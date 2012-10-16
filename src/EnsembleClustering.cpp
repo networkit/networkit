@@ -7,8 +7,15 @@
 //============================================================================
 
 #include <iostream>
+#include <fstream>
+
+#include "METISGraphParser.h"
 
 int main() {
-	std::cout << "!!!Hello World!!!" << std::endl; // prints !!!Hello World!!!
+
+
+	EnsembleClustering::METISGraphParser *parser = new EnsembleClustering::METISGraphParser;
+	parser->parse("/Users/cls/workspace/Data/DIMACS/example.graph");
+
 	return 0;
 }
