@@ -24,9 +24,9 @@ public:
 
 	EdgeTuple(int i, int j, double w);
 
-	int i;
-	int j;
-	double w;
+	int i; //!< edge source index
+	int j; //!< edge target index
+	double w; //!< edge weight
 
 };
 
@@ -37,19 +37,19 @@ public:
 
 	NodeTuple(double w);
 
-	double w; // self-loop weight
+	double w; //!< self-loop weight
 
 };
 
 
 
-class EdgeTripleGraphDataStructure {
+class EdgeTripleGraphData {
 
 public:
 
-	EdgeTripleGraphDataStructure();
+	EdgeTripleGraphData();
 
-	virtual ~EdgeTripleGraphDataStructure();
+	virtual ~EdgeTripleGraphData();
 
 	EdgeTuple edgeArray[];
 

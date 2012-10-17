@@ -27,6 +27,10 @@ METISGraphParser::~METISGraphParser() {
 
 /**
  * Extract a vector of indices from a line in the file.
+ *
+ * @param[in]	line		line from input file containing node indices
+ *
+ * @param[out]	indices		node indices extracted from line
  */
 static std::vector<id> parseLine(std::string line) {
 
@@ -52,9 +56,6 @@ Graph METISGraphParser::parse(std::string path) {
 	unsigned int linecount;
 	id currentNode;
 
-	// graph data structure
-	int n;  // number of nodes
-	int m;	// number of edges
 
 
 	graphFile.open(path.c_str());
@@ -70,8 +71,13 @@ Graph METISGraphParser::parse(std::string path) {
 			indices = parseLine(line);
 			if (linecount == 0) {
 				// handle header line
+				// graph data structure
+				int n;  // number of nodes
+				int m;	// number of edges
+
 				n = indices[0];
 				m = indices[1];
+				this->initGraph(n, m);
 			} else {
 				// handle node line
 				this->connectNode(currentNode, indices);
@@ -87,8 +93,19 @@ Graph METISGraphParser::parse(std::string path) {
 
 }
 
+void METISGraphParser::initGraph(int n, int m) {
+
+	// TODO: implement
+
+}
+
 void METISGraphParser::connectNode(id v, std::vector<id> indices) {
 	std::cout << "Connecting node " << v << " with " << indices.size() << " other nodes" << std::endl;
+	// TODO: implement
+
+	int deg = indices.size();
+
+
 }
 
 } /* namespace EnsembleClustering */

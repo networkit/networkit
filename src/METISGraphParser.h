@@ -41,13 +41,33 @@ public:
 
 	virtual ~METISGraphParser();
 
-	virtual Graph parse(std::string path);
 
 	/**
-	 * Connects node with id v to all its neighbors given by a
-	 * vector of indices.
+	 * Parses and returns a graph from a METIS graph file.
+	 *
+	 * @param[in]	path	path of the METIS graph input file
+	 */
+	virtual Graph parse(std::string path);
+
+
+protected:
+
+
+	/**
+	 * Initializes the graph data structure before parsing.
+	 */
+	virtual void initGraph(int n, int m);
+
+	/**
+	 * Connects node with to all its neighbors.
+	 *
+	 * @param[in]	v			node id
+	 * @param[in]	indices		neighbor node ids
 	 */
 	virtual void connectNode(id v, std::vector<id> indices);
+
+
+
 
 };
 
