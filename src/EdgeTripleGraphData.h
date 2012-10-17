@@ -22,6 +22,8 @@ class EdgeTuple {
 
 public:
 
+	EdgeTuple();
+
 	EdgeTuple(int i, int j, double w);
 
 	int i; //!< edge source index
@@ -35,6 +37,8 @@ class NodeTuple {
 
 public:
 
+	NodeTuple();
+
 	NodeTuple(double w);
 
 	double w; //!< self-loop weight
@@ -47,13 +51,15 @@ class EdgeTripleGraphData {
 
 public:
 
-	EdgeTripleGraphData();
+	EdgeTripleGraphData(int n, int m);
 
 	virtual ~EdgeTripleGraphData();
 
-	EdgeTuple edgeArray[];
+	int n; //!< number of nodes
+	int m; //!< number of edges
 
-	NodeTuple nodeArray[];
+	EdgeTuple* edgeData;
+	NodeTuple* nodeData;
 
 
 };

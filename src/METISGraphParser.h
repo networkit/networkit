@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "Graph.h"
+#include "EdgeTripleGraphData.h"
 
 namespace EnsembleClustering {
 
@@ -22,8 +23,8 @@ typedef unsigned int id;
 /**
  * A parser for the METIS graph file format.
  *
-		METIS graph file format
-		-----------------------
+		**METIS graph file format**
+
 
 		- ASCII
 		- a graph of N nodes is stored in a file of N+1 lines;
@@ -46,6 +47,8 @@ public:
 	 * Parses and returns a graph from a METIS graph file.
 	 *
 	 * @param[in]	path	path of the METIS graph input file
+	 *
+	 * @param[out]	graph	the graph contained in the input file
 	 */
 	virtual Graph parse(std::string path);
 
@@ -66,9 +69,12 @@ protected:
 	 */
 	virtual void connectNode(id v, std::vector<id> indices);
 
+
 private:
 
+	Graph *graph; //!< output of parsing, lightweight graph interface
 
+	EdgeTripleGraphData *graphData; //!< the actual data structure storing the graph
 
 
 

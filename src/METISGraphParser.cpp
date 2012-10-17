@@ -12,6 +12,8 @@
 #include <string>
 #include <sstream>
 
+#include "EdgeTripleGraphData.h"
+
 namespace EnsembleClustering {
 
 METISGraphParser::METISGraphParser() {
@@ -62,28 +64,39 @@ Graph METISGraphParser::parse(std::string path) {
 
 	if (graphFile.is_open()) {
 
+
 		linecount = 0;
 		currentNode = 0;
 		std::vector<id> indices; // the integer indices for the current line
 
 		while (graphFile.good()) {
 			std::getline(graphFile, line);
-			indices = parseLine(line);
-			if (linecount == 0) {
-				// handle header line
-				// graph data structure
-				int n;  // number of nodes
-				int m;	// number of edges
-
-				n = indices[0];
-				m = indices[1];
-				this->initGraph(n, m);
+			// check for comment line starting with '%'
+			if (line[0] == '%') {
+				// omit comment line
 			} else {
-				// handle node line
-				this->connectNode(currentNode, indices);
-				++currentNode;
+				indices = parseLine(line);
+				if (linecount == 0) {
+					// handle header line
+					// graph data structure
+					int n;  // number of nodes
+					int m;	// number of edges
+
+					n = indices[0];
+					m = indices[1];
+
+					std::cout << "n = " << n << " m = " << m << std::endl;
+
+					this->initGraph(n, m);
+
+				} else {
+					// handle node line
+					this->connectNode(currentNode, indices);
+					++currentNode;
+				}
+				++linecount;
 			}
-			++linecount;
+
 		}
 	} else {
 		std::cout << "unable to open file: " << path << std::endl;
@@ -95,7 +108,9 @@ Graph METISGraphParser::parse(std::string path) {
 
 void METISGraphParser::initGraph(int n, int m) {
 
-	// TODO: implement
+	this->graphData = new EdgeTripleGraphData(n, m);
+
+	std::cout << "created new graph data structure with n=" << this->graphData->n << " and m=" << this->graphData->m << std::endl;
 
 }
 
