@@ -66,6 +66,10 @@ protected:
 	 */
 	virtual void connectNode(id v, std::vector<id> indices);
 
+private:
+
+
+
 
 
 

@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "EdgeTripleGraphDataStructure.h"
+#include "EdgeTripleGraphData.h"
 
 namespace EnsembleClustering {
 
