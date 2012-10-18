@@ -10,6 +10,9 @@
 
 #include <iostream>
 #include <vector>
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+#include "log4cxx/helpers/exception.h"
 
 #include "Graph.h"
 #include "EdgeTripleGraphData.h"
@@ -51,6 +54,10 @@ public:
 	 * @param[out]	graph	the graph contained in the input file
 	 */
 	virtual Graph parse(std::string path);
+
+	// members
+	log4cxx::LoggerPtr logger; //!< logger
+
 
 
 protected:

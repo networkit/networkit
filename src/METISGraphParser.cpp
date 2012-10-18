@@ -11,14 +11,18 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include "log4cxx/logger.h"
+
 
 #include "EdgeTripleGraphData.h"
 
 namespace EnsembleClustering {
 
 METISGraphParser::METISGraphParser() {
-	// TODO Auto-generated constructor stub
-
+	// logging
+	log4cxx::LoggerPtr logger(log4cxx::Logger::getRootLogger());
+	logger->setLevel(log4cxx::Level::getDebug());
+	this->logger = logger;
 }
 
 METISGraphParser::~METISGraphParser() {
@@ -35,6 +39,7 @@ METISGraphParser::~METISGraphParser() {
  * @param[out]	indices		node indices extracted from line
  */
 static std::vector<id> parseLine(std::string line) {
+
 
 	std::stringstream stream(line);
 	std::string token;
@@ -110,7 +115,8 @@ void METISGraphParser::initGraph(int n, int m) {
 
 	this->graphData = new EdgeTripleGraphData(n, m);
 
-	std::cout << "created new graph data structure with n=" << this->graphData->n << " and m=" << this->graphData->m << std::endl;
+
+	LOG4CXX_DEBUG(this->logger, "created new graph data structure with n=" << this->graphData->n << " and m=" << this->graphData->m );
 
 }
 
