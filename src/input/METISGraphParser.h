@@ -14,8 +14,8 @@
 #include "log4cxx/basicconfigurator.h"
 #include "log4cxx/helpers/exception.h"
 
-#include "Graph.h"
-#include "EdgeTripleGraphData.h"
+#include "../graph/Graph.h"
+#include "../graph/EdgeTripleGraphData.h"
 
 namespace EnsembleClustering {
 

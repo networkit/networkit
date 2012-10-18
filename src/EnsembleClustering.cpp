@@ -13,7 +13,7 @@
 #include "log4cxx/basicconfigurator.h"
 
 
-#include "METISGraphParser.h"
+#include "input/METISGraphParser.h"
 
 
 int main() {
@@ -22,6 +22,7 @@ int main() {
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
 
+	// start
 	EnsembleClustering::METISGraphParser *parser = new EnsembleClustering::METISGraphParser;
 	parser->parse("/Users/cls/workspace/Data/DIMACS/example.graph");
 

@@ -14,7 +14,7 @@
 #include "log4cxx/logger.h"
 
 
-#include "EdgeTripleGraphData.h"
+#include "../graph/EdgeTripleGraphData.h"
 
 namespace EnsembleClustering {
 
