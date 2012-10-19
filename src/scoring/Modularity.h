@@ -13,9 +13,14 @@
 namespace EnsembleClustering {
 
 class Modularity: public EnsembleClustering::EdgeScoring {
+
 public:
+
 	Modularity();
+
 	virtual ~Modularity();
+
+	virtual double scoreEdge(id u, id v);
 };
 
 } /* namespace EnsembleClustering */
