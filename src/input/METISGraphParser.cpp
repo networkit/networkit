@@ -19,10 +19,6 @@
 namespace EnsembleClustering {
 
 METISGraphParser::METISGraphParser() {
-	// logging
-	log4cxx::LoggerPtr logger(log4cxx::Logger::getRootLogger());
-	logger->setLevel(log4cxx::Level::getDebug());
-	this->logger = logger;
 }
 
 METISGraphParser::~METISGraphParser() {
@@ -90,13 +86,13 @@ Graph METISGraphParser::parse(std::string path) {
 					n = indices[0];
 					m = indices[1];
 
-					std::cout << "n = " << n << " m = " << m << std::endl;
+					LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "n = " << n << " m = " << m )
 
 					this->initGraph(n, m);
 
 				} else {
 					// handle node line
-					this->connectNode(currentNode, indices);
+					this->graphData->connectNode(currentNode, indices);
 					++currentNode;
 				}
 				++linecount;
@@ -109,6 +105,8 @@ Graph METISGraphParser::parse(std::string path) {
 
 	graphFile.close();
 
+	// TODO: return graph
+
 }
 
 void METISGraphParser::initGraph(int n, int m) {
@@ -116,17 +114,10 @@ void METISGraphParser::initGraph(int n, int m) {
 	this->graphData = new EdgeTripleGraphData(n, m);
 
 
-	LOG4CXX_DEBUG(this->logger, "created new graph data structure with n=" << this->graphData->n << " and m=" << this->graphData->m );
+	LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "created new graph data structure with n=" << this->graphData->n << " and m=" << this->graphData->m );
 
 }
 
-void METISGraphParser::connectNode(id v, std::vector<id> indices) {
-	std::cout << "Connecting node " << v << " with " << indices.size() << " other nodes" << std::endl;
-	// TODO: implement
 
-	int deg = indices.size();
-
-
-}
 
 } /* namespace EnsembleClustering */

@@ -8,7 +8,11 @@
 #ifndef EDGETRIPLEGRAPHDATASTRUCTURE_H_
 #define EDGETRIPLEGRAPHDATASTRUCTURE_H_
 
+#include "Graph.h"
+
 namespace EnsembleClustering {
+
+
 
 
 /**
@@ -24,10 +28,10 @@ public:
 
 	EdgeTuple();
 
-	EdgeTuple(int i, int j, double w);
+	EdgeTuple(id i, id j, double w);
 
-	int i; //!< edge source index
-	int j; //!< edge target index
+	id i; //!< edge source index
+	id j; //!< edge target index
 	double w; //!< edge weight
 
 };
@@ -54,6 +58,14 @@ public:
 	EdgeTripleGraphData(int n, int m);
 
 	virtual ~EdgeTripleGraphData();
+
+	/**
+	 * Connects node with to all its neighbors.
+	 *
+	 * @param[in]	v			node id
+	 * @param[in]	indices		neighbor node ids
+	 */
+	virtual void connectNode(id v, std::vector<id> indices);
 
 	int n; //!< number of nodes
 	int m; //!< number of edges

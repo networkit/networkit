@@ -8,6 +8,8 @@
 #ifndef EDGESCORING_H_
 #define EDGESCORING_H_
 
+#include "../graph/Graph.h"
+
 namespace EnsembleClustering {
 
 class EdgeScoring {
@@ -18,7 +20,7 @@ public:
 
 	virtual ~EdgeScoring();
 
-	virtual double scoreEdge(id u, id v);
+	virtual double scoreEdge(id u, id v) = 0;
 };
 
 } /* namespace EnsembleClustering */

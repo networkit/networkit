@@ -18,4 +18,7 @@ Modularity::~Modularity() {
 	// TODO Auto-generated destructor stub
 }
 
+double Modularity::scoreEdge(id u, id v) {
+}
+
 } /* namespace EnsembleClustering */

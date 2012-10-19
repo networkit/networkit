@@ -10,6 +10,9 @@
 
 namespace EnsembleClustering {
 
+typedef unsigned int id; //<! type definition of a node id
+
+
 class Graph {
 public:
 	Graph();

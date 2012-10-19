@@ -5,6 +5,10 @@
  *      Author: cls
  */
 
+#include "log4cxx/logger.h"
+
+#include "../globals.h"
+#include "Graph.h"
 #include "EdgeTripleGraphData.h"
 
 
@@ -16,7 +20,7 @@ EdgeTuple::EdgeTuple() {
 	this->w = 0.0;
 }
 
-EdgeTuple::EdgeTuple(int i, int j, double w) {
+EdgeTuple::EdgeTuple(id i, id j, double w) {
 	this->i = i;
 	this->j = j;
 	this->w = w;
@@ -45,6 +49,23 @@ EdgeTripleGraphData::EdgeTripleGraphData(int n, int m) {
 
 EdgeTripleGraphData::~EdgeTripleGraphData() {
 	// TODO Auto-generated destructor stub
+}
+
+void EdgeTripleGraphData::connectNode(id v, std::vector<id> indices) {
+
+	LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "Connecting node " << v << " with " << indices.size() << " other nodes");
+
+	NodeTuple nodetuple;
+	this->nodeData[v] = 0.0; // TODO: weight?
+
+	int deg = indices.size();
+
+	int i; // edge tuple array index
+	EdgeTuple edgetuple;
+	for (std::vector<id>::iterator iter = indices.begin(); iter != indices.end(); ++iter) {
+		this->edgeData[i] = EdgeTuple(v, *iter, 0.0); // TODO: weight?
+	}
+
 }
 
 } /* namespace EnsembleClustering */

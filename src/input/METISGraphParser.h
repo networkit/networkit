@@ -20,8 +20,6 @@
 namespace EnsembleClustering {
 
 
-typedef unsigned int id;
-
 
 /**
  * A parser for the METIS graph file format.
@@ -55,8 +53,6 @@ public:
 	 */
 	virtual Graph parse(std::string path);
 
-	// members
-	log4cxx::LoggerPtr logger; //!< logger
 
 
 
@@ -68,13 +64,6 @@ protected:
 	 */
 	virtual void initGraph(int n, int m);
 
-	/**
-	 * Connects node with to all its neighbors.
-	 *
-	 * @param[in]	v			node id
-	 * @param[in]	indices		neighbor node ids
-	 */
-	virtual void connectNode(id v, std::vector<id> indices);
 
 
 private:

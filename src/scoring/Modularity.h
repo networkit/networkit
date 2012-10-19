@@ -9,6 +9,7 @@
 #define MODULARITY_H_
 
 #include "EdgeScoring.h"
+#include "../graph/Graph.h"
 
 namespace EnsembleClustering {
 

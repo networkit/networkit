@@ -12,8 +12,9 @@
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
 
-
+#include "globals.h"
 #include "input/METISGraphParser.h"
+
 
 
 int main() {
@@ -21,10 +22,16 @@ int main() {
 
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
+	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getTrace());
+
 
 	// start
 	EnsembleClustering::METISGraphParser *parser = new EnsembleClustering::METISGraphParser;
-	parser->parse("/Users/cls/workspace/Data/DIMACS/example.graph");
+
+	// available graphs
+	//	- kron_g500-simple-logn16.graph
+
+	parser->parse("/Users/cls/workspace/Data/DIMACS/kron_g500-simple-logn16.graph");
 
 	return 0;
 }
