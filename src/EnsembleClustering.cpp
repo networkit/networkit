@@ -22,7 +22,7 @@ int main() {
 
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
-	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getTrace());
+	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
 
 
 	// start

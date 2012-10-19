@@ -55,16 +55,20 @@ void EdgeTripleGraphData::connectNode(id v, std::vector<id> indices) {
 
 	LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "Connecting node " << v << " with " << indices.size() << " other nodes");
 
-	NodeTuple nodetuple;
-	this->nodeData[v] = 0.0; // TODO: weight?
+	NodeTuple *nodeTuple = new NodeTuple(0.0);
+	this->nodeData[v] = *nodeTuple;
 
 	int deg = indices.size();
 
-	int i; // edge tuple array index
-	EdgeTuple edgetuple;
+	int i = 0; // edge tuple array index
 	for (std::vector<id>::iterator iter = indices.begin(); iter != indices.end(); ++iter) {
-		this->edgeData[i] = EdgeTuple(v, *iter, 0.0); // TODO: weight?
+		EdgeTuple *edgeTuple = new EdgeTuple(v, *iter, 0.0);
+		this->edgeData[i] = *edgeTuple; // TODO: weight?
+		++i; // move to next array slot
 	}
+
+	LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "done connectNode");
+
 
 }
 

@@ -51,7 +51,7 @@ public:
 	 *
 	 * @param[out]	graph	the graph contained in the input file
 	 */
-	virtual Graph parse(std::string path);
+	virtual Graph* parse(std::string path);
 
 
 

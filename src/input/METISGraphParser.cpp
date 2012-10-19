@@ -52,7 +52,9 @@ static std::vector<id> parseLine(std::string line) {
 }
 
 
-Graph METISGraphParser::parse(std::string path) {
+Graph* METISGraphParser::parse(std::string path) {
+
+	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "Parsing graph file : " << path);
 
 	std::ifstream graphFile;
 	std::string line;
@@ -72,10 +74,12 @@ Graph METISGraphParser::parse(std::string path) {
 
 		while (graphFile.good()) {
 			std::getline(graphFile, line);
+			LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "reading line: " << line);
 			// check for comment line starting with '%'
 			if (line[0] == '%') {
 				// omit comment line
 			} else {
+				LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "linecount: " << linecount);
 				indices = parseLine(line);
 				if (linecount == 0) {
 					// handle header line
@@ -98,14 +102,23 @@ Graph METISGraphParser::parse(std::string path) {
 				++linecount;
 			}
 
-		}
+		} // end while
+
+		LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "finished reading file");
+
+
 	} else {
 		std::cout << "unable to open file: " << path << std::endl;
 	}
 
 	graphFile.close();
 
-	// TODO: return graph
+
+	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "Done: Graph file parsed");
+
+	// TODO: assemble graph
+	Graph* G = new Graph();
+	return G;
 
 }
 

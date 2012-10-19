@@ -11,6 +11,9 @@
 #include "EdgeScoring.h"
 #include "../graph/Graph.h"
 
+class Cluster; // TODO: implement in src/clustering
+class Clustering; // TODO: implement in src/clustering
+
 namespace EnsembleClustering {
 
 class Modularity: public EnsembleClustering::EdgeScoring {
@@ -22,6 +25,12 @@ public:
 	virtual ~Modularity();
 
 	virtual double scoreEdge(id u, id v);
+
+	double mod(Cluster* C, Clustering* clustering);
+
+	double cutweight(Cluster* c, Cluster* d);
+
+	double weight(Cluster* c);
 };
 
 } /* namespace EnsembleClustering */
