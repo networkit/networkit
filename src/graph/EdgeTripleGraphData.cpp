@@ -67,7 +67,6 @@ void EdgeTripleGraphData::connectNode(id v, std::vector<id> indices) {
 		++i; // move to next array slot
 	}
 
-	LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "done connectNode");
 
 
 }

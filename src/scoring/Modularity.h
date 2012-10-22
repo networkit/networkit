@@ -24,9 +24,30 @@ public:
 
 	virtual ~Modularity();
 
+
+	/**
+	 * Returns an edge score for an edge (u,v) which expresses the
+	 * modularity increase which can be gained by merging
+	 * the clusters of u and v.
+	 *
+	 * @param[in]	u	source node id
+	 * @param[out]	v	target node id
+	 *
+	 */
 	virtual double scoreEdge(id u, id v);
 
-	double mod(Cluster* C, Clustering* clustering);
+	/**
+	 * Calculates the modularity of the given clustering;
+	 *
+	 */
+	double mod(Clustering* clustering);
+
+	/**
+	 * Calculates the difference in modularity that would result from a merger of
+	 * two clusters.
+	 *
+	 */
+	virtual double deltaMod(Cluster* c, Cluster* d);
 
 	double cutweight(Cluster* c, Cluster* d);
 
