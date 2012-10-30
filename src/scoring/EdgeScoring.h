@@ -20,7 +20,7 @@ public:
 
 	virtual ~EdgeScoring();
 
-	virtual double scoreEdge(id u, id v) = 0;
+	virtual double scoreEdge(Node u, Node v) = 0;
 };
 
 } /* namespace EnsembleClustering */

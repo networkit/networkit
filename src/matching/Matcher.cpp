@@ -1,20 +1,20 @@
 /*
- * Matching.cpp
+ * Matcher.cpp
  *
- *  Created on: 15.10.2012
+ *  Created on: 30.10.2012
  *      Author: cls
  */
 
-#include "Matching.h"
+#include "Matcher.h"
 
 namespace EnsembleClustering {
 
-Matching::Matching() {
+Matcher::Matcher() {
 	// TODO Auto-generated constructor stub
 
 }
 
-Matching::~Matching() {
+Matcher::~Matcher() {
 	// TODO Auto-generated destructor stub
 }
 

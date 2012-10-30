@@ -10,10 +10,10 @@
 
 namespace EnsembleClustering {
 
-class EnsembleClusteringAlgo {
+class EnsembleClusterer {
 public:
-	EnsembleClusteringAlgo();
-	virtual ~EnsembleClusteringAlgo();
+	EnsembleClusterer();
+	virtual ~EnsembleClusterer();
 };
 
 } /* namespace EnsembleClustering */

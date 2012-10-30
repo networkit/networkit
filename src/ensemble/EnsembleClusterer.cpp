@@ -9,12 +9,12 @@
 
 namespace EnsembleClustering {
 
-EnsembleClusteringAlgo::EnsembleClusteringAlgo() {
+EnsembleClusterer::EnsembleClusterer() {
 	// TODO Auto-generated constructor stub
 
 }
 
-EnsembleClusteringAlgo::~EnsembleClusteringAlgo() {
+EnsembleClusterer::~EnsembleClusterer() {
 	// TODO Auto-generated destructor stub
 }
 

@@ -16,6 +16,9 @@ class Clustering; // TODO: implement in src/clustering
 
 namespace EnsembleClustering {
 
+
+// TODO: implement modularity as in Python prototype
+
 class Modularity: public EnsembleClustering::EdgeScoring {
 
 public:
@@ -34,7 +37,7 @@ public:
 	 * @param[out]	v	target node id
 	 *
 	 */
-	virtual double scoreEdge(id u, id v);
+	virtual double scoreEdge(Node u, Node v);
 
 	/**
 	 * Calculates the modularity of the given clustering;
