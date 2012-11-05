@@ -11,8 +11,6 @@
 #include "EdgeScoring.h"
 #include "../graph/Graph.h"
 
-class Cluster; // TODO: implement in src/clustering
-class Clustering; // TODO: implement in src/clustering
 
 namespace EnsembleClustering {
 

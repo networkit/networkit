@@ -14,9 +14,29 @@ typedef unsigned int id; //<! type definition of a node id
 
 
 class Graph {
+
+
 public:
+
+	class Node;
+	class Edge;
+
 	Graph();
+
 	virtual ~Graph();
+
+	virtual int numberOfNodes();
+
+	virtual int numberOfEdges();
+
+	virtual int degree(Node v);
+
+	virtual void neighbors(Node v);
+
+
+
+
+
 };
 
 } /* namespace EnsembleClustering */

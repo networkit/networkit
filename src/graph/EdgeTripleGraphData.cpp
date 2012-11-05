@@ -7,7 +7,6 @@
 
 #include "log4cxx/logger.h"
 
-#include "../globals.h"
 #include "Graph.h"
 #include "EdgeTripleGraphData.h"
 

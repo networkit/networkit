@@ -14,6 +14,8 @@ namespace EnsembleClustering {
 
 class EdgeScoring {
 
+class Node;
+
 public:
 
 	EdgeScoring();
