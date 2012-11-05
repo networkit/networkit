@@ -10,6 +10,10 @@
 
 namespace EnsembleClustering {
 
+// TODO: import
+class Graph;
+class Clustering;
+
 class Clusterer {
 public:
 

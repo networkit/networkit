@@ -14,7 +14,6 @@
 #include "log4cxx/logger.h"
 
 
-#include "../graph/EdgeTripleGraphData.h"
 
 namespace EnsembleClustering {
 
@@ -70,7 +69,9 @@ Graph* METISGraphParser::parse(std::string path) {
 
 		linecount = 0;
 		currentNode = 0;
-		std::vector<id> indices; // the integer indices for the current line
+
+
+		std::vector<id> indices;
 
 		while (graphFile.good()) {
 			std::getline(graphFile, line);
@@ -96,7 +97,8 @@ Graph* METISGraphParser::parse(std::string path) {
 
 				} else {
 					// handle node line
-					this->graphData->connectNode(currentNode, indices);
+					// FIXME:adapt to new graph data structure
+					// this->graphData->connectNode(currentNode, indices);
 					++currentNode;
 				}
 				++linecount;
@@ -117,17 +119,19 @@ Graph* METISGraphParser::parse(std::string path) {
 	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "Done: Graph file parsed");
 
 	// TODO: assemble graph
-	Graph* G = new Graph();
-	return G;
+	// Graph* G = new Graph();
+	// return G;
 
 }
 
 void METISGraphParser::initGraph(int n, int m) {
 
-	this->graphData = new EdgeTripleGraphData(n, m);
+	// FIXME:
+	// this->graphData = new EdgeTripleGraph(n, m);
 
 
-	LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "created new graph data structure with n=" << this->graphData->n << " and m=" << this->graphData->m );
+	// FIXME:
+	// LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "created new graph data structure with n=" << this->graphData->n << " and m=" << this->graphData->m );
 
 }
 

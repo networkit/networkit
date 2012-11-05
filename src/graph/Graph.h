@@ -10,7 +10,6 @@
 
 namespace EnsembleClustering {
 
-typedef unsigned int id; //<! type definition of a node id
 
 
 class Graph {
@@ -25,13 +24,13 @@ public:
 
 	virtual ~Graph();
 
-	virtual int numberOfNodes();
+	virtual int numberOfNodes() =0;
 
-	virtual int numberOfEdges();
+	virtual int numberOfEdges() =0;
 
-	virtual int degree(Node v);
+	virtual int degree(Node v) =0;
 
-	virtual void neighbors(Node v);
+	virtual void neighbors(Node v) =0;
 
 
 

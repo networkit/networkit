@@ -15,7 +15,7 @@
 #include "log4cxx/helpers/exception.h"
 
 #include "../graph/Graph.h"
-#include "../graph/EdgeTripleGraphData.h"
+#include "../graph/EdgeTripleGraph.h"
 
 namespace EnsembleClustering {
 
@@ -70,7 +70,7 @@ private:
 
 	Graph *graph; //!< output of parsing, lightweight graph interface
 
-	EdgeTripleGraphData *graphData; //!< the actual data structure storing the graph
+	EdgeTripleGraph *graphData; //!< the actual data structure storing the graph
 
 
 

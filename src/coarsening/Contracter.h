@@ -11,6 +11,10 @@
 
 namespace EnsembleClustering {
 
+// TODO: import
+typedef int Node;
+
+
 class Contracter {
 
 public:

@@ -12,9 +12,10 @@
 
 namespace EnsembleClustering {
 
+typedef Graph::Node Node;
+
 class EdgeScoring {
 
-class Node;
 
 public:
 

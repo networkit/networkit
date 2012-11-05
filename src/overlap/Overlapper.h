@@ -11,7 +11,12 @@
 #include <set>
 #include <vector>
 
+
 namespace EnsembleClustering {
+
+// TODO: import from module
+class Clustering;
+class Graph;
 
 class Overlapper {
 

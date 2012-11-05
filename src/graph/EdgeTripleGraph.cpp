@@ -9,12 +9,12 @@
 
 namespace EnsembleClustering {
 
-EdgeTripeGraph::EdgeTripleGraph() {
+EdgeTripleGraph::EdgeTripleGraph() {
 	// TODO Auto-generated constructor stub
 
 }
 
-EdgeTripeGraph::~EdgeTripleGraph() {
+EdgeTripleGraph::~EdgeTripleGraph() {
 	// TODO Auto-generated destructor stub
 }
 

@@ -9,6 +9,9 @@
 
 namespace EnsembleClustering {
 
+typedef Graph::Node Node;
+typedef Graph::Edge Edge;
+
 
 Modularity::Modularity() {
 	// TODO Auto-generated constructor stub
@@ -19,13 +22,10 @@ Modularity::~Modularity() {
 	// TODO Auto-generated destructor stub
 }
 
-double Modularity::scoreEdge(id u, id v) {
-	// TODO implement
-}
 
 
 
-double Modularity::mod(Clustering* clustering) {
+double Modularity::mod(Clustering clustering) {
 
 	int k; // number of clusters
 	int c; // current cluster id
@@ -44,16 +44,6 @@ double Modularity::mod(Clustering* clustering) {
 	mod = (1 / 4 * total) * clusterSum;
 }
 
-double Modularity::cutweight(Cluster* c, Cluster* d) {
-}
 
-double Modularity::deltaMod(Cluster* c, Cluster* d) {
-
-
-
-}
-
-double Modularity::weight(Cluster* c) {
-}
 
 } /* namespace EnsembleClustering */

@@ -12,7 +12,6 @@
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
 
-#include "globals.h"
 #include "input/METISGraphParser.h"
 
 

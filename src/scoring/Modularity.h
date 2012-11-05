@@ -14,6 +14,13 @@
 
 namespace EnsembleClustering {
 
+typedef Graph::Node Node;
+typedef Graph::Edge Edge;
+
+// TODO: import from proper module
+typedef int Clustering;
+typedef int Cluster;
+
 
 // TODO: implement modularity as in Python prototype
 
@@ -35,24 +42,24 @@ public:
 	 * @param[out]	v	target node id
 	 *
 	 */
-	virtual double scoreEdge(Node u, Node v);
+	virtual double scoreEdge(Edge uv) =0;
 
 	/**
 	 * Calculates the modularity of the given clustering;
 	 *
 	 */
-	double mod(Clustering* clustering);
+	virtual double mod(Clustering clustering) =0;
 
 	/**
 	 * Calculates the difference in modularity that would result from a merger of
 	 * two clusters.
 	 *
 	 */
-	virtual double deltaMod(Cluster* c, Cluster* d);
+	virtual double deltaMod(Cluster c, Cluster d) =0;
 
-	double cutweight(Cluster* c, Cluster* d);
+	virtual double cutweight(Cluster c, Cluster d) =0;
 
-	double weight(Cluster* c);
+	virtual double weight(Cluster c) =0;
 };
 
 } /* namespace EnsembleClustering */

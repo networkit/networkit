@@ -10,6 +10,11 @@
 
 namespace EnsembleClustering {
 
+// TODO: imports
+class Matching;
+class Graph;
+
+
 class Matcher {
 
 public:
@@ -18,7 +23,7 @@ public:
 
 	virtual ~Matcher();
 
-	Matching run(Graph G) = 0;
+	virtual Matching run(Graph G) = 0;
 };
 
 } /* namespace EnsembleClustering */

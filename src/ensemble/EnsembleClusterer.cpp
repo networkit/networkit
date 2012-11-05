@@ -1,11 +1,11 @@
 /*
- * EnsembleClusteringAlgo.cpp
+ * EnsembleClustererAlgo.cpp
  *
  *  Created on: 15.10.2012
  *      Author: cls
  */
 
-#include "EnsembleClusteringAlgo.h"
+#include "EnsembleClusterer.h"
 
 namespace EnsembleClustering {
 
