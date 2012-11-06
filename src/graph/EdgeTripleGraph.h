@@ -8,7 +8,6 @@
 #ifndef EDGETRIPLEGRAPH_H_
 #define EDGETRIPLEGRAPH_H_
 
-#include "Graph.h"
 
 #include <vector>
 
@@ -28,8 +27,6 @@ class EdgeTuple {
 
 public:
 
-	EdgeTuple();
-
 	EdgeTuple(id i, id j, double w);
 
 	id i; //!< edge source index
@@ -43,8 +40,6 @@ class NodeTuple {
 
 public:
 
-	NodeTuple();
-
 	NodeTuple(weight w);
 
 	weight w; //!< self-loop weight
@@ -56,23 +51,60 @@ public:
 class BucketTuple {
 
 
-	id begin;	//!< index into the EdgeTuple array pointing to the first EdgeTuple of this node
-	id end;		//!< index into the EdgeTuple array pointing to the last EdgeTuple of this node
+
+public:
+
+	int begin;	//!< index into the EdgeTuple array pointing to the first EdgeTuple of this node
+	int end;		//!< index into the EdgeTuple array pointing to the last EdgeTuple of this node
+
+	BucketTuple(int begin, int end);
+
 
 };
 
+/** ------------------------------------------------------------------- **/
 
-class EdgeTripleGraph: public EnsembleClustering::Graph {
+class EdgeTripleGraph: public EnsembleClustering::StaticGraphImplementor {
 
 private:
 
-	std::vector<EdgeTuple> edges;		//!< array containing EdgeTuples (ie. weighted edges grouped into buckets)
-	std::vector<NodeTuple> nodes;		//!< array containing NodeTuples (ie. self loop-weights)
-	std::vector<BucketTuple> buckets; 	//!< array containing BucketTuples (ie. begin and end indices into the edge array)
+	int n; 	//!< number of nodes
+	int m; 	//!< number of edges
+
+	std::vector<EdgeTuple> _edges;		//!< array containing EdgeTuples (ie. weighted edges grouped into buckets)
+	std::vector<NodeTuple> _nodes;		//!< array containing NodeTuples (ie. self loop-weights)
+	std::vector<BucketTuple> _buckets; 	//!< array containing BucketTuples (ie. begin and end indices into the edge array)
+
+	// insert markers
+	int ieh;	//!< insert edge here
 
 public:
-	EdgeTripleGraph();
+
+	EdgeTripleGraph(int n, int m);
+
 	virtual ~EdgeTripleGraph();
+
+	virtual int numberOfNodes();
+
+	virtual int numberOfEdges();
+
+	// virtual int degree(Node v) =0;
+
+	// virtual void neighbors(Node v) =0;
+
+	// virtual void nodes() =0;
+
+	// virtual void edges() =0;
+
+	// virtual void edges(Node u) =0;
+
+
+	/****** non-interface methods *********/
+
+	virtual void addAdjacencies(id u, std::vector<id> adjacencies);
+
+
+
 };
 
 } /* namespace EnsembleClustering */

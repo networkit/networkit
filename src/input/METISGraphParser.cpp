@@ -126,8 +126,7 @@ Graph* METISGraphParser::parse(std::string path) {
 
 void METISGraphParser::initGraph(int n, int m) {
 
-	// FIXME:
-	// this->graphData = new EdgeTripleGraph(n, m);
+	this->graphData = new EdgeTripleGraph(n, m);
 
 
 	// FIXME:

@@ -14,11 +14,17 @@ namespace EnsembleClustering {
 
 class Graph {
 
+protected:
+
+	GraphImplementor* implementor;
+
 
 public:
 
 	class Node;
 	class Edge;
+
+	// TODO: templating instead of typedef weight?
 
 	Graph();
 
@@ -32,11 +38,16 @@ public:
 
 	virtual void neighbors(Node v) =0;
 
+	virtual void nodes() =0;
 
+	virtual void edges() =0;
 
+	virtual void edges(Node u) =0;
 
 
 };
+
+
 
 } /* namespace EnsembleClustering */
 #endif /* GRAPH_H_ */
