@@ -9,13 +9,12 @@
 #define MODULARITY_H_
 
 #include "EdgeScoring.h"
-#include "../graph/Graph.h"
 
 
 namespace EnsembleClustering {
 
-typedef Graph::Node Node;
-typedef Graph::Edge Edge;
+typedef int Node;
+typedef int Edge;
 
 // TODO: import from proper module
 typedef int Clustering;

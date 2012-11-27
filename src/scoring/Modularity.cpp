@@ -9,8 +9,8 @@
 
 namespace EnsembleClustering {
 
-typedef Graph::Node Node;
-typedef Graph::Edge Edge;
+typedef int Node;
+typedef int Edge;
 
 
 Modularity::Modularity() {

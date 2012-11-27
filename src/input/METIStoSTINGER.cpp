@@ -1,20 +1,20 @@
 /*
- * StaticGraph.cpp
+ * METIStoSTINGER.cpp
  *
- *  Created on: 06.11.2012
+ *  Created on: 27.11.2012
  *      Author: cls
  */
 
-#include "StaticGraph.h"
+#include "METIStoSTINGER.h"
 
 namespace EnsembleClustering {
 
-StaticGraph::StaticGraph() {
+METIStoSTINGER::METIStoSTINGER() {
 	// TODO Auto-generated constructor stub
 
 }
 
-StaticGraph::~StaticGraph() {
+METIStoSTINGER::~METIStoSTINGER() {
 	// TODO Auto-generated destructor stub
 }
 

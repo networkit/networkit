@@ -14,11 +14,8 @@
 #include "log4cxx/basicconfigurator.h"
 #include "log4cxx/helpers/exception.h"
 
-#include "../graph/Graph.h"
-#include "../graph/EdgeTripleGraph.h"
 
 namespace EnsembleClustering {
-
 
 
 /**
@@ -51,7 +48,7 @@ public:
 	 *
 	 * @param[out]	graph	the graph contained in the input file
 	 */
-	virtual Graph* parse(std::string path);
+	// virtual Graph* parse(std::string path) =0;
 
 
 
@@ -62,15 +59,15 @@ protected:
 	/**
 	 * Initializes the graph data structure before parsing.
 	 */
-	virtual void initGraph(int n, int m);
+	virtual void initGraph(int n, int m) =0;
 
 
 
 private:
 
-	Graph *graph; //!< output of parsing, lightweight graph interface
+	// Graph *graph; //!< output of parsing, lightweight graph interface
 
-	EdgeTripleGraph *graphData; //!< the actual data structure storing the graph
+	// EdgeTripleGraph *graphData; //!< the actual data structure storing the graph
 
 
 

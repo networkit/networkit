@@ -8,11 +8,10 @@
 #ifndef EDGESCORING_H_
 #define EDGESCORING_H_
 
-#include "../graph/Graph.h"
 
 namespace EnsembleClustering {
 
-typedef Graph::Node Node;
+typedef int Node;
 
 class EdgeScoring {
 
