@@ -8,12 +8,26 @@
 #ifndef METISTOSTINGER_H_
 #define METISTOSTINGER_H_
 
+#include <string>
+
+extern "C" {
+	#include "stinger.h"
+}
+
+typedef stinger graph;
+
+
 namespace EnsembleClustering {
 
 class METIStoSTINGER {
+
 public:
+
 	METIStoSTINGER();
+
 	virtual ~METIStoSTINGER();
+
+	virtual graph* read(std::string graphPath);
 };
 
 } /* namespace EnsembleClustering */

@@ -13,6 +13,7 @@
 #include "log4cxx/basicconfigurator.h"
 
 #include "input/METISParser.h"
+#include "input/METIStoSTINGER.h"
 
 void testMETISParser() {
 
@@ -33,6 +34,20 @@ void testMETISParser() {
 }
 
 
+void testMETIStoSTINGER() {
+
+	std::string graphPath = "/Users/cls/workspace/Data/DIMACS/kron_g500-simple-logn16.graph";
+	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "trying to read from graph file " << graphPath);
+
+
+	EnsembleClustering::METIStoSTINGER* m2s = new EnsembleClustering::METIStoSTINGER();
+	graph* G = m2s->read(graphPath);
+
+	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "read graph " << G << " from file " << graphPath);
+
+}
+
+
 int main() {
 
 	std::cout << "running EnsembleClustering" << std::endl;
@@ -42,15 +57,7 @@ int main() {
 	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
 
 
-	testMETISParser();
-
-	// start
-	//EnsembleClustering::METISGraphParser *parser = new EnsembleClustering::METISGraphParser;
-
-	// available graphs
-	//	- kron_g500-simple-logn16.graph
-
-	//parser->parse("/Users/cls/workspace/Data/DIMACS/kron_g500-simple-logn16.graph");
+	testMETIStoSTINGER();
 
 	return 0;
 }
