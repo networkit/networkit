@@ -58,18 +58,41 @@ public:
 
 	/** methods **/
 
+	/**
+	 * Initialize with STINGER graph.
+	 *
+	 * @param[in]	stingerG	a STINGER graph struct
+	 */
 	Graph(stinger* stingerG);
 
 	~Graph();
 
+	/**
+	 * Return the internal STINGER data structure.
+	 *
+	 */
 	stinger* asSTINGER();
 
+	/**
+	 * Insert a weighted, undirected edge.
+	 */
 	void insertEdge(node u, node v, double weight=defaultEdgeWeight, int64_t type=defaultEdgeType, int64_t timestamp=defaultTimeStamp);
 
+	/**
+	 * Return node weight.
+	 */
 	double getWeight(node v);
 
+	/**
+	 * Return edge weight.
+	 */
 	double getWeight(edge uv);
 
+	/**
+	 * Return edge weight.
+	 *
+	 * Equivalent to getWeight(edge uv)
+	 */
 	double getWeight(node u, node v);
 
 
