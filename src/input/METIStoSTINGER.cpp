@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "../graph/Graph.h"
 #include "STINGERFromAdjacencies.h"
 #include "METISParser.h"
 
@@ -24,7 +25,7 @@ METIStoSTINGER::~METIStoSTINGER() {
 	// TODO Auto-generated destructor stub
 }
 
-graph* METIStoSTINGER::read(std::string graphPath) {
+Graph* METIStoSTINGER::read(std::string graphPath) {
 
 	METISParser* parser = new METISParser();
 	STINGERFromAdjacencies* builder = new STINGERFromAdjacencies();

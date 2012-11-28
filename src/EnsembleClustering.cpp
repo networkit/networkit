@@ -12,6 +12,8 @@
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
 
+#include "aux/log.h"
+#include "graph/Graph.h"
 #include "input/METISParser.h"
 #include "input/METIStoSTINGER.h"
 
@@ -40,8 +42,9 @@ void testMETIStoSTINGER() {
 	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "trying to read from graph file " << graphPath);
 
 
+	EnsembleClustering::Graph* G;
 	EnsembleClustering::METIStoSTINGER* m2s = new EnsembleClustering::METIStoSTINGER();
-	graph* G = m2s->read(graphPath);
+	G = m2s->read(graphPath);
 
 	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "read graph " << G << " from file " << graphPath);
 
@@ -52,10 +55,13 @@ int main() {
 
 	std::cout << "running EnsembleClustering" << std::endl;
 
+
+
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
 	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
 
+	debug("test debug macro");
 
 	testMETIStoSTINGER();
 

@@ -10,12 +10,7 @@
 
 #include <string>
 
-extern "C" {
-	#include "stinger.h"
-}
-
-typedef stinger graph;
-
+#include "../graph/Graph.h"
 
 namespace EnsembleClustering {
 
@@ -32,7 +27,7 @@ public:
 
 	virtual ~METIStoSTINGER();
 
-	virtual graph* read(std::string graphPath);
+	virtual Graph* read(std::string graphPath);
 };
 
 } /* namespace EnsembleClustering */
