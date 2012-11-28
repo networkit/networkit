@@ -14,11 +14,15 @@ extern "C" {
 	#include "stinger.h"
 }
 
-typedef stinger graph;
-typedef int64_t node;
+#include "../graph/Graph.h"
 
 namespace EnsembleClustering {
 
+/**
+ * A 'builder' which constructs a STINGER-based graph from adjacencies.
+ * An adjacency is a collection of node ids which represent a new node
+ * as well as its incident edges.
+ */
 class STINGERFromAdjacencies {
 
 public:
@@ -37,14 +41,16 @@ public:
 	 */
 	virtual void addAdjacencies(std::vector<node> adj);
 
-	virtual graph* getGraph();
+	virtual stinger* getSTINGER();
+
+	virtual Graph* getGraph();
 
 protected:
 
-	graph* G;
-	int etype = 0;
-	double eweight = 1.0;
-	int timestamp = 0;
+	Graph* G;
+	// int etype = 0;
+	// double eweight = 1.0;
+	// int timestamp = 0;
 	node currentNode;
 
 };

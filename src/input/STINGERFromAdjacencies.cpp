@@ -24,7 +24,8 @@ STINGERFromAdjacencies::~STINGERFromAdjacencies() {
 }
 
 void STINGERFromAdjacencies::createGraph() {
-	this->G = stinger_new();
+	this->G = new Graph(stinger_new());
+
 }
 
 void STINGERFromAdjacencies::addAdjacencies(std::vector<node> adj) {
@@ -34,14 +35,21 @@ void STINGERFromAdjacencies::addAdjacencies(std::vector<node> adj) {
 	node from = this->currentNode;
 	node to;
 	for (auto toPtr = adj.begin(); toPtr != adj.end(); ++toPtr) {
-		stinger_insert_edge_pair(this->G, this->etype, from, *toPtr, this->eweight, this->timestamp);
+		this->G->insertEdge(from, *toPtr);
 		LOG4CXX_TRACE(log4cxx::Logger::getRootLogger(), "inserted edge (" << from << "," << *toPtr << ")");
 	}
 
 }
 
-graph* STINGERFromAdjacencies::getGraph() {
+stinger* STINGERFromAdjacencies::getSTINGER() {
+	return this->G->asSTINGER();
+}
+
+Graph* STINGERFromAdjacencies::getGraph() {
 	return this->G;
 }
+
+
+
 
 } /* namespace EnsembleClustering */
