@@ -13,6 +13,7 @@
 #include "log4cxx/basicconfigurator.h"
 
 #include "aux/log.h"
+#include "aux/Noise.h"
 #include "graph/Graph.h"
 #include "input/METISParser.h"
 #include "input/METIStoSTINGER.h"
@@ -50,6 +51,16 @@ void testMETIStoSTINGER() {
 
 }
 
+void testNoise() {
+
+	INFO("testing noise");
+	EnsembleClustering::Noise* noise = new EnsembleClustering::Noise(-0.5, 0.5);
+	double x = 1.0;
+	for (int i = 0; i < 10; i++) {
+		std::cout << noise->add(x) << std::endl;
+	}
+}
+
 
 int main() {
 
@@ -63,7 +74,10 @@ int main() {
 
 	INFO("test debug macro");
 
-	testMETIStoSTINGER();
+
+	testNoise();
+
+	//testMETIStoSTINGER();
 
 	return 0;
 }

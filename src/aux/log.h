@@ -10,8 +10,6 @@
 
 #include "log4cxx/logger.h"
 
-// TODO: define concise logging macros here
-
 #define FATAL(X) LOG4CXX_FATAL(log4cxx::Logger::getRootLogger(), X)
 #define ERROR(X) LOG4CXX_ERROR(log4cxx::Logger::getRootLogger(), X)
 #define WARN(X) LOG4CXX_WARN(log4cxx::Logger::getRootLogger(), X)
