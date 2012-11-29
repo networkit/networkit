@@ -90,7 +90,6 @@ public:
 
 	/**
 	 * Return edge weight.
-	 *
 	 * Equivalent to getWeight(edge uv)
 	 */
 	double getWeight(node u, node v);

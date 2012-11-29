@@ -16,7 +16,7 @@ extern "C" {
 namespace EnsembleClustering {
 
 STINGERFromAdjacencies::STINGERFromAdjacencies() {
-	this->currentNode = 0; // set current node to -1, increment in addAdjacencies
+	this->currentNode = 1; //<! first node index;  METIS graph files have 1-based indices
 }
 
 STINGERFromAdjacencies::~STINGERFromAdjacencies() {
@@ -31,14 +31,13 @@ void STINGERFromAdjacencies::createGraph() {
 void STINGERFromAdjacencies::addAdjacencies(std::vector<node> adj) {
 
 
-	this->currentNode++;
 	node from = this->currentNode;
 	node to;
 	for (auto toPtr = adj.begin(); toPtr != adj.end(); ++toPtr) {
 		this->G->insertEdge(from, *toPtr);
 		LOG4CXX_TRACE(log4cxx::Logger::getRootLogger(), "inserted edge (" << from << "," << *toPtr << ")");
 	}
-
+	this->currentNode++;
 }
 
 stinger* STINGERFromAdjacencies::getSTINGER() {

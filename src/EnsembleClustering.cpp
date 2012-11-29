@@ -61,7 +61,7 @@ int main() {
 	log4cxx::BasicConfigurator::configure();
 	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
 
-	debug("test debug macro");
+	DEBUG("test debug macro");
 
 	testMETIStoSTINGER();
 
