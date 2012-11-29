@@ -8,12 +8,16 @@
 #ifndef LOG_H_
 #define LOG_H_
 
-
 #include "log4cxx/logger.h"
 
 // TODO: define concise logging macros here
 
-#define DEBUG(x) LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), x);
-// FIXME: why doesn't this macro work?
+#define FATAL(X) LOG4CXX_FATAL(log4cxx::Logger::getRootLogger(), X)
+#define ERROR(X) LOG4CXX_ERROR(log4cxx::Logger::getRootLogger(), X)
+#define WARN(X) LOG4CXX_WARN(log4cxx::Logger::getRootLogger(), X)
+#define INFO(X) LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), X)
+#define DEBUG(X) LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), X);
+#define TRACE(X) LOG4CXX_TRACE(log4cxx::Logger::getRootLogger(), X)
+
 
 #endif /* LOG_H_ */
