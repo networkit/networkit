@@ -34,7 +34,6 @@
 //clock_gettime(CLOCK_REALTIME, &ts);
 //#endif
 
-namespace EnsembleClustering {
 
 
 /**
@@ -46,5 +45,4 @@ public:
 	virtual ~Timer();
 };
 
-} /* namespace EnsembleClustering */
 #endif /* TIMER_H_ */

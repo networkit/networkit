@@ -8,7 +8,6 @@
 #include "Noise.h"
 
 
-namespace EnsembleClustering {
 
 Noise::Noise(double l, double u) {
 	this->lowerBound = l;
@@ -26,4 +25,3 @@ double Noise::add(double x) {
 	return x + r;
 }
 
-} /* namespace EnsembleClustering */

@@ -17,6 +17,10 @@
 #include "graph/Graph.h"
 #include "input/METISParser.h"
 #include "input/METIStoSTINGER.h"
+#include "matching/Matching.h"
+
+
+
 
 void testMETISParser() {
 
@@ -54,11 +58,25 @@ void testMETIStoSTINGER() {
 void testNoise() {
 
 	INFO("testing noise");
-	EnsembleClustering::Noise* noise = new EnsembleClustering::Noise(-0.5, 0.5);
+	Noise noise(-0.5, 0.5);
 	double x = 1.0;
 	for (int i = 0; i < 10; i++) {
-		std::cout << noise->add(x) << std::endl;
+		std::cout << noise.add(x) << std::endl;
 	}
+}
+
+
+void testMatching() {
+
+	EnsembleClustering::Matching M(2);
+
+	EnsembleClustering::node u = 0;
+	EnsembleClustering::node v = 1;
+	M.match(u, v);
+
+	std::cout << "Node " << u << " is matched: " << M.isMatched(u) << std::endl;
+	std::cout << "Node " << u << " is matched with " << M[u] << std::endl;
+
 }
 
 
@@ -66,18 +84,14 @@ int main() {
 
 	std::cout << "running EnsembleClustering" << std::endl;
 
-
-
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
 	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
 
 	INFO("test debug macro");
 
+	testMatching();
 
-	testNoise();
-
-	//testMETIStoSTINGER();
 
 	return 0;
 }

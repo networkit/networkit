@@ -9,7 +9,6 @@
 
 namespace EnsembleClustering {
 
-
 Graph::Graph(stinger* stingerG) {
 	this->stingerG = stingerG;
 }
@@ -22,7 +21,8 @@ stinger* Graph::asSTINGER() {
 	return this->stingerG;
 }
 
-void Graph::insertEdge(node u, node v, double weight, int64_t type, int64_t timestamp) {
+void Graph::insertEdge(node u, node v, double weight, int64_t type,
+		int64_t timestamp) {
 	stinger_insert_edge_pair(this->stingerG, type, u, v, weight, timestamp);
 }
 
@@ -31,7 +31,8 @@ double Graph::getWeight(node v) {
 }
 
 double Graph::getWeight(edge uv) {
-	return stinger_edgeweight(this->stingerG, uv.first, uv.second, this->defaultEdgeType);
+	return stinger_edgeweight(this->stingerG, uv.first, uv.second,
+			this->defaultEdgeType);
 
 }
 

@@ -7,7 +7,6 @@
 
 #include "Timer.h"
 
-namespace EnsembleClustering {
 
 Timer::Timer() {
 	// TODO Auto-generated constructor stub
@@ -18,4 +17,3 @@ Timer::~Timer() {
 	// TODO Auto-generated destructor stub
 }
 
-} /* namespace EnsembleClustering */

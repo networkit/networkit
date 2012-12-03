@@ -11,7 +11,6 @@
 #include <random>
 
 
-namespace EnsembleClustering {
 
 /**
  * Noise is random addition to a signal. This class provides methods
@@ -48,5 +47,4 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
 #endif /* NOISE_H_ */
