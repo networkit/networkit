@@ -25,6 +25,32 @@ bool Matching::isMatched(const node& u) const {
 }
 
 bool Matching::isProper(Graph& G) const {
+	/**
+	 * The content of this data structure represents a matching iff
+	 * 	(for all v in V: M[v] = 0 or M[M[v]] = v) and
+	 * 	(for all (u,v) in M): (u,v) in E
+	 *
+	 */
+	bool sym;
+	// check if entries are symmetric
+	for (node v = 1; v <= G.numberOfNodes(); ++v) {
+		sym = (((*this)[v] == 0) || ((*this)[(*this)[v]] == v));
+		if (!sym) {
+			DEBUG("node " << v << " is not symmetrically matched");
+			return false;
+		}
+	}
+	bool inGraph;
+	// check if every pair exists as an edge
+	for (node v = 1; v <= G.numberOfNodes(); ++v) {
+		node w = (*this)[v];
+		inGraph = G.hasEdge(v, w);
+		if (!inGraph) {
+			DEBUG("matched pair (" << v << "," << w << ") is not an edge");
+			return false;
+		}
+	}
+
 }
 
 

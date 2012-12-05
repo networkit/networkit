@@ -8,7 +8,7 @@
 #ifndef MATCHING_H_
 #define MATCHING_H_
 
-
+# include "../aux/log.h"
 #include "../graph/Graph.h"
 #include "../graph/NodeMap.h"
 
@@ -55,7 +55,8 @@ public:
 
 	/**
 	 * Check whether this is a proper matching
-	 * in the graph, i.e. no two edges are adjacent
+	 * in the graph, i.e. no two edges are adjacent.
+	 *
 	 *
 	 * @paramt[in]	G	a graph
 	 * @param[out]		true if this is a proper matching

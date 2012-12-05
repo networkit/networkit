@@ -30,11 +30,11 @@ Matching& ParallelMatcher::run(Graph& G) {
 																		//!< candidates of node v
 
 	std::set<node> D;	//!< targets of dominating edges
-	Matching M(n);
+	Matching* M = new Matching(n);
 
 	// TODO: for all nodes
 
-	return M;
+	return *M;
 }
 
 } /* namespace EnsembleClustering */
