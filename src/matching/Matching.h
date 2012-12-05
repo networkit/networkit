@@ -10,14 +10,12 @@
 
 
 #include "../graph/Graph.h"
+#include "../graph/NodeMap.h"
 
 namespace EnsembleClustering {
 
-class Matching {
+class Matching : public NodeMap<node> {
 
-protected:
-
-	node* array;	//!< array of matching partners
 
 public:
 
@@ -26,28 +24,12 @@ public:
 	 *
 	 * @param[in]	n 	maximum number of nodes
 	 */
-	Matching(int n);
+	Matching(int64_t n);
 
 	/**
 	 * Destructor.
 	 */
 	virtual ~Matching();
-
-
-	/**
-	 *  Index operator.
-	 *
-	 *  @param[in]	u	a node
-	 */
-	node& operator[](const node& u);
-
-	/**
-	 * Index operator for const instances of this class.
-	 *
-	 * @param[in]	u 	a node
-	 */
-	const node& operator[](const node& u) const;
-
 
 
 	/**

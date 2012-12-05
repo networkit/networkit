@@ -8,11 +8,9 @@
 #ifndef MATCHER_H_
 #define MATCHER_H_
 
-namespace EnsembleClustering {
+#include "Matching.h"
 
-// TODO: imports
-class Matching;
-class Graph;
+namespace EnsembleClustering {
 
 
 class Matcher {

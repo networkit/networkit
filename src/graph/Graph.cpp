@@ -53,4 +53,9 @@ int64_t Graph::numberOfEdges() {
 	return stinger_total_edges(this->stingerG);
 }
 
+int64_t Graph::numberOfNodes() {
+	// TODO: is this sufficient? do isolated nodes have to be counted?
+	return stinger_max_active_vertex(this->stingerG);
+}
+
 } /* namespace EnsembleClustering */

@@ -9,17 +9,14 @@
 
 namespace EnsembleClustering {
 
-Matching::Matching(int n) {
-	this->array = new node[n];
+Matching::Matching(int64_t n) : NodeMap<node>(n, 0) {
 	// initialize each node's matching partner to itself
-	// TODO: does it pay to parallelize this?
-	for (int i = 0; i < n; ++i) {
+	for (int64_t i = 1; i < n+1; ++i) {
 		this->array[i] = i;
 	}
 }
 
 Matching::~Matching() {
-	delete[] this->array;
 }
 
 
@@ -36,13 +33,6 @@ void Matching::match(const node& u, const node& v) {
 	(*this)[v] = u;
 }
 
-node& Matching::operator[](const node& u) {
-	return this->array[u];
-}
-
-const node& Matching::operator [](const node& u) const {
-	return this->array[u];
-}
 
 Matching& Matching::operator =(const Matching& from) {
 	// clone and dispose properly on assignment

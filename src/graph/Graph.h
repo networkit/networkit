@@ -22,7 +22,7 @@ namespace EnsembleClustering {
 /** Typedefs **/
 
 
-typedef int64_t node; //!< a node is an integer logical index
+typedef int64_t node; //!< a node is an integer logical index. it is 1-based!
 typedef std::pair<node, node> edge; //!< an undirected edge is a pair of nodes (indices)
 
 
@@ -46,7 +46,10 @@ class Graph {
 protected:
 
 	stinger* stingerG;
-
+	// TODO: is it necessary to store isolated nodes?
+//	int64_t maxNode; 	//!< the maximum index for a node in the graph.
+//						//!< Needed to keep track of the number of (possibly isolated) nodes,
+//						//!< since stinger does not store isolated nodes
 
 
 public:
@@ -101,9 +104,16 @@ public:
 	double getWeight(node u, node v);
 
 
+	/**
+	 * Return the number of edges in the graph.
+	 */
 	int64_t numberOfEdges();
 
-
+	/**
+	 * Return the number of (non-isolated) nodes in the graph.
+	 *
+	 * TODO: Maybe this should be changed to support isolated nodes.
+	 */
 	int64_t numberOfNodes();
 
 

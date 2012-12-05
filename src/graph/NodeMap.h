@@ -16,7 +16,7 @@ template <class T> class NodeMap {
 
 protected:
 
-	T array[];
+	T* array; //!< array of size (n+1).  array[0] is not a valid entry, since node indices are 1-based
 	T defaultEntry;
 
 public:
@@ -24,7 +24,7 @@ public:
 	/**
 	 * Construct a node map which holds n entries.
 	 */
-	NodeMap(int n, T defaultEntry = NULL);
+	NodeMap(int64_t n, T defaultEntry);
 
 	virtual ~NodeMap();
 
@@ -48,14 +48,11 @@ public:
 
 /*** Implementation ***/
 
-template<class T> inline EnsembleClustering::NodeMap<T>::NodeMap(int n, T defaultEntry) {
+template<class T> inline EnsembleClustering::NodeMap<T>::NodeMap(int64_t n, T defaultEntry) {
 	this->defaultEntry = defaultEntry;
-	this->array = {};
-	if (defaultEntry != NULL) {
-		// initialize all entries to default
-		for (int i = 0; i < n; ++i) {
-			this->array[i] = defaultEntry;
-		}
+	this->array = new T[n+1];
+	for (int64_t i = 1; i < n+1; ++i) {
+		this->array[i] = defaultEntry;
 	}
 }
 
