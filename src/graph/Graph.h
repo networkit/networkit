@@ -27,13 +27,30 @@ typedef std::pair<node, node> edge; //!< an undirected edge is a pair of nodes (
 
 
 
-/** Traversal macros **/
+/** Traversal macros
+ *
+ * These are modified versions of the macros defined in stinger/include/stinger-traversal.h
+ *
+ *
+ *  **/
+
+
+
+
+#define FORALL_EDGES_BEGIN(G) STINGER_FORALL_EDGES_BEGIN(G.asSTINGER(), G.defaultEdgeType)
+#define FORALL_EDGES_END() STINGER_FORALL_EDGES_END()
+
+#define PARALLEL_FORALL_EDGES_BEGIN(G) STINGER_PARALLEL_FORALL_EDGES_BEGIN(G.asSTINGER(), G.defaultEdgeType)
+#define PARALLEL_FORALL_EDGES_END() STINGER_PARALLEL_FORALL_EDGES_END()
 
 #define EDGE_SOURCE STINGER_EDGE_SOURCE
 #define EDGE_DEST STINGER_EDGE_DEST
 
-#define FORALL_EDGES_BEGIN(G) STINGER_FORALL_EDGES_BEGIN(G.asSTINGER(), G.defaultEdgeType)
-#define FORALL_EDGES_END() STINGER_FORALL_EDGES_END()
+#define FORALL_EDGES_OF_NODE_BEGIN(G, V) STINGER_FORALL_EDGES_OF_VTX_BEGIN(G.asSTINGER(), V)
+#define FORALL_EDGES_OF_NODE_END() STINGER_FORALL_EDGES_OF_VTX_END()
+
+// TODO: add the missing macros
+
 
 
 /** Graph interface **/
