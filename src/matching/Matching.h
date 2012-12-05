@@ -35,17 +35,6 @@ public:
 
 
 	/**
-	 * Set two nodes as eachothers matching
-	 * partners.
-	 *
-	 * @param[in]	u	a node
-	 * @param[in]	v	a node
-	 *
-	 */
-	void match(const node& u, const node& v);
-
-
-	/**
 	 *  Index operator.
 	 *
 	 *  @param[in]	u	a node
@@ -58,6 +47,20 @@ public:
 	 * @param[in]	u 	a node
 	 */
 	const node& operator[](const node& u) const;
+
+
+
+	/**
+	 * Set two nodes as eachothers matching
+	 * partners.
+	 *
+	 * @param[in]	u	a node
+	 * @param[in]	v	a node
+	 *
+	 */
+	void match(const node& u, const node& v);
+
+
 
 
 	/**
