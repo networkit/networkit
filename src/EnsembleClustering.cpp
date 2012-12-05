@@ -19,12 +19,18 @@
 #include "input/METIStoSTINGER.h"
 #include "matching/Matching.h"
 
+extern "C" {
+#include "stinger.h"
+}
+
+
+using namespace EnsembleClustering;
 
 
 
 void testMETISParser() {
 
-	EnsembleClustering::METISParser* parser = new EnsembleClustering::METISParser();
+	METISParser* parser = new METISParser();
 
 	parser->open("/Users/cls/workspace/Data/DIMACS/kron_g500-simple-logn16.graph");
 	std::pair<int, int> header = parser->getHeader();
@@ -47,13 +53,14 @@ void testMETIStoSTINGER() {
 	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "trying to read from graph file " << graphPath);
 
 
-	EnsembleClustering::Graph* G;
-	EnsembleClustering::METIStoSTINGER* m2s = new EnsembleClustering::METIStoSTINGER();
+	Graph* G;
+	METIStoSTINGER* m2s = new METIStoSTINGER();
 	G = m2s->read(graphPath);
 
 	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "read graph " << G << " from file " << graphPath);
 
 }
+
 
 void testNoise() {
 
@@ -67,16 +74,57 @@ void testNoise() {
 
 
 void testMatching() {
+	INFO("testing matching");
 
-	EnsembleClustering::Matching M(2);
+	int n = 10e7;
+	Matching M(n);
 
-	EnsembleClustering::node u = 0;
-	EnsembleClustering::node v = 1;
-	M.match(u, v);
+	#pragma omp parallel for
+	for (node u = 0; u < n; ++u) {
+		M.match(u, (u + 1) % n);
+	}
 
-	std::cout << "Node " << u << " is matched: " << M.isMatched(u) << std::endl;
-	std::cout << "Node " << u << " is matched with " << M[u] << std::endl;
+//	std::cout << "Node " << u << " is matched: " << M.isMatched(u) << std::endl;
+//	std::cout << "Node " << u << " is matched with " << M[u] << std::endl;
 
+}
+
+
+/**
+ * Test iteration
+ */
+void testIteration(Graph& G) {
+	INFO("testing iteration");
+
+	int64_t etype = G.defaultEdgeType;
+
+	STINGER_PARALLEL_FORALL_EDGES_BEGIN(G.asSTINGER(), etype) {
+		node u = STINGER_EDGE_SOURCE;
+		node v = STINGER_EDGE_DEST;
+		std::printf("found edge (%d, %d) with weight %f \n", u, v, stinger_edgeweight(G.asSTINGER(), u, v, etype));
+	} STINGER_PARALLEL_FORALL_EDGES_END();
+
+}
+
+
+
+/**
+ * Make a complete graph with n vertices.
+ *
+ */
+Graph& makeCompleteGraph(int n) {
+
+	Graph G;
+
+	for (node u = 0; u < n; ++u) {
+		for (node v = u + 1; v < n; ++v) {
+			G.insertEdge(u, v);
+		}
+	}
+
+	DEBUG("number of edges " << G.numberOfEdges());
+
+	return G;
 }
 
 
@@ -86,11 +134,15 @@ int main() {
 
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
-	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
+	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
 
 	INFO("test debug macro");
 
-	testMatching();
+	int n = 10;
+	Graph G = makeCompleteGraph(n);
+	testIteration(G);
+
+	// testMatching();
 
 
 	return 0;

@@ -58,6 +58,12 @@ public:
 
 	/** methods **/
 
+
+	/**
+	 * Construct Graph object with new STINGER graph inside.
+	 */
+	Graph();
+
 	/**
 	 * Initialize with STINGER graph.
 	 *
@@ -93,6 +99,12 @@ public:
 	 * Equivalent to getWeight(edge uv)
 	 */
 	double getWeight(node u, node v);
+
+
+	int64_t numberOfEdges();
+
+
+	int64_t numberOfNodes();
 
 
 

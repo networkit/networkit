@@ -9,13 +9,19 @@
 
 namespace EnsembleClustering {
 
+
+Graph::Graph() {
+	this->stingerG = stinger_new();
+}
+
+Graph::~Graph() {
+}
+
 Graph::Graph(stinger* stingerG) {
 	this->stingerG = stingerG;
 }
 
-Graph::~Graph() {
-	// TODO Auto-generated destructor stub
-}
+
 
 stinger* Graph::asSTINGER() {
 	return this->stingerG;
@@ -36,8 +42,15 @@ double Graph::getWeight(edge uv) {
 
 }
 
+
+
+
 double Graph::getWeight(node u, node v) {
 	return stinger_edgeweight(this->stingerG, u, v, this->defaultEdgeType);
+}
+
+int64_t Graph::numberOfEdges() {
+	return stinger_total_edges(this->stingerG);
 }
 
 } /* namespace EnsembleClustering */

@@ -78,6 +78,28 @@ public:
 	bool isProper(Graph& G) const;
 
 
+	/**  copy semantics **/
+
+
+	/**
+	 * Assignment operator.
+	 */
+	Matching& operator=(const Matching& from);
+
+
+	/**
+	 * Properly copy this object.
+	 */
+	 void clone(const Matching& from);
+
+
+	/**
+	 * Properly destruct this object.
+	 */
+	void dispose();
+
+
+
 };
 
 } /* namespace EnsembleClustering */
