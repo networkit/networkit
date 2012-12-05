@@ -80,7 +80,7 @@ void testMatching() {
 	Matching M(n);
 
 	#pragma omp parallel for
-	for (node u = 0; u < n; ++u) {
+	for (node u = 1; u <= n; ++u) {
 		M.match(u, (u + 1) % n);
 	}
 

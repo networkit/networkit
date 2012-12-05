@@ -32,6 +32,13 @@ void Graph::insertEdge(node u, node v, double weight, int64_t type,
 	stinger_insert_edge_pair(this->stingerG, type, u, v, weight, timestamp);
 }
 
+bool Graph::hasEdge(node u, node v) {
+	int to = stinger_has_typed_successor(this->stingerG, this->defaultEdgeType, u, v);
+	int back = stinger_has_typed_successor(this->stingerG, this->defaultEdgeType, v, u);
+	return to && back;
+}
+
+
 double Graph::getWeight(node v) {
 	return stinger_vweight(this->stingerG, v);
 }
@@ -53,9 +60,18 @@ int64_t Graph::numberOfEdges() {
 	return stinger_total_edges(this->stingerG);
 }
 
+
 int64_t Graph::numberOfNodes() {
 	// TODO: is this sufficient? do isolated nodes have to be counted?
 	return stinger_max_active_vertex(this->stingerG);
+}
+
+node Graph::firstNode() {
+	return 1;
+}
+
+node Graph::lastNode() {
+	return this->numberOfNodes();
 }
 
 } /* namespace EnsembleClustering */

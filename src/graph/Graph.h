@@ -26,6 +26,16 @@ typedef int64_t node; //!< a node is an integer logical index. it is 1-based!
 typedef std::pair<node, node> edge; //!< an undirected edge is a pair of nodes (indices)
 
 
+
+/** Traversal macros **/
+
+#define EDGE_SOURCE STINGER_EDGE_SOURCE
+#define EDGE_DEST STINGER_EDGE_DEST
+
+#define FORALL_EDGES_BEGIN(G) STINGER_FORALL_EDGES_BEGIN(G.asSTINGER(), G.defaultEdgeType)
+#define FORALL_EDGES_END() STINGER_FORALL_EDGES_END()
+
+
 /** Graph interface **/
 
 
@@ -38,7 +48,6 @@ typedef std::pair<node, node> edge; //!< an undirected edge is a pair of nodes (
  * - weighted
  * - without self-loops (use node weights instead)
  *
- * TODO: timestamps
  *
  */
 class Graph {
@@ -88,6 +97,13 @@ public:
 	void insertEdge(node u, node v, double weight=defaultEdgeWeight, int64_t type=defaultEdgeType, int64_t timestamp=defaultTimeStamp);
 
 	/**
+	 * Check if undirected edge {u,v} exists in G
+	 *
+	 */
+	bool hasEdge(node u, node v);
+
+
+	/**
 	 * Return node weight.
 	 */
 	double getWeight(node v);
@@ -117,6 +133,16 @@ public:
 	int64_t numberOfNodes();
 
 
+	/**
+	 * Get the first node index (for iteration over all nodes)
+	 */
+	node firstNode();
+
+
+	/**
+	 * Get the last node index (for iteration over all nodes).
+	 */
+	node lastNode();
 
 
 
