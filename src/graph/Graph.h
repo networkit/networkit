@@ -163,7 +163,24 @@ public:
 
 
 
+	template<typename Callback> void forallEdges(bool parallel, Callback callback);
+
+
+
 };
 
 } /* namespace EnsembleClustering */
+
+template<typename Callback>
+inline void EnsembleClustering::Graph::forallEdges(bool parallel, Callback callback) {
+	STINGER_FORALL_EDGES_BEGIN(this->stingerG, this->defaultEdgeType) {
+		node u = STINGER_EDGE_SOURCE;
+		node v = STINGER_EDGE_DEST;
+
+		// call the supplied callback
+		callback(u, v);
+	} STINGER_FORALL_EDGES_END();
+
+}
+
 #endif /* GRAPH_H_ */

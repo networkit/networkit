@@ -46,7 +46,7 @@ METISParser::~METISParser() {
 
 
 void METISParser::open(std::string graphPath) {
-	LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "opening file " << graphPath);
+	DEBUG("opening file " << graphPath);
 	this->graphPath = graphPath;
 	// open METIS graph file
 	this->graphFile.open(graphPath.c_str());
@@ -70,7 +70,7 @@ std::pair<int, int> METISParser::getHeader() {
 	n = tokens[0];
 	m = tokens[1];
 
-	LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "n = " << n << " m = " << m );
+	DEBUG("n = " << n << " m = " << m );
 
 	return std::make_pair(n, m);
 }
@@ -89,7 +89,7 @@ std::vector<node> METISParser::getNext() {
 	bool comment = false;
 	do {
 		std::getline(this->graphFile, this->line);
-		LOG4CXX_DEBUG(log4cxx::Logger::getRootLogger(), "reading line: " << line);
+		TRACE("reading line: " << line);
 		// check for comment line starting with '%'
 		if (line[0] == '%') {
 			comment = true;

@@ -26,11 +26,13 @@
 								<option id="macosx.cpp.link.option.flags.1474665416" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-fopenmp -std=c++11" valueType="string"/>
 								<option id="macosx.cpp.link.option.paths.650826799" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/lib/"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/cppunit/1.12.1/lib"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STINGER/OpenMP Debug}&quot;"/>
 								</option>
 								<option id="macosx.cpp.link.option.libs.1440568016" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="log4cxx"/>
 									<listOptionValue builtIn="false" value="STINGER"/>
+									<listOptionValue builtIn="false" value="cppunit"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.305790712" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -155,6 +157,7 @@
 		<configuration configurationName="Release">
 			<resource resourceType="PROJECT" workspacePath="/EnsembleClustering"/>
 		</configuration>
+		<configuration configurationName="EnsembleClustering2"/>
 		<configuration configurationName="EnsembleClustering"/>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/EnsembleClustering"/>
@@ -172,4 +175,5 @@
 			</target>
 		</buildTargets>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

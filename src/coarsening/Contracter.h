@@ -8,10 +8,11 @@
 #ifndef CONTRACTER_H_
 #define CONTRACTER_H_
 
+#include "../graph/Graph.h"
+
 
 namespace EnsembleClustering {
 
-#include "../graph/Graph.h"
 
 class Contracter {
 

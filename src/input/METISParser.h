@@ -14,7 +14,8 @@
 #include <string>
 #include <sstream>
 #include <utility>
-#include "log4cxx/logger.h"
+
+#include "../aux/log.h"
 
 
 namespace EnsembleClustering {

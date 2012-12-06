@@ -9,9 +9,20 @@
 #include <iostream>
 #include <utility>
 
+// log4cxx
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
 
+
+// cppunig
+#include <cppunit/CompilerOutputter.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestResultCollector.h>
+#include <cppunit/TestRunner.h>
+#include <cppunit/BriefTestProgressListener.h>
+
+// EnsembleClustering
 #include "aux/log.h"
 #include "aux/Noise.h"
 #include "graph/Graph.h"
@@ -27,24 +38,6 @@ extern "C" {
 using namespace EnsembleClustering;
 
 
-
-void testMETISParser() {
-
-	METISParser* parser = new METISParser();
-
-	parser->open("/Users/cls/workspace/Data/DIMACS/kron_g500-simple-logn16.graph");
-	std::pair<int, int> header = parser->getHeader();
-
-	int lc = 0;
-	while (parser->hasNext()) {
-		parser->getNext();
-		lc++;
-	}
-
-	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "parsed " << lc << " lines");
-
-	parser->close();
-}
 
 
 void testMETIStoSTINGER() {
@@ -62,15 +55,6 @@ void testMETIStoSTINGER() {
 }
 
 
-void testNoise() {
-
-	INFO("testing noise");
-	Noise noise(-0.5, 0.5);
-	double x = 1.0;
-	for (int i = 0; i < 10; i++) {
-		std::cout << noise.add(x) << std::endl;
-	}
-}
 
 
 void testMatching() {
@@ -89,22 +73,6 @@ void testMatching() {
 
 }
 
-
-/**
- * Test iteration
- */
-void testIteration(Graph& G) {
-	INFO("testing iteration");
-
-	int64_t etype = G.defaultEdgeType;
-
-	STINGER_PARALLEL_FORALL_EDGES_BEGIN(G.asSTINGER(), etype) {
-		node u = STINGER_EDGE_SOURCE;
-		node v = STINGER_EDGE_DEST;
-		std::printf("found edge (%d, %d) with weight %f \n", u, v, stinger_edgeweight(G.asSTINGER(), u, v, etype));
-	} STINGER_PARALLEL_FORALL_EDGES_END();
-
-}
 
 
 
@@ -128,22 +96,53 @@ Graph& makeCompleteGraph(int n) {
 }
 
 
+/**
+ * Call this first to configure logging output.
+ */
+void configureLogging() {
+	// configure logging
+	log4cxx::BasicConfigurator::configure();
+	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+}
+
+
+/**
+ * Call this to run all cppunit unit tests.
+ */
+int runUnitTests() {
+	// Informiert Test-Listener ueber Testresultate
+	CPPUNIT_NS::TestResult testresult;
+
+	// Listener zum Sammeln der Testergebnisse registrieren
+	CPPUNIT_NS::TestResultCollector collectedresults;
+	testresult.addListener(&collectedresults);
+
+	// Listener zur Ausgabe der Ergebnisse einzelner Tests
+	CPPUNIT_NS::BriefTestProgressListener progress;
+	testresult.addListener(&progress);
+
+	// Test-Suite ueber die Registry im Test-Runner einfuegen
+	CPPUNIT_NS::TestRunner testrunner;
+	testrunner.addTest(CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest());
+	testrunner.run(testresult);
+
+	// Resultate im Compiler-Format ausgeben
+	CPPUNIT_NS::CompilerOutputter compileroutputter(&collectedresults, std::cerr);
+	compileroutputter.write();
+
+	// Rueckmeldung, ob Tests erfolgreich waren
+	return collectedresults.wasSuccessful() ? 0 : 1;
+}
+
+
+
 int main() {
 
 	std::cout << "running EnsembleClustering" << std::endl;
 
-	// configure logging
-	log4cxx::BasicConfigurator::configure();
-	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+	configureLogging();
 
-	INFO("test debug macro");
-
-	int n = 10;
-	Graph G = makeCompleteGraph(n);
-	testIteration(G);
-
-	// testMatching();
-
+	runUnitTests();
 
 	return 0;
 }

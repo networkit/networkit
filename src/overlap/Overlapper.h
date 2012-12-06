@@ -23,7 +23,7 @@ public:
 	Overlapper();
 	virtual ~Overlapper();
 
-	virtual Clustering run(std::set<Clustering> clusterings, Graph G) = 0;
+	// virtual Clustering run(std::set<Clustering> clusterings, Graph G) = 0;
 };
 
 } /* namespace EnsembleClustering */
