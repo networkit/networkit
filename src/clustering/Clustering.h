@@ -22,18 +22,43 @@ protected:
 
 public:
 
+	class iterator; // TODO: iterator
+
+	/**
+	 * Construct new clustering.
+	 *
+	 * @param[in]	n	number of nodes
+	 */
 	Clustering(int64_t n);
 
 	virtual ~Clustering();
 
+	/**
+	 * Return the cluster (id) in which a node
+	 * is contained.
+	 */
 	cluster getCluster(node u);
 
+	/**
+	 * Add a (previously unassigned) node to a cluster
+	 */
 	void addToCluster(cluster c, node u);
 
-	void toSingleton(node u);
-
+	/**
+	 * Move a (previously assigned) node to a cluster.
+	 */
 	void moveToCluster(cluster c, node u);
 
+
+	/**
+	 * Creates a singleton cluster containing the node.
+	 */
+	void toSingleton(node u);
+
+
+	/**
+	 * Assigns the nodes from both clusters to a new cluster.
+	 */
 	void mergeClusters(cluster c, cluster d);
 
 	/**
@@ -42,6 +67,12 @@ public:
 	 *
 	 */
 	virtual bool isProper(const Graph& G);
+
+
+	/**
+	 * Get iterator for all nodes in a cluster.
+	 */
+	virtual Clustering::iterator iterCluster(cluster c) =0;
 
 };
 
