@@ -8,27 +8,40 @@
 #ifndef CLUSTERING_H_
 #define CLUSTERING_H_
 
+#include "../graph/NodeMap.h"
+
 namespace EnsembleClustering {
 
-// TODO: import
-typedef int Cluster;
-typedef int Node;
+typedef int64_t cluster;	//!< cluster is represented as a 1-based index
 
-class Clustering {
+class Clustering : public NodeMap<cluster> {
+
+protected:
+
+	cluster nextCluster;	//!< next free cluster id for new cluster
 
 public:
 
-	Clustering();
+	Clustering(int64_t n);
 
 	virtual ~Clustering();
 
-	virtual Cluster getCluster(Node u);
+	cluster getCluster(node u);
 
-	virtual void addToCluster(Cluster c, Node u);
+	void addToCluster(cluster c, node u);
 
-	virtual void addToNewCluster(Node u);
+	void toSingleton(node u);
 
-	virtual void moveToCluster(Cluster c, Node u);
+	void moveToCluster(cluster c, node u);
+
+	void mergeClusters(cluster c, cluster d);
+
+	/**
+	 * Check whether this clustering is a proper clustering of
+	 * the graph, i.e. a disjoint partition of the whole node set.
+	 *
+	 */
+	virtual bool isProper(const Graph& G);
 
 
 

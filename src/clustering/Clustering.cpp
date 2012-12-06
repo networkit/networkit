@@ -9,29 +9,46 @@
 
 namespace EnsembleClustering {
 
-// TODO: import
-typedef int Node;
-typedef int Cluster;
 
-Clustering::Clustering() {
-	// TODO Auto-generated constructor stub
-
+Clustering::Clustering(int64_t n) : NodeMap<cluster>(n, 0) {
+	this->nextCluster = 1; //!< first cluster index is 1
 }
 
 Clustering::~Clustering() {
 	// TODO Auto-generated destructor stub
 }
 
-Cluster Clustering::getCluster(Node u) {
+cluster Clustering::getCluster(node u) {
+	return (*this)[u];
 }
 
-void Clustering::addToCluster(Cluster c, Node u) {
+void Clustering::addToCluster(cluster c, node u) {
+	assert ((*this)[u] == this->defaultValue);
+	(*this)[u] = c;
 }
 
-void Clustering::addToNewCluster(Node u) {
+void Clustering::toSingleton(node u) {
+	(*this)[u] = this->nextCluster;
+	this->nextCluster++;
 }
 
-void Clustering::moveToCluster(Cluster c, Node u) {
+void Clustering::moveToCluster(cluster c, node u) {
+	assert ((*this)[u] != this->defaultValue);
+	(*this)[u] = c;
+}
+
+void Clustering::mergeClusters(cluster c, cluster d) {
+	cluster e = this->nextCluster;
+	this->nextCluster++;
+	for (node u = 1; u <= this->n; ++u) {
+		if (( (*this)[u] == c) || (*this)[u] == d) {
+			this->moveToCluster(e, u);
+		}
+	}
+}
+
+bool Clustering::isProper(const Graph& G) {
+	// TODO: Clustering::isProper
 }
 
 } /* namespace EnsembleClustering */

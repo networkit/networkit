@@ -8,10 +8,11 @@
 #ifndef CLUSTERER_H_
 #define CLUSTERER_H_
 
+#include "../graph/Graph.h"
+
 namespace EnsembleClustering {
 
 // TODO: import
-class Graph;
 class Clustering;
 
 class Clusterer {
@@ -21,7 +22,7 @@ public:
 
 	virtual ~Clusterer();
 
-	virtual Clustering run(Graph G) = 0;
+	virtual Clustering& run(Graph& G) = 0;
 };
 
 } /* namespace EnsembleClustering */

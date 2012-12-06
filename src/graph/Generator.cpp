@@ -21,8 +21,8 @@ Generator::~Generator() {
 Graph& Generator::makeErdosRenyiGraph(int64_t n, double p) {
 	RandomProbability randP;
 	Graph G;
-	for (node u = G.firstNode(); u != G.lastNode(); ++u) {
-		for (node v = u; v != G.lastNode(); ++v) {
+	for (node u = 1; u <= n; ++u) {
+		for (node v = u; v <= n; ++v) {
 			if (randP.generate() <= p) {
 				G.insertEdge(u, v);
 			}
@@ -32,6 +32,11 @@ Graph& Generator::makeErdosRenyiGraph(int64_t n, double p) {
 }
 
 Graph& Generator::makeCircularGraph(int64_t n) {
+	Graph G;
+	for (node u = G.firstNode(); u <= n; ++u) {
+		G.insertEdge(u, (u + 1) % n);
+	}
+	return G;
 }
 
 } /* namespace EnsembleClustering */

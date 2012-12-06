@@ -36,13 +36,15 @@ public:
 	 * Set two nodes as eachothers matching
 	 * partners.
 	 *
-	 * @param[in]	u	a node
-	 * @param[in]	v	a node
 	 *
 	 */
 	void match(const node& u, const node& v);
 
 
+	/**
+	 * Reset the two nodes to unmatched.
+	 */
+	void unmatch(const node& u, const node& v);
 
 
 	/**
@@ -52,6 +54,13 @@ public:
 	 * @param[out]		true if u is matched
 	 */
 	bool isMatched(const node& u) const;
+
+
+	/**
+	 * Check if the two nodes are matched.
+	 *
+	 */
+	bool areMatched(const node& u, const node& v) const;
 
 	/**
 	 * Check whether this is a proper matching

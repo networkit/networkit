@@ -26,13 +26,31 @@ Matching& ParallelMatcher::run(Graph& G) {
 
 	int64_t n = G.numberOfNodes();
 	NodeMap<node> candidate(n, 0);					//!< candidate[v] is the preferred matching partner of v
-	NodeMap<std::set<node> > S(n, std::set<node>()); 	//!< S[v] is a set with the potential
-																		//!< candidates of node v
+	NodeMap<std::vector<node> > S(n, std::vector<node>()); 	//!< S[v] is a set with the potential
+														//!< candidates of node v
 
-	std::set<node> D;	//!< targets of dominating edges
+	std::vector<node> D;	//!< targets of dominating edges
 	Matching* M = new Matching(n);
 
-	// TODO: for all nodes
+	for (node v = G.firstNode(); v <= n; ++v) {
+
+	}
+
+
+	while (! D.empty()) {
+		node v = D.back();
+		D.pop_back();
+
+		for (int i = 0; i < S[v].size(); ++i) {
+			node x = S[v][i];
+			if ((x != candidate[v]) && (! M->areMatched(x, candidate[x]))) {
+				// TODO: S[x].erase()
+				if (! S[x].empty()) {
+					// TODO:
+				}
+			}
+		}
+	}
 
 	return *M;
 }

@@ -60,6 +60,12 @@ void Matching::match(const node& u, const node& v) {
 }
 
 
+void Matching::unmatch(const node& u, const node& v) {
+	(*this)[u] = 0;
+	(*this)[v] = 0;
+}
+
+
 Matching& Matching::operator =(const Matching& from) {
 	// clone and dispose properly on assignment
 	if (&from != this) {
@@ -72,6 +78,12 @@ Matching& Matching::operator =(const Matching& from) {
 void Matching::clone(const Matching& from) {
 	// TODO: deep copy array
 }
+
+bool Matching::areMatched(const node& u, const node& v) const {
+	return ((*this)[u] == v);
+}
+
+
 
 void Matching::dispose() {
 	delete[] this->array;
