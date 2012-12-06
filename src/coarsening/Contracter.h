@@ -11,9 +11,7 @@
 
 namespace EnsembleClustering {
 
-// TODO: import
-typedef int Node;
-
+#include "../graph/Graph.h"
 
 class Contracter {
 
@@ -23,7 +21,7 @@ public:
 
 	virtual ~Contracter();
 
-	virtual Node contract(Node u, Node v);
+	virtual node contract(node u, node v);
 };
 
 

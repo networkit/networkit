@@ -14,7 +14,7 @@ namespace EnsembleClustering {
 
 typedef int64_t cluster;	//!< cluster is represented as a 1-based index
 
-class Clustering : public NodeMap<cluster> {
+class Clustering: public NodeMap<cluster> {
 
 protected:
 
@@ -42,8 +42,6 @@ public:
 	 *
 	 */
 	virtual bool isProper(const Graph& G);
-
-
 
 };
 

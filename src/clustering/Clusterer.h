@@ -9,11 +9,10 @@
 #define CLUSTERER_H_
 
 #include "../graph/Graph.h"
+#include "Clustering.h"
 
 namespace EnsembleClustering {
 
-// TODO: import
-class Clustering;
 
 class Clusterer {
 public:

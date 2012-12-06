@@ -9,8 +9,8 @@
 
 namespace EnsembleClustering {
 
-
-Clustering::Clustering(int64_t n) : NodeMap<cluster>(n, 0) {
+Clustering::Clustering(int64_t n) :
+		NodeMap<cluster>(n, 0) {
 	this->nextCluster = 1; //!< first cluster index is 1
 }
 
@@ -23,7 +23,7 @@ cluster Clustering::getCluster(node u) {
 }
 
 void Clustering::addToCluster(cluster c, node u) {
-	assert ((*this)[u] == this->defaultValue);
+	assert((*this)[u] == this->defaultValue);
 	(*this)[u] = c;
 }
 
@@ -33,7 +33,7 @@ void Clustering::toSingleton(node u) {
 }
 
 void Clustering::moveToCluster(cluster c, node u) {
-	assert ((*this)[u] != this->defaultValue);
+	assert((*this)[u] != this->defaultValue);
 	(*this)[u] = c;
 }
 
@@ -41,7 +41,7 @@ void Clustering::mergeClusters(cluster c, cluster d) {
 	cluster e = this->nextCluster;
 	this->nextCluster++;
 	for (node u = 1; u <= this->n; ++u) {
-		if (( (*this)[u] == c) || (*this)[u] == d) {
+		if (((*this)[u] == c) || (*this)[u] == d) {
 			this->moveToCluster(e, u);
 		}
 	}

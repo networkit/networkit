@@ -11,12 +11,11 @@
 #include <set>
 #include <vector>
 
+#include "../graph/Graph.h"
+#include "../clustering/Clustering.h"
 
 namespace EnsembleClustering {
 
-// TODO: import from module
-class Clustering;
-class Graph;
 
 class Overlapper {
 
