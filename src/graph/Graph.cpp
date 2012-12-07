@@ -70,6 +70,13 @@ node Graph::firstNode() {
 	return 1;
 }
 
+int64_t Graph::getDegree(node u) {
+	int64_t deg = stinger_outdegree(this->stingerG, u);
+	// each ndirected edge is represented by two directed edges
+	assert (deg == stinger_indegree(this->stingerG, u));
+	return deg;
+}
+
 node Graph::lastNode() {
 	return this->numberOfNodes();
 }

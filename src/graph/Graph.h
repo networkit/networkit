@@ -138,6 +138,11 @@ public:
 
 
 	/**
+	 * Return the degree (number of incident edges).
+	 */
+	int64_t getDegree(node u);
+
+	/**
 	 * Return the number of edges in the graph.
 	 */
 	int64_t numberOfEdges();
@@ -176,7 +181,6 @@ inline void EnsembleClustering::Graph::forallEdges(bool parallel, Callback callb
 	STINGER_FORALL_EDGES_BEGIN(this->stingerG, this->defaultEdgeType) {
 		node u = STINGER_EDGE_SOURCE;
 		node v = STINGER_EDGE_DEST;
-
 		// call the supplied callback
 		callback(u, v);
 	} STINGER_FORALL_EDGES_END();

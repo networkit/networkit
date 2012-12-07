@@ -53,4 +53,19 @@ void GraphTest::testCppUnit() {
 
 }
 
+void printEdge(node u, node v) {
+	INFO("found edge (" << u << "," << v << ")");
+}
+
+void GraphTest::testForallEdges() {
+
+	Graph G = this->randomGraph;
+
+	auto func = [](node u, node v) {
+		DEBUG("found edge (" << u << "," << v << ")");
+	};
+	// FIXME: G.forallEdges(true, func);
+
+}
+
 } /* namespace EnsembleClustering */

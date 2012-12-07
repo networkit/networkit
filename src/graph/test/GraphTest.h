@@ -22,6 +22,7 @@ class GraphTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST_SUITE(GraphTest);
 	CPPUNIT_TEST(testCppUnit);
 	CPPUNIT_TEST(testIteration);
+	CPPUNIT_TEST(testForallEdges);
 	CPPUNIT_TEST_SUITE_END();
 
 protected:
@@ -45,6 +46,8 @@ public:
 	void testIteration();
 
 	void testCppUnit();
+
+	void testForallEdges();
 };
 
 } /* namespace EnsembleClustering */
