@@ -5,20 +5,20 @@
  *      Author: cls
  */
 
-#include "Generator.h"
+#include "GraphGenerator.h"
 
 namespace EnsembleClustering {
 
-Generator::Generator() {
+GraphGenerator::GraphGenerator() {
 	// TODO Auto-generated constructor stub
 
 }
 
-Generator::~Generator() {
+GraphGenerator::~GraphGenerator() {
 	// TODO Auto-generated destructor stub
 }
 
-Graph& Generator::makeErdosRenyiGraph(int64_t n, double p) {
+Graph& GraphGenerator::makeErdosRenyiGraph(int64_t n, double p) {
 	RandomProbability randP;
 	Graph G;
 	for (node u = 1; u <= n; ++u) {
@@ -31,7 +31,7 @@ Graph& Generator::makeErdosRenyiGraph(int64_t n, double p) {
 	return G;
 }
 
-Graph& Generator::makeCircularGraph(int64_t n) {
+Graph& GraphGenerator::makeCircularGraph(int64_t n) {
 	Graph G;
 	for (node u = G.firstNode(); u <= n; ++u) {
 		G.insertEdge(u, (u + 1) % n);

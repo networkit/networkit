@@ -13,13 +13,13 @@
 
 namespace EnsembleClustering {
 
-class Generator {
+class GraphGenerator {
 
 public:
 
-	Generator();
+	GraphGenerator();
 
-	virtual ~Generator();
+	virtual ~GraphGenerator();
 
 	/**
 	 * Generate a random graph according to the Erdšs-Renyi model.

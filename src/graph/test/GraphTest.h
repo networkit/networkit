@@ -12,7 +12,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "../Graph.h"
-#include "../Generator.h"
+#include "../GraphGenerator.h"
 #include "../../aux/log.h"
 
 namespace EnsembleClustering {
@@ -27,7 +27,7 @@ class GraphTest : public CPPUNIT_NS::TestFixture {
 
 protected:
 
-	Generator gen;
+	GraphGenerator gen;
 	Graph randomGraph;
 
 

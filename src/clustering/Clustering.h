@@ -53,7 +53,7 @@ public:
 	 * Return the cluster (id) in which a node
 	 * is contained.
 	 */
-	cluster& getCluster(node u);
+	cluster& clusterOf(node u);
 
 	/**
 	 * Add a (previously unassigned) node to a cluster
@@ -82,8 +82,21 @@ public:
 	 * the graph, i.e. a disjoint partition of the whole node set.
 	 *
 	 */
-	virtual bool isProper(const Graph& G);
+	bool isProper(const Graph& G);
 
+
+
+	/**
+	 * Get the lowest cluster id;
+	 */
+	cluster firstCluster();
+
+	/**
+	 * Get the highest cluster id that has been assigned.
+	 * This gives an upper bound for the number of clusters in this clustering,
+	 * although not the actual number of clusters since clusters can become empty.
+	 */
+	cluster lastCluster();
 
 	/**
 	 * Get iterator for all nodes in a cluster.

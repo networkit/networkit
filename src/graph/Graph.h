@@ -106,7 +106,7 @@ public:
 	 * Return the internal STINGER data structure.
 	 *
 	 */
-	stinger* asSTINGER();
+	stinger* asSTINGER() const;
 
 	/**
 	 * Insert a weighted, undirected edge.
@@ -117,54 +117,60 @@ public:
 	 * Check if undirected edge {u,v} exists in G
 	 *
 	 */
-	bool hasEdge(node u, node v);
+	bool hasEdge(node u, node v) const;
 
 
 	/**
 	 * Return node weight.
 	 */
-	double getWeight(node v);
+	double weight(node v) const;
 
 	/**
 	 * Return edge weight.
 	 */
-	double getWeight(edge uv);
+	double weight(edge uv) const;
 
 	/**
 	 * Return edge weight.
 	 * Equivalent to getWeight(edge uv)
 	 */
-	double getWeight(node u, node v);
+	double weight(node u, node v) const;
+
+
+	/**
+	 * Get the sum of the weight of all edges.
+	 */
+	double totalEdgeWeight() const;
 
 
 	/**
 	 * Return the degree (number of incident edges).
 	 */
-	int64_t getDegree(node u);
+	int64_t degree(node u) const;
 
 	/**
 	 * Return the number of edges in the graph.
 	 */
-	int64_t numberOfEdges();
+	int64_t numberOfEdges() const;
 
 	/**
 	 * Return the number of (non-isolated) nodes in the graph.
 	 *
 	 * TODO: Maybe this should be changed to support isolated nodes.
 	 */
-	int64_t numberOfNodes();
+	int64_t numberOfNodes() const;
 
 
 	/**
 	 * Get the first node index (for iteration over all nodes)
 	 */
-	node firstNode();
+	node firstNode() const;
 
 
 	/**
 	 * Get the last node index (for iteration over all nodes).
 	 */
-	node lastNode();
+	node lastNode() const;
 
 
 

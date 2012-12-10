@@ -23,13 +23,13 @@ typedef int Cluster;
 
 // TODO: implement modularity as in Python prototype
 
-class Modularity: public EnsembleClustering::EdgeScoring {
+class ModularityScoring: public EnsembleClustering::EdgeScoring {
 
 public:
 
-	Modularity();
+	ModularityScoring();
 
-	virtual ~Modularity();
+	virtual ~ModularityScoring();
 
 
 	/**

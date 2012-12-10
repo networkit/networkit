@@ -5,27 +5,24 @@
  *      Author: cls
  */
 
-#include "Modularity.h"
+#include "ModularityScoring.h"
 
 namespace EnsembleClustering {
 
-typedef int Node;
-typedef int Edge;
 
-
-Modularity::Modularity() {
+ModularityScoring::ModularityScoring() {
 	// TODO Auto-generated constructor stub
 
 }
 
-Modularity::~Modularity() {
+ModularityScoring::~ModularityScoring() {
 	// TODO Auto-generated destructor stub
 }
 
 
 
 
-double Modularity::mod(Clustering clustering) {
+double ModularityScoring::mod(Clustering clustering) {
 
 	int k; // number of clusters
 	int c; // current cluster id

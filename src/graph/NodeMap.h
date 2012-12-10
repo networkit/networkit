@@ -18,7 +18,7 @@ protected:
 
 	T* array; //!< array of size (n+1).  array[0] is not a valid entry, since node indices are 1-based
 	T defaultValue;
-	int64_t n;	//<! number of keys
+	int64_t n;	//<! number of indices
 
 public:
 

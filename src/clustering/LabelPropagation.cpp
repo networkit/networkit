@@ -37,16 +37,17 @@ Clustering& LabelPropagation::run(Graph& G) {
 	int64_t nIterations = 0; 	//!< number of iterations
 
 	// TODO: for all nodes
-	int64_t degV = G.getDegree(v);
+	int64_t degV = G.degree(v);
 	neighborLabelCounts[v].clear();
 		// TODO: for all neighbors w
 	node w;
 
-	if (neighborLabelCounts[v].count(labels[w]) == 0) {
-		neighborLabelCounts[v][labels[w]] = 1;
-	} else {
-		neighborLabelCounts[v][labels[w]]++;
-	}
+// FIXME:
+//	if (neighborLabelCounts[v].count(labels[w]) == 0) {
+//		neighborLabelCounts[v][labels[w]] = 1;
+//	} else {
+//		neighborLabelCounts[v][labels[w]]++;
+//	}
 
 	assert (labels != NULL);
 	return *labels;

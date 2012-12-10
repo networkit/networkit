@@ -18,7 +18,7 @@ Clustering::~Clustering() {
 	// TODO Auto-generated destructor stub
 }
 
-cluster& Clustering::getCluster(node u) {
+cluster& Clustering::clusterOf(node u) {
 	return (*this)[u];
 }
 
@@ -57,6 +57,14 @@ inline const cluster& Clustering::operator [](const node& u) const {
 
 bool Clustering::isProper(const Graph& G) {
 	// TODO: Clustering::isProper
+}
+
+cluster Clustering::firstCluster() {
+	return 1;
+}
+
+cluster Clustering::lastCluster() {
+	return this->nextCluster - 1;
 }
 
 } /* namespace EnsembleClustering */

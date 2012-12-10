@@ -157,9 +157,8 @@ int main() {
 
 	configureLogging();
 
-	// runUnitTests();
+	runUnitTests();
 
-	testMap();
 
 	return 0;
 }
