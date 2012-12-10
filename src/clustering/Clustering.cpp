@@ -18,7 +18,7 @@ Clustering::~Clustering() {
 	// TODO Auto-generated destructor stub
 }
 
-cluster Clustering::getCluster(node u) {
+cluster& Clustering::getCluster(node u) {
 	return (*this)[u];
 }
 
@@ -45,6 +45,14 @@ void Clustering::mergeClusters(cluster c, cluster d) {
 			this->moveToCluster(e, u);
 		}
 	}
+}
+
+inline cluster& Clustering::operator [](const node& u) {
+	return this->array[u];
+}
+
+inline const cluster& Clustering::operator [](const node& u) const {
+	return this->array[u];
 }
 
 bool Clustering::isProper(const Graph& G) {

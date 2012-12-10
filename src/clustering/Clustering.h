@@ -33,11 +33,27 @@ public:
 
 	virtual ~Clustering();
 
+
+	/**
+	 *  Index operator.
+	 *
+	 *  @param[in]	u	a node
+	 */
+	inline cluster& operator[](const node& u);
+
+	/**
+	 * Index operator for const instances of this class.
+	 *
+	 * @param[in]	u 	a node
+	 */
+	inline const cluster& operator[](const node& u) const;
+
+
 	/**
 	 * Return the cluster (id) in which a node
 	 * is contained.
 	 */
-	cluster getCluster(node u);
+	cluster& getCluster(node u);
 
 	/**
 	 * Add a (previously unassigned) node to a cluster
@@ -72,7 +88,7 @@ public:
 	/**
 	 * Get iterator for all nodes in a cluster.
 	 */
-	virtual Clustering::iterator iterCluster(cluster c) =0;
+	// TODO: virtual Clustering::iterator iterCluster(cluster c);
 
 };
 

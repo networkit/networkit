@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <utility>
+#include <unordered_map>
 
 // log4cxx
 #include "log4cxx/logger.h"
@@ -135,6 +136,20 @@ int runUnitTests() {
 }
 
 
+void testMap() {
+
+
+	std::unordered_map<int, int> mapArray[10];
+
+	auto aMap = mapArray[1];
+	std::cout << aMap.empty() << std::endl;
+
+	aMap[1] = 42;
+	std::cout << aMap[1] << std::endl;
+
+}
+
+
 
 int main() {
 
@@ -142,7 +157,9 @@ int main() {
 
 	configureLogging();
 
-	runUnitTests();
+	// runUnitTests();
+
+	testMap();
 
 	return 0;
 }
