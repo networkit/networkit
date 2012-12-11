@@ -27,7 +27,7 @@ void Modularity::precompute() {
 		FORALL_EDGES_OF_NODE_BEGIN((*G), v) {
 			iw += G->weight(EDGE_SOURCE, EDGE_DEST);
 		} FORALL_EDGES_OF_NODE_END();
-		this->incidentWeight[v] = iw;
+		(*this->incidentWeight)[v] = iw;
 	}
 }
 

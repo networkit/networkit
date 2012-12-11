@@ -19,20 +19,20 @@ ClusteringGenerator::~ClusteringGenerator() {
 }
 
 Clustering& ClusteringGenerator::makeSingletonClustering(const Graph& G) {
-	Clustering zeta(G.numberOfNodes());
+	Clustering* zeta = new Clustering(G.numberOfNodes());
 	for (node v = G.firstNode(); v <= G.numberOfNodes(); ++v) {
-		zeta.toSingleton(v);
+		zeta->toSingleton(v);
 	}
-	return zeta;
+	return *zeta;
 }
 
 Clustering& ClusteringGenerator::makeOneClustering(const Graph& G) {
-	Clustering zeta(G.numberOfNodes());
+	Clustering* zeta = new Clustering(G.numberOfNodes());
 	cluster one = 1;
 	for (node v = G.firstNode(); v <= G.numberOfNodes(); ++v) {
-		zeta.addToCluster(one, v);
+		zeta->addToCluster(one, v);
 	}
-	return zeta;
+	return *zeta;
 }
 
 } /* namespace EnsembleClustering */

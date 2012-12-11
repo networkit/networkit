@@ -10,8 +10,7 @@
 namespace EnsembleClustering {
 
 QualityMeasure::QualityMeasure(Graph& G) {
-	// TODO Auto-generated constructor stub
-
+	this->G = &G;
 }
 
 QualityMeasure::~QualityMeasure() {

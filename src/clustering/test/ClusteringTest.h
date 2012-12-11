@@ -8,6 +8,8 @@
 #ifndef ClusteringTest_H_
 #define ClusteringTest_H_
 
+#include <iostream>
+
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 

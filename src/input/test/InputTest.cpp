@@ -9,7 +9,7 @@
 
 namespace EnsembleClustering {
 
-CPPUNIT_TEST_SUITE_REGISTRATION(InputTest);
+//TODO: include in unittests CPPUNIT_TEST_SUITE_REGISTRATION(InputTest);
 
 InputTest::InputTest() {
 	// TODO Auto-generated constructor stub

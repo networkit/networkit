@@ -9,8 +9,7 @@
 
 namespace EnsembleClustering {
 
-Clustering::Clustering(int64_t n) :
-		NodeMap<cluster>(n, 0) {
+Clustering::Clustering(int64_t n) : NodeMap<cluster>(n, 0) {
 	this->nextCluster = 1; //!< first cluster index is 1
 }
 

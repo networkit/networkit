@@ -31,7 +31,7 @@ void ClusteringTest::testModularity() {
 
 	GraphGenerator graphGenerator;
 
-	Graph G = graphGenerator.makeErdosRenyiGraph(100, 0.1);
+	Graph G = graphGenerator.makeCompleteGraph(20);
 
 	ClusteringGenerator clusteringGenerator;
 
@@ -43,8 +43,15 @@ void ClusteringTest::testModularity() {
 	double modSingleton = modularity.getQuality(singleton);
 	double modOne = modularity.getQuality(one);
 
-	CPPUNIT_ASSERT_EQUAL_MESSAGE("A singleton clustering should have a modularity of 0", modSingleton, 0.0);
-	CPPUNIT_ASSERT_EQUAL_MESSAGE("A 1-clustering should have a modularity of 0", modOne, 0.0);
+	std::cout << "modSingleton: " << modSingleton << std::endl;
+	std::cout << "modOne: " << modOne << std::endl;
+
+	CPPUNIT_ASSERT_EQUAL(0.0, modSingleton);
+	CPPUNIT_ASSERT_EQUAL(0.0, modOne);
+
+
+//	CPPUNIT_ASSERT_EQUAL_MESSAGE("A singleton clustering should have a modularity of 0", 0.0, modSingleton);
+//	CPPUNIT_ASSERT_EQUAL_MESSAGE("A 1-clustering should have a modularity of 0", 0.0, modOne);
 }
 
 } /* namespace EnsembleClustering */

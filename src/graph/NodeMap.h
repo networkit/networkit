@@ -56,7 +56,6 @@ public:
 
 template<class T> inline EnsembleClustering::NodeMap<T>::NodeMap(int64_t n) {
 	this->n = n;
-	this->defaultValue = defaultValue;
 	this->array = new T[n+1];
 }
 
@@ -70,7 +69,7 @@ template<class T> inline EnsembleClustering::NodeMap<T>::NodeMap(int64_t n, T de
 }
 
 template<class T> inline EnsembleClustering::NodeMap<T>::~NodeMap() {
-	delete[] this->array;
+	delete[] array;
 }
 
 template<class T> inline T& EnsembleClustering::NodeMap<T>::operator [](const node& u) {

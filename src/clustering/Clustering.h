@@ -22,7 +22,6 @@ protected:
 
 public:
 
-	class iterator; // TODO: iterator
 
 	/**
 	 * Construct new clustering.

@@ -37,6 +37,9 @@ public:
 	 */
 	Graph& makeCircularGraph(int64_t n);
 
+
+	Graph& makeCompleteGraph(int64_t n);
+
 };
 
 } /* namespace EnsembleClustering */

@@ -30,10 +30,16 @@
 #include "input/METISParser.h"
 #include "input/METIStoSTINGER.h"
 #include "matching/Matching.h"
+#include "clustering/Clustering.h"
+#include "clustering/ClusteringGenerator.h"
+#include "graph/GraphGenerator.h"
+#include "clustering/Modularity.h"
 
 extern "C" {
 #include "stinger.h"
 }
+
+
 
 
 using namespace EnsembleClustering;
@@ -136,17 +142,25 @@ int runUnitTests() {
 }
 
 
-void testMap() {
 
 
-	std::unordered_map<int, int> mapArray[10];
+void testModularity() {
+	GraphGenerator graphGenerator;
 
-	auto aMap = mapArray[1];
-	std::cout << aMap.empty() << std::endl;
+	Graph G = graphGenerator.makeCompleteGraph(20);
 
-	aMap[1] = 42;
-	std::cout << aMap[1] << std::endl;
+	ClusteringGenerator clusteringGenerator;
 
+	Clustering singleton = clusteringGenerator.makeSingletonClustering(G);
+	Clustering one = clusteringGenerator.makeOneClustering(G);
+
+	Modularity modularity(G);
+
+	double modSingleton = modularity.getQuality(singleton);
+	double modOne = modularity.getQuality(one);
+
+	std::cout << "modSingleton: " << modSingleton << std::endl;
+	std::cout << "modOne: " << modOne << std::endl;
 }
 
 
@@ -157,8 +171,10 @@ int main() {
 
 	configureLogging();
 
-	runUnitTests();
 
+	testModularity();
+
+	runUnitTests();
 
 	return 0;
 }
