@@ -31,8 +31,8 @@
 								<option id="macosx.cpp.link.option.flags.1474665416" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-fopenmp -std=c++11" valueType="string"/>
 								<option id="macosx.cpp.link.option.paths.650826799" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STINGER/OpenMP Debug}&quot;"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/lib/"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gtest/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/lib"/>
 								</option>
 								<option id="macosx.cpp.link.option.libs.1440568016" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="STINGER"/>
@@ -46,10 +46,13 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug.908200985" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug">
 								<option id="gnu.both.asm.option.include.paths.286083465" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EnsembleClustering/STINGER/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EnsembleClustering/gtest/include}&quot;"/>
+									<listOptionValue builtIn="false" value="STINGER/include"/>
+									<listOptionValue builtIn="false" value="gtest/include"/>
 									<listOptionValue builtIn="false" value="/usr/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/cppunit/1.12.1/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EnsembleClustering/STINGER/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EnsembleClustering/gtest/include}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.456183023" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -59,10 +62,9 @@
 								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.1267133053" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.1721976491" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -fopenmp -std=c++11 -g" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.37447088" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/cppunit/1.12.1/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STINGER/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gtest/include}&quot;"/>
-									<listOptionValue builtIn="false" value="/usr/include"/>
+									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest/include"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/include"/>
+									<listOptionValue builtIn="false" value="/Users/cls/workspace/STINGER/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1147447093" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1818051269" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -73,81 +75,20 @@
 								<option id="gnu.c.compiler.option.misc.other.1519888187" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -std=c99" valueType="string"/>
 								<option id="gnu.c.compiler.option.include.files.208735423" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files"/>
 								<option id="gnu.c.compiler.option.include.paths.766751015" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EnsembleClustering/STINGER/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EnsembleClustering/gtest/include}&quot;"/>
+									<listOptionValue builtIn="false" value="STINGER/include"/>
+									<listOptionValue builtIn="false" value="gtest/include"/>
 									<listOptionValue builtIn="false" value="/usr/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest"/>
+									<listOptionValue builtIn="false" value="/usr/local/Cellar/cppunit/1.12.1/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EnsembleClustering/STINGER/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EnsembleClustering/gtest/include}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1768658729" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="input/test/InputTest.h|input/test/InputTest.cpp|graph/test/GraphTest.h|graph/test/GraphTest.cpp|Test.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
-					</sourceEntries>
-				</configuration>
-			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
-		</cconfiguration>
-		<cconfiguration id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1852031403">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1852031403" moduleId="org.eclipse.cdt.core.settings" name="EnsembleClustering2">
-				<externalSettings/>
-				<extensions>
-					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-				</extensions>
-			</storageModule>
-			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1852031403" name="EnsembleClustering2" parent="cdt.managedbuild.config.gnu.macosx.exe.debug">
-					<folderInfo id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1852031403." name="/" resourcePath="">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.exe.debug.988603863" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.exe.debug">
-							<targetPlatform id="cdt.managedbuild.target.gnu.platform.macosx.exe.debug.1258815292" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.exe.debug"/>
-							<builder buildPath="${workspace_loc:/OpemMPTutorial/Debug}" id="cdt.managedbuild.target.gnu.builder.macosx.exe.debug.2024183607" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.exe.debug"/>
-							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug.1651830416" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug"/>
-							<tool command="/usr/local/bin/g++-4.7" id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug.2051492900" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug">
-								<option id="macosx.cpp.link.option.flags.1714872483" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-fopenmp -std=c++11" valueType="string"/>
-								<option id="macosx.cpp.link.option.paths.1183767891" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/lib/"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STINGER/OpenMP Debug}&quot;"/>
-								</option>
-								<option id="macosx.cpp.link.option.libs.1978954976" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="log4cxx"/>
-									<listOptionValue builtIn="false" value="STINGER"/>
-								</option>
-								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.2101705336" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
-									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
-									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
-								</inputType>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug.1965134383" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug">
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1784852334" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.1958036755" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
-							<tool command="/usr/local/bin/g++-4.7" id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.debug.806506983" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.debug">
-								<option id="gnu.cpp.compilermacosx.exe.debug.option.optimization.level.904159430" name="Optimization Level" superClass="gnu.cpp.compilermacosx.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.1227330372" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.1092907284" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -fopenmp -std=c++11" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.include.paths.2052480053" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STINGER/include}&quot;"/>
-									<listOptionValue builtIn="false" value="/usr/include"/>
-								</option>
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.992640068" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
-							</tool>
-							<tool command="/usr/local/bin/gcc-4.7" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug.1652417199" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug">
-								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.macosx.exe.debug.option.optimization.level.1828826809" name="Optimization Level" superClass="gnu.c.compiler.macosx.exe.debug.option.optimization.level" valueType="enumerated"/>
-								<option id="gnu.c.compiler.macosx.exe.debug.option.debugging.level.1672298245" name="Debug Level" superClass="gnu.c.compiler.macosx.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.misc.other.1526202243" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -std=c99" valueType="string"/>
-								<option id="gnu.c.compiler.option.include.files.498608352" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files"/>
-								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2130693732" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-							</tool>
-						</toolChain>
-					</folderInfo>
-					<sourceEntries>
-						<entry excluding="EnsembleClustering.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="graph/test/GraphTest.h|Test.cpp|input/test/InputTest.cpp|input/test/InputTest.h|graph/test/GraphTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
