@@ -22,9 +22,9 @@
 
 namespace EnsembleClustering {
 
-class ClusteringTest : public CPPUNIT_NS::TestFixture {
+class ClusteringCppUnitTest : public CPPUNIT_NS::TestFixture {
 
-	CPPUNIT_TEST_SUITE(ClusteringTest);
+	CPPUNIT_TEST_SUITE(ClusteringCppUnitTest);
 	CPPUNIT_TEST(testModularity);
 	CPPUNIT_TEST_SUITE_END();
 
@@ -36,9 +36,9 @@ protected:
 
 public:
 
-	ClusteringTest();
+	ClusteringCppUnitTest();
 
-	virtual ~ClusteringTest();
+	virtual ~ClusteringCppUnitTest();
 
 	void setUp();
 
@@ -48,6 +48,7 @@ public:
 
 	void testModularity();
 };
+
 
 } /* namespace EnsembleClustering */
 #endif /* ClusteringTest_H_ */

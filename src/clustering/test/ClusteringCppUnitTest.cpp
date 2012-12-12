@@ -9,25 +9,25 @@
 
 namespace EnsembleClustering {
 
-CPPUNIT_TEST_SUITE_REGISTRATION(ClusteringTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(ClusteringCppUnitTest);
 
-ClusteringTest::ClusteringTest() {
+ClusteringCppUnitTest::ClusteringCppUnitTest() {
 	// TODO Auto-generated constructor stub
 
 }
 
-ClusteringTest::~ClusteringTest() {
+ClusteringCppUnitTest::~ClusteringCppUnitTest() {
 	// TODO Auto-generated destructor stub
 }
 
-void ClusteringTest::setUp() {
+void ClusteringCppUnitTest::setUp() {
 	this->randomGraph = this->gen.makeErdosRenyiGraph(20, 0.2);
 }
 
-void ClusteringTest::tearDown() {
+void ClusteringCppUnitTest::tearDown() {
 }
 
-void ClusteringTest::testModularity() {
+void ClusteringCppUnitTest::testModularity() {
 
 	GraphGenerator graphGenerator;
 

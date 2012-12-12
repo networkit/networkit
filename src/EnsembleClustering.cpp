@@ -15,13 +15,16 @@
 #include "log4cxx/basicconfigurator.h"
 
 
-// cppunig
+// cppunit
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 #include <cppunit/BriefTestProgressListener.h>
+
+// GoogleTest
+#include "gtest/gtest.h"
 
 // EnsembleClustering
 #include "aux/log.h"
@@ -116,7 +119,7 @@ void configureLogging() {
 /**
  * Call this to run all cppunit unit tests.
  */
-int runUnitTests() {
+int runUnitTestsCppUnit() {
 	// Informiert Test-Listener ueber Testresultate
 	CPPUNIT_NS::TestResult testresult;
 
@@ -140,6 +143,15 @@ int runUnitTests() {
 	// Rueckmeldung, ob Tests erfolgreich waren
 	return collectedresults.wasSuccessful() ? 0 : 1;
 }
+
+/**
+ * Call this to run all GoogleTest unit tests
+ */
+int runUnitTests(int argc, char **argv) {
+::testing::InitGoogleTest(&argc, argv);
+ return RUN_ALL_TESTS();
+}
+
 
 
 
@@ -165,16 +177,17 @@ void testModularity() {
 
 
 
-int main() {
+
+
+int main(int argc, char **argv) {
 
 	std::cout << "running EnsembleClustering" << std::endl;
 
 	configureLogging();
 
+	 ::testing::InitGoogleTest(&argc, argv);
+	 return RUN_ALL_TESTS();
 
-	testModularity();
-
-	runUnitTests();
 
 	return 0;
 }
