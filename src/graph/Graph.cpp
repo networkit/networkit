@@ -50,12 +50,6 @@ double Graph::weight(edge uv) const {
 }
 
 
-
-
-double Graph::weight(node u, node v) const {
-	return stinger_edgeweight(this->stingerG, u, v, this->defaultEdgeType);
-}
-
 int64_t Graph::numberOfEdges() const {
 	return stinger_total_edges(this->stingerG);
 }
@@ -63,6 +57,7 @@ int64_t Graph::numberOfEdges() const {
 
 int64_t Graph::numberOfNodes() const {
 	// TODO: is this sufficient? do isolated nodes have to be counted?
+	// TODO: implement node counter
 	return stinger_max_active_vertex(this->stingerG);
 }
 
@@ -78,6 +73,7 @@ int64_t Graph::degree(node u) const {
 }
 
 double Graph::totalEdgeWeight() const {
+	// TODO: optimize
 	double total = 0.0;
 	FORALL_EDGES_BEGIN((*this)) {
 		total += this->weight(EDGE_SOURCE, EDGE_DEST);

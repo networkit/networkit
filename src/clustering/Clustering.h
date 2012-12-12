@@ -10,12 +10,9 @@
 
 #include "../graph/NodeMap.h"
 
-
-
 namespace EnsembleClustering {
 
 typedef int64_t cluster;	//!< cluster is represented as a 1-based index
-
 
 class Clustering: public NodeMap<cluster> {
 
@@ -24,7 +21,6 @@ protected:
 	cluster nextCluster;	//!< next free cluster id for new cluster
 
 public:
-
 
 	/**
 	 * Construct new clustering.
@@ -35,27 +31,30 @@ public:
 
 	virtual ~Clustering();
 
-
 	/**
 	 *  Index operator.
 	 *
 	 *  @param[in]	u	a node
 	 */
-//	cluster& operator[](const node& u);
-
+	inline cluster& operator [](const node& u) {
+		return this->array[u];
+	}
 	/**
 	 * Index operator for const instances of this class.
 	 *
 	 * @param[in]	u 	a node
 	 */
-//	const cluster& operator[](const node& u) const;
-
+	inline const cluster& operator [](const node& u) const {
+		return this->array[u];
+	}
 
 	/**
 	 * Return the cluster (id) in which a node
 	 * is contained.
 	 */
-//	cluster& clusterOf(node u);
+	inline cluster& clusterOf(node u) {
+		return (*this)[u];
+	}
 
 	/**
 	 * Add a (previously unassigned) node to a cluster
@@ -67,12 +66,10 @@ public:
 	 */
 	void moveToCluster(cluster c, node u);
 
-
 	/**
 	 * Creates a singleton cluster containing the node.
 	 */
 	void toSingleton(node u);
-
 
 	/**
 	 * Assigns the nodes from both clusters to a new cluster.
@@ -85,8 +82,6 @@ public:
 	 *
 	 */
 	bool isProper(const Graph& G);
-
-
 
 	/**
 	 * Get the lowest cluster id;
@@ -104,31 +99,8 @@ public:
 	 * Get iterator for all nodes in a cluster.
 	 */
 	// TODO: virtual Clustering::iterator iterCluster(cluster c);
-
-
-	/** inline function definitions **/
-
-
-	inline cluster& operator [](const node& u) {
-		return this->array[u];
-	}
-
-	inline const cluster& operator [](const node& u) const {
-		return this->array[u];
-	}
-
-	inline cluster& clusterOf(node u) {
-		return (*this)[u];
-	}
-
 };
 
 } /* namespace EnsembleClustering */
-
-
-
-
-
-
 
 #endif /* CLUSTERING_H_ */

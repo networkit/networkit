@@ -29,7 +29,7 @@ class ClusteringTest: public testing::Test {
 TEST_F(ClusteringTest, testModularity) {
 	GraphGenerator graphGenerator;
 
-	int n = 100;
+	int n = 1000;
 
 	DEBUG("testing modularity of clustering of graph with " << n << " nodes");
 

@@ -134,7 +134,9 @@ public:
 	 * Return edge weight.
 	 * Equivalent to getWeight(edge uv)
 	 */
-	double weight(node u, node v) const;
+	inline double weight(node u, node v) const {
+		return stinger_edgeweight(this->stingerG, u, v, this->defaultEdgeType);
+	}
 
 
 	/**
