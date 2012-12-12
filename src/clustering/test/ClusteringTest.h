@@ -10,6 +10,8 @@
 
 #include <gtest/gtest.h>
 
+
+
 #include "../Clustering.h"
 #include "../Modularity.h"
 #include "../ClusteringGenerator.h"
@@ -22,10 +24,6 @@ class ClusteringTest: public testing::Test {
 
 };
 
-
-TEST_F(ClusteringTest, doesGTestWork) {
-	EXPECT_EQ(42, 42);
-}
 
 
 TEST_F(ClusteringTest, testModularity) {
@@ -43,6 +41,7 @@ TEST_F(ClusteringTest, testModularity) {
 	double modSingleton = modularity.getQuality(singleton);
 	double modOne = modularity.getQuality(one);
 
+	// TODO: log values
 	EXPECT_EQ(modOne, 0.0) << "1-clustering should have modularity of 0.0";
 	ASSERT_LE(modSingleton, 0.0) << "singleton clustering should have modularity less than 0.0";
 

@@ -178,8 +178,10 @@ int main(int argc, char **argv) {
 
 	configureLogging();
 
-	 ::testing::InitGoogleTest(&argc, argv);
-	 return RUN_ALL_TESTS();
+	INFO("=== starting unit tests ===");
+
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 
 	 return 0;
 }
