@@ -10,9 +10,12 @@
 
 #include "../graph/NodeMap.h"
 
+
+
 namespace EnsembleClustering {
 
 typedef int64_t cluster;	//!< cluster is represented as a 1-based index
+
 
 class Clustering: public NodeMap<cluster> {
 
@@ -38,21 +41,21 @@ public:
 	 *
 	 *  @param[in]	u	a node
 	 */
-	inline cluster& operator[](const node& u);
+//	cluster& operator[](const node& u);
 
 	/**
 	 * Index operator for const instances of this class.
 	 *
 	 * @param[in]	u 	a node
 	 */
-	inline const cluster& operator[](const node& u) const;
+//	const cluster& operator[](const node& u) const;
 
 
 	/**
 	 * Return the cluster (id) in which a node
 	 * is contained.
 	 */
-	cluster& clusterOf(node u);
+//	cluster& clusterOf(node u);
 
 	/**
 	 * Add a (previously unassigned) node to a cluster
@@ -102,7 +105,30 @@ public:
 	 */
 	// TODO: virtual Clustering::iterator iterCluster(cluster c);
 
+
+	/** inline function definitions **/
+
+
+	inline cluster& operator [](const node& u) {
+		return this->array[u];
+	}
+
+	inline const cluster& operator [](const node& u) const {
+		return this->array[u];
+	}
+
+	inline cluster& clusterOf(node u) {
+		return (*this)[u];
+	}
+
 };
 
 } /* namespace EnsembleClustering */
+
+
+
+
+
+
+
 #endif /* CLUSTERING_H_ */

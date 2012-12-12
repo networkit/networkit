@@ -17,9 +17,7 @@ Clustering::~Clustering() {
 	// TODO Auto-generated destructor stub
 }
 
-cluster& Clustering::clusterOf(node u) {
-	return (*this)[u];
-}
+
 
 void Clustering::addToCluster(cluster c, node u) {
 	assert((*this)[u] == this->defaultValue);
@@ -46,13 +44,7 @@ void Clustering::mergeClusters(cluster c, cluster d) {
 	}
 }
 
-inline cluster& Clustering::operator [](const node& u) {
-	return this->array[u];
-}
 
-inline const cluster& Clustering::operator [](const node& u) const {
-	return this->array[u];
-}
 
 bool Clustering::isProper(const Graph& G) {
 	// TODO: Clustering::isProper

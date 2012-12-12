@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 
 
-
+#include "../../aux/log.h"
 #include "../Clustering.h"
 #include "../Modularity.h"
 #include "../ClusteringGenerator.h"
@@ -29,7 +29,12 @@ class ClusteringTest: public testing::Test {
 TEST_F(ClusteringTest, testModularity) {
 	GraphGenerator graphGenerator;
 
-	Graph G = graphGenerator.makeCompleteGraph(20);
+	int n = 100;
+
+	DEBUG("testing modularity of clustering of graph with " << n << " nodes");
+
+
+	Graph G = graphGenerator.makeCompleteGraph(n);
 
 	ClusteringGenerator clusteringGenerator;
 
@@ -41,7 +46,10 @@ TEST_F(ClusteringTest, testModularity) {
 	double modSingleton = modularity.getQuality(singleton);
 	double modOne = modularity.getQuality(one);
 
-	// TODO: log values
+	DEBUG("mod(singleton-clustering) = " << modSingleton);
+	DEBUG("mod(1-clustering) = " << modOne);
+
+
 	EXPECT_EQ(modOne, 0.0) << "1-clustering should have modularity of 0.0";
 	ASSERT_LE(modSingleton, 0.0) << "singleton clustering should have modularity less than 0.0";
 

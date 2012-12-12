@@ -19,17 +19,19 @@ ClusteringGenerator::~ClusteringGenerator() {
 }
 
 Clustering& ClusteringGenerator::makeSingletonClustering(const Graph& G) {
-	Clustering* zeta = new Clustering(G.numberOfNodes());
-	for (node v = G.firstNode(); v <= G.numberOfNodes(); ++v) {
+	int64_t n = G.numberOfNodes();
+	Clustering* zeta = new Clustering(n);
+	for (node v = G.firstNode(); v <= n; ++v) {
 		zeta->toSingleton(v);
 	}
 	return *zeta;
 }
 
 Clustering& ClusteringGenerator::makeOneClustering(const Graph& G) {
-	Clustering* zeta = new Clustering(G.numberOfNodes());
+	int64_t n = G.numberOfNodes();
+	Clustering* zeta = new Clustering(n);
 	cluster one = 1;
-	for (node v = G.firstNode(); v <= G.numberOfNodes(); ++v) {
+	for (node v = G.firstNode(); v <= n; ++v) {
 		zeta->addToCluster(one, v);
 	}
 	return *zeta;
