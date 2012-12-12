@@ -46,7 +46,7 @@ METISParser::~METISParser() {
 
 
 void METISParser::open(std::string graphPath) {
-	DEBUG("opening file " << graphPath);
+	TRACE("opening file " << graphPath);
 	this->graphPath = graphPath;
 	// open METIS graph file
 	this->graphFile.open(graphPath.c_str());
@@ -70,7 +70,7 @@ std::pair<int, int> METISParser::getHeader() {
 	n = tokens[0];
 	m = tokens[1];
 
-	DEBUG("n = " << n << " m = " << m );
+	TRACE("n = " << n << " m = " << m );
 
 	return std::make_pair(n, m);
 }
