@@ -41,6 +41,7 @@ Graph& GraphGenerator::makeCircularGraph(int64_t n) {
 Graph& GraphGenerator::makeCompleteGraph(int64_t n) {
 	RandomProbability randP;
 	Graph* G = new Graph();
+	// TODO: parallel? is insertEdge thread safe?
 	for (node u = 1; u <= n; ++u) {
 		for (node v = u; v <= n; ++v) {
 			G->insertEdge(u, v);

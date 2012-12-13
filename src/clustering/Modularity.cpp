@@ -23,6 +23,7 @@ Modularity::~Modularity() {
 void Modularity::precompute() {
 	int64_t n = G->numberOfNodes();
 	// precompute incident edge weight for all nodes
+	#pragma omp parallel for
 	for (node v = 1; v <= n; ++v) {
 		double iw = 0.0;
 		READ_ONLY_FORALL_EDGES_OF_NODE_BEGIN((*G), v) {
