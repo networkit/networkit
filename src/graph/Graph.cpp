@@ -29,6 +29,7 @@ stinger* Graph::asSTINGER() const {
 
 void Graph::insertEdge(node u, node v, double weight, int64_t type,
 		int64_t timestamp) {
+	// FIXME: do not store weight twice
 	stinger_insert_edge_pair(this->stingerG, type, u, v, weight, timestamp);
 }
 
@@ -75,9 +76,9 @@ int64_t Graph::degree(node u) const {
 double Graph::totalEdgeWeight() const {
 	// TODO: optimize
 	double total = 0.0;
-	FORALL_EDGES_BEGIN((*this)) {
+	READ_ONLY_FORALL_EDGES_BEGIN((*this)) {
 		total += this->weight(EDGE_SOURCE, EDGE_DEST);
-	} FORALL_EDGES_END();
+	} READ_ONLY_FORALL_EDGES_END();
 	return total;
 }
 

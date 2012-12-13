@@ -45,17 +45,16 @@ double Modularity::getQuality(Clustering& zeta) {
 	double totalEdgeWeight = G->totalEdgeWeight();
 	IndexMap<cluster, double> intraEdgeWeight(zeta.lastCluster()); //!< cluster -> weight of its internal edges
 
-	// TODO: parallel
-	READ_ONLY_FORALL_EDGES_BEGIN((*G)) {
+	READ_ONLY_PARALLEL_FORALL_EDGES_BEGIN((*G)) {
 		node u = EDGE_SOURCE;
 		node v = EDGE_DEST;
 		cluster c = zeta[u];
 		cluster d = zeta[v];
 		if (c == d) {
-			// TODO: make critical section atomic
+			#pragma omp atomic update
 			intraEdgeWeight[c] += G->weight(u, v);
 		} // else ignore edge
-	} READ_ONLY_FORALL_EDGES_END();
+	} READ_ONLY_PARALLEL_FORALL_EDGES_END();
 
 	double intraEdgeWeightSum = 0.0;	//!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
 	for (cluster c = zeta.firstCluster(); c <= k; ++c) {
