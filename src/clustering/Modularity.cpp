@@ -25,9 +25,9 @@ void Modularity::precompute() {
 	// precompute incident edge weight for all nodes
 	for (node v = 1; v <= n; ++v) {
 		double iw = 0.0;
-		FORALL_EDGES_OF_NODE_BEGIN((*G), v) {
+		READ_ONLY_FORALL_EDGES_OF_NODE_BEGIN((*G), v) {
 			iw += G->weight(EDGE_SOURCE, EDGE_DEST);
-		} FORALL_EDGES_OF_NODE_END();
+		} READ_ONLY_FORALL_EDGES_OF_NODE_END();
 		(*this->incidentWeight)[v] = iw;
 	}
 }
@@ -46,7 +46,7 @@ double Modularity::getQuality(Clustering& zeta) {
 	IndexMap<cluster, double> intraEdgeWeight(zeta.lastCluster()); //!< cluster -> weight of its internal edges
 
 	// TODO: parallel
-	FORALL_EDGES_BEGIN((*G)) {
+	READ_ONLY_FORALL_EDGES_BEGIN((*G)) {
 		node u = EDGE_SOURCE;
 		node v = EDGE_DEST;
 		cluster c = zeta[u];
@@ -55,7 +55,7 @@ double Modularity::getQuality(Clustering& zeta) {
 			// TODO: make critical section atomic
 			intraEdgeWeight[c] += G->weight(u, v);
 		} // else ignore edge
-	} FORALL_EDGES_END();
+	} READ_ONLY_FORALL_EDGES_END();
 
 	double intraEdgeWeightSum = 0.0;	//!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
 	for (cluster c = zeta.firstCluster(); c <= k; ++c) {
