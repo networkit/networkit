@@ -4,36 +4,224 @@
 \subsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-class \hyperlink{class_ensemble_clustering_1_1_edge_scoring}{Edge\-Scoring}
+class \hyperlink{class_ensemble_clustering_1_1_index_map}{Index\-Map}
+\begin{DoxyCompactList}\small\item\em An \hyperlink{class_ensemble_clustering_1_1_index_map}{Index\-Map} implements a 1-\/based mapping from an integer index type to an arbitray value type. \end{DoxyCompactList}\item 
+class \hyperlink{class_ensemble_clustering_1_1_clusterer}{Clusterer}
 \item 
-class \hyperlink{class_ensemble_clustering_1_1_edge_tuple}{Edge\-Tuple}
-\begin{DoxyCompactList}\small\item\em \hyperlink{class_ensemble_clustering_1_1_edge_tuple}{Edge\-Tuple} contains triple (i, j, w) where i\-: edge source index j\-: edge target index w\-: edge weight. \end{DoxyCompactList}\item 
-class \hyperlink{class_ensemble_clustering_1_1_node_tuple}{Node\-Tuple}
+class \hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering}
 \item 
-class \hyperlink{class_ensemble_clustering_1_1_edge_triple_graph_data}{Edge\-Triple\-Graph\-Data}
+class \hyperlink{class_ensemble_clustering_1_1_clustering_generator}{Clustering\-Generator}
 \item 
-class \hyperlink{class_ensemble_clustering_1_1_ensemble_clustering_algo}{Ensemble\-Clustering\-Algo}
+class \hyperlink{class_ensemble_clustering_1_1_label_propagation}{Label\-Propagation}
+\begin{DoxyCompactList}\small\item\em As described in Ovelgoenne et al\-: An Ensemble Learning Strategy for \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} Raghavan et al. \end{DoxyCompactList}\item 
+class \hyperlink{class_ensemble_clustering_1_1_modularity}{Modularity}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_quality_measure}{Quality\-Measure}
+\begin{DoxyCompactList}\small\item\em Abstract base class for all clustering quality measures. \end{DoxyCompactList}\item 
+class \hyperlink{class_ensemble_clustering_1_1_score_match_contract}{Score\-Match\-Contract}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_clustering_test}{Clustering\-Test}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_cluster_contracter}{Cluster\-Contracter}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_contracter}{Contracter}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_matching_contracter}{Matching\-Contracter}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_ensemble_clusterer}{Ensemble\-Clusterer}
 \item 
 class \hyperlink{class_ensemble_clustering_1_1_graph}{Graph}
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} interface. \end{DoxyCompactList}\item 
+class \hyperlink{class_ensemble_clustering_1_1_graph_generator}{Graph\-Generator}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_node_map}{Node\-Map}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_graph_g_test}{Graph\-G\-Test}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser}{M\-E\-T\-I\-S\-Parser}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_sto_s_t_i_n_g_e_r}{M\-E\-T\-I\-Sto\-S\-T\-I\-N\-G\-E\-R}
+\begin{DoxyCompactList}\small\item\em This class provides a user interface for reading a M\-E\-T\-I\-S graph file and returning a S\-T\-I\-N\-G\-E\-R-\/based graph object. \end{DoxyCompactList}\item 
+class \hyperlink{class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies}{S\-T\-I\-N\-G\-E\-R\-From\-Adjacencies}
+\begin{DoxyCompactList}\small\item\em A 'builder' which constructs a S\-T\-I\-N\-G\-E\-R-\/based graph from adjacencies. \end{DoxyCompactList}\item 
+class \hyperlink{class_ensemble_clustering_1_1_input_g_test}{Input\-G\-Test}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_matcher}{Matcher}
 \item 
 class \hyperlink{class_ensemble_clustering_1_1_matching}{Matching}
 \item 
-class \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser}{M\-E\-T\-I\-S\-Graph\-Parser}
-\begin{DoxyCompactList}\small\item\em A parser for the M\-E\-T\-I\-S graph file format. \end{DoxyCompactList}\item 
-class \hyperlink{class_ensemble_clustering_1_1_modularity}{Modularity}
+class \hyperlink{class_ensemble_clustering_1_1_parallel_matcher}{Parallel\-Matcher}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_overlapper}{Overlapper}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_region_growing_overlapper}{Region\-Growing\-Overlapper}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_edge_scoring}{Edge\-Scoring}
+\item 
+class \hyperlink{class_ensemble_clustering_1_1_modularity_scoring}{Modularity\-Scoring}
 \end{DoxyCompactItemize}
 \subsection*{Typedefs}
 \begin{DoxyCompactItemize}
 \item 
-typedef unsigned int \hyperlink{namespace_ensemble_clustering_a3228848abf8dfd6602f3b08dd459ea20}{id}
+typedef int64\-\_\-t \hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster}
+\begin{DoxyCompactList}\small\item\em cluster is represented as a 1-\/based index \end{DoxyCompactList}\item 
+typedef int64\-\_\-t \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node}
+\begin{DoxyCompactList}\small\item\em Typedefs. \end{DoxyCompactList}\item 
+typedef std\-::pair$<$ \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node}, \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} $>$ \hyperlink{namespace_ensemble_clustering_aff19dd5e3051ee3d4360fd3f29daf16b}{edge}
+\begin{DoxyCompactList}\small\item\em an undirected edge is a pair of nodes (indices) \end{DoxyCompactList}\item 
+typedef int \hyperlink{namespace_ensemble_clustering_a136bcdc52fb2f62a89bc8bf8c1a7cb8f}{Node}
+\item 
+typedef int \hyperlink{namespace_ensemble_clustering_abb5f21f23a27c13de604d6ff457ac94b}{Edge}
+\item 
+typedef int \hyperlink{namespace_ensemble_clustering_a8376de7054d9b646ad127a6256989024}{Clustering}
+\item 
+typedef int \hyperlink{namespace_ensemble_clustering_a8d9740fbc7cc7696652cd8b6974121ac}{Cluster}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespace_ensemble_clustering_a21108087fb4225d2c718b2ab980a0352}{T\-E\-S\-T\-\_\-\-F} (\hyperlink{class_ensemble_clustering_1_1_clustering_test}{Clustering\-Test}, test\-Modularity)
+\item 
+\hyperlink{namespace_ensemble_clustering_ab112b02697a12bdbc3b4e866d60444d3}{T\-E\-S\-T\-\_\-\-F} (\hyperlink{class_ensemble_clustering_1_1_graph_g_test}{Graph\-G\-Test}, test\-Iteration)
+\item 
+\hyperlink{namespace_ensemble_clustering_a968aa929eb81f21fab68af5447226d50}{T\-E\-S\-T\-\_\-\-F} (\hyperlink{class_ensemble_clustering_1_1_input_g_test}{Input\-G\-Test}, test\-M\-E\-T\-I\-S\-Parser)
 \end{DoxyCompactItemize}
 
 
 \subsection{Typedef Documentation}
-\hypertarget{namespace_ensemble_clustering_a3228848abf8dfd6602f3b08dd459ea20}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!id@{id}}
-\index{id@{id}!EnsembleClustering@{Ensemble\-Clustering}}
-\subsubsection[{id}]{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int {\bf Ensemble\-Clustering\-::id}}}\label{namespace_ensemble_clustering_a3228848abf8dfd6602f3b08dd459ea20}
+\hypertarget{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!cluster@{cluster}}
+\index{cluster@{cluster}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{cluster}]{\setlength{\rightskip}{0pt plus 5cm}typedef int64\-\_\-t {\bf Ensemble\-Clustering\-::cluster}}}\label{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}
 
 
-Definition at line 20 of file M\-E\-T\-I\-S\-Graph\-Parser.\-h.
+cluster is represented as a 1-\/based index 
+
+
+
+Definition at line 15 of file Clustering.\-h.
+
+\hypertarget{namespace_ensemble_clustering_a8d9740fbc7cc7696652cd8b6974121ac}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!Cluster@{Cluster}}
+\index{Cluster@{Cluster}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{Cluster}]{\setlength{\rightskip}{0pt plus 5cm}typedef int {\bf Ensemble\-Clustering\-::\-Cluster}}}\label{namespace_ensemble_clustering_a8d9740fbc7cc7696652cd8b6974121ac}
+
+
+Definition at line 21 of file Modularity\-Scoring.\-h.
+
+\hypertarget{namespace_ensemble_clustering_a8376de7054d9b646ad127a6256989024}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!Clustering@{Clustering}}
+\index{Clustering@{Clustering}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{Clustering}]{\setlength{\rightskip}{0pt plus 5cm}typedef int {\bf Ensemble\-Clustering\-::\-Clustering}}}\label{namespace_ensemble_clustering_a8376de7054d9b646ad127a6256989024}
+
+
+Definition at line 20 of file Modularity\-Scoring.\-h.
+
+\hypertarget{namespace_ensemble_clustering_abb5f21f23a27c13de604d6ff457ac94b}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!Edge@{Edge}}
+\index{Edge@{Edge}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{Edge}]{\setlength{\rightskip}{0pt plus 5cm}typedef int {\bf Ensemble\-Clustering\-::\-Edge}}}\label{namespace_ensemble_clustering_abb5f21f23a27c13de604d6ff457ac94b}
+
+
+Definition at line 17 of file Modularity\-Scoring.\-h.
+
+\hypertarget{namespace_ensemble_clustering_aff19dd5e3051ee3d4360fd3f29daf16b}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!edge@{edge}}
+\index{edge@{edge}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{edge}]{\setlength{\rightskip}{0pt plus 5cm}typedef std\-::pair$<${\bf node}, {\bf node}$>$ {\bf Ensemble\-Clustering\-::edge}}}\label{namespace_ensemble_clustering_aff19dd5e3051ee3d4360fd3f29daf16b}
+
+
+an undirected edge is a pair of nodes (indices) 
+
+
+
+Definition at line 26 of file Graph.\-h.
+
+\hypertarget{namespace_ensemble_clustering_a136bcdc52fb2f62a89bc8bf8c1a7cb8f}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!Node@{Node}}
+\index{Node@{Node}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{Node}]{\setlength{\rightskip}{0pt plus 5cm}typedef int {\bf Ensemble\-Clustering\-::\-Node}}}\label{namespace_ensemble_clustering_a136bcdc52fb2f62a89bc8bf8c1a7cb8f}
+
+
+Definition at line 14 of file Edge\-Scoring.\-h.
+
+\hypertarget{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!node@{node}}
+\index{node@{node}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{node}]{\setlength{\rightskip}{0pt plus 5cm}typedef int64\-\_\-t {\bf Ensemble\-Clustering\-::node}}}\label{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}
+
+
+Typedefs. 
+
+a node is an integer logical index. it is 1-\/based! 
+
+Definition at line 25 of file Graph.\-h.
+
+
+
+\subsection{Function Documentation}
+\hypertarget{namespace_ensemble_clustering_a968aa929eb81f21fab68af5447226d50}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!T\-E\-S\-T\-\_\-\-F@{T\-E\-S\-T\-\_\-\-F}}
+\index{T\-E\-S\-T\-\_\-\-F@{T\-E\-S\-T\-\_\-\-F}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{T\-E\-S\-T\-\_\-\-F}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-T\-E\-S\-T\-\_\-\-F (
+\begin{DoxyParamCaption}
+\item[{Input\-G\-Test}]{, }
+\item[{test\-M\-E\-T\-I\-S\-Parser}]{}
+\end{DoxyParamCaption}
+)}}\label{namespace_ensemble_clustering_a968aa929eb81f21fab68af5447226d50}
+
+
+Definition at line 22 of file Input\-G\-Test.\-h.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{namespace_ensemble_clustering_a968aa929eb81f21fab68af5447226d50_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{namespace_ensemble_clustering_a21108087fb4225d2c718b2ab980a0352}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!T\-E\-S\-T\-\_\-\-F@{T\-E\-S\-T\-\_\-\-F}}
+\index{T\-E\-S\-T\-\_\-\-F@{T\-E\-S\-T\-\_\-\-F}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{T\-E\-S\-T\-\_\-\-F}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-T\-E\-S\-T\-\_\-\-F (
+\begin{DoxyParamCaption}
+\item[{Clustering\-Test}]{, }
+\item[{test\-Modularity}]{}
+\end{DoxyParamCaption}
+)}}\label{namespace_ensemble_clustering_a21108087fb4225d2c718b2ab980a0352}
+
+
+Definition at line 29 of file Clustering\-Test.\-h.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{namespace_ensemble_clustering_a21108087fb4225d2c718b2ab980a0352_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{namespace_ensemble_clustering_ab112b02697a12bdbc3b4e866d60444d3}{\index{Ensemble\-Clustering@{Ensemble\-Clustering}!T\-E\-S\-T\-\_\-\-F@{T\-E\-S\-T\-\_\-\-F}}
+\index{T\-E\-S\-T\-\_\-\-F@{T\-E\-S\-T\-\_\-\-F}!EnsembleClustering@{Ensemble\-Clustering}}
+\subsubsection[{T\-E\-S\-T\-\_\-\-F}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-T\-E\-S\-T\-\_\-\-F (
+\begin{DoxyParamCaption}
+\item[{Graph\-G\-Test}]{, }
+\item[{test\-Iteration}]{}
+\end{DoxyParamCaption}
+)}}\label{namespace_ensemble_clustering_ab112b02697a12bdbc3b4e866d60444d3}
+
+
+Definition at line 34 of file Graph\-G\-Test.\-h.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=332pt]{namespace_ensemble_clustering_ab112b02697a12bdbc3b4e866d60444d3_cgraph}
+\end{center}
+\end{figure}
+
 

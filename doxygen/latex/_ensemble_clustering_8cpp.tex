@@ -2,24 +2,161 @@
 \label{_ensemble_clustering_8cpp}\index{src/\-Ensemble\-Clustering.\-cpp@{src/\-Ensemble\-Clustering.\-cpp}}
 }
 {\ttfamily \#include $<$iostream$>$}\\*
-{\ttfamily \#include $<$fstream$>$}\\*
-{\ttfamily \#include \char`\"{}M\-E\-T\-I\-S\-Graph\-Parser.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$utility$>$}\\*
+{\ttfamily \#include $<$unordered\-\_\-map$>$}\\*
+{\ttfamily \#include \char`\"{}log4cxx/logger.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}log4cxx/basicconfigurator.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$cppunit/\-Compiler\-Outputter.\-h$>$}\\*
+{\ttfamily \#include $<$cppunit/extensions/\-Test\-Factory\-Registry.\-h$>$}\\*
+{\ttfamily \#include $<$cppunit/\-Test\-Result.\-h$>$}\\*
+{\ttfamily \#include $<$cppunit/\-Test\-Result\-Collector.\-h$>$}\\*
+{\ttfamily \#include $<$cppunit/\-Test\-Runner.\-h$>$}\\*
+{\ttfamily \#include $<$cppunit/\-Brief\-Test\-Progress\-Listener.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}gtest/gtest.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}aux/log.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}aux/\-Noise.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}graph/\-Graph.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}input/\-M\-E\-T\-I\-S\-Parser.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}input/\-M\-E\-T\-I\-Sto\-S\-T\-I\-N\-G\-E\-R.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}matching/\-Matching.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}clustering/\-Clustering.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}clustering/\-Clustering\-Generator.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}graph/\-Graph\-Generator.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}clustering/\-Modularity.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}stinger.\-h\char`\"{}}\\*
+Include dependency graph for Ensemble\-Clustering.\-cpp\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_ensemble_clustering_8cpp__incl}
+\end{center}
+\end{figure}
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-int \hyperlink{_ensemble_clustering_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{main} ()
+void \hyperlink{_ensemble_clustering_8cpp_a8812968b4c432ff873e47469a09f98ed}{test\-M\-E\-T\-I\-Sto\-S\-T\-I\-N\-G\-E\-R} ()
+\item 
+void \hyperlink{_ensemble_clustering_8cpp_a85cffe0e678e839d43a0aaeed3f8563f}{test\-Matching} ()
+\item 
+\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \& \hyperlink{_ensemble_clustering_8cpp_a95ced9d3d0a7270acb5f2b3deea53ace}{make\-Complete\-Graph} (int n)
+\begin{DoxyCompactList}\small\item\em Make a complete graph with n vertices. \end{DoxyCompactList}\item 
+void \hyperlink{_ensemble_clustering_8cpp_a743dc80157d90a093ae489a586acfae7}{configure\-Logging} ()
+\begin{DoxyCompactList}\small\item\em Call this first to configure logging output. \end{DoxyCompactList}\item 
+int \hyperlink{_ensemble_clustering_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main} (int argc, char $\ast$$\ast$argv)
 \end{DoxyCompactItemize}
 
 
 \subsection{Function Documentation}
-\hypertarget{_ensemble_clustering_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{\index{Ensemble\-Clustering.\-cpp@{Ensemble\-Clustering.\-cpp}!main@{main}}
-\index{main@{main}!EnsembleClustering.cpp@{Ensemble\-Clustering.\-cpp}}
-\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\hypertarget{_ensemble_clustering_8cpp_a743dc80157d90a093ae489a586acfae7}{\index{Ensemble\-Clustering.\-cpp@{Ensemble\-Clustering.\-cpp}!configure\-Logging@{configure\-Logging}}
+\index{configure\-Logging@{configure\-Logging}!EnsembleClustering.cpp@{Ensemble\-Clustering.\-cpp}}
+\subsubsection[{configure\-Logging}]{\setlength{\rightskip}{0pt plus 5cm}void configure\-Logging (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
-)}}\label{_ensemble_clustering_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}
+)}}\label{_ensemble_clustering_8cpp_a743dc80157d90a093ae489a586acfae7}
 
 
-Definition at line 14 of file Ensemble\-Clustering.\-cpp.
+Call this first to configure logging output. 
+
+
+
+Definition at line 112 of file Ensemble\-Clustering.\-cpp.
+
+\hypertarget{_ensemble_clustering_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{\index{Ensemble\-Clustering.\-cpp@{Ensemble\-Clustering.\-cpp}!main@{main}}
+\index{main@{main}!EnsembleClustering.cpp@{Ensemble\-Clustering.\-cpp}}
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv}
+\end{DoxyParamCaption}
+)}}\label{_ensemble_clustering_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}
+
+
+Definition at line 121 of file Ensemble\-Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=248pt]{_ensemble_clustering_8cpp_a3c04138a5bfe5d72780bb7e82a18e627_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_ensemble_clustering_8cpp_a95ced9d3d0a7270acb5f2b3deea53ace}{\index{Ensemble\-Clustering.\-cpp@{Ensemble\-Clustering.\-cpp}!make\-Complete\-Graph@{make\-Complete\-Graph}}
+\index{make\-Complete\-Graph@{make\-Complete\-Graph}!EnsembleClustering.cpp@{Ensemble\-Clustering.\-cpp}}
+\subsubsection[{make\-Complete\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph}\& make\-Complete\-Graph (
+\begin{DoxyParamCaption}
+\item[{int}]{n}
+\end{DoxyParamCaption}
+)}}\label{_ensemble_clustering_8cpp_a95ced9d3d0a7270acb5f2b3deea53ace}
+
+
+Make a complete graph with n vertices. 
+
+
+
+Definition at line 93 of file Ensemble\-Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_ensemble_clustering_8cpp_a95ced9d3d0a7270acb5f2b3deea53ace_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_ensemble_clustering_8cpp_a85cffe0e678e839d43a0aaeed3f8563f}{\index{Ensemble\-Clustering.\-cpp@{Ensemble\-Clustering.\-cpp}!test\-Matching@{test\-Matching}}
+\index{test\-Matching@{test\-Matching}!EnsembleClustering.cpp@{Ensemble\-Clustering.\-cpp}}
+\subsubsection[{test\-Matching}]{\setlength{\rightskip}{0pt plus 5cm}void test\-Matching (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{_ensemble_clustering_8cpp_a85cffe0e678e839d43a0aaeed3f8563f}
+
+
+Definition at line 70 of file Ensemble\-Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=296pt]{_ensemble_clustering_8cpp_a85cffe0e678e839d43a0aaeed3f8563f_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_ensemble_clustering_8cpp_a8812968b4c432ff873e47469a09f98ed}{\index{Ensemble\-Clustering.\-cpp@{Ensemble\-Clustering.\-cpp}!test\-M\-E\-T\-I\-Sto\-S\-T\-I\-N\-G\-E\-R@{test\-M\-E\-T\-I\-Sto\-S\-T\-I\-N\-G\-E\-R}}
+\index{test\-M\-E\-T\-I\-Sto\-S\-T\-I\-N\-G\-E\-R@{test\-M\-E\-T\-I\-Sto\-S\-T\-I\-N\-G\-E\-R}!EnsembleClustering.cpp@{Ensemble\-Clustering.\-cpp}}
+\subsubsection[{test\-M\-E\-T\-I\-Sto\-S\-T\-I\-N\-G\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}void test\-M\-E\-T\-I\-Sto\-S\-T\-I\-N\-G\-E\-R (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{_ensemble_clustering_8cpp_a8812968b4c432ff873e47469a09f98ed}
+
+
+Definition at line 53 of file Ensemble\-Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_ensemble_clustering_8cpp_a8812968b4c432ff873e47469a09f98ed_cgraph}
+\end{center}
+\end{figure}
+
 

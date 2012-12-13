@@ -5,39 +5,77 @@
 
 {\ttfamily \#include $<$Modularity.\-h$>$}
 
-Inheritance diagram for Ensemble\-Clustering\-:\-:Modularity\-:\begin{figure}[H]
+
+
+Inheritance diagram for Ensemble\-Clustering\-:\-:Modularity\-:
+\nopagebreak
+\begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[height=2.000000cm]{class_ensemble_clustering_1_1_modularity}
+\includegraphics[width=184pt]{class_ensemble_clustering_1_1_modularity__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Modularity\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=315pt]{class_ensemble_clustering_1_1_modularity__coll__graph}
 \end{center}
 \end{figure}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{class_ensemble_clustering_1_1_modularity_a5c447eccb7cacf9291a3a5c67ae249fb}{Modularity} ()
+\hyperlink{class_ensemble_clustering_1_1_modularity_ac2cac4e5a1aa00af4fce69123c57f94b}{Modularity} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&\hyperlink{class_ensemble_clustering_1_1_quality_measure_a8639730658036901338b34bc59bf4cec}{G})
 \item 
 virtual \hyperlink{class_ensemble_clustering_1_1_modularity_a57b3f96bdd38a7920317e7587518715d}{$\sim$\-Modularity} ()
-\end{DoxyCompactItemize}
+\item 
+virtual double \hyperlink{class_ensemble_clustering_1_1_modularity_a516c1fa49609c233d01a76d0f0d4c255}{get\-Quality} (\hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} \&zeta)
+\begin{DoxyCompactList}\small\item\em Returns the \hyperlink{class_ensemble_clustering_1_1_modularity}{Modularity} of the given clustering with respect to the graph instance. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_modularity_a5c449dd6b3b3485dcc497edd8dc3c156}{precompute} ()
+\begin{DoxyCompactList}\small\item\em Precompute some values depending on the graph instance to be used in get\-Quality. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_node_map}{Node\-Map}$<$ double $>$ $\ast$ \hyperlink{class_ensemble_clustering_1_1_modularity_abc6c72d596cd3f00cce8c8c87e602df1}{incident\-Weight}
+\begin{DoxyCompactList}\small\item\em node -\/$>$ sum of the weight of incident edges \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 
 
-Definition at line 15 of file Modularity.\-h.
+Definition at line 22 of file Modularity.\-h.
 
 
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{class_ensemble_clustering_1_1_modularity_a5c447eccb7cacf9291a3a5c67ae249fb}{\index{Ensemble\-Clustering\-::\-Modularity@{Ensemble\-Clustering\-::\-Modularity}!Modularity@{Modularity}}
+\hypertarget{class_ensemble_clustering_1_1_modularity_ac2cac4e5a1aa00af4fce69123c57f94b}{\index{Ensemble\-Clustering\-::\-Modularity@{Ensemble\-Clustering\-::\-Modularity}!Modularity@{Modularity}}
 \index{Modularity@{Modularity}!EnsembleClustering::Modularity@{Ensemble\-Clustering\-::\-Modularity}}
 \subsubsection[{Modularity}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Modularity\-::\-Modularity (
 \begin{DoxyParamCaption}
-{}
+\item[{{\bf Graph} \&}]{G}
 \end{DoxyParamCaption}
-)}}\label{class_ensemble_clustering_1_1_modularity_a5c447eccb7cacf9291a3a5c67ae249fb}
+)}}\label{class_ensemble_clustering_1_1_modularity_ac2cac4e5a1aa00af4fce69123c57f94b}
 
 
-Definition at line 12 of file Modularity.\-cpp.
+Definition at line 14 of file Modularity.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_modularity_ac2cac4e5a1aa00af4fce69123c57f94b_cgraph}
+\end{center}
+\end{figure}
+
 
 \hypertarget{class_ensemble_clustering_1_1_modularity_a57b3f96bdd38a7920317e7587518715d}{\index{Ensemble\-Clustering\-::\-Modularity@{Ensemble\-Clustering\-::\-Modularity}!$\sim$\-Modularity@{$\sim$\-Modularity}}
 \index{$\sim$\-Modularity@{$\sim$\-Modularity}!EnsembleClustering::Modularity@{Ensemble\-Clustering\-::\-Modularity}}
@@ -48,11 +86,98 @@ Definition at line 12 of file Modularity.\-cpp.
 )\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_modularity_a57b3f96bdd38a7920317e7587518715d}
 
 
-Definition at line 17 of file Modularity.\-cpp.
+Definition at line 19 of file Modularity.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_modularity_a516c1fa49609c233d01a76d0f0d4c255}{\index{Ensemble\-Clustering\-::\-Modularity@{Ensemble\-Clustering\-::\-Modularity}!get\-Quality@{get\-Quality}}
+\index{get\-Quality@{get\-Quality}!EnsembleClustering::Modularity@{Ensemble\-Clustering\-::\-Modularity}}
+\subsubsection[{get\-Quality}]{\setlength{\rightskip}{0pt plus 5cm}double Ensemble\-Clustering\-::\-Modularity\-::get\-Quality (
+\begin{DoxyParamCaption}
+\item[{{\bf Clustering} \&}]{zeta}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_modularity_a516c1fa49609c233d01a76d0f0d4c255}
+
+
+Returns the \hyperlink{class_ensemble_clustering_1_1_modularity}{Modularity} of the given clustering with respect to the graph instance. 
+
+\hyperlink{class_ensemble_clustering_1_1_modularity}{Modularity} is defined as\-: \begin{DoxyVerb}$$mod(\zeta) := \frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}
+- \frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$$\end{DoxyVerb}
+ $<$ term \$\{\{C  \} \{ e  E(\-C) \} (e)\}\{\{e  E\} (e)\}\$
+
+$<$ term \$\{ \{C  \}( \{v  C\} (v) )$^\wedge$2 \}\{4( \{e  E\} (e) )$^\wedge$2 \}\$
+
+$<$ cluster -\/$>$ weight of its internal edges
+
+$<$ term \$\{C  \} \{ e  E(\-C) \} (e)\$
+
+$<$ cluster -\/$>$ sum of the weights of incident edges for all nodes
+
+$<$ term \$\{C  \}( \{v  C\} (v) )$^\wedge$2 \$ 
+
+Implements \hyperlink{class_ensemble_clustering_1_1_quality_measure_ac451b559397c922c27be3a64b3463bd9}{Ensemble\-Clustering\-::\-Quality\-Measure}.
+
+
+
+Definition at line 36 of file Modularity.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_modularity_a516c1fa49609c233d01a76d0f0d4c255_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_modularity_a5c449dd6b3b3485dcc497edd8dc3c156}{\index{Ensemble\-Clustering\-::\-Modularity@{Ensemble\-Clustering\-::\-Modularity}!precompute@{precompute}}
+\index{precompute@{precompute}!EnsembleClustering::Modularity@{Ensemble\-Clustering\-::\-Modularity}}
+\subsubsection[{precompute}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Modularity\-::precompute (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_modularity_a5c449dd6b3b3485dcc497edd8dc3c156}
+
+
+Precompute some values depending on the graph instance to be used in get\-Quality. 
+
+
+
+Definition at line 23 of file Modularity.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_modularity_a5c449dd6b3b3485dcc497edd8dc3c156_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_modularity_abc6c72d596cd3f00cce8c8c87e602df1}{\index{Ensemble\-Clustering\-::\-Modularity@{Ensemble\-Clustering\-::\-Modularity}!incident\-Weight@{incident\-Weight}}
+\index{incident\-Weight@{incident\-Weight}!EnsembleClustering::Modularity@{Ensemble\-Clustering\-::\-Modularity}}
+\subsubsection[{incident\-Weight}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Node\-Map}$<$double$>$$\ast$ Ensemble\-Clustering\-::\-Modularity\-::incident\-Weight\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_modularity_abc6c72d596cd3f00cce8c8c87e602df1}
+
+
+node -\/$>$ sum of the weight of incident edges 
+
+
+
+Definition at line 26 of file Modularity.\-h.
 
 
 
 The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
 \item 
-src/\hyperlink{_modularity_8h}{Modularity.\-h}\item 
-src/\hyperlink{_modularity_8cpp}{Modularity.\-cpp}\end{DoxyCompactItemize}
+src/clustering/\hyperlink{_modularity_8h}{Modularity.\-h}\item 
+src/clustering/\hyperlink{_modularity_8cpp}{Modularity.\-cpp}\end{DoxyCompactItemize}

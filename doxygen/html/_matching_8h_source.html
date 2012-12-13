@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Ensemble Clustering: src/Matching.h Source File</title>
+<title>Ensemble Clustering: src/matching/Matching.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -80,7 +80,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b70b8b783a8b9aa73bee47b1192dd9af.html">matching</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,27 +91,61 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="_matching_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Matching.h</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 15.10.2012</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 03.12.2012</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: cls</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef MATCHING_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MATCHING_H_</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>EnsembleClustering {</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_matching.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_ensemble_clustering_1_1_matching.html">Matching</a> {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <a class="code" href="class_ensemble_clustering_1_1_matching.html#a2609490f3aa6309f37146e3d8d43fe57">Matching</a>();</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html#abcc136cf0a7e0b0f2364f2d1b3eb1f2c">~Matching</a>();</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;};</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"># include &quot;../aux/log.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;../graph/Graph.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../graph/NodeMap.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>EnsembleClustering {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_matching.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_ensemble_clustering_1_1_matching.html">Matching</a> : <span class="keyword">public</span> <a class="code" href="class_ensemble_clustering_1_1_node_map.html">NodeMap</a>&lt;node&gt; {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;} <span class="comment">/* namespace EnsembleClustering */</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* MATCHING_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="class_ensemble_clustering_1_1_matching.html#a5e1de8d09e758fae48909c25484b42b7" title="Construct new matching.">Matching</a>(int64_t <a class="code" href="class_ensemble_clustering_1_1_node_map.html#a511baf014428ed1dece45d9ab94f205b">n</a>);</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html#abcc136cf0a7e0b0f2364f2d1b3eb1f2c" title="Destructor.">~Matching</a>();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html#a41f6ed1f3b1660fb682c32cf2ade11de" title="Set two nodes as eachothers matching partners.">match</a>(<span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; u, <span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; v);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html#a214fd9e80cb5842f87e2ec909655b5e2" title="Reset the two nodes to unmatched.">unmatch</a>(<span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; u, <span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; v);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html#a6591583cd8dcd8ddc702cdbddcc42bd0" title="Check if node is matched.">isMatched</a>(<span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; u) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html#ad2637dece8a3a56d9f62f3c9df4713db" title="Check if the two nodes are matched.">areMatched</a>(<span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; u, <span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; v) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html#a29b8fa3ba916f0b3d73b184c883c36b6" title="Check whether this is a proper matching in the graph, i.e.">isProper</a>(<a class="code" href="class_ensemble_clustering_1_1_graph.html" title="Graph interface.">Graph</a>&amp; G) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <a class="code" href="class_ensemble_clustering_1_1_matching.html">Matching</a>&amp; <a class="code" href="class_ensemble_clustering_1_1_matching.html#a3b523f31e77718537c0883874442be0c" title="copy semantics">operator=</a>(<span class="keyword">const</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html">Matching</a>&amp; from);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;     <span class="keywordtype">void</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html#a6753fd67c53b6e0d94f2d6e0d6de640e" title="Properly copy this object.">clone</a>(<span class="keyword">const</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html">Matching</a>&amp; from);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_ensemble_clustering_1_1_matching.html#ae7e8c62662439dc7adae829506d2dd32" title="Properly destruct this object.">dispose</a>();</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;};</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;} <span class="comment">/* namespace EnsembleClustering */</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* MATCHING_H_ */</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Oct 17 2012 16:55:34 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 13 2012 16:27:31 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

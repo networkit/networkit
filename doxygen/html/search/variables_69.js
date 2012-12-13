@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['i',['i',['../class_ensemble_clustering_1_1_edge_tuple.html#acf12140619e42d9e60ccf402caf0730d',1,'EnsembleClustering::EdgeTuple']]]
+  ['incidentweight',['incidentWeight',['../class_ensemble_clustering_1_1_modularity.html#abc6c72d596cd3f00cce8c8c87e602df1',1,'EnsembleClustering::Modularity']]]
 ];

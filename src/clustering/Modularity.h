@@ -23,7 +23,7 @@ class Modularity: public EnsembleClustering::QualityMeasure {
 
 protected:
 
-	NodeMap<double>* incidentWeight;	//<! node -> sum of the weight of incident edges
+	NodeMap<double>* incidentWeight;	//!< node -> sum of the weight of incident edges
 
 	/**
 	 * Precompute some values depending on the graph instance

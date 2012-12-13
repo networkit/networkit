@@ -62,7 +62,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
       <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
-      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="inherits.html"><span>Class&#160;Hierarchy</span></a></li>
       <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
     </ul>
   </div>
@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -88,24 +88,95 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="class_ensemble_clustering_1_1_graph-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EnsembleClustering::Graph Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="class_ensemble_clustering_1_1_graph.html" title="Graph interface.">Graph</a> interface.  
+ <a href="class_ensemble_clustering_1_1_graph.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_graph_8h_source.html">Graph.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a65031e76ae95333341f795fb9a13647f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a65031e76ae95333341f795fb9a13647f">Graph</a> ()</td></tr>
+<tr class="memdesc:a65031e76ae95333341f795fb9a13647f"><td class="mdescLeft">&#160;</td><td class="mdescRight">methods  <a href="#a65031e76ae95333341f795fb9a13647f"></a><br/></td></tr>
 <tr class="separator:a65031e76ae95333341f795fb9a13647f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8368ff972ce067d51e37c48124a0038"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#ac8368ff972ce067d51e37c48124a0038">~Graph</a> ()</td></tr>
+<tr class="memitem:a0ffcdfea431e8c85de2058a226a4783a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a0ffcdfea431e8c85de2058a226a4783a">Graph</a> (stinger *<a class="el" href="class_ensemble_clustering_1_1_graph.html#af83709e85afb91c70729405a725afb9a">stingerG</a>)</td></tr>
+<tr class="memdesc:a0ffcdfea431e8c85de2058a226a4783a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize with STINGER graph.  <a href="#a0ffcdfea431e8c85de2058a226a4783a"></a><br/></td></tr>
+<tr class="separator:a0ffcdfea431e8c85de2058a226a4783a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8368ff972ce067d51e37c48124a0038"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#ac8368ff972ce067d51e37c48124a0038">~Graph</a> ()</td></tr>
 <tr class="separator:ac8368ff972ce067d51e37c48124a0038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7ad5a71649990fe2b823b8ed7a113b7"><td class="memItemLeft" align="right" valign="top">stinger *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#ad7ad5a71649990fe2b823b8ed7a113b7">asSTINGER</a> () const </td></tr>
+<tr class="memdesc:ad7ad5a71649990fe2b823b8ed7a113b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the internal STINGER data structure.  <a href="#ad7ad5a71649990fe2b823b8ed7a113b7"></a><br/></td></tr>
+<tr class="separator:ad7ad5a71649990fe2b823b8ed7a113b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78d527f03a3a860ee173dadbaefe1d5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a78d527f03a3a860ee173dadbaefe1d5c">insertEdge</a> (<a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> u, <a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> v, double <a class="el" href="class_ensemble_clustering_1_1_graph.html#a9bff231567f9ac604f1854d62f6682d1">weight</a>=<a class="el" href="class_ensemble_clustering_1_1_graph.html#a8186ee969064a4e12b779b1dc506ac60">defaultEdgeWeight</a>, int64_t type=<a class="el" href="class_ensemble_clustering_1_1_graph.html#a377621f37c1dc58f32ecec0fd229408e">defaultEdgeType</a>, int64_t timestamp=<a class="el" href="class_ensemble_clustering_1_1_graph.html#a9a6623d55f673a3b30e0c23284dd6da1">defaultTimeStamp</a>)</td></tr>
+<tr class="memdesc:a78d527f03a3a860ee173dadbaefe1d5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a weighted, undirected edge.  <a href="#a78d527f03a3a860ee173dadbaefe1d5c"></a><br/></td></tr>
+<tr class="separator:a78d527f03a3a860ee173dadbaefe1d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9be0c0a70204723e4b040b9cba51b15d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a9be0c0a70204723e4b040b9cba51b15d">hasEdge</a> (<a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> u, <a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> v) const </td></tr>
+<tr class="memdesc:a9be0c0a70204723e4b040b9cba51b15d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if undirected edge {u,v} exists in G.  <a href="#a9be0c0a70204723e4b040b9cba51b15d"></a><br/></td></tr>
+<tr class="separator:a9be0c0a70204723e4b040b9cba51b15d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bff231567f9ac604f1854d62f6682d1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a9bff231567f9ac604f1854d62f6682d1">weight</a> (<a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> v) const </td></tr>
+<tr class="memdesc:a9bff231567f9ac604f1854d62f6682d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return node weight.  <a href="#a9bff231567f9ac604f1854d62f6682d1"></a><br/></td></tr>
+<tr class="separator:a9bff231567f9ac604f1854d62f6682d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a656f5cb3119dd3f8f4182d38cce82fa0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a656f5cb3119dd3f8f4182d38cce82fa0">weight</a> (<a class="el" href="namespace_ensemble_clustering.html#aff19dd5e3051ee3d4360fd3f29daf16b">edge</a> uv) const </td></tr>
+<tr class="memdesc:a656f5cb3119dd3f8f4182d38cce82fa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return edge weight.  <a href="#a656f5cb3119dd3f8f4182d38cce82fa0"></a><br/></td></tr>
+<tr class="separator:a656f5cb3119dd3f8f4182d38cce82fa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4699131f4d3602ecda00eaf70a86cbea"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a4699131f4d3602ecda00eaf70a86cbea">weight</a> (<a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> u, <a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> v) const </td></tr>
+<tr class="memdesc:a4699131f4d3602ecda00eaf70a86cbea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return edge weight.  <a href="#a4699131f4d3602ecda00eaf70a86cbea"></a><br/></td></tr>
+<tr class="separator:a4699131f4d3602ecda00eaf70a86cbea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7be7f13f5a31b0513293e7bbac26ca6c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a7be7f13f5a31b0513293e7bbac26ca6c">totalEdgeWeight</a> () const </td></tr>
+<tr class="memdesc:a7be7f13f5a31b0513293e7bbac26ca6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the sum of the weight of all edges.  <a href="#a7be7f13f5a31b0513293e7bbac26ca6c"></a><br/></td></tr>
+<tr class="separator:a7be7f13f5a31b0513293e7bbac26ca6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35f4b169cd0157117b468b1863a0d70a"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a35f4b169cd0157117b468b1863a0d70a">degree</a> (<a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> u) const </td></tr>
+<tr class="memdesc:a35f4b169cd0157117b468b1863a0d70a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the degree (number of incident edges).  <a href="#a35f4b169cd0157117b468b1863a0d70a"></a><br/></td></tr>
+<tr class="separator:a35f4b169cd0157117b468b1863a0d70a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab019840b239c3247eaf00e5ffcc6bb03"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#ab019840b239c3247eaf00e5ffcc6bb03">numberOfEdges</a> () const </td></tr>
+<tr class="memdesc:ab019840b239c3247eaf00e5ffcc6bb03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of edges in the graph.  <a href="#ab019840b239c3247eaf00e5ffcc6bb03"></a><br/></td></tr>
+<tr class="separator:ab019840b239c3247eaf00e5ffcc6bb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affe61a24e54266aba872272fb9501c61"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61">numberOfNodes</a> () const </td></tr>
+<tr class="memdesc:affe61a24e54266aba872272fb9501c61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of (non-isolated) nodes in the graph.  <a href="#affe61a24e54266aba872272fb9501c61"></a><br/></td></tr>
+<tr class="separator:affe61a24e54266aba872272fb9501c61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaac8bcc5d64461cba54ad38ec929be3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#aaac8bcc5d64461cba54ad38ec929be3c">firstNode</a> () const </td></tr>
+<tr class="memdesc:aaac8bcc5d64461cba54ad38ec929be3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the first node index (for iteration over all nodes)  <a href="#aaac8bcc5d64461cba54ad38ec929be3c"></a><br/></td></tr>
+<tr class="separator:aaac8bcc5d64461cba54ad38ec929be3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d6fe2d0c27605f4b55585198eb9b933"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a3d6fe2d0c27605f4b55585198eb9b933">lastNode</a> () const </td></tr>
+<tr class="memdesc:a3d6fe2d0c27605f4b55585198eb9b933"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the last node index (for iteration over all nodes).  <a href="#a3d6fe2d0c27605f4b55585198eb9b933"></a><br/></td></tr>
+<tr class="separator:a3d6fe2d0c27605f4b55585198eb9b933"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b599771f8dc476712ea7e6b52157a3f"><td class="memTemplParams" colspan="2">template&lt;typename Callback &gt; </td></tr>
+<tr class="memitem:a7b599771f8dc476712ea7e6b52157a3f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a7b599771f8dc476712ea7e6b52157a3f">forallEdges</a> (bool parallel, Callback callback)</td></tr>
+<tr class="separator:a7b599771f8dc476712ea7e6b52157a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a8186ee969064a4e12b779b1dc506ac60"><td class="memItemLeft" align="right" valign="top">static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a8186ee969064a4e12b779b1dc506ac60">defaultEdgeWeight</a> = 1.0</td></tr>
+<tr class="memdesc:a8186ee969064a4e12b779b1dc506ac60"><td class="mdescLeft">&#160;</td><td class="mdescRight">default parameters  <a href="#a8186ee969064a4e12b779b1dc506ac60"></a><br/></td></tr>
+<tr class="separator:a8186ee969064a4e12b779b1dc506ac60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a377621f37c1dc58f32ecec0fd229408e"><td class="memItemLeft" align="right" valign="top">static const int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a377621f37c1dc58f32ecec0fd229408e">defaultEdgeType</a> = 0</td></tr>
+<tr class="separator:a377621f37c1dc58f32ecec0fd229408e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a6623d55f673a3b30e0c23284dd6da1"><td class="memItemLeft" align="right" valign="top">static const int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#a9a6623d55f673a3b30e0c23284dd6da1">defaultTimeStamp</a> = 0</td></tr>
+<tr class="separator:a9a6623d55f673a3b30e0c23284dd6da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:af83709e85afb91c70729405a725afb9a"><td class="memItemLeft" align="right" valign="top">stinger *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_graph.html#af83709e85afb91c70729405a725afb9a">stingerG</a></td></tr>
+<tr class="separator:af83709e85afb91c70729405a725afb9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="_graph_8h_source.html#l00013">13</a> of file <a class="el" href="_graph_8h_source.html">Graph.h</a>.</p>
+<div class="textblock"><p><a class="el" href="class_ensemble_clustering_1_1_graph.html" title="Graph interface.">Graph</a> interface. </p>
+<p><a class="el" href="class_ensemble_clustering_1_1_graph.html" title="Graph interface.">Graph</a> encapsulates a STINGER graph object and provides a more concise interface to it.</p>
+<p>The graph concept modelled is</p>
+<ul>
+<li>undirected</li>
+<li>weighted</li>
+<li>without self-loops (use node weights instead) </li>
+</ul>
+
+<p>Definition at line <a class="el" href="_graph_8h_source.html#l00077">77</a> of file <a class="el" href="_graph_8h_source.html">Graph.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a65031e76ae95333341f795fb9a13647f"></a>
 <div class="memitem">
@@ -120,16 +191,42 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00012">12</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+<p>methods </p>
+<p>Construct <a class="el" href="class_ensemble_clustering_1_1_graph.html" title="Graph interface.">Graph</a> object with new STINGER graph inside. </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00013">13</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0ffcdfea431e8c85de2058a226a4783a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EnsembleClustering::Graph::Graph </td>
+          <td>(</td>
+          <td class="paramtype">stinger *&#160;</td>
+          <td class="paramname"><em>stingerG</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize with STINGER graph. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">stingerG</td><td>a STINGER graph struct </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00020">20</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
 
 </div>
 </div>
 <a class="anchor" id="ac8368ff972ce067d51e37c48124a0038"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">EnsembleClustering::Graph::~Graph </td>
@@ -138,25 +235,460 @@ Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00017">17</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
 
 </div>
 </div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ad7ad5a71649990fe2b823b8ed7a113b7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">stinger * EnsembleClustering::Graph::asSTINGER </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the internal STINGER data structure. </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00026">26</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a35f4b169cd0157117b468b1863a0d70a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t EnsembleClustering::Graph::degree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td>
+          <td class="paramname"><em>u</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the degree (number of incident edges). </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00069">69</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aaac8bcc5d64461cba54ad38ec929be3c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> EnsembleClustering::Graph::firstNode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the first node index (for iteration over all nodes) </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00065">65</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7b599771f8dc476712ea7e6b52157a3f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Callback &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EnsembleClustering::Graph::forallEdges </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>parallel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Callback&#160;</td>
+          <td class="paramname"><em>callback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_graph_8h_source.html#l00195">195</a> of file <a class="el" href="_graph_8h_source.html">Graph.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9be0c0a70204723e4b040b9cba51b15d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool EnsembleClustering::Graph::hasEdge </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if undirected edge {u,v} exists in G. </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00036">36</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a78d527f03a3a860ee173dadbaefe1d5c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EnsembleClustering::Graph::insertEdge </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>weight</em> = <code><a class="el" href="class_ensemble_clustering_1_1_graph.html#a8186ee969064a4e12b779b1dc506ac60">defaultEdgeWeight</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>type</em> = <code><a class="el" href="class_ensemble_clustering_1_1_graph.html#a377621f37c1dc58f32ecec0fd229408e">defaultEdgeType</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>timestamp</em> = <code><a class="el" href="class_ensemble_clustering_1_1_graph.html#a9a6623d55f673a3b30e0c23284dd6da1">defaultTimeStamp</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert a weighted, undirected edge. </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00030">30</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3d6fe2d0c27605f4b55585198eb9b933"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a> EnsembleClustering::Graph::lastNode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the last node index (for iteration over all nodes). </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00085">85</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_ensemble_clustering_1_1_graph_a3d6fe2d0c27605f4b55585198eb9b933_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_graph_a3d6fe2d0c27605f4b55585198eb9b933_cgraph" alt=""/></div>
+<map name="class_ensemble_clustering_1_1_graph_a3d6fe2d0c27605f4b55585198eb9b933_cgraph" id="class_ensemble_clustering_1_1_graph_a3d6fe2d0c27605f4b55585198eb9b933_cgraph">
+<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non&#45;isolated) nodes in the graph." alt="" coords="194,5,366,49"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ab019840b239c3247eaf00e5ffcc6bb03"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t EnsembleClustering::Graph::numberOfEdges </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of edges in the graph. </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00054">54</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="affe61a24e54266aba872272fb9501c61"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t EnsembleClustering::Graph::numberOfNodes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of (non-isolated) nodes in the graph. </p>
+<p>TODO: Maybe this should be changed to support isolated nodes. </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00059">59</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7be7f13f5a31b0513293e7bbac26ca6c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double EnsembleClustering::Graph::totalEdgeWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the sum of the weight of all edges. </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00076">76</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_ensemble_clustering_1_1_graph_a7be7f13f5a31b0513293e7bbac26ca6c_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_graph_a7be7f13f5a31b0513293e7bbac26ca6c_cgraph" alt=""/></div>
+<map name="class_ensemble_clustering_1_1_graph_a7be7f13f5a31b0513293e7bbac26ca6c_cgraph" id="class_ensemble_clustering_1_1_graph_a7be7f13f5a31b0513293e7bbac26ca6c_cgraph">
+<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#a9bff231567f9ac604f1854d62f6682d1" title="Return node weight." alt="" coords="224,5,365,49"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a9bff231567f9ac604f1854d62f6682d1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double EnsembleClustering::Graph::weight </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return node weight. </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00043">43</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a656f5cb3119dd3f8f4182d38cce82fa0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double EnsembleClustering::Graph::weight </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#aff19dd5e3051ee3d4360fd3f29daf16b">edge</a>&#160;</td>
+          <td class="paramname"><em>uv</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return edge weight. </p>
+
+<p>Definition at line <a class="el" href="_graph_8cpp_source.html#l00047">47</a> of file <a class="el" href="_graph_8cpp_source.html">Graph.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4699131f4d3602ecda00eaf70a86cbea"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double EnsembleClustering::Graph::weight </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114">node</a>&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return edge weight. </p>
+<p>Equivalent to getWeight(edge uv) </p>
+
+<p>Definition at line <a class="el" href="_graph_8h_source.html#l00144">144</a> of file <a class="el" href="_graph_8h_source.html">Graph.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a377621f37c1dc58f32ecec0fd229408e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int64_t EnsembleClustering::Graph::defaultEdgeType = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_graph_8h_source.html#l00092">92</a> of file <a class="el" href="_graph_8h_source.html">Graph.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8186ee969064a4e12b779b1dc506ac60"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr double EnsembleClustering::Graph::defaultEdgeWeight = 1.0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>default parameters </p>
+
+<p>Definition at line <a class="el" href="_graph_8h_source.html#l00091">91</a> of file <a class="el" href="_graph_8h_source.html">Graph.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9a6623d55f673a3b30e0c23284dd6da1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int64_t EnsembleClustering::Graph::defaultTimeStamp = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_graph_8h_source.html#l00093">93</a> of file <a class="el" href="_graph_8h_source.html">Graph.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af83709e85afb91c70729405a725afb9a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">stinger* EnsembleClustering::Graph::stingerG</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_graph_8h_source.html#l00081">81</a> of file <a class="el" href="_graph_8h_source.html">Graph.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/<a class="el" href="_graph_8h_source.html">Graph.h</a></li>
-<li>src/<a class="el" href="_graph_8cpp_source.html">Graph.cpp</a></li>
+<li>src/graph/<a class="el" href="_graph_8h_source.html">Graph.h</a></li>
+<li>src/graph/<a class="el" href="_graph_8cpp_source.html">Graph.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Oct 17 2012 16:55:34 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 13 2012 16:27:32 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

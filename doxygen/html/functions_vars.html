@@ -62,7 +62,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
       <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
-      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="inherits.html"><span>Class&#160;Hierarchy</span></a></li>
       <li class="current"><a href="functions.html"><span>Class&#160;Members</span></a></li>
     </ul>
   </div>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -90,33 +90,77 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="contents">
 &#160;<ul>
-<li>edgeData
-: <a class="el" href="class_ensemble_clustering_1_1_edge_triple_graph_data.html#acb27bbd92c258f29537e2d9a94e973ea">EnsembleClustering::EdgeTripleGraphData</a>
+<li>array
+: <a class="el" href="class_ensemble_clustering_1_1_index_map.html#af1d57517c8a2eac72bfe7805b65fcebc">EnsembleClustering::IndexMap&lt; I, T &gt;</a>
+, <a class="el" href="class_ensemble_clustering_1_1_node_map.html#a07b1d885793627c3691beeb5dca28717">EnsembleClustering::NodeMap&lt; T &gt;</a>
 </li>
-<li>i
-: <a class="el" href="class_ensemble_clustering_1_1_edge_tuple.html#acf12140619e42d9e60ccf402caf0730d">EnsembleClustering::EdgeTuple</a>
+<li>currentNode
+: <a class="el" href="class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies.html#a5ee544e2493998867bd1cd7e98d72575">EnsembleClustering::STINGERFromAdjacencies</a>
 </li>
-<li>j
-: <a class="el" href="class_ensemble_clustering_1_1_edge_tuple.html#a8f3e5de46a3c3e1eefeda14d6330eaab">EnsembleClustering::EdgeTuple</a>
+<li>defaultEdgeType
+: <a class="el" href="class_ensemble_clustering_1_1_graph.html#a377621f37c1dc58f32ecec0fd229408e">EnsembleClustering::Graph</a>
 </li>
-<li>m
-: <a class="el" href="class_ensemble_clustering_1_1_edge_triple_graph_data.html#a5ee6e7a60111a4120f880db9ae16d0cb">EnsembleClustering::EdgeTripleGraphData</a>
+<li>defaultEdgeWeight
+: <a class="el" href="class_ensemble_clustering_1_1_graph.html#a8186ee969064a4e12b779b1dc506ac60">EnsembleClustering::Graph</a>
+</li>
+<li>defaultTimeStamp
+: <a class="el" href="class_ensemble_clustering_1_1_graph.html#a9a6623d55f673a3b30e0c23284dd6da1">EnsembleClustering::Graph</a>
+</li>
+<li>defaultValue
+: <a class="el" href="class_ensemble_clustering_1_1_index_map.html#ab5f1dc778237131e9d6c5713c2b318ec">EnsembleClustering::IndexMap&lt; I, T &gt;</a>
+, <a class="el" href="class_ensemble_clustering_1_1_node_map.html#a79da6a77072605a77c060bbb2e5a620c">EnsembleClustering::NodeMap&lt; T &gt;</a>
+</li>
+<li>G
+: <a class="el" href="class_ensemble_clustering_1_1_quality_measure.html#a8639730658036901338b34bc59bf4cec">EnsembleClustering::QualityMeasure</a>
+, <a class="el" href="class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies.html#a5376c951560b41a3a6ad24edddf143ee">EnsembleClustering::STINGERFromAdjacencies</a>
+</li>
+<li>gen
+: <a class="el" href="class_ensemble_clustering_1_1_graph_g_test.html#a8233040cfa6b04e5a36d2bc0bfe1bc07">EnsembleClustering::GraphGTest</a>
+</li>
+<li>graphFile
+: <a class="el" href="class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#abe77511f89d17b6a043d38790b334151">EnsembleClustering::METISParser</a>
+</li>
+<li>graphPath
+: <a class="el" href="class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a115b663b7cba22ec147d48f02c550b4a">EnsembleClustering::METISParser</a>
+</li>
+<li>incidentWeight
+: <a class="el" href="class_ensemble_clustering_1_1_modularity.html#abc6c72d596cd3f00cce8c8c87e602df1">EnsembleClustering::Modularity</a>
+</li>
+<li>line
+: <a class="el" href="class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#ac9ae7379afb81dde47ba1298c42a9273">EnsembleClustering::METISParser</a>
+</li>
+<li>lowerBound
+: <a class="el" href="class_noise.html#aea68fa84d28eb99d85078f97e8b5c232">Noise</a>
 </li>
 <li>n
-: <a class="el" href="class_ensemble_clustering_1_1_edge_triple_graph_data.html#a907cee0110aa331fa3c3ddd99b8deaf7">EnsembleClustering::EdgeTripleGraphData</a>
+: <a class="el" href="class_ensemble_clustering_1_1_index_map.html#a3151d302c54e6ad0175bd87aef62d4ca">EnsembleClustering::IndexMap&lt; I, T &gt;</a>
+, <a class="el" href="class_ensemble_clustering_1_1_node_map.html#a511baf014428ed1dece45d9ab94f205b">EnsembleClustering::NodeMap&lt; T &gt;</a>
 </li>
-<li>nodeData
-: <a class="el" href="class_ensemble_clustering_1_1_edge_triple_graph_data.html#ac9d42d7b576078953b3ddbae01004dd8">EnsembleClustering::EdgeTripleGraphData</a>
+<li>nextCluster
+: <a class="el" href="class_ensemble_clustering_1_1_clustering.html#a47de59cf22e93a801cac55eb001b6d3d">EnsembleClustering::Clustering</a>
 </li>
-<li>w
-: <a class="el" href="class_ensemble_clustering_1_1_edge_tuple.html#a5dbd8079be78b2057d441f79eae7c905">EnsembleClustering::EdgeTuple</a>
-, <a class="el" href="class_ensemble_clustering_1_1_node_tuple.html#ad22f4e0e736249fe884f9adb87491d66">EnsembleClustering::NodeTuple</a>
+<li>nodeCount
+: <a class="el" href="class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a50fd01e9082507c3cbb34b7194d8e047">EnsembleClustering::METISParser</a>
+</li>
+<li>randomEngine
+: <a class="el" href="class_noise.html#ac334ce93af290c25bb835780c3d25018">Noise</a>
+, <a class="el" href="class_random_probability.html#a6017556b51ee6d01a58a9c43176f6a2b">RandomProbability</a>
+</li>
+<li>stingerG
+: <a class="el" href="class_ensemble_clustering_1_1_graph.html#af83709e85afb91c70729405a725afb9a">EnsembleClustering::Graph</a>
+</li>
+<li>uniform
+: <a class="el" href="class_noise.html#aa7025a1f6193c8cf2ce4d225b9f9413f">Noise</a>
+, <a class="el" href="class_random_probability.html#a1bad4faa982f0fc1e9169c073ec53295">RandomProbability</a>
+</li>
+<li>upperBound
+: <a class="el" href="class_noise.html#ae4e9a84fa020eac595826a7a9a95bcb6">Noise</a>
 </li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Oct 17 2012 16:55:35 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 13 2012 16:27:33 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

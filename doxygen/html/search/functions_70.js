@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['parse',['parse',['../class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser.html#a28c963c44b2a559f1f26a68ce55b8650',1,'EnsembleClustering::METISGraphParser']]]
+  ['parallelmatcher',['ParallelMatcher',['../class_ensemble_clustering_1_1_parallel_matcher.html#ab311a101a93c6fd157d01d45a39728cf',1,'EnsembleClustering::ParallelMatcher']]],
+  ['precompute',['precompute',['../class_ensemble_clustering_1_1_modularity.html#a5c449dd6b3b3485dcc497edd8dc3c156',1,'EnsembleClustering::Modularity']]]
 ];
