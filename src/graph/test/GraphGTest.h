@@ -31,25 +31,8 @@ public:
 
 };
 
-TEST_F(GraphGTest, testIteration) {
-	int success = 0;
 
-	Graph G = this->gen.makeCompleteGraph(20);
-
-	int64_t etype = G.defaultEdgeType;
-
-	STINGER_PARALLEL_FORALL_EDGES_BEGIN(G.asSTINGER(), etype) {
-		node u = STINGER_EDGE_SOURCE;
-		node v = STINGER_EDGE_DEST;
-		TRACE("found edge (" << u << "," << v << ") with weight " << stinger_edgeweight(G.asSTINGER(), u, v, etype));
-	} STINGER_PARALLEL_FORALL_EDGES_END();
-
-	success = 1;
-	EXPECT_EQ(1, success);
-}
-
-
-TEST_F(GraphGTest, testUndirectedEdgeIteration) {
+TEST_F(GraphGTest, testEdgeIteration) {
 
 	int64_t n = 100;
 	Graph G = this->gen.makeCompleteGraph(n);
@@ -75,6 +58,23 @@ TEST_F(GraphGTest, testLambdaEdgeIteration) {
 	int64_t edgeCount = 0;
 	G.forallEdges([&](node u, node v) {
 		if (u < v) {
+			edgeCount += 1;
+		}
+	},"readonly");
+
+	EXPECT_EQ((n * (n-1)) / 2, edgeCount) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
+}
+
+
+
+TEST_F(GraphGTest, testParallelLambdaEdgeIteration) {
+
+	int64_t n = 100;
+	Graph G = this->gen.makeCompleteGraph(n);
+
+	int64_t edgeCount = 0;
+	G.forallEdges([&](node u, node v) {
+		if (u < v) {
 			#pragma omp atomic update
 			edgeCount += 1;
 		}
@@ -82,6 +82,8 @@ TEST_F(GraphGTest, testLambdaEdgeIteration) {
 
 	EXPECT_EQ((n * (n-1)) / 2, edgeCount) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
 }
+
+
 
 
 TEST_F(GraphGTest, testLambdaEdgeModification) {
@@ -94,6 +96,36 @@ TEST_F(GraphGTest, testLambdaEdgeModification) {
 	});
 
 	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been deleted";
+}
+
+
+
+TEST_F(GraphGTest, testLambdaNodeIteration) {
+
+	int64_t n = 1000;
+	Graph G = this->gen.makeCompleteGraph(n);
+
+	int64_t nodeCount = 0;
+	G.forallNodes([&](node v) {
+		nodeCount++;
+	});
+
+	EXPECT_EQ(n, nodeCount);
+}
+
+
+TEST_F(GraphGTest, testParallelLambdaNodeIteration) {
+
+	int64_t n = 1000;
+	Graph G = this->gen.makeCompleteGraph(n);
+
+	int64_t nodeCount = 0;
+	G.forallNodes([&](node v) {
+		#pragma omp atomic update
+		nodeCount++;
+	}, "parallel");
+
+	EXPECT_EQ(n, nodeCount);
 }
 
 

@@ -191,7 +191,18 @@ public:
 
 
 
-	template<typename Callback> void forallEdges(Callback callback, std::string par="", std::string write="");
+	/**
+	 * Iterate over all undirected edges of a graph and execute callback function.
+	 *
+	 * If the callback function is a lambda closure which captures the variables
+	 * of the curent scope, iteration looks similar to ordinary loops with STINGER traversal macros.
+	 */
+	template<typename Callback> void forallEdges(Callback func, std::string par="", std::string write="");
+
+
+	template<typename Callback> void forallNodes(Callback func, std::string par="");
+
+
 
 
 
@@ -252,6 +263,16 @@ inline void EnsembleClustering::Graph::forallEdges(Callback func, std::string pa
 	}
 
 
+}
+
+template<typename Callback>
+inline void EnsembleClustering::Graph::forallNodes(Callback func, std::string par) {
+	int64_t n  = this->numberOfNodes();
+	#pragma omp parallel for if (par == "parallel")
+	for (node v = this->firstNode(); v <= n; ++v) {
+		// call callback function
+		func(v);
+	}
 }
 
 #endif /* GRAPH_H_ */

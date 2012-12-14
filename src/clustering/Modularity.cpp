@@ -35,6 +35,8 @@ void Modularity::precompute() {
 
 double Modularity::getQuality(Clustering& zeta) {
 
+	// FIXME: solve issue: singleton modularity sometimes gets extremely high values
+
 	int n = G->numberOfNodes();
 	cluster k = zeta.lastCluster();
 
@@ -46,16 +48,15 @@ double Modularity::getQuality(Clustering& zeta) {
 	double totalEdgeWeight = G->totalEdgeWeight();
 	IndexMap<cluster, double> intraEdgeWeight(zeta.lastCluster()); //!< cluster -> weight of its internal edges
 
-	READ_ONLY_PARALLEL_FORALL_EDGES_BEGIN((*G)) {
-		node u = EDGE_SOURCE;
-		node v = EDGE_DEST;
+	G->forallEdges([&](node u, node v){
 		cluster c = zeta[u];
 		cluster d = zeta[v];
 		if (c == d) {
 			#pragma omp atomic update
 			intraEdgeWeight[c] += G->weight(u, v);
 		} // else ignore edge
-	} READ_ONLY_PARALLEL_FORALL_EDGES_END();
+	}, "parallel", "readonly");
+
 
 	double intraEdgeWeightSum = 0.0;	//!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
 	for (cluster c = zeta.firstCluster(); c <= k; ++c) {
