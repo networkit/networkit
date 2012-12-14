@@ -45,7 +45,7 @@ TEST_F(GraphGTest, testIteration) {
 	} STINGER_PARALLEL_FORALL_EDGES_END();
 
 	success = 1;
-	EXPECT_EQ(success, 1);
+	EXPECT_EQ(1, success);
 }
 
 
@@ -63,7 +63,7 @@ TEST_F(GraphGTest, testUndirectedEdgeIteration) {
 		}
 	} READ_ONLY_FORALL_EDGES_END();
 
-	EXPECT_EQ(edgeCount, (n * (n-1)) / 2) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
+	EXPECT_EQ((n * (n-1)) / 2, edgeCount) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
 }
 
 
@@ -75,11 +75,12 @@ TEST_F(GraphGTest, testLambdaEdgeIteration) {
 	int64_t edgeCount = 0;
 	G.forallEdges([&](node u, node v) {
 		if (u < v) {
+			#pragma omp atomic update
 			edgeCount += 1;
 		}
-	});
+	}, "parallel", "readonly");
 
-	EXPECT_EQ(edgeCount, (n * (n-1)) / 2) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
+	EXPECT_EQ((n * (n-1)) / 2, edgeCount) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
 }
 
 
@@ -92,7 +93,7 @@ TEST_F(GraphGTest, testLambdaEdgeModification) {
 		G.removeEdge(u, v);
 	});
 
-	EXPECT_EQ(G.numberOfEdges(), 0) << "all edges should have been deleted";
+	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been deleted";
 }
 
 

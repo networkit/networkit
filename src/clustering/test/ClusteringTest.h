@@ -29,7 +29,7 @@ class ClusteringTest: public testing::Test {
 TEST_F(ClusteringTest, testModularity) {
 	GraphGenerator graphGenerator;
 
-	int n = 1000;
+	int n = 100;
 
 	DEBUG("testing modularity on clustering of complete graph with " << n << " nodes");
 
@@ -50,9 +50,9 @@ TEST_F(ClusteringTest, testModularity) {
 	DEBUG("mod(1-clustering) = " << modOne);
 
 
-	EXPECT_EQ(modOne, 0.0) << "1-clustering should have modularity of 0.0";
-	EXPECT_LE(modSingleton, 0.0) << "singleton clustering should have modularity less than 0.0";
-	EXPECT_NE(modSingleton, -1* std::numeric_limits<double>::infinity()) << "modularity of singleton clustering became negative infinity - why?";
+	EXPECT_EQ(0.0, modOne) << "1-clustering should have modularity of 0.0";
+	EXPECT_GE(0.0, modSingleton) << "singleton clustering should have modularity less than 0.0";
+	EXPECT_NE(-1* std::numeric_limits<double>::infinity(), modSingleton) << "modularity of singleton clustering became negative infinity - why?";
 
 }
 

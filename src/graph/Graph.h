@@ -10,6 +10,7 @@
 
 #include <utility>
 #include <cinttypes>
+#include <string>
 
 extern "C" {
 #include "stinger.h"
@@ -190,7 +191,7 @@ public:
 
 
 
-	template<typename Callback> void forallEdges(Callback callback);
+	template<typename Callback> void forallEdges(Callback callback, std::string par="", std::string write="");
 
 
 
@@ -199,16 +200,57 @@ public:
 } /* namespace EnsembleClustering */
 
 template<typename Callback>
-inline void EnsembleClustering::Graph::forallEdges(Callback func) {
-	STINGER_FORALL_EDGES_BEGIN(this->stingerG, this->defaultEdgeType) {
-		node u = STINGER_EDGE_SOURCE;
-		node v = STINGER_EDGE_DEST;
-		if (u < v) {
-			// consider only undirected edges
-			func(u, v);
+inline void EnsembleClustering::Graph::forallEdges(Callback func, std::string par, std::string write) {
+	if (par == "parallel") {
+		if (write == "readonly") {
+			// parallel, readonly
+			STINGER_READ_ONLY_PARALLEL_FORALL_EDGES_BEGIN(this->stingerG, this->defaultEdgeType) {
+				node u = STINGER_EDGE_SOURCE;
+				node v = STINGER_EDGE_DEST;
+				if (u < v) {
+					// consider only undirected edges
+					// call the supplied callback
+					func(u, v);
+				}
+			} STINGER_READ_ONLY_PARALLEL_FORALL_EDGES_END();
+			return;
+		} else {
+			// parallel, writable
+			STINGER_PARALLEL_FORALL_EDGES_BEGIN(this->stingerG, this->defaultEdgeType) {
+				node u = STINGER_EDGE_SOURCE;
+				node v = STINGER_EDGE_DEST;
+				if (u < v) {
+					func(u, v);
+				}
+			} STINGER_PARALLEL_FORALL_EDGES_END();
+			return;
 		}
-		// call the supplied callback
-	} STINGER_FORALL_EDGES_END();
+	} else {
+		if (write == "readonly") {
+			// sequential, readonly
+			STINGER_READ_ONLY_FORALL_EDGES_BEGIN(this->stingerG, this->defaultEdgeType) {
+				node u = STINGER_EDGE_SOURCE;
+				node v = STINGER_EDGE_DEST;
+				if (u < v) {
+					// consider only undirected edges
+					func(u, v);
+				}
+			} STINGER_READ_ONLY_FORALL_EDGES_END();
+			return;
+		} else {
+			// sequential, writable
+			STINGER_FORALL_EDGES_BEGIN(this->stingerG, this->defaultEdgeType) {
+				node u = STINGER_EDGE_SOURCE;
+				node v = STINGER_EDGE_DEST;
+				if (u < v) {
+					// consider only undirected edges
+					func(u, v);
+				}
+			} STINGER_FORALL_EDGES_END();
+			return;
+		}
+	}
+
 
 }
 
