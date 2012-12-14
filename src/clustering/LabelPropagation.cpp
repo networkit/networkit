@@ -20,34 +20,50 @@ LabelPropagation::~LabelPropagation() {
 
 Clustering& LabelPropagation::run(Graph& G) {
 
-	typedef cluster label;	//!< a label is the same as a cluster id
+	typedef cluster label;	// a label is the same as a cluster id
 
 	int64_t n = G.numberOfNodes();
 
-	std::unordered_map<label, int64_t> neighborLabelCounts[n]; //!< neighborLabelCounts[v] maps label -> frequency in the neighbors of v
-
+	// create the clustering to be returned
+	// set unique label for each node
 	Clustering* labels = new Clustering(n);
+	G.forallNodes([&](node v){
+		labels->toSingleton(v);
+	});
 
-	node v;
+	int64_t majorityLabelCount = 0;	// number of nodes which already have the majority label
+	int64_t nIterations = 0; 	// number of iterations
 
-	// TODO: for all nodes
-	labels->toSingleton(v);
+	// propagate labels
+	while (majorityLabelCount != n) {
+		majorityLabelCount = 0;
+		nIterations += 1;
 
-	int64_t majorityLabelCount = 0;	//!< number of nodes which already have the majority label
-	int64_t nIterations = 0; 	//!< number of iterations
+		// TODO: in random order
+		G.forallNodes([&](node v){
+			// count the labels in the neighborhood of v and select the most frequent one
+			int64_t degV = G.degree(v);
+			IndexMap<label, int64_t> neighborLabelCounts(n); // neighborLabelCounts[v] maps label -> frequency in the neighbors of v
 
-	// TODO: for all nodes
-	int64_t degV = G.degree(v);
-	neighborLabelCounts[v].clear();
-		// TODO: for all neighbors w
-	node w;
+			// TODO: forall neighbors of v
+			//		count labels
 
-// FIXME:
-//	if (neighborLabelCounts[v].count(labels[w]) == 0) {
-//		neighborLabelCounts[v][labels[w]] = 1;
-//	} else {
-//		neighborLabelCounts[v][labels[w]]++;
-//	}
+			label mostFrequent;
+
+
+			labels[v] = mostFrequent;
+			// stop if v has label of at least half of its neighbors
+			label dominantLabel = 0; // = None
+
+			if (dominantLabel != 0) {
+				if ((*labels)[v] == dominantLabel) {
+					majorityLabelCount += 1;
+				}
+			} // if no label dominant, do nothing
+
+		});
+
+	}
 
 	assert (labels != NULL);
 	return *labels;

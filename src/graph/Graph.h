@@ -200,10 +200,22 @@ public:
 	template<typename Callback> void forallEdges(Callback func, std::string par="", std::string write="");
 
 
+	/**
+	 * Iterate over all nodes of the graph and execute callback function (lambda closure).
+	 */
 	template<typename Callback> void forallNodes(Callback func, std::string par="");
 
 
+	/**
+	 * Iterate over all neighbors of a node and execute callback function (lamdba closure).
+	 */
+	template<typename Callback> void forallNeighborsOf(node v, Callback func);
 
+
+	/**
+	 * Iterate over all incident edges of a node and execute callback function (lamdba closure).
+	 */
+	template<typename Callback> void forallEdgesOf(node v, Callback func);
 
 
 };
@@ -270,9 +282,31 @@ inline void EnsembleClustering::Graph::forallNodes(Callback func, std::string pa
 	int64_t n  = this->numberOfNodes();
 	#pragma omp parallel for if (par == "parallel")
 	for (node v = this->firstNode(); v <= n; ++v) {
-		// call callback function
+		// call node function
 		func(v);
 	}
+}
+
+template<typename Callback>
+inline void EnsembleClustering::Graph::forallNeighborsOf(node v, Callback func) {
+	STINGER_FORALL_EDGES_OF_VTX_BEGIN(this->stingerG, v) {
+		// filtering edges is not necessary because only out-edges are considered by stinger
+		node w = EDGE_DEST;
+		// call node function
+		func(w);
+	} STINGER_FORALL_EDGES_OF_VTX_END();
+}
+
+
+template<typename Callback>
+inline void EnsembleClustering::Graph::forallEdgesOf(node u, Callback func) {
+	STINGER_FORALL_EDGES_OF_VTX_BEGIN(this->stingerG, u) {
+		// filtering edges is not necessary because only out-edges are considered by stinger
+		node v = STINGER_EDGE_SOURCE; // = u
+		node w = STINGER_EDGE_DEST;
+		// call edge function
+		func(v, w);
+	} STINGER_FORALL_EDGES_OF_VTX_END();
 }
 
 #endif /* GRAPH_H_ */

@@ -42,7 +42,7 @@ public:
 	 *
 	 *  @param[in]	u	a node
 	 */
-	inline T& operator[](const I& index);
+	T& operator[](const I& index);
 
 
 	/**
@@ -50,7 +50,7 @@ public:
 	 *
 	 * @param[in]	u 	a node
 	 */
-	inline const T& operator[](const I& index) const;
+	const T& operator[](const I& index) const;
 
 };
 
