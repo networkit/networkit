@@ -82,6 +82,10 @@ double Graph::totalEdgeWeight() const {
 	return total;
 }
 
+void Graph::removeEdge(node u, node v) {
+	stinger_remove_edge_pair(this->stingerG, this->defaultEdgeType, u, v);
+}
+
 node Graph::lastNode() const {
 	return this->numberOfNodes();
 }

@@ -120,6 +120,13 @@ public:
 	 */
 	void insertEdge(node u, node v, double weight=defaultEdgeWeight, int64_t type=defaultEdgeType, int64_t timestamp=defaultTimeStamp);
 
+
+	/**
+	 * Remove an unirected edges.
+	 */
+	void removeEdge(node u, node v);
+
+
 	/**
 	 * Check if undirected edge {u,v} exists in G
 	 *
@@ -183,7 +190,7 @@ public:
 
 
 
-	template<typename Callback> void forallEdges(bool parallel, Callback callback);
+	template<typename Callback> void forallEdges(Callback callback);
 
 
 
@@ -192,12 +199,15 @@ public:
 } /* namespace EnsembleClustering */
 
 template<typename Callback>
-inline void EnsembleClustering::Graph::forallEdges(bool parallel, Callback callback) {
+inline void EnsembleClustering::Graph::forallEdges(Callback func) {
 	STINGER_FORALL_EDGES_BEGIN(this->stingerG, this->defaultEdgeType) {
 		node u = STINGER_EDGE_SOURCE;
 		node v = STINGER_EDGE_DEST;
+		if (u < v) {
+			// consider only undirected edges
+			func(u, v);
+		}
 		// call the supplied callback
-		callback(u, v);
 	} STINGER_FORALL_EDGES_END();
 
 }

@@ -31,7 +31,7 @@ TEST_F(ClusteringTest, testModularity) {
 
 	int n = 1000;
 
-	DEBUG("testing modularity of clustering of graph with " << n << " nodes");
+	DEBUG("testing modularity on clustering of complete graph with " << n << " nodes");
 
 
 	Graph G = graphGenerator.makeCompleteGraph(n);
@@ -51,7 +51,8 @@ TEST_F(ClusteringTest, testModularity) {
 
 
 	EXPECT_EQ(modOne, 0.0) << "1-clustering should have modularity of 0.0";
-	ASSERT_LE(modSingleton, 0.0) << "singleton clustering should have modularity less than 0.0";
+	EXPECT_LE(modSingleton, 0.0) << "singleton clustering should have modularity less than 0.0";
+	EXPECT_NE(modSingleton, -1* std::numeric_limits<double>::infinity()) << "modularity of singleton clustering became negative infinity - why?";
 
 }
 

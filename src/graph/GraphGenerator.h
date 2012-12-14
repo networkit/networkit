@@ -22,7 +22,7 @@ public:
 	virtual ~GraphGenerator();
 
 	/**
-	 * Generate a random graph according to the Erdšs-Renyi model.
+	 * Generate a random graph according to the Erdos-Renyi model.
 	 *
 	 * @param[in]	n	number of nodes
 	 * @param[in]	p	edge probability
