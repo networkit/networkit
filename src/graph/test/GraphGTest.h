@@ -163,5 +163,22 @@ TEST_F(GraphGTest, testLambdaIncidentEdgeIteration) {
 }
 
 
+TEST_F(GraphGTest, testNodeBFS) {
+
+	Graph G;
+	node v = 1;
+	G.insertEdge(v, 2);
+	G.insertEdge(v, 3);
+	G.insertEdge(v, 4);
+
+	int nodeCount = 0;
+	G.breadthFirstNodesFrom(v, [&](node w) {
+		nodeCount += 1;
+	});
+
+	EXPECT_EQ(4, nodeCount) << "4 nodes should have been visited by BFS";
+}
+
+
 } /* namespace EnsembleClustering */
 #endif /* GRAPHGTEST_H_ */

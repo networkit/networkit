@@ -11,11 +11,13 @@
 #include <utility>
 #include <cinttypes>
 #include <string>
+#include <queue>
 
 extern "C" {
 #include "stinger.h"
 }
 
+#include "../aux/log.h"
 
 namespace EnsembleClustering {
 
@@ -218,6 +220,20 @@ public:
 	template<typename Callback> void forallEdgesOf(node v, Callback func);
 
 
+	/**
+	 * Iterate over nodes in breadth-first search order starting from r until connected component
+	 * of r has been visited.
+	 */
+	template<typename Callback> void breadthFirstNodesFrom(node r, Callback func);
+
+
+	/**
+	 * Iterate over edges in breadth-first search order starting from node r until connected component
+	 * of r has been visited.
+	 */
+	template<typename Callback> void breadthFirstEdgesFrom(node r, Callback func);
+
+
 };
 
 } /* namespace EnsembleClustering */
@@ -307,6 +323,61 @@ inline void EnsembleClustering::Graph::forallEdgesOf(node u, Callback func) {
 		// call edge function
 		func(v, w);
 	} STINGER_FORALL_EDGES_OF_VTX_END();
+}
+
+template<typename Callback>
+inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, Callback func) {
+	std::queue<node> q;
+	int64_t n = this->numberOfNodes();
+	bool marked[n+1];
+	for (int64_t i = 0; i <= n+1; ++i) {
+		marked[i] = false;
+	}
+
+	q.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = q.front();
+		q.pop();
+		// apply function
+		func(u);
+		STINGER_FORALL_EDGES_OF_VTX_BEGIN(this->stingerG, u) {
+			// filtering edges is not necessary because only out-edges are considered by stinger
+			node v = STINGER_EDGE_DEST;
+			if (! marked[v]) {
+				DEBUG("pushing node " << v);
+				q.push(v);
+				marked[v] = true;
+			}
+		} STINGER_FORALL_EDGES_OF_VTX_END();
+
+	} while (! q.empty());
+
+}
+
+template<typename Callback>
+inline void EnsembleClustering::Graph::breadthFirstEdgesFrom(node r, Callback func) {
+	std::queue<node> q;
+	int64_t n = this->numberOfNodes();
+	bool marked[n+1];
+	for (int64_t i = 0; i <= n+1; ++i) {
+		marked[i] = false;
+	}
+
+	q.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = q.front();
+		q.pop();
+		STINGER_FORALL_EDGES_OF_VTX_BEGIN(this->stingerG, u) {
+			// filtering edges is not necessary because only out-edges are considered by stinger
+			node v = STINGER_EDGE_DEST;
+			// apply edge function
+			func(u, v);
+			q.push(v);
+			marked[v] = true;
+		} STINGER_FORALL_EDGES_OF_VTX_END();
+	} while (! q.empty());
 }
 
 #endif /* GRAPH_H_ */
