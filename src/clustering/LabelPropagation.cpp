@@ -39,27 +39,53 @@ Clustering& LabelPropagation::run(Graph& G) {
 		majorityLabelCount = 0;
 		nIterations += 1;
 
+
 		// TODO: in random order
 		G.forallNodes([&](node v){
-			// count the labels in the neighborhood of v and select the most frequent one
+
 			int64_t degV = G.degree(v);
-			IndexMap<label, int64_t> neighborLabelCounts(n); // neighborLabelCounts[v] maps label -> frequency in the neighbors of v
+			// ignore isolated nodes TODO: correct?
+			if (degV > 0) {
 
-			// TODO: forall neighbors of v
-			//		count labels
+				std::map<label, int64_t> labelCounts; // neighborLabelCounts maps label -> frequency in the neighbors
 
-			label mostFrequent;
+				// count the labels in the neighborhood of v and select the most frequent one
+				G.forallNeighborsOf(v, [&](node w) {
+					label cw = labels->clusterOf(w);
+					if (labelCounts.find(cw) == labelCounts.end()) {
+						labelCounts[cw] = 0;
+					}
+					labelCounts[cw] += 1;
+				});
 
-
-			labels[v] = mostFrequent;
-			// stop if v has label of at least half of its neighbors
-			label dominantLabel = 0; // = None
-
-			if (dominantLabel != 0) {
-				if ((*labels)[v] == dominantLabel) {
-					majorityLabelCount += 1;
+				// get most frequent label
+				label mostFrequent = 0; // TODO: check if 0 occurs in final clustering
+				int64_t max = 0;
+				for (auto it = labelCounts.begin(); it != labelCounts.end(); it++) {
+					if (it->second > max) {
+						max = it->second;
+						mostFrequent = it->first;
+					}
 				}
-			} // if no label dominant, do nothing
+
+				labels[v] = mostFrequent;
+				// stop if v has label of at least half of its neighbors
+				label dominantLabel = 0; // = None
+				// try to find dominant label
+				DEBUG("labelCounts size: " << labelCounts.size());
+				for (auto it2 = labelCounts.begin(); it2 != labelCounts.end(); it2++) {
+						DEBUG("labelCounts entry: " << it2->first << ":" << it2->second);
+						if (it2->second > (degV / 2.0)) {
+						dominantLabel = it2->first;
+					}
+				}
+
+				if (dominantLabel != 0) {
+					if ((*labels)[v] == dominantLabel) {
+						majorityLabelCount += 1;
+					}
+				} // if no label dominant, do nothing
+			}
 
 		});
 

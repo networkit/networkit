@@ -16,6 +16,7 @@
 #include "../Modularity.h"
 #include "../ClusteringGenerator.h"
 #include "../../graph/GraphGenerator.h"
+#include "../LabelPropagation.h"
 
 namespace EnsembleClustering {
 
@@ -54,6 +55,18 @@ TEST_F(ClusteringTest, testModularity) {
 	EXPECT_GE(0.0, modSingleton) << "singleton clustering should have modularity less than 0.0";
 	EXPECT_NE(-1* std::numeric_limits<double>::infinity(), modSingleton) << "modularity of singleton clustering became negative infinity - why?";
 
+}
+
+
+TEST_F(ClusteringTest, testLabelPropagation) {
+	GraphGenerator graphGenerator;
+	int n = 10;
+	Graph G = graphGenerator.makeCompleteGraph(n);
+
+	LabelPropagation lp;
+	Clustering zeta = lp.run(G);
+
+	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
 }
 
 } /* namespace EnsembleClustering */

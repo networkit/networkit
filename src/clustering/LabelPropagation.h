@@ -12,8 +12,12 @@
 #include "Clustering.h"
 
 #include <vector>
+#include <map>
+#include <unordered_map>
+
 #include "../graph/NodeMap.h"
 #include "../aux/IndexMap.h"
+#include "../aux/log.h"
 
 namespace EnsembleClustering {
 
