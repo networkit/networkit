@@ -41,8 +41,7 @@ std::ostream& operator<<(std::ostream& os, const std::map<K, V>& m)
     os << "{ ";
     for (auto& kv : m)
     {
-        if (kv != m.begin()) os << ", ";
-        os << kv->first << ": " << kv->second;
+        os << kv.first << ": " << kv.second << ", ";
     }
     return os << " }";
 }

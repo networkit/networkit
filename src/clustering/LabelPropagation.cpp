@@ -49,6 +49,8 @@ Clustering& LabelPropagation::run(Graph& G) {
 
 				std::map<label, int64_t> labelCounts; // neighborLabelCounts maps label -> frequency in the neighbors
 
+				std::cout << "new labelCounts: " << labelCounts << std::endl;
+
 				// count the labels in the neighborhood of v and select the most frequent one
 				G.forallNeighborsOf(v, [&](node w) {
 					label cw = labels->clusterOf(w);
@@ -57,6 +59,9 @@ Clustering& LabelPropagation::run(Graph& G) {
 					}
 					labelCounts[cw] += 1;
 				});
+
+				std::cout << "labelCounts: " << labelCounts << std::endl;
+
 
 				// get most frequent label
 				label mostFrequent = 0; // TODO: check if 0 occurs in final clustering
