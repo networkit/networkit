@@ -179,6 +179,23 @@ TEST_F(GraphGTest, testNodeBFS) {
 	EXPECT_EQ(4, nodeCount) << "4 nodes should have been visited by BFS";
 }
 
+TEST_F(GraphGTest, testEdgeBFS) {
+
+	Graph G;
+	node v = 1;
+	G.insertEdge(v, 2);
+	G.insertEdge(v, 3);
+	G.insertEdge(v, 4);
+	G.insertEdge(4, 3);
+
+	int edgeCount = 0;
+	G.breadthFirstEdgesFrom(v, [&](node x, node y) {
+		edgeCount += 1;
+	});
+
+	EXPECT_EQ(4, edgeCount) << "4 edges should have been visited by BFS";
+}
+
 
 } /* namespace EnsembleClustering */
 #endif /* GRAPHGTEST_H_ */

@@ -19,6 +19,14 @@ EnsembleClusterer::~EnsembleClusterer() {
 }
 
 Clustering& EnsembleClusterer::run(Graph& G) {
+
+	for (Clusterer& clusterer : baseClusterers) {
+		Clustering zeta = clusterer.run(G);
+		baseClusterings.push_back(zeta);
+	}
+
+	// TODO: implement
+
 }
 
 } /* namespace EnsembleClustering */

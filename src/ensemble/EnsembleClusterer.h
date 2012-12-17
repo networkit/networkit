@@ -8,9 +8,12 @@
 #ifndef ENSEMBLECLUSTERER_H_
 #define ENSEMBLECLUSTERER_H_
 
-#include "../clustering/Clusterer.h"
-
 #include <vector>
+
+
+#include "../clustering/Clusterer.h"
+#include "../clustering/Clustering.h"
+#include "../overlap/Overlapper.h"
 
 namespace EnsembleClustering {
 
@@ -19,6 +22,8 @@ class EnsembleClusterer: public EnsembleClustering::Clusterer {
 protected:
 
 	std::vector<Clusterer> baseClusterers;
+	std::vector<Clustering> baseClusterings;
+	Overlapper overlapper;
 
 public:
 
