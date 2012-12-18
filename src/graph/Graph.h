@@ -157,9 +157,33 @@ public:
 
 
 	/**
+	 * Set the weight of an edge
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	inline void setWeight(node u, node v, double weight) {
+		// set for both directed edges
+		stinger_set_edgeweight(this->stingerG, u, v, this->defaultEdgeType, weight);
+		stinger_set_edgeweight(this->stingerG, v, u, this->defaultEdgeType, weight);
+	}
+
+	/**
+	 * Set the weight of a node.
+	 */
+	inline void setWeight(node u, double weight) {
+		stinger_set_vweight(this->stingerG, u, weight);
+	}
+
+
+	/**
 	 * Get the sum of the weight of all edges.
 	 */
 	double totalEdgeWeight() const;
+
+
+
 
 
 	/**
@@ -171,6 +195,12 @@ public:
 	 * Return the number of edges in the graph.
 	 */
 	int64_t numberOfEdges() const;
+
+
+	/**
+	 * Add a new node to the graph and return it.
+	 */
+	node addNode();
 
 	/**
 	 * Return the number of (non-isolated) nodes in the graph.
@@ -190,6 +220,15 @@ public:
 	 * Get the last node index (for iteration over all nodes).
 	 */
 	node lastNode() const;
+
+
+	/********** ATTRIBUTES **************/
+
+	// TODO: template <typename T> void addNodeMap(NodeMap<T>& map)
+
+
+
+	/********** ITERATION / TRAVERSAL ***********/
 
 
 
