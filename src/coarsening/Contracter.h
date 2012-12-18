@@ -22,7 +22,6 @@ public:
 
 	virtual ~Contracter();
 
-	virtual node contract(node u, node v);
 };
 
 

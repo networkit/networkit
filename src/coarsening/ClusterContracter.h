@@ -9,13 +9,20 @@
 #define CLUSTERCONTRACTER_H_
 
 #include "Contracter.h"
+#include "../clustering/Clustering.h";
+#include "../aux/IndexMap.h"
 
 namespace EnsembleClustering {
 
 class ClusterContracter: public Contracter {
+
 public:
+
 	ClusterContracter();
+
 	virtual ~ClusterContracter();
+
+	virtual Graph run(Graph& G, Clustering& zeta);
 };
 
 

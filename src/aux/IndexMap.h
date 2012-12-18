@@ -19,8 +19,9 @@ template <typename I, typename T> class IndexMap {
 
 protected:
 
+	// TODO: change this to vector
 	T* array; //!< array of size (n+1).  array[0] is not a valid entry, since node indices are 1-based
-	T defaultValue;
+	T defaultValue; //!< default value
 	int64_t n;	//<! number of indices
 
 public:
@@ -52,6 +53,15 @@ public:
 	 */
 	const T& operator[](const I& index) const;
 
+
+	/**
+	 * Get the number of 1-based entries in this map.
+	 */
+	inline int64_t numberOfEntries() const;
+
+
+
+
 };
 
 } /* namespace EnsembleClustering */
@@ -68,7 +78,7 @@ inline EnsembleClustering::IndexMap<I, T>::IndexMap(int64_t n, T defaultValue) {
 	this->n = n;
 	this->defaultValue = defaultValue;
 	this->array = new T[n+1];
-	for (int64_t i = 1; i < n+1; ++i) {
+	for (int64_t i = 1; i <= n; ++i) {
 		this->array[i] = defaultValue;
 	}
 }
@@ -86,6 +96,12 @@ inline T& EnsembleClustering::IndexMap<I, T>::operator [](const I& index) {
 template<typename I, typename T>
 inline const T& EnsembleClustering::IndexMap<I, T>::operator [](const I& index) const {
 	return this->array[index];
+}
+
+template<typename I, typename T>
+inline int64_t EnsembleClustering::IndexMap<I, T>::numberOfEntries() const {
+	// assert (this->n == (this->array.size() - 1));
+	return this->n;
 }
 
 /*** Implementation ***/

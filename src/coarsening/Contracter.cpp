@@ -18,7 +18,5 @@ Contracter::~Contracter() {
 	// TODO Auto-generated destructor stub
 }
 
-node Contracter::contract(node u, node v) {
-}
 
 }

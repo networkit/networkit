@@ -20,7 +20,7 @@ RegionGrowingOverlapper::~RegionGrowingOverlapper() {
 
 void RegionGrowingOverlapper::run(Graph& G, std::vector<Clustering> clusterings) {
 	int64_t n = G.numberOfNodes();
-	Clustering zetaOverlap(n);
+	Clustering core(n); // "core groups" resulting from overlap of all clustering
 
 	node r;
 	G.breadthFirstEdgesFrom(r, [&](node u, node v) {
@@ -29,7 +29,7 @@ void RegionGrowingOverlapper::run(Graph& G, std::vector<Clustering> clusterings)
 			together = together && (zeta.clusterOf(u) == zeta.clusterOf(v));
 		}
 		if (together) {
-			zetaOverlap.mergeClusters(zetaOverlap.clusterOf(u), zetaOverlap.clusterOf(v));
+			core.mergeClusters(core.clusterOf(u), core.clusterOf(v));
 		}
 	});
 

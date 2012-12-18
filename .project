@@ -3,6 +3,7 @@
 	<name>EnsembleClustering</name>
 	<comment></comment>
 	<projects>
+		<project>gtest</project>
 		<project>STINGER</project>
 	</projects>
 	<buildSpec>

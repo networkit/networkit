@@ -73,12 +73,11 @@ int64_t Graph::degree(node u) const {
 	return deg;
 }
 
-double Graph::totalEdgeWeight() const {
-	// TODO: optimize
+double Graph::totalEdgeWeight() {
 	double total = 0.0;
-	READ_ONLY_FORALL_EDGES_BEGIN((*this)) {
-		total += this->weight(EDGE_SOURCE, EDGE_DEST);
-	} READ_ONLY_FORALL_EDGES_END();
+	this->forallEdges([&](node u, node v) {
+		total += this->weight(u, v);
+	}, "readonly");
 	return total;
 }
 

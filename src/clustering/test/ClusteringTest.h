@@ -44,7 +44,10 @@ TEST_F(ClusteringTest, testModularity) {
 
 	Modularity modularity(G);
 
+	DEBUG("calculating modularity for singleton clustering");
 	double modSingleton = modularity.getQuality(singleton);
+
+	DEBUG("calculating modularity for 1-clustering");
 	double modOne = modularity.getQuality(one);
 
 	DEBUG("mod(singleton-clustering) = " << modSingleton);
@@ -58,16 +61,17 @@ TEST_F(ClusteringTest, testModularity) {
 }
 
 
-TEST_F(ClusteringTest, testLabelPropagation) {
-	GraphGenerator graphGenerator;
-	int n = 10;
-	Graph G = graphGenerator.makeCompleteGraph(n);
+//TEST_F(ClusteringTest, testLabelPropagation) {
+//	GraphGenerator graphGenerator;
+//	int n = 10;
+//	Graph G = graphGenerator.makeCompleteGraph(n);
+//
+//	LabelPropagation lp;
+//	Clustering zeta = lp.run(G);
+//
+//	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
+//}
 
-	LabelPropagation lp;
-	Clustering zeta = lp.run(G);
-
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
-}
 
 } /* namespace EnsembleClustering */
 #endif /* CLUSTERINGTEST_H_ */

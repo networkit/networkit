@@ -8,7 +8,10 @@
 #ifndef CLUSTERING_H_
 #define CLUSTERING_H_
 
+#include <set>
+
 #include "../graph/NodeMap.h"
+
 
 namespace EnsembleClustering {
 
@@ -19,6 +22,13 @@ class Clustering: public NodeMap<cluster> {
 protected:
 
 	cluster nextCluster;	//!< next free cluster id for new cluster
+
+	inline cluster getNextCluster() {
+		// TODO: performance - is this a bottleneck?
+		cluster c = this->nextCluster;
+		this->nextCluster++;
+		return c;
+	}
 
 public:
 
@@ -53,7 +63,7 @@ public:
 	 * is contained.
 	 */
 	inline cluster& clusterOf(node u) {
-		return (*this)[u];
+		return this->array[u];
 	}
 
 	/**
@@ -83,22 +93,24 @@ public:
 	 */
 	bool isProper(const Graph& G);
 
-	/**
-	 * Get the lowest cluster id;
-	 */
-	cluster firstCluster();
 
 	/**
-	 * Get the highest cluster id that has been assigned.
-	 * This gives an upper bound for the number of clusters in this clustering,
-	 * although not the actual number of clusters since clusters can become empty.
+	 * Get the current number of clusters in this clustering.
 	 */
-	cluster lastCluster();
+	int64_t numberOfClusters();
+
 
 	/**
-	 * Get iterator for all nodes in a cluster.
+	 * Return an upper bound for the cluster ids that have been assigned.
 	 */
-	// TODO: virtual Clustering::iterator iterCluster(cluster c);
+	cluster upperBound() const;
+
+	/**
+	 * Return a lower bound for the cluster ids that have been assigned.
+	 */
+	cluster lowerBound() const;
+
+
 };
 
 } /* namespace EnsembleClustering */

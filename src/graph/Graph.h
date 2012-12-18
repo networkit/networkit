@@ -149,7 +149,8 @@ public:
 
 	/**
 	 * Return edge weight.
-	 * Equivalent to getWeight(edge uv)
+	 *
+	 * Return 0 if edge does not exist.
 	 */
 	inline double weight(node u, node v) const {
 		return stinger_edgeweight(this->stingerG, u, v, this->defaultEdgeType);
@@ -180,7 +181,7 @@ public:
 	/**
 	 * Get the sum of the weight of all edges.
 	 */
-	double totalEdgeWeight() const;
+	double totalEdgeWeight();
 
 
 

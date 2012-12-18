@@ -25,8 +25,7 @@ void Clustering::addToCluster(cluster c, node u) {
 }
 
 void Clustering::toSingleton(node u) {
-	(*this)[u] = this->nextCluster;
-	this->nextCluster++;
+	(*this)[u] = this->getNextCluster();
 }
 
 void Clustering::moveToCluster(cluster c, node u) {
@@ -35,8 +34,7 @@ void Clustering::moveToCluster(cluster c, node u) {
 }
 
 void Clustering::mergeClusters(cluster c, cluster d) {
-	cluster e = this->nextCluster;
-	this->nextCluster++;
+	cluster e = this->getNextCluster();
 	for (node u = 1; u <= this->n; ++u) {
 		if (((*this)[u] == c) || (*this)[u] == d) {
 			this->moveToCluster(e, u);
@@ -50,12 +48,27 @@ bool Clustering::isProper(const Graph& G) {
 	// TODO: Clustering::isProper
 }
 
-cluster Clustering::firstCluster() {
-	return 1;
+
+int64_t Clustering::numberOfClusters() {
+	int64_t k = 0; // number of clusters
+	std::set<cluster> activeClusters;
+	for (int64_t i = 1; i <= this->n; ++i) {
+		cluster c = this->array[i];
+		if (activeClusters.find(c) == activeClusters.end()) {
+			k++;
+			activeClusters.insert(c);
+		}
+	}
+	return k;
 }
 
-cluster Clustering::lastCluster() {
-	return this->nextCluster - 1;
+
+cluster Clustering::upperBound() const {
+	return this->nextCluster;
+}
+
+cluster Clustering::lowerBound() const {
+	return 1;
 }
 
 } /* namespace EnsembleClustering */
