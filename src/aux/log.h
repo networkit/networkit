@@ -14,6 +14,7 @@
 
 #include "log4cxx/logger.h"
 
+namespace Aux {
 
 // prepends the function name
 #define LOCATION "in " << __PRETTY_FUNCTION__ << ": "
@@ -62,6 +63,7 @@ std::ostream& operator<<(std::ostream& os, const std::unordered_map<K, V>& m)
 }
 
 
+} // end namespace
 
 
 

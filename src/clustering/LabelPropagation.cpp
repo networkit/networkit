@@ -20,6 +20,9 @@ LabelPropagation::~LabelPropagation() {
 
 Clustering& LabelPropagation::run(Graph& G) {
 
+	// TODO: remove after debugging
+	using Aux::operator<<; // map printer
+
 	typedef cluster label;	// a label is the same as a cluster id
 
 	int64_t n = G.numberOfNodes();
