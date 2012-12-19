@@ -81,6 +81,12 @@ public:
 	 */
 	void toSingleton(node u);
 
+
+	/**
+	 * Assigns every node to a singleton cluster.
+	 */
+	void allToSingletons();
+
 	/**
 	 * Assigns the nodes from both clusters to a new cluster.
 	 */

@@ -73,6 +73,13 @@ cluster Clustering::upperBound() const {
 	return this->nextCluster;
 }
 
+void Clustering::allToSingletons() {
+	#pragma omp parallel for
+	for (node u = 1; u <= this->n; ++u) {
+		this->array[u] = u;
+	}
+}
+
 cluster Clustering::lowerBound() const {
 	return 1;
 }

@@ -23,7 +23,6 @@ protected:
 
 	std::vector<Clusterer> baseClusterers;
 	std::vector<Clustering> baseClusterings;
-	Overlapper overlapper;
 
 public:
 
