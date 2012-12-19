@@ -62,7 +62,7 @@ public:
 	 * Return the cluster (id) in which a node
 	 * is contained.
 	 */
-	inline cluster& clusterOf(node u) {
+	inline cluster& clusterOf(node u) const {
 		return this->array[u];
 	}
 
@@ -91,7 +91,7 @@ public:
 	 * the graph, i.e. a disjoint partition of the whole node set.
 	 *
 	 */
-	bool isProper(const Graph& G);
+	bool isProper(Graph& G);
 
 
 	/**
@@ -109,6 +109,7 @@ public:
 	 * Return a lower bound for the cluster ids that have been assigned.
 	 */
 	cluster lowerBound() const;
+
 
 
 };

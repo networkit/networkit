@@ -56,21 +56,26 @@ TEST_F(ClusteringTest, testModularity) {
 
 	EXPECT_EQ(0.0, modOne) << "1-clustering should have modularity of 0.0";
 	EXPECT_GE(0.0, modSingleton) << "singleton clustering should have modularity less than 0.0";
-	EXPECT_NE(-1* std::numeric_limits<double>::infinity(), modSingleton) << "modularity of singleton clustering became negative infinity - why?";
 
 }
 
 
-//TEST_F(ClusteringTest, testLabelPropagation) {
-//	GraphGenerator graphGenerator;
-//	int n = 10;
-//	Graph G = graphGenerator.makeCompleteGraph(n);
-//
-//	LabelPropagation lp;
-//	Clustering zeta = lp.run(G);
-//
-//	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
-//}
+TEST_F(ClusteringTest, testLabelPropagation) {
+	GraphGenerator graphGenerator;
+	int n = 100;
+	Graph G = graphGenerator.makeErdosRenyiGraph(n, 0.2);
+
+	LabelPropagation lp;
+	Clustering zeta = lp.run(G);
+
+	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
+
+	Modularity modularity(G);
+	double mod = modularity.getQuality(zeta);
+	DEBUG("modularity produced by LabelPropagation: " << mod);
+	EXPECT_GE(1.0, mod) << "valid modularity values are in [-0.5, 1]";
+	EXPECT_LE(-0.5, mod) << "valid modularity values are in [-0.5, 1]";
+}
 
 
 } /* namespace EnsembleClustering */

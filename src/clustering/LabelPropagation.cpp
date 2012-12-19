@@ -32,6 +32,8 @@ Clustering& LabelPropagation::run(Graph& G) {
 	Clustering* labels = new Clustering(n);
 	G.forallNodes([&](node v){
 		labels->toSingleton(v);
+		// DEBUG
+		cluster c = labels->clusterOf(v);
 	});
 
 	int64_t majorityLabelCount = 0;	// number of nodes which already have the majority label
@@ -41,6 +43,7 @@ Clustering& LabelPropagation::run(Graph& G) {
 	while (majorityLabelCount != n) {
 		majorityLabelCount = 0;
 		nIterations += 1;
+		DEBUG("iteration number " << nIterations);
 
 
 		// TODO: in random order
@@ -52,7 +55,6 @@ Clustering& LabelPropagation::run(Graph& G) {
 
 				std::map<label, int64_t> labelCounts; // neighborLabelCounts maps label -> frequency in the neighbors
 
-				std::cout << "new labelCounts: " << labelCounts << std::endl;
 
 				// count the labels in the neighborhood of v and select the most frequent one
 				G.forallNeighborsOf(v, [&](node w) {
@@ -62,9 +64,6 @@ Clustering& LabelPropagation::run(Graph& G) {
 					}
 					labelCounts[cw] += 1;
 				});
-
-				std::cout << "labelCounts: " << labelCounts << std::endl;
-
 
 				// get most frequent label
 				label mostFrequent = 0; // TODO: check if 0 occurs in final clustering
@@ -76,13 +75,21 @@ Clustering& LabelPropagation::run(Graph& G) {
 					}
 				}
 
-				labels[v] = mostFrequent;
+				TRACE("updating label of " << v << " from " << labels->clusterOf(v) << " to " << mostFrequent);
+				labels->moveToCluster(mostFrequent, v);
+				// DEBUG
+//				std::cout << "updated labels: ";
+//				std::cout << "{";
+//				for (node v = 1; v <= n; ++v) {
+//					std::cout << v << "->" << labels->clusterOf(v) << ", ";
+//				}
+//				std::cout << "}" << std::endl;
+				// DEBUG
+
 				// stop if v has label of at least half of its neighbors
 				label dominantLabel = 0; // = None
 				// try to find dominant label
-				DEBUG("labelCounts size: " << labelCounts.size());
 				for (auto it2 = labelCounts.begin(); it2 != labelCounts.end(); it2++) {
-						DEBUG("labelCounts entry: " << it2->first << ":" << it2->second);
 						if (it2->second > (degV / 2.0)) {
 						dominantLabel = it2->first;
 					}

@@ -44,8 +44,14 @@ void Clustering::mergeClusters(cluster c, cluster d) {
 
 
 
-bool Clustering::isProper(const Graph& G) {
-	// TODO: Clustering::isProper
+bool Clustering::isProper(Graph& G) {
+	// test whether each node has been assigned to a cluster
+	G.forallNodes([&](node v) {
+		cluster c = this->clusterOf(v);
+		assert (c <= this->upperBound());
+	});
+	bool success = true;
+	return success;
 }
 
 
@@ -71,4 +77,8 @@ cluster Clustering::lowerBound() const {
 	return 1;
 }
 
+
+
 } /* namespace EnsembleClustering */
+
+
