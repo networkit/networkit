@@ -14,6 +14,7 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <algorithm>
 
 #include "../graph/NodeMap.h"
 #include "../aux/IndexMap.h"

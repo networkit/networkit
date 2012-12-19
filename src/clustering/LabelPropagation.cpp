@@ -45,10 +45,14 @@ Clustering& LabelPropagation::run(Graph& G) {
 		nIterations += 1;
 		DEBUG("iteration number " << nIterations);
 
-
-		// TODO: in random order
+		std::vector<node> shuffledNodes;
+		shuffledNodes.resize(n);
 		G.forallNodes([&](node v){
+			shuffledNodes.push_back(v);
+		});
+		std::random_shuffle(shuffledNodes.begin(), shuffledNodes.end());
 
+		for (node v : shuffledNodes) {
 			int64_t degV = G.degree(v);
 			// ignore isolated nodes TODO: correct?
 			if (degV > 0) {
@@ -77,14 +81,6 @@ Clustering& LabelPropagation::run(Graph& G) {
 
 				TRACE("updating label of " << v << " from " << labels->clusterOf(v) << " to " << mostFrequent);
 				labels->moveToCluster(mostFrequent, v);
-				// DEBUG
-//				std::cout << "updated labels: ";
-//				std::cout << "{";
-//				for (node v = 1; v <= n; ++v) {
-//					std::cout << v << "->" << labels->clusterOf(v) << ", ";
-//				}
-//				std::cout << "}" << std::endl;
-				// DEBUG
 
 				// stop if v has label of at least half of its neighbors
 				label dominantLabel = 0; // = None
@@ -101,8 +97,7 @@ Clustering& LabelPropagation::run(Graph& G) {
 					}
 				} // if no label dominant, do nothing
 			}
-
-		});
+		} // end for shuffled nodes
 
 	}
 
