@@ -10,6 +10,7 @@
 
 #include "Graph.h"
 #include "../aux/RandomProbability.h"
+#include "../clustering/Clustering.h"
 
 namespace EnsembleClustering {
 
@@ -31,14 +32,30 @@ public:
 
 
 	/**
-	 * Gemerate a graph whose nodes and edges form a circle.
+	 * Generate a graph whose nodes and edges form a circle.
 	 *
 	 * @param[in]	n	number of nodes
 	 */
 	Graph& makeCircularGraph(int64_t n);
 
 
+	/**
+	 * Generate a complete graph.
+	 *
+	 * @param[in]	n	number of nodes
+	 */
 	Graph& makeCompleteGraph(int64_t n);
+
+
+	/**
+	 * Creates a clustered random graph:
+	 *
+	 * @param[in]	n	number of nodes
+	 * @param[in]	k	number of clusters
+	 * @param[in]	pin		intra-cluster edge probability
+	 * @param[in]	pout	inter-cluster edge probability
+	 */
+	Graph& makeClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout);
 
 };
 

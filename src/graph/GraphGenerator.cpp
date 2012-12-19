@@ -53,4 +53,39 @@ Graph& GraphGenerator::makeCompleteGraph(int64_t n) {
 	return *G;
 }
 
+Graph& GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout) {
+	assert(pin >= pout);
+
+	Graph* G = new Graph();
+	RandomProbability randP;
+	// assign nodes evenly to clusters
+	Clustering zeta(n);
+	cluster c = 1;
+	for (node v = 1; v <= n; ++v) {
+		zeta.addToCluster(c, v);
+		c++;
+		if (c > k) {
+			c = 1;
+		}
+	}
+	assert (zeta.numberOfClusters() == k);
+
+	// TODO: add nodes first?
+	for (node u = 1; u <= n; ++u) {
+		for (node v = u; v <= n; ++v) {
+			if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
+				if (randP.generate() <= pin) {
+					G->insertEdge(u, v);
+				}
+			} else {
+				if (randP.generate() <= pout) {
+					G->insertEdge(u, v);
+				}
+			}
+		}
+	}
+
+	return *G;
+}
+
 } /* namespace EnsembleClustering */
