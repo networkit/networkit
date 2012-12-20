@@ -17,4 +17,5 @@ QualityMeasure::~QualityMeasure() {
 	// TODO Auto-generated destructor stub
 }
 
+
 } /* namespace EnsembleClustering */

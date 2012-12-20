@@ -27,7 +27,7 @@ public:
 
 	virtual ~QualityMeasure();
 
-	virtual double getQuality(Clustering& zeta) =0;
+	virtual double getQuality(const Clustering& zeta) =0;
 };
 
 } /* namespace EnsembleClustering */

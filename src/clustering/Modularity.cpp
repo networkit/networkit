@@ -33,7 +33,7 @@ void Modularity::precompute() {
 	}
 }
 
-double Modularity::getQuality(Clustering& zeta) {
+double Modularity::getQuality(const Clustering& zeta) {
 
 	int64_t n = G->numberOfNodes();
 
