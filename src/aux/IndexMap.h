@@ -22,6 +22,7 @@ protected:
 	// TODO: change this to vector
 	T* array; //!< array of size (n+1).  array[0] is not a valid entry, since node indices are 1-based
 	T defaultValue; //!< default value
+	T nullValue; //!< denotes absence of a value
 	int64_t n;	//<! number of indices
 
 public:
@@ -60,6 +61,12 @@ public:
 	inline int64_t numberOfEntries() const;
 
 
+	/**
+	 * Check whether map contains a valid entry for index.
+	 */
+	inline bool contains(I index) const;
+
+
 
 
 };
@@ -69,15 +76,21 @@ public:
 template<typename I, typename T>
 inline EnsembleClustering::IndexMap<I, T>::IndexMap(int64_t n) {
 	this->n = n;
-	this->defaultValue = defaultValue;
+	this->defaultValue = 0;
+	this->nullValue = 0;
 	this->array = new T[n+1];
+	for (int64_t i = 1; i <= n; ++i) {
+		this->array[i] = this->nullValue;
+	}
 }
 
 template<typename I, typename T>
 inline EnsembleClustering::IndexMap<I, T>::IndexMap(int64_t n, T defaultValue) {
 	this->n = n;
 	this->defaultValue = defaultValue;
+	this->nullValue = 0;
 	this->array = new T[n+1];
+	this->array[0] = 0;
 	for (int64_t i = 1; i <= n; ++i) {
 		this->array[i] = defaultValue;
 	}
@@ -102,6 +115,12 @@ template<typename I, typename T>
 inline int64_t EnsembleClustering::IndexMap<I, T>::numberOfEntries() const {
 	// assert (this->n == (this->array.size() - 1));
 	return this->n;
+}
+
+template<typename I, typename T>
+inline bool EnsembleClustering::IndexMap<I, T>::contains(I index) const {
+	bool cont = (this->array[index] != this->nullValue);
+	return cont;
 }
 
 /*** Implementation ***/
