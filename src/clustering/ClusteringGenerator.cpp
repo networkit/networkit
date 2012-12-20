@@ -21,9 +21,7 @@ ClusteringGenerator::~ClusteringGenerator() {
 Clustering& ClusteringGenerator::makeSingletonClustering(const Graph& G) {
 	int64_t n = G.numberOfNodes();
 	Clustering* zeta = new Clustering(n);
-	for (node v = G.firstNode(); v <= n; ++v) {
-		zeta->toSingleton(v);
-	}
+	zeta->allToSingletons();
 	return *zeta;
 }
 
