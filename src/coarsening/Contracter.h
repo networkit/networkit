@@ -22,6 +22,7 @@ public:
 
 	virtual ~Contracter();
 
+
 };
 
 

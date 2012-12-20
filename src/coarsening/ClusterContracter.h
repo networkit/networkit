@@ -22,7 +22,7 @@ public:
 
 	virtual ~ClusterContracter();
 
-	virtual Graph run(Graph& G, Clustering& zeta);
+	virtual Graph& run(Graph& G, Clustering& zeta);
 };
 
 
