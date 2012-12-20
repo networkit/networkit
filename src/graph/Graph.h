@@ -87,6 +87,8 @@ protected:
 //						//!< Needed to keep track of the number of (possibly isolated) nodes,
 //						//!< since stinger does not store isolated nodes
 
+	node nextNode;	//!< the next free node index for adding a node
+
 
 public:
 	/** default parameters ***/
@@ -105,6 +107,8 @@ public:
 
 	/**
 	 * Initialize with STINGER graph.
+	 *
+	 * DEPRECATED: may set Graph to an inconsistent state
 	 *
 	 * @param[in]	stingerG	a STINGER graph struct
 	 */

@@ -12,6 +12,7 @@ namespace EnsembleClustering {
 
 Graph::Graph() {
 	this->stingerG = stinger_new();
+	this->nextNode = 1;
 }
 
 Graph::~Graph() {
@@ -86,7 +87,10 @@ void Graph::removeEdge(node u, node v) {
 }
 
 node Graph::addNode() {
-	// TODO: implement
+	node v = this->nextNode;
+	this->nextNode += 1;
+	// currently, Graph does not store of nodes any more than STINGER
+	return v;
 }
 
 node Graph::lastNode() const {
