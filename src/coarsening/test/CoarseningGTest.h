@@ -42,12 +42,12 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 	EXPECT_EQ(G.numberOfEdges(), Gcon.numberOfEdges())
 			<< "graph contracted according to singletons clustering should have the same number of nodes as original";
 
-	int k = 3; // number of clusters in random clustering
+	int k = 2; // number of clusters in random clustering
 	Clustering& random = clusteringGen.makeRandomClustering(G, k);
 	Graph& GConRand = contracter.run(G, random);
 
 	EXPECT_EQ(k, GConRand.numberOfNodes())
-			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters";
+			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
 
 }
 
