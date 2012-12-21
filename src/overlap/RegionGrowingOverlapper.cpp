@@ -46,6 +46,7 @@ Clustering& RegionGrowingOverlapper::run(Graph& G, std::vector<Clustering>& clus
 			// check for all incident edges if u and v belong in the same core cluster
 			G.forallEdgesOf(u, [&](node u, node v) {
 				bool together = true;
+				// TODO: is this cache-efficient? if not: use combined clustering array with k entries per node
 				for (Clustering& zeta : clusterings) {
 					together = together && (zeta.clusterOf(u) == zeta.clusterOf(v));
 				}
