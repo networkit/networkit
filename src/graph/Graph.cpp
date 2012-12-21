@@ -87,6 +87,7 @@ void Graph::removeEdge(node u, node v) {
 }
 
 node Graph::addNode() {
+	// TODO: might lead to race condition or bottleneck
 	node v = this->nextNode;
 	this->nextNode += 1;
 	// currently, Graph does not store of nodes any more than STINGER

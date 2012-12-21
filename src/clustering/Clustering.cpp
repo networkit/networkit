@@ -70,7 +70,7 @@ int64_t Clustering::numberOfClusters() {
 
 
 cluster Clustering::upperBound() const {
-	return this->nextCluster;
+	return this->n;
 }
 
 void Clustering::allToSingletons() {
@@ -78,13 +78,26 @@ void Clustering::allToSingletons() {
 	for (node u = 1; u <= this->n; ++u) {
 		this->array[u] = u;
 	}
+	this->nextCluster = this->n + 1;
+}
+
+cluster Clustering::addCluster() {
+	cluster c = this->nextCluster;
+	this->nextCluster += 1;
+	return c;
 }
 
 cluster Clustering::lowerBound() const {
 	return 1;
 }
 
-
+void Clustering::print() {
+	std::cout << "{";
+	for (int64_t i = 0; i <= this->n; ++i) {
+		std::cout << i << ":" << this->array[i] << ", ";
+	}
+	std::cout << "}" << std::endl;
+}
 
 } /* namespace EnsembleClustering */
 

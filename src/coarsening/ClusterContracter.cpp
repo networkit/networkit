@@ -20,10 +20,6 @@ ClusterContracter::~ClusterContracter() {
 
 Graph& ClusterContracter::run(Graph& G, Clustering& zeta) {
 
-	// DEBUG
-	std::cout << "input clustering: ";
-	zeta.print();
-
 	Graph* Gcon = new Graph();
 
 	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound()); // there is one supernode for each cluster
@@ -32,17 +28,10 @@ Graph& ClusterContracter::run(Graph& G, Clustering& zeta) {
 	G.forallNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
 		if (! clusterToSuperNode.contains(c)) {
-			std::cout << "cluster " << c << " has no supernode yet" << std::endl;
 			node sv = Gcon->addNode(); // TOOD: probably does not scale well, think about allocating ranges of nodes
-			std::cout << "adding supernode " << sv << std::endl;
 			clusterToSuperNode[c] = sv;
 		}
 	});
-
-
-	// DEBUG
-	std::cout << "cluster -> supernode";
-	clusterToSuperNode.print();
 
 	// find supernode for node with this function
 	auto getSuperNode = [&](node v) {
@@ -51,13 +40,6 @@ Graph& ClusterContracter::run(Graph& G, Clustering& zeta) {
 		node sv = clusterToSuperNode[cv];
 		return sv;
 	};
-
-	// DEBUG
-	std::cout << "node -> supernode: {";
-	G.forallNodes([&](node v){
-		std::cout << v << ":" << getSuperNode(v) <<",";
-	});
-	std::cout << "}" << std::endl;
 
 	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
 	G.forallEdges([&](node u, node v) {

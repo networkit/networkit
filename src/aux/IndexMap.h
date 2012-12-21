@@ -67,6 +67,12 @@ public:
 	inline bool contains(I index) const;
 
 
+	/**
+	 * quick & dirty debug print
+	 * TODO: replace with operator<<
+	 */
+	void print();
+
 
 
 };
@@ -121,6 +127,16 @@ template<typename I, typename T>
 inline bool EnsembleClustering::IndexMap<I, T>::contains(I index) const {
 	bool cont = (this->array[index] != this->nullValue);
 	return cont;
+}
+
+template<typename I, typename T>
+inline void EnsembleClustering::IndexMap<I, T>::print() {
+	std::cout << "{";
+	for (int64_t i = 0; i <= this->n; ++i) {
+		std::cout << i << ":" << this->array[i] << ", ";
+	}
+	std::cout << "}" << std::endl;
+
 }
 
 /*** Implementation ***/

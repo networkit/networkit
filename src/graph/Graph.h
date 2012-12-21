@@ -389,7 +389,7 @@ inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, Callback fu
 			// filtering edges is not necessary because only out-edges are considered by stinger
 			node v = STINGER_EDGE_DEST;
 			if (! marked[v]) {
-				DEBUG("pushing node " << v);
+				TRACE("pushing node " << v);
 				q.push(v);
 				marked[v] = true;
 			}
@@ -408,7 +408,7 @@ inline void EnsembleClustering::Graph::breadthFirstEdgesFrom(node r, Callback fu
 		marked[i] = false;
 	}
 
-	DEBUG("pushing node " << r);
+	TRACE("pushing node " << r);
 	q.push(r); // enqueue root
 	marked[r] = true;
 	do {
@@ -417,11 +417,11 @@ inline void EnsembleClustering::Graph::breadthFirstEdgesFrom(node r, Callback fu
 		STINGER_FORALL_EDGES_OF_VTX_BEGIN(this->stingerG, u) {
 			node v = STINGER_EDGE_DEST;
 			if (u < v) {
-				DEBUG("visiting edge (" << u << "," << v << ")");
+				TRACE("visiting edge (" << u << "," << v << ")");
 				// apply edge function
 				func(u, v);
 				if (! marked[v]) {
-					DEBUG("pushing node " << v);
+					TRACE("pushing node " << v);
 					q.push(v);
 					marked[v] = true;
 				}

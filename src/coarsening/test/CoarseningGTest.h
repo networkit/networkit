@@ -28,7 +28,7 @@ class CoarseningGTest: public testing::Test {
 
 TEST_F(CoarseningGTest, testClusterContracter) {
 	GraphGenerator graphGen;
-	int64_t n = 10;
+	int64_t n = 100;
 	Graph& G = graphGen.makeErdosRenyiGraph(n, 0.5);
 
 	ClusteringGenerator clusteringGen;

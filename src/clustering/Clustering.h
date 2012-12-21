@@ -67,6 +67,11 @@ public:
 	}
 
 	/**
+	 * Call this before assigning nodes to cluster ids.
+	 */
+	cluster addCluster();
+
+	/**
 	 * Add a (previously unassigned) node to a cluster
 	 */
 	void addToCluster(cluster c, node u);
@@ -116,6 +121,10 @@ public:
 	 */
 	cluster lowerBound() const;
 
+
+	// DEBUG
+
+	void print();
 
 
 };
