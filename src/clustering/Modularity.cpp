@@ -11,43 +11,41 @@
 namespace EnsembleClustering {
 
 
-Modularity::Modularity(Graph& G) : QualityMeasure(G) {
-	this->incidentWeight = new NodeMap<double>(this->G->numberOfNodes());
-	this->precompute();
+Modularity::Modularity() : QualityMeasure() {
 }
 
 Modularity::~Modularity() {
 	// TODO Auto-generated destructor stub
 }
 
-void Modularity::precompute() {
-	int64_t n = G->numberOfNodes();
-	// precompute incident edge weight for all nodes
-	#pragma omp parallel for
-	for (node v = 1; v <= n; ++v) {
-		double iw = 0.0;
-		READ_ONLY_FORALL_EDGES_OF_NODE_BEGIN((*G), v) {
-			iw += G->weight(EDGE_SOURCE, EDGE_DEST);
-		} READ_ONLY_FORALL_EDGES_OF_NODE_END();
-		(*this->incidentWeight)[v] = iw;
-	}
-}
+// TODO: don't precompute
 
-double Modularity::getQuality(const Clustering& zeta) {
+double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 
-	int64_t n = G->numberOfNodes();
+
+	int64_t n = G.numberOfNodes();
 
 	double coverage;	// term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double expectedCoverage; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
 	double modularity; 	// mod = coverage - expectedCoverage
 
-	double totalEdgeWeight = G->totalEdgeWeight();
+	double totalEdgeWeight = G.totalEdgeWeight();
+
+	NodeMap<double> incidentWeight(n, 0.0);
+	// compute incident edge weight for all nodes
+	G.forallNodes([&](node v){
+		double iw = 0.0;
+		G.forallEdgesOf(v, [&](node v, node w) {
+			iw += G.weight(v, w);
+		});
+		incidentWeight[v] = iw;
+	}, "parallel");
 
 
 	IndexMap<cluster, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
 
 
-	G->forallEdges([&](node u, node v){
+	G.forallEdges([&](node u, node v){
 		cluster c = zeta[u];
 		cluster d = zeta[v];
 		if (c == d) {
@@ -56,7 +54,7 @@ double Modularity::getQuality(const Clustering& zeta) {
 			}
 			assert (c <= zeta.upperBound());
 			#pragma omp atomic update
-			intraEdgeWeight[c] += G->weight(u, v);
+			intraEdgeWeight[c] += G.weight(u, v);
 		} // else ignore edge
 	}, "parallel", "readonly");
 
@@ -71,11 +69,11 @@ double Modularity::getQuality(const Clustering& zeta) {
 	IndexMap<cluster, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
 
 
-	for (node v = G->firstNode(); v <= n; ++v) {
+	G.forallNodes([&](node v){
 		// add to cluster weight
 		cluster c = zeta.clusterOf(v);
-		incidentWeightSum[c] += (*this->incidentWeight)[v];
-	}
+		incidentWeightSum[c] += incidentWeight[v];
+	});
 
 	double totalIncidentWeight = 0.0; 	//!< term $\sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 $
 	for (cluster c = zeta.lowerBound(); c <= zeta.upperBound(); ++c) {

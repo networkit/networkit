@@ -17,17 +17,14 @@ namespace EnsembleClustering {
  */
 class QualityMeasure {
 
-protected:
-
-	Graph* G;
 
 public:
 
-	QualityMeasure(Graph& G);
+	QualityMeasure();
 
 	virtual ~QualityMeasure();
 
-	virtual double getQuality(const Clustering& zeta) =0;
+	virtual double getQuality(const Clustering& zeta, Graph& G) =0;
 };
 
 } /* namespace EnsembleClustering */

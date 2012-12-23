@@ -22,13 +22,13 @@ EnsembleClusterer::~EnsembleClusterer() {
 }
 
 bool EnsembleClusterer::isBetterClustering(const Clustering& zeta) {
-	double qNew = this->qm->getQuality(zeta);
+	// FIXME: double qNew = this->qm->getQuality(zeta);
 }
 
 Clustering& EnsembleClusterer::run(Graph& G) {
 
 	// initialize quality measure
-	this->qm = new Modularity(G);
+	this->qm = new Modularity; // FIXME:initialize in constructor
 
 	ClusteringGenerator clustGen;
 	Clustering& zetaSingleton = clustGen.makeSingletonClustering(G);

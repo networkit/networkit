@@ -9,8 +9,7 @@
 
 namespace EnsembleClustering {
 
-QualityMeasure::QualityMeasure(Graph& G) {
-	this->G = &G;
+QualityMeasure::QualityMeasure() {
 }
 
 QualityMeasure::~QualityMeasure() {

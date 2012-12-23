@@ -42,13 +42,13 @@ TEST_F(ClusteringTest, testModularity) {
 	Clustering singleton = clusteringGenerator.makeSingletonClustering(G);
 	Clustering one = clusteringGenerator.makeOneClustering(G);
 
-	Modularity modularity(G);
+	Modularity modularity;
 
 	DEBUG("calculating modularity for singleton clustering");
-	double modSingleton = modularity.getQuality(singleton);
+	double modSingleton = modularity.getQuality(singleton, G);
 
 	DEBUG("calculating modularity for 1-clustering");
-	double modOne = modularity.getQuality(one);
+	double modOne = modularity.getQuality(one, G);
 
 	DEBUG("mod(singleton-clustering) = " << modSingleton);
 	DEBUG("mod(1-clustering) = " << modOne);
@@ -70,8 +70,8 @@ TEST_F(ClusteringTest, testLabelPropagationOnUniformGraph) {
 
 	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
 
-	Modularity modularity(G);
-	double mod = modularity.getQuality(zeta);
+	Modularity modularity;
+	double mod = modularity.getQuality(zeta, G);
 	DEBUG("modularity produced by LabelPropagation: " << mod);
 	EXPECT_GE(1.0, mod) << "valid modularity values are in [-0.5, 1]";
 	EXPECT_LE(-0.5, mod) << "valid modularity values are in [-0.5, 1]";
@@ -87,8 +87,8 @@ TEST_F(ClusteringTest, testLabelPropagationOnClusteredGraph) {
 	LabelPropagation lp;
 	Clustering zeta = lp.run(G);
 
-	Modularity modularity(G);
-	double mod = modularity.getQuality(zeta);
+	Modularity modularity;
+	double mod = modularity.getQuality(zeta, G);
 	DEBUG("modularity produced by LabelPropagation: " << mod);
 
 	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
