@@ -33,10 +33,6 @@ protected:
 	std::vector<Clusterer*> baseClusterers;
 	std::vector<Clustering*> baseClusterings;
 
-	/**
-	 * Check if new clustering is better than previously best clustering.
-	 */
-	virtual bool isBetterClustering(const Clustering& zeta);
 
 public:
 
@@ -46,9 +42,11 @@ public:
 
 	virtual Clustering& run(Graph& G);
 
-	virtual void addBaseClusterer(Clusterer& baseClusterer);
+	virtual void addBaseClusterer(Clusterer&  base);
 
-	virtual void setFinalClusterer(Clusterer& clusterer);
+	virtual void setFinalClusterer(Clusterer& final);
+
+	virtual void setQualityMeasure(QualityMeasure& qm);
 
 };
 

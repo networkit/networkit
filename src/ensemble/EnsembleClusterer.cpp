@@ -9,73 +9,99 @@
 
 namespace EnsembleClustering {
 
-EnsembleClusterer::EnsembleClusterer() : Clusterer(),
-		baseClusterers(), baseClusterings() {
-	this->bestClustering = NULL;
+EnsembleClusterer::EnsembleClusterer() : Clusterer() {
 	this->finalClusterer = NULL;
-	this->qm = NULL; // TODO: select quality measure
-	this->qBest = -1; // TODO: ?
+	this->qm = NULL;
 }
 
 EnsembleClusterer::~EnsembleClusterer() {
 	// TODO Auto-generated destructor stub
 }
 
-bool EnsembleClusterer::isBetterClustering(const Clustering& zeta) {
-	// FIXME: double qNew = this->qm->getQuality(zeta);
+void EnsembleClusterer::setQualityMeasure(QualityMeasure& qm) {
+	this->qm = &qm;
+}
+
+
+void EnsembleClusterer::addBaseClusterer(Clusterer& base) {
+	this->baseClusterers.push_back(&base);
+}
+
+void EnsembleClusterer::setFinalClusterer(Clusterer& final) {
+	this->finalClusterer = &final;
 }
 
 Clustering& EnsembleClusterer::run(Graph& G) {
 
-	// initialize quality measure
-	this->qm = new Modularity; // FIXME:initialize in constructor
-
-	ClusteringGenerator clustGen;
-	Clustering& zetaSingleton = clustGen.makeSingletonClustering(G);
-
-	this->bestClustering = &zetaSingleton; // TODO: ?
-
-	// store all contracted graphs here
-	std::vector<Graph*> contractionHierarchy(log(G.numberOfNodes()), NULL); // TODO: ?
-
-	// base clusterers calculate base clusterings
-	for (auto clusterer : baseClusterers) {
-		Clustering& zeta = clusterer->run(G);
-		baseClusterings.push_back(&zeta);
-	}
-
-	// calculate overlap of base clusterings
-	RegionGrowingOverlapper overlapper;
-	// TODO: Clustering& core = overlapper.run(G, baseClusterings);
-
-
-
-	// if new clustering is better than best clustering
-
-
-	// contract graph according to overlap clustering
+	// sub-algorithms
 	ClusterContracter contracter;
-	// TODO: Graph& Gcon = contracter.run(G, core);
+	RegionGrowingOverlapper overlapper;
+	// data
+	Clustering* bestClustering = NULL;
+	std::vector<Clustering*> baseClusterings;
+	double qNew;	// quality of new clustering
+	double qBest;	// quality of best clustering
+	bool repeat; 	// loop condition
+	Graph* Gbest = NULL;	// contracted graph belonging to the best clustering
 
-	// submit contracted graph to base clusterers again
+	// store all clusterings/contracted graphs here
+	double logn = log(G.numberOfNodes());
+	std::vector<Graph*> graphHierarchy(logn, NULL);
+	std::vector<Clustering*> clusteringHierarchy(logn, NULL);
+
+	do {
+		baseClusterings.clear();
+
+		// base clusterers calculate base clusterings
+		for (auto clusterer : baseClusterers) {
+			Clustering& zeta = clusterer->run(G);
+			baseClusterings.push_back(&zeta);
+		}
+
+		// calculate overlap of base clusterings
+		Clustering& core = overlapper.run(G, baseClusterings);
+		// store clustering
+		clusteringHierarchy.push_back(&core);
+		// store graph
+		graphHierarchy.push_back(&G);
+
+		if (bestClustering == NULL) {
+			// in first iteration
+			bestClustering = *core;
+			qBest = this->qm->getQuality(core, G);
+		} else {
+			// after first iteration
+			// test if new clustering is better
+			qNew = this->qm->getQuality(core, G);
+			if (qNew > qBest) {
+				// new clustering is better
+				bestClustering = core;
+				qBest = qNew;
+				// contract graph according to overlap clustering
+				Graph& Gcon = contracter.run(G, core);
+				// work on contracted graph
+				Gbest = &Gcon;
+				repeat = true; // submit contracted graph to base clusterers again
+			} else {
+				// new clustering is not better
+				repeat = false;
+			}
+		}
+		// repeat while new clustering is better than old clustering
+	} while (repeat);
+
+	// work on contracted graph for best clustering
 
 	// use final clusterer to find clustering of contracted graph
-	// TODO: Clustering& zetaFinal = this->finalClusterer->run(GconFinal);
+	Clustering& zetaFinal = this->finalClusterer->run(*Gbest);
+
 
 	// project final clustering back to original graph
 	// TODO: Clustering& zetaEnsemble = this->projectBack(zetaFinal, GconFinal, G);
 
-	// TODO: implement
 
-	// TODO: return references directly
+	return zetaFinal;
 }
 
-void EnsembleClusterer::addBaseClusterer(Clusterer& baseClusterer) {
-	this->baseClusterers.push_back(&baseClusterer);
-}
-
-void EnsembleClusterer::setFinalClusterer(Clusterer& clusterer) {
-	this->finalClusterer = &clusterer;
-}
 
 } /* namespace EnsembleClustering */
