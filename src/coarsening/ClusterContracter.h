@@ -22,6 +22,7 @@ public:
 
 	virtual ~ClusterContracter();
 
+	// TODO: return GraphContraction
 	virtual Graph& run(Graph& G, Clustering& zeta);
 };
 

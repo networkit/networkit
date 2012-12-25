@@ -33,6 +33,8 @@ Graph& ClusterContracter::run(Graph& G, Clustering& zeta) {
 		}
 	});
 
+	// TODO: create node->supernode map
+
 	// find supernode for node with this function
 	auto getSuperNode = [&](node v) {
 		cluster cv = zeta.clusterOf(v);
