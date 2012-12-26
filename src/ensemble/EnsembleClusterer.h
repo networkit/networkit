@@ -31,7 +31,6 @@ protected:
 
 	Clusterer* finalClusterer;	//!< final clustering algorithm
 	std::vector<Clusterer*> baseClusterers;
-	std::vector<Clustering*> baseClusterings;
 
 
 public:

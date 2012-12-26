@@ -14,6 +14,7 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../coarsening/ClusterContracter.h"
+#include "../../coarsening/GraphContraction.h"
 
 namespace EnsembleClustering {
 
@@ -35,7 +36,8 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 	Clustering& singleton = clusteringGen.makeSingletonClustering(G);
 
 	ClusterContracter contracter;
-	Graph& Gcon = contracter.run(G, singleton);
+	GraphContraction& conSingleton = contracter.run(G, singleton);
+	Graph& Gcon = conSingleton.getCoarseGraph();
 
 	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
 			<< "graph contracted according to singleton clustering should have the same number of nodes as original";
@@ -44,9 +46,10 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 
 	int k = 2; // number of clusters in random clustering
 	Clustering& random = clusteringGen.makeRandomClustering(G, k);
-	Graph& GConRand = contracter.run(G, random);
+	GraphContraction& conRand = contracter.run(G, random);
+	Graph& GconRand = conRand.getCoarseGraph();
 
-	EXPECT_EQ(k, GConRand.numberOfNodes())
+	EXPECT_EQ(k, GconRand.numberOfNodes())
 			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
 
 }

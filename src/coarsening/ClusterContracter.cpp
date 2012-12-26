@@ -18,7 +18,7 @@ ClusterContracter::~ClusterContracter() {
 	// TODO Auto-generated destructor stub
 }
 
-Graph& ClusterContracter::run(Graph& G, Clustering& zeta) {
+GraphContraction& ClusterContracter::run(Graph& G, Clustering& zeta) {
 
 	Graph* Gcon = new Graph();
 
@@ -33,20 +33,21 @@ Graph& ClusterContracter::run(Graph& G, Clustering& zeta) {
 		}
 	});
 
-	// TODO: create node->supernode map
 
-	// find supernode for node with this function
-	auto getSuperNode = [&](node v) {
-		cluster cv = zeta.clusterOf(v);
-		assert (cv <= zeta.upperBound());
-		node sv = clusterToSuperNode[cv];
-		return sv;
-	};
+	int64_t n = G.numberOfNodes();
+	NodeMap<node>* nodeToSuperNode = new NodeMap<node>(n);
+
+	// set entries node -> supernode
+	G.forallNodes([&](node v){
+		cluster c = zeta.clusterOf(v);
+		(*nodeToSuperNode)[v] = clusterToSuperNode[c];
+	});
+
 
 	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
 	G.forallEdges([&](node u, node v) {
-		node su = getSuperNode(u);
-		node sv = getSuperNode(v);
+		node su = (*nodeToSuperNode)[u];
+		node sv = (*nodeToSuperNode)[v];
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 			// add edge weight to supernode (self-loop) weight
 			Gcon->setWeight(su, Gcon->weight(su) + G.weight(u, v));
@@ -62,7 +63,9 @@ Graph& ClusterContracter::run(Graph& G, Clustering& zeta) {
 		}
 	});
 
-	return (*Gcon);
+	GraphContraction* contraction = new GraphContraction(G, *Gcon, *nodeToSuperNode); // TODO: ?
+
+	return *contraction;
 }
 
 }

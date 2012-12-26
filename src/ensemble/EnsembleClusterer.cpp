@@ -67,7 +67,7 @@ Clustering& EnsembleClusterer::run(Graph& G) {
 
 		if (bestClustering == NULL) {
 			// in first iteration
-			bestClustering = *core;
+			bestClustering = &core;
 			qBest = this->qm->getQuality(core, G);
 		} else {
 			// after first iteration
@@ -75,10 +75,11 @@ Clustering& EnsembleClusterer::run(Graph& G) {
 			qNew = this->qm->getQuality(core, G);
 			if (qNew > qBest) {
 				// new clustering is better
-				bestClustering = core;
+				bestClustering = &core;
 				qBest = qNew;
 				// contract graph according to overlap clustering
-				Graph& Gcon = contracter.run(G, core);
+				GraphContraction& con = contracter.run(G, core);
+				Graph& Gcon = con.getCoarseGraph();
 				// work on contracted graph
 				Gbest = &Gcon;
 				repeat = true; // submit contracted graph to base clusterers again

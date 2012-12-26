@@ -8,6 +8,8 @@
 #ifndef GRAPHCONTRACTION_H_
 #define GRAPHCONTRACTION_H_
 
+#include "../graph/NodeMap.h"
+
 namespace EnsembleClustering {
 
 class GraphContraction {
@@ -20,7 +22,7 @@ protected:
 
 public:
 
-	GraphContraction(Graph& fine, Graph& coarse, NodeMap<node> fineToCoarse);
+	GraphContraction(Graph& fine, Graph& coarse, NodeMap<node>& fineToCoarse);
 
 	virtual ~GraphContraction();
 
