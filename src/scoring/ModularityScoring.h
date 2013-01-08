@@ -10,16 +10,10 @@
 
 #include "EdgeScoring.h"
 
+#include "../clustering/Clustering.h"
+
 
 namespace EnsembleClustering {
-
-typedef int Node;
-typedef int Edge;
-
-// TODO: import from proper module
-typedef int Clustering;
-typedef int Cluster;
-
 
 // TODO: implement modularity as in Python prototype
 
@@ -41,24 +35,24 @@ public:
 	 * @param[out]	v	target node id
 	 *
 	 */
-	virtual double scoreEdge(Edge uv) =0;
+	virtual double scoreEdge(node u, node v);
 
 	/**
 	 * Calculates the modularity of the given clustering;
 	 *
 	 */
-	virtual double mod(Clustering clustering) =0;
+	virtual double mod(Clustering& clustering) =0; // TODO: needed?
 
 	/**
 	 * Calculates the difference in modularity that would result from a merger of
 	 * two clusters.
 	 *
 	 */
-	virtual double deltaMod(Cluster c, Cluster d) =0;
+	virtual double deltaMod(cluster c, cluster d) =0;
 
-	virtual double cutweight(Cluster c, Cluster d) =0;
+	virtual double cutweight(cluster c, cluster d) =0;
 
-	virtual double weight(Cluster c) =0;
+	virtual double weight(cluster c) =0;
 };
 
 } /* namespace EnsembleClustering */
