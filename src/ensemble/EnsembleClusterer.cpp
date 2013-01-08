@@ -37,7 +37,7 @@ Clustering& EnsembleClusterer::run(Graph& G) {
 	ClusterContracter contracter;
 	RegionGrowingOverlapper overlapper;
 	// data
-	Clustering* bestClustering = NULL;
+	Clustering* zetaBest = NULL;
 	std::vector<Clustering*> baseClusterings;
 	double qNew;	// quality of new clustering
 	double qBest;	// quality of best clustering
@@ -49,37 +49,39 @@ Clustering& EnsembleClusterer::run(Graph& G) {
 	std::vector<Graph*> graphHierarchy(logn, NULL);
 	std::vector<Clustering*> clusteringHierarchy(logn, NULL);
 
+	qBest = -1; // => repeat loop at least once
 	do {
 		baseClusterings.clear();
 
 		// base clusterers calculate base clusterings
 		for (auto clusterer : baseClusterers) {
-			Clustering& zeta = clusterer->run(G);
+			Clustering zeta = clusterer->run(G);
 			baseClusterings.push_back(&zeta);
 		}
 
 		// calculate overlap of base clusterings
-		Clustering& core = overlapper.run(G, baseClusterings);
-		// store clustering
+		Clustering core = overlapper.run(G, baseClusterings);
+		// store clustering & graph
 		clusteringHierarchy.push_back(&core);
-		// store graph
 		graphHierarchy.push_back(&G);
 
-		if (bestClustering == NULL) {
+		if (zetaBest == NULL) {
 			// in first iteration
-			bestClustering = &core;
-			qBest = this->qm->getQuality(core, G);
+			zetaBest = &core;
+			qBest = -1; // contract graph at least once
+			repeat = true; // repeat at least once
 		} else {
 			// after first iteration
 			// test if new clustering is better
-			qNew = this->qm->getQuality(core, G);
+			qNew = this->qm->getQuality(core, G); // FIXME: quality must be calculated with respect to original graph - project back
+			DEBUG("qNew = " << qNew << ", qBest = " << qBest);
 			if (qNew > qBest) {
 				// new clustering is better
-				bestClustering = &core;
+				zetaBest = &core;
 				qBest = qNew;
 				// contract graph according to overlap clustering
-				GraphContraction& con = contracter.run(G, core);
-				Graph& Gcon = con.getCoarseGraph();
+				GraphContraction con = contracter.run(G, core);
+				Graph Gcon = con.getCoarseGraph();
 				// work on contracted graph
 				Gbest = &Gcon;
 				repeat = true; // submit contracted graph to base clusterers again
@@ -89,12 +91,12 @@ Clustering& EnsembleClusterer::run(Graph& G) {
 			}
 		}
 		// repeat while new clustering is better than old clustering
-	} while (repeat);
+	} while (qNew > qBest);
 
 	// work on contracted graph for best clustering
 
 	// use final clusterer to find clustering of contracted graph
-	Clustering& zetaFinal = this->finalClusterer->run(*Gbest);
+	Clustering zetaFinal = this->finalClusterer->run(*Gbest); // FIXME: Gbest can be NULL
 
 
 	// project final clustering back to original graph
