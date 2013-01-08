@@ -61,6 +61,7 @@ public:
 
 
 template<class T> inline EnsembleClustering::NodeMap<T>::NodeMap(int64_t n) {
+	// TODO: use std::vector instead of bare array
 	this->n = n;
 	this->array = new T[n+1];
 }
@@ -75,7 +76,8 @@ template<class T> inline EnsembleClustering::NodeMap<T>::NodeMap(int64_t n, T de
 }
 
 template<class T> inline EnsembleClustering::NodeMap<T>::~NodeMap() {
-	delete[] array;
+	// FIXME: if the destructor is implemented, also implement copy constructor according to the Rule of Three
+	// FIXME: delete[] array;
 }
 
 template<class T> inline T& EnsembleClustering::NodeMap<T>::operator [](const node& u) {

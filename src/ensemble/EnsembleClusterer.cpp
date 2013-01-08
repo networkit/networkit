@@ -32,6 +32,7 @@ void EnsembleClusterer::setFinalClusterer(Clusterer& final) {
 }
 
 Clustering EnsembleClusterer::run(Graph& G) {
+	// FIXME: LabelPropagation does not terminate on contracted graph
 
 	// sub-algorithms
 	ClusterContracter contracter;

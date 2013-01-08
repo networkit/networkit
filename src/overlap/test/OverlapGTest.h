@@ -31,7 +31,7 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
 	std::vector<Clustering> clusterings;
 	int z = 3; // number of clusterings
 	for (int i = 0; i < z; ++i) {
-		clusterings.push_back(clusterGen.makeOneClustering(G));
+ 		clusterings.push_back(clusterGen.makeOneClustering(G));
 	}
 	DEBUG("end of loop");
 
