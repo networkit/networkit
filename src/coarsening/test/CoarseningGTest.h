@@ -54,5 +54,22 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 
 }
 
+
+TEST_F(CoarseningGTest, testClusteringProjector) {
+	GraphGenerator graphGen;
+	int64_t n = 100;
+	Graph& G = graphGen.makeErdosRenyiGraph(n, 0.5);
+
+	// make random clustering with k clusters
+	int k = 10;
+	ClusteringGenerator clusteringGen;
+	Clustering& zetaRand = clusteringGen.makeRandomClustering(G, k);
+
+	ClusterContracter contracter;
+	GraphContraction contraction = contracter.run(G, zetaRand);
+	EnsembleClustering::Clustering zetaOne = clusteringGen.makeOneClustering(contraction.getCoarseGraph());
+
+}
+
 } /* namespace EnsembleClustering */
 #endif /* COARSENINGGTEST_H_ */
