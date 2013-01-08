@@ -70,7 +70,12 @@ int64_t Clustering::numberOfClusters() {
 
 
 cluster Clustering::upperBound() const {
-	return this->n;
+	return this->n; // TODO: possibly inefficient
+}
+
+
+cluster Clustering::lowerBound() const {
+	return 1;
 }
 
 void Clustering::allToSingletons() {
@@ -87,9 +92,6 @@ cluster Clustering::addCluster() {
 	return c;
 }
 
-cluster Clustering::lowerBound() const {
-	return 1;
-}
 
 void Clustering::print() {
 	std::cout << "{";
