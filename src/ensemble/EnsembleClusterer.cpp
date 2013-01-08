@@ -31,14 +31,14 @@ void EnsembleClusterer::setFinalClusterer(Clusterer& final) {
 	this->finalClusterer = &final;
 }
 
-Clustering& EnsembleClusterer::run(Graph& G) {
+Clustering EnsembleClusterer::run(Graph& G) {
 
 	// sub-algorithms
 	ClusterContracter contracter;
 	RegionGrowingOverlapper overlapper;
 	// data
 	Clustering* zetaBest = NULL;
-	std::vector<Clustering*> baseClusterings;
+	std::vector<Clustering> baseClusterings;
 	double qNew;	// quality of new clustering
 	double qBest;	// quality of best clustering
 	bool repeat; 	// loop condition
@@ -46,8 +46,8 @@ Clustering& EnsembleClusterer::run(Graph& G) {
 
 	// store all clusterings/contracted graphs here
 	double logn = log(G.numberOfNodes());
-	std::vector<Graph*> graphHierarchy(logn, NULL);
-	std::vector<Clustering*> clusteringHierarchy(logn, NULL);
+	std::vector<Graph> graphHierarchy(logn, NULL);
+	std::vector<Clustering> clusteringHierarchy(logn, NULL);
 
 	qBest = -1; // => repeat loop at least once
 	do {
@@ -56,14 +56,14 @@ Clustering& EnsembleClusterer::run(Graph& G) {
 		// base clusterers calculate base clusterings
 		for (auto clusterer : baseClusterers) {
 			Clustering zeta = clusterer->run(G);
-			baseClusterings.push_back(&zeta);
+			baseClusterings.push_back(zeta);
 		}
 
 		// calculate overlap of base clusterings
 		Clustering core = overlapper.run(G, baseClusterings);
 		// store clustering & graph
-		clusteringHierarchy.push_back(&core);
-		graphHierarchy.push_back(&G);
+		clusteringHierarchy.push_back(core);
+		graphHierarchy.push_back(G);
 
 		if (zetaBest == NULL) {
 			// in first iteration

@@ -16,9 +16,9 @@ class GraphContraction {
 
 protected:
 
-	Graph* fine;	//!< the fine graph
-	Graph* coarse;	//!< the coarse graph
-	NodeMap<node>* fineToCoarse;	//!< maps each node in the fine graph to a supernode in the coarse graph
+	Graph fine;	//!< the fine graph
+	Graph coarse;	//!< the coarse graph
+	NodeMap<node> fineToCoarse;	//!< maps each node in the fine graph to a supernode in the coarse graph
 
 public:
 

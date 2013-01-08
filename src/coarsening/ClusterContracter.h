@@ -8,10 +8,11 @@
 #ifndef CLUSTERCONTRACTER_H_
 #define CLUSTERCONTRACTER_H_
 
+
 #include "Contracter.h"
-#include "GraphContraction.h"
-#include "../clustering/Clustering.h";
+#include "../clustering/Clustering.h"
 #include "../aux/IndexMap.h"
+#include "../coarsening/GraphContraction.h"
 
 namespace EnsembleClustering {
 
@@ -24,7 +25,7 @@ public:
 	virtual ~ClusterContracter();
 
 	// TODO: return GraphContraction
-	virtual GraphContraction& run(Graph& G, Clustering& zeta);
+	virtual GraphContraction run(Graph& G, Clustering& zeta);
 };
 
 

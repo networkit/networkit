@@ -18,12 +18,12 @@ RegionGrowingOverlapper::~RegionGrowingOverlapper() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering& RegionGrowingOverlapper::run(Graph& G, std::vector<Clustering*>& clusterings) {
+Clustering RegionGrowingOverlapper::run(Graph& G, std::vector<Clustering>& clusterings) {
 	// TODO: test
 
 	int64_t n = G.numberOfNodes();
-	Clustering* core = new Clustering(n); // "core groups" resulting from overlap of all clustering
-	core->allToSingletons(); // assign all nodes to singletons
+	Clustering core(n); // "core groups" resulting from overlap of all clustering
+	core.allToSingletons(); // assign all nodes to singletons
 
 	NodeMap<int> visited(n, 0); // node -> has been visited (1) or not (0). not <bool> because of thread-safety
 	node r;	// start node for BFS
@@ -47,18 +47,18 @@ Clustering& RegionGrowingOverlapper::run(Graph& G, std::vector<Clustering*>& clu
 			G.forallEdgesOf(u, [&](node u, node v) {
 				bool together = true;
 				// TODO: is this cache-efficient? if not: use combined clustering array with k entries per node
-				for (Clustering* zeta : clusterings) {
-					together = together && (zeta->clusterOf(u) == zeta->clusterOf(v));
+				for (Clustering zeta : clusterings) {
+					together = together && (zeta.clusterOf(u) == zeta.clusterOf(v));
 				}
 				if (together) {
-					core->moveToCluster(core->clusterOf(u), v);
+					core.moveToCluster(core.clusterOf(u), v);
 				}
 			});
 
 		});
 	}
 
-	return *core;
+	return core;
 }
 
 } /* namespace EnsembleClustering */

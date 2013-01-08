@@ -22,21 +22,21 @@ class OverlapGTest: public testing::Test {
 };
 
 
-TEST_F(OverlapGTest, testRegionGrowingOverlapperOn1Clustering) {
+TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
 	GraphGenerator graphGen;
 	int64_t n = 10;
-	Graph& G = graphGen.makeCompleteGraph(n);
+	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusterGen;
-	std::vector<Clustering*> clusterings;
+	std::vector<Clustering> clusterings;
 	int z = 3; // number of clusterings
 	for (int i = 0; i < z; ++i) {
-		Clustering& zeta = clusterGen.makeOneClustering(G);
-		clusterings.push_back(&zeta);
+		clusterings.push_back(clusterGen.makeOneClustering(G));
 	}
+	DEBUG("end of loop");
 
 	RegionGrowingOverlapper over;
-	Clustering& core = over.run(G, clusterings);
+	Clustering core = over.run(G, clusterings);
 
 	// test if core clustering is one-clustering
 	node v = 1;
@@ -44,6 +44,7 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOn1Clustering) {
 	bool isOneClustering = true;
 	G.forallNodes([&](node v) {
 		cluster c = core.clusterOf(v);
+		DEBUG("CLUSTER! c = " << c);
 		isOneClustering = isOneClustering && (c == one);
 	});
 
@@ -55,18 +56,18 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOn1Clustering) {
 TEST_F(OverlapGTest, testRegionGrowingOverlapperOnSingletonClustering) {
 	GraphGenerator graphGen;
 	int64_t n = 10;
-	Graph& G = graphGen.makeCompleteGraph(n);
+	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusterGen;
-	std::vector<Clustering*> clusterings;
+	std::vector<Clustering> clusterings;
 	int z = 3; // number of clusterings
 	for (int i = 0; i < z; ++i) {
-		Clustering& zeta = clusterGen.makeSingletonClustering(G);
-		clusterings.push_back(&zeta);
+		Clustering zeta = clusterGen.makeSingletonClustering(G);
+		clusterings.push_back(zeta);
 	}
 
 	RegionGrowingOverlapper over;
-	Clustering& core = over.run(G, clusterings);
+	Clustering core = over.run(G, clusterings);
 
 	// test if core clustering is singleton-clustering
 	bool isSingleton = true;

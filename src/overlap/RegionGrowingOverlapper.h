@@ -23,7 +23,7 @@ public:
 
 	virtual ~RegionGrowingOverlapper();
 
-	virtual Clustering& run(Graph& G, std::vector<Clustering*>& clusterings);
+	virtual Clustering run(Graph& G, std::vector<Clustering>& clusterings);
 
 };
 

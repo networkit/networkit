@@ -40,7 +40,7 @@ public:
 
 	virtual ~LabelPropagation();
 
-	virtual Clustering& run(Graph& G);
+	virtual Clustering run(Graph& G);
 };
 
 } /* namespace EnsembleClustering */

@@ -21,7 +21,7 @@ public:
 
 	virtual ~Clusterer();
 
-	virtual Clustering& run(Graph& G) = 0;
+	virtual Clustering run(Graph& G) = 0;
 };
 
 } /* namespace EnsembleClustering */

@@ -18,14 +18,14 @@ ClusteringProjector::~ClusteringProjector() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering& ClusteringProjector::projectBack(GraphContraction& contraction,
+Clustering ClusteringProjector::projectBack(GraphContraction& contraction,
 		Clustering& zetaCoarse) {
 
 	Graph Gfine = contraction.getFineGraph();
 	Graph Gcoarse = contraction.getCoarseGraph();
 	auto fineToCoarse = contraction.getFineToCoarseMap();
 
-	Clustering* zetaFine = new Clustering(Gfine.numberOfNodes());
+	Clustering zetaFine(Gfine.numberOfNodes());
 
 	Gfine.forallNodes([&](node v) {
 		node sv = fineToCoarse[v];
@@ -33,7 +33,7 @@ Clustering& ClusteringProjector::projectBack(GraphContraction& contraction,
 		zetaFine[v] = cv;
 	});
 
-	return *zetaFine;
+	return zetaFine;
 }
 
 } /* namespace EnsembleClustering */

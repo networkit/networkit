@@ -28,7 +28,7 @@ public:
 	 * @param[in]	n	number of nodes
 	 * @param[in]	p	edge probability
 	 */
-	Graph& makeErdosRenyiGraph(int64_t n, double p);
+	Graph makeErdosRenyiGraph(int64_t n, double p);
 
 
 	/**
@@ -36,7 +36,7 @@ public:
 	 *
 	 * @param[in]	n	number of nodes
 	 */
-	Graph& makeCircularGraph(int64_t n);
+	Graph makeCircularGraph(int64_t n);
 
 
 	/**
@@ -44,7 +44,7 @@ public:
 	 *
 	 * @param[in]	n	number of nodes
 	 */
-	Graph& makeCompleteGraph(int64_t n);
+	Graph makeCompleteGraph(int64_t n);
 
 
 	/**
@@ -55,7 +55,7 @@ public:
 	 * @param[in]	pin		intra-cluster edge probability
 	 * @param[in]	pout	inter-cluster edge probability
 	 */
-	Graph& makeClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout);
+	Graph makeClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout);
 
 };
 

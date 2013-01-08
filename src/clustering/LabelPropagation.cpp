@@ -18,7 +18,7 @@ LabelPropagation::~LabelPropagation() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering& LabelPropagation::run(Graph& G) {
+Clustering LabelPropagation::run(Graph& G) {
 
 	// TODO: remove after debugging
 	using Aux::operator<<; // map printer
@@ -29,11 +29,11 @@ Clustering& LabelPropagation::run(Graph& G) {
 
 	// create the clustering to be returned
 	// set unique label for each node
-	Clustering* labels = new Clustering(n);
+	Clustering labels(n);
 	G.forallNodes([&](node v){
-		labels->toSingleton(v);
+		labels.toSingleton(v);
 		// DEBUG
-		cluster c = labels->clusterOf(v);
+		cluster c = labels.clusterOf(v);
 	});
 
 	int64_t majorityLabelCount = 0;	// number of nodes which already have the majority label
@@ -62,7 +62,7 @@ Clustering& LabelPropagation::run(Graph& G) {
 
 				// count the labels in the neighborhood of v and select the most frequent one
 				G.forallNeighborsOf(v, [&](node w) {
-					label cw = labels->clusterOf(w);
+					label cw = labels.clusterOf(w);
 					if (labelCounts.find(cw) == labelCounts.end()) {
 						labelCounts[cw] = 0;
 					}
@@ -79,8 +79,8 @@ Clustering& LabelPropagation::run(Graph& G) {
 					}
 				}
 
-				TRACE("updating label of " << v << " from " << labels->clusterOf(v) << " to " << mostFrequent);
-				labels->moveToCluster(mostFrequent, v);
+				TRACE("updating label of " << v << " from " << labels.clusterOf(v) << " to " << mostFrequent);
+				labels.moveToCluster(mostFrequent, v);
 
 				// stop if v has label of at least half of its neighbors
 				label dominantLabel = 0; // = None
@@ -92,7 +92,7 @@ Clustering& LabelPropagation::run(Graph& G) {
 				}
 
 				if (dominantLabel != 0) {
-					if ((*labels)[v] == dominantLabel) {
+					if (labels[v] == dominantLabel) {
 						majorityLabelCount += 1;
 					}
 				} // if no label dominant, do nothing
@@ -101,8 +101,7 @@ Clustering& LabelPropagation::run(Graph& G) {
 
 	}
 
-	assert (labels != NULL);
-	return *labels;
+	return labels;
 
 }
 

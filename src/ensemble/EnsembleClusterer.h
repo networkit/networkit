@@ -18,6 +18,7 @@
 #include "../clustering/ClusteringGenerator.h"
 #include "../overlap/RegionGrowingOverlapper.h"
 #include "../coarsening/ClusterContracter.h"
+#include "../coarsening/GraphContraction.h"
 
 namespace EnsembleClustering {
 
@@ -39,7 +40,7 @@ public:
 
 	virtual ~EnsembleClusterer();
 
-	virtual Clustering& run(Graph& G);
+	virtual Clustering run(Graph& G);
 
 	virtual void addBaseClusterer(Clusterer&  base);
 

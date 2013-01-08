@@ -9,10 +9,9 @@
 
 namespace EnsembleClustering {
 
-GraphContraction::GraphContraction(Graph& fine, Graph& coarse, NodeMap<node>& fineToCoarse) {
-	this->fine = &fine;
-	this->coarse = &coarse;
-	this->fineToCoarse = &fineToCoarse;
+GraphContraction::GraphContraction(Graph& fine, Graph& coarse, NodeMap<node>& fineToCoarse) :
+		fine(fine), coarse(coarse), fineToCoarse(fineToCoarse) {
+
 }
 
 GraphContraction::~GraphContraction() {
@@ -20,15 +19,15 @@ GraphContraction::~GraphContraction() {
 }
 
 Graph& GraphContraction::getFineGraph() {
-	return *(this->fine);
+	return this->fine;
 }
 
 Graph& GraphContraction::getCoarseGraph() {
-	return *(this->coarse);
+	return this->coarse;
 }
 
 NodeMap<node>& GraphContraction::getFineToCoarseMap() {
-	return *(this->fineToCoarse);
+	return this->fineToCoarse;
 }
 
 } /* namespace EnsembleClustering */
