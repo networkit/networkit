@@ -35,14 +35,16 @@ Graph GraphGenerator::makeErdosRenyiGraph(int64_t n, double p) {
 	return G;
 }
 Graph GraphGenerator::makeCircularGraph(int64_t n) {
+	// TODO: modernize
 	Graph G;
-	for (node u = G.firstNode(); u <= n; ++u) {
-		G.insertEdge(u, (u + 1) % n);
+	for (int i = 0; i < n; ++i) {
+		G.insertEdge(i + 1, ((i+1) % n) + 1);
 	}
 	return G;
 }
 
 Graph GraphGenerator::makeCompleteGraph(int64_t n) {
+	// TODO: modernize
 	RandomProbability randP;
 	Graph G;
 	for (node u = 1; u <= n; ++u) {

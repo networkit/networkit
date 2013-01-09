@@ -32,6 +32,7 @@ namespace Aux {
 
 
 
+
 #define PRINTMAP(M) std::cout << M << std::endl;
 /**
  * Print a map for debugging.

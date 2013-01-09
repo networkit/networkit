@@ -207,6 +207,12 @@ public:
 	 */
 	node addNode();
 
+
+	/**
+	 * After calling this, nodes 1..n exist in the graph.
+	 */
+	void setNodeRange(int64_t n);
+
 	/**
 	 * Return the number of (non-isolated) nodes in the graph.
 	 *

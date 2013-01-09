@@ -94,6 +94,13 @@ node Graph::addNode() {
 	return v;
 }
 
+void Graph::setNodeRange(int64_t n) {
+	this->nextNode = n + 1;
+	// FIXME: implement
+}
+
+
+
 node Graph::lastNode() const {
 	return this->numberOfNodes();
 }

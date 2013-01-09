@@ -19,6 +19,7 @@
 #include "../overlap/RegionGrowingOverlapper.h"
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/GraphContraction.h"
+#include "../input/GraphIO.h"
 
 namespace EnsembleClustering {
 
@@ -27,8 +28,6 @@ class EnsembleClusterer: public EnsembleClustering::Clusterer {
 protected:
 
 	QualityMeasure* qm;	//!< evaluates clutering quality
-	double qBest;	//!< quality of currently best clustering
-	Clustering* bestClustering; 	//<! currently best clustering
 
 	Clusterer* finalClusterer;	//!< final clustering algorithm
 	std::vector<Clusterer*> baseClusterers;
@@ -40,13 +39,14 @@ public:
 
 	virtual ~EnsembleClusterer();
 
-	virtual Clustering run(Graph& G);
-
 	virtual void addBaseClusterer(Clusterer&  base);
 
 	virtual void setFinalClusterer(Clusterer& final);
 
 	virtual void setQualityMeasure(QualityMeasure& qm);
+
+	virtual Clustering run(Graph& G);
+
 
 };
 
