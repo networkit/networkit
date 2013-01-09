@@ -44,6 +44,10 @@ Clustering LabelPropagation::run(Graph& G) {
 		majorityLabelCount = 0;
 		nIterations += 1;
 		DEBUG("iteration number " << nIterations);
+		if (nIterations >= 50) {
+			ERROR("LabelPropagation reached " << nIterations << " iterations. It usually terminates after less than 5 iterations. Something has gone terribly wrong! TERMINATING PROGRAM NOW.");
+			exit(1); // terminate program
+		}
 
 		std::vector<node> shuffledNodes;
 		shuffledNodes.resize(n);
