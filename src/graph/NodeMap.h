@@ -9,27 +9,20 @@
 #define NODEMAP_H_
 
 #include "Graph.h"
+#include "../aux/IndexMap.h"
 
 namespace EnsembleClustering {
 
-template <class T> class NodeMap {
+template <typename T> class NodeMap : public IndexMap<node, T> {
 
-protected:
-
-	T* array; //!< array of size (n+1).  array[0] is not a valid entry, since node indices are 1-based
-	T defaultValue;
-	int64_t n;	//<! number of indices
 
 public:
 
-	/**
-	 * Construct a node map which holds n entries. Node ids are 1-based.
-	 */
-	NodeMap(int64_t n);
 
 	/**
-	 * Construct a node map which holds n entries .
+	 * Construct a new IndexMap which holds n entries .
 	 *
+	 * @param[in]	n				number of entries
 	 * @param[in]	defaultValue	all entries are initialized to this value
 	 */
 	NodeMap(int64_t n, T defaultValue);
@@ -60,33 +53,23 @@ public:
 /*** Implementation ***/
 
 
-template<class T> inline EnsembleClustering::NodeMap<T>::NodeMap(int64_t n) {
-	// TODO: use std::vector instead of bare array
-	this->n = n;
-	this->array = new T[n+1];
+
+template<typename T> inline EnsembleClustering::NodeMap<T>::NodeMap(int64_t n, T defaultValue = 0) :
+		IndexMap<node, T>(n, defaultValue) {
 }
 
-template<class T> inline EnsembleClustering::NodeMap<T>::NodeMap(int64_t n, T defaultValue) {
-	this->n = n;
-	this->defaultValue = defaultValue;
-	this->array = new T[n+1];
-	for (int64_t i = 1; i <= n; ++i) {
-		this->array[i] = defaultValue;
-	}
-}
-
-template<class T> inline EnsembleClustering::NodeMap<T>::~NodeMap() {
+template<typename T> inline EnsembleClustering::NodeMap<T>::~NodeMap() {
 	// FIXME: if the destructor is implemented, also implement copy constructor according to the Rule of Three
 	// FIXME: delete[] array;
 }
 
-template<class T> inline T& EnsembleClustering::NodeMap<T>::operator [](const node& u) {
-	return this->array[u];
+template<typename T> inline T& EnsembleClustering::NodeMap<T>::operator [](const node& u) {
+	return this->data[u];
 }
 
-template<class T> inline const T& EnsembleClustering::NodeMap<T>::operator [](
+template<typename T> inline const T& EnsembleClustering::NodeMap<T>::operator [](
 		const node& u) const {
-	return this->array[u];
+	return this->data[u];
 }
 
 // FIXME: operator<<

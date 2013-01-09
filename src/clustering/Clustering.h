@@ -47,7 +47,7 @@ public:
 	 *  @param[in]	u	a node
 	 */
 	inline cluster& operator [](const node& u) {
-		return this->array[u];
+		return this->data[u];
 	}
 	/**
 	 * Index operator for const instances of this class.
@@ -55,15 +55,15 @@ public:
 	 * @param[in]	u 	a node
 	 */
 	inline const cluster& operator [](const node& u) const {
-		return this->array[u];
+		return this->data[u];
 	}
 
 	/**
 	 * Return the cluster (id) in which a node
 	 * is contained.
 	 */
-	inline cluster& clusterOf(node u) const {
-		return this->array[u];
+	inline cluster clusterOf(node u) const {
+		return this->data[u];
 	}
 
 	/**

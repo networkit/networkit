@@ -59,7 +59,7 @@ int64_t Clustering::numberOfClusters() {
 	int64_t k = 0; // number of clusters
 	std::set<cluster> activeClusters;
 	for (int64_t i = 1; i <= this->n; ++i) {
-		cluster c = this->array[i];
+		cluster c = this->data[i];
 		if (activeClusters.find(c) == activeClusters.end()) {
 			k++;
 			activeClusters.insert(c);
@@ -81,7 +81,7 @@ cluster Clustering::lowerBound() const {
 void Clustering::allToSingletons() {
 	#pragma omp parallel for
 	for (node u = 1; u <= this->n; ++u) {
-		this->array[u] = u;
+		this->data[u] = u;
 	}
 	this->nextCluster = this->n + 1;
 }
@@ -96,7 +96,7 @@ cluster Clustering::addCluster() {
 void Clustering::print() {
 	std::cout << "{";
 	for (int64_t i = 0; i <= this->n; ++i) {
-		std::cout << i << ":" << this->array[i] << ", ";
+		std::cout << i << ":" << this->data[i] << ", ";
 	}
 	std::cout << "}" << std::endl;
 }

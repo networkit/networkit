@@ -18,7 +18,6 @@ Modularity::~Modularity() {
 	// TODO Auto-generated destructor stub
 }
 
-// TODO: don't precompute
 
 double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 

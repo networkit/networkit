@@ -12,7 +12,7 @@ namespace EnsembleClustering {
 Matching::Matching(int64_t n) : NodeMap<node>(n, 0) {
 	// initialize each node's matching partner to itself
 	for (int64_t i = 1; i < n+1; ++i) {
-		this->array[i] = i;
+		this->data[i] = i;
 	}
 }
 
@@ -21,7 +21,7 @@ Matching::~Matching() {
 
 
 bool Matching::isMatched(const node& u) const {
-	return (this->array[u] != u);
+	return (this->data[u] != u);
 }
 
 bool Matching::isProper(Graph& G) const {
@@ -86,7 +86,7 @@ bool Matching::areMatched(const node& u, const node& v) const {
 
 
 void Matching::dispose() {
-	delete[] this->array;
+	// FIXME: dispose method?
 }
 
 } /* namespace EnsembleClustering */

@@ -22,12 +22,12 @@ GraphContraction ClusterContracter::run(Graph& G, Clustering& zeta) {
 
 	Graph Gcon;
 
-	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound()); // there is one supernode for each cluster
+	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound(), 0); // there is one supernode for each cluster
 
 	// populate map cluster -> supernode
 	G.forallNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
-		if (! clusterToSuperNode.contains(c)) {
+		if (! clusterToSuperNode.hasBeenSet(c)) {
 			node sv = Gcon.addNode(); // TOOD: probably does not scale well, think about allocating ranges of nodes
 			clusterToSuperNode[c] = sv;
 		}

@@ -35,6 +35,7 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 	ClusteringGenerator clusteringGen;
 	Clustering singleton = clusteringGen.makeSingletonClustering(G);
 
+
 	ClusterContracter contracter;
 	GraphContraction conSingleton = contracter.run(G, singleton);
 	Graph Gcon = conSingleton.getCoarseGraph();
