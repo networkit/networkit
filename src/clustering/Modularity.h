@@ -12,7 +12,7 @@
 
 #include "QualityMeasure.h"
 
-#include "../aux/IndexMap.h"
+#include "../base/IndexMap.h"
 #include "../graph/Graph.h"
 #include "../graph/NodeMap.h"
 

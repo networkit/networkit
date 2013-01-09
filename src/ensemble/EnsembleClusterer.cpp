@@ -12,6 +12,8 @@ namespace EnsembleClustering {
 EnsembleClusterer::EnsembleClusterer() : Clusterer() {
 	this->finalClusterer = NULL;
 	this->qm = NULL;
+	this->qBest = NULL;
+	this->bestClustering = NULL;
 }
 
 EnsembleClusterer::~EnsembleClusterer() {

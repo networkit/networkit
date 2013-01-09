@@ -11,7 +11,7 @@
 
 #include "Contracter.h"
 #include "../clustering/Clustering.h"
-#include "../aux/IndexMap.h"
+#include "../base/IndexMap.h"
 #include "../coarsening/GraphContraction.h"
 
 namespace EnsembleClustering {

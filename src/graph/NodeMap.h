@@ -9,7 +9,7 @@
 #define NODEMAP_H_
 
 #include "Graph.h"
-#include "../aux/IndexMap.h"
+#include "../base/IndexMap.h"
 
 namespace EnsembleClustering {
 
