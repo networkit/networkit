@@ -10,9 +10,9 @@
 namespace EnsembleClustering {
 
 
-Graph::Graph() {
-	this->stingerG = stinger_new();
-	this->nextNode = 1;
+Graph::Graph(int64_t n) {
+	this->stingerG = stinger_new(); // TODO: manage memory
+	this->n = n;
 }
 
 Graph::~Graph() {
@@ -30,7 +30,8 @@ stinger* Graph::asSTINGER() const {
 
 void Graph::insertEdge(node u, node v, double weight, int64_t type,
 		int64_t timestamp) {
-	// FIXME: do not store weight twice
+	// FIXME: do not store weight twice (?)
+	assert ((u <= this->n) && (v <= this->n));	// TODO: disable assertions for performance
 	stinger_insert_edge_pair(this->stingerG, type, u, v, weight, timestamp);
 }
 
@@ -58,9 +59,7 @@ int64_t Graph::numberOfEdges() const {
 
 
 int64_t Graph::numberOfNodes() const {
-	// TODO: is this sufficient? do isolated nodes have to be counted?
-	// TODO: implement node counter
-	return stinger_max_active_vertex(this->stingerG);
+	return this->n;
 }
 
 node Graph::firstNode() const {
@@ -87,19 +86,21 @@ void Graph::removeEdge(node u, node v) {
 }
 
 node Graph::addNode() {
-	// TODO: might lead to race condition or bottleneck
-	node v = this->nextNode;
-	this->nextNode += 1;
-	// currently, Graph does not store of nodes any more than STINGER
+	this->n += 1;	// increment node range by one
+	node v = this->n;
 	return v;
 }
 
-void Graph::setNodeRange(int64_t n) {
-	this->nextNode = n + 1;
-	// FIXME: implement
+void Graph::extendNodeRangeTo(int64_t n) {
+	assert(n > this->n); // new range must be greater than old range
+	this->n = n;
 }
 
-
+bool Graph::isEmpty() {
+	bool empty = (this->n == 0);
+	assert(this->numberOfEdges() == 0);	// stinger edge data structure should not contain any edges either
+	return empty;
+}
 
 node Graph::lastNode() const {
 	return this->numberOfNodes();

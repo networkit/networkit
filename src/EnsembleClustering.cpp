@@ -86,24 +86,6 @@ void testMatching() {
 
 
 
-/**
- * Make a complete graph with n vertices.
- *
- */
-Graph& makeCompleteGraph(int n) {
-
-	Graph G;
-
-	for (node u = 0; u < n; ++u) {
-		for (node v = u + 1; v < n; ++v) {
-			G.insertEdge(u, v);
-		}
-	}
-
-	DEBUG("number of edges " << G.numberOfEdges());
-
-	return G;
-}
 
 
 /**

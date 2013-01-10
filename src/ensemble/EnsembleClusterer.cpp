@@ -37,7 +37,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	// DEBUG
 	GraphIO graphio;
-	graphio.toEdgeList(G, "sandbox/Gensemble.edgelist");
+	graphio.toEdgeList(G, "sandbox/Ginput.edgelist");
 	// DEBUG
 
 

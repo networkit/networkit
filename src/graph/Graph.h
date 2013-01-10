@@ -87,6 +87,7 @@ protected:
 //						//!< Needed to keep track of the number of (possibly isolated) nodes,
 //						//!< since stinger does not store isolated nodes
 
+	node n;		//!< the maximum node id. currently, all nodes 1...n exist in the graph and node deletion is not possible
 	node nextNode;	//!< the next free node index for adding a node
 
 
@@ -101,9 +102,13 @@ public:
 
 
 	/**
-	 * Construct Graph object with new STINGER graph inside.
+	 * Construct a new Graph.
+	 *
+	 * @param[in]	n	number of nodes
+	 *
+	 * After calling this with n >= 1, nodes 1...n exist in the graph.
 	 */
-	Graph();
+	Graph(int64_t n = 0);
 
 	/**
 	 * Initialize with STINGER graph.
@@ -211,7 +216,13 @@ public:
 	/**
 	 * After calling this, nodes 1..n exist in the graph.
 	 */
-	void setNodeRange(int64_t n);
+	void extendNodeRangeTo(int64_t n);
+
+
+	/**
+	 * Return true if graph contains no nodes.
+	 */
+	bool isEmpty();
 
 	/**
 	 * Return the number of (non-isolated) nodes in the graph.

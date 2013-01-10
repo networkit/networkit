@@ -108,7 +108,7 @@ TEST_F(GraphGTest, testParallelLambdaNodeIteration) {
 
 TEST_F(GraphGTest, testLambdaNeighborIteration) {
 
-	Graph G;
+	Graph G(4);
 	node v = 1;
 	G.insertEdge(v, 2);
 	G.insertEdge(v, 3);
@@ -125,7 +125,7 @@ TEST_F(GraphGTest, testLambdaNeighborIteration) {
 
 TEST_F(GraphGTest, testLambdaIncidentEdgeIteration) {
 
-	Graph G;
+	Graph G(4);
 	node v = 1;
 	G.insertEdge(v, 2);
 	G.insertEdge(v, 3);
@@ -142,7 +142,7 @@ TEST_F(GraphGTest, testLambdaIncidentEdgeIteration) {
 
 TEST_F(GraphGTest, testNodeBFS) {
 
-	Graph G;
+	Graph G(4);
 	node v = 1;
 	G.insertEdge(v, 2);
 	G.insertEdge(v, 3);
@@ -158,7 +158,7 @@ TEST_F(GraphGTest, testNodeBFS) {
 
 TEST_F(GraphGTest, testEdgeBFS) {
 
-	Graph G;
+	Graph G(4);
 	node v = 1;
 	G.insertEdge(v, 2);
 	G.insertEdge(v, 3);
@@ -172,6 +172,38 @@ TEST_F(GraphGTest, testEdgeBFS) {
 
 	EXPECT_EQ(4, edgeCount) << "4 edges should have been visited by BFS";
 }
+
+
+TEST_F(GraphGTest, testNodeIteration) {
+	int64_t n = 42;
+	Graph G(n);
+
+	int64_t counter = 0;
+
+	G.forallNodes([&](node v) {
+		counter += 1;
+	});
+
+	EXPECT_EQ(n, counter) << "all nodes should have been counted";
+}
+
+
+TEST_F(GraphGTest, testExtendNodeRange) {
+	int64_t n = 17;
+	int64_t n2 = 42;
+	Graph G(n);
+	G.extendNodeRangeTo(n2);
+
+	int64_t counter = 0;
+
+	G.forallNodes([&](node v) {
+		counter += 1;
+	});
+
+	EXPECT_EQ(n2, counter) << "all nodes should have been counted";
+}
+
+
 
 } /* namespace EnsembleClustering */
 
