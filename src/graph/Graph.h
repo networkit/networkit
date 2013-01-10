@@ -111,14 +111,8 @@ public:
 	Graph(int64_t n = 0);
 
 	/**
-	 * Initialize with STINGER graph.
-	 *
-	 * DEPRECATED: may set Graph to an inconsistent state
-	 *
-	 * @param[in]	stingerG	a STINGER graph struct
+	 * Destructor.
 	 */
-	Graph(stinger* stingerG);
-
 	~Graph();
 
 	/**
@@ -216,7 +210,7 @@ public:
 	/**
 	 * After calling this, nodes 1..n exist in the graph.
 	 */
-	void extendNodeRangeTo(int64_t n);
+	void extendNodeRange(int64_t n);
 
 
 	/**

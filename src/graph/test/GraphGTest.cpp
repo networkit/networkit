@@ -192,7 +192,7 @@ TEST_F(GraphGTest, testExtendNodeRange) {
 	int64_t n = 17;
 	int64_t n2 = 42;
 	Graph G(n);
-	G.extendNodeRangeTo(n2);
+	G.extendNodeRange(n2);
 
 	int64_t counter = 0;
 

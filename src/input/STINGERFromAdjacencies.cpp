@@ -24,7 +24,7 @@ STINGERFromAdjacencies::~STINGERFromAdjacencies() {
 }
 
 void STINGERFromAdjacencies::createGraph() {
-	this->G = new Graph(stinger_new());
+	this->G = new Graph;
 
 }
 

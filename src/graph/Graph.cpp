@@ -18,10 +18,6 @@ Graph::Graph(int64_t n) {
 Graph::~Graph() {
 }
 
-Graph::Graph(stinger* stingerG) {
-	this->stingerG = stingerG;
-}
-
 
 
 stinger* Graph::asSTINGER() const {
@@ -32,6 +28,7 @@ void Graph::insertEdge(node u, node v, double weight, int64_t type,
 		int64_t timestamp) {
 	// FIXME: do not store weight twice (?)
 	assert ((u <= this->n) && (v <= this->n));	// TODO: disable assertions for performance
+	assert(u != v); // no self-loops allowed
 	stinger_insert_edge_pair(this->stingerG, type, u, v, weight, timestamp);
 }
 
@@ -91,7 +88,7 @@ node Graph::addNode() {
 	return v;
 }
 
-void Graph::extendNodeRangeTo(int64_t n) {
+void Graph::extendNodeRange(int64_t n) {
 	assert(n > this->n); // new range must be greater than old range
 	this->n = n;
 }
