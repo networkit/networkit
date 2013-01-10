@@ -26,7 +26,7 @@ Graph GraphGenerator::makeErdosRenyiGraph(int64_t n, double p) {
 	RandomProbability randP;
 	Graph G(n);
 	for (node u = 1; u <= n; ++u) {
-		for (node v = u; v <= n; ++v) {
+		for (node v = u + 1; v <= n; ++v) {
 			if (randP.generate() <= p) {
 				G.insertEdge(u, v);
 			}
@@ -48,7 +48,7 @@ Graph GraphGenerator::makeCompleteGraph(int64_t n) {
 	RandomProbability randP;
 	Graph G(n);
 	for (node u = 1; u <= n; ++u) {
-		for (node v = u; v <= n; ++v) {
+		for (node v = u + 1; v <= n; ++v) {
 			G.insertEdge(u, v);
 		}
 	}
@@ -73,7 +73,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin,
 	assert (zeta.numberOfClusters() == k);
 
 	for (node u = 1; u <= n; ++u) {
-		for (node v = u; v <= n; ++v) {
+		for (node v = u + 1; v <= n; ++v) {
 			if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 				if (randP.generate() <= pin) {
 					G.insertEdge(u, v);

@@ -19,7 +19,7 @@
 #include "../overlap/RegionGrowingOverlapper.h"
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/GraphContraction.h"
-#include "../input/GraphIO.h"
+#include "../io/GraphIO.h"
 
 namespace EnsembleClustering {
 
