@@ -21,11 +21,18 @@ TEST_F(AuxGTest, testRandomInteger) {
 		rVector.push_back(r);
 	}
 
+	int64_t minR = *(min_element(rVector.begin(), rVector.end()));
+	int64_t maxR = *(max_element(rVector.begin(), rVector.end()));
+
+	EXPECT_EQ(minR, l);
+	EXPECT_EQ(maxR, u);
+
 	double sum = 0.0;
 	for (int64_t r : rVector) {
 		sum += r;
 	}
 	double avg = sum / n;
+
 
 	DEBUG("avg rand integer: " << avg);
 	EXPECT_LE(avg, 6.0);
@@ -48,6 +55,7 @@ TEST_F(AuxGTest, testRandomProbability) {
 		sum += r;
 	}
 	double avg = sum / n;
+
 
 	DEBUG("avg rand probability: " << avg);
 	EXPECT_LE(avg, 0.6);

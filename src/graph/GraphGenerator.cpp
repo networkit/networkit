@@ -60,16 +60,14 @@ Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin,
 
 	Graph G(n);
 	RandomProbability randP;
+	RandomInteger randInt(1, k);
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
-	cluster c = 1;
-	for (node v = 1; v <= n; ++v) {
+	G.forallNodes([&](node v){
+		cluster c = randInt.generate();
 		zeta.addToCluster(c, v);
-		c++;
-		if (c > k) {
-			c = 1;
-		}
-	}
+	});
+
 	assert (zeta.numberOfClusters() == k);
 
 	for (node u = 1; u <= n; ++u) {
