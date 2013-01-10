@@ -7,9 +7,7 @@
 
 #include "RandomProbability.h"
 
-RandomProbability::RandomProbability() {
-	std::uniform_real_distribution<double> dist(0.0, 1.0);
-	this->uniform = dist;
+RandomProbability::RandomProbability() :  randomEngine((unsigned int) time(0)), distribution(0.0, 1.0) {
 }
 
 RandomProbability::~RandomProbability() {
@@ -17,6 +15,6 @@ RandomProbability::~RandomProbability() {
 }
 
 double RandomProbability::generate() {
-	double r = this->uniform(this->randomEngine);
+	double r = this->distribution(this->randomEngine);
 	return r;
 }
