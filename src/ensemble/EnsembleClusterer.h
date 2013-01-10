@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <cmath>
+#include <stdexcept>
 
 
 #include "../clustering/Clusterer.h"

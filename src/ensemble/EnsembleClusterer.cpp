@@ -37,7 +37,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	// DEBUG
 	GraphIO graphio;
-	graphio.writeEdgeList(G, "sandbox/Ginput.edgelist");
+	graphio.writeAdjacencyList(G, "sandbox/Ginput.adjlist");
 	// DEBUG
 
 
@@ -68,9 +68,14 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// base clusterers calculate base clusterings
 		for (auto clusterer : baseClusterers) {
-			Clustering zeta = clusterer->run(G);
-			baseClusterings.push_back(zeta);
-			DEBUG("created clustering with k=" << zeta.numberOfClusters());
+			try {
+				Clustering zeta = clusterer->run(G);
+				baseClusterings.push_back(zeta);
+				DEBUG("created clustering with k=" << zeta.numberOfClusters());
+			} catch (...) {
+				ERROR("base clusterer failed.");
+				throw std::runtime_error("base clusterer failed.");
+			}
 		}
 
 		// calculate overlap of base clusterings
@@ -116,7 +121,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	assert (Gbest != NULL);
 	DEBUG("Gbest graph: n=" << Gbest->numberOfNodes() << " m=" << Gbest->numberOfEdges());
 	// DEBUG
-	graphio.writeEdgeList(*Gbest, "sandbox/Gbest.edgelist");
+	graphio.writeAdjacencyList(*Gbest, "sandbox/Gbest.adjlist");
 	// DEBUG
 	Clustering zetaFinal = this->finalClusterer->run(*Gbest); // FIXME: LabelPropagation does not terminate
 

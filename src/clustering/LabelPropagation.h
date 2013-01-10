@@ -15,6 +15,7 @@
 #include <map>
 #include <unordered_map>
 #include <algorithm>
+#include <stdexcept>
 
 #include "../graph/NodeMap.h"
 #include "../base/IndexMap.h"
