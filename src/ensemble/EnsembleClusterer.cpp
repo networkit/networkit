@@ -37,7 +37,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	// DEBUG
 	GraphIO graphio;
-	graphio.toEdgeList(G, "sandbox/Ginput.edgelist");
+	graphio.writeEdgeList(G, "sandbox/Ginput.edgelist");
 	// DEBUG
 
 
@@ -116,7 +116,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	assert (Gbest != NULL);
 	DEBUG("Gbest graph: n=" << Gbest->numberOfNodes() << " m=" << Gbest->numberOfEdges());
 	// DEBUG
-	graphio.toEdgeList(*Gbest, "sandbox/Gbest.edgelist");
+	graphio.writeEdgeList(*Gbest, "sandbox/Gbest.edgelist");
 	// DEBUG
 	Clustering zetaFinal = this->finalClusterer->run(*Gbest); // FIXME: LabelPropagation does not terminate
 

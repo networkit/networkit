@@ -18,7 +18,7 @@ GraphIO::~GraphIO() {
 	// TODO Auto-generated destructor stub
 }
 
-void GraphIO::toEdgeList(Graph& G, std::string path) {
+void GraphIO::writeEdgeList(Graph& G, std::string path) {
 
 	std::ofstream file;
 	file.open(path.c_str());
@@ -29,6 +29,20 @@ void GraphIO::toEdgeList(Graph& G, std::string path) {
 
 	file.close();
 	INFO("wrote graph to file: " << path);
+
+}
+
+void GraphIO::writeAdjacencyList(Graph& G, std::string path) {
+	std::ofstream file;
+	file.open(path.c_str());
+
+	G.forallNodes([&](node v) {
+		file << v;
+		G.forallNeighborsOf(v, [&](node x) {
+			file << " " << x;
+		});
+		file << std::endl;
+	});
 
 }
 

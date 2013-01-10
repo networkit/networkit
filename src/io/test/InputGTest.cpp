@@ -14,7 +14,38 @@ TEST_F(InputGTest, testGraphIOEdgeList) {
 	Graph G = graphGen.makeCircularGraph(20);
 	GraphIO graphio;
 	std::string path = "sandbox/edgelist.txt";
-	graphio.toEdgeList(G, path);
+	graphio.writeEdgeList(G, path);
+
+	bool exists = false;
+	std::ifstream file(path);
+	if (file) {
+		exists = true;
+	}
+	EXPECT_TRUE(exists) << "A file should have been created : " << path;
+}
+
+TEST_F(InputGTest, testGraphIOAdjacencyList) {
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCircularGraph(20);
+	GraphIO graphio;
+	std::string path = "sandbox/circular.adjlist";
+	graphio.writeAdjacencyList(G, path);
+
+	bool exists = false;
+	std::ifstream file(path);
+	if (file) {
+		exists = true;
+	}
+	EXPECT_TRUE(exists) << "A file should have been created : " << path;
+}
+
+
+TEST_F(InputGTest, testGraphIOForIsolatedNodes) {
+	GraphGenerator graphGen;
+	Graph G(20);
+	GraphIO graphio;
+	std::string path = "sandbox/isolated.adjlist";
+	graphio.writeAdjacencyList(G, path);
 
 	bool exists = false;
 	std::ifstream file(path);
