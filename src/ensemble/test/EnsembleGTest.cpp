@@ -31,6 +31,11 @@ TEST_F(EnsembleGTest, testEnsembleClusterer) {
 	double pOut = 0.001;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pIn, pOut);
 
+	// DEBUG
+	GraphIO graphio;
+	graphio.writeAdjacencyList(G, "sandbox/Ginput.adjlist");
+	// DEBUG
+
 
 	Clustering zeta = ensembleClusterer.run(G);
 

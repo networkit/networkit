@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 #include <fstream>
 
-#include "../../aux/log.h"
+#include "../../aux/Log.h"
 #include "../METISParser.h"
 
 #include "../GraphIO.h"

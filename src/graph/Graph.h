@@ -17,7 +17,7 @@ extern "C" {
 #include "stinger.h"
 }
 
-#include "../aux/log.h"
+#include "../aux/Log.h"
 
 namespace EnsembleClustering {
 

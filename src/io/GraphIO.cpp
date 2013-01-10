@@ -43,7 +43,7 @@ void GraphIO::writeAdjacencyList(Graph& G, std::string path) {
 		});
 		file << std::endl;
 	});
-
+	INFO("wrote graph to file: " << path);
 }
 
 } /* namespace EnsembleClustering */

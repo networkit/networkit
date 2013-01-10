@@ -20,7 +20,7 @@
 #include <gtest/gtest.h>
 
 // EnsembleClustering
-#include "aux/log.h"
+#include "aux/Log.h"
 #include "aux/Noise.h"
 #include "graph/Graph.h"
 #include "io/METISParser.h"

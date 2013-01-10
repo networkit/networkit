@@ -15,7 +15,7 @@
 #include <sstream>
 #include <utility>
 
-#include "../aux/log.h"
+#include "../aux/Log.h"
 
 
 namespace EnsembleClustering {

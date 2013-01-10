@@ -13,7 +13,7 @@
 #include <fstream>
 
 #include "../graph/Graph.h"
-#include "../aux/log.h"
+#include "../aux/Log.h"
 
 namespace EnsembleClustering {
 

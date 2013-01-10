@@ -35,10 +35,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// FIXME: LabelPropagation does not terminate on contracted graph
 	DEBUG("starting EnsembleClusterer on graph G with n=" << G.numberOfNodes() << " m=" << G.numberOfEdges());
 
-	// DEBUG
-	GraphIO graphio;
-	graphio.writeAdjacencyList(G, "sandbox/Ginput.adjlist");
-	// DEBUG
 
 
 	// sub-algorithms
@@ -120,9 +116,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// use final clusterer to find clustering of contracted graph
 	assert (Gbest != NULL);
 	DEBUG("Gbest graph: n=" << Gbest->numberOfNodes() << " m=" << Gbest->numberOfEdges());
-	// DEBUG
-	graphio.writeAdjacencyList(*Gbest, "sandbox/Gbest.adjlist");
-	// DEBUG
 	Clustering zetaFinal = this->finalClusterer->run(*Gbest); // FIXME: LabelPropagation does not terminate
 
 

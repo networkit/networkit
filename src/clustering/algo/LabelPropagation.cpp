@@ -41,11 +41,12 @@ Clustering LabelPropagation::run(Graph& G) {
 
 	// propagate labels
 	while (majorityLabelCount != n) {
+		DEBUG("number of nodes which already have the majority label: " << majorityLabelCount << " of " << G.numberOfNodes());
 		majorityLabelCount = 0;
 		nIterations += 1;
 		DEBUG("iteration number " << nIterations);
 		if (nIterations >= 42) {
-			ERROR("LabelPropagation reached " << nIterations << " iterations. It usually terminates after less than 5 iterations. Something has gone terribly wrong! TERMINATING PROGRAM NOW.");
+			ERROR("LabelPropagation reached " << nIterations << " iterations. It usually terminates after less than 5 iterations. Something has gone terribly wrong.");
 			throw std::runtime_error("aborting LabelPropagation to avoid infinite loop");
 		}
 

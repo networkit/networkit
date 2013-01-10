@@ -8,7 +8,7 @@
 #ifndef MATCHING_H_
 #define MATCHING_H_
 
-# include "../aux/log.h"
+# include "../aux/Log.h"
 #include "../graph/Graph.h"
 #include "../graph/NodeMap.h"
 
