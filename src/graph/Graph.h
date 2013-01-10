@@ -258,6 +258,13 @@ public:
 
 
 	/**
+	 * Iterate over all pairs of undirected (non-self-loop) node pairs of a graph and execute callback function.
+	 *
+	 */
+	template<typename Callback> void forallNodePairs(Callback func, std::string par="", std::string write="");
+
+
+	/**
 	 * Iterate over all nodes of the graph and execute callback function (lambda closure).
 	 */
 	template<typename Callback> void forallNodes(Callback func, std::string par="");
@@ -368,6 +375,18 @@ inline void EnsembleClustering::Graph::forallNeighborsOf(node v, Callback func) 
 	} STINGER_FORALL_EDGES_OF_VTX_END();
 }
 
+template<typename Callback>
+inline void EnsembleClustering::Graph::forallNodePairs(Callback func, std::string par,
+		std::string write) {
+	for (node u = 1; u <= n; ++u) {
+		for (node v = u + 1; v <= n; ++v) {
+			// call node pair function
+			func(u, v);
+		}
+	}
+}
+
+
 
 template<typename Callback>
 inline void EnsembleClustering::Graph::forallEdgesOf(node u, Callback func) {
@@ -439,6 +458,7 @@ inline void EnsembleClustering::Graph::breadthFirstEdgesFrom(node r, Callback fu
 			}
 		} STINGER_FORALL_EDGES_OF_VTX_END();
 	} while (! q.empty());
-}
+	}
+
 
 #endif /* GRAPH_H_ */
