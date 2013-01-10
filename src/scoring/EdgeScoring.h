@@ -15,10 +15,13 @@ namespace EnsembleClustering {
 
 class EdgeScoring {
 
+protected:
+
+	Graph* G;	//!< pointer to the graph
 
 public:
 
-	EdgeScoring();
+	EdgeScoring(Graph& G);
 
 	virtual ~EdgeScoring();
 

@@ -19,9 +19,18 @@ namespace EnsembleClustering {
 
 class ModularityScoring: public EnsembleClustering::EdgeScoring {
 
+protected:
+
+	double omegaE;	//!< total weight of the graph
+
 public:
 
-	ModularityScoring();
+	/**
+	 * @param[in]	G	a graph instance
+	 *
+	 * Do not modify the graph while using this instance of ModularityScoring.
+	 */
+	ModularityScoring(Graph& G);
 
 	virtual ~ModularityScoring();
 
@@ -31,17 +40,14 @@ public:
 	 * modularity increase which can be gained by merging
 	 * the clusters of u and v.
 	 *
+	 *		 $$\Delta mod(c, d) := \frac{1}{2 \omega(E)} \left ( 2 \omega(E) \omega(c,d) - \omega(c) \omega(d) \right ) $$
+	 *
 	 * @param[in]	u	source node id
 	 * @param[out]	v	target node id
 	 *
 	 */
 	virtual double scoreEdge(node u, node v);
 
-	/**
-	 * Calculates the modularity of the given clustering;
-	 *
-	 */
-	virtual double mod(Clustering& clustering) =0; // TODO: needed?
 
 	/**
 	 * Calculates the difference in modularity that would result from a merger of

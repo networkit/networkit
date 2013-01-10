@@ -9,9 +9,8 @@
 
 namespace EnsembleClustering {
 
-EdgeScoring::EdgeScoring() {
-	// TODO Auto-generated constructor stub
-
+EdgeScoring::EdgeScoring(Graph& G) {
+	this->G = &G;
 }
 
 EdgeScoring::~EdgeScoring() {

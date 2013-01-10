@@ -34,6 +34,11 @@ Graph GraphGenerator::makeErdosRenyiGraph(int64_t n, double p) {
 	}
 	return G;
 }
+
+Graph GraphGenerator::makeRandomGraph(int64_t n, double p) {
+	return this->makeErdosRenyiGraph(n, p);	// alias
+}
+
 Graph GraphGenerator::makeCircularGraph(int64_t n) {
 	// TODO: modernize
 	Graph G(n);
@@ -54,6 +59,8 @@ Graph GraphGenerator::makeCompleteGraph(int64_t n) {
 	}
 	return G;
 }
+
+
 
 Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout) {
 	assert(pin >= pout);

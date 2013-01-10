@@ -10,9 +10,8 @@
 namespace EnsembleClustering {
 
 
-ModularityScoring::ModularityScoring() {
-	// TODO Auto-generated constructor stub
-
+ModularityScoring::ModularityScoring(Graph& G) : EdgeScoring(G) {
+	this->omegaE = this->G->totalEdgeWeight();
 }
 
 ModularityScoring::~ModularityScoring() {
@@ -21,26 +20,13 @@ ModularityScoring::~ModularityScoring() {
 
 double ModularityScoring::scoreEdge(node u, node v) {
 
+	// calculate $$\Delta mod(c, d) := \frac{1}{2 \omega(E)} \left ( 2 \omega(E) \omega(c,d) - \omega(c) \omega(d) \right ) $$
+
+	double deltaMod = (1 / (2 * omegaE)) * (2 * omegaE * G->weight(u, v) - G->weight(u) * G->weight(v));
+	return deltaMod;
+
 }
 
-//double ModularityScoring::mod(Clustering& clustering) {
-//
-//	int k; // number of clusters
-//	int c; // current cluster id
-//
-//	double mod; // result
-//	double total; // total weight of all edges
-//	double cutSum; // sum of cut weights to all other clusters
-//	double clusterSum; // result of term which is a sum over all clusters
-//	for (int j = 0; j < k; ++j) {
-//		// sum over all cuts
-//		if (j != c) {
-//			// cutSum += this->cutweight(clustering[c], clustering[j]);
-//		}
-//	}
-//	// this->weight(cluster) * (2 * total - this->weight(cluster)) - 2 * total * cutSum;
-//	mod = (1 / 4 * total) * clusterSum;
-//}
 
 
 

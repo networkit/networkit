@@ -33,6 +33,12 @@ public:
 
 
 	/**
+	 * Alias for makeErdosRenyiGraph
+	 */
+	Graph makeRandomGraph(int64_t n, double p);
+
+
+	/**
 	 * Generate a graph whose nodes and edges form a circle.
 	 *
 	 * @param[in]	n	number of nodes
