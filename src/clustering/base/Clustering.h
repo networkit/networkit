@@ -10,7 +10,7 @@
 
 #include <set>
 
-#include "../graph/NodeMap.h"
+#include "../../graph/NodeMap.h"
 
 
 namespace EnsembleClustering {

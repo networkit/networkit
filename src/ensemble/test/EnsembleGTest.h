@@ -13,8 +13,8 @@
 
 #include "../EnsembleClusterer.h"
 #include "../../graph/GraphGenerator.h"
-#include "../../clustering/Modularity.h"
-#include "../../clustering/LabelPropagation.h"
+#include "../../clustering/base/Modularity.h"
+#include "../../clustering/algo/LabelPropagation.h"
 
 namespace EnsembleClustering {
 

@@ -10,7 +10,7 @@
 
 #include "Graph.h"
 #include "../aux/RandomProbability.h"
-#include "../clustering/Clustering.h"
+#include "../clustering/base/Clustering.h"
 
 namespace EnsembleClustering {
 

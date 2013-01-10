@@ -8,8 +8,8 @@
 #ifndef CLUSTERER_H_
 #define CLUSTERER_H_
 
-#include "../graph/Graph.h"
-#include "Clustering.h"
+#include "../../graph/Graph.h"
+#include "../base/Clustering.h"
 
 namespace EnsembleClustering {
 

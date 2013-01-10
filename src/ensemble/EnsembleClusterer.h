@@ -13,10 +13,10 @@
 #include <stdexcept>
 
 
-#include "../clustering/Clusterer.h"
-#include "../clustering/Clustering.h"
-#include "../clustering/Modularity.h"
-#include "../clustering/ClusteringGenerator.h"
+#include "../clustering/algo/Clusterer.h"
+#include "../clustering/base/Clustering.h"
+#include "../clustering/base/Modularity.h"
+#include "../clustering/base/ClusteringGenerator.h"
 #include "../overlap/RegionGrowingOverlapper.h"
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/GraphContraction.h"

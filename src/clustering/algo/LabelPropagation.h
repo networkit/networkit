@@ -9,7 +9,7 @@
 #define LABELPROPAGATION_H_
 
 #include "Clusterer.h"
-#include "Clustering.h"
+#include "../base/Clustering.h"
 
 #include <vector>
 #include <map>
@@ -17,9 +17,9 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "../graph/NodeMap.h"
-#include "../base/IndexMap.h"
-#include "../aux/log.h"
+#include "../../graph/NodeMap.h"
+#include "../../base/IndexMap.h"
+#include "../../aux/log.h"
 
 namespace EnsembleClustering {
 

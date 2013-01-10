@@ -12,11 +12,11 @@
 
 
 #include "../../aux/log.h"
-#include "../Clustering.h"
-#include "../Modularity.h"
-#include "../ClusteringGenerator.h"
+#include "../base/Clustering.h"
+#include "../base/Modularity.h"
+#include "../base/ClusteringGenerator.h"
 #include "../../graph/GraphGenerator.h"
-#include "../LabelPropagation.h"
+#include "../algo/LabelPropagation.h"
 
 namespace EnsembleClustering {
 

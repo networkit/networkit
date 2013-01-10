@@ -15,16 +15,9 @@
 #include "log4cxx/basicconfigurator.h"
 
 
-// cppunit
-#include <cppunit/CompilerOutputter.h>
-#include <cppunit/extensions/TestFactoryRegistry.h>
-#include <cppunit/TestResult.h>
-#include <cppunit/TestResultCollector.h>
-#include <cppunit/TestRunner.h>
-#include <cppunit/BriefTestProgressListener.h>
 
 // GoogleTest
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 // EnsembleClustering
 #include "aux/log.h"
@@ -33,10 +26,10 @@
 #include "io/METISParser.h"
 #include "io/METIStoSTINGER.h"
 #include "matching/Matching.h"
-#include "clustering/Clustering.h"
-#include "clustering/ClusteringGenerator.h"
+#include "clustering/base/Clustering.h"
+#include "clustering/base/ClusteringGenerator.h"
 #include "graph/GraphGenerator.h"
-#include "clustering/Modularity.h"
+#include "clustering/base/Modularity.h"
 
 extern "C" {
 #include "stinger.h"

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "../graph/Graph.h"
-#include "../clustering/Clustering.h"
+#include "../clustering/base/Clustering.h"
 
 namespace EnsembleClustering {
 

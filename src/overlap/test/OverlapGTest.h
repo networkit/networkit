@@ -12,7 +12,7 @@
 
 #include "../RegionGrowingOverlapper.h"
 #include "../../graph/GraphGenerator.h"
-#include "../../clustering/ClusteringGenerator.h"
+#include "../../clustering/base/ClusteringGenerator.h"
 
 
 namespace EnsembleClustering {

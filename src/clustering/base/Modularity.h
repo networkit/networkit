@@ -12,9 +12,9 @@
 
 #include "QualityMeasure.h"
 
-#include "../base/IndexMap.h"
-#include "../graph/Graph.h"
-#include "../graph/NodeMap.h"
+#include "../../base/IndexMap.h"
+#include "../../graph/Graph.h"
+#include "../../graph/NodeMap.h"
 
 
 namespace EnsembleClustering {
