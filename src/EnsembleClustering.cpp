@@ -43,44 +43,6 @@ using namespace EnsembleClustering;
 
 
 
-//void testMETIStoSTINGER() {
-//
-//	std::string graphPath = "/Users/cls/workspace/Data/DIMACS/kron_g500-simple-logn16.graph";
-//	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "trying to read from graph file " << graphPath);
-//
-//
-//	Graph* G;
-//	METISToGraph* m2s = new METISToGraph();
-//	G = m2s->read(graphPath);
-//
-//	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "read graph " << G << " from file " << graphPath);
-//
-//}
-
-
-
-
-void testMatching() {
-	INFO("testing matching");
-
-	int n = 10e7;
-	Matching M(n);
-
-	#pragma omp parallel for
-	for (node u = 1; u <= n; ++u) {
-		M.match(u, (u + 1) % n);
-	}
-
-//	std::cout << "Node " << u << " is matched: " << M.isMatched(u) << std::endl;
-//	std::cout << "Node " << u << " is matched with " << M[u] << std::endl;
-
-}
-
-
-
-
-
-
 /**
  * Call this first to configure logging output.
  */

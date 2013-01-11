@@ -9,7 +9,7 @@
 
 namespace EnsembleClustering {
 
-TEST_F(EnsembleGTest, testEnsembleClusterer) {
+TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 
 	EnsembleClusterer ensembleClusterer;
 	// configure EnsembleClusterer
@@ -27,8 +27,9 @@ TEST_F(EnsembleGTest, testEnsembleClusterer) {
 	GraphGenerator graphGen;
 	int64_t n = 20;
 	int64_t k = 3;
-	double pIn = 0.5;
-	double pOut = 0.001;
+	// these parameters generate a clique graph
+	double pIn = 1.0;
+	double pOut = 0.0;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pIn, pOut);
 
 	// DEBUG
@@ -51,13 +52,8 @@ TEST_F(EnsembleGTest, testEnsembleClusterer) {
 	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters are easy to detect";
 
 	Modularity modularity;
-	try {
-		double mod = modularity.getQuality(zeta, G);
-		INFO("modularity produced by EnsembleClusterer: " << mod);
-	} catch (...) {
-		ERROR("exception thrown in Modularity.getQuality()")
-	}
-
+	double mod = modularity.getQuality(zeta, G);
+	INFO("modularity produced by EnsembleClusterer: " << mod);
 
 }
 
