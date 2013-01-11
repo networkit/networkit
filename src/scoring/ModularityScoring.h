@@ -49,16 +49,16 @@ public:
 	virtual double scoreEdge(node u, node v);
 
 
-	/**
-	 * Calculates the difference in modularity that would result from a merger of
-	 * two clusters.
-	 *
-	 */
-	virtual double deltaMod(cluster c, cluster d) =0;
-
-	virtual double cutweight(cluster c, cluster d) =0;
-
-	virtual double weight(cluster c) =0;
+//	/**
+//	 * Calculates the difference in modularity that would result from a merger of
+//	 * two clusters.
+//	 *
+//	 */
+//	virtual double deltaMod(cluster c, cluster d) =0;
+//
+//	virtual double cutweight(cluster c, cluster d) =0;
+//
+//	virtual double weight(cluster c) =0;
 };
 
 } /* namespace EnsembleClustering */

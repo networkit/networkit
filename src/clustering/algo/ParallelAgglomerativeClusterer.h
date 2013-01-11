@@ -9,6 +9,10 @@
 #define PARALLELAGGLOMERATIVECLUSTERER_H_
 
 #include "Clusterer.h"
+#include "../../scoring/ModularityScoring.h"
+#include "../../matching/ParallelMatcher.h"
+#include "../../coarsening/MatchingContracter.h"
+
 
 namespace EnsembleClustering {
 
@@ -19,6 +23,8 @@ public:
 	ParallelAgglomerativeClusterer();
 
 	virtual ~ParallelAgglomerativeClusterer();
+
+	virtual Clustering run(Graph& G);
 };
 
 } /* namespace EnsembleClustering */

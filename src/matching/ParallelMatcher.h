@@ -30,7 +30,7 @@ public:
 
 	virtual ~ParallelMatcher();
 
-	virtual Matching& run(Graph& G);
+	virtual Matching run(Graph& G);
 };
 
 } /* namespace EnsembleClustering */

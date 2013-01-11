@@ -10,11 +10,25 @@
 
 namespace EnsembleClustering {
 
-class MatchingContracter {
+class MatchingContracter : public Contracter {
+
 public:
+
 	MatchingContracter();
+
 	virtual ~MatchingContracter();
+
+	/**
+	 * Contracts graph according to a matching.
+	 *
+	 * @param[in]	G	fine graph
+	 * @param[in]	M	matching
+	 *
+	 * @param[out]		coarse graph
+	 */
+	virtual Graph run(Graph& G, Matching& M);
 };
+
 
 } /* namespace EnsembleClustering */
 #endif /* MATCHINGCONTRACTER_H_ */

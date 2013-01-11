@@ -18,4 +18,8 @@ MatchingContracter::~MatchingContracter() {
 	// TODO Auto-generated destructor stub
 }
 
+Graph MatchingContracter::run(Graph& G, Matching& M) {
+	// TODO: implement MatchingContracter.run
+}
+
 } /* namespace EnsembleClustering */

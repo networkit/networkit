@@ -21,7 +21,7 @@ public:
 
 	virtual ~Matcher();
 
-	virtual Matching& run(const Graph& G) = 0;
+	virtual Matching run(Graph& G) = 0;
 };
 
 } /* namespace EnsembleClustering */

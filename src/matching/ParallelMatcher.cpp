@@ -19,7 +19,7 @@ ParallelMatcher::~ParallelMatcher() {
 	// TODO Auto-generated destructor stub
 }
 
-Matching& ParallelMatcher::run(Graph& G) {
+Matching ParallelMatcher::run(Graph& G) {
 
 	// TODO: exclude isolated nodes?
 
@@ -28,7 +28,7 @@ Matching& ParallelMatcher::run(Graph& G) {
 	NodeMap<std::set<node> > S(n, std::set<node>()); 	//!< S[v] is a set with the potential
 														//!< candidates of node v
 	std::vector<node> D;	//!< targets of dominating edges
-	Matching* M = new Matching(n);
+	Matching M(n);
 
 
 	G.forallNodes([&](node v){
@@ -48,7 +48,7 @@ Matching& ParallelMatcher::run(Graph& G) {
 		if (candidate[candidate[v]] == v) {
 			D.push_back(v);
 			D.push_back(candidate[v]);
-			M->match(v, candidate[v]);
+			M.match(v, candidate[v]);
 		}
 	});
 
@@ -58,7 +58,7 @@ Matching& ParallelMatcher::run(Graph& G) {
 		D.pop_back();
 
 		for (node x : S[v]) {
-			if ((x != candidate[v]) && (! M->areMatched(x, candidate[x]))) {
+			if ((x != candidate[v]) && (! M.areMatched(x, candidate[x]))) {
 				S[x].erase(v);
 				if (! S[x].empty()) {
 					// find new candidate
@@ -72,14 +72,14 @@ Matching& ParallelMatcher::run(Graph& G) {
 				if (candidate[candidate[x]] == x) {
 					D.push_back(x);
 					D.push_back(candidate[x]);
-					M->match(x, candidate[x]);
+					M.match(x, candidate[x]);
 				}
 
 			}
 		}
 	} // end while
 
-	return *M;
+	return M;
 }
 
 } /* namespace EnsembleClustering */
