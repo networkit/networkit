@@ -59,7 +59,7 @@ typedef std::pair<node, node> edge; //!< an undirected edge is a pair of nodes (
 #define READ_ONLY_FORALL_EDGES_OF_NODE_BEGIN(G, V) STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_BEGIN(G.asSTINGER(), V)
 #define READ_ONLY_FORALL_EDGES_OF_NODE_END() STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_END()
 
-// TODO: add the missing macros
+// TODO: add the missing traversal macros
 
 
 
@@ -82,11 +82,6 @@ class Graph {
 protected:
 
 	stinger* stingerG;
-	// TODO: is it necessary to store isolated nodes?
-//	int64_t maxNode; 	//!< the maximum index for a node in the graph.
-//						//!< Needed to keep track of the number of (possibly isolated) nodes,
-//						//!< since stinger does not store isolated nodes
-
 	node n;		//!< the maximum node id. currently, all nodes 1...n exist in the graph and node deletion is not possible
 	node nextNode;	//!< the next free node index for adding a node
 
@@ -240,7 +235,8 @@ public:
 
 	/********** ATTRIBUTES **************/
 
-	// TODO: template <typename T> void addNodeMap(NodeMap<T>& map)
+	// TODO: feature: append NodeMap to graph for node attributes
+	// template <typename T> void addNodeMap(NodeMap<T>& map)
 
 
 

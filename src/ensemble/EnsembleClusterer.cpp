@@ -51,6 +51,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// store all clusterings/contracted graphs here
 	std::vector<Graph> graphHierarchy;
 	std::vector<Clustering> clusteringHierarchy;
+	std::vector<GraphContraction> contractionHierarchy; // TODO: store
 
 	int nIter = 0;
 	qBest = -1; // => repeat loop at least once
@@ -99,6 +100,8 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			qBest = qNew;
 			// contract graph according to overlap clustering
 			GraphContraction con = contracter.run(G, core);
+			contractionHierarchy.push_back(con); 			// store contraction in hierarchy
+
 			Graph Gcon = con.getCoarseGraph();
 			DEBUG("contracted graph: n=" << Gcon.numberOfNodes() << " m=" << Gcon.numberOfEdges());
 			// work on contracted graph
@@ -120,10 +123,15 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 
 	// project final clustering back to original graph
-	// TODO: Clustering& zetaEnsemble = this->projectBack(zetaFinal, GconFinal, G);
+	ClusteringProjector projector;
+	int h = contractionHierarchy.size() - 1; // coarsest contraction in the hierarchy
+	Clustering zeta = zetaFinal;
+	for (int i = h; i > 1; --i) {
+		zeta = projector.projectBack(contractionHierarchy[i], zeta); // TODO: check
+	}
 
 
-	return zetaFinal;
+	return zeta;
 }
 
 

@@ -30,37 +30,58 @@ Clustering LabelPropagation::run(Graph& G) {
 	// create the clustering to be returned
 	// set unique label for each node
 	Clustering labels(n);
+	// TODO: use labels.allToSingleton
 	G.forallNodes([&](node v){
 		labels.toSingleton(v);
-		// DEBUG
-		cluster c = labels.clusterOf(v);
 	});
 
 	int64_t majorityLabelCount = 0;	// number of nodes which already have the majority label
 	int64_t nIterations = 0; 	// number of iterations
 
+	/**
+	 * == Dealing with isolated nodes ==
+	 *
+	 * The pseudocode published does not deal with isolated nodes (and therefore does not terminate if they are present).
+	 * Isolated nodes stay singletons. They can be ignored in the while loop, but the loop condition must
+	 * compare to the number of non-isolated nodes instead of n.
+	 *
+	 */
+
+	// count connected nodes for loop condition
+	int64_t nConnected = 0;
+	G.forallNodes([&](node v) {
+		if (G.degree(v) > 0) {
+			nConnected += 1;
+		}
+	});
+
+
 	// propagate labels
-	while (majorityLabelCount != n) {
-		DEBUG("number of nodes which already have the majority label: " << majorityLabelCount << " of " << G.numberOfNodes());
-		majorityLabelCount = 0;
+	while (majorityLabelCount != nConnected) {
 		nIterations += 1;
-		DEBUG("iteration number " << nIterations);
+		DEBUG("***** LabelPropagation: iteration #" << nIterations << "*****");
+		// DEBUG
+		DEBUG("number of nodes which already have the majority label: " << majorityLabelCount << " of " << G.numberOfNodes());
+		DEBUG("clustering at the beginning of loop: ");
+		labels.print();
+		// DEBUG
+		majorityLabelCount = 0;
+
 		if (nIterations >= 42) {
 			ERROR("LabelPropagation reached " << nIterations << " iterations. It usually terminates after less than 5 iterations. Something has gone terribly wrong.");
 			throw std::runtime_error("aborting LabelPropagation to avoid infinite loop");
 		}
 
 		std::vector<node> shuffledNodes;
-		shuffledNodes.resize(n);
 		G.forallNodes([&](node v){
 			shuffledNodes.push_back(v);
 		});
 		std::random_shuffle(shuffledNodes.begin(), shuffledNodes.end());
+		DEBUG("shuffledNodes: " << Aux::vectorToString(shuffledNodes));
 
 		for (node v : shuffledNodes) {
-			int64_t degV = G.degree(v);
 			// ignore isolated nodes TODO: correct?
-			if (degV > 0) {
+			if (G.degree(v) > 0) {
 
 				std::map<label, int64_t> labelCounts; // neighborLabelCounts maps label -> frequency in the neighbors
 
@@ -91,7 +112,7 @@ Clustering LabelPropagation::run(Graph& G) {
 				label dominantLabel = 0; // = None
 				// try to find dominant label
 				for (auto it2 = labelCounts.begin(); it2 != labelCounts.end(); it2++) {
-						if (it2->second > (degV / 2.0)) {
+						if (it2->second > (G.degree(v) / 2.0)) {
 						dominantLabel = it2->first;
 					}
 				}
@@ -100,7 +121,12 @@ Clustering LabelPropagation::run(Graph& G) {
 					if (labels[v] == dominantLabel) {
 						majorityLabelCount += 1;
 					}
-				} // if no label dominant, do nothing
+				} else {
+					TRACE("no dominant label found for node: " << v);
+				}// if no label dominant, do nothing
+			} else {
+				// node is isolated
+				DEBUG("ignoring isolated node: " << v);
 			}
 		} // end for shuffled nodes
 

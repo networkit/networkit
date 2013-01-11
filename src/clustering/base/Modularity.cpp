@@ -49,7 +49,7 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 		cluster d = zeta[v];
 		if (c == d) {
 			if (c > zeta.upperBound()) {
-				DEBUG("c=" << c << ", upper bound=" << zeta.upperBound());
+				DEBUG("c=" << c << " = zeta(" << u << "is larger than upper bound=" << zeta.upperBound());
 			}
 			assert (c <= zeta.upperBound());
 			#pragma omp atomic update

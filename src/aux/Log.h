@@ -11,13 +11,14 @@
 #include <iostream>
 #include <map>
 #include <unordered_map>
+#include <vector>
 
 #include "log4cxx/logger.h"
 
 namespace Aux {
 
 // prepends the function name
-#define LOCATION "in " << __PRETTY_FUNCTION__ << ": "
+#define LOCATION "in " << __FUNCTION__ << ": "
 #define LOGGER log4cxx::Logger::getRootLogger()
 
 
@@ -30,8 +31,24 @@ namespace Aux {
 #define TRACE(X) LOG4CXX_TRACE(LOGGER, LOCATION << X)
 
 
-
-
+/**
+ * String representation of std::vector<T>
+ * 		[x, y, ..., z]
+ */
+template <typename T> std::string vectorToString(const std::vector<T>& vec) {
+	std::ostringstream ss;
+	ss << '[';
+	bool first = true;
+	for (T element : vec) {
+	    if (!first) {
+	        ss << ", ";
+	    }
+	    ss << element;
+	    first = false;
+	}
+	ss << ']';
+	return ss.str();
+}
 
 #define PRINTMAP(M) std::cout << M << std::endl;
 /**

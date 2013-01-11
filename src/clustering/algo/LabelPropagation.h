@@ -17,9 +17,10 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "../../aux/Log.h"
 #include "../../graph/NodeMap.h"
 #include "../../base/IndexMap.h"
-#include "../../aux/Log.h"
+
 
 namespace EnsembleClustering {
 

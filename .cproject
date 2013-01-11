@@ -391,6 +391,7 @@
 		<configuration configurationName="EnsembleClustering-O"/>
 		<configuration configurationName="EnsembleClustering.backup"/>
 		<configuration configurationName="EnsembleClustering2"/>
+		<configuration configurationName="EnsembleClustering-D"/>
 		<configuration configurationName="EnsembleClustering"/>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/EnsembleClustering"/>
