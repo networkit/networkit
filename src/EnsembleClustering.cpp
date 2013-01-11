@@ -24,7 +24,7 @@
 #include "aux/Noise.h"
 #include "graph/Graph.h"
 #include "io/METISParser.h"
-#include "io/METIStoSTINGER.h"
+#include "io/METISToGraph.h"
 #include "matching/Matching.h"
 #include "clustering/base/Clustering.h"
 #include "clustering/base/ClusteringGenerator.h"
@@ -43,19 +43,19 @@ using namespace EnsembleClustering;
 
 
 
-void testMETIStoSTINGER() {
-
-	std::string graphPath = "/Users/cls/workspace/Data/DIMACS/kron_g500-simple-logn16.graph";
-	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "trying to read from graph file " << graphPath);
-
-
-	Graph* G;
-	METIStoSTINGER* m2s = new METIStoSTINGER();
-	G = m2s->read(graphPath);
-
-	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "read graph " << G << " from file " << graphPath);
-
-}
+//void testMETIStoSTINGER() {
+//
+//	std::string graphPath = "/Users/cls/workspace/Data/DIMACS/kron_g500-simple-logn16.graph";
+//	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "trying to read from graph file " << graphPath);
+//
+//
+//	Graph* G;
+//	METISToGraph* m2s = new METISToGraph();
+//	G = m2s->read(graphPath);
+//
+//	LOG4CXX_INFO(log4cxx::Logger::getRootLogger(), "read graph " << G << " from file " << graphPath);
+//
+//}
 
 
 

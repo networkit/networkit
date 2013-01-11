@@ -1,12 +1,12 @@
 /*
- * METIStoSTINGER.h
+ * METISToGraph.h
  *
  *  Created on: 27.11.2012
  *      Author: cls
  */
 
-#ifndef METISTOSTINGER_H_
-#define METISTOSTINGER_H_
+#ifndef METISTOGRAPH_H_
+#define METISTOGRAPH_H_
 
 #include <string>
 
@@ -19,15 +19,15 @@ namespace EnsembleClustering {
  * This class provides a user interface for reading a METIS graph file and returning a
  * STINGER-based graph object.
  */
-class METIStoSTINGER {
+class METISToGraph {
 
 public:
 
-	METIStoSTINGER();
+	METISToGraph();
 
-	virtual ~METIStoSTINGER();
+	virtual ~METISToGraph();
 
-	virtual Graph* read(std::string graphPath);
+	virtual Graph read(std::string graphPath);
 };
 
 } /* namespace EnsembleClustering */
