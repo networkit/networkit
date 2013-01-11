@@ -8,6 +8,10 @@
 #ifndef MATCHINGCONTRACTER_H_
 #define MATCHINGCONTRACTER_H_
 
+#include "Contracter.h"
+
+#include "../matching/Matching.h"
+
 namespace EnsembleClustering {
 
 class MatchingContracter : public Contracter {
