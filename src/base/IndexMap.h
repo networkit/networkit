@@ -70,6 +70,11 @@ public:
 
 
 	/**
+	 * Number of indices for which there is an entry
+	 */
+	virtual int64_t size() const;
+
+	/**
 	 * quick & dirty debug print
 	 * TODO: replace with operator<<
 	 */
@@ -134,6 +139,11 @@ inline void EnsembleClustering::IndexMap<I, T>::print() {
 	}
 	std::cout << "}" << std::endl;
 
+}
+
+template<typename I, typename T>
+inline int64_t EnsembleClustering::IndexMap<I, T>::size() const {
+	return this->data.size() - 1;	// first index 0 is not used since indices are 1-based
 }
 
 /*** Implementation ***/

@@ -46,11 +46,13 @@ void Clustering::mergeClusters(cluster c, cluster d) {
 
 bool Clustering::isProper(Graph& G) {
 	// test whether each node has been assigned to a cluster
+	bool success = true;
 	G.forallNodes([&](node v) {
 		cluster c = this->clusterOf(v);
-		assert (c <= this->upperBound());
+		if (c > this->upperBound()) {
+			success = false;
+		}
 	});
-	bool success = true;
 	return success;
 }
 
@@ -93,7 +95,7 @@ cluster Clustering::addCluster() {
 }
 
 
-void Clustering::print() {
+void Clustering::print() const {
 	std::cout << "{";
 	for (int64_t i = 0; i <= this->n; ++i) {
 		std::cout << i << ":" << this->data[i] << ", ";

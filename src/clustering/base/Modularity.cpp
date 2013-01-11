@@ -20,6 +20,7 @@ Modularity::~Modularity() {
 
 
 double Modularity::getQuality(const Clustering& zeta, Graph& G) {
+	DEBUG("calculating modularity of clustering: "); zeta.print();
 
 
 	int64_t n = G.numberOfNodes();
@@ -45,11 +46,14 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 
 
 	G.forallEdges([&](node u, node v){
+		assert (u <= zeta.size());
+		assert (v <= zeta.size());
 		cluster c = zeta[u];
 		cluster d = zeta[v];
 		if (c == d) {
 			if (c > zeta.upperBound()) {
-				DEBUG("c=" << c << " = zeta(" << u << "is larger than upper bound=" << zeta.upperBound());
+				ERROR("c=" << c << " = zeta(" << u << ") is larger than upper bound: " << zeta.upperBound());
+				ERROR("zeta: "); zeta.print();
 			}
 			assert (c <= zeta.upperBound());
 			#pragma omp atomic update
@@ -71,6 +75,7 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	G.forallNodes([&](node v){
 		// add to cluster weight
 		cluster c = zeta.clusterOf(v);
+		assert (zeta.lowerBound() <= c <= zeta.upperBound());
 		incidentWeightSum[c] += incidentWeight[v];
 	});
 

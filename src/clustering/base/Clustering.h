@@ -124,7 +124,7 @@ public:
 
 	// DEBUG
 
-	void print();
+	void print() const;
 
 
 };

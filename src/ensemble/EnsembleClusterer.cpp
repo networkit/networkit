@@ -126,11 +126,11 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	ClusteringProjector projector;
 	int h = contractionHierarchy.size() - 1; // coarsest contraction in the hierarchy
 	Clustering zeta = zetaFinal;
-	for (int i = h; i > 1; --i) {
-		zeta = projector.projectBack(contractionHierarchy[i], zeta); // TODO: check
+	for (int i = h; i >= 0; --i) {
+		zeta = projector.projectBack(contractionHierarchy.at(i), zeta); // TODO: check
 	}
 
-
+	// FIXME: clustering returned does not belong to G
 	return zeta;
 }
 

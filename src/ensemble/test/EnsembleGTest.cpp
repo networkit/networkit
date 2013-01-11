@@ -39,13 +39,25 @@ TEST_F(EnsembleGTest, testEnsembleClusterer) {
 
 	Clustering zeta = ensembleClusterer.run(G);
 
-	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
+	DEBUG("clustering produced by EnsembleClusterer: "); zeta.print();
 
-	INFO("modularity produced by EnsembleClusterer: " << mod);
+	// DEBUG
+	if (zeta.size() != G.numberOfNodes()) {
+		ERROR("clustering produced by EnsembleClusterer has " << zeta.size() << " entries but n = " << G.numberOfNodes());
+	}
+	// DEBUG
 
 	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters are easy to detect";
+
+	Modularity modularity;
+	try {
+		double mod = modularity.getQuality(zeta, G);
+		INFO("modularity produced by EnsembleClusterer: " << mod);
+	} catch (...) {
+		ERROR("exception thrown in Modularity.getQuality()")
+	}
+
 
 }
 
