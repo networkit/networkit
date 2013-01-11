@@ -13,9 +13,14 @@ namespace EnsembleClustering {
 Graph::Graph(int64_t n) {
 	this->stingerG = stinger_new(); // TODO: manage memory
 	this->n = n;
+	static int64_t graphId = 1;
+	std::stringstream sstm;
+	sstm << "noname#" << graphId++;
+	this->name = sstm.str();
 }
 
 Graph::~Graph() {
+	// TODO: destructor stub
 }
 
 
@@ -101,6 +106,20 @@ bool Graph::isEmpty() {
 
 node Graph::lastNode() const {
 	return this->numberOfNodes();
+}
+
+void Graph::setName(std::string name) {
+	this->name = name;
+}
+
+std::string Graph::getName() const {
+	return this->name;
+}
+
+std::string Graph::toString() const {
+	std::stringstream strm;
+	strm << "Graph(name=" << this->getName() << ", n=" << this->numberOfNodes() << ", m=" << this->numberOfEdges() << ")";
+	return strm.str();
 }
 
 } /* namespace EnsembleClustering */

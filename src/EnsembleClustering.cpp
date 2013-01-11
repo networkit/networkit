@@ -49,7 +49,7 @@ using namespace EnsembleClustering;
 void configureLogging() {
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
-	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
 }
 
 

@@ -83,7 +83,7 @@ protected:
 
 	stinger* stingerG;
 	node n;		//!< the maximum node id. currently, all nodes 1...n exist in the graph and node deletion is not possible
-	node nextNode;	//!< the next free node index for adding a node
+	std::string name;	//!< a human-readable identifier for the graph
 
 
 public:
@@ -239,6 +239,23 @@ public:
 	// template <typename T> void addNodeMap(NodeMap<T>& map)
 
 
+	/**
+	 * Set a human-readable identifier (vulg. a "name") for the graph instance.
+	 */
+	void setName(std::string name);
+
+
+	/**
+	 * Get the human-readable identifier (vulg. the "name") of the graph
+	 */
+	std::string getName() const;
+
+
+	/**
+	 * Append string representation to stream.
+	 */
+	virtual std::string toString() const;
+
 
 	/********** ITERATION / TRAVERSAL ***********/
 
@@ -294,7 +311,13 @@ public:
 
 };
 
+
+
+
 } /* namespace EnsembleClustering */
+
+
+
 
 template<typename Callback>
 inline void EnsembleClustering::Graph::forallEdges(Callback func, std::string par, std::string write) {
@@ -454,7 +477,11 @@ inline void EnsembleClustering::Graph::breadthFirstEdgesFrom(node r, Callback fu
 			}
 		} STINGER_FORALL_EDGES_OF_VTX_END();
 	} while (! q.empty());
-	}
+}
+
+
+// ostream operator
+
 
 
 #endif /* GRAPH_H_ */

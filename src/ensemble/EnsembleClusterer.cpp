@@ -32,8 +32,8 @@ void EnsembleClusterer::setFinalClusterer(Clusterer& final) {
 }
 
 Clustering EnsembleClusterer::run(Graph& G) {
-	// FIXME: LabelPropagation does not terminate on contracted graph
-	DEBUG("starting EnsembleClusterer on graph G with n=" << G.numberOfNodes() << " m=" << G.numberOfEdges());
+	G.setName("G^0");
+	INFO("starting EnsembleClusterer on graph G: " << G.toString());
 
 
 
@@ -45,7 +45,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	std::vector<Clustering> baseClusterings;
 	double qNew;	// quality of new clustering
 	double qBest;	// quality of best clustering
-	bool repeat; 	// loop condition
 	Graph* Gbest = NULL;	// contracted graph belonging to the best clustering
 
 	// store all clusterings/contracted graphs here
@@ -55,6 +54,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	int nIter = 0;
 	qBest = -1; // => repeat loop at least once
+	bool repeat;	// loop condition
 	do {
 		nIter += 1;
 		INFO("\n EnsembleClusterer *** ITERATION " << nIter << " ***");
@@ -77,12 +77,11 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// calculate overlap of base clusterings
 		Clustering core = overlapper.run(G, baseClusterings);
-		DEBUG("created core clustering with k=" << core.numberOfClusters());
+		INFO("created core clustering with k=" << core.numberOfClusters());
 
 		// store core clustering
 		clusteringHierarchy.push_back(core);
 
-		// FIXME: contract graph also in first iteration
 
 		if (zetaBest == NULL) {
 			// in first iteration
@@ -93,7 +92,9 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// test if new clustering is better
 		qNew = this->qm->getQuality(core, G); // FIXME: quality must be calculated with respect to original graph - project back
-		DEBUG("qNew = " << qNew << ", qBest = " << qBest);
+
+		INFO("qNew = " << qNew << ", qBest = " << qBest);
+
 		if (qNew > qBest) {
 			// new clustering is better
 			zetaBest = &core;
@@ -102,23 +103,31 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			GraphContraction con = contracter.run(G, core);
 			contractionHierarchy.push_back(con); 			// store contraction in hierarchy
 
+
 			Graph Gcon = con.getCoarseGraph();
-			DEBUG("contracted graph: n=" << Gcon.numberOfNodes() << " m=" << Gcon.numberOfEdges());
+			// DEBUG
+			std::ostringstream oss;	oss << "G^" << nIter; Gcon.setName(oss.str());	//C++??!!
+			// DEBUG
+			INFO("contracted graph created: " << Gcon.toString());
 			// work on contracted graph
 			Gbest = &Gcon;
-			repeat = true; // submit contracted graph to base clusterers again
+			G = Gcon;	// TODO: correct?
+			DEBUG("G is now" << G.toString());
+			repeat = true;
 		} else {
 			// new clustering is not better
 			repeat = false;
 		}
 		// repeat while new clustering is better than old clustering
-	} while (qNew > qBest);
+		// FIXME: set new
+
+	} while (repeat);
 
 	// work on contracted graph for best clustering
 
 	// use final clusterer to find clustering of contracted graph
 	assert (Gbest != NULL);
-	DEBUG("Gbest graph: n=" << Gbest->numberOfNodes() << " m=" << Gbest->numberOfEdges());
+	INFO("Gbest graph: n=" << Gbest->numberOfNodes() << " m=" << Gbest->numberOfEdges());
 	Clustering zetaFinal = this->finalClusterer->run(*Gbest); // FIXME: LabelPropagation does not terminate
 
 
@@ -127,10 +136,9 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	int h = contractionHierarchy.size() - 1; // coarsest contraction in the hierarchy
 	Clustering zeta = zetaFinal;
 	for (int i = h; i >= 0; --i) {
-		zeta = projector.projectBack(contractionHierarchy.at(i), zeta); // TODO: check
+		zeta = projector.projectBack(contractionHierarchy.at(i), zeta);
 	}
 
-	// FIXME: clustering returned does not belong to G
 	return zeta;
 }
 
