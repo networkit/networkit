@@ -61,23 +61,27 @@ Clustering LabelPropagation::run(Graph& G) {
 		nIterations += 1;
 		DEBUG("***** LabelPropagation: iteration #" << nIterations << "*****");
 		// DEBUG
-		DEBUG("number of nodes which already have the majority label: " << majorityLabelCount << " of " << G.numberOfNodes());
-		DEBUG("clustering at the beginning of loop: ");
+		TRACE("number of nodes which already have the majority label: " << majorityLabelCount << " of " << G.numberOfNodes());
+		TRACE("clustering at the beginning of loop: ");
 		labels.print();
 		// DEBUG
+
+		// reset majority label count
 		majorityLabelCount = 0;
 
+		// DEBUG
 		if (nIterations >= 42) {
 			ERROR("LabelPropagation reached " << nIterations << " iterations. It usually terminates after less than 5 iterations. Something has gone terribly wrong.");
 			throw std::runtime_error("aborting LabelPropagation to avoid infinite loop");
 		}
+		// DEBUG
 
 		std::vector<node> shuffledNodes;
 		G.forallNodes([&](node v){
 			shuffledNodes.push_back(v);
 		});
 		std::random_shuffle(shuffledNodes.begin(), shuffledNodes.end());
-		DEBUG("shuffledNodes: " << Aux::vectorToString(shuffledNodes));
+		TRACE("shuffledNodes: " << Aux::vectorToString(shuffledNodes));
 
 		for (node v : shuffledNodes) {
 			// ignore isolated nodes TODO: correct?
@@ -126,7 +130,7 @@ Clustering LabelPropagation::run(Graph& G) {
 				}// if no label dominant, do nothing
 			} else {
 				// node is isolated
-				DEBUG("ignoring isolated node: " << v);
+				TRACE("ignoring isolated node: " << v);
 			}
 		} // end for shuffled nodes
 

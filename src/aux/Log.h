@@ -18,7 +18,7 @@
 namespace Aux {
 
 // prepends the function name
-#define LOCATION "in " << __FUNCTION__ << ": "
+#define LOCATION "in " << __PRETTY_FUNCTION__ << ": "
 #define LOGGER log4cxx::Logger::getRootLogger()
 
 

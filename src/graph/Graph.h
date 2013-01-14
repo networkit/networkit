@@ -12,6 +12,7 @@
 #include <cinttypes>
 #include <string>
 #include <queue>
+#include <stdexcept>
 
 extern "C" {
 #include "stinger.h"

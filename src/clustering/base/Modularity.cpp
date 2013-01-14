@@ -20,7 +20,7 @@ Modularity::~Modularity() {
 
 
 double Modularity::getQuality(const Clustering& zeta, Graph& G) {
-	DEBUG("calculating modularity of clustering: "); zeta.print();
+	TRACE("calculating modularity of clustering: "); zeta.print();
 
 
 	int64_t n = G.numberOfNodes();
@@ -87,8 +87,8 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	expectedCoverage = totalIncidentWeight / (4 * totalEdgeWeight * totalEdgeWeight);
 
 
-	DEBUG("coverage: " << coverage);
-	DEBUG("expected coverage: " << expectedCoverage);
+	TRACE("coverage: " << coverage);
+	TRACE("expected coverage: " << expectedCoverage);
 	modularity = coverage - expectedCoverage;
 	return modularity;
 }

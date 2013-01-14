@@ -245,6 +245,7 @@ TEST_F(GraphGTest, testGraphCopy) {
 
 } /* namespace EnsembleClustering */
 
+
 void EnsembleClustering::GraphGTest::SetUp() {
 }
 
