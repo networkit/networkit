@@ -31,9 +31,12 @@ stinger* Graph::asSTINGER() const {
 
 void Graph::insertEdge(node u, node v, double weight, int64_t type,
 		int64_t timestamp) {
-	// FIXME: do not store weight twice (?)
-	assert ((u <= this->n) && (v <= this->n));	// TODO: disable assertions for performance
+	// FIXME: do not store weight twice!
+	// TODO: disable assertions for performance
+	assert ((u <= this->n) && (v <= this->n));
 	assert(u != v); // no self-loops allowed
+	assert(!this->hasEdge(u, v)); // no redundant edge insertions
+
 	stinger_insert_edge_pair(this->stingerG, type, u, v, weight, timestamp);
 }
 
@@ -56,7 +59,7 @@ double Graph::weight(edge uv) const {
 
 
 int64_t Graph::numberOfEdges() const {
-	return stinger_total_edges(this->stingerG);
+	return stinger_total_edges(this->stingerG) / 2;
 }
 
 

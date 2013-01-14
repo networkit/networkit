@@ -204,6 +204,44 @@ TEST_F(GraphGTest, testExtendNodeRange) {
 }
 
 
+TEST_F(GraphGTest, testNumberOfEdges) {
+	int64_t n = 3;
+	Graph G(n);
+
+	G.insertEdge(1, 2);
+	EXPECT_EQ(1, G.numberOfEdges()) << "G should have 1 edge now";
+
+	G.insertEdge(1, 3);
+	EXPECT_EQ(2, G.numberOfEdges()) << "G should have 2 edges now";
+
+}
+
+
+TEST_F(GraphGTest, testHasEdge) {
+	int64_t n = 3;
+	Graph G(n);
+
+	G.insertEdge(1, 2);
+	EXPECT_TRUE(G.hasEdge(1, 2)) << "edge should exist in G";
+
+}
+
+
+TEST_F(GraphGTest, testGraphCopy) {
+	int64_t n = 3;
+	Graph G1(n);
+	G1.insertEdge(1, 2);
+
+	Graph G2 = G1;	// copy G1 to G2
+
+	EXPECT_EQ(G1.numberOfNodes(), G2.numberOfNodes()) << "G2 should have same number of nodes as G1";
+	EXPECT_EQ(G1.numberOfEdges(), G2.numberOfEdges()) << "G2 should have same number of edges as G1";
+
+	G1.insertEdge(1, 3);
+
+	EXPECT_FALSE(G2.hasEdge(1, 3)) << "edge inserted in G1 should not exist in G2";
+}
+
 
 } /* namespace EnsembleClustering */
 
