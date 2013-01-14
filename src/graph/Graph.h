@@ -81,9 +81,9 @@ class Graph {
 
 protected:
 
-	stinger* stingerG;
-	node n;		//!< the maximum node id. currently, all nodes 1...n exist in the graph and node deletion is not possible
-	std::string name;	//!< a human-readable identifier for the graph
+	stinger* stingerG;		//!< STINGER data structure
+	node n;					//!< the maximum node id. currently, all nodes 1...n exist in the graph and node deletion is not possible
+	std::string name;		//!< a human-readable identifier for the graph
 
 
 public:
@@ -109,6 +109,12 @@ public:
 	 * Destructor.
 	 */
 	~Graph();
+
+
+	/**
+	 * Copy constructor.
+	 */
+	Graph(const Graph& other);
 
 	/**
 	 * Return the internal STINGER data structure.

@@ -24,6 +24,14 @@ Graph::~Graph() {
 }
 
 
+Graph::Graph(const Graph& other) {
+	WARN("copy constructor of Graph called, which is not yet implemented correctly");
+	this->n = other.n;
+	this->name = other.name;
+	this->stingerG = other.stingerG;	// FIXME: deep copy of STINGER data structure needed
+}
+
+
 
 stinger* Graph::asSTINGER() const {
 	return this->stingerG;
@@ -118,6 +126,7 @@ void Graph::setName(std::string name) {
 std::string Graph::getName() const {
 	return this->name;
 }
+
 
 std::string Graph::toString() const {
 	std::stringstream strm;
