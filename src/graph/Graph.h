@@ -116,6 +116,13 @@ public:
 	 */
 	Graph(const Graph& other);
 
+
+	/*
+	 * Overloaded assignment operator.
+	 */
+	Graph& operator=(const Graph& other);
+
+
 	/**
 	 * Return the internal STINGER data structure.
 	 *

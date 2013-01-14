@@ -20,15 +20,20 @@ Graph::Graph(int64_t n) {
 }
 
 Graph::~Graph() {
-	// TODO: destructor stub
+	WARN("destructor of Graph called: incorrect implementation leading to memory leak");
+	// FIXME: stinger_free(this->stingerG);
 }
 
 
 Graph::Graph(const Graph& other) {
-	WARN("copy constructor of Graph called, which is not yet implemented correctly");
+	ERROR("copy constructor of Graph called: incorrect implementation leading to shared resources");
 	this->n = other.n;
 	this->name = other.name;
-	this->stingerG = other.stingerG;	// FIXME: deep copy of STINGER data structure needed
+	this->stingerG = other.stingerG;	// FIXME: deep copy of STINGER data structure needed, which is difficult
+}
+
+Graph& Graph::Graph::operator =(const Graph& other) {
+	ERROR("overloaded operator= of Graph called: not yet implemented");
 }
 
 
