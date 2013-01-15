@@ -9,6 +9,8 @@
 #define MODULARITY_H_
 
 #include <unordered_map>
+#include <cmath>
+#include <stdexcept>
 
 #include "QualityMeasure.h"
 

@@ -20,16 +20,19 @@ Modularity::~Modularity() {
 
 
 double Modularity::getQuality(const Clustering& zeta, Graph& G) {
-	TRACE("calculating modularity of clustering: "); zeta.print();
-
 
 	int64_t n = G.numberOfNodes();
+	int64_t m = G.numberOfEdges();
+	if (m == 0) {
+		throw std::invalid_argument("Modularity is undefined for graphs without edges.");
+	}
 
 	double coverage;	// term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double expectedCoverage; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
 	double modularity; 	// mod = coverage - expectedCoverage
 
 	double totalEdgeWeight = G.totalEdgeWeight();
+
 
 	NodeMap<double> incidentWeight(n, 0.0);
 	// compute incident edge weight for all nodes
@@ -38,6 +41,8 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 		G.forallEdgesOf(v, [&](node v, node w) {
 			iw += G.weight(v, w);
 		});
+		// FIXME: solve this with self-loops
+		iw += 2 * G.weight(v);	// Graph datastructure does not support self-loops. Node weights are used instead.
 		incidentWeight[v] = iw;
 	}, "parallel");
 
@@ -83,13 +88,26 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	for (cluster c = zeta.lowerBound(); c <= zeta.upperBound(); ++c) {
 		totalIncidentWeight += incidentWeightSum[c] * incidentWeightSum[c];	// squared
 	}
-
-	expectedCoverage = totalIncidentWeight / (4 * totalEdgeWeight * totalEdgeWeight);
+	double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
+	assert (divisor != 0);	// do not divide by 0
+	expectedCoverage = totalIncidentWeight / divisor;
 
 
 	TRACE("coverage: " << coverage);
 	TRACE("expected coverage: " << expectedCoverage);
+
+	// assert ranges of coverage
+	assert(coverage <= 1.0);
+	assert(coverage >= 0.0);
+	assert(expectedCoverage <= 1.0);	// FIXME: expected coverage can become > 1.0
+	assert(expectedCoverage >= 0.0);
+
 	modularity = coverage - expectedCoverage;
+
+	assert(! std::isnan(modularity));	// do not return NaN
+	// do not return anything not in the range of modularity values
+	assert(modularity >= -0.5);
+	assert(modularity <= 1);
 	return modularity;
 }
 

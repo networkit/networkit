@@ -85,7 +85,12 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		for (auto clusterer : baseClusterers) {
 			try {
 				baseClustering.push_back(clusterer->run(graph[i]));
-				TRACE("created clustering with k=" << baseClustering.back().numberOfClusters());
+				// DEBUG
+				DEBUG("created clustering with k=" << baseClustering.back().numberOfClusters());
+				if (baseClustering.back().isOneClustering(graph[i])) {
+					WARN("base clusterer created 1-clustering");
+				}
+				// DEBUG
 			} catch (...) {
 				ERROR("base clusterer failed with exception.");
 				throw std::runtime_error("base clusterer failed.");
@@ -104,6 +109,18 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			auto con = contract.run(graph[i], clustering[i]);	// returns pair (G^{i+1}, M^{i->i+1})
 			graph.push_back(con.first);		// store G^{i+1}
 			map.push_back(con.second);		// store M^{i->i+1}
+
+			//DEBUG
+			DEBUG("contracted graph G^" << (i+1) << " created: " << graph.back().toString());
+
+			if (graph[i+1].numberOfEdges() == 0) {
+				double vw = 0.0;
+				G.forallNodes([&](node v) {
+					vw += graph[i+1].weight(v);
+				});
+				DEBUG("graph has no edges, total node (self-loop) weight is:" << vw);
+			}
+			//DEBUG
 
 			// new graph created => repeat
 			repeat = true;
