@@ -189,8 +189,10 @@ Clustering EnsembleClusterer::run2(Graph& G) {
 	bool repeat;
 	int i = -1;	// iteration counter, starts with 0 in loop
 
-	// store G^{0}
-	graph.push_back(G);
+	graph.push_back(G); 		// store G^{0}
+	Clustering empty(0);
+	clusteringBack.push_back(empty); // push a dummy clustering so that clusteringBack[i] contains the clustering projected from G^{i} to G^{0}  (there is no clusteringBack[0])
+
 
 	do {
 		i += 1; 	// increment iteration/hierarchy counter
@@ -216,6 +218,7 @@ Clustering EnsembleClusterer::run2(Graph& G) {
 		if (i == 0) {			// first iteration
 			// *** calculate quality of first core clustering with respect to first graph ***
 			quality.push_back(this->qm->getQuality(clustering[i], graph[i]));
+			DEBUG("pushed quality: " << quality.back());
 
 			// *** contract the graph according to core clustering **
 			auto con = contract.run(graph[i], clustering[i]);	// returns pair (G^{i+1}, M^{i->i+1})
@@ -227,9 +230,12 @@ Clustering EnsembleClusterer::run2(Graph& G) {
 		} else { 	// other iterations
 			clusteringBack.push_back(this->projectBack(clustering[i], map, G));
 			quality.push_back(this->qm->getQuality(clusteringBack[i], graph[i]));
+			DEBUG("pushed quality: " << quality.back());
+
 
 			// *** test if new core clustering is better than previous one **
 			if (quality[i] > quality[i-1]) {
+				DEBUG("quality[" << i << "] = " << quality[i] << " > quality[" << (i-1) << "] = " << quality[i-1]);
 
 
 				auto con = contract.run(graph[i], clustering[i]);	// returns pair (G^{i+1}, M^{i->i+1})
@@ -239,6 +245,8 @@ Clustering EnsembleClusterer::run2(Graph& G) {
 				// new graph created => repeat
 				repeat = true;
 			} else {
+				DEBUG("quality[" << i << "] = " << quality[i] << " <= quality[" << (i-1) << "] = " << quality[i-1]);
+
 				// new core clustering is not better => do not contract according to new core clustering and do not repeat
 				repeat = false;
 			}
