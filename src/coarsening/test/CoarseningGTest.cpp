@@ -19,8 +19,8 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 
 
 	ClusterContracter contracter;
-	GraphContraction conSingleton = contracter.run(G, singleton);
-	Graph Gcon = conSingleton.getCoarseGraph();
+	auto conSingletonPair = contracter.run(G, singleton);
+	Graph Gcon = conSingletonPair.first;
 
 	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
 			<< "graph contracted according to singleton clustering should have the same number of nodes as original";
@@ -29,8 +29,8 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 
 	int k = 2; // number of clusters in random clustering
 	Clustering random = clusteringGen.makeRandomClustering(G, k);
-	GraphContraction conRand = contracter.run(G, random);
-	Graph GconRand = conRand.getCoarseGraph();
+	auto conRandPair = contracter.run(G, random);
+	Graph GconRand = conRandPair.first;
 
 	EXPECT_EQ(k, GconRand.numberOfNodes())
 			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
@@ -49,8 +49,8 @@ TEST_F(CoarseningGTest, testClusteringProjector) {
 	Clustering zetaRand = clusteringGen.makeRandomClustering(G, k);
 
 	ClusterContracter contracter;
-	GraphContraction contraction = contracter.run(G, zetaRand);
-	EnsembleClustering::Clustering zetaOne = clusteringGen.makeOneClustering(contraction.getCoarseGraph());
+	auto con = contracter.run(G, zetaRand);
+	EnsembleClustering::Clustering zetaOne = clusteringGen.makeOneClustering(con.first);
 
 }
 

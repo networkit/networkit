@@ -24,7 +24,11 @@ public:
 
 	virtual ~ClusterContracter();
 
-	virtual GraphContraction run(Graph& G, Clustering& zeta);
+	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Clustering& zeta);
+
+
+
+
 };
 
 

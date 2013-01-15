@@ -223,6 +223,10 @@ TEST_F(GraphGTest, testHasEdge) {
 
 	G.insertEdge(1, 2);
 	EXPECT_TRUE(G.hasEdge(1, 2)) << "edge should exist in G";
+	EXPECT_FALSE(G.hasEdge(1, 3)) << "edge should not exist in G";
+
+	G.removeEdge(1, 2);
+	EXPECT_FALSE(G.hasEdge(1, 2)) << "edge should no longer exist in G";
 
 }
 

@@ -49,7 +49,7 @@ void Graph::insertEdge(node u, node v, double weight, int64_t type,
 	// TODO: disable assertions for performance
 	assert ((u <= this->n) && (v <= this->n));
 	assert(u != v); // no self-loops allowed
-	assert(!this->hasEdge(u, v)); // no redundant edge insertions
+	assert(!(this->hasEdge(u, v))); // no redundant edge insertions
 
 	stinger_insert_edge_pair(this->stingerG, type, u, v, weight, timestamp);
 }

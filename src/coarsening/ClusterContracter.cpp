@@ -18,9 +18,9 @@ ClusterContracter::~ClusterContracter() {
 	// TODO Auto-generated destructor stub
 }
 
-GraphContraction ClusterContracter::run(Graph& G, Clustering& zeta) {
+std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& zeta) {
 
-	Graph Gcon;
+	Graph Gcon; // empty graph
 
 	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound(), 0); // there is one supernode for each cluster
 
@@ -28,7 +28,7 @@ GraphContraction ClusterContracter::run(Graph& G, Clustering& zeta) {
 	G.forallNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
 		if (! clusterToSuperNode.hasBeenSet(c)) {
-			node sv = Gcon.addNode(); // TOOD: probably does not scale well, think about allocating ranges of nodes
+			node sv = Gcon.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
 			clusterToSuperNode[c] = sv;
 		}
 	});
@@ -53,7 +53,7 @@ GraphContraction ClusterContracter::run(Graph& G, Clustering& zeta) {
 			Gcon.setWeight(su, Gcon.weight(su) + G.weight(u, v));
 		} else {
 			// add edge weight to weight between two supernodes
-			if (Gcon.hasEdge(u, v)) {
+			if (Gcon.hasEdge(su, sv)) {
 				Gcon.setWeight(su, sv, Gcon.weight(su, sv) + G.weight(u, v));
 			} else {
 				// create new edge
@@ -63,9 +63,8 @@ GraphContraction ClusterContracter::run(Graph& G, Clustering& zeta) {
 		}
 	});
 
-	GraphContraction contraction(G, Gcon, nodeToSuperNode);
+	return std::make_pair(Gcon, nodeToSuperNode);
 
-	return contraction;
 }
 
 }
