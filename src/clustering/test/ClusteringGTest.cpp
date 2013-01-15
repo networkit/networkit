@@ -9,6 +9,7 @@
 
 namespace EnsembleClustering {
 
+// TODO: tests for base/Clustering
 
 
 TEST_F(ClusteringGTest, testModularity) {

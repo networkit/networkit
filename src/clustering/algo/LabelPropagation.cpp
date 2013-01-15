@@ -62,8 +62,6 @@ Clustering LabelPropagation::run(Graph& G) {
 		DEBUG("***** LabelPropagation: iteration #" << nIterations << "*****");
 		// DEBUG
 		TRACE("number of nodes which already have the majority label: " << majorityLabelCount << " of " << G.numberOfNodes());
-		TRACE("clustering at the beginning of loop: ");
-		labels.print();
 		// DEBUG
 
 		// reset majority label count

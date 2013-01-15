@@ -9,7 +9,8 @@
 
 namespace EnsembleClustering {
 
-Clustering::Clustering(int64_t n) : NodeMap<cluster>(n, 0) {
+Clustering::Clustering(int64_t n) : NodeMap<cluster>(n, 0), name("noname") {
+	// all entries are initialized to 0, which means that the nodes are unclustered
 	this->nextCluster = 1; //!< first cluster index is 1
 }
 
@@ -48,8 +49,8 @@ bool Clustering::isProper(Graph& G) {
 	// test whether each node has been assigned to a cluster
 	bool success = true;
 	G.forallNodes([&](node v) {
-		cluster c = this->clusterOf(v);
-		if (c > this->upperBound()) {
+		bool contained = this->contains(v);
+		if (!contained) {
 			success = false;
 		}
 	});
@@ -94,6 +95,23 @@ cluster Clustering::addCluster() {
 	return c;
 }
 
+
+bool Clustering::isInRange(node v) {
+	return (1 <= v <= this->size());
+}
+
+bool Clustering::contains(node v) {
+	assert (this->isInRange(v));	// assume that node is in range
+	return (this->data[v] != 0);	// check if node is assigned to cluster, i.e. entry is not null
+}
+
+void Clustering::setName(std::string name) {
+	this->name = name;
+}
+
+std::string Clustering::getName() const {
+	return this->name;
+}
 
 void Clustering::print() const {
 	std::cout << "{";

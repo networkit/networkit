@@ -23,13 +23,16 @@ public:
 
 	/**
 	 * Given
-	 * 		@param[in]	contraction	a graph contraction, including a fine graph, a coarse graphm, and a mapping from fine to coarse
+	 * 		@param[in]	Gcoarse
+	 * 		@param[in] 	Gfine
+	 * 		@param[in]	fineToCoarse
 	 * 		@param[in]	zetaCoarse	a clustering of the coarse graph
 	 *
 	 * 	, project the clustering back to the fine graph to create a clustering of the fine graph.
 	 * 		@param[out] 			a clustering of the fine graph
 	 **/
-	virtual Clustering projectBack(GraphContraction& contraction, Clustering& zetaCoarse);
+	virtual Clustering projectBack(Graph& Gcoarse, Graph& Gfine, NodeMap<node>& fineToCoarse,
+			Clustering& zetaCoarse);
 
 };
 

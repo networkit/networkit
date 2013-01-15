@@ -22,6 +22,7 @@ class Clustering: public NodeMap<cluster> {
 protected:
 
 	cluster nextCluster;	//!< next free cluster id for new cluster
+	std::string name;
 
 	inline cluster getNextCluster() {
 		// TODO: performance - is this a bottleneck?
@@ -29,6 +30,12 @@ protected:
 		this->nextCluster++;
 		return c;
 	}
+
+	/**
+	 * Check if clustering can hold a valid entry for the node because
+	 * it is in the range mapped.
+	 */
+	bool isInRange(node v);
 
 public:
 
@@ -40,6 +47,18 @@ public:
 	Clustering(int64_t n);
 
 	virtual ~Clustering();
+
+
+	/**
+	 * Set a human-readable identifier (vulg. a "name") for the graph instance.
+	 */
+	void setName(std::string name);
+
+
+	/**
+	 * Get the human-readable identifier (vulg. the "name") of the graph
+	 */
+	std::string getName() const;
 
 	/**
 	 *  Index operator.
@@ -63,6 +82,7 @@ public:
 	 * is contained.
 	 */
 	inline cluster clusterOf(node u) const {
+		assert (u <= this->size());
 		return this->data[u];
 	}
 
@@ -121,6 +141,14 @@ public:
 	 */
 	cluster lowerBound() const;
 
+
+
+
+
+	/**
+	 * Check if clustering assigns a valid cluster to the node.
+	 */
+	bool contains(node v);
 
 	// DEBUG
 

@@ -18,14 +18,13 @@ ClusteringProjector::~ClusteringProjector() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering ClusteringProjector::projectBack(GraphContraction& contraction,
+Clustering ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, NodeMap<node>& fineToCoarse,
 		Clustering& zetaCoarse) {
 
-	Graph Gfine = contraction.getFineGraph();
-	Graph Gcoarse = contraction.getCoarseGraph();
-	auto fineToCoarse = contraction.getFineToCoarseMap();
-
 	Clustering zetaFine(Gfine.numberOfNodes());
+	// DEBUG
+	std::ostringstream oss;	oss << "zeta(" << Gfine.getName() << ")"; zetaFine.setName(oss.str());	//C++??!!
+	// DEBUG
 
 	Gfine.forallNodes([&](node v) {
 		node sv = fineToCoarse[v];

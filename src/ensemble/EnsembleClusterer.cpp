@@ -42,14 +42,17 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	// data storage
 	std::vector<Clustering> clusteringHierarchy;
-	std::vector<GraphContraction> contractionHierarchy;
+	// std::vector<GraphContraction> contractionHierarchy;
+	std::vector<Graph> graphHierarchy;
+	std::vector<NodeMap<node> > mapHierarchy;
 
 	std::vector<Clustering> baseClusterings;
 
 	// temporaries
-	Graph* G_ = &G;				// the (fine) graph which is to be clustered by the base clusterers
-	Graph* Gcoarse_ = NULL;
-	Graph* Gbest_ = NULL;		// contracted graph belonging to the best clustering - TODO: needed?
+	Graph* G0_ = &G;			// points to the input graph G^0
+	Graph* G_ = &G;				// points to the current (fine) graph which is to be clustered by the base clusterers
+	Graph* Gcoarse_ = NULL;		// points to the
+	// Graph* Gbest_ = NULL;		// contracted graph belonging to the best clustering - TODO: needed?
 	Clustering* zetaBest_ = NULL;
 
 	// values
@@ -67,7 +70,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		// base clusterers calculate base clusterings
 		for (auto clusterer : baseClusterers) {
 			try {
-				Clustering zeta = clusterer->run(G);
+				Clustering zeta = clusterer->run(*G_);
 				baseClusterings.push_back(zeta);
 				TRACE("created clustering with k=" << zeta.numberOfClusters());
 			} catch (...) {
@@ -77,51 +80,47 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		}
 
 		// calculate overlap of base clusterings
-		Clustering core = overlapper.run(G, baseClusterings);
+		Clustering core = overlapper.run(*G_, baseClusterings);
 		clusteringHierarchy.push_back(core);
 
 		DEBUG("created core clustering with k=" << core.numberOfClusters());
 
+		// TODO: project core clustering back to G
+		Clustering coreG0; // FIXME: project back
+
 		// test if new clustering is better
-		Clustering coreG0
-		qNew = this->qm->getQuality(core, G); // FIXME: quality must be calculated with respect to original graph - project back
+		qNew = this->qm->getQuality(coreG0, G); // FIXME: quality must be calculated with respect to original graph
 
 		DEBUG("qNew = " << qNew << ", qBest = " << qBest);
 
 		if (qNew > qBest) {
 			// new clustering is better
-			zetaBest_ = &core;
+			// FIXME: zetaBest_ = &core;
 			qBest = qNew;
+			zetaBest_ = &coreG0;
+
+			std::pair<Graph, NodeMap<node> > contraction = contracter.run(G, core);
 			// contract graph according to overlap clustering
-			contractionHierarchy.push_back(contracter.run(G, core)); 			// store contraction in hierarchy
+			graphHierarchy.push_back(contraction.first); 	// store coarse graph in hierarchy
+			mapHierarchy.push_back(contraction.second);		// store fine->coarse node map in hierarchy
 
-			Gcoarse_ = &(contractionHierarchy.back().getCoarseGraph());
-
-			// use this
-//			Graph* Gcon = &(contractionHierarchy[i].getCoarseGraph());
-//
-//			Graph Gcon = con.getCoarseGraph();
-//
-//			Graph* Gcon = new Graph(con.getCoarseGraph());
-//
-//			Graph* Gcon = &con.getCoarseGraph();
+			Gcoarse_ = &(graphHierarchy.back());
 
 			// DEBUG
 			std::ostringstream oss;	oss << "G^" << nIter; Gcoarse_->setName(oss.str());	//C++??!!
 			// DEBUG
 			INFO("contracted graph created: " << Gcoarse_->toString());
-			// work on contracted graph
-			Gbest_ = Gcoarse_;
-			// FIXME: G = Gcon;	// TODO: correct?
-			// FIXME: DEBUG("G is now " << G.toString());
+
+			// work on coarse graph now
+			G_ = Gcoarse_;
+			// if new coarse graph has been created, repeat
 			repeat = true;
+
 		} else {
 			// new clustering is not better
 			repeat = false;
 		}
 		// repeat while new clustering is better than old clustering
-		// FIXME: set new
-
 	} while (repeat);
 
 	DEBUG("LOOP EXIT");
@@ -132,17 +131,25 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	assert (Gbest_ != NULL);
 	DEBUG("Gbest_: " << Gbest_->toString());
 	Clustering zetaFinal = this->finalClusterer->run(*Gbest_); // FIXME: LabelPropagation does not terminate
+	zetaFinal.setName("zetaFinal");
 
 
 	// project final clustering back to original graph
 	ClusteringProjector projector;
-	int h = contractionHierarchy.size() - 1; // coarsest contraction in the hierarchy
-	Clustering zeta = zetaFinal;
-	for (int i = h; i >= 0; --i) {
-		zeta = projector.projectBack(contractionHierarchy.at(i), zeta);
+	int h = graphHierarchy.size() - 1; // coarsest contraction in the hierarchy
+
+	// DEBUG
+	DEBUG("graph hierarchy size: " << h);
+	assert (h > 0);
+	// DEBUG
+
+	Clustering zetaBack = zetaFinal;
+	for (int i = h; i >= 1; --i) {
+		zetaBack = projector.projectBack(graphHierarchy.at(i), graphHierarchy.at(i - 1), mapHierarchy.at(i - 1), zetaBack);
 	}
 
-	return zeta;
+	DEBUG("returning zetaBack: " << zetaBack.getName());
+	return zetaBack;
 }
 
 
