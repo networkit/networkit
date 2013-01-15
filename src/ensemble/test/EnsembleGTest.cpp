@@ -38,7 +38,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 	// DEBUG
 
 
-	Clustering zeta = ensembleClusterer.run(G);
+	Clustering zeta = ensembleClusterer.run2(G);
 
 	DEBUG("clustering produced by EnsembleClusterer: "); zeta.print();
 
@@ -87,7 +87,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
 	// DEBUG
 
 
-	Clustering zeta = ensembleClusterer.run(G);
+	Clustering zeta = ensembleClusterer.run2(G);
 
 	DEBUG("clustering produced by EnsembleClusterer: "); zeta.print();
 

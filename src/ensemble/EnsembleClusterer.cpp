@@ -52,7 +52,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	Graph* G0_ = &G;			// points to the input graph G^0
 	Graph* G_ = &G;				// points to the current (fine) graph which is to be clustered by the base clusterers
 	Graph* Gcoarse_ = NULL;		// points to the
-	// Graph* Gbest_ = NULL;		// contracted graph belonging to the best clustering - TODO: needed?
+	Graph* Gbest_ = NULL;		// contracted graph belonging to the best clustering - TODO: needed?
 	Clustering* zetaBest_ = NULL;
 
 	// values
@@ -86,10 +86,10 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		DEBUG("created core clustering with k=" << core.numberOfClusters());
 
 		// TODO: project core clustering back to G
-		Clustering coreG0; // FIXME: project back
+		// Clustering coreG0(n); // FIXME: project back
 
 		// test if new clustering is better
-		qNew = this->qm->getQuality(coreG0, G); // FIXME: quality must be calculated with respect to original graph
+		qNew = this->qm->getQuality(core, G); // FIXME: quality must be calculated with respect to original graph
 
 		DEBUG("qNew = " << qNew << ", qBest = " << qBest);
 
@@ -97,7 +97,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			// new clustering is better
 			// FIXME: zetaBest_ = &core;
 			qBest = qNew;
-			zetaBest_ = &coreG0;
+			zetaBest_ = &core;
 
 			std::pair<Graph, NodeMap<node> > contraction = contracter.run(G, core);
 			// contract graph according to overlap clustering
@@ -152,5 +152,104 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	return zetaBack;
 }
 
+Clustering EnsembleClusterer::projectBack(Clustering& zetaCoarse,
+		std::vector<NodeMap<node> >& maps, Graph& G0) {
+
+	Clustering zetaFine(G0.numberOfNodes());
+	G0.forallNodes([&](node v) {
+		node sv = v;
+		for (auto map : maps) {
+			sv = map[sv];
+		}
+		cluster sc = zetaCoarse[sv];
+		zetaFine.addToCluster(sc, v);
+	});
+
+	return zetaFine;
+}
+
+Clustering EnsembleClusterer::run2(Graph& G) {
+
+	// sub-algorithms
+	ClusterContracter contract;
+	RegionGrowingOverlapper overlap;
+
+	// hierarchies
+	std::vector<Graph> graph;				// hierarchy of graphs G^{i}
+	std::vector<Clustering> clustering;		// hierarchy of core clusterings \zeta^{i}
+	std::vector<Clustering> clusteringBack;	// hierarchy of core clusterings projected back to the original graph
+	std::vector<NodeMap<node> > map;		// hierarchy of maps M^{i->i+1}
+	std::vector<double> quality;			// hierarchy of clustering quality values q^{i} = q(\zeta^{i}, G^{0})
+
+	// other data collections
+	std::vector<Clustering>	baseClustering;	// collection of base clusterings, reset in each iteration
+
+
+
+	bool repeat;
+	int i = -1;	// iteration counter, starts with 0 in loop
+
+	// store G^{0}
+	graph.push_back(G);
+
+	do {
+		i += 1; 	// increment iteration/hierarchy counter
+
+
+		INFO("EnsembleClusterer *** ITERATION " << i << " ***");
+		baseClustering.clear();
+
+		// *** base clusterers calculate base clusterings ***
+		for (auto clusterer : baseClusterers) {
+			try {
+				baseClustering.push_back(clusterer->run(graph[i]));
+				TRACE("created clustering with k=" << baseClustering.back().numberOfClusters());
+			} catch (...) {
+				ERROR("base clusterer failed with exception.");
+				throw std::runtime_error("base clusterer failed.");
+			}
+		}
+
+		// *** overlap clusters to create core clustering ***
+		clustering.push_back(overlap.run(graph[i], baseClustering));
+
+		if (i == 0) {			// first iteration
+			// *** calculate quality of first core clustering with respect to first graph ***
+			quality.push_back(this->qm->getQuality(clustering[i], graph[i]));
+
+			// *** contract the graph according to core clustering **
+			auto con = contract.run(graph[i], clustering[i]);	// returns pair (G^{i+1}, M^{i->i+1})
+			graph.push_back(con.first);		// store G^{i+1}
+			map.push_back(con.second);		// store M^{i->i+1}
+
+			// new graph created => repeat
+			repeat = true;
+		} else { 	// other iterations
+			clusteringBack.push_back(this->projectBack(clustering[i], map, G));
+			quality.push_back(this->qm->getQuality(clusteringBack[i], graph[i]));
+
+			// *** test if new core clustering is better than previous one **
+			if (quality[i] > quality[i-1]) {
+
+
+				auto con = contract.run(graph[i], clustering[i]);	// returns pair (G^{i+1}, M^{i->i+1})
+				graph.push_back(con.first);		// store G^{i+1}
+				map.push_back(con.second);		// store M^{i->i+1}
+
+				// new graph created => repeat
+				repeat = true;
+			} else {
+				// new core clustering is not better => do not contract according to new core clustering and do not repeat
+				repeat = false;
+			}
+		}
+
+	} while (repeat);
+
+	Clustering zetaCoarse = this->finalClusterer->run(graph[i]); // TODO: check: index correct?
+	Clustering zetaFine = this->projectBack(zetaCoarse, map, G);
+
+	return zetaFine;
+}
 
 } /* namespace EnsembleClustering */
