@@ -126,6 +126,19 @@ public:
 
 
 	/**
+	 * Check if clustering is a 1-clustering,
+	 * i.e. every node is assigned to the same cluster.
+	 */
+	bool isOneClustering(Graph& G);
+
+
+	/**
+	 * Check if clustering is a singleton clustering,
+	 * i.e. every node is assigned to a different cluster.
+	 */
+	bool isSingletonClustering(Graph& G);
+
+	/**
 	 * Get the current number of clusters in this clustering.
 	 */
 	int64_t numberOfClusters();

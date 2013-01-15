@@ -113,6 +113,14 @@ std::string Clustering::getName() const {
 	return this->name;
 }
 
+bool Clustering::isOneClustering(Graph& G) {
+	return (this->numberOfClusters() == 1);
+}
+
+bool Clustering::isSingletonClustering(Graph& G) {
+	return (this->numberOfClusters() == G.numberOfNodes());
+}
+
 void Clustering::print() const {
 	std::cout << "{";
 	for (int64_t i = 0; i <= this->n; ++i) {
