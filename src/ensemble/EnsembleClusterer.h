@@ -56,7 +56,6 @@ public:
 
 	virtual Clustering run(Graph& G);
 
-	virtual Clustering run2(Graph& G);
 
 
 };
