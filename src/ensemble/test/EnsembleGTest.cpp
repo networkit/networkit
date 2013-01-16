@@ -40,7 +40,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 
 	Clustering zeta = ensembleClusterer.run(G);
 
-	DEBUG("clustering produced by EnsembleClusterer: "); zeta.print();
+	DEBUG("clustering produced by EnsembleClusterer: k=" << zeta.numberOfClusters()); zeta.print();
 
 	// DEBUG
 	if (zeta.size() != G.numberOfNodes()) {
@@ -89,7 +89,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
 
 	Clustering zeta = ensembleClusterer.run(G);
 
-	DEBUG("clustering produced by EnsembleClusterer: "); zeta.print();
+	DEBUG("clustering produced by EnsembleClusterer: k=" << zeta.numberOfClusters()); zeta.print();
 
 	// DEBUG
 	if (zeta.size() != G.numberOfNodes()) {
@@ -135,7 +135,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnRandomGraph) {
 
 	Clustering zeta = ensembleClusterer.run(G);
 
-	DEBUG("clustering produced by EnsembleClusterer: "); zeta.print();
+	DEBUG("clustering produced by EnsembleClusterer: k=" << zeta.numberOfClusters()); zeta.print();
 
 	// DEBUG
 	if (zeta.size() != G.numberOfNodes()) {

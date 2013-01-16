@@ -118,11 +118,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			assert (clustering[i].numberOfClusters() == clusteringBack[i].numberOfClusters());
 			// DEBUG
 			DEBUG("created projected clustering: k=" << clusteringBack[i].numberOfClusters());
-			// check if projected clustering is the same as in previous iteration
-			bool same = clusteringBack[i].equals(clusteringBack[i-1], G);
-			if (same) {
-				WARN("projected clustering zeta^{" << i << "Ê\to 0} is the same as zeta^{" << (i-1) << "Ê\to 0} ");
-			}
 			// DEBUG
 
 			quality.push_back(this->qm->getQuality(clusteringBack[i], graph[i]));
