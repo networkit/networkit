@@ -14,6 +14,7 @@
 #include "../LabelPropagation.h"
 #include "../../base/Modularity.h"
 #include "../../../graph/GraphGenerator.h"
+#include "../../../clustering/base/ClusteringGenerator.h"
 
 namespace EnsembleClustering {
 

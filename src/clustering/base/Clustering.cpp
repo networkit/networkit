@@ -101,7 +101,7 @@ bool Clustering::isInRange(node v) {
 }
 
 bool Clustering::contains(node v) {
-	assert (this->isInRange(v));	// assume that node is in range
+	// assert (this->isInRange(v));	// assume that node is in range
 	return (this->data[v] != 0);	// check if node is assigned to cluster, i.e. entry is not null
 }
 

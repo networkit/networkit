@@ -70,9 +70,9 @@ public:
 
 
 	/**
-	 * Number of indices for which there is an entry
+	 * Number of nodes for which this clsutering can hold an entry.
 	 */
-	virtual int64_t size() const;
+	virtual int64_t numberOfNodes() const;
 
 	/**
 	 * quick & dirty debug print
@@ -142,7 +142,7 @@ inline void EnsembleClustering::IndexMap<I, T>::print() {
 }
 
 template<typename I, typename T>
-inline int64_t EnsembleClustering::IndexMap<I, T>::size() const {
+inline int64_t EnsembleClustering::IndexMap<I, T>::numberOfNodes() const {
 	return this->data.size() - 1;	// first index 0 is not used since indices are 1-based
 }
 

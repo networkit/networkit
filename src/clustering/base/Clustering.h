@@ -82,7 +82,7 @@ public:
 	 * is contained.
 	 */
 	inline cluster clusterOf(node u) const {
-		assert (u <= this->size());
+		assert (u <= this->numberOfNodes());
 		return this->data[u];
 	}
 
