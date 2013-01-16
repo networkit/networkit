@@ -94,4 +94,27 @@ Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin,
 	return G;
 }
 
+Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
+		double pout) {
+	assert (pin > pout);
+
+	int64_t n = zeta.numberOfNodes();
+	Graph G(n);
+
+	RandomProbability randP;
+	G.forallNodePairs([&](node u, node v){
+		if (zeta.inSameCluster(u, v)) {
+			if (randP.generate() <= pin) {
+				G.insertEdge(u, v);
+			}
+		} else {
+			if (randP.generate() <= pout) {
+				G.insertEdge(u, v);
+			}
+		}
+	});
+
+	return G;
+}
+
 } /* namespace EnsembleClustering */
