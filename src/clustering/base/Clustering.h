@@ -163,8 +163,26 @@ public:
 	 */
 	bool contains(node v);
 
+
+	/**
+	 * Check if two nodes belong to the same cluster
+	 */
+	bool inSameCluster(node u, node v);
+
+
+
+	/**
+	 * Check if this clustering equals another clustering (with respect to a graph).
+	 * Criterion for equality:
+	 *
+	 * 		$$\zeta_1(G) = \zeta_2(G) \iff  \forall \{u, v\} \in E: \zeta_1(u) = \zeta_1(v) \implies \zeta_2(u) = \zeta_2(v) \and \zeta_1(u) \neq \zeta_1(v) \implies \zeta_2(u) \neq \zeta_2(v) $$
+	 */
+	bool equals(Clustering& other, Graph& G);
+
+
 	// DEBUG
 
+	// TODO: ugly, remove
 	void print() const;
 
 

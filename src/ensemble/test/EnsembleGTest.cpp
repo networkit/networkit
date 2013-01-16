@@ -25,7 +25,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 
 	// generate clustered random graph with obvious community structure
 	GraphGenerator graphGen;
-	int64_t n = 500;
+	int64_t n = 42;
 	int64_t k = 3;
 	// these parameters generate a clique graph
 	double pIn = 1.0;

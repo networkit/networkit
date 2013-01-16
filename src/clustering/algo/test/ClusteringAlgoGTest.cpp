@@ -64,4 +64,22 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 
 }
 
+
+TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
+	Graph G(1);
+	G.setWeight(1, 42.0);
+
+	LabelPropagation lp;
+	Clustering zeta = lp.run(G);
+
+	EXPECT_TRUE(zeta.isProper(G));
+	EXPECT_TRUE(zeta.isSingletonClustering(G));
+	EXPECT_TRUE(zeta.isOneClustering(G));
+
+	Modularity modularity;
+	double mod = modularity.getQuality(zeta, G);
+	DEBUG("modularity produced by LabelPropagation: " << mod);
+
+}
+
 } /* namespace EnsembleClustering */

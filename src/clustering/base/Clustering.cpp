@@ -121,6 +121,28 @@ bool Clustering::isSingletonClustering(Graph& G) {
 	return (this->numberOfClusters() == G.numberOfNodes());
 }
 
+bool Clustering::inSameCluster(node u, node v) {
+	assert (this->contains(u));
+	assert (this->contains(v));
+	return (this->clusterOf(u) == this->clusterOf(v));
+}
+
+bool Clustering::equals(Clustering& other, Graph& G) {
+	bool eq = true;
+	G.forallEdges([&](node u, node v){
+		if (this->inSameCluster(u, v)) {
+			if (! other.inSameCluster(u, v)) {
+				eq = false;
+			}
+		} else {
+			if (other.inSameCluster(u, v)) {
+				eq = false;
+			}
+		}
+	});
+	return eq;
+}
+
 void Clustering::print() const {
 	std::cout << "{";
 	for (int64_t i = 0; i <= this->n; ++i) {

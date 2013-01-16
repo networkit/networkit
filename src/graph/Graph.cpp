@@ -133,10 +133,31 @@ std::string Graph::getName() const {
 	return this->name;
 }
 
+double Graph::totalNodeWeight() {
+	double total = 0.0;
+	this->forallNodes([&](node v){
+		total += this->weight(v);
+	});
+	return total;
+}
 
-std::string Graph::toString() const {
+double Graph::incidentWeight(node u) {
+	double iw = 0.0;
+	this->forallEdgesOf(u, [&](node u, node v){
+		iw += this->weight(u, v);
+	});
+	return iw;
+}
+
+std::string Graph::toString() {
 	std::stringstream strm;
-	strm << "Graph(name=" << this->getName() << ", n=" << this->numberOfNodes() << ", m=" << this->numberOfEdges() << ")";
+	int64_t l = 0;	// number of weighted nodes (=self-loops)
+	this->forallNodes([&](node v){
+		if (this->weight(v) >= 0.0) {
+			l += 1;
+		}
+	});
+	strm << "Graph(name=" << this->getName() << ", n=" << this->numberOfNodes() << ", m=" << this->numberOfEdges() << ", l=" << l << ")";
 	return strm.str();
 }
 

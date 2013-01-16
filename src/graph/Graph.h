@@ -196,6 +196,11 @@ public:
 	double totalEdgeWeight();
 
 
+	/**
+	 * Get the sum of the weight of all nodes (can be treated as self-loops weight).
+	 */
+	double totalNodeWeight();
+
 
 
 
@@ -203,6 +208,13 @@ public:
 	 * Return the degree (number of incident edges).
 	 */
 	int64_t degree(node u) const;
+
+
+	/**
+	 * Return the weight of all incident edges.
+	 *	The self-loop (weight of a node) is not included.
+	 */
+	double incidentWeight(node u);
 
 	/**
 	 * Return the number of edges in the graph.
@@ -268,7 +280,7 @@ public:
 	/**
 	 * Append string representation to stream.
 	 */
-	virtual std::string toString() const;
+	virtual std::string toString();
 
 
 	/********** ITERATION / TRAVERSAL ***********/

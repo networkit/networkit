@@ -49,6 +49,9 @@ Clustering EnsembleClusterer::projectBack(Clustering& zetaCoarse,
 }
 
 Clustering EnsembleClusterer::run(Graph& G) {
+	// DEBUG
+	INFO("STARTING EnsembleClusterer on G=" << G.toString());
+	// DEBUG
 
 	// sub-algorithms
 	ClusterContracter contract;
@@ -64,6 +67,10 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// other data collections
 	std::vector<Clustering>	baseClustering;	// collection of base clusterings, reset in each iteration
 
+
+	// DEBUG
+	GraphIO graphio;
+	// DEBUG
 
 
 	bool repeat;
@@ -86,7 +93,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			try {
 				baseClustering.push_back(clusterer->run(graph[i]));
 				// DEBUG
-				DEBUG("created clustering with k=" << baseClustering.back().numberOfClusters());
+				DEBUG("created base clustering: k=" << baseClustering.back().numberOfClusters());
 				if (baseClustering.back().isOneClustering(graph[i])) {
 					WARN("base clusterer created 1-clustering");
 				}
@@ -99,6 +106,10 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// *** overlap clusters to create core clustering ***
 		clustering.push_back(overlap.run(graph[i], baseClustering));
+		// DEBUG
+		DEBUG("created core clustering: k=" << clustering[i].numberOfClusters());
+
+		// DEBUG
 
 		if (i == 0) {			// first iteration
 			// *** calculate quality of first core clustering with respect to first graph ***
@@ -112,20 +123,22 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 			//DEBUG
 			DEBUG("contracted graph G^" << (i+1) << " created: " << graph.back().toString());
-
-			if (graph[i+1].numberOfEdges() == 0) {
-				double vw = 0.0;
-				G.forallNodes([&](node v) {
-					vw += graph[i+1].weight(v);
-				});
-				DEBUG("graph has no edges, total node (self-loop) weight is:" << vw);
-			}
 			//DEBUG
 
 			// new graph created => repeat
 			repeat = true;
 		} else { 	// other iterations
 			clusteringBack.push_back(this->projectBack(clustering[i], map, G));
+			assert (clustering[i].numberOfClusters() == clusteringBack[i].numberOfClusters());
+			// DEBUG
+			DEBUG("created projected clustering: k=" << clusteringBack[i].numberOfClusters());
+			// check if projected clustering is the same as in previous iteration
+			bool same = clusteringBack[i].equals(clusteringBack[i-1], G);
+			if (same) {
+				WARN("projected clustering zeta^{" << i << "Ê\to 0} is the same as zeta^{" << (i-1) << "Ê\to 0} ");
+			}
+			// DEBUG
+
 			quality.push_back(this->qm->getQuality(clusteringBack[i], graph[i]));
 			DEBUG("pushed quality: " << quality.back());
 

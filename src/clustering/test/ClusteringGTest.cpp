@@ -45,6 +45,24 @@ TEST_F(ClusteringGTest, testModularity) {
 }
 
 
+TEST_F(ClusteringGTest, testClusteringEquality) {
+	int n = 100;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCompleteGraph(n);
+
+	ClusteringGenerator clusteringGen;
+	Clustering one1 = clusteringGen.makeOneClustering(G);
+	Clustering one2 = clusteringGen.makeOneClustering(G);
+
+	EXPECT_TRUE(one1.equals(one2, G)) << "two 1-clusterings of G should be equal";
+
+	Clustering singleton1 = clusteringGen.makeSingletonClustering(G);
+	Clustering singleton2 = clusteringGen.makeSingletonClustering(G);
+
+	EXPECT_TRUE(singleton1.equals(singleton2, G)) << "two singleton clusterings of G should be equal";
+
+}
+
 
 
 } /* namespace EnsembleClustering */

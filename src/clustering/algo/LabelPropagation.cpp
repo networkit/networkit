@@ -82,36 +82,45 @@ Clustering LabelPropagation::run(Graph& G) {
 			// ignore isolated nodes TODO: correct?
 			if (G.degree(v) > 0) {
 
-				std::map<label, int64_t> labelCounts; // neighborLabelCounts maps label -> frequency in the neighbors
+				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 
 
-				// count the labels in the neighborhood of v and select the most frequent one
+				// weigh the labels in the neighborhood of v
 				G.forallNeighborsOf(v, [&](node w) {
-					label cw = labels.clusterOf(w);
-					if (labelCounts.find(cw) == labelCounts.end()) {
-						labelCounts[cw] = 0;
+					label lw = labels[w];
+					if (labelWeights.find(lw) == labelWeights.end()) {
+						labelWeights[lw] = 0.0; // init map entry if not yet in map
 					}
-					labelCounts[cw] += 1;
+					labelWeights[lw] += G.weight(v, w);	// add weight of edge {v, w}
 				});
 
+				// consider also self-loop (i.e. v's own weight)
+				label lv = labels[v];
+				if (labelWeights.find(lv) == labelWeights.end()) {
+					labelWeights[lv] = 0.0;	// init map entry if not yet in map
+				}
+				labelWeights[lv] += G.weight(v);
+
+
 				// get most frequent label
-				label mostFrequent = 0; // TODO: check if 0 occurs in final clustering
-				int64_t max = 0;
-				for (auto it = labelCounts.begin(); it != labelCounts.end(); it++) {
-					if (it->second > max) {
-						max = it->second;
-						mostFrequent = it->first;
+				label heaviest = 0; // TODO: check if 0 occurs in final clustering
+				double maxWeight = 0.0;
+				for (auto it = labelWeights.begin(); it != labelWeights.end(); it++) {
+					if (it->second > maxWeight) {
+						maxWeight = it->second;
+						heaviest = it->first;
 					}
 				}
 
-				TRACE("updating label of " << v << " from " << labels.clusterOf(v) << " to " << mostFrequent);
-				labels.moveToCluster(mostFrequent, v);
+				TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
+				labels.moveToCluster(heaviest, v);
 
 				// stop if v has label of at least half of its neighbors
 				label dominantLabel = 0; // = None
 				// try to find dominant label
-				for (auto it2 = labelCounts.begin(); it2 != labelCounts.end(); it2++) {
-						if (it2->second > (G.degree(v) / 2.0)) {
+				for (auto it2 = labelWeights.begin(); it2 != labelWeights.end(); it2++) {
+					// label is dominant if it weighs more than half of the incident weight (including self-loop)
+						if (it2->second > ((G.incidentWeight(v) + G.weight(v)) / 2.0)) {
 						dominantLabel = it2->first;
 					}
 				}

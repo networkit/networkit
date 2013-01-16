@@ -23,15 +23,17 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 
 	int64_t n = G.numberOfNodes();
 	int64_t m = G.numberOfEdges();
-	if (m == 0) {
-		throw std::invalid_argument("Modularity is undefined for graphs without edges.");
+	if ((m == 0) && (G.totalNodeWeight() == 0.0)) {
+		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
 	}
 
 	double coverage;	// term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double expectedCoverage; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
 	double modularity; 	// mod = coverage - expectedCoverage
 
-	double totalEdgeWeight = G.totalEdgeWeight();
+	double totalEdgeWeight = 0.0;
+	totalEdgeWeight += G.totalEdgeWeight(); // add edge weight
+	totalEdgeWeight += G.totalNodeWeight();	// add "self-loop" weight
 
 
 	NodeMap<double> incidentWeight(n, 0.0);
@@ -41,7 +43,6 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 		G.forallEdgesOf(v, [&](node v, node w) {
 			iw += G.weight(v, w);
 		});
-		// FIXME: solve this with self-loops
 		iw += 2 * G.weight(v);	// Graph datastructure does not support self-loops. Node weights are used instead.
 		incidentWeight[v] = iw;
 	}, "parallel");
@@ -50,6 +51,7 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	IndexMap<cluster, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
 
 
+	// compute intra-cluster edge weights per cluster
 	G.forallEdges([&](node u, node v){
 		assert (u <= zeta.size());
 		assert (v <= zeta.size());
@@ -65,6 +67,12 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 			intraEdgeWeight[c] += G.weight(u, v);
 		} // else ignore edge
 	}, "parallel", "readonly");
+
+	// .... and also add self-loops
+	G.forallNodes([&](node v){
+		cluster c = zeta.clusterOf(v);
+		intraEdgeWeight[c] += G.weight(v);
+	});
 
 
 	double intraEdgeWeightSum = 0.0;	//!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
