@@ -38,20 +38,53 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 }
 
 
-TEST_F(CoarseningGTest, testClusteringProjector) {
+TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	GraphGenerator graphGen;
 	int64_t n = 100;
-	Graph G = graphGen.makeErdosRenyiGraph(n, 0.5);
+	Graph G0 = graphGen.makeErdosRenyiGraph(n, 0.5);
 
-	// make random clustering with k clusters
-	int k = 10;
+	// get 1-clustering of G0
 	ClusteringGenerator clusteringGen;
-	Clustering zetaRand = clusteringGen.makeRandomClustering(G, k);
+	Clustering zeta0 = clusteringGen.makeOneClustering(G0);
 
-	ClusterContracter contracter;
-	auto con = contracter.run(G, zetaRand);
-	EnsembleClustering::Clustering zetaOne = clusteringGen.makeOneClustering(con.first);
+	// contract G0 according to 1-clusterings
+	ClusterContracter contract;
+	auto con = contract.run(G0, zeta0);
+	std::vector<NodeMap<node> > maps;
+	Graph G1 = con.first;
+	maps.push_back(con.second);
 
+	Clustering zeta1 = clusteringGen.makeOneClustering(G1);
+
+	ClusteringProjector project;
+	Clustering zetaBack = project.projectBackToFinest(zeta1, maps, G0);
+
+	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "\zeta^{1->0} and \zeta^{0} should be identical";
+}
+
+
+TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
+	GraphGenerator graphGen;
+	int64_t n = 100;
+	Graph G0 = graphGen.makeErdosRenyiGraph(n, 0.5);
+
+	// get 1-clustering of G0
+	ClusteringGenerator clusteringGen;
+	Clustering zeta0 = clusteringGen.makeSingletonClustering(G0);
+
+	// contract G0 according to 1-clusterings
+	ClusterContracter contract;
+	auto con = contract.run(G0, zeta0);
+	std::vector<NodeMap<node> > maps;
+	Graph G1 = con.first;
+	maps.push_back(con.second);
+
+	Clustering zeta1 = clusteringGen.makeSingletonClustering(G1);
+
+	ClusteringProjector project;
+	Clustering zetaBack = project.projectBackToFinest(zeta1, maps, G0);
+
+	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "\zeta^{1->0} and \zeta^{0} should be identical";
 }
 
 

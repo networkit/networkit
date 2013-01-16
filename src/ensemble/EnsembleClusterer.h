@@ -34,13 +34,6 @@ protected:
 	Clusterer* finalClusterer;	//!< final clustering algorithm
 	std::vector<Clusterer*> baseClusterers;
 
-	/**
-	 * Project clustering of the coarsest graph back to get a clustering of the first graph G^{0}
-	 *
-	 * @param[in]	zetaCoarse		clustering of coarsest graph
-	 */
-	virtual Clustering projectBack(Clustering& zetaCoarse, std::vector<NodeMap<node> >& maps, Graph& G0);
-
 
 public:
 

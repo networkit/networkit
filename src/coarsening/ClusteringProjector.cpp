@@ -35,4 +35,20 @@ Clustering ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, NodeMa
 	return zetaFine;
 }
 
+Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
+		std::vector<NodeMap<node> >& maps, Graph& Gfinest) {
+
+	Clustering zetaFine(Gfinest.numberOfNodes());
+	Gfinest.forallNodes([&](node v) {
+		node sv = v;
+		for (auto map : maps) {
+			sv = map[sv];
+		}
+		cluster sc = zetaCoarse[sv];
+		zetaFine.addToCluster(sc, v);
+	});
+
+	return zetaFine;
+}
+
 } /* namespace EnsembleClustering */

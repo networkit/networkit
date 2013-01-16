@@ -32,21 +32,6 @@ void EnsembleClusterer::setFinalClusterer(Clusterer& final) {
 }
 
 
-Clustering EnsembleClusterer::projectBack(Clustering& zetaCoarse,
-		std::vector<NodeMap<node> >& maps, Graph& G0) {
-
-	Clustering zetaFine(G0.numberOfNodes());
-	G0.forallNodes([&](node v) {
-		node sv = v;
-		for (auto map : maps) {
-			sv = map[sv];
-		}
-		cluster sc = zetaCoarse[sv];
-		zetaFine.addToCluster(sc, v);
-	});
-
-	return zetaFine;
-}
 
 Clustering EnsembleClusterer::run(Graph& G) {
 	// DEBUG
@@ -56,6 +41,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// sub-algorithms
 	ClusterContracter contract;
 	RegionGrowingOverlapper overlap;
+	ClusteringProjector project;
 
 	// hierarchies
 	std::vector<Graph> graph;				// hierarchy of graphs G^{i}
@@ -128,7 +114,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			// new graph created => repeat
 			repeat = true;
 		} else { 	// other iterations
-			clusteringBack.push_back(this->projectBack(clustering[i], map, G));
+			clusteringBack.push_back(project.projectBackToFinest(clustering[i], map, G));
 			assert (clustering[i].numberOfClusters() == clusteringBack[i].numberOfClusters());
 			// DEBUG
 			DEBUG("created projected clustering: k=" << clusteringBack[i].numberOfClusters());
@@ -165,7 +151,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	} while (repeat);
 
 	Clustering zetaCoarse = this->finalClusterer->run(graph[i]); // TODO: check: index correct?
-	Clustering zetaFine = this->projectBack(zetaCoarse, map, G);
+	Clustering zetaFine = project.projectBackToFinest(zetaCoarse, map, G);
 
 	return zetaFine;
 }

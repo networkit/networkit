@@ -15,6 +15,7 @@
 #include "../../clustering/base/ClusteringGenerator.h"
 #include "../../coarsening/ClusterContracter.h"
 #include "../../coarsening/GraphContraction.h"
+#include "../../coarsening/ClusteringProjector.h"
 
 namespace EnsembleClustering {
 

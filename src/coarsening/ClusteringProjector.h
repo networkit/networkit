@@ -34,6 +34,14 @@ public:
 	virtual Clustering projectBack(Graph& Gcoarse, Graph& Gfine, NodeMap<node>& fineToCoarse,
 			Clustering& zetaCoarse);
 
+
+	/**
+	 * Project a clustering \zeta^{i} of the coarse graph G^{i}Êback to
+	 * the finest graph G^{0}, using the hierarchy of fine->coarse maps
+	 */
+	virtual Clustering projectBackToFinest(Clustering& zetaCoarse,
+			std::vector<NodeMap<node> >& maps, Graph& Gfinest);
+
 };
 
 } /* namespace EnsembleClustering */
