@@ -30,10 +30,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	// create the clustering to be returned
 	// set unique label for each node
 	Clustering labels(n);
-	// TODO: use labels.allToSingleton
-	G.forallNodes([&](node v){
-		labels.toSingleton(v);
-	});
+	labels.allToSingletons();
 
 	int64_t majorityLabelCount = 0;	// number of nodes which already have the majority label
 	int64_t nIterations = 0; 	// number of iterations
