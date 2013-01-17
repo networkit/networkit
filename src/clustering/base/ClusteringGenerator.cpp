@@ -51,7 +51,7 @@ Clustering ClusteringGenerator::makeRandomClustering(Graph& G, int k) {
 	G.forallNodes([&](node v){
 		cluster c = dis(gen);
 		zeta.addToCluster(c, v);
-	});
+	}, "parallel");
 
 	assert (zeta.isProper(G));
 	return zeta;

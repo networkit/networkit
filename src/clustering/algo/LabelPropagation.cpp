@@ -48,15 +48,16 @@ Clustering LabelPropagation::run(Graph& G) {
 	int64_t nConnected = 0;
 	G.forallNodes([&](node v) {
 		if (G.degree(v) > 0) {
+			#pragma omp atomic update
 			nConnected += 1;
 		}
-	});
+	}, "parallel");
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	NodeMap<double> incidentWeight(n);
 	G.forallNodes([&](node v) {
 		incidentWeight[v] = G.incidentWeight(v);
-	});
+	}, "parallel");
 
 
 	// propagate labels

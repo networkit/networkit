@@ -402,6 +402,7 @@ inline void EnsembleClustering::Graph::forallEdges(Callback func, std::string pa
 
 template<typename Callback>
 inline void EnsembleClustering::Graph::forallNodes(Callback func, std::string par) {
+	assert ((par == "") || (par == "parallel"));
 	int64_t n  = this->numberOfNodes();
 	#pragma omp parallel for if (par == "parallel")
 	for (node v = this->firstNode(); v <= n; ++v) {
