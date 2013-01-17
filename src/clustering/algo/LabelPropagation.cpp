@@ -52,6 +52,12 @@ Clustering LabelPropagation::run(Graph& G) {
 		}
 	});
 
+	// PERFORMANCE: precompute and store incident edge weight for all nodes
+	NodeMap<double> incidentWeight(n);
+	G.forallNodes([&](node v) {
+		incidentWeight[v] = G.incidentWeight(v);
+	});
+
 
 	// propagate labels
 	while (majorityLabelCount != nConnected) {
@@ -120,7 +126,7 @@ Clustering LabelPropagation::run(Graph& G) {
 				// try to find dominant label
 				for (auto it2 = labelWeights.begin(); it2 != labelWeights.end(); it2++) {
 					// label is dominant if it weighs more than half of the incident weight (including self-loop)
-						if (it2->second > ((G.incidentWeight(v) + G.weight(v)) / 2.0)) {
+						if (it2->second > ((incidentWeight[v] + G.weight(v)) / 2.0)) {
 						dominantLabel = it2->first;
 					}
 				}
