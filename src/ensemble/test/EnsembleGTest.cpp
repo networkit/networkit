@@ -43,8 +43,58 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 	DEBUG("clustering produced by EnsembleClusterer: k=" << zeta.numberOfClusters()); zeta.print();
 
 	// DEBUG
-	if (zeta.size() != G.numberOfNodes()) {
-		ERROR("clustering produced by EnsembleClusterer has " << zeta.size() << " entries but n = " << G.numberOfNodes());
+	if (zeta.numberOfNodes() != G.numberOfNodes()) {
+		ERROR("clustering produced by EnsembleClusterer has " << zeta.numberOfNodes() << " entries but n = " << G.numberOfNodes());
+	}
+	// DEBUG
+
+	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
+	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters (cliques) are easy to detect";
+
+	Modularity modularity;
+	double mod = modularity.getQuality(zeta, G);
+	INFO("modularity produced by EnsembleClusterer: " << mod);
+
+}
+
+
+TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph_ManyBaseClusterers) {
+
+	// generate clustered random graph with obvious community structure
+	GraphGenerator graphGen;
+	int64_t n = 1000;
+	int64_t k = 10;
+	// these parameters generate a clique graph
+	double pIn = 1.0;
+	double pOut = 0.0;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pIn, pOut);
+
+	// DEBUG
+	GraphIO graphio;
+	graphio.writeAdjacencyList(G, "sandbox/G_Clique.adjlist");
+	// DEBUG
+
+	EnsembleClusterer ensembleClusterer;
+	// configure EnsembleClusterer
+	QualityMeasure* qm = new Modularity();
+	ensembleClusterer.setQualityMeasure(*qm);
+	int b = 10; // number of base clusterers
+	for (int i = 0; i < b; ++i) {
+		Clusterer* baseClusterer = new LabelPropagation();
+		ensembleClusterer.addBaseClusterer(*baseClusterer);
+	}
+	Clusterer* finalClusterer = new LabelPropagation();
+	ensembleClusterer.setFinalClusterer(*finalClusterer);
+
+
+
+	Clustering zeta = ensembleClusterer.run(G);
+
+	DEBUG("clustering produced by EnsembleClusterer: k=" << zeta.numberOfClusters()); zeta.print();
+
+	// DEBUG
+	if (zeta.numberOfNodes() != G.numberOfNodes()) {
+		ERROR("clustering produced by EnsembleClusterer has " << zeta.numberOfNodes() << " entries but n = " << G.numberOfNodes());
 	}
 	// DEBUG
 
@@ -92,8 +142,8 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
 	DEBUG("clustering produced by EnsembleClusterer: k=" << zeta.numberOfClusters()); zeta.print();
 
 	// DEBUG
-	if (zeta.size() != G.numberOfNodes()) {
-		ERROR("clustering produced by EnsembleClusterer has " << zeta.size() << " entries but n = " << G.numberOfNodes());
+	if (zeta.numberOfNodes() != G.numberOfNodes()) {
+		ERROR("clustering produced by EnsembleClusterer has " << zeta.numberOfNodes() << " entries but n = " << G.numberOfNodes());
 	}
 	// DEBUG
 
@@ -105,6 +155,8 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
 	INFO("modularity produced by EnsembleClusterer: " << mod);
 
 }
+
+
 
 
 
@@ -138,8 +190,8 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnRandomGraph) {
 	DEBUG("clustering produced by EnsembleClusterer: k=" << zeta.numberOfClusters()); zeta.print();
 
 	// DEBUG
-	if (zeta.size() != G.numberOfNodes()) {
-		ERROR("clustering produced by EnsembleClusterer has " << zeta.size() << " entries but n = " << G.numberOfNodes());
+	if (zeta.numberOfNodes() != G.numberOfNodes()) {
+		ERROR("clustering produced by EnsembleClusterer has " << zeta.numberOfNodes() << " entries but n = " << G.numberOfNodes());
 	}
 	// DEBUG
 
