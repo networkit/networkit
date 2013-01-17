@@ -139,7 +139,7 @@ bool Clustering::equals(Clustering& other, Graph& G) {
 				eq = false;
 			}
 		}
-	});
+	}, "parallel", "readonly");
 	return eq;
 }
 

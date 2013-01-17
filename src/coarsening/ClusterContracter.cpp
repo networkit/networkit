@@ -61,7 +61,7 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 			}
 
 		}
-	});
+	}); // TODO: parallel?
 
 	return std::make_pair(Gcon, nodeToSuperNode);
 
