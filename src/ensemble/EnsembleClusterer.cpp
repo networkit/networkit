@@ -75,9 +75,9 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		baseClustering.clear();
 
 		// *** base clusterers calculate base clusterings ***
-		for (auto clusterer : baseClusterers) {
+		for (auto clusterer : baseClusterers) {	// TODO: run base clusterers in parallel
 			try {
-				baseClustering.push_back(clusterer->run(graph[i]));
+				baseClustering.push_back(clusterer->run(graph[i]));	// TODO: is push_back a critical section?
 				// DEBUG
 				DEBUG("created base clustering: k=" << baseClustering.back().numberOfClusters());
 				if (baseClustering.back().isOneClustering(graph[i])) {
