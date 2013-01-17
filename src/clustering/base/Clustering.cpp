@@ -97,7 +97,7 @@ cluster Clustering::addCluster() {
 
 
 bool Clustering::isInRange(node v) {
-	return (1 <= v <= this->size());
+	return (1 <= v <= this->numberOfNodes());
 }
 
 bool Clustering::contains(node v) {

@@ -53,8 +53,8 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 
 	// compute intra-cluster edge weights per cluster
 	G.forallEdges([&](node u, node v){
-		assert (u <= zeta.size());
-		assert (v <= zeta.size());
+		assert (u <= zeta.numberOfNodes());
+		assert (v <= zeta.numberOfNodes());
 		cluster c = zeta[u];
 		cluster d = zeta[v];
 		if (c == d) {
