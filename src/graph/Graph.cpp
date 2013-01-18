@@ -117,7 +117,7 @@ void Graph::extendNodeRange(int64_t n) {
 }
 
 bool Graph::isEmpty() {
-	bool empty = (this->n == 0);
+	bool empty = (this->numberOfNodes() == 0);
 	assert(this->numberOfEdges() == 0);	// stinger edge data structure should not contain any edges either
 	return empty;
 }

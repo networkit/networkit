@@ -319,6 +319,7 @@
 									<listOptionValue builtIn="false" value="gtest"/>
 									<listOptionValue builtIn="false" value="log4cxx"/>
 								</option>
+								<option id="macosx.cpp.link.option.shared.612408908" name="Shared (-dynamiclib)" superClass="macosx.cpp.link.option.shared" value="false" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1495923261" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -392,11 +393,12 @@
 		<configuration configurationName="EnsembleClustering-O"/>
 		<configuration configurationName="EnsembleClustering.backup"/>
 		<configuration configurationName="EnsembleClustering2"/>
-		<configuration configurationName="EnsembleClustering-D"/>
 		<configuration configurationName="EnsembleClustering"/>
+		<configuration configurationName="EnsembleClustering-D"/>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/EnsembleClustering"/>
 		</configuration>
+		<configuration configurationName="EnsembleClustering-DPar"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>

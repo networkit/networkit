@@ -21,15 +21,13 @@
 // EnsembleClustering
 #include "aux/optionparser.h"
 #include "aux/Log.h"
-#include "aux/Noise.h"
 #include "graph/Graph.h"
-#include "io/METISParser.h"
-#include "io/METISToGraph.h"
-#include "matching/Matching.h"
+#include "ensemble/EnsembleClusterer.h"
+#include "clustering/algo/LabelPropagation.h"
 #include "clustering/base/Clustering.h"
-#include "clustering/base/ClusteringGenerator.h"
-#include "graph/GraphGenerator.h"
 #include "clustering/base/Modularity.h"
+#include "io/METISGraphReader.h"
+
 
 
 
@@ -80,8 +78,39 @@ const OptionParser::Descriptor usage[] =
 };
 
 
-void startEnsembleClusterer(std::string graphPath, int ensembleSize) {
+void start(std::string graphPath, int ensembleSize) {
 	assert (ensembleSize > 0);
+	assert (! graphPath.empty());
+
+	// READ GRAPH
+
+	GraphReader* reader = new METISGraphReader();	// TODO: add support for multiple graph file formats
+	Graph G = reader->read(graphPath);
+
+	EnsembleClusterer ensemble;
+
+	// CONFIGURE ENSEMBLE CLUSTERER
+
+	// 1. Quality Measure
+	QualityMeasure* qm = new Modularity();
+	ensemble.setQualityMeasure(*qm);
+
+	// 2. Base Clusterers
+	for (int i = 0; i < ensembleSize; i += 1) {
+		Clusterer* base = new LabelPropagation();
+		ensemble.addBaseClusterer(*base);
+	}
+
+	// 3. Final Clusterer
+	Clusterer* final = new LabelPropagation();
+	ensemble.setFinalClusterer(*final);
+
+	// RUN ENSEMBLE CLUSTERER
+	Clustering result = ensemble.run(G);
+
+
+	// ANALYZE RESULT
+
 }
 
 
