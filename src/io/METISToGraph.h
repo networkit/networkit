@@ -17,7 +17,7 @@ namespace EnsembleClustering {
 
 /**
  * This class provides a user interface for reading a METIS graph file and returning a
- * STINGER-based graph object.
+ * Graph object.
  */
 class METISToGraph {
 

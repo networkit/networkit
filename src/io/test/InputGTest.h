@@ -12,7 +12,7 @@
 #include <fstream>
 
 #include "../../aux/Log.h"
-#include "../METISParser.h"
+#include "../METISGraphReader.h"
 
 #include "../GraphIO.h"
 #include "../../graph/GraphGenerator.h"

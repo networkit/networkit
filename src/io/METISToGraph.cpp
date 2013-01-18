@@ -27,11 +27,8 @@ METISToGraph::~METISToGraph() {
 
 Graph METISToGraph::read(std::string graphPath) {
 
-	METISParser parser;
+	METISParser parser(graphPath);
 
-
-
-	parser.open(graphPath);
 	std::pair<int64_t, int64_t> header = parser.getHeader();
 
 	GraphFromAdjacencies builder;
@@ -39,9 +36,6 @@ Graph METISToGraph::read(std::string graphPath) {
 	while (parser.hasNext()) {
 		builder.addAdjacencies(parser.getNext());
 	}
-
-	parser.close();
-
 	return builder.getGraph();
 }
 

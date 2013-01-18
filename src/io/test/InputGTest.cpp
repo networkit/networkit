@@ -56,4 +56,15 @@ TEST_F(InputGTest, testGraphIOForIsolatedNodes) {
 }
 
 
+
+TEST_F(InputGTest, testMETISGraphReader) {
+	std::string path = "input/jazz.graph";
+
+	METISGraphReader reader;
+	Graph G = reader.read(path);
+
+	EXPECT_FALSE(G.isEmpty());
+}
+
+
 } /* namespace EnsembleClustering */

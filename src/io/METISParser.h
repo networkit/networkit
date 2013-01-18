@@ -14,6 +14,7 @@
 #include <string>
 #include <sstream>
 #include <utility>
+#include <stdexcept>
 
 #include "../aux/Log.h"
 
@@ -24,16 +25,18 @@ typedef int64_t node;
 
 class METISParser {
 
+
+protected:
+
+	std::ifstream graphFile;
+
+
 public:
 
-	METISParser();
+	METISParser(std::string path);
 
 	virtual ~METISParser();
 
-	/**
-	 * Open a METIS graph file.
-	 */
-	virtual void open(std::string graphPath);
 
 	/**
 	 * Get the METIS graph file header
@@ -50,17 +53,6 @@ public:
 	 */
 	virtual std::vector<node> getNext();
 
-	/**
-	 * Close input file and clean up.
-	 */
-	virtual void close();
-
-protected:
-
-	std::string graphPath;
-	std::ifstream graphFile;
-	std::string line;
-	int nodeCount;
 
 };
 
