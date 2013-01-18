@@ -15,6 +15,7 @@
 #include <sstream>
 #include <utility>
 #include <stdexcept>
+#include <cassert>
 
 #include "../aux/Log.h"
 

@@ -76,7 +76,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// *** base clusterers calculate base clusterings ***
 		for (auto clusterer : baseClusterers) {	// TODO: run base clusterers in parallel
-			try {
+			try { // TODO: resize vector and index
 				baseClustering.push_back(clusterer->run(graph[i]));	// TODO: is push_back a critical section?
 				// DEBUG
 				DEBUG("created base clustering: k=" << baseClustering.back().numberOfClusters());
