@@ -11,12 +11,12 @@
 #include <gtest/gtest.h>
 
 
-#include "../../aux/Log.h"
-#include "../base/Clustering.h"
-#include "../base/Modularity.h"
-#include "../base/ClusteringGenerator.h"
-#include "../../graph/GraphGenerator.h"
-#include "../algo/LabelPropagation.h"
+#include "../../../aux/Log.h"
+#include "../Clustering.h"
+#include "../Modularity.h"
+#include "../ClusteringGenerator.h"
+#include "../../../graph/GraphGenerator.h"
+#include "../../algo/LabelPropagation.h"
 
 namespace EnsembleClustering {
 

@@ -51,7 +51,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	std::vector<double> quality;			// hierarchy of clustering quality values q^{i} = q(\zeta^{i}, G^{0})
 
 	// other data collections
-	std::vector<Clustering>	baseClustering;	// collection of base clusterings, reset in each iteration
+	std::vector<Clustering>	baseClustering(baseClusterers.size(), Clustering(0));	// collection of base clusterings - fill with empty clustering
 
 
 	// DEBUG
@@ -72,15 +72,15 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 
 		INFO("EnsembleClusterer *** ITERATION " << i << " ***");
-		baseClustering.clear();
 
 		// *** base clusterers calculate base clusterings ***
-		for (auto clusterer : baseClusterers) {	// TODO: run base clusterers in parallel
-			try { // TODO: resize vector and index
-				baseClustering.push_back(clusterer->run(graph[i]));	// TODO: is push_back a critical section?
+		#pragma omp parallel for
+		for (int b = 0; b < baseClusterers.size(); b += 1) {	// TODO: run base clusterers in parallel
+			try {
+				baseClustering[b] = baseClusterers[b]->run(graph[i]);	// TODO: is push_back a critical section?
 				// DEBUG
-				DEBUG("created base clustering: k=" << baseClustering.back().numberOfClusters());
-				if (baseClustering.back().isOneClustering(graph[i])) {
+				DEBUG("created base clustering: k=" << baseClustering[b].numberOfClusters());
+				if (baseClustering[b].isOneClustering(graph[i])) {
 					WARN("base clusterer created 1-clustering");
 				}
 				// DEBUG
