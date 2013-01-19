@@ -25,8 +25,12 @@ source = [name for name in source if name not in excluded]
 
 # set up environment (compiler flags etc.)
 
-# 1. Debug Parallel
 env = Environment()
+
+# libraries
+env.Append(LIBPATH = [""])
+env.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
+
 env.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -fopenmp -std=c++11")
 
 

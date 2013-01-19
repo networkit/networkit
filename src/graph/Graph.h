@@ -424,6 +424,7 @@ inline void EnsembleClustering::Graph::forallNeighborsOf(node v, Callback func) 
 template<typename Callback>
 inline void EnsembleClustering::Graph::forallNodePairs(Callback func, std::string par,
 		std::string write) {
+	#pragma omp parallel for if (par == "parallel")
 	for (node u = 1; u <= n; ++u) {
 		for (node v = u + 1; v <= n; ++v) {
 			// call node pair function
