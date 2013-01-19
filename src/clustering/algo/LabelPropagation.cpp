@@ -20,8 +20,6 @@ LabelPropagation::~LabelPropagation() {
 
 Clustering LabelPropagation::run(Graph& G) {
 
-	// TODO: remove after debugging
-	using Aux::operator<<; // map printer
 
 	typedef cluster label;	// a label is the same as a cluster id
 
@@ -79,11 +77,14 @@ Clustering LabelPropagation::run(Graph& G) {
 		// DEBUG
 
 		std::vector<node> shuffledNodes;
+		shuffledNodes.resize(n); 	// hold n nodes
 		G.forallNodes([&](node v){
-			shuffledNodes.push_back(v);
-		});
+			shuffledNodes[v - 1] = v;	// store all nodes in vector
+		}, "parallel");
 		std::random_shuffle(shuffledNodes.begin(), shuffledNodes.end());
+		// DEBUG
 		TRACE("shuffledNodes: " << Aux::vectorToString(shuffledNodes));
+		// DEBUG
 
 		for (node v : shuffledNodes) {
 			// ignore isolated nodes TODO: correct?
