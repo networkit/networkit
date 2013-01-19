@@ -15,6 +15,8 @@
 #include "../Clustering.h"
 #include "../Modularity.h"
 #include "../ClusteringGenerator.h"
+#include "../JaccardMeasure.h"
+#include "../RandMeasure.h"
 #include "../../../graph/GraphGenerator.h"
 #include "../../algo/LabelPropagation.h"
 

@@ -65,4 +65,39 @@ TEST_F(ClusteringGTest, testClusteringEquality) {
 
 
 
+TEST_F(ClusteringGTest, testJaccardMeasure) {
+	int n = 100;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCompleteGraph(n);
+
+	ClusteringGenerator clusteringGen;
+	Clustering singleton = clusteringGen.makeSingletonClustering(G);
+	Clustering random = clusteringGen.makeRandomClustering(G, 10);
+
+	JaccardMeasure jaccard;
+	double j = jaccard.getDissimilarity(G, singleton, random);
+
+	EXPECT_EQ(1.0, j) << "The singleton clustering and any other clustering compare with a dissimilarity of 1.0";
+
+}
+
+
+TEST_F(ClusteringGTest, testRandMeasure) {
+	int n = 100;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCompleteGraph(n);
+
+	ClusteringGenerator clusteringGen;
+	Clustering one1 = clusteringGen.makeOneClustering(G);
+	Clustering one2 = clusteringGen.makeOneClustering(G);
+
+	RandMeasure rand;
+	double r = rand.getDissimilarity(G, one1, one2);
+
+	EXPECT_EQ(0.0, r) << "Identical clusterings should compare with a dissimilarity of 0.0";
+
+}
+
+
+
 } /* namespace EnsembleClustering */
