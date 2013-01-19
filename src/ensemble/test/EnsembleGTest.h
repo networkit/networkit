@@ -14,7 +14,10 @@
 #include "../EnsembleClusterer.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/base/Modularity.h"
+#include "../../clustering/base/JaccardMeasure.h"
+#include "../../clustering/base/RandMeasure.h"
 #include "../../clustering/algo/LabelPropagation.h"
+
 
 namespace EnsembleClustering {
 

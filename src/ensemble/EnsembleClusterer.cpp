@@ -75,7 +75,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// *** base clusterers calculate base clusterings ***
 		#pragma omp parallel for
-		for (int b = 0; b < baseClusterers.size(); b += 1) {	// TODO: run base clusterers in parallel
+		for (uint b = 0; b < baseClusterers.size(); b += 1) {	// TODO: run base clusterers in parallel
 			try {
 				baseClustering[b] = baseClusterers[b]->run(graph[i]);	// TODO: is push_back a critical section?
 				// DEBUG
@@ -87,6 +87,15 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			} catch (...) {
 				ERROR("base clusterer failed with exception.");
 				throw std::runtime_error("base clusterer failed.");
+			}
+		}
+
+		// ANALYSIS
+		JaccardMeasure dm;
+		for (uint b = 0; b < baseClustering.size(); b += 1) {
+			for (uint c = b; c < baseClustering.size(); c += 1) {
+				double d = dm.getDissimilarity(graph[i], baseClustering.at(b), baseClustering.at(c));
+				INFO("dm " << b << " <-> " << c << ": " << d);
 			}
 		}
 

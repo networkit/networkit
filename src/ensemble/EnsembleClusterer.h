@@ -22,6 +22,8 @@
 #include "../coarsening/GraphContraction.h"
 #include "../io/GraphIO.h"
 #include "../coarsening/ClusteringProjector.h"
+#include "../clustering/base/RandMeasure.h"
+#include "../clustering/base/JaccardMeasure.h"
 
 namespace EnsembleClustering {
 
