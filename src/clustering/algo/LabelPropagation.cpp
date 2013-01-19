@@ -70,8 +70,10 @@ Clustering LabelPropagation::run(Graph& G) {
 		majorityLabelCount = 0;
 
 		// DEBUG
-		if (nIterations >= 42) {
+		if (nIterations >= 23) {
 			ERROR("LabelPropagation reached " << nIterations << " iterations. It usually terminates after less than 5 iterations. Something has gone terribly wrong.");
+			GraphIO graphio;
+			graphio.writeAdjacencyList(G, "sandbox/LabelPropagationFAIL.adjlist");
 			throw std::runtime_error("aborting LabelPropagation to avoid infinite loop");
 		}
 		// DEBUG
