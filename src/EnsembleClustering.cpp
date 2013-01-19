@@ -38,10 +38,24 @@ using namespace EnsembleClustering;
 /**
  * Call this first to configure logging output.
  */
-void configureLogging() {
+void configureLogging(std::string loglevel = "DEBUG") {
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
-	log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());	// TODO: make debug level a command line parameter
+	if (loglevel == "TRACE") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getTrace());
+
+	} else if (loglevel == "DEBUG") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+	} else if (loglevel == "INFO") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
+	} else if (loglevel == "WARN") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getWarn());
+	} else if (loglevel == "ERROR") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getError());
+	} else {
+		std::cout << "unknown log level: " << loglevel;
+		std::exit(1);
+	}
 }
 
 
@@ -55,7 +69,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
     return OptionParser::ARG_OK;
 
   if (msg) {
-	  ERROR("Option '" << option << "' requires an argument\n");
+	  std::cout << "Option '" << option << "' requires an argument" << std::endl;
   }
   return OptionParser::ARG_ILLEGAL;
 }
@@ -63,12 +77,13 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, TESTS, GRAPH, ENSEMBLE_SIZE};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, TESTS, GRAPH, ENSEMBLE_SIZE};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
                                             "Options:" },
  {HELP,    0,"h" , "help",OptionParser::Arg::None, "  --help  \t Print usage and exit." },
+ {LOGLEVEL,    0, "" , "loglevel", OptionParser::Arg::Required, "  --loglevel  \t set the log level" },
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
  {ENSEMBLE_SIZE, 0, "", "ensemble-size", OptionParser::Arg::Required, "  --ensemble-size \t number of clusterers in the ensemble"},
@@ -139,7 +154,13 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE LOGGING
-	configureLogging();
+
+	if (options[LOGLEVEL]) {
+		configureLogging(options[LOGLEVEL].arg);
+	} else {
+		configureLogging();	// with default level
+	}
+
 
 	// RUN UNIT TESTS
 
