@@ -23,6 +23,7 @@
 // EnsembleClustering
 #include "aux/optionparser.h"
 #include "aux/Log.h"
+#include "aux/Timer.h"
 #include "graph/Graph.h"
 #include "ensemble/EnsembleClusterer.h"
 #include "clustering/algo/LabelPropagation.h"
@@ -35,6 +36,63 @@
 
 
 using namespace EnsembleClustering;
+
+
+
+
+void start(Graph& G, int ensembleSize) {
+
+	EnsembleClusterer ensemble;
+
+		// CONFIGURE ENSEMBLE CLUSTERER
+
+		// 1. Quality Measure
+		QualityMeasure* qm = new Modularity();
+		ensemble.setQualityMeasure(*qm);
+
+		// 2. Base Clusterers
+		for (int i = 0; i < ensembleSize; i += 1) {
+			Clusterer* base = new LabelPropagation();
+			ensemble.addBaseClusterer(*base);
+		}
+
+		// 3. Final Clusterer
+		Clusterer* final = new LabelPropagation();
+		ensemble.setFinalClusterer(*final);
+
+		// RUN ENSEMBLE CLUSTERER
+		Aux::Timer runtime;
+		runtime.start();
+
+		Clustering result = ensemble.run(G);
+
+		runtime.stop();
+		std::cout << "EnsembleClusterer runtime: " << runtime.elapsed().count() << " ms" << std::endl;
+
+
+		// ANALYZE RESULT
+
+}
+
+void start(std::string graphPath, int ensembleSize) {
+	assert (ensembleSize > 0);
+	assert (! graphPath.empty());
+
+	// READ GRAPH
+
+	GraphReader* reader = new METISGraphReader();	// TODO: add support for multiple graph file formats
+	Graph G = reader->read(graphPath);
+
+
+	start(G, ensembleSize);
+}
+
+
+void startWithGenerated(int64_t n, int64_t k, double pin, double pout, int ensembleSize) {
+
+}
+
+// TODO: start with planted partition
 
 
 /**
@@ -79,7 +137,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, TESTS, GRAPH, ENSEMBLE_SIZE};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -88,6 +146,7 @@ const OptionParser::Descriptor usage[] =
  {LOGLEVEL,    0, "" , "loglevel", OptionParser::Arg::Required, "  --loglevel  \t set the log level" },
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
+ {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
  {ENSEMBLE_SIZE, 0, "", "ensemble-size", OptionParser::Arg::Required, "  --ensemble-size \t number of clusterers in the ensemble"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
@@ -95,40 +154,6 @@ const OptionParser::Descriptor usage[] =
 };
 
 
-void start(std::string graphPath, int ensembleSize) {
-	assert (ensembleSize > 0);
-	assert (! graphPath.empty());
-
-	// READ GRAPH
-
-	GraphReader* reader = new METISGraphReader();	// TODO: add support for multiple graph file formats
-	Graph G = reader->read(graphPath);
-
-	EnsembleClusterer ensemble;
-
-	// CONFIGURE ENSEMBLE CLUSTERER
-
-	// 1. Quality Measure
-	QualityMeasure* qm = new Modularity();
-	ensemble.setQualityMeasure(*qm);
-
-	// 2. Base Clusterers
-	for (int i = 0; i < ensembleSize; i += 1) {
-		Clusterer* base = new LabelPropagation();
-		ensemble.addBaseClusterer(*base);
-	}
-
-	// 3. Final Clusterer
-	Clusterer* final = new LabelPropagation();
-	ensemble.setFinalClusterer(*final);
-
-	// RUN ENSEMBLE CLUSTERER
-	Clustering result = ensemble.run(G);
-
-
-	// ANALYZE RESULT
-
-}
 
 
 
@@ -180,6 +205,10 @@ int main(int argc, char **argv) {
 
 	if (options[GRAPH]) {
 	   DEBUG("called with graph argument: " << options[GRAPH].arg);
+	}
+
+	if (options[GENERATE]) {
+		// TODO: --generated=(1000,10,0.2,0.2)
 	}
 
 	if (options[ENSEMBLE_SIZE]) {
