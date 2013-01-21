@@ -255,7 +255,7 @@
 								<option id="gnu.cpp.compiler.option.warnings.nowarn.1084143294" name="Inhibit all warnings (-w)" superClass="gnu.cpp.compiler.option.warnings.nowarn" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.prof.1580238196" name="Generate prof information (-p)" superClass="gnu.cpp.compiler.option.debugging.prof" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.566174941" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
-								<option id="gnu.cpp.compiler.option.debugging.other.972298497" name="Other debugging flags" superClass="gnu.cpp.compiler.option.debugging.other" value="-D_GLIBCXX_DEBUG -fno-elide-constructors" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.debugging.other.972298497" name="Other debugging flags" superClass="gnu.cpp.compiler.option.debugging.other" value="-D_GLIBCXX_DEBUG" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1712152076" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool command="/usr/local/bin/gcc-4.7" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug.1027723416" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug">
@@ -353,7 +353,7 @@
 								<option id="gnu.cpp.compiler.option.warnings.nowarn.1240200254" name="Inhibit all warnings (-w)" superClass="gnu.cpp.compiler.option.warnings.nowarn" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.prof.939890264" name="Generate prof information (-p)" superClass="gnu.cpp.compiler.option.debugging.prof" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.990385355" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
-								<option id="gnu.cpp.compiler.option.debugging.other.1383726546" name="Other debugging flags" superClass="gnu.cpp.compiler.option.debugging.other" value="-D_GLIBCXX_DEBUG -fno-elide-constructors" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.debugging.other.1383726546" name="Other debugging flags" superClass="gnu.cpp.compiler.option.debugging.other" value="-D_GLIBCXX_DEBUG" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1948052548" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool command="/usr/local/bin/gcc-4.7" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug.1544981721" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug">

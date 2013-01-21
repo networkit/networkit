@@ -7,17 +7,17 @@
 
 #include "AuxGTest.h"
 
-namespace EnsembleClustering {
 
 TEST_F(AuxGTest, testRandomInteger) {
 	int64_t l = 0; 	// lower bound
 	int64_t u = 10;	// upper bound
-	RandomInteger randInt(l, u);
+	Aux::RandomInteger randInt(l, u);
 	std::vector<int64_t> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
 		int64_t r = randInt.generate();
-		assert(l <= r <= u);
+		assert(l <= r);
+		assert(r <= u);
 		rVector.push_back(r);
 	}
 
@@ -41,12 +41,13 @@ TEST_F(AuxGTest, testRandomInteger) {
 
 
 TEST_F(AuxGTest, testRandomProbability) {
-	RandomProbability randPr;
+	Aux::RandomProbability randPr;
 	std::vector<double> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
 		double r = randPr.generate();
-		assert(0.0 <= r <= 1.0);
+		assert(0.0 <= r);
+		assert(r <= 1.0);
 		rVector.push_back(r);
 	}
 
@@ -62,4 +63,22 @@ TEST_F(AuxGTest, testRandomProbability) {
 	EXPECT_GE(avg, 0.4);
 }
 
-} /* namespace EnsembleClustering */
+
+
+
+TEST_F(AuxGTest, testTimer) {
+	int64_t sleepTime = 1000; // sleep time in ms
+	int64_t tolerance = 10;
+
+	Aux::Timer timer;
+	DEBUG("sleeping for " << sleepTime << " ms");
+	timer.start();
+	std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+	timer.stop();
+	std::chrono::duration<int64_t, std::milli> elapsed = timer.elapsed();
+	int64_t ec = elapsed.count();
+
+	EXPECT_LE(sleepTime - tolerance, ec) << "elapsed time should be roughly equal to sleep time";
+	EXPECT_GE(sleepTime + tolerance, ec) << "elapsed time should be roughly to sleep time";
+}
+

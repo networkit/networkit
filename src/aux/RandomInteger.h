@@ -11,7 +11,7 @@
 #include <random>
 #include <ctime>
 
-namespace EnsembleClustering {
+namespace Aux {
 
 class RandomInteger {
 
@@ -29,5 +29,5 @@ public:
 	virtual int64_t generate();
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace Aux */
 #endif /* RANDOMINTEGER_H_ */

@@ -7,7 +7,7 @@
 
 #include "RandomInteger.h"
 
-namespace EnsembleClustering {
+namespace Aux {
 
 RandomInteger::RandomInteger(int64_t lower, int64_t upper) : randomEngine((unsigned int) time(0)), distribution(lower, upper) {
 }
@@ -21,4 +21,4 @@ int64_t RandomInteger::generate() {
 	return i;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace Aux */

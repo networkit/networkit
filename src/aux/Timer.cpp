@@ -29,14 +29,16 @@ std::chrono::steady_clock::time_point Timer::stop() {
 }
 
 std::chrono::duration<int64_t, std::milli> Timer::elapsed() {
-	auto now = std::chrono::steady_clock::now();
-	// FIXME: return now - this->started;
+	std::chrono::duration<int64_t, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(std::chrono::steady_clock::now() - this->started);
+	return elapsed;
 }
 
 std::chrono::steady_clock::time_point Timer::startTime() {
+	return this->started;
 }
 
 std::chrono::steady_clock::time_point Timer::stopTime() {
+	return this->stopped;
 }
 
 } /* namespace Aux */

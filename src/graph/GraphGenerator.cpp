@@ -23,7 +23,7 @@ GraphGenerator::~GraphGenerator() {
 
 
 Graph GraphGenerator::makeErdosRenyiGraph(int64_t n, double p) {
-	RandomProbability randP;
+	Aux::RandomProbability randP;
 	Graph G(n);
 	for (node u = 1; u <= n; ++u) {
 		for (node v = u + 1; v <= n; ++v) {
@@ -50,7 +50,7 @@ Graph GraphGenerator::makeCircularGraph(int64_t n) {
 
 Graph GraphGenerator::makeCompleteGraph(int64_t n) {
 	// TODO: modernize
-	RandomProbability randP;
+	Aux::RandomProbability randP;
 	Graph G(n);
 	for (node u = 1; u <= n; ++u) {
 		for (node v = u + 1; v <= n; ++v) {
@@ -66,8 +66,8 @@ Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin,
 	assert(pin >= pout);
 
 	Graph G(n);
-	RandomProbability randP;
-	RandomInteger randInt(1, k);
+	Aux::RandomProbability randP;
+	Aux::RandomInteger randInt(1, k);
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
 	G.forallNodes([&](node v){
@@ -101,7 +101,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 	int64_t n = zeta.numberOfNodes();
 	Graph G(n);
 
-	RandomProbability randP;
+	Aux::RandomProbability randP;
 	G.forallNodePairs([&](node u, node v){
 		if (zeta.inSameCluster(u, v)) {
 			if (randP.generate() <= pin) {

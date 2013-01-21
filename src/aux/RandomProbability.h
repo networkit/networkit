@@ -10,6 +10,8 @@
 
 #include <random>
 
+namespace Aux {
+
 class RandomProbability {
 
 protected:
@@ -25,5 +27,7 @@ public:
 
 	virtual double generate();
 };
+
+}
 
 #endif /* RANDOMPROBABILITY_H_ */

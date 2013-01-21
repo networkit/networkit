@@ -7,6 +7,8 @@
 
 #include "RandomProbability.h"
 
+namespace Aux {
+
 RandomProbability::RandomProbability() :  randomEngine((unsigned int) time(0)), distribution(0.0, 1.0) {
 }
 
@@ -17,4 +19,6 @@ RandomProbability::~RandomProbability() {
 double RandomProbability::generate() {
 	double r = this->distribution(this->randomEngine);
 	return r;
+}
+
 }
