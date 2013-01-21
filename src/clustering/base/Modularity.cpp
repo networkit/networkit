@@ -109,7 +109,7 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	// assert ranges of coverage
 	assert(coverage <= 1.0);
 	assert(coverage >= 0.0);
-	assert(expectedCoverage <= 1.0);	// FIXME: expected coverage can become > 1.0
+	assert(expectedCoverage <= 1.0);
 	assert(expectedCoverage >= 0.0);
 
 	modularity = coverage - expectedCoverage;

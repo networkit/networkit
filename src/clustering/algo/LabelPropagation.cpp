@@ -23,6 +23,10 @@ Clustering LabelPropagation::run(Graph& G) {
 
 	typedef cluster label;	// a label is the same as a cluster id
 
+	// init random for std::shuffle
+	std::random_device rd;
+	std::mt19937 randgen(rd());
+
 	int64_t n = G.numberOfNodes();
 
 	// create the clustering to be returned
@@ -83,7 +87,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		G.forallNodes([&](node v){
 			shuffledNodes[v - 1] = v;	// store all nodes in vector
 		}, "parallel");
-		std::random_shuffle(shuffledNodes.begin(), shuffledNodes.end());
+		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
 		// DEBUG
 		TRACE("shuffledNodes: " << Aux::vectorToString(shuffledNodes));
 		// DEBUG

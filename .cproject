@@ -88,7 +88,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Test.cpp|input/test/InputTest.cpp|graph/test/GraphTest.h|input/test/InputTest.h|graph/test/GraphTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="test/ParametrizedGTest.h|test/ParametrizedGTest.cpp|Test.cpp|input/test/InputTest.cpp|graph/test/GraphTest.h|input/test/InputTest.h|graph/test/GraphTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -180,7 +180,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Test.cpp|input/test/InputTest.cpp|graph/test/GraphTest.h|input/test/InputTest.h|graph/test/GraphTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="test/ParametrizedGTest.h|test/ParametrizedGTest.cpp|Test.cpp|input/test/InputTest.cpp|graph/test/GraphTest.h|input/test/InputTest.h|graph/test/GraphTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
