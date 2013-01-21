@@ -24,7 +24,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	typedef cluster label;	// a label is the same as a cluster id
 
 	// init random for std::shuffle
-	std::random_device rd;
+	std::default_random_engine rd;
 	std::mt19937 randgen(rd());
 
 	int64_t n = G.numberOfNodes();
