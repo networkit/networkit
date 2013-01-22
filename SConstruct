@@ -42,13 +42,13 @@ macbook.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
 macbook.Append(LIBPATH = ["/Users/cls/workspace/STINGER/OpenMP Debug",\
                            "/Users/cls/workspace/gtest/lib", \
                             "/usr/local/Cellar/log4cxx/0.10.0/lib"])
-# env.Append(LINKFLAGS = ['-Wl,--rpath,/usr/local/lib/'])
+env.Append(LINKFLAGS = ["-fopenmp -std=c++11"])
 
 ### compiler & flags
 macbook["CC"] = "gcc-4.7"
 macbook["CXX"] = "g++-4.7"
-macbook.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -fopenmp -std=c++11")
-macbook.Append(CPPFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -fopenmp -std=c++11")
+#macbook.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -g -pg -fopenmp")
+macbook.Append(CPPFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -g -pg -fopenmp")
 
 # TODO: extract environment-independent flags
 
