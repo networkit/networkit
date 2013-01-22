@@ -28,7 +28,11 @@ source = [name for name in source if name not in excluded]
 ## environment: macbook
 macbook = Environment()
 ### include
-macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
+#macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
+#                          "/Users/cls/workspace/gtest/include", \
+#                          "/usr/local/Cellar/log4cxx/0.10.0/include", \
+#                          "/Users/cls/workspace/STINGER/include"])
+macbook.Append(CXXPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
                           "/Users/cls/workspace/gtest/include", \
                           "/usr/local/Cellar/log4cxx/0.10.0/include", \
                           "/Users/cls/workspace/STINGER/include"])
@@ -37,7 +41,7 @@ macbook.Append(CPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
                           "/usr/local/Cellar/log4cxx/0.10.0/include", \
                           "/Users/cls/workspace/STINGER/include"])
 
-print(macbook["CPPPATH"])
+#print(macbook["CPPPATH"])
 print(macbook["CPATH"])
 
 ### link
@@ -51,11 +55,11 @@ macbook.Append(LIBPATH = ["/Users/cls/workspace/STINGER/OpenMP Debug",\
 macbook["CC"] = "gcc-4.7"
 macbook["CXX"] = "g++-4.7"
 #macbook.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -g -pg -fopenmp")
-macbook.Append(CPPFLAGS = "-std=c++11 -O0 -g3 -Wall -c -fmessage-length=0 -g -pg -fopenmp")
+#macbook.Append(CPPFLAGS = "-std=c++11 -O0 -g3 -Wall -c -fmessage-length=0 -g -pg -fopenmp")
 macbook.Append(CXXFLAGS = "-std=c++11 -O0 -g3 -Wall -c -fmessage-length=0 -g -pg -fopenmp")
 
 print("CXXFLAGS: %s" % macbook["CXXFLAGS"])
-print("CPPFLAGS: %s" % macbook["CPPFLAGS"])
+#print("CPPFLAGS: %s" % macbook["CPPFLAGS"])
 
 # TODO: extract environment-independent flags
 
@@ -89,4 +93,5 @@ except:
 
 
 # TARGET
+print("env CPPFLAGS: %s" % env["CXXFLAGS"])
 env.Program("EnsembleClustering-DPar", source)
