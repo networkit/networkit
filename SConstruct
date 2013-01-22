@@ -32,10 +32,10 @@ macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
                           "/Users/cls/workspace/gtest/include", \
                           "/usr/local/Cellar/log4cxx/0.10.0/include", \
                           "/Users/cls/workspace/STINGER/include"])
-macbook.Append(CCPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
-                          "/Users/cls/workspace/gtest/include", \
-                          "/usr/local/Cellar/log4cxx/0.10.0/include", \
-                          "/Users/cls/workspace/STINGER/include"])
+#macbook.Append(CCPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
+#                          "/Users/cls/workspace/gtest/include", \
+#                          "/usr/local/Cellar/log4cxx/0.10.0/include", \
+#                          "/Users/cls/workspace/STINGER/include"])
 
 
 ### link
@@ -43,7 +43,7 @@ macbook.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
 macbook.Append(LIBPATH = ["/Users/cls/workspace/STINGER/OpenMP Debug",\
                            "/Users/cls/workspace/gtest/lib", \
                             "/usr/local/Cellar/log4cxx/0.10.0/lib"])
-#macbook.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
+# macbook.Append(LINKFLAGS = ["-fopenmp -std=c++11"])
 
 ### compiler & flags
 macbook["CC"] = "gcc-4.7"
