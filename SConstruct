@@ -4,10 +4,8 @@ import fnmatch
 # SOURCE
 source = []
 
-# walk source directory and find .cpp and .h
+# walk source directory and find ONLY .cpp files
 for (dirpath, dirnames, filenames) in os.walk("src"):
-    for name in fnmatch.filter(filenames, "*.h"):
-        source.append(os.path.join(dirpath, name))
     for name in fnmatch.filter(filenames, "*.cpp"):
         source.append(os.path.join(dirpath, name))
 
@@ -48,7 +46,7 @@ macbook.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
 ### compiler & flags
 macbook["CC"] = "gcc-4.7"
 macbook["CXX"] = "g++-4.7"
-macbook.Append(CCFLAGS = ["-c", "-fmessage-length=0", "-std=c99"])
+macbook.Append(CFLAGS = ["-c", "-fmessage-length=0", "-std=c99"])
 macbook.Append(CPPFLAGS = ["-std=c++11", "-O0", "-g3", "-Wall", "-c", "-fmessage-length=0", "-g", "-pg", "-fopenmp"])
 
 
@@ -84,4 +82,4 @@ except:
 
 
 # TARGET
-env.Program("EnsembleClustering-DPar", source)
+env.Program("EnsembleClustering-DPar-scons", source)
