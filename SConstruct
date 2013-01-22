@@ -42,7 +42,7 @@ macbook.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
 macbook.Append(LIBPATH = ["/Users/cls/workspace/STINGER/OpenMP Debug",\
                            "/Users/cls/workspace/gtest/lib", \
                             "/usr/local/Cellar/log4cxx/0.10.0/lib"])
-env.Append(LINKFLAGS = ["-fopenmp -std=c++11"])
+macbook.Append(LINKFLAGS = ["-fopenmp -std=c++11"])
 
 ### compiler & flags
 macbook["CC"] = "gcc-4.7"
