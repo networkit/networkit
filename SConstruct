@@ -39,7 +39,8 @@ macbook.Append(LIBPATH = ["~/workspace/STINGER/OpenMP Debug",\
                            "~/workspace/gtest/lib", \
                             "/usr/local/Cellar/log4cxx/0.10.0/lib"])
 
-### flags
+### compiler & flags
+macbook.Append(CXX = "g++-4.7")
 macbook.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -fopenmp -std=c++11")
 # TODO: extract environment-independent flags
 
