@@ -6,7 +6,6 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-
 // includes
 #include <iostream>
 #include <utility>
@@ -89,10 +88,10 @@ void start(std::string graphPath, int ensembleSize) {
 
 
 void startWithGenerated(int64_t n, int64_t k, double pin, double pout, int ensembleSize) {
+	// TODO: start with planted partition
 
 }
 
-// TODO: start with planted partition
 
 
 /**
@@ -158,6 +157,7 @@ const OptionParser::Descriptor usage[] =
 
 
 int main(int argc, char **argv) {
+
 	/// PARSE OPTIONS
 
 	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present

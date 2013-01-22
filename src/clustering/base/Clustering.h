@@ -180,14 +180,36 @@ public:
 	bool equals(Clustering& other, Graph& G);
 
 
+	/**
+	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void forallEntries(Callback func, std::string par="");
+
+
+
+
+
 	// DEBUG
 
 	// TODO: ugly, remove
 	void print() const;
 
 
+
 };
 
 } /* namespace EnsembleClustering */
+
+template<typename Callback>
+inline void EnsembleClustering::Clustering::forallEntries(Callback func,
+		std::string par) {
+	assert ((par == "") || (par == "parallel"));
+	#pragma omp parallel for if (par == "parallel")
+	for (node v = 1; v <= this->n; v += 1) {
+		cluster c = (*this)[v];
+		func(v, c);
+	}
+
+}
 
 #endif /* CLUSTERING_H_ */

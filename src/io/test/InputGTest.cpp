@@ -67,4 +67,20 @@ TEST_F(InputGTest, testMETISGraphReader) {
 }
 
 
+TEST_F(InputGTest, testClusteringWriter) {
+	std::string path = "sandbox/example.clustering";
+
+	GraphGenerator graphGen;
+	int64_t n;
+	Graph G = graphGen.makeCompleteGraph(10);
+
+	ClusteringGenerator clusteringGen;
+	Clustering one = clusteringGen.makeOneClustering(G);
+
+	ClusteringWriter writer;
+	writer.write(one, path);
+
+}
+
+
 } /* namespace EnsembleClustering */
