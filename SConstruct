@@ -34,7 +34,7 @@ macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
                           "~/workspace/STINGER/include"])
 macbook.Append(CPATH = ["~/workspace/STINGER/include"])
 
-print(macbook["CPPATH"])
+print(macbook["CPPPATH"])
 print(macbook["CPATH"])
 
 ### link
