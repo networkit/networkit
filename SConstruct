@@ -29,18 +29,18 @@ source = [name for name in source if name not in excluded]
 macbook = Environment()
 ### include
 macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
-                          "~/workspace/gtest/include", \
+                          "/Users/cls/workspace/gtest/include", \
                           "/usr/local/Cellar/log4cxx/0.10.0/include", \
-                          "~/workspace/STINGER/include"])
-macbook.Append(CPATH = ["~/workspace/STINGER/include"])
+                          "/Users/cls/workspace/STINGER/include"])
+macbook.Append(CPATH = ["/Users/cls/workspace/STINGER/include"])
 
 print(macbook["CPPPATH"])
 print(macbook["CPATH"])
 
 ### link
 macbook.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
-macbook.Append(LIBPATH = ["~/workspace/STINGER/OpenMP Debug",\
-                           "~/workspace/gtest/lib", \
+macbook.Append(LIBPATH = ["/Users/cls/workspace/STINGER/OpenMP Debug",\
+                           "/Users/cls/workspace/gtest/lib", \
                             "/usr/local/Cellar/log4cxx/0.10.0/lib"])
 
 ### compiler & flags
