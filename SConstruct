@@ -87,4 +87,4 @@ except:
 
 
 # TARGET
-#env.Program("EnsembleClustering-DPar", source)
+env.Program("EnsembleClustering-DPar", source)
