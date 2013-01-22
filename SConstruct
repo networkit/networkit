@@ -1,7 +1,7 @@
 import os
 import fnmatch
 
-# select source
+# SOURCE
 source = []
 
 # walk source directory and find .cpp and .h
@@ -23,19 +23,54 @@ for pattern in xpatterns:
 source = [name for name in source if name not in excluded]
 
 
-# set up environment (compiler flags etc.)
+# ENVIRONMENT
 
-env = Environment()
+## environment: macbook
+macbook = Environment()
+### include
+macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
+                          "/Users/cls/workspace/gtest/include", \
+                          "/usr/local/Cellar/log4cxx/0.10.0/include", \
+                          "/Users/cls/workspace/STINGER/include"])
 
-# libraries
-env.Append(LIBPATH = ["", "~/workspace/gtest/lib"])
-env.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
+### link
+macbook.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
+macbook.Append(LIBPATH = ["~/workspace/STINGER/OpenMP Debug",\
+                           "~/workspace/gtest/lib", \
+                            "/usr/local/Cellar/log4cxx/0.10.0/lib"])
 
-env.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -fopenmp -std=c++11")
+### flags
+macbook.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -fopenmp -std=c++11")
+# TODO: extract environment-independent flags
 
+
+## environment: compute11
+
+compute11 = Environment()
+compute11.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
 
 
 # TODO: for gcc-4.6 env.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -fopenmp -std=c++11")
 
 
-# env.Program("EnsembleClustering-DPar", source)
+## select environment
+# custom command line options
+AddOption("--machine",
+          dest="machine",
+          type="string",
+          nargs=1,
+          action="store",
+          help="specify the machine (environment) on which to build")
+
+
+environments = {"macbook" : macbook, "compute11" : compute11}
+
+try:
+    env = environments[GetOption("machine")]
+except:
+    print("ERROR: In order to build call scons with --machine=<MACHINE> where <MACHINE> is one of: %s" % environments.keys())
+    exit()
+
+
+# TARGET
+env.Program("EnsembleClustering-DPar", source)
