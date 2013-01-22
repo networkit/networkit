@@ -56,7 +56,25 @@ macbook.Append(CPPFLAGS = ["-std=c++11", "-O0", "-g3", "-Wall", "-c", "-fmessage
 ## environment: compute11
 
 compute11 = Environment()
+
+### include
+compute11.Append(CPPPATH = ["/home/staudt/workspace/gtest/include", \
+                          "/home/staudt/workspace/STINGER/include"])
+compute11.Append(CCPATH = ["/home/staudt/workspace/gtest/include", \
+                          "/home/staudt/workspace/STINGER/include"])
+
+
+### link
 compute11.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
+compute11.Append(LIBPATH = ["/home/staudt/workspace/STINGER",\
+                           "/home/staudt/workspace/gtest/lib"])
+compute11.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
+
+### compiler & flags
+compute11["CC"] = "gcc-4.7"
+compute11["CXX"] = "g++-4.7"
+compute11.Append(CFLAGS = ["-c", "-fmessage-length=0", "-std=c99"])
+compute11.Append(CPPFLAGS = ["-std=c++11", "-O0", "-g3", "-Wall", "-c", "-fmessage-length=0", "-g", "-pg", "-fopenmp"])
 
 
 # TODO: for gcc-4.6 env.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -fopenmp -std=c++11")
