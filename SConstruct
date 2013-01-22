@@ -88,4 +88,4 @@ except:
 
 # TARGET
 print("env CPPFLAGS: %s" % env["CPPFLAGS"])
-#env.Program("EnsembleClustering-DPar", source)
+env.Program("EnsembleClustering-DPar", source)
