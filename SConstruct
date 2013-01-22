@@ -52,8 +52,10 @@ macbook["CC"] = "gcc-4.7"
 macbook["CXX"] = "g++-4.7"
 #macbook.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -g -pg -fopenmp")
 macbook.Append(CPPFLAGS = "-std=c++11 -O0 -g3 -Wall -c -fmessage-length=0 -g -pg -fopenmp")
+macbook.Append(CXXFLAGS = "-std=c++11 -O0 -g3 -Wall -c -fmessage-length=0 -g -pg -fopenmp")
 
-print(macbook["CPPFLAGS"])
+print("CXXFLAGS: %s" % macbook["CXXFLAGS"])
+print("CPPFLAGS: %s" % macbook["CPPFLAGS"])
 
 # TODO: extract environment-independent flags
 
