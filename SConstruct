@@ -37,8 +37,6 @@ macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
 #                          "/usr/local/Cellar/log4cxx/0.10.0/include", \
 #                          "/Users/cls/workspace/STINGER/include"])
 
-print(macbook["CPPPATH"])
-print(macbook["CCPATH"])
 
 ### link
 macbook.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
@@ -53,7 +51,6 @@ macbook["CXX"] = "g++-4.7"
 #macbook.Append(CCFLAGS = "-std=c++11 -O0 -g3 -Wall -c -fmessage-length=0 -g -pg -fopenmp")
 macbook.Append(CPPFLAGS = "-std=c++11 -O0 -g3 -Wall -c -fmessage-length=0 -g -pg -fopenmp")
 
-print("CPPFLAGS: %s" % macbook["CPPFLAGS"])
 
 # TODO: extract environment-independent flags
 
@@ -87,5 +84,4 @@ except:
 
 
 # TARGET
-print("env CPPFLAGS: %s" % env["CPPFLAGS"])
 env.Program("EnsembleClustering-DPar", source)
