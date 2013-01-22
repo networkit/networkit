@@ -56,13 +56,12 @@ macbook.Append(CPPFLAGS = ["-std=c++11", "-O0", "-g3", "-Wall", "-c", "-fmessage
 ## environment: compute11
 
 compute11 = Environment()
-
 ### include
 compute11.Append(CPPPATH = ["/home/staudt/workspace/gtest/include", \
                           "/home/staudt/workspace/STINGER/include"])
 compute11.Append(CCPATH = ["/home/staudt/workspace/gtest/include", \
                           "/home/staudt/workspace/STINGER/include"])
-
+print("compute11 CPPPATH: %s" % compute11["CPPPATH"])
 
 ### link
 compute11.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
