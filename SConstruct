@@ -48,7 +48,7 @@ macbook.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
 ### compiler & flags
 macbook["CC"] = "gcc-4.7"
 macbook["CXX"] = "g++-4.7"
-macbook.Append(CCFLAGS = "-c", "-fmessage-length=0", "-std=c99")
+macbook.Append(CCFLAGS = ["-c", "-fmessage-length=0", "-std=c99"])
 macbook.Append(CPPFLAGS = ["-std=c++11", "-O0", "-g3", "-Wall", "-c", "-fmessage-length=0", "-g", "-pg", "-fopenmp"])
 
 
