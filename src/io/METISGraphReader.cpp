@@ -20,6 +20,8 @@ METISGraphReader::~METISGraphReader() {
 
 Graph METISGraphReader::read(std::string path) {
 
+	std::cout << "[BEGIN]Êreading graph from METIS file: ";	// status bar follows
+
 	METISParser parser(path);
 
 	std::pair<int64_t, int64_t> header = parser.getHeader();
@@ -30,6 +32,7 @@ Graph METISGraphReader::read(std::string path) {
 
 
 	int lc = 0;
+	double p = 0.0; // percentage for status bar
 	node u = 0;
 	while (parser.hasNext()) {
 		TRACE("line: " << lc++);
@@ -40,8 +43,14 @@ Graph METISGraphReader::read(std::string path) {
 				G.insertEdge(u, v);
 			}
 		}
+		if ((u % 1000) == 0) {
+			p = (u / n) * 100;
+			std::cout << p << "% ";
+		}
 	}
 
+	// end status bar
+	std::cout << "[DONE]" << std::endl;
 
 	assert (G.numberOfNodes() == n);
 	assert (G.numberOfEdges() == m);
