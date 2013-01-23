@@ -28,13 +28,16 @@ Graph METISGraphReader::read(std::string path) {
 
 	Graph G(n);
 
+
 	node u = 0;
 	while (parser.hasNext()) {
 		DEBUG("next line");
 		u += 1;
 		std::vector<node> adjacencies = parser.getNext();
 		for (node v : adjacencies) {
-			G.insertEdge(u, v);
+			if (! G.hasEdge(u, v)) { // edges in METIS file are directed, G edges are undirected
+				G.insertEdge(u, v);
+			}
 		}
 	}
 
