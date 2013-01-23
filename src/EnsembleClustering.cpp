@@ -39,7 +39,7 @@ using namespace EnsembleClustering;
 
 
 
-void startWithGraph(Graph& G, int ensembleSize) {
+bool startWithGraph(Graph& G, int ensembleSize) {
 
 	EnsembleClusterer ensemble;
 
@@ -71,9 +71,10 @@ void startWithGraph(Graph& G, int ensembleSize) {
 
 		// ANALYZE RESULT
 
+		return true;
 }
 
-void startWithPath(std::string graphPath, int ensembleSize) {
+bool startWithPath(std::string graphPath, int ensembleSize) {
 	assert (ensembleSize > 0);
 	assert (! graphPath.empty());
 
@@ -92,6 +93,7 @@ void startWithPath(std::string graphPath, int ensembleSize) {
 	// TIMING
 
 	// startWithGraph(G, ensembleSize);
+	return true;
 }
 
 
@@ -227,8 +229,13 @@ int main(int argc, char **argv) {
 	}
 
 	if ((graphPath != "NONE") || (ensembleSize > 0)) {
-	   std::cout << "\t starting with --graph" << std::endl;
-	   startWithPath(graphPath, ensembleSize);
+	   std::cout << "[START] EnsembleClustering --graph" << std::endl;
+
+	   bool done = startWithPath(graphPath, ensembleSize);
+
+	   if (done) {
+		   std::cout << "[FINISH] EnsembleClustering --graph" << std::endl;
+	   }
 
 	} else {
 	   ERROR("wrong options");

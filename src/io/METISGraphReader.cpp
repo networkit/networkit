@@ -29,9 +29,10 @@ Graph METISGraphReader::read(std::string path) {
 	Graph G(n);
 
 
+	int lc = 0;
 	node u = 0;
 	while (parser.hasNext()) {
-		DEBUG("next line");
+		TRACE("line: " << lc++);
 		u += 1;
 		std::vector<node> adjacencies = parser.getNext();
 		for (node v : adjacencies) {
