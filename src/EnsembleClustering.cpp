@@ -39,7 +39,7 @@ using namespace EnsembleClustering;
 
 
 
-void start(Graph& G, int ensembleSize) {
+void startWithGraph(Graph& G, int ensembleSize) {
 
 	EnsembleClusterer ensemble;
 
@@ -73,17 +73,25 @@ void start(Graph& G, int ensembleSize) {
 
 }
 
-void start(std::string graphPath, int ensembleSize) {
+void startWithPath(std::string graphPath, int ensembleSize) {
 	assert (ensembleSize > 0);
 	assert (! graphPath.empty());
 
 	// READ GRAPH
 
-	GraphReader* reader = new METISGraphReader();	// TODO: add support for multiple graph file formats
-	Graph G = reader->read(graphPath);
+	METISGraphReader reader;	// TODO: add support for multiple graph file formats
 
+	// TIMING
+	Aux::Timer readTimer;
+	readTimer.start();
+	//
+	Graph G = reader.read(graphPath);
+	//
+	readTimer.stop();
+	std::cout << "read graph file in " << readTimer.elapsed().count() << " ms :" << graphPath;
+	// TIMING
 
-	start(G, ensembleSize);
+	// startWithGraph(G, ensembleSize);
 }
 
 
@@ -157,6 +165,7 @@ const OptionParser::Descriptor usage[] =
 
 
 int main(int argc, char **argv) {
+	std::cout << "*** EnsembleClustering: combining parallel clustering algorithms with an ensemble learning strategy *** " << std::endl;
 
 	/// PARSE OPTIONS
 
@@ -204,7 +213,8 @@ int main(int argc, char **argv) {
 	std::string graphPath = "NONE";
 
 	if (options[GRAPH]) {
-	   DEBUG("called with graph argument: " << options[GRAPH].arg);
+		graphPath = options[GRAPH].arg;
+		std::cout << "\t --graph=" << graphPath << std::endl;
 	}
 
 	if (options[GENERATE]) {
@@ -213,11 +223,12 @@ int main(int argc, char **argv) {
 
 	if (options[ENSEMBLE_SIZE]) {
 	   ensembleSize = std::atoi(options[ENSEMBLE_SIZE].arg);
-	   DEBUG("called with ensemble size: " << ensembleSize);
+	   std::cout << "\t --ensemble-size=" << ensembleSize << std::endl;
 	}
 
-	if ((graphPath != "") || (ensembleSize > 0)) {
-	   INFO("starting EnsembleClusterer");
+	if ((graphPath != "NONE") || (ensembleSize > 0)) {
+	   std::cout << "\t starting with --graph" << std::endl;
+	   startWithPath(graphPath, ensembleSize);
 
 	} else {
 	   ERROR("wrong options");
