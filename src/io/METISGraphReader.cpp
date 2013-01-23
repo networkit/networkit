@@ -20,7 +20,6 @@ METISGraphReader::~METISGraphReader() {
 
 Graph METISGraphReader::read(std::string path) {
 
-	std::cout << "[BEGIN]Êreading graph from METIS file: ";	// status bar follows
 
 	METISParser parser(path);
 
@@ -29,6 +28,8 @@ Graph METISGraphReader::read(std::string path) {
 	int64_t m = header.second;
 
 	Graph G(n);
+
+	std::cout << "[BEGIN]Êreading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// status bar follows
 
 
 	int lc = 0;

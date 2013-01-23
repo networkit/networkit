@@ -86,7 +86,7 @@ bool startWithPath(std::string graphPath, int ensembleSize) {
 	Aux::Timer readTimer;
 	readTimer.start();
 	//
-	std::cout << "opening file: " << graphPath << std::endl;
+	std::cout << "opening file... : " << graphPath << std::endl;
 
 	Graph G = reader.read(graphPath);
 	//
