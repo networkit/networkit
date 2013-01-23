@@ -91,7 +91,7 @@ bool startWithPath(std::string graphPath, int ensembleSize) {
 	Graph G = reader.read(graphPath);
 	//
 	readTimer.stop();
-	std::cout << "read graph file in " << readTimer.elapsed().count() << " ms :" << graphPath;
+	std::cout << "read graph file in " << readTimer.elapsed().count() << " ms " << std::endl;
 	// TIMING
 
 	// startWithGraph(G, ensembleSize);

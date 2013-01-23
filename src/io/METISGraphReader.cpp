@@ -44,7 +44,7 @@ Graph METISGraphReader::read(std::string path) {
 			}
 		}
 		if ((u % 1000) == 0) {
-			p = (u / n) * 100;
+			p = ((double) u / (double) n) * 100;
 			std::cout << p << "% ";
 		}
 	}
