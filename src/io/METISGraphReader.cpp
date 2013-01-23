@@ -29,7 +29,7 @@ Graph METISGraphReader::read(std::string path) {
 
 	Graph G(n);
 
-	std::cout << "[BEGIN]Êreading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// status bar follows
+	std::cout << "[BEGIN] reading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// status bar follows
 
 
 	int lc = 0;

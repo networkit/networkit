@@ -211,7 +211,7 @@
 							</builder>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug.1017065296" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug"/>
 							<tool command="/usr/local/bin/g++-4.7" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug.952868356" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug">
-								<option id="macosx.cpp.link.option.flags.554438879" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-fopenmp -std=c++11" valueType="string"/>
+								<option id="macosx.cpp.link.option.flags.554438879" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-std=c++11 -fopenmp" valueType="string"/>
 								<option id="macosx.cpp.link.option.paths.1232500102" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STINGER/OpenMP Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gtest/lib}&quot;"/>
@@ -255,7 +255,7 @@
 								<option id="gnu.cpp.compiler.option.warnings.nowarn.1084143294" name="Inhibit all warnings (-w)" superClass="gnu.cpp.compiler.option.warnings.nowarn" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.prof.1580238196" name="Generate prof information (-p)" superClass="gnu.cpp.compiler.option.debugging.prof" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.566174941" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
-								<option id="gnu.cpp.compiler.option.debugging.other.972298497" name="Other debugging flags" superClass="gnu.cpp.compiler.option.debugging.other" value="-D_GLIBCXX_DEBUG" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.debugging.other.972298497" name="Other debugging flags" superClass="gnu.cpp.compiler.option.debugging.other" value="" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1712152076" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool command="/usr/local/bin/gcc-4.7" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug.1027723416" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug">
