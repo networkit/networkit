@@ -33,14 +33,14 @@
 #include "clustering/base/ClusteringGenerator.h"
 #include "io/METISGraphReader.h"
 
-
+// import global
 
 
 
 using namespace EnsembleClustering;
 
 
-
+// start functions
 
 bool startWithGraph(Graph& G, int ensembleSize) {
 
@@ -180,13 +180,14 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, SEQUENTIAL, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
                                             "Options:" },
  {HELP,    0,"h" , "help",OptionParser::Arg::None, "  --help  \t Print usage and exit." },
  {LOGLEVEL,    0, "" , "loglevel", OptionParser::Arg::Required, "  --loglevel  \t set the log level" },
+ {SEQUENTIAL,    0, "s" , "sequential", OptionParser::Arg::None, "  --sequential  \t Turn off parallelism." },
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
@@ -231,6 +232,12 @@ int main(int argc, char **argv) {
 		configureLogging(options[LOGLEVEL].arg);
 	} else {
 		configureLogging();	// with default level
+	}
+
+
+	// PARALLELISMISM SWITCH
+	if (options[SEQUENTIAL]) {
+		// TODO: parallelism switch
 	}
 
 
