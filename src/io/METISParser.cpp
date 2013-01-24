@@ -65,8 +65,6 @@ std::pair<int, int> METISParser::getHeader() {
 		n = tokens[0];
 		m = tokens[1];
 
-		TRACE("n = " << n << " m = " << m );
-
 		return std::make_pair(n, m);
 	} else {
 		ERROR("getline not successful");

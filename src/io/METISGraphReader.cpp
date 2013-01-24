@@ -29,11 +29,11 @@ Graph METISGraphReader::read(std::string path) {
 
 	Graph G(n);
 
-	std::cout << "[BEGIN] reading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// status bar follows
+	std::cout << "[BEGIN] reading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// progress bar follows
 
 
 	int lc = 0;
-	double p = 0.0; // percentage for status bar
+	double p = 0.0; // percentage for progress bar
 	node u = 0;
 	while (parser.hasNext()) {
 		TRACE("line: " << lc++);
@@ -50,7 +50,7 @@ Graph METISGraphReader::read(std::string path) {
 		}
 	}
 
-	// end status bar
+	// end progress bar
 	std::cout << "[DONE]" << std::endl;
 
 	assert (G.numberOfNodes() == n);
