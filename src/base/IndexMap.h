@@ -81,6 +81,12 @@ public:
 	void print();
 
 
+	/**
+	 * Return string representation.
+	 */
+	virtual std::string toString();
+
+
 
 };
 
@@ -144,6 +150,10 @@ inline void EnsembleClustering::IndexMap<I, T>::print() {
 template<typename I, typename T>
 inline int64_t EnsembleClustering::IndexMap<I, T>::numberOfNodes() const {
 	return this->data.size() - 1;	// first index 0 is not used since indices are 1-based
+}
+
+template<typename I, typename T>
+inline std::string EnsembleClustering::IndexMap<I, T>::toString() {
 }
 
 /*** Implementation ***/

@@ -72,10 +72,12 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		// reset majority label count
 		majorityLabelCount = 0;
+		NodeMap<int> dominated(nConnected);
 
 		// DEBUG
-		if (nIterations >= 23) {
+		if (nIterations >= 42) {
 			ERROR("LabelPropagation reached " << nIterations << " iterations. It usually terminates after less than 5 iterations. Something has gone terribly wrong.");
+			ERROR("majorityLabelCount=" << majorityLabelCount);
 			GraphIO graphio;
 			graphio.writeAdjacencyList(G, "sandbox/LabelPropagationFAIL.adjlist");
 			throw std::runtime_error("aborting LabelPropagation to avoid infinite loop");
@@ -126,8 +128,12 @@ Clustering LabelPropagation::run(Graph& G) {
 					}
 				}
 
-				TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
-				labels.moveToCluster(heaviest, v);
+				if (labels[v] != heaviest) {
+					TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
+					labels.moveToCluster(heaviest, v);
+				} else {
+					TRACE("label of " << v << " stays " << labels[v]);
+				}
 
 				// stop if v has label of at least half of its neighbors
 				label dominantLabel = 0; // = None
@@ -142,17 +148,20 @@ Clustering LabelPropagation::run(Graph& G) {
 				if (dominantLabel != 0) {
 					if (labels[v] == dominantLabel) {
 						majorityLabelCount += 1;
+						dominated[v] = 1;
 					}
 				} else {
 					TRACE("no dominant label found for node: " << v);
 				}// if no label dominant, do nothing
+
 			} else {
 				// node is isolated
 				TRACE("ignoring isolated node: " << v);
 			}
 		} // end for shuffled nodes
 
-	}
+		DEBUG("dominated: " << dominated.toString());
+	} // end while
 
 	return labels;
 

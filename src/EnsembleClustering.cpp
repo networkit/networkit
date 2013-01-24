@@ -122,6 +122,22 @@ bool startWithGenerated(int64_t n, int64_t k, double pin, double pout, int ensem
 
 
 
+
+std::vector<std::string> splitAString(std::string s, char delim = ' ') {
+	std::stringstream stream(s);
+	std::string token;
+	std::vector<std::string> tokens;
+
+	// split string and push adjacent nodes
+	while (std::getline(stream, token, delim)) {
+		tokens.push_back(token);
+	}
+
+	return tokens;
+}
+
+
+
 /**
  * Call this first to configure logging output.
  */
@@ -254,7 +270,7 @@ int main(int argc, char **argv) {
 		std::string genOption = options[GENERATE].arg;
 		std::cout << "\t --generate=" << options[GENERATE].arg << std::endl;
 
-		std::vector<std::string> genArgs = splitString(genOption, ',');
+		std::vector<std::string> genArgs = splitAString(genOption, ',');
 		assert (genArgs.size() == 4);
 		int n = std::atoi(genArgs.at(0).c_str());
 		int k = std::atoi(genArgs.at(1).c_str());
