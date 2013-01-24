@@ -44,6 +44,9 @@ public:
 	inline const T& operator[](const node& u) const;
 
 
+	// TODO: virtual std::string toString();
+
+
 //	FIXME: friend std::ostream& operator <<(std::ostream& os, const NodeMap<T> m);
 };
 
