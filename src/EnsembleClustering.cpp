@@ -23,11 +23,14 @@
 #include "aux/optionparser.h"
 #include "aux/Log.h"
 #include "aux/Timer.h"
+#include "aux/Functions.h"
 #include "graph/Graph.h"
+#include "graph/GraphGenerator.h"
 #include "ensemble/EnsembleClusterer.h"
 #include "clustering/algo/LabelPropagation.h"
 #include "clustering/base/Clustering.h"
 #include "clustering/base/Modularity.h"
+#include "clustering/base/ClusteringGenerator.h"
 #include "io/METISGraphReader.h"
 
 
@@ -99,9 +102,22 @@ bool startWithPath(std::string graphPath, int ensembleSize) {
 }
 
 
-void startWithGenerated(int64_t n, int64_t k, double pin, double pout, int ensembleSize) {
-	// TODO: start with planted partition
+bool startWithGenerated(int64_t n, int64_t k, double pin, double pout, int ensembleSize) {
 
+	// prepare generated clustered random graph (planted partition)
+	std::cout << "[BEGIN] making random clustering..." << std::flush;
+	Graph emptyG(n);	// clustering generator needs a dummy graph
+	ClusteringGenerator clusteringGen;
+	Clustering planted = clusteringGen.makeRandomClustering(emptyG, k);
+	std::cout << "[DONE]" << std::endl;
+
+	std::cout << "[BEGIN] making clustered random graph..." << std::flush;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(planted, pin, pout);
+	std::cout << "[DONE]" << std::endl;
+
+	// call ensemble clusterer
+	return startWithGraph(G, ensembleSize);
 }
 
 
@@ -222,6 +238,12 @@ int main(int argc, char **argv) {
 	}
 
 	if (options[GENERATE]) {
+		std::string genArgString = options[GENERATE].arg;
+//		std::vector<std::string> genArgStrings = splitString(genArgString, ',');
+//		int n = std::atoi(genArgStrings[0]);
+//		int k = std::atoi(genArgStrings.at(1));
+//		double pin = std::atof(genArgStrings.at(2));
+//		double pout = std::atof(genArgStrings.at(3));
 		// TODO: --generated=(1000,10,0.2,0.2)
 	}
 
