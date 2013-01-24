@@ -42,17 +42,17 @@ public:
 	/**
 	 * Get the METIS graph file header
 	 */
-	virtual std::pair<int, int> getHeader();
+	std::pair<int, int> getHeader();
 
 	/**
 	 * Test if graph file has a next line.
 	 */
-	virtual bool hasNext();
+	bool hasNext();
 
 	/**
 	 * Get adjacencies from the next line in the METIS graph file.
 	 */
-	virtual std::vector<node> getNext();
+	std::vector<node> getNext();
 
 
 };
