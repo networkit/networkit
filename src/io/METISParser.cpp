@@ -36,6 +36,30 @@ static std::vector<node> parseLine(std::string line) {
 }
 
 
+static inline std::vector<node> parseLineDIY(std::string line) {
+	// TODO: is this faster?
+
+	std::string token;
+	char delim = ' ';
+	std::vector<node> adjacencies;
+
+	for (char& c : line) {
+		if (c == delim) {
+			node v = atoi(token.c_str());
+			adjacencies.push_back(v);
+			token.clear();
+		} else if (c == '\n') {
+			break;
+		} else {
+			token.push_back(c);
+		}
+	}
+
+	TRACE("line parsed");
+	return adjacencies;
+}
+
+
 METISParser::METISParser(std::string path) : graphFile(path) {
 	if (!(this->graphFile)) {
 		ERROR("invalid graph file: " << path);

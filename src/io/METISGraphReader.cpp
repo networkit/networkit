@@ -44,9 +44,9 @@ Graph METISGraphReader::read(std::string path) {
 				G.insertEdge(u, v);
 			}
 		}
-		if ((u % 1000) == 0) {
+		if ((u % 100) == 0) {
 			p = ((double) u / (double) n) * 100;
-			std::cout << p << "% ";
+			std::cout << p << "% " << std::flush;
 		}
 	}
 
