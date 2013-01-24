@@ -38,6 +38,19 @@ Iter argmax2(Iter begin, Iter end, Function f)
 */
 
 
+std::vector<std::string> splitString(std::string s, char delim = ' ') {
+	std::stringstream stream(s);
+	std::string token;
+	std::vector<std::string> tokens;
+
+	// split string and push adjacent nodes
+	while (std::getline(stream, token, delim)) {
+		tokens.push_back(token);
+	}
+
+	return tokens;
+}
+
 
 
 #endif /* FUNCTIONS_H_ */

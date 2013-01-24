@@ -235,35 +235,41 @@ int main(int argc, char **argv) {
 	if (options[GRAPH]) {
 		graphPath = options[GRAPH].arg;
 		std::cout << "\t --graph=" << graphPath << std::endl;
+
+		ensembleSize = std::atoi(options[ENSEMBLE_SIZE].arg);
+		std::cout << "\t --ensemble-size=" << ensembleSize << std::endl;
+
+		std::cout << "[START] EnsembleClustering --graph" << std::endl;
+
+		bool done = startWithPath(graphPath, ensembleSize);
+
+		if (done) {
+		   std::cout << "[FINISH] EnsembleClustering --graph" << std::endl;
+		}
+
 	}
 
 	if (options[GENERATE]) {
-		std::string genArgString = options[GENERATE].arg;
-//		std::vector<std::string> genArgStrings = splitString(genArgString, ',');
-//		int n = std::atoi(genArgStrings[0]);
-//		int k = std::atoi(genArgStrings.at(1));
-//		double pin = std::atof(genArgStrings.at(2));
-//		double pout = std::atof(genArgStrings.at(3));
-		// TODO: --generated=(1000,10,0.2,0.2)
-	}
+		// read n, k, pin, pout
+		std::string genOption = options[GENERATE].arg;
+		std::cout << "\t --generate=" << options[GENERATE].arg << std::endl;
 
-	if (options[ENSEMBLE_SIZE]) {
-	   ensembleSize = std::atoi(options[ENSEMBLE_SIZE].arg);
-	   std::cout << "\t --ensemble-size=" << ensembleSize << std::endl;
-	}
+		std::vector<std::string> genArgs = splitString(genOption, ',');
+		assert (genArgs.size() == 4);
+		int n = std::atoi(genArgs.at(0).c_str());
+		int k = std::atoi(genArgs.at(1).c_str());
+		double pin = std::atof(genArgs.at(2).c_str());
+		double pout = std::atof(genArgs.at(3).c_str());
 
-	if ((graphPath != "NONE") || (ensembleSize > 0)) {
-	   std::cout << "[START] EnsembleClustering --graph" << std::endl;
 
-	   bool done = startWithPath(graphPath, ensembleSize);
+		ensembleSize = std::atoi(options[ENSEMBLE_SIZE].arg);
+		std::cout << "\t --ensemble-size=" << ensembleSize << std::endl;
 
-	   if (done) {
-		   std::cout << "[FINISH] EnsembleClustering --graph" << std::endl;
-	   }
+		bool done = startWithGenerated(n, k, pin, pout, ensembleSize);
 
-	} else {
-	   ERROR("wrong options");
-	   return 1;
+		if (done) {
+		   std::cout << "[FINISH] EnsembleClustering --generate" << std::endl;
+		}
 	}
 
 

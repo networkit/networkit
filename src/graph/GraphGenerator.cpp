@@ -96,7 +96,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin,
 
 Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 		double pout) {
-	assert (pin > pout);
+	assert (pin >= pout);
 
 	int64_t n = zeta.numberOfNodes();
 	Graph G(n);

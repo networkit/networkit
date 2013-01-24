@@ -156,7 +156,7 @@ std::string Graph::toString() {
 	std::stringstream strm;
 	int64_t l = 0;	// number of weighted nodes (=self-loops)
 	this->forallNodes([&](node v){
-		if (this->weight(v) >= 0.0) {
+		if (this->weight(v) > 0.0) {
 			l += 1;
 		}
 	});
