@@ -40,7 +40,65 @@
 using namespace EnsembleClustering;
 
 
+// graph functions
+
+Graph generateGraph(int64_t n, int64_t k, double pin, double pout, int ensembleSize) {
+
+	// prepare generated clustered random graph (planted partition)
+	std::cout << "[BEGIN] making random clustering..." << std::flush;
+	Graph emptyG(n);	// clustering generator needs a dummy graph
+	ClusteringGenerator clusteringGen;
+	Clustering planted = clusteringGen.makeRandomClustering(emptyG, k);
+	std::cout << "[DONE]" << std::endl;
+
+	std::cout << "[BEGIN] making clustered random graph..." << std::flush;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(planted, pin, pout);
+	std::cout << "[DONE]" << std::endl;
+
+	return G;
+}
+
+
+Graph readGraph(std::string graphPath) {
+
+	// READ GRAPH
+
+	METISGraphReader reader;	// TODO: add support for multiple graph file formats
+
+	// TIMING
+	Aux::Timer readTimer;
+	readTimer.start();
+	//
+	std::cout << "opening file... : " << graphPath << std::endl;
+
+	Graph G = reader.read(graphPath);
+	//
+	readTimer.stop();
+	std::cout << "read graph file in " << readTimer.elapsed().count() << " ms " << std::endl;
+	// TIMING
+
+	return G;
+
+}
+
 // start functions
+
+bool startSoloWithGraph(Graph& G, Clusterer* algo) {
+
+	// RUN BASE CLUSTERER SOLO
+	Aux::Timer runtime;
+	runtime.start();
+
+	Clustering zeta = algo->run(G);
+
+	runtime.stop();
+	std::cout << "Solo clusterer runtime: " << runtime.elapsed().count() << " ms" << std::endl;
+
+	return true;
+}
+
+
 
 bool startWithGraph(Graph& G, int ensembleSize) {
 
@@ -180,7 +238,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, SEQUENTIAL, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, SEQUENTIAL, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, SOLO};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -192,6 +250,7 @@ const OptionParser::Descriptor usage[] =
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
  {ENSEMBLE_SIZE, 0, "", "ensemble-size", OptionParser::Arg::Required, "  --ensemble-size \t number of clusterers in the ensemble"},
+ {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -293,6 +352,27 @@ int main(int argc, char **argv) {
 		if (done) {
 		   std::cout << "[FINISH] EnsembleClustering --generate" << std::endl;
 		}
+	}
+
+
+	// RUN ONLY SINGLE BASE ALGORITHM
+	if (options[SOLO]) {
+		Clusterer* algo = NULL;
+
+		std::string algoName = options[SOLO].arg;
+		if (algoName == "LabelPropagation") {
+			algo = new LabelPropagation();
+		} else {
+			std::cout << "[ERROR] unknown base algorithm: " << algoName << std::endl;
+			std::cout << "[EXIT]" << std::endl;
+			exit(1);
+		}
+
+		if (options[GRAPH]) {
+			graphPath = options[GRAPH].arg;
+			// TODO: start solo with graph
+		}
+
 	}
 
 
