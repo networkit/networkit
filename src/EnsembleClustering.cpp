@@ -54,8 +54,12 @@ Graph generateGraph(int64_t n, int64_t k, double pin, double pout) {
 
 	std::cout << "[BEGIN] making clustered random graph..." << std::flush;
 	GraphGenerator graphGen;
+
+	Aux::Timer runtime;
+	runtime.start();
 	Graph G = graphGen.makeClusteredRandomGraph(planted, pin, pout);
-	std::cout << "[DONE]" << std::endl;
+	runtime.stop();
+	std::cout << "[DONE] (" << runtime.elapsed().count() << " ms)" << std::endl;
 
 	return G;
 }
@@ -293,6 +297,7 @@ Graph getGraph(OptionParser::Option* options) {
 	}
 }
 
+
 bool startAlgo(Graph G, OptionParser::Option* options) {
 
 	// if getGraph returns empty graph, abort
@@ -320,7 +325,7 @@ bool startAlgo(Graph G, OptionParser::Option* options) {
 		}
 
 		// start solo base algorithm
-		std::cout << "[START] solo base clusterer: " << algoName << std::endl;
+		std::cout << "[BEGIN] solo base clusterer: " << algoName << std::endl;
 
 		algo->run(G);
 
