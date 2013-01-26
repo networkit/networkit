@@ -40,9 +40,7 @@ Graph METISGraphReader::read(std::string path) {
 		u += 1;
 		std::vector<node> adjacencies = parser.getNext();
 		for (node v : adjacencies) {
-			if (! G.hasEdge(u, v)) { // edges in METIS file are directed, G edges are undirected
-				G.insertEdge(u, v);
-			}
+			G.insertEdge(u, v);
 		}
 		if ((u % 100) == 0) {
 			p = ((double) u / (double) n) * 100;

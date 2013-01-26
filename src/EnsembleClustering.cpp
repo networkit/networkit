@@ -57,7 +57,9 @@ Graph generateGraph(int64_t n, int64_t k, double pin, double pout) {
 
 	Aux::Timer runtime;
 	runtime.start();
+	//
 	Graph G = graphGen.makeClusteredRandomGraph(planted, pin, pout);
+	//
 	runtime.stop();
 	std::cout << "[DONE] (" << runtime.elapsed().count() << " ms)" << std::endl;
 
@@ -220,8 +222,8 @@ void configureLogging(std::string loglevel = "DEBUG") {
 	} else if (loglevel == "ERROR") {
 		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getError());
 	} else {
-		std::cout << "unknown log level: " << loglevel;
-		std::exit(1);
+		std::cout << "\t using default loglevel INFO" << loglevel;
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
 	}
 }
 
