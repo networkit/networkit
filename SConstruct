@@ -11,7 +11,7 @@ for (dirpath, dirnames, filenames) in os.walk("src"):
 
 
 # exclude files matching following patterns
-xpatterns = ["*ParametrizedGTest.*"]
+xpatterns = []
 excluded = []
 
 for pattern in xpatterns:
@@ -46,8 +46,6 @@ macbook.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
 ### compiler & flags
 macbook["CC"] = "gcc-4.7"
 macbook["CXX"] = "g++-4.7"
-macbook.Append(CFLAGS = ["-c", "-fmessage-length=0", "-std=c99"])
-macbook.Append(CPPFLAGS = ["-std=c++11", "-O0", "-g3", "-Wall", "-c", "-fmessage-length=0", "-g", "-pg", "-fopenmp"])
 
 
 # TODO: extract environment-independent flags
@@ -72,11 +70,8 @@ compute11.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
 ### compiler & flags
 compute11["CC"] = "gcc-4.7"
 compute11["CXX"] = "g++-4.7"
-compute11.Append(CFLAGS = ["-c", "-fmessage-length=0", "-std=c99"])
-compute11.Append(CPPFLAGS = ["-std=c++11", "-O0", "-g3", "-Wall", "-c", "-fmessage-length=0", "-g", "-pg", "-fopenmp"])
 
 
-# TODO: for gcc-4.6 env.Append(CCFLAGS = "-O0 -g3 -Wall -c -fmessage-length=0 -fopenmp -std=c++11")
 
 
 ## select environment
@@ -98,5 +93,48 @@ except:
     exit()
 
 
+## CONFIGURATIONS
+
+commonCFlags = ["-c", "-fmessage-length=0", "-std=c99"]
+commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fopenmp"]
+
+debugCppFlags = ["-O0", "-g3", "-pg"]
+debugCFlags = ["-O0", "-g3"]
+
+optimizedCppFlags = ["-O3", "-DNDEBUG"]
+optimizedCFlags = ["-O3"]
+
+# select configuration
+# custom command line options
+AddOption("--buildconf",
+          dest="buildconf",
+          type="string",
+          nargs=1,
+          action="store",
+          help="specify the buildconfuration to build (Debug, Release)")
+
+
+try:
+    buildconf = GetOption("buildconf")
+except:
+    print("ERROR: Missing option --buildconf=<CONF>")
+    exit()
+
+# append flags
+
+#commmon flags
+env.Append(CFLAGS = commonCFlags)
+env.Append(CPPFLAGS = commonCppFlags)
+
+# buildconf flags
+if buildconf == "debug":
+    env.Append(CFLAGS = debugCFlags)
+    env.Append(CPPFLAGS = debugCppFlags)
+elif buildconf == "optimized":
+    env.Append(CFLAGS = optimizedCFlags)
+    env.Append(CPPFLAGS = optimizedCppFlags)
+else:
+    print("ERROR: invalid buildconf: %s" % buildconf)
+
 # TARGET
-env.Program("EnsembleClustering-DPar-scons", source)
+env.Program("EnsembleClustering-scons-%s" % buildconf, source)
