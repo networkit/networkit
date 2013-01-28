@@ -78,7 +78,8 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		// reset majority label count
 		majorityLabelCount = 0;
-		NodeMap<int> dominated(nConnected);
+
+		NodeMap<int> dominated(n, 0); // map node-> dominated?
 
 		// DEBUG
 		if (nIterations >= 42) {
@@ -157,7 +158,10 @@ Clustering LabelPropagation::run(Graph& G) {
 				if (dominantLabel != 0) {
 					if (labels[v] == dominantLabel) {
 						majorityLabelCount += 1;
+						// DEBUG
+						assert (v <= dominated.numberOfNodes());
 						dominated[v] = 1;
+						// DEBUG
 					}
 				} else {
 					TRACE("no dominant label found for node: " << v);
