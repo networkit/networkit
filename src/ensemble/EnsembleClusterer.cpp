@@ -78,12 +78,12 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// *** base clusterers calculate base clusterings ***
 		#pragma omp parallel for
-		for (uint b = 0; b < baseClusterers.size(); b += 1) {	// TODO: run base clusterers in parallel
+		for (uint b = 0; b < baseClusterers.size(); b += 1) {
 			try {
-				baseClustering[b] = baseClusterers[b]->run(graph[i]);	// TODO: is push_back a critical section?
+				baseClustering.at(b) = baseClusterers.at(b)->run(graph.at(i));
 				// DEBUG
-				DEBUG("created base clustering: k=" << baseClustering[b].numberOfClusters());
-				if (baseClustering[b].isOneClustering(graph[i])) {
+				DEBUG("created base clustering: k=" << baseClustering.at(b).numberOfClusters());
+				if (baseClustering.at(b).isOneClustering(graph.at(i))) {
 					WARN("base clusterer created 1-clustering");
 				}
 				// DEBUG
@@ -98,7 +98,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			JaccardMeasure dm;
 			for (uint b = 0; b < baseClustering.size(); b += 1) {
 				for (uint c = b; c < baseClustering.size(); c += 1) {
-					double d = dm.getDissimilarity(graph[i], baseClustering.at(b), baseClustering.at(c));
+					double d = dm.getDissimilarity(graph.at(i), baseClustering.at(b), baseClustering.at(c));
 					INFO("dm " << b << " <-> " << c << ": " << d);
 				}
 			}
@@ -106,19 +106,19 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		//
 
 		// *** overlap clusters to create core clustering ***
-		clustering.push_back(overlap.run(graph[i], baseClustering));
+		clustering.push_back(overlap.run(graph.at(i), baseClustering));
 		// DEBUG
-		DEBUG("created core clustering: k=" << clustering[i].numberOfClusters());
+		DEBUG("created core clustering: k=" << clustering.at(i).numberOfClusters());
 
 		// DEBUG
 
 		if (i == 0) {			// first iteration
 			// *** calculate quality of first core clustering with respect to first graph ***
-			quality.push_back(this->qm->getQuality(clustering[i], graph[i]));
+			quality.push_back(this->qm->getQuality(clustering.at(i), graph.at(i)));
 			DEBUG("pushed quality: " << quality.back());
 
 			// *** contract the graph according to core clustering **
-			auto con = contract.run(graph[i], clustering[i]);	// returns pair (G^{i+1}, M^{i->i+1})
+			auto con = contract.run(graph.at(i), clustering.at(i));	// returns pair (G^{i+1}, M^{i->i+1})
 			graph.push_back(con.first);		// store G^{i+1}
 			map.push_back(con.second);		// store M^{i->i+1}
 
@@ -129,29 +129,29 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			// new graph created => repeat
 			repeat = true;
 		} else { 	// other iterations
-			clusteringBack.push_back(project.projectBackToFinest(clustering[i], map, G));
-			assert (clustering[i].numberOfClusters() == clusteringBack[i].numberOfClusters());
+			clusteringBack.push_back(project.projectBackToFinest(clustering.at(i), map, G));
+			assert (clustering.at(i).numberOfClusters() == clusteringBack.at(i).numberOfClusters());
 			// DEBUG
-			DEBUG("created projected clustering: k=" << clusteringBack[i].numberOfClusters());
+			DEBUG("created projected clustering: k=" << clusteringBack.at(i).numberOfClusters());
 			// DEBUG
 
-			quality.push_back(this->qm->getQuality(clusteringBack[i], graph[i]));
+			quality.push_back(this->qm->getQuality(clusteringBack.at(i), graph.at(i)));
 			DEBUG("pushed quality: " << quality.back());
 
 
 			// *** test if new core clustering is better than previous one **
-			if (quality[i] > quality[i-1]) {
-				DEBUG("quality[" << i << "] = " << quality[i] << " > quality[" << (i-1) << "] = " << quality[i-1]);
+			if (quality.at(i) > quality.at(i-1)) {
+				DEBUG("quality[" << i << "] = " << quality.at(i) << " > quality[" << (i-1) << "] = " << quality.at(i-1));
 
 
-				auto con = contract.run(graph[i], clustering[i]);	// returns pair (G^{i+1}, M^{i->i+1})
+				auto con = contract.run(graph.at(i), clustering.at(i));	// returns pair (G^{i+1}, M^{i->i+1})
 				graph.push_back(con.first);		// store G^{i+1}
 				map.push_back(con.second);		// store M^{i->i+1}
 
 				// new graph created => repeat
 				repeat = true;
 			} else {
-				DEBUG("quality[" << i << "] = " << quality[i] << " <= quality[" << (i-1) << "] = " << quality[i-1]);
+				DEBUG("quality[" << i << "] = " << quality.at(i) << " <= quality[" << (i-1) << "] = " << quality.at(i-1));
 
 				// new core clustering is not better => do not contract according to new core clustering and do not repeat
 				repeat = false;
@@ -160,7 +160,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	} while (repeat);
 
-	Clustering zetaCoarse = this->finalClusterer->run(graph[i]); // TODO: check: index correct?
+	Clustering zetaCoarse = this->finalClusterer->run(graph.at(i)); // TODO: check: index correct?
 	Clustering zetaFine = project.projectBackToFinest(zetaCoarse, map, G);
 
 	return zetaFine;

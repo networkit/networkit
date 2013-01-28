@@ -55,6 +55,12 @@ Clustering LabelPropagation::run(Graph& G) {
 		}
 	}, "parallel");
 
+	//DEBUG
+	if (nConnected == 0){
+		DEBUG("NOTE: all nodes are isolated - skipping main loop");
+	}
+	//DEBUG
+
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	NodeMap<double> incidentWeight(n);
 	G.forallNodes([&](node v) {
@@ -63,7 +69,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 	// propagate labels
-	while (majorityLabelCount != nConnected) {
+	while (majorityLabelCount < nConnected) {
 		nIterations += 1;
 		DEBUG("***** LabelPropagation: iteration #" << nIterations << "*****");
 		// DEBUG
