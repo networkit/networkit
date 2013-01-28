@@ -38,6 +38,9 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	INFO("STARTING EnsembleClusterer on G=" << G.toString());
 	// DEBUG
 
+	// config flags
+	bool calcBaseClusteringDissimilarity = false;
+
 	// sub-algorithms
 	ClusterContracter contract;
 	RegionGrowingOverlapper overlap;
@@ -91,13 +94,16 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		}
 
 		// ANALYSIS
-		JaccardMeasure dm;
-		for (uint b = 0; b < baseClustering.size(); b += 1) {
-			for (uint c = b; c < baseClustering.size(); c += 1) {
-				double d = dm.getDissimilarity(graph[i], baseClustering.at(b), baseClustering.at(c));
-				INFO("dm " << b << " <-> " << c << ": " << d);
+		if (calcBaseClusteringDissimilarity) {
+			JaccardMeasure dm;
+			for (uint b = 0; b < baseClustering.size(); b += 1) {
+				for (uint c = b; c < baseClustering.size(); c += 1) {
+					double d = dm.getDissimilarity(graph[i], baseClustering.at(b), baseClustering.at(c));
+					INFO("dm " << b << " <-> " << c << ": " << d);
+				}
 			}
 		}
+		//
 
 		// *** overlap clusters to create core clustering ***
 		clustering.push_back(overlap.run(graph[i], baseClustering));
