@@ -94,6 +94,39 @@ Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin,
 	return G;
 }
 
+std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferenceClustering(
+		int64_t n, int64_t k, double pin, double pout) {
+	assert(pin >= pout);
+
+	Graph G(n);
+	Aux::RandomProbability randP;
+	Aux::RandomInteger randInt(1, k);
+	// assign nodes evenly to clusters
+	Clustering zeta(n);
+	G.forallNodes([&](node v){
+		cluster c = randInt.generate();
+		zeta.addToCluster(c, v);
+	});
+
+	assert (zeta.numberOfClusters() == k);
+
+	for (node u = 1; u <= n; ++u) {
+		for (node v = u + 1; v <= n; ++v) {
+			if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
+				if (randP.generate() <= pin) {
+					G.insertEdge(u, v);
+				}
+			} else {
+				if (randP.generate() <= pout) {
+					G.insertEdge(u, v);
+				}
+			}
+		}
+	}
+
+	return std::make_pair(G, zeta);
+}
+
 Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 		double pout) {
 	assert (pin >= pout);

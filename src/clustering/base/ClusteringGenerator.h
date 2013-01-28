@@ -38,6 +38,8 @@ public:
 	 * Make a clustering with k clusters to which the nodes are randomly assigned.
 	 */
 	virtual Clustering makeRandomClustering(Graph& G, int k);
+
+
 };
 
 } /* namespace EnsembleClustering */

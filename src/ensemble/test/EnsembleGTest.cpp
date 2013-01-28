@@ -62,7 +62,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph_ManyBaseClusterers) {
 
 	// generate clustered random graph with obvious community structure
 	GraphGenerator graphGen;
-	int64_t n = 1000;
+	int64_t n = 100;
 	int64_t k = 10;
 	// these parameters generate a clique graph
 	double pIn = 1.0;
@@ -203,7 +203,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnRandomGraph) {
 }
 
 
-TEST_F(EnsembleGTest, showPlantedClusteringDissimilarity) {
+TEST_F(EnsembleGTest, showPlantedPartitionDissimilarity) {
 
 	EnsembleClusterer ensembleClusterer;
 	// configure EnsembleClusterer

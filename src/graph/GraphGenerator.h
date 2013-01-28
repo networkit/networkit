@@ -64,12 +64,24 @@ public:
 	 */
 	virtual Graph makeClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout);
 
+	/**
+	 * Creates a clustered random graph:
+	 *
+	 * @param[in]	n	number of nodes
+	 * @param[in]	k	number of clusters
+	 * @param[in]	pin		intra-cluster edge probability
+	 * @param[in]	pout	inter-cluster edge probability
+	 */
+	virtual std::pair<Graph, Clustering> makeClusteredRandomGraphWithReferenceClustering(int64_t n, int64_t k, double pin, double pout);
+
 
 	/**
 	 * Create a clustered random graph from a given clustering.
 	 *
 	 */
 	virtual Graph makeClusteredRandomGraph(Clustering& zeta, double pin, double pout);
+
+
 
 };
 
