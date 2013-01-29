@@ -207,7 +207,7 @@ std::vector<std::string> splitAString(std::string s, char delim = ' ') {
 /**
  * Call this first to configure logging output.
  */
-void configureLogging(std::string loglevel = "DEBUG") {
+void configureLogging(std::string loglevel = "INFO") {
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
 	if (loglevel == "TRACE") {
@@ -222,8 +222,7 @@ void configureLogging(std::string loglevel = "DEBUG") {
 	} else if (loglevel == "ERROR") {
 		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getError());
 	} else {
-		std::cout << "\t using default loglevel INFO" << loglevel;
-		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
+		// see default parameter
 	}
 }
 

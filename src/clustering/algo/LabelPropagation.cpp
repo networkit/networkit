@@ -172,19 +172,19 @@ Clustering LabelPropagation::run(Graph& G) {
 				}
 
 				// DEBUG
-				if (problem) {
-					if (v == undominated) {
-						std::stringstream debug;
-						debug << "my label: " << labels[v] << " / ";
-						debug << "label weights:";
-						for (auto it2 = labelWeights.begin(); it2 != labelWeights.end(); it2++) {
-							debug << "(" << it2->first << ":" << it2->second << ") ";
-						}
-						debug << "dominant label is: " << dominantLabel << " ";
-						debug << "threshold is: " << ((incidentWeight[v] + G.weight(v)) / 2.0) << " ";
-						DEBUG(debug.str())
-					}
-				}
+//				if (problem) {
+//					if (v == undominated) {
+//						std::stringstream debug;
+//						debug << "my label: " << labels[v] << " / ";
+//						debug << "label weights:";
+//						for (auto it2 = labelWeights.begin(); it2 != labelWeights.end(); it2++) {
+//							debug << "(" << it2->first << ":" << it2->second << ") ";
+//						}
+//						debug << "dominant label is: " << dominantLabel << " ";
+//						debug << "threshold is: " << ((incidentWeight[v] + G.weight(v)) / 2.0) << " ";
+//						DEBUG(debug.str())
+//					}
+//				}
 				// DEBUG
 
 				if (dominantLabel != 0) {
@@ -212,26 +212,25 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		// for each while loop iteration...
 
-
 		DEBUG("number of dominated nodes after iteration " << nIterations << ": " << nDominated);
 		// check and record history of nDominated
 		if (! (nDominated > nDominatedHistory.back())) {
 			WARN("number of dominated nodes (" << nDominated << " of " << nConnected << ") did not increase");
 			// DEBUG
-			problem = true;
-			G.forallNodes([&](node v) {
-				if (dominated[v] == 0) {
-					undominated = v;
-				}
-			});
-			// assert (undominated != 0);
+//			problem = true;
+//			G.forallNodes([&](node v) {
+//				if (dominated[v] == 0) {
+//					undominated = v;
+//				}
+//			});
+//			// assert (undominated != 0);
 			// DEBUG
 		} else {
 			// DEBUG
-			problem = false;
+//			problem = false;
 			// DEBUG
 		}
-		nDominatedHistory.push_back(nDominated);
+//		nDominatedHistory.push_back(nDominated);
 
 	} // end while
 
