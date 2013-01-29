@@ -79,7 +79,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 	// propagate labels
-	while (nUpdated > 0) {
+	while (nUpdated > 0) { // as long as a label has changed...
 		nIterations += 1;
 		DEBUG("***** LabelPropagation: iteration #" << nIterations << "*****");
 		// DEBUG
@@ -112,9 +112,6 @@ Clustering LabelPropagation::run(Graph& G) {
 			shuffledNodes[v - 1] = v;	// store all nodes in vector
 		}, "parallel");
 		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
-		// DEBUG
-		TRACE("shuffledNodes: " << Aux::vectorToString(shuffledNodes));
-		// DEBUG
 
 		for (node v : shuffledNodes) {
 			// ignore isolated nodes TODO: correct?
@@ -154,7 +151,7 @@ Clustering LabelPropagation::run(Graph& G) {
 					// DEBUG
 					TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
 					// DEBUG
-					labels.moveToCluster(heaviest, v);
+					labels[v] = heaviest;
 					nUpdated += 1;
 				} else {
 					TRACE("label of " << v << " stays " << labels[v]);
