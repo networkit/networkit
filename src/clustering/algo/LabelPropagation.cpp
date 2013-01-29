@@ -34,8 +34,16 @@ Clustering LabelPropagation::run(Graph& G) {
 	Clustering labels(n);
 	labels.allToSingletons();
 
-	int64_t majorityLabelCount = 0;	// number of nodes which already have the majority label
 	int64_t nIterations = 0; 	// number of iterations
+	int64_t nDominated = 0;	// number of nodes which are already dominated
+
+	// DEBUG
+	std::vector<int64_t> nDominatedHistory; // record history of nDominated
+	nDominatedHistory.push_back(0); // start with non-empty vector
+	bool problem = false; // indicate that there's a problem and debug
+	node undominated = 0;
+	// DEBUG
+
 
 	/**
 	 * == Dealing with isolated nodes ==
@@ -69,23 +77,21 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 	// propagate labels
-	while (majorityLabelCount < nConnected) {
+	while (nDominated < nConnected) {
 		nIterations += 1;
 		DEBUG("***** LabelPropagation: iteration #" << nIterations << "*****");
 		// DEBUG
-		TRACE("number of nodes which already have the majority label: " << majorityLabelCount << " of " << G.numberOfNodes());
+		TRACE("number of nodes which already have the majority label: " << nDominated << " of " << G.numberOfNodes());
 		// DEBUG
 
 		// reset majority label count
-		majorityLabelCount = 0;
+		nDominated = 0;
 
 		NodeMap<int> dominated(n, 0); // map node-> dominated?
 
 		// DEBUG
 		if (nIterations >= 42) {
 			ERROR("LabelPropagation reached " << nIterations << " iterations. It usually terminates after less than 5 iterations. Something has gone terribly wrong.");
-			ERROR("majorityLabelCount=" << majorityLabelCount);
-			ERROR("dominated:"); dominated.print();
 			ERROR("labels"); labels.print();
 			GraphIO graphio;
 			graphio.writeAdjacencyList(G, "sandbox/LabelPropagationFAIL.adjlist");
@@ -138,13 +144,15 @@ Clustering LabelPropagation::run(Graph& G) {
 				}
 
 				if (labels[v] != heaviest) {
-					TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
+					// DEBUG
+					if (v == 42) TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
+					// DEBUG
 					labels.moveToCluster(heaviest, v);
 				} else {
-					TRACE("label of " << v << " stays " << labels[v]);
+					if (v == 42) TRACE("label of " << v << " stays " << labels[v]);
 				}
 
-				// stop if v has label of at least half of its neighbors
+				// stop if v has the label which dominates it
 				label dominantLabel = 0; // = None
 				// try to find dominant label
 				for (auto it2 = labelWeights.begin(); it2 != labelWeights.end(); it2++) {
@@ -155,24 +163,66 @@ Clustering LabelPropagation::run(Graph& G) {
 					}
 				}
 
+				// DEBUG
+				if (problem) {
+					if (v == undominated) {
+						std::stringstream debug;
+						debug << "my label: " << labels[v] << " / ";
+						debug << "label weights:";
+						for (auto it2 = labelWeights.begin(); it2 != labelWeights.end(); it2++) {
+							debug << "(" << it2->first << ":" << it2->second << ") ";
+						}
+						debug << "dominant label is: " << dominantLabel << " ";
+						debug << "threshold is: " << ((incidentWeight[v] + G.weight(v)) / 2.0) << " ";
+						DEBUG(debug.str())
+					}
+				}
+				// DEBUG
+
 				if (dominantLabel != 0) {
 					if (labels[v] == dominantLabel) {
-						majorityLabelCount += 1;
+						nDominated += 1;
 						// DEBUG
+						if (v == 42) TRACE("node " << v << " has dominant label!");
 						assert (v <= dominated.numberOfNodes());
 						dominated[v] = 1;
 						// DEBUG
+					} else {
+						// DEBUG
+						if (v == 42) TRACE("dominant label " << dominantLabel << " found but node " << v << " has label " << labels[v]);
+						// DEBUG
 					}
 				} else {
-					TRACE("no dominant label found for node: " << v);
+					if (v == 42) TRACE("no dominant label found for node: " << v);
 				}// if no label dominant, do nothing
 
 			} else {
 				// node is isolated
-				TRACE("ignoring isolated node: " << v);
+				if (v == 42) TRACE("ignoring isolated node: " << v);
 			}
 		} // end for shuffled nodes
 
+		// for each while loop iteration...
+
+		DEBUG("number of dominated nodes after iteration " << nIterations << ": " << nDominated);
+		// check and record history of nDominated
+		if (! (nDominated > nDominatedHistory.back())) {
+			WARN("number of dominated nodes (" << nDominated << " of " << nConnected << ") did not increase");
+			// DEBUG
+			problem = true;
+			G.forallNodes([&](node v) {
+				if (dominated[v] == 0) {
+					undominated = v;
+				}
+			});
+			assert (undominated != 0);
+			// DEBUG
+		} else {
+			// DEBUG
+			problem = false;
+			// DEBUG
+		}
+		nDominatedHistory.push_back(nDominated);
 
 	} // end while
 
