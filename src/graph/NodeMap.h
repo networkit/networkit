@@ -75,6 +75,7 @@ template<typename T> inline const T& EnsembleClustering::NodeMap<T>::operator []
 	return this->data[u];
 }
 
+
 // FIXME: operator<<
 //template<class T>
 //inline std::ostream& operator <<(std::ostream& os, const EnsembleClustering::NodeMap<T> m) {

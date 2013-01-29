@@ -72,7 +72,14 @@ public:
 	/**
 	 * Number of nodes for which this clsutering can hold an entry.
 	 */
-	virtual int64_t numberOfNodes() const;
+	virtual int64_t numberOfNodes() const; // TODO: appropriate here?
+
+
+	/**
+	 * Set all values to one value
+	 */
+	virtual void setAll(T value);
+
 
 	/**
 	 * quick & dirty debug print
@@ -152,6 +159,13 @@ inline int64_t EnsembleClustering::IndexMap<I, T>::numberOfNodes() const {
 	return this->data.size() - 1;	// first index 0 is not used since indices are 1-based
 }
 
+template<typename I, typename T>
+inline void EnsembleClustering::IndexMap<I, T>::setAll(T value) {
+	#pragma omp parallel for if (this->n >= 100000)  // TODO: correct parallelization condition?
+	for (int64_t i = 1; i <= this->n; ++i) {
+		this->data[i] = value;
+	}
+}
 
 /*** Implementation ***/
 

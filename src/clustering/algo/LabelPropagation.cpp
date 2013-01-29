@@ -20,7 +20,6 @@ LabelPropagation::~LabelPropagation() {
 
 Clustering LabelPropagation::run(Graph& G) {
 
-
 	typedef cluster label;	// a label is the same as a cluster id
 
 	// init random for std::shuffle
@@ -33,6 +32,9 @@ Clustering LabelPropagation::run(Graph& G) {
 	// set unique label for each node
 	Clustering labels(n);
 	labels.allToSingletons();
+
+	int64_t nUpdated;	// updated[v]Ê== 1 => label of node has changed in this iteration
+	nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
 	int64_t nIterations = 0; 	// number of iterations
 	int64_t nDominated = 0;	// number of nodes which are already dominated
@@ -77,15 +79,20 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 	// propagate labels
-	while (nDominated < nConnected) {
+	while (nUpdated > 0) {
 		nIterations += 1;
 		DEBUG("***** LabelPropagation: iteration #" << nIterations << "*****");
 		// DEBUG
 		TRACE("number of nodes which already have the majority label: " << nDominated << " of " << G.numberOfNodes());
 		// DEBUG
 
-		// reset majority label count
+
+
+		// reset nDominated
 		nDominated = 0;
+		// reset updated
+		nUpdated = 0;
+
 
 		NodeMap<int> dominated(n, 0); // map node-> dominated?
 
@@ -143,13 +150,14 @@ Clustering LabelPropagation::run(Graph& G) {
 					}
 				}
 
-				if (labels[v] != heaviest) {
+				if (labels[v] != heaviest) { // UPDATE
 					// DEBUG
-					if (v == 42) TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
+					TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
 					// DEBUG
 					labels.moveToCluster(heaviest, v);
+					nUpdated += 1;
 				} else {
-					if (v == 42) TRACE("label of " << v << " stays " << labels[v]);
+					TRACE("label of " << v << " stays " << labels[v]);
 				}
 
 				// stop if v has the label which dominates it
@@ -183,26 +191,27 @@ Clustering LabelPropagation::run(Graph& G) {
 					if (labels[v] == dominantLabel) {
 						nDominated += 1;
 						// DEBUG
-						if (v == 42) TRACE("node " << v << " has dominant label!");
+						TRACE("node " << v << " has dominant label!");
 						assert (v <= dominated.numberOfNodes());
 						dominated[v] = 1;
 						// DEBUG
 					} else {
 						// DEBUG
-						if (v == 42) TRACE("dominant label " << dominantLabel << " found but node " << v << " has label " << labels[v]);
+						TRACE("dominant label " << dominantLabel << " found but node " << v << " has label " << labels[v]);
 						// DEBUG
 					}
 				} else {
-					if (v == 42) TRACE("no dominant label found for node: " << v);
+					TRACE("no dominant label found for node: " << v);
 				}// if no label dominant, do nothing
 
 			} else {
 				// node is isolated
-				if (v == 42) TRACE("ignoring isolated node: " << v);
+				TRACE("ignoring isolated node: " << v);
 			}
 		} // end for shuffled nodes
 
 		// for each while loop iteration...
+
 
 		DEBUG("number of dominated nodes after iteration " << nIterations << ": " << nDominated);
 		// check and record history of nDominated
@@ -215,7 +224,7 @@ Clustering LabelPropagation::run(Graph& G) {
 					undominated = v;
 				}
 			});
-			assert (undominated != 0);
+			// assert (undominated != 0);
 			// DEBUG
 		} else {
 			// DEBUG
