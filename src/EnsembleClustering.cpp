@@ -32,6 +32,7 @@
 #include "clustering/base/Modularity.h"
 #include "clustering/base/ClusteringGenerator.h"
 #include "io/METISGraphReader.h"
+#include "io/METISGraphWriter.h"
 
 // import global
 
@@ -245,7 +246,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, SEQUENTIAL, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, SEQUENTIAL, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -259,6 +260,7 @@ const OptionParser::Descriptor usage[] =
  {ENSEMBLE_SIZE, 0, "", "ensemble-size", OptionParser::Arg::Required, "  --ensemble-size \t number of clusterers in the ensemble"},
  {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "  --ensemble=<b> \t <b>: number of base clusterers in the ensemble"},	// TODO: provide more options
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
+ {WRITEGRAPH, 0, "", "writegraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"}, // TODO: leave as "algo"
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -367,6 +369,17 @@ bool startAlgo(Graph G, OptionParser::Option* options) {
 		runtime.stop();
 		std::cout << "EnsembleClusterer runtime: " << runtime.elapsed().count() << " ms" << std::endl;
 
+	}
+
+
+	if (options[WRITEGRAPH]) {
+		std::cout << "\t --writegraph=" << options[WRITEGRAPH].arg << std::endl;
+
+		std::string path = options[WRITEGRAPH].arg;
+		METISGraphWriter writer;
+		std::cout << "[BEGIN] writing graph to file: " << path << std::endl;
+		writer.write(G, path);
+		std::cout << "[DONE]" << std::endl;
 
 	}
 
