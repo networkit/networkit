@@ -20,6 +20,44 @@ GraphBenchmarkGTest::~GraphBenchmarkGTest() {
 
 // TASK: benchmark edge insertions standard vs raw
 
+TEST_F(GraphBenchmarkGTest, edgeInsertions_noop_seq) {
+	int64_t n = this->n;
+	Aux::Timer runtime;
+
+	Graph G(n);
+	int64_t i = 0;
+	runtime.start();
+	G.forallNodePairs([&](node u, node v) {
+		i++;
+		// G.insertEdge(u, v);
+	});
+	runtime.stop();
+
+	TRACE("counted i = " << i);
+
+	INFO("[DONE] edgeInsertions_noop_seq (" << runtime.elapsed().count() << " ms)");
+
+}
+
+TEST_F(GraphBenchmarkGTest, edgeInsertions_noop_par) {
+	int64_t n = this->n;
+	Aux::Timer runtime;
+
+	Graph G(n);
+	int64_t i = 0;
+	runtime.start();
+	G.forallNodePairs([&](node u, node v) {
+		i++;
+		// G.insertEdge(u, v);
+	}, "parallel");
+	runtime.stop();
+
+	TRACE("counted i = " << i);
+
+	INFO("[DONE] edgeInsertions_noop_par (" << runtime.elapsed().count() << " ms)");
+
+}
+
 TEST_F(GraphBenchmarkGTest, edgeInsertions_standard_seq) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
