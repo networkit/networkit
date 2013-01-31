@@ -71,6 +71,8 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_standard_seq) {
 	runtime.stop();
 
 	INFO("[DONE] edgeInsertions_standard_seq (" << runtime.elapsed().count() << " ms)");
+	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
+
 
 }
 
@@ -86,8 +88,7 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_standard_par) {
 	runtime.stop();
 
 	INFO("[DONE] edgeInsertions_standard_par(" << runtime.elapsed().count() << " ms)");
-	int64_t m = G.numberOfEdges();
-	EXPECT_EQ((n * (n-1)) / 2, m);
+	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
 
 }
 
@@ -108,8 +109,8 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_raw_seq) {
 
 
 	INFO("[DONE] edgeInsertions_raw_seq (" << runtime.elapsed().count() << " ms)");
-	int64_t m = G.numberOfEdges();
-	EXPECT_EQ((n * (n-1)) / 2, m);
+	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
+
 
 }
 
@@ -130,8 +131,8 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_raw_par) {
 	runtime.stop();
 
 	INFO("[DONE] edgeInsertions_raw_par (" << runtime.elapsed().count() << " ms)");
-	int64_t m = G.numberOfEdges();
-	EXPECT_EQ((n * (n-1)) / 2, m);
+	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
+
 }
 
 
