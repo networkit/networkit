@@ -150,4 +150,40 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 	return G;
 }
 
+Graph GraphGenerator::makeBarabasiAlbertGraph(int64_t n, int64_t k) {
+
+	// FIXME: fix the generator
+
+	Graph G(n);
+
+	// all nodes need to have at least degree 1 - create a path
+	for (node v = 1; v < n; ++v) {
+		G.insertEdge(v, (v + 1));
+	}
+
+	int64_t m = G.numberOfEdges(); // number of edges
+
+	G.forallNodes([&](node u) {
+		TRACE("connecting node " << u);
+		for (int64_t i = 0; i < k; ++i) { // for all k new edges
+			Aux::RandomInteger randInt(0, 2*m);
+			int64_t r = randInt.generate();
+			TRACE("r = " << r);
+			for (node v = 1; v <= n; ++v) {
+				if (r <= G.degree(v)) {
+					// select v
+					G.insertEdge(u, v);
+					TRACE("inserting edge (" << u << "," << v << ")");
+					m += 1;
+					break;
+				}
+				r -= G.degree(v);
+			}
+		}
+	});
+
+
+	return G;
+}
+
 } /* namespace EnsembleClustering */

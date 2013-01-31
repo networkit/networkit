@@ -83,6 +83,13 @@ public:
 
 
 
+	/**
+	 * Generate random graph according to the Barabasi-Albert model (preferential attachment)
+	 *
+	 *
+	 */
+	virtual Graph makeBarabasiAlbertGraph(int64_t n, int64_t k);
+
 };
 
 } /* namespace EnsembleClustering */
