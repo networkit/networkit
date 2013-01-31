@@ -24,6 +24,8 @@ class GraphBenchmarkGTest: public testing::Test {
 protected:
 
 	int64_t n;
+	Graph G;
+
 
 public:
 	GraphBenchmarkGTest();

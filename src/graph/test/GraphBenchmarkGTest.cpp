@@ -18,12 +18,91 @@ GraphBenchmarkGTest::~GraphBenchmarkGTest() {
 }
 
 
+// TASK: benchmark edge insertions standard vs raw
+
+TEST_F(GraphBenchmarkGTest, edgeInsertions_standard_seq) {
+	int64_t n = this->n;
+	Aux::Timer runtime;
+
+	Graph G(n);
+	runtime.start();
+	G.forallNodePairs([&](node u, node v) {
+		G.insertEdge(u, v);
+	});
+	runtime.stop();
+
+	INFO("[DONE] edgeInsertions_standard_seq (" << runtime.elapsed().count() << " ms)");
+
+}
+
+TEST_F(GraphBenchmarkGTest, edgeInsertions_standard_par) {
+	int64_t n = this->n;
+	Aux::Timer runtime;
+
+	Graph G(n);
+	runtime.start();
+	G.forallNodePairs([&](node u, node v) {
+		G.insertEdge(u, v);
+	}, "parallel");
+	runtime.stop();
+
+	INFO("[DONE] edgeInsertions_standard_par(" << runtime.elapsed().count() << " ms)");
+	int64_t m = G.numberOfEdges();
+	EXPECT_EQ((n * (n-1)) / 2, m);
+
+}
+
+TEST_F(GraphBenchmarkGTest, edgeInsertions_raw_seq) {
+	int64_t n = this->n;
+	Aux::Timer runtime;
+
+	Graph G(n);
+	stinger* S = G.asSTINGER();
+
+	runtime.start();
+	for (node u = 1; u <= n; ++u) {
+		for (node v = u + 1; v <= n; ++v) {
+			stinger_insert_edge_pair(S, G.defaultEdgeType, u, v, G.defaultEdgeWeight, G.defaultTimeStamp);
+		}
+	}
+	runtime.stop();
+
+
+	INFO("[DONE] edgeInsertions_raw_seq (" << runtime.elapsed().count() << " ms)");
+	int64_t m = G.numberOfEdges();
+	EXPECT_EQ((n * (n-1)) / 2, m);
+
+}
+
+TEST_F(GraphBenchmarkGTest, edgeInsertions_raw_par) {
+	int64_t n = this->n;
+	Aux::Timer runtime;
+
+	Graph G(n);
+	stinger* S = G.asSTINGER();
+
+	runtime.start();
+	#pragma omp parallel
+	for (node u = 1; u <= n; ++u) {
+		for (node v = u + 1; v <= n; ++v) {
+			stinger_insert_edge_pair(S, G.defaultEdgeType, u, v, G.defaultEdgeWeight, G.defaultTimeStamp);
+		}
+	}
+	runtime.stop();
+
+	INFO("[DONE] edgeInsertions_raw_par (" << runtime.elapsed().count() << " ms)");
+	int64_t m = G.numberOfEdges();
+	EXPECT_EQ((n * (n-1)) / 2, m);
+}
+
+
+
+
 // Task: precompute incident weights with different methods
 
 
-// TEST: use different containers
 
-TEST_F(GraphBenchmarkGTest, useStandard_seq) {
+TEST_F(GraphBenchmarkGTest, incidentWeight_standard_seq) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -49,65 +128,14 @@ TEST_F(GraphBenchmarkGTest, useStandard_seq) {
 	EXPECT_TRUE(correct);
 }
 
-//TEST_F(GraphBenchmarkGTest, useVector) {
-//	int64_t n = this->n;
-//	GraphGenerator graphGen;
-//	Graph G = graphGen.makeCompleteGraph(n);
-//
-//	Aux::Timer runtime;
-//
-//	runtime.start();
-//	std::vector<double> incidentWeight(n+1, 0.0);
-//
-//	G.forallNodes([&](node v) {
-//		incidentWeight[v] = G.incidentWeight(v);
-//	});
-//	runtime.stop();
-//
-//	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
-//
-//	// test correctness of result
-//	bool correct = true;
-//	G.forallNodes([&](node v){
-//		correct &= (incidentWeight[v] == (n - 1));
-//	});
-//
-//	EXPECT_TRUE(correct);
-//}
-//
-//TEST_F(GraphBenchmarkGTest, useArray) {
-//	int64_t n = this->n;
-//	GraphGenerator graphGen;
-//	Graph G = graphGen.makeCompleteGraph(n);
-//
-//	Aux::Timer runtime;
-//
-//	runtime.start();
-//	double incidentWeight[n + 1];
-//
-//	G.forallNodes([&](node v) {
-//		incidentWeight[v] = G.incidentWeight(v);
-//	});
-//	runtime.stop();
-//
-//	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
-//
-//	// test correctness of result
-//	bool correct = true;
-//	G.forallNodes([&](node v){
-//		correct &= (incidentWeight[v] == (n - 1));
-//	});
-//
-//	EXPECT_TRUE(correct);
-//}
 
-
+// TEST: use different containers
 // RESULT: NodeMap, vector and array are about equally fast
 
 
-// TEST: parallelize with different containers
+// TEST: parallelize
 
-TEST_F(GraphBenchmarkGTest, useStandard_par) {
+TEST_F(GraphBenchmarkGTest, incidentWeight_standard_par) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -133,62 +161,10 @@ TEST_F(GraphBenchmarkGTest, useStandard_par) {
 	EXPECT_TRUE(correct);
 }
 
-//TEST_F(GraphBenchmarkGTest, useVector_par) {
-//	int64_t n = this->n;
-//	GraphGenerator graphGen;
-//	Graph G = graphGen.makeCompleteGraph(n);
-//
-//	Aux::Timer runtime;
-//
-//	runtime.start();
-//	std::vector<double> incidentWeight(n+1, 0.0);
-//
-//	G.forallNodes([&](node v) {
-//		incidentWeight[v] = G.incidentWeight(v);
-//	}, "parallel");
-//	runtime.stop();
-//
-//	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
-//
-//	// test correctness of result
-//	bool correct = true;
-//	G.forallNodes([&](node v){
-//		correct &= (incidentWeight[v] == (n - 1));
-//	});
-//
-//	EXPECT_TRUE(correct);
-//}
-//
-//TEST_F(GraphBenchmarkGTest, useArray_par) {
-//	int64_t n = this->n;
-//	GraphGenerator graphGen;
-//	Graph G = graphGen.makeCompleteGraph(n);
-//
-//	Aux::Timer runtime;
-//
-//	runtime.start();
-//	double incidentWeight[n + 1];
-//
-//	G.forallNodes([&](node v) {
-//		incidentWeight[v] = G.incidentWeight(v);
-//	}, "parallel");
-//	runtime.stop();
-//
-//	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
-//
-//	// test correctness of result
-//	bool correct = true;
-//	G.forallNodes([&](node v){
-//		correct &= (incidentWeight[v] == (n - 1));
-//	});
-//
-//	EXPECT_TRUE(correct);
-//}
 
+// RESULT: significant super-linear speedup regardless of target container
 
-// RESULT: significant super-linear speedup in all cases
-
-TEST_F(GraphBenchmarkGTest, useStingerRaw_seq) {
+TEST_F(GraphBenchmarkGTest, incidentWeight_raw_seq) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -221,7 +197,7 @@ TEST_F(GraphBenchmarkGTest, useStingerRaw_seq) {
 }
 
 
-TEST_F(GraphBenchmarkGTest, useStingerRaw_par) {
+TEST_F(GraphBenchmarkGTest, incidentWeight_raw_par) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
