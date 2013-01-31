@@ -13,6 +13,10 @@
 #include "../GraphGenerator.h"
 #include "../../aux/Timer.h"
 
+extern "C" {
+#include "stinger.h"
+}
+
 namespace EnsembleClustering {
 
 class GraphBenchmarkGTest: public testing::Test {
