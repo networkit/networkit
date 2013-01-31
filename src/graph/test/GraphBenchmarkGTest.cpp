@@ -11,6 +11,7 @@ namespace EnsembleClustering {
 
 GraphBenchmarkGTest::GraphBenchmarkGTest() {
 	this->n = 1000;
+	INFO("n = " << this->n);
 }
 
 GraphBenchmarkGTest::~GraphBenchmarkGTest() {
