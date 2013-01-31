@@ -10,7 +10,7 @@
 namespace EnsembleClustering {
 
 GraphBenchmarkGTest::GraphBenchmarkGTest() {
-	this->n = 300;
+	this->n = 1000;
 }
 
 GraphBenchmarkGTest::~GraphBenchmarkGTest() {
@@ -23,7 +23,7 @@ GraphBenchmarkGTest::~GraphBenchmarkGTest() {
 
 // TEST: use different containers
 
-TEST_F(GraphBenchmarkGTest, useStandard) {
+TEST_F(GraphBenchmarkGTest, useStandard_seq) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -188,7 +188,7 @@ TEST_F(GraphBenchmarkGTest, useStandard_par) {
 
 // RESULT: significant super-linear speedup in all cases
 
-TEST_F(GraphBenchmarkGTest, useStingerRaw) {
+TEST_F(GraphBenchmarkGTest, useStingerRaw_seq) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -199,6 +199,40 @@ TEST_F(GraphBenchmarkGTest, useStingerRaw) {
 	runtime.start();
 	NodeMap<double> incidentWeight(n, 0.0);
 
+	for (node v = 1; v <= n; ++v) {
+		double iw = 0.0;
+		STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_BEGIN(S, v) {
+			iw += stinger_edgeweight(S, STINGER_EDGE_SOURCE, STINGER_EDGE_DEST, G.defaultEdgeType);
+		} STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_END();
+		incidentWeight[v] = iw;
+	}
+	runtime.stop();
+
+	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
+
+	// test correctness of result
+	bool correct = true;
+	G.forallNodes([&](node v){
+		correct &= (incidentWeight[v] == (n - 1));
+	});
+
+	EXPECT_TRUE(correct);
+
+}
+
+
+TEST_F(GraphBenchmarkGTest, useStingerRaw_par) {
+	int64_t n = this->n;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCompleteGraph(n);
+	stinger* S = G.asSTINGER();
+
+	Aux::Timer runtime;
+
+	runtime.start();
+	NodeMap<double> incidentWeight(n, 0.0);
+
+	#pragma omp parallel for
 	for (node v = 1; v <= n; ++v) {
 		double iw = 0.0;
 		STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_BEGIN(S, v) {
