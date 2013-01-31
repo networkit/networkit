@@ -26,5 +26,5 @@ TEST_P(ParametrizedGTest, testParameter) {
 
 INSTANTIATE_TEST_CASE_P(ParametrizedGTestInstance,
 						ParametrizedGTest,
-                        ::testing::Values(100));
+                        ::testing::Values(100, 1000));
 

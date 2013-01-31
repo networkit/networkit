@@ -39,12 +39,6 @@ Clustering LabelPropagation::run(Graph& G) {
 	int64_t nIterations = 0; 	// number of iterations
 	int64_t nDominated = 0;	// number of nodes which are already dominated
 
-	// DEBUG
-	std::vector<int64_t> nDominatedHistory; // record history of nDominated
-	nDominatedHistory.push_back(0); // start with non-empty vector
-	bool problem = false; // indicate that there's a problem and debug
-	node undominated = 0;
-	// DEBUG
 
 
 	/**
@@ -63,7 +57,7 @@ Clustering LabelPropagation::run(Graph& G) {
 			#pragma omp atomic update
 			nConnected += 1;
 		}
-	}, "parallel");
+	});
 
 	//DEBUG
 	if (nConnected == 0){
@@ -72,7 +66,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	//DEBUG
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
-	NodeMap<double> incidentWeight(n);
+	NodeMap<double> incidentWeight(n, 0.0);
 	G.forallNodes([&](node v) {
 		incidentWeight[v] = G.incidentWeight(v);
 	}, "parallel");
@@ -82,14 +76,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	while (nUpdated > 0) { // as long as a label has changed...
 		nIterations += 1;
 		DEBUG("***** LabelPropagation: iteration #" << nIterations << "*****");
-		// DEBUG
-		TRACE("number of nodes which already have the majority label: " << nDominated << " of " << G.numberOfNodes());
-		// DEBUG
 
-
-
-		// reset nDominated
-		nDominated = 0;
 		// reset updated
 		nUpdated = 0;
 
@@ -110,7 +97,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		shuffledNodes.resize(n); 	// hold n nodes
 		G.forallNodes([&](node v){
 			shuffledNodes[v - 1] = v;	// store all nodes in vector
-		}, "parallel");
+		});
 		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
 
 		for (node v : shuffledNodes) {
@@ -157,50 +144,6 @@ Clustering LabelPropagation::run(Graph& G) {
 					TRACE("label of " << v << " stays " << labels[v]);
 				}
 
-				// stop if v has the label which dominates it
-				label dominantLabel = 0; // = None
-				// try to find dominant label
-				for (auto it2 = labelWeights.begin(); it2 != labelWeights.end(); it2++) {
-					// label is dominant if it weighs >= half of the incident weight (including self-loop)
-						if (it2->second >= ((incidentWeight[v] + G.weight(v)) / 2.0)) {	// >= for tie breaking
-						dominantLabel = it2->first;
-						break;
-					}
-				}
-
-				// DEBUG
-//				if (problem) {
-//					if (v == undominated) {
-//						std::stringstream debug;
-//						debug << "my label: " << labels[v] << " / ";
-//						debug << "label weights:";
-//						for (auto it2 = labelWeights.begin(); it2 != labelWeights.end(); it2++) {
-//							debug << "(" << it2->first << ":" << it2->second << ") ";
-//						}
-//						debug << "dominant label is: " << dominantLabel << " ";
-//						debug << "threshold is: " << ((incidentWeight[v] + G.weight(v)) / 2.0) << " ";
-//						DEBUG(debug.str())
-//					}
-//				}
-				// DEBUG
-
-				if (dominantLabel != 0) {
-					if (labels[v] == dominantLabel) {
-						nDominated += 1;
-						// DEBUG
-						TRACE("node " << v << " has dominant label!");
-						assert (v <= dominated.numberOfNodes());
-						dominated[v] = 1;
-						// DEBUG
-					} else {
-						// DEBUG
-						TRACE("dominant label " << dominantLabel << " found but node " << v << " has label " << labels[v]);
-						// DEBUG
-					}
-				} else {
-					TRACE("no dominant label found for node: " << v);
-				}// if no label dominant, do nothing
-
 			} else {
 				// node is isolated
 				TRACE("ignoring isolated node: " << v);
@@ -208,26 +151,6 @@ Clustering LabelPropagation::run(Graph& G) {
 		} // end for shuffled nodes
 
 		// for each while loop iteration...
-
-		DEBUG("number of dominated nodes after iteration " << nIterations << ": " << nDominated);
-		// check and record history of nDominated
-		if (! (nDominated > nDominatedHistory.back())) {
-			WARN("number of dominated nodes (" << nDominated << " of " << nConnected << ") did not increase");
-			// DEBUG
-//			problem = true;
-//			G.forallNodes([&](node v) {
-//				if (dominated[v] == 0) {
-//					undominated = v;
-//				}
-//			});
-//			// assert (undominated != 0);
-			// DEBUG
-		} else {
-			// DEBUG
-//			problem = false;
-			// DEBUG
-		}
-//		nDominatedHistory.push_back(nDominated);
 
 	} // end while
 
