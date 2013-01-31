@@ -51,25 +51,25 @@ macbook["CXX"] = "g++-4.7"
 # TODO: extract environment-independent flags
 
 
-## environment: compute11
+## environment: compute
 
-compute11 = Environment()
+compute = Environment()
 ### include
-compute11.Append(CPPPATH = ["/home/staudt/workspace/gtest/include", \
+compute.Append(CPPPATH = ["/home/staudt/workspace/gtest/include", \
                           "/home/staudt/workspace/STINGER/include"])
-compute11.Append(CCPATH = ["/home/staudt/workspace/gtest/include", \
+compute.Append(CCPATH = ["/home/staudt/workspace/gtest/include", \
                           "/home/staudt/workspace/STINGER/include"])
-print("compute11 CPPPATH: %s" % compute11["CPPPATH"])
+print("compute CPPPATH: %s" % compute["CPPPATH"])
 
 ### link
-compute11.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
-compute11.Append(LIBPATH = ["/home/staudt/workspace/STINGER",\
+compute.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
+compute.Append(LIBPATH = ["/home/staudt/workspace/STINGER",\
                            "/home/staudt/workspace/gtest/lib"])
-compute11.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
+compute.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
 
 ### compiler & flags
-compute11["CC"] = "gcc-4.7"
-compute11["CXX"] = "g++-4.7"
+compute["CC"] = "gcc-4.7"
+compute["CXX"] = "g++-4.7"
 
 
 
@@ -84,7 +84,7 @@ AddOption("--machine",
           help="specify the machine (environment) on which to build")
 
 
-environments = {"macbook" : macbook, "compute11" : compute11}
+environments = {"macbook" : macbook, "compute" : compute}
 
 try:
     env = environments[GetOption("machine")]
