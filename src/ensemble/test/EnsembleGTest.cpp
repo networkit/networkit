@@ -218,8 +218,8 @@ TEST_F(EnsembleGTest, showPlantedPartitionDissimilarity) {
 	ensembleClusterer.setFinalClusterer(*finalClusterer);
 
 	// make clustered random graph with planted partition
-	int64_t n = 1000;	// number of nodes
-	int k = 42; 			// number of clusters
+	int64_t n = 100;	// number of nodes
+	int k = 5; 			// number of clusters
 	double pin = 0.5;
 	double pout = 0.01;
 
