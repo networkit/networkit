@@ -19,12 +19,16 @@ GraphGeneratorGTest::~GraphGeneratorGTest() {
 }
 
 TEST_F(GraphGeneratorGTest, testBarabasiAlbert) {
-	int64_t n = 100;
+	int64_t n = 5000;
 	int64_t k = 2;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeBarabasiAlbertGraph(n, k);
 
 	INFO("m = " << G.numberOfEdges());
+
+	GraphIO graphio;
+	INFO("writing graph to file");
+	// graphio.writeAdjacencyList(G, "sandbox/testBarabasiAlbert.graph");
 
 }
 

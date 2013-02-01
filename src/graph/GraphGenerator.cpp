@@ -152,8 +152,6 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 
 Graph GraphGenerator::makeBarabasiAlbertGraph(int64_t n, int64_t k) {
 
-	// FIXME: fix the generator
-
 	Graph G(n);
 
 	// all nodes need to have at least degree 1 - create a path
@@ -162,12 +160,14 @@ Graph GraphGenerator::makeBarabasiAlbertGraph(int64_t n, int64_t k) {
 	}
 
 	int64_t m = G.numberOfEdges(); // number of edges
+	int64_t r = 0;
 
 	G.forallNodes([&](node u) {
 		TRACE("connecting node " << u);
 		for (int64_t i = 0; i < k; ++i) { // for all k new edges
-			Aux::RandomInteger randInt(0, 2*m);
-			int64_t r = randInt.generate();
+			TRACE("2m = " << 2 * m);
+			Aux::RandomInteger randInt(0, 2*m);	// TODO: n * k instantiations of RandomInteger are inefficient because random device reads from /dev/random
+			r = randInt.generate();
 			TRACE("r = " << r);
 			for (node v = 1; v <= n; ++v) {
 				if (r <= G.degree(v)) {
@@ -175,7 +175,10 @@ Graph GraphGenerator::makeBarabasiAlbertGraph(int64_t n, int64_t k) {
 					G.insertEdge(u, v);
 					TRACE("inserting edge (" << u << "," << v << ")");
 					m += 1;
+					r = 0;
 					break;
+				} else {
+					TRACE("skipping node " << v);
 				}
 				r -= G.degree(v);
 			}

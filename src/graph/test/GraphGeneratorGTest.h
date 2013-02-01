@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 
 #include "../GraphGenerator.h"
+#include "../../io/GraphIO.h"
 
 namespace EnsembleClustering {
 
