@@ -1,27 +1,27 @@
 /*
- * GraphBenchmarkGTest.cpp
+ * GraphBenchmark.cpp
  *
- *  Created on: 30.01.2013
+ *  Created on: 01.02.2013
  *      Author: cls
  */
 
-#include "GraphBenchmarkGTest.h"
+#include "GraphBenchmark.h"
 
 namespace EnsembleClustering {
 
-GraphBenchmarkGTest::GraphBenchmarkGTest() {
+GraphBenchmark::GraphBenchmark() {
 	this->n = 1000;
 	INFO("n = " << this->n);
 }
 
-GraphBenchmarkGTest::~GraphBenchmarkGTest() {
+GraphBenchmark::~GraphBenchmark() {
 	// TODO Auto-generated destructor stub
 }
 
 
 // TASK: benchmark edge insertions standard vs raw
 
-TEST_F(GraphBenchmarkGTest, edgeInsertions_noop_seq) {
+TEST_F(GraphBenchmark, edgeInsertions_noop_seq) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
@@ -40,7 +40,7 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_noop_seq) {
 
 }
 
-TEST_F(GraphBenchmarkGTest, edgeInsertions_noop_par) {
+TEST_F(GraphBenchmark, edgeInsertions_noop_par) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
@@ -59,7 +59,7 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_noop_par) {
 
 }
 
-TEST_F(GraphBenchmarkGTest, edgeInsertions_standard_seq) {
+TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
@@ -76,7 +76,7 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_standard_seq) {
 
 }
 
-TEST_F(GraphBenchmarkGTest, edgeInsertions_standard_par) {
+TEST_F(GraphBenchmark, edgeInsertions_standard_par) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
@@ -92,7 +92,7 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_standard_par) {
 
 }
 
-TEST_F(GraphBenchmarkGTest, edgeInsertions_raw_seq) {
+TEST_F(GraphBenchmark, edgeInsertions_raw_seq) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
@@ -114,7 +114,7 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_raw_seq) {
 
 }
 
-TEST_F(GraphBenchmarkGTest, edgeInsertions_raw_par) {
+TEST_F(GraphBenchmark, edgeInsertions_raw_par) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
@@ -142,7 +142,7 @@ TEST_F(GraphBenchmarkGTest, edgeInsertions_raw_par) {
 
 
 
-TEST_F(GraphBenchmarkGTest, incidentWeight_standard_seq) {
+TEST_F(GraphBenchmark, incidentWeight_standard_seq) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -175,7 +175,7 @@ TEST_F(GraphBenchmarkGTest, incidentWeight_standard_seq) {
 
 // TEST: parallelize
 
-TEST_F(GraphBenchmarkGTest, incidentWeight_standard_par) {
+TEST_F(GraphBenchmark, incidentWeight_standard_par) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -204,7 +204,7 @@ TEST_F(GraphBenchmarkGTest, incidentWeight_standard_par) {
 
 // RESULT: significant super-linear speedup regardless of target container
 
-TEST_F(GraphBenchmarkGTest, incidentWeight_raw_seq) {
+TEST_F(GraphBenchmark, incidentWeight_raw_seq) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -237,7 +237,7 @@ TEST_F(GraphBenchmarkGTest, incidentWeight_raw_seq) {
 }
 
 
-TEST_F(GraphBenchmarkGTest, incidentWeight_raw_par) {
+TEST_F(GraphBenchmark, incidentWeight_raw_par) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);

@@ -1,25 +1,26 @@
 /*
- * BenchmarkGTest.cpp
+ * BasicsBenchmark.cpp
  *
- *  Created on: 30.01.2013
+ *  Created on: 01.02.2013
  *      Author: cls
  */
 
-#include "BenchmarkGTest.h"
+#include "BasicsBenchmark.h"
 
 namespace EnsembleClustering {
 
-BenchmarkGTest::BenchmarkGTest() {
+BasicsBenchmark::BasicsBenchmark() {
 	// TODO Auto-generated constructor stub
 
 }
 
-BenchmarkGTest::~BenchmarkGTest() {
+BasicsBenchmark::~BasicsBenchmark() {
 	// TODO Auto-generated destructor stub
 }
 
 
-TEST_F(BenchmarkGTest, sequentialSum) {
+
+TEST_F(BasicsBenchmark, sequentialSum) {
 	Aux::Timer runtime;
 
 	int64_t n = 1e+9;
@@ -33,7 +34,7 @@ TEST_F(BenchmarkGTest, sequentialSum) {
 	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
 }
 
-TEST_F(BenchmarkGTest, parallelSumIncorrect) {
+TEST_F(BasicsBenchmark, parallelSumIncorrect) {
 	Aux::Timer runtime;
 
 	int64_t n = 1e+9;
@@ -48,7 +49,7 @@ TEST_F(BenchmarkGTest, parallelSumIncorrect) {
 	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
 }
 
-TEST_F(BenchmarkGTest, parallelSumAtomicUpdate) {
+TEST_F(BasicsBenchmark, parallelSumAtomicUpdate) {
 	Aux::Timer runtime;
 
 	int64_t n = 1e+9;
@@ -66,7 +67,7 @@ TEST_F(BenchmarkGTest, parallelSumAtomicUpdate) {
 }
 
 //
-//TEST_F(BenchmarkGTest, parallelSumCritical) {
+//TEST_F(BasicsBenchmark, parallelSumCritical) {
 //	Aux::Timer runtime;
 //
 //	int64_t n = 1e+9;
@@ -84,7 +85,7 @@ TEST_F(BenchmarkGTest, parallelSumAtomicUpdate) {
 //}
 
 
-TEST_F(BenchmarkGTest, seqVectorWrite) {
+TEST_F(BasicsBenchmark, seqVectorWrite) {
 	Aux::Timer runtime;
 	int64_t n = 1e+8;
 
@@ -102,7 +103,7 @@ TEST_F(BenchmarkGTest, seqVectorWrite) {
 
 
 
-TEST_F(BenchmarkGTest, parVectorWrite) {
+TEST_F(BasicsBenchmark, parVectorWrite) {
 	Aux::Timer runtime;
 	int64_t n = 1e+8;
 
@@ -122,7 +123,7 @@ TEST_F(BenchmarkGTest, parVectorWrite) {
 
 
 
-TEST_F(BenchmarkGTest, lambdaSummation_seq) {
+TEST_F(BasicsBenchmark, lambdaSummation_seq) {
 	Aux::Timer runtime;
 	int64_t n = 1e+9;
 	double sum = 0.0;
@@ -140,7 +141,7 @@ TEST_F(BenchmarkGTest, lambdaSummation_seq) {
 	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
 }
 
-TEST_F(BenchmarkGTest, lambdaSummation_parWrong) {
+TEST_F(BasicsBenchmark, lambdaSummation_parWrong) {
 	Aux::Timer runtime;
 	int64_t n = 1e+9;
 	double sum = 0.0;
@@ -160,7 +161,7 @@ TEST_F(BenchmarkGTest, lambdaSummation_parWrong) {
 }
 
 
-TEST_F(BenchmarkGTest, lambdaSummation_par) {
+TEST_F(BasicsBenchmark, lambdaSummation_par) {
 	Aux::Timer runtime;
 	int64_t n = 1e+9;
 	double sum = 0.0;
@@ -182,7 +183,7 @@ TEST_F(BenchmarkGTest, lambdaSummation_par) {
 
 
 
-TEST_F(BenchmarkGTest, lambdaVectorWrite_seq) {
+TEST_F(BasicsBenchmark, lambdaVectorWrite_seq) {
 	Aux::Timer runtime;
 	int64_t n = 1e+8;
 
@@ -202,7 +203,7 @@ TEST_F(BenchmarkGTest, lambdaVectorWrite_seq) {
 	INFO("vector written in [" << runtime.elapsed().count() << " ms ]");
 }
 
-TEST_F(BenchmarkGTest, lambdaVectorWrite_par) {
+TEST_F(BasicsBenchmark, lambdaVectorWrite_par) {
 	Aux::Timer runtime;
 	int64_t n = 1e+8;
 
