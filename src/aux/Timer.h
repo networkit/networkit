@@ -9,6 +9,7 @@
 #define TIMER_H_
 
 #include <chrono>
+#include <sstream>
 
 namespace Aux {
 
@@ -57,6 +58,12 @@ public:
 	 *
 	 */
 	virtual std::chrono::steady_clock::time_point stopTime();
+
+
+	/**
+	 *
+	 */
+	virtual std::string elapsedTag();
 };
 
 } /* namespace Aux */

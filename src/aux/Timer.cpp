@@ -41,4 +41,12 @@ std::chrono::steady_clock::time_point Timer::stopTime() {
 	return this->stopped;
 }
 
+std::string Timer::elapsedTag() {
+	std::stringstream s;
+	s << "(" << this->elapsed().count() << " ms) ";
+	return s.str();
+}
+
+
 } /* namespace Aux */
+
