@@ -44,7 +44,7 @@ Clustering HashingOverlapper::run(Graph& G, std::vector<Clustering>& clusterings
 		}
 		cHash = cHash & 0xffff;
 		core[v] = cHash;
-	});
+	}, "parallel");
 
 	return core;
 }
