@@ -9,7 +9,7 @@
 
 namespace Aux {
 
-RandomProbability::RandomProbability() :  randomEngine((unsigned int) time(0)), distribution(0.0, 1.0) {
+RandomProbability::RandomProbability() :  randomEngine(this->randomDevice()), distribution(0.0, 1.0) {
 }
 
 RandomProbability::~RandomProbability() {
