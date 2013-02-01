@@ -33,7 +33,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	Clustering labels(n);
 	labels.allToSingletons();
 
-	int64_t nUpdated;	// updated[v]Ê== 1 => label of node has changed in this iteration
+	int64_t nUpdated;	// number of nodes which have been updated in last iteration
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
 	int64_t nIterations = 0; 	// number of iterations
@@ -48,10 +48,15 @@ Clustering LabelPropagation::run(Graph& G) {
 	 * Isolated nodes stay singletons. They can be ignored in the while loop, but the loop condition must
 	 * compare to the number of non-isolated nodes instead of n.
 	 *
+	 * == Termination criterion ==
+	 *
+	 * The published termination criterion is: All nodes have got the label of the majority of their neighbors.
+	 * In general this does not work. It was changed to: No label was changed in last iteration.
 	 */
 
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
+	INFO("[BEGIN] Label Propagation: precomputing incident weight");
 	NodeMap<double> incidentWeight(n, 0.0);
 	G.forallNodes([&](node v) {
 		incidentWeight[v] = G.incidentWeight(v);
@@ -61,7 +66,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	// propagate labels
 	while (nUpdated > 0) { // as long as a label has changed...
 		nIterations += 1;
-		INFO("***** LabelPropagation: iteration #" << nIterations << "*****");
+		INFO("[BEGIN] LabelPropagation: iteration #" << nIterations);
 
 		// reset updated
 		nUpdated = 0;
