@@ -19,6 +19,7 @@
 #include "../clustering/base/Modularity.h"
 #include "../clustering/base/ClusteringGenerator.h"
 #include "../overlap/RegionGrowingOverlapper.h"
+#include "../overlap/HashingOverlapper.h"
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/GraphContraction.h"
 #include "../io/GraphIO.h"

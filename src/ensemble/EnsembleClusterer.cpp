@@ -43,7 +43,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	// sub-algorithms
 	ClusterContracter contract;
-	RegionGrowingOverlapper overlap;
+	HashingOverlapper overlap;
 	ClusteringProjector project;
 
 	// hierarchies

@@ -23,6 +23,7 @@ protected:
 
 	cluster nextCluster;	//!< next free cluster id for new cluster
 	std::string name;
+	cluster upperIdBound;	//!< upper bound for cluster ids
 
 	inline cluster getNextCluster() {
 		// TODO: performance - is this a bottleneck?
@@ -144,6 +145,8 @@ public:
 	int64_t numberOfClusters();
 
 
+
+
 	/**
 	 * Return an upper bound for the cluster ids that have been assigned.
 	 */
@@ -153,6 +156,11 @@ public:
 	 * Return a lower bound for the cluster ids that have been assigned.
 	 */
 	cluster lowerBound() const;
+
+	/**
+	 * Set an upper bound for the cluster ids.
+	 */
+	void setUpperBound(cluster id);
 
 
 

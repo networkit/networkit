@@ -37,6 +37,8 @@ Clustering HashingOverlapper::run(Graph& G, std::vector<Clustering>& clusterings
 	// select hash function
 	auto hash = sdbm;
 
+
+
 	G.forallNodes([&](node v) {
 		size_t cHash = 0;
 		for (Clustering zeta : clusterings) {
@@ -45,6 +47,15 @@ Clustering HashingOverlapper::run(Graph& G, std::vector<Clustering>& clusterings
 		cHash = cHash & 0xffff;
 		core[v] = cHash;
 	}, "parallel");
+
+	// TODO: this is a quick fix for the issue that clusterings start with an upper id bound of n. bounds are needed and checked for iteration over all clusters
+	cluster maxCluster = 0;
+	G.forallNodes([&](node v){
+		if (core[v] > maxCluster) {
+			maxCluster = core[v];
+		}
+	});
+	core.setUpperBound(maxCluster);
 
 	return core;
 }

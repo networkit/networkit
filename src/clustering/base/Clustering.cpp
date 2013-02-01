@@ -12,6 +12,7 @@ namespace EnsembleClustering {
 Clustering::Clustering(int64_t n) : NodeMap<cluster>(n, 0), name("noname") {
 	// all entries are initialized to 0, which means that the nodes are unclustered
 	this->nextCluster = 1; //!< first cluster index is 1
+	this->upperIdBound = n;	// upper id bound = n is okay only for agglomeratively created clusters
 }
 
 Clustering::~Clustering() {
@@ -73,7 +74,7 @@ int64_t Clustering::numberOfClusters() {
 
 
 cluster Clustering::upperBound() const {
-	return this->n; // TODO: possibly inefficient
+	return this->upperIdBound;
 }
 
 
@@ -141,6 +142,10 @@ bool Clustering::equals(Clustering& other, Graph& G) {
 		}
 	}, "parallel", "readonly");
 	return eq;
+}
+
+void Clustering::setUpperBound(cluster id) {
+	this->upperIdBound = id;
 }
 
 void Clustering::print() const {

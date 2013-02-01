@@ -56,7 +56,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
-	INFO("[BEGIN] Label Propagation: precomputing incident weight");
+	DEBUG("[BEGIN] Label Propagation: precomputing incident weight");
 	NodeMap<double> incidentWeight(n, 0.0);
 	G.forallNodes([&](node v) {
 		incidentWeight[v] = G.incidentWeight(v);
