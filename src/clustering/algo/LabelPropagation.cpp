@@ -50,20 +50,6 @@ Clustering LabelPropagation::run(Graph& G) {
 	 *
 	 */
 
-	// count connected nodes for loop condition
-	int64_t nConnected = 0;
-	G.forallNodes([&](node v) {
-		if (G.degree(v) > 0) {
-			#pragma omp atomic update
-			nConnected += 1;
-		}
-	});
-
-	//DEBUG
-	if (nConnected == 0){
-		DEBUG("NOTE: all nodes are isolated - skipping main loop");
-	}
-	//DEBUG
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	NodeMap<double> incidentWeight(n, 0.0);
