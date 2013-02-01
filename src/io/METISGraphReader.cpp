@@ -28,6 +28,7 @@ Graph METISGraphReader::read(std::string path) {
 	int64_t m = header.second;
 
 	Graph G(n);
+	G.setName(path);
 
 	std::cout << "[BEGIN] reading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// progress bar follows
 
@@ -42,7 +43,7 @@ Graph METISGraphReader::read(std::string path) {
 		for (node v : adjacencies) {
 			G.insertEdge(u, v);
 		}
-		if ((u % 100) == 0) {
+		if ((u % 1000) == 0) {
 			p = ((double) u / (double) n) * 100;
 			std::cout << p << "% " << std::flush;
 		}

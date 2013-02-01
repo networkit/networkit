@@ -218,10 +218,10 @@ Graph getGraph(OptionParser::Option* options) {
 		// get graph generation model
 		std::vector<std::string> genArgs = splitAString(genOption, ':');
 		std::vector<std::string> genNumArgs = splitAString(genArgs.at(1), ',');
-		assert (genArgs.size == 2);
+		assert (genArgs.size() == 2);
 		std::string model = genArgs.at(0);
 		if (model == "RG") { // random graph (Erdos-Renyi)
-			assert (genNumArgs.size == 2);
+			assert (genNumArgs.size() == 2);
 			int64_t n = std::atoi(genNumArgs.at(0).c_str());
 			double p = std::atoi(genNumArgs.at(1).c_str());
 			return generateRandomGraph(n, p);
@@ -257,7 +257,7 @@ Graph getGraph(OptionParser::Option* options) {
 }
 
 
-bool startAlgo(Graph G, OptionParser::Option* options) {
+std::pair<Clustering, Graph> startClusterer(Graph G, OptionParser::Option* options) {
 
 	// if getGraph returns empty graph, abort
 	if (G.isEmpty() && (G.getName() == "NONE")) {
@@ -284,17 +284,19 @@ bool startAlgo(Graph G, OptionParser::Option* options) {
 		}
 
 		// start solo base algorithm
+		Aux::Timer runtime;
 		std::cout << "[BEGIN] solo base clusterer: " << algoName << std::endl;
-
-		algo->run(G);
-
+		runtime.start();
+		Clustering result = algo->run(G);
+		runtime.stop();
 		//
-		std::cout << "[DONE]" << std::endl;
+		std::cout << "[DONE] " << algoName << " runtime: \t" << runtime.elapsedTag() << std::endl;
+		return std::make_pair(result, G);
 
 	} else if (options[ENSEMBLE]) {
 		// RUN ENSEMBLE
 
-		std::string ensembleOptions = options[GENERATE].arg;
+		std::string ensembleOptions = options[ENSEMBLE].arg;
 
 		int ensembleSize = std::atoi(ensembleOptions.c_str()); // TODO: provide more options
 
@@ -323,8 +325,10 @@ bool startAlgo(Graph G, OptionParser::Option* options) {
 		Clustering result = ensemble.run(G);
 
 		runtime.stop();
-		std::cout << "EnsembleClusterer runtime: " << runtime.elapsed().count() << " ms" << std::endl;
+		std::cout << "[DONE] EmsembleClusterer (" << ensembleSize << ") runtime: \t" << runtime.elapsedTag() << std::endl;
 
+
+		return std::make_pair(result, G);
 	}
 
 
@@ -339,7 +343,23 @@ bool startAlgo(Graph G, OptionParser::Option* options) {
 
 	}
 
+
+	return std::make_pair(Clustering(0), G);	// return empty clustering
+
 }
+
+
+bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options) {
+	std::cout << "[INFO] inspecting result clustering " << std::endl;
+	std::cout << "Graph: " << result.second.toString() << std::endl;
+
+	Modularity modularity;
+	double mod = modularity.getQuality(result.first, result.second);
+
+ 	std::cout << "\t # clusters:\t" << result.first.numberOfClusters() << std::endl;
+ 	std::cout << "\t modularity:\t" << mod << std::endl;
+}
+
 
 
 
@@ -399,8 +419,7 @@ int main(int argc, char **argv) {
 
 	// RUN PROGRAM
 
-	startAlgo(getGraph(options), options);
-
-
-
+	inspect(startClusterer(getGraph(options), options), options);
+	std::cout << "[EXIT] terminated normally" << std::endl;
+	return 0;
 }
