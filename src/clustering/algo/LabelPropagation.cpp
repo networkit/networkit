@@ -61,23 +61,13 @@ Clustering LabelPropagation::run(Graph& G) {
 	// propagate labels
 	while (nUpdated > 0) { // as long as a label has changed...
 		nIterations += 1;
-		DEBUG("***** LabelPropagation: iteration #" << nIterations << "*****");
+		INFO("***** LabelPropagation: iteration #" << nIterations << "*****");
 
 		// reset updated
 		nUpdated = 0;
 
 
 		NodeMap<int> dominated(n, 0); // map node-> dominated?
-
-		// DEBUG
-		if (nIterations >= 42) {
-			ERROR("LabelPropagation reached " << nIterations << " iterations. It usually terminates after less than 5 iterations. Something has gone terribly wrong.");
-			ERROR("labels"); labels.print();
-			GraphIO graphio;
-			graphio.writeAdjacencyList(G, "sandbox/LabelPropagationFAIL.adjlist");
-			throw std::runtime_error("aborting LabelPropagation to avoid infinite loop");
-		}
-		// DEBUG
 
 		std::vector<node> shuffledNodes;
 		shuffledNodes.resize(n); 	// hold n nodes
@@ -111,7 +101,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 				// get most frequent label
-				label heaviest = 0; // TODO: check if 0 occurs in final clustering
+				label heaviest = 0;
 				double maxWeight = 0.0;
 				for (auto it = labelWeights.begin(); it != labelWeights.end(); it++) {
 					if (it->second > maxWeight) {
