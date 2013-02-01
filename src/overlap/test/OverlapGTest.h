@@ -9,8 +9,10 @@
 #define OVERLAPGTEST_H_
 
 #include <gtest/gtest.h>
+#include <functional>
 
 #include "../RegionGrowingOverlapper.h"
+#include "../HashingOverlapper.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/base/ClusteringGenerator.h"
 
