@@ -7,6 +7,16 @@
 
 #include "AuxGTest.h"
 
+TEST_F(AuxGTest, produceRandomIntegers) {
+	int64_t l = 0; 	// lower bound
+	int64_t u = 100;	// upper bound
+	Aux::RandomInteger randInt(l, u);
+
+	for (int i = 0; i < 100; ++i) {
+		TRACE(randInt.generate());
+	}
+}
+
 
 TEST_F(AuxGTest, testRandomInteger) {
 	int64_t l = 0; 	// lower bound

@@ -9,7 +9,7 @@
 
 namespace Aux {
 
-RandomInteger::RandomInteger(int64_t lower, int64_t upper) : randomEngine((unsigned int) time(0)), distribution(lower, upper) {
+RandomInteger::RandomInteger(int64_t lower, int64_t upper) : randomEngine(this->randomDevice()), distribution(lower, upper) {
 }
 
 RandomInteger::~RandomInteger() {

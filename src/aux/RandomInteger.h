@@ -17,6 +17,7 @@ class RandomInteger {
 
 protected:
 
+	std::random_device randomDevice;
 	std::default_random_engine randomEngine;
 	std::uniform_int_distribution<> distribution;
 
