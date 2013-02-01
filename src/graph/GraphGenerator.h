@@ -86,9 +86,11 @@ public:
 	/**
 	 * Generate random graph according to the Barabasi-Albert model (preferential attachment)
 	 *
+	 *	@param[in]	n	number of nodes
+	 *	@param[in]	a	number of edges added for each node
 	 *
 	 */
-	virtual Graph makeBarabasiAlbertGraph(int64_t n, int64_t k);
+	virtual Graph makePreferentialAttachmentGraph(int64_t n, int64_t a);
 
 };
 

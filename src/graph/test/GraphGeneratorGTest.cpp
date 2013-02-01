@@ -22,7 +22,7 @@ TEST_F(GraphGeneratorGTest, testBarabasiAlbert) {
 	int64_t n = 5000;
 	int64_t k = 2;
 	GraphGenerator graphGen;
-	Graph G = graphGen.makeBarabasiAlbertGraph(n, k);
+	Graph G = graphGen.makePreferentialAttachmentGraph(n, k);
 
 	INFO("m = " << G.numberOfEdges());
 

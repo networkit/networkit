@@ -150,7 +150,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 	return G;
 }
 
-Graph GraphGenerator::makeBarabasiAlbertGraph(int64_t n, int64_t k) {
+Graph GraphGenerator::makePreferentialAttachmentGraph(int64_t n, int64_t a) {
 
 	Graph G(n);
 
@@ -164,7 +164,7 @@ Graph GraphGenerator::makeBarabasiAlbertGraph(int64_t n, int64_t k) {
 
 	G.forallNodes([&](node u) {
 		TRACE("connecting node " << u);
-		for (int64_t i = 0; i < k; ++i) { // for all k new edges
+		for (int64_t i = 0; i < a; ++i) { // for all k new edges
 			TRACE("2m = " << 2 * m);
 			Aux::RandomInteger randInt(0, 2*m);	// TODO: n * k instantiations of RandomInteger are inefficient because random device reads from /dev/random
 			r = randInt.generate();

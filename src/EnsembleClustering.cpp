@@ -44,16 +44,28 @@ using namespace EnsembleClustering;
 
 // graph functions
 
-Graph generateGraph(int64_t n, int64_t k, double pin, double pout) {
+Graph generateRandomGraph(int64_t n, double p) {
+
+	std::cout << "[BEGIN] generating random graph..." << std::flush;
+	Aux::Timer runtime;
+	runtime.start();
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeRandomGraph(n, p);
+	runtime.stop();
+	std::cout << "[DONE] (" << runtime.elapsed().count() << " ms)" << std::endl;
+	return G;
+}
+
+Graph generateClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout) {
 
 	// prepare generated clustered random graph (planted partition)
-	std::cout << "[BEGIN] making random clustering..." << std::flush;
+	std::cout << "[BEGIN] generating random clustering..." << std::flush;
 	Graph emptyG(n);	// clustering generator needs a dummy graph
 	ClusteringGenerator clusteringGen;
 	Clustering planted = clusteringGen.makeRandomClustering(emptyG, k);
 	std::cout << "[DONE]" << std::endl;
 
-	std::cout << "[BEGIN] making clustered random graph..." << std::flush;
+	std::cout << "[BEGIN] generating clustered random graph..." << std::flush;
 	GraphGenerator graphGen;
 
 	Aux::Timer runtime;
@@ -67,7 +79,26 @@ Graph generateGraph(int64_t n, int64_t k, double pin, double pout) {
 	return G;
 }
 
+Graph generatePreferentialAttachmentGraph(int64_t n, int64_t a) {
 
+	std::cout << "[BEGIN] generating preferential attachment graph..." << std::flush;
+	GraphGenerator graphGen;
+
+	Aux::Timer runtime;
+	runtime.start();
+	//
+	Graph G = graphGen.makePreferentialAttachmentGraph(n, a);
+	//
+	runtime.stop();
+	std::cout << "[DONE] (" << runtime.elapsed().count() << " ms)" << std::endl;
+
+	return G;
+}
+
+
+/**
+ * Read a graph from a file.
+ */
 Graph readGraph(std::string graphPath) {
 
 	// READ GRAPH
@@ -90,106 +121,13 @@ Graph readGraph(std::string graphPath) {
 
 }
 
-// start functions
-// FIXME: deprecated
-bool startSoloWithGraph(Graph& G, Clusterer* algo) {
-
-	// RUN BASE CLUSTERER SOLO
-	Aux::Timer runtime;
-	runtime.start();
-
-	Clustering zeta = algo->run(G);
-
-	runtime.stop();
-	std::cout << "Solo clusterer runtime: " << runtime.elapsed().count() << " ms" << std::endl;
-
-	return true;
-}
-
-
-// FIXME: deprecated
-bool startWithGraph(Graph& G, int ensembleSize) {
-
-	EnsembleClusterer ensemble;
-
-		// CONFIGURE ENSEMBLE CLUSTERER
-
-		// 1. Quality Measure
-		QualityMeasure* qm = new Modularity();
-		ensemble.setQualityMeasure(*qm);
-
-		// 2. Base Clusterers
-		for (int i = 0; i < ensembleSize; i += 1) {
-			Clusterer* base = new LabelPropagation();
-			ensemble.addBaseClusterer(*base);
-		}
-
-		// 3. Final Clusterer
-		Clusterer* final = new LabelPropagation();
-		ensemble.setFinalClusterer(*final);
-
-		// RUN ENSEMBLE CLUSTERER
-		Aux::Timer runtime;
-		runtime.start();
-
-		Clustering result = ensemble.run(G);
-
-		runtime.stop();
-		std::cout << "EnsembleClusterer runtime: " << runtime.elapsed().count() << " ms" << std::endl;
-
-
-		// ANALYZE RESULT
-
-		return true;
-}
-
-// FIXME: deprecated
-bool startWithPath(std::string graphPath, int ensembleSize) {
-	assert (ensembleSize > 0);
-	assert (! graphPath.empty());
-
-	// READ GRAPH
-
-	METISGraphReader reader;	// TODO: add support for multiple graph file formats
-
-	// TIMING
-	Aux::Timer readTimer;
-	readTimer.start();
-	//
-	std::cout << "opening file... : " << graphPath << std::endl;
-
-	Graph G = reader.read(graphPath);
-	//
-	readTimer.stop();
-	std::cout << "read graph file in " << readTimer.elapsed().count() << " ms " << std::endl;
-	// TIMING
-
-	// startWithGraph(G, ensembleSize);
-	return true;
-}
-
-// FIXME: deprecated
-bool startWithGenerated(int64_t n, int64_t k, double pin, double pout, int ensembleSize) {
-
-	// prepare generated clustered random graph (planted partition)
-	std::cout << "[BEGIN] making random clustering..." << std::flush;
-	Graph emptyG(n);	// clustering generator needs a dummy graph
-	ClusteringGenerator clusteringGen;
-	Clustering planted = clusteringGen.makeRandomClustering(emptyG, k);
-	std::cout << "[DONE]" << std::endl;
-
-	std::cout << "[BEGIN] making clustered random graph..." << std::flush;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(planted, pin, pout);
-	std::cout << "[DONE]" << std::endl;
-
-	// call ensemble clusterer
-	return startWithGraph(G, ensembleSize);
-}
 
 
 
-
+/**
+ * Split a string at delimiter and return vector of parts.
+ *
+ */
 std::vector<std::string> splitAString(std::string s, char delim = ' ') {
 	std::stringstream stream(s);
 	std::string token;
@@ -274,19 +212,37 @@ Graph getGraph(OptionParser::Option* options) {
 
 	// generated graph
 	if (options[GENERATE]) {
-		// read n, k, pin, pout
 		std::string genOption = options[GENERATE].arg;
 		std::cout << "\t --generate=" << options[GENERATE].arg << std::endl;
 
-		std::vector<std::string> genArgs = splitAString(genOption, ',');
-		assert (genArgs.size() == 4);
-		int64_t n = std::atoi(genArgs.at(0).c_str());
-		int64_t k = std::atoi(genArgs.at(1).c_str());
-		double pin = std::atof(genArgs.at(2).c_str());
-		double pout = std::atof(genArgs.at(3).c_str());
+		// get graph generation model
+		std::vector<std::string> genArgs = splitAString(genOption, ':');
+		std::vector<std::string> genNumArgs = splitAString(genArgs.at(1), ',');
+		assert (genArgs.size == 2);
+		std::string model = genArgs.at(0);
+		if (model == "RG") { // random graph (Erdos-Renyi)
+			assert (genNumArgs.size == 2);
+			int64_t n = std::atoi(genNumArgs.at(0).c_str());
+			double p = std::atoi(genNumArgs.at(1).c_str());
+			return generateRandomGraph(n, p);
+		} else if (model == "CR") {	// clustered random graph
+			assert (genNumArgs.size() == 4);
+			int64_t n = std::atoi(genNumArgs.at(0).c_str());
+			int64_t k = std::atoi(genNumArgs.at(1).c_str());
+			double pin = std::atof(genNumArgs.at(2).c_str());
+			double pout = std::atof(genNumArgs.at(3).c_str());
+			return generateClusteredRandomGraph(n, k, pin, pout);
+		} else if (model == "PA") {	// preferential attachment (Barabasi-Albert)
+			assert (genNumArgs.size() == 2);
+			int64_t n = std::atoi(genNumArgs.at(0).c_str());
+			int64_t a = std::atoi(genNumArgs.at(1).c_str());
+			return generatePreferentialAttachmentGraph(n, a);
+		} else {
+			std::cout << "[ERROR] unknown graph generation model: " << model << " [EXIT]" << std::endl;
+			exit(1);
+		}
 
-		Graph G = generateGraph(n, k, pin, pout);
-		return G;
+
 	} else if (options[GRAPH]) { // graph from file
 		std::string graphPath = options[GRAPH].arg;
 		std::cout << "\t --graph=" << graphPath << std::endl;
@@ -445,69 +401,6 @@ int main(int argc, char **argv) {
 
 	startAlgo(getGraph(options), options);
 
-
-//	int ensembleSize = -1;
-//	std::string graphPath = "NONE";
-//
-//	if (options[GRAPH]) {
-//		graphPath = options[GRAPH].arg;
-//		std::cout << "\t --graph=" << graphPath << std::endl;
-//
-//		ensembleSize = std::atoi(options[ENSEMBLE_SIZE].arg);
-//		std::cout << "\t --ensemble-size=" << ensembleSize << std::endl;
-//
-//		std::cout << "[START] EnsembleClustering --graph" << std::endl;
-//
-//		bool done = startWithPath(graphPath, ensembleSize);
-//
-//		if (done) {
-//		   std::cout << "[FINISH] EnsembleClustering --graph" << std::endl;
-//		}
-//	}
-//
-//	if (options[GENERATE]) {
-//		// read n, k, pin, pout
-//		std::string genOption = options[GENERATE].arg;
-//		std::cout << "\t --generate=" << options[GENERATE].arg << std::endl;
-//
-//		std::vector<std::string> genArgs = splitAString(genOption, ',');
-//		assert (genArgs.size() == 4);
-//		int n = std::atoi(genArgs.at(0).c_str());
-//		int k = std::atoi(genArgs.at(1).c_str());
-//		double pin = std::atof(genArgs.at(2).c_str());
-//		double pout = std::atof(genArgs.at(3).c_str());
-//
-//
-//		ensembleSize = std::atoi(options[ENSEMBLE_SIZE].arg);
-//		std::cout << "\t --ensemble-size=" << ensembleSize << std::endl;
-//
-//		bool done = startWithGenerated(n, k, pin, pout, ensembleSize);
-//
-//		if (done) {
-//		   std::cout << "[FINISH] EnsembleClustering --generate" << std::endl;
-//		}
-//	}
-//
-//
-//	// RUN ONLY SINGLE BASE ALGORITHM
-//	if (options[SOLO]) {
-//		Clusterer* algo = NULL;
-//
-//		std::string algoName = options[SOLO].arg;
-//		if (algoName == "LabelPropagation") {
-//			algo = new LabelPropagation();
-//		} else {
-//			std::cout << "[ERROR] unknown base algorithm: " << algoName << std::endl;
-//			std::cout << "[EXIT]" << std::endl;
-//			exit(1);
-//		}
-//
-//		if (options[GRAPH]) {
-//			graphPath = options[GRAPH].arg;
-//			// TODO: start solo with graph
-//		}
-//
-//	}
 
 
 }
