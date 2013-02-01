@@ -73,33 +73,6 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testLabelPropagation_OnCliqueGraph_ScaledUp) {
-	int64_t n = 1000;
-
-	GraphGenerator graphGen;
-	Graph Gtrash(n);
-
-	int k = 100; // number of clusters
-	ClusteringGenerator clusteringGen;
-	Clustering reference = clusteringGen.makeRandomClustering(Gtrash, k);
-	assert (reference.numberOfClusters() == k);
-
-	Graph G = graphGen.makeClusteredRandomGraph(reference, 1.0, 0.0);	// LabelPropagation is very bad at discerning clusters and needs this large pin/pout difference
-
-	LabelPropagation lp;
-	Clustering zeta = lp.run(G);
-
-	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " << mod);
-	DEBUG("number of clusters produced by LabelPropagation: k=" << zeta.numberOfClusters());
-
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
-	EXPECT_TRUE(zeta.equals(reference, G)) << "LP should detect exactly the reference clustering";
-
-}
-
-
 
 TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 	GraphGenerator graphGenerator;
