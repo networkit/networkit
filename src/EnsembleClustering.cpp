@@ -28,6 +28,7 @@
 #include "graph/GraphGenerator.h"
 #include "ensemble/EnsembleClusterer.h"
 #include "clustering/algo/LabelPropagation.h"
+#include "clustering/algo/RandomClusterer.h"
 #include "clustering/base/Clustering.h"
 #include "clustering/base/Modularity.h"
 #include "clustering/base/Coverage.h"
@@ -278,6 +279,8 @@ std::pair<Clustering, Graph> startClusterer(Graph G, OptionParser::Option* optio
 		std::string algoName = options[SOLO].arg;
 		if (algoName == "LabelPropagation") {
 			algo = new LabelPropagation();
+		} else if (algoName == "RandomClusterer") {
+			algo = new RandomClusterer();
 		} else {
 			std::cout << "[ERROR] unknown base algorithm: " << algoName << std::endl;
 			std::cout << "[EXIT]" << std::endl;
