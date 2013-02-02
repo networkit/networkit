@@ -87,21 +87,11 @@ Clustering LabelPropagation::run(Graph& G) {
 		Aux::ProgressMeter pm(shuffledNodes.size(), 1000);
 		int64_t vc = 0;  // node counter
 
-		// DEBUG
-		Aux::ProgressMeter ompPm(shuffledNodes.size(), 1000);
-		auto printThreadNum = [](){
-			std::stringstream s;
-			s << omp_get_thread_num();
-			return s.str();
-		};
-		// DEBUG
-
 		for (node v : shuffledNodes) {
 			// PROGRESS
 			vc += 1;
 			pm.signal(vc);
 
-			ompPm.signal(vc, printThreadNum);;
 
 			// ignore isolated nodes TODO: correct?
 			if (G.degree(v) > 0) {
