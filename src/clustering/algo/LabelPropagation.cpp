@@ -56,7 +56,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
-	DEBUG("[BEGIN] Label Propagation: precomputing incident weight");
+	INFO("[BEGIN] Label Propagation: precomputing incident weight");
 	NodeMap<double> incidentWeight(n, 0.0);
 	G.forallNodes([&](node v) {
 		incidentWeight[v] = G.incidentWeight(v);
@@ -81,7 +81,14 @@ Clustering LabelPropagation::run(Graph& G) {
 		});
 		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
 
+		Aux::ProgressMeter pm(shuffledNodes.size(), 1000);
+		int64_t vc = 0;  // node counter
+
 		for (node v : shuffledNodes) {
+			// PROGRESS
+			vc += 1;
+			pm.signal(vc);
+
 			// ignore isolated nodes TODO: correct?
 			if (G.degree(v) > 0) {
 
@@ -129,8 +136,11 @@ Clustering LabelPropagation::run(Graph& G) {
 				// node is isolated
 				TRACE("ignoring isolated node: " << v);
 			}
+
 		} // end for shuffled nodes
 
+		// PROGRESS
+		pm.end();
 		// for each while loop iteration...
 
 	} // end while

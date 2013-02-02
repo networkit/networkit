@@ -18,6 +18,7 @@
 #include <random>
 
 #include "../../aux/Log.h"
+#include "../../aux/ProgressMeter.h"
 #include "../../graph/NodeMap.h"
 #include "../../base/IndexMap.h"
 #include "../../io/GraphIO.h"
