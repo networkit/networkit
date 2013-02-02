@@ -9,7 +9,6 @@
 
 namespace EnsembleClustering {
 
-// TODO: tests for base/Clustering
 
 
 TEST_F(ClusteringGTest, testModularity) {
@@ -41,6 +40,38 @@ TEST_F(ClusteringGTest, testModularity) {
 
 	EXPECT_EQ(0.0, modOne) << "1-clustering should have modularity of 0.0";
 	EXPECT_GE(0.0, modSingleton) << "singleton clustering should have modularity less than 0.0";
+
+}
+
+TEST_F(ClusteringGTest, testCoverage) {
+	GraphGenerator graphGenerator;
+
+	int n = 100;
+
+	DEBUG("testing coverage on clustering of complete graph with " << n << " nodes");
+
+
+	Graph G = graphGenerator.makeCompleteGraph(n);
+
+	ClusteringGenerator clusteringGenerator;
+
+	Clustering singleton = clusteringGenerator.makeSingletonClustering(G);
+	Clustering one = clusteringGenerator.makeOneClustering(G);
+
+	Coverage coverage;
+
+	DEBUG("calculating coverage for singleton clustering");
+	double covSingleton = coverage.getQuality(singleton, G);
+
+	DEBUG("calculating coverage for 1-clustering");
+	double covOne = coverage.getQuality(one, G);
+
+	DEBUG("mod(singleton-clustering) = " << covSingleton);
+	DEBUG("mod(1-clustering) = " << covOne);
+
+
+	EXPECT_EQ(1.0, covOne) << "1-clustering should have coverage of 1.0";
+	EXPECT_GE(0.0, covSingleton) << "singleton clustering should have coverage of 0.0";
 
 }
 

@@ -30,6 +30,7 @@
 #include "clustering/algo/LabelPropagation.h"
 #include "clustering/base/Clustering.h"
 #include "clustering/base/Modularity.h"
+#include "clustering/base/Coverage.h"
 #include "clustering/base/ClusteringGenerator.h"
 #include "io/METISGraphReader.h"
 #include "io/METISGraphWriter.h"
@@ -348,12 +349,15 @@ std::pair<Clustering, Graph> startClusterer(Graph G, OptionParser::Option* optio
 
 }
 
-
+/**
+ * Examine the returned clustering and print stats.
+ */
 bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options) {
 
 	std::cout << "[INFO] Graph: " << result.second.toString() << std::endl;
 
 	if (result.first.numberOfEntries() == 0) {
+		std::cout << "[EXIT] no clusterer specified";
 		return true; // no inspection
 	}
 	std::cout << "[INFO] inspecting result clustering " << std::endl;
@@ -361,7 +365,11 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
 	Modularity modularity;
 	double mod = modularity.getQuality(result.first, result.second);
 
+	Coverage coverage;
+	double cov = coverage.getQuality(result.first, result.second);
+
  	std::cout << "\t # clusters:\t" << result.first.numberOfClusters() << std::endl;
+ 	std::cout << "\t coverage:\t" << cov << std::endl;
  	std::cout << "\t modularity:\t" << mod << std::endl;
 }
 

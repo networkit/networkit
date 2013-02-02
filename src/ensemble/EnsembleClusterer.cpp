@@ -118,9 +118,11 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			DEBUG("pushed quality: " << quality.back());
 
 			// *** contract the graph according to core clustering **
+			INFO("[BEGIN] contracting graph");
 			auto con = contract.run(graph.at(i), clustering.at(i));	// returns pair (G^{i+1}, M^{i->i+1})
 			graph.push_back(con.first);		// store G^{i+1}
 			map.push_back(con.second);		// store M^{i->i+1}
+			INFO("[DONE] contracting graph");
 
 			//DEBUG
 			DEBUG("contracted graph G^" << (i+1) << " created: " << graph.back().toString());
@@ -143,10 +145,12 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			if (quality.at(i) > quality.at(i-1)) {
 				DEBUG("quality[" << i << "] = " << quality.at(i) << " > quality[" << (i-1) << "] = " << quality.at(i-1));
 
-
+				INFO("[BEGIN] contracting graph");
 				auto con = contract.run(graph.at(i), clustering.at(i));	// returns pair (G^{i+1}, M^{i->i+1})
 				graph.push_back(con.first);		// store G^{i+1}
 				map.push_back(con.second);		// store M^{i->i+1}
+				INFO("[DONE] contracting graph");
+
 
 				// new graph created => repeat
 				repeat = true;

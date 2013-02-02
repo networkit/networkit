@@ -1,35 +1,32 @@
 /*
- * Modularity.cpp
+ * Coverage.cpp
  *
- *  Created on: 10.12.2012
+ *  Created on: 02.02.2013
  *      Author: cls
  */
 
-#include "Modularity.h"
-
+#include "Coverage.h"
 
 namespace EnsembleClustering {
 
+Coverage::Coverage() {
+	// TODO Auto-generated constructor stub
 
-Modularity::Modularity() : QualityMeasure() {
 }
 
-Modularity::~Modularity() {
+Coverage::~Coverage() {
 	// TODO Auto-generated destructor stub
 }
 
-
-double Modularity::getQuality(const Clustering& zeta, Graph& G) {
+double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 
 	int64_t n = G.numberOfNodes();
 	int64_t m = G.numberOfEdges();
 	if ((m == 0) && (G.totalNodeWeight() == 0.0)) {
-		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
+		throw std::invalid_argument("Coverage is undefined for graphs without edges (including self-loops).");
 	}
 
 	double coverage;	// term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
-	double expectedCoverage; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
-	double modularity; 	// mod = coverage - expectedCoverage
 
 	double totalEdgeWeight = 0.0;
 	totalEdgeWeight += G.totalEdgeWeight(); // add edge weight
@@ -70,9 +67,9 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	// .... and also add self-loops
 	G.forallNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
-		// #pragma omp atomic update
+		#pragma omp atomic update
 		intraEdgeWeight[c] += G.weight(v);
-	});
+	}, "parallel");
 
 
 	double intraEdgeWeightSum = 0.0;	//!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
@@ -81,43 +78,9 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	}
 
 	coverage = intraEdgeWeightSum / totalEdgeWeight;
-
-	IndexMap<cluster, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
-
-
-	G.forallNodes([&](node v){
-		// add to cluster weight
-		cluster c = zeta.clusterOf(v);
-		assert (zeta.lowerBound() <= c <= zeta.upperBound());
-		#pragma omp atomic update
-		incidentWeightSum[c] += incidentWeight[v];
-	}, "parallel");
-
-	double totalIncidentWeight = 0.0; 	//!< term $\sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 $
-	for (cluster c = zeta.lowerBound(); c <= zeta.upperBound(); ++c) {
-		totalIncidentWeight += incidentWeightSum[c] * incidentWeightSum[c];	// squared
-	}
-	double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
-	assert (divisor != 0);	// do not divide by 0
-	expectedCoverage = totalIncidentWeight / divisor;
-
-
-	TRACE("coverage: " << coverage);
-	TRACE("expected coverage: " << expectedCoverage);
-
-	// assert ranges of coverage
-	assert(coverage <= 1.0);
-	assert(coverage >= 0.0);
-	assert(expectedCoverage <= 1.0);
-	assert(expectedCoverage >= 0.0);
-
-	modularity = coverage - expectedCoverage;
-
-	assert(! std::isnan(modularity));	// do not return NaN
-	// do not return anything not in the range of modularity values
-	assert(modularity >= -0.5);
-	assert(modularity <= 1);
-	return modularity;
+	assert (coverage <= 1.0);
+	assert (coverage >= 0.0);
+	return coverage;
 }
 
 } /* namespace EnsembleClustering */
