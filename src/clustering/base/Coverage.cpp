@@ -67,12 +67,12 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 	// .... and also add self-loops
 	G.forallNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
-		#pragma omp atomic update
 		intraEdgeWeight[c] += G.weight(v);
-	}, "parallel");
+	});
 
 
 	double intraEdgeWeightSum = 0.0;	//!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
+	#pragma omp parallel for reduction(+:intraEdgeWeightSum)
 	for (cluster c = zeta.lowerBound(); c <= zeta.upperBound(); ++c) {
 		intraEdgeWeightSum += intraEdgeWeight[c];
 	}

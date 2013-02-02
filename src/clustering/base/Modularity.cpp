@@ -70,12 +70,12 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	// .... and also add self-loops
 	G.forallNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
-		// #pragma omp atomic update
 		intraEdgeWeight[c] += G.weight(v);
 	});
 
 
 	double intraEdgeWeightSum = 0.0;	//!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
+	#pragma omp parallel for reduction(+:intraEdgeWeightSum)
 	for (cluster c = zeta.lowerBound(); c <= zeta.upperBound(); ++c) {
 		intraEdgeWeightSum += intraEdgeWeight[c];
 	}
@@ -89,11 +89,11 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 		// add to cluster weight
 		cluster c = zeta.clusterOf(v);
 		assert (zeta.lowerBound() <= c <= zeta.upperBound());
-		#pragma omp atomic update
 		incidentWeightSum[c] += incidentWeight[v];
-	}, "parallel");
+	});
 
 	double totalIncidentWeight = 0.0; 	//!< term $\sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 $
+	#pragma omp parallel for reduction(+:totalIncidentWeight)
 	for (cluster c = zeta.lowerBound(); c <= zeta.upperBound(); ++c) {
 		totalIncidentWeight += incidentWeightSum[c] * incidentWeightSum[c];	// squared
 	}
