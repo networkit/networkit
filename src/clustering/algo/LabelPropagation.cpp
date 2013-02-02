@@ -76,17 +76,16 @@ Clustering LabelPropagation::run(Graph& G) {
 		shuffledNodes.resize(n); 	// hold n nodes
 		G.forallNodes([&](node v){
 			shuffledNodes[v - 1] = v;	// store all nodes in vector
-		}, "parallel");
+		});
 		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
 
 		Aux::ProgressMeter pm(shuffledNodes.size(), 1000);
+		int64_t vc = 0;  // node counter
 
-		int64_t s = shuffledNodes.size();
-		#pragma omp parallel for
-		for (int64_t i = 0; i < s; ++i) {
-			node v = shuffledNodes[i];
+		for (node v : shuffledNodes) {
 			// PROGRESS
-			pm.signal(i);
+			vc += 1;
+			pm.signal(vc);
 
 
 			if (G.degree(v) > 0) {
