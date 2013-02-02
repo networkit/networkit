@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <random>
+#include <omp.h>
 
 #include "../../aux/Log.h"
 #include "../../aux/ProgressMeter.h"

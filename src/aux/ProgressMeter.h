@@ -31,6 +31,13 @@ public:
 		}
 	}
 
+	 template<typename Output> inline void signal(int64_t v, Output out) {
+			if ((v % this->i) == 0) {
+				std::string o = out();
+				std::cout << o << std::flush;
+			}
+	}
+
 
 	inline void end() {
 		std::cout << std::endl;
