@@ -137,9 +137,13 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		} // end for shuffled nodes
 
+		// for each while loop iteration...
+
 		// PROGRESS
 		pm.end();
-		// for each while loop iteration...
+
+		INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels");
+
 
 	} // end while
 
