@@ -72,21 +72,11 @@ Clustering LabelPropagation::run(Graph& G) {
 		// reset updated
 		nUpdated = 0;
 
-		std::vector<node> shuffledNodes;
-		shuffledNodes.resize(n); 	// hold n nodes
+		Aux::ProgressMeter pm(n, 1000);
+
 		G.forallNodes([&](node v){
-			shuffledNodes[v - 1] = v;	// store all nodes in vector
-		});
-		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
-
-		Aux::ProgressMeter pm(shuffledNodes.size(), 1000);
-		int64_t vc = 0;  // node counter
-
-		for (node v : shuffledNodes) {
 			// PROGRESS
-			vc += 1;
-			pm.signal(vc);
-
+			pm.signal(v);
 
 			if (G.degree(v) > 0) {
 
@@ -135,7 +125,7 @@ Clustering LabelPropagation::run(Graph& G) {
 				TRACE("ignoring isolated node: " << v);
 			}
 
-		} // end for shuffled nodes
+		}, "parallel"); // end node iteration
 
 		// for each while loop iteration...
 
