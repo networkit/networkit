@@ -57,10 +57,13 @@ Clustering LabelPropagation::run(Graph& G) {
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	INFO("[BEGIN] Label Propagation: precomputing incident weight");
+	Aux::ProgressMeter pm(n, 1000);
 	NodeMap<double> incidentWeight(n, 0.0);
 	G.forallNodes([&](node v) {
 		incidentWeight[v] = G.incidentWeight(v);
+		pm.signal(v);
 	}, "parallel");
+	pm.end();
 
 
 	// propagate labels
