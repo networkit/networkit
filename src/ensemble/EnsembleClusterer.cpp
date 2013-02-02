@@ -41,6 +41,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// config flags
 	bool calcBaseClusteringDissimilarity = false;
 
+	// TODO: add setter methods
 	// sub-algorithms
 	ClusterContracter contract;
 	HashingOverlapper overlap;

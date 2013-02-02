@@ -82,7 +82,9 @@ Clustering LabelPropagation::run(Graph& G) {
 		Aux::ProgressMeter pm(shuffledNodes.size(), 1000);
 		int64_t vc = 0;  // node counter
 
-		for (node v : shuffledNodes) {
+		int64_t s = shuffledNodes.size();
+		for (int64_t i = 0; i < s; ++i) {
+			node v = shuffledNodes[i];
 			// PROGRESS
 			vc += 1;
 			pm.signal(vc);

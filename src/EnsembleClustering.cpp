@@ -109,12 +109,12 @@ Graph readGraph(std::string graphPath) {
 	Aux::Timer readTimer;
 	readTimer.start();
 	//
-	std::cout << "opening file... : " << graphPath << std::endl;
+	std::cout << "[BEGIN]Êreading file: " << graphPath << std::endl;
 
 	Graph G = reader.read(graphPath);
 	//
 	readTimer.stop();
-	std::cout << "read graph file in " << readTimer.elapsed().count() << " ms " << std::endl;
+	std::cout << "[DONE]Êread graph file " << readTimer.elapsedTag() << std::endl;
 	// TIMING
 
 	return G;
@@ -351,7 +351,7 @@ std::pair<Clustering, Graph> startClusterer(Graph G, OptionParser::Option* optio
 
 bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options) {
 
-	std::cout << "[INFO]ÊGraph: " << result.second.toString() << std::endl;
+	std::cout << "[INFO] Graph: " << result.second.toString() << std::endl;
 
 	if (result.first.numberOfEntries() == 0) {
 		return true; // no inspection
