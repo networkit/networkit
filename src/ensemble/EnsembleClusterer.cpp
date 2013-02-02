@@ -106,11 +106,10 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		//
 
 		// *** overlap clusters to create core clustering ***
+		INFO("[BEGIN] finding core clustering");
 		clustering.push_back(overlap.run(graph.at(i), baseClustering));
-		// DEBUG
 		DEBUG("created core clustering: k=" << clustering.at(i).numberOfClusters());
-
-		// DEBUG
+		INFO("[DONE] finding core clustering");
 
 		if (i == 0) {			// first iteration
 			// *** calculate quality of first core clustering with respect to first graph ***

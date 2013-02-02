@@ -350,8 +350,13 @@ std::pair<Clustering, Graph> startClusterer(Graph G, OptionParser::Option* optio
 
 
 bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options) {
+
+	std::cout << "[INFO]ÊGraph: " << result.second.toString() << std::endl;
+
+	if (result.first.numberOfEntries() == 0) {
+		return true; // no inspection
+	}
 	std::cout << "[INFO] inspecting result clustering " << std::endl;
-	std::cout << "Graph: " << result.second.toString() << std::endl;
 
 	Modularity modularity;
 	double mod = modularity.getQuality(result.first, result.second);
