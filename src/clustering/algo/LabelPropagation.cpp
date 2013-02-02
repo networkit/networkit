@@ -37,8 +37,6 @@ Clustering LabelPropagation::run(Graph& G) {
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
 	int64_t nIterations = 0; 	// number of iterations
-	int64_t nDominated = 0;	// number of nodes which are already dominated
-
 
 
 	/**
@@ -74,9 +72,6 @@ Clustering LabelPropagation::run(Graph& G) {
 		// reset updated
 		nUpdated = 0;
 
-
-		NodeMap<int> dominated(n, 0); // map node-> dominated?
-
 		std::vector<node> shuffledNodes;
 		shuffledNodes.resize(n); 	// hold n nodes
 		G.forallNodes([&](node v){
@@ -93,7 +88,6 @@ Clustering LabelPropagation::run(Graph& G) {
 			pm.signal(vc);
 
 
-			// ignore isolated nodes TODO: correct?
 			if (G.degree(v) > 0) {
 
 				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
