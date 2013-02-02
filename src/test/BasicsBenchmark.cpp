@@ -66,6 +66,23 @@ TEST_F(BasicsBenchmark, parallelSumAtomicUpdate) {
 
 }
 
+
+TEST_F(BasicsBenchmark, parallelSumReduction) {
+	Aux::Timer runtime;
+
+	int64_t n = 1e+9;
+	double sum = 0.0;
+	runtime.start();
+	#pragma omp parallel for reduction(+:sum)
+	for (int64_t i = 0; i < n; ++i) {
+		sum += i;
+	}
+	runtime.stop();
+
+	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+
+}
+
 //
 //TEST_F(BasicsBenchmark, parallelSumCritical) {
 //	Aux::Timer runtime;
@@ -161,7 +178,7 @@ TEST_F(BasicsBenchmark, lambdaSummation_parWrong) {
 }
 
 
-TEST_F(BasicsBenchmark, lambdaSummation_par) {
+TEST_F(BasicsBenchmark, lambdaSummation_par_atomic) {
 	Aux::Timer runtime;
 	int64_t n = 1e+9;
 	double sum = 0.0;
@@ -173,6 +190,25 @@ TEST_F(BasicsBenchmark, lambdaSummation_par) {
 
 	runtime.start();
 	#pragma omp parallel for
+	for (int64_t i = 0; i < n; ++i) {
+		func(i);
+	}
+	runtime.stop();
+
+	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+}
+
+TEST_F(BasicsBenchmark, lambdaSummation_par_reduction) {
+	Aux::Timer runtime;
+	int64_t n = 1e+9;
+	double sum = 0.0;
+
+	auto func = [&](int64_t x) {
+		sum += x;
+	};
+
+	runtime.start();
+	#pragma omp parallel for reduction(+:sum)
 	for (int64_t i = 0; i < n; ++i) {
 		func(i);
 	}
