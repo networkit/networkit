@@ -31,11 +31,6 @@ print("Going to call the following commands:")
 for command in commands:
     print("\t %s" % command)
 
-ok = input("Okay? (y/n): ")
-if ok == "y":
-    for command in commands:
-        print("[BEGIN] %s" % command)
-        os.system(command)
-        print("[END]")
-else:
-    print("[ABORT]")
+for command in commands:
+    print("[BEGIN] %s" % command)
+    os.system(command)
