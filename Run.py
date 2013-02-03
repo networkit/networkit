@@ -19,10 +19,23 @@ for (dirpath, dirnames, filenames) in os.walk(dir):
         print(path)
         graphFiles.append(path)
         
-print("batch: %s" % graphFiles)
-        
+    
+commands = []
 for graphFile in graphFiles:
     outFile = "output/%s-%s.txt" % (graphFile.split("/")[-1].split(".")[0], str(datetime.now()).replace(" ", "-"))
     command = commandTemplate % {"graphFile" : graphFile}
     command = "%s > '%s'" % (command, outFile)
-    os.system(command)
+    commands.append(command)
+    
+print("Going to call the following commands:")
+for command in commands:
+    print("\t %s" % command)
+
+ok = input("Okay? (y/n): ")
+if ok == "y":
+    for command in commands:
+        print("[BEGIN] %s" % command)
+        os.system(command)
+        print("[END]")
+else:
+    print("[ABORT]")

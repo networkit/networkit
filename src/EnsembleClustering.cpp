@@ -365,13 +365,23 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
 	}
 	std::cout << "[INFO] inspecting result clustering " << std::endl;
 
+	int64_t k = result.first.numberOfClusters();
+
+	Aux::Timer runtime;
+	runtime.start();
 	Modularity modularity;
 	double mod = modularity.getQuality(result.first, result.second);
+	runtime.stop();
+	std::cout << "[DONE] calculating modularity " << runtime.elapsedTag() << std::endl;
 
+	runtime.start();
 	Coverage coverage;
 	double cov = coverage.getQuality(result.first, result.second);
+	runtime.stop();
+	std::cout << "[DONE] calculating coverage " << runtime.elapsedTag() << std::endl;
 
- 	std::cout << "\t # clusters:\t" << result.first.numberOfClusters() << std::endl;
+
+ 	std::cout << "\t # clusters:\t" << k << std::endl;
  	std::cout << "\t coverage:\t" << cov << std::endl;
  	std::cout << "\t modularity:\t" << mod << std::endl;
 }
