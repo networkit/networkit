@@ -57,6 +57,9 @@ public:
 	inline const T& operator[](const I& index) const;
 
 
+	virtual T at(I index);
+
+
 	/**
 	 * Get the number of 1-based entries in this map.
 	 */
@@ -165,6 +168,11 @@ inline void EnsembleClustering::IndexMap<I, T>::setAll(T value) {
 	for (int64_t i = 1; i <= this->n; ++i) {
 		this->data[i] = value;
 	}
+}
+
+template<typename I, typename T>
+inline T EnsembleClustering::IndexMap<I, T>::at(I index) {
+	return this->data.at(index);
 }
 
 /*** Implementation ***/
