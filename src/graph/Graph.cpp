@@ -93,9 +93,8 @@ int64_t Graph::degree(node u) const {
 double Graph::totalEdgeWeight() {
 	double total = 0.0;
 	this->forallEdges([&](node u, node v) {
-		#pragma omp atomic update
 		total += this->weight(u, v);
-	}, "parallel", "readonly");
+	});
 	return total;
 }
 
