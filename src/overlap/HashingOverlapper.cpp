@@ -56,6 +56,8 @@ Clustering HashingOverlapper::run(Graph& G, std::vector<Clustering>& clusterings
 		}
 	});
 	core.setUpperBound(maxCluster);
+	INFO("maxCluster: " << maxCluster);
+
 
 	return core;
 }
