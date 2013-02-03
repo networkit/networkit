@@ -29,13 +29,11 @@ double JaccardMeasure::getDissimilarity(Graph& G, Clustering& first,
 
 	G.forallNodePairs([&](node u, node v){
 		if ((first[u] == first[v]) && (second[u] == second[v])) {
-			#pragma omp atomic update
 			s11 += 1;
 		} else if ((first[u] != first[v]) && (second[u] != second[v])) {
-			#pragma omp atomic update
 			s00 += 1;
 		}
-	}, "parallel");
+	});
 
 	double jaccard;
 	double divisor = n * (n - 1) - 2 * s00;
