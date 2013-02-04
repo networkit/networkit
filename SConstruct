@@ -140,7 +140,7 @@ if (openmp == "yes") or (openmp == None):
     env.Append(CPPFLAGS = ["-fopenmp"])
     env.Append(LINKFLAGS = ["-fopenmp"])
 elif (openmp == "no"):
-    env.append(LIBS = ["pthread"])
+    env.Append(LIBS = ["pthread"])
 else:
     print("ERROR: unrecognized option --openmp=%s" % openmp)
     exit()
