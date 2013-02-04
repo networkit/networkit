@@ -38,11 +38,19 @@ Clustering ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, NodeMa
 Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
 		std::vector<NodeMap<node> >& maps, Graph& Gfinest) {
 
+	std::cout << "# maps: " << maps.size() << std::endl;
+	for (auto map : maps) {
+		std::cout << "map size: " << map.numberOfNodes() << std::endl;
+	}
+	std::cout << "zetaCoarse # nodes " << zetaCoarse.numberOfNodes() << std::endl;
+	std::cout << "zetaCoarse # clusters " << zetaCoarse.numberOfClusters() << std::endl;
+
+
 	Clustering zetaFine(Gfinest.numberOfNodes());
 	Gfinest.forallNodes([&](node v) {
 		node sv = v;
 		for (auto map : maps) {
-			sv = map[sv];
+			sv = map.at(sv);
 		}
 		cluster sc = zetaCoarse[sv];
 		zetaFine.addToCluster(sc, v);

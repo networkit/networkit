@@ -65,7 +65,7 @@ print("compute CPPPATH: %s" % compute["CPPPATH"])
 compute.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
 compute.Append(LIBPATH = ["/home/staudt/workspace/STINGER",\
                            "/home/staudt/workspace/gtest/lib"])
-compute.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
+compute.Append(LINKFLAGS = ["-std=c++11"])
 
 ### compiler & flags
 compute["CC"] = "gcc-4.7"
@@ -96,7 +96,7 @@ except:
 ## CONFIGURATIONS
 
 commonCFlags = ["-c", "-fmessage-length=0", "-std=c99"]
-commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fopenmp"]
+commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0"]
 
 debugCppFlags = ["-O0", "-g3", "-pg"]
 debugCFlags = ["-O0", "-g3"]

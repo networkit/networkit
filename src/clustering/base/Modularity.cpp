@@ -20,6 +20,7 @@ Modularity::~Modularity() {
 
 
 double Modularity::getQuality(const Clustering& zeta, Graph& G) {
+	assert (G.numberOfNodes() <= zeta.numberOfNodes());
 
 	int64_t n = G.numberOfNodes();
 	int64_t m = G.numberOfEdges();
@@ -60,7 +61,7 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 		if (c == d) {
 			if (c > zeta.upperBound()) {
 				ERROR("c=" << c << " = zeta(" << u << ") is larger than upper bound: " << zeta.upperBound());
-				ERROR("zeta: "); zeta.print();
+				// ERROR("zeta: "); zeta.print();
 			}
 			assert (c <= zeta.upperBound());
 			intraEdgeWeight[c] += G.weight(u, v);
@@ -88,7 +89,8 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	G.forallNodes([&](node v){
 		// add to cluster weight
 		cluster c = zeta.clusterOf(v);
-		assert (zeta.lowerBound() <= c <= zeta.upperBound());
+		assert (zeta.lowerBound() <= c);
+		assert (c <= zeta.upperBound());
 		incidentWeightSum[c] += incidentWeight[v];
 	});
 
