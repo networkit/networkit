@@ -134,11 +134,9 @@ AddOption("--openmp",
           action="store",
           help="-fopenmp: yes or no")
 
-try:
-    openmp = GetOption("openmp")
-except:
-    openmp = "yes"  # default
-if (openmp == "yes"):
+openmp = GetOption("openmp")
+
+if (openmp == "yes") or (openmp == None):
     env.Append(CPPFLAGS = ["-fopenmp"])
     env.Append(LINKFLAGS = ["-fopenmp"])
 elif (openmp == "no"):
