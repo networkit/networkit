@@ -41,7 +41,7 @@ macbook.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
 macbook.Append(LIBPATH = ["/Users/cls/workspace/STINGER/OpenMP Debug",\
                            "/Users/cls/workspace/gtest/lib", \
                             "/usr/local/Cellar/log4cxx/0.10.0/lib"])
-macbook.Append(LINKFLAGS = ["-fopenmp", "-std=c++11"])
+macbook.Append(LINKFLAGS = ["-std=c++11"])
 
 ### compiler & flags
 macbook["CC"] = "gcc-4.7"
@@ -125,6 +125,27 @@ except:
 #commmon flags
 env.Append(CFLAGS = commonCFlags)
 env.Append(CPPFLAGS = commonCppFlags)
+
+# openmp yes or no
+AddOption("--openmp",
+          dest="openmp",
+          type="string",
+          nargs=1,
+          action="store",
+          help="-fopenmp: yes or no")
+
+try:
+    openmp = GetOption("openmp")
+except:
+    openmp = "yes"  # default
+if (openmp == "yes"):
+    env.Append(CPPFLAGS = ["-fopenmp"])
+    env.Append(LINKFLAGS = ["-fopenmp"])
+elif (openmp == "no"):
+    pass
+else:
+    print("ERROR: unrecognized option --openmp=%s" % openmp)
+    exit()
 
 # buildconf flags
 if buildconf == "debug":
