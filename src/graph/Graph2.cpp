@@ -19,26 +19,41 @@ Graph2::~Graph2() {
 
 
 int64_t Graph2::find(node u, node v) const {
-	int64_t i = -1;
-	for (node x : this->adj[u]) {
+	int64_t i = none;
+	for (node x : this->adja[u]) {
 		i++;
 		if (x == v) {
 			return i;
 		}
 	}
-	return -1;
+	return none;
 }
 
 void Graph2::insertEdge(node u, node v) {
-	this->adj[u].push_back(v);
-	this->weights[u].push_back(this->defaultWeight);
+	this->adja[u].push_back(v);
+	this->eweights[u].push_back(this->defaultWeight);
 	// TODO: loop over all attributes, setting default attr
 }
 
-void Graph2::weight(node u, node v, edgeweight w) {
-	// TODO: find edge index method
-	this->weights[find(u, v)] = w;
+edgeweight Graph2::weight(node u, node v) const {
+	int64_t vi = find(u, v);
+	if (vi != none) {
+		return this->eweights[u][vi];
+	} else {
+		return 0.0;
+	}
 }
+
+void Graph2::setWeight(node u, node v, edgeweight w) {
+	index vi = find(u, v);
+	if (vi != none) {
+		this->eweights[u][vi] = w;
+	} else {
+		// TODO: what if edge not there?
+	}
+
+}
+
 
 bool Graph2::hasEdge(node u, node v) const {
 	return (find(u, v) != -1);
@@ -61,6 +76,7 @@ bool Graph2::isEmpty() {
 int64_t Graph2::numberOfNodes() const {
 	return this->n;
 }
+
 
 int64_t Graph2::numberOfEdges() const {
 	// TODO:

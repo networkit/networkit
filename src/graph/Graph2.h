@@ -20,8 +20,14 @@ namespace EnsembleClustering {
 
 /** Typedefs **/
 
-typedef float edgeweight;
+typedef int64_t index;
 typedef int64_t node;
+typedef float edgeweight;
+
+/** Constants **/
+
+int64_t none = -1;
+
 
 class Graph2 {
 
@@ -30,8 +36,8 @@ class Graph2 {
 protected:
 
 	// per edge data
-	std::vector<std::vector<node> > adj; 	//!< neighbors/adjacencies
-	std::vector<std::vector<edgeweight> > weights;	//!< edge weights
+	std::vector<std::vector<node> > adja; 	//!< neighbors/adjacencies
+	std::vector<std::vector<edgeweight> > eweights;	//!< edge weights
 
 	// per node data
 	std::vector<int64_t> next;	//!< index of next free slot in adjacency array
