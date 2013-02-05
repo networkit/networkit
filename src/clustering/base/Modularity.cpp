@@ -45,6 +45,7 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 			iw += G.weight(v, w);
 		});
 		iw += 2 * G.weight(v);	// Graph datastructure does not support self-loops. Node weights are used instead.
+		// TODO: check DIMACS rules regarding self-loops
 		incidentWeight[v] = iw;
 	}, "parallel");
 
@@ -88,7 +89,7 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 
 	G.forallNodes([&](node v){
 		// add to cluster weight
-		cluster c = zeta.clusterOf(v);
+		cluster c = zeta[v];
 		assert (zeta.lowerBound() <= c);
 		assert (c <= zeta.upperBound());
 		incidentWeightSum[c] += incidentWeight[v];
