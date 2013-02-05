@@ -28,15 +28,14 @@ typedef int64_t count; // more expressive name for an integer quantity
 typedef index node; // node indices are 0-based
 typedef float edgeweight; // edge weight type
 template<typename T> using nodemap = std::vector<T>; // more expressive name for container that is indexed by a node
-template<typename T> using edgemap = std::vector<std::vector<T> >; // more expressive name for an edge data structure
+template<typename T> using edgemap = std::vector<std::vector<T> >;// more expressive name for an edge data structure
 
 class Graph {
 
 protected:
 
 	// defaults
-	static constexpr double defaultEdgeWeight = 1.0;
-	static constexpr edgeweight nullWeight = 0.0;
+	static constexpr double defaultEdgeWeight = 1.0;static constexpr edgeweight nullWeight = 0.0;
 
 	// scalars
 	count n; //!< number of nodes
@@ -68,12 +67,10 @@ public:
 	 */
 	void setName(std::string name);
 
-
 	/*
 	 * @return name of graph
 	 */
 	std::string getName();
-
 
 	/**
 	 * Get string representation
@@ -122,7 +119,6 @@ public:
 	 */
 	void setWeight(node u, node v, edgeweight w);
 
-
 	/**
 	 * DEPRECATED
 	 *
@@ -130,20 +126,15 @@ public:
 	 */
 	void setWeight(node u, edgeweight w);
 
-
-
 	/**
 	 * @return sum of all edge weights
 	 */
 	edgeweight totalEdgeWeight();
 
-
 	/**
 	 * DEPRECATED - TODO: update clients
 	 */
 	edgeweight totalNodeWeight();
-
-
 
 	/**
 	 * Add a new node to the graph and return it.
@@ -190,11 +181,20 @@ public:
 	 */
 	template<typename L> void forNodePairs(L handle);
 
+	/**
+	 * Iterate over all undirected pairs of nodesand call handler (lambda closure).
+	 */
+	template<typename L> void forNodePairs(L handle) const;
 
 	/**
 	 * Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure).
 	 */
 	template<typename L> void parallelForNodePairs(L handle);
+
+	/**
+	 * Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure).
+	 */
+	template<typename L> void parallelForNodePairs(L handle) const;
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
@@ -212,9 +212,19 @@ public:
 	template<typename L> float parallelSumForNodes(L handle, float sum);
 
 	/**
+	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> float parallelSumForNodes(L handle, float sum) const;
+
+	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forEdges(L handle);
+
+	/**
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forEdges(L handle) const;
 
 	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
@@ -222,23 +232,30 @@ public:
 	template<typename L> void parallelForEdges(L handle);
 
 	/**
+	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void parallelForEdges(L handle) const;
+
+	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forNeighborsOf(node u, L handle);
 
+	/**
+	 * Iterate over all neighbors of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forNeighborsOf(node u, L handle) const;
 
 	/**
-	* Iterate over all incident edges of a node and call handler (lamdba closure).
-	*/
+	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 */
 	template<typename L> void forEdgesOf(node v, L handle);
 
-
 	/**
-	* Iterate over nodes in breadth-first search order starting from r until connected component
-	* of r has been visited.
-	*/
+	 * Iterate over nodes in breadth-first search order starting from r until connected component
+	 * of r has been visited.
+	 */
 	template<typename L> void breadthFirstNodesFrom(node r, L handle);
-
 
 	/**
 	 * Iterate over edges in breadth-first search order starting from node r until connected component
@@ -247,7 +264,6 @@ public:
 	template<typename L> void breadthFirstEdgesFrom(node r, L handle);
 
 	// TODO: const iterators
-
 
 	/** Adapters **/
 
@@ -264,6 +280,15 @@ public:
 
 template<typename L>
 inline void EnsembleClustering::Graph::forNeighborsOf(node u, L handle) {
+	for (node v : this->adja[u]) {
+		if (v != none) {
+			handle(v);
+		}
+	}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph::forNeighborsOf(node u, L handle) const {
 	for (node v : this->adja[u]) {
 		if (v != none) {
 			handle(v);
@@ -306,7 +331,20 @@ inline void EnsembleClustering::Graph::parallelForNodes(L handle) const {
 }
 
 template<typename L>
-inline float EnsembleClustering::Graph::parallelSumForNodes(L handle, float sum) {
+inline float EnsembleClustering::Graph::parallelSumForNodes(L handle,
+		float sum) {
+	sum = 0.0;
+#pragma omp parallel for reduction(+:sum)
+	for (node v = 0; v < n; ++v) {
+		// call here
+		sum += handle(v);
+	}
+	return sum;
+}
+
+template<typename L>
+inline float EnsembleClustering::Graph::parallelSumForNodes(L handle,
+		float sum) const {
 	sum = 0.0;
 #pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < n; ++v) {
@@ -318,6 +356,17 @@ inline float EnsembleClustering::Graph::parallelSumForNodes(L handle, float sum)
 
 template<typename L>
 inline void EnsembleClustering::Graph::forEdges(L handle) {
+	for (node u = 0; u < n; ++u) {
+		for (node v : this->adja[u]) {
+			if (u < v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+				handle(u, v);
+			}
+		}
+	}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph::forEdges(L handle) const {
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
 			if (u < v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
@@ -340,7 +389,29 @@ inline void EnsembleClustering::Graph::parallelForEdges(L handle) {
 }
 
 template<typename L>
+inline void EnsembleClustering::Graph::parallelForEdges(L handle) const {
+#pragma omp parallel for
+	for (node u = 0; u < n; ++u) {
+		for (node v : this->adja[u]) {
+			if (u < v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+				handle(u, v);
+			}
+		}
+	}
+}
+
+template<typename L>
 inline void EnsembleClustering::Graph::forNodePairs(L handle) {
+	for (node u = 0; u < n; ++u) {
+		for (node v = u + 1; v < n; ++v) {
+			// call node pair function
+			handle(u, v);
+		}
+	}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph::forNodePairs(L handle) const {
 	for (node u = 0; u < n; ++u) {
 		for (node v = u + 1; v < n; ++v) {
 			// call node pair function
@@ -386,7 +457,18 @@ inline void EnsembleClustering::Graph::forEdgesOf(node u, L handle) {
 
 template<typename L>
 inline void EnsembleClustering::Graph::parallelForNodePairs(L handle) {
-	#pragma omp parallel for
+#pragma omp parallel for
+	for (node u = 0; u < n; ++u) {
+		for (node v = u + 1; v < n; ++v) {
+			// call node pair function
+			handle(u, v);
+		}
+	}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph::parallelForNodePairs(L handle) const {
+#pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
 		for (node v = u + 1; v < n; ++v) {
 			// call node pair function
