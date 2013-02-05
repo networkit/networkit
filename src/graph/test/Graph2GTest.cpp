@@ -21,7 +21,7 @@ Graph2GTest::~Graph2GTest() {
 
 TEST_F(Graph2GTest, testNumberOfNodes) {
 	int64_t n = 10;
-	Graph2 G(n);
+	Graph G(n);
 
 	EXPECT_EQ(n, G.numberOfNodes()) << "number of nodes should be " << n << " in the graph";
 
@@ -31,7 +31,7 @@ TEST_F(Graph2GTest, testNumberOfNodes) {
 
 TEST_F(Graph2GTest, testNumberOfEdges) {
 	int64_t n = 10;
-	Graph2 G(n);
+	Graph G(n);
 
 	EXPECT_EQ(0, G.numberOfEdges()) << "no edges should be in the graph";
 
@@ -55,7 +55,7 @@ TEST_F(Graph2GTest, testNumberOfEdges) {
 }
 
 TEST_F(Graph2GTest, testIsEmpty) {
-	Graph2 G(0);
+	Graph G(0);
 	EXPECT_EQ(0, G.numberOfNodes()) << "no nodes should be in the graph";
 	EXPECT_TRUE(G.isEmpty());
 
@@ -65,7 +65,7 @@ TEST_F(Graph2GTest, testIsEmpty) {
 TEST_F(Graph2GTest, testEdgeInsertionAndRemoval) {
 
 	int64_t n = 10;
-	Graph2 G(n);
+	Graph G(n);
 
 	EXPECT_EQ(0, G.numberOfEdges()) << "no edges should be in the graph";
 
@@ -90,7 +90,7 @@ TEST_F(Graph2GTest, testEdgeInsertionAndRemoval) {
 
 TEST_F(Graph2GTest, testNodeIteration) {
 	int64_t n = 20;
-	Graph2 G(n);
+	Graph G(n);
 
 	G.forNodes([&](node v) {
 		G.insertEdge(v, (v+1) % n);
@@ -109,7 +109,7 @@ TEST_F(Graph2GTest, testNodeIteration) {
 TEST_F(Graph2GTest, testParallelNodeIteration) {
 	int64_t n = 500;
 	int64_t offset = 100;
-	Graph2 G(n);
+	Graph G(n);
 
 	G.parallelForNodes([&](node v) {
 		G.insertEdge(v, (v+offset) % n);
@@ -132,7 +132,7 @@ TEST_F(Graph2GTest, testParallelNodeIteration) {
 TEST_F(Graph2GTest, testEdgeIteration) {
 	int64_t n = 500;
 	int64_t offset = 100;
-	Graph2 G(n);
+	Graph G(n);
 
 	G.forNodes([&](node v) {
 		G.insertEdge(v, (v+offset) % n);
@@ -150,7 +150,7 @@ TEST_F(Graph2GTest, testEdgeIteration) {
 TEST_F(Graph2GTest, testParallelEdgeIteration) {
 	int64_t n = 500;
 	int64_t offset = 100;
-	Graph2 G(n);
+	Graph G(n);
 
 	G.parallelForNodes([&](node v) {
 		G.insertEdge(v, (v+offset) % n);
@@ -172,7 +172,7 @@ TEST_F(Graph2GTest, testNeighborIteration) {
 TEST_F(Graph2GTest, testParallelSumForNodes) {
 	int64_t n = 500;
 	int64_t offset = 100;
-	Graph2 G(n);
+	Graph G(n);
 
 	G.parallelForNodes([&](node v) {
 		G.insertEdge(v, (v+offset) % n);
@@ -201,13 +201,13 @@ TEST_F(Graph2GTest, testConstNodeIteration) {
 TEST_F(Graph2GTest, testConstParallelNodeIteration) {
 	int64_t n = 500;
 	int64_t offset = 100;
-	Graph2 G2(n);
+	Graph G2(n);
 
 	G2.parallelForNodes([&](node v) {
 		G2.insertEdge(v, (v+offset) % n);
 	});
 
-	const Graph2 G(G2);
+	const Graph G(G2);
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
 	G.parallelForNodes([&](node v) {
 		EXPECT_EQ(2, G.degree(v)) << "degree should be two";

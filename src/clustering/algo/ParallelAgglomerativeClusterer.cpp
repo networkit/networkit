@@ -24,10 +24,10 @@ Clustering ParallelAgglomerativeClusterer::run(Graph& G) {
 		// TODO: score edges with deltaMod
 		ModularityScoring modScoring(G);	// TODO: make this EdgeScoring to allow other scoring measures
 
-		G.forallEdges([&](node u, node v){
+		G.parallelForEdges([&](node u, node v){
 			double deltaMod = modScoring.scoreEdge(u, v);
 			// TODO: where to store edge scores? copy graph?
-		}, "parallel", "readonly");
+		});
 
 		// compute matching
 		ParallelMatcher parMatcher;

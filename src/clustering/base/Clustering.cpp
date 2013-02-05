@@ -49,7 +49,7 @@ void Clustering::mergeClusters(cluster c, cluster d) {
 bool Clustering::isProper(Graph& G) {
 	// test whether each node has been assigned to a cluster
 	bool success = true;
-	G.forallNodes([&](node v) {
+	G.forNodes([&](node v) {
 		bool contained = this->contains(v);
 		if (!contained) {
 			success = false;
@@ -98,7 +98,7 @@ cluster Clustering::addCluster() {
 
 
 bool Clustering::isInRange(node v) {
-	return (1 <= v <= this->numberOfNodes());
+	return ((1 <= v) && (v <= this->numberOfNodes()));
 }
 
 bool Clustering::contains(node v) {
@@ -130,7 +130,7 @@ bool Clustering::inSameCluster(node u, node v) {
 
 bool Clustering::equals(Clustering& other, Graph& G) {
 	bool eq = true;
-	G.forallEdges([&](node u, node v){
+	G.parallelForEdges([&](node u, node v){
 		if (this->inSameCluster(u, v)) {
 			if (! other.inSameCluster(u, v)) {
 				eq = false;
@@ -140,7 +140,7 @@ bool Clustering::equals(Clustering& other, Graph& G) {
 				eq = false;
 			}
 		}
-	}, "parallel", "readonly");
+	});
 	return eq;
 }
 

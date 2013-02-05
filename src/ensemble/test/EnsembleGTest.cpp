@@ -224,9 +224,9 @@ TEST_F(EnsembleGTest, showPlantedPartitionDissimilarity) {
 	double pout = 0.01;
 
 
-	Graph none(n);		// dummy graph for clustering generation
+	Graph dummy(n);		// dummy graph for clustering generation
 	ClusteringGenerator clusteringGen;
-	Clustering planted = clusteringGen.makeRandomClustering(none, k);
+	Clustering planted = clusteringGen.makeRandomClustering(dummy, k);
 
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(planted, pin, pout);

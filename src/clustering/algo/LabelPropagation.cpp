@@ -56,11 +56,11 @@ Clustering LabelPropagation::run(Graph& G) {
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	INFO("[BEGIN] Label Propagation: precomputing incident weight");
 	Aux::ProgressMeter pm(n, 1000);
-	NodeMap<double> incidentWeight(n, 0.0);
-	G.forallNodes([&](node v) {
-		incidentWeight[v] = G.incidentWeight(v);
+	NodeMap<double> weightedDegree(n, 0.0);
+	G.parallelForNodes([&](node v) {
+		weightedDegree[v] = G.weightedDegree(v);
 		pm.signal(v);
-	}, "parallel");
+	});
 	pm.end();
 
 
@@ -74,9 +74,9 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		std::vector<node> shuffledNodes;
 		shuffledNodes.resize(n); 	// hold n nodes
-		G.forallNodes([&](node v){
-			shuffledNodes[v - 1] = v;	// store all nodes in vector
-		}, "parallel");
+		G.parallelForNodes([&](node v){
+			shuffledNodes[v] = v;	// store all nodes in vector
+		});
 		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
 
 		Aux::ProgressMeter pm(n, 1000);
@@ -95,7 +95,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 				// weigh the labels in the neighborhood of v
-				G.forallNeighborsOf(v, [&](node w) {
+				G.forNeighborsOf(v, [&](node w) {
 					label lw = labels[w];
 					if (labelWeights.find(lw) == labelWeights.end()) {
 						labelWeights[lw] = 0.0; // init map entry if not yet in map

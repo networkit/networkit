@@ -26,7 +26,7 @@ Clustering ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, NodeMa
 	std::ostringstream oss;	oss << "zeta(" << Gfine.getName() << ")"; zetaFine.setName(oss.str());	//C++??!!
 	// DEBUG
 
-	Gfine.forallNodes([&](node v) {
+	Gfine.forNodes([&](node v) {
 		node sv = fineToCoarse[v];
 		cluster cv = zetaCoarse.clusterOf(sv);
 		zetaFine[v] = cv;
@@ -47,7 +47,7 @@ Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
 
 
 	Clustering zetaFine(Gfinest.numberOfNodes());
-	Gfinest.forallNodes([&](node v) {
+	Gfinest.forNodes([&](node v) {
 		node sv = v;
 		for (auto map : maps) {
 			sv = map.at(sv);

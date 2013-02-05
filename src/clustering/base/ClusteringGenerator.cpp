@@ -29,9 +29,9 @@ Clustering ClusteringGenerator::makeOneClustering(Graph& G) {
 	int64_t n = G.numberOfNodes();
 	Clustering zeta(n);
 	cluster one = zeta.addCluster();
-	for (node v = G.firstNode(); v <= n; ++v) {
+	G.forNodes([&](node v){
 		zeta.addToCluster(one, v);
-	}
+	});
 	return zeta;
 }
 
@@ -48,10 +48,10 @@ Clustering ClusteringGenerator::makeRandomClustering(Graph& G, int k) {
 		zeta.addCluster();
 	}
 
-	G.forallNodes([&](node v){
+	G.parallelForNodes([&](node v){
 		cluster c = dis(gen);
 		zeta.addToCluster(c, v);
-	}, "parallel");
+	});
 
 	assert (zeta.isProper(G));
 	return zeta;

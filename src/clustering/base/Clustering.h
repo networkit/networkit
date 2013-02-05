@@ -185,7 +185,7 @@ public:
 	 * Check if this clustering equals another clustering (with respect to a graph).
 	 * Criterion for equality:
 	 *
-	 * 		$$\zeta_1(G) = \zeta_2(G) \iff  \forall \{u, v\} \in E: \zeta_1(u) = \zeta_1(v) \implies \zeta_2(u) = \zeta_2(v) \and \zeta_1(u) \neq \zeta_1(v) \implies \zeta_2(u) \neq \zeta_2(v) $$
+	 * 		$$\zeta_1(G) = \zeta_2(G) \iff  \for \{u, v\} \in E: \zeta_1(u) = \zeta_1(v) \implies \zeta_2(u) = \zeta_2(v) \and \zeta_1(u) \neq \zeta_1(v) \implies \zeta_2(u) \neq \zeta_2(v) $$
 	 */
 	bool equals(Clustering& other, Graph& G);
 
@@ -193,7 +193,7 @@ public:
 	/**
 	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
 	 */
-	template<typename Callback> void forallEntries(Callback func, std::string par="");
+	template<typename Callback> void forEntries(Callback func, std::string par="");
 
 
 
@@ -211,7 +211,7 @@ public:
 } /* namespace EnsembleClustering */
 
 template<typename Callback>
-inline void EnsembleClustering::Clustering::forallEntries(Callback func,
+inline void EnsembleClustering::Clustering::forEntries(Callback func,
 		std::string par) {
 	assert ((par == "") || (par == "parallel"));
 	#pragma omp parallel for if (par == "parallel")

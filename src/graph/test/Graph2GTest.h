@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../Graph2.h"
+#include "../Graph.h"
 
 namespace EnsembleClustering {
 

@@ -25,7 +25,7 @@ TEST_F(Graph2Benchmark, graphConstruction) {
 	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
-	Graph2 G(n);
+	Graph G(n);
 
 	run.stop();
 	INFO("[DONE]" << run.elapsedTag());
@@ -34,7 +34,7 @@ TEST_F(Graph2Benchmark, graphConstruction) {
 
 TEST_F(Graph2Benchmark, nodeIteration) {
 	count n = 1e+7;;
-	Graph2 G(n);
+	Graph G(n);
 
 
 	std::vector<node> nodes(n, 0);
@@ -54,7 +54,7 @@ TEST_F(Graph2Benchmark, nodeIteration) {
 
 TEST_F(Graph2Benchmark, parallelNodeIteration) {
 	count n = 1e+7;;
-	Graph2 G(n);
+	Graph G(n);
 
 
 	std::vector<node> nodes(n, 0);
@@ -74,7 +74,7 @@ TEST_F(Graph2Benchmark, parallelNodeIteration) {
 
 TEST_F(Graph2Benchmark, nodePairIteration) {
 	count n = 1e+4;;
-	Graph2 G(n);
+	Graph G(n);
 
 
 	Aux::Timer run;
@@ -96,7 +96,7 @@ TEST_F(Graph2Benchmark, nodePairIteration) {
 TEST_F(Graph2Benchmark, edgeInsertion) {
 
 	count n = 1e+4;
-	Graph2 G(n);
+	Graph G(n);
 
 	Aux::Timer run;
 	INFO("[BEGIN] (n=" << n << ")");
@@ -115,7 +115,7 @@ TEST_F(Graph2Benchmark, edgeInsertion) {
 TEST_F(Graph2Benchmark, parallelEdgeInsertion) {
 
 	count n = 1e+4;
-	Graph2 G(n);
+	Graph G(n);
 
 	Aux::Timer run;
 	INFO("[BEGIN] (n=" << n << ")");
@@ -131,7 +131,7 @@ TEST_F(Graph2Benchmark, parallelEdgeInsertion) {
 
 TEST_F(Graph2Benchmark, edgeRemoval) {
 	count n = 1e+4;
-	Graph2 G(n);
+	Graph G(n);
 
 	// insert edges
 	G.forNodePairs([&](node u, node v){
@@ -154,7 +154,7 @@ TEST_F(Graph2Benchmark, edgeRemoval) {
 
 TEST_F(Graph2Benchmark, parallelEdgeRemoval) {
 	count n = 1e+4;
-	Graph2 G(n);
+	Graph G(n);
 
 	// insert edges
 	G.forNodePairs([&](node u, node v){
@@ -176,7 +176,7 @@ TEST_F(Graph2Benchmark, parallelEdgeRemoval) {
 
 TEST_F(Graph2Benchmark, edgeIteration) {
 	count n = 1e+4;
-	Graph2 G(n);
+	Graph G(n);
 
 	// insert edges
 	G.forNodePairs([&](node u, node v){
@@ -198,7 +198,7 @@ TEST_F(Graph2Benchmark, edgeIteration) {
 
 TEST_F(Graph2Benchmark, parallelEdgeIteration) {
 	count n = 1e+4;
-	Graph2 G(n);
+	Graph G(n);
 
 	// insert edges
 	G.forNodePairs([&](node u, node v){
@@ -218,7 +218,7 @@ TEST_F(Graph2Benchmark, parallelEdgeIteration) {
 
 TEST_F(Graph2Benchmark, parallelSumForNodes) {
 	count n = 1e+7;
-	Graph2 G(n);
+	Graph G(n);
 
 	// TODO:
 	EXPECT_TRUE(false) << "TODO";
