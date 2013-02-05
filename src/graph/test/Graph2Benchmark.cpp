@@ -21,7 +21,7 @@ Graph2Benchmark::~Graph2Benchmark() {
 TEST_F(Graph2Benchmark, graphConstruction) {
 
 	Aux::Timer run;
-	INFO("[BEGIN]");
+	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
 	count n = 1e+7;;
@@ -40,7 +40,7 @@ TEST_F(Graph2Benchmark, nodeIteration) {
 	std::vector<node> nodes(n, 0);
 
 	Aux::Timer run;
-	INFO("[BEGIN]");
+	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
 	G.forNodes([&](node v){
@@ -60,7 +60,7 @@ TEST_F(Graph2Benchmark, parallelNodeIteration) {
 	std::vector<node> nodes(n, 0);
 
 	Aux::Timer run;
-	INFO("[BEGIN]");
+	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
 	G.parallelForNodes([&](node v){
@@ -78,7 +78,7 @@ TEST_F(Graph2Benchmark, nodePairIteration) {
 
 
 	Aux::Timer run;
-	INFO("[BEGIN]");
+	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
 	count p = 0;
@@ -99,13 +99,30 @@ TEST_F(Graph2Benchmark, edgeInsertion) {
 	Graph2 G(n);
 
 	Aux::Timer run;
-	INFO("[BEGIN]");
+	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
 	G.forNodePairs([&](node u, node v){
 		G.insertEdge(u, v);
 	});
 
+
+	run.stop();
+	INFO("[DONE]" << run.elapsedTag());
+
+}
+
+TEST_F(Graph2Benchmark, parallelEdgeInsertion) {
+
+	count n = 1e+4;
+	Graph2 G(n);
+
+	Aux::Timer run;
+	INFO("[BEGIN] (n=" << n << ")");
+	run.start();
+
+	// TODO:
+	EXPECT_TRUE(false) << "TODO";
 
 	run.stop();
 	INFO("[DONE]" << run.elapsedTag());
@@ -123,12 +140,34 @@ TEST_F(Graph2Benchmark, edgeRemoval) {
 
 
 	Aux::Timer run;
-	INFO("[BEGIN]");
+	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
 	G.forNodePairs([&](node u, node v){
 		G.removeEdge(u, v);
 	});
+
+	run.stop();
+	INFO("[DONE]" << run.elapsedTag());
+
+}
+
+TEST_F(Graph2Benchmark, parallelEdgeRemoval) {
+	count n = 1e+4;
+	Graph2 G(n);
+
+	// insert edges
+	G.forNodePairs([&](node u, node v){
+		G.insertEdge(u, v);
+	});
+
+
+	Aux::Timer run;
+	INFO("[BEGIN] (n=" << n << ")");
+	run.start();
+
+	// TODO:
+	EXPECT_TRUE(false) << "TODO";
 
 	run.stop();
 	INFO("[DONE]" << run.elapsedTag());
@@ -146,7 +185,7 @@ TEST_F(Graph2Benchmark, edgeIteration) {
 
 
 	Aux::Timer run;
-	INFO("[BEGIN]");
+	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
 	G.forEdges([&](node u, node v){
@@ -167,7 +206,7 @@ TEST_F(Graph2Benchmark, parallelEdgeIteration) {
 	});
 
 	Aux::Timer run;
-	INFO("[BEGIN]");
+	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
 	// TODO:
