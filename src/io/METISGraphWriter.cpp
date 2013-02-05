@@ -28,8 +28,8 @@ void METISGraphWriter::write(Graph& G, std::string path) {
 
 	file << n << " " << m << std::endl;
 
-	G.forallNodes([&](node u) {
-		G.forallNeighborsOf(u, [&](node v){
+	G.forNodes([&](node u) {
+		G.forNeighborsOf(u, [&](node v){
 			file << v << " ";
 		});
 		file << std::endl;

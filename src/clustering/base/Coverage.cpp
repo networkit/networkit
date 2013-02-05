@@ -35,21 +35,21 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 
 	NodeMap<double> incidentWeight(n, 0.0);
 	// compute incident edge weight for all nodes
-	G.forallNodes([&](node v){
+	G.parallelForNodes([&](node v){
 		double iw = 0.0;
-		G.forallEdgesOf(v, [&](node v, node w) {
+		G.forEdgesOf(v, [&](node v, node w) {
 			iw += G.weight(v, w);
 		});
 		iw += 2 * G.weight(v);	// Graph datastructure does not support self-loops. Node weights are used instead.
 		incidentWeight[v] = iw;
-	}, "parallel");
+	});
 
 
 	IndexMap<cluster, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
 
 
 	// compute intra-cluster edge weights per cluster
-	G.forallEdges([&](node u, node v){
+	G.forEdges([&](node u, node v){
 		assert (u <= zeta.numberOfNodes());
 		assert (v <= zeta.numberOfNodes());
 		cluster c = zeta[u];
@@ -65,7 +65,7 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 	});
 
 	// .... and also add self-loops
-	G.forallNodes([&](node v){
+	G.forNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
 		intraEdgeWeight[c] += G.weight(v);
 	});

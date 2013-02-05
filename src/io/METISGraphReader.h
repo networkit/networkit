@@ -11,7 +11,6 @@
 #include "GraphReader.h"
 
 #include "METISParser.h"
-#include "GraphFromAdjacencies.h"
 
 namespace EnsembleClustering {
 

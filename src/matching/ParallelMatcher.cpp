@@ -31,9 +31,9 @@ Matching ParallelMatcher::run(Graph& G) {
 	Matching M(n);
 
 
-	G.forallNodes([&](node v){
+	G.forNodes([&](node v){
 		// S[v] <- N(v)
-		G.forallNeighborsOf(v, [&](node w){
+		G.forNeighborsOf(v, [&](node w){
 			S[v].insert(w);
 		});
 		// set candidate of v to neighbor x with strongest connection

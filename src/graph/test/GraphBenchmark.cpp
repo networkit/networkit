@@ -28,7 +28,7 @@ TEST_F(GraphBenchmark, edgeInsertions_noop_seq) {
 	Graph G(n);
 	int64_t i = 0;
 	runtime.start();
-	G.forallNodePairs([&](node u, node v) {
+	G.forNodePairs([&](node u, node v) {
 		i++;
 		// G.insertEdge(u, v);
 	});
@@ -47,10 +47,10 @@ TEST_F(GraphBenchmark, edgeInsertions_noop_par) {
 	Graph G(n);
 	int64_t i = 0;
 	runtime.start();
-	G.forallNodePairs([&](node u, node v) {
+	G.parallelForNodePairs([&](node u, node v) {
 		i++;
 		// G.insertEdge(u, v);
-	}, "parallel");
+	});
 	runtime.stop();
 
 	TRACE("counted i = " << i);
@@ -65,7 +65,7 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 
 	Graph G(n);
 	runtime.start();
-	G.forallNodePairs([&](node u, node v) {
+	G.forNodePairs([&](node u, node v) {
 		G.insertEdge(u, v);
 	});
 	runtime.stop();
@@ -82,58 +82,58 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_par) {
 
 	Graph G(n);
 	runtime.start();
-	G.forallNodePairs([&](node u, node v) {
+	G.parallelForNodePairs([&](node u, node v) {
 		G.insertEdge(u, v);
-	}, "parallel");
+	});
 	runtime.stop();
 
 	INFO("[DONE] edgeInsertions_standard_par(" << runtime.elapsed().count() << " ms)");
 	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
 
 }
+//
+//TEST_F(GraphBenchmark, edgeInsertions_raw_seq) {
+//	int64_t n = this->n;
+//	Aux::Timer runtime;
+//
+//	Graph G(n);
+//	stinger* S = G.asSTINGER();
+//
+//	runtime.start();
+//	for (node u = 1; u <= n; ++u) {
+//		for (node v = u + 1; v <= n; ++v) {
+//			stinger_insert_edge_pair(S, G.defaultEdgeType, u, v, G.defaultEdgeWeight, G.defaultTimeStamp);
+//		}
+//	}
+//	runtime.stop();
+//
+//
+//	INFO("[DONE] edgeInsertions_raw_seq (" << runtime.elapsed().count() << " ms)");
+//	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
+//
+//
+//}
 
-TEST_F(GraphBenchmark, edgeInsertions_raw_seq) {
-	int64_t n = this->n;
-	Aux::Timer runtime;
-
-	Graph G(n);
-	stinger* S = G.asSTINGER();
-
-	runtime.start();
-	for (node u = 1; u <= n; ++u) {
-		for (node v = u + 1; v <= n; ++v) {
-			stinger_insert_edge_pair(S, G.defaultEdgeType, u, v, G.defaultEdgeWeight, G.defaultTimeStamp);
-		}
-	}
-	runtime.stop();
-
-
-	INFO("[DONE] edgeInsertions_raw_seq (" << runtime.elapsed().count() << " ms)");
-	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
-
-
-}
-
-TEST_F(GraphBenchmark, edgeInsertions_raw_par) {
-	int64_t n = this->n;
-	Aux::Timer runtime;
-
-	Graph G(n);
-	stinger* S = G.asSTINGER();
-
-	runtime.start();
-	#pragma omp parallel
-	for (node u = 1; u <= n; ++u) {
-		for (node v = u + 1; v <= n; ++v) {
-			stinger_insert_edge_pair(S, G.defaultEdgeType, u, v, G.defaultEdgeWeight, G.defaultTimeStamp);
-		}
-	}
-	runtime.stop();
-
-	INFO("[DONE] edgeInsertions_raw_par (" << runtime.elapsed().count() << " ms)");
-	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
-
-}
+//TEST_F(GraphBenchmark, edgeInsertions_raw_par) {
+//	int64_t n = this->n;
+//	Aux::Timer runtime;
+//
+//	Graph G(n);
+//	stinger* S = G.asSTINGER();
+//
+//	runtime.start();
+//	#pragma omp parallel
+//	for (node u = 1; u <= n; ++u) {
+//		for (node v = u + 1; v <= n; ++v) {
+//			stinger_insert_edge_pair(S, G.defaultEdgeType, u, v, G.defaultEdgeWeight, G.defaultTimeStamp);
+//		}
+//	}
+//	runtime.stop();
+//
+//	INFO("[DONE] edgeInsertions_raw_par (" << runtime.elapsed().count() << " ms)");
+//	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
+//
+//}
 
 
 
@@ -142,7 +142,7 @@ TEST_F(GraphBenchmark, edgeInsertions_raw_par) {
 
 
 
-TEST_F(GraphBenchmark, incidentWeight_standard_seq) {
+TEST_F(GraphBenchmark, weightedDegree_standard_seq) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -150,10 +150,10 @@ TEST_F(GraphBenchmark, incidentWeight_standard_seq) {
 	Aux::Timer runtime;
 
 	runtime.start();
-	NodeMap<double> incidentWeight(n, 0.0);
+	NodeMap<double> weightedDegree(n, 0.0);
 
-	G.forallNodes([&](node v) {
-		incidentWeight[v] = G.incidentWeight(v);
+	G.forNodes([&](node v) {
+		weightedDegree[v] = G.weightedDegree(v);
 	});
 	runtime.stop();
 
@@ -161,8 +161,8 @@ TEST_F(GraphBenchmark, incidentWeight_standard_seq) {
 
 	// test correctness of result
 	bool correct = true;
-	G.forallNodes([&](node v){
-		correct &= (incidentWeight[v] == (n - 1));
+	G.forNodes([&](node v){
+		correct &= (weightedDegree[v] == (n - 1));
 	});
 
 	EXPECT_TRUE(correct);
@@ -175,7 +175,7 @@ TEST_F(GraphBenchmark, incidentWeight_standard_seq) {
 
 // TEST: parallelize
 
-TEST_F(GraphBenchmark, incidentWeight_standard_par) {
+TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 	int64_t n = this->n;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -183,19 +183,19 @@ TEST_F(GraphBenchmark, incidentWeight_standard_par) {
 	Aux::Timer runtime;
 
 	runtime.start();
-	NodeMap<double> incidentWeight(n, 0.0);
+	NodeMap<double> weightedDegree(n, 0.0);
 
-	G.forallNodes([&](node v) {
-		incidentWeight[v] = G.incidentWeight(v);
-	}, "parallel");
+	G.parallelForNodes([&](node v) {
+		weightedDegree[v] = G.weightedDegree(v);
+	});
 	runtime.stop();
 
 	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
 
 	// test correctness of result
 	bool correct = true;
-	G.forallNodes([&](node v){
-		correct &= (incidentWeight[v] == (n - 1));
+	G.forNodes([&](node v){
+		correct &= (weightedDegree[v] == (n - 1));
 	});
 
 	EXPECT_TRUE(correct);
@@ -204,71 +204,71 @@ TEST_F(GraphBenchmark, incidentWeight_standard_par) {
 
 // RESULT: significant super-linear speedup regardless of target container
 
-TEST_F(GraphBenchmark, incidentWeight_raw_seq) {
-	int64_t n = this->n;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
-	stinger* S = G.asSTINGER();
+//TEST_F(GraphBenchmark, weightedDegree_raw_seq) {
+//	int64_t n = this->n;
+//	GraphGenerator graphGen;
+//	Graph G = graphGen.makeCompleteGraph(n);
+//	stinger* S = G.asSTINGER();
+//
+//	Aux::Timer runtime;
+//
+//	runtime.start();
+//	NodeMap<double> weightedDegree(n, 0.0);
+//
+//	for (node v = 1; v <= n; ++v) {
+//		double iw = 0.0;
+//		STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_BEGIN(S, v) {
+//			iw += stinger_edgeweight(S, STINGER_EDGE_SOURCE, STINGER_EDGE_DEST, G.defaultEdgeType);
+//		} STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_END();
+//		weightedDegree[v] = iw;
+//	}
+//	runtime.stop();
+//
+//	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
+//
+//	// test correctness of result
+//	bool correct = true;
+//	G.forNodes([&](node v){
+//		correct &= (weightedDegree[v] == (n - 1));
+//	});
+//
+//	EXPECT_TRUE(correct);
+//
+//}
 
-	Aux::Timer runtime;
-
-	runtime.start();
-	NodeMap<double> incidentWeight(n, 0.0);
-
-	for (node v = 1; v <= n; ++v) {
-		double iw = 0.0;
-		STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_BEGIN(S, v) {
-			iw += stinger_edgeweight(S, STINGER_EDGE_SOURCE, STINGER_EDGE_DEST, G.defaultEdgeType);
-		} STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_END();
-		incidentWeight[v] = iw;
-	}
-	runtime.stop();
-
-	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
-
-	// test correctness of result
-	bool correct = true;
-	G.forallNodes([&](node v){
-		correct &= (incidentWeight[v] == (n - 1));
-	});
-
-	EXPECT_TRUE(correct);
-
-}
-
-
-TEST_F(GraphBenchmark, incidentWeight_raw_par) {
-	int64_t n = this->n;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
-	stinger* S = G.asSTINGER();
-
-	Aux::Timer runtime;
-
-	runtime.start();
-	NodeMap<double> incidentWeight(n, 0.0);
-
-	#pragma omp parallel for
-	for (node v = 1; v <= n; ++v) {
-		double iw = 0.0;
-		STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_BEGIN(S, v) {
-			iw += stinger_edgeweight(S, STINGER_EDGE_SOURCE, STINGER_EDGE_DEST, G.defaultEdgeType);
-		} STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_END();
-		incidentWeight[v] = iw;
-	}
-	runtime.stop();
-
-	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
-
-	// test correctness of result
-	bool correct = true;
-	G.forallNodes([&](node v){
-		correct &= (incidentWeight[v] == (n - 1));
-	});
-
-	EXPECT_TRUE(correct);
-
-}
+//
+//TEST_F(GraphBenchmark, weightedDegree_raw_par) {
+//	int64_t n = this->n;
+//	GraphGenerator graphGen;
+//	Graph G = graphGen.makeCompleteGraph(n);
+//	stinger* S = G.asSTINGER();
+//
+//	Aux::Timer runtime;
+//
+//	runtime.start();
+//	NodeMap<double> weightedDegree(n, 0.0);
+//
+//	#pragma omp parallel for
+//	for (node v = 1; v <= n; ++v) {
+//		double iw = 0.0;
+//		STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_BEGIN(S, v) {
+//			iw += stinger_edgeweight(S, STINGER_EDGE_SOURCE, STINGER_EDGE_DEST, G.defaultEdgeType);
+//		} STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_END();
+//		weightedDegree[v] = iw;
+//	}
+//	runtime.stop();
+//
+//	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
+//
+//	// test correctness of result
+//	bool correct = true;
+//	G.forNodes([&](node v){
+//		correct &= (weightedDegree[v] == (n - 1));
+//	});
+//
+//	EXPECT_TRUE(correct);
+//
+//}
 
 
 } /* namespace EnsembleClustering */

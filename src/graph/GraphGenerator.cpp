@@ -52,11 +52,9 @@ Graph GraphGenerator::makeCompleteGraph(int64_t n) {
 	// TODO: modernize
 	Aux::RandomProbability randP;
 	Graph G(n);
-	for (node u = 1; u <= n; ++u) {
-		for (node v = u + 1; v <= n; ++v) {
-			G.insertEdge(u, v);
-		}
-	}
+	G.forNodePairs([&](node u, node v){
+		G.insertEdge(u, v);
+	});
 	return G;
 }
 
@@ -70,7 +68,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin,
 	Aux::RandomInteger randInt(1, k);
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
-	G.forallNodes([&](node v){
+	G.forNodes([&](node v){
 		cluster c = randInt.generate();
 		zeta.addToCluster(c, v);
 	});
@@ -103,7 +101,7 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 	Aux::RandomInteger randInt(1, k);
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
-	G.forallNodes([&](node v){
+	G.forNodes([&](node v){
 		cluster c = randInt.generate();
 		zeta.addToCluster(c, v);
 	});
@@ -135,7 +133,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 	Graph G(n);
 
 	Aux::RandomProbability randP;
-	G.forallNodePairs([&](node u, node v){
+	G.forNodePairs([&](node u, node v){
 		if (zeta.inSameCluster(u, v)) {
 			if (randP.generate() <= pin) {
 				G.insertEdge(u, v);
@@ -162,7 +160,7 @@ Graph GraphGenerator::makePreferentialAttachmentGraph(int64_t n, int64_t a) {
 	int64_t m = G.numberOfEdges(); // number of edges
 	int64_t r = 0;
 
-	G.forallNodes([&](node u) {
+	G.forNodes([&](node u) {
 		TRACE("connecting node " << u);
 		for (int64_t i = 0; i < a; ++i) { // for all k new edges
 			TRACE("2m = " << 2 * m);

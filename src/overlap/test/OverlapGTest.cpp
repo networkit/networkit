@@ -30,7 +30,7 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
 	node v = 1;
 	cluster one = core.clusterOf(v);
 	bool isOneClustering = true;
-	G.forallNodes([&](node v) {
+	G.forNodes([&](node v) {
 		cluster c = core.clusterOf(v);
 		DEBUG("CLUSTER! c = " << c);
 		isOneClustering = isOneClustering && (c == one);
@@ -59,7 +59,7 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnSingletonClustering) {
 
 	// test if core clustering is singleton-clustering
 	bool isSingleton = true;
-	G.forallEdges([&](node u, node v) {
+	G.forEdges([&](node u, node v) {
 		isSingleton = isSingleton && (core.clusterOf(u) != core.clusterOf(v));
 	});
 
@@ -99,7 +99,7 @@ TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
 
 	// test if core clustering is singleton-clustering
 	bool isSingleton = true;
-	G.forallEdges([&](node u, node v) {
+	G.forEdges([&](node u, node v) {
 		isSingleton = isSingleton && (core.clusterOf(u) != core.clusterOf(v));
 	});
 
@@ -127,7 +127,7 @@ TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 	node v = 1;
 	cluster one = core.clusterOf(v);
 	bool isOneClustering = true;
-	G.forallNodes([&](node v) {
+	G.forNodes([&](node v) {
 		cluster c = core.clusterOf(v);
 		DEBUG("CLUSTER! c = " << c);
 		isOneClustering = isOneClustering && (c == one);

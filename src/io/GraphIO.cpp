@@ -23,7 +23,7 @@ void GraphIO::writeEdgeList(Graph& G, std::string path) {
 	std::ofstream file;
 	file.open(path.c_str());
 
-	G.forallEdges([&](node v, node w) {
+	G.forEdges([&](node v, node w) {
 		file << v << " " << w << std::endl;
 	});
 
@@ -36,9 +36,9 @@ void GraphIO::writeAdjacencyList(Graph& G, std::string path) {
 	std::ofstream file;
 	file.open(path.c_str());
 
-	G.forallNodes([&](node v) {
+	G.forNodes([&](node v) {
 		file << v;
-		G.forallNeighborsOf(v, [&](node x) {
+		G.forNeighborsOf(v, [&](node x) {
 			file << " " << x;
 		});
 		file << std::endl;

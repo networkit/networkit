@@ -26,15 +26,13 @@ double RandMeasure::getDissimilarity(Graph& G, Clustering& first, Clustering& se
 	int64_t s11 = 0; 	// number of node pairs for which clusterings aggree
 	int64_t s00 = 0;	// number of node pairs for which clusterings disagree
 
-	G.forallNodePairs([&](node u, node v){
+	G.forNodePairs([&](node u, node v){
 		if ((first[u] == first[v]) && (second[u] == second[v])) {
-			#pragma omp atomic update
 			s11 += 1;
 		} else if ((first[u] != first[v]) && (second[u] != second[v])) {
-			#pragma omp atomic update
 			s00 += 1;
 		}
-	}, "parallel");
+	});
 
 	double rand = 1 - ((2 * (s11 + s00)) / (n * (n-1)));
 

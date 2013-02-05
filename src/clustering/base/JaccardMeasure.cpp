@@ -27,7 +27,7 @@ double JaccardMeasure::getDissimilarity(Graph& G, Clustering& first,
 	int64_t s11 = 0; 	// number of node pairs for which clusterings aggree
 	int64_t s00 = 0;	// number of node pairs for which clusterings disagree
 
-	G.forallNodePairs([&](node u, node v){
+	G.forNodePairs([&](node u, node v){
 		if ((first[u] == first[v]) && (second[u] == second[v])) {
 			s11 += 1;
 		} else if ((first[u] != first[v]) && (second[u] != second[v])) {

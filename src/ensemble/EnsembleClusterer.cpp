@@ -79,7 +79,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// *** base clusterers calculate base clusterings ***
 		#pragma omp parallel for
-		for (uint b = 0; b < baseClusterers.size(); b += 1) {
+		for (int b = 0; b < baseClusterers.size(); b += 1) {
 			try {
 				baseClustering.at(b) = baseClusterers.at(b)->run(graph.at(i));
 				// DEBUG
@@ -97,8 +97,8 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		// ANALYSIS
 		if (calcBaseClusteringDissimilarity) {
 			JaccardMeasure dm;
-			for (uint b = 0; b < baseClustering.size(); b += 1) {
-				for (uint c = b; c < baseClustering.size(); c += 1) {
+			for (int b = 0; b < baseClustering.size(); b += 1) {
+				for (int c = b; c < baseClustering.size(); c += 1) {
 					double d = dm.getDissimilarity(graph.at(i), baseClustering.at(b), baseClustering.at(c));
 					INFO("dm " << b << " <-> " << c << ": " << d);
 				}

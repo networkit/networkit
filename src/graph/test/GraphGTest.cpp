@@ -9,22 +9,22 @@
 
 namespace EnsembleClustering {
 
-TEST_F(GraphGTest, testEdgeIteration) {
-
-	int64_t n = 100;
-	Graph G = this->gen.makeCompleteGraph(n);
-
-	int64_t edgeCount = 0;
-	READ_ONLY_FORALL_EDGES_BEGIN(G) {
-		node u = EDGE_SOURCE;
-		node v = EDGE_DEST;
-		if (u < v) {
-			edgeCount += 1;
-		}
-	} READ_ONLY_FORALL_EDGES_END();
-
-	EXPECT_EQ((n * (n-1)) / 2, edgeCount) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
-}
+//TEST_F(GraphGTest, testEdgeIteration) {
+//
+//	int64_t n = 100;
+//	Graph G = this->gen.makeCompleteGraph(n);
+//
+//	int64_t edgeCount = 0;
+//	READ_ONLY_FORALL_EDGES_BEGIN(G) {
+//		node u = EDGE_SOURCE;
+//		node v = EDGE_DEST;
+//		if (u < v) {
+//			edgeCount += 1;
+//		}
+//	} READ_ONLY_FORALL_EDGES_END();
+//
+//	EXPECT_EQ((n * (n-1)) / 2, edgeCount) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
+//}
 
 
 TEST_F(GraphGTest, testLambdaEdgeIteration) {
@@ -33,11 +33,11 @@ TEST_F(GraphGTest, testLambdaEdgeIteration) {
 	Graph G = this->gen.makeCompleteGraph(n);
 
 	int64_t edgeCount = 0;
-	G.forallEdges([&](node u, node v) {
+	G.forEdges([&](node u, node v) {
 		if (u < v) {
 			edgeCount += 1;
 		}
-	},"readonly");
+	});
 
 	EXPECT_EQ((n * (n-1)) / 2, edgeCount) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
 }
@@ -50,12 +50,12 @@ TEST_F(GraphGTest, testParallelLambdaEdgeIteration) {
 	Graph G = this->gen.makeCompleteGraph(n);
 
 	int64_t edgeCount = 0;
-	G.forallEdges([&](node u, node v) {
+	G.parallelForEdges([&](node u, node v) {
 		if (u < v) {
 			#pragma omp atomic update
 			edgeCount += 1;
 		}
-	}, "parallel", "readonly");
+	});
 
 	EXPECT_EQ((n * (n-1)) / 2, edgeCount) << "There are (n * (n-1)) / 2 undirected edges in a compete graph";
 }
@@ -68,7 +68,7 @@ TEST_F(GraphGTest, testLambdaEdgeModification) {
 	int64_t n = 100;
 	Graph G = this->gen.makeCompleteGraph(n);
 
-	G.forallEdges([&](node u, node v){
+	G.forEdges([&](node u, node v){
 		G.removeEdge(u, v);
 	});
 
@@ -83,7 +83,7 @@ TEST_F(GraphGTest, testLambdaNodeIteration) {
 	Graph G = this->gen.makeCompleteGraph(n);
 
 	int64_t nodeCount = 0;
-	G.forallNodes([&](node v) {
+	G.forNodes([&](node v) {
 		nodeCount++;
 	});
 
@@ -97,10 +97,10 @@ TEST_F(GraphGTest, testParallelLambdaNodeIteration) {
 	Graph G = this->gen.makeCompleteGraph(n);
 
 	int64_t nodeCount = 0;
-	G.forallNodes([&](node v) {
+	G.parallelForNodes([&](node v) {
 		#pragma omp atomic update
 		nodeCount++;
-	}, "parallel");
+	});
 
 	EXPECT_EQ(n, nodeCount);
 }
@@ -115,7 +115,7 @@ TEST_F(GraphGTest, testLambdaNeighborIteration) {
 	G.insertEdge(v, 4);
 
 	int neighborCount = 0;
-	G.forallNeighborsOf(v, [&](node w){
+	G.forNeighborsOf(v, [&](node w){
 		neighborCount += 1;
 	});
 
@@ -132,7 +132,7 @@ TEST_F(GraphGTest, testLambdaIncidentEdgeIteration) {
 	G.insertEdge(v, 4);
 
 	int edgeCount = 0;
-	G.forallEdgesOf(v, [&](node v, node w){
+	G.forEdgesOf(v, [&](node v, node w){
 		edgeCount += 1;
 	});
 
@@ -180,7 +180,7 @@ TEST_F(GraphGTest, testNodeIteration) {
 
 	int64_t counter = 0;
 
-	G.forallNodes([&](node v) {
+	G.forNodes([&](node v) {
 		counter += 1;
 	});
 
@@ -196,7 +196,7 @@ TEST_F(GraphGTest, testExtendNodeRange) {
 
 	int64_t counter = 0;
 
-	G.forallNodes([&](node v) {
+	G.forNodes([&](node v) {
 		counter += 1;
 	});
 
