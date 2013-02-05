@@ -11,6 +11,8 @@
 #include <set>
 
 #include "../../graph/NodeMap.h"
+#include <cassert>
+
 
 
 namespace EnsembleClustering {
