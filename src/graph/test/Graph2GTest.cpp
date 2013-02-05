@@ -19,12 +19,24 @@ Graph2GTest::~Graph2GTest() {
 }
 
 
+TEST_F(Graph2GTest, testNumberOfNodes) {
+	// TODO:
+}
+
+TEST_F(Graph2GTest, testNumberOfEdges) {
+	// TODO:
+}
+
+TEST_F(Graph2GTest, testIsEmpty) {
+	// TODO:
+}
+
 TEST_F(Graph2GTest, testEdgeInsertionAndRemoval) {
 
 	int64_t n = 10;
 	Graph2 G(n);
 
-	EXPECT_EQ(0, G.numberOfEdges()) << "no edges in graph";
+	EXPECT_EQ(0, G.numberOfEdges()) << "no edges should be in the graph";
 
 	G.insertEdge(1, 2);
 	G.insertEdge(2, 3);
@@ -43,6 +55,36 @@ TEST_F(Graph2GTest, testEdgeInsertionAndRemoval) {
 	EXPECT_FALSE(G.hasEdge(2, 3));
 	EXPECT_FALSE(G.hasEdge(1, 3));
 	EXPECT_EQ(0, G.numberOfEdges()) << "all edges were removed";
+}
+
+TEST_F(Graph2GTest, testNodeIteration) {
+	// TODO:
+}
+
+
+TEST_F(Graph2GTest, testParallelNodeIteration) {
+	// TODO:
+}
+
+
+TEST_F(Graph2GTest, testEdgeIteration) {
+	// TODO:
+}
+
+TEST_F(Graph2GTest, testParallelEdgeIteration) {
+	// TODO:
+}
+
+TEST_F(Graph2GTest, testNeighborIteration) {
+	// TODO:
+}
+
+TEST_F(Graph2GTest, testParallelSumForNodes) {
+	// TODO:
+}
+
+TEST_F(Graph2GTest, testNodePairIteration) {
+	// TODO:
 }
 
 } /* namespace EnsembleClustering */
