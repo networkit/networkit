@@ -19,12 +19,12 @@ Graph2Benchmark::~Graph2Benchmark() {
 }
 
 TEST_F(Graph2Benchmark, graphConstruction) {
+	count n = 1e+7;;
 
 	Aux::Timer run;
 	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
-	count n = 1e+7;;
 	Graph2 G(n);
 
 	run.stop();
