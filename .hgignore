@@ -5,3 +5,5 @@ syntax: regexp
 \.trace$
 \.mk$
 \.o
+.cproject
+.project
