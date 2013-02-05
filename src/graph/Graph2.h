@@ -21,16 +21,13 @@ namespace EnsembleClustering {
 
 /** Typedefs **/
 
-typedef int64_t index;		// more expressive name for an index into an array
-typedef int64_t count;		// more expressive name for an integer quantity
-typedef index node;			// node indices are 0-based
-typedef float edgeweight;	// edge weight type
+typedef int64_t index; // more expressive name for an index into an array
+typedef int64_t count; // more expressive name for an integer quantity
+typedef index node; // node indices are 0-based
+typedef float edgeweight; // edge weight type
 template<typename T> using nodemap = std::vector<T>; // more expressive name for container that is indexed by a node
 
-
 class Graph2 {
-
-
 
 protected:
 
@@ -39,18 +36,15 @@ protected:
 	edgeweight nullWeight = 0.0;
 
 	// scalars
-	count n;	//!< number of nodes
-	node maxn;	//!< maximum node id / upper bound of node range
-
+	count n; //!< number of nodes
+	node maxn; //!< maximum node id / upper bound of node range
 
 	// per node data
-	nodemap<count> deg;	//!< degree of each node
+	nodemap<count> deg; //!< degree of each node
 
 	// per edge data
-	std::vector<std::vector<node> > adja; 	//!< neighbors/adjacencies
-	std::vector<std::vector<edgeweight> > eweights;	//!< edge weights
-
-
+	std::vector<std::vector<node> > adja; //!< neighbors/adjacencies
+	std::vector<std::vector<edgeweight> > eweights; //!< edge weights
 
 	/**
 	 * Return the index of v in the adjacency array of u.
@@ -58,7 +52,6 @@ protected:
 	index find(node u, node v) const;
 
 public:
-
 
 	Graph2(count n);
 
@@ -69,13 +62,11 @@ public:
 	 */
 	void insertEdge(node u, node v);
 
-
 	/**
 	 * Check if undirected edge {u,v} exists in G
 	 *
 	 */
 	bool hasEdge(node u, node v) const;
-
 
 	/**
 	 * Remove undirected edge between two nodes.
@@ -98,24 +89,20 @@ public:
 	 */
 	void setWeight(node u, node v, edgeweight w);
 
-
 	/**
 	 * Add a new node to the graph and return it.
 	 */
 	node addNode();
-
 
 	/**
 	 * After calling this, nodes 1..n exist in the graph.
 	 */
 	void extendNodeRange(int64_t n);
 
-
 	/**
 	 * Return true if graph contains no nodes.
 	 */
 	bool isEmpty();
-
 
 	/**
 	 * Return the number of nodes in the graph.
@@ -130,17 +117,12 @@ public:
 	 */
 	count numberOfEdges() const;
 
-
-
-
-
 	// TODO: lambda iterators
 
 	/**
 	 * Iterate over all nodes of the graph and execute handler (lambda closure).
 	 */
 	template<typename L> void forNodes(L handle);
-
 
 	/**
 	 * Iterate over all nodes of the graph and execute handler (lambda closure).
@@ -152,34 +134,25 @@ public:
 	 */
 	template<typename L> void forNodePairs(L handle);
 
-
 	/**
 	 * Iterate in parallel over all nodes of the graph and execute handler (lambda closure).
 	 */
 	template<typename L> void parallelForNodes(L handle);
-
 
 	/**
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
 	 */
 	template<typename L> float parallelSumForNodes(L handle, float sum);
 
-
-
 	/**
 	 * Iterate over all nodes of the graph and execute handler (lambda closure).
 	 */
 	template<typename L> void forEdges(L handle);
 
-
-
 	/**
 	 * Iterate over all neighbors of a node and execute callback handletion (lamdba closure).
 	 */
 	template<typename L> void forallNeighborsOf(node v, L handle);
-
-
-
 
 	// TODO: const iterators
 };
@@ -188,7 +161,9 @@ public:
 
 template<typename L>
 inline void EnsembleClustering::Graph2::forallNeighborsOf(node v, L handle) {
-
+	for (node u : this->adja[v]) {
+		handle(v, u);
+	}
 }
 
 template<typename L>
@@ -207,10 +182,9 @@ inline void EnsembleClustering::Graph2::forNodes(L handle) const {
 	}
 }
 
-
 template<typename L>
 inline void EnsembleClustering::Graph2::parallelForNodes(L handle) {
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (node v = 0; v < n; ++v) {
 		// call here
 		handle(v);
@@ -218,8 +192,9 @@ inline void EnsembleClustering::Graph2::parallelForNodes(L handle) {
 }
 
 template<typename L>
-inline float EnsembleClustering::Graph2::parallelSumForNodes(L handle, float sum) {
-	#pragma omp parallel for reduction(+:sum)
+inline float EnsembleClustering::Graph2::parallelSumForNodes(L handle,
+		float sum) {
+#pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < n; ++v) {
 		// call here
 		sum += handle(v);
@@ -246,7 +221,5 @@ inline void EnsembleClustering::Graph2::forNodePairs(L handle) {
 		}
 	}
 }
-
-
 
 #endif /* GRAPH2_H_ */
