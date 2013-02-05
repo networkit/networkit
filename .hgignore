@@ -1,0 +1,9 @@
+
+syntax: regexp
+\.d$
+syntax: regexp
+\.trace$
+\.mk$
+\.o
+.cproject
+.project

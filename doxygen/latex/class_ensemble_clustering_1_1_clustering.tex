@@ -1,0 +1,295 @@
+\hypertarget{class_ensemble_clustering_1_1_clustering}{\section{Ensemble\-Clustering\-:\-:Clustering Class Reference}
+\label{class_ensemble_clustering_1_1_clustering}\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+}
+
+
+{\ttfamily \#include $<$Clustering.\-h$>$}
+
+
+
+Inheritance diagram for Ensemble\-Clustering\-:\-:Clustering\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{class_ensemble_clustering_1_1_clustering__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Clustering\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{class_ensemble_clustering_1_1_clustering__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_clustering_a2bc47b6f0c935be840d4f12fc2043a71}{Clustering} (int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_node_map_a511baf014428ed1dece45d9ab94f205b}{n})
+\begin{DoxyCompactList}\small\item\em Construct new clustering. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_clustering_ad7d81b7dc44d96c4802e1294e3ffbb48}{$\sim$\-Clustering} ()
+\item 
+\hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} \& \hyperlink{class_ensemble_clustering_1_1_clustering_aaa9d16c93e56a4ea1c6bcf7eb302610a}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} \&u)
+\begin{DoxyCompactList}\small\item\em Index operator. \end{DoxyCompactList}\item 
+const \hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} \& \hyperlink{class_ensemble_clustering_1_1_clustering_aa277d9365e79e8b2f067e8630a29b031}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} \&u) const 
+\begin{DoxyCompactList}\small\item\em Index operator for const instances of this class. \end{DoxyCompactList}\item 
+\hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} \& \hyperlink{class_ensemble_clustering_1_1_clustering_ad928bde104aea2f59caadc40aa9fb664}{cluster\-Of} (\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} u)
+\begin{DoxyCompactList}\small\item\em Return the cluster (id) in which a node is contained. \end{DoxyCompactList}\item 
+void \hyperlink{class_ensemble_clustering_1_1_clustering_a2f6334480e3938deae8425dc57e6ea86}{add\-To\-Cluster} (\hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} c, \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} u)
+\begin{DoxyCompactList}\small\item\em Add a (previously unassigned) node to a cluster. \end{DoxyCompactList}\item 
+void \hyperlink{class_ensemble_clustering_1_1_clustering_a7e3a719ed9904897617a3152bf80a634}{move\-To\-Cluster} (\hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} c, \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} u)
+\begin{DoxyCompactList}\small\item\em Move a (previously assigned) node to a cluster. \end{DoxyCompactList}\item 
+void \hyperlink{class_ensemble_clustering_1_1_clustering_a461a251d674b64cf29e97408c343253a}{to\-Singleton} (\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} u)
+\begin{DoxyCompactList}\small\item\em Creates a singleton cluster containing the node. \end{DoxyCompactList}\item 
+void \hyperlink{class_ensemble_clustering_1_1_clustering_a1cfe6fb096bef4aeb7814877847e2df9}{merge\-Clusters} (\hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} c, \hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} d)
+\begin{DoxyCompactList}\small\item\em Assigns the nodes from both clusters to a new cluster. \end{DoxyCompactList}\item 
+bool \hyperlink{class_ensemble_clustering_1_1_clustering_aa5d19717228e6c6c74aedfc9dfd722fe}{is\-Proper} (const \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&G)
+\begin{DoxyCompactList}\small\item\em Check whether this clustering is a proper clustering of the graph, i.\-e. \end{DoxyCompactList}\item 
+\hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} \hyperlink{class_ensemble_clustering_1_1_clustering_a98c5900c89d56ac67d2b7b46be83e0a2}{first\-Cluster} ()
+\begin{DoxyCompactList}\small\item\em Get the lowest cluster id;. \end{DoxyCompactList}\item 
+\hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} \hyperlink{class_ensemble_clustering_1_1_clustering_af776bb377f90cbf03e0661bc8902ef2d}{last\-Cluster} ()
+\begin{DoxyCompactList}\small\item\em Get the highest cluster id that has been assigned. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespace_ensemble_clustering_a5ae38234e207add524443be6e597b970}{cluster} \hyperlink{class_ensemble_clustering_1_1_clustering_a47de59cf22e93a801cac55eb001b6d3d}{next\-Cluster}
+\begin{DoxyCompactList}\small\item\em next free cluster id for new cluster \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 17 of file Clustering.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_clustering_a2bc47b6f0c935be840d4f12fc2043a71}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!Clustering@{Clustering}}
+\index{Clustering@{Clustering}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{Clustering}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Clustering\-::\-Clustering (
+\begin{DoxyParamCaption}
+\item[{int64\-\_\-t}]{n}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_clustering_a2bc47b6f0c935be840d4f12fc2043a71}
+
+
+Construct new clustering. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em n} & number of nodes \\
+\hline
+\end{DoxyParams}
+$<$ first cluster index is 1 
+
+Definition at line 12 of file Clustering.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_ad7d81b7dc44d96c4802e1294e3ffbb48}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!$\sim$\-Clustering@{$\sim$\-Clustering}}
+\index{$\sim$\-Clustering@{$\sim$\-Clustering}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{$\sim$\-Clustering}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Clustering\-::$\sim$\-Clustering (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_clustering_ad7d81b7dc44d96c4802e1294e3ffbb48}
+
+
+Definition at line 16 of file Clustering.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_clustering_a2f6334480e3938deae8425dc57e6ea86}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!add\-To\-Cluster@{add\-To\-Cluster}}
+\index{add\-To\-Cluster@{add\-To\-Cluster}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{add\-To\-Cluster}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Clustering\-::add\-To\-Cluster (
+\begin{DoxyParamCaption}
+\item[{{\bf cluster}}]{c, }
+\item[{{\bf node}}]{u}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_clustering_a2f6334480e3938deae8425dc57e6ea86}
+
+
+Add a (previously unassigned) node to a cluster. 
+
+
+
+Definition at line 22 of file Clustering.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_ad928bde104aea2f59caadc40aa9fb664}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!cluster\-Of@{cluster\-Of}}
+\index{cluster\-Of@{cluster\-Of}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{cluster\-Of}]{\setlength{\rightskip}{0pt plus 5cm}{\bf cluster}\& Ensemble\-Clustering\-::\-Clustering\-::cluster\-Of (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_clustering_ad928bde104aea2f59caadc40aa9fb664}
+
+
+Return the cluster (id) in which a node is contained. 
+
+
+
+Definition at line 55 of file Clustering.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_a98c5900c89d56ac67d2b7b46be83e0a2}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!first\-Cluster@{first\-Cluster}}
+\index{first\-Cluster@{first\-Cluster}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{first\-Cluster}]{\setlength{\rightskip}{0pt plus 5cm}{\bf cluster} Ensemble\-Clustering\-::\-Clustering\-::first\-Cluster (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_clustering_a98c5900c89d56ac67d2b7b46be83e0a2}
+
+
+Get the lowest cluster id;. 
+
+
+
+Definition at line 53 of file Clustering.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_aa5d19717228e6c6c74aedfc9dfd722fe}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!is\-Proper@{is\-Proper}}
+\index{is\-Proper@{is\-Proper}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{is\-Proper}]{\setlength{\rightskip}{0pt plus 5cm}bool Ensemble\-Clustering\-::\-Clustering\-::is\-Proper (
+\begin{DoxyParamCaption}
+\item[{const {\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_clustering_aa5d19717228e6c6c74aedfc9dfd722fe}
+
+
+Check whether this clustering is a proper clustering of the graph, i.\-e. 
+
+a disjoint partition of the whole node set. 
+
+Definition at line 49 of file Clustering.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_af776bb377f90cbf03e0661bc8902ef2d}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!last\-Cluster@{last\-Cluster}}
+\index{last\-Cluster@{last\-Cluster}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{last\-Cluster}]{\setlength{\rightskip}{0pt plus 5cm}{\bf cluster} Ensemble\-Clustering\-::\-Clustering\-::last\-Cluster (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_clustering_af776bb377f90cbf03e0661bc8902ef2d}
+
+
+Get the highest cluster id that has been assigned. 
+
+This gives an upper bound for the number of clusters in this clustering, although not the actual number of clusters since clusters can become empty. 
+
+Definition at line 57 of file Clustering.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_a1cfe6fb096bef4aeb7814877847e2df9}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!merge\-Clusters@{merge\-Clusters}}
+\index{merge\-Clusters@{merge\-Clusters}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{merge\-Clusters}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Clustering\-::merge\-Clusters (
+\begin{DoxyParamCaption}
+\item[{{\bf cluster}}]{c, }
+\item[{{\bf cluster}}]{d}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_clustering_a1cfe6fb096bef4aeb7814877847e2df9}
+
+
+Assigns the nodes from both clusters to a new cluster. 
+
+
+
+Definition at line 37 of file Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_clustering_a1cfe6fb096bef4aeb7814877847e2df9_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_a7e3a719ed9904897617a3152bf80a634}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!move\-To\-Cluster@{move\-To\-Cluster}}
+\index{move\-To\-Cluster@{move\-To\-Cluster}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{move\-To\-Cluster}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Clustering\-::move\-To\-Cluster (
+\begin{DoxyParamCaption}
+\item[{{\bf cluster}}]{c, }
+\item[{{\bf node}}]{u}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_clustering_a7e3a719ed9904897617a3152bf80a634}
+
+
+Move a (previously assigned) node to a cluster. 
+
+
+
+Definition at line 32 of file Clustering.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_aaa9d16c93e56a4ea1c6bcf7eb302610a}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}{\bf cluster}\& Ensemble\-Clustering\-::\-Clustering\-::operator\mbox{[}$\,$\mbox{]} (
+\begin{DoxyParamCaption}
+\item[{const {\bf node} \&}]{u}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_clustering_aaa9d16c93e56a4ea1c6bcf7eb302610a}
+
+
+Index operator. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & a node \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 39 of file Clustering.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_aa277d9365e79e8b2f067e8630a29b031}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf cluster}\& Ensemble\-Clustering\-::\-Clustering\-::operator\mbox{[}$\,$\mbox{]} (
+\begin{DoxyParamCaption}
+\item[{const {\bf node} \&}]{u}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_clustering_aa277d9365e79e8b2f067e8630a29b031}
+
+
+Index operator for const instances of this class. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & a node \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 47 of file Clustering.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_clustering_a461a251d674b64cf29e97408c343253a}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!to\-Singleton@{to\-Singleton}}
+\index{to\-Singleton@{to\-Singleton}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{to\-Singleton}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Clustering\-::to\-Singleton (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_clustering_a461a251d674b64cf29e97408c343253a}
+
+
+Creates a singleton cluster containing the node. 
+
+
+
+Definition at line 27 of file Clustering.\-cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_clustering_a47de59cf22e93a801cac55eb001b6d3d}{\index{Ensemble\-Clustering\-::\-Clustering@{Ensemble\-Clustering\-::\-Clustering}!next\-Cluster@{next\-Cluster}}
+\index{next\-Cluster@{next\-Cluster}!EnsembleClustering::Clustering@{Ensemble\-Clustering\-::\-Clustering}}
+\subsubsection[{next\-Cluster}]{\setlength{\rightskip}{0pt plus 5cm}{\bf cluster} Ensemble\-Clustering\-::\-Clustering\-::next\-Cluster\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_clustering_a47de59cf22e93a801cac55eb001b6d3d}
+
+
+next free cluster id for new cluster 
+
+
+
+Definition at line 21 of file Clustering.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/clustering/\hyperlink{_clustering_8h}{Clustering.\-h}\item 
+src/clustering/\hyperlink{_clustering_8cpp}{Clustering.\-cpp}\end{DoxyCompactItemize}
