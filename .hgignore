@@ -7,3 +7,22 @@ syntax: regexp
 \.o
 \.cproject
 \.project
+
+syntax: regexp
+^output$
+syntax: regexp
+^sandbox$
+syntax: regexp
+^profiling$
+syntax: regexp
+^input$
+syntax: regexp
+^EnsembleClustering-D$
+syntax: regexp
+^EnsembleClustering-D$
+syntax: regexp
+^EnsembleClustering-D$
+syntax: regexp
+^EnsembleClustering-DPar$
+syntax: regexp
+^EnsembleClustering-O$
