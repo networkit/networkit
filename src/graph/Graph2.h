@@ -172,7 +172,7 @@ public:
 	/**
 	 * Iterate over all neighbors of a node and execute callback handletion (lamdba closure).
 	 */
-	template<typename L> void forallNeighborsOf(node v, L handle);
+	template<typename L> void forNeighborsOf(node v, L handle);
 
 	// TODO: const iterators
 };
@@ -180,7 +180,7 @@ public:
 } /* namespace EnsembleClustering */
 
 template<typename L>
-inline void EnsembleClustering::Graph2::forallNeighborsOf(node v, L handle) {
+inline void EnsembleClustering::Graph2::forNeighborsOf(node v, L handle) {
 	for (node u : this->adja[v]) {
 		handle(v, u);
 	}
