@@ -74,6 +74,16 @@ public:
 	void removeEdge(node u, node v);
 
 	/**
+	 * @return Number of neighbors.
+	 */
+	count degree(node v) const;
+
+	/**
+	 * @return Weighted degree of @a v.
+	 */
+	edgeweight weightedDegree(node v) const;
+
+	/**
 	 * Return edge weight.
 	 *
 	 * Return 0 if edge does not exist.
@@ -140,14 +150,24 @@ public:
 	template<typename L> void parallelForNodes(L handle);
 
 	/**
+	 * Iterate in parallel over all nodes of the graph and execute handler (lambda closure).
+	 */
+	template<typename L> void parallelForNodes(L handle) const;
+
+	/**
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
 	 */
 	template<typename L> float parallelSumForNodes(L handle, float sum);
 
 	/**
-	 * Iterate over all nodes of the graph and execute handler (lambda closure).
+	 * Iterate over all edges of the graph and execute handler (lambda closure).
 	 */
 	template<typename L> void forEdges(L handle);
+
+	/**
+	 * Iterate in parallel over all edges of the graph and execute handler (lambda closure).
+	 */
+	template<typename L> void parallelForEdges(L handle);
 
 	/**
 	 * Iterate over all neighbors of a node and execute callback handletion (lamdba closure).
@@ -192,20 +212,42 @@ inline void EnsembleClustering::Graph2::parallelForNodes(L handle) {
 }
 
 template<typename L>
-inline float EnsembleClustering::Graph2::parallelSumForNodes(L handle,
-		float sum) {
+inline void EnsembleClustering::Graph2::parallelForNodes(L handle) const {
+#pragma omp parallel for
+	for (node v = 0; v < n; ++v) {
+		// call here
+		handle(v);
+	}
+}
+
+template<typename L>
+inline float EnsembleClustering::Graph2::parallelSumForNodes(L handle, float sum) {
+	sum = 0.0;
 #pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < n; ++v) {
 		// call here
 		sum += handle(v);
 	}
+	return sum;
 }
 
 template<typename L>
 inline void EnsembleClustering::Graph2::forEdges(L handle) {
 	for (node u = 0; u < n; ++u) {
-		for (node v : this->adja[v]) {
-			if (u < v) { // {u, v} instead of (u, v)
+		for (node v : this->adja[u]) {
+			if (u < v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+				handle(u, v);
+			}
+		}
+	}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph2::parallelForEdges(L handle) {
+#pragma omp parallel for
+	for (node u = 0; u < n; ++u) {
+		for (node v : this->adja[u]) {
+			if (u < v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
 				handle(u, v);
 			}
 		}
