@@ -18,26 +18,34 @@ HashingOverlapper::~HashingOverlapper() {
 	// TODO Auto-generated destructor stub
 }
 
-
-Clustering HashingOverlapper::run(Graph& G, std::vector<Clustering>& clusterings) {
+Clustering HashingOverlapper::run(Graph& G,
+		std::vector<Clustering>& clusterings) {
 
 	// hash function sdbm
 	auto sdbm = [](int64_t cid) {
 		unsigned char* str = (unsigned char*) &cid;
 		unsigned long h = 0;
 		int c;
-		while (c = *str++)
-		   h = c + (h << 6) + (h << 16) - h;
+		while (c = *str++) {
+			h = c + (h << 6) + (h << 16) - h;
+		}
 		return h;
 	};
 
+	auto djb2 = [](int64_t cid) {
+		unsigned char* str = (unsigned char*) &cid;
+		unsigned long hash = 5381;
+		int c;
+		while (c = *str++) {
+			hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+		}
+		return hash;
+	};
 
 	Clustering core(G.numberOfNodes());
 
 	// select hash function
-	auto hash = sdbm;
-
-
+	auto hash = djb2;
 
 	G.forallNodes([&](node v) {
 		size_t cHash = 0;
@@ -50,14 +58,13 @@ Clustering HashingOverlapper::run(Graph& G, std::vector<Clustering>& clusterings
 
 	// TODO: this is a quick fix for the issue that clusterings start with an upper id bound of n. bounds are needed and checked for iteration over all clusters
 	cluster maxCluster = 0;
-	G.forallNodes([&](node v){
+	G.forallNodes([&](node v) {
 		if (core[v] > maxCluster) {
 			maxCluster = core[v];
 		}
 	});
 	core.setUpperBound(maxCluster);
 	INFO("maxCluster: " << maxCluster);
-
 
 	return core;
 }
