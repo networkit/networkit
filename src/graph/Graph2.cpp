@@ -43,16 +43,6 @@ void Graph2::insertEdge(node u, node v) {
 }
 
 void Graph2::removeEdge(node u, node v) {
-//	std::cout << "before removing edge " << u << "," << v << ":" << std::endl;
-//	std::cout << "adj[" << u << "]: ";
-//	for (node x : this->adja[u]) {
-//		std::cout << x << " ";
-//	}
-//	std::cout << std::endl;
-//	std::cout << "adj[" << v << "]: ";
-//	for (node x : this->adja[v]) {
-//		std::cout << x << " ";
-//	}
 	std::cout << std::endl;
 
 	// remove adjacency
@@ -73,18 +63,6 @@ void Graph2::removeEdge(node u, node v) {
 		// TODO: remove attributes
 
 	}
-
-//	std::cout << "after removing edge " << u << "," << v << ":" << std::endl;
-//	std::cout << "adj[" << u << "]: ";
-//	for (node x : this->adja[u]) {
-//		std::cout << x << " ";
-//	}
-//	std::cout << std::endl;
-//	std::cout << "adj[" << v << "]: ";
-//	for (node x : this->adja[v]) {
-//		std::cout << x << " ";
-//	}
-//	std::cout << std::endl;
 }
 
 edgeweight Graph2::weight(node u, node v) const {
