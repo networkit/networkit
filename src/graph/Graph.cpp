@@ -90,7 +90,7 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 		if (ui != none) {
 			this->eweights[u][ui] = w;
 		} else {
-			throw std::runtime_error("TODO: what if edge not there?");
+			insertEdge(u, u, w);
 		}
 	} else {
 		index vi = find(u, v);
@@ -99,7 +99,7 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 			this->eweights[u][vi] = w;
 			this->eweights[v][ui] = w;
 		} else {
-			throw std::runtime_error("TODO: what if edge not there?");
+			insertEdge(u, v, w);
 		}
 	}
 
