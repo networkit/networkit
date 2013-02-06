@@ -1,0 +1,106 @@
+\hypertarget{class_ensemble_clustering_1_1_quality_measure}{\section{Ensemble\-Clustering\-:\-:Quality\-Measure Class Reference}
+\label{class_ensemble_clustering_1_1_quality_measure}\index{Ensemble\-Clustering\-::\-Quality\-Measure@{Ensemble\-Clustering\-::\-Quality\-Measure}}
+}
+
+
+Abstract base class for all clustering quality measures.  
+
+
+
+
+{\ttfamily \#include $<$Quality\-Measure.\-h$>$}
+
+
+
+Inheritance diagram for Ensemble\-Clustering\-:\-:Quality\-Measure\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{class_ensemble_clustering_1_1_quality_measure__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Quality\-Measure\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{class_ensemble_clustering_1_1_quality_measure__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_quality_measure_a3b41bebc4ac3305e09bcec0af16d0813}{Quality\-Measure} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&\hyperlink{class_ensemble_clustering_1_1_quality_measure_a8639730658036901338b34bc59bf4cec}{G})
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_quality_measure_aa7c9e45c6605f81f63c6dcca105e964c}{$\sim$\-Quality\-Measure} ()
+\item 
+virtual double \hyperlink{class_ensemble_clustering_1_1_quality_measure_ac451b559397c922c27be3a64b3463bd9}{get\-Quality} (\hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} \&zeta)=0
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} $\ast$ \hyperlink{class_ensemble_clustering_1_1_quality_measure_a8639730658036901338b34bc59bf4cec}{G}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Abstract base class for all clustering quality measures. 
+
+Definition at line 18 of file Quality\-Measure.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_quality_measure_a3b41bebc4ac3305e09bcec0af16d0813}{\index{Ensemble\-Clustering\-::\-Quality\-Measure@{Ensemble\-Clustering\-::\-Quality\-Measure}!Quality\-Measure@{Quality\-Measure}}
+\index{Quality\-Measure@{Quality\-Measure}!EnsembleClustering::QualityMeasure@{Ensemble\-Clustering\-::\-Quality\-Measure}}
+\subsubsection[{Quality\-Measure}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Quality\-Measure\-::\-Quality\-Measure (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_quality_measure_a3b41bebc4ac3305e09bcec0af16d0813}
+
+
+Definition at line 12 of file Quality\-Measure.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_quality_measure_aa7c9e45c6605f81f63c6dcca105e964c}{\index{Ensemble\-Clustering\-::\-Quality\-Measure@{Ensemble\-Clustering\-::\-Quality\-Measure}!$\sim$\-Quality\-Measure@{$\sim$\-Quality\-Measure}}
+\index{$\sim$\-Quality\-Measure@{$\sim$\-Quality\-Measure}!EnsembleClustering::QualityMeasure@{Ensemble\-Clustering\-::\-Quality\-Measure}}
+\subsubsection[{$\sim$\-Quality\-Measure}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Quality\-Measure\-::$\sim$\-Quality\-Measure (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_quality_measure_aa7c9e45c6605f81f63c6dcca105e964c}
+
+
+Definition at line 16 of file Quality\-Measure.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_quality_measure_ac451b559397c922c27be3a64b3463bd9}{\index{Ensemble\-Clustering\-::\-Quality\-Measure@{Ensemble\-Clustering\-::\-Quality\-Measure}!get\-Quality@{get\-Quality}}
+\index{get\-Quality@{get\-Quality}!EnsembleClustering::QualityMeasure@{Ensemble\-Clustering\-::\-Quality\-Measure}}
+\subsubsection[{get\-Quality}]{\setlength{\rightskip}{0pt plus 5cm}virtual double Ensemble\-Clustering\-::\-Quality\-Measure\-::get\-Quality (
+\begin{DoxyParamCaption}
+\item[{{\bf Clustering} \&}]{zeta}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_ensemble_clustering_1_1_quality_measure_ac451b559397c922c27be3a64b3463bd9}
+
+
+Implemented in \hyperlink{class_ensemble_clustering_1_1_modularity_a516c1fa49609c233d01a76d0f0d4c255}{Ensemble\-Clustering\-::\-Modularity}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_quality_measure_a8639730658036901338b34bc59bf4cec}{\index{Ensemble\-Clustering\-::\-Quality\-Measure@{Ensemble\-Clustering\-::\-Quality\-Measure}!G@{G}}
+\index{G@{G}!EnsembleClustering::QualityMeasure@{Ensemble\-Clustering\-::\-Quality\-Measure}}
+\subsubsection[{G}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph}$\ast$ Ensemble\-Clustering\-::\-Quality\-Measure\-::\-G\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_quality_measure_a8639730658036901338b34bc59bf4cec}
+
+
+Definition at line 22 of file Quality\-Measure.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/clustering/\hyperlink{_quality_measure_8h}{Quality\-Measure.\-h}\item 
+src/clustering/\hyperlink{_quality_measure_8cpp}{Quality\-Measure.\-cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,182 @@
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser}{\section{Ensemble\-Clustering\-:\-:M\-E\-T\-I\-S\-Parser Class Reference}
+\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser}\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+}
+
+
+{\ttfamily \#include $<$M\-E\-T\-I\-S\-Parser.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a44f5a744a2047441ff64ea1a1ab1a3fc}{M\-E\-T\-I\-S\-Parser} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a5937df5903a58e15c0df1445a70fff5c}{$\sim$\-M\-E\-T\-I\-S\-Parser} ()
+\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_afa2cbafd7ae746d310bba7b6ae6539ba}{open} (std\-::string \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a115b663b7cba22ec147d48f02c550b4a}{graph\-Path})
+\begin{DoxyCompactList}\small\item\em Open a M\-E\-T\-I\-S graph file. \end{DoxyCompactList}\item 
+virtual std\-::pair$<$ int, int $>$ \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a6c11f188b2ca67435a63fc9c71d261e9}{get\-Header} ()
+\begin{DoxyCompactList}\small\item\em Get the M\-E\-T\-I\-S graph file header. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_aa9adb857b8ff519edfe94b7bc59ef12a}{has\-Next} ()
+\begin{DoxyCompactList}\small\item\em Test if graph file has a next line. \end{DoxyCompactList}\item 
+virtual std\-::vector$<$ \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} $>$ \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a473d40949f87385130369a4f5d14b2ae}{get\-Next} ()
+\begin{DoxyCompactList}\small\item\em Get adjacencies from the next line in the M\-E\-T\-I\-S graph file. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a10b501c16294e94701fd231cb0b8d3f4}{close} ()
+\begin{DoxyCompactList}\small\item\em Close input file and clean up. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\-::string \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a115b663b7cba22ec147d48f02c550b4a}{graph\-Path}
+\item 
+std\-::ifstream \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_abe77511f89d17b6a043d38790b334151}{graph\-File}
+\item 
+std\-::string \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_ac9ae7379afb81dde47ba1298c42a9273}{line}
+\item 
+int \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a50fd01e9082507c3cbb34b7194d8e047}{node\-Count}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 25 of file M\-E\-T\-I\-S\-Parser.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a44f5a744a2047441ff64ea1a1ab1a3fc}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!M\-E\-T\-I\-S\-Parser@{M\-E\-T\-I\-S\-Parser}}
+\index{M\-E\-T\-I\-S\-Parser@{M\-E\-T\-I\-S\-Parser}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{M\-E\-T\-I\-S\-Parser}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::\-M\-E\-T\-I\-S\-Parser (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a44f5a744a2047441ff64ea1a1ab1a3fc}
+
+
+Definition at line 39 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a5937df5903a58e15c0df1445a70fff5c}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!$\sim$\-M\-E\-T\-I\-S\-Parser@{$\sim$\-M\-E\-T\-I\-S\-Parser}}
+\index{$\sim$\-M\-E\-T\-I\-S\-Parser@{$\sim$\-M\-E\-T\-I\-S\-Parser}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{$\sim$\-M\-E\-T\-I\-S\-Parser}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::$\sim$\-M\-E\-T\-I\-S\-Parser (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a5937df5903a58e15c0df1445a70fff5c}
+
+
+Definition at line 43 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a10b501c16294e94701fd231cb0b8d3f4}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!close@{close}}
+\index{close@{close}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{close}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::close (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a10b501c16294e94701fd231cb0b8d3f4}
+
+
+Close input file and clean up. 
+
+
+
+Definition at line 103 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a6c11f188b2ca67435a63fc9c71d261e9}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!get\-Header@{get\-Header}}
+\index{get\-Header@{get\-Header}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{get\-Header}]{\setlength{\rightskip}{0pt plus 5cm}std\-::pair$<$ int, int $>$ Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::get\-Header (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a6c11f188b2ca67435a63fc9c71d261e9}
+
+
+Get the M\-E\-T\-I\-S graph file header. 
+
+
+
+Definition at line 62 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a473d40949f87385130369a4f5d14b2ae}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!get\-Next@{get\-Next}}
+\index{get\-Next@{get\-Next}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{get\-Next}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$ {\bf node} $>$ Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::get\-Next (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a473d40949f87385130369a4f5d14b2ae}
+
+
+Get adjacencies from the next line in the M\-E\-T\-I\-S graph file. 
+
+
+
+Definition at line 87 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_aa9adb857b8ff519edfe94b7bc59ef12a}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!has\-Next@{has\-Next}}
+\index{has\-Next@{has\-Next}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{has\-Next}]{\setlength{\rightskip}{0pt plus 5cm}bool Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::has\-Next (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_aa9adb857b8ff519edfe94b7bc59ef12a}
+
+
+Test if graph file has a next line. 
+
+
+
+Definition at line 79 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_afa2cbafd7ae746d310bba7b6ae6539ba}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!open@{open}}
+\index{open@{open}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{open}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::open (
+\begin{DoxyParamCaption}
+\item[{std\-::string}]{graph\-Path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_afa2cbafd7ae746d310bba7b6ae6539ba}
+
+
+Open a M\-E\-T\-I\-S graph file. 
+
+
+
+Definition at line 48 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_abe77511f89d17b6a043d38790b334151}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!graph\-File@{graph\-File}}
+\index{graph\-File@{graph\-File}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{graph\-File}]{\setlength{\rightskip}{0pt plus 5cm}std\-::ifstream Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::graph\-File\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_abe77511f89d17b6a043d38790b334151}
+
+
+Definition at line 61 of file M\-E\-T\-I\-S\-Parser.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a115b663b7cba22ec147d48f02c550b4a}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!graph\-Path@{graph\-Path}}
+\index{graph\-Path@{graph\-Path}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{graph\-Path}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::graph\-Path\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a115b663b7cba22ec147d48f02c550b4a}
+
+
+Definition at line 60 of file M\-E\-T\-I\-S\-Parser.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_ac9ae7379afb81dde47ba1298c42a9273}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!line@{line}}
+\index{line@{line}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{line}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::line\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_ac9ae7379afb81dde47ba1298c42a9273}
+
+
+Definition at line 62 of file M\-E\-T\-I\-S\-Parser.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a50fd01e9082507c3cbb34b7194d8e047}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}!node\-Count@{node\-Count}}
+\index{node\-Count@{node\-Count}!EnsembleClustering::METISParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{node\-Count}]{\setlength{\rightskip}{0pt plus 5cm}int Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Parser\-::node\-Count\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_parser_a50fd01e9082507c3cbb34b7194d8e047}
+
+
+Definition at line 63 of file M\-E\-T\-I\-S\-Parser.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/input/\hyperlink{_m_e_t_i_s_parser_8h}{M\-E\-T\-I\-S\-Parser.\-h}\item 
+src/input/\hyperlink{_m_e_t_i_s_parser_8cpp}{M\-E\-T\-I\-S\-Parser.\-cpp}\end{DoxyCompactItemize}
