@@ -9,9 +9,9 @@
 
 namespace EnsembleClustering {
 
-Clustering::Clustering(int64_t n) : NodeMap<cluster>(n, 0), name("noname") {
+Clustering::Clustering(count n) : NodeMap<cluster>(n, -1), name("noname") {
 	// all entries are initialized to 0, which means that the nodes are unclustered
-	this->nextCluster = 1; //!< first cluster index is 1
+	this->nextCluster = 0; //!< first cluster index is 1
 	this->upperIdBound = n;	// upper id bound = n is okay only for agglomeratively created clusters
 }
 
@@ -37,7 +37,7 @@ void Clustering::moveToCluster(cluster c, node u) {
 
 void Clustering::mergeClusters(cluster c, cluster d) {
 	cluster e = this->getNextCluster();
-	for (node u = 1; u <= this->n; ++u) {
+	for (node u = 0; u < this->n; ++u) {
 		if (((*this)[u] == c) || (*this)[u] == d) {
 			this->moveToCluster(e, u);
 		}
@@ -60,10 +60,10 @@ bool Clustering::isProper(Graph& G) {
 
 
 int64_t Clustering::numberOfClusters() {
-	int64_t k = 0; // number of clusters
+	count k = 0; // number of clusters
 	std::set<cluster> activeClusters;
-	for (int64_t i = 1; i <= this->n; ++i) {
-		cluster c = this->data[i];
+	for (node u = 0; u < this->n; ++u) {
+		cluster c = this->data[u];
 		if (activeClusters.find(c) == activeClusters.end()) {
 			k++;
 			activeClusters.insert(c);
@@ -79,15 +79,15 @@ cluster Clustering::upperBound() const {
 
 
 cluster Clustering::lowerBound() const {
-	return 1;
+	return 0;
 }
 
 void Clustering::allToSingletons() {
 	#pragma omp parallel for
-	for (node u = 1; u <= this->n; ++u) {
+	for (node u = 0; u < this->n; ++u) {
 		this->data[u] = u;
 	}
-	this->nextCluster = this->n + 1;
+	this->nextCluster = this->n;
 }
 
 cluster Clustering::addCluster() {
@@ -98,12 +98,12 @@ cluster Clustering::addCluster() {
 
 
 bool Clustering::isInRange(node v) {
-	return ((1 <= v) && (v <= this->numberOfNodes()));
+	return ((0 <= v) && (v < this->numberOfNodes()));
 }
 
 bool Clustering::contains(node v) {
 	// assert (this->isInRange(v));	// assume that node is in range
-	return (this->data[v] != 0);	// check if node is assigned to cluster, i.e. entry is not null
+	return (this->data[v] != this->defaultValue);	// check if node is assigned to cluster, i.e. entry is not null
 }
 
 void Clustering::setName(std::string name) {
@@ -150,7 +150,7 @@ void Clustering::setUpperBound(cluster id) {
 
 void Clustering::print() const {
 	std::cout << "{";
-	for (int64_t i = 0; i <= this->n; ++i) {
+	for (int64_t i = 0; i < this->n; ++i) {
 		std::cout << i << ":" << this->data[i] << ", ";
 	}
 	std::cout << "}" << std::endl;

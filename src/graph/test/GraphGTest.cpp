@@ -109,10 +109,10 @@ TEST_F(GraphGTest, testParallelLambdaNodeIteration) {
 TEST_F(GraphGTest, testLambdaNeighborIteration) {
 
 	Graph G(4);
-	node v = 1;
+	node v = 0;
+	G.insertEdge(v, 1);
 	G.insertEdge(v, 2);
 	G.insertEdge(v, 3);
-	G.insertEdge(v, 4);
 
 	int neighborCount = 0;
 	G.forNeighborsOf(v, [&](node w){
@@ -126,10 +126,10 @@ TEST_F(GraphGTest, testLambdaNeighborIteration) {
 TEST_F(GraphGTest, testLambdaIncidentEdgeIteration) {
 
 	Graph G(4);
-	node v = 1;
+	node v = 0;
+	G.insertEdge(v, 1);
 	G.insertEdge(v, 2);
 	G.insertEdge(v, 3);
-	G.insertEdge(v, 4);
 
 	int edgeCount = 0;
 	G.forEdgesOf(v, [&](node v, node w){
@@ -143,10 +143,10 @@ TEST_F(GraphGTest, testLambdaIncidentEdgeIteration) {
 TEST_F(GraphGTest, testNodeBFS) {
 
 	Graph G(4);
-	node v = 1;
+	node v = 0;
+	G.insertEdge(v, 1);
 	G.insertEdge(v, 2);
 	G.insertEdge(v, 3);
-	G.insertEdge(v, 4);
 
 	int nodeCount = 0;
 	G.breadthFirstNodesFrom(v, [&](node w) {
@@ -159,11 +159,11 @@ TEST_F(GraphGTest, testNodeBFS) {
 TEST_F(GraphGTest, testEdgeBFS) {
 
 	Graph G(4);
-	node v = 1;
+	node v = 0;
+	G.insertEdge(v, 1);
 	G.insertEdge(v, 2);
 	G.insertEdge(v, 3);
-	G.insertEdge(v, 4);
-	G.insertEdge(4, 3);
+	G.insertEdge(3, 2);
 
 	int edgeCount = 0;
 	G.breadthFirstEdgesFrom(v, [&](node x, node y) {
@@ -208,10 +208,10 @@ TEST_F(GraphGTest, testNumberOfEdges) {
 	int64_t n = 3;
 	Graph G(n);
 
-	G.insertEdge(1, 2);
+	G.insertEdge(0, 1);
 	EXPECT_EQ(1, G.numberOfEdges()) << "G should have 1 edge now";
 
-	G.insertEdge(1, 3);
+	G.insertEdge(0, 2);
 	EXPECT_EQ(2, G.numberOfEdges()) << "G should have 2 edges now";
 
 }
@@ -221,12 +221,12 @@ TEST_F(GraphGTest, testHasEdge) {
 	int64_t n = 3;
 	Graph G(n);
 
-	G.insertEdge(1, 2);
-	EXPECT_TRUE(G.hasEdge(1, 2)) << "edge should exist in G";
-	EXPECT_FALSE(G.hasEdge(1, 3)) << "edge should not exist in G";
+	G.insertEdge(0, 1);
+	EXPECT_TRUE(G.hasEdge(0, 1)) << "edge should exist in G";
+	EXPECT_FALSE(G.hasEdge(0, 2)) << "edge should not exist in G";
 
-	G.removeEdge(1, 2);
-	EXPECT_FALSE(G.hasEdge(1, 2)) << "edge should no longer exist in G";
+	G.removeEdge(0, 1);
+	EXPECT_FALSE(G.hasEdge(0, 1)) << "edge should no longer exist in G";
 
 }
 
@@ -234,16 +234,16 @@ TEST_F(GraphGTest, testHasEdge) {
 TEST_F(GraphGTest, testGraphCopy) {
 	int64_t n = 3;
 	Graph G1(n);
-	G1.insertEdge(1, 2);
+	G1.insertEdge(0, 1);
 
 	Graph G2 = G1;	// copy G1 to G2
 
 	EXPECT_EQ(G1.numberOfNodes(), G2.numberOfNodes()) << "G2 should have same number of nodes as G1";
 	EXPECT_EQ(G1.numberOfEdges(), G2.numberOfEdges()) << "G2 should have same number of edges as G1";
 
-	G1.insertEdge(1, 3);
+	G1.insertEdge(0, 2);
 
-	EXPECT_FALSE(G2.hasEdge(1, 3)) << "edge inserted in G1 should not exist in G2";
+	EXPECT_FALSE(G2.hasEdge(0, 2)) << "edge inserted in G1 should not exist in G2";
 }
 
 

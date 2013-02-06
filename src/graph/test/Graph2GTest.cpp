@@ -236,4 +236,16 @@ TEST_F(Graph2GTest, testConstNodePairIteration) {
 }
 
 
+TEST_F(Graph2GTest, testAddNode) {
+	count n = 10;
+	Graph G(n);
+
+	// TODO:
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "number of nodes should be " << n << " in the graph";
+
+
+	// TODO: insert nodes and delete them, test again
+}
+
 } /* namespace EnsembleClustering */

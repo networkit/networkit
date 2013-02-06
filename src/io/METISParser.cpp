@@ -27,7 +27,7 @@ static std::vector<node> parseLine(std::string line) {
 
 	// split string and push adjacent nodes
 	while (std::getline(stream, token, delim)) {
-		node v = atoi(token.c_str());
+		node v = atoi(token.c_str()); // make node indices 0-based
 		adjacencies.push_back(v);
 	}
 

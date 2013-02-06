@@ -92,11 +92,20 @@ bool Graph::hasEdge(node u, node v) const {
 }
 
 node Graph::addNode() {
-	// TODO:
-	// TODO: how to set capacity of std::vector
+	this->n += 1;
+
+	//update per node data structures
+	this->deg.push_back(0);
+
+	// update per edge data structures
+	std::vector<node> adjacencyVector;	// vector of adjacencies for new node
+	std::vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
+	this->adja.push_back(adjacencyVector);
+	this->eweights.push_back(edgeWeightVector);
 }
 
 void Graph::extendNodeRange(int64_t n) {
+	throw std::runtime_error("TODO");
 	// TODO:
 }
 
@@ -113,7 +122,8 @@ count Graph::degree(node v) const {
 }
 
 edgeweight Graph::weightedDegree(node v) const {
-	// TODO
+	throw std::runtime_error("DEPRECATED");
+	// TODO:
 }
 
 

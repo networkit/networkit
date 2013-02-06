@@ -12,6 +12,7 @@
 
 namespace EnsembleClustering {
 
+
 /**
  * An IndexMap implements a 1-based mapping from an integer index type to an arbitray value type.
  *
@@ -24,7 +25,6 @@ protected:
 	int64_t n;	//<! number of indices
 	std::vector<T> data; //!< array of size (n+1).  array[0] is not a valid entry, since node indices are 1-based, and contains the nullValue
 	T defaultValue; //!< default value
-	T nullValue; //!< denotes absence of a value
 
 public:
 
@@ -114,8 +114,8 @@ public:
 //}
 
 template<typename I, typename T>
-inline EnsembleClustering::IndexMap<I, T>::IndexMap(int64_t n, T defaultValue = 0) :
-		data(n + 1, defaultValue), defaultValue(defaultValue) {
+inline EnsembleClustering::IndexMap<I, T>::IndexMap(int64_t n, T defaultValue = -1) :
+		data(n, defaultValue), defaultValue(defaultValue) {
 	this->n = n;
 }
 
@@ -150,7 +150,7 @@ inline bool EnsembleClustering::IndexMap<I, T>::hasBeenSet(I index) const {
 template<typename I, typename T>
 inline void EnsembleClustering::IndexMap<I, T>::print() {
 	std::cout << "{";
-	for (int64_t i = 0; i <= this->n; ++i) {
+	for (int64_t i = 0; i < this->n; ++i) {
 		std::cout << i << ":" << this->data[i] << ", ";
 	}
 	std::cout << "}" << std::endl;
@@ -159,13 +159,13 @@ inline void EnsembleClustering::IndexMap<I, T>::print() {
 
 template<typename I, typename T>
 inline int64_t EnsembleClustering::IndexMap<I, T>::numberOfNodes() const {
-	return this->data.size() - 1;	// first index 0 is not used since indices are 1-based
+	return this->data.size();	// indices are 0-based
 }
 
 template<typename I, typename T>
 inline void EnsembleClustering::IndexMap<I, T>::setAll(T value) {
 	#pragma omp parallel for if (this->n >= 100000)  // TODO: correct parallelization condition?
-	for (int64_t i = 1; i <= this->n; ++i) {
+	for (int64_t i = 0; i < this->n; ++i) {
 		this->data[i] = value;
 	}
 }

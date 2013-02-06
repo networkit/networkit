@@ -35,14 +35,17 @@ Graph METISGraphReader::read(std::string path) {
 
 	int lc = 0;
 	double p = 0.0; // percentage for progress bar
-	node u = 0;
+	node u = 0; // begin with 0
 	while (parser.hasNext()) {
 		TRACE("line: " << lc++);
-		u += 1;
 		std::vector<node> adjacencies = parser.getNext();
 		for (node v : adjacencies) {
-			G.insertEdge(u, v);
+			v = v - 1; 	// METIS-indices are 1-based
+			if (! G.hasEdge(u, v)) {
+				G.insertEdge(u, v);
+			}
 		}
+		u += 1; // next node
 		if ((u % 1000) == 0) {
 			p = ((double) u / (double) n) * 100;
 			std::cout << p << "% " << std::flush;

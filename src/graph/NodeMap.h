@@ -25,7 +25,7 @@ public:
 	 * @param[in]	n				number of entries
 	 * @param[in]	defaultValue	all entries are initialized to this value
 	 */
-	NodeMap(int64_t n, T defaultValue);
+	NodeMap(count n, T defaultValue);
 
 	virtual ~NodeMap();
 
@@ -57,13 +57,11 @@ public:
 
 
 
-template<typename T> inline EnsembleClustering::NodeMap<T>::NodeMap(int64_t n, T defaultValue = 0) :
+template<typename T> inline EnsembleClustering::NodeMap<T>::NodeMap(count n, T defaultValue = -1) :
 		IndexMap<node, T>(n, defaultValue) {
 }
 
 template<typename T> inline EnsembleClustering::NodeMap<T>::~NodeMap() {
-	// FIXME: if the destructor is implemented, also implement copy constructor according to the Rule of Three
-	// FIXME: delete[] array;
 }
 
 template<typename T> inline T& EnsembleClustering::NodeMap<T>::operator [](const node& u) {

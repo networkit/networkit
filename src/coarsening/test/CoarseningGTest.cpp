@@ -59,7 +59,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	ClusteringProjector project;
 	Clustering zetaBack = project.projectBackToFinest(zeta1, maps, G0);
 
-	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "\zeta^{1->0} and \zeta^{0} should be identical";
+	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical";
 }
 
 
@@ -84,7 +84,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 	ClusteringProjector project;
 	Clustering zetaBack = project.projectBackToFinest(zeta1, maps, G0);
 
-	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "\zeta^{1->0} and \zeta^{0} should be identical";
+	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical";
 }
 
 

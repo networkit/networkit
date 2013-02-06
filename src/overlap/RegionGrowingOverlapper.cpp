@@ -31,7 +31,8 @@ Clustering RegionGrowingOverlapper::run(Graph& G, std::vector<Clustering>& clust
 
 	while (! allVisited) {
 		// select start node for BFS
-		for (node v = 1; v <= n; ++v) {
+
+		for (node v = 0; v < n; ++v) {
 			if (visited[v] == 0) {
 				r = v;
 				break;

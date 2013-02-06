@@ -43,7 +43,7 @@ protected:
 	node maxn; //!< maximum node id / upper bound of node range
 
 	// per node data
-	nodemap<count> deg; //!< degree of each node
+	std::vector<count> deg; //!< degree of each node
 
 	// per edge data
 	std::vector<std::vector<node> > adja; //!< neighbors/adjacencies

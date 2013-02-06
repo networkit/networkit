@@ -47,7 +47,7 @@ public:
 	 *
 	 * @param[in]	n	number of nodes
 	 */
-	Clustering(int64_t n);
+	Clustering(count n);
 
 	virtual ~Clustering();
 
@@ -85,7 +85,7 @@ public:
 	 * is contained.
 	 */
 	inline cluster clusterOf(node u) const {
-		assert (u <= this->numberOfNodes());
+		assert (u < this->numberOfNodes());
 		return this->data[u];
 	}
 
@@ -215,7 +215,7 @@ inline void EnsembleClustering::Clustering::forEntries(Callback func,
 		std::string par) {
 	assert ((par == "") || (par == "parallel"));
 	#pragma omp parallel for if (par == "parallel")
-	for (node v = 1; v <= this->n; v += 1) {
+	for (node v = 0; v < this->n; v += 1) {
 		cluster c = (*this)[v];
 		func(v, c);
 	}

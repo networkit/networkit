@@ -48,6 +48,7 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 	G.forEdges([&](node u, node v) {
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
+		// FIXME: bad accees to nodeToSuperNode
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 			// add edge weight to supernode (self-loop) weight
 			Gcon.setWeight(su, su, Gcon.weight(su) + G.weight(u, v));
