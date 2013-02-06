@@ -353,8 +353,24 @@ TEST_F(Graph2GTest, testAddNode) {
 	EXPECT_EQ(newN, G.numberOfNodes()) << "new number of nodes should be " << newN;
 	EXPECT_EQ(0, G.degree(v)) << "new node should have degree 0";
 
+}
 
-	// TODO: insert nodes and delete them, test again
+
+TEST_F(Graph2GTest, testWeightedDegree) {
+	count n = 4;
+	Graph G(n);
+
+	node v = 0;
+	G.insertEdge(v, 1, 20.0);
+	G.insertEdge(v, 2, 20.0);
+	G.insertEdge(v, v, 2.0); // self-loop
+	G.insertEdge(v, 3, 100.0);
+	G.removeEdge(v, 3);
+
+	edgeweight wDeg = G.weightedDegree(v);
+
+	EXPECT_EQ(42.0, wDeg) << "weighted degree should be 42.0";
+
 }
 
 } /* namespace EnsembleClustering */
