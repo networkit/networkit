@@ -20,17 +20,13 @@ Coverage::~Coverage() {
 
 double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 
-//	int64_t n = G.numberOfNodes();
-//	int64_t m = G.numberOfEdges();
 	if (G.totalEdgeWeight() == 0.0) {
 		throw std::invalid_argument(
 				"Coverage is undefined for graphs without edges (including self-loops).");
 	}
 
 	double coverage = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
-
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
-// deprecated:	totalEdgeWeight += G.totalNodeWeight();	// add "self-loop" weight
 
 	IndexMap<cluster, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
 
@@ -51,12 +47,6 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 					intraEdgeWeight[c] += G.weight(u, v);
 				} // else ignore edge
 			});
-
-	// deprecated: .... and also add self-loops
-//	G.forNodes([&](node v) {
-//		cluster c = zeta.clusterOf(v);
-//		intraEdgeWeight[c] += G.weight(v);
-//	});
 
 	double intraEdgeWeightSum = 0.0; //!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
 #pragma omp parallel for reduction(+:intraEdgeWeightSum)
