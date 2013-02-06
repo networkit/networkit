@@ -20,6 +20,7 @@ TEST_F(ClusteringGTest, testModularity) {
 
 
 	Graph G = graphGenerator.makeCompleteGraph(n);
+	DEBUG("total edge weight: " << G.totalEdgeWeight());
 
 	ClusteringGenerator clusteringGenerator;
 

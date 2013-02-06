@@ -22,6 +22,7 @@ Graph::~Graph() {
 }
 
 
+// TODO: replace by for_each
 index Graph::find(node u, node v) const {
 	index vi = none;
 	for (node x : this->adja[u]) {
@@ -35,7 +36,6 @@ index Graph::find(node u, node v) const {
 }
 
 void Graph::insertEdge(node u, node v, edgeweight weight) {
-
 	if (u == v) { // self-loop case
 		this->adja[u].push_back(u);
 		this->deg[u] += 1;
@@ -52,7 +52,6 @@ void Graph::insertEdge(node u, node v, edgeweight weight) {
 		this->eweights[v].push_back(weight);
 		// TODO: loop over all attributes, setving default attr
 	}
-
 }
 
 void Graph::removeEdge(node u, node v) {
@@ -64,7 +63,7 @@ void Graph::removeEdge(node u, node v) {
 		// TODO: what if edge does not exist?
 	} else {
 		this->adja[u][vi] = none;
-		this->adja[v][ui] = none; //FIXME:  assumpvion: u is at same index w.r.t. v as v w.r.t. u -
+		this->adja[v][ui] = none; //FIXME:  assumption: u is at same index w.r.t. v as v w.r.t. u -
 		// decrement degree counters
 		this->deg[u] -= 1;
 		this->deg[v] -= 1;
@@ -123,7 +122,6 @@ node Graph::addNode() {
 	std::vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 	this->adja.push_back(adjacencyVector);
 	this->eweights.push_back(edgeWeightVector);
-
 	return v;
 }
 
@@ -172,6 +170,7 @@ edgeweight Graph::totalEdgeWeight() {
 	this->forEdges([&](node u, node v){
 		sum += this->weight(u, v);
 	});
+	return sum;
 }
 
 void Graph::setName(std::string name) {
