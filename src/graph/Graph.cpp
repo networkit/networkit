@@ -178,8 +178,10 @@ void Graph::setName(std::string name) {
 }
 
 std::string Graph::toString() {
-	return "TODO";
-	// TODO:
+	std::stringstream strm;
+	strm << "Graph(name=" << this->getName() << ", n=" << this->numberOfNodes()
+			<< ", m=" << this->numberOfEdges() << ")";
+	return strm.str();
 }
 
 std::string Graph::getName() {
