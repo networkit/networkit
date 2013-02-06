@@ -86,12 +86,24 @@ edgeweight Graph::weight(node u, node v) const {
 }
 
 void Graph::setWeight(node u, node v, edgeweight w) {
-	index vi = find(u, v);
-	if (vi != none) {
-		this->eweights[u][vi] = w;
+	if (u == v) { 		// self-loop case
+		index ui = find(u, u);
+		if (ui != none) {
+			this->eweights[u][ui] = w;
+		} else {
+			throw std::runtime_error("TODO: what if edge not there?");
+		}
 	} else {
-		// TODO: what if edge not there?
+		index vi = find(u, v);
+		index ui = find(v, u);
+		if ((vi != none) && (ui != none)) {
+			this->eweights[u][vi] = w;
+			this->eweights[v][ui] = w;
+		} else {
+			throw std::runtime_error("TODO: what if edge not there?");
+		}
 	}
+
 }
 
 bool Graph::hasEdge(node u, node v) const {

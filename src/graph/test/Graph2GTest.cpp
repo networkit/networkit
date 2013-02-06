@@ -373,4 +373,31 @@ TEST_F(Graph2GTest, testWeightedDegree) {
 
 }
 
+
+
+TEST_F(Graph2GTest, testSetWeight) {
+	count n = 4;
+	Graph G(n);
+
+	node u = 0;
+	node v = 1;
+	G.insertEdge(u, v);
+
+	G.setWeight(u, v, 42.0);
+	EXPECT_EQ(42.0, G.weight(u, v));
+
+	// symmetric case
+	G.setWeight(v, u, 23.0);
+	EXPECT_EQ(23.0, G.weight(u, v));
+
+	// self-loop
+	G.insertEdge(v, v);
+	G.setWeight(v, v, 42.0);
+	EXPECT_EQ(42.0, G.weight(v, v));
+	G.setWeight(v, v, 17.0);
+	EXPECT_EQ(17.0, G.weight(v, v));
+
+
+}
+
 } /* namespace EnsembleClustering */
