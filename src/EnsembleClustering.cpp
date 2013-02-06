@@ -23,6 +23,7 @@
 
 
 // EnsembleClustering
+#include "Globals.h"
 #include "aux/optionparser.h"
 #include "aux/Log.h"
 #include "aux/Timer.h"
@@ -189,7 +190,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SILENT};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -204,6 +205,7 @@ const OptionParser::Descriptor usage[] =
  {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "  --ensemble=<b> \t <b>: number of base clusterers in the ensemble"},	// TODO: provide more options
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
  {WRITEGRAPH, 0, "", "writegraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"}, // TODO: leave as "algo"
+ {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -432,6 +434,13 @@ int main(int argc, char **argv) {
 		// set number of threads
 		int nThreads = std::atoi(options[THREADS].arg);
 		omp_set_num_threads(nThreads);
+	}
+
+	// CONFIGURE OUTPUT
+	if (options[SILENT]) {
+		PRINT_PROGRESS = false;
+	} else {
+		PRINT_PROGRESS = true;
 	}
 
 

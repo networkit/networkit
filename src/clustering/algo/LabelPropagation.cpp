@@ -20,6 +20,8 @@ LabelPropagation::~LabelPropagation() {
 
 Clustering LabelPropagation::run(Graph& G) {
 
+	const bool printProgress = PRINT_PROGRESS;
+
 	typedef cluster label;	// a label is the same as a cluster id
 
 	// init random for std::shuffle
@@ -59,9 +61,14 @@ Clustering LabelPropagation::run(Graph& G) {
 	NodeMap<double> weightedDegree(n, 0.0);
 	G.parallelForNodes([&](node v) {
 		weightedDegree[v] = G.weightedDegree(v);
-		pm.signal(v);
+		if (printProgress) {
+			pm.signal(v);
+		}
 	});
-	pm.end();
+	if (printProgress) {
+		pm.end();
+	}
+
 
 
 	// propagate labels
@@ -86,7 +93,10 @@ Clustering LabelPropagation::run(Graph& G) {
 			node v = shuffledNodes[i];
 
 			// PROGRESS
-			pm.signal(i);
+
+			if (printProgress) {
+				pm.signal(i);
+			}
 
 
 			if (G.degree(v) > 0) {
@@ -100,16 +110,6 @@ Clustering LabelPropagation::run(Graph& G) {
 					labelWeights[lw] += G.weight(v, w);	// add weight of edge {v, w}
 				});
 
-
-				// get most frequent label
-//				label heaviest = 0;
-//				edgeweight maxWeight = 0.0;
-//				for (auto it = labelWeights.begin(); it != labelWeights.end(); it++) {
-//					if (it->second > maxWeight) {
-//						maxWeight = it->second;
-//						heaviest = it->first;
-//					}
-//				}
 
 				// get heaviest label
 				label heaviest = std::max_element(labelWeights.begin(), labelWeights.end(),
@@ -136,7 +136,10 @@ Clustering LabelPropagation::run(Graph& G) {
 		// for each while loop iteration...
 
 		// PROGRESS
-		pm.end();
+		if (printProgress) {
+			pm.end();
+		}
+
 
 		INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels");
 
