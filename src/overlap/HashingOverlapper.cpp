@@ -26,7 +26,7 @@ Clustering HashingOverlapper::run(Graph& G,
 		unsigned char* str = (unsigned char*) &cid;
 		unsigned long h = 0;
 		int c;
-		while (c = *str++) {
+		while ((c = *str++)) {
 			h = c + (h << 6) + (h << 16) - h;
 		}
 		return h;
@@ -36,7 +36,7 @@ Clustering HashingOverlapper::run(Graph& G,
 		unsigned char* str = (unsigned char*) &cid;
 		unsigned long hash = 5381;
 		int c;
-		while (c = *str++) {
+		while ((c = *str++)) {
 			hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 		}
 		return hash;
