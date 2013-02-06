@@ -28,8 +28,7 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 	G.forNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
 		if (! clusterToSuperNode.hasBeenSet(c)) {
-			node sv = Gcon.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
-			clusterToSuperNode[c] = sv;
+			clusterToSuperNode[c] = Gcon.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
 		}
 	});
 
@@ -38,9 +37,8 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 	NodeMap<node> nodeToSuperNode(n);
 
 	// set entries node -> supernode
-	G.forNodes([&](node v){
-		cluster c = zeta.clusterOf(v);
-		nodeToSuperNode[v] = clusterToSuperNode[c];
+	G.parallelForNodes([&](node v){
+		nodeToSuperNode[v] = clusterToSuperNode[zeta.clusterOf(v)];
 	});
 
 
@@ -48,7 +46,7 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 	G.forEdges([&](node u, node v) {
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
-		// FIXME: bad accees to nodeToSuperNode
+		// FIXME: bad access to nodeToSuperNode
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 			// add edge weight to supernode (self-loop) weight
 			Gcon.setWeight(su, su, Gcon.weight(su) + G.weight(u, v));
