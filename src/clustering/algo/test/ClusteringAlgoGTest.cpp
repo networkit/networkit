@@ -95,7 +95,8 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 
 TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	Graph G(1);
-	G.setWeight(1, 42.0);
+	node v = 0;
+	G.setWeight(v, v, 42.0);
 
 	LabelPropagation lp;
 	Clustering zeta = lp.run(G);
