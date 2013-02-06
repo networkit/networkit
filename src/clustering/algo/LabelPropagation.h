@@ -18,6 +18,7 @@
 #include <random>
 #include <omp.h>
 
+#include "../../Globals.h"
 #include "../../aux/Log.h"
 #include "../../aux/ProgressMeter.h"
 #include "../../graph/NodeMap.h"
