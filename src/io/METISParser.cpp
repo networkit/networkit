@@ -94,6 +94,8 @@ std::pair<int, int> METISParser::getHeader() {
 		return std::make_pair(n, m);
 	} else {
 		ERROR("getline not successful");
+		throw std::runtime_error("getting METIS file header failed");
+		return std::make_pair(0,0);
 	}
 
 }
@@ -122,6 +124,10 @@ std::vector<node> METISParser::getNext() {
 		}
 
 	} while (comment);
+
+	throw std::runtime_error("bad METIS file structure");
+	std::vector<node> fail;
+	return fail;
 }
 
 
