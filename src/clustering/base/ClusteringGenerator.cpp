@@ -39,7 +39,7 @@ Clustering ClusteringGenerator::makeRandomClustering(Graph& G, int k) {
 	// random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1, k);
+    std::uniform_int_distribution<> dis(0, k-1);
 	//
 	int64_t n = G.numberOfNodes();
 	Clustering zeta(n);

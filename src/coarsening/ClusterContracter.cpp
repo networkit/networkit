@@ -22,7 +22,7 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 
 	Graph Gcon(0); // empty graph
 
-	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound(), 0); // there is one supernode for each cluster
+	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound(), -1); // there is one supernode for each cluster
 
 	// populate map cluster -> supernode
 	G.forNodes([&](node v){
@@ -49,7 +49,7 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 		// FIXME: bad access to nodeToSuperNode
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 			// add edge weight to supernode (self-loop) weight
-			Gcon.setWeight(su, su, Gcon.weight(su) + G.weight(u, v));
+			Gcon.setWeight(su, su, Gcon.weight(su, su) + G.weight(u, v));
 		} else {
 			// add edge weight to weight between two supernodes
 			if (Gcon.hasEdge(su, sv)) {
