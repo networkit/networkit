@@ -345,11 +345,13 @@ TEST_F(Graph2GTest, testConstNodePairIteration) {
 
 TEST_F(Graph2GTest, testAddNode) {
 	count n = 10;
+	count newN = n + 1;
 	Graph G(n);
 
-	// TODO:
-
-	EXPECT_EQ(n, G.numberOfNodes()) << "number of nodes should be " << n << " in the graph";
+	node v = G.addNode();
+	EXPECT_EQ(v, n) << "new node should have id equal to previous n";
+	EXPECT_EQ(newN, G.numberOfNodes()) << "new number of nodes should be " << newN;
+	EXPECT_EQ(0, G.degree(v)) << "new node should have degree 0";
 
 
 	// TODO: insert nodes and delete them, test again

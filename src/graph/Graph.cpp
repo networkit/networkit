@@ -92,6 +92,7 @@ bool Graph::hasEdge(node u, node v) const {
 }
 
 node Graph::addNode() {
+	node v = this->n;
 	this->n += 1;
 
 	//update per node data structures
@@ -102,6 +103,8 @@ node Graph::addNode() {
 	std::vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 	this->adja.push_back(adjacencyVector);
 	this->eweights.push_back(edgeWeightVector);
+
+	return v;
 }
 
 void Graph::extendNodeRange(int64_t n) {
