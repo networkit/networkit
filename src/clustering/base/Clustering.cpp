@@ -157,12 +157,10 @@ void Clustering::compact() {
 	}, "");
 
 	this->forEntries([&](node v, cluster c) {
-		(*this)[v] = compactingMap[c];
+		data[v] = compactingMap[c];
 	}, "parallel");
 
-	cluster ub = std::max_element(compactingMap.begin(), compactingMap.end(),
-	      [](const std::pair<cluster, cluster>& p1, const std::pair<cluster, cluster>& p2) {
-	        return p1.second < p2.second; })->second;
+	cluster ub = *std::max_element(data.begin(), data.end());
 	setUpperBound(ub+1);
 
 	TRACE("upperBound: " << upperBound());
