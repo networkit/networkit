@@ -53,22 +53,7 @@ Clustering HashingOverlapper::run(Graph& G,
 			core[v] += (hash(zeta[v]) & 0xffff);
 		});
 	}
-
 	core.compact();
-
-
-//	// TODO: this is a quick fix for the issue that clusterings start with an upper id bound of n. bounds are needed and checked for iteration over all clusters
-//	cluster maxCluster = 0;
-//	G.forNodes([&](node v) {
-//		if (core[v] > maxCluster) {
-//			maxCluster = core[v];
-//		}
-//	});
-//	INFO("upperBound: " << core.upperBound());
-//	core.setUpperBound(maxCluster + 1);
-//	INFO("upperBound: " << core.upperBound());
-//	assert (core.upperBound() == (maxCluster + 1));
-//	INFO("maxCluster: " << maxCluster);
 
 	return core;
 }
