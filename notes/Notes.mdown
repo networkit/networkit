@@ -1,0 +1,8 @@
+Ensemble Clustering
+===================
+
+
+Code Style
+----------
+
+* [Google Code Style Guidelines for C++](http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml) (rough recommendations, not followed precisely)
