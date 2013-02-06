@@ -345,14 +345,59 @@ TEST_F(Graph2GTest, testConstNodePairIteration) {
 
 TEST_F(Graph2GTest, testAddNode) {
 	count n = 10;
+	count newN = n + 1;
 	Graph G(n);
 
-	// TODO:
+	node v = G.addNode();
+	EXPECT_EQ(v, n) << "new node should have id equal to previous n";
+	EXPECT_EQ(newN, G.numberOfNodes()) << "new number of nodes should be " << newN;
+	EXPECT_EQ(0, G.degree(v)) << "new node should have degree 0";
 
-	EXPECT_EQ(n, G.numberOfNodes()) << "number of nodes should be " << n << " in the graph";
+}
 
 
-	// TODO: insert nodes and delete them, test again
+TEST_F(Graph2GTest, testWeightedDegree) {
+	count n = 4;
+	Graph G(n);
+
+	node v = 0;
+	G.insertEdge(v, 1, 20.0);
+	G.insertEdge(v, 2, 20.0);
+	G.insertEdge(v, v, 2.0); // self-loop
+	G.insertEdge(v, 3, 100.0);
+	G.removeEdge(v, 3);
+
+	edgeweight wDeg = G.weightedDegree(v);
+
+	EXPECT_EQ(42.0, wDeg) << "weighted degree should be 42.0";
+
+}
+
+
+
+TEST_F(Graph2GTest, testSetWeight) {
+	count n = 4;
+	Graph G(n);
+
+	node u = 0;
+	node v = 1;
+	G.insertEdge(u, v);
+
+	G.setWeight(u, v, 42.0);
+	EXPECT_EQ(42.0, G.weight(u, v));
+
+	// symmetric case
+	G.setWeight(v, u, 23.0);
+	EXPECT_EQ(23.0, G.weight(u, v));
+
+	// self-loop
+	G.insertEdge(v, v);
+	G.setWeight(v, v, 42.0);
+	EXPECT_EQ(42.0, G.weight(v, v));
+	G.setWeight(v, v, 17.0);
+	EXPECT_EQ(17.0, G.weight(v, v));
+
+
 }
 
 } /* namespace EnsembleClustering */

@@ -36,6 +36,7 @@ index Graph::find(node u, node v) const {
 }
 
 void Graph::insertEdge(node u, node v, edgeweight weight) {
+<<<<<<< mine
 	// set adjacency
 	this->adja[u].push_back(v);
 	this->adja[v].push_back(u);
@@ -46,6 +47,26 @@ void Graph::insertEdge(node u, node v, edgeweight weight) {
 	this->eweights[u].push_back(weight);
 	this->eweights[v].push_back(weight);
 	// TODO: loop over all attributes, setting default attr
+=======
+
+	if (u == v) { // self-loop case
+		this->adja[u].push_back(u);
+		this->deg[u] += 1;
+		this->eweights[u].push_back(weight);
+	} else {
+		// set adjacency
+		this->adja[u].push_back(v);
+		this->adja[v].push_back(u);
+		// increment degree counters
+		this->deg[u] += 1;
+		this->deg[v] += 1;
+		// set edge weight
+		this->eweights[u].push_back(weight);
+		this->eweights[v].push_back(weight);
+		// TODO: loop over all attributes, setving default attr
+	}
+
+>>>>>>> theirs
 }
 
 void Graph::removeEdge(node u, node v) {
@@ -79,12 +100,24 @@ edgeweight Graph::weight(node u, node v) const {
 }
 
 void Graph::setWeight(node u, node v, edgeweight w) {
-	index vi = find(u, v);
-	if (vi != none) {
-		this->eweights[u][vi] = w;
+	if (u == v) { 		// self-loop case
+		index ui = find(u, u);
+		if (ui != none) {
+			this->eweights[u][ui] = w;
+		} else {
+			throw std::runtime_error("TODO: what if edge not there?");
+		}
 	} else {
-		// TODO: what if edge not there?
+		index vi = find(u, v);
+		index ui = find(v, u);
+		if ((vi != none) && (ui != none)) {
+			this->eweights[u][vi] = w;
+			this->eweights[v][ui] = w;
+		} else {
+			throw std::runtime_error("TODO: what if edge not there?");
+		}
 	}
+
 }
 
 bool Graph::hasEdge(node u, node v) const {
@@ -93,6 +126,7 @@ bool Graph::hasEdge(node u, node v) const {
 }
 
 node Graph::addNode() {
+	node v = this->n;
 	this->n += 1;
 
 	//update per node data structures
@@ -103,8 +137,7 @@ node Graph::addNode() {
 	std::vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 	this->adja.push_back(adjacencyVector);
 	this->eweights.push_back(edgeWeightVector);
-
-	return this->n;
+	return v;
 }
 
 void Graph::extendNodeRange(int64_t n) {
@@ -125,8 +158,12 @@ count Graph::degree(node v) const {
 }
 
 edgeweight Graph::weightedDegree(node v) const {
-	throw std::runtime_error("DEPRECATED");
-	// TODO:
+	// weighted degree as sum over incident edge weight
+	edgeweight wDeg = 0.0;
+	for (edgeweight w : this->eweights[v]) {
+		wDeg += w;
+	}
+	return wDeg;
 }
 
 
