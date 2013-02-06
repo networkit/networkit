@@ -40,14 +40,6 @@ Graph METISGraphReader::read(std::string path) {
 		TRACE("line: " << lc++);
 		std::vector<node> adjacencies = parser.getNext();
 
-		// DEBUG
-		for (node v : adjacencies) {
-			std::cout << v << " ";
-		}
-		std::cout << std::endl;
-		// DEBUG
-
-
 		for (node v : adjacencies) {
 			v = v - 1; 	// METIS-indices are 1-based
 			TRACE("v = " << v);
