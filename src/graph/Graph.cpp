@@ -193,13 +193,13 @@ edgeweight Graph::totalNodeWeight() {
 }
 
 void Graph::setWeight(node u, edgeweight w) {
-	WARN("DEPRECATED");
-	this->setWeight(u, u, w);
+	throw std::runtime_error("DEPRECATED");
+//	this->setWeight(u, u, w);
 }
 
 edgeweight Graph::weight(node v) {
-	WARN("DEPRECATED");
-	return this->weight(v, v); // return self-loop weight
+	throw std::runtime_error("DEPRECATED");
+//	return this->weight(v, v); // return self-loop weight
 }
 
 } /* namespace EnsembleClustering */

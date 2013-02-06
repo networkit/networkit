@@ -103,12 +103,14 @@ Clustering LabelPropagation::run(Graph& G) {
 					labelWeights[lw] += G.weight(v, w);	// add weight of edge {v, w}
 				});
 
-				// consider also self-loop (i.e. v's own weight)
-				label lv = labels[v];
-				if (labelWeights.find(lv) == labelWeights.end()) {
-					labelWeights[lv] = 0.0;	// init map entry if not yet in map
-				}
-				labelWeights[lv] += G.weight(v);
+				// self-loops special case should now be obsolete
+
+//				// consider also self-loop (i.e. v's own weight)
+//				label lv = labels[v];
+//				if (labelWeights.find(lv) == labelWeights.end()) {
+//					labelWeights[lv] = 0.0;	// init map entry if not yet in map
+//				}
+//				labelWeights[lv] += G.weight(v);
 
 
 				// get most frequent label
