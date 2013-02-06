@@ -36,19 +36,6 @@ index Graph::find(node u, node v) const {
 }
 
 void Graph::insertEdge(node u, node v, edgeweight weight) {
-<<<<<<< mine
-	// set adjacency
-	this->adja[u].push_back(v);
-	this->adja[v].push_back(u);
-	// increment degree counters
-	this->deg[u] += 1;
-	this->deg[v] += 1;
-	// set edge weight
-	this->eweights[u].push_back(weight);
-	this->eweights[v].push_back(weight);
-	// TODO: loop over all attributes, setting default attr
-=======
-
 	if (u == v) { // self-loop case
 		this->adja[u].push_back(u);
 		this->deg[u] += 1;
@@ -65,8 +52,6 @@ void Graph::insertEdge(node u, node v, edgeweight weight) {
 		this->eweights[v].push_back(weight);
 		// TODO: loop over all attributes, setving default attr
 	}
-
->>>>>>> theirs
 }
 
 void Graph::removeEdge(node u, node v) {
