@@ -18,6 +18,9 @@
 // GoogleTest
 #include <gtest/gtest.h>
 
+// OpenMP
+#include <omp.h>
+
 
 // EnsembleClustering
 #include "aux/optionparser.h"
@@ -186,14 +189,14 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, SEQUENTIAL, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
                                             "Options:" },
  {HELP,    0,"h" , "help",OptionParser::Arg::None, "  --help  \t Print usage and exit." },
  {LOGLEVEL,    0, "" , "loglevel", OptionParser::Arg::Required, "  --loglevel  \t set the log level" },
- {SEQUENTIAL,    0, "s" , "sequential", OptionParser::Arg::None, "  --sequential  \t Turn off parallelism." },
+ {THREADS,    0, "" , "threads", OptionParser::Arg::Required, "  --threads=<NUM>  \t set the maximum number of threads" },
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
@@ -423,9 +426,12 @@ int main(int argc, char **argv) {
 	}
 
 
-	// PARALLELISMISM SWITCH
-	if (options[SEQUENTIAL]) {
-		// TODO: parallelism switch
+	// CONFIGURE PARALLELISM
+
+	if (options[THREADS]) {
+		// set number of threads
+		int nThreads = std::atoi(options[THREADS].arg);
+		omp_set_num_threads(nThreads);
 	}
 
 
