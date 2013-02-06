@@ -73,6 +73,28 @@ compute["CXX"] = "g++-4.7"
 
 
 
+## environment: comp_hm
+
+comp_hm = Environment()
+### include
+comp_hm.Append(CPPPATH = ["/home/henningm/workspace/gtest/include", \
+                          "/home/henningm/workspace/STINGER/include"])
+comp_hm.Append(CCPATH = ["/home/henningm/workspace/gtest/include", \
+                          "/home/henningm/workspace/STINGER/include"])
+print("comp_hm CPPPATH: %s" % comp_hm["CPPPATH"])
+
+### link
+comp_hm.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
+comp_hm.Append(LIBPATH = ["/home/henningm/workspace/STINGER",\
+                           "/home/henningm/workspace/gtest/"])
+comp_hm.Append(LINKFLAGS = ["-std=c++11"])
+
+### compiler & flags
+comp_hm["CC"] = "gcc-4.7"
+comp_hm["CXX"] = "g++-4.7"
+
+
+
 
 ## select environment
 # custom command line options
@@ -84,7 +106,7 @@ AddOption("--machine",
           help="specify the machine (environment) on which to build")
 
 
-environments = {"macbook" : macbook, "compute" : compute}
+environments = {"macbook" : macbook, "compute" : compute, "comp_hm" : comp_hm}
 
 try:
     env = environments[GetOption("machine")]
