@@ -166,7 +166,20 @@ TEST_F(Graph2GTest, testParallelEdgeIteration) {
 }
 
 TEST_F(Graph2GTest, testNeighborIteration) {
-	// TODO:
+	int64_t n = 50;
+	int64_t offset = 10;
+	Graph G(n);
+
+	G.forNodes([&](node v) {
+		G.insertEdge(v, (v+offset) % n);
+		G.insertEdge(v, (v+2*offset) % n);
+	});
+
+	G.forNodes([&](node v) {
+		G.forNeighborsOf(v, [&](node u) {
+			EXPECT_TRUE(G.hasEdge(v, u));
+		});
+	});
 }
 
 TEST_F(Graph2GTest, testParallelSumForNodes) {
@@ -186,15 +199,40 @@ TEST_F(Graph2GTest, testParallelSumForNodes) {
 		return (float) G.degree(v);
 	}, sum);
 
-	EXPECT_EQ(summe, 2 * G.numberOfEdges()) << " graph volume should be" << (2*n);
+	EXPECT_EQ(summe, 2 * G.numberOfEdges()) << " graph volume should be" << (2*G.numberOfEdges());
 }
 
 TEST_F(Graph2GTest, testNodePairIteration) {
-	// TODO:
+	int64_t n = 50;
+	Graph G(n);
+
+	G.forNodePairs([&](node u, node v) {
+		G.insertEdge(u, v);
+	});
+
+	EXPECT_EQ(n*(n-1)/2, G.numberOfEdges()) << n*(n-1)/2 << " edges should have been inserted";
+
+	G.forNodePairs([&](node u, node v) {
+		G.removeEdge(u, v);
+	});
+
+	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
 }
 
 TEST_F(Graph2GTest, testConstNodeIteration) {
-	// TODO:
+	int64_t n = 500;
+	int64_t offset = 100;
+	Graph G2(n);
+
+	G2.forNodes([&](node v) {
+		G2.insertEdge(v, (v+offset) % n);
+	});
+
+	const Graph G(G2);
+	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
+	G.forNodes([&](node v) {
+		EXPECT_EQ(2, G.degree(v)) << "degree should be two";
+	});
 }
 
 
@@ -216,23 +254,92 @@ TEST_F(Graph2GTest, testConstParallelNodeIteration) {
 
 
 TEST_F(Graph2GTest, testConstEdgeIteration) {
-	// TODO:
+	int64_t n = 500;
+	int64_t offset = 100;
+	Graph G(n);
+
+	G.forNodes([&](node v) {
+		G.insertEdge(v, (v+offset) % n);
+	});
+
+	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
+
+	const Graph G2(G);
+	G2.forEdges([&](node u, node v) {
+		EXPECT_TRUE(G2.hasEdge(v, u));
+	});
 }
 
 TEST_F(Graph2GTest, testConstParallelEdgeIteration) {
-	// TODO:
+	int64_t n = 500;
+	int64_t offset = 100;
+	Graph G(n);
+
+	G.parallelForNodes([&](node v) {
+		G.insertEdge(v, (v+offset) % n);
+	});
+
+	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
+
+	const Graph G2(G);
+	G2.parallelForEdges([&](node u, node v) {
+		EXPECT_TRUE(G2.hasEdge(v, u));
+	});
 }
 
 TEST_F(Graph2GTest, testConstNeighborIteration) {
-	// TODO:
+	int64_t n = 50;
+	int64_t offset = 10;
+	Graph G(n);
+
+	G.forNodes([&](node v) {
+		G.insertEdge(v, (v+offset) % n);
+		G.insertEdge(v, (v+2*offset) % n);
+	});
+
+	const Graph G2(G);
+	G2.forNodes([&](node v) {
+		G2.forNeighborsOf(v, [&](node u) {
+			EXPECT_TRUE(G.hasEdge(v, u));
+		});
+	});
 }
 
 TEST_F(Graph2GTest, testConstParallelSumForNodes) {
-	// TODO:
+	int64_t n = 500;
+	int64_t offset = 100;
+	Graph G(n);
+
+	G.parallelForNodes([&](node v) {
+		G.insertEdge(v, (v+offset) % n);
+	});
+
+	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
+
+	const Graph G2(G);
+	// sum degrees in parallel
+	float sum;
+	float summe = G2.parallelSumForNodes([&](node v) {
+		return (float) G.degree(v);
+	}, sum);
+
+	EXPECT_EQ(summe, 2 * G2.numberOfEdges()) << " graph volume should be" << (2*G2.numberOfEdges());
 }
 
 TEST_F(Graph2GTest, testConstNodePairIteration) {
-	// TODO:
+	int64_t n = 50;
+	Graph G(n);
+
+	G.forNodePairs([&](node u, node v) {
+		G.insertEdge(u, v);
+	});
+
+	EXPECT_EQ(n*(n-1)/2, G.numberOfEdges()) << n*(n-1)/2 << " edges should have been inserted";
+
+	const Graph G2(G);
+	G2.forNodePairs([&](node u, node v) {
+		EXPECT_TRUE(G2.hasEdge(u, v));
+	});
 }
 
 
