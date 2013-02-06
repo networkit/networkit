@@ -97,20 +97,8 @@ Clustering LabelPropagation::run(Graph& G) {
 				// weigh the labels in the neighborhood of v
 				G.forNeighborsOf(v, [&](node w) {
 					label lw = labels[w];
-					if (labelWeights.find(lw) == labelWeights.end()) {
-						labelWeights[lw] = 0.0; // init map entry if not yet in map
-					}
 					labelWeights[lw] += G.weight(v, w);	// add weight of edge {v, w}
 				});
-
-				// self-loops special case should now be obsolete
-
-//				// consider also self-loop (i.e. v's own weight)
-//				label lv = labels[v];
-//				if (labelWeights.find(lv) == labelWeights.end()) {
-//					labelWeights[lv] = 0.0;	// init map entry if not yet in map
-//				}
-//				labelWeights[lv] += G.weight(v);
 
 
 				// get most frequent label
