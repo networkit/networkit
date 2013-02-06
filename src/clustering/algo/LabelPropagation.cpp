@@ -102,14 +102,19 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 				// get most frequent label
-				label heaviest = 0;
-				double maxWeight = 0.0;
-				for (auto it = labelWeights.begin(); it != labelWeights.end(); it++) {
-					if (it->second > maxWeight) {
-						maxWeight = it->second;
-						heaviest = it->first;
-					}
-				}
+//				label heaviest = 0;
+//				edgeweight maxWeight = 0.0;
+//				for (auto it = labelWeights.begin(); it != labelWeights.end(); it++) {
+//					if (it->second > maxWeight) {
+//						maxWeight = it->second;
+//						heaviest = it->first;
+//					}
+//				}
+
+				// get heaviest label
+				label heaviest = std::max_element(labelWeights.begin(), labelWeights.end(),
+				      [](const std::pair<label, edgeweight>& p1, const std::pair<label, edgeweight>& p2) {
+				        return p1.second < p2.second; })->first;
 
 				if (labels[v] != heaviest) { // UPDATE
 					// DEBUG
