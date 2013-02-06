@@ -151,6 +151,8 @@ public:
 
 	/**
 	 * Return an upper bound for the cluster ids that have been assigned.
+	 *
+	 * (This is the maximum id + 1.)
 	 */
 	cluster upperBound() const;
 
