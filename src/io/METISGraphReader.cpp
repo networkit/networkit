@@ -39,8 +39,19 @@ Graph METISGraphReader::read(std::string path) {
 	while (parser.hasNext()) {
 		TRACE("line: " << lc++);
 		std::vector<node> adjacencies = parser.getNext();
+
+		// DEBUG
+		for (node v : adjacencies) {
+			std::cout << v << " ";
+		}
+		std::cout << std::endl;
+		// DEBUG
+
+
 		for (node v : adjacencies) {
 			v = v - 1; 	// METIS-indices are 1-based
+			TRACE("v = " << v);
+			assert (v >= 0);
 			if (! G.hasEdge(u, v)) {
 				G.insertEdge(u, v);
 			}
