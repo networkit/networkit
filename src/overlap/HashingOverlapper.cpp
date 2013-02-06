@@ -63,7 +63,10 @@ Clustering HashingOverlapper::run(Graph& G,
 			maxCluster = core[v];
 		}
 	});
-	core.setUpperBound(maxCluster);
+	INFO("upperBound: " << core.upperBound());
+	core.setUpperBound(maxCluster + 1);
+	INFO("upperBound: " << core.upperBound());
+	assert (core.upperBound() == (maxCluster + 1));
 	INFO("maxCluster: " << maxCluster);
 
 	return core;

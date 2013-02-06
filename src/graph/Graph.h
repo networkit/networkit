@@ -39,7 +39,6 @@ protected:
 
 	// scalars
 	count n; //!< number of nodes
-	node maxn; //!< maximum node id / upper bound of node range
 
 	// per node data
 	std::vector<count> deg; //!< degree of each node
@@ -358,7 +357,7 @@ template<typename L>
 inline void EnsembleClustering::Graph::forEdges(L handle) {
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
-			if (u < v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
 				handle(u, v);
 			}
 		}
@@ -369,7 +368,7 @@ template<typename L>
 inline void EnsembleClustering::Graph::forEdges(L handle) const {
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
-			if (u < v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
 				handle(u, v);
 			}
 		}
@@ -381,7 +380,7 @@ inline void EnsembleClustering::Graph::parallelForEdges(L handle) {
 #pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
-			if (u < v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
 				handle(u, v);
 			}
 		}
@@ -393,7 +392,7 @@ inline void EnsembleClustering::Graph::parallelForEdges(L handle) const {
 #pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
-			if (u < v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
 				handle(u, v);
 			}
 		}

@@ -47,6 +47,8 @@ Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
 
 
 	Clustering zetaFine(Gfinest.numberOfNodes());
+	zetaFine.setUpperBound(zetaCoarse.upperBound()); // upper bound for ids in zetaFine must be set to upper bound in zetaCoarse, or modularity assertions fail
+
 	Gfinest.forNodes([&](node v) {
 		node sv = v;
 		for (auto map : maps) {

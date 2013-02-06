@@ -9,7 +9,7 @@
 
 namespace EnsembleClustering {
 
-Graph::Graph(count n) : n(n), maxn(n), deg(n, 0), adja(n), eweights(n) {
+Graph::Graph(count n) : n(n), deg(n, 0), adja(n), eweights(n) {
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;

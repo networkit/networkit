@@ -20,13 +20,15 @@ Coverage::~Coverage() {
 
 double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 
-	if (G.totalEdgeWeight() == 0.0) {
-		throw std::invalid_argument(
-				"Coverage is undefined for graphs without edges (including self-loops).");
-	}
+
 
 	double coverage = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
+
+	if (totalEdgeWeight == 0.0) {
+		throw std::invalid_argument(
+				"Coverage is undefined for graphs without edges (including self-loops).");
+	}
 
 	IndexMap<cluster, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
 
@@ -39,7 +41,7 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 				cluster c = zeta[u];
 				cluster d = zeta[v];
 				if (c == d) {
-					if (c >= zeta.upperBound()) {
+					if ((c >= zeta.upperBound()) || (c < zeta.lowerBound())) {
 						ERROR("c=" << c << " = zeta(" << u << ") is larger than upper bound: " << zeta.upperBound());
 						ERROR("zeta: "); zeta.print();
 					}
@@ -50,7 +52,7 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 
 	double intraEdgeWeightSum = 0.0; //!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
 #pragma omp parallel for reduction(+:intraEdgeWeightSum)
-	for (cluster c = zeta.lowerBound(); c <= zeta.upperBound(); ++c) {
+	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		intraEdgeWeightSum += intraEdgeWeight[c];
 	}
 

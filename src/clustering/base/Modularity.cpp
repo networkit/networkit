@@ -23,15 +23,18 @@ Modularity::~Modularity() {
 double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	assert (G.numberOfNodes() <= zeta.numberOfNodes());
 
-	if (G.totalEdgeWeight() == 0.0) {
-		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
-	}
+
 
 	Coverage cov;
 	double coverage = cov.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / totalEdgeWeight;
 	double expectedCoverage; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
 	double modularity; 	// mod = coverage - expectedCoverage
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
+
+	if (totalEdgeWeight == 0.0) {
+		ERROR("G: m=" << G.numberOfEdges() << "n=" << G.numberOfNodes());
+		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
+	}
 
 	IndexMap<cluster, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
 
@@ -41,17 +44,18 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 		cluster c = zeta[v];
 		assert (zeta.lowerBound() <= c);
 		assert (c < zeta.upperBound());
-		incidentWeightSum[c] += G.degree(v) + G.weight(v,v); // account for self-loops a second time
+		incidentWeightSum[c] += G.weightedDegree(v) + G.weight(v,v); // account for self-loops a second time
 	});
 
 	// compute sum of squared cluster volumes and divide by squared graph volume
 	double totalIncidentWeight = 0.0; 	//!< term $\sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 $
 	#pragma omp parallel for reduction(+:totalIncidentWeight)
-	for (cluster c = zeta.lowerBound(); c <= zeta.upperBound(); ++c) {
+	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		totalIncidentWeight += incidentWeightSum[c] * incidentWeightSum[c];	// squared
 	}
 	double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
 	assert (divisor != 0);	// do not divide by 0
+	assert (divisor >= totalIncidentWeight);
 	expectedCoverage = totalIncidentWeight / divisor;
 
 	TRACE("coverage: " << coverage);

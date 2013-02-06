@@ -124,7 +124,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
 
 	// generate clustered random graph with obvious community structure
 	GraphGenerator graphGen;
-	int64_t n = 20;
+	int64_t n = 200;
 	int64_t k = 3;
 	// these parameters generate a clique graph
 	double pIn = 1.0;
@@ -232,6 +232,7 @@ TEST_F(EnsembleGTest, showPlantedPartitionDissimilarity) {
 	Graph G = graphGen.makeClusteredRandomGraph(planted, pin, pout);
 
 	Clustering found = ensembleClusterer.run(G);
+	INFO("found.upperBound " << found.upperBound());
 
 	Modularity modularity;
 	double mod = modularity.getQuality(found, G);
