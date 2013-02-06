@@ -17,8 +17,9 @@ class RandomProbability {
 protected:
 
 	std::random_device randomDevice;
-	std::uniform_real_distribution<double> distribution;
 	std::default_random_engine randomEngine;
+	std::uniform_real_distribution<double> distribution;
+
 
 public:
 

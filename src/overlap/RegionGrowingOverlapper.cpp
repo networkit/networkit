@@ -26,7 +26,7 @@ Clustering RegionGrowingOverlapper::run(Graph& G, std::vector<Clustering>& clust
 	core.allToSingletons(); // assign all nodes to singletons
 
 	NodeMap<int> visited(n, 0); // node -> has been visited (1) or not (0). not <bool> because of thread-safety
-	node r;	// start node for BFS
+	node r = -1;	// start node for BFS
 	bool allVisited = false;	// have all nodes been visited by BFS?
 
 	while (! allVisited) {

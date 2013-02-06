@@ -389,6 +389,8 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
  	std::cout << "\t # clusters:\t" << k << std::endl;
  	std::cout << "\t coverage:\t" << cov << std::endl;
  	std::cout << "\t modularity:\t" << mod << std::endl;
+
+ 	return true;
 }
 
 
