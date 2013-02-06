@@ -45,7 +45,7 @@ void Graph::insertEdge(node u, node v, edgeweight weight) {
 	// set edge weight
 	this->eweights[u].push_back(weight);
 	this->eweights[v].push_back(weight);
-	// TODO: loop over all attributes, setving default attr
+	// TODO: loop over all attributes, setting default attr
 }
 
 void Graph::removeEdge(node u, node v) {
@@ -57,7 +57,7 @@ void Graph::removeEdge(node u, node v) {
 		// TODO: what if edge does not exist?
 	} else {
 		this->adja[u][vi] = none;
-		this->adja[v][ui] = none; //FIXME:  assumpvion: u is at same index w.r.t. v as v w.r.t. u -
+		this->adja[v][ui] = none; //FIXME:  assumption: u is at same index w.r.t. v as v w.r.t. u -
 		// decrement degree counters
 		this->deg[u] -= 1;
 		this->deg[v] -= 1;
@@ -103,6 +103,8 @@ node Graph::addNode() {
 	std::vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 	this->adja.push_back(adjacencyVector);
 	this->eweights.push_back(edgeWeightVector);
+
+	return this->n;
 }
 
 void Graph::extendNodeRange(int64_t n) {
