@@ -131,5 +131,18 @@ TEST_F(ClusteringGTest, testRandMeasure) {
 }
 
 
+TEST_F(ClusteringGTest, testCompact) {
+	int n = 50;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCompleteGraph(n);
+
+	ClusteringGenerator clusteringGen;
+	Clustering clustering = clusteringGen.makeRandomClustering(G, 2*n);
+	clustering.compact();
+
+	EXPECT_LE(clustering.upperBound(), n);
+}
+
+
 
 } /* namespace EnsembleClustering */

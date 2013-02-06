@@ -6,20 +6,20 @@
  */
 
 #include "Clustering.h"
+#include <algorithm>
 
 namespace EnsembleClustering {
 
-Clustering::Clustering(count n) : NodeMap<cluster>(n, -1), name("noname") {
+Clustering::Clustering(count n) :
+		NodeMap<cluster>(n, -1), name("noname") {
 	// all entries are initialized to 0, which means that the nodes are unclustered
 	this->nextCluster = 0; //!< first cluster index is 1
-	this->upperIdBound = n;	// upper id bound = n is okay only for agglomeratively created clusters
+	this->upperIdBound = n; // upper id bound = n is okay only for agglomeratively created clusters
 }
 
 Clustering::~Clustering() {
 	// TODO Auto-generated destructor stub
 }
-
-
 
 void Clustering::addToCluster(cluster c, node u) {
 	assert((*this)[u] == this->defaultValue);
@@ -44,8 +44,6 @@ void Clustering::mergeClusters(cluster c, cluster d) {
 	}
 }
 
-
-
 bool Clustering::isProper(Graph& G) {
 	// test whether each node has been assigned to a cluster
 	bool success = true;
@@ -57,7 +55,6 @@ bool Clustering::isProper(Graph& G) {
 	});
 	return success;
 }
-
 
 int64_t Clustering::numberOfClusters() {
 	count k = 0; // number of clusters
@@ -72,18 +69,15 @@ int64_t Clustering::numberOfClusters() {
 	return k;
 }
 
-
 cluster Clustering::upperBound() const {
 	return this->upperIdBound;
 }
-
 
 cluster Clustering::lowerBound() const {
 	return 0;
 }
 
 void Clustering::allToSingletons() {
-	#pragma omp parallel for
 	for (node u = 0; u < this->n; ++u) {
 		this->data[u] = u;
 	}
@@ -96,14 +90,13 @@ cluster Clustering::addCluster() {
 	return c;
 }
 
-
 bool Clustering::isInRange(node v) {
 	return ((0 <= v) && (v < this->numberOfNodes()));
 }
 
 bool Clustering::contains(node v) {
 	// assert (this->isInRange(v));	// assume that node is in range
-	return (this->data[v] != this->defaultValue);	// check if node is assigned to cluster, i.e. entry is not null
+	return (this->data[v] != this->defaultValue); // check if node is assigned to cluster, i.e. entry is not null
 }
 
 void Clustering::setName(std::string name) {
@@ -123,29 +116,56 @@ bool Clustering::isSingletonClustering(Graph& G) {
 }
 
 bool Clustering::inSameCluster(node u, node v) {
-	assert (this->contains(u));
-	assert (this->contains(v));
+	assert(this->contains(u));
+	assert(this->contains(v));
 	return (this->clusterOf(u) == this->clusterOf(v));
 }
 
 bool Clustering::equals(Clustering& other, Graph& G) {
 	bool eq = true;
-	G.parallelForEdges([&](node u, node v){
+	G.parallelForEdges([&](node u, node v) {
 		if (this->inSameCluster(u, v)) {
-			if (! other.inSameCluster(u, v)) {
+			if (!other.inSameCluster(u, v)) {
 				eq = false;
 			}
-		} else {
+		}
+		else {
 			if (other.inSameCluster(u, v)) {
 				eq = false;
 			}
 		}
+
 	});
 	return eq;
 }
 
 void Clustering::setUpperBound(cluster id) {
 	this->upperIdBound = id;
+}
+
+
+void Clustering::compact() {
+	std::map<cluster, cluster> compactingMap;
+	cluster nextIndex = 0;
+
+	this->forEntries([&](node v, cluster c) {
+		if (compactingMap.count(c) == 0) {
+			// insert and increase nextIndex
+			compactingMap.insert(std::make_pair(c, nextIndex));
+			++nextIndex;
+		}
+	}, "");
+
+	this->forEntries([&](node v, cluster c) {
+		(*this)[v] = compactingMap[c];
+	}, "parallel");
+
+	cluster ub = std::max_element(compactingMap.begin(), compactingMap.end(),
+	      [](const std::pair<cluster, cluster>& p1, const std::pair<cluster, cluster>& p2) {
+	        return p1.second < p2.second; })->second;
+	setUpperBound(ub+1);
+
+	TRACE("upperBound: " << upperBound());
 }
 
 void Clustering::print() const {
@@ -157,5 +177,4 @@ void Clustering::print() const {
 }
 
 } /* namespace EnsembleClustering */
-
 

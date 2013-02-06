@@ -167,7 +167,10 @@ public:
 	void setUpperBound(cluster id);
 
 
-
+	/**
+	 * Change cluster IDs to be consecutive, starting at 0.
+	 */
+	void compact();
 
 
 	/**
