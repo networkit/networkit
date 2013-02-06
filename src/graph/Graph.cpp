@@ -22,6 +22,7 @@ Graph::~Graph() {
 }
 
 
+// TODO: replace by for_each
 index Graph::find(node u, node v) const {
 	index vi = none;
 	for (node x : this->adja[u]) {
@@ -145,6 +146,7 @@ edgeweight Graph::totalEdgeWeight() {
 	this->forEdges([&](node u, node v){
 		sum += this->weight(u, v);
 	});
+	return sum;
 }
 
 void Graph::setName(std::string name) {
