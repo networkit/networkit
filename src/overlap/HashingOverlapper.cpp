@@ -47,14 +47,12 @@ Clustering HashingOverlapper::run(Graph& G,
 	// select hash function
 	auto hash = djb2;
 
-	G.parallelForNodes([&](node v) {
-		size_t cHash = 0;
-		for (Clustering zeta : clusterings) {
-			cHash += hash(zeta[v]);
-		}
-		cHash = cHash & 0xffff;
-		core[v] = cHash;
-	});
+	core.setAll(0);
+	for (Clustering zeta : clusterings) {
+		G.parallelForNodes([&](node v){
+			core[v] += (hash(zeta[v]) & 0xffff);
+		});
+	}
 
 	// TODO: this is a quick fix for the issue that clusterings start with an upper id bound of n. bounds are needed and checked for iteration over all clusters
 	cluster maxCluster = 0;
