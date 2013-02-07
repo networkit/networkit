@@ -87,6 +87,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		nUpdated = 0;
 
 		// new random order
+		// TODO: deactivated to check performance difference		
 		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
 
 		Aux::ProgressMeter pm(n, 10000);
