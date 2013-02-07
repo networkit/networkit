@@ -212,6 +212,18 @@ public:
 	 */
 	template<typename L> void breadthFirstEdgesFrom(node r, L handle);
 
+	/**
+	 * Iterate over all nodes of the graph and call handler (lambda closure).
+	 *
+	 * @param[in]	attrKey		attribute key
+	 * @param[in]	handle		takes parameters (v, a) where a is a node attribute
+	 */
+	template<typename L> void forNodesWithAttribute(std::string attrKey, L handle);
+
+
+
+
+
 	/** EDGE ITERATORS **/
 
 	/**
@@ -264,20 +276,18 @@ public:
 	 */
 	template<typename L> void parallelForWeightedEdges(L handle) const;
 
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 *
-	 * Handler takes arguments (u, v, a) where u and v are the nodes of the edge and a is its attribute.
-	 */
-	template<typename L> void forEdgesWithAttribute(std::string attr, L handle);
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 *
-	 * Handler takes arguments (u, v, a) where u and v are the nodes of the edge and a is its attribute.
+	 *	@param[in]	attrKey		attribute key
+	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
 	 */
-	template<typename L> void forEdgesWithAttribute(std::string attr,
-			L handle) const;
+	template<typename L> void forEdgesWithAttribute(std::string attrKey, L handle);
+
+
+
+	template<typename L> void forEdgesWithAttribute(std::string attr, L handle) const;
 
 	/** NEIGHBORHOOD ITERATORS **/
 
@@ -670,8 +680,7 @@ inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u, L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u,
-		L handle) const {
+inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u, L handle) const {
 	for (index i = 0; i < adja[u].size(); ++i) {
 		node v = adja[u][i];
 		if (v != none) {
@@ -682,5 +691,9 @@ inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u,
 	}
 }
 
+template<typename L>
+inline void EnsembleClustering::Graph::forEdgesWithAttribute(std::string attrKey, L handle) {
+	// TODO:
+}
 
 #endif /* GRAPH_H_ */
