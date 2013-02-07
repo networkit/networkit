@@ -44,8 +44,8 @@ Graph METISGraphReader::read(std::string path) {
 			v = v - 1; 	// METIS-indices are 1-based
 			TRACE("v = " << v);
 			assert (v >= 0);
-			if (! G.hasEdge(u, v)) {
-				G.insertEdge(u, v);
+			if (u < v) { // TODO: works only for simple graphs
+			  G.insertEdge(u, v);
 			}
 		}
 		u += 1; // next node
