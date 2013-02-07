@@ -276,12 +276,6 @@ public:
 	 */
 	template<typename L> void parallelForWeightedEdges(L handle) const;
 
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 *
-	 * Handler takes arguments (u, v, a) where u and v are the nodes of the edge and a is its attribute.
-	 */
-	template<typename L> void forEdgesWithAttribute(std::string attr, L handle);
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
