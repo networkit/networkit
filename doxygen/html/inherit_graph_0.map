@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_ensemble_clustering_1_1_clusterer.html" title="EnsembleClustering\l::Clusterer" alt="" coords="6,39,146,83"/>
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_label_propagation.html" title="As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering Raghavan et al..." alt="" coords="200,5,341,49"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_score_match_contract.html" title="EnsembleClustering\l::ScoreMatchContract" alt="" coords="196,73,346,117"/>
+</map>
