@@ -435,7 +435,11 @@ int main(int argc, char **argv) {
 	if (options[THREADS]) {
 		// set number of threads
 		int nThreads = std::atoi(options[THREADS].arg);
+#ifdef _OPENMP
 		omp_set_num_threads(nThreads);
+#else
+		WARN("Thread option ignored since OpenMP is deactivated.");
+#endif
 	}
 
 	// CONFIGURE OUTPUT

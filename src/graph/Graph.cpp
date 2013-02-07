@@ -165,11 +165,10 @@ int64_t Graph::numberOfEdges() const {
 }
 
 edgeweight Graph::totalEdgeWeight() {
-	// TODO: optimize - replace by efficient parallel reduction?
 	edgeweight sum = 0.0;
-	this->forEdges([&](node u, node v){
-		sum += this->weight(u, v);
-	});
+	sum = this->parallelSumForEdgesAndTheirWeights([&](node u, node v, edgeweight ew) {
+		return ew;
+	}, sum);
 	return sum;
 }
 

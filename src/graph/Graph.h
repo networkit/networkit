@@ -216,9 +216,19 @@ public:
 	template<typename L> float parallelSumForNodes(L handle, float sum) const;
 
 	/**
+	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> float parallelSumForEdgesAndTheirWeights(L handle, float sum) const;
+
+	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forEdges(L handle);
+
+	/**
+	 * Iterate over all edges and their weights of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forEdgesAndTheirWeights(L handle) const;
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
@@ -307,7 +317,6 @@ inline void EnsembleClustering::Graph::forNeighborWeightsOf(node u, L handle) co
 		if (v != none) {
 			edgeweight ew = eweights[u][i];
 			handle(v, ew);
-//			INFO("v: " << v << ", ew: " << ew << ", weight: " << weight(u, v));
 			assert(ew == weight(u, v));
 		}
 	}
@@ -372,6 +381,23 @@ inline float EnsembleClustering::Graph::parallelSumForNodes(L handle,
 }
 
 template<typename L>
+float EnsembleClustering::Graph::parallelSumForEdgesAndTheirWeights(L handle, float sum) const {
+	sum = 0.0;
+#pragma omp parallel for reduction(+:sum)
+	for (node u = 0; u < n; ++u) {
+		for (index i = 0; i < this->adja[u].size(); ++i) {
+			node v = this->adja[u][i];
+			edgeweight ew = this->eweights[u][i];
+			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+				sum += handle(u, v, ew);
+			}
+		}
+	}
+	return sum;
+}
+
+
+template<typename L>
 inline void EnsembleClustering::Graph::forEdges(L handle) {
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
@@ -392,6 +418,20 @@ inline void EnsembleClustering::Graph::forEdges(L handle) const {
 		}
 	}
 }
+
+template<typename L>
+void EnsembleClustering::Graph::forEdgesAndTheirWeights(L handle) const {
+	for (node u = 0; u < n; ++u) {
+		for (index i = 0; i < this->adja[u].size(); ++i) {
+			node v = this->adja[u][i];
+			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+				edgeweight ew = this->eweights[u][i];
+				handle(u, v, ew);
+			}
+		}
+	}
+}
+
 
 template<typename L>
 inline void EnsembleClustering::Graph::parallelForEdges(L handle) {

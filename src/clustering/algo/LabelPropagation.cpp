@@ -105,12 +105,6 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 				// weigh the labels in the neighborhood of v
-//				G.forNeighborsOf(v, [&](node w) {
-//					label lw = labels[w];
-//					labelWeights[lw] += G.weight(v, w);	// add weight of edge {v, w}
-//					// TODO: avoid that G.weight needs to find the location, iterate over weights!
-//				});
-
 				G.forNeighborWeightsOf(v, [&](node w, edgeweight weight) {
 					label lw = labels[w];
 					labelWeights[lw] += weight;	// add weight of edge {v, w}

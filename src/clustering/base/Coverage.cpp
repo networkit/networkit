@@ -34,19 +34,21 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 
 	// compute intra-cluster edge weights per cluster
 	// TODO: Make parallel, protect intraEdgeWeight[c]
-	G.forEdges(
-			[&](node u, node v) {
+	G.forEdgesAndTheirWeights(
+			[&](node u, node v, edgeweight ew) {
 				assert (u < zeta.numberOfNodes());
 				assert (v < zeta.numberOfNodes());
 				cluster c = zeta[u];
 				cluster d = zeta[v];
 				if (c == d) {
+#ifdef DEBUG
 					if ((c >= zeta.upperBound()) || (c < zeta.lowerBound())) {
 						ERROR("c=" << c << " = zeta(" << u << ") is larger than upper bound: " << zeta.upperBound());
 						ERROR("zeta: "); zeta.print();
 					}
-					assert (c < zeta.upperBound());
-					intraEdgeWeight[c] += G.weight(u, v);
+#endif
+					assert ((zeta.lowerBound()) <= c && (c < zeta.upperBound()));
+					intraEdgeWeight[c] += ew;
 				} // else ignore edge
 			});
 
