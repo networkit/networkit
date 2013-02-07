@@ -1,6 +1,8 @@
 import os
 import fnmatch
 
+home_path = os.environ['HOME']
+
 # SOURCE
 source = []
 
@@ -55,7 +57,7 @@ macbook["CXX"] = "g++-4.7"
 
 compute = Environment()
 ### include
-compute.Append(CPPPATH = ["/home/staudt/workspace/gtest/include", \
+compute.Append(CPPPATH = [os.path.join(home_path, "workspace/gtest/include"), \
                           "/home/staudt/workspace/STINGER/include"])
 compute.Append(CCPATH = ["/home/staudt/workspace/gtest/include", \
                           "/home/staudt/workspace/STINGER/include"])

@@ -246,6 +246,11 @@ public:
 	template<typename L> void forNeighborsOf(node u, L handle) const;
 
 	/**
+	 * Iterate over all edge weights of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forNeighborWeightsOf(node u, L handle) const;
+
+	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forEdgesOf(node v, L handle);
@@ -291,6 +296,19 @@ inline void EnsembleClustering::Graph::forNeighborsOf(node u, L handle) const {
 	for (node v : this->adja[u]) {
 		if (v != none) {
 			handle(v);
+		}
+	}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph::forNeighborWeightsOf(node u, L handle) const {
+	for (index i = 0; i < adja[u].size(); ++i) {
+		node v = adja[u][i];
+		if (v != none) {
+			edgeweight ew = eweights[u][i];
+			handle(v, ew);
+//			INFO("v: " << v << ", ew: " << ew << ", weight: " << weight(u, v));
+			assert(ew == weight(u, v));
 		}
 	}
 }
