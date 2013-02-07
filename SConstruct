@@ -30,18 +30,15 @@ macbook = Environment()
 ### include
 macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
                           "/Users/cls/workspace/gtest/include", \
-                          "/usr/local/Cellar/log4cxx/0.10.0/include", \
-                          "/Users/cls/workspace/STINGER/include"])
+                          "/usr/local/Cellar/log4cxx/0.10.0/include"])
 macbook.Append(CCPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
                           "/Users/cls/workspace/gtest/include", \
-                          "/usr/local/Cellar/log4cxx/0.10.0/include", \
-                          "/Users/cls/workspace/STINGER/include"])
+                          "/usr/local/Cellar/log4cxx/0.10.0/include"])
 
 
 ### link
-macbook.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
-macbook.Append(LIBPATH = ["/Users/cls/workspace/STINGER/OpenMP Debug",\
-                           "/Users/cls/workspace/gtest/lib", \
+macbook.Append(LIBS = ["gtest", "log4cxx"])
+macbook.Append(LIBPATH = ["/Users/cls/workspace/gtest", \
                             "/usr/local/Cellar/log4cxx/0.10.0/lib"])
 macbook.Append(LINKFLAGS = ["-std=c++11"])
 
@@ -50,23 +47,18 @@ macbook["CC"] = "gcc-4.7"
 macbook["CXX"] = "g++-4.7"
 
 
-# TODO: extract environment-independent flags
-
 
 ## environment: compute
 
 compute = Environment()
 ### include
-compute.Append(CPPPATH = [os.path.join(home_path, "workspace/gtest/include"), \
-                          "/home/staudt/workspace/STINGER/include"])
-compute.Append(CCPATH = ["/home/staudt/workspace/gtest/include", \
-                          "/home/staudt/workspace/STINGER/include"])
+compute.Append(CPPPATH = [os.path.join(home_path, "workspace/gtest/include")])
+compute.Append(CCPATH = [os.path.join(home_path, "workspace/gtest/include")])
 print("compute CPPPATH: %s" % compute["CPPPATH"])
 
 ### link
-compute.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
-compute.Append(LIBPATH = ["/home/staudt/workspace/STINGER",\
-                           "/home/staudt/workspace/gtest/lib"])
+compute.Append(LIBS = ["gtest", "log4cxx"])
+compute.Append(LIBPATH = [os.path.join(home_path, "workspace/gtest")])
 compute.Append(LINKFLAGS = ["-std=c++11"])
 
 ### compiler & flags
@@ -213,6 +205,7 @@ elif buildconf == "profile":
 	 env.Append(CPPFLAGS = profileCppFlags)
 else:
     print("ERROR: invalid buildconf: %s" % buildconf)
+    exit()
 
 # TARGET
 env.Program("EnsembleClustering-scons-%s" % buildconf, source)
