@@ -56,7 +56,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
-	INFO("[BEGIN] Label Propagation: precomputing incident weight");
+	DEBUG("[BEGIN] Label Propagation: precomputing incident weight");
 	Aux::ProgressMeter pm(n, 1000);
 	NodeMap<double> weightedDegree(n, 0.0);
 	G.parallelForNodes([&](node v) {
@@ -87,8 +87,20 @@ Clustering LabelPropagation::run(Graph& G) {
 		nUpdated = 0;
 
 		// new random order
+#ifdef _OPENMP
+		// not really random, but the next best thing in parallel w/o hurting performance
+		count numChunks = omp_get_num_threads();
+		count chunkSize = (count) n / numChunks; // discard remainder
+#pragma omp parallel for
+		for (index i = 0; i < numChunks; ++i) {
+			index begin = i * chunkSize;
+			index end = begin + chunkSize;
+			std::shuffle(&shuffledNodes[begin], &shuffledNodes[end], randgen);
+		}
+#else
 		// TODO: deactivated to check performance difference		
 		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
+#endif
 
 		Aux::ProgressMeter pm(n, 10000);
 
