@@ -13,6 +13,7 @@
 namespace EnsembleClustering {
 
 
+template<typename T>
 class EdgeScoring {
 
 protected:
@@ -25,8 +26,22 @@ public:
 
 	virtual ~EdgeScoring();
 
-	virtual double scoreEdge(node u, node v) = 0;
+	virtual void scoreEdges() = 0;
+
+	virtual T edgeScore(node u, node v) const = 0;
 };
+
+
+template<typename T>
+EdgeScoring<T>::EdgeScoring(Graph& G) {
+	this->G = &G;
+}
+
+template<typename T>
+EdgeScoring<T>::~EdgeScoring() {
+	// TODO Auto-generated destructor stub
+}
+
 
 } /* namespace EnsembleClustering */
 #endif /* EDGESCORING_H_ */
