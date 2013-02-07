@@ -86,7 +86,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		});
 		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
 
-		Aux::ProgressMeter pm(n, 1000);
+		Aux::ProgressMeter pm(n, 10000);
 
 		#pragma omp parallel for
 		for (int64_t i = 0; i < n; ++i) {
