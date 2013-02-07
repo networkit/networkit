@@ -166,9 +166,9 @@ int64_t Graph::numberOfEdges() const {
 
 edgeweight Graph::totalEdgeWeight() {
 	edgeweight sum = 0.0;
-	sum = this->parallelSumForEdgesAndTheirWeights([&](node u, node v, edgeweight ew) {
+	sum = this->parallelSumForWeightedEdges([&](node u, node v, edgeweight ew) {
 		return ew;
-	}, sum);
+	});
 	return sum;
 }
 
@@ -192,15 +192,6 @@ edgeweight Graph::totalNodeWeight() {
 	throw std::runtime_error("DEPRECATED");
 }
 
-void Graph::setWeight(node u, edgeweight w) {
-	throw std::runtime_error("DEPRECATED");
-//	this->setWeight(u, u, w);
-}
-
-edgeweight Graph::weight(node v) {
-	throw std::runtime_error("DEPRECATED");
-//	return this->weight(v, v); // return self-loop weight
-}
 
 } /* namespace EnsembleClustering */
 

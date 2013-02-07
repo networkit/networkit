@@ -118,12 +118,6 @@ public:
 	 */
 	void setWeight(node u, node v, edgeweight w);
 
-	/**
-	 * DEPRECATED
-	 *
-	 * Set self-loop weight
-	 */
-	void setWeight(node u, edgeweight w);
 
 	/**
 	 * @return sum of all edge weights
@@ -163,7 +157,10 @@ public:
 	 */
 	count numberOfEdges() const;
 
-	// TODO: lambda iterators
+
+
+	/** NODE ITERATORS **/
+
 
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
@@ -174,6 +171,16 @@ public:
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forNodes(L handle) const;
+
+	/**
+	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void parallelForNodes(L handle);
+
+	/**
+	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void parallelForNodes(L handle) const;
 
 	/**
 	 * Iterate over all undirected pairs of nodesand call handler (lambda closure).
@@ -195,75 +202,6 @@ public:
 	 */
 	template<typename L> void parallelForNodePairs(L handle) const;
 
-	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void parallelForNodes(L handle);
-
-	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void parallelForNodes(L handle) const;
-
-	/**
-	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
-	 */
-	template<typename L> float parallelSumForNodes(L handle, float sum);
-
-	/**
-	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
-	 */
-	template<typename L> float parallelSumForNodes(L handle, float sum) const;
-
-	/**
-	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
-	 */
-	template<typename L> float parallelSumForEdgesAndTheirWeights(L handle, float sum) const;
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void forEdges(L handle);
-
-	/**
-	 * Iterate over all edges and their weights of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void forEdgesAndTheirWeights(L handle) const;
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void forEdges(L handle) const;
-
-	/**
-	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void parallelForEdges(L handle);
-
-	/**
-	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void parallelForEdges(L handle) const;
-
-	/**
-	 * Iterate over all neighbors of a node and call handler (lamdba closure).
-	 */
-	template<typename L> void forNeighborsOf(node u, L handle);
-
-	/**
-	 * Iterate over all neighbors of a node and call handler (lamdba closure).
-	 */
-	template<typename L> void forNeighborsOf(node u, L handle) const;
-
-	/**
-	 * Iterate over all edge weights of a node and call handler (lamdba closure).
-	 */
-	template<typename L> void forNeighborWeightsOf(node u, L handle) const;
-
-	/**
-	 * Iterate over all incident edges of a node and call handler (lamdba closure).
-	 */
-	template<typename L> void forEdgesOf(node v, L handle);
 
 	/**
 	 * Iterate over nodes in breadth-first search order starting from r until connected component
@@ -277,16 +215,139 @@ public:
 	 */
 	template<typename L> void breadthFirstEdgesFrom(node r, L handle);
 
-	// TODO: const iterators
 
-	/** Adapters **/
+
+
+	/** EDGE ITERATORS **/
+
 
 	/**
-	 * DEPRECATED - only used until the old STINGER-based interface is replaced
-	 * @return the self-loop weight of this node
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forEdges(L handle);
+
+	/**
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forEdges(L handle) const;
+
+
+	/**
+	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void parallelForEdges(L handle);
+
+	/**
+	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void parallelForEdges(L handle) const;
+
+	/**
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 *
+	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
 	 *
 	 */
-	edgeweight weight(node v);
+	template<typename L> void forWeightedEdges(L handle);
+
+	/**
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 *
+	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
+	 */
+	template<typename L> void forWeightedEdges(L handle) const;
+
+	/**
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 *
+	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
+	 *
+	 */
+	template<typename L> void parallelForWeightedEdges(L handle);
+
+	/**
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 *
+	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
+	 */
+	template<typename L> void parallelForWeightedEdges(L handle) const;
+
+
+
+	/** NEIGHBORHOOD ITERATORS **/
+
+
+	/**
+	 * Iterate over all neighbors of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forNeighborsOf(node u, L handle);
+
+	/**
+	 * Iterate over all neighbors of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forNeighborsOf(node u, L handle) const;
+
+
+	/**
+	 * Iterate over all edge weights of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forWeightedNeighborsOf(node u, L handle);
+
+
+	/**
+	 * Iterate over all edge weights of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forEdgesOf(node u, L handle);
+
+	/**
+	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forEdgesOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 *
+	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 *
+	 */
+	template<typename L> void forWeightedEdgesOf(node u, L handle);
+
+	/**
+	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 *
+	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 *
+	 */
+	template<typename L> void forWeightedEdgesOf(node u, L handle) const;
+
+
+
+
+	/** REDUCTION ITERATORS **/
+
+	/**
+	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> float parallelSumForNodes(L handle);
+
+	/**
+	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> float parallelSumForNodes(L handle) const;
+
+
+	/**
+	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> float parallelSumForWeightedEdges(L handle) const;
+
+
+
 
 };
 
@@ -310,8 +371,10 @@ inline void EnsembleClustering::Graph::forNeighborsOf(node u, L handle) const {
 	}
 }
 
+
 template<typename L>
-inline void EnsembleClustering::Graph::forNeighborWeightsOf(node u, L handle) const {
+inline void EnsembleClustering::Graph::forWeightedNeighborsOf(node u,
+		L handle) {
 	for (index i = 0; i < adja[u].size(); ++i) {
 		node v = adja[u][i];
 		if (v != none) {
@@ -321,6 +384,21 @@ inline void EnsembleClustering::Graph::forNeighborWeightsOf(node u, L handle) co
 		}
 	}
 }
+
+template<typename L>
+inline void EnsembleClustering::Graph::forWeightedNeighborsOf(node u, L handle) const {
+	for (index i = 0; i < adja[u].size(); ++i) {
+		node v = adja[u][i];
+		if (v != none) {
+			edgeweight ew = eweights[u][i];
+			handle(v, ew);
+			assert(ew == weight(u, v));
+		}
+	}
+}
+
+
+
 
 template<typename L>
 inline void EnsembleClustering::Graph::forNodes(L handle) {
@@ -357,10 +435,9 @@ inline void EnsembleClustering::Graph::parallelForNodes(L handle) const {
 }
 
 template<typename L>
-inline float EnsembleClustering::Graph::parallelSumForNodes(L handle,
-		float sum) {
-	sum = 0.0;
-#pragma omp parallel for reduction(+:sum)
+inline float EnsembleClustering::Graph::parallelSumForNodes(L handle) {
+	float sum = 0.0;
+	#pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < n; ++v) {
 		// call here
 		sum += handle(v);
@@ -369,10 +446,9 @@ inline float EnsembleClustering::Graph::parallelSumForNodes(L handle,
 }
 
 template<typename L>
-inline float EnsembleClustering::Graph::parallelSumForNodes(L handle,
-		float sum) const {
-	sum = 0.0;
-#pragma omp parallel for reduction(+:sum)
+inline float EnsembleClustering::Graph::parallelSumForNodes(L handle) const {
+	float sum = 0.0;
+	#pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < n; ++v) {
 		// call here
 		sum += handle(v);
@@ -381,9 +457,9 @@ inline float EnsembleClustering::Graph::parallelSumForNodes(L handle,
 }
 
 template<typename L>
-float EnsembleClustering::Graph::parallelSumForEdgesAndTheirWeights(L handle, float sum) const {
-	sum = 0.0;
-#pragma omp parallel for reduction(+:sum)
+float EnsembleClustering::Graph::parallelSumForWeightedEdges(L handle) const {
+	float sum = 0.0;
+	#pragma omp parallel for reduction(+:sum)
 	for (node u = 0; u < n; ++u) {
 		for (index i = 0; i < this->adja[u].size(); ++i) {
 			node v = this->adja[u][i];
@@ -414,19 +490,6 @@ inline void EnsembleClustering::Graph::forEdges(L handle) const {
 		for (node v : this->adja[u]) {
 			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
 				handle(u, v);
-			}
-		}
-	}
-}
-
-template<typename L>
-void EnsembleClustering::Graph::forEdgesAndTheirWeights(L handle) const {
-	for (node u = 0; u < n; ++u) {
-		for (index i = 0; i < this->adja[u].size(); ++i) {
-			node v = this->adja[u][i];
-			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
-				edgeweight ew = this->eweights[u][i];
-				handle(u, v, ew);
 			}
 		}
 	}
@@ -512,6 +575,17 @@ inline void EnsembleClustering::Graph::forEdgesOf(node u, L handle) {
 	}
 }
 
+
+template<typename L>
+inline void EnsembleClustering::Graph::forEdgesOf(node u, L handle) const {
+	for (node v : this->adja[u]) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
+}
+
+
 template<typename L>
 inline void EnsembleClustering::Graph::parallelForNodePairs(L handle) {
 #pragma omp parallel for
@@ -539,5 +613,88 @@ inline void EnsembleClustering::Graph::breadthFirstEdgesFrom(node r, L handle) {
 	// TODO:
 	throw std::runtime_error("TODO");
 }
+
+template<typename L>
+inline void EnsembleClustering::Graph::forWeightedEdges(L handle) {
+	for (node u = 0; u < n; ++u) {
+		for (index vi = 0; vi < adja[u].size(); ++vi) {
+			node v = this->adja[u][vi];
+			if (u <= v) {
+				edgeweight w = this->eweights[u][vi];
+				handle(u, v, w);
+			}
+		}
+	}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph::forWeightedEdges(L handle) const {
+	for (node u = 0; u < n; ++u) {
+		for (index vi = 0; vi < adja[u].size(); ++vi) {
+			node v = this->adja[u][vi];
+			if (u <= v) {
+				edgeweight w = this->eweights[u][vi];
+				handle(u, v, w);
+			}
+		}
+	}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph::parallelForWeightedEdges(L handle) {
+	#pragma omp parallel for
+	for (node u = 0; u < n; ++u) {
+		for (index vi = 0; vi < adja[u].size(); ++vi) {
+			node v = this->adja[u][vi];
+			if (u <= v) {
+				edgeweight w = this->eweights[u][vi];
+				handle(u, v, w);
+			}
+		}
+	}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph::parallelForWeightedEdges(L handle) const {
+#pragma omp parallel for
+for (node u = 0; u < n; ++u) {
+	for (index vi = 0; vi < adja[u].size(); ++vi) {
+		node v = this->adja[u][vi];
+		if (u <= v) {
+			edgeweight w = this->eweights[u][vi];
+			handle(u, v, w);
+		}
+	}
+}
+}
+
+template<typename L>
+inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u, L handle) {
+	for (index i = 0; i < adja[u].size(); ++i) {
+		node v = adja[u][i];
+		if (v != none) {
+			edgeweight ew = eweights[u][i];
+			handle(u, v, ew);
+			assert(ew == weight(u, v));
+		}
+	}
+}
+
+
+
+template<typename L>
+inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u,
+		L handle) const {
+	for (index i = 0; i < adja[u].size(); ++i) {
+		node v = adja[u][i];
+		if (v != none) {
+			edgeweight ew = eweights[u][i];
+			handle(u, v, ew);
+			assert(ew == weight(u, v));
+		}
+	}
+}
+
+
 
 #endif /* GRAPH_H_ */
