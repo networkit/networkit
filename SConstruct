@@ -96,6 +96,34 @@ comp_hm["CXX"] = "g++-4.7"
 
 
 
+
+## environment: mac_hm
+
+mac_hm = Environment()
+### include
+mac_hm.Append(CPPPATH = ["/opt/local/include/gcc/c++/4.7.2", \
+                          "/Users/Henning/Documents/workspace/gtest/include", \
+                          "/opt/local/include/log4cxx/", \
+                          "/Users/Henning/Documents/workspace/STINGER/include"])
+mac_hm.Append(CCPATH = ["/opt/local/include/gcc/c++/4.7.2", \
+                          "/Users/Henning/Documents/workspace/gtest/include", \
+                          "/opt/local/include/log4cxx/", \
+                          "/Users/Henning/Documents/workspace/STINGER/include"])
+
+### link
+mac_hm.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
+mac_hm.Append(LIBPATH = ["/Users/Henning/Documents/workspace/STINGER/OpenMP Debug",\
+                           "/Users/Henning/Documents/workspace/gtest/", \
+                            "/opt/local/lib/"])
+mac_hm.Append(LINKFLAGS = ["-std=c++11"])
+
+### compiler & flags
+mac_hm["CC"] = "gcc-mp-4.7"
+mac_hm["CXX"] = "g++-mp-4.7"
+
+
+
+
 ## select environment
 # custom command line options
 AddOption("--machine",
@@ -106,7 +134,7 @@ AddOption("--machine",
           help="specify the machine (environment) on which to build")
 
 
-environments = {"macbook" : macbook, "compute" : compute, "comp_hm" : comp_hm}
+environments = {"macbook" : macbook, "compute" : compute, "mac_hm" : mac_hm, "comp_hm" : comp_hm}
 
 try:
     env = environments[GetOption("machine")]
@@ -120,11 +148,15 @@ except:
 commonCFlags = ["-c", "-fmessage-length=0", "-std=c99"]
 commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0"]
 
-debugCppFlags = ["-O0", "-g3", "-pg"]
+debugCppFlags = ["-O0", "-g3"]
 debugCFlags = ["-O0", "-g3"]
 
 optimizedCppFlags = ["-O3", "-DNDEBUG"]
 optimizedCFlags = ["-O3"]
+
+profileCppFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
+profileCFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
+
 
 # select configuration
 # custom command line options
@@ -174,6 +206,9 @@ if buildconf == "debug":
 elif buildconf == "optimized":
     env.Append(CFLAGS = optimizedCFlags)
     env.Append(CPPFLAGS = optimizedCppFlags)
+elif buildconf == "profile":
+	 env.Append(CFLAGS = profileCFlags)
+	 env.Append(CPPFLAGS = profileCppFlags)
 else:
     print("ERROR: invalid buildconf: %s" % buildconf)
 
