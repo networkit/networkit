@@ -148,8 +148,8 @@ debugCFlags = ["-O0", "-g3"]
 optimizedCppFlags = ["-O3", "-DNDEBUG"]
 optimizedCFlags = ["-O3"]
 
-profileCppFlags = ["-O3", "-DNDEBUG", "-g", "-pg"]
-profileCFlags = ["-O3", "-DNDEBUG", "-g", "-pg"]
+profileCppFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
+profileCFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
 
 
 # select configuration
