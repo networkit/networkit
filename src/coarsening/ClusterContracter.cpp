@@ -49,19 +49,10 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 		// FIXME: bad access to nodeToSuperNode
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 			// add edge weight to supernode (self-loop) weight
-//			Gcon.setWeight(su, su, Gcon.weight(su, su) + G.weight(u, v));
 			Gcon.setWeight(su, su, Gcon.weight(su, su) + ew);
 		} else {
-			// add edge weight to weight between two supernodes
-			if (Gcon.hasEdge(su, sv)) {
-//				Gcon.setWeight(su, sv, Gcon.weight(su, sv) + G.weight(u, v));
-				Gcon.setWeight(su, sv, Gcon.weight(su, sv) + ew);
-			} else {
-				// create new edge
-//				Gcon.insertEdge(su, sv, G.weight(u, v));
-				Gcon.insertEdge(su, sv, ew);
-			}
-
+			// add edge weight to weight between two supernodes (or insert edge)
+			Gcon.setWeight(su, sv, Gcon.weight(su, sv) + ew);
 		}
 	}); // TODO: parallel?
 

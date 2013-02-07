@@ -24,12 +24,12 @@ Graph::~Graph() {
 
 // TODO: replace by for_each
 index Graph::find(node u, node v) const {
-	index vi = none;
+	index vi = 0;
 	for (node x : this->adja[u]) {
-		vi++;
 		if (x == v) {
 			return vi;
 		}
+		vi++;
 	}
 
 	return none;
