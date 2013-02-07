@@ -17,11 +17,12 @@ namespace EnsembleClustering {
 
 // TODO: implement modularity as in Python prototype
 
-class ModularityScoring: public EnsembleClustering::EdgeScoring {
+template<typename T>
+class ModularityScoring: public EnsembleClustering::EdgeScoring<T> {
 
 protected:
 
-	double omegaE;	//!< total weight of the graph
+	double totalEdgeWeight;	//!< total weight of the graph
 
 public:
 
@@ -35,6 +36,9 @@ public:
 	virtual ~ModularityScoring();
 
 
+	virtual void scoreEdges();
+
+
 	/**
 	 * Returns an edge score for an edge (u,v) which expresses the
 	 * modularity increase which can be gained by merging
@@ -46,7 +50,8 @@ public:
 	 * @param[out]	v	target node id
 	 *
 	 */
-	virtual double scoreEdge(node u, node v);
+	virtual T edgeScore(node u, node v) const;
+
 
 
 //	/**
@@ -61,5 +66,34 @@ public:
 //	virtual double weight(cluster c) =0;
 };
 
+
+template<typename T>
+ModularityScoring<T>::ModularityScoring(Graph& G) : EdgeScoring<T>(G) {
+	this->totalEdgeWeight = this->G->totalEdgeWeight();
+}
+
+template<typename T>
+ModularityScoring<T>::~ModularityScoring() {
+	// TODO Auto-generated destructor stub
+}
+
+template<typename T>
+T ModularityScoring<T>::edgeScore(node u, node v) const {
+	// return G->
+	// TODO
+}
+
+template<typename T>
+inline void EnsembleClustering::ModularityScoring<T>::scoreEdges() {
+	// calculate $$\Delta mod(c, d) := \frac{1}{2 \omega(E)} \left ( 2 \omega(E) \omega(c,d) - \omega(c) \omega(d) \right ) $$
+
+//	double deltaMod = (1 / (2 * omegaE)) * (2 * omegaE * G->weight(u, v) - G->weight(u) * G->weight(v));
+//	return deltaMod;
+
+	// TODO
+}
+
+
 } /* namespace EnsembleClustering */
+
 #endif /* MODULARITY_H_ */

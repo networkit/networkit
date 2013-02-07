@@ -5,7 +5,6 @@
  *      Author: cls
  */
 
-
 #include "ParallelMatcher.h"
 
 namespace EnsembleClustering {
@@ -21,37 +20,59 @@ ParallelMatcher::~ParallelMatcher() {
 
 Matching ParallelMatcher::run(Graph& G) {
 
+	int64_t n = G.numberOfNodes();
+	Matching M(n);
+
+	// TODO: switch to different algorithm
+	// match with heaviest unmatched neighbor
+	G.forNodes([&](node v) { // TODO: parallel
+				edgeweight maxWeight = 0.0;
+				node argmax = v;
+				if (! M.isMatched(v)) {
+					G.forEdgesOf(v, [&](node v, node u) {
+								edgeweight ew = G.weight(v, u);
+								if ((ew > maxWeight) && (! M.isMatched(u))) {
+									maxWeight = ew;
+									argmax = u;
+								}
+
+							});
+					// match with heaviest free neighbor
+					if (argmax != v) {
+						M.match(v, argmax);
+					}
+				}
+			});
+
+#if 0
 	// TODO: exclude isolated nodes?
 
 	int64_t n = G.numberOfNodes();
-	NodeMap<node> candidate(n, 0);					//!< candidate[v] is the preferred matching partner of v
-	NodeMap<std::set<node> > S(n, std::set<node>()); 	//!< S[v] is a set with the potential
-														//!< candidates of node v
-	std::vector<node> D;	//!< targets of dominating edges
+	NodeMap<node> candidate(n, 0);//!< candidate[v] is the preferred matching partner of v
+	NodeMap<std::set<node> > S(n, std::set<node>());//!< S[v] is a set with the potential
+													//!< candidates of node v
+	std::vector<node> D;//!< targets of dominating edges
 	Matching M(n);
 
+	G.forNodes([&](node v) {
+				// S[v] <- N(v)
+				G.forNeighborsOf(v, [&](node w) {
+							S[v].insert(w);
+						});
+				// set candidate of v to neighbor x with strongest connection
+				// INFO: argmax is equivalent to Python max(collection, key=function)
+				auto cv = argmax(S[v], [&](node w) {
+							return G.weight(v, w);
+						});
+				candidate[v] = cv;
 
-	G.forNodes([&](node v){
-		// S[v] <- N(v)
-		G.forNeighborsOf(v, [&](node w){
-			S[v].insert(w);
-		});
-		// set candidate of v to neighbor x with strongest connection
-		// INFO: argmax is equivalent to Python max(collection, key=function)
-		auto cv = argmax(S[v], [&](node w){
-			return G.weight(v, w);
-		});
-		candidate[v] = cv;
-
-
-		// if nodes mutually prefer eachother:
-		if (candidate[candidate[v]] == v) {
-			D.push_back(v);
-			D.push_back(candidate[v]);
-			M.match(v, candidate[v]);
-		}
-	});
-
+				// if nodes mutually prefer eachother:
+				if (candidate[candidate[v]] == v) {
+					D.push_back(v);
+					D.push_back(candidate[v]);
+					M.match(v, candidate[v]);
+				}
+			});
 
 	while (! D.empty()) {
 		node v = D.back();
@@ -63,8 +84,8 @@ Matching ParallelMatcher::run(Graph& G) {
 				if (! S[x].empty()) {
 					// find new candidate
 					auto cx = argmax(S[x], [&](node y) {
-						return G.weight(x, y);
-					});
+								return G.weight(x, y);
+							});
 					candidate[x] = cx;
 				} else {
 					// TODO: what if no potential candidates are left?
@@ -78,6 +99,7 @@ Matching ParallelMatcher::run(Graph& G) {
 			}
 		}
 	} // end while
+#endif
 
 	return M;
 }
