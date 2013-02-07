@@ -210,7 +210,7 @@ TEST_F(Graph2GTest, testParallelSumForNodes) {
 	float sum;
 	float summe = G.parallelSumForNodes([&](node v) {
 		return (float) G.degree(v);
-	}, sum);
+	});
 
 	EXPECT_EQ(summe, 2 * G.numberOfEdges()) << " graph volume should be" << (2*G.numberOfEdges());
 }
@@ -336,7 +336,7 @@ TEST_F(Graph2GTest, testConstParallelSumForNodes) {
 	float sum;
 	float summe = G2.parallelSumForNodes([&](node v) {
 		return (float) G.degree(v);
-	}, sum);
+	});
 
 	EXPECT_EQ(summe, 2 * G2.numberOfEdges()) << " graph volume should be" << (2*G2.numberOfEdges());
 }
@@ -412,6 +412,41 @@ TEST_F(Graph2GTest, testSetWeight) {
 	G.setWeight(v, v, 17.0);
 	EXPECT_EQ(17.0, G.weight(v, v));
 
+
+}
+
+
+TEST_F(Graph2GTest, testForWeightedEdges) {
+	count n = 4;
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.insertEdge(u, v, 1.0);
+	});
+
+	edgeweight weightSum = 0.0;
+	G.forWeightedEdges([&](node u, node v, node w){
+		weightSum += w;
+	});
+
+	EXPECT_EQ(6.0, weightSum) << "sum of edge weights should be 6";
+
+}
+
+
+TEST_F(Graph2GTest, testParallelForWeightedEdges) {
+	count n = 4;
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.insertEdge(u, v, 1.0);
+	});
+
+	edgeweight weightSum = 0.0;
+	G.parallelForWeightedEdges([&](node u, node v, node w){
+		#pragma omp atomic update
+		weightSum += w;
+	});
+
+	EXPECT_EQ(6.0, weightSum) << "sum of edge weights should be 6";
 
 }
 
