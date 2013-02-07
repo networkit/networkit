@@ -38,7 +38,7 @@ macbook.Append(CCPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
 
 ### link
 macbook.Append(LIBS = ["gtest", "log4cxx"])
-macbook.Append(LIBPATH = ["/Users/cls/workspace/gtest/lib", \
+macbook.Append(LIBPATH = ["/Users/cls/workspace/gtest", \
                             "/usr/local/Cellar/log4cxx/0.10.0/lib"])
 macbook.Append(LINKFLAGS = ["-std=c++11"])
 
@@ -58,7 +58,7 @@ print("compute CPPPATH: %s" % compute["CPPPATH"])
 
 ### link
 compute.Append(LIBS = ["gtest", "log4cxx"])
-compute.Append(LIBPATH = [os.path.join(home_path, "/workspace/gtest/")])
+compute.Append(LIBPATH = [os.path.join(home_path, "workspace/gtest")])
 compute.Append(LINKFLAGS = ["-std=c++11"])
 
 ### compiler & flags
@@ -205,6 +205,7 @@ elif buildconf == "profile":
 	 env.Append(CPPFLAGS = profileCppFlags)
 else:
     print("ERROR: invalid buildconf: %s" % buildconf)
+    exit()
 
 # TARGET
 env.Program("EnsembleClustering-scons-%s" % buildconf, source)
