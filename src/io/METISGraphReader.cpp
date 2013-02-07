@@ -49,7 +49,7 @@ Graph METISGraphReader::read(std::string path) {
 			}
 		}
 		u += 1; // next node
-		if ((u % 1000) == 0) {
+		if ((u % 10000) == 0) {
 			p = ((double) u / (double) n) * 100;
 			std::cout << p << "% " << std::flush;
 		}
