@@ -35,7 +35,8 @@ class Graph {
 protected:
 
 	// defaults
-	static constexpr double defaultEdgeWeight = 1.0;static constexpr edgeweight nullWeight = 0.0;
+	static constexpr double defaultEdgeWeight = 1.0;
+	static constexpr edgeweight nullWeight = 0.0;
 
 	// scalars
 	count n; //!< number of nodes
@@ -110,7 +111,8 @@ public:
 	edgeweight weight(node u, node v) const;
 
 	/**
-	 * Set the weight of an edge
+	 * Set the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
 	 *
 	 * @param[in]	u	endpoint of edge
 	 * @param[in]	v	endpoint of edge
