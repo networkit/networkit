@@ -18,8 +18,8 @@ METISGraphReader::~METISGraphReader() {
 	// TODO Auto-generated destructor stub
 }
 
-Graph METISGraphReader::read(std::string path) {
 
+Graph METISGraphReader::read(std::string path) {
 
 	METISParser parser(path);
 

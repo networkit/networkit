@@ -18,14 +18,15 @@ ParallelAgglomerativeClusterer::~ParallelAgglomerativeClusterer() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering ParallelAgglomerativeClusterer::run(Graph& G) {
+Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
+	Graph G = graph;
 
 	do {
-		// TODO: score edges with deltaMod
-		ModularityScoring modScoring(G);	// TODO: make this EdgeScoring to allow other scoring measures
+		ModularityScoring<double> modScoring(G);
+		modScoring.scoreEdges();
 
 		G.parallelForEdges([&](node u, node v){
-			double deltaMod = modScoring.scoreEdge(u, v);
+			double deltaMod = modScoring.edgeScore(u, v);
 			// TODO: where to store edge scores? copy graph?
 		});
 
@@ -35,8 +36,7 @@ Clustering ParallelAgglomerativeClusterer::run(Graph& G) {
 
 		// TODO: contract graph according to matching (and star-like structures)
 		MatchingContracter matchingContracter;
-		Graph Gcon = matchingContracter.run(G, M);
-
+		G = matchingContracter.run(G, M);
 	} while (false); 	// TODO: repeat until?
 
 	Clustering zeta(G.numberOfNodes());

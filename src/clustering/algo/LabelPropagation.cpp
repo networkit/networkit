@@ -69,6 +69,13 @@ Clustering LabelPropagation::run(Graph& G) {
 		pm.end();
 	}
 
+	std::vector<node> shuffledNodes(n);
+	G.parallelForNodes([&](node v){
+		shuffledNodes[v] = v;	// store all nodes in vector
+	});
+
+	std::vector<bool> activeNodes(n); // record if node must be processed
+	activeNodes.assign(n, true);
 
 
 	// propagate labels
@@ -79,11 +86,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		// reset updated
 		nUpdated = 0;
 
-		std::vector<node> shuffledNodes;
-		shuffledNodes.resize(n); 	// hold n nodes
-		G.parallelForNodes([&](node v){
-			shuffledNodes[v] = v;	// store all nodes in vector
-		});
+		// new random order
 		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
 
 		Aux::ProgressMeter pm(n, 10000);
@@ -99,7 +102,7 @@ Clustering LabelPropagation::run(Graph& G) {
 			}
 
 
-			if (G.degree(v) > 0) {
+			if ((activeNodes[v]) && (G.degree(v) > 0)) {
 
 				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 
@@ -121,8 +124,12 @@ Clustering LabelPropagation::run(Graph& G) {
 					TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
 					// DEBUG
 					labels[v] = heaviest;
-					nUpdated += 1;
+					nUpdated += 1; // TODO: atomic update?
+					G.forNeighborsOf(v, [&](node u) {
+						activeNodes[u] = true;
+					});
 				} else {
+					activeNodes[v] = false;
 					TRACE("label of " << v << " stays " << labels[v]);
 				}
 

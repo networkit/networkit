@@ -9,12 +9,4 @@
 
 namespace EnsembleClustering {
 
-EdgeScoring::EdgeScoring(Graph& G) {
-	this->G = &G;
-}
-
-EdgeScoring::~EdgeScoring() {
-	// TODO Auto-generated destructor stub
-}
-
 } /* namespace EnsembleClustering */
