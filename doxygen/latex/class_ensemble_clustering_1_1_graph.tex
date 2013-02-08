@@ -1,0 +1,390 @@
+\hypertarget{class_ensemble_clustering_1_1_graph}{\section{Ensemble\-Clustering\-:\-:Graph Class Reference}
+\label{class_ensemble_clustering_1_1_graph}\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}}
+}
+
+
+\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} interface.  
+
+
+
+
+{\ttfamily \#include $<$Graph.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_graph_a65031e76ae95333341f795fb9a13647f}{Graph} ()
+\begin{DoxyCompactList}\small\item\em methods \end{DoxyCompactList}\item 
+\hyperlink{class_ensemble_clustering_1_1_graph_a0ffcdfea431e8c85de2058a226a4783a}{Graph} (stinger $\ast$\hyperlink{class_ensemble_clustering_1_1_graph_af83709e85afb91c70729405a725afb9a}{stinger\-G})
+\begin{DoxyCompactList}\small\item\em Initialize with S\-T\-I\-N\-G\-E\-R graph. \end{DoxyCompactList}\item 
+\hyperlink{class_ensemble_clustering_1_1_graph_ac8368ff972ce067d51e37c48124a0038}{$\sim$\-Graph} ()
+\item 
+stinger $\ast$ \hyperlink{class_ensemble_clustering_1_1_graph_ad7ad5a71649990fe2b823b8ed7a113b7}{as\-S\-T\-I\-N\-G\-E\-R} () const 
+\begin{DoxyCompactList}\small\item\em Return the internal S\-T\-I\-N\-G\-E\-R data structure. \end{DoxyCompactList}\item 
+void \hyperlink{class_ensemble_clustering_1_1_graph_a78d527f03a3a860ee173dadbaefe1d5c}{insert\-Edge} (\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} u, \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} v, double \hyperlink{class_ensemble_clustering_1_1_graph_a9bff231567f9ac604f1854d62f6682d1}{weight}=\hyperlink{class_ensemble_clustering_1_1_graph_a8186ee969064a4e12b779b1dc506ac60}{default\-Edge\-Weight}, int64\-\_\-t type=\hyperlink{class_ensemble_clustering_1_1_graph_a377621f37c1dc58f32ecec0fd229408e}{default\-Edge\-Type}, int64\-\_\-t timestamp=\hyperlink{class_ensemble_clustering_1_1_graph_a9a6623d55f673a3b30e0c23284dd6da1}{default\-Time\-Stamp})
+\begin{DoxyCompactList}\small\item\em Insert a weighted, undirected edge. \end{DoxyCompactList}\item 
+bool \hyperlink{class_ensemble_clustering_1_1_graph_a9be0c0a70204723e4b040b9cba51b15d}{has\-Edge} (\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} u, \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} v) const 
+\begin{DoxyCompactList}\small\item\em Check if undirected edge \{u,v\} exists in G. \end{DoxyCompactList}\item 
+double \hyperlink{class_ensemble_clustering_1_1_graph_a9bff231567f9ac604f1854d62f6682d1}{weight} (\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} v) const 
+\begin{DoxyCompactList}\small\item\em Return node weight. \end{DoxyCompactList}\item 
+double \hyperlink{class_ensemble_clustering_1_1_graph_a656f5cb3119dd3f8f4182d38cce82fa0}{weight} (\hyperlink{namespace_ensemble_clustering_aff19dd5e3051ee3d4360fd3f29daf16b}{edge} uv) const 
+\begin{DoxyCompactList}\small\item\em Return edge weight. \end{DoxyCompactList}\item 
+double \hyperlink{class_ensemble_clustering_1_1_graph_a4699131f4d3602ecda00eaf70a86cbea}{weight} (\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} u, \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} v) const 
+\begin{DoxyCompactList}\small\item\em Return edge weight. \end{DoxyCompactList}\item 
+double \hyperlink{class_ensemble_clustering_1_1_graph_a7be7f13f5a31b0513293e7bbac26ca6c}{total\-Edge\-Weight} () const 
+\begin{DoxyCompactList}\small\item\em Get the sum of the weight of all edges. \end{DoxyCompactList}\item 
+int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_graph_a35f4b169cd0157117b468b1863a0d70a}{degree} (\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} u) const 
+\begin{DoxyCompactList}\small\item\em Return the degree (number of incident edges). \end{DoxyCompactList}\item 
+int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_graph_ab019840b239c3247eaf00e5ffcc6bb03}{number\-Of\-Edges} () const 
+\begin{DoxyCompactList}\small\item\em Return the number of edges in the graph. \end{DoxyCompactList}\item 
+int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_graph_affe61a24e54266aba872272fb9501c61}{number\-Of\-Nodes} () const 
+\begin{DoxyCompactList}\small\item\em Return the number of (non-\/isolated) nodes in the graph. \end{DoxyCompactList}\item 
+\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} \hyperlink{class_ensemble_clustering_1_1_graph_aaac8bcc5d64461cba54ad38ec929be3c}{first\-Node} () const 
+\begin{DoxyCompactList}\small\item\em Get the first node index (for iteration over all nodes) \end{DoxyCompactList}\item 
+\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} \hyperlink{class_ensemble_clustering_1_1_graph_a3d6fe2d0c27605f4b55585198eb9b933}{last\-Node} () const 
+\begin{DoxyCompactList}\small\item\em Get the last node index (for iteration over all nodes). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Callback $>$ }\\void \hyperlink{class_ensemble_clustering_1_1_graph_a7b599771f8dc476712ea7e6b52157a3f}{forall\-Edges} (bool parallel, Callback callback)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static constexpr double \hyperlink{class_ensemble_clustering_1_1_graph_a8186ee969064a4e12b779b1dc506ac60}{default\-Edge\-Weight} = 1.\-0
+\begin{DoxyCompactList}\small\item\em default parameters \end{DoxyCompactList}\item 
+static const int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_graph_a377621f37c1dc58f32ecec0fd229408e}{default\-Edge\-Type} = 0
+\item 
+static const int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_graph_a9a6623d55f673a3b30e0c23284dd6da1}{default\-Time\-Stamp} = 0
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+stinger $\ast$ \hyperlink{class_ensemble_clustering_1_1_graph_af83709e85afb91c70729405a725afb9a}{stinger\-G}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} interface. 
+
+\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} encapsulates a S\-T\-I\-N\-G\-E\-R graph object and provides a more concise interface to it.
+
+The graph concept modelled is
+\begin{DoxyItemize}
+\item undirected
+\item weighted
+\item without self-\/loops (use node weights instead) 
+\end{DoxyItemize}
+
+Definition at line 77 of file Graph.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_graph_a65031e76ae95333341f795fb9a13647f}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!Graph@{Graph}}
+\index{Graph@{Graph}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{Graph}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Graph\-::\-Graph (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_graph_a65031e76ae95333341f795fb9a13647f}
+
+
+methods 
+
+Construct \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} object with new S\-T\-I\-N\-G\-E\-R graph inside. 
+
+Definition at line 13 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a0ffcdfea431e8c85de2058a226a4783a}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!Graph@{Graph}}
+\index{Graph@{Graph}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{Graph}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Graph\-::\-Graph (
+\begin{DoxyParamCaption}
+\item[{stinger $\ast$}]{stinger\-G}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_graph_a0ffcdfea431e8c85de2058a226a4783a}
+
+
+Initialize with S\-T\-I\-N\-G\-E\-R graph. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em stinger\-G} & a S\-T\-I\-N\-G\-E\-R graph struct \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 20 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_ac8368ff972ce067d51e37c48124a0038}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!$\sim$\-Graph@{$\sim$\-Graph}}
+\index{$\sim$\-Graph@{$\sim$\-Graph}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{$\sim$\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Graph\-::$\sim$\-Graph (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_graph_ac8368ff972ce067d51e37c48124a0038}
+
+
+Definition at line 17 of file Graph.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_graph_ad7ad5a71649990fe2b823b8ed7a113b7}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!as\-S\-T\-I\-N\-G\-E\-R@{as\-S\-T\-I\-N\-G\-E\-R}}
+\index{as\-S\-T\-I\-N\-G\-E\-R@{as\-S\-T\-I\-N\-G\-E\-R}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{as\-S\-T\-I\-N\-G\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}stinger $\ast$ Ensemble\-Clustering\-::\-Graph\-::as\-S\-T\-I\-N\-G\-E\-R (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_ad7ad5a71649990fe2b823b8ed7a113b7}
+
+
+Return the internal S\-T\-I\-N\-G\-E\-R data structure. 
+
+
+
+Definition at line 26 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a35f4b169cd0157117b468b1863a0d70a}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!degree@{degree}}
+\index{degree@{degree}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{degree}]{\setlength{\rightskip}{0pt plus 5cm}int64\-\_\-t Ensemble\-Clustering\-::\-Graph\-::degree (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_a35f4b169cd0157117b468b1863a0d70a}
+
+
+Return the degree (number of incident edges). 
+
+
+
+Definition at line 69 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_aaac8bcc5d64461cba54ad38ec929be3c}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!first\-Node@{first\-Node}}
+\index{first\-Node@{first\-Node}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{first\-Node}]{\setlength{\rightskip}{0pt plus 5cm}{\bf node} Ensemble\-Clustering\-::\-Graph\-::first\-Node (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_aaac8bcc5d64461cba54ad38ec929be3c}
+
+
+Get the first node index (for iteration over all nodes) 
+
+
+
+Definition at line 65 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a7b599771f8dc476712ea7e6b52157a3f}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!forall\-Edges@{forall\-Edges}}
+\index{forall\-Edges@{forall\-Edges}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{forall\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Callback $>$ void Ensemble\-Clustering\-::\-Graph\-::forall\-Edges (
+\begin{DoxyParamCaption}
+\item[{bool}]{parallel, }
+\item[{Callback}]{callback}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_graph_a7b599771f8dc476712ea7e6b52157a3f}
+
+
+Definition at line 195 of file Graph.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a9be0c0a70204723e4b040b9cba51b15d}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!has\-Edge@{has\-Edge}}
+\index{has\-Edge@{has\-Edge}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{has\-Edge}]{\setlength{\rightskip}{0pt plus 5cm}bool Ensemble\-Clustering\-::\-Graph\-::has\-Edge (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_a9be0c0a70204723e4b040b9cba51b15d}
+
+
+Check if undirected edge \{u,v\} exists in G. 
+
+
+
+Definition at line 36 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a78d527f03a3a860ee173dadbaefe1d5c}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!insert\-Edge@{insert\-Edge}}
+\index{insert\-Edge@{insert\-Edge}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{insert\-Edge}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Graph\-::insert\-Edge (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v, }
+\item[{double}]{weight = {\ttfamily {\bf default\-Edge\-Weight}}, }
+\item[{int64\-\_\-t}]{type = {\ttfamily {\bf default\-Edge\-Type}}, }
+\item[{int64\-\_\-t}]{timestamp = {\ttfamily {\bf default\-Time\-Stamp}}}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_graph_a78d527f03a3a860ee173dadbaefe1d5c}
+
+
+Insert a weighted, undirected edge. 
+
+
+
+Definition at line 30 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a3d6fe2d0c27605f4b55585198eb9b933}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!last\-Node@{last\-Node}}
+\index{last\-Node@{last\-Node}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{last\-Node}]{\setlength{\rightskip}{0pt plus 5cm}{\bf node} Ensemble\-Clustering\-::\-Graph\-::last\-Node (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_a3d6fe2d0c27605f4b55585198eb9b933}
+
+
+Get the last node index (for iteration over all nodes). 
+
+
+
+Definition at line 85 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_a3d6fe2d0c27605f4b55585198eb9b933_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_graph_ab019840b239c3247eaf00e5ffcc6bb03}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!number\-Of\-Edges@{number\-Of\-Edges}}
+\index{number\-Of\-Edges@{number\-Of\-Edges}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{number\-Of\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}int64\-\_\-t Ensemble\-Clustering\-::\-Graph\-::number\-Of\-Edges (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_ab019840b239c3247eaf00e5ffcc6bb03}
+
+
+Return the number of edges in the graph. 
+
+
+
+Definition at line 54 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_affe61a24e54266aba872272fb9501c61}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!number\-Of\-Nodes@{number\-Of\-Nodes}}
+\index{number\-Of\-Nodes@{number\-Of\-Nodes}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{number\-Of\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}int64\-\_\-t Ensemble\-Clustering\-::\-Graph\-::number\-Of\-Nodes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_affe61a24e54266aba872272fb9501c61}
+
+
+Return the number of (non-\/isolated) nodes in the graph. 
+
+T\-O\-D\-O\-: Maybe this should be changed to support isolated nodes. 
+
+Definition at line 59 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a7be7f13f5a31b0513293e7bbac26ca6c}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!total\-Edge\-Weight@{total\-Edge\-Weight}}
+\index{total\-Edge\-Weight@{total\-Edge\-Weight}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{total\-Edge\-Weight}]{\setlength{\rightskip}{0pt plus 5cm}double Ensemble\-Clustering\-::\-Graph\-::total\-Edge\-Weight (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_a7be7f13f5a31b0513293e7bbac26ca6c}
+
+
+Get the sum of the weight of all edges. 
+
+
+
+Definition at line 76 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_a7be7f13f5a31b0513293e7bbac26ca6c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a9bff231567f9ac604f1854d62f6682d1}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!weight@{weight}}
+\index{weight@{weight}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{weight}]{\setlength{\rightskip}{0pt plus 5cm}double Ensemble\-Clustering\-::\-Graph\-::weight (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_a9bff231567f9ac604f1854d62f6682d1}
+
+
+Return node weight. 
+
+
+
+Definition at line 43 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a656f5cb3119dd3f8f4182d38cce82fa0}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!weight@{weight}}
+\index{weight@{weight}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{weight}]{\setlength{\rightskip}{0pt plus 5cm}double Ensemble\-Clustering\-::\-Graph\-::weight (
+\begin{DoxyParamCaption}
+\item[{{\bf edge}}]{uv}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_graph_a656f5cb3119dd3f8f4182d38cce82fa0}
+
+
+Return edge weight. 
+
+
+
+Definition at line 47 of file Graph.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a4699131f4d3602ecda00eaf70a86cbea}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!weight@{weight}}
+\index{weight@{weight}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{weight}]{\setlength{\rightskip}{0pt plus 5cm}double Ensemble\-Clustering\-::\-Graph\-::weight (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_graph_a4699131f4d3602ecda00eaf70a86cbea}
+
+
+Return edge weight. 
+
+Equivalent to get\-Weight(edge uv) 
+
+Definition at line 144 of file Graph.\-h.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_graph_a377621f37c1dc58f32ecec0fd229408e}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!default\-Edge\-Type@{default\-Edge\-Type}}
+\index{default\-Edge\-Type@{default\-Edge\-Type}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{default\-Edge\-Type}]{\setlength{\rightskip}{0pt plus 5cm}const int64\-\_\-t Ensemble\-Clustering\-::\-Graph\-::default\-Edge\-Type = 0\hspace{0.3cm}{\ttfamily [static]}}}\label{class_ensemble_clustering_1_1_graph_a377621f37c1dc58f32ecec0fd229408e}
+
+
+Definition at line 92 of file Graph.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a8186ee969064a4e12b779b1dc506ac60}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!default\-Edge\-Weight@{default\-Edge\-Weight}}
+\index{default\-Edge\-Weight@{default\-Edge\-Weight}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{default\-Edge\-Weight}]{\setlength{\rightskip}{0pt plus 5cm}constexpr double Ensemble\-Clustering\-::\-Graph\-::default\-Edge\-Weight = 1.\-0\hspace{0.3cm}{\ttfamily [static]}}}\label{class_ensemble_clustering_1_1_graph_a8186ee969064a4e12b779b1dc506ac60}
+
+
+default parameters 
+
+
+
+Definition at line 91 of file Graph.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_a9a6623d55f673a3b30e0c23284dd6da1}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!default\-Time\-Stamp@{default\-Time\-Stamp}}
+\index{default\-Time\-Stamp@{default\-Time\-Stamp}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{default\-Time\-Stamp}]{\setlength{\rightskip}{0pt plus 5cm}const int64\-\_\-t Ensemble\-Clustering\-::\-Graph\-::default\-Time\-Stamp = 0\hspace{0.3cm}{\ttfamily [static]}}}\label{class_ensemble_clustering_1_1_graph_a9a6623d55f673a3b30e0c23284dd6da1}
+
+
+Definition at line 93 of file Graph.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_af83709e85afb91c70729405a725afb9a}{\index{Ensemble\-Clustering\-::\-Graph@{Ensemble\-Clustering\-::\-Graph}!stinger\-G@{stinger\-G}}
+\index{stinger\-G@{stinger\-G}!EnsembleClustering::Graph@{Ensemble\-Clustering\-::\-Graph}}
+\subsubsection[{stinger\-G}]{\setlength{\rightskip}{0pt plus 5cm}stinger$\ast$ Ensemble\-Clustering\-::\-Graph\-::stinger\-G\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_graph_af83709e85afb91c70729405a725afb9a}
+
+
+Definition at line 81 of file Graph.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/graph/\hyperlink{_graph_8h}{Graph.\-h}\item 
+src/graph/\hyperlink{_graph_8cpp}{Graph.\-cpp}\end{DoxyCompactItemize}

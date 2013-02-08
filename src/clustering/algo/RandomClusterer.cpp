@@ -1,0 +1,26 @@
+/*
+ * RandomClusterer.cpp
+ *
+ *  Created on: 02.02.2013
+ *      Author: cls
+ */
+
+#include "RandomClusterer.h"
+
+namespace EnsembleClustering {
+
+RandomClusterer::RandomClusterer() {
+	// TODO Auto-generated constructor stub
+
+}
+
+RandomClusterer::~RandomClusterer() {
+	// TODO Auto-generated destructor stub
+}
+
+Clustering RandomClusterer::run(Graph& G) {
+	ClusteringGenerator gen;
+	return gen.makeRandomClustering(G, 42); // TODO: does this need a command line parameter?
+}
+
+} /* namespace EnsembleClustering */
