@@ -18,6 +18,11 @@ LabelPropagation::~LabelPropagation() {
 	// TODO Auto-generated destructor stub
 }
 
+
+static int countOne(const bool& a) {
+	return (int) a;
+}
+
 Clustering LabelPropagation::run(Graph& G) {
 
 	const bool printProgress = PRINT_PROGRESS;
@@ -110,6 +115,11 @@ Clustering LabelPropagation::run(Graph& G) {
 		}
 
 		Aux::ProgressMeter pm(n, 10000);
+
+		// TODO: delete for performance tests
+		count numActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
+		INFO("number of active nodes: " << numActive);
+
 
 #pragma omp parallel for
 		for (int64_t i = 0; i < n; ++i) {
