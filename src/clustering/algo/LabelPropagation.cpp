@@ -110,7 +110,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		Aux::ProgressMeter pm(n, 10000);
 
-		#pragma omp parallel for
+#pragma omp parallel for schedule(guided)
 		for (int64_t i = 0; i < n; ++i) {
 			node v = shuffledNodes[i];
 
