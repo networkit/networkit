@@ -105,7 +105,7 @@ Graph generatePreferentialAttachmentGraph(int64_t n, int64_t a) {
 /**
  * Read a graph from a file.
  */
-Graph readGraph(std::string graphPath) {
+Graph readGraph(const std::string& graphPath) {
 
 	// READ GRAPH
 
@@ -134,7 +134,7 @@ Graph readGraph(std::string graphPath) {
  * Split a string at delimiter and return vector of parts.
  *
  */
-std::vector<std::string> splitAString(std::string s, char delim = ' ') {
+std::vector<std::string> splitAString(const std::string& s, char delim = ' ') {
 	std::stringstream stream(s);
 	std::string token;
 	std::vector<std::string> tokens;
@@ -148,11 +148,23 @@ std::vector<std::string> splitAString(std::string s, char delim = ' ') {
 }
 
 
+void configureRandOrder(const std::string& isOrderRandomized) {
+	if (isOrderRandomized == "no") {
+		RAND_ORDER = false;
+	}
+	else if (isOrderRandomized == "yes") {
+		RAND_ORDER = true;
+	}
+	else {
+		// TODO: print warning?
+	}
+}
+
 
 /**
  * Call this first to configure logging output.
  */
-void configureLogging(std::string loglevel = "INFO") {
+void configureLogging(const std::string& loglevel = "INFO") {
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
 	if (loglevel == "TRACE") {
@@ -190,7 +202,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SILENT};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SILENT, RANDORDER};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -206,6 +218,7 @@ const OptionParser::Descriptor usage[] =
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
  {WRITEGRAPH, 0, "", "writegraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"}, // TODO: leave as "algo"
  {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
+ {RANDORDER, 0, "", "randOrder", OptionParser::Arg::Required, "  --randOrder=<yes,no> \t don't randomize vertex processing order"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -450,6 +463,14 @@ int main(int argc, char **argv) {
 	}
 
 
+	// CONFIGURE RANDOM ORDER
+
+	if (options[RANDORDER]) {
+		std::cout << "rand? " << options[RANDORDER].arg << std::endl;
+		configureRandOrder(options[RANDORDER].arg);
+	}
+
+
 	// RUN UNIT TESTS
 
 	if (options[TESTS]) {
@@ -458,8 +479,6 @@ int main(int argc, char **argv) {
 	   INFO("=== starting unit tests ===");
 	   return RUN_ALL_TESTS();
 	}
-
-	//
 
 
 

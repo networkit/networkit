@@ -114,11 +114,11 @@ std::vector<node> METISParser::getNext() {
 	do {
 		comment = false;
 		std::getline(this->graphFile, line);
-		TRACE("reading line: " << line);
+//		TRACE("reading line: " << line);
 		// check for comment line starting with '%'
 		if (line[0] == '%') {
 			comment = true;
-			TRACE("comment line found");
+//			TRACE("comment line found");
 		} else {
 			return parseLine(line);
 		}

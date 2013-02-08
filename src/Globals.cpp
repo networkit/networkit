@@ -6,5 +6,5 @@
  */
 
 bool PRINT_PROGRESS = true;
-
+bool RAND_ORDER = true;
 
