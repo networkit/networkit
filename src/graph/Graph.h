@@ -28,15 +28,16 @@ typedef int64_t index; // more expressive name for an index into an array
 typedef int64_t count; // more expressive name for an integer quantity
 typedef index node; // node indices are 0-based
 typedef float edgeweight; // edge weight type
-template<typename T> using nodemap = std::vector<T>; // more expressive name for container that is indexed by a node
-template<typename T> using edgemap = std::vector<std::vector<T> >;// more expressive name for an edge data structure
+//template<typename T> using nodemap = std::vector<T>; // more expressive name for container that is indexed by a node
+//template<typename T> using edgemap = std::vector<std::vector<T> >;// more expressive name for an edge data structure
 
 class Graph {
 
 protected:
 
 	// defaults
-	static constexpr double defaultEdgeWeight = 1.0;static constexpr edgeweight nullWeight = 0.0;
+	static constexpr double defaultEdgeWeight = 1.00;
+	static constexpr edgeweight nullWeight = 0.0;
 
 	// scalars
 	count n; //!< number of nodes
@@ -51,12 +52,35 @@ protected:
 	// graph attributes
 	std::string name;
 
+
+	// user-defined edge atributes
+
+	//	attribute maps storage
+
+	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
+
+	// defaults
+
+	std::vector<double> edgeAttrDefaults_double;	 // stores default value for edgeMaps_double[i] at index i
+
 	/**
 	 * Return the index of v in the adjacency array of u.
 	 */
 	index find(node u, node v) const;
 
 public:
+
+	/** ATTRIBUTE ABSTRACT BASE CLASSES **/
+
+	class NodeAttribute {
+		// abstract
+	};
+
+	class EdgeAttribute {
+		// abstract
+	};
+
+	/** GRAPH INTERFACE **/
 
 	Graph(count n);
 
@@ -103,12 +127,29 @@ public:
 	 */
 	edgeweight weightedDegree(node v) const;
 
+
+	/** EDGE ATTRIBUTE GETTERS **/
+
 	/**
 	 * Return edge weight.
 	 *
 	 * Return 0 if edge does not exist.
 	 */
 	edgeweight weight(node u, node v) const;
+
+
+
+	/**
+	 * @return attribute of type double for an edge.
+	 *
+	 * @param[in]	u	node
+	 * @param[in]	v	node
+	 * @param[in]	attrId	attribute id
+	 */
+	double attribute_double(node u, node v, int attrId) const;
+
+
+	/**  EDGE ATTRIBUTE SETTERS */
 
 	/**
 	 * Set the weight of an edge. If the edge does not exist,
@@ -120,6 +161,22 @@ public:
 	 */
 	void setWeight(node u, node v, edgeweight w);
 
+
+
+	/**
+	 * Set edge attribute of type double If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	attr	double edge attribute
+	 */
+	void setAttribute_double(node u, node v, int attrId, double attr);
+
+
+
+	/** SUMS **/
+
 	/**
 	 * @return sum of all edge weights
 	 */
@@ -129,6 +186,9 @@ public:
 	 * DEPRECATED - TODO: update clients
 	 */
 	edgeweight totalNodeWeight();
+
+
+	/** NODE MODIFIERS **/
 
 	/**
 	 * Add a new node to the graph and return it.
@@ -157,6 +217,18 @@ public:
 	 * This involves calculation, so store result in a if needed multiple times.
 	 */
 	count numberOfEdges() const;
+
+
+	/** ATTRIBUTES **/
+
+
+
+	/**
+	 * Add new edge map for an attribute of type float.
+	 */
+	int addEdgeAttribute_double(double defaultValue);
+
+
 
 	/** NODE ITERATORS **/
 
@@ -224,6 +296,7 @@ public:
 
 
 
+
 	/** EDGE ITERATORS **/
 
 	/**
@@ -277,17 +350,18 @@ public:
 	template<typename L> void parallelForWeightedEdges(L handle) const;
 
 
+
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 *
-	 *	@param[in]	attrKey		attribute key
+	 *	@param[in]	attrId		attribute id
 	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *
 	 */
-	template<typename L> void forEdgesWithAttribute(std::string attrKey, L handle);
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle);
 
 
 
-	template<typename L> void forEdgesWithAttribute(std::string attr, L handle) const;
 
 	/** NEIGHBORHOOD ITERATORS **/
 
@@ -558,7 +632,6 @@ inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, L handle) {
 		this->forNeighborsOf(u, [&](node v) {
 			// filtering edges is not necessary because only out-edges are considered by stinger
 				if (!marked[v]) {
-					TRACE("pushing node " << v);
 					q.push(v);
 					marked[v] = true;
 				}
@@ -692,8 +765,54 @@ inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u, L handle) cons
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forEdgesWithAttribute(std::string attrKey, L handle) {
+inline void EnsembleClustering::Graph::forNodesWithAttribute(std::string attrKey, L handle) {
+	// get nodemap for attrKey
+
+//	auto nodeMap; // ?
+//
+//	auto findIdPair = this->attrKey2IdPair.find(attrKey);
+//	if (findIdPair != this->attrKey2IdPair.end()) {
+//		std::pair<index, index> idPair = findIdPair->second;
+//		index typeId = idPair.first;
+//		index mapId = idPair.second;
+//
+//		// nodemaps are in a vector, one for each node attribute type int, float, NodeAttribute
+//		switch (typeId) {
+//		case 0:
+//			nodeMap = this->nodeMapsInt[mapId];
+//			break;
+//		case 1:
+//			nodeMap = this->nodeMapsFloat[mapId];
+//			break;
+//		}
+//
+//		// iterate over nodes and call handler with attribute
+//		this->forNodes([&](node u) {
+//			auto attr = nodeMap[u];
+//			handle(u, attr);
+//		});
+//	} else {
+//		throw std::runtime_error("node attribute not found");
+//	}
+
+
 	// TODO:
+	throw std::runtime_error("TODO");
+}
+
+
+template<typename L>
+inline void EnsembleClustering::Graph::forEdgesWithAttribute_double(int attrId, L handle) {
+	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
+	for (node u = 0; u < n; ++u) {
+		for (index vi = 0; vi < adja[u].size(); ++vi) {
+			node v = this->adja[u][vi];
+			double attr = edgeMap[u][vi];
+			if (u <= v) {
+				handle(u, v, attr);
+			}
+		}
+	}
 }
 
 #endif /* GRAPH_H_ */
