@@ -21,6 +21,7 @@
 #include "../../Globals.h"
 #include "../../aux/Log.h"
 #include "../../aux/ProgressMeter.h"
+#include "../../aux/Timer.h"
 #include "../../graph/NodeMap.h"
 #include "../../base/IndexMap.h"
 #include "../../io/GraphIO.h"
