@@ -374,7 +374,7 @@ std::pair<Clustering, Graph> startClusterer(Graph G, OptionParser::Option* optio
  	if (options[SUMMARY]) {
  		char sep = ';';
  		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
-
+ 		summary << G.getName() << sep;
  		summary << running.elapsed().count() << sep;	// APPEND running time
  	}
 
@@ -484,6 +484,20 @@ int main(int argc, char **argv) {
 		PRINT_PROGRESS = false;
 	} else {
 		PRINT_PROGRESS = true;
+	}
+
+
+	if (options[SUMMARY]) {
+		// check if file exists by trying to read from it
+		std::ifstream summary(options[SUMMARY].arg);
+		if (summary) {
+			// file exists
+		} else {
+			// create it and write CSV header
+			std::ofstream summary(options[SUMMARY].arg);
+			summary << "graph;running(ms);#clusters;mod" << std::endl; // TODO: update header
+		}
+
 	}
 
 
