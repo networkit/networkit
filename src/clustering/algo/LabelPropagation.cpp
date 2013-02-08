@@ -18,17 +18,11 @@ LabelPropagation::~LabelPropagation() {
 	// TODO Auto-generated destructor stub
 }
 
-
-static int countOne(const bool& a) {
-	return (int) a;
-}
-
 Clustering LabelPropagation::run(Graph& G) {
 
 	const bool printProgress = PRINT_PROGRESS;
-	const bool randOrder = RAND_ORDER;
 
-	typedef cluster label; // a label is the same as a cluster id
+	typedef cluster label;	// a label is the same as a cluster id
 
 	// init random for std::shuffle
 	std::default_random_engine rd;
@@ -41,10 +35,11 @@ Clustering LabelPropagation::run(Graph& G) {
 	Clustering labels(n);
 	labels.allToSingletons();
 
-	int64_t nUpdated; // number of nodes which have been updated in last iteration
+	int64_t nUpdated;	// number of nodes which have been updated in last iteration
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
-	int64_t nIterations = 0; // number of iterations
+	int64_t nIterations = 0; 	// number of iterations
+
 
 	/**
 	 * == Dealing with isolated nodes ==
@@ -58,6 +53,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	 * The published termination criterion is: All nodes have got the label of the majority of their neighbors.
 	 * In general this does not work. It was changed to: No label was changed in last iteration.
 	 */
+
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	DEBUG("[BEGIN] Label Propagation: precomputing incident weight");
@@ -74,9 +70,9 @@ Clustering LabelPropagation::run(Graph& G) {
 	}
 
 	std::vector<node> shuffledNodes(n);
-	G.parallelForNodes([&](node v) {
-		shuffledNodes[v] = v; // store all nodes in vector
-		});
+	G.parallelForNodes([&](node v){
+		shuffledNodes[v] = v;	// store all nodes in vector
+	});
 
 	std::vector<bool> activeNodes(n); // record if node must be processed
 	activeNodes.assign(n, true);
@@ -96,32 +92,25 @@ Clustering LabelPropagation::run(Graph& G) {
 		// reset updated
 		nUpdated = 0;
 
-		if (randOrder) {
-			// new random order
+		// new random order
 #ifdef _OPENMP
-			// not really random, but the next best thing in parallel w/o hurting performance
-			count numChunks = omp_get_num_threads();
-			count chunkSize = (count) n / numChunks;// discard remainder
+		// not really random, but the next best thing in parallel w/o hurting performance
+		count numChunks = omp_get_num_threads();
+		count chunkSize = (count) n / numChunks; // discard remainder
 #pragma omp parallel for
-			for (index i = 0; i < numChunks; ++i) {
-				index begin = i * chunkSize;
-				index end = begin + chunkSize;
-				std::shuffle(&shuffledNodes[begin], &shuffledNodes[end], randgen);
-			}
-#else
-			// TODO: deactivated to check performance difference
-			std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
-#endif
+		for (index i = 0; i < numChunks; ++i) {
+			index begin = i * chunkSize;
+			index end = begin + chunkSize;
+			std::shuffle(&shuffledNodes[begin], &shuffledNodes[end], randgen);
 		}
+#else
+		// TODO: deactivated to check performance difference		
+		std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
+#endif
 
 		Aux::ProgressMeter pm(n, 10000);
 
-		// TODO: delete for performance tests
-		count numActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
-		INFO("number of active nodes: " << numActive);
-
-
-#pragma omp parallel for
+#pragma omp parallel for schedule(guided)
 		for (int64_t i = 0; i < n; ++i) {
 			node v = shuffledNodes[i];
 
@@ -131,24 +120,28 @@ Clustering LabelPropagation::run(Graph& G) {
 				pm.signal(i);
 			}
 
+
 			if ((activeNodes[v]) && (G.degree(v) > 0)) {
 
 				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 
+
 				// weigh the labels in the neighborhood of v
 				G.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
 					label lw = labels[w];
-					labelWeights[lw] += weight; // add weight of edge {v, w}
-					});
+					labelWeights[lw] += weight;	// add weight of edge {v, w}
+				});
+
 
 				// get heaviest label
-				label heaviest =
-						std::max_element(labelWeights.begin(),
-								labelWeights.end(),
-								[](const std::pair<label, edgeweight>& p1, const std::pair<label, edgeweight>& p2) {
-									return p1.second < p2.second;})->first;
+				label heaviest = std::max_element(labelWeights.begin(), labelWeights.end(),
+				      [](const std::pair<label, edgeweight>& p1, const std::pair<label, edgeweight>& p2) {
+				        return p1.second < p2.second; })->first;
 
 				if (labels[v] != heaviest) { // UPDATE
+					// DEBUG
+					TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
+					// DEBUG
 					labels[v] = heaviest;
 					nUpdated += 1; // TODO: atomic update?
 					G.forNeighborsOf(v, [&](node u) {
@@ -156,10 +149,12 @@ Clustering LabelPropagation::run(Graph& G) {
 					});
 				} else {
 					activeNodes[v] = false;
+					TRACE("label of " << v << " stays " << labels[v]);
 				}
 
 			} else {
 				// node is isolated
+				TRACE("ignoring isolated node: " << v);
 			}
 
 		} // end for shuffled nodes
@@ -172,8 +167,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		}
 
 		runtime.stop();
-		INFO(
-				"[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
+		INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
 
 	} // end while
 
