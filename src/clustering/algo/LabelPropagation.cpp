@@ -77,9 +77,15 @@ Clustering LabelPropagation::run(Graph& G) {
 	std::vector<bool> activeNodes(n); // record if node must be processed
 	activeNodes.assign(n, true);
 
+#ifdef _OPENMP
+	double startTime = omp_get_wtime();
+#endif
+
+	Aux::Timer runtime;
 
 	// propagate labels
 	while (nUpdated > 0) { // as long as a label has changed...
+		runtime.start();
 		nIterations += 1;
 		INFO("[BEGIN] LabelPropagation: iteration #" << nIterations);
 
@@ -160,9 +166,8 @@ Clustering LabelPropagation::run(Graph& G) {
 			pm.end();
 		}
 
-
-		INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels");
-
+		runtime.stop();
+		INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
 
 	} // end while
 
