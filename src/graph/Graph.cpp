@@ -115,7 +115,6 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 }
 
 bool Graph::hasEdge(node u, node v) const {
-	TRACE("find(" << u << "," << v << ") = " << find(u, v));
 	return (find(u, v) != none);
 }
 

@@ -632,7 +632,6 @@ inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, L handle) {
 		this->forNeighborsOf(u, [&](node v) {
 			// filtering edges is not necessary because only out-edges are considered by stinger
 				if (!marked[v]) {
-					TRACE("pushing node " << v);
 					q.push(v);
 					marked[v] = true;
 				}
