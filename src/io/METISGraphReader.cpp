@@ -37,12 +37,10 @@ Graph METISGraphReader::read(std::string path) {
 	double p = 0.0; // percentage for progress bar
 	node u = 0; // begin with 0
 	while (parser.hasNext()) {
-//		TRACE("line: " << lc++);
 		std::vector<node> adjacencies = parser.getNext();
 
 		for (node v : adjacencies) {
 			v = v - 1; 	// METIS-indices are 1-based
-//			TRACE("v = " << v);
 			assert (v >= 0);
 			if (u < v) { // TODO: works only for simple graphs
 			  G.insertEdge(u, v);

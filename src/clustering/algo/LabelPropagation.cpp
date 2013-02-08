@@ -139,9 +139,6 @@ Clustering LabelPropagation::run(Graph& G) {
 									return p1.second < p2.second;})->first;
 
 				if (labels[v] != heaviest) { // UPDATE
-					// DEBUG
-//					TRACE("updating label of " << v << " from " << labels[v] << " to " << heaviest);
-					// DEBUG
 					labels[v] = heaviest;
 					nUpdated += 1; // TODO: atomic update?
 					G.forNeighborsOf(v, [&](node u) {
@@ -149,12 +146,10 @@ Clustering LabelPropagation::run(Graph& G) {
 					});
 				} else {
 					activeNodes[v] = false;
-//					TRACE("label of " << v << " stays " << labels[v]);
 				}
 
 			} else {
 				// node is isolated
-//				TRACE("ignoring isolated node: " << v);
 			}
 
 		} // end for shuffled nodes

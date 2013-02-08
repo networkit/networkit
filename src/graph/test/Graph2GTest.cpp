@@ -450,4 +450,34 @@ TEST_F(Graph2GTest, testParallelForWeightedEdges) {
 
 }
 
+
+TEST_F(Graph2GTest, testEdgeAttributes) {
+	count n = 5;
+	Graph G(n);
+
+	int attrId = G.addEdgeAttribute_double(0.0);
+
+	G.forNodePairs([&](node u, node v){
+		G.insertEdge(u, v);
+	});
+
+	G.forEdges([&](node u, node v){
+		EXPECT_EQ(0.0, G.attribute_double(u, v, attrId));
+	});
+
+	G.forEdges([&](node u, node v){
+		G.setAttribute_double(u, v, attrId, 42.0);
+	});
+
+	G.forEdges([&](node u, node v){
+		EXPECT_EQ(42.0, G.attribute_double(u, v, attrId));
+	});
+
+	node v = G.addNode();
+	G.insertEdge(v, 0);
+
+	EXPECT_EQ(0.0, G.attribute_double(v, 0, attrId));
+
+}
+
 } /* namespace EnsembleClustering */
