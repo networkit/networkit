@@ -339,14 +339,17 @@
 								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.1989845031" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.576312230" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++11 -pg -fopenmp" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1374303277" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering-DPar/STINGER/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering-DPar/gtest/include"/>
 									<listOptionValue builtIn="false" value="/usr/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/cppunit/1.12.1/include"/>
+									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering/STINGER/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering/gtest/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/include"/>
+									<listOptionValue builtIn="false" value="/Users/cls/workspace/STINGER/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1587274842" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def"/>
 								<option id="gnu.cpp.compiler.option.warnings.allwarn.530906436" name="All warnings (-Wall)" superClass="gnu.cpp.compiler.option.warnings.allwarn" value="true" valueType="boolean"/>
@@ -362,14 +365,17 @@
 								<option id="gnu.c.compiler.option.misc.other.878310408" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -std=c99" valueType="string"/>
 								<option id="gnu.c.compiler.option.include.files.803500021" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files"/>
 								<option id="gnu.c.compiler.option.include.paths.1419033667" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering-DPar/STINGER/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering-DPar/gtest/include"/>
 									<listOptionValue builtIn="false" value="/usr/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/cppunit/1.12.1/include"/>
+									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering/STINGER/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering/gtest/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/include"/>
+									<listOptionValue builtIn="false" value="/Users/cls/workspace/STINGER/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.483039574" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
