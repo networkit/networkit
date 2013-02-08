@@ -53,12 +53,12 @@ using namespace EnsembleClustering;
 Graph generateRandomGraph(int64_t n, double p) {
 
 	std::cout << "[BEGIN] generating random graph..." << std::flush;
-	Aux::Timer runtime;
-	runtime.start();
+	Aux::Timer running;
+	running.start();
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeRandomGraph(n, p);
-	runtime.stop();
-	std::cout << "[DONE] (" << runtime.elapsed().count() << " ms)" << std::endl;
+	running.stop();
+	std::cout << "[DONE] (" << running.elapsed().count() << " ms)" << std::endl;
 	return G;
 }
 
@@ -74,13 +74,13 @@ Graph generateClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout
 	std::cout << "[BEGIN] generating clustered random graph..." << std::flush;
 	GraphGenerator graphGen;
 
-	Aux::Timer runtime;
-	runtime.start();
+	Aux::Timer running;
+	running.start();
 	//
 	Graph G = graphGen.makeClusteredRandomGraph(planted, pin, pout);
 	//
-	runtime.stop();
-	std::cout << "[DONE] (" << runtime.elapsed().count() << " ms)" << std::endl;
+	running.stop();
+	std::cout << "[DONE] (" << running.elapsed().count() << " ms)" << std::endl;
 
 	return G;
 }
@@ -90,13 +90,13 @@ Graph generatePreferentialAttachmentGraph(int64_t n, int64_t a) {
 	std::cout << "[BEGIN] generating preferential attachment graph..." << std::flush;
 	GraphGenerator graphGen;
 
-	Aux::Timer runtime;
-	runtime.start();
+	Aux::Timer running;
+	running.start();
 	//
 	Graph G = graphGen.makePreferentialAttachmentGraph(n, a);
 	//
-	runtime.stop();
-	std::cout << "[DONE] (" << runtime.elapsed().count() << " ms)" << std::endl;
+	running.stop();
+	std::cout << "[DONE] (" << running.elapsed().count() << " ms)" << std::endl;
 
 	return G;
 }
@@ -202,7 +202,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SILENT, RANDORDER};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SILENT, SUMMARY, RANDORDER};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -218,6 +218,7 @@ const OptionParser::Descriptor usage[] =
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
  {WRITEGRAPH, 0, "", "writegraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"}, // TODO: leave as "algo"
  {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
+ {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {RANDORDER, 0, "", "randOrder", OptionParser::Arg::Required, "  --randOrder=<yes,no> \t don't randomize vertex processing order"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
@@ -287,6 +288,22 @@ std::pair<Clustering, Graph> startClusterer(Graph G, OptionParser::Option* optio
 	}
 
 
+	if (options[WRITEGRAPH]) {
+		// write input graph to file
+		std::cout << "\t --writegraph=" << options[WRITEGRAPH].arg << std::endl;
+
+		std::string path = options[WRITEGRAPH].arg;
+		METISGraphWriter writer;
+		std::cout << "[BEGIN] writing graph to file: " << path << std::endl;
+		writer.write(G, path);
+		std::cout << "[DONE]" << std::endl;
+
+	}
+
+
+	std::pair<Clustering, Graph> result = std::make_pair(Clustering(0), G); // this will be returned
+	Aux::Timer running; // measures running time of clusterer
+
 	if (options[SOLO]) {
 		std::cout << "\t --solo=" << options[SOLO].arg << std::endl;
 		// RUN ONLY SINGLE BASE ALGORITHM
@@ -306,14 +323,13 @@ std::pair<Clustering, Graph> startClusterer(Graph G, OptionParser::Option* optio
 		}
 
 		// start solo base algorithm
-		Aux::Timer runtime;
 		std::cout << "[BEGIN] solo base clusterer: " << algoName << std::endl;
-		runtime.start();
-		Clustering result = algo->run(G);
-		runtime.stop();
+		running.start();
+		Clustering resultClustering = algo->run(G);
+		running.stop();
 		//
-		std::cout << "[DONE] " << algoName << " runtime: \t" << runtime.elapsedTag() << std::endl;
-		return std::make_pair(result, G);
+		std::cout << "[DONE] " << algoName << " running: \t" << running.elapsedTag() << std::endl;
+		result = std::make_pair(resultClustering, G);
 
 	} else if (options[ENSEMBLE]) {
 		// RUN ENSEMBLE
@@ -341,32 +357,29 @@ std::pair<Clustering, Graph> startClusterer(Graph G, OptionParser::Option* optio
 		ensemble.setFinalClusterer(*final);
 
 		// RUN ENSEMBLE CLUSTERER
-		Aux::Timer runtime;
-		runtime.start();
+		running.start();
 
-		Clustering result = ensemble.run(G);
+		Clustering resultClustering = ensemble.run(G);
 
-		runtime.stop();
-		std::cout << "[DONE] EmsembleClusterer (" << ensembleSize << ") runtime: \t" << runtime.elapsedTag() << std::endl;
+		running.stop();
+		std::cout << "[DONE] EmsembleClusterer (" << ensembleSize << ") running: \t" << running.elapsedTag() << std::endl;
 
 
-		return std::make_pair(result, G);
+		result = std::make_pair(resultClustering, G);
+	} else {
+		// if no algorithm specified, return empty clustering
 	}
 
 
-	if (options[WRITEGRAPH]) {
-		std::cout << "\t --writegraph=" << options[WRITEGRAPH].arg << std::endl;
+ 	if (options[SUMMARY]) {
+ 		char sep = ';';
+ 		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
 
-		std::string path = options[WRITEGRAPH].arg;
-		METISGraphWriter writer;
-		std::cout << "[BEGIN] writing graph to file: " << path << std::endl;
-		writer.write(G, path);
-		std::cout << "[DONE]" << std::endl;
-
-	}
+ 		summary << running.elapsed().count() << sep;	// APPEND running time
+ 	}
 
 
-	return std::make_pair(Clustering(0), G);	// return empty clustering
+	return result;	// return empty clustering
 
 }
 
@@ -385,23 +398,34 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
 
 	int64_t k = result.first.numberOfClusters();
 
-	Aux::Timer runtime;
-	runtime.start();
+	Aux::Timer running;
+	running.start();
 	Modularity modularity;
 	double mod = modularity.getQuality(result.first, result.second);
-	runtime.stop();
-	std::cout << "[DONE] calculating modularity " << runtime.elapsedTag() << std::endl;
+	running.stop();
+	std::cout << "[DONE] calculating modularity " << running.elapsedTag() << std::endl;
 
-	runtime.start();
+	running.start();
 	Coverage coverage;
 	double cov = coverage.getQuality(result.first, result.second);
-	runtime.stop();
-	std::cout << "[DONE] calculating coverage " << runtime.elapsedTag() << std::endl;
+	running.stop();
+	std::cout << "[DONE] calculating coverage " << running.elapsedTag() << std::endl;
 
 
  	std::cout << "\t # clusters:\t" << k << std::endl;
  	std::cout << "\t coverage:\t" << cov << std::endl;
  	std::cout << "\t modularity:\t" << mod << std::endl;
+
+
+ 	if (options[SUMMARY]) {
+ 		char sep = ';';
+ 		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
+ 		summary << k << sep;
+ 		summary << mod << sep;
+
+ 		// since this is the last appender, append endl
+ 		summary << std::endl;
+ 	}
 
  	return true;
 }
