@@ -10,6 +10,7 @@
 
 
 extern bool PRINT_PROGRESS;
+extern bool RAND_ORDER;
 
 
 #endif /* GLOBALS_H_ */

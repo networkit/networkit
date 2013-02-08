@@ -40,6 +40,10 @@ void Graph::insertEdge(node u, node v, edgeweight weight) {
 		this->adja[u].push_back(u);
 		this->deg[u] += 1;
 		this->eweights[u].push_back(weight);
+		for (int attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
+			double defaultAttr = this->edgeAttrDefaults_double[attrId];
+			this->edgeMaps_double[attrId][u].push_back(defaultAttr);
+		}
 	} else {
 		// set adjacency
 		this->adja[u].push_back(v);
@@ -50,7 +54,12 @@ void Graph::insertEdge(node u, node v, edgeweight weight) {
 		// set edge weight
 		this->eweights[u].push_back(weight);
 		this->eweights[v].push_back(weight);
-		// TODO: loop over all attributes, setving default attr
+		// loop over all attributes, setting default attr
+		for (int attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
+			double defaultAttr = this->edgeAttrDefaults_double[attrId];
+			this->edgeMaps_double[attrId][u].push_back(defaultAttr);
+			this->edgeMaps_double[attrId][v].push_back(defaultAttr);
+		}
 	}
 }
 
@@ -59,11 +68,11 @@ void Graph::removeEdge(node u, node v) {
 	index vi = find(u, v);
 	index ui = find(v, u);
 	if (vi == none) {
-		ERROR("edge (" << u << "," << v << ") does not exist");
+		throw std::runtime_error("edge does not exist");
 		// TODO: what if edge does not exist?
 	} else {
 		this->adja[u][vi] = none;
-		this->adja[v][ui] = none; //FIXME:  assumption: u is at same index w.r.t. v as v w.r.t. u -
+		this->adja[v][ui] = none;
 		// decrement degree counters
 		this->deg[u] -= 1;
 		this->deg[v] -= 1;
@@ -106,7 +115,6 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 }
 
 bool Graph::hasEdge(node u, node v) const {
-	TRACE("find(" << u << "," << v << ") = " << find(u, v));
 	return (find(u, v) != none);
 }
 
@@ -122,6 +130,13 @@ node Graph::addNode() {
 	std::vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 	this->adja.push_back(adjacencyVector);
 	this->eweights.push_back(edgeWeightVector);
+
+	// update edge attribute data structures
+	for (int attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
+		std::vector<double> attrVector;
+		this->edgeMaps_double[attrId].push_back(attrVector);
+	}
+
 	return v;
 }
 
@@ -192,6 +207,59 @@ edgeweight Graph::totalNodeWeight() {
 	throw std::runtime_error("DEPRECATED");
 }
 
+void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
+
+
+	if (u == v) { 		// self-loop case
+		index ui = find(u, u);
+		if (ui != none) {
+			this->edgeMaps_double.at(attrId)[u][ui] = attr;
+		} else {
+			throw std::runtime_error("What if edge does not exist?");
+		}
+	} else {
+		index vi = find(u, v);
+		index ui = find(v, u);
+		if ((vi != none) && (ui != none)) {
+			// DEBUG
+			int s = this->edgeMaps_double.size();
+			int sm = this->edgeMaps_double[attrId].size();
+			int smu = this->edgeMaps_double[attrId][u].size();
+			int smv = this->edgeMaps_double[attrId][v].size();
+			// DEBUG
+
+			this->edgeMaps_double[attrId][u][vi] = attr;
+			this->edgeMaps_double[attrId][v][ui] = attr;
+		} else {
+			throw std::runtime_error("What if edge does not exist?");
+		}
+	}
+}
+
+double Graph::attribute_double(node u, node v, int attrId) const {
+	assert (attrId < this->edgeMaps_double.size());
+	index vi = find(u, v);
+	if (vi != none) {
+		return this->edgeMaps_double[attrId][u][vi];
+	} else {
+		throw std::runtime_error("TODO: what if edge does not exist?");
+	}
+
+}
+
+int Graph::addEdgeAttribute_double(double defaultValue) {
+	int attrId = this->edgeMaps_double.size();
+	std::vector<std::vector<double> > edgeMap;
+	edgeMap.resize(this->n);	// create empty vector<attr> for each node
+	this->edgeMaps_double.push_back(edgeMap);
+	this->edgeAttrDefaults_double.push_back(defaultValue);
+
+	if (this->numberOfEdges() > 0) {
+		throw std::runtime_error("TODO: set attributes for already existing edges");
+	}
+	// TODO: set attribute for already existing edges
+	return attrId;
+}
 
 } /* namespace EnsembleClustering */
 

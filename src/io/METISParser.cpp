@@ -33,7 +33,6 @@ static std::vector<node> parseLine(std::string line) {
 		}
 	}
 
-	TRACE("line parsed");
 	return adjacencies;
 }
 
@@ -57,7 +56,6 @@ static inline std::vector<node> parseLineDIY(std::string line) {
 		}
 	}
 
-	TRACE("line parsed");
 	return adjacencies;
 }
 
@@ -114,11 +112,9 @@ std::vector<node> METISParser::getNext() {
 	do {
 		comment = false;
 		std::getline(this->graphFile, line);
-		TRACE("reading line: " << line);
 		// check for comment line starting with '%'
 		if (line[0] == '%') {
 			comment = true;
-			TRACE("comment line found");
 		} else {
 			return parseLine(line);
 		}
