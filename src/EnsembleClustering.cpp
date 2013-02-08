@@ -278,7 +278,7 @@ Graph getGraph(OptionParser::Option* options) {
 }
 
 
-std::pair<Clustering, Graph> startClusterer(Graph G&, OptionParser::Option* options) {
+std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* options) {
 
 	// if getGraph returns empty graph, abort
 	if (G.isEmpty() && (G.getName() == "NONE")) {
