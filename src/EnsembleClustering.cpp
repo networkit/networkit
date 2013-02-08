@@ -490,7 +490,6 @@ int main(int argc, char **argv) {
 	// CONFIGURE RANDOM ORDER
 
 	if (options[RANDORDER]) {
-		std::cout << "rand? " << options[RANDORDER].arg << std::endl;
 		configureRandOrder(options[RANDORDER].arg);
 	}
 
