@@ -11,6 +11,7 @@
 #include "GraphReader.h"
 
 #include "METISParser.h"
+#include "../aux/StringTools.h"
 
 namespace EnsembleClustering {
 
