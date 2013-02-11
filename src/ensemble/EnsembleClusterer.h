@@ -47,13 +47,31 @@ public:
 
 	virtual ~EnsembleClusterer();
 
+	/**
+	 * Add a base clusterer to the ensemble.
+	 */
 	virtual void addBaseClusterer(Clusterer&  base);
 
+	/**
+	 * Set final clusterer.
+	 */
 	virtual void setFinalClusterer(Clusterer& final);
 
+	/**
+	 * Set quality measure to evaluate clusterings.
+	 */
 	virtual void setQualityMeasure(QualityMeasure& qm);
 
+	/**
+	 * Run the ensemble clusterer.
+	 */
 	virtual Clustering run(Graph& G);
+
+	/**
+	 * @return string representation.
+	 */
+	virtual std::string toString();
+
 
 
 
