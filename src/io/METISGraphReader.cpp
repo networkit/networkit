@@ -23,17 +23,18 @@ Graph METISGraphReader::read(std::string path) {
 
 	METISParser parser(path);
 
+
 	std::pair<int64_t, int64_t> header = parser.getHeader();
 	int64_t n = header.first;
 	int64_t m = header.second;
 
 	Graph G(n);
-	G.setName(path);
+	std::string fileName = Aux::StringTools::split(path, '/').back();
+	G.setName(fileName);
 
 	std::cout << "[BEGIN] reading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// progress bar follows
 
 
-	int lc = 0;
 	double p = 0.0; // percentage for progress bar
 	node u = 0; // begin with 0
 	while (parser.hasNext()) {
