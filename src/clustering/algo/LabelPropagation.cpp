@@ -180,4 +180,11 @@ Clustering LabelPropagation::run(Graph& G) {
 
 }
 
+std::string LabelPropagation::toString() {
+	std::stringstream strm;
+	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ")";
+	return strm.str();
+
+}
+
 } /* namespace EnsembleClustering */

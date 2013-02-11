@@ -47,7 +47,18 @@ public:
 
 	virtual ~LabelPropagation();
 
+	/**
+	 * Run the label propagation clustering algorithm.
+	 *
+	 * @param[in]	G	input graph
+	 * @return			clustering
+	 */
 	virtual Clustering run(Graph& G);
+
+	/**
+	 * @return string representation of algorithm and parameters.
+	 */
+	virtual std::string toString();
 };
 
 } /* namespace EnsembleClustering */
