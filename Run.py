@@ -24,10 +24,14 @@ for graphFile in graphFiles:
     command = "%s &> '%s'" % (command, outFile)
     commands.append(command)
     
-print("Going to call the following commands:")
+print("Going to call the following %d commands:" % len(commands))
 for command in commands:
     print("\t %s" % command)
 
+called = 0
 for command in commands:
     print("[BEGIN] %s" % command)
     os.system(command)
+    called += 1
+    
+print("[DONE] called %d commands" % called)
