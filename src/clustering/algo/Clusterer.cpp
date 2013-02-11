@@ -18,4 +18,8 @@ Clusterer::~Clusterer() {
 	// TODO Auto-generated destructor stub
 }
 
+std::string Clusterer::toString() {
+	return "TODO: string representation of clusterer";
+}
+
 } /* namespace EnsembleClustering */
