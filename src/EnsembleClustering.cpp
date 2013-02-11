@@ -419,10 +419,7 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
  		char sep = ';';
  		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
  		summary << k << sep;
- 		summary << mod << sep;
-
- 		// since this is the last appender, append endl
- 		summary << std::endl;
+ 		summary << mod << std::endl;  		// since this is the last column, append endl instead of separator
  	}
 
  	return true;
