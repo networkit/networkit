@@ -491,7 +491,7 @@ int main(int argc, char **argv) {
 			// create it and write CSV header
 			std::ofstream summary(options[SUMMARY].arg);
 
-			summary << "threads;algo;graph;running(ms);#clusters;mod" << std::endl; // TODO: update header
+			summary << "threads;algo;graph;running;clusters;mod" << std::endl; // TODO: update header
 
 		}
 		// append number of threads available
