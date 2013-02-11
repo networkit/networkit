@@ -148,14 +148,16 @@ std::vector<std::string> splitAString(const std::string& s, char delim = ' ') {
 }
 
 
+/**
+ * Set LabelPropagation parameter: randOrder
+ */
 void configureRandOrder(const std::string& isOrderRandomized) {
 	if (isOrderRandomized == "no") {
 		RAND_ORDER = false;
 	}
 	else if (isOrderRandomized == "yes") {
 		RAND_ORDER = true;
-	}
-	else {
+	} else {
 		// TODO: print warning?
 	}
 }
@@ -169,7 +171,6 @@ void configureLogging(const std::string& loglevel = "INFO") {
 	log4cxx::BasicConfigurator::configure();
 	if (loglevel == "TRACE") {
 		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getTrace());
-
 	} else if (loglevel == "DEBUG") {
 		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
 	} else if (loglevel == "INFO") {
@@ -179,7 +180,8 @@ void configureLogging(const std::string& loglevel = "INFO") {
 	} else if (loglevel == "ERROR") {
 		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getError());
 	} else {
-		// see default parameter
+		ERROR("unknown loglevel: " << loglevel);
+		exit(1);
 	}
 }
 
@@ -300,6 +302,7 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 
 	}
 
+	Clusterer* algo = NULL; // the clusterer
 
 	std::pair<Clustering, Graph> result = std::make_pair(Clustering(0), G); // this will be returned
 	Aux::Timer running; // measures running time of clusterer
@@ -308,7 +311,7 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 		std::cout << "\t --solo=" << options[SOLO].arg << std::endl;
 		// RUN ONLY SINGLE BASE ALGORITHM
 
-		Clusterer* algo = NULL; // the clusterer
+
 
 		// get specified base algorithm
 		std::string algoName = options[SOLO].arg;
@@ -322,14 +325,6 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 			exit(1);
 		}
 
-		// start solo base algorithm
-		std::cout << "[BEGIN] solo base clusterer: " << algoName << std::endl;
-		running.start();
-		Clustering resultClustering = algo->run(G);
-		running.stop();
-		//
-		std::cout << "[DONE] " << algoName << " running: \t" << running.elapsedTag() << std::endl;
-		result = std::make_pair(resultClustering, G);
 
 	} else if (options[ENSEMBLE]) {
 		// RUN ENSEMBLE
@@ -338,43 +333,47 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 
 		int ensembleSize = std::atoi(ensembleOptions.c_str()); // TODO: provide more options
 
-		EnsembleClusterer ensemble;
+		EnsembleClusterer* ensemble = new EnsembleClusterer();
 
 		// CONFIGURE ENSEMBLE CLUSTERER
 
 		// 1. Quality Measure
 		QualityMeasure* qm = new Modularity();
-		ensemble.setQualityMeasure(*qm);
+		ensemble->setQualityMeasure(*qm);
 
 		// 2. Base Clusterers
 		for (int i = 0; i < ensembleSize; i += 1) {
 			Clusterer* base = new LabelPropagation();
-			ensemble.addBaseClusterer(*base);
+			ensemble->addBaseClusterer(*base);
 		}
 
 		// 3. Final Clusterer
 		Clusterer* final = new LabelPropagation();
-		ensemble.setFinalClusterer(*final);
+		ensemble->setFinalClusterer(*final);
 
-		// RUN ENSEMBLE CLUSTERER
-		running.start();
+		algo = ensemble;
 
-		Clustering resultClustering = ensemble.run(G);
-
-		running.stop();
-		std::cout << "[DONE] EmsembleClusterer (" << ensembleSize << ") running: \t" << running.elapsedTag() << std::endl;
-
-
-		result = std::make_pair(resultClustering, G);
 	} else {
 		// if no algorithm specified, return empty clustering
 	}
 
 
+	// START CLUSTERER
+	// start solo base algorithm
+	std::cout << "[BEGIN] clusterer: " << algo->toString() << std::endl;
+	running.start();
+	Clustering resultClustering = algo->run(G);
+	running.stop();
+	//
+	std::cout << "[DONE] " << algo->toString() << " ran: \t" << running.elapsedTag() << std::endl;
+	result = std::make_pair(resultClustering, G);
+
+
  	if (options[SUMMARY]) {
  		char sep = ';';
  		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
-
+ 		summary << algo->toString() << sep;
+ 		summary << G.getName() << sep;
  		summary << running.elapsed().count() << sep;	// APPEND running time
  	}
 
@@ -405,15 +404,14 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
 	running.stop();
 	std::cout << "[DONE] calculating modularity " << running.elapsedTag() << std::endl;
 
-	running.start();
-	Coverage coverage;
-	double cov = coverage.getQuality(result.first, result.second);
-	running.stop();
-	std::cout << "[DONE] calculating coverage " << running.elapsedTag() << std::endl;
+//	running.start();
+//	Coverage coverage;
+//	double cov = coverage.getQuality(result.first, result.second);
+//	running.stop();
+//	std::cout << "[DONE] calculating coverage " << running.elapsedTag() << std::endl;
 
 
  	std::cout << "\t # clusters:\t" << k << std::endl;
- 	std::cout << "\t coverage:\t" << cov << std::endl;
  	std::cout << "\t modularity:\t" << mod << std::endl;
 
 
@@ -484,6 +482,30 @@ int main(int argc, char **argv) {
 		PRINT_PROGRESS = false;
 	} else {
 		PRINT_PROGRESS = true;
+	}
+
+
+	if (options[SUMMARY]) {
+		// check if file exists by trying to read from it
+		std::ifstream summary(options[SUMMARY].arg);
+		if (summary) {
+			// file exists
+		} else {
+			// create it and write CSV header
+			std::ofstream summary(options[SUMMARY].arg);
+
+			summary << "threads;algo;graph;running(ms);#clusters;mod" << std::endl; // TODO: update header
+
+		}
+		// append number of threads available
+		std::ofstream summaryOut(options[SUMMARY].arg, std::ios::app);
+		char sep = ';';
+#ifdef _OPENMP
+		summaryOut << omp_get_max_threads() << sep;
+#else
+		summary << "No OpenMP" << sep;
+#endif
+
 	}
 
 

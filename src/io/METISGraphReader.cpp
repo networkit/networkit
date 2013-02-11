@@ -42,7 +42,7 @@ Graph METISGraphReader::read(std::string path) {
 		for (node v : adjacencies) {
 			v = v - 1; 	// METIS-indices are 1-based
 			assert (v >= 0);
-			if (u < v) { // TODO: works only for simple graphs
+			if (u <= v) { // self-loops are allowed
 			  G.insertEdge(u, v);
 			}
 		}

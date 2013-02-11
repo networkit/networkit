@@ -170,4 +170,10 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	return zetaFine;
 }
 
+std::string EnsembleClusterer::toString() {
+	std::stringstream strm;
+	strm << "EnsembleClusterer(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",final=" << this->finalClusterer->toString() << ")";
+	return strm.str();
+}
+
 } /* namespace EnsembleClustering */
