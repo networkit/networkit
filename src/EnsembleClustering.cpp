@@ -366,7 +366,13 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 	running.stop();
 	//
 	std::cout << "[DONE] " << algo->toString() << " ran: \t" << running.elapsedTag() << std::endl;
+
+
 	result = std::make_pair(resultClustering, G);
+
+	// print speed info
+	double eps = (G.numberOfEdges() / ((double) running.elapsed().count() / 1000.0));	// edges per second
+	std::cout << "\t # edges per second:\t" << eps << std::endl;
 
 
  	if (options[SUMMARY]) {
@@ -375,6 +381,7 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
  		summary << algo->toString() << sep;
  		summary << G.getName() << sep;
  		summary << running.elapsed().count() << sep;	// APPEND running time
+ 		summary << eps << sep;								// APPEND edges per second
  	}
 
 
@@ -495,7 +502,7 @@ int main(int argc, char **argv) {
 			// create it and write CSV header
 			std::ofstream summary(options[SUMMARY].arg);
 
-			summary << "threads;algo;graph;running;clusters;mod" << std::endl; // TODO: update header
+			summary << "threads;algo;graph;running;eps;clusters;mod" << std::endl; // TODO: update header
 
 		}
 		// append number of threads available
