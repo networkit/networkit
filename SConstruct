@@ -184,7 +184,7 @@ AddOption("--openmp",
 
 openmp = GetOption("openmp")
 
-if (openmp == "yes") or (openmp == None):
+if (openmp == "yes") or (openmp == None): # with OpenMP by default
     env.Append(CPPFLAGS = ["-fopenmp"])
     env.Append(LINKFLAGS = ["-fopenmp"])
 elif (openmp == "no"):
