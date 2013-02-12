@@ -404,6 +404,10 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
 	running.stop();
 	std::cout << "[DONE] calculating modularity " << running.elapsedTag() << std::endl;
 
+	if ((mod > 1.0) || (mod < -0.5)) {
+		std::cout << "[ERROR] modularity calculation went wrong: " << mod << " is not in range [-0.5, 1.0]";
+	}
+
 //	running.start();
 //	Coverage coverage;
 //	double cov = coverage.getQuality(result.first, result.second);
