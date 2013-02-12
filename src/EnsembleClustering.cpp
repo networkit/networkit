@@ -12,8 +12,10 @@
 
 
 // log4cxx
+#ifndef NOLOG4CXX
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
+#endif
 
 // GoogleTest
 #include <gtest/gtest.h>
@@ -163,6 +165,7 @@ void configureRandOrder(const std::string& isOrderRandomized) {
 }
 
 
+#ifndef NOLOG4CXX
 /**
  * Call this first to configure logging output.
  */
@@ -184,6 +187,8 @@ void configureLogging(const std::string& loglevel = "INFO") {
 		exit(1);
 	}
 }
+#endif
+
 
 
 // *** Option Parser Configuration ***//
@@ -466,11 +471,13 @@ int main(int argc, char **argv) {
 
 	// CONFIGURE LOGGING
 
+#ifndef NOLOG4CXX
 	if (options[LOGLEVEL]) {
 		configureLogging(options[LOGLEVEL].arg);
 	} else {
 		configureLogging();	// with default level
 	}
+#endif
 
 
 	// CONFIGURE PARALLELISM

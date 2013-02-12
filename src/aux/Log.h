@@ -12,8 +12,11 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
+#include <sstream>
 
+#ifndef NOLOG4CXX
 #include <log4cxx/logger.h>
+#endif
 
 namespace Aux {
 
@@ -23,12 +26,22 @@ namespace Aux {
 
 
 // short macros for logging statements
-#define FATAL(X) LOG4CXX_FATAL(LOGGER, LOCATION << X)
-#define ERROR(X) LOG4CXX_ERROR(LOGGER, LOCATION << X)
-#define WARN(X) LOG4CXX_WARN(LOGGER, LOCATION << X)
-#define INFO(X) LOG4CXX_INFO(LOGGER, LOCATION << X)
-#define DEBUG(X) LOG4CXX_DEBUG(LOGGER, LOCATION << X)
-#define TRACE(X) LOG4CXX_TRACE(LOGGER, LOCATION << X)
+#ifdef NOLOG4CXX
+	// define logging macros to nothing
+	#define FATAL(X)
+	#define ERROR(X)
+	#define WARN(X)
+	#define INFO(X)
+	#define DEBUG(X)
+	#define TRACE(X)
+#else
+	#define FATAL(X) LOG4CXX_FATAL(LOGGER, LOCATION << X)
+	#define ERROR(X) LOG4CXX_ERROR(LOGGER, LOCATION << X)
+	#define WARN(X) LOG4CXX_WARN(LOGGER, LOCATION << X)
+	#define INFO(X) LOG4CXX_INFO(LOGGER, LOCATION << X)
+	#define DEBUG(X) LOG4CXX_DEBUG(LOGGER, LOCATION << X)
+	#define TRACE(X) LOG4CXX_TRACE(LOGGER, LOCATION << X)
+#endif
 
 
 /**
