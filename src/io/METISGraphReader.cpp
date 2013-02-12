@@ -29,8 +29,9 @@ Graph METISGraphReader::read(std::string path) {
 	int64_t m = header.second;
 
 	Graph G(n);
-	std::string fileName = Aux::StringTools::split(path, '/').back();
-	G.setName(fileName);
+	std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
+
+	G.setName(graphName);
 
 	std::cout << "[BEGIN] reading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// progress bar follows
 

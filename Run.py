@@ -16,6 +16,8 @@ for (dirpath, dirnames, filenames) in os.walk(dir):
         path = os.path.join(dirpath, name)
         graphFiles.append(path)
         
+graphFiles.sort()
+
     
 commands = []
 for graphFile in graphFiles:
