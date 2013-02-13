@@ -360,6 +360,8 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 
 	} else {
 		// if no algorithm specified, return empty clustering
+		std::cout << "[INFO] no algorithm specified - returning empty clustering" << std::endl;
+		return result;
 	}
 
 
