@@ -76,21 +76,21 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 
 }
 
-TEST_F(GraphBenchmark, edgeInsertions_standard_par) {
-	int64_t n = this->n;
-	Aux::Timer runtime;
-
-	Graph G(n);
-	runtime.start();
-	G.parallelForNodePairs([&](node u, node v) {
-		G.insertEdge(u, v);
-	});
-	runtime.stop();
-
-	INFO("[DONE] edgeInsertions_standard_par(" << runtime.elapsed().count() << " ms)");
-	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
-
-}
+//TEST_F(GraphBenchmark, edgeInsertions_standard_par) {
+//	int64_t n = this->n;
+//	Aux::Timer runtime;
+//
+//	Graph G(n);
+//	runtime.start();
+//	G.parallelForNodePairs([&](node u, node v) {
+//		G.insertEdge(u, v);
+//	});
+//	runtime.stop();
+//
+//	INFO("[DONE] edgeInsertions_standard_par(" << runtime.elapsed().count() << " ms)");
+//	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
+//
+//}
 //
 //TEST_F(GraphBenchmark, edgeInsertions_raw_seq) {
 //	int64_t n = this->n;
