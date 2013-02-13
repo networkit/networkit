@@ -111,9 +111,14 @@ TEST_F(Graph2GTest, testParallelEdgeInsertion) {
 	int64_t offset = 100;
 	Graph G(n);
 
-	G.parallelForNodes([&](node v) {
-		G.insertEdge(v, (v+offset) % n);
-	});
+	try {
+		G.parallelForNodes([&](node v) {
+			G.insertEdge(v, (v+offset) % n);
+		});
+
+	} catch (...) {
+		EXPECT_TRUE(false) << "exception thrown - fail test";
+	}
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
 
@@ -129,15 +134,20 @@ TEST_F(Graph2GTest, testParallelEdgeRemoval) {
 	int64_t offset = 100;
 	Graph G(n);
 
-	G.parallelForNodes([&](node v) {
+	G.forNodes([&](node v) {
 		G.insertEdge(v, (v+offset) % n);
 	});
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
 
-	G.parallelForNodes([&](node v) {
-		G.removeEdge(v, (v+offset) % n);
-	});
+	try {
+		G.parallelForNodes([&](node v) {
+			G.removeEdge(v, (v+offset) % n);
+		});
+	} catch (...) {
+		EXPECT_TRUE(false) << "exception thrown - fail test";
+	}
+
 
 	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
 }
