@@ -66,6 +66,29 @@ compute["CC"] = "gcc-4.7"
 compute["CXX"] = "g++-4.7"
 
 
+## environment: ic2.scc.kit.edu
+
+ic2 = Environment()
+### include
+ic2.Append(CPPPATH = [os.path.join(home_path, "workspace/gtest/include")])
+ic2.Append(CCPATH = [os.path.join(home_path, "workspace/gtest/include")])
+print("compute CPPPATH: %s" % compute["CPPPATH"])
+
+### link
+ic2.Append(LIBS = ["gtest"])
+ic2.Append(LIBPATH = [os.path.join(home_path, "workspace/gtest")])
+ic2.Append(LINKFLAGS = ["-std=c++11"])
+
+ic2.Append(CPPDEFINES=['NOLOG4CXX'])    # log4cxx is not available
+
+### compiler & flags
+ic2["CC"] = "gcc"
+ic2["CXX"] = "g++"
+
+
+
+
+
 
 ## environment: comp_hm
 
@@ -128,7 +151,7 @@ AddOption("--machine",
           help="specify the machine (environment) on which to build")
 
 
-environments = {"macbook" : macbook, "compute" : compute, "mac_hm" : mac_hm, "comp_hm" : comp_hm}
+environments = {"macbook" : macbook, "compute" : compute, "mac_hm" : mac_hm, "comp_hm" : comp_hm, "ic2": ic2}
 
 try:
     env = environments[GetOption("machine")]
