@@ -82,9 +82,8 @@ ic2.Append(LINKFLAGS = ["-std=c++11"])
 ic2.Append(CPPDEFINES=['NOLOG4CXX'])    # log4cxx is not available
 
 ### compiler & flags
-ic2["CC"] = "gcc"
-ic2["CXX"] = "g++"
-
+ic2["CC"] = "/opt/gcc_4.7/bin/gcc"
+ic2["CXX"] = "/opt/gcc_4.7/bin/g++"
 
 
 
