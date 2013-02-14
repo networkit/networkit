@@ -24,27 +24,33 @@ static int countOne(const bool& a) {
 }
 
 Clustering LabelPropagation::run(Graph& G) {
+	typedef cluster label; // a label is the same as a cluster id
 
+	// get global variables
 	const bool printProgress = PRINT_PROGRESS;
 	const bool randOrder = RAND_ORDER;
-
-	typedef cluster label; // a label is the same as a cluster id
 
 	// init random for std::shuffle
 	std::default_random_engine rd;
 	std::mt19937 randgen(rd());
 
-	int64_t n = G.numberOfNodes();
+	// open file for csv output
+	std::stringstream filePath;
+	filePath << "output/LPCount-" << G.getName() << ".csv";
+	std::ofstream lpCount(filePath.str());
+	lpCount << "nActive;nUpdated" << std::endl; // header
+
+	count n = G.numberOfNodes();
 
 	// create the clustering to be returned
 	// set unique label for each node
 	Clustering labels(n);
 	labels.allToSingletons();
 
-	int64_t nUpdated; // number of nodes which have been updated in last iteration
+	count nUpdated; // number of nodes which have been updated in last iteration
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
-	int64_t nIterations = 0; // number of iterations
+	count nIterations = 0; // number of iterations
 
 	/**
 	 * == Dealing with isolated nodes ==
@@ -81,10 +87,6 @@ Clustering LabelPropagation::run(Graph& G) {
 	std::vector<bool> activeNodes(n); // record if node must be processed
 	activeNodes.assign(n, true);
 
-#ifdef _OPENMP
-	double startTime = omp_get_wtime();
-#endif
-
 	Aux::Timer runtime;
 
 	// propagate labels
@@ -117,8 +119,8 @@ Clustering LabelPropagation::run(Graph& G) {
 		Aux::ProgressMeter pm(n, 10000);
 
 		// TODO: delete for performance tests
-		count numActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
-		INFO("number of active nodes: " << numActive);
+		count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
+		INFO("number of active nodes: " << nActive);
 
 
 #pragma omp parallel for schedule(guided)
@@ -142,8 +144,7 @@ Clustering LabelPropagation::run(Graph& G) {
 					});
 
 				// get heaviest label
-				label heaviest =
-						std::max_element(labelWeights.begin(),
+				label heaviest = std::max_element(labelWeights.begin(),
 								labelWeights.end(),
 								[](const std::pair<label, edgeweight>& p1, const std::pair<label, edgeweight>& p2) {
 									return p1.second < p2.second;})->first;
@@ -173,6 +174,9 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		runtime.stop();
 		INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
+
+		// record nActive and nUpdated in csv file
+		lpCount << nActive << ";" << nUpdated << std::endl;
 
 	} // end while
 
