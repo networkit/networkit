@@ -14,6 +14,7 @@
 #include "../../../aux/Log.h"
 #include "../Clustering.h"
 #include "../Modularity.h"
+#include "../ModularitySequential.h"
 #include "../Coverage.h"
 #include "../ClusteringGenerator.h"
 #include "../JaccardMeasure.h"

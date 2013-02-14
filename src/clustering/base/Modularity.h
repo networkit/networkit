@@ -13,9 +13,9 @@
 #include <stdexcept>
 
 #include "QualityMeasure.h"
+#include "Coverage.h"
 
 #include "../../base/IndexMap.h"
-#include "../../graph/Graph.h"
 #include "../../graph/NodeMap.h"
 
 

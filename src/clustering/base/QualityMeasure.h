@@ -9,6 +9,7 @@
 #define QUALITYMEASURE_H_
 
 #include "Clustering.h"
+#include "../../graph/Graph.h"
 
 namespace EnsembleClustering {
 
