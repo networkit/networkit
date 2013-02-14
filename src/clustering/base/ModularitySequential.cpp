@@ -1,31 +1,27 @@
 /*
- * Modularity.cpp
+ * ModularitySequential.cpp
  *
- *  Created on: 10.12.2012
+ *  Created on: 14.02.2013
  *      Author: cls
  */
 
-#include "Modularity.h"
-
-
+#include "ModularitySequential.h"
 
 namespace EnsembleClustering {
 
+ModularitySequential::ModularitySequential() {
+	// TODO Auto-generated constructor stub
 
-Modularity::Modularity() : QualityMeasure() {
 }
 
-Modularity::~Modularity() {
+ModularitySequential::~ModularitySequential() {
 	// TODO Auto-generated destructor stub
 }
 
-
-double Modularity::getQuality(const Clustering& zeta, Graph& G) {
+double ModularitySequential::getQuality(const Clustering& zeta, Graph& G) {
 	assert (G.numberOfNodes() <= zeta.numberOfNodes());
 
-
-
-	Coverage cov;
+	CoverageSequential cov;
 	double coverage = cov.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / totalEdgeWeight;
 	double expectedCoverage; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
 	double modularity; 	// mod = coverage - expectedCoverage
@@ -53,7 +49,6 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
 	assert (divisor != 0);	// do not divide by 0
 
-	#pragma omp parallel for reduction(+:expectedCoverage)
 	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		expectedCoverage += incidentWeightSum[c] * incidentWeightSum[c] / divisor;	// squared
 	}

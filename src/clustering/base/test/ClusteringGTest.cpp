@@ -14,7 +14,7 @@ namespace EnsembleClustering {
 TEST_F(ClusteringGTest, testModularity) {
 	GraphGenerator graphGenerator;
 
-	int n = 100;
+	count n = 100;
 
 	DEBUG("testing modularity on clustering of complete graph with " << n << " nodes");
 
@@ -47,7 +47,7 @@ TEST_F(ClusteringGTest, testModularity) {
 TEST_F(ClusteringGTest, testCoverage) {
 	GraphGenerator graphGenerator;
 
-	int n = 100;
+	count n = 100;
 
 	DEBUG("testing coverage on clustering of complete graph with " << n << " nodes");
 
@@ -78,7 +78,7 @@ TEST_F(ClusteringGTest, testCoverage) {
 
 
 TEST_F(ClusteringGTest, testClusteringEquality) {
-	int n = 100;
+	count n = 100;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
 
@@ -98,7 +98,7 @@ TEST_F(ClusteringGTest, testClusteringEquality) {
 
 
 TEST_F(ClusteringGTest, testJaccardMeasure) {
-	int n = 100;
+	count n = 100;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
 
@@ -115,7 +115,7 @@ TEST_F(ClusteringGTest, testJaccardMeasure) {
 
 
 TEST_F(ClusteringGTest, testRandMeasure) {
-	int n = 100;
+	count n = 100;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
 
@@ -132,7 +132,7 @@ TEST_F(ClusteringGTest, testRandMeasure) {
 
 
 TEST_F(ClusteringGTest, testCompact) {
-	int n = 50;
+	count n = 50;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
 
@@ -143,6 +143,23 @@ TEST_F(ClusteringGTest, testCompact) {
 	EXPECT_LE(clustering.upperBound(), n);
 }
 
+TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 
+	Modularity modularityPar;
+	ModularitySequential modularitySeq;
+
+	count n = 10e3;
+	GraphGenerator graphGen;
+	ClusteringGenerator clusteringGen;
+
+	Graph G = graphGen.makeRandomGraph(n, 0.2);
+	Clustering zeta = clusteringGen.makeRandomClustering(G, 42);
+
+	double modPar = modularityPar.getQuality(zeta, G);
+	double modSeq = modularitySeq.getQuality(zeta, G);
+
+	EXPECT_EQ(modPar, modSeq) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
+
+}
 
 } /* namespace EnsembleClustering */
