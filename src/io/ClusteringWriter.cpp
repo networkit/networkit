@@ -23,7 +23,7 @@ void ClusteringWriter::write(Clustering& zeta, std::string path) {
 	file.open(path.c_str());
 
 	zeta.forEntries([&](node v, cluster c){
-		file << v << " " << c << std::endl;
+		file << c << std::endl;
 	});
 
 	file.close();
