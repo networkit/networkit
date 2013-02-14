@@ -41,6 +41,7 @@
 #include "clustering/base/ClusteringGenerator.h"
 #include "io/METISGraphReader.h"
 #include "io/METISGraphWriter.h"
+#include "io/ClusteringWriter.h"
 
 // import global
 
@@ -117,12 +118,12 @@ Graph readGraph(const std::string& graphPath) {
 	Aux::Timer readTimer;
 	readTimer.start();
 	//
-	std::cout << "[BEGIN]Êreading file: " << graphPath << std::endl;
+	std::cout << "[BEGIN] reading file: " << graphPath << std::endl;
 
 	Graph G = reader.read(graphPath);
 	//
 	readTimer.stop();
-	std::cout << "[DONE]Êread graph file " << readTimer.elapsedTag() << std::endl;
+	std::cout << "[DONE] read graph file " << readTimer.elapsedTag() << std::endl;
 	// TIMING
 
 	return G;
@@ -209,7 +210,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SILENT, SUMMARY, RANDORDER, UPDATE_THRESHOLD};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SAVE_CLUSTERING, SILENT, SUMMARY, RANDORDER, UPDATE_THRESHOLD};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -220,10 +221,11 @@ const OptionParser::Descriptor usage[] =
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
- {ENSEMBLE_SIZE, 0, "", "ensemble-size", OptionParser::Arg::Required, "  --ensemble-size \t number of clusterers in the ensemble"},
+ {ENSEMBLE_SIZE, 0, "", "ensembleSize", OptionParser::Arg::Required, "  --ensembleSize \t number of clusterers in the ensemble"},
  {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "  --ensemble=<b> \t <b>: number of base clusterers in the ensemble"},	// TODO: provide more options
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
- {WRITEGRAPH, 0, "", "writegraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"}, // TODO: leave as "algo"
+ {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"}, // TODO: leave as "algo"
+ {SAVE_CLUSTERING, 0, "", "saveClustering", OptionParser::Arg::Required, "  --saveClustering=<PATH> \t save the clustering to a file"}, // TODO: leave as "algo"
  {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {RANDORDER, 0, "", "randOrder", OptionParser::Arg::Required, "  --randOrder=<yes,no> \t don't randomize vertex processing order"},
@@ -428,12 +430,6 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
 		std::cout << "[ERROR] modularity calculation went wrong: " << mod << " is not in range [-0.5, 1.0]";
 	}
 
-//	running.start();
-//	Coverage coverage;
-//	double cov = coverage.getQuality(result.first, result.second);
-//	running.stop();
-//	std::cout << "[DONE] calculating coverage " << running.elapsedTag() << std::endl;
-
 
  	std::cout << "\t # clusters:\t" << k << std::endl;
  	std::cout << "\t modularity:\t" << mod << std::endl;
@@ -444,6 +440,14 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
  		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
  		summary << k << sep;
  		summary << mod << std::endl;  		// since this is the last column, append endl instead of separator
+ 	}
+
+ 	if (options[SAVE_CLUSTERING]) {
+ 		std::string clusteringFilePath = options[SAVE_CLUSTERING].arg;
+ 		ClusteringWriter writer;
+ 		std::cout << "[BEGIN]Êsaving clustering to file" << std::endl;
+ 		writer.write(result.first, clusteringFilePath);
+ 		std::cout << "[DONE] saved clustering to file: " << clusteringFilePath << std::endl;
  	}
 
  	return true;
