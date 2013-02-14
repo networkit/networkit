@@ -41,6 +41,10 @@ namespace EnsembleClustering {
  */
 class LabelPropagation: public EnsembleClustering::Clusterer {
 
+protected:
+
+	count updateThreshold = 0;
+
 public:
 
 	LabelPropagation();
@@ -59,6 +63,14 @@ public:
 	 * @return string representation of algorithm and parameters.
 	 */
 	virtual std::string toString();
+
+
+	/**
+	 * The algorithm runs until a number of nodes less than
+	 * the threshold is updated.
+	 *
+	 */
+	virtual void setUpdateThreshold(count th);
 };
 
 } /* namespace EnsembleClustering */

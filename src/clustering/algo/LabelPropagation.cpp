@@ -90,7 +90,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	Aux::Timer runtime;
 
 	// propagate labels
-	while (nUpdated > 0) { // as long as a label has changed...
+	while (nUpdated > this->updateThreshold) { // as long as a label has changed...
 		runtime.start();
 		nIterations += 1;
 		INFO("[BEGIN] LabelPropagation: iteration #" << nIterations);
@@ -111,7 +111,6 @@ Clustering LabelPropagation::run(Graph& G) {
 				std::shuffle(&shuffledNodes[begin], &shuffledNodes[end], randgen);
 			}
 #else
-			// TODO: deactivated to check performance difference
 			std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
 #endif
 		}
@@ -189,6 +188,10 @@ std::string LabelPropagation::toString() {
 	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ")";
 	return strm.str();
 
+}
+
+void LabelPropagation::setUpdateThreshold(count th) {
+	this->updateThreshold = th;
 }
 
 } /* namespace EnsembleClustering */

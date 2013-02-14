@@ -209,7 +209,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SILENT, SUMMARY, RANDORDER};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SILENT, SUMMARY, RANDORDER, UPDATE_THRESHOLD};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -227,6 +227,7 @@ const OptionParser::Descriptor usage[] =
  {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {RANDORDER, 0, "", "randOrder", OptionParser::Arg::Required, "  --randOrder=<yes,no> \t don't randomize vertex processing order"},
+ {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> \t number of updated nodes below which label propagation terminates"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -321,7 +322,12 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 		// get specified base algorithm
 		std::string algoName = options[SOLO].arg;
 		if (algoName == "LabelPropagation") {
-			algo = new LabelPropagation();
+			LabelPropagation* lp = new LabelPropagation();
+			if (options[UPDATE_THRESHOLD]) {
+				count updateThreshold = std::atoi(options[UPDATE_THRESHOLD].arg);
+				lp->setUpdateThreshold(updateThreshold);
+			}
+			algo = lp;
 		} else if (algoName == "RandomClusterer") {
 			algo = new RandomClusterer();
 		} else {
