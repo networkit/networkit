@@ -9,7 +9,7 @@
 // includes
 #include <iostream>
 #include <utility>
-
+#include <cfenv>	// floating point exceptions
 
 // log4cxx
 #ifndef NOLOG4CXX
@@ -459,6 +459,10 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
 int main(int argc, char **argv) {
 	std::cout << "*** EnsembleClustering: combining parallel clustering algorithms with an ensemble learning strategy *** " << std::endl;
 
+	// ENABLE FLOATING POINT EXCEPTIONS (needs GNU extension)
+	std::feenableexcept(FE_ALL_EXCEPT);
+
+
 	/// PARSE OPTIONS
 
 	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
@@ -479,6 +483,8 @@ int main(int argc, char **argv) {
 
 	for (int i = 0; i < parse.nonOptionsCount(); ++i)
 	 std::cout << "Non-option #" << i << ": " << parse.nonOption(i) << "\n";
+
+
 
 
 	// CONFIGURE LOGGING
