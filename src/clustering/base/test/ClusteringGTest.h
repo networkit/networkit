@@ -22,6 +22,7 @@
 #include "../../../graph/GraphGenerator.h"
 #include "../../algo/LabelPropagation.h"
 #include "../../../io/METISGraphReader.h"
+#include "../../../io/ClusteringReader.h"
 
 namespace EnsembleClustering {
 
