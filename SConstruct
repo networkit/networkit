@@ -65,6 +65,9 @@ compute.Append(LINKFLAGS = ["-std=c++11"])
 compute["CC"] = "gcc-4.7"
 compute["CXX"] = "g++-4.7"
 
+# preprocessor defines
+compute.Append(CPPDEFINES=["_GNU_SOURCE"]) 
+
 
 ## environment: ic2.scc.kit.edu
 
