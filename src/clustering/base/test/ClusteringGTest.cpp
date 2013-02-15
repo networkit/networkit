@@ -169,8 +169,6 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequentialOnLargeGraph) {
 	Modularity modularityPar;
 	ModularitySequential modularitySeq;
 
-	count n = 10e3;
-	GraphGenerator graphGen;
 	ClusteringGenerator clusteringGen;
 
 	METISGraphReader reader;
