@@ -459,8 +459,10 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
 int main(int argc, char **argv) {
 	std::cout << "*** EnsembleClustering: combining parallel clustering algorithms with an ensemble learning strategy *** " << std::endl;
 
-	// ENABLE FLOATING POINT EXCEPTIONS (needs GNU extension)
-	std::feenableexcept(FE_ALL_EXCEPT);
+	// ENABLE FLOATING POINT EXCEPTIONS (needs GNU extension, apparently only available on Linux)
+#ifdef _GNU_SOURCE
+	feenableexcept(FE_ALL_EXCEPT);
+#endif
 
 
 	/// PARSE OPTIONS
