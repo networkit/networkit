@@ -14,6 +14,7 @@
 #include "../../aux/Log.h"
 #include "../METISGraphReader.h"
 #include "../ClusteringWriter.h"
+#include "../ClusteringReader.h"
 
 #include "../GraphIO.h"
 #include "../../graph/GraphGenerator.h"

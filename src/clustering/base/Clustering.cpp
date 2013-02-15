@@ -13,7 +13,7 @@ namespace EnsembleClustering {
 Clustering::Clustering(count n) :
 		NodeMap<cluster>(n, -1), name("noname") {
 	// all entries are initialized to 0, which means that the nodes are unclustered
-	this->nextCluster = 0; //!< first cluster index is 1
+	this->nextCluster = 0; // first cluster index is 0
 	this->upperIdBound = n; // upper id bound = n is okay only for agglomeratively created clusters
 }
 
