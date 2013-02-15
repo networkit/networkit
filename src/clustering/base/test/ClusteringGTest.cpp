@@ -162,4 +162,27 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 
 }
 
+
+
+TEST_F(ClusteringGTest, testModularityParallelVsSequentialOnLargeGraph) {
+
+	Modularity modularityPar;
+	ModularitySequential modularitySeq;
+
+	count n = 10e3;
+	GraphGenerator graphGen;
+	ClusteringGenerator clusteringGen;
+
+	METISGraphReader reader;
+	Graph G = reader.read("graphs/Benchmark/uk-2002.graph"); // FIXME: hardcoded file name
+	Clustering zeta = clusteringGen.makeRandomClustering(G, 42);
+
+	double modPar = modularityPar.getQuality(zeta, G);
+	double modSeq = modularitySeq.getQuality(zeta, G);
+
+	EXPECT_EQ(modPar, modSeq) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
+
+}
+
+
 } /* namespace EnsembleClustering */
