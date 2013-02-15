@@ -230,4 +230,4 @@ else:
     exit()
 
 # TARGET
-env.Program("EnsembleClustering-scons-%s" % buildconf, source)
+env.Program("EnsembleClustering-%s" % buildconf, source)
