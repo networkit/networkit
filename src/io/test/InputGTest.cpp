@@ -67,19 +67,38 @@ TEST_F(InputGTest, testMETISGraphReader) {
 }
 
 
-TEST_F(InputGTest, testClusteringWriter) {
-	std::string path = "sandbox/example.clustering";
+
+
+TEST_F(InputGTest, testClusteringWriterAndReader) {
+	// write clustering first
+	std::string path = "sandbox/example.clust";
 
 	GraphGenerator graphGen;
-	int64_t n;
-	Graph G = graphGen.makeCompleteGraph(10);
+	count n = 100;
+	count k = 3;
+	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusteringGen;
-	Clustering one = clusteringGen.makeOneClustering(G);
+	Clustering zeta = clusteringGen.makeRandomClustering(G, k);
 
 	ClusteringWriter writer;
-	writer.write(one, path);
+	writer.write(zeta, path);
 
+	// check if file exists
+	bool exists = false;
+	std::ifstream file(path);
+	if (file) {
+		exists = true;
+	}
+	EXPECT_TRUE(exists) << "clustering file should have been written to: " << path;
+
+
+	ClusteringReader reader;
+	Clustering read = reader.read(path);
+
+	EXPECT_EQ(n, read.numberOfNodes()) << "read clustering should contain n nodes";
+	EXPECT_TRUE(read.isProper(G)) << "read clustering should be proper clustering of G";
+	EXPECT_TRUE(read.equals(zeta, G)) << "read clustering should be identical to created clustering";
 }
 
 
