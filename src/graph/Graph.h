@@ -27,7 +27,7 @@ namespace EnsembleClustering {
 typedef int64_t index; // more expressive name for an index into an array
 typedef int64_t count; // more expressive name for an integer quantity
 typedef index node; // node indices are 0-based
-typedef float edgeweight; // edge weight type
+typedef double edgeweight; // edge weight type
 //template<typename T> using nodemap = std::vector<T>; // more expressive name for container that is indexed by a node
 //template<typename T> using edgemap = std::vector<std::vector<T> >;// more expressive name for an edge data structure
 
