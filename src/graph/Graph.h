@@ -214,9 +214,17 @@ public:
 	/**
 	 * Return the number of edges in the graph.
 	 *
-	 * This involves calculation, so store result in a if needed multiple times.
+	 * This involves calculation, so store result if needed multiple times.
 	 */
 	count numberOfEdges() const;
+
+
+	/**
+	 * @return the number of loops {v, v} in the graph.
+	 *
+	 * This involves calculation, so store result if needed multiple times.
+	 */
+	count numberOfSelfLoops() const;
 
 
 	/** ATTRIBUTES **/
