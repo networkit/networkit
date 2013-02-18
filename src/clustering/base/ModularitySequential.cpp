@@ -21,11 +21,16 @@ ModularitySequential::~ModularitySequential() {
 double ModularitySequential::getQuality(const Clustering& zeta, Graph& G) {
 	assert (G.numberOfNodes() <= zeta.numberOfNodes());
 
-	CoverageSequential cov;
-	double coverage = cov.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / totalEdgeWeight;
-	double expectedCoverage; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
-	double modularity; 	// mod = coverage - expectedCoverage
+	DEBUG("m = " << G.numberOfEdges());
+	DEBUG("l = " << G.numberOfSelfLoops());
+
+	CoverageSequential coverage;
+	double cov = coverage.getQuality(zeta, G);
+	DEBUG("coverage = " << cov);
+	double expCov; // expected coverage - term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
+	double modularity; 	// mod = coverage - expected coverage
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
+	DEBUG("total edge weight: " << totalEdgeWeight)
 
 	if (totalEdgeWeight == 0.0) {
 		ERROR("G: m=" << G.numberOfEdges() << "n=" << G.numberOfNodes());
@@ -45,24 +50,24 @@ double ModularitySequential::getQuality(const Clustering& zeta, Graph& G) {
 
 	// compute sum of squared cluster volumes and divide by squared graph volume
 	// double totalIncidentWeight = 0.0; 	//!< term $\sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 $
-	expectedCoverage = 0.0;
+	expCov = 0.0;
 //	double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
 //	assert (divisor != 0);	// do not divide by 0
 
 	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
-		expectedCoverage += ((incidentWeightSum[c] / totalEdgeWeight) * (incidentWeightSum[c] / totalEdgeWeight )) / 4;	// squared
+		expCov += ((incidentWeightSum[c] / totalEdgeWeight) * (incidentWeightSum[c] / totalEdgeWeight )) / 4;	// squared
 	}
 
-	TRACE("coverage: " << coverage);
-	TRACE("expected coverage: " << expectedCoverage);
+	DEBUG("expected coverage: " << expCov);
 
 	// assert ranges of coverage
-	assert(coverage <= 1.0);
-	assert(coverage >= 0.0);
-	assert(expectedCoverage <= 1.0);
-	assert(expectedCoverage >= 0.0);
+	assert(cov <= 1.0);
+	assert(cov >= 0.0);
+	assert(expCov <= 1.0);
+	assert(expCov >= 0.0);
 
-	modularity = coverage - expectedCoverage;
+	modularity = cov - expCov;
+	DEBUG("modularity = " << modularity)
 
 	assert(! std::isnan(modularity));	// do not return NaN
 	// do not return anything not in the range of modularity values
