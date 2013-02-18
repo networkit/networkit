@@ -50,12 +50,12 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	// compute sum of squared cluster volumes and divide by squared graph volume
 	// double totalIncidentWeight = 0.0; 	//!< term $\sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 $
 	expectedCoverage = 0.0;
-	double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
-	assert (divisor != 0);	// do not divide by 0
+//	double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
+//	assert (divisor != 0);	// do not divide by 0
 
 	#pragma omp parallel for reduction(+:expectedCoverage)
 	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
-		expectedCoverage += incidentWeightSum[c] * incidentWeightSum[c] / divisor;	// squared
+		expectedCoverage += ((incidentWeightSum[c] / totalEdgeWeight) * (incidentWeightSum[c] / totalEdgeWeight )) / 4;	// squared
 	}
 
 	TRACE("coverage: " << coverage);
