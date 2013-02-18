@@ -248,7 +248,7 @@ double Graph::attribute_double(node u, node v, int attrId) const {
 }
 
 count Graph::numberOfSelfLoops() const {
-	count nl;
+	count nl = 0;
 	this->forEdges([&](node u, node v) {
 		if (u == v) {
 			nl += 1;
