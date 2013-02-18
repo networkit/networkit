@@ -499,8 +499,11 @@ TEST_F(Graph2GTest, testTotalEdgeWeight) {
 		G.insertEdge(u, v);
 	});
 
-	double m = (n * (n-1)) / 2;
-	EXPECT_EQ(m, G.totalEdgeWeight()) << "total edge weight should be n * (n -1) / 2";
+	double m = (n * (n-1)) / 2.0;
+	double total = G.totalEdgeWeight();
+	EXPECT_EQ(m, total) << "total edge weight should be n * (n -1) / 2";
+
+	INFO("difference: " << (total - m));
 
 }
 
