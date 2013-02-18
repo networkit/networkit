@@ -64,8 +64,6 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 
 	DEBUG("expected coverage: " << expCov);
 
-	DEBUG("expected coverage: " << expCov);
-
 	// assert ranges of coverage
 	assert(cov <= 1.0);
 	assert(cov >= 0.0);
@@ -73,6 +71,7 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	assert(expCov >= 0.0);
 
 	modularity = cov - expCov;
+	DEBUG("modularity = " << modularity)
 
 	assert(! std::isnan(modularity));	// do not return NaN
 	// do not return anything not in the range of modularity values
