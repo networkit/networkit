@@ -181,8 +181,8 @@ int64_t Graph::numberOfEdges() const {
 
 edgeweight Graph::totalEdgeWeight() {
 	edgeweight sum = 0.0;
-	sum = this->parallelSumForWeightedEdges([&](node u, node v, edgeweight ew) {
-		return ew;
+	this->forWeightedEdges([&](node u, node v, edgeweight ew) {
+		sum += ew;
 	});
 	return sum;
 }
