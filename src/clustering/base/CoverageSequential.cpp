@@ -32,6 +32,8 @@ double CoverageSequential::getQuality(const Clustering& zeta, Graph& G) {
 
 	IndexMap<cluster, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
 
+	// TODO: sum only over intra-cluster edges, not over clusters
+
 	// compute intra-cluster edge weights per cluster
 	G.forWeightedEdges(
 			[&](node u, node v, edgeweight ew) {
@@ -55,6 +57,7 @@ double CoverageSequential::getQuality(const Clustering& zeta, Graph& G) {
 	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		intraEdgeWeightSum += intraEdgeWeight[c];
 	}
+	DEBUG("total intra-cluster edge weight = " << intraEdgeWeightSum);
 
 	cov = intraEdgeWeightSum / totalEdgeWeight;
 	DEBUG("coverage = " << cov);
