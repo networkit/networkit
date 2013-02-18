@@ -20,8 +20,10 @@ CoverageSequential::~CoverageSequential() {
 
 double CoverageSequential::getQuality(const Clustering& zeta, Graph& G) {
 
-	double coverage = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
+	double cov = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
+	DEBUG("total edge weight = " << totalEdgeWeight)
+
 
 	if (totalEdgeWeight == 0.0) {
 		throw std::invalid_argument(
@@ -54,11 +56,12 @@ double CoverageSequential::getQuality(const Clustering& zeta, Graph& G) {
 		intraEdgeWeightSum += intraEdgeWeight[c];
 	}
 
-	coverage = intraEdgeWeightSum / totalEdgeWeight;
+	cov = intraEdgeWeightSum / totalEdgeWeight;
+	DEBUG("coverage = " << cov);
 
-	assert(coverage <= 1.0);
-	assert(coverage >= 0.0);
-	return coverage;
+	assert(cov <= 1.0);
+	assert(cov >= 0.0);
+	return cov;
 }
 
 } /* namespace EnsembleClustering */
