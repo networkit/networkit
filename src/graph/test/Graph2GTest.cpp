@@ -490,4 +490,19 @@ TEST_F(Graph2GTest, testEdgeAttributes) {
 
 }
 
+
+TEST_F(Graph2GTest, testTotalEdgeWeight) {
+	count n = 10000;
+	Graph G(n);
+
+	G.forNodePairs([&](node u, node v){
+		G.insertEdge(u, v);
+	});
+
+	double m = (n * (n-1)) / 2;
+	EXPECT_EQ(m, G.totalEdgeWeight()) << "total edge weight should be n * (n -1) / 2";
+
+}
+
+
 } /* namespace EnsembleClustering */
