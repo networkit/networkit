@@ -22,8 +22,9 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 
 
 
-	double coverage = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
+	double cov = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
+	DEBUG("total edge weight = " << totalEdgeWeight)
 
 	if (totalEdgeWeight == 0.0) {
 		throw std::invalid_argument(
@@ -53,16 +54,19 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 			});
 
 	double intraEdgeWeightSum = 0.0; //!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
-#pragma omp parallel for reduction(+:intraEdgeWeightSum)
+	#pragma omp parallel for reduction(+:intraEdgeWeightSum)
 	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		intraEdgeWeightSum += intraEdgeWeight[c];
 	}
+	DEBUG("total intra-cluster edge weight = " << intraEdgeWeightSum);
 
-	coverage = intraEdgeWeightSum / totalEdgeWeight;
 
-	assert(coverage <= 1.0);
-	assert(coverage >= 0.0);
-	return coverage;
+	cov = intraEdgeWeightSum / totalEdgeWeight;
+	DEBUG("coverage = " << cov);
+
+	assert(cov <= 1.0);
+	assert(cov >= 0.0);
+	return cov;
 }
 
 } /* namespace EnsembleClustering */
