@@ -30,6 +30,7 @@
 #include "aux/Log.h"
 #include "aux/Timer.h"
 #include "aux/Functions.h"
+#include "aux/StringTools.h"
 #include "graph/Graph.h"
 #include "graph/GraphGenerator.h"
 #include "ensemble/EnsembleClusterer.h"
@@ -223,10 +224,10 @@ const OptionParser::Descriptor usage[] =
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
  {ENSEMBLE_SIZE, 0, "", "ensembleSize", OptionParser::Arg::Required, "  --ensembleSize \t number of clusterers in the ensemble"},
- {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "  --ensemble=<b> \t <b>: number of base clusterers in the ensemble"},	// TODO: provide more options
+ {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "--ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
- {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"}, // TODO: leave as "algo"
- {SAVE_CLUSTERING, 0, "", "saveClustering", OptionParser::Arg::Required, "  --saveClustering=<PATH> \t save the clustering to a file"}, // TODO: leave as "algo"
+ {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"},
+ {SAVE_CLUSTERING, 0, "", "saveClustering", OptionParser::Arg::Required, "  --saveClustering=<PATH> \t save the clustering to a file"},
  {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {RANDORDER, 0, "", "randOrder", OptionParser::Arg::Required, "  --randOrder=<yes,no> \t don't randomize vertex processing order"},
@@ -353,9 +354,14 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 	} else if (options[ENSEMBLE]) {
 		// RUN ENSEMBLE
 
-		std::string ensembleSizeArg = options[ENSEMBLE].arg;
+		std::string ensembleArg = options[ENSEMBLE].arg;
 
-		int ensembleSize = std::atoi(ensembleSizeArg.c_str()); // TODO: provide more options
+		std::string ensembleFrontArg = Aux::StringTools::split(ensembleArg, '+').front();
+		std::string finalClustererArg = Aux::StringTools::split(ensembleArg, '+').back();
+		std::string ensembleSizeArg = Aux::StringTools::split(ensembleFrontArg, '*').front();
+		std::string baseClustererArg = Aux::StringTools::split(ensembleFrontArg, '*').back();
+
+		int ensembleSize = std::atoi(ensembleSizeArg.c_str());
 
 		EnsembleClusterer* ensemble = new EnsembleClusterer();
 
@@ -367,7 +373,15 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 
 		// 2. Base Clusterers
 		for (int i = 0; i < ensembleSize; i += 1) {
-			Clusterer* base = new LabelPropagation();
+			Clusterer* base = NULL;
+			if (baseClustererArg == "LabelPropagation") {
+				base = new LabelPropagation();
+			} else if (baseClustererArg == "Agglomerative") {
+				base = new ParallelAgglomerativeClusterer();
+			} else {
+				std::cout << "[ERROR]Êunknown base clusterer: " << baseClustererArg << std::endl;
+				exit(1);
+			}
 			ensemble->addBaseClusterer(*base);
 		}
 
@@ -393,7 +407,16 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 
 
 		// 4. Final Clusterer
-		Clusterer* final = new LabelPropagation();
+		Clusterer* final = NULL;
+		if (finalClustererArg == "LabelPropagation") {
+			final = new LabelPropagation();
+		} else if (finalClustererArg == "Agglomerative") {
+			final = new ParallelAgglomerativeClusterer();
+		} else {
+			std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
+			exit(1);
+		}
+
 		ensemble->setFinalClusterer(*final);
 
 		algo = ensemble;
