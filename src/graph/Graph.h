@@ -461,7 +461,7 @@ inline void EnsembleClustering::Graph::forNeighborsOf(node u, L handle) const {
 template<typename L>
 inline void EnsembleClustering::Graph::forWeightedNeighborsOf(node u,
 		L handle) {
-	for (index i = 0; i < adja[u].size(); ++i) {
+	for (index i = 0; i < (index) adja[u].size(); ++i) {
 		node v = adja[u][i];
 		if (v != none) {
 			edgeweight ew = eweights[u][i];
@@ -813,7 +813,7 @@ template<typename L>
 inline void EnsembleClustering::Graph::forEdgesWithAttribute_double(int attrId, L handle) {
 	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
 	for (node u = 0; u < n; ++u) {
-		for (index vi = 0; vi < adja[u].size(); ++vi) {
+		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			double attr = edgeMap[u][vi];
 			if (u <= v) {

@@ -20,10 +20,11 @@ ParallelAgglomerativeClusterer::~ParallelAgglomerativeClusterer() {
 
 Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
 	Graph G = graph;
+	int attrId = G.addEdgeAttribute_double(0.0);
 
 	do {
 		ModularityScoring<double> modScoring(G);
-		modScoring.scoreEdges();
+		modScoring.scoreEdges(attrId);
 
 		G.parallelForEdges([&](node u, node v){
 			double deltaMod = modScoring.edgeScore(u, v);
