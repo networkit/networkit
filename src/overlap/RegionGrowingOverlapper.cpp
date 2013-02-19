@@ -40,6 +40,8 @@ Clustering RegionGrowingOverlapper::run(Graph& G, std::vector<Clustering>& clust
 			allVisited = true;
 		}
 
+		DEBUG("starting BFS from node: " << r);
+
 		// start BFS
 		G.breadthFirstNodesFrom(r, [&](node u) {
 			visited[u] = 1; // has been visited
