@@ -84,7 +84,12 @@ std::pair<int, int> METISParser::getHeader() {
 
 	std::string line = "";
 	assert (this->graphFile);
+
 	if (std::getline(this->graphFile, line)) {
+		while (line[0] == '%') {
+			std::getline(this->graphFile, line);
+		}
+
 		std::vector<node> tokens = parseLine(line);
 		n = tokens[0];
 		m = tokens[1];
