@@ -122,7 +122,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		INFO("number of active nodes: " << nActive);
 
 
-#pragma omp parallel for schedule(guided)
+#pragma omp parallel for schedule(guided) shared(nUpdated)
 		for (int64_t i = 0; i < n; ++i) {
 			node v = shuffledNodes[i];
 
