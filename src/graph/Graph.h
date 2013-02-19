@@ -624,7 +624,7 @@ inline void EnsembleClustering::Graph::forNodePairs(L handle) const {
 
 template<typename L>
 inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle) {
-	INFO("Call to BFS");
+	DEBUG("Call to BFS");
 	std::queue<node> q;
 	count n = this->numberOfNodes();
 	q.push(r); // enqueue root
