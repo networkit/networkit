@@ -284,7 +284,7 @@ public:
 	 * Iterate over nodes in breadth-first search order starting from r until connected component
 	 * of r has been visited.
 	 */
-	template<typename L> void breadthFirstNodesFrom(node r, L handle);
+	template<typename L> void breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle);
 
 	/**
 	 * Iterate over edges in breadth-first search order starting from node r until connected component
@@ -623,15 +623,12 @@ inline void EnsembleClustering::Graph::forNodePairs(L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, L handle) {
+inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle) {
+	INFO("Call to BFS");
 	std::queue<node> q;
 	count n = this->numberOfNodes();
-	bool marked[n];
-	for (index i = 0; i < n; ++i) {
-		marked[i] = false;
-	}
 	q.push(r); // enqueue root
-	marked[r] = true;
+	marked[r] = 1;
 	do {
 		node u = q.front();
 		q.pop();
@@ -639,9 +636,9 @@ inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, L handle) {
 		handle(u);
 		this->forNeighborsOf(u, [&](node v) {
 			// filtering edges is not necessary because only out-edges are considered by stinger
-				if (!marked[v]) {
+				if (marked[v] == 0) {
 					q.push(v);
-					marked[v] = true;
+					marked[v] = 1;
 				}
 			});
 	} while (!q.empty());

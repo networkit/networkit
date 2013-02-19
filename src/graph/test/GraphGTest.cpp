@@ -148,8 +148,10 @@ TEST_F(GraphGTest, testNodeBFS) {
 	G.insertEdge(v, 2);
 	G.insertEdge(v, 3);
 
+	std::vector<int> visited(4, 0);
+
 	int nodeCount = 0;
-	G.breadthFirstNodesFrom(v, [&](node w) {
+	G.breadthFirstNodesFrom(v, visited, [&](node w) {
 		nodeCount += 1;
 	});
 
