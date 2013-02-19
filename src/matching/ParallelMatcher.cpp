@@ -9,7 +9,7 @@
 
 namespace EnsembleClustering {
 
-ParallelMatcher::ParallelMatcher() {
+ParallelMatcher::ParallelMatcher(int attrId_) : attrId(attrId_) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -30,9 +30,11 @@ Matching ParallelMatcher::run(Graph& G) {
 				node argmax = v;
 				if (! M.isMatched(v)) {
 					G.forEdgesOf(v, [&](node v, node u) {
-								edgeweight ew = G.weight(v, u);
-								if ((ew > maxWeight) && (! M.isMatched(u))) {
-									maxWeight = ew;
+								edgeweight escore = (attrId == none) ?
+										(G.weight(v, u)):
+										(G.attribute_double(v, u, attrId));
+								if ((escore > maxWeight) && (! M.isMatched(u))) {
+									maxWeight = escore;
 									argmax = u;
 								}
 

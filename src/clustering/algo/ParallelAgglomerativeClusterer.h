@@ -12,6 +12,8 @@
 #include "../../scoring/ModularityScoring.h"
 #include "../../matching/ParallelMatcher.h"
 #include "../../coarsening/MatchingContracter.h"
+#include "../../coarsening/ClusteringProjector.h"
+#include "../../Globals.h"
 
 
 namespace EnsembleClustering {
@@ -23,6 +25,11 @@ public:
 	ParallelAgglomerativeClusterer();
 
 	virtual ~ParallelAgglomerativeClusterer();
+
+	/**
+	 * @return string representation of algorithm and parameters.
+	 */
+	virtual std::string toString() const;
 
 	virtual Clustering run(Graph& G);
 };

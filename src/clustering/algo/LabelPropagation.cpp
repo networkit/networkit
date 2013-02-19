@@ -122,7 +122,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		INFO("number of active nodes: " << nActive);
 
 
-#pragma omp parallel for schedule(guided)
+#pragma omp parallel for schedule(guided) shared(nUpdated)
 		for (int64_t i = 0; i < n; ++i) {
 			node v = shuffledNodes[i];
 
@@ -183,11 +183,10 @@ Clustering LabelPropagation::run(Graph& G) {
 
 }
 
-std::string LabelPropagation::toString() {
+std::string LabelPropagation::toString() const {
 	std::stringstream strm;
 	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ")";
 	return strm.str();
-
 }
 
 void LabelPropagation::setUpdateThreshold(count th) {
