@@ -183,11 +183,10 @@ Clustering LabelPropagation::run(Graph& G) {
 
 }
 
-std::string LabelPropagation::toString() {
+std::string LabelPropagation::toString() const {
 	std::stringstream strm;
 	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ")";
 	return strm.str();
-
 }
 
 void LabelPropagation::setUpdateThreshold(count th) {

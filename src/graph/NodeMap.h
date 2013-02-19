@@ -15,7 +15,7 @@ namespace EnsembleClustering {
 
 // forward declarations for specialization
 template<typename T> class NodeMap;
-template<typename T> std::ostream& operator<<(std::ostream& os, const NodeMap<T> m);
+template<typename T> std::ostream& operator<<(std::ostream& os, const NodeMap<T>& m);
 
 
 template <typename T> class NodeMap : public IndexMap<node, T> {
@@ -52,7 +52,7 @@ public:
 	// TODO: virtual std::string toString();
 
 	//template<typename T>
-	friend std::ostream& operator<< <> (std::ostream& os, const NodeMap<T> m);
+	friend std::ostream& operator<< <> (std::ostream& os, const NodeMap<T>& m);
 };
 
 } /* namespace EnsembleClustering */
@@ -79,8 +79,9 @@ template<typename T> inline const T& EnsembleClustering::NodeMap<T>::operator []
 }
 
 
+// FIXME: linker errors when calling operator<<
 template<typename T>
-std::ostream& operator <<(std::ostream& os, const EnsembleClustering::NodeMap<T> m) {
+std::ostream& operator <<(std::ostream& os, const EnsembleClustering::NodeMap<T>& m) {
 	os << "{ ";
 	for (EnsembleClustering::node v = 1; v <= m.n; ++v) {
 		T val = m.array[v];

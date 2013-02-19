@@ -71,4 +71,22 @@ bool Matching::areMatched(const node& u, const node& v) const {
 	return ((*this)[u] == v);
 }
 
-} /* namespace EnsembleClustering */
+count Matching::matchingSize() const {
+	count size = 0;
+	for (index i = 0; i < n; ++i) { // TODO: parallel
+		if (isMatched(i)) {
+			++size;
+		}
+	}
+	return size / 2;
+}
+
+index Matching::mate(node v) const {
+	if (isMatched(v)) {
+		return data[v];
+	}
+	else return none;
+}
+
+}
+ /* namespace EnsembleClustering */

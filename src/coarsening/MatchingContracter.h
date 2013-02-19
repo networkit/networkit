@@ -30,7 +30,7 @@ public:
 	 *
 	 * @param[out]		coarse graph
 	 */
-	virtual Graph run(Graph& G, Matching& M);
+	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Matching& M);
 };
 
 

@@ -94,6 +94,16 @@ public:
 	void dispose();
 
 
+	/**
+	 * @return Number of edges in matching.
+	 */
+	count matchingSize() const;
+
+	/**
+	 * @return Mate of @a v if it exists, otherwise none.
+	 */
+	index mate(node v) const;
+
 
 };
 
