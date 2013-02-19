@@ -329,7 +329,7 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 				std::string updateThresholdArg = options[UPDATE_THRESHOLD].arg;
 				count updateThreshold = 0;
 				if (updateThresholdArg == "auto") {
-					updateThreshold = (count) (G.numberOfNodes() / 1e5);
+					updateThreshold = (count) (G.numberOfNodes() / 1e3);
 				} else {
 					updateThreshold = std::atoi(updateThresholdArg.c_str());
 				}
