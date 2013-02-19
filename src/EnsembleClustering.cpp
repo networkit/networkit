@@ -229,7 +229,7 @@ const OptionParser::Descriptor usage[] =
  {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {RANDORDER, 0, "", "randOrder", OptionParser::Arg::Required, "  --randOrder=<yes,no> \t don't randomize vertex processing order"},
- {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> \t number of updated nodes below which label propagation terminates"},
+ {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> or --updateThreshold=auto \t number of updated nodes below which label propagation terminates - auto determines this automatically from the size of the graph"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -326,7 +326,13 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 		if (algoName == "LabelPropagation") {
 			LabelPropagation* lp = new LabelPropagation();
 			if (options[UPDATE_THRESHOLD]) {
-				count updateThreshold = std::atoi(options[UPDATE_THRESHOLD].arg);
+				std::string updateThresholdArg = options[UPDATE_THRESHOLD].arg;
+				count updateThreshold = 0;
+				if (updateThresholdArg == "auto") {
+					updateThreshold = (count) (G.numberOfNodes() / 1e5);
+				} else {
+					updateThreshold = std::atoi(updateThresholdArg.c_str());
+				}
 				lp->setUpdateThreshold(updateThreshold);
 			}
 			algo = lp;
