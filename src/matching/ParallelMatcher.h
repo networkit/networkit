@@ -23,10 +23,12 @@ namespace EnsembleClustering {
 	 * Source:  http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1
  */
 class ParallelMatcher: public EnsembleClustering::Matcher {
+private:
+	int attrId; ///< attribute ID of matching scores/weights
 
 public:
 
-	ParallelMatcher();
+	ParallelMatcher(int attrId);
 
 	virtual ~ParallelMatcher();
 

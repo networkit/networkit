@@ -34,6 +34,7 @@
 #include "graph/GraphGenerator.h"
 #include "ensemble/EnsembleClusterer.h"
 #include "clustering/algo/LabelPropagation.h"
+#include "clustering/algo/ParallelAgglomerativeClusterer.h"
 #include "clustering/algo/RandomClusterer.h"
 #include "clustering/base/Clustering.h"
 #include "clustering/base/Modularity.h"
@@ -337,6 +338,9 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 				lp->setUpdateThreshold(updateThreshold);
 			}
 			algo = lp;
+		} else if (algoName == "Agglomerative") {
+			ParallelAgglomerativeClusterer* agglo = new ParallelAgglomerativeClusterer();
+			algo = agglo;
 		} else if (algoName == "RandomClusterer") {
 			algo = new RandomClusterer();
 		} else {

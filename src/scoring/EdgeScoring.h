@@ -26,7 +26,7 @@ public:
 
 	virtual ~EdgeScoring();
 
-	virtual void scoreEdges() = 0;
+	virtual void scoreEdges(int attrId) = 0;
 
 	virtual T edgeScore(node u, node v) const = 0;
 };

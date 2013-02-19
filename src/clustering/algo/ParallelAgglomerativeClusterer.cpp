@@ -19,30 +19,60 @@ ParallelAgglomerativeClusterer::~ParallelAgglomerativeClusterer() {
 }
 
 Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
-	Graph G = graph;
+	Graph G = graph; // G is the community graph, starts with singletons
+	std::vector<NodeMap<node> > mapHierarchy;
 
+	bool repeat = true;
 	do {
-		ModularityScoring<double> modScoring(G);
-		modScoring.scoreEdges();
+		// prepare attributes for scoring
+		int attrId = G.addEdgeAttribute_double(0.0);
 
-		G.parallelForEdges([&](node u, node v){
-			double deltaMod = modScoring.edgeScore(u, v);
-			// TODO: where to store edge scores? copy graph?
-		});
+		// perform scoring
+		ModularityScoring<double> modScoring(G);
+		modScoring.scoreEdges(attrId);
 
 		// compute matching
-		ParallelMatcher parMatcher;
+		ParallelMatcher parMatcher(attrId);
 		Matching M = parMatcher.run(G);
 
-		// TODO: contract graph according to matching (and star-like structures)
+		// contract graph according to matching, TODO: (and star-like structures)
 		MatchingContracter matchingContracter;
-		G = matchingContracter.run(G, M);
-	} while (false); 	// TODO: repeat until?
+		std::pair<Graph, NodeMap<node> > GandMap = matchingContracter.run(G, M);
 
-	Clustering zeta(G.numberOfNodes());
-	// TODO: get clustering induced by contracted graph
+		// determine if it makes sense to proceed
+		count n = G.numberOfNodes();
+		count cn = GandMap.first.numberOfNodes();
+		count diff = n - cn;
+		repeat = ((diff > 0) &&
+				(cn >= MIN_NUM_COMMUNITIES) &&
+				((double) diff / (double) n > REL_REPEAT_THRSH)
+				); // TODO: last condition: no community becomes too big
+
+		// prepare next iteration if there is one
+		if (repeat) {
+			G = GandMap.first;
+			mapHierarchy.push_back(GandMap.second);
+			INFO("Repeat agglomeration with graph of size " << G.numberOfNodes());
+		}
+	} while (repeat);
+
+	// vertices of coarsest graph are the clusters
+	count cn = G.numberOfNodes();
+	Clustering zetaCoarse(cn);
+	zetaCoarse.allToSingletons();
+
+	// project clustering back to finest graph
+	ClusteringProjector projector;
+	Clustering zeta = projector.projectBackToFinest(zetaCoarse, mapHierarchy,
+			graph);
 
 	return zeta;
+}
+
+std::string ParallelAgglomerativeClusterer::toString() const {
+	std::stringstream strm;
+	strm << "ParallelAgglomerativeClusterer";
+	return strm.str();
 }
 
 } /* namespace EnsembleClustering */
