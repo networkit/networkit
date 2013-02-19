@@ -31,6 +31,9 @@ void EnsembleClusterer::setFinalClusterer(Clusterer& final) {
 	this->finalClusterer = &final;
 }
 
+void EnsembleClusterer::setOverlapper(Overlapper& overlap) {
+	this->overlap = &overlap;
+}
 
 
 Clustering EnsembleClusterer::run(Graph& G) {
@@ -44,7 +47,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// TODO: add setter methods
 	// sub-algorithms
 	ClusterContracter contract;
-	HashingOverlapper overlap;
 	ClusteringProjector project;
 
 	// hierarchies
@@ -108,7 +110,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// *** overlap clusters to create core clustering ***
 		INFO("[BEGIN] finding core clustering");
-		clustering.push_back(overlap.run(graph.at(i), baseClustering));
+		clustering.push_back(this->overlap->run(graph.at(i), baseClustering));
 		DEBUG("created core clustering: k=" << clustering.at(i).numberOfClusters());
 		INFO("[DONE] finding core clustering");
 
@@ -169,6 +171,8 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	return zetaFine;
 }
+
+
 
 std::string EnsembleClusterer::toString() {
 	std::stringstream strm;

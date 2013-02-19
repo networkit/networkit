@@ -38,7 +38,9 @@ protected:
 	QualityMeasure* qm;	//!< evaluates clutering quality
 
 	Clusterer* finalClusterer;	//!< final clustering algorithm
-	std::vector<Clusterer*> baseClusterers;
+	std::vector<Clusterer*> baseClusterers; //!< ensemble of base clusterers
+
+	Overlapper* overlap; //!< clustering overlap algorithm
 
 
 public:
@@ -61,6 +63,12 @@ public:
 	 * Set quality measure to evaluate clusterings.
 	 */
 	virtual void setQualityMeasure(QualityMeasure& qm);
+
+
+	/**
+	 * Set overlap algorithm which combines the results of the base clusterers.
+	 */
+	virtual void setOverlapper(Overlapper& overlap);
 
 	/**
 	 * Run the ensemble clusterer.
