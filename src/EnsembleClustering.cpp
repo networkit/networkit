@@ -467,7 +467,7 @@ int main(int argc, char **argv) {
 
 	// ENABLE FLOATING POINT EXCEPTIONS (needs GNU extension, apparently only available on Linux)
 #ifdef _GNU_SOURCE
-	// FIXME: how to use this productively to detect overflows?  feenableexcept(FE_ALL_EXCEPT);
+	// feenableexcept(FE_ALL_EXCEPT);
 #endif
 
 
