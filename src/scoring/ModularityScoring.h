@@ -78,19 +78,17 @@ ModularityScoring<T>::~ModularityScoring() {
 }
 
 template<typename T>
-T ModularityScoring<T>::edgeScore(node u, node v) const {
-	// return G->
-	// TODO
-	// calculate $$\Delta mod(c, d) := \frac{1}{2 \omega(E)} \left ( 2 \omega(E) \omega(c,d) - \omega(c) \omega(d) \right ) $$
-
-	double deltaMod = 0.0; // (1 / (2 * omegaE)) * (2 * omegaE * G->weight(u, v) - G->weight(u) * G->weight(v));
+inline T ModularityScoring<T>::edgeScore(node u, node v) const {
+	double volume = 2.0 * totalEdgeWeight;
+	double deltaMod = (this->G->weight(u, v) / totalEdgeWeight) -
+			((this->G->weightedDegree(u) / volume) * (this->G->weightedDegree(v) / volume)); // TODO: check!
 	return deltaMod;
 }
 
 template<typename T>
 void EnsembleClustering::ModularityScoring<T>::scoreEdges(int attrId) {
 	this->G->forEdgesWithAttribute_double(attrId, [&](node u, node v, double attr) {
-		attr = edgeScore(u, v);
+		attr = this->edgeScore(u, v);
 		this->G->setAttribute_double(u, v, attrId, attr);
 	});
 }

@@ -12,5 +12,8 @@
 extern bool PRINT_PROGRESS;
 extern bool RAND_ORDER;
 
+extern int MIN_NUM_COMMUNITIES;
+extern double REL_REPEAT_THRSH;
+
 
 #endif /* GLOBALS_H_ */

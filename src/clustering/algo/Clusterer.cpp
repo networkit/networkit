@@ -18,7 +18,7 @@ Clusterer::~Clusterer() {
 	// TODO Auto-generated destructor stub
 }
 
-std::string Clusterer::toString() {
+std::string Clusterer::toString() const {
 	return "TODO: string representation of clusterer";
 }
 

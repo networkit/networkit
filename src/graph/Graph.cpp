@@ -261,13 +261,18 @@ int Graph::addEdgeAttribute_double(double defaultValue) {
 	int attrId = this->edgeMaps_double.size();
 	std::vector<std::vector<double> > edgeMap;
 	edgeMap.resize(this->n);	// create empty vector<attr> for each node
-	this->edgeMaps_double.push_back(edgeMap);
 	this->edgeAttrDefaults_double.push_back(defaultValue);
 
 	if (this->numberOfEdges() > 0) {
-		throw std::runtime_error("TODO: set attributes for already existing edges");
+		forNodes([&] (node v) {
+			// create edgeMaps and fill them with default value
+			edgeMap[v].resize(adja[v].size());
+			fill(edgeMap[v].begin(), edgeMap[v].end(), defaultValue);
+		});
+//		throw std::runtime_error("TODO: set attributes for already existing edges");
 	}
-	// TODO: set attribute for already existing edges
+	this->edgeMaps_double.push_back(edgeMap);
+
 	return attrId;
 }
 
