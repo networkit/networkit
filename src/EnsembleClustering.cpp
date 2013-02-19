@@ -210,7 +210,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SAVE_CLUSTERING, SILENT, SUMMARY, RANDORDER, UPDATE_THRESHOLD};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SAVE_CLUSTERING, SILENT, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -230,6 +230,7 @@ const OptionParser::Descriptor usage[] =
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {RANDORDER, 0, "", "randOrder", OptionParser::Arg::Required, "  --randOrder=<yes,no> \t don't randomize vertex processing order"},
  {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> or --updateThreshold=auto \t number of updated nodes below which label propagation terminates - auto determines this automatically from the size of the graph"},
+ {OVERLAP, 0, "", "overlap", OptionParser::Arg::Required, "  --overlap=<Algorithm> set overlap algorithm which combines the base clusterings"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -348,9 +349,9 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 	} else if (options[ENSEMBLE]) {
 		// RUN ENSEMBLE
 
-		std::string ensembleOptions = options[ENSEMBLE].arg;
+		std::string ensembleSizeArg = options[ENSEMBLE].arg;
 
-		int ensembleSize = std::atoi(ensembleOptions.c_str()); // TODO: provide more options
+		int ensembleSize = std::atoi(ensembleSizeArg.c_str()); // TODO: provide more options
 
 		EnsembleClusterer* ensemble = new EnsembleClusterer();
 
@@ -366,7 +367,28 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 			ensemble->addBaseClusterer(*base);
 		}
 
-		// 3. Final Clusterer
+		// 3. Overlap
+		Overlapper* overlap = NULL;
+
+		// select overlap algorithm
+		if (options[OVERLAP]) {
+			std::string overlapArg = options[OVERLAP].arg;
+			if (overlapArg == "Hashing") {
+				overlap = new HashingOverlapper();
+			} else if (overlapArg == "RegionGrowing") {
+				overlap = new RegionGrowingOverlapper();
+			} else {
+				std::cout << "[ERROR] unknown overlap algorithm: " << overlapArg << std::endl;
+				exit(1);
+			}
+		} else {
+			// default
+			overlap = new RegionGrowingOverlapper();
+		}
+		ensemble->setOverlapper(*overlap);
+
+
+		// 4. Final Clusterer
 		Clusterer* final = new LabelPropagation();
 		ensemble->setFinalClusterer(*final);
 
