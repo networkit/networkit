@@ -47,7 +47,7 @@ protected:
 
 public:
 
-	LabelPropagation();
+	LabelPropagation(count theta = 0);
 
 	virtual ~LabelPropagation();
 
