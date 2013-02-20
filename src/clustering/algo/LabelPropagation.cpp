@@ -9,7 +9,7 @@
 
 namespace EnsembleClustering {
 
-LabelPropagation::LabelPropagation() {
+LabelPropagation::LabelPropagation(count theta) : updateThreshold(theta) {
 	// TODO Auto-generated constructor stub
 
 }
