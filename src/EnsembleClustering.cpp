@@ -45,8 +45,9 @@
 #include "io/METISGraphWriter.h"
 #include "io/ClusteringWriter.h"
 
-// import global
 
+// revision
+static const std::string REVISION = "r002";
 
 
 using namespace EnsembleClustering;
@@ -448,10 +449,11 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
  	if (options[SUMMARY]) {
  		char sep = ';';
  		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
- 		summary << algo->toString() << sep;
- 		summary << G.getName() << sep;
+ 		summary << algo->toString() << sep;				// APPEND algorithm description
+ 		summary << REVISION << sep;						// APPEND revision number
+ 		summary << G.getName() << sep;					// APPEND graph description
  		summary << running.elapsed().count() << sep;	// APPEND running time
- 		summary << eps << sep;								// APPEND edges per second
+ 		summary << eps << sep;							// APPEND edges per second
  	}
 
 
@@ -584,7 +586,7 @@ int main(int argc, char **argv) {
 			// create it and write CSV header
 			std::ofstream summary(options[SUMMARY].arg);
 
-			summary << "threads;algo;graph;running;eps;clusters;mod" << std::endl; // TODO: update header
+			summary << "threads;algo;revision;graph;running;eps;clusters;mod" << std::endl; // TODO: update header
 
 		}
 		// append number of threads available
