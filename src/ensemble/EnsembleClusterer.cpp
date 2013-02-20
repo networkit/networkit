@@ -101,11 +101,11 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		}
 
 		for (int b = 0; b < baseClusterers.size(); b += 1) {
-			double qual = modularity.getQuality(baseClustering[b], graph.at(i));
+			double qual = modularity.getQuality(baseClustering[b], graph.at(h));
 			if (qual > bestQuality) {
 				bestQuality = qual;
 				best = baseClustering[b];
-				bestLevel = i;
+				bestLevel = h;
 			}
 		}
 
@@ -135,7 +135,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			if (quality.back() > bestQuality) {
 				bestQuality = quality.back();
 				best = clustering.back();
-				bestLevel = i;
+				bestLevel = h;
 			}
 
 			// *** contract the graph according to core clustering **
@@ -162,8 +162,8 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 			if (quality.back() > bestQuality) {
 				bestQuality = quality.back();
-				best = clustering.at(i);
-				bestLevel = i;
+				best = clustering.at(h);
+				bestLevel = h;
 			}
 
 			// *** test if new core clustering is better than previous one **
@@ -186,7 +186,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 			if (repeat) {
 				INFO("[BEGIN] contracting graph");
-				auto con = contract.run(graph.at(i), clustering.at(i)); // returns pair (G^{i+1}, M^{i->i+1})
+				auto con = contract.run(graph.at(h), clustering.at(h)); // returns pair (G^{i+1}, M^{i->i+1})
 				graph.push_back(con.first); // store G^{i+1}
 				map.push_back(con.second); // store M^{i->i+1}
 				INFO("[DONE] contracting graph");
@@ -197,7 +197,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	Clustering zetaFine(0);
 	if (bestLevel > 0) {
-		Clustering zetaCoarse = this->finalClusterer->run(graph.at(i)); // TODO: check: index correct?
+		Clustering zetaCoarse = this->finalClusterer->run(graph.at(h)); // TODO: check: index correct?
 //	Clustering zetaFine = project.projectBackToFinest(zetaCoarse, map, G);
 		zetaFine = project.projectBackToFinest(best, map, graph.at(bestLevel));
 	} else {
