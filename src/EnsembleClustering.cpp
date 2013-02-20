@@ -47,7 +47,7 @@
 
 
 // revision
-static const std::string REVISION = "r004";
+static const std::string REVISION = "r005";
 
 
 using namespace EnsembleClustering;
