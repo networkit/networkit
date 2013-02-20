@@ -1,0 +1,22 @@
+<map id="src/clustering/Clustering.h" name="src/clustering/Clustering.h">
+<area shape="rect" id="node3" href="$_clusterer_8h.html" title="src/clustering/Clusterer.h" alt="" coords="264,83,432,111"/>
+<area shape="rect" id="node7" href="$_label_propagation_8h.html" title="src/clustering/LabelPropagation.h" alt="" coords="410,169,629,197"/>
+<area shape="rect" id="node15" href="$_clustering_8cpp.html" title="src/clustering/Clustering.cpp" alt="" coords="578,83,765,111"/>
+<area shape="rect" id="node17" href="$_clustering_generator_8h.html" title="src/clustering/Clustering\lGenerator.h" alt="" coords="654,161,817,205"/>
+<area shape="rect" id="node21" href="$_clustering_test_8h.html" title="src/clustering/test\l/ClusteringTest.h" alt="" coords="792,254,916,298"/>
+<area shape="rect" id="node25" href="$_ensemble_clustering_8cpp.html" title="src/EnsembleClustering.cpp" alt="" coords="1154,262,1341,290"/>
+<area shape="rect" id="node28" href="$_quality_measure_8h.html" title="src/clustering/QualityMeasure.h" alt="" coords="892,83,1100,111"/>
+<area shape="rect" id="node40" href="$_overlapper_8h.html" title="src/overlap/Overlapper.h" alt="" coords="1395,83,1561,111"/>
+<area shape="rect" id="node5" href="$_clusterer_8cpp.html" title="src/clustering/Clusterer.cpp" alt="" coords="204,169,385,197"/>
+<area shape="rect" id="node11" href="$_score_match_contract_8h.html" title="src/clustering/ScoreMatch\lContract.h" alt="" coords="5,161,179,205"/>
+<area shape="rect" id="node9" href="$_label_propagation_8cpp.html" title="src/clustering/LabelPropagation.cpp" alt="" coords="347,262,580,290"/>
+<area shape="rect" id="node13" href="$_score_match_contract_8cpp.html" title="src/clustering/ScoreMatch\lContract.cpp" alt="" coords="5,254,179,298"/>
+<area shape="rect" id="node19" href="$_clustering_generator_8cpp.html" title="src/clustering/Clustering\lGenerator.cpp" alt="" coords="605,254,768,298"/>
+<area shape="rect" id="node23" href="$_clustering_test_8cpp.html" title="src/clustering/test\l/ClusteringTest.cpp" alt="" coords="787,347,921,391"/>
+<area shape="rect" id="node30" href="$_modularity_8h.html" title="src/clustering/Modularity.h" alt="" coords="892,169,1067,197"/>
+<area shape="rect" id="node36" href="$_quality_measure_8cpp.html" title="src/clustering/QualityMeasure.cpp" alt="" coords="1092,169,1313,197"/>
+<area shape="rect" id="node32" href="$_modularity_8cpp.html" title="src/clustering/Modularity.cpp" alt="" coords="941,262,1129,290"/>
+<area shape="rect" id="node42" href="$_overlapper_8cpp.html" title="src/overlap/Overlapper.cpp" alt="" coords="1388,169,1568,197"/>
+<area shape="rect" id="node44" href="$_region_growing_overlapper_8h.html" title="src/overlap/RegionGrowing\lOverlapper.h" alt="" coords="1593,161,1775,205"/>
+<area shape="rect" id="node46" href="$_region_growing_overlapper_8cpp.html" title="src/overlap/RegionGrowing\lOverlapper.cpp" alt="" coords="1593,254,1775,298"/>
+</map>
