@@ -29,7 +29,7 @@ std::chrono::steady_clock::time_point Timer::stop() {
 }
 
 std::chrono::duration<int64_t, std::milli> Timer::elapsed() {
-	std::chrono::duration<int64_t, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(std::chrono::steady_clock::now() - this->started);
+	std::chrono::duration<int64_t, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<int64_t, std::milli>>(this->stopped - this->started);
 	return elapsed;
 }
 
