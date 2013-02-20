@@ -78,7 +78,7 @@ public:
 	/**
 	 * @return string representation.
 	 */
-	virtual std::string toString();
+	virtual std::string toString() const;
 
 
 

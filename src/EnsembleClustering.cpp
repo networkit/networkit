@@ -47,7 +47,7 @@
 
 
 // revision
-static const std::string REVISION = "r003";
+static const std::string REVISION = "r004";
 
 
 using namespace EnsembleClustering;
@@ -314,6 +314,23 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 
 	}
 
+
+	// determine update threshold / abort criterion for LabelPropagation
+	count updateThreshold = 0;
+	if (options[UPDATE_THRESHOLD]) {
+		std::string updateThresholdArg = options[UPDATE_THRESHOLD].arg;
+		if (updateThresholdArg == "auto") {
+			updateThreshold = (count) (G.numberOfNodes() / 1e3);
+		} else {
+			updateThreshold = std::atoi(updateThresholdArg.c_str());
+		}
+	} else {
+		// default = "auto"
+		updateThreshold = (count) (G.numberOfNodes() / 1e3);
+	}
+
+	// prepare clusterer run
+
 	Clusterer* algo = NULL; // the clusterer
 
 	std::pair<Clustering, Graph> result = std::make_pair(Clustering(0), G); // this will be returned
@@ -328,17 +345,9 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 		// get specified base algorithm
 		std::string algoName = options[SOLO].arg;
 		if (algoName == "LabelPropagation") {
-			LabelPropagation* lp = new LabelPropagation();
-			if (options[UPDATE_THRESHOLD]) {
-				std::string updateThresholdArg = options[UPDATE_THRESHOLD].arg;
-				count updateThreshold = 0;
-				if (updateThresholdArg == "auto") {
-					updateThreshold = (count) (G.numberOfNodes() / 1e3);
-				} else {
-					updateThreshold = std::atoi(updateThresholdArg.c_str());
-				}
-				lp->setUpdateThreshold(updateThreshold);
-			}
+
+			LabelPropagation* lp = new LabelPropagation(updateThreshold);
+
 			algo = lp;
 		} else if (algoName == "Agglomerative") {
 			ParallelAgglomerativeClusterer* agglo = new ParallelAgglomerativeClusterer();
@@ -376,7 +385,7 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 		for (int i = 0; i < ensembleSize; i += 1) {
 			Clusterer* base = NULL;
 			if (baseClustererArg == "LabelPropagation") {
-				base = new LabelPropagation();
+				base = new LabelPropagation(updateThreshold);
 			} else if (baseClustererArg == "Agglomerative") {
 				base = new ParallelAgglomerativeClusterer();
 			} else {
