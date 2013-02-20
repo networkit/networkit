@@ -42,6 +42,8 @@ protected:
 
 	Overlapper* overlap; //!< clustering overlap algorithm
 
+	int h; //!< hierarchy level / iteration counter
+
 
 public:
 

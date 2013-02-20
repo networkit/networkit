@@ -12,6 +12,7 @@ namespace EnsembleClustering {
 EnsembleClusterer::EnsembleClusterer() : Clusterer() {
 	this->finalClusterer = NULL;
 	this->qm = NULL;
+	this->h = -1;	// start with 0 in loop
 }
 
 EnsembleClusterer::~EnsembleClusterer() {
@@ -66,7 +67,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 
 	bool repeat;
-	int i = -1;	// iteration counter, starts with 0 in loop
 
 	graph.push_back(G); 		// store G^{0}
 	Clustering empty(0);
@@ -74,19 +74,19 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 
 	do {
-		i += 1; 	// increment iteration/hierarchy counter
+		h += 1; 	// increment iteration/hierarchy counter
 
 
-		INFO("EnsembleClusterer *** ITERATION " << i << " ***");
+		INFO("EnsembleClusterer *** ITERATION " << h << " ***");
 
 		// *** base clusterers calculate base clusterings ***
 		#pragma omp parallel for
 		for (int b = 0; b < baseClusterers.size(); b += 1) {
 			try {
-				baseClustering.at(b) = baseClusterers.at(b)->run(graph.at(i));
+				baseClustering.at(b) = baseClusterers.at(b)->run(graph.at(h));
 				// DEBUG
 				DEBUG("created base clustering: k=" << baseClustering.at(b).numberOfClusters());
-				if (baseClustering.at(b).isOneClustering(graph.at(i))) {
+				if (baseClustering.at(b).isOneClustering(graph.at(h))) {
 					WARN("base clusterer created 1-clustering");
 				}
 				// DEBUG
@@ -101,7 +101,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			JaccardMeasure dm;
 			for (int b = 0; b < baseClustering.size(); b += 1) {
 				for (int c = b; c < baseClustering.size(); c += 1) {
-					double d = dm.getDissimilarity(graph.at(i), baseClustering.at(b), baseClustering.at(c));
+					double d = dm.getDissimilarity(graph.at(h), baseClustering.at(b), baseClustering.at(c));
 					INFO("dm " << b << " <-> " << c << ": " << d);
 				}
 			}
@@ -110,45 +110,45 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// *** overlap clusters to create core clustering ***
 		INFO("[BEGIN] finding core clustering");
-		clustering.push_back(this->overlap->run(graph.at(i), baseClustering));
-		DEBUG("created core clustering: k=" << clustering.at(i).numberOfClusters());
+		clustering.push_back(this->overlap->run(graph.at(h), baseClustering));
+		DEBUG("created core clustering: k=" << clustering.at(h).numberOfClusters());
 		INFO("[DONE] finding core clustering");
 
-		if (i == 0) {			// first iteration
+		if (h == 0) {			// first iteration
 			// *** calculate quality of first core clustering with respect to first graph ***
-			quality.push_back(this->qm->getQuality(clustering.at(i), graph.at(i)));
+			quality.push_back(this->qm->getQuality(clustering.at(h), graph.at(h)));
 			DEBUG("pushed quality: " << quality.back());
 
 			// *** contract the graph according to core clustering **
 			INFO("[BEGIN] contracting graph");
-			auto con = contract.run(graph.at(i), clustering.at(i));	// returns pair (G^{i+1}, M^{i->i+1})
+			auto con = contract.run(graph.at(h), clustering.at(h));	// returns pair (G^{i+1}, M^{i->i+1})
 			graph.push_back(con.first);		// store G^{i+1}
 			map.push_back(con.second);		// store M^{i->i+1}
 			INFO("[DONE] contracting graph");
 
 			//DEBUG
-			DEBUG("contracted graph G^" << (i+1) << " created: " << graph.back().toString());
+			DEBUG("contracted graph G^" << (h+1) << " created: " << graph.back().toString());
 			//DEBUG
 
 			// new graph created => repeat
 			repeat = true;
 		} else { 	// other iterations
-			clusteringBack.push_back(project.projectBackToFinest(clustering.at(i), map, G));
-			assert (clustering.at(i).numberOfClusters() == clusteringBack.at(i).numberOfClusters());
+			clusteringBack.push_back(project.projectBackToFinest(clustering.at(h), map, G));
+			assert (clustering.at(h).numberOfClusters() == clusteringBack.at(h).numberOfClusters());
 			// DEBUG
-			DEBUG("created projected clustering: k=" << clusteringBack.at(i).numberOfClusters());
+			DEBUG("created projected clustering: k=" << clusteringBack.at(h).numberOfClusters());
 			// DEBUG
 
-			quality.push_back(this->qm->getQuality(clusteringBack.at(i), graph.at(i)));
+			quality.push_back(this->qm->getQuality(clusteringBack.at(h), graph.at(h)));
 			DEBUG("pushed quality: " << quality.back());
 
 
 			// *** test if new core clustering is better than previous one **
-			if (quality.at(i) > quality.at(i-1)) {
-				DEBUG("quality[" << i << "] = " << quality.at(i) << " > quality[" << (i-1) << "] = " << quality.at(i-1));
+			if (quality.at(h) > quality.at(h-1)) {
+				DEBUG("quality[" << h << "] = " << quality.at(h) << " > quality[" << (h-1) << "] = " << quality.at(h-1));
 
 				INFO("[BEGIN] contracting graph");
-				auto con = contract.run(graph.at(i), clustering.at(i));	// returns pair (G^{i+1}, M^{i->i+1})
+				auto con = contract.run(graph.at(h), clustering.at(h));	// returns pair (G^{i+1}, M^{i->i+1})
 				graph.push_back(con.first);		// store G^{i+1}
 				map.push_back(con.second);		// store M^{i->i+1}
 				INFO("[DONE] contracting graph");
@@ -157,7 +157,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 				// new graph created => repeat
 				repeat = true;
 			} else {
-				DEBUG("quality[" << i << "] = " << quality.at(i) << " <= quality[" << (i-1) << "] = " << quality.at(i-1));
+				DEBUG("quality[" << h << "] = " << quality.at(h) << " <= quality[" << (h-1) << "] = " << quality.at(h-1));
 
 				// new core clustering is not better => do not contract according to new core clustering and do not repeat
 				repeat = false;
@@ -166,7 +166,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	} while (repeat);
 
-	Clustering zetaCoarse = this->finalClusterer->run(graph.at(i)); // TODO: check: index correct?
+	Clustering zetaCoarse = this->finalClusterer->run(graph.at(h)); // TODO: check: index correct?
 	Clustering zetaFine = project.projectBackToFinest(zetaCoarse, map, G);
 
 	return zetaFine;
@@ -176,7 +176,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 std::string EnsembleClusterer::toString() const {
 	std::stringstream strm;
-	strm << "EnsembleClusterer(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",final=" << this->finalClusterer->toString() << ")";
+	strm << "EnsembleClusterer(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",final=" << this->finalClusterer->toString() << ")(h=" << this->h << ")";
 	return strm.str();
 }
 
