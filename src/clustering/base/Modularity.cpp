@@ -43,11 +43,12 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	IndexMap<cluster, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
 
 	// compute volume of each cluster
-	G.forNodes([&](node v){
+	G.parallelForNodes([&](node v){
 		// add to cluster weight
 		cluster c = zeta[v];
 		assert (zeta.lowerBound() <= c);
 		assert (c < zeta.upperBound());
+#pragma omp atomic
 		incidentWeightSum[c] += G.weightedDegree(v) + G.weight(v,v); // account for self-loops a second time
 	});
 
