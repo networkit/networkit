@@ -213,7 +213,9 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE, ENSEMBLE, SOLO, WRITEGRAPH, SAVE_CLUSTERING, SILENT, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE,
+	ENSEMBLE, SOLO, NOREC,
+	WRITEGRAPH, SAVE_CLUSTERING, SILENT, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -227,6 +229,7 @@ const OptionParser::Descriptor usage[] =
  {ENSEMBLE_SIZE, 0, "", "ensembleSize", OptionParser::Arg::Required, "  --ensembleSize \t number of clusterers in the ensemble"},
  {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "--ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
+ {NOREC, 0, "", "no_recursion", OptionParser::Arg::None, "  --no_recursion \t run only on the finest graph, even if ensemble is used"},
  {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"},
  {SAVE_CLUSTERING, 0, "", "saveClustering", OptionParser::Arg::Required, "  --saveClustering=<PATH> \t save the clustering to a file"},
  {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
@@ -430,11 +433,16 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 		ensemble->setFinalClusterer(*final);
 
 		algo = ensemble;
-
-	} else {
+	}
+	else {
 		// if no algorithm specified, return empty clustering
 		std::cout << "[INFO] no algorithm specified - returning empty clustering" << std::endl;
 		return result;
+	}
+
+	// recurse on ensemble
+	if (options[NOREC]) {
+		NO_RECURSION = true;
 	}
 
 

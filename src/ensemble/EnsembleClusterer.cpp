@@ -52,7 +52,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// hierarchies
 	std::vector<Graph> graph; // hierarchy of graphs G^{i}
 	std::vector<Clustering> clustering; // hierarchy of core clusterings \zeta^{i}
-	std::vector<Clustering> clusteringBack; // hierarchy of core clusterings projected back to the original graph
+//	std::vector<Clustering> clusteringBack; // hierarchy of core clusterings projected back to the original graph
 	std::vector<NodeMap<node> > map; // hierarchy of maps M^{i->i+1}
 	std::vector<double> quality; // hierarchy of clustering quality values q^{i} = q(\zeta^{i}, G^{0})
 
@@ -69,7 +69,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	graph.push_back(G); // store G^{0}
 	Clustering empty(0);
-	clusteringBack.push_back(empty); // push a dummy clustering so that clusteringBack[i] contains the clustering projected from G^{i} to G^{0}  (there is no clusteringBack[0])
+//	clusteringBack.push_back(empty); // push a dummy clustering so that clusteringBack[i] contains the clustering projected from G^{i} to G^{0}  (there is no clusteringBack[0])
 
 	Clustering best(0); // best clustering seen so far
 	double bestQuality = -2.0; // quality of best clustering
@@ -138,6 +138,14 @@ Clustering EnsembleClusterer::run(Graph& G) {
 				bestLevel = h;
 			}
 
+			// if NO_RECURSION is set: do not contract/recurse and break
+			if (NO_RECURSION) {
+				break;
+			}
+
+			// new graph created => repeat
+			repeat = true;
+
 			// *** contract the graph according to core clustering **
 			INFO("[BEGIN] contracting graph");
 			auto con = contract.run(graph.at(h), clustering.at(h));	// returns pair (G^{i+1}, M^{i->i+1})
@@ -148,16 +156,15 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			DEBUG("contracted graph G^" << (h+1) << " created: " << graph.back().toString());
 			//DEBUG
 
-			// new graph created => repeat
-			repeat = true;
 		} else { 	// other iterations
-			clusteringBack.push_back(project.projectBackToFinest(clustering.at(h), map, G));
-			assert (clustering.at(h).numberOfClusters() == clusteringBack.at(h).numberOfClusters());
+//			clusteringBack.push_back(project.projectBackToFinest(clustering.at(h), map, G));
+//			assert (clustering.at(h).numberOfClusters() == clusteringBack.at(h).numberOfClusters());
 			// DEBUG
-			DEBUG("created projected clustering: k=" << clusteringBack.at(h).numberOfClusters());
+//			DEBUG("created projected clustering: k=" << clusteringBack.at(h).numberOfClusters());
 			// DEBUG
 
-			quality.push_back(this->qm->getQuality(clusteringBack.at(h), graph.at(h)));
+//			quality.push_back(this->qm->getQuality(clusteringBack.at(h), graph.at(h)));
+			quality.push_back(this->qm->getQuality(clustering.at(h), graph.at(h)));
 			DEBUG("pushed quality: " << quality.back());
 
 			if (quality.back() > bestQuality) {
@@ -171,7 +178,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 				DEBUG("quality[" << h << "] = " << quality.at(h) << " > quality[" << (h-1) << "] = " << quality.at(h-1));
 
 				// better quality => repeat
-				repeat = true;
+				repeat = (true && (! NO_RECURSION));
 				iterationsWithoutImprovement = 0;
 			} else {
 				DEBUG("quality[" << h << "] = " << quality.at(h) << " <= quality[" << (h-1) << "] = " << quality.at(h-1));

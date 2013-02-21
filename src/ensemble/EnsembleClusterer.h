@@ -14,6 +14,7 @@
 
 
 #include "../aux/Log.h"
+#include "../Globals.h"
 #include "../clustering/algo/Clusterer.h"
 #include "../clustering/base/Clustering.h"
 #include "../clustering/base/Modularity.h"
