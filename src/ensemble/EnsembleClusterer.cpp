@@ -64,7 +64,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// DEBUG
 
 	bool repeat;
-	int h = -1; // iteration counter, starts with 0 in loop
 
 	graph.push_back(G); // store G^{0}
 	Clustering empty(0);
@@ -220,7 +219,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 std::string EnsembleClusterer::toString() const {
 	std::stringstream strm;
-	strm << "EnsembleClusterer(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",final=" << this->finalClusterer->toString() << ")(h=" << this->h << ")";
+	strm << "EnsembleClusterer(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",no_recursion=" << NO_RECURSION << ",final=" << this->finalClusterer->toString() << ")(h=" << this->h << ")";
 	return strm.str();
 }
 
