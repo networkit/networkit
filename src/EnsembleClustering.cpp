@@ -214,7 +214,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 
 
 enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE,
-	ENSEMBLE, SOLO, NOREC,
+	ENSEMBLE, SOLO, NOREC, NORM_VOTES, SCALESTRENGTH,
 	WRITEGRAPH, SAVE_CLUSTERING, SILENT, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP};
 const OptionParser::Descriptor usage[] =
 {
@@ -229,7 +229,9 @@ const OptionParser::Descriptor usage[] =
  {ENSEMBLE_SIZE, 0, "", "ensembleSize", OptionParser::Arg::Required, "  --ensembleSize \t number of clusterers in the ensemble"},
  {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "--ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
- {NOREC, 0, "", "no_recursion", OptionParser::Arg::None, "  --no_recursion \t run only on the finest graph, even if ensemble is used"},
+ {NOREC, 0, "", "noRecursion", OptionParser::Arg::None, "  --noRecursion \t run only on the finest graph, even if ensemble is used"},
+ {NORM_VOTES, 0, "", "normalizeVotes", OptionParser::Arg::None, "  --normalizeVotes \t normalize votes in label propagation by weighted degree"},
+ {SCALESTRENGTH, 0, "", "scaleStrength", OptionParser::Arg::None, "  --scaleStrength \t scale cluster strengths"},
  {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"},
  {SAVE_CLUSTERING, 0, "", "saveClustering", OptionParser::Arg::Required, "  --saveClustering=<PATH> \t save the clustering to a file"},
  {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
@@ -626,6 +628,17 @@ int main(int argc, char **argv) {
 
 	if (options[RANDORDER]) {
 		configureRandOrder(options[RANDORDER].arg);
+	}
+
+
+	// CONFIGURE NORMALIZED VOTES
+
+	if (options[NORM_VOTES]) {
+		NORMALIZE_VOTES = true;
+	}
+
+	if (options[SCALESTRENGTH]) {
+		SCALE_STRENGTH = true;
 	}
 
 
