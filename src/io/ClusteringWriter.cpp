@@ -18,7 +18,7 @@ ClusteringWriter::~ClusteringWriter() {
 	// TODO Auto-generated destructor stub
 }
 
-void ClusteringWriter::write(Clustering& zeta, std::string path) {
+void ClusteringWriter::write(Clustering& zeta, std::string path) const {
 	std::ofstream file;
 	file.open(path.c_str());
 

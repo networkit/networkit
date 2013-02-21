@@ -295,7 +295,7 @@ Graph getGraph(OptionParser::Option* options) {
 }
 
 
-std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* options) {
+Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 	// if getGraph returns empty graph, abort
 	if (G.isEmpty() && (G.getName() == "NONE")) {
@@ -336,7 +336,7 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 
 	Clusterer* algo = NULL; // the clusterer
 
-	std::pair<Clustering, Graph> result = std::make_pair(Clustering(0), G); // this will be returned
+//	std::pair<Clustering, Graph> result = std::make_pair(Clustering(0), G); // this will be returned
 	Aux::Timer running; // measures running time of clusterer
 
 	if (options[SOLO]) {
@@ -437,7 +437,7 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 	else {
 		// if no algorithm specified, return empty clustering
 		std::cout << "[INFO] no algorithm specified - returning empty clustering" << std::endl;
-		return result;
+		return Clustering(0);
 	}
 
 	// recurse on ensemble
@@ -456,7 +456,7 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
 	std::cout << "[DONE] " << algo->toString() << " ran: \t" << running.elapsedTag() << std::endl;
 
 
-	result = std::make_pair(resultClustering, G);
+	// result = std::make_pair(resultClustering, G);
 
 	// print speed info
 	double eps = (G.numberOfEdges() / ((double) running.elapsed().count() / 1000.0));	// edges per second
@@ -474,29 +474,29 @@ std::pair<Clustering, Graph> startClusterer(Graph& G, OptionParser::Option* opti
  	}
 
 
-	return result;	// return empty clustering
-
+//	return result;	// return empty clustering
+ 	return resultClustering;
 }
 
 /**
  * Examine the returned clustering and print stats.
  */
-bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options) {
+bool inspect(Graph& G, Clustering& clustering, OptionParser::Option* options) {
 
-	std::cout << "[INFO] Graph: " << result.second.toString() << std::endl;
+	std::cout << "[INFO] Graph: " << G.toString() << std::endl;
 
-	if (result.first.numberOfEntries() == 0) {
+	if (clustering.numberOfEntries() == 0) {
 		std::cout << "[EXIT] no clusterer specified" << std::endl;
 		return true; // no inspection
 	}
 	std::cout << "[INFO] inspecting result clustering " << std::endl;
 
-	int64_t k = result.first.numberOfClusters();
+	int64_t k = clustering.numberOfClusters();
 
 	Aux::Timer running;
 	running.start();
 	Modularity modularity;
-	double mod = modularity.getQuality(result.first, result.second);
+	double mod = modularity.getQuality(clustering, G);
 	running.stop();
 	std::cout << "[DONE] calculating modularity " << running.elapsedTag() << std::endl;
 
@@ -520,7 +520,7 @@ bool inspect(std::pair<Clustering, Graph> result, OptionParser::Option* options)
  		std::string clusteringFilePath = options[SAVE_CLUSTERING].arg;
  		ClusteringWriter writer;
  		std::cout << "[BEGIN]Êsaving clustering to file" << std::endl;
- 		writer.write(result.first, clusteringFilePath);
+ 		writer.write(clustering, clusteringFilePath);
  		std::cout << "[DONE] saved clustering to file: " << clusteringFilePath << std::endl;
  	}
 
@@ -643,7 +643,8 @@ int main(int argc, char **argv) {
 
 	// RUN PROGRAM
 	Graph G = getGraph(options);
-	inspect(startClusterer(G, options), options);
+	Clustering clustering = startClusterer(G, options);
+	inspect(G, clustering, options);
 	std::cout << "[EXIT] terminated normally" << std::endl;
 	return 0;
 }

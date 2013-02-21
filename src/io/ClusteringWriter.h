@@ -22,7 +22,7 @@ public:
 
 	virtual ~ClusteringWriter();
 
-	virtual void write(Clustering& zeta, std::string path);
+	virtual void write(Clustering& zeta, std::string path) const;
 };
 
 } /* namespace EnsembleClustering */

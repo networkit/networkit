@@ -8,6 +8,7 @@
 bool PRINT_PROGRESS = true;
 bool RAND_ORDER = false; 	///< don't randomize LabelPropagation node order by default, since this seems to be faster and slightly better
 bool NO_RECURSION = false; ///< don't recurse in ensemble clustering if set to true
+bool NORMALIZE_VOTES = false; ///< if set, normalize votes of LP by dividing edge weight by weighted degree
 
 
 int MIN_NUM_COMMUNITIES = 2; ///< minimum number of communities, so far only used by agglomerative clustering

@@ -23,12 +23,14 @@ static int countOne(const bool& a) {
 	return (int) a;
 }
 
+
 Clustering LabelPropagation::run(Graph& G) {
 	typedef cluster label; // a label is the same as a cluster id
 
 	// get global variables
 	const bool printProgress = PRINT_PROGRESS;
 	const bool randOrder = RAND_ORDER;
+	const bool normalizeVotes = NORMALIZE_VOTES;
 
 	// init random for std::shuffle
 	std::default_random_engine rd;
@@ -139,7 +141,12 @@ Clustering LabelPropagation::run(Graph& G) {
 				// weigh the labels in the neighborhood of v
 				G.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
 					label lw = labels[w];
-					labelWeights[lw] += weight; // add weight of edge {v, w}
+					if (normalizeVotes) {
+						labelWeights[lw] += weight / weightedDegree[v]; // add weight of edge {v, w}
+					}
+					else {
+						labelWeights[lw] += weight; // add weight of edge {v, w}
+					}
 					});
 
 				// get heaviest label
