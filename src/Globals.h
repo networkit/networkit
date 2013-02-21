@@ -11,6 +11,7 @@
 
 extern bool PRINT_PROGRESS;
 extern bool RAND_ORDER;
+extern bool NO_RECURSION;
 
 extern int MIN_NUM_COMMUNITIES;
 extern double REL_REPEAT_THRSH;
