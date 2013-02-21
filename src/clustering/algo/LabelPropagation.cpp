@@ -31,7 +31,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	const bool printProgress = PRINT_PROGRESS;
 	const bool randOrder = RAND_ORDER;
 	const bool normalizeVotes = NORMALIZE_VOTES;
-	const bool scaleClusterStrength = SCALE_STRENGTH;
+	const bool scaleClusterStrength = (SCALE_STRENGTH != 0.0);
 	std::vector<double> scale;
 
 	// init random for std::shuffle
@@ -127,10 +127,9 @@ Clustering LabelPropagation::run(Graph& G) {
 		if (scaleClusterStrength) {
 			std::vector<count> clusterSizes = labels.clusterSizes();
 			scale.resize(clusterSizes.size());
-			double exponent = 0.5;
-			INFO("Scaling cluster strengths with exponent " << exponent);
+			INFO("Scaling cluster strengths with exponent " << SCALE_STRENGTH);
 			for (index i = 0; i < clusterSizes.size(); ++i) {
-				scale[i] = pow((double) clusterSizes[i], exponent);
+				scale[i] = pow((double) clusterSizes[i], SCALE_STRENGTH);
 			}
 		}
 

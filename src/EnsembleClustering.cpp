@@ -231,7 +231,7 @@ const OptionParser::Descriptor usage[] =
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
  {NOREC, 0, "", "noRecursion", OptionParser::Arg::None, "  --noRecursion \t run only on the finest graph, even if ensemble is used"},
  {NORM_VOTES, 0, "", "normalizeVotes", OptionParser::Arg::None, "  --normalizeVotes \t normalize votes in label propagation by weighted degree"},
- {SCALESTRENGTH, 0, "", "scaleStrength", OptionParser::Arg::None, "  --scaleStrength \t scale cluster strengths"},
+ {SCALESTRENGTH, 0, "", "scaleStrength", OptionParser::Arg::Required, "  --scaleStrength=<value in [0,1]> \t scale cluster strengths"},
  {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"},
  {SAVE_CLUSTERING, 0, "", "saveClustering", OptionParser::Arg::Required, "  --saveClustering=<PATH> \t save the clustering to a file"},
  {SILENT, 0, "", "silent", OptionParser::Arg::None, "  --silent \t don't print progress info"},
@@ -638,7 +638,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (options[SCALESTRENGTH]) {
-		SCALE_STRENGTH = true;
+		SCALE_STRENGTH = options[SCALE_STRENGTH].arg;
 	}
 
 
