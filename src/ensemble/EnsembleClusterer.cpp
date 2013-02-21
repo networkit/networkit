@@ -52,7 +52,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// hierarchies
 	std::vector<Graph> graph; // hierarchy of graphs G^{i}
 	std::vector<Clustering> clustering; // hierarchy of core clusterings \zeta^{i}
-//	std::vector<Clustering> clusteringBack; // hierarchy of core clusterings projected back to the original graph
 	std::vector<NodeMap<node> > map; // hierarchy of maps M^{i->i+1}
 	std::vector<double> quality; // hierarchy of clustering quality values q^{i} = q(\zeta^{i}, G^{0})
 
@@ -69,7 +68,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 	graph.push_back(G); // store G^{0}
 	Clustering empty(0);
-//	clusteringBack.push_back(empty); // push a dummy clustering so that clusteringBack[i] contains the clustering projected from G^{i} to G^{0}  (there is no clusteringBack[0])
 
 	Clustering best(0); // best clustering seen so far
 	double bestQuality = -2.0; // quality of best clustering
@@ -157,13 +155,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			//DEBUG
 
 		} else { 	// other iterations
-//			clusteringBack.push_back(project.projectBackToFinest(clustering.at(h), map, G));
-//			assert (clustering.at(h).numberOfClusters() == clusteringBack.at(h).numberOfClusters());
-			// DEBUG
-//			DEBUG("created projected clustering: k=" << clusteringBack.at(h).numberOfClusters());
-			// DEBUG
-
-//			quality.push_back(this->qm->getQuality(clusteringBack.at(h), graph.at(h)));
 			quality.push_back(this->qm->getQuality(clustering.at(h), graph.at(h)));
 			DEBUG("pushed quality: " << quality.back());
 
@@ -203,6 +194,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	} while (repeat);
 
 	Clustering zetaFine(0);
+	bool bestInCoreGroup = false;
 	if (bestLevel > 0) {
 		Clustering zetaCoarse = this->finalClusterer->run(graph.at(h)); // TODO: check: index correct?
 		double mod = modularity.getQuality(zetaCoarse, graph.at(h));
@@ -211,6 +203,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 			bestQuality = mod;
 			best = zetaCoarse;
 			bestLevel = h;
+			bestInCoreGroup = true;
 		}
 		zetaFine = project.projectBackToFinest(best, map, graph.at(bestLevel));
 
@@ -218,7 +211,9 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		zetaFine = best;
 	}
 
-	INFO("Best clustering was found on level " << bestLevel << ", quality: " << modularity.getQuality(zetaFine, G) << " vs " << bestQuality << " vs " << modularity.getQuality(best, graph.at(bestLevel)));
+	INFO("Best clustering was found on level " << bestLevel << ", quality: "
+			<< modularity.getQuality(zetaFine, G) << " vs " << bestQuality << " vs "
+			<< modularity.getQuality(best, graph.at(bestLevel)) << ", in core group? " << bestInCoreGroup);
 
 	return zetaFine;
 }
