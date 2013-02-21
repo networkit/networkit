@@ -144,7 +144,7 @@ public:
 	/**
 	 * Get the current number of clusters in this clustering.
 	 */
-	int64_t numberOfClusters();
+	count numberOfClusters() const;
 
 
 
@@ -200,6 +200,8 @@ public:
 	 */
 	template<typename Callback> void forEntries(Callback func, std::string par="");
 
+
+	std::vector<count> clusterSizes();
 
 
 

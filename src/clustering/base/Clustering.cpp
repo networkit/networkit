@@ -56,7 +56,7 @@ bool Clustering::isProper(Graph& G) {
 	return success;
 }
 
-int64_t Clustering::numberOfClusters() {
+count Clustering::numberOfClusters() const {
 	count k = 0; // number of clusters
 	std::set<cluster> activeClusters;
 	for (node u = 0; u < this->n; ++u) {
@@ -164,6 +164,19 @@ void Clustering::compact() {
 	setUpperBound(ub+1);
 
 	TRACE("upperBound: " << upperBound());
+}
+
+std::vector<count> Clustering::clusterSizes() {
+	count numC = this->numberOfClusters();
+	std::vector<count> clusterSizes(numC);
+
+	this->forEntries([&](node v, cluster c) {
+		c = data[v];
+		++clusterSizes[c];
+	}, "parallel");
+
+
+	return clusterSizes;
 }
 
 void Clustering::print() const {

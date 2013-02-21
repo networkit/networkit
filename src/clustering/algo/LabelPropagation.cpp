@@ -31,10 +31,17 @@ Clustering LabelPropagation::run(Graph& G) {
 	const bool printProgress = PRINT_PROGRESS;
 	const bool randOrder = RAND_ORDER;
 	const bool normalizeVotes = NORMALIZE_VOTES;
+	const bool scaleClusterStrength = SCALE_STRENGTH;
+	std::vector<double> scale;
 
 	// init random for std::shuffle
 	std::default_random_engine rd;
 	std::mt19937 randgen(rd());
+
+	// option not used
+	if (normalizeVotes) {
+		WARN("normalized votes turned off for undirected graphs");
+	}
 
 	// open file for csv output
 	std::stringstream filePath;
@@ -117,6 +124,16 @@ Clustering LabelPropagation::run(Graph& G) {
 #endif
 		}
 
+		if (scaleClusterStrength) {
+			std::vector<count> clusterSizes = labels.clusterSizes();
+			scale.resize(clusterSizes.size());
+			double exponent = 0.5;
+			INFO("Scaling cluster strengths with exponent " << exponent);
+			for (index i = 0; i < clusterSizes.size(); ++i) {
+				scale[i] = pow((double) clusterSizes[i], exponent);
+			}
+		}
+
 		Aux::ProgressMeter pm(n, 10000);
 
 		// TODO: delete for performance tests
@@ -141,8 +158,8 @@ Clustering LabelPropagation::run(Graph& G) {
 				// weigh the labels in the neighborhood of v
 				G.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
 					label lw = labels[w];
-					if (normalizeVotes) {
-						labelWeights[lw] += weight / weightedDegree[v]; // add weight of edge {v, w}
+					if (scaleClusterStrength) {
+						labelWeights[lw] += weight / scale[labels[v]]; // add weight of edge {v, w}
 					}
 					else {
 						labelWeights[lw] += weight; // add weight of edge {v, w}
