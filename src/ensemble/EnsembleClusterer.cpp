@@ -198,14 +198,18 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	Clustering zetaFine(0);
 	if (bestLevel > 0) {
 		Clustering zetaCoarse = this->finalClusterer->run(graph.at(h)); // TODO: check: index correct?
-//	Clustering zetaFine = project.projectBackToFinest(zetaCoarse, map, G);
+		double mod = modularity.getQuality(zetaCoarse, graph.at(h));
+
+		if (mod > bestQuality) {
+			bestQuality = mod;
+			best = zetaCoarse;
+			bestLevel = h;
+		}
 		zetaFine = project.projectBackToFinest(best, map, graph.at(bestLevel));
+
 	} else {
 		zetaFine = best;
 	}
-
-	// FIXME: Rueckprojektion scheint noch nicht zu stimmen, denn wenn man von Level 0 auf Level 0
-	// zurueckwirft, kommt ein anderes Clustering raus
 
 	INFO("Best clustering was found on level " << bestLevel << ", quality: " << modularity.getQuality(zetaFine, G) << " vs " << bestQuality << " vs " << modularity.getQuality(best, graph.at(bestLevel)));
 

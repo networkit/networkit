@@ -37,6 +37,9 @@ Clustering ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, NodeMa
 
 Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
 		std::vector<NodeMap<node> >& maps, Graph& Gfinest) {
+	if (zetaCoarse.numberOfNodes() == Gfinest.numberOfNodes()) {
+		return zetaCoarse;
+	}
 
 	Clustering zetaFine(Gfinest.numberOfNodes());
 	zetaFine.setUpperBound(zetaCoarse.upperBound()); // upper bound for ids in zetaFine must be set to upper bound in zetaCoarse, or modularity assertions fail
@@ -50,9 +53,9 @@ Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
 	});
 
 	// find coarsest supernode for each node
-	for (NodeMap<node> map : maps) {
+	for (std::vector<NodeMap<node> >::iterator iter = maps.begin(); iter != maps.end(); ++iter) {
 		Gfinest.parallelForNodes([&](node v){
-			tempMap[v] = map[tempMap[v]];
+			tempMap[v] = (* iter)[tempMap[v]];
 		});
 	}
 
