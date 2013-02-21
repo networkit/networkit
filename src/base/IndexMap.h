@@ -14,7 +14,7 @@ namespace EnsembleClustering {
 
 
 /**
- * An IndexMap implements a 1-based mapping from an integer index type to an arbitray value type.
+ * An IndexMap implements a 0-based mapping from an integer index type to an arbitray value type.
  *
  */
 template <typename I, typename T> class IndexMap {
@@ -23,7 +23,7 @@ template <typename I, typename T> class IndexMap {
 protected:
 
 	int64_t n;	//<! number of indices
-	std::vector<T> data; //!< array of size (n+1).  array[0] is not a valid entry, since node indices are 1-based, and contains the nullValue
+	std::vector<T> data; //!< array of size (n).
 	T defaultValue; //!< default value
 
 public:
