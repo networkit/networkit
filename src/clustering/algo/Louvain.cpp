@@ -37,7 +37,7 @@ Clustering Louvain::run(Graph& G) {
 		return sum;
 	};
 
-	// $\lambda_1(C)$
+	// $\lambda(C)$
 	auto lambda_2 = [&](cluster C){
 		edgeweight sum = 0.0;
 		G.forNodes([&](node u){
@@ -86,13 +86,33 @@ Clustering Louvain::run(Graph& G) {
 	};
 
 
-	auto DeltaMod = [](node u, cluster C, cluster D){
-		double d = (omega_1(u, D) - omega_2(u, C)) / total + (2 * lambda_3(C, u) * lambda_1(u) - 2 * lambda_2(D) * \lambda_1(u)) / (4 * total * total);
-		return d;
+	// difference in modularity when moving node u from cluster C to D
+	auto deltaMod = [&](node u, cluster C, cluster D){
+		double delta = (omega_1(u, D) - omega_2(u, C)) / total + (2 * lambda_3(C, u) * lambda_1(u) - 2 * lambda_2(D) * lambda_1(u)) / (4 * total * total);
+		return delta;
 	};
 
-	G.forNodes([&](node u){
-	});
+
+	bool stable = false;
+	while (! stable){
+		G.forNodes([&](node u){
+			cluster C = zeta[u];
+			cluster best;
+			double deltaBest = -0.5;
+			G.forNeighborsOf(u, [&](node v){
+				cluster D = zeta[v];
+				double delta = deltaMod(u, C, D);
+				if (delta > deltaBest) {
+					deltaBest = delta;
+					best = D;
+				}
+				if (deltaBest > 0.0) {
+					zeta.moveToCluster(best, u);
+				}
+			});
+		});
+	}
+
 
 }
 
