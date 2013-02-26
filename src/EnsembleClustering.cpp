@@ -37,6 +37,7 @@
 #include "clustering/algo/LabelPropagation.h"
 #include "clustering/algo/ParallelAgglomerativeClusterer.h"
 #include "clustering/algo/RandomClusterer.h"
+#include "clustering/algo/Louvain.h"
 #include "clustering/base/Clustering.h"
 #include "clustering/base/Modularity.h"
 #include "clustering/base/Coverage.h"
@@ -360,7 +361,9 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			algo = agglo;
 		} else if (algoName == "RandomClusterer") {
 			algo = new RandomClusterer();
-		} else {
+		} else if (algoName == "Louvain") {
+			algo = new Louvain();
+		}else {
 			std::cout << "[ERROR] unknown base algorithm: " << algoName << std::endl;
 			std::cout << "[EXIT]" << std::endl;
 			exit(1);
