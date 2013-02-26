@@ -105,13 +105,11 @@ Clustering Louvain::pass(Graph& G) {
 		DEBUG("Louvain pass: iteration # " << i);
 		change = false; // is clustering stable?
 		G.forNodes([&](node u){
-			TRACE("considering node " << u);
 			cluster C = zeta[u];
 			cluster best;
 			double deltaBest = -0.5;
 			G.forNeighborsOf(u, [&](node v){
 				if (zeta[v] != zeta[u]) { // consider only nodes in other clusters
-					TRACE("considering neighbor " << v << " in " << zeta[v]);
 					cluster D = zeta[v];
 					double delta = deltaMod(u, C, D);
 					if (delta > deltaBest) {
@@ -121,7 +119,6 @@ Clustering Louvain::pass(Graph& G) {
 				}
 			});
 			if ((deltaBest > 0.0)) { // if modularity improvement possible
-				TRACE("deltaBest: " << deltaBest << "=> moving " << u << " to " << best);
 				assert (best != zeta[u]); // do not "move" to original cluster
 				zeta.moveToCluster(best, u);
 				change = true;	// change to clustering has been made
