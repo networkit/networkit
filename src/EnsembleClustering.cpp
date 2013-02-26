@@ -215,7 +215,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 
 enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE,
 	ENSEMBLE, SOLO, NOREC, NORM_VOTES, SCALESTRENGTH,
-	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP};
+	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -234,11 +234,12 @@ const OptionParser::Descriptor usage[] =
  {SCALESTRENGTH, 0, "", "scaleStrength", OptionParser::Arg::Required, "  --scaleStrength=<value in [0,1]> \t scale cluster strengths"},
  {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"},
  {SAVE_CLUSTERING, 0, "", "saveClustering", OptionParser::Arg::Required, "  --saveClustering=<PATH> \t save the clustering to a file"},
- {PROGRESS, 0, "", "silent", OptionParser::Arg::None, "  --progress \t print progress bar"},
+ {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {RANDORDER, 0, "", "randOrder", OptionParser::Arg::Required, "  --randOrder=<yes,no> \t don't randomize vertex processing order"},
  {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> or --updateThreshold=auto \t number of updated nodes below which label propagation terminates - auto determines this automatically from the size of the graph"},
  {OVERLAP, 0, "", "overlap", OptionParser::Arg::Required, "  --overlap=<Algorithm> set overlap algorithm which combines the base clusterings"},
+ {DISSIMILARITY, 0, "", "dissimilarity", OptionParser::Arg::None, "  --dissimilarity \t calculate and print base clustering dissimilarity for ensemble (expensive!)"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -623,11 +624,18 @@ int main(int argc, char **argv) {
 
 	}
 
+	// CONFIGURE GLOBAL FLAGS
 
 	// CONFIGURE RANDOM ORDER
 
 	if (options[RANDORDER]) {
 		configureRandOrder(options[RANDORDER].arg);
+	}
+
+
+	// CALCULATE BASE CLUSTERING DISSIMILARITY?
+	if (options[DISSIMILARITY]) {
+		CALC_DISSIMILARITY = true;
 	}
 
 

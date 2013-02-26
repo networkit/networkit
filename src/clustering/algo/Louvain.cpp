@@ -18,6 +18,8 @@ Louvain::~Louvain() {
 	// TODO Auto-generated destructor stub
 }
 
+
+// TODO: optimize
 Clustering Louvain::pass(Graph& G) {
 	Clustering zeta(G.numberOfNodes());
 	zeta.allToSingletons();

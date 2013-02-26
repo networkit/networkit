@@ -41,10 +41,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	INFO("STARTING EnsembleClusterer on G=" << G.toString());
 	// DEBUG
 
-	// config flags
-	bool calcBaseClusteringDissimilarity = true;
 
-	// TODO: add setter methods
 	// sub-algorithms
 	ClusterContracter contract;
 	ClusteringProjector project;
@@ -107,7 +104,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		}
 
 		// ANALYSIS
-		if (calcBaseClusteringDissimilarity) {
+		if (CALC_DISSIMILARITY) {
 			JaccardMeasure dm;
 			double dissimilaritySum = 0.0;
 			for (int b = 0; b < baseClustering.size(); b += 1) {
