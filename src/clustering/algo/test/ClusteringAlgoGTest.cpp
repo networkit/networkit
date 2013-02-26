@@ -140,7 +140,7 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 	count n = 1000;
 	count k = 100;
 	double pin = 1.0;
-	double pout = 0.0;
+	double pout = 0.005;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
