@@ -42,7 +42,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	// DEBUG
 
 	// config flags
-	bool calcBaseClusteringDissimilarity = false;
+	bool calcBaseClusteringDissimilarity = true;
 
 	// TODO: add setter methods
 	// sub-algorithms
@@ -56,8 +56,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	std::vector<double> quality; // hierarchy of clustering quality values q^{i} = q(\zeta^{i}, G^{0})
 
 	// other data collections
-	std::vector<Clustering> baseClustering(baseClusterers.size(),
-			Clustering(0)); // collection of base clusterings - fill with empty clustering
+	std::vector<Clustering> baseClustering(baseClusterers.size(), Clustering(0)); // collection of base clusterings - fill with empty clustering
 
 	// DEBUG
 	GraphIO graphio;
@@ -81,7 +80,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		INFO("EnsembleClusterer *** ITERATION " << h << " ***");
 
 		// *** base clusterers calculate base clusterings ***
-#pragma omp parallel for
+		#pragma omp parallel for
 		for (int b = 0; b < baseClusterers.size(); b += 1) {
 			try {
 				baseClustering.at(b) = baseClusterers.at(b)->run(graph.at(h));
@@ -99,6 +98,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		for (int b = 0; b < baseClusterers.size(); b += 1) {
 			double qual = modularity.getQuality(baseClustering[b], graph.at(h));
+			INFO("base clustering quality: " << qual);
 			if (qual > bestQuality) {
 				bestQuality = qual;
 				best = baseClustering[b];
@@ -109,12 +109,16 @@ Clustering EnsembleClusterer::run(Graph& G) {
 		// ANALYSIS
 		if (calcBaseClusteringDissimilarity) {
 			JaccardMeasure dm;
+			double dissimilaritySum = 0.0;
 			for (int b = 0; b < baseClustering.size(); b += 1) {
-				for (int c = b; c < baseClustering.size(); c += 1) {
+				for (int c = b + 1; c < baseClustering.size(); c += 1) {
 					double d = dm.getDissimilarity(graph.at(h), baseClustering.at(b), baseClustering.at(c));
+					dissimilaritySum += d;
 					INFO("dm " << b << " <-> " << c << ": " << d);
 				}
 			}
+			double avgDissimilarity = dissimilaritySum / (baseClustering.size() * (baseClustering.size() - 1) / 2.0);
+			std::cout << "[INFO] avg. base clustering dissimilarity for h=" << this->h << ": " << avgDissimilarity << std::endl;
 		}
 		//
 
@@ -155,7 +159,8 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		} else { 	// other iterations
 			quality.push_back(this->qm->getQuality(clustering.at(h), graph.at(h)));
-			DEBUG("pushed quality: " << quality.back());
+			INFO("new quality: " << quality.back());
+			std::cout << "[INFO] new quality: " << quality.back() << std::endl;
 
 			if (quality.back() > bestQuality) {
 				bestQuality = quality.back();
