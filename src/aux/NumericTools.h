@@ -17,13 +17,18 @@ public:
 	NumericTools();
 	virtual ~NumericTools();
 
-	template <typename T> bool will_overflow(const T& pX, const T& pValue, const T& pMax = std::numeric_limits<T>::max()) {
+	template <typename T> bool willOverflow(const T& pX, const T& pValue, const T& pMax = std::numeric_limits<T>::max()) {
 		return pMax - pValue < pX;
 	}
 
-	template <typename T> bool will_underflow(const T& pX, const T& pValue, const T& pMin = std::numeric_limits<T>::min()) {
+	template <typename T> bool willUnderflow(const T& pX, const T& pValue, const T& pMin = std::numeric_limits<T>::min()) {
 		return pMin + pValue > pX;
 	}
+
+
+	bool equal(const double x, const double y);
+
+
 };
 
 } /* namespace EnsembleClustering */
