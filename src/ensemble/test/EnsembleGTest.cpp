@@ -25,8 +25,8 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 
 	// generate clustered random graph with obvious community structure
 	GraphGenerator graphGen;
-	int64_t n = 42;
-	int64_t k = 3;
+	count n = 42;
+	count k = 3;
 	// these parameters generate a clique graph
 	double pIn = 1.0;
 	double pOut = 0.0;
@@ -62,8 +62,8 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph_ManyBaseClusterers) {
 
 	// generate clustered random graph with obvious community structure
 	GraphGenerator graphGen;
-	int64_t n = 100;
-	int64_t k = 10;
+	count n = 100;
+	count k = 10;
 	// these parameters generate a clique graph
 	double pIn = 1.0;
 	double pOut = 0.0;
@@ -124,8 +124,8 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
 
 	// generate clustered random graph with obvious community structure
 	GraphGenerator graphGen;
-	int64_t n = 200;
-	int64_t k = 3;
+	count n = 200;
+	count k = 3;
 	// these parameters generate a clique graph
 	double pIn = 1.0;
 	double pOut = 0.01;
@@ -175,7 +175,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnRandomGraph) {
 	ensembleClusterer.setFinalClusterer(*finalClusterer);
 
 	GraphGenerator graphGen;
-	int64_t n = 20;
+	count n = 20;
 	Graph G = graphGen.makeRandomGraph(20, 0.5);
 
 	// DEBUG
@@ -218,7 +218,7 @@ TEST_F(EnsembleGTest, showPlantedPartitionDissimilarity) {
 	ensembleClusterer.setFinalClusterer(*finalClusterer);
 
 	// make clustered random graph with planted partition
-	int64_t n = 100;	// number of nodes
+	count n = 100;	// number of nodes
 	int k = 5; 			// number of clusters
 	double pin = 0.5;
 	double pout = 0.01;
@@ -251,6 +251,36 @@ TEST_F(EnsembleGTest, showPlantedPartitionDissimilarity) {
 
 	// TODO: what would it mean to fail the test?
 	EXPECT_TRUE(found.isProper(G)) << "found clustering should be proper clustering of G";
+
+}
+
+
+TEST_F(EnsembleGTest, testEnsemblePreprocessing) {
+	count n = 1000;
+	count k = 10;
+	double pin = 1.0;
+	double pout = 0.0;
+
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	EnsemblePreprocessing ensemble;
+
+	count b = 4;
+	for (count i = 0; i < b; ++i) {
+		ensemble.addBaseClusterer(*(new LabelPropagation()));
+	}
+	ensemble.setFinalClusterer(*(new Louvain()));
+	ensemble.setOverlapper(*(new HashingOverlapper));
+
+	Clustering zeta = ensemble.run(G);
+
+	INFO("number of clusters:" << zeta.numberOfClusters());
+
+	Modularity modularity;
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+
+
 
 }
 
