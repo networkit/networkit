@@ -3,7 +3,7 @@
 // Author      : Christian Staudt
 // Version     :
 // Copyright   : © 2012, Christian Staudt
-// Description : Hello World in C++, Ansi-style
+// Description : Combining parallel clustering and ensemble learning
 //============================================================================
 
 // includes
@@ -34,6 +34,7 @@
 #include "graph/Graph.h"
 #include "graph/GraphGenerator.h"
 #include "ensemble/EnsembleClusterer.h"
+#include "ensemble/EnsemblePreprocessing.h"
 #include "clustering/algo/LabelPropagation.h"
 #include "clustering/algo/ParallelAgglomerativeClusterer.h"
 #include "clustering/algo/RandomClusterer.h"
@@ -57,7 +58,7 @@ using namespace EnsembleClustering;
 
 // graph functions
 
-Graph generateRandomGraph(int64_t n, double p) {
+Graph generateRandomGraph(count n, double p) {
 
 	std::cout << "[BEGIN] generating random graph..." << std::flush;
 	Aux::Timer running;
@@ -69,7 +70,7 @@ Graph generateRandomGraph(int64_t n, double p) {
 	return G;
 }
 
-Graph generateClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout) {
+Graph generateClusteredRandomGraph(count n, count k, double pin, double pout) {
 
 	// prepare generated clustered random graph (planted partition)
 	std::cout << "[BEGIN] generating random clustering..." << std::flush;
@@ -92,7 +93,7 @@ Graph generateClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout
 	return G;
 }
 
-Graph generatePreferentialAttachmentGraph(int64_t n, int64_t a) {
+Graph generatePreferentialAttachmentGraph(count n, count a) {
 
 	std::cout << "[BEGIN] generating preferential attachment graph..." << std::flush;
 	GraphGenerator graphGen;
@@ -214,7 +215,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ENSEMBLE_SIZE,
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, ENSEMBLE_SIZE,
 	ENSEMBLE, SOLO, NOREC, NORM_VOTES, SCALESTRENGTH,
 	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
@@ -227,6 +228,7 @@ const OptionParser::Descriptor usage[] =
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
+ {ALGORITHM, 0, "", "algorithm", OptionParser::Arg::Required, "  --algorithm=<NAME>:<PARAMS> \t select clustering algorithm"},
  {ENSEMBLE_SIZE, 0, "", "ensembleSize", OptionParser::Arg::Required, "  --ensembleSize \t number of clusterers in the ensemble"},
  {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "--ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
@@ -264,20 +266,20 @@ Graph getGraph(OptionParser::Option* options) {
 		std::string model = genArgs.at(0);
 		if (model == "RG") { // random graph (Erdos-Renyi)
 			assert (genNumArgs.size() == 2);
-			int64_t n = std::atoi(genNumArgs.at(0).c_str());
+			count n = std::atoi(genNumArgs.at(0).c_str());
 			double p = std::atoi(genNumArgs.at(1).c_str());
 			return generateRandomGraph(n, p);
 		} else if (model == "CR") {	// clustered random graph
 			assert (genNumArgs.size() == 4);
-			int64_t n = std::atoi(genNumArgs.at(0).c_str());
-			int64_t k = std::atoi(genNumArgs.at(1).c_str());
+			count n = std::atoi(genNumArgs.at(0).c_str());
+			count k = std::atoi(genNumArgs.at(1).c_str());
 			double pin = std::atof(genNumArgs.at(2).c_str());
 			double pout = std::atof(genNumArgs.at(3).c_str());
 			return generateClusteredRandomGraph(n, k, pin, pout);
 		} else if (model == "PA") {	// preferential attachment (Barabasi-Albert)
 			assert (genNumArgs.size() == 2);
-			int64_t n = std::atoi(genNumArgs.at(0).c_str());
-			int64_t a = std::atoi(genNumArgs.at(1).c_str());
+			count n = std::atoi(genNumArgs.at(0).c_str());
+			count a = std::atoi(genNumArgs.at(1).c_str());
 			return generatePreferentialAttachmentGraph(n, a);
 		} else {
 			std::cout << "[ERROR] unknown graph generation model: " << model << " [EXIT]" << std::endl;
@@ -321,7 +323,6 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 	}
 
-
 	// determine update threshold / abort criterion for LabelPropagation
 	count updateThreshold = 0;
 	if (options[UPDATE_THRESHOLD]) {
@@ -343,6 +344,117 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 //	std::pair<Clustering, Graph> result = std::make_pair(Clustering(0), G); // this will be returned
 	Aux::Timer running; // measures running time of clusterer
 
+	if (options[ALGORITHM]) {
+		std::string algoArg = options[ALGORITHM].arg;
+		std::string algoName = Aux::StringTools::split(algoArg, ':').front();
+		std::string algoParams = Aux::StringTools::split(algoArg, ':').back();
+
+		if (algoName == "LabelPropagation") {
+			algo = new LabelPropagation(updateThreshold);
+		} else if (algoName == "Agglomerative") {
+			algo = new ParallelAgglomerativeClusterer();
+		} else if (algoName == "RandomClusterer") {
+			algo = new RandomClusterer();
+		} else if (algoName == "Louvain") {
+			algo = new Louvain();
+		} else if (algoName == "EnsembleMultiLevel") {
+			// TODO:
+		} else if (algoName == "EnsemblePreprocessing") {
+			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
+			// parse params
+			std::string ensembleFrontArg = Aux::StringTools::split(algoParams, '+').front();
+			std::string finalClustererArg = Aux::StringTools::split(algoParams, '+').back();
+			std::string ensembleSizeArg = Aux::StringTools::split(ensembleFrontArg, '*').front();
+			std::string baseClustererArg = Aux::StringTools::split(ensembleFrontArg, '*').back();
+
+			int ensembleSize = std::atoi(ensembleSizeArg.c_str());
+			// 1. add base clusterers
+			for (int i = 0; i < ensembleSize; i += 1) {
+				Clusterer* base = NULL;
+				if (baseClustererArg == "LabelPropagation") {
+					base = new LabelPropagation(updateThreshold);
+				} else if (baseClustererArg == "Agglomerative") {
+					base = new ParallelAgglomerativeClusterer();
+				} else {
+					std::cout << "[ERROR]Êunknown base clusterer: " << baseClustererArg << std::endl;
+					exit(1);
+				}
+				ensemblePre->addBaseClusterer(*base);
+			}
+			// 2. overlap algorithm
+			Overlapper* overlap = NULL;
+			if (options[OVERLAP]) {
+				std::string overlapArg = options[OVERLAP].arg;
+				if (overlapArg == "Hashing") {
+					overlap = new HashingOverlapper();
+				} else if (overlapArg == "RegionGrowing") {
+					overlap = new RegionGrowingOverlapper();
+				} else {
+					std::cout << "[ERROR] unknown overlap algorithm: " << overlapArg << std::endl;
+					exit(1);
+				}
+			} else {
+				// default
+				overlap = new RegionGrowingOverlapper();
+			}
+			ensemblePre->setOverlapper(*overlap);
+			// 3. Final Clusterer
+			Clusterer* final = NULL;
+			if (finalClustererArg == "LabelPropagation") {
+				final = new LabelPropagation();
+			} else if (finalClustererArg == "Agglomerative") {
+				final = new ParallelAgglomerativeClusterer();
+			} else if (finalClustererArg == "Louvain") {
+				final = new Louvain();
+			} else {
+				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
+				exit(1);
+			}
+
+			ensemblePre->setFinalClusterer(*final);
+
+			algo = ensemblePre;
+
+		} else {
+			std::cout << "[ERROR] unknown algorithm: " << algoName << std::endl;
+			std::cout << "[EXIT]" << std::endl;
+			exit(1);
+		}
+
+		// START CLUSTERER
+			// start solo base algorithm
+			std::cout << "[BEGIN] clusterer: " << algo->toString() << std::endl;
+			running.start();
+			Clustering resultClustering = algo->run(G);
+			running.stop();
+			//
+			std::cout << "[DONE] " << algo->toString() << " ran: \t" << running.elapsedTag() << std::endl;
+
+
+			// result = std::make_pair(resultClustering, G);
+
+			// print speed info
+			double eps = (G.numberOfEdges() / ((double) running.elapsed().count() / 1000.0));	// edges per second
+			std::cout << "\t # edges per second:\t" << eps << std::endl;
+
+
+		 	if (options[SUMMARY]) {
+		 		char sep = ';';
+		 		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
+		 		summary << algo->toString() << sep;				// APPEND algorithm description
+		 		summary << REVISION << sep;						// APPEND revision number
+		 		summary << G.getName() << sep;					// APPEND graph description
+		 		summary << running.elapsed().count() << sep;	// APPEND running time
+		 		summary << eps << sep;							// APPEND edges per second
+		 	}
+
+
+		//	return result;	// return empty clustering
+		 	return resultClustering;
+
+	}
+
+	// TODO: REMOVE OLD PARAMETERS!
 	if (options[SOLO]) {
 		std::cout << "\t --solo=" << options[SOLO].arg << std::endl;
 		// RUN ONLY SINGLE BASE ALGORITHM
@@ -497,7 +609,7 @@ bool inspect(Graph& G, Clustering& clustering, OptionParser::Option* options) {
 	}
 	std::cout << "[INFO] inspecting result clustering " << std::endl;
 
-	int64_t k = clustering.numberOfClusters();
+	count k = clustering.numberOfClusters();
 
 	Aux::Timer running;
 	running.start();
