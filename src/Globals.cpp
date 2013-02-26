@@ -16,3 +16,5 @@ double SCALE_STRENGTH = 0.0; ///< if set, scale cluster strengths in LP
 
 int MIN_NUM_COMMUNITIES = 2; ///< minimum number of communities, so far only used by agglomerative clustering
 double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching edges relative to number of vertices to proceed agglomeration
+
+bool CALC_DISSIMILARITY = false; ///< if set, calculate and print base clustering dissimilarity for ensemble (expensive!)

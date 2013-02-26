@@ -18,5 +18,7 @@ extern bool SCALE_STRENGTH;
 extern int MIN_NUM_COMMUNITIES;
 extern double REL_REPEAT_THRSH;
 
+extern bool CALC_DISSIMILARITY;
+
 
 #endif /* GLOBALS_H_ */
