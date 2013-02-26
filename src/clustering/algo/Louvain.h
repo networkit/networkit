@@ -9,13 +9,23 @@
 #define LOUVAIN_H_
 
 #include "Clusterer.h"
+#include "../../coarsening/ClusterContracter.h"
+#include "../../coarsening/ClusteringProjector.h"
 
 namespace EnsembleClustering {
 
 class Louvain: public EnsembleClustering::Clusterer {
+
+protected:
+	bool anyChange;	//!< indicates whether any change was made to the clustering in the last pass over the nodes
+
+
 public:
 	Louvain();
+
 	virtual ~Louvain();
+
+	virtual Clustering pass(Graph& G);
 
 	virtual Clustering run(Graph& G);
 };

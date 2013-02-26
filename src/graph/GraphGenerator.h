@@ -29,13 +29,13 @@ public:
 	 * @param[in]	n	number of nodes
 	 * @param[in]	p	edge probability
 	 */
-	virtual Graph makeErdosRenyiGraph(int64_t n, double p);
+	virtual Graph makeErdosRenyiGraph(count n, double p);
 
 
 	/**
 	 * Alias for makeErdosRenyiGraph
 	 */
-	virtual Graph makeRandomGraph(int64_t n, double p);
+	virtual Graph makeRandomGraph(count n, double p);
 
 
 	/**
@@ -43,7 +43,7 @@ public:
 	 *
 	 * @param[in]	n	number of nodes
 	 */
-	virtual Graph makeCircularGraph(int64_t n);
+	virtual Graph makeCircularGraph(count n);
 
 
 	/**
@@ -51,7 +51,7 @@ public:
 	 *
 	 * @param[in]	n	number of nodes
 	 */
-	virtual Graph makeCompleteGraph(int64_t n);
+	virtual Graph makeCompleteGraph(count n);
 
 
 	/**
@@ -62,7 +62,7 @@ public:
 	 * @param[in]	pin		intra-cluster edge probability
 	 * @param[in]	pout	inter-cluster edge probability
 	 */
-	virtual Graph makeClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout);
+	virtual Graph makeClusteredRandomGraph(count n, count k, double pin, double pout);
 
 	/**
 	 * Creates a clustered random graph:
@@ -72,7 +72,7 @@ public:
 	 * @param[in]	pin		intra-cluster edge probability
 	 * @param[in]	pout	inter-cluster edge probability
 	 */
-	virtual std::pair<Graph, Clustering> makeClusteredRandomGraphWithReferenceClustering(int64_t n, int64_t k, double pin, double pout);
+	virtual std::pair<Graph, Clustering> makeClusteredRandomGraphWithReferenceClustering(count n, count k, double pin, double pout);
 
 
 	/**
@@ -90,7 +90,7 @@ public:
 	 *	@param[in]	a	number of edges added for each node
 	 *
 	 */
-	virtual Graph makePreferentialAttachmentGraph(int64_t n, int64_t a);
+	virtual Graph makePreferentialAttachmentGraph(count n, count a);
 
 };
 

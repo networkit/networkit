@@ -22,7 +22,7 @@ GraphGenerator::~GraphGenerator() {
 // TODO: parallel? is insertEdge thread safe?
 
 
-Graph GraphGenerator::makeErdosRenyiGraph(int64_t n, double p) {
+Graph GraphGenerator::makeErdosRenyiGraph(count n, double p) {
 	Aux::RandomProbability randP;
 	Graph G(n);
 	G.forNodePairs([&](node u, node v){
@@ -34,11 +34,11 @@ Graph GraphGenerator::makeErdosRenyiGraph(int64_t n, double p) {
 	return G;
 }
 
-Graph GraphGenerator::makeRandomGraph(int64_t n, double p) {
+Graph GraphGenerator::makeRandomGraph(count n, double p) {
 	return this->makeErdosRenyiGraph(n, p);	// alias
 }
 
-Graph GraphGenerator::makeCircularGraph(int64_t n) {
+Graph GraphGenerator::makeCircularGraph(count n) {
 	// TODO: modernize
 	Graph G(n);
 	G.forNodes([&](node u){
@@ -47,7 +47,7 @@ Graph GraphGenerator::makeCircularGraph(int64_t n) {
 	return G;
 }
 
-Graph GraphGenerator::makeCompleteGraph(int64_t n) {
+Graph GraphGenerator::makeCompleteGraph(count n) {
 	// TODO: modernize
 	Aux::RandomProbability randP;
 	Graph G(n);
@@ -59,7 +59,7 @@ Graph GraphGenerator::makeCompleteGraph(int64_t n) {
 
 
 
-Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin, double pout) {
+Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, double pout) {
 	assert(pin >= pout);
 
 	Graph G(n);
@@ -90,7 +90,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(int64_t n, int64_t k, double pin,
 }
 
 std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferenceClustering(
-		int64_t n, int64_t k, double pin, double pout) {
+		count n, count k, double pin, double pout) {
 	assert(pin >= pout);
 
 	Graph G(n);
@@ -124,7 +124,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 		double pout) {
 	assert (pin >= pout);
 
-	int64_t n = zeta.numberOfNodes();
+	count n = zeta.numberOfNodes();
 	Graph G(n);
 
 	Aux::RandomProbability randP;
@@ -143,7 +143,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 	return G;
 }
 
-Graph GraphGenerator::makePreferentialAttachmentGraph(int64_t n, int64_t a) {
+Graph GraphGenerator::makePreferentialAttachmentGraph(count n, count a) {
 	// FIXME: infinite loop
 
 	Graph G(n);
@@ -153,12 +153,12 @@ Graph GraphGenerator::makePreferentialAttachmentGraph(int64_t n, int64_t a) {
 		G.insertEdge(v, (v + 1));
 	}
 
-	int64_t m = G.numberOfEdges(); // number of edges
-	int64_t r = 0;
+	count m = G.numberOfEdges(); // number of edges
+	count r = 0;
 
 	G.forNodes([&](node u) {
 		TRACE("connecting node " << u);
-		for (int64_t i = 0; i < a; ++i) { // for all k new edges
+		for (count i = 0; i < a; ++i) { // for all k new edges
 			TRACE("2m = " << 2 * m);
 			Aux::RandomInteger randInt(0, 2*m);	// TODO: n * k instantiations of RandomInteger are inefficient because random device reads from /dev/random
 			r = randInt.generate();
