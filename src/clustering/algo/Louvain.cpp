@@ -41,15 +41,15 @@ Clustering Louvain::pass(Graph& G) {
 	};
 
 	// $\lambda(C)$
-	auto lambda_2 = [&](cluster C){
-		edgeweight sum = 0.0;
-		G.forNodes([&](node u){
-			if (zeta[u] == C) {
-				sum += lambda_1(u);
-			}
-		});
-		return sum;
-	};
+//	auto lambda_2 = [&](cluster C){
+//		edgeweight sum = 0.0;
+//		G.forNodes([&](node u){
+//			if (zeta[u] == C) {
+//				sum += lambda_1(u);
+//			}
+//		});
+//		return sum;
+//	};
 
 
 	// $\lambda(C \ x)$
@@ -66,17 +66,17 @@ Clustering Louvain::pass(Graph& G) {
 	};
 
 	// $\omega(u | C)$
-	auto omega_1 = [&](node u, cluster C){
-		edgeweight sum = 0.0;
-		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
-			if (zeta[v] == C) {
-				sum += w;
-			}
-		});
-		return sum;
-	};
+//	auto omega_1 = [&](node u, cluster C){
+//		edgeweight sum = 0.0;
+//		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
+//			if (zeta[v] == C) {
+//				sum += w;
+//			}
+//		});
+//		return sum;
+//	};
 
-	// $\omega(u | C \ x)$
+	// $\omega(u | C \ u)$
 	auto omega_2 = [&](node u, cluster C){
 		edgeweight sum = 0.0;
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
@@ -92,7 +92,7 @@ Clustering Louvain::pass(Graph& G) {
 
 	// difference in modularity when moving node u from cluster C to D
 	auto deltaMod = [&](node u, cluster C, cluster D){
-		double delta = (omega_1(u, D) - omega_2(u, C)) / total + (2 * lambda_3(C, u) * lambda_1(u) - 2 * lambda_2(D) * lambda_1(u)) / (4 * total * total);
+		double delta = (omega_2(u, D) - omega_2(u, C)) / total + (lambda_3(C, u) * lambda_1(u) - lambda_3(D, u) * lambda_1(u)) / (2 * total * total);
 		return delta;
 	};
 
@@ -108,7 +108,7 @@ Clustering Louvain::pass(Graph& G) {
 			cluster best;
 			double deltaBest = -0.5;
 			G.forNeighborsOf(u, [&](node v){
-				if (v != u) { // ignore self-loops
+				if (zeta[v] != zeta[u]) { // consider only nodes in other clusters
 					TRACE("considering neighbor " << v << " in " << zeta[v]);
 					cluster D = zeta[v];
 					double delta = deltaMod(u, C, D);
@@ -118,8 +118,7 @@ Clustering Louvain::pass(Graph& G) {
 					}
 				}
 			});
-			// TODO: can deltaMod become positive for neighbor in same cluster?
-			if ((deltaBest > 0.0) & (best != zeta[u])) { // if modularity improvement possible by moving to different (!) cluster
+			if ((deltaBest > 0.0)) { // if modularity improvement possible
 				TRACE("deltaBest: " << deltaBest << "=> moving " << u << " to " << best);
 				assert (best != zeta[u]); // do not "move" to original cluster
 				zeta.moveToCluster(best, u);
