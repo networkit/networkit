@@ -9,8 +9,7 @@
 
 namespace EnsembleClustering {
 
-EnsembleClusterer::EnsembleClusterer() :
-		Clusterer() {
+EnsembleClusterer::EnsembleClusterer() : Clusterer() {
 	this->finalClusterer = NULL;
 	this->qm = NULL;
 	this->h = -1;	// start with 0 in loop
