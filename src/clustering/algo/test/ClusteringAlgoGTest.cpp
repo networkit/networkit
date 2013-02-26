@@ -136,4 +136,22 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 
 }
 
+TEST_F(ClusteringAlgoGTest, testLouvain) {
+	count n = 1000;
+	count k = 100;
+	double pin = 1.0;
+	double pout = 0.0;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	Louvain louvain;
+	Clustering zeta = louvain.run(G);
+
+	INFO("number of clusters: " << zeta.numberOfClusters());
+
+	Modularity modularity;
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+
+}
+
 } /* namespace EnsembleClustering */

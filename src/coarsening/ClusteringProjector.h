@@ -42,6 +42,16 @@ public:
 	virtual Clustering projectBackToFinest(Clustering& zetaCoarse,
 			std::vector<NodeMap<node> >& maps, Graph& Gfinest);
 
+
+	/**
+	 * Assuming that the coarse graph resulted from contracting and represents a clustering of the finest graph
+	 *
+	 * @param[in]	Gcoarse		coarse graph
+	 * @param[in]	Gfinest		finest graph
+	 * @param[in]	maps		hierarchy of maps M^{i->i+1} mapping nodes in finer graph to supernodes in coarser graph
+	 */
+	virtual Clustering projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<NodeMap<node> >& maps);
+
 };
 
 } /* namespace EnsembleClustering */

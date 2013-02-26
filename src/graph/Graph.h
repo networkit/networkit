@@ -375,6 +375,8 @@ public:
 
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
+	 *
+	 * (Note that a node is its own neighbor if there is a self-loop.)
 	 */
 	template<typename L> void forNeighborsOf(node u, L handle);
 

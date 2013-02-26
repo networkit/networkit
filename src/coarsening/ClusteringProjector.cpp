@@ -69,4 +69,35 @@ Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
 	return zetaFine;
 }
 
+Clustering ClusteringProjector::projectCoarseGraphToFinestClustering(
+		Graph& Gcoarse, Graph& Gfinest, std::vector<NodeMap<node> >& maps) {
+
+	Clustering zeta(Gfinest.numberOfNodes());
+
+	// store temporarily coarsest supernode here
+	NodeMap<node> super(Gfinest.numberOfNodes());
+	// initialize to identity
+	Gfinest.parallelForNodes([&](node v){
+		super[v] = v;
+	});
+
+
+	// find coarsest supernode for each node
+	for (std::vector<NodeMap<node> >::iterator iter = maps.begin(); iter != maps.end(); ++iter) {
+		Gfinest.parallelForNodes([&](node v){
+			super[v] = (* iter)[super[v]];
+		});
+	}
+
+	// assign super node id as cluster id
+	Gfinest.parallelForNodes([&](node v) {
+		zeta[v] = super[v];
+	});
+
+	assert (zeta.numberOfClusters() == Gcoarse.numberOfNodes());
+
+	return zeta;
+
+}
+
 } /* namespace EnsembleClustering */
