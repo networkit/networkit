@@ -18,4 +18,10 @@ NumericTools::~NumericTools() {
 	// TODO Auto-generated destructor stub
 }
 
+bool NumericTools::equal(const double x, const double y) {
+	// TODO: needs testing
+	double eps = std::numeric_limits<double>::epsilon();
+	return (x <= (y + eps)) && (x >= (y - eps));
+}
+
 } /* namespace EnsembleClustering */
