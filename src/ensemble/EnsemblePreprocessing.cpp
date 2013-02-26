@@ -78,7 +78,7 @@ Clustering EnsemblePreprocessing::run(Graph& G) {
 std::string EnsemblePreprocessing::toString() const {
 	std::stringstream strm;
 	strm << "TODO: string representation";
-	// TODO: string representation
+	strm << "EnsemblePreprocessing(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",final=" << this->finalClusterer->toString() << ")";
 	return strm.str();
 }
 
