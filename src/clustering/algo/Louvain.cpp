@@ -25,7 +25,9 @@ Clustering Louvain::pass(Graph& G) {
 	// modularity update formula for node moves
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\lambda(C\setminus u)\cdot\lambda(u)-2\cdot\lambda(D)\cdot\lambda(u)}{4\cdot\omega(E)^{2}}$$
 
-	// parts of formula
+	// parts of formula follow
+
+	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();
 
 	// $\lamdbda(u)$
@@ -63,6 +65,7 @@ Clustering Louvain::pass(Graph& G) {
 		return sum;
 	};
 
+	// $\omega(u | C)$
 	auto omega_1 = [&](node u, cluster C){
 		edgeweight sum = 0.0;
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
@@ -73,7 +76,7 @@ Clustering Louvain::pass(Graph& G) {
 		return sum;
 	};
 
-	// $\omega(u, C \ x)$
+	// $\omega(u | C \ x)$
 	auto omega_2 = [&](node u, cluster C){
 		edgeweight sum = 0.0;
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
