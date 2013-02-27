@@ -28,6 +28,11 @@ public:
 	virtual Clustering pass(Graph& G);
 
 	virtual Clustering run(Graph& G);
+
+	/**
+	 * @return string representation of algorithm and parameters.
+	 */
+	virtual std::string toString() const;
 };
 
 } /* namespace EnsembleClustering */
