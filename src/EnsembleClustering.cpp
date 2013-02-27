@@ -216,7 +216,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, ENSEMBLE_SIZE,
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM,
 	ENSEMBLE, SOLO, NOREC, NORM_VOTES, SCALESTRENGTH,
 	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
@@ -230,7 +230,6 @@ const OptionParser::Descriptor usage[] =
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
  {ALGORITHM, 0, "", "algorithm", OptionParser::Arg::Required, "  --algorithm=<NAME>:<PARAMS> \t select clustering algorithm"},
- {ENSEMBLE_SIZE, 0, "", "ensembleSize", OptionParser::Arg::Required, "  --ensembleSize \t number of clusterers in the ensemble"},
  {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "--ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
  {NOREC, 0, "", "noRecursion", OptionParser::Arg::None, "  --noRecursion \t run only on the finest graph, even if ensemble is used"},
@@ -461,6 +460,8 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 	// TODO: REMOVE OLD PARAMETERS!
 	if (options[SOLO]) {
+		std::cout << "[WARNING]ÊDEPRECATED: use --algorithm=<NAME>:<PARAMS> instead!" << std::endl;
+
 		std::cout << "\t --solo=" << options[SOLO].arg << std::endl;
 		// RUN ONLY SINGLE BASE ALGORITHM
 
@@ -489,6 +490,8 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 	} else if (options[ENSEMBLE]) {
 		// RUN ENSEMBLE
+
+		std::cout << "[WARNING]ÊDEPRECATED: use --algorithm=<NAME>:<PARAMS> instead!" << std::endl;
 
 		std::string ensembleArg = options[ENSEMBLE].arg;
 
