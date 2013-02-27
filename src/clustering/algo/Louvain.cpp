@@ -133,9 +133,11 @@ Clustering Louvain::run(Graph& G) {
 		h += 1; // begin new hierarchy level
 		INFO("Louvain hierarchy level " << h);
 		// one local optimization pass
+		DEBUG("starting Louvain pass");
 		clusterings.push_back(this->pass(graphs[h]));
 		if (this->anyChange){
 			// contract the graph according to clustering
+			DEBUG("starting contraction");
 			std::pair<Graph, NodeMap<node> > contraction = contracter.run(graphs[h], clusterings[h]);
 			graphs.push_back(contraction.first);
 			maps.push_back(contraction.second);
@@ -147,6 +149,7 @@ Clustering Louvain::run(Graph& G) {
 		}
 	} while (! done);
 
+	DEBUG("starting projection");
 	// project fine graph to result clustering
 	Clustering result = projector.projectCoarseGraphToFinestClustering(graphs[h], graphs[0], maps);
 	return result;
