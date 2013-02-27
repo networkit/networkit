@@ -22,7 +22,7 @@ public:
 
 	virtual ~Luby();
 
-	virtual std::vector<bool> run(Graph& G);
+	virtual std::vector<bool> run(const Graph& G);
 
 	virtual std::string toString() const;
 };

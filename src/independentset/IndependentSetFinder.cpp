@@ -22,4 +22,14 @@ std::string IndependentSetFinder::toString() const {
 	return "TODO: implement IndependentSetFinder.toString";
 }
 
+bool IndependentSetFinder::isIndependentSet(const std::vector<bool>& set, const Graph& G) const {
+	G.parallelForEdges([&](node u, node v) {
+		if (set[u] & set[v]) {
+			return false;
+		}
+	});
+	return true;
+}
+
+
 } /* namespace EnsembleClustering */
