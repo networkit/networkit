@@ -257,6 +257,13 @@ public:
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
+	 * Using schedule(guided) to remedy load-imbalances due to e.g. unequal degree distribution.
+	 */
+	template<typename L> void balancedParallelForNodes(L handle);
+
+
+	/**
+	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void parallelForNodes(L handle) const;
 
@@ -520,6 +527,16 @@ inline void EnsembleClustering::Graph::parallelForNodes(L handle) const {
 		handle(v);
 	}
 }
+
+template<typename L>
+inline void EnsembleClustering::Graph::balancedParallelForNodes(L handle) {
+	#pragma omp parallel for schedule(guided)
+	for (node v = 0; v < n; ++v) {
+		// call here
+		handle(v);
+	}
+}
+
 
 template<typename L>
 inline float EnsembleClustering::Graph::parallelSumForNodes(L handle) {
@@ -822,5 +839,6 @@ inline void EnsembleClustering::Graph::forEdgesWithAttribute_double(int attrId, 
 		}
 	}
 }
+
 
 #endif /* GRAPH_H_ */
