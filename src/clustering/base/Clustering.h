@@ -112,6 +112,7 @@ public:
 
 	/**
 	 * Assigns every node to a singleton cluster.
+	 * Cluster id is equal to node id.
 	 */
 	void allToSingletons();
 
@@ -201,6 +202,12 @@ public:
 	template<typename Callback> void forEntries(Callback func, std::string par="");
 
 
+	/**
+	 * Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void parallelForEntries(Callback handle);
+
+
 	std::vector<count> clusterSizes();
 
 
@@ -227,6 +234,16 @@ inline void EnsembleClustering::Clustering::forEntries(Callback func,
 		func(v, c);
 	}
 
+}
+
+template<typename Callback>
+inline void EnsembleClustering::Clustering::parallelForEntries(
+		Callback handle) {
+	#pragma omp parallel for
+	for (node v = 0; v < this->n; v += 1) {
+		cluster c = (*this)[v];
+		handle(v, c);
+	}
 }
 
 #endif /* CLUSTERING_H_ */
