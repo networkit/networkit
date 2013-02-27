@@ -11,6 +11,7 @@
 #include "Clusterer.h"
 #include "../../coarsening/ClusterContracter.h"
 #include "../../coarsening/ClusteringProjector.h"
+#include "../../base/IndexMap.h"
 
 namespace EnsembleClustering {
 

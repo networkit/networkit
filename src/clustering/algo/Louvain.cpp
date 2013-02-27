@@ -21,70 +21,45 @@ Louvain::~Louvain() {
 
 // TODO: optimize
 Clustering Louvain::pass(Graph& G) {
+	// init clustering to singletons
 	Clustering zeta(G.numberOfNodes());
 	zeta.allToSingletons();
+
+	// $\omega(E)$
+	edgeweight total = G.totalEdgeWeight();
+
 
 	// modularity update formula for node moves
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
 
 	// parts of formula follow
+	NodeMap<double> volNode(G.numberOfNodes(), 0.0);
+	// calculate and store volume of each node
+	G.parallelForNodes([&](node u){
+		volNode[u] += G.weightedDegree(u);
+		volNode[u] += G.weight(u, u); // consider self-loop twice
+	});
 
-	// $\omega(E)$
-	edgeweight total = G.totalEdgeWeight();
+	IndexMap<cluster, double> volCluster(G.numberOfNodes(), 0.0);
+	// set volume for all singletons
+	zeta.parallelForEntries([&](node u, cluster C){
+		volCluster[C] = volNode[u];
+	});
 
-	// $\lamdbda(u)$
+	// $\vol(C \ {x})$ - volume of cluster C excluding node x
+	auto volClusterMinusNode = [&](cluster C, node x){
+		if (zeta[x] == C) {
+			return volCluster[C] - volNode[x];
+		} else {
+			return volCluster[C];
+		}
 
-	// TODO: call graph method
-	auto vol_1 = [&](node u){
-		edgeweight sum = 0.0;
-		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
-			sum += w;
-		});
-		sum += G.weight(u, u); // consider self-loop twice
-		return sum;
-	};
-
-	// $\vol(C)$
-//	auto vol_2 = [&](cluster C){
-//		edgeweight sum = 0.0;
-//		G.forNodes([&](node u){
-//			if (zeta[u] == C) {
-//				sum += vol_1(u);
-//			}
-//		});
-//		return sum;
-//	};
-
-
-	// $\vol(C \ x)$
-	// TODO: call this volume
-	auto vol_3 = [&](cluster C, node x){
-		edgeweight sum = 0.0;
-		G.forNodes([&](node u){ // FIXME: performance problem
-			if (zeta[u] == C) {
-				if (u != x) {
-					sum += vol_1(u);
-				}
-			}
-		});
-		return sum;
 	};
 
 	// TODO: store and update volume for clusters - store vol_3 for every cluster - move one node - subtract wdge of v and add it to the other
 
-	// $\omega(u | C)$
-//	auto omega_1 = [&](node u, cluster C){
-//		edgeweight sum = 0.0;
-//		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
-//			if (zeta[v] == C) {
-//				sum += w;
-//			}
-//		});
-//		return sum;
-//	};
-
 	// $\omega(u | C \ u)$
-	auto omega_2 = [&](node u, cluster C){
+	auto omegaCut = [&](node u, cluster C){
 		edgeweight sum = 0.0;
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
 			if (zeta[v] == C) {
@@ -99,7 +74,7 @@ Clustering Louvain::pass(Graph& G) {
 
 	// difference in modularity when moving node u from cluster C to D
 	auto deltaMod = [&](node u, cluster C, cluster D){
-		double delta = (omega_2(u, D) - omega_2(u, C)) / total + (vol_3(C, u) * vol_1(u) - vol_3(D, u) * vol_1(u)) / (2 * total * total);
+		double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + (volClusterMinusNode(C, u) * volNode[u] - volClusterMinusNode(D, u) * volNode[u]) / (2 * total * total);
 		return delta;
 	};
 
@@ -114,7 +89,7 @@ Clustering Louvain::pass(Graph& G) {
 			cluster best;
 			double deltaBest = -0.5;
 			G.forNeighborsOf(u, [&](node v){
-				if (zeta[v] != zeta[u]) { // consider only nodes in other clusters
+				if (zeta[v] != zeta[u]) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 					cluster D = zeta[v];
 					double delta = deltaMod(u, C, D);
 					if (delta > deltaBest) {
@@ -123,11 +98,14 @@ Clustering Louvain::pass(Graph& G) {
 					}
 				}
 			});
-			if ((deltaBest > 0.0)) { // if modularity improvement possible
+			if (deltaBest > 0.0) { // if modularity improvement possible
 				assert (best != zeta[u]); // do not "move" to original cluster
-				zeta.moveToCluster(best, u);
+				zeta[u] = best; // move to best cluster
 				change = true;	// change to clustering has been made
 				this->anyChange = true;	// indicate globally that clustering was modified
+				// update the volume of the two clusters
+				volCluster[C] -= volNode[u];
+				volCluster[best] += volNode[u];
 			}
 		});
 	} while (change);
