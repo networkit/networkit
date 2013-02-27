@@ -25,7 +25,7 @@ Clustering Louvain::pass(Graph& G) {
 	zeta.allToSingletons();
 
 	// modularity update formula for node moves
-	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\lambda(C\setminus u)\cdot\lambda(u)-2\cdot\lambda(D)\cdot\lambda(u)}{4\cdot\omega(E)^{2}}$$
+	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\psi(C\setminus u)\cdot\psi(u)-2\cdot\psi(D)\cdot\psi(u)}{4\cdot\omega(E)^{2}}$$
 
 	// parts of formula follow
 
@@ -33,7 +33,7 @@ Clustering Louvain::pass(Graph& G) {
 	edgeweight total = G.totalEdgeWeight();
 
 	// $\lamdbda(u)$
-	auto lambda_1 = [&](node u){
+	auto psi_1 = [&](node u){
 		edgeweight sum = 0.0;
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
 			sum += w;
@@ -42,25 +42,25 @@ Clustering Louvain::pass(Graph& G) {
 		return sum;
 	};
 
-	// $\lambda(C)$
-//	auto lambda_2 = [&](cluster C){
+	// $\psi(C)$
+//	auto psi_2 = [&](cluster C){
 //		edgeweight sum = 0.0;
 //		G.forNodes([&](node u){
 //			if (zeta[u] == C) {
-//				sum += lambda_1(u);
+//				sum += psi_1(u);
 //			}
 //		});
 //		return sum;
 //	};
 
 
-	// $\lambda(C \ x)$
-	auto lambda_3 = [&](cluster C, node x){
+	// $\psi(C \ x)$
+	auto psi_3 = [&](cluster C, node x){
 		edgeweight sum = 0.0;
-		G.forNodes([&](node u){
+		G.forNodes([&](node u){ // FIXME: performance problem
 			if (zeta[u] == C) {
 				if (u != x) {
-					sum += lambda_1(u);
+					sum += psi_1(u);
 				}
 			}
 		});
@@ -94,7 +94,7 @@ Clustering Louvain::pass(Graph& G) {
 
 	// difference in modularity when moving node u from cluster C to D
 	auto deltaMod = [&](node u, cluster C, cluster D){
-		double delta = (omega_2(u, D) - omega_2(u, C)) / total + (lambda_3(C, u) * lambda_1(u) - lambda_3(D, u) * lambda_1(u)) / (2 * total * total);
+		double delta = (omega_2(u, D) - omega_2(u, C)) / total + (psi_3(C, u) * psi_1(u) - psi_3(D, u) * psi_1(u)) / (2 * total * total);
 		return delta;
 	};
 
@@ -167,6 +167,12 @@ Clustering Louvain::run(Graph& G) {
 	// project fine graph to result clustering
 	Clustering result = projector.projectCoarseGraphToFinestClustering(graphs[h], graphs[0], maps);
 	return result;
+}
+
+std::string Louvain::toString() const {
+	std::stringstream strm;
+	strm << "Louvain";
+	return strm.str();
 }
 
 } /* namespace EnsembleClustering */
