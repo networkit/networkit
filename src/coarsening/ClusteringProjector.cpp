@@ -69,8 +69,7 @@ Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
 	return zetaFine;
 }
 
-Clustering ClusteringProjector::projectCoarseGraphToFinestClustering(
-		Graph& Gcoarse, Graph& Gfinest, std::vector<NodeMap<node> >& maps) {
+Clustering ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<NodeMap<node> >& maps) {
 
 	Clustering zeta(Gfinest.numberOfNodes());
 
