@@ -1,25 +1,24 @@
 /*
- * Louvain.cpp
+ * LouvainParallel.cpp
  *
- *  Created on: 25.02.2013
+ *  Created on: 27.02.2013
  *      Author: cls
  */
 
-#include "Louvain.h"
+#include "LouvainParallel.h"
 
 namespace EnsembleClustering {
 
-Louvain::Louvain() {
+LouvainParallel::LouvainParallel() {
 	// TODO Auto-generated constructor stub
 
 }
 
-Louvain::~Louvain() {
+LouvainParallel::~LouvainParallel() {
 	// TODO Auto-generated destructor stub
 }
 
-
-Clustering Louvain::pass(Graph& G) {
+Clustering LouvainParallel::pass(Graph& G) {
 
 	// init clustering to singletons
 	Clustering zeta(G.numberOfNodes());
@@ -83,7 +82,7 @@ Clustering Louvain::pass(Graph& G) {
 		i += 1;
 		DEBUG("Louvain pass: iteration # " << i);
 		change = false; // is clustering stable?
-		G.forNodes([&](node u){
+		G.parallelForNodes([&](node u){		// naive parallelization here <<<
 			cluster C = zeta[u];
 			cluster best;
 			double deltaBest = -0.5;
@@ -112,7 +111,7 @@ Clustering Louvain::pass(Graph& G) {
 	return zeta;
 }
 
-Clustering Louvain::run(Graph& G) {
+Clustering LouvainParallel::run(Graph& G) {
 	INFO("starting Louvain method");
 
 	// sub-algorithms
@@ -152,9 +151,9 @@ Clustering Louvain::run(Graph& G) {
 	return result;
 }
 
-std::string Louvain::toString() const {
+std::string LouvainParallel::toString() const {
 	std::stringstream strm;
-	strm << "Louvain";
+	strm << "LouvainParallel";
 	return strm.str();
 }
 
