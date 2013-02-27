@@ -18,7 +18,7 @@ Luby::~Luby() {
 	// TODO Auto-generated destructor stub
 }
 
-std::vector<bool> Luby::run(Graph& G) {
+std::vector<bool> Luby::run(const Graph& G) {
 
 	std::vector<bool> I(G.numberOfNodes(), false); // independent set $I = \emptyset$
 	std::vector<bool> V(G.numberOfNodes(), true); // instead of pruning the graph, store here whether a node in G is still in G'
@@ -61,8 +61,8 @@ std::vector<bool> Luby::run(Graph& G) {
 			}
 		});
 		// remove non-independent nodes from S to get S'
-		G.forEdges([&](node u, node v) {
-			if (S[u] && S[v]) { // S is subset of V'
+		G.parallelForEdges([&](node u, node v) {
+			if (S[u] & S[v]) { // u and v are not independent (note: S is subset of V')
 				// remove node with smaller degree
 				edgeweight wu = weightedDegree(u);
 				edgeweight wv = weightedDegree(v);

@@ -14,6 +14,8 @@ namespace EnsembleClustering {
 
 
 class IndependentSetFinder {
+
+
 public:
 
 	IndependentSetFinder();
@@ -25,9 +27,15 @@ public:
 	 *
 	 * @param[in]	G	graph
 	 */
-	virtual std::vector<bool> run(Graph& G) = 0;
+	virtual std::vector<bool> run(const Graph& G) = 0;
 
 	virtual std::string toString() const;
+
+	/**
+	 * Check whether a set is independent.
+	 */
+	bool isIndependentSet(const std::vector<bool>& set, const Graph& G) const;
+
 };
 
 } /* namespace EnsembleClustering */
