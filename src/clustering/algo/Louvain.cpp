@@ -25,7 +25,7 @@ Clustering Louvain::pass(Graph& G) {
 	zeta.allToSingletons();
 
 	// modularity update formula for node moves
-	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\psi(C\setminus u)\cdot\psi(u)-2\cdot\psi(D)\cdot\psi(u)}{4\cdot\omega(E)^{2}}$$
+	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
 
 	// parts of formula follow
 
@@ -33,7 +33,9 @@ Clustering Louvain::pass(Graph& G) {
 	edgeweight total = G.totalEdgeWeight();
 
 	// $\lamdbda(u)$
-	auto psi_1 = [&](node u){
+
+	// TODO: call graph method
+	auto vol_1 = [&](node u){
 		edgeweight sum = 0.0;
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
 			sum += w;
@@ -42,30 +44,33 @@ Clustering Louvain::pass(Graph& G) {
 		return sum;
 	};
 
-	// $\psi(C)$
-//	auto psi_2 = [&](cluster C){
+	// $\vol(C)$
+//	auto vol_2 = [&](cluster C){
 //		edgeweight sum = 0.0;
 //		G.forNodes([&](node u){
 //			if (zeta[u] == C) {
-//				sum += psi_1(u);
+//				sum += vol_1(u);
 //			}
 //		});
 //		return sum;
 //	};
 
 
-	// $\psi(C \ x)$
-	auto psi_3 = [&](cluster C, node x){
+	// $\vol(C \ x)$
+	// TODO: call this volume
+	auto vol_3 = [&](cluster C, node x){
 		edgeweight sum = 0.0;
 		G.forNodes([&](node u){ // FIXME: performance problem
 			if (zeta[u] == C) {
 				if (u != x) {
-					sum += psi_1(u);
+					sum += vol_1(u);
 				}
 			}
 		});
 		return sum;
 	};
+
+	// TODO: store and update volume for clusters - store vol_3 for every cluster - move one node - subtract wdge of v and add it to the other
 
 	// $\omega(u | C)$
 //	auto omega_1 = [&](node u, cluster C){
@@ -94,7 +99,7 @@ Clustering Louvain::pass(Graph& G) {
 
 	// difference in modularity when moving node u from cluster C to D
 	auto deltaMod = [&](node u, cluster C, cluster D){
-		double delta = (omega_2(u, D) - omega_2(u, C)) / total + (psi_3(C, u) * psi_1(u) - psi_3(D, u) * psi_1(u)) / (2 * total * total);
+		double delta = (omega_2(u, D) - omega_2(u, C)) / total + (vol_3(C, u) * vol_1(u) - vol_3(D, u) * vol_1(u)) / (2 * total * total);
 		return delta;
 	};
 
