@@ -9,9 +9,8 @@
 
 namespace EnsembleClustering {
 
-Louvain::Louvain() {
-	// TODO Auto-generated constructor stub
-
+Louvain::Louvain(std::string par) {
+	this->parallelism = par;
 }
 
 Louvain::~Louvain() {
@@ -27,7 +26,6 @@ Clustering Louvain::pass(Graph& G) {
 
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();
-
 
 	// modularity update formula for node moves
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
@@ -77,13 +75,24 @@ Clustering Louvain::pass(Graph& G) {
 		return delta;
 	};
 
+
+	Luby luby;	// independent set algorithm
+	std::vector<bool> I;
+	if (this->parallelism == "independent") {
+		INFO("finding independent set");
+		I = luby.run(G);
+	}
+
+	// begin pass
 	int i = 0;
 	bool change; // change in last iteration?
 	do {
 		i += 1;
 		DEBUG("Louvain pass: iteration # " << i);
 		change = false; // is clustering stable?
-		G.forNodes([&](node u){
+
+		// try to improve modularity by moving a node to neighboring clusters
+		auto moveNode = [&](node u){
 			cluster C = zeta[u];
 			cluster best;
 			double deltaBest = -0.5;
@@ -106,7 +115,26 @@ Clustering Louvain::pass(Graph& G) {
 				volCluster[C] -= volNode[u];
 				volCluster[best] += volNode[u];
 			}
-		});
+		};
+
+		// apply node movement according to parallelization strategy
+		if (this->parallelism == "none") {
+			G.forNodes(moveNode);
+		} else if (this->parallelism == "naive") {
+			G.parallelForNodes(moveNode);
+		} else if (this->parallelism == "naive-balanced") {
+			G.balancedParallelForNodes(moveNode);
+		} else if (this->parallelism == "independent") {
+			// try to move only the nodes in independent set
+			G.parallelForNodes([&](node u){
+				if (I[u]) {
+					moveNode(u);
+				}
+			});
+		} else {
+			ERROR("unknown parallelization strategy: " << this->parallelism);
+			exit(1);
+		}
 	} while (change);
 
 	return zeta;

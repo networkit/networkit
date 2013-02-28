@@ -356,7 +356,12 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		} else if (algoName == "RandomClusterer") {
 			algo = new RandomClusterer();
 		} else if (algoName == "Louvain") {
-			algo = new Louvain();
+			// algoParams is parallelization strategy
+			if (algoParams.empty()) {
+				algo = new Louvain();
+			} else {
+				algo = new Louvain(algoParams);
+			}
 		} else if (algoName == "LouvainParallel") {
 			algo = new LouvainParallel();
 		} else if (algoName == "EnsembleMultiLevel") {

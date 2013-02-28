@@ -154,4 +154,60 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 
 }
 
+
+TEST_F(ClusteringAlgoGTest, testLouvainParallelNaive) {
+	count n = 1000;
+	count k = 100;
+	double pin = 1.0;
+	double pout = 0.005;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	Louvain louvain("naive");
+	Clustering zeta = louvain.run(G);
+
+	INFO("number of clusters: " << zeta.numberOfClusters());
+
+	Modularity modularity;
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+
+}
+
+TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
+	count n = 1000;
+	count k = 100;
+	double pin = 1.0;
+	double pout = 0.005;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	Louvain louvain("naive-balanced");
+	Clustering zeta = louvain.run(G);
+
+	INFO("number of clusters: " << zeta.numberOfClusters());
+
+	Modularity modularity;
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+
+}
+
+TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
+	count n = 1000;
+	count k = 100;
+	double pin = 1.0;
+	double pout = 0.005;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	Louvain louvain("independent");
+	Clustering zeta = louvain.run(G);
+
+	INFO("number of clusters: " << zeta.numberOfClusters());
+
+	Modularity modularity;
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+
+}
+
+
 } /* namespace EnsembleClustering */
