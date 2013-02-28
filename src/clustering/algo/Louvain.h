@@ -12,6 +12,7 @@
 #include "../../coarsening/ClusterContracter.h"
 #include "../../coarsening/ClusteringProjector.h"
 #include "../../base/IndexMap.h"
+#include "../../independentset/Luby.h"
 
 namespace EnsembleClustering {
 
@@ -19,10 +20,14 @@ class Louvain: public EnsembleClustering::Clusterer {
 
 protected:
 	bool anyChange;	//!< indicates whether any change was made to the clustering in the last pass over the nodes
+	std::string parallelism; //!< switch for the kind of parallelization strategy to use
 
 
 public:
-	Louvain();
+	/**
+	 * @param[in]	par		parallelization strategy
+	 */
+	Louvain(std::string par="none");
 
 	virtual ~Louvain();
 

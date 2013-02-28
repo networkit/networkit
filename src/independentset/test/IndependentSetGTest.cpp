@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "IndependentSetTest.h"
+#include "IndependentSetGTest.h"
 
 namespace EnsembleClustering {
 
