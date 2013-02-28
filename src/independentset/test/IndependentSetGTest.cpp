@@ -39,4 +39,28 @@ TEST_F(IndependentSetGTest, testLuby) {
 	INFO("independent set size: " << size << "/" << n);
 }
 
+TEST_F(IndependentSetGTest, testLubyWithSelfLoops) {
+	count n = 5000;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeRandomGraph(n, 0.001);
+	G.forNodes([&](node u){
+		G.insertEdge(u,u);
+	});
+
+	INFO("G: " << G.toString());
+
+	Luby luby;
+	std::vector<bool> I = luby.run(G);
+
+	EXPECT_TRUE(luby.isIndependentSet(I, G)) << "result must be an independent set";
+
+	count size = 0;
+	for (bool x : I) {
+		if (x) {
+			size += 1;
+		}
+	}
+	INFO("independent set size: " << size << "/" << n);
+}
+
 } /* namespace EnsembleClustering */
