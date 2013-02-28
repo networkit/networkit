@@ -8,6 +8,12 @@ args = sys.argv[1:]
 
 commandTemplate = args[0]
 dir = args[1]
+if len(args) > 2:
+    runs = int(args[2])
+else:
+    runs = 1
+    
+print("performing %d runs each" % runs)
 
 graphFiles = []
 
@@ -32,8 +38,9 @@ for command in commands:
 
 called = 0
 for command in commands:
-    print("[BEGIN] %s" % command)
-    os.system(command)
-    called += 1
+    for r in range(runs):
+        print("[BEGIN] %s" % command)
+        os.system(command)
+        called += 1
     
 print("[DONE] called %d commands" % called)
