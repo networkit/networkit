@@ -216,7 +216,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM,
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS,
 	ENSEMBLE, SOLO, NOREC, NORM_VOTES, SCALESTRENGTH,
 	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
@@ -230,7 +230,8 @@ const OptionParser::Descriptor usage[] =
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph \t Run ensemble clusterer on graph"},
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
  {ALGORITHM, 0, "", "algorithm", OptionParser::Arg::Required, "  --algorithm=<NAME>:<PARAMS> \t select clustering algorithm"},
- {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "--ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
+ {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
+ {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "  --ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
  {NOREC, 0, "", "noRecursion", OptionParser::Arg::None, "  --noRecursion \t run only on the finest graph, even if ensemble is used"},
  {NORM_VOTES, 0, "", "normalizeVotes", OptionParser::Arg::None, "  --normalizeVotes \t normalize votes in label propagation by weighted degree"},
@@ -322,6 +323,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		std::cout << "[DONE]" << std::endl;
 
 	}
+
 
 	// determine update threshold / abort criterion for LabelPropagation
 	count updateThreshold = 0;
@@ -431,7 +433,6 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		}
 
 		// START CLUSTERER
-			// start solo base algorithm
 			std::cout << "[BEGIN] clusterer: " << algo->toString() << std::endl;
 			running.start();
 			Clustering resultClustering = algo->run(G);
@@ -450,6 +451,12 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		 	if (options[SUMMARY]) {
 		 		char sep = ';';
 		 		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
+		 		// APPEND number of threads available
+		 		#ifdef _OPENMP
+		 		summary << omp_get_max_threads() << sep;
+		 		#else
+		 		summary << "NoOpenMP" << sep;
+		 		#endif
 		 		summary << algo->toString() << sep;				// APPEND algorithm description
 		 		summary << REVISION << sep;						// APPEND revision number
 		 		summary << G.getName() << sep;					// APPEND graph description
@@ -741,14 +748,7 @@ int main(int argc, char **argv) {
 			summary << "threads;algo;revision;graph;running;eps;clusters;mod" << std::endl; // TODO: update header
 
 		}
-		// append number of threads available
-		std::ofstream summaryOut(options[SUMMARY].arg, std::ios::app);
-		char sep = ';';
-#ifdef _OPENMP
-		summaryOut << omp_get_max_threads() << sep;
-#else
-		summary << "No OpenMP" << sep;
-#endif
+
 
 	}
 
@@ -788,12 +788,23 @@ int main(int argc, char **argv) {
 	}
 
 
+	// SET NUMBER OF CLUSTERER RUNS
+	int runs = 1;
+	if (options[RUNS]) {
+		runs = std::atoi(options[RUNS].arg);
+	}
+
 
 
 	// RUN PROGRAM
 	Graph G = getGraph(options);
-	Clustering clustering = startClusterer(G, options);
-	inspect(G, clustering, options);
+
+	// allow for multiple runs
+	for (int run = 0; run < runs; run++) {
+		Clustering clustering = startClusterer(G, options);
+		inspect(G, clustering, options);
+	}
+
 	std::cout << "[EXIT] terminated normally" << std::endl;
 	return 0;
 }
