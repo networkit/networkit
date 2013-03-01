@@ -19,11 +19,6 @@ LabelPropagation::~LabelPropagation() {
 }
 
 
-static int countOne(const bool& a) {
-	return (int) a;
-}
-
-
 Clustering LabelPropagation::run(Graph& G) {
 	typedef cluster label; // a label is the same as a cluster id
 
@@ -42,12 +37,6 @@ Clustering LabelPropagation::run(Graph& G) {
 	if (normalizeVotes) {
 		WARN("normalized votes turned off for undirected graphs");
 	}
-
-	// open file for csv output
-	std::stringstream filePath;
-	filePath << "output/LPCount-" << G.getName() << ".csv";
-	std::ofstream lpCount(filePath.str());
-	lpCount << "nActive;nUpdated" << std::endl; // header
 
 	count n = G.numberOfNodes();
 
@@ -76,17 +65,10 @@ Clustering LabelPropagation::run(Graph& G) {
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	DEBUG("[BEGIN] Label Propagation: precomputing incident weight");
-	Aux::ProgressMeter pm(n, 1000);
 	NodeMap<double> weightedDegree(n, 0.0);
 	G.parallelForNodes([&](node v) {
 		weightedDegree[v] = G.weightedDegree(v);
-		if (printProgress) {
-			pm.signal(v);
-		}
 	});
-	if (printProgress) {
-		pm.end();
-	}
 
 	std::vector<node> shuffledNodes(n);
 	G.parallelForNodes([&](node v) {
@@ -107,7 +89,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		// reset updated
 		nUpdated = 0;
 
-		if (randOrder) {
+		if (randOrder) { // randomize the order of node iteration
 			// new random order
 #ifdef _OPENMP
 			// not really random, but the next best thing in parallel w/o hurting performance
@@ -125,6 +107,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		}
 
 		if (scaleClusterStrength) {
+			// TODO: documentation?
 			std::vector<count> clusterSizes = labels.clusterSizes();
 			scale.resize(clusterSizes.size());
 			INFO("Scaling cluster strengths with exponent " << SCALE_STRENGTH);
@@ -135,9 +118,9 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		Aux::ProgressMeter pm(n, 10000);
 
-		// TODO: delete for performance tests
-		count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
-		INFO("number of active nodes: " << nActive);
+		// removed for performance reasons
+		// count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
+		// INFO("number of active nodes: " << nActive);
 
 
 #pragma omp parallel for schedule(guided) shared(nUpdated)
@@ -145,7 +128,6 @@ Clustering LabelPropagation::run(Graph& G) {
 			node v = shuffledNodes[i];
 
 			// PROGRESS
-
 			if (printProgress) {
 				pm.signal(i);
 			}
@@ -196,9 +178,6 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		runtime.stop();
 		INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
-
-		// record nActive and nUpdated in csv file
-		lpCount << nActive << ";" << nUpdated << std::endl;
 
 	} // end while
 
