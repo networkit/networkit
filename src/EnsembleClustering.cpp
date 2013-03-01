@@ -50,7 +50,7 @@
 
 
 // revision
-static const std::string REVISION = "r007";
+static const std::string REVISION = "r008";
 
 
 using namespace EnsembleClustering;
@@ -451,9 +451,8 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		 	if (options[SUMMARY]) {
 		 		char sep = ';';
 		 		std::ofstream summary(options[SUMMARY].arg, std::ios::app); // open summary file to append to
-		 		// APPEND number of threads available
 		 		#ifdef _OPENMP
-		 		summary << omp_get_max_threads() << sep;
+		 		summary << omp_get_max_threads() << sep; 		 		// APPEND number of threads available
 		 		#else
 		 		summary << "NoOpenMP" << sep;
 		 		#endif
