@@ -45,6 +45,22 @@ Clustering LouvainParallel::pass(Graph& G) {
 		volCluster[C] = volNode[u];
 	});
 
+
+	// FIXME: For each node you need to store a map that maps from
+	// cluster to weight of edges to that cluster, this needs to
+	// be updated
+	std::vector<std::map<cluster, edgeweight> > incidenceWeight(G.numberOfNodes());
+
+	G.parallelForWeightedEdges([&](node u, node v, edgeweight w) {
+		cluster C = zeta[v];
+		if (u != v) {
+			incidenceWeight[u][C] += w;
+		}
+	});
+
+
+
+
 	// $\vol(C \ {x})$ - volume of cluster C excluding node x
 	auto volClusterMinusNode = [&](cluster C, node x){
 		if (zeta[x] == C) {
@@ -57,7 +73,9 @@ Clustering LouvainParallel::pass(Graph& G) {
 
 
 	// $\omega(u | C \ u)$
+	// sum of weights of edges from u to cluster C, w/o self-loops
 	auto omegaCut = [&](node u, cluster C){
+#ifdef NOT_NEW
 		edgeweight sum = 0.0;
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
 			if (zeta[v] == C) {
@@ -67,14 +85,18 @@ Clustering LouvainParallel::pass(Graph& G) {
 			}
 		});
 		return sum;
+#else
+		return incidenceWeight[u][C];
+#endif
 	};
 
 
 	// difference in modularity when moving node u from cluster C to D
 	auto deltaMod = [&](node u, cluster C, cluster D){
-		double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + (volClusterMinusNode(C, u) * volNode[u] - volClusterMinusNode(D, u) * volNode[u]) / (2 * total * total);
+		double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volNode[u]) / (2 * total * total);
 		return delta;
 	};
+
 
 	int i = 0;
 	bool change; // change in last iteration?
@@ -82,7 +104,9 @@ Clustering LouvainParallel::pass(Graph& G) {
 		i += 1;
 		DEBUG("Louvain pass: iteration # " << i);
 		change = false; // is clustering stable?
-		G.parallelForNodes([&](node u){		// naive parallelization here <<<
+		G.parallelForNodes([&](node u){		// naive parallelization here <<< TODO: call guided schedule?
+//		G.forNodes([&](node u) {
+//			std::cout << u << " " << std::endl;
 			cluster C = zeta[u];
 			cluster best;
 			double deltaBest = -0.5;
@@ -98,6 +122,14 @@ Clustering LouvainParallel::pass(Graph& G) {
 			});
 			if (deltaBest > 0.0) { // if modularity improvement possible
 				assert (best != zeta[u]); // do not "move" to original cluster
+#ifndef NOT_NEW
+				// update weight of edges to incident clusters
+				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
+					incidenceWeight[v][zeta[u]] -= w;
+					incidenceWeight[v][best] += w;
+				});
+#endif
+
 				zeta[u] = best; // move to best cluster
 				change = true;	// change to clustering has been made
 				this->anyChange = true;	// indicate globally that clustering was modified
@@ -112,7 +144,7 @@ Clustering LouvainParallel::pass(Graph& G) {
 }
 
 Clustering LouvainParallel::run(Graph& G) {
-	INFO("starting Louvain method");
+	INFO("starting Louvain method, graph size: " << G.numberOfNodes());
 
 	// sub-algorithms
 	ClusterContracter contracter;
@@ -123,23 +155,30 @@ Clustering LouvainParallel::run(Graph& G) {
 	std::vector<Clustering> clusterings; // hierarchy of core clusterings \zeta^{i}
 	std::vector<NodeMap<node> > maps; // hierarchy of maps M^{i->i+1}
 
+	std::vector<std::pair<Graph, NodeMap<node> > > hierarchy; // hierarchy of graphs G^{i} and maps M^{i->i+1}
+
 	int h = -1; 	// finest hierarchy level
 	bool done = false;	//
 
-	graphs.push_back(G);
+//	graphs.push_back(G);
+	Graph* graph = &G;
 
 	do {
 		h += 1; // begin new hierarchy level
 		INFO("Louvain hierarchy level " << h);
 		// one local optimization pass
 		DEBUG("starting Louvain pass");
-		clusterings.push_back(this->pass(graphs[h]));
+//		clusterings.push_back(this->pass(graphs[h]));
+		clusterings.push_back(this->pass(*graph));
 		if (this->anyChange){
 			// contract the graph according to clustering
 			DEBUG("starting contraction");
-			std::pair<Graph, NodeMap<node> > contraction = contracter.run(graphs[h], clusterings[h]);
-			graphs.push_back(contraction.first);
-			maps.push_back(contraction.second);
+//			std::pair<Graph, NodeMap<node> > contraction = contracter.run(graphs[h], clusterings[h]);
+			hierarchy.push_back(contracter.run(*graph, clusterings[h]));
+			maps.push_back(hierarchy[h].second);
+			graph = &hierarchy[h].first;
+//			graphs.push_back(contraction.first); // FIXME: this creates a copy, avoid!
+//			maps.push_back(contraction.second);
 
 			done = false; // new hierarchy level, continue with loop
 			this->anyChange = false; // reset change flag
@@ -150,7 +189,8 @@ Clustering LouvainParallel::run(Graph& G) {
 
 	// project fine graph to result clustering
 	DEBUG("starting projection");
-	Clustering result = projector.projectCoarseGraphToFinestClustering(graphs[h], graphs[0], maps);
+//	Clustering result = projector.projectCoarseGraphToFinestClustering(graphs[h], graphs[0], maps);
+	Clustering result = projector.projectCoarseGraphToFinestClustering(hierarchy[h].first, G, maps);
 	return result;
 }
 
