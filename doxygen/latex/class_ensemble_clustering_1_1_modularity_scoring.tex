@@ -1,0 +1,143 @@
+\hypertarget{class_ensemble_clustering_1_1_modularity_scoring}{\section{Ensemble\-Clustering\-:\-:Modularity\-Scoring Class Reference}
+\label{class_ensemble_clustering_1_1_modularity_scoring}\index{Ensemble\-Clustering\-::\-Modularity\-Scoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}}
+}
+
+
+{\ttfamily \#include $<$Modularity\-Scoring.\-h$>$}
+
+
+
+Inheritance diagram for Ensemble\-Clustering\-:\-:Modularity\-Scoring\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{class_ensemble_clustering_1_1_modularity_scoring__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Modularity\-Scoring\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{class_ensemble_clustering_1_1_modularity_scoring__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_modularity_scoring_afc43c6855a0ab865fc55d184d479a3d0}{Modularity\-Scoring} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_modularity_scoring_a4ef0138b4df5b5e4cfd787a55bd89862}{$\sim$\-Modularity\-Scoring} ()
+\item 
+virtual double \hyperlink{class_ensemble_clustering_1_1_modularity_scoring_abf09f85a7a028727888ab767d7cd7bcf}{score\-Edge} (\hyperlink{namespace_ensemble_clustering_abb5f21f23a27c13de604d6ff457ac94b}{Edge} uv)=0
+\begin{DoxyCompactList}\small\item\em Returns an edge score for an edge (u,v) which expresses the modularity increase which can be gained by merging the clusters of u and v. \end{DoxyCompactList}\item 
+virtual double \hyperlink{class_ensemble_clustering_1_1_modularity_scoring_a2eeb581ed35b9dbf8488824588f72b57}{mod} (\hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} clustering)=0
+\begin{DoxyCompactList}\small\item\em Calculates the modularity of the given clustering;. \end{DoxyCompactList}\item 
+virtual double \hyperlink{class_ensemble_clustering_1_1_modularity_scoring_a3c3d64dafd04e3d1b6a2dae6db7ef5dd}{delta\-Mod} (\hyperlink{namespace_ensemble_clustering_a8d9740fbc7cc7696652cd8b6974121ac}{Cluster} c, \hyperlink{namespace_ensemble_clustering_a8d9740fbc7cc7696652cd8b6974121ac}{Cluster} d)=0
+\begin{DoxyCompactList}\small\item\em Calculates the difference in modularity that would result from a merger of two clusters. \end{DoxyCompactList}\item 
+virtual double \hyperlink{class_ensemble_clustering_1_1_modularity_scoring_a58f3949c9e11e26d6935ddcca8946cf0}{cutweight} (\hyperlink{namespace_ensemble_clustering_a8d9740fbc7cc7696652cd8b6974121ac}{Cluster} c, \hyperlink{namespace_ensemble_clustering_a8d9740fbc7cc7696652cd8b6974121ac}{Cluster} d)=0
+\item 
+virtual double \hyperlink{class_ensemble_clustering_1_1_modularity_scoring_ae8e025cec5c6c45154967889e5825626}{weight} (\hyperlink{namespace_ensemble_clustering_a8d9740fbc7cc7696652cd8b6974121ac}{Cluster} c)=0
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 26 of file Modularity\-Scoring.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_modularity_scoring_afc43c6855a0ab865fc55d184d479a3d0}{\index{Ensemble\-Clustering\-::\-Modularity\-Scoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}!Modularity\-Scoring@{Modularity\-Scoring}}
+\index{Modularity\-Scoring@{Modularity\-Scoring}!EnsembleClustering::ModularityScoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}}
+\subsubsection[{Modularity\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Modularity\-Scoring\-::\-Modularity\-Scoring (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_modularity_scoring_afc43c6855a0ab865fc55d184d479a3d0}
+
+
+Definition at line 13 of file Modularity\-Scoring.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_modularity_scoring_a4ef0138b4df5b5e4cfd787a55bd89862}{\index{Ensemble\-Clustering\-::\-Modularity\-Scoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}!$\sim$\-Modularity\-Scoring@{$\sim$\-Modularity\-Scoring}}
+\index{$\sim$\-Modularity\-Scoring@{$\sim$\-Modularity\-Scoring}!EnsembleClustering::ModularityScoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}}
+\subsubsection[{$\sim$\-Modularity\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Modularity\-Scoring\-::$\sim$\-Modularity\-Scoring (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_modularity_scoring_a4ef0138b4df5b5e4cfd787a55bd89862}
+
+
+Definition at line 18 of file Modularity\-Scoring.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_modularity_scoring_a58f3949c9e11e26d6935ddcca8946cf0}{\index{Ensemble\-Clustering\-::\-Modularity\-Scoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}!cutweight@{cutweight}}
+\index{cutweight@{cutweight}!EnsembleClustering::ModularityScoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}}
+\subsubsection[{cutweight}]{\setlength{\rightskip}{0pt plus 5cm}virtual double Ensemble\-Clustering\-::\-Modularity\-Scoring\-::cutweight (
+\begin{DoxyParamCaption}
+\item[{{\bf Cluster}}]{c, }
+\item[{{\bf Cluster}}]{d}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_ensemble_clustering_1_1_modularity_scoring_a58f3949c9e11e26d6935ddcca8946cf0}
+\hypertarget{class_ensemble_clustering_1_1_modularity_scoring_a3c3d64dafd04e3d1b6a2dae6db7ef5dd}{\index{Ensemble\-Clustering\-::\-Modularity\-Scoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}!delta\-Mod@{delta\-Mod}}
+\index{delta\-Mod@{delta\-Mod}!EnsembleClustering::ModularityScoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}}
+\subsubsection[{delta\-Mod}]{\setlength{\rightskip}{0pt plus 5cm}virtual double Ensemble\-Clustering\-::\-Modularity\-Scoring\-::delta\-Mod (
+\begin{DoxyParamCaption}
+\item[{{\bf Cluster}}]{c, }
+\item[{{\bf Cluster}}]{d}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_ensemble_clustering_1_1_modularity_scoring_a3c3d64dafd04e3d1b6a2dae6db7ef5dd}
+
+
+Calculates the difference in modularity that would result from a merger of two clusters. 
+
+\hypertarget{class_ensemble_clustering_1_1_modularity_scoring_a2eeb581ed35b9dbf8488824588f72b57}{\index{Ensemble\-Clustering\-::\-Modularity\-Scoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}!mod@{mod}}
+\index{mod@{mod}!EnsembleClustering::ModularityScoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}}
+\subsubsection[{mod}]{\setlength{\rightskip}{0pt plus 5cm}double Ensemble\-Clustering\-::\-Modularity\-Scoring\-::mod (
+\begin{DoxyParamCaption}
+\item[{{\bf Clustering}}]{clustering}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_ensemble_clustering_1_1_modularity_scoring_a2eeb581ed35b9dbf8488824588f72b57}
+
+
+Calculates the modularity of the given clustering;. 
+
+
+
+Definition at line 25 of file Modularity\-Scoring.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_modularity_scoring_abf09f85a7a028727888ab767d7cd7bcf}{\index{Ensemble\-Clustering\-::\-Modularity\-Scoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}!score\-Edge@{score\-Edge}}
+\index{score\-Edge@{score\-Edge}!EnsembleClustering::ModularityScoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}}
+\subsubsection[{score\-Edge}]{\setlength{\rightskip}{0pt plus 5cm}virtual double Ensemble\-Clustering\-::\-Modularity\-Scoring\-::score\-Edge (
+\begin{DoxyParamCaption}
+\item[{{\bf Edge}}]{uv}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_ensemble_clustering_1_1_modularity_scoring_abf09f85a7a028727888ab767d7cd7bcf}
+
+
+Returns an edge score for an edge (u,v) which expresses the modularity increase which can be gained by merging the clusters of u and v. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & source node id \\
+\hline
+\mbox{\tt out}  & {\em v} & target node id \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_ensemble_clustering_1_1_modularity_scoring_ae8e025cec5c6c45154967889e5825626}{\index{Ensemble\-Clustering\-::\-Modularity\-Scoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}!weight@{weight}}
+\index{weight@{weight}!EnsembleClustering::ModularityScoring@{Ensemble\-Clustering\-::\-Modularity\-Scoring}}
+\subsubsection[{weight}]{\setlength{\rightskip}{0pt plus 5cm}virtual double Ensemble\-Clustering\-::\-Modularity\-Scoring\-::weight (
+\begin{DoxyParamCaption}
+\item[{{\bf Cluster}}]{c}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_ensemble_clustering_1_1_modularity_scoring_ae8e025cec5c6c45154967889e5825626}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/scoring/\hyperlink{_modularity_scoring_8h}{Modularity\-Scoring.\-h}\item 
+src/scoring/\hyperlink{_modularity_scoring_8cpp}{Modularity\-Scoring.\-cpp}\end{DoxyCompactItemize}

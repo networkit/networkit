@@ -1,0 +1,174 @@
+\hypertarget{class_ensemble_clustering_1_1_index_map}{\section{Ensemble\-Clustering\-:\-:Index\-Map$<$ I, T $>$ Class Template Reference}
+\label{class_ensemble_clustering_1_1_index_map}\index{Ensemble\-Clustering\-::\-Index\-Map$<$ I, T $>$@{Ensemble\-Clustering\-::\-Index\-Map$<$ I, T $>$}}
+}
+
+
+An \hyperlink{class_ensemble_clustering_1_1_index_map}{Index\-Map} implements a 1-\/based mapping from an integer index type to an arbitray value type.  
+
+
+
+
+{\ttfamily \#include $<$Index\-Map.\-h$>$}
+
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Index\-Map$<$ I, T $>$\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{class_ensemble_clustering_1_1_index_map__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_index_map_a72433a968da75b3a08e939165b489885}{Index\-Map} (int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_index_map_a3151d302c54e6ad0175bd87aef62d4ca}{n})
+\item 
+\hyperlink{class_ensemble_clustering_1_1_index_map_a475e833d787f15cb3ea392d2a986af3b}{Index\-Map} (int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_index_map_a3151d302c54e6ad0175bd87aef62d4ca}{n}, T \hyperlink{class_ensemble_clustering_1_1_index_map_ab5f1dc778237131e9d6c5713c2b318ec}{default\-Value})
+\begin{DoxyCompactList}\small\item\em Construct a new \hyperlink{class_ensemble_clustering_1_1_index_map}{Index\-Map} which holds n entries . \end{DoxyCompactList}\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_index_map_aa4d08669a9bc3863b01f924c8d115328}{$\sim$\-Index\-Map} ()
+\item 
+T \& \hyperlink{class_ensemble_clustering_1_1_index_map_a961b55c469821e1a66cbdb1113a10f22}{operator\mbox{[}$\,$\mbox{]}} (const I \&index)
+\begin{DoxyCompactList}\small\item\em Index operator. \end{DoxyCompactList}\item 
+const T \& \hyperlink{class_ensemble_clustering_1_1_index_map_afa664fe610c7cd8871125ba041bb9374}{operator\mbox{[}$\,$\mbox{]}} (const I \&index) const 
+\begin{DoxyCompactList}\small\item\em Index operator for const instances of this class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+T $\ast$ \hyperlink{class_ensemble_clustering_1_1_index_map_af1d57517c8a2eac72bfe7805b65fcebc}{array}
+\begin{DoxyCompactList}\small\item\em array of size (n+1). array\mbox{[}0\mbox{]} is not a valid entry, since node indices are 1-\/based \end{DoxyCompactList}\item 
+T \hyperlink{class_ensemble_clustering_1_1_index_map_ab5f1dc778237131e9d6c5713c2b318ec}{default\-Value}
+\item 
+int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_index_map_a3151d302c54e6ad0175bd87aef62d4ca}{n}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename I, typename T$>$class Ensemble\-Clustering\-::\-Index\-Map$<$ I, T $>$}
+
+An \hyperlink{class_ensemble_clustering_1_1_index_map}{Index\-Map} implements a 1-\/based mapping from an integer index type to an arbitray value type. 
+
+Definition at line 17 of file Index\-Map.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_index_map_a72433a968da75b3a08e939165b489885}{\index{Ensemble\-Clustering\-::\-Index\-Map@{Ensemble\-Clustering\-::\-Index\-Map}!Index\-Map@{Index\-Map}}
+\index{Index\-Map@{Index\-Map}!EnsembleClustering::IndexMap@{Ensemble\-Clustering\-::\-Index\-Map}}
+\subsubsection[{Index\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ {\bf Ensemble\-Clustering\-::\-Index\-Map}$<$ I, T $>$\-::{\bf Index\-Map} (
+\begin{DoxyParamCaption}
+\item[{int64\-\_\-t}]{n}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_index_map_a72433a968da75b3a08e939165b489885}
+
+
+Definition at line 60 of file Index\-Map.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_index_map_a475e833d787f15cb3ea392d2a986af3b}{\index{Ensemble\-Clustering\-::\-Index\-Map@{Ensemble\-Clustering\-::\-Index\-Map}!Index\-Map@{Index\-Map}}
+\index{Index\-Map@{Index\-Map}!EnsembleClustering::IndexMap@{Ensemble\-Clustering\-::\-Index\-Map}}
+\subsubsection[{Index\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ {\bf Ensemble\-Clustering\-::\-Index\-Map}$<$ I, T $>$\-::{\bf Index\-Map} (
+\begin{DoxyParamCaption}
+\item[{int64\-\_\-t}]{n, }
+\item[{T}]{default\-Value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_index_map_a475e833d787f15cb3ea392d2a986af3b}
+
+
+Construct a new \hyperlink{class_ensemble_clustering_1_1_index_map}{Index\-Map} which holds n entries . 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em default\-Value} & all entries are initialized to this value \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 67 of file Index\-Map.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_index_map_aa4d08669a9bc3863b01f924c8d115328}{\index{Ensemble\-Clustering\-::\-Index\-Map@{Ensemble\-Clustering\-::\-Index\-Map}!$\sim$\-Index\-Map@{$\sim$\-Index\-Map}}
+\index{$\sim$\-Index\-Map@{$\sim$\-Index\-Map}!EnsembleClustering::IndexMap@{Ensemble\-Clustering\-::\-Index\-Map}}
+\subsubsection[{$\sim$\-Index\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ {\bf Ensemble\-Clustering\-::\-Index\-Map}$<$ I, T $>$\-::$\sim${\bf Index\-Map} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_index_map_aa4d08669a9bc3863b01f924c8d115328}
+
+
+Definition at line 77 of file Index\-Map.\-h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_index_map_a961b55c469821e1a66cbdb1113a10f22}{\index{Ensemble\-Clustering\-::\-Index\-Map@{Ensemble\-Clustering\-::\-Index\-Map}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!EnsembleClustering::IndexMap@{Ensemble\-Clustering\-::\-Index\-Map}}
+\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ T \& {\bf Ensemble\-Clustering\-::\-Index\-Map}$<$ I, T $>$\-::operator\mbox{[}$\,$\mbox{]} (
+\begin{DoxyParamCaption}
+\item[{const I \&}]{index}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_index_map_a961b55c469821e1a66cbdb1113a10f22}
+
+
+Index operator. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & a node \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 82 of file Index\-Map.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_index_map_afa664fe610c7cd8871125ba041bb9374}{\index{Ensemble\-Clustering\-::\-Index\-Map@{Ensemble\-Clustering\-::\-Index\-Map}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!EnsembleClustering::IndexMap@{Ensemble\-Clustering\-::\-Index\-Map}}
+\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ const T \& {\bf Ensemble\-Clustering\-::\-Index\-Map}$<$ I, T $>$\-::operator\mbox{[}$\,$\mbox{]} (
+\begin{DoxyParamCaption}
+\item[{const I \&}]{index}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_index_map_afa664fe610c7cd8871125ba041bb9374}
+
+
+Index operator for const instances of this class. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & a node \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 87 of file Index\-Map.\-h.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_index_map_af1d57517c8a2eac72bfe7805b65fcebc}{\index{Ensemble\-Clustering\-::\-Index\-Map@{Ensemble\-Clustering\-::\-Index\-Map}!array@{array}}
+\index{array@{array}!EnsembleClustering::IndexMap@{Ensemble\-Clustering\-::\-Index\-Map}}
+\subsubsection[{array}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ T$\ast$ {\bf Ensemble\-Clustering\-::\-Index\-Map}$<$ I, T $>$\-::array\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_index_map_af1d57517c8a2eac72bfe7805b65fcebc}
+
+
+array of size (n+1). array\mbox{[}0\mbox{]} is not a valid entry, since node indices are 1-\/based 
+
+
+
+Definition at line 22 of file Index\-Map.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_index_map_ab5f1dc778237131e9d6c5713c2b318ec}{\index{Ensemble\-Clustering\-::\-Index\-Map@{Ensemble\-Clustering\-::\-Index\-Map}!default\-Value@{default\-Value}}
+\index{default\-Value@{default\-Value}!EnsembleClustering::IndexMap@{Ensemble\-Clustering\-::\-Index\-Map}}
+\subsubsection[{default\-Value}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ T {\bf Ensemble\-Clustering\-::\-Index\-Map}$<$ I, T $>$\-::default\-Value\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_index_map_ab5f1dc778237131e9d6c5713c2b318ec}
+
+
+Definition at line 23 of file Index\-Map.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_index_map_a3151d302c54e6ad0175bd87aef62d4ca}{\index{Ensemble\-Clustering\-::\-Index\-Map@{Ensemble\-Clustering\-::\-Index\-Map}!n@{n}}
+\index{n@{n}!EnsembleClustering::IndexMap@{Ensemble\-Clustering\-::\-Index\-Map}}
+\subsubsection[{n}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ int64\-\_\-t {\bf Ensemble\-Clustering\-::\-Index\-Map}$<$ I, T $>$\-::n\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_index_map_a3151d302c54e6ad0175bd87aef62d4ca}
+
+
+Definition at line 24 of file Index\-Map.\-h.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/aux/\hyperlink{_index_map_8h}{Index\-Map.\-h}\end{DoxyCompactItemize}
