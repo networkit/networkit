@@ -140,6 +140,8 @@ Clustering LouvainParallel::pass(Graph& G) {
 		});
 	} while (change);
 
+	DEBUG("zeta has " << zeta.numberOfClusters() << " clusters");
+
 	return zeta;
 }
 
@@ -188,9 +190,9 @@ Clustering LouvainParallel::run(Graph& G) {
 	} while (! done);
 
 	// project fine graph to result clustering
-	DEBUG("starting projection");
+	DEBUG("starting projection, h: " << h);
 //	Clustering result = projector.projectCoarseGraphToFinestClustering(graphs[h], graphs[0], maps);
-	Clustering result = projector.projectCoarseGraphToFinestClustering(hierarchy[h].first, G, maps);
+	Clustering result = projector.projectCoarseGraphToFinestClustering(*graph, G, maps);
 	return result;
 }
 
