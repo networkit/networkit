@@ -7,6 +7,7 @@
 
 bool PRINT_PROGRESS = true;
 bool RAND_ORDER = false; 	///< don't randomize LabelPropagation node order by default, since this seems to be faster and slightly better
+int INACTIVE_SEEDS = 0;		///< number of seed nodes which are set inactive for first iteration
 bool NO_RECURSION = false; ///< don't recurse in ensemble clustering if set to true
 bool NORMALIZE_VOTES = false; ///< if set, normalize votes of LP by dividing edge weight by weighted degree
 

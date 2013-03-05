@@ -11,6 +11,7 @@
 
 extern bool PRINT_PROGRESS;
 extern bool RAND_ORDER;
+extern int INACTIVE_SEEDS;
 extern bool NO_RECURSION;
 extern bool NORMALIZE_VOTES;
 extern bool SCALE_STRENGTH;

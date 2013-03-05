@@ -157,20 +157,6 @@ std::vector<std::string> splitAString(const std::string& s, char delim = ' ') {
 }
 
 
-/**
- * Set LabelPropagation parameter: randOrder
- */
-void configureRandOrder(const std::string& isOrderRandomized) {
-	if (isOrderRandomized == "no") {
-		RAND_ORDER = false;
-	}
-	else if (isOrderRandomized == "yes") {
-		RAND_ORDER = true;
-	} else {
-		// TODO: print warning?
-	}
-}
-
 
 #ifndef NOLOG4CXX
 /**
@@ -218,7 +204,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 
 enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS,
 	ENSEMBLE, SOLO, NOREC, NORM_VOTES, SCALESTRENGTH,
-	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
+	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -241,6 +227,7 @@ const OptionParser::Descriptor usage[] =
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {RANDORDER, 0, "", "randOrder", OptionParser::Arg::Required, "  --randOrder=<yes,no> \t don't randomize vertex processing order"},
+ {INACTIVESEEDS, 0, "", "inactiveSeeds", OptionParser::Arg::Required, "  --inactiveSeeds=<N> \t numer of randomly chosen seed nodes which are set inactive in first LabelPropagation iteration - creates diversity in base clusterings"},
  {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> or --updateThreshold=auto \t number of updated nodes below which label propagation terminates - auto determines this automatically from the size of the graph"},
  {OVERLAP, 0, "", "overlap", OptionParser::Arg::Required, "  --overlap=<Algorithm> set overlap algorithm which combines the base clusterings"},
  {DISSIMILARITY, 0, "", "dissimilarity", OptionParser::Arg::None, "  --dissimilarity \t calculate and print base clustering dissimilarity for ensemble (expensive!)"},
@@ -753,12 +740,23 @@ int main(int argc, char **argv) {
 
 	// CONFIGURE GLOBAL FLAGS
 
-	// CONFIGURE RANDOM ORDER
+	// CONFIGURE  LABEL PROPAGATION: RANDOM ORDER
 
 	if (options[RANDORDER]) {
-		configureRandOrder(options[RANDORDER].arg);
+		if (options[RANDORDER].arg == "no") {
+			RAND_ORDER = false;
+		}
+		else if (options[RANDORDER].arg == "yes") {
+			RAND_ORDER = true;
+		} else {
+			// TODO: print warning?
+		}
 	}
 
+	// CONFIGURE LABEL PROPAGTION: INACTIVE SEEDS
+	if (options[INACTIVESEEDS]) {
+		INACTIVE_SEEDS = std::atoi(options[INACTIVESEEDS].arg);
+	}
 
 	// CALCULATE BASE CLUSTERING DISSIMILARITY?
 	if (options[DISSIMILARITY]) {
