@@ -19,11 +19,6 @@ LabelPropagation::~LabelPropagation() {
 }
 
 
-static int countOne(const bool& a) {
-	return (int) a;
-}
-
-
 Clustering LabelPropagation::run(Graph& G) {
 	typedef cluster label; // a label is the same as a cluster id
 
@@ -42,12 +37,6 @@ Clustering LabelPropagation::run(Graph& G) {
 	if (normalizeVotes) {
 		WARN("normalized votes turned off for undirected graphs");
 	}
-
-	// open file for csv output
-	std::stringstream filePath;
-	filePath << "output/LPCount-" << G.getName() << ".csv";
-	std::ofstream lpCount(filePath.str());
-	lpCount << "nActive;nUpdated" << std::endl; // header
 
 	count n = G.numberOfNodes();
 
@@ -76,25 +65,38 @@ Clustering LabelPropagation::run(Graph& G) {
 
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	DEBUG("[BEGIN] Label Propagation: precomputing incident weight");
-	Aux::ProgressMeter pm(n, 1000);
 	NodeMap<double> weightedDegree(n, 0.0);
 	G.parallelForNodes([&](node v) {
 		weightedDegree[v] = G.weightedDegree(v);
-		if (printProgress) {
-			pm.signal(v);
-		}
 	});
-	if (printProgress) {
-		pm.end();
-	}
 
-	std::vector<node> shuffledNodes(n);
+
+
+	// prepare nodes for randomized iteration order
+	std::vector<node> nodes(n);
 	G.parallelForNodes([&](node v) {
-		shuffledNodes[v] = v; // store all nodes in vector
-		});
+		nodes[v] = v; // store all nodes in vector
+	});
 
 	std::vector<bool> activeNodes(n); // record if node must be processed
 	activeNodes.assign(n, true);
+
+
+	// randomize outcome by deactivating a very small number of nodes
+//	bool randInit = true;
+//	if (randInit) {
+//		int r = n / 10;
+//		std::cout << "r = " << r << std::endl;
+//		Aux::RandomInteger randInt(0, (n-1));
+//		for (count i = 0; i < r; i++) {
+//			node u = randInt.generate();
+//			activeNodes[u] = false;
+//		}
+//	}
+
+
+
+
 
 	Aux::Timer runtime;
 
@@ -107,7 +109,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		// reset updated
 		nUpdated = 0;
 
-		if (randOrder) {
+		if (randOrder) { // randomize the order of node iteration
 			// new random order
 #ifdef _OPENMP
 			// not really random, but the next best thing in parallel w/o hurting performance
@@ -117,14 +119,15 @@ Clustering LabelPropagation::run(Graph& G) {
 			for (index i = 0; i < numChunks; ++i) {
 				index begin = i * chunkSize;
 				index end = begin + chunkSize;
-				std::shuffle(&shuffledNodes[begin], &shuffledNodes[end], randgen);
+				std::shuffle(&nodes[begin], &nodes[end], randgen);
 			}
 #else
-			std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
+			std::shuffle(nodes.begin(), nodes.end(), randgen);
 #endif
 		}
 
 		if (scaleClusterStrength) {
+			// TODO: documentation?
 			std::vector<count> clusterSizes = labels.clusterSizes();
 			scale.resize(clusterSizes.size());
 			INFO("Scaling cluster strengths with exponent " << SCALE_STRENGTH);
@@ -135,17 +138,16 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		Aux::ProgressMeter pm(n, 10000);
 
-		// TODO: delete for performance tests
-		count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
-		INFO("number of active nodes: " << nActive);
+		// removed for performance reasons
+		// count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
+		// INFO("number of active nodes: " << nActive);
 
 
 #pragma omp parallel for schedule(guided) shared(nUpdated)
 		for (int64_t i = 0; i < n; ++i) {
-			node v = shuffledNodes[i];
+			node v = nodes[i];
 
 			// PROGRESS
-
 			if (printProgress) {
 				pm.signal(i);
 			}
@@ -159,11 +161,10 @@ Clustering LabelPropagation::run(Graph& G) {
 					label lw = labels[w];
 					if (scaleClusterStrength) {
 						labelWeights[lw] += weight / scale[labels[v]]; // add weight of edge {v, w}
-					}
-					else {
+					} else {
 						labelWeights[lw] += weight; // add weight of edge {v, w}
 					}
-					});
+				});
 
 				// get heaviest label
 				label heaviest = std::max_element(labelWeights.begin(),
@@ -196,9 +197,6 @@ Clustering LabelPropagation::run(Graph& G) {
 
 		runtime.stop();
 		INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
-
-		// record nActive and nUpdated in csv file
-		lpCount << nActive << ";" << nUpdated << std::endl;
 
 	} // end while
 

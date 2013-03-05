@@ -173,6 +173,24 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelNaive) {
 
 }
 
+TEST_F(ClusteringAlgoGTest, testLouvainParallel2Naive) {
+	count n = 1000;
+	count k = 100;
+	double pin = 1.0;
+	double pout = 0.005;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	LouvainParallel louvain;
+	Clustering zeta = louvain.run(G);
+
+	INFO("number of clusters: " << zeta.numberOfClusters());
+
+	Modularity modularity;
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+
+}
+
 TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 	count n = 1000;
 	count k = 100;

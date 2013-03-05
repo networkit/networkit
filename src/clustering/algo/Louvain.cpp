@@ -71,7 +71,7 @@ Clustering Louvain::pass(Graph& G) {
 
 	// difference in modularity when moving node u from cluster C to D
 	auto deltaMod = [&](node u, cluster C, cluster D){
-		double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + (volClusterMinusNode(C, u) * volNode[u] - volClusterMinusNode(D, u) * volNode[u]) / (2 * total * total);
+		double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volNode[u]) / (2 * total * total);
 		return delta;
 	};
 

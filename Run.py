@@ -27,9 +27,9 @@ graphFiles.sort(key=lambda s: s.lower()) # sort case-insensitively
     
 commands = []
 for graphFile in graphFiles:
-    outFile = "output/%s-%s.txt" % (graphFile.split("/")[-1].split(".")[0], str(datetime.now()).replace(" ", "-"))
+    # outFile = "output/%s-%s.txt" % (graphFile.split("/")[-1].split(".")[0], str(datetime.now()).replace(" ", "-"))
     command = commandTemplate % {"graphFile" : graphFile}
-    command = "%s &> '%s'" % (command, outFile)
+    # command = "%s &> '%s'" % (command, outFile)
     commands.append(command)
     
 print("Going to call the following %d commands:" % len(commands))
