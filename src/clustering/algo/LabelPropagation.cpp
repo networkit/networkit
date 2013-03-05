@@ -70,13 +70,33 @@ Clustering LabelPropagation::run(Graph& G) {
 		weightedDegree[v] = G.weightedDegree(v);
 	});
 
-	std::vector<node> shuffledNodes(n);
+
+
+	// prepare nodes for randomized iteration order
+	std::vector<node> nodes(n);
 	G.parallelForNodes([&](node v) {
-		shuffledNodes[v] = v; // store all nodes in vector
-		});
+		nodes[v] = v; // store all nodes in vector
+	});
 
 	std::vector<bool> activeNodes(n); // record if node must be processed
 	activeNodes.assign(n, true);
+
+
+	// randomize outcome by deactivating a very small number of nodes
+//	bool randInit = true;
+//	if (randInit) {
+//		int r = n / 10;
+//		std::cout << "r = " << r << std::endl;
+//		Aux::RandomInteger randInt(0, (n-1));
+//		for (count i = 0; i < r; i++) {
+//			node u = randInt.generate();
+//			activeNodes[u] = false;
+//		}
+//	}
+
+
+
+
 
 	Aux::Timer runtime;
 
@@ -99,10 +119,10 @@ Clustering LabelPropagation::run(Graph& G) {
 			for (index i = 0; i < numChunks; ++i) {
 				index begin = i * chunkSize;
 				index end = begin + chunkSize;
-				std::shuffle(&shuffledNodes[begin], &shuffledNodes[end], randgen);
+				std::shuffle(&nodes[begin], &nodes[end], randgen);
 			}
 #else
-			std::shuffle(shuffledNodes.begin(), shuffledNodes.end(), randgen);
+			std::shuffle(nodes.begin(), nodes.end(), randgen);
 #endif
 		}
 
@@ -125,7 +145,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 #pragma omp parallel for schedule(guided) shared(nUpdated)
 		for (int64_t i = 0; i < n; ++i) {
-			node v = shuffledNodes[i];
+			node v = nodes[i];
 
 			// PROGRESS
 			if (printProgress) {
@@ -141,11 +161,10 @@ Clustering LabelPropagation::run(Graph& G) {
 					label lw = labels[w];
 					if (scaleClusterStrength) {
 						labelWeights[lw] += weight / scale[labels[v]]; // add weight of edge {v, w}
-					}
-					else {
+					} else {
 						labelWeights[lw] += weight; // add weight of edge {v, w}
 					}
-					});
+				});
 
 				// get heaviest label
 				label heaviest = std::max_element(labelWeights.begin(),
