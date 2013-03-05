@@ -137,8 +137,8 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 }
 
 TEST_F(ClusteringAlgoGTest, testLouvain) {
-	count n = 1000;
-	count k = 100;
+	count n = 500;
+	count k = 50;
 	double pin = 1.0;
 	double pout = 0.005;
 	GraphGenerator graphGen;
@@ -156,8 +156,8 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 
 
 TEST_F(ClusteringAlgoGTest, testLouvainParallelNaive) {
-	count n = 1000;
-	count k = 100;
+	count n = 500;
+	count k = 50;
 	double pin = 1.0;
 	double pout = 0.005;
 	GraphGenerator graphGen;
@@ -173,6 +173,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelNaive) {
 
 }
 
+/*
 TEST_F(ClusteringAlgoGTest, testLouvainParallel2Naive) {
 	count n = 1000;
 	count k = 100;
@@ -190,10 +191,12 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallel2Naive) {
 	INFO("modularity: " << modularity.getQuality(zeta, G));
 
 }
+*/
+
 
 TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
-	count n = 1000;
-	count k = 100;
+	count n = 500;
+	count k = 50;
 	double pin = 1.0;
 	double pout = 0.005;
 	GraphGenerator graphGen;
@@ -209,9 +212,11 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 
 }
 
+
+
 TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
-	count n = 1000;
-	count k = 100;
+	count n = 500;
+	count k = 50;
 	double pin = 1.0;
 	double pout = 0.005;
 	GraphGenerator graphGen;
@@ -226,6 +231,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
 	INFO("modularity: " << modularity.getQuality(zeta, G));
 
 }
+
 
 
 } /* namespace EnsembleClustering */
