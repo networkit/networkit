@@ -103,8 +103,6 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 		zeta.addToCluster(c, v);
 	});
 
-//	assert (zeta.numberOfClusters() == k);
-
 	G.forNodePairs([&](node u, node v){
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 			if (randP.generate() <= pin) {
