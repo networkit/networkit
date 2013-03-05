@@ -13,6 +13,7 @@
 #include "../../../aux/Log.h"
 #include "../LabelPropagation.h"
 #include "../Louvain.h"
+#include "../LouvainParallel.h"
 #include "../../base/Modularity.h"
 #include "../../../graph/GraphGenerator.h"
 #include "../../../clustering/base/ClusteringGenerator.h"
