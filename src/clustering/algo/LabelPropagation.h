@@ -22,6 +22,7 @@
 #include "../../aux/Log.h"
 #include "../../aux/ProgressMeter.h"
 #include "../../aux/Timer.h"
+#include "../../aux/RandomInteger.h"
 #include "../../graph/NodeMap.h"
 #include "../../base/IndexMap.h"
 #include "../../io/GraphIO.h"

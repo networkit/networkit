@@ -57,7 +57,7 @@ using namespace EnsembleClustering;
 
 
 
-// graph functions
+// GRAPH GENERATOR FUNCTIONS
 
 Graph generateRandomGraph(count n, double p) {
 
