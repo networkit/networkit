@@ -27,6 +27,16 @@ Clustering Louvain::pass(Graph& G) {
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();
 
+	// For each node we store a map that maps from cluster ID
+	// to weight of edges to that cluster, this needs to be updated when a change occurs
+	std::vector<std::map<cluster, edgeweight> > incidenceWeight(G.numberOfNodes());
+	G.parallelForWeightedEdges([&](node u, node v, edgeweight w) {
+		cluster C = zeta[v];
+		if (u != v) {
+			incidenceWeight[u][C] += w;
+		}
+	});
+
 	// modularity update formula for node moves
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
 
@@ -57,6 +67,8 @@ Clustering Louvain::pass(Graph& G) {
 
 	// $\omega(u | C \ u)$
 	auto omegaCut = [&](node u, cluster C){
+		return incidenceWeight[u][C];
+
 		edgeweight sum = 0.0;
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
 			if (zeta[v] == C) {
@@ -83,6 +95,8 @@ Clustering Louvain::pass(Graph& G) {
 		I = luby.run(G);
 	}
 
+	// FIXME: parallel unit tests lead to hanging execution (deadlocks or infinite loops?) sometimes
+
 	// begin pass
 	int i = 0;
 	bool change; // change in last iteration?
@@ -94,9 +108,11 @@ Clustering Louvain::pass(Graph& G) {
 		// try to improve modularity by moving a node to neighboring clusters
 		auto moveNode = [&](node u){
 			cluster C = zeta[u];
+			DEBUG("Processing node " << u << ", which is still in cluster " << C);
 			cluster best;
 			double deltaBest = -0.5;
 			G.forNeighborsOf(u, [&](node v){
+				TRACE("Neighbor " << v << ", which is still in cluster " << zeta[v]);
 				if (zeta[v] != zeta[u]) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 					cluster D = zeta[v];
 					double delta = deltaMod(u, C, D);
@@ -108,11 +124,24 @@ Clustering Louvain::pass(Graph& G) {
 			});
 			if (deltaBest > 0.0) { // if modularity improvement possible
 				assert (best != zeta[u]); // do not "move" to original cluster
+
+				TRACE("Move vertex " << u << " to cluster " << best << ", deltaMod: " << deltaBest);
+
+				// update weight of edges to incident clusters
+				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
+#pragma omp atomic update
+					incidenceWeight[v][zeta[u]] -= w;
+#pragma omp atomic update
+					incidenceWeight[v][best] += w;
+				});
+
 				zeta[u] = best; // move to best cluster
 				change = true;	// change to clustering has been made
 				this->anyChange = true;	// indicate globally that clustering was modified
 				// update the volume of the two clusters
+#pragma omp atomic update
 				volCluster[C] -= volNode[u];
+#pragma omp atomic update
 				volCluster[best] += volNode[u];
 			}
 		};
@@ -148,27 +177,26 @@ Clustering Louvain::run(Graph& G) {
 	ClusteringProjector projector;
 
 	// hierarchies
-	std::vector<Graph> graphs; // hierarchy of graphs G^{i}
-	std::vector<Clustering> clusterings; // hierarchy of core clusterings \zeta^{i}
+	std::vector<std::pair<Graph, NodeMap<node> > > hierarchy; // hierarchy of graphs G^{i} and maps M^{i->i+1}
 	std::vector<NodeMap<node> > maps; // hierarchy of maps M^{i->i+1}
 
 	int h = -1; 	// finest hierarchy level
 	bool done = false;	//
 
-	graphs.push_back(G);
+	Graph* graph = &G;
 
 	do {
 		h += 1; // begin new hierarchy level
 		INFO("Louvain hierarchy level " << h);
 		// one local optimization pass
 		DEBUG("starting Louvain pass");
-		clusterings.push_back(this->pass(graphs[h]));
+		Clustering clustering = this->pass(*graph);
 		if (this->anyChange){
 			// contract the graph according to clustering
 			DEBUG("starting contraction");
-			std::pair<Graph, NodeMap<node> > contraction = contracter.run(graphs[h], clusterings[h]);
-			graphs.push_back(contraction.first);
-			maps.push_back(contraction.second);
+			hierarchy.push_back(contracter.run(*graph, clustering));
+			maps.push_back(hierarchy[h].second);
+			graph = &hierarchy[h].first;
 
 			done = false; // new hierarchy level, continue with loop
 			this->anyChange = false; // reset change flag
@@ -179,7 +207,7 @@ Clustering Louvain::run(Graph& G) {
 
 	DEBUG("starting projection");
 	// project fine graph to result clustering
-	Clustering result = projector.projectCoarseGraphToFinestClustering(graphs[h], graphs[0], maps);
+	Clustering result = projector.projectCoarseGraphToFinestClustering(*graph, G, maps);
 	return result;
 }
 
