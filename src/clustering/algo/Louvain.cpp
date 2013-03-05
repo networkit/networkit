@@ -108,7 +108,6 @@ Clustering Louvain::pass(Graph& G) {
 		// try to improve modularity by moving a node to neighboring clusters
 		auto moveNode = [&](node u){
 			cluster C = zeta[u];
-			DEBUG("Processing node " << u << ", which is still in cluster " << C);
 			cluster best;
 			double deltaBest = -0.5;
 			G.forNeighborsOf(u, [&](node v){
@@ -124,8 +123,6 @@ Clustering Louvain::pass(Graph& G) {
 			});
 			if (deltaBest > 0.0) { // if modularity improvement possible
 				assert (best != zeta[u]); // do not "move" to original cluster
-
-				TRACE("Move vertex " << u << " to cluster " << best << ", deltaMod: " << deltaBest);
 
 				// update weight of edges to incident clusters
 				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
