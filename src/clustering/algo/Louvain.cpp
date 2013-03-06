@@ -70,11 +70,7 @@ Clustering Louvain::pass(Graph& G) {
 
 	// $\omega(u | C \ u)$
 	auto omegaCut = [&](node u, cluster C) {
-		edgeweight w = 0.0;
-#pragma omp critical
-		{
-			w = incidenceWeight[u][C];
-		}
+		edgeweight w = incidenceWeight[u][C];
 		return w;
 
 //		edgeweight sum = 0.0;
