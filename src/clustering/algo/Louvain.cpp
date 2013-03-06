@@ -33,7 +33,10 @@ Clustering Louvain::pass(Graph& G) {
 	G.parallelForWeightedEdges([&](node u, node v, edgeweight w) {
 		cluster C = zeta[v];
 		if (u != v) {
-			incidenceWeight[u][C] += w;
+#pragma omp critical
+			{
+				incidenceWeight[u][C] += w;
+			}
 		}
 	});
 
@@ -66,18 +69,23 @@ Clustering Louvain::pass(Graph& G) {
 
 
 	// $\omega(u | C \ u)$
-	auto omegaCut = [&](node u, cluster C){
-		return incidenceWeight[u][C];
+	auto omegaCut = [&](node u, cluster C) {
+		edgeweight w = 0.0;
+#pragma omp critical
+		{
+			w = incidenceWeight[u][C];
+		}
+		return w;
 
-		edgeweight sum = 0.0;
-		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
-			if (zeta[v] == C) {
-				if (v != u){
-					sum += w;
-				}
-			}
-		});
-		return sum;
+//		edgeweight sum = 0.0;
+//		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
+//			if (zeta[v] == C) {
+//				if (v != u){
+//					sum += w;
+//				}
+//			}
+//		});
+//		return sum;
 	};
 
 
@@ -102,12 +110,14 @@ Clustering Louvain::pass(Graph& G) {
 	bool change; // change in last iteration?
 	do {
 		i += 1;
-		DEBUG("Louvain pass: iteration # " << i);
+		DEBUG("---> Louvain pass: iteration # " << i);
 		change = false; // is clustering stable?
 
 		// try to improve modularity by moving a node to neighboring clusters
 		auto moveNode = [&](node u){
 			cluster C = zeta[u];
+			TRACE("Processing node " << u << " of cluster " << C);
+//			std::cout << ".";
 			cluster best;
 			double deltaBest = -0.5;
 			G.forNeighborsOf(u, [&](node v){
@@ -126,10 +136,11 @@ Clustering Louvain::pass(Graph& G) {
 
 				// update weight of edges to incident clusters
 				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
-#pragma omp atomic update
-					incidenceWeight[v][zeta[u]] -= w;
-#pragma omp atomic update
-					incidenceWeight[v][best] += w;
+#pragma omp critical
+					{
+						incidenceWeight[v][zeta[u]] -= w;
+						incidenceWeight[v][best] += w;
+					}
 				});
 
 				zeta[u] = best; // move to best cluster
@@ -161,7 +172,9 @@ Clustering Louvain::pass(Graph& G) {
 			ERROR("unknown parallelization strategy: " << this->parallelism);
 			exit(1);
 		}
-	} while (change);
+
+//		std::cout << std::endl;
+	} while (change && i < MAX_LOUVAIN_ITERATIONS);
 
 	return zeta;
 }
