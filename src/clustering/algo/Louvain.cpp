@@ -210,7 +210,7 @@ Clustering Louvain::run(Graph& G) {
 
 std::string Louvain::toString() const {
 	std::stringstream strm;
-	strm << "Louvain";
+	strm << "Louvain(" << "parallelism=" << this->parallelism << ")";
 	return strm.str();
 }
 
