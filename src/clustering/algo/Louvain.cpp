@@ -134,8 +134,6 @@ Clustering Louvain::pass(Graph& G) {
 			if (deltaBest > 0.0) { // if modularity improvement possible
 				assert (best != zeta[u]); // do not "move" to original cluster
 
-				TRACE("Move vertex " << u << " to cluster " << best << ", deltaMod: " << deltaBest);
-
 				// update weight of edges to incident clusters
 				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
 #pragma omp critical

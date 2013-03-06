@@ -24,7 +24,8 @@ Clustering LabelPropagation::run(Graph& G) {
 
 	// get global variables
 	const bool printProgress = PRINT_PROGRESS;
-	const bool randOrder = RAND_ORDER;
+	const bool randOrder = RAND_ORDER;							// explicitly randomize node order for each iteration
+	const int inactiveSeeds = INACTIVE_SEEDS;					// number of seed nodes which are set inactive for first iteration
 	const bool normalizeVotes = NORMALIZE_VOTES;
 	const bool scaleClusterStrength = (SCALE_STRENGTH != 0.0);
 	std::vector<double> scale;
@@ -40,7 +41,6 @@ Clustering LabelPropagation::run(Graph& G) {
 
 	count n = G.numberOfNodes();
 
-	// create the clustering to be returned
 	// set unique label for each node
 	Clustering labels(n);
 	labels.allToSingletons();
@@ -83,16 +83,14 @@ Clustering LabelPropagation::run(Graph& G) {
 
 
 	// randomize outcome by deactivating a very small number of nodes
-//	bool randInit = true;
-//	if (randInit) {
-//		int r = n / 10;
-//		std::cout << "r = " << r << std::endl;
-//		Aux::RandomInteger randInt(0, (n-1));
-//		for (count i = 0; i < r; i++) {
-//			node u = randInt.generate();
-//			activeNodes[u] = false;
-//		}
-//	}
+	// TODO: make this an object attribute
+	if (inactiveSeeds > 0) {
+		Aux::RandomInteger randInt(0, (n-1));
+		for (count i = 0; i < inactiveSeeds; i++) {
+			node u = randInt.generate();
+			activeNodes[u] = false;
+		}
+	}
 
 
 
@@ -206,7 +204,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 std::string LabelPropagation::toString() const {
 	std::stringstream strm;
-	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ")";
+	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ",threads=" << omp_get_max_threads() << ")";
 	return strm.str();
 }
 
