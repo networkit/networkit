@@ -20,5 +20,7 @@ extern double REL_REPEAT_THRSH;
 
 extern bool CALC_DISSIMILARITY;
 
+extern int MAX_LOUVAIN_ITERATIONS;
+
 
 #endif /* GLOBALS_H_ */

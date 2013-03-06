@@ -511,7 +511,6 @@ inline void EnsembleClustering::Graph::forNodes(L handle) const {
 
 template<typename L>
 inline void EnsembleClustering::Graph::parallelForNodes(L handle) {
-	// TODO: implement guided scheduling iterator
 #pragma omp parallel for
 	for (node v = 0; v < n; ++v) {
 		// call here
@@ -530,7 +529,7 @@ inline void EnsembleClustering::Graph::parallelForNodes(L handle) const {
 
 template<typename L>
 inline void EnsembleClustering::Graph::balancedParallelForNodes(L handle) {
-	#pragma omp parallel for schedule(guided)
+	#pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
 	for (node v = 0; v < n; ++v) {
 		// call here
 		handle(v);

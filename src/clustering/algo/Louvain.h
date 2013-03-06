@@ -13,6 +13,7 @@
 #include "../../coarsening/ClusteringProjector.h"
 #include "../../base/IndexMap.h"
 #include "../../independentset/Luby.h"
+#include "../../Globals.h"
 
 namespace EnsembleClustering {
 

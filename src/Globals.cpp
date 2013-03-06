@@ -18,3 +18,5 @@ int MIN_NUM_COMMUNITIES = 2; ///< minimum number of communities, so far only use
 double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching edges relative to number of vertices to proceed agglomeration
 
 bool CALC_DISSIMILARITY = false; ///< if set, calculate and print base clustering dissimilarity for ensemble (expensive!)
+
+int MAX_LOUVAIN_ITERATIONS = 50; ///< maximum number of iterations within contractions in Louvain algorithm
