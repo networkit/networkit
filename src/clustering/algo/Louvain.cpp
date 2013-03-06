@@ -30,7 +30,7 @@ Clustering Louvain::pass(Graph& G) {
 	// For each node we store a map that maps from cluster ID
 	// to weight of edges to that cluster, this needs to be updated when a change occurs
 	std::vector<std::map<cluster, edgeweight> > incidenceWeight(G.numberOfNodes());
-	G.forWeightedEdges([&](node u, node v, edgeweight w) { // FIXME: parallel would be better, but might cause problems
+	G.parallelForWeightedEdges([&](node u, node v, edgeweight w) {
 		cluster C = zeta[v];
 		if (u != v) {
 #pragma omp critical
