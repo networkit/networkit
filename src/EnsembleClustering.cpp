@@ -183,6 +183,18 @@ void configureLogging(const std::string& loglevel = "INFO") {
 #endif
 
 
+/**
+ *  Set the number of threads available to the program.
+ */
+void setNumberOfThreads(int nThreads) {
+#ifdef _OPENMP
+		omp_set_num_threads(nThreads);
+#else
+		WARN("Thread option ignored since OpenMP is deactivated.");
+#endif
+}
+
+
 
 // *** Option Parser Configuration ***//
 
@@ -201,8 +213,8 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 
 };
 
-
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS,
+// TODO: clean up obsolete parameters
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS,
 	ENSEMBLE, SOLO, NOREC, NORM_VOTES, SCALESTRENGTH,
 	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
@@ -217,6 +229,7 @@ const OptionParser::Descriptor usage[] =
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate \t Run ensemble clusterer on generated graph with planted partition"},
  {ALGORITHM, 0, "", "algorithm", OptionParser::Arg::Required, "  --algorithm=<NAME>:<PARAMS> \t select clustering algorithm"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
+ {SCALETHREADS, 0, "", "scaleThreads", OptionParser::Arg::Required, "  --scaleThreads=<MAXTHREADS> \t scale number of threads by factor 2 until maximum is reached"},
  {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "  --ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
  {NOREC, 0, "", "noRecursion", OptionParser::Arg::None, "  --noRecursion \t run only on the finest graph, even if ensemble is used"},
@@ -631,6 +644,7 @@ bool inspect(Graph& G, Clustering& clustering, OptionParser::Option* options) {
 
  	std::cout << "\t # clusters:\t" << k << std::endl;
  	std::cout << "\t modularity:\t" << mod << std::endl;
+ 	std::cout << std::endl; // newline
 
 
  	if (options[SUMMARY]) {
@@ -707,11 +721,7 @@ int main(int argc, char **argv) {
 	if (options[THREADS]) {
 		// set number of threads
 		int nThreads = std::atoi(options[THREADS].arg);
-#ifdef _OPENMP
-		omp_set_num_threads(nThreads);
-#else
-		WARN("Thread option ignored since OpenMP is deactivated.");
-#endif
+		setNumberOfThreads(nThreads);
 	}
 
 	// CONFIGURE OUTPUT
@@ -793,10 +803,25 @@ int main(int argc, char **argv) {
 	// RUN PROGRAM
 	Graph G = getGraph(options);
 
-	// allow for multiple runs
-	for (int run = 0; run < runs; run++) {
-		Clustering clustering = startClusterer(G, options);
-		inspect(G, clustering, options);
+	// allow for scripted thread scaling
+	if (options[SCALETHREADS]) {
+		// perform scaling
+		int maxThreads = std::atoi(options[SCALETHREADS].arg);
+		for (int nThreads = 1; nThreads <= maxThreads; nThreads *= 2) {
+			setNumberOfThreads(nThreads);
+			// allow for multiple runs
+			for (int run = 0; run < runs; run++) {
+				Clustering clustering = startClusterer(G, options);
+				inspect(G, clustering, options);
+			}
+
+		}
+	} else {
+		// allow for multiple runs
+		for (int run = 0; run < runs; run++) {
+			Clustering clustering = startClusterer(G, options);
+			inspect(G, clustering, options);
+		}
 	}
 
 	std::cout << "[EXIT] terminated normally" << std::endl;
