@@ -39,7 +39,6 @@
 #include "clustering/algo/ParallelAgglomerativeClusterer.h"
 #include "clustering/algo/RandomClusterer.h"
 #include "clustering/algo/Louvain.h"
-#include "clustering/algo/LouvainParallel.h"
 #include "clustering/base/Clustering.h"
 #include "clustering/base/Modularity.h"
 #include "clustering/base/Coverage.h"
@@ -364,8 +363,6 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			} else {
 				algo = new Louvain(algoParams);
 			}
-		} else if (algoName == "LouvainParallel") {
-			algo = new LouvainParallel();
 		} else if (algoName == "EnsembleMultiLevel") {
 			// TODO:
 		} else if (algoName == "EnsemblePreprocessing") {
@@ -415,8 +412,6 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "Louvain") {
 				final = new Louvain();
-			} else if (finalClustererArg == "LouvainParallel") {
-				final = new LouvainParallel();
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);
