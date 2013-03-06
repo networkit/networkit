@@ -730,12 +730,8 @@ int main(int argc, char **argv) {
 		} else {
 			// create it and write CSV header
 			std::ofstream summary(options[SUMMARY].arg);
-
 			summary << "threads;algo;revision;graph;running;eps;clusters;mod" << std::endl; // TODO: update header
-
 		}
-
-
 	}
 
 	// CONFIGURE GLOBAL FLAGS
@@ -743,13 +739,14 @@ int main(int argc, char **argv) {
 	// CONFIGURE  LABEL PROPAGATION: RANDOM ORDER
 
 	if (options[RANDORDER]) {
-		if (options[RANDORDER].arg == "no") {
+		std::string randOrderArg = options[RANDORDER].arg;
+		if (randOrderArg == "no") {
 			RAND_ORDER = false;
 		}
-		else if (options[RANDORDER].arg == "yes") {
+		else if (randOrderArg == "yes") {
 			RAND_ORDER = true;
 		} else {
-			// TODO: print warning?
+			ERROR("randOrder argument not recognized");
 		}
 	}
 
