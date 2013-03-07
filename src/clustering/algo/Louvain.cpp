@@ -17,7 +17,6 @@ Louvain::~Louvain() {
 	// TODO Auto-generated destructor stub
 }
 
-
 Clustering Louvain::pass(Graph& G) {
 
 	// init clustering to singletons
@@ -30,22 +29,28 @@ Clustering Louvain::pass(Graph& G) {
 
 	// For each node we store a map that maps from cluster ID
 	// to weight of edges to that cluster, this needs to be updated when a change occurs
-	std::vector<std::map<cluster, edgeweight> > incidenceWeight(G.numberOfNodes());
+	std::vector<std::map<cluster, edgeweight> > incidenceWeight(
+			G.numberOfNodes());
 	G.parallelForNodes([&](node u) {
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-			cluster C = zeta[v];
-			if (u != v) {
-				incidenceWeight[u][C] += w;
-			}
-		});
+					cluster C = zeta[v];
+					if (u != v) {
+						incidenceWeight[u][C] += w;
+					}
+				});
 	});
 
+#ifdef _OPENMP_
+	const int NUM_THREADS = omp_get_num_threads();
+
+#pragma omp barrier
 	// create and init locks
 	std::vector<omp_lock_t> mapLocks(n);
 	G.parallelForNodes([&](node u) {
-		omp_init_lock(&mapLocks[u]);
-	});
-
+				omp_init_lock(&mapLocks[u]);
+			});
+#pragma omp barrier
+#endif
 
 	// modularity update formula for node moves
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
@@ -53,67 +58,103 @@ Clustering Louvain::pass(Graph& G) {
 	// parts of formula follow
 	NodeMap<double> volNode(G.numberOfNodes(), 0.0);
 	// calculate and store volume of each node
-	G.parallelForNodes([&](node u){
+	G.parallelForNodes([&](node u) {
 		volNode[u] += G.weightedDegree(u);
 		volNode[u] += G.weight(u, u); // consider self-loop twice
-	});
+		});
 
 	IndexMap<cluster, double> volCluster(G.numberOfNodes(), 0.0);
 	// set volume for all singletons
-	zeta.parallelForEntries([&](node u, cluster C){
+	zeta.parallelForEntries([&](node u, cluster C) {
 		volCluster[C] = volNode[u];
 	});
 
 	// $\vol(C \ {x})$ - volume of cluster C excluding node x
-	auto volClusterMinusNode = [&](cluster C, node x){
+	auto volClusterMinusNode = [&](cluster C, node x) {
+		double vol = 0.0;
 		if (zeta[x] == C) {
-			return volCluster[C] - volNode[x];
+#pragma omp atomic read
+			vol = volCluster[C];
+			return vol - volNode[x];
 		} else {
-			return volCluster[C];
+
+#pragma omp atomic read
+			vol = volCluster[C];
+			return vol;
 		}
 
 	};
 
-
 	// $\omega(u | C \ u)$
 	auto omegaCut = [&](node u, cluster C) {
 		edgeweight w = 0.0;
-#pragma omp atomic read
-		w = incidenceWeight[u][C];
-		return w;
-
-//		edgeweight sum = 0.0;
-//		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w){
-//			if (zeta[v] == C) {
-//				if (v != u){
-//					sum += w;
-//				}
-//			}
-//		});
-//		return sum;
-	};
-
+//#pragma omp atomic read
+#ifdef _OPENMP_
+			omp_set_lock(&mapLocks[u]);
+#endif
+			w = incidenceWeight[u][C];
+#ifdef _OPENMP_
+			omp_unset_lock(&mapLocks[u]);
+#endif
+			return w;
+		};
 
 	// difference in modularity when moving node u from cluster C to D
-	auto deltaMod = [&](node u, cluster C, cluster D){
-		double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volNode[u]) / (2 * total * total);
-		return delta;
-	};
+	auto deltaMod =
+			[&](node u, cluster C, cluster D) {
+				double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volNode[u]) / (2 * total * total);
+				return delta;
+			};
 
-
-	Luby luby;	// independent set algorithm
+	Luby luby; // independent set algorithm
 	std::vector<bool> I;
 	if (this->parallelism == "independent") {
 		INFO("finding independent set");
 		I = luby.run(G);
 	}
 
+#if 0
+	std::vector<bool> indSet(n, true);
+	bool anyChange = false;
+
+	int i = 0;
+	do {
+		anyChange = false;
+
+		G.parallelForNodes([&](node u) {
+					index neighInI = none;
+					G.forNeighborsOf(u, [&](node v) {
+								if (indSet[v]) {
+									if (neighInI != none) {
+										indSet[v] = false;
+										indSet[std::min(u, neighInI)] = false;
+										neighInI = std::max(u, neighInI);
+										anyChange = true;
+									}
+									else {
+										neighInI = v;
+									}
+								}
+							});
+				});
+		++i;
+		DEBUG("end of iteration " << i);
+
+#ifdef DEBUG
+		count summe = 0;
+		G.forNodes([&](node u) {
+					summe += indSet[u];
+				});
+		DEBUG("independent set size " << summe);
+#endif
+	}while (anyChange);
+#endif
+
 	// begin pass
 	int i = 0;
 	bool change; // change in last iteration?
-
-#pragma omp barrier
 	do {
+#pragma omp barrier
 		i += 1;
 		DEBUG("---> Louvain pass: iteration # " << i);
 		change = false; // is clustering stable?
@@ -123,33 +164,42 @@ Clustering Louvain::pass(Graph& G) {
 			cluster C = zeta[u];
 			TRACE("Processing node " << u << " of cluster " << C);
 //			std::cout << ".";
-			cluster best = none;
-			double deltaBest = -0.5;
-			G.forNeighborsOf(u, [&](node v) {
-				TRACE("Neighbor " << v << ", which is still in cluster " << zeta[v]);
-				if (zeta[v] != zeta[u]) { // consider only nodes in other clusters (and implicitly only nodes other than u)
-					cluster D = zeta[v];
-					double delta = deltaMod(u, C, D);
-					if (delta > deltaBest) {
-						deltaBest = delta;
-						best = D;
-					}
-				}
-			});
-			if (deltaBest > 0.0) { // if modularity improvement possible
-				assert (best != zeta[u] && best != none); // do not "move" to original cluster
+				cluster best = none;
+				double deltaBest = -0.5;
+				G.forNeighborsOf(u, [&](node v) {
+							TRACE("Neighbor " << v << ", which is still in cluster " << zeta[v]);
+							if (zeta[v] != zeta[u]) { // consider only nodes in other clusters (and implicitly only nodes other than u)
+								cluster D = zeta[v];
+								double delta = deltaMod(u, C, D);
+								if (delta > deltaBest) {
+									deltaBest = delta;
+									best = D;
+								}
+							}
+						});
+				if (deltaBest > 0.0) { // if modularity improvement possible
+					assert (best != zeta[u] && best != none);// do not "move" to original cluster
 
-				// update weight of edges to incident clusters
-				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
-					omp_set_lock(&mapLocks[v]);
-					incidenceWeight[v][best] += w;
-					incidenceWeight[v][zeta[u]] -= w;
-					omp_unset_lock(&mapLocks[v]);
-				});
+					// update weight of edges to incident clusters
+					G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
+#ifdef _OPENMP_
+				omp_set_lock(&mapLocks[v]);
+#endif
+				incidenceWeight[v][best] += w;
+				incidenceWeight[v][zeta[u]] -= w;
+#ifdef _OPENMP_
+				omp_unset_lock(&mapLocks[v]);
+#endif
+			});
 
 				zeta[u] = best; // move to best cluster
-				change = true;	// change to clustering has been made
-				this->anyChange = true;	// indicate globally that clustering was modified
+
+#pragma omp atomic write
+				change = true; // change to clustering has been made
+
+#pragma omp atomic write
+				this->anyChange = true; // indicate globally that clustering was modified
+
 				// update the volume of the two clusters
 #pragma omp atomic update
 				volCluster[C] -= volNode[u];
@@ -167,7 +217,7 @@ Clustering Louvain::pass(Graph& G) {
 			G.balancedParallelForNodes(moveNode);
 		} else if (this->parallelism == "independent") {
 			// try to move only the nodes in independent set
-			G.parallelForNodes([&](node u){
+			G.parallelForNodes([&](node u) {
 				if (I[u]) {
 					moveNode(u);
 				}
@@ -182,9 +232,11 @@ Clustering Louvain::pass(Graph& G) {
 
 	// free lock mem
 #pragma omp barrier
+#ifdef _OPENMP_
 	G.parallelForNodes([&](node u) {
-		omp_destroy_lock(&mapLocks[u]);
-	});
+				omp_destroy_lock(&mapLocks[u]);
+			});
+#endif
 
 	return zeta;
 }
@@ -200,8 +252,8 @@ Clustering Louvain::run(Graph& G) {
 	std::vector<std::pair<Graph, NodeMap<node> > > hierarchy; // hierarchy of graphs G^{i} and maps M^{i->i+1}
 	std::vector<NodeMap<node> > maps; // hierarchy of maps M^{i->i+1}
 
-	int h = -1; 	// finest hierarchy level
-	bool done = false;	//
+	int h = -1; // finest hierarchy level
+	bool done = false; //
 
 	Graph* graph = &G;
 
@@ -210,8 +262,8 @@ Clustering Louvain::run(Graph& G) {
 		INFO("Louvain hierarchy level " << h);
 		// one local optimization pass
 		DEBUG("starting Louvain pass");
-		Clustering clustering = this->pass(*graph);
-		if (this->anyChange){
+		Clustering clustering = this->pass(*graph); // FIXME
+		if (this->anyChange) {
 			// contract the graph according to clustering
 			DEBUG("starting contraction");
 			hierarchy.push_back(contracter.run(*graph, clustering));
@@ -223,11 +275,12 @@ Clustering Louvain::run(Graph& G) {
 		} else {
 			done = true; // if clustering was not modified, do not contract and exit loop
 		}
-	} while (! done);
+	} while (!done);
 
 	DEBUG("starting projection");
 	// project fine graph to result clustering
-	Clustering result = projector.projectCoarseGraphToFinestClustering(*graph, G, maps);
+	Clustering result = projector.projectCoarseGraphToFinestClustering(*graph,
+			G, maps);
 	return result;
 }
 
