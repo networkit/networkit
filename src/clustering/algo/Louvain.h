@@ -15,6 +15,8 @@
 #include "../../independentset/Luby.h"
 #include "../../Globals.h"
 
+#include "omp.h"
+
 namespace EnsembleClustering {
 
 class Louvain: public EnsembleClustering::Clusterer {
