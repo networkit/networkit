@@ -21,7 +21,8 @@ Louvain::~Louvain() {
 Clustering Louvain::pass(Graph& G) {
 
 	// init clustering to singletons
-	Clustering zeta(G.numberOfNodes());
+	count n = G.numberOfNodes();
+	Clustering zeta(n);
 	zeta.allToSingletons();
 
 	// $\omega(E)$
@@ -37,6 +38,12 @@ Clustering Louvain::pass(Graph& G) {
 				incidenceWeight[u][C] += w;
 			}
 		});
+	});
+
+	// create and init locks
+	std::vector<omp_lock_t> mapLocks(n);
+	G.parallelForNodes([&](node u) {
+		omp_init_lock(&mapLocks[u]);
 	});
 
 
@@ -70,7 +77,9 @@ Clustering Louvain::pass(Graph& G) {
 
 	// $\omega(u | C \ u)$
 	auto omegaCut = [&](node u, cluster C) {
-		edgeweight w = incidenceWeight[u][C];
+		edgeweight w = 0.0;
+#pragma omp atomic read
+		w = incidenceWeight[u][C];
 		return w;
 
 //		edgeweight sum = 0.0;
@@ -99,11 +108,11 @@ Clustering Louvain::pass(Graph& G) {
 		I = luby.run(G);
 	}
 
-	// FIXME: parallel unit tests lead to hanging execution (deadlocks or infinite loops?) sometimes
-
 	// begin pass
 	int i = 0;
 	bool change; // change in last iteration?
+
+#pragma omp barrier
 	do {
 		i += 1;
 		DEBUG("---> Louvain pass: iteration # " << i);
@@ -114,7 +123,7 @@ Clustering Louvain::pass(Graph& G) {
 			cluster C = zeta[u];
 			TRACE("Processing node " << u << " of cluster " << C);
 //			std::cout << ".";
-			cluster best;
+			cluster best = none;
 			double deltaBest = -0.5;
 			G.forNeighborsOf(u, [&](node v) {
 				TRACE("Neighbor " << v << ", which is still in cluster " << zeta[v]);
@@ -128,22 +137,14 @@ Clustering Louvain::pass(Graph& G) {
 				}
 			});
 			if (deltaBest > 0.0) { // if modularity improvement possible
-				assert (best != zeta[u]); // do not "move" to original cluster
+				assert (best != zeta[u] && best != none); // do not "move" to original cluster
 
 				// update weight of edges to incident clusters
 				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
-					if (incidenceWeight[v][best] == 0) {
-#pragma omp critical
-						{
-							incidenceWeight[v][best] = w;
-						}
-					}
-					else {
-#pragma omp atomic update
-						incidenceWeight[v][best] += w;
-					}
-#pragma omp atomic update
+					omp_set_lock(&mapLocks[v]);
+					incidenceWeight[v][best] += w;
 					incidenceWeight[v][zeta[u]] -= w;
+					omp_unset_lock(&mapLocks[v]);
 				});
 
 				zeta[u] = best; // move to best cluster
@@ -178,6 +179,12 @@ Clustering Louvain::pass(Graph& G) {
 
 //		std::cout << std::endl;
 	} while (change && i < MAX_LOUVAIN_ITERATIONS);
+
+	// free lock mem
+#pragma omp barrier
+	G.parallelForNodes([&](node u) {
+		omp_destroy_lock(&mapLocks[u]);
+	});
 
 	return zeta;
 }
