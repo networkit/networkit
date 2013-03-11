@@ -75,27 +75,11 @@ Clustering Louvain::pass(Graph& G) {
 	auto volClusterMinusNode = [&](cluster C, node x) {
 		double volC = 0.0;
 		double volN = 0.0;
-//#ifdef _OPENMP
-//		DEBUG("Try to acquire lock for pos " << C);
-//		omp_set_lock(&mapLocks[C]);
-//#endif
 #pragma omp atomic read
 		volC = volCluster[C];
-//#ifdef _OPENMP
-//		omp_unset_lock(&mapLocks[C]);
-//		DEBUG("Released lock for pos " << C);
-//#endif
 		if (zeta[x] == C) {
-//#ifdef _OPENMP
-//			DEBUG("Try to acquire lock for pos " << x);
-//			omp_set_lock(&mapLocks[x]);
-//#endif
 #pragma omp atomic read
 			volN = volNode[x];
-//#ifdef _OPENMP
-//			omp_unset_lock(&mapLocks[x]);
-//			DEBUG("Released lock for pos " << x);
-//#endif
 			return volC - volN;
 		} else {
 			return volC;
@@ -106,31 +90,22 @@ Clustering Louvain::pass(Graph& G) {
 	auto omegaCut = [&](node u, cluster C) {
 		edgeweight w = 0.0;
 #ifdef _OPENMP
-		DEBUG("Try to acquire lock for pos " << u);
-			omp_set_lock(&mapLocks[u]);
+		omp_set_lock(&mapLocks[u]);
 #endif
-			w = incidenceWeight[u][C];
+		// #pragma omp atomic read
+		w = incidenceWeight[u][C];
 #ifdef _OPENMP
-			omp_unset_lock(&mapLocks[u]);
-			DEBUG("Released lock for pos " << u);
+		omp_unset_lock(&mapLocks[u]);
 #endif
-			return w;
-		};
+		return w;
+	};
 
 	// difference in modularity when moving node u from cluster C to D
 	auto deltaMod =
 			[&](node u, cluster C, cluster D) {
-//#ifdef _OPENMP
-//		DEBUG("Try to acquire lock for pos " << u);
-//			omp_set_lock(&mapLocks[u]);
-//#endif
 			double volN = 0.0;
 #pragma omp atomic read
 			volN = volNode[u];
-//#ifdef _OPENMP
-//			omp_unset_lock(&mapLocks[u]);
-//			DEBUG("Released lock for pos " << u);
-//#endif
 			double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volN) / (2 * total * total);
 			return delta;
 		};
@@ -142,52 +117,17 @@ Clustering Louvain::pass(Graph& G) {
 		I = luby.run(G);
 	}
 
-#if 0
-	std::vector<bool> indSet(n, true);
-	bool change = false;
-
-	int i = 0;
-	do {
-		change = false;
-
-		G.parallelForNodes([&](node u) {
-					index neighInI = none;
-					G.forNeighborsOf(u, [&](node v) {
-								if (indSet[v]) {
-									if (neighInI != none) {
-										indSet[v] = false;
-										indSet[std::min(u, neighInI)] = false;
-										neighInI = std::max(u, neighInI);
-										change = true;
-									}
-									else {
-										neighInI = v;
-									}
-								}
-							});
-				});
-		++i;
-		DEBUG("end of iteration " << i);
-
-#ifdef DEBUG
-		count summe = 0;
-		G.forNodes([&](node u) {
-					summe += indSet[u];
-				});
-		DEBUG("independent set size " << summe);
-#endif
-	} while (change);
-#endif
 
 	// begin pass
 	int i = 0;
 	bool change = false; // change in last iteration?
 	do {
-#pragma omp barrier
 		i += 1;
 		DEBUG("---> Louvain pass: iteration # " << i << ", parallelism: " << this->parallelism);
 		change = false; // is clustering stable?
 
+
+		// TODO: loop -> moveNode
 #pragma omp parallel for \
 		shared(change, zeta, volCluster, volNode) \
 		schedule(guided) // FIXME
@@ -204,29 +144,13 @@ Clustering Louvain::pass(Graph& G) {
 			cluster D = none;
 			double deltaBest = -0.5;
 
-//#ifdef _OPENMP
-//			DEBUG("Try to acquire lock for pos " << u);
-//			omp_set_lock(&mapLocks[u]);
-//#endif
 #pragma omp atomic read
 			C = zeta[u];
-//#ifdef _OPENMP
-//			omp_unset_lock(&mapLocks[u]);
-//			DEBUG("Released lock for pos " << u);
-//#endif
 
 //			TRACE("Processing neighborhood of node " << u << ", which is in cluster " << C);
 			G.forNeighborsOf(u, [&](node v) {
-//#ifdef _OPENMP
-//				DEBUG("Try to acquire lock for pos " << v);
-//				omp_set_lock(&mapLocks[v]);
-//#endif
 #pragma omp atomic read
 				D = zeta[v];
-//#ifdef _OPENMP
-//				omp_unset_lock(&mapLocks[v]);
-//				DEBUG("Released lock for pos " << v);
-//#endif
 //				TRACE("Neighbor " << v << ", which is still in cluster " << zeta[v]);
 				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 					double delta = deltaMod(u, C, D);
@@ -254,44 +178,20 @@ Clustering Louvain::pass(Graph& G) {
 					DEBUG("Released lock for pos " << v);
 #endif
 				});
-//#ifdef _OPENMP
-//				DEBUG("Try to acquire lock for pos " << u);
-//				omp_set_lock(&mapLocks[u]);
-//#endif
 #pragma omp atomic write
 				zeta[u] = best; // move to best cluster
 #pragma omp atomic read
 				volN = volNode[u];
-//#ifdef _OPENMP
-//				omp_unset_lock(&mapLocks[u]);
-//				DEBUG("Released lock for pos " << u);
-//#endif
-
 #pragma omp atomic write
 				change = true; // change to clustering has been made
-
 #pragma omp atomic write
 				this->anyChange = true; // indicate globally that clustering was modified
 
 				// update the volume of the two clusters
-//#ifdef _OPENMP
-//				DEBUG("Try to acquire lock for pos " << C);
-//				omp_set_lock(&mapLocks[C]);
-//#endif
 #pragma omp atomic update
 				volCluster[C] -= volN;
-//#ifdef _OPENMP
-//				omp_unset_lock(&mapLocks[C]);
-//				DEBUG("Released lock for pos " << C);
-//				DEBUG("Try to acquire lock for pos " << best);
-//				omp_set_lock(&mapLocks[best]);
-//#endif
 #pragma omp atomic update
 				volCluster[best] += volN;
-//#ifdef _OPENMP
-//				omp_unset_lock(&mapLocks[best]);
-//				DEBUG("Released lock for pos " << best);
-//#endif
 			}
 //		};
 		}
@@ -321,9 +221,8 @@ Clustering Louvain::pass(Graph& G) {
 	} while (change && i < MAX_LOUVAIN_ITERATIONS);
 
 	// free lock mem
-#pragma omp barrier
-	DEBUG("about to destroy locks in Louvain pass");
 #ifdef _OPENMP
+	DEBUG("about to destroy locks in Louvain pass");
 	G.parallelForNodes([&](node u) {
 				omp_destroy_lock(&mapLocks[u]);
 			});
