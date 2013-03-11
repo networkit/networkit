@@ -41,15 +41,11 @@ Clustering Louvain::pass(Graph& G) {
 	});
 
 #ifdef _OPENMP
-	const int NUM_THREADS = omp_get_num_threads();
-
-#pragma omp barrier
 	// create and init locks
 	std::vector<omp_lock_t> mapLocks(n);
 	G.parallelForNodes([&](node u) {
 				omp_init_lock(&mapLocks[u]);
 			});
-#pragma omp barrier
 #endif
 
 	// modularity update formula for node moves
@@ -69,7 +65,6 @@ Clustering Louvain::pass(Graph& G) {
 		volCluster[C] = volNode[u];
 	});
 	// end of initialization, set barrier for safety reasons
-#pragma omp barrier
 
 	// $\vol(C \ {x})$ - volume of cluster C excluding node x
 	auto volClusterMinusNode = [&](cluster C, node x) {
@@ -206,11 +201,11 @@ Clustering Louvain::pass(Graph& G) {
 		}
 
 //		std::cout << std::endl;
-#pragma omp barrier
 	} while (change && i < MAX_LOUVAIN_ITERATIONS);
 
 	// free lock mem
 #ifdef _OPENMP
+#pragma omp barrier
 	DEBUG("about to destroy locks in Louvain pass");
 	G.parallelForNodes([&](node u) {
 				omp_destroy_lock(&mapLocks[u]);

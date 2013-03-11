@@ -140,7 +140,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		// count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
 		// INFO("number of active nodes: " << nActive);
 
-
+// TODO: make this forNodes loop
 #pragma omp parallel for schedule(guided) shared(nUpdated)
 		for (int64_t i = 0; i < n; ++i) {
 			node v = nodes[i];
