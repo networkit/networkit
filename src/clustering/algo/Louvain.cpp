@@ -126,17 +126,8 @@ Clustering Louvain::pass(Graph& G) {
 		DEBUG("---> Louvain pass: iteration # " << i << ", parallelism: " << this->parallelism);
 		change = false; // is clustering stable?
 
-
-		// TODO: loop -> moveNode
-#pragma omp parallel for \
-		shared(change, zeta, volCluster, volNode) \
-		schedule(guided) // FIXME
-
-		for (node u = 0; u < n; ++u) {
-			// call here
-
 		// try to improve modularity by moving a node to neighboring clusters
-//		auto moveNode = [&](node u) {
+		auto moveNode = [&](node u) {
 //			std::cout << u << " ";
 
 			cluster best = none;
@@ -193,28 +184,26 @@ Clustering Louvain::pass(Graph& G) {
 #pragma omp atomic update
 				volCluster[best] += volN;
 			}
-//		};
-		}
+		};
 
-		// FIXME: uncomment
 		// apply node movement according to parallelization strategy
-//		if (this->parallelism == "none") {
-//			G.forNodes(moveNode);
-//		} else if (this->parallelism == "naive") {
-//			G.parallelForNodes(moveNode);
-//		} else if (this->parallelism == "naive-balanced") {
-//			G.balancedParallelForNodes(moveNode);
-//		} else if (this->parallelism == "independent") {
-//			// try to move only the nodes in independent set
-//			G.parallelForNodes([&](node u) {
-//				if (I[u]) {
-//					moveNode(u);
-//				}
-//			});
-//		} else {
-//			ERROR("unknown parallelization strategy: " << this->parallelism);
-//			exit(1);
-//		}
+		if (this->parallelism == "none") {
+			G.forNodes(moveNode);
+		} else if (this->parallelism == "naive") {
+			G.parallelForNodes(moveNode);
+		} else if (this->parallelism == "naive-balanced") {
+			G.balancedParallelForNodes(moveNode);
+		} else if (this->parallelism == "independent") {
+			// try to move only the nodes in independent set
+			G.parallelForNodes([&](node u) {
+				if (I[u]) {
+					moveNode(u);
+				}
+			});
+		} else {
+			ERROR("unknown parallelization strategy: " << this->parallelism);
+			exit(1);
+		}
 
 //		std::cout << std::endl;
 #pragma omp barrier
