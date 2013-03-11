@@ -766,7 +766,8 @@ inline void EnsembleClustering::Graph::parallelForWeightedEdges(
 
 template<typename L>
 inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u, L handle) {
-	for (index i = 0; i < adja[u].size(); ++i) {
+	const count asize = (count) adja[u].size();
+	for (index i = 0; i < asize; ++i) {
 		node v = adja[u][i];
 		if (v != none) {
 			edgeweight ew = eweights[u][i];
