@@ -411,7 +411,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			} else if (finalClustererArg == "Agglomerative") {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "Louvain") {
-				final = new Louvain("naive-balanced"); // TODO: parallel!
+				final = new Louvain("balanced");
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);

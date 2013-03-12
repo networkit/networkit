@@ -184,9 +184,9 @@ Clustering Louvain::pass(Graph& G) {
 		// apply node movement according to parallelization strategy
 		if (this->parallelism == "none") {
 			G.forNodes(moveNode);
-		} else if (this->parallelism == "naive") {
+		} else if (this->parallelism == "simple") {
 			G.parallelForNodes(moveNode);
-		} else if (this->parallelism == "naive-balanced") {
+		} else if (this->parallelism == "balanced") {
 			G.balancedParallelForNodes(moveNode);
 		} else if (this->parallelism == "independent") {
 			// try to move only the nodes in independent set
