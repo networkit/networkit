@@ -213,8 +213,8 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS,
-	ENSEMBLE, SOLO, NOREC, NORM_VOTES, SCALESTRENGTH,
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS, ENSEMBLE, SOLO,
+	 NOREC, NORM_VOTES, SCALESTRENGTH,
 	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
 {
@@ -364,7 +364,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 				algo = new Louvain(algoParams);
 			}
 		} else if (algoName == "EnsembleMultiLevel") {
-			// TODO:
+			// TODO: call multilevel algorithm
 		} else if (algoName == "EnsemblePreprocessing") {
 			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
 			// parse params

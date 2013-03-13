@@ -94,7 +94,7 @@ public:
 	/**
 	 * Return string representation.
 	 */
-	// TODO: virtual std::string toString() =0;
+	// TODO: string representation of IndexMap
 
 
 

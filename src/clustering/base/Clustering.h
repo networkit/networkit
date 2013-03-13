@@ -213,12 +213,6 @@ public:
 
 
 
-	// DEBUG
-
-	// TODO: ugly, remove
-	void print() const;
-
-
 
 };
 
