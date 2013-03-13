@@ -179,13 +179,6 @@ std::vector<count> Clustering::clusterSizes() {
 	return clusterSizes;
 }
 
-void Clustering::print() const {
-	std::cout << "{";
-	for (int64_t i = 0; i < this->n; ++i) {
-		std::cout << i << ":" << this->data[i] << ", ";
-	}
-	std::cout << "}" << std::endl;
-}
 
 } /* namespace EnsembleClustering */
 

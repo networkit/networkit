@@ -236,7 +236,7 @@ Clustering Louvain::run(Graph& G) {
 		INFO("Louvain hierarchy level " << h);
 		// one local optimization pass
 		DEBUG("starting Louvain pass");
-		Clustering clustering = this->pass(*graph); // FIXME
+		Clustering clustering = this->pass(*graph);
 		if (this->anyChange) {
 			// contract the graph according to clustering
 			DEBUG("starting contraction");

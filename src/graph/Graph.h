@@ -705,7 +705,7 @@ inline void EnsembleClustering::Graph::parallelForNodePairs(L handle) const {
 
 template<typename L>
 inline void EnsembleClustering::Graph::breadthFirstEdgesFrom(node r, L handle) {
-	// TODO:
+	// TODO: implement BFS iterator for edges
 	throw std::runtime_error("TODO");
 }
 
@@ -821,7 +821,7 @@ inline void EnsembleClustering::Graph::forNodesWithAttribute(std::string attrKey
 //	}
 
 
-	// TODO:
+	// TODO: iterate over nodes with atributes
 	throw std::runtime_error("TODO");
 }
 
