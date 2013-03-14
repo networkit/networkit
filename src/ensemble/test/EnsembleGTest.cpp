@@ -22,6 +22,8 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 	}
 	Clusterer* finalClusterer = new LabelPropagation();
 	ensembleClusterer.setFinalClusterer(*finalClusterer);
+	Overlapper* overlapper = new HashingOverlapper();
+	ensembleClusterer.setOverlapper(*overlapper);
 
 	// generate clustered random graph with obvious community structure
 	GraphGenerator graphGen;

@@ -205,7 +205,7 @@ Clustering LabelPropagation::run(Graph& G) {
 std::string LabelPropagation::toString() const {
 	std::stringstream strm;
 #ifdef _OPENMP_
-	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ",threads=" << omp_get_max_threads() << ")";
+	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ",OpenMP)";
 #else
 	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ",threads=1)";
 #endif
