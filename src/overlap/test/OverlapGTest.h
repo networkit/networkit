@@ -2,7 +2,7 @@
  * OverlapGTest.h
  *
  *  Created on: 21.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef OVERLAPGTEST_H_

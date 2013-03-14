@@ -2,7 +2,7 @@
  * Timer.cpp
  *
  *  Created on: 14.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Timer.h"

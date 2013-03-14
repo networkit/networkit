@@ -2,7 +2,7 @@
  * EnsembleGTest.h
  *
  *  Created on: 31.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef ENSEMBLEGTEST_H_

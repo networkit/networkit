@@ -2,7 +2,7 @@
  * log.h
  *
  *  Created on: 28.11.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef LOG_H_

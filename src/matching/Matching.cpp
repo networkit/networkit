@@ -2,7 +2,7 @@
  * Matching.cpp
  *
  *  Created on: 03.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Matching.h"

@@ -2,7 +2,7 @@
  * EnsembleClusterer.cpp
  *
  *  Created on: 17.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "EnsembleClusterer.h"

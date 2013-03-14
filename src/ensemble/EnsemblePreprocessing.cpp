@@ -2,7 +2,7 @@
  * EnsemblePreprocessing.cpp
  *
  *  Created on: 26.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "EnsemblePreprocessing.h"

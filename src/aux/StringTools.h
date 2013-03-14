@@ -2,7 +2,7 @@
  * StringTools.h
  *
  *  Created on: 11.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef STRINGTOOLS_H_

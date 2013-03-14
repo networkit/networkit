@@ -2,7 +2,7 @@
  * Graph2GTest.h
  *
  *  Created on: 04.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef GRAPH2GTEST_H_

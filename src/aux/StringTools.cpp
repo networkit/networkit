@@ -2,7 +2,7 @@
  * StringTools.cpp
  *
  *  Created on: 11.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "StringTools.h"

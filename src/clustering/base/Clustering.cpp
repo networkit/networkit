@@ -2,7 +2,7 @@
  * Clustering.cpp
  *
  *  Created on: 31.10.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Clustering.h"

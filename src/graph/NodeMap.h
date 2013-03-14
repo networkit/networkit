@@ -2,7 +2,7 @@
  * NodeMap.h
  *
  *  Created on: 05.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef NODEMAP_H_

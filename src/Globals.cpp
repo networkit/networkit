@@ -2,7 +2,7 @@
  * Globals.cpp
  *
  *  Created on: 06.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 bool PRINT_PROGRESS = true;

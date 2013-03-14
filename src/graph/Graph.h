@@ -1,8 +1,8 @@
 /*
- * Graph2.h
+ * Graph.h
  *
  *  Created on: 04.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
 #ifndef GRAPH_H_
