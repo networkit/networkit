@@ -1,8 +1,9 @@
 //============================================================================
 // Name        : EnsembleClustering.cpp
-// Author      : Christian Staudt
+// Author      : Christian Staudt (christian.staudt@kit.edu),
+//				 Henning Meyerhenke (henning.meyerhenke@kit.edu)
 // Version     :
-// Copyright   : © 2012, Christian Staudt
+// Copyright   : © 2012, Christian Staudt, Henning Meyerhenke
 // Description : Combining parallel clustering and ensemble learning
 //============================================================================
 
@@ -213,8 +214,8 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS,
-	ENSEMBLE, SOLO, NOREC, NORM_VOTES, SCALESTRENGTH,
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS, ENSEMBLE, SOLO,
+	 NOREC, NORM_VOTES, SCALESTRENGTH,
 	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
 {
@@ -364,7 +365,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 				algo = new Louvain(algoParams);
 			}
 		} else if (algoName == "EnsembleMultiLevel") {
-			// TODO:
+			// TODO: call multilevel algorithm
 		} else if (algoName == "EnsemblePreprocessing") {
 			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
 			// parse params
@@ -411,7 +412,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			} else if (finalClustererArg == "Agglomerative") {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "Louvain") {
-				final = new Louvain("naive-balanced"); // TODO: parallel!
+				final = new Louvain("balanced");
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);

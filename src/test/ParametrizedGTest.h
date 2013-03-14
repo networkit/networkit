@@ -2,7 +2,7 @@
  * ParametrizedGTest.h
  *
  *  Created on: 16.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef PARAMETRIZEDGTEST_H_

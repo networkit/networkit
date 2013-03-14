@@ -2,7 +2,7 @@
  * METISGraphWriter.cpp
  *
  *  Created on: 30.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "METISGraphWriter.h"

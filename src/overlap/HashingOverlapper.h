@@ -2,7 +2,7 @@
  * HashingOverlapper.h
  *
  *  Created on: 31.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef HASHINGOVERLAPPER_H_

@@ -1,8 +1,8 @@
 /*
- * Graph2.h
+ * Graph.h
  *
  *  Created on: 04.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
 #ifndef GRAPH_H_
@@ -705,7 +705,7 @@ inline void EnsembleClustering::Graph::parallelForNodePairs(L handle) const {
 
 template<typename L>
 inline void EnsembleClustering::Graph::breadthFirstEdgesFrom(node r, L handle) {
-	// TODO:
+	// TODO: implement BFS iterator for edges
 	throw std::runtime_error("TODO");
 }
 
@@ -821,7 +821,7 @@ inline void EnsembleClustering::Graph::forNodesWithAttribute(std::string attrKey
 //	}
 
 
-	// TODO:
+	// TODO: iterate over nodes with atributes
 	throw std::runtime_error("TODO");
 }
 

@@ -2,7 +2,7 @@
  * OverlapGTest.cpp
  *
  *  Created on: 21.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "OverlapGTest.h"
@@ -137,36 +137,5 @@ TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 
 }
 
-
-// FIXME: hash function produces collisions for small cluster IDs, vertex is moved to other cluster
-// without being assigned before => assertion fails in moveToCluster
-//TEST_F(OverlapGTest, testHashingOverlapperCollision) {
-//	GraphGenerator graphGen;
-//	int64_t n = 10;
-//	Graph G = graphGen.makeCompleteGraph(n);
-//
-//	Clustering first(n);
-//	Clustering second(n);
-//
-//	// assign nodes to 2 structurally identical but differently numbered clusters
-//	G.forallNodes([&](node v){
-//		if ((v % 2) == 0) {
-//			first.moveToCluster(1, v);
-//			second.moveToCluster(2, v);
-//		} else {
-//			first.moveToCluster(2, v);
-//			second.moveToCluster(1, v);
-//		}
-//	});
-//
-//	std::vector<Clustering> clusterings;
-//	clusterings.push_back(first);
-//	clusterings.push_back(second);
-//
-//	HashingOverlapper over;
-//	Clustering core = over.run(G, clusterings);
-//
-//	EXPECT_EQ(2, core.numberOfClusters()) << "there should be 2 clusters in the core clustering";
-//}
 
 } /* namespace EnsembleClustering */

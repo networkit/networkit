@@ -2,7 +2,7 @@
  * Clustering.h
  *
  *  Created on: 31.10.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef CLUSTERING_H_
@@ -211,12 +211,6 @@ public:
 	std::vector<count> clusterSizes();
 
 
-
-
-	// DEBUG
-
-	// TODO: ugly, remove
-	void print() const;
 
 
 

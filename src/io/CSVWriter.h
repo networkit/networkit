@@ -2,7 +2,7 @@
  * CSVWriter.h
  *
  *  Created on: 11.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef CSVWRITER_H_

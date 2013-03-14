@@ -2,7 +2,7 @@
  * Clustering.cpp
  *
  *  Created on: 31.10.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Clustering.h"
@@ -179,13 +179,6 @@ std::vector<count> Clustering::clusterSizes() {
 	return clusterSizes;
 }
 
-void Clustering::print() const {
-	std::cout << "{";
-	for (int64_t i = 0; i < this->n; ++i) {
-		std::cout << i << ":" << this->data[i] << ", ";
-	}
-	std::cout << "}" << std::endl;
-}
 
 } /* namespace EnsembleClustering */
 

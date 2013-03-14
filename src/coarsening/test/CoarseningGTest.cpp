@@ -2,7 +2,7 @@
  * CoarseningGTest.cpp
  *
  *  Created on: 20.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "CoarseningGTest.h"

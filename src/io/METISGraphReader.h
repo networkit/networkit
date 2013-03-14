@@ -2,7 +2,7 @@
  * METISGraphReader.h
  *
  *  Created on: 17.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef METISGRAPHREADER_H_

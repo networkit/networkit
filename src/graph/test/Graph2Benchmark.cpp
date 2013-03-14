@@ -2,7 +2,7 @@
  * Graph2Benchmark.cpp
  *
  *  Created on: 05.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Graph2Benchmark.h"
@@ -121,7 +121,7 @@ TEST_F(Graph2Benchmark, parallelEdgeInsertion) {
 	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
-	// TODO:
+	// TODO: test parallel edge insertion
 	EXPECT_TRUE(false) << "TODO";
 
 	run.stop();
@@ -166,7 +166,7 @@ TEST_F(Graph2Benchmark, parallelEdgeRemoval) {
 	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
-	// TODO:
+	// TODO: test parallel edge removal
 	EXPECT_TRUE(false) << "TODO";
 
 	run.stop();
@@ -209,7 +209,7 @@ TEST_F(Graph2Benchmark, parallelEdgeIteration) {
 	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
-	// TODO:
+	// TODO: benchmark parallel edge iteration
 	EXPECT_TRUE(false) << "TODO";
 
 	run.stop();

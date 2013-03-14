@@ -2,7 +2,7 @@
  * Noise.h
  *
  *  Created on: 29.11.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef NOISE_H_

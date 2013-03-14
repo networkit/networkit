@@ -2,7 +2,7 @@
  * GraphGeneratorGTest.cpp
  *
  *  Created on: 31.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "GraphGeneratorGTest.h"

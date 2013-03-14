@@ -2,7 +2,7 @@
  * GraphIO.cpp
  *
  *  Created on: 09.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "GraphIO.h"

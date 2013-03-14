@@ -2,7 +2,7 @@
  * ClusteringAlgoGTest.h
  *
  *  Created on: 10.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef CLUSTERINGALGOGTEST_H_

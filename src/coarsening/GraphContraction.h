@@ -2,7 +2,7 @@
  * GraphContraction.h
  *
  *  Created on: 25.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef GRAPHCONTRACTION_H_

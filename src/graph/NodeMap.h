@@ -2,7 +2,7 @@
  * NodeMap.h
  *
  *  Created on: 05.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef NODEMAP_H_
@@ -49,7 +49,7 @@ public:
 	inline const T& operator[](const node& u) const;
 
 
-	// TODO: virtual std::string toString();
+	// TODO: string representation of NodeMap
 
 	//template<typename T>
 	friend std::ostream& operator<< <> (std::ostream& os, const NodeMap<T>& m);

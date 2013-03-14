@@ -2,7 +2,7 @@
  * METISParser.h
  *
  *  Created on: 27.11.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef METISPARSER_H_

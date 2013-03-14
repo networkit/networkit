@@ -2,7 +2,7 @@
  * IndependentSetFinder.cpp
  *
  *  Created on: 27.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "IndependentSetFinder.h"

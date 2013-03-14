@@ -2,7 +2,7 @@
  * Functions.h
  *
  *  Created on: 02.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef FUNCTIONS_H_

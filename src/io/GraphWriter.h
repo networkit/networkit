@@ -2,7 +2,7 @@
  * GraphWriter.h
  *
  *  Created on: 30.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef GRAPHWRITER_H_

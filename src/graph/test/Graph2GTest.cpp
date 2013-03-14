@@ -2,7 +2,7 @@
  * Graph2GTest.cpp
  *
  *  Created on: 04.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Graph2GTest.h"
