@@ -2,7 +2,7 @@
  * Globals.h
  *
  *  Created on: 06.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef GLOBALS_H_

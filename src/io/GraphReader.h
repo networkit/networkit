@@ -2,7 +2,7 @@
  * GraphReader.h
  *
  *  Created on: 17.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef GRAPHREADER_H_

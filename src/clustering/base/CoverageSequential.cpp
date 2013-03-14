@@ -2,7 +2,7 @@
  * CoverageSequential.cpp
  *
  *  Created on: 14.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "CoverageSequential.h"
@@ -45,7 +45,6 @@ double CoverageSequential::getQuality(const Clustering& zeta, Graph& G) {
 #ifdef DEBUG
 					if ((c >= zeta.upperBound()) || (c < zeta.lowerBound())) {
 						ERROR("c=" << c << " = zeta(" << u << ") is larger than upper bound: " << zeta.upperBound());
-						ERROR("zeta: "); zeta.print();
 					}
 #endif
 					assert ((zeta.lowerBound()) <= c && (c < zeta.upperBound()));

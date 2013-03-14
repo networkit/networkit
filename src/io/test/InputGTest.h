@@ -2,7 +2,7 @@
  * InputGTest.h
  *
  *  Created on: 12.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef INPUTGTEST_H_

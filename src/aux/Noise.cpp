@@ -2,7 +2,7 @@
  * Noise.cpp
  *
  *  Created on: 29.11.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Noise.h"

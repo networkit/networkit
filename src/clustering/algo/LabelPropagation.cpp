@@ -2,7 +2,7 @@
  * LabelPropagation.cpp
  *
  *  Created on: 07.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "LabelPropagation.h"

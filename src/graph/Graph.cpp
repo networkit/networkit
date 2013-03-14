@@ -2,7 +2,7 @@
  * Graph.cpp
  *
  *  Created on: 04.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
 #include "Graph.h"
@@ -22,7 +22,6 @@ Graph::~Graph() {
 }
 
 
-// TODO: replace by for_each
 index Graph::find(node u, node v) const {
 	index vi = 0;
 	for (node x : this->adja[u]) {
@@ -142,7 +141,7 @@ node Graph::addNode() {
 
 void Graph::extendNodeRange(int64_t n) {
 	throw std::runtime_error("TODO");
-	// TODO:
+	// TODO: extend node range
 }
 
 bool Graph::isEmpty() {

@@ -2,7 +2,7 @@
  * Clusterer.cpp
  *
  *  Created on: 30.10.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Clusterer.h"
