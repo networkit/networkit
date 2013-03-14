@@ -2,7 +2,7 @@
  * CoverageSequential.h
  *
  *  Created on: 14.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef COVERAGESEQUENTIAL_H_

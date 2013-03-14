@@ -2,7 +2,7 @@
  * GraphBenchmark.h
  *
  *  Created on: 01.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef GRAPHBENCHMARK_H_

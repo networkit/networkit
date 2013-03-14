@@ -2,7 +2,7 @@
  * AuxGTest.h
  *
  *  Created on: 10.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef AUXGTEST_H_

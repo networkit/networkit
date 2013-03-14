@@ -2,7 +2,7 @@
  * Graph2Benchmark.cpp
  *
  *  Created on: 05.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Graph2Benchmark.h"

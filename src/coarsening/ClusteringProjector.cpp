@@ -2,7 +2,7 @@
  * ClusteringProjector.cpp
  *
  *  Created on: 07.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "ClusteringProjector.h"

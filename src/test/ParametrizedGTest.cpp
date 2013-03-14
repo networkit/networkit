@@ -2,7 +2,7 @@
  * ParametrizedGTest.cpp
  *
  *  Created on: 16.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "ParametrizedGTest.h"

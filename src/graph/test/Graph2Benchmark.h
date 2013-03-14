@@ -2,7 +2,7 @@
  * Graph2Benchmark.h
  *
  *  Created on: 05.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef GRAPH2BENCHMARK_H_

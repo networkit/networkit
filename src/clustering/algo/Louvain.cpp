@@ -2,7 +2,7 @@
  * Louvain.cpp
  *
  *  Created on: 25.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
 #include "Louvain.h"

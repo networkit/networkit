@@ -2,7 +2,7 @@
  * ClusteringReader.h
  *
  *  Created on: 15.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef CLUSTERINGREADER_H_

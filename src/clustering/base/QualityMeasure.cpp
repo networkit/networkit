@@ -2,7 +2,7 @@
  * QualityMeasure.cpp
  *
  *  Created on: 10.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "QualityMeasure.h"

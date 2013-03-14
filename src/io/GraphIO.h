@@ -2,7 +2,7 @@
  * GraphIO.h
  *
  *  Created on: 09.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef GRAPHIO_H_

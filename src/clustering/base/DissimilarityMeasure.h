@@ -2,7 +2,7 @@
  * DissimilarityMeasure.h
  *
  *  Created on: 19.01.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef DISSIMILARITYMEASURE_H_

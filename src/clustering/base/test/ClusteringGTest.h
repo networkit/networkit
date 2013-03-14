@@ -2,7 +2,7 @@
  * ClusteringTest.h
  *
  *  Created on: 12.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef CLUSTERINGGTEST_H_

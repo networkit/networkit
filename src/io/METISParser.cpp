@@ -2,7 +2,7 @@
  * METISParser.cpp
  *
  *  Created on: 27.11.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "METISParser.h"

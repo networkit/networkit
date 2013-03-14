@@ -1,8 +1,9 @@
 //============================================================================
 // Name        : EnsembleClustering.cpp
-// Author      : Christian Staudt
+// Author      : Christian Staudt (christian.staudt@kit.edu),
+//				 Henning Meyerhenke (henning.meyerhenke@kit.edu)
 // Version     :
-// Copyright   : © 2012, Christian Staudt
+// Copyright   : © 2012, Christian Staudt, Henning Meyerhenke
 // Description : Combining parallel clustering and ensemble learning
 //============================================================================
 

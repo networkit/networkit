@@ -2,7 +2,7 @@
  * OverlapGTest.cpp
  *
  *  Created on: 21.12.2012
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "OverlapGTest.h"

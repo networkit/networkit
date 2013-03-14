@@ -2,7 +2,7 @@
  * ProgressMeter.cpp
  *
  *  Created on: 02.02.2013
- *      Author: cls
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "ProgressMeter.h"
