@@ -21,6 +21,8 @@ HashingOverlapper::~HashingOverlapper() {
 Clustering HashingOverlapper::run(Graph& G,
 		std::vector<Clustering>& clusterings) {
 
+	DEBUG("Starting hashing overlapper");
+
 	// hash function sdbm
 	auto sdbm = [](int64_t cid) {
 		unsigned char* str = (unsigned char*) &cid;
