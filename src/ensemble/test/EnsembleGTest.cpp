@@ -20,10 +20,10 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 		Clusterer* baseClusterer = new LabelPropagation();
 		ensembleClusterer.addBaseClusterer(*baseClusterer);
 	}
-	Clusterer* finalClusterer = new LabelPropagation();
-	ensembleClusterer.setFinalClusterer(*finalClusterer);
 	Overlapper* overlapper = new HashingOverlapper();
 	ensembleClusterer.setOverlapper(*overlapper);
+	Clusterer* finalClusterer = new LabelPropagation();
+	ensembleClusterer.setFinalClusterer(*finalClusterer);
 
 	// generate clustered random graph with obvious community structure
 	GraphGenerator graphGen;
@@ -85,9 +85,10 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph_ManyBaseClusterers) {
 		Clusterer* baseClusterer = new LabelPropagation();
 		ensembleClusterer.addBaseClusterer(*baseClusterer);
 	}
+	Overlapper* overlapper = new HashingOverlapper();
+	ensembleClusterer.setOverlapper(*overlapper);
 	Clusterer* finalClusterer = new LabelPropagation();
 	ensembleClusterer.setFinalClusterer(*finalClusterer);
-
 
 
 	Clustering zeta = ensembleClusterer.run(G);
@@ -121,6 +122,8 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
 		Clusterer* baseClusterer = new LabelPropagation();
 		ensembleClusterer.addBaseClusterer(*baseClusterer);
 	}
+	Overlapper* overlapper = new HashingOverlapper();
+	ensembleClusterer.setOverlapper(*overlapper);
 	Clusterer* finalClusterer = new LabelPropagation();
 	ensembleClusterer.setFinalClusterer(*finalClusterer);
 
@@ -173,6 +176,8 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnRandomGraph) {
 		Clusterer* baseClusterer = new LabelPropagation();
 		ensembleClusterer.addBaseClusterer(*baseClusterer);
 	}
+	Overlapper* overlapper = new HashingOverlapper();
+	ensembleClusterer.setOverlapper(*overlapper);
 	Clusterer* finalClusterer = new LabelPropagation();
 	ensembleClusterer.setFinalClusterer(*finalClusterer);
 
@@ -216,6 +221,8 @@ TEST_F(EnsembleGTest, showPlantedPartitionDissimilarity) {
 		Clusterer* baseClusterer = new LabelPropagation();
 		ensembleClusterer.addBaseClusterer(*baseClusterer);
 	}
+	Overlapper* overlapper = new HashingOverlapper();
+	ensembleClusterer.setOverlapper(*overlapper);
 	Clusterer* finalClusterer = new LabelPropagation();
 	ensembleClusterer.setFinalClusterer(*finalClusterer);
 

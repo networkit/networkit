@@ -120,6 +120,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 		// *** overlap clusters to create core clustering ***
 		INFO("[BEGIN] finding core clustering");
+		DEBUG("graph at pos " << h << ": " << graph.at(h).toString());
 		clustering.push_back(this->overlap->run(graph.at(h), baseClustering));
 		DEBUG("created core clustering: k=" << clustering.at(h).numberOfClusters());
 		INFO("[DONE] finding core clustering");
