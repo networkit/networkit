@@ -2,7 +2,7 @@
  * ParallelAgglomerativeClusterer.cpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
 #include "ParallelAgglomerativeClusterer.h"
