@@ -347,24 +347,27 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 	if (options[ALGORITHM]) {
 		std::string algoArg = options[ALGORITHM].arg;
 		std::string algoName = Aux::StringTools::split(algoArg, ':').front();
-		std::string algoParams = Aux::StringTools::split(algoArg, ':').back();
+		std::string algoParams = "";
+		if (Aux::StringTools::split(algoArg, ':').size() > 1) {
+			algoParams = Aux::StringTools::split(algoArg, ':').back();
+		}
 
-		if (algoName == "LabelPropagation") {
+		if (algoName == "PLP") {
 			algo = new LabelPropagation(updateThreshold);
 		} else if (algoName == "Agglomerative") {
 			algo = new ParallelAgglomerativeClusterer();
 		} else if (algoName == "RandomClusterer") {
 			algo = new RandomClusterer();
-		} else if (algoName == "Louvain") {
+		} else if (algoName == "PLM") {
 			// algoParams is parallelization strategy
 			if (algoParams.empty()) {
 				algo = new Louvain();
 			} else {
 				algo = new Louvain(algoParams);
 			}
-		} else if (algoName == "EnsembleMultiLevel") {
+		} else if (algoName == "EML") {
 			// TODO: call multilevel algorithm
-		} else if (algoName == "EnsemblePreprocessing") {
+		} else if (algoName == "EPP") {
 			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
 			// parse params
 			std::string ensembleFrontArg = Aux::StringTools::split(algoParams, '+').front();
@@ -376,7 +379,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			// 1. add base clusterers
 			for (int i = 0; i < ensembleSize; i += 1) {
 				Clusterer* base = NULL;
-				if (baseClustererArg == "LabelPropagation") {
+				if (baseClustererArg == "PLP") {
 					base = new LabelPropagation(updateThreshold);
 				} else if (baseClustererArg == "Agglomerative") {
 					base = new ParallelAgglomerativeClusterer();
@@ -405,11 +408,11 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			ensemblePre->setOverlapper(*overlap);
 			// 3. Final Clusterer
 			Clusterer* final = NULL;
-			if (finalClustererArg == "LabelPropagation") {
+			if (finalClustererArg == "PLP") {
 				final = new LabelPropagation();
 			} else if (finalClustererArg == "Agglomerative") {
 				final = new ParallelAgglomerativeClusterer();
-			} else if (finalClustererArg == "Louvain") {
+			} else if (finalClustererArg == "PLM") {
 				final = new Louvain("balanced");
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
@@ -474,7 +477,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 		// get specified base algorithm
 		std::string algoName = options[SOLO].arg;
-		if (algoName == "LabelPropagation") {
+		if (algoName == "PLP") {
 
 			LabelPropagation* lp = new LabelPropagation(updateThreshold);
 
@@ -484,7 +487,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			algo = agglo;
 		} else if (algoName == "RandomClusterer") {
 			algo = new RandomClusterer();
-		} else if (algoName == "Louvain") {
+		} else if (algoName == "PLM") {
 			algo = new Louvain();
 		}else {
 			std::cout << "[ERROR] unknown base algorithm: " << algoName << std::endl;
@@ -518,7 +521,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		// 2. Base Clusterers
 		for (int i = 0; i < ensembleSize; i += 1) {
 			Clusterer* base = NULL;
-			if (baseClustererArg == "LabelPropagation") {
+			if (baseClustererArg == "PLP") {
 				base = new LabelPropagation(updateThreshold);
 			} else if (baseClustererArg == "Agglomerative") {
 				base = new ParallelAgglomerativeClusterer();
@@ -552,7 +555,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 		// 4. Final Clusterer
 		Clusterer* final = NULL;
-		if (finalClustererArg == "LabelPropagation") {
+		if (finalClustererArg == "PLP") {
 			final = new LabelPropagation();
 		} else if (finalClustererArg == "Agglomerative") {
 			final = new ParallelAgglomerativeClusterer();
