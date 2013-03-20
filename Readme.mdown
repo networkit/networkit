@@ -1,0 +1,101 @@
+NetworKit.CommunityDetection
+============================
+
+This is the first component of the high-performance network analysis package [NetworKit][networkit]. In this component, the focus is on community detection (or graph clustering). 
+
+ The amount of graph-structured data has recently experienced an enormous growth in many applications. To transform such data into useful information, high-performance analytics algorithms and software tools are necessary. One common graph analytics kernel is community detection (or graph clustering). Despite extensive research on heuristic solvers for this task, only few parallel codes exist, although parallelism is often necessary to scale to the data volume of real-world applications.
+
+We address the deficit in computing capability by a flexible and extensible clustering algorithm framework with shared-memory parallelism. Within this framework we implement our parallel variations of known sequential algorithms and combine them by an ensemble approach. In extensive experiments driven by the algorithm engineering paradigm, we have identified the most successful parameters and combinations of these algorithms. The processing rate of our fastest algorithm exceeds 10M edges/second for many large graphs, making it suitable for massive data streams. Moreover, the strongest algorithm we developed yields the best tradeoff between quality and speed for graph clusterers to date. 
+
+[networkit]: http://parco.iti.kit.edu/software/networkit.shtml 
+
+
+Authors
+-------
+
+
+License
+-------
+
+The source code of this program is released under the [MIT License][mitlicense].  
+We ask you to give credit if you use this code in your project. Feedback is also welcome.
+
+
+Contributions
+-------------
+
+This program includes the *[The Lean Mean C++ Option Parser][optparse]* by Matthias S. Benkmann. 
+
+[mitlicense]: http://opensource.org/licenses/MIT
+[optparse]: http://optionparser.sourceforge.net/
+
+
+
+
+Requirements
+------------
+
+###Compiler: 
+
+- compiler supporting C++11 (we use GCC 4.7)
+
+
+###Libraries:
+
+- `OpenMP`	
+- `Googletest` 	for unit testing
+- `log4cxx` 	for logging
+
+
+Build
+-----
+
+We recommend SCons for building the project. Edit the file `SConstruct.EDITME` to set include paths, library paths etc, then rename it to `SConstruct`.
+
+Alternatively, our Eclipse project file is included as an example. Import the project into Eclipse and modify depending on your needs.
+
+
+Test
+----
+
+Run all unit tests with 
+
+		./CommunityDetection-debug --tests --gtest_filter=*Test*
+
+Run performance tests with
+
+		./CommunityDetection-optimized --tests --gtest_filter=*Benchmark*
+
+
+Run
+---
+
+Required options for community detection are `--algorithm` and `--graph`.
+
+
+	PLP		Parallel Label Propagation
+	PLM		Parallel Louvain Method
+	EPP		Ensemble Preprocessing
+
+Example call:
+
+--algorithm=EPP:4*PLP+PLM
+
+
+The default loglevel is INFO, set --loglevel=DEBUG for more or --loglevel=ERROR for less verbose output.
+
+To perform 42 runs of the algorithm one graph, add
+
+	--runs=42
+
+To append key result dates to a CSV file, add
+
+	--summary=/path/to/file.csv
+
+To save the clustering produced, add
+
+	--saveClustering=/path/to/file.clust
+
+
+
+
