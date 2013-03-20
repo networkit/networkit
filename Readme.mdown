@@ -14,20 +14,23 @@ Authors
 -------
 
 Christian Staudt		
+
 `christian.staudt @ kit.edu`
+
 [Homepage](http://parco.iti.kit.edu/staudt/)
 
 
 Henning Meyerhenke
+
 `meyerhenke @ kit.edu`
+
 [Homepage](http://parco.iti.kit.edu/henningm/)
 
 
 License
 -------
 
-The source code of this program is released under the [MIT License][mitlicense].  
-We ask you to give credit if you use this code in your project. Feedback is also welcome.
+The source code of this program is released under the [MIT License][mitlicense].  We ask you to cite us if you use this code in your project. Feedback is also welcome.
 
 
 Contributions
