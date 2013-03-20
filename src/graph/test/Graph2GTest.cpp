@@ -107,6 +107,10 @@ TEST_F(Graph2GTest, testNodeIteration) {
 
 
 TEST_F(Graph2GTest, testParallelEdgeInsertion) {
+	EXPECT_TRUE(false) << "TODO: implement";
+	return;
+
+
 	int64_t n = 500;
 	int64_t offset = 100;
 	Graph G(n);
@@ -130,6 +134,9 @@ TEST_F(Graph2GTest, testParallelEdgeInsertion) {
 
 
 TEST_F(Graph2GTest, testParallelEdgeRemoval) {
+	EXPECT_TRUE(false) << "TODO: implement";
+	return;
+
 	int64_t n = 500;
 	int64_t offset = 100;
 	Graph G(n);
@@ -171,6 +178,10 @@ TEST_F(Graph2GTest, testEdgeIteration) {
 }
 
 TEST_F(Graph2GTest, testParallelEdgeModification) {
+	EXPECT_TRUE(false) << "TODO: implement";
+	return;
+
+
 	int64_t n = 500;
 	int64_t offset = 100;
 	Graph G(n);
@@ -492,7 +503,7 @@ TEST_F(Graph2GTest, testEdgeAttributes) {
 
 
 TEST_F(Graph2GTest, testTotalEdgeWeight) {
-	count n = 10000;
+	count n = 100;
 	Graph G(n);
 
 	G.forNodePairs([&](node u, node v){

@@ -13,6 +13,9 @@ We address the deficit in computing capability by a flexible and extensible clus
 Authors
 -------
 
+Christian Staudt		christian.staudt @ kit.edu 		http://parco.iti.kit.edu/staudt/
+Henning Meyerhenke		meyerhenke@kit.edu 				http://parco.iti.kit.edu/henningm/
+
 
 License
 -------
@@ -77,14 +80,21 @@ Required options for community detection are `--algorithm` and `--graph`.
 	PLM		Parallel Louvain Method
 	EPP		Ensemble Preprocessing
 
-Example call:
-
---algorithm=EPP:4*PLP+PLM
+Example calls:
 
 
-The default loglevel is INFO, set --loglevel=DEBUG for more or --loglevel=ERROR for less verbose output.
+		./CommunityDetection --algorithm=PLP --graph=path/to/a.graph
+		./CommunityDetection --algorithm=EPP:4*PLP+PLM --graph=path/to/a.graph
+		./CommunityDetection --algorithm=PLM --graph=path/to/a.graph --runs=10 --summary=path/to/file.csv
 
-To perform 42 runs of the algorithm one graph, add
+
+The default loglevel is INFO, add `--loglevel=DEBUG` for more or `--loglevel=ERROR` for less verbose output.
+
+By default, all available threads will be used. To explicitly set the number of threads, use
+
+	--threads=8
+
+To perform 42 runs of the algorithm per graph, add
 
 	--runs=42
 
