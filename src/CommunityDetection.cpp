@@ -34,7 +34,7 @@
 #include "aux/StringTools.h"
 #include "graph/Graph.h"
 #include "graph/GraphGenerator.h"
-#include "ensemble/EnsembleClusterer.h"
+#include "ensemble/EnsembleMultilevel.h"
 #include "ensemble/EnsemblePreprocessing.h"
 #include "clustering/algo/LabelPropagation.h"
 #include "clustering/algo/ParallelAgglomerativeClusterer.h"

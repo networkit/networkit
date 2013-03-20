@@ -233,4 +233,4 @@ else:
     exit()
 
 # TARGET
-env.Program("EnsembleClustering-%s" % buildconf, source)
+env.Program("CommunityDetection-%s" % buildconf, source)
