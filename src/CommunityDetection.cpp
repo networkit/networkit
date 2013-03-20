@@ -27,7 +27,7 @@
 
 // EnsembleClustering
 #include "Globals.h"
-#include "aux/optionparser.h"
+#include "ext/optionparser.h"
 #include "aux/Log.h"
 #include "aux/Timer.h"
 #include "aux/Functions.h"
