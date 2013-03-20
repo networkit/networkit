@@ -13,8 +13,14 @@ We address the deficit in computing capability by a flexible and extensible clus
 Authors
 -------
 
-Christian Staudt		christian.staudt @ kit.edu 		http://parco.iti.kit.edu/staudt/
-Henning Meyerhenke		meyerhenke@kit.edu 				http://parco.iti.kit.edu/henningm/
+Christian Staudt		
+`christian.staudt @ kit.edu`
+[Homepage](http://parco.iti.kit.edu/staudt/)
+
+
+Henning Meyerhenke
+`meyerhenke @ kit.edu`
+[Homepage](http://parco.iti.kit.edu/henningm/)
 
 
 License
@@ -74,6 +80,8 @@ Run
 ---
 
 Required options for community detection are `--algorithm` and `--graph`.
+
+Main algorithms:
 
 
 	PLP		Parallel Label Propagation
