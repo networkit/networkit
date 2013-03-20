@@ -214,7 +214,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS, ENSEMBLE, SOLO, NORM_VOTES, SCALESTRENGTH,
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS, NORM_VOTES, SCALESTRENGTH,
 	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
 {
@@ -229,8 +229,6 @@ const OptionParser::Descriptor usage[] =
  {ALGORITHM, 0, "", "algorithm", OptionParser::Arg::Required, "  --algorithm=<NAME>:<PARAMS> \t select clustering algorithm"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
  {SCALETHREADS, 0, "", "scaleThreads", OptionParser::Arg::Required, "  --scaleThreads=<MAXTHREADS> \t scale number of threads by factor 2 until maximum is reached"},
- {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "  --ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
- {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
  {NORM_VOTES, 0, "", "normalizeVotes", OptionParser::Arg::None, "  --normalizeVotes \t normalize votes in label propagation by weighted degree"},
  {SCALESTRENGTH, 0, "", "scaleStrength", OptionParser::Arg::Required, "  --scaleStrength=<value in [0,1]> \t scale cluster strengths"},
  {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"},
@@ -466,113 +464,6 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 	}
 
-	// TODO: REMOVE OLD PARAMETERS!
-	if (options[SOLO]) {
-		std::cout << "[WARNING]ÊDEPRECATED: use --algorithm=<NAME>:<PARAMS> instead!" << std::endl;
-
-		std::cout << "\t --solo=" << options[SOLO].arg << std::endl;
-		// RUN ONLY SINGLE BASE ALGORITHM
-
-
-
-		// get specified base algorithm
-		std::string algoName = options[SOLO].arg;
-		if (algoName == "PLP") {
-
-			LabelPropagation* lp = new LabelPropagation(updateThreshold);
-
-			algo = lp;
-		} else if (algoName == "Agglomerative") {
-			ParallelAgglomerativeClusterer* agglo = new ParallelAgglomerativeClusterer();
-			algo = agglo;
-		} else if (algoName == "RandomClusterer") {
-			algo = new RandomClusterer();
-		} else if (algoName == "PLM") {
-			algo = new Louvain();
-		}else {
-			std::cout << "[ERROR] unknown base algorithm: " << algoName << std::endl;
-			std::cout << "[EXIT]" << std::endl;
-			exit(1);
-		}
-
-
-	} else if (options[ENSEMBLE]) {
-		// RUN ENSEMBLE
-
-		std::cout << "[WARNING]ÊDEPRECATED: use --algorithm=<NAME>:<PARAMS> instead!" << std::endl;
-
-		std::string ensembleArg = options[ENSEMBLE].arg;
-
-		std::string ensembleFrontArg = Aux::StringTools::split(ensembleArg, '+').front();
-		std::string finalClustererArg = Aux::StringTools::split(ensembleArg, '+').back();
-		std::string ensembleSizeArg = Aux::StringTools::split(ensembleFrontArg, '*').front();
-		std::string baseClustererArg = Aux::StringTools::split(ensembleFrontArg, '*').back();
-
-		int ensembleSize = std::atoi(ensembleSizeArg.c_str());
-
-		EnsembleMultilevel* ensemble = new EnsembleMultilevel();
-
-		// CONFIGURE ENSEMBLE CLUSTERER
-
-		// 1. Quality Measure
-		QualityMeasure* qm = new Modularity();
-		ensemble->setQualityMeasure(*qm);
-
-		// 2. Base Clusterers
-		for (int i = 0; i < ensembleSize; i += 1) {
-			Clusterer* base = NULL;
-			if (baseClustererArg == "PLP") {
-				base = new LabelPropagation(updateThreshold);
-			} else if (baseClustererArg == "Agglomerative") {
-				base = new ParallelAgglomerativeClusterer();
-			} else {
-				std::cout << "[ERROR]Êunknown base clusterer: " << baseClustererArg << std::endl;
-				exit(1);
-			}
-			ensemble->addBaseClusterer(*base);
-		}
-
-		// 3. Overlap
-		Overlapper* overlap = NULL;
-
-		// select overlap algorithm
-		if (options[OVERLAP]) {
-			std::string overlapArg = options[OVERLAP].arg;
-			if (overlapArg == "Hashing") {
-				overlap = new HashingOverlapper();
-			} else if (overlapArg == "RegionGrowing") {
-				overlap = new RegionGrowingOverlapper();
-			} else {
-				std::cout << "[ERROR] unknown overlap algorithm: " << overlapArg << std::endl;
-				exit(1);
-			}
-		} else {
-			// default
-			overlap = new RegionGrowingOverlapper();
-		}
-		ensemble->setOverlapper(*overlap);
-
-
-		// 4. Final Clusterer
-		Clusterer* final = NULL;
-		if (finalClustererArg == "PLP") {
-			final = new LabelPropagation();
-		} else if (finalClustererArg == "Agglomerative") {
-			final = new ParallelAgglomerativeClusterer();
-		} else {
-			std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
-			exit(1);
-		}
-
-		ensemble->setFinalClusterer(*final);
-
-		algo = ensemble;
-	}
-	else {
-		// if no algorithm specified, return empty clustering
-		std::cout << "[INFO] no algorithm specified - returning empty clustering" << std::endl;
-		return Clustering(0);
-	}
 
 
 	// START CLUSTERER
