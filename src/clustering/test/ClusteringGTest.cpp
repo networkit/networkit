@@ -183,50 +183,50 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequentialOnLargeGraph) {
 }
 
 
-TEST_F(ClusteringGTest, testModularityWithStoredClustering) {
-
-	std::string graphPath;
-	std::cout << "[INPUT] .graph file path >" << std::endl;
-	std::getline(std::cin, graphPath);
-
-	std::string clusteringPath;
-	std::cout << "[INPUT] .clust/.ptn file path >" << std::endl;
-	std::getline(std::cin, clusteringPath);
-
-	std::string evalPath;
-	std::cout << "[INPUT] .eval file path >" << std::endl;
-	std::getline(std::cin, evalPath);
-
-	INFO("reading graph from: " << graphPath);
-	METISGraphReader graphReader;
-	Graph G = graphReader.read(graphPath);
-
-	ClusteringReader clusteringReader;
-	INFO("reading clustering from: " << clusteringPath);
-	Clustering zeta = clusteringReader.read(clusteringPath);
-
-	INFO("reading modularity value from .eval file: " << evalPath);
-	std::ifstream evalFile(evalPath);
-	std::string evalLine;
-	std::getline(evalFile, evalLine);
-	double evalMod = std::atof(evalLine.c_str());
-	INFO("modularity from .eval file: " << evalMod);
-
-	Modularity modularity;
-	INFO("calculating modularity in parallel");
-	double modPar = modularity.getQuality(zeta, G);
-	INFO("modPar: " << modPar);
-
-	ModularitySequential modularitySeq;
-	INFO("calculating modularity sequentially");
-	double modSeq = modularitySeq.getQuality(zeta, G);
-	INFO("modSeq: " << modSeq);
-
-	EXPECT_EQ(modSeq, modPar) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
-	EXPECT_EQ(modSeq, evalMod) << "modSeq should be agree with DIMACS challenge evaluation";
-	EXPECT_EQ(modPar, evalMod) << "modPar should be agree with DIMACS challenge evaluation";
-
-}
+//TEST_F(ClusteringGTest, testModularityWithStoredClustering) {
+//
+//	std::string graphPath;
+//	std::cout << "[INPUT] .graph file path >" << std::endl;
+//	std::getline(std::cin, graphPath);
+//
+//	std::string clusteringPath;
+//	std::cout << "[INPUT] .clust/.ptn file path >" << std::endl;
+//	std::getline(std::cin, clusteringPath);
+//
+//	std::string evalPath;
+//	std::cout << "[INPUT] .eval file path >" << std::endl;
+//	std::getline(std::cin, evalPath);
+//
+//	INFO("reading graph from: " << graphPath);
+//	METISGraphReader graphReader;
+//	Graph G = graphReader.read(graphPath);
+//
+//	ClusteringReader clusteringReader;
+//	INFO("reading clustering from: " << clusteringPath);
+//	Clustering zeta = clusteringReader.read(clusteringPath);
+//
+//	INFO("reading modularity value from .eval file: " << evalPath);
+//	std::ifstream evalFile(evalPath);
+//	std::string evalLine;
+//	std::getline(evalFile, evalLine);
+//	double evalMod = std::atof(evalLine.c_str());
+//	INFO("modularity from .eval file: " << evalMod);
+//
+//	Modularity modularity;
+//	INFO("calculating modularity in parallel");
+//	double modPar = modularity.getQuality(zeta, G);
+//	INFO("modPar: " << modPar);
+//
+//	ModularitySequential modularitySeq;
+//	INFO("calculating modularity sequentially");
+//	double modSeq = modularitySeq.getQuality(zeta, G);
+//	INFO("modSeq: " << modSeq);
+//
+//	EXPECT_EQ(modSeq, modPar) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
+//	EXPECT_EQ(modSeq, evalMod) << "modSeq should be agree with DIMACS challenge evaluation";
+//	EXPECT_EQ(modPar, evalMod) << "modPar should be agree with DIMACS challenge evaluation";
+//
+//}
 
 
 
