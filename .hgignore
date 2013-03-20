@@ -5,6 +5,7 @@ syntax: regexp
 \.trace$
 \.mk$
 \.o
+.DS_Store
 
 syntax: regexp
 ^output$
@@ -24,3 +25,4 @@ syntax: regexp
 ^EnsembleClustering-DPar$
 syntax: regexp
 ^EnsembleClustering-O$
+

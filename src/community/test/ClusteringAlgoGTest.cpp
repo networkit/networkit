@@ -155,7 +155,7 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testLouvainParallelNaive) {
+TEST_F(ClusteringAlgoGTest, testLouvainParallelSimple) {
 	count n = 500;
 	count k = 50;
 	double pin = 1.0;
@@ -163,7 +163,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelNaive) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	Louvain louvain("naive");
+	Louvain louvain("simple");
 	Clustering zeta = louvain.run(G);
 
 	INFO("number of clusters: " << zeta.numberOfClusters());
@@ -202,7 +202,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	Louvain louvain("naive-balanced");
+	Louvain louvain("balanced");
 	Clustering zeta = louvain.run(G);
 
 	INFO("number of clusters: " << zeta.numberOfClusters());
