@@ -11,14 +11,14 @@
 #include <gtest/gtest.h>
 
 
-#include "../EnsembleClusterer.h"
+#include "../EnsembleMultilevel.h"
 #include "../EnsemblePreprocessing.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/base/Modularity.h"
 #include "../../clustering/base/JaccardMeasure.h"
 #include "../../clustering/base/RandMeasure.h"
 #include "../../clustering/algo/LabelPropagation.h"
-#include "../../clustering/algo/Louvain.h";
+#include "../../clustering/algo/Louvain.h"
 #include "../../overlap/HashingOverlapper.h"
 
 

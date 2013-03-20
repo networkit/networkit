@@ -11,7 +11,7 @@ namespace EnsembleClustering {
 
 TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 
-	EnsembleClusterer ensembleClusterer;
+	EnsembleMultilevel ensembleClusterer;
 	// configure EnsembleClusterer
 	QualityMeasure* qm = new Modularity();
 	ensembleClusterer.setQualityMeasure(*qm);
@@ -76,7 +76,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph_ManyBaseClusterers) {
 	graphio.writeAdjacencyList(G, "sandbox/G_Clique.adjlist");
 	// DEBUG
 
-	EnsembleClusterer ensembleClusterer;
+	EnsembleMultilevel ensembleClusterer;
 	// configure EnsembleClusterer
 	QualityMeasure* qm = new Modularity();
 	ensembleClusterer.setQualityMeasure(*qm);
@@ -113,7 +113,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph_ManyBaseClusterers) {
 
 TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
 
-	EnsembleClusterer ensembleClusterer;
+	EnsembleMultilevel ensembleClusterer;
 	// configure EnsembleClusterer
 	QualityMeasure* qm = new Modularity();
 	ensembleClusterer.setQualityMeasure(*qm);
@@ -167,7 +167,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
 
 TEST_F(EnsembleGTest, testEnsembleClustererOnRandomGraph) {
 
-	EnsembleClusterer ensembleClusterer;
+	EnsembleMultilevel ensembleClusterer;
 	// configure EnsembleClusterer
 	QualityMeasure* qm = new Modularity();
 	ensembleClusterer.setQualityMeasure(*qm);
@@ -212,7 +212,7 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnRandomGraph) {
 
 TEST_F(EnsembleGTest, showPlantedPartitionDissimilarity) {
 
-	EnsembleClusterer ensembleClusterer;
+	EnsembleMultilevel ensembleClusterer;
 	// configure EnsembleClusterer
 	QualityMeasure* qm = new Modularity();
 	ensembleClusterer.setQualityMeasure(*qm);

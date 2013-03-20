@@ -510,7 +510,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 		int ensembleSize = std::atoi(ensembleSizeArg.c_str());
 
-		EnsembleClusterer* ensemble = new EnsembleClusterer();
+		EnsembleMultilevel* ensemble = new EnsembleMultilevel();
 
 		// CONFIGURE ENSEMBLE CLUSTERER
 

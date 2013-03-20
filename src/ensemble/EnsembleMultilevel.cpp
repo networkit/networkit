@@ -5,37 +5,37 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "EnsembleClusterer.h"
+#include "EnsembleMultilevel.h"
 
 namespace EnsembleClustering {
 
-EnsembleClusterer::EnsembleClusterer() : Clusterer() {
+EnsembleMultilevel::EnsembleMultilevel() : Clusterer() {
 	this->finalClusterer = NULL;
 	this->qm = NULL;
 	this->h = -1;	// start with 0 in loop
 }
 
-EnsembleClusterer::~EnsembleClusterer() {
+EnsembleMultilevel::~EnsembleMultilevel() {
 	// TODO Auto-generated destructor stub
 }
 
-void EnsembleClusterer::setQualityMeasure(QualityMeasure& qm) {
+void EnsembleMultilevel::setQualityMeasure(QualityMeasure& qm) {
 	this->qm = &qm;
 }
 
-void EnsembleClusterer::addBaseClusterer(Clusterer& base) {
+void EnsembleMultilevel::addBaseClusterer(Clusterer& base) {
 	this->baseClusterers.push_back(&base);
 }
 
-void EnsembleClusterer::setFinalClusterer(Clusterer& final) {
+void EnsembleMultilevel::setFinalClusterer(Clusterer& final) {
 	this->finalClusterer = &final;
 }
 
-void EnsembleClusterer::setOverlapper(Overlapper& overlap) {
+void EnsembleMultilevel::setOverlapper(Overlapper& overlap) {
 	this->overlap = &overlap;
 }
 
-Clustering EnsembleClusterer::run(Graph& G) {
+Clustering EnsembleMultilevel::run(Graph& G) {
 	// DEBUG
 	INFO("STARTING EnsembleClusterer on G=" << G.toString());
 	// DEBUG
@@ -214,7 +214,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 	return zetaFine;
 }
 
-std::string EnsembleClusterer::toString() const {
+std::string EnsembleMultilevel::toString() const {
 	std::stringstream strm;
 	strm << "EnsembleClusterer(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",final=" << this->finalClusterer->toString() << ")(h=" << this->h << ")";
 	return strm.str();
