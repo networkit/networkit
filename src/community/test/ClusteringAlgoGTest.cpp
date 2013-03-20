@@ -7,7 +7,7 @@
 
 #include "ClusteringAlgoGTest.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
 	GraphGenerator graphGenerator;
@@ -234,4 +234,4 @@ TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

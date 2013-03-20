@@ -17,10 +17,10 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class ClusteringAlgoGTest: public testing::Test {
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* CLUSTERINGALGOGTEST_H_ */

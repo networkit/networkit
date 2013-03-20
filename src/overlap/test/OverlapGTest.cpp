@@ -8,7 +8,7 @@
 #include "OverlapGTest.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
 	GraphGenerator graphGen;
@@ -138,4 +138,4 @@ TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 }
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

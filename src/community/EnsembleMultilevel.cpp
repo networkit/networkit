@@ -7,7 +7,7 @@
 
 #include "EnsembleMultilevel.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 EnsembleMultilevel::EnsembleMultilevel() : Clusterer() {
 	this->finalClusterer = NULL;
@@ -220,4 +220,4 @@ std::string EnsembleMultilevel::toString() const {
 	return strm.str();
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

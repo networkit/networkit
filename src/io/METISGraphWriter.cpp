@@ -7,7 +7,7 @@
 
 #include "METISGraphWriter.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 METISGraphWriter::METISGraphWriter() {
 	// TODO Auto-generated constructor stub
@@ -39,4 +39,4 @@ void METISGraphWriter::write(Graph& G, std::string path) {
 
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

@@ -7,7 +7,7 @@
 
 #include "ModularitySequential.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 ModularitySequential::ModularitySequential() {
 	// TODO Auto-generated constructor stub
@@ -76,4 +76,4 @@ double ModularitySequential::getQuality(const Clustering& zeta, Graph& G) {
 	return modularity;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

@@ -7,7 +7,7 @@
 
 #include "EnsemblePreprocessing.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 EnsemblePreprocessing::EnsemblePreprocessing() : Clusterer() {
 	this->finalClusterer = NULL;
@@ -81,4 +81,4 @@ std::string EnsemblePreprocessing::toString() const {
 	return strm.str();
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

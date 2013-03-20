@@ -7,7 +7,7 @@
 
 #include "Matching.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Matching::Matching(int64_t n) :
 		NodeMap<node>(n, 0) {
@@ -89,4 +89,4 @@ index Matching::mate(node v) const {
 }
 
 }
- /* namespace EnsembleClustering */
+ /* namespace NetworKit */

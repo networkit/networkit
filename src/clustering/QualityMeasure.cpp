@@ -7,7 +7,7 @@
 
 #include "QualityMeasure.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 QualityMeasure::QualityMeasure() {
 }
@@ -17,4 +17,4 @@ QualityMeasure::~QualityMeasure() {
 }
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

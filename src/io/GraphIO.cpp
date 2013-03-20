@@ -7,7 +7,7 @@
 
 #include "GraphIO.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 GraphIO::GraphIO() {
 	// TODO Auto-generated constructor stub
@@ -46,4 +46,4 @@ void GraphIO::writeAdjacencyList(Graph& G, std::string path) {
 	INFO("wrote graph to file: " << path);
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

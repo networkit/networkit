@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -88,13 +88,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="class_ensemble_clustering_1_1_label_propagation-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EnsembleClustering::LabelPropagation Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>As described in Ovelgoenne et al: An Ensemble Learning Strategy for <a class="el" href="class_ensemble_clustering_1_1_graph.html" title="Graph interface.">Graph</a> <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> Raghavan et al.  
+<p>As described in Ovelgoenne et al: An Ensemble Learning Strategy for <a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> Raghavan et al.  
  <a href="class_ensemble_clustering_1_1_label_propagation.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_label_propagation_8h_source.html">LabelPropagation.h</a>&gt;</code></p>
@@ -115,32 +116,44 @@ Collaboration diagram for EnsembleClustering::LabelPropagation:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af91e8416ef54ab48990edf68741cc74f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#af91e8416ef54ab48990edf68741cc74f">LabelPropagation</a> ()</td></tr>
-<tr class="separator:af91e8416ef54ab48990edf68741cc74f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a8f90b8e7632915c729861d320c240"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#a72a8f90b8e7632915c729861d320c240">LabelPropagation</a> (<a class="el" href="namespace_ensemble_clustering.html#a2482e94ca22a0c6544a5a9173186fde8">count</a> theta=0)</td></tr>
+<tr class="separator:a72a8f90b8e7632915c729861d320c240"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ac63cb56597fdef47e6c0f4f7b20254"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#a7ac63cb56597fdef47e6c0f4f7b20254">~LabelPropagation</a> ()</td></tr>
 <tr class="separator:a7ac63cb56597fdef47e6c0f4f7b20254"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4915a00c1a2dc5a07c7d902bcb66f52a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#a4915a00c1a2dc5a07c7d902bcb66f52a">run</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)</td></tr>
-<tr class="separator:a4915a00c1a2dc5a07c7d902bcb66f52a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6680246bb334e82318703c2ecbbd117"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#ab6680246bb334e82318703c2ecbbd117">run</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)</td></tr>
+<tr class="memdesc:ab6680246bb334e82318703c2ecbbd117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the label propagation clustering algorithm.  <a href="#ab6680246bb334e82318703c2ecbbd117"></a><br/></td></tr>
+<tr class="separator:ab6680246bb334e82318703c2ecbbd117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1672735899b9c00e797f0270638fba7f"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#a1672735899b9c00e797f0270638fba7f">toString</a> () const </td></tr>
+<tr class="separator:a1672735899b9c00e797f0270638fba7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcb4fa1b00aa36461bf3b1c46bc3b892"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#adcb4fa1b00aa36461bf3b1c46bc3b892">setUpdateThreshold</a> (<a class="el" href="namespace_ensemble_clustering.html#a2482e94ca22a0c6544a5a9173186fde8">count</a> th)</td></tr>
+<tr class="memdesc:adcb4fa1b00aa36461bf3b1c46bc3b892"><td class="mdescLeft">&#160;</td><td class="mdescRight">The algorithm runs until a number of nodes less than the threshold is updated.  <a href="#adcb4fa1b00aa36461bf3b1c46bc3b892"></a><br/></td></tr>
+<tr class="separator:adcb4fa1b00aa36461bf3b1c46bc3b892"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_ensemble_clustering_1_1_clusterer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_ensemble_clustering_1_1_clusterer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_ensemble_clustering_1_1_clusterer.html">EnsembleClustering::Clusterer</a></td></tr>
 <tr class="memitem:acbd9729676a2793bccffbacec6bd13f9 inherit pub_methods_class_ensemble_clustering_1_1_clusterer"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clusterer.html#acbd9729676a2793bccffbacec6bd13f9">Clusterer</a> ()</td></tr>
 <tr class="separator:acbd9729676a2793bccffbacec6bd13f9 inherit pub_methods_class_ensemble_clustering_1_1_clusterer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93a0ef31adf30861adc1db201174953f inherit pub_methods_class_ensemble_clustering_1_1_clusterer"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clusterer.html#a93a0ef31adf30861adc1db201174953f">~Clusterer</a> ()</td></tr>
 <tr class="separator:a93a0ef31adf30861adc1db201174953f inherit pub_methods_class_ensemble_clustering_1_1_clusterer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a02e1930c35c9b2fe9121415cb6be7b65"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_ensemble_clustering.html#a2482e94ca22a0c6544a5a9173186fde8">count</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#a02e1930c35c9b2fe9121415cb6be7b65">updateThreshold</a> = 0</td></tr>
+<tr class="separator:a02e1930c35c9b2fe9121415cb6be7b65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>As described in Ovelgoenne et al: An Ensemble Learning Strategy for <a class="el" href="class_ensemble_clustering_1_1_graph.html" title="Graph interface.">Graph</a> <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> Raghavan et al. </p>
+<div class="textblock"><p>As described in Ovelgoenne et al: An Ensemble Learning Strategy for <a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> Raghavan et al. </p>
 <p>proposed a label propagation algorithm for graph clustering. This algorithm initializes every vertex of a graph with a unique label. Then, in iterative sweeps over the set of vertices the vertex labels are updated. A vertex gets the label that the maximum number of its neighbors have. The procedure is stopped when every vertex has the label that at least half of its neighbors have. </p>
 
-<p>Definition at line <a class="el" href="_label_propagation_8h_source.html#l00030">30</a> of file <a class="el" href="_label_propagation_8h_source.html">LabelPropagation.h</a>.</p>
+<p>Definition at line <a class="el" href="_label_propagation_8h_source.html#l00043">43</a> of file <a class="el" href="_label_propagation_8h_source.html">LabelPropagation.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="af91e8416ef54ab48990edf68741cc74f"></a>
+<a class="anchor" id="a72a8f90b8e7632915c729861d320c240"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">EnsembleClustering::LabelPropagation::LabelPropagation </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#a2482e94ca22a0c6544a5a9173186fde8">count</a>&#160;</td>
+          <td class="paramname"><em>theta</em> = <code>0</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -176,7 +189,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a4915a00c1a2dc5a07c7d902bcb66f52a"></a>
+<a class="anchor" id="ab6680246bb334e82318703c2ecbbd117"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -184,7 +197,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> &amp; EnsembleClustering::LabelPropagation::run </td>
+          <td class="memname"><a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> EnsembleClustering::LabelPropagation::run </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;&#160;</td>
           <td class="paramname"><em>G</em></td><td>)</td>
@@ -197,34 +210,122 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>&lt; a label is the same as a cluster id</p>
-<p>&lt; neighborLabelCounts[v] maps label -&gt; frequency in the neighbors of v</p>
-<p>&lt; number of nodes which already have the majority label</p>
-<p>&lt; number of iterations </p>
 
-<p>Implements <a class="el" href="class_ensemble_clustering_1_1_clusterer.html#a4266e5bb967201f6567ce299bbc2f662">EnsembleClustering::Clusterer</a>.</p>
+<p>Run the label propagation clustering algorithm. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">G</td><td>input graph </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>clustering </dd></dl>
+<p>== Dealing with isolated nodes ==</p>
+<p>The pseudocode published does not deal with isolated nodes (and therefore does not terminate if they are present). Isolated nodes stay singletons. They can be ignored in the while loop, but the loop condition must compare to the number of non-isolated nodes instead of n.</p>
+<p>== Termination criterion ==</p>
+<p>The published termination criterion is: All nodes have got the label of the majority of their neighbors. In general this does not work. It was changed to: No label was changed in last iteration.</p>
 
-<p>Definition at line <a class="el" href="_label_propagation_8cpp_source.html#l00021">21</a> of file <a class="el" href="_label_propagation_8cpp_source.html">LabelPropagation.cpp</a>.</p>
+<p>Implements <a class="el" href="class_ensemble_clustering_1_1_clusterer.html#a9fab8db7082b6399e1d29509512cad91">EnsembleClustering::Clusterer</a>.</p>
+
+<p>Definition at line <a class="el" href="_label_propagation_8cpp_source.html#l00022">22</a> of file <a class="el" href="_label_propagation_8cpp_source.html">LabelPropagation.cpp</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_ensemble_clustering_1_1_label_propagation_a4915a00c1a2dc5a07c7d902bcb66f52a_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_label_propagation_a4915a00c1a2dc5a07c7d902bcb66f52a_cgraph" alt=""/></div>
-<map name="class_ensemble_clustering_1_1_label_propagation_a4915a00c1a2dc5a07c7d902bcb66f52a_cgraph" id="class_ensemble_clustering_1_1_label_propagation_a4915a00c1a2dc5a07c7d902bcb66f52a_cgraph">
-<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non&#45;isolated) nodes in the graph." alt="" coords="213,5,384,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_clustering.html#a461a251d674b64cf29e97408c343253a" title="Creates a singleton cluster containing the node." alt="" coords="217,73,380,117"/><area shape="rect" id="node7" href="class_ensemble_clustering_1_1_graph.html#a35f4b169cd0157117b468b1863a0d70a" title="Return the degree (number of incident edges)." alt="" coords="228,141,369,185"/></map>
+<div class="center"><img src="class_ensemble_clustering_1_1_label_propagation_ab6680246bb334e82318703c2ecbbd117_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_label_propagation_ab6680246bb334e82318703c2ecbbd117_cgraph" alt=""/></div>
+<map name="class_ensemble_clustering_1_1_label_propagation_ab6680246bb334e82318703c2ecbbd117_cgraph" id="class_ensemble_clustering_1_1_label_propagation_ab6680246bb334e82318703c2ecbbd117_cgraph">
+<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="238,5,410,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_clustering.html#aa93abafed46c4707dac3ca4b0d445f79" title="Assigns every node to a singleton cluster." alt="" coords="231,73,417,117"/><area shape="rect" id="node7" href="class_ensemble_clustering_1_1_graph.html#a80dc95eb3a526de34c6a35ccc1dfc7ef" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="237,141,411,185"/><area shape="rect" id="node9" href="class_ensemble_clustering_1_1_graph.html#a2d7f581bd5da054f4e9fc936de48bd18" title="EnsembleClustering\l::Graph::weightedDegree" alt="" coords="239,209,409,253"/><area shape="rect" id="node11" href="class_aux_1_1_random_integer.html#a288840111a1aa8cdd93949c5fe88ccaa" title="Aux::RandomInteger\l::generate" alt="" coords="252,277,396,321"/><area shape="rect" id="node13" href="class_aux_1_1_timer.html#a3c58e715148a05a6294743619d111bab" title="Start the clock." alt="" coords="265,345,383,373"/><area shape="rect" id="node15" href="class_ensemble_clustering_1_1_clustering.html#aecf64e29e7032bdcac3f90fa76df2b0b" title="EnsembleClustering\l::Clustering::clusterSizes" alt="" coords="240,397,408,441"/><area shape="rect" id="node21" href="class_aux_1_1_progress_meter.html#ac850b5a02da40912ca5f87a8c7bff5b3" title="Aux::ProgressMeter\l::signal" alt="" coords="254,465,394,509"/><area shape="rect" id="node23" href="class_ensemble_clustering_1_1_graph.html#a7604c9b72a9b4c3326f8000595755e8f" title="EnsembleClustering\l::Graph::degree" alt="" coords="254,533,394,577"/><area shape="rect" id="node25" href="class_ensemble_clustering_1_1_graph.html#aaa8ec445c018c465d6dc69980ce44972" title="Iterate over all edge weights of a node and call handler (lamdba closure)." alt="" coords="214,601,434,645"/><area shape="rect" id="node27" href="class_ensemble_clustering_1_1_graph.html#a4d1024eccff37ffb085025959d7e6ae3" title="NEIGHBORHOOD ITERATORS." alt="" coords="242,669,406,713"/><area shape="rect" id="node29" href="class_aux_1_1_progress_meter.html#a4447a41339a5b19480fe4d32d360a393" title="Aux::ProgressMeter::end" alt="" coords="240,737,408,765"/><area shape="rect" id="node31" href="class_aux_1_1_timer.html#a14d926626eef461e836f87f7bc3d03b7" title="Stops the clock permanently for the instance of the Timer." alt="" coords="265,789,383,817"/><area shape="rect" id="node33" href="class_aux_1_1_timer.html#a428b45cb66f4be47bbea61b0db368142" title="Aux::Timer::elapsedTag" alt="" coords="244,841,404,869"/><area shape="rect" id="node17" href="class_ensemble_clustering_1_1_clustering.html#a7eb03661a933eff8176af0e073da2ef4" title="Get the current number of clusters in this clustering." alt="" coords="483,363,688,407"/><area shape="rect" id="node19" href="class_ensemble_clustering_1_1_clustering.html#ac73ad4ef868aa0b851f768f1a74186b7" title="Iterate over all entries (node, cluster) and execute callback function (lambda closure)." alt="" coords="509,431,662,475"/><area shape="rect" id="node35" href="class_aux_1_1_timer.html#a16fdb76113530c5d4d8787e27d1e0aca" title="The number of seconds since the current time that the Timer object was created." alt="" coords="516,841,655,869"/></map>
 </div>
 </p>
 
 </div>
 </div>
+<a class="anchor" id="adcb4fa1b00aa36461bf3b1c46bc3b892"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EnsembleClustering::LabelPropagation::setUpdateThreshold </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespace_ensemble_clustering.html#a2482e94ca22a0c6544a5a9173186fde8">count</a>&#160;</td>
+          <td class="paramname"><em>th</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The algorithm runs until a number of nodes less than the threshold is updated. </p>
+
+<p>Definition at line <a class="el" href="_label_propagation_8cpp_source.html#l00215">215</a> of file <a class="el" href="_label_propagation_8cpp_source.html">LabelPropagation.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1672735899b9c00e797f0270638fba7f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string EnsembleClustering::LabelPropagation::toString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>string representation of algorithm and parameters. </dd></dl>
+
+<p>Reimplemented from <a class="el" href="class_ensemble_clustering_1_1_clusterer.html#aba1a37081af12061ef675139668c5ee6">EnsembleClustering::Clusterer</a>.</p>
+
+<p>Definition at line <a class="el" href="_label_propagation_8cpp_source.html#l00205">205</a> of file <a class="el" href="_label_propagation_8cpp_source.html">LabelPropagation.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a02e1930c35c9b2fe9121415cb6be7b65"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespace_ensemble_clustering.html#a2482e94ca22a0c6544a5a9173186fde8">count</a> EnsembleClustering::LabelPropagation::updateThreshold = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_label_propagation_8h_source.html#l00047">47</a> of file <a class="el" href="_label_propagation_8h_source.html">LabelPropagation.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/clustering/<a class="el" href="_label_propagation_8h_source.html">LabelPropagation.h</a></li>
-<li>src/clustering/<a class="el" href="_label_propagation_8cpp_source.html">LabelPropagation.cpp</a></li>
+<li>src/community/<a class="el" href="_label_propagation_8h_source.html">LabelPropagation.h</a></li>
+<li>src/community/<a class="el" href="_label_propagation_8cpp_source.html">LabelPropagation.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:35 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:16:37 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

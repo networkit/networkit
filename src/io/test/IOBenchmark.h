@@ -14,7 +14,7 @@
 #include "../../aux/Timer.h"
 #include "../METISGraphReader.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class IOBenchmark: public testing::Test {
 public:
@@ -22,5 +22,5 @@ public:
 	virtual ~IOBenchmark();
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* IOBENCHMARK_H_ */

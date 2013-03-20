@@ -11,7 +11,7 @@
 #include "Graph.h"
 #include "../base/IndexMap.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 // forward declarations for specialization
 template<typename T> class NodeMap;
@@ -55,25 +55,25 @@ public:
 	friend std::ostream& operator<< <> (std::ostream& os, const NodeMap<T>& m);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 
 
 /*** Implementation ***/
 
 
 
-template<typename T> inline EnsembleClustering::NodeMap<T>::NodeMap(count n, T defaultValue = -1) :
+template<typename T> inline NetworKit::NodeMap<T>::NodeMap(count n, T defaultValue = -1) :
 		IndexMap<node, T>(n, defaultValue) {
 }
 
-template<typename T> inline EnsembleClustering::NodeMap<T>::~NodeMap() {
+template<typename T> inline NetworKit::NodeMap<T>::~NodeMap() {
 }
 
-template<typename T> inline T& EnsembleClustering::NodeMap<T>::operator [](const node& u) {
+template<typename T> inline T& NetworKit::NodeMap<T>::operator [](const node& u) {
 	return this->data[u];
 }
 
-template<typename T> inline const T& EnsembleClustering::NodeMap<T>::operator [](
+template<typename T> inline const T& NetworKit::NodeMap<T>::operator [](
 		const node& u) const {
 	return this->data[u];
 }
@@ -81,9 +81,9 @@ template<typename T> inline const T& EnsembleClustering::NodeMap<T>::operator []
 
 // FIXME: linker errors when calling operator<<
 template<typename T>
-std::ostream& operator <<(std::ostream& os, const EnsembleClustering::NodeMap<T>& m) {
+std::ostream& operator <<(std::ostream& os, const NetworKit::NodeMap<T>& m) {
 	os << "{ ";
-	for (EnsembleClustering::node v = 1; v <= m.n; ++v) {
+	for (NetworKit::node v = 1; v <= m.n; ++v) {
 		T val = m.array[v];
 		os << v ;
 		os << ": ";

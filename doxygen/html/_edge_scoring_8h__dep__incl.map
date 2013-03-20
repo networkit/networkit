@@ -1,5 +1,8 @@
 <map id="src/scoring/EdgeScoring.h" name="src/scoring/EdgeScoring.h">
-<area shape="rect" id="node3" href="$_edge_scoring_8cpp.html" title="src/scoring/EdgeScoring.cpp" alt="" coords="4,83,195,111"/>
-<area shape="rect" id="node5" href="$_modularity_scoring_8h.html" title="src/scoring/ModularityScoring.h" alt="" coords="219,83,425,111"/>
-<area shape="rect" id="node7" href="$_modularity_scoring_8cpp.html" title="src/scoring/ModularityScoring.cpp" alt="" coords="212,161,433,189"/>
+<area shape="rect" id="node3" href="$_modularity_scoring_8h.html" title="src/scoring/ModularityScoring.h" alt="" coords="268,83,475,111"/>
+<area shape="rect" id="node13" href="$_edge_scoring_8cpp.html" title="src/scoring/EdgeScoring.cpp" alt="" coords="499,83,689,111"/>
+<area shape="rect" id="node5" href="$_parallel_agglomerative_clusterer_8h.html" title="src/community/ParallelAgglomerative\lClusterer.h" alt="" coords="125,161,365,205"/>
+<area shape="rect" id="node11" href="$_modularity_scoring_8cpp.html" title="src/scoring/ModularityScoring.cpp" alt="" coords="389,169,611,197"/>
+<area shape="rect" id="node7" href="$_parallel_agglomerative_clusterer_8cpp.html" title="src/community/ParallelAgglomerative\lClusterer.cpp" alt="" coords="5,254,245,298"/>
+<area shape="rect" id="node9" href="$_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="269,262,460,290"/>
 </map>

@@ -23,9 +23,9 @@
 #include "../clustering/RandMeasure.h"
 #include "../clustering/JaccardMeasure.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class EnsemblePreprocessing: public EnsembleClustering::Clusterer {
+class EnsemblePreprocessing: public NetworKit::Clusterer {
 
 protected:
 
@@ -68,5 +68,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* ENSEMBLEPREPROCESSING_H_ */

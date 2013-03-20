@@ -7,7 +7,7 @@
 
 #include "Graph.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Graph::Graph(count n) : n(n), deg(n, 0), adja(n), eweights(n) {
 	// set name from global id
@@ -275,7 +275,7 @@ int Graph::addEdgeAttribute_double(double defaultValue) {
 	return attrId;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 
 
 

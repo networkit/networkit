@@ -14,7 +14,7 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../independentset/Luby.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class IndependentSetGTest: public testing::Test {
 public:
@@ -22,5 +22,5 @@ public:
 	virtual ~IndependentSetGTest();
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* INDEPENDENTSETTEST_H_ */

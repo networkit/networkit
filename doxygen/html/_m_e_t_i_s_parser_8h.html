@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Ensemble Clustering: src/input/METISParser.h File Reference</title>
+<title>NetworKit.CommunityDetection: src/io/METISParser.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">Ensemble Clustering
+   <div id="projectname">NetworKit.CommunityDetection
    </div>
   </td>
  </tr>
@@ -69,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -80,7 +80,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d365e15d984c8d0205117ee0c40d6716.html">input</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_c184e51c84f2c3f0345bbc8a0d75d3e1.html">io</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -97,38 +97,40 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <code>#include &lt;string&gt;</code><br/>
 <code>#include &lt;sstream&gt;</code><br/>
 <code>#include &lt;utility&gt;</code><br/>
-<code>#include &quot;<a class="el" href="log_8h_source.html">../aux/log.h</a>&quot;</code><br/>
+<code>#include &lt;stdexcept&gt;</code><br/>
+<code>#include &lt;cassert&gt;</code><br/>
+<code>#include &quot;<a class="el" href="_log_8h_source.html">../aux/Log.h</a>&quot;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for METISParser.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="_m_e_t_i_s_parser_8h__incl.png" border="0" usemap="#src_2input_2_m_e_t_i_s_parser_8h" alt=""/></div>
-<map name="src_2input_2_m_e_t_i_s_parser_8h" id="src_2input_2_m_e_t_i_s_parser_8h">
-<area shape="rect" id="node15" href="log_8h.html" title="../aux/log.h" alt="" coords="519,83,605,111"/></map>
+<div class="center"><img src="_m_e_t_i_s_parser_8h__incl.png" border="0" usemap="#src_2io_2_m_e_t_i_s_parser_8h" alt=""/></div>
+<map name="src_2io_2_m_e_t_i_s_parser_8h" id="src_2io_2_m_e_t_i_s_parser_8h">
+<area shape="rect" id="node19" href="_log_8h.html" title="../aux/Log.h" alt="" coords="218,83,309,111"/></map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="_m_e_t_i_s_parser_8h__dep__incl.png" border="0" usemap="#src_2input_2_m_e_t_i_s_parser_8hdep" alt=""/></div>
-<map name="src_2input_2_m_e_t_i_s_parser_8hdep" id="src_2input_2_m_e_t_i_s_parser_8hdep">
-<area shape="rect" id="node3" href="_ensemble_clustering_8cpp.html" title="src/EnsembleClustering.cpp" alt="" coords="5,83,192,111"/><area shape="rect" id="node5" href="_m_e_t_i_s_parser_8cpp.html" title="src/input/METISParser.cpp" alt="" coords="217,83,396,111"/><area shape="rect" id="node7" href="_m_e_t_i_sto_s_t_i_n_g_e_r_8cpp.html" title="src/input/METIStoSTINGER.cpp" alt="" coords="421,83,632,111"/><area shape="rect" id="node9" href="_input_g_test_8h.html" title="src/input/test/InputGTest.h" alt="" coords="656,83,832,111"/><area shape="rect" id="node11" href="_input_g_test_8cpp.html" title="src/input/test/InputGTest.cpp" alt="" coords="649,161,839,189"/></map>
+<div class="center"><img src="_m_e_t_i_s_parser_8h__dep__incl.png" border="0" usemap="#src_2io_2_m_e_t_i_s_parser_8hdep" alt=""/></div>
+<map name="src_2io_2_m_e_t_i_s_parser_8hdep" id="src_2io_2_m_e_t_i_s_parser_8hdep">
+<area shape="rect" id="node3" href="_m_e_t_i_s_graph_reader_8h.html" title="src/io/METISGraphReader.h" alt="" coords="390,83,577,111"/><area shape="rect" id="node21" href="_m_e_t_i_s_parser_8cpp.html" title="src/io/METISParser.cpp" alt="" coords="602,83,763,111"/><area shape="rect" id="node5" href="_clustering_g_test_8h.html" title="src/clustering/test\l/ClusteringGTest.h" alt="" coords="12,161,143,205"/><area shape="rect" id="node9" href="_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="167,169,357,197"/><area shape="rect" id="node11" href="_m_e_t_i_s_graph_reader_8cpp.html" title="src/io/METISGraphReader.cpp" alt="" coords="383,169,585,197"/><area shape="rect" id="node13" href="_input_g_test_8h.html" title="src/io/test/InputGTest.h" alt="" coords="609,169,767,197"/><area shape="rect" id="node17" href="_i_o_benchmark_8h.html" title="src/io/test/IOBenchmark.h" alt="" coords="794,169,968,197"/><area shape="rect" id="node7" href="_clustering_g_test_8cpp.html" title="src/clustering/test\l/ClusteringGTest.cpp" alt="" coords="5,254,149,298"/><area shape="rect" id="node15" href="_input_g_test_8cpp.html" title="src/io/test/InputGTest.cpp" alt="" coords="598,262,769,290"/><area shape="rect" id="node19" href="_i_o_benchmark_8cpp.html" title="src/io/test/IOBenchmark.cpp" alt="" coords="794,262,981,290"/></map>
 </div>
 </div>
 <p><a href="_m_e_t_i_s_parser_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_m_e_t_i_s_parser.html">EnsembleClustering::METISParser</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_networ_kit_1_1_m_e_t_i_s_parser.html">NetworKit::METISParser</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespace_ensemble_clustering"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_ensemble_clustering.html">EnsembleClustering</a></td></tr>
+<tr class="memitem:namespace_networ_kit"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_networ_kit.html">NetworKit</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:34 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:37:05 for NetworKit.CommunityDetection by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

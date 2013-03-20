@@ -11,7 +11,7 @@
 #include "../clustering/Clustering.h"
 #include "GraphContraction.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class ClusteringProjector {
 
@@ -54,5 +54,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* CLUSTERINGPROJECTOR_H_ */

@@ -7,7 +7,7 @@
 
 #include "ParallelAgglomerativeClusterer.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer() {
 	// TODO Auto-generated constructor stub
@@ -75,4 +75,4 @@ std::string ParallelAgglomerativeClusterer::toString() const {
 	return strm.str();
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

@@ -19,9 +19,9 @@
 #include "../graph/NodeMap.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class Modularity: public EnsembleClustering::QualityMeasure {
+class Modularity: public NetworKit::QualityMeasure {
 
 
 
@@ -42,5 +42,5 @@ public:
 	virtual double getQuality(const Clustering& zeta, Graph& G);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* MODULARITY_H_ */

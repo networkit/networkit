@@ -7,7 +7,7 @@
 
 #include "Louvain.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Louvain::Louvain(std::string par) {
 	this->parallelism = par;
@@ -264,4 +264,4 @@ std::string Louvain::toString() const {
 	return strm.str();
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

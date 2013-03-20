@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 /**
@@ -100,10 +100,10 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 
 //template<typename I, typename T>
-//inline EnsembleClustering::IndexMap<I, T>::IndexMap(int64_t n) {
+//inline NetworKit::IndexMap<I, T>::IndexMap(int64_t n) {
 //	this->n = n;
 //	this->defaultValue = 0;
 //	this->nullValue = 0;
@@ -114,41 +114,41 @@ public:
 //}
 
 template<typename I, typename T>
-inline EnsembleClustering::IndexMap<I, T>::IndexMap(int64_t n, T defaultValue = -1) :
+inline NetworKit::IndexMap<I, T>::IndexMap(int64_t n, T defaultValue = -1) :
 		data(n, defaultValue), defaultValue(defaultValue) {
 	this->n = n;
 }
 
 template<typename I, typename T>
-inline EnsembleClustering::IndexMap<I, T>::~IndexMap() {
+inline NetworKit::IndexMap<I, T>::~IndexMap() {
 	//TODO: destructor stub
 }
 
 template<typename I, typename T>
-inline T& EnsembleClustering::IndexMap<I, T>::operator [](const I& index) {
+inline T& NetworKit::IndexMap<I, T>::operator [](const I& index) {
 	return this->data[index];
 }
 
 template<typename I, typename T>
-inline const T& EnsembleClustering::IndexMap<I, T>::operator [](const I& index) const {
+inline const T& NetworKit::IndexMap<I, T>::operator [](const I& index) const {
 	return this->data[index];
 }
 
 template<typename I, typename T>
-inline int64_t EnsembleClustering::IndexMap<I, T>::numberOfEntries() const {
+inline int64_t NetworKit::IndexMap<I, T>::numberOfEntries() const {
 	// assert (this->n == (this->array.size() - 1));
 	return this->n;
 }
 
 
 template<typename I, typename T>
-inline bool EnsembleClustering::IndexMap<I, T>::hasBeenSet(I index) const {
+inline bool NetworKit::IndexMap<I, T>::hasBeenSet(I index) const {
 	bool cont = (this->data[index] != this->defaultValue);
 	return cont;
 }
 
 template<typename I, typename T>
-inline void EnsembleClustering::IndexMap<I, T>::print() {
+inline void NetworKit::IndexMap<I, T>::print() {
 	std::cout << "{";
 	for (int64_t i = 0; i < this->n; ++i) {
 		std::cout << i << ":" << this->data[i] << ", ";
@@ -158,12 +158,12 @@ inline void EnsembleClustering::IndexMap<I, T>::print() {
 }
 
 template<typename I, typename T>
-inline int64_t EnsembleClustering::IndexMap<I, T>::numberOfNodes() const {
+inline int64_t NetworKit::IndexMap<I, T>::numberOfNodes() const {
 	return this->data.size();	// indices are 0-based
 }
 
 template<typename I, typename T>
-inline void EnsembleClustering::IndexMap<I, T>::setAll(T value) {
+inline void NetworKit::IndexMap<I, T>::setAll(T value) {
 	#pragma omp parallel for if (this->n >= 100000)  // TODO: correct parallelization condition?
 	for (int64_t i = 0; i < this->n; ++i) {
 		this->data[i] = value;
@@ -171,7 +171,7 @@ inline void EnsembleClustering::IndexMap<I, T>::setAll(T value) {
 }
 
 template<typename I, typename T>
-inline T EnsembleClustering::IndexMap<I, T>::at(I index) {
+inline T NetworKit::IndexMap<I, T>::at(I index) {
 	return this->data.at(index);
 }
 

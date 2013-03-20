@@ -12,7 +12,7 @@
 
 #include "../Graph.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class Graph2GTest: public testing::Test {
 public:
@@ -20,5 +20,5 @@ public:
 	virtual ~Graph2GTest();
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GRAPH2GTEST_H_ */

@@ -1,7 +1,29 @@
 var searchData=
 [
-  ['scoreedge',['scoreEdge',['../class_ensemble_clustering_1_1_edge_scoring.html#ae0b8ed83c76ea8f71f8246949d3106f4',1,'EnsembleClustering::EdgeScoring::scoreEdge()'],['../class_ensemble_clustering_1_1_modularity_scoring.html#abf09f85a7a028727888ab767d7cd7bcf',1,'EnsembleClustering::ModularityScoring::scoreEdge()']]],
-  ['scorematchcontract',['ScoreMatchContract',['../class_ensemble_clustering_1_1_score_match_contract.html#a88f6c9df98292c3af20f944895d4c174',1,'EnsembleClustering::ScoreMatchContract']]],
-  ['setup',['SetUp',['../class_ensemble_clustering_1_1_graph_g_test.html#ae9469ed9c84ebaaefe10dbe444209ee7',1,'EnsembleClustering::GraphGTest::SetUp()'],['../class_g_test_test.html#ac1d7b693d1ce5ab93890720bed6e8d29',1,'GTestTest::SetUp()']]],
-  ['stingerfromadjacencies',['STINGERFromAdjacencies',['../class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies.html#abe244c39398307e20829ee66dee1ce09',1,'EnsembleClustering::STINGERFromAdjacencies']]]
+  ['scoreedges',['scoreEdges',['../class_networ_kit_1_1_edge_scoring.html#a51bb5124be2834ac097ff8d65f63880d',1,'NetworKit::EdgeScoring::scoreEdges()'],['../class_networ_kit_1_1_modularity_scoring.html#a9c93ca2ca6126a4de8a2c3c196828116',1,'NetworKit::ModularityScoring::scoreEdges()']]],
+  ['screenlength',['screenLength',['../class_option_parser_1_1_print_usage_implementation_1_1_line_part_iterator.html#a2708cbe66a8fb7060e4aa5841f68bc75',1,'OptionParser::PrintUsageImplementation::LinePartIterator']]],
+  ['setall',['setAll',['../class_networ_kit_1_1_index_map.html#ac86b82fdac7adf228caaa13e11e8cb89',1,'NetworKit::IndexMap']]],
+  ['setattribute_5fdouble',['setAttribute_double',['../class_networ_kit_1_1_graph.html#a05e6af930ba5b3ca6b74d1e3b2cffd0e',1,'NetworKit::Graph']]],
+  ['setfinalclusterer',['setFinalClusterer',['../class_networ_kit_1_1_ensemble_multilevel.html#a8e07f339de7ed28c6fc0501f6d1e6d47',1,'NetworKit::EnsembleMultilevel::setFinalClusterer()'],['../class_networ_kit_1_1_ensemble_preprocessing.html#a2e420ecb90d0c5886a18a4809e7fcad5',1,'NetworKit::EnsemblePreprocessing::setFinalClusterer()']]],
+  ['setname',['setName',['../class_networ_kit_1_1_clustering.html#a5be82c60354b7e9652df63567ad7de63',1,'NetworKit::Clustering::setName()'],['../class_networ_kit_1_1_graph.html#ac40cbd88c3a2b65d33ce74236b805666',1,'NetworKit::Graph::setName()']]],
+  ['setnumberofthreads',['setNumberOfThreads',['../_community_detection_8cpp.html#a3dacd96cc3a2e3ed89fb38b3d75d1599',1,'CommunityDetection.cpp']]],
+  ['setoverlapper',['setOverlapper',['../class_networ_kit_1_1_ensemble_multilevel.html#a37ff4e9548124f5d908efc763cf82ffc',1,'NetworKit::EnsembleMultilevel::setOverlapper()'],['../class_networ_kit_1_1_ensemble_preprocessing.html#ac186607085f348789d82c29d2007266e',1,'NetworKit::EnsemblePreprocessing::setOverlapper()']]],
+  ['setqualitymeasure',['setQualityMeasure',['../class_networ_kit_1_1_ensemble_multilevel.html#a95cb11b277ca5d73a965f53b73d8c6cf',1,'NetworKit::EnsembleMultilevel']]],
+  ['setup',['SetUp',['../class_networ_kit_1_1_graph_g_test.html#a098ec8aecc22b520b365f7d165749892',1,'NetworKit::GraphGTest']]],
+  ['setupdatethreshold',['setUpdateThreshold',['../class_networ_kit_1_1_label_propagation.html#a1525c6b6610b9183c127edb318ebf552',1,'NetworKit::LabelPropagation']]],
+  ['setupperbound',['setUpperBound',['../class_networ_kit_1_1_clustering.html#a8810a044c480adc30d5e05263dabf67c',1,'NetworKit::Clustering']]],
+  ['setweight',['setWeight',['../class_networ_kit_1_1_graph.html#ad56d4fada3895f8446e58d7cd33ca274',1,'NetworKit::Graph']]],
+  ['signal',['signal',['../class_aux_1_1_progress_meter.html#ac850b5a02da40912ca5f87a8c7bff5b3',1,'Aux::ProgressMeter::signal(int64_t v)'],['../class_aux_1_1_progress_meter.html#a3871dc92cf3b964eb9255f8ead508a35',1,'Aux::ProgressMeter::signal(int64_t v, Output out)']]],
+  ['split',['split',['../class_aux_1_1_string_tools.html#ac0c0678138b5308c77d7565938027df3',1,'Aux::StringTools']]],
+  ['splitastring',['splitAString',['../_community_detection_8cpp.html#a325ac8b97e67a33e7a42b65db01b4fba',1,'CommunityDetection.cpp']]],
+  ['start',['start',['../class_aux_1_1_timer.html#a3c58e715148a05a6294743619d111bab',1,'Aux::Timer']]],
+  ['startclusterer',['startClusterer',['../_community_detection_8cpp.html#a2e86b4af9b51c19fe406c7a5dd6111fd',1,'CommunityDetection.cpp']]],
+  ['starttime',['startTime',['../class_aux_1_1_timer.html#a767c6de21191f9bee75c35edd9df2c9e',1,'Aux::Timer']]],
+  ['stats',['Stats',['../struct_option_parser_1_1_stats.html#af488528dadc4a10c77a0135b1205e23d',1,'OptionParser::Stats::Stats()'],['../struct_option_parser_1_1_stats.html#adb41f21c1a7c4f494f5831d9b8585b8a',1,'OptionParser::Stats::Stats(bool gnu, const Descriptor usage[], int argc, const char **argv, int min_abbr_len=0, bool single_minus_longopt=false)'],['../struct_option_parser_1_1_stats.html#a75907970e80d82ec01a8db827012b7af',1,'OptionParser::Stats::Stats(bool gnu, const Descriptor usage[], int argc, char **argv, int min_abbr_len=0, bool single_minus_longopt=false)'],['../struct_option_parser_1_1_stats.html#aed8e2b1777ff408c30b91051fcdd8cfc',1,'OptionParser::Stats::Stats(const Descriptor usage[], int argc, const char **argv, int min_abbr_len=0, bool single_minus_longopt=false)'],['../struct_option_parser_1_1_stats.html#a1db2096d3599352d4d0f8efb7b60d299',1,'OptionParser::Stats::Stats(const Descriptor usage[], int argc, char **argv, int min_abbr_len=0, bool single_minus_longopt=false)']]],
+  ['stop',['stop',['../class_aux_1_1_timer.html#a14d926626eef461e836f87f7bc3d03b7',1,'Aux::Timer']]],
+  ['stoptime',['stopTime',['../class_aux_1_1_timer.html#a2ecdbad6184276140eb88480d04b417e',1,'Aux::Timer']]],
+  ['storeoptionaction',['StoreOptionAction',['../class_option_parser_1_1_parser_1_1_store_option_action.html#a2a16ee59ec2f924996df3c51a368a3a6',1,'OptionParser::Parser::StoreOptionAction']]],
+  ['streamwriter',['StreamWriter',['../struct_option_parser_1_1_print_usage_implementation_1_1_stream_writer.html#a57540078d18d615f52a8f9f3787472cf',1,'OptionParser::PrintUsageImplementation::StreamWriter']]],
+  ['stringtools',['StringTools',['../class_aux_1_1_string_tools.html#ad60089180cb7e2f2d1a7749ee911c526',1,'Aux::StringTools']]],
+  ['syscallwriter',['SyscallWriter',['../struct_option_parser_1_1_print_usage_implementation_1_1_syscall_writer.html#a99b5ebc53f8b142aa08a2684aa9a3791',1,'OptionParser::PrintUsageImplementation::SyscallWriter']]]
 ];

@@ -1,5 +1,7 @@
-<map id="src/clustering/Clusterer.h" name="src/clustering/Clusterer.h">
-<area shape="rect" id="node3" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="58,238,176,266"/>
-<area shape="rect" id="node11" href="$_clustering_8h.html" title="Clustering.h" alt="" coords="112,83,204,111"/>
-<area shape="rect" id="node13" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="101,161,240,189"/>
+<map id="src/community/Clusterer.h" name="src/community/Clusterer.h">
+<area shape="rect" id="node3" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="273,238,391,266"/>
+<area shape="rect" id="node31" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="236,83,400,111"/>
+<area shape="rect" id="node19" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="328,315,419,343"/>
+<area shape="rect" id="node35" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="268,161,407,189"/>
+<area shape="rect" id="node38" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="535,238,669,266"/>
 </map>

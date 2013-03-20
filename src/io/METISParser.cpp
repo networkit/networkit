@@ -8,7 +8,7 @@
 #include "METISParser.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 /**
@@ -134,4 +134,4 @@ std::vector<node> METISParser::getNext() {
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

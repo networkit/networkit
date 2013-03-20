@@ -7,7 +7,7 @@
 
 #include "ClusteringWriter.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 ClusteringWriter::ClusteringWriter() {
 	// TODO Auto-generated constructor stub
@@ -29,4 +29,4 @@ void ClusteringWriter::write(Clustering& zeta, std::string path) const {
 	file.close();
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

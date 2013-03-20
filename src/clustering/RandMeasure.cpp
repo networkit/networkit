@@ -7,7 +7,7 @@
 
 #include "RandMeasure.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 RandMeasure::RandMeasure() {
 	// TODO Auto-generated constructor stub
@@ -42,4 +42,4 @@ double RandMeasure::getDissimilarity(Graph& G, Clustering& first, Clustering& se
 	return rand;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

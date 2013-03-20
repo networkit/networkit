@@ -7,7 +7,7 @@
 
 #include "DissimilarityMeasure.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 DissimilarityMeasure::DissimilarityMeasure() {
 	// TODO Auto-generated constructor stub
@@ -18,4 +18,4 @@ DissimilarityMeasure::~DissimilarityMeasure() {
 	// TODO Auto-generated destructor stub
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

@@ -12,9 +12,9 @@
 
 #include "../aux/RandomProbability.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class Luby: public EnsembleClustering::IndependentSetFinder {
+class Luby: public NetworKit::IndependentSetFinder {
 
 public:
 
@@ -27,5 +27,5 @@ public:
 	virtual std::string toString() const;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* LUBY_H_ */

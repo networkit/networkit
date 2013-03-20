@@ -7,7 +7,7 @@
 
 #include "IndependentSetGTest.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 IndependentSetGTest::IndependentSetGTest() {
 	// TODO Auto-generated constructor stub
@@ -63,4 +63,4 @@ TEST_F(IndependentSetGTest, testLubyWithSelfLoops) {
 	INFO("independent set size: " << size << "/" << n);
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

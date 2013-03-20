@@ -7,7 +7,7 @@
 
 #include "Overlapper.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Overlapper::Overlapper() {
 	// TODO Auto-generated constructor stub
@@ -18,4 +18,4 @@ Overlapper::~Overlapper() {
 	// TODO Auto-generated destructor stub
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

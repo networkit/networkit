@@ -10,7 +10,7 @@
 
 #include "../graph/Graph.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 class IndependentSetFinder {
@@ -38,5 +38,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* INDEPENDENTSETFINDER_H_ */

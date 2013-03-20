@@ -1,6 +1,10 @@
 <map id="src/graph/test/GraphGTest.h" name="src/graph/test/GraphGTest.h">
-<area shape="rect" id="node5" href="$log_8h.html" title="../../aux/log.h" alt="" coords="123,83,220,111"/>
-<area shape="rect" id="node9" href="$_graph_8h.html" title="../Graph.h" alt="" coords="237,161,317,189"/>
-<area shape="rect" id="node17" href="$_graph_generator_8h.html" title="../GraphGenerator.h" alt="" coords="295,83,435,111"/>
-<area shape="rect" id="node20" href="$_random_probability_8h.html" title="../aux/RandomProbability.h" alt="" coords="351,161,531,189"/>
+<area shape="rect" id="node5" href="$_log_8h.html" title="../../aux/Log.h" alt="" coords="322,393,424,421"/>
+<area shape="rect" id="node19" href="$_graph_8h.html" title="../Graph.h" alt="" coords="634,315,715,343"/>
+<area shape="rect" id="node34" href="$_graph_generator_8h.html" title="../GraphGenerator.h" alt="" coords="737,83,876,111"/>
+<area shape="rect" id="node37" href="$_random_probability_8h.html" title="../aux/RandomProbability.h" alt="" coords="912,161,1092,189"/>
+<area shape="rect" id="node41" href="$_random_integer_8h.html" title="../aux/RandomInteger.h" alt="" coords="1117,161,1276,189"/>
+<area shape="rect" id="node46" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="724,161,888,189"/>
+<area shape="rect" id="node50" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="862,238,1001,266"/>
+<area shape="rect" id="node53" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="910,315,1044,343"/>
 </map>

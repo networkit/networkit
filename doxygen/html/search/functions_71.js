@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['qualitymeasure',['QualityMeasure',['../class_ensemble_clustering_1_1_quality_measure.html#a3b41bebc4ac3305e09bcec0af16d0813',1,'EnsembleClustering::QualityMeasure']]]
+  ['qualitymeasure',['QualityMeasure',['../class_networ_kit_1_1_quality_measure.html#ac2b1c035d218ad96d1c6033db44daf28',1,'NetworKit::QualityMeasure']]]
 ];

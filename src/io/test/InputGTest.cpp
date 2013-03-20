@@ -7,7 +7,7 @@
 
 #include "InputGTest.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 TEST_F(InputGTest, testGraphIOEdgeList) {
 	GraphGenerator graphGen;
@@ -103,4 +103,4 @@ TEST_F(InputGTest, testClusteringWriterAndReader) {
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

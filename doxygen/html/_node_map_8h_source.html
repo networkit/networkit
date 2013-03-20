@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Ensemble Clustering: src/graph/NodeMap.h Source File</title>
+<title>NetworKit.CommunityDetection: src/graph/NodeMap.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">Ensemble Clustering
+   <div id="projectname">NetworKit.CommunityDetection
    </div>
   </td>
  </tr>
@@ -69,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -92,77 +92,86 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * NodeMap.h</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 05.12.2012</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: cls</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: Christian Staudt (christian.staudt@kit.edu)</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef NODEMAP_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NODEMAP_H_</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_graph_8h.html">Graph.h</a>&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>EnsembleClustering {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_node_map.html">   15</a></span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt; <span class="keyword">class </span><a class="code" href="class_ensemble_clustering_1_1_node_map.html">NodeMap</a> {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_node_map.html#a07b1d885793627c3691beeb5dca28717">   19</a></span>&#160;    T* <a class="code" href="class_ensemble_clustering_1_1_node_map.html#a07b1d885793627c3691beeb5dca28717" title="array of size (n+1). array[0] is not a valid entry, since node indices are 1-based">array</a>; </div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_node_map.html#a79da6a77072605a77c060bbb2e5a620c">   20</a></span>&#160;    T <a class="code" href="class_ensemble_clustering_1_1_node_map.html#a79da6a77072605a77c060bbb2e5a620c">defaultValue</a>;</div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_node_map.html#a511baf014428ed1dece45d9ab94f205b">   21</a></span>&#160;    int64_t <a class="code" href="class_ensemble_clustering_1_1_node_map.html#a511baf014428ed1dece45d9ab94f205b">n</a>;  <span class="comment">//&lt;! number of indices</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;../base/IndexMap.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>NetworKit {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">// forward declarations for specialization</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="class_node_map.html">   17</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">class </span><a class="code" href="class_node_map.html">NodeMap</a>;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, const NodeMap&lt;T&gt;&amp; m);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_node_map.html">   21</a></span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="keyword">class </span><a class="code" href="class_networ_kit_1_1_node_map.html">NodeMap</a> : <span class="keyword">public</span> <a class="code" href="class_networ_kit_1_1_index_map.html" title="An IndexMap implements a 0-based mapping from an integer index type to an arbitray value type...">IndexMap</a>&lt;node, T&gt; {</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="class_ensemble_clustering_1_1_node_map.html#aab4cdeacb9053e3af1e85c8610bc81c1">NodeMap</a>(int64_t <a class="code" href="class_ensemble_clustering_1_1_node_map.html#a511baf014428ed1dece45d9ab94f205b">n</a>);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="class_ensemble_clustering_1_1_node_map.html#aab4cdeacb9053e3af1e85c8610bc81c1">NodeMap</a>(int64_t <a class="code" href="class_ensemble_clustering_1_1_node_map.html#a511baf014428ed1dece45d9ab94f205b">n</a>, T <a class="code" href="class_ensemble_clustering_1_1_node_map.html#a79da6a77072605a77c060bbb2e5a620c">defaultValue</a>);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_ensemble_clustering_1_1_node_map.html#ad362216773b1f778db051309ecfb5c99">~NodeMap</a>();</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">inline</span> T&amp; <a class="code" href="class_ensemble_clustering_1_1_node_map.html#aebc1eed243771ab969c08dc4ab73e12b" title="Index operator.">operator[]</a>(<span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; u);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">inline</span> <span class="keyword">const</span> T&amp; <a class="code" href="class_ensemble_clustering_1_1_node_map.html#aebc1eed243771ab969c08dc4ab73e12b" title="Index operator.">operator[]</a>(<span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; u) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="class_networ_kit_1_1_node_map.html#ae5324b98b88f23032dcb0e3847b5eff9" title="Construct a new IndexMap which holds n entries .">NodeMap</a>(<a class="code" href="namespace_networ_kit.html#ad4c536a5339a8bf2f91f418b9a67a7d8">count</a> <a class="code" href="class_networ_kit_1_1_index_map.html#aabb9796ff1a0c002446b14ff7d4fffbc">n</a>, T <a class="code" href="class_networ_kit_1_1_index_map.html#aa7b9e890a78e37f9e1fd1978b3706c4c" title="default value">defaultValue</a>);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_networ_kit_1_1_node_map.html#a3c540495a55c9aaecee101e1483c135c">~NodeMap</a>();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">inline</span> T&amp; <a class="code" href="class_networ_kit_1_1_node_map.html#a2d37467f509efb2fbdd54dd2b28fe8ea" title="Index operator.">operator[]</a>(<span class="keyword">const</span> <a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a>&amp; u);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">inline</span> <span class="keyword">const</span> T&amp; <a class="code" href="class_networ_kit_1_1_node_map.html#a2d37467f509efb2fbdd54dd2b28fe8ea" title="Index operator.">operator[]</a>(<span class="keyword">const</span> <a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a>&amp; u) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;} <span class="comment">/* namespace EnsembleClustering */</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="comment">// TODO: string representation of NodeMap</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">/*** Implementation ***/</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_node_map.html#aab4cdeacb9053e3af1e85c8610bc81c1">   57</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">inline</span> <a class="code" href="class_ensemble_clustering_1_1_node_map.html#aab4cdeacb9053e3af1e85c8610bc81c1">EnsembleClustering::NodeMap&lt;T&gt;::NodeMap</a>(int64_t n) {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    this-&gt;n = n;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    this-&gt;array = <span class="keyword">new</span> T[n+1];</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_node_map.html#ab5f347c8b015b0c2efc3750a7d4e0762">   62</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">inline</span> <a class="code" href="class_ensemble_clustering_1_1_node_map.html#aab4cdeacb9053e3af1e85c8610bc81c1">EnsembleClustering::NodeMap&lt;T&gt;::NodeMap</a>(int64_t n, T defaultValue) {</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    this-&gt;n = n;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    this-&gt;defaultValue = defaultValue;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    this-&gt;array = <span class="keyword">new</span> T[n+1];</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">for</span> (int64_t i = 1; i &lt; n+1; ++i) {</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        this-&gt;array[i] = defaultValue;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_node_map.html#ad362216773b1f778db051309ecfb5c99">   71</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">inline</span> <a class="code" href="class_ensemble_clustering_1_1_node_map.html#ad362216773b1f778db051309ecfb5c99">EnsembleClustering::NodeMap&lt;T&gt;::~NodeMap</a>() {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keyword">delete</span>[] array;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_node_map.html#aebc1eed243771ab969c08dc4ab73e12b">   75</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">inline</span> T&amp; <a class="code" href="class_ensemble_clustering_1_1_node_map.html#aebc1eed243771ab969c08dc4ab73e12b" title="Index operator.">EnsembleClustering::NodeMap&lt;T&gt;::operator []</a>(<span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; u) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordflow">return</span> this-&gt;array[u];</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_node_map.html#a7a39722236380fd5879370351d0c177a">   79</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">inline</span> <span class="keyword">const</span> T&amp; <a class="code" href="class_ensemble_clustering_1_1_node_map.html#aebc1eed243771ab969c08dc4ab73e12b" title="Index operator.">EnsembleClustering::NodeMap&lt;T&gt;::operator []</a>(</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keyword">const</span> <a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a>&amp; u)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordflow">return</span> this-&gt;array[u];</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* NODEMAP_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="comment">//template&lt;typename T&gt;</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">friend</span> std::ostream&amp; operator&lt;&lt; &lt;&gt; (std::ostream&amp; os, <span class="keyword">const</span> <a class="code" href="class_networ_kit_1_1_node_map.html">NodeMap&lt;T&gt;</a>&amp; m);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;};</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;} <span class="comment">/* namespace NetworKit */</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">/*** Implementation ***/</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_node_map.html#ae5324b98b88f23032dcb0e3847b5eff9">   65</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">inline</span> <a class="code" href="class_networ_kit_1_1_node_map.html#ae5324b98b88f23032dcb0e3847b5eff9" title="Construct a new IndexMap which holds n entries .">NetworKit::NodeMap&lt;T&gt;::NodeMap</a>(<a class="code" href="namespace_networ_kit.html#ad4c536a5339a8bf2f91f418b9a67a7d8">count</a> n, T defaultValue = -1) :</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <a class="code" href="class_networ_kit_1_1_index_map.html" title="An IndexMap implements a 0-based mapping from an integer index type to an arbitray value type...">IndexMap</a>&lt;<a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a>, T&gt;(n, defaultValue) {</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_node_map.html#a3c540495a55c9aaecee101e1483c135c">   69</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">inline</span> <a class="code" href="class_networ_kit_1_1_node_map.html#a3c540495a55c9aaecee101e1483c135c">NetworKit::NodeMap&lt;T&gt;::~NodeMap</a>() {</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_node_map.html#a2d37467f509efb2fbdd54dd2b28fe8ea">   72</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">inline</span> T&amp; <a class="code" href="class_networ_kit_1_1_node_map.html#a2d37467f509efb2fbdd54dd2b28fe8ea" title="Index operator.">NetworKit::NodeMap&lt;T&gt;::operator []</a>(<span class="keyword">const</span> <a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a>&amp; u) {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">return</span> this-&gt;data[u];</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_node_map.html#a3494496fcc4041f747f45a5edd9d3b22">   76</a></span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">inline</span> <span class="keyword">const</span> T&amp; <a class="code" href="class_networ_kit_1_1_node_map.html#a2d37467f509efb2fbdd54dd2b28fe8ea" title="Index operator.">NetworKit::NodeMap&lt;T&gt;::operator []</a>(</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keyword">const</span> <a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a>&amp; u)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">return</span> this-&gt;data[u];</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">// FIXME: linker errors when calling operator&lt;&lt;</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="code" href="_node_map_8h.html#af28df8ee4832ee9e4fcd283b5c6ba93b">   84</a></span>&#160;std::ostream&amp; operator &lt;&lt;(std::ostream&amp; os, const NetworKit::NodeMap&lt;T&gt;&amp; m) {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;{ &quot;</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">for</span> (<a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">NetworKit::node</a> v = 1; v &lt;= m.n; ++v) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        T val = m.array[v];</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        os &lt;&lt; v ;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;: &quot;</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        os &lt;&lt; val;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">return</span> os &lt;&lt; <span class="stringliteral">&quot;}&quot;</span>;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* NODEMAP_H_ */</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:33 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:37:03 for NetworKit.CommunityDetection by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

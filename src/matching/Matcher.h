@@ -10,7 +10,7 @@
 
 #include "Matching.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 class Matcher {
@@ -24,5 +24,5 @@ public:
 	virtual Matching run(Graph& G) = 0;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* MATCHER_H_ */

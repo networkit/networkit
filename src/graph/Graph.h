@@ -20,7 +20,7 @@
 
 #define none -1
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 /** Typedefs **/
 
@@ -447,10 +447,10 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 
 template<typename L>
-inline void EnsembleClustering::Graph::forNeighborsOf(node u, L handle) {
+inline void NetworKit::Graph::forNeighborsOf(node u, L handle) {
 	for (node v : this->adja[u]) {
 		if (v != none) {
 			handle(v);
@@ -459,7 +459,7 @@ inline void EnsembleClustering::Graph::forNeighborsOf(node u, L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forNeighborsOf(node u, L handle) const {
+inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
 	for (node v : this->adja[u]) {
 		if (v != none) {
 			handle(v);
@@ -468,7 +468,7 @@ inline void EnsembleClustering::Graph::forNeighborsOf(node u, L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forWeightedNeighborsOf(node u,
+inline void NetworKit::Graph::forWeightedNeighborsOf(node u,
 		L handle) {
 	for (index i = 0; i < (index) adja[u].size(); ++i) {
 		node v = adja[u][i];
@@ -481,7 +481,7 @@ inline void EnsembleClustering::Graph::forWeightedNeighborsOf(node u,
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forWeightedNeighborsOf(node u,
+inline void NetworKit::Graph::forWeightedNeighborsOf(node u,
 		L handle) const {
 	for (index i = 0; i < adja[u].size(); ++i) {
 		node v = adja[u][i];
@@ -494,7 +494,7 @@ inline void EnsembleClustering::Graph::forWeightedNeighborsOf(node u,
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forNodes(L handle) {
+inline void NetworKit::Graph::forNodes(L handle) {
 	// TODO: this assumes that no nodes are deleted
 	for (node v = 0; v < n; ++v) {
 		handle(v);
@@ -502,7 +502,7 @@ inline void EnsembleClustering::Graph::forNodes(L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forNodes(L handle) const {
+inline void NetworKit::Graph::forNodes(L handle) const {
 	// TODO: this assumes that no nodes are deleted
 	for (node v = 0; v < n; ++v) {
 		handle(v);
@@ -510,7 +510,7 @@ inline void EnsembleClustering::Graph::forNodes(L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::parallelForNodes(L handle) {
+inline void NetworKit::Graph::parallelForNodes(L handle) {
 #pragma omp parallel for
 	for (node v = 0; v < n; ++v) {
 		// call here
@@ -519,7 +519,7 @@ inline void EnsembleClustering::Graph::parallelForNodes(L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::parallelForNodes(L handle) const {
+inline void NetworKit::Graph::parallelForNodes(L handle) const {
 #pragma omp parallel for
 	for (node v = 0; v < n; ++v) {
 		// call here
@@ -528,7 +528,7 @@ inline void EnsembleClustering::Graph::parallelForNodes(L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::balancedParallelForNodes(L handle) {
+inline void NetworKit::Graph::balancedParallelForNodes(L handle) {
 	#pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
 	for (node v = 0; v < n; ++v) {
 		// call here
@@ -538,7 +538,7 @@ inline void EnsembleClustering::Graph::balancedParallelForNodes(L handle) {
 
 
 template<typename L>
-inline float EnsembleClustering::Graph::parallelSumForNodes(L handle) {
+inline float NetworKit::Graph::parallelSumForNodes(L handle) {
 	float sum = 0.0;
 #pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < n; ++v) {
@@ -549,7 +549,7 @@ inline float EnsembleClustering::Graph::parallelSumForNodes(L handle) {
 }
 
 template<typename L>
-inline float EnsembleClustering::Graph::parallelSumForNodes(L handle) const {
+inline float NetworKit::Graph::parallelSumForNodes(L handle) const {
 	float sum = 0.0;
 #pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < n; ++v) {
@@ -560,7 +560,7 @@ inline float EnsembleClustering::Graph::parallelSumForNodes(L handle) const {
 }
 
 template<typename L>
-float EnsembleClustering::Graph::parallelSumForWeightedEdges(L handle) const {
+float NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
 	float sum = 0.0;
 #pragma omp parallel for reduction(+:sum)
 	for (node u = 0; u < n; ++u) {
@@ -576,7 +576,7 @@ float EnsembleClustering::Graph::parallelSumForWeightedEdges(L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forEdges(L handle) {
+inline void NetworKit::Graph::forEdges(L handle) {
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
 			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
@@ -587,7 +587,7 @@ inline void EnsembleClustering::Graph::forEdges(L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forEdges(L handle) const {
+inline void NetworKit::Graph::forEdges(L handle) const {
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
 			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
@@ -598,7 +598,7 @@ inline void EnsembleClustering::Graph::forEdges(L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::parallelForEdges(L handle) {
+inline void NetworKit::Graph::parallelForEdges(L handle) {
 #pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
@@ -610,7 +610,7 @@ inline void EnsembleClustering::Graph::parallelForEdges(L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::parallelForEdges(L handle) const {
+inline void NetworKit::Graph::parallelForEdges(L handle) const {
 #pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
 		for (node v : this->adja[u]) {
@@ -622,7 +622,7 @@ inline void EnsembleClustering::Graph::parallelForEdges(L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forNodePairs(L handle) {
+inline void NetworKit::Graph::forNodePairs(L handle) {
 	for (node u = 0; u < n; ++u) {
 		for (node v = u + 1; v < n; ++v) {
 			// call node pair function
@@ -632,7 +632,7 @@ inline void EnsembleClustering::Graph::forNodePairs(L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forNodePairs(L handle) const {
+inline void NetworKit::Graph::forNodePairs(L handle) const {
 	for (node u = 0; u < n; ++u) {
 		for (node v = u + 1; v < n; ++v) {
 			// call node pair function
@@ -642,7 +642,7 @@ inline void EnsembleClustering::Graph::forNodePairs(L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle) {
+inline void NetworKit::Graph::breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle) {
 	DEBUG("Call to BFS");
 	std::queue<node> q;
 	count n = this->numberOfNodes();
@@ -664,7 +664,7 @@ inline void EnsembleClustering::Graph::breadthFirstNodesFrom(node r, std::vector
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forEdgesOf(node u, L handle) {
+inline void NetworKit::Graph::forEdgesOf(node u, L handle) {
 	for (node v : this->adja[u]) {
 		if (v != none) {
 			handle(u, v);
@@ -673,7 +673,7 @@ inline void EnsembleClustering::Graph::forEdgesOf(node u, L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forEdgesOf(node u, L handle) const {
+inline void NetworKit::Graph::forEdgesOf(node u, L handle) const {
 	for (node v : this->adja[u]) {
 		if (v != none) {
 			handle(u, v);
@@ -682,7 +682,7 @@ inline void EnsembleClustering::Graph::forEdgesOf(node u, L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::parallelForNodePairs(L handle) {
+inline void NetworKit::Graph::parallelForNodePairs(L handle) {
 #pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
 		for (node v = u + 1; v < n; ++v) {
@@ -693,7 +693,7 @@ inline void EnsembleClustering::Graph::parallelForNodePairs(L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::parallelForNodePairs(L handle) const {
+inline void NetworKit::Graph::parallelForNodePairs(L handle) const {
 #pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
 		for (node v = u + 1; v < n; ++v) {
@@ -704,13 +704,13 @@ inline void EnsembleClustering::Graph::parallelForNodePairs(L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::breadthFirstEdgesFrom(node r, L handle) {
+inline void NetworKit::Graph::breadthFirstEdgesFrom(node r, L handle) {
 	// TODO: implement BFS iterator for edges
 	throw std::runtime_error("TODO");
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forWeightedEdges(L handle) {
+inline void NetworKit::Graph::forWeightedEdges(L handle) {
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
@@ -723,7 +723,7 @@ inline void EnsembleClustering::Graph::forWeightedEdges(L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forWeightedEdges(L handle) const {
+inline void NetworKit::Graph::forWeightedEdges(L handle) const {
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
@@ -736,7 +736,7 @@ inline void EnsembleClustering::Graph::forWeightedEdges(L handle) const {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::parallelForWeightedEdges(L handle) {
+inline void NetworKit::Graph::parallelForWeightedEdges(L handle) {
 #pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
@@ -750,7 +750,7 @@ inline void EnsembleClustering::Graph::parallelForWeightedEdges(L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::parallelForWeightedEdges(
+inline void NetworKit::Graph::parallelForWeightedEdges(
 		L handle) const {
 #pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
@@ -765,7 +765,7 @@ inline void EnsembleClustering::Graph::parallelForWeightedEdges(
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u, L handle) {
+inline void NetworKit::Graph::forWeightedEdgesOf(node u, L handle) {
 	const count asize = (count) adja[u].size();
 	for (index i = 0; i < asize; ++i) {
 		node v = adja[u][i];
@@ -778,7 +778,7 @@ inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u, L handle) {
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u, L handle) const {
+inline void NetworKit::Graph::forWeightedEdgesOf(node u, L handle) const {
 	for (index i = 0; i < adja[u].size(); ++i) {
 		node v = adja[u][i];
 		if (v != none) {
@@ -790,7 +790,7 @@ inline void EnsembleClustering::Graph::forWeightedEdgesOf(node u, L handle) cons
 }
 
 template<typename L>
-inline void EnsembleClustering::Graph::forNodesWithAttribute(std::string attrKey, L handle) {
+inline void NetworKit::Graph::forNodesWithAttribute(std::string attrKey, L handle) {
 	// get nodemap for attrKey
 
 //	auto nodeMap; // ?
@@ -827,7 +827,7 @@ inline void EnsembleClustering::Graph::forNodesWithAttribute(std::string attrKey
 
 
 template<typename L>
-inline void EnsembleClustering::Graph::forEdgesWithAttribute_double(int attrId, L handle) {
+inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId, L handle) {
 	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {

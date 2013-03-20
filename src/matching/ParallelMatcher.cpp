@@ -7,7 +7,7 @@
 
 #include "ParallelMatcher.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 ParallelMatcher::ParallelMatcher(int attrId_) : attrId(attrId_) {
 	// TODO Auto-generated constructor stub
@@ -106,4 +106,4 @@ Matching ParallelMatcher::run(Graph& G) {
 	return M;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

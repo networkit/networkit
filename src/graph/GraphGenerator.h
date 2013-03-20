@@ -13,7 +13,7 @@
 #include "../aux/RandomInteger.h"
 #include "../clustering/Clustering.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class GraphGenerator {
 
@@ -94,5 +94,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GENERATOR_H_ */

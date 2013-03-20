@@ -17,7 +17,7 @@
 #include "../../clustering/ClusteringGenerator.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class OverlapGTest: public testing::Test {
 
@@ -26,5 +26,5 @@ class OverlapGTest: public testing::Test {
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* OVERLAPGTEST_H_ */

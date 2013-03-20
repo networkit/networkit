@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['array',['array',['../class_ensemble_clustering_1_1_index_map.html#af1d57517c8a2eac72bfe7805b65fcebc',1,'EnsembleClustering::IndexMap::array()'],['../class_ensemble_clustering_1_1_node_map.html#a07b1d885793627c3691beeb5dca28717',1,'EnsembleClustering::NodeMap::array()']]]
+  ['adja',['adja',['../class_networ_kit_1_1_graph.html#ad731885a6d7d7cf22ec8a8babc77d389',1,'NetworKit::Graph']]],
+  ['anychange',['anyChange',['../class_networ_kit_1_1_louvain.html#a2531d4e703305b7a4b6ea1ca67450a0d',1,'NetworKit::Louvain']]],
+  ['arg',['arg',['../class_option_parser_1_1_option.html#a5b222bff75241e025502aab20a914191',1,'OptionParser::Option']]]
 ];

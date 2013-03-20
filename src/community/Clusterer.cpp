@@ -7,7 +7,7 @@
 
 #include "Clusterer.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Clusterer::Clusterer() {
 	// TODO Auto-generated constructor stub
@@ -22,4 +22,4 @@ std::string Clusterer::toString() const {
 	return "TODO: string representation of clusterer";
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

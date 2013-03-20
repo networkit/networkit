@@ -7,7 +7,7 @@
 
 #include "ClusteringGenerator.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 ClusteringGenerator::ClusteringGenerator() {
 	// TODO Auto-generated constructor stub
@@ -57,4 +57,4 @@ Clustering ClusteringGenerator::makeRandomClustering(Graph& G, int k) {
 	return zeta;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

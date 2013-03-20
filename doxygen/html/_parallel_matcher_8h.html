@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Ensemble Clustering: src/matching/ParallelMatcher.h File Reference</title>
+<title>NetworKit.CommunityDetection: src/matching/ParallelMatcher.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">Ensemble Clustering
+   <div id="projectname">NetworKit.CommunityDetection
    </div>
   </td>
  </tr>
@@ -69,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -91,39 +91,43 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">ParallelMatcher.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="_matcher_8h_source.html">Matcher.h</a>&quot;</code><br/>
+<div class="textblock"><code>#include &lt;set&gt;</code><br/>
+<code>#include &lt;algorithm&gt;</code><br/>
+<code>#include &quot;<a class="el" href="_matcher_8h_source.html">Matcher.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_node_map_8h_source.html">../graph/NodeMap.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_functions_8h_source.html">../aux/Functions.h</a>&quot;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for ParallelMatcher.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="_parallel_matcher_8h__incl.png" border="0" usemap="#src_2matching_2_parallel_matcher_8h" alt=""/></div>
 <map name="src_2matching_2_parallel_matcher_8h" id="src_2matching_2_parallel_matcher_8h">
-<area shape="rect" id="node3" href="_matcher_8h.html" title="Matcher.h" alt="" coords="112,83,191,111"/><area shape="rect" id="node19" href="_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="181,238,320,266"/><area shape="rect" id="node5" href="_matching_8h.html" title="Matching.h" alt="" coords="107,161,193,189"/><area shape="rect" id="node7" href="log_8h.html" title="../aux/log.h" alt="" coords="21,238,107,266"/><area shape="rect" id="node11" href="_graph_8h.html" title="../graph/Graph.h" alt="" coords="169,315,287,343"/></map>
+<area shape="rect" id="node7" href="_matcher_8h.html" title="Matcher.h" alt="" coords="327,83,405,111"/><area shape="rect" id="node40" href="_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="205,238,344,266"/><area shape="rect" id="node47" href="_functions_8h.html" title="../aux/Functions.h" alt="" coords="67,83,193,111"/><area shape="rect" id="node9" href="_matching_8h.html" title="Matching.h" alt="" coords="331,161,417,189"/><area shape="rect" id="node11" href="_log_8h.html" title="../aux/Log.h" alt="" coords="580,393,671,421"/><area shape="rect" id="node25" href="_graph_8h.html" title="../graph/Graph.h" alt="" coords="258,315,376,343"/><area shape="rect" id="node43" href="_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="13,315,147,343"/></map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="_parallel_matcher_8h__dep__incl.png" border="0" usemap="#src_2matching_2_parallel_matcher_8hdep" alt=""/></div>
 <map name="src_2matching_2_parallel_matcher_8hdep" id="src_2matching_2_parallel_matcher_8hdep">
-<area shape="rect" id="node3" href="_parallel_matcher_8cpp.html" title="src/matching/ParallelMatcher.cpp" alt="" coords="4,83,221,111"/></map>
+<area shape="rect" id="node3" href="_parallel_agglomerative_clusterer_8h.html" title="src/community/ParallelAgglomerative\lClusterer.h" alt="" coords="125,83,365,127"/><area shape="rect" id="node9" href="_parallel_matcher_8cpp.html" title="src/matching/ParallelMatcher.cpp" alt="" coords="390,91,607,119"/><area shape="rect" id="node5" href="_parallel_agglomerative_clusterer_8cpp.html" title="src/community/ParallelAgglomerative\lClusterer.cpp" alt="" coords="5,177,245,221"/><area shape="rect" id="node7" href="_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="269,185,460,213"/></map>
 </div>
 </div>
 <p><a href="_parallel_matcher_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_parallel_matcher.html">EnsembleClustering::ParallelMatcher</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_networ_kit_1_1_parallel_matcher.html">NetworKit::ParallelMatcher</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parallel matching algorithm as described by Manne/Bisseling Source: <a href="http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1">http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1</a>.  <a href="class_networ_kit_1_1_parallel_matcher.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespace_ensemble_clustering"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_ensemble_clustering.html">EnsembleClustering</a></td></tr>
+<tr class="memitem:namespace_networ_kit"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_networ_kit.html">NetworKit</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:34 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:37:05 for NetworKit.CommunityDetection by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

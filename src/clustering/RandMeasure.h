@@ -10,9 +10,9 @@
 
 #include "DissimilarityMeasure.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class RandMeasure: public EnsembleClustering::DissimilarityMeasure {
+class RandMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
@@ -24,5 +24,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* RANDMEASURE_H_ */

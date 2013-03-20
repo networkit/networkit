@@ -9,7 +9,7 @@
 
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 Modularity::Modularity() : QualityMeasure() {
@@ -81,4 +81,4 @@ double Modularity::getQuality(const Clustering& zeta, Graph& G) {
 	return modularity;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

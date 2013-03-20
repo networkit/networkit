@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -100,7 +100,7 @@ Inheritance diagram for EnsembleClustering::Clusterer:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_ensemble_clustering_1_1_clusterer__inherit__graph.png" border="0" usemap="#_ensemble_clustering_1_1_clusterer_inherit__map" alt="Inheritance graph"/></div>
 <map name="_ensemble_clustering_1_1_clusterer_inherit__map" id="_ensemble_clustering_1_1_clusterer_inherit__map">
-<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_label_propagation.html" title="As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering Raghavan et al..." alt="" coords="4,99,144,143"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_score_match_contract.html" title="EnsembleClustering\l::ScoreMatchContract" alt="" coords="169,99,319,143"/></map>
+<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_ensemble_multilevel.html" title="EnsembleClustering\l::EnsembleMultilevel" alt="" coords="230,5,373,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_ensemble_preprocessing.html" title="EnsembleClustering\l::EnsemblePreprocessing" alt="" coords="215,73,388,117"/><area shape="rect" id="node7" href="class_ensemble_clustering_1_1_label_propagation.html" title="As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering Raghavan et al..." alt="" coords="231,141,372,185"/><area shape="rect" id="node9" href="class_ensemble_clustering_1_1_louvain.html" title="EnsembleClustering\l::Louvain" alt="" coords="231,209,372,253"/><area shape="rect" id="node11" href="class_ensemble_clustering_1_1_parallel_agglomerative_clusterer.html" title="EnsembleClustering\l::ParallelAgglomerativeClusterer" alt="" coords="195,277,408,321"/><area shape="rect" id="node13" href="class_ensemble_clustering_1_1_random_clusterer.html" title="EnsembleClustering\l::RandomClusterer" alt="" coords="231,345,372,389"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -109,8 +109,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:acbd9729676a2793bccffbacec6bd13f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93a0ef31adf30861adc1db201174953f"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clusterer.html#a93a0ef31adf30861adc1db201174953f">~Clusterer</a> ()</td></tr>
 <tr class="separator:a93a0ef31adf30861adc1db201174953f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4266e5bb967201f6567ce299bbc2f662"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clusterer.html#a4266e5bb967201f6567ce299bbc2f662">run</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)=0</td></tr>
-<tr class="separator:a4266e5bb967201f6567ce299bbc2f662"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fab8db7082b6399e1d29509512cad91"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clusterer.html#a9fab8db7082b6399e1d29509512cad91">run</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)=0</td></tr>
+<tr class="separator:a9fab8db7082b6399e1d29509512cad91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1a37081af12061ef675139668c5ee6"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clusterer.html#aba1a37081af12061ef675139668c5ee6">toString</a> () const </td></tr>
+<tr class="separator:aba1a37081af12061ef675139668c5ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -159,7 +161,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a4266e5bb967201f6567ce299bbc2f662"></a>
+<a class="anchor" id="a9fab8db7082b6399e1d29509512cad91"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -167,7 +169,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>&amp; EnsembleClustering::Clusterer::run </td>
+          <td class="memname">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> EnsembleClustering::Clusterer::run </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;&#160;</td>
           <td class="paramname"><em>G</em></td><td>)</td>
@@ -181,18 +183,46 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#a4915a00c1a2dc5a07c7d902bcb66f52a">EnsembleClustering::LabelPropagation</a>.</p>
+<p>Implemented in <a class="el" href="class_ensemble_clustering_1_1_ensemble_multilevel.html#adc1557bf71810a5fc7f37400917f407e">EnsembleClustering::EnsembleMultilevel</a>, <a class="el" href="class_ensemble_clustering_1_1_ensemble_preprocessing.html#a85f74ed57d5d35b99db96ac2a9618f08">EnsembleClustering::EnsemblePreprocessing</a>, <a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#ab6680246bb334e82318703c2ecbbd117">EnsembleClustering::LabelPropagation</a>, <a class="el" href="class_ensemble_clustering_1_1_louvain.html#abc6d8ce42bcc51e1913dc0be34cfb2b8">EnsembleClustering::Louvain</a>, <a class="el" href="class_ensemble_clustering_1_1_parallel_agglomerative_clusterer.html#a7858e8e6b9110b6a0a59c3972709d606">EnsembleClustering::ParallelAgglomerativeClusterer</a>, and <a class="el" href="class_ensemble_clustering_1_1_random_clusterer.html#ae10f83a508ceaac1b61cd6e7029bded1">EnsembleClustering::RandomClusterer</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aba1a37081af12061ef675139668c5ee6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string EnsembleClustering::Clusterer::toString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>string representation of algorithm and parameters. </dd></dl>
+
+<p>Reimplemented in <a class="el" href="class_ensemble_clustering_1_1_ensemble_multilevel.html#a18d80c7285dfbf236306908804e45af8">EnsembleClustering::EnsembleMultilevel</a>, <a class="el" href="class_ensemble_clustering_1_1_ensemble_preprocessing.html#abbd5ff18c5507f2867d9ff5a585e4331">EnsembleClustering::EnsemblePreprocessing</a>, <a class="el" href="class_ensemble_clustering_1_1_label_propagation.html#a1672735899b9c00e797f0270638fba7f">EnsembleClustering::LabelPropagation</a>, <a class="el" href="class_ensemble_clustering_1_1_louvain.html#af86f67cf0c83abf0af7c149c158342c5">EnsembleClustering::Louvain</a>, and <a class="el" href="class_ensemble_clustering_1_1_parallel_agglomerative_clusterer.html#a1b14e2b84b9541e49df16a2e8401d4b9">EnsembleClustering::ParallelAgglomerativeClusterer</a>.</p>
+
+<p>Definition at line <a class="el" href="_clusterer_8cpp_source.html#l00021">21</a> of file <a class="el" href="_clusterer_8cpp_source.html">Clusterer.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/clustering/<a class="el" href="_clusterer_8h_source.html">Clusterer.h</a></li>
-<li>src/clustering/<a class="el" href="_clusterer_8cpp_source.html">Clusterer.cpp</a></li>
+<li>src/community/<a class="el" href="_clusterer_8h_source.html">Clusterer.h</a></li>
+<li>src/community/<a class="el" href="_clusterer_8cpp_source.html">Clusterer.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:35 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:16:37 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

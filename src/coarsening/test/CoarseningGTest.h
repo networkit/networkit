@@ -17,7 +17,7 @@
 #include "../../coarsening/GraphContraction.h"
 #include "../../coarsening/ClusteringProjector.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 /**
  * googletest test fixture for the coarsening module.
@@ -29,5 +29,5 @@ class CoarseningGTest: public testing::Test {
 };
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* COARSENINGGTEST_H_ */

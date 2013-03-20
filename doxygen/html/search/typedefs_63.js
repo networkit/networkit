@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['cluster',['cluster',['../namespace_ensemble_clustering.html#a5ae38234e207add524443be6e597b970',1,'EnsembleClustering::cluster()'],['../namespace_ensemble_clustering.html#a8d9740fbc7cc7696652cd8b6974121ac',1,'EnsembleClustering::Cluster()']]],
-  ['clustering',['Clustering',['../namespace_ensemble_clustering.html#a8376de7054d9b646ad127a6256989024',1,'EnsembleClustering']]]
+  ['checkarg',['CheckArg',['../namespace_option_parser.html#aee9955553cc70fd9fd41849622680c6a',1,'OptionParser']]],
+  ['cluster',['cluster',['../namespace_networ_kit.html#aee72806475c8d37642866ab18aceab8b',1,'NetworKit']]],
+  ['count',['count',['../namespace_networ_kit.html#ad4c536a5339a8bf2f91f418b9a67a7d8',1,'NetworKit']]]
 ];

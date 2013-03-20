@@ -7,7 +7,7 @@
 
 #include "GraphBenchmark.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 GraphBenchmark::GraphBenchmark() {
 	this->n = 1000;
@@ -271,4 +271,4 @@ TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 //}
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

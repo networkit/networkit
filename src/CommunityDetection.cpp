@@ -53,7 +53,7 @@
 static const std::string REVISION = "r008";
 
 
-using namespace EnsembleClustering;
+using namespace NetworKit;
 
 
 

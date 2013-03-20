@@ -12,7 +12,7 @@
 
 #include "../clustering/Clustering.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class ClusteringWriter {
 
@@ -25,5 +25,5 @@ public:
 	virtual void write(Clustering& zeta, std::string path) const;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* CLUSTERINGWRITER_H_ */

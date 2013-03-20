@@ -1,8 +1,12 @@
 <map id="src/matching/Matching.h" name="src/matching/Matching.h">
-<area shape="rect" id="node3" href="$_ensemble_clustering_8cpp.html" title="src/EnsembleClustering.cpp" alt="" coords="5,83,192,111"/>
-<area shape="rect" id="node5" href="$_matcher_8h.html" title="src/matching/Matcher.h" alt="" coords="216,83,375,111"/>
-<area shape="rect" id="node13" href="$_matching_8cpp.html" title="src/matching/Matching.cpp" alt="" coords="399,83,579,111"/>
-<area shape="rect" id="node7" href="$_matcher_8cpp.html" title="src/matching/Matcher.cpp" alt="" coords="104,161,276,189"/>
-<area shape="rect" id="node9" href="$_parallel_matcher_8h.html" title="src/matching/ParallelMatcher.h" alt="" coords="301,161,504,189"/>
-<area shape="rect" id="node11" href="$_parallel_matcher_8cpp.html" title="src/matching/ParallelMatcher.cpp" alt="" coords="294,238,511,266"/>
+<area shape="rect" id="node3" href="$_matching_contracter_8h.html" title="src/coarsening/MatchingContracter.h" alt="" coords="154,83,392,111"/>
+<area shape="rect" id="node13" href="$_matcher_8h.html" title="src/matching/Matcher.h" alt="" coords="416,83,575,111"/>
+<area shape="rect" id="node22" href="$_matching_8cpp.html" title="src/matching/Matching.cpp" alt="" coords="599,83,779,111"/>
+<area shape="rect" id="node5" href="$_matching_contracter_8cpp.html" title="src/coarsening/MatchingContracter.cpp" alt="" coords="4,161,256,189"/>
+<area shape="rect" id="node7" href="$_parallel_agglomerative_clusterer_8h.html" title="src/community/ParallelAgglomerative\lClusterer.h" alt="" coords="174,238,415,282"/>
+<area shape="rect" id="node9" href="$_parallel_agglomerative_clusterer_8cpp.html" title="src/community/ParallelAgglomerative\lClusterer.cpp" alt="" coords="54,331,295,375"/>
+<area shape="rect" id="node11" href="$_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="319,339,509,367"/>
+<area shape="rect" id="node15" href="$_parallel_matcher_8h.html" title="src/matching/ParallelMatcher.h" alt="" coords="373,161,576,189"/>
+<area shape="rect" id="node20" href="$_matcher_8cpp.html" title="src/matching/Matcher.cpp" alt="" coords="600,161,772,189"/>
+<area shape="rect" id="node18" href="$_parallel_matcher_8cpp.html" title="src/matching/ParallelMatcher.cpp" alt="" coords="439,246,656,274"/>
 </map>

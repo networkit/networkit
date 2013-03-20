@@ -18,9 +18,9 @@
 #include "../base/IndexMap.h"
 #include "../graph/NodeMap.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class ModularitySequential: public EnsembleClustering::QualityMeasure {
+class ModularitySequential: public NetworKit::QualityMeasure {
 public:
 	ModularitySequential();
 	virtual ~ModularitySequential();
@@ -29,5 +29,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* MODULARITYSEQUENTIAL_H_ */

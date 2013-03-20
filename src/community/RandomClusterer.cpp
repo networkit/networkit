@@ -7,7 +7,7 @@
 
 #include "RandomClusterer.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 RandomClusterer::RandomClusterer() {
 	// TODO Auto-generated constructor stub
@@ -23,4 +23,4 @@ Clustering RandomClusterer::run(Graph& G) {
 	return gen.makeRandomClustering(G, 42); // TODO: does this need a command line parameter?
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

@@ -1,4 +1,6 @@
 <map id="src/clustering/Clustering.h" name="src/clustering/Clustering.h">
-<area shape="rect" id="node3" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="48,83,187,111"/>
-<area shape="rect" id="node5" href="$_graph_8h.html" title="Graph.h" alt="" coords="83,161,152,189"/>
+<area shape="rect" id="node5" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="272,83,411,111"/>
+<area shape="rect" id="node7" href="$_graph_8h.html" title="Graph.h" alt="" coords="307,161,376,189"/>
+<area shape="rect" id="node35" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="530,161,664,189"/>
+<area shape="rect" id="node23" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="145,238,236,266"/>
 </map>

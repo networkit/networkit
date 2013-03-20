@@ -1,5 +1,5 @@
-\hypertarget{class_ensemble_clustering_1_1_edge_scoring}{\section{Ensemble\-Clustering\-:\-:Edge\-Scoring Class Reference}
-\label{class_ensemble_clustering_1_1_edge_scoring}\index{Ensemble\-Clustering\-::\-Edge\-Scoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}}
+\hypertarget{class_ensemble_clustering_1_1_edge_scoring}{\section{Ensemble\-Clustering\-:\-:Edge\-Scoring$<$ T $>$ Class Template Reference}
+\label{class_ensemble_clustering_1_1_edge_scoring}\index{Ensemble\-Clustering\-::\-Edge\-Scoring$<$ T $>$@{Ensemble\-Clustering\-::\-Edge\-Scoring$<$ T $>$}}
 }
 
 
@@ -7,68 +7,116 @@
 
 
 
-Inheritance diagram for Ensemble\-Clustering\-:\-:Edge\-Scoring\-:\nopagebreak
+Inheritance diagram for Ensemble\-Clustering\-:\-:Edge\-Scoring$<$ T $>$\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=184pt]{class_ensemble_clustering_1_1_edge_scoring__inherit__graph}
+\includegraphics[width=204pt]{class_ensemble_clustering_1_1_edge_scoring__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Edge\-Scoring$<$ T $>$\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{class_ensemble_clustering_1_1_edge_scoring__coll__graph}
 \end{center}
 \end{figure}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{class_ensemble_clustering_1_1_edge_scoring_a83339193ebf55255b09a34a2e1112eea}{Edge\-Scoring} ()
+\hyperlink{class_ensemble_clustering_1_1_edge_scoring_a929532ab86b6e6a8dcbee7fc5f6c69b4}{Edge\-Scoring} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&\hyperlink{class_ensemble_clustering_1_1_edge_scoring_a5f44e943d8b0609bb7e866d785502300}{G})
 \item 
-virtual \hyperlink{class_ensemble_clustering_1_1_edge_scoring_a1bb790ce6fd801ea40e0603785c73727}{$\sim$\-Edge\-Scoring} ()
+virtual \hyperlink{class_ensemble_clustering_1_1_edge_scoring_aa79bc49f70d7d833aa1ed07c50e3e15c}{$\sim$\-Edge\-Scoring} ()
 \item 
-virtual double \hyperlink{class_ensemble_clustering_1_1_edge_scoring_ae0b8ed83c76ea8f71f8246949d3106f4}{score\-Edge} (\hyperlink{namespace_ensemble_clustering_a136bcdc52fb2f62a89bc8bf8c1a7cb8f}{Node} u, \hyperlink{namespace_ensemble_clustering_a136bcdc52fb2f62a89bc8bf8c1a7cb8f}{Node} v)=0
+virtual void \hyperlink{class_ensemble_clustering_1_1_edge_scoring_adfce8d05bbaaa6526ca4e22af6897c2d}{score\-Edges} (int attr\-Id)=0
+\item 
+virtual T \hyperlink{class_ensemble_clustering_1_1_edge_scoring_aa61da87fb5141e85134f6cdc6564e9ca}{edge\-Score} (\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} u, \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} v) const =0
 \end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} $\ast$ \hyperlink{class_ensemble_clustering_1_1_edge_scoring_a5f44e943d8b0609bb7e866d785502300}{G}
+\begin{DoxyCompactList}\small\item\em pointer to the graph \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
+\subsubsection*{template$<$typename T$>$class Ensemble\-Clustering\-::\-Edge\-Scoring$<$ T $>$}
 
 
-Definition at line 16 of file Edge\-Scoring.\-h.
+
+Definition at line 17 of file Edge\-Scoring.\-h.
 
 
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{class_ensemble_clustering_1_1_edge_scoring_a83339193ebf55255b09a34a2e1112eea}{\index{Ensemble\-Clustering\-::\-Edge\-Scoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}!Edge\-Scoring@{Edge\-Scoring}}
+\hypertarget{class_ensemble_clustering_1_1_edge_scoring_a929532ab86b6e6a8dcbee7fc5f6c69b4}{\index{Ensemble\-Clustering\-::\-Edge\-Scoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}!Edge\-Scoring@{Edge\-Scoring}}
 \index{Edge\-Scoring@{Edge\-Scoring}!EnsembleClustering::EdgeScoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}}
-\subsubsection[{Edge\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Edge\-Scoring\-::\-Edge\-Scoring (
+\subsubsection[{Edge\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf Ensemble\-Clustering\-::\-Edge\-Scoring}$<$ T $>$\-::{\bf Edge\-Scoring} (
 \begin{DoxyParamCaption}
-{}
+\item[{{\bf Graph} \&}]{G}
 \end{DoxyParamCaption}
-)}}\label{class_ensemble_clustering_1_1_edge_scoring_a83339193ebf55255b09a34a2e1112eea}
+)}}\label{class_ensemble_clustering_1_1_edge_scoring_a929532ab86b6e6a8dcbee7fc5f6c69b4}
 
 
-Definition at line 12 of file Edge\-Scoring.\-cpp.
+Definition at line 36 of file Edge\-Scoring.\-h.
 
-\hypertarget{class_ensemble_clustering_1_1_edge_scoring_a1bb790ce6fd801ea40e0603785c73727}{\index{Ensemble\-Clustering\-::\-Edge\-Scoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}!$\sim$\-Edge\-Scoring@{$\sim$\-Edge\-Scoring}}
+\hypertarget{class_ensemble_clustering_1_1_edge_scoring_aa79bc49f70d7d833aa1ed07c50e3e15c}{\index{Ensemble\-Clustering\-::\-Edge\-Scoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}!$\sim$\-Edge\-Scoring@{$\sim$\-Edge\-Scoring}}
 \index{$\sim$\-Edge\-Scoring@{$\sim$\-Edge\-Scoring}!EnsembleClustering::EdgeScoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}}
-\subsubsection[{$\sim$\-Edge\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Edge\-Scoring\-::$\sim$\-Edge\-Scoring (
+\subsubsection[{$\sim$\-Edge\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf Ensemble\-Clustering\-::\-Edge\-Scoring}$<$ T $>$\-::$\sim${\bf Edge\-Scoring} (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_edge_scoring_a1bb790ce6fd801ea40e0603785c73727}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_edge_scoring_aa79bc49f70d7d833aa1ed07c50e3e15c}
 
 
-Definition at line 17 of file Edge\-Scoring.\-cpp.
+Definition at line 41 of file Edge\-Scoring.\-h.
 
 
 
 \subsection{Member Function Documentation}
-\hypertarget{class_ensemble_clustering_1_1_edge_scoring_ae0b8ed83c76ea8f71f8246949d3106f4}{\index{Ensemble\-Clustering\-::\-Edge\-Scoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}!score\-Edge@{score\-Edge}}
-\index{score\-Edge@{score\-Edge}!EnsembleClustering::EdgeScoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}}
-\subsubsection[{score\-Edge}]{\setlength{\rightskip}{0pt plus 5cm}virtual double Ensemble\-Clustering\-::\-Edge\-Scoring\-::score\-Edge (
+\hypertarget{class_ensemble_clustering_1_1_edge_scoring_aa61da87fb5141e85134f6cdc6564e9ca}{\index{Ensemble\-Clustering\-::\-Edge\-Scoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}!edge\-Score@{edge\-Score}}
+\index{edge\-Score@{edge\-Score}!EnsembleClustering::EdgeScoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}}
+\subsubsection[{edge\-Score}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ virtual T {\bf Ensemble\-Clustering\-::\-Edge\-Scoring}$<$ T $>$\-::edge\-Score (
 \begin{DoxyParamCaption}
-\item[{{\bf Node}}]{u, }
-\item[{{\bf Node}}]{v}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_ensemble_clustering_1_1_edge_scoring_ae0b8ed83c76ea8f71f8246949d3106f4}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_ensemble_clustering_1_1_edge_scoring_aa61da87fb5141e85134f6cdc6564e9ca}
 
 
-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+Implemented in \hyperlink{class_ensemble_clustering_1_1_modularity_scoring_ab8f469274771dda801a75df49f8d27c6}{Ensemble\-Clustering\-::\-Modularity\-Scoring$<$ T $>$}.
+
+\hypertarget{class_ensemble_clustering_1_1_edge_scoring_adfce8d05bbaaa6526ca4e22af6897c2d}{\index{Ensemble\-Clustering\-::\-Edge\-Scoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}!score\-Edges@{score\-Edges}}
+\index{score\-Edges@{score\-Edges}!EnsembleClustering::EdgeScoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}}
+\subsubsection[{score\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ virtual void {\bf Ensemble\-Clustering\-::\-Edge\-Scoring}$<$ T $>$\-::score\-Edges (
+\begin{DoxyParamCaption}
+\item[{int}]{attr\-Id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_ensemble_clustering_1_1_edge_scoring_adfce8d05bbaaa6526ca4e22af6897c2d}
+
+
+Implemented in \hyperlink{class_ensemble_clustering_1_1_modularity_scoring_ae98a672a41a6f5d8e0b84c96b2d30b0a}{Ensemble\-Clustering\-::\-Modularity\-Scoring$<$ T $>$}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_edge_scoring_a5f44e943d8b0609bb7e866d785502300}{\index{Ensemble\-Clustering\-::\-Edge\-Scoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}!G@{G}}
+\index{G@{G}!EnsembleClustering::EdgeScoring@{Ensemble\-Clustering\-::\-Edge\-Scoring}}
+\subsubsection[{G}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf Graph}$\ast$ {\bf Ensemble\-Clustering\-::\-Edge\-Scoring}$<$ T $>$\-::G\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_edge_scoring_a5f44e943d8b0609bb7e866d785502300}
+
+
+pointer to the graph 
+
+
+
+Definition at line 21 of file Edge\-Scoring.\-h.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
 \item 
-src/scoring/\hyperlink{_edge_scoring_8h}{Edge\-Scoring.\-h}\item 
-src/scoring/\hyperlink{_edge_scoring_8cpp}{Edge\-Scoring.\-cpp}\end{DoxyCompactItemize}
+src/scoring/\hyperlink{_edge_scoring_8h}{Edge\-Scoring.\-h}\end{DoxyCompactItemize}

@@ -1,4 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_ensemble_clustering_1_1_node_map.html" title="EnsembleClustering\l::NodeMap\&lt; cluster \&gt;" alt="" coords="6,5,154,49"/>
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_clustering.html" title="EnsembleClustering\l::Clustering" alt="" coords="203,5,344,49"/>
+<area shape="rect" id="node1" href="$class_networ_kit_1_1_dissimilarity_measure.html" title="Base class for all clustering dissimilarity measures." alt="" coords="5,23,163,67"/>
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_jaccard_measure.html" title="NetworKit::JaccardMeasure" alt="" coords="211,5,397,33"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_rand_measure.html" title="NetworKit::RandMeasure" alt="" coords="219,57,389,85"/>
 </map>

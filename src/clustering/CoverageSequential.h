@@ -10,9 +10,9 @@
 
 #include "QualityMeasure.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class CoverageSequential: public EnsembleClustering::QualityMeasure {
+class CoverageSequential: public NetworKit::QualityMeasure {
 public:
 	CoverageSequential();
 	virtual ~CoverageSequential();
@@ -20,5 +20,5 @@ public:
 	virtual double getQuality(const Clustering& zeta, Graph& G);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* COVERAGESEQUENTIAL_H_ */

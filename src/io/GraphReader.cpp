@@ -7,7 +7,7 @@
 
 #include "GraphReader.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 GraphReader::GraphReader() {
 	// TODO Auto-generated constructor stub
@@ -18,4 +18,4 @@ GraphReader::~GraphReader() {
 	// TODO Auto-generated destructor stub
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

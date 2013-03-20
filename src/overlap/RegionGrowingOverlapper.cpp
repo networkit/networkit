@@ -7,7 +7,7 @@
 
 #include "RegionGrowingOverlapper.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 RegionGrowingOverlapper::RegionGrowingOverlapper() {
 	// TODO Auto-generated constructor stub
@@ -75,4 +75,4 @@ Clustering RegionGrowingOverlapper::run(Graph& G,
 	return core;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

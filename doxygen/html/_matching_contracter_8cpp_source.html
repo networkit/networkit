@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Ensemble Clustering: src/coarsening/MatchingContracter.cpp Source File</title>
+<title>NetworKit.CommunityDetection: src/coarsening/MatchingContracter.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">Ensemble Clustering
+   <div id="projectname">NetworKit.CommunityDetection
    </div>
   </td>
  </tr>
@@ -69,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -92,27 +92,65 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * MatchingContracter.cpp</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 30.10.2012</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: cls</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: Christian Staudt (christian.staudt@kit.edu)</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_matching_contracter_8h.html">MatchingContracter.h</a>&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>EnsembleClustering {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>NetworKit {</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_matching_contracter.html#adf9bd1fa8b62171910543e82f8237d71">   12</a></span>&#160;<a class="code" href="class_ensemble_clustering_1_1_matching_contracter.html#adf9bd1fa8b62171910543e82f8237d71">MatchingContracter::MatchingContracter</a>() {</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_matching_contracter.html#a21fe7ce43777d7338a9cb0d9d5b07762">   12</a></span>&#160;<a class="code" href="class_networ_kit_1_1_matching_contracter.html#a21fe7ce43777d7338a9cb0d9d5b07762">MatchingContracter::MatchingContracter</a>() {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="comment">// TODO Auto-generated constructor stub</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;}</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_matching_contracter.html#ab04bb205ff8cd3a81a0cfa386094fab6">   17</a></span>&#160;<a class="code" href="class_ensemble_clustering_1_1_matching_contracter.html#ab04bb205ff8cd3a81a0cfa386094fab6">MatchingContracter::~MatchingContracter</a>() {</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_matching_contracter.html#ad5aff6c794367db1ad91f35f62e70fcb">   17</a></span>&#160;<a class="code" href="class_networ_kit_1_1_matching_contracter.html#ad5aff6c794367db1ad91f35f62e70fcb">MatchingContracter::~MatchingContracter</a>() {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="comment">// TODO Auto-generated destructor stub</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;} <span class="comment">/* namespace EnsembleClustering */</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_matching_contracter.html#ae63ba5e9dea01c5d6388a15c9f3cf27c">   21</a></span>&#160;std::pair&lt;Graph, NodeMap&lt;node&gt; &gt; <a class="code" href="class_networ_kit_1_1_matching_contracter.html#ae63ba5e9dea01c5d6388a15c9f3cf27c" title="Contracts graph according to a matching.">MatchingContracter::run</a>(<a class="code" href="class_networ_kit_1_1_graph.html">Graph</a>&amp; G, <a class="code" href="class_networ_kit_1_1_matching.html">Matching</a>&amp; M) {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="namespace_networ_kit.html#ad4c536a5339a8bf2f91f418b9a67a7d8">count</a> n = G.<a class="code" href="class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph.">numberOfNodes</a>();</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="namespace_networ_kit.html#ad4c536a5339a8bf2f91f418b9a67a7d8">count</a> cn = n - M.<a class="code" href="class_networ_kit_1_1_matching.html#abd61defac0cb2868d7c80739b0f6e902">matchingSize</a>();</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph.html">Graph</a> cG(cn);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="comment">// compute map: old ID -&gt; new coarse ID</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="namespace_networ_kit.html#af49e67df68af41dcd75dffbb1e9abee6" title="Typedefs.">index</a> idx = 0;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="class_networ_kit_1_1_node_map.html">NodeMap&lt;node&gt;</a> mapFineToCoarse(n);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    G.<a class="code" href="class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS.">forNodes</a>([&amp;](<a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> v) { <span class="comment">// TODO: difficult in parallel</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <a class="code" href="namespace_networ_kit.html#af49e67df68af41dcd75dffbb1e9abee6" title="Typedefs.">index</a> mate = M.<a class="code" href="class_networ_kit_1_1_matching.html#a76cf82e05446a8f29b1c46d1dcdef2f3">mate</a>(v);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="keywordflow">if</span> ((mate == <a class="code" href="_graph_8h.html#a7c01eac0d89b74473a90fd5c33ed4e74">none</a>) || (v &lt; mate)) {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            <span class="comment">// vertex is carried over to the new level</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            mapFineToCoarse[v] = idx;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            ++idx;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        }</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="comment">// vertex is not carried over, receives ID of mate</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            mapFineToCoarse[v] = mapFineToCoarse[mate];</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        }</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    });</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">//  for (node v = 0; v &lt; n; ++v) {</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">//      std::cout &lt;&lt; v &lt;&lt; &quot; maps to &quot; &lt;&lt; mapFineToCoarse[v] &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">//  }</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">//  std::cout &lt;&lt; &quot;matching size: &quot; &lt;&lt; M.matchingSize() &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    G.<a class="code" href="class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS.">forNodes</a>([&amp;](<a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> v) { <span class="comment">// TODO: difficult in parallel</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        G.<a class="code" href="class_networ_kit_1_1_graph.html#a7b0d575c9fa66d075bd6d81c1593f081" title="NEIGHBORHOOD ITERATORS.">forNeighborsOf</a>(v, [&amp;](<a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> u) {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> cv = mapFineToCoarse[v];</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> cu = mapFineToCoarse[u];</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <a class="code" href="namespace_networ_kit.html#a831b108dbcd79dad062d9e28b1b4e3dd">edgeweight</a> ew = G.<a class="code" href="class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8" title="EDGE ATTRIBUTE GETTERS.">weight</a>(v, u);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            cG.<a class="code" href="class_networ_kit_1_1_graph.html#ad56d4fada3895f8446e58d7cd33ca274" title="EDGE ATTRIBUTE SETTERS.">setWeight</a>(cv, cu, cG.<a class="code" href="class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8" title="EDGE ATTRIBUTE GETTERS.">weight</a>(cv, cu) + ew);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        });</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    });</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">return</span> std::make_pair(cG, mapFineToCoarse);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;} <span class="comment">/* namespace NetworKit */</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:33 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:37:02 for NetworKit.CommunityDetection by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

@@ -7,7 +7,7 @@
 
 #include "Luby.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Luby::Luby() {
 	// TODO Auto-generated constructor stub
@@ -108,4 +108,4 @@ std::string Luby::toString() const {
 	return "Luby";
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

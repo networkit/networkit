@@ -5,19 +5,42 @@
 
 {\ttfamily \#include $<$Matching\-Contracter.\-h$>$}
 
+
+
+Inheritance diagram for Ensemble\-Clustering\-:\-:Matching\-Contracter\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=188pt]{class_ensemble_clustering_1_1_matching_contracter__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Matching\-Contracter\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=188pt]{class_ensemble_clustering_1_1_matching_contracter__coll__graph}
+\end{center}
+\end{figure}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
 \hyperlink{class_ensemble_clustering_1_1_matching_contracter_adf9bd1fa8b62171910543e82f8237d71}{Matching\-Contracter} ()
 \item 
 virtual \hyperlink{class_ensemble_clustering_1_1_matching_contracter_ab04bb205ff8cd3a81a0cfa386094fab6}{$\sim$\-Matching\-Contracter} ()
-\end{DoxyCompactItemize}
+\item 
+virtual std\-::pair$<$ \hyperlink{class_ensemble_clustering_1_1_graph}{Graph}, \\*
+\hyperlink{class_ensemble_clustering_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} $>$ $>$ \hyperlink{class_ensemble_clustering_1_1_matching_contracter_a472b55c49dc1679f57fb8d9c9b521e55}{run} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&G, \hyperlink{class_ensemble_clustering_1_1_matching}{Matching} \&M)
+\begin{DoxyCompactList}\small\item\em Contracts graph according to a matching. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 
 
-Definition at line 13 of file Matching\-Contracter.\-h.
+Definition at line 17 of file Matching\-Contracter.\-h.
 
 
 
@@ -43,6 +66,46 @@ Definition at line 12 of file Matching\-Contracter.\-cpp.
 
 
 Definition at line 17 of file Matching\-Contracter.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_matching_contracter_a472b55c49dc1679f57fb8d9c9b521e55}{\index{Ensemble\-Clustering\-::\-Matching\-Contracter@{Ensemble\-Clustering\-::\-Matching\-Contracter}!run@{run}}
+\index{run@{run}!EnsembleClustering::MatchingContracter@{Ensemble\-Clustering\-::\-Matching\-Contracter}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}std\-::pair$<$ {\bf Graph}, {\bf Node\-Map}$<$ {\bf node} $>$ $>$ Ensemble\-Clustering\-::\-Matching\-Contracter\-::run (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{{\bf Matching} \&}]{M}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_matching_contracter_a472b55c49dc1679f57fb8d9c9b521e55}
+
+
+Contracts graph according to a matching. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em G} & fine graph \\
+\hline
+\mbox{\tt in}  & {\em M} & matching\\
+\hline
+\mbox{\tt out}  & {\em coarse} & graph \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 21 of file Matching\-Contracter.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_matching_contracter_a472b55c49dc1679f57fb8d9c9b521e55_cgraph}
+\end{center}
+\end{figure}
+
 
 
 

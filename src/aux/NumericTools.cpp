@@ -7,7 +7,7 @@
 
 #include "NumericTools.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 NumericTools::NumericTools() {
 	// TODO Auto-generated constructor stub
@@ -24,4 +24,4 @@ bool NumericTools::equal(const double x, const double y) {
 	return (x <= (y + eps)) && (x >= (y - eps));
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

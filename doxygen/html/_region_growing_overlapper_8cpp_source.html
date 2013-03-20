@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Ensemble Clustering: src/overlap/RegionGrowingOverlapper.cpp Source File</title>
+<title>NetworKit.CommunityDetection: src/overlap/RegionGrowingOverlapper.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">Ensemble Clustering
+   <div id="projectname">NetworKit.CommunityDetection
    </div>
   </td>
  </tr>
@@ -69,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -92,27 +92,84 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * RegionGrowingOverlapper.cpp</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 30.10.2012</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: cls</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: Christian Staudt (christian.staudt@kit.edu)</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_region_growing_overlapper_8h.html">RegionGrowingOverlapper.h</a>&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>EnsembleClustering {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>NetworKit {</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_region_growing_overlapper.html#a35429f2952a64b9b53b8026557b54e30">   12</a></span>&#160;<a class="code" href="class_ensemble_clustering_1_1_region_growing_overlapper.html#a35429f2952a64b9b53b8026557b54e30">RegionGrowingOverlapper::RegionGrowingOverlapper</a>() {</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_region_growing_overlapper.html#a14f11d0ba47d1f63cc4ce6811fd07aaa">   12</a></span>&#160;<a class="code" href="class_networ_kit_1_1_region_growing_overlapper.html#a14f11d0ba47d1f63cc4ce6811fd07aaa">RegionGrowingOverlapper::RegionGrowingOverlapper</a>() {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="comment">// TODO Auto-generated constructor stub</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;}</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_region_growing_overlapper.html#a42a9074e3760f95fb325683adf6e5827">   17</a></span>&#160;<a class="code" href="class_ensemble_clustering_1_1_region_growing_overlapper.html#a42a9074e3760f95fb325683adf6e5827">RegionGrowingOverlapper::~RegionGrowingOverlapper</a>() {</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_region_growing_overlapper.html#aec6655d87edcd3a04ae4364c4418a0b2">   17</a></span>&#160;<a class="code" href="class_networ_kit_1_1_region_growing_overlapper.html#aec6655d87edcd3a04ae4364c4418a0b2">RegionGrowingOverlapper::~RegionGrowingOverlapper</a>() {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="comment">// TODO Auto-generated destructor stub</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;} <span class="comment">/* namespace EnsembleClustering */</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_region_growing_overlapper.html#aea22e56ac677a60f722e7037e5bf227c">   21</a></span>&#160;<a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> <a class="code" href="class_networ_kit_1_1_region_growing_overlapper.html#aea22e56ac677a60f722e7037e5bf227c">RegionGrowingOverlapper::run</a>(<a class="code" href="class_networ_kit_1_1_graph.html">Graph</a>&amp; G,</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        std::vector&lt;Clustering&gt;&amp; clusterings) {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="comment">// TODO: test</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    int64_t n = G.<a class="code" href="class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph.">numberOfNodes</a>();</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> core(n); <span class="comment">// &quot;core groups&quot; resulting from overlap of all clustering</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    core.<a class="code" href="class_networ_kit_1_1_clustering.html#a777f65aa262cbed40eb1c85721250026" title="Assigns every node to a singleton cluster.">allToSingletons</a>(); <span class="comment">// assign all nodes to singletons</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    std::vector&lt;int&gt; visited(n, 0); <span class="comment">// node -&gt; has been visited (1) or not (0). not &lt;bool&gt; because of thread-safety</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> r = -1; <span class="comment">// start node for BFS</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">bool</span> allVisited = <span class="keyword">false</span>; <span class="comment">// have all nodes been visited by BFS?</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    std::set&lt;index&gt; unvisited;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordflow">for</span> (<a class="code" href="namespace_networ_kit.html#ad4c536a5339a8bf2f91f418b9a67a7d8">count</a> i = 0; i &lt; n; ++i) {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        unvisited.insert(i);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    }</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">while</span> (unvisited.size() &gt; 0) { <span class="comment">// !allVisited) {</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="comment">// select start node for BFS</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">//      for (node v = 0; v &lt; n; ++v) {</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">//          if (visited[v] == 0) {</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">//              r = v;</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">//              break;</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">//          }</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">//          allVisited = true;</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">//      }</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="comment">// root: first unvisited element</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        r = *unvisited.begin();</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        unvisited.erase(r);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <a class="code" href="_log_8h.html#aef41e8aaf4c60819b30faf396cdf4978">DEBUG</a>(<span class="stringliteral">&quot;starting BFS from node: &quot;</span> &lt;&lt; r);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="comment">// start BFS</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        G.<a class="code" href="class_networ_kit_1_1_graph.html#a02659fe2c37176f0fdb3c2a5099c75cf" title="Iterate over nodes in breadth-first search order starting from r until connected component of r has b...">breadthFirstNodesFrom</a>(r, visited, [&amp;](<a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> u) {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            visited[u] = 1; <span class="comment">// has been visited</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                unvisited.erase(u);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                <span class="comment">// check for all incident edges if u and v belong in the same core cluster</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                G.<a class="code" href="class_networ_kit_1_1_graph.html#afc892cbb7e1df4a83c718decae4ad377" title="Iterate over all incident edges of a node and call handler (lamdba closure).">forEdgesOf</a>(u, [&amp;](<a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> u, <a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> v) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                            <span class="keywordtype">bool</span> together = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                            <span class="keywordflow">for</span> (std::vector&lt;Clustering&gt;::iterator iter = clusterings.begin(); iter != clusterings.end(); ++iter ) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                                together = together &amp;&amp; (iter-&gt;clusterOf(u) == iter-&gt;clusterOf(v));</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                            }</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                            <span class="keywordflow">if</span> (together) {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                                core.<a class="code" href="class_networ_kit_1_1_clustering.html#abe2ac522cb7634610e5871dc1d20a50f" title="Move a (previously assigned) node to a cluster.">moveToCluster</a>(core.<a class="code" href="class_networ_kit_1_1_clustering.html#a2c2dfb71bd9d88609fbb569027793be1" title="Return the cluster (id) in which a node is contained.">clusterOf</a>(u), v);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                            }</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                        });</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            });</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordflow">return</span> core;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;} <span class="comment">/* namespace NetworKit */</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:33 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:37:03 for NetworKit.CommunityDetection by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

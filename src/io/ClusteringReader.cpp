@@ -7,7 +7,7 @@
 
 #include "ClusteringReader.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 ClusteringReader::ClusteringReader() {
 	// TODO Auto-generated constructor stub
@@ -48,4 +48,4 @@ Clustering ClusteringReader::read(std::string path) {
 	return zeta;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

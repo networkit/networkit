@@ -14,7 +14,7 @@
 #include "../../aux/Timer.h"
 #include "../../aux/Log.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class Graph2Benchmark: public testing::Test {
 public:
@@ -22,5 +22,5 @@ public:
 	virtual ~Graph2Benchmark();
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GRAPH2BENCHMARK_H_ */

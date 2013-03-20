@@ -12,9 +12,9 @@
 
 #include "Overlapper.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class HashingOverlapper: public EnsembleClustering::Overlapper {
+class HashingOverlapper: public NetworKit::Overlapper {
 
 public:
 
@@ -25,5 +25,5 @@ public:
 	virtual Clustering run(Graph& G, std::vector<Clustering>& clusterings);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* HASHINGOVERLAPPER_H_ */

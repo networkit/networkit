@@ -18,4 +18,4 @@ StringTools::~StringTools() {
 	// TODO Auto-generated destructor stub
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

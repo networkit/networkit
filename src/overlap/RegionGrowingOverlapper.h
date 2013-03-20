@@ -13,9 +13,9 @@
 #include "Overlapper.h"
 #include "../clustering/Clustering.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class RegionGrowingOverlapper: public EnsembleClustering::Overlapper {
+class RegionGrowingOverlapper: public NetworKit::Overlapper {
 
 public:
 
@@ -27,5 +27,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* REGIONGROWINGOVERLAPPER_H_ */

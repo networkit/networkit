@@ -12,9 +12,9 @@
 
 #include "../clustering/ClusteringGenerator.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class RandomClusterer: public EnsembleClustering::Clusterer {
+class RandomClusterer: public NetworKit::Clusterer {
 public:
 	RandomClusterer();
 	virtual ~RandomClusterer();
@@ -22,5 +22,5 @@ public:
 	virtual Clustering run(Graph& G);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* RANDOMCLUSTERER_H_ */
