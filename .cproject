@@ -3,106 +3,8 @@
 
 <cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
-		<cconfiguration id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1525604956">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1525604956" moduleId="org.eclipse.cdt.core.settings" name="EnsembleClustering.backup">
-				<externalSettings/>
-				<extensions>
-					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-				</extensions>
-			</storageModule>
-			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1525604956" name="EnsembleClustering.backup" parent="cdt.managedbuild.config.gnu.macosx.exe.debug">
-					<folderInfo id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1525604956." name="/" resourcePath="">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.exe.debug.916135756" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.exe.debug">
-							<targetPlatform id="cdt.managedbuild.target.gnu.platform.macosx.exe.debug.855315086" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.exe.debug"/>
-							<builder buildPath="${workspace_loc:/OpemMPTutorial/Debug}" id="cdt.managedbuild.target.gnu.builder.macosx.exe.debug.243468194" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.exe.debug">
-								<outputEntries>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="EnsembleClustering.backup"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="EnsembleClustering-O"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="EnsembleClustering-D"/>
-									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="EnsembleClustering-DPar"/>
-								</outputEntries>
-							</builder>
-							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug.1537835217" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug"/>
-							<tool command="/usr/local/bin/g++-4.7" id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug.1911528608" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug">
-								<option id="macosx.cpp.link.option.flags.1422740915" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-fopenmp -std=c++11" valueType="string"/>
-								<option id="macosx.cpp.link.option.paths.733542784" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths"/>
-								<option id="macosx.cpp.link.option.libs.1636509472" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs"/>
-								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.647523197" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
-									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
-									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
-								</inputType>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug.246928071" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug">
-								<option id="gnu.both.asm.option.include.paths.810880393" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering.backup/STINGER/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering.backup/gtest/include"/>
-									<listOptionValue builtIn="false" value="/usr/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/cppunit/1.12.1/include"/>
-									<listOptionValue builtIn="false" value="../EnsembleClustering/STINGER/include"/>
-									<listOptionValue builtIn="false" value="../EnsembleClustering/gtest/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest/include"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/STINGER/include"/>
-								</option>
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2085821836" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.1961918146" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
-							<tool command="/usr/local/bin/g++-4.7" id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.debug.829712443" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.debug">
-								<option id="gnu.cpp.compilermacosx.exe.debug.option.optimization.level.1931428128" name="Optimization Level" superClass="gnu.cpp.compilermacosx.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.optimize" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.1437294971" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.330368704" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -fopenmp -std=c++11 -g" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.include.paths.439059986" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering.backup/STINGER/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering.backup/gtest/include"/>
-									<listOptionValue builtIn="false" value="/usr/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/cppunit/1.12.1/include"/>
-									<listOptionValue builtIn="false" value="../EnsembleClustering/STINGER/include"/>
-									<listOptionValue builtIn="false" value="../EnsembleClustering/gtest/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest/include"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/STINGER/include"/>
-								</option>
-								<option id="gnu.cpp.compiler.option.preprocessor.def.1561580686" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def"/>
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1094895877" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
-							</tool>
-							<tool command="/usr/local/bin/gcc-4.7" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug.1734093934" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.debug">
-								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.macosx.exe.debug.option.optimization.level.1100048153" name="Optimization Level" superClass="gnu.c.compiler.macosx.exe.debug.option.optimization.level" valueType="enumerated"/>
-								<option id="gnu.c.compiler.macosx.exe.debug.option.debugging.level.1385221007" name="Debug Level" superClass="gnu.c.compiler.macosx.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.misc.other.1785793097" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -std=c99" valueType="string"/>
-								<option id="gnu.c.compiler.option.include.files.302442414" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files"/>
-								<option id="gnu.c.compiler.option.include.paths.275661643" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering.backup/STINGER/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/EnsembleClustering/EnsembleClustering.backup/gtest/include"/>
-									<listOptionValue builtIn="false" value="/usr/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/cppunit/1.12.1/include"/>
-									<listOptionValue builtIn="false" value="../EnsembleClustering/STINGER/include"/>
-									<listOptionValue builtIn="false" value="../EnsembleClustering/gtest/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/gtest/include"/>
-									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/include"/>
-									<listOptionValue builtIn="false" value="/Users/cls/workspace/STINGER/include"/>
-								</option>
-								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1949647531" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-							</tool>
-						</toolChain>
-					</folderInfo>
-					<sourceEntries>
-						<entry excluding="graph/test/GraphTest.h|Test.cpp|input/test/InputTest.cpp|input/test/InputTest.h|graph/test/GraphTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
-					</sourceEntries>
-				</configuration>
-			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
-		</cconfiguration>
 		<cconfiguration id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.668847908">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.668847908" moduleId="org.eclipse.cdt.core.settings" name="EnsembleClustering-O">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.668847908" moduleId="org.eclipse.cdt.core.settings" name="CommunityDetection-O">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -114,7 +16,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}-O" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.668847908" name="EnsembleClustering-O" parent="cdt.managedbuild.config.gnu.macosx.exe.debug" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="" prebuildStep="">
+				<configuration artifactName="${ProjName}-O" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.668847908" name="CommunityDetection-O" parent="cdt.managedbuild.config.gnu.macosx.exe.debug" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.668847908." name="/" resourcePath="">
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.macosx.exe.debug.1725066775" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.exe.debug.543602537" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.exe.debug"/>
@@ -190,7 +92,7 @@
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 		<cconfiguration id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548" moduleId="org.eclipse.cdt.core.settings" name="EnsembleClustering-D">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548" moduleId="org.eclipse.cdt.core.settings" name="CommunityDetection-D">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -202,7 +104,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}-D" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548" name="EnsembleClustering-D" parent="cdt.managedbuild.config.gnu.macosx.exe.debug" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="" prebuildStep="">
+				<configuration artifactName="${ProjName}-D" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548" name="CommunityDetection-D" parent="cdt.managedbuild.config.gnu.macosx.exe.debug" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548." name="/" resourcePath="">
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.macosx.exe.debug.38269620" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.exe.debug.1070122722" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.exe.debug"/>
@@ -283,7 +185,7 @@
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 		<cconfiguration id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548.1782364890">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548.1782364890" moduleId="org.eclipse.cdt.core.settings" name="EnsembleClustering-DPar">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548.1782364890" moduleId="org.eclipse.cdt.core.settings" name="CommunityDetection-DPar">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -295,7 +197,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}-DPar" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548.1782364890" name="EnsembleClustering-DPar" parent="cdt.managedbuild.config.gnu.macosx.exe.debug" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="" prebuildStep="">
+				<configuration artifactName="${ProjName}-DPar" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548.1782364890" name="CommunityDetection-DPar" parent="cdt.managedbuild.config.gnu.macosx.exe.debug" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.gnu.macosx.exe.debug.11912961.1727293882.1935496891.1777415471.1045527896.659238198.1423745951.180377405.1532967548.1782364890." name="/" resourcePath="">
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.macosx.exe.debug.83423646" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.exe.debug.1128076600" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.exe.debug"/>
@@ -358,7 +260,7 @@
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/STINGER/include"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.preprocessor.def.1587274842" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols"/>
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1587274842" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def"/>
 								<option id="gnu.cpp.compiler.option.warnings.allwarn.530906436" name="All warnings (-Wall)" superClass="gnu.cpp.compiler.option.warnings.allwarn" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.warnings.nowarn.1240200254" name="Inhibit all warnings (-w)" superClass="gnu.cpp.compiler.option.warnings.nowarn" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.prof.939890264" name="Generate prof information (-p)" superClass="gnu.cpp.compiler.option.debugging.prof" value="true" valueType="boolean"/>
