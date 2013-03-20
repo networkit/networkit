@@ -13,18 +13,10 @@ We address the deficit in computing capability by a flexible and extensible clus
 Authors
 -------
 
-Christian Staudt		
-
-`christian.staudt @ kit.edu`
-
-[Homepage](http://parco.iti.kit.edu/staudt/)
+Christian Staudt - `christian.staudt @ kit.edu` - [Homepage](http://parco.iti.kit.edu/staudt/)
 
 
-Henning Meyerhenke
-
-`meyerhenke @ kit.edu`
-
-[Homepage](http://parco.iti.kit.edu/henningm/)
+Henning Meyerhenke - `meyerhenke @ kit.edu` - [Homepage](http://parco.iti.kit.edu/henningm/)
 
 
 License
