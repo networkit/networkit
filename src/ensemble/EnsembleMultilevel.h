@@ -1,12 +1,12 @@
 /*
- * EnsembleClusterer.h
+ * EnsembleMultilevel.h
  *
  *  Created on: 17.12.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef ENSEMBLECLUSTERER_H_
-#define ENSEMBLECLUSTERER_H_
+#ifndef ENSEMBLEMULTILEVEL_H_
+#define ENSEMBLEMULTILEVEL_H_
 
 #include <vector>
 #include <cmath>
@@ -32,7 +32,7 @@
 
 namespace EnsembleClustering {
 
-class EnsembleClusterer: public EnsembleClustering::Clusterer {
+class EnsembleMultilevel: public EnsembleClustering::Clusterer {
 
 protected:
 
@@ -48,9 +48,9 @@ protected:
 
 public:
 
-	EnsembleClusterer();
+	EnsembleMultilevel();
 
-	virtual ~EnsembleClusterer();
+	virtual ~EnsembleMultilevel();
 
 	/**
 	 * Add a base clusterer to the ensemble.
@@ -89,4 +89,4 @@ public:
 };
 
 } /* namespace EnsembleClustering */
-#endif /* ENSEMBLECLUSTERER_H_ */
+#endif /* ENSEMBLEMULTILEVEL_H_ */
