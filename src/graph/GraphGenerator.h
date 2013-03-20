@@ -11,7 +11,7 @@
 #include "Graph.h"
 #include "../aux/RandomProbability.h"
 #include "../aux/RandomInteger.h"
-#include "../clustering/base/Clustering.h"
+#include "../clustering/Clustering.h"
 
 namespace EnsembleClustering {
 

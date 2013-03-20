@@ -12,7 +12,7 @@
 
 #include "../../graph/Graph.h"
 #include "../../graph/GraphGenerator.h"
-#include "../../clustering/base/ClusteringGenerator.h"
+#include "../../clustering/ClusteringGenerator.h"
 #include "../../coarsening/ClusterContracter.h"
 #include "../../coarsening/GraphContraction.h"
 #include "../../coarsening/ClusteringProjector.h"

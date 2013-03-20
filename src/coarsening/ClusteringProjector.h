@@ -8,7 +8,7 @@
 #ifndef CLUSTERINGPROJECTOR_H_
 #define CLUSTERINGPROJECTOR_H_
 
-#include "../clustering/base/Clustering.h"
+#include "../clustering/Clustering.h"
 #include "GraphContraction.h"
 
 namespace EnsembleClustering {

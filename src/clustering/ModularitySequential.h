@@ -15,8 +15,8 @@
 #include "QualityMeasure.h"
 #include "CoverageSequential.h"
 
-#include "../../base/IndexMap.h"
-#include "../../graph/NodeMap.h"
+#include "../base/IndexMap.h"
+#include "../graph/NodeMap.h"
 
 namespace EnsembleClustering {
 

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "Overlapper.h"
-#include "../clustering/base/Clustering.h"
+#include "../clustering/Clustering.h"
 
 namespace EnsembleClustering {
 

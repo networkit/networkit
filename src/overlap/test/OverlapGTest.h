@@ -14,7 +14,7 @@
 #include "../RegionGrowingOverlapper.h"
 #include "../HashingOverlapper.h"
 #include "../../graph/GraphGenerator.h"
-#include "../../clustering/base/ClusteringGenerator.h"
+#include "../../clustering/ClusteringGenerator.h"
 
 
 namespace EnsembleClustering {

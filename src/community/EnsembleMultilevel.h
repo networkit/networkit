@@ -1,55 +1,72 @@
 /*
- * EnsemblePreprocessing.h
+ * EnsembleMultilevel.h
  *
- *  Created on: 26.02.2013
+ *  Created on: 17.12.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef ENSEMBLEPREPROCESSING_H_
-#define ENSEMBLEPREPROCESSING_H_
+#ifndef ENSEMBLEMULTILEVEL_H_
+#define ENSEMBLEMULTILEVEL_H_
 
 #include <vector>
+#include <cmath>
 #include <stdexcept>
 
-#include "../clustering/algo/Clusterer.h"
 
 #include "../aux/Log.h"
 #include "../Globals.h"
-#include "../clustering/base/Clustering.h"
-#include "../clustering/base/Modularity.h"
+#include "../community/Clusterer.h"
+#include "../clustering/Clustering.h"
+#include "../clustering/Modularity.h"
+#include "../clustering/ClusteringGenerator.h"
+#include "../overlap/RegionGrowingOverlapper.h"
 #include "../overlap/HashingOverlapper.h"
 #include "../coarsening/ClusterContracter.h"
+#include "../coarsening/GraphContraction.h"
+#include "../io/GraphIO.h"
 #include "../coarsening/ClusteringProjector.h"
-#include "../clustering/base/RandMeasure.h"
-#include "../clustering/base/JaccardMeasure.h"
+#include "../clustering/RandMeasure.h"
+#include "../clustering/JaccardMeasure.h"
+
+
 
 namespace EnsembleClustering {
 
-class EnsemblePreprocessing: public EnsembleClustering::Clusterer {
+class EnsembleMultilevel: public EnsembleClustering::Clusterer {
 
 protected:
+
+	QualityMeasure* qm;	//!< evaluates clutering quality
 
 	Clusterer* finalClusterer;	//!< final clustering algorithm
 	std::vector<Clusterer*> baseClusterers; //!< ensemble of base clusterers
 
 	Overlapper* overlap; //!< clustering overlap algorithm
 
+	int h; //!< hierarchy level / iteration counter
+
+
 public:
 
-	EnsemblePreprocessing();
+	EnsembleMultilevel();
 
-	virtual ~EnsemblePreprocessing();
+	virtual ~EnsembleMultilevel();
 
 	/**
 	 * Add a base clusterer to the ensemble.
 	 */
 	virtual void addBaseClusterer(Clusterer&  base);
 
-
 	/**
 	 * Set final clusterer.
 	 */
 	virtual void setFinalClusterer(Clusterer& final);
+
+	/**
+	 * Set quality measure to evaluate clusterings.
+	 */
+	virtual void setQualityMeasure(QualityMeasure& qm);
+
 
 	/**
 	 * Set overlap algorithm which combines the results of the base clusterers.
@@ -66,7 +83,10 @@ public:
 	 */
 	virtual std::string toString() const;
 
+
+
+
 };
 
 } /* namespace EnsembleClustering */
-#endif /* ENSEMBLEPREPROCESSING_H_ */
+#endif /* ENSEMBLEMULTILEVEL_H_ */
