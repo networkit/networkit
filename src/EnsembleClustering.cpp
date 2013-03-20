@@ -214,8 +214,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS, ENSEMBLE, SOLO,
-	 NOREC, NORM_VOTES, SCALESTRENGTH,
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS, ENSEMBLE, SOLO, NORM_VOTES, SCALESTRENGTH,
 	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
 const OptionParser::Descriptor usage[] =
 {
@@ -232,7 +231,6 @@ const OptionParser::Descriptor usage[] =
  {SCALETHREADS, 0, "", "scaleThreads", OptionParser::Arg::Required, "  --scaleThreads=<MAXTHREADS> \t scale number of threads by factor 2 until maximum is reached"},
  {ENSEMBLE, 0, "", "ensemble", OptionParser::Arg::Required, "  --ensemble=<b>*<BASE>+<FINAL> \t <b>: number of base clusterers in the ensemble, <BASE>: base clusterer name, <FINAL>: final clusterer name"},
  {SOLO, 0, "", "solo", OptionParser::Arg::Required, "  --solo=<Algorithm> \t run only a single base algorithm"},
- {NOREC, 0, "", "noRecursion", OptionParser::Arg::None, "  --noRecursion \t run only on the finest graph, even if ensemble is used"},
  {NORM_VOTES, 0, "", "normalizeVotes", OptionParser::Arg::None, "  --normalizeVotes \t normalize votes in label propagation by weighted degree"},
  {SCALESTRENGTH, 0, "", "scaleStrength", OptionParser::Arg::Required, "  --scaleStrength=<value in [0,1]> \t scale cluster strengths"},
  {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"},
@@ -571,11 +569,6 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		// if no algorithm specified, return empty clustering
 		std::cout << "[INFO] no algorithm specified - returning empty clustering" << std::endl;
 		return Clustering(0);
-	}
-
-	// recurse on ensemble
-	if (options[NOREC]) {
-		NO_RECURSION = true;
 	}
 
 

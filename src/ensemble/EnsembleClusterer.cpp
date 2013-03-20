@@ -136,11 +136,6 @@ Clustering EnsembleClusterer::run(Graph& G) {
 				bestLevel = h;
 			}
 
-			// if NO_RECURSION is set: do not contract/recurse and break
-			if (NO_RECURSION) {
-				break;
-			}
-
 			// new graph created => repeat
 			repeat = true;
 
@@ -170,7 +165,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 				DEBUG("quality[" << h << "] = " << quality.at(h) << " > quality[" << (h-1) << "] = " << quality.at(h-1));
 
 				// better quality => repeat
-				repeat = (true && (! NO_RECURSION));
+				repeat = true;
 				iterationsWithoutImprovement = 0;
 			} else {
 				DEBUG("quality[" << h << "] = " << quality.at(h) << " <= quality[" << (h-1) << "] = " << quality.at(h-1));
@@ -221,7 +216,7 @@ Clustering EnsembleClusterer::run(Graph& G) {
 
 std::string EnsembleClusterer::toString() const {
 	std::stringstream strm;
-	strm << "EnsembleClusterer(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",no_recursion=" << NO_RECURSION << ",final=" << this->finalClusterer->toString() << ")(h=" << this->h << ")";
+	strm << "EnsembleClusterer(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",final=" << this->finalClusterer->toString() << ")(h=" << this->h << ")";
 	return strm.str();
 }
 
