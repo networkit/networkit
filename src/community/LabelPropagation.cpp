@@ -7,7 +7,7 @@
 
 #include "LabelPropagation.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 LabelPropagation::LabelPropagation(count theta) : updateThreshold(theta) {
 	// TODO Auto-generated constructor stub
@@ -216,4 +216,4 @@ void LabelPropagation::setUpdateThreshold(count th) {
 	this->updateThreshold = th;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

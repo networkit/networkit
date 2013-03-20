@@ -15,14 +15,14 @@
 #include "../graph/NodeMap.h"
 #include "../aux/Functions.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 /**
  * Parallel matching algorithm as described by Manne/Bisseling
 	 * Source:  http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1
  */
-class ParallelMatcher: public EnsembleClustering::Matcher {
+class ParallelMatcher: public NetworKit::Matcher {
 private:
 	int attrId; ///< attribute ID of matching scores/weights
 
@@ -35,5 +35,5 @@ public:
 	virtual Matching run(Graph& G);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* PARALLELMATCHER_H_ */

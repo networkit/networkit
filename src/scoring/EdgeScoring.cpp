@@ -7,6 +7,6 @@
 
 #include "EdgeScoring.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

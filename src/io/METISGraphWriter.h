@@ -12,9 +12,9 @@
 
 #include "GraphWriter.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class METISGraphWriter: public EnsembleClustering::GraphWriter {
+class METISGraphWriter: public NetworKit::GraphWriter {
 
 public:
 
@@ -25,5 +25,5 @@ public:
 	virtual void write(Graph& G, std::string path);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* METISGRAPHWRITER_H_ */

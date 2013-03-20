@@ -12,7 +12,7 @@
 
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class NumericTools {
 public:
@@ -33,5 +33,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* NUMERICTOOLS_H_ */

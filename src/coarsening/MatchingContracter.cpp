@@ -7,7 +7,7 @@
 
 #include "MatchingContracter.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 MatchingContracter::MatchingContracter() {
 	// TODO Auto-generated constructor stub
@@ -56,4 +56,4 @@ std::pair<Graph, NodeMap<node> > MatchingContracter::run(Graph& G, Matching& M) 
 	return std::make_pair(cG, mapFineToCoarse);
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

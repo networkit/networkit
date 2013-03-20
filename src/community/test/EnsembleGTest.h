@@ -22,7 +22,7 @@
 #include "../../overlap/HashingOverlapper.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class EnsembleGTest: public testing::Test {
 
@@ -31,5 +31,5 @@ class EnsembleGTest: public testing::Test {
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* ENSEMBLEGTEST_H_ */

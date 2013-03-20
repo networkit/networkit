@@ -14,7 +14,7 @@
 #include "../base/IndexMap.h"
 #include "../coarsening/GraphContraction.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class ClusterContracter: public Contracter {
 

@@ -7,7 +7,7 @@
 
 #include "ClusteringGTest.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 
@@ -230,4 +230,4 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequentialOnLargeGraph) {
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

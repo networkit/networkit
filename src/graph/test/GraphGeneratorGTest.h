@@ -13,7 +13,7 @@
 #include "../GraphGenerator.h"
 #include "../../io/GraphIO.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class GraphGeneratorGTest: public testing::Test {
 public:
@@ -21,5 +21,5 @@ public:
 	virtual ~GraphGeneratorGTest();
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GRAPHGENERATORGTEST_H_ */

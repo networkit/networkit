@@ -1,0 +1,6 @@
+<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="429,5,624,33"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#ad56d4fada3895f8446e58d7cd33ca274" title="EDGE ATTRIBUTE SETTERS." alt="" coords="190,30,380,58"/>
+<area shape="rect" id="node10" href="$class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8" title="EDGE ATTRIBUTE GETTERS." alt="" coords="201,82,370,110"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a4c6dde807d9cd6dd53f3a4794d411528" title="Return the index of v in the adjacency array of u." alt="" coords="450,69,603,97"/>
+</map>

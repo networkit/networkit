@@ -7,7 +7,7 @@
 
 #include "JaccardMeasure.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 JaccardMeasure::JaccardMeasure() {
 	// TODO Auto-generated constructor stub
@@ -50,4 +50,4 @@ double JaccardMeasure::getDissimilarity(Graph& G, Clustering& first,
 
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

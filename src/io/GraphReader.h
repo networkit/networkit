@@ -10,7 +10,7 @@
 
 #include "../graph/Graph.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class GraphReader {
 
@@ -28,5 +28,5 @@ public:
 	virtual Graph read(std::string path) = 0;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GRAPHREADER_H_ */

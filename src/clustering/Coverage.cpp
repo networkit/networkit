@@ -7,7 +7,7 @@
 
 #include "Coverage.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Coverage::Coverage() {
 	// TODO Auto-generated constructor stub
@@ -68,4 +68,4 @@ double Coverage::getQuality(const Clustering& zeta, Graph& G) {
 	return cov;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

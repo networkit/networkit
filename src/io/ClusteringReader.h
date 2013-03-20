@@ -13,7 +13,7 @@
 #include "../clustering/Clustering.h"
 #include "../graph/Graph.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class ClusteringReader {
 
@@ -32,5 +32,5 @@ public:
 	virtual Clustering read(std::string path);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* CLUSTERINGREADER_H_ */

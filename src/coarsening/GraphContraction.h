@@ -10,7 +10,7 @@
 
 #include "../graph/NodeMap.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class GraphContraction {
 
@@ -34,5 +34,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GRAPHCONTRACTION_H_ */

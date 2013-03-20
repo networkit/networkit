@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -102,16 +102,19 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab0903498f00fe5fcf2f60e7c51c500f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd7d065d414d8f51fe584df2bc79577c"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clustering_generator.html#afd7d065d414d8f51fe584df2bc79577c">~ClusteringGenerator</a> ()</td></tr>
 <tr class="separator:afd7d065d414d8f51fe584df2bc79577c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a389692d091d311420c6173d1ae527f56"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clustering_generator.html#a389692d091d311420c6173d1ae527f56">makeSingletonClustering</a> (const <a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)</td></tr>
-<tr class="memdesc:a389692d091d311420c6173d1ae527f56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a singleton clustering of G, i.e.  <a href="#a389692d091d311420c6173d1ae527f56"></a><br/></td></tr>
-<tr class="separator:a389692d091d311420c6173d1ae527f56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aceff2507723f4a978f7bf51f0c3577be"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clustering_generator.html#aceff2507723f4a978f7bf51f0c3577be">makeOneClustering</a> (const <a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)</td></tr>
-<tr class="memdesc:aceff2507723f4a978f7bf51f0c3577be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a 1-clustering of G, i.e.  <a href="#aceff2507723f4a978f7bf51f0c3577be"></a><br/></td></tr>
-<tr class="separator:aceff2507723f4a978f7bf51f0c3577be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51906150a30e960243d720668fda0ab4"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clustering_generator.html#a51906150a30e960243d720668fda0ab4">makeSingletonClustering</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)</td></tr>
+<tr class="memdesc:a51906150a30e960243d720668fda0ab4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a singleton clustering of G, i.e.  <a href="#a51906150a30e960243d720668fda0ab4"></a><br/></td></tr>
+<tr class="separator:a51906150a30e960243d720668fda0ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba77ffb1a767d6004f5f79ec0abf82a0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clustering_generator.html#aba77ffb1a767d6004f5f79ec0abf82a0">makeOneClustering</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)</td></tr>
+<tr class="memdesc:aba77ffb1a767d6004f5f79ec0abf82a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a 1-clustering of G, i.e.  <a href="#aba77ffb1a767d6004f5f79ec0abf82a0"></a><br/></td></tr>
+<tr class="separator:aba77ffb1a767d6004f5f79ec0abf82a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5e71f42a81b05bc2d2d9ce6c16e1443"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_clustering_generator.html#ad5e71f42a81b05bc2d2d9ce6c16e1443">makeRandomClustering</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G, int k)</td></tr>
+<tr class="memdesc:ad5e71f42a81b05bc2d2d9ce6c16e1443"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a clustering with k clusters to which the nodes are randomly assigned.  <a href="#ad5e71f42a81b05bc2d2d9ce6c16e1443"></a><br/></td></tr>
+<tr class="separator:ad5e71f42a81b05bc2d2d9ce6c16e1443"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="_clustering_generator_8h_source.html#l00015">15</a> of file <a class="el" href="_clustering_generator_8h_source.html">ClusteringGenerator.h</a>.</p>
+<p>Definition at line <a class="el" href="_clustering_generator_8h_source.html#l00016">16</a> of file <a class="el" href="_clustering_generator_8h_source.html">ClusteringGenerator.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ab0903498f00fe5fcf2f60e7c51c500f4"></a>
 <div class="memitem">
@@ -156,7 +159,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="aceff2507723f4a978f7bf51f0c3577be"></a>
+<a class="anchor" id="aba77ffb1a767d6004f5f79ec0abf82a0"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -164,9 +167,9 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> &amp; EnsembleClustering::ClusteringGenerator::makeOneClustering </td>
+          <td class="memname"><a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> EnsembleClustering::ClusteringGenerator::makeOneClustering </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;&#160;</td>
           <td class="paramname"><em>G</em></td><td>)</td>
           <td></td>
         </tr>
@@ -181,20 +184,20 @@ Public Member Functions</h2></td></tr>
 <p>Make a 1-clustering of G, i.e. </p>
 <p>a clustering in which all nodes belong to the same cluster. </p>
 
-<p>Definition at line <a class="el" href="_clustering_generator_8cpp_source.html#l00030">30</a> of file <a class="el" href="_clustering_generator_8cpp_source.html">ClusteringGenerator.cpp</a>.</p>
+<p>Definition at line <a class="el" href="_clustering_generator_8cpp_source.html#l00028">28</a> of file <a class="el" href="_clustering_generator_8cpp_source.html">ClusteringGenerator.cpp</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_ensemble_clustering_1_1_clustering_generator_aceff2507723f4a978f7bf51f0c3577be_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_clustering_generator_aceff2507723f4a978f7bf51f0c3577be_cgraph" alt=""/></div>
-<map name="class_ensemble_clustering_1_1_clustering_generator_aceff2507723f4a978f7bf51f0c3577be_cgraph" id="class_ensemble_clustering_1_1_clustering_generator_aceff2507723f4a978f7bf51f0c3577be_cgraph">
-<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non&#45;isolated) nodes in the graph." alt="" coords="205,5,376,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_graph.html#aaac8bcc5d64461cba54ad38ec929be3c" title="Get the first node index (for iteration over all nodes)" alt="" coords="220,73,361,117"/><area shape="rect" id="node7" href="class_ensemble_clustering_1_1_clustering.html#a2f6334480e3938deae8425dc57e6ea86" title="Add a (previously unassigned) node to a cluster." alt="" coords="203,141,378,185"/></map>
+<div class="center"><img src="class_ensemble_clustering_1_1_clustering_generator_aba77ffb1a767d6004f5f79ec0abf82a0_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_clustering_generator_aba77ffb1a767d6004f5f79ec0abf82a0_cgraph" alt=""/></div>
+<map name="class_ensemble_clustering_1_1_clustering_generator_aba77ffb1a767d6004f5f79ec0abf82a0_cgraph" id="class_ensemble_clustering_1_1_clustering_generator_aba77ffb1a767d6004f5f79ec0abf82a0_cgraph">
+<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="205,5,376,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_clustering.html#af6a1379873404b3408d513026005f921" title="Call this before assigning nodes to cluster ids." alt="" coords="210,73,371,117"/><area shape="rect" id="node7" href="class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="220,141,361,185"/><area shape="rect" id="node9" href="class_ensemble_clustering_1_1_clustering.html#a2f6334480e3938deae8425dc57e6ea86" title="Add a (previously unassigned) node to a cluster." alt="" coords="203,209,378,253"/></map>
 </div>
 </p>
 
 </div>
 </div>
-<a class="anchor" id="a389692d091d311420c6173d1ae527f56"></a>
+<a class="anchor" id="ad5e71f42a81b05bc2d2d9ce6c16e1443"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -202,9 +205,56 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> &amp; EnsembleClustering::ClusteringGenerator::makeSingletonClustering </td>
+          <td class="memname"><a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> EnsembleClustering::ClusteringGenerator::makeRandomClustering </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>G</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Make a clustering with k clusters to which the nodes are randomly assigned. </p>
+
+<p>Definition at line <a class="el" href="_clustering_generator_8cpp_source.html#l00038">38</a> of file <a class="el" href="_clustering_generator_8cpp_source.html">ClusteringGenerator.cpp</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_ensemble_clustering_1_1_clustering_generator_ad5e71f42a81b05bc2d2d9ce6c16e1443_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_clustering_generator_ad5e71f42a81b05bc2d2d9ce6c16e1443_cgraph" alt=""/></div>
+<map name="class_ensemble_clustering_1_1_clustering_generator_ad5e71f42a81b05bc2d2d9ce6c16e1443_cgraph" id="class_ensemble_clustering_1_1_clustering_generator_ad5e71f42a81b05bc2d2d9ce6c16e1443_cgraph">
+<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="229,5,400,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_clustering.html#af6a1379873404b3408d513026005f921" title="Call this before assigning nodes to cluster ids." alt="" coords="234,73,395,117"/><area shape="rect" id="node7" href="class_ensemble_clustering_1_1_graph.html#a80dc95eb3a526de34c6a35ccc1dfc7ef" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="227,141,402,185"/><area shape="rect" id="node9" href="class_ensemble_clustering_1_1_clustering.html#a2f6334480e3938deae8425dc57e6ea86" title="Add a (previously unassigned) node to a cluster." alt="" coords="227,209,402,253"/><area shape="rect" id="node11" href="class_ensemble_clustering_1_1_clustering.html#a6ef2d3f0c4a53532067a140caa531449" title="Check whether this clustering is a proper clustering of the graph, i.e." alt="" coords="242,277,388,321"/><area shape="rect" id="node13" href="class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="454,242,594,286"/><area shape="rect" id="node15" href="class_ensemble_clustering_1_1_clustering.html#a53f22ed7ab2a41979f5cdf9b99b5e1de" title="Check if clustering assigns a valid cluster to the node." alt="" coords="451,310,597,354"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a51906150a30e960243d720668fda0ab4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> EnsembleClustering::ClusteringGenerator::makeSingletonClustering </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;&#160;</td>
           <td class="paramname"><em>G</em></td><td>)</td>
           <td></td>
         </tr>
@@ -224,9 +274,9 @@ Here is the call graph for this function:</div>
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_ensemble_clustering_1_1_clustering_generator_a389692d091d311420c6173d1ae527f56_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_clustering_generator_a389692d091d311420c6173d1ae527f56_cgraph" alt=""/></div>
-<map name="class_ensemble_clustering_1_1_clustering_generator_a389692d091d311420c6173d1ae527f56_cgraph" id="class_ensemble_clustering_1_1_clustering_generator_a389692d091d311420c6173d1ae527f56_cgraph">
-<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non&#45;isolated) nodes in the graph." alt="" coords="232,5,403,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_graph.html#aaac8bcc5d64461cba54ad38ec929be3c" title="Get the first node index (for iteration over all nodes)" alt="" coords="247,73,388,117"/><area shape="rect" id="node7" href="class_ensemble_clustering_1_1_clustering.html#a461a251d674b64cf29e97408c343253a" title="Creates a singleton cluster containing the node." alt="" coords="236,141,399,185"/></map>
+<div class="center"><img src="class_ensemble_clustering_1_1_clustering_generator_a51906150a30e960243d720668fda0ab4_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_clustering_generator_a51906150a30e960243d720668fda0ab4_cgraph" alt=""/></div>
+<map name="class_ensemble_clustering_1_1_clustering_generator_a51906150a30e960243d720668fda0ab4_cgraph" id="class_ensemble_clustering_1_1_clustering_generator_a51906150a30e960243d720668fda0ab4_cgraph">
+<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="240,5,411,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_clustering.html#aa93abafed46c4707dac3ca4b0d445f79" title="Assigns every node to a singleton cluster." alt="" coords="232,73,418,117"/></map>
 </div>
 </p>
 
@@ -239,7 +289,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:35 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:16:37 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

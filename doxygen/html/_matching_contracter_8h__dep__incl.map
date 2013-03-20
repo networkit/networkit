@@ -1,3 +1,6 @@
 <map id="src/coarsening/MatchingContracter.h" name="src/coarsening/MatchingContracter.h">
-<area shape="rect" id="node3" href="$_matching_contracter_8cpp.html" title="src/coarsening/MatchingContracter.cpp" alt="" coords="4,83,256,111"/>
+<area shape="rect" id="node3" href="$_matching_contracter_8cpp.html" title="src/coarsening/MatchingContracter.cpp" alt="" coords="4,91,256,119"/>
+<area shape="rect" id="node5" href="$_parallel_agglomerative_clusterer_8h.html" title="src/community/ParallelAgglomerative\lClusterer.h" alt="" coords="281,83,521,127"/>
+<area shape="rect" id="node7" href="$_parallel_agglomerative_clusterer_8cpp.html" title="src/community/ParallelAgglomerative\lClusterer.cpp" alt="" coords="161,177,401,221"/>
+<area shape="rect" id="node9" href="$_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="425,185,616,213"/>
 </map>

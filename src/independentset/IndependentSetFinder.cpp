@@ -7,7 +7,7 @@
 
 #include "IndependentSetFinder.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 IndependentSetFinder::IndependentSetFinder() {
 	// TODO Auto-generated constructor stub
@@ -32,4 +32,4 @@ bool IndependentSetFinder::isIndependentSet(const std::vector<bool>& set, const 
 }
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

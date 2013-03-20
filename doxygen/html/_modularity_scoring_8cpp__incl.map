@@ -1,4 +1,9 @@
 <map id="src/scoring/ModularityScoring.cpp" name="src/scoring/ModularityScoring.cpp">
-<area shape="rect" id="node3" href="$_modularity_scoring_8h.html" title="ModularityScoring.h" alt="" coords="46,83,185,111"/>
-<area shape="rect" id="node5" href="$_edge_scoring_8h.html" title="EdgeScoring.h" alt="" coords="62,161,169,189"/>
+<area shape="rect" id="node3" href="$_modularity_scoring_8h.html" title="ModularityScoring.h" alt="" coords="190,83,329,111"/>
+<area shape="rect" id="node5" href="$_edge_scoring_8h.html" title="EdgeScoring.h" alt="" coords="126,161,233,189"/>
+<area shape="rect" id="node35" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="258,161,421,189"/>
+<area shape="rect" id="node7" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="273,315,391,343"/>
+<area shape="rect" id="node23" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="328,393,419,421"/>
+<area shape="rect" id="node39" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="269,238,408,266"/>
+<area shape="rect" id="node42" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="535,315,669,343"/>
 </map>

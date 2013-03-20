@@ -28,7 +28,7 @@
 #include "../io/GraphIO.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 /**
  *     As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering
@@ -40,7 +40,7 @@ namespace EnsembleClustering {
  *
  *
  */
-class LabelPropagation: public EnsembleClustering::Clusterer {
+class LabelPropagation: public NetworKit::Clusterer {
 
 protected:
 
@@ -74,5 +74,5 @@ public:
 	virtual void setUpdateThreshold(count th);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* LABELPROPAGATION_H_ */

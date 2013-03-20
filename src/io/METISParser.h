@@ -20,7 +20,7 @@
 #include "../aux/Log.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 typedef int64_t node;
 
@@ -57,5 +57,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* METISPARSER_H_ */

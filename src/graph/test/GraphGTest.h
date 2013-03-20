@@ -15,7 +15,7 @@
 #include "../GraphGenerator.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class GraphGTest: public testing::Test {
 
@@ -35,5 +35,5 @@ public:
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GRAPHGTEST_H_ */

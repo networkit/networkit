@@ -17,9 +17,9 @@
 
 #include "omp.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class Louvain: public EnsembleClustering::Clusterer {
+class Louvain: public NetworKit::Clusterer {
 
 protected:
 	bool anyChange;	//!< indicates whether any change was made to the clustering in the last pass over the nodes
@@ -44,5 +44,5 @@ public:
 	virtual std::string toString() const;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* LOUVAIN_H_ */

@@ -11,7 +11,7 @@
 #include "../graph/Graph.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 class Contracter {

@@ -30,9 +30,9 @@
 
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class EnsembleMultilevel: public EnsembleClustering::Clusterer {
+class EnsembleMultilevel: public NetworKit::Clusterer {
 
 protected:
 
@@ -88,5 +88,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* ENSEMBLEMULTILEVEL_H_ */

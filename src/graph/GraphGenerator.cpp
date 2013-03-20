@@ -7,7 +7,7 @@
 
 #include "GraphGenerator.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 GraphGenerator::GraphGenerator() {
 	// TODO Auto-generated constructor stub
@@ -181,4 +181,4 @@ Graph GraphGenerator::makePreferentialAttachmentGraph(count n, count a) {
 	return G;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

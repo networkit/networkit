@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Ensemble Clustering: src/clustering/ClusteringGenerator.cpp Source File</title>
+<title>NetworKit.CommunityDetection: src/clustering/ClusteringGenerator.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">Ensemble Clustering
+   <div id="projectname">NetworKit.CommunityDetection
    </div>
   </td>
  </tr>
@@ -69,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -92,46 +92,66 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * ClusteringGenerator.cpp</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 10.12.2012</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: cls</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: Christian Staudt (christian.staudt@kit.edu)</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_clustering_generator_8h.html">ClusteringGenerator.h</a>&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>EnsembleClustering {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>NetworKit {</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_clustering_generator.html#ab0903498f00fe5fcf2f60e7c51c500f4">   12</a></span>&#160;<a class="code" href="class_ensemble_clustering_1_1_clustering_generator.html#ab0903498f00fe5fcf2f60e7c51c500f4">ClusteringGenerator::ClusteringGenerator</a>() {</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_clustering_generator.html#a9f953e4296caa047ca8810b1938264b8">   12</a></span>&#160;<a class="code" href="class_networ_kit_1_1_clustering_generator.html#a9f953e4296caa047ca8810b1938264b8">ClusteringGenerator::ClusteringGenerator</a>() {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="comment">// TODO Auto-generated constructor stub</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;}</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_clustering_generator.html#afd7d065d414d8f51fe584df2bc79577c">   17</a></span>&#160;<a class="code" href="class_ensemble_clustering_1_1_clustering_generator.html#afd7d065d414d8f51fe584df2bc79577c">ClusteringGenerator::~ClusteringGenerator</a>() {</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_clustering_generator.html#ad63aa03c038650c38d6a1bf767c734ff">   17</a></span>&#160;<a class="code" href="class_networ_kit_1_1_clustering_generator.html#ad63aa03c038650c38d6a1bf767c734ff">ClusteringGenerator::~ClusteringGenerator</a>() {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="comment">// TODO Auto-generated destructor stub</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_clustering_generator.html#a389692d091d311420c6173d1ae527f56">   21</a></span>&#160;<a class="code" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>&amp; <a class="code" href="class_ensemble_clustering_1_1_clustering_generator.html#a389692d091d311420c6173d1ae527f56" title="Make a singleton clustering of G, i.e.">ClusteringGenerator::makeSingletonClustering</a>(<span class="keyword">const</span> <a class="code" href="class_ensemble_clustering_1_1_graph.html" title="Graph interface.">Graph</a>&amp; G) {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    int64_t n = G.<a class="code" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non-isolated) nodes in the graph.">numberOfNodes</a>();</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>* zeta = <span class="keyword">new</span> <a class="code" href="namespace_ensemble_clustering.html#a8376de7054d9b646ad127a6256989024">Clustering</a>(n);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordflow">for</span> (<a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a> v = G.<a class="code" href="class_ensemble_clustering_1_1_graph.html#aaac8bcc5d64461cba54ad38ec929be3c" title="Get the first node index (for iteration over all nodes)">firstNode</a>(); v &lt;= n; ++v) {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        zeta-&gt;<a class="code" href="class_ensemble_clustering_1_1_clustering.html#a461a251d674b64cf29e97408c343253a" title="Creates a singleton cluster containing the node.">toSingleton</a>(v);</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    }</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">return</span> *zeta;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;}</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="code" href="class_ensemble_clustering_1_1_clustering_generator.html#aceff2507723f4a978f7bf51f0c3577be">   30</a></span>&#160;<a class="code" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>&amp; <a class="code" href="class_ensemble_clustering_1_1_clustering_generator.html#aceff2507723f4a978f7bf51f0c3577be" title="Make a 1-clustering of G, i.e.">ClusteringGenerator::makeOneClustering</a>(<span class="keyword">const</span> <a class="code" href="class_ensemble_clustering_1_1_graph.html" title="Graph interface.">Graph</a>&amp; G) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    int64_t n = G.<a class="code" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non-isolated) nodes in the graph.">numberOfNodes</a>();</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>* zeta = <span class="keyword">new</span> <a class="code" href="namespace_ensemble_clustering.html#a8376de7054d9b646ad127a6256989024">Clustering</a>(n);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="namespace_ensemble_clustering.html#a5ae38234e207add524443be6e597b970" title="cluster is represented as a 1-based index">cluster</a> one = 1;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordflow">for</span> (<a class="code" href="namespace_ensemble_clustering.html#ae829290aeccd1a420b17a37fd901f114" title="Typedefs.">node</a> v = G.<a class="code" href="class_ensemble_clustering_1_1_graph.html#aaac8bcc5d64461cba54ad38ec929be3c" title="Get the first node index (for iteration over all nodes)">firstNode</a>(); v &lt;= n; ++v) {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        zeta-&gt;<a class="code" href="class_ensemble_clustering_1_1_clustering.html#a2f6334480e3938deae8425dc57e6ea86" title="Add a (previously unassigned) node to a cluster.">addToCluster</a>(one, v);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordflow">return</span> *zeta;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;} <span class="comment">/* namespace EnsembleClustering */</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_clustering_generator.html#a0a9dc09f93d77c77562792b3537cf6c1">   21</a></span>&#160;<a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> <a class="code" href="class_networ_kit_1_1_clustering_generator.html#a0a9dc09f93d77c77562792b3537cf6c1" title="Make a singleton clustering of G, i.e.">ClusteringGenerator::makeSingletonClustering</a>(<a class="code" href="class_networ_kit_1_1_graph.html">Graph</a>&amp; G) {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    int64_t n = G.<a class="code" href="class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph.">numberOfNodes</a>();</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> zeta(n);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    zeta.<a class="code" href="class_networ_kit_1_1_clustering.html#a777f65aa262cbed40eb1c85721250026" title="Assigns every node to a singleton cluster.">allToSingletons</a>();</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordflow">return</span> zeta;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_clustering_generator.html#ab1fb839d72c6ca2fcf0b7c2896fcd6e3">   28</a></span>&#160;<a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> <a class="code" href="class_networ_kit_1_1_clustering_generator.html#ab1fb839d72c6ca2fcf0b7c2896fcd6e3" title="Make a 1-clustering of G, i.e.">ClusteringGenerator::makeOneClustering</a>(<a class="code" href="class_networ_kit_1_1_graph.html">Graph</a>&amp; G) {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    int64_t n = G.<a class="code" href="class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph.">numberOfNodes</a>();</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> zeta(n);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="namespace_networ_kit.html#aee72806475c8d37642866ab18aceab8b" title="cluster is represented as a 1-based index">cluster</a> one = zeta.<a class="code" href="class_networ_kit_1_1_clustering.html#a17835c3aaee8a0f76c3f49201eaab5ea" title="Call this before assigning nodes to cluster ids.">addCluster</a>();</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    G.<a class="code" href="class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS.">forNodes</a>([&amp;](<a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> v){</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        zeta.<a class="code" href="class_networ_kit_1_1_clustering.html#a8c6557683ca585e65d349b01368260ea" title="Add a (previously unassigned) node to a cluster.">addToCluster</a>(one, v);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    });</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordflow">return</span> zeta;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="code" href="class_networ_kit_1_1_clustering_generator.html#a2a2d4a14c14fb34fd9a66a1047c52c5d">   38</a></span>&#160;<a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> <a class="code" href="class_networ_kit_1_1_clustering_generator.html#a2a2d4a14c14fb34fd9a66a1047c52c5d" title="Make a clustering with k clusters to which the nodes are randomly assigned.">ClusteringGenerator::makeRandomClustering</a>(<a class="code" href="class_networ_kit_1_1_graph.html">Graph</a>&amp; G, <span class="keywordtype">int</span> k) {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="comment">// random number generator</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    std::random_device rd;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    std::mt19937 gen(rd());</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    std::uniform_int_distribution&lt;&gt; dis(0, k-1);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="comment">//</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    int64_t n = G.<a class="code" href="class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph.">numberOfNodes</a>();</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> zeta(n);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">for</span> (int64_t i = 0; i &lt; k; ++i) {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        zeta.<a class="code" href="class_networ_kit_1_1_clustering.html#a17835c3aaee8a0f76c3f49201eaab5ea" title="Call this before assigning nodes to cluster ids.">addCluster</a>();</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    G.<a class="code" href="class_networ_kit_1_1_graph.html#a8633f553d0f134474f248e94faf3064d" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure).">parallelForNodes</a>([&amp;](<a class="code" href="namespace_networ_kit.html#a61914158fd771265be48de9942369160">node</a> v){</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <a class="code" href="namespace_networ_kit.html#aee72806475c8d37642866ab18aceab8b" title="cluster is represented as a 1-based index">cluster</a> c = dis(gen);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        zeta.<a class="code" href="class_networ_kit_1_1_clustering.html#a8c6557683ca585e65d349b01368260ea" title="Add a (previously unassigned) node to a cluster.">addToCluster</a>(c, v);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    });</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    assert (zeta.<a class="code" href="class_networ_kit_1_1_clustering.html#a65ee5f83e25a5e3ccae11c98eb55a7b8" title="Check whether this clustering is a proper clustering of the graph, i.e.">isProper</a>(G));</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> zeta;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;} <span class="comment">/* namespace NetworKit */</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:33 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:37:02 for NetworKit.CommunityDetection by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

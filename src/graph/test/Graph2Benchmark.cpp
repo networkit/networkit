@@ -7,7 +7,7 @@
 
 #include "Graph2Benchmark.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Graph2Benchmark::Graph2Benchmark() {
 	// TODO Auto-generated constructor stub
@@ -237,4 +237,4 @@ TEST_F(Graph2Benchmark, nodeRemoval) {
 	EXPECT_TRUE(false) << "TODO";
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

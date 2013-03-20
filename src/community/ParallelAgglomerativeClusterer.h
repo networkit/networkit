@@ -16,9 +16,9 @@
 #include "../Globals.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class ParallelAgglomerativeClusterer: public EnsembleClustering::Clusterer {
+class ParallelAgglomerativeClusterer: public NetworKit::Clusterer {
 
 public:
 
@@ -34,5 +34,5 @@ public:
 	virtual Clustering run(Graph& G);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* SCOREMATCHCONTRACT_H_ */

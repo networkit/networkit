@@ -1,14 +1,19 @@
 \hypertarget{_graph_8h}{\section{src/graph/\-Graph.h File Reference}
 \label{_graph_8h}\index{src/graph/\-Graph.\-h@{src/graph/\-Graph.\-h}}
 }
-{\ttfamily \#include $<$utility$>$}\\*
+{\ttfamily \#include $<$cassert$>$}\\*
+{\ttfamily \#include $<$vector$>$}\\*
 {\ttfamily \#include $<$cinttypes$>$}\\*
-{\ttfamily \#include \char`\"{}stinger.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$string$>$}\\*
+{\ttfamily \#include $<$queue$>$}\\*
+{\ttfamily \#include $<$stdexcept$>$}\\*
+{\ttfamily \#include $<$map$>$}\\*
+{\ttfamily \#include \char`\"{}../aux/\-Log.\-h\char`\"{}}\\*
 Include dependency graph for Graph.\-h\-:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=263pt]{_graph_8h__incl}
+\includegraphics[width=350pt]{_graph_8h__incl}
 \end{center}
 \end{figure}
 This graph shows which files directly or indirectly include this file\-:\nopagebreak
@@ -21,203 +26,40 @@ This graph shows which files directly or indirectly include this file\-:\nopageb
 \subsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-class \hyperlink{class_ensemble_clustering_1_1_graph}{Ensemble\-Clustering\-::\-Graph}
-\begin{DoxyCompactList}\small\item\em \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} interface. \end{DoxyCompactList}\end{DoxyCompactItemize}
+class \hyperlink{class_networ_kit_1_1_graph}{Networ\-Kit\-::\-Graph}
+\item 
+class \hyperlink{class_networ_kit_1_1_graph_1_1_node_attribute}{Networ\-Kit\-::\-Graph\-::\-Node\-Attribute}
+\begin{DoxyCompactList}\small\item\em A\-T\-T\-R\-I\-B\-U\-T\-E A\-B\-S\-T\-R\-A\-C\-T B\-A\-S\-E C\-L\-A\-S\-S\-E\-S. \end{DoxyCompactList}\item 
+class \hyperlink{class_networ_kit_1_1_graph_1_1_edge_attribute}{Networ\-Kit\-::\-Graph\-::\-Edge\-Attribute}
+\end{DoxyCompactItemize}
 \subsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
-namespace \hyperlink{namespace_ensemble_clustering}{Ensemble\-Clustering}
+namespace \hyperlink{namespace_networ_kit}{Networ\-Kit}
 \end{DoxyCompactItemize}
 \subsection*{Macros}
 \begin{DoxyCompactItemize}
 \item 
-\#define \hyperlink{_graph_8h_aeae3dd1d7fd04e66f0be4e9ce77b7ae0}{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}(G)~S\-T\-I\-N\-G\-E\-R\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), G.\-default\-Edge\-Type)
-\begin{DoxyCompactList}\small\item\em Traversal macros. \end{DoxyCompactList}\item 
-\#define \hyperlink{_graph_8h_a7b84c5d18eff11e33e79e11bf37708e7}{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}()~S\-T\-I\-N\-G\-E\-R\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D()
-\item 
-\#define \hyperlink{_graph_8h_ae8678d7c70efd7101f17cfc088fe81be}{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}(G)~S\-T\-I\-N\-G\-E\-R\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), G.\-default\-Edge\-Type)
-\item 
-\#define \hyperlink{_graph_8h_a99521ce2ead52e5c9023ab8646726382}{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}()~S\-T\-I\-N\-G\-E\-R\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D()
-\item 
-\#define \hyperlink{_graph_8h_a17929df2f289ca96f12ab15f0f6251eb}{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}(G)~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), G.\-default\-Edge\-Type)
-\item 
-\#define \hyperlink{_graph_8h_a3882002cb35e91a9ab06020418e7fa75}{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}()~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D()
-\item 
-\#define \hyperlink{_graph_8h_a38113824a99b1130d0cdef91d5dad758}{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}(G)~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), G.\-default\-Edge\-Type)
-\item 
-\#define \hyperlink{_graph_8h_afcb45939f8d7efba9a15052b47b3866a}{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}()~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D()
-\item 
-\#define \hyperlink{_graph_8h_a7f4bbc1efb1c29ba6b114c777c3cc94c}{E\-D\-G\-E\-\_\-\-S\-O\-U\-R\-C\-E}~S\-T\-I\-N\-G\-E\-R\-\_\-\-E\-D\-G\-E\-\_\-\-S\-O\-U\-R\-C\-E
-\item 
-\#define \hyperlink{_graph_8h_ab57bd4afea3a30a1cab100758eaabf82}{E\-D\-G\-E\-\_\-\-D\-E\-S\-T}~S\-T\-I\-N\-G\-E\-R\-\_\-\-E\-D\-G\-E\-\_\-\-D\-E\-S\-T
-\item 
-\#define \hyperlink{_graph_8h_a09e7b1df8498de7b02486a58456f9fe5}{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N}(G, V)~S\-T\-I\-N\-G\-E\-R\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-V\-T\-X\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), V)
-\item 
-\#define \hyperlink{_graph_8h_a576d65d98c211cf885382b720bfa735d}{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D}()~S\-T\-I\-N\-G\-E\-R\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-V\-T\-X\-\_\-\-E\-N\-D()
-\item 
-\#define \hyperlink{_graph_8h_a2dec33af9eb34c7062f4a59f3b5941c2}{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N}(G, V)~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-V\-T\-X\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), V)
-\item 
-\#define \hyperlink{_graph_8h_a2afd9b2b55ee19e7d79016c730ad2ff1}{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D}()~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-V\-T\-X\-\_\-\-E\-N\-D()
+\#define \hyperlink{_graph_8h_a7c01eac0d89b74473a90fd5c33ed4e74}{none}~-\/1
 \end{DoxyCompactItemize}
 \subsection*{Typedefs}
 \begin{DoxyCompactItemize}
 \item 
-typedef int64\-\_\-t \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{Ensemble\-Clustering\-::node}
+typedef int64\-\_\-t \hyperlink{namespace_networ_kit_af49e67df68af41dcd75dffbb1e9abee6}{Networ\-Kit\-::index}
 \begin{DoxyCompactList}\small\item\em Typedefs. \end{DoxyCompactList}\item 
-typedef std\-::pair$<$ node, node $>$ \hyperlink{namespace_ensemble_clustering_aff19dd5e3051ee3d4360fd3f29daf16b}{Ensemble\-Clustering\-::edge}
-\begin{DoxyCompactList}\small\item\em an undirected edge is a pair of nodes (indices) \end{DoxyCompactList}\end{DoxyCompactItemize}
+typedef int64\-\_\-t \hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{Networ\-Kit\-::count}
+\item 
+typedef index \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{Networ\-Kit\-::node}
+\item 
+typedef double \hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{Networ\-Kit\-::edgeweight}
+\end{DoxyCompactItemize}
 
 
 \subsection{Macro Definition Documentation}
-\hypertarget{_graph_8h_ab57bd4afea3a30a1cab100758eaabf82}{\index{Graph.\-h@{Graph.\-h}!E\-D\-G\-E\-\_\-\-D\-E\-S\-T@{E\-D\-G\-E\-\_\-\-D\-E\-S\-T}}
-\index{E\-D\-G\-E\-\_\-\-D\-E\-S\-T@{E\-D\-G\-E\-\_\-\-D\-E\-S\-T}!Graph.h@{Graph.\-h}}
-\subsubsection[{E\-D\-G\-E\-\_\-\-D\-E\-S\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define E\-D\-G\-E\-\_\-\-D\-E\-S\-T~S\-T\-I\-N\-G\-E\-R\-\_\-\-E\-D\-G\-E\-\_\-\-D\-E\-S\-T}}\label{_graph_8h_ab57bd4afea3a30a1cab100758eaabf82}
+\hypertarget{_graph_8h_a7c01eac0d89b74473a90fd5c33ed4e74}{\index{Graph.\-h@{Graph.\-h}!none@{none}}
+\index{none@{none}!Graph.h@{Graph.\-h}}
+\subsubsection[{none}]{\setlength{\rightskip}{0pt plus 5cm}\#define none~-\/1}}\label{_graph_8h_a7c01eac0d89b74473a90fd5c33ed4e74}
 
 
-Definition at line 51 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a7f4bbc1efb1c29ba6b114c777c3cc94c}{\index{Graph.\-h@{Graph.\-h}!E\-D\-G\-E\-\_\-\-S\-O\-U\-R\-C\-E@{E\-D\-G\-E\-\_\-\-S\-O\-U\-R\-C\-E}}
-\index{E\-D\-G\-E\-\_\-\-S\-O\-U\-R\-C\-E@{E\-D\-G\-E\-\_\-\-S\-O\-U\-R\-C\-E}!Graph.h@{Graph.\-h}}
-\subsubsection[{E\-D\-G\-E\-\_\-\-S\-O\-U\-R\-C\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define E\-D\-G\-E\-\_\-\-S\-O\-U\-R\-C\-E~S\-T\-I\-N\-G\-E\-R\-\_\-\-E\-D\-G\-E\-\_\-\-S\-O\-U\-R\-C\-E}}\label{_graph_8h_a7f4bbc1efb1c29ba6b114c777c3cc94c}
-
-
-Definition at line 50 of file Graph.\-h.
-
-\hypertarget{_graph_8h_aeae3dd1d7fd04e66f0be4e9ce77b7ae0}{\index{Graph.\-h@{Graph.\-h}!F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N@{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}}
-\index{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N@{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}!Graph.h@{Graph.\-h}}
-\subsubsection[{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(
-\begin{DoxyParamCaption}
-\item[{}]{G}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), G.\-default\-Edge\-Type)}}\label{_graph_8h_aeae3dd1d7fd04e66f0be4e9ce77b7ae0}
-
-
-Traversal macros. 
-
-These are modified versions of the macros defined in stinger/include/stinger-\/traversal.\-h 
-
-Definition at line 38 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a7b84c5d18eff11e33e79e11bf37708e7}{\index{Graph.\-h@{Graph.\-h}!F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D@{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}}
-\index{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D@{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}!Graph.h@{Graph.\-h}}
-\subsubsection[{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D(
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D()}}\label{_graph_8h_a7b84c5d18eff11e33e79e11bf37708e7}
-
-
-Definition at line 39 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a09e7b1df8498de7b02486a58456f9fe5}{\index{Graph.\-h@{Graph.\-h}!F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N@{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N}}
-\index{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N@{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N}!Graph.h@{Graph.\-h}}
-\subsubsection[{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N(
-\begin{DoxyParamCaption}
-\item[{}]{G, }
-\item[{}]{V}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-V\-T\-X\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), V)}}\label{_graph_8h_a09e7b1df8498de7b02486a58456f9fe5}
-
-
-Definition at line 53 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a576d65d98c211cf885382b720bfa735d}{\index{Graph.\-h@{Graph.\-h}!F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D@{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D}}
-\index{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D@{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D}!Graph.h@{Graph.\-h}}
-\subsubsection[{F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D(
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-V\-T\-X\-\_\-\-E\-N\-D()}}\label{_graph_8h_a576d65d98c211cf885382b720bfa735d}
-
-
-Definition at line 54 of file Graph.\-h.
-
-\hypertarget{_graph_8h_ae8678d7c70efd7101f17cfc088fe81be}{\index{Graph.\-h@{Graph.\-h}!P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N@{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}}
-\index{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N@{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}!Graph.h@{Graph.\-h}}
-\subsubsection[{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(
-\begin{DoxyParamCaption}
-\item[{}]{G}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), G.\-default\-Edge\-Type)}}\label{_graph_8h_ae8678d7c70efd7101f17cfc088fe81be}
-
-
-Definition at line 41 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a99521ce2ead52e5c9023ab8646726382}{\index{Graph.\-h@{Graph.\-h}!P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D@{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}}
-\index{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D@{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}!Graph.h@{Graph.\-h}}
-\subsubsection[{P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D(
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D()}}\label{_graph_8h_a99521ce2ead52e5c9023ab8646726382}
-
-
-Definition at line 42 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a17929df2f289ca96f12ab15f0f6251eb}{\index{Graph.\-h@{Graph.\-h}!R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}}
-\index{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}!Graph.h@{Graph.\-h}}
-\subsubsection[{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(
-\begin{DoxyParamCaption}
-\item[{}]{G}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), G.\-default\-Edge\-Type)}}\label{_graph_8h_a17929df2f289ca96f12ab15f0f6251eb}
-
-
-Definition at line 44 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a3882002cb35e91a9ab06020418e7fa75}{\index{Graph.\-h@{Graph.\-h}!R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}}
-\index{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}!Graph.h@{Graph.\-h}}
-\subsubsection[{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D(
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D()}}\label{_graph_8h_a3882002cb35e91a9ab06020418e7fa75}
-
-
-Definition at line 45 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a2dec33af9eb34c7062f4a59f3b5941c2}{\index{Graph.\-h@{Graph.\-h}!R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N}}
-\index{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N}!Graph.h@{Graph.\-h}}
-\subsubsection[{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-B\-E\-G\-I\-N(
-\begin{DoxyParamCaption}
-\item[{}]{G, }
-\item[{}]{V}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-V\-T\-X\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), V)}}\label{_graph_8h_a2dec33af9eb34c7062f4a59f3b5941c2}
-
-
-Definition at line 56 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a2afd9b2b55ee19e7d79016c730ad2ff1}{\index{Graph.\-h@{Graph.\-h}!R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D}}
-\index{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D}!Graph.h@{Graph.\-h}}
-\subsubsection[{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-N\-O\-D\-E\-\_\-\-E\-N\-D(
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-O\-F\-\_\-\-V\-T\-X\-\_\-\-E\-N\-D()}}\label{_graph_8h_a2afd9b2b55ee19e7d79016c730ad2ff1}
-
-
-Definition at line 57 of file Graph.\-h.
-
-\hypertarget{_graph_8h_a38113824a99b1130d0cdef91d5dad758}{\index{Graph.\-h@{Graph.\-h}!R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}}
-\index{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}!Graph.h@{Graph.\-h}}
-\subsubsection[{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(
-\begin{DoxyParamCaption}
-\item[{}]{G}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-B\-E\-G\-I\-N(G.\-as\-S\-T\-I\-N\-G\-E\-R(), G.\-default\-Edge\-Type)}}\label{_graph_8h_a38113824a99b1130d0cdef91d5dad758}
-
-
-Definition at line 47 of file Graph.\-h.
-
-\hypertarget{_graph_8h_afcb45939f8d7efba9a15052b47b3866a}{\index{Graph.\-h@{Graph.\-h}!R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}}
-\index{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D@{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}!Graph.h@{Graph.\-h}}
-\subsubsection[{R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D(
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)~S\-T\-I\-N\-G\-E\-R\-\_\-\-R\-E\-A\-D\-\_\-\-O\-N\-L\-Y\-\_\-\-P\-A\-R\-A\-L\-L\-E\-L\-\_\-\-F\-O\-R\-A\-L\-L\-\_\-\-E\-D\-G\-E\-S\-\_\-\-E\-N\-D()}}\label{_graph_8h_afcb45939f8d7efba9a15052b47b3866a}
-
-
-Definition at line 48 of file Graph.\-h.
+Definition at line 21 of file Graph.\-h.
 

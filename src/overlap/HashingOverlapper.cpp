@@ -7,7 +7,7 @@
 
 #include "HashingOverlapper.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 HashingOverlapper::HashingOverlapper() {
 	// TODO Auto-generated constructor stub
@@ -60,4 +60,4 @@ Clustering HashingOverlapper::run(Graph& G,
 	return core;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

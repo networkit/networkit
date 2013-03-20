@@ -7,7 +7,7 @@
 
 #include "METISGraphReader.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 METISGraphReader::METISGraphReader() {
 	// TODO Auto-generated constructor stub
@@ -64,4 +64,4 @@ Graph METISGraphReader::read(std::string path) {
 	return G;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

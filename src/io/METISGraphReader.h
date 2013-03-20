@@ -13,9 +13,9 @@
 #include "METISParser.h"
 #include "../aux/StringTools.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class METISGraphReader: public EnsembleClustering::GraphReader {
+class METISGraphReader: public NetworKit::GraphReader {
 
 public:
 
@@ -26,5 +26,5 @@ public:
 	virtual Graph read(std::string path);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* METISGRAPHREADER_H_ */

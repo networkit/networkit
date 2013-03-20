@@ -7,7 +7,7 @@
 
 #include "GraphGTest.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 //TEST_F(GraphGTest, testEdgeIteration) {
 //
@@ -249,11 +249,11 @@ TEST_F(GraphGTest, testGraphCopy) {
 }
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 
 
-void EnsembleClustering::GraphGTest::SetUp() {
+void NetworKit::GraphGTest::SetUp() {
 }
 
-void EnsembleClustering::GraphGTest::TearDown() {
+void NetworKit::GraphGTest::TearDown() {
 }

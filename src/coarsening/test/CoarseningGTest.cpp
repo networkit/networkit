@@ -7,7 +7,7 @@
 
 #include "CoarseningGTest.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 TEST_F(CoarseningGTest, testClusterContracter) {
 	GraphGenerator graphGen;
@@ -89,4 +89,4 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

@@ -12,18 +12,29 @@
 \item 
 virtual \hyperlink{class_ensemble_clustering_1_1_graph_generator_a4f0b5374c64c6c81bf64e88a9b74b646}{$\sim$\-Graph\-Generator} ()
 \item 
-\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \& \hyperlink{class_ensemble_clustering_1_1_graph_generator_a468d366b781fcc9169a79c4e82209f65}{make\-Erdos\-Renyi\-Graph} (int64\-\_\-t n, double p)
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_graph_generator_ae3f01707491ceca4cdc6b87af45370ae}{make\-Erdos\-Renyi\-Graph} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} n, double p)
 \begin{DoxyCompactList}\small\item\em Generate a random graph according to the Erdos-\/\-Renyi model. \end{DoxyCompactList}\item 
-\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \& \hyperlink{class_ensemble_clustering_1_1_graph_generator_a1e6842768d895f0e4fa1e24a87fdf55f}{make\-Circular\-Graph} (int64\-\_\-t n)
-\begin{DoxyCompactList}\small\item\em Gemerate a graph whose nodes and edges form a circle. \end{DoxyCompactList}\item 
-\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \& \hyperlink{class_ensemble_clustering_1_1_graph_generator_aaba3c61fd2aafae1f46b936e7a0dbc46}{make\-Complete\-Graph} (int64\-\_\-t n)
-\end{DoxyCompactItemize}
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_graph_generator_aec7e3e94b6e925077f7531da793a47a5}{make\-Random\-Graph} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} n, double p)
+\begin{DoxyCompactList}\small\item\em Alias for make\-Erdos\-Renyi\-Graph. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_graph_generator_a6b1dfcef57d42bb6bccf2d15ea0aeac1}{make\-Circular\-Graph} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} n)
+\begin{DoxyCompactList}\small\item\em Generate a graph whose nodes and edges form a circle. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_graph_generator_af418835f00a4fc70a76eebe7c70104d2}{make\-Complete\-Graph} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} n)
+\begin{DoxyCompactList}\small\item\em Generate a complete graph. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_graph_generator_aefc6fbc6e23235419d1a2030d688b4bd}{make\-Clustered\-Random\-Graph} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} n, \hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} k, double pin, double pout)
+\begin{DoxyCompactList}\small\item\em Creates a clustered random graph\-: \end{DoxyCompactList}\item 
+virtual std\-::pair$<$ \hyperlink{class_ensemble_clustering_1_1_graph}{Graph}, \\*
+\hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} $>$ \hyperlink{class_ensemble_clustering_1_1_graph_generator_a573c023203806f719bdd0caf17764340}{make\-Clustered\-Random\-Graph\-With\-Reference\-Clustering} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} n, \hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} k, double pin, double pout)
+\begin{DoxyCompactList}\small\item\em Creates a clustered random graph\-: \end{DoxyCompactList}\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_graph_generator_a098d0364dc2792e97f7242f5df1534d0}{make\-Clustered\-Random\-Graph} (\hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} \&zeta, double pin, double pout)
+\begin{DoxyCompactList}\small\item\em Create a clustered random graph from a given clustering. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_graph_generator_aca4bcf582579a571c5a6b4a1cd59770e}{make\-Preferential\-Attachment\-Graph} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} n, \hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} a)
+\begin{DoxyCompactList}\small\item\em Generate random graph according to the Barabasi-\/\-Albert model (preferential attachment) \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 
 
-Definition at line 16 of file Graph\-Generator.\-h.
+Definition at line 18 of file Graph\-Generator.\-h.
 
 
 
@@ -53,16 +64,16 @@ Definition at line 17 of file Graph\-Generator.\-cpp.
 
 
 \subsection{Member Function Documentation}
-\hypertarget{class_ensemble_clustering_1_1_graph_generator_a1e6842768d895f0e4fa1e24a87fdf55f}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Circular\-Graph@{make\-Circular\-Graph}}
+\hypertarget{class_ensemble_clustering_1_1_graph_generator_a6b1dfcef57d42bb6bccf2d15ea0aeac1}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Circular\-Graph@{make\-Circular\-Graph}}
 \index{make\-Circular\-Graph@{make\-Circular\-Graph}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
-\subsubsection[{make\-Circular\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} \& Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Circular\-Graph (
+\subsubsection[{make\-Circular\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Circular\-Graph (
 \begin{DoxyParamCaption}
-\item[{int64\-\_\-t}]{n}
+\item[{{\bf count}}]{n}
 \end{DoxyParamCaption}
-)}}\label{class_ensemble_clustering_1_1_graph_generator_a1e6842768d895f0e4fa1e24a87fdf55f}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_generator_a6b1dfcef57d42bb6bccf2d15ea0aeac1}
 
 
-Gemerate a graph whose nodes and edges form a circle. 
+Generate a graph whose nodes and edges form a circle. 
 
 
 \begin{DoxyParams}[1]{Parameters}
@@ -71,49 +82,171 @@ Gemerate a graph whose nodes and edges form a circle.
 \end{DoxyParams}
 
 
-Definition at line 37 of file Graph\-Generator.\-cpp.
+Definition at line 41 of file Graph\-Generator.\-cpp.
 
 
 
-Here is the call graph for this function\-:\nopagebreak
+Here is the call graph for this function\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_a1e6842768d895f0e4fa1e24a87fdf55f_cgraph}
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_a6b1dfcef57d42bb6bccf2d15ea0aeac1_cgraph}
 \end{center}
 \end{figure}
 
 
-\hypertarget{class_ensemble_clustering_1_1_graph_generator_aaba3c61fd2aafae1f46b936e7a0dbc46}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Complete\-Graph@{make\-Complete\-Graph}}
-\index{make\-Complete\-Graph@{make\-Complete\-Graph}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
-\subsubsection[{make\-Complete\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} \& Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Complete\-Graph (
+\hypertarget{class_ensemble_clustering_1_1_graph_generator_aefc6fbc6e23235419d1a2030d688b4bd}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Clustered\-Random\-Graph@{make\-Clustered\-Random\-Graph}}
+\index{make\-Clustered\-Random\-Graph@{make\-Clustered\-Random\-Graph}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
+\subsubsection[{make\-Clustered\-Random\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Clustered\-Random\-Graph (
 \begin{DoxyParamCaption}
-\item[{int64\-\_\-t}]{n}
+\item[{{\bf count}}]{n, }
+\item[{{\bf count}}]{k, }
+\item[{double}]{pin, }
+\item[{double}]{pout}
 \end{DoxyParamCaption}
-)}}\label{class_ensemble_clustering_1_1_graph_generator_aaba3c61fd2aafae1f46b936e7a0dbc46}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_generator_aefc6fbc6e23235419d1a2030d688b4bd}
 
 
-Definition at line 45 of file Graph\-Generator.\-cpp.
+Creates a clustered random graph\-: 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em n} & number of nodes \\
+\hline
+\mbox{\tt in}  & {\em k} & number of clusters \\
+\hline
+\mbox{\tt in}  & {\em pin} & intra-\/cluster edge probability \\
+\hline
+\mbox{\tt in}  & {\em pout} & inter-\/cluster edge probability \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 62 of file Graph\-Generator.\-cpp.
 
 
 
-Here is the call graph for this function\-:\nopagebreak
+Here is the call graph for this function\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_aaba3c61fd2aafae1f46b936e7a0dbc46_cgraph}
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_aefc6fbc6e23235419d1a2030d688b4bd_cgraph}
 \end{center}
 \end{figure}
 
 
-\hypertarget{class_ensemble_clustering_1_1_graph_generator_a468d366b781fcc9169a79c4e82209f65}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Erdos\-Renyi\-Graph@{make\-Erdos\-Renyi\-Graph}}
-\index{make\-Erdos\-Renyi\-Graph@{make\-Erdos\-Renyi\-Graph}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
-\subsubsection[{make\-Erdos\-Renyi\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} \& Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Erdos\-Renyi\-Graph (
+\hypertarget{class_ensemble_clustering_1_1_graph_generator_a098d0364dc2792e97f7242f5df1534d0}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Clustered\-Random\-Graph@{make\-Clustered\-Random\-Graph}}
+\index{make\-Clustered\-Random\-Graph@{make\-Clustered\-Random\-Graph}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
+\subsubsection[{make\-Clustered\-Random\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Clustered\-Random\-Graph (
 \begin{DoxyParamCaption}
-\item[{int64\-\_\-t}]{n, }
+\item[{{\bf Clustering} \&}]{zeta, }
+\item[{double}]{pin, }
+\item[{double}]{pout}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_generator_a098d0364dc2792e97f7242f5df1534d0}
+
+
+Create a clustered random graph from a given clustering. 
+
+
+
+Definition at line 121 of file Graph\-Generator.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_a098d0364dc2792e97f7242f5df1534d0_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_graph_generator_a573c023203806f719bdd0caf17764340}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Clustered\-Random\-Graph\-With\-Reference\-Clustering@{make\-Clustered\-Random\-Graph\-With\-Reference\-Clustering}}
+\index{make\-Clustered\-Random\-Graph\-With\-Reference\-Clustering@{make\-Clustered\-Random\-Graph\-With\-Reference\-Clustering}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
+\subsubsection[{make\-Clustered\-Random\-Graph\-With\-Reference\-Clustering}]{\setlength{\rightskip}{0pt plus 5cm}std\-::pair$<$ {\bf Graph}, {\bf Clustering} $>$ Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Clustered\-Random\-Graph\-With\-Reference\-Clustering (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{n, }
+\item[{{\bf count}}]{k, }
+\item[{double}]{pin, }
+\item[{double}]{pout}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_generator_a573c023203806f719bdd0caf17764340}
+
+
+Creates a clustered random graph\-: 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em n} & number of nodes \\
+\hline
+\mbox{\tt in}  & {\em k} & number of clusters \\
+\hline
+\mbox{\tt in}  & {\em pin} & intra-\/cluster edge probability \\
+\hline
+\mbox{\tt in}  & {\em pout} & inter-\/cluster edge probability \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 92 of file Graph\-Generator.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_a573c023203806f719bdd0caf17764340_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_graph_generator_af418835f00a4fc70a76eebe7c70104d2}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Complete\-Graph@{make\-Complete\-Graph}}
+\index{make\-Complete\-Graph@{make\-Complete\-Graph}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
+\subsubsection[{make\-Complete\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Complete\-Graph (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{n}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_generator_af418835f00a4fc70a76eebe7c70104d2}
+
+
+Generate a complete graph. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em n} & number of nodes \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 50 of file Graph\-Generator.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_af418835f00a4fc70a76eebe7c70104d2_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_graph_generator_ae3f01707491ceca4cdc6b87af45370ae}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Erdos\-Renyi\-Graph@{make\-Erdos\-Renyi\-Graph}}
+\index{make\-Erdos\-Renyi\-Graph@{make\-Erdos\-Renyi\-Graph}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
+\subsubsection[{make\-Erdos\-Renyi\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Erdos\-Renyi\-Graph (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{n, }
 \item[{double}]{p}
 \end{DoxyParamCaption}
-)}}\label{class_ensemble_clustering_1_1_graph_generator_a468d366b781fcc9169a79c4e82209f65}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_generator_ae3f01707491ceca4cdc6b87af45370ae}
 
 
 Generate a random graph according to the Erdos-\/\-Renyi model. 
@@ -131,11 +264,75 @@ Definition at line 25 of file Graph\-Generator.\-cpp.
 
 
 
-Here is the call graph for this function\-:\nopagebreak
+Here is the call graph for this function\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_a468d366b781fcc9169a79c4e82209f65_cgraph}
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_ae3f01707491ceca4cdc6b87af45370ae_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_graph_generator_aca4bcf582579a571c5a6b4a1cd59770e}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Preferential\-Attachment\-Graph@{make\-Preferential\-Attachment\-Graph}}
+\index{make\-Preferential\-Attachment\-Graph@{make\-Preferential\-Attachment\-Graph}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
+\subsubsection[{make\-Preferential\-Attachment\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Preferential\-Attachment\-Graph (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{n, }
+\item[{{\bf count}}]{a}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_generator_aca4bcf582579a571c5a6b4a1cd59770e}
+
+
+Generate random graph according to the Barabasi-\/\-Albert model (preferential attachment) 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em n} & number of nodes \\
+\hline
+\mbox{\tt in}  & {\em a} & number of edges added for each node \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 144 of file Graph\-Generator.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_aca4bcf582579a571c5a6b4a1cd59770e_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_graph_generator_aec7e3e94b6e925077f7531da793a47a5}{\index{Ensemble\-Clustering\-::\-Graph\-Generator@{Ensemble\-Clustering\-::\-Graph\-Generator}!make\-Random\-Graph@{make\-Random\-Graph}}
+\index{make\-Random\-Graph@{make\-Random\-Graph}!EnsembleClustering::GraphGenerator@{Ensemble\-Clustering\-::\-Graph\-Generator}}
+\subsubsection[{make\-Random\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-Graph\-Generator\-::make\-Random\-Graph (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{n, }
+\item[{double}]{p}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_generator_aec7e3e94b6e925077f7531da793a47a5}
+
+
+Alias for make\-Erdos\-Renyi\-Graph. 
+
+
+
+Definition at line 37 of file Graph\-Generator.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_generator_aec7e3e94b6e925077f7531da793a47a5_cgraph}
 \end{center}
 \end{figure}
 

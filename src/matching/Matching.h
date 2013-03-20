@@ -12,7 +12,7 @@
 #include "../graph/Graph.h"
 #include "../graph/NodeMap.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class Matching : public NodeMap<node> {
 
@@ -107,5 +107,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* MATCHING_H_ */

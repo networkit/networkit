@@ -7,7 +7,7 @@
 
 #include "Contracter.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Contracter::Contracter() {
 	// TODO Auto-generated constructor stub

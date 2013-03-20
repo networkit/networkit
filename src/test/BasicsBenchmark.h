@@ -14,7 +14,7 @@
 #include "../aux/Log.h"
 #include "../aux/Timer.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class BasicsBenchmark: public testing::Test {
 public:
@@ -22,5 +22,5 @@ public:
 	virtual ~BasicsBenchmark();
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* BASICSBENCHMARK_H_ */

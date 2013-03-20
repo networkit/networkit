@@ -8,7 +8,7 @@
 #include "Clustering.h"
 #include <algorithm>
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Clustering::Clustering(count n) :
 		NodeMap<cluster>(n, -1), name("noname") {
@@ -180,5 +180,5 @@ std::vector<count> Clustering::clusterSizes() {
 }
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 

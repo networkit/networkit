@@ -7,7 +7,7 @@
 
 #include "ClusteringProjector.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 ClusteringProjector::ClusteringProjector() {
 	// TODO Auto-generated constructor stub
@@ -101,4 +101,4 @@ Clustering ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoa
 
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

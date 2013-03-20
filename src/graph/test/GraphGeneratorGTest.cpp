@@ -7,7 +7,7 @@
 
 #include "GraphGeneratorGTest.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 GraphGeneratorGTest::GraphGeneratorGTest() {
 	// TODO Auto-generated constructor stub
@@ -34,4 +34,4 @@ TEST_F(GraphGeneratorGTest, testBarabasiAlbert) {
 }
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

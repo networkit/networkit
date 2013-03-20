@@ -14,7 +14,7 @@
 #include "../graph/Graph.h"
 #include "../clustering/Clustering.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 class Overlapper {
@@ -28,5 +28,5 @@ public:
 	virtual Clustering run(Graph& G, std::vector<Clustering>& clusterings) = 0;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* OVERLAPPER_H_ */

@@ -14,7 +14,7 @@
 #include "../../aux/Timer.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class GraphBenchmark: public testing::Test {
 protected:
@@ -24,5 +24,5 @@ public:
 	virtual ~GraphBenchmark();
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GRAPHBENCHMARK_H_ */

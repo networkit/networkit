@@ -23,7 +23,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../io/ClusteringReader.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class ClusteringGTest: public testing::Test {
 
@@ -32,5 +32,5 @@ class ClusteringGTest: public testing::Test {
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* CLUSTERINGTEST_H_ */

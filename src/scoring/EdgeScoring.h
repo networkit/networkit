@@ -10,7 +10,7 @@
 
 #include "../graph/Graph.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 template<typename T>
@@ -43,5 +43,5 @@ EdgeScoring<T>::~EdgeScoring() {
 }
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* EDGESCORING_H_ */

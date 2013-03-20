@@ -7,100 +7,97 @@
 
 
 
-Collaboration diagram for Ensemble\-Clustering\-:\-:Node\-Map$<$ T $>$\-:\nopagebreak
+Inheritance diagram for Ensemble\-Clustering\-:\-:Node\-Map$<$ T $>$\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=187pt]{class_ensemble_clustering_1_1_node_map__coll__graph}
+\includegraphics[width=196pt]{class_ensemble_clustering_1_1_node_map__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Node\-Map$<$ T $>$\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{class_ensemble_clustering_1_1_node_map__coll__graph}
 \end{center}
 \end{figure}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{class_ensemble_clustering_1_1_node_map_aab4cdeacb9053e3af1e85c8610bc81c1}{Node\-Map} (int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_node_map_a511baf014428ed1dece45d9ab94f205b}{n})
+\hyperlink{class_ensemble_clustering_1_1_node_map_ae5324b98b88f23032dcb0e3847b5eff9}{Node\-Map} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} \hyperlink{class_ensemble_clustering_1_1_index_map_a3151d302c54e6ad0175bd87aef62d4ca}{n}, T \hyperlink{class_ensemble_clustering_1_1_index_map_ab5f1dc778237131e9d6c5713c2b318ec}{default\-Value})
+\begin{DoxyCompactList}\small\item\em Construct a new \hyperlink{class_ensemble_clustering_1_1_index_map}{Index\-Map} which holds n entries . \end{DoxyCompactList}\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_node_map_a3c540495a55c9aaecee101e1483c135c}{$\sim$\-Node\-Map} ()
 \item 
-\hyperlink{class_ensemble_clustering_1_1_node_map_ab5f347c8b015b0c2efc3750a7d4e0762}{Node\-Map} (int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_node_map_a511baf014428ed1dece45d9ab94f205b}{n}, T \hyperlink{class_ensemble_clustering_1_1_node_map_a79da6a77072605a77c060bbb2e5a620c}{default\-Value})
-\begin{DoxyCompactList}\small\item\em Construct a node map which holds n entries . \end{DoxyCompactList}\item 
-virtual \hyperlink{class_ensemble_clustering_1_1_node_map_ad362216773b1f778db051309ecfb5c99}{$\sim$\-Node\-Map} ()
-\item 
-T \& \hyperlink{class_ensemble_clustering_1_1_node_map_aebc1eed243771ab969c08dc4ab73e12b}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} \&u)
+T \& \hyperlink{class_ensemble_clustering_1_1_node_map_a2d37467f509efb2fbdd54dd2b28fe8ea}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} \&u)
 \begin{DoxyCompactList}\small\item\em Index operator. \end{DoxyCompactList}\item 
-const T \& \hyperlink{class_ensemble_clustering_1_1_node_map_a7a39722236380fd5879370351d0c177a}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} \&u) const 
+const T \& \hyperlink{class_ensemble_clustering_1_1_node_map_a3494496fcc4041f747f45a5edd9d3b22}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} \&u) const 
 \begin{DoxyCompactList}\small\item\em Index operator for const instances of this class. \end{DoxyCompactList}\end{DoxyCompactItemize}
-\subsection*{Protected Attributes}
+\subsection*{Friends}
 \begin{DoxyCompactItemize}
 \item 
-T $\ast$ \hyperlink{class_ensemble_clustering_1_1_node_map_a07b1d885793627c3691beeb5dca28717}{array}
-\begin{DoxyCompactList}\small\item\em array of size (n+1). array\mbox{[}0\mbox{]} is not a valid entry, since node indices are 1-\/based \end{DoxyCompactList}\item 
-T \hyperlink{class_ensemble_clustering_1_1_node_map_a79da6a77072605a77c060bbb2e5a620c}{default\-Value}
-\item 
-int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_node_map_a511baf014428ed1dece45d9ab94f205b}{n}
+std\-::ostream \& \hyperlink{class_ensemble_clustering_1_1_node_map_a04c08e83d9f515f810401ff16ed5f745}{operator$<$$<$} (std\-::ostream \&os, const \hyperlink{class_ensemble_clustering_1_1_node_map}{Node\-Map}$<$ T $>$ \&m)
 \end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
 
 
 \subsection{Detailed Description}
-\subsubsection*{template$<$class T$>$class Ensemble\-Clustering\-::\-Node\-Map$<$ T $>$}
+\subsubsection*{template$<$typename T$>$class Ensemble\-Clustering\-::\-Node\-Map$<$ T $>$}
 
 
 
-Definition at line 15 of file Node\-Map.\-h.
+Definition at line 21 of file Node\-Map.\-h.
 
 
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{class_ensemble_clustering_1_1_node_map_aab4cdeacb9053e3af1e85c8610bc81c1}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!Node\-Map@{Node\-Map}}
+\hypertarget{class_ensemble_clustering_1_1_node_map_ae5324b98b88f23032dcb0e3847b5eff9}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!Node\-Map@{Node\-Map}}
 \index{Node\-Map@{Node\-Map}!EnsembleClustering::NodeMap@{Ensemble\-Clustering\-::\-Node\-Map}}
-\subsubsection[{Node\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf Ensemble\-Clustering\-::\-Node\-Map}$<$ T $>$\-::{\bf Node\-Map} (
+\subsubsection[{Node\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ {\bf Node\-Map}$<$ T $>$\-::{\bf Node\-Map} (
 \begin{DoxyParamCaption}
-\item[{int64\-\_\-t}]{n}
+\item[{{\bf count}}]{n, }
+\item[{T}]{default\-Value = {\ttfamily -\/1}}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_node_map_aab4cdeacb9053e3af1e85c8610bc81c1}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_node_map_ae5324b98b88f23032dcb0e3847b5eff9}
 
 
-Definition at line 57 of file Node\-Map.\-h.
-
-\hypertarget{class_ensemble_clustering_1_1_node_map_ab5f347c8b015b0c2efc3750a7d4e0762}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!Node\-Map@{Node\-Map}}
-\index{Node\-Map@{Node\-Map}!EnsembleClustering::NodeMap@{Ensemble\-Clustering\-::\-Node\-Map}}
-\subsubsection[{Node\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ {\bf Ensemble\-Clustering\-::\-Node\-Map}$<$ T $>$\-::{\bf Node\-Map} (
-\begin{DoxyParamCaption}
-\item[{int64\-\_\-t}]{n, }
-\item[{T}]{default\-Value}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_node_map_ab5f347c8b015b0c2efc3750a7d4e0762}
-
-
-Construct a node map which holds n entries . 
+Construct a new \hyperlink{class_ensemble_clustering_1_1_index_map}{Index\-Map} which holds n entries . 
 
 
 \begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em n} & number of entries \\
+\hline
 \mbox{\tt in}  & {\em default\-Value} & all entries are initialized to this value \\
 \hline
 \end{DoxyParams}
 
 
-Definition at line 62 of file Node\-Map.\-h.
+Definition at line 65 of file Node\-Map.\-h.
 
-\hypertarget{class_ensemble_clustering_1_1_node_map_ad362216773b1f778db051309ecfb5c99}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!$\sim$\-Node\-Map@{$\sim$\-Node\-Map}}
+\hypertarget{class_ensemble_clustering_1_1_node_map_a3c540495a55c9aaecee101e1483c135c}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!$\sim$\-Node\-Map@{$\sim$\-Node\-Map}}
 \index{$\sim$\-Node\-Map@{$\sim$\-Node\-Map}!EnsembleClustering::NodeMap@{Ensemble\-Clustering\-::\-Node\-Map}}
-\subsubsection[{$\sim$\-Node\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf Ensemble\-Clustering\-::\-Node\-Map}$<$ T $>$\-::$\sim${\bf Node\-Map} (
+\subsubsection[{$\sim$\-Node\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf Node\-Map}$<$ T $>$\-::$\sim${\bf Node\-Map} (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_node_map_ad362216773b1f778db051309ecfb5c99}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_node_map_a3c540495a55c9aaecee101e1483c135c}
 
 
-Definition at line 71 of file Node\-Map.\-h.
+Definition at line 69 of file Node\-Map.\-h.
 
 
 
 \subsection{Member Function Documentation}
-\hypertarget{class_ensemble_clustering_1_1_node_map_aebc1eed243771ab969c08dc4ab73e12b}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\hypertarget{class_ensemble_clustering_1_1_node_map_a2d37467f509efb2fbdd54dd2b28fe8ea}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
 \index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!EnsembleClustering::NodeMap@{Ensemble\-Clustering\-::\-Node\-Map}}
-\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ T \& {\bf Ensemble\-Clustering\-::\-Node\-Map}$<$ T $>$\-::operator\mbox{[}$\,$\mbox{]} (
+\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ T \& {\bf Node\-Map}$<$ T $>$\-::operator\mbox{[}$\,$\mbox{]} (
 \begin{DoxyParamCaption}
 \item[{const {\bf node} \&}]{u}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_node_map_aebc1eed243771ab969c08dc4ab73e12b}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_node_map_a2d37467f509efb2fbdd54dd2b28fe8ea}
 
 
 Index operator. 
@@ -112,15 +109,15 @@ Index operator.
 \end{DoxyParams}
 
 
-Definition at line 75 of file Node\-Map.\-h.
+Definition at line 72 of file Node\-Map.\-h.
 
-\hypertarget{class_ensemble_clustering_1_1_node_map_a7a39722236380fd5879370351d0c177a}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\hypertarget{class_ensemble_clustering_1_1_node_map_a3494496fcc4041f747f45a5edd9d3b22}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
 \index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!EnsembleClustering::NodeMap@{Ensemble\-Clustering\-::\-Node\-Map}}
-\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ const T \& {\bf Ensemble\-Clustering\-::\-Node\-Map}$<$ T $>$\-::operator\mbox{[}$\,$\mbox{]} (
+\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ const T \& {\bf Node\-Map}$<$ T $>$\-::operator\mbox{[}$\,$\mbox{]} (
 \begin{DoxyParamCaption}
 \item[{const {\bf node} \&}]{u}
 \end{DoxyParamCaption}
-) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_node_map_a7a39722236380fd5879370351d0c177a}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_ensemble_clustering_1_1_node_map_a3494496fcc4041f747f45a5edd9d3b22}
 
 
 Index operator for const instances of this class. 
@@ -132,35 +129,22 @@ Index operator for const instances of this class.
 \end{DoxyParams}
 
 
-Definition at line 79 of file Node\-Map.\-h.
+Definition at line 76 of file Node\-Map.\-h.
 
 
 
-\subsection{Member Data Documentation}
-\hypertarget{class_ensemble_clustering_1_1_node_map_a07b1d885793627c3691beeb5dca28717}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!array@{array}}
-\index{array@{array}!EnsembleClustering::NodeMap@{Ensemble\-Clustering\-::\-Node\-Map}}
-\subsubsection[{array}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ T$\ast$ {\bf Ensemble\-Clustering\-::\-Node\-Map}$<$ T $>$\-::array\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_node_map_a07b1d885793627c3691beeb5dca28717}
+\subsection{Friends And Related Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_node_map_a04c08e83d9f515f810401ff16ed5f745}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!EnsembleClustering::NodeMap@{Ensemble\-Clustering\-::\-Node\-Map}}
+\subsubsection[{operator$<$$<$}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ std\-::ostream\& operator$<$$<$ (
+\begin{DoxyParamCaption}
+\item[{std\-::ostream \&}]{os, }
+\item[{const {\bf Node\-Map}$<$ T $>$ \&}]{m}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [friend]}}}\label{class_ensemble_clustering_1_1_node_map_a04c08e83d9f515f810401ff16ed5f745}
 
 
-array of size (n+1). array\mbox{[}0\mbox{]} is not a valid entry, since node indices are 1-\/based 
-
-
-
-Definition at line 19 of file Node\-Map.\-h.
-
-\hypertarget{class_ensemble_clustering_1_1_node_map_a79da6a77072605a77c060bbb2e5a620c}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!default\-Value@{default\-Value}}
-\index{default\-Value@{default\-Value}!EnsembleClustering::NodeMap@{Ensemble\-Clustering\-::\-Node\-Map}}
-\subsubsection[{default\-Value}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ T {\bf Ensemble\-Clustering\-::\-Node\-Map}$<$ T $>$\-::default\-Value\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_node_map_a79da6a77072605a77c060bbb2e5a620c}
-
-
-Definition at line 20 of file Node\-Map.\-h.
-
-\hypertarget{class_ensemble_clustering_1_1_node_map_a511baf014428ed1dece45d9ab94f205b}{\index{Ensemble\-Clustering\-::\-Node\-Map@{Ensemble\-Clustering\-::\-Node\-Map}!n@{n}}
-\index{n@{n}!EnsembleClustering::NodeMap@{Ensemble\-Clustering\-::\-Node\-Map}}
-\subsubsection[{n}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ int64\-\_\-t {\bf Ensemble\-Clustering\-::\-Node\-Map}$<$ T $>$\-::n\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_node_map_a511baf014428ed1dece45d9ab94f205b}
-
-
-Definition at line 21 of file Node\-Map.\-h.
+Definition at line 84 of file Node\-Map.\-h.
 
 
 

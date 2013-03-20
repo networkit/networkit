@@ -11,7 +11,7 @@
 #include "Clustering.h"
 #include "../graph/Graph.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 /**
  * Abstract base class for all clustering quality measures.
@@ -28,5 +28,5 @@ public:
 	virtual double getQuality(const Clustering& zeta, Graph& G) =0;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* QUALITYMEASURE_H_ */

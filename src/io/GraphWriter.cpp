@@ -7,7 +7,7 @@
 
 #include "GraphWriter.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 GraphWriter::GraphWriter() {
 	// TODO Auto-generated constructor stub
@@ -18,4 +18,4 @@ GraphWriter::~GraphWriter() {
 	// TODO Auto-generated destructor stub
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

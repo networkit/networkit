@@ -10,7 +10,7 @@
 
 #include "../graph/Graph.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class GraphWriter {
 public:
@@ -22,5 +22,5 @@ public:
 	virtual void write(Graph& G, std::string path) = 0;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GRAPHWRITER_H_ */

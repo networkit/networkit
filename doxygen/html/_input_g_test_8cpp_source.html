@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Ensemble Clustering: src/input/test/InputGTest.cpp Source File</title>
+<title>NetworKit.CommunityDetection: src/io/test/InputGTest.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">Ensemble Clustering
+   <div id="projectname">NetworKit.CommunityDetection
    </div>
   </td>
  </tr>
@@ -69,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -80,7 +80,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d365e15d984c8d0205117ee0c40d6716.html">input</a></li><li class="navelem"><a class="el" href="dir_0c6091932dd9a2b60b516ddd6d2ce350.html">test</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_c184e51c84f2c3f0345bbc8a0d75d3e1.html">io</a></li><li class="navelem"><a class="el" href="dir_69f6345b61f294d84c63bc66277026e4.html">test</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -92,18 +92,112 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * InputGTest.cpp</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 12.12.2012</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: cls</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: Christian Staudt (christian.staudt@kit.edu)</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_input_g_test_8h.html">InputGTest.h</a>&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>EnsembleClustering {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>NetworKit {</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;} <span class="comment">/* namespace EnsembleClustering */</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="namespace_networ_kit.html#adc6014d7776384a91125e1adfc6821d1">   12</a></span>&#160;<a class="code" href="namespace_networ_kit.html#ae7329d30d6284a0d4aee6045ad5fa91a">TEST_F</a>(<a class="code" href="class_networ_kit_1_1_input_g_test.html">InputGTest</a>, testGraphIOEdgeList) {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph_generator.html">GraphGenerator</a> graphGen;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph.html">Graph</a> G = graphGen.<a class="code" href="class_networ_kit_1_1_graph_generator.html#a7f8a211ff09c119c448c58a2fd58cda5" title="Generate a graph whose nodes and edges form a circle.">makeCircularGraph</a>(20);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph_i_o.html">GraphIO</a> graphio;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    std::string path = <span class="stringliteral">&quot;sandbox/edgelist.txt&quot;</span>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    graphio.<a class="code" href="class_networ_kit_1_1_graph_i_o.html#a8da55a700826f34d53dda22f389701bc" title="Writes graph to text file in edge list format.">writeEdgeList</a>(G, path);</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keywordtype">bool</span> exists = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    std::ifstream file(path);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordflow">if</span> (file) {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        exists = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    }</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    EXPECT_TRUE(exists) &lt;&lt; <span class="stringliteral">&quot;A file should have been created : &quot;</span> &lt;&lt; path;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="code" href="namespace_networ_kit.html#a1badbd8faa22ba9d7da2c6acffb57897">   27</a></span>&#160;<a class="code" href="namespace_networ_kit.html#ae7329d30d6284a0d4aee6045ad5fa91a">TEST_F</a>(<a class="code" href="class_networ_kit_1_1_input_g_test.html">InputGTest</a>, testGraphIOAdjacencyList) {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph_generator.html">GraphGenerator</a> graphGen;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph.html">Graph</a> G = graphGen.<a class="code" href="class_networ_kit_1_1_graph_generator.html#a7f8a211ff09c119c448c58a2fd58cda5" title="Generate a graph whose nodes and edges form a circle.">makeCircularGraph</a>(20);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph_i_o.html">GraphIO</a> graphio;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    std::string path = <span class="stringliteral">&quot;sandbox/circular.adjlist&quot;</span>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    graphio.<a class="code" href="class_networ_kit_1_1_graph_i_o.html#ac9122f7c03ed73752ab7e5c1de2d9565" title="Writes graph to text file in adjacency list format.">writeAdjacencyList</a>(G, path);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">bool</span> exists = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    std::ifstream file(path);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">if</span> (file) {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        exists = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    EXPECT_TRUE(exists) &lt;&lt; <span class="stringliteral">&quot;A file should have been created : &quot;</span> &lt;&lt; path;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="code" href="namespace_networ_kit.html#a2f24a06e45f75caeec4df09b75d604a8">   43</a></span>&#160;<a class="code" href="namespace_networ_kit.html#ae7329d30d6284a0d4aee6045ad5fa91a">TEST_F</a>(<a class="code" href="class_networ_kit_1_1_input_g_test.html">InputGTest</a>, testGraphIOForIsolatedNodes) {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph_generator.html">GraphGenerator</a> graphGen;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph.html">Graph</a> G(20);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph_i_o.html">GraphIO</a> graphio;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    std::string path = <span class="stringliteral">&quot;sandbox/isolated.adjlist&quot;</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    graphio.<a class="code" href="class_networ_kit_1_1_graph_i_o.html#ac9122f7c03ed73752ab7e5c1de2d9565" title="Writes graph to text file in adjacency list format.">writeAdjacencyList</a>(G, path);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">bool</span> exists = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    std::ifstream file(path);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordflow">if</span> (file) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        exists = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    EXPECT_TRUE(exists) &lt;&lt; <span class="stringliteral">&quot;A file should have been created : &quot;</span> &lt;&lt; path;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="code" href="namespace_networ_kit.html#a36ec61ec5bc474b3725ed82139d9baaa">   60</a></span>&#160;<a class="code" href="namespace_networ_kit.html#ae7329d30d6284a0d4aee6045ad5fa91a">TEST_F</a>(<a class="code" href="class_networ_kit_1_1_input_g_test.html">InputGTest</a>, testMETISGraphReader) {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    std::string path = <span class="stringliteral">&quot;input/jazz.graph&quot;</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <a class="code" href="class_networ_kit_1_1_m_e_t_i_s_graph_reader.html">METISGraphReader</a> reader;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph.html">Graph</a> G = reader.<a class="code" href="class_networ_kit_1_1_m_e_t_i_s_graph_reader.html#a82e63d4d0e6383be034db6082478a94d" title="Given the path of an input file, read the graph contained.">read</a>(path);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    EXPECT_FALSE(G.<a class="code" href="class_networ_kit_1_1_graph.html#a14c01e09942d12db12f3ff6efc8f63aa" title="Return true if graph contains no nodes.">isEmpty</a>());</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="code" href="namespace_networ_kit.html#a9123d4b22507a6441651434fb666892d">   72</a></span>&#160;<a class="code" href="namespace_networ_kit.html#ae7329d30d6284a0d4aee6045ad5fa91a">TEST_F</a>(<a class="code" href="class_networ_kit_1_1_input_g_test.html">InputGTest</a>, testClusteringWriterAndReader) {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="comment">// write clustering first</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    std::string path = <span class="stringliteral">&quot;sandbox/example.clust&quot;</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph_generator.html">GraphGenerator</a> graphGen;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="namespace_networ_kit.html#ad4c536a5339a8bf2f91f418b9a67a7d8">count</a> n = 100;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <a class="code" href="namespace_networ_kit.html#ad4c536a5339a8bf2f91f418b9a67a7d8">count</a> k = 3;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <a class="code" href="class_networ_kit_1_1_graph.html">Graph</a> G = graphGen.<a class="code" href="class_networ_kit_1_1_graph_generator.html#a8dcd5d1f75f5f04d1cbf98dd60616f31" title="Generate a complete graph.">makeCompleteGraph</a>(n);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <a class="code" href="class_networ_kit_1_1_clustering_generator.html">ClusteringGenerator</a> clusteringGen;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> zeta = clusteringGen.<a class="code" href="class_networ_kit_1_1_clustering_generator.html#a2a2d4a14c14fb34fd9a66a1047c52c5d" title="Make a clustering with k clusters to which the nodes are randomly assigned.">makeRandomClustering</a>(G, k);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <a class="code" href="class_networ_kit_1_1_clustering_writer.html">ClusteringWriter</a> writer;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    writer.<a class="code" href="class_networ_kit_1_1_clustering_writer.html#a13a0fd79b2fb036a0c9261b994cef36d">write</a>(zeta, path);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="comment">// check if file exists</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">bool</span> exists = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    std::ifstream file(path);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">if</span> (file) {</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        exists = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    EXPECT_TRUE(exists) &lt;&lt; <span class="stringliteral">&quot;clustering file should have been written to: &quot;</span> &lt;&lt; path;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <a class="code" href="class_networ_kit_1_1_clustering_reader.html">ClusteringReader</a> reader;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="class_networ_kit_1_1_clustering.html">Clustering</a> read = reader.<a class="code" href="class_networ_kit_1_1_clustering_reader.html#a8b426dfaedd1c950e8031e912cea9dfc" title="Read a clustering from a file.">read</a>(path);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    EXPECT_EQ(n, read.<a class="code" href="class_networ_kit_1_1_index_map.html#ab2bf024de2a5d5cb47e7ae2e7e3e833b" title="Number of nodes for which this clsutering can hold an entry.">numberOfNodes</a>()) &lt;&lt; <span class="stringliteral">&quot;read clustering should contain n nodes&quot;</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    EXPECT_TRUE(read.<a class="code" href="class_networ_kit_1_1_clustering.html#a65ee5f83e25a5e3ccae11c98eb55a7b8" title="Check whether this clustering is a proper clustering of the graph, i.e.">isProper</a>(G)) &lt;&lt; <span class="stringliteral">&quot;read clustering should be proper clustering of G&quot;</span>;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    EXPECT_TRUE(read.<a class="code" href="class_networ_kit_1_1_clustering.html#a6d544799c96254b1ec6600b1b23c0fe7" title="E: (u) = (v)  (u) = (v)  (u)  (v)  (u)  (v) $$">equals</a>(zeta, G)) &lt;&lt; <span class="stringliteral">&quot;read clustering should be identical to created clustering&quot;</span>;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;} <span class="comment">/* namespace NetworKit */</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:33 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:37:03 for NetworKit.CommunityDetection by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

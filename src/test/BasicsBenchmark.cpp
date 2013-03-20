@@ -7,7 +7,7 @@
 
 #include "BasicsBenchmark.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 BasicsBenchmark::BasicsBenchmark() {
 	// TODO Auto-generated constructor stub
@@ -260,4 +260,4 @@ TEST_F(BasicsBenchmark, lambdaVectorWrite_par) {
 	INFO("vector written in [" << runtime.elapsed().count() << " ms ]");
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

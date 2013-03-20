@@ -15,7 +15,7 @@
 #include "../graph/Graph.h"
 #include "../aux/Log.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class GraphIO {
 public:
@@ -55,5 +55,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* GRAPHIO_H_ */

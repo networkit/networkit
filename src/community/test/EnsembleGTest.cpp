@@ -7,7 +7,7 @@
 
 #include "EnsembleGTest.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph) {
 
@@ -293,4 +293,4 @@ TEST_F(EnsembleGTest, testEnsemblePreprocessing) {
 
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

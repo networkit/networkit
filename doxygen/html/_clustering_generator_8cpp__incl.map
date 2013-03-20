@@ -1,6 +1,8 @@
 <map id="src/clustering/ClusteringGenerator.cpp" name="src/clustering/ClusteringGenerator.cpp">
-<area shape="rect" id="node3" href="$_clustering_generator_8h.html" title="ClusteringGenerator.h" alt="" coords="41,99,192,127"/>
-<area shape="rect" id="node5" href="$_clustering_8h.html" title="Clustering.h" alt="" coords="71,177,163,205"/>
-<area shape="rect" id="node7" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="48,254,187,282"/>
-<area shape="rect" id="node9" href="$_graph_8h.html" title="Graph.h" alt="" coords="83,331,152,359"/>
+<area shape="rect" id="node3" href="$_clustering_generator_8h.html" title="ClusteringGenerator.h" alt="" coords="135,99,285,127"/>
+<area shape="rect" id="node5" href="$_clustering_8h.html" title="Clustering.h" alt="" coords="112,177,204,205"/>
+<area shape="rect" id="node9" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="272,254,411,282"/>
+<area shape="rect" id="node11" href="$_graph_8h.html" title="Graph.h" alt="" coords="307,331,376,359"/>
+<area shape="rect" id="node39" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="530,331,664,359"/>
+<area shape="rect" id="node27" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="145,409,236,437"/>
 </map>

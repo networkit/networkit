@@ -7,7 +7,7 @@
 
 #include "GraphContraction.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 GraphContraction::GraphContraction(Graph& fine, Graph& coarse, NodeMap<node>& fineToCoarse) :
 		fine(fine), coarse(coarse), fineToCoarse(fineToCoarse) {
@@ -30,4 +30,4 @@ NodeMap<node>& GraphContraction::getFineToCoarseMap() {
 	return this->fineToCoarse;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

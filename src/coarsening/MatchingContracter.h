@@ -12,7 +12,7 @@
 
 #include "../matching/Matching.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class MatchingContracter : public Contracter {
 
@@ -34,5 +34,5 @@ public:
 };
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* MATCHINGCONTRACTER_H_ */

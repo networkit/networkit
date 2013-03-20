@@ -11,7 +11,7 @@
 #include "../graph/Graph.h"
 #include "../clustering/Clustering.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 class Clusterer {
@@ -29,5 +29,5 @@ public:
 	virtual std::string toString() const;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* CLUSTERER_H_ */

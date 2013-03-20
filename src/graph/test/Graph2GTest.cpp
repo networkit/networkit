@@ -7,7 +7,7 @@
 
 #include "Graph2GTest.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 Graph2GTest::Graph2GTest() {
 	// TODO Auto-generated constructor stub
@@ -519,4 +519,4 @@ TEST_F(Graph2GTest, testTotalEdgeWeight) {
 }
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

@@ -7,10 +7,10 @@
 
 #include "ModularityScoring.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

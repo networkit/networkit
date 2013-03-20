@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -90,7 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="class_ensemble_clustering_1_1_overlapper-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">EnsembleClustering::Overlapper Class Reference</div>  </div>
+<div class="title">EnsembleClustering::Overlapper Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -100,7 +100,7 @@ Inheritance diagram for EnsembleClustering::Overlapper:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_ensemble_clustering_1_1_overlapper__inherit__graph.png" border="0" usemap="#_ensemble_clustering_1_1_overlapper_inherit__map" alt="Inheritance graph"/></div>
 <map name="_ensemble_clustering_1_1_overlapper_inherit__map" id="_ensemble_clustering_1_1_overlapper_inherit__map">
-<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_region_growing_overlapper.html" title="EnsembleClustering\l::RegionGrowingOverlapper" alt="" coords="4,99,189,143"/></map>
+<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_hashing_overlapper.html" title="EnsembleClustering\l::HashingOverlapper" alt="" coords="4,99,147,143"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_region_growing_overlapper.html" title="EnsembleClustering\l::RegionGrowingOverlapper" alt="" coords="172,99,357,143"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -109,6 +109,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac6dbb69f2ca3a9caccd49e32919594fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58ec179d9470f32a90279f3e8b273874"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_overlapper.html#a58ec179d9470f32a90279f3e8b273874">~Overlapper</a> ()</td></tr>
 <tr class="separator:a58ec179d9470f32a90279f3e8b273874"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a427ef1bf113f2c59e26e3e3f7c3d266b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_overlapper.html#a427ef1bf113f2c59e26e3e3f7c3d266b">run</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G, std::vector&lt; <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> &gt; &amp;clusterings)=0</td></tr>
+<tr class="separator:a427ef1bf113f2c59e26e3e3f7c3d266b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -156,6 +158,43 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a427ef1bf113f2c59e26e3e3f7c3d266b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> EnsembleClustering::Overlapper::run </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>G</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="class_ensemble_clustering_1_1_clustering.html">Clustering</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>clusterings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="class_ensemble_clustering_1_1_region_growing_overlapper.html#a2b164486347878e81101abc9a89b47d9">EnsembleClustering::RegionGrowingOverlapper</a>, and <a class="el" href="class_ensemble_clustering_1_1_hashing_overlapper.html#afa5bd4826c328e8637c57c27e334ae0b">EnsembleClustering::HashingOverlapper</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/overlap/<a class="el" href="_overlapper_8h_source.html">Overlapper.h</a></li>
 <li>src/overlap/<a class="el" href="_overlapper_8cpp_source.html">Overlapper.cpp</a></li>
@@ -163,7 +202,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:35 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:16:38 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

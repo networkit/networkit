@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -87,19 +87,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">EnsembleClustering::EdgeScoring Member List</div>  </div>
+<div class="title">EnsembleClustering::EdgeScoring&lt; T &gt; Member List</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring</a>, including all inherited members.</p>
+<p>This is the complete list of members for <a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring&lt; T &gt;</a>, including all inherited members.</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html#a83339193ebf55255b09a34a2e1112eea">EdgeScoring</a>()</td><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html#ae0b8ed83c76ea8f71f8246949d3106f4">scoreEdge</a>(Node u, Node v)=0</td><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html#a1bb790ce6fd801ea40e0603785c73727">~EdgeScoring</a>()</td><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html#aa61da87fb5141e85134f6cdc6564e9ca">edgeScore</a>(node u, node v) const =0</td><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring&lt; T &gt;</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html#a929532ab86b6e6a8dcbee7fc5f6c69b4">EdgeScoring</a>(Graph &amp;G)</td><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring&lt; T &gt;</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html#a5f44e943d8b0609bb7e866d785502300">G</a></td><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring&lt; T &gt;</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html#adfce8d05bbaaa6526ca4e22af6897c2d">scoreEdges</a>(int attrId)=0</td><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring&lt; T &gt;</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html#aa79bc49f70d7d833aa1ed07c50e3e15c">~EdgeScoring</a>()</td><td class="entry"><a class="el" href="class_ensemble_clustering_1_1_edge_scoring.html">EnsembleClustering::EdgeScoring&lt; T &gt;</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:35 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:16:38 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

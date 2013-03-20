@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -94,6 +94,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Parallel matching algorithm as described by Manne/Bisseling Source: <a href="http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1">http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1</a>.  
+ <a href="class_ensemble_clustering_1_1_parallel_matcher.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_parallel_matcher_8h_source.html">ParallelMatcher.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for EnsembleClustering::ParallelMatcher:</div>
@@ -112,39 +115,38 @@ Collaboration diagram for EnsembleClustering::ParallelMatcher:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab311a101a93c6fd157d01d45a39728cf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_parallel_matcher.html#ab311a101a93c6fd157d01d45a39728cf">ParallelMatcher</a> ()</td></tr>
-<tr class="separator:ab311a101a93c6fd157d01d45a39728cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a5e692a3ea02120ad1ab250c4068a58"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_parallel_matcher.html#a8a5e692a3ea02120ad1ab250c4068a58">ParallelMatcher</a> (int attrId)</td></tr>
+<tr class="separator:a8a5e692a3ea02120ad1ab250c4068a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5341c0424961cb05bc09886ac44876c6"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_parallel_matcher.html#a5341c0424961cb05bc09886ac44876c6">~ParallelMatcher</a> ()</td></tr>
 <tr class="separator:a5341c0424961cb05bc09886ac44876c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1504bd97f11843772a51bfdf01bfd7a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_matching.html">Matching</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_parallel_matcher.html#ad1504bd97f11843772a51bfdf01bfd7a">run</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)</td></tr>
-<tr class="memdesc:ad1504bd97f11843772a51bfdf01bfd7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the parallel matching algorithm described by Manne/Bisseling Source: <a href="http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1">http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1</a>.  <a href="#ad1504bd97f11843772a51bfdf01bfd7a"></a><br/></td></tr>
-<tr class="separator:ad1504bd97f11843772a51bfdf01bfd7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59d01ba8833164d22ddf54f5d163d7cb"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_matching.html">Matching</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_parallel_matcher.html#a59d01ba8833164d22ddf54f5d163d7cb">run</a> (<a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)</td></tr>
+<tr class="separator:a59d01ba8833164d22ddf54f5d163d7cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_ensemble_clustering_1_1_matcher"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_ensemble_clustering_1_1_matcher')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_ensemble_clustering_1_1_matcher.html">EnsembleClustering::Matcher</a></td></tr>
 <tr class="memitem:a0ce4d861d6801323f7fecd299694adae inherit pub_methods_class_ensemble_clustering_1_1_matcher"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_matcher.html#a0ce4d861d6801323f7fecd299694adae">Matcher</a> ()</td></tr>
 <tr class="separator:a0ce4d861d6801323f7fecd299694adae inherit pub_methods_class_ensemble_clustering_1_1_matcher"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeed88dc2dc179e94c36ff3f6472db766 inherit pub_methods_class_ensemble_clustering_1_1_matcher"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_matcher.html#aeed88dc2dc179e94c36ff3f6472db766">~Matcher</a> ()</td></tr>
 <tr class="separator:aeed88dc2dc179e94c36ff3f6472db766 inherit pub_methods_class_ensemble_clustering_1_1_matcher"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa01aa3886fde7c286073946daa1b36b7 inherit pub_methods_class_ensemble_clustering_1_1_matcher"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_ensemble_clustering_1_1_matching.html">Matching</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_ensemble_clustering_1_1_matcher.html#aa01aa3886fde7c286073946daa1b36b7">run</a> (const <a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;G)=0</td></tr>
-<tr class="separator:aa01aa3886fde7c286073946daa1b36b7 inherit pub_methods_class_ensemble_clustering_1_1_matcher"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="_parallel_matcher_8h_source.html#l00016">16</a> of file <a class="el" href="_parallel_matcher_8h_source.html">ParallelMatcher.h</a>.</p>
+<div class="textblock"><p>Parallel matching algorithm as described by Manne/Bisseling Source: <a href="http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1">http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1</a>. </p>
+
+<p>Definition at line <a class="el" href="_parallel_matcher_8h_source.html#l00025">25</a> of file <a class="el" href="_parallel_matcher_8h_source.html">ParallelMatcher.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ab311a101a93c6fd157d01d45a39728cf"></a>
+<a class="anchor" id="a8a5e692a3ea02120ad1ab250c4068a58"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">EnsembleClustering::ParallelMatcher::ParallelMatcher </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>attrId</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_parallel_matcher_8cpp_source.html#l00014">14</a> of file <a class="el" href="_parallel_matcher_8cpp_source.html">ParallelMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="_parallel_matcher_8cpp_source.html#l00012">12</a> of file <a class="el" href="_parallel_matcher_8cpp_source.html">ParallelMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -169,12 +171,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_parallel_matcher_8cpp_source.html#l00019">19</a> of file <a class="el" href="_parallel_matcher_8cpp_source.html">ParallelMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="_parallel_matcher_8cpp_source.html#l00017">17</a> of file <a class="el" href="_parallel_matcher_8cpp_source.html">ParallelMatcher.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ad1504bd97f11843772a51bfdf01bfd7a"></a>
+<a class="anchor" id="a59d01ba8833164d22ddf54f5d163d7cb"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -182,7 +184,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_ensemble_clustering_1_1_matching.html">Matching</a> &amp; EnsembleClustering::ParallelMatcher::run </td>
+          <td class="memname"><a class="el" href="class_ensemble_clustering_1_1_matching.html">Matching</a> EnsembleClustering::ParallelMatcher::run </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_ensemble_clustering_1_1_graph.html">Graph</a> &amp;&#160;</td>
           <td class="paramname"><em>G</em></td><td>)</td>
@@ -196,20 +198,16 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Apply the parallel matching algorithm described by Manne/Bisseling Source: <a href="http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1">http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1</a>. </p>
-<p>&lt; candidate[v] is the preferred matching partner of v</p>
-<p>&lt; S[v] is a set with the potential</p>
-<p>&lt; candidates of node v</p>
-<p>&lt; targets of dominating edges </p>
+<p>Implements <a class="el" href="class_ensemble_clustering_1_1_matcher.html#ab0b3532440faa6678f16ee11a6215b75">EnsembleClustering::Matcher</a>.</p>
 
-<p>Definition at line <a class="el" href="_parallel_matcher_8cpp_source.html#l00023">23</a> of file <a class="el" href="_parallel_matcher_8cpp_source.html">ParallelMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="_parallel_matcher_8cpp_source.html#l00021">21</a> of file <a class="el" href="_parallel_matcher_8cpp_source.html">ParallelMatcher.cpp</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_ensemble_clustering_1_1_parallel_matcher_ad1504bd97f11843772a51bfdf01bfd7a_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_parallel_matcher_ad1504bd97f11843772a51bfdf01bfd7a_cgraph" alt=""/></div>
-<map name="class_ensemble_clustering_1_1_parallel_matcher_ad1504bd97f11843772a51bfdf01bfd7a_cgraph" id="class_ensemble_clustering_1_1_parallel_matcher_ad1504bd97f11843772a51bfdf01bfd7a_cgraph">
-<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non&#45;isolated) nodes in the graph." alt="" coords="202,5,374,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_graph.html#aaac8bcc5d64461cba54ad38ec929be3c" title="Get the first node index (for iteration over all nodes)" alt="" coords="218,73,358,117"/><area shape="rect" id="node7" href="class_ensemble_clustering_1_1_matching.html#ad2637dece8a3a56d9f62f3c9df4713db" title="Check if the two nodes are matched." alt="" coords="208,141,368,185"/></map>
+<div class="center"><img src="class_ensemble_clustering_1_1_parallel_matcher_a59d01ba8833164d22ddf54f5d163d7cb_cgraph.png" border="0" usemap="#class_ensemble_clustering_1_1_parallel_matcher_a59d01ba8833164d22ddf54f5d163d7cb_cgraph" alt=""/></div>
+<map name="class_ensemble_clustering_1_1_parallel_matcher_a59d01ba8833164d22ddf54f5d163d7cb_cgraph" id="class_ensemble_clustering_1_1_parallel_matcher_a59d01ba8833164d22ddf54f5d163d7cb_cgraph">
+<area shape="rect" id="node3" href="class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="202,5,374,49"/><area shape="rect" id="node5" href="class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="218,73,358,117"/><area shape="rect" id="node7" href="_functions_8h.html#a603edf7b14c4b441d4f1e6bb461dd98f" title="Given." alt="" coords="255,141,321,169"/><area shape="rect" id="node9" href="class_ensemble_clustering_1_1_matching.html#a6591583cd8dcd8ddc702cdbddcc42bd0" title="Check if node is matched." alt="" coords="212,193,364,237"/><area shape="rect" id="node11" href="class_ensemble_clustering_1_1_graph.html#aab71cc92f41f6df6a1b51d5142f7ed66" title="Iterate over all incident edges of a node and call handler (lamdba closure)." alt="" coords="218,261,358,305"/><area shape="rect" id="node13" href="class_ensemble_clustering_1_1_graph.html#ad24e78f88db1eeadfbf3956cfa1e9ccf" title="EDGE ATTRIBUTE GETTERS." alt="" coords="218,329,358,373"/><area shape="rect" id="node17" href="class_ensemble_clustering_1_1_graph.html#a8967283828dca42d349991c8d35118db" title="EnsembleClustering\l::Graph::attribute_double" alt="" coords="204,397,372,441"/><area shape="rect" id="node20" href="class_ensemble_clustering_1_1_matching.html#a41f6ed1f3b1660fb682c32cf2ade11de" title="Set two nodes as eachothers matching partners." alt="" coords="218,465,358,509"/><area shape="rect" id="node22" href="class_ensemble_clustering_1_1_graph.html#a4d1024eccff37ffb085025959d7e6ae3" title="NEIGHBORHOOD ITERATORS." alt="" coords="206,533,370,577"/><area shape="rect" id="node24" href="class_ensemble_clustering_1_1_matching.html#ad2637dece8a3a56d9f62f3c9df4713db" title="Check if the two nodes are matched." alt="" coords="208,601,368,645"/><area shape="rect" id="node15" href="class_ensemble_clustering_1_1_graph.html#a723838db1433dcbe4ac2679e0707d718" title="Return the index of v in the adjacency array of u." alt="" coords="422,363,562,407"/></map>
 </div>
 </p>
 
@@ -222,7 +220,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 16:53:35 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 20 2013 15:16:38 for Ensemble Clustering by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

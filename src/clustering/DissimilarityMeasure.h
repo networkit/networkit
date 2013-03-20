@@ -10,7 +10,7 @@
 
 #include "Clustering.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 
 /**
@@ -27,5 +27,5 @@ public:
 	virtual double getDissimilarity(Graph& G, Clustering& first, Clustering& second) = 0;
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* DISSIMILARITYMEASURE_H_ */

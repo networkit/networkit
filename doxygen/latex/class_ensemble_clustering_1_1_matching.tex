@@ -7,26 +7,28 @@
 
 
 
-Inheritance diagram for Ensemble\-Clustering\-:\-:Matching\-:\nopagebreak
+Inheritance diagram for Ensemble\-Clustering\-:\-:Matching\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=184pt]{class_ensemble_clustering_1_1_matching__inherit__graph}
+\includegraphics[width=212pt]{class_ensemble_clustering_1_1_matching__inherit__graph}
 \end{center}
 \end{figure}
 
 
-Collaboration diagram for Ensemble\-Clustering\-:\-:Matching\-:\nopagebreak
+Collaboration diagram for Ensemble\-Clustering\-:\-:Matching\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=184pt]{class_ensemble_clustering_1_1_matching__coll__graph}
+\includegraphics[width=212pt]{class_ensemble_clustering_1_1_matching__coll__graph}
 \end{center}
 \end{figure}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{class_ensemble_clustering_1_1_matching_a5e1de8d09e758fae48909c25484b42b7}{Matching} (int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_node_map_a511baf014428ed1dece45d9ab94f205b}{n})
+\hyperlink{class_ensemble_clustering_1_1_matching_a5e1de8d09e758fae48909c25484b42b7}{Matching} (int64\-\_\-t \hyperlink{class_ensemble_clustering_1_1_index_map_a3151d302c54e6ad0175bd87aef62d4ca}{n})
 \begin{DoxyCompactList}\small\item\em Construct new matching. \end{DoxyCompactList}\item 
 virtual \hyperlink{class_ensemble_clustering_1_1_matching_abcc136cf0a7e0b0f2364f2d1b3eb1f2c}{$\sim$\-Matching} ()
 \begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
@@ -40,12 +42,16 @@ bool \hyperlink{class_ensemble_clustering_1_1_matching_ad2637dece8a3a56d9f62f3c9
 \begin{DoxyCompactList}\small\item\em Check if the two nodes are matched. \end{DoxyCompactList}\item 
 bool \hyperlink{class_ensemble_clustering_1_1_matching_a29b8fa3ba916f0b3d73b184c883c36b6}{is\-Proper} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&G) const 
 \begin{DoxyCompactList}\small\item\em Check whether this is a proper matching in the graph, i.\-e. \end{DoxyCompactList}\item 
-\hyperlink{class_ensemble_clustering_1_1_matching}{Matching} \& \hyperlink{class_ensemble_clustering_1_1_matching_a3b523f31e77718537c0883874442be0c}{operator=} (const \hyperlink{class_ensemble_clustering_1_1_matching}{Matching} \&from)
+\hyperlink{class_ensemble_clustering_1_1_matching}{Matching} \& \hyperlink{class_ensemble_clustering_1_1_matching_aa1d0732ec84c2012fd3e642595f23556}{operator=} (const \hyperlink{class_ensemble_clustering_1_1_matching}{Matching} \&from)
 \begin{DoxyCompactList}\small\item\em copy semantics \end{DoxyCompactList}\item 
 void \hyperlink{class_ensemble_clustering_1_1_matching_a6753fd67c53b6e0d94f2d6e0d6de640e}{clone} (const \hyperlink{class_ensemble_clustering_1_1_matching}{Matching} \&from)
 \begin{DoxyCompactList}\small\item\em Properly copy this object. \end{DoxyCompactList}\item 
 void \hyperlink{class_ensemble_clustering_1_1_matching_ae7e8c62662439dc7adae829506d2dd32}{dispose} ()
-\begin{DoxyCompactList}\small\item\em Properly destruct this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Properly destruct this object. \end{DoxyCompactList}\item 
+\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} \hyperlink{class_ensemble_clustering_1_1_matching_a0e9020a85e9f6e8d0bf0ec236394b2e8}{matching\-Size} () const 
+\item 
+\hyperlink{namespace_ensemble_clustering_a1ba11e6d628873b803a26fe054f45e28}{index} \hyperlink{class_ensemble_clustering_1_1_matching_adc5f7971cb778e55e58b140e1371b89d}{mate} (\hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} v) const 
+\end{DoxyCompactItemize}
 \subsection*{Additional Inherited Members}
 
 
@@ -90,7 +96,7 @@ Destructor.
 
 
 
-Definition at line 19 of file Matching.\-cpp.
+Definition at line 20 of file Matching.\-cpp.
 
 
 
@@ -109,7 +115,7 @@ Check if the two nodes are matched.
 
 
 
-Definition at line 82 of file Matching.\-cpp.
+Definition at line 70 of file Matching.\-cpp.
 
 \hypertarget{class_ensemble_clustering_1_1_matching_a6753fd67c53b6e0d94f2d6e0d6de640e}{\index{Ensemble\-Clustering\-::\-Matching@{Ensemble\-Clustering\-::\-Matching}!clone@{clone}}
 \index{clone@{clone}!EnsembleClustering::Matching@{Ensemble\-Clustering\-::\-Matching}}
@@ -122,10 +128,6 @@ Definition at line 82 of file Matching.\-cpp.
 
 Properly copy this object. 
 
-
-
-Definition at line 78 of file Matching.\-cpp.
-
 \hypertarget{class_ensemble_clustering_1_1_matching_ae7e8c62662439dc7adae829506d2dd32}{\index{Ensemble\-Clustering\-::\-Matching@{Ensemble\-Clustering\-::\-Matching}!dispose@{dispose}}
 \index{dispose@{dispose}!EnsembleClustering::Matching@{Ensemble\-Clustering\-::\-Matching}}
 \subsubsection[{dispose}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Matching\-::dispose (
@@ -136,10 +138,6 @@ Definition at line 78 of file Matching.\-cpp.
 
 
 Properly destruct this object. 
-
-
-
-Definition at line 88 of file Matching.\-cpp.
 
 \hypertarget{class_ensemble_clustering_1_1_matching_a6591583cd8dcd8ddc702cdbddcc42bd0}{\index{Ensemble\-Clustering\-::\-Matching@{Ensemble\-Clustering\-::\-Matching}!is\-Matched@{is\-Matched}}
 \index{is\-Matched@{is\-Matched}!EnsembleClustering::Matching@{Ensemble\-Clustering\-::\-Matching}}
@@ -181,13 +179,14 @@ no two edges are adjacent.
 \mbox{\tt out}  & {\em true} & if this is a proper matching \\
 \hline
 \end{DoxyParams}
-The content of this data structure represents a matching iff (for all v in V\-: M\mbox{[}v\mbox{]} = 0 or M\mbox{[}M\mbox{[}v\mbox{]}\mbox{]} = v) and (for all (u,v) in M)\-: (u,v) in E
+The content of this data structure represents a matching iff (for all v in V\-: M\mbox{[}v\mbox{]} = v or M\mbox{[}M\mbox{[}v\mbox{]}\mbox{]} = v) and (for all (u,v) in M)\-: (u,v) in E
 
 Definition at line 27 of file Matching.\-cpp.
 
 
 
-Here is the call graph for this function\-:\nopagebreak
+Here is the call graph for this function\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -210,35 +209,72 @@ Set two nodes as eachothers matching partners.
 
 
 
-Definition at line 57 of file Matching.\-cpp.
+Definition at line 60 of file Matching.\-cpp.
 
-\hypertarget{class_ensemble_clustering_1_1_matching_a3b523f31e77718537c0883874442be0c}{\index{Ensemble\-Clustering\-::\-Matching@{Ensemble\-Clustering\-::\-Matching}!operator=@{operator=}}
-\index{operator=@{operator=}!EnsembleClustering::Matching@{Ensemble\-Clustering\-::\-Matching}}
-\subsubsection[{operator=}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Matching} \& Ensemble\-Clustering\-::\-Matching\-::operator= (
+\hypertarget{class_ensemble_clustering_1_1_matching_a0e9020a85e9f6e8d0bf0ec236394b2e8}{\index{Ensemble\-Clustering\-::\-Matching@{Ensemble\-Clustering\-::\-Matching}!matching\-Size@{matching\-Size}}
+\index{matching\-Size@{matching\-Size}!EnsembleClustering::Matching@{Ensemble\-Clustering\-::\-Matching}}
+\subsubsection[{matching\-Size}]{\setlength{\rightskip}{0pt plus 5cm}{\bf count} Ensemble\-Clustering\-::\-Matching\-::matching\-Size (
 \begin{DoxyParamCaption}
-\item[{const {\bf Matching} \&}]{from}
+{}
 \end{DoxyParamCaption}
-)}}\label{class_ensemble_clustering_1_1_matching_a3b523f31e77718537c0883874442be0c}
+) const}}\label{class_ensemble_clustering_1_1_matching_a0e9020a85e9f6e8d0bf0ec236394b2e8}
+\begin{DoxyReturn}{Returns}
+Number of edges in matching. 
+\end{DoxyReturn}
 
 
-copy semantics 
-
-Assignment operator. 
-
-Definition at line 69 of file Matching.\-cpp.
+Definition at line 74 of file Matching.\-cpp.
 
 
 
-Here is the call graph for this function\-:\nopagebreak
+Here is the call graph for this function\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=334pt]{class_ensemble_clustering_1_1_matching_a3b523f31e77718537c0883874442be0c_cgraph}
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_matching_a0e9020a85e9f6e8d0bf0ec236394b2e8_cgraph}
 \end{center}
 \end{figure}
 
 
-\hypertarget{class_ensemble_clustering_1_1_matching_a214fd9e80cb5842f87e2ec909655b5e2}{\index{Ensemble\-Clustering\-::\-Matching@{Ensemble\-Clustering\-::\-Matching}!unmatch@{unmatch}}
+\hypertarget{class_ensemble_clustering_1_1_matching_adc5f7971cb778e55e58b140e1371b89d}{\index{Ensemble\-Clustering\-::\-Matching@{Ensemble\-Clustering\-::\-Matching}!mate@{mate}}
+\index{mate@{mate}!EnsembleClustering::Matching@{Ensemble\-Clustering\-::\-Matching}}
+\subsubsection[{mate}]{\setlength{\rightskip}{0pt plus 5cm}{\bf index} Ensemble\-Clustering\-::\-Matching\-::mate (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const}}\label{class_ensemble_clustering_1_1_matching_adc5f7971cb778e55e58b140e1371b89d}
+\begin{DoxyReturn}{Returns}
+Mate of {\itshape v} if it exists, otherwise none. 
+\end{DoxyReturn}
+
+
+Definition at line 84 of file Matching.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{class_ensemble_clustering_1_1_matching_adc5f7971cb778e55e58b140e1371b89d_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_matching_aa1d0732ec84c2012fd3e642595f23556}{\index{Ensemble\-Clustering\-::\-Matching@{Ensemble\-Clustering\-::\-Matching}!operator=@{operator=}}
+\index{operator=@{operator=}!EnsembleClustering::Matching@{Ensemble\-Clustering\-::\-Matching}}
+\subsubsection[{operator=}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Matching}\& Ensemble\-Clustering\-::\-Matching\-::operator= (
+\begin{DoxyParamCaption}
+\item[{const {\bf Matching} \&}]{from}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_matching_aa1d0732ec84c2012fd3e642595f23556}
+
+
+copy semantics 
+
+Assignment operator. \hypertarget{class_ensemble_clustering_1_1_matching_a214fd9e80cb5842f87e2ec909655b5e2}{\index{Ensemble\-Clustering\-::\-Matching@{Ensemble\-Clustering\-::\-Matching}!unmatch@{unmatch}}
 \index{unmatch@{unmatch}!EnsembleClustering::Matching@{Ensemble\-Clustering\-::\-Matching}}
 \subsubsection[{unmatch}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Matching\-::unmatch (
 \begin{DoxyParamCaption}
@@ -252,7 +288,7 @@ Reset the two nodes to unmatched.
 
 
 
-Definition at line 63 of file Matching.\-cpp.
+Definition at line 65 of file Matching.\-cpp.
 
 
 

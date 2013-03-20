@@ -20,7 +20,7 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class InputGTest: public testing::Test {
 
@@ -28,5 +28,5 @@ class InputGTest: public testing::Test {
 
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* INPUTGTEST_H_ */

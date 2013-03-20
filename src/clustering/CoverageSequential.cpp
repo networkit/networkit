@@ -7,7 +7,7 @@
 
 #include "CoverageSequential.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 CoverageSequential::CoverageSequential() {
 	// TODO Auto-generated constructor stub
@@ -66,4 +66,4 @@ double CoverageSequential::getQuality(const Clustering& zeta, Graph& G) {
 	return cov;
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

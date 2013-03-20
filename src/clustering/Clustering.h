@@ -15,7 +15,7 @@
 
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 typedef int64_t cluster;	//!< cluster is represented as a 1-based index
 
@@ -216,10 +216,10 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 
 template<typename Callback>
-inline void EnsembleClustering::Clustering::forEntries(Callback func,
+inline void NetworKit::Clustering::forEntries(Callback func,
 		std::string par) {
 	assert ((par == "") || (par == "parallel"));
 	#pragma omp parallel for if (par == "parallel")
@@ -231,7 +231,7 @@ inline void EnsembleClustering::Clustering::forEntries(Callback func,
 }
 
 template<typename Callback>
-inline void EnsembleClustering::Clustering::parallelForEntries(
+inline void NetworKit::Clustering::parallelForEntries(
 		Callback handle) {
 	#pragma omp parallel for
 	for (node v = 0; v < this->n; v += 1) {

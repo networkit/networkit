@@ -10,9 +10,9 @@
 
 #include "QualityMeasure.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class Coverage: public EnsembleClustering::QualityMeasure {
+class Coverage: public NetworKit::QualityMeasure {
 public:
 	Coverage();
 	virtual ~Coverage();
@@ -21,5 +21,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* COVERAGE_H_ */

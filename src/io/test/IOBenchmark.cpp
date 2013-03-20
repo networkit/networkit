@@ -7,7 +7,7 @@
 
 #include "IOBenchmark.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 IOBenchmark::IOBenchmark() {
 	// TODO Auto-generated constructor stub
@@ -38,4 +38,4 @@ TEST_F(IOBenchmark, timeMETISGraphReader) {
 
 }
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */

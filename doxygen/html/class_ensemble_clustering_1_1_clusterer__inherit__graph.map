@@ -1,4 +1,8 @@
 <map id="EnsembleClustering::Clusterer" name="EnsembleClustering::Clusterer">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_label_propagation.html" title="As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering Raghavan et al..." alt="" coords="4,99,144,143"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_score_match_contract.html" title="EnsembleClustering\l::ScoreMatchContract" alt="" coords="169,99,319,143"/>
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_ensemble_multilevel.html" title="EnsembleClustering\l::EnsembleMultilevel" alt="" coords="230,5,373,49"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_ensemble_preprocessing.html" title="EnsembleClustering\l::EnsemblePreprocessing" alt="" coords="215,73,388,117"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_label_propagation.html" title="As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering Raghavan et al..." alt="" coords="231,141,372,185"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_louvain.html" title="EnsembleClustering\l::Louvain" alt="" coords="231,209,372,253"/>
+<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_parallel_agglomerative_clusterer.html" title="EnsembleClustering\l::ParallelAgglomerativeClusterer" alt="" coords="195,277,408,321"/>
+<area shape="rect" id="node13" href="$class_ensemble_clustering_1_1_random_clusterer.html" title="EnsembleClustering\l::RandomClusterer" alt="" coords="231,345,372,389"/>
 </map>

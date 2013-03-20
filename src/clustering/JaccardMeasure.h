@@ -10,9 +10,9 @@
 
 #include "DissimilarityMeasure.h"
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
-class JaccardMeasure: public EnsembleClustering::DissimilarityMeasure {
+class JaccardMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
@@ -23,5 +23,5 @@ public:
 	virtual double getDissimilarity(Graph& G, Clustering& first, Clustering& second);
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* JACCARDMEASURE_H_ */

@@ -1,7 +1,19 @@
 var searchData=
 [
-  ['nodemap',['NodeMap',['../class_ensemble_clustering_1_1_node_map.html#aab4cdeacb9053e3af1e85c8610bc81c1',1,'EnsembleClustering::NodeMap::NodeMap(int64_t n)'],['../class_ensemble_clustering_1_1_node_map.html#ab5f347c8b015b0c2efc3750a7d4e0762',1,'EnsembleClustering::NodeMap::NodeMap(int64_t n, T defaultValue)']]],
+  ['next',['next',['../class_option_parser_1_1_option.html#ab06f7c1798782d301d35265eda2b95a5',1,'OptionParser::Option::next()'],['../class_option_parser_1_1_print_usage_implementation_1_1_line_part_iterator.html#aa73c9df321f1101b9a0496af8eb7f9ae',1,'OptionParser::PrintUsageImplementation::LinePartIterator::next()']]],
+  ['nextrow',['nextRow',['../class_option_parser_1_1_print_usage_implementation_1_1_line_part_iterator.html#a329e6f5eca1a9376d63e1d6b99ecba29',1,'OptionParser::PrintUsageImplementation::LinePartIterator']]],
+  ['nexttable',['nextTable',['../class_option_parser_1_1_print_usage_implementation_1_1_line_part_iterator.html#a4f3a60ab882ab40ae961e3ed49d706ae',1,'OptionParser::PrintUsageImplementation::LinePartIterator']]],
+  ['nextwrap',['nextwrap',['../class_option_parser_1_1_option.html#a3c426f5fa1315b9b474286d7d2d1c277',1,'OptionParser::Option']]],
+  ['nodemap',['NodeMap',['../class_networ_kit_1_1_node_map.html#ae5324b98b88f23032dcb0e3847b5eff9',1,'NetworKit::NodeMap']]],
   ['noise',['Noise',['../class_noise.html#ace14f0bb8c81fb41a3c3f8baf860c4b5',1,'Noise']]],
-  ['numberofedges',['numberOfEdges',['../class_ensemble_clustering_1_1_graph.html#ab019840b239c3247eaf00e5ffcc6bb03',1,'EnsembleClustering::Graph']]],
-  ['numberofnodes',['numberOfNodes',['../class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61',1,'EnsembleClustering::Graph']]]
+  ['none',['None',['../struct_option_parser_1_1_arg.html#afd9e5e7362e4accc619fe7dee7098956',1,'OptionParser::Arg']]],
+  ['nonoption',['nonOption',['../class_option_parser_1_1_parser.html#a5e0eef337b8d04c89189a9bfd3c6032a',1,'OptionParser::Parser']]],
+  ['nonoptions',['nonOptions',['../class_option_parser_1_1_parser.html#a7366e4dae916f33bde6deecac642bb39',1,'OptionParser::Parser']]],
+  ['nonoptionscount',['nonOptionsCount',['../class_option_parser_1_1_parser.html#a9cf3ea6206b3d832ef6cbc335e3b58e6',1,'OptionParser::Parser']]],
+  ['numberofclusters',['numberOfClusters',['../class_networ_kit_1_1_clustering.html#a5d70e71e3c6b0082c0ab4035e1b65f79',1,'NetworKit::Clustering']]],
+  ['numberofedges',['numberOfEdges',['../class_networ_kit_1_1_graph.html#a6625b34904eae267ca384c77a081f333',1,'NetworKit::Graph']]],
+  ['numberofentries',['numberOfEntries',['../class_networ_kit_1_1_index_map.html#a20b9a522db36a731e67e1e84fe9d7aec',1,'NetworKit::IndexMap']]],
+  ['numberofnodes',['numberOfNodes',['../class_networ_kit_1_1_index_map.html#ab2bf024de2a5d5cb47e7ae2e7e3e833b',1,'NetworKit::IndexMap::numberOfNodes()'],['../class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8',1,'NetworKit::Graph::numberOfNodes()']]],
+  ['numberofselfloops',['numberOfSelfLoops',['../class_networ_kit_1_1_graph.html#a467e6959962dc4600add8832602b5353',1,'NetworKit::Graph']]],
+  ['numerictools',['NumericTools',['../class_networ_kit_1_1_numeric_tools.html#a4a4bbc3378d259e08ec3d12fb7661ce1',1,'NetworKit::NumericTools']]]
 ];

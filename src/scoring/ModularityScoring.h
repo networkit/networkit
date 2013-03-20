@@ -13,12 +13,12 @@
 #include "../clustering/Clustering.h"
 
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 // TODO: implement modularity as in Python prototype
 
 template<typename T>
-class ModularityScoring: public EnsembleClustering::EdgeScoring<T> {
+class ModularityScoring: public NetworKit::EdgeScoring<T> {
 
 protected:
 
@@ -86,7 +86,7 @@ inline T ModularityScoring<T>::edgeScore(node u, node v) const {
 }
 
 template<typename T>
-void EnsembleClustering::ModularityScoring<T>::scoreEdges(int attrId) {
+void NetworKit::ModularityScoring<T>::scoreEdges(int attrId) {
 	this->G->forEdgesWithAttribute_double(attrId, [&](node u, node v, double attr) {
 		attr = this->edgeScore(u, v);
 		this->G->setAttribute_double(u, v, attrId, attr);
@@ -94,6 +94,6 @@ void EnsembleClustering::ModularityScoring<T>::scoreEdges(int attrId) {
 }
 
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 
 #endif /* MODULARITY_H_ */

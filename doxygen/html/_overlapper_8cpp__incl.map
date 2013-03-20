@@ -1,6 +1,8 @@
 <map id="src/overlap/Overlapper.cpp" name="src/overlap/Overlapper.cpp">
-<area shape="rect" id="node3" href="$_overlapper_8h.html" title="Overlapper.h" alt="" coords="80,83,177,111"/>
-<area shape="rect" id="node9" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="159,315,277,343"/>
-<area shape="rect" id="node17" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="200,161,364,189"/>
-<area shape="rect" id="node19" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="206,238,345,266"/>
+<area shape="rect" id="node3" href="$_overlapper_8h.html" title="Overlapper.h" alt="" coords="424,83,521,111"/>
+<area shape="rect" id="node9" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="301,315,419,343"/>
+<area shape="rect" id="node36" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="451,161,615,189"/>
+<area shape="rect" id="node24" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="157,393,248,421"/>
+<area shape="rect" id="node39" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="461,238,600,266"/>
+<area shape="rect" id="node42" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="463,315,597,343"/>
 </map>

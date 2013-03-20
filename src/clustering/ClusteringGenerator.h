@@ -11,7 +11,7 @@
 #include "Clustering.h"
 #include <random>
 
-namespace EnsembleClustering {
+namespace NetworKit {
 
 class ClusteringGenerator {
 
@@ -42,5 +42,5 @@ public:
 
 };
 
-} /* namespace EnsembleClustering */
+} /* namespace NetworKit */
 #endif /* CLUSTERINGGENERATOR_H_ */
