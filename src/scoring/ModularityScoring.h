@@ -10,7 +10,7 @@
 
 #include "EdgeScoring.h"
 
-#include "../clustering/base/Clustering.h"
+#include "../clustering/Clustering.h"
 
 
 namespace EnsembleClustering {

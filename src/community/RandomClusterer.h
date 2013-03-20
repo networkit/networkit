@@ -10,7 +10,7 @@
 
 #include "Clusterer.h"
 
-#include "../base/ClusteringGenerator.h"
+#include "../clustering/ClusteringGenerator.h"
 
 namespace EnsembleClustering {
 

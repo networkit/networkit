@@ -14,11 +14,11 @@
 #include "../EnsembleMultilevel.h"
 #include "../EnsemblePreprocessing.h"
 #include "../../graph/GraphGenerator.h"
-#include "../../clustering/base/Modularity.h"
-#include "../../clustering/base/JaccardMeasure.h"
-#include "../../clustering/base/RandMeasure.h"
-#include "../../clustering/algo/LabelPropagation.h"
-#include "../../clustering/algo/Louvain.h"
+#include "../../clustering/Modularity.h"
+#include "../../clustering/JaccardMeasure.h"
+#include "../../clustering/RandMeasure.h"
+#include "../../community/LabelPropagation.h"
+#include "../../community/Louvain.h"
 #include "../../overlap/HashingOverlapper.h"
 
 

@@ -9,7 +9,7 @@
 #define LABELPROPAGATION_H_
 
 #include "Clusterer.h"
-#include "../base/Clustering.h"
+#include "../clustering/Clustering.h"
 
 #include <vector>
 #include <map>
@@ -18,14 +18,14 @@
 #include <random>
 #include <omp.h>
 
-#include "../../Globals.h"
-#include "../../aux/Log.h"
-#include "../../aux/ProgressMeter.h"
-#include "../../aux/Timer.h"
-#include "../../aux/RandomInteger.h"
-#include "../../graph/NodeMap.h"
-#include "../../base/IndexMap.h"
-#include "../../io/GraphIO.h"
+#include "../Globals.h"
+#include "../aux/Log.h"
+#include "../aux/ProgressMeter.h"
+#include "../aux/Timer.h"
+#include "../aux/RandomInteger.h"
+#include "../graph/NodeMap.h"
+#include "../base/IndexMap.h"
+#include "../io/GraphIO.h"
 
 
 namespace EnsembleClustering {

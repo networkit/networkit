@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-#include "../clustering/base/Clustering.h"
+#include "../clustering/Clustering.h"
 #include "../graph/Graph.h"
 
 namespace EnsembleClustering {
