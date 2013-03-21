@@ -92,3 +92,16 @@ TEST_F(AuxGTest, testTimer) {
 	EXPECT_GE(sleepTime + tolerance, ec) << "elapsed time should be roughly to sleep time";
 }
 
+
+TEST_F(AuxGTest, testBinomial) {
+	EXPECT_EQ(1, Aux::MissingMath::binomial(7,0));
+	EXPECT_EQ(7, Aux::MissingMath::binomial(7,1));
+	EXPECT_EQ(21, Aux::MissingMath::binomial(7,2));
+	EXPECT_EQ(35, Aux::MissingMath::binomial(7,3));
+	EXPECT_EQ(35, Aux::MissingMath::binomial(7,4));
+	EXPECT_EQ(21, Aux::MissingMath::binomial(7,5));
+	EXPECT_EQ(7, Aux::MissingMath::binomial(7,6));
+	EXPECT_EQ(1, Aux::MissingMath::binomial(7,7));
+
+}
+
