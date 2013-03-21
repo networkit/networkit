@@ -18,7 +18,7 @@ CoverageSequential::~CoverageSequential() {
 	// TODO Auto-generated destructor stub
 }
 
-double CoverageSequential::getQuality(const Clustering& zeta, Graph& G) {
+double CoverageSequential::getQuality(const Clustering& zeta, const Graph& G) {
 
 	double cov = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight

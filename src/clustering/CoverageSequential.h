@@ -17,7 +17,7 @@ public:
 	CoverageSequential();
 	virtual ~CoverageSequential();
 
-	virtual double getQuality(const Clustering& zeta, Graph& G);
+	virtual double getQuality(const Clustering& zeta, const Graph& G);
 };
 
 } /* namespace NetworKit */

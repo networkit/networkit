@@ -25,7 +25,7 @@ public:
 
 	virtual ~QualityMeasure();
 
-	virtual double getQuality(const Clustering& zeta, Graph& G) =0;
+	virtual double getQuality(const Clustering& zeta, const Graph& G) =0;
 };
 
 } /* namespace NetworKit */

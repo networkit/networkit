@@ -180,7 +180,7 @@ public:
 	/**
 	 * @return sum of all edge weights
 	 */
-	edgeweight totalEdgeWeight();
+	edgeweight totalEdgeWeight() const;
 
 	/**
 	 * DEPRECATED - TODO: update clients

@@ -17,7 +17,7 @@ public:
 	Coverage();
 	virtual ~Coverage();
 
-	virtual double getQuality(const Clustering& zeta, Graph& G);
+	virtual double getQuality(const Clustering& zeta, const Graph& G);
 
 };
 

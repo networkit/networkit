@@ -18,7 +18,7 @@ Coverage::~Coverage() {
 	// TODO Auto-generated destructor stub
 }
 
-double Coverage::getQuality(const Clustering& zeta, Graph& G) {
+double Coverage::getQuality(const Clustering& zeta, const Graph& G) {
 
 
 

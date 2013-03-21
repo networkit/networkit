@@ -18,7 +18,7 @@ ModularitySequential::~ModularitySequential() {
 	// TODO Auto-generated destructor stub
 }
 
-double ModularitySequential::getQuality(const Clustering& zeta, Graph& G) {
+double ModularitySequential::getQuality(const Clustering& zeta, const Graph& G) {
 	assert (G.numberOfNodes() <= zeta.numberOfNodes());
 
 	DEBUG("m = " << G.numberOfEdges());

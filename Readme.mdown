@@ -101,7 +101,7 @@ To perform 42 runs of the algorithm per graph, add
 
 	--runs=42
 
-To append key result dates to a CSV file, add
+To append key result data to a CSV file, add
 
 	--summary=/path/to/file.csv
 

@@ -20,7 +20,7 @@ Modularity::~Modularity() {
 }
 
 
-double Modularity::getQuality(const Clustering& zeta, Graph& G) {
+double Modularity::getQuality(const Clustering& zeta, const Graph& G) {
 	assert (G.numberOfNodes() <= zeta.numberOfNodes());
 
 	DEBUG("m = " << G.numberOfEdges());
