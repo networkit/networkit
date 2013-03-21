@@ -233,4 +233,4 @@ else:
     exit()
 
 # TARGET
-env.Program("CommunityDetection-%s" % buildconf, source)
+env.Program("NetworKit-CommunityDetection-%s" % buildconf, source)
