@@ -103,5 +103,22 @@ TEST_F(AuxGTest, testBinomial) {
 	EXPECT_EQ(7, Aux::MissingMath::binomial(7,6));
 	EXPECT_EQ(1, Aux::MissingMath::binomial(7,7));
 
+
 }
 
+
+TEST_F(AuxGTest, benchmarkBinomial) {
+	Aux::Timer timer;
+	INFO("starting calculation");
+	timer.start();
+
+	int64_t n = 500;
+	for (int64_t k = 0; k < n; ++k) {
+		Aux::MissingMath::binomial(n, k);
+	}
+
+	timer.stop();
+
+	INFO("calculation finished after " << timer.elapsedTag());
+
+}
