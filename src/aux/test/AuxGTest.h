@@ -21,6 +21,7 @@
 #include "../RandomInteger.h"
 #include "../RandomProbability.h"
 #include "../Timer.h"
+#include "../MissingMath.h"
 
 
 class AuxGTest: public testing::Test {
