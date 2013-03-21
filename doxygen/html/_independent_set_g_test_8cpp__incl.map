@@ -1,0 +1,13 @@
+<map id="src/independentset/test/IndependentSetGTest.cpp" name="src/independentset/test/IndependentSetGTest.cpp">
+<area shape="rect" id="node3" href="$_independent_set_g_test_8h.html" title="IndependentSetGTest.h" alt="" coords="139,99,300,127"/>
+<area shape="rect" id="node7" href="$_graph_8h.html" title="../../graph/Graph.h" alt="" coords="485,425,613,453"/>
+<area shape="rect" id="node35" href="$_graph_generator_8h.html" title="../../graph/GraphGenerator.h" alt="" coords="210,185,397,213"/>
+<area shape="rect" id="node58" href="$_luby_8h.html" title="../../independentset\l/Luby.h" alt="" coords="431,177,565,221"/>
+<area shape="rect" id="node23" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="450,502,541,530"/>
+<area shape="rect" id="node38" href="$_random_probability_8h.html" title="../aux/RandomProbability.h" alt="" coords="408,270,588,298"/>
+<area shape="rect" id="node42" href="$_random_integer_8h.html" title="../aux/RandomInteger.h" alt="" coords="224,270,383,298"/>
+<area shape="rect" id="node47" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="800,270,964,298"/>
+<area shape="rect" id="node51" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="852,347,991,375"/>
+<area shape="rect" id="node54" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="853,425,987,453"/>
+<area shape="rect" id="node60" href="$_independent_set_finder_8h.html" title="IndependentSetFinder.h" alt="" coords="613,270,776,298"/>
+</map>
