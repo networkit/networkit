@@ -21,4 +21,6 @@ double RandomProbability::generate() {
 	return r;
 }
 
+// TODO: for faster generation, use rand() function
+
 }
