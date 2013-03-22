@@ -17,6 +17,7 @@
 #include <map>
 #include <sstream>
 
+#include "../aux/Log.h"
 
 #define none -1
 
