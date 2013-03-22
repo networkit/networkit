@@ -15,8 +15,8 @@
 #include <queue>
 #include <stdexcept>
 #include <map>
+#include <sstream>
 
-#include "../aux/Log.h"
 
 #define none -1
 
@@ -643,7 +643,6 @@ inline void NetworKit::Graph::forNodePairs(L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle) {
-	DEBUG("Call to BFS");
 	std::queue<node> q;
 	count n = this->numberOfNodes();
 	q.push(r); // enqueue root
