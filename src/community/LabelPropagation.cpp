@@ -10,8 +10,8 @@
 namespace NetworKit {
 
 LabelPropagation::LabelPropagation(count theta) : updateThreshold(theta) {
-	// TODO Auto-generated constructor stub
 
+	this->VERSION = "1.0";
 }
 
 LabelPropagation::~LabelPropagation() {
@@ -204,10 +204,11 @@ Clustering LabelPropagation::run(Graph& G) {
 
 std::string LabelPropagation::toString() const {
 	std::stringstream strm;
+	// FIXME: report current number of threads
 #ifdef _OPENMP_
-	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ",OpenMP)";
+	strm << "LabelPropagation(" << "version=" << this->VERSION << ", randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ",OpenMP)";
 #else
-	strm << "LabelPropagation(randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ",threads=1)";
+	strm << "LabelPropagation(" << "version=" << this->VERSION << ", randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ",threads=1)";
 #endif
 	return strm.str();
 }
