@@ -48,6 +48,8 @@ protected:
 
 public:
 
+	std::string VERSION;	// algorithm version number - increment in constructor for significant changes to the implementation
+
 	LabelPropagation(count theta = 0);
 
 	virtual ~LabelPropagation();

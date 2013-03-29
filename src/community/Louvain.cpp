@@ -9,8 +9,11 @@
 
 namespace NetworKit {
 
+
 Louvain::Louvain(std::string par) {
 	this->parallelism = par;
+
+	this->VERSION = "1.0";
 }
 
 Louvain::~Louvain() {
@@ -260,7 +263,7 @@ Clustering Louvain::run(Graph& G) {
 
 std::string Louvain::toString() const {
 	std::stringstream strm;
-	strm << "Louvain(" << "parallelism=" << this->parallelism << ")";
+	strm << "Louvain(" << "version=" << this->VERSION << ",parallelism=" << this->parallelism << ")";
 	return strm.str();
 }
 
