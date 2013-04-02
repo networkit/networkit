@@ -157,14 +157,12 @@ Clustering Louvain::pass(Graph& G) {
 				// update weight of edges to incident clusters
 				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
 #ifdef _OPENMP
-					DEBUG("Try to acquire lock for pos " << v);
 					omp_set_lock(&mapLocks[v]);
 #endif
 					incidenceWeight[v][best] += w;
 					incidenceWeight[v][C] -= w;
 #ifdef _OPENMP
 					omp_unset_lock(&mapLocks[v]);
-					DEBUG("Released lock for pos " << v);
 #endif
 				});
 #pragma omp atomic write
