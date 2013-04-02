@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-Graph::Graph(count n) : n(n), deg(n, 0), adja(n), eweights(n) {
+Graph::Graph(count n) : n(n), z(n), deg(z, 0), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;
@@ -118,11 +118,13 @@ bool Graph::hasEdge(node u, node v) const {
 }
 
 node Graph::addNode() {
-	node v = this->n;
-	this->n += 1;
+	node v = this->z;	// node gets maximum id
+	this->z += 1;	// increment node range
+	this->n += 1;	// increment node count
 
 	//update per node data structures
 	this->deg.push_back(0);
+	this->exists.push_back(true);
 
 	// update per edge data structures
 	std::vector<node> adjacencyVector;	// vector of adjacencies for new node
@@ -139,10 +141,6 @@ node Graph::addNode() {
 	return v;
 }
 
-void Graph::extendNodeRange(int64_t n) {
-	throw std::runtime_error("TODO");
-	// TODO: extend node range
-}
 
 bool Graph::isEmpty() {
 	return (n == 0);
@@ -255,6 +253,21 @@ count Graph::numberOfSelfLoops() const {
 	});
 	return nl;
 }
+
+void Graph::removeNode(node u) {
+	this->forEdgesOf(u, [&](node u, node v){
+		this->removeEdge(u, v);
+	});
+
+	this->exists[u] = false;
+	this->n -= 1;
+}
+
+bool Graph::hasNode(node u) {
+	return this->exists[u];	// exists array determines whether node is present
+}
+
+
 
 int Graph::addEdgeAttribute_double(double defaultValue) {
 	int attrId = this->edgeMaps_double.size();

@@ -392,6 +392,53 @@ TEST_F(Graph2GTest, testAddNode) {
 }
 
 
+TEST_F(Graph2GTest, testRemoveNode) {
+
+	// test removing all nodes sequentially
+	count n = 10;
+	Graph G(n);
+
+	EXPECT_EQ(n, G.numberOfNodes());
+
+	count nc = 0;
+	G.forNodes([&](node u){
+		nc += 1;
+	});
+	EXPECT_EQ(nc, n);
+
+	G.forNodes([&](node u) {
+		G.removeNode(u);
+	});
+
+	EXPECT_EQ(0, G.numberOfNodes()) << "number of nodes should be zero";
+
+	nc = 0;
+	G.forNodes([&](node u){
+		nc += 1;
+	});
+	EXPECT_EQ(0, nc) << "counter should not be incremented";
+
+
+	// test removing a single node
+	Graph G2(n);
+	node x = 5;
+
+	G.forNodes([&](node u){
+		G2.insertEdge(x, u);
+	});
+
+	G2.removeNode(x);
+
+	G2.forNodes([&](node u) {
+		EXPECT_NE(x, u) << "node x should not be handled";
+	});
+
+	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed with x";
+
+
+}
+
+
 TEST_F(Graph2GTest, testWeightedDegree) {
 	count n = 4;
 	Graph G(n);
@@ -409,6 +456,36 @@ TEST_F(Graph2GTest, testWeightedDegree) {
 
 }
 
+
+TEST_F(Graph2GTest, testNodeDynamics) {
+	count n = 10;
+	Graph G(n);
+
+	G.forNodePairs([&](node u, node v){
+		G.insertEdge(u, v);
+	});
+
+	for (count i = 0; i < n; ++i) {
+		G.addNode();
+	}
+
+	EXPECT_EQ((n * 2), G.numberOfNodes());
+	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
+
+	for (node u = 0; u < n; ++u) {
+		G.removeNode(u);
+	}
+
+	EXPECT_EQ(n, G.numberOfNodes());
+	EXPECT_EQ(0, G.numberOfEdges());
+
+	for (node u = n; u < 2 * n; ++u) {
+		G.removeNode(u);
+	}
+
+	EXPECT_EQ(0, G.numberOfNodes());
+
+}
 
 
 TEST_F(Graph2GTest, testSetWeight) {
@@ -518,5 +595,21 @@ TEST_F(Graph2GTest, testTotalEdgeWeight) {
 
 }
 
+
+TEST_F(Graph2GTest, testNodeAdditionAndIteration) {
+	count n = 1;
+	Graph G(n);
+
+	G.addNode();
+
+	EXPECT_EQ((n + 1), G.numberOfNodes());
+
+	count nc = 0;
+	G.forNodes([&](node u){
+		nc += 1;
+	});
+
+	EXPECT_EQ((n + 1), nc);
+}
 
 } /* namespace NetworKit */

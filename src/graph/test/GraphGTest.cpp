@@ -190,22 +190,6 @@ TEST_F(GraphGTest, testNodeIteration) {
 }
 
 
-TEST_F(GraphGTest, testExtendNodeRange) {
-	int64_t n = 17;
-	int64_t n2 = 42;
-	Graph G(n);
-	G.extendNodeRange(n2);
-
-	int64_t counter = 0;
-
-	G.forNodes([&](node v) {
-		counter += 1;
-	});
-
-	EXPECT_EQ(n2, counter) << "all nodes should have been counted";
-}
-
-
 TEST_F(GraphGTest, testNumberOfEdges) {
 	int64_t n = 3;
 	Graph G(n);
