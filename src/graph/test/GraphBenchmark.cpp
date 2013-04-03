@@ -66,7 +66,7 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 	Graph G(n);
 	runtime.start();
 	G.forNodePairs([&](node u, node v) {
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 	runtime.stop();
 

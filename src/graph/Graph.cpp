@@ -34,7 +34,7 @@ index Graph::find(node u, node v) const {
 	return none;
 }
 
-void Graph::insertEdge(node u, node v, edgeweight weight) {
+void Graph::addEdge(node u, node v, edgeweight weight) {
 	if (u == v) { // self-loop case
 		this->adja[u].push_back(u);
 		this->deg[u] += 1;
@@ -98,7 +98,7 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 		if (ui != none) {
 			this->eweights[u][ui] = w;
 		} else {
-			insertEdge(u, u, w);
+			addEdge(u, u, w);
 		}
 	} else {
 		index vi = find(u, v);
@@ -107,7 +107,7 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 			this->eweights[u][vi] = w;
 			this->eweights[v][ui] = w;
 		} else {
-			insertEdge(u, v, w);
+			addEdge(u, v, w);
 		}
 	}
 

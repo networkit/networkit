@@ -107,7 +107,7 @@ public:
 	/**
 	 * Insert an undirected edge between two nodes.
 	 */
-	void insertEdge(node u, node v, edgeweight weight = defaultEdgeWeight);
+	void addEdge(node u, node v, edgeweight weight = defaultEdgeWeight);
 
 	/**
 	 * Check if undirected edge {u,v} exists in G

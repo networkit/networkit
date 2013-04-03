@@ -35,9 +35,9 @@ TEST_F(Graph2GTest, testNumberOfEdges) {
 
 	EXPECT_EQ(0, G.numberOfEdges()) << "no edges should be in the graph";
 
-	G.insertEdge(1, 2);
-	G.insertEdge(2, 3);
-	G.insertEdge(1, 3);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(1, 3);
 
 	EXPECT_TRUE(G.hasEdge(1, 2));
 	EXPECT_TRUE(G.hasEdge(2, 3));
@@ -69,9 +69,9 @@ TEST_F(Graph2GTest, testEdgeInsertionAndRemoval) {
 
 	EXPECT_EQ(0, G.numberOfEdges()) << "no edges should be in the graph";
 
-	G.insertEdge(1, 2);
-	G.insertEdge(2, 3);
-	G.insertEdge(1, 3);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(1, 3);
 
 	EXPECT_TRUE(G.hasEdge(1, 2));
 	EXPECT_TRUE(G.hasEdge(2, 3));
@@ -93,7 +93,7 @@ TEST_F(Graph2GTest, testNodeIteration) {
 	Graph G(n);
 
 	G.forNodes([&](node v) {
-		G.insertEdge(v, (v+1) % n);
+		G.addEdge(v, (v+1) % n);
 	});
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
@@ -117,7 +117,7 @@ TEST_F(Graph2GTest, testParallelEdgeInsertion) {
 
 	try {
 		G.parallelForNodes([&](node v) {
-			G.insertEdge(v, (v+offset) % n);
+			G.addEdge(v, (v+offset) % n);
 		});
 
 	} catch (...) {
@@ -142,7 +142,7 @@ TEST_F(Graph2GTest, testParallelEdgeRemoval) {
 	Graph G(n);
 
 	G.forNodes([&](node v) {
-		G.insertEdge(v, (v+offset) % n);
+		G.addEdge(v, (v+offset) % n);
 	});
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
@@ -165,7 +165,7 @@ TEST_F(Graph2GTest, testEdgeIteration) {
 	Graph G(n);
 
 	G.forNodes([&](node v) {
-		G.insertEdge(v, (v+offset) % n);
+		G.addEdge(v, (v+offset) % n);
 	});
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
@@ -187,7 +187,7 @@ TEST_F(Graph2GTest, testParallelEdgeModification) {
 	Graph G(n);
 
 	G.parallelForNodes([&](node v) {
-		G.insertEdge(v, (v+offset) % n);
+		G.addEdge(v, (v+offset) % n);
 	});
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
@@ -205,8 +205,8 @@ TEST_F(Graph2GTest, testNeighborIteration) {
 	Graph G(n);
 
 	G.forNodes([&](node v) {
-		G.insertEdge(v, (v+offset) % n);
-		G.insertEdge(v, (v+2*offset) % n);
+		G.addEdge(v, (v+offset) % n);
+		G.addEdge(v, (v+2*offset) % n);
 	});
 
 	G.forNodes([&](node v) {
@@ -222,7 +222,7 @@ TEST_F(Graph2GTest, testParallelSumForNodes) {
 	Graph G(n);
 
 	G.parallelForNodes([&](node v) {
-		G.insertEdge(v, (v+offset) % n);
+		G.addEdge(v, (v+offset) % n);
 	});
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
@@ -241,7 +241,7 @@ TEST_F(Graph2GTest, testNodePairIteration) {
 	Graph G(n);
 
 	G.forNodePairs([&](node u, node v) {
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 	EXPECT_EQ(n*(n-1)/2, G.numberOfEdges()) << n*(n-1)/2 << " edges should have been inserted";
@@ -259,7 +259,7 @@ TEST_F(Graph2GTest, testConstNodeIteration) {
 	Graph G2(n);
 
 	G2.forNodes([&](node v) {
-		G2.insertEdge(v, (v+offset) % n);
+		G2.addEdge(v, (v+offset) % n);
 	});
 
 	const Graph G(G2);
@@ -276,7 +276,7 @@ TEST_F(Graph2GTest, testConstParallelNodeIteration) {
 	Graph G2(n);
 
 	G2.parallelForNodes([&](node v) {
-		G2.insertEdge(v, (v+offset) % n);
+		G2.addEdge(v, (v+offset) % n);
 	});
 
 	const Graph G(G2);
@@ -293,7 +293,7 @@ TEST_F(Graph2GTest, testConstEdgeIteration) {
 	Graph G(n);
 
 	G.forNodes([&](node v) {
-		G.insertEdge(v, (v+offset) % n);
+		G.addEdge(v, (v+offset) % n);
 	});
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
@@ -310,7 +310,7 @@ TEST_F(Graph2GTest, testConstParallelEdgeIteration) {
 	Graph G(n);
 
 	G.parallelForNodes([&](node v) {
-		G.insertEdge(v, (v+offset) % n);
+		G.addEdge(v, (v+offset) % n);
 	});
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
@@ -327,8 +327,8 @@ TEST_F(Graph2GTest, testConstNeighborIteration) {
 	Graph G(n);
 
 	G.forNodes([&](node v) {
-		G.insertEdge(v, (v+offset) % n);
-		G.insertEdge(v, (v+2*offset) % n);
+		G.addEdge(v, (v+offset) % n);
+		G.addEdge(v, (v+2*offset) % n);
 	});
 
 	const Graph G2(G);
@@ -347,7 +347,7 @@ TEST_F(Graph2GTest, testConstParallelSumForNodes) {
 	G.parallelForNodes([&](node v) {
 		node w = (v + offset) % n;
 		assert (w < n);
-		G.insertEdge(v, w);
+		G.addEdge(v, w);
 	});
 
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
@@ -367,7 +367,7 @@ TEST_F(Graph2GTest, testConstNodePairIteration) {
 	Graph G(n);
 
 	G.forNodePairs([&](node u, node v) {
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 	EXPECT_EQ(n*(n-1)/2, G.numberOfEdges()) << n*(n-1)/2 << " edges should have been inserted";
@@ -424,7 +424,7 @@ TEST_F(Graph2GTest, testRemoveNode) {
 	node x = 5;
 
 	G.forNodes([&](node u){
-		G2.insertEdge(x, u);
+		G2.addEdge(x, u);
 	});
 
 	G2.removeNode(x);
@@ -444,10 +444,10 @@ TEST_F(Graph2GTest, testWeightedDegree) {
 	Graph G(n);
 
 	node v = 0;
-	G.insertEdge(v, 1, 20.0);
-	G.insertEdge(v, 2, 20.0);
-	G.insertEdge(v, v, 2.0); // self-loop
-	G.insertEdge(v, 3, 100.0);
+	G.addEdge(v, 1, 20.0);
+	G.addEdge(v, 2, 20.0);
+	G.addEdge(v, v, 2.0); // self-loop
+	G.addEdge(v, 3, 100.0);
 	G.removeEdge(v, 3);
 
 	edgeweight wDeg = G.weightedDegree(v);
@@ -462,7 +462,7 @@ TEST_F(Graph2GTest, testNodeDynamics) {
 	Graph G(n);
 
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 	for (count i = 0; i < n; ++i) {
@@ -494,7 +494,7 @@ TEST_F(Graph2GTest, testSetWeight) {
 
 	node u = 0;
 	node v = 1;
-	G.insertEdge(u, v);
+	G.addEdge(u, v);
 
 	G.setWeight(u, v, 42.0);
 	EXPECT_EQ(42.0, G.weight(u, v));
@@ -504,7 +504,7 @@ TEST_F(Graph2GTest, testSetWeight) {
 	EXPECT_EQ(23.0, G.weight(u, v));
 
 	// self-loop
-	G.insertEdge(v, v);
+	G.addEdge(v, v);
 	G.setWeight(v, v, 42.0);
 	EXPECT_EQ(42.0, G.weight(v, v));
 	G.setWeight(v, v, 17.0);
@@ -518,7 +518,7 @@ TEST_F(Graph2GTest, testForWeightedEdges) {
 	count n = 4;
 	Graph G(n);
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v, 1.0);
+		G.addEdge(u, v, 1.0);
 	});
 
 	edgeweight weightSum = 0.0;
@@ -535,7 +535,7 @@ TEST_F(Graph2GTest, testParallelForWeightedEdges) {
 	count n = 4;
 	Graph G(n);
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v, 1.0);
+		G.addEdge(u, v, 1.0);
 	});
 
 	edgeweight weightSum = 0.0;
@@ -556,7 +556,7 @@ TEST_F(Graph2GTest, testEdgeAttributes) {
 	int attrId = G.addEdgeAttribute_double(0.0);
 
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 	G.forEdges([&](node u, node v){
@@ -572,7 +572,7 @@ TEST_F(Graph2GTest, testEdgeAttributes) {
 	});
 
 	node v = G.addNode();
-	G.insertEdge(v, 0);
+	G.addEdge(v, 0);
 
 	EXPECT_EQ(0.0, G.attribute_double(v, 0, attrId));
 
@@ -584,7 +584,7 @@ TEST_F(Graph2GTest, testTotalEdgeWeight) {
 	Graph G(n);
 
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 	double m = (n * (n-1)) / 2.0;

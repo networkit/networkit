@@ -45,7 +45,7 @@ Graph METISGraphReader::read(std::string path) {
 			v = v - 1; 	// METIS-indices are 1-based
 			assert (v >= 0);
 			if (u <= v) { // self-loops are allowed
-			  G.insertEdge(u, v);
+			  G.addEdge(u, v);
 			}
 		}
 		u += 1; // next node

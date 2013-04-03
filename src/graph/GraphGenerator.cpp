@@ -27,7 +27,7 @@ Graph GraphGenerator::makeErdosRenyiGraph(count n, double p) {
 	Graph G(n);
 	G.forNodePairs([&](node u, node v){
 		if (randP.generate() <= p) {
-			G.insertEdge(u, v);
+			G.addEdge(u, v);
 		}
 	});
 
@@ -42,7 +42,7 @@ Graph GraphGenerator::makeCircularGraph(count n) {
 	// TODO: modernize
 	Graph G(n);
 	G.forNodes([&](node u){
-		G.insertEdge(u, (u + 1) % n);
+		G.addEdge(u, (u + 1) % n);
 	});
 	return G;
 }
@@ -52,7 +52,7 @@ Graph GraphGenerator::makeCompleteGraph(count n) {
 	Aux::RandomProbability randP;
 	Graph G(n);
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 	return G;
 }
@@ -77,11 +77,11 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 	G.forNodePairs([&](node u, node v){
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 			if (randP.generate() <= pin) {
-				G.insertEdge(u, v);
+				G.addEdge(u, v);
 			}
 		} else {
 			if (randP.generate() <= pout) {
-				G.insertEdge(u, v);
+				G.addEdge(u, v);
 			}
 		}
 	});
@@ -106,11 +106,11 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 	G.forNodePairs([&](node u, node v){
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 			if (randP.generate() <= pin) {
-				G.insertEdge(u, v);
+				G.addEdge(u, v);
 			}
 		} else {
 			if (randP.generate() <= pout) {
-				G.insertEdge(u, v);
+				G.addEdge(u, v);
 			}
 		}
 	});
@@ -129,11 +129,11 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 	G.forNodePairs([&](node u, node v){
 		if (zeta.inSameCluster(u, v)) {
 			if (randP.generate() <= pin) {
-				G.insertEdge(u, v);
+				G.addEdge(u, v);
 			}
 		} else {
 			if (randP.generate() <= pout) {
-				G.insertEdge(u, v);
+				G.addEdge(u, v);
 			}
 		}
 	});
@@ -148,7 +148,7 @@ Graph GraphGenerator::makePreferentialAttachmentGraph(count n, count a) {
 
 	// all nodes need to have at least degree 1 - create a path
 	for (node v = 0; v < (n-1); ++v) {
-		G.insertEdge(v, (v + 1));
+		G.addEdge(v, (v + 1));
 	}
 
 	count m = G.numberOfEdges(); // number of edges
@@ -164,7 +164,7 @@ Graph GraphGenerator::makePreferentialAttachmentGraph(count n, count a) {
 			for (node v = 0; v < n; ++v) {
 				if (r <= G.degree(v)) {
 					// select v
-					G.insertEdge(u, v);
+					G.addEdge(u, v);
 					TRACE("inserting edge (" << u << "," << v << ")");
 					m += 1;
 					r = 0;

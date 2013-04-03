@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-GraphEvent::GraphEvent(GraphEventType type, node u, node v, edgeweight w) : type(type), u(u), v(v), w(w) {
+GraphEvent::GraphEvent(GraphEvent::Type type, node u, node v, edgeweight w) : type(type), u(u), v(v), w(w) {
 }
 
 GraphEvent::~GraphEvent() {

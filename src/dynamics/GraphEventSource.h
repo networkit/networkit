@@ -8,9 +8,10 @@
 #ifndef GRAPHEVENTSOURCE_H_
 #define GRAPHEVENTSOURCE_H_
 
+#include "GraphEvent.h"
+
 namespace NetworKit {
 
-#include "GraphEvent.h"
 
 class GraphEventSource {
 
