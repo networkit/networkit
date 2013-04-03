@@ -44,7 +44,7 @@ TEST_F(IndependentSetGTest, testLubyWithSelfLoops) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeRandomGraph(n, 0.001);
 	G.forNodes([&](node u){
-		G.insertEdge(u,u);
+		G.addEdge(u,u);
 	});
 
 	INFO("G: " << G.toString());

@@ -12,26 +12,28 @@
 
 namespace NetworKit {
 
-enum GraphEventType {
-	NODE_ADDITION,
-	NODE_REMOVAL,
-	EDGE_ADDITION,
-	EDGE_REMOVAL,
-	EDGE_WEIGHT_UPDATE
-};
+
 
 class GraphEvent {
 
 
 public:
 
-	GraphEventType type;	//!< type of graph event
+	enum Type {
+		NODE_ADDITION,
+		NODE_REMOVAL,
+		EDGE_ADDITION,
+		EDGE_REMOVAL,
+		EDGE_WEIGHT_UPDATE
+	};
+
+	Type type;	//!< type of graph event
 	node u; 				//!< first node parameter
 	node v;					//!< second node parameter
 	edgeweight w;			//!< edge weight parameter
 
 
-	GraphEvent(GraphEventType type, node u = none, node v = none, edgeweight w = none);
+	GraphEvent(Type type, node u = none, node v = none, edgeweight w = none);
 
 	virtual ~GraphEvent();
 };

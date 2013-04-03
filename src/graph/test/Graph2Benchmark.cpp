@@ -103,7 +103,7 @@ TEST_F(Graph2Benchmark, edgeInsertion) {
 	run.start();
 
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 
@@ -135,7 +135,7 @@ TEST_F(Graph2Benchmark, edgeRemoval) {
 
 	// insert edges
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 
@@ -158,7 +158,7 @@ TEST_F(Graph2Benchmark, parallelEdgeRemoval) {
 
 	// insert edges
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 
@@ -180,7 +180,7 @@ TEST_F(Graph2Benchmark, edgeIteration) {
 
 	// insert edges
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 
@@ -202,7 +202,7 @@ TEST_F(Graph2Benchmark, parallelEdgeIteration) {
 
 	// insert edges
 	G.forNodePairs([&](node u, node v){
-		G.insertEdge(u, v);
+		G.addEdge(u, v);
 	});
 
 	Aux::Timer run;

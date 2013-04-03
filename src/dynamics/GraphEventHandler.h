@@ -8,21 +8,28 @@
 #ifndef GRAPHEVENTHANDLER_H_
 #define GRAPHEVENTHANDLER_H_
 
+#include "../graph/Graph.h"
+
 namespace NetworKit {
 
-#include "Graph.h"
 
 class GraphEventHandler {
 
-	void onNodeAddition(node u) = 0;
+public:
 
-	void onNodeRemoval(node u) = 0;
+	GraphEventHandler();
 
-	void onEdgeAddition(node u, node v) = 0;
+	virtual ~GraphEventHandler();
 
-	void onEdgeRemoval(node u, node v) = 0;
+	virtual void onNodeAddition(node u) = 0;
 
-	void onWeightUpdate(node u, node v, edgeweight w);
+	virtual void onNodeRemoval(node u) = 0;
+
+	virtual void onEdgeAddition(node u, node v) = 0;
+
+	virtual void onEdgeRemoval(node u, node v) = 0;
+
+	virtual void onWeightUpdate(node u, node v, edgeweight w) = 0;
 };
 
 } /* namespace NetworKit */
