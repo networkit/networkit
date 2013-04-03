@@ -23,6 +23,7 @@ void GraphEventGenerator::generateStream(std::function<bool(void)> done) {
 
 	while (!done()) {
 
+
 	}
 	return;
 }
