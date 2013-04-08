@@ -20,7 +20,7 @@ IndependentSetGTest::~IndependentSetGTest() {
 
 
 TEST_F(IndependentSetGTest, testLuby) {
-	count n = 5000;
+	count n = 500;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeRandomGraph(n, 0.001);
 	INFO("G: " << G.toString());
@@ -40,7 +40,7 @@ TEST_F(IndependentSetGTest, testLuby) {
 }
 
 TEST_F(IndependentSetGTest, testLubyWithSelfLoops) {
-	count n = 5000;
+	count n = 500;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeRandomGraph(n, 0.001);
 	G.forNodes([&](node u){
