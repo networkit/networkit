@@ -552,7 +552,7 @@ bool inspect(Graph& G, Clustering& clustering, OptionParser::Option* options) {
 
 
 int main(int argc, char **argv) {
-	std::cout << "*** EnsembleClustering: combining parallel clustering algorithms with an ensemble learning strategy *** " << std::endl;
+	std::cout << "*** NetworKit-CommunityDetection *** " << std::endl;
 
 	// ENABLE FLOATING POINT EXCEPTIONS (needs GNU extension, apparently only available on Linux)
 #ifdef _GNU_SOURCE
