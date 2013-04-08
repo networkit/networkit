@@ -22,6 +22,7 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/ClusteringReader.h"
+#include "../ClusteringCoefficient.h"
 
 namespace NetworKit {
 

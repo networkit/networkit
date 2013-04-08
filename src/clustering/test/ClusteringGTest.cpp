@@ -229,5 +229,16 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequentialOnLargeGraph) {
 //}
 
 
+TEST_F(ClusteringGTest, testClusteringCoefficient) {
+
+	GraphGenerator gen;
+	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
+
+	ClusteringCoefficient clusteringCoefficient;
+	double cc = clusteringCoefficient.calculate(G);
+
+	EXPECT_EQ(1.0, cc);
+
+}
 
 } /* namespace NetworKit */
