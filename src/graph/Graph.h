@@ -243,7 +243,7 @@ public:
 
 
 	/**
-	 * Add new edge map for an attribute of type float.
+	 * Add new edge map for an attribute of type double.
 	 */
 	int addEdgeAttribute_double(double defaultValue);
 
@@ -444,17 +444,17 @@ public:
 	/**
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
 	 */
-	template<typename L> float parallelSumForNodes(L handle);
+	template<typename L> double parallelSumForNodes(L handle);
 
 	/**
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
 	 */
-	template<typename L> float parallelSumForNodes(L handle) const;
+	template<typename L> double parallelSumForNodes(L handle) const;
 
 	/**
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
 	 */
-	template<typename L> float parallelSumForWeightedEdges(L handle) const;
+	template<typename L> double parallelSumForWeightedEdges(L handle) const;
 
 };
 
@@ -558,8 +558,8 @@ inline void NetworKit::Graph::balancedParallelForNodes(L handle) {
 
 
 template<typename L>
-inline float NetworKit::Graph::parallelSumForNodes(L handle) {
-	float sum = 0.0;
+inline double NetworKit::Graph::parallelSumForNodes(L handle) {
+	double sum = 0.0;
 	#pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < z; ++v) {
 		// call here
@@ -571,8 +571,8 @@ inline float NetworKit::Graph::parallelSumForNodes(L handle) {
 }
 
 template<typename L>
-inline float NetworKit::Graph::parallelSumForNodes(L handle) const {
-	float sum = 0.0;
+inline double NetworKit::Graph::parallelSumForNodes(L handle) const {
+	double sum = 0.0;
 #pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < z; ++v) {
 		// call here
@@ -584,8 +584,8 @@ inline float NetworKit::Graph::parallelSumForNodes(L handle) const {
 }
 
 template<typename L>
-float NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
-	float sum = 0.0;
+double NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
+	double sum = 0.0;
 	#pragma omp parallel for reduction(+:sum)
 	for (node u = 0; u < z; ++u) {
 		for (index i = 0; i < this->adja[u].size(); ++i) {
@@ -847,13 +847,13 @@ inline void NetworKit::Graph::forNodesWithAttribute(std::string attrKey, L handl
 //		index typeId = idPair.first;
 //		index mapId = idPair.second;
 //
-//		// nodemaps are in a vector, one for each node attribute type int, float, NodeAttribute
+//		// nodemaps are in a vector, one for each node attribute type int, double, NodeAttribute
 //		switch (typeId) {
 //		case 0:
 //			nodeMap = this->nodeMapsInt[mapId];
 //			break;
 //		case 1:
-//			nodeMap = this->nodeMapsFloat[mapId];
+//			nodeMap = this->nodeMapsdouble[mapId];
 //			break;
 //		}
 //
