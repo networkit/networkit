@@ -18,11 +18,12 @@ GraphEventProxy::~GraphEventProxy() {
 	// TODO Auto-generated destructor stub
 }
 
-void GraphEventProxy::addNode() {
+node GraphEventProxy::addNode() {
 	node u = this->G->addNode();
 	for (GraphEventHandler* handler : this->handlers) {
 		handler->onNodeAddition(u);
 	}
+	return u;
 }
 
 void GraphEventProxy::removeNode(node u) {

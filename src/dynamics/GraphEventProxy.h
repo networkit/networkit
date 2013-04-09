@@ -28,7 +28,7 @@ public:
 
 	virtual ~GraphEventProxy();
 
-	virtual void addNode();
+	virtual node addNode();
 
 	virtual void removeNode(node u);
 

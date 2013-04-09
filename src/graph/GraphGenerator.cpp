@@ -64,11 +64,11 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 
 	Graph G(n);
 	Aux::RandomProbability randP;
-	Aux::RandomInteger randInt(1, k);
+	Aux::RandomInteger randInt;
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
 	G.forNodes([&](node v){
-		cluster c = randInt.generate();
+		cluster c = randInt.generate(1, k);
 		zeta.addToCluster(c, v);
 	});
 
@@ -95,11 +95,11 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 
 	Graph G(n);
 	Aux::RandomProbability randP;
-	Aux::RandomInteger randInt(1, k);
+	Aux::RandomInteger randInt;
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
 	G.forNodes([&](node v){
-		cluster c = randInt.generate();
+		cluster c = randInt.generate(1, k);
 		zeta.addToCluster(c, v);
 	});
 
@@ -154,12 +154,13 @@ Graph GraphGenerator::makePreferentialAttachmentGraph(count n, count a) {
 	count m = G.numberOfEdges(); // number of edges
 	count r = 0;
 
+	Aux::RandomInteger randInt;	// TODO: n * k instantiations of RandomInteger are inefficient because random device reads from /dev/random
+
 	G.forNodes([&](node u) {
 		TRACE("connecting node " << u);
 		for (count i = 0; i < a; ++i) { // for all k new edges
 			TRACE("2m = " << 2 * m);
-			Aux::RandomInteger randInt(0, 2*m);	// TODO: n * k instantiations of RandomInteger are inefficient because random device reads from /dev/random
-			r = randInt.generate();
+			r = randInt.generate(0, 2*m);
 			TRACE("r = " << r);
 			for (node v = 0; v < n; ++v) {
 				if (r <= G.degree(v)) {

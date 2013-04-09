@@ -10,10 +10,10 @@
 TEST_F(AuxGTest, produceRandomIntegers) {
 	int64_t l = 0; 	// lower bound
 	int64_t u = 100;	// upper bound
-	Aux::RandomInteger randInt(l, u);
+	Aux::RandomInteger randInt;
 
 	for (int i = 0; i < 100; ++i) {
-		TRACE(randInt.generate());
+		TRACE(randInt.generate(l, u));
 	}
 }
 
@@ -21,11 +21,11 @@ TEST_F(AuxGTest, produceRandomIntegers) {
 TEST_F(AuxGTest, testRandomInteger) {
 	int64_t l = 0; 	// lower bound
 	int64_t u = 10;	// upper bound
-	Aux::RandomInteger randInt(l, u);
+	Aux::RandomInteger randInt;
 	std::vector<int64_t> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
-		int64_t r = randInt.generate();
+		int64_t r = randInt.generate(l, u);
 		assert(l <= r);
 		assert(r <= u);
 		rVector.push_back(r);
