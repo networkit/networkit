@@ -266,13 +266,13 @@ public:
 	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
-	template<typename L> void forNodesWhile(std::function<bool(void)> condition, L handle);
+	template<typename C, typename L> void forNodesWhile(C condition, L handle);
 
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
-	template<typename L> void forNodes(std::function<bool(void)>, L handle) const;
+	template<typename C, typename L> void forNodes(C condition, L handle) const;
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
@@ -899,8 +899,8 @@ inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId, L handle)
 	}
 }
 
-template<typename L>
-inline void NetworKit::Graph::forNodesWhile(std::function<bool(void)> condition, L handle) {
+template<typename C, typename L>
+inline void NetworKit::Graph::forNodesWhile(C condition, L handle) {
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
 			if (!condition()) {
@@ -912,8 +912,8 @@ inline void NetworKit::Graph::forNodesWhile(std::function<bool(void)> condition,
 	}
 }
 
-template<typename L>
-inline void NetworKit::Graph::forNodes(std::function<bool(void)> condition, L handle) const {
+template<typename C, typename L>
+inline void NetworKit::Graph::forNodes(C condition, L handle) const {
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
 			if (!condition()) {

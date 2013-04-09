@@ -85,9 +85,9 @@ Clustering LabelPropagation::run(Graph& G) {
 	// randomize outcome by deactivating a very small number of nodes
 	// TODO: make this an object attribute
 	if (inactiveSeeds > 0) {
-		Aux::RandomInteger randInt(0, (n-1));
+		Aux::RandomInteger randInt;
 		for (count i = 0; i < inactiveSeeds; i++) {
-			node u = randInt.generate();
+			node u = randInt.generate(0, (n-1));
 			activeNodes[u] = false;
 		}
 	}

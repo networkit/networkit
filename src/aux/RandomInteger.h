@@ -19,15 +19,15 @@ protected:
 
 	std::random_device randomDevice;
 	std::default_random_engine randomEngine;
-	std::uniform_int_distribution<> distribution;
+	std::uniform_int_distribution<int64_t> distribution;
 
 public:
 
-	RandomInteger(int64_t lower, int64_t upper);
+	RandomInteger();
 
 	virtual ~RandomInteger();
 
-	virtual int64_t generate();
+	int64_t generate(int64_t lower, int64_t upper);
 };
 
 } /* namespace Aux */
