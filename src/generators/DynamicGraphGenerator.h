@@ -32,6 +32,12 @@ public:
 	 */
 	virtual void setProxy(GraphEventProxy& proxy);
 
+
+	/**
+	 * The generator may expect the graph to be in a certain initial state. Call this method first.
+	 */
+	virtual void initializeGraph() = 0;
+
 	/*
 	 * Send graph events to the proxy until termination function becomes true.
 	 */
