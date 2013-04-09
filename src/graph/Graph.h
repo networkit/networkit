@@ -8,6 +8,7 @@
 #ifndef GRAPH_H_
 #define GRAPH_H_
 
+#include <functional>
 #include <cassert>
 #include <vector>
 #include <cinttypes>
@@ -260,6 +261,18 @@ public:
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forNodes(L handle) const;
+
+	/**
+	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
+	 * This allows for breaking from a node loop.
+	 */
+	template<typename L> void forNodesWhile(std::function<bool(void)> condition, L handle);
+
+	/**
+	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
+	 * This allows for breaking from a node loop.
+	 */
+	template<typename L> void forNodes(std::function<bool(void)>, L handle) const;
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
@@ -886,5 +899,29 @@ inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId, L handle)
 	}
 }
 
+template<typename L>
+inline void NetworKit::Graph::forNodesWhile(std::function<bool(void)> condition, L handle) {
+	for (node v = 0; v < z; ++v) {
+		if (exists[v]) {
+			if (!condition()) {
+				break; // if condition does not hold, break from loop and do not call handle
+			}
+			handle(v);
+
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::Graph::forNodes(std::function<bool(void)> condition, L handle) const {
+	for (node v = 0; v < z; ++v) {
+		if (exists[v]) {
+			if (!condition()) {
+				break;	// if condition does not hold, break from loop and do not call handle
+			}
+			handle(v);
+		}
+	}
+}
 
 #endif /* GRAPH_H_ */

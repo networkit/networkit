@@ -612,4 +612,18 @@ TEST_F(Graph2GTest, testNodeAdditionAndIteration) {
 	EXPECT_EQ((n + 1), nc);
 }
 
+
+TEST_F(Graph2GTest, testConditionalNodeIteration) {
+	count n = 100;
+	Graph G(n);
+
+
+	count nc = 0;
+	G.forNodesWhile([&](){ return (nc <= 50); }, [&](node u){
+		nc += 1;
+	});
+
+	EXPECT_EQ(50, nc);
+}
+
 } /* namespace NetworKit */
