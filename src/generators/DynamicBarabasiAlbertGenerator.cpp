@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator() {
+DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(GraphEventProxy& proxy, int k) : DynamicGraphGenerator(proxy), k(k) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -31,30 +31,31 @@ DynamicBarabasiAlbertGenerator::~DynamicBarabasiAlbertGenerator() {
 void DynamicBarabasiAlbertGenerator::generate(std::function<bool(void)> terminate) {
 
 
-	this->initializeGraph();
+	this->initializeGraph(); // TODO: not here when generation needs to be stopped and resumed
 
 	count degSum = 2; // TODO: parameters
+
+	Aux::RandomInteger randInt;
 
 
 	while (! terminate()) {
 
-		// 1) calculate the sum of all the weights
-		// TODO: update degSum
-
-
-		// 2) pick a random number that is 0 or greater and is less than the sum of the weights
-
-		int k = 2; // number of edges per new node
-
-		int64_t rand; // TODO: generate random number from [0, degSum]
 
 		// 3) go through the items one at a time, subtracting their weight from your random number, until you get the item where the random number is less than that item's weight
 		node u = this->proxy->addNode();
+		TRACE("adding node " << u);
 
-		for (int i = 0; i < k; ++i) {
+		for (int i = 0; i < this->k; ++i) {
+			TRACE("i = " << i);
+			// 2) pick a random number that is 0 or greater and is less than the sum of the weights
+			int64_t rand = randInt.generate(0, degSum); // TODO: generate random number from [0, degSum]
+
 			bool found = false; // break from node iteration when done
 			auto notFound = [&](){ return ! found; };
 			this->G->forNodesWhile(notFound, [&](node v){
+				TRACE("scanning node " << v);
+				rand -= this->G->degree(v);
+				TRACE("rand = " << rand);
 				if (rand < this->G->degree(v)) {
 					found = true; // found a node to connect to
 					this->proxy->addEdge(u, v);
@@ -63,11 +64,7 @@ void DynamicBarabasiAlbertGenerator::generate(std::function<bool(void)> terminat
 			});
 		}
 
-	}
-
-
-
-
+	} // end while
 
 }
 

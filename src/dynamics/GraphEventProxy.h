@@ -13,11 +13,16 @@
 
 namespace NetworKit {
 
+/**
+ * This class enables the observer pattern for dynamic graphs: It has the same modifiers as a Graph object.
+ * When these modifiers are called, they are also called on the underlying graphs. Also, all registered
+ * observers (type GraphEventHandler) are notified.
+ */
 class GraphEventProxy {
 
 protected:
 
-	std::vector<GraphEventHandler*> handlers;
+	std::vector<GraphEventHandler*> observers;
 
 
 public:
@@ -28,15 +33,17 @@ public:
 
 	virtual ~GraphEventProxy();
 
-	virtual node addNode();
+	void registerObserver(GraphEventHandler* observer);
 
-	virtual void removeNode(node u);
+	node addNode();
 
-	virtual void addEdge(node u, node v);
+	void removeNode(node u);
 
-	virtual void removeEdge(node u, node v);
+	void addEdge(node u, node v);
 
-	virtual void setWeight(node u, node v, edgeweight w);
+	void removeEdge(node u, node v);
+
+	void setWeight(node u, node v, edgeweight w);
 };
 
 } /* namespace NetworKit */

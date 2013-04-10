@@ -29,6 +29,8 @@ public:
 
 	virtual Clustering run();
 
+	virtual std::string toString() const;
+
 	// GRAPH DYNAMICS INTERFACE
 
 	virtual void onNodeAddition(node u);

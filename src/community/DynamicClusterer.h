@@ -1,18 +1,20 @@
 /*
  * DynamicClusterer.h
  *
- *  Created on: 27.03.2013
+ *  Created on: 10.04.2013
  *      Author: cls
  */
 
 #ifndef DYNAMICCLUSTERER_H_
 #define DYNAMICCLUSTERER_H_
 
-#include "Clusterer.h"
+#include "../clustering/Clustering.h"
+#include "../dynamics/GraphEventHandler.h"
 
 namespace NetworKit {
 
-class DynamicClusterer {
+class DynamicClusterer: public NetworKit::GraphEventHandler {
+
 
 public:
 
@@ -20,29 +22,14 @@ public:
 
 	virtual ~DynamicClusterer();
 
-	/**
-	 * Produce clustering.
-	 */
-	virtual Clustering run() = 0;
+	virtual Clustering run();
 
-	/**
-	 * @return string representation of algorithm and parameters.
-	 */
-	virtual std::string toString() const;
+	virtual std::string toString() const = 0;
 
 
-	// GRAPH DYNAMICS INTERFACE
+protected:
 
-	virtual void onNodeAddition(node u) = 0;
-
-	virtual void onNodeRemoval(node u) = 0;
-
-	virtual void onEdgeAddition(node u, node v) = 0;
-
-	virtual void onEdgeRemoval(node u, node v) = 0;
-
-	virtual void onWeightUpdate(node u, node v, edgeweight w) = 0;
-
+	Graph* G;
 
 };
 

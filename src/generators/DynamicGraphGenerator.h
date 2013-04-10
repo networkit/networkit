@@ -23,14 +23,14 @@ protected:
 
 public:
 
-	DynamicGraphGenerator();
+	DynamicGraphGenerator(GraphEventProxy& proxy);
 
 	virtual ~DynamicGraphGenerator();
 
-	/*
-	 * Set the graph proxy object.
+	/**
+	 * The generator may expect the graph to be in a certain initial state. Call this method first.
 	 */
-	virtual void setProxy(GraphEventProxy& proxy);
+	virtual void initializeGraph() = 0;
 
 	/*
 	 * Send graph events to the proxy until termination function becomes true.

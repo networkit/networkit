@@ -1,7 +1,7 @@
 /*
  * DynamicClusterer.cpp
  *
- *  Created on: 27.03.2013
+ *  Created on: 10.04.2013
  *      Author: cls
  */
 
@@ -10,16 +10,11 @@
 namespace NetworKit {
 
 DynamicClusterer::DynamicClusterer(Graph& G) {
-	// TODO Auto-generated constructor stub
-
+	this->G = &G;
 }
 
 DynamicClusterer::~DynamicClusterer() {
 	// TODO Auto-generated destructor stub
-}
-
-std::string DynamicClusterer::toString() const {
-	return "TODO: string representation";
 }
 
 } /* namespace NetworKit */
