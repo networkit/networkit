@@ -47,11 +47,16 @@ void GraphEventProxy::removeEdge(node u, node v) {
 	}
 }
 
+
 void GraphEventProxy::setWeight(node u, node v, edgeweight w) {
 	this->G->setWeight(u, v, w);
 	for (GraphEventHandler* observer : this->observers) {
 		observer->onWeightUpdate(u, v, w);
 	}
+}
+
+void GraphEventProxy::registerObserver(GraphEventHandler* observer) {
+	this->observers.push_back(observer);
 }
 
 } /* namespace NetworKit */

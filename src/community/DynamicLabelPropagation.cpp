@@ -20,8 +20,8 @@ DynamicLabelPropagation::~DynamicLabelPropagation() {
 }
 
 void DynamicLabelPropagation::onNodeAddition(node u) {
+	this->activeNodes.push_back(true); // new node is active
 	// TODO: new node gets id as label
-	// TODO: extend data structures
 }
 
 void DynamicLabelPropagation::onNodeRemoval(node u) {
@@ -53,16 +53,18 @@ std::string DynamicLabelPropagation::toString() const {
 }
 
 Clustering DynamicLabelPropagation::run() {
+	return Clustering(this->G->numberOfNodes()); // FIXME:
+
 // TODO: standard PLP iteration
 
-	count nUpdated;
-
-	// propagate labels
-	while (nUpdated > this->updateThreshold) {
-		this->G->parallelForNodes([&](node u) {
-			// TODO:
-			});
-	}
+//	count nUpdated;
+//
+//	// propagate labels
+//	while (nUpdated > this->updateThreshold) {
+//		this->G->parallelForNodes([&](node u) {
+//			// TODO:
+//			});
+//	}
 
 }
 

@@ -9,18 +9,14 @@
 
 namespace NetworKit {
 
-DynamicGraphGenerator::DynamicGraphGenerator() {
-	// TODO Auto-generated constructor stub
-
+DynamicGraphGenerator::DynamicGraphGenerator(GraphEventProxy& proxy) {
+	this->proxy = &proxy;
+	this->G = this->proxy->G;
 }
 
 DynamicGraphGenerator::~DynamicGraphGenerator() {
 	// TODO Auto-generated destructor stub
 }
 
-void DynamicGraphGenerator::setProxy(GraphEventProxy& proxy) {
-	this->proxy = &proxy;
-	this->G = this->proxy->G;
-}
 
 } /* namespace NetworKit */
