@@ -291,7 +291,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="graph/test/GraphTest.h|Test.cpp|input/test/InputTest.cpp|input/test/InputTest.h|graph/test/GraphTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="Test.cpp|input/test/InputTest.cpp|graph/test/GraphTest.h|input/test/InputTest.h|graph/test/GraphTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
