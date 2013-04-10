@@ -30,20 +30,23 @@ TEST_F(DynamicCommunityDetectionGTest, testSetup) {
 	DynamicClusterer* dynPLP = new DynamicLabelPropagation(G);
 	// 5. register dynamic algorithm as observer
 	Gproxy.registerObserver(dynPLP);
-	// 6. start generator
+	// 6. initialize graph for generator
+	gen->initializeGraph();
+
+	// 7. start generator
 	auto until1 = [&](){
 		return (G.numberOfNodes() == 100);
 	};
 	gen->generate(until1); // stops when function returns true
-	// 7. start clusterer
+	// 8. start clusterer
 	Clustering zeta1 = dynPLP->run();
-	// 8. resume generator
+	// 9. resume generator
 	auto until2 = [&](){
 		return (G.numberOfNodes() == 200);
 	};
 	gen->generate(until2); // terminate when function returns true
 	EXPECT_EQ(200, G.numberOfNodes()) << "200 nodes should have been generated";
-	// 9. resume clusterer
+	// 10. resume clusterer
 	Clustering zeta2 = dynPLP->run();
 
 }
