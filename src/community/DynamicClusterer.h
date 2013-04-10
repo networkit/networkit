@@ -22,7 +22,7 @@ public:
 
 	virtual ~DynamicClusterer();
 
-	virtual Clustering run();
+	virtual Clustering run() = 0;
 
 	virtual std::string toString() const = 0;
 
