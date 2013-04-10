@@ -1,0 +1,14 @@
+<map id="src/independentset/IndependentSetFinder.h" name="src/independentset/IndependentSetFinder.h">
+<area shape="rect" id="node3" href="$_luby_8h.html" title="src/independentset\l/Luby.h" alt="" coords="581,99,715,143"/>
+<area shape="rect" id="node25" href="$_independent_set_finder_8cpp.html" title="src/independentset\l/IndependentSetFinder.cpp" alt="" coords="739,99,920,143"/>
+<area shape="rect" id="node5" href="$_louvain_8h.html" title="src/community/Louvain.h" alt="" coords="376,201,544,229"/>
+<area shape="rect" id="node19" href="$_luby_8cpp.html" title="src/independentset\l/Luby.cpp" alt="" coords="581,193,715,237"/>
+<area shape="rect" id="node21" href="$_independent_set_g_test_8h.html" title="src/independentset\l/test/IndependentSetGTest.h" alt="" coords="762,193,952,237"/>
+<area shape="rect" id="node7" href="$_louvain_8cpp.html" title="src/community/Louvain.cpp" alt="" coords="5,294,187,322"/>
+<area shape="rect" id="node9" href="$_clustering_algo_g_test_8h.html" title="src/community/test\l/ClusteringAlgoGTest.h" alt="" coords="212,286,369,330"/>
+<area shape="rect" id="node13" href="$_ensemble_g_test_8h.html" title="src/community/test\l/EnsembleGTest.h" alt="" coords="394,286,525,330"/>
+<area shape="rect" id="node17" href="$_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="551,294,741,322"/>
+<area shape="rect" id="node11" href="$_clustering_algo_g_test_8cpp.html" title="src/community/test\l/ClusteringAlgoGTest.cpp" alt="" coords="198,379,369,423"/>
+<area shape="rect" id="node15" href="$_ensemble_g_test_8cpp.html" title="src/community/test\l/EnsembleGTest.cpp" alt="" coords="394,379,539,423"/>
+<area shape="rect" id="node23" href="$_independent_set_g_test_8cpp.html" title="src/independentset\l/test/IndependentSetGTest.cpp" alt="" coords="767,286,971,330"/>
+</map>
