@@ -56,7 +56,7 @@ TEST_F(GeneratorsTest, testStaticPubWebGenerator) {
 
 	// output to EPS file
 	PostscriptWriter psWriter(G, true);
-	psWriter.write(clustering, "pubweb-random-cluster.eps");
+	psWriter.write(clustering, "pubweb-lp-cluster.eps");
 }
 
 } /* namespace NetworKit */
