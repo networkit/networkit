@@ -30,9 +30,6 @@ DynamicBarabasiAlbertGenerator::~DynamicBarabasiAlbertGenerator() {
 
 void DynamicBarabasiAlbertGenerator::generate(std::function<bool(void)> terminate) {
 
-
-	this->initializeGraph(); // TODO: not here when generation needs to be stopped and resumed
-
 	count degSum = 2; // TODO: parameters
 
 	Aux::RandomInteger randInt;
