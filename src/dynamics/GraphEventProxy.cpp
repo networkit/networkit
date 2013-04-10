@@ -20,38 +20,43 @@ GraphEventProxy::~GraphEventProxy() {
 
 node GraphEventProxy::addNode() {
 	node u = this->G->addNode();
-	for (GraphEventHandler* handler : this->handlers) {
-		handler->onNodeAddition(u);
+	for (GraphEventHandler* observer : this->observers) {
+		observer->onNodeAddition(u);
 	}
 	return u;
 }
 
 void GraphEventProxy::removeNode(node u) {
 	this->G->removeNode(u);
-	for (GraphEventHandler* handler : this->handlers) {
-		handler->onNodeRemoval(u);
+	for (GraphEventHandler* observer : this->observers) {
+		observer->onNodeRemoval(u);
 	}
 }
 
 void GraphEventProxy::addEdge(node u, node v) {
 	this->G->addEdge(u, v);
-	for (GraphEventHandler* handler : this->handlers) {
-		handler->onEdgeAddition(u, v);
+	for (GraphEventHandler* observer : this->observers) {
+		observer->onEdgeAddition(u, v);
 	}
 }
 
 void GraphEventProxy::removeEdge(node u, node v) {
 	this->G->removeEdge(u, v);
-	for (GraphEventHandler* handler : this->handlers) {
-		handler->onEdgeRemoval(u, v);
+	for (GraphEventHandler* observer : this->observers) {
+		observer->onEdgeRemoval(u, v);
 	}
 }
 
+
 void GraphEventProxy::setWeight(node u, node v, edgeweight w) {
 	this->G->setWeight(u, v, w);
-	for (GraphEventHandler* handler : this->handlers) {
-		handler->onWeightUpdate(u, v, w);
+	for (GraphEventHandler* observer : this->observers) {
+		observer->onWeightUpdate(u, v, w);
 	}
+}
+
+void GraphEventProxy::registerObserver(GraphEventHandler* observer) {
+	this->observers.push_back(observer);
 }
 
 } /* namespace NetworKit */
