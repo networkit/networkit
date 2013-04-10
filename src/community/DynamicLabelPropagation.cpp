@@ -43,10 +43,13 @@ void DynamicLabelPropagation::onEdgeRemoval(node u, node v) {
 }
 
 
-
 void DynamicLabelPropagation::onWeightUpdate(node u, node v, edgeweight w) {
 	this->activeNodes[u] = true;
 	this->activeNodes[v] = true;
+}
+
+std::string DynamicLabelPropagation::toString() const {
+	return "DynamicLabelPropagation";
 }
 
 Clustering DynamicLabelPropagation::run() {
