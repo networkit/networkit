@@ -51,8 +51,8 @@ TEST_F(GeneratorsTest, testStaticPubWebGenerator) {
 
 	EXPECT_EQ(n, G.numberOfNodes()) << "number of generated nodes";
 
-	ClusteringGenerator clusterGen;
-	Clustering clustering = clusterGen.makeRandomClustering(G, numCluster);
+	LabelPropagation lp;
+	Clustering clustering = lp.run(G);
 
 	// output to EPS file
 	PostscriptWriter psWriter(G, true);

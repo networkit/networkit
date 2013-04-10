@@ -15,6 +15,7 @@
 #include "../PubWebGenerator.h"
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"
+#include "../../community/LabelPropagation.h"
 
 namespace NetworKit {
 
