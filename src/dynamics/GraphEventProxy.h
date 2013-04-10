@@ -33,7 +33,7 @@ public:
 
 	virtual ~GraphEventProxy();
 
-	void registerObserver(GraphEventHandler& observer);
+	void registerObserver(GraphEventHandler* observer);
 
 	node addNode();
 

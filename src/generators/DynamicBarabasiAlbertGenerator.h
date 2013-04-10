@@ -22,7 +22,7 @@ protected:
 
 public:
 
-	DynamicBarabasiAlbertGenerator(int k = 2);
+	DynamicBarabasiAlbertGenerator(GraphEventProxy& proxy, int k = 2);
 
 	virtual ~DynamicBarabasiAlbertGenerator();
 

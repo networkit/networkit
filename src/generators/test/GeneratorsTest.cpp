@@ -23,8 +23,7 @@ TEST_F(GeneratorsTest, testDynamicBarabasiAlbertGenerator) {
 	Graph G(0); // empty graph
 	GraphEventProxy proxy(G);
 
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator();
-	gen->setProxy(proxy);
+	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy);
 
 	gen->initializeGraph();
 

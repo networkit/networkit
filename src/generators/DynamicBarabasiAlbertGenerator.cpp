@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(int k) : k(k) {
+DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(GraphEventProxy& proxy, int k) : DynamicGraphGenerator(proxy), k(k) {
 	// TODO Auto-generated constructor stub
 
 }
