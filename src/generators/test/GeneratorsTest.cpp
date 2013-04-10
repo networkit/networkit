@@ -31,13 +31,33 @@ TEST_F(GeneratorsTest, testDynamicBarabasiAlbertGenerator) {
 
 	count n = 100;
 
-	gen->generate([&](){
-		return ( G.numberOfNodes() == n );
-	});
+	gen->generate([&]() {
+				return ( G.numberOfNodes() == n );
+			});
 
 	EXPECT_EQ(n, G.numberOfNodes());
 
 	DEBUG("m = " << G.numberOfEdges());
 }
 
+TEST_F(GeneratorsTest, testStaticPubWebGenerator) {
+	count n = 800;
+	count numCluster = 40;
+	count maxNumNeighbors = 20;
+	float rad = 0.125;
+
+	PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
+	Graph G = gen.generate();
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "number of generated nodes";
+
+	ClusteringGenerator clusterGen;
+	Clustering clustering = clusterGen.makeRandomClustering(G, numCluster);
+
+	// output to EPS file
+	PostscriptWriter psWriter(G, true);
+	psWriter.write(clustering, "pubweb-random-cluster.eps");
+}
+
 } /* namespace NetworKit */
+

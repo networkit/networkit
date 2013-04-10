@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <cassert>
 
 #include "../graph/Graph.h"
 #include "../clustering/Clustering.h"
@@ -28,6 +29,7 @@ class PostscriptWriter {
 
 protected:
 	Graph* g;
+	bool wrapAround;
 
 	count numColors;
 	std::vector<float_triple> psColor;
@@ -50,7 +52,7 @@ protected:
 	void writeClustering(Clustering& clustering, std::ofstream& file);
 
 public:
-	PostscriptWriter(Graph& graph);
+	PostscriptWriter(Graph& graph, bool isTorus = false);
 	~PostscriptWriter();
 
 	void write(Clustering& clustering, std::string filename);

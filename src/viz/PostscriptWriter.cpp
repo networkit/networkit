@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-PostscriptWriter::PostscriptWriter(Graph& graph): g(&graph) {
+PostscriptWriter::PostscriptWriter(Graph& graph, bool isTorus): g(&graph), wrapAround(isTorus) {
 	numColors = 24;
 	psColor = { { 1.0, 0.0, 0.0 },
 			{ 1.0, 0.5, 0.0 }, { 1.0, 1.0, 0.0 }, { 0.5, 1.0, 0.0 }, { 0.0, 1.0,
@@ -38,12 +38,24 @@ PostscriptWriter::~PostscriptWriter() {
 
 void PostscriptWriter::writeHeader(std::ofstream& file) {
 	/* Header */
-	file << "%!PS-Adobe-1.0\n";
+	if (wrapAround) {
+		file << "%!PS-Adobe-3.0 EPSF-3.0\n";
+	}
+	else {
+		file << "%!PS-Adobe-1.0\n";
+	}
 	file << "%%Title: clusteredGraph.eps\n";
-	file << "%%BoundingBox: 0 0 " << (int)ceil(ps_sizex) << " " << (int)ceil(ps_sizey+ 40.0) << "\n";
+	if (wrapAround) {
+		file << "%%BoundingBox: 0.000 0.000 1020.0 1020.0\n";
+	}
+	else {
+		file << "%%BoundingBox: 0 0 " << (int)ceil(ps_sizex) << " " << (int)ceil(ps_sizey+ 40.0) << "\n";
+	}
 	file << "%%EndComments\n";
-	file << "%%EndProlog\n";
-	file << "gsave\n";
+	if (! wrapAround) {
+		file << "%%EndProlog\n";
+		file << "gsave\n";
+	}
 }
 
 void PostscriptWriter::writeMacros(std::ofstream& file) {
@@ -51,6 +63,7 @@ void PostscriptWriter::writeMacros(std::ofstream& file) {
 	file << "/p {newpath} bind def\n";
 	file << "/m {moveto} bind def\n";
 	file << "/r {rmoveto} bind def\n";
+	file << "/k {rlineto} bind def\n";
 	file << "/l {lineto} bind def\n";
 	file << "/n {rlineto} bind def\n";
 	file << "/c {setrgbcolor} bind def\n";
@@ -63,9 +76,14 @@ void PostscriptWriter::writeMacros(std::ofstream& file) {
 
 // TODO: node and edge weights and thicker nodes/edges
 void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& file) {
+	auto adjust([&](float& val) {
+		val += 10.0;
+	});
+
+
 	/* Kanten zeichnen */
 	g->forEdges([&](node u, node v) {
-		if (u < v) {
+		if (u < v || wrapAround) {
 			if (clustering[u] == clustering[v] && clustering[u] != none) {
 				// same cluster
 				float r = psColor[clustering[u] % numColors].r;
@@ -75,14 +93,52 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 			}
 			else {
 				// different clusters -> grey
-				file << "0.50 0.50 0.50 c ";
+				file << "0.80 0.80 0.80 c 1.0 w ";
 			}
 
-			float startx = (g->getCoordinate(u, 0) - ps_minx) * ps_scale + ps_borderx;
-			float starty = (g->getCoordinate(u, 1) - ps_miny) * ps_scale + ps_bordery;
-			float endx = (g->getCoordinate(v, 0) - ps_minx) * ps_scale + ps_borderx;
-			float endy = (g->getCoordinate(v, 1) - ps_miny) * ps_scale + ps_bordery;
-			file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
+			float startx = g->getCoordinate(u, 0);
+			float starty = g->getCoordinate(u, 1);
+			float endx = g->getCoordinate(v, 0);
+			float endy = g->getCoordinate(v, 1);
+
+			if (wrapAround) {
+				auto adjust1([&](float& val) {
+					if (val > 500.0f) {
+						val -= 1000.0f;
+					}
+					else if (val < -500.0f) {
+						val += 1000.0f;
+					}
+				});
+
+				auto adjustWrapAround([&](float& distx, float& disty) {
+					adjust1(distx);
+					adjust1(disty);
+				});
+
+				float distx = endx - startx;
+				float disty = endy - starty;
+
+				adjustWrapAround(distx, disty);
+
+				endx = startx + distx;
+				endy = starty + disty;
+
+				adjust(startx);
+				adjust(endx);
+				adjust(starty);
+				adjust(endy);
+
+				file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
+			}
+			else {
+				startx = (startx - ps_minx) * ps_scale + ps_borderx;
+				starty = (starty - ps_miny) * ps_scale + ps_bordery;
+				endx = (endx - ps_minx) * ps_scale + ps_borderx;
+				endy = (endy - ps_miny) * ps_scale + ps_bordery;
+
+				file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
+			}
 		}
 	});
 
@@ -97,26 +153,47 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 			float b = psColor[clustering[u] % numColors].b;
 			file << r << " " << g << " " << b << " c ";
 		}
+		else {
+			file << "0.0 0.0 0.0 c ";
+		}
 
-		float x = (g->getCoordinate(u, 0) - ps_minx) * ps_scale + ps_borderx;
-		float y = (g->getCoordinate(u, 1) - ps_miny) * ps_scale + ps_bordery;
-		file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a\n";
+		float x = g->getCoordinate(u, 0);
+		float y = g->getCoordinate(u, 1);
+		if (wrapAround) {
+			adjust(x);
+			adjust(y);
+			file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a s\n";
+		}
+		else {
+			x = (x - ps_minx) * ps_scale + ps_borderx;
+			y = (y - ps_miny) * ps_scale + ps_bordery;
+			file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a\n";
+		}
 
 	});
 }
 
+
 void PostscriptWriter::write(Clustering& clustering, std::string filename) {
 	std::ofstream file;
 	file.open(filename.c_str());
-	file.precision(2);
+	if (wrapAround) {
+		file.precision(3);
+	}
+	else {
+		file.precision(2);
+	}
 	file << std::fixed;
 
 	writeHeader(file);
 	writeMacros(file);
 
-	file << "0.00 0.00 0.00 c\n";
+	file << "0.00 0.00 0.00 c\n";   // 0.25 0.25 0.25 c 1.0 w
+
 	writeClustering(clustering, file);
-	file << "grestore\n";
+	if (! wrapAround) {
+		file << "grestore\n";
+	}
 
 	file.close();
 }

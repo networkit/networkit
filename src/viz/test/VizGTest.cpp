@@ -22,7 +22,7 @@ VizGTest::~VizGTest() {
 
 TEST_F(VizGTest, testPostscriptWriter) {
 	// create graph
-	count n = 150;
+	count n = 60;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeRandomGraph(n, 0.2);
 
@@ -31,7 +31,8 @@ TEST_F(VizGTest, testPostscriptWriter) {
 	Clustering zeta = clusteringGen.makeRandomClustering(G, 3);
 
 	// create coordinates
-	G.initCoordinates(2);
+	count dimensions = 2;
+	G.initCoordinates(dimensions);
 	G.forNodes([&](node u) {
 		float x = (float) drand48();
 		float y = (float) drand48();
