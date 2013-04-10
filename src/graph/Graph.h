@@ -37,9 +37,55 @@ class Graph {
 
 protected:
 
+	template<class T>
+	class Coordinates {
+	private:
+		count nv; //!< number of vertices
+		count dxy; //!< dimension of coordinates
+		std::vector<T> data; //!< array of coordinates, length nv * dxy
+
+	public:
+		Coordinates() {}
+		void init(count numVertices, count dimensions) {
+			nv = numVertices;
+			dxy = dimensions;
+			data.reserve(nv * dxy);
+		}
+
+		void setCoordinate(node v, count dim, T value) {
+			data[v * dxy + dim] = value;
+		}
+
+		T getCoordinate(node v, count dim) {
+			return data[v * dxy + dim];
+		}
+
+		T minCoordinate(count dim) {
+			T value = data[dim];
+			for (index i = dim + dxy; i < nv; i += dxy) {
+				if (data[i] < value) {
+					value = data[i];
+				}
+			}
+			return value;
+		}
+
+		T maxCoordinate(count dim) {
+			T value = data[dim];
+			for (index i = dim + dxy; i < nv; i += dxy) {
+				if (data[i] > value) {
+					value = data[i];
+				}
+			}
+			return value;
+		}
+
+		virtual ~Coordinates() {}
+	};
+
+
 	// defaults
-	static constexpr double defaultEdgeWeight = 1.00;
-	static constexpr edgeweight nullWeight = 0.0;
+	static constexpr double defaultEdgeWeight = 1.00;static constexpr edgeweight nullWeight = 0.0;
 
 	// scalars
 	count n; //!< current number of nodes
@@ -47,7 +93,7 @@ protected:
 
 	// per node data
 	std::vector<count> deg; //!< degree of each node
-	std::vector<bool> exists;	//!< exists[v] is true if node v has not been removed from the graph
+	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 
 	// per edge data
 	std::vector<std::vector<node> > adja; //!< neighbors/adjacencies
@@ -55,7 +101,6 @@ protected:
 
 	// graph attributes
 	std::string name;
-
 
 	// user-defined edge atributes
 
@@ -65,7 +110,7 @@ protected:
 
 	// defaults
 
-	std::vector<double> edgeAttrDefaults_double;	 // stores default value for edgeMaps_double[i] at index i
+	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
 
 	/**
 	 * Return the index of v in the adjacency array of u.
@@ -83,6 +128,11 @@ public:
 	class EdgeAttribute {
 		// abstract
 	};
+
+
+	// TODO: make protected
+	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
+
 
 	/** GRAPH INTERFACE **/
 
@@ -131,7 +181,6 @@ public:
 	 */
 	edgeweight weightedDegree(node v) const;
 
-
 	/** EDGE ATTRIBUTE GETTERS **/
 
 	/**
@@ -141,8 +190,6 @@ public:
 	 */
 	edgeweight weight(node u, node v) const;
 
-
-
 	/**
 	 * @return attribute of type double for an edge.
 	 *
@@ -151,7 +198,6 @@ public:
 	 * @param[in]	attrId	attribute id
 	 */
 	double attribute_double(node u, node v, int attrId) const;
-
 
 	/**  EDGE ATTRIBUTE SETTERS */
 
@@ -165,8 +211,6 @@ public:
 	 */
 	void setWeight(node u, node v, edgeweight w);
 
-
-
 	/**
 	 * Set edge attribute of type double If the edge does not exist,
 	 * it will be inserted.
@@ -176,8 +220,6 @@ public:
 	 * @param[in]	attr	double edge attribute
 	 */
 	void setAttribute_double(node u, node v, int attrId, double attr);
-
-
 
 	/** SUMS **/
 
@@ -191,7 +233,6 @@ public:
 	 */
 	edgeweight totalNodeWeight();
 
-
 	/** NODE MODIFIERS **/
 
 	/**
@@ -199,13 +240,10 @@ public:
 	 */
 	node addNode();
 
-
 	/**
 	 * Remove a node from the graph.
 	 */
 	void removeNode(node u);
-
-
 
 	/**
 	 * Check if node exists in the graph.
@@ -230,7 +268,6 @@ public:
 	 */
 	count numberOfEdges() const;
 
-
 	/**
 	 * @return the number of loops {v, v} in the graph.
 	 *
@@ -238,17 +275,12 @@ public:
 	 */
 	count numberOfSelfLoops() const;
 
-
 	/** ATTRIBUTES **/
-
-
 
 	/**
 	 * Add new edge map for an attribute of type double.
 	 */
 	int addEdgeAttribute_double(double defaultValue);
-
-
 
 	/** NODE ITERATORS **/
 
@@ -285,7 +317,6 @@ public:
 	 */
 	template<typename L> void balancedParallelForNodes(L handle);
 
-
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
 	 */
@@ -315,7 +346,8 @@ public:
 	 * Iterate over nodes in breadth-first search order starting from r until connected component
 	 * of r has been visited.
 	 */
-	template<typename L> void breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle);
+	template<typename L> void breadthFirstNodesFrom(node r,
+			std::vector<int>& marked, L handle);
 
 	/**
 	 * Iterate over edges in breadth-first search order starting from node r until connected component
@@ -329,12 +361,8 @@ public:
 	 * @param[in]	attrKey		attribute key
 	 * @param[in]	handle		takes parameters (v, a) where a is a node attribute
 	 */
-	template<typename L> void forNodesWithAttribute(std::string attrKey, L handle);
-
-
-
-
-
+	template<typename L> void forNodesWithAttribute(std::string attrKey,
+			L handle);
 
 	/** EDGE ITERATORS **/
 
@@ -388,8 +416,6 @@ public:
 	 */
 	template<typename L> void parallelForWeightedEdges(L handle) const;
 
-
-
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 *
@@ -397,10 +423,8 @@ public:
 	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
 	 *
 	 */
-	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle);
-
-
-
+	template<typename L> void forEdgesWithAttribute_double(int attrId,
+			L handle);
 
 	/** NEIGHBORHOOD ITERATORS **/
 
@@ -492,8 +516,7 @@ inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::Graph::forWeightedNeighborsOf(node u,
-		L handle) {
+inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) {
 	for (index i = 0; i < (index) adja[u].size(); ++i) {
 		node v = adja[u][i];
 		if (v != none) {
@@ -505,8 +528,7 @@ inline void NetworKit::Graph::forWeightedNeighborsOf(node u,
 }
 
 template<typename L>
-inline void NetworKit::Graph::forWeightedNeighborsOf(node u,
-		L handle) const {
+inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) const {
 	for (index i = 0; i < adja[u].size(); ++i) {
 		node v = adja[u][i];
 		if (v != none) {
@@ -549,7 +571,7 @@ inline void NetworKit::Graph::parallelForNodes(L handle) {
 
 template<typename L>
 inline void NetworKit::Graph::parallelForNodes(L handle) const {
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (node v = 0; v < z; ++v) {
 		// call here
 		if (exists[v]) {
@@ -560,7 +582,7 @@ inline void NetworKit::Graph::parallelForNodes(L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::balancedParallelForNodes(L handle) {
-	#pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
+#pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
 	for (node v = 0; v < z; ++v) {
 		// call here
 		if (exists[v]) {
@@ -569,11 +591,10 @@ inline void NetworKit::Graph::balancedParallelForNodes(L handle) {
 	}
 }
 
-
 template<typename L>
 inline double NetworKit::Graph::parallelSumForNodes(L handle) {
 	double sum = 0.0;
-	#pragma omp parallel for reduction(+:sum)
+#pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < z; ++v) {
 		// call here
 		if (exists[v]) {
@@ -599,7 +620,7 @@ inline double NetworKit::Graph::parallelSumForNodes(L handle) const {
 template<typename L>
 double NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
 	double sum = 0.0;
-	#pragma omp parallel for reduction(+:sum)
+#pragma omp parallel for reduction(+:sum)
 	for (node u = 0; u < z; ++u) {
 		for (index i = 0; i < this->adja[u].size(); ++i) {
 			node v = this->adja[u][i];
@@ -639,7 +660,7 @@ inline void NetworKit::Graph::forEdges(L handle) const {
 template<typename L>
 inline void NetworKit::Graph::parallelForEdges(L handle) {
 	node z = n; // store current n in local variable since handle might modify node count
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
 			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
@@ -652,7 +673,7 @@ inline void NetworKit::Graph::parallelForEdges(L handle) {
 template<typename L>
 inline void NetworKit::Graph::parallelForEdges(L handle) const {
 	node z = n; // store current n in local variable since handle might modify node count
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
 			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
@@ -693,7 +714,8 @@ inline void NetworKit::Graph::forNodePairs(L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::Graph::breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle) {
+inline void NetworKit::Graph::breadthFirstNodesFrom(node r,
+		std::vector<int>& marked, L handle) {
 	std::queue<node> q;
 	count n = this->numberOfNodes();
 	q.push(r); // enqueue root
@@ -704,11 +726,11 @@ inline void NetworKit::Graph::breadthFirstNodesFrom(node r, std::vector<int>& ma
 		// apply function
 		handle(u);
 		this->forNeighborsOf(u, [&](node v) {
-				if (marked[v] == 0) {
-					q.push(v);
-					marked[v] = 1;
-				}
-			});
+			if (marked[v] == 0) {
+				q.push(v);
+				marked[v] = 1;
+			}
+		});
 	} while (!q.empty());
 }
 
@@ -732,7 +754,7 @@ inline void NetworKit::Graph::forEdgesOf(node u, L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::parallelForNodePairs(L handle) {
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		if (exists[u]) {
 			for (node v = u + 1; v < z; ++v) {
@@ -748,7 +770,7 @@ inline void NetworKit::Graph::parallelForNodePairs(L handle) {
 
 template<typename L>
 inline void NetworKit::Graph::parallelForNodePairs(L handle) const {
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		if (exists[u]) {
 			for (node v = u + 1; v < z; ++v) {
@@ -809,8 +831,7 @@ inline void NetworKit::Graph::parallelForWeightedEdges(L handle) {
 }
 
 template<typename L>
-inline void NetworKit::Graph::parallelForWeightedEdges(
-		L handle) const {
+inline void NetworKit::Graph::parallelForWeightedEdges(L handle) const {
 #pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
@@ -849,7 +870,8 @@ inline void NetworKit::Graph::forWeightedEdgesOf(node u, L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::Graph::forNodesWithAttribute(std::string attrKey, L handle) {
+inline void NetworKit::Graph::forNodesWithAttribute(std::string attrKey,
+		L handle) {
 	// get nodemap for attrKey
 
 //	auto nodeMap; // ?
@@ -879,14 +901,13 @@ inline void NetworKit::Graph::forNodesWithAttribute(std::string attrKey, L handl
 //		throw std::runtime_error("node attribute not found");
 //	}
 
-
 	// TODO: iterate over nodes with atributes
 	throw std::runtime_error("TODO");
 }
 
-
 template<typename L>
-inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId, L handle) {
+inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
+		L handle) {
 	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
@@ -917,7 +938,7 @@ inline void NetworKit::Graph::forNodes(C condition, L handle) const {
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
 			if (!condition()) {
-				break;	// if condition does not hold, break from loop and do not call handle
+				break; // if condition does not hold, break from loop and do not call handle
 			}
 			handle(v);
 		}
