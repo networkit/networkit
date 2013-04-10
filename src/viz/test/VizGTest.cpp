@@ -31,12 +31,12 @@ TEST_F(VizGTest, testPostscriptWriter) {
 	Clustering zeta = clusteringGen.makeRandomClustering(G, 3);
 
 	// create coordinates
-	G.coordinates.init(n, 2);
+	G.initCoordinates(2);
 	G.forNodes([&](node u) {
 		float x = (float) drand48();
 		float y = (float) drand48();
-		G.coordinates.setCoordinate(u, 0, x);
-		G.coordinates.setCoordinate(u, 1, y);
+		G.setCoordinate(u, 0, x);
+		G.setCoordinate(u, 1, y);
 	});
 
 	// write graph to file

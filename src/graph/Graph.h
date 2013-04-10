@@ -94,6 +94,7 @@ protected:
 	// per node data
 	std::vector<count> deg; //!< degree of each node
 	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
+	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
 	// per edge data
 	std::vector<std::vector<node> > adja; //!< neighbors/adjacencies
@@ -128,10 +129,6 @@ public:
 	class EdgeAttribute {
 		// abstract
 	};
-
-
-	// TODO: make protected
-	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
 
 	/** GRAPH INTERFACE **/
@@ -274,6 +271,27 @@ public:
 	 * This involves calculation, so store result if needed multiple times.
 	 */
 	count numberOfSelfLoops() const;
+
+
+	void setCoordinate(node v, count dim, float value) {
+		coordinates.setCoordinate(v, dim, value);
+	}
+
+	float getCoordinate(node v, count dim) {
+		return coordinates.getCoordinate(v, dim);
+	}
+
+	float minCoordinate(count dim) {
+		return coordinates.minCoordinate(dim);
+	}
+
+	float maxCoordinate(count dim) {
+		return coordinates.maxCoordinate(dim);
+	}
+
+	void initCoordinates(count dimensions) {
+		coordinates.init(n, dimensions);
+	}
 
 	/** ATTRIBUTES **/
 

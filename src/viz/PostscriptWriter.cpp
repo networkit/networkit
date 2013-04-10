@@ -23,10 +23,10 @@ PostscriptWriter::PostscriptWriter(Graph& graph): g(&graph) {
 					0.6 }, { 0.6, 0.0, 0.3 } };
 
 
-	ps_minx = g->coordinates.minCoordinate(0);
-	ps_maxx = g->coordinates.maxCoordinate(0);
-	ps_miny = g->coordinates.minCoordinate(1);
-	ps_maxy = g->coordinates.maxCoordinate(1);
+	ps_minx = g->minCoordinate(0);
+	ps_maxx = g->maxCoordinate(0);
+	ps_miny = g->minCoordinate(1);
+	ps_maxy = g->maxCoordinate(1);
 
 	ps_scale = (ps_sizex - 2 * ps_borderx) / (ps_maxx - ps_minx);
 	ps_sizey = (ps_maxy - ps_miny) * ps_scale + 2 * ps_bordery;
@@ -78,10 +78,10 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 				file << "0.50 0.50 0.50 c ";
 			}
 
-			float startx = (g->coordinates.getCoordinate(u, 0) - ps_minx) * ps_scale + ps_borderx;
-			float starty = (g->coordinates.getCoordinate(u, 1) - ps_miny) * ps_scale + ps_bordery;
-			float endx = (g->coordinates.getCoordinate(v, 0) - ps_minx) * ps_scale + ps_borderx;
-			float endy = (g->coordinates.getCoordinate(v, 1) - ps_miny) * ps_scale + ps_bordery;
+			float startx = (g->getCoordinate(u, 0) - ps_minx) * ps_scale + ps_borderx;
+			float starty = (g->getCoordinate(u, 1) - ps_miny) * ps_scale + ps_bordery;
+			float endx = (g->getCoordinate(v, 0) - ps_minx) * ps_scale + ps_borderx;
+			float endy = (g->getCoordinate(v, 1) - ps_miny) * ps_scale + ps_bordery;
 			file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
 		}
 	});
@@ -98,8 +98,8 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 			file << r << " " << g << " " << b << " c ";
 		}
 
-		float x = (g->coordinates.getCoordinate(u, 0) - ps_minx) * ps_scale + ps_borderx;
-		float y = (g->coordinates.getCoordinate(u, 1) - ps_miny) * ps_scale + ps_bordery;
+		float x = (g->getCoordinate(u, 0) - ps_minx) * ps_scale + ps_borderx;
+		float y = (g->getCoordinate(u, 1) - ps_miny) * ps_scale + ps_bordery;
 		file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a\n";
 
 	});
