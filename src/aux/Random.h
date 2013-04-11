@@ -33,7 +33,7 @@ public:
 	/**
 	 * @return a uniformly random element from a vector
 	 */
-	template<typename T> T choice(std::vector<T> vec);
+	template<typename T> T choice(std::vector<T>& vec);
 
 protected:
 
