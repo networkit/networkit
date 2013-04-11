@@ -181,12 +181,6 @@ Graph PubWebGenerator::generate() {
 	// determine neighbors before adjusting the coordinates
 	determineNeighbors(g);
 
-	// adjust coordinates for postscript output
-	g.forNodes([&](node u) {
-		g.setCoordinate(u, 0, 1000.0 * g.getCoordinate(u, 0));
-		g.setCoordinate(u, 1, 1000.0 * g.getCoordinate(u, 1));
-	});
-
 	return g;
 }
 
