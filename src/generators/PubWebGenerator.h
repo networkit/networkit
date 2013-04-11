@@ -12,8 +12,13 @@
 #include "../aux/RandomProbability.h"
 #include <cmath>
 
-
 namespace NetworKit {
+
+struct circle {
+	float x;
+	float y;
+	float rad;
+};
 
 class PubWebGenerator: public NetworKit::StaticGraphGenerator {
 protected:
@@ -25,9 +30,16 @@ protected:
 	void determineNeighbors(Graph& g);
 	void moveNodeIntoUnitSquare(float& x, float& y);
 	float squaredDistanceInUnitTorus(float x1, float y1, float x2, float y2);
+	std::vector<circle> chooseDenseAreaSizes();
+	std::vector<float> fillDenseAreas(Graph& g,
+			const std::vector<count>& numPerArea,
+			std::vector<circle>& denseAreaXYR);
+	void spreadRemainingNodes(Graph& g, std::vector<float>& coordinates);
+	std::vector<count> chooseClusterSizes(std::vector<circle>& denseAreaXYR);
 
 public:
-	PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors);
+	PubWebGenerator(count numNodes, count numberOfDenseAreas,
+			float neighborhoodRadius, count maxNumberOfNeighbors);
 	virtual ~PubWebGenerator();
 
 	virtual Graph generate();
