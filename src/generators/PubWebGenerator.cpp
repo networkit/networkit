@@ -64,19 +64,36 @@ PubWebGenerator::~PubWebGenerator() {
 	// TODO Auto-generated destructor stub
 }
 
-void PubWebGenerator::determineNeighbors(Graph& g) {
-	auto isValidEdge([&](node u, node v, float squaredDistance) {
+bool PubWebGenerator::isValidEdge(Graph& g, node u, node v) {
+	auto isValid([&](node u, node v, float squaredDistance) {
 		return ((squaredDistance <= neighRad * neighRad)
 				&& (g.degree(u) <= maxNeigh)
 				&& (g.degree(v) <= maxNeigh));
 	});
 
-	g.forNodePairs([&](node u, node v) { // FIXME: quadratic loop!
-				float sqrDist = squaredDistanceInUnitTorus(g.getCoordinate(u, 0), g.getCoordinate(u, 1), g.getCoordinate(v, 0), g.getCoordinate(v, 1));
-				if (isValidEdge(u, v, sqrDist)) {
-					g.addEdge(u, v);
-				}
-			});
+	float x1 = g.getCoordinate(u, 0);
+	float y1 = g.getCoordinate(u, 1);
+	float x2 = g.getCoordinate(v, 0);
+	float y2 = g.getCoordinate(v, 1);
+	float sqrDist = squaredDistanceInUnitTorus(x1, y1, x2, y2);
+
+	return isValid(u, v, sqrDist);
+}
+
+void PubWebGenerator::determineNeighborsOf(Graph& g, node u) {
+	g.forNodes([&](node v) {
+		if (isValidEdge(g, u, v)) {
+			g.addEdge(u, v);
+		}
+	});
+}
+
+void PubWebGenerator::determineNeighbors(Graph& g) {
+	g.forNodePairs([&](node u, node v) { // TODO: improve quadratic loop!
+		if (isValidEdge(g, u, v)) {
+			g.addEdge(u, v);
+		}
+	});
 }
 
 void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
@@ -137,7 +154,8 @@ void PubWebGenerator::chooseClusterSizes() {
 	for (index i = 0; i < numDenseAreas; ++i) {
 		f += pow(denseAreaXYR[i].rad, 1.5);
 	}
-	f = ((float) n * ((float) numDenseAreas / ((float) numDenseAreas + 2.0f))) / f;
+	f = ((float) n * ((float) numDenseAreas / ((float) numDenseAreas + 2.0f)))
+			/ f;
 	// TODO: better formula?
 
 	numPerArea.reserve(numDenseAreas);
@@ -162,30 +180,13 @@ Graph PubWebGenerator::generate() {
 	return g;
 }
 
-void PubWebGenerator::addNode(Graph& g) {
-	// TODO
-
-	// identify dense area (or remaining)
-	// -> find out where rand value falls into the interval divided by
-	//    the fraction of the cluster size, don't forget the non-dense area
-	index area = 0;
-
-	// identify random location in that area
-	count dims = 2;
-	count num = 1;
-	addNodesToArea(area, num, g);
-
-	// insert edges according to rules in determineNeighbors
-	// determineNeighborsOf(g, u);
-}
 
 // TODO: NOT tested!
 void PubWebGenerator::removeRandomNode(Graph& g) {
 	Aux::RandomInteger randInt;
-	node u = randInt.generate(0, (n-1));
+	node u = randInt.generate(0, (n - 1));
 	g.removeNode(u);
 }
-
 
 } /* namespace NetworKit */
 
