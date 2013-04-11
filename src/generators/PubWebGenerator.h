@@ -10,6 +10,7 @@
 
 #include "StaticGraphGenerator.h"
 #include "../aux/RandomProbability.h"
+#include "../aux/RandomInteger.h"
 #include <cmath>
 
 namespace NetworKit {
@@ -27,15 +28,16 @@ protected:
 	float neighRad; //!< neighborhood radius
 	count maxNeigh; //!< maximum number of neighbors
 	std::vector<circle> denseAreaXYR;
+	std::vector<count> numPerArea;
 
 	void determineNeighbors(Graph& g);
 	void moveNodeIntoUnitSquare(float& x, float& y);
 	float squaredDistanceInUnitTorus(float x1, float y1, float x2, float y2);
 	void chooseDenseAreaSizes();
-	std::vector<float> fillDenseAreas(Graph& g,
-			const std::vector<count>& numPerArea);
-	void spreadRemainingNodes(Graph& g, std::vector<float>& coordinates);
-	std::vector<count> chooseClusterSizes();
+	void fillDenseAreas(Graph& g);
+	void spreadRemainingNodes(Graph& g);
+	void chooseClusterSizes();
+	void addNodesToArea(index area, count num, Graph& g);
 
 public:
 	PubWebGenerator(count numNodes, count numberOfDenseAreas,
@@ -43,6 +45,16 @@ public:
 	virtual ~PubWebGenerator();
 
 	virtual Graph generate();
+
+	/**
+	 * Adds nodes randomly, distribution respects original one.
+	 */
+	void addNode(Graph& g);
+
+	/**
+	 * Removes random node, uniform distribution.
+	 */
+	void removeRandomNode(Graph& g);
 };
 
 } /* namespace NetworKit */
