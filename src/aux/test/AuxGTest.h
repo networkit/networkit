@@ -18,6 +18,7 @@
 #include <thread>
 
 #include "../Log.h"
+#include "../Random.h"
 #include "../RandomInteger.h"
 #include "../RandomProbability.h"
 #include "../Timer.h"
