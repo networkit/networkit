@@ -79,34 +79,33 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
 			});
 }
 
-std::vector<float> PubWebGenerator::fillDenseAreas(Graph& g,
-		const std::vector<count>& numPerArea) {
-	std::vector<float> coordinates;
+void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
+	Aux::RandomProbability randGen;
+
+	for (index j = 0; j < num; ++j) {
+		// compute random angle between [0, 2pi) and distance between [0, width/2]
+		float angle = randGen.randomFloat() * 2.0 * PI;
+		float dist = randGen.randomFloat() * denseAreaXYR[area].rad;
+
+		// compute coordinates and adjust them
+		float x = denseAreaXYR[area].x + cosf(angle) * dist;
+		float y = denseAreaXYR[area].y + sinf(angle) * dist;
+		moveNodeIntoUnitSquare(x, y);
+
+		// create vertex with these coordinates
+		g.addNode(x, y);
+	}
+}
+
+void PubWebGenerator::fillDenseAreas(Graph& g) {
 	Aux::RandomProbability randGen;
 
 	for (index area = 0; area < numDenseAreas; ++area) {
 		// choose center randomly, ensure complete cluster is within (0,1) without modifications
 		denseAreaXYR[area].x = randGen.randomFloat();
 		denseAreaXYR[area].y = randGen.randomFloat();
-
-		for (index j = 0; j < numPerArea[area]; ++j) {
-			// compute random angle between [0, 2pi) and distance between [0, width/2]
-			float angle = randGen.randomFloat() * 2.0 * PI;
-			float dist = randGen.randomFloat() * denseAreaXYR[area].rad;
-
-			// compute coordinates and adjust them
-			float x = denseAreaXYR[area].x + cosf(angle) * dist;
-			float y = denseAreaXYR[area].y + sinf(angle) * dist;
-			moveNodeIntoUnitSquare(x, y);
-
-			// create vertex with this coordinate
-			g.addNode();
-			coordinates.push_back(x);
-			coordinates.push_back(y);
-		}
+		addNodesToArea(area, numPerArea[area], g);
 	}
-
-	return coordinates;
 }
 
 void PubWebGenerator::chooseDenseAreaSizes() {
@@ -122,18 +121,18 @@ void PubWebGenerator::chooseDenseAreaSizes() {
 }
 
 // randomly spread remaining vertices over whole area
-void PubWebGenerator::spreadRemainingNodes(Graph& g, std::vector<float>& coordinates) {
+void PubWebGenerator::spreadRemainingNodes(Graph& g) {
 	Aux::RandomProbability randGen;
 
-	while (coordinates.size() < 2 * n) {
-		g.addNode();
-		coordinates.push_back(randGen.randomFloat());
-		coordinates.push_back(randGen.randomFloat());
+	while (g.numberOfNodes() < n) {
+		float x = randGen.randomFloat();
+		float y = randGen.randomFloat();
+		g.addNode(x, y);
 	}
 }
 
 // compute number of nodes per cluster, each cluster has approx. same density
-std::vector<count> PubWebGenerator::chooseClusterSizes() {
+void PubWebGenerator::chooseClusterSizes() {
 	float f = 0.0;
 	for (index i = 0; i < numDenseAreas; ++i) {
 		f += pow(denseAreaXYR[i].rad, 1.5);
@@ -141,45 +140,52 @@ std::vector<count> PubWebGenerator::chooseClusterSizes() {
 	f = ((float) n * ((float) numDenseAreas / ((float) numDenseAreas + 2.0f))) / f;
 	// TODO: better formula?
 
-	std::vector<count> numPerArea(numDenseAreas);
+	numPerArea.reserve(numDenseAreas);
 	for (index i = 0; i < numDenseAreas; ++i) {
 		numPerArea[i] = roundf(f * pow(denseAreaXYR[i].rad, 1.5));
 	}
-
-	return numPerArea;
 }
 
 Graph PubWebGenerator::generate() {
 	// init
 	Graph g(0);
 	count dims = 2;
-	std::vector<float> coordinates;
 	Aux::RandomProbability randGen;
 
-	// choose area sizes
+	// add vertices according to PubWeb distribution
 	chooseDenseAreaSizes();
-
-	// compute number of nodes per cluster, each cluster has approx. same density
-	std::vector<count> numPerArea = chooseClusterSizes();
-
-	// fill dense areas
-	coordinates = fillDenseAreas(g, numPerArea);
-
-	// randomly spread remaining vertices over whole area
-	spreadRemainingNodes(g, coordinates);
-
-	// insert coordinates into graph
-	g.initCoordinates(dims);
-	for (index v = 0; v < n; ++v) {
-		g.setCoordinate(v, 0, coordinates[v * dims]);
-		g.setCoordinate(v, 1, coordinates[v * dims + 1]);
-	}
-
-	// determine neighbors before adjusting the coordinates
+	chooseClusterSizes();
+	fillDenseAreas(g);
+	spreadRemainingNodes(g);
 	determineNeighbors(g);
 
 	return g;
 }
+
+void PubWebGenerator::addNode(Graph& g) {
+	// TODO
+
+	// identify dense area (or remaining)
+	// -> find out where rand value falls into the interval divided by
+	//    the fraction of the cluster size, don't forget the non-dense area
+	index area = 0;
+
+	// identify random location in that area
+	count dims = 2;
+	count num = 1;
+	addNodesToArea(area, num, g);
+
+	// insert edges according to rules in determineNeighbors
+	// determineNeighborsOf(g, u);
+}
+
+// TODO: NOT tested!
+void PubWebGenerator::removeRandomNode(Graph& g) {
+	Aux::RandomInteger randInt;
+	node u = randInt.generate(0, (n-1));
+	g.removeNode(u);
+}
+
 
 } /* namespace NetworKit */
 
