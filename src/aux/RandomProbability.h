@@ -9,6 +9,7 @@
 #define RANDOMPROBABILITY_H_
 
 #include <random>
+#include <cmath>
 
 namespace Aux {
 
@@ -28,6 +29,11 @@ public:
 	virtual ~RandomProbability();
 
 	virtual double generate();
+
+	/**
+	 * @return Random float in [0 ... 1)
+	 */
+	float randomFloat() const;
 };
 
 }
