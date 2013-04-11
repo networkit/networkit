@@ -26,16 +26,16 @@ protected:
 	count numDenseAreas; //!< number of areas with more nodes (denser)
 	float neighRad; //!< neighborhood radius
 	count maxNeigh; //!< maximum number of neighbors
+	std::vector<circle> denseAreaXYR;
 
 	void determineNeighbors(Graph& g);
 	void moveNodeIntoUnitSquare(float& x, float& y);
 	float squaredDistanceInUnitTorus(float x1, float y1, float x2, float y2);
-	std::vector<circle> chooseDenseAreaSizes();
+	void chooseDenseAreaSizes();
 	std::vector<float> fillDenseAreas(Graph& g,
-			const std::vector<count>& numPerArea,
-			std::vector<circle>& denseAreaXYR);
+			const std::vector<count>& numPerArea);
 	void spreadRemainingNodes(Graph& g, std::vector<float>& coordinates);
-	std::vector<count> chooseClusterSizes(std::vector<circle>& denseAreaXYR);
+	std::vector<count> chooseClusterSizes();
 
 public:
 	PubWebGenerator(count numNodes, count numberOfDenseAreas,
