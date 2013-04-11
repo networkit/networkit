@@ -80,8 +80,7 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
 }
 
 std::vector<float> PubWebGenerator::fillDenseAreas(Graph& g,
-		const std::vector<count>& numPerArea,
-		std::vector<circle>& denseAreaXYR) {
+		const std::vector<count>& numPerArea) {
 	std::vector<float> coordinates;
 	Aux::RandomProbability randGen;
 
@@ -110,8 +109,8 @@ std::vector<float> PubWebGenerator::fillDenseAreas(Graph& g,
 	return coordinates;
 }
 
-std::vector<circle> PubWebGenerator::chooseDenseAreaSizes() {
-	std::vector<circle> denseAreaXYR(numDenseAreas);
+void PubWebGenerator::chooseDenseAreaSizes() {
+	denseAreaXYR.reserve(numDenseAreas);
 	Aux::RandomProbability randGen;
 
 	for (index area = 0; area < numDenseAreas; ++area) {
@@ -120,8 +119,6 @@ std::vector<circle> PubWebGenerator::chooseDenseAreaSizes() {
 		denseAreaXYR[area].rad = (MAX_DENSE_AREA_RADIUS * f * f)
 				/ (MIN_MAX_DENSE_AREA_FACTOR * MIN_MAX_DENSE_AREA_FACTOR);
 	}
-
-	return denseAreaXYR;
 }
 
 // randomly spread remaining vertices over whole area
@@ -136,7 +133,7 @@ void PubWebGenerator::spreadRemainingNodes(Graph& g, std::vector<float>& coordin
 }
 
 // compute number of nodes per cluster, each cluster has approx. same density
-std::vector<count> PubWebGenerator::chooseClusterSizes(std::vector<circle>& denseAreaXYR) {
+std::vector<count> PubWebGenerator::chooseClusterSizes() {
 	float f = 0.0;
 	for (index i = 0; i < numDenseAreas; ++i) {
 		f += pow(denseAreaXYR[i].rad, 1.5);
@@ -160,13 +157,13 @@ Graph PubWebGenerator::generate() {
 	Aux::RandomProbability randGen;
 
 	// choose area sizes
-	std::vector<circle> denseAreaXYR = chooseDenseAreaSizes();
+	chooseDenseAreaSizes();
 
 	// compute number of nodes per cluster, each cluster has approx. same density
-	std::vector<count> numPerArea = chooseClusterSizes(denseAreaXYR);
+	std::vector<count> numPerArea = chooseClusterSizes();
 
 	// fill dense areas
-	coordinates = fillDenseAreas(g, numPerArea, denseAreaXYR);
+	coordinates = fillDenseAreas(g, numPerArea);
 
 	// randomly spread remaining vertices over whole area
 	spreadRemainingNodes(g, coordinates);
