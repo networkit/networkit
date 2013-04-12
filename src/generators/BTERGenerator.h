@@ -12,6 +12,7 @@
 #include <cmath>
 
 #include "StaticGraphGenerator.h"
+#include "../aux/Random.h"
 
 namespace NetworKit {
 
@@ -61,25 +62,34 @@ public:
 
 protected:
 
-	void preprocessing();
+	void setup();
 
-	void phaseOne();
+	void sample();
 
-	void phaseTwo();
+	std::pair<node, node> samplePhaseOne();
 
-	void BTERSample();
+	std::pair<node, node> samplePhaseTwo();
 
-	void BTERSamplePhaseOne();
-
-	void BTERSamplePhaseTwo();
-
-	void BTERSamplePhase2Node();
+	node samplePhaseTwoNode();
 
 
-	std::vector<count> n_; //!< degree distribution: n_[d] = number of nodes with degree d
-	std::vector<double> c_;	//!< clustering coefficient per degree:
-	// TODO: no need to keep c_ after the preprocessing is done
-	count dMax; //!< maximum degree
+
+	Aux::Random rand; // random module
+
+	std::vector<count> nd_; //!< degree distribution: nd_[d] = number of nodes with degree d
+	degree dMax; //!< maximum degree
+	std::vector<double> c_;	//!< clustering coefficient per degree: 	// TODO: no need to keep c_ after the preprocessing is done
+	double beta; // blowup-factor for deg-1 nodes
+
+	// instead of passing these as arguments, keep them as member variables
+	std::vector<index> ig_; //? group index vector: ?
+	std::vector<count> ng_; // ?
+	std::vector<index> b_; // ?  index vector?
+	std::vector<count> nFill_; // ?
+	std::vector<index> id_; // index i_d for first node of each degree d
+	std::vector<double> wd_; // ?
+	std::vector<double> wg_; // ?
+
 
 };
 
