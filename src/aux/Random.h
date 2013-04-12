@@ -49,7 +49,7 @@ protected:
 } /* namespace Aux */
 
 template<typename T>
-inline T Aux::Random::choice(std::vector<T> vec) {
+inline T Aux::Random::choice(std::vector<T>& vec) {
 	int64_t i = this->integer(0, vec.size() - 1);
 	return vec[i];
 }
