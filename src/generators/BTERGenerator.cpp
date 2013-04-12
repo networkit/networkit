@@ -9,8 +9,21 @@
 
 namespace NetworKit {
 
-BTERGenerator::BTERGenerator(std::vector<count> degreeDistribution,
-		std::vector<count> clusteringCoefficients) : nd_(degreeDistribution), dMax(nd_.size()) {
+BTERGenerator::BTERGenerator(std::vector<count>& degreeDistribution,
+		std::vector<double>& clusteringCoefficients, double beta) :
+		beta(beta),
+		dMax(degreeDistribution.size()),
+		nd_(degreeDistribution),
+		c_(clusteringCoefficients),
+		id_(dMax),
+		nFill_(dMax),
+		wd_(dMax),
+		r_(dMax),
+		ig_(dMax), 	// gMax <= dMax TODO: save memory here?
+		b_(dMax),	// gMax <= dMax
+		wg_(dMax),	// gMax <= dMax
+		ng_(dMax) 	// gMax <= dMax
+{
 }
 
 BTERGenerator::~BTERGenerator() {
@@ -18,22 +31,22 @@ BTERGenerator::~BTERGenerator() {
 }
 
 Graph BTERGenerator::generate() {
+	DEBUG("setup");
 	this->setup();
+	DEBUG("sample");
+	this->sample();
 }
 
 void BTERGenerator::setup() {
 
+	// assign nodes to affinity blocks of d +1 nodes with degree d
 
-	std::vector<double> wFill_; // ?
-	std::vector<count> nBulk_; // ?
-	std::vector<count> nRest_; // ?
-	std::vector<double> wBulk_; // ?
-	std::vector<double> rFill_;
-	std::vector<double> r_; // ?
+	// compute number of nodes n'_d with degree greater d
 
-	// TODO: assign nodes to affinity blocks of d +1 nodes with degree d
-
-	// TODO: compute number of nodes n'_d with degree greater d
+	std::vector<count> nBulk_(dMax); // number of bulk nodes of degree d
+	std::vector<count> ndRest_(dMax); // ?
+	std::vector<double> wFill_(dMax); // weight of the degree-d fill nodes for phase 2
+	std::vector<double> wBulk_(dMax); //weight of degree-d bulk nodes for phase 2
 
 	// number of nodes from least degree to greatest, except degree-1 nodes are last
 	id_[2] = 1; // TODO: should indices be zero-based?
@@ -43,22 +56,21 @@ void BTERGenerator::setup() {
 	id_[1] = id_[dMax] + nd_[dMax];
 
 	// compute number of nodes with degree greater than d
-	std::vector<count> higherDegreeNodes;
 	for (count d = 1; d < dMax; d++) {
 		for (count d_ = d + 1; d_ <= dMax; d_++) {
-			higherDegreeNodes[d] += nd_[d_]; // TODO: check that higherDegreeNodes[dMax]Ê== 0
+			ndRest_[d] += nd_[d_]; // TODO: check that higherDegreeNodes[dMax]Ê== 0
 		}
 	}
 
 	// handle degree-1 nodes
 	nFill_[1] = beta * nd_[1];
 	wd_[1] = 0.5 * nFill_[1];
-	rFill_[1] = 1;
+	r_[1] = 1; // TODO: should rFill_ be a seperate array from r_?
 
 	// main loop
 	count g = 0; // affinity group index ?
-	count nFillStar = 0; // ?
-	count dStar = 0; // ?
+	count nFillStar = 0; // number of nodes needed to complete the last incomplete block
+	count dStar = 0; // internal degree of the last incomplete block
 	double rhoStar; // ?
 
 	for (count d = 2; d <= dMax; d++) {
@@ -76,19 +88,20 @@ void BTERGenerator::setup() {
 		if (nBulk_[d] > 0) {
 			// create a new group for degree-d bulk nodes
 			g += 1;
-			ig_[g] = id_[d] + nFill_[d]; // ? is i_g and i_d the same array?
+			ig_[g] = id_[d] + nFill_[d];
 			b_[g] = std::ceil(nBulk_[d] / (d + 1));
 			nd_[g] = d + 1;
-			if ((b_[g] * (d + 1)) > (nRest_[d] + nBulk_[d])) {
+			if ((b_[g] * (d + 1)) > (ndRest_[d] + nBulk_[d])) {
 				// special handling of last group
 				if (b_[g] != 1) {
-					throw std::runtime_error("?");
+					throw std::runtime_error("?"); // TODO: what happens here? check for indexing error
 				}
-				nd_[g] = (nRest_[d] + nBulk_[d]);
+				nd_[g] = (ndRest_[d] + nBulk_[d]);
 			}
 			rhoStar = std::pow(c_[d], (1.0 / 3.0)); //
 			dStar = (nd_[g] - 1) * rhoStar;
 			wBulk_[d] = 0.5 * nBulk_[d] * (d - dStar);
+			DEBUG("wg_: " << wg_.size() << " b_: " << b_.size() << " ng_: " << ng_.size());
 			wg_[g] = b_[g] * 0.5 * ng_[g] * (ng_[g] - 1) * std::log(1.0 / (1 - rhoStar)); // correct log?
 			nFillStar = (b_[g] * ng_[g]) - nBulk_[d];
 		} else {
@@ -103,6 +116,28 @@ void BTERGenerator::setup() {
 
 
 void BTERGenerator::sample() {
+	double w1 = 0.0;
+	for (double wg : wg_) {
+		w1 += wg;
+	}
+	double w2 = 0.0;
+	for (double wd : wd_) {
+		w2 += wd;
+	}
+	double w = w1 + w2;
+
+	std::vector<std::pair<node, node> > E1;
+	std::vector<std::pair<node, node> > E2;
+
+	DEBUG("start sampling");
+	for (count j = 0; j < w; ++j) {
+		double r = this->rand.probability();
+		if (r < (w1 / w)) {
+			E1.push_back(this->samplePhaseOne());
+		} else {
+			E2.push_back(this->samplePhaseTwo());
+		}
+	}
 }
 
 std::pair<node, node> BTERGenerator::samplePhaseOne() {
