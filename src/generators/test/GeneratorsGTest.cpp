@@ -5,20 +5,20 @@
  *      Author: cls
  */
 
-#include "GeneratorsTest.h"
+#include "GeneratorsGTest.h"
 
 namespace NetworKit {
 
-GeneratorsTest::GeneratorsTest() {
+GeneratorsGTest::GeneratorsGTest() {
 	// TODO Auto-generated constructor stub
 
 }
 
-GeneratorsTest::~GeneratorsTest() {
+GeneratorsGTest::~GeneratorsGTest() {
 	// TODO Auto-generated destructor stub
 }
 
-TEST_F(GeneratorsTest, testDynamicBarabasiAlbertGenerator) {
+TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 
 	Graph G(0); // empty graph
 	GraphEventProxy proxy(G);
@@ -40,7 +40,7 @@ TEST_F(GeneratorsTest, testDynamicBarabasiAlbertGenerator) {
 	DEBUG("m = " << G.numberOfEdges());
 }
 
-TEST_F(GeneratorsTest, testStaticPubWebGenerator) {
+TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	count n = 800;
 	count numCluster = 40;
 	count maxNumNeighbors = 20;
@@ -56,7 +56,17 @@ TEST_F(GeneratorsTest, testStaticPubWebGenerator) {
 
 	// output to EPS file
 	PostscriptWriter psWriter(G, true);
-	psWriter.write(clustering, "pubweb-lp-cluster.eps");
+	psWriter.write(clustering, "output/pubweb-lp-cluster.eps");
+}
+
+
+TEST_F(GeneratorsGTest, testBTERGenerator) {
+	std::vector<count> degreeDistribution { 0, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+	std::vector<double> clusteringCoefficients {0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+	DEBUG("construct BTERGenerator");
+	BTERGenerator bter(degreeDistribution, clusteringCoefficients, 1.0);
+	DEBUG("call BTERGenerator");
+	bter.generate();
 }
 
 } /* namespace NetworKit */

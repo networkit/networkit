@@ -144,7 +144,7 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 
 
 	/* Knoten zeichnen */
-	float dotsize = 1.2;
+	float dotsize = 3.6;
 	g->forNodes([&](node u) {
 		if (clustering[u] != none) {
 			// change color
