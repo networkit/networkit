@@ -9,12 +9,15 @@
 #define FORCEDIRECTED_H_
 
 #include "SpringEmbedder.h"
+#include "Point.h"
+#include <vector>
+#include <cmath>
 
 namespace NetworKit {
 
 class ForceDirected: public NetworKit::SpringEmbedder {
 public:
-	ForceDirected();
+	ForceDirected(Point<float> bottomLeft, Point<float> topRight);
 	virtual ~ForceDirected();
 
 	/**
