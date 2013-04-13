@@ -9,7 +9,9 @@
 
 namespace NetworKit {
 
-SpringEmbedder::SpringEmbedder() {
+SpringEmbedder::SpringEmbedder(Point<float> bottom_left, Point<float> top_right):
+		Layouter(bottom_left, top_right)
+{
 	// TODO Auto-generated constructor stub
 
 }

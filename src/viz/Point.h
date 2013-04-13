@@ -10,6 +10,8 @@
 
 #include <vector>
 #include <cinttypes>
+#include <cassert>
+#include <cmath>
 
 namespace NetworKit {
 
@@ -32,7 +34,31 @@ public:
 	count getDimensions() { return data.size(); }
 	T getValue(index dim) { return data.at(dim); }
 	void setValue(index dim, T value) { data.at(dim) = value; }
+
+	T distance(const Point<T>& p) const;
+
+	void operator+=(const Point<T>& p);
 };
+
+template<class T>
+T Point<T>::distance(const Point<T>& p) const {
+	assert(this->data.size() == p.data.size());
+	T dist = (T) 0;
+	for (index i = 0; i < data.size(); ++i) {
+		T diff = this->data[i] - p.data[i];
+		dist += diff * diff;
+	}
+	return sqrt(dist);
+}
+
+template<class T>
+void Point<T>::operator+=(const Point<T>& p) {
+	assert(this->data.size() == p.data.size());
+	for (index i = 0; i < data.size(); ++i) {
+		this->data[i] += p.data[i];
+	}
+}
+
 
 } /* namespace NetworKit */
 #endif /* POINT_H_ */

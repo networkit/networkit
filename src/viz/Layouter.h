@@ -9,15 +9,23 @@
 #define LAYOUTER_H_
 
 #include "../graph/Graph.h"
+#include "../aux/RandomProbability.h"
 
 namespace NetworKit {
 
 class Layouter {
+protected:
+	Point<float> bottomLeft;
+	Point<float> topRight;
+	std::vector<Point<float> > layout;
+
 public:
-	Layouter();
+	Layouter(Point<float> bottomLeft, Point<float> topRight);
 	virtual ~Layouter();
 
 	virtual void draw(Graph& g) = 0;
+
+	virtual void randomInitCoordinates(Graph& g);
 };
 
 } /* namespace NetworKit */

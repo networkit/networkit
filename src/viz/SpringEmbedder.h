@@ -14,7 +14,7 @@ namespace NetworKit {
 
 class SpringEmbedder: public NetworKit::Layouter {
 public:
-	SpringEmbedder();
+	SpringEmbedder(Point<float> bottomLeft, Point<float> topRight);
 	virtual ~SpringEmbedder();
 
 	virtual void draw(Graph& g) = 0;
