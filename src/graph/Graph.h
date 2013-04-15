@@ -37,6 +37,7 @@ class Graph {
 
 protected:
 
+	// TODO: why is this an inner class?
 	template<class T>
 	class Coordinates {
 	private:

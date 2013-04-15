@@ -35,6 +35,11 @@ index Graph::find(node u, node v) const {
 }
 
 void Graph::addEdge(node u, node v, edgeweight weight) {
+	assert (u >= 0);
+	assert (u <= this->z);
+	assert (v >= 0);
+	assert (v <= this->z); // node ids must be in range
+
 	if (u == v) { // self-loop case
 		this->adja[u].push_back(u);
 		this->deg[u] += 1;
