@@ -12,17 +12,17 @@ namespace NetworKit {
 BTERGenerator::BTERGenerator(std::vector<count>& degreeDistribution,
 		std::vector<double>& clusteringCoefficients, double beta) :
 		beta(beta),
-		dMax(degreeDistribution.size()),
+		dMax(degreeDistribution.size() - 1), // degree distribution has entries for indices in [0, dMax]
 		nd_(degreeDistribution),
 		c_(clusteringCoefficients),
 		id_(dMax),
 		nFill_(dMax),
 		wd_(dMax),
-		r_(dMax),
-		ig_(dMax), 	// gMax <= dMax TODO: save memory here?
-		b_(dMax),	// gMax <= dMax
-		wg_(dMax),	// gMax <= dMax
-		ng_(dMax) 	// gMax <= dMax
+		r_(dMax, none),
+		ig_(dMax, none), 	// gMax <= dMax TODO: save memory here?
+		b_(dMax, none),	// gMax <= dMax
+		wg_(dMax, none),	// gMax <= dMax
+		ng_(dMax, none) 	// gMax <= dMax
 {
 }
 
@@ -30,11 +30,32 @@ BTERGenerator::~BTERGenerator() {
 	// TODO Auto-generated destructor stub
 }
 
+std::pair<count, count> BTERGenerator::desiredGraphSize() {
+	assert (nd_.size() == dMax + 1);
+	count nDesired = 0;
+	count mDesired = 0;
+	for (index d = 0; d <= dMax; ++d) {
+		nDesired += nd_[d];
+		mDesired += d * nd_[d];
+	}
+	mDesired = mDesired / 2;
+	return std::pair<count, count>(nDesired, mDesired);
+}
+
 Graph BTERGenerator::generate() {
+
+	std::pair<count, count> size = this->desiredGraphSize();
+	INFO("desired number of nodes: " << size.first);
+	INFO("desired number of edges: " << size.second);
+
 	DEBUG("setup");
 	this->setup();
 	DEBUG("sample");
-	this->sample();
+	this->sample(); // TODO: insert edges directly
+
+
+
+	return Graph(0); // FIXME: mock graph
 }
 
 void BTERGenerator::setup() {
@@ -68,7 +89,7 @@ void BTERGenerator::setup() {
 	r_[1] = 1; // TODO: should rFill_ be a seperate array from r_?
 
 	// main loop
-	count g = 0; // affinity group index ?
+	count g = -1; // affinity group index - first group has index (correct?)
 	count nFillStar = 0; // number of nodes needed to complete the last incomplete block
 	count dStar = 0; // internal degree of the last incomplete block
 	double rhoStar; // ?
@@ -102,6 +123,7 @@ void BTERGenerator::setup() {
 			dStar = (nd_[g] - 1) * rhoStar;
 			wBulk_[d] = 0.5 * nBulk_[d] * (d - dStar);
 			DEBUG("wg_: " << wg_.size() << " b_: " << b_.size() << " ng_: " << ng_.size());
+			assert ( (1 - rhoStar) > 0); // avoid division by 0
 			wg_[g] = b_[g] * 0.5 * ng_[g] * (ng_[g] - 1) * std::log(1.0 / (1 - rhoStar)); // correct log?
 			nFillStar = (b_[g] * ng_[g]) - nBulk_[d];
 		} else {
@@ -138,6 +160,9 @@ void BTERGenerator::sample() {
 			E2.push_back(this->samplePhaseTwo());
 		}
 	}
+
+	INFO("E_1 size: " << E1.size());
+	INFO("E_2 size: " << E2.size());
 }
 
 std::pair<node, node> BTERGenerator::samplePhaseOne() {
@@ -159,6 +184,8 @@ std::pair<node, node> BTERGenerator::samplePhaseTwo() {
 	node v = this->samplePhaseTwoNode();
 	return std::pair<node, node>(u, v);
 }
+
+
 
 node BTERGenerator::samplePhaseTwoNode() {
 	degree d = this->rand.choice(wd_);

@@ -10,9 +10,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
 #include "StaticGraphGenerator.h"
 #include "../aux/Random.h"
+
+#define none -1 // use this as a placeholder for nonexistent values
+
 
 namespace NetworKit {
 
@@ -42,6 +46,11 @@ public:
 
 	virtual Graph generate();
 
+	/**
+	 * @return pair (n, m) 		desired graph size calculated from degree distribution
+	 */
+	virtual std::pair<count, count> desiredGraphSize();
+
 
 protected:
 
@@ -68,13 +77,13 @@ protected:
 	// instead of passing these as arguments, keep them as member variables
 
 	std::vector<index> id_; // index i_d for first node of each degree d
-	std::vector<count> nFill_; // ?
-	std::vector<double> wd_; // ? double or int? sum of wFill and wBulk
+	std::vector<count> nFill_; // number of filler nodes per degree
+	std::vector<double> wd_; // sum of wFill and wBulk TODO: double or int?
 	std::vector<double> r_; // ratio of fill nodes
-	std::vector<index> ig_; //? group index vector: ?
+	std::vector<index> ig_; // start index for affinity group
 	std::vector<count> b_; // b_[g]: number of blocks in a group
 	std::vector<double> wg_; // wg_[g]: weight of the group g
-	std::vector<count> ng_; // ?
+	std::vector<count> ng_; // number of blocks in the affinity group
 
 
 
