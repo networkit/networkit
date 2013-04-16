@@ -24,6 +24,9 @@ BTERGenerator::BTERGenerator(std::vector<count>& degreeDistribution,
 		wg_(dMax, none),	// gMax <= dMax
 		ng_(dMax, none) 	// gMax <= dMax
 {
+	if (beta < 1.0) {
+		throw std::runtime_error("blowup factor beta must be >= 1.0");
+	}
 }
 
 BTERGenerator::~BTERGenerator() {
@@ -48,14 +51,14 @@ Graph BTERGenerator::generate() {
 	INFO("desired number of nodes: " << size.first);
 	INFO("desired number of edges: " << size.second);
 
+	this->G = new Graph(size.first);
+
 	DEBUG("setup");
 	this->setup();
 	DEBUG("sample");
 	this->sample(); // TODO: insert edges directly
 
-
-
-	return Graph(0); // FIXME: mock graph
+	return *(this->G);
 }
 
 void BTERGenerator::setup() {
@@ -133,6 +136,7 @@ void BTERGenerator::setup() {
 		r_[d] = wFill_[d] / wd_[d];
 	}
 
+	// TODO: print all arrays for debugging
 	// arrays are passed to other procesures as member variables
 }
 
@@ -148,24 +152,20 @@ void BTERGenerator::sample() {
 	}
 	double w = w1 + w2;
 
-	std::vector<std::pair<node, node> > E1;
-	std::vector<std::pair<node, node> > E2;
 
 	DEBUG("start sampling");
 	for (count j = 0; j < w; ++j) {
 		double r = this->rand.probability();
 		if (r < (w1 / w)) {
-			E1.push_back(this->samplePhaseOne());
+			this->samplePhaseOne();
 		} else {
-			E2.push_back(this->samplePhaseTwo());
+			this->samplePhaseTwo();
 		}
 	}
 
-	INFO("E_1 size: " << E1.size());
-	INFO("E_2 size: " << E2.size());
 }
 
-std::pair<node, node> BTERGenerator::samplePhaseOne() {
+void BTERGenerator::samplePhaseOne() {
 	index g = this->rand.choice(wd_); // choose group
 	double r1 = this->rand.probability();
 	double r2 = this->rand.probability();
@@ -176,13 +176,15 @@ std::pair<node, node> BTERGenerator::samplePhaseOne() {
 	if (v >= u) {
 		v += 1; // TODO: why?
 	}
-	return std::pair<node, node>(u, v); // TODO: create edge here?
+	TRACE("adding phase 1 edge (" << u << ", " << v << ")");
+	this->G->addEdge(u, v);
 }
 
-std::pair<node, node> BTERGenerator::samplePhaseTwo() {
+void BTERGenerator::samplePhaseTwo() {
 	node u = this->samplePhaseTwoNode();
 	node v = this->samplePhaseTwoNode();
-	return std::pair<node, node>(u, v);
+	TRACE("adding phase 2 edge (" << u << ", " << v << ")");
+	this->G->addEdge(u, v);
 }
 
 

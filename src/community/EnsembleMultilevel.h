@@ -25,7 +25,8 @@
 #include "../coarsening/GraphContraction.h"
 #include "../io/GraphIO.h"
 #include "../coarsening/ClusteringProjector.h"
-#include "../clustering/RandMeasure.h"
+#include "../clustering/NodeStructuralRandMeasure.h"
+#include "../clustering/GraphStructuralRandMeasure.h"
 #include "../clustering/JaccardMeasure.h"
 
 

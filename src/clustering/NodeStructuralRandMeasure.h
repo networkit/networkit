@@ -5,20 +5,20 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef RANDMEASURE_H_
-#define RANDMEASURE_H_
+#ifndef NODESTRUCTURALRANDMEASURE_H_
+#define NODESTRUCTURALRANDMEASURE_H_
 
 #include "DissimilarityMeasure.h"
 
 namespace NetworKit {
 
-class RandMeasure: public NetworKit::DissimilarityMeasure {
+class NodeStructuralRandMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	RandMeasure();
+	NodeStructuralRandMeasure();
 
-	virtual ~RandMeasure();
+	virtual ~NodeStructuralRandMeasure();
 
 	virtual double getDissimilarity(Graph& G, Clustering& first, Clustering& second);
 
