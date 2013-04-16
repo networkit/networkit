@@ -8,22 +8,33 @@
 #ifndef DYNAMICLABELPROPAGATION_H_
 #define DYNAMICLABELPROPAGATION_H_
 
+#include <algorithm>
+
 #include "DynamicClusterer.h"
+#include "../aux/Timer.h"
 
 namespace NetworKit {
+
+typedef cluster label;
 
 class DynamicLabelPropagation: public NetworKit::DynamicClusterer {
 
 protected:
 
-	Graph* G;
+	count n; //!< current number of nodes TOOD: update
+	Clustering labels;
 	std::vector<bool> activeNodes;
+	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
 	count updateThreshold;
-	// Clustering labels;
+	count nUpdated; //!< number of nodes updated in last iteration (?)
 
 public:
 
-	DynamicLabelPropagation(Graph& G);
+	/**
+	 * @param[in]	G		graph
+	 * @param[in]	theta	update threshold
+	 */
+	DynamicLabelPropagation(Graph& G, count theta);
 
 	virtual ~DynamicLabelPropagation();
 
