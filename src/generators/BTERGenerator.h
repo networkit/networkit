@@ -58,15 +58,16 @@ protected:
 
 	void sample();
 
-	std::pair<node, node> samplePhaseOne();
+	void samplePhaseOne();
 
-	std::pair<node, node> samplePhaseTwo();
+	void samplePhaseTwo();
 
 	node samplePhaseTwoNode();
 
-
+	// data
 
 	Aux::Random rand; // random module
+	Graph* G;	// pointer to graph instance being generated
 
 	double beta; // blowup-factor for deg-1 nodes
 
@@ -74,7 +75,7 @@ protected:
 	std::vector<count> nd_; //!< degree distribution: nd_[d] = number of nodes with degree d
 	std::vector<double> c_;	//!< clustering coefficient per degree: 	// TODO: no need to keep c_ after the preprocessing is done
 
-	// instead of passing these as arguments, keep them as member variables
+	// instead of passing these arrays as arguments, keep them as member variables
 
 	std::vector<index> id_; // index i_d for first node of each degree d
 	std::vector<count> nFill_; // number of filler nodes per degree

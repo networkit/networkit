@@ -65,8 +65,15 @@ TEST_F(GeneratorsGTest, testBTERGenerator) {
 	std::vector<double> clusteringCoefficients {0.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 };
 	DEBUG("construct BTERGenerator");
 	BTERGenerator bter(degreeDistribution, clusteringCoefficients, 1.0);
+	std::pair<count, count> nm = bter.desiredGraphSize();
 	DEBUG("call BTERGenerator");
-	bter.generate();
+	Graph G = bter.generate();
+
+	EXPECT_EQ(nm.first, G.numberOfNodes());
+	EXPECT_EQ(nm.second, G.numberOfEdges());
+
+	METISGraphWriter writer;
+	writer.write(G, "output/BTERTest.graph");
 }
 
 } /* namespace NetworKit */

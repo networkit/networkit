@@ -17,6 +17,7 @@
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../community/LabelPropagation.h"
 #include "../BTERGenerator.h"
+#include "../../io/METISGraphWriter.h"
 
 namespace NetworKit {
 

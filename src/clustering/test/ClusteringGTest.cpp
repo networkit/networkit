@@ -114,7 +114,7 @@ TEST_F(ClusteringGTest, testJaccardMeasure) {
 }
 
 
-TEST_F(ClusteringGTest, testRandMeasure) {
+TEST_F(ClusteringGTest, testNodeStructuralRandMeasure) {
 	count n = 100;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
@@ -123,7 +123,23 @@ TEST_F(ClusteringGTest, testRandMeasure) {
 	Clustering one1 = clusteringGen.makeOneClustering(G);
 	Clustering one2 = clusteringGen.makeOneClustering(G);
 
-	RandMeasure rand;
+	NodeStructuralRandMeasure rand;
+	double r = rand.getDissimilarity(G, one1, one2);
+
+	EXPECT_EQ(0.0, r) << "Identical clusterings should compare with a dissimilarity of 0.0";
+
+}
+
+TEST_F(ClusteringGTest, testGraphStructuralRandMeasure) {
+	count n = 100;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCompleteGraph(n);
+
+	ClusteringGenerator clusteringGen;
+	Clustering one1 = clusteringGen.makeOneClustering(G);
+	Clustering one2 = clusteringGen.makeOneClustering(G);
+
+	GraphStructuralRandMeasure rand;
 	double r = rand.getDissimilarity(G, one1, one2);
 
 	EXPECT_EQ(0.0, r) << "Identical clusterings should compare with a dissimilarity of 0.0";
