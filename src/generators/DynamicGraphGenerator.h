@@ -18,7 +18,7 @@ class DynamicGraphGenerator {
 
 protected:
 
-	GraphEventProxy* proxy;	//!< receives events produced by the generator and forwards them
+	GraphEventProxy* Gproxy;	//!< receives events produced by the generator and forwards them
 	Graph* G;
 
 public:
