@@ -21,12 +21,11 @@ class DynamicLabelPropagation: public NetworKit::DynamicClusterer {
 
 protected:
 
-	count n; //!< current number of nodes TOOD: update
-	Clustering labels;
-	std::vector<bool> activeNodes;
+	Clustering labels;		//!< the labelling/clustering
+	std::vector<bool> activeNodes;		//!< which nodes are currently active?
 	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
 	count updateThreshold;
-	count nUpdated; //!< number of nodes updated in last iteration (?)
+	count nUpdated; 					//!< number of nodes updated in last iteration (?)
 
 public:
 
@@ -52,7 +51,7 @@ public:
 
 	virtual void onEdgeRemoval(node u, node v);
 
-	virtual void onWeightUpdate(node u, node v, edgeweight w);
+	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
 
 };
 

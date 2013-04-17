@@ -84,6 +84,8 @@ public:
 	virtual void setAll(T value);
 
 
+
+
 	/**
 	 * quick & dirty debug print
 	 * TODO: replace with operator<<

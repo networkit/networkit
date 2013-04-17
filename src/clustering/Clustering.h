@@ -17,7 +17,7 @@
 
 namespace NetworKit {
 
-typedef int64_t cluster;	//!< cluster is represented as a 1-based index
+typedef int64_t cluster;	//!< cluster is represented as a 0-based index
 
 class Clustering: public NodeMap<cluster> {
 
@@ -209,6 +209,12 @@ public:
 
 
 	std::vector<count> clusterSizes();
+
+
+	/**
+	 * Append a node.
+	 */
+	void append(node u);
 
 
 

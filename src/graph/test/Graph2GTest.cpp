@@ -473,6 +473,9 @@ TEST_F(Graph2GTest, testNodeDynamics) {
 	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
 
 	for (node u = 0; u < n; ++u) {
+		G.forEdgesOf(u, [&](node u, node v){
+			G.removeEdge(u, v);
+		});
 		G.removeNode(u);
 	}
 
@@ -480,6 +483,9 @@ TEST_F(Graph2GTest, testNodeDynamics) {
 	EXPECT_EQ(0, G.numberOfEdges());
 
 	for (node u = n; u < 2 * n; ++u) {
+		G.forEdgesOf(u, [&](node u, node v){
+			G.removeEdge(u, v);
+		});
 		G.removeNode(u);
 	}
 
@@ -619,11 +625,11 @@ TEST_F(Graph2GTest, testConditionalNodeIteration) {
 
 
 	count nc = 0;
-	G.forNodesWhile([&](){ return (nc <= 50); }, [&](node u){
+	G.forNodesWhile([&](){ return (nc < n); }, [&](node u){
 		nc += 1;
 	});
 
-	EXPECT_EQ(50, nc);
+	EXPECT_EQ(n, nc);
 }
 
 } /* namespace NetworKit */
