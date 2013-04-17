@@ -49,9 +49,10 @@ void GraphEventProxy::removeEdge(node u, node v) {
 
 
 void GraphEventProxy::setWeight(node u, node v, edgeweight w) {
+	edgeweight wOld = this->G->weight(u, v);
 	this->G->setWeight(u, v, w);
 	for (GraphEventHandler* observer : this->observers) {
-		observer->onWeightUpdate(u, v, w);
+		observer->onWeightUpdate(u, v, wOld, w);
 	}
 }
 

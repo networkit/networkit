@@ -34,17 +34,17 @@ TEST_F(DynamicCommunityDetectionGTest, testSetup) {
 	gen->initializeGraph();
 
 	// 7. start generator
-	auto until1 = [&](){
-		return (G.numberOfNodes() == 100);
+	auto cont1 = [&](){
+		return (G.numberOfNodes() < 100);
 	};
-	gen->generate(until1); // stops when function returns true
+	gen->generateWhile(cont1); // stops when function returns true
 	// 8. start clusterer
 	Clustering zeta1 = dynPLP->run();
 	// 9. resume generator
-	auto until2 = [&](){
-		return (G.numberOfNodes() == 200);
+	auto cont2 = [&](){
+		return (G.numberOfNodes() < 200);
 	};
-	gen->generate(until2); // terminate when function returns true
+	gen->generateWhile(cont2); // terminate when function returns true
 	EXPECT_EQ(200, G.numberOfNodes()) << "200 nodes should have been generated";
 	// 10. resume clusterer
 	Clustering zeta2 = dynPLP->run();

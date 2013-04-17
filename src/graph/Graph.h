@@ -239,7 +239,12 @@ public:
 	node addNode();
 
 	/**
-	 * Remove a node from the graph.
+	 * Remove an isolated node from the graph.
+	 *
+	 * Although it would be convenient to remove all incident edges at the same time,
+	 * this causes complications for dynamic applications. Therefore, removeNode is an
+	 * atomic event. All incident edges need to be removed first and an exception is thrown
+	 * otherwise.
 	 */
 	void removeNode(node u);
 

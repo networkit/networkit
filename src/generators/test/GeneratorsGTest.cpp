@@ -31,8 +31,8 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 
 	count n = 100;
 
-	gen->generate([&]() {
-				return ( G.numberOfNodes() == n );
+	gen->generateWhile([&]() {
+				return ( G.numberOfNodes() < n );
 			});
 
 	EXPECT_EQ(n, G.numberOfNodes());

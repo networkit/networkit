@@ -260,9 +260,9 @@ count Graph::numberOfSelfLoops() const {
 }
 
 void Graph::removeNode(node u) {
-	this->forEdgesOf(u, [&](node u, node v){
-		this->removeEdge(u, v);
-	});
+	if (this->degree(u) > 0) {
+		throw std::runtime_error("nodes must have degree 0 before they can be removed");
+	}
 
 	this->exists[u] = false;
 	this->n -= 1;

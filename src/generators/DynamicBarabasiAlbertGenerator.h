@@ -28,7 +28,7 @@ public:
 
 	virtual void initializeGraph();
 
-	virtual void generate(std::function<bool(void)> terminate);
+	virtual void generateWhile(std::function<bool(void)> cont);
 };
 
 } /* namespace NetworKit */

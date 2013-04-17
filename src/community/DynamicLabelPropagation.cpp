@@ -11,11 +11,11 @@ namespace NetworKit {
 
 DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta) :
 		DynamicClusterer(G),
-		n(G.numberOfNodes()),
-		labels(n),
-		activeNodes(n),
-		weightedDegree(n, 0.0),
-		updateThreshold(theta) {
+		labels(G.numberOfNodes()),
+		activeNodes(G.numberOfNodes()),
+		weightedDegree(G.numberOfNodes(), 0.0),
+		updateThreshold(theta),
+		nUpdated(G.numberOfNodes()) {
 	labels.allToSingletons(); // initialize labels to singleton clustering
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	DEBUG("[BEGIN] Label Propagation: precomputing incident weight");
@@ -32,30 +32,52 @@ DynamicLabelPropagation::~DynamicLabelPropagation() {
 }
 
 void DynamicLabelPropagation::onNodeAddition(node u) {
-	this->activeNodes.push_back(true); // new node is active
-	// TODO: new node gets id as label
+	// update data structures
+	activeNodes.push_back(true); // new node is active
+	weightedDegree.push_back(0.0);
+	labels.append(u);
+	labels.toSingleton(u);
 }
 
 void DynamicLabelPropagation::onNodeRemoval(node u) {
-	// TODO: implies removal of all incident edges
-	this->G->forNeighborsOf(u, [&](node v){
-		this->activeNodes[v] = true;
-	});
-	// TODO: node is no longer included in iteration
+	assert (G->degree(u) == 0);
+	assert (weightedDegree[u] == 0.0);
+	activeNodes[u] = false; //
 }
 
 void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
-	this->activeNodes[u] = true;
-	this->activeNodes[v] = true;
+	// update weighted degree
+	edgeweight w = G->weight(u, v);
+	weightedDegree[u] += w;
+	weightedDegree[v] += w;
+	// assert that this is consistent with the graph
+	assert (G->weightedDegree(u) == weightedDegree[u]);
+	assert (G->weightedDegree(v) == weightedDegree[v]);
+	// activate source and target // TODO: strategy
+	activeNodes[u] = true;
+	activeNodes[v] = true;
 }
 
 void DynamicLabelPropagation::onEdgeRemoval(node u, node v) {
+	// update weighted degree
+	edgeweight w = G->weight(u, v);
+	weightedDegree[u] -= w;
+	weightedDegree[v] -= w;
+	// assert that this is consistent with the graph
+	assert (G->weightedDegree(u) == weightedDegree[u]);
+	assert (G->weightedDegree(v) == weightedDegree[v]);
+	// activate source and target // TODO: strategy
 	this->activeNodes[u] = true;
 	this->activeNodes[v] = true;
 }
 
 
-void DynamicLabelPropagation::onWeightUpdate(node u, node v, edgeweight w) {
+void DynamicLabelPropagation::onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) {
+	//update weighted degree
+	weightedDegree[u] += (wNew - wOld);
+	weightedDegree[v] += (wNew - wOld);
+
+	// activate source and target // TODO: strategy
 	this->activeNodes[u] = true;
 	this->activeNodes[v] = true;
 }
