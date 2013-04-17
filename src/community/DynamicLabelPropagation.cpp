@@ -18,11 +18,11 @@ DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta) :
 		nUpdated(G.numberOfNodes()) {
 	labels.allToSingletons(); // initialize labels to singleton clustering
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
-	DEBUG("[BEGIN] Label Propagation: precomputing incident weight");
+	DEBUG("[BEGIN] Label Propagation: precomputing weighted degree");
 	this->G->parallelForNodes([&](node v) {
 		weightedDegree[v] = this->G->weightedDegree(v);
 	});
-	DEBUG("[DONE] Label Propagation: precomputing incident weight");
+	DEBUG("[DONE] Label Propagation: precomputing weighted degree");
 
 }
 
@@ -48,8 +48,13 @@ void DynamicLabelPropagation::onNodeRemoval(node u) {
 void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
 	// update weighted degree
 	edgeweight w = G->weight(u, v);
-	weightedDegree[u] += w;
-	weightedDegree[v] += w;
+	if (u != v) {
+		weightedDegree[u] += w;
+		weightedDegree[v] += w;
+	} else {
+		weightedDegree[u] += w; // self-loop case
+	}
+
 	// assert that this is consistent with the graph
 	assert (G->weightedDegree(u) == weightedDegree[u]);
 	assert (G->weightedDegree(v) == weightedDegree[v]);
@@ -61,8 +66,12 @@ void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
 void DynamicLabelPropagation::onEdgeRemoval(node u, node v) {
 	// update weighted degree
 	edgeweight w = G->weight(u, v);
-	weightedDegree[u] -= w;
-	weightedDegree[v] -= w;
+	if (u != v) {
+		weightedDegree[u] -= w;
+		weightedDegree[v] -= w;
+	} else {
+		weightedDegree[u] -= w; // self-loop case
+	}
 	// assert that this is consistent with the graph
 	assert (G->weightedDegree(u) == weightedDegree[u]);
 	assert (G->weightedDegree(v) == weightedDegree[v]);
@@ -74,8 +83,13 @@ void DynamicLabelPropagation::onEdgeRemoval(node u, node v) {
 
 void DynamicLabelPropagation::onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) {
 	//update weighted degree
-	weightedDegree[u] += (wNew - wOld);
-	weightedDegree[v] += (wNew - wOld);
+	if (u != v) {
+		weightedDegree[u] += (wNew - wOld);
+		weightedDegree[v] += (wNew - wOld);
+	} else {
+		weightedDegree[u] += (wNew - wOld);
+	}
+
 
 	// activate source and target // TODO: strategy
 	this->activeNodes[u] = true;
@@ -87,11 +101,15 @@ std::string DynamicLabelPropagation::toString() const {
 }
 
 Clustering DynamicLabelPropagation::run() {
+	INFO("running DynamicLabelPropagation");
 
 	Aux::Timer runtime;
 	count nIterations = 0;
+	nUpdated = G->numberOfNodes(); // starts while loop - TODO: correct?
+
 	runtime.start();
 	while (nUpdated > updateThreshold) {
+		nUpdated = 0;
 		nIterations += 1;
 		G->parallelForNodes([&](node u){
 			if ((activeNodes[u]) && (G->degree(u) > 0)) {
@@ -120,8 +138,8 @@ Clustering DynamicLabelPropagation::run() {
 				}
 			} else { /* node is isolated */ }
 		}); // end parallel for nodes
-		// TODO:
-	}
+		TRACE("nUpdated = " << nUpdated);
+	} // end while
 
 	runtime.stop();
 	INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());

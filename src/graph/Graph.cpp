@@ -160,7 +160,7 @@ count Graph::degree(node v) const {
 }
 
 edgeweight Graph::weightedDegree(node v) const {
-	// weighted degree as sum over incident edge weight
+	// weighted degree as sum over incident edge weight - self-loops are counted once
 	edgeweight wDeg = 0.0;
 	for (edgeweight w : this->eweights[v]) {
 		wDeg += w;

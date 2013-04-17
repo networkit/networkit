@@ -8,6 +8,8 @@
 #ifndef DYNAMICBARABASIALBERTGENERATOR_H_
 #define DYNAMICBARABASIALBERTGENERATOR_H_
 
+#include <set>
+
 #include "DynamicGraphGenerator.h"
 #include "../aux/RandomInteger.h"
 
@@ -17,12 +19,12 @@ class DynamicBarabasiAlbertGenerator: public NetworKit::DynamicGraphGenerator {
 
 protected:
 
-	int k; //<! paramter of the BA model: number of edges per new node
+	count k; //<! paramter of the BA model: number of edges per new node
 
 
 public:
 
-	DynamicBarabasiAlbertGenerator(GraphEventProxy& proxy, int k = 2);
+	DynamicBarabasiAlbertGenerator(GraphEventProxy& proxy, count k = 2);
 
 	virtual ~DynamicBarabasiAlbertGenerator();
 

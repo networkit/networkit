@@ -623,13 +623,30 @@ TEST_F(Graph2GTest, testConditionalNodeIteration) {
 	count n = 100;
 	Graph G(n);
 
-
 	count nc = 0;
 	G.forNodesWhile([&](){ return (nc < n); }, [&](node u){
 		nc += 1;
 	});
 
 	EXPECT_EQ(n, nc);
+}
+
+
+TEST_F(Graph2GTest, testMultiEdgeInsertion) {
+	// the current implementation of Graph allows multi-edges for performance reasons
+	// this may result in unexpected behavior - it is up to the graph generator to avoid multi-edges if necessary
+	count n = 2;
+	Graph G(n);
+
+	node u = 0;
+	node v = 1;
+	for (int i = 0; i < 42; ++i) {
+		G.addEdge(u, v);
+	}
+
+	EXPECT_EQ(42, G.numberOfEdges());
+	EXPECT_EQ(42, G.degree(u));
+	EXPECT_EQ(42, G.degree(v));
 }
 
 } /* namespace NetworKit */

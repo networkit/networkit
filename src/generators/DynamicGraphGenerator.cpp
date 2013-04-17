@@ -10,8 +10,8 @@
 namespace NetworKit {
 
 DynamicGraphGenerator::DynamicGraphGenerator(GraphEventProxy& proxy) {
-	this->proxy = &proxy;
-	this->G = this->proxy->G;
+	this->Gproxy = &proxy;
+	this->G = this->Gproxy->G;
 }
 
 DynamicGraphGenerator::~DynamicGraphGenerator() {

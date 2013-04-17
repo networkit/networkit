@@ -23,11 +23,12 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 	Graph G(0); // empty graph
 	GraphEventProxy proxy(G);
 
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy);
+	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy, 2);
 
 	gen->initializeGraph();
 
 	EXPECT_EQ(2, G.numberOfNodes()) << "initially the generator creates two connected nodes";
+	EXPECT_EQ(1, G.numberOfEdges()) << "initially the generator creates two connected nodes";
 
 	count n = 100;
 
@@ -39,6 +40,21 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 
 	DEBUG("m = " << G.numberOfEdges());
 }
+
+
+TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
+	Graph G(0); // empty graph
+	GraphEventProxy proxy(G);
+	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy, 2);
+	gen->initializeGraph();
+	count n = 42;
+	gen->generateWhile([&]() {
+				return ( G.numberOfNodes() < n );
+			});
+	METISGraphWriter writer;
+	writer.write(G, "output/BATest.graph");
+}
+
 
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	count n = 800;
