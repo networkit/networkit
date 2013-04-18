@@ -37,8 +37,13 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 			});
 
 	EXPECT_EQ(n, G.numberOfNodes());
-
 	DEBUG("m = " << G.numberOfEdges());
+
+	// resume generator
+	gen->generateWhile([&]() {
+		return (G.numberOfNodes() < 2 * n);
+	});
+	EXPECT_EQ(2 * n, G.numberOfNodes());
 }
 
 
