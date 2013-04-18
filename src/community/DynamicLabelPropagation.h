@@ -12,6 +12,7 @@
 
 #include "DynamicClusterer.h"
 #include "../aux/Timer.h"
+#include "PrepStrategy.h"
 
 namespace NetworKit {
 
@@ -19,13 +20,6 @@ typedef cluster label;
 
 class DynamicLabelPropagation: public NetworKit::DynamicClusterer {
 
-protected:
-
-	Clustering labels;		//!< the labelling/clustering
-	std::vector<bool> activeNodes;		//!< which nodes are currently active?
-	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
-	count updateThreshold;
-	count nUpdated; 					//!< number of nodes updated in last iteration (?)
 
 public:
 
@@ -52,6 +46,61 @@ public:
 	virtual void onEdgeRemoval(node u, node v);
 
 	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
+
+protected:
+
+	Clustering labels;					//!< the labelling/clustering
+	std::vector<bool> activeNodes;		//!< which nodes are currently active?
+	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
+	count updateThreshold;
+	count nUpdated; 					//!< number of nodes updated in last iteration (?)
+
+	PrepStrategy* prepStrategy;			//!< a prep strategy reacts to graph events by preparing the algorithm's clustering
+
+
+	// PREP STRATEGIES
+	// prep strategies encapsulate different update schemes and make DynamicLabelPropagation modular
+
+	class Reactivation : public NetworKit::PrepStrategy {
+
+		friend class DynamicLabelPropagation;
+
+	public:
+
+		Reactivation(DynamicLabelPropagation& dynPLP);
+
+		virtual ~Reactivation();
+
+		/**
+		 * New node u becomes a singleton and active.
+		 */
+		virtual void onNodeAddition(node u);
+
+		/**
+		 * Removed node u becomes permanently inactive.
+		 */
+		virtual void onNodeRemoval(node u);
+
+		/**
+		 * Reactivate u and v on addition of edge {u,v}
+		 */
+		virtual void onEdgeAddition(node u, node v);
+
+		/**
+		 * Reactivate u and v on removal of edge {u,v}
+		 */
+		virtual void onEdgeRemoval(node u, node v);
+
+		/**
+		 * Same reaction as onEdgeAddition
+		 */
+		virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
+
+	protected:
+
+		DynamicLabelPropagation* dynPLP;
+
+	};
 
 };
 

@@ -35,14 +35,16 @@ void DynamicLabelPropagation::onNodeAddition(node u) {
 	// update data structures
 	activeNodes.push_back(true); // new node is active
 	weightedDegree.push_back(0.0);
-	labels.append(u);
-	labels.toSingleton(u);
+	labels.append(u); // extend label array by 1 entry
+
+	prepStrategy->onNodeAddition(u);
 }
 
 void DynamicLabelPropagation::onNodeRemoval(node u) {
 	assert (G->degree(u) == 0);
 	assert (weightedDegree[u] == 0.0);
-	activeNodes[u] = false; //
+
+	prepStrategy->onNodeRemoval(u);
 }
 
 void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
@@ -61,6 +63,7 @@ void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
 	// activate source and target // TODO: strategy
 	activeNodes[u] = true;
 	activeNodes[v] = true;
+
 }
 
 void DynamicLabelPropagation::onEdgeRemoval(node u, node v) {
@@ -148,5 +151,33 @@ Clustering DynamicLabelPropagation::run() {
 }
 
 
+// PREP STRATEGY IMPLEMENTATIONS
+
+void DynamicLabelPropagation::Reactivation::onNodeAddition(node u) {
+	dynPLP->labels.toSingleton(u);
+	dynPLP->activeNodes[u] = true;
+}
+
+void DynamicLabelPropagation::Reactivation::onNodeRemoval(node u) {
+	dynPLP->activeNodes[u] = false; // assumption: this node can never be reactivated
+}
+
+void DynamicLabelPropagation::Reactivation::onEdgeAddition(node u, node v) {
+	dynPLP->activeNodes[u] = true;
+	dynPLP->activeNodes[v] = true;
+}
+
+void DynamicLabelPropagation::Reactivation::onEdgeRemoval(node u, node v) {
+	dynPLP->activeNodes[u] = true;
+	dynPLP->activeNodes[v] = true;
+}
+
+void DynamicLabelPropagation::Reactivation::onWeightUpdate(node u, node v,
+		edgeweight wOld, edgeweight wNew) {
+	this->onEdgeAddition(u, v);
+}
+
+
 
 } /* namespace NetworKit */
+
