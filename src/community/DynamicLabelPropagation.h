@@ -67,7 +67,7 @@ protected:
 
 	public:
 
-		Reactivation(DynamicLabelPropagation& dynPLP);
+		Reactivation(DynamicLabelPropagation* dynPLP);
 
 		virtual ~Reactivation();
 
