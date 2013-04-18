@@ -24,6 +24,8 @@ DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta) :
 	});
 	DEBUG("[DONE] Label Propagation: precomputing weighted degree");
 
+	this->prepStrategy = new DynamicLabelPropagation::Reactivation(this);
+
 }
 
 
@@ -152,6 +154,15 @@ Clustering DynamicLabelPropagation::run() {
 
 
 // PREP STRATEGY IMPLEMENTATIONS
+
+DynamicLabelPropagation::Reactivation::Reactivation(
+		DynamicLabelPropagation* dynPLP) {
+	this->dynPLP = dynPLP;
+}
+
+DynamicLabelPropagation::Reactivation::~Reactivation() {
+}
+
 
 void DynamicLabelPropagation::Reactivation::onNodeAddition(node u) {
 	dynPLP->labels.toSingleton(u);
