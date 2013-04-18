@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 
 #include "../DynamicLabelPropagation.h"
+#include "../LabelPropagation.h"
 #include "../../generators/DynamicBarabasiAlbertGenerator.h"
 
 namespace NetworKit {
