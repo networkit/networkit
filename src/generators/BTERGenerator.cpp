@@ -67,10 +67,10 @@ void BTERGenerator::setup() {
 
 	// compute number of nodes n'_d with degree greater d
 
-	std::vector<count> nBulk_(dMax); // number of bulk nodes of degree d
-	std::vector<count> ndRest_(dMax); // ?
-	std::vector<double> wFill_(dMax); // weight of the degree-d fill nodes for phase 2
-	std::vector<double> wBulk_(dMax); //weight of degree-d bulk nodes for phase 2
+	std::vector<count> nBulk_(dMax); 	// number of bulk nodes of degree d
+	std::vector<count> ndRest_(dMax); 	// ?
+	std::vector<double> wFill_(dMax); 	// weight of the degree-d fill nodes for phase 2
+	std::vector<double> wBulk_(dMax); 	//weight of degree-d bulk nodes for phase 2
 
 	// number of nodes from least degree to greatest, except degree-1 nodes are last
 	id_[2] = 1; // TODO: should indices be zero-based?
@@ -89,13 +89,13 @@ void BTERGenerator::setup() {
 	// handle degree-1 nodes
 	nFill_[1] = beta * nd_[1];
 	wd_[1] = 0.5 * nFill_[1];
-	r_[1] = 1; // TODO: should rFill_ be a seperate array from r_?
+	r_[1] = 1;
 
 	// main loop
-	count g = -1; // affinity group index - first group has index (correct?)
-	count nFillStar = 0; // number of nodes needed to complete the last incomplete block
-	count dStar = 0; // internal degree of the last incomplete block
-	double rhoStar; // ?
+	count g = 0; 			// affinity group index - first group has index 1 TODO: correct?
+	count nFillStar = 0; 	// number of nodes needed to complete the last incomplete block
+	count dStar = 0; 		// internal degree of the last incomplete block
+	double rhoStar; 		// ?
 
 	for (count d = 2; d <= dMax; d++) {
 		// try to fill incomplete block from current group
@@ -167,14 +167,16 @@ void BTERGenerator::sample() {
 
 void BTERGenerator::samplePhaseOne() {
 	index g = this->rand.choice(wd_); // choose group
+	// FIXME: when g = 0 u and v become garbage
 	double r1 = this->rand.probability();
 	double r2 = this->rand.probability();
 	double r3 = this->rand.probability();
 	index delta = ig_[g] + std::floor(r1 * b_[g]) * ng_[g]; // choose block and compute its offset
+	assert (delta >= 0);
 	node u = std::floor(r2 * ng_[g]) + delta;
 	node v = std::floor(r3 * (ng_[g] - 1)) + delta;
 	if (v >= u) {
-		v += 1; // TODO: why?
+		v += 1; // TODO: why? should this be (v == u) ?
 	}
 	TRACE("adding phase 1 edge (" << u << ", " << v << ")");
 	this->G->addEdge(u, v);
