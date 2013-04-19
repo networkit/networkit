@@ -27,7 +27,7 @@ public:
 	 * @param[in]	G		graph
 	 * @param[in]	theta	update threshold
 	 */
-	DynamicLabelPropagation(Graph& G, count theta);
+	DynamicLabelPropagation(Graph& G, count theta, std::string strategy = "reactivate");
 
 	virtual ~DynamicLabelPropagation();
 
@@ -61,15 +61,57 @@ protected:
 	// PREP STRATEGIES
 	// prep strategies encapsulate different update schemes and make DynamicLabelPropagation modular
 
-	class Reactivation : public NetworKit::PrepStrategy {
+	class Reactivate : public NetworKit::PrepStrategy {
 
 		friend class DynamicLabelPropagation;
 
 	public:
 
-		Reactivation(DynamicLabelPropagation* dynPLP);
+		Reactivate(DynamicLabelPropagation* dynPLP);
 
-		virtual ~Reactivation();
+		virtual ~Reactivate();
+
+		/**
+		 * New node u becomes a singleton and active.
+		 */
+		virtual void onNodeAddition(node u);
+
+		/**
+		 * Removed node u becomes permanently inactive.
+		 */
+		virtual void onNodeRemoval(node u);
+
+		/**
+		 * Reactivate u and v on addition of edge {u,v}
+		 */
+		virtual void onEdgeAddition(node u, node v);
+
+		/**
+		 * Reactivate u and v on removal of edge {u,v}
+		 */
+		virtual void onEdgeRemoval(node u, node v);
+
+		/**
+		 * Same reaction as onEdgeAddition
+		 */
+		virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
+
+	protected:
+
+		DynamicLabelPropagation* dynPLP;
+
+	};
+
+
+	class ReactivateNeighbors : public NetworKit::PrepStrategy {
+
+		friend class DynamicLabelPropagation;
+
+	public:
+
+		ReactivateNeighbors(DynamicLabelPropagation* dynPLP);
+
+		virtual ~ReactivateNeighbors();
 
 		/**
 		 * New node u becomes a singleton and active.
