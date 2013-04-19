@@ -19,6 +19,7 @@ METISGraphWriter::~METISGraphWriter() {
 }
 
 void METISGraphWriter::write(Graph& G, std::string path) {
+	// TODO: enable weighted graphs
 
 	std::ofstream file(path);
 	assert (file.good());
@@ -26,7 +27,7 @@ void METISGraphWriter::write(Graph& G, std::string path) {
 	int64_t n = G.numberOfNodes();
 	int64_t m = G.numberOfEdges();
 
-	file << n << " " << m << std::endl;
+	file << n << " " << m << " " << 0 << std::endl;
 
 	G.forNodes([&](node u) {
 		G.forNeighborsOf(u, [&](node v){
