@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta) :
+DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta, std::string strategy) :
 		DynamicClusterer(G),
 		labels(G.numberOfNodes()),
 		activeNodes(G.numberOfNodes()),
@@ -24,7 +24,14 @@ DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta) :
 	});
 	DEBUG("[DONE] Label Propagation: precomputing weighted degree");
 
-	this->prepStrategy = new DynamicLabelPropagation::Reactivation(this);
+	// select prep strategy
+	if (strategy == "reactivate") {
+		this->prepStrategy = new DynamicLabelPropagation::Reactivate(this);
+	} else if (strategy == "reactivate-neighbors") {
+		this->prepStrategy = new DynamicLabelPropagation::ReactivateNeighbors(this);
+	} else {
+		throw std::runtime_error("unknown prep strategy");
+	}
 
 }
 
@@ -155,40 +162,81 @@ Clustering DynamicLabelPropagation::run() {
 
 // PREP STRATEGY IMPLEMENTATIONS
 
-DynamicLabelPropagation::Reactivation::Reactivation(
+DynamicLabelPropagation::Reactivate::Reactivate(
 		DynamicLabelPropagation* dynPLP) {
 	this->dynPLP = dynPLP;
 }
 
-DynamicLabelPropagation::Reactivation::~Reactivation() {
+DynamicLabelPropagation::Reactivate::~Reactivate() {
 }
 
 
-void DynamicLabelPropagation::Reactivation::onNodeAddition(node u) {
+void DynamicLabelPropagation::Reactivate::onNodeAddition(node u) {
 	dynPLP->labels.toSingleton(u);
 	dynPLP->activeNodes[u] = true;
+	assert (dynPLP->G->degree(u) == 0); // new node has no incident edges
 }
 
-void DynamicLabelPropagation::Reactivation::onNodeRemoval(node u) {
+void DynamicLabelPropagation::Reactivate::onNodeRemoval(node u) {
 	dynPLP->activeNodes[u] = false; // assumption: this node can never be reactivated
+	// incident edges must have been removed before, so neighborhood is already active at this point
 }
 
-void DynamicLabelPropagation::Reactivation::onEdgeAddition(node u, node v) {
+void DynamicLabelPropagation::Reactivate::onEdgeAddition(node u, node v) {
+	// activate the affected nodes
 	dynPLP->activeNodes[u] = true;
 	dynPLP->activeNodes[v] = true;
 }
 
-void DynamicLabelPropagation::Reactivation::onEdgeRemoval(node u, node v) {
-	dynPLP->activeNodes[u] = true;
-	dynPLP->activeNodes[v] = true;
+void DynamicLabelPropagation::Reactivate::onEdgeRemoval(node u, node v) {
+	this->onEdgeAddition(u, v);
 }
 
-void DynamicLabelPropagation::Reactivation::onWeightUpdate(node u, node v,
+void DynamicLabelPropagation::Reactivate::onWeightUpdate(node u, node v,
 		edgeweight wOld, edgeweight wNew) {
 	this->onEdgeAddition(u, v);
 }
 
 
+DynamicLabelPropagation::ReactivateNeighbors::ReactivateNeighbors(
+		DynamicLabelPropagation* dynPLP) {
+}
+
+DynamicLabelPropagation::ReactivateNeighbors::~ReactivateNeighbors() {
+}
+
+void DynamicLabelPropagation::ReactivateNeighbors::onNodeAddition(node u) {
+	dynPLP->labels.toSingleton(u);
+	dynPLP->activeNodes[u] = true;
+	assert (dynPLP->G->degree(u) == 0); // new node has no incident edges
+}
+
+void DynamicLabelPropagation::ReactivateNeighbors::onNodeRemoval(node u) {
+	dynPLP->activeNodes[u] = false; // assumption: this node can never be reactivated
+	// incident edges must have been removed before, so neighborhood is already active at this point
+}
+
+void DynamicLabelPropagation::ReactivateNeighbors::onEdgeAddition(node u, node v) {
+	// activate the affected nodes and their neighbors
+	dynPLP->activeNodes[u] = true;
+	dynPLP->activeNodes[v] = true;
+	dynPLP->G->forNeighborsOf(u, [&](node w) {
+		dynPLP->activeNodes[w] = true;
+	});
+	dynPLP->G->forNeighborsOf(v, [&](node w) {
+		dynPLP->activeNodes[w] = true;
+	});
+}
+
+void DynamicLabelPropagation::ReactivateNeighbors::onEdgeRemoval(node u, node v) {
+	this->onEdgeAddition(u, v);
+}
+
+void DynamicLabelPropagation::ReactivateNeighbors::onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) {
+	this->onEdgeAddition(u, v);
+}
+
 
 } /* namespace NetworKit */
+
 

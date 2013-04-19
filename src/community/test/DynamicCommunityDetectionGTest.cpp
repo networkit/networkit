@@ -27,7 +27,7 @@ TEST_F(DynamicCommunityDetectionGTest, testDynamicLabelPropagation) {
 	// 3. create generator and pass proxy
 	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(Gproxy, 3);
 	// 4. create dynamic algorithm and pass graph
-	DynamicClusterer* dynPLP = new DynamicLabelPropagation(G, 0);
+	DynamicClusterer* dynPLP = new DynamicLabelPropagation(G, 0, "reactivate");
 	// 5. register dynamic algorithm as observer
 	Gproxy.registerObserver(dynPLP);
 	// 6. initialize graph for generator
