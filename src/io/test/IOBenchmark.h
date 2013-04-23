@@ -10,8 +10,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../../aux/Log.h"
-#include "../../aux/Timer.h"
+#include "../../auxilliary/Log.h"
+#include "../../auxilliary/Timer.h"
 #include "../METISGraphReader.h"
 
 namespace NetworKit {

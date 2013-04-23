@@ -13,7 +13,7 @@
 #include <numeric>
 
 #include "StaticGraphGenerator.h"
-#include "../aux/Random.h"
+#include "../auxilliary/Random.h"
 
 #define none -1 // use this as a placeholder for nonexistent values
 
