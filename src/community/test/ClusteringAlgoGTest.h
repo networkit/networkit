@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../../aux/Log.h"
+#include "../../auxilliary/Log.h"
 #include "../LabelPropagation.h"
 #include "../Louvain.h"
 #include "../../clustering/Modularity.h"

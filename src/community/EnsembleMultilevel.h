@@ -13,7 +13,7 @@
 #include <stdexcept>
 
 
-#include "../aux/Log.h"
+#include "../auxilliary/Log.h"
 #include "../Globals.h"
 #include "../community/Clusterer.h"
 #include "../clustering/Clustering.h"

@@ -11,7 +11,7 @@
 #include <algorithm>
 
 #include "DynamicClusterer.h"
-#include "../aux/Timer.h"
+#include "../auxilliary/Timer.h"
 #include "PrepStrategy.h"
 
 namespace NetworKit {

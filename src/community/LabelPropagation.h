@@ -19,10 +19,10 @@
 #include <omp.h>
 
 #include "../Globals.h"
-#include "../aux/Log.h"
-#include "../aux/ProgressMeter.h"
-#include "../aux/Timer.h"
-#include "../aux/RandomInteger.h"
+#include "../auxilliary/Log.h"
+#include "../auxilliary/ProgressMeter.h"
+#include "../auxilliary/Timer.h"
+#include "../auxilliary/RandomInteger.h"
 #include "../graph/NodeMap.h"
 #include "../base/IndexMap.h"
 #include "../io/GraphIO.h"
