@@ -9,7 +9,7 @@
 #define PUBWEBGENERATOR_H_
 
 #include "StaticGraphGenerator.h"
-#include "../auxilliary/RandomProbability.h"
+#include "../auxiliary/RandomProbability.h"
 #include <cmath>
 
 

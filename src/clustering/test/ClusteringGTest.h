@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 
 
-#include "../../auxilliary/Log.h"
+#include "../../auxiliary/Log.h"
 #include "../Clustering.h"
 #include "../Modularity.h"
 #include "../ModularitySequential.h"

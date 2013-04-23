@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../../auxilliary/Log.h"
+#include "../../auxiliary/Log.h"
 #include "../Graph.h"
 #include "../GraphGenerator.h"
 

@@ -13,7 +13,7 @@
 
 #include "../community/Clusterer.h"
 
-#include "../auxilliary/Log.h"
+#include "../auxiliary/Log.h"
 #include "../Globals.h"
 #include "../clustering/Clustering.h"
 #include "../clustering/Modularity.h"

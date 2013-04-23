@@ -13,7 +13,7 @@
 #include <fstream>
 
 #include "../graph/Graph.h"
-#include "../auxilliary/Log.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

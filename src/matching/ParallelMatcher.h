@@ -13,7 +13,7 @@
 
 #include "Matcher.h"
 #include "../graph/NodeMap.h"
-#include "../auxilliary/Functions.h"
+#include "../auxiliary/Functions.h"
 
 namespace NetworKit {
 
