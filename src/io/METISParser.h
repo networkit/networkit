@@ -17,7 +17,7 @@
 #include <stdexcept>
 #include <cassert>
 
-#include "../auxilliary/Log.h"
+#include "../auxiliary/Log.h"
 
 
 namespace NetworKit {

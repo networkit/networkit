@@ -10,7 +10,7 @@
 
 #include "IndependentSetFinder.h"
 
-#include "../auxilliary/RandomProbability.h"
+#include "../auxiliary/RandomProbability.h"
 
 namespace NetworKit {
 

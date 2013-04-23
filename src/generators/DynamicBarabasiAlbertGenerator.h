@@ -11,7 +11,7 @@
 #include <set>
 
 #include "DynamicGraphGenerator.h"
-#include "../auxilliary/RandomInteger.h"
+#include "../auxiliary/RandomInteger.h"
 
 namespace NetworKit {
 
