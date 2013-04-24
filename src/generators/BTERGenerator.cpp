@@ -15,18 +15,23 @@ BTERGenerator::BTERGenerator(std::vector<count>& degreeDistribution,
 		dMax(degreeDistribution.size() - 1), // degree distribution has entries for indices in [0, dMax]
 		nd_(degreeDistribution),
 		c_(clusteringCoefficients),
-		id_(dMax),
-		nFill_(dMax),
-		wd_(dMax),
-		r_(dMax, none),
-		ig_(dMax, none), 	// gMax <= dMax TODO: save memory here?
-		b_(dMax, none),	// gMax <= dMax
-		wg_(dMax, none),	// gMax <= dMax
-		ng_(dMax, none) 	// gMax <= dMax
+		// array sizes are dMax + 1, indexing begins with 1
+		id_(dMax + 1, none),
+		nFill_(dMax + 1, none),
+		wd_(dMax + 1, none),
+		r_(dMax + 1, none),
+		ig_(dMax + 1, none), 	// gMax <= dMax TODO: save memory here?
+		b_(dMax + 1, none),	// gMax <= dMax
+		wg_(dMax + 1, none),	// gMax <= dMax
+		ng_(dMax + 1, none) 	// gMax <= dMax
 {
+	if (degreeDistribution.size() != clusteringCoefficients.size()) {
+		throw std::runtime_error("degree distribution and clustering coefficients must have the same size (maximum degree + 1)");
+	}
 	if (beta < 1.0) {
 		throw std::runtime_error("blowup factor beta must be >= 1.0");
 	}
+
 }
 
 BTERGenerator::~BTERGenerator() {
@@ -63,21 +68,32 @@ Graph BTERGenerator::generate() {
 
 void BTERGenerator::setup() {
 
+	DEBUG("nd_ degree distribution: nd_[d] = number of nodes with degree d : " << Aux::vectorToString(nd_));
+	DEBUG("c_ clustering coefficient per degree: " << Aux::vectorToString(c_));
+	DEBUG("id_ : index i_d for first node of each degree d" << Aux::vectorToString(id_));
+	DEBUG("nFill_  number of filler nodes per degree " << Aux::vectorToString(nFill_));
+	DEBUG("wd_ sum of wFill and wBulk: " << Aux::vectorToString(wd_));
+	DEBUG("r_ ratio of fill nodes : " << Aux::vectorToString(r_));
+	DEBUG("ig_ start index for affinity group : " << Aux::vectorToString(ig_));
+	DEBUG("b_ b_[g]: number of blocks in a group : " << Aux::vectorToString(b_));
+	DEBUG("wg_ wg_[g]: weight of the group g : " << Aux::vectorToString(wg_));
+	DEBUG("ng_  ng_[g]: number of blocks in the affinity group g : " << Aux::vectorToString(ng_));
+
 	// assign nodes to affinity blocks of d +1 nodes with degree d
 
 	// compute number of nodes n'_d with degree greater d
 
-	std::vector<count> nBulk_(dMax); 	// number of bulk nodes of degree d
-	std::vector<count> ndRest_(dMax); 	// ?
-	std::vector<double> wFill_(dMax); 	// weight of the degree-d fill nodes for phase 2
-	std::vector<double> wBulk_(dMax); 	//weight of degree-d bulk nodes for phase 2
+	std::vector<count> nBulk_(dMax + 1); 	// number of bulk nodes of degree d
+	std::vector<count> ndRest_(dMax + 1); 	// ?
+	std::vector<double> wFill_(dMax + 1); 	// weight of the degree-d fill nodes for phase 2
+	std::vector<double> wBulk_(dMax + 1); 	// weight of degree-d bulk nodes for phase 2
 
 	// number of nodes from least degree to greatest, except degree-1 nodes are last
 	id_[2] = 1; // TODO: should indices be zero-based?
 	for (count d = 3; d <= dMax; d++) {
-		id_[d] = id_[d - 1] + nd_[d - 1];
+		id_[d] = id_[d - 1] + nd_[d - 1]; // FIXME: invalid write
 	}
-	id_[1] = id_[dMax] + nd_[dMax];
+	id_[1] = id_[dMax] + nd_[dMax]; // FIXME: invalid read
 
 	// compute number of nodes with degree greater than d
 	for (count d = 1; d < dMax; d++) {
@@ -95,9 +111,9 @@ void BTERGenerator::setup() {
 	count g = 0; 			// affinity group index - first group has index 1 TODO: correct?
 	count nFillStar = 0; 	// number of nodes needed to complete the last incomplete block
 	count dStar = 0; 		// internal degree of the last incomplete block
-	double rhoStar; 		// ?
+	double rhoStar = -1; 		// ?
 
-	for (count d = 2; d <= dMax; d++) {
+	for (count d = 2; d <= dMax; d++) { // FIXME: <= ?
 		// try to fill incomplete block from current group
 		if (nFillStar > 0) {
 			nFill_[d] = std::min(nFillStar, nd_[d]);
@@ -114,18 +130,23 @@ void BTERGenerator::setup() {
 			g += 1;
 			ig_[g] = id_[d] + nFill_[d];
 			b_[g] = std::ceil(nBulk_[d] / (d + 1));
-			nd_[g] = d + 1;
+			ng_[g] = d + 1;
 			if ((b_[g] * (d + 1)) > (ndRest_[d] + nBulk_[d])) {
 				// special handling of last group
 				if (b_[g] != 1) {
 					throw std::runtime_error("?"); // TODO: what happens here? check for indexing error
 				}
-				nd_[g] = (ndRest_[d] + nBulk_[d]);
+				ng_[g] = (ndRest_[d] + nBulk_[d]);
 			}
-			rhoStar = std::pow(c_[d], (1.0 / 3.0)); //
-			dStar = (nd_[g] - 1) * rhoStar;
+			DEBUG("rhoStar: " << rhoStar);
+			assert (d <= dMax);
+			DEBUG("c_[d] : " << c_[d]);
+			rhoStar = std::pow(c_[d], (1.0 / 3.0));
+			dStar = (ng_[g] - 1) * rhoStar;
+			assert (dStar <= d);
 			wBulk_[d] = 0.5 * nBulk_[d] * (d - dStar);
-			DEBUG("wg_: " << wg_.size() << " b_: " << b_.size() << " ng_: " << ng_.size());
+			assert (wBulk_[d] > 0);
+			DEBUG("rhoStar: " << rhoStar);
 			assert ( (1 - rhoStar) > 0); // avoid division by 0
 			wg_[g] = b_[g] * 0.5 * ng_[g] * (ng_[g] - 1) * std::log(1.0 / (1 - rhoStar)); // correct log?
 			nFillStar = (b_[g] * ng_[g]) - nBulk_[d];
@@ -138,7 +159,21 @@ void BTERGenerator::setup() {
 
 	// DEBUG: print all arrays for debugging
 
-	// DEBUG("nd_" << nd_);
+	DEBUG("nd_ degree distribution: nd_[d] = number of nodes with degree d : " << Aux::vectorToString(nd_));
+	DEBUG("c_ clustering coefficient per degree: " << Aux::vectorToString(c_));
+	DEBUG("id_ : index i_d for first node of each degree d" << Aux::vectorToString(id_));
+	DEBUG("nFill_  number of filler nodes per degree " << Aux::vectorToString(nFill_));
+	DEBUG("wd_ sum of wFill and wBulk: " << Aux::vectorToString(wd_));
+	DEBUG("r_ ratio of fill nodes : " << Aux::vectorToString(r_));
+	DEBUG("ig_ start index for affinity group : " << Aux::vectorToString(ig_));
+	DEBUG("b_ b_[g]: number of blocks in a group : " << Aux::vectorToString(b_));
+	DEBUG("wg_ wg_[g]: weight of the group g : " << Aux::vectorToString(wg_));
+	DEBUG("ng_  ng_[g]: number of blocks in the affinity group g : " << Aux::vectorToString(ng_));
+
+	DEBUG("nBulk_ number of bulk nodes of degree d : " << Aux::vectorToString(nBulk_));
+	DEBUG("ndRest_ : " << Aux::vectorToString(ndRest_));
+	DEBUG("wFill_ weight of the degree-d fill nodes for phase 2 : " << Aux::vectorToString(wFill_));
+	DEBUG("wBulk_  : weight of degree-d bulk nodes for phase 2 " << Aux::vectorToString(wBulk_));
 
 	// arrays are passed to other procesures as member variables
 }
@@ -169,12 +204,15 @@ void BTERGenerator::sample() {
 }
 
 void BTERGenerator::samplePhaseOne() {
-	index g = this->rand.choice(wd_); // choose group
+	index g;
+	do {
+		g = this->rand.choice(wd_); // choose group
+	} while (g == none);
 	// FIXME: when g = 0 u and v become garbage
 	double r1 = this->rand.probability();
 	double r2 = this->rand.probability();
 	double r3 = this->rand.probability();
-	index delta = ig_[g] + std::floor(r1 * b_[g]) * ng_[g]; // choose block and compute its offset
+	index delta = ig_[g] + std::floor(r1 * b_[g]) * ng_[g]; // choose block and compute its offset  // FIXME: invalid read
 	assert (delta >= 0);
 	node u = std::floor(r2 * ng_[g]) + delta;
 	node v = std::floor(r3 * (ng_[g] - 1)) + delta;
@@ -195,7 +233,10 @@ void BTERGenerator::samplePhaseTwo() {
 
 
 node BTERGenerator::samplePhaseTwoNode() {
-	degree d = this->rand.choice(wd_);
+	degree d = none;
+	do {
+		d = this->rand.choice(wd_);
+	} while (d == none); // first entry in wd_ is none (-1)
 	double r1 = this->rand.probability();
 	double r2 = this->rand.probability();
 	node u;
