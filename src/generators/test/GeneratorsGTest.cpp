@@ -83,7 +83,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 TEST_F(GeneratorsGTest, testBTERGenerator) {
 	std::vector<count> degreeDistribution { 0, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
-	std::vector<double> clusteringCoefficients {0.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 };
+	std::vector<double> clusteringCoefficients {0.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 };
 	DEBUG("construct BTERGenerator");
 	BTERGenerator bter(degreeDistribution, clusteringCoefficients, 1.0);
 	std::pair<count, count> nm = bter.desiredGraphSize();
