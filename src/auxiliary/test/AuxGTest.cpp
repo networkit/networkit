@@ -189,3 +189,9 @@ TEST_F(AuxGTest, benchmarkBinomial) {
 	INFO("calculation finished after " << timer.elapsedTag());
 
 }
+
+
+TEST_F(AuxGTest, testVectorDebug) {
+	std::vector<int> vec(10, 42);
+	std::cout << Aux::vectorToString(vec) << std::endl;
+}

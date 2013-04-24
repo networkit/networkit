@@ -23,6 +23,7 @@
 #include "../RandomProbability.h"
 #include "../Timer.h"
 #include "../MissingMath.h"
+#include "../Debug.h"
 
 
 class AuxGTest: public testing::Test {

@@ -136,7 +136,10 @@ void BTERGenerator::setup() {
 		r_[d] = wFill_[d] / wd_[d];
 	}
 
-	// TODO: print all arrays for debugging
+	// DEBUG: print all arrays for debugging
+
+	// DEBUG("nd_" << nd_);
+
 	// arrays are passed to other procesures as member variables
 }
 
