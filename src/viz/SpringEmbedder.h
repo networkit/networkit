@@ -12,7 +12,12 @@
 
 namespace NetworKit {
 
+const count MAX_ITER = 1000; // TODO: maybe better as object variable
+
 class SpringEmbedder: public NetworKit::Layouter {
+protected:
+	float forceCorrection; //<! value for scaling the forces
+
 public:
 	SpringEmbedder(Point<float> bottomLeft, Point<float> topRight);
 	virtual ~SpringEmbedder();

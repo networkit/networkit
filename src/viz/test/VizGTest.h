@@ -9,8 +9,10 @@
 #define POSTSCRIPTWRITERGTEST_H_
 
 #include <gtest/gtest.h>
+#include <vector>
 
 #include "../PostscriptWriter.h"
+#include "../ForceDirected.h"
 #include "../../graph/Graph.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"

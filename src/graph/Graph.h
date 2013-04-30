@@ -43,10 +43,14 @@ protected:
 	template<class T>
 	class Coordinates {
 	private:
-		std::vector<Point<T> > data; //!< array of coordinates, length nv * dxy
+		std::vector<Point<T> > data;
 
 	public:
 		Coordinates() {}
+
+		void init(count numNodes) {
+			data.resize(numNodes);
+		}
 
 		void setCoordinate(node v, count dim, T value) {
 			data[v].setValue(dim, value);
@@ -305,9 +309,9 @@ public:
 		return coordinates.maxCoordinate(dim);
 	}
 
-//	void initCoordinates(count dimensions) {
-//		coordinates.init(n, dimensions);
-//	}
+	void initCoordinates() {
+		coordinates.init(n);
+	}
 
 	/** ATTRIBUTES **/
 

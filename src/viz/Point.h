@@ -28,6 +28,7 @@ protected:
 	std::vector<T> data;
 
 public:
+	Point() { data = {0.0, 0.0}; }
 	Point(std::vector<T>& values): data(values) {}
 	virtual ~Point() {}
 
@@ -36,8 +37,9 @@ public:
 	void setValue(index dim, T value) { data.at(dim) = value; }
 
 	T distance(const Point<T>& p) const;
+	T squaredDistance(const Point<T>& p) const;
 
-	void operator+=(const Point<T>& p);
+	Point& operator+=(const Point<T>& p);
 	Point& scale(const T factor);
 
 	T length() const;
@@ -54,22 +56,28 @@ T Point<T>::length() const {
 }
 
 template<class T>
-T Point<T>::distance(const Point<T>& p) const {
+T Point<T>::squaredDistance(const Point<T>& p) const {
 	assert(this->data.size() == p.data.size());
 	T dist = (T) 0;
 	for (index i = 0; i < data.size(); ++i) {
 		T diff = this->data[i] - p.data[i];
 		dist += diff * diff;
 	}
-	return sqrt(dist);
+	return dist;
 }
 
 template<class T>
-void Point<T>::operator+=(const Point<T>& p) {
+T Point<T>::distance(const Point<T>& p) const {
+	return sqrt(squaredDistance(p));
+}
+
+template<class T>
+Point<T>& Point<T>::operator+=(const Point<T>& p) {
 	assert(this->data.size() == p.data.size());
 	for (index i = 0; i < data.size(); ++i) {
 		this->data[i] += p.data[i];
 	}
+	return *this;
 }
 
 template<class T>

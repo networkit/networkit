@@ -13,6 +13,8 @@ ForceDirected::ForceDirected(Point<float> bottom_left, Point<float> top_right):
 		SpringEmbedder(bottom_left, top_right) {
 	// TODO Auto-generated constructor stub
 
+	// FIXME: set forceCorrection in base class
+	forceCorrection = 10.0;
 }
 
 ForceDirected::~ForceDirected() {
@@ -33,7 +35,9 @@ void ForceDirected::draw(Graph& g) {
 	auto attractiveForce([&](Point<float>& p1, Point<float>& p2) {
 		Point<float> force = p1;
 
-		// TODO
+		float dist = p1.distance(p2);
+		float strength = - dist / forceCorrection;
+		force.scale(strength);
 
 		return force;
 	});
@@ -41,7 +45,9 @@ void ForceDirected::draw(Graph& g) {
 	auto repellingForce([&](Point<float>& p1, Point<float>& p2) {
 		Point<float> force = p1;
 
-		// TODO
+		float sqrDist = p1.squaredDistance(p2);
+		float strength = forceCorrection * forceCorrection / sqrDist; // TODO: store square
+		force.scale(strength);
 
 		return force;
 	});
@@ -71,7 +77,7 @@ void ForceDirected::draw(Graph& g) {
 
 	auto updateStepLength([&](float step, std::vector<Point<float> >& oldLayout,
 			std::vector<Point<float> >& newLayout) {
-		float newStep = 1.0;
+		float newStep = 0.95;
 		// FIXME: clever update
 		return newStep;
 	});
@@ -80,6 +86,7 @@ void ForceDirected::draw(Graph& g) {
 	bool converged = false;
 	float step = INITIAL_STEP_LENGTH;
 	std::vector<float> origin = {0.0, 0.0};
+	count numIter = 0;
 
 	while (! converged) {
 		std::vector<Point<float> > previousLayout = layout;
@@ -99,12 +106,17 @@ void ForceDirected::draw(Graph& g) {
 			move(layout[u], force, step);
 		});
 
+		++numIter;
 		step = updateStepLength(step, previousLayout, layout);
-		converged = isConverged(previousLayout, layout);
+		converged = isConverged(previousLayout, layout) || numIter > MAX_ITER;
 	}
 
 	// TODO: copy layout into graph
-
+	g.forNodes([&](node u) {
+		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop
+			g.setCoordinate(u, d, layout[u].getValue(d));
+		}
+	});
 }
 
 
