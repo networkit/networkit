@@ -32,7 +32,6 @@ TEST_F(VizGTest, testPostscriptWriter) {
 
 	// create coordinates
 	count dimensions = 2;
-	G.initCoordinates(dimensions);
 	G.forNodes([&](node u) {
 		float x = (float) drand48();
 		float y = (float) drand48();

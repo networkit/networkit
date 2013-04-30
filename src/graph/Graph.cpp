@@ -147,6 +147,14 @@ node Graph::addNode() {
 }
 
 
+node Graph::addNode(float x, float y) {
+	node u = addNode();
+	std::vector<float> coords = {x, y};
+	coordinates.addCoordinates(coords);
+	return u;
+}
+
+
 bool Graph::isEmpty() {
 	return (n == 0);
 }
@@ -271,7 +279,6 @@ void Graph::removeNode(node u) {
 bool Graph::hasNode(node u) {
 	return this->exists[u];	// exists array determines whether node is present
 }
-
 
 
 int Graph::addEdgeAttribute_double(double defaultValue) {

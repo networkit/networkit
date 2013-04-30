@@ -9,6 +9,7 @@
 #define GLOBALS_H_
 
 
+
 extern bool PRINT_PROGRESS;
 extern bool RAND_ORDER;
 extern int INACTIVE_SEEDS;
