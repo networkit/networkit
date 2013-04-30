@@ -51,6 +51,10 @@ void ForceDirected::draw(Graph& g) {
 
 		// TODO: x_i := x_i + step * (f / ||f||)
 
+		p += (step / force.length()) * force;
+
+		// TODO scalar multiply operator for Point
+
 		return newPoint;
 	});
 
