@@ -38,7 +38,19 @@ public:
 	T distance(const Point<T>& p) const;
 
 	void operator+=(const Point<T>& p);
+
+	T length() const;
 };
+
+template<class T>
+T Point<T>::length() const {
+	T length = (T) 0;
+	for (index i = 0; i < data.size(); ++i) {
+		T diff = this->data[i];
+		length += diff * diff;
+	}
+	return sqrt(length);
+}
 
 template<class T>
 T Point<T>::distance(const Point<T>& p) const {
