@@ -38,6 +38,7 @@ public:
 	T distance(const Point<T>& p) const;
 
 	void operator+=(const Point<T>& p);
+	Point& scale(const T factor);
 
 	T length() const;
 };
@@ -69,6 +70,14 @@ void Point<T>::operator+=(const Point<T>& p) {
 	for (index i = 0; i < data.size(); ++i) {
 		this->data[i] += p.data[i];
 	}
+}
+
+template<class T>
+Point<T>& Point<T>::scale(const T factor) {
+	for (index i = 0; i < data.size(); ++i) {
+		this->data[i] *= factor;
+	}
+	return *this;
 }
 
 

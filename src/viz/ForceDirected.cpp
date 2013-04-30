@@ -49,11 +49,8 @@ void ForceDirected::draw(Graph& g) {
 	auto move([&](Point<float>& p, Point<float>& force, float step) {
 		Point<float> newPoint = p;
 
-		// TODO: x_i := x_i + step * (f / ||f||)
-
-		p += (step / force.length()) * force;
-
-		// TODO scalar multiply operator for Point
+		// x_i := x_i + step * (f / ||f||)
+		p += force.scale(step / force.length());
 
 		return newPoint;
 	});

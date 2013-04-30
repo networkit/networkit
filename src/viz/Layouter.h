@@ -9,7 +9,7 @@
 #define LAYOUTER_H_
 
 #include "../graph/Graph.h"
-#include "../aux/RandomProbability.h"
+#include "../auxiliary/RandomProbability.h"
 
 namespace NetworKit {
 
