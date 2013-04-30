@@ -250,7 +250,7 @@ TEST_F(EnsembleGTest, showPlantedPartitionDissimilarity) {
 	JaccardMeasure jaccard;
 	double j = jaccard.getDissimilarity(G, planted, found);
 
-	RandMeasure rand;
+	NodeStructuralRandMeasure rand;
 	double r = rand.getDissimilarity(G, planted, found);
 
 	INFO("EnsembleClusterer(LabelPropagation," << b << ") found " << found.numberOfClusters() << " of " << k << " clusters for (pin, pout) = (" << pin << ", " << pout << ")");

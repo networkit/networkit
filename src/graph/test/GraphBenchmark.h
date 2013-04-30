@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 
 #include "../GraphGenerator.h"
-#include "../../aux/Timer.h"
+#include "../../auxiliary/Timer.h"
 
 
 namespace NetworKit {

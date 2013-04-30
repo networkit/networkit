@@ -18,7 +18,7 @@
 #include <map>
 #include <sstream>
 
-#include "../aux/Log.h"
+#include "../auxiliary/Log.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
@@ -39,6 +39,7 @@ class Graph {
 
 protected:
 
+	// TODO: why is this an inner class?
 	template<class T>
 	class Coordinates {
 	private:
@@ -248,7 +249,12 @@ public:
 	node addNode(float x, float y);
 
 	/**
-	 * Remove a node from the graph.
+	 * Remove an isolated node from the graph.
+	 *
+	 * Although it would be convenient to remove all incident edges at the same time,
+	 * this causes complications for dynamic applications. Therefore, removeNode is an
+	 * atomic event. All incident edges need to be removed first and an exception is thrown
+	 * otherwise.
 	 */
 	void removeNode(node u);
 

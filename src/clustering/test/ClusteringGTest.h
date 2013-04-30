@@ -11,14 +11,15 @@
 #include <gtest/gtest.h>
 
 
-#include "../../aux/Log.h"
+#include "../../auxiliary/Log.h"
 #include "../Clustering.h"
 #include "../Modularity.h"
 #include "../ModularitySequential.h"
 #include "../Coverage.h"
 #include "../ClusteringGenerator.h"
 #include "../JaccardMeasure.h"
-#include "../RandMeasure.h"
+#include "../NodeStructuralRandMeasure.h"
+#include "../GraphStructuralRandMeasure.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/ClusteringReader.h"

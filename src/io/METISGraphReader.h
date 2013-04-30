@@ -11,7 +11,7 @@
 #include "GraphReader.h"
 
 #include "METISParser.h"
-#include "../aux/StringTools.h"
+#include "../auxiliary/StringTools.h"
 
 namespace NetworKit {
 

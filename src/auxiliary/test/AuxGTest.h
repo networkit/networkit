@@ -18,10 +18,12 @@
 #include <thread>
 
 #include "../Log.h"
+#include "../Random.h"
 #include "../RandomInteger.h"
 #include "../RandomProbability.h"
 #include "../Timer.h"
 #include "../MissingMath.h"
+#include "../Debug.h"
 
 
 class AuxGTest: public testing::Test {

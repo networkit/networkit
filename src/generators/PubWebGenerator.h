@@ -10,7 +10,7 @@
 
 #include "StaticGraphGenerator.h"
 #include "../aux/RandomProbability.h"
-#include "../aux/RandomInteger.h"
+#include "../auxiliary/RandomInteger.h"
 #include <cmath>
 
 namespace NetworKit {

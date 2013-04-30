@@ -11,8 +11,8 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-#include "../aux/Log.h"
-#include "../aux/Timer.h"
+#include "../auxiliary/Log.h"
+#include "../auxiliary/Timer.h"
 
 namespace NetworKit {
 

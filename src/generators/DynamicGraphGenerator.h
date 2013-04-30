@@ -18,7 +18,7 @@ class DynamicGraphGenerator {
 
 protected:
 
-	GraphEventProxy* proxy;	//!< receives events produced by the generator and forwards them
+	GraphEventProxy* Gproxy;	//!< receives events produced by the generator and forwards them
 	Graph* G;
 
 public:
@@ -33,9 +33,9 @@ public:
 	virtual void initializeGraph() = 0;
 
 	/*
-	 * Send graph events to the proxy until termination function becomes true.
+	 * Send graph events to the proxy while function does not return false.
 	 */
-	virtual void generate(std::function<bool(void)> terminate) = 0;
+	virtual void generateWhile(std::function<bool(void)> cont) = 0;
 };
 
 } /* namespace NetworKit */

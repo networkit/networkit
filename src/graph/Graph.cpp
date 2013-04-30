@@ -35,6 +35,11 @@ index Graph::find(node u, node v) const {
 }
 
 void Graph::addEdge(node u, node v, edgeweight weight) {
+	assert (u >= 0);
+	assert (u <= this->z);
+	assert (v >= 0);
+	assert (v <= this->z); // node ids must be in range
+
 	if (u == v) { // self-loop case
 		this->adja[u].push_back(u);
 		this->deg[u] += 1;
@@ -163,7 +168,7 @@ count Graph::degree(node v) const {
 }
 
 edgeweight Graph::weightedDegree(node v) const {
-	// weighted degree as sum over incident edge weight
+	// weighted degree as sum over incident edge weight - self-loops are counted once
 	edgeweight wDeg = 0.0;
 	for (edgeweight w : this->eweights[v]) {
 		wDeg += w;
@@ -263,9 +268,9 @@ count Graph::numberOfSelfLoops() const {
 }
 
 void Graph::removeNode(node u) {
-	this->forEdgesOf(u, [&](node u, node v){
-		this->removeEdge(u, v);
-	});
+	if (this->degree(u) > 0) {
+		throw std::runtime_error("nodes must have degree 0 before they can be removed");
+	}
 
 	this->exists[u] = false;
 	this->n -= 1;

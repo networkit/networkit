@@ -16,7 +16,7 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/Modularity.h"
 #include "../../clustering/JaccardMeasure.h"
-#include "../../clustering/RandMeasure.h"
+#include "../../clustering/NodeStructuralRandMeasure.h"
 #include "../../community/LabelPropagation.h"
 #include "../../community/Louvain.h"
 #include "../../overlap/HashingOverlapper.h"

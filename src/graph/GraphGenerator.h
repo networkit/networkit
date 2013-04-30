@@ -9,8 +9,8 @@
 #define GENERATOR_H_
 
 #include "Graph.h"
-#include "../aux/RandomProbability.h"
-#include "../aux/RandomInteger.h"
+#include "../auxiliary/RandomProbability.h"
+#include "../auxiliary/RandomInteger.h"
 #include "../clustering/Clustering.h"
 
 namespace NetworKit {

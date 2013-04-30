@@ -13,14 +13,14 @@
 
 #include "../community/Clusterer.h"
 
-#include "../aux/Log.h"
+#include "../auxiliary/Log.h"
 #include "../Globals.h"
 #include "../clustering/Clustering.h"
 #include "../clustering/Modularity.h"
 #include "../overlap/HashingOverlapper.h"
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
-#include "../clustering/RandMeasure.h"
+#include "../clustering/NodeStructuralRandMeasure.h"
 #include "../clustering/JaccardMeasure.h"
 
 namespace NetworKit {

@@ -473,6 +473,9 @@ TEST_F(Graph2GTest, testNodeDynamics) {
 	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
 
 	for (node u = 0; u < n; ++u) {
+		G.forEdgesOf(u, [&](node u, node v){
+			G.removeEdge(u, v);
+		});
 		G.removeNode(u);
 	}
 
@@ -480,6 +483,9 @@ TEST_F(Graph2GTest, testNodeDynamics) {
 	EXPECT_EQ(0, G.numberOfEdges());
 
 	for (node u = n; u < 2 * n; ++u) {
+		G.forEdgesOf(u, [&](node u, node v){
+			G.removeEdge(u, v);
+		});
 		G.removeNode(u);
 	}
 
@@ -617,13 +623,30 @@ TEST_F(Graph2GTest, testConditionalNodeIteration) {
 	count n = 100;
 	Graph G(n);
 
-
 	count nc = 0;
-	G.forNodesWhile([&](){ return (nc <= 50); }, [&](node u){
+	G.forNodesWhile([&](){ return (nc < n); }, [&](node u){
 		nc += 1;
 	});
 
-	EXPECT_EQ(50, nc);
+	EXPECT_EQ(n, nc);
+}
+
+
+TEST_F(Graph2GTest, testMultiEdgeInsertion) {
+	// the current implementation of Graph allows multi-edges for performance reasons
+	// this may result in unexpected behavior - it is up to the graph generator to avoid multi-edges if necessary
+	count n = 2;
+	Graph G(n);
+
+	node u = 0;
+	node v = 1;
+	for (int i = 0; i < 42; ++i) {
+		G.addEdge(u, v);
+	}
+
+	EXPECT_EQ(42, G.numberOfEdges());
+	EXPECT_EQ(42, G.degree(u));
+	EXPECT_EQ(42, G.degree(v));
 }
 
 } /* namespace NetworKit */

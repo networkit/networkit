@@ -13,7 +13,7 @@
 #include <cmath>
 #include <algorithm>
 
-#include "../aux/MissingMath.h"
+#include "../auxiliary/MissingMath.h"
 
 namespace NetworKit {
 

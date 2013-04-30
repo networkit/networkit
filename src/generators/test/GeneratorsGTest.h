@@ -1,12 +1,12 @@
 /*
- * GeneratorsTest.h
+ * GeneratorsGTest.h
  *
  *  Created on: 09.04.2013
  *      Author: cls
  */
 
-#ifndef GENERATORSTEST_H_
-#define GENERATORSTEST_H_
+#ifndef GENERATORSGTEST_H_
+#define GENERATORSGTEST_H_
 
 #include <gtest/gtest.h>
 
@@ -16,14 +16,16 @@
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../community/LabelPropagation.h"
+#include "../BTERGenerator.h"
+#include "../../io/METISGraphWriter.h"
 
 namespace NetworKit {
 
-class GeneratorsTest: public testing::Test {
+class GeneratorsGTest: public testing::Test {
 public:
-	GeneratorsTest();
-	virtual ~GeneratorsTest();
+	GeneratorsGTest();
+	virtual ~GeneratorsGTest();
 };
 
 } /* namespace NetworKit */
-#endif /* GENERATORSTEST_H_ */
+#endif /* GENERATORSGTEST_H_ */

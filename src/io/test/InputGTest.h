@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 #include <fstream>
 
-#include "../../aux/Log.h"
+#include "../../auxiliary/Log.h"
 #include "../METISGraphReader.h"
 #include "../ClusteringWriter.h"
 #include "../ClusteringReader.h"
