@@ -32,6 +32,7 @@ BTERGenerator::BTERGenerator(std::vector<count>& degreeDistribution,
 		throw std::runtime_error("blowup factor beta must be >= 1.0");
 	}
 
+	this->G = NULL; // G is created in BTERGenerator.generate
 }
 
 BTERGenerator::~BTERGenerator() {
@@ -58,9 +59,9 @@ Graph BTERGenerator::generate() {
 
 	this->G = new Graph(size.first);
 
-	DEBUG("setup");
+	INFO("BTERGenreator setup phase");
 	this->setup();
-	DEBUG("sample");
+	INFO("BTERGenerator sample phase");
 	this->sample(); // TODO: insert edges directly
 
 	return *(this->G);
@@ -192,6 +193,7 @@ void BTERGenerator::sample() {
 
 
 	DEBUG("start sampling");
+	// TODO: parallelize this
 	for (count j = 0; j < w; ++j) {
 		double r = this->rand.probability();
 		if (r < (w1 / w)) {
@@ -216,21 +218,47 @@ void BTERGenerator::samplePhaseOne() {
 	assert (delta >= 0);
 	node u = std::floor(r2 * ng_[g]) + delta;
 	node v = std::floor(r3 * (ng_[g] - 1)) + delta;
-	if (v >= u) {
-		v += 1; // TODO: why? should this be (v == u) ?
+	if (v == u) { // TODO: why? should this be (v >= u) as in the pseudocode?
+		v += 1;
 	}
 	TRACE("adding phase 1 edge (" << u << ", " << v << ")");
-	this->G->addEdge(u, v);
+	this->G->addEdge(u, v); // TODO: decouple edge insertion from edge generation for parallelism - alternative: make graph thread-safe
 }
 
 void BTERGenerator::samplePhaseTwo() {
 	node u = this->samplePhaseTwoNode();
 	node v = this->samplePhaseTwoNode();
 	TRACE("adding phase 2 edge (" << u << ", " << v << ")");
-	this->G->addEdge(u, v);
+	this->G->addEdge(u, v); // TODO: decouple edge insertion from edge generation for parallelism
 }
 
+std::vector<count> BTERGenerator::generatePowerLawDegreeDistribution(count n, double gamma, double a) {
 
+	// power-law function
+	auto f = [&](double x){
+		return a * std::pow(x, -1.0 * gamma);
+	};
+
+	// sample the function and create sum for normalization
+	double s = 0.0;
+	for (index i = 1; i < n; ++i) {
+		s += f(i);
+	}
+
+	std::vector<count> dist(n, 0); // the degree distribution
+	// sample again and calculate node counts per degree
+	for (index i = 1; i < n; ++i) {
+		dist[i] = (f(i) / s) * n;
+	}
+
+	return dist;
+}
+
+Clustering BTERGenerator::getAffinityBlocks() {
+
+	// TODO: get block start and end indices
+
+}
 
 node BTERGenerator::samplePhaseTwoNode() {
 	degree d = none;

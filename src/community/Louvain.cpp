@@ -108,6 +108,7 @@ Clustering Louvain::pass(Graph& G) {
 			return delta;
 		};
 
+	// TODO: remove Luby algorithm
 	Luby luby; // independent set algorithm
 	std::vector<bool> I;
 	if (this->parallelism == "independent") {
