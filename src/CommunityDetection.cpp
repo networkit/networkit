@@ -157,7 +157,7 @@ std::vector<std::string> splitAString(const std::string& s, char delim = ' ') {
 }
 
 
-
+#ifndef NOLOGGING
 #ifndef NOLOG4CXX
 /**
  * Call this first to configure logging output.
@@ -180,6 +180,7 @@ void configureLogging(const std::string& loglevel = "INFO") {
 		exit(1);
 	}
 }
+#endif
 #endif
 
 
@@ -586,12 +587,15 @@ int main(int argc, char **argv) {
 
 	// CONFIGURE LOGGING
 
+
+#ifndef NOLOGGING
 #ifndef NOLOG4CXX
 	if (options[LOGLEVEL]) {
 		configureLogging(options[LOGLEVEL].arg);
 	} else {
 		configureLogging();	// with default level
 	}
+#endif
 #endif
 
 

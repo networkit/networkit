@@ -15,6 +15,7 @@
 #include "StaticGraphGenerator.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/Debug.h"
+#include "../clustering/Clustering.h"
 
 
 #define none -1 // use this as a placeholder for nonexistent values
@@ -55,6 +56,16 @@ public:
 	 * @return pair (n, m) 		desired graph size calculated from degree distribution
 	 */
 	virtual std::pair<count, count> desiredGraphSize();
+
+
+	/**
+	 * Return the affinity blocks as a ground-truth clustering.
+	 */
+	virtual Clustering getAffinityBlocks();
+
+
+
+	static std::vector<count> generatePowerLawDegreeDistribution(count n, double gamma, double a=1.0);
 
 
 protected:
