@@ -260,7 +260,7 @@
 									<listOptionValue builtIn="false" value="/usr/local/Cellar/log4cxx/0.10.0/include"/>
 									<listOptionValue builtIn="false" value="/Users/cls/workspace/STINGER/include"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.preprocessor.def.1587274842" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def"/>
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1587274842" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols"/>
 								<option id="gnu.cpp.compiler.option.warnings.allwarn.530906436" name="All warnings (-Wall)" superClass="gnu.cpp.compiler.option.warnings.allwarn" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.warnings.nowarn.1240200254" name="Inhibit all warnings (-w)" superClass="gnu.cpp.compiler.option.warnings.nowarn" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.prof.939890264" name="Generate prof information (-p)" superClass="gnu.cpp.compiler.option.debugging.prof" value="true" valueType="boolean"/>
@@ -309,12 +309,15 @@
 		<configuration configurationName="EnsembleClustering-O"/>
 		<configuration configurationName="EnsembleClustering.backup"/>
 		<configuration configurationName="EnsembleClustering2"/>
-		<configuration configurationName="EnsembleClustering"/>
+		<configuration configurationName="CommunityDetection-D"/>
 		<configuration configurationName="EnsembleClustering-D"/>
+		<configuration configurationName="EnsembleClustering"/>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/EnsembleClustering"/>
 		</configuration>
+		<configuration configurationName="CommunityDetection-O"/>
 		<configuration configurationName="EnsembleClustering-DPar"/>
+		<configuration configurationName="CommunityDetection-DPar"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
