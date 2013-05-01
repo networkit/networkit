@@ -50,6 +50,11 @@ Requirements
 - `Googletest` 	for unit testing
 - `log4cxx` 	for logging
 
+The following preprocessor definitions (using the `-D` compiler flag) remove these dependencies, but also some functionality:
+
+- `NOLOGGING`	removes all log statements
+- `NOLOG4CXX`	replaces log statements with `std::cout` output if `log4cxx` is not available - loglevel `TRACE` becomes fixed.
+
 
 Build
 -----
