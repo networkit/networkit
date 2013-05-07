@@ -96,6 +96,8 @@ Example calls:
 		./CommunityDetection --algorithm=PLM --graph=path/to/a.graph --runs=10 --summary=path/to/file.csv
 
 
+The `--graph` option accepts graph files in a format known as the [METIS file format][metis], a simple adjacency list format. Many example files can be found in the collection of the [10th DIMACS Implementation Challenge][dimacs]. 
+
 The default loglevel is INFO, add `--loglevel=DEBUG` for more or `--loglevel=ERROR` for less verbose output.
 
 By default, all available threads will be used. To explicitly set the number of threads, use
