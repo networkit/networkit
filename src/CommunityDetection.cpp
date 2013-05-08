@@ -47,6 +47,7 @@
 #include "io/METISGraphReader.h"
 #include "io/METISGraphWriter.h"
 #include "io/ClusteringWriter.h"
+#include "io/DotClusteringWriter.h"
 
 
 // revision
@@ -216,7 +217,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 
 // TODO: clean up obsolete parameters
 enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS, NORM_VOTES, SCALESTRENGTH,
-	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY};
+	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY, SAVE_CLUSTERING_DOT};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -231,6 +232,7 @@ const OptionParser::Descriptor usage[] =
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
  {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"},
  {SAVE_CLUSTERING, 0, "", "saveClustering", OptionParser::Arg::Required, "  --saveClustering=<PATH> \t save the clustering to a file"},
+ {SAVE_CLUSTERING_DOT, 0, "", "saveClusteringDot", OptionParser::Arg::Required, "  --saveClusteringDot=<PATH> \t save the clustering to a dot file"},
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {SCALETHREADS, 0, "", "scaleThreads", OptionParser::Arg::Required, "  --scaleThreads=<MAXTHREADS> \t scale number of threads by factor 2 until maximum is reached"},
@@ -541,10 +543,18 @@ bool inspect(Graph& G, Clustering& clustering, OptionParser::Option* options) {
  	if (options[SAVE_CLUSTERING]) {
  		std::string clusteringFilePath = options[SAVE_CLUSTERING].arg;
  		ClusteringWriter writer;
- 		std::cout << "[BEGIN]Êsaving clustering to file" << std::endl;
+ 		std::cout << "[BEGIN] saving clustering to file" << std::endl;
  		writer.write(clustering, clusteringFilePath);
  		std::cout << "[DONE] saved clustering to file: " << clusteringFilePath << std::endl;
  	}
+
+    if (options[SAVE_CLUSTERING_DOT]) {
+        std::string clusteringFilePath = options[SAVE_CLUSTERING_DOT].arg;
+        DotClusteringWriter writer;
+        std::cout << "[BEGIN] saving clustering to file" << std::endl;
+        writer.write(G, clustering, clusteringFilePath);
+        std::cout << "[DONE] saved clustering to file: " << clusteringFilePath << std::endl;
+    }
 
  	return true;
 }
