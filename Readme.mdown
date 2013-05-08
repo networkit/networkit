@@ -13,11 +13,16 @@ We address the deficit in computing capability by a flexible and extensible clus
 Authors
 -------
 
-Christian Staudt - `christian.staudt @ kit.edu` - [Homepage](http://parco.iti.kit.edu/staudt/)
+### Main Developers
+
+- Christian Staudt - `christian.staudt @ kit.edu` - [Homepage](http://parco.iti.kit.edu/staudt/)
+- Henning Meyerhenke - `meyerhenke @ kit.edu` - [Homepage](http://parco.iti.kit.edu/henningm/)
 
 
-Henning Meyerhenke - `meyerhenke @ kit.edu` - [Homepage](http://parco.iti.kit.edu/henningm/)
+### Contributors
 
+- Andreas Bilke
+- Yassine Marrakchi
 
 License
 -------
@@ -25,7 +30,7 @@ License
 The source code of this program is released under the [MIT License][mitlicense].  We ask you to cite us if you use this code in your project. Feedback is also welcome.
 
 
-Contributions
+External Code
 -------------
 
 This program includes the *[The Lean Mean C++ Option Parser][optparse]* by Matthias S. Benkmann. 
