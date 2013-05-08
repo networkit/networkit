@@ -234,3 +234,5 @@ else:
 
 # TARGET
 env.Program("NetworKit-CommunityDetection-%s" % buildconf, source)
+
+# TODO: make unit tests a separate target
