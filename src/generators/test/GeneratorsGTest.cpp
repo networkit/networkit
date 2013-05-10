@@ -52,7 +52,7 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 	GraphEventProxy proxy(G);
 	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy, 2);
 	gen->initializeGraph();
-	count n = 1000;
+	count n = 42;
 	gen->generateWhile([&]() {
 				return ( G.numberOfNodes() < n );
 			});

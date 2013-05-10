@@ -48,6 +48,9 @@ DynamicBarabasiAlbertGenerator::~DynamicBarabasiAlbertGenerator() {
 
 
 void DynamicBarabasiAlbertGenerator::generateWhile(std::function<bool(void)> cont) {
+	// FIXME: allow k = 1
+	// FIXME: check for correct degree distribution
+
 	INFO("[BEGIN] generating graph");
 
 	assert (G->numberOfNodes() >= k); // there must be at least as many nodes in the graphs as the number of edges added in each step
