@@ -74,13 +74,12 @@ METISParser::~METISParser() {
 }
 
 
-
-
-std::pair<int, int> METISParser::getHeader() {
+std::tuple<int, int, int> METISParser::getHeader() {
 
 	// handle header line
 	int n;  // number of nodes
 	int m;	// number of edges
+	int weighted; // weighted or unweighted graph
 
 	std::string line = "";
 	assert (this->graphFile);
@@ -93,15 +92,21 @@ std::pair<int, int> METISParser::getHeader() {
 		std::vector<node> tokens = parseLine(line);
 		n = tokens[0];
 		m = tokens[1];
-
-		return std::make_pair(n, m);
+		if (tokens[2] < 2) {
+			weighted = tokens[2];
+		} else {
+			throw std::runtime_error("weighted graph"); // FIXME: handle weighted graphs
+			return std::tuple<int, int, int>(0,0,0);
+		}
+		return std::tuple<int, int, int>(n,m,weighted);
 	} else {
 		ERROR("getline not successful");
 		throw std::runtime_error("getting METIS file header failed");
-		return std::make_pair(0,0);
+		return std::tuple<int, int, int>(0,0,0);
 	}
-
 }
+
+
 
 
 bool METISParser::hasNext() {

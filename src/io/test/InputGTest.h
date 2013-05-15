@@ -13,6 +13,7 @@
 
 #include "../../auxiliary/Log.h"
 #include "../METISGraphReader.h"
+#include "../METISGraphWriter.h"
 #include "../ClusteringWriter.h"
 #include "../ClusteringReader.h"
 
