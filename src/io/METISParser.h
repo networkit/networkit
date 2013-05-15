@@ -16,6 +16,7 @@
 #include <utility>
 #include <stdexcept>
 #include <cassert>
+#include <tuple>
 
 #include "../auxiliary/Log.h"
 
@@ -42,7 +43,7 @@ public:
 	/**
 	 * Get the METIS graph file header
 	 */
-	std::pair<int, int> getHeader();
+	std::tuple<int, int, int> getHeader();
 
 	/**
 	 * Test if graph file has a next line.

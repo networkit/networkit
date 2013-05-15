@@ -17,8 +17,10 @@ METISGraphWriter::METISGraphWriter() {
 METISGraphWriter::~METISGraphWriter() {
 	// TODO Auto-generated destructor stub
 }
-
 void METISGraphWriter::write(Graph& G, std::string path) {
+	this->write(G, false, path);
+}
+void METISGraphWriter::write(Graph& G, bool weighted, std::string path) {
 	// TODO: enable weighted graphs
 
 	std::ofstream file(path);
@@ -27,17 +29,25 @@ void METISGraphWriter::write(Graph& G, std::string path) {
 	int64_t n = G.numberOfNodes();
 	int64_t m = G.numberOfEdges();
 
-	file << n << " " << m << " " << 0 << std::endl;
+	file << n << " " << m << " " << (int)weighted << std::endl;
 
-	G.forNodes([&](node u) {
-		G.forNeighborsOf(u, [&](node v){
-			file << v << " ";
+	if (weighted == false) {
+		G.forNodes([&](node u) {
+			G.forNeighborsOf(u, [&](node v){
+				file << v << " ";
+			});
+			file << std::endl;
 		});
-		file << std::endl;
-	});
+	} else {
+			G.forNodes([&](node u) {
+			G.forNeighborsOf(u, [&](node v){
+				file << v << " " << G.weight(u, v) <<"   ";
+			});
+			file << std::endl;
+		});
+	}
 
 	file.close();
-
 }
 
 } /* namespace NetworKit */
