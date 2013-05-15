@@ -91,6 +91,8 @@ protected:
 		}
 
 		virtual ~Coordinates() {}
+
+
 	};
 
 
@@ -100,6 +102,7 @@ protected:
 	// scalars
 	count n; //!< current number of nodes
 	node z; //!< current upper bound of node ids
+
 
 	// per node data
 	std::vector<count> deg; //!< degree of each node
@@ -113,7 +116,7 @@ protected:
 	// graph attributes
 	std::string name;
 
-	// user-defined edge atributes
+	// user-defined edge attributes
 
 	//	attribute maps storage
 
@@ -156,6 +159,7 @@ public:
 	 * @return name of graph
 	 */
 	std::string getName();
+
 
 	/**
 	 * Get string representation
@@ -982,5 +986,6 @@ inline void NetworKit::Graph::forNodes(C condition, L handle) const {
 		}
 	}
 }
+
 
 #endif /* GRAPH_H_ */

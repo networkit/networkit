@@ -23,6 +23,8 @@ public:
 	virtual ~METISGraphWriter();
 
 	virtual void write(Graph& G, std::string path);
+
+	virtual void write(Graph& G, bool weighted, std::string path);
 };
 
 } /* namespace NetworKit */

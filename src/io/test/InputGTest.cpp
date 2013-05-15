@@ -7,6 +7,7 @@
 
 #include "InputGTest.h"
 
+
 namespace NetworKit {
 
 TEST_F(InputGTest, testGraphIOEdgeList) {
@@ -62,12 +63,63 @@ TEST_F(InputGTest, testMETISGraphReader) {
 
 	METISGraphReader reader;
 	Graph G = reader.read(path);
-
+	count n = 198;
+	count m = 2742;
 	EXPECT_FALSE(G.isEmpty());
+	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
+	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
 }
 
+TEST_F(InputGTest, testMETISGraphReaderWithWeights) {
+	std::string path = "input/lesmis.graph";
 
+	METISGraphReader reader;
+	Graph G = reader.read(path);
 
+	EXPECT_FALSE(G.isEmpty());
+	count n = 77;
+	count m = 254;
+	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
+	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
+}
+
+TEST_F(InputGTest, testMETISGraphWriter) {
+	std::string path = "input/jazz1.graph";
+	Graph G = Graph(3);
+	G.addEdge(0,2);
+	G.addEdge(1,1);
+	G.addEdge(1,2);
+	G.addEdge(2,2);
+
+	METISGraphWriter writer;
+	writer.write(G, false, path);
+    bool exists = false;
+	std::ifstream file(path);
+	if (file) {
+		exists = true;
+	}
+	EXPECT_TRUE(exists) << "A file should have been created : " << path;
+
+}
+
+TEST_F(InputGTest, testMETISGraphWriterWithWeights) {
+	std::string path = "input/jazz2.graph";
+	Graph G = Graph(5);
+	G.addEdge(0,2);
+	G.addEdge(0,1);
+	G.addEdge(0,0);
+	G.addEdge(1,1);
+
+	METISGraphWriter writer;
+	writer.write(G, true, path);
+    bool exists = false;
+	std::ifstream file(path);
+	if (file) {
+		exists = true;
+	}
+	EXPECT_TRUE(exists) << "A file should have been created : " << path;
+
+}
 
 TEST_F(InputGTest, testClusteringWriterAndReader) {
 	// write clustering first

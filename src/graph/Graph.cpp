@@ -184,7 +184,11 @@ int64_t Graph::numberOfEdges() const {
 	count mm = 0;
 	this->forNodes([&](node v) {
 		mm += this->deg[v];
+	//	if(this->hasEdge(v , v)) {
+	//		mm++;
+	//	}
 	});
+
 	count m = mm / 2;
 	return m;
 }
