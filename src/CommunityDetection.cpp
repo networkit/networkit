@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : EnsembleClustering.cpp
+// Name        : CommunityDetection.cpp
 // Author      : Christian Staudt (christian.staudt@kit.edu),
 //				 Henning Meyerhenke (henning.meyerhenke@kit.edu)
 // Version     :
@@ -48,6 +48,7 @@
 #include "io/METISGraphWriter.h"
 #include "io/ClusteringWriter.h"
 #include "io/DotClusteringWriter.h"
+#include "generators/DynamicBarabasiAlbertGenerator.h"
 
 
 // revision
@@ -217,7 +218,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 
 // TODO: clean up obsolete parameters
 enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS, NORM_VOTES, SCALESTRENGTH,
-	WRITEGRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY, SAVE_CLUSTERING_DOT};
+	SAVE_GRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY, SAVE_CLUSTERING_DOT};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -230,7 +231,7 @@ const OptionParser::Descriptor usage[] =
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate=<GENERATOR>:<PARAMS> \t Run ensemble clusterer on generated graph with planted partition"},
  {ALGORITHM, 0, "", "algorithm", OptionParser::Arg::Required, "  --algorithm=<ALGORITHM>:<PARAMS> \t select clustering algorithm"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
- {WRITEGRAPH, 0, "", "writeGraph", OptionParser::Arg::Required, "  --writegraph=<PATH> \t write the graph to a file"},
+ {SAVE_GRAPH, 0, "", "saveGraph", OptionParser::Arg::Required, "  --saveGraph=<PATH> \t write the graph to a file"},
  {SAVE_CLUSTERING, 0, "", "saveClustering", OptionParser::Arg::Required, "  --saveClustering=<PATH> \t save the clustering to a file"},
  {SAVE_CLUSTERING_DOT, 0, "", "saveClusteringDot", OptionParser::Arg::Required, "  --saveClusteringDot=<PATH> \t save the clustering to a dot file"},
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
@@ -281,6 +282,19 @@ Graph getGraph(OptionParser::Option* options) {
 			count n = std::atoi(genNumArgs.at(0).c_str());
 			count a = std::atoi(genNumArgs.at(1).c_str());
 			return generatePreferentialAttachmentGraph(n, a);
+		} else if (model == "DBA") {
+			assert (genNumArgs.size() == 2);
+			count n = std::atoi(genNumArgs.at(0).c_str());
+			count a = std::atoi(genNumArgs.at(1).c_str());
+
+			Graph G(0); // empty graph
+			GraphEventProxy Gproxy(G);
+			DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(Gproxy, a);
+			gen->initializeGraph();
+			gen->generateWhile([&]() {
+						return ( G.numberOfNodes() < n );
+					});
+			return G;
 		} else {
 			std::cout << "[ERROR] unknown graph generation model: " << model << " [EXIT]" << std::endl;
 			exit(1);
@@ -311,11 +325,11 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 	}
 
 
-	if (options[WRITEGRAPH]) {
+	if (options[SAVE_GRAPH]) {
 		// write input graph to file
-		std::cout << "\t --writegraph=" << options[WRITEGRAPH].arg << std::endl;
+		std::cout << "\t --writegraph=" << options[SAVE_GRAPH].arg << std::endl;
 
-		std::string path = options[WRITEGRAPH].arg;
+		std::string path = options[SAVE_GRAPH].arg;
 		METISGraphWriter writer;
 		std::cout << "[BEGIN] writing graph to file: " << path << std::endl;
 		writer.write(G, path);

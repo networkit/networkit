@@ -68,20 +68,6 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnSingletonClustering) {
 }
 
 
-TEST_F(OverlapGTest, testHashing) {
-	std::hash<int64_t> h;
-	for (int64_t i = 1; i <= 42; ++i) {
-		size_t val = h(i);
-		std::cout << val << " ";
-	}
-	std::cout << std::endl;
-
-	size_t val = 42;
-	size_t masked = val & 0xffff;
-	std::cout << masked << std::endl;
-}
-
-
 TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
 	GraphGenerator graphGen;
 	int64_t n = 10;

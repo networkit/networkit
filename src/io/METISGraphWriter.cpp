@@ -29,13 +29,16 @@ void METISGraphWriter::write(Graph& G, std::string path) {
 
 	file << n << " " << m << " " << 0 << std::endl;
 
+	count nc = 0;
 	G.forNodes([&](node u) {
+		nc += 1;
 		G.forNeighborsOf(u, [&](node v){
 			file << v << " ";
 		});
 		file << std::endl;
 	});
 
+	assert (nc == n);
 	file.close();
 
 }
