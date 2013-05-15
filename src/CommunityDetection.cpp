@@ -3,7 +3,7 @@
 // Author      : Christian Staudt (christian.staudt@kit.edu),
 //				 Henning Meyerhenke (henning.meyerhenke@kit.edu)
 // Version     :
-// Copyright   : © 2012, Christian Staudt, Henning Meyerhenke
+// Copyright   : ï¿½ 2012, Christian Staudt, Henning Meyerhenke
 // Description : Combining parallel clustering and ensemble learning
 //============================================================================
 
@@ -305,7 +305,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 	// if getGraph returns empty graph, abort
 	if (G.isEmpty() && (G.getName() == "NONE")) {
-		std::cout << "[ERROR]Êno graph instance provided." << std::endl;
+		std::cout << "[ERROR]ï¿½no graph instance provided." << std::endl;
 		std::cout << "[EXIT]" << std::endl;
 		exit(1);
 	}
@@ -385,7 +385,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 				} else if (baseClustererArg == "Agglomerative") {
 					base = new ParallelAgglomerativeClusterer();
 				} else {
-					std::cout << "[ERROR]Êunknown base clusterer: " << baseClustererArg << std::endl;
+					std::cout << "[ERROR]ï¿½unknown base clusterer: " << baseClustererArg << std::endl;
 					exit(1);
 				}
 				ensemblePre->addBaseClusterer(*base);
