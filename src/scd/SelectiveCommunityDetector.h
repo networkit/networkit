@@ -8,6 +8,9 @@
 #ifndef SELECTIVECOMMUNITYDETECTOR_H_
 #define SELECTIVECOMMUNITYDETECTOR_H_
 
+#include "../graph/Graph.h"
+#include "../clustering/Clustering.h"
+
 namespace NetworKit {
 
 class SelectiveCommunityDetector {
