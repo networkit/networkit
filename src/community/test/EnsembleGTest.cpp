@@ -111,55 +111,55 @@ TEST_F(EnsembleGTest, testEnsembleClustererOnCliqueGraph_ManyBaseClusterers) {
 }
 
 
-TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
-
-	EnsembleMultilevel ensembleClusterer;
-	// configure EnsembleClusterer
-	QualityMeasure* qm = new Modularity();
-	ensembleClusterer.setQualityMeasure(*qm);
-	int b = 2; // number of base clusterers
-	for (int i = 0; i < b; ++i) {
-		Clusterer* baseClusterer = new LabelPropagation();
-		ensembleClusterer.addBaseClusterer(*baseClusterer);
-	}
-	Overlapper* overlapper = new HashingOverlapper();
-	ensembleClusterer.setOverlapper(*overlapper);
-	Clusterer* finalClusterer = new LabelPropagation();
-	ensembleClusterer.setFinalClusterer(*finalClusterer);
-
-	// generate clustered random graph with obvious community structure
-	GraphGenerator graphGen;
-	count n = 200;
-	count k = 3;
-	// these parameters generate a clique graph
-	double pIn = 1.0;
-	double pOut = 0.01;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pIn, pOut);
-
-	// DEBUG
-	GraphIO graphio;
-	graphio.writeAdjacencyList(G, "sandbox/G_AlmostClique.adjlist");
-	// DEBUG
-
-
-	Clustering zeta = ensembleClusterer.run(G);
-
-	DEBUG("clustering produced by EnsembleClusterer: k=" << zeta.numberOfClusters());
-
-	// DEBUG
-	if (zeta.numberOfNodes() != G.numberOfNodes()) {
-		ERROR("clustering produced by EnsembleClusterer has " << zeta.numberOfNodes() << " entries but n = " << G.numberOfNodes());
-	}
-	// DEBUG
-
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
-	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters are easy to detect";
-
-	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	INFO("modularity produced by EnsembleClusterer: " << mod);
-
-}
+//TEST_F(EnsembleGTest, testEnsembleClustererOnAlmostCliqueGraph) {
+//
+//	EnsembleMultilevel ensembleClusterer;
+//	// configure EnsembleClusterer
+//	QualityMeasure* qm = new Modularity();
+//	ensembleClusterer.setQualityMeasure(*qm);
+//	int b = 2; // number of base clusterers
+//	for (int i = 0; i < b; ++i) {
+//		Clusterer* baseClusterer = new LabelPropagation();
+//		ensembleClusterer.addBaseClusterer(*baseClusterer);
+//	}
+//	Overlapper* overlapper = new HashingOverlapper();
+//	ensembleClusterer.setOverlapper(*overlapper);
+//	Clusterer* finalClusterer = new LabelPropagation();
+//	ensembleClusterer.setFinalClusterer(*finalClusterer);
+//
+//	// generate clustered random graph with obvious community structure
+//	GraphGenerator graphGen;
+//	count n = 200;
+//	count k = 3;
+//	// these parameters generate a clique graph
+//	double pIn = 1.0;
+//	double pOut = 0.01;
+//	Graph G = graphGen.makeClusteredRandomGraph(n, k, pIn, pOut);
+//
+//	// DEBUG
+//	GraphIO graphio;
+//	graphio.writeAdjacencyList(G, "sandbox/G_AlmostClique.adjlist");
+//	// DEBUG
+//
+//
+//	Clustering zeta = ensembleClusterer.run(G);
+//
+//	DEBUG("clustering produced by EnsembleClusterer: k=" << zeta.numberOfClusters());
+//
+//	// DEBUG
+//	if (zeta.numberOfNodes() != G.numberOfNodes()) {
+//		ERROR("clustering produced by EnsembleClusterer has " << zeta.numberOfNodes() << " entries but n = " << G.numberOfNodes());
+//	}
+//	// DEBUG
+//
+//	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
+//	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters are easy to detect";
+//
+//	Modularity modularity;
+//	double mod = modularity.getQuality(zeta, G);
+//	INFO("modularity produced by EnsembleClusterer: " << mod);
+//
+//}
 
 
 

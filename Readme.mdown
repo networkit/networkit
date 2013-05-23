@@ -66,7 +66,7 @@ Build
 
 We recommend SCons for building the project. Edit the file `SConstruct.EDITME` to set include paths, library paths etc, then rename it to `SConstruct`.
 
-Alternatively, our Eclipse project file is included as an example. Import the project into Eclipse and modify depending on your needs.
+Alternatively, our Eclipse project files are included as examples in the `eclipse/` directory. Import the project into Eclipse and modify depending on your needs.
 
 
 Test

@@ -164,14 +164,18 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 	Modularity modularityPar;
 	ModularitySequential modularitySeq;
 
-	count n = 10e3;
+	count n = 500;
 	GraphGenerator graphGen;
 	ClusteringGenerator clusteringGen;
 
+	INFO("making random graph");
 	Graph G = graphGen.makeRandomGraph(n, 0.2);
+	INFO("making random clustering");
 	Clustering zeta = clusteringGen.makeRandomClustering(G, 42);
 
+	INFO("calculating modularity in parallel");
 	double modPar = modularityPar.getQuality(zeta, G);
+	INFO("calculating modularity sequentially");
 	double modSeq = modularitySeq.getQuality(zeta, G);
 
 	EXPECT_EQ(modPar, modSeq) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
@@ -180,23 +184,23 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 
 
 
-TEST_F(ClusteringGTest, testModularityParallelVsSequentialOnLargeGraph) {
-
-	Modularity modularityPar;
-	ModularitySequential modularitySeq;
-
-	ClusteringGenerator clusteringGen;
-
-	METISGraphReader reader;
-	Graph G = reader.read("graphs/Benchmark/uk-2002.graph"); // FIXME: hardcoded file name
-	Clustering zeta = clusteringGen.makeRandomClustering(G, 42);
-
-	double modPar = modularityPar.getQuality(zeta, G);
-	double modSeq = modularitySeq.getQuality(zeta, G);
-
-	EXPECT_EQ(modPar, modSeq) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
-
-}
+//TEST_F(ClusteringGTest, testModularityParallelVsSequentialOnLargeGraph) {
+//
+//	Modularity modularityPar;
+//	ModularitySequential modularitySeq;
+//
+//	ClusteringGenerator clusteringGen;
+//
+//	METISGraphReader reader;
+//	Graph G = reader.read("graphs/Benchmark/uk-2002.graph"); // FIXME: hardcoded file name
+//	Clustering zeta = clusteringGen.makeRandomClustering(G, 42);
+//
+//	double modPar = modularityPar.getQuality(zeta, G);
+//	double modSeq = modularitySeq.getQuality(zeta, G);
+//
+//	EXPECT_EQ(modPar, modSeq) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
+//
+//}
 
 
 //TEST_F(ClusteringGTest, testModularityWithStoredClustering) {

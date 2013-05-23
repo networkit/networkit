@@ -14,7 +14,7 @@ TEST_F(InputGTest, testGraphIOEdgeList) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCircularGraph(20);
 	GraphIO graphio;
-	std::string path = "sandbox/edgelist.txt";
+	std::string path = "output/edgelist.txt";
 	graphio.writeEdgeList(G, path);
 
 	bool exists = false;
@@ -29,7 +29,7 @@ TEST_F(InputGTest, testGraphIOAdjacencyList) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCircularGraph(20);
 	GraphIO graphio;
-	std::string path = "sandbox/circular.adjlist";
+	std::string path = "output/circular.adjlist";
 	graphio.writeAdjacencyList(G, path);
 
 	bool exists = false;
@@ -45,7 +45,7 @@ TEST_F(InputGTest, testGraphIOForIsolatedNodes) {
 	GraphGenerator graphGen;
 	Graph G(20);
 	GraphIO graphio;
-	std::string path = "sandbox/isolated.adjlist";
+	std::string path = "output/isolated.adjlist";
 	graphio.writeAdjacencyList(G, path);
 
 	bool exists = false;
@@ -123,7 +123,7 @@ TEST_F(InputGTest, testMETISGraphWriterWithWeights) {
 
 TEST_F(InputGTest, testClusteringWriterAndReader) {
 	// write clustering first
-	std::string path = "sandbox/example.clust";
+	std::string path = "output/example.clust";
 
 	GraphGenerator graphGen;
 	count n = 100;
