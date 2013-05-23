@@ -228,7 +228,7 @@ const OptionParser::Descriptor usage[] =
  {THREADS,    0, "" , "threads", OptionParser::Arg::Required, "  --threads=<NUM>  \t set the maximum number of threads" },
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
  {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph=<PATH> \t Run ensemble clusterer on graph"},
- {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate=<GENERATOR>:<PARAMS> \t Run ensemble clusterer on generated graph with planted partition"},
+ {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate=<GENERATOR>:<PARAMS> \t generate a graph"},
  {ALGORITHM, 0, "", "algorithm", OptionParser::Arg::Required, "  --algorithm=<ALGORITHM>:<PARAMS> \t select clustering algorithm"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
  {SAVE_GRAPH, 0, "", "saveGraph", OptionParser::Arg::Required, "  --saveGraph=<PATH> \t write the graph to a file"},
