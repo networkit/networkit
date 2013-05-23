@@ -34,14 +34,14 @@ void METISGraphWriter::write(Graph& G, bool weighted, std::string path) {
 	if (weighted == false) {
 		G.forNodes([&](node u) {
 			G.forNeighborsOf(u, [&](node v){
-				file << v << " ";
+				file << v + 1 << " ";
 			});
 			file << std::endl;
 		});
 	} else {
 			G.forNodes([&](node u) {
 			G.forNeighborsOf(u, [&](node v){
-				file << v << " " << G.weight(u, v) <<"   ";
+				file << v + 1 << " " << G.weight(u, v) <<"   ";
 			});
 			file << std::endl;
 		});

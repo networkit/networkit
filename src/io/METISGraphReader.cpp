@@ -28,7 +28,6 @@ Graph METISGraphReader::read(std::string path) {
 	int64_t m = std::get<1>(header);
 	int64_t weighted = std::get<2>(header);
 
-
 	Graph G(n);
 
 	std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
@@ -60,14 +59,16 @@ Graph METISGraphReader::read(std::string path) {
 		return G;
 	} else {
 		while (parser.hasNext()) {
-			std::vector<node> adjacencies = parser.getNext();
-			for (int i=0; i < adjacencies.size(); i+=2) {
-				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
+
+			std::vector<std::pair<node,double>> adjacencies = parser.getNextWithWeights();
+
+			for (int i=0; i < adjacencies.size(); i++) {
+				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
 				assert (v >= 0);
 				if (u <= v) { // self-loops are allowed
 					G.addEdge(u, v);
-					G.setWeight(u, v, adjacencies[i+1]);
-					assert(adjacencies[i+1] > 0); // FIXME: store adjacencies and weights separately
+					G.setWeight(u, v, adjacencies[i].second);
+					assert(adjacencies[i].second > 0);
 				}
 			}
 			u += 1; // next node

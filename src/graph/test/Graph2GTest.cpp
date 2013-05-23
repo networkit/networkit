@@ -215,7 +215,7 @@ TEST_F(Graph2GTest, testNeighborIteration) {
 		});
 	});
 }
-
+/*
 TEST_F(Graph2GTest, testParallelSumForNodes) {
 	int64_t n = 500;
 	int64_t offset = 100;
@@ -235,7 +235,7 @@ TEST_F(Graph2GTest, testParallelSumForNodes) {
 
 	EXPECT_EQ(summe, 2 * G.numberOfEdges()) << " graph volume should be" << (2*G.numberOfEdges());
 }
-
+*/
 TEST_F(Graph2GTest, testNodePairIteration) {
 	int64_t n = 50;
 	Graph G(n);
@@ -338,7 +338,7 @@ TEST_F(Graph2GTest, testConstNeighborIteration) {
 		});
 	});
 }
-
+/*
 TEST_F(Graph2GTest, testConstParallelSumForNodes) {
 	int64_t n = 500;
 	int64_t offset = 100;
@@ -360,7 +360,7 @@ TEST_F(Graph2GTest, testConstParallelSumForNodes) {
 	});
 
 	EXPECT_EQ(summe, 2 * G2.numberOfEdges()) << " graph volume should be" << (2*G2.numberOfEdges());
-}
+}*/
 
 TEST_F(Graph2GTest, testConstNodePairIteration) {
 	int64_t n = 50;

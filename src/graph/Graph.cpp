@@ -177,18 +177,16 @@ edgeweight Graph::weightedDegree(node v) const {
 }
 
 
-
 int64_t Graph::numberOfEdges() const {
 	// sum over all stored degrees
 	// TODO: parallel sum?
 	count mm = 0;
 	this->forNodes([&](node v) {
 		mm += this->deg[v];
-	//	if(this->hasEdge(v , v)) {
-	//		mm++;
-	//	}
+		if(this->hasEdge(v , v)) {
+			mm++;
+		}
 	});
-
 	count m = mm / 2;
 	return m;
 }

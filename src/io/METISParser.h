@@ -55,8 +55,8 @@ public:
 	 */
 	std::vector<node> getNext();
 
+	std::vector<std::pair<node,double>> getNextWithWeights();
 
 };
-
 } /* namespace NetworKit */
 #endif /* METISPARSER_H_ */

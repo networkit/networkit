@@ -25,7 +25,6 @@ public:
 
 	virtual Graph read(std::string path);
 
-// TODO: reader for weighted graphs in METIS format
 };
 
 } /* namespace NetworKit */
