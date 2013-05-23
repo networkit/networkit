@@ -158,22 +158,22 @@ TEST_F(GraphGTest, testNodeBFS) {
 	EXPECT_EQ(4, nodeCount) << "4 nodes should have been visited by BFS";
 }
 
-TEST_F(GraphGTest, testEdgeBFS) {
-
-	Graph G(4);
-	node v = 0;
-	G.addEdge(v, 1);
-	G.addEdge(v, 2);
-	G.addEdge(v, 3);
-	G.addEdge(3, 2);
-
-	int edgeCount = 0;
-	G.breadthFirstEdgesFrom(v, [&](node x, node y) {
-		edgeCount += 1;
-	});
-
-	EXPECT_EQ(4, edgeCount) << "4 edges should have been visited by BFS";
-}
+//TEST_F(GraphGTest, testEdgeBFS) {
+//
+//	Graph G(4);
+//	node v = 0;
+//	G.addEdge(v, 1);
+//	G.addEdge(v, 2);
+//	G.addEdge(v, 3);
+//	G.addEdge(3, 2);
+//
+//	int edgeCount = 0;
+//	G.breadthFirstEdgesFrom(v, [&](node x, node y) {
+//		edgeCount += 1;
+//	});
+//
+//	EXPECT_EQ(4, edgeCount) << "4 edges should have been visited by BFS";
+//}
 
 
 TEST_F(GraphGTest, testNodeIteration) {
