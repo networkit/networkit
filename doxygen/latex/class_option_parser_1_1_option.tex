@@ -1,0 +1,585 @@
+\hypertarget{class_option_parser_1_1_option}{\section{Option\-Parser\-:\-:Option Class Reference}
+\label{class_option_parser_1_1_option}\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}}
+}
+
+
+A parsed option from the command line together with its argument if it has one.  
+
+
+
+
+{\ttfamily \#include $<$optionparser.\-h$>$}
+
+
+
+Collaboration diagram for Option\-Parser\-:\-:Option\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=206pt]{class_option_parser_1_1_option__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{class_option_parser_1_1_option_a957a9dab42de6de017ee655254b57a41}{type} () const 
+\begin{DoxyCompactList}\small\item\em Returns \hyperlink{struct_option_parser_1_1_descriptor_a070d24a33fc9f30cf3deafa428ff7fa7}{Descriptor\-::type} of this \hyperlink{class_option_parser_1_1_option}{Option}'s \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor}, or 0 if this \hyperlink{class_option_parser_1_1_option}{Option} is invalid (unused). \end{DoxyCompactList}\item 
+int \hyperlink{class_option_parser_1_1_option_aaa10d0593f60d8cd2c631fe99b26cf0a}{index} () const 
+\begin{DoxyCompactList}\small\item\em Returns \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} of this \hyperlink{class_option_parser_1_1_option}{Option}'s \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor}, or -\/1 if this \hyperlink{class_option_parser_1_1_option}{Option} is invalid (unused). \end{DoxyCompactList}\item 
+int \hyperlink{class_option_parser_1_1_option_a43b8ad4e4546d97bd12ed04ea39850e2}{count} ()
+\begin{DoxyCompactList}\small\item\em Returns the number of times this \hyperlink{class_option_parser_1_1_option}{Option} (or others with the same \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index}) occurs in the argument vector. \end{DoxyCompactList}\item 
+bool \hyperlink{class_option_parser_1_1_option_aca0c27907db0b24c320252ea80babf6d}{is\-First} () const 
+\begin{DoxyCompactList}\small\item\em Returns true iff this is the first element of the linked list. \end{DoxyCompactList}\item 
+bool \hyperlink{class_option_parser_1_1_option_ad901abe9af59167b9c2b1937b7129fdc}{is\-Last} () const 
+\begin{DoxyCompactList}\small\item\em Returns true iff this is the last element of the linked list. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option}{Option} $\ast$ \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the first element of the linked list. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option}{Option} $\ast$ \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the last element of the linked list. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option}{Option} $\ast$ \hyperlink{class_option_parser_1_1_option_aa17639d1c0e0ae5eae682080ae93d5a3}{prev} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the previous element of the linked list or N\-U\-L\-L if called on \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first()}. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option}{Option} $\ast$ \hyperlink{class_option_parser_1_1_option_aa8caf9f5b9ae5d3900f2432f894dd4b5}{prevwrap} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the previous element of the linked list with wrap-\/around from \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first()} to \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option}{Option} $\ast$ \hyperlink{class_option_parser_1_1_option_ab06f7c1798782d301d35265eda2b95a5}{next} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the next element of the linked list or N\-U\-L\-L if called on \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option}{Option} $\ast$ \hyperlink{class_option_parser_1_1_option_a3c426f5fa1315b9b474286d7d2d1c277}{nextwrap} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the next element of the linked list with wrap-\/around from \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()} to \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first()}. \end{DoxyCompactList}\item 
+void \hyperlink{class_option_parser_1_1_option_a47a6a9946633001b36826680252065df}{append} (\hyperlink{class_option_parser_1_1_option}{Option} $\ast$new\-\_\-last)
+\begin{DoxyCompactList}\small\item\em Makes {\ttfamily new\-\_\-last} the new \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()} by chaining it into the list after \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option_a52a071fc38974597b6673ab34725c8d5}{operator const Option $\ast$} () const 
+\begin{DoxyCompactList}\small\item\em Casts from \hyperlink{class_option_parser_1_1_option}{Option} to const Option$\ast$ but only if this \hyperlink{class_option_parser_1_1_option}{Option} is valid. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option_a3e135f163c812dbd1c954f8d8d9c8a6e}{operator Option $\ast$} ()
+\begin{DoxyCompactList}\small\item\em Casts from \hyperlink{class_option_parser_1_1_option}{Option} to Option$\ast$ but only if this \hyperlink{class_option_parser_1_1_option}{Option} is valid. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option_a688623720b4f2221a82a29014b856d95}{Option} ()
+\begin{DoxyCompactList}\small\item\em Creates a new \hyperlink{class_option_parser_1_1_option}{Option} that is a one-\/element linked list and has N\-U\-L\-L \hyperlink{class_option_parser_1_1_option_a9ea2f4b0658ab175b7f0f0c204671fa9}{desc}, \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name}, \hyperlink{class_option_parser_1_1_option_a5b222bff75241e025502aab20a914191}{arg} and \hyperlink{class_option_parser_1_1_option_a25a2b22da7c974be3bcda66f08d2f3f3}{namelen}. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option_ac8f3256f7544abfcdabd330671023e60}{Option} (const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} $\ast$desc\-\_\-, const char $\ast$name\-\_\-, const char $\ast$arg\-\_\-)
+\begin{DoxyCompactList}\small\item\em Creates a new \hyperlink{class_option_parser_1_1_option}{Option} that is a one-\/element linked list and has the given values for \hyperlink{class_option_parser_1_1_option_a9ea2f4b0658ab175b7f0f0c204671fa9}{desc}, \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name} and \hyperlink{class_option_parser_1_1_option_a5b222bff75241e025502aab20a914191}{arg}. \end{DoxyCompactList}\item 
+void \hyperlink{class_option_parser_1_1_option_a79a809add651558e23bfcdccdad8bc24}{operator=} (const \hyperlink{class_option_parser_1_1_option}{Option} \&orig)
+\begin{DoxyCompactList}\small\item\em Makes {\ttfamily $\ast$this} a copy of {\ttfamily orig} except for the linked list pointers. \end{DoxyCompactList}\item 
+\hyperlink{class_option_parser_1_1_option_a7cb1067fedf60add2dad9c6bf9c78b4b}{Option} (const \hyperlink{class_option_parser_1_1_option}{Option} \&orig)
+\begin{DoxyCompactList}\small\item\em Makes {\ttfamily $\ast$this} a copy of {\ttfamily orig} except for the linked list pointers. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} $\ast$ \hyperlink{class_option_parser_1_1_option_a9ea2f4b0658ab175b7f0f0c204671fa9}{desc}
+\begin{DoxyCompactList}\small\item\em Pointer to this \hyperlink{class_option_parser_1_1_option}{Option}'s \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor}. \end{DoxyCompactList}\item 
+const char $\ast$ \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name}
+\begin{DoxyCompactList}\small\item\em The name of the option as used on the command line. \end{DoxyCompactList}\item 
+const char $\ast$ \hyperlink{class_option_parser_1_1_option_a5b222bff75241e025502aab20a914191}{arg}
+\begin{DoxyCompactList}\small\item\em Pointer to this \hyperlink{class_option_parser_1_1_option}{Option}'s argument (if any). \end{DoxyCompactList}\item 
+int \hyperlink{class_option_parser_1_1_option_a25a2b22da7c974be3bcda66f08d2f3f3}{namelen}
+\begin{DoxyCompactList}\small\item\em The length of the option \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A parsed option from the command line together with its argument if it has one. 
+
+The \hyperlink{class_option_parser_1_1_parser}{Parser} chains all parsed options with the same \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} together to form a linked list. This allows you to easily implement all of the common ways of handling repeated options and enable/disable pairs.
+
+\begin{DoxyItemize}
+\item Test for presence of a switch in the argument vector\-: 
+\begin{DoxyCode}
+\textcolor{keywordflow}{if} ( options[QUIET] ) ... 
+\end{DoxyCode}
+ \item Evaluate --enable-\/foo/--disable-\/foo pair where the last one used wins\-: 
+\begin{DoxyCode}
+\textcolor{keywordflow}{if} ( options[FOO].\hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last}()->\hyperlink{class_option_parser_1_1_option_a957a9dab42de6de017ee655254b57a41}{type}() == DISABLE ) ... 
+\end{DoxyCode}
+ \item Cumulative option (-\/v verbose, -\/vv more verbose, -\/vvv even more verbose)\-: 
+\begin{DoxyCode}
+\textcolor{keywordtype}{int} verbosity = options[VERBOSE].count(); 
+\end{DoxyCode}
+ \item Iterate over all --file=$<$fname$>$ arguments\-: 
+\begin{DoxyCode}
+\textcolor{keywordflow}{for} (\hyperlink{class_option_parser_1_1_option_a688623720b4f2221a82a29014b856d95}{Option}* opt = options[FILE]; opt; opt = opt->next())
+ fname = opt->arg; ... 
+\end{DoxyCode}
+ \end{DoxyItemize}
+
+
+Definition at line 434 of file optionparser.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_option_parser_1_1_option_a688623720b4f2221a82a29014b856d95}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!Option@{Option}}
+\index{Option@{Option}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{Option}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Option\-::\-Option (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a688623720b4f2221a82a29014b856d95}
+
+
+Creates a new \hyperlink{class_option_parser_1_1_option}{Option} that is a one-\/element linked list and has N\-U\-L\-L \hyperlink{class_option_parser_1_1_option_a9ea2f4b0658ab175b7f0f0c204671fa9}{desc}, \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name}, \hyperlink{class_option_parser_1_1_option_a5b222bff75241e025502aab20a914191}{arg} and \hyperlink{class_option_parser_1_1_option_a25a2b22da7c974be3bcda66f08d2f3f3}{namelen}. 
+
+
+
+Definition at line 747 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_ac8f3256f7544abfcdabd330671023e60}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!Option@{Option}}
+\index{Option@{Option}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{Option}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Option\-::\-Option (
+\begin{DoxyParamCaption}
+\item[{const {\bf Descriptor} $\ast$}]{desc\-\_\-, }
+\item[{const char $\ast$}]{name\-\_\-, }
+\item[{const char $\ast$}]{arg\-\_\-}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_ac8f3256f7544abfcdabd330671023e60}
+
+
+Creates a new \hyperlink{class_option_parser_1_1_option}{Option} that is a one-\/element linked list and has the given values for \hyperlink{class_option_parser_1_1_option_a9ea2f4b0658ab175b7f0f0c204671fa9}{desc}, \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name} and \hyperlink{class_option_parser_1_1_option_a5b222bff75241e025502aab20a914191}{arg}. 
+
+If {\ttfamily name\-\_\-} points at a character other than '-\/' it will be assumed to refer to a short option and \hyperlink{class_option_parser_1_1_option_a25a2b22da7c974be3bcda66f08d2f3f3}{namelen} will be set to 1. Otherwise the length will extend to the first '=' character or the string's 0-\/terminator. 
+
+Definition at line 762 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_a7cb1067fedf60add2dad9c6bf9c78b4b}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!Option@{Option}}
+\index{Option@{Option}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{Option}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Option\-::\-Option (
+\begin{DoxyParamCaption}
+\item[{const {\bf Option} \&}]{orig}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a7cb1067fedf60add2dad9c6bf9c78b4b}
+
+
+Makes {\ttfamily $\ast$this} a copy of {\ttfamily orig} except for the linked list pointers. 
+
+After this operation {\ttfamily $\ast$this} will be a one-\/element linked list. 
+
+Definition at line 782 of file optionparser.\-h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_option_parser_1_1_option_a47a6a9946633001b36826680252065df}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!append@{append}}
+\index{append@{append}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{append}]{\setlength{\rightskip}{0pt plus 5cm}void Option\-Parser\-::\-Option\-::append (
+\begin{DoxyParamCaption}
+\item[{{\bf Option} $\ast$}]{new\-\_\-last}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a47a6a9946633001b36826680252065df}
+
+
+Makes {\ttfamily new\-\_\-last} the new \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()} by chaining it into the list after \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}. 
+
+It doesn't matter which element you call \hyperlink{class_option_parser_1_1_option_a47a6a9946633001b36826680252065df}{append()} on. The new element will always be appended to \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}.
+
+\begin{DoxyAttention}{Attention}
+{\ttfamily new\-\_\-last} must not yet be part of a list, or that list will become corrupted, because this method does not unchain {\ttfamily new\-\_\-last} from an existing list. 
+\end{DoxyAttention}
+
+
+Definition at line 691 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_option_parser_1_1_option_a47a6a9946633001b36826680252065df_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_option_parser_1_1_option_a43b8ad4e4546d97bd12ed04ea39850e2}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!count@{count}}
+\index{count@{count}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{count}]{\setlength{\rightskip}{0pt plus 5cm}int Option\-Parser\-::\-Option\-::count (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a43b8ad4e4546d97bd12ed04ea39850e2}
+
+
+Returns the number of times this \hyperlink{class_option_parser_1_1_option}{Option} (or others with the same \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index}) occurs in the argument vector. 
+
+This corresponds to the number of elements in the linked list this \hyperlink{class_option_parser_1_1_option}{Option} is part of. It doesn't matter on which element you call \hyperlink{class_option_parser_1_1_option_a43b8ad4e4546d97bd12ed04ea39850e2}{count()}. The return value is always the same.
+
+Use this to implement cumulative options, such as -\/v, -\/vv, -\/vvv for different verbosity levels.
+
+Returns 0 when called for an unused/invalid option. 
+
+Definition at line 551 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_option_parser_1_1_option_a43b8ad4e4546d97bd12ed04ea39850e2_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!first@{first}}
+\index{first@{first}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{first}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Option}$\ast$ Option\-Parser\-::\-Option\-::first (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}
+
+
+Returns a pointer to the first element of the linked list. 
+
+Use this when you want the first occurrence of an option on the command line to take precedence. Note that this is not the way most programs handle options. You should probably be using \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()} instead.
+
+\begin{DoxyNote}{Note}
+This method may be called on an unused/invalid option and will return a pointer to the option itself. 
+\end{DoxyNote}
+
+
+Definition at line 600 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_option_parser_1_1_option_aaa10d0593f60d8cd2c631fe99b26cf0a}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!index@{index}}
+\index{index@{index}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{index}]{\setlength{\rightskip}{0pt plus 5cm}int Option\-Parser\-::\-Option\-::index (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_aaa10d0593f60d8cd2c631fe99b26cf0a}
+
+
+Returns \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} of this \hyperlink{class_option_parser_1_1_option}{Option}'s \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor}, or -\/1 if this \hyperlink{class_option_parser_1_1_option}{Option} is invalid (unused). 
+
+
+
+Definition at line 534 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_aca0c27907db0b24c320252ea80babf6d}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!is\-First@{is\-First}}
+\index{is\-First@{is\-First}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{is\-First}]{\setlength{\rightskip}{0pt plus 5cm}bool Option\-Parser\-::\-Option\-::is\-First (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_aca0c27907db0b24c320252ea80babf6d}
+
+
+Returns true iff this is the first element of the linked list. 
+
+The first element in the linked list is the first option on the command line that has the respective \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} value.
+
+Returns true for an unused/invalid option. 
+
+Definition at line 571 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_ad901abe9af59167b9c2b1937b7129fdc}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!is\-Last@{is\-Last}}
+\index{is\-Last@{is\-Last}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{is\-Last}]{\setlength{\rightskip}{0pt plus 5cm}bool Option\-Parser\-::\-Option\-::is\-Last (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_ad901abe9af59167b9c2b1937b7129fdc}
+
+
+Returns true iff this is the last element of the linked list. 
+
+The last element in the linked list is the last option on the command line that has the respective \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} value.
+
+Returns true for an unused/invalid option. 
+
+Definition at line 584 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!last@{last}}
+\index{last@{last}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{last}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Option}$\ast$ Option\-Parser\-::\-Option\-::last (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}
+
+
+Returns a pointer to the last element of the linked list. 
+
+Use this when you want the last occurrence of an option on the command line to take precedence. This is the most common way of handling conflicting options.
+
+\begin{DoxyNote}{Note}
+This method may be called on an unused/invalid option and will return a pointer to the option itself.
+\end{DoxyNote}
+\begin{DoxyParagraph}{Tip\-:}
+If you have options with opposite meanings (e.\-g. {\ttfamily --enable-\/foo} and {\ttfamily --disable-\/foo}), you can assign them the same \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} to get them into the same list. Distinguish them by \hyperlink{struct_option_parser_1_1_descriptor_a070d24a33fc9f30cf3deafa428ff7fa7}{Descriptor\-::type} and all you have to do is check {\ttfamily  \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}-\/$>$\hyperlink{class_option_parser_1_1_option_a957a9dab42de6de017ee655254b57a41}{type()} } to get the state listed last on the command line. 
+\end{DoxyParagraph}
+
+
+Definition at line 624 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_option_parser_1_1_option_ab06f7c1798782d301d35265eda2b95a5}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!next@{next}}
+\index{next@{next}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{next}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Option}$\ast$ Option\-Parser\-::\-Option\-::next (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_ab06f7c1798782d301d35265eda2b95a5}
+
+
+Returns a pointer to the next element of the linked list or N\-U\-L\-L if called on \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}. 
+
+If called on \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()} this method returns N\-U\-L\-L. Otherwise it will return the option with the same \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} that follows this option on the command line. 
+
+Definition at line 663 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{class_option_parser_1_1_option_ab06f7c1798782d301d35265eda2b95a5_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_option_parser_1_1_option_a3c426f5fa1315b9b474286d7d2d1c277}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!nextwrap@{nextwrap}}
+\index{nextwrap@{nextwrap}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{nextwrap}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Option}$\ast$ Option\-Parser\-::\-Option\-::nextwrap (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a3c426f5fa1315b9b474286d7d2d1c277}
+
+
+Returns a pointer to the next element of the linked list with wrap-\/around from \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()} to \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first()}. 
+
+If called on \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()} this method returns \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first()}. Otherwise it will return the option with the same \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} that follows this option on the command line. 
+
+Definition at line 676 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_a52a071fc38974597b6673ab34725c8d5}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!operator const Option $\ast$@{operator const Option $\ast$}}
+\index{operator const Option $\ast$@{operator const Option $\ast$}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{operator const Option $\ast$}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Option\-::operator const {\bf Option} $\ast$ (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a52a071fc38974597b6673ab34725c8d5}
+
+
+Casts from \hyperlink{class_option_parser_1_1_option}{Option} to const Option$\ast$ but only if this \hyperlink{class_option_parser_1_1_option}{Option} is valid. 
+
+If this \hyperlink{class_option_parser_1_1_option}{Option} is valid (i.\-e. {\ttfamily desc!=N\-U\-L\-L}), returns this. Otherwise returns N\-U\-L\-L. This allows testing an \hyperlink{class_option_parser_1_1_option}{Option} directly in an if-\/clause to see if it is used\-: 
+\begin{DoxyCode}
+\textcolor{keywordflow}{if} (options[CREATE])
+\{
+  ...
+\}
+\end{DoxyCode}
+ It also allows you to write loops like this\-: 
+\begin{DoxyCode}
+\textcolor{keywordflow}{for} (\hyperlink{class_option_parser_1_1_option_a688623720b4f2221a82a29014b856d95}{Option}* opt = options[FILE]; opt; opt = opt->next())
+ fname = opt->arg; ... 
+\end{DoxyCode}
+ 
+
+Definition at line 717 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_a3e135f163c812dbd1c954f8d8d9c8a6e}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!operator Option $\ast$@{operator Option $\ast$}}
+\index{operator Option $\ast$@{operator Option $\ast$}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{operator Option $\ast$}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Option\-::operator {\bf Option} $\ast$ (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a3e135f163c812dbd1c954f8d8d9c8a6e}
+
+
+Casts from \hyperlink{class_option_parser_1_1_option}{Option} to Option$\ast$ but only if this \hyperlink{class_option_parser_1_1_option}{Option} is valid. 
+
+If this \hyperlink{class_option_parser_1_1_option}{Option} is valid (i.\-e. {\ttfamily desc!=N\-U\-L\-L}), returns this. Otherwise returns N\-U\-L\-L. This allows testing an \hyperlink{class_option_parser_1_1_option}{Option} directly in an if-\/clause to see if it is used\-: 
+\begin{DoxyCode}
+\textcolor{keywordflow}{if} (options[CREATE])
+\{
+  ...
+\}
+\end{DoxyCode}
+ It also allows you to write loops like this\-: 
+\begin{DoxyCode}
+\textcolor{keywordflow}{for} (\hyperlink{class_option_parser_1_1_option_a688623720b4f2221a82a29014b856d95}{Option}* opt = options[FILE]; opt; opt = opt->next())
+ fname = opt->arg; ... 
+\end{DoxyCode}
+ 
+
+Definition at line 738 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_a79a809add651558e23bfcdccdad8bc24}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!operator=@{operator=}}
+\index{operator=@{operator=}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{operator=}]{\setlength{\rightskip}{0pt plus 5cm}void Option\-Parser\-::\-Option\-::operator= (
+\begin{DoxyParamCaption}
+\item[{const {\bf Option} \&}]{orig}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a79a809add651558e23bfcdccdad8bc24}
+
+
+Makes {\ttfamily $\ast$this} a copy of {\ttfamily orig} except for the linked list pointers. 
+
+After this operation {\ttfamily $\ast$this} will be a one-\/element linked list. 
+
+Definition at line 772 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_aa17639d1c0e0ae5eae682080ae93d5a3}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!prev@{prev}}
+\index{prev@{prev}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{prev}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Option}$\ast$ Option\-Parser\-::\-Option\-::prev (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_aa17639d1c0e0ae5eae682080ae93d5a3}
+
+
+Returns a pointer to the previous element of the linked list or N\-U\-L\-L if called on \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first()}. 
+
+If called on \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first()} this method returns N\-U\-L\-L. Otherwise it will return the option with the same \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} that precedes this option on the command line. 
+
+Definition at line 637 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{class_option_parser_1_1_option_aa17639d1c0e0ae5eae682080ae93d5a3_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_option_parser_1_1_option_aa8caf9f5b9ae5d3900f2432f894dd4b5}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!prevwrap@{prevwrap}}
+\index{prevwrap@{prevwrap}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{prevwrap}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Option}$\ast$ Option\-Parser\-::\-Option\-::prevwrap (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_aa8caf9f5b9ae5d3900f2432f894dd4b5}
+
+
+Returns a pointer to the previous element of the linked list with wrap-\/around from \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first()} to \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}. 
+
+If called on \hyperlink{class_option_parser_1_1_option_aa5f751dbb4de499f2665d4d0b6238037}{first()} this method returns \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}. Otherwise it will return the option with the same \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index} that precedes this option on the command line. 
+
+Definition at line 650 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_a957a9dab42de6de017ee655254b57a41}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!type@{type}}
+\index{type@{type}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{type}]{\setlength{\rightskip}{0pt plus 5cm}int Option\-Parser\-::\-Option\-::type (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_option_a957a9dab42de6de017ee655254b57a41}
+
+
+Returns \hyperlink{struct_option_parser_1_1_descriptor_a070d24a33fc9f30cf3deafa428ff7fa7}{Descriptor\-::type} of this \hyperlink{class_option_parser_1_1_option}{Option}'s \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor}, or 0 if this \hyperlink{class_option_parser_1_1_option}{Option} is invalid (unused). 
+
+Because this method (and \hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last()}, too) can be used even on unused Options with desc==0, you can (provided you arrange your types properly) switch on \hyperlink{class_option_parser_1_1_option_a957a9dab42de6de017ee655254b57a41}{type()} without testing validity first. 
+\begin{DoxyCode}
+\textcolor{keyword}{enum} OptionType \{ UNUSED=0, DISABLED=0, ENABLED=1 \};
+\textcolor{keyword}{enum} OptionIndex \{ FOO \};
+\textcolor{keyword}{const} Descriptor usage[] = \{
+  \{ FOO, ENABLED,  \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"enable-foo"},  \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{Arg::None}, 0 \},
+  \{ FOO, DISABLED, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"disable-foo"}, \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{Arg::None}, 0 \},
+  \{ 0, 0, 0, 0, 0, 0 \} \};
+...
+switch(options[FOO].\hyperlink{class_option_parser_1_1_option_a4c500ad0071e1dc9be2b2b234db71b1d}{last}()->\hyperlink{class_option_parser_1_1_option_a957a9dab42de6de017ee655254b57a41}{type}()) \textcolor{comment}{// no validity check required!}
+\{
+  \textcolor{keywordflow}{case} ENABLED: ...
+  \textcolor{keywordflow}{case} DISABLED: ...  \textcolor{comment}{// UNUSED==DISABLED !}
+\}
+\end{DoxyCode}
+ 
+
+Definition at line 525 of file optionparser.\-h.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_option_parser_1_1_option_a5b222bff75241e025502aab20a914191}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!arg@{arg}}
+\index{arg@{arg}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{arg}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ Option\-Parser\-::\-Option\-::arg}}\label{class_option_parser_1_1_option_a5b222bff75241e025502aab20a914191}
+
+
+Pointer to this \hyperlink{class_option_parser_1_1_option}{Option}'s argument (if any). 
+
+N\-U\-L\-L if this option has no argument. Do not confuse this with the empty string which is a valid argument. 
+
+Definition at line 481 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_a9ea2f4b0658ab175b7f0f0c204671fa9}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!desc@{desc}}
+\index{desc@{desc}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{desc}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf Descriptor}$\ast$ Option\-Parser\-::\-Option\-::desc}}\label{class_option_parser_1_1_option_a9ea2f4b0658ab175b7f0f0c204671fa9}
+
+
+Pointer to this \hyperlink{class_option_parser_1_1_option}{Option}'s \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor}. 
+
+Remember that the first dummy descriptor (see \hyperlink{struct_option_parser_1_1_descriptor_ab9db8207bae68dd5c4ee83e05189a9d0}{Descriptor\-::longopt}) is used for unknown options.
+
+\begin{DoxyAttention}{Attention}
+{\ttfamily desc==N\-U\-L\-L} signals that this \hyperlink{class_option_parser_1_1_option}{Option} is unused. This is the default state of elements in the result array. You don't need to test {\ttfamily desc} explicitly. You can simply write something like this\-: 
+\begin{DoxyCode}
+\textcolor{keywordflow}{if} (options[CREATE])
+\{
+  ...
+\}
+\end{DoxyCode}
+ This works because of {\ttfamily  operator const Option$\ast$() }. 
+\end{DoxyAttention}
+
+
+Definition at line 457 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!name@{name}}
+\index{name@{name}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{name}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ Option\-Parser\-::\-Option\-::name}}\label{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}
+
+
+The name of the option as used on the command line. 
+
+The main purpose of this string is to be presented to the user in messages.
+
+In the case of a long option, this is the actual {\ttfamily argv} pointer, i.\-e. the first character is a '-\/'. In the case of a short option this points to the option character within the {\ttfamily argv} string.
+
+Note that in the case of a short option group or an attached option argument, this string will contain additional characters following the actual name. Use \hyperlink{class_option_parser_1_1_option_a25a2b22da7c974be3bcda66f08d2f3f3}{namelen} to filter out the actual option name only. 
+
+Definition at line 473 of file optionparser.\-h.
+
+\hypertarget{class_option_parser_1_1_option_a25a2b22da7c974be3bcda66f08d2f3f3}{\index{Option\-Parser\-::\-Option@{Option\-Parser\-::\-Option}!namelen@{namelen}}
+\index{namelen@{namelen}!OptionParser::Option@{Option\-Parser\-::\-Option}}
+\subsubsection[{namelen}]{\setlength{\rightskip}{0pt plus 5cm}int Option\-Parser\-::\-Option\-::namelen}}\label{class_option_parser_1_1_option_a25a2b22da7c974be3bcda66f08d2f3f3}
+
+
+The length of the option \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name}. 
+
+Because \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name} points into the actual {\ttfamily argv} string, the option name may be followed by more characters (e.\-g. other short options in the same short option group). This value is the number of bytes (not characters!) that are part of the actual name.
+
+For a short option, this length is always 1. For a long option this length is always at least 2 if single minus long options are permitted and at least 3 if they are disabled.
+
+\begin{DoxyNote}{Note}
+In the pathological case of a minus within a short option group (e.\-g. {\ttfamily -\/xf-\/z}), this length is incorrect, because this case will be misinterpreted as a long option and the name will therefore extend to the string's 0-\/terminator or a following '=" character if there is one. This is irrelevant for most uses of \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name} and {\ttfamily namelen}. If you really need to distinguish the case of a long and a short option, compare \hyperlink{class_option_parser_1_1_option_abea386c9b8b1a810a2eb776d338fdfab}{name} to the {\ttfamily argv} pointers. A long option's {\ttfamily name} is always identical to one of them, whereas a short option's is never. 
+\end{DoxyNote}
+
+
+Definition at line 502 of file optionparser.\-h.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/ext/\hyperlink{optionparser_8h}{optionparser.\-h}\end{DoxyCompactItemize}
