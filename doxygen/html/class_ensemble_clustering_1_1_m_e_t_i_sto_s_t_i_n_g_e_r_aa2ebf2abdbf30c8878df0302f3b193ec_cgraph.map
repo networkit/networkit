@@ -1,0 +1,11 @@
+<map id="EnsembleClustering::METIStoSTINGER::read" name="EnsembleClustering::METIStoSTINGER::read">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies.html#af4f5ba6e752d80f9d062a7f185ad14c4" title="Create new STINGER instance." alt="" coords="227,5,418,65"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#afa2cbafd7ae746d310bba7b6ae6539ba" title="Open a METIS graph file." alt="" coords="250,89,396,133"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a6c11f188b2ca67435a63fc9c71d261e9" title="Get the METIS graph file header." alt="" coords="233,157,412,201"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#aa9adb857b8ff519edfe94b7bc59ef12a" title="Test if graph file has a next line." alt="" coords="240,225,405,269"/>
+<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies.html#a0057c2a5ea2a4521f51d1f03593e98ad" title="Add next node and its adjacent edges." alt="" coords="227,293,418,353"/>
+<area shape="rect" id="node15" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a473d40949f87385130369a4f5d14b2ae" title="Get adjacencies from the next line in the METIS graph file." alt="" coords="242,377,404,421"/>
+<area shape="rect" id="node17" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a10b501c16294e94701fd231cb0b8d3f4" title="Close input file and clean up." alt="" coords="249,445,396,489"/>
+<area shape="rect" id="node19" href="$class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies.html#a67ea2ddaa606d7de19ab51b495edf6ec" title="EnsembleClustering\l::STINGERFromAdjacencies\l::getGraph" alt="" coords="227,513,418,573"/>
+<area shape="rect" id="node13" href="$class_ensemble_clustering_1_1_graph.html#a78d527f03a3a860ee173dadbaefe1d5c" title="Insert a weighted, undirected edge." alt="" coords="467,301,608,345"/>
+</map>
