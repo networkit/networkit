@@ -261,4 +261,28 @@ TEST_F(ClusteringGTest, testClusteringCoefficient) {
 
 }
 
+
+
+TEST_F(ClusteringGTest, testNMIDistance) {
+	// two 1-clusterings should have NMID = 0 because H is 0
+	GraphGenerator gen;
+	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
+
+	ClusteringGenerator clustGen;
+	Clustering one1 = clustGen.makeOneClustering(G);
+	Clustering one2 = clustGen.makeOneClustering(G);
+
+	NMIDistance NMID;
+	double distOne = NMID.getDissimilarity(G, one1, one2);
+
+	EXPECT_EQ(0.0, distOne) << "NMID of two 1-clusterings should be 0.0";
+
+	Clustering singleton1 = clustGen.makeSingletonClustering(G);
+	Clustering singleton2 = clustGen.makeSingletonClustering(G);
+
+	double distSingleton = NMID.getDissimilarity(G, singleton1, singleton2);
+
+	EXPECT_EQ(0.0, distSingleton) << "NMID of two identical singleton clusterings should be 0.0";
+}
+
 } /* namespace NetworKit */

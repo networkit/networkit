@@ -24,6 +24,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../io/ClusteringReader.h"
 #include "../ClusteringCoefficient.h"
+#include "../NMIDistance.h"
 
 namespace NetworKit {
 
