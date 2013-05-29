@@ -263,7 +263,7 @@ TEST_F(ClusteringGTest, testClusteringCoefficient) {
 
 
 
-TEST_F(ClusteringGTest, testNMIDistance) {
+TEST_F(ClusteringGTest, tryNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
 	GraphGenerator gen;
 	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
