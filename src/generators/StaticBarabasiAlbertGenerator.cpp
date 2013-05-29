@@ -24,20 +24,18 @@ StaticBarabasiAlbertGenerator::~StaticBarabasiAlbertGenerator() {
 Graph StaticBarabasiAlbertGenerator::generate() {
 	Graph G = initializeGraph();
 	assert (G.numberOfNodes() >= k);
+	Aux::ProgressMeter progress(nMax, 200);
 
-	for (int i = n0; i < nMax; i++) {
-		DEBUG("FOR")
+	for (count i = n0; i < nMax; i++) {
 		count degreeSum = G.numberOfEdges() * 2;
-		//DEBUG("Random")
-
+		//DEBUG("Random")ProgressMeter
 		node u = G.addNode();
+		progress.signal(u);
 		std::set<node> targets;
 		targets.insert(u);
 		int j = 0;
 		while (targets.size() - 1 < k) {
 			int64_t random = randomInt.generate(0, degreeSum);
-
-			DEBUG("WHILE")
 			j++;
 			///if (j > k) throw std::runtime_error("Possible infinite loop detected.");
 			bool found = false; // break from node iteration when done
@@ -45,10 +43,8 @@ Graph StaticBarabasiAlbertGenerator::generate() {
 
 			G.forNodesWhile(notFound, [&](node v) {
 
-				DEBUG("FOR-NODES-WHILE")
 
 				if (random <= G.degree(v)) {
-					DEBUG("found a node " << v);
 					found = true; // found a node to connect to
 					targets.insert(v);
 				}
@@ -72,7 +68,7 @@ Graph StaticBarabasiAlbertGenerator::initializeGraph() {
 	Graph G(0);
 
 	// initialize the graph with n0 connected nodes
-	for (int i = 0; i < n0; i++) {
+	for (count i = 0; i < n0; i++) {
 		node v = G.addNode();
 		if (i > 0) G.addEdge(v, v - 1);
 	}

@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-Graph::Graph(count n) : n(n), z(n), deg(z, 0), exists(z, true), adja(z), eweights(z) {
+Graph::Graph(count n) : n(n), m(0), z(n), deg(z, 0), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;
@@ -65,6 +65,8 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 			this->edgeMaps_double[attrId][v].push_back(defaultAttr);
 		}
 	}
+
+	m++; // increasing the number of edges
 }
 
 void Graph::removeEdge(node u, node v) {
@@ -84,6 +86,8 @@ void Graph::removeEdge(node u, node v) {
 		this->eweights[u][vi] = this->nullWeight;
 		this->eweights[v][ui] = this->nullWeight;
 		// TODO: remove attributes
+
+		m--; // decreasing the number of edges
 
 	}
 }
@@ -178,16 +182,7 @@ edgeweight Graph::weightedDegree(node v) const {
 
 
 int64_t Graph::numberOfEdges() const {
-	// sum over all stored degrees
-	// TODO: parallel sum?
-	count mm = 0;
-	this->forNodes([&](node v) {
-		mm += this->deg[v];
-		if(this->hasEdge(v , v)) {
-			mm++;
-		}
-	});
-	count m = mm / 2;
+	// returns a field which is updated on addEdge() and removeEdge()
 	return m;
 }
 

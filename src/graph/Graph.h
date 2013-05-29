@@ -101,6 +101,7 @@ protected:
 
 	// scalars
 	count n; //!< current number of nodes
+	count m; //!< current number of edges
 	node z; //!< current upper bound of node ids
 
 

@@ -116,7 +116,7 @@ TEST_F(GeneratorsGTest, testBTERGeneratorWithPowerLawDistribution) {
 
 TEST_F(GeneratorsGTest, testStaticBarabasiAlbertGenerator) {
 	count k = 3;
-	count nMax = 10;
+	count nMax = 100;
 	count n0 = 3;
 
 	StaticBarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
@@ -142,7 +142,8 @@ TEST_F(GeneratorsGTest, generatetStaticBarabasiAlbertGeneratorGraph) {
 
 		Graph G = BarabasiAlbert.generate();
 		GraphIO io;
-		io.writeAdjacencyList(G, "output/BarabasiGraph.txt");
+		io.writeAdjacencyList(G, "output/"
+				"BarabasiGraph.txt");
 }
 
 

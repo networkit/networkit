@@ -20,7 +20,7 @@ GeneratorsBenchmark::~GeneratorsBenchmark() {
 
 TEST_F(GeneratorsBenchmark, benchmarkStaticBarabasiAlbertGenerator) {
 	count k = 2;
-	count nMax = 10e6;
+	count nMax = 100000;
 	count n0 = 2;
 
 	StaticBarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
