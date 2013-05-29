@@ -39,7 +39,6 @@ Graph GraphGenerator::makeRandomGraph(count n, double p) {
 }
 
 Graph GraphGenerator::makeCircularGraph(count n) {
-	// TODO: modernize
 	Graph G(n);
 	G.forNodes([&](node u){
 		G.addEdge(u, (u + 1) % n);

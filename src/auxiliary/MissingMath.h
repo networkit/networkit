@@ -9,6 +9,9 @@
 #define MISSINGMATH_H_
 
 #include <cinttypes>
+#include <cmath>
+#include <cassert>
+#include <stdexcept>
 
 namespace Aux {
 
@@ -26,6 +29,14 @@ public:
 			b = b / i;
 		}
 		return b;
+	}
+
+	static inline double log_b(double x, double b) {
+		if (x == 0) {
+			throw std::domain_error("log(0) is undefined");
+		}
+		assert (log(b) != 0);
+		return log(x) / log(b);
 	}
 
 };
