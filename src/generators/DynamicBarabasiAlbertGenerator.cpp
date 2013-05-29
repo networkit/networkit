@@ -63,7 +63,6 @@ void DynamicBarabasiAlbertGenerator::generateWhile(std::function<bool(void)> con
 
 		count nAttempts = 0;
 		while (targets.size() < k) {
-			nAttempts += 1;
 			TRACE("pick random node to connect to");
 			DEBUG("targets.size() == " << targets.size());
 

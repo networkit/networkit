@@ -18,6 +18,8 @@
 #include "../../community/LabelPropagation.h"
 #include "../BTERGenerator.h"
 #include "../../io/METISGraphWriter.h"
+#include "../StaticBarabasiAlbertGenerator.h"
+#include "../../io/GraphIO.h"
 
 namespace NetworKit {
 
