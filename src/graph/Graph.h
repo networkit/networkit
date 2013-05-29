@@ -975,6 +975,8 @@ inline void NetworKit::Graph::forNodesWhile(C condition, L handle) {
 	}
 }
 
+
+
 template<typename C, typename L>
 inline void NetworKit::Graph::forNodes(C condition, L handle) const {
 	for (node v = 0; v < z; ++v) {
