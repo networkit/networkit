@@ -23,6 +23,7 @@ Authors
 
 - Andreas Bilke
 - Yassine Marrakchi
+- Aleksejs Sazonovs
 
 License
 -------
@@ -74,7 +75,11 @@ Test
 
 Run all unit tests with 
 
-		./CommunityDetection-debug --tests --gtest_filter=*Test*
+		./CommunityDetection-debug --tests --gtest_filter=*Test*.test*
+
+The expression after `--gtest_filter=` automatically selects all unit tests which are supposed to pass correctly. Unit tests for unstable experimental features begin with `.try`, so in order to run them call
+
+	./CommunityDetection-debug --tests --gtest_filter=*Test*.try*	
 
 Run performance tests with
 
