@@ -114,5 +114,37 @@ TEST_F(GeneratorsGTest, testBTERGeneratorWithPowerLawDistribution) {
 	writer.write(G, "output/BTERTest.graph");
 }
 
+TEST_F(GeneratorsGTest, testStaticBarabasiAlbertGenerator) {
+	count k = 3;
+	count nMax = 10;
+	count n0 = 3;
+
+	StaticBarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
+	Graph G(0);
+	EXPECT_TRUE(G.isEmpty());
+
+	G = BarabasiAlbert.generate();
+	EXPECT_FALSE(G.isEmpty());
+
+	EXPECT_EQ(nMax, G.numberOfNodes());
+	EXPECT_EQ( ((n0-1) + ((nMax - n0) * k)), G.numberOfEdges());
+
+
+
+}
+
+TEST_F(GeneratorsGTest, generatetStaticBarabasiAlbertGeneratorGraph) {
+		count k = 3;
+		count nMax = 1000;
+		count n0 = 3;
+
+		StaticBarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
+
+		Graph G = BarabasiAlbert.generate();
+		GraphIO io;
+		io.writeAdjacencyList(G, "output/BarabasiGraph.txt");
+}
+
+
 } /* namespace NetworKit */
 
