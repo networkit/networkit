@@ -50,10 +50,10 @@ Graph METISGraphReader::read(std::string path) {
 				}
 			}
 			u += 1; // next node
-			if ((u % 0x10000) == 0) {
-				p = ((double) u / (double) n) * 100;
+			if ((u % (n/10)) == 0) {
+				p = ((double) (u-1) / (double) n) * 100;
+				std::cout << p << "% " << std::flush;
 			}
-			std::cout << p << "% " << std::flush;
 		}
 		std::cout << "[DONE]" << std::endl;
 		return G;
@@ -72,10 +72,10 @@ Graph METISGraphReader::read(std::string path) {
 				}
 			}
 			u += 1; // next node
-			if ((u % 0x10000) == 0) {
-				p = ((double) u / (double) n) * 100;
+			if ((u % (n/10)) == 0) {
+				p = ((double) (u-1) / (double) n) * 100;
+				std::cout << p << "% " << std::flush;
 			}
-			std::cout << p << "% " << std::flush;
 		}
 		std::cout << "[DONE]" << std::endl;
 		return G;

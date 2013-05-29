@@ -8,10 +8,10 @@
 #ifndef NMIDISTANCE_H_
 #define NMIDISTANCE_H_
 
-#include <cmath>
 
 #include "DissimilarityMeasure.h"
 #include "../overlap/HashingOverlapper.h"
+#include "../auxiliary/MissingMath.h"
 
 namespace NetworKit {
 
