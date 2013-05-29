@@ -98,13 +98,18 @@ Graph generateClusteredRandomGraph(count n, count k, double pin, double pout) {
 
 Graph generatePreferentialAttachmentGraph(count n, count a) {
 
+	// TODO: replace this with StaticBarabasiAlbertGenerator
+	throw std::runtime_error("currently not implemented");
+
 	std::cout << "[BEGIN] generating preferential attachment graph..." << std::flush;
 	GraphGenerator graphGen;
 
 	Aux::Timer running;
 	running.start();
+
+	Graph G(0);
 	//
-	Graph G = graphGen.makePreferentialAttachmentGraph(n, a);
+	// Graph G = graphGen.makePreferentialAttachmentGraph(n, a);
 	//
 	running.stop();
 	std::cout << "[DONE] (" << running.elapsed().count() << " ms)" << std::endl;

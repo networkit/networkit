@@ -14,12 +14,13 @@ namespace NetworKit {
 class DotClusteringWriter {
 
 public:
+    DotClusteringWriter();
 
-	DotClusteringWriter();
+    virtual ~DotClusteringWriter();
 
-	virtual ~DotClusteringWriter();
+    virtual void write(Graph& graph, Clustering& zeta, std::string path) const;
 
-	virtual void write(Graph& graph, Clustering& zeta, std::string path) const;
+    virtual std::map<cluster, double> createHueMap(Graph &graph, Clustering& zeta) const;
 };
 
 } /* namespace NetworKit */
