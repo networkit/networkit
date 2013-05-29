@@ -140,45 +140,5 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 	return G;
 }
 
-Graph GraphGenerator::makePreferentialAttachmentGraph(count n, count a) {
-	// FIXME: infinite loop
-
-	Graph G(n);
-
-	// all nodes need to have at least degree 1 - create a path
-	for (node v = 0; v < (n-1); ++v) {
-		G.addEdge(v, (v + 1));
-	}
-
-	count m = G.numberOfEdges(); // number of edges
-	count r = 0;
-
-	Aux::RandomInteger randInt;	// TODO: n * k instantiations of RandomInteger are inefficient because random device reads from /dev/random
-
-	G.forNodes([&](node u) {
-		TRACE("connecting node " << u);
-		for (count i = 0; i < a; ++i) { // for all k new edges
-			TRACE("2m = " << 2 * m);
-			r = randInt.generate(0, 2*m);
-			TRACE("r = " << r);
-			for (node v = 0; v < n; ++v) {
-				if (r <= G.degree(v)) {
-					// select v
-					G.addEdge(u, v);
-					TRACE("inserting edge (" << u << "," << v << ")");
-					m += 1;
-					r = 0;
-					break;
-				} else {
-					TRACE("skipping node " << v);
-				}
-				r -= G.degree(v);
-			}
-		}
-	});
-
-
-	return G;
-}
 
 } /* namespace NetworKit */
