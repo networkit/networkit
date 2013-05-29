@@ -1,0 +1,10 @@
+<map id="generateRandomGraph" name="generateRandomGraph">
+<area shape="rect" id="node3" href="$class_aux_1_1_timer.html#a3c58e715148a05a6294743619d111bab" title="Start the clock." alt="" coords="249,21,367,49"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph_generator.html#af518e37d5588aa84c51cbca117340dc4" title="Alias for makeErdosRenyiGraph." alt="" coords="216,73,400,117"/>
+<area shape="rect" id="node15" href="$class_aux_1_1_timer.html#a14d926626eef461e836f87f7bc3d03b7" title="Stops the clock permanently for the instance of the Timer." alt="" coords="249,141,367,169"/>
+<area shape="rect" id="node17" href="$class_aux_1_1_timer.html#a16fdb76113530c5d4d8787e27d1e0aca" title="The number of seconds since the current time that the Timer object was created." alt="" coords="238,193,378,221"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph_generator.html#aba5717e858cde8d115606c821d032961" title="Generate a random graph according to the Erdos&#45;Renyi model." alt="" coords="448,73,632,117"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_graph.html#a498eb0beb05b992d12b246fcf3b76070" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="688,5,867,49"/>
+<area shape="rect" id="node11" href="$class_aux_1_1_random_probability.html#aa3f2835c364aabb340440c45f6a28e33" title="Aux::RandomProbability\l::generate" alt="" coords="695,73,860,117"/>
+<area shape="rect" id="node13" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="680,141,875,169"/>
+</map>
