@@ -67,7 +67,7 @@ Build
 
 We recommend SCons for building the project. Edit the file `SConstruct.EDITME` to set include paths, library paths etc, then rename it to `SConstruct`.
 
-Alternatively, our Eclipse project files are included as examples in the `eclipse/` directory. Import the project into Eclipse and modify depending on your needs.
+Alternatively, our Eclipse project files are included as examples in the `eclipse/` directory. Copy them, import the project into Eclipse and modify depending on your needs.
 
 
 Test
@@ -75,15 +75,15 @@ Test
 
 Run all unit tests with 
 
-		./CommunityDetection-debug --tests --gtest_filter=*Test*.test*
+		./NetworKit-CommunityDetection-debug --tests --gtest_filter=*Test*.test*
 
 The expression after `--gtest_filter=` automatically selects all unit tests which are supposed to pass correctly. Unit tests for unstable experimental features begin with `.try`, so in order to run them call
 
-	./CommunityDetection-debug --tests --gtest_filter=*Test*.try*	
+	./NetworKit-CommunityDetection-debug --tests --gtest_filter=*Test*.try*	
 
 Run performance tests with
 
-		./CommunityDetection-optimized --tests --gtest_filter=*Benchmark*
+		./NetworKit-CommunityDetection-optimized --tests --gtest_filter=*Benchmark*
 
 
 Run
@@ -101,9 +101,9 @@ Main algorithms:
 Example calls:
 
 
-		./CommunityDetection --algorithm=PLP --graph=path/to/a.graph
-		./CommunityDetection --algorithm=EPP:4*PLP+PLM --graph=path/to/a.graph
-		./CommunityDetection --algorithm=PLM --graph=path/to/a.graph --runs=10 --summary=path/to/file.csv
+		./NetworKit-CommunityDetection --algorithm=PLP --graph=path/to/a.graph
+		./NetworKit-CommunityDetection --algorithm=EPP:4*PLP+PLM --graph=path/to/a.graph
+		./NetworKit-CommunityDetection --algorithm=PLM --graph=path/to/a.graph --runs=10 --summary=path/to/file.csv
 
 
 The `--graph` option accepts graph files in a format known as the [METIS file format][metis], a simple adjacency list format. Many example files can be found in the collection of the [10th DIMACS Implementation Challenge][dimacs]. 
