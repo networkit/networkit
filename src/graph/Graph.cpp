@@ -9,6 +9,7 @@
 
 namespace NetworKit {
 
+// TODO: z should probably be n-1, but it breaks some tests
 Graph::Graph(count n) : n(n), m(0), z(n), deg(z, 0), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
 	static int64_t graphId = 1;
