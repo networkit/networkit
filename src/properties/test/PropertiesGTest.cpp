@@ -32,4 +32,16 @@ TEST_F(PropertiesGTest, testClusteringCoefficient) {
 }
 
 
+TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
+	GraphGenerator gen;
+	Graph G = gen.makeCompleteGraph(4);
+
+	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
+	for (double cc : coefficients) {
+		EXPECT_EQ(1.0, cc) << "In a clique all possible triangles are closed so all local clustering coefficients are 1";
+	}
+
+}
+
+
 } /* namespace NetworKit */
