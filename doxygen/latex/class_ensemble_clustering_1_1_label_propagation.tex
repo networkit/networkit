@@ -1,0 +1,179 @@
+\hypertarget{class_ensemble_clustering_1_1_label_propagation}{\section{Ensemble\-Clustering\-:\-:Label\-Propagation Class Reference}
+\label{class_ensemble_clustering_1_1_label_propagation}\index{Ensemble\-Clustering\-::\-Label\-Propagation@{Ensemble\-Clustering\-::\-Label\-Propagation}}
+}
+
+
+As described in Ovelgoenne et al\-: An Ensemble Learning Strategy for \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} Raghavan et al.  
+
+
+
+
+{\ttfamily \#include $<$Label\-Propagation.\-h$>$}
+
+
+
+Inheritance diagram for Ensemble\-Clustering\-:\-:Label\-Propagation\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{class_ensemble_clustering_1_1_label_propagation__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Label\-Propagation\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{class_ensemble_clustering_1_1_label_propagation__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_label_propagation_a72a8f90b8e7632915c729861d320c240}{Label\-Propagation} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} theta=0)
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_label_propagation_a7ac63cb56597fdef47e6c0f4f7b20254}{$\sim$\-Label\-Propagation} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} \hyperlink{class_ensemble_clustering_1_1_label_propagation_ab6680246bb334e82318703c2ecbbd117}{run} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&G)
+\begin{DoxyCompactList}\small\item\em Run the label propagation clustering algorithm. \end{DoxyCompactList}\item 
+virtual std\-::string \hyperlink{class_ensemble_clustering_1_1_label_propagation_a1672735899b9c00e797f0270638fba7f}{to\-String} () const 
+\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_label_propagation_adcb4fa1b00aa36461bf3b1c46bc3b892}{set\-Update\-Threshold} (\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} th)
+\begin{DoxyCompactList}\small\item\em The algorithm runs until a number of nodes less than the threshold is updated. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespace_ensemble_clustering_a2482e94ca22a0c6544a5a9173186fde8}{count} \hyperlink{class_ensemble_clustering_1_1_label_propagation_a02e1930c35c9b2fe9121415cb6be7b65}{update\-Threshold} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+As described in Ovelgoenne et al\-: An Ensemble Learning Strategy for \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} Raghavan et al. 
+
+proposed a label propagation algorithm for graph clustering. This algorithm initializes every vertex of a graph with a unique label. Then, in iterative sweeps over the set of vertices the vertex labels are updated. A vertex gets the label that the maximum number of its neighbors have. The procedure is stopped when every vertex has the label that at least half of its neighbors have. 
+
+Definition at line 43 of file Label\-Propagation.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_label_propagation_a72a8f90b8e7632915c729861d320c240}{\index{Ensemble\-Clustering\-::\-Label\-Propagation@{Ensemble\-Clustering\-::\-Label\-Propagation}!Label\-Propagation@{Label\-Propagation}}
+\index{Label\-Propagation@{Label\-Propagation}!EnsembleClustering::LabelPropagation@{Ensemble\-Clustering\-::\-Label\-Propagation}}
+\subsubsection[{Label\-Propagation}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Label\-Propagation\-::\-Label\-Propagation (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{theta = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_label_propagation_a72a8f90b8e7632915c729861d320c240}
+
+
+Definition at line 12 of file Label\-Propagation.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_label_propagation_a7ac63cb56597fdef47e6c0f4f7b20254}{\index{Ensemble\-Clustering\-::\-Label\-Propagation@{Ensemble\-Clustering\-::\-Label\-Propagation}!$\sim$\-Label\-Propagation@{$\sim$\-Label\-Propagation}}
+\index{$\sim$\-Label\-Propagation@{$\sim$\-Label\-Propagation}!EnsembleClustering::LabelPropagation@{Ensemble\-Clustering\-::\-Label\-Propagation}}
+\subsubsection[{$\sim$\-Label\-Propagation}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Label\-Propagation\-::$\sim$\-Label\-Propagation (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_label_propagation_a7ac63cb56597fdef47e6c0f4f7b20254}
+
+
+Definition at line 17 of file Label\-Propagation.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_label_propagation_ab6680246bb334e82318703c2ecbbd117}{\index{Ensemble\-Clustering\-::\-Label\-Propagation@{Ensemble\-Clustering\-::\-Label\-Propagation}!run@{run}}
+\index{run@{run}!EnsembleClustering::LabelPropagation@{Ensemble\-Clustering\-::\-Label\-Propagation}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Ensemble\-Clustering\-::\-Label\-Propagation\-::run (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_label_propagation_ab6680246bb334e82318703c2ecbbd117}
+
+
+Run the label propagation clustering algorithm. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em G} & input graph \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+clustering 
+\end{DoxyReturn}
+== Dealing with isolated nodes ==
+
+The pseudocode published does not deal with isolated nodes (and therefore does not terminate if they are present). Isolated nodes stay singletons. They can be ignored in the while loop, but the loop condition must compare to the number of non-\/isolated nodes instead of n.
+
+== Termination criterion ==
+
+The published termination criterion is\-: All nodes have got the label of the majority of their neighbors. In general this does not work. It was changed to\-: No label was changed in last iteration.
+
+Implements \hyperlink{class_ensemble_clustering_1_1_clusterer_a9fab8db7082b6399e1d29509512cad91}{Ensemble\-Clustering\-::\-Clusterer}.
+
+
+
+Definition at line 22 of file Label\-Propagation.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_label_propagation_ab6680246bb334e82318703c2ecbbd117_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_label_propagation_adcb4fa1b00aa36461bf3b1c46bc3b892}{\index{Ensemble\-Clustering\-::\-Label\-Propagation@{Ensemble\-Clustering\-::\-Label\-Propagation}!set\-Update\-Threshold@{set\-Update\-Threshold}}
+\index{set\-Update\-Threshold@{set\-Update\-Threshold}!EnsembleClustering::LabelPropagation@{Ensemble\-Clustering\-::\-Label\-Propagation}}
+\subsubsection[{set\-Update\-Threshold}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Label\-Propagation\-::set\-Update\-Threshold (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{th}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_label_propagation_adcb4fa1b00aa36461bf3b1c46bc3b892}
+
+
+The algorithm runs until a number of nodes less than the threshold is updated. 
+
+
+
+Definition at line 215 of file Label\-Propagation.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_label_propagation_a1672735899b9c00e797f0270638fba7f}{\index{Ensemble\-Clustering\-::\-Label\-Propagation@{Ensemble\-Clustering\-::\-Label\-Propagation}!to\-String@{to\-String}}
+\index{to\-String@{to\-String}!EnsembleClustering::LabelPropagation@{Ensemble\-Clustering\-::\-Label\-Propagation}}
+\subsubsection[{to\-String}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Ensemble\-Clustering\-::\-Label\-Propagation\-::to\-String (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_label_propagation_a1672735899b9c00e797f0270638fba7f}
+\begin{DoxyReturn}{Returns}
+string representation of algorithm and parameters. 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_ensemble_clustering_1_1_clusterer_aba1a37081af12061ef675139668c5ee6}{Ensemble\-Clustering\-::\-Clusterer}.
+
+
+
+Definition at line 205 of file Label\-Propagation.\-cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_label_propagation_a02e1930c35c9b2fe9121415cb6be7b65}{\index{Ensemble\-Clustering\-::\-Label\-Propagation@{Ensemble\-Clustering\-::\-Label\-Propagation}!update\-Threshold@{update\-Threshold}}
+\index{update\-Threshold@{update\-Threshold}!EnsembleClustering::LabelPropagation@{Ensemble\-Clustering\-::\-Label\-Propagation}}
+\subsubsection[{update\-Threshold}]{\setlength{\rightskip}{0pt plus 5cm}{\bf count} Ensemble\-Clustering\-::\-Label\-Propagation\-::update\-Threshold = 0\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_label_propagation_a02e1930c35c9b2fe9121415cb6be7b65}
+
+
+Definition at line 47 of file Label\-Propagation.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/community/\hyperlink{_label_propagation_8h}{Label\-Propagation.\-h}\item 
+src/community/\hyperlink{_label_propagation_8cpp}{Label\-Propagation.\-cpp}\end{DoxyCompactItemize}
