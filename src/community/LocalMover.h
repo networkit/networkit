@@ -58,7 +58,7 @@ public:
 
 	virtual Clustering run(Graph& G);
 
-protected:
+private:
 
 	void move(node u, cluster C);
 
