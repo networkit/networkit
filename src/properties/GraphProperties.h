@@ -1,0 +1,24 @@
+/*
+ * GraphProperties.h
+ *
+ *  Created on: 03.06.2013
+ *      Author: cls
+ */
+
+#ifndef GRAPHPROPERTIES_H_
+#define GRAPHPROPERTIES_H_
+
+namespace NetworKit {
+
+class GraphProperties {
+public:
+	GraphProperties();
+	virtual ~GraphProperties();
+
+	static std::vector<count> degreeDistribution(Graph& G);
+
+	static std::vector<double> localClusteringCoefficientPerDegree(Graph& G);
+};
+
+} /* namespace NetworKit */
+#endif /* GRAPHPROPERTIES_H_ */
