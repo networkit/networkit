@@ -8,6 +8,9 @@
 #ifndef GRAPHPROPERTIES_H_
 #define GRAPHPROPERTIES_H_
 
+
+#include "Graph.h"
+
 namespace NetworKit {
 
 class GraphProperties {
@@ -18,6 +21,8 @@ public:
 	static std::vector<count> degreeDistribution(Graph& G);
 
 	static std::vector<double> localClusteringCoefficientPerDegree(Graph& G);
+
+	static std::pair<count, count> minMaxDegree(Graph& G);
 };
 
 } /* namespace NetworKit */
