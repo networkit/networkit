@@ -8,6 +8,9 @@
 #ifndef GRAPHPROPERTIES_H_
 #define GRAPHPROPERTIES_H_
 
+
+#include "Graph.h"
+
 namespace NetworKit {
 
 class GraphProperties {

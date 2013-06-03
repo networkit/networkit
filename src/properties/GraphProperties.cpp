@@ -19,6 +19,15 @@ GraphProperties::~GraphProperties() {
 }
 
 std::vector<count> GraphProperties::degreeDistribution(Graph& G) {
+	count maxDegree = minMaxDegree(G).second;
+	vector<count> values (maxDegree, 0);
+
+	G.forNodes([&](node v)){
+		count i = G.degree(v);
+		vector[i]++;
+	}
+
+	return values;
 }
 
 std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(
