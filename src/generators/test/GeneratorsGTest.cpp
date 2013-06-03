@@ -115,9 +115,10 @@ TEST_F(GeneratorsGTest, tryBTERGeneratorWithPowerLawDistribution) {
 }
 
 TEST_F(GeneratorsGTest, tryBTERGeneratorOnARealGraph) {
-	METISGraphReader METISReader;
-	std::vector<double> clusteringCoefficients =
-	std::vector<count> degreeDistribution =
+	METISGraphReader reader;
+	Graph Gin = reader.read("TODO:");
+	std::vector<double> clusteringCoefficients = GraphProperties::localClusteringCoefficientPerDegree(Gin);
+	std::vector<count> degreeDistribution = GraphProperties::degreeDistribution(Gin);
 	DEBUG("construct BTERGenerator");
 	BTERGenerator bter(degreeDistribution, clusteringCoefficients, 1.0);
 	std::pair<count, count> nm = bter.desiredGraphSize();

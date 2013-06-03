@@ -21,7 +21,7 @@ ClusteringCoefficient::~ClusteringCoefficient() {
 double ClusteringCoefficient::calculate(Graph& G) {
 
 	count n = G.numberOfNodes();
-	std::vector<count> numerator(n); // 2 *
+	std::vector<count> numerator(n); //
 	std::vector<count> denominator(n); // $\deg(u) \cdot ( \deg(u) - 1 )$
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
