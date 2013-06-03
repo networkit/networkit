@@ -21,6 +21,7 @@
 #include "../StaticBarabasiAlbertGenerator.h"
 #include "../../io/GraphIO.h"
 #include "../../io/METISGraphReader.h"
+#include "../../properties/GraphProperties.h"
 
 namespace NetworKit {
 
