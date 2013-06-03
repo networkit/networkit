@@ -14,7 +14,7 @@ cdef extern from "../src/auxiliary/RandomInteger.h":
 cdef extern from "../src/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph(int) except +
-		int numberOfNodes()
+		count numberOfNodes()
 		
 
 cdef extern from "../src/graph/GraphGenerator.h":
@@ -46,7 +46,6 @@ cdef class Graph:
 	def __cinit__(self, n):
 		self.thisptr = new _Graph(n)
 		
-	
 	def __dealloc__(self):
 		del self.thisptr
 	
