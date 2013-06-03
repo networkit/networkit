@@ -20,11 +20,12 @@ GraphProperties::~GraphProperties() {
 
 std::vector<count> GraphProperties::degreeDistribution(Graph& G) {
 	count maxDegree = minMaxDegree(G).second;
-	std::vector<count> distribution(maxDegree, 0);
+	std::vector<count> distribution(maxDegree+1, 0);
 	G.forNodes([&](node v){
 		count i = G.degree(v);
 		distribution[i]++;
 	});
+	return distribution;
 }
 
 
