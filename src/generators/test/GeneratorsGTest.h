@@ -20,6 +20,7 @@
 #include "../../io/METISGraphWriter.h"
 #include "../StaticBarabasiAlbertGenerator.h"
 #include "../../io/GraphIO.h"
+#include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
 

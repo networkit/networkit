@@ -114,6 +114,25 @@ TEST_F(GeneratorsGTest, tryBTERGeneratorWithPowerLawDistribution) {
 	writer.write(G, "output/BTERTest.graph");
 }
 
+TEST_F(GeneratorsGTest, tryBTERGeneratorOnARealGraph) {
+	METISGraphReader METISReader;
+	std::vector<double> clusteringCoefficients =
+	std::vector<count> degreeDistribution =
+	DEBUG("construct BTERGenerator");
+	BTERGenerator bter(degreeDistribution, clusteringCoefficients, 1.0);
+	std::pair<count, count> nm = bter.desiredGraphSize();
+	DEBUG("call BTERGenerator");
+	Graph G = bter.generate();
+
+	EXPECT_EQ(nm.first, G.numberOfNodes());
+	EXPECT_EQ(nm.second, G.numberOfEdges());
+
+	METISGraphWriter writer;
+	writer.write(G, "output/BTERTest.graph");
+
+}
+
+
 TEST_F(GeneratorsGTest, testStaticBarabasiAlbertGenerator) {
 	count k = 3;
 	count nMax = 100;
