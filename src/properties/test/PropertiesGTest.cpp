@@ -31,6 +31,21 @@ TEST_F(PropertiesGTest, testClusteringCoefficient) {
 
 }
 
+TEST_F(PropertiesGTest, testDegreeDistribution) {
+	Graph G(3);
+	std::vector<count> degreeDist = GraphProperties::degreeDistribution(G);
+	G.addEdge(0,1);
+	G.addEdge(1,2);
+	G.addEdge(2,0);
+	degreeDist = GraphProperties::degreeDistribution(G);
+	EXPECT_EQ(degreeDist[0], 0);
+	EXPECT_EQ(degreeDist[1], 0);
+	EXPECT_EQ(degreeDist[2], 3);
+
+
+}
+
+
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 	GraphGenerator gen;
