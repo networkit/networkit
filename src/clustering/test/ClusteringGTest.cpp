@@ -249,19 +249,6 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 //}
 
 
-TEST_F(ClusteringGTest, testClusteringCoefficient) {
-
-	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
-
-	ClusteringCoefficient clusteringCoefficient;
-	double cc = clusteringCoefficient.calculate(G);
-
-	EXPECT_EQ(1.0, cc);
-
-}
-
-
 
 TEST_F(ClusteringGTest, tryNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
