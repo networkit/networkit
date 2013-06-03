@@ -74,7 +74,7 @@ void BTERGenerator::setup() {
 	DEBUG("id_ : index i_d for first node of each degree d" << Aux::vectorToString(id_));
 	DEBUG("nFill_  number of filler nodes per degree " << Aux::vectorToString(nFill_));
 	DEBUG("wd_ sum of wFill and wBulk: " << Aux::vectorToString(wd_));
-	DEBUG("r_ ratio of fill nodes : " << Aux::vectorToString(r_));
+	DEBUG("r_ ratio of fill excess degree for degree : " << Aux::vectorToString(r_));
 	DEBUG("ig_ start index for affinity group : " << Aux::vectorToString(ig_));
 	DEBUG("b_ b_[g]: number of blocks in a group : " << Aux::vectorToString(b_));
 	DEBUG("wg_ wg_[g]: weight of the group g : " << Aux::vectorToString(wg_));
@@ -86,6 +86,7 @@ void BTERGenerator::setup() {
 
 	std::vector<count> nBulk_(dMax + 1); 	// number of bulk nodes of degree d
 	std::vector<count> ndRest_(dMax + 1); 	// ?
+	// TODO: check the formula. wFill and wBulk are not not explicitly stored according to the table
 	std::vector<double> wFill_(dMax + 1); 	// weight of the degree-d fill nodes for phase 2
 	std::vector<double> wBulk_(dMax + 1); 	// weight of degree-d bulk nodes for phase 2
 
@@ -119,7 +120,7 @@ void BTERGenerator::setup() {
 		if (nFillStar > 0) {
 			nFill_[d] = std::min(nFillStar, nd_[d]);
 			nFillStar = nFillStar - nFill_[d];
-			wFill_[d] = 0.5 * nFill_[d] * (d - dStar);
+			wFill_[d] = 0.5 * nFill_[d] * (d - dStar); 
 		} else {
 			nFill_[d] = 0;
 			wFill_[d] = 0.0;
@@ -165,7 +166,7 @@ void BTERGenerator::setup() {
 	DEBUG("id_ : index i_d for first node of each degree d" << Aux::vectorToString(id_));
 	DEBUG("nFill_  number of filler nodes per degree " << Aux::vectorToString(nFill_));
 	DEBUG("wd_ sum of wFill and wBulk: " << Aux::vectorToString(wd_));
-	DEBUG("r_ ratio of fill nodes : " << Aux::vectorToString(r_));
+	DEBUG("r_ ratio of fill excess degree for degree : " << Aux::vectorToString(r_));
 	DEBUG("ig_ start index for affinity group : " << Aux::vectorToString(ig_));
 	DEBUG("b_ b_[g]: number of blocks in a group : " << Aux::vectorToString(b_));
 	DEBUG("wg_ wg_[g]: weight of the group g : " << Aux::vectorToString(wg_));

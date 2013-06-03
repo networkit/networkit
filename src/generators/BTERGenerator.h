@@ -90,6 +90,7 @@ protected:
 	double beta; // blowup-factor for deg-1 nodes
 
 	degree dMax; 			//!< maximum degree
+	count gMax; 			//!< totall number of affinity groups (gMax <= dMax)
 	std::vector<count> nd_; //!< degree distribution: nd_[d] = number of nodes with degree d
 	std::vector<double> c_;	//!< clustering coefficient per degree: 	// TODO: no need to keep c_ after the preprocessing is done
 
@@ -98,8 +99,8 @@ protected:
 	std::vector<index> id_;	 	//!< index i_d for first node of each degree d
 	std::vector<count> nFill_; 	//!< number of filler nodes per degree
 	std::vector<count> wd_; 	//!< sum of wFill and wBulk
-	std::vector<double> r_; 	//!< ratio of fill nodes
-	std::vector<index> ig_; 	//!< start index for affinity group
+	std::vector<double> r_; 	//!< ratio of fill excess degree for degree
+	std::vector<index> ig_; 	//!< index of first node in affinity group g
 	std::vector<count> b_; 		//!< b_[g]: number of blocks in a group
 	std::vector<double> wg_; 	//! wg_[g]: weight of the group g
 	std::vector<count> ng_; 	// ng_[g]: number of blocks in the affinity group g
