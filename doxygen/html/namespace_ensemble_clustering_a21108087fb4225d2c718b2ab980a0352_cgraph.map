@@ -1,0 +1,16 @@
+<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph_generator.html#aaba3c61fd2aafae1f46b936e7a0dbc46" title="EnsembleClustering\l::GraphGenerator::makeComplete\lGraph" alt="" coords="195,15,418,75"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_clustering_generator.html#a389692d091d311420c6173d1ae527f56" title="Make a singleton clustering of G, i.e." alt="" coords="218,209,395,269"/>
+<area shape="rect" id="node15" href="$class_ensemble_clustering_1_1_clustering_generator.html#aceff2507723f4a978f7bf51f0c3577be" title="Make a 1&#45;clustering of G, i.e." alt="" coords="232,125,381,185"/>
+<area shape="rect" id="node21" href="$class_ensemble_clustering_1_1_modularity.html#a516c1fa49609c233d01a76d0f0d4c255" title="Returns the Modularity of the given clustering with respect to the graph instance." alt="" coords="228,374,386,418"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a78d527f03a3a860ee173dadbaefe1d5c" title="Insert a weighted, undirected edge." alt="" coords="484,5,625,49"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non&#45;isolated) nodes in the graph." alt="" coords="469,141,640,185"/>
+<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_graph.html#aaac8bcc5d64461cba54ad38ec929be3c" title="Get the first node index (for iteration over all nodes)" alt="" coords="484,209,625,253"/>
+<area shape="rect" id="node13" href="$class_ensemble_clustering_1_1_clustering.html#a461a251d674b64cf29e97408c343253a" title="Creates a singleton cluster containing the node." alt="" coords="473,277,636,321"/>
+<area shape="rect" id="node19" href="$class_ensemble_clustering_1_1_clustering.html#a2f6334480e3938deae8425dc57e6ea86" title="Add a (previously unassigned) node to a cluster." alt="" coords="467,73,642,117"/>
+<area shape="rect" id="node24" href="$class_ensemble_clustering_1_1_clustering.html#af776bb377f90cbf03e0661bc8902ef2d" title="Get the highest cluster id that has been assigned." alt="" coords="475,345,634,389"/>
+<area shape="rect" id="node26" href="$class_ensemble_clustering_1_1_graph.html#a7be7f13f5a31b0513293e7bbac26ca6c" title="Get the sum of the weight of all edges." alt="" coords="469,465,640,509"/>
+<area shape="rect" id="node28" href="$class_ensemble_clustering_1_1_graph.html#a9bff231567f9ac604f1854d62f6682d1" title="Return node weight." alt="" coords="691,435,832,479"/>
+<area shape="rect" id="node31" href="$class_ensemble_clustering_1_1_clustering.html#a98c5900c89d56ac67d2b7b46be83e0a2" title="Get the lowest cluster id;." alt="" coords="475,533,635,577"/>
+<area shape="rect" id="node34" href="$class_ensemble_clustering_1_1_clustering.html#ad928bde104aea2f59caadc40aa9fb664" title="Return the cluster (id) in which a node is contained." alt="" coords="480,601,629,645"/>
+</map>
