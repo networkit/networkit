@@ -9,7 +9,7 @@
 #define GRAPHPROPERTIES_H_
 
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 
