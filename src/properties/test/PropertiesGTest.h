@@ -12,6 +12,8 @@
 
 #include "../ClusteringCoefficient.h"
 #include "../../graph/GraphGenerator.h"
+#include "../../properties/GraphProperties.h"
+
 
 namespace NetworKit {
 
