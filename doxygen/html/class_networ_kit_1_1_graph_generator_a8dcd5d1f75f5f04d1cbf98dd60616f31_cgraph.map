@@ -1,0 +1,4 @@
+<map id="NetworKit::GraphGenerator::makeCompleteGraph" name="NetworKit::GraphGenerator::makeCompleteGraph">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#a498eb0beb05b992d12b246fcf3b76070" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="245,5,424,49"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="237,73,432,101"/>
+</map>
