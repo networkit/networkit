@@ -18,7 +18,7 @@ for (root, dirs, files) in os.walk(srcDir, topdown=False):
 			
 print(src)
 	
-
+# TODO: remove user-specific paths
 modules = [Extension("NetworKit",
 					src,
 					language = "c++",
