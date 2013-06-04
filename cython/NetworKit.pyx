@@ -5,12 +5,6 @@ ctypedef int64_t count
 
 # Cython class definitions
 
-# cdef extern from "../src/auxiliary/RandomInteger.h":
-# 	cdef cppclass _RandomInteger "Aux::RandomInteger":
-# 		_RandomInteger() except +
-# 		int64_t generate(int64_t lower, int64_t upper)
-		
-
 cdef extern from "../src/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
@@ -24,24 +18,7 @@ cdef extern from "../src/graph/GraphGenerator.h":
 		_Graph makeRandomGraph(count n, double p)
 
 		
-		
-# Python wrappers
-	
-# cdef class RandomInteger:
-# 
-# 	cdef _RandomInteger obj
-# 	
-# 	def __cinit__(self):
-# 		self.obj = _RandomInteger()
-# 		
-# # 	def __dealloc__(self):
-# # 		del self.obj
-# 	
-# 	def generate(self, lower, upper):
-# 		return self.obj.generate(lower, upper)
-
 cdef class Graph:
-
 	cdef _Graph obj
 	
 	
@@ -61,7 +38,6 @@ cdef class Graph:
 
 
 cdef class GraphGenerator:
-
 	cdef _GraphGenerator obj
 	
 	def __cinit__(self):
