@@ -147,6 +147,8 @@ public:
 
 	/** GRAPH INTERFACE **/
 
+	Graph();
+
 	Graph(count n);
 
 	virtual ~Graph();

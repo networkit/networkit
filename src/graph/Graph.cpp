@@ -9,6 +9,14 @@
 
 namespace NetworKit {
 
+Graph::Graph(): n(0), m(0), z(n), deg(z, 0), exists(z, true), adja(z), eweights(z) {
+	// set name from global id
+	static int64_t graphId = 1;
+	std::stringstream sstm;
+	sstm << "G#" << graphId++;
+	this->name = sstm.str();
+}
+
 // TODO: z should probably be n-1, but it breaks some tests
 Graph::Graph(count n) : n(n), m(0), z(n), deg(z, 0), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
