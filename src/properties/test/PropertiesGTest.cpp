@@ -59,4 +59,20 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 }
 
 
+TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
+	GraphGenerator gen;
+	Graph G = gen.makeCompleteGraph(4);
+
+	std::vector<double> coefficients = GraphProperties::localClusteringCoefficientPerDegree(G);
+
+	EXPECT_EQ(0.0, coefficients[0]);
+	EXPECT_EQ(0.0, coefficients[1]);
+	EXPECT_EQ(0.0, coefficients[2]);
+	EXPECT_EQ(1.0, coefficients[3]);
+
+
+}
+
+
+
 } /* namespace NetworKit */

@@ -57,6 +57,7 @@ std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 		coefficient[u] = numerator[u] / denominator[u];
 	});
 
+	return coefficient;
 }
 
 std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& G) {
@@ -72,7 +73,11 @@ std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& 
 
 	// get the average local clustering coefficient for nodes of each degreee
 	for (index i = 0; i < degDist.size(); ++i) {
-		perDegree[i] = perDegree[i] / (double) degDist[i];
+		if (degDist[i] == 0) {
+			perDegree[i] = 0.0; // TODO: should this be -1
+		} else {
+			perDegree[i] = perDegree[i] / (double) degDist[i];
+		}
 	}
 
 	return perDegree;

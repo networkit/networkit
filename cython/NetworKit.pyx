@@ -48,6 +48,10 @@ cdef class Graph:
 		
 	def __dealloc__(self):
 		del self.thisptr
+		
+	cdef setInstance(self, _Graph *ptr):
+		del self.thisptr
+		self.thisptr = ptr
 	
 	def numberOfNodes(self):
 		return self.thisptr.numberOfNodes()
@@ -65,4 +69,9 @@ cdef class GraphGenerator:
 		del self.thisptr
 	
 	def makeRandomGraph(self, n, p):
-		return self.thisptr.makeRandomGraph(n, p)
+		G = Graph(0)
+		#cdef _Graph* _G = &(self.thisptr.makeRandomGraph(n, p))
+		#G.setInstance(_G)
+		return G
+
+#cdef _Graph* test = &_Graph(0)
