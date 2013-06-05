@@ -17,7 +17,11 @@ namespace NetworKit {
 
 class ForceDirected: public NetworKit::SpringEmbedder {
 public:
+
+	ForceDirected();
+
 	ForceDirected(Point<float> bottomLeft, Point<float> topRight);
+
 	virtual ~ForceDirected();
 
 	/**
