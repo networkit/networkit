@@ -108,9 +108,11 @@ cdef extern from "../src/community/LabelPropagation.h":
 cdef class LabelPropagation:
 	cdef _LabelPropagation obj
 	
-	def run(self, G):
-		pass
+	def run(self, Graph G not None):
+		self.obj.run(G.obj)
 
+
+# TODO: initialize log4cxx
 
 
 def readGraph(path):
