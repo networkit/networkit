@@ -10,6 +10,12 @@
 
 namespace NetworKit {
 
+Clustering::Clustering() : NodeMap<cluster>(0, -1), name("noname")  {
+	this->nextCluster = 0; // first cluster index is 0
+	this->upperIdBound = 0; // upper id bound = n is okay only for agglomeratively created clusters
+}
+
+
 Clustering::Clustering(count n) :
 		NodeMap<cluster>(n, -1), name("noname") {
 	// all entries are initialized to -1, which means that the nodes are unclustered
@@ -178,6 +184,7 @@ std::vector<count> Clustering::clusterSizes() {
 
 	return clusterSizes;
 }
+
 
 void Clustering::append(node u) {
 	this->data.push_back(this->defaultValue);
