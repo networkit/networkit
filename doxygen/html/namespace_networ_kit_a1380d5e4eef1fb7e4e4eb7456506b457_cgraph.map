@@ -1,0 +1,6 @@
+<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
+<area shape="rect" id="node3" href="$class_aux_1_1_timer.html#a3c58e715148a05a6294743619d111bab" title="Start the clock." alt="" coords="211,5,330,33"/>
+<area shape="rect" id="node5" href="$class_aux_1_1_timer.html#a14d926626eef461e836f87f7bc3d03b7" title="Stops the clock permanently for the instance of the Timer." alt="" coords="212,57,330,85"/>
+<area shape="rect" id="node7" href="$class_aux_1_1_timer.html#a428b45cb66f4be47bbea61b0db368142" title="Aux::Timer::elapsedTag" alt="" coords="190,109,351,137"/>
+<area shape="rect" id="node9" href="$class_aux_1_1_timer.html#a16fdb76113530c5d4d8787e27d1e0aca" title="The number of seconds since the current time that the Timer object was created." alt="" coords="401,109,540,137"/>
+</map>
