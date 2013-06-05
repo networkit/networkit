@@ -17,12 +17,13 @@
 #include <stdexcept>
 #include <map>
 #include <sstream>
+#include <limits>
 
 #include "../auxiliary/Log.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
-#define none -1
+#define none std::numeric_limits<int64_t>::min()
 
 namespace NetworKit {
 
@@ -537,6 +538,19 @@ public:
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
 	 */
 	template<typename L> double parallelSumForWeightedEdges(L handle) const;
+
+
+	/** Collections **/
+
+	/**
+	 * Return list of nodes
+	 */
+	std::vector<node> nodes();
+
+	/**
+	 * Return list of edges as node pairs.
+	 */
+	std::vector<std::pair<node, node> > edges();
 
 };
 

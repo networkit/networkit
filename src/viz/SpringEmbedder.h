@@ -19,7 +19,11 @@ protected:
 	float forceCorrection; //<! value for scaling the forces
 
 public:
+
+	SpringEmbedder(); // nullary constructor needed for Python shell
+
 	SpringEmbedder(Point<float> bottomLeft, Point<float> topRight);
+
 	virtual ~SpringEmbedder();
 
 	virtual void draw(Graph& g) = 0;

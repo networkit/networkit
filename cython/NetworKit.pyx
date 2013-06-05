@@ -2,11 +2,17 @@
 from libc.stdint cimport int64_t
 
 from libcpp.vector cimport vector
+from libcpp.utility cimport pair
 from libcpp.string cimport string
 
 ctypedef int64_t count
 ctypedef int64_t index
 ctypedef index node
+
+
+# python module imports
+import networkx as nx
+
 
 # Cython class definitions
 
@@ -20,6 +26,8 @@ cdef extern from "../src/graph/Graph.h":
 		void removeNode(node u)
 		void addEdge(node u, node v)
 		void removeEdge(node u, node v)
+		vector[node] nodes()
+		vector[pair[node, node]] edges()
 		
 
 cdef class Graph:
@@ -33,9 +41,6 @@ cdef class Graph:
 		#del self.obj
 		self.obj = other
 		return self
-	
-	cdef _Graph getObj(self):
-		return self.obj
 	
 	def numberOfNodes(self):
 		return self.obj.numberOfNodes()
@@ -54,6 +59,12 @@ cdef class Graph:
 		
 	def removeEdge(self, u, v):
 		self.obj.removeEdge(u, v)
+		
+	def nodes(self):
+		return self.obj.nodes()
+	
+	def edges(self):
+		return self.obj.edges()
 	
 	
 cdef extern from "../src/graph/GraphGenerator.h":
@@ -98,6 +109,7 @@ cdef class Clustering:
 	
 	cdef setObj(self, _Clustering other):
 		self.obj = other
+		return self
 
 
 cdef extern from "../src/community/LabelPropagation.h":
@@ -108,12 +120,43 @@ cdef extern from "../src/community/LabelPropagation.h":
 cdef class LabelPropagation:
 	cdef _LabelPropagation obj
 	
-	def run(self, G):
+	def run(self, Graph G not None):
+		return Clustering().setObj(self.obj.run(G.obj))
+
+
+cdef extern from "../src/io/DotGraphWriter.h":
+	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter":
+		_DotGraphWriter() except +
+		void write(_Graph G, string path)
+
+
+cdef class DotGraphWriter:
+	cdef _DotGraphWriter obj
+	
+	def write(self, Graph G not None, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		self.obj.write(G.obj, pathbytes)
+	
+
+cdef extern from "../src/viz/ForceDirected.h":
+	cdef cppclass _ForceDirected "NetworKit::ForceDirected":
+		_ForceDirected() except +
+		void draw(_Graph _G)
+	
+cdef class ForceDirected:
+	cdef _ForceDirected obj
+	
+	def draw(self, Graph G not None):
 		pass
+	
 
 
+# TODO: initialize log4cxx
+
+#--------- NetworKit functions ----------------#
 
 def readGraph(path):
+	"""	Automatically detect input format and read graph"""
 	# TODO: detect file format by looking at the file content
 	if path.endswith(".graph"):
 		reader = METISGraphReader()
@@ -121,3 +164,27 @@ def readGraph(path):
 		raise Exception("unknown graph file format")
 	G = reader.read(path)
 	return G
+
+
+
+
+def nx2nk(nxG):
+	""" Convert a networkx.Graph to a NetworKit.Graph """
+	
+	n = nxG.number_of_nodes()
+	cdef Graph nkG = Graph(n)
+	
+	for (u, v) in nxG.edges():
+		nkG.addEdge(u, v)
+	
+	return nkG
+
+def nk2nx(nkG):
+	""" Convert a NetworKit.Graph to a networkx.Graph """
+	nxG = nx.Graph()
+	for (u, v) in nkG.edges():
+		nxG.add_edge(u, v)
+	
+	return nxG
+	
+	
