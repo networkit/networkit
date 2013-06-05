@@ -7,6 +7,7 @@
 
 #include "GraphProperties.h"
 
+
 namespace NetworKit {
 
 GraphProperties::GraphProperties() {
@@ -73,22 +74,32 @@ std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& G) {
 
 	std::vector<count> degDist = degreeDistribution(G);
-	std::vector<double> coefficient = localClusteringCoefficients(G);
-
+	std::vector<double> coefficient;
 	std::vector<double> perDegree(degDist.size(), 0.0);
 
-	G.forNodes([&](node u){
-		perDegree[G.degree(u)] += coefficient[u];
-	});
+	if (G.numberOfNodes() > 1 ) {
+		coefficient = localClusteringCoefficients(G);
 
-	// get the average local clustering coefficient for nodes of each degreee
-	for (index i = 0; i < degDist.size(); ++i) {
-		if (degDist[i] == 0) {
-			perDegree[i] = 0.0; // TODO: should this be -1
-		} else {
-			perDegree[i] = perDegree[i] / (double) degDist[i];
-		}
+			G.forNodes([&](node u){
+				perDegree[G.degree(u)] += coefficient[u];
+			});
+
+			// get the average local clustering coefficient for nodes of each degreee
+			for (index i = 2; i < degDist.size(); ++i) {
+				if (degDist[i] == 0) {
+					perDegree[i] = 0.0; // TODO: should this be -1
+				} else {
+					perDegree[i] = perDegree[i] / (double) degDist[i];
+				}
+			}
 	}
+
+
+
+	// allows to avoid the situation, when local clustering coefficient is calculated for 0-1 degree nodes.
+	// These nodes are warranted not to be triangle centers, thus we avoid calculating the coefficients for the,
+	degDist[0] = none;
+	if (G.numberOfNodes() > 0 ) degDist[1] = none;
 
 	return perDegree;
 }
