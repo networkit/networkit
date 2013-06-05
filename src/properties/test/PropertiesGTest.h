@@ -13,6 +13,7 @@
 #include "../ClusteringCoefficient.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../properties/GraphProperties.h"
+#include "../../io/METISGraphReader.h"
 
 
 namespace NetworKit {
