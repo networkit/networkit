@@ -42,6 +42,11 @@ protected:
 
 public:
 
+	/*
+	 * Construct an empty clustering.
+	 */
+	Clustering();
+
 	/**
 	 * Construct new clustering.
 	 *
