@@ -2,11 +2,17 @@
 from libc.stdint cimport int64_t
 
 from libcpp.vector cimport vector
+from libcpp.utility cimport pair
 from libcpp.string cimport string
 
 ctypedef int64_t count
 ctypedef int64_t index
 ctypedef index node
+
+
+# python module imports
+import networkx as nx
+
 
 # Cython class definitions
 
@@ -20,6 +26,8 @@ cdef extern from "../src/graph/Graph.h":
 		void removeNode(node u)
 		void addEdge(node u, node v)
 		void removeEdge(node u, node v)
+		vector[node] nodes()
+		vector[pair[node, node]] edges()
 		
 
 cdef class Graph:
@@ -51,6 +59,12 @@ cdef class Graph:
 		
 	def removeEdge(self, u, v):
 		self.obj.removeEdge(u, v)
+		
+	def nodes(self):
+		return self.obj.nodes()
+	
+	def edges(self):
+		return self.obj.edges()
 	
 	
 cdef extern from "../src/graph/GraphGenerator.h":
@@ -139,6 +153,7 @@ cdef class ForceDirected:
 
 # TODO: initialize log4cxx
 
+#--------- NetworKit functions ----------------#
 
 def readGraph(path):
 	"""	Automatically detect input format and read graph"""
@@ -152,9 +167,9 @@ def readGraph(path):
 
 
 
+
 def nx2nk(nxG):
-	""" Convert a NetworkX.Graph to a NetworKit.Graph """
-	import networkx as nx
+	""" Convert a networkx.Graph to a NetworKit.Graph """
 	
 	n = nxG.number_of_nodes()
 	cdef Graph nkG = Graph(n)
@@ -163,5 +178,13 @@ def nx2nk(nxG):
 		nkG.addEdge(u, v)
 	
 	return nkG
+
+def nk2nx(nkG):
+	""" Convert a NetworKit.Graph to a networkx.Graph """
+	nxG = nx.Graph()
+	for (u, v) in nkG.edges():
+		nxG.add_edge(u, v)
+	
+	return nxG
 	
 	

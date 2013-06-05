@@ -539,6 +539,19 @@ public:
 	 */
 	template<typename L> double parallelSumForWeightedEdges(L handle) const;
 
+
+	/** Collections **/
+
+	/**
+	 * Return list of nodes
+	 */
+	std::vector<node> nodes();
+
+	/**
+	 * Return list of edges as node pairs.
+	 */
+	std::vector<std::pair<node, node> > edges();
+
 };
 
 } /* namespace NetworKit */
