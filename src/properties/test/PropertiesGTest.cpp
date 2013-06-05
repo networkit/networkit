@@ -38,9 +38,9 @@ TEST_F(PropertiesGTest, testDegreeDistribution) {
 	G.addEdge(1,2);
 	G.addEdge(2,0);
 	degreeDist = GraphProperties::degreeDistribution(G);
-	EXPECT_EQ(degreeDist[0], 0);
-	EXPECT_EQ(degreeDist[1], 0);
-	EXPECT_EQ(degreeDist[2], 3);
+	EXPECT_EQ(0, degreeDist[0]);
+	EXPECT_EQ(0, degreeDist[1]);
+	EXPECT_EQ(3, degreeDist[2]);
 
 
 }
@@ -48,20 +48,25 @@ TEST_F(PropertiesGTest, testDegreeDistribution) {
 
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
-	GraphGenerator gen;
-	Graph G = gen.makeCompleteGraph(4);
 
-	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
+	// Test case for a complete graph
+	GraphGenerator gen;
+	Graph G_complete = gen.makeCompleteGraph(4);
+
+	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G_complete);
 	for (double cc : coefficients) {
 		EXPECT_EQ(1.0, cc) << "In a clique all possible triangles are closed so all local clustering coefficients are 1";
 	}
+
+
+
 
 }
 
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
 	GraphGenerator gen;
-	Graph G = gen.makeCompleteGraph(4);
+	Graph G = gen.makeCompleteGraph(2);
 
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficientPerDegree(G);
 
@@ -69,6 +74,40 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
 	EXPECT_EQ(0.0, coefficients[1]);
 	EXPECT_EQ(0.0, coefficients[2]);
 	EXPECT_EQ(1.0, coefficients[3]);
+
+
+	// Test case for a graph, which contains nodes with degree 1
+
+	Graph G1(5);
+	G1.addEdge(0,1);
+
+	std::vector<double> coefficients1 = GraphProperties::localClusteringCoefficientPerDegree(G1);
+	for (double cc : coefficients1) {
+		EXPECT_EQ(none, cc) << "Local clustering coefficients should not be calculated should not be calculated for nodes with degree 0 and 1";
+	}
+
+	G1.addEdge(1, 2);
+	G1.addEdge(2, 0);
+
+	coefficients1 = GraphProperties::localClusteringCoefficientPerDegree(G1);
+
+	EXPECT_EQ(none, coefficients1[0]);
+	EXPECT_EQ(none, coefficients1[1]);
+	EXPECT_EQ(1.0, coefficients1[2]);
+
+
+/*
+	// Test case for a graph, which contains nodes with degree 0
+
+	Graph G0(1);
+
+	std::vector<double> coefficients0 = GraphProperties::localClusteringCoefficientPerDegree(G0);
+	for (double cc : coefficients0) {
+		EXPECT_EQ(none, cc) << "Local clustering coefficients should not be calculated should not be calculated for nodes with degree 0 and 1";
+	}
+
+	*/
+
 
 
 }
