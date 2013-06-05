@@ -34,9 +34,6 @@ cdef class Graph:
 		self.obj = other
 		return self
 	
-	cdef _Graph getObj(self):
-		return self.obj
-	
 	def numberOfNodes(self):
 		return self.obj.numberOfNodes()
 	
@@ -122,9 +119,9 @@ cdef extern from "../src/io/DotGraphWriter.h":
 cdef class DotGraphWriter:
 	cdef _DotGraphWriter obj
 	
-def write(self, Graph G not None, string path):
-	pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
-	#self.obj.write(G.getObj())
+	def write(self, Graph G not None, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		self.obj.write(G.obj, pathbytes)
 	
 
 cdef extern from "../src/viz/ForceDirected.h":
@@ -161,6 +158,9 @@ def nx2nk(nxG):
 	
 	n = nxG.number_of_nodes()
 	cdef Graph nkG = Graph(n)
+	
+	for (u, v) in nxG.edges():
+		nkG.addEdge(u, v)
 	
 	return nkG
 	
