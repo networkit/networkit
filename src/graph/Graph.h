@@ -17,12 +17,13 @@
 #include <stdexcept>
 #include <map>
 #include <sstream>
+#include <limits>
 
 #include "../auxiliary/Log.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
-#define none -1
+#define none std::numeric_limits<int64_t>::min()
 
 namespace NetworKit {
 

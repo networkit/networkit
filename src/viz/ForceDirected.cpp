@@ -10,7 +10,6 @@
 namespace NetworKit {
 
 ForceDirected::ForceDirected() {
-	// TODO: default constructor needed for Python bindings - probably incorrect initialization
 }
 
 ForceDirected::ForceDirected(Point<float> bottom_left, Point<float> top_right):

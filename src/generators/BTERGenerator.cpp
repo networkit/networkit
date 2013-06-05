@@ -269,11 +269,15 @@ node BTERGenerator::samplePhaseTwoNode() {
 	double r1 = this->rand.probability();
 	double r2 = this->rand.probability();
 	node u;
-	if (r1 < nFill_[d]) {
-		u = std::floor(r2 * nFill_[d]) + id_[d];
+	count nFill = nFill_[d];
+	assert (nFill >= 0);
+	if (r1 < nFill) {
+		u = std::floor(r2 * nFill) + id_[d];
 	} else {
-		u = std::floor(r2 * (nd_[d] - nFill_[d])) + (id_[d] + nFill_[d]);
+		u = std::floor(r2 * (nd_[d] - nFill)) + (id_[d] + nFill);
 	}
+
+	assert (u >= 0);
 	return u;
 }
 

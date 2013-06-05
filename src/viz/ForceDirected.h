@@ -18,7 +18,7 @@ namespace NetworKit {
 class ForceDirected: public NetworKit::SpringEmbedder {
 public:
 
-	ForceDirected();
+	ForceDirected(); // nullary constructor needed for Python shell
 
 	ForceDirected(Point<float> bottomLeft, Point<float> topRight);
 

@@ -16,6 +16,9 @@ SpringEmbedder::SpringEmbedder(Point<float> bottom_left, Point<float> top_right)
 
 }
 
+SpringEmbedder::SpringEmbedder() {
+}
+
 SpringEmbedder::~SpringEmbedder() {
 	// TODO Auto-generated destructor stub
 }
