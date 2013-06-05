@@ -36,15 +36,6 @@ std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 	std::vector<double> denominator(n); // $\deg(u) \cdot ( \deg(u) - 1 )$
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
-
-	// DEBUG: check if there is a degree 0 node
-	G.forNodes([&](node u){
-		if (G.degree(u) == 1) {
-			DEBUG("node " << u << " has degree 1");
-		}
-	});
-
-
 	G.parallelForNodes([&](node u){
 		count edgeCount = 0;
 		G.forEdgesOf(u, [&](node u, node v) {
@@ -63,8 +54,6 @@ std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 	});
 
 	G.parallelForNodes([&](node u){
-		TRACE("numerator = " << numerator[u]);
-		TRACE("denominator = " << denominator[u]);
 		if (denominator[u] == 0.0) {
 			coefficient[u] = 0.0;
 		} else {
