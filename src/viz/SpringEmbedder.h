@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-const count MAX_ITER = 1000; // TODO: maybe better as object variable
+const count MAX_ITER = 1; // TODO: maybe better as object variable
 
 class SpringEmbedder: public NetworKit::Layouter {
 protected:

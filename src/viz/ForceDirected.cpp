@@ -14,7 +14,7 @@ ForceDirected::ForceDirected(Point<float> bottom_left, Point<float> top_right):
 	// TODO Auto-generated constructor stub
 
 	// FIXME: set forceCorrection in base class
-	forceCorrection = 10.0;
+	forceCorrection = 0.05;
 }
 
 ForceDirected::~ForceDirected() {
@@ -29,6 +29,7 @@ void ForceDirected::draw(Graph& g) {
 	int area = width * height;
 	count n = g.numberOfNodes();
 
+	// initialize randomly
 	randomInitCoordinates(g);
 
 
@@ -36,8 +37,8 @@ void ForceDirected::draw(Graph& g) {
 		Point<float> force = p1;
 
 		float dist = p1.distance(p2);
-		float strength = - dist / forceCorrection;
-		force.scale(strength);
+		float strength = dist / forceCorrection;
+		force.scale(strength); // FIXME:
 
 		return force;
 	});
@@ -88,6 +89,7 @@ void ForceDirected::draw(Graph& g) {
 	std::vector<float> origin = {0.0, 0.0};
 	count numIter = 0;
 
+	converged = true; // FIXME: just for test
 	while (! converged) {
 		std::vector<Point<float> > previousLayout = layout;
 		g.forNodes([&](node u) {
@@ -108,10 +110,10 @@ void ForceDirected::draw(Graph& g) {
 
 		++numIter;
 		step = updateStepLength(step, previousLayout, layout);
-		converged = isConverged(previousLayout, layout) || numIter > MAX_ITER;
+		converged = isConverged(previousLayout, layout) || numIter >= MAX_ITER;
 	}
 
-	// TODO: copy layout into graph
+	// copy layout into graph
 	g.forNodes([&](node u) {
 		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop
 			g.setCoordinate(u, d, layout[u].getValue(d));

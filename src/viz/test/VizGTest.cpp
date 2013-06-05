@@ -47,7 +47,7 @@ TEST_F(VizGTest, testPostscriptWriter) {
 
 TEST_F(VizGTest, testForceDirectedLayouter) {
 	// create graph
-	count n = 50;
+	count n = 30;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeRandomGraph(n, 0.2);
 	G.initCoordinates();
@@ -62,19 +62,26 @@ TEST_F(VizGTest, testForceDirectedLayouter) {
 
 	// create clustering
 	ClusteringGenerator clusteringGen;
-	Clustering zeta = clusteringGen.makeRandomClustering(G, 3);
-
-	// draw (independent of clustering)
-	std::vector<float> bottomLeft = {0.0, 0.0};
-	std::vector<float> topRight = {1000.0, 1000.0};
-	Point<float> bl(bottomLeft);
-	Point<float> tr(topRight);
-	ForceDirected layouter(bl, tr);
-	layouter.draw(G);
+	Clustering zeta = clusteringGen.makeOneClustering(G);
 
 	// write graph to file
 	PostscriptWriter psWriter(G);
 	psWriter.write(zeta, "testGraph.eps");
+
+	// draw (independent of clustering) and write again
+	std::vector<float> bottomLeft = {0.0, 0.0};
+	std::vector<float> topRight = {1.0, 1.0};
+	Point<float> bl(bottomLeft);
+	Point<float> tr(topRight);
+	ForceDirected layouter(bl, tr);
+	layouter.draw(G);
+	psWriter.write(zeta, "testForceGraph.eps");
+
+	G.forNodes([&](node u) {
+		float x = G.getCoordinate(u, 0);
+		float y = G.getCoordinate(u, 1);
+		DEBUG("x: " << x << ", y: " << y);
+	});
 }
 
 
