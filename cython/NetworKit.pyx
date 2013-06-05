@@ -98,6 +98,7 @@ cdef class Clustering:
 	
 	cdef setObj(self, _Clustering other):
 		self.obj = other
+		return self
 
 
 cdef extern from "../src/community/LabelPropagation.h":
@@ -109,13 +110,41 @@ cdef class LabelPropagation:
 	cdef _LabelPropagation obj
 	
 	def run(self, Graph G not None):
-		self.obj.run(G.obj)
+		return Clustering().setObj(self.obj.run(G.obj))
+
+
+cdef extern from "../src/io/DotGraphWriter.h":
+	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter":
+		_DotGraphWriter() except +
+		void write(_Graph G, string path)
+
+
+cdef class DotGraphWriter:
+	cdef _DotGraphWriter obj
+	
+def write(self, Graph G not None, string path):
+	pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+	#self.obj.write(G.getObj())
+	
+
+cdef extern from "../src/viz/ForceDirected.h":
+	cdef cppclass _ForceDirected "NetworKit::ForceDirected":
+		_ForceDirected() except +
+		void draw(_Graph _G)
+	
+cdef class ForceDirected:
+	cdef _ForceDirected obj
+	
+	def draw(self, Graph G not None):
+		pass
+	
 
 
 # TODO: initialize log4cxx
 
 
 def readGraph(path):
+	"""	Automatically detect input format and read graph"""
 	# TODO: detect file format by looking at the file content
 	if path.endswith(".graph"):
 		reader = METISGraphReader()
@@ -123,3 +152,16 @@ def readGraph(path):
 		raise Exception("unknown graph file format")
 	G = reader.read(path)
 	return G
+
+
+
+def nx2nk(nxG):
+	""" Convert a NetworkX.Graph to a NetworKit.Graph """
+	import networkx as nx
+	
+	n = nxG.number_of_nodes()
+	cdef Graph nkG = Graph(n)
+	
+	return nkG
+	
+	
