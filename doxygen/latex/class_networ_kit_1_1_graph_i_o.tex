@@ -1,0 +1,129 @@
+\hypertarget{class_networ_kit_1_1_graph_i_o}{\section{Networ\-Kit\-:\-:Graph\-I\-O Class Reference}
+\label{class_networ_kit_1_1_graph_i_o}\index{Networ\-Kit\-::\-Graph\-I\-O@{Networ\-Kit\-::\-Graph\-I\-O}}
+}
+
+
+{\ttfamily \#include $<$Graph\-I\-O.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_graph_i_o_a42803c373c9621ade10162c534884d0f}{Graph\-I\-O} ()
+\item 
+virtual \hyperlink{class_networ_kit_1_1_graph_i_o_a894cfd9361c0e6c72167a78752501361}{$\sim$\-Graph\-I\-O} ()
+\item 
+virtual void \hyperlink{class_networ_kit_1_1_graph_i_o_a8da55a700826f34d53dda22f389701bc}{write\-Edge\-List} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G, std\-::string path)
+\begin{DoxyCompactList}\small\item\em Writes graph to text file in edge list format. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_networ_kit_1_1_graph_i_o_ac9122f7c03ed73752ab7e5c1de2d9565}{write\-Adjacency\-List} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G, std\-::string path)
+\begin{DoxyCompactList}\small\item\em Writes graph to text file in adjacency list format. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 20 of file Graph\-I\-O.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_graph_i_o_a42803c373c9621ade10162c534884d0f}{\index{Networ\-Kit\-::\-Graph\-I\-O@{Networ\-Kit\-::\-Graph\-I\-O}!Graph\-I\-O@{Graph\-I\-O}}
+\index{Graph\-I\-O@{Graph\-I\-O}!NetworKit::GraphIO@{Networ\-Kit\-::\-Graph\-I\-O}}
+\subsubsection[{Graph\-I\-O}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Graph\-I\-O\-::\-Graph\-I\-O (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_i_o_a42803c373c9621ade10162c534884d0f}
+
+
+Definition at line 12 of file Graph\-I\-O.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_i_o_a894cfd9361c0e6c72167a78752501361}{\index{Networ\-Kit\-::\-Graph\-I\-O@{Networ\-Kit\-::\-Graph\-I\-O}!$\sim$\-Graph\-I\-O@{$\sim$\-Graph\-I\-O}}
+\index{$\sim$\-Graph\-I\-O@{$\sim$\-Graph\-I\-O}!NetworKit::GraphIO@{Networ\-Kit\-::\-Graph\-I\-O}}
+\subsubsection[{$\sim$\-Graph\-I\-O}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Graph\-I\-O\-::$\sim$\-Graph\-I\-O (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_graph_i_o_a894cfd9361c0e6c72167a78752501361}
+
+
+Definition at line 17 of file Graph\-I\-O.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_graph_i_o_ac9122f7c03ed73752ab7e5c1de2d9565}{\index{Networ\-Kit\-::\-Graph\-I\-O@{Networ\-Kit\-::\-Graph\-I\-O}!write\-Adjacency\-List@{write\-Adjacency\-List}}
+\index{write\-Adjacency\-List@{write\-Adjacency\-List}!NetworKit::GraphIO@{Networ\-Kit\-::\-Graph\-I\-O}}
+\subsubsection[{write\-Adjacency\-List}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Graph\-I\-O\-::write\-Adjacency\-List (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{std\-::string}]{path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_graph_i_o_ac9122f7c03ed73752ab7e5c1de2d9565}
+
+
+Writes graph to text file in adjacency list format. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em G} & graph \\
+\hline
+\mbox{\tt in}  & {\em path} & file path\\
+\hline
+\end{DoxyParams}
+Adjacency list format\-: for each node v\-: write \char`\"{}v\char`\"{} write \char`\"{} x\char`\"{} for each edge \{v, x\} end line 
+
+Definition at line 35 of file Graph\-I\-O.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_i_o_ac9122f7c03ed73752ab7e5c1de2d9565_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_i_o_a8da55a700826f34d53dda22f389701bc}{\index{Networ\-Kit\-::\-Graph\-I\-O@{Networ\-Kit\-::\-Graph\-I\-O}!write\-Edge\-List@{write\-Edge\-List}}
+\index{write\-Edge\-List@{write\-Edge\-List}!NetworKit::GraphIO@{Networ\-Kit\-::\-Graph\-I\-O}}
+\subsubsection[{write\-Edge\-List}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Graph\-I\-O\-::write\-Edge\-List (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{std\-::string}]{path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_graph_i_o_a8da55a700826f34d53dda22f389701bc}
+
+
+Writes graph to text file in edge list format. 
+
+Keep in mind that isolated nodes are ignored.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em G} & graph \\
+\hline
+\mbox{\tt in}  & {\em path} & file path\\
+\hline
+\end{DoxyParams}
+Edge list format\-: for each edge \{u, v\}\-: write line \char`\"{}u v\char`\"{} 
+
+Definition at line 21 of file Graph\-I\-O.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_i_o_a8da55a700826f34d53dda22f389701bc_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/io/\hyperlink{_graph_i_o_8h}{Graph\-I\-O.\-h}\item 
+src/io/\hyperlink{_graph_i_o_8cpp}{Graph\-I\-O.\-cpp}\end{DoxyCompactItemize}
