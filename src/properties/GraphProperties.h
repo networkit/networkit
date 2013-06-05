@@ -20,7 +20,27 @@ public:
 
 	static std::vector<count> degreeDistribution(Graph& G);
 
+
+	/**
+	 * The local clustering coefficient for a node is the number of edges among its
+	 * neighbors divided by the number of possible edges.
+	 * 	For an undirected graph where N(v) does not include v itself:
+	 * 		$c_v := \frac{2 \cdot |E(N(v))| }{\deg(v) ( \deg(v) - 1 )}$
+	 *
+	 *
+	 * @param[in]	G	the graph
+	 * @param[out]		node -> local clustering coefficient
+	 */
 	static std::vector<double> localClusteringCoefficients(Graph& G);
+
+
+	/**
+	 * The average local clustering coefficient for the graph.
+	 * 		$\frac{1}{n} \cdot \sum_{v \in V} c_v$
+	 *
+	 * @param[in]	G	the graph
+	 */
+	static double averageLocalClusteringCoefficient(Graph& G);
 
 	static std::vector<double> localClusteringCoefficientPerDegree(Graph& G);
 

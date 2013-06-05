@@ -58,7 +58,36 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 		EXPECT_EQ(1.0, cc) << "In a clique all possible triangles are closed so all local clustering coefficients are 1";
 	}
 
+	// Test case for graph with degree-1 nodes
+	Graph G1(4);
+	//build a path
+	G1.addEdge(0, 1);
+	G1.addEdge(1, 2);
+	G1.addEdge(2, 3);
 
+
+
+
+
+}
+
+
+TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
+
+	// Test case for a complete graph
+	GraphGenerator gen;
+	Graph G_complete = gen.makeCompleteGraph(4);
+
+	EXPECT_EQ(1.0, GraphProperties::averageLocalClusteringCoefficient(G_complete)) << "should be 1.0 for a complete graph";
+
+	// Test case for graph with degree-1 nodes
+	Graph G_path(4);
+	//build a path
+	G_path.addEdge(0, 1);
+	G_path.addEdge(1, 2);
+	G_path.addEdge(2, 3);
+
+	EXPECT_EQ(0.0, GraphProperties::averageLocalClusteringCoefficient(G_path)) << "should be 0.0 for a path";
 
 
 }
