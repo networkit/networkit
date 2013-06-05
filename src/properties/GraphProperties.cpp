@@ -63,9 +63,13 @@ std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 	});
 
 	G.parallelForNodes([&](node u){
-		double num = numerator[u];
-		double denom = denominator[u];
-		coefficient[u] = numerator[u] / denominator[u];
+		TRACE("numerator = " << numerator[u]);
+		TRACE("denominator = " << denominator[u]);
+		if (denominator[u] == 0.0) {
+			coefficient[u] = 0.0;
+		} else {
+			coefficient[u] = numerator[u] / denominator[u];
+		}
 	});
 
 	return coefficient;
@@ -104,7 +108,15 @@ std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& 
 	return perDegree;
 }
 
-
+double GraphProperties::averageLocalClusteringCoefficient(Graph& G) {
+	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
+	double sum = 0.0;
+	for (double c : coefficients) {
+		sum += c;
+	}
+	double avg = sum / G.numberOfNodes();
+	return avg;
+}
 
 std::pair<count, count> GraphProperties::minMaxDegree(Graph& G) {
 
