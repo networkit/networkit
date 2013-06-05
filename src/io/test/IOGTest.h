@@ -1,12 +1,12 @@
 /*
- * InputGTest.h
+ * IOGTest.h
  *
  *  Created on: 12.12.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef INPUTGTEST_H_
-#define INPUTGTEST_H_
+#ifndef IOGTEST_H_
+#define IOGTEST_H_
 
 #include <gtest/gtest.h>
 #include <fstream>
@@ -16,18 +16,18 @@
 #include "../METISGraphWriter.h"
 #include "../ClusteringWriter.h"
 #include "../ClusteringReader.h"
-
 #include "../GraphIO.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
+#include "../DotGraphWriter.h"
 
 namespace NetworKit {
 
-class InputGTest: public testing::Test {
+class IOGTest: public testing::Test {
 
 };
 
 
 
 } /* namespace NetworKit */
-#endif /* INPUTGTEST_H_ */
+#endif /* IOGTEST_H_ */
