@@ -35,9 +35,9 @@ void GraphEventProxy::removeNode(node u) {
 	}
 }
 
-void GraphEventProxy::addEdge(node u, node v) {
+void GraphEventProxy::addEdge(node u, node v, edgeweight weight) {
 	// TODO:
-	this->G->addEdge(u, v);
+	this->G->addEdge(u, v, weight);
 	TRACE("adding edge (" << u << "," << v << ")");
 	for (GraphEventHandler* observer : this->observers) {
 		observer->onEdgeAddition(u, v);
