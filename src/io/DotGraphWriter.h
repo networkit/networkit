@@ -1,9 +1,9 @@
 /*
- * DotClusteringWriter.h
+ * DotGraphWriter.h
  */
 
-#ifndef DOTWRITER_H_
-#define DOTWRITER_H_
+#ifndef DOTGRAPHWRITER_H
+#define DOTGRAPHWRITER_H
 
 #include <fstream>
 
@@ -11,16 +11,16 @@
 
 namespace NetworKit {
 
-class DotWriter {
+class DotGraphWriter {
 
 public:
-    DotWriter();
+    DotGraphWriter();
 
-    virtual ~DotWriter();
+    virtual ~DotGraphWriter();
 
     virtual void write(Graph& graph, std::string path) const;
 
 };
 
 } /* namespace NetworKit */
-#endif /* DOTWRITER_H_ */
+#endif /* DOTGRAPHWRITER_H */

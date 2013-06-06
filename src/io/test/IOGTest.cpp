@@ -1,16 +1,16 @@
 /*
- * InputGTest.cpp
+ * IOGTest.cpp
  *
  *  Created on: 12.12.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "InputGTest.h"
+#include "IOGTest.h"
 
 
 namespace NetworKit {
 
-TEST_F(InputGTest, testGraphIOEdgeList) {
+TEST_F(IOGTest, testGraphIOEdgeList) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCircularGraph(20);
 	GraphIO graphio;
@@ -25,7 +25,7 @@ TEST_F(InputGTest, testGraphIOEdgeList) {
 	EXPECT_TRUE(exists) << "A file should have been created : " << path;
 }
 
-TEST_F(InputGTest, testGraphIOAdjacencyList) {
+TEST_F(IOGTest, testGraphIOAdjacencyList) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCircularGraph(20);
 	GraphIO graphio;
@@ -41,7 +41,7 @@ TEST_F(InputGTest, testGraphIOAdjacencyList) {
 }
 
 
-TEST_F(InputGTest, testGraphIOForIsolatedNodes) {
+TEST_F(IOGTest, testGraphIOForIsolatedNodes) {
 	GraphGenerator graphGen;
 	Graph G(20);
 	GraphIO graphio;
@@ -58,7 +58,7 @@ TEST_F(InputGTest, testGraphIOForIsolatedNodes) {
 
 
 
-TEST_F(InputGTest, testMETISGraphReader) {
+TEST_F(IOGTest, testMETISGraphReader) {
 	std::string path = "input/jazz.graph";
 
 	METISGraphReader reader;
@@ -70,7 +70,7 @@ TEST_F(InputGTest, testMETISGraphReader) {
 	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
 }
 
-TEST_F(InputGTest, testMETISGraphReaderWithWeights) {
+TEST_F(IOGTest, testMETISGraphReaderWithWeights) {
 	std::string path = "input/lesmis.graph";
 
 	METISGraphReader reader;
@@ -83,7 +83,7 @@ TEST_F(InputGTest, testMETISGraphReaderWithWeights) {
 	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
 }
 
-TEST_F(InputGTest, testMETISGraphWriter) {
+TEST_F(IOGTest, testMETISGraphWriter) {
 	std::string path = "input/jazz1.graph";
 	Graph G = Graph(3);
 	G.addEdge(0,2);
@@ -102,7 +102,7 @@ TEST_F(InputGTest, testMETISGraphWriter) {
 
 }
 
-TEST_F(InputGTest, testMETISGraphWriterWithWeights) {
+TEST_F(IOGTest, testMETISGraphWriterWithWeights) {
 	std::string path = "input/jazz2.graph";
 	Graph G = Graph(5);
 	G.addEdge(0,2);
@@ -121,7 +121,7 @@ TEST_F(InputGTest, testMETISGraphWriterWithWeights) {
 
 }
 
-TEST_F(InputGTest, testClusteringWriterAndReader) {
+TEST_F(IOGTest, testClusteringWriterAndReader) {
 	// write clustering first
 	std::string path = "output/example.clust";
 
@@ -151,6 +151,25 @@ TEST_F(InputGTest, testClusteringWriterAndReader) {
 	EXPECT_EQ(n, read.numberOfNodes()) << "read clustering should contain n nodes";
 	EXPECT_TRUE(read.isProper(G)) << "read clustering should be proper clustering of G";
 	EXPECT_TRUE(read.equals(zeta, G)) << "read clustering should be identical to created clustering";
+}
+
+
+TEST_F(IOGTest, testDotGraphWriter) {
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCompleteGraph(42);
+
+	std::string path = "output/example.dot";
+
+	DotGraphWriter writer;
+	writer.write(G, path);
+
+	// check if file exists
+	bool exists = false;
+	std::ifstream file(path);
+	if (file) {
+		exists = true;
+	}
+	EXPECT_TRUE(exists) << "graph file should have been written to: " << path;
 }
 
 
