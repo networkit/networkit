@@ -45,12 +45,12 @@ void PostscriptWriter::writeHeader(std::ofstream& file) {
 		file << "%!PS-Adobe-1.0\n";
 	}
 	file << "%%Title: clusteredGraph.eps\n";
-	if (wrapAround) {
+//	if (wrapAround) {
 		file << "%%BoundingBox: 0.000 0.000 1020.0 1020.0\n";
-	}
-	else {
-		file << "%%BoundingBox: 0 0 " << (int)ceil(ps_sizex) << " " << (int)ceil(ps_sizey+ 40.0) << "\n";
-	}
+//	}
+//	else {
+//		file << "%%BoundingBox: 0 0 " << (int)ceil(ps_sizex) << " " << (int)ceil(ps_sizey+ 40.0) << "\n";
+//	}
 	file << "%%EndComments\n";
 	if (! wrapAround) {
 		file << "%%EndProlog\n";
@@ -123,22 +123,23 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 
 				endx = startx + distx;
 				endy = starty + disty;
-
-				adjust(startx);
-				adjust(endx);
-				adjust(starty);
-				adjust(endy);
-
-				file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
 			}
-			else {
-				startx = (startx - ps_minx) * ps_scale + ps_borderx;
-				starty = (starty - ps_miny) * ps_scale + ps_bordery;
-				endx = (endx - ps_minx) * ps_scale + ps_borderx;
-				endy = (endy - ps_miny) * ps_scale + ps_bordery;
 
-				file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
-			}
+			adjust(startx);
+			adjust(endx);
+			adjust(starty);
+			adjust(endy);
+
+			file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
+//			}
+//			else {
+//				startx = (startx - ps_minx) * ps_scale + ps_borderx;
+//				starty = (starty - ps_miny) * ps_scale + ps_bordery;
+//				endx = (endx - ps_minx) * ps_scale + ps_borderx;
+//				endy = (endy - ps_miny) * ps_scale + ps_bordery;
+//				file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
+//			}
+
 		}
 	});
 
@@ -159,16 +160,20 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 
 		float x = g->getCoordinate(u, 0);
 		float y = g->getCoordinate(u, 1);
-		if (wrapAround) {
-			adjust(x);
-			adjust(y);
-			file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a s\n";
-		}
-		else {
-			x = (x - ps_minx) * ps_scale + ps_borderx;
-			y = (y - ps_miny) * ps_scale + ps_bordery;
-			file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a\n";
-		}
+
+//		if (wrapAround) {
+		adjust(x);
+		adjust(y);
+		file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a s\n";
+//		}
+//		else {
+//			x = (x - ps_minx) * ps_scale + ps_borderx;
+// FIXME			y = (y - ps_miny) * ps_scale + ps_bordery;
+//			file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a\n";
+//		}
+
+//		DEBUG("x: " << x);
+//		DEBUG("y: " << y);
 
 	});
 }
@@ -177,7 +182,7 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 void PostscriptWriter::write(Clustering& clustering, std::string filename) {
 	std::ofstream file;
 	file.open(filename.c_str());
-	if (wrapAround) {
+	if (true || wrapAround) { // FIXME
 		file.precision(3);
 		// adjust coordinates for postscript output
 		g->forNodes([&](node u) {

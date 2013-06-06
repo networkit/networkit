@@ -12,14 +12,17 @@
 
 namespace NetworKit {
 
-const count MAX_ITER = 1; // TODO: maybe better as object variable
+const count MAX_ITER = 200; // TODO: maybe better as object variable
 
 class SpringEmbedder: public NetworKit::Layouter {
 protected:
-	float forceCorrection; //<! value for scaling the forces
 
 public:
+
+	SpringEmbedder(); // nullary constructor needed for Python shell
+
 	SpringEmbedder(Point<float> bottomLeft, Point<float> topRight);
+
 	virtual ~SpringEmbedder();
 
 	virtual void draw(Graph& g) = 0;

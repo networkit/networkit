@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta, std::string strategy) :
-		DynamicClusterer(G),
+		DynamicCommunityDetector(G),
 		labels(G.numberOfNodes()),
 		activeNodes(G.numberOfNodes()),
 		weightedDegree(G.numberOfNodes(), 0.0),

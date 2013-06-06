@@ -20,6 +20,7 @@ protected:
 	std::vector<Point<float> > layout;
 
 public:
+	Layouter(); // nullary constructor needed for Python shell
 	Layouter(Point<float> bottomLeft, Point<float> topRight);
 	virtual ~Layouter();
 
