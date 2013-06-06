@@ -12,6 +12,7 @@
 
 #include "../DynamicLabelPropagation.h"
 #include "../LabelPropagation.h"
+#include "../Louvain.h"
 #include "../../generators/DynamicBarabasiAlbertGenerator.h"
 
 namespace NetworKit {

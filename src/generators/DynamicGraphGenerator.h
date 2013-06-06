@@ -32,10 +32,30 @@ public:
 	 */
 	virtual void initializeGraph() = 0;
 
-	/*
-	 * Send graph events to the proxy while function does not return false.
+
+	/**
+	 * Perform one generative step - as defined by the implementation.
 	 */
-	virtual void generateWhile(std::function<bool(void)> cont) = 0;
+	virtual void generate() = 0;
+
+	/*
+	 * Continue generating while function does not return false.
+	 * @param[in]	cont	generator continues when this function returns true
+	 */
+	virtual void generateWhile(std::function<bool(void)> cont);
+
+	/**
+	 * Continue generating until the number of nodes reaches this upper limit.
+	 * @param[in]	n	number of nodes
+	 */
+	virtual void generateNodes(count n);
+
+
+	/**
+	 * Continue generating until the number of edges reaches this upper limit.
+	 * @param[in]	m	number of edges
+	 */
+	virtual void generateEdges(count m);
 };
 
 } /* namespace NetworKit */
