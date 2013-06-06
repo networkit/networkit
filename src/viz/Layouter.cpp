@@ -20,6 +20,8 @@ Layouter::~Layouter() {
 	// TODO Auto-generated destructor stub
 }
 
+Layouter::Layouter() {
+}
 
 void Layouter::randomInitCoordinates(Graph& g) {
 	Aux::RandomProbability randGen;

@@ -9,6 +9,9 @@
 
 namespace NetworKit {
 
+ForceDirected::ForceDirected() {
+}
+
 ForceDirected::ForceDirected(Point<float> bottom_left, Point<float> top_right):
 		SpringEmbedder(bottom_left, top_right) {
 
@@ -17,6 +20,8 @@ ForceDirected::ForceDirected(Point<float> bottom_left, Point<float> top_right):
 ForceDirected::~ForceDirected() {
 
 }
+
+
 
 void ForceDirected::draw(Graph& g) {
 	const float INITIAL_STEP_LENGTH = 1.0;

@@ -653,4 +653,22 @@ TEST_F(Graph2GTest, testMultiEdgeInsertion) {
 	EXPECT_EQ(42, G.degree(v));
 }
 
+
+TEST_F(Graph2GTest, testNodeCollection) {
+	count n = 4;
+	Graph G(n);
+	G.removeNode(0);
+	std::vector<node> nodes = G.nodes();
+	EXPECT_EQ(G.numberOfNodes(), nodes.size());
+}
+
+TEST_F(Graph2GTest, testEdgeCollection) {
+	count n = 4;
+	Graph G(n);
+	G.addEdge(0, 1);
+	std::vector<std::pair<node, node> > edges = G.edges();
+	EXPECT_EQ(G.numberOfEdges(), edges.size());
+}
+
+
 } /* namespace NetworKit */

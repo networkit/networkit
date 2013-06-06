@@ -32,18 +32,9 @@ std::vector<count> GraphProperties::degreeDistribution(Graph& G) {
 
 std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 	count n = G.numberOfNodes();
-	std::vector<count> numerator(n); //
-	std::vector<count> denominator(n); // $\deg(u) \cdot ( \deg(u) - 1 )$
+	std::vector<double> numerator(n); //
+	std::vector<double> denominator(n); // $\deg(u) \cdot ( \deg(u) - 1 )$
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
-
-
-	// DEBUG: check if there is a degree 0 node
-	G.forNodes([&](node u){
-		if (G.degree(u) == 1) {
-			DEBUG("node " << u << " has degree 1");
-		}
-	});
-
 
 	G.parallelForNodes([&](node u){
 		count edgeCount = 0;
@@ -63,8 +54,6 @@ std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 	});
 
 	G.parallelForNodes([&](node u){
-		TRACE("numerator = " << numerator[u]);
-		TRACE("denominator = " << denominator[u]);
 		if (denominator[u] == 0.0) {
 			coefficient[u] = 0.0;
 		} else {
@@ -102,8 +91,8 @@ std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& 
 
 	// allows to avoid the situation, when local clustering coefficient is calculated for 0-1 degree nodes.
 	// These nodes are warranted not to be triangle centers, thus we avoid calculating the coefficients for the,
-	degDist[0] = none;
-	if (G.numberOfNodes() > 0 ) degDist[1] = none;
+	degDist[0] = 0;
+	if (G.numberOfNodes() > 0 ) degDist[1] = 0;
 
 	return perDegree;
 }

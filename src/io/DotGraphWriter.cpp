@@ -5,20 +5,20 @@
  *      Author: forigem
  */
 
-#include "DotWriter.h"
+#include "DotGraphWriter.h"
 
 namespace NetworKit {
 
-DotWriter::DotWriter() {
+DotGraphWriter::DotGraphWriter() {
 	// TODO Auto-generated constructor stub
 
 }
 
-DotWriter::~DotWriter() {
+DotGraphWriter::~DotGraphWriter() {
 	// TODO Auto-generated destructor stub
 }
 
-void DotWriter::write(Graph& graph, std::string path) const {
+void DotGraphWriter::write(Graph& graph, std::string path) const {
 	std::ofstream file;
 		file.open(path.c_str());
 

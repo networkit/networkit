@@ -146,13 +146,18 @@ TEST_F(GeneratorsGTest, tryBTERGeneratorWithPowerLawDistribution) {
 }
 
 TEST_F(GeneratorsGTest, tryBTERGeneratorOnARealGraph) {
+	// read example graph
 	METISGraphReader reader;
 	Graph Gin = reader.read("input/jazz.graph");
+
+	// get input parameters
 	std::vector<double> clusteringCoefficients = GraphProperties::localClusteringCoefficientPerDegree(Gin);
 	std::vector<count> degreeDistribution = GraphProperties::degreeDistribution(Gin);
+
 	DEBUG("construct BTERGenerator");
 	BTERGenerator bter(degreeDistribution, clusteringCoefficients, 1.0);
 	std::pair<count, count> nm = bter.desiredGraphSize();
+	DEBUG("desired graph size is: n=" << nm.first << ", m= " << nm.second);
 	DEBUG("call BTERGenerator");
 	Graph G = bter.generate();
 
