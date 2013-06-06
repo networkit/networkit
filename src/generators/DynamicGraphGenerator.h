@@ -42,7 +42,7 @@ public:
 	 * Continue generating while function does not return false.
 	 * @param[in]	cont	generator continues when this function returns true
 	 */
-	virtual void generateWhile(std::function<bool(void)> cont) = 0;
+	virtual void generateWhile(std::function<bool(void)> cont);
 
 	/**
 	 * Continue generating until the number of nodes reaches this upper limit.

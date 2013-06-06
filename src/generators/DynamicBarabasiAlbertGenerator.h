@@ -36,7 +36,6 @@ public:
 
 	virtual void generate();
 
-	virtual void generateWhile(std::function<bool(void)> cont);
 };
 
 } /* namespace NetworKit */
