@@ -21,7 +21,7 @@ DynamicCommunityDetectionGTest::~DynamicCommunityDetectionGTest() {
 
 TEST_F(DynamicCommunityDetectionGTest, testDynamicLabelPropagation) {
 	// 1. create graph
-	Graph G(0); // empty graph
+	Graph G(0); // empty graphw
 	// 2. create proxy
 	GraphEventProxy Gproxy(G);
 	// 3. create generator and pass proxy
@@ -38,20 +38,14 @@ TEST_F(DynamicCommunityDetectionGTest, testDynamicLabelPropagation) {
 	count n1 = 1000;
 	count n2 = 2000;
 
-	auto cont1 = [&](){
-		return (G.numberOfNodes() < n1);
-	};
-	gen->generateWhile(cont1); // stops when function returns true
+	gen->generateNodes(n1); // stops when graph has n1 nodes
 	// 8. start clusterer
 	Clustering zeta1 = dynPLP->run();
 
 	EXPECT_TRUE(zeta1.isProper(G)) << "first dynamic clustering should be a proper clustering of G";
 
 	// 9. resume generator
-	auto cont2 = [&](){
-		return (G.numberOfNodes() < n2);
-	};
-	gen->generateWhile(cont2); // terminate when function returns true
+	gen->generateNodes(n2); // terminate when function returns true
 	EXPECT_EQ(n2, G.numberOfNodes()) << n2 << "nodes should have been generated";
 	// 10. resume clusterer
 	Clustering zeta2 = dynPLP->run();
