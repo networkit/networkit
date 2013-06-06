@@ -9,10 +9,10 @@ h
 #ifndef LOCALQUALITYMEASURE_H_
 #define LOCALQUALITYMEASURE_H_
 
+#include <unordered_set>
 
 #include "../clustering/Clustering.h"
 #include "../graph/Graph.h"
-#include <unordered_set>
 
 namespace NetworKit {
 
@@ -28,7 +28,7 @@ public:
 
 	virtual ~LocalQualityMeasure();
 
-	virtual double getQuality(std::unordered_set<node>& zeta, Graph& G) =0;
+	virtual double getQuality(std::unordered_set<node>& C, Graph& G) = 0;
 };
 
 } /* namespace NetworKit */

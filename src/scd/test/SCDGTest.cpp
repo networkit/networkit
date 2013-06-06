@@ -1,15 +1,20 @@
 /*
- * LocalClusteringGTest.cpp
+ * SCDGTest.cpp
  *
  *  Created on: 06.06.2013
- *      Author: Yassine Marrakchi
+ *      Author: cls
  */
 
-#include "LocalClusteringGTest.h"
+#include "SCDGTest.h"
 
 namespace NetworKit {
 
-TEST_F(LocalClusteringGTest, testConductance) {
+
+TEST_F(SCDGTest, testGreedyCommunityExpansion) {
+	// TODO: unit test for GreedyCommunityExpansion
+}
+
+TEST_F(SCDGTest, testConductance) {
 
 	Graph G(5);
 		G.addEdge(0,0);
