@@ -19,7 +19,7 @@ public:
 	Conductance();
 	virtual ~Conductance();
 
-//	virtual double getQuality(std::unordered_set<node>& C, Graph& G);
+	virtual double getQuality(std::unordered_set<node>& C, Graph& G);
 };
 
 } /* namespace NetworKit */

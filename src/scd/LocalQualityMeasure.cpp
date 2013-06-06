@@ -17,8 +17,6 @@ LocalQualityMeasure::~LocalQualityMeasure() {
 	// TODO Auto-generated destructor stub
 }
 
-double LocalQualityMeasure::getQuality(std::unordered_set<node>& C, Graph& G) {
-}
 
 } /* namespace NetworKit */
 
