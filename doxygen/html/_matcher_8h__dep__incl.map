@@ -1,0 +1,8 @@
+<map id="src/matching/Matcher.h" name="src/matching/Matcher.h">
+<area shape="rect" id="node3" href="$_parallel_matcher_8h.html" title="src/matching/ParallelMatcher.h" alt="" coords="270,83,473,111"/>
+<area shape="rect" id="node13" href="$_matcher_8cpp.html" title="src/matching/Matcher.cpp" alt="" coords="497,83,669,111"/>
+<area shape="rect" id="node5" href="$_parallel_agglomerative_clusterer_8h.html" title="src/community/ParallelAgglomerative\lClusterer.h" alt="" coords="125,161,365,205"/>
+<area shape="rect" id="node11" href="$_parallel_matcher_8cpp.html" title="src/matching/ParallelMatcher.cpp" alt="" coords="390,169,607,197"/>
+<area shape="rect" id="node7" href="$_parallel_agglomerative_clusterer_8cpp.html" title="src/community/ParallelAgglomerative\lClusterer.cpp" alt="" coords="5,254,245,298"/>
+<area shape="rect" id="node9" href="$_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="269,262,460,290"/>
+</map>

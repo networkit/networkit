@@ -1,0 +1,275 @@
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel}{\section{Networ\-Kit\-:\-:Ensemble\-Multilevel Class Reference}
+\label{class_networ_kit_1_1_ensemble_multilevel}\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+}
+
+
+{\ttfamily \#include $<$Ensemble\-Multilevel.\-h$>$}
+
+
+
+Inheritance diagram for Networ\-Kit\-:\-:Ensemble\-Multilevel\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=230pt]{class_networ_kit_1_1_ensemble_multilevel__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Networ\-Kit\-:\-:Ensemble\-Multilevel\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_ensemble_multilevel__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_ensemble_multilevel_abb98d9bce5a20d4e1671a855e0236c0a}{Ensemble\-Multilevel} ()
+\item 
+virtual \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a3eaa45f6f867e6afb50751565b42609c}{$\sim$\-Ensemble\-Multilevel} ()
+\item 
+virtual void \hyperlink{class_networ_kit_1_1_ensemble_multilevel_aa6ee44f370a906b114ca50e9d700fbea}{add\-Base\-Clusterer} (\hyperlink{class_networ_kit_1_1_clusterer}{Clusterer} \&base)
+\begin{DoxyCompactList}\small\item\em Add a base clusterer to the ensemble. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a8e07f339de7ed28c6fc0501f6d1e6d47}{set\-Final\-Clusterer} (\hyperlink{class_networ_kit_1_1_clusterer}{Clusterer} \&final)
+\begin{DoxyCompactList}\small\item\em Set final clusterer. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a95cb11b277ca5d73a965f53b73d8c6cf}{set\-Quality\-Measure} (\hyperlink{class_networ_kit_1_1_quality_measure}{Quality\-Measure} \&\hyperlink{class_networ_kit_1_1_ensemble_multilevel_a915aae76cd6660ae3a541d36969ebeea}{qm})
+\begin{DoxyCompactList}\small\item\em Set quality measure to evaluate clusterings. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a37ff4e9548124f5d908efc763cf82ffc}{set\-Overlapper} (\hyperlink{class_networ_kit_1_1_overlapper}{Overlapper} \&\hyperlink{class_networ_kit_1_1_ensemble_multilevel_a4b3abd511fb680656839a9fc9b02c5db}{overlap})
+\begin{DoxyCompactList}\small\item\em Set overlap algorithm which combines the results of the base clusterers. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a06877e20895c68ab431262e00b44ca4b}{run} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
+\begin{DoxyCompactList}\small\item\em Run the ensemble clusterer. \end{DoxyCompactList}\item 
+virtual std\-::string \hyperlink{class_networ_kit_1_1_ensemble_multilevel_aa5954a8f62e107b0d8d34563b4596ddd}{to\-String} () const 
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_quality_measure}{Quality\-Measure} $\ast$ \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a915aae76cd6660ae3a541d36969ebeea}{qm}
+\begin{DoxyCompactList}\small\item\em evaluates clutering quality \end{DoxyCompactList}\item 
+\hyperlink{class_networ_kit_1_1_clusterer}{Clusterer} $\ast$ \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a7a6938877c0d0f405b953eda8053c181}{final\-Clusterer}
+\begin{DoxyCompactList}\small\item\em final clustering algorithm \end{DoxyCompactList}\item 
+std\-::vector$<$ \hyperlink{class_networ_kit_1_1_clusterer}{Clusterer} $\ast$ $>$ \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a0bd8b22ab79760c4839e77e37ed553f5}{base\-Clusterers}
+\begin{DoxyCompactList}\small\item\em ensemble of base clusterers \end{DoxyCompactList}\item 
+\hyperlink{class_networ_kit_1_1_overlapper}{Overlapper} $\ast$ \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a4b3abd511fb680656839a9fc9b02c5db}{overlap}
+\begin{DoxyCompactList}\small\item\em clustering overlap algorithm \end{DoxyCompactList}\item 
+int \hyperlink{class_networ_kit_1_1_ensemble_multilevel_a4bc6df355537771fcdc186b308232391}{h}
+\begin{DoxyCompactList}\small\item\em hierarchy level / iteration counter \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 35 of file Ensemble\-Multilevel.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_abb98d9bce5a20d4e1671a855e0236c0a}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!Ensemble\-Multilevel@{Ensemble\-Multilevel}}
+\index{Ensemble\-Multilevel@{Ensemble\-Multilevel}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{Ensemble\-Multilevel}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Ensemble\-Multilevel\-::\-Ensemble\-Multilevel (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_ensemble_multilevel_abb98d9bce5a20d4e1671a855e0236c0a}
+
+
+Definition at line 12 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a3eaa45f6f867e6afb50751565b42609c}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!$\sim$\-Ensemble\-Multilevel@{$\sim$\-Ensemble\-Multilevel}}
+\index{$\sim$\-Ensemble\-Multilevel@{$\sim$\-Ensemble\-Multilevel}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{$\sim$\-Ensemble\-Multilevel}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Ensemble\-Multilevel\-::$\sim$\-Ensemble\-Multilevel (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a3eaa45f6f867e6afb50751565b42609c}
+
+
+Definition at line 18 of file Ensemble\-Multilevel.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_aa6ee44f370a906b114ca50e9d700fbea}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!add\-Base\-Clusterer@{add\-Base\-Clusterer}}
+\index{add\-Base\-Clusterer@{add\-Base\-Clusterer}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{add\-Base\-Clusterer}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Ensemble\-Multilevel\-::add\-Base\-Clusterer (
+\begin{DoxyParamCaption}
+\item[{{\bf Clusterer} \&}]{base}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_ensemble_multilevel_aa6ee44f370a906b114ca50e9d700fbea}
+
+
+Add a base clusterer to the ensemble. 
+
+
+
+Definition at line 26 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a06877e20895c68ab431262e00b44ca4b}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!run@{run}}
+\index{run@{run}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Ensemble\-Multilevel\-::run (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a06877e20895c68ab431262e00b44ca4b}
+
+
+Run the ensemble clusterer. 
+
+
+
+Implements \hyperlink{class_networ_kit_1_1_clusterer_ab881df49f4398d2c94b5429d7dfa88f1}{Networ\-Kit\-::\-Clusterer}.
+
+
+
+Definition at line 38 of file Ensemble\-Multilevel.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_ensemble_multilevel_a06877e20895c68ab431262e00b44ca4b_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a8e07f339de7ed28c6fc0501f6d1e6d47}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!set\-Final\-Clusterer@{set\-Final\-Clusterer}}
+\index{set\-Final\-Clusterer@{set\-Final\-Clusterer}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{set\-Final\-Clusterer}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Ensemble\-Multilevel\-::set\-Final\-Clusterer (
+\begin{DoxyParamCaption}
+\item[{{\bf Clusterer} \&}]{final}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a8e07f339de7ed28c6fc0501f6d1e6d47}
+
+
+Set final clusterer. 
+
+
+
+Definition at line 30 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a37ff4e9548124f5d908efc763cf82ffc}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!set\-Overlapper@{set\-Overlapper}}
+\index{set\-Overlapper@{set\-Overlapper}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{set\-Overlapper}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Ensemble\-Multilevel\-::set\-Overlapper (
+\begin{DoxyParamCaption}
+\item[{{\bf Overlapper} \&}]{overlap}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a37ff4e9548124f5d908efc763cf82ffc}
+
+
+Set overlap algorithm which combines the results of the base clusterers. 
+
+
+
+Definition at line 34 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a95cb11b277ca5d73a965f53b73d8c6cf}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!set\-Quality\-Measure@{set\-Quality\-Measure}}
+\index{set\-Quality\-Measure@{set\-Quality\-Measure}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{set\-Quality\-Measure}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Ensemble\-Multilevel\-::set\-Quality\-Measure (
+\begin{DoxyParamCaption}
+\item[{{\bf Quality\-Measure} \&}]{qm}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a95cb11b277ca5d73a965f53b73d8c6cf}
+
+
+Set quality measure to evaluate clusterings. 
+
+
+
+Definition at line 22 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_aa5954a8f62e107b0d8d34563b4596ddd}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!to\-String@{to\-String}}
+\index{to\-String@{to\-String}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{to\-String}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Networ\-Kit\-::\-Ensemble\-Multilevel\-::to\-String (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_ensemble_multilevel_aa5954a8f62e107b0d8d34563b4596ddd}
+\begin{DoxyReturn}{Returns}
+string representation. 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_networ_kit_1_1_clusterer_ae67135b9fb55c4166ca7d50b720939da}{Networ\-Kit\-::\-Clusterer}.
+
+
+
+Definition at line 217 of file Ensemble\-Multilevel.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_ensemble_multilevel_aa5954a8f62e107b0d8d34563b4596ddd_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a0bd8b22ab79760c4839e77e37ed553f5}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!base\-Clusterers@{base\-Clusterers}}
+\index{base\-Clusterers@{base\-Clusterers}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{base\-Clusterers}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<${\bf Clusterer}$\ast$$>$ Networ\-Kit\-::\-Ensemble\-Multilevel\-::base\-Clusterers\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a0bd8b22ab79760c4839e77e37ed553f5}
+
+
+ensemble of base clusterers 
+
+
+
+Definition at line 42 of file Ensemble\-Multilevel.\-h.
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a7a6938877c0d0f405b953eda8053c181}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!final\-Clusterer@{final\-Clusterer}}
+\index{final\-Clusterer@{final\-Clusterer}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{final\-Clusterer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clusterer}$\ast$ Networ\-Kit\-::\-Ensemble\-Multilevel\-::final\-Clusterer\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a7a6938877c0d0f405b953eda8053c181}
+
+
+final clustering algorithm 
+
+
+
+Definition at line 41 of file Ensemble\-Multilevel.\-h.
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a4bc6df355537771fcdc186b308232391}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!h@{h}}
+\index{h@{h}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{h}]{\setlength{\rightskip}{0pt plus 5cm}int Networ\-Kit\-::\-Ensemble\-Multilevel\-::h\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a4bc6df355537771fcdc186b308232391}
+
+
+hierarchy level / iteration counter 
+
+
+
+Definition at line 46 of file Ensemble\-Multilevel.\-h.
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a4b3abd511fb680656839a9fc9b02c5db}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!overlap@{overlap}}
+\index{overlap@{overlap}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{overlap}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Overlapper}$\ast$ Networ\-Kit\-::\-Ensemble\-Multilevel\-::overlap\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a4b3abd511fb680656839a9fc9b02c5db}
+
+
+clustering overlap algorithm 
+
+
+
+Definition at line 44 of file Ensemble\-Multilevel.\-h.
+
+\hypertarget{class_networ_kit_1_1_ensemble_multilevel_a915aae76cd6660ae3a541d36969ebeea}{\index{Networ\-Kit\-::\-Ensemble\-Multilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}!qm@{qm}}
+\index{qm@{qm}!NetworKit::EnsembleMultilevel@{Networ\-Kit\-::\-Ensemble\-Multilevel}}
+\subsubsection[{qm}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Quality\-Measure}$\ast$ Networ\-Kit\-::\-Ensemble\-Multilevel\-::qm\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_ensemble_multilevel_a915aae76cd6660ae3a541d36969ebeea}
+
+
+evaluates clutering quality 
+
+
+
+Definition at line 39 of file Ensemble\-Multilevel.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/community/\hyperlink{_ensemble_multilevel_8h}{Ensemble\-Multilevel.\-h}\item 
+src/community/\hyperlink{_ensemble_multilevel_8cpp}{Ensemble\-Multilevel.\-cpp}\end{DoxyCompactItemize}
