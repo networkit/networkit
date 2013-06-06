@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../Conductance2.h"
+#include "../Conductance.h"
 
 namespace NetworKit {
 
