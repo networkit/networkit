@@ -34,6 +34,8 @@ public:
 
 	virtual void initializeGraph();
 
+	virtual void generate();
+
 	virtual void generateWhile(std::function<bool(void)> cont);
 };
 
