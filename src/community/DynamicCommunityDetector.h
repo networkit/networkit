@@ -5,22 +5,22 @@
  *      Author: cls
  */
 
-#ifndef DYNAMICCLUSTERER_H_
-#define DYNAMICCLUSTERER_H_
+#ifndef DYNAMICCOMMUNITYDETECTOR_H_
+#define DYNAMICCOMMUNITYDETECTOR_H_
 
 #include "../clustering/Clustering.h"
 #include "../dynamics/GraphEventHandler.h"
 
 namespace NetworKit {
 
-class DynamicClusterer: public NetworKit::GraphEventHandler {
+class DynamicCommunityDetector: public NetworKit::GraphEventHandler {
 
 
 public:
 
-	DynamicClusterer(Graph& G);
+	DynamicCommunityDetector(Graph& G);
 
-	virtual ~DynamicClusterer();
+	virtual ~DynamicCommunityDetector();
 
 	virtual Clustering run() = 0;
 
@@ -34,4 +34,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* DYNAMICCLUSTERER_H_ */
+#endif /* DYNAMICCOMMUNITYDETECTOR_H_ */

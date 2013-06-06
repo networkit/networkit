@@ -9,7 +9,7 @@
 #define PREPSTRATEGY_H_
 
 #include "../dynamics/GraphEventHandler.h"
-#include "DynamicClusterer.h"
+#include "DynamicCommunityDetector.h"
 
 namespace NetworKit {
 
