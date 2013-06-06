@@ -23,13 +23,17 @@ VizGTest::~VizGTest() {
 TEST_F(VizGTest, testPostscriptWriter) {
 	// create graph
 	count n = 60;
+	count numClusters = 3;
+	double pin = 0.35;
+	double pout = 0.05;
+
 	GraphGenerator graphGen;
-	Graph G = graphGen.makeRandomGraph(n, 0.2);
+	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
 	G.initCoordinates();
 
 	// create clustering
 	ClusteringGenerator clusteringGen;
-	Clustering zeta = clusteringGen.makeRandomClustering(G, 3);
+	Clustering zeta = clusteringGen.makeRandomClustering(G, numClusters);
 
 	// create coordinates
 	G.forNodes([&](node u) {
@@ -48,8 +52,12 @@ TEST_F(VizGTest, testPostscriptWriter) {
 TEST_F(VizGTest, testForceDirectedLayouter) {
 	// create graph
 	count n = 30;
+	count numClusters = 2;
+	double pin = 0.35;
+	double pout = 0.05;
+
 	GraphGenerator graphGen;
-	Graph G = graphGen.makeRandomGraph(n, 0.2);
+	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
 	G.initCoordinates();
 
 	// create coordinates
@@ -76,12 +84,6 @@ TEST_F(VizGTest, testForceDirectedLayouter) {
 	ForceDirected layouter(bl, tr);
 	layouter.draw(G);
 	psWriter.write(zeta, "testForceGraph.eps");
-
-	G.forNodes([&](node u) {
-		float x = G.getCoordinate(u, 0);
-		float y = G.getCoordinate(u, 1);
-		DEBUG("x: " << x << ", y: " << y);
-	});
 }
 
 

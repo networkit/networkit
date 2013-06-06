@@ -32,6 +32,10 @@ void Layouter::randomInitCoordinates(Graph& g) {
 	g.forNodes([&](node u) {
 		float x = randGen.randomFloat() * width + x1;
 		float y = randGen.randomFloat() * height + y1;
+
+		TRACE("x: " << x);
+		TRACE("y: " << y);
+
 		std::vector<float> coords = {x, y};
 		Point<float> p(coords);
 		layout.push_back(p);

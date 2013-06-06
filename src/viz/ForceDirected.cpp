@@ -11,14 +11,11 @@ namespace NetworKit {
 
 ForceDirected::ForceDirected(Point<float> bottom_left, Point<float> top_right):
 		SpringEmbedder(bottom_left, top_right) {
-	// TODO Auto-generated constructor stub
 
-	// FIXME: set forceCorrection in base class
-	forceCorrection = 0.05;
 }
 
 ForceDirected::~ForceDirected() {
-	// TODO Auto-generated destructor stub
+
 }
 
 void ForceDirected::draw(Graph& g) {
@@ -28,43 +25,49 @@ void ForceDirected::draw(Graph& g) {
 	int height = (topRight.getValue(1) - bottomLeft.getValue(1));
 	int area = width * height;
 	count n = g.numberOfNodes();
+	double optPairDist = 0.95 * sqrt((double) area / (double) n);
+	TRACE("k: " << optPairDist);
 
 	// initialize randomly
 	randomInitCoordinates(g);
 
 
 	auto attractiveForce([&](Point<float>& p1, Point<float>& p2) {
-		Point<float> force = p1;
+		Point<float> force = p1 - p2;
 
-		float dist = p1.distance(p2);
-		float strength = dist / forceCorrection;
-		force.scale(strength); // FIXME:
+		float dist = force.length();
+		float strength = dist / optPairDist;
+		force.scale(-strength);
 
 		return force;
 	});
 
-	auto repellingForce([&](Point<float>& p1, Point<float>& p2) {
-		Point<float> force = p1;
 
-		float sqrDist = p1.squaredDistance(p2);
-		float strength = forceCorrection * forceCorrection / sqrDist; // TODO: store square
+
+	auto repellingForce([&](Point<float>& p1, Point<float>& p2) {
+		Point<float> force = p1 - p2;
+
+		float sqrDist = force.squaredLength();
+		float strength = optPairDist * optPairDist / sqrDist; // TODO: store square
 		force.scale(strength);
 
 		return force;
 	});
 
 	auto move([&](Point<float>& p, Point<float>& force, float step) {
-		Point<float> newPoint = p;
-
 		// x_i := x_i + step * (f / ||f||)
 		p += force.scale(step / force.length());
 
-		return newPoint;
+		// position inside frame
+		p.setValue(0, fmax(p.getValue(0), 0.0));
+		p.setValue(1, fmax(p.getValue(1), 0.0));
+		p.setValue(0, fmin(p.getValue(0), 1.0));
+		p.setValue(1, fmin(p.getValue(1), 1.0));
 	});
 
 	auto isConverged([&](std::vector<Point<float> >& oldLayout,
 			std::vector<Point<float> >& newLayout) {
-		float eps = 0.1;
+		float eps = 1e-1;
 		float change = 0.0;
 
 		for (index i = 0; i < oldLayout.size(); ++i) {
@@ -78,39 +81,56 @@ void ForceDirected::draw(Graph& g) {
 
 	auto updateStepLength([&](float step, std::vector<Point<float> >& oldLayout,
 			std::vector<Point<float> >& newLayout) {
-		float newStep = 0.95;
-		// FIXME: clever update
-		return newStep;
+		float newStep = 1.0 / step;
+		newStep += 0.5;
+
+		return 1.0 / newStep;
 	});
 
-	float optimalPairwiseDist = sqrt((float) area / (float) n);
+
 	bool converged = false;
 	float step = INITIAL_STEP_LENGTH;
 	std::vector<float> origin = {0.0, 0.0};
 	count numIter = 0;
+	std::vector<Point<float> > forces(n, origin);
 
-	converged = true; // FIXME: just for test
 	while (! converged) {
 		std::vector<Point<float> > previousLayout = layout;
+
+		// repulsive forces
 		g.forNodes([&](node u) {
-			Point<float> force = origin;
-
-			g.forNeighborsOf(u, [&](node v) {
-				force += attractiveForce(layout[u], layout[v]);
-			});
-
+			forces[u] = origin;
 			g.forNodes([&](node v) {
 				if (u != v) {
-					force += repellingForce(layout[u], layout[v]);
+					forces[u] += repellingForce(previousLayout[u], previousLayout[v]);
 				}
 			});
+		});
 
-			move(layout[u], force, step);
+
+		// attractive forces
+		g.forEdges([&](node u, node v) {
+			// TOOD: store result instead of computing it twice; requires point operations
+			forces[u] += attractiveForce(previousLayout[u], previousLayout[v]);
+			forces[v] += attractiveForce(previousLayout[v], previousLayout[u]);
+		});
+
+
+		// move nodes
+		g.forNodes([&](node u) {
+			move(layout[u], forces[u], step);
+
+//			DEBUG("moved " << u);
+//			DEBUG("by: " << forces[u].getValue(0) << " and " << forces[u].getValue(1));
+//			DEBUG("new x: " << layout[u].getValue(0));
+//			DEBUG("new y: " << layout[u].getValue(1));
 		});
 
 		++numIter;
 		step = updateStepLength(step, previousLayout, layout);
 		converged = isConverged(previousLayout, layout) || numIter >= MAX_ITER;
+
+		TRACE("Iteration finished: " << numIter);
 	}
 
 	// copy layout into graph
