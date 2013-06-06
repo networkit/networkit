@@ -18,5 +18,18 @@ DynamicGraphGenerator::~DynamicGraphGenerator() {
 	// TODO Auto-generated destructor stub
 }
 
+void DynamicGraphGenerator::generateNodes(count n) {
+	auto cont = [&](){
+		return (this->G->numberOfNodes() < n);
+	};
+	this->generateWhile(cont);
+}
+
+void DynamicGraphGenerator::generateEdges(count m) {
+	auto cont = [&](){
+		return (this->G->numberOfEdges() < m);
+	};
+	this->generateWhile(cont);
+}
 
 } /* namespace NetworKit */
