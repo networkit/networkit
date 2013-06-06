@@ -42,7 +42,10 @@ public:
 	Point& operator+=(const Point<T>& p);
 	Point& scale(const T factor);
 
+	Point operator-(const Point<T>& other);
+
 	T length() const;
+	T squaredLength() const;
 };
 
 template<class T>
@@ -53,6 +56,16 @@ T Point<T>::length() const {
 		length += diff * diff;
 	}
 	return sqrt(length);
+}
+
+template<class T>
+T Point<T>::squaredLength() const {
+	T length = (T) 0;
+	for (index i = 0; i < data.size(); ++i) {
+		T diff = this->data[i];
+		length += diff * diff;
+	}
+	return length;
 }
 
 template<class T>
@@ -79,6 +92,17 @@ Point<T>& Point<T>::operator+=(const Point<T>& p) {
 	}
 	return *this;
 }
+
+template<class T>
+Point<T> Point<T>::operator-(const Point<T>& other) {
+	Point<T> result(*this);
+	assert(result.data.size() == other.data.size());
+	for (index i = 0; i < result.data.size(); ++i) {
+		result.data[i] -= other.data[i];
+	}
+	return result;
+}
+
 
 template<class T>
 Point<T>& Point<T>::scale(const T factor) {

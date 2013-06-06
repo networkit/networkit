@@ -47,55 +47,41 @@ DynamicBarabasiAlbertGenerator::~DynamicBarabasiAlbertGenerator() {
 }
 
 
-void DynamicBarabasiAlbertGenerator::generateWhile(std::function<bool(void)> cont) {
-	// FIXME: allow k = 1
-	// FIXME: check for correct degree distribution
+void DynamicBarabasiAlbertGenerator::generate() {
+	// 3) go through the items one at a time, subtracting their weight from your random number, until you get the item where the random number is less than that item's weight
+	node u = this->Gproxy->addNode();
+	std::set<node> targets; // avoid duplicate edges by collecting target nodes in a set
 
-	INFO("[BEGIN] generating graph");
+	count nAttempts = 0;
+	while (targets.size() < k) {
+		TRACE("pick random node to connect to");
+		TRACE("targets.size() == " << targets.size());
 
-	assert (G->numberOfNodes() >= k); // there must be at least as many nodes in the graphs as the number of edges added in each step
+		if (nAttempts > 10) {
+			throw std::runtime_error("picking target nodes takes too long - something is wrong");
+		}
 
-	while (cont()) {
+		// 2) pick a random number that is 0 or greater and is less than the sum of the weights
+		int64_t rand = randInt.generate(0, degSum);
 
-		// 3) go through the items one at a time, subtracting their weight from your random number, until you get the item where the random number is less than that item's weight
-		node u = this->Gproxy->addNode();
-		std::set<node> targets; // avoid duplicate edges by collecting target nodes in a set
-
-		count nAttempts = 0;
-		while (targets.size() < k) {
-			TRACE("pick random node to connect to");
-			DEBUG("targets.size() == " << targets.size());
-
-			if (nAttempts > 10) {
-				throw std::runtime_error("picking target nodes takes too long - something is wrong");
-			}
-
-			// 2) pick a random number that is 0 or greater and is less than the sum of the weights
-			int64_t rand = randInt.generate(0, degSum);
-
-			bool found = false; // break from node iteration when done
-			auto notFound = [&](){ return ! found; };
-			this->G->forNodesWhile(notFound, [&](node v){
-				if (v != u) { // skip u, which has degree 0 anyway, to avoid self-loops
-					assert (rand >= 0);
-					if (rand < this->G->degree(v)) {
-						found = true; // found a node to connect to
-						targets.insert(v);
-					}
-					rand -= this->G->degree(v);
+		bool found = false; // break from node iteration when done
+		auto notFound = [&](){ return ! found; };
+		this->G->forNodesWhile(notFound, [&](node v){
+			if (v != u) { // skip u, which has degree 0 anyway, to avoid self-loops
+				assert (rand >= 0);
+				if (rand < this->G->degree(v)) {
+					found = true; // found a node to connect to
+					targets.insert(v);
 				}
-			});
-		}
+				rand -= this->G->degree(v);
+			}
+		});
+	}
 
-		for (node v : targets) {
-			this->Gproxy->addEdge(u, v);
-			degSum += 2; 	// increment degree sum
-		}
-
-	} // end while
-
-	INFO("[STOP]Êgenerating graph");
-
+	for (node v : targets) {
+		this->Gproxy->addEdge(u, v);
+		degSum += 2; 	// increment degree sum
+	}
 }
 
 } /* namespace NetworKit */

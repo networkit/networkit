@@ -306,6 +306,22 @@ int Graph::addEdgeAttribute_double(double defaultValue) {
 	return attrId;
 }
 
+std::vector<node> Graph::nodes() {
+	std::vector<node> nodes;
+	this->forNodes([&](node u){
+		nodes.push_back(u);
+	});
+	return nodes;
+}
+
+std::vector<std::pair<node, node> > Graph::edges() {
+	std::vector<std::pair<node, node> > edges;
+	this->forEdges([&](node u, node v){
+		edges.push_back(std::pair<node, node>(u, v));
+	});
+	return edges;
+}
+
 } /* namespace NetworKit */
 
 

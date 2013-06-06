@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <limits>
 
 #include "StaticGraphGenerator.h"
 #include "../auxiliary/Random.h"
@@ -18,7 +19,6 @@
 #include "../clustering/Clustering.h"
 
 
-#define none -1 // use this as a placeholder for nonexistent values
 
 
 namespace NetworKit {

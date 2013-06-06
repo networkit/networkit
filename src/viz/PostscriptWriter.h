@@ -34,8 +34,8 @@ protected:
 	count numColors;
 	std::vector<float_triple> psColor;
 
-	float ps_sizex = 1024.0;
-	float ps_sizey = 0.0;
+	float ps_sizex = 1020.0;
+	float ps_sizey = 1020.0;
 	float ps_borderx = 10.0;
 	float ps_bordery = 10.0;
 

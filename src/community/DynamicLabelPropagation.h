@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-#include "DynamicClusterer.h"
+#include "DynamicCommunityDetector.h"
 #include "../auxiliary/Timer.h"
 #include "PrepStrategy.h"
 
@@ -18,7 +18,7 @@ namespace NetworKit {
 
 typedef cluster label;
 
-class DynamicLabelPropagation: public NetworKit::DynamicClusterer {
+class DynamicLabelPropagation: public NetworKit::DynamicCommunityDetector {
 
 
 public:
@@ -31,6 +31,11 @@ public:
 
 	virtual ~DynamicLabelPropagation();
 
+	/**
+	 * Run the Label Propagation community detection algorithm and produce a clustering.
+	 * This reuses the previous clustering and takes collected graph modifications
+	 * into account.
+	 */
 	virtual Clustering run();
 
 	virtual std::string toString() const;
