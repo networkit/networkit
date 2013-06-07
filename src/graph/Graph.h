@@ -100,8 +100,6 @@ protected:
 	};
 
 
-	// defaults
-	static constexpr double defaultEdgeWeight = 1.00;static constexpr edgeweight nullWeight = 0.0;
 
 	// scalars
 	count n; //!< current number of nodes
@@ -137,6 +135,10 @@ protected:
 	index find(node u, node v) const;
 
 public:
+
+	// defaults
+	static constexpr double defaultEdgeWeight = 1.00;
+	static constexpr edgeweight nullWeight = 0.0;
 
 	/** ATTRIBUTE ABSTRACT BASE CLASSES **/
 

@@ -1,5 +1,5 @@
 /*
- * GeneratorsTest.cpp
+Dy * GeneratorsTest.cpp
  *
  *  Created on: 09.04.2013
  *      Author: cls
@@ -16,6 +16,30 @@ GeneratorsGTest::GeneratorsGTest() {
 
 GeneratorsGTest::~GeneratorsGTest() {
 	// TODO Auto-generated destructor stub
+}
+
+
+TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGeneratorSingleStep) {
+	Graph G(0); // empty graph
+	GraphEventProxy proxy(G);
+	count k = 2; // number of edges added per node
+	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy, k);
+	gen->initializeGraph();
+
+	count nPre = G.numberOfNodes();
+	count mPre = G.numberOfEdges();
+	EXPECT_EQ(k, nPre) << "graph should have been initialized to k nodes";
+	EXPECT_EQ(k - 1, mPre) << "graph should have been initialized to a path of k nodes which means k-1 edges";
+
+	// perform single preferential attachment step
+	gen->generate();
+
+	count nPost = G.numberOfNodes();
+	count mPost = G.numberOfEdges();
+	EXPECT_EQ(nPre + 1, nPost) << "one more node should have been added";
+	EXPECT_EQ(mPre + k, mPost) << "k edges should have been added";
+
+
 }
 
 TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
@@ -40,6 +64,7 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 	DEBUG("m = " << G.numberOfEdges());
 
 	// resume generator
+
 	gen->generateWhile([&]() {
 		return (G.numberOfNodes() < 2 * n);
 	});
@@ -81,35 +106,35 @@ TEST_F(GeneratorsGTest, tryStaticPubWebGenerator) {
 }
 
 
-TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
-
-	count numInitialNodes = 100;
-	count numberOfDenseAreas = 6;
-	float neighborhoodRadius = 0.1;
-	count maxNumberOfNeighbors = 12;
-
-	Graph G(0); // empty graph
-	GraphEventProxy proxy(G);
-
-	DynamicGraphGenerator* gen = new DynamicPubWebGenerator(
-			proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
-
-	DEBUG("before init graph");
-	gen->initializeGraph();
-	DEBUG("after init graph");
-
-	EXPECT_EQ(numInitialNodes, G.numberOfNodes()) << "initial number of nodes";
-
-	count numIterations = 10;
-	count iter = 0;
-
-	gen->generateWhile([&]() {
-				++iter;
-				return ( iter < numIterations );
-			});
-
-	DEBUG("m = " << G.numberOfEdges());
-}
+//TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
+//
+//	count numInitialNodes = 100;
+//	count numberOfDenseAreas = 6;
+//	float neighborhoodRadius = 0.1;
+//	count maxNumberOfNeighbors = 12;
+//
+//	Graph G(0); // empty graph
+//	GraphEventProxy proxy(G);
+//
+//	DynamicGraphGenerator* gen = new DynamicPubWebGenerator(
+//			proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+//
+//	DEBUG("before init graph");
+//	gen->initializeGraph();
+//	DEBUG("after init graph");
+//
+//	EXPECT_EQ(numInitialNodes, G.numberOfNodes()) << "initial number of nodes";
+//
+//	count numIterations = 10;
+//	count iter = 0;
+//
+//	gen->generateWhile([&]() {
+//				++iter;
+//				return ( iter < numIterations );
+//			});
+//
+//	DEBUG("m = " << G.numberOfEdges());
+//}
 
 
 TEST_F(GeneratorsGTest, tryBTERGenerator) {

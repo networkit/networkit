@@ -12,6 +12,9 @@
 
 #include "DynamicGraphReader.h"
 
+#include <string>
+#include <unordered_map>
+
 #include "../dynamics/GraphEventProxy.h"
 #include "../auxiliary/StringTools.h"
 
