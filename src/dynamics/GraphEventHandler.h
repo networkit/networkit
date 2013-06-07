@@ -30,6 +30,8 @@ public:
 	virtual void onEdgeRemoval(node u, node v) = 0;
 
 	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) = 0;
+
+	virtual void onTimeStep() = 0;
 };
 
 } /* namespace NetworKit */
