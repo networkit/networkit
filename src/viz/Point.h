@@ -12,11 +12,12 @@
 #include <cinttypes>
 #include <cassert>
 #include <cmath>
+#include <cstdint>
 
 namespace NetworKit {
 
-typedef int64_t index; // more expressive name for an index into an array
-typedef int64_t count; // more expressive name for an integer quantity
+typedef uint64_t index; // more expressive name for an index into an array
+typedef uint64_t count; // more expressive name for an integer quantity
 
 
 /**

@@ -18,23 +18,26 @@
 #include <map>
 #include <sstream>
 #include <limits>
+#include <cstdint>
 
 #include "../auxiliary/Log.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
-#define none std::numeric_limits<int64_t>::min()
 
 namespace NetworKit {
 
 /** Typedefs **/
 
-typedef int64_t index; // more expressive name for an index into an array
-typedef int64_t count; // more expressive name for an integer quantity
+typedef uint64_t index; // more expressive name for an index into an array
+typedef uint64_t count; // more expressive name for an integer quantity
 typedef index node; // node indices are 0-based
 typedef double edgeweight; // edge weight type
 //template<typename T> using nodemap = std::vector<T>; // more expressive name for container that is indexed by a node
 //template<typename T> using edgemap = std::vector<std::vector<T> >;// more expressive name for an edge data structure
+
+#define none std::numeric_limits<index>::max()
+
 
 class Graph {
 
@@ -684,7 +687,7 @@ double NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
 		for (index i = 0; i < this->adja[u].size(); ++i) {
 			node v = this->adja[u][i];
 			edgeweight ew = this->eweights[u][i];
-			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				sum += handle(u, v, ew);
 			}
 		}
@@ -697,7 +700,7 @@ inline void NetworKit::Graph::forEdges(L handle) {
 	node z = n; // store current n in local variable since handle might modify node count
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
-			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				handle(u, v);
 			}
 		}
@@ -709,7 +712,7 @@ inline void NetworKit::Graph::forEdges(L handle) const {
 	node z = n; // store current n in local variable since handle might modify node count
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
-			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				handle(u, v);
 			}
 		}
@@ -722,7 +725,7 @@ inline void NetworKit::Graph::parallelForEdges(L handle) {
 #pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
-			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				handle(u, v);
 			}
 		}
@@ -735,7 +738,7 @@ inline void NetworKit::Graph::parallelForEdges(L handle) const {
 #pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
-			if (u <= v) { // {u, v} instead of (u, v); if v == -1, u < v is not fulfilled
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				handle(u, v);
 			}
 		}
@@ -854,7 +857,7 @@ inline void NetworKit::Graph::forWeightedEdges(L handle) {
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
-			if (u <= v) {
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				edgeweight w = this->eweights[u][vi];
 				handle(u, v, w);
 			}
@@ -867,7 +870,7 @@ inline void NetworKit::Graph::forWeightedEdges(L handle) const {
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
-			if (u <= v) {
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				edgeweight w = this->eweights[u][vi];
 				handle(u, v, w);
 			}
@@ -881,7 +884,7 @@ inline void NetworKit::Graph::parallelForWeightedEdges(L handle) {
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
-			if (u <= v) {
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				edgeweight w = this->eweights[u][vi];
 				handle(u, v, w);
 			}
@@ -895,7 +898,7 @@ inline void NetworKit::Graph::parallelForWeightedEdges(L handle) const {
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
-			if (u <= v) {
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				edgeweight w = this->eweights[u][vi];
 				handle(u, v, w);
 			}
@@ -972,7 +975,7 @@ inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
 		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			double attr = edgeMap[u][vi];
-			if (u <= v) {
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 				handle(u, v, attr);
 			}
 		}
