@@ -52,6 +52,8 @@ public:
 
 	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
 
+	virtual void onTimeStep();
+
 protected:
 
 	Clustering labels;					//!< the labelling/clustering
@@ -59,6 +61,7 @@ protected:
 	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
 	count updateThreshold;
 	count nUpdated; 					//!< number of nodes updated in last iteration (?)
+	count t;							//!< counter for time steps received
 
 	PrepStrategy* prepStrategy;			//!< a prep strategy reacts to graph events by preparing the algorithm's clustering
 
@@ -101,6 +104,11 @@ protected:
 		 */
 		virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
 
+		/**
+		 * Ignore time steps.
+		 */
+		virtual void onTimeStep();
+
 	protected:
 
 		DynamicLabelPropagation* dynPLP;
@@ -142,6 +150,11 @@ protected:
 		 * Same reaction as onEdgeAddition
 		 */
 		virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
+
+		/**
+		 * Ignore time step.
+		 */
+		virtual void onTimeStep();
 
 	protected:
 

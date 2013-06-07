@@ -15,7 +15,8 @@ DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta, std::str
 		activeNodes(G.numberOfNodes()),
 		weightedDegree(G.numberOfNodes(), 0.0),
 		updateThreshold(theta),
-		nUpdated(G.numberOfNodes()) {
+		nUpdated(G.numberOfNodes()),
+		t(0) {
 	labels.allToSingletons(); // initialize labels to singleton clustering
 	// PERFORMANCE: precompute and store incident edge weight for all nodes
 	DEBUG("[BEGIN] Label Propagation: precomputing weighted degree");
@@ -102,11 +103,15 @@ void DynamicLabelPropagation::onWeightUpdate(node u, node v, edgeweight wOld, ed
 		weightedDegree[u] += (wNew - wOld);
 	}
 
-
 	// activate source and target // TODO: strategy
 	this->activeNodes[u] = true;
 	this->activeNodes[v] = true;
 }
+
+void DynamicLabelPropagation::onTimeStep() {
+	this->t += 1;
+}
+
 
 std::string DynamicLabelPropagation::toString() const {
 	return "DynamicLabelPropagation";
@@ -236,6 +241,11 @@ void DynamicLabelPropagation::ReactivateNeighbors::onWeightUpdate(node u, node v
 	this->onEdgeAddition(u, v);
 }
 
+void DynamicLabelPropagation::Reactivate::onTimeStep() {
+}
+
+void DynamicLabelPropagation::ReactivateNeighbors::onTimeStep() {
+}
 
 } /* namespace NetworKit */
 
