@@ -132,7 +132,7 @@ Contribute
 
 We would like to encourage contributions to the NetworKit source code. For support please contact `christian.staudt @ kit.edu`.
 
-## Code Conventions and Style Guide
+### Code Conventions and Style Guide
 
 - Document code in Doxygen style.
 - Use the `count` and `index` integer types for positive integer quantities and indices.
