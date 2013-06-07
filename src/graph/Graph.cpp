@@ -81,10 +81,6 @@ void Graph::removeEdge(node u, node v) {
 	index ui = find(v, u);
 	index vi = find(u, v);
 
-	DEBUG("none: " << none);
-	DEBUG("u: " << u << ", ui: " << ui);
-	DEBUG("v: " << v << ", vi: " << vi);
-
 	if (vi == none) {
 		throw std::runtime_error("edge does not exist");
 		// TODO: what if edge does not exist?

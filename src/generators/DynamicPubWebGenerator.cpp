@@ -27,64 +27,112 @@ DynamicPubWebGenerator::~DynamicPubWebGenerator() {
  * Assumption: Static PubWeb graph already exists.
  */
 void DynamicPubWebGenerator::initializeGraph() {
-	DEBUG("G: " << this->Gproxy << ", number of nodes: " << Gproxy->G->numberOfNodes());
-//	delete Gproxy->G;
-	Gproxy->G = new Graph(staticGen.generate());
-	G = Gproxy->G;
-	DEBUG("Gproxy: " << this->Gproxy << ", number of nodes: " << Gproxy->G->numberOfNodes());
-	DEBUG("G:      " << this->G << ", number of nodes: " << G->numberOfNodes());
+	// add vertices according to PubWeb distribution
+	staticGen.chooseDenseAreaSizes();
+	staticGen.chooseClusterSizes();
+	staticGen.fillDenseAreas(*G);
+	staticGen.spreadRemainingNodes(*G);
+	staticGen.determineNeighbors(*G);
 }
 
-node DynamicPubWebGenerator::addNode() {
+#if 0
+void Move(int V, float vmin, float vmax, int stop, float * xy, float * way, float * vel, int * vstop)
+{
+  int i;
+  float distx, disty, dist;
 
-	// identify dense area (or remaining)
-	// -> find out where rand value falls into the interval divided by
-	//    the fraction of the cluster size, don't forget the non-dense area
-	// TODO
-	std::vector<float> probInterval(staticGen.numDenseAreas+1);
-	count n = Gproxy->G->numberOfNodes();
+  for (i = 0; i < V; i++) {
+    if (vstop[i] > 0)
+      // Pause
+      vstop[i]--;
+    else {
+      distx = way[i + i] - xy[i + i];
+      disty = way[i + i + 1] - xy[i + i + 1];
 
-	for (index i = 0; i < staticGen.numDenseAreas; ++i) {
-		probInterval[i] = (float) staticGen.numPerArea[i] / (float) n;
-	}
-	// prefix sums
-	for (index i = 1; i < staticGen.numDenseAreas; ++i) {
-		probInterval[i] += probInterval[i-1];
-	}
-	probInterval[staticGen.numDenseAreas] = 1.0;
+      // Wrap around
+      AdjustWrapAround(distx, disty);
+      dist = sqrt(distx * distx + disty * disty);
 
-	Aux::RandomProbability randProb;
-	float r = randProb.randomFloat();
+      if (dist < vel[i]) {
+	vstop[i] = rand() % stop;
+	xy[i + i] = way[i + i];
+	xy[i + i + 1] = way[i + i + 1];
+	// Neues Ziel
+	way[i + i] = (float)rand() / (float)RAND_MAX;
+	way[i + i + 1] = (float)rand() / (float)RAND_MAX;
+#ifdef ONE_DIM
+	way[i + i + 1] *= ONE_DIM_SCALE;
+#endif
+	vel[i] = vmin + ((float)rand() / (float)RAND_MAX) * (vmax - vmin);
+      }
+      else { // berechne Zwischenhalt
+	xy[i + i] += distx * vel[i] / dist;
 
-	index area = 0;
-	while (r > probInterval[area] && area < staticGen.numDenseAreas) {
-		++area;
-	}
+	if (xy[i + i] > 1.0)
+	  xy[i + i] -= 1.0;
+	if (xy[i + i] < 0.0)
+	  xy[i + i] += 1.0;
 
-	// identify random location in that area
-	count dims = 2;
-	count num = 1;
-	staticGen.addNodesToArea(area, num, *G);
+	xy[i + i + 1] += disty * vel[i] / dist;
 
-	// insert edges according to rules in determineNeighbors
-	node u = n; // inserted last
-	staticGen.determineNeighborsOf(*G, u);
+	if (xy[i + i + 1] > 1.0)
+	  xy[i + i + 1] -= 1.0;
+	if (xy[i + i + 1] < 0.0)
+	  xy[i + i + 1] += 1.0;
+      }
+    }
+  }
+}
+#endif
 
-	return u;
+
+void DynamicPubWebGenerator::moveNodesRandomly() {
+	Aux::RandomProbability randGen;
+
+	this->G->forNodes([&](node u) {
+		// current position
+		float x = this->G->getCoordinate(u, 0);
+		float y = this->G->getCoordinate(u, 1);
+
+		// compute random direction
+		float angle = randGen.randomFloat() * M_PI_2;
+
+		// compute random distance
+		float dist = randGen.randomFloat();
+
+		// compute new positions
+		x += cosf(angle) * dist;
+		y += sinf(angle) * dist;
+
+		// adjust for wraparound
+		this->staticGen.moveNodeIntoUnitSquare(x, y);
+
+		// move node
+		this->G->setCoordinate(u, 0, x);
+		this->G->setCoordinate(u, 1, y);
+	});
 }
 
 
-void DynamicPubWebGenerator::generateWhile(std::function<bool(void)> cont) {
-	// TODO: delete, so far only add
+void DynamicPubWebGenerator::generate() {
+	// nodes move to new position
+	moveNodesRandomly();
 
-	// incoming action: add or delete vertex
-	// => add or delete edges accordingly
+	// decide if new edges have to be inserted
+	// FIXME: inefficient!
+	G->forNodePairs([&](node u, node v) {
+		bool valid = staticGen.isValidEdge(*G, u, v);
+		bool exists = G->hasEdge(u, v);
 
-	while (cont()) {
-		node u = this->addNode();
-		TRACE("adding node " << u);
-	}
-
+		if (valid && ! exists) {
+			// insert
+			this->Gproxy->addEdge(u, v);
+		}
+		if (! valid && exists) {
+			// remove
+			this->Gproxy->removeEdge(u, v);
+		}
+	});
 }
 
 } /* namespace NetworKit */

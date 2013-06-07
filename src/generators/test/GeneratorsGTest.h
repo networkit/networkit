@@ -13,7 +13,7 @@
 #include "../DynamicGraphGenerator.h"
 #include "../DynamicBarabasiAlbertGenerator.h"
 #include "../PubWebGenerator.h"
-// #include "../DynamicPubWebGenerator.h"
+#include "../DynamicPubWebGenerator.h"
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../community/LabelPropagation.h"

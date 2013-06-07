@@ -167,8 +167,6 @@ void PubWebGenerator::chooseClusterSizes() {
 Graph PubWebGenerator::generate() {
 	// init
 	Graph g(0);
-	count dims = 2;
-	Aux::RandomProbability randGen;
 
 	// add vertices according to PubWeb distribution
 	chooseDenseAreaSizes();
@@ -179,6 +177,8 @@ Graph PubWebGenerator::generate() {
 
 	return g;
 }
+
+
 
 
 // TODO: NOT tested!

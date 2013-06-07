@@ -86,7 +86,7 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 }
 
 
-TEST_F(GeneratorsGTest, tryStaticPubWebGenerator) {
+TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	count n = 800;
 	count numCluster = 40;
 	count maxNumNeighbors = 20;
@@ -106,35 +106,37 @@ TEST_F(GeneratorsGTest, tryStaticPubWebGenerator) {
 }
 
 
-//TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
-//
-//	count numInitialNodes = 100;
-//	count numberOfDenseAreas = 6;
-//	float neighborhoodRadius = 0.1;
-//	count maxNumberOfNeighbors = 12;
-//
-//	Graph G(0); // empty graph
-//	GraphEventProxy proxy(G);
-//
-//	DynamicGraphGenerator* gen = new DynamicPubWebGenerator(
-//			proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
-//
-//	DEBUG("before init graph");
-//	gen->initializeGraph();
-//	DEBUG("after init graph");
-//
-//	EXPECT_EQ(numInitialNodes, G.numberOfNodes()) << "initial number of nodes";
-//
-//	count numIterations = 10;
-//	count iter = 0;
-//
-//	gen->generateWhile([&]() {
-//				++iter;
-//				return ( iter < numIterations );
-//			});
-//
-//	DEBUG("m = " << G.numberOfEdges());
-//}
+TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
+
+	count numInitialNodes = 2000;
+	count numberOfDenseAreas = 12;
+	float neighborhoodRadius = 0.1;
+	count maxNumberOfNeighbors = 16;
+	count numIterations = 10;
+
+	Graph G(0); // empty graph
+	GraphEventProxy proxy(G);
+
+	DynamicGraphGenerator* gen = new DynamicPubWebGenerator(
+			proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+
+	DEBUG("before init graph");
+	gen->initializeGraph();
+	DEBUG("after init graph");
+
+	EXPECT_EQ(numInitialNodes, G.numberOfNodes()) << "initial number of nodes";
+
+	// FIXME: find out why second iteration has a lot fewer edges (random anomaly or error?)
+
+	// TODO: postscript output
+	DEBUG("m = " << G.numberOfEdges());
+
+	for (index iter = 0; iter < numIterations; ++iter) {
+		// TODO: postscript output
+		gen->generate();
+		DEBUG("m = " << G.numberOfEdges());
+	}
+}
 
 
 TEST_F(GeneratorsGTest, tryBTERGenerator) {
