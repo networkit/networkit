@@ -52,24 +52,24 @@ def main():
 
 	print()
 	
-def termgraph(labels, data, width=50):
+def graph(labels, values, width=50):
 	# verify data
 	m = len(labels)
-	if m != len(data):
-		print(">> Error: Label and data array sizes don't match")
+	if m != len(values):
+		print(">> Error: Label and value array sizes don't match")
 		sys.exit(1)
 
 	# massage data
 	## normalize for graph
 	max = 0
 	for i in range(m):
-		if data[i] > max:
-			max = data[i]
+		if values[i] > max:
+			max = values[i]
 
 	step = max / width
 	# display graph
 	for i in range(m):
-		print_blocks(labels[i], data[i], step)
+		print_blocks(labels[i], values[i], step)
 
 	print()
 	
