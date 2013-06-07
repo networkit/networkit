@@ -77,7 +77,7 @@ Clustering EnsembleMultilevel::run(Graph& G) {
 
 		// *** base clusterers calculate base clusterings ***
 		#pragma omp parallel for
-		for (int b = 0; b < baseClusterers.size(); b += 1) {
+		for (index b = 0; b < baseClusterers.size(); b += 1) {
 			try {
 				baseClustering.at(b) = baseClusterers.at(b)->run(graph.at(h));
 				// DEBUG
@@ -92,7 +92,7 @@ Clustering EnsembleMultilevel::run(Graph& G) {
 			}
 		}
 
-		for (int b = 0; b < baseClusterers.size(); b += 1) {
+		for (index b = 0; b < baseClusterers.size(); b += 1) {
 			double qual = modularity.getQuality(baseClustering[b], graph.at(h));
 			INFO("base clustering quality: " << qual);
 			if (qual > bestQuality) {
@@ -106,8 +106,8 @@ Clustering EnsembleMultilevel::run(Graph& G) {
 		if (CALC_DISSIMILARITY) {
 			JaccardMeasure dm;
 			double dissimilaritySum = 0.0;
-			for (int b = 0; b < baseClustering.size(); b += 1) {
-				for (int c = b + 1; c < baseClustering.size(); c += 1) {
+			for (index b = 0; b < baseClustering.size(); b += 1) {
+				for (index c = b + 1; c < baseClustering.size(); c += 1) {
 					double d = dm.getDissimilarity(graph.at(h), baseClustering.at(b), baseClustering.at(c));
 					dissimilaritySum += d;
 					INFO("dm " << b << " <-> " << c << ": " << d);

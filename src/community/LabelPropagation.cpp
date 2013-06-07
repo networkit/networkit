@@ -25,7 +25,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	// get global variables
 	const bool printProgress = PRINT_PROGRESS;
 	const bool randOrder = RAND_ORDER;							// explicitly randomize node order for each iteration
-	const int inactiveSeeds = INACTIVE_SEEDS;					// number of seed nodes which are set inactive for first iteration
+	const count inactiveSeeds = INACTIVE_SEEDS;					// number of seed nodes which are set inactive for first iteration
 	const bool normalizeVotes = NORMALIZE_VOTES;
 	const bool scaleClusterStrength = (SCALE_STRENGTH != 0.0);
 	std::vector<double> scale;
@@ -142,7 +142,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 // TODO: make this forNodes loop
 #pragma omp parallel for schedule(guided) shared(nUpdated)
-		for (int64_t i = 0; i < n; ++i) {
+		for (index i = 0; i < n; ++i) {
 			node v = nodes[i];
 
 			// PROGRESS

@@ -40,8 +40,8 @@ protected:
 	std::random_device randomDevice;
 	std::default_random_engine randomEngine;
 
-	std::uniform_int_distribution<int64_t> integerDistribution;
 	std::uniform_real_distribution<double> probabilityDistribution;
+	std::uniform_int_distribution<int64_t> integerDistribution;
 
 
 };

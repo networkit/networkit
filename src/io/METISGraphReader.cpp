@@ -42,7 +42,7 @@ Graph METISGraphReader::read(std::string path) {
 	if (weighted == 0) {
 		while (parser.hasNext()) {
 			std::vector<node> adjacencies = parser.getNext();
-			for (int i=0; i < adjacencies.size(); i++) {
+			for (index i=0; i < adjacencies.size(); i++) {
 				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
 				assert (v >= 0);
 				if (u <= v) { // self-loops are allowed
@@ -62,7 +62,7 @@ Graph METISGraphReader::read(std::string path) {
 
 			std::vector<std::pair<node,double>> adjacencies = parser.getNextWithWeights();
 
-			for (int i=0; i < adjacencies.size(); i++) {
+			for (index i=0; i < adjacencies.size(); i++) {
 				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
 				assert (v >= 0);
 				if (u <= v) { // self-loops are allowed

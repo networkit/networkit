@@ -41,7 +41,7 @@ Clustering EnsemblePreprocessing::run(Graph& G) {
 
 	// run base clusterers in parallel
 	#pragma omp parallel for
-	for (int b = 0; b < baseClusterers.size(); b += 1) {
+	for (index b = 0; b < baseClusterers.size(); b += 1) {
 		baseClusterings.at(b) = baseClusterers.at(b)->run(G);
 	}
 
@@ -49,8 +49,8 @@ Clustering EnsemblePreprocessing::run(Graph& G) {
 	if (CALC_DISSIMILARITY) {
 		JaccardMeasure dm;
 		double dissimilaritySum = 0.0;
-		for (int b = 0; b < baseClusterings.size(); b += 1) {
-			for (int c = b + 1; c < baseClusterings.size(); c += 1) {
+		for (index b = 0; b < baseClusterings.size(); b += 1) {
+			for (index c = b + 1; c < baseClusterings.size(); c += 1) {
 				double d = dm.getDissimilarity(G, baseClusterings.at(b), baseClusterings.at(c));
 				dissimilaritySum += d;
 			}
