@@ -39,7 +39,7 @@ public:
 
 	void removeNode(node u);
 
-	void addEdge(node u, node v);
+	void addEdge(node u, node v, edgeweight weight = Graph::defaultEdgeWeight);
 
 	void removeEdge(node u, node v);
 

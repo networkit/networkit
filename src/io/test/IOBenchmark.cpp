@@ -38,4 +38,17 @@ TEST_F(IOBenchmark, timeMETISGraphReader) {
 
 }
 
+TEST_F(IOBenchmark, tryDGSReader) {
+	// read example graph
+	DGSReader reader;
+	Graph G;
+	GraphEventProxy Gproxy(G);
+	reader.read("input/AuthorsGraph.dgs", Gproxy);
+
+	// get input parameters
+	count nodeCount = G.numberOfNodes();
+	DEBUG("Number of nodes " << nodeCount);
+
+}
+
 } /* namespace NetworKit */
