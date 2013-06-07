@@ -15,7 +15,7 @@ ctypedef index cluster
 
 # python module imports
 import networkx as nx
-import termgraph
+# TODO: how to import termgraph
 
 
 
@@ -219,6 +219,8 @@ cdef class GraphProperties:
 
 
 
+
+
 # under construction
 
 cdef extern from "../src/generators/PubWebGenerator.h":
@@ -290,7 +292,7 @@ def printDegreeHistogram(nxG):
 	""" Prints a degree histogram as a bar chart to the terminal"""
 	hist = nx.degree_histogram(nxG)
 	labels = range(len(hist))
-	termgraph.graph(labels, hist)
+	# FIXME: termgraph.graph(labels, hist)
 	
 
 
