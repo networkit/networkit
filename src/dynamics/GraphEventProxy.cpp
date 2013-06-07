@@ -64,7 +64,8 @@ void GraphEventProxy::setWeight(node u, node v, edgeweight w) {
 
 void GraphEventProxy::timeStep() {
 	TRACE("time step");
-	// graph is not changed for time step
+	// increment time step counter in G
+	this->G->timeStep();
 	for (GraphEventHandler* observer : this->observers) {
 		observer->onTimeStep();
 	}
