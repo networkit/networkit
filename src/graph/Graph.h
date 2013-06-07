@@ -105,6 +105,7 @@ protected:
 	count n; //!< current number of nodes
 	count m; //!< current number of edges
 	node z; //!< current upper bound of node ids
+	count t; //!< current time step
 
 
 	// per node data
@@ -248,10 +249,6 @@ public:
 	 */
 	edgeweight totalEdgeWeight() const;
 
-	/**
-	 * DEPRECATED - TODO: update clients
-	 */
-	edgeweight totalNodeWeight();
 
 	/** NODE MODIFIERS **/
 
@@ -280,6 +277,9 @@ public:
 	 */
 	bool hasNode(node u);
 
+
+	/** GLOBAL PROPERTIES **/
+
 	/**
 	 * Return true if graph contains no nodes.
 	 */
@@ -305,6 +305,20 @@ public:
 	 */
 	count numberOfSelfLoops() const;
 
+	/** DYNAMICS **/
+
+	/**
+	 * Trigger a time step - increments counter.
+	 */
+	void timeStep();
+
+	/**
+	 * Get time step counter.
+	 */
+	count time();
+
+
+	/** COORDINATES **/
 
 	void setCoordinate(node v, count dim, float value) {
 		coordinates.setCoordinate(v, dim, value);

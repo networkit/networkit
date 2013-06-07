@@ -1,5 +1,5 @@
 # type imports
-from libc.stdint cimport int64_t
+from libc.stdint cimport uint64_t
 
 # the C++ standard library
 from libcpp cimport bool
@@ -8,13 +8,15 @@ from libcpp.utility cimport pair
 from libcpp.string cimport string
 
 # NetworKit typedefs
-ctypedef int64_t count
-ctypedef int64_t index
+ctypedef uint64_t count
+ctypedef uint64_t index
 ctypedef index node
-
+ctypedef index cluster
+ctypedef double edgeweight
 
 # python module imports
 import networkx as nx
+# TODO: how to import termgraph
 
 
 
@@ -37,6 +39,7 @@ cdef extern from "../src/graph/Graph.h":
 		node addNode()
 		void removeNode(node u)
 		void addEdge(node u, node v)
+		# TODO: optional weight argument
 		void removeEdge(node u, node v)
 		bool hasEdge(node u, node v)
 		vector[node] nodes()
@@ -217,6 +220,43 @@ cdef class GraphProperties:
 		return minMaxDegree(G._this)
 
 
+# TODO: cdef extern from "../src/dynamics/GraphEventHandler.h"
+
+
+cdef extern from "../src/dynamics/GraphEventProxy.h":
+	cdef cppclass _GraphEventProxy "NetworKit::GraphEventProxy":
+		_GraphEventProxy()	# nullary constructor not valid
+		_GraphEventProxy(_Graph _G)
+		# TODO: void registerObserver(_GraphEventHandler* _observer)
+		node addNode()
+		void removeNode(node u)
+		void addEdge(node u, node v)
+		# TODO: optional edge weight
+		void removeEdge(node u, node v)
+		void setWeight(node u, node v, edgeweight w)
+		void timeStep()
+		
+cdef class GraphEventProxy:
+	cdef _GraphEventProxy _this
+	
+	def __cinit__(self, Graph G not None):
+		self._this = _GraphEventProxy(G._this)
+	# TODO: delegates
+
+
+
+cdef extern from "../src/io/DGSReader.h":
+	cdef cppclass _DGSReader "NetworKit::DGSReader":
+		_DGSReader() except +
+		void read(string path, _GraphEventProxy _proxy)
+		
+		
+cdef class DGSReader:
+	cdef _DGSReader _this
+	
+	def read(self, path, GraphEventProxy proxy not None):
+		self._this.read(stdstring(path), proxy._this)
+
 
 # under construction
 
@@ -277,10 +317,54 @@ def nk2nx(nkG):
 	
 def properties(nkG):
 	""" Get an overview of the properties for the graph"""
-	pass
+	nxG = nk2nx(nkG)
+	(n, m) = (nxG.number_of_nodes(), nxG.number_of_edges())
+	print("number of nodes \t n \t {0}".format(n))
+	print("number of edges \t n \t {0}".format(m))
+	print("degree distribution:")
+	printDegreeHistogram(nxG)
+	
+	
+def printDegreeHistogram(nxG):
+	""" Prints a degree histogram as a bar chart to the terminal"""
+	hist = nx.degree_histogram(nxG)
+	labels = range(len(hist))
+	# FIXME: termgraph.graph(labels, hist)
+	
 
 
 def hpProperties(nkG):
 	""" For large graphs: get an overview of some properties"""
 	print("min/max degree:")
 	
+	
+def compactDegreeHistogram(nxG, nbins=10):
+	"""
+	Create a compact histogram for the degree distribution. 
+	"""
+	hist = nx.degree_histogram(nxG)
+	maxDeg = len(hist) - 1
+	binsize = len(hist) / nbins
+	labels = []
+	values = []
+	
+	# TODO: range(0, len(hist), binsize)
+	
+	return (labels, values)
+	
+	
+# NetworKit algorithm engineering workflows
+
+class DynamicCommunityDetectionWorkflow:
+	
+	def setSource(self, source):
+		pass
+	
+	def setTarget(self, target):
+		pass
+	
+	def setInterval(self, deltaT):
+		""" Every deltaT """
+	
+	def start(self):
+		pass
