@@ -18,7 +18,7 @@ LocalModularityM::~LocalModularityM() {
 	// TODO Auto-generated destructor stub
 }
 
-double getQuality(std::unordered_set<node>& zeta, Graph& G) {
+double LocalModularityM::getQuality(std::unordered_set<node>& zeta, Graph& G) {
 
 	double inside = 0;
 	double outside = 0;
