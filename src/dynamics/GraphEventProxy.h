@@ -29,6 +29,8 @@ public:
 
 	Graph* G;
 
+	GraphEventProxy(); // nullary constructor needed for python interface
+
 	GraphEventProxy(Graph& G);
 
 	virtual ~GraphEventProxy();
