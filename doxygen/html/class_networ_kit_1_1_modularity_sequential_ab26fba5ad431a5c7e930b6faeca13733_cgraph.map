@@ -1,0 +1,16 @@
+<map id="NetworKit::ModularitySequential::getQuality" name="NetworKit::ModularitySequential::getQuality">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="280,5,456,49"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_index_map.html#ab2bf024de2a5d5cb47e7ae2e7e3e833b" title="Number of nodes for which this clsutering can hold an entry." alt="" coords="542,47,687,91"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a6625b34904eae267ca384c77a081f333" title="Return the number of edges in the graph." alt="" coords="280,346,456,390"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="522,393,707,421"/>
+<area shape="rect" id="node11" href="$class_networ_kit_1_1_graph.html#a467e6959962dc4600add8832602b5353" title="NetworKit::Graph::number\lOfSelfLoops" alt="" coords="280,466,456,510"/>
+<area shape="rect" id="node15" href="$class_networ_kit_1_1_coverage_sequential.html#a5dc6bb483caa0b8762874a81846d53ba" title="NetworKit::CoverageSequential\l::getQuality" alt="" coords="264,175,472,219"/>
+<area shape="rect" id="node17" href="$class_networ_kit_1_1_graph.html#a8c2ee66ae18da530bca98bfd0a13ed44" title="SUMS." alt="" coords="521,115,708,159"/>
+<area shape="rect" id="node21" href="$class_networ_kit_1_1_clustering.html#a1bf0c38a510c8ef384d2ce25f18e1ab6" title="Return an upper bound for the cluster ids that have been assigned." alt="" coords="541,235,688,279"/>
+<area shape="rect" id="node25" href="$class_networ_kit_1_1_clustering.html#aa67805208c7663502ca951801198cb34" title="Return a lower bound for the cluster ids that have been assigned." alt="" coords="541,303,688,347"/>
+<area shape="rect" id="node31" href="$class_networ_kit_1_1_graph.html#a48ace7ae9a931d69999d8fb55e563063" title="NetworKit::Graph::weighted\lDegree" alt="" coords="276,534,460,578"/>
+<area shape="rect" id="node33" href="$class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8" title="EDGE ATTRIBUTE GETTERS." alt="" coords="283,602,453,630"/>
+<area shape="rect" id="node13" href="$class_networ_kit_1_1_graph.html#a23a817e845887e6d2be9b42180448282" title="EDGE ITERATORS." alt="" coords="522,474,707,502"/>
+<area shape="rect" id="node19" href="$class_networ_kit_1_1_graph.html#a5cfc35c769c1edc8805aa9b93ac096cf" title="Iterate over all edges of the graph and call handler (lambda closure)." alt="" coords="757,146,960,190"/>
+<area shape="rect" id="node35" href="$class_networ_kit_1_1_graph.html#a4c6dde807d9cd6dd53f3a4794d411528" title="Return the index of v in the adjacency array of u." alt="" coords="538,602,691,630"/>
+</map>
