@@ -46,7 +46,7 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 	    //std::unordered_map<std::string, node> edgeNames;
 
 		if (tag.compare("st") == 0 && split.size() == 2) { // clock
-			//TODO: implement
+			Gproxy.timeStep();
 
 		} else if (tag.compare("an") == 0 && split.size() == 2) { // add node
 			// Get the node name from the input
@@ -60,7 +60,7 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 			std::string edge_name = split[1];
 			Gproxy.addEdge(nodeNames[edge_from], nodeNames[edge_to], 1.0);
 
-		} else if (tag.compare("ce") == 0 && split.size() == 3) { // update edge. Only the "weight" attribute is supported
+		} else if (tag.compare("ce") == 0 && split.size() == 3) { // update edge. Only the "weight" attribute is supported so far
 
 			std::string from_to_edges = split[1];
 			std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
@@ -73,9 +73,22 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 
 			Gproxy.setWeight(nodeNames[edge_from], nodeNames[edge_to], weightValue);
 
+		} else if (tag.compare("dn") == 0 && split.size() == 2) {
+			std::string nodeName = split[1];
+			node deleteNode = nodeNames[nodeName];
+			// Delete the nodes only if there are no edges connected to it
+			if (Gproxy.G -> degree(deleteNode) == 0) {
+				Gproxy.removeNode(deleteNode);
+			}
+
+		} else if (tag.compare("de") == 0 && split.size() == 2) {
+			std::string from_to_edges = split[1];
+			std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
+			std::string edge_from = edgesSplit[0];
+			std::string edge_to = edgesSplit[1];
+
+			Gproxy.removeEdge(nodeNames[edge_from], nodeNames[edge_to]);
 		}
-
-
 
 	}
 }
