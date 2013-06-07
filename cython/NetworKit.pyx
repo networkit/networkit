@@ -12,6 +12,7 @@ ctypedef uint64_t count
 ctypedef uint64_t index
 ctypedef index node
 ctypedef index cluster
+ctypedef double edgeweight
 
 # python module imports
 import networkx as nx
@@ -38,6 +39,7 @@ cdef extern from "../src/graph/Graph.h":
 		node addNode()
 		void removeNode(node u)
 		void addEdge(node u, node v)
+		# TODO: optional weight argument
 		void removeEdge(node u, node v)
 		bool hasEdge(node u, node v)
 		vector[node] nodes()
@@ -218,7 +220,42 @@ cdef class GraphProperties:
 		return minMaxDegree(G._this)
 
 
+# TODO: cdef extern from "../src/dynamics/GraphEventHandler.h"
 
+
+cdef extern from "../src/dynamics/GraphEventProxy.h":
+	cdef cppclass _GraphEventProxy "NetworKit::GraphEventProxy":
+		_GraphEventProxy()	# nullary constructor not valid
+		_GraphEventProxy(_Graph _G)
+		# TODO: void registerObserver(_GraphEventHandler* _observer)
+		node addNode()
+		void removeNode(node u)
+		void addEdge(node u, node v)
+		# TODO: optional edge weight
+		void removeEdge(node u, node v)
+		void setWeight(node u, node v, edgeweight w)
+		void timeStep()
+		
+cdef class GraphEventProxy:
+	cdef _GraphEventProxy _this
+	
+	def __cinit__(self, Graph G not None):
+		self._this = _GraphEventProxy(G._this)
+	# TODO: delegates
+
+
+
+cdef extern from "../src/io/DGSReader.h":
+	cdef cppclass _DGSReader "NetworKit::DGSReader":
+		_DGSReader() except +
+		void read(string path, _GraphEventProxy _proxy)
+		
+		
+cdef class DGSReader:
+	cdef _DGSReader _this
+	
+	def read(self, path, GraphEventProxy proxy not None):
+		self._this.read(stdstring(path), proxy._this)
 
 
 # under construction
@@ -315,3 +352,19 @@ def compactDegreeHistogram(nxG, nbins=10):
 	
 	return (labels, values)
 	
+	
+# NetworKit algorithm engineering workflows
+
+class DynamicCommunityDetectionWorkflow:
+	
+	def setSource(self, source):
+		pass
+	
+	def setTarget(self, target):
+		pass
+	
+	def setInterval(self, deltaT):
+		""" Every deltaT """
+	
+	def start(self):
+		pass

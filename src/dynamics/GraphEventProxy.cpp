@@ -10,6 +10,9 @@
 namespace NetworKit {
 
 
+GraphEventProxy::GraphEventProxy() {
+}
+
 GraphEventProxy::GraphEventProxy(Graph& G) {
 	this->G = &G;
 }
@@ -61,6 +64,7 @@ void GraphEventProxy::setWeight(node u, node v, edgeweight w) {
 		observer->onWeightUpdate(u, v, wOld, w);
 	}
 }
+
 
 void GraphEventProxy::timeStep() {
 	TRACE("time step");
