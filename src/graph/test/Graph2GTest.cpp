@@ -160,8 +160,8 @@ TEST_F(Graph2GTest, testNodeIteration) {
 //}
 
 TEST_F(Graph2GTest, testEdgeIteration) {
-	int64_t n = 500;
-	int64_t offset = 100;
+	int64_t n = 100;
+	int64_t offset = 20;
 	Graph G(n);
 
 	G.forNodes([&](node v) {
@@ -171,7 +171,9 @@ TEST_F(Graph2GTest, testEdgeIteration) {
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
 
 	G.forEdges([&](node u, node v) {
+		DEBUG("about to remove edge " << u << ", " << v);
 		G.removeEdge(u, v);
+		DEBUG("have removed edge " << u << ", " << v);
 	});
 
 	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";

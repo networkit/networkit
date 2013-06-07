@@ -34,7 +34,7 @@ TEST_F(GraphGTest, testLambdaEdgeIteration) {
 
 	int64_t edgeCount = 0;
 	G.forEdges([&](node u, node v) {
-		if (u < v) {
+		if (u > v) {
 			edgeCount += 1;
 		}
 	});
@@ -51,7 +51,7 @@ TEST_F(GraphGTest, testParallelLambdaEdgeIteration) {
 
 	int64_t edgeCount = 0;
 	G.parallelForEdges([&](node u, node v) {
-		if (u < v) {
+		if (u > v) {
 			#pragma omp atomic update
 			edgeCount += 1;
 		}

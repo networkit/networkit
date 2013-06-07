@@ -1,5 +1,4 @@
 /*
- * Graph.cpp
  *
  *  Created on: 04.02.2013
  *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
@@ -27,17 +26,16 @@ Graph::Graph(count n) : n(n), m(0), z(n), deg(z, 0), exists(z, true), adja(z), e
 }
 
 Graph::~Graph() {
-	// TODO Auto-generated destructor stub
+
 }
 
 
 index Graph::find(node u, node v) const {
-	index vi = 0;
-	for (node x : this->adja[u]) {
+	for (index vi = 0; vi < this->adja[u].size(); ++vi) {
+		node x = this->adja[u][vi];
 		if (x == v) {
 			return vi;
 		}
-		vi++;
 	}
 
 	return none;
@@ -53,7 +51,7 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 		this->adja[u].push_back(u);
 		this->deg[u] += 1;
 		this->eweights[u].push_back(weight);
-		for (int attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
+		for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
 			double defaultAttr = this->edgeAttrDefaults_double[attrId];
 			this->edgeMaps_double[attrId][u].push_back(defaultAttr);
 		}
@@ -68,7 +66,7 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 		this->eweights[u].push_back(weight);
 		this->eweights[v].push_back(weight);
 		// loop over all attributes, setting default attr
-		for (int attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
+		for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
 			double defaultAttr = this->edgeAttrDefaults_double[attrId];
 			this->edgeMaps_double[attrId][u].push_back(defaultAttr);
 			this->edgeMaps_double[attrId][v].push_back(defaultAttr);
@@ -80,8 +78,13 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 
 void Graph::removeEdge(node u, node v) {
 	// remove adjacency
-	index vi = find(u, v);
 	index ui = find(v, u);
+	index vi = find(u, v);
+
+	DEBUG("none: " << none);
+	DEBUG("u: " << u << ", ui: " << ui);
+	DEBUG("v: " << v << ", vi: " << vi);
+
 	if (vi == none) {
 		throw std::runtime_error("edge does not exist");
 		// TODO: what if edge does not exist?
@@ -172,7 +175,7 @@ bool Graph::isEmpty() {
 	return (n == 0);
 }
 
-int64_t Graph::numberOfNodes() const {
+count Graph::numberOfNodes() const {
 	return this->n;
 }
 
@@ -190,7 +193,7 @@ edgeweight Graph::weightedDegree(node v) const {
 }
 
 
-int64_t Graph::numberOfEdges() const {
+count Graph::numberOfEdges() const {
 	// returns a field which is updated on addEdge() and removeEdge()
 	return m;
 }

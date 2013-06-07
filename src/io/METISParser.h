@@ -23,7 +23,8 @@
 
 namespace NetworKit {
 
-typedef int64_t node;
+typedef uint64_t index;
+typedef index node;
 
 class METISParser {
 

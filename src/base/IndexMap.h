@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+typedef uint64_t index; // more expressive name for an index into an array
+typedef uint64_t count; // more expressive name for an integer quantity
+
 
 /**
  * An IndexMap implements a 0-based mapping from an integer index type to an arbitray value type.
@@ -22,7 +25,7 @@ template <typename I, typename T> class IndexMap {
 
 protected:
 
-	int64_t n;	//<! number of indices
+	count n;	//<! number of indices
 	std::vector<T> data; //!< array of size (n).
 	T defaultValue; //!< default value
 
@@ -36,7 +39,7 @@ public:
 	 * @param[in]	n				number of entries
 	 * @param[in]	defaultValue	all entries are initialized to this value
 	 */
-	IndexMap(int64_t n, T defaultValue);
+	IndexMap(count n, T defaultValue);
 
 	virtual ~IndexMap();
 
@@ -63,7 +66,7 @@ public:
 	/**
 	 * Get the number of 1-based entries in this map.
 	 */
-	inline int64_t numberOfEntries() const;
+	inline count numberOfEntries() const;
 
 
 	/**
@@ -75,7 +78,7 @@ public:
 	/**
 	 * Number of nodes for which this clsutering can hold an entry.
 	 */
-	virtual int64_t numberOfNodes() const; // TODO: appropriate here?
+	virtual count numberOfNodes() const; // TODO: appropriate here?
 
 
 	/**
@@ -102,10 +105,9 @@ public:
 
 };
 
-} /* namespace NetworKit */
 
 //template<typename I, typename T>
-//inline NetworKit::IndexMap<I, T>::IndexMap(int64_t n) {
+//inline IndexMap<I, T>::IndexMap(int64_t n) {
 //	this->n = n;
 //	this->defaultValue = 0;
 //	this->nullValue = 0;
@@ -116,43 +118,43 @@ public:
 //}
 
 template<typename I, typename T>
-inline NetworKit::IndexMap<I, T>::IndexMap(int64_t n, T defaultValue = -1) :
+inline IndexMap<I, T>::IndexMap(count n, T defaultValue = -1) :
 		data(n, defaultValue), defaultValue(defaultValue) {
 	this->n = n;
 }
 
 template<typename I, typename T>
-inline NetworKit::IndexMap<I, T>::~IndexMap() {
-	//TODO: destructor stub
+inline IndexMap<I, T>::~IndexMap() {
+
 }
 
 template<typename I, typename T>
-inline T& NetworKit::IndexMap<I, T>::operator [](const I& index) {
+inline T& IndexMap<I, T>::operator [](const I& index) {
 	return this->data[index];
 }
 
 template<typename I, typename T>
-inline const T& NetworKit::IndexMap<I, T>::operator [](const I& index) const {
+inline const T& IndexMap<I, T>::operator [](const I& index) const {
 	return this->data[index];
 }
 
 template<typename I, typename T>
-inline int64_t NetworKit::IndexMap<I, T>::numberOfEntries() const {
+inline count IndexMap<I, T>::numberOfEntries() const {
 	// assert (this->n == (this->array.size() - 1));
 	return this->n;
 }
 
 
 template<typename I, typename T>
-inline bool NetworKit::IndexMap<I, T>::hasBeenSet(I index) const {
+inline bool IndexMap<I, T>::hasBeenSet(I index) const {
 	bool cont = (this->data[index] != this->defaultValue);
 	return cont;
 }
 
 template<typename I, typename T>
-inline void NetworKit::IndexMap<I, T>::print() {
+inline void IndexMap<I, T>::print() {
 	std::cout << "{";
-	for (int64_t i = 0; i < this->n; ++i) {
+	for (index i = 0; i < this->n; ++i) {
 		std::cout << i << ":" << this->data[i] << ", ";
 	}
 	std::cout << "}" << std::endl;
@@ -160,24 +162,25 @@ inline void NetworKit::IndexMap<I, T>::print() {
 }
 
 template<typename I, typename T>
-inline int64_t NetworKit::IndexMap<I, T>::numberOfNodes() const {
+inline count IndexMap<I, T>::numberOfNodes() const {
 	return this->data.size();	// indices are 0-based
 }
 
 template<typename I, typename T>
-inline void NetworKit::IndexMap<I, T>::setAll(T value) {
+inline void IndexMap<I, T>::setAll(T value) {
 	#pragma omp parallel for if (this->n >= 100000)  // TODO: correct parallelization condition?
-	for (int64_t i = 0; i < this->n; ++i) {
+	for (index i = 0; i < this->n; ++i) {
 		this->data[i] = value;
 	}
 }
 
 template<typename I, typename T>
-inline T NetworKit::IndexMap<I, T>::at(I index) {
+inline T IndexMap<I, T>::at(I index) {
 	return this->data.at(index);
 }
 
 /*** Implementation ***/
 
+} /* namespace NetworKit */
 
 #endif /* INDEXMAP_H_ */

@@ -15,7 +15,7 @@
 #include <sstream>
 
 #ifndef NOLOG4CXX
-#include <log4cxx/logger.h>
+#include "log4cxx/logger.h"
 #endif
 
 namespace Aux {
