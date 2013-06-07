@@ -44,6 +44,8 @@ public:
 	void removeEdge(node u, node v);
 
 	void setWeight(node u, node v, edgeweight w);
+
+	void timeStep();
 };
 
 } /* namespace NetworKit */

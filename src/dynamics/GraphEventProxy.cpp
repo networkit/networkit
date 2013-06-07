@@ -62,8 +62,18 @@ void GraphEventProxy::setWeight(node u, node v, edgeweight w) {
 	}
 }
 
+void GraphEventProxy::timeStep() {
+	TRACE("time step");
+	// graph is not changed for time step
+	for (GraphEventHandler* observer : this->observers) {
+		observer->onTimeStep();
+	}
+}
+
 void GraphEventProxy::registerObserver(GraphEventHandler* observer) {
 	this->observers.push_back(observer);
 }
+
+
 
 } /* namespace NetworKit */
