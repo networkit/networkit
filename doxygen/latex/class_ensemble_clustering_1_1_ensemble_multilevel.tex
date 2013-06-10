@@ -1,0 +1,279 @@
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel}{\section{Ensemble\-Clustering\-:\-:Ensemble\-Multilevel Class Reference}
+\label{class_ensemble_clustering_1_1_ensemble_multilevel}\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+}
+
+
+{\ttfamily \#include $<$Ensemble\-Multilevel.\-h$>$}
+
+
+
+Inheritance diagram for Ensemble\-Clustering\-:\-:Ensemble\-Multilevel\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=186pt]{class_ensemble_clustering_1_1_ensemble_multilevel__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Ensemble\-Multilevel\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_ensemble_multilevel__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_afcc3bde4f78125af56d8a07591bc7a79}{Ensemble\-Multilevel} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_ab31fe3caeeb302e9278f7f9887d72a38}{$\sim$\-Ensemble\-Multilevel} ()
+\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a9b07e585d4d1b618de09cc0788f0f06a}{add\-Base\-Clusterer} (\hyperlink{class_ensemble_clustering_1_1_clusterer}{Clusterer} \&base)
+\begin{DoxyCompactList}\small\item\em Add a base clusterer to the ensemble. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a24a9f848556af3d58978c7b1a144cfdb}{set\-Final\-Clusterer} (\hyperlink{class_ensemble_clustering_1_1_clusterer}{Clusterer} \&final)
+\begin{DoxyCompactList}\small\item\em Set final clusterer. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a2685958be0a4b56fe5f1719ef603ed4a}{set\-Quality\-Measure} (\hyperlink{class_ensemble_clustering_1_1_quality_measure}{Quality\-Measure} \&\hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a15b2fa011c34bb8c2ea0125b22530eb0}{qm})
+\begin{DoxyCompactList}\small\item\em Set quality measure to evaluate clusterings. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a41d1c8b828f043f79cdb7925b71fb771}{set\-Overlapper} (\hyperlink{class_ensemble_clustering_1_1_overlapper}{Overlapper} \&\hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a14fc679b06a378edbda2fe0b77c831b0}{overlap})
+\begin{DoxyCompactList}\small\item\em Set overlap algorithm which combines the results of the base clusterers. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_clustering}{Clustering} \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_adc1557bf71810a5fc7f37400917f407e}{run} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&G)
+\begin{DoxyCompactList}\small\item\em Run the ensemble clusterer. \end{DoxyCompactList}\item 
+virtual std\-::string \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a18d80c7285dfbf236306908804e45af8}{to\-String} () const 
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_quality_measure}{Quality\-Measure} $\ast$ \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a15b2fa011c34bb8c2ea0125b22530eb0}{qm}
+\begin{DoxyCompactList}\small\item\em evaluates clutering quality \end{DoxyCompactList}\item 
+\hyperlink{class_ensemble_clustering_1_1_clusterer}{Clusterer} $\ast$ \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a8fd0edb77e73782397ee3abcd0ef7703}{final\-Clusterer}
+\begin{DoxyCompactList}\small\item\em final clustering algorithm \end{DoxyCompactList}\item 
+std\-::vector$<$ \hyperlink{class_ensemble_clustering_1_1_clusterer}{Clusterer} $\ast$ $>$ \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a3cfdea29f6d247ee855ce68ebfbd8945}{base\-Clusterers}
+\begin{DoxyCompactList}\small\item\em ensemble of base clusterers \end{DoxyCompactList}\item 
+\hyperlink{class_ensemble_clustering_1_1_overlapper}{Overlapper} $\ast$ \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a14fc679b06a378edbda2fe0b77c831b0}{overlap}
+\begin{DoxyCompactList}\small\item\em clustering overlap algorithm \end{DoxyCompactList}\item 
+int \hyperlink{class_ensemble_clustering_1_1_ensemble_multilevel_a326e7cca2b0f70d543c1b71fdb534ee6}{h}
+\begin{DoxyCompactList}\small\item\em hierarchy level / iteration counter \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 35 of file Ensemble\-Multilevel.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_afcc3bde4f78125af56d8a07591bc7a79}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!Ensemble\-Multilevel@{Ensemble\-Multilevel}}
+\index{Ensemble\-Multilevel@{Ensemble\-Multilevel}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{Ensemble\-Multilevel}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::\-Ensemble\-Multilevel (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_afcc3bde4f78125af56d8a07591bc7a79}
+
+
+Definition at line 12 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_ab31fe3caeeb302e9278f7f9887d72a38}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!$\sim$\-Ensemble\-Multilevel@{$\sim$\-Ensemble\-Multilevel}}
+\index{$\sim$\-Ensemble\-Multilevel@{$\sim$\-Ensemble\-Multilevel}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{$\sim$\-Ensemble\-Multilevel}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::$\sim$\-Ensemble\-Multilevel (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_ab31fe3caeeb302e9278f7f9887d72a38}
+
+
+Definition at line 18 of file Ensemble\-Multilevel.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a9b07e585d4d1b618de09cc0788f0f06a}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!add\-Base\-Clusterer@{add\-Base\-Clusterer}}
+\index{add\-Base\-Clusterer@{add\-Base\-Clusterer}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{add\-Base\-Clusterer}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::add\-Base\-Clusterer (
+\begin{DoxyParamCaption}
+\item[{{\bf Clusterer} \&}]{base}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a9b07e585d4d1b618de09cc0788f0f06a}
+
+
+Add a base clusterer to the ensemble. 
+
+
+
+Definition at line 26 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_adc1557bf71810a5fc7f37400917f407e}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!run@{run}}
+\index{run@{run}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::run (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_adc1557bf71810a5fc7f37400917f407e}
+
+
+Run the ensemble clusterer. 
+
+
+
+Implements \hyperlink{class_ensemble_clustering_1_1_clusterer_a9fab8db7082b6399e1d29509512cad91}{Ensemble\-Clustering\-::\-Clusterer}.
+
+
+
+Definition at line 38 of file Ensemble\-Multilevel.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_ensemble_multilevel_adc1557bf71810a5fc7f37400917f407e_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a24a9f848556af3d58978c7b1a144cfdb}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!set\-Final\-Clusterer@{set\-Final\-Clusterer}}
+\index{set\-Final\-Clusterer@{set\-Final\-Clusterer}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{set\-Final\-Clusterer}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::set\-Final\-Clusterer (
+\begin{DoxyParamCaption}
+\item[{{\bf Clusterer} \&}]{final}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a24a9f848556af3d58978c7b1a144cfdb}
+
+
+Set final clusterer. 
+
+
+
+Definition at line 30 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a41d1c8b828f043f79cdb7925b71fb771}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!set\-Overlapper@{set\-Overlapper}}
+\index{set\-Overlapper@{set\-Overlapper}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{set\-Overlapper}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::set\-Overlapper (
+\begin{DoxyParamCaption}
+\item[{{\bf Overlapper} \&}]{overlap}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a41d1c8b828f043f79cdb7925b71fb771}
+
+
+Set overlap algorithm which combines the results of the base clusterers. 
+
+
+
+Definition at line 34 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a2685958be0a4b56fe5f1719ef603ed4a}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!set\-Quality\-Measure@{set\-Quality\-Measure}}
+\index{set\-Quality\-Measure@{set\-Quality\-Measure}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{set\-Quality\-Measure}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::set\-Quality\-Measure (
+\begin{DoxyParamCaption}
+\item[{{\bf Quality\-Measure} \&}]{qm}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a2685958be0a4b56fe5f1719ef603ed4a}
+
+
+Set quality measure to evaluate clusterings. 
+
+
+
+Definition at line 22 of file Ensemble\-Multilevel.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a18d80c7285dfbf236306908804e45af8}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!to\-String@{to\-String}}
+\index{to\-String@{to\-String}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{to\-String}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::to\-String (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a18d80c7285dfbf236306908804e45af8}
+\begin{DoxyReturn}{Returns}
+string representation. 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_ensemble_clustering_1_1_clusterer_aba1a37081af12061ef675139668c5ee6}{Ensemble\-Clustering\-::\-Clusterer}.
+
+
+
+Definition at line 217 of file Ensemble\-Multilevel.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=330pt]{class_ensemble_clustering_1_1_ensemble_multilevel_a18d80c7285dfbf236306908804e45af8_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a3cfdea29f6d247ee855ce68ebfbd8945}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!base\-Clusterers@{base\-Clusterers}}
+\index{base\-Clusterers@{base\-Clusterers}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{base\-Clusterers}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<${\bf Clusterer}$\ast$$>$ Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::base\-Clusterers\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a3cfdea29f6d247ee855ce68ebfbd8945}
+
+
+ensemble of base clusterers 
+
+
+
+Definition at line 42 of file Ensemble\-Multilevel.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a8fd0edb77e73782397ee3abcd0ef7703}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!final\-Clusterer@{final\-Clusterer}}
+\index{final\-Clusterer@{final\-Clusterer}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{final\-Clusterer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clusterer}$\ast$ Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::final\-Clusterer\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a8fd0edb77e73782397ee3abcd0ef7703}
+
+
+final clustering algorithm 
+
+
+
+Definition at line 41 of file Ensemble\-Multilevel.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a326e7cca2b0f70d543c1b71fdb534ee6}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!h@{h}}
+\index{h@{h}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{h}]{\setlength{\rightskip}{0pt plus 5cm}int Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::h\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a326e7cca2b0f70d543c1b71fdb534ee6}
+
+
+hierarchy level / iteration counter 
+
+
+
+Definition at line 46 of file Ensemble\-Multilevel.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a14fc679b06a378edbda2fe0b77c831b0}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!overlap@{overlap}}
+\index{overlap@{overlap}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{overlap}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Overlapper}$\ast$ Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::overlap\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a14fc679b06a378edbda2fe0b77c831b0}
+
+
+clustering overlap algorithm 
+
+
+
+Definition at line 44 of file Ensemble\-Multilevel.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_ensemble_multilevel_a15b2fa011c34bb8c2ea0125b22530eb0}{\index{Ensemble\-Clustering\-::\-Ensemble\-Multilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}!qm@{qm}}
+\index{qm@{qm}!EnsembleClustering::EnsembleMultilevel@{Ensemble\-Clustering\-::\-Ensemble\-Multilevel}}
+\subsubsection[{qm}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Quality\-Measure}$\ast$ Ensemble\-Clustering\-::\-Ensemble\-Multilevel\-::qm\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_ensemble_multilevel_a15b2fa011c34bb8c2ea0125b22530eb0}
+
+
+evaluates clutering quality 
+
+
+
+Definition at line 39 of file Ensemble\-Multilevel.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/community/\hyperlink{_ensemble_multilevel_8h}{Ensemble\-Multilevel.\-h}\item 
+src/community/\hyperlink{_ensemble_multilevel_8cpp}{Ensemble\-Multilevel.\-cpp}\end{DoxyCompactItemize}
