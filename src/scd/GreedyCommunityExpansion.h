@@ -19,6 +19,36 @@ class GreedyCommunityExpansion: public NetworKit::SelectiveCommunityDetector {
 
 public:
 
+	class QualityObjective {
+
+		/**
+		 * @param[in]	G	the graph
+		 * @param[in]	community	the currently expanding community
+		 */
+		QualityObjective(Graph& G, std::unordered_set<node>& community);
+
+		virtual double getValue(node v) = 0;
+	};
+
+
+	class LocalModularity : public QualityObjective {
+
+		// TODO: constructor
+
+		virtual double getValue(node v);
+
+	};
+
+
+	class Acceptability {
+
+		// TODO: constructor
+
+		virtual double getValue(node v) = 0;
+
+	};
+
+
 	GreedyCommunityExpansion();
 
 	virtual ~GreedyCommunityExpansion();
