@@ -13,6 +13,9 @@ DynamicCommunityDetector::DynamicCommunityDetector(Graph& G) {
 	this->G = &G;
 }
 
+DynamicCommunityDetector::DynamicCommunityDetector() {
+}
+
 DynamicCommunityDetector::~DynamicCommunityDetector() {
 	// TODO Auto-generated destructor stub
 }
