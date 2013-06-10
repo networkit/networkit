@@ -13,7 +13,6 @@
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Timer.h"
 #include "../METISGraphReader.h"
-#include "../DGSReader.h"
 
 namespace NetworKit {
 

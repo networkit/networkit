@@ -17,6 +17,9 @@ for (root, dirs, files) in os.walk(srcDir, topdown=False):
 			src.append(os.path.join(root, name))
 			
 print(src)
+
+log4cxx_library = "/usr/local/Cellar/log4cxx/0.10.0/lib"
+gtest = "workspace/gtest/"
 	
 # TODO: remove user-specific paths
 modules = [Extension("NetworKit",
@@ -24,8 +27,8 @@ modules = [Extension("NetworKit",
 					language = "c++",
 					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX"],
 					extra_link_args=["-fopenmp", "-std=c++11"],
-					include_dirs=[os.path.join(os.path.expanduser("~"), "workspace/gtest/include")],
-					library_dirs=["/usr/local/Cellar/log4cxx/0.10.0/lib", os.path.join(os.path.expanduser("~"), "workspace/gtest/")],
+					include_dirs=[os.path.join(os.path.expanduser("~"), (gtest + "include"))],
+					library_dirs=[log4cxx_library, os.path.join(os.path.expanduser("~"), gtest)],
 					libraries=["log4cxx", "gtest"])]
 
 for e in modules:
