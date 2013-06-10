@@ -176,30 +176,6 @@ cdef class Louvain(Clusterer):
 		return Clustering().setThis(self._this.run(G._this))
 
 
-class DynamicCommunityDetector:
-	pass
-	
-	
-cdef extern from "../src/community/DynamicLabelPropagation.h":
-	cdef cppclass _DynamicLabelPropagation "NetworKit::DynamicLabelPropagation":
-		_DynamicLabelPropagation() except +
-		_DynamicLabelPropagation(_Graph _G, count theta, string strategy) except +
-		_Clustering run()
-		string toString()
-		
-# TODO: how to inherit from base class DynamicCommunityDetector
-cdef class DynamicLabelPropagation:
-	# FIXME:
-	# cdef _DynamicLabelPropagation _this
-	
-	def __cinit__(Graph G not None, theta, strategy):
-		pass
-		# FIXME:
-		# self._this = _DynamicLabelPropagation(G._this, theta, stdstring(strategy))
-	
-	def run(self):
-		pass	
-	
 
 # this is an example for using static methods
 cdef extern from "../src/properties/GraphProperties.h" namespace "NetworKit::GraphProperties":
@@ -256,6 +232,45 @@ cdef class DGSReader:
 	
 	def read(self, path, GraphEventProxy proxy not None):
 		self._this.read(stdstring(path), proxy._this)
+
+
+
+cdef extern from "../src/community/DynamicLabelPropagation.h":
+	cdef cppclass _DynamicLabelPropagation "NetworKit::DynamicLabelPropagation":
+		_DynamicLabelPropagation() except +
+		_DynamicLabelPropagation(_Graph G, count theta, string strategyName) except +
+		_Clustering run()
+		string toString()
+
+class DynamicCommunityDetector:
+	pass	
+		
+cdef class DynamicLabelPropagation:
+	cdef _DynamicLabelPropagation _this
+	
+	def __cinit__(self, Graph G not None, theta, strategyName):
+		self._this = _DynamicLabelPropagation(G._this, theta, stdstring(strategyName))
+		
+	def run(self):
+		self._this.run()
+
+
+cdef extern from "../src/generators/DynamicBarabasiAlbertGenerator.h":
+	cdef cppclass _DynamicBarabasiAlbertGenerator "NetworKit::DynamicBarabasiAlbertGenerator":
+		_DynamicBarabasiAlbertGenerator() except +
+		_DynamicBarabasiAlbertGenerator(_GraphEventProxy _Gproxy, count k) except +
+		void initializeGraph()
+		void generate()
+		
+cdef class DynamicBarabasiAlbertGenerator:
+	cdef _DynamicBarabasiAlbertGenerator _this
+	
+	def __cinit__(self, GraphEventProxy Gproxy not None, k):
+		self._this = _DynamicBarabasiAlbertGenerator(Gproxy._this, k)
+		
+	def generate(self):
+		self._this.generate()
+		
 
 
 # under construction
@@ -357,14 +372,21 @@ def compactDegreeHistogram(nxG, nbins=10):
 
 class DynamicCommunityDetectionWorkflow:
 	
-	def setSource(self, source):
-		pass
+	def __init__(self):
+		clusterings = []	# list of clusterings
 	
-	def setTarget(self, target):
-		pass
 	
-	def setInterval(self, deltaT):
-		""" Every deltaT """
-	
-	def start(self):
-		pass
+	def start(self, nMax, deltaT):
+		
+		self.G = Graph(0)
+		self.Gproxy = GraphEventProxy(self.G)
+		self.generator = DynamicBarabasiAlbertGenerator(self.Gproxy)
+		self.dcd = DynamicLabelPropagation(self.Gproxy)
+		
+		while (self.G.numberOfNodes() < nMax):
+			self.generator.generate()
+			if (self.G.time() % deltaT) == 0:
+				zeta = self.dcd.run()
+				self.clusterings.append(zeta)
+		
+			
