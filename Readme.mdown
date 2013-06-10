@@ -47,7 +47,7 @@ Requirements
 
 ###Compiler: 
 
-- compiler supporting C++11 (we use GCC 4.7)
+- compiler supporting C++11 (we use GCC 4.7 and 4.8)
 
 
 ###Libraries:
@@ -65,9 +65,13 @@ The following preprocessor definitions (using the `-D` compiler flag) remove the
 Build
 -----
 
-We recommend SCons for building the project. Edit the file `SConstruct.EDITME` to set include paths, library paths etc, then rename it to `SConstruct`.
+To build NetworKit, the compiler and linker flags `-fopenmp -std=c++11` are required.
 
-Alternatively, our Eclipse project files are included as examples in the `eclipse/` directory. Copy them, import the project into Eclipse and modify depending on your needs.
+We recommend [SCons](http://www.scons.org/) for building the project. Edit the file `SConstruct.EDITME` to set include paths, library paths etc, then rename it to `SConstruct`.
+
+Alternatively, the project can be build with Eclipse. Our Eclipse and CDT project files are included as examples in the `eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
+
+
 
 
 Test
