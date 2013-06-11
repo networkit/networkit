@@ -23,6 +23,8 @@ protected:
 
 public:
 
+	 DynamicGraphGenerator(); // nullary constructor needed for Python interface - do not use this to construct an instance
+
 	DynamicGraphGenerator(GraphEventProxy& proxy);
 
 	virtual ~DynamicGraphGenerator();

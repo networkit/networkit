@@ -17,6 +17,8 @@ class DynamicPubWebGenerator: public DynamicGraphGenerator {
 protected:
 	PubWebGenerator staticGen;
 
+	void moveNodesRandomly();
+
 public:
 	DynamicPubWebGenerator(GraphEventProxy& proxy, count numInitialNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors);
@@ -30,7 +32,7 @@ public:
 	/*
 	 * Send graph events to the proxy until termination function becomes true.
 	 */
-	virtual void generateWhile(std::function<bool(void)> cont);
+	virtual void generate();
 
 	node addNode();
 };

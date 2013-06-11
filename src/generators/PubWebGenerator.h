@@ -23,8 +23,9 @@ struct circle {
 
 class PubWebGenerator: public NetworKit::StaticGraphGenerator {
 
-// FIXMEprotected:
-public:
+	friend class DynamicPubWebGenerator;
+
+protected:
 	count n; //!< number of nodes
 	count numDenseAreas; //!< number of areas with more nodes (denser)
 	float neighRad; //!< neighborhood radius

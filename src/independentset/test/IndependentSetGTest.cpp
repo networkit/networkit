@@ -5,6 +5,9 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
+
 #include "IndependentSetGTest.h"
 
 namespace NetworKit {
@@ -64,3 +67,6 @@ TEST_F(IndependentSetGTest, testLubyWithSelfLoops) {
 }
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */
+

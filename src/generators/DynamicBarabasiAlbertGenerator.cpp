@@ -9,6 +9,9 @@
 
 namespace NetworKit {
 
+DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator() {
+}
+
 DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(GraphEventProxy& proxy, count k) : DynamicGraphGenerator(proxy), k(k) {
 	if (k <= 0) {
 		throw std::runtime_error("k must be at least 1");

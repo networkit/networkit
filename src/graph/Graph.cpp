@@ -8,7 +8,7 @@
 
 namespace NetworKit {
 
-Graph::Graph(): n(0), m(0), z(n), deg(z, 0), exists(z, true), adja(z), eweights(z) {
+Graph::Graph(): n(0), m(0), z(n), t(0), deg(z, 0), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;
@@ -17,7 +17,7 @@ Graph::Graph(): n(0), m(0), z(n), deg(z, 0), exists(z, true), adja(z), eweights(
 }
 
 // TODO: z should probably be n-1, but it breaks some tests
-Graph::Graph(count n) : n(n), m(0), z(n), deg(z, 0), exists(z, true), adja(z), eweights(z) {
+Graph::Graph(count n) : n(n), m(0), z(n), t(0), deg(z, 0), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;
@@ -80,10 +80,6 @@ void Graph::removeEdge(node u, node v) {
 	// remove adjacency
 	index ui = find(v, u);
 	index vi = find(u, v);
-
-	DEBUG("none: " << none);
-	DEBUG("u: " << u << ", ui: " << ui);
-	DEBUG("v: " << v << ", vi: " << vi);
 
 	if (vi == none) {
 		throw std::runtime_error("edge does not exist");
@@ -222,10 +218,6 @@ std::string Graph::getName() {
 	return this->name;
 }
 
-edgeweight Graph::totalNodeWeight() {
-	throw std::runtime_error("DEPRECATED");
-}
-
 void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 
 
@@ -324,6 +316,15 @@ std::vector<std::pair<node, node> > Graph::edges() {
 	});
 	return edges;
 }
+
+void Graph::timeStep() {
+	this->t += 1;
+}
+
+count Graph::time() {
+	return this->t;
+}
+
 
 } /* namespace NetworKit */
 
