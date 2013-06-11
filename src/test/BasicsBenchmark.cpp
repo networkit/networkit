@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "BasicsBenchmark.h"
 
 namespace NetworKit {
@@ -261,3 +263,5 @@ TEST_F(BasicsBenchmark, lambdaVectorWrite_par) {
 }
 
 } /* namespace NetworKit */
+
+#endif /* NOGTEST */

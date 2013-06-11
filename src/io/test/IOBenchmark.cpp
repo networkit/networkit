@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "IOBenchmark.h"
 
 namespace NetworKit {
@@ -52,3 +54,6 @@ TEST_F(IOBenchmark, tryDGSReader) {
 }
 
 } /* namespace NetworKit */
+
+
+#endif /* NOGTEST */

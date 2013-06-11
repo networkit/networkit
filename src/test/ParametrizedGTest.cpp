@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "ParametrizedGTest.h"
 
 
@@ -28,3 +30,5 @@ TEST_P(ParametrizedGTest, testParameter) {
 //						ParametrizedGTest,
 //                       ::testing::Values(100, 1000));
 
+
+#endif /* NOGTEST */

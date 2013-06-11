@@ -5,9 +5,10 @@
  *      Author: cls
  */
 
+#ifndef NOGTEST
+
 #include "PropertiesGTest.h"
-#include <algorithm> // for copy
-#include <iterator> // for ostream_iterator
+
 
 namespace NetworKit {
 
@@ -242,3 +243,5 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 
 } /* namespace NetworKit */
+
+#endif NOGTEST

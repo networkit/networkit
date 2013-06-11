@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#ifndef NOGTEST
+
 #include "VizGTest.h"
 
 
@@ -90,4 +92,8 @@ TEST_F(VizGTest, testForceDirectedLayouter) {
 
 
 } /* namespace NetworKit */
+
+
+#endif /*NOGTEST */
+
 

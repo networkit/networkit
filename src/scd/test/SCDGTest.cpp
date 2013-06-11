@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#ifndef NOGTEST
+
 #include "SCDGTest.h"
 
 namespace NetworKit {
@@ -41,3 +43,5 @@ TEST_F(SCDGTest, testGreedyCommunityExpansion) {
 //}
 
 } /* namespace NetworKit */
+
+#endif /* NOGTEST */
