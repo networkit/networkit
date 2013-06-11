@@ -196,14 +196,22 @@ cdef class GraphProperties:
 		return minMaxDegree(G._this)
 
 
-# TODO: cdef extern from "../src/dynamics/GraphEventHandler.h"
+cdef extern from "../src/dynamics/GraphEventHandler.h":
+	cdef cppclass _GraphEventHandler "NetworKit::GraphEventHandler":
+		_GraphEventHandler() except +
+		void onNodeAddition(node u)
+		void onNodeRemoval(node u)
+		void onEdgeAddition(node u, node v)
+		void onEdgeRemoval(node u, node v)
+		void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew)
+		void onTimeStep()
 
 
 cdef extern from "../src/dynamics/GraphEventProxy.h":
 	cdef cppclass _GraphEventProxy "NetworKit::GraphEventProxy":
 		_GraphEventProxy()	# nullary constructor not valid
 		_GraphEventProxy(_Graph _G)
-		# TODO: void registerObserver(_GraphEventHandler* _observer)
+		void registerObserver(_GraphEventHandler* _observer)
 		node addNode()
 		void removeNode(node u)
 		void addEdge(node u, node v)
