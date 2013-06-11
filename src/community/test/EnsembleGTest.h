@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef ENSEMBLEGTEST_H_
 #define ENSEMBLEGTEST_H_
 
@@ -33,3 +35,5 @@ class EnsembleGTest: public testing::Test {
 
 } /* namespace NetworKit */
 #endif /* ENSEMBLEGTEST_H_ */
+
+#endif /*NOGTEST */

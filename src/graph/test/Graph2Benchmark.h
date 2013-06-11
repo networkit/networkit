@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef GRAPH2BENCHMARK_H_
 #define GRAPH2BENCHMARK_H_
 
@@ -24,3 +26,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* GRAPH2BENCHMARK_H_ */
+
+#endif /*NOGTEST */

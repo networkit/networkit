@@ -174,6 +174,16 @@ TEST_F(IOGTest, testDotGraphWriter) {
 	EXPECT_TRUE(exists) << "graph file should have been written to: " << path;
 }
 
+TEST_F(IOGTest, tryDGSReaderOnBigFile) {
+	// read example graph
+	DGSReader reader;
+	Graph G;
+	GraphEventProxy Gproxy(G);
+	reader.read("/Users/forigem/KIT/NetworKit-CommunityDetection/input/AuthorsGraph.dgs", Gproxy);
+}
+
+
+
 TEST_F(IOGTest, tryDGSReader) {
 	// read example graph
 	DGSReader reader;

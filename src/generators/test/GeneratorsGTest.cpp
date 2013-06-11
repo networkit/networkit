@@ -5,6 +5,8 @@ Dy * GeneratorsTest.cpp
  *      Author: cls
  */
 
+#ifndef NOGTEST
+
 #include "GeneratorsGTest.h"
 
 namespace NetworKit {
@@ -248,4 +250,6 @@ TEST_F(GeneratorsGTest, generatetStaticBarabasiAlbertGeneratorGraph) {
 
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */
 

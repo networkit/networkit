@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "GraphGeneratorGTest.h"
 
 namespace NetworKit {
@@ -21,3 +23,5 @@ GraphGeneratorGTest::~GraphGeneratorGTest() {
 
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */
