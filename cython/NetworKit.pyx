@@ -49,8 +49,9 @@ cdef extern from "../src/graph/Graph.h":
 cdef class Graph:
 	cdef _Graph _this
 	
-	def __cinit__(self, n):
-		self._this = _Graph(n)
+	def __cinit__(self, n=None):
+		if n is not None:
+			self._this = _Graph(n)
 		
 	# any _thisect which appears as a return type needs to implement setThis
 	cdef setThis(self, _Graph other):
@@ -286,8 +287,18 @@ cdef class DynamicLabelPropagation:
 
 cdef extern from "../src/generators/PubWebGenerator.h":
 	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator":
-		pass # TODO:
+		_PubWebGenerator() except +
+		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
+		_Graph generate()
+		
+cdef class PubWebGenerator:
+	cdef _PubWebGenerator _this
 	
+	def __cinit__(self, count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors):
+		self._this = _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+		
+	def generate(self):
+		return Graph().setThis(self._this.generate())	
 
 cdef extern from "../src/viz/ForceDirected.h":
 	cdef cppclass _ForceDirected "NetworKit::ForceDirected":
@@ -321,7 +332,7 @@ def readGraph(path):
 
 def nx2nk(nxG):
 	""" Convert a networkx.Graph to a NetworKit.Graph """
-	
+	# TODO: consider weights
 	n = nxG.number_of_nodes()
 	cdef Graph nkG = Graph(n)
 	
@@ -332,6 +343,7 @@ def nx2nk(nxG):
 
 def nk2nx(nkG):
 	""" Convert a NetworKit.Graph to a networkx.Graph """
+	# TODO: consider weights
 	nxG = nx.Graph()
 	for (u, v) in nkG.edges():
 		nxG.add_edge(u, v)

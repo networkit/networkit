@@ -52,6 +52,10 @@ float PubWebGenerator::squaredDistanceInUnitTorus(float x1, float y1, float x2,
 	return (distx * distx + disty * disty);
 }
 
+PubWebGenerator::PubWebGenerator() {
+}
+
+
 PubWebGenerator::PubWebGenerator(count numNodes, count numberOfDenseAreas,
 		float neighborhoodRadius, count maxNumberOfNeighbors) :
 		n(numNodes), numDenseAreas(numberOfDenseAreas), neighRad(
@@ -177,8 +181,6 @@ Graph PubWebGenerator::generate() {
 
 	return g;
 }
-
-
 
 
 // TODO: NOT tested!
