@@ -16,6 +16,7 @@
 
 #include "../graph/Graph.h"
 #include "../clustering/Clustering.h"
+#include "../clustering/ClusteringGenerator.h"
 
 namespace NetworKit {
 
@@ -28,7 +29,7 @@ class PostscriptWriter {
 	};
 
 protected:
-	Graph* g;
+	Graph g;
 	bool wrapAround;
 
 	count numColors;
@@ -47,15 +48,17 @@ protected:
 	float ps_minz;
 	float ps_maxz;
 
+	void init(std::string filename, std::ofstream& file);
 	void writeHeader(std::ofstream& file);
 	void writeMacros(std::ofstream& file);
 	void writeClustering(Clustering& clustering, std::ofstream& file);
 
 public:
-	PostscriptWriter(Graph& graph, bool isTorus = false);
+	PostscriptWriter(const Graph& graph, bool isTorus = false);
 	~PostscriptWriter();
 
 	void write(Clustering& clustering, std::string filename);
+	void write(std::string filename);
 };
 
 } /* namespace NetworKit */

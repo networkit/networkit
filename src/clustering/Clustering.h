@@ -17,7 +17,7 @@
 
 namespace NetworKit {
 
-typedef int64_t cluster;	//!< cluster is represented as a 0-based index
+typedef int64_t cluster;	//!< cluster is represented as a 0-based index   TODO: make unsigned
 
 class Clustering: public NodeMap<cluster> {
 

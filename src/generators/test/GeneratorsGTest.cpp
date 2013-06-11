@@ -108,9 +108,9 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 
-	count numInitialNodes = 2000;
-	count numberOfDenseAreas = 12;
-	float neighborhoodRadius = 0.1;
+	count numInitialNodes = 600;
+	count numberOfDenseAreas = 10;
+	float neighborhoodRadius = 0.125;
 	count maxNumberOfNeighbors = 16;
 	count numIterations = 10;
 
@@ -120,21 +120,23 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 	DynamicGraphGenerator* gen = new DynamicPubWebGenerator(
 			proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
 
-	DEBUG("before init graph");
+	TRACE("before init graph");
 	gen->initializeGraph();
-	DEBUG("after init graph");
+	TRACE("after init graph");
 
 	EXPECT_EQ(numInitialNodes, G.numberOfNodes()) << "initial number of nodes";
 
-	// FIXME: find out why second iteration has a lot fewer edges (random anomaly or error?)
-
-	// TODO: postscript output
-	DEBUG("m = " << G.numberOfEdges());
+	TRACE("m = " << G.numberOfEdges());
 
 	for (index iter = 0; iter < numIterations; ++iter) {
-		// TODO: postscript output
 		gen->generate();
-		DEBUG("m = " << G.numberOfEdges());
+		TRACE("m = " << G.numberOfEdges());
+
+		PostscriptWriter psWriter(G, true);
+		char filename[20];
+		assert(iter < 10);
+		sprintf(filename, "output/pubweb-%i.eps", iter);
+		psWriter.write(filename);
 	}
 }
 
