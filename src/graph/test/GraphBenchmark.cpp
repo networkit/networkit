@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "GraphBenchmark.h"
 
 namespace NetworKit {
@@ -272,3 +274,5 @@ TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */

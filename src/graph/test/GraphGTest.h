@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef GRAPHGTEST_H_
 #define GRAPHGTEST_H_
 
@@ -37,3 +39,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* GRAPHGTEST_H_ */
+
+#endif /*NOGTEST */

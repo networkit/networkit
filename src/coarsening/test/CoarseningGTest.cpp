@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "CoarseningGTest.h"
 
 namespace NetworKit {
@@ -90,3 +92,5 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */

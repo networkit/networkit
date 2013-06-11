@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "Graph2Benchmark.h"
 
 namespace NetworKit {
@@ -238,3 +240,5 @@ TEST_F(Graph2Benchmark, nodeRemoval) {
 }
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */

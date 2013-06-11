@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "EnsembleGTest.h"
 
 namespace NetworKit {
@@ -294,3 +296,5 @@ TEST_F(EnsembleGTest, testEnsemblePreprocessing) {
 }
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */
