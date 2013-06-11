@@ -28,6 +28,8 @@ protected:
 
 public:
 
+	DynamicBarabasiAlbertGenerator(); // nullary constructor needed for Python interface - do not use this to construct an instance
+
 	DynamicBarabasiAlbertGenerator(GraphEventProxy& proxy, count k = 2);
 
 	virtual ~DynamicBarabasiAlbertGenerator();
