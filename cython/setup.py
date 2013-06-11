@@ -11,23 +11,20 @@ os.environ["CXX"] = "g++-4.7"
 srcDir = "../src"
 src = ["NetworKit.pyx"]	# list of source files
 # include all .cpp files
-for (root, dirs, files) in os.walk(srcDir, topdown=False):
-	for name in files:
-		if name.endswith(".cpp") and (not root.endswith("/test")):
-			src.append(os.path.join(root, name))
+# for (root, dirs, files) in os.walk(srcDir, topdown=False):
+# 	for name in files:
+# 		if name.endswith(".cpp") and (not root.endswith("/test")):
+# 			src.append(os.path.join(root, name))
 			
-print(src)
+print("source files: {0}".format(src))
 
-log4cxx_library = "/usr/local/Cellar/log4cxx/0.10.0/lib"
-gtest = "workspace/gtest/"
-	
-# TODO: remove user-specific paths
 modules = [Extension("NetworKit",
 					src,
 					language = "c++",
-
 					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
-					extra_link_args=["-fopenmp", "-std=c++11"])]
+					extra_link_args=["-fopenmp", "-std=c++11"],
+					libraries=["NetworKit-Core-O"],
+					library_dirs=["../NetworKit-Core-O/"])]
 
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}
@@ -35,4 +32,6 @@ for e in modules:
 setup(name="NetworKit",
 	 cmdclass={"build_ext": build_ext},
 	 ext_modules=modules)
+
+print("setup script terminated")
 
