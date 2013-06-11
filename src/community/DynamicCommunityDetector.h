@@ -18,6 +18,8 @@ class DynamicCommunityDetector: public NetworKit::GraphEventHandler {
 
 public:
 
+	DynamicCommunityDetector(); // nullary constructor needed for Python shell - do not create instances with this
+
 	DynamicCommunityDetector(Graph& G);
 
 	virtual ~DynamicCommunityDetector();

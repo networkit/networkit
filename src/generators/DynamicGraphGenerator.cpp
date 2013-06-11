@@ -9,10 +9,15 @@
 
 namespace NetworKit {
 
+DynamicGraphGenerator::DynamicGraphGenerator() {
+}
+
 DynamicGraphGenerator::DynamicGraphGenerator(GraphEventProxy& proxy) {
 	this->Gproxy = &proxy;
 	this->G = this->Gproxy->G;
 }
+
+
 
 DynamicGraphGenerator::~DynamicGraphGenerator() {
 	// TODO Auto-generated destructor stub

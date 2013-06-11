@@ -23,6 +23,8 @@ class DynamicLabelPropagation: public NetworKit::DynamicCommunityDetector {
 
 public:
 
+	DynamicLabelPropagation(); // nullary constructor needed for Python interface - do not use this to construct instance
+
 	/**
 	 * @param[in]	G		graph
 	 * @param[in]	theta	update threshold
