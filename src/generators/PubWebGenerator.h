@@ -45,6 +45,9 @@ protected:
 	bool isValidEdge(Graph& g, node u, node v);
 
 public:
+	PubWebGenerator(); // nullary constructor needed for Python Shell - do not use this to construct instance
+
+	// TODO: provide reasonable default parameters in documentation or as default arguments to constructor
 	PubWebGenerator(count numNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors);
 	virtual ~PubWebGenerator();
