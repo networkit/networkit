@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#ifndef NOGTEST
+
 #ifndef POSTSCRIPTWRITERGTEST_H_
 #define POSTSCRIPTWRITERGTEST_H_
 
@@ -29,3 +31,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* POSTSCRIPTWRITERGTEST_H_ */
+
+#endif /*NOGTEST */

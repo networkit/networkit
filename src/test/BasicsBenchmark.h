@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef BASICSBENCHMARK_H_
 #define BASICSBENCHMARK_H_
 
@@ -24,3 +26,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* BASICSBENCHMARK_H_ */
+
+#endif /* NOGTEST */
