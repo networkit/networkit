@@ -255,21 +255,22 @@ cdef class DynamicLabelPropagation:
 		self._this.run()
 
 
-cdef extern from "../src/generators/DynamicBarabasiAlbertGenerator.h":
-	cdef cppclass _DynamicBarabasiAlbertGenerator "NetworKit::DynamicBarabasiAlbertGenerator":
-		_DynamicBarabasiAlbertGenerator() except +
-		_DynamicBarabasiAlbertGenerator(_GraphEventProxy _Gproxy, count k) except +
-		void initializeGraph()
-		void generate()
-		
-cdef class DynamicBarabasiAlbertGenerator:
-	cdef _DynamicBarabasiAlbertGenerator _this
-	
-	def __cinit__(self, GraphEventProxy Gproxy not None, k):
-		self._this = _DynamicBarabasiAlbertGenerator(Gproxy._this, k)
-		
-	def generate(self):
-		self._this.generate()
+# FIXME:
+# cdef extern from "../src/generators/DynamicBarabasiAlbertGenerator.h":
+# 	cdef cppclass _DynamicBarabasiAlbertGenerator "NetworKit::DynamicBarabasiAlbertGenerator":
+# 		_DynamicBarabasiAlbertGenerator() except +
+# 		_DynamicBarabasiAlbertGenerator(_GraphEventProxy _Gproxy, count k) except +
+# 		void initializeGraph()
+# 		void generate()
+# 		
+# cdef class DynamicBarabasiAlbertGenerator:
+# 	cdef _DynamicBarabasiAlbertGenerator _this
+# 	
+# 	def __cinit__(self, GraphEventProxy Gproxy not None, k):
+# 		self._this = _DynamicBarabasiAlbertGenerator(Gproxy._this, k)
+# 		
+# 	def generate(self):
+# 		self._this.generate()
 		
 
 
@@ -380,7 +381,7 @@ class DynamicCommunityDetectionWorkflow:
 		
 		self.G = Graph(0)
 		self.Gproxy = GraphEventProxy(self.G)
-		self.generator = DynamicBarabasiAlbertGenerator(self.Gproxy)
+		#self.generator = DynamicBarabasiAlbertGenerator(self.Gproxy)
 		self.dcd = DynamicLabelPropagation(self.Gproxy)
 		
 		while (self.G.numberOfNodes() < nMax):
