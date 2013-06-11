@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef AUXGTEST_H_
 #define AUXGTEST_H_
 
@@ -31,3 +33,5 @@ class AuxGTest: public testing::Test {
 };
 
 #endif /* AUXGTEST_H_ */
+
+#endif /*NOGTEST */

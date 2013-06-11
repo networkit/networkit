@@ -5,6 +5,9 @@
  *      Author: cls
  */
 
+#ifndef NOGTEST
+
+
 #include "DynamicCommunityDetectionGTest.h"
 
 namespace NetworKit {
@@ -71,3 +74,5 @@ TEST_F(DynamicCommunityDetectionGTest, testDynamicLabelPropagation) {
 }
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */

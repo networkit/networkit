@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "GraphGTest.h"
 
 namespace NetworKit {
@@ -241,3 +243,5 @@ void NetworKit::GraphGTest::SetUp() {
 
 void NetworKit::GraphGTest::TearDown() {
 }
+
+#endif /*NOGTEST */

@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "Graph2GTest.h"
 
 namespace NetworKit {
@@ -674,3 +676,5 @@ TEST_F(Graph2GTest, testEdgeCollection) {
 
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */
