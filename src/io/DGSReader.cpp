@@ -32,7 +32,7 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 		throw std::runtime_error("This does not seem to be a valid DGS file. Expected magic cookie 'DGS004' in first line");
 	}
 
-	// handle second line
+	// handle second line: optional name of file, number of clock ticks, total number of events
 	std::getline(dgsFile, line);
 	std::vector<std::string> split = Aux::StringTools::split(line);
 
@@ -80,7 +80,7 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 			if (Gproxy.G->degree(deleteNode) == 0) {
 				Gproxy.removeNode(deleteNode);
 			} else {
-				DEBUG("The node was not deleted, since there are edges attached to it.");
+				throw std::runtime_error("The node was not deleted, since there are edges attached to it.");
 			}
 
 		} else if (tag.compare("de") == 0 && split.size() == 2) {
@@ -90,8 +90,8 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 			std::string edge_to = edgesSplit[1];
 			node u = nodeNames[edge_from];
 			node v = nodeNames[edge_to];
-			DEBUG("u: " << edge_from << " " << u);
-			DEBUG("v: " << edge_to << " " << v);
+//			TRACE("u: " << edge_from << " " << u);
+//			TRACE("v: " << edge_to << " " << v);
 
 			Gproxy.removeEdge(u, v);
 		}
