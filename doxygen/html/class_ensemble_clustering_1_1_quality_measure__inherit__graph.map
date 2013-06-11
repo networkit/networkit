@@ -1,0 +1,6 @@
+<map id="EnsembleClustering::QualityMeasure" name="EnsembleClustering::QualityMeasure">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_coverage.html" title="EnsembleClustering\l::Coverage" alt="" coords="202,5,342,49"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_coverage_sequential.html" title="EnsembleClustering\l::CoverageSequential" alt="" coords="197,73,347,117"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_modularity.html" title="EnsembleClustering\l::Modularity" alt="" coords="202,141,342,185"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_modularity_sequential.html" title="EnsembleClustering\l::ModularitySequential" alt="" coords="195,209,349,253"/>
+</map>

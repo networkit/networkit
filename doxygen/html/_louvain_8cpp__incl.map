@@ -1,0 +1,17 @@
+<map id="src/community/Louvain.cpp" name="src/community/Louvain.cpp">
+<area shape="rect" id="node3" href="$_louvain_8h.html" title="Louvain.h" alt="" coords="808,83,887,111"/>
+<area shape="rect" id="node5" href="$_clusterer_8h.html" title="Clusterer.h" alt="" coords="444,169,529,197"/>
+<area shape="rect" id="node42" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="901,409,1035,437"/>
+<area shape="rect" id="node46" href="$_cluster_contracter_8h.html" title="../coarsening/ClusterContracter.h" alt="" coords="740,169,956,197"/>
+<area shape="rect" id="node56" href="$_clustering_projector_8h.html" title="../coarsening/Clustering\lProjector.h" alt="" coords="554,161,715,205"/>
+<area shape="rect" id="node61" href="$_luby_8h.html" title="../independentset/Luby.h" alt="" coords="199,169,365,197"/>
+<area shape="rect" id="node70" href="$_globals_8h.html" title="../Globals.h" alt="" coords="1030,169,1119,197"/>
+<area shape="rect" id="node7" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="583,409,701,437"/>
+<area shape="rect" id="node35" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="448,254,612,282"/>
+<area shape="rect" id="node23" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="450,486,541,514"/>
+<area shape="rect" id="node39" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="593,331,732,359"/>
+<area shape="rect" id="node48" href="$_contracter_8h.html" title="Contracter.h" alt="" coords="793,331,887,359"/>
+<area shape="rect" id="node53" href="$_graph_contraction_8h.html" title="../coarsening/GraphContraction.h" alt="" coords="636,254,853,282"/>
+<area shape="rect" id="node63" href="$_independent_set_finder_8h.html" title="IndependentSetFinder.h" alt="" coords="5,254,168,282"/>
+<area shape="rect" id="node66" href="$_random_probability_8h.html" title="../aux/RandomProbability.h" alt="" coords="192,254,372,282"/>
+</map>

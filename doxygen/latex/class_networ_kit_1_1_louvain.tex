@@ -1,0 +1,182 @@
+\hypertarget{class_networ_kit_1_1_louvain}{\section{Networ\-Kit\-:\-:Louvain Class Reference}
+\label{class_networ_kit_1_1_louvain}\index{Networ\-Kit\-::\-Louvain@{Networ\-Kit\-::\-Louvain}}
+}
+
+
+{\ttfamily \#include $<$Louvain.\-h$>$}
+
+
+
+Inheritance diagram for Networ\-Kit\-:\-:Louvain\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{class_networ_kit_1_1_louvain__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Networ\-Kit\-:\-:Louvain\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{class_networ_kit_1_1_louvain__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_louvain_a5ddbd33d58a2a7f4be92429149cec17f}{Louvain} (std\-::string par=\char`\"{}none\char`\"{})
+\item 
+virtual \hyperlink{class_networ_kit_1_1_louvain_a31031bd1cab70940668a08ea7da75a20}{$\sim$\-Louvain} ()
+\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_louvain_a40251120e85c77c17e53713435653fe7}{pass} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
+\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_louvain_a493a2aba661d7c4dec2b573f963f800d}{run} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
+\item 
+virtual std\-::string \hyperlink{class_networ_kit_1_1_louvain_a6c7b4f56e6aea10e481f7fe7e91b43b8}{to\-String} () const 
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{class_networ_kit_1_1_louvain_a2531d4e703305b7a4b6ea1ca67450a0d}{any\-Change}
+\begin{DoxyCompactList}\small\item\em indicates whether any change was made to the clustering in the last pass over the nodes \end{DoxyCompactList}\item 
+std\-::string \hyperlink{class_networ_kit_1_1_louvain_ad690b266426199e76caefd234ea53397}{parallelism}
+\begin{DoxyCompactList}\small\item\em switch for the kind of parallelization strategy to use \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 22 of file Louvain.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_louvain_a5ddbd33d58a2a7f4be92429149cec17f}{\index{Networ\-Kit\-::\-Louvain@{Networ\-Kit\-::\-Louvain}!Louvain@{Louvain}}
+\index{Louvain@{Louvain}!NetworKit::Louvain@{Networ\-Kit\-::\-Louvain}}
+\subsubsection[{Louvain}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Louvain\-::\-Louvain (
+\begin{DoxyParamCaption}
+\item[{std\-::string}]{par = {\ttfamily \char`\"{}none\char`\"{}}}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_louvain_a5ddbd33d58a2a7f4be92429149cec17f}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em par} & parallelization strategy \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 12 of file Louvain.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_louvain_a31031bd1cab70940668a08ea7da75a20}{\index{Networ\-Kit\-::\-Louvain@{Networ\-Kit\-::\-Louvain}!$\sim$\-Louvain@{$\sim$\-Louvain}}
+\index{$\sim$\-Louvain@{$\sim$\-Louvain}!NetworKit::Louvain@{Networ\-Kit\-::\-Louvain}}
+\subsubsection[{$\sim$\-Louvain}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Louvain\-::$\sim$\-Louvain (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_louvain_a31031bd1cab70940668a08ea7da75a20}
+
+
+Definition at line 16 of file Louvain.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_louvain_a40251120e85c77c17e53713435653fe7}{\index{Networ\-Kit\-::\-Louvain@{Networ\-Kit\-::\-Louvain}!pass@{pass}}
+\index{pass@{pass}!NetworKit::Louvain@{Networ\-Kit\-::\-Louvain}}
+\subsubsection[{pass}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Louvain\-::pass (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_louvain_a40251120e85c77c17e53713435653fe7}
+
+
+Definition at line 20 of file Louvain.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_louvain_a40251120e85c77c17e53713435653fe7_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_louvain_a493a2aba661d7c4dec2b573f963f800d}{\index{Networ\-Kit\-::\-Louvain@{Networ\-Kit\-::\-Louvain}!run@{run}}
+\index{run@{run}!NetworKit::Louvain@{Networ\-Kit\-::\-Louvain}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Louvain\-::run (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_louvain_a493a2aba661d7c4dec2b573f963f800d}
+
+
+Implements \hyperlink{class_networ_kit_1_1_clusterer_ab881df49f4398d2c94b5429d7dfa88f1}{Networ\-Kit\-::\-Clusterer}.
+
+
+
+Definition at line 218 of file Louvain.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_louvain_a493a2aba661d7c4dec2b573f963f800d_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_louvain_a6c7b4f56e6aea10e481f7fe7e91b43b8}{\index{Networ\-Kit\-::\-Louvain@{Networ\-Kit\-::\-Louvain}!to\-String@{to\-String}}
+\index{to\-String@{to\-String}!NetworKit::Louvain@{Networ\-Kit\-::\-Louvain}}
+\subsubsection[{to\-String}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Networ\-Kit\-::\-Louvain\-::to\-String (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_louvain_a6c7b4f56e6aea10e481f7fe7e91b43b8}
+\begin{DoxyReturn}{Returns}
+string representation of algorithm and parameters. 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_networ_kit_1_1_clusterer_ae67135b9fb55c4166ca7d50b720939da}{Networ\-Kit\-::\-Clusterer}.
+
+
+
+Definition at line 261 of file Louvain.\-cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_networ_kit_1_1_louvain_a2531d4e703305b7a4b6ea1ca67450a0d}{\index{Networ\-Kit\-::\-Louvain@{Networ\-Kit\-::\-Louvain}!any\-Change@{any\-Change}}
+\index{any\-Change@{any\-Change}!NetworKit::Louvain@{Networ\-Kit\-::\-Louvain}}
+\subsubsection[{any\-Change}]{\setlength{\rightskip}{0pt plus 5cm}bool Networ\-Kit\-::\-Louvain\-::any\-Change\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_louvain_a2531d4e703305b7a4b6ea1ca67450a0d}
+
+
+indicates whether any change was made to the clustering in the last pass over the nodes 
+
+
+
+Definition at line 25 of file Louvain.\-h.
+
+\hypertarget{class_networ_kit_1_1_louvain_ad690b266426199e76caefd234ea53397}{\index{Networ\-Kit\-::\-Louvain@{Networ\-Kit\-::\-Louvain}!parallelism@{parallelism}}
+\index{parallelism@{parallelism}!NetworKit::Louvain@{Networ\-Kit\-::\-Louvain}}
+\subsubsection[{parallelism}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Networ\-Kit\-::\-Louvain\-::parallelism\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_louvain_ad690b266426199e76caefd234ea53397}
+
+
+switch for the kind of parallelization strategy to use 
+
+
+
+Definition at line 26 of file Louvain.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/community/\hyperlink{_louvain_8h}{Louvain.\-h}\item 
+src/community/\hyperlink{_louvain_8cpp}{Louvain.\-cpp}\end{DoxyCompactItemize}
