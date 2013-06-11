@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef OVERLAPGTEST_H_
 #define OVERLAPGTEST_H_
 
@@ -28,3 +30,5 @@ class OverlapGTest: public testing::Test {
 
 } /* namespace NetworKit */
 #endif /* OVERLAPGTEST_H_ */
+
+#endif /* NOGTEST */

@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef IOBENCHMARK_H_
 #define IOBENCHMARK_H_
 
@@ -13,7 +15,6 @@
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Timer.h"
 #include "../METISGraphReader.h"
-#include "../DGSReader.h"
 
 namespace NetworKit {
 
@@ -25,3 +26,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* IOBENCHMARK_H_ */
+
+#endif /* NOGTEST */

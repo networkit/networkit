@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "OverlapGTest.h"
 
 
@@ -125,3 +127,5 @@ TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 
 
 } /* namespace NetworKit */
+
+#endif

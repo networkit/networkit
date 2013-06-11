@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef IOGTEST_H_
 #define IOGTEST_H_
 
@@ -20,6 +22,7 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../DotGraphWriter.h"
+#include "../DGSReader.h"
 
 namespace NetworKit {
 
@@ -31,3 +34,6 @@ class IOGTest: public testing::Test {
 
 } /* namespace NetworKit */
 #endif /* IOGTEST_H_ */
+
+
+#endif /* NOGTEST */
