@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "IOGTest.h"
 
 
@@ -175,3 +177,5 @@ TEST_F(IOGTest, testDotGraphWriter) {
 
 
 } /* namespace NetworKit */
+
+#endif /* NOGTEST */
