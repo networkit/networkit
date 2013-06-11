@@ -5,10 +5,14 @@
  *      Author: cls
  */
 
+#ifndef NOGTEST
+
 #ifndef PROPERTIESGTEST_H_
 #define PROPERTIESGTEST_H_
 
 #include <gtest/gtest.h>
+#include <algorithm> // for copy
+#include <iterator> // for ostream_iterator
 
 #include "../ClusteringCoefficient.h"
 #include "../../graph/GraphGenerator.h"
@@ -26,3 +30,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* PROPERTIESGTEST_H_ */
+
+#endif /* NOGTEST */

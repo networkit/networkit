@@ -5,6 +5,9 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
+
 #ifndef PARAMETRIZEDGTEST_H_
 #define PARAMETRIZEDGTEST_H_
 
@@ -18,3 +21,5 @@ public:
 };
 
 #endif /* PARAMETRIZEDGTEST_H_ */
+
+#endif /* NOGTEST */
