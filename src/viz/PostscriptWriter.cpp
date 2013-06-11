@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-PostscriptWriter::PostscriptWriter(Graph& graph, bool isTorus): g(&graph), wrapAround(isTorus) {
+PostscriptWriter::PostscriptWriter(const Graph& graph, bool isTorus): g(graph), wrapAround(isTorus) {
 	numColors = 24;
 	psColor = { { 1.0, 0.0, 0.0 },
 			{ 1.0, 0.5, 0.0 }, { 1.0, 1.0, 0.0 }, { 0.5, 1.0, 0.0 }, { 0.0, 1.0,
@@ -23,17 +23,17 @@ PostscriptWriter::PostscriptWriter(Graph& graph, bool isTorus): g(&graph), wrapA
 					0.6 }, { 0.6, 0.0, 0.3 } };
 
 
-	ps_minx = g->minCoordinate(0);
-	ps_maxx = g->maxCoordinate(0);
-	ps_miny = g->minCoordinate(1);
-	ps_maxy = g->maxCoordinate(1);
+	ps_minx = g.minCoordinate(0);
+	ps_maxx = g.maxCoordinate(0);
+	ps_miny = g.minCoordinate(1);
+	ps_maxy = g.maxCoordinate(1);
 
 	ps_scale = (ps_sizex - 2 * ps_borderx) / (ps_maxx - ps_minx);
 	ps_sizey = (ps_maxy - ps_miny) * ps_scale + 2 * ps_bordery;
 }
 
 PostscriptWriter::~PostscriptWriter() {
-	// TODO Auto-generated destructor stub
+
 }
 
 void PostscriptWriter::writeHeader(std::ofstream& file) {
@@ -82,7 +82,7 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 
 
 	/* Kanten zeichnen */
-	g->forEdges([&](node u, node v) {
+	g.forEdges([&](node u, node v) {
 		if (u < v || wrapAround) {
 			if (clustering[u] == clustering[v] && clustering[u] != none) {
 				// same cluster
@@ -96,10 +96,10 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 				file << "0.80 0.80 0.80 c 1.0 w ";
 			}
 
-			float startx = g->getCoordinate(u, 0);
-			float starty = g->getCoordinate(u, 1);
-			float endx = g->getCoordinate(v, 0);
-			float endy = g->getCoordinate(v, 1);
+			float startx = g.getCoordinate(u, 0);
+			float starty = g.getCoordinate(u, 1);
+			float endx = g.getCoordinate(v, 0);
+			float endy = g.getCoordinate(v, 1);
 
 			if (wrapAround) {
 				auto adjust1([&](float& val) {
@@ -146,7 +146,7 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 
 	/* Knoten zeichnen */
 	float dotsize = 3.6;
-	g->forNodes([&](node u) {
+	g.forNodes([&](node u) {
 		if (clustering[u] != none) {
 			// change color
 			float r = psColor[clustering[u] % numColors].r;
@@ -158,8 +158,8 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 			file << "0.0 0.0 0.0 c ";
 		}
 
-		float x = g->getCoordinate(u, 0);
-		float y = g->getCoordinate(u, 1);
+		float x = g.getCoordinate(u, 0);
+		float y = g.getCoordinate(u, 1);
 
 //		if (wrapAround) {
 		adjust(x);
@@ -179,28 +179,48 @@ void PostscriptWriter::writeClustering(Clustering& clustering, std::ofstream& fi
 }
 
 
-void PostscriptWriter::write(Clustering& clustering, std::string filename) {
-	std::ofstream file;
+void PostscriptWriter::init(std::string filename, std::ofstream& file) {
 	file.open(filename.c_str());
 	if (true || wrapAround) { // FIXME
 		file.precision(3);
 		// adjust coordinates for postscript output
-		g->forNodes([&](node u) {
-			g->setCoordinate(u, 0, 1000.0 * g->getCoordinate(u, 0));
-			g->setCoordinate(u, 1, 1000.0 * g->getCoordinate(u, 1));
+		g.forNodes([&](node u) {
+			g.setCoordinate(u, 0, 1000.0 * g.getCoordinate(u, 0));
+			g.setCoordinate(u, 1, 1000.0 * g.getCoordinate(u, 1));
 		});
 	}
 	else {
 		file.precision(2);
 	}
 	file << std::fixed;
+}
 
+
+void PostscriptWriter::write(Clustering& clustering, std::string filename) {
+	std::ofstream file;
+	init(filename, file);
 	writeHeader(file);
 	writeMacros(file);
 
 	file << "0.00 0.00 0.00 c\n";   // 0.25 0.25 0.25 c 1.0 w
 
 	writeClustering(clustering, file);
+	if (! wrapAround) {
+		file << "grestore\n";
+	}
+
+	file.close();
+}
+
+void PostscriptWriter::write(std::string filename) {
+	std::ofstream file;
+	init(filename, file);
+	writeHeader(file);
+	writeMacros(file);
+
+	ClusteringGenerator gen;
+	Clustering allNone = gen.makeOneClustering(g);
+	writeClustering(allNone, file);
 	if (! wrapAround) {
 		file << "grestore\n";
 	}
