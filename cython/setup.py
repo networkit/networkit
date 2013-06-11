@@ -25,11 +25,9 @@ gtest = "workspace/gtest/"
 modules = [Extension("NetworKit",
 					src,
 					language = "c++",
-					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX"],
-					extra_link_args=["-fopenmp", "-std=c++11"],
-					include_dirs=[os.path.join(os.path.expanduser("~"), (gtest + "include"))],
-					library_dirs=[log4cxx_library, os.path.join(os.path.expanduser("~"), gtest)],
-					libraries=["log4cxx", "gtest"])]
+
+					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
+					extra_link_args=["-fopenmp", "-std=c++11"])]
 
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}

@@ -47,7 +47,7 @@ Requirements
 
 ###Compiler: 
 
-- compiler supporting C++11 (we use GCC 4.7)
+A C++ compiler supporting C++11 (we use GCC 4.7 and 4.8). The compiler and linker flags `-fopenmp -std=c++11` are required.
 
 
 ###Libraries:
@@ -60,14 +60,15 @@ The following preprocessor definitions (using the `-D` compiler flag) remove the
 
 - `NOLOGGING`	removes all log statements
 - `NOLOG4CXX`	replaces log statements with `std::cout` output if `log4cxx` is not available - loglevel `TRACE` becomes fixed.
+- `NOGTEST`		removes the dependency on Googletest - unit tests are not compiled
 
 
 Build
 -----
 
-We recommend SCons for building the project. Edit the file `SConstruct.EDITME` to set include paths, library paths etc, then rename it to `SConstruct`.
+We recommend [SCons](http://scons.org) for building the project. Edit the file `SConstruct.EDITME` We recommend [SCons](http://www.scons.org/) for building the project. Edit the file `SConstruct.EDITME` to set include paths, library paths etc, then rename it to `SConstruct`.
 
-Alternatively, our Eclipse project files are included as examples in the `eclipse/` directory. Copy them, import the project into Eclipse and modify depending on your needs.
+Alternatively, the project can be build with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
 
 
 Test
@@ -77,9 +78,7 @@ Run all unit tests with
 
 		./NetworKit-CommunityDetection-debug --tests --gtest_filter=*Test*.test*
 
-The expression after `--gtest_filter=` automatically selects all unit tests which are supposed to pass correctly. Unit tests for unstable experimental features begin with `.try`, so in order to run them call
-
-	./NetworKit-CommunityDetection-debug --tests --gtest_filter=*Test*.try*	
+The expression after `--gtest_filter=` automatically selects all undebug --tests --gtest_filter=*Test*.try*	
 
 Run performance tests with
 
@@ -132,12 +131,14 @@ Contribute
 
 We would like to encourage contributions to the NetworKit source code. For support please contact `christian.staudt @ kit.edu`.
 
-## Code Conventions and Style Guide
+### Code Conventions and Style Guide
 
-- Document code in Doxygen style.
+- Make sure your code builds correctly before pushing it to the main repository.
+- Use meaningful commit messages.
+- Document classes, methods and attributes in Doxygen style.
 - Use the `count` and `index` integer types for positive integer quantities and indices.
-- Create the appropriate unit tests for each feature in the `*GTest` class of the module.
-- Prefix standard unit tests with `test` and experimental feature tests with `try`. A `test*` must pass when pushed to the main repository, a `try*` is allowed to fail.
-- In genereal, objects are passed by reference. New objects are stack-allocated and returned by value. Avoid pointers and `new` where possible.
-
+- Create the appropriate unit tests for each feature in the- Make sure your code builds correctly before pushing it to the main repository.
+- prefix standard unit tests with `test` and experimental feature tests with `try`. A `test*` must pass when pushed to the main repository, a `try*` is allowed to fail.
+- In most cases, objects are passed by reference. New objects are stack-allocated and returned by value. Avoid pointers and `new` where possible.
+- ...
 

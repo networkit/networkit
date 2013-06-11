@@ -9,7 +9,10 @@
 
 namespace NetworKit {
 
-DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta, std::string strategy) :
+DynamicLabelPropagation::DynamicLabelPropagation() {
+}
+
+DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta, std::string strategyName) :
 		DynamicCommunityDetector(G),
 		labels(G.numberOfNodes()),
 		activeNodes(G.numberOfNodes()),
@@ -26,9 +29,9 @@ DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta, std::str
 	DEBUG("[DONE] Label Propagation: precomputing weighted degree");
 
 	// select prep strategy
-	if (strategy == "reactivate") {
+	if (strategyName == "reactivate") {
 		this->prepStrategy = new DynamicLabelPropagation::Reactivate(this);
-	} else if (strategy == "reactivate-neighbors") {
+	} else if (strategyName == "reactivate-neighbors") {
 		this->prepStrategy = new DynamicLabelPropagation::ReactivateNeighbors(this);
 	} else {
 		throw std::runtime_error("unknown prep strategy");
@@ -107,6 +110,8 @@ void DynamicLabelPropagation::onWeightUpdate(node u, node v, edgeweight wOld, ed
 	this->activeNodes[u] = true;
 	this->activeNodes[v] = true;
 }
+
+
 
 void DynamicLabelPropagation::onTimeStep() {
 	this->t += 1;
