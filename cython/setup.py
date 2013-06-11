@@ -17,11 +17,15 @@ for (root, dirs, files) in os.walk(srcDir, topdown=False):
 			src.append(os.path.join(root, name))
 			
 print(src)
+
+log4cxx_library = "/usr/local/Cellar/log4cxx/0.10.0/lib"
+gtest = "workspace/gtest/"
 	
 # TODO: remove user-specific paths
 modules = [Extension("NetworKit",
 					src,
 					language = "c++",
+
 					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
 					extra_link_args=["-fopenmp", "-std=c++11"])]
 

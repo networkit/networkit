@@ -85,6 +85,23 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 	writer.write(G, "output/BATest.graph");
 }
 
+TEST_F(GeneratorsGTest, verifyDynamicBarabasiAlbertGenerator) {
+	for (int i = 1; i <= 5; i++) {
+		Graph G(0); // empty graph
+		GraphEventProxy proxy(G);
+		DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy, i);
+		gen->initializeGraph();
+		count n = 300;
+		gen->generateWhile([&]() {
+					return ( G.numberOfNodes() < n );
+				});
+		METISGraphWriter writer;
+		std::string iString = std::to_string(i);
+		std::string path = "output/BAVerify" + iString + ".graph";
+		writer.write(G, path);
+	}
+}
+
 
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	count n = 800;

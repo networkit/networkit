@@ -22,6 +22,7 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../DotGraphWriter.h"
+#include "../DGSReader.h"
 
 namespace NetworKit {
 

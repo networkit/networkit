@@ -174,6 +174,27 @@ TEST_F(IOGTest, testDotGraphWriter) {
 	EXPECT_TRUE(exists) << "graph file should have been written to: " << path;
 }
 
+TEST_F(IOGTest, tryDGSReader) {
+	// read example graph
+	DGSReader reader;
+	Graph G;
+	GraphEventProxy Gproxy(G);
+	reader.read("input/example2.dgs", Gproxy);
+
+	// get input parameters
+	count nodeCount = G.numberOfNodes();
+	DEBUG("Number of nodes " << nodeCount);
+	EXPECT_EQ(3, nodeCount);
+	count edgeCount = G.numberOfEdges();
+	DEBUG("Number of edges " << edgeCount);
+	EXPECT_EQ(2, edgeCount);
+
+	G.forNodes([&](node n) {
+		DEBUG("DEGREE OF NODE: " << G.degree(n) << std::endl);
+	});
+
+}
+
 
 
 } /* namespace NetworKit */

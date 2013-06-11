@@ -33,12 +33,7 @@ void DynamicBarabasiAlbertGenerator::initializeGraph() {
 		}
 	}
 
-	// initialize degree sum (for path of k nodes)
-	if (k >= 2) {
-		degSum = 2 + (k - 2) * 2;
-	} else if (k == 1) {
-		degSum = 0;
-	}
+	degSum = 2 * G->numberOfEdges();
 
 	DEBUG("n = " << G->numberOfNodes());
 	assert (G->numberOfNodes() == k);
@@ -57,10 +52,12 @@ void DynamicBarabasiAlbertGenerator::generate() {
 
 	count nAttempts = 0;
 	while (targets.size() < k) {
+		nAttempts++;
+
 		TRACE("pick random node to connect to");
 		TRACE("targets.size() == " << targets.size());
 
-		if (nAttempts > 10) {
+		if (nAttempts > 100) {
 			throw std::runtime_error("picking target nodes takes too long - something is wrong");
 		}
 
@@ -72,7 +69,7 @@ void DynamicBarabasiAlbertGenerator::generate() {
 		this->G->forNodesWhile(notFound, [&](node v){
 			if (v != u) { // skip u, which has degree 0 anyway, to avoid self-loops
 				assert (rand >= 0);
-				if (rand < this->G->degree(v)) {
+				if (rand <= this->G->degree(v)) {
 					found = true; // found a node to connect to
 					targets.insert(v);
 				}
