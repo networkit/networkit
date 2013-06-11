@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#ifndef NOGTEST
+
 #ifndef GENERATORSGTEST_H_
 #define GENERATORSGTEST_H_
 
@@ -35,3 +37,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* GENERATORSGTEST_H_ */
+
+#endif /*NOGTEST */
