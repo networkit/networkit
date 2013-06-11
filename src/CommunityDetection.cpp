@@ -11,6 +11,7 @@
 #include <iostream>
 #include <utility>
 #include <cfenv>	// floating point exceptions
+#include <stdexcept>
 
 // log4cxx
 #ifndef NOLOG4CXX
@@ -19,7 +20,9 @@
 #endif
 
 // GoogleTest
+#ifndef NOGTEST
 #include <gtest/gtest.h>
+#endif
 
 // OpenMP
 #include <omp.h>
@@ -702,9 +705,13 @@ int main(int argc, char **argv) {
 
 	if (options[TESTS]) {
 
+#ifndef NOGTEST
 	   ::testing::InitGoogleTest(&argc, argv);
 	   INFO("=== starting unit tests ===");
 	   return RUN_ALL_TESTS();
+#else
+	   throw std::runtime_error("unit tests are excluded from build by the NOGTEST preprocessor directive");
+#endif
 	}
 
 

@@ -60,6 +60,7 @@ The following preprocessor definitions (using the `-D` compiler flag) remove the
 
 - `NOLOGGING`	removes all log statements
 - `NOLOG4CXX`	replaces log statements with `std::cout` output if `log4cxx` is not available - loglevel `TRACE` becomes fixed.
+- `NOGTEST`		removes the dependency on Googletest - unit tests are not compiled
 
 
 Build
