@@ -196,6 +196,10 @@ cdef class GraphProperties:
 	def minMaxDegree(Graph G not None):
 		return minMaxDegree(G._this)
 
+	@staticmethod
+	def degreeDistribution(Graph G not None):
+		return degreeDistribution(G._this)
+
 
 cdef extern from "../src/dynamics/GraphEventHandler.h":
 	cdef cppclass _GraphEventHandler "NetworKit::GraphEventHandler":
@@ -365,10 +369,22 @@ def properties(nkG):
 	""" Get an overview of the properties for the graph"""
 	nxG = nk2nx(nkG)
 	(n, m) = (nxG.number_of_nodes(), nxG.number_of_edges())
-	print("number of nodes \t n \t {0}".format(n))
-	print("number of edges \t n \t {0}".format(m))
-	print("degree distribution:")
+	print("Number of nodes \t n \t {0}".format(n))
+	print("Number of edges \t n \t {0}".format(m))
+	
+	print("Degree distribution:")
 	printDegreeHistogram(nxG)
+
+	min_max = GraphProperties.minMaxDegree(nkG);
+	print("Minimum degree \t {0}".format(minMax[0]))
+	print("Maximum degree \t {0}".format(minMax[1]))
+
+	degree_distribution = GraphProperties.degreeDistribution(nxG)
+	print("Degree distribution:\n{0}".format(degree_distribution))
+	
+	isolated_nodes = nx.isolate(nxG)
+	print("Number of isolated nodes: \t{0}".format(len(isolated_nodes))) 
+	
 	
 	
 def printDegreeHistogram(nxG):
