@@ -1,0 +1,131 @@
+\hypertarget{class_ensemble_clustering_1_1_graph_i_o}{\section{Ensemble\-Clustering\-:\-:Graph\-I\-O Class Reference}
+\label{class_ensemble_clustering_1_1_graph_i_o}\index{Ensemble\-Clustering\-::\-Graph\-I\-O@{Ensemble\-Clustering\-::\-Graph\-I\-O}}
+}
+
+
+{\ttfamily \#include $<$Graph\-I\-O.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_graph_i_o_a7facb3dd59b61c170b732cb006626e00}{Graph\-I\-O} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph_i_o_a05713f5e4b56a6ed0aeb37e653ad6d6e}{$\sim$\-Graph\-I\-O} ()
+\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_graph_i_o_ac0ebb5ee826cf649bf3a6d821c3d6bc4}{write\-Edge\-List} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&G, std\-::string path)
+\begin{DoxyCompactList}\small\item\em Writes graph to text file in edge list format. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_graph_i_o_aa31e284a79283a18153b40e34f417e7c}{write\-Adjacency\-List} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&G, std\-::string path)
+\begin{DoxyCompactList}\small\item\em Writes graph to text file in adjacency list format. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 20 of file Graph\-I\-O.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_graph_i_o_a7facb3dd59b61c170b732cb006626e00}{\index{Ensemble\-Clustering\-::\-Graph\-I\-O@{Ensemble\-Clustering\-::\-Graph\-I\-O}!Graph\-I\-O@{Graph\-I\-O}}
+\index{Graph\-I\-O@{Graph\-I\-O}!EnsembleClustering::GraphIO@{Ensemble\-Clustering\-::\-Graph\-I\-O}}
+\subsubsection[{Graph\-I\-O}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Graph\-I\-O\-::\-Graph\-I\-O (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_graph_i_o_a7facb3dd59b61c170b732cb006626e00}
+
+
+Definition at line 12 of file Graph\-I\-O.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_i_o_a05713f5e4b56a6ed0aeb37e653ad6d6e}{\index{Ensemble\-Clustering\-::\-Graph\-I\-O@{Ensemble\-Clustering\-::\-Graph\-I\-O}!$\sim$\-Graph\-I\-O@{$\sim$\-Graph\-I\-O}}
+\index{$\sim$\-Graph\-I\-O@{$\sim$\-Graph\-I\-O}!EnsembleClustering::GraphIO@{Ensemble\-Clustering\-::\-Graph\-I\-O}}
+\subsubsection[{$\sim$\-Graph\-I\-O}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Graph\-I\-O\-::$\sim$\-Graph\-I\-O (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_i_o_a05713f5e4b56a6ed0aeb37e653ad6d6e}
+
+
+Definition at line 17 of file Graph\-I\-O.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_graph_i_o_aa31e284a79283a18153b40e34f417e7c}{\index{Ensemble\-Clustering\-::\-Graph\-I\-O@{Ensemble\-Clustering\-::\-Graph\-I\-O}!write\-Adjacency\-List@{write\-Adjacency\-List}}
+\index{write\-Adjacency\-List@{write\-Adjacency\-List}!EnsembleClustering::GraphIO@{Ensemble\-Clustering\-::\-Graph\-I\-O}}
+\subsubsection[{write\-Adjacency\-List}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Graph\-I\-O\-::write\-Adjacency\-List (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{std\-::string}]{path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_i_o_aa31e284a79283a18153b40e34f417e7c}
+
+
+Writes graph to text file in adjacency list format. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em G} & graph \\
+\hline
+\mbox{\tt in}  & {\em path} & file path\\
+\hline
+\end{DoxyParams}
+Adjacency list format\-: for each node v\-: write \char`\"{}v\char`\"{} write \char`\"{} x\char`\"{} for each edge \{v, x\} end line 
+
+Definition at line 35 of file Graph\-I\-O.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_ensemble_clustering_1_1_graph_i_o_aa31e284a79283a18153b40e34f417e7c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_ensemble_clustering_1_1_graph_i_o_ac0ebb5ee826cf649bf3a6d821c3d6bc4}{\index{Ensemble\-Clustering\-::\-Graph\-I\-O@{Ensemble\-Clustering\-::\-Graph\-I\-O}!write\-Edge\-List@{write\-Edge\-List}}
+\index{write\-Edge\-List@{write\-Edge\-List}!EnsembleClustering::GraphIO@{Ensemble\-Clustering\-::\-Graph\-I\-O}}
+\subsubsection[{write\-Edge\-List}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-Graph\-I\-O\-::write\-Edge\-List (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{std\-::string}]{path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_i_o_ac0ebb5ee826cf649bf3a6d821c3d6bc4}
+
+
+Writes graph to text file in edge list format. 
+
+Keep in mind that isolated nodes are ignored.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em G} & graph \\
+\hline
+\mbox{\tt in}  & {\em path} & file path\\
+\hline
+\end{DoxyParams}
+Edge list format\-: for each edge \{u, v\}\-: write line \char`\"{}u v\char`\"{} 
+
+Definition at line 21 of file Graph\-I\-O.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{class_ensemble_clustering_1_1_graph_i_o_ac0ebb5ee826cf649bf3a6d821c3d6bc4_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/io/\hyperlink{_graph_i_o_8h}{Graph\-I\-O.\-h}\item 
+src/io/\hyperlink{_graph_i_o_8cpp}{Graph\-I\-O.\-cpp}\end{DoxyCompactItemize}
