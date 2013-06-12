@@ -35,18 +35,16 @@ TEST_F(DistMeasureTest, tryAlgebraicDistances) {
 
 	// determine two vertices with highest distance
 	index best0 = 0;
-	index best1 = 0;
+	index best1 = 1;
 	double maxDist = ad.algdist(best0, best1, norm);
-	for (index i = 0; i < n; ++i) {
-		for (index j = 0; j < i; ++j) {
-			double dist = ad.algdist(i, j , norm);
-			if (dist > maxDist) {
-				best0 = i;
-				best1 = j;
-				maxDist = dist;
-			}
+	g.forNodePairs([&](node i, node j) {
+		double dist = ad.algdist(i, j , norm);
+		if (dist > maxDist) {
+			best0 = i;
+			best1 = j;
+			maxDist = dist;
 		}
-	}
+	});
 	DEBUG("Finished with maxDist computation");
 
 	// assign remaining vertices to one of the two according to the smaller distance
