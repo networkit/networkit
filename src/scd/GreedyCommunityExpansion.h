@@ -20,32 +20,52 @@ class GreedyCommunityExpansion: public NetworKit::SelectiveCommunityDetector {
 public:
 
 	class QualityObjective {
+	public:
+		Graph G;
+		std::unordered_set<node>* community;
 
 		/**
 		 * @param[in]	G	the graph
 		 * @param[in]	community	the currently expanding community
 		 */
-		QualityObjective(Graph& G, std::unordered_set<node>& community);
-
+	public:
+		QualityObjective(Graph& G, std::unordered_set<node>* community);
+		virtual ~QualityObjective();
 		virtual double getValue(node v) = 0;
 	};
 
 
-	class LocalModularity : public QualityObjective {
-
-		// TODO: constructor
-
+	class LocalModularityM : public QualityObjective {
+	public:
+		LocalModularityM(Graph& G, std::unordered_set<node>* community);
+		virtual ~LocalModularityM();
 		virtual double getValue(node v);
-
 	};
 
+	class Conductance : public QualityObjective {
+		public:
+		Conductance(Graph& G, std::unordered_set<node>* community);
+			virtual ~Conductance();
+			virtual double getValue(node v);
+		};
 
 	class Acceptability {
-
-		// TODO: constructor
-
+	public:
+		Graph G;
+		std::unordered_set<node>* community;
+		std::unordered_set<node>* shell;
+	public:
+		Acceptability(Graph& G, std::unordered_set<node>* community, std::unordered_set<node>* shell);
+		virtual ~Acceptability();
 		virtual double getValue(node v) = 0;
+	};
 
+
+	class NodeClusterSimilarity: public Acceptability {
+	public:
+		NodeClusterSimilarity(Graph& G, std::unordered_set<node>* community, std::unordered_set<node>* shell);
+		virtual ~NodeClusterSimilarity();
+		virtual double getValue(node v);
 	};
 
 
@@ -64,3 +84,6 @@ public:
 
 } /* namespace NetworKit */
 #endif /* GREEDYCOMMUNITYEXPANSION_H_ */
+
+
+
