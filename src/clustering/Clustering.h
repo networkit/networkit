@@ -31,6 +31,7 @@ protected:
 		// TODO: performance - is this a bottleneck?
 		cluster c = this->nextCluster;
 		this->nextCluster++;
+		this->upperIdBound++;
 		return c;
 	}
 
