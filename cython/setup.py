@@ -5,8 +5,8 @@ from Cython.Distutils import build_ext
 
 import os
 
-os.environ["CC"] = "g++-4.7"
-os.environ["CXX"] = "g++-4.7"
+os.environ["CC"] = "g++-4.8"
+os.environ["CXX"] = "g++-4.8"
 
 srcDir = "../src"
 src = ["NetworKit.pyx"]	# list of source files
