@@ -1,0 +1,45 @@
+<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_ensemble_multilevel.html#a95cb11b277ca5d73a965f53b73d8c6cf" title="Set quality measure to evaluate clusterings." alt="" coords="203,346,405,390"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_ensemble_multilevel.html#aa6ee44f370a906b114ca50e9d700fbea" title="Add a base clusterer to the ensemble." alt="" coords="203,414,405,458"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_ensemble_multilevel.html#a37ff4e9548124f5d908efc763cf82ffc" title="Set overlap algorithm which combines the results of the base clusterers." alt="" coords="203,482,405,526"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_ensemble_multilevel.html#a8e07f339de7ed28c6fc0501f6d1e6d47" title="Set final clusterer." alt="" coords="203,550,405,594"/>
+<area shape="rect" id="node11" href="$class_networ_kit_1_1_clustering_generator.html#a2a2d4a14c14fb34fd9a66a1047c52c5d" title="Make a clustering with k clusters to which the nodes are randomly assigned." alt="" coords="467,681,674,725"/>
+<area shape="rect" id="node21" href="$class_networ_kit_1_1_clustering.html#a65ee5f83e25a5e3ccae11c98eb55a7b8" title="Check whether this clustering is a proper clustering of the graph, i.e." alt="" coords="747,957,893,1001"/>
+<area shape="rect" id="node27" href="$class_networ_kit_1_1_graph_generator.html#ace5f942042a6805eb8cad512376ec641" title="Creates a clustered random graph:" alt="" coords="468,1243,674,1287"/>
+<area shape="rect" id="node43" href="$class_networ_kit_1_1_ensemble_multilevel.html#a06877e20895c68ab431262e00b44ca4b" title="Run the ensemble clusterer." alt="" coords="190,801,418,829"/>
+<area shape="rect" id="node53" href="$class_networ_kit_1_1_modularity.html#a8788753db47a3698219933b3a37357b9" title="Returns the Modularity of the given clustering with respect to the graph G." alt="" coords="497,454,645,498"/>
+<area shape="rect" id="node68" href="$class_networ_kit_1_1_clustering.html#a1bf0c38a510c8ef384d2ce25f18e1ab6" title="Return an upper bound for the cluster ids that have been assigned." alt="" coords="987,253,1133,297"/>
+<area shape="rect" id="node84" href="$class_networ_kit_1_1_jaccard_measure.html#aff4bd8b51e95bc96b8dd4d916e1b186a" title="NetworKit::JaccardMeasure\l::getDissimilarity" alt="" coords="478,1025,663,1069"/>
+<area shape="rect" id="node107" href="$class_networ_kit_1_1_rand_measure.html#a017a320b3c9a06f3c1076adfb8944674" title="NetworKit::RandMeasure\l::getDissimilarity" alt="" coords="486,1145,656,1189"/>
+<area shape="rect" id="node111" href="$class_networ_kit_1_1_clustering.html#a5d70e71e3c6b0082c0ab4035e1b65f79" title="Get the current number of clusters in this clustering." alt="" coords="231,1246,377,1290"/>
+<area shape="rect" id="node13" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="732,889,908,933"/>
+<area shape="rect" id="node15" href="$class_networ_kit_1_1_clustering.html#a17835c3aaee8a0f76c3f49201eaab5ea" title="Call this before assigning nodes to cluster ids." alt="" coords="747,821,893,865"/>
+<area shape="rect" id="node17" href="$class_networ_kit_1_1_graph.html#a8633f553d0f134474f248e94faf3064d" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="733,565,907,609"/>
+<area shape="rect" id="node19" href="$class_networ_kit_1_1_clustering.html#a8c6557683ca585e65d349b01368260ea" title="Add a (previously unassigned) node to a cluster." alt="" coords="747,1077,893,1121"/>
+<area shape="rect" id="node23" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="967,995,1153,1023"/>
+<area shape="rect" id="node25" href="$class_networ_kit_1_1_clustering.html#afe45f9be7aeb735a8560bd5e95324f95" title="Check if clustering assigns a valid cluster to the node." alt="" coords="987,927,1133,971"/>
+<area shape="rect" id="node30" href="$class_aux_1_1_random_integer.html#a288840111a1aa8cdd93949c5fe88ccaa" title="Aux::RandomInteger\l::generate" alt="" coords="748,1385,892,1429"/>
+<area shape="rect" id="node33" href="$class_networ_kit_1_1_graph.html#a498eb0beb05b992d12b246fcf3b76070" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="731,1145,909,1189"/>
+<area shape="rect" id="node35" href="$class_networ_kit_1_1_clustering.html#a2c2dfb71bd9d88609fbb569027793be1" title="Return the cluster (id) in which a node is contained." alt="" coords="747,1213,893,1257"/>
+<area shape="rect" id="node39" href="$class_aux_1_1_random_probability.html#aa3f2835c364aabb340440c45f6a28e33" title="Aux::RandomProbability\l::generate" alt="" coords="738,1453,902,1497"/>
+<area shape="rect" id="node41" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="723,1333,917,1361"/>
+<area shape="rect" id="node37" href="$class_networ_kit_1_1_index_map.html#ab2bf024de2a5d5cb47e7ae2e7e3e833b" title="Number of nodes for which this clsutering can hold an entry." alt="" coords="966,603,1154,663"/>
+<area shape="rect" id="node45" href="$class_networ_kit_1_1_graph.html#a1ec9e68347696937a5d98d2b0bd610b3" title="Get string representation." alt="" coords="482,749,659,777"/>
+<area shape="rect" id="node88" href="$class_networ_kit_1_1_overlapper.html#a92f5347bb5144e3d76b36cceac7a0409" title="NetworKit::Overlapper::run" alt="" coords="481,905,660,933"/>
+<area shape="rect" id="node90" href="$class_networ_kit_1_1_quality_measure.html#a1ca0aecc5d7f564fc627af2baf86239c" title="NetworKit::QualityMeasure\l::getQuality" alt="" coords="481,957,661,1001"/>
+<area shape="rect" id="node92" href="$class_networ_kit_1_1_index_map.html#adf2c9ecee594a7ef579a42019619b39e" title="NetworKit::IndexMap::at" alt="" coords="489,801,652,829"/>
+<area shape="rect" id="node94" href="$class_networ_kit_1_1_clusterer.html#ab881df49f4398d2c94b5429d7dfa88f1" title="NetworKit::Clusterer::run" alt="" coords="487,853,654,881"/>
+<area shape="rect" id="node96" href="$class_networ_kit_1_1_clustering_projector.html#a9a53bf1165f4c1d98b0ffa97cead81b5" title="Project a clustering ^{i} of the coarse graph G^{i}Êback to the finest graph G^{0}, using the hierarchy of fine&#45;&gt;coarse maps." alt="" coords="471,613,671,657"/>
+<area shape="rect" id="node47" href="$class_networ_kit_1_1_graph.html#a51d60896a8ae08301cf6b2c0161f2c68" title="NetworKit::Graph::getName" alt="" coords="727,1025,913,1053"/>
+<area shape="rect" id="node50" href="$class_networ_kit_1_1_graph.html#a6625b34904eae267ca384c77a081f333" title="Return the number of edges in the graph." alt="" coords="732,753,908,797"/>
+<area shape="rect" id="node58" href="$class_networ_kit_1_1_graph.html#a467e6959962dc4600add8832602b5353" title="NetworKit::Graph::number\lOfSelfLoops" alt="" coords="732,53,908,97"/>
+<area shape="rect" id="node62" href="$class_networ_kit_1_1_coverage.html#a459bd590841ca37e6081b39213486f75" title="NetworKit::Coverage\l::getQuality" alt="" coords="748,394,892,438"/>
+<area shape="rect" id="node64" href="$class_networ_kit_1_1_graph.html#a8c2ee66ae18da530bca98bfd0a13ed44" title="SUMS." alt="" coords="966,454,1154,498"/>
+<area shape="rect" id="node72" href="$class_networ_kit_1_1_clustering.html#aa67805208c7663502ca951801198cb34" title="Return a lower bound for the cluster ids that have been assigned." alt="" coords="987,334,1133,378"/>
+<area shape="rect" id="node78" href="$class_networ_kit_1_1_graph.html#a48ace7ae9a931d69999d8fb55e563063" title="NetworKit::Graph::weighted\lDegree" alt="" coords="728,121,912,165"/>
+<area shape="rect" id="node80" href="$class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8" title="EDGE ATTRIBUTE GETTERS." alt="" coords="735,189,905,217"/>
+<area shape="rect" id="node60" href="$class_networ_kit_1_1_graph.html#a23a817e845887e6d2be9b42180448282" title="EDGE ITERATORS." alt="" coords="968,61,1152,89"/>
+<area shape="rect" id="node66" href="$class_networ_kit_1_1_graph.html#a5cfc35c769c1edc8805aa9b93ac096cf" title="Iterate over all edges of the graph and call handler (lambda closure)." alt="" coords="1203,425,1405,469"/>
+<area shape="rect" id="node82" href="$class_networ_kit_1_1_graph.html#a4c6dde807d9cd6dd53f3a4794d411528" title="Return the index of v in the adjacency array of u." alt="" coords="984,189,1136,217"/>
+<area shape="rect" id="node100" href="$class_networ_kit_1_1_clustering.html#a8810a044c480adc30d5e05263dabf67c" title="Set an upper bound for the cluster ids." alt="" coords="747,633,893,677"/>
+</map>
