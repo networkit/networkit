@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#ifndef NOGTEST
+
 #include "DistMeasureTest.h"
 
 namespace NetworKit {
@@ -64,3 +66,5 @@ TEST_F(DistMeasureTest, tryAlgebraicDistances) {
 
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */

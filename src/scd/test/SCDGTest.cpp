@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#ifndef NOGTEST
+
 #include "SCDGTest.h"
 
 namespace NetworKit {
@@ -67,4 +69,4 @@ SCDGTest::~SCDGTest() {
 }
 } /* namespace NetworKit */
 
-
+#endif /*NOGTEST */
