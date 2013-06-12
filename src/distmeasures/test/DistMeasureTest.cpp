@@ -18,19 +18,22 @@ DistMeasureTest::~DistMeasureTest() {
 }
 
 TEST_F(DistMeasureTest, tryAlgebraicDistances) {
-	METISGraphReader reader;
-	Graph g = reader.read("input/airfoil1.graph");
-	std::cout.precision(5);
+	DibapGraphReader reader;
+	Graph g = reader.read("input/airfoil1.gi");
 
 	// init algebraic distances and preprocess
 	count n = g.numberOfNodes();
-	count numSystems = 5;
-	count numIterations = 20;
+	count numSystems = 8;
+	count numIterations = 25;
 	double omega = 0.5;
 	const count norm = 2;
 	AlgebraicDistances ad(g);
 	ad.preprocess(numSystems, numIterations, omega);
 
+	PostscriptWriter psWriter(g);
+	psWriter.writeAlgebraicDistances("output/airfoil1-ad-test.eps", ad);
+
+#if 0
 	// *** produce 2-clustering according to AD ***/
 
 	// determine two vertices with highest distance
@@ -57,9 +60,7 @@ TEST_F(DistMeasureTest, tryAlgebraicDistances) {
 
 	Modularity modScore;
 	DEBUG("Finished with assignment to clusters, mod score: " << modScore.getQuality(clustering, g));
-
-//	PostscriptWriter psWriter(g);
-//	psWriter.write(clustering, "output/airfoil1-ad-test.eps");
+#endif
 }
 
 

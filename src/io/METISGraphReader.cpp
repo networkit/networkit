@@ -10,12 +10,11 @@
 namespace NetworKit {
 
 METISGraphReader::METISGraphReader() {
-	// TODO Auto-generated constructor stub
 
 }
 
 METISGraphReader::~METISGraphReader() {
-	// TODO Auto-generated destructor stub
+
 }
 
 
