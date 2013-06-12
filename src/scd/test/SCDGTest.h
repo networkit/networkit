@@ -5,6 +5,9 @@
  *      Author: cls
  */
 
+#ifndef NOGTEST
+
+
 #ifndef SCDGTEST_H_
 #define SCDGTEST_H_
 
@@ -22,3 +25,5 @@ class SCDGTest: public testing::Test {
 
 } /* namespace NetworKit */
 #endif /* SCDGTEST_H_ */
+
+#endif /*NOGTEST */
