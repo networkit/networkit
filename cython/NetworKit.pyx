@@ -38,12 +38,15 @@ cdef extern from "../src/graph/Graph.h":
 		count numberOfEdges()
 		node addNode()
 		void removeNode(node u)
-		void addEdge(node u, node v)
+		void addEdge(node u, node v, edgeweight w)
 		# TODO: optional weight argument
 		void removeEdge(node u, node v)
 		bool hasEdge(node u, node v)
+		edgeweight weight(node u, node v)
 		vector[node] nodes()
 		vector[pair[node, node]] edges()
+		void markAsWeighted()
+		bool isMarkedAsWeighted()
 		
 
 cdef class Graph:
@@ -71,8 +74,8 @@ cdef class Graph:
 	def removeNode(self, u):
 		self._this.removeNode(u)
 		
-	def addEdge(self, u, v):
-		self._this.addEdge(u, v)
+	def addEdge(self, u, v, w=1.0):
+		self._this.addEdge(u, v, w)
 		
 	def removeEdge(self, u, v):
 		self._this.removeEdge(u, v)
@@ -80,11 +83,20 @@ cdef class Graph:
 	def hasEdge(self, u, v):
 		self._this.hasEdge(u, v)
 		
+	def weight(self, u, v):
+		return self._this.weight(u, v)
+		
 	def nodes(self):
 		return self._this.nodes()
 	
 	def edges(self):
 		return self._this.edges()
+	
+	def markAsWeighted(self):
+		self._this.markAsWeighted()
+	
+	def isMarkedAsWeighted(self):
+		return self._this.isMarkedAsWeighted()
 	
 	
 cdef extern from "../src/graph/GraphGenerator.h":
@@ -340,24 +352,36 @@ def readGraph(path):
 
 
 
-def nx2nk(nxG):
-	""" Convert a networkx.Graph to a NetworKit.Graph """
+def nx2nk(nxG, weightAttr=None):
+	""" 
+	Convert a networkx.Graph to a NetworKit.Graph
+		:param weightAttr: the edge attribute which should be treated as the edge weight
+	 """
 	# TODO: consider weights
 	n = nxG.number_of_nodes()
 	cdef Graph nkG = Graph(n)
 	
-	for (u, v) in nxG.edges():
-		nkG.addEdge(u, v)
+	if weightAttr is not None:
+		nkG.markAsWeighted()
+		for (u, v) in nxG.edges():
+			w = nxG.edge[u][v][weightAttr]
+			nkG.addEdge(u, v, w)
+	else:
+		for (u, v) in nxG.edges():
+			nkG.addEdge(u, v)
 	
 	return nkG
 
+
 def nk2nx(nkG):
 	""" Convert a NetworKit.Graph to a networkx.Graph """
-	# TODO: consider weights
 	nxG = nx.Graph()
-	for (u, v) in nkG.edges():
-		nxG.add_edge(u, v)
-	
+	if nkG.isMarkedAsWeighted():
+		for (u, v) in nkG.edges():
+			nxG.add_edge(u, v, weight=nkG.weight(u, v))
+	else:
+		for (u, v) in nkG.edges():
+			nxG.add_edge(u, v)
 	return nxG
 	
 	
