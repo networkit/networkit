@@ -1,12 +1,12 @@
 /*
- * Modularity.h
+ * ModularityScoring.h
  *
  *  Created on: 15.10.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef MODULARITY_H_
-#define MODULARITY_H_
+#ifndef MODULARITY_SCORING_H_
+#define MODULARITY_SCORING_H_
 
 #include "EdgeScoring.h"
 

@@ -15,6 +15,7 @@
 #include "../../graph/Graph.h"
 #include "../../viz/PostscriptWriter.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/DibapGraphReader.h"
 #include "../../clustering/Clustering.h"
 #include "../../clustering/Modularity.h"
 #include <cstdio>
