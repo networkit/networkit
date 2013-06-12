@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef COARSENINGGTEST_H_
 #define COARSENINGGTEST_H_
 
@@ -31,3 +33,5 @@ class CoarseningGTest: public testing::Test {
 
 } /* namespace NetworKit */
 #endif /* COARSENINGGTEST_H_ */
+
+#endif /*NOGTEST */

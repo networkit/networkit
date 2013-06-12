@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef CLUSTERINGGTEST_H_
 #define CLUSTERINGGTEST_H_
 
@@ -36,3 +38,5 @@ class ClusteringGTest: public testing::Test {
 
 } /* namespace NetworKit */
 #endif /* CLUSTERINGTEST_H_ */
+
+#endif /*NOGTEST */
