@@ -14,12 +14,15 @@
 
 namespace NetworKit {
 
+/**
+ * Algebraic distances according to SISC paper by Jie Chen and Ilya Safro
+ */
 class AlgebraicDistances {
 protected:
-	std::vector<std::vector<double> > loads; //<! loads[i]: vector of loads of length n for one system
-	count numSystems;
-	count numIters;
-	const Graph& g;
+	std::vector<std::vector<double> > loads; //!< loads[i]: vector of loads of length n for one system
+	count numSystems; //!< number of vectors/systems used for algebraic iteration
+	count numIters; //!< number of iterations in each system
+	const Graph& g; //!< graph on which ADs are computed
 
 	void randomInit();
 
@@ -27,7 +30,25 @@ public:
 	AlgebraicDistances(const Graph& graph);
 	virtual ~AlgebraicDistances();
 
+	/**
+	 * @param numberSystems Number of vectors/systems used for algebraic iteration
+	 * @param numberIterations Number of iterations in each system
+	 * @param omega Overrelaxation parameter
+	 *
+	 * Starting with random initialization, compute for all @a numberSystems
+	 * "diffusion" systems the situation after @a numberIterations iterations
+	 * of overrelaxation with overrelaxation parameter @a omega.
+	 *
+	 * REQ: Needs to be called before algdist delivers meaningful results!
+	 */
 	void preprocess(count numberSystems, count numberIterations, double omega);
+
+	/**
+	 * Algebraic distance between node @a u and node @a v in norm @a norm with
+	 * default norm 2.
+	 *
+	 * Maximum norm is realized by setting @a norm to 0.
+	 */
 	double algdist(node u, node v, count norm = 2) const;
 };
 

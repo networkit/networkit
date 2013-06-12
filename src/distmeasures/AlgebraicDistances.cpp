@@ -71,16 +71,21 @@ void AlgebraicDistances::preprocess(count numberSystems, count numberIterations,
 double AlgebraicDistances::algdist(node u, node v, count norm) const {
 	double result = 0.0;
 
-	// TODO: handle case norm = 0 (maximum norm by convention)
-	if (norm == 0)
-		throw std::runtime_error("TODO: implement case of maximum norm");
-
-	for (index sys = 0; sys < numSystems; ++sys) {
-		double absDiff = fabs(loads[sys][u] - loads[sys][v]);
-		result += pow(absDiff, norm);
+	if (norm == 0) {
+		for (index sys = 0; sys < numSystems; ++sys) {
+			double absDiff = fabs(loads[sys][u] - loads[sys][v]);
+			if (absDiff > result) {
+				result = absDiff;
+			}
+		}
 	}
-
-	result = pow(result, 1.0 / (double) norm);
+	else {
+		for (index sys = 0; sys < numSystems; ++sys) {
+			double absDiff = fabs(loads[sys][u] - loads[sys][v]);
+			result += pow(absDiff, norm);
+		}
+		result = pow(result, 1.0 / (double) norm);
+	}
 
 	return result;
 }
