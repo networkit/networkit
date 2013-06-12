@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_networ_kit_1_1_clusterer.html" title="NetworKit::Clusterer" alt="" coords="6,135,146,163"/>
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_ensemble_multilevel.html" title="NetworKit::EnsembleMultilevel" alt="" coords="210,5,411,33"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_ensemble_preprocessing.html" title="NetworKit::EnsemblePreprocessing" alt="" coords="195,57,426,85"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_label_propagation.html" title="As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering Raghavan et al..." alt="" coords="215,109,406,137"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_louvain.html" title="NetworKit::Louvain" alt="" coords="244,161,377,189"/>
+<area shape="rect" id="node11" href="$class_networ_kit_1_1_parallel_agglomerative_clusterer.html" title="NetworKit::ParallelAgglomerative\lClusterer" alt="" coords="203,213,419,257"/>
+<area shape="rect" id="node13" href="$class_networ_kit_1_1_random_clusterer.html" title="NetworKit::RandomClusterer" alt="" coords="215,281,406,309"/>
+</map>

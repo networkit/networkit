@@ -1,0 +1,293 @@
+\hypertarget{class_networ_kit_1_1_matching}{\section{Networ\-Kit\-:\-:Matching Class Reference}
+\label{class_networ_kit_1_1_matching}\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}}
+}
+
+
+{\ttfamily \#include $<$Matching.\-h$>$}
+
+
+
+Inheritance diagram for Networ\-Kit\-:\-:Matching\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=188pt]{class_networ_kit_1_1_matching__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Networ\-Kit\-:\-:Matching\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=188pt]{class_networ_kit_1_1_matching__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_matching_a9d358cca48ef83b667e7eb9095dc7699}{Matching} (int64\-\_\-t \hyperlink{class_networ_kit_1_1_index_map_aabb9796ff1a0c002446b14ff7d4fffbc}{n})
+\begin{DoxyCompactList}\small\item\em Construct new matching. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_networ_kit_1_1_matching_a09f6410ab15dbe1875691c2c96906052}{$\sim$\-Matching} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+void \hyperlink{class_networ_kit_1_1_matching_a09ae97510791ef8a5165c76944f8f02e}{match} (const \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \&u, const \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \&v)
+\begin{DoxyCompactList}\small\item\em Set two nodes as eachothers matching partners. \end{DoxyCompactList}\item 
+void \hyperlink{class_networ_kit_1_1_matching_a66a2ced23196544647da2a605956e491}{unmatch} (const \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \&u, const \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \&v)
+\begin{DoxyCompactList}\small\item\em Reset the two nodes to unmatched. \end{DoxyCompactList}\item 
+bool \hyperlink{class_networ_kit_1_1_matching_abf1ff6be646ccfb468f568ea4951cee5}{is\-Matched} (const \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \&u) const 
+\begin{DoxyCompactList}\small\item\em Check if node is matched. \end{DoxyCompactList}\item 
+bool \hyperlink{class_networ_kit_1_1_matching_ad2920bb96b22c8f860ba7d465217eb59}{are\-Matched} (const \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \&u, const \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \&v) const 
+\begin{DoxyCompactList}\small\item\em Check if the two nodes are matched. \end{DoxyCompactList}\item 
+bool \hyperlink{class_networ_kit_1_1_matching_a0fde7bb5ee1f95858afe7782e9ea7158}{is\-Proper} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G) const 
+\begin{DoxyCompactList}\small\item\em Check whether this is a proper matching in the graph, i.\-e. \end{DoxyCompactList}\item 
+\hyperlink{class_networ_kit_1_1_matching}{Matching} \& \hyperlink{class_networ_kit_1_1_matching_aa1807bdcb5f5aea56a9e08afbdd7023c}{operator=} (const \hyperlink{class_networ_kit_1_1_matching}{Matching} \&from)
+\begin{DoxyCompactList}\small\item\em copy semantics \end{DoxyCompactList}\item 
+void \hyperlink{class_networ_kit_1_1_matching_ad93d7eacc7dfee2b6732bb6296cb9e6b}{clone} (const \hyperlink{class_networ_kit_1_1_matching}{Matching} \&from)
+\begin{DoxyCompactList}\small\item\em Properly copy this object. \end{DoxyCompactList}\item 
+void \hyperlink{class_networ_kit_1_1_matching_a6fc203e8f1f6485d05b70a0e502bc210}{dispose} ()
+\begin{DoxyCompactList}\small\item\em Properly destruct this object. \end{DoxyCompactList}\item 
+\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} \hyperlink{class_networ_kit_1_1_matching_abd61defac0cb2868d7c80739b0f6e902}{matching\-Size} () const 
+\item 
+\hyperlink{namespace_networ_kit_af49e67df68af41dcd75dffbb1e9abee6}{index} \hyperlink{class_networ_kit_1_1_matching_a76cf82e05446a8f29b1c46d1dcdef2f3}{mate} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v) const 
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 17 of file Matching.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_matching_a9d358cca48ef83b667e7eb9095dc7699}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!Matching@{Matching}}
+\index{Matching@{Matching}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{Matching}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Matching\-::\-Matching (
+\begin{DoxyParamCaption}
+\item[{int64\-\_\-t}]{n}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_matching_a9d358cca48ef83b667e7eb9095dc7699}
+
+
+Construct new matching. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em n} & maximum number of nodes \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 12 of file Matching.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_matching_a09f6410ab15dbe1875691c2c96906052}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!$\sim$\-Matching@{$\sim$\-Matching}}
+\index{$\sim$\-Matching@{$\sim$\-Matching}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{$\sim$\-Matching}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Matching\-::$\sim$\-Matching (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_matching_a09f6410ab15dbe1875691c2c96906052}
+
+
+Destructor. 
+
+
+
+Definition at line 20 of file Matching.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_matching_ad2920bb96b22c8f860ba7d465217eb59}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!are\-Matched@{are\-Matched}}
+\index{are\-Matched@{are\-Matched}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{are\-Matched}]{\setlength{\rightskip}{0pt plus 5cm}bool Networ\-Kit\-::\-Matching\-::are\-Matched (
+\begin{DoxyParamCaption}
+\item[{const {\bf node} \&}]{u, }
+\item[{const {\bf node} \&}]{v}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_matching_ad2920bb96b22c8f860ba7d465217eb59}
+
+
+Check if the two nodes are matched. 
+
+
+
+Definition at line 70 of file Matching.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_matching_ad93d7eacc7dfee2b6732bb6296cb9e6b}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!clone@{clone}}
+\index{clone@{clone}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{clone}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Matching\-::clone (
+\begin{DoxyParamCaption}
+\item[{const {\bf Matching} \&}]{from}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_matching_ad93d7eacc7dfee2b6732bb6296cb9e6b}
+
+
+Properly copy this object. 
+
+\hypertarget{class_networ_kit_1_1_matching_a6fc203e8f1f6485d05b70a0e502bc210}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!dispose@{dispose}}
+\index{dispose@{dispose}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{dispose}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Matching\-::dispose (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_matching_a6fc203e8f1f6485d05b70a0e502bc210}
+
+
+Properly destruct this object. 
+
+\hypertarget{class_networ_kit_1_1_matching_abf1ff6be646ccfb468f568ea4951cee5}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!is\-Matched@{is\-Matched}}
+\index{is\-Matched@{is\-Matched}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{is\-Matched}]{\setlength{\rightskip}{0pt plus 5cm}bool Networ\-Kit\-::\-Matching\-::is\-Matched (
+\begin{DoxyParamCaption}
+\item[{const {\bf node} \&}]{u}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_matching_abf1ff6be646ccfb468f568ea4951cee5}
+
+
+Check if node is matched. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & a node \\
+\hline
+\mbox{\tt out}  & {\em true} & if u is matched \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 23 of file Matching.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_matching_a0fde7bb5ee1f95858afe7782e9ea7158}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!is\-Proper@{is\-Proper}}
+\index{is\-Proper@{is\-Proper}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{is\-Proper}]{\setlength{\rightskip}{0pt plus 5cm}bool Networ\-Kit\-::\-Matching\-::is\-Proper (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_matching_a0fde7bb5ee1f95858afe7782e9ea7158}
+
+
+Check whether this is a proper matching in the graph, i.\-e. 
+
+no two edges are adjacent.
+
+\mbox{[}in\mbox{]} G a graph 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em true} & if this is a proper matching \\
+\hline
+\end{DoxyParams}
+The content of this data structure represents a matching iff (for all v in V\-: M\mbox{[}v\mbox{]} = v or M\mbox{[}M\mbox{[}v\mbox{]}\mbox{]} = v) and (for all (u,v) in M)\-: (u,v) in E
+
+Definition at line 27 of file Matching.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_matching_a0fde7bb5ee1f95858afe7782e9ea7158_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_matching_a09ae97510791ef8a5165c76944f8f02e}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!match@{match}}
+\index{match@{match}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{match}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Matching\-::match (
+\begin{DoxyParamCaption}
+\item[{const {\bf node} \&}]{u, }
+\item[{const {\bf node} \&}]{v}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_matching_a09ae97510791ef8a5165c76944f8f02e}
+
+
+Set two nodes as eachothers matching partners. 
+
+
+
+Definition at line 60 of file Matching.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_matching_abd61defac0cb2868d7c80739b0f6e902}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!matching\-Size@{matching\-Size}}
+\index{matching\-Size@{matching\-Size}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{matching\-Size}]{\setlength{\rightskip}{0pt plus 5cm}{\bf count} Networ\-Kit\-::\-Matching\-::matching\-Size (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_matching_abd61defac0cb2868d7c80739b0f6e902}
+\begin{DoxyReturn}{Returns}
+Number of edges in matching. 
+\end{DoxyReturn}
+
+
+Definition at line 74 of file Matching.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=328pt]{class_networ_kit_1_1_matching_abd61defac0cb2868d7c80739b0f6e902_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_matching_a76cf82e05446a8f29b1c46d1dcdef2f3}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!mate@{mate}}
+\index{mate@{mate}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{mate}]{\setlength{\rightskip}{0pt plus 5cm}{\bf index} Networ\-Kit\-::\-Matching\-::mate (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_matching_a76cf82e05446a8f29b1c46d1dcdef2f3}
+\begin{DoxyReturn}{Returns}
+Mate of {\itshape v} if it exists, otherwise none. 
+\end{DoxyReturn}
+
+
+Definition at line 84 of file Matching.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=328pt]{class_networ_kit_1_1_matching_a76cf82e05446a8f29b1c46d1dcdef2f3_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_matching_aa1807bdcb5f5aea56a9e08afbdd7023c}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!operator=@{operator=}}
+\index{operator=@{operator=}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{operator=}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Matching}\& Networ\-Kit\-::\-Matching\-::operator= (
+\begin{DoxyParamCaption}
+\item[{const {\bf Matching} \&}]{from}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_matching_aa1807bdcb5f5aea56a9e08afbdd7023c}
+
+
+copy semantics 
+
+Assignment operator. \hypertarget{class_networ_kit_1_1_matching_a66a2ced23196544647da2a605956e491}{\index{Networ\-Kit\-::\-Matching@{Networ\-Kit\-::\-Matching}!unmatch@{unmatch}}
+\index{unmatch@{unmatch}!NetworKit::Matching@{Networ\-Kit\-::\-Matching}}
+\subsubsection[{unmatch}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Matching\-::unmatch (
+\begin{DoxyParamCaption}
+\item[{const {\bf node} \&}]{u, }
+\item[{const {\bf node} \&}]{v}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_matching_a66a2ced23196544647da2a605956e491}
+
+
+Reset the two nodes to unmatched. 
+
+
+
+Definition at line 65 of file Matching.\-cpp.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/matching/\hyperlink{_matching_8h}{Matching.\-h}\item 
+src/matching/\hyperlink{_matching_8cpp}{Matching.\-cpp}\end{DoxyCompactItemize}

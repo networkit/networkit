@@ -1,0 +1,84 @@
+\hypertarget{class_option_parser_1_1_stats_1_1_count_options_action}{\section{Option\-Parser\-:\-:Stats\-:\-:Count\-Options\-Action Class Reference}
+\label{class_option_parser_1_1_stats_1_1_count_options_action}\index{Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action@{Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action}}
+}
+
+
+{\ttfamily \#include $<$optionparser.\-h$>$}
+
+
+
+Inheritance diagram for Option\-Parser\-:\-:Stats\-:\-:Count\-Options\-Action\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{class_option_parser_1_1_stats_1_1_count_options_action__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Option\-Parser\-:\-:Stats\-:\-:Count\-Options\-Action\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{class_option_parser_1_1_stats_1_1_count_options_action__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_option_parser_1_1_stats_1_1_count_options_action_a1c535a57ab397fb52435373cb8ef143e}{Count\-Options\-Action} (unsigned $\ast$buffer\-\_\-max\-\_\-)
+\begin{DoxyCompactList}\small\item\em Creates a new \hyperlink{class_option_parser_1_1_stats_1_1_count_options_action}{Count\-Options\-Action} that will increase {\ttfamily $\ast$buffer\-\_\-max\-\_\-} for each parsed \hyperlink{class_option_parser_1_1_option}{Option}. \end{DoxyCompactList}\item 
+bool \hyperlink{class_option_parser_1_1_stats_1_1_count_options_action_a1428a8145dfcf0f57a33ccef99737709}{perform} (\hyperlink{class_option_parser_1_1_option}{Option} \&)
+\begin{DoxyCompactList}\small\item\em Called by Parser\-::workhorse() for each \hyperlink{class_option_parser_1_1_option}{Option} that has been successfully parsed (including unknown options if they have a \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} whose \hyperlink{struct_option_parser_1_1_descriptor_aac19c7bd3a84282211edd0331c92a44a}{Descriptor\-::check\-\_\-arg} does not return \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a6ea016ff6334ed0d2ec885e96a76c472}{A\-R\-G\-\_\-\-I\-L\-L\-E\-G\-A\-L}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 1403 of file optionparser.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_option_parser_1_1_stats_1_1_count_options_action_a1c535a57ab397fb52435373cb8ef143e}{\index{Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action@{Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action}!Count\-Options\-Action@{Count\-Options\-Action}}
+\index{Count\-Options\-Action@{Count\-Options\-Action}!OptionParser::Stats::CountOptionsAction@{Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action}}
+\subsubsection[{Count\-Options\-Action}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action\-::\-Count\-Options\-Action (
+\begin{DoxyParamCaption}
+\item[{unsigned $\ast$}]{buffer\-\_\-max\-\_\-}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_option_parser_1_1_stats_1_1_count_options_action_a1c535a57ab397fb52435373cb8ef143e}
+
+
+Creates a new \hyperlink{class_option_parser_1_1_stats_1_1_count_options_action}{Count\-Options\-Action} that will increase {\ttfamily $\ast$buffer\-\_\-max\-\_\-} for each parsed \hyperlink{class_option_parser_1_1_option}{Option}. 
+
+
+
+Definition at line 1411 of file optionparser.\-h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_option_parser_1_1_stats_1_1_count_options_action_a1428a8145dfcf0f57a33ccef99737709}{\index{Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action@{Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action}!perform@{perform}}
+\index{perform@{perform}!OptionParser::Stats::CountOptionsAction@{Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action}}
+\subsubsection[{perform}]{\setlength{\rightskip}{0pt plus 5cm}bool Option\-Parser\-::\-Stats\-::\-Count\-Options\-Action\-::perform (
+\begin{DoxyParamCaption}
+\item[{{\bf Option} \&}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{class_option_parser_1_1_stats_1_1_count_options_action_a1428a8145dfcf0f57a33ccef99737709}
+
+
+Called by Parser\-::workhorse() for each \hyperlink{class_option_parser_1_1_option}{Option} that has been successfully parsed (including unknown options if they have a \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} whose \hyperlink{struct_option_parser_1_1_descriptor_aac19c7bd3a84282211edd0331c92a44a}{Descriptor\-::check\-\_\-arg} does not return \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a6ea016ff6334ed0d2ec885e96a76c472}{A\-R\-G\-\_\-\-I\-L\-L\-E\-G\-A\-L}. 
+
+Returns {\ttfamily false} iff a fatal error has occured and the parse should be aborted. 
+
+Reimplemented from \hyperlink{struct_option_parser_1_1_parser_1_1_action_a04eafe7666fd69e0a84a0aac118ccb8a}{Option\-Parser\-::\-Parser\-::\-Action}.
+
+
+
+Definition at line 1416 of file optionparser.\-h.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/ext/\hyperlink{optionparser_8h}{optionparser.\-h}\end{DoxyCompactItemize}

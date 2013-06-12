@@ -1,0 +1,13 @@
+<map id="NetworKit::ParallelMatcher::run" name="NetworKit::ParallelMatcher::run">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="281,5,457,49"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="277,73,462,101"/>
+<area shape="rect" id="node7" href="$_functions_8h.html#a603edf7b14c4b441d4f1e6bb461dd98f" title="Given." alt="" coords="336,125,402,153"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_matching.html#abf1ff6be646ccfb468f568ea4951cee5" title="Check if node is matched." alt="" coords="299,177,440,221"/>
+<area shape="rect" id="node11" href="$class_networ_kit_1_1_graph.html#afc892cbb7e1df4a83c718decae4ad377" title="Iterate over all incident edges of a node and call handler (lamdba closure)." alt="" coords="270,245,469,273"/>
+<area shape="rect" id="node13" href="$class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8" title="EDGE ATTRIBUTE GETTERS." alt="" coords="285,297,454,325"/>
+<area shape="rect" id="node17" href="$class_networ_kit_1_1_graph.html#a91cffc25cb2af288ce098fb9c2fcb192" title="NetworKit::Graph::attribute\l_double" alt="" coords="280,349,459,393"/>
+<area shape="rect" id="node20" href="$class_networ_kit_1_1_matching.html#a09ae97510791ef8a5165c76944f8f02e" title="Set two nodes as eachothers matching partners." alt="" coords="299,417,440,461"/>
+<area shape="rect" id="node22" href="$class_networ_kit_1_1_graph.html#a7b0d575c9fa66d075bd6d81c1593f081" title="NEIGHBORHOOD ITERATORS." alt="" coords="259,485,480,513"/>
+<area shape="rect" id="node24" href="$class_networ_kit_1_1_matching.html#ad2920bb96b22c8f860ba7d465217eb59" title="Check if the two nodes are matched." alt="" coords="299,537,440,581"/>
+<area shape="rect" id="node15" href="$class_networ_kit_1_1_graph.html#a4c6dde807d9cd6dd53f3a4794d411528" title="Return the index of v in the adjacency array of u." alt="" coords="528,327,680,355"/>
+</map>
