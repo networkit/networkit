@@ -68,10 +68,10 @@ void AlgebraicDistances::preprocess(count numberSystems, count numberIterations,
 	}
 }
 
-double AlgebraicDistances::algdist(node u, node v, count norm) const {
+double AlgebraicDistances::algdist(node u, node v, index norm) const {
 	double result = 0.0;
 
-	if (norm == 0) {
+	if (norm == MAX_NORM) { // maximum norm
 		for (index sys = 0; sys < numSystems; ++sys) {
 			double absDiff = fabs(loads[sys][u] - loads[sys][v]);
 			if (absDiff > result) {
