@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#ifndef NOGTEST
+
 #ifndef DYNAMICCOMMUNITYDETECTIONGTEST_H_
 #define DYNAMICCOMMUNITYDETECTIONGTEST_H_
 
@@ -25,3 +27,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* DYNAMICCOMMUNITYDETECTIONGTEST_H_ */
+
+#endif /*NOGTEST */

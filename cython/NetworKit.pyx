@@ -38,12 +38,15 @@ cdef extern from "../src/graph/Graph.h":
 		count numberOfEdges()
 		node addNode()
 		void removeNode(node u)
-		void addEdge(node u, node v)
+		void addEdge(node u, node v, edgeweight w)
 		# TODO: optional weight argument
 		void removeEdge(node u, node v)
 		bool hasEdge(node u, node v)
+		edgeweight weight(node u, node v)
 		vector[node] nodes()
 		vector[pair[node, node]] edges()
+		void markAsWeighted()
+		bool isMarkedAsWeighted()
 		
 
 cdef class Graph:
@@ -71,8 +74,8 @@ cdef class Graph:
 	def removeNode(self, u):
 		self._this.removeNode(u)
 		
-	def addEdge(self, u, v):
-		self._this.addEdge(u, v)
+	def addEdge(self, u, v, w=1.0):
+		self._this.addEdge(u, v, w)
 		
 	def removeEdge(self, u, v):
 		self._this.removeEdge(u, v)
@@ -80,11 +83,20 @@ cdef class Graph:
 	def hasEdge(self, u, v):
 		self._this.hasEdge(u, v)
 		
+	def weight(self, u, v):
+		return self._this.weight(u, v)
+		
 	def nodes(self):
 		return self._this.nodes()
 	
 	def edges(self):
 		return self._this.edges()
+	
+	def markAsWeighted(self):
+		self._this.markAsWeighted()
+	
+	def isMarkedAsWeighted(self):
+		return self._this.isMarkedAsWeighted()
 	
 	
 cdef extern from "../src/graph/GraphGenerator.h":
@@ -137,6 +149,7 @@ cdef class DotGraphWriter:
 cdef extern from "../src/clustering/Clustering.h":
 	cdef cppclass _Clustering "NetworKit::Clustering":
 		_Clustering() except +
+		count numberOfClusters()
 
 cdef class Clustering:
 	cdef _Clustering _this
@@ -145,6 +158,8 @@ cdef class Clustering:
 		self._this = other
 		return self
 
+	def numberOfClusters(self):
+		return self._this.numberOfClusters()
 
 cdef class Clusterer:
 	""" Abstract base class for static community detection algorithms"""
@@ -196,6 +211,14 @@ cdef class GraphProperties:
 	def minMaxDegree(Graph G not None):
 		return minMaxDegree(G._this)
 
+	@staticmethod
+	def degreeDistribution(Graph G not None):
+		return degreeDistribution(G._this)
+
+	@staticmethod
+	def averageLocalClusteringCoefficient(Graph G not None):
+		return averageLocalClusteringCoefficient(G._this)
+
 
 cdef extern from "../src/dynamics/GraphEventHandler.h":
 	cdef cppclass _GraphEventHandler "NetworKit::GraphEventHandler":
@@ -241,8 +264,18 @@ cdef class DGSReader:
 	
 	def read(self, path, GraphEventProxy proxy not None):
 		self._this.read(stdstring(path), proxy._this)
-
-
+		
+cdef extern from "../src/clustering/Modularity.h":
+	cdef cppclass _Modularity "NetworKit::Modularity":
+		_Modularity() except +
+		double getQuality(const _Clustering _zeta, const _Graph _G)
+		
+		
+cdef class Modularity:
+	cdef _Modularity _this
+	
+	def getQuality(self, Clustering zeta, Graph G):
+		return self._this.getQuality(zeta._this, G._this)
 
 cdef extern from "../src/community/DynamicLabelPropagation.h":
 	cdef cppclass _DynamicLabelPropagation "NetworKit::DynamicLabelPropagation":
@@ -330,35 +363,76 @@ def readGraph(path):
 
 
 
-def nx2nk(nxG):
-	""" Convert a networkx.Graph to a NetworKit.Graph """
+def nx2nk(nxG, weightAttr=None):
+	""" 
+	Convert a networkx.Graph to a NetworKit.Graph
+		:param weightAttr: the edge attribute which should be treated as the edge weight
+	 """
 	# TODO: consider weights
 	n = nxG.number_of_nodes()
 	cdef Graph nkG = Graph(n)
 	
-	for (u, v) in nxG.edges():
-		nkG.addEdge(u, v)
+	if weightAttr is not None:
+		nkG.markAsWeighted()
+		for (u, v) in nxG.edges():
+			w = nxG.edge[u][v][weightAttr]
+			nkG.addEdge(u, v, w)
+	else:
+		for (u, v) in nxG.edges():
+			nkG.addEdge(u, v)
 	
 	return nkG
 
+
 def nk2nx(nkG):
 	""" Convert a NetworKit.Graph to a networkx.Graph """
-	# TODO: consider weights
 	nxG = nx.Graph()
-	for (u, v) in nkG.edges():
-		nxG.add_edge(u, v)
-	
+	if nkG.isMarkedAsWeighted():
+		for (u, v) in nkG.edges():
+			nxG.add_edge(u, v, weight=nkG.weight(u, v))
+	else:
+		for (u, v) in nkG.edges():
+			nxG.add_edge(u, v)
 	return nxG
 	
 	
 def properties(nkG):
 	""" Get an overview of the properties for the graph"""
 	nxG = nk2nx(nkG)
+	if (nxG.markAsWeighted()):
+		print("The graph marked as weighted")
+	else: 
+		print("The graph has not been marked as weighed")
 	(n, m) = (nxG.number_of_nodes(), nxG.number_of_edges())
-	print("number of nodes \t n \t {0}".format(n))
-	print("number of edges \t n \t {0}".format(m))
-	print("degree distribution:")
+	print("Number of nodes \t n \t {0}".format(n))
+	print("Number of edges \t n \t {0}".format(m))
+	
+	print("Degree distribution:")
 	printDegreeHistogram(nxG)
+
+	minMax = GraphProperties.minMaxDegree(nkG);
+	print("Minimum degree \t {0}".format(minMax[0]))
+	print("Maximum degree \t {0}".format(minMax[1]))
+
+	degree_distribution = GraphProperties.degreeDistribution(nxG)
+	print("Degree distribution:\n{0}".format(degree_distribution))
+	
+	isolated_nodes = nx.isolate(nxG)
+	print("Isolated nodes: \t{0}".format(len(isolated_nodes))) 
+
+	self_loops = nxG.selfloop_edges()
+	print("Self-loop edges: \t{0}".format(len(self_loops)))
+
+	print("Connected components: \t{0}".format(nx.number_connected_components(nxG)))
+
+	average_Local_clustering = GraphProperties.averageLocalClusteringCoefficient
+	print("Average local clustering coefficient: \t{0}".format(average_Local_clustering))
+
+	plp = LabelPropagation()
+	zeta = LabelPropagation.run(plp)
+	n_clusters = zeta.numberOfClusters();
+	print("Label propagation found: \t{0}".format(n_clusters))
+	
 	
 	
 def printDegreeHistogram(nxG):

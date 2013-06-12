@@ -7,19 +7,23 @@
 
 #ifndef NOGTEST
 
+
 #ifndef SCDGTEST_H_
 #define SCDGTEST_H_
 
 #include <gtest/gtest.h>
-
-#include "../Conductance.h"
+#include "../../graph/Graph.h"
+#include "../GreedyCommunityExpansion.h"
 
 namespace NetworKit {
 
 class SCDGTest: public testing::Test {
+	public:
+		SCDGTest();
+		virtual ~SCDGTest();
 };
 
 } /* namespace NetworKit */
 #endif /* SCDGTEST_H_ */
 
-#endif /* NOGTEST */
+#endif /*NOGTEST */

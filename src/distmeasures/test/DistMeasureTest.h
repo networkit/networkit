@@ -4,6 +4,7 @@
  *  Created on: Jun 11, 2013
  *      Author: Henning
  */
+#ifndef NOGTEST
 
 #ifndef DISTMEASURETEST_H_
 #define DISTMEASURETEST_H_
@@ -29,3 +30,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* DISTMEASURETEST_H_ */
+
+#endif /*NOGTEST */

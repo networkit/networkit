@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#ifndef NOGTEST
+
 #include "ClusteringGTest.h"
 
 namespace NetworKit {
@@ -273,3 +275,5 @@ TEST_F(ClusteringGTest, tryNMIDistance) {
 }
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */

@@ -5,6 +5,8 @@
  *      Author: forigem
  */
 
+#ifndef NOGTEST
+
 #include "GeneratorsBenchmark.h"
 
 namespace NetworKit {
@@ -38,3 +40,5 @@ TEST_F(GeneratorsBenchmark, benchmarkStaticBarabasiAlbertGenerator) {
 }
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */

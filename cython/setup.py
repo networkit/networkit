@@ -4,9 +4,19 @@ from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 
 import os
+import shutil
 
-os.environ["CC"] = "g++-4.7"
-os.environ["CXX"] = "g++-4.7"
+if (shutil.which("g++-4.8") is not None):
+	os.environ["CC"] = "g++-4.8"
+	os.environ["CXX"] = "g++-4.8"
+
+elif (shutil.which("g++-4.7") is not None):
+	os.environ["CC"] = "g++-4.7"
+	os.environ["CXX"] = "g++-4.7"
+
+else:
+	print("Using: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
+
 
 srcDir = "../src"
 src = ["NetworKit.pyx"]	# list of source files
