@@ -8,7 +8,7 @@
 
 namespace NetworKit {
 
-Graph::Graph(): n(0), m(0), z(n), t(0), deg(z, 0), exists(z, true), adja(z), eweights(z) {
+Graph::Graph(): n(0), m(0), z(n), t(0), weighted(false), deg(z, 0), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;
@@ -17,7 +17,7 @@ Graph::Graph(): n(0), m(0), z(n), t(0), deg(z, 0), exists(z, true), adja(z), ewe
 }
 
 // TODO: z should probably be n-1, but it breaks some tests
-Graph::Graph(count n) : n(n), m(0), z(n), t(0), deg(z, 0), exists(z, true), adja(z), eweights(z) {
+Graph::Graph(count n) : n(n), m(0), z(n), t(0), weighted(false), deg(z, 0), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;
@@ -307,6 +307,14 @@ std::vector<node> Graph::nodes() {
 		nodes.push_back(u);
 	});
 	return nodes;
+}
+
+void Graph::markAsWeighted() {
+	this->weighted = true;
+}
+
+bool Graph::isMarkedAsWeighted() {
+	return this->weighted;
 }
 
 std::vector<std::pair<node, node> > Graph::edges() {

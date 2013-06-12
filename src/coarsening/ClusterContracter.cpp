@@ -21,6 +21,7 @@ ClusterContracter::~ClusterContracter() {
 std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& zeta) {
 
 	Graph Gcon(0); // empty graph
+	Gcon.markAsWeighted(); // Gcon will be a weighted graph
 
 	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound(), -1); // there is one supernode for each cluster
 

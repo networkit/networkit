@@ -106,7 +106,7 @@ protected:
 	count m; //!< current number of edges
 	node z; //!< current upper bound of node ids
 	count t; //!< current time step
-
+	bool weighted; //!< true if this graph has been marked as weighted.
 
 	// per node data
 	std::vector<count> deg; //!< degree of each node
@@ -170,6 +170,19 @@ public:
 	 */
 	std::string getName();
 
+	/**
+	 * Mark this graph as a weighted graph, i.e. as a graph containing edges
+	 * with weight other than 1.0.
+	 * The insertion of edges with weights other than 1.0 does not automatically
+	 * mark the graph as weighted.
+	 */
+	void markAsWeighted();
+
+
+	/**
+	 * Return if this graph has been marked as a weighted graph.
+	 */
+	bool isMarkedAsWeighted();
 
 	/**
 	 * Get string representation
@@ -570,6 +583,7 @@ public:
 	 * Return list of edges as node pairs.
 	 */
 	std::vector<std::pair<node, node> > edges();
+
 
 };
 
