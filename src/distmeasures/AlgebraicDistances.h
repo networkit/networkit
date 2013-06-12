@@ -14,6 +14,8 @@
 
 namespace NetworKit {
 
+const index MAX_NORM = 0;
+
 /**
  * Algebraic distances according to SISC paper by Jie Chen and Ilya Safro
  */
@@ -49,7 +51,7 @@ public:
 	 *
 	 * Maximum norm is realized by setting @a norm to 0.
 	 */
-	double algdist(node u, node v, count norm = 2) const;
+	double algdist(node u, node v, index norm = 2) const;
 };
 
 } /* namespace NetworKit */
