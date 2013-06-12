@@ -7,6 +7,8 @@
 
 #include "ClusteringAlgoGTest.h"
 
+#ifndef NOGTEST
+
 namespace NetworKit {
 
 TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
@@ -235,3 +237,5 @@ TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
 
 
 } /* namespace NetworKit */
+
+#endif /*NOGTEST */

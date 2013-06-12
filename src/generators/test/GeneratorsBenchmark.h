@@ -5,6 +5,8 @@
  *      Author: forigem
  */
 
+#ifndef NOGTEST
+
 #ifndef GENERATORSBENCHMARK_H_
 #define GENERATORSBENCHMARK_H_
 
@@ -23,3 +25,5 @@ public:
 
 } /* namespace NetworKit */
 #endif /* GENERATORSBENCHMARK_H_ */
+
+#endif /*NOGTEST */

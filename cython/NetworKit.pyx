@@ -241,8 +241,18 @@ cdef class DGSReader:
 	
 	def read(self, path, GraphEventProxy proxy not None):
 		self._this.read(stdstring(path), proxy._this)
-
-
+		
+cdef extern from "../src/clustering/Modularity.h":
+	cdef cppclass _Modularity "NetworKit::Modularity":
+		_Modularity() except +
+		double getQuality(const _Clustering _zeta, const _Graph _G)
+		
+		
+cdef class Modularity:
+	cdef _Modularity _this
+	
+	def getQuality(self, Clustering zeta, Graph G):
+		return self._this.getQuality(zeta._this, G._this)
 
 cdef extern from "../src/community/DynamicLabelPropagation.h":
 	cdef cppclass _DynamicLabelPropagation "NetworKit::DynamicLabelPropagation":

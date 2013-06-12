@@ -1,3 +1,5 @@
+#ifndef NOGTEST
+
 /*
  * AuxGTest.cpp
  *
@@ -195,3 +197,5 @@ TEST_F(AuxGTest, testVectorDebug) {
 	std::vector<int> vec(10, 42);
 	std::cout << Aux::vectorToString(vec) << std::endl;
 }
+
+#endif /*NOGTEST */
