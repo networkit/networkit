@@ -1,0 +1,7 @@
+<map id="NetworKit::ClusteringProjector::projectBack" name="NetworKit::ClusteringProjector::projectBack">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="259,5,435,49"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a51d60896a8ae08301cf6b2c0161f2c68" title="NetworKit::Graph::getName" alt="" coords="254,73,439,101"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="254,125,439,153"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_clustering.html#a2c2dfb71bd9d88609fbb569027793be1" title="Return the cluster (id) in which a node is contained." alt="" coords="273,177,420,221"/>
+<area shape="rect" id="node11" href="$class_networ_kit_1_1_index_map.html#ab2bf024de2a5d5cb47e7ae2e7e3e833b" title="Number of nodes for which this clsutering can hold an entry." alt="" coords="489,169,676,229"/>
+</map>
