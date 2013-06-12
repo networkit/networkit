@@ -149,6 +149,7 @@ cdef class DotGraphWriter:
 cdef extern from "../src/clustering/Clustering.h":
 	cdef cppclass _Clustering "NetworKit::Clustering":
 		_Clustering() except +
+		count numberOfClusters()
 
 cdef class Clustering:
 	cdef _Clustering _this
@@ -157,6 +158,8 @@ cdef class Clustering:
 		self._this = other
 		return self
 
+	def numberOfClusters(self):
+		return self._this.numberOfClusters()
 
 cdef class Clusterer:
 	""" Abstract base class for static community detection algorithms"""
@@ -211,6 +214,10 @@ cdef class GraphProperties:
 	@staticmethod
 	def degreeDistribution(Graph G not None):
 		return degreeDistribution(G._this)
+
+	@staticmethod
+	def averageLocalClusteringCoefficient(Graph G not None):
+		return averageLocalClusteringCoefficient(G._this)
 
 
 cdef extern from "../src/dynamics/GraphEventHandler.h":
@@ -392,6 +399,10 @@ def nk2nx(nkG):
 def properties(nkG):
 	""" Get an overview of the properties for the graph"""
 	nxG = nk2nx(nkG)
+	if (nxG.markAsWeighted()):
+		print("The graph marked as weighted")
+	else: 
+		print("The graph has not been marked as weighed")
 	(n, m) = (nxG.number_of_nodes(), nxG.number_of_edges())
 	print("Number of nodes \t n \t {0}".format(n))
 	print("Number of edges \t n \t {0}".format(m))
@@ -399,7 +410,7 @@ def properties(nkG):
 	print("Degree distribution:")
 	printDegreeHistogram(nxG)
 
-	min_max = GraphProperties.minMaxDegree(nkG);
+	minMax = GraphProperties.minMaxDegree(nkG);
 	print("Minimum degree \t {0}".format(minMax[0]))
 	print("Maximum degree \t {0}".format(minMax[1]))
 
@@ -407,7 +418,20 @@ def properties(nkG):
 	print("Degree distribution:\n{0}".format(degree_distribution))
 	
 	isolated_nodes = nx.isolate(nxG)
-	print("Number of isolated nodes: \t{0}".format(len(isolated_nodes))) 
+	print("Isolated nodes: \t{0}".format(len(isolated_nodes))) 
+
+	self_loops = nxG.selfloop_edges()
+	print("Self-loop edges: \t{0}".format(len(self_loops)))
+
+	print("Connected components: \t{0}".format(nx.number_connected_components(nxG)))
+
+	average_Local_clustering = GraphProperties.averageLocalClusteringCoefficient
+	print("Average local clustering coefficient: \t{0}".format(average_Local_clustering))
+
+	plp = LabelPropagation()
+	zeta = LabelPropagation.run(plp)
+	n_clusters = zeta.numberOfClusters();
+	print("Label propagation found: \t{0}".format(n_clusters))
 	
 	
 	
