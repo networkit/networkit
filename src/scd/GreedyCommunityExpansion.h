@@ -47,8 +47,8 @@ public:
 	class Conductance : public QualityObjective {
 		public:
 		Conductance(Graph& G, std::unordered_set<node>* community);
-			virtual ~Conductance();
-			virtual double getValue(node v);
+		virtual ~Conductance();
+		virtual double getValue(node v);
 		};
 
 	/**
