@@ -21,25 +21,29 @@ GreedyCommunityExpansion::~GreedyCommunityExpansion() {
 std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 
 	std::unordered_set<node> community;
-	community.insert(s); // begin with C_s = {s}
+	std::unordered_set<node> shell; // shell are the nodes outside of the
+	                                // community with edges to nodes inside
 
-	std::unordered_set<node> shell; // shell are the nodes outside of the community with edges to nodes inside
-	// initialize shell to N(s)
-
+	std::map<node,double> acceptanceValues;
 	std::map<node,double> objectiveValues;
 
+	GreedyCommunityExpansion::NodeClusterSimilarity acceptability(G, &community, &shell);
+	GreedyCommunityExpansion::Conductance conductance(G, &community);
+
+	double currentObjectiveValue = ;
+	node vMax;
+	double acceptanceMax = 0;
+
+	community.insert(s);
 
 	G.forNeighborsOf(s, [&](node v) {
 		shell.insert(v);
 	});
 
-	double deltaQMax;
-	node vMax;
 
 	do {
-		for (node v : shell) { // TODO: optionally order the nodes by acceptability
-			// TODO: evaluate Delta Q
-
+		for (node v : shell) {
+			acceptanceValues.insert(std::pair<node,double> (v, acceptability.getValue(v)));
 		}
 
 
