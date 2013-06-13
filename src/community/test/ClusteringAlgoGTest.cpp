@@ -54,7 +54,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	GraphGenerator graphGen;
 	Graph Gtrash = graphGen.makeCompleteGraph(n);
 
-//	count k = 3; // number of clusters
+	count k = 3; // number of clusters
 	ClusteringGenerator clusteringGen;
 	Clustering reference = clusteringGen.makeRandomClustering(Gtrash, 3);
 	assert (reference.numberOfClusters() == k);
