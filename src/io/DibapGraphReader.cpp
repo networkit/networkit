@@ -139,24 +139,24 @@ Graph DibapGraphReader::read(std::string path) {
 	// fill graph: FIXME: so far without node weights, extend to weights
 	Graph graph(0);
 	if (dxy == 2) {
-		for (index v = 0; v < V; ++v) {
+		for (index v = 0; v < (count) V; ++v) {
 			graph.addNode(xy[2 * v], xy[2 * v + 1]);
 		}
 	} else {
-		for (index v = 0; v < V; ++v) {
+		for (index v = 0; v < (count) V; ++v) {
 			graph.addNode();
 		}
 	}
 
 	if (dew > 0) {
-		for (index v = 0; v < V; ++v) {
-			for (index e = of[v]; e < of[v + 1]; ++e) {
+		for (index v = 0; v < (count) V; ++v) {
+			for (index e = of[v]; e < (index) of[v + 1]; ++e) {
 				graph.addEdge(v, to[e], ew[e]);
 			}
 		}
 	} else {
-		for (index v = 0; v < V; ++v) {
-			for (index e = of[v]; e < of[v + 1]; ++e) {
+		for (index v = 0; v < (count) V; ++v) {
+			for (index e = of[v]; e < (index) of[v + 1]; ++e) {
 				graph.addEdge(v, to[e]);
 			}
 		}
