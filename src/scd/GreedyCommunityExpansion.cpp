@@ -21,39 +21,45 @@ GreedyCommunityExpansion::~GreedyCommunityExpansion() {
 std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 
 	std::unordered_set<node> community;
-	community.insert(s); // begin with C_s = {s}
+	std::unordered_set<node> shell; // shell are the nodes outside of the
+	                                // community with edges to nodes inside
 
-	std::unordered_set<node> shell; // shell are the nodes outside of the community with edges to nodes inside
-	// initialize shell to N(s)
+	std::map<node,double,double> acceptanceValues;
 
-	std::map<node,double> objectiveValues;
+	GreedyCommunityExpansion::NodeClusterSimilarity acceptability(G, &community, &shell);
+	GreedyCommunityExpansion::Conductance conductance(G, &community);
 
+	double currentObjectiveValue = conductance.getValue(s);
+	node vMax;
+	double acceptanceMax = 0;
+
+	community.insert(s);
 
 	G.forNeighborsOf(s, [&](node v) {
 		shell.insert(v);
 	});
 
-	double deltaQMax;
-	node vMax;
 
 	do {
-		for (node v : shell) { // TODO: optionally order the nodes by acceptability
-			// TODO: evaluate Delta Q
-
+		for (node v : shell) {
 		}
 
 
-		// TODO: if Delta Q* > 0
-		community.insert(vMax);
-		// update shell incrementally in O(deg(vMax))
-		shell.erase(vMax);
-		G.forNeighborsOf(vMax, [&](node v){
-			if (community.find(v) == community.end()) {
-				// v is not in C
-				shell.insert(v);
-			}
-		});
-	} while (deltaQMax > 0);
+
+
+
+
+
+		if(conductance.getValue(vMax) <= currentObjectiveValue){
+			community.insert(vMax);
+			shell.erase(vMax);
+			G.forNeighborsOf(vMax, [&](node v){
+				if (community.find(v) == community.end()) {
+					shell.insert(v);
+				}
+			});
+		}
+	} while (true);
 
 
 	// TODO: optional trimming phase according to node fitness
@@ -76,9 +82,9 @@ double GreedyCommunityExpansion::LocalModularityM::getValue(node v) {
 
 	double inside = 0;
 	double outside = 0;
-	for (auto it = (*community).begin(); it != (*community).end(); ++it) {
+	for (auto it = community->begin(); it != community->end(); ++it) {
 		this->G.forNeighborsOf(*it, [&](node v){
-			if ((*community).find(v) == (*community).end()){
+			if (community->find(v) == community->end()){
 				outside ++;
 			} else {
 				if (*it == v) {
@@ -138,20 +144,19 @@ double GreedyCommunityExpansion::Conductance::getValue(node v) {
 	double volume = 0;
 	double boundary = 0;
 	double all = 0;
-	std::unordered_set<node> tempCommunity = *community;
-	tempCommunity.insert(v);
+	community->insert(v);
 
-	for (auto it = tempCommunity.begin(); it != tempCommunity.end(); ++it) {
+	for (auto it = community->begin(); it != community->end(); ++it) {
 		volume = volume + this->G.degree(*it);
 		this->G.forNeighborsOf(*it, [&](node v){
-			if (tempCommunity.find(v) == tempCommunity.end()) boundary++;
+			if (community->find(v) == community->end()) boundary++;
 		});
 	}
 
 	G.forNodes([&](node v){
 		all = all + G.degree(v);
 	});
-
+	community->erase(v);
 	if (volume == 0 || all-volume == 0)
 		return 1;
 	return boundary / std::min(volume, all-volume);
