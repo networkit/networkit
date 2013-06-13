@@ -12,8 +12,10 @@
 #define SCDGTEST_H_
 
 #include <gtest/gtest.h>
+
 #include "../../graph/Graph.h"
 #include "../GreedyCommunityExpansion.h"
+#include "../../graph/Graph.h"
 
 namespace NetworKit {
 

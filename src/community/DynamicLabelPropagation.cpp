@@ -73,7 +73,7 @@ void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
 	// assert that this is consistent with the graph
 	assert (G->weightedDegree(u) == weightedDegree[u]);
 	assert (G->weightedDegree(v) == weightedDegree[v]);
-	// activate source and target // TODO: strategy
+	// apply prep strategy
 	this->prepStrategy->onEdgeAddition(u, v);
 }
 
@@ -89,6 +89,7 @@ void DynamicLabelPropagation::onEdgeRemoval(node u, node v) {
 	// assert that this is consistent with the graph
 	assert (G->weightedDegree(u) == weightedDegree[u]);
 	assert (G->weightedDegree(v) == weightedDegree[v]);
+	// apply prep strategy
 	this->prepStrategy->onEdgeRemoval(u, v);
 }
 

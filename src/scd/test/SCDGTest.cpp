@@ -99,12 +99,31 @@ TEST_F(SCDGTest, testNodeClusterSimilarity) {
 	EXPECT_GE(0.571429, 1-condTwo) << "2-clustering should have conductance of 4/7";
 	EXPECT_LE(0.571428, 1-condTwo) << "2-clustering should have conductance of 4/7";
 
-	EXPECT_GE(0.666667, 1-condThree) << "3-clustering should have conductance of 2/3";
-	EXPECT_LE(0.666666, 1-condThree) << "3-clustering should have conductance of 2/3";
+	EXPECT_GE(0.666667, condThree) << "3-clustering should have conductance of 2/3";
+	EXPECT_LE(0.666666, condThree) << "3-clustering should have conductance of 2/3";
 
-	EXPECT_EQ(1, 1-condFour) << "4-clustering should have conductance of 1";
+	EXPECT_EQ(1, condFour) << "4-clustering should have conductance of 1";
 
-	EXPECT_EQ(1, 1-condFive) << "5-clustering should have conductance of 1";
+	EXPECT_EQ(1, condFive) << "5-clustering should have conductance of 1";
+
+}
+
+
+TEST_F(SCDGTest, tryCommunitySubgraph) {
+	GraphGenerator gen;
+	Graph G = gen.makeClusteredRandomGraph(42, 2, 0.6, 0.1);
+
+	node s = 0; // seed node
+
+	GreedyCommunityExpansion GCE;
+	std::unordered_set<node> community = GCE.run(G, s);
+
+	// get the subgraph of the community
+	Graph sub;
+
+	// write it to file
+	METISGraphWriter writer;
+	writer.write(sub, "output/CommunitySubgraph.graph");
 
 }
 
@@ -113,6 +132,7 @@ SCDGTest::SCDGTest() {
 
 SCDGTest::~SCDGTest() {
 }
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
