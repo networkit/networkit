@@ -111,7 +111,7 @@ TEST_F(SCDGTest, testNodeClusterSimilarity) {
 
 TEST_F(SCDGTest, tryCommunitySubgraph) {
 	GraphGenerator gen;
-	Graph G = gen.makeClusteredRandomGraph(42, 2, 0.6, 0.1);
+	Graph G = gen.makeCompleteGraph(10);
 
 	node s = 0; // seed node
 

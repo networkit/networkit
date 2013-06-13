@@ -176,6 +176,8 @@ count Graph::numberOfNodes() const {
 }
 
 count Graph::degree(node v) const {
+	assert (v >= 0);
+	assert (v <= this->z); // node ids must be in range
 	return deg[v];
 }
 

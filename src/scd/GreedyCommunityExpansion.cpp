@@ -31,8 +31,7 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 	GreedyCommunityExpansion::Conductance conductance(G, community);
 
 	double currentObjectiveValue = conductance.getValue(s);
-	node vMax;
-	double acceptanceMax = 0;	// maximum acceptance value
+
 
 	community.insert(s);
 	bool expanded = true;		// community has been expanded in the last iteration
@@ -42,30 +41,48 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 		shell.insert(v);
 	});
 
+	if (shell.empty()) {
+		INFO("shell of {s}Êis empty because s is an isolated node");
+		// if shell is empty, just return the singleton community of s
+		return community;
+	}
+
+	node vMax = *(shell.begin()); // initialize vMax with a random node from the shell
+	double acceptanceMax = acceptability.getValue(vMax);	// maximum acceptance value
+
 
 	while(expanded) {
+		if (shell.empty()) {
+			INFO("there are no more nodes in the shell - breaking iteration now");
+			break;
+		}
+
 		expanded = false;
 		for (node v : shell) {
 			acceptanceValues.insert(std::pair<node,double> (v, acceptability.getValue(v)));
 		}
 //for strong symmetric graphs still not well defined
 		// find the next node which will be added to the community
-		while (acceptanceValues.size() != 0) {
+		while (acceptanceValues.empty()) {
 			acceptanceMax = 0;
 			for (auto it = acceptanceValues.begin(); it != acceptanceValues.end(); ++it ) {
+				node x = it->first;
+				double acc = it->second;
 				if (it->second > acceptanceMax) {
-					vMax = it->first;
-					acceptanceMax = it->second;
+					vMax = x;
+					acceptanceMax = acc;
 				} else if (it ->second == acceptanceMax) {
-					if (conductance.getValue(vMax) > conductance.getValue(it->first)) {
-						vMax = it->first;
-						acceptanceMax = it->second;
-					} else if (conductance.getValue(vMax) == conductance.getValue(it->first)) {
-						if (G.degree(it->first) > G.degree(vMax)) {
-							vMax = it->first;
-							acceptanceMax = it->second;
-						} else if (G.degree(it->first) == G.degree(vMax)) {
-							if (it->first < vMax) {
+					if (conductance.getValue(vMax) > conductance.getValue(x)) {
+						vMax = x;
+						acceptanceMax = acc;
+					} else if (conductance.getValue(vMax) == conductance.getValue(x)) {
+						// first tie-breaking by degree
+						if (G.degree(x) > G.degree(vMax)) {
+							vMax = x;
+							acceptanceMax = acc;
+						} else if (G.degree(x) == G.degree(vMax)) {
+							// last tie-breaking by id
+							if (x < vMax) {
 								vMax = it->first;
 								acceptanceMax = it->second;
 							}
@@ -86,7 +103,13 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 				});
 				acceptanceValues.clear();
 			} else {
-				acceptanceValues.erase(acceptanceValues.find(vMax));
+				auto it = acceptanceValues.find(vMax);
+
+				assert (it != acceptanceValues.end()); // assert that vMax not found
+				node x = it->first;
+				// node with highest acceptability is discarded from the map
+				acceptanceValues.erase(x);
+
 			}
 		} // end while acceptanceValues.size() != 0
 	}
@@ -114,12 +137,12 @@ double GreedyCommunityExpansion::LocalModularityM::getValue(node v) {
 
 	double inside = 0;
 	double outside = 0;
-	for (auto it = community->begin(); it != community->end(); ++it) {
-		this->G->forNeighborsOf(*it, [&](node v){
+	for (node u : (*community)) {
+		this->G->forNeighborsOf(u, [&](node v){
 			if (community->find(v) == community->end()){
 				outside ++;
 			} else {
-				if (*it == v) {
+				if (u == v) {
 					inside++;
 				} else {
 					inside = inside + 0.5;
@@ -181,10 +204,12 @@ double GreedyCommunityExpansion::Conductance::getValue(node v) {
 	double all = 0;
 	community->insert(v);
 
-	for (auto it = community->begin(); it != community->end(); ++it) {
-		volume = volume + this->G->degree(*it);
-		this->G->forNeighborsOf(*it, [&](node v){
-			if (community->find(v) == community->end()) boundary++;
+	for (node u : (*community)) {
+		volume = volume + this->G->degree(u);
+		this->G->forNeighborsOf(u, [&](node v){
+			if (community->find(v) == community->end()) {
+				boundary++;
+			}
 		});
 	}
 
