@@ -1,0 +1,9 @@
+<map id="src/coarsening/ClusterContracter.h" name="src/coarsening/ClusterContracter.h">
+<area shape="rect" id="node3" href="$_contracter_8h.html" title="Contracter.h" alt="" coords="377,161,471,189"/>
+<area shape="rect" id="node33" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="462,83,625,111"/>
+<area shape="rect" id="node40" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="642,238,776,266"/>
+<area shape="rect" id="node45" href="$_graph_contraction_8h.html" title="../coarsening/GraphContraction.h" alt="" coords="650,83,867,111"/>
+<area shape="rect" id="node5" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="365,238,483,266"/>
+<area shape="rect" id="node21" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="184,315,275,343"/>
+<area shape="rect" id="node37" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="640,161,779,189"/>
+</map>
