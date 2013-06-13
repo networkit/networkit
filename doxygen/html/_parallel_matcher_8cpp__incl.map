@@ -1,0 +1,10 @@
+<map id="src/matching/ParallelMatcher.cpp" name="src/matching/ParallelMatcher.cpp">
+<area shape="rect" id="node3" href="$_parallel_matcher_8h.html" title="ParallelMatcher.h" alt="" coords="168,83,292,111"/>
+<area shape="rect" id="node9" href="$_matcher_8h.html" title="Matcher.h" alt="" coords="327,161,405,189"/>
+<area shape="rect" id="node42" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="205,315,344,343"/>
+<area shape="rect" id="node49" href="$_functions_8h.html" title="../aux/Functions.h" alt="" coords="67,161,193,189"/>
+<area shape="rect" id="node11" href="$_matching_8h.html" title="Matching.h" alt="" coords="331,238,417,266"/>
+<area shape="rect" id="node13" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="580,470,671,498"/>
+<area shape="rect" id="node27" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="258,393,376,421"/>
+<area shape="rect" id="node45" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="13,393,147,421"/>
+</map>
