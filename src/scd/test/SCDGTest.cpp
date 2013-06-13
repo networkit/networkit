@@ -119,7 +119,7 @@ TEST_F(SCDGTest, tryCommunitySubgraph) {
 	std::unordered_set<node> community = GCE.run(G, s);
 
 	// get the subgraph of the community
-	Graph sub;
+	Graph sub = Subgraph::fromNodes(G,community);
 
 	// write it to file
 	METISGraphWriter writer;
