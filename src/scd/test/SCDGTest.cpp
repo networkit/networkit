@@ -62,11 +62,31 @@ TEST_F(SCDGTest, testConductance) {
 
 }
 
+
+TEST_F(SCDGTest, tryCommunitySubgraph) {
+	GraphGenerator gen;
+	Graph G = gen.makeClusteredRandomGraph(42, 2, 0.6, 0.1);
+
+	node s = 0; // seed node
+
+	GreedyCommunityExpansion GCE;
+	std::unordered_set<node> community = GCE.run(G, s);
+
+	// get the subgraph of the community
+	Graph sub;
+
+	// write it to file
+	METISGraphWriter writer;
+	writer.write(sub, "output/CommunitySubgraph.graph");
+
+}
+
 SCDGTest::SCDGTest() {
 }
 
 SCDGTest::~SCDGTest() {
 }
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
