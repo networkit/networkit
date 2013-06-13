@@ -18,6 +18,7 @@ Matching::Matching(int64_t n) :
 }
 
 Matching::~Matching() {
+
 }
 
 bool Matching::isMatched(const node& u) const {
@@ -71,7 +72,7 @@ bool Matching::areMatched(const node& u, const node& v) const {
 	return ((*this)[u] == v);
 }
 
-count Matching::matchingSize() const {
+count Matching::size() const {
 	count size = 0;
 	for (index i = 0; i < n; ++i) { // TODO: parallel
 		if (isMatched(i)) {
@@ -86,6 +87,18 @@ index Matching::mate(node v) const {
 		return data[v];
 	}
 	else return none;
+}
+
+edgeweight Matching::weight(const Graph& g) const {
+	edgeweight weight = 0;
+
+	for (index i = 0; i < n; ++i) {
+		if (isMatched(i) && i < mate(i)) {
+			weight += g.weight(i, mate(i));
+		}
+	}
+
+	return weight;
 }
 
 }
