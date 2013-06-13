@@ -31,15 +31,15 @@ TEST_F(SCDGTest, testConductance) {
 
 	std::unordered_set<node> first, second, third, fourth, fifth;
 	first = {};
-	GreedyCommunityExpansion::Conductance conductance1(G, &first);
+	GreedyCommunityExpansion::Conductance conductance1(G, first);
 	second = {0};
-	GreedyCommunityExpansion::Conductance conductance2(G, &second);
+	GreedyCommunityExpansion::Conductance conductance2(G, second);
 	third = {0,1};
-	GreedyCommunityExpansion::Conductance conductance3(G, &third);
+	GreedyCommunityExpansion::Conductance conductance3(G, third);
 	fourth = {0,1,2};
-	GreedyCommunityExpansion::Conductance conductance4(G, &fourth);
+	GreedyCommunityExpansion::Conductance conductance4(G, fourth);
 	fifth = {0,1,2,3};
-	GreedyCommunityExpansion::Conductance conductance5(G, &fifth);
+	GreedyCommunityExpansion::Conductance conductance5(G, fifth);
 
 	double condOne = conductance1.getValue(0);
 	double condTwo = conductance2.getValue(1);
@@ -77,15 +77,15 @@ TEST_F(SCDGTest, testNodeClusterSimilarity) {
 
 	std::unordered_set<node> first, second, third, fourth, fifth;
 	first = {};
-	GreedyCommunityExpansion::Conductance conductance1(G, &first);
+	GreedyCommunityExpansion::Conductance conductance1(G, first);
 	second = {0};
-	GreedyCommunityExpansion::Conductance conductance2(G, &second);
+	GreedyCommunityExpansion::Conductance conductance2(G, second);
 	third = {0,1};
-	GreedyCommunityExpansion::Conductance conductance3(G, &third);
+	GreedyCommunityExpansion::Conductance conductance3(G, third);
 	fourth = {0,1,2};
-	GreedyCommunityExpansion::Conductance conductance4(G, &fourth);
+	GreedyCommunityExpansion::Conductance conductance4(G, fourth);
 	fifth = {0,1,2,3};
-	GreedyCommunityExpansion::Conductance conductance5(G, &fifth);
+	GreedyCommunityExpansion::Conductance conductance5(G, fifth);
 
 	double condOne = conductance1.getValue(0);
 	double condTwo = conductance2.getValue(1);

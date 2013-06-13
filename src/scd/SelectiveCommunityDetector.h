@@ -8,6 +8,8 @@
 #ifndef SELECTIVECOMMUNITYDETECTOR_H_
 #define SELECTIVECOMMUNITYDETECTOR_H_
 
+#include <unordered_set>
+
 #include "../graph/Graph.h"
 #include "../clustering/Clustering.h"
 
@@ -23,11 +25,11 @@ public:
 
 	/**
 	 * @param[in]	G		the graph
-	 * @param[in]	seeds	set of seed nodes
+	 * @param[in]	seed	seed node
 	 *
-	 * @param[out]			partial clustering, i.e. some entries are undefined
+	 * @param[out]			the community as a set of nodes
 	 */
-	virtual Clustering& run(Graph& G, std::vector<node> seeds) = 0;
+	virtual std::unordered_set<node> run(Graph& G, node seed) = 0;
 };
 
 } /* namespace NetworKit */
