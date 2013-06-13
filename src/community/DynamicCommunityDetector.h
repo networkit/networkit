@@ -8,6 +8,8 @@
 #ifndef DYNAMICCOMMUNITYDETECTOR_H_
 #define DYNAMICCOMMUNITYDETECTOR_H_
 
+#include <sstream>
+
 #include "../clustering/Clustering.h"
 #include "../dynamics/GraphEventHandler.h"
 

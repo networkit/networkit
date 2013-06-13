@@ -81,6 +81,8 @@ protected:
 
 		virtual ~Reactivate();
 
+		std::string toString();
+
 		/**
 		 * New node u becomes a singleton and active.
 		 */
@@ -127,6 +129,8 @@ protected:
 		ReactivateNeighbors(DynamicLabelPropagation* dynPLP);
 
 		virtual ~ReactivateNeighbors();
+
+		virtual std::string toString();
 
 		/**
 		 * New node u becomes a singleton and active.

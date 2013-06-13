@@ -38,6 +38,8 @@ public:
 
 	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) = 0;
 
+	virtual std::string toString() = 0;
+
 };
 
 } /* namespace NetworKit */
