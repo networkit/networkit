@@ -26,8 +26,8 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 
 	std::map<node,double,double> acceptanceValues;
 
-	GreedyCommunityExpansion::NodeClusterSimilarity acceptability(G, &community, &shell);
-	GreedyCommunityExpansion::Conductance conductance(G, &community);
+	GreedyCommunityExpansion::NodeClusterSimilarity acceptability(&G, &community, &shell);
+	GreedyCommunityExpansion::Conductance conductance(&G, &community);
 
 	double currentObjectiveValue = conductance.getValue(s);
 	node vMax;
@@ -68,10 +68,10 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 
 
 GreedyCommunityExpansion::QualityObjective::QualityObjective(
-	Graph& G, std::unordered_set<node>* community): G(G), community(community) {
+	Graph* G, std::unordered_set<node>* community): G(G), community(community) {
 }
 
-GreedyCommunityExpansion::LocalModularityM::LocalModularityM(Graph& G, std::unordered_set<node>* community)
+GreedyCommunityExpansion::LocalModularityM::LocalModularityM(Graph* G, std::unordered_set<node>* community)
 	: QualityObjective(G, community){
 }
 
@@ -83,7 +83,7 @@ double GreedyCommunityExpansion::LocalModularityM::getValue(node v) {
 	double inside = 0;
 	double outside = 0;
 	for (auto it = community->begin(); it != community->end(); ++it) {
-		this->G.forNeighborsOf(*it, [&](node v){
+		this->G->forNeighborsOf(*it, [&](node v){
 			if (community->find(v) == community->end()){
 				outside ++;
 			} else {
@@ -100,12 +100,12 @@ double GreedyCommunityExpansion::LocalModularityM::getValue(node v) {
 }
 
 GreedyCommunityExpansion::Acceptability::Acceptability(
-	Graph& G, std::unordered_set<node>* community, std::unordered_set<node>* shell): G(G), community(community), shell(shell) {
+	Graph* G, std::unordered_set<node>* community, std::unordered_set<node>* shell): G(G), community(community), shell(shell) {
 }
 
 
 GreedyCommunityExpansion::NodeClusterSimilarity::NodeClusterSimilarity(
-	Graph& G, std::unordered_set<node>* community, std::unordered_set<node>* shell): Acceptability(G, community, shell) {
+	Graph* G, std::unordered_set<node>* community, std::unordered_set<node>* shell): Acceptability(G, community, shell) {
 }
 
 GreedyCommunityExpansion::NodeClusterSimilarity::~NodeClusterSimilarity() {
@@ -114,15 +114,15 @@ GreedyCommunityExpansion::NodeClusterSimilarity::~NodeClusterSimilarity() {
 double GreedyCommunityExpansion::NodeClusterSimilarity::getValue(node v) {
 
 	int intersection = 0;
-	this->G.forNeighborsOf(v, [&](node u){
+	this->G->forNeighborsOf(v, [&](node u){
 	//	if ((*(this->community)).find(u) < (*(this->community)).end()||(*(this->shell)).find(u) < (*(this->shell)).end()) { // fixme: there is a fault hier
 //			intersection++;
 	//	}
 	});
-	if (G.hasEdge(v, v)) {
-		return intersection / (G.degree(v) + (*community).size() + (*shell).size() - intersection);
+	if (G->hasEdge(v, v)) {
+		return intersection / (G->degree(v) + (*community).size() + (*shell).size() - intersection);
 	} else {
-		return (intersection + 1) / (G.degree(v) + (*community).size() + (*shell).size() - intersection);
+		return (intersection + 1) / (G->degree(v) + (*community).size() + (*shell).size() - intersection);
 	}
 	return 0;
 }
@@ -133,7 +133,7 @@ GreedyCommunityExpansion::QualityObjective::~QualityObjective() {
 GreedyCommunityExpansion::Acceptability::~Acceptability() {
 }
 
-GreedyCommunityExpansion::Conductance::Conductance(Graph& G, std::unordered_set<node>* community)
+GreedyCommunityExpansion::Conductance::Conductance(Graph* G, std::unordered_set<node>* community)
 	: QualityObjective(G, community){
 }
 
@@ -147,14 +147,14 @@ double GreedyCommunityExpansion::Conductance::getValue(node v) {
 	community->insert(v);
 
 	for (auto it = community->begin(); it != community->end(); ++it) {
-		volume = volume + this->G.degree(*it);
-		this->G.forNeighborsOf(*it, [&](node v){
+		volume = volume + this->G->degree(*it);
+		this->G->forNeighborsOf(*it, [&](node v){
 			if (community->find(v) == community->end()) boundary++;
 		});
 	}
 
-	G.forNodes([&](node v){
-		all = all + G.degree(v);
+	G->forNodes([&](node v){
+		all = all + G->degree(v);
 	});
 	community->erase(v);
 	if (volume == 0 || all-volume == 0)
