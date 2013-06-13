@@ -34,7 +34,9 @@ public:
 		virtual double getValue(node v) = 0;
 	};
 
-
+	/**
+	 * LocalModularityM as a quality objective function
+	 */
 	class LocalModularityM : public QualityObjective {
 	public:
 		LocalModularityM(Graph& G, std::unordered_set<node>* community);
@@ -49,6 +51,10 @@ public:
 			virtual double getValue(node v);
 		};
 
+	/**
+	 * Acceptability measures quantify how likely a new node from the shell
+	 * is to improve the community when it is included.
+	 */
 	class Acceptability {
 	public:
 		Graph G;
