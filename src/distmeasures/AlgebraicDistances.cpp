@@ -41,7 +41,6 @@ void AlgebraicDistances::preprocess(count numberSystems, count numberIterations,
 	// init
 	numSystems = numberSystems;
 	numIters = numberIterations;
-	count n = g.numberOfNodes();
 
 	// random init
 	randomInit();
@@ -88,6 +87,14 @@ double AlgebraicDistances::algdist(node u, node v, index norm) const {
 	}
 
 	return result;
+}
+
+double AlgebraicDistances::geometricMeanLoad(node u) const {
+	double result = 1.0;
+	for (index sys = 0; sys < numSystems; ++sys) {
+		result *= loads[sys][u];
+	}
+	return pow(result, 1.0 / (double) numSystems);
 }
 
 } /* namespace NetworKit */

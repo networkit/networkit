@@ -56,4 +56,9 @@ void LocalMover::move(node u, cluster C) {
 
 } /* namespace NetworKit */
 
+double NetworKit::LocalMover::Objective::Modularity::getValue(node v) {
+}
 
+double NetworKit::LocalMover::Objective::Coverage::getValue(node v) {
+
+}

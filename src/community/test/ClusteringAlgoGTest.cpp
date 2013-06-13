@@ -32,7 +32,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
 TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters) {
 	GraphGenerator graphGenerator;
 	int64_t n = 100;
-	int k = 3; // number of clusters
+	count k = 3; // number of clusters
 	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.001);
 
 	LabelPropagation lp;
@@ -54,7 +54,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	GraphGenerator graphGen;
 	Graph Gtrash = graphGen.makeCompleteGraph(n);
 
-	int k = 3; // number of clusters
+	count k = 3; // number of clusters
 	ClusteringGenerator clusteringGen;
 	Clustering reference = clusteringGen.makeRandomClustering(Gtrash, 3);
 	assert (reference.numberOfClusters() == k);
@@ -140,8 +140,8 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 
 TEST_F(ClusteringAlgoGTest, testLouvain) {
 	count n = 500;
-	count k = 50;
-	double pin = 1.0;
+	count k = 25;
+	double pin = 0.9;
 	double pout = 0.005;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
@@ -159,8 +159,8 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 
 TEST_F(ClusteringAlgoGTest, testLouvainParallelSimple) {
 	count n = 500;
-	count k = 50;
-	double pin = 1.0;
+	count k = 25;
+	double pin = 0.9;
 	double pout = 0.005;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
@@ -198,8 +198,8 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallel2Naive) {
 
 TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 	count n = 500;
-	count k = 50;
-	double pin = 1.0;
+	count k = 25;
+	double pin = 0.9;
 	double pout = 0.005;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
@@ -218,8 +218,8 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 
 TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
 	count n = 500;
-	count k = 50;
-	double pin = 1.0;
+	count k = 25;
+	double pin = 0.9;
 	double pout = 0.005;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
@@ -232,6 +232,57 @@ TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
 	Modularity modularity;
 	INFO("modularity: " << modularity.getQuality(zeta, G));
 
+}
+
+
+TEST_F(ClusteringAlgoGTest, testCNM) {
+	count n = 500;
+	count k = 25;
+	double pin = 0.9;
+	double pout = 0.005;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	Modularity modularity;
+	CNM cnm;
+
+	Clustering clustering = cnm.run(G);
+	INFO("CNM number of clusters: " << clustering.numberOfClusters());
+	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
+}
+
+
+TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
+	Modularity modularity;
+	CNM cnm;
+	Louvain louvain;
+	METISGraphReader reader;
+	Graph jazz = reader.read("input/jazz.graph");
+	Graph blog = reader.read("input/polblogs.graph");
+
+
+	// *** jazz graph
+	// CNM
+	Clustering clustering = cnm.run(jazz);
+	INFO("CNM number of jazz clusters: " << clustering.numberOfClusters());
+	INFO("CNM modularity jazz graph: " << modularity.getQuality(clustering, jazz));
+
+	// Louvain
+	clustering = louvain.run(jazz);
+	INFO("Louvain number of jazz clusters: " << clustering.numberOfClusters());
+	INFO("Louvain modularity jazz graph: " << modularity.getQuality(clustering, jazz));
+
+
+	// *** blog graph
+	// CNM
+	clustering = cnm.run(blog);
+	INFO("CNM number of blog clusters: " << clustering.numberOfClusters());
+	INFO("CNM modularity blog graph: " << modularity.getQuality(clustering, jazz));
+
+	// Louvain
+	clustering = louvain.run(blog);
+	INFO("Louvain number of blog clusters: " << clustering.numberOfClusters());
+	INFO("Louvain modularity blog graph: " << modularity.getQuality(clustering, jazz));
 }
 
 

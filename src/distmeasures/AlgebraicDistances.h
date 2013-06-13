@@ -46,12 +46,17 @@ public:
 	void preprocess(count numberSystems, count numberIterations, double omega);
 
 	/**
-	 * Algebraic distance between node @a u and node @a v in norm @a norm with
+	 * @return Extended algebraic distance between node @a u and node @a v in norm @a norm with
 	 * default norm 2.
 	 *
 	 * Maximum norm is realized by setting @a norm to 0.
 	 */
 	double algdist(node u, node v, index norm = 2) const;
+
+	/**
+	 * @return Geometric mean of "load" values of node @a u
+	 */
+	double geometricMeanLoad(node u) const;
 };
 
 } /* namespace NetworKit */
