@@ -11,10 +11,13 @@
 #define GRAPHGTEST_H_
 
 #include <gtest/gtest.h>
+#include <unordered_set>
 
 #include "../../auxiliary/Log.h"
 #include "../Graph.h"
+#include "../Subgraph.h"
 #include "../GraphGenerator.h"
+#include "../../graph/GraphGenerator.h"
 
 
 namespace NetworKit {

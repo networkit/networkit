@@ -234,6 +234,20 @@ TEST_F(GraphGTest, testGraphCopy) {
 	EXPECT_FALSE(G2.hasEdge(0, 2)) << "edge inserted in G1 should not exist in G2";
 }
 
+TEST_F(GraphGTest, testSubgraphPartitioning) {
+	GraphGenerator graphGenerator;
+	Graph G = graphGenerator.makeCompleteGraph(4);
+	node u = 0;
+	node v = 1;
+	node w = 2;
+	std::unordered_set<node> subgraphSet = {u,v,w};
+
+	Graph subG = Subgraph::fromNodes(G,subgraphSet);
+	EXPECT_EQ(3, subG.numberOfEdges());
+	EXPECT_EQ(3, subG.numberOfNodes());
+
+
+}
 
 } /* namespace NetworKit */
 

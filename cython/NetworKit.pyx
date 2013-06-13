@@ -399,7 +399,7 @@ def nk2nx(nkG):
 def properties(nkG):
 	""" Get an overview of the properties for the graph"""
 	nxG = nk2nx(nkG)
-	if (nxG.markAsWeighted()):
+	if (nkG.isMarkedAsWeighted()):
 		print("The graph marked as weighted")
 	else: 
 		print("The graph has not been marked as weighed")
@@ -414,10 +414,10 @@ def properties(nkG):
 	print("Minimum degree \t {0}".format(minMax[0]))
 	print("Maximum degree \t {0}".format(minMax[1]))
 
-	degree_distribution = GraphProperties.degreeDistribution(nxG)
+	degree_distribution = GraphProperties.degreeDistribution(nkG)
 	print("Degree distribution:\n{0}".format(degree_distribution))
 	
-	isolated_nodes = nx.isolate(nxG)
+	isolated_nodes = nx.isolates(nxG)
 	print("Isolated nodes: \t{0}".format(len(isolated_nodes))) 
 
 	self_loops = nxG.selfloop_edges()
@@ -429,8 +429,8 @@ def properties(nkG):
 	print("Average local clustering coefficient: \t{0}".format(average_Local_clustering))
 
 	plp = LabelPropagation()
-	zeta = LabelPropagation.run(plp)
-	n_clusters = zeta.numberOfClusters();
+	zeta = plp.run(nkG)
+	n_clusters = zeta.numberOfClusters()
 	print("Label propagation found: \t{0}".format(n_clusters))
 	
 	
