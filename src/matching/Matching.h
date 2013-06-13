@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * FIXME: Could be better to store a reference to the according graph;
+ */
 class Matching : public NodeMap<node> {
 
 
@@ -97,14 +100,17 @@ public:
 	/**
 	 * @return Number of edges in matching.
 	 */
-	count matchingSize() const;
+	count size() const;
 
 	/**
 	 * @return Mate of @a v if it exists, otherwise none.
 	 */
 	index mate(node v) const;
 
-
+	/**
+	 * @return Total weight of edges in the matching.
+	 */
+	edgeweight weight(const Graph& g) const;
 };
 
 } /* namespace NetworKit */

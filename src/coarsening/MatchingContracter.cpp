@@ -20,7 +20,7 @@ MatchingContracter::~MatchingContracter() {
 
 std::pair<Graph, NodeMap<node> > MatchingContracter::run(Graph& G, Matching& M) {
 	count n = G.numberOfNodes();
-	count cn = n - M.matchingSize();
+	count cn = n - M.size();
 	Graph cG(cn);
 
 	// compute map: old ID -> new coarse ID
