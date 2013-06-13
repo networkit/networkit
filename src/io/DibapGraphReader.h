@@ -10,6 +10,7 @@
 
 #include "GraphReader.h"
 #include "../graph/Graph.h"
+#include <netinet/in.h>
 #include <cstdio>
 
 
