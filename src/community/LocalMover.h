@@ -33,6 +33,19 @@ public:
 		 */
 		virtual void onMove(node u, cluster C);
 
+
+		class QualityObjective {
+			virtual double getValue(node v) = 0;
+		};
+
+		class Modularity : public QualityObjective {
+			virtual double getValue(node v);
+		};
+
+		class Coverage : public QualityObjective {
+			virtual double getValue(node v);
+		};
+
 	};
 
 

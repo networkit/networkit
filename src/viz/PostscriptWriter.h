@@ -13,12 +13,14 @@
 #include <fstream>
 #include <cmath>
 #include <cassert>
+#include <cstdio>
+#include <climits>
+
 
 #include "../graph/Graph.h"
 #include "../clustering/Clustering.h"
 #include "../clustering/ClusteringGenerator.h"
 #include "../distmeasures/AlgebraicDistances.h"
-#include <cstdio>
 
 namespace NetworKit {
 
