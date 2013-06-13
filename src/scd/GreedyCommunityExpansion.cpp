@@ -24,22 +24,23 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 	std::unordered_set<node> shell; // shell are the nodes outside of the
 	                                // community with edges to nodes inside
 
-	std::map<node,double> acceptanceValues;
+	std::map<node, double> acceptanceValues;
 
-	GreedyCommunityExpansion::NodeClusterSimilarity acceptability(&G, &community, &shell);
-	GreedyCommunityExpansion::Conductance conductance(&G, &community);
+	// TODO: make these selectable later
+	GreedyCommunityExpansion::NodeClusterSimilarity acceptability(G, community, shell);
+	GreedyCommunityExpansion::Conductance conductance(G, community);
 
 	double currentObjectiveValue = conductance.getValue(s);
 	node vMax;
-	double acceptanceMax = 0;
-	bool expanded = true;
+	double acceptanceMax = 0;	// maximum acceptance value
 
 	community.insert(s);
+	bool expanded = true;		// community has been expanded in the last iteration
 
+	// all neighbors of s form the shell
 	G.forNeighborsOf(s, [&](node v) {
 		shell.insert(v);
 	});
-
 
 
 	while(expanded) {
@@ -48,21 +49,22 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 			acceptanceValues.insert(std::pair<node,double> (v, acceptability.getValue(v)));
 		}
 //for strong symmetric graphs still not well defined
-		while(acceptanceValues.size() != 0) {
+		// find the next node which will be added to the community
+		while (acceptanceValues.size() != 0) {
 			acceptanceMax = 0;
-			for(auto it = acceptanceValues.begin(); it != acceptanceValues.end(); ++it ) {
-				if (it ->second > acceptanceMax) {
+			for (auto it = acceptanceValues.begin(); it != acceptanceValues.end(); ++it ) {
+				if (it->second > acceptanceMax) {
 					vMax = it->first;
 					acceptanceMax = it->second;
-				} else if(!it ->second < acceptanceMax) {
+				} else if (it ->second == acceptanceMax) {
 					if (conductance.getValue(vMax) > conductance.getValue(it->first)) {
 						vMax = it->first;
 						acceptanceMax = it->second;
-					} else if (!conductance.getValue(vMax) < conductance.getValue(it->first)) {
+					} else if (conductance.getValue(vMax) == conductance.getValue(it->first)) {
 						if (G.degree(it->first) > G.degree(vMax)) {
 							vMax = it->first;
 							acceptanceMax = it->second;
-						} else if (!G.degree(it->first) < G.degree(vMax)) {
+						} else if (G.degree(it->first) == G.degree(vMax)) {
 							if (it->first < vMax) {
 								vMax = it->first;
 								acceptanceMax = it->second;
@@ -71,8 +73,8 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 					}
 				}
 			}
-// > or >=
-			if(conductance.getValue(vMax) > currentObjectiveValue){
+			// include only nodes which lead to a strictly positive improvement
+			if (conductance.getValue(vMax) > currentObjectiveValue) {
 				community.insert(vMax);
 				expanded = true;
 				currentObjectiveValue = conductance.getValue(vMax);
@@ -86,7 +88,7 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 			} else {
 				acceptanceValues.erase(acceptanceValues.find(vMax));
 			}
-		}
+		} // end while acceptanceValues.size() != 0
 	}
 
 
@@ -96,10 +98,12 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 
 
 GreedyCommunityExpansion::QualityObjective::QualityObjective(
-	Graph* G, std::unordered_set<node>* community): G(G), community(community) {
+	Graph& G, std::unordered_set<node>& community) {
+	this->G = &G;
+	this->community = &community;
 }
 
-GreedyCommunityExpansion::LocalModularityM::LocalModularityM(Graph* G, std::unordered_set<node>* community)
+GreedyCommunityExpansion::LocalModularityM::LocalModularityM(Graph& G, std::unordered_set<node>& community)
 	: QualityObjective(G, community){
 }
 
@@ -128,12 +132,15 @@ double GreedyCommunityExpansion::LocalModularityM::getValue(node v) {
 }
 
 GreedyCommunityExpansion::Acceptability::Acceptability(
-	Graph* G, std::unordered_set<node>* community, std::unordered_set<node>* shell): G(G), community(community), shell(shell) {
+	Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell) {
+	this->G = &G;
+	this->community = &community;
+	this->shell = &shell;
 }
 
 
 GreedyCommunityExpansion::NodeClusterSimilarity::NodeClusterSimilarity(
-	Graph* G, std::unordered_set<node>* community, std::unordered_set<node>* shell): Acceptability(G, community, shell) {
+	Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell): Acceptability(G, community, shell) {
 }
 
 GreedyCommunityExpansion::NodeClusterSimilarity::~NodeClusterSimilarity() {
@@ -161,7 +168,7 @@ GreedyCommunityExpansion::QualityObjective::~QualityObjective() {
 GreedyCommunityExpansion::Acceptability::~Acceptability() {
 }
 
-GreedyCommunityExpansion::Conductance::Conductance(Graph* G, std::unordered_set<node>* community)
+GreedyCommunityExpansion::Conductance::Conductance(Graph& G, std::unordered_set<node>& community)
 	: QualityObjective(G, community){
 }
 
