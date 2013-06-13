@@ -26,7 +26,6 @@ Graph Subgraph::fromNodes(Graph G,
 
 	int i = 0;
 	for (node setNode: nodeMap) {
-		DEBUG(i);
 		i++;
 		node addedNode = returnGraph.addNode();
 		setNodesToSubgraphNodes[setNode] = addedNode;

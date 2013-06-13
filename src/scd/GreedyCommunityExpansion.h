@@ -124,6 +124,17 @@ public:
 		virtual double getValue(node v);
 	};
 
+	class DummySimilarity: public Acceptability {
+
+	public:
+
+		DummySimilarity(Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
+
+		virtual ~DummySimilarity();
+
+		virtual double getValue(node v);
+	};
+
 
 	/** Greedy Community Expansion **/
 

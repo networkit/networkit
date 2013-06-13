@@ -118,8 +118,13 @@ TEST_F(SCDGTest, tryCommunitySubgraph) {
 	GreedyCommunityExpansion GCE;
 	std::unordered_set<node> community = GCE.run(G, s);
 
+	DEBUG("Community size: " << community.size());
+
+
 	// get the subgraph of the community
-	Graph sub = Subgraph::fromNodes(G,community);
+	Graph sub = Subgraph::fromNodes(G, community);
+
+	DEBUG("Subgraph number of nodes: " << sub.numberOfNodes());
 
 	// write it to file
 	METISGraphWriter writer;
