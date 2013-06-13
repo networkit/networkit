@@ -11,11 +11,17 @@
 #ifndef SCDGTEST_H_
 #define SCDGTEST_H_
 
+#include <unordered_set>
 #include <gtest/gtest.h>
 
 #include "../../graph/Graph.h"
 #include "../GreedyCommunityExpansion.h"
 #include "../../graph/Graph.h"
+#include "../../graph/Subgraph.h"
+#include "../../graph/GraphGenerator.h"
+#include "../../io/METISGraphWriter.h"
+
+
 
 namespace NetworKit {
 
