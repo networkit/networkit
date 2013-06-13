@@ -37,7 +37,7 @@ public:
 		 * @param[in]	G	the graph
 		 * @param[in]	community	the currently expanding community
 		 */
-		QualityObjective(Graph* G, std::unordered_set<node>* community);
+		QualityObjective(Graph& G, std::unordered_set<node>& community);
 
 		virtual ~QualityObjective();
 
@@ -57,7 +57,7 @@ public:
 
 	public:
 
-		LocalModularityM(Graph* G, std::unordered_set<node>* community);
+		LocalModularityM(Graph& G, std::unordered_set<node>& community);
 
 		virtual ~LocalModularityM();
 
@@ -73,7 +73,7 @@ public:
 
 	public:
 
-		Conductance(Graph* G, std::unordered_set<node>* community);
+		Conductance(Graph& G, std::unordered_set<node>& community);
 
 		virtual ~Conductance();
 
@@ -96,7 +96,7 @@ public:
 		 * @param[in]	community	pointer to current community
 		 * @param[in]	shell		pointer to current shell
 		 */
-		Acceptability(Graph* G, std::unordered_set<node>* community, std::unordered_set<node>* shell);
+		Acceptability(Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
 
 		virtual ~Acceptability();
 
@@ -116,7 +116,7 @@ public:
 
 	public:
 
-		NodeClusterSimilarity(Graph* G, std::unordered_set<node>* community, std::unordered_set<node>* shell);
+		NodeClusterSimilarity(Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
 
 		virtual ~NodeClusterSimilarity();
 
