@@ -113,7 +113,9 @@ void DynamicLabelPropagation::onTimeStep() {
 
 
 std::string DynamicLabelPropagation::toString() const {
-	return "DynamicLabelPropagation(" << this->prepStrategy->toString() << ")";
+	std::stringstream strm;
+	strm << "DynamicLabelPropagation(" << this->prepStrategy->toString() << ")";
+	return strm.str();
 }
 
 Clustering DynamicLabelPropagation::run() {
