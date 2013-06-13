@@ -15,7 +15,7 @@
 #include "../../auxiliary/Log.h"
 #include "../LabelPropagation.h"
 #include "../Louvain.h"
-#include "../CNM-WW.h"
+#include "../CNM.h"
 #include "../../clustering/Modularity.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
