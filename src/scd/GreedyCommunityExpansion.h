@@ -52,7 +52,7 @@ public:
 		};
 
 	/**
-	 * Acceptability measures quantify how likely a new node from the shell
+	 * Acceptability measures quantify how likely a node from the community shell
 	 * is to improve the community when it is included.
 	 */
 	class Acceptability {
