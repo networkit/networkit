@@ -8,10 +8,13 @@
 #ifndef DIBAPGRAPHREADER_H_
 #define DIBAPGRAPHREADER_H_
 
+#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
+
 #include "GraphReader.h"
 #include "../graph/Graph.h"
-#include <cstdio>
 
+#include <cstdio>
+#include <netinet/in.h>
 
 // codes in file headers to distinguish type
 #define IO_TYPE_XX (('X' << 8) | 'X')
@@ -37,4 +40,7 @@ public:
 };
 
 } /* namespace NetworKit */
+
+#endif /* check for non-Windows */
+
 #endif /* DIBAPGRAPHREADER_H_ */

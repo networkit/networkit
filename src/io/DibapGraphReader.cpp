@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
+
 #include "DibapGraphReader.h"
 
 namespace NetworKit {
@@ -166,3 +168,5 @@ Graph DibapGraphReader::read(std::string path) {
 }
 
 } /* namespace NetworKit */
+
+#endif // check for non-Windows

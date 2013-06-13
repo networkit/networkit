@@ -20,8 +20,11 @@ DistMeasureTest::~DistMeasureTest() {
 }
 
 TEST_F(DistMeasureTest, testAlgebraicDistances) {
+#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
+
 	DibapGraphReader reader;
-	Graph g = reader.read("input/airfoil1.gi");
+	std::string path = "input/airfoil1.gi";
+	Graph g = reader.read(path);
 
 	// init algebraic distances and preprocess
 //	count n = g.numberOfNodes();
@@ -63,6 +66,8 @@ TEST_F(DistMeasureTest, testAlgebraicDistances) {
 	Modularity modScore;
 	DEBUG("Finished with assignment to clusters, mod score: " << modScore.getQuality(clustering, g));
 #endif
+
+#endif // non-Windows test
 }
 
 

@@ -41,7 +41,6 @@ void AlgebraicDistances::preprocess(count numberSystems, count numberIterations,
 	// init
 	numSystems = numberSystems;
 	numIters = numberIterations;
-	count n = g.numberOfNodes();
 
 	// random init
 	randomInit();
