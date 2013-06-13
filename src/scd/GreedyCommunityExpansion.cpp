@@ -27,7 +27,7 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 	std::map<node, double> acceptanceValues;
 
 	// TODO: make these selectable later
-	GreedyCommunityExpansion::NodeClusterSimilarity acceptability(G, community, shell);
+	GreedyCommunityExpansion::DummySimilarity acceptability(G, community, shell);
 	GreedyCommunityExpansion::Conductance conductance(G, community);
 
 	double currentObjectiveValue = conductance.getValue(s);
@@ -40,6 +40,8 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 	G.forNeighborsOf(s, [&](node v) {
 		shell.insert(v);
 	});
+
+	DEBUG("initial shell size: " << shell.size());
 
 	if (shell.empty()) {
 		INFO("shell of {s}Êis empty because s is an isolated node");
@@ -63,7 +65,7 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 		}
 //for strong symmetric graphs still not well defined
 		// find the next node which will be added to the community
-		while (acceptanceValues.empty()) {
+		while (!acceptanceValues.empty()) {
 			acceptanceMax = 0;
 			for (auto it = acceptanceValues.begin(); it != acceptanceValues.end(); ++it ) {
 				node x = it->first;
@@ -92,10 +94,17 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 			}
 			// include only nodes which lead to a strictly positive improvement
 			if (conductance.getValue(vMax) > currentObjectiveValue) {
+				assert (community.find(vMax) == community.end()); // assert that vMax is not in community
 				community.insert(vMax);
+
 				expanded = true;
+
 				currentObjectiveValue = conductance.getValue(vMax);
+				DEBUG("community size before shell.erase:" << community.size());
 				shell.erase(vMax);
+				DEBUG("community size after shell.erase:" << community.size());
+
+				DEBUG("shell size after erase: " << shell.size());
 				G.forNeighborsOf(vMax, [&](node v){
 					if (community.find(v) == community.end()) {
 						shell.insert(v);
@@ -104,7 +113,6 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 				acceptanceValues.clear();
 			} else {
 				auto it = acceptanceValues.find(vMax);
-
 				assert (it != acceptanceValues.end()); // assert that vMax not found
 				node x = it->first;
 				// node with highest acceptability is discarded from the map
@@ -112,10 +120,10 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 
 			}
 		} // end while acceptanceValues.size() != 0
-	}
+	} // end while expanded
 
 
-	// TODO: optional trimming phase according to node fitness
+	INFO("community size at end of run: " << community.size());
 	return community;
 }
 
@@ -172,10 +180,10 @@ GreedyCommunityExpansion::NodeClusterSimilarity::~NodeClusterSimilarity() {
 double GreedyCommunityExpansion::NodeClusterSimilarity::getValue(node v) {
 
 	int intersection = 0;
-	this->G->forNeighborsOf(v, [&](node u){
-	//	if ((*(this->community)).find(u) < (*(this->community)).end()||(*(this->shell)).find(u) < (*(this->shell)).end()) { // fixme: there is a fault hier
-//			intersection++;
-	//	}
+	this->G->forNeighborsOf(v, [&](node u) {
+		if (this->community->find(u) != this->community->end()||this->shell->find(u) != this->shell->end()) { // fixme: there is a fault hier
+			intersection++;
+		}
 	});
 	if (G->hasEdge(v, v)) {
 		return intersection / (G->degree(v) + (*community).size() + (*shell).size() - intersection);
@@ -222,4 +230,17 @@ double GreedyCommunityExpansion::Conductance::getValue(node v) {
 	return 1 - (boundary / std::min(volume, all-volume));
 }
 
+GreedyCommunityExpansion::DummySimilarity::DummySimilarity(
+		Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell): Acceptability(G, community, shell) {
+}
+
+GreedyCommunityExpansion::DummySimilarity::~DummySimilarity() {
+}
+
+double GreedyCommunityExpansion::DummySimilarity::getValue(node v) {
+	return 0.5;
+}
+
 } /* namespace NetworKit */
+
+
