@@ -63,9 +63,11 @@ Matching PathGrowingMatcher::run(Graph& G) {
 			}
 
 			// remove current vertex and its incident edges from graph
+			TRACE("Remove edges of node " << v << ", which has degree " << graph.degree(v));
 			graph.forEdgesOf(v, [&](node v, node u) {
 				graph.removeEdge(v, u);
 			});
+			TRACE("Remove node " << v << " of degree " << graph.degree(v));
 			graph.removeNode(v);
 
 			// start next iteration from best neighbor

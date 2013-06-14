@@ -2,7 +2,8 @@
  * ParallelAgglomerativeClusterer.cpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
+ *      Author: Christian Staudt (christian.staudt@kit.edu),
+ *      		Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
 #include "ParallelAgglomerativeClusterer.h"
@@ -28,11 +29,15 @@ Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
 		int attrId = G.addEdgeAttribute_double(0.0);
 
 		// perform scoring
+		TRACE("before scoring graph of size " << G.numberOfNodes());
 		ModularityScoring<double> modScoring(G);
 		modScoring.scoreEdges(attrId);
 
+		// FIXME: so far only sequential
+		// FIXME: error in second iteration in matching, apparently node
+		// degrees are not correctly determined
 		// compute matching
-		ParallelMatcher parMatcher(attrId);
+		PathGrowingMatcher parMatcher;
 		Matching M = parMatcher.run(G);
 
 		// contract graph according to matching, TODO: (and star-like structures)
