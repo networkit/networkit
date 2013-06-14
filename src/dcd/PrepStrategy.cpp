@@ -16,4 +16,8 @@ PrepStrategy::~PrepStrategy() {
 	// TODO Auto-generated destructor stub
 }
 
+void PrepStrategy::onTimeStep() {
+	// do nothing - prep strategies do not need to know about time steps
+}
+
 } /* namespace NetworKit */
