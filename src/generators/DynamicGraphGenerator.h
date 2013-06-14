@@ -58,6 +58,11 @@ public:
 	 * @param[in]	m	number of edges
 	 */
 	virtual void generateEdges(count m);
+
+	/**
+	 * Continute generating until the number of time steps reaches this upper limit.
+	 */
+	virtual void generateTimeSteps(count t);
 };
 
 } /* namespace NetworKit */

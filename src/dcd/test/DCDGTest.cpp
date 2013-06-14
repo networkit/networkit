@@ -69,9 +69,33 @@ TEST_F(DCDGTest, testDynamicLabelPropagation) {
 	INFO("number of clusters for static PLM: " << zetaPLM.numberOfClusters());
 	EXPECT_TRUE(zetaPLM.isProper(G));
 
+}
 
+
+TEST_F(DCDGTest, tryArxivGraphs) {
+	std::string graphPath;
+	std::cout << "[INPUT] .dgs file path >" << std::endl;
+	std::getline(std::cin, graphPath);
+
+	DGSReader reader;
 
 }
+
+
+TEST_F(DCDGTest, tryDynamicPubWebGeneratorAsSource) {
+	count numInitialNodes = 600;
+	count numberOfDenseAreas = 10;
+	float neighborhoodRadius = 0.125;
+	count maxNumberOfNeighbors = 16;
+	count numIterations = 10;
+
+	Graph G(0); // empty graph
+	GraphEventProxy proxy(G);
+
+	DynamicPubWebGenerator pubweb(proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+
+}
+
 
 } /* namespace NetworKit */
 
