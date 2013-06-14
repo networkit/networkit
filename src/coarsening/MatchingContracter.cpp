@@ -10,12 +10,11 @@
 namespace NetworKit {
 
 MatchingContracter::MatchingContracter() {
-	// TODO Auto-generated constructor stub
 
 }
 
 MatchingContracter::~MatchingContracter() {
-	// TODO Auto-generated destructor stub
+
 }
 
 std::pair<Graph, NodeMap<node> > MatchingContracter::run(Graph& G, Matching& M) {
