@@ -117,12 +117,15 @@ TEST_F(SCDGTest, tryCommunitySubgraph) {
 
 	GreedyCommunityExpansion GCE;
 	std::unordered_set<node> community = GCE.run(G, s);
+	DEBUG("Community detection: DONE");
 
 	DEBUG("Community size: " << community.size());
 
 
 	// get the subgraph of the community
-	Graph sub = Subgraph::fromNodes(G, community);
+
+	Graph sub = Subgraph::fromNodes(G,community);
+	DEBUG("Subgraph partitioning: DONE");
 
 	DEBUG("Subgraph number of nodes: " << sub.numberOfNodes());
 
