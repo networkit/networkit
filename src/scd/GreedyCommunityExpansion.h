@@ -67,7 +67,7 @@ public:
 	/**
 	 * Conductance as a quality objective function. Unlike standard conductance,
 	 * higher values are better. This measure is defined as
-	 * $1 - conductance(C) = 1 - \frac{|B(C)|}{|\max \{vol (C), vol(VÊ\setminus \{ C \} )\}|}$
+	 * $1 - conductance(C) = 1 - \frac{|B(C)|}{|\max \{vol (C), vol(Vï¿½\setminus \{ C \} )\}|}$
 	 */
 	class Conductance : public QualityObjective {
 
@@ -107,6 +107,17 @@ public:
 	};
 
 
+	class DummySimilarity: public Acceptability {
+
+	public:
+
+		DummySimilarity(Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
+
+		virtual ~DummySimilarity();
+
+		virtual double getValue(node v);
+	};
+
 	/**
 	 * Get the node cluster similarity value for a node.
 	 *
@@ -120,20 +131,10 @@ public:
 
 		virtual ~NodeClusterSimilarity();
 
-
 		virtual double getValue(node v);
 	};
 
-	class DummySimilarity: public Acceptability {
 
-	public:
-
-		DummySimilarity(Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
-
-		virtual ~DummySimilarity();
-
-		virtual double getValue(node v);
-	};
 
 
 	/** Greedy Community Expansion **/

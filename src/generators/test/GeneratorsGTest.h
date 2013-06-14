@@ -21,7 +21,7 @@
 #include "../../community/LabelPropagation.h"
 #include "../BTERGenerator.h"
 #include "../../io/METISGraphWriter.h"
-#include "../../io/DOTGraphWriter.h"
+#include "../../io/DotGraphWriter.h"
 #include "../StaticBarabasiAlbertGenerator.h"
 #include "../../io/GraphIO.h"
 #include "../../io/METISGraphReader.h"
