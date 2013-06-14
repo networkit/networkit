@@ -1,0 +1,12 @@
+<map id="src/clustering/JaccardMeasure.h" name="src/clustering/JaccardMeasure.h">
+<area shape="rect" id="node3" href="$_jaccard_measure_8cpp.html" title="src/clustering/JaccardMeasure.cpp" alt="" coords="5,91,232,119"/>
+<area shape="rect" id="node5" href="$_clustering_g_test_8h.html" title="src/clustering/test\l/ClusteringGTest.h" alt="" coords="256,83,387,127"/>
+<area shape="rect" id="node9" href="$_ensemble_multilevel_8h.html" title="src/community/EnsembleMultilevel.h" alt="" coords="411,91,647,119"/>
+<area shape="rect" id="node13" href="$_ensemble_g_test_8h.html" title="src/community/test\l/EnsembleGTest.h" alt="" coords="720,177,852,221"/>
+<area shape="rect" id="node19" href="$_ensemble_preprocessing_8h.html" title="src/community/EnsemblePreprocessing.h" alt="" coords="723,91,988,119"/>
+<area shape="rect" id="node7" href="$_clustering_g_test_8cpp.html" title="src/clustering/test\l/ClusteringGTest.cpp" alt="" coords="59,177,204,221"/>
+<area shape="rect" id="node11" href="$_ensemble_multilevel_8cpp.html" title="src/community/EnsembleMultilevel.cpp" alt="" coords="229,185,480,213"/>
+<area shape="rect" id="node17" href="$_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="504,185,695,213"/>
+<area shape="rect" id="node15" href="$_ensemble_g_test_8cpp.html" title="src/community/test\l/EnsembleGTest.cpp" alt="" coords="714,270,859,314"/>
+<area shape="rect" id="node21" href="$_ensemble_preprocessing_8cpp.html" title="src/community/EnsemblePreprocessing.cpp" alt="" coords="877,185,1157,213"/>
+</map>
