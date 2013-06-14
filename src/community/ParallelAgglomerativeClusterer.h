@@ -11,6 +11,7 @@
 #include "Clusterer.h"
 #include "../scoring/ModularityScoring.h"
 #include "../matching/ParallelMatcher.h"
+#include "../matching/PathGrowingMatcher.h"
 #include "../coarsening/MatchingContracter.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../Globals.h"

@@ -38,10 +38,10 @@ TEST_F(MatcherGTest, testPgaMatching) {
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 	DibapGraphReader reader;
 	Graph airfoil1 = reader.read("input/airfoil1.gi");
-	Matching M2 = pgaMatcher.run(airfoil1);
-	isProper = M2.isProper(airfoil1);
+	M = pgaMatcher.run(airfoil1);
+	isProper = M.isProper(airfoil1);
 	EXPECT_TRUE(isProper);
-	DEBUG("PGA on airfoil1 produces matching of size: " << M2.size());
+	DEBUG("PGA on airfoil1 produces matching of size: " << M.size());
 #endif
 }
 

@@ -10,12 +10,11 @@
 namespace NetworKit {
 
 ParallelMatcher::ParallelMatcher(int attrId_) : attrId(attrId_) {
-	// TODO Auto-generated constructor stub
 
 }
 
 ParallelMatcher::~ParallelMatcher() {
-	// TODO Auto-generated destructor stub
+
 }
 
 Matching ParallelMatcher::run(Graph& G) {

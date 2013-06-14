@@ -286,6 +286,40 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 }
 
 
+TEST_F(ClusteringAlgoGTest, tryAgglomerativeAndLouvain) {
+	Modularity modularity;
+	ParallelAgglomerativeClusterer aggl;
+	Louvain louvain;
+	METISGraphReader reader;
+	Graph jazz = reader.read("input/jazz.graph");
+	Graph blog = reader.read("input/polblogs.graph");
+
+
+	// *** jazz graph
+	// aggl
+	Clustering clustering = aggl.run(jazz);
+	INFO("CNM number of jazz clusters: " << clustering.numberOfClusters());
+	INFO("CNM modularity jazz graph: " << modularity.getQuality(clustering, jazz));
+
+	// Louvain
+	clustering = louvain.run(jazz);
+	INFO("Louvain number of jazz clusters: " << clustering.numberOfClusters());
+	INFO("Louvain modularity jazz graph: " << modularity.getQuality(clustering, jazz));
+
+
+	// *** blog graph
+	// CNM
+	clustering = aggl.run(blog);
+	INFO("CNM number of blog clusters: " << clustering.numberOfClusters());
+	INFO("CNM modularity blog graph: " << modularity.getQuality(clustering, jazz));
+
+	// Louvain
+	clustering = louvain.run(blog);
+	INFO("Louvain number of blog clusters: " << clustering.numberOfClusters());
+	INFO("Louvain modularity blog graph: " << modularity.getQuality(clustering, jazz));
+}
+
+
 
 } /* namespace NetworKit */
 
