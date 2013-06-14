@@ -12,10 +12,12 @@
 
 #include <gtest/gtest.h>
 
-#include "../../auxiliary/Log.h"
 #include "../LabelPropagation.h"
 #include "../Louvain.h"
 #include "../CNM.h"
+#include "../ParallelAgglomerativeClusterer.h"
+
+#include "../../auxiliary/Log.h"
 #include "../../clustering/Modularity.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"

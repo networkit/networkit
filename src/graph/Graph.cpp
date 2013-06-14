@@ -88,6 +88,8 @@ void Graph::removeEdge(node u, node v) {
 		this->adja[u][vi] = none;
 		this->adja[v][ui] = none;
 		// decrement degree counters
+//		assert(this->deg[u] > 0);
+//		assert(this->deg[v] > 0);
 		this->deg[u] -= 1;
 		this->deg[v] -= 1;
 		// remove edge weight

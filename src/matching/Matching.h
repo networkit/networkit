@@ -80,24 +80,6 @@ public:
 
 
 	/**
-	 * Assignment operator.
-	 */
-	Matching& operator=(const Matching& from);
-
-
-	/**
-	 * Properly copy this object.
-	 */
-	 void clone(const Matching& from);
-
-
-	/**
-	 * Properly destruct this object.
-	 */
-	void dispose();
-
-
-	/**
 	 * @return Number of edges in matching.
 	 */
 	count size() const;
