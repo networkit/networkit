@@ -60,9 +60,8 @@ void DynamicLabelPropagation::onNodeRemoval(node u) {
 	prepStrategy->onNodeRemoval(u);
 }
 
-void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
+void DynamicLabelPropagation::onEdgeAddition(node u, node v, edgeweight w) {
 	// update weighted degree
-	edgeweight w = G->weight(u, v);
 	if (u != v) {
 		weightedDegree[u] += w;
 		weightedDegree[v] += w;
@@ -77,9 +76,8 @@ void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
 	this->prepStrategy->onEdgeAddition(u, v);
 }
 
-void DynamicLabelPropagation::onEdgeRemoval(node u, node v) {
+void DynamicLabelPropagation::onEdgeRemoval(node u, node v, edgeweight w) {
 	// update weighted degree
-	edgeweight w = G->weight(u, v);
 	if (u != v) {
 		weightedDegree[u] -= w;
 		weightedDegree[v] -= w;
@@ -169,8 +167,7 @@ Clustering DynamicLabelPropagation::run() {
 
 // PREP STRATEGY IMPLEMENTATIONS
 
-DynamicLabelPropagation::Reactivate::Reactivate(
-		DynamicLabelPropagation* dynPLP) {
+DynamicLabelPropagation::Reactivate::Reactivate(DynamicLabelPropagation* dynPLP) {
 	this->dynPLP = dynPLP;
 }
 
@@ -189,14 +186,14 @@ void DynamicLabelPropagation::Reactivate::onNodeRemoval(node u) {
 	// incident edges must have been removed before, so neighborhood is already active at this point
 }
 
-void DynamicLabelPropagation::Reactivate::onEdgeAddition(node u, node v) {
+void DynamicLabelPropagation::Reactivate::onEdgeAddition(node u, node v, edgeweight w) {
 	// activate the affected nodes
 	dynPLP->activeNodes[u] = true;
 	dynPLP->activeNodes[v] = true;
 }
 
-void DynamicLabelPropagation::Reactivate::onEdgeRemoval(node u, node v) {
-	this->onEdgeAddition(u, v);
+void DynamicLabelPropagation::Reactivate::onEdgeRemoval(node u, node v, edgeweight w) {
+	this->onEdgeAddition(u, v, w);
 }
 
 void DynamicLabelPropagation::Reactivate::onWeightUpdate(node u, node v,
@@ -205,8 +202,8 @@ void DynamicLabelPropagation::Reactivate::onWeightUpdate(node u, node v,
 }
 
 
-DynamicLabelPropagation::ReactivateNeighbors::ReactivateNeighbors(
-		DynamicLabelPropagation* dynPLP) {
+DynamicLabelPropagation::ReactivateNeighbors::ReactivateNeighbors(DynamicLabelPropagation* dynPLP) {
+	this->dynPLP = dynPLP;
 }
 
 DynamicLabelPropagation::ReactivateNeighbors::~ReactivateNeighbors() {
@@ -223,24 +220,24 @@ void DynamicLabelPropagation::ReactivateNeighbors::onNodeRemoval(node u) {
 	// incident edges must have been removed before, so neighborhood is already active at this point
 }
 
-void DynamicLabelPropagation::ReactivateNeighbors::onEdgeAddition(node u, node v) {
+void DynamicLabelPropagation::ReactivateNeighbors::onEdgeAddition(node u, node v, edgeweight w) {
 	// activate the affected nodes and their neighbors
 	dynPLP->activeNodes[u] = true;
 	dynPLP->activeNodes[v] = true;
-	dynPLP->G->forNeighborsOf(u, [&](node w) {
-		dynPLP->activeNodes[w] = true;
+	dynPLP->G->forNeighborsOf(u, [&](node x) {
+		dynPLP->activeNodes[x] = true;
 	});
-	dynPLP->G->forNeighborsOf(v, [&](node w) {
-		dynPLP->activeNodes[w] = true;
+	dynPLP->G->forNeighborsOf(v, [&](node x) {
+		dynPLP->activeNodes[x] = true;
 	});
 }
 
-void DynamicLabelPropagation::ReactivateNeighbors::onEdgeRemoval(node u, node v) {
-	this->onEdgeAddition(u, v);
+void DynamicLabelPropagation::ReactivateNeighbors::onEdgeRemoval(node u, node v, edgeweight w) {
+	this->onEdgeAddition(u, v, w);
 }
 
 void DynamicLabelPropagation::ReactivateNeighbors::onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) {
-	this->onEdgeAddition(u, v);
+	this->onEdgeAddition(u, v, wNew);
 }
 
 std::string DynamicLabelPropagation::Reactivate::toString() {

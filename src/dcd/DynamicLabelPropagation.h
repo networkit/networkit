@@ -48,9 +48,9 @@ public:
 
 	virtual void onNodeRemoval(node u);
 
-	virtual void onEdgeAddition(node u, node v);
+	virtual void onEdgeAddition(node u, node v, edgeweight w = 1.0);
 
-	virtual void onEdgeRemoval(node u, node v);
+	virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0);
 
 	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
 
@@ -96,12 +96,12 @@ protected:
 		/**
 		 * Reactivate u and v on addition of edge {u,v}
 		 */
-		virtual void onEdgeAddition(node u, node v);
+		virtual void onEdgeAddition(node u, node v, edgeweight w = 1.0);
 
 		/**
 		 * Reactivate u and v on removal of edge {u,v}
 		 */
-		virtual void onEdgeRemoval(node u, node v);
+		virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0);
 
 		/**
 		 * Same reaction as onEdgeAddition
@@ -145,12 +145,12 @@ protected:
 		/**
 		 * Reactivate u and v on addition of edge {u,v}
 		 */
-		virtual void onEdgeAddition(node u, node v);
+		virtual void onEdgeAddition(node u, node v, edgeweight w = 1.0);
 
 		/**
 		 * Reactivate u and v on removal of edge {u,v}
 		 */
-		virtual void onEdgeRemoval(node u, node v);
+		virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0);
 
 		/**
 		 * Same reaction as onEdgeAddition
