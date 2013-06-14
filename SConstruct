@@ -118,6 +118,7 @@ comp_hm["CXX"] = "g++-4.7"
 
 ## environment: mac_hm
 
+# VariantDir('build', 'src', duplicate=0)
 mac_hm = Environment()
 ### include
 mac_hm.Append(CPPPATH = ["/opt/local/include/gcc/c++/4.7.2", \
@@ -135,6 +136,7 @@ mac_hm.Append(LIBPATH = ["/Users/Henning/Documents/workspace/STINGER/OpenMP Debu
                            "/Users/Henning/Documents/workspace/gtest/", \
                             "/opt/local/lib/"])
 mac_hm.Append(LINKFLAGS = ["-std=c++11"])
+# mac_hm.Program('build/CommunityDetection.cpp')
 
 ### compiler & flags
 mac_hm["CC"] = "gcc-mp-4.7"
