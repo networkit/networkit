@@ -133,6 +133,8 @@ void DynamicPubWebGenerator::generate() {
 			this->Gproxy->removeEdge(u, v);
 		}
 	});
+
+	this->Gproxy->timeStep(); // trigger a time step
 }
 
 } /* namespace NetworKit */

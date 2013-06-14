@@ -77,7 +77,6 @@ TEST_F(DCDGTest, tryArxivGraphs) {
 	std::cout << "[INPUT] .dgs file path >" << std::endl;
 	std::getline(std::cin, graphPath);
 
-	DGSReader reader;
 
 }
 
@@ -92,7 +91,21 @@ TEST_F(DCDGTest, tryDynamicPubWebGeneratorAsSource) {
 	Graph G(0); // empty graph
 	GraphEventProxy proxy(G);
 
-	DynamicPubWebGenerator pubweb(proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+	DynamicPubWebGenerator* pubweb = new DynamicPubWebGenerator(proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+
+	DynamicLabelPropagation dynLP;
+
+	proxy.registerObserver(&dynLP);
+
+	count deltaT = 1;
+	count tMax = 10;
+
+	pubweb->initializeGraph();
+
+	while (G.time() <= tMax) {
+		pubweb->generateTimeSteps(G.time() + deltaT);
+	}
+
 
 }
 

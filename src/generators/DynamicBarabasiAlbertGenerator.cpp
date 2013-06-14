@@ -82,6 +82,8 @@ void DynamicBarabasiAlbertGenerator::generate() {
 		this->Gproxy->addEdge(u, v);
 		degSum += 2; 	// increment degree sum
 	}
+
+	this->Gproxy->timeStep(); // trigger a time step
 }
 
 } /* namespace NetworKit */
