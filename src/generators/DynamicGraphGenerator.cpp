@@ -45,4 +45,11 @@ void DynamicGraphGenerator::generateEdges(count m) {
 	this->generateWhile(cont);
 }
 
+void DynamicGraphGenerator::generateTimeSteps(count t) {
+	auto cont = [&](){
+		return (this->G->time() < t);
+	};
+	this->generateWhile(cont);
+}
+
 } /* namespace NetworKit */
