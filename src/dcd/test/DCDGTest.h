@@ -1,5 +1,5 @@
 /*
- * DynamicCommunityDetectionGTest.h
+ * DCDGTest.h
  *
  *  Created on: 10.04.2013
  *      Author: cls
@@ -7,8 +7,8 @@
 
 #ifndef NOGTEST
 
-#ifndef DYNAMICCOMMUNITYDETECTIONGTEST_H_
-#define DYNAMICCOMMUNITYDETECTIONGTEST_H_
+#ifndef DCDGTEST_H_
+#define DCDGTEST_H_
 
 #include <gtest/gtest.h>
 
@@ -19,13 +19,13 @@
 
 namespace NetworKit {
 
-class DynamicCommunityDetectionGTest: public testing::Test {
+class DCDGTest: public testing::Test {
 public:
-	DynamicCommunityDetectionGTest();
-	virtual ~DynamicCommunityDetectionGTest();
+	DCDGTest();
+	virtual ~DCDGTest();
 };
 
 } /* namespace NetworKit */
-#endif /* DYNAMICCOMMUNITYDETECTIONGTEST_H_ */
+#endif /* DCDGTEST_H_ */
 
 #endif /*NOGTEST */

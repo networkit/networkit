@@ -8,21 +8,21 @@
 #ifndef NOGTEST
 
 
-#include "DynamicCommunityDetectionGTest.h"
+#include "DCDGTest.h"
 
 namespace NetworKit {
 
-DynamicCommunityDetectionGTest::DynamicCommunityDetectionGTest() {
+DCDGTest::DCDGTest() {
 	// TODO Auto-generated constructor stub
 
 }
 
-DynamicCommunityDetectionGTest::~DynamicCommunityDetectionGTest() {
+DCDGTest::~DCDGTest() {
 	// TODO Auto-generated destructor stub
 }
 
 
-TEST_F(DynamicCommunityDetectionGTest, testDynamicLabelPropagation) {
+TEST_F(DCDGTest, testDynamicLabelPropagation) {
 	// 1. create graph
 	Graph G(0); // empty graphw
 	// 2. create proxy
