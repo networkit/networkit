@@ -13,8 +13,8 @@
 #include <gtest/gtest.h>
 
 #include "../DynamicLabelPropagation.h"
-#include "../LabelPropagation.h"
-#include "../Louvain.h"
+#include "../../community/LabelPropagation.h"
+#include "../../community/Louvain.h"
 #include "../../generators/DynamicBarabasiAlbertGenerator.h"
 
 namespace NetworKit {
