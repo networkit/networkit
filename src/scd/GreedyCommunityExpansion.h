@@ -11,6 +11,7 @@
 #include <unordered_set>
 
 #include "SelectiveCommunityDetector.h"
+#include "CommunityTrimming.h"
 
 
 namespace NetworKit {
