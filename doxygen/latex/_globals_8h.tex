@@ -1,0 +1,129 @@
+\hypertarget{_globals_8h}{\section{src/\-Globals.h File Reference}
+\label{_globals_8h}\index{src/\-Globals.\-h@{src/\-Globals.\-h}}
+}
+This graph shows which files directly or indirectly include this file\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_globals_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{_globals_8h_a5670d8f00ac221e50249e1e1556d65e1}{P\-R\-I\-N\-T\-\_\-\-P\-R\-O\-G\-R\-E\-S\-S}
+\item 
+bool \hyperlink{_globals_8h_ad3c382e32f9cf2ab73ba4c3a9f8a22c0}{R\-A\-N\-D\-\_\-\-O\-R\-D\-E\-R}
+\begin{DoxyCompactList}\small\item\em don't randomize Label\-Propagation node order by default, since this seems to be faster and slightly better \end{DoxyCompactList}\item 
+int \hyperlink{_globals_8h_a94cbe79b80d6be895b3dbe4dbf85b6d4}{I\-N\-A\-C\-T\-I\-V\-E\-\_\-\-S\-E\-E\-D\-S}
+\begin{DoxyCompactList}\small\item\em number of seed nodes which are set inactive for first iteration \end{DoxyCompactList}\item 
+bool \hyperlink{_globals_8h_a3078cde24ec108878990db8c0d3aeb70}{N\-O\-R\-M\-A\-L\-I\-Z\-E\-\_\-\-V\-O\-T\-E\-S}
+\begin{DoxyCompactList}\small\item\em if set, normalize votes of L\-P by dividing edge weight by weighted degree \end{DoxyCompactList}\item 
+bool \hyperlink{_globals_8h_a2d594da421d5f66db58c2129a17f1668}{S\-C\-A\-L\-E\-\_\-\-S\-T\-R\-E\-N\-G\-T\-H}
+\begin{DoxyCompactList}\small\item\em if set, scale cluster strengths in L\-P \end{DoxyCompactList}\item 
+int \hyperlink{_globals_8h_af3e1f0f8f1a4df52f819c5749f0dd344}{M\-I\-N\-\_\-\-N\-U\-M\-\_\-\-C\-O\-M\-M\-U\-N\-I\-T\-I\-E\-S}
+\begin{DoxyCompactList}\small\item\em minimum number of communities, so far only used by agglomerative clustering \end{DoxyCompactList}\item 
+double \hyperlink{_globals_8h_ada2c9841852e824fbc1d336339edaaa6}{R\-E\-L\-\_\-\-R\-E\-P\-E\-A\-T\-\_\-\-T\-H\-R\-S\-H}
+\begin{DoxyCompactList}\small\item\em threshold for minimum number of matching edges relative to number of vertices to proceed agglomeration \end{DoxyCompactList}\item 
+bool \hyperlink{_globals_8h_a66d8c9ccbe208549b6e1c1b9457afe3b}{C\-A\-L\-C\-\_\-\-D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y}
+\begin{DoxyCompactList}\small\item\em if set, calculate and print base clustering dissimilarity for ensemble (expensive!) \end{DoxyCompactList}\item 
+int \hyperlink{_globals_8h_a5be9f520bba7dd57c60feb113872632c}{M\-A\-X\-\_\-\-L\-O\-U\-V\-A\-I\-N\-\_\-\-I\-T\-E\-R\-A\-T\-I\-O\-N\-S}
+\begin{DoxyCompactList}\small\item\em maximum number of iterations within contractions in Louvain algorithm \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{_globals_8h_a66d8c9ccbe208549b6e1c1b9457afe3b}{\index{Globals.\-h@{Globals.\-h}!C\-A\-L\-C\-\_\-\-D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y@{C\-A\-L\-C\-\_\-\-D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y}}
+\index{C\-A\-L\-C\-\_\-\-D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y@{C\-A\-L\-C\-\_\-\-D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y}!Globals.h@{Globals.\-h}}
+\subsubsection[{C\-A\-L\-C\-\_\-\-D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y}]{\setlength{\rightskip}{0pt plus 5cm}bool C\-A\-L\-C\-\_\-\-D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y}}\label{_globals_8h_a66d8c9ccbe208549b6e1c1b9457afe3b}
+
+
+if set, calculate and print base clustering dissimilarity for ensemble (expensive!) 
+
+
+
+Definition at line 20 of file Globals.\-cpp.
+
+\hypertarget{_globals_8h_a94cbe79b80d6be895b3dbe4dbf85b6d4}{\index{Globals.\-h@{Globals.\-h}!I\-N\-A\-C\-T\-I\-V\-E\-\_\-\-S\-E\-E\-D\-S@{I\-N\-A\-C\-T\-I\-V\-E\-\_\-\-S\-E\-E\-D\-S}}
+\index{I\-N\-A\-C\-T\-I\-V\-E\-\_\-\-S\-E\-E\-D\-S@{I\-N\-A\-C\-T\-I\-V\-E\-\_\-\-S\-E\-E\-D\-S}!Globals.h@{Globals.\-h}}
+\subsubsection[{I\-N\-A\-C\-T\-I\-V\-E\-\_\-\-S\-E\-E\-D\-S}]{\setlength{\rightskip}{0pt plus 5cm}int I\-N\-A\-C\-T\-I\-V\-E\-\_\-\-S\-E\-E\-D\-S}}\label{_globals_8h_a94cbe79b80d6be895b3dbe4dbf85b6d4}
+
+
+number of seed nodes which are set inactive for first iteration 
+
+
+
+Definition at line 10 of file Globals.\-cpp.
+
+\hypertarget{_globals_8h_a5be9f520bba7dd57c60feb113872632c}{\index{Globals.\-h@{Globals.\-h}!M\-A\-X\-\_\-\-L\-O\-U\-V\-A\-I\-N\-\_\-\-I\-T\-E\-R\-A\-T\-I\-O\-N\-S@{M\-A\-X\-\_\-\-L\-O\-U\-V\-A\-I\-N\-\_\-\-I\-T\-E\-R\-A\-T\-I\-O\-N\-S}}
+\index{M\-A\-X\-\_\-\-L\-O\-U\-V\-A\-I\-N\-\_\-\-I\-T\-E\-R\-A\-T\-I\-O\-N\-S@{M\-A\-X\-\_\-\-L\-O\-U\-V\-A\-I\-N\-\_\-\-I\-T\-E\-R\-A\-T\-I\-O\-N\-S}!Globals.h@{Globals.\-h}}
+\subsubsection[{M\-A\-X\-\_\-\-L\-O\-U\-V\-A\-I\-N\-\_\-\-I\-T\-E\-R\-A\-T\-I\-O\-N\-S}]{\setlength{\rightskip}{0pt plus 5cm}int M\-A\-X\-\_\-\-L\-O\-U\-V\-A\-I\-N\-\_\-\-I\-T\-E\-R\-A\-T\-I\-O\-N\-S}}\label{_globals_8h_a5be9f520bba7dd57c60feb113872632c}
+
+
+maximum number of iterations within contractions in Louvain algorithm 
+
+
+
+Definition at line 22 of file Globals.\-cpp.
+
+\hypertarget{_globals_8h_af3e1f0f8f1a4df52f819c5749f0dd344}{\index{Globals.\-h@{Globals.\-h}!M\-I\-N\-\_\-\-N\-U\-M\-\_\-\-C\-O\-M\-M\-U\-N\-I\-T\-I\-E\-S@{M\-I\-N\-\_\-\-N\-U\-M\-\_\-\-C\-O\-M\-M\-U\-N\-I\-T\-I\-E\-S}}
+\index{M\-I\-N\-\_\-\-N\-U\-M\-\_\-\-C\-O\-M\-M\-U\-N\-I\-T\-I\-E\-S@{M\-I\-N\-\_\-\-N\-U\-M\-\_\-\-C\-O\-M\-M\-U\-N\-I\-T\-I\-E\-S}!Globals.h@{Globals.\-h}}
+\subsubsection[{M\-I\-N\-\_\-\-N\-U\-M\-\_\-\-C\-O\-M\-M\-U\-N\-I\-T\-I\-E\-S}]{\setlength{\rightskip}{0pt plus 5cm}int M\-I\-N\-\_\-\-N\-U\-M\-\_\-\-C\-O\-M\-M\-U\-N\-I\-T\-I\-E\-S}}\label{_globals_8h_af3e1f0f8f1a4df52f819c5749f0dd344}
+
+
+minimum number of communities, so far only used by agglomerative clustering 
+
+
+
+Definition at line 17 of file Globals.\-cpp.
+
+\hypertarget{_globals_8h_a3078cde24ec108878990db8c0d3aeb70}{\index{Globals.\-h@{Globals.\-h}!N\-O\-R\-M\-A\-L\-I\-Z\-E\-\_\-\-V\-O\-T\-E\-S@{N\-O\-R\-M\-A\-L\-I\-Z\-E\-\_\-\-V\-O\-T\-E\-S}}
+\index{N\-O\-R\-M\-A\-L\-I\-Z\-E\-\_\-\-V\-O\-T\-E\-S@{N\-O\-R\-M\-A\-L\-I\-Z\-E\-\_\-\-V\-O\-T\-E\-S}!Globals.h@{Globals.\-h}}
+\subsubsection[{N\-O\-R\-M\-A\-L\-I\-Z\-E\-\_\-\-V\-O\-T\-E\-S}]{\setlength{\rightskip}{0pt plus 5cm}bool N\-O\-R\-M\-A\-L\-I\-Z\-E\-\_\-\-V\-O\-T\-E\-S}}\label{_globals_8h_a3078cde24ec108878990db8c0d3aeb70}
+
+
+if set, normalize votes of L\-P by dividing edge weight by weighted degree 
+
+
+
+Definition at line 11 of file Globals.\-cpp.
+
+\hypertarget{_globals_8h_a5670d8f00ac221e50249e1e1556d65e1}{\index{Globals.\-h@{Globals.\-h}!P\-R\-I\-N\-T\-\_\-\-P\-R\-O\-G\-R\-E\-S\-S@{P\-R\-I\-N\-T\-\_\-\-P\-R\-O\-G\-R\-E\-S\-S}}
+\index{P\-R\-I\-N\-T\-\_\-\-P\-R\-O\-G\-R\-E\-S\-S@{P\-R\-I\-N\-T\-\_\-\-P\-R\-O\-G\-R\-E\-S\-S}!Globals.h@{Globals.\-h}}
+\subsubsection[{P\-R\-I\-N\-T\-\_\-\-P\-R\-O\-G\-R\-E\-S\-S}]{\setlength{\rightskip}{0pt plus 5cm}bool P\-R\-I\-N\-T\-\_\-\-P\-R\-O\-G\-R\-E\-S\-S}}\label{_globals_8h_a5670d8f00ac221e50249e1e1556d65e1}
+
+
+Definition at line 8 of file Globals.\-cpp.
+
+\hypertarget{_globals_8h_ad3c382e32f9cf2ab73ba4c3a9f8a22c0}{\index{Globals.\-h@{Globals.\-h}!R\-A\-N\-D\-\_\-\-O\-R\-D\-E\-R@{R\-A\-N\-D\-\_\-\-O\-R\-D\-E\-R}}
+\index{R\-A\-N\-D\-\_\-\-O\-R\-D\-E\-R@{R\-A\-N\-D\-\_\-\-O\-R\-D\-E\-R}!Globals.h@{Globals.\-h}}
+\subsubsection[{R\-A\-N\-D\-\_\-\-O\-R\-D\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}bool R\-A\-N\-D\-\_\-\-O\-R\-D\-E\-R}}\label{_globals_8h_ad3c382e32f9cf2ab73ba4c3a9f8a22c0}
+
+
+don't randomize Label\-Propagation node order by default, since this seems to be faster and slightly better 
+
+
+
+Definition at line 9 of file Globals.\-cpp.
+
+\hypertarget{_globals_8h_ada2c9841852e824fbc1d336339edaaa6}{\index{Globals.\-h@{Globals.\-h}!R\-E\-L\-\_\-\-R\-E\-P\-E\-A\-T\-\_\-\-T\-H\-R\-S\-H@{R\-E\-L\-\_\-\-R\-E\-P\-E\-A\-T\-\_\-\-T\-H\-R\-S\-H}}
+\index{R\-E\-L\-\_\-\-R\-E\-P\-E\-A\-T\-\_\-\-T\-H\-R\-S\-H@{R\-E\-L\-\_\-\-R\-E\-P\-E\-A\-T\-\_\-\-T\-H\-R\-S\-H}!Globals.h@{Globals.\-h}}
+\subsubsection[{R\-E\-L\-\_\-\-R\-E\-P\-E\-A\-T\-\_\-\-T\-H\-R\-S\-H}]{\setlength{\rightskip}{0pt plus 5cm}double R\-E\-L\-\_\-\-R\-E\-P\-E\-A\-T\-\_\-\-T\-H\-R\-S\-H}}\label{_globals_8h_ada2c9841852e824fbc1d336339edaaa6}
+
+
+threshold for minimum number of matching edges relative to number of vertices to proceed agglomeration 
+
+
+
+Definition at line 18 of file Globals.\-cpp.
+
+\hypertarget{_globals_8h_a2d594da421d5f66db58c2129a17f1668}{\index{Globals.\-h@{Globals.\-h}!S\-C\-A\-L\-E\-\_\-\-S\-T\-R\-E\-N\-G\-T\-H@{S\-C\-A\-L\-E\-\_\-\-S\-T\-R\-E\-N\-G\-T\-H}}
+\index{S\-C\-A\-L\-E\-\_\-\-S\-T\-R\-E\-N\-G\-T\-H@{S\-C\-A\-L\-E\-\_\-\-S\-T\-R\-E\-N\-G\-T\-H}!Globals.h@{Globals.\-h}}
+\subsubsection[{S\-C\-A\-L\-E\-\_\-\-S\-T\-R\-E\-N\-G\-T\-H}]{\setlength{\rightskip}{0pt plus 5cm}bool S\-C\-A\-L\-E\-\_\-\-S\-T\-R\-E\-N\-G\-T\-H}}\label{_globals_8h_a2d594da421d5f66db58c2129a17f1668}
+
+
+if set, scale cluster strengths in L\-P 
+
+
+
+Definition at line 14 of file Globals.\-cpp.
+

@@ -1,0 +1,5 @@
+<map id="EnsembleClustering::Modularity::Modularity" name="EnsembleClustering::Modularity::Modularity">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non&#45;isolated) nodes in the graph." alt="" coords="429,5,600,49"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_modularity.html#a5c449dd6b3b3485dcc497edd8dc3c156" title="Precompute some values depending on the graph instance to be used in getQuality." alt="" coords="213,65,381,109"/>
+<area shape="rect" id="node8" href="$class_ensemble_clustering_1_1_graph.html#a9bff231567f9ac604f1854d62f6682d1" title="Return node weight." alt="" coords="444,73,585,117"/>
+</map>
