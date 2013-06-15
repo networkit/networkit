@@ -167,8 +167,11 @@ GreedyCommunityExpansion::NodeClusterSimilarity::~NodeClusterSimilarity() {
 }
 
 double GreedyCommunityExpansion::NodeClusterSimilarity::getValue(node v) {
-	std::cout << this->shell->size() << std::endl;
+	std::cout << this->community << std::endl;
 	std::cout << this->community->size() << std::endl;
+	std::cout << this->shell << std::endl;
+	std::cout << this->shell->size() << std::endl;
+
 
 
 	int intersection = 0;
