@@ -181,72 +181,74 @@ TEST_F(SCDGTest, testRun) {
 	EXPECT_EQ(community.size(), 5) << "The community should have 5 nodes";
 
 }
-//
-//TEST_F(SCDGTest, testNodeClusterSimilarity) {
-//
-//	Graph G(5);
-//	G.addEdge(0,0);
-//	G.addEdge(0,1);
-//	G.addEdge(0,2);
-//	G.addEdge(0,3);
-//	G.addEdge(1,2);
-//	G.addEdge(1,4);
-//	G.addEdge(2,3);
-//	G.addEdge(2,4);
-//	G.addEdge(3,4);
-//
-//
-//	std::unordered_set<node> first, second, third, fourth, fifth, shel;
-//	first = {0,23};
-//	shel = {1,2,3};
-//
-//	GreedyCommunityExpansion::NodeClusterSimilarity ncs1(G, first, shel);
-//	std::cout << ncs1.community << std::endl;
-//		std::cout << ncs1.community->size() << std::endl;
-//		std::cout << ncs1.shell << std::endl;
-//		std::cout << ncs1.shell->size() << std::endl;
-//
-//	second = {0,1};
-//	shel = {2,3,4};
-//	GreedyCommunityExpansion::NodeClusterSimilarity ncs2(G, second, shel);
-//	third = {0,1,2};
-//	shel = {3,4};
-//	GreedyCommunityExpansion::NodeClusterSimilarity ncs3(G, third, shel);
-//	fourth = {0,1,2,3};
-//	shel = {4};
-//	GreedyCommunityExpansion::NodeClusterSimilarity ncs4(G, fourth, shel);
-//	fifth = {0,1,2,3,4};
-//	shel = {};
-//	GreedyCommunityExpansion::NodeClusterSimilarity ncs5(G, fifth, shel);
-//
-//	double ncsOne = ncs1.getValue(1);
-//	double ncsTwo = ncs2.getValue(1);
-//	std::cout << "[BEGIN] reading graph   " << ncsOne << std::endl;
-//
-//	double ncsThree = ncs3.getValue(2);
-//	std::cout << "[BEGIN] reading graph   " << ncsOne << std::endl;
-//
-//	double ncsFour = ncs4.getValue(3);
-//	std::cout << "[BEGIN] reading graph   " << ncsOne << std::endl;
-//
-//	double ncsFive = ncs5.getValue(4);
-//	std::cout << "[BEGIN] reading graph   " << ncsOne << std::endl;
+
+TEST_F(SCDGTest, testNodeClusterSimilarity) {
+
+	Graph G(5);
+	G.addEdge(0,0);
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(1,2);
+	G.addEdge(1,4);
+	G.addEdge(2,3);
+	G.addEdge(2,4);
+	G.addEdge(3,4);
+
+
+	// std::unordered_set<node> first, second, third, fourth, fifth, shel;
+	std::unordered_set<node> first = {0,23};
+	std::unordered_set<node> shell_1 = {1,2,3};
+
+	GreedyCommunityExpansion::NodeClusterSimilarity ncs1(G, first, shell_1);
+	// TODO: replace this with DEBUG macros
+	std::cout << ncs1.community << std::endl;
+	std::cout << ncs1.community->size() << std::endl;
+	std::cout << ncs1.shell << std::endl;
+	std::cout << ncs1.shell->size() << std::endl;
+
+	std::unordered_set<node> second = {0,1};
+	std::unordered_set<node> shell_2 = {2,3,4};
+	GreedyCommunityExpansion::NodeClusterSimilarity ncs2(G, second, shell_2);
+	std::unordered_set<node> third = {0,1,2};
+	std::unordered_set<node> shell_3 = {3,4};
+	GreedyCommunityExpansion::NodeClusterSimilarity ncs3(G, third, shell_3);
+	std::unordered_set<node> fourth = {0,1,2,3};
+	std::unordered_set<node> shell_4 = {4};
+	GreedyCommunityExpansion::NodeClusterSimilarity ncs4(G, fourth, shell_4);
+	std::unordered_set<node> fifth = {0,1,2,3,4};
+	std::unordered_set<node> shell_5 = {};
+	GreedyCommunityExpansion::NodeClusterSimilarity ncs5(G, fifth, shell_5);
+
+	double ncsOne = ncs1.getValue(1);
+	double ncsTwo = ncs2.getValue(1);
+	// TODO: replace with DEBUG macros
+	std::cout << "[BEGIN] reading graph   " << ncsOne << std::endl;
+
+	double ncsThree = ncs3.getValue(2);
+	std::cout << "[BEGIN] reading graph   " << ncsOne << std::endl;
+
+	double ncsFour = ncs4.getValue(3);
+	std::cout << "[BEGIN] reading graph   " << ncsOne << std::endl;
+
+	double ncsFive = ncs5.getValue(4);
+	std::cout << "[BEGIN] reading graph   " << ncsOne << std::endl;
 
 
 
-//	EXPECT_EQ(0, ncsOne) << "1-clustering should have similarity of 0";
-//
-//	EXPECT_GE(0.571429, ncsTwo) << "2-clustering should have similarity of 4/7";
-//	EXPECT_LE(0.571428, ncsTwo) << "2-clustering should have similarity of 4/7";
-//
-//	EXPECT_GE(0.666667, ncsThree) << "3-clustering should have similarity of 2/3";
-//	EXPECT_LE(0.666666, ncsThree) << "3-clustering should have similarity of 2/3";
-//
-//	EXPECT_EQ(1, ncsFour) << "4-clustering should have similarity of 1";
-//
-//	EXPECT_EQ(0, ncsFive) << "5-clustering should have similarity of 0";
+	EXPECT_EQ(0, ncsOne) << "1-clustering should have similarity of 0";
 
-//}
+	EXPECT_GE(0.571429, ncsTwo) << "2-clustering should have similarity of 4/7";
+	EXPECT_LE(0.571428, ncsTwo) << "2-clustering should have similarity of 4/7";
+
+	EXPECT_GE(0.666667, ncsThree) << "3-clustering should have similarity of 2/3";
+	EXPECT_LE(0.666666, ncsThree) << "3-clustering should have similarity of 2/3";
+
+	EXPECT_EQ(1, ncsFour) << "4-clustering should have similarity of 1";
+
+	EXPECT_EQ(0, ncsFive) << "5-clustering should have similarity of 0";
+
+}
 
 //
 TEST_F(SCDGTest, tryCommunitySubgraph) {
