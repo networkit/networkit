@@ -9,10 +9,9 @@
 
 namespace NetworKit {
 
-DynamicPubWebGenerator::DynamicPubWebGenerator(GraphEventProxy& proxy,
-		count numInitialNodes, count numberOfDenseAreas, float neighborhoodRadius,
+DynamicPubWebGenerator::DynamicPubWebGenerator(count numInitialNodes, count numberOfDenseAreas, float neighborhoodRadius,
 		count maxNumberOfNeighbors) :
-		DynamicGraphGenerator(proxy),
+		DynamicGraphGenerator(),
 		staticGen(numInitialNodes, numberOfDenseAreas, neighborhoodRadius,
 				maxNumberOfNeighbors)
 {

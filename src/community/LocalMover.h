@@ -17,55 +17,20 @@ class LocalMover: public NetworKit::Clusterer {
 
 public:
 
-	class Objective {
+	class QualityObjective {
+		virtual double getValue(node v) = 0;
+	};
 
-	public:
+	class Modularity : public QualityObjective {
+		virtual double getValue(node v);
+	};
 
-		/**
-		 * Finds the best neighboring cluster for node  u.
-		 */
-		virtual cluster find(node u);
-
-		virtual double eval(node u, cluster C);
-
-		/**
-		 * LocalMover notifies Objective to update data structures.
-		 */
-		virtual void onMove(node u, cluster C);
-
-
-		class QualityObjective {
-			virtual double getValue(node v) = 0;
-		};
-
-		class Modularity : public QualityObjective {
-			virtual double getValue(node v);
-		};
-
-		class Coverage : public QualityObjective {
-			virtual double getValue(node v);
-		};
-
+	class Coverage : public QualityObjective {
+		virtual double getValue(node v);
 	};
 
 
-//	class DeltaModularity : public Objective {
-//
-//	public:
-//
-//		virtual cluster find(node u);
-//
-//		virtual void onMove(node u, cluster C);
-//
-//	};
-
-	class TerminationCriterion {
-	public:
-
-		virtual bool done();
-	};
-
-	LocalMover(Objective* obj, TerminationCriterion* crit);
+	LocalMover(QualityObjective& obj);
 
 	virtual ~LocalMover();
 
@@ -75,8 +40,7 @@ private:
 
 	void move(node u, cluster C);
 
-	Objective* objective;
-	TerminationCriterion* criterion;
+	QualityObjective* objective;
 	Clustering* zeta;
 
 };

@@ -9,13 +9,10 @@
 
 namespace NetworKit {
 
-DynamicGraphGenerator::DynamicGraphGenerator() {
+DynamicGraphGenerator::DynamicGraphGenerator() : G(NULL), Gproxy(NULL), graphSet(false), graphInitialized(false) {
+	// Graph and GraphEventProxy are set by calling newGraph
 }
 
-DynamicGraphGenerator::DynamicGraphGenerator(GraphEventProxy& proxy) {
-	this->Gproxy = &proxy;
-	this->G = this->Gproxy->G;
-}
 
 
 
@@ -43,6 +40,14 @@ void DynamicGraphGenerator::generateEdges(count m) {
 		return (this->G->numberOfEdges() < m);
 	};
 	this->generateWhile(cont);
+}
+
+GraphEventProxy* DynamicGraphGenerator::newGraph() {
+	this->G = new Graph(0);
+	this->Gproxy = new GraphEventProxy(*(this->G));
+	// not returning proxy because only generator needs write access to graph
+	this->graphSet = true;
+	return this->Gproxy;
 }
 
 void DynamicGraphGenerator::generateTimeSteps(count t) {

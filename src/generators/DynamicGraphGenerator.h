@@ -18,16 +18,25 @@ class DynamicGraphGenerator {
 
 protected:
 
-	GraphEventProxy* Gproxy;	//!< receives events produced by the generator and forwards them
+	GraphEventProxy* Gproxy;		//!< receives events produced by the generator and forwards them
 	Graph* G;
+	bool graphSet;			//!< true if newGraph has been called and graph and proxy instances are properly set
+	bool graphInitialized;	//!< true if initializeGraph has been called and graph has been properly initialized
 
 public:
 
-	 DynamicGraphGenerator(); // nullary constructor needed for Python interface - do not use this to construct an instance
+	 DynamicGraphGenerator();
 
-	DynamicGraphGenerator(GraphEventProxy& proxy);
+	// DynamicGraphGenerator(GraphEventProxy& proxy);
 
 	virtual ~DynamicGraphGenerator();
+
+
+	/**
+	 * After constructing a DynamicGraphGenerator, call this to set a new
+	 * a Graph and GraphEventProxy instance and get access to them.
+	 */
+	GraphEventProxy* newGraph();
 
 	/**
 	 * The generator may expect the graph to be in a certain initial state. Call this method first.
