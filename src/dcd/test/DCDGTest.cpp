@@ -95,6 +95,7 @@ TEST_F(DCDGTest, tryDynamicPubWebGeneratorAsSource) {
 
 	DynamicLabelPropagation dynLP;
 
+
 	proxy.registerObserver(&dynLP);
 
 	count deltaT = 1;
@@ -102,10 +103,17 @@ TEST_F(DCDGTest, tryDynamicPubWebGeneratorAsSource) {
 
 	pubweb->initializeGraph();
 
+	std::vector<Clustering> results;
 	while (G.time() <= tMax) {
 		pubweb->generateTimeSteps(G.time() + deltaT);
+		if (G.time() % 2 == 0) {
+			results.push_back(dynLP.run());
+		}
 	}
 
+	for (Clustering zeta : results) {
+		DEBUG("number of clusters: " << zeta.numberOfClusters());
+	}
 
 }
 
