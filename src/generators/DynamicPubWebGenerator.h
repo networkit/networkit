@@ -20,7 +20,7 @@ protected:
 	void moveNodesRandomly();
 
 public:
-	DynamicPubWebGenerator(GraphEventProxy& proxy, count numInitialNodes, count numberOfDenseAreas,
+	DynamicPubWebGenerator(count numInitialNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors);
 	virtual ~DynamicPubWebGenerator();
 

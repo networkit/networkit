@@ -9,9 +9,9 @@
 
 namespace NetworKit {
 
-LocalMover::LocalMover(Objective* obj, TerminationCriterion* crit) {
-	this->objective = obj;
-	this->criterion = crit;
+LocalMover::LocalMover(QualityObjective& obj) {
+	this->objective = &obj;
+	// this->criterion = crit;
 }
 
 LocalMover::~LocalMover() {
@@ -19,24 +19,27 @@ LocalMover::~LocalMover() {
 }
 
 Clustering LocalMover::run(Graph& G) {
-	zeta = new Clustering(G.numberOfNodes());
-	// TODO: initialize objective and termination criterion with graph and clustering
+	Clustering zeta(G.numberOfNodes());
 
-	while (! criterion->done()) {
+	this->zeta = &zeta;
+	// TODO: initialize objective
+
+	bool done; // TODO: define
+	while (!done) {
 		G.forNodes([&](node u) {
-			cluster C = objective->find(u);
+			// TODO: cluster C = objective->find(u);
 			if (true) { // FIXME:
-				move(u, C);
+				// TODO: move(u, C);
 			}
 		});
 	}
 
-	return *zeta;
+	return zeta;
 }
 
 void LocalMover::move(node u, cluster C) {
-	zeta[u] = C;
-	objective->onMove(u,C); // notify objective to update data structures
+	(*zeta)[u] = C;
+	// TODO: objective->onMove(u,C); // notify objective to update data structures
 }
 
 
@@ -56,9 +59,9 @@ void LocalMover::move(node u, cluster C) {
 
 } /* namespace NetworKit */
 
-double NetworKit::LocalMover::Objective::Modularity::getValue(node v) {
+
+double NetworKit::LocalMover::Modularity::getValue(node v) {
 }
 
-double NetworKit::LocalMover::Objective::Coverage::getValue(node v) {
-
+double NetworKit::LocalMover::Coverage::getValue(node v) {
 }

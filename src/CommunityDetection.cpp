@@ -290,19 +290,6 @@ Graph getGraph(OptionParser::Option* options) {
 			count n = std::atoi(genNumArgs.at(0).c_str());
 			count a = std::atoi(genNumArgs.at(1).c_str());
 			return generatePreferentialAttachmentGraph(n, a);
-		} else if (model == "DBA") {
-			assert (genNumArgs.size() == 2);
-			count n = std::atoi(genNumArgs.at(0).c_str());
-			count a = std::atoi(genNumArgs.at(1).c_str());
-
-			Graph G(0); // empty graph
-			GraphEventProxy Gproxy(G);
-			DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(Gproxy, a);
-			gen->initializeGraph();
-			gen->generateWhile([&]() {
-						return ( G.numberOfNodes() < n );
-					});
-			return G;
 		} else {
 			std::cout << "[ERROR] unknown graph generation model: " << model << " [EXIT]" << std::endl;
 			exit(1);

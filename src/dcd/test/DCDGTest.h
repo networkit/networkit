@@ -17,6 +17,7 @@
 #include "../../community/Louvain.h"
 #include "../../generators/DynamicBarabasiAlbertGenerator.h"
 #include "../../generators/DynamicPubWebGenerator.h"
+#include "../DynCDSetup.h"
 
 namespace NetworKit {
 

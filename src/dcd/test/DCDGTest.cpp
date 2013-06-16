@@ -23,16 +23,18 @@ DCDGTest::~DCDGTest() {
 
 
 TEST_F(DCDGTest, testDynamicLabelPropagation) {
-	// 1. create graph
-	Graph G(0); // empty graphw
-	// 2. create proxy
-	GraphEventProxy Gproxy(G);
-	// 3. create generator and pass proxy
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(Gproxy, 2);
-	// 4. create dynamic algorithm and pass graph
-	DynamicCommunityDetector* dynPLP = new DynamicLabelPropagation(G, 0, "reactivate");
+
+	//  create generator and pass proxy
+	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(2);
+
+	GraphEventProxy* Gproxy = gen->newGraph();
+	Graph* G = Gproxy->G;
+
+	// create dynamic algorithm and pass graph
+	DynamicCommunityDetector* dynCD = new DynamicLabelPropagation(0, "Reactivate");
+	dynCD->setGraph(*G);
 	// 5. register dynamic algorithm as observer
-	Gproxy.registerObserver(dynPLP);
+	Gproxy->registerObserver(dynCD);
 	// 6. initialize graph for generator
 	gen->initializeGraph();
 
@@ -43,16 +45,16 @@ TEST_F(DCDGTest, testDynamicLabelPropagation) {
 
 	gen->generateNodes(n1); // stops when graph has n1 nodes
 	// 8. start clusterer
-	Clustering zeta1 = dynPLP->run();
+	Clustering zeta1 = dynCD->run();
 
-	EXPECT_TRUE(zeta1.isProper(G)) << "first dynamic clustering should be a proper clustering of G";
+	EXPECT_TRUE(zeta1.isProper(*G)) << "first dynamic clustering should be a proper clustering of G";
 
 	// 9. resume generator
 	gen->generateNodes(n2); // terminate when function returns true
-	EXPECT_EQ(n2, G.numberOfNodes()) << n2 << "nodes should have been generated";
+	EXPECT_EQ(n2, G->numberOfNodes()) << n2 << "nodes should have been generated";
 	// 10. resume clusterer
-	Clustering zeta2 = dynPLP->run();
-	EXPECT_TRUE(zeta2.isProper(G)) << "second dynamic clustering should be a proper clustering of G";
+	Clustering zeta2 = dynCD->run();
+	EXPECT_TRUE(zeta2.isProper(*G)) << "second dynamic clustering should be a proper clustering of G";
 
 
 	INFO("number of clusters 1: " << zeta1.numberOfClusters());
@@ -60,14 +62,14 @@ TEST_F(DCDGTest, testDynamicLabelPropagation) {
 
 
 	LabelPropagation PLP;
-	Clustering zetaPLP = PLP.run(G);
+	Clustering zetaPLP = PLP.run(*G);
 	INFO("number of clusters for static PLP: " << zetaPLP.numberOfClusters());
-	EXPECT_TRUE(zetaPLP.isProper(G));
+	EXPECT_TRUE(zetaPLP.isProper(*G));
 
 	Louvain PLM;
-	Clustering zetaPLM = PLM.run(G);
+	Clustering zetaPLM = PLM.run(*G);
 	INFO("number of clusters for static PLM: " << zetaPLM.numberOfClusters());
-	EXPECT_TRUE(zetaPLM.isProper(G));
+	EXPECT_TRUE(zetaPLM.isProper(*G));
 
 }
 
@@ -88,26 +90,29 @@ TEST_F(DCDGTest, tryDynamicPubWebGeneratorAsSource) {
 	count maxNumberOfNeighbors = 16;
 	count numIterations = 10;
 
-	Graph G(0); // empty graph
-	GraphEventProxy proxy(G);
+	DynamicGraphGenerator* dynGen = new DynamicPubWebGenerator(numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
 
-	DynamicPubWebGenerator* pubweb = new DynamicPubWebGenerator(proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+	GraphEventProxy* Gproxy = dynGen->newGraph();
+	Graph* G = Gproxy->G;
 
-	DynamicLabelPropagation dynLP;
+	DynamicCommunityDetector* dynCD = new DynamicLabelPropagation(0, "Reactivate");
+	dynCD->setGraph(*G);
 
 
-	proxy.registerObserver(&dynLP);
+
+
+	Gproxy->registerObserver(dynCD);
 
 	count deltaT = 1;
 	count tMax = 10;
 
-	pubweb->initializeGraph();
+	dynGen->initializeGraph();
 
 	std::vector<Clustering> results;
-	while (G.time() <= tMax) {
-		pubweb->generateTimeSteps(G.time() + deltaT);
-		if (G.time() % 2 == 0) {
-			results.push_back(dynLP.run());
+	while (G->time() <= tMax) {
+		dynGen->generateTimeSteps(G->time() + deltaT);
+		if (G->time() % 2 == 0) {
+			results.push_back(dynCD->run());
 		}
 	}
 
@@ -117,6 +122,58 @@ TEST_F(DCDGTest, tryDynamicPubWebGeneratorAsSource) {
 
 }
 
+
+TEST_F(DCDGTest, tryDynamicBarabasiAlbertGeneratorAsSource) {
+
+	// create instance of generator
+	count k = 1;
+	DynamicGraphGenerator* dynGen = new DynamicBarabasiAlbertGenerator(k);
+
+	// use generator to get graph and proxy
+	GraphEventProxy* Gproxy = dynGen->newGraph();
+	Graph* G = Gproxy->G;
+
+	// create instance of dynamic community detection algorithm
+	DynamicCommunityDetector* dynCD = new DynamicLabelPropagation(0, "ReactivateNeighbors");
+
+	// provide graph to algorithm
+	dynCD->setGraph(*G);
+	// register algorithm as observer to the graph
+	Gproxy->registerObserver(dynCD);
+
+	// initialize graph
+	dynGen->initializeGraph();
+
+	// start dynamic community detection setup
+	count deltaT = 1;
+	count tMax = 10;
+
+	std::vector<Clustering> results;
+	while (G->time() <= tMax) {
+		dynGen->generateTimeSteps(G->time() + deltaT);
+		if (G->time() % 2 == 0) {
+			results.push_back(dynCD->run());
+		}
+	}
+
+	for (Clustering zeta : results) {
+		DEBUG("number of clusters: " << zeta.numberOfClusters());
+	}
+
+}
+
+
+TEST_F(DCDGTest, tryDynCDSetup) {
+	 DynamicGraphGenerator* dynGen = new DynamicBarabasiAlbertGenerator(1);
+	 DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "ReactivateNeighbors");
+	 DynamicCommunityDetector* dynCD2 = new DynamicLabelPropagation(0, "ReactivateNeighbors");
+
+	 std::vector<DynamicCommunityDetector*> detectors = {dynCD1, dynCD2};
+	 DynCDSetup setup(*dynGen, detectors, 1, 10);
+
+	 setup.run();
+
+}
 
 } /* namespace NetworKit */
 

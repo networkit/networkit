@@ -26,12 +26,17 @@ public:
 	DynamicLabelPropagation(); // nullary constructor needed for Python interface - do not use this to construct instance
 
 	/**
-	 * @param[in]	G		graph
 	 * @param[in]	theta	update threshold
 	 */
-	DynamicLabelPropagation(Graph& G, count theta, std::string strategy = "reactivate");
+	DynamicLabelPropagation(count theta, std::string strategy = "reactivate");
 
 	virtual ~DynamicLabelPropagation();
+
+
+	/**
+	 * Set the input graph and initialize data structures.
+	 */
+	virtual void setGraph(Graph& G);
 
 	/**
 	 * Run the Label Propagation community detection algorithm and produce a clustering.
@@ -58,13 +63,13 @@ public:
 
 protected:
 
+	count updateThreshold;
 	Clustering labels;					//!< the labelling/clustering
 	std::vector<bool> activeNodes;		//!< which nodes are currently active?
 	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
-	count updateThreshold;
 	count nUpdated; 					//!< number of nodes updated in last iteration (?)
-	count t;							//!< counter for time steps received
 
+	Graph* G;							//!< the current graph instance
 	PrepStrategy* prepStrategy;			//!< a prep strategy reacts to graph events by preparing the algorithm's clustering
 
 
