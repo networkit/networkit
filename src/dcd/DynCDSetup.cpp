@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynCDSetup::DynCDSetup(DynamicGraphGenerator& dynGen, std::vector<DynamicCommunityDetector*>& dynDetectors, count tMax, count deltaT) :
+DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityDetector*>& dynDetectors, count tMax, count deltaT) :
 		gen(&dynGen),
 		detectors(dynDetectors),
 		tMax(tMax),
@@ -51,13 +51,22 @@ void DynCDSetup::run() {
 	// for all community detectors, perform run
 
 	while (G->time() <= tMax) {
-		gen->generateTimeSteps(G->time() + deltaT);
-		if (G->time() % deltaT == 0) {
+		try {
+			gen->generateTimeSteps(G->time() + deltaT);
 			for (count i = 0; i < this->detectors.size(); ++i) {
 				DynamicCommunityDetector* dynCD = this->detectors[i];
 				INFO("running dynamic community detector " << dynCD->toString());
 				results[i].push_back(dynCD->run());
 			}
+		} catch (std::logic_error& e) {
+			INFO("source cannot produce any more events");
+			// perform algorithm runs for the last time
+			for (count i = 0; i < this->detectors.size(); ++i) {
+				DynamicCommunityDetector* dynCD = this->detectors[i];
+				INFO("running dynamic community detector " << dynCD->toString());
+				results[i].push_back(dynCD->run());
+			}
+			break;
 		}
 
 	}

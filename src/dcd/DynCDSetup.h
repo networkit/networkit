@@ -9,7 +9,7 @@
 #define DYNCDSETUP_H_
 
 #include "DynamicCommunityDetector.h"
-#include "../generators/DynamicGraphGenerator.h"
+#include "../generators/DynamicGraphSource.h"
 
 namespace NetworKit {
 
@@ -23,14 +23,14 @@ public:
 	 * @param[in]	deltaT			time steps between two algorithm runs
 	*/
 
-	DynCDSetup(DynamicGraphGenerator& dynGen, std::vector<DynamicCommunityDetector*>& dynDetectors, count tMax, count deltaT=1);
+	DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityDetector*>& dynDetectors, count tMax, count deltaT=1);
 
 	virtual ~DynCDSetup();
 
 	virtual void run();
 
 private:
-	DynamicGraphGenerator* gen;	//!< pointer to dynamic graph generator
+	DynamicGraphSource* gen;	//!< pointer to dynamic graph generator
 	std::vector<DynamicCommunityDetector*> detectors;	//!< pointer to collection of dynamic community detection algorithms
 	Graph* G;
 	GraphEventProxy* Gproxy;
