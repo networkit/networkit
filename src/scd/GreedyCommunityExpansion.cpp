@@ -177,27 +177,24 @@ GreedyCommunityExpansion::NodeClusterSimilarity::~NodeClusterSimilarity() {
 }
 
 double GreedyCommunityExpansion::NodeClusterSimilarity::getValue(node v) {
-	std::cout << this->community << std::endl;
-	std::cout << this->community->size() << std::endl;
-	std::cout << this->shell << std::endl;
-	std::cout << this->shell->size() << std::endl;
 
-
-
-	int intersection = 0;
+	double intersection = 0;
 	this->G->forNeighborsOf(v, [&](node u) {
 
 		if (this->community->find(u) != this->community->end()||this->shell->find(u) != this->shell->end()) {
 			intersection++;
 		}
 	});
-	if (G->hasEdge(v, v)) {
-		return intersection / (G->degree(v) + (*community).size() + (*shell).size() - intersection);
-	} else {
 
-
-		return (intersection + 1) / (G->degree(v) + (*community).size() + (*shell).size() - intersection);
+	if (this->shell->find(v) != this->shell->end()) {
+		intersection++;
 	}
+
+	if (G->hasEdge(v, v)) {
+		return (intersection - 1) / (G->degree(v) + community->size() + shell->size() - intersection  + 1);
+	}
+
+	return intersection / (G->degree(v) + 1 + community->size() + shell->size() - intersection);
 }
 
 GreedyCommunityExpansion::QualityObjective::~QualityObjective() {
@@ -253,6 +250,31 @@ GreedyCommunityExpansion::DummySimilarity::~DummySimilarity() {
 
 double GreedyCommunityExpansion::DummySimilarity::getValue(node v) {
 	return 0.5;
+}
+
+std::map<node, std::unordered_set<node> > GreedyCommunityExpansion::seedSetExpansion(
+		Graph& G, std::vector<node> set) {
+
+	std::map<node, std::unordered_set<node>> communities;
+	GreedyCommunityExpansion GCE;
+	for (node u : set) {
+		communities.insert(std::pair<node, std::unordered_set<node>> (u, GCE.run(G, u)));
+	}
+	bool modified = true;
+
+	return communities;
+}
+
+double GreedyCommunityExpansion::clusterClusterSimilarity(
+		std::unordered_set<node>& community1,
+		std::unordered_set<node>& community2) {
+	double intersection = 0;
+	for (node u : community1) {
+		if (community2.find(u) != community2.end()) {
+			intersection++;
+		}
+	}
+	return intersection / (community1.size() + community2.size() - intersection);
 }
 
 } /* namespace NetworKit */

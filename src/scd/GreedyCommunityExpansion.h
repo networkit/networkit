@@ -152,6 +152,9 @@ public:
 	 */
 	virtual std::unordered_set<node> run(Graph& G, node s);
 
+	virtual std::map<node, std::unordered_set<node>> seedSetExpansion(Graph& G, std::vector<node> set);
+
+	virtual double clusterClusterSimilarity (std::unordered_set<node>& community1, std::unordered_set<node>& community2);
 };
 
 } /* namespace NetworKit */
