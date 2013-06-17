@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynamicDGSParser::DynamicDGSParser(std::string path) : Gproxy(NULL), G(NULL), graphInitialized(false), dgsFile(path) {
+DynamicDGSParser::DynamicDGSParser(std::string path) : graphInitialized(false), dgsFile(path) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -40,10 +40,10 @@ void DynamicDGSParser::initializeGraph() {
 
 void DynamicDGSParser::generate() {
 	if (graphInitialized == false) {
-		throw std::runtime_error("Can not call generate(), before graph was initialized.");
+		throw std::runtime_error("Can not call generate() before graph was initialized.");
 	}
-
 	std::string line;
+	bool breakTimeStep; // true if breaking from the while loop was due to a time step event
 
 	while (std::getline(dgsFile, line)) {
 		std::vector<std::string> split = Aux::StringTools::split(line);
@@ -53,6 +53,7 @@ void DynamicDGSParser::generate() {
 
 		if (tag.compare("st") == 0 && split.size() == 2) { // clock
 			Gproxy->timeStep();
+			breakTimeStep = true;
 			break;
 
 		} else if (tag.compare("an") == 0 && split.size() == 2) { // add node
@@ -101,8 +102,11 @@ void DynamicDGSParser::generate() {
 			Gproxy->removeEdge(u, v);
 		}
 
+	} // end while
+	if (!breakTimeStep) {
+		// while loop finished because it hit the end of the file
+		throw std::logic_error("reached the end of the .dgs file");
 	}
-	DEBUG("EOF");
 }
 
 } /* namespace NetworKit */

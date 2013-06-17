@@ -175,6 +175,23 @@ TEST_F(DCDGTest, tryDynCDSetup) {
 
 }
 
+
+TEST_F(DCDGTest, tryDGSAsSource) {
+	std::string path;
+	std::cout << "[INPUT] .dgs file path >" << std::endl;
+	std::getline(std::cin, path);
+
+	DynamicGraphSource* source = new DynamicDGSParser(path);
+	DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Reactivate");
+	// DynamicCommunityDetector* dynCD2 = new DynamicLabelPropagation(0, "ReactivateNeighbors");
+
+	std::vector<DynamicCommunityDetector*> detectors = { dynCD1 };
+	DynCDSetup setup(*source, detectors, 10e9, 10000);
+
+	setup.run();
+
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */

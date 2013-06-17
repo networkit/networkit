@@ -11,7 +11,6 @@ namespace NetworKit {
 
 DGSReader::DGSReader() {
 	// TODO Auto-generated constructor stub
-
 }
 
 DGSReader::~DGSReader() {

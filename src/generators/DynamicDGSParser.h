@@ -32,8 +32,6 @@ public:
 	virtual void generate();
 
 protected:
-	GraphEventProxy* Gproxy;		//!< receives events produced by the generator and forwards them
-	Graph* G;
 	bool graphInitialized;	//!< true if initializeGraph has been called and graph has been properly initialized
 	std::unordered_map<std::string, node> nodeNames;
 	std::ifstream dgsFile;
