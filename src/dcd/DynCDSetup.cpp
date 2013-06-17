@@ -14,6 +14,10 @@ DynCDSetup::DynCDSetup(DynamicGraphGenerator& dynGen, std::vector<DynamicCommuni
 		detectors(dynDetectors),
 		tMax(tMax),
 		deltaT(deltaT) {
+	if (deltaT >= tMax) {
+		throw std::runtime_error("deltaT must be smaller than tMax");
+	}
+
 	// create graph and proxy instances
 	Gproxy = this->gen->newGraph();
 	G = Gproxy->G;
@@ -48,7 +52,7 @@ void DynCDSetup::run() {
 
 	while (G->time() <= tMax) {
 		gen->generateTimeSteps(G->time() + deltaT);
-		if (G->time() % 2 == 0) {
+		if (G->time() % deltaT == 0) {
 			for (count i = 0; i < this->detectors.size(); ++i) {
 				DynamicCommunityDetector* dynCD = this->detectors[i];
 				INFO("running dynamic community detector " << dynCD->toString());
