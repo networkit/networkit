@@ -1,0 +1,265 @@
+\hypertarget{class_networ_kit_1_1_index_map}{\section{Networ\-Kit\-:\-:Index\-Map$<$ I, T $>$ Class Template Reference}
+\label{class_networ_kit_1_1_index_map}\index{Networ\-Kit\-::\-Index\-Map$<$ I, T $>$@{Networ\-Kit\-::\-Index\-Map$<$ I, T $>$}}
+}
+
+
+An \hyperlink{class_networ_kit_1_1_index_map}{Index\-Map} implements a 0-\/based mapping from an integer index type to an arbitray value type.  
+
+
+
+
+{\ttfamily \#include $<$Index\-Map.\-h$>$}
+
+
+
+Collaboration diagram for Networ\-Kit\-:\-:Index\-Map$<$ I, T $>$\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=192pt]{class_networ_kit_1_1_index_map__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_index_map_a994d0a23af13a7eb8cfae44d14fd7dab}{Index\-Map} (int64\-\_\-t \hyperlink{class_networ_kit_1_1_index_map_aabb9796ff1a0c002446b14ff7d4fffbc}{n}, T \hyperlink{class_networ_kit_1_1_index_map_aa7b9e890a78e37f9e1fd1978b3706c4c}{default\-Value})
+\begin{DoxyCompactList}\small\item\em Construct a new \hyperlink{class_networ_kit_1_1_index_map}{Index\-Map} which holds n entries . \end{DoxyCompactList}\item 
+virtual \hyperlink{class_networ_kit_1_1_index_map_a8708a9f45cbd25368b18ad62eda39d50}{$\sim$\-Index\-Map} ()
+\item 
+T \& \hyperlink{class_networ_kit_1_1_index_map_aa8486b4e644ee023322b8e5de624012c}{operator\mbox{[}$\,$\mbox{]}} (const I \&\hyperlink{namespace_networ_kit_af49e67df68af41dcd75dffbb1e9abee6}{index})
+\begin{DoxyCompactList}\small\item\em Index operator. \end{DoxyCompactList}\item 
+const T \& \hyperlink{class_networ_kit_1_1_index_map_a96cdbc04080f3acfed51b12267c31732}{operator\mbox{[}$\,$\mbox{]}} (const I \&\hyperlink{namespace_networ_kit_af49e67df68af41dcd75dffbb1e9abee6}{index}) const 
+\begin{DoxyCompactList}\small\item\em Index operator for const instances of this class. \end{DoxyCompactList}\item 
+virtual T \hyperlink{class_networ_kit_1_1_index_map_adf2c9ecee594a7ef579a42019619b39e}{at} (I \hyperlink{namespace_networ_kit_af49e67df68af41dcd75dffbb1e9abee6}{index})
+\item 
+int64\-\_\-t \hyperlink{class_networ_kit_1_1_index_map_a20b9a522db36a731e67e1e84fe9d7aec}{number\-Of\-Entries} () const 
+\begin{DoxyCompactList}\small\item\em Get the number of 1-\/based entries in this map. \end{DoxyCompactList}\item 
+bool \hyperlink{class_networ_kit_1_1_index_map_a319166184122c92f427836a89441b39e}{has\-Been\-Set} (I \hyperlink{namespace_networ_kit_af49e67df68af41dcd75dffbb1e9abee6}{index}) const 
+\begin{DoxyCompactList}\small\item\em Check whether map contains an entry other than the default. \end{DoxyCompactList}\item 
+virtual int64\-\_\-t \hyperlink{class_networ_kit_1_1_index_map_ab2bf024de2a5d5cb47e7ae2e7e3e833b}{number\-Of\-Nodes} () const 
+\begin{DoxyCompactList}\small\item\em Number of nodes for which this clsutering can hold an entry. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_networ_kit_1_1_index_map_ac86b82fdac7adf228caaa13e11e8cb89}{set\-All} (T value)
+\begin{DoxyCompactList}\small\item\em Set all values to one value. \end{DoxyCompactList}\item 
+void \hyperlink{class_networ_kit_1_1_index_map_aa261d0fb3eb6e267f0ce9a8713f5c939}{print} ()
+\begin{DoxyCompactList}\small\item\em quick \& dirty debug print T\-O\-D\-O\-: replace with operator$<$$<$ \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int64\-\_\-t \hyperlink{class_networ_kit_1_1_index_map_aabb9796ff1a0c002446b14ff7d4fffbc}{n}
+\item 
+std\-::vector$<$ T $>$ \hyperlink{class_networ_kit_1_1_index_map_ade29c9c1886b524dc11d0032b6063d83}{data}
+\begin{DoxyCompactList}\small\item\em array of size (n). \end{DoxyCompactList}\item 
+T \hyperlink{class_networ_kit_1_1_index_map_aa7b9e890a78e37f9e1fd1978b3706c4c}{default\-Value}
+\begin{DoxyCompactList}\small\item\em default value \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename I, typename T$>$class Networ\-Kit\-::\-Index\-Map$<$ I, T $>$}
+
+An \hyperlink{class_networ_kit_1_1_index_map}{Index\-Map} implements a 0-\/based mapping from an integer index type to an arbitray value type. 
+
+Definition at line 20 of file Index\-Map.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_index_map_a994d0a23af13a7eb8cfae44d14fd7dab}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!Index\-Map@{Index\-Map}}
+\index{Index\-Map@{Index\-Map}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{Index\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T$>$ {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::{\bf Index\-Map} (
+\begin{DoxyParamCaption}
+\item[{int64\-\_\-t}]{n, }
+\item[{T}]{default\-Value = {\ttfamily -\/1}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_index_map_a994d0a23af13a7eb8cfae44d14fd7dab}
+
+
+Construct a new \hyperlink{class_networ_kit_1_1_index_map}{Index\-Map} which holds n entries . 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em n} & number of entries \\
+\hline
+\mbox{\tt in}  & {\em default\-Value} & all entries are initialized to this value \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 117 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_a8708a9f45cbd25368b18ad62eda39d50}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!$\sim$\-Index\-Map@{$\sim$\-Index\-Map}}
+\index{$\sim$\-Index\-Map@{$\sim$\-Index\-Map}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{$\sim$\-Index\-Map}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::$\sim${\bf Index\-Map} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{class_networ_kit_1_1_index_map_a8708a9f45cbd25368b18ad62eda39d50}
+
+
+Definition at line 123 of file Index\-Map.\-h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_index_map_adf2c9ecee594a7ef579a42019619b39e}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!at@{at}}
+\index{at@{at}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{at}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I, typename T $>$ T {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::at (
+\begin{DoxyParamCaption}
+\item[{I}]{index}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{class_networ_kit_1_1_index_map_adf2c9ecee594a7ef579a42019619b39e}
+
+
+Definition at line 174 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_a319166184122c92f427836a89441b39e}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!has\-Been\-Set@{has\-Been\-Set}}
+\index{has\-Been\-Set@{has\-Been\-Set}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{has\-Been\-Set}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I, typename T $>$ bool {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::has\-Been\-Set (
+\begin{DoxyParamCaption}
+\item[{I}]{index}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_index_map_a319166184122c92f427836a89441b39e}
+
+
+Check whether map contains an entry other than the default. 
+
+
+
+Definition at line 145 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_a20b9a522db36a731e67e1e84fe9d7aec}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!number\-Of\-Entries@{number\-Of\-Entries}}
+\index{number\-Of\-Entries@{number\-Of\-Entries}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{number\-Of\-Entries}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ int64\-\_\-t {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::number\-Of\-Entries (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_index_map_a20b9a522db36a731e67e1e84fe9d7aec}
+
+
+Get the number of 1-\/based entries in this map. 
+
+
+
+Definition at line 138 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_ab2bf024de2a5d5cb47e7ae2e7e3e833b}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!number\-Of\-Nodes@{number\-Of\-Nodes}}
+\index{number\-Of\-Nodes@{number\-Of\-Nodes}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{number\-Of\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ int64\-\_\-t {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::number\-Of\-Nodes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{class_networ_kit_1_1_index_map_ab2bf024de2a5d5cb47e7ae2e7e3e833b}
+
+
+Number of nodes for which this clsutering can hold an entry. 
+
+
+
+Definition at line 161 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_aa8486b4e644ee023322b8e5de624012c}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I, typename T $>$ T \& {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::operator\mbox{[}$\,$\mbox{]} (
+\begin{DoxyParamCaption}
+\item[{const I \&}]{index}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_index_map_aa8486b4e644ee023322b8e5de624012c}
+
+
+Index operator. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & a node \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 128 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_a96cdbc04080f3acfed51b12267c31732}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I, typename T $>$ const T \& {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::operator\mbox{[}$\,$\mbox{]} (
+\begin{DoxyParamCaption}
+\item[{const I \&}]{index}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_index_map_a96cdbc04080f3acfed51b12267c31732}
+
+
+Index operator for const instances of this class. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & a node \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 133 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_aa261d0fb3eb6e267f0ce9a8713f5c939}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!print@{print}}
+\index{print@{print}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{print}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T $>$ void {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::print (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_index_map_aa261d0fb3eb6e267f0ce9a8713f5c939}
+
+
+quick \& dirty debug print T\-O\-D\-O\-: replace with operator$<$$<$ 
+
+
+
+Definition at line 151 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_ac86b82fdac7adf228caaa13e11e8cb89}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!set\-All@{set\-All}}
+\index{set\-All@{set\-All}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{set\-All}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I , typename T$>$ void {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::set\-All (
+\begin{DoxyParamCaption}
+\item[{T}]{value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{class_networ_kit_1_1_index_map_ac86b82fdac7adf228caaa13e11e8cb89}
+
+
+Set all values to one value. 
+
+
+
+Definition at line 166 of file Index\-Map.\-h.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_networ_kit_1_1_index_map_ade29c9c1886b524dc11d0032b6063d83}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!data@{data}}
+\index{data@{data}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{data}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I, typename T$>$ std\-::vector$<$T$>$ {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::data\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_index_map_ade29c9c1886b524dc11d0032b6063d83}
+
+
+array of size (n). 
+
+
+
+Definition at line 26 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_aa7b9e890a78e37f9e1fd1978b3706c4c}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!default\-Value@{default\-Value}}
+\index{default\-Value@{default\-Value}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{default\-Value}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I, typename T$>$ T {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::default\-Value\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_index_map_aa7b9e890a78e37f9e1fd1978b3706c4c}
+
+
+default value 
+
+
+
+Definition at line 27 of file Index\-Map.\-h.
+
+\hypertarget{class_networ_kit_1_1_index_map_aabb9796ff1a0c002446b14ff7d4fffbc}{\index{Networ\-Kit\-::\-Index\-Map@{Networ\-Kit\-::\-Index\-Map}!n@{n}}
+\index{n@{n}!NetworKit::IndexMap@{Networ\-Kit\-::\-Index\-Map}}
+\subsubsection[{n}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename I, typename T$>$ int64\-\_\-t {\bf Networ\-Kit\-::\-Index\-Map}$<$ I, T $>$\-::n\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_index_map_aabb9796ff1a0c002446b14ff7d4fffbc}
+
+
+Definition at line 25 of file Index\-Map.\-h.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/base/\hyperlink{_index_map_8h}{Index\-Map.\-h}\end{DoxyCompactItemize}

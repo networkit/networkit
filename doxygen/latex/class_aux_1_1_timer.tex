@@ -1,0 +1,214 @@
+\hypertarget{class_aux_1_1_timer}{\section{Aux\-:\-:Timer Class Reference}
+\label{class_aux_1_1_timer}\index{Aux\-::\-Timer@{Aux\-::\-Timer}}
+}
+
+
+{\ttfamily \#include $<$Timer.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_aux_1_1_timer_a20a52aee280d958a8a2a903ffdc0847e}{Timer} ()
+\item 
+virtual \hyperlink{class_aux_1_1_timer_ae5467925452fc10618acf8f5c27b46e6}{$\sim$\-Timer} ()
+\item 
+virtual \\*
+std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point \hyperlink{class_aux_1_1_timer_a3c58e715148a05a6294743619d111bab}{start} ()
+\begin{DoxyCompactList}\small\item\em Start the clock. \end{DoxyCompactList}\item 
+virtual \\*
+std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point \hyperlink{class_aux_1_1_timer_a14d926626eef461e836f87f7bc3d03b7}{stop} ()
+\begin{DoxyCompactList}\small\item\em Stops the clock permanently for the instance of the \hyperlink{class_aux_1_1_timer}{Timer}. \end{DoxyCompactList}\item 
+virtual std\-::chrono\-::duration\\*
+$<$ int64\-\_\-t, std\-::milli $>$ \hyperlink{class_aux_1_1_timer_a16fdb76113530c5d4d8787e27d1e0aca}{elapsed} ()
+\begin{DoxyCompactList}\small\item\em The number of seconds since the current time that the \hyperlink{class_aux_1_1_timer}{Timer} object was created. \end{DoxyCompactList}\item 
+virtual \\*
+std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point \hyperlink{class_aux_1_1_timer_a767c6de21191f9bee75c35edd9df2c9e}{start\-Time} ()
+\begin{DoxyCompactList}\small\item\em Returns the time at which the instance was started. \end{DoxyCompactList}\item 
+virtual \\*
+std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point \hyperlink{class_aux_1_1_timer_a2ecdbad6184276140eb88480d04b417e}{stop\-Time} ()
+\begin{DoxyCompactList}\small\item\em Returns the time at which the instance was stopped. \end{DoxyCompactList}\item 
+virtual std\-::string \hyperlink{class_aux_1_1_timer_a428b45cb66f4be47bbea61b0db368142}{elapsed\-Tag} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{class_aux_1_1_timer_a5a85ed37ed9e2f0eb07e35a465094b9f}{running}
+\begin{DoxyCompactList}\small\item\em true if timer has been started and not stopped after that \end{DoxyCompactList}\item 
+std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point \hyperlink{class_aux_1_1_timer_a2fde73af550d464ac12d62eb53c3a976}{started}
+\begin{DoxyCompactList}\small\item\em time at which timer has been started \end{DoxyCompactList}\item 
+std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point \hyperlink{class_aux_1_1_timer_a2b2db52da1cb51c6940597173133d910}{stopped}
+\begin{DoxyCompactList}\small\item\em time at which timer has been stopped \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 18 of file Timer.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_aux_1_1_timer_a20a52aee280d958a8a2a903ffdc0847e}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!Timer@{Timer}}
+\index{Timer@{Timer}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{Timer}]{\setlength{\rightskip}{0pt plus 5cm}Aux\-::\-Timer\-::\-Timer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_aux_1_1_timer_a20a52aee280d958a8a2a903ffdc0847e}
+
+
+Definition at line 12 of file Timer.\-cpp.
+
+\hypertarget{class_aux_1_1_timer_ae5467925452fc10618acf8f5c27b46e6}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!$\sim$\-Timer@{$\sim$\-Timer}}
+\index{$\sim$\-Timer@{$\sim$\-Timer}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{$\sim$\-Timer}]{\setlength{\rightskip}{0pt plus 5cm}Aux\-::\-Timer\-::$\sim$\-Timer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_ae5467925452fc10618acf8f5c27b46e6}
+
+
+Definition at line 17 of file Timer.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_aux_1_1_timer_a16fdb76113530c5d4d8787e27d1e0aca}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!elapsed@{elapsed}}
+\index{elapsed@{elapsed}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{elapsed}]{\setlength{\rightskip}{0pt plus 5cm}std\-::chrono\-::duration$<$ int64\-\_\-t, std\-::milli $>$ Aux\-::\-Timer\-::elapsed (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_a16fdb76113530c5d4d8787e27d1e0aca}
+
+
+The number of seconds since the current time that the \hyperlink{class_aux_1_1_timer}{Timer} object was created. 
+
+If \hyperlink{class_aux_1_1_timer_a14d926626eef461e836f87f7bc3d03b7}{stop()} was called, it is the number of seconds from the instance creation until \hyperlink{class_aux_1_1_timer_a14d926626eef461e836f87f7bc3d03b7}{stop()} was called. 
+
+Definition at line 31 of file Timer.\-cpp.
+
+\hypertarget{class_aux_1_1_timer_a428b45cb66f4be47bbea61b0db368142}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!elapsed\-Tag@{elapsed\-Tag}}
+\index{elapsed\-Tag@{elapsed\-Tag}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{elapsed\-Tag}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Aux\-::\-Timer\-::elapsed\-Tag (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_a428b45cb66f4be47bbea61b0db368142}
+
+
+Definition at line 44 of file Timer.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=344pt]{class_aux_1_1_timer_a428b45cb66f4be47bbea61b0db368142_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_aux_1_1_timer_a3c58e715148a05a6294743619d111bab}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!start@{start}}
+\index{start@{start}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point Aux\-::\-Timer\-::start (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_a3c58e715148a05a6294743619d111bab}
+
+
+Start the clock. 
+
+Returns the time at which the instance was started. 
+
+Definition at line 21 of file Timer.\-cpp.
+
+\hypertarget{class_aux_1_1_timer_a767c6de21191f9bee75c35edd9df2c9e}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!start\-Time@{start\-Time}}
+\index{start\-Time@{start\-Time}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{start\-Time}]{\setlength{\rightskip}{0pt plus 5cm}std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point Aux\-::\-Timer\-::start\-Time (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_a767c6de21191f9bee75c35edd9df2c9e}
+
+
+Returns the time at which the instance was started. 
+
+
+
+Definition at line 36 of file Timer.\-cpp.
+
+\hypertarget{class_aux_1_1_timer_a14d926626eef461e836f87f7bc3d03b7}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!stop@{stop}}
+\index{stop@{stop}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point Aux\-::\-Timer\-::stop (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_a14d926626eef461e836f87f7bc3d03b7}
+
+
+Stops the clock permanently for the instance of the \hyperlink{class_aux_1_1_timer}{Timer}. 
+
+Returns the time at which the instance was stopped. 
+
+Definition at line 26 of file Timer.\-cpp.
+
+\hypertarget{class_aux_1_1_timer_a2ecdbad6184276140eb88480d04b417e}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!stop\-Time@{stop\-Time}}
+\index{stop\-Time@{stop\-Time}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{stop\-Time}]{\setlength{\rightskip}{0pt plus 5cm}std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point Aux\-::\-Timer\-::stop\-Time (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_a2ecdbad6184276140eb88480d04b417e}
+
+
+Returns the time at which the instance was stopped. 
+
+
+
+Definition at line 40 of file Timer.\-cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_aux_1_1_timer_a5a85ed37ed9e2f0eb07e35a465094b9f}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!running@{running}}
+\index{running@{running}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{running}]{\setlength{\rightskip}{0pt plus 5cm}bool Aux\-::\-Timer\-::running\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_aux_1_1_timer_a5a85ed37ed9e2f0eb07e35a465094b9f}
+
+
+true if timer has been started and not stopped after that 
+
+
+
+Definition at line 22 of file Timer.\-h.
+
+\hypertarget{class_aux_1_1_timer_a2fde73af550d464ac12d62eb53c3a976}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!started@{started}}
+\index{started@{started}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{started}]{\setlength{\rightskip}{0pt plus 5cm}std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point Aux\-::\-Timer\-::started\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_aux_1_1_timer_a2fde73af550d464ac12d62eb53c3a976}
+
+
+time at which timer has been started 
+
+
+
+Definition at line 23 of file Timer.\-h.
+
+\hypertarget{class_aux_1_1_timer_a2b2db52da1cb51c6940597173133d910}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!stopped@{stopped}}
+\index{stopped@{stopped}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{stopped}]{\setlength{\rightskip}{0pt plus 5cm}std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point Aux\-::\-Timer\-::stopped\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_aux_1_1_timer_a2b2db52da1cb51c6940597173133d910}
+
+
+time at which timer has been stopped 
+
+
+
+Definition at line 24 of file Timer.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/aux/\hyperlink{_timer_8h}{Timer.\-h}\item 
+src/aux/\hyperlink{_timer_8cpp}{Timer.\-cpp}\end{DoxyCompactItemize}
