@@ -35,7 +35,6 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 
 
 	community.insert(s);
-	TRACE("adding start node " << s);
 	bool expanded = true;		// community has been expanded in the last iteration
 
 	// all neighbors of s form the shell
@@ -60,16 +59,18 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 		for (node v : shell) {
 			acceptanceValues.insert(std::pair<node,double> (v, acceptability.getValue(v)));
 		}
+
 		while (!acceptanceValues.empty()) {
 			acceptanceMax = 0;
 			for (auto it = acceptanceValues.begin(); it != acceptanceValues.end(); ++it ) {
+
 				node x = it->first;
 				double acc = it->second;
 				if (it->second > acceptanceMax) {
 					vMax = x;
 					acceptanceMax = acc;
-				} else if (it ->second == acceptanceMax) {
-					if (conductance.getValue(vMax) < conductance.getValue(x)) {
+				} else if (floor(100000 * it ->second) == floor(100000 * acceptanceMax)) {
+					if (floor(100000 * conductance.getValue(vMax)) < floor(100000 * conductance.getValue(x))) {
 						vMax = x;
 						acceptanceMax = acc;
 					} else if (conductance.getValue(vMax) == conductance.getValue(x)) {
@@ -86,7 +87,6 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 						}
 					}
 				}
-
 			}
 
 			// include only nodes which lead to a strictly positive improvement
@@ -94,7 +94,6 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 				expanded = true;
 				currentObjectiveValue = conductance.getValue(vMax);
 				community.insert(vMax);
-				TRACE("adding node " << vMax);
 				shell.erase(vMax);
 				G.forNeighborsOf(vMax, [&](node v){
 					if (community.find(v) == community.end()) {
