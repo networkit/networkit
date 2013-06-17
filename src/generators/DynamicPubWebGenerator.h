@@ -8,7 +8,7 @@
 #ifndef DYNAMICPUBWEBGENERATOR_H_
 #define DYNAMICPUBWEBGENERATOR_H_
 
-#include "DynamicGraphGenerator.h"
+#include "DynamicGraphSource.h"
 #include "PubWebGenerator.h"
 
 namespace NetworKit {

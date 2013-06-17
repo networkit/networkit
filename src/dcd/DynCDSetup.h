@@ -9,7 +9,7 @@
 #define DYNCDSETUP_H_
 
 #include "DynamicCommunityDetector.h"
-#include "../generators/DynamicGraphGenerator.h"
+#include "../generators/DynamicGraphSource.h"
 
 namespace NetworKit {
 

@@ -10,7 +10,7 @@
 
 #include <set>
 
-#include "DynamicGraphGenerator.h"
+#include "DynamicGraphSource.h"
 #include "../auxiliary/RandomInteger.h"
 
 namespace NetworKit {

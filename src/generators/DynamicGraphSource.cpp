@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "DynamicGraphGenerator.h"
+#include "DynamicGraphSource.h"
 
 namespace NetworKit {
 
