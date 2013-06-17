@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DYNAMICGRAPHGENERATOR_H_
-#define DYNAMICGRAPHGENERATOR_H_
+#ifndef DYNAMICGRAPHSOURCE_H_
+#define DYNAMICGRAPHSOURCE_H_
 
 #include <functional>
 
@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-class DynamicGraphGenerator {
+class DynamicGraphSource {
 
 protected:
 
@@ -25,11 +25,11 @@ protected:
 
 public:
 
-	 DynamicGraphGenerator();
+	 DynamicGraphSource();
 
 	// DynamicGraphGenerator(GraphEventProxy& proxy);
 
-	virtual ~DynamicGraphGenerator();
+	virtual ~DynamicGraphSource();
 
 
 	/**
