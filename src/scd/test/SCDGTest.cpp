@@ -178,6 +178,7 @@ TEST_F(SCDGTest, testRun) {
 	community = GCE.run(G, 6);
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
 
+
 	community = GCE.run(G, 8);
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
 

@@ -86,7 +86,9 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 						}
 					}
 				}
+
 			}
+
 			// include only nodes which lead to a strictly positive improvement
 			if (conductance.getValue(vMax) > currentObjectiveValue) {
 				expanded = true;
