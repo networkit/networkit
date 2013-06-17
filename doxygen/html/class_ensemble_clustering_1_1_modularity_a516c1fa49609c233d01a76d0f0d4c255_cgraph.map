@@ -1,0 +1,9 @@
+<map id="EnsembleClustering::Modularity::getQuality" name="EnsembleClustering::Modularity::getQuality">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non&#45;isolated) nodes in the graph." alt="" coords="210,5,382,49"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_clustering.html#af776bb377f90cbf03e0661bc8902ef2d" title="Get the highest cluster id that has been assigned." alt="" coords="216,73,376,117"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#a7be7f13f5a31b0513293e7bbac26ca6c" title="Get the sum of the weight of all edges." alt="" coords="211,141,381,185"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_graph.html#a9bff231567f9ac604f1854d62f6682d1" title="Return node weight." alt="" coords="430,171,570,215"/>
+<area shape="rect" id="node12" href="$class_ensemble_clustering_1_1_clustering.html#a98c5900c89d56ac67d2b7b46be83e0a2" title="Get the lowest cluster id;." alt="" coords="216,261,376,305"/>
+<area shape="rect" id="node14" href="$class_ensemble_clustering_1_1_graph.html#aaac8bcc5d64461cba54ad38ec929be3c" title="Get the first node index (for iteration over all nodes)" alt="" coords="226,329,366,373"/>
+<area shape="rect" id="node16" href="$class_ensemble_clustering_1_1_clustering.html#ad928bde104aea2f59caadc40aa9fb664" title="Return the cluster (id) in which a node is contained." alt="" coords="221,397,371,441"/>
+</map>
