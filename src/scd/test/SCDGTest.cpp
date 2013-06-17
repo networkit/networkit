@@ -135,6 +135,7 @@ TEST_F(SCDGTest, testRun) {
 
 	Graph G (12);
 
+	// add clique
 	G.addEdge(0,1);
 	G.addEdge(0,2);
 	G.addEdge(0,3);
@@ -146,6 +147,7 @@ TEST_F(SCDGTest, testRun) {
 	std::unordered_set<node> community = GCE.run(G, 0);
 	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
 
+	// add satelites
 	G.addEdge(0,4);
 	G.addEdge(1,5);
 	G.addEdge(2,6);
@@ -157,6 +159,7 @@ TEST_F(SCDGTest, testRun) {
 	community = GCE.run(G, 6);
 	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
 
+	// add another clique
 	G.addEdge(6,8);
 	G.addEdge(8,9);
 	G.addEdge(8,10);
@@ -164,6 +167,7 @@ TEST_F(SCDGTest, testRun) {
 	G.addEdge(9,10);
 	G.addEdge(9,11);
 	G.addEdge(10,11);
+
 
 	community = GCE.run(G, 0);
 	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
@@ -176,9 +180,7 @@ TEST_F(SCDGTest, testRun) {
 
 	community = GCE.run(G, 8);
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
-	for(node u : community){
 
-	}
 
 	community = GCE.run(G, 9);
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
@@ -234,9 +236,8 @@ TEST_F(SCDGTest, testNodeClusterSimilarity) {
 
 
 TEST_F(SCDGTest, tryCommunitySubgraph) {
-
-	GraphGenerator gen;
-	Graph G = gen.makeCompleteGraph(10);
+	METISGraphReader reader;
+	Graph G = reader.read("input/lesmis.graph");
 
 	node s = 0; // seed node
 
@@ -248,7 +249,7 @@ TEST_F(SCDGTest, tryCommunitySubgraph) {
 
 	// write it to file
 	METISGraphWriter writer;
-	writer.write(sub, "output/CommunitySubgraph.graph");
+	writer.write(sub, "output/lesmis-comm0.graph");
 
 }
 
