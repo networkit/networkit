@@ -81,11 +81,11 @@ TEST_F(SCDGTest, testBoundarySharpnessTrimming) {
 	std::unordered_set<node> cluster = {0,1,2,3,4,5};
     DummyTrimming trim;
     std::unordered_set<node> community = trim.run(cluster, G);
-	EXPECT_EQ(community.size(), 6) << "The community has 6 nodes";
+	EXPECT_EQ(6, community.size()) << "The community has 6 nodes";
 
 	BoundarySharpness trim2;
 	std::unordered_set<node> community2 = trim2.run(cluster, G);
-	EXPECT_EQ(community2.size(), 5) << "The community has 5 nodes";
+	EXPECT_EQ(5, community2.size()) << "The community has 5 nodes";
 
 }
 
@@ -106,27 +106,27 @@ TEST_F(SCDGTest, testLocalMdularityM) {
 
 	std::unordered_set<node> community = {};
 	GreedyCommunityExpansion::LocalModularityM mod (G, community);
-	EXPECT_EQ(mod.getValue(0), 0) << "The community should have a local modularity of 0";
-	EXPECT_EQ(mod.getValue(4), 0.25) << "The community should have a local modularity of 0.25";
+	EXPECT_EQ(0, mod.getValue(0)) << "The community should have a local modularity of 0";
+	EXPECT_EQ(0.25, mod.getValue(4)) << "The community should have a local modularity of 0.25";
 
 	community.insert(0);
-	EXPECT_EQ(mod.getValue(0), 0) << "The community should have a local modularity of 0";
-	EXPECT_GE(mod.getValue(1), 0.16666) << "The community should have a local modularity of 1/6";
-	EXPECT_LE(mod.getValue(1), 0.16667) << "The community should have a local modularity of 1/6";
-	EXPECT_GE(mod.getValue(4), 0.33333) << "The community should have a local modularity of 1/3";
-	EXPECT_LE(mod.getValue(4), 0.33334) << "The community should have a local modularity of 1/3";
+	EXPECT_EQ(0, mod.getValue(0)) << "The community should have a local modularity of 0";
+	EXPECT_GE(0.16667, mod.getValue(1)) << "The community should have a local modularity of 1/6";
+	EXPECT_LE(0.16666, mod.getValue(1)) << "The community should have a local modularity of 1/6";
+	EXPECT_GE(0.33334, mod.getValue(4)) << "The community should have a local modularity of 1/3";
+	EXPECT_LE(0.33333, mod.getValue(4)) << "The community should have a local modularity of 1/3";
 
 	community.insert(1);
-	EXPECT_EQ(mod.getValue(2), 0.5) << "The community should have a local modularity of 0.5";
-	EXPECT_GE(mod.getValue(4), 0.66666) << "The community should have a local modularity of 2/3";
-	EXPECT_LE(mod.getValue(4), 0.66667) << "The community should have a local modularity of 2/3";
+	EXPECT_EQ(0.5, mod.getValue(2)) << "The community should have a local modularity of 0.5";
+	EXPECT_GE(0.66667, mod.getValue(4)) << "The community should have a local modularity of 2/3";
+	EXPECT_LE(0.66666, mod.getValue(4)) << "The community should have a local modularity of 2/3";
 
 	community.insert(2);
-	EXPECT_EQ(mod.getValue(3), 1.5) << "The community should have a local modularity of 1.5";
-	EXPECT_EQ(mod.getValue(4), 1.75) << "The community should have a local modularity of 1.75";
+	EXPECT_EQ(1.5, mod.getValue(3)) << "The community should have a local modularity of 1.5";
+	EXPECT_EQ(1.75, mod.getValue(4)) << "The community should have a local modularity of 1.75";
 
 	community.insert(3);
-	EXPECT_EQ(mod.getValue(4), 11) << "The community should have a local modularity of 11";
+	EXPECT_EQ(11, mod.getValue(4)) << "The community should have a local modularity of 11";
 
 }
 
@@ -144,7 +144,7 @@ TEST_F(SCDGTest, testRun) {
 
 	GreedyCommunityExpansion GCE;
 	std::unordered_set<node> community = GCE.run(G, 0);
-	EXPECT_EQ(community.size(), 2) << "The community should have 2 nodes";
+	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
 
 	G.addEdge(0,4);
 	G.addEdge(1,5);
@@ -152,10 +152,10 @@ TEST_F(SCDGTest, testRun) {
 	G.addEdge(3,7);
 
 	community = GCE.run(G, 0);
-	EXPECT_EQ(community.size(), 4) << "The community should have 4 nodes";
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
 
 	community = GCE.run(G, 6);
-	EXPECT_EQ(community.size(), 4) << "The community should have 4 nodes";
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
 
 	G.addEdge(6,8);
 	G.addEdge(8,9);
@@ -166,19 +166,22 @@ TEST_F(SCDGTest, testRun) {
 	G.addEdge(10,11);
 
 	community = GCE.run(G, 0);
-	EXPECT_EQ(community.size(), 7) << "The community should have 7 nodes";
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
 
 	community = GCE.run(G, 4);
-	EXPECT_EQ(community.size(), 7) << "The community should have 7 nodes";
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
 
 	community = GCE.run(G, 6);
-	EXPECT_EQ(community.size(), 5) << "The community should have 5 nodes";
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
 
 	community = GCE.run(G, 8);
-	EXPECT_EQ(community.size(), 5) << "The community should have 5 nodes";
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
+	for(node u : community){
+
+	}
 
 	community = GCE.run(G, 9);
-	EXPECT_EQ(community.size(), 5) << "The community should have 5 nodes";
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
 
 }
 
@@ -229,24 +232,25 @@ TEST_F(SCDGTest, testNodeClusterSimilarity) {
 
 }
 
-//
-//TEST_F(SCDGTest, tryCommunitySubgraph) {
-//	GraphGenerator gen;
-//	Graph G = gen.makeCompleteGraph(10);
-//
-//	node s = 0; // seed node
-//
-//	GreedyCommunityExpansion GCE;
-//	std::unordered_set<node> community = GCE.run(G, s);
-//
-//	// get the subgraph of the community
-//	Graph sub = Subgraph::fromNodes(G, community);
-//
-//	// write it to file
-////	METISGraphWriter writer;
-////	writer.write(sub, "output/CommunitySubgraph.graph");
-//
-//}
+
+TEST_F(SCDGTest, tryCommunitySubgraph) {
+
+	GraphGenerator gen;
+	Graph G = gen.makeCompleteGraph(10);
+
+	node s = 0; // seed node
+
+	GreedyCommunityExpansion GCE;
+	std::unordered_set<node> community = GCE.run(G, s);
+
+	// get the subgraph of the community
+	Graph sub = Subgraph::fromNodes(G, community);
+
+	// write it to file
+	METISGraphWriter writer;
+	writer.write(sub, "output/CommunitySubgraph.graph");
+
+}
 
 SCDGTest::SCDGTest() {
 }
