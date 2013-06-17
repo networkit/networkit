@@ -19,6 +19,7 @@ GreedyCommunityExpansion::~GreedyCommunityExpansion() {
 }
 
 std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
+	INFO("running GreedyCommunityExpansion from node " << s);
 
 	std::unordered_set<node> community;
 	std::unordered_set<node> shell; // shell are the nodes outside of the
@@ -34,6 +35,7 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 
 
 	community.insert(s);
+	TRACE("adding start node " << s);
 	bool expanded = true;		// community has been expanded in the last iteration
 
 	// all neighbors of s form the shell
@@ -90,6 +92,7 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 				expanded = true;
 				currentObjectiveValue = conductance.getValue(vMax);
 				community.insert(vMax);
+				TRACE("adding node " << vMax);
 				shell.erase(vMax);
 				G.forNeighborsOf(vMax, [&](node v){
 					if (community.find(v) == community.end()) {
