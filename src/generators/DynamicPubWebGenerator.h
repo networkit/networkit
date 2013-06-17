@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 
-class DynamicPubWebGenerator: public DynamicGraphGenerator {
+class DynamicPubWebGenerator: public DynamicGraphSource {
 protected:
 	PubWebGenerator staticGen;
 

@@ -17,7 +17,7 @@ namespace NetworKit {
 
 
 // FIXME: for k=2, degree 2 nodes should be most frequent but degree 4 nodes are
-class DynamicBarabasiAlbertGenerator: public NetworKit::DynamicGraphGenerator {
+class DynamicBarabasiAlbertGenerator: public NetworKit::DynamicGraphSource {
 
 protected:
 

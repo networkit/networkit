@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynCDSetup::DynCDSetup(DynamicGraphGenerator& dynGen, std::vector<DynamicCommunityDetector*>& dynDetectors, count tMax, count deltaT) :
+DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityDetector*>& dynDetectors, count tMax, count deltaT) :
 		gen(&dynGen),
 		detectors(dynDetectors),
 		tMax(tMax),

@@ -23,7 +23,7 @@ GeneratorsGTest::~GeneratorsGTest() {
 
 TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGeneratorSingleStep) {
 	count k = 2; // number of edges added per node
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(k);
+	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(k);
 	GraphEventProxy* Gproxy = gen->newGraph();
 	Graph* G = Gproxy->G;
 
@@ -48,7 +48,7 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGeneratorSingleStep) {
 TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 
 
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(2);
+	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(2);
 
 	GraphEventProxy* Gproxy = gen->newGraph();
 	Graph* G = Gproxy->G;
@@ -77,7 +77,7 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 
 
 TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(2);
+	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(2);
 	GraphEventProxy* Gproxy = gen->newGraph();
 	Graph* G = Gproxy->G;
 	gen->initializeGraph();
@@ -122,7 +122,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 	count numIterations = 10;
 
 
-	DynamicGraphGenerator* gen = new DynamicPubWebGenerator(numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+	DynamicGraphSource* gen = new DynamicPubWebGenerator(numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
 
 	GraphEventProxy* Gproxy = gen->newGraph();
 	Graph* G = Gproxy->G;

@@ -11,7 +11,7 @@ namespace NetworKit {
 
 DynamicPubWebGenerator::DynamicPubWebGenerator(count numInitialNodes, count numberOfDenseAreas, float neighborhoodRadius,
 		count maxNumberOfNeighbors) :
-		DynamicGraphGenerator(),
+		DynamicGraphSource(),
 		staticGen(numInitialNodes, numberOfDenseAreas, neighborhoodRadius,
 				maxNumberOfNeighbors)
 {

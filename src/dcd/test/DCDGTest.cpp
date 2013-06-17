@@ -25,7 +25,7 @@ DCDGTest::~DCDGTest() {
 TEST_F(DCDGTest, testDynamicLabelPropagation) {
 
 	//  create generator and pass proxy
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(2);
+	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(2);
 
 	GraphEventProxy* Gproxy = gen->newGraph();
 	Graph* G = Gproxy->G;
@@ -90,7 +90,7 @@ TEST_F(DCDGTest, tryDynamicPubWebGeneratorAsSource) {
 	count maxNumberOfNeighbors = 16;
 	count numIterations = 10;
 
-	DynamicGraphGenerator* dynGen = new DynamicPubWebGenerator(numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+	DynamicGraphSource* dynGen = new DynamicPubWebGenerator(numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
 
 	GraphEventProxy* Gproxy = dynGen->newGraph();
 	Graph* G = Gproxy->G;
@@ -127,7 +127,7 @@ TEST_F(DCDGTest, tryDynamicBarabasiAlbertGeneratorAsSource) {
 
 	// create instance of generator
 	count k = 1;
-	DynamicGraphGenerator* dynGen = new DynamicBarabasiAlbertGenerator(k);
+	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(k);
 
 	// use generator to get graph and proxy
 	GraphEventProxy* Gproxy = dynGen->newGraph();
@@ -164,7 +164,7 @@ TEST_F(DCDGTest, tryDynamicBarabasiAlbertGeneratorAsSource) {
 
 
 TEST_F(DCDGTest, tryDynCDSetup) {
-	 DynamicGraphGenerator* dynGen = new DynamicBarabasiAlbertGenerator(1);
+	 DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
 	 DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Reactivate");
 	 DynamicCommunityDetector* dynCD2 = new DynamicLabelPropagation(0, "ReactivateNeighbors");
 
