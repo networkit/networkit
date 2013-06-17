@@ -121,7 +121,7 @@ Clustering DynamicLabelPropagation::run() {
 		throw std::runtime_error("pointer to current graph was not initialized - call setGraph first");
 	}
 
-	INFO("running DynamicLabelPropagation");
+	INFO("running DynamicLabelPropagation at t=" << G->time());
 
 	Aux::Timer runtime;
 	count nIterations = 0;

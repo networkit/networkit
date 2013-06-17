@@ -1,26 +1,24 @@
 /*
- * DGSReader.cpp
+ * DynamicDGSParser.cpp
  *
- *  Created on: 01.06.2013
- *      Author: cls
+ *  Created on: Jun 17, 2013
+ *      Author: forigem
  */
 
-#include "DGSReader.h"
+#include "DynamicDGSParser.h"
 
 namespace NetworKit {
 
-DGSReader::DGSReader() {
+DynamicDGSParser::DynamicDGSParser(std::string path) : graphInitialized(false), dgsFile(path) {
 	// TODO Auto-generated constructor stub
+
 }
 
-DGSReader::~DGSReader() {
+DynamicDGSParser::~DynamicDGSParser() {
 	// TODO Auto-generated destructor stub
 }
 
-void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
-
-	std::ifstream dgsFile(path);
-
+void DynamicDGSParser::initializeGraph() {
 	std::string line;
 
 	// handle first line
@@ -33,31 +31,42 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 
 	// handle second line: optional name of file, number of clock ticks, total number of events
 	std::getline(dgsFile, line);
-	std::vector<std::string> split = Aux::StringTools::split(line);
 
-	// TODO: complete implementation
-    std::unordered_map<std::string, node> nodeNames;
+	// Throw away the st0
+	std::getline(dgsFile, line);
+
+	graphInitialized = true;
+}
+
+void DynamicDGSParser::generate() {
+	if (graphInitialized == false) {
+		throw std::runtime_error("Can not call generate() before graph was initialized.");
+	}
+	std::string line;
+	bool breakTimeStep; // true if breaking from the while loop was due to a time step event
 
 	while (std::getline(dgsFile, line)) {
 		std::vector<std::string> split = Aux::StringTools::split(line);
 		std::string tag = split[0];
 
-	    //std::unordered_map<std::string, node> edgeNames;
+		//std::unordered_map<std::string, node> edgeNames;
 
 		if (tag.compare("st") == 0 && split.size() == 2) { // clock
-			Gproxy.timeStep();
+			Gproxy->timeStep();
+			breakTimeStep = true;
+			break;
 
 		} else if (tag.compare("an") == 0 && split.size() == 2) { // add node
 			// Get the node name from the input
 			std::string nodeName = split[1];
 			// Add a node to a graph, mapping it to the node name inside the nodeNames map
-			nodeNames[nodeName] = Gproxy.addNode();
+			nodeNames[nodeName] = Gproxy->addNode();
 
 		} else if (tag.compare("ae") == 0 && split.size() >= 4) { // add edge
 			std::string edge_from = split[2];
 			std::string edge_to = split[3];
 			std::string edge_name = split[1];
-			Gproxy.addEdge(nodeNames[edge_from], nodeNames[edge_to], 1.0);
+			Gproxy->addEdge(nodeNames[edge_from], nodeNames[edge_to], 1.0);
 
 		} else if (tag.compare("ce") == 0 && split.size() == 3) { // update edge. Only the "weight" attribute is supported so far
 
@@ -70,14 +79,14 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 			std::vector<std::string> weightSplit = Aux::StringTools::split(weight, '=');
 			double weightValue = atoi(weightSplit[1].c_str() );
 
-			Gproxy.setWeight(nodeNames[edge_from], nodeNames[edge_to], weightValue);
+			Gproxy->setWeight(nodeNames[edge_from], nodeNames[edge_to], weightValue);
 
 		} else if (tag.compare("dn") == 0 && split.size() == 2) {
 			std::string nodeName = split[1];
 			node deleteNode = nodeNames[nodeName];
 			// Delete the nodes only if there are no edges connected to it
-			if (Gproxy.G->degree(deleteNode) == 0) {
-				Gproxy.removeNode(deleteNode);
+			if (Gproxy->G->degree(deleteNode) == 0) {
+				Gproxy->removeNode(deleteNode);
 			} else {
 				throw std::runtime_error("The node was not deleted, since there are edges attached to it.");
 			}
@@ -89,24 +98,15 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 			std::string edge_to = edgesSplit[1];
 			node u = nodeNames[edge_from];
 			node v = nodeNames[edge_to];
-//			TRACE("u: " << edge_from << " " << u);
-//			TRACE("v: " << edge_to << " " << v);
 
-			Gproxy.removeEdge(u, v);
+			Gproxy->removeEdge(u, v);
 		}
 
-
-
-
-
+	} // end while
+	if (!breakTimeStep) {
+		// while loop finished because it hit the end of the file
+		throw std::logic_error("reached the end of the .dgs file");
 	}
-
-	std::cout << "nodeNames length " << nodeNames.size();
-				std::map<std::string, node> ordered(nodeNames.begin(), nodeNames.end());
-				for(auto it = ordered.begin(); it != ordered.end(); ++it)
-					std::cout << " contents " << it->second << std::endl;
-
-
 }
 
 } /* namespace NetworKit */

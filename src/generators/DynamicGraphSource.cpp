@@ -5,28 +5,28 @@
  *      Author: cls
  */
 
-#include "DynamicGraphGenerator.h"
+#include "DynamicGraphSource.h"
 
 namespace NetworKit {
 
-DynamicGraphGenerator::DynamicGraphGenerator() : G(NULL), Gproxy(NULL), graphSet(false), graphInitialized(false) {
+DynamicGraphSource::DynamicGraphSource() : G(NULL), Gproxy(NULL), graphSet(false), graphInitialized(false) {
 	// Graph and GraphEventProxy are set by calling newGraph
 }
 
 
 
 
-DynamicGraphGenerator::~DynamicGraphGenerator() {
+DynamicGraphSource::~DynamicGraphSource() {
 	// TODO Auto-generated destructor stub
 }
 
-void DynamicGraphGenerator::generateWhile(std::function<bool(void)> cont) {
+void DynamicGraphSource::generateWhile(std::function<bool(void)> cont) {
 	while (cont()) {
 		this->generate();
 	}
 }
 
-void DynamicGraphGenerator::generateNodes(count n) {
+void DynamicGraphSource::generateNodes(count n) {
 	auto cont = [&](){
 		return (this->G->numberOfNodes() < n);
 	};
@@ -35,14 +35,14 @@ void DynamicGraphGenerator::generateNodes(count n) {
 
 
 
-void DynamicGraphGenerator::generateEdges(count m) {
+void DynamicGraphSource::generateEdges(count m) {
 	auto cont = [&](){
 		return (this->G->numberOfEdges() < m);
 	};
 	this->generateWhile(cont);
 }
 
-GraphEventProxy* DynamicGraphGenerator::newGraph() {
+GraphEventProxy* DynamicGraphSource::newGraph() {
 	this->G = new Graph(0);
 	this->Gproxy = new GraphEventProxy(*(this->G));
 	// not returning proxy because only generator needs write access to graph
@@ -50,7 +50,7 @@ GraphEventProxy* DynamicGraphGenerator::newGraph() {
 	return this->Gproxy;
 }
 
-void DynamicGraphGenerator::generateTimeSteps(count t) {
+void DynamicGraphSource::generateTimeSteps(count t) {
 	auto cont = [&](){
 		return (this->G->time() < t);
 	};

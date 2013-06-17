@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 
-DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(count k) : DynamicGraphGenerator(), k(k), degSum(0) {
+DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(count k) : DynamicGraphSource(), k(k), degSum(0) {
 	if (k <= 0) {
 		throw std::runtime_error("k must be at least 1");
 	}
