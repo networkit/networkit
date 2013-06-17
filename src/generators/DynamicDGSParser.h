@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-#include "DynamicGraphGenerator.h"
+#include "DynamicGraphSource.h"
 #include "../auxiliary/StringTools.h"
 
 namespace NetworKit {
