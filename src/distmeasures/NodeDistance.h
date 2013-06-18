@@ -8,6 +8,8 @@
 #ifndef NODEDISTANCE_H_
 #define NODEDISTANCE_H_
 
+#include "../graph/Graph.h"
+
 namespace NetworKit {
 
 class NodeDistance {
