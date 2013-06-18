@@ -288,7 +288,7 @@ public:
 	/**
 	 * Check if node exists in the graph.
 	 */
-	bool hasNode(node u);
+	bool hasNode(node u) const;
 
 
 	/** GLOBAL PROPERTIES **/
