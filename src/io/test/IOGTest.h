@@ -23,6 +23,7 @@
 #include "../../clustering/ClusteringGenerator.h"
 #include "../DotGraphWriter.h"
 #include "../DGSReader.h"
+#include "../EdgeListReader.h"
 
 namespace NetworKit {
 
