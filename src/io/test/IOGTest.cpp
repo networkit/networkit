@@ -205,6 +205,13 @@ TEST_F(IOGTest, tryDGSReader) {
 
 }
 
+TEST_F(IOGTest, testEdgeListReader) {
+	EdgeListReader reader;
+
+	Graph G = reader.read("input/example.edgelist");
+
+}
+
 
 
 } /* namespace NetworKit */
