@@ -9,6 +9,8 @@
 #define EDGELISTREADER_H_
 
 #include <fstream>
+#include <iostream>
+#include <string>
 
 #include "GraphReader.h"
 
@@ -29,7 +31,7 @@ public:
 	 *
 	 * @param[in]	path	input file path
 	 */
-	virtual Graph read(std::string path);
+	virtual Graph read(std::string path, node firstNode = 0);
 };
 
 } /* namespace NetworKit */
