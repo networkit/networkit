@@ -189,8 +189,56 @@ TEST_F(DCDGTest, tryDGSAsSource) {
 	DynCDSetup setup(*source, detectors, 10e9, 10000);
 
 	setup.run();
+}
+
+
+TEST_F(DCDGTest, testPseudoDynamic) {
+	Graph G(3);
+	G.addEdge(0, 1);
+	G.addEdge(1, 2);
+
+
+	DynamicGraphSource* source = new PseudoDynamic(G);
+
+	GraphEventProxy* proxy = source->newGraph();
+	Graph* dynG = proxy->G;
+
+	source->initializeGraph();
+
+	source->generate();
+	EXPECT_EQ(1, dynG->numberOfNodes());
+	EXPECT_EQ(0, dynG->numberOfEdges());
+
+	source->generate();
+	EXPECT_EQ(2, dynG->numberOfNodes());
+	EXPECT_EQ(1, dynG->numberOfEdges());
+
+
+	source->generate();
+	EXPECT_EQ(3, dynG->numberOfNodes());
+	EXPECT_EQ(2, dynG->numberOfEdges());
+
+
+	EXPECT_EQ(G.numberOfNodes(), dynG->numberOfNodes()) << "n should be equal";
+	EXPECT_EQ(G.numberOfEdges(), dynG->numberOfEdges()) << "m should be equal";
 
 }
+
+TEST_F(DCDGTest, testPseudoDynamicOnRealGraph) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+
+	DynamicGraphSource* source = new PseudoDynamic(G);
+
+	Graph* dynG = source->newGraph()->G;
+
+	source->initializeGraph();
+
+	source->generateNodes(G.numberOfNodes());
+
+	EXPECT_EQ(G.numberOfEdges(), dynG->numberOfEdges()) << "same graph, so m should be equal";
+}
+
 
 } /* namespace NetworKit */
 
