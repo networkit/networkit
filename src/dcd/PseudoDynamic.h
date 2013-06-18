@@ -15,7 +15,7 @@ namespace NetworKit {
 class PseudoDynamic: public NetworKit::DynamicGraphSource {
 public:
 
-	PseudoDynamic(const Graph& G);
+	PseudoDynamic(const Graph& Gstatic);
 
 	virtual ~PseudoDynamic();
 
@@ -26,7 +26,8 @@ public:
 
 protected:
 
-	const Graph& G;
+	const Graph& Gstatic;
+	node u; //!< the current node
 };
 
 } /* namespace NetworKit */

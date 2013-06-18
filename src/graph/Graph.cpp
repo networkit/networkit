@@ -281,7 +281,7 @@ void Graph::removeNode(node u) {
 	this->n -= 1;
 }
 
-bool Graph::hasNode(node u) {
+bool Graph::hasNode(node u) const {
 	return this->exists[u];	// exists array determines whether node is present
 }
 
