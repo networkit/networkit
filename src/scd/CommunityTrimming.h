@@ -9,7 +9,6 @@
 #define COMMUNITYTRIMMING_H_
 
 #include <unordered_set>
-
 #include "../graph/Graph.h"
 
 namespace NetworKit {

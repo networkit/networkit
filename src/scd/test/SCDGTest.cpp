@@ -31,15 +31,15 @@ TEST_F(SCDGTest, testConductance) {
 
 	std::unordered_set<node> first, second, third, fourth, fifth;
 	first = {};
-	GreedyCommunityExpansion::Conductance conductance1(G, first);
+	Conductance conductance1(G, first);
 	second = {0};
-	GreedyCommunityExpansion::Conductance conductance2(G, second);
+	Conductance conductance2(G, second);
 	third = {0,1};
-	GreedyCommunityExpansion::Conductance conductance3(G, third);
+	Conductance conductance3(G, third);
 	fourth = {0,1,2};
-	GreedyCommunityExpansion::Conductance conductance4(G, fourth);
+	Conductance conductance4(G, fourth);
 	fifth = {0,1,2,3};
-	GreedyCommunityExpansion::Conductance conductance5(G, fifth);
+	Conductance conductance5(G, fifth);
 
 	double condOne = conductance1.getValue(0);
 	double condTwo = conductance2.getValue(1);
@@ -105,7 +105,7 @@ TEST_F(SCDGTest, testLocalMdularityM) {
 	G.addEdge(4,4);
 
 	std::unordered_set<node> community = {};
-	GreedyCommunityExpansion::LocalModularityM mod (G, community);
+	LocalModularityM mod (G, community);
 	EXPECT_EQ(0, mod.getValue(0)) << "The community should have a local modularity of 0";
 	EXPECT_EQ(0.25, mod.getValue(4)) << "The community should have a local modularity of 0.25";
 
@@ -203,25 +203,25 @@ TEST_F(SCDGTest, testNodeClusterSimilarity) {
 
 	std::unordered_set<node> first = {0};
 	std::unordered_set<node> shell_1 = {1,2,3};
-	GreedyCommunityExpansion::NodeClusterSimilarity ncs1(G, first, shell_1);
+	NodeClusterSimilarity ncs1(G, first, shell_1);
 	double ncsOne = ncs1.getValue(1);
 	EXPECT_EQ(0.6, ncsOne) << "1-clustering should have similarity of 0.6";
 
 	std::unordered_set<node> second = {1};
 	std::unordered_set<node> shell_2 = {2,0,4};
-	GreedyCommunityExpansion::NodeClusterSimilarity ncs2(G, second, shell_2);
+	NodeClusterSimilarity ncs2(G, second, shell_2);
 	double ncsTwo = ncs2.getValue(0);
 	EXPECT_EQ(0.6, ncsTwo) << "2-clustering should have similarity of 0.6";
 
 	std::unordered_set<node> third = {0,1,2};
 	std::unordered_set<node> shell_3 = {3,4};
-	GreedyCommunityExpansion::NodeClusterSimilarity ncs3(G, third, shell_3);
+	NodeClusterSimilarity ncs3(G, third, shell_3);
 	double ncsThree = ncs3.getValue(3);
 	EXPECT_GE(0.8, ncsThree) << "3-clustering should have similarity of 0.8";
 
 	std::unordered_set<node> fourth = {0,1,2,3};
 	std::unordered_set<node> shell_4 = {4};
-	GreedyCommunityExpansion::NodeClusterSimilarity ncs4(G, fourth, shell_4);
+	NodeClusterSimilarity ncs4(G, fourth, shell_4);
 	double ncsFour = ncs4.getValue(4);
 	EXPECT_EQ(0.8, ncsFour) << "4-clustering should have similarity of 0.8";
 
@@ -229,7 +229,7 @@ TEST_F(SCDGTest, testNodeClusterSimilarity) {
 
 	std::unordered_set<node> fifth = {0,1};
 	std::unordered_set<node> shell_5 = {2,3,4};
-	GreedyCommunityExpansion::NodeClusterSimilarity ncs5(G, fifth, shell_5);
+	NodeClusterSimilarity ncs5(G, fifth, shell_5);
 	double ncsFive = ncs5.getValue(2);
 	EXPECT_EQ(1, ncsFive) << "5-clustering should have similarity of 1";
 
