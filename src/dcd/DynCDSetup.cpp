@@ -78,4 +78,8 @@ void DynCDSetup::run() {
 
 }
 
+Graph* DynCDSetup::getGraph() {
+	return this->G;
+}
+
 } /* namespace NetworKit */

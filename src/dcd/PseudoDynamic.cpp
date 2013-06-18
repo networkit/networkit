@@ -23,6 +23,7 @@ void PseudoDynamic::initializeGraph() {
 }
 
 void PseudoDynamic::generate() {
+	TRACE("calling generate");
 	// if there are no more nodes left from the input graph, stop
 	if (this->G->numberOfNodes() == Gstatic.numberOfNodes()) {
 		throw std::logic_error("all nodes from the static graph have been generated");
@@ -32,7 +33,6 @@ void PseudoDynamic::generate() {
 	if (Gstatic.hasNode(u)) {
 		// create node in the dynamic graph
 		node uNew = this->Gproxy->addNode();
-		assert (u == uNew);
 
 		// add edges to already existing neighbors
 		Gstatic.forNeighborsOf(u, [&](node v){
@@ -46,6 +46,8 @@ void PseudoDynamic::generate() {
 
 	// next node
 	u += 1;
+	// trigger time step
+	this->Gproxy->timeStep();
 }
 
 } /* namespace NetworKit */
