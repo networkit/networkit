@@ -15,7 +15,18 @@ namespace NetworKit {
 
 class DynamicPubWebGenerator: public DynamicGraphSource {
 protected:
-	PubWebGenerator staticGen;
+//	PubWebGenerator staticGen;
+
+	void determineNeighbors(Graph& g);
+	void determineNeighborsOf(Graph& g, node u);
+	void moveNodeIntoUnitSquare(float& x, float& y);
+	float squaredDistanceInUnitTorus(float x1, float y1, float x2, float y2);
+	void chooseDenseAreaSizes();
+	void fillDenseAreas(Graph& g);
+	void spreadRemainingNodes(Graph& g);
+	void chooseClusterSizes();
+	void addNodesToArea(index area, count num, Graph& g);
+	bool isValidEdge(Graph& g, node u, node v);
 
 	void moveNodesRandomly();
 
