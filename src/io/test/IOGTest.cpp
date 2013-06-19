@@ -208,7 +208,25 @@ TEST_F(IOGTest, tryDGSReader) {
 TEST_F(IOGTest, testEdgeListReader) {
 	EdgeListReader reader;
 
-	Graph G = reader.read("input/example.edgelist");
+	Graph G = reader.read("input/LFR-generator-example/network.dat");
+	EXPECT_EQ(10, G.numberOfNodes());
+	EXPECT_EQ(10, G.numberOfEdges());
+	EXPECT_TRUE(G.hasEdge(0, 5));
+	EXPECT_TRUE(G.hasEdge(2, 9));
+	EXPECT_TRUE(G.hasEdge(1, 7));
+
+}
+
+TEST_F(IOGTest, testEdgeListClusteringReader) {
+	EdgeListClusteringReader reader(1);
+
+	Clustering zeta = reader.read("input/LFR-generator-example/community.dat");
+	//EXPECT_EQ(10, zeta.size());
+	EXPECT_EQ(1, zeta[0]);
+	EXPECT_EQ(3, zeta[1]);
+	EXPECT_EQ(2, zeta[2]);
+
+
 
 }
 

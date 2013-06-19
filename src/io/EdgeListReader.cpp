@@ -28,10 +28,16 @@ Graph EdgeListReader::read(std::string path) {
     // read file once to get to the last line and figure out the number of nodes
     file.open(path);
 
-
+   std::string previousLine;
     while (file.good()) {
+    	previousLine = line;
     	std::getline(file, line);
     }
+
+    std::vector<std::string> split = Aux::StringTools::split(previousLine, '\t');
+    node u = std::stoi(split[0]) - firstNode + 1;
+    Graph G(u);
+
 
     // TODO: unfortunately there is an empty line at the ending of the file, so we need to get the line before that
     DEBUG("the last line is: " << line);
@@ -41,14 +47,16 @@ Graph EdgeListReader::read(std::string path) {
     file.close();
 
     file.open(path);
-    Graph G(0);
+    // Graph G(0);
 
     while(std::getline(file,line)){
     	std::vector<std::string> split = Aux::StringTools::split(line, '\t');
 		if (split.size() == 2) {
 			node u = std::stoi(split[0]) - firstNode;
 			node v = std::stoi(split[1]) - firstNode;
-			G.addEdge(u, v);
+			if (!G.hasEdge(u,v) && !G.hasEdge(v,u)) {
+				G.addEdge(u, v);
+			}
 		}
     }
 
