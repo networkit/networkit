@@ -113,7 +113,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 }
 
 
-TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
+TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
 	count numInitialNodes = 300;
 	count numberOfDenseAreas = 10;

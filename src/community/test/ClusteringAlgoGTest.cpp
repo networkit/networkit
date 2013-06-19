@@ -288,7 +288,7 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, tryAgglomerativeAndLouvain) {
+TEST_F(ClusteringAlgoGTest, testAgglomerativeAndLouvain) {
 	Modularity modularity;
 	ParallelAgglomerativeClusterer aggl;
 	Louvain louvain;
@@ -300,25 +300,25 @@ TEST_F(ClusteringAlgoGTest, tryAgglomerativeAndLouvain) {
 	// *** jazz graph
 	// aggl
 	Clustering clustering = aggl.run(jazz);
-	INFO("CNM number of jazz clusters: " << clustering.numberOfClusters());
-	INFO("CNM modularity jazz graph: " << modularity.getQuality(clustering, jazz));
+	INFO("Match-AGGL number of jazz clusters: " << clustering.numberOfClusters());
+	INFO("Match-AGGL modularity jazz graph:   " << modularity.getQuality(clustering, jazz));
 
 	// Louvain
 	clustering = louvain.run(jazz);
 	INFO("Louvain number of jazz clusters: " << clustering.numberOfClusters());
-	INFO("Louvain modularity jazz graph: " << modularity.getQuality(clustering, jazz));
+	INFO("Louvain modularity jazz graph:   " << modularity.getQuality(clustering, jazz));
 
 
 	// *** blog graph
 	// CNM
 	clustering = aggl.run(blog);
-	INFO("CNM number of blog clusters: " << clustering.numberOfClusters());
-	INFO("CNM modularity blog graph: " << modularity.getQuality(clustering, jazz));
+	INFO("Match-AGGL number of blog clusters: " << clustering.numberOfClusters());
+	INFO("Match-AGGL modularity blog graph:   " << modularity.getQuality(clustering, jazz));
 
 	// Louvain
 	clustering = louvain.run(blog);
 	INFO("Louvain number of blog clusters: " << clustering.numberOfClusters());
-	INFO("Louvain modularity blog graph: " << modularity.getQuality(clustering, jazz));
+	INFO("Louvain modularity blog graph:   " << modularity.getQuality(clustering, jazz));
 }
 
 

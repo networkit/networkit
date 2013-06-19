@@ -34,8 +34,6 @@ Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
 		modScoring.scoreEdges(attrId);
 
 		// FIXME: so far only sequential
-		// FIXME: error in second iteration in matching, apparently node
-		// degrees are not correctly determined
 		// compute matching
 		PathGrowingMatcher parMatcher;
 		Matching M = parMatcher.run(G);
@@ -57,7 +55,7 @@ Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
 		if (repeat) {
 			G = GandMap.first;
 			mapHierarchy.push_back(GandMap.second);
-			INFO("Repeat agglomeration with graph of size " << G.numberOfNodes());
+			TRACE("Repeat agglomeration with graph of size " << G.numberOfNodes());
 		}
 	} while (repeat);
 
