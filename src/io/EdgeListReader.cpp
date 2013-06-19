@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-EdgeListReader::EdgeListReader() {
+EdgeListReader::EdgeListReader(node firstNode) : firstNode(firstNode) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -22,7 +22,6 @@ EdgeListReader::~EdgeListReader() {
 
 Graph EdgeListReader::read(std::string path) {
 
-	node firstNode = 0;
     std::ifstream file;
     std::string line; // the current line
 
