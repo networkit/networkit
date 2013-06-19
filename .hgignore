@@ -25,4 +25,9 @@ syntax: regexp
 ^EnsembleClustering-DPar$
 syntax: regexp
 ^EnsembleClustering-O$
-
+syntax: regexp
+/NetworKit-Comm*$
+syntax: regexp
+/*.orig
+/*.pdf
+/*.eps

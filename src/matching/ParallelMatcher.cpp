@@ -9,41 +9,66 @@
 
 namespace NetworKit {
 
-ParallelMatcher::ParallelMatcher(int attrId_) : attrId(attrId_) {
+LocalMaxMatcher::LocalMaxMatcher(int attrId_) :
+		attrId(attrId_) {
 
 }
 
-ParallelMatcher::~ParallelMatcher() {
+LocalMaxMatcher::~LocalMaxMatcher() {
 
 }
 
-Matching ParallelMatcher::run(Graph& G) {
+Matching LocalMaxMatcher::run(Graph& graph) {
+	Graph G = graph;
 
 	int64_t n = G.numberOfNodes();
 	Matching M(n);
 
-	// TODO: switch to different algorithm
-	// match with heaviest unmatched neighbor
-	G.forNodes([&](node v) { // TODO: parallel
-				edgeweight maxWeight = 0.0;
-				node argmax = v;
-				if (! M.isMatched(v)) {
-					G.forEdgesOf(v, [&](node v, node u) {
-								edgeweight escore = (attrId == none) ?
-										(G.weight(v, u)):
-										(G.attribute_double(v, u, attrId));
-								if ((escore > maxWeight) && (! M.isMatched(u))) {
-									maxWeight = escore;
-									argmax = u;
-								}
+	// local max algorithm
+	G.forEdges([&](node u, node v) { // TODO: parallel
+		// check neighborhood if both vertices are unmatched
+		if (! M.isMatched(u) && ! M.isMatched(v)) {
+			edgeweight escore = (attrId == none) ?
+					(G.weight(u, v)):
+					(G.attribute_double(u, v, attrId));
+			bool localMax = true;
 
-							});
-					// match with heaviest free neighbor
-					if (argmax != v) {
-						M.match(v, argmax);
-					}
+			G.forEdgesOf(u, [&](node u, node x) {
+				edgeweight otherScore = (attrId == none) ?
+						(G.weight(u, x)):
+						(G.attribute_double(u, x, attrId));
+
+				if (otherScore > escore) {
+					localMax = false;
+// TODO					break;
 				}
 			});
+
+			G.forEdgesOf(v, [&](node v, node x) {
+				edgeweight otherScore = (attrId == none) ?
+						(G.weight(v, x)):
+						(G.attribute_double(v, x, attrId));
+
+				if (otherScore > escore) {
+					localMax = false;
+// TODO					break;
+				}
+			});
+
+			if (localMax) {
+				M.match(u, v);
+
+				// remove incident edges
+				G.forEdgesOf(u, [&](node u, node x) {
+					G.removeEdge(u, x);
+				});
+
+				G.forEdgesOf(v, [&](node v, node x) {
+					G.removeEdge(v, x);
+				});
+			}
+		}
+	});
 
 #if 0
 	// TODO: exclude isolated nodes?
@@ -52,7 +77,7 @@ Matching ParallelMatcher::run(Graph& G) {
 	NodeMap<node> candidate(n, 0);//!< candidate[v] is the preferred matching partner of v
 	NodeMap<std::set<node> > S(n, std::set<node>());//!< S[v] is a set with the potential
 													//!< candidates of node v
-	std::vector<node> D;//!< targets of dominating edges
+	std::vector<node> D;							//!< targets of dominating edges
 	Matching M(n);
 
 	G.forNodes([&](node v) {
