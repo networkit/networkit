@@ -10,6 +10,8 @@
 #define DISTMEASURESGTEST_H_
 
 #include <gtest/gtest.h>
+#include <cstdio>
+
 
 #include "../AlgebraicDistances.h"
 #include "../../graph/Graph.h"
@@ -18,7 +20,9 @@
 #include "../../io/DibapGraphReader.h"
 #include "../../clustering/Clustering.h"
 #include "../../clustering/Modularity.h"
-#include <cstdio>
+#include "../../graph/GraphGenerator.h"
+#include "../NodeDistance.h"
+#include "../AlgebraicDistance.h"
 
 namespace NetworKit {
 
