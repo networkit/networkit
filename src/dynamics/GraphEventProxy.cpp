@@ -23,7 +23,7 @@ GraphEventProxy::~GraphEventProxy() {
 
 node GraphEventProxy::addNode() {
 	node u = this->G->addNode();
-	TRACE("adding node " << u);
+//	TRACE("adding node " << u);
 	for (GraphEventHandler* observer : this->observers) {
 		observer->onNodeAddition(u);
 	}
@@ -32,23 +32,22 @@ node GraphEventProxy::addNode() {
 
 void GraphEventProxy::removeNode(node u) {
 	this->G->removeNode(u);
-	TRACE("removing node " << u);
+//	TRACE("removing node " << u);
 	for (GraphEventHandler* observer : this->observers) {
 		observer->onNodeRemoval(u);
 	}
 }
 
 void GraphEventProxy::addEdge(node u, node v, edgeweight weight) {
-	// TODO:
 	this->G->addEdge(u, v, weight);
-	TRACE("adding edge (" << u << "," << v << ")");
+//	TRACE("adding edge (" << u << "," << v << ")");
 	for (GraphEventHandler* observer : this->observers) {
 		observer->onEdgeAddition(u, v);
 	}
 }
 
 void GraphEventProxy::removeEdge(node u, node v) {
-	TRACE("removing edge (" << u << "," << v << ")");
+//	TRACE("removing edge (" << u << "," << v << ")");
 	this->G->removeEdge(u, v);
 	for (GraphEventHandler* observer : this->observers) {
 		observer->onEdgeRemoval(u, v);
@@ -57,7 +56,7 @@ void GraphEventProxy::removeEdge(node u, node v) {
 
 
 void GraphEventProxy::setWeight(node u, node v, edgeweight w) {
-	TRACE("setting weight of edge (" << u << "," << v << ") to " << w);
+//	TRACE("setting weight of edge (" << u << "," << v << ") to " << w);
 	edgeweight wOld = this->G->weight(u, v);
 	this->G->setWeight(u, v, w);
 	for (GraphEventHandler* observer : this->observers) {
@@ -67,7 +66,7 @@ void GraphEventProxy::setWeight(node u, node v, edgeweight w) {
 
 
 void GraphEventProxy::timeStep() {
-	TRACE("time step");
+//	TRACE("time step");
 	// increment time step counter in G
 	this->G->timeStep();
 	for (GraphEventHandler* observer : this->observers) {

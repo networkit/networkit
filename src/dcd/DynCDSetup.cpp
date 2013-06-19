@@ -50,7 +50,8 @@ void DynCDSetup::run() {
 
 	// for all community detectors, perform run
 
-	while (G->time() <= tMax) {
+	while (G->time() < tMax) {
+		INFO("time: " << G->time() << " of " << tMax);
 		try {
 			gen->generateTimeSteps(G->time() + deltaT);
 			for (count i = 0; i < this->detectors.size(); ++i) {
@@ -74,6 +75,10 @@ void DynCDSetup::run() {
 		for (Clustering zeta : dynZeta) {
 			DEBUG("number of clusters: " << zeta.numberOfClusters());
 		}
+	}
+
+	for (DynamicCommunityDetector* dynCD : this->detectors){
+		INFO("timer history for algorithm " << dynCD->toString() << ": " << Aux::vectorToString(dynCD->getTimerHistory()));
 	}
 
 }
