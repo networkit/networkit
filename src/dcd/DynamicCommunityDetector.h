@@ -12,6 +12,7 @@
 
 #include "../clustering/Clustering.h"
 #include "../dynamics/GraphEventHandler.h"
+#include "../auxiliary/Timer.h"
 
 namespace NetworKit {
 
@@ -33,6 +34,14 @@ public:
 	virtual Clustering run() = 0;
 
 	virtual std::string toString() const = 0;
+
+	virtual std::vector<count> getTimerHistory();
+
+
+protected:
+
+	Aux::Timer runtime;					//!< runtime measurement
+	std::vector<count> timerHistory;	//1< stores a history of runtimes
 
 
 
