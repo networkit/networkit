@@ -6,8 +6,8 @@
  */
 #ifndef NOGTEST
 
-#ifndef DISTMEASURETEST_H_
-#define DISTMEASURETEST_H_
+#ifndef DISTMEASURESGTEST_H_
+#define DISTMEASURESGTEST_H_
 
 #include <gtest/gtest.h>
 
@@ -22,10 +22,10 @@
 
 namespace NetworKit {
 
-class DistMeasureTest: public testing::Test {
+class DistMeasuresGTest: public testing::Test {
 public:
-	DistMeasureTest();
-	virtual ~DistMeasureTest();
+	DistMeasuresGTest();
+	virtual ~DistMeasuresGTest();
 };
 
 } /* namespace NetworKit */

@@ -11,15 +11,19 @@
 
 namespace NetworKit {
 
-DistMeasureTest::DistMeasureTest() {
+DistMeasuresGTest::DistMeasuresGTest() {
 
 }
 
-DistMeasureTest::~DistMeasureTest() {
+DistMeasuresGTest::~DistMeasuresGTest() {
 
 }
 
-TEST_F(DistMeasureTest, testAlgebraicDistances) {
+TEST_F(DistMeasuresGTest, testAlgebraicDistances) {
+	EXPECT_TRUE(false) << "TODO:";
+}
+
+TEST_F(DistMeasuresGTest, tryAlgebraicDistancesVisualization) {
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 
 	DibapGraphReader reader;
