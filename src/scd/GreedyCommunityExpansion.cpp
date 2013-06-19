@@ -41,10 +41,8 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 		shell.insert(v);
 	});
 
-	DEBUG("initial shell size: " << shell.size());
-
 	if (shell.empty()) {
-		INFO("shell of {s}Êis empty because s is an isolated node");
+		INFO("shell of {s}ï¿½is empty because s is an isolated node");
 		// if shell is empty, just return the singleton community of s
 		return community;
 	}
@@ -63,8 +61,7 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 		for (node v : shell) {
 			acceptanceValues.insert(std::pair<node,double> (v, acceptability.getValue(v)));
 		}
-//for strong symmetric graphs still not well defined
-		// find the next node which will be added to the community
+
 		while (!acceptanceValues.empty()) {
 			acceptanceMax = 0;
 			for (auto it = acceptanceValues.begin(); it != acceptanceValues.end(); ++it ) {
@@ -94,17 +91,10 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 			}
 			// include only nodes which lead to a strictly positive improvement
 			if (conductance.getValue(vMax) > currentObjectiveValue) {
-				assert (community.find(vMax) == community.end()); // assert that vMax is not in community
-				community.insert(vMax);
-
 				expanded = true;
-
 				currentObjectiveValue = conductance.getValue(vMax);
-				DEBUG("community size before shell.erase:" << community.size());
+				community.insert(vMax);
 				shell.erase(vMax);
-				DEBUG("community size after shell.erase:" << community.size());
-
-				DEBUG("shell size after erase: " << shell.size());
 				G.forNeighborsOf(vMax, [&](node v){
 					if (community.find(v) == community.end()) {
 						shell.insert(v);
@@ -113,7 +103,6 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 				acceptanceValues.clear();
 			} else {
 				auto it = acceptanceValues.find(vMax);
-				assert (it != acceptanceValues.end()); // assert that vMax not found
 				node x = it->first;
 				// node with highest acceptability is discarded from the map
 				acceptanceValues.erase(x);
@@ -178,19 +167,24 @@ GreedyCommunityExpansion::NodeClusterSimilarity::~NodeClusterSimilarity() {
 }
 
 double GreedyCommunityExpansion::NodeClusterSimilarity::getValue(node v) {
+	std::cout << this->shell->size() << std::endl;
+	std::cout << this->community->size() << std::endl;
+
 
 	int intersection = 0;
 	this->G->forNeighborsOf(v, [&](node u) {
-		if (this->community->find(u) != this->community->end()||this->shell->find(u) != this->shell->end()) { // fixme: there is a fault hier
+
+		if (this->community->find(u) != this->community->end()||this->shell->find(u) != this->shell->end()) {
 			intersection++;
 		}
 	});
 	if (G->hasEdge(v, v)) {
 		return intersection / (G->degree(v) + (*community).size() + (*shell).size() - intersection);
 	} else {
+
+
 		return (intersection + 1) / (G->degree(v) + (*community).size() + (*shell).size() - intersection);
 	}
-	return 0;
 }
 
 GreedyCommunityExpansion::QualityObjective::~QualityObjective() {
