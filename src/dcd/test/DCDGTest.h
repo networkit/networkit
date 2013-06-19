@@ -21,6 +21,7 @@
 #include "../DynCDSetup.h"
 #include "../PseudoDynamic.h"
 #include "../../io/METISGraphReader.h"
+#include "../../community/LabelPropagation.h"
 
 
 namespace NetworKit {

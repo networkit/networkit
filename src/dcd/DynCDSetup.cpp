@@ -50,7 +50,7 @@ void DynCDSetup::run() {
 
 	// for all community detectors, perform run
 
-	while (G->time() <= tMax) {
+	while (G->time() < tMax) {
 		try {
 			gen->generateTimeSteps(G->time() + deltaT);
 			for (count i = 0; i < this->detectors.size(); ++i) {
