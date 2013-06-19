@@ -33,7 +33,7 @@ Clustering EdgeListClusteringReader::read(std::string path) {
 	std::string line;
 	while(std::getline(file, line)) {
 		std::vector<std::string> split = Aux::StringTools::split(line, '\t');
-		if (split.size() == 2) {
+		if (split.size() == 2 && split[0] != "#") {
 			cluster c = std::atoi(split[1].c_str());
 			temp.push_back(c);
 		}
