@@ -17,6 +17,8 @@ class DynCDSetup {
 
 public:
 	/**
+	 * Construct a setup.
+	 *
 	 * @param[in]	dynGen		dynamic graph generator
 	 * @param[in]	dynDetectors	collection of dynamic community detection algorithms
 	 * @param[in]	tMax			maximum number of time steps
@@ -27,7 +29,15 @@ public:
 
 	virtual ~DynCDSetup();
 
+	/**
+	 * Run the setup.
+	 */
 	virtual void run();
+
+	/**
+	 * Return the graph instance.
+	 */
+	virtual Graph* getGraph();
 
 private:
 	DynamicGraphSource* gen;	//!< pointer to dynamic graph generator
