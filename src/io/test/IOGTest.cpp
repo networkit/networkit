@@ -225,9 +225,46 @@ TEST_F(IOGTest, testEdgeListClusteringReader) {
 	EXPECT_EQ(1, zeta[0]);
 	EXPECT_EQ(3, zeta[1]);
 	EXPECT_EQ(2, zeta[2]);
+	EXPECT_EQ(10, zeta.numberOfEntries());
+
+}
+
+
+TEST_F(IOGTest, tryReadingLFR) {
+	std::string graphPath;
+	std::string clustPath;
+
+	std::cout << "[INPUT] graph file path >" << std::endl;
+	std::getline(std::cin, graphPath);
+
+	std::cout << "[INPUT] clustering file path >" << std::endl;
+	std::getline(std::cin, clustPath);
+
+	EdgeListReader graphReader;
+	EdgeListClusteringReader clusteringReader;
+
+	Graph G = graphReader.read(graphPath);
+	Clustering truth = clusteringReader.read(clustPath);
+
+	LabelPropagation PLP;
+	Clustering zeta = PLP.run(G);
+
+	Modularity mod;
+	INFO("static clustering quality: " << mod.getQuality(zeta, G));
+	INFO("static clustering number of clusters: " << zeta.numberOfClusters());
+	INFO("ground truth quality: " << mod.getQuality(truth, G));
+	INFO("ground truth number of clusters: " << truth.numberOfClusters());
+
+}
 
 
 
+TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+	EXPECT_TRUE(G.hasNode(0));
+	EXPECT_EQ(198, G.numberOfNodes());
+	EXPECT_EQ(2742, G.numberOfEdges());
 }
 
 
@@ -242,13 +279,6 @@ TEST_F(IOGTest, testMETISGraphReaderWithIsolatedNodes) {
 	EXPECT_TRUE(G.hasNode(3));
 }
 
-TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/jazz.graph");
-	EXPECT_TRUE(G.hasNode(0));
-	EXPECT_EQ(198, G.numberOfNodes());
-	EXPECT_EQ(2742, G.numberOfEdges());
-}
 
 
 

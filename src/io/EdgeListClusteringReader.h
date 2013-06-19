@@ -14,7 +14,7 @@ class EdgeListClusteringReader {
 
 public:
 
-	EdgeListClusteringReader(node firstNode);
+	EdgeListClusteringReader(node firstNode=1);
 
 	virtual ~EdgeListClusteringReader();
 
