@@ -76,6 +76,9 @@ protected:
 	// PREP STRATEGIES
 	// prep strategies encapsulate different update schemes and make DynamicLabelPropagation modular
 
+	/**
+	 * Reactivates nodes affected by a change.
+	 */
 	class Reactivate : public NetworKit::PrepStrategy {
 
 		friend class DynamicLabelPropagation;
@@ -125,6 +128,9 @@ protected:
 	};
 
 
+	/**
+	 * Activates nodes affected by a change and also their neighbors.
+	 */
 	class ReactivateNeighbors : public NetworKit::PrepStrategy {
 
 		friend class DynamicLabelPropagation;
@@ -172,6 +178,112 @@ protected:
 		DynamicLabelPropagation* dynPLP;
 
 	};
+
+
+	/**
+	 * Turn nodes affected by a change into singletons. Since this is a label change,
+	 * nodes in the neighborhood get activated.
+	 */
+	class Isolate : public NetworKit::PrepStrategy {
+
+			friend class DynamicLabelPropagation;
+
+		public:
+
+			Isolate(DynamicLabelPropagation* dynPLP);
+
+			virtual ~Isolate();
+
+			std::string toString();
+
+			/**
+			 * New node u becomes a singleton and active.
+			 */
+			virtual void onNodeAddition(node u);
+
+			/**
+			 * Removed node u becomes permanently inactive.
+			 */
+			virtual void onNodeRemoval(node u);
+
+			/**
+			 * Reactivate u and v on addition of edge {u,v}
+			 */
+			virtual void onEdgeAddition(node u, node v, edgeweight w = 1.0);
+
+			/**
+			 * Reactivate u and v on removal of edge {u,v}
+			 */
+			virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0);
+
+			/**
+			 * Same reaction as onEdgeAddition
+			 */
+			virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
+
+			/**
+			 * Ignore time steps.
+			 */
+			virtual void onTimeStep();
+
+		protected:
+
+			DynamicLabelPropagation* dynPLP;
+
+		};
+
+
+	/**
+	 * Turn nodes affected by a change and their neighbors into singletons. Since this is a label change,
+	 * nodes in the 2-neighborhood get activated.
+	 */
+	class IsolateNeighbors : public NetworKit::PrepStrategy {
+
+			friend class DynamicLabelPropagation;
+
+		public:
+
+			IsolateNeighbors(DynamicLabelPropagation* dynPLP);
+
+			virtual ~IsolateNeighbors();
+
+			std::string toString();
+
+			/**
+			 * New node u becomes a singleton and active.
+			 */
+			virtual void onNodeAddition(node u);
+
+			/**
+			 * Removed node u becomes permanently inactive.
+			 */
+			virtual void onNodeRemoval(node u);
+
+			/**
+			 * Reactivate u and v on addition of edge {u,v}
+			 */
+			virtual void onEdgeAddition(node u, node v, edgeweight w = 1.0);
+
+			/**
+			 * Reactivate u and v on removal of edge {u,v}
+			 */
+			virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0);
+
+			/**
+			 * Same reaction as onEdgeAddition
+			 */
+			virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
+
+			/**
+			 * Ignore time steps.
+			 */
+			virtual void onTimeStep();
+
+		protected:
+
+			DynamicLabelPropagation* dynPLP;
+
+		};
 
 };
 

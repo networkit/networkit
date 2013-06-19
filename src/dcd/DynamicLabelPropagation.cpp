@@ -26,6 +26,10 @@ DynamicLabelPropagation::DynamicLabelPropagation(count theta, std::string strate
 		this->prepStrategy = new DynamicLabelPropagation::Reactivate(this);
 	} else if (strategyName == "ReactivateNeighbors") {
 		this->prepStrategy = new DynamicLabelPropagation::ReactivateNeighbors(this);
+	} else if (strategyName == "Isolate") {
+		this->prepStrategy = new DynamicLabelPropagation::Isolate(this);
+	} else if (strategyName == "IsolateNeighbors") {
+		this->prepStrategy = new DynamicLabelPropagation::IsolateNeighbors(this);
 	} else {
 		throw std::runtime_error("unknown prep strategy");
 	}
@@ -41,7 +45,7 @@ void DynamicLabelPropagation::onNodeAddition(node u) {
 	// update data structures
 	activeNodes.push_back(true); // new node is active
 	weightedDegree.push_back(0.0);
-	labels.append(u); // extend label array by 1 entry
+	labels.append(u); // extend label array by 1 entry and create singleton
 
 	prepStrategy->onNodeAddition(u);
 }
@@ -49,6 +53,8 @@ void DynamicLabelPropagation::onNodeAddition(node u) {
 void DynamicLabelPropagation::onNodeRemoval(node u) {
 	assert (G->degree(u) == 0);
 	assert (weightedDegree[u] == 0.0);
+
+	this->activeNodes[u] = false; // assumption: this node can never be reactivated
 
 	prepStrategy->onNodeRemoval(u);
 }
@@ -179,13 +185,13 @@ DynamicLabelPropagation::Reactivate::~Reactivate() {
 
 
 void DynamicLabelPropagation::Reactivate::onNodeAddition(node u) {
-	dynPLP->labels.toSingleton(u);
+	// dynPLP has already made the new node a singleton
 	dynPLP->activeNodes[u] = true;
 	assert (dynPLP->G->degree(u) == 0); // new node has no incident edges
 }
 
 void DynamicLabelPropagation::Reactivate::onNodeRemoval(node u) {
-	dynPLP->activeNodes[u] = false; // assumption: this node can never be reactivated
+	assert (dynPLP->activeNodes[u] == false); // dynPLP has permanently deactivated the node
 	// incident edges must have been removed before, so neighborhood is already active at this point
 }
 
@@ -213,13 +219,13 @@ DynamicLabelPropagation::ReactivateNeighbors::~ReactivateNeighbors() {
 }
 
 void DynamicLabelPropagation::ReactivateNeighbors::onNodeAddition(node u) {
-	dynPLP->labels.toSingleton(u);
-	dynPLP->activeNodes[u] = true;
+	// dynPLP has already made the new node a singleton
+	assert (dynPLP->activeNodes[u] == true);
 	assert (dynPLP->G->degree(u) == 0); // new node has no incident edges
 }
 
 void DynamicLabelPropagation::ReactivateNeighbors::onNodeRemoval(node u) {
-	dynPLP->activeNodes[u] = false; // assumption: this node can never be reactivated
+	assert (dynPLP->activeNodes[u] == false); // dynPLP has permanently deactivated the node
 	// incident edges must have been removed before, so neighborhood is already active at this point
 }
 
@@ -255,6 +261,111 @@ std::string DynamicLabelPropagation::ReactivateNeighbors::toString() {
 }
 
 void DynamicLabelPropagation::ReactivateNeighbors::onTimeStep() {
+}
+
+
+DynamicLabelPropagation::Isolate::Isolate(DynamicLabelPropagation* dynPLP) : dynPLP(dynPLP) {
+}
+
+DynamicLabelPropagation::Isolate::~Isolate() {
+}
+
+std::string DynamicLabelPropagation::Isolate::toString() {
+	return "Isolate";
+}
+
+void DynamicLabelPropagation::Isolate::onNodeAddition(node u) {
+	// dynPLP has already made the new node a singleton
+	dynPLP->G->forNeighborsOf(u, [&](node v) {
+		dynPLP->activeNodes[v] = true;
+	});
+
+}
+
+void DynamicLabelPropagation::Isolate::onNodeRemoval(node u) {
+	assert (dynPLP->activeNodes[u] == false); // dynPLP has permanently deactivated the node
+	// incident edges must have been removed before, so neighborhood is already active at this point
+}
+
+void DynamicLabelPropagation::Isolate::onEdgeAddition(node u, node v, edgeweight w) {
+	dynPLP->labels.toSingleton(u);
+	dynPLP->activeNodes[u] = true;
+	dynPLP->labels.toSingleton(v);
+	dynPLP->activeNodes[v] = true;
+	dynPLP->G->forNeighborsOf(u, [&](node x) {
+		dynPLP->activeNodes[x] = true;
+	});
+	dynPLP->G->forNeighborsOf(v, [&](node x) {
+		dynPLP->activeNodes[x] = true;
+	});
+
+}
+
+void DynamicLabelPropagation::Isolate::onEdgeRemoval(node u, node v, edgeweight w) {
+	this->onEdgeAddition(u, v, w); // TODO: maybe remove additional method call
+}
+
+void DynamicLabelPropagation::Isolate::onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) {
+	this->onEdgeAddition(u, v, wNew); // TODO: maybe remove additional method call
+}
+
+void DynamicLabelPropagation::Isolate::onTimeStep() {
+	// do nothing
+}
+
+
+
+DynamicLabelPropagation::IsolateNeighbors::IsolateNeighbors(
+		DynamicLabelPropagation* dynPLP) : dynPLP(dynPLP)  {
+}
+
+DynamicLabelPropagation::IsolateNeighbors::~IsolateNeighbors() {
+}
+
+std::string DynamicLabelPropagation::IsolateNeighbors::toString() {
+	return "IsolateNeighbors";
+}
+
+void DynamicLabelPropagation::IsolateNeighbors::onNodeAddition(node u) {
+	// dynPLP has already made the new node a singleton and activated it
+	assert (dynPLP->activeNodes[u] == true);
+	assert (dynPLP->G->degree(u) == 0); // new node has no incident edges
+}
+
+void DynamicLabelPropagation::IsolateNeighbors::onNodeRemoval(node u) {
+	assert (dynPLP->activeNodes[u] == false); // dynPLP has permanently deactivated the node
+	// incident edges must have been removed before, so neighborhood is already active at this point
+}
+
+void DynamicLabelPropagation::IsolateNeighbors::onEdgeAddition(node u, node v, edgeweight w) {
+	dynPLP->labels.toSingleton(u);
+	dynPLP->activeNodes[u] = true;
+	dynPLP->labels.toSingleton(v);
+	dynPLP->activeNodes[v] = true;
+	dynPLP->G->forNeighborsOf(u, [&](node x) {
+		dynPLP->labels.toSingleton(x);
+		dynPLP->G->forNeighborsOf(x, [&](node y){
+			dynPLP->activeNodes[y] = true;
+		});
+	});
+	dynPLP->G->forNeighborsOf(v, [&](node x) {
+		dynPLP->labels.toSingleton(x);
+		dynPLP->G->forNeighborsOf(x, [&](node y){
+			dynPLP->activeNodes[y] = true;
+		});
+	});
+}
+
+void DynamicLabelPropagation::IsolateNeighbors::onEdgeRemoval(node u, node v, edgeweight w) {
+	this->onEdgeAddition(u, v, w);
+}
+
+void DynamicLabelPropagation::IsolateNeighbors::onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) {
+	this->onEdgeAddition(u, v, wNew);
+}
+
+void DynamicLabelPropagation::IsolateNeighbors::onTimeStep() {
+	// do nothing
 }
 
 } /* namespace NetworKit */
