@@ -32,7 +32,7 @@ public:
 	/**
 	 * Return the distance between two nodes.
 	 */
-	virtual void distance(node u, node v) = 0;
+	virtual double distance(node u, node v) = 0;
 };
 
 } /* namespace NetworKit */
