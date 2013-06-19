@@ -26,6 +26,8 @@
 #include "../EdgeListReader.h"
 #include "../EdgeListClusteringReader.h"
 #include "../../clustering/Clustering.h"
+#include "../../clustering/Modularity.h"
+#include "../../community/LabelPropagation.h"
 
 
 
