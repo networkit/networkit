@@ -61,6 +61,7 @@ public:
 
 	virtual void onTimeStep();
 
+
 protected:
 
 	count updateThreshold;
@@ -72,6 +73,9 @@ protected:
 	Graph* G;							//!< the current graph instance
 	PrepStrategy* prepStrategy;			//!< a prep strategy reacts to graph events by preparing the algorithm's clustering
 
+	// main timer is in superclass
+//	Aux::Timer prepTimer; 				//!< measure time spent in prep strategy
+//	std::vector<count> prepTimerHistory;//!< record time spent in prep strategy
 
 	// PREP STRATEGIES
 	// prep strategies encapsulate different update schemes and make DynamicLabelPropagation modular

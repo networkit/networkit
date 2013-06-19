@@ -165,11 +165,11 @@ TEST_F(DCDGTest, tryDynamicBarabasiAlbertGeneratorAsSource) {
 
 TEST_F(DCDGTest, tryDynCDSetup) {
 	 DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
-	 DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Reactivate");
-	 DynamicCommunityDetector* dynCD2 = new DynamicLabelPropagation(0, "ReactivateNeighbors");
+	 DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Isolate");
+	 DynamicCommunityDetector* dynCD2 = new DynamicLabelPropagation(0, "IsolateNeighbors");
 
 	 std::vector<DynamicCommunityDetector*> detectors = {dynCD1, dynCD2};
-	 DynCDSetup setup(*dynGen, detectors, 10e4, 100);
+	 DynCDSetup setup(*dynGen, detectors, 1e4, 100);
 
 	 setup.run();
 

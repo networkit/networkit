@@ -9,7 +9,7 @@
 
 namespace Aux {
 
-Timer::Timer() {
+Timer::Timer() : running(false) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -39,6 +39,10 @@ std::chrono::steady_clock::time_point Timer::startTime() {
 
 std::chrono::steady_clock::time_point Timer::stopTime() {
 	return this->stopped;
+}
+
+int64_t Timer::elapsedMilliseconds() {
+	return this->elapsed().count();
 }
 
 std::string Timer::elapsedTag() {

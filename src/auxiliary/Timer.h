@@ -42,11 +42,19 @@ public:
 	virtual std::chrono::steady_clock::time_point stop();
 
 	/**
-	 * The number of seconds since the current time that the Timer
+	 * The number of milliseconds since the current time that the Timer
         object was created.  If stop() was called, it is the number
         of seconds from the instance creation until stop() was called.
 	 */
 	virtual std::chrono::duration<int64_t, std::milli> elapsed();
+
+
+	/**
+	 * The number of milliseconds since the current time that the Timer
+        object was created.  If stop() was called, it is the number
+        of seconds from the instance creation until stop() was called.
+	 */
+	virtual int64_t elapsedMilliseconds();
 
 	/**
 	 * Returns the time at which the instance was started.
