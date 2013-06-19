@@ -17,5 +17,8 @@ DynamicCommunityDetector::~DynamicCommunityDetector() {
 	// TODO Auto-generated destructor stub
 }
 
+std::vector<count> DynamicCommunityDetector::getTimerHistory() {
+	return this->timerHistory;
+}
 
 } /* namespace NetworKit */

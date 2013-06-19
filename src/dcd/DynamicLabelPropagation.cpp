@@ -129,7 +129,6 @@ Clustering DynamicLabelPropagation::run() {
 
 	INFO("running DynamicLabelPropagation at t=" << G->time());
 
-	Aux::Timer runtime;
 	count nIterations = 0;
 	nUpdated = G->numberOfNodes(); // starts while loop - TODO: correct?
 
@@ -168,10 +167,14 @@ Clustering DynamicLabelPropagation::run() {
 	} // end while
 
 	runtime.stop();
+	this->timerHistory.push_back(runtime.elapsedMilliseconds());
 	INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
+
 
 	return labels;
 }
+
+
 
 
 // PREP STRATEGY IMPLEMENTATIONS
@@ -367,6 +370,8 @@ void DynamicLabelPropagation::IsolateNeighbors::onWeightUpdate(node u, node v, e
 void DynamicLabelPropagation::IsolateNeighbors::onTimeStep() {
 	// do nothing
 }
+
+
 
 } /* namespace NetworKit */
 
