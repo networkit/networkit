@@ -675,6 +675,15 @@ TEST_F(Graph2GTest, testEdgeCollection) {
 }
 
 
+TEST_F(Graph2GTest, testHasNode) {
+	Graph G(4);
+	EXPECT_TRUE(G.hasNode(3));
+	EXPECT_TRUE(G.hasNode(2));
+	EXPECT_TRUE(G.hasNode(1));
+	EXPECT_TRUE(G.hasNode(0));
+}
+
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
