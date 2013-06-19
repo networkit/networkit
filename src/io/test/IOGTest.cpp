@@ -230,11 +230,34 @@ TEST_F(IOGTest, testEdgeListClusteringReader) {
 }
 
 
+
+
+TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+	EXPECT_TRUE(G.hasNode(0));
+	EXPECT_EQ(198, G.numberOfNodes());
+	EXPECT_EQ(2742, G.numberOfEdges());
+}
+
+
+TEST_F(IOGTest, testMETISGraphReaderWithIsolatedNodes) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/example.graph");
+	EXPECT_EQ(4, G.numberOfNodes());
+	EXPECT_EQ(1, G.numberOfEdges());
+	EXPECT_TRUE(G.hasNode(0));
+	EXPECT_TRUE(G.hasNode(1));
+	EXPECT_TRUE(G.hasNode(2));
+	EXPECT_TRUE(G.hasNode(3));
+}
+
+
 TEST_F(IOGTest, tryReadingLFR) {
 	std::string graphPath;
 	std::string clustPath;
 
-	std::cout << "[INPUT] graph file path >" << std::endl;
+	std::cout << "[INPUT] LFR graph file path >" << std::endl;
 	std::getline(std::cin, graphPath);
 
 	std::cout << "[INPUT] clustering file path >" << std::endl;
@@ -258,26 +281,21 @@ TEST_F(IOGTest, tryReadingLFR) {
 }
 
 
+TEST_F(IOGTest, tryReadingSNAP) {
+	std::string graphPath;
 
-TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/jazz.graph");
-	EXPECT_TRUE(G.hasNode(0));
-	EXPECT_EQ(198, G.numberOfNodes());
-	EXPECT_EQ(2742, G.numberOfEdges());
+	std::cout << "[INPUT] SNAP graph file path >" << std::endl;
+	std::getline(std::cin, graphPath);
+
+	EdgeListReader graphReader;
+
+	Graph G = graphReader.read(graphPath);
+
+	INFO("n = " << G.numberOfNodes());
+	INFO("m = " << G.numberOfEdges());
+
 }
 
-
-TEST_F(IOGTest, testMETISGraphReaderWithIsolatedNodes) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/example.graph");
-	EXPECT_EQ(4, G.numberOfNodes());
-	EXPECT_EQ(1, G.numberOfEdges());
-	EXPECT_TRUE(G.hasNode(0));
-	EXPECT_TRUE(G.hasNode(1));
-	EXPECT_TRUE(G.hasNode(2));
-	EXPECT_TRUE(G.hasNode(3));
-}
 
 
 
