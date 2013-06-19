@@ -19,6 +19,9 @@
 #include "../../graph/Subgraph.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../io/METISGraphWriter.h"
+#include "../../io/METISGraphReader.h"
+#include "../CommunityTrimming.h"
+
 
 
 

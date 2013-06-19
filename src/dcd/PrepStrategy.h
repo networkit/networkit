@@ -28,16 +28,11 @@ public:
 
 	virtual ~PrepStrategy();
 
-	virtual void onNodeAddition(node u) = 0;
+	virtual void onTimeStep();
 
-	virtual void onNodeRemoval(node u) = 0;
-
-	virtual void onEdgeAddition(node u, node v) = 0;
-
-	virtual void onEdgeRemoval(node u, node v) = 0;
-
-	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) = 0;
-
+	/**
+	 * String representation - PrepStrategy subclasses must implement this.
+	 */
 	virtual std::string toString() = 0;
 
 };

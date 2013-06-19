@@ -22,87 +22,75 @@ GeneratorsGTest::~GeneratorsGTest() {
 
 
 TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGeneratorSingleStep) {
-	Graph G(0); // empty graph
-	GraphEventProxy proxy(G);
 	count k = 2; // number of edges added per node
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy, k);
+	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(k);
+	GraphEventProxy* Gproxy = gen->newGraph();
+	Graph* G = Gproxy->G;
+
 	gen->initializeGraph();
 
-	count nPre = G.numberOfNodes();
-	count mPre = G.numberOfEdges();
+	count nPre = G->numberOfNodes();
+	count mPre = G->numberOfEdges();
 	EXPECT_EQ(k, nPre) << "graph should have been initialized to k nodes";
 	EXPECT_EQ(k - 1, mPre) << "graph should have been initialized to a path of k nodes which means k-1 edges";
 
 	// perform single preferential attachment step
 	gen->generate();
 
-	count nPost = G.numberOfNodes();
-	count mPost = G.numberOfEdges();
+	count nPost = G->numberOfNodes();
+	count mPost = G->numberOfEdges();
 	EXPECT_EQ(nPre + 1, nPost) << "one more node should have been added";
 	EXPECT_EQ(mPre + k, mPost) << "k edges should have been added";
 
-
+	delete G;
 }
 
 TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 
-	Graph G(0); // empty graph
-	GraphEventProxy proxy(G);
 
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy, 2);
+	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(2);
+
+	GraphEventProxy* Gproxy = gen->newGraph();
+	Graph* G = Gproxy->G;
 
 	gen->initializeGraph();
 
-	EXPECT_EQ(2, G.numberOfNodes()) << "initially the generator creates two connected nodes";
-	EXPECT_EQ(1, G.numberOfEdges()) << "initially the generator creates two connected nodes";
+	EXPECT_EQ(2, G->numberOfNodes()) << "initially the generator creates two connected nodes";
+	EXPECT_EQ(1, G->numberOfEdges()) << "initially the generator creates two connected nodes";
 
 	count n = 100;
 
 	gen->generateWhile([&]() {
-				return ( G.numberOfNodes() < n );
+				return ( G->numberOfNodes() < n );
 			});
 
-	EXPECT_EQ(n, G.numberOfNodes());
-	DEBUG("m = " << G.numberOfEdges());
+	EXPECT_EQ(n, G->numberOfNodes());
+	DEBUG("m = " << G->numberOfEdges());
 
 	// resume generator
 
 	gen->generateWhile([&]() {
-		return (G.numberOfNodes() < 2 * n);
+		return (G->numberOfNodes() < 2 * n);
 	});
-	EXPECT_EQ(2 * n, G.numberOfNodes());
+	EXPECT_EQ(2 * n, G->numberOfNodes());
 }
 
 
 TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
-	Graph G(0); // empty graph
-	GraphEventProxy proxy(G);
-	DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy, 2);
+	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(2);
+	GraphEventProxy* Gproxy = gen->newGraph();
+	Graph* G = Gproxy->G;
 	gen->initializeGraph();
 	count n = 42;
 	gen->generateWhile([&]() {
-				return ( G.numberOfNodes() < n );
+				return ( G->numberOfNodes() < n );
 			});
 	METISGraphWriter writer;
-	writer.write(G, "output/BATest.graph");
+	writer.write(*G, "output/BATest.graph");
+
+	delete G;
 }
 
-TEST_F(GeneratorsGTest, verifyDynamicBarabasiAlbertGenerator) {
-	for (int i = 1; i <= 5; i++) {
-		Graph G(0); // empty graph
-		GraphEventProxy proxy(G);
-		DynamicGraphGenerator* gen = new DynamicBarabasiAlbertGenerator(proxy, i);
-		gen->initializeGraph();
-		count n = 300;
-		gen->generateWhile([&]() {
-					return ( G.numberOfNodes() < n );
-				});
-		METISGraphWriter writer;
-		std::string iString = std::to_string(i);
-		std::string path = "output/BAVerify" + iString + ".graph";
-		writer.write(G, path);
-	}
-}
 
 
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
@@ -127,31 +115,31 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
-	count numInitialNodes = 600;
+	count numInitialNodes = 300;
 	count numberOfDenseAreas = 10;
 	float neighborhoodRadius = 0.125;
 	count maxNumberOfNeighbors = 16;
 	count numIterations = 10;
 
-	Graph G(0); // empty graph
-	GraphEventProxy proxy(G);
 
-	DynamicGraphGenerator* gen = new DynamicPubWebGenerator(
-			proxy, numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+	DynamicGraphSource* gen = new DynamicPubWebGenerator(numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
+
+	GraphEventProxy* Gproxy = gen->newGraph();
+	Graph* G = Gproxy->G;
 
 	TRACE("before init graph");
 	gen->initializeGraph();
 	TRACE("after init graph");
 
-	EXPECT_EQ(numInitialNodes, G.numberOfNodes()) << "initial number of nodes";
+	EXPECT_EQ(numInitialNodes, G->numberOfNodes()) << "initial number of nodes";
 
-	TRACE("m = " << G.numberOfEdges());
+	TRACE("m = " << G->numberOfEdges());
 
 	for (index iter = 0; iter < numIterations; ++iter) {
 		gen->generate();
-		TRACE("m = " << G.numberOfEdges());
+		TRACE("m = " << G->numberOfEdges());
 
-		PostscriptWriter psWriter(G, true);
+		PostscriptWriter psWriter(*G, true);
 		char filename[20];
 		assert(iter < 10);
 		sprintf(filename, "output/pubweb-%i.eps", iter);

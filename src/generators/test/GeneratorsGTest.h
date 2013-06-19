@@ -12,7 +12,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../DynamicGraphGenerator.h"
+#include "../DynamicGraphSource.h"
 #include "../DynamicBarabasiAlbertGenerator.h"
 #include "../PubWebGenerator.h"
 #include "../DynamicPubWebGenerator.h"

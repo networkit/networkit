@@ -10,14 +10,14 @@
 
 #include <set>
 
-#include "DynamicGraphGenerator.h"
+#include "DynamicGraphSource.h"
 #include "../auxiliary/RandomInteger.h"
 
 namespace NetworKit {
 
 
 // FIXME: for k=2, degree 2 nodes should be most frequent but degree 4 nodes are
-class DynamicBarabasiAlbertGenerator: public NetworKit::DynamicGraphGenerator {
+class DynamicBarabasiAlbertGenerator: public NetworKit::DynamicGraphSource {
 
 protected:
 
@@ -28,9 +28,8 @@ protected:
 
 public:
 
-	DynamicBarabasiAlbertGenerator(); // nullary constructor needed for Python interface - do not use this to construct an instance
 
-	DynamicBarabasiAlbertGenerator(GraphEventProxy& proxy, count k = 2);
+	DynamicBarabasiAlbertGenerator(count k = 2);
 
 	virtual ~DynamicBarabasiAlbertGenerator();
 

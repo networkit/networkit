@@ -76,9 +76,6 @@ public:
 	bool isProper(Graph& G) const;
 
 
-	/**  copy semantics **/
-
-
 	/**
 	 * @return Number of edges in matching.
 	 */

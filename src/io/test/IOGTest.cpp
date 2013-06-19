@@ -205,6 +205,33 @@ TEST_F(IOGTest, tryDGSReader) {
 
 }
 
+TEST_F(IOGTest, testEdgeListReader) {
+	EdgeListReader reader;
+
+	Graph G = reader.read("input/example.edgelist");
+
+}
+
+
+TEST_F(IOGTest, testMETISGraphReaderWithIsolatedNodes) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/example.graph");
+	EXPECT_EQ(4, G.numberOfNodes());
+	EXPECT_EQ(1, G.numberOfEdges());
+	EXPECT_TRUE(G.hasNode(0));
+	EXPECT_TRUE(G.hasNode(1));
+	EXPECT_TRUE(G.hasNode(2));
+	EXPECT_TRUE(G.hasNode(3));
+}
+
+TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+	EXPECT_TRUE(G.hasNode(0));
+	EXPECT_EQ(198, G.numberOfNodes());
+	EXPECT_EQ(2742, G.numberOfEdges());
+}
+
 
 
 } /* namespace NetworKit */

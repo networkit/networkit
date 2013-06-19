@@ -9,13 +9,54 @@
 
 namespace NetworKit {
 
-CommunityTrimming::CommunityTrimming() {
-	// TODO Auto-generated constructor stub
 
+NetworKit::CommunityTrimming::CommunityTrimming() {
 }
 
-CommunityTrimming::~CommunityTrimming() {
-	// TODO Auto-generated destructor stub
+NetworKit::CommunityTrimming::~CommunityTrimming() {
+}
+
+NetworKit::BoundarySharpness::BoundarySharpness():CommunityTrimming() {
+}
+
+NetworKit::BoundarySharpness::~BoundarySharpness() {
+}
+
+std::unordered_set<node> NetworKit::BoundarySharpness::run(
+		std::unordered_set<node>& community, Graph& G) {
+
+	std::unordered_set<node> outliers;
+
+	for (node u : community) {
+		int in = 0;
+		int out = 0;
+		G.forNeighborsOf(u, [&](node v){
+			if (community.find(v) == community.end()) {
+				out++;
+			} else {
+				in++;
+			}
+		});
+		if (out > in) {
+			outliers.insert(u);
+		}
+	}
+
+	for(node u : outliers) {
+		community.erase(community.find(u));
+	}
+	return community;
+}
+
+NetworKit::DummyTrimming::DummyTrimming():CommunityTrimming() {
+}
+
+NetworKit::DummyTrimming::~DummyTrimming() {
+}
+
+std::unordered_set<node> NetworKit::DummyTrimming::run(
+		std::unordered_set<node>& community, Graph& G) {
+	return community;
 }
 
 } /* namespace NetworKit */

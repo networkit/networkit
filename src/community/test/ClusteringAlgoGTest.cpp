@@ -258,7 +258,9 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 	Louvain louvain;
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
-	Graph blog = reader.read("input/polblogs.graph");
+	// this takes much longer than a unit test should
+	// Graph blog = reader.read("input/polblogs.graph");
+
 
 
 	// *** jazz graph
@@ -273,16 +275,16 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 	INFO("Louvain modularity jazz graph: " << modularity.getQuality(clustering, jazz));
 
 
-	// *** blog graph
-	// CNM
-	clustering = cnm.run(blog);
-	INFO("CNM number of blog clusters: " << clustering.numberOfClusters());
-	INFO("CNM modularity blog graph: " << modularity.getQuality(clustering, jazz));
-
-	// Louvain
-	clustering = louvain.run(blog);
-	INFO("Louvain number of blog clusters: " << clustering.numberOfClusters());
-	INFO("Louvain modularity blog graph: " << modularity.getQuality(clustering, jazz));
+//	// *** blog graph
+//	// CNM
+//	clustering = cnm.run(blog);
+//	INFO("CNM number of blog clusters: " << clustering.numberOfClusters());
+//	INFO("CNM modularity blog graph: " << modularity.getQuality(clustering, jazz));
+//
+//	// Louvain
+//	clustering = louvain.run(blog);
+//	INFO("Louvain number of blog clusters: " << clustering.numberOfClusters());
+//	INFO("Louvain modularity blog graph: " << modularity.getQuality(clustering, jazz));
 }
 
 

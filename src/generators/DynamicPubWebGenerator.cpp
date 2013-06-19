@@ -5,28 +5,21 @@
  *      Author: Henning
  */
 
-
 #include "DynamicPubWebGenerator.h"
 
 namespace NetworKit {
 
-
-
-DynamicPubWebGenerator::DynamicPubWebGenerator(GraphEventProxy& proxy,
-		count numInitialNodes, count numberOfDenseAreas, float neighborhoodRadius,
+DynamicPubWebGenerator::DynamicPubWebGenerator(count numInitialNodes,
+		count numberOfDenseAreas, float neighborhoodRadius,
 		count maxNumberOfNeighbors) :
-		DynamicGraphGenerator(proxy)
-//,
-//		staticGen(numInitialNodes, numberOfDenseAreas, neighborhoodRadius,
-//				maxNumberOfNeighbors)
-{
+		DynamicGraphSource(), staticGen(numInitialNodes, numberOfDenseAreas,
+				neighborhoodRadius, maxNumberOfNeighbors) {
 
 }
 
 DynamicPubWebGenerator::~DynamicPubWebGenerator() {
 	// TODO Auto-generated destructor stub
 }
-
 
 /**
  * Assumption: Static PubWeb graph already exists.
@@ -41,87 +34,84 @@ void DynamicPubWebGenerator::initializeGraph() {
 //	this->determineNeighbors(*G);
 }
 
-
 #if 0
 void Move(int V, float vmin, float vmax, int stop, float * xy, float * way, float * vel, int * vstop)
 {
-  int i;
-  float distx, disty, dist;
+	int i;
+	float distx, disty, dist;
 
-  for (i = 0; i < V; i++) {
-    if (vstop[i] > 0)
-      // Pause
-      vstop[i]--;
-    else {
-      distx = way[i + i] - xy[i + i];
-      disty = way[i + i + 1] - xy[i + i + 1];
+	for (i = 0; i < V; i++) {
+		if (vstop[i] > 0)
+		// Pause
+		vstop[i]--;
+		else {
+			distx = way[i + i] - xy[i + i];
+			disty = way[i + i + 1] - xy[i + i + 1];
 
-      // Wrap around
-      AdjustWrapAround(distx, disty);
-      dist = sqrt(distx * distx + disty * disty);
+			// Wrap around
+			AdjustWrapAround(distx, disty);
+			dist = sqrt(distx * distx + disty * disty);
 
-      if (dist < vel[i]) {
-	vstop[i] = rand() % stop;
-	xy[i + i] = way[i + i];
-	xy[i + i + 1] = way[i + i + 1];
-	// Neues Ziel
-	way[i + i] = (float)rand() / (float)RAND_MAX;
-	way[i + i + 1] = (float)rand() / (float)RAND_MAX;
+			if (dist < vel[i]) {
+				vstop[i] = rand() % stop;
+				xy[i + i] = way[i + i];
+				xy[i + i + 1] = way[i + i + 1];
+				// Neues Ziel
+				way[i + i] = (float)rand() / (float)RAND_MAX;
+				way[i + i + 1] = (float)rand() / (float)RAND_MAX;
 #ifdef ONE_DIM
-	way[i + i + 1] *= ONE_DIM_SCALE;
+				way[i + i + 1] *= ONE_DIM_SCALE;
 #endif
-	vel[i] = vmin + ((float)rand() / (float)RAND_MAX) * (vmax - vmin);
-      }
-      else { // berechne Zwischenhalt
-	xy[i + i] += distx * vel[i] / dist;
+				vel[i] = vmin + ((float)rand() / (float)RAND_MAX) * (vmax - vmin);
+			}
+			else { // berechne Zwischenhalt
+				xy[i + i] += distx * vel[i] / dist;
 
-	if (xy[i + i] > 1.0)
-	  xy[i + i] -= 1.0;
-	if (xy[i + i] < 0.0)
-	  xy[i + i] += 1.0;
+				if (xy[i + i] > 1.0)
+				xy[i + i] -= 1.0;
+				if (xy[i + i] < 0.0)
+				xy[i + i] += 1.0;
 
-	xy[i + i + 1] += disty * vel[i] / dist;
+				xy[i + i + 1] += disty * vel[i] / dist;
 
-	if (xy[i + i + 1] > 1.0)
-	  xy[i + i + 1] -= 1.0;
-	if (xy[i + i + 1] < 0.0)
-	  xy[i + i + 1] += 1.0;
-      }
-    }
-  }
+				if (xy[i + i + 1] > 1.0)
+				xy[i + i + 1] -= 1.0;
+				if (xy[i + i + 1] < 0.0)
+				xy[i + i + 1] += 1.0;
+			}
+		}
+	}
 }
 #endif
-
 
 void DynamicPubWebGenerator::moveNodesRandomly() {
 #if 0
 	Aux::RandomProbability randGen;
 
 	this->G->forNodes([&](node u) {
-		// current position
-		float x = this->G->getCoordinate(u, 0);
-		float y = this->G->getCoordinate(u, 1);
+				// current position
+				float x = this->G->getCoordinate(u, 0);
+				float y = this->G->getCoordinate(u, 1);
 
-		// compute random direction
-		float angle = randGen.randomFloat() * M_PI_2;
+				// compute random direction
+				float angle = randGen.randomFloat() * M_PI_2;
 
-		// compute random distance
-		float dist = randGen.randomFloat();
+				// compute random distance
+				float dist = randGen.randomFloat();
 
-		// compute new positions
-		x += cosf(angle) * dist;
-		y += sinf(angle) * dist;
+				// compute new positions
+				x += cosf(angle) * dist;
+				y += sinf(angle) * dist;
 
-		// adjust for wraparound
-		this->moveNodeIntoUnitSquare(x, y);
+				// adjust for wraparound
+				this->moveNodeIntoUnitSquare(x, y);
 
-		// move node
-		this->Gproxy->G->setCoordinate(u, 0, x);
-		this->Gproxy->G->setCoordinate(u, 1, y);
-	});
+				// move node
+				this->Gproxy->G->setCoordinate(u, 0, x);
+				this->Gproxy->G->setCoordinate(u, 1, y);
+			});
 #endif
 }
-
 
 void DynamicPubWebGenerator::generate() {
 #if 0
@@ -131,26 +121,24 @@ void DynamicPubWebGenerator::generate() {
 	// decide if new edges have to be inserted
 	// FIXME: inefficient!
 	G->forNodePairs([&](node u, node v) {
-		bool valid = this->isValidEdge(*G, u, v);
-		bool exists = G->hasEdge(u, v);
+				bool valid = this->isValidEdge(*G, u, v);
+				bool exists = G->hasEdge(u, v);
 
-		if (valid && ! exists) {
-			// insert
-			this->Gproxy->addEdge(u, v);
-		}
-		if (! valid && exists) {
-			// remove
-			this->Gproxy->removeEdge(u, v);
-		}
-	});
+				if (valid && ! exists) {
+					// insert
+					this->Gproxy->addEdge(u, v);
+				}
+				if (! valid && exists) {
+					// remove
+					this->Gproxy->removeEdge(u, v);
+				}
+			});
 
 	this->Gproxy->timeStep(); // trigger a time step
 #endif
 }
 
-
 #if 0
-
 
 /** FIXME: the following is code duplicated from the static generator
  *  Reason: Need to use the proxy
@@ -169,12 +157,12 @@ void DynamicPubWebGenerator::generate() {
 
 void DynamicPubWebGenerator::moveNodeIntoUnitSquare(float& x, float& y) {
 	auto move([&](float& z) {
-		if (z > 1.0f) {
-			z -= 1.0f;
-		} else if (z < 0.0f) {
-			z += 1.0f;
-		}
-	});
+				if (z > 1.0f) {
+					z -= 1.0f;
+				} else if (z < 0.0f) {
+					z += 1.0f;
+				}
+			});
 
 	move(x);
 	move(y);
@@ -183,13 +171,13 @@ void DynamicPubWebGenerator::moveNodeIntoUnitSquare(float& x, float& y) {
 float DynamicPubWebGenerator::squaredDistanceInUnitTorus(float x1, float y1, float x2,
 		float y2) {
 	auto adjustForUnitTorus([&](float& z) {
-		if (z > 0.5) {
-			z = 1.0 - z;
-		}
-		else if (z < -0.5) {
-			z = z + 1.0;
-		}
-	});
+				if (z > 0.5) {
+					z = 1.0 - z;
+				}
+				else if (z < -0.5) {
+					z = z + 1.0;
+				}
+			});
 
 	float distx = x1 - x2;
 	float disty = y1 - y2;
@@ -201,10 +189,10 @@ float DynamicPubWebGenerator::squaredDistanceInUnitTorus(float x1, float y1, flo
 
 bool DynamicPubWebGenerator::isValidEdge(Graph& g, node u, node v) {
 	auto isValid([&](node u, node v, float squaredDistance) {
-		return ((squaredDistance <= neighRad * neighRad)
-				&& (g.degree(u) <= maxNeigh)
-				&& (g.degree(v) <= maxNeigh));
-	});
+				return ((squaredDistance <= neighRad * neighRad)
+						&& (g.degree(u) <= maxNeigh)
+						&& (g.degree(v) <= maxNeigh));
+			});
 
 	float x1 = g.getCoordinate(u, 0);
 	float y1 = g.getCoordinate(u, 1);
@@ -217,18 +205,18 @@ bool DynamicPubWebGenerator::isValidEdge(Graph& g, node u, node v) {
 
 void DynamicPubWebGenerator::determineNeighborsOf(Graph& g, node u) {
 	g.forNodes([&](node v) {
-		if (isValidEdge(g, u, v)) {
-			g.addEdge(u, v);
-		}
-	});
+				if (isValidEdge(g, u, v)) {
+					g.addEdge(u, v);
+				}
+			});
 }
 
 void DynamicPubWebGenerator::determineNeighbors(Graph& g) {
 	g.forNodePairs([&](node u, node v) { // TODO: improve quadratic loop!
-		if (isValidEdge(g, u, v)) {
-			g.addEdge(u, v);
-		}
-	});
+				if (isValidEdge(g, u, v)) {
+					g.addEdge(u, v);
+				}
+			});
 }
 
 void DynamicPubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
@@ -268,7 +256,7 @@ void DynamicPubWebGenerator::chooseDenseAreaSizes() {
 		// anti-quadratic probability distribution
 		float f = randGen.randomFloat() * MIN_MAX_DENSE_AREA_FACTOR + 1.0f;
 		denseAreaXYR[area].rad = (MAX_DENSE_AREA_RADIUS * f * f)
-				/ (MIN_MAX_DENSE_AREA_FACTOR * MIN_MAX_DENSE_AREA_FACTOR);
+		/ (MIN_MAX_DENSE_AREA_FACTOR * MIN_MAX_DENSE_AREA_FACTOR);
 	}
 }
 
@@ -290,7 +278,7 @@ void DynamicPubWebGenerator::chooseClusterSizes() {
 		f += pow(denseAreaXYR[i].rad, 1.5);
 	}
 	f = ((float) n * ((float) numDenseAreas / ((float) numDenseAreas + 2.0f)))
-			/ f;
+	/ f;
 	// TODO: better formula?
 
 	numPerArea.reserve(numDenseAreas);
@@ -313,7 +301,6 @@ Graph DynamicPubWebGenerator::generate() {
 	return g;
 }
 
-
 // TODO: NOT tested!
 void DynamicPubWebGenerator::removeRandomNode(Graph& g) {
 	Aux::RandomInteger randInt;
@@ -321,8 +308,7 @@ void DynamicPubWebGenerator::removeRandomNode(Graph& g) {
 	g.removeNode(u);
 }
 
-
 #endif
 
-
-} /* namespace NetworKit */
+}
+/* namespace NetworKit */

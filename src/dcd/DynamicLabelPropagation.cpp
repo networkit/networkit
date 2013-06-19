@@ -10,28 +10,21 @@
 namespace NetworKit {
 
 DynamicLabelPropagation::DynamicLabelPropagation() {
+#ifndef CORE
+	throw std::runtime_error("Nullary constructor needed only for Python Shell - no proper initialization");
+#endif
 }
 
-DynamicLabelPropagation::DynamicLabelPropagation(Graph& G, count theta, std::string strategyName) :
-		DynamicCommunityDetector(G),
-		labels(G.numberOfNodes()),
-		activeNodes(G.numberOfNodes()),
-		weightedDegree(G.numberOfNodes(), 0.0),
+DynamicLabelPropagation::DynamicLabelPropagation(count theta, std::string strategyName) :
+		DynamicCommunityDetector(),
 		updateThreshold(theta),
-		nUpdated(G.numberOfNodes()),
-		t(0) {
-	labels.allToSingletons(); // initialize labels to singleton clustering
-	// PERFORMANCE: precompute and store incident edge weight for all nodes
-	DEBUG("[BEGIN] Label Propagation: precomputing weighted degree");
-	this->G->parallelForNodes([&](node v) {
-		weightedDegree[v] = this->G->weightedDegree(v);
-	});
-	DEBUG("[DONE] Label Propagation: precomputing weighted degree");
+		nUpdated(0) {
 
+	this->G = NULL; // G is set in method setGraph
 	// select prep strategy
-	if (strategyName == "reactivate") {
+	if (strategyName == "Reactivate") {
 		this->prepStrategy = new DynamicLabelPropagation::Reactivate(this);
-	} else if (strategyName == "reactivate-neighbors") {
+	} else if (strategyName == "ReactivateNeighbors") {
 		this->prepStrategy = new DynamicLabelPropagation::ReactivateNeighbors(this);
 	} else {
 		throw std::runtime_error("unknown prep strategy");
@@ -60,9 +53,8 @@ void DynamicLabelPropagation::onNodeRemoval(node u) {
 	prepStrategy->onNodeRemoval(u);
 }
 
-void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
+void DynamicLabelPropagation::onEdgeAddition(node u, node v, edgeweight w) {
 	// update weighted degree
-	edgeweight w = G->weight(u, v);
 	if (u != v) {
 		weightedDegree[u] += w;
 		weightedDegree[v] += w;
@@ -77,9 +69,8 @@ void DynamicLabelPropagation::onEdgeAddition(node u, node v) {
 	this->prepStrategy->onEdgeAddition(u, v);
 }
 
-void DynamicLabelPropagation::onEdgeRemoval(node u, node v) {
+void DynamicLabelPropagation::onEdgeRemoval(node u, node v, edgeweight w) {
 	// update weighted degree
-	edgeweight w = G->weight(u, v);
 	if (u != v) {
 		weightedDegree[u] -= w;
 		weightedDegree[v] -= w;
@@ -106,10 +97,16 @@ void DynamicLabelPropagation::onWeightUpdate(node u, node v, edgeweight wOld, ed
 	this->prepStrategy->onWeightUpdate(u, v, wOld, wNew);
 }
 
+void DynamicLabelPropagation::setGraph(Graph& G) {
+	if (!G.isEmpty()) {
+		throw std::runtime_error("G is not an empty graph. Currently, it is assumed that this algorithm is initialized with an empty graph, which is then constructed incrementally");
+	}
 
+	this->G = &G;
+}
 
 void DynamicLabelPropagation::onTimeStep() {
-	this->t += 1;
+	// ignore
 }
 
 
@@ -120,7 +117,11 @@ std::string DynamicLabelPropagation::toString() const {
 }
 
 Clustering DynamicLabelPropagation::run() {
-	INFO("running DynamicLabelPropagation");
+	if (this->G == NULL) {
+		throw std::runtime_error("pointer to current graph was not initialized - call setGraph first");
+	}
+
+	INFO("running DynamicLabelPropagation at t=" << G->time());
 
 	Aux::Timer runtime;
 	count nIterations = 0;
@@ -169,8 +170,7 @@ Clustering DynamicLabelPropagation::run() {
 
 // PREP STRATEGY IMPLEMENTATIONS
 
-DynamicLabelPropagation::Reactivate::Reactivate(
-		DynamicLabelPropagation* dynPLP) {
+DynamicLabelPropagation::Reactivate::Reactivate(DynamicLabelPropagation* dynPLP) {
 	this->dynPLP = dynPLP;
 }
 
@@ -189,14 +189,14 @@ void DynamicLabelPropagation::Reactivate::onNodeRemoval(node u) {
 	// incident edges must have been removed before, so neighborhood is already active at this point
 }
 
-void DynamicLabelPropagation::Reactivate::onEdgeAddition(node u, node v) {
+void DynamicLabelPropagation::Reactivate::onEdgeAddition(node u, node v, edgeweight w) {
 	// activate the affected nodes
 	dynPLP->activeNodes[u] = true;
 	dynPLP->activeNodes[v] = true;
 }
 
-void DynamicLabelPropagation::Reactivate::onEdgeRemoval(node u, node v) {
-	this->onEdgeAddition(u, v);
+void DynamicLabelPropagation::Reactivate::onEdgeRemoval(node u, node v, edgeweight w) {
+	this->onEdgeAddition(u, v, w);
 }
 
 void DynamicLabelPropagation::Reactivate::onWeightUpdate(node u, node v,
@@ -205,8 +205,8 @@ void DynamicLabelPropagation::Reactivate::onWeightUpdate(node u, node v,
 }
 
 
-DynamicLabelPropagation::ReactivateNeighbors::ReactivateNeighbors(
-		DynamicLabelPropagation* dynPLP) {
+DynamicLabelPropagation::ReactivateNeighbors::ReactivateNeighbors(DynamicLabelPropagation* dynPLP) {
+	this->dynPLP = dynPLP;
 }
 
 DynamicLabelPropagation::ReactivateNeighbors::~ReactivateNeighbors() {
@@ -223,24 +223,24 @@ void DynamicLabelPropagation::ReactivateNeighbors::onNodeRemoval(node u) {
 	// incident edges must have been removed before, so neighborhood is already active at this point
 }
 
-void DynamicLabelPropagation::ReactivateNeighbors::onEdgeAddition(node u, node v) {
+void DynamicLabelPropagation::ReactivateNeighbors::onEdgeAddition(node u, node v, edgeweight w) {
 	// activate the affected nodes and their neighbors
 	dynPLP->activeNodes[u] = true;
 	dynPLP->activeNodes[v] = true;
-	dynPLP->G->forNeighborsOf(u, [&](node w) {
-		dynPLP->activeNodes[w] = true;
+	dynPLP->G->forNeighborsOf(u, [&](node x) {
+		dynPLP->activeNodes[x] = true;
 	});
-	dynPLP->G->forNeighborsOf(v, [&](node w) {
-		dynPLP->activeNodes[w] = true;
+	dynPLP->G->forNeighborsOf(v, [&](node x) {
+		dynPLP->activeNodes[x] = true;
 	});
 }
 
-void DynamicLabelPropagation::ReactivateNeighbors::onEdgeRemoval(node u, node v) {
-	this->onEdgeAddition(u, v);
+void DynamicLabelPropagation::ReactivateNeighbors::onEdgeRemoval(node u, node v, edgeweight w) {
+	this->onEdgeAddition(u, v, w);
 }
 
 void DynamicLabelPropagation::ReactivateNeighbors::onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) {
-	this->onEdgeAddition(u, v);
+	this->onEdgeAddition(u, v, wNew);
 }
 
 std::string DynamicLabelPropagation::Reactivate::toString() {

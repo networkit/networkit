@@ -20,20 +20,21 @@ class DynamicCommunityDetector: public NetworKit::GraphEventHandler {
 
 public:
 
-	DynamicCommunityDetector(); // nullary constructor needed for Python shell - do not create instances with this
 
-	DynamicCommunityDetector(Graph& G);
+	DynamicCommunityDetector();
 
 	virtual ~DynamicCommunityDetector();
+
+	/**
+	 * Set the Graph instance. Needs to be called before calling run().
+	 */
+	virtual void setGraph(Graph& G) = 0;
 
 	virtual Clustering run() = 0;
 
 	virtual std::string toString() const = 0;
 
 
-protected:
-
-	Graph* G;
 
 };
 

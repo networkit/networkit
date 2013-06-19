@@ -8,12 +8,12 @@
 #ifndef DYNAMICPUBWEBGENERATOR_H_
 #define DYNAMICPUBWEBGENERATOR_H_
 
-#include "DynamicGraphGenerator.h"
+#include "DynamicGraphSource.h"
 #include "PubWebGenerator.h"
 
 namespace NetworKit {
 
-class DynamicPubWebGenerator: public DynamicGraphGenerator {
+class DynamicPubWebGenerator: public DynamicGraphSource {
 protected:
 //	PubWebGenerator staticGen;
 
@@ -31,7 +31,7 @@ protected:
 	void moveNodesRandomly();
 
 public:
-	DynamicPubWebGenerator(GraphEventProxy& proxy, count numInitialNodes, count numberOfDenseAreas,
+	DynamicPubWebGenerator(count numInitialNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors);
 	virtual ~DynamicPubWebGenerator();
 

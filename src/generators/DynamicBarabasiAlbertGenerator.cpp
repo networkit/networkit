@@ -9,19 +9,18 @@
 
 namespace NetworKit {
 
-DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator() {
-}
 
-DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(GraphEventProxy& proxy, count k) : DynamicGraphGenerator(proxy), k(k) {
+DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(count k) : DynamicGraphSource(), k(k), degSum(0) {
 	if (k <= 0) {
 		throw std::runtime_error("k must be at least 1");
-	}
-	if (this->G->numberOfNodes() > 0) {
-		throw std::runtime_error("this generator needs to be initialized with an empty graph");
 	}
 }
 
 void DynamicBarabasiAlbertGenerator::initializeGraph() {
+	if (! this->graphSet) {
+		throw std::runtime_error("Graph instance has not been set - call newGraph first");
+	}
+
 	// The network begins with an initial network of m0 nodes. m0 ³ 2 and the degree of each node in the initial network should be at least 1,
 	// otherwise it will always remain disconnected from the rest of the network.
 	DEBUG("k = " << k);
@@ -35,6 +34,8 @@ void DynamicBarabasiAlbertGenerator::initializeGraph() {
 
 	degSum = 2 * G->numberOfEdges();
 
+	this->graphInitialized = true; // graph has been properly initialized
+
 	DEBUG("n = " << G->numberOfNodes());
 	assert (G->numberOfNodes() == k);
 	assert (G->numberOfEdges() == (k - 1));
@@ -46,6 +47,10 @@ DynamicBarabasiAlbertGenerator::~DynamicBarabasiAlbertGenerator() {
 
 
 void DynamicBarabasiAlbertGenerator::generate() {
+	if (! this->graphInitialized) {
+		throw std::runtime_error("Graph instance has not been initialized - call initializeGraph first");
+	}
+
 	// 3) go through the items one at a time, subtracting their weight from your random number, until you get the item where the random number is less than that item's weight
 	node u = this->Gproxy->addNode();
 	std::set<node> targets; // avoid duplicate edges by collecting target nodes in a set

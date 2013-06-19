@@ -9,7 +9,6 @@
 #define COMMUNITYTRIMMING_H_
 
 #include <unordered_set>
-
 #include "../graph/Graph.h"
 
 namespace NetworKit {
@@ -17,16 +16,29 @@ namespace NetworKit {
 class CommunityTrimming {
 public:
 
-	class NodeFitness {
-		// TODO: constructor
-		virtual double getValue(node v) = 0;
-	};
-
 	CommunityTrimming();
 
 	virtual ~CommunityTrimming();
 
 	virtual std::unordered_set<node> run(std::unordered_set<node>& community, Graph& G) = 0;
+};
+
+class BoundarySharpness : public CommunityTrimming {
+public:
+	BoundarySharpness();
+
+	virtual ~BoundarySharpness();
+
+	virtual std::unordered_set<node> run(std::unordered_set<node>& community, Graph& G);
+};
+
+class DummyTrimming : public CommunityTrimming {
+public:
+	DummyTrimming();
+
+	virtual ~DummyTrimming();
+
+	virtual std::unordered_set<node> run(std::unordered_set<node>& community, Graph& G);
 };
 
 } /* namespace NetworKit */

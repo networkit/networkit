@@ -26,12 +26,17 @@ public:
 	DynamicLabelPropagation(); // nullary constructor needed for Python interface - do not use this to construct instance
 
 	/**
-	 * @param[in]	G		graph
 	 * @param[in]	theta	update threshold
 	 */
-	DynamicLabelPropagation(Graph& G, count theta, std::string strategy = "reactivate");
+	DynamicLabelPropagation(count theta, std::string strategy = "reactivate");
 
 	virtual ~DynamicLabelPropagation();
+
+
+	/**
+	 * Set the input graph and initialize data structures.
+	 */
+	virtual void setGraph(Graph& G);
 
 	/**
 	 * Run the Label Propagation community detection algorithm and produce a clustering.
@@ -48,9 +53,9 @@ public:
 
 	virtual void onNodeRemoval(node u);
 
-	virtual void onEdgeAddition(node u, node v);
+	virtual void onEdgeAddition(node u, node v, edgeweight w = 1.0);
 
-	virtual void onEdgeRemoval(node u, node v);
+	virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0);
 
 	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
 
@@ -58,13 +63,13 @@ public:
 
 protected:
 
+	count updateThreshold;
 	Clustering labels;					//!< the labelling/clustering
 	std::vector<bool> activeNodes;		//!< which nodes are currently active?
 	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
-	count updateThreshold;
 	count nUpdated; 					//!< number of nodes updated in last iteration (?)
-	count t;							//!< counter for time steps received
 
+	Graph* G;							//!< the current graph instance
 	PrepStrategy* prepStrategy;			//!< a prep strategy reacts to graph events by preparing the algorithm's clustering
 
 
@@ -96,12 +101,12 @@ protected:
 		/**
 		 * Reactivate u and v on addition of edge {u,v}
 		 */
-		virtual void onEdgeAddition(node u, node v);
+		virtual void onEdgeAddition(node u, node v, edgeweight w = 1.0);
 
 		/**
 		 * Reactivate u and v on removal of edge {u,v}
 		 */
-		virtual void onEdgeRemoval(node u, node v);
+		virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0);
 
 		/**
 		 * Same reaction as onEdgeAddition
@@ -145,12 +150,12 @@ protected:
 		/**
 		 * Reactivate u and v on addition of edge {u,v}
 		 */
-		virtual void onEdgeAddition(node u, node v);
+		virtual void onEdgeAddition(node u, node v, edgeweight w = 1.0);
 
 		/**
 		 * Reactivate u and v on removal of edge {u,v}
 		 */
-		virtual void onEdgeRemoval(node u, node v);
+		virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0);
 
 		/**
 		 * Same reaction as onEdgeAddition

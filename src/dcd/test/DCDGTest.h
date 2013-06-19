@@ -17,6 +17,11 @@
 #include "../../community/Louvain.h"
 #include "../../generators/DynamicBarabasiAlbertGenerator.h"
 #include "../../generators/DynamicPubWebGenerator.h"
+#include "../../generators/DynamicDGSParser.h"
+#include "../DynCDSetup.h"
+#include "../PseudoDynamic.h"
+#include "../../io/METISGraphReader.h"
+
 
 namespace NetworKit {
 
