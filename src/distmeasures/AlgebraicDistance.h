@@ -14,7 +14,6 @@
 
 namespace NetworKit {
 
-const index MAX_NORM = 0;
 
 class AlgebraicDistance: public NetworKit::NodeDistance {
 public:
@@ -51,6 +50,7 @@ protected:
 	count numIters; //!< number of iterations in each system
 	double omega; //!<
 	index norm;
+	const index MAX_NORM = 0;
 
 	std::vector<std::vector<double> > loads; //!< loads[i]: vector of loads of length n for one system
 
