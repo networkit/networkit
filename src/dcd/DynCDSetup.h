@@ -10,6 +10,7 @@
 
 #include "DynamicCommunityDetector.h"
 #include "../generators/DynamicGraphSource.h"
+#include "../auxiliary/Debug.h"
 
 namespace NetworKit {
 
