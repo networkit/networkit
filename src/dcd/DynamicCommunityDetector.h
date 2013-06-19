@@ -38,6 +38,9 @@ public:
 	virtual std::vector<count> getTimerHistory();
 
 
+	/** Do not forget to also implement the event handler abstract methods from GraphEventHandler **/
+
+
 protected:
 
 	Aux::Timer runtime;					//!< runtime measurement
