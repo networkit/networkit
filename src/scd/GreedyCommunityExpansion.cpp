@@ -66,14 +66,15 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 
 				node x = it->first;
 				double acc = it->second;
-				if (it->second > acceptanceMax) {
+				if (it->second - acceptanceMax > 0.00001) {
 					vMax = x;
 					acceptanceMax = acc;
-				} else if (floor(100000 * it ->second) == floor(100000 * acceptanceMax)) {
-					if (conductance.getValue(vMax) < conductance.getValue(x)) {
+				} else if (it ->second - acceptanceMax < 0.00001) {
+					if (conductance.getValue(x) - conductance.getValue(vMax) > 0.00001) {
+
 						vMax = x;
 						acceptanceMax = acc;
-					} else if (floor(100000 *conductance.getValue(vMax)) == floor(100000 *conductance.getValue(x))) {
+					} else if (conductance.getValue(vMax) - conductance.getValue(x) < 0.00001) {
 						// first tie-breaking by degree
 						if (G.degree(x) > G.degree(vMax)) {
 							vMax = x;
