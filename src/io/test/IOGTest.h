@@ -24,6 +24,10 @@
 #include "../DotGraphWriter.h"
 #include "../DGSReader.h"
 #include "../EdgeListReader.h"
+#include "../EdgeListClusteringReader.h"
+#include "../../clustering/Clustering.h"
+
+
 
 namespace NetworKit {
 

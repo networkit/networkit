@@ -165,11 +165,11 @@ TEST_F(DCDGTest, tryDynamicBarabasiAlbertGeneratorAsSource) {
 
 TEST_F(DCDGTest, tryDynCDSetup) {
 	 DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
-	 DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Reactivate");
-	 DynamicCommunityDetector* dynCD2 = new DynamicLabelPropagation(0, "ReactivateNeighbors");
+	 DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Isolate");
+	 DynamicCommunityDetector* dynCD2 = new DynamicLabelPropagation(0, "IsolateNeighbors");
 
 	 std::vector<DynamicCommunityDetector*> detectors = {dynCD1, dynCD2};
-	 DynCDSetup setup(*dynGen, detectors, 10e4, 100);
+	 DynCDSetup setup(*dynGen, detectors, 1e4, 100);
 
 	 setup.run();
 
@@ -200,13 +200,18 @@ TEST_F(DCDGTest, tryStaticVsDynamic) {
 	METISGraphReader reader;
 
 	DynamicGraphSource* source = new PseudoDynamic(reader.read(path));
-	DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Reactivate");
-	// DynamicCommunityDetector* dynCD2 = new DynamicLabelPropagation(0, "ReactivateNeighbors");
+	DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Isolate");
 
 	std::vector<DynamicCommunityDetector*> detectors = { dynCD1 };
 	DynCDSetup setup(*source, detectors, 10e9, 10);
 
 	setup.run();
+
+	Graph* G = setup.getGraph();
+	LabelPropagation PLP;
+	Clustering zetaStatic = PLP.run(*G);
+
+	INFO("number of clusters for static: " << zetaStatic.numberOfClusters());
 }
 
 
@@ -257,6 +262,58 @@ TEST_F(DCDGTest, testPseudoDynamicOnRealGraph) {
 	EXPECT_EQ(G.numberOfEdges(), dynG->numberOfEdges()) << "same graph, so m should be equal";
 }
 
+
+
+TEST_F(DCDGTest, testStrategyReactivate) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+	DynamicGraphSource* dynGen = new PseudoDynamic(G);
+	DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Reactivate");
+
+	std::vector<DynamicCommunityDetector*> detectors = { dynCD1 };
+	DynCDSetup setup(*dynGen, detectors, 200, 50);
+
+	setup.run();
+}
+
+
+TEST_F(DCDGTest, testStrategyReactivateNeighbors) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+	DynamicGraphSource* dynGen = new PseudoDynamic(G);
+	DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "ReactivateNeighbors");
+
+	 std::vector<DynamicCommunityDetector*> detectors = {dynCD1};
+	 DynCDSetup setup(*dynGen, detectors, 200, 50);
+
+	 setup.run();
+}
+
+
+TEST_F(DCDGTest, testStrategyIsolate) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+	DynamicGraphSource* dynGen = new PseudoDynamic(G);
+	DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Isolate");
+
+	 std::vector<DynamicCommunityDetector*> detectors = {dynCD1};
+	 DynCDSetup setup(*dynGen, detectors, 200, 50);
+
+	 setup.run();
+}
+
+
+TEST_F(DCDGTest, testStrategyIsolateNeighbors) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+	DynamicGraphSource* dynGen = new PseudoDynamic(G);
+	DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "IsolateNeighbors");
+
+	 std::vector<DynamicCommunityDetector*> detectors = {dynCD1};
+	 DynCDSetup setup(*dynGen, detectors, 200, 50);
+
+	 setup.run();
+}
 
 } /* namespace NetworKit */
 

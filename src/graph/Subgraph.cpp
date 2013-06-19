@@ -32,7 +32,7 @@ Graph Subgraph::fromNodes(Graph G,
 	}
 
 
-	G.parallelForEdges([&](node u, node v) {
+	G.forEdges([&](node u, node v) {
 
 		bool gotU = true;
 		bool gotV = true;
