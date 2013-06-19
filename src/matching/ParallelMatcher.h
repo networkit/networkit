@@ -19,18 +19,17 @@ namespace NetworKit {
 
 
 /**
- * Parallel matching algorithm as described by Manne/Bisseling
-	 * Source:  http://link.springer.com/chapter/10.1007%2F978-3-540-68111-3_74?LI=true#page-1
+ * LocalMax matching as described in the EuroPar13 paper by the Sanders group
  */
-class ParallelMatcher: public NetworKit::Matcher {
+class LocalMaxMatcher: public NetworKit::Matcher {
 private:
 	int attrId; ///< attribute ID of matching scores/weights
 
 public:
 
-	ParallelMatcher(int attrId);
+	LocalMaxMatcher(int attrId);
 
-	virtual ~ParallelMatcher();
+	virtual ~LocalMaxMatcher();
 
 	virtual Matching run(Graph& G);
 };
