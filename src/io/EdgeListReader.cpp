@@ -51,7 +51,7 @@ Graph EdgeListReader::read(std::string path) {
 
     while(std::getline(file,line)){
     	std::vector<std::string> split = Aux::StringTools::split(line, '\t');
-		if (split.size() == 2) {
+		if (split.size() == 2 && split[0] != "#") {
 			node u = std::stoi(split[0]) - firstNode;
 			node v = std::stoi(split[1]) - firstNode;
 			if (!G.hasEdge(u,v) && !G.hasEdge(v,u)) {
