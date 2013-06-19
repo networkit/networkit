@@ -1,0 +1,18 @@
+<map id="src/aux/log.h" name="src/aux/log.h">
+<area shape="rect" id="node3" href="$_clustering_test_8h.html" title="src/clustering/test\l/ClusteringTest.h" alt="" coords="235,83,359,127"/>
+<area shape="rect" id="node7" href="$_ensemble_clustering_8cpp.html" title="src/EnsembleClustering.cpp" alt="" coords="804,185,991,213"/>
+<area shape="rect" id="node9" href="$_m_e_t_i_s_parser_8h.html" title="src/input/METISParser.h" alt="" coords="609,91,775,119"/>
+<area shape="rect" id="node16" href="$_input_g_test_8h.html" title="src/input/test/InputGTest.h" alt="" coords="604,185,780,213"/>
+<area shape="rect" id="node20" href="$_matching_8h.html" title="src/matching/Matching.h" alt="" coords="981,91,1147,119"/>
+<area shape="rect" id="node33" href="$_graph_g_test_8h.html" title="src/graph/test/GraphGTest.h" alt="" coords="1331,91,1519,119"/>
+<area shape="rect" id="node5" href="$_clustering_test_8cpp.html" title="src/clustering/test\l/ClusteringTest.cpp" alt="" coords="5,177,139,221"/>
+<area shape="rect" id="node12" href="$_m_e_t_i_s_parser_8cpp.html" title="src/input/METISParser.cpp" alt="" coords="399,185,579,213"/>
+<area shape="rect" id="node14" href="$_m_e_t_i_sto_s_t_i_n_g_e_r_8cpp.html" title="src/input/METIStoSTINGER.cpp" alt="" coords="163,185,375,213"/>
+<area shape="rect" id="node18" href="$_input_g_test_8cpp.html" title="src/input/test/InputGTest.cpp" alt="" coords="597,270,787,298"/>
+<area shape="rect" id="node23" href="$_matcher_8h.html" title="src/matching/Matcher.h" alt="" coords="1015,185,1173,213"/>
+<area shape="rect" id="node31" href="$_matching_8cpp.html" title="src/matching/Matching.cpp" alt="" coords="1198,185,1377,213"/>
+<area shape="rect" id="node25" href="$_matcher_8cpp.html" title="src/matching/Matcher.cpp" alt="" coords="909,270,1081,298"/>
+<area shape="rect" id="node27" href="$_parallel_matcher_8h.html" title="src/matching/ParallelMatcher.h" alt="" coords="1106,270,1309,298"/>
+<area shape="rect" id="node29" href="$_parallel_matcher_8cpp.html" title="src/matching/ParallelMatcher.cpp" alt="" coords="1099,347,1316,375"/>
+<area shape="rect" id="node35" href="$_graph_g_test_8cpp.html" title="src/graph/test/GraphGTest.cpp" alt="" coords="1403,185,1605,213"/>
+</map>
