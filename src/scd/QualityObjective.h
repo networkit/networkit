@@ -53,6 +53,16 @@ public:
 	virtual double getValue(node v);
 };
 
+class LocalModularityL : public QualityObjective {
+
+public:
+
+	LocalModularityL(Graph& G, std::unordered_set<node>& community);
+
+	virtual ~LocalModularityL();
+
+	virtual double getValue(node v);
+};
 /**
  * Conductance as a quality objective function. Unlike standard conductance,
  * higher values are better. This measure is defined as

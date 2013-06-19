@@ -107,10 +107,8 @@ void DynamicDGSParser::generate() {
 		// while loop finished because it hit the end of the file
 		throw std::logic_error("reached the end of the .dgs file");
 	}
-<<<<<<< local
-	DEBUG("End of the DGS file");
-=======
->>>>>>> other
+
+
 }
 
 } /* namespace NetworKit */

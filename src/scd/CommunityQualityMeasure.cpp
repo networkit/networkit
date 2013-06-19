@@ -16,7 +16,41 @@ CommunityQualityMeasure::CommunityQualityMeasure() {
 
 CommunityQualityMeasure::~CommunityQualityMeasure() {
 	// TODO Auto-generated destructor stub
-
 }
+
+
+
+LocalModularityL::LocalModularityL() {
+}
+
+
+LocalModularityL::~LocalModularityL() {
+}
+
+double LocalModularityL::getQuality(
+		const std::unordered_set<node>& community, const Graph& G) {
+	double inside = 0;
+	double outside = 0;
+	std::unordered_set<node> boundary;
+
+	for (node u : community) {
+		G.forNeighborsOf(u, [&](node x){
+			if (community.find(x) == community.end()){
+				outside ++;
+				if (boundary.find(u) == boundary.end()) {
+					boundary.insert(u);
+				}
+			} else {
+				if (u == x) {
+					inside++;
+				} else {
+					inside = inside + 0.5;
+				}
+			}
+		});
+	}
+	return (inside / community.size()) / (outside / boundary.size());
+}
+
 
 } /* namespace NetworKit */

@@ -97,4 +97,7 @@ double Conductance::getValue(node v) {
 	return 1 - (boundary / std::min(volume, all-volume));
 }
 
+
 }
+
+

@@ -18,8 +18,11 @@ EdgeListReader::~EdgeListReader() {
 	// TODO Auto-generated destructor stub
 }
 
-Graph EdgeListReader::read(std::string path, node firstNode
-		) {
+
+
+Graph EdgeListReader::read(std::string path) {
+
+	node firstNode = 0;
     std::ifstream file;
     std::string line; // the current line
 
@@ -41,7 +44,7 @@ Graph EdgeListReader::read(std::string path, node firstNode
     file.open(path);
     Graph G(0);
 
-    while(std:getline(file,line)){
+    while(std::getline(file,line)){
     	std::vector<std::string> split = Aux::StringTools::split(line, '\t');
 		if (split.size() == 2) {
 			node u = std::stoi(split[0]) - firstNode;

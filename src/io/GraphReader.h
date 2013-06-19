@@ -9,6 +9,8 @@
 #define GRAPHREADER_H_
 
 #include "../graph/Graph.h"
+#include "../auxiliary/StringTools.h"
+
 
 namespace NetworKit {
 

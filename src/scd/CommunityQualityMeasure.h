@@ -29,5 +29,16 @@ public:
 	virtual double getQuality(const std::unordered_set<node>& community, const Graph& G) = 0;
 };
 
+class LocalModularityL {
+
+public:
+
+	LocalModularityL();
+
+	virtual ~LocalModularityL();
+
+	virtual double getQuality(const std::unordered_set<node>& community, const Graph& G);
+};
+
 } /* namespace NetworKit */
 #endif /* COMMUNITYQUALITYMEASURE_H_ */

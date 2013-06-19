@@ -70,10 +70,10 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 					vMax = x;
 					acceptanceMax = acc;
 				} else if (floor(100000 * it ->second) == floor(100000 * acceptanceMax)) {
-					if (floor(100000 * conductance.getValue(vMax)) < floor(100000 * conductance.getValue(x))) {
+					if (conductance.getValue(vMax) < conductance.getValue(x)) {
 						vMax = x;
 						acceptanceMax = acc;
-					} else if (conductance.getValue(vMax) == conductance.getValue(x)) {
+					} else if (floor(100000 *conductance.getValue(vMax)) == floor(100000 *conductance.getValue(x))) {
 						// first tie-breaking by degree
 						if (G.degree(x) > G.degree(vMax)) {
 							vMax = x;
