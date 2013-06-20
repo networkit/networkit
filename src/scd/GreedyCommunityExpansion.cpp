@@ -11,7 +11,6 @@ namespace NetworKit {
 
 GreedyCommunityExpansion::GreedyCommunityExpansion() {
 	// TODO Auto-generated constructor stub
-
 }
 
 GreedyCommunityExpansion::~GreedyCommunityExpansion() {
@@ -28,10 +27,9 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 
 	// TODO: make these selectable later
 	DummySimilarity acceptability(G, community, shell);
-	Conductance conductance(G, community);
+	Conductance objective(G, community);
 
-	double currentObjectiveValue = conductance.getValue(s);
-	int tmp = 0;
+	double currentObjectiveValue = objective.getValue(s);
 
 	community.insert(s);
 	bool expanded = true;	// community has been expanded in the last iteration
@@ -45,6 +43,8 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 		return community;
 	}
 
+	objective.nBoundaryEdges = shell.size();
+	objective.volume = G.degree(s);
 	node vMax = *(shell.begin()); // initialize vMax with a random node from the shell
 	double acceptanceMax = acceptability.getValue(vMax);// maximum acceptance value
 
@@ -68,13 +68,10 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 					vMax = x;
 					acceptanceMax = acc;
 				} else if (it->second - acceptanceMax < 0.00001) {
-					tmp = conductance.getValue(vMax);
-					if (conductance.getValue(x) - tmp > 0.00001) {
-
+					if (objective.getValue(x) - objective.getValue(vMax) > 0.00001) {
 						vMax = x;
 						acceptanceMax = acc;
-						tmp = conductance.getValue(x);
-					} else if (conductance.getValue(vMax) - conductance.getValue(x) < 0.00001) {
+					} else if (objective.getValue(vMax) - objective.getValue(x) < 0.00001) {
 						// first tie-breaking by degree
 						if (G.degree(x) > G.degree(vMax)) {
 							vMax = x;
@@ -91,9 +88,10 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 			}
 
 			// include only nodes which lead to a strictly positive improvement
-			if (conductance.getValue(vMax) > currentObjectiveValue) {
+			if (objective.getValue(vMax) > currentObjectiveValue) {
+
 				expanded = true;
-				currentObjectiveValue = conductance.getValue(vMax);
+				currentObjectiveValue = objective.getValue(vMax);
 				int count = 0;
 				G.forNeighborsOf(vMax, [&](node u){
 					if (community.find(u) == community.end()) {
@@ -101,11 +99,11 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 					}
 				});
 				if (G.hasEdge(vMax, vMax)) {
-					conductance.nBoundaryEdges = conductance.nBoundaryEdges + 2 * count - G.degree(vMax) + 1;
+					objective.nBoundaryEdges = objective.nBoundaryEdges + 2 * count - G.degree(vMax) + 1;
 				} else {
-					conductance.nBoundaryEdges = conductance.nBoundaryEdges + 2 * count - G.degree(vMax);
+					objective.nBoundaryEdges = objective.nBoundaryEdges + 2 * count - G.degree(vMax);
 				}
-				conductance.volume = conductance.volume + G.degree(vMax);
+				objective.volume = objective.volume + G.degree(vMax);
 				community.insert(vMax);
 				shell.erase(vMax);
 				G.forNeighborsOf(vMax, [&](node v) {
@@ -119,10 +117,8 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 				node x = it->first;
 				// node with highest acceptability is discarded from the map
 				acceptanceValues.erase(x);
-
 			}
 		} // end while acceptanceValues.size() != 0
-
 	} // end while expanded
 
 	DummyTrimming trimm;
@@ -137,14 +133,9 @@ std::unordered_map<node, std::unordered_set<node>> GreedyCommunityExpansion::run
 	std::unordered_map<node, std::unordered_set<node>> communities;
 	GreedyCommunityExpansion GCE;
 	for (node u : set) {
-
 		std::unordered_set<node> community = GCE.expandSeed(G, u);
-		std::cout<<"-----------------------------"<<std::endl;
-
-
 		communities.insert(std::pair<node, std::unordered_set<node>>(u, community));
 	}
-
 	return communities;
 }
 
