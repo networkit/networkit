@@ -33,7 +33,7 @@ std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(Graph& G, 
 	return communitites;
 }
 
-double SelectiveSCAN::nodeNodeSimilarity(node u, node v, Graph& G) {
+double SelectiveSCAN::nodeDistance(node u, node v, Graph& G) {
 
 	int inter = 0;
 	int uni = 0;
@@ -54,7 +54,7 @@ double SelectiveSCAN::nodeNodeSimilarity(node u, node v, Graph& G) {
 			}
 		}
 	});
-	return (double) (inter + 2)/ (double) (uni +2);
+	return 1- ((double) (inter + 2)/ (double) (uni +2));
 }
 
 std::pair<bool,std::vector<node>> SelectiveSCAN::isCore(node u, Graph& G) {
@@ -63,7 +63,7 @@ std::pair<bool,std::vector<node>> SelectiveSCAN::isCore(node u, Graph& G) {
 	std::vector<node> similarNeighbors;
 	int count = 0;
 	G.forNeighborsOf(u, [&](node v){
-		if (this->nodeNodeSimilarity(u, v, G) >= this->epsilon) {
+		if (this->nodeDistance(u, v, G) <= this->epsilon) {
 			count++;
 			similarNeighbors.push_back(v);
 		}
