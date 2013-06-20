@@ -97,6 +97,44 @@ double Conductance::getValue(node v) {
 	return 1 - (boundary / std::min(volume, all-volume));
 }
 
+LocalModularityL::LocalModularityL(Graph& G, std::unordered_set<node>& community)
+	: QualityObjective(G, community){
+}
+
+LocalModularityL::~LocalModularityL() {
+}
+
+double LocalModularityL::getValue(node v) {
+	double inside = 0;
+	double outside = 0;
+	std::unordered_set<node> boundary;
+	bool modified = false;
+	if (community->find(v) == community->end()) {
+		modified = true;
+	}
+	community->insert(v);
+
+	for (node u : *community) {
+		this->G->forNeighborsOf(u, [&](node x){
+			if (community->find(x) == community->end()){
+				outside ++;
+				if (boundary.find(u) == boundary.end()) {
+					boundary.insert(u);
+				}
+			} else {
+				if (u == x) {
+					inside++;
+				} else {
+					inside = inside + 0.5;
+				}
+			}
+		});
+	}
+	if (modified == true) {
+		community->erase(v);
+	}
+	return (inside / community->size()) / (outside / boundary.size());
+}
 
 }
 

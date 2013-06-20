@@ -20,14 +20,14 @@ CommunityQualityMeasure::~CommunityQualityMeasure() {
 
 
 
-LocalModularityL::LocalModularityL() {
+LocalModularity::LocalModularity() {
 }
 
 
-LocalModularityL::~LocalModularityL() {
+LocalModularity::~LocalModularity() {
 }
 
-double LocalModularityL::getQuality(
+double LocalModularity::getQuality(
 		const std::unordered_set<node>& community, const Graph& G) {
 	double inside = 0;
 	double outside = 0;
