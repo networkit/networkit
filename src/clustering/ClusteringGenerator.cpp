@@ -19,14 +19,14 @@ ClusteringGenerator::~ClusteringGenerator() {
 }
 
 Clustering ClusteringGenerator::makeSingletonClustering(Graph& G) {
-	int64_t n = G.numberOfNodes();
+	count n = G.numberOfNodes();
 	Clustering zeta(n);
 	zeta.allToSingletons();
 	return zeta;
 }
 
 Clustering ClusteringGenerator::makeOneClustering(Graph& G) {
-	int64_t n = G.numberOfNodes();
+	count n = G.numberOfNodes();
 	Clustering zeta(n);
 	cluster one = zeta.addCluster();
 	G.forNodes([&](node v){

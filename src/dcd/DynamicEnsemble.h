@@ -10,6 +10,8 @@
 
 #include "DynamicCommunityDetector.h"
 
+#include "../community/EnsemblePreprocessing.h"
+
 namespace NetworKit {
 
 class DynamicEnsemble: public NetworKit::DynamicCommunityDetector {
@@ -28,8 +30,6 @@ public:
 
 	virtual std::string toString() const;
 
-	virtual std::vector<count> getTimerHistory();
-
 	/** EVENT HANDLING **/
 
 	virtual void onNodeAddition(node u);
@@ -43,6 +43,32 @@ public:
 	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew);
 
 	virtual void onTimeStep();
+
+	/** ENSEMBLE CONFIGURATION **/
+
+	/**
+	 * Add a base clusterer to the ensemble.
+	 */
+	virtual void addBaseAlgorithm(DynamicCommunityDetector& base);
+
+
+	/**
+	 * Set final clusterer.
+	 */
+	virtual void setFinalAlgorithm(Clusterer& final);
+
+	/**
+	 * Set overlap algorithm which combines the results of the base clusterers.
+	 */
+	virtual void setOverlapper(Overlapper& overlap);
+
+protected:
+
+
+	Clusterer* finalAlgo;	//!< final clustering algorithm
+	std::vector<DynamicCommunityDetector*> baseAlgos; //!< ensemble of dynamic base algorithms
+
+	Overlapper* overlapAlgo; //!< clustering overlap algorithm
 
 };
 
