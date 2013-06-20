@@ -77,6 +77,13 @@ public:
 	virtual ~Conductance();
 
 	virtual double getValue(node v);
+
+
+protected:
+
+	count degSum; //!< degree sum of the graph needed
+	count nBoundaryEdges; //!< current number of boundary edges
+	count volume;	//!< current community volume
 };
 
 } /* namespace NetworKit */

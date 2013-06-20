@@ -59,17 +59,17 @@ double LocalModularityM::getValue(node v) {
 }
 
 
-Conductance::Conductance(Graph& G, std::unordered_set<node>& community)
-	: QualityObjective(G, community){
+Conductance::Conductance(Graph& G, std::unordered_set<node>& community) : QualityObjective(G, community), degSum(0), nBoundaryEdges(0), volume(0) {
+	// precompute degree sum
+	this->degSum = this->G->parallelSumForNodes([&](node u){
+		return this->G->degree(u);
+	});
 }
 
 Conductance::~Conductance() {
 }
 
 double Conductance::getValue(node v) {
-	double volume = 0;
-	double boundary = 0;
-	double all = 0;
 	bool modified = false;
 	if (community->find(v) == community->end()) {
 		modified = true;
@@ -80,21 +80,17 @@ double Conductance::getValue(node v) {
 		volume = volume + this->G->degree(u);
 		this->G->forNeighborsOf(u, [&](node v){
 			if (community->find(v) == community->end()) {
-				boundary++;
+				nBoundaryEdges++;
 			}
 		});
 	}
 
-	G->forNodes([&](node v){
-		all = all + G->degree(v);
-	});
-
 	if (modified == true) {
 		community->erase(v);
 	}
-	if (volume == 0 || all-volume == 0)
+	if (volume == 0 || degSum - volume == 0)
 		return 0;
-	return 1 - (boundary / std::min(volume, all-volume));
+	return 1 - (nBoundaryEdges / std::min(volume, degSum - volume));
 }
 
 LocalModularityL::LocalModularityL(Graph& G, std::unordered_set<node>& community)
