@@ -160,11 +160,11 @@ void Clustering::compact() {
 			compactingMap.insert(std::make_pair(c, nextIndex));
 			++nextIndex;
 		}
-	}, "");
+	});
 
-	this->forEntries([&](node v, cluster c) {
+	this->parallelForEntries([&](node v, cluster c) {
 		data[v] = compactingMap[c];
-	}, "parallel");
+	});
 
 	cluster ub = *std::max_element(data.begin(), data.end());
 	setUpperBound(ub+1);
@@ -176,10 +176,10 @@ std::vector<count> Clustering::clusterSizes() {
 	count numC = this->numberOfClusters();
 	std::vector<count> clusterSizes(numC);
 
-	this->forEntries([&](node v, cluster c) {
+	this->parallelForEntries([&](node v, cluster c) {
 		c = data[v];
 		++clusterSizes[c];
-	}, "parallel");
+	});
 
 
 	return clusterSizes;

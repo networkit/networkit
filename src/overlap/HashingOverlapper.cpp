@@ -44,7 +44,8 @@ Clustering HashingOverlapper::run(Graph& G,
 		return hash;
 	};
 
-	Clustering core(G.numberOfNodes());
+	count n = G.numberOfNodes();
+	Clustering core(n);
 
 	// select hash function
 	auto hash = djb2;

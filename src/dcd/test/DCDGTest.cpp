@@ -315,6 +315,28 @@ TEST_F(DCDGTest, testStrategyIsolateNeighbors) {
 	 setup.run();
 }
 
+
+TEST_F(DCDGTest, tryDynamicEnsemble) {
+	 DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
+	 DynamicCommunityDetector* dynLP1 = new DynamicLabelPropagation(0, "Isolate");
+	 DynamicCommunityDetector* dynLP2 = new DynamicLabelPropagation(0, "IsolateNeighbors");
+	 Clusterer* PLM = new Louvain();
+
+	 DynamicEnsemble* ensemble = new DynamicEnsemble();
+	 ensemble->addBaseAlgorithm(*dynLP1);
+	 ensemble->addBaseAlgorithm(*dynLP2);
+	 ensemble->setFinalAlgorithm(*PLM);
+
+	 HashingOverlapper overlapAlgo;
+	 ensemble->setOverlapper(overlapAlgo);
+
+	 std::vector<DynamicCommunityDetector*> detectors = {ensemble};
+	 DynCDSetup setup(*dynGen, detectors, 1e4, 100);
+
+	 setup.run();
+
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
