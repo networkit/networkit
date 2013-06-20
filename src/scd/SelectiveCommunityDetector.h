@@ -23,13 +23,8 @@ public:
 
 	virtual ~SelectiveCommunityDetector();
 
-	/**
-	 * @param[in]	G		the graph
-	 * @param[in]	seed	seed node
-	 *
-	 * @param[out]			the community as a set of nodes
-	 */
-	virtual std::unordered_set<node> run(Graph& G, node seed) = 0;
+	virtual std::unordered_map<node, std::unordered_set<node> > seedSetExpansion(
+			Graph& G, std::vector<node> set) = 0;
 };
 
 } /* namespace NetworKit */
