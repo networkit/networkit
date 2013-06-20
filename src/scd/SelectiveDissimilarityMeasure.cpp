@@ -36,7 +36,7 @@ double JaccardIndex::localDissimilarity(const node seedNode,
 	if (cluster == -1) {
 		return 0;
 	}
-	for(node u = 0; u < groundTruth.n ; ++u) {
+	for(node u = 0; u < groundTruth.numberOfEntries() ; ++u) {
 		if(groundTruth.clusterOf(u) == cluster) {
 			clusterSize++;
 		}
@@ -103,7 +103,7 @@ double Recall::localDissimilarity(const node seedNode,
 			counter++;
 		}
 	}
-	for(node u = 0; u < groundTruth.n ; ++u) {
+	for(node u = 0; u < groundTruth.numberOfEntries(); ++u) {
 		if(groundTruth.clusterOf(u) == cluster) {
 			clusterSize++;
 		}
@@ -136,7 +136,7 @@ double NMI::localDissimilarity(const node seedNode,
 			counter++;
 		}
 	}
-	for(node u = 0; u < groundTruth.n ; ++u) {
+	for(node u = 0; u < groundTruth.numberOfEntries(); ++u) {
 		if(groundTruth.clusterOf(u) == cluster) {
 			clusterSize++;
 		}
