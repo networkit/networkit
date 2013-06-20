@@ -291,6 +291,21 @@ TEST_F(SCDGTest, testRandomWalkSeedSet) {
 }
 
 
+TEST_F(SCDGTest, tryGreedyWithSeedSets) {
+
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+
+	RandomSeedSet randSeeds(G);
+
+	GreedyCommunityExpansion GCE;
+
+	// GCE.seedSetExpansion()
+
+
+}
+
+
 
 } /* namespace NetworKit */
 
