@@ -1,0 +1,10 @@
+<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph_generator.html#a8dcd5d1f75f5f04d1cbf98dd60616f31" title="Generate a complete graph." alt="" coords="191,34,374,78"/>
+<area shape="rect" id="node9" href="$class_aux_1_1_timer.html#a3c58e715148a05a6294743619d111bab" title="Start the clock." alt="" coords="223,102,342,130"/>
+<area shape="rect" id="node11" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="190,154,375,182"/>
+<area shape="rect" id="node13" href="$class_networ_kit_1_1_graph.html#a48ace7ae9a931d69999d8fb55e563063" title="NetworKit::Graph::weighted\lDegree" alt="" coords="190,206,375,250"/>
+<area shape="rect" id="node15" href="$class_aux_1_1_timer.html#a14d926626eef461e836f87f7bc3d03b7" title="Stops the clock permanently for the instance of the Timer." alt="" coords="224,274,342,302"/>
+<area shape="rect" id="node17" href="$class_aux_1_1_timer.html#a16fdb76113530c5d4d8787e27d1e0aca" title="The number of seconds since the current time that the Timer object was created." alt="" coords="213,326,352,354"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a498eb0beb05b992d12b246fcf3b76070" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="432,5,611,49"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="424,73,619,101"/>
+</map>
