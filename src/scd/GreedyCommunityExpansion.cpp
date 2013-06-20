@@ -127,7 +127,6 @@ std::unordered_map<node, std::unordered_set<node> > GreedyCommunityExpansion::se
 	for (node u : set) {
 		communities.insert(std::pair<node, std::unordered_set<node>> (u, GCE.run(G, u)));
 	}
-	bool modified = true;
 
 	return communities;
 }
