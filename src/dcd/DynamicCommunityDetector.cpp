@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynamicCommunityDetector::DynamicCommunityDetector() {
+DynamicCommunityDetector::DynamicCommunityDetector() : G(NULL) {
 }
 
 
