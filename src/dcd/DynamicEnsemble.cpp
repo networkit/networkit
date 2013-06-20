@@ -24,6 +24,10 @@ void DynamicEnsemble::setGraph(Graph& G) {
 	}
 
 	this->G = &G;
+	// also set the graph for all base algorithms
+	for (DynamicCommunityDetector* algo : baseAlgos) {
+		algo->setGraph(G);
+	}
 }
 
 Clustering DynamicEnsemble::run() {

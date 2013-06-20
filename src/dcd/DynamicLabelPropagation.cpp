@@ -167,7 +167,7 @@ Clustering DynamicLabelPropagation::run() {
 	} // end while
 
 	runtime.stop();
-	this->timerHistory.push_back(runtime.elapsedMilliseconds());
+	this->timerHistory.push_back(runtime.elapsed().count());
 	INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
 
 
