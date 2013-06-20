@@ -18,7 +18,7 @@ GreedyCommunityExpansion::~GreedyCommunityExpansion() {
 	// TODO Auto-generated destructor stub
 }
 
-std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
+std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) {
 	INFO("running GreedyCommunityExpansion from node " << s);
 
 	std::unordered_set<node> community;
@@ -119,13 +119,12 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 	return community;
 }
 
-std::unordered_map<node, std::unordered_set<node> > GreedyCommunityExpansion::seedSetExpansion(
-		Graph& G, std::vector<node> set) {
+std::unordered_map<node, std::unordered_set<node> > GreedyCommunityExpansion::run(Graph& G, std::unordered_set<node> set) {
 
 	std::unordered_map<node, std::unordered_set<node>> communities;
 	GreedyCommunityExpansion GCE;
 	for (node u : set) {
-		communities.insert(std::pair<node, std::unordered_set<node>> (u, GCE.run(G, u)));
+		communities.insert(std::pair<node, std::unordered_set<node>> (u, GCE.expandSeed(G, u)));
 	}
 
 	return communities;

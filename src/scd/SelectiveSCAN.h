@@ -16,7 +16,7 @@ class SelectiveSCAN: public NetworKit::SelectiveCommunityDetector {
 
 public:
 	double epsilon;
-	double nhu;
+	double mu;
 
 public:
 
@@ -24,8 +24,9 @@ public:
 
 	virtual ~SelectiveSCAN();
 
-	virtual std::unordered_map<node, std::unordered_set<node> > seedSetExpansion(
-				Graph& G, std::vector<node> set);
+	virtual std::unordered_map<node, std::unordered_set<node> > run(Graph& G, std::unordered_set<node> seeds);
+
+protected:
 
 	virtual double nodeNodeSimilarity (node u, node v, Graph& G);
 

@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveSCAN::SelectiveSCAN(): epsilon(0.7), nhu(3) {
+SelectiveSCAN::SelectiveSCAN(): epsilon(0.7), mu(3) {
 
 }
 
@@ -17,25 +17,23 @@ SelectiveSCAN::~SelectiveSCAN() {
 	// TODO Auto-generated destructor stub
 }
 
-std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::seedSetExpansion(
-			Graph& G, std::vector<node> set){
+std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(Graph& G, std::unordered_set<node> set){
 
 	std::unordered_map<node, node> nodesState;
 	std::unordered_map<node, std::unordered_set<node>> communitites;
-	SelectiveSCAN SSCAN;
 
 	for (node u : set) {
 		nodesState.insert(std::pair<node,int>(u, -1));
 	}
 	for (node u : set) {
-		if ((nodesState.find(u))->second == -1  && SSCAN.isCore(u, G).first){
+		if ((nodesState.find(u))->second == -1  && this->isCore(u, G).first){
 
 		}
 	}
 	return communitites;
 }
 
-double SelectiveSCAN::nodeNodeSimilarity (node u, node v, Graph& G) {
+double SelectiveSCAN::nodeNodeSimilarity(node u, node v, Graph& G) {
 
 	int inter = 0;
 	int uni = 0;
@@ -62,16 +60,15 @@ double SelectiveSCAN::nodeNodeSimilarity (node u, node v, Graph& G) {
 std::pair<bool,std::vector<node>> SelectiveSCAN::isCore(node u, Graph& G) {
 
 	bool core = false;
-	SelectiveSCAN SSCAN;
 	std::vector<node> similarNeighbors;
 	int count = 0;
 	G.forNeighborsOf(u, [&](node v){
-		if (SSCAN.nodeNodeSimilarity(u, v, G) >= SSCAN.epsilon) {
+		if (this->nodeNodeSimilarity(u, v, G) >= this->epsilon) {
 			count++;
 			similarNeighbors.push_back(v);
 		}
 	});
-	if (count >= SSCAN.nhu) {
+	if (count >= this->mu) {
 		core = true;
 	}
 	return std::pair<bool,std::vector<node>>(core, similarNeighbors);
