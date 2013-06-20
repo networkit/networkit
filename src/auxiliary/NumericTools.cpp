@@ -18,9 +18,14 @@ NumericTools::~NumericTools() {
 	// TODO Auto-generated destructor stub
 }
 
-bool NumericTools::equal(const double x, const double y) {
+bool NumericTools::equal(const double x, const double y, const double error) {
 	// TODO: needs testing
-	double eps = std::numeric_limits<double>::epsilon();
+	double eps;
+	if (error == 0.0) {
+		eps = std::numeric_limits<double>::epsilon();
+	} else {
+		eps = error;
+	}
 	return (x <= (y + eps)) && (x >= (y - eps));
 }
 

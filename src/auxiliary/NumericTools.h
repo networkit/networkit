@@ -28,7 +28,9 @@ public:
 	}
 
 
-	bool equal(const double x, const double y);
+	static bool equal(const double x, const double y, const double error = 0.0);
+
+
 
 
 };
