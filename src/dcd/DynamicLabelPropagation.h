@@ -70,7 +70,6 @@ protected:
 	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
 	count nUpdated; 					//!< number of nodes updated in last iteration (?)
 
-	Graph* G;							//!< the current graph instance
 	PrepStrategy* prepStrategy;			//!< a prep strategy reacts to graph events by preparing the algorithm's clustering
 
 	// main timer is in superclass
