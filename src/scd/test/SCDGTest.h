@@ -21,6 +21,8 @@
 #include "../../io/METISGraphWriter.h"
 #include "../../io/METISGraphReader.h"
 #include "../CommunityTrimming.h"
+#include "../RandomSeedSet.h"
+#include "../RandomWalkSeedSet.h"
 
 
 
