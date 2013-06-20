@@ -82,6 +82,7 @@ public:
 protected:
 
 	count degSum; //!< degree sum of the graph needed
+public:
 	count nBoundaryEdges; //!< current number of boundary edges
 	count volume;	//!< current community volume
 };

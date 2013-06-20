@@ -70,27 +70,31 @@ Conductance::~Conductance() {
 }
 
 double Conductance::getValue(node v) {
+
+	int count = 0;
 	bool modified = false;
 	if (community->find(v) == community->end()) {
 		modified = true;
 	}
 	community->insert(v);
 
-	for (node u : (*community)) {
-		volume = volume + this->G->degree(u);
-		this->G->forNeighborsOf(u, [&](node v){
-			if (community->find(v) == community->end()) {
-				nBoundaryEdges++;
-			}
-		});
-	}
+	this->G->forNeighborsOf(v, [&](node u){
+		if (community->find(u) == community->end()) {
+			count++;
+		}
+	});
 
 	if (modified == true) {
 		community->erase(v);
 	}
-	if (volume == 0 || degSum - volume == 0)
+	if (degSum - volume - this->G->degree(v)  == 0) {
 		return 0;
-	return 1 - (nBoundaryEdges / std::min(volume, degSum - volume));
+	}
+	if (G->hasEdge(v, v)) {
+		return 1 - ((double)(nBoundaryEdges + 2 * count - this->G->degree(v) + 1)/ ((double)std::min(volume + this->G->degree(v), degSum - volume - this->G->degree(v))));
+	}
+
+	return 1 - ((double)(nBoundaryEdges + 2 * count - this->G->degree(v))/ ((double)std::min(volume + this->G->degree(v), degSum - volume - this->G->degree(v))));
 }
 
 LocalModularityL::LocalModularityL(Graph& G, std::unordered_set<node>& community)
