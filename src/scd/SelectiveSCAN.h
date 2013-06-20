@@ -13,19 +13,23 @@
 namespace NetworKit {
 
 class SelectiveSCAN: public NetworKit::SelectiveCommunityDetector {
+
+public:
+	double epsilon;
+	double nhu;
+
 public:
 
 	SelectiveSCAN();
 
 	virtual ~SelectiveSCAN();
 
-	/**
-	 * @param[in]	G		the graph
-	 * @param[in]	seed	seed node
-	 *
-	 * @param[out]			the community as a set of nodes
-	 */
-	virtual std::unordered_set<node> run(Graph& G, node seed);
+	virtual std::unordered_map<node, std::unordered_set<node> > seedSetExpansion(
+				Graph& G, std::vector<node> set);
+
+	virtual double nodeNodeSimilarity (node u, node v, Graph& G);
+
+	virtual std::pair<bool,std::vector<node>> isCore(node u, Graph& G);
 };
 
 } /* namespace NetworKit */
