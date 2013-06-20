@@ -8,6 +8,8 @@
 #ifndef SEEDSETGENERATOR_H_
 #define SEEDSETGENERATOR_H_
 
+#include <unordered_set>
+
 #include "../graph/Graph.h"
 
 namespace NetworKit {
@@ -16,15 +18,15 @@ class SeedSetGenerator {
 
 public:
 
-	SeedSetGenerator(Graph& G);
+	SeedSetGenerator(const Graph& G);
 
 	virtual ~SeedSetGenerator();
 
-	virtual std::vector<node> getSeeds() = 0;
+	virtual std::unordered_set<node> getSeeds(count k) = 0;
 
 protected:
 
-	Graph* G;
+	const Graph& G;
 
 };
 

@@ -21,6 +21,7 @@
 #include <cstdint>
 
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Debug.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
@@ -318,6 +319,12 @@ public:
 	 * This involves calculation, so store result if needed multiple times.
 	 */
 	count numberOfSelfLoops() const;
+
+
+	/**
+	 * Get an upper bound for the node ids in the graph.
+	 */
+	index upperNodeIdBound() const;
 
 	/** DYNAMICS **/
 

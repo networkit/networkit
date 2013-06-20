@@ -28,7 +28,9 @@ public:
 
 	virtual ~RandomProbability();
 
-	virtual double generate();
+	double generate();
+
+	double generateFast();
 
 	/**
 	 * @return Random float in [0 ... 1)

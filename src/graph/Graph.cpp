@@ -338,8 +338,10 @@ count Graph::time() {
 }
 
 
+index Graph::upperNodeIdBound() const {
+	return this->z;
+}
+
+
 } /* namespace NetworKit */
-
-
-
 
