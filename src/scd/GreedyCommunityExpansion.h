@@ -39,9 +39,9 @@ public:
 	 *
 	 * @param[out]		community as a set of nodes
 	 */
-	virtual std::unordered_set<node> run(Graph& G, node s);
+	virtual std::unordered_set<node> expandSeed(Graph& G, node s);
 
-	virtual std::unordered_map<node, std::unordered_set<node>> seedSetExpansion(Graph& G, std::vector<node> set);
+	virtual std::unordered_map<node, std::unordered_set<node>> run(Graph& G, std::unordered_set<node> set);
 
 	virtual double clusterClusterSimilarity (std::unordered_set<node>& community1, std::unordered_set<node>& community2);
 };
