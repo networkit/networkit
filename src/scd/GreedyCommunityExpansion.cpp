@@ -25,7 +25,7 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 	std::unordered_set<node> shell; // shell are the nodes outside of the
 	                                // community with edges to nodes inside
 
-	std::map<node, double> acceptanceValues;
+	std::unordered_map<node, double> acceptanceValues;
 
 	// TODO: make these selectable later
 	DummySimilarity acceptability(G, community, shell);
@@ -119,10 +119,10 @@ std::unordered_set<node> GreedyCommunityExpansion::run(Graph& G, node s) {
 	return community;
 }
 
-std::map<node, std::unordered_set<node> > GreedyCommunityExpansion::seedSetExpansion(
+std::unordered_map<node, std::unordered_set<node> > GreedyCommunityExpansion::seedSetExpansion(
 		Graph& G, std::vector<node> set) {
 
-	std::map<node, std::unordered_set<node>> communities;
+	std::unordered_map<node, std::unordered_set<node>> communities;
 	GreedyCommunityExpansion GCE;
 	for (node u : set) {
 		communities.insert(std::pair<node, std::unordered_set<node>> (u, GCE.run(G, u)));

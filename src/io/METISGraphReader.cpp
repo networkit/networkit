@@ -42,14 +42,15 @@ Graph METISGraphReader::read(std::string path) {
 		while (parser.hasNext()) {
 			std::vector<node> adjacencies = parser.getNext();
 			for (index i=0; i < adjacencies.size(); i++) {
+
 				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
 				assert (v >= 0);
 				if (u <= v) { // self-loops are allowed
 					G.addEdge(u, v);
 				}
 			}
-			u += 1; // next node
-			if ((u % (n/10)) == 0) {
+			u++; // next node
+			if ((u % ((n + 10)/10)) == 0) {
 				p = ((double) (u-1) / (double) n) * 100;
 				std::cout << p << "% " << std::flush;
 			}
@@ -71,7 +72,7 @@ Graph METISGraphReader::read(std::string path) {
 				}
 			}
 			u += 1; // next node
-			if ((u % (n/10)) == 0) {
+			if ((u % ((n + 10)/10)) == 0) {
 				p = ((double) (u-1) / (double) n) * 100;
 				std::cout << p << "% " << std::flush;
 			}

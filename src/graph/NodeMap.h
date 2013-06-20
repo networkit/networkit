@@ -22,7 +22,7 @@ template <typename T> class NodeMap : public IndexMap<node, T> {
 
 
 public:
-
+	count n;
 
 	/**
 	 * Construct a new IndexMap which holds n entries .

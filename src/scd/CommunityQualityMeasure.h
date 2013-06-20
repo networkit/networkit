@@ -9,7 +9,7 @@
 #define COMMUNITYQUALITYMEASURE_H_
 
 #include <unordered_set>
-
+#include <math.h>
 #include "../graph/Graph.h"
 
 namespace NetworKit {
@@ -29,13 +29,13 @@ public:
 	virtual double getQuality(const std::unordered_set<node>& community, const Graph& G) = 0;
 };
 
-class LocalModularityL {
+class LocalModularity {
 
 public:
 
-	LocalModularityL();
+	LocalModularity();
 
-	virtual ~LocalModularityL();
+	virtual ~LocalModularity();
 
 	virtual double getQuality(const std::unordered_set<node>& community, const Graph& G);
 };
