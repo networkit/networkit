@@ -10,9 +10,12 @@
 
 namespace NetworKit {
 
-QualityObjective::QualityObjective(Graph& G, std::unordered_set<node>& community) {
+QualityObjective::QualityObjective(Graph& G, std::unordered_set<node>& community): degSum(0), nBoundaryEdges(0), volume(0){
 	this->G = &G;
 	this->community = &community;
+	this->degSum = this->G->parallelSumForNodes([&](node u){
+		return this->G->degree(u);
+	});
 }
 
 QualityObjective::~QualityObjective() {
@@ -59,11 +62,8 @@ double LocalModularityM::getValue(node v) {
 }
 
 
-Conductance::Conductance(Graph& G, std::unordered_set<node>& community) : QualityObjective(G, community), degSum(0), nBoundaryEdges(0), volume(0) {
-	// precompute degree sum
-	this->degSum = this->G->parallelSumForNodes([&](node u){
-		return this->G->degree(u);
-	});
+Conductance::Conductance(Graph& G, std::unordered_set<node>& community) : QualityObjective(G, community) {
+
 }
 
 Conductance::~Conductance() {
