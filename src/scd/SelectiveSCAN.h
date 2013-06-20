@@ -28,7 +28,7 @@ public:
 
 protected:
 
-	virtual double nodeNodeSimilarity (node u, node v, Graph& G);
+	virtual double nodeDistance(node u, node v, Graph& G);
 
 	virtual std::pair<bool,std::vector<node>> isCore(node u, Graph& G);
 };

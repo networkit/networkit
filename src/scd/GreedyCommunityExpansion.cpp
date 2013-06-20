@@ -23,7 +23,7 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 
 	std::unordered_set<node> community;
 	std::unordered_set<node> shell; // shell are the nodes outside of the
-	                                // community with edges to nodes inside
+									// community with edges to nodes inside
 
 	std::unordered_map<node, double> acceptanceValues;
 
@@ -33,43 +33,43 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 
 	double currentObjectiveValue = conductance.getValue(s);
 
-
 	community.insert(s);
-	bool expanded = true;		// community has been expanded in the last iteration
+	bool expanded = true;	// community has been expanded in the last iteration
 
 	// all neighbors of s form the shell
 	G.forNeighborsOf(s, [&](node v) {
 		shell.insert(v);
 	});
 
-
-
 	if (shell.empty()) {
 		return community;
 	}
 
 	node vMax = *(shell.begin()); // initialize vMax with a random node from the shell
-	double acceptanceMax = acceptability.getValue(vMax);	// maximum acceptance value
+	double acceptanceMax = acceptability.getValue(vMax);// maximum acceptance value
 
 	while (expanded) {
+		TRACE("while expanded");
 		if (shell.empty()) {
 			break;
 		}
 		expanded = false;
 		for (node v : shell) {
-			acceptanceValues.insert(std::pair<node,double> (v, acceptability.getValue(v)));
+			acceptanceValues.insert(std::pair<node, double>(v, acceptability.getValue(v)));
 		}
 
 		while (!acceptanceValues.empty()) {
+			TRACE("acceptance not empty");
 			acceptanceMax = 0;
-			for (auto it = acceptanceValues.begin(); it != acceptanceValues.end(); ++it ) {
+			for (auto it = acceptanceValues.begin();
+					it != acceptanceValues.end(); ++it) {
 
 				node x = it->first;
 				double acc = it->second;
 				if (it->second - acceptanceMax > 0.00001) {
 					vMax = x;
 					acceptanceMax = acc;
-				} else if (it ->second - acceptanceMax < 0.00001) {
+				} else if (it->second - acceptanceMax < 0.00001) {
 					if (conductance.getValue(x) - conductance.getValue(vMax) > 0.00001) {
 
 						vMax = x;
@@ -96,7 +96,7 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 				currentObjectiveValue = conductance.getValue(vMax);
 				community.insert(vMax);
 				shell.erase(vMax);
-				G.forNeighborsOf(vMax, [&](node v){
+				G.forNeighborsOf(vMax, [&](node v) {
 					if (community.find(v) == community.end()) {
 						shell.insert(v);
 					}
@@ -119,12 +119,16 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 	return community;
 }
 
-std::unordered_map<node, std::unordered_set<node> > GreedyCommunityExpansion::run(Graph& G, std::unordered_set<node> set) {
+std::unordered_map<node, std::unordered_set<node> > GreedyCommunityExpansion::run(
+		Graph& G, std::unordered_set<node> set) {
 
 	std::unordered_map<node, std::unordered_set<node>> communities;
 	GreedyCommunityExpansion GCE;
 	for (node u : set) {
-		communities.insert(std::pair<node, std::unordered_set<node>> (u, GCE.expandSeed(G, u)));
+		DEBUG("expanding from seed node " << u);
+		std::unordered_set<node> community = GCE.expandSeed(G, u);
+		DEBUG("found a community of size " << community.size());
+		communities.insert(std::pair<node, std::unordered_set<node>>(u, community));
 	}
 
 	return communities;
@@ -143,5 +147,4 @@ double GreedyCommunityExpansion::clusterClusterSimilarity(
 }
 
 } /* namespace NetworKit */
-
 

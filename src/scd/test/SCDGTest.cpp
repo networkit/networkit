@@ -293,14 +293,16 @@ TEST_F(SCDGTest, testRandomWalkSeedSet) {
 
 TEST_F(SCDGTest, tryGreedyWithSeedSets) {
 
+	// TODO: simple graph
 	METISGraphReader reader;
 	Graph G = reader.read("input/jazz.graph");
 
 	RandomSeedSet randSeeds(G);
+	std::unordered_set<node> seeds = randSeeds.getSeeds(2);
+	assert (seeds.size() == 2);
 
 	GreedyCommunityExpansion GCE;
-
-	// GCE.seedSetExpansion()
+	GCE.run(G, seeds);
 
 
 }
