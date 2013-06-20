@@ -118,8 +118,9 @@ public:
 //}
 
 template<typename I, typename T>
-inline IndexMap<I, T>::IndexMap(count n, T defaultValue = -1) :
+inline IndexMap<I, T>::IndexMap(count n, T defaultValue = 0) :
 		data(n, defaultValue), defaultValue(defaultValue) {
+	TRACE("IndexMap initialized with n = " << n);
 	this->n = n;
 }
 

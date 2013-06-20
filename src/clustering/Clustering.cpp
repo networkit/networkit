@@ -10,15 +10,15 @@
 
 namespace NetworKit {
 
-Clustering::Clustering() : NodeMap<cluster>(0, -1), name("noname")  {
+Clustering::Clustering() : NodeMap<cluster>(0, none), name("noname")  {
 	this->nextCluster = 0; // first cluster index is 0
 	this->upperIdBound = 0; // upper id bound = n is okay only for agglomeratively created clusters
 }
 
 
 Clustering::Clustering(count n) :
-		NodeMap<cluster>(n, -1), name("noname") {
-	// all entries are initialized to -1, which means that the nodes are unclustered
+		NodeMap<cluster>(n, none), name("noname") {
+	// all entries are initialized to none, which means that the nodes are unclustered
 	this->nextCluster = 0; // first cluster index is 0
 	this->upperIdBound = n; // upper id bound = n is okay only for agglomeratively created clusters
 }
@@ -84,6 +84,7 @@ cluster Clustering::lowerBound() const {
 }
 
 void Clustering::allToSingletons() {
+	DEBUG("this->n is " << this->n);
 	for (node u = 0; u < this->n; ++u) {
 		this->data[u] = u;
 	}
