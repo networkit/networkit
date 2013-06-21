@@ -20,17 +20,17 @@ public:
 
 public:
 
-	SelectiveSCAN();
+	SelectiveSCAN(Graph& G);
 
 	virtual ~SelectiveSCAN();
 
-	virtual std::unordered_map<node, std::unordered_set<node> > run(Graph& G, std::unordered_set<node> seeds);
+	virtual std::unordered_map<node, std::unordered_set<node> > run(std::unordered_set<node> seeds);
 
 protected:
 
-	virtual double nodeDistance(node u, node v, Graph& G);
+	virtual double nodeDistance(node u, node v);
 
-	virtual std::pair<bool,std::vector<node>> isCore(node u, Graph& G);
+	virtual std::pair<bool,std::vector<node>> isCore(node u);
 };
 
 } /* namespace NetworKit */
