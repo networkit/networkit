@@ -56,6 +56,7 @@ bool Clustering::isProper(Graph& G) {
 	G.forNodes([&](node v) {
 		bool contained = this->contains(v);
 		if (!contained) {
+			ERROR("Clustering does not contain node " << v);
 			success = false;
 		}
 	});
