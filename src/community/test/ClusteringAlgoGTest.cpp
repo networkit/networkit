@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
+TEST_F(PartitioningAlgoGTest, testLabelPropagationOnUniformGraph) {
 	GraphGenerator graphGenerator;
 	int n = 100;
 	Graph G = graphGenerator.makeErdosRenyiGraph(n, 0.2);
@@ -29,7 +29,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters) {
+TEST_F(PartitioningAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters) {
 	GraphGenerator graphGenerator;
 	int64_t n = 100;
 	count k = 3; // number of clusters
@@ -48,7 +48,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClus
 }
 
 
-TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
+TEST_F(PartitioningAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	int64_t n = 100;
 
 	GraphGenerator graphGen;
@@ -76,7 +76,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 
 
 
-TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
+TEST_F(PartitioningAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 	GraphGenerator graphGenerator;
 	int n = 100;
 	int k = 2; // number of clusters
@@ -95,7 +95,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
+TEST_F(PartitioningAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	Graph G(1);
 	node v = 0;
 	G.setWeight(v, v, 42.0);
@@ -115,7 +115,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 
 
 
-TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
+TEST_F(PartitioningAlgoGTest, testLabelPropagationOnManySmallClusters) {
 	int64_t n = 1000;
 	int k = 100; // number of clusters
 	double pin = 1.0;
@@ -138,7 +138,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 
 }
 
-TEST_F(ClusteringAlgoGTest, testLouvain) {
+TEST_F(PartitioningAlgoGTest, testLouvain) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -157,7 +157,7 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testLouvainParallelSimple) {
+TEST_F(PartitioningAlgoGTest, testLouvainParallelSimple) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -196,7 +196,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallel2Naive) {
 */
 
 
-TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
+TEST_F(PartitioningAlgoGTest, testLouvainParallelBalanced) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -216,7 +216,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 
 
 
-TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
+TEST_F(PartitioningAlgoGTest, testLouvainIndependent) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -235,7 +235,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testCNM) {
+TEST_F(PartitioningAlgoGTest, testCNM) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -252,7 +252,7 @@ TEST_F(ClusteringAlgoGTest, testCNM) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
+TEST_F(PartitioningAlgoGTest, testCNMandLouvain) {
 	Modularity modularity;
 	CNM cnm;
 	Louvain louvain;
@@ -288,7 +288,7 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testAgglomerativeAndLouvain) {
+TEST_F(PartitioningAlgoGTest, testAgglomerativeAndLouvain) {
 	Modularity modularity;
 	ParallelAgglomerativeClusterer aggl;
 	Louvain louvain;
@@ -313,12 +313,12 @@ TEST_F(ClusteringAlgoGTest, testAgglomerativeAndLouvain) {
 	// CNM
 	clustering = aggl.run(blog);
 	INFO("Match-AGGL number of blog clusters: " << clustering.numberOfClusters());
-	INFO("Match-AGGL modularity blog graph:   " << modularity.getQuality(clustering, jazz));
+	INFO("Match-AGGL modularity blog graph:   " << modularity.getQuality(clustering, blog));
 
 	// Louvain
 	clustering = louvain.run(blog);
 	INFO("Louvain number of blog clusters: " << clustering.numberOfClusters());
-	INFO("Louvain modularity blog graph:   " << modularity.getQuality(clustering, jazz));
+	INFO("Louvain modularity blog graph:   " << modularity.getQuality(clustering, blog));
 }
 
 

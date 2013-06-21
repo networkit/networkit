@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-class MatchingContracter : public Contracter {
+class MatchingContracter: public Contracter {
 
 public:
 
@@ -27,12 +27,13 @@ public:
 	 *
 	 * @param[in]	G	fine graph
 	 * @param[in]	M	matching
+	 * @param[in]	noSelfLoops  if true, self-loops are not produced
 	 *
-	 * @param[out]		coarse graph
+	 * @return		coarse graph
 	 */
-	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Matching& M);
+	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Matching& M,
+			bool noSelfLoops = false);
 };
-
 
 } /* namespace NetworKit */
 #endif /* MATCHINGCONTRACTER_H_ */
