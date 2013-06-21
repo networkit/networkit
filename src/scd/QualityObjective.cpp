@@ -60,6 +60,7 @@ double LocalModularityM::getValue(node v) {
 
 
 Conductance::Conductance(Graph& G, std::unordered_set<node>& community) : QualityObjective(G, community), degSum(0), nBoundaryEdges(0), volume(0) {
+	// TODO: precomputation of degree sum should not happen more than once for a graph
 	this->degSum = this->G->parallelSumForNodes([&](node u){
 		return this->G->degree(u);
 	});
