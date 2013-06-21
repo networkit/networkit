@@ -19,11 +19,15 @@ class SelectiveCommunityDetector {
 
 public:
 
-	SelectiveCommunityDetector();
+	SelectiveCommunityDetector(Graph& G);
 
 	virtual ~SelectiveCommunityDetector();
 
-	virtual std::unordered_map<node, std::unordered_set<node> > run(Graph& G, std::unordered_set<node> seeds) = 0;
+	virtual std::unordered_map<node, std::unordered_set<node> > run(std::unordered_set<node> seeds) = 0;
+
+protected:
+
+	Graph& G;	//!< the input graph
 };
 
 } /* namespace NetworKit */

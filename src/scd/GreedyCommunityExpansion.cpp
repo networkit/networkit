@@ -9,15 +9,14 @@
 
 namespace NetworKit {
 
-GreedyCommunityExpansion::GreedyCommunityExpansion() {
-	// TODO Auto-generated constructor stub
+GreedyCommunityExpansion::GreedyCommunityExpansion(Graph& G) : SelectiveCommunityDetector(G) {
 }
 
 GreedyCommunityExpansion::~GreedyCommunityExpansion() {
 	// TODO Auto-generated destructor stub
 }
 
-std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) {
+std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 
 	std::unordered_set<node> community;
 	std::unordered_set<node> shell; // shell are the nodes outside of the
@@ -127,13 +126,12 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(Graph& G, node s) 
 	return community;
 }
 
-std::unordered_map<node, std::unordered_set<node>> GreedyCommunityExpansion::run(
-		Graph& G, std::unordered_set<node> set) {
+std::unordered_map<node, std::unordered_set<node>> GreedyCommunityExpansion::run(std::unordered_set<node> set) {
 
 	std::unordered_map<node, std::unordered_set<node>> communities;
-	GreedyCommunityExpansion GCE;
+	GreedyCommunityExpansion GCE(G);
 	for (node u : set) {
-		std::unordered_set<node> community = GCE.expandSeed(G, u);
+		std::unordered_set<node> community = GCE.expandSeed(u);
 		communities.insert(std::pair<node, std::unordered_set<node>>(u, community));
 	}
 	return communities;
