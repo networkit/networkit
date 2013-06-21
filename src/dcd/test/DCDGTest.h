@@ -25,6 +25,7 @@
 #include "../DynamicEnsemble.h"
 #include "../../community/Louvain.h"
 #include "../../overlap/HashingOverlapper.h"
+#include "../../auxiliary/Debug.h"
 
 
 namespace NetworKit {

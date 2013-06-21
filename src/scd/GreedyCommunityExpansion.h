@@ -29,25 +29,22 @@ class GreedyCommunityExpansion: public NetworKit::SelectiveCommunityDetector {
 
 public:
 
-	GreedyCommunityExpansion();
+	GreedyCommunityExpansion(Graph& G);
 
 	virtual ~GreedyCommunityExpansion();
 
-	virtual std::unordered_map<node, std::unordered_set<node>> run(Graph& G, std::unordered_set<node> set);
+	virtual std::unordered_map<node, std::unordered_set<node>> run(std::unordered_set<node> set);
 
 	/**
-	 * @param[in]	G	input graph
 	 * @param[in]	s	seed node
 	 *
 	 * @param[out]		community as a set of nodes
 	 */
-	virtual std::unordered_set<node> expandSeed(Graph& G, node s);
+	virtual std::unordered_set<node> expandSeed(node s);
 
 protected:
 
 	virtual double clusterClusterSimilarity (std::unordered_set<node>& community1, std::unordered_set<node>& community2);
-
-
 
 
 };
