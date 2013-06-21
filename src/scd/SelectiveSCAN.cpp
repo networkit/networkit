@@ -27,21 +27,21 @@ std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unord
 		nodesState.insert(std::pair<node,int>(u, -1));
 	});
 	for (node u : set) {
-		std::pair<bool,std::vector<node>> isCore = this->isCore(u, G);
+		std::pair<bool,std::vector<node>> isCore = this->isCore(u);
 		std::vector<node> candidates;
 		for(node v : isCore.second){
 			candidates.push_back(v);
 		}
 		if ((nodesState.find(u))->second == -1  && isCore.first){
-			expandCore(u, u, &community, &nodesState, &candidates, G);
+			expandCore(u, u, &community, &nodesState, &candidates);
 		} else if ((nodesState.find(u))->second >= 0) {
 			community = communities.find((nodesState.find(u))->second)->second;
 		} else {
 			bool clustered = false;
 			while (!candidates.empty() && !clustered) {
-				if(this->isCore(*candidates.begin(), G).first) {
-					std::pair<bool,std::vector<node>> isCore = this->isCore(u, G);
-					expandCore(*candidates.begin(), u, &community, &nodesState, &candidates, G);
+				if(this->isCore(*candidates.begin()).first) {
+					std::pair<bool,std::vector<node>> isCore = this->isCore(u);
+					expandCore(*candidates.begin(), u, &community, &nodesState, &candidates);
 					clustered = true;
 				} else {
 					candidates.erase(candidates.begin());
@@ -50,16 +50,7 @@ std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unord
 		}
 		communities.insert({u, community});
 	}
-<<<<<<< local
 	return communities;
-=======
-	for (node u : set) {
-		if ((nodesState.find(u))->second == -1  && this->isCore(u).first){
-
-		}
-	}
-	return communitites;
->>>>>>> other
 }
 
 double SelectiveSCAN::nodeDistance(node u, node v) {
@@ -104,7 +95,7 @@ std::pair<bool,std::vector<node>> SelectiveSCAN::isCore(node u) {
 }
 
 void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* community,
-		std::unordered_map<node, node>* nodesState, std::vector<node>* candidates, Graph& G) {
+		std::unordered_map<node, node>* nodesState, std::vector<node>* candidates) {
 
 	std::pair<bool,std::vector<node>> isCore;
 	community->insert(core);
@@ -112,7 +103,7 @@ void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* 
 	for (node v : *candidates) {
 		nodesState->find(v)->second = label;
 		community->insert(v);
-		isCore = this->isCore(v, G);
+		isCore = this->isCore(v);
 		if (isCore.first) {
 			for (node x : isCore.second) {
 				int tmp = nodesState->find(x)->second;
