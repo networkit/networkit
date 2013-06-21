@@ -256,7 +256,7 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 TEST_F(ClusteringGTest, tryNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
 	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
+	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
 
 	ClusteringGenerator clustGen;
 	Clustering one1 = clustGen.makeOneClustering(G);
@@ -265,12 +265,23 @@ TEST_F(ClusteringGTest, tryNMIDistance) {
 	NMIDistance NMID;
 	double distOne = NMID.getDissimilarity(G, one1, one2);
 
+	INFO("NMID for two 1-clusterings: " << distOne);
 	EXPECT_EQ(0.0, distOne) << "NMID of two 1-clusterings should be 0.0";
+
+
+	Clustering random1 = clustGen.makeRandomClustering(G, 2);
+	Clustering random2 = clustGen.makeRandomClustering(G, 2);
+
+	double distRandom = NMID.getDissimilarity(G, random1, random2);
+	INFO("NMID for two random clusterings: " << distRandom);
+
 
 	Clustering singleton1 = clustGen.makeSingletonClustering(G);
 	Clustering singleton2 = clustGen.makeSingletonClustering(G);
 
 	double distSingleton = NMID.getDissimilarity(G, singleton1, singleton2);
+	INFO("NMID for two singleton clusterings: " << distSingleton);
+
 
 	EXPECT_EQ(0.0, distSingleton) << "NMID of two identical singleton clusterings should be 0.0";
 }

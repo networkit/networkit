@@ -14,12 +14,6 @@
 namespace NetworKit {
 
 class QualityObjective {
-public:
-	Graph* G;								//!< pointer to the graph
-	std::unordered_set<node>* community;	//!< pointer to the current community
-	count degSum; //!< degree sum of the graph needed
-	count nBoundaryEdges; //!< current number of boundary edges
-	count volume;	//!< current community volume
 
 public:
 
@@ -38,6 +32,10 @@ public:
 		 * Higher values are better.
 		 */
 	virtual double getValue(node v) = 0;
+
+protected:
+	Graph* G;								//!< pointer to the graph
+	std::unordered_set<node>* community;	//!< pointer to the current community
 };
 
 
@@ -79,6 +77,12 @@ public:
 	virtual ~Conductance();
 
 	virtual double getValue(node v);
+
+public: // TODO: make this protected
+
+	count degSum; //!< degree sum of the graph needed
+	count nBoundaryEdges; //!< current number of boundary edges
+	count volume;	//!< current community volume
 
 };
 
