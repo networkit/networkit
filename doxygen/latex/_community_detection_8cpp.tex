@@ -1,0 +1,480 @@
+\hypertarget{_community_detection_8cpp}{\section{src/\-Community\-Detection.cpp File Reference}
+\label{_community_detection_8cpp}\index{src/\-Community\-Detection.\-cpp@{src/\-Community\-Detection.\-cpp}}
+}
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$utility$>$}\\*
+{\ttfamily \#include $<$cfenv$>$}\\*
+{\ttfamily \#include \char`\"{}log4cxx/logger.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}log4cxx/basicconfigurator.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$gtest/gtest.\-h$>$}\\*
+{\ttfamily \#include $<$omp.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}Globals.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ext/optionparser.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}aux/\-Log.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}aux/\-Timer.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}aux/\-Functions.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}aux/\-String\-Tools.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}graph/\-Graph.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}graph/\-Graph\-Generator.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}community/\-Ensemble\-Multilevel.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}community/\-Ensemble\-Preprocessing.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}community/\-Label\-Propagation.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}community/\-Parallel\-Agglomerative\-Clusterer.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}community/\-Random\-Clusterer.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}community/\-Louvain.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}clustering/\-Clustering.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}clustering/\-Modularity.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}clustering/\-Coverage.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}clustering/\-Clustering\-Generator.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}io/\-M\-E\-T\-I\-S\-Graph\-Reader.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}io/\-M\-E\-T\-I\-S\-Graph\-Writer.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}io/\-Clustering\-Writer.\-h\char`\"{}}\\*
+Include dependency graph for Community\-Detection.\-cpp\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_community_detection_8cpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_arg}{Arg}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39}{option\-Index} \{ \\*
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c}{U\-N\-K\-N\-O\-W\-N}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a9f5cb747b2e1f0ea781d2b1f2a5b4824}{H\-E\-L\-P}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ad704b30f4f33d2868e6d2d94b6f68097}{L\-O\-G\-L\-E\-V\-E\-L}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a02278c64c4a4318bce669a93391760c3}{T\-H\-R\-E\-A\-D\-S}, 
+\\*
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ae50941d772adaec4934ce042c59998a5}{T\-E\-S\-T\-S}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a3f2da53bcaa9802a92482bd71391fcf8}{G\-R\-A\-P\-H}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39af5ae723c1ee75a8e8e2e6196a125bc99}{G\-E\-N\-E\-R\-A\-T\-E}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a822d6cb395cb7d087ab399e5c7efe2ee}{A\-L\-G\-O\-R\-I\-T\-H\-M}, 
+\\*
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a9d6f11cf89d8d2721e5e9408e1962faa}{R\-U\-N\-S}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a631eeebec3c924c4888e5d18883f6f4c}{S\-C\-A\-L\-E\-T\-H\-R\-E\-A\-D\-S}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a7a0e2f3e7f01710e3a16d69679e2dd33}{N\-O\-R\-M\-\_\-\-V\-O\-T\-E\-S}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39aafd387d644e92386e31931ece9af7c98}{S\-C\-A\-L\-E\-S\-T\-R\-E\-N\-G\-T\-H}, 
+\\*
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39afecf7a9535026dab6202b124e7e77a38}{W\-R\-I\-T\-E\-G\-R\-A\-P\-H}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ac1c9e6ac0ddd20412101557b78bb5d3f}{S\-A\-V\-E\-\_\-\-C\-L\-U\-S\-T\-E\-R\-I\-N\-G}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adde29e2575d154d83c3b43f3046ac88b}{P\-R\-O\-G\-R\-E\-S\-S}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a795df149a3d04a523c1627562f0db4fe}{S\-U\-M\-M\-A\-R\-Y}, 
+\\*
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ae57cf53b36ee435cfb16d1d969e86e7c}{R\-A\-N\-D\-O\-R\-D\-E\-R}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adc785ece63f5ab98cd00ed6653c9cb24}{I\-N\-A\-C\-T\-I\-V\-E\-S\-E\-E\-D\-S}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a99fee38e3c553496f710e3c0e0a1103c}{U\-P\-D\-A\-T\-E\-\_\-\-T\-H\-R\-E\-S\-H\-O\-L\-D}, 
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39acb2f0de53b7bc584fc5838a34911189c}{O\-V\-E\-R\-L\-A\-P}, 
+\\*
+\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adc2a689c712d108b093e33a7e94482b4}{D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_graph}{Graph} \hyperlink{_community_detection_8cpp_a7c4d3d094d15df46bfeee793171f10e2}{generate\-Random\-Graph} (\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} n, double p)
+\item 
+\hyperlink{class_networ_kit_1_1_graph}{Graph} \hyperlink{_community_detection_8cpp_a26a075cdfb5c576d092dc1a9b9d6c517}{generate\-Clustered\-Random\-Graph} (\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} n, \hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} k, double pin, double pout)
+\item 
+\hyperlink{class_networ_kit_1_1_graph}{Graph} \hyperlink{_community_detection_8cpp_a5ed085f7bcf3d593229a951b732e5e73}{generate\-Preferential\-Attachment\-Graph} (\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} n, \hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} a)
+\item 
+\hyperlink{class_networ_kit_1_1_graph}{Graph} \hyperlink{_community_detection_8cpp_a627dbc459d6147dcee92dc4bfffc4804}{read\-Graph} (const std\-::string \&graph\-Path)
+\begin{DoxyCompactList}\small\item\em Read a graph from a file. \end{DoxyCompactList}\item 
+std\-::vector$<$ std\-::string $>$ \hyperlink{_community_detection_8cpp_a325ac8b97e67a33e7a42b65db01b4fba}{split\-A\-String} (const std\-::string \&s, char delim= ' ')
+\begin{DoxyCompactList}\small\item\em Split a string at delimiter and return vector of parts. \end{DoxyCompactList}\item 
+void \hyperlink{_community_detection_8cpp_a9062ecdab44183701b6519a60eeb7fdd}{configure\-Logging} (const std\-::string \&loglevel=\char`\"{}I\-N\-F\-O\char`\"{})
+\begin{DoxyCompactList}\small\item\em Call this first to configure logging output. \end{DoxyCompactList}\item 
+void \hyperlink{_community_detection_8cpp_a3dacd96cc3a2e3ed89fb38b3d75d1599}{set\-Number\-Of\-Threads} (int n\-Threads)
+\begin{DoxyCompactList}\small\item\em Set the number of threads available to the program. \end{DoxyCompactList}\item 
+\hyperlink{class_networ_kit_1_1_graph}{Graph} \hyperlink{_community_detection_8cpp_a4696f393dbc2dc04d3c7e23f6204c31c}{get\-Graph} (\hyperlink{class_option_parser_1_1_option}{Option\-Parser\-::\-Option} $\ast$options)
+\item 
+\hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{_community_detection_8cpp_a2e86b4af9b51c19fe406c7a5dd6111fd}{start\-Clusterer} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G, \hyperlink{class_option_parser_1_1_option}{Option\-Parser\-::\-Option} $\ast$options)
+\item 
+bool \hyperlink{_community_detection_8cpp_a7a50a9e46400a5052e3b9a739619b430}{inspect} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G, \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&clustering, \hyperlink{class_option_parser_1_1_option}{Option\-Parser\-::\-Option} $\ast$options)
+\begin{DoxyCompactList}\small\item\em Examine the returned clustering and print stats. \end{DoxyCompactList}\item 
+int \hyperlink{_community_detection_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{struct_option_parser_1_1_descriptor}{Option\-Parser\-::\-Descriptor} \hyperlink{_community_detection_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!option\-Index@{option\-Index}}
+\index{option\-Index@{option\-Index}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{option\-Index}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf option\-Index}}}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39}
+\begin{Desc}
+\item[Enumerator\-: ]\par
+\begin{description}
+\index{U\-N\-K\-N\-O\-W\-N@{U\-N\-K\-N\-O\-W\-N}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!U\-N\-K\-N\-O\-W\-N@{U\-N\-K\-N\-O\-W\-N}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c}{U\-N\-K\-N\-O\-W\-N}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c}
+}]\index{H\-E\-L\-P@{H\-E\-L\-P}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!H\-E\-L\-P@{H\-E\-L\-P}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a9f5cb747b2e1f0ea781d2b1f2a5b4824}{H\-E\-L\-P}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a9f5cb747b2e1f0ea781d2b1f2a5b4824}
+}]\index{L\-O\-G\-L\-E\-V\-E\-L@{L\-O\-G\-L\-E\-V\-E\-L}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!L\-O\-G\-L\-E\-V\-E\-L@{L\-O\-G\-L\-E\-V\-E\-L}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ad704b30f4f33d2868e6d2d94b6f68097}{L\-O\-G\-L\-E\-V\-E\-L}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ad704b30f4f33d2868e6d2d94b6f68097}
+}]\index{T\-H\-R\-E\-A\-D\-S@{T\-H\-R\-E\-A\-D\-S}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!T\-H\-R\-E\-A\-D\-S@{T\-H\-R\-E\-A\-D\-S}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a02278c64c4a4318bce669a93391760c3}{T\-H\-R\-E\-A\-D\-S}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a02278c64c4a4318bce669a93391760c3}
+}]\index{T\-E\-S\-T\-S@{T\-E\-S\-T\-S}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!T\-E\-S\-T\-S@{T\-E\-S\-T\-S}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ae50941d772adaec4934ce042c59998a5}{T\-E\-S\-T\-S}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ae50941d772adaec4934ce042c59998a5}
+}]\index{G\-R\-A\-P\-H@{G\-R\-A\-P\-H}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!G\-R\-A\-P\-H@{G\-R\-A\-P\-H}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a3f2da53bcaa9802a92482bd71391fcf8}{G\-R\-A\-P\-H}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a3f2da53bcaa9802a92482bd71391fcf8}
+}]\index{G\-E\-N\-E\-R\-A\-T\-E@{G\-E\-N\-E\-R\-A\-T\-E}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!G\-E\-N\-E\-R\-A\-T\-E@{G\-E\-N\-E\-R\-A\-T\-E}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39af5ae723c1ee75a8e8e2e6196a125bc99}{G\-E\-N\-E\-R\-A\-T\-E}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39af5ae723c1ee75a8e8e2e6196a125bc99}
+}]\index{A\-L\-G\-O\-R\-I\-T\-H\-M@{A\-L\-G\-O\-R\-I\-T\-H\-M}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!A\-L\-G\-O\-R\-I\-T\-H\-M@{A\-L\-G\-O\-R\-I\-T\-H\-M}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a822d6cb395cb7d087ab399e5c7efe2ee}{A\-L\-G\-O\-R\-I\-T\-H\-M}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a822d6cb395cb7d087ab399e5c7efe2ee}
+}]\index{R\-U\-N\-S@{R\-U\-N\-S}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!R\-U\-N\-S@{R\-U\-N\-S}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a9d6f11cf89d8d2721e5e9408e1962faa}{R\-U\-N\-S}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a9d6f11cf89d8d2721e5e9408e1962faa}
+}]\index{S\-C\-A\-L\-E\-T\-H\-R\-E\-A\-D\-S@{S\-C\-A\-L\-E\-T\-H\-R\-E\-A\-D\-S}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!S\-C\-A\-L\-E\-T\-H\-R\-E\-A\-D\-S@{S\-C\-A\-L\-E\-T\-H\-R\-E\-A\-D\-S}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a631eeebec3c924c4888e5d18883f6f4c}{S\-C\-A\-L\-E\-T\-H\-R\-E\-A\-D\-S}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a631eeebec3c924c4888e5d18883f6f4c}
+}]\index{N\-O\-R\-M\-\_\-\-V\-O\-T\-E\-S@{N\-O\-R\-M\-\_\-\-V\-O\-T\-E\-S}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!N\-O\-R\-M\-\_\-\-V\-O\-T\-E\-S@{N\-O\-R\-M\-\_\-\-V\-O\-T\-E\-S}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a7a0e2f3e7f01710e3a16d69679e2dd33}{N\-O\-R\-M\-\_\-\-V\-O\-T\-E\-S}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a7a0e2f3e7f01710e3a16d69679e2dd33}
+}]\index{S\-C\-A\-L\-E\-S\-T\-R\-E\-N\-G\-T\-H@{S\-C\-A\-L\-E\-S\-T\-R\-E\-N\-G\-T\-H}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!S\-C\-A\-L\-E\-S\-T\-R\-E\-N\-G\-T\-H@{S\-C\-A\-L\-E\-S\-T\-R\-E\-N\-G\-T\-H}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39aafd387d644e92386e31931ece9af7c98}{S\-C\-A\-L\-E\-S\-T\-R\-E\-N\-G\-T\-H}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39aafd387d644e92386e31931ece9af7c98}
+}]\index{W\-R\-I\-T\-E\-G\-R\-A\-P\-H@{W\-R\-I\-T\-E\-G\-R\-A\-P\-H}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!W\-R\-I\-T\-E\-G\-R\-A\-P\-H@{W\-R\-I\-T\-E\-G\-R\-A\-P\-H}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39afecf7a9535026dab6202b124e7e77a38}{W\-R\-I\-T\-E\-G\-R\-A\-P\-H}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39afecf7a9535026dab6202b124e7e77a38}
+}]\index{S\-A\-V\-E\-\_\-\-C\-L\-U\-S\-T\-E\-R\-I\-N\-G@{S\-A\-V\-E\-\_\-\-C\-L\-U\-S\-T\-E\-R\-I\-N\-G}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!S\-A\-V\-E\-\_\-\-C\-L\-U\-S\-T\-E\-R\-I\-N\-G@{S\-A\-V\-E\-\_\-\-C\-L\-U\-S\-T\-E\-R\-I\-N\-G}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ac1c9e6ac0ddd20412101557b78bb5d3f}{S\-A\-V\-E\-\_\-\-C\-L\-U\-S\-T\-E\-R\-I\-N\-G}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ac1c9e6ac0ddd20412101557b78bb5d3f}
+}]\index{P\-R\-O\-G\-R\-E\-S\-S@{P\-R\-O\-G\-R\-E\-S\-S}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!P\-R\-O\-G\-R\-E\-S\-S@{P\-R\-O\-G\-R\-E\-S\-S}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adde29e2575d154d83c3b43f3046ac88b}{P\-R\-O\-G\-R\-E\-S\-S}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adde29e2575d154d83c3b43f3046ac88b}
+}]\index{S\-U\-M\-M\-A\-R\-Y@{S\-U\-M\-M\-A\-R\-Y}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!S\-U\-M\-M\-A\-R\-Y@{S\-U\-M\-M\-A\-R\-Y}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a795df149a3d04a523c1627562f0db4fe}{S\-U\-M\-M\-A\-R\-Y}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a795df149a3d04a523c1627562f0db4fe}
+}]\index{R\-A\-N\-D\-O\-R\-D\-E\-R@{R\-A\-N\-D\-O\-R\-D\-E\-R}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!R\-A\-N\-D\-O\-R\-D\-E\-R@{R\-A\-N\-D\-O\-R\-D\-E\-R}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ae57cf53b36ee435cfb16d1d969e86e7c}{R\-A\-N\-D\-O\-R\-D\-E\-R}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ae57cf53b36ee435cfb16d1d969e86e7c}
+}]\index{I\-N\-A\-C\-T\-I\-V\-E\-S\-E\-E\-D\-S@{I\-N\-A\-C\-T\-I\-V\-E\-S\-E\-E\-D\-S}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!I\-N\-A\-C\-T\-I\-V\-E\-S\-E\-E\-D\-S@{I\-N\-A\-C\-T\-I\-V\-E\-S\-E\-E\-D\-S}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adc785ece63f5ab98cd00ed6653c9cb24}{I\-N\-A\-C\-T\-I\-V\-E\-S\-E\-E\-D\-S}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adc785ece63f5ab98cd00ed6653c9cb24}
+}]\index{U\-P\-D\-A\-T\-E\-\_\-\-T\-H\-R\-E\-S\-H\-O\-L\-D@{U\-P\-D\-A\-T\-E\-\_\-\-T\-H\-R\-E\-S\-H\-O\-L\-D}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!U\-P\-D\-A\-T\-E\-\_\-\-T\-H\-R\-E\-S\-H\-O\-L\-D@{U\-P\-D\-A\-T\-E\-\_\-\-T\-H\-R\-E\-S\-H\-O\-L\-D}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a99fee38e3c553496f710e3c0e0a1103c}{U\-P\-D\-A\-T\-E\-\_\-\-T\-H\-R\-E\-S\-H\-O\-L\-D}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a99fee38e3c553496f710e3c0e0a1103c}
+}]\index{O\-V\-E\-R\-L\-A\-P@{O\-V\-E\-R\-L\-A\-P}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!O\-V\-E\-R\-L\-A\-P@{O\-V\-E\-R\-L\-A\-P}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39acb2f0de53b7bc584fc5838a34911189c}{O\-V\-E\-R\-L\-A\-P}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39acb2f0de53b7bc584fc5838a34911189c}
+}]\index{D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y@{D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y}!Community\-Detection.\-cpp@{Community\-Detection.\-cpp}}\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y@{D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y}}\item[{\em 
+\hypertarget{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adc2a689c712d108b093e33a7e94482b4}{D\-I\-S\-S\-I\-M\-I\-L\-A\-R\-I\-T\-Y}\label{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adc2a689c712d108b093e33a7e94482b4}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 217 of file Community\-Detection.\-cpp.
+
+
+
+\subsection{Function Documentation}
+\hypertarget{_community_detection_8cpp_a9062ecdab44183701b6519a60eeb7fdd}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!configure\-Logging@{configure\-Logging}}
+\index{configure\-Logging@{configure\-Logging}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{configure\-Logging}]{\setlength{\rightskip}{0pt plus 5cm}void configure\-Logging (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{loglevel = {\ttfamily \char`\"{}INFO\char`\"{}}}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a9062ecdab44183701b6519a60eeb7fdd}
+
+
+Call this first to configure logging output. 
+
+
+
+Definition at line 165 of file Community\-Detection.\-cpp.
+
+\hypertarget{_community_detection_8cpp_a26a075cdfb5c576d092dc1a9b9d6c517}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!generate\-Clustered\-Random\-Graph@{generate\-Clustered\-Random\-Graph}}
+\index{generate\-Clustered\-Random\-Graph@{generate\-Clustered\-Random\-Graph}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{generate\-Clustered\-Random\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} generate\-Clustered\-Random\-Graph (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{n, }
+\item[{{\bf count}}]{k, }
+\item[{double}]{pin, }
+\item[{double}]{pout}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a26a075cdfb5c576d092dc1a9b9d6c517}
+
+
+Definition at line 74 of file Community\-Detection.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_community_detection_8cpp_a26a075cdfb5c576d092dc1a9b9d6c517_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_community_detection_8cpp_a5ed085f7bcf3d593229a951b732e5e73}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!generate\-Preferential\-Attachment\-Graph@{generate\-Preferential\-Attachment\-Graph}}
+\index{generate\-Preferential\-Attachment\-Graph@{generate\-Preferential\-Attachment\-Graph}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{generate\-Preferential\-Attachment\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} generate\-Preferential\-Attachment\-Graph (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{n, }
+\item[{{\bf count}}]{a}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a5ed085f7bcf3d593229a951b732e5e73}
+
+
+Definition at line 97 of file Community\-Detection.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_community_detection_8cpp_a5ed085f7bcf3d593229a951b732e5e73_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_community_detection_8cpp_a7c4d3d094d15df46bfeee793171f10e2}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!generate\-Random\-Graph@{generate\-Random\-Graph}}
+\index{generate\-Random\-Graph@{generate\-Random\-Graph}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{generate\-Random\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} generate\-Random\-Graph (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{n, }
+\item[{double}]{p}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a7c4d3d094d15df46bfeee793171f10e2}
+
+
+Definition at line 62 of file Community\-Detection.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_community_detection_8cpp_a7c4d3d094d15df46bfeee793171f10e2_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_community_detection_8cpp_a4696f393dbc2dc04d3c7e23f6204c31c}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!get\-Graph@{get\-Graph}}
+\index{get\-Graph@{get\-Graph}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{get\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} get\-Graph (
+\begin{DoxyParamCaption}
+\item[{{\bf Option\-Parser\-::\-Option} $\ast$}]{options}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a4696f393dbc2dc04d3c7e23f6204c31c}
+
+
+Definition at line 252 of file Community\-Detection.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_community_detection_8cpp_a4696f393dbc2dc04d3c7e23f6204c31c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_community_detection_8cpp_a7a50a9e46400a5052e3b9a739619b430}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!inspect@{inspect}}
+\index{inspect@{inspect}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{inspect}]{\setlength{\rightskip}{0pt plus 5cm}bool inspect (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{{\bf Clustering} \&}]{clustering, }
+\item[{{\bf Option\-Parser\-::\-Option} $\ast$}]{options}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a7a50a9e46400a5052e3b9a739619b430}
+
+
+Examine the returned clustering and print stats. 
+
+
+
+Definition at line 504 of file Community\-Detection.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_community_detection_8cpp_a7a50a9e46400a5052e3b9a739619b430_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_community_detection_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!main@{main}}
+\index{main@{main}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}
+P\-A\-R\-S\-E O\-P\-T\-I\-O\-N\-S 
+
+Definition at line 554 of file Community\-Detection.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{_community_detection_8cpp_a3c04138a5bfe5d72780bb7e82a18e627_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_community_detection_8cpp_a627dbc459d6147dcee92dc4bfffc4804}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!read\-Graph@{read\-Graph}}
+\index{read\-Graph@{read\-Graph}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{read\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} read\-Graph (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{graph\-Path}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a627dbc459d6147dcee92dc4bfffc4804}
+
+
+Read a graph from a file. 
+
+
+
+Definition at line 117 of file Community\-Detection.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_community_detection_8cpp_a627dbc459d6147dcee92dc4bfffc4804_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{_community_detection_8cpp_a3dacd96cc3a2e3ed89fb38b3d75d1599}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!set\-Number\-Of\-Threads@{set\-Number\-Of\-Threads}}
+\index{set\-Number\-Of\-Threads@{set\-Number\-Of\-Threads}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{set\-Number\-Of\-Threads}]{\setlength{\rightskip}{0pt plus 5cm}void set\-Number\-Of\-Threads (
+\begin{DoxyParamCaption}
+\item[{int}]{n\-Threads}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a3dacd96cc3a2e3ed89fb38b3d75d1599}
+
+
+Set the number of threads available to the program. 
+
+
+
+Definition at line 189 of file Community\-Detection.\-cpp.
+
+\hypertarget{_community_detection_8cpp_a325ac8b97e67a33e7a42b65db01b4fba}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!split\-A\-String@{split\-A\-String}}
+\index{split\-A\-String@{split\-A\-String}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{split\-A\-String}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$std\-::string$>$ split\-A\-String (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{s, }
+\item[{char}]{delim = {\ttfamily '~'}}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a325ac8b97e67a33e7a42b65db01b4fba}
+
+
+Split a string at delimiter and return vector of parts. 
+
+
+
+Definition at line 146 of file Community\-Detection.\-cpp.
+
+\hypertarget{_community_detection_8cpp_a2e86b4af9b51c19fe406c7a5dd6111fd}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!start\-Clusterer@{start\-Clusterer}}
+\index{start\-Clusterer@{start\-Clusterer}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{start\-Clusterer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} start\-Clusterer (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{{\bf Option\-Parser\-::\-Option} $\ast$}]{options}
+\end{DoxyParamCaption}
+)}}\label{_community_detection_8cpp_a2e86b4af9b51c19fe406c7a5dd6111fd}
+
+
+Definition at line 301 of file Community\-Detection.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_community_detection_8cpp_a2e86b4af9b51c19fe406c7a5dd6111fd_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{_community_detection_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{\index{Community\-Detection.\-cpp@{Community\-Detection.\-cpp}!usage@{usage}}
+\index{usage@{usage}!CommunityDetection.cpp@{Community\-Detection.\-cpp}}
+\subsubsection[{usage}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf Option\-Parser\-::\-Descriptor} usage\mbox{[}$\,$\mbox{]}}}\label{_community_detection_8cpp_ae4e685e845abde182eb8fc1f87b756ae}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+=
+\{
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c}{UNKNOWN}, 0,\textcolor{stringliteral}{""} , \textcolor{stringliteral}{""}    ,\hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{OptionParser::Arg::None},
+       \textcolor{stringliteral}{"USAGE: EnsembleClustering [options]\(\backslash\)n\(\backslash\)n"}
+                                            \textcolor{stringliteral}{"Options:"} \},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a9f5cb747b2e1f0ea781d2b1f2a5b4824}{HELP},    0,\textcolor{stringliteral}{"h"} , \textcolor{stringliteral}{"help"},\hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{OptionParser::Arg::None}, \textcolor{stringliteral}{"
+        --help  \(\backslash\)t Print usage and exit."} \},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ad704b30f4f33d2868e6d2d94b6f68097}{LOGLEVEL},    0, \textcolor{stringliteral}{""} , \textcolor{stringliteral}{"loglevel"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --loglevel=<LEVEL>  \(\backslash\)t set the log level"} \},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a02278c64c4a4318bce669a93391760c3}{THREADS},    0, \textcolor{stringliteral}{""} , \textcolor{stringliteral}{"threads"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --threads=<NUM>  \(\backslash\)t set the maximum number of threads"} \},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ae50941d772adaec4934ce042c59998a5}{TESTS}, 0, \textcolor{stringliteral}{"t"}, \textcolor{stringliteral}{"tests"}, \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{OptionParser::Arg::None}, \textcolor{stringliteral}{
+      "  --tests \(\backslash\)t Run unit tests"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a3f2da53bcaa9802a92482bd71391fcf8}{GRAPH}, 0, \textcolor{stringliteral}{"g"}, \textcolor{stringliteral}{"graph"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --graph=<PATH> \(\backslash\)t Run ensemble clusterer on graph"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39af5ae723c1ee75a8e8e2e6196a125bc99}{GENERATE}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"generate"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --generate=<GENERATOR>:<PARAMS> \(\backslash\)t Run ensemble clusterer on generated
+       graph with planted partition"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a822d6cb395cb7d087ab399e5c7efe2ee}{ALGORITHM}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"algorithm"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --algorithm=<ALGORITHM>:<PARAMS> \(\backslash\)t select clustering algorithm"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a9d6f11cf89d8d2721e5e9408e1962faa}{RUNS}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"runs"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --runs=<NUMBER> \(\backslash\)t set number of clusterer runs"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39afecf7a9535026dab6202b124e7e77a38}{WRITEGRAPH}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"writeGraph"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --writegraph=<PATH> \(\backslash\)t write the graph to a file"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ac1c9e6ac0ddd20412101557b78bb5d3f}{SAVE\_CLUSTERING}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"saveClustering"}, 
+      \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}, \textcolor{stringliteral}{" 
+       --saveClustering=<PATH> \(\backslash\)t save the clustering to a file"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adde29e2575d154d83c3b43f3046ac88b}{PROGRESS}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"progress"}, \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{OptionParser::Arg::None}
+      , \textcolor{stringliteral}{"  --progress \(\backslash\)t print progress bar"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a795df149a3d04a523c1627562f0db4fe}{SUMMARY}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"summary"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --summary=<PATH> \(\backslash\)t append summary as a .csv line to this file"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a631eeebec3c924c4888e5d18883f6f4c}{SCALETHREADS}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"scaleThreads"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --scaleThreads=<MAXTHREADS> \(\backslash\)t scale number of threads by factor 2 until
+       maximum is reached"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a7a0e2f3e7f01710e3a16d69679e2dd33}{NORM\_VOTES}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"normalizeVotes"}, \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{OptionParser::Arg::None}
+      , \textcolor{stringliteral}{"  --normalizeVotes \(\backslash\)t normalize votes in label propagation by weighted degree
+      "}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39aafd387d644e92386e31931ece9af7c98}{SCALESTRENGTH}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"scaleStrength"}, 
+      \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}, \textcolor{stringliteral}{" 
+       --scaleStrength=<value in [0,1]> \(\backslash\)t scale cluster strengths"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39ae57cf53b36ee435cfb16d1d969e86e7c}{RANDORDER}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"randOrder"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --randOrder=<yes,no> \(\backslash\)t don't randomize vertex processing order"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adc785ece63f5ab98cd00ed6653c9cb24}{INACTIVESEEDS}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"inactiveSeeds"}, 
+      \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}, \textcolor{stringliteral}{"  --inactiveSeeds=<N> 
+      \(\backslash\)t numer of randomly chosen seed nodes which are set inactive in first
+       LabelPropagation iteration - creates diversity in base clusterings"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a99fee38e3c553496f710e3c0e0a1103c}{UPDATE\_THRESHOLD}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"updateThreshold"}, 
+      \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}, \textcolor{stringliteral}{" 
+       --updateThreshold=<N> or --updateThreshold=auto \(\backslash\)t number of updated nodes below which label
+       propagation terminates - auto determines this automatically from the size of the graph"}
+      \},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39acb2f0de53b7bc584fc5838a34911189c}{OVERLAP}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"overlap"}, \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{OptionParser::Arg::Required}
+      , \textcolor{stringliteral}{"  --overlap=<Algorithm> set overlap algorithm which combines the base
+       clusterings"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39adc2a689c712d108b093e33a7e94482b4}{DISSIMILARITY}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{"dissimilarity"}, \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{OptionParser::Arg::None}
+      , \textcolor{stringliteral}{"  --dissimilarity \(\backslash\)t calculate and print base clustering dissimilarity for
+       ensemble (expensive!)"}\},
+ \{\hyperlink{_community_detection_8cpp_a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c}{UNKNOWN}, 0,\textcolor{stringliteral}{""} ,  \textcolor{stringliteral}{""}   ,\hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{OptionParser::Arg::None},
+       \textcolor{stringliteral}{"\(\backslash\)nExamples:\(\backslash\)n"}
+                                            \textcolor{stringliteral}{" TODO"} \},
+ \{0,0,0,0,0,0\}
+\}
+\end{DoxyCode}
+
+
+Definition at line 219 of file Community\-Detection.\-cpp.
+
