@@ -27,13 +27,18 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 	std::vector<count> size_eta(eta.upperBound());
 
 	// precompute sizes for each cluster
-	zeta.forEntries([&](node u, cluster C){
+
+	G.forNodes([&](node u){
+		cluster C = zeta[u];
+		cluster D = eta[u];
+		assert (C != none);
+		assert (D != none);
 		size_zeta[C] += 1;
+		size_eta[D] += 1;
 	});
 
-	eta.forEntries([&](node u, cluster C){
-		size_eta[C] += 1;
-	});
+	DEBUG("size_zeta=" << Aux::vectorToString(size_zeta));
+	DEBUG("size_eta=" << Aux::vectorToString(size_eta));
 
 	// precompute cluster probabilities
 	std::vector<double> P_zeta(zeta.upperBound(), 0.0);
@@ -55,10 +60,11 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 	clusterings.push_back(eta);
 
 	Clustering overlap = hashing.run(G, clusterings);
+	DEBUG("overlap=" << Aux::vectorToString(overlap.getVector()));
 
-	std::vector<std::vector<cluster> > intersect(zeta.upperBound(), std::vector<cluster>(eta.upperBound(), none)); // intersection[C][D] returns the overlap cluster
+	std::vector<std::vector<cluster> > intersect(zeta.upperBound(), std::vector<cluster>(eta.upperBound(), none)); // intersect[C][D] returns the overlap cluster
 
-	std::vector<count> overlapSizes(overlap.upperBound(), 0); // overlap[O] returns the size of the overlap cluster
+	std::vector<count> overlapSizes(overlap.upperBound(), 0); // overlapSizes[O] returns the size of the overlap cluster
 
 	G.forNodes([&](node u){
 		cluster O = overlap[u];
@@ -75,10 +81,12 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 	 * C is a cluster in zeta, D in eta
 	 */
 	auto unionSize = [&](cluster C, cluster D){
-		TRACE("clusters sized " << size_zeta[C] << " and " << size_eta[D] << " have overlap of " << overlapSizes[intersect[C][D]]);
-		assert (overlapSizes[intersect[C][D]] >= 0);
-		assert (overlapSizes[intersect[C][D]] <= std::max(size_zeta[C], size_eta[D]));
-		return size_zeta[C] + size_eta[D] - overlapSizes[intersect[C][D]];
+		cluster inter = intersect[C][D];
+		assert (inter != none); // entry must be set
+		TRACE("clusters sized " << size_zeta[C] << " and " << size_eta[D] << " have overlap of " << overlapSizes[inter]);
+		assert (overlapSizes[inter] >= 0);
+		assert (overlapSizes[inter] <= std::max(size_zeta[C], size_eta[D]));
+		return size_zeta[C] + size_eta[D] - overlapSizes[inter];
 	};
 
 
@@ -90,7 +98,9 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 	double MI = 0.0; // mutual information
 	for (cluster C = 0; C < zeta.upperBound(); C++) {
 		for (cluster D = 0; D < eta.upperBound(); D++) {
-			if ((size_zeta[C] != 0) && (size_eta[D] != 0)) {
+			count sizeC = size_zeta[C];
+			count sizeD = size_eta[D];
+			if ((sizeC != 0) && (sizeD != 0)) {
 				double factor1 = overlapSizes[intersect[C][D]] / (double) n;
 				assert ((size_zeta[C] * size_eta[D]) != 0);
 				TRACE("union of " << C << " and " << D << ": " << unionSize(C, D));
