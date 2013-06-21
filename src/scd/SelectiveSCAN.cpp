@@ -20,17 +20,37 @@ SelectiveSCAN::~SelectiveSCAN() {
 std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(Graph& G, std::unordered_set<node> set){
 
 	std::unordered_map<node, node> nodesState;
-	std::unordered_map<node, std::unordered_set<node>> communitites;
+	std::unordered_map<node, std::unordered_set<node>> communities;
+	std::unordered_set<node> community;
 
-	for (node u : set) {
+	G.forNodes ([&](node u){
 		nodesState.insert(std::pair<node,int>(u, -1));
-	}
+	});
 	for (node u : set) {
-		if ((nodesState.find(u))->second == -1  && this->isCore(u, G).first){
-
+		std::pair<bool,std::vector<node>> isCore = this->isCore(u, G);
+		std::vector<node> candidates;
+		for(node v : isCore.second){
+			candidates.push_back(v);
 		}
+		if ((nodesState.find(u))->second == -1  && isCore.first){
+			expandCore(u, u, &community, &nodesState, &candidates, G);
+		} else if ((nodesState.find(u))->second >= 0) {
+			community = communities.find((nodesState.find(u))->second)->second;
+		} else {
+			bool clustered = false;
+			while (!candidates.empty() && !clustered) {
+				if(this->isCore(*candidates.begin(), G).first) {
+					std::pair<bool,std::vector<node>> isCore = this->isCore(u, G);
+					expandCore(*candidates.begin(), u, &community, &nodesState, &candidates, G);
+					clustered = true;
+				} else {
+					candidates.erase(candidates.begin());
+				}
+			}
+		}
+		communities.insert({u, community});
 	}
-	return communitites;
+	return communities;
 }
 
 double SelectiveSCAN::nodeDistance(node u, node v, Graph& G) {
@@ -72,6 +92,32 @@ std::pair<bool,std::vector<node>> SelectiveSCAN::isCore(node u, Graph& G) {
 		core = true;
 	}
 	return std::pair<bool,std::vector<node>>(core, similarNeighbors);
+}
+
+void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* community,
+		std::unordered_map<node, node>* nodesState, std::vector<node>* candidates, Graph& G) {
+
+	std::pair<bool,std::vector<node>> isCore;
+	community->insert(core);
+	nodesState->find(core)->second = label;
+	for (node v : *candidates) {
+		nodesState->find(v)->second = label;
+		community->insert(v);
+		isCore = this->isCore(v, G);
+		if (isCore.first) {
+			for (node x : isCore.second) {
+				int tmp = nodesState->find(x)->second;
+				if (tmp < 0) {
+					nodesState->find(x)->second = label;
+					community->insert(x);
+				}
+				if (tmp == -1) {
+					candidates->push_back(x);
+				}
+			}
+		}
+		candidates->erase(candidates->begin());
+	}
 }
 
 } /* namespace NetworKit */

@@ -31,6 +31,9 @@ protected:
 	virtual double nodeDistance(node u, node v, Graph& G);
 
 	virtual std::pair<bool,std::vector<node>> isCore(node u, Graph& G);
+
+	virtual void expandCore(node core, node label, std::unordered_set<node>* community,
+					std::unordered_map<node, node>* nodesState, std::vector<node>* candidates, Graph& G);
 };
 
 } /* namespace NetworKit */

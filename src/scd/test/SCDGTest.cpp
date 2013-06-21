@@ -305,12 +305,16 @@ TEST_F(SCDGTest, tryGreedyWithSeedSets) {
 	Graph G = reader.read("input/jazz.graph");
 
 	RandomSeedSet randSeeds(G);
-	std::unordered_set<node> seeds = randSeeds.getSeeds(6);
-
-	assert (seeds.size() == 6);
-	GreedyCommunityExpansion GCE;
+	std::unordered_set<node> seeds;// = randSeeds.getSeeds(10);
+for(int i = 0; i <198; i++){
+	seeds.insert(i);
+	//assert (seeds.size() == 10);
+	SelectiveSCAN GCE;
 	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(G, seeds);
-
+	std::cout<< i << "  " << result.find(i)->second.size() << std::endl;
+	std::cout << "############################################"<<std::endl;
+	seeds.erase(i);
+}
 }
 
 
