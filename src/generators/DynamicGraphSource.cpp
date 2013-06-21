@@ -27,19 +27,17 @@ void DynamicGraphSource::generateWhile(std::function<bool(void)> cont) {
 }
 
 void DynamicGraphSource::generateNodes(count n) {
-	auto cont = [&](){
-		return (this->G->numberOfNodes() < n);
-	};
-	this->generateWhile(cont);
+	while (G->numberOfNodes() < n) {
+		this->generate();
+	}
 }
 
 
 
 void DynamicGraphSource::generateEdges(count m) {
-	auto cont = [&](){
-		return (this->G->numberOfEdges() < m);
-	};
-	this->generateWhile(cont);
+	while (G->numberOfEdges() < m) {
+		this->generate();
+	}
 }
 
 GraphEventProxy* DynamicGraphSource::newGraph() {
@@ -51,10 +49,9 @@ GraphEventProxy* DynamicGraphSource::newGraph() {
 }
 
 void DynamicGraphSource::generateTimeSteps(count t) {
-	auto cont = [&](){
-		return (this->G->time() < t);
-	};
-	this->generateWhile(cont);
+	while (G->time() < t) {
+		this->generate();
+	}
 }
 
 } /* namespace NetworKit */

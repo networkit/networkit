@@ -276,7 +276,8 @@ TEST_F(DCDGTest, testPseudoDynamicOnRealGraph) {
 
 	source->generateNodes(G.numberOfNodes());
 
-	EXPECT_EQ(G.numberOfEdges(), dynG->numberOfEdges()) << "same graph, so m should be equal";
+	EXPECT_EQ(G.numberOfNodes(), dynG->numberOfNodes()) << "n should be equal";
+	EXPECT_EQ(G.numberOfEdges(), dynG->numberOfEdges()) << "m should be equal";
 }
 
 

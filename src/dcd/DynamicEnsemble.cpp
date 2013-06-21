@@ -32,6 +32,7 @@ void DynamicEnsemble::setGraph(Graph& G) {
 
 Clustering DynamicEnsemble::run() {
 	INFO("STARTING EnsemblePreprocessing on G=" << G->toString());
+	this->runtime.start(); // start timer
 
 	// fixed sub-algorithms
 	ClusterContracter contracter;
@@ -57,6 +58,9 @@ Clustering DynamicEnsemble::run() {
 
 	// project clustering of contracted graph back to original graph
 	Clustering final = projector.projectBack(Gcore, *G, fineToCoarse, finalCoarse);
+
+	this->runtime.stop(); // stop timer
+	this->timerHistory.push_back(this->runtime.elapsedMilliseconds());
 	// return clustering
 	return final;
 }
