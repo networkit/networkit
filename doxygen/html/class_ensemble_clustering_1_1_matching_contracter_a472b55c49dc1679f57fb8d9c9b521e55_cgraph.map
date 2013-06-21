@@ -1,0 +1,12 @@
+<map id="EnsembleClustering::MatchingContracter::run" name="EnsembleClustering::MatchingContracter::run">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="226,5,398,49"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_matching.html#a0e9020a85e9f6e8d0bf0ec236394b2e8" title="EnsembleClustering\l::Matching::matchingSize" alt="" coords="227,73,397,117"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="242,141,382,185"/>
+<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_matching.html#adc5f7971cb778e55e58b140e1371b89d" title="EnsembleClustering\l::Matching::mate" alt="" coords="242,209,382,253"/>
+<area shape="rect" id="node14" href="$class_ensemble_clustering_1_1_graph.html#a4d1024eccff37ffb085025959d7e6ae3" title="NEIGHBORHOOD ITERATORS." alt="" coords="230,277,394,321"/>
+<area shape="rect" id="node16" href="$class_ensemble_clustering_1_1_graph.html#ad24e78f88db1eeadfbf3956cfa1e9ccf" title="EDGE ATTRIBUTE GETTERS." alt="" coords="242,345,382,389"/>
+<area shape="rect" id="node20" href="$class_ensemble_clustering_1_1_graph.html#a8e504170520b0746a2d169f82d863bab" title="EDGE ATTRIBUTE SETTERS." alt="" coords="242,413,382,457"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_matching.html#a6591583cd8dcd8ddc702cdbddcc42bd0" title="Check if node is matched." alt="" coords="446,141,597,185"/>
+<area shape="rect" id="node18" href="$class_ensemble_clustering_1_1_graph.html#a723838db1433dcbe4ac2679e0707d718" title="Return the index of v in the adjacency array of u." alt="" coords="451,345,592,389"/>
+<area shape="rect" id="node23" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="451,413,592,457"/>
+</map>

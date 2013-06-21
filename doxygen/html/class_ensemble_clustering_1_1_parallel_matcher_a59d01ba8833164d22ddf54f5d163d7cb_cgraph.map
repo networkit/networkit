@@ -1,0 +1,13 @@
+<map id="EnsembleClustering::ParallelMatcher::run" name="EnsembleClustering::ParallelMatcher::run">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="202,5,374,49"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="218,73,358,117"/>
+<area shape="rect" id="node7" href="$_functions_8h.html#a603edf7b14c4b441d4f1e6bb461dd98f" title="Given." alt="" coords="255,141,321,169"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_matching.html#a6591583cd8dcd8ddc702cdbddcc42bd0" title="Check if node is matched." alt="" coords="212,193,364,237"/>
+<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_graph.html#aab71cc92f41f6df6a1b51d5142f7ed66" title="Iterate over all incident edges of a node and call handler (lamdba closure)." alt="" coords="218,261,358,305"/>
+<area shape="rect" id="node13" href="$class_ensemble_clustering_1_1_graph.html#ad24e78f88db1eeadfbf3956cfa1e9ccf" title="EDGE ATTRIBUTE GETTERS." alt="" coords="218,329,358,373"/>
+<area shape="rect" id="node17" href="$class_ensemble_clustering_1_1_graph.html#a8967283828dca42d349991c8d35118db" title="EnsembleClustering\l::Graph::attribute_double" alt="" coords="204,397,372,441"/>
+<area shape="rect" id="node20" href="$class_ensemble_clustering_1_1_matching.html#a41f6ed1f3b1660fb682c32cf2ade11de" title="Set two nodes as eachothers matching partners." alt="" coords="218,465,358,509"/>
+<area shape="rect" id="node22" href="$class_ensemble_clustering_1_1_graph.html#a4d1024eccff37ffb085025959d7e6ae3" title="NEIGHBORHOOD ITERATORS." alt="" coords="206,533,370,577"/>
+<area shape="rect" id="node24" href="$class_ensemble_clustering_1_1_matching.html#ad2637dece8a3a56d9f62f3c9df4713db" title="Check if the two nodes are matched." alt="" coords="208,601,368,645"/>
+<area shape="rect" id="node15" href="$class_ensemble_clustering_1_1_graph.html#a723838db1433dcbe4ac2679e0707d718" title="Return the index of v in the adjacency array of u." alt="" coords="422,363,562,407"/>
+</map>
