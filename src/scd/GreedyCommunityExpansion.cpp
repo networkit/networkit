@@ -129,12 +129,9 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 std::unordered_map<node, std::unordered_set<node>> GreedyCommunityExpansion::run(std::unordered_set<node> set) {
 
 	std::unordered_map<node, std::unordered_set<node>> communities;
-<<<<<<< local
-	GreedyCommunityExpansion GCE;
 
-=======
 	GreedyCommunityExpansion GCE(G);
->>>>>>> other
+
 	for (node u : set) {
 		std::unordered_set<node> community = GCE.expandSeed(u);
 		communities.insert(std::pair<node, std::unordered_set<node>>(u, community));
