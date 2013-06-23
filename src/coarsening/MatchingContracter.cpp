@@ -17,7 +17,7 @@ MatchingContracter::~MatchingContracter() {
 
 }
 
-std::pair<Graph, NodeMap<node> > MatchingContracter::run(Graph& G, Matching& M) {
+std::pair<Graph, NodeMap<node> > MatchingContracter::run(Graph& G, Matching& M, bool noSelfLoops) {
 	count n = G.numberOfNodes();
 	count cn = n - M.size();
 	Graph cG(cn);
@@ -48,7 +48,9 @@ std::pair<Graph, NodeMap<node> > MatchingContracter::run(Graph& G, Matching& M) 
 			node cv = mapFineToCoarse[v];
 			node cu = mapFineToCoarse[u];
 			edgeweight ew = G.weight(v, u);
-			cG.setWeight(cv, cu, cG.weight(cv, cu) + ew);
+			if (! noSelfLoops || (cv != cu)) {
+				cG.setWeight(cv, cu, cG.weight(cv, cu) + ew);
+			}
 		});
 	});
 
