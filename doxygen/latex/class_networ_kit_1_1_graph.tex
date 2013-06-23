@@ -1,0 +1,1284 @@
+\hypertarget{class_networ_kit_1_1_graph}{\section{Networ\-Kit\-:\-:Graph Class Reference}
+\label{class_networ_kit_1_1_graph}\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}}
+}
+
+
+{\ttfamily \#include $<$Graph.\-h$>$}
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_networ_kit_1_1_graph_1_1_edge_attribute}{Edge\-Attribute}
+\item 
+class \hyperlink{class_networ_kit_1_1_graph_1_1_node_attribute}{Node\-Attribute}
+\begin{DoxyCompactList}\small\item\em A\-T\-T\-R\-I\-B\-U\-T\-E A\-B\-S\-T\-R\-A\-C\-T B\-A\-S\-E C\-L\-A\-S\-S\-E\-S. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_graph_aba688511045b476df066431fd797333b}{Graph} (\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} \hyperlink{class_networ_kit_1_1_graph_aae05e611d6d5eb42e045d374d73eb34a}{n})
+\begin{DoxyCompactList}\small\item\em G\-R\-A\-P\-H I\-N\-T\-E\-R\-F\-A\-C\-E. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_networ_kit_1_1_graph_a95159535740c13622832bd95cf04e553}{$\sim$\-Graph} ()
+\item 
+void \hyperlink{class_networ_kit_1_1_graph_ac40cbd88c3a2b65d33ce74236b805666}{set\-Name} (std\-::string \hyperlink{class_networ_kit_1_1_graph_aad1c9901bb8b7493df628469be54300a}{name})
+\begin{DoxyCompactList}\small\item\em Set name of graph. \end{DoxyCompactList}\item 
+std\-::string \hyperlink{class_networ_kit_1_1_graph_a51d60896a8ae08301cf6b2c0161f2c68}{get\-Name} ()
+\item 
+std\-::string \hyperlink{class_networ_kit_1_1_graph_a1ec9e68347696937a5d98d2b0bd610b3}{to\-String} ()
+\begin{DoxyCompactList}\small\item\em Get string representation. \end{DoxyCompactList}\item 
+void \hyperlink{class_networ_kit_1_1_graph_ac6c882c23df62222dab60887114c0b6a}{insert\-Edge} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v, \hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{edgeweight} \hyperlink{class_networ_kit_1_1_graph_a4cc21c97791b60088e735ef0c36583b8}{weight}=\hyperlink{class_networ_kit_1_1_graph_af32663b9ad67bae546281e7725db3519}{default\-Edge\-Weight})
+\begin{DoxyCompactList}\small\item\em Insert an undirected edge between two nodes. \end{DoxyCompactList}\item 
+bool \hyperlink{class_networ_kit_1_1_graph_a7a646fd6745ba9e7528170ff237232eb}{has\-Edge} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v) const 
+\begin{DoxyCompactList}\small\item\em Check if undirected edge \{u,v\} exists in G. \end{DoxyCompactList}\item 
+void \hyperlink{class_networ_kit_1_1_graph_a79d74bd437bf63f866a9da4ba11f270c}{remove\-Edge} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v)
+\begin{DoxyCompactList}\small\item\em Remove undirected edge between two nodes. \end{DoxyCompactList}\item 
+\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} \hyperlink{class_networ_kit_1_1_graph_a7a9ae1841eed3ab10520f89d94a50539}{degree} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v) const 
+\item 
+\hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{edgeweight} \hyperlink{class_networ_kit_1_1_graph_a48ace7ae9a931d69999d8fb55e563063}{weighted\-Degree} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v) const 
+\item 
+\hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{edgeweight} \hyperlink{class_networ_kit_1_1_graph_a4cc21c97791b60088e735ef0c36583b8}{weight} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v) const 
+\begin{DoxyCompactList}\small\item\em E\-D\-G\-E A\-T\-T\-R\-I\-B\-U\-T\-E G\-E\-T\-T\-E\-R\-S. \end{DoxyCompactList}\item 
+double \hyperlink{class_networ_kit_1_1_graph_a91cffc25cb2af288ce098fb9c2fcb192}{attribute\-\_\-double} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v, int attr\-Id) const 
+\item 
+void \hyperlink{class_networ_kit_1_1_graph_ad56d4fada3895f8446e58d7cd33ca274}{set\-Weight} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v, \hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{edgeweight} w)
+\begin{DoxyCompactList}\small\item\em E\-D\-G\-E A\-T\-T\-R\-I\-B\-U\-T\-E S\-E\-T\-T\-E\-R\-S. \end{DoxyCompactList}\item 
+void \hyperlink{class_networ_kit_1_1_graph_a05e6af930ba5b3ca6b74d1e3b2cffd0e}{set\-Attribute\-\_\-double} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v, int attr\-Id, double attr)
+\begin{DoxyCompactList}\small\item\em Set edge attribute of type double If the edge does not exist, it will be inserted. \end{DoxyCompactList}\item 
+\hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{edgeweight} \hyperlink{class_networ_kit_1_1_graph_a8c2ee66ae18da530bca98bfd0a13ed44}{total\-Edge\-Weight} ()
+\begin{DoxyCompactList}\small\item\em S\-U\-M\-S. \end{DoxyCompactList}\item 
+\hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{edgeweight} \hyperlink{class_networ_kit_1_1_graph_a01c5d8d5dc8ddbe3bef346d9e7a0de3c}{total\-Node\-Weight} ()
+\begin{DoxyCompactList}\small\item\em D\-E\-P\-R\-E\-C\-A\-T\-E\-D -\/ T\-O\-D\-O\-: update clients. \end{DoxyCompactList}\item 
+\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \hyperlink{class_networ_kit_1_1_graph_a6f6d56aae8ee494223164a54d30d4ea6}{add\-Node} ()
+\begin{DoxyCompactList}\small\item\em N\-O\-D\-E M\-O\-D\-I\-F\-I\-E\-R\-S. \end{DoxyCompactList}\item 
+void \hyperlink{class_networ_kit_1_1_graph_a9bd3b6558c856e8c5f4265aa337300d4}{extend\-Node\-Range} (int64\-\_\-t \hyperlink{class_networ_kit_1_1_graph_aae05e611d6d5eb42e045d374d73eb34a}{n})
+\begin{DoxyCompactList}\small\item\em After calling this, nodes 1..n exist in the graph. \end{DoxyCompactList}\item 
+bool \hyperlink{class_networ_kit_1_1_graph_a14c01e09942d12db12f3ff6efc8f63aa}{is\-Empty} ()
+\begin{DoxyCompactList}\small\item\em Return true if graph contains no nodes. \end{DoxyCompactList}\item 
+\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} \hyperlink{class_networ_kit_1_1_graph_afe664838b6341ceb708f3b42e0871cd8}{number\-Of\-Nodes} () const 
+\begin{DoxyCompactList}\small\item\em Return the number of nodes in the graph. \end{DoxyCompactList}\item 
+\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} \hyperlink{class_networ_kit_1_1_graph_a6625b34904eae267ca384c77a081f333}{number\-Of\-Edges} () const 
+\begin{DoxyCompactList}\small\item\em Return the number of edges in the graph. \end{DoxyCompactList}\item 
+\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} \hyperlink{class_networ_kit_1_1_graph_a467e6959962dc4600add8832602b5353}{number\-Of\-Self\-Loops} () const 
+\item 
+int \hyperlink{class_networ_kit_1_1_graph_a465160318e06e6e9b03299dd5774cb04}{add\-Edge\-Attribute\-\_\-double} (double default\-Value)
+\begin{DoxyCompactList}\small\item\em A\-T\-T\-R\-I\-B\-U\-T\-E\-S. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a56bdf60b5d0b9f11d4211fea53f87e7a}{for\-Nodes} (L handle)
+\begin{DoxyCompactList}\small\item\em N\-O\-D\-E I\-T\-E\-R\-A\-T\-O\-R\-S. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a078067eec8fdce7f09afd974724a7f66}{for\-Nodes} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all nodes of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a8633f553d0f134474f248e94faf3064d}{parallel\-For\-Nodes} (L handle)
+\begin{DoxyCompactList}\small\item\em Iterate in parallel over all nodes of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a72e5787ce9f3016853cbdde0f961d570}{balanced\-Parallel\-For\-Nodes} (L handle)
+\begin{DoxyCompactList}\small\item\em Iterate in parallel over all nodes of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_acd5d60cd2eda52401fe660e172185e01}{parallel\-For\-Nodes} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate in parallel over all nodes of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a498eb0beb05b992d12b246fcf3b76070}{for\-Node\-Pairs} (L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over all undirected pairs of nodesand call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a4d313c86d4fdb03af369ed33c2d66e02}{for\-Node\-Pairs} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all undirected pairs of nodesand call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a7b7ce5c377baf11553e700dbe76cfba5}{parallel\-For\-Node\-Pairs} (L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_afc68ceae56467a28d722a117f00bf50f}{parallel\-For\-Node\-Pairs} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a02659fe2c37176f0fdb3c2a5099c75cf}{breadth\-First\-Nodes\-From} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} r, std\-::vector$<$ int $>$ \&marked, L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over nodes in breadth-\/first search order starting from r until connected component of r has been visited. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a571265128780839333214b2d14d15e1b}{breadth\-First\-Edges\-From} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} r, L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over edges in breadth-\/first search order starting from node r until connected component of r has been visited. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_ae182c231c108a4ff329f79e4eec28bc6}{for\-Nodes\-With\-Attribute} (std\-::string attr\-Key, L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over all nodes of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a23a817e845887e6d2be9b42180448282}{for\-Edges} (L handle)
+\begin{DoxyCompactList}\small\item\em E\-D\-G\-E I\-T\-E\-R\-A\-T\-O\-R\-S. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a664cd528e003b9d530b9844412c9c243}{for\-Edges} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all edges of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a22c0e86e32fa99bb6f883bc63c42134a}{parallel\-For\-Edges} (L handle)
+\begin{DoxyCompactList}\small\item\em Iterate in parallel over all edges of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a107e9f9e74bee51de04b20fd8577db48}{parallel\-For\-Edges} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate in parallel over all edges of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a5cfc35c769c1edc8805aa9b93ac096cf}{for\-Weighted\-Edges} (L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over all edges of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a561e122e5eec4a7a5fb6867fc01b6dec}{for\-Weighted\-Edges} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all edges of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_ab015dda7fdcfe35c2b61473c47f76348}{parallel\-For\-Weighted\-Edges} (L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over all edges of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a517abe475e68e421037a99fe2945f96a}{parallel\-For\-Weighted\-Edges} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all edges of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_aaa1d8ce38bb9d2603ea2426f920699d6}{for\-Edges\-With\-Attribute\-\_\-double} (int attr\-Id, L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over all edges of the graph and call handler (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a7b0d575c9fa66d075bd6d81c1593f081}{for\-Neighbors\-Of} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, L handle)
+\begin{DoxyCompactList}\small\item\em N\-E\-I\-G\-H\-B\-O\-R\-H\-O\-O\-D I\-T\-E\-R\-A\-T\-O\-R\-S. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a87e7e61da8108f72de37893f8a2a7c4d}{for\-Neighbors\-Of} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all neighbors of a node and call handler (lamdba closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a62c59e656987e72e2386a70635e978e1}{for\-Weighted\-Neighbors\-Of} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over all edge weights of a node and call handler (lamdba closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_af94709f5bb5ee071d5d1e0b4292db525}{for\-Weighted\-Neighbors\-Of} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all edge weights of a node and call handler (lamdba closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_afc892cbb7e1df4a83c718decae4ad377}{for\-Edges\-Of} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over all incident edges of a node and call handler (lamdba closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a7d7d282c67bbe28e5d38086f4a7ca2c9}{for\-Edges\-Of} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all incident edges of a node and call handler (lamdba closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a8ae088eb738bd7d985196a62f3e3b8a1}{for\-Weighted\-Edges\-Of} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, L handle)
+\begin{DoxyCompactList}\small\item\em Iterate over all incident edges of a node and call handler (lamdba closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\void \hyperlink{class_networ_kit_1_1_graph_a7def131befb3c0fc285f4774b5c9d634}{for\-Weighted\-Edges\-Of} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all incident edges of a node and call handler (lamdba closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\float \hyperlink{class_networ_kit_1_1_graph_ae5ac84a0a10e142fd93217f435eb574d}{parallel\-Sum\-For\-Nodes} (L handle)
+\begin{DoxyCompactList}\small\item\em R\-E\-D\-U\-C\-T\-I\-O\-N I\-T\-E\-R\-A\-T\-O\-R\-S. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\float \hyperlink{class_networ_kit_1_1_graph_ae9c20cc5e11189b892bb264a1d2f779f}{parallel\-Sum\-For\-Nodes} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename L $>$ }\\float \hyperlink{class_networ_kit_1_1_graph_ae621cf042fa8d136ea4353c1044acd9e}{parallel\-Sum\-For\-Weighted\-Edges} (L handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate in parallel over all edges and sum (reduce +) the values returned by the handler. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespace_networ_kit_af49e67df68af41dcd75dffbb1e9abee6}{index} \hyperlink{class_networ_kit_1_1_graph_a4c6dde807d9cd6dd53f3a4794d411528}{find} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v) const 
+\begin{DoxyCompactList}\small\item\em Return the index of v in the adjacency array of u. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} \hyperlink{class_networ_kit_1_1_graph_aae05e611d6d5eb42e045d374d73eb34a}{n}
+\begin{DoxyCompactList}\small\item\em number of nodes \end{DoxyCompactList}\item 
+std\-::vector$<$ \hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} $>$ \hyperlink{class_networ_kit_1_1_graph_a264a36a2017c51a1c3f71e7429e47b22}{deg}
+\begin{DoxyCompactList}\small\item\em degree of each node \end{DoxyCompactList}\item 
+std\-::vector$<$ std\-::vector$<$ \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} $>$ $>$ \hyperlink{class_networ_kit_1_1_graph_ad731885a6d7d7cf22ec8a8babc77d389}{adja}
+\begin{DoxyCompactList}\small\item\em neighbors/adjacencies \end{DoxyCompactList}\item 
+std\-::vector$<$ std\-::vector\\*
+$<$ \hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{edgeweight} $>$ $>$ \hyperlink{class_networ_kit_1_1_graph_a6fb34025f32ff2850911ee0e90b085fa}{eweights}
+\begin{DoxyCompactList}\small\item\em edge weights \end{DoxyCompactList}\item 
+std\-::string \hyperlink{class_networ_kit_1_1_graph_aad1c9901bb8b7493df628469be54300a}{name}
+\item 
+std\-::vector$<$ std\-::vector\\*
+$<$ std\-::vector$<$ double $>$ $>$ $>$ \hyperlink{class_networ_kit_1_1_graph_a63a00d1d3330ce8050fcd77794ec8d45}{edge\-Maps\-\_\-double}
+\item 
+std\-::vector$<$ double $>$ \hyperlink{class_networ_kit_1_1_graph_ac3f25277b53638e1486cde303803eb0a}{edge\-Attr\-Defaults\-\_\-double}
+\end{DoxyCompactItemize}
+\subsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static constexpr double \hyperlink{class_networ_kit_1_1_graph_af32663b9ad67bae546281e7725db3519}{default\-Edge\-Weight} = 1.\-00
+\item 
+static constexpr \hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{edgeweight} \hyperlink{class_networ_kit_1_1_graph_a4b97f82f62865c47a7a2e1309f90c676}{null\-Weight} = 0.\-0
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 34 of file Graph.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_graph_aba688511045b476df066431fd797333b}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!Graph@{Graph}}
+\index{Graph@{Graph}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{Graph}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Graph\-::\-Graph (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{n}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_aba688511045b476df066431fd797333b}
+
+
+G\-R\-A\-P\-H I\-N\-T\-E\-R\-F\-A\-C\-E. 
+
+
+
+Definition at line 12 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a95159535740c13622832bd95cf04e553}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!$\sim$\-Graph@{$\sim$\-Graph}}
+\index{$\sim$\-Graph@{$\sim$\-Graph}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{$\sim$\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Graph\-::$\sim$\-Graph (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_graph_a95159535740c13622832bd95cf04e553}
+
+
+Definition at line 20 of file Graph.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_graph_a465160318e06e6e9b03299dd5774cb04}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!add\-Edge\-Attribute\-\_\-double@{add\-Edge\-Attribute\-\_\-double}}
+\index{add\-Edge\-Attribute\-\_\-double@{add\-Edge\-Attribute\-\_\-double}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{add\-Edge\-Attribute\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}int Networ\-Kit\-::\-Graph\-::add\-Edge\-Attribute\-\_\-double (
+\begin{DoxyParamCaption}
+\item[{double}]{default\-Value}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a465160318e06e6e9b03299dd5774cb04}
+
+
+A\-T\-T\-R\-I\-B\-U\-T\-E\-S. 
+
+Add new edge map for an attribute of type float. 
+
+Definition at line 259 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a465160318e06e6e9b03299dd5774cb04_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_a6f6d56aae8ee494223164a54d30d4ea6}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!add\-Node@{add\-Node}}
+\index{add\-Node@{add\-Node}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{add\-Node}]{\setlength{\rightskip}{0pt plus 5cm}{\bf node} Networ\-Kit\-::\-Graph\-::add\-Node (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a6f6d56aae8ee494223164a54d30d4ea6}
+
+
+N\-O\-D\-E M\-O\-D\-I\-F\-I\-E\-R\-S. 
+
+Add a new node to the graph and return it. 
+
+Definition at line 120 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a91cffc25cb2af288ce098fb9c2fcb192}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!attribute\-\_\-double@{attribute\-\_\-double}}
+\index{attribute\-\_\-double@{attribute\-\_\-double}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{attribute\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}double Networ\-Kit\-::\-Graph\-::attribute\-\_\-double (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v, }
+\item[{int}]{attr\-Id}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_graph_a91cffc25cb2af288ce098fb9c2fcb192}
+\begin{DoxyReturn}{Returns}
+attribute of type double for an edge.
+\end{DoxyReturn}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & node \\
+\hline
+\mbox{\tt in}  & {\em v} & node \\
+\hline
+\mbox{\tt in}  & {\em attr\-Id} & attribute id \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 238 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a91cffc25cb2af288ce098fb9c2fcb192_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_a72e5787ce9f3016853cbdde0f961d570}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!balanced\-Parallel\-For\-Nodes@{balanced\-Parallel\-For\-Nodes}}
+\index{balanced\-Parallel\-For\-Nodes@{balanced\-Parallel\-For\-Nodes}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{balanced\-Parallel\-For\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::balanced\-Parallel\-For\-Nodes (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a72e5787ce9f3016853cbdde0f961d570}
+
+
+Iterate in parallel over all nodes of the graph and call handler (lambda closure). 
+
+Using schedule(guided) to remedy load-\/imbalances due to e.\-g. unequal degree distribution. 
+
+Definition at line 531 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a571265128780839333214b2d14d15e1b}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!breadth\-First\-Edges\-From@{breadth\-First\-Edges\-From}}
+\index{breadth\-First\-Edges\-From@{breadth\-First\-Edges\-From}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{breadth\-First\-Edges\-From}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::breadth\-First\-Edges\-From (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{r, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a571265128780839333214b2d14d15e1b}
+
+
+Iterate over edges in breadth-\/first search order starting from node r until connected component of r has been visited. 
+
+
+
+Definition at line 707 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a02659fe2c37176f0fdb3c2a5099c75cf}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!breadth\-First\-Nodes\-From@{breadth\-First\-Nodes\-From}}
+\index{breadth\-First\-Nodes\-From@{breadth\-First\-Nodes\-From}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{breadth\-First\-Nodes\-From}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::breadth\-First\-Nodes\-From (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{r, }
+\item[{std\-::vector$<$ int $>$ \&}]{marked, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a02659fe2c37176f0fdb3c2a5099c75cf}
+
+
+Iterate over nodes in breadth-\/first search order starting from r until connected component of r has been visited. 
+
+
+
+Definition at line 645 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a7a9ae1841eed3ab10520f89d94a50539}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!degree@{degree}}
+\index{degree@{degree}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{degree}]{\setlength{\rightskip}{0pt plus 5cm}{\bf count} Networ\-Kit\-::\-Graph\-::degree (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_graph_a7a9ae1841eed3ab10520f89d94a50539}
+\begin{DoxyReturn}{Returns}
+Number of neighbors. 
+\end{DoxyReturn}
+
+
+Definition at line 155 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a9bd3b6558c856e8c5f4265aa337300d4}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!extend\-Node\-Range@{extend\-Node\-Range}}
+\index{extend\-Node\-Range@{extend\-Node\-Range}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{extend\-Node\-Range}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Graph\-::extend\-Node\-Range (
+\begin{DoxyParamCaption}
+\item[{int64\-\_\-t}]{n}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a9bd3b6558c856e8c5f4265aa337300d4}
+
+
+After calling this, nodes 1..n exist in the graph. 
+
+
+
+Definition at line 142 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a4c6dde807d9cd6dd53f3a4794d411528}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!find@{find}}
+\index{find@{find}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{find}]{\setlength{\rightskip}{0pt plus 5cm}{\bf index} Networ\-Kit\-::\-Graph\-::find (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_a4c6dde807d9cd6dd53f3a4794d411528}
+
+
+Return the index of v in the adjacency array of u. 
+
+
+
+Definition at line 25 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a23a817e845887e6d2be9b42180448282}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Edges@{for\-Edges}}
+\index{for\-Edges@{for\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Edges (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a23a817e845887e6d2be9b42180448282}
+
+
+E\-D\-G\-E I\-T\-E\-R\-A\-T\-O\-R\-S. 
+
+Iterate over all edges of the graph and call handler (lambda closure). 
+
+Definition at line 579 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a664cd528e003b9d530b9844412c9c243}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Edges@{for\-Edges}}
+\index{for\-Edges@{for\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Edges (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a664cd528e003b9d530b9844412c9c243}
+
+
+Iterate over all edges of the graph and call handler (lambda closure). 
+
+
+
+Definition at line 590 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_afc892cbb7e1df4a83c718decae4ad377}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Edges\-Of@{for\-Edges\-Of}}
+\index{for\-Edges\-Of@{for\-Edges\-Of}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Edges\-Of}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Edges\-Of (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_afc892cbb7e1df4a83c718decae4ad377}
+
+
+Iterate over all incident edges of a node and call handler (lamdba closure). 
+
+
+
+Definition at line 667 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a7d7d282c67bbe28e5d38086f4a7ca2c9}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Edges\-Of@{for\-Edges\-Of}}
+\index{for\-Edges\-Of@{for\-Edges\-Of}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Edges\-Of}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Edges\-Of (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a7d7d282c67bbe28e5d38086f4a7ca2c9}
+
+
+Iterate over all incident edges of a node and call handler (lamdba closure). 
+
+
+
+Definition at line 676 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_aaa1d8ce38bb9d2603ea2426f920699d6}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Edges\-With\-Attribute\-\_\-double@{for\-Edges\-With\-Attribute\-\_\-double}}
+\index{for\-Edges\-With\-Attribute\-\_\-double@{for\-Edges\-With\-Attribute\-\_\-double}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Edges\-With\-Attribute\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Edges\-With\-Attribute\-\_\-double (
+\begin{DoxyParamCaption}
+\item[{int}]{attr\-Id, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_aaa1d8ce38bb9d2603ea2426f920699d6}
+
+
+Iterate over all edges of the graph and call handler (lambda closure). 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em attr\-Id} & attribute id \\
+\hline
+\mbox{\tt in}  & {\em handle} & takes arguments (u, v, a) where a is an edge attribute of edge \{u, v\} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 830 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a7b0d575c9fa66d075bd6d81c1593f081}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Neighbors\-Of@{for\-Neighbors\-Of}}
+\index{for\-Neighbors\-Of@{for\-Neighbors\-Of}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Neighbors\-Of}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Neighbors\-Of (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a7b0d575c9fa66d075bd6d81c1593f081}
+
+
+N\-E\-I\-G\-H\-B\-O\-R\-H\-O\-O\-D I\-T\-E\-R\-A\-T\-O\-R\-S. 
+
+Iterate over all neighbors of a node and call handler (lamdba closure).
+
+(Note that a node is its own neighbor if there is a self-\/loop.) 
+
+Definition at line 453 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a87e7e61da8108f72de37893f8a2a7c4d}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Neighbors\-Of@{for\-Neighbors\-Of}}
+\index{for\-Neighbors\-Of@{for\-Neighbors\-Of}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Neighbors\-Of}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Neighbors\-Of (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a87e7e61da8108f72de37893f8a2a7c4d}
+
+
+Iterate over all neighbors of a node and call handler (lamdba closure). 
+
+
+
+Definition at line 462 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a498eb0beb05b992d12b246fcf3b76070}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Node\-Pairs@{for\-Node\-Pairs}}
+\index{for\-Node\-Pairs@{for\-Node\-Pairs}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Node\-Pairs}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Node\-Pairs (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a498eb0beb05b992d12b246fcf3b76070}
+
+
+Iterate over all undirected pairs of nodesand call handler (lambda closure). 
+
+
+
+Definition at line 625 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a4d313c86d4fdb03af369ed33c2d66e02}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Node\-Pairs@{for\-Node\-Pairs}}
+\index{for\-Node\-Pairs@{for\-Node\-Pairs}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Node\-Pairs}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Node\-Pairs (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a4d313c86d4fdb03af369ed33c2d66e02}
+
+
+Iterate over all undirected pairs of nodesand call handler (lambda closure). 
+
+
+
+Definition at line 635 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a56bdf60b5d0b9f11d4211fea53f87e7a}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Nodes@{for\-Nodes}}
+\index{for\-Nodes@{for\-Nodes}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Nodes (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a56bdf60b5d0b9f11d4211fea53f87e7a}
+
+
+N\-O\-D\-E I\-T\-E\-R\-A\-T\-O\-R\-S. 
+
+Iterate over all nodes of the graph and call handler (lambda closure). 
+
+Definition at line 497 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a078067eec8fdce7f09afd974724a7f66}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Nodes@{for\-Nodes}}
+\index{for\-Nodes@{for\-Nodes}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Nodes (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a078067eec8fdce7f09afd974724a7f66}
+
+
+Iterate over all nodes of the graph and call handler (lambda closure). 
+
+
+
+Definition at line 505 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_ae182c231c108a4ff329f79e4eec28bc6}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Nodes\-With\-Attribute@{for\-Nodes\-With\-Attribute}}
+\index{for\-Nodes\-With\-Attribute@{for\-Nodes\-With\-Attribute}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Nodes\-With\-Attribute}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Nodes\-With\-Attribute (
+\begin{DoxyParamCaption}
+\item[{std\-::string}]{attr\-Key, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_ae182c231c108a4ff329f79e4eec28bc6}
+
+
+Iterate over all nodes of the graph and call handler (lambda closure). 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em attr\-Key} & attribute key \\
+\hline
+\mbox{\tt in}  & {\em handle} & takes parameters (v, a) where a is a node attribute \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 793 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a5cfc35c769c1edc8805aa9b93ac096cf}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Weighted\-Edges@{for\-Weighted\-Edges}}
+\index{for\-Weighted\-Edges@{for\-Weighted\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Weighted\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Weighted\-Edges (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a5cfc35c769c1edc8805aa9b93ac096cf}
+
+
+Iterate over all edges of the graph and call handler (lambda closure). 
+
+Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight. 
+
+Definition at line 713 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a561e122e5eec4a7a5fb6867fc01b6dec}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Weighted\-Edges@{for\-Weighted\-Edges}}
+\index{for\-Weighted\-Edges@{for\-Weighted\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Weighted\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Weighted\-Edges (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a561e122e5eec4a7a5fb6867fc01b6dec}
+
+
+Iterate over all edges of the graph and call handler (lambda closure). 
+
+Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight. 
+
+Definition at line 726 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a8ae088eb738bd7d985196a62f3e3b8a1}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Weighted\-Edges\-Of@{for\-Weighted\-Edges\-Of}}
+\index{for\-Weighted\-Edges\-Of@{for\-Weighted\-Edges\-Of}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Weighted\-Edges\-Of}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Weighted\-Edges\-Of (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a8ae088eb738bd7d985196a62f3e3b8a1}
+
+
+Iterate over all incident edges of a node and call handler (lamdba closure). 
+
+Handle takes parameters (u, v, w) where w is the edge weight. 
+
+Definition at line 768 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a7def131befb3c0fc285f4774b5c9d634}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Weighted\-Edges\-Of@{for\-Weighted\-Edges\-Of}}
+\index{for\-Weighted\-Edges\-Of@{for\-Weighted\-Edges\-Of}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Weighted\-Edges\-Of}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Weighted\-Edges\-Of (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a7def131befb3c0fc285f4774b5c9d634}
+
+
+Iterate over all incident edges of a node and call handler (lamdba closure). 
+
+Handle takes parameters (u, v, w) where w is the edge weight. 
+
+Definition at line 781 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a62c59e656987e72e2386a70635e978e1}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Weighted\-Neighbors\-Of@{for\-Weighted\-Neighbors\-Of}}
+\index{for\-Weighted\-Neighbors\-Of@{for\-Weighted\-Neighbors\-Of}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Weighted\-Neighbors\-Of}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Weighted\-Neighbors\-Of (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a62c59e656987e72e2386a70635e978e1}
+
+
+Iterate over all edge weights of a node and call handler (lamdba closure). 
+
+
+
+Definition at line 471 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_af94709f5bb5ee071d5d1e0b4292db525}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!for\-Weighted\-Neighbors\-Of@{for\-Weighted\-Neighbors\-Of}}
+\index{for\-Weighted\-Neighbors\-Of@{for\-Weighted\-Neighbors\-Of}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{for\-Weighted\-Neighbors\-Of}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::for\-Weighted\-Neighbors\-Of (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_af94709f5bb5ee071d5d1e0b4292db525}
+
+
+Iterate over all edge weights of a node and call handler (lamdba closure). 
+
+
+
+Definition at line 484 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a51d60896a8ae08301cf6b2c0161f2c68}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!get\-Name@{get\-Name}}
+\index{get\-Name@{get\-Name}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{get\-Name}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Networ\-Kit\-::\-Graph\-::get\-Name (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a51d60896a8ae08301cf6b2c0161f2c68}
+
+
+Definition at line 200 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a7a646fd6745ba9e7528170ff237232eb}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!has\-Edge@{has\-Edge}}
+\index{has\-Edge@{has\-Edge}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{has\-Edge}]{\setlength{\rightskip}{0pt plus 5cm}bool Networ\-Kit\-::\-Graph\-::has\-Edge (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_graph_a7a646fd6745ba9e7528170ff237232eb}
+
+
+Check if undirected edge \{u,v\} exists in G. 
+
+
+
+Definition at line 116 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a7a646fd6745ba9e7528170ff237232eb_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_ac6c882c23df62222dab60887114c0b6a}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!insert\-Edge@{insert\-Edge}}
+\index{insert\-Edge@{insert\-Edge}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{insert\-Edge}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Graph\-::insert\-Edge (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v, }
+\item[{{\bf edgeweight}}]{weight = {\ttfamily {\bf default\-Edge\-Weight}}}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_ac6c882c23df62222dab60887114c0b6a}
+
+
+Insert an undirected edge between two nodes. 
+
+
+
+Definition at line 37 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a14c01e09942d12db12f3ff6efc8f63aa}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!is\-Empty@{is\-Empty}}
+\index{is\-Empty@{is\-Empty}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{is\-Empty}]{\setlength{\rightskip}{0pt plus 5cm}bool Networ\-Kit\-::\-Graph\-::is\-Empty (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a14c01e09942d12db12f3ff6efc8f63aa}
+
+
+Return true if graph contains no nodes. 
+
+
+
+Definition at line 147 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a6625b34904eae267ca384c77a081f333}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!number\-Of\-Edges@{number\-Of\-Edges}}
+\index{number\-Of\-Edges@{number\-Of\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{number\-Of\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}int64\-\_\-t Networ\-Kit\-::\-Graph\-::number\-Of\-Edges (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_graph_a6625b34904eae267ca384c77a081f333}
+
+
+Return the number of edges in the graph. 
+
+This involves calculation, so store result if needed multiple times. 
+
+Definition at line 170 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a6625b34904eae267ca384c77a081f333_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_afe664838b6341ceb708f3b42e0871cd8}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!number\-Of\-Nodes@{number\-Of\-Nodes}}
+\index{number\-Of\-Nodes@{number\-Of\-Nodes}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{number\-Of\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}int64\-\_\-t Networ\-Kit\-::\-Graph\-::number\-Of\-Nodes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_graph_afe664838b6341ceb708f3b42e0871cd8}
+
+
+Return the number of nodes in the graph. 
+
+
+
+Definition at line 151 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a467e6959962dc4600add8832602b5353}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!number\-Of\-Self\-Loops@{number\-Of\-Self\-Loops}}
+\index{number\-Of\-Self\-Loops@{number\-Of\-Self\-Loops}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{number\-Of\-Self\-Loops}]{\setlength{\rightskip}{0pt plus 5cm}{\bf count} Networ\-Kit\-::\-Graph\-::number\-Of\-Self\-Loops (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_graph_a467e6959962dc4600add8832602b5353}
+\begin{DoxyReturn}{Returns}
+the number of loops \{v, v\} in the graph.
+\end{DoxyReturn}
+This involves calculation, so store result if needed multiple times. 
+
+Definition at line 249 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a467e6959962dc4600add8832602b5353_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_a22c0e86e32fa99bb6f883bc63c42134a}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-For\-Edges@{parallel\-For\-Edges}}
+\index{parallel\-For\-Edges@{parallel\-For\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-For\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::parallel\-For\-Edges (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a22c0e86e32fa99bb6f883bc63c42134a}
+
+
+Iterate in parallel over all edges of the graph and call handler (lambda closure). 
+
+
+
+Definition at line 601 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a107e9f9e74bee51de04b20fd8577db48}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-For\-Edges@{parallel\-For\-Edges}}
+\index{parallel\-For\-Edges@{parallel\-For\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-For\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::parallel\-For\-Edges (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a107e9f9e74bee51de04b20fd8577db48}
+
+
+Iterate in parallel over all edges of the graph and call handler (lambda closure). 
+
+
+
+Definition at line 613 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a7b7ce5c377baf11553e700dbe76cfba5}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-For\-Node\-Pairs@{parallel\-For\-Node\-Pairs}}
+\index{parallel\-For\-Node\-Pairs@{parallel\-For\-Node\-Pairs}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-For\-Node\-Pairs}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::parallel\-For\-Node\-Pairs (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a7b7ce5c377baf11553e700dbe76cfba5}
+
+
+Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure). 
+
+
+
+Definition at line 685 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_afc68ceae56467a28d722a117f00bf50f}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-For\-Node\-Pairs@{parallel\-For\-Node\-Pairs}}
+\index{parallel\-For\-Node\-Pairs@{parallel\-For\-Node\-Pairs}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-For\-Node\-Pairs}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::parallel\-For\-Node\-Pairs (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_afc68ceae56467a28d722a117f00bf50f}
+
+
+Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure). 
+
+
+
+Definition at line 696 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a8633f553d0f134474f248e94faf3064d}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-For\-Nodes@{parallel\-For\-Nodes}}
+\index{parallel\-For\-Nodes@{parallel\-For\-Nodes}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-For\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::parallel\-For\-Nodes (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a8633f553d0f134474f248e94faf3064d}
+
+
+Iterate in parallel over all nodes of the graph and call handler (lambda closure). 
+
+
+
+Definition at line 513 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_acd5d60cd2eda52401fe660e172185e01}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-For\-Nodes@{parallel\-For\-Nodes}}
+\index{parallel\-For\-Nodes@{parallel\-For\-Nodes}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-For\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::parallel\-For\-Nodes (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_acd5d60cd2eda52401fe660e172185e01}
+
+
+Iterate in parallel over all nodes of the graph and call handler (lambda closure). 
+
+
+
+Definition at line 522 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_ab015dda7fdcfe35c2b61473c47f76348}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-For\-Weighted\-Edges@{parallel\-For\-Weighted\-Edges}}
+\index{parallel\-For\-Weighted\-Edges@{parallel\-For\-Weighted\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-For\-Weighted\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::parallel\-For\-Weighted\-Edges (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_ab015dda7fdcfe35c2b61473c47f76348}
+
+
+Iterate over all edges of the graph and call handler (lambda closure). 
+
+Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight. 
+
+Definition at line 739 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a517abe475e68e421037a99fe2945f96a}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-For\-Weighted\-Edges@{parallel\-For\-Weighted\-Edges}}
+\index{parallel\-For\-Weighted\-Edges@{parallel\-For\-Weighted\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-For\-Weighted\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ void Networ\-Kit\-::\-Graph\-::parallel\-For\-Weighted\-Edges (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_a517abe475e68e421037a99fe2945f96a}
+
+
+Iterate over all edges of the graph and call handler (lambda closure). 
+
+Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight. 
+
+Definition at line 753 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_ae5ac84a0a10e142fd93217f435eb574d}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-Sum\-For\-Nodes@{parallel\-Sum\-For\-Nodes}}
+\index{parallel\-Sum\-For\-Nodes@{parallel\-Sum\-For\-Nodes}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-Sum\-For\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ float Networ\-Kit\-::\-Graph\-::parallel\-Sum\-For\-Nodes (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_ae5ac84a0a10e142fd93217f435eb574d}
+
+
+R\-E\-D\-U\-C\-T\-I\-O\-N I\-T\-E\-R\-A\-T\-O\-R\-S. 
+
+Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler 
+
+Definition at line 541 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_ae9c20cc5e11189b892bb264a1d2f779f}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-Sum\-For\-Nodes@{parallel\-Sum\-For\-Nodes}}
+\index{parallel\-Sum\-For\-Nodes@{parallel\-Sum\-For\-Nodes}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-Sum\-For\-Nodes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ float Networ\-Kit\-::\-Graph\-::parallel\-Sum\-For\-Nodes (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_graph_ae9c20cc5e11189b892bb264a1d2f779f}
+
+
+Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler. 
+
+
+
+Definition at line 552 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_ae621cf042fa8d136ea4353c1044acd9e}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!parallel\-Sum\-For\-Weighted\-Edges@{parallel\-Sum\-For\-Weighted\-Edges}}
+\index{parallel\-Sum\-For\-Weighted\-Edges@{parallel\-Sum\-For\-Weighted\-Edges}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{parallel\-Sum\-For\-Weighted\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename L $>$ float Networ\-Kit\-::\-Graph\-::parallel\-Sum\-For\-Weighted\-Edges (
+\begin{DoxyParamCaption}
+\item[{L}]{handle}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_graph_ae621cf042fa8d136ea4353c1044acd9e}
+
+
+Iterate in parallel over all edges and sum (reduce +) the values returned by the handler. 
+
+
+
+Definition at line 563 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a79d74bd437bf63f866a9da4ba11f270c}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!remove\-Edge@{remove\-Edge}}
+\index{remove\-Edge@{remove\-Edge}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{remove\-Edge}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Graph\-::remove\-Edge (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a79d74bd437bf63f866a9da4ba11f270c}
+
+
+Remove undirected edge between two nodes. 
+
+
+
+Definition at line 65 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a79d74bd437bf63f866a9da4ba11f270c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_a05e6af930ba5b3ca6b74d1e3b2cffd0e}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!set\-Attribute\-\_\-double@{set\-Attribute\-\_\-double}}
+\index{set\-Attribute\-\_\-double@{set\-Attribute\-\_\-double}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{set\-Attribute\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Graph\-::set\-Attribute\-\_\-double (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v, }
+\item[{int}]{attr\-Id, }
+\item[{double}]{attr}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a05e6af930ba5b3ca6b74d1e3b2cffd0e}
+
+
+Set edge attribute of type double If the edge does not exist, it will be inserted. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & endpoint of edge \\
+\hline
+\mbox{\tt in}  & {\em v} & endpoint of edge \\
+\hline
+\mbox{\tt in}  & {\em attr} & double edge attribute \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 209 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a05e6af930ba5b3ca6b74d1e3b2cffd0e_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_ac40cbd88c3a2b65d33ce74236b805666}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!set\-Name@{set\-Name}}
+\index{set\-Name@{set\-Name}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{set\-Name}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Graph\-::set\-Name (
+\begin{DoxyParamCaption}
+\item[{std\-::string}]{name}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_ac40cbd88c3a2b65d33ce74236b805666}
+
+
+Set name of graph. 
+
+
+
+Definition at line 189 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_ad56d4fada3895f8446e58d7cd33ca274}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!set\-Weight@{set\-Weight}}
+\index{set\-Weight@{set\-Weight}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{set\-Weight}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Graph\-::set\-Weight (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v, }
+\item[{{\bf edgeweight}}]{w}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_ad56d4fada3895f8446e58d7cd33ca274}
+
+
+E\-D\-G\-E A\-T\-T\-R\-I\-B\-U\-T\-E S\-E\-T\-T\-E\-R\-S. 
+
+Set the weight of an edge. If the edge does not exist, it will be inserted.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & endpoint of edge \\
+\hline
+\mbox{\tt in}  & {\em v} & endpoint of edge \\
+\hline
+\mbox{\tt in}  & {\em weight} & edge weight \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 95 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_ad56d4fada3895f8446e58d7cd33ca274_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_a1ec9e68347696937a5d98d2b0bd610b3}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!to\-String@{to\-String}}
+\index{to\-String@{to\-String}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{to\-String}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Networ\-Kit\-::\-Graph\-::to\-String (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a1ec9e68347696937a5d98d2b0bd610b3}
+
+
+Get string representation. 
+
+
+
+Definition at line 193 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a1ec9e68347696937a5d98d2b0bd610b3_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_a8c2ee66ae18da530bca98bfd0a13ed44}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!total\-Edge\-Weight@{total\-Edge\-Weight}}
+\index{total\-Edge\-Weight@{total\-Edge\-Weight}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{total\-Edge\-Weight}]{\setlength{\rightskip}{0pt plus 5cm}{\bf edgeweight} Networ\-Kit\-::\-Graph\-::total\-Edge\-Weight (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a8c2ee66ae18da530bca98bfd0a13ed44}
+
+
+S\-U\-M\-S. 
+
+\begin{DoxyReturn}{Returns}
+sum of all edge weights 
+\end{DoxyReturn}
+
+
+Definition at line 181 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a8c2ee66ae18da530bca98bfd0a13ed44_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_a01c5d8d5dc8ddbe3bef346d9e7a0de3c}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!total\-Node\-Weight@{total\-Node\-Weight}}
+\index{total\-Node\-Weight@{total\-Node\-Weight}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{total\-Node\-Weight}]{\setlength{\rightskip}{0pt plus 5cm}{\bf edgeweight} Networ\-Kit\-::\-Graph\-::total\-Node\-Weight (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_graph_a01c5d8d5dc8ddbe3bef346d9e7a0de3c}
+
+
+D\-E\-P\-R\-E\-C\-A\-T\-E\-D -\/ T\-O\-D\-O\-: update clients. 
+
+
+
+Definition at line 205 of file Graph.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_graph_a4cc21c97791b60088e735ef0c36583b8}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!weight@{weight}}
+\index{weight@{weight}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{weight}]{\setlength{\rightskip}{0pt plus 5cm}{\bf edgeweight} Networ\-Kit\-::\-Graph\-::weight (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_graph_a4cc21c97791b60088e735ef0c36583b8}
+
+
+E\-D\-G\-E A\-T\-T\-R\-I\-B\-U\-T\-E G\-E\-T\-T\-E\-R\-S. 
+
+Return edge weight.
+
+Return 0 if edge does not exist. 
+
+Definition at line 86 of file Graph.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_graph_a4cc21c97791b60088e735ef0c36583b8_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_graph_a48ace7ae9a931d69999d8fb55e563063}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!weighted\-Degree@{weighted\-Degree}}
+\index{weighted\-Degree@{weighted\-Degree}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{weighted\-Degree}]{\setlength{\rightskip}{0pt plus 5cm}{\bf edgeweight} Networ\-Kit\-::\-Graph\-::weighted\-Degree (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_graph_a48ace7ae9a931d69999d8fb55e563063}
+\begin{DoxyReturn}{Returns}
+Weighted degree of {\itshape v}. 
+\end{DoxyReturn}
+
+
+Definition at line 159 of file Graph.\-cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_networ_kit_1_1_graph_ad731885a6d7d7cf22ec8a8babc77d389}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!adja@{adja}}
+\index{adja@{adja}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{adja}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$std\-::vector$<${\bf node}$>$ $>$ Networ\-Kit\-::\-Graph\-::adja\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_ad731885a6d7d7cf22ec8a8babc77d389}
+
+
+neighbors/adjacencies 
+
+
+
+Definition at line 49 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_af32663b9ad67bae546281e7725db3519}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!default\-Edge\-Weight@{default\-Edge\-Weight}}
+\index{default\-Edge\-Weight@{default\-Edge\-Weight}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{default\-Edge\-Weight}]{\setlength{\rightskip}{0pt plus 5cm}constexpr double Networ\-Kit\-::\-Graph\-::default\-Edge\-Weight = 1.\-00\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_af32663b9ad67bae546281e7725db3519}
+
+
+Definition at line 39 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a264a36a2017c51a1c3f71e7429e47b22}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!deg@{deg}}
+\index{deg@{deg}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{deg}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<${\bf count}$>$ Networ\-Kit\-::\-Graph\-::deg\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_a264a36a2017c51a1c3f71e7429e47b22}
+
+
+degree of each node 
+
+
+
+Definition at line 46 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_ac3f25277b53638e1486cde303803eb0a}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!edge\-Attr\-Defaults\-\_\-double@{edge\-Attr\-Defaults\-\_\-double}}
+\index{edge\-Attr\-Defaults\-\_\-double@{edge\-Attr\-Defaults\-\_\-double}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{edge\-Attr\-Defaults\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$double$>$ Networ\-Kit\-::\-Graph\-::edge\-Attr\-Defaults\-\_\-double\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_ac3f25277b53638e1486cde303803eb0a}
+
+
+Definition at line 64 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a63a00d1d3330ce8050fcd77794ec8d45}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!edge\-Maps\-\_\-double@{edge\-Maps\-\_\-double}}
+\index{edge\-Maps\-\_\-double@{edge\-Maps\-\_\-double}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{edge\-Maps\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$std\-::vector$<$std\-::vector$<$double$>$ $>$ $>$ Networ\-Kit\-::\-Graph\-::edge\-Maps\-\_\-double\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_a63a00d1d3330ce8050fcd77794ec8d45}
+
+
+Definition at line 60 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a6fb34025f32ff2850911ee0e90b085fa}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!eweights@{eweights}}
+\index{eweights@{eweights}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{eweights}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$std\-::vector$<${\bf edgeweight}$>$ $>$ Networ\-Kit\-::\-Graph\-::eweights\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_a6fb34025f32ff2850911ee0e90b085fa}
+
+
+edge weights 
+
+
+
+Definition at line 50 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_aae05e611d6d5eb42e045d374d73eb34a}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!n@{n}}
+\index{n@{n}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{n}]{\setlength{\rightskip}{0pt plus 5cm}{\bf count} Networ\-Kit\-::\-Graph\-::n\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_aae05e611d6d5eb42e045d374d73eb34a}
+
+
+number of nodes 
+
+
+
+Definition at line 43 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_aad1c9901bb8b7493df628469be54300a}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!name@{name}}
+\index{name@{name}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{name}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Networ\-Kit\-::\-Graph\-::name\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_aad1c9901bb8b7493df628469be54300a}
+
+
+Definition at line 53 of file Graph.\-h.
+
+\hypertarget{class_networ_kit_1_1_graph_a4b97f82f62865c47a7a2e1309f90c676}{\index{Networ\-Kit\-::\-Graph@{Networ\-Kit\-::\-Graph}!null\-Weight@{null\-Weight}}
+\index{null\-Weight@{null\-Weight}!NetworKit::Graph@{Networ\-Kit\-::\-Graph}}
+\subsubsection[{null\-Weight}]{\setlength{\rightskip}{0pt plus 5cm}constexpr {\bf edgeweight} Networ\-Kit\-::\-Graph\-::null\-Weight = 0.\-0\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [protected]}}}\label{class_networ_kit_1_1_graph_a4b97f82f62865c47a7a2e1309f90c676}
+
+
+Definition at line 40 of file Graph.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/graph/\hyperlink{_graph_8h}{Graph.\-h}\item 
+src/graph/\hyperlink{_graph_8cpp}{Graph.\-cpp}\end{DoxyCompactItemize}
