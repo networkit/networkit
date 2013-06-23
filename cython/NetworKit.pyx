@@ -81,7 +81,7 @@ cdef class Graph:
 		self._this.removeEdge(u, v)
 		
 	def hasEdge(self, u, v):
-		self._this.hasEdge(u, v)
+		return self._this.hasEdge(u, v)
 		
 	def weight(self, u, v):
 		return self._this.weight(u, v)
@@ -277,24 +277,24 @@ cdef class Modularity:
 	def getQuality(self, Clustering zeta, Graph G):
 		return self._this.getQuality(zeta._this, G._this)
 
-cdef extern from "../src/community/DynamicLabelPropagation.h":
-	cdef cppclass _DynamicLabelPropagation "NetworKit::DynamicLabelPropagation":
-		_DynamicLabelPropagation() except +
-		_DynamicLabelPropagation(_Graph G, count theta, string strategyName) except +
-		_Clustering run()
-		string toString()
-
-class DynamicCommunityDetector:
-	pass	
-		
-cdef class DynamicLabelPropagation:
-	cdef _DynamicLabelPropagation _this
-	
-	def __cinit__(self, Graph G not None, theta, strategyName):
-		self._this = _DynamicLabelPropagation(G._this, theta, stdstring(strategyName))
-		
-	def run(self):
-		self._this.run()
+# cdef extern from "../src/dcd/DynamicLabelPropagation.h":
+# 	cdef cppclass _DynamicLabelPropagation "NetworKit::DynamicLabelPropagation":
+# 		_DynamicLabelPropagation() except +
+# 		_DynamicLabelPropagation(_Graph G, count theta, string strategyName) except +
+# 		_Clustering run()
+# 		string toString()
+# 
+# class DynamicCommunityDetector:
+# 	pass	
+# 		
+# cdef class DynamicLabelPropagation:
+# 	cdef _DynamicLabelPropagation _this
+# 	
+# 	def __cinit__(self, Graph G not None, theta, strategyName):
+# 		self._this = _DynamicLabelPropagation(G._this, theta, stdstring(strategyName))
+# 		
+# 	def run(self):
+# 		self._this.run()
 
 
 # FIXME:
@@ -465,23 +465,23 @@ def compactDegreeHistogram(nxG, nbins=10):
 	
 # NetworKit algorithm engineering workflows
 
-class DynamicCommunityDetectionWorkflow:
-	
-	def __init__(self):
-		clusterings = []	# list of clusterings
-	
-	
-	def start(self, nMax, deltaT):
-		
-		self.G = Graph(0)
-		self.Gproxy = GraphEventProxy(self.G)
-		#self.generator = DynamicBarabasiAlbertGenerator(self.Gproxy)
-		self.dcd = DynamicLabelPropagation(self.Gproxy)
-		
-		while (self.G.numberOfNodes() < nMax):
-			self.generator.generate()
-			if (self.G.time() % deltaT) == 0:
-				zeta = self.dcd.run()
-				self.clusterings.append(zeta)
+# class DynamicCommunityDetectionWorkflow:
+# 	
+# 	def __init__(self):
+# 		clusterings = []	# list of clusterings
+# 	
+# 	
+# 	def start(self, nMax, deltaT):
+# 		
+# 		self.G = Graph(0)
+# 		self.Gproxy = GraphEventProxy(self.G)
+# 		#self.generator = DynamicBarabasiAlbertGenerator(self.Gproxy)
+# 		self.dcd = DynamicLabelPropagation(self.Gproxy)
+# 		
+# 		while (self.G.numberOfNodes() < nMax):
+# 			self.generator.generate()
+# 			if (self.G.time() % deltaT) == 0:
+# 				zeta = self.dcd.run()
+# 				self.clusterings.append(zeta)
 		
 			

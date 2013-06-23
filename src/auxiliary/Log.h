@@ -54,24 +54,6 @@ namespace Aux {
 
 
 
-/**
- * String representation of std::vector<T>
- * 		[x, y, ..., z]
- */
-template <typename T> std::string vectorToString(const std::vector<T>& vec) {
-	std::ostringstream ss;
-	ss << '[';
-	bool first = true;
-	for (T element : vec) {
-	    if (!first) {
-	        ss << ", ";
-	    }
-	    ss << element;
-	    first = false;
-	}
-	ss << ']';
-	return ss.str();
-}
 
 #define PRINTMAP(M) std::cout << M << std::endl;
 /**

@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#ifndef NOGTEST
+
 #include "ParallelMatcherGTest.h"
 
 #include "../ParallelMatcher.h"
@@ -39,3 +41,6 @@ TEST_F(ParallelMatcherGTest, tryValidMatching) {
 
 
 } // namespace EnsembleClustering
+
+
+#endif

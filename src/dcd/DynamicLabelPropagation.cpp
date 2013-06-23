@@ -20,7 +20,6 @@ DynamicLabelPropagation::DynamicLabelPropagation(count theta, std::string strate
 		updateThreshold(theta),
 		nUpdated(0) {
 
-	this->G = NULL; // G is set in method setGraph
 	// select prep strategy
 	if (strategyName == "Reactivate") {
 		this->prepStrategy = new DynamicLabelPropagation::Reactivate(this);
@@ -167,7 +166,7 @@ Clustering DynamicLabelPropagation::run() {
 	} // end while
 
 	runtime.stop();
-	this->timerHistory.push_back(runtime.elapsedMilliseconds());
+	this->timerHistory.push_back(runtime.elapsed().count());
 	INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
 
 

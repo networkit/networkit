@@ -10,6 +10,7 @@
 
 #include <vector>
 
+
 namespace NetworKit {
 
 typedef uint64_t index; // more expressive name for an index into an array
@@ -96,30 +97,24 @@ public:
 	void print();
 
 
+
+	std::vector<T> getVector();
+
 	/**
 	 * Return string representation.
 	 */
-	// TODO: string representation of IndexMap
+	// std::string toString();
 
 
 
 };
 
 
-//template<typename I, typename T>
-//inline IndexMap<I, T>::IndexMap(int64_t n) {
-//	this->n = n;
-//	this->defaultValue = 0;
-//	this->nullValue = 0;
-//	this->array = new T[n+1];
-//	for (int64_t i = 1; i <= n; ++i) {
-//		this->array[i] = this->nullValue;
-//	}
-//}
 
 template<typename I, typename T>
-inline IndexMap<I, T>::IndexMap(count n, T defaultValue = -1) :
+inline IndexMap<I, T>::IndexMap(count n, T defaultValue = 0) :
 		data(n, defaultValue), defaultValue(defaultValue) {
+	TRACE("IndexMap initialized with n = " << n);
 	this->n = n;
 }
 
@@ -179,8 +174,15 @@ inline T IndexMap<I, T>::at(I index) {
 	return this->data.at(index);
 }
 
-/*** Implementation ***/
+
+template<typename I, typename T>
+inline std::vector<T> NetworKit::IndexMap<I, T>::getVector() {
+	return this->data;
+}
+
 
 } /* namespace NetworKit */
+
+
 
 #endif /* INDEXMAP_H_ */

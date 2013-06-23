@@ -10,21 +10,47 @@
 
 #include <vector>
 #include <sstream>
+#include <unordered_set>
 
 namespace Aux {
 
 
 /**
- * Get string representation of vector.
+ * String representation of std::vector<T>
+ * 		[x, y, ..., z]
  */
-template <typename T> std::string vectorToString(std::vector<T>& vec) {
-	std::stringstream out;
-	out << "[";
+template <typename T> std::string vectorToString(const std::vector<T>& vec) {
+	std::ostringstream ss;
+	ss << '[';
+	bool first = true;
 	for (T element : vec) {
-		out << element << ",";
+	    if (!first) {
+	        ss << ", ";
+	    }
+	    ss << element;
+	    first = false;
 	}
-	out << "]";
-	return out.str();
+	ss << ']';
+	return ss.str();
+}
+
+/**
+ * String representation of std::unordered_set<T>
+ * 		[x, y, ..., z]
+ */
+template <typename T> std::string setToString(const std::unordered_set<T>& set) {
+	std::ostringstream ss;
+	ss << '[';
+	bool first = true;
+	for (T element : set) {
+	    if (!first) {
+	        ss << ", ";
+	    }
+	    ss << element;
+	    first = false;
+	}
+	ss << ']';
+	return ss.str();
 }
 
 

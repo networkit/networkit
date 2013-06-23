@@ -10,8 +10,7 @@
 
 namespace NetworKit {
 
-SeedSetGenerator::SeedSetGenerator(Graph& G) {
-	this->G = &G;
+SeedSetGenerator::SeedSetGenerator(const Graph& G) : G(G) {
 }
 
 SeedSetGenerator::~SeedSetGenerator() {

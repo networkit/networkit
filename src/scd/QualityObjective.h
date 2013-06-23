@@ -14,20 +14,16 @@
 namespace NetworKit {
 
 class QualityObjective {
-	public:
-		Graph* G;								//!< pointer to the graph
-		std::unordered_set<node>* community;	//!< pointer to the current community
 
-
-	public:
+public:
 
 		/**
 		 * @param[in]	G	the graph
 		 * @param[in]	community	the currently expanding community
 		 */
-		QualityObjective(Graph& G, std::unordered_set<node>& community);
+	QualityObjective(Graph& G, std::unordered_set<node>& community);
 
-		virtual ~QualityObjective();
+	virtual ~QualityObjective();
 
 		/**
 		 * @param[in]	v	a candidate node
@@ -35,7 +31,11 @@ class QualityObjective {
 		 *
 		 * Higher values are better.
 		 */
-		virtual double getValue(node v) = 0;
+	virtual double getValue(node v) = 0;
+
+protected:
+	Graph* G;								//!< pointer to the graph
+	std::unordered_set<node>* community;	//!< pointer to the current community
 };
 
 
@@ -77,6 +77,13 @@ public:
 	virtual ~Conductance();
 
 	virtual double getValue(node v);
+
+public: // TODO: make this protected
+
+	count degSum; //!< degree sum of the graph needed
+	count nBoundaryEdges; //!< current number of boundary edges
+	count volume;	//!< current community volume
+
 };
 
 } /* namespace NetworKit */

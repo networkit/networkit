@@ -14,6 +14,7 @@ Graph::Graph(): n(0), m(0), z(n), t(0), weighted(false), deg(z, 0), exists(z, tr
 	std::stringstream sstm;
 	sstm << "G#" << graphId++;
 	this->name = sstm.str();
+
 }
 
 // TODO: z should probably be n-1, but it breaks some tests
@@ -338,8 +339,10 @@ count Graph::time() {
 }
 
 
+index Graph::upperNodeIdBound() const {
+	return this->z;
+}
+
+
 } /* namespace NetworKit */
-
-
-
 

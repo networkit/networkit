@@ -22,6 +22,12 @@
 #include "../PseudoDynamic.h"
 #include "../../io/METISGraphReader.h"
 #include "../../community/LabelPropagation.h"
+#include "../DynamicEnsemble.h"
+#include "../../community/Louvain.h"
+#include "../../overlap/HashingOverlapper.h"
+#include "../../auxiliary/Debug.h"
+
+#include "../TDynamicLabelPropagation.h"
 
 
 namespace NetworKit {

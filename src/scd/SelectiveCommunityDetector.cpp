@@ -9,9 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveCommunityDetector::SelectiveCommunityDetector() {
-	// TODO Auto-generated constructor stub
-
+SelectiveCommunityDetector::SelectiveCommunityDetector(Graph& G) : G(G) {
 }
 
 SelectiveCommunityDetector::~SelectiveCommunityDetector() {

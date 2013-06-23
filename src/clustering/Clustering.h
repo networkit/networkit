@@ -17,7 +17,7 @@
 
 namespace NetworKit {
 
-typedef int64_t cluster;	//!< cluster is represented as a 0-based index   TODO: make unsigned
+typedef index cluster;	//!< cluster is represented as a 0-based index
 
 class Clustering: public NodeMap<cluster> {
 
@@ -205,7 +205,7 @@ public:
 	/**
 	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
 	 */
-	template<typename Callback> void forEntries(Callback func, std::string par="");
+	template<typename Callback> void forEntries(Callback func);
 
 
 	/**
@@ -233,10 +233,7 @@ public:
 } /* namespace NetworKit */
 
 template<typename Callback>
-inline void NetworKit::Clustering::forEntries(Callback func,
-		std::string par) {
-	assert ((par == "") || (par == "parallel"));
-	#pragma omp parallel for if (par == "parallel")
+inline void NetworKit::Clustering::forEntries(Callback func) {
 	for (node v = 0; v < this->n; v += 1) {
 		cluster c = (*this)[v];
 		func(v, c);

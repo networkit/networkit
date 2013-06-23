@@ -236,7 +236,7 @@ TEST_F(PartitioningAlgoGTest, testLouvainIndependent) {
 
 
 TEST_F(PartitioningAlgoGTest, testCNM) {
-	count n = 500;
+	count n = 200;
 	count k = 25;
 	double pin = 0.9;
 	double pout = 0.005;
@@ -249,6 +249,7 @@ TEST_F(PartitioningAlgoGTest, testCNM) {
 	Clustering clustering = cnm.run(G);
 	INFO("CNM number of clusters: " << clustering.numberOfClusters());
 	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
+	EXPECT_TRUE(clustering.isProper(G));
 }
 
 

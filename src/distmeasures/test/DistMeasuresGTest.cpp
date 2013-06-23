@@ -7,19 +7,39 @@
 
 #ifndef NOGTEST
 
-#include "DistMeasureTest.h"
+#include "DistMeasuresGTest.h"
 
 namespace NetworKit {
 
-DistMeasureTest::DistMeasureTest() {
+DistMeasuresGTest::DistMeasuresGTest() {
 
 }
 
-DistMeasureTest::~DistMeasureTest() {
+DistMeasuresGTest::~DistMeasuresGTest() {
 
 }
 
-TEST_F(DistMeasureTest, testAlgebraicDistances) {
+TEST_F(DistMeasuresGTest, testAlgebraicDistances) {
+	GraphGenerator gen;
+	Graph G = gen.makeCompleteGraph(42);
+
+	count numSystems = 2;
+	count numIterations = 200;
+	double omega = 0.5;
+	NodeDistance* ad = new AlgebraicDistance(G, numSystems, numIterations, omega);
+	ad->preprocess();
+
+	double adSum = 0.0;
+	G.forNodePairs([&](node u, node v){
+		adSum += ad->distance(u, v);
+	});
+
+	INFO("sum of algebraic distances: " << adSum);
+	EXPECT_GE(1e-12, adSum) << "algebraic distances should converge towards zero";
+
+}
+
+TEST_F(DistMeasuresGTest, tryAlgebraicDistancesVisualization) {
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 
 	DibapGraphReader reader;

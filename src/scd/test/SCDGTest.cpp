@@ -11,6 +11,12 @@
 
 namespace NetworKit {
 
+SCDGTest::SCDGTest() {
+}
+
+SCDGTest::~SCDGTest() {
+}
+
 
 TEST_F(SCDGTest, testGreedyCommunityExpansion) {
 	// TODO: unit test for GreedyCommunityExpansion
@@ -34,12 +40,20 @@ TEST_F(SCDGTest, testConductance) {
 	Conductance conductance1(G, first);
 	second = {0};
 	Conductance conductance2(G, second);
+	conductance2.volume = 4;
+	conductance2.nBoundaryEdges = 3;
 	third = {0,1};
 	Conductance conductance3(G, third);
+	conductance3.volume = 7;
+	conductance3.nBoundaryEdges = 4;
 	fourth = {0,1,2};
 	Conductance conductance4(G, fourth);
+	conductance4.volume = 11;
+	conductance4.nBoundaryEdges = 4;
 	fifth = {0,1,2,3};
 	Conductance conductance5(G, fifth);
+	conductance5.volume = 14;
+	conductance5.nBoundaryEdges = 3;
 
 	double condOne = conductance1.getValue(0);
 	double condTwo = conductance2.getValue(1);
@@ -54,7 +68,6 @@ TEST_F(SCDGTest, testConductance) {
 
 	EXPECT_GE(0.666667, 1-condThree) << "3-clustering should have conductance of 2/3";
 	EXPECT_LE(0.666666, 1-condThree) << "3-clustering should have conductance of 2/3";
-
 	EXPECT_EQ(1, 1-condFour) << "4-clustering should have conductance of 1";
 
 	EXPECT_EQ(1, 1-condFive) << "5-clustering should have conductance of 1";
@@ -143,21 +156,22 @@ TEST_F(SCDGTest, testRun) {
 	G.addEdge(1,3);
 	G.addEdge(2,3);
 
-	GreedyCommunityExpansion GCE;
-	std::unordered_set<node> community= GCE.run(G, 0);
+	GreedyCommunityExpansion GCE(G);
+	std::unordered_set<node> community= GCE.expandSeed(0);
 	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
 
-	// add satelites
+
+	//add satelites
 	G.addEdge(0,4);
 	G.addEdge(1,5);
 	G.addEdge(2,6);
 	G.addEdge(3,7);
 
-	community = GCE.run(G, 0);
+	community = GCE.expandSeed(0);
 
 	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
 
-	community = GCE.run(G, 6);
+	community = GCE.expandSeed(6);
 	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
 
 	// add another clique
@@ -170,20 +184,20 @@ TEST_F(SCDGTest, testRun) {
 	G.addEdge(10,11);
 
 
-	community = GCE.run(G, 0);
+	community = GCE.expandSeed(0);
 	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
 
-	community = GCE.run(G, 4);
+	community = GCE.expandSeed(4);
 	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
 
-	community = GCE.run(G, 6);
+	community = GCE.expandSeed(6);
 	EXPECT_EQ(8, community.size()) << "The community should have 8 nodes";
 
-	community = GCE.run(G, 8);
+	community = GCE.expandSeed(8);
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
 
 
-	community = GCE.run(G, 9);
+	community = GCE.expandSeed(9);
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
 
 }
@@ -242,8 +256,8 @@ TEST_F(SCDGTest, tryCommunitySubgraph) {
 
 	node s = 0; // seed node
 
-	GreedyCommunityExpansion GCE;
-	std::unordered_set<node> community = GCE.run(G, s);
+	GreedyCommunityExpansion GCE(G);
+	std::unordered_set<node> community = GCE.expandSeed(s);
 
 	// get the subgraph of the community
 	Graph sub = Subgraph::fromNodes(G, community);
@@ -254,11 +268,79 @@ TEST_F(SCDGTest, tryCommunitySubgraph) {
 
 }
 
-SCDGTest::SCDGTest() {
+TEST_F(SCDGTest, testRandomSeedSet) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+
+	RandomSeedSet randSeeds(G);
+
+	count k = 42;
+	std::unordered_set<node> S = randSeeds.getSeeds(k);
+
+	EXPECT_EQ(k, S.size());
+
+	DEBUG("seed set is: " << Aux::setToString(S));
+
 }
 
-SCDGTest::~SCDGTest() {
+TEST_F(SCDGTest, testRandomWalkSeedSet) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+
+	RandomWalkSeedSet walk(G, 2);
+
+	count k = 42;
+	std::unordered_set<node> S = walk.getSeeds(k);
+
+	EXPECT_EQ(k, S.size());
+
+	DEBUG("seed set is: " << Aux::setToString(S));
+
 }
+
+
+TEST_F(SCDGTest, tryGreedyWithSeedSets) {
+
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+
+	RandomSeedSet randSeeds(G);
+
+	std::unordered_set<node> seeds = randSeeds.getSeeds(6);
+
+	assert (seeds.size() == 6);
+	GreedyCommunityExpansion GCE(G);
+	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+
+
+}
+
+TEST_F(SCDGTest, SelectiveSCAN) {
+	Graph G (12);
+	// add clique
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(2,3);
+
+
+}
+
+//TEST_F(SCDGTest, benchmarkGreedy) {
+//	METISGraphReader reader;
+//	Graph G = reader.read("input/pgp.graph");
+//
+//	RandomSeedSet randSeeds(G);
+//
+//	GreedyCommunityExpansion GCE(G);
+//	count nRuns = 1000;
+//	for (count i = 0; i < nRuns; ++i) {
+//		std::unordered_set<node> seeds = randSeeds.getSeeds(1);
+//		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+//	}
+//}
 
 } /* namespace NetworKit */
 

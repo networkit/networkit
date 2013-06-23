@@ -23,7 +23,6 @@ template <typename T> class NodeMap : public IndexMap<node, T> {
 
 public:
 
-
 	/**
 	 * Construct a new IndexMap which holds n entries .
 	 *
@@ -62,8 +61,9 @@ public:
 
 
 
-template<typename T> inline NetworKit::NodeMap<T>::NodeMap(count n, T defaultValue = -1) :
+template<typename T> inline NetworKit::NodeMap<T>::NodeMap(count n, T defaultValue = 0) :
 		IndexMap<node, T>(n, defaultValue) {
+	TRACE("NodeMap initialized with n = " << this->n);
 }
 
 template<typename T> inline NetworKit::NodeMap<T>::~NodeMap() {

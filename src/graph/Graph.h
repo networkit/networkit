@@ -22,6 +22,7 @@
 #include <algorithm>
 
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Debug.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
@@ -103,6 +104,7 @@ protected:
 
 
 	// scalars
+
 	count n; //!< current number of nodes
 	count m; //!< current number of edges
 	node z; //!< current upper bound of node ids
@@ -159,7 +161,24 @@ public:
 
 	Graph(count n);
 
+	Graph(const Graph& other) = default;
+
+	Graph(Graph&& other) = default;
+
 	virtual ~Graph();
+
+
+	/**
+	 * Assignment operator
+	 */
+	Graph& operator=(Graph&& other) = default;
+
+	/**
+	 * Assignment operator
+	 */
+	Graph& operator=(const Graph& other) = default;
+
+
 
 	/**
 	 * Set name of graph.
@@ -318,6 +337,12 @@ public:
 	 * This involves calculation, so store result if needed multiple times.
 	 */
 	count numberOfSelfLoops() const;
+
+
+	/**
+	 * Get an upper bound for the node ids in the graph.
+	 */
+	index upperNodeIdBound() const;
 
 	/** DYNAMICS **/
 

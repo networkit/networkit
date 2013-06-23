@@ -31,8 +31,9 @@ public:
 
 	/**
 	 * Return the distance between two nodes.
+	 * The distance must be normed to return a distance between 0 and 1.
 	 */
-	virtual void distance(node u, node v) = 0;
+	virtual double distance(node u, node v) = 0;
 };
 
 } /* namespace NetworKit */

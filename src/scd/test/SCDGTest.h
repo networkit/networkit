@@ -16,11 +16,14 @@
 
 #include "../../graph/Graph.h"
 #include "../GreedyCommunityExpansion.h"
+#include "../SelectiveSCAN.h"
 #include "../../graph/Subgraph.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../io/METISGraphWriter.h"
 #include "../../io/METISGraphReader.h"
 #include "../CommunityTrimming.h"
+#include "../RandomSeedSet.h"
+#include "../RandomWalkSeedSet.h"
 
 
 

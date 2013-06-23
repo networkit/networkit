@@ -9,8 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveSCAN::SelectiveSCAN() {
-	// TODO Auto-generated constructor stub
+SelectiveSCAN::SelectiveSCAN(Graph& G): SelectiveCommunityDetector(G), epsilon(0.7), mu(3) {
 
 }
 
@@ -18,7 +17,107 @@ SelectiveSCAN::~SelectiveSCAN() {
 	// TODO Auto-generated destructor stub
 }
 
-std::unordered_set<node> SelectiveSCAN::run(Graph& G, node seed) {
+std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unordered_set<node> set){
+
+	std::unordered_map<node, node> nodesState;
+	std::unordered_map<node, std::unordered_set<node>> communities;
+	std::unordered_set<node> community;
+
+	G.forNodes ([&](node u){
+		nodesState.insert(std::pair<node,int>(u, -1));
+	});
+	for (node u : set) {
+		std::pair<bool,std::vector<node>> isCore = this->isCore(u);
+		std::vector<node> candidates;
+		for(node v : isCore.second){
+			candidates.push_back(v);
+		}
+		if ((nodesState.find(u))->second == -1  && isCore.first){
+			expandCore(u, u, &community, &nodesState, &candidates);
+		} else if ((nodesState.find(u))->second >= 0) {
+			community = communities.find((nodesState.find(u))->second)->second;
+		} else {
+			bool clustered = false;
+			while (!candidates.empty() && !clustered) {
+				if(this->isCore(*candidates.begin()).first) {
+					std::pair<bool,std::vector<node>> isCore = this->isCore(u);
+					expandCore(*candidates.begin(), u, &community, &nodesState, &candidates);
+					clustered = true;
+				} else {
+					candidates.erase(candidates.begin());
+				}
+			}
+		}
+		communities.insert({u, community});
+	}
+	return communities;
+}
+
+double SelectiveSCAN::nodeDistance(node u, node v) {
+
+	int inter = 0;
+	int uni = 0;
+	G.forNeighborsOf(u, [&](node x){
+		if (x != v ) {
+			if (G.hasEdge(x, v)) {
+				inter++;
+				uni++;
+			} else {
+				uni++;
+			}
+		}
+	});
+	G.forNeighborsOf(v, [&](node x){
+		if (x != u ) {
+			if (!G.hasEdge(x, u)) {
+				uni++;
+			}
+		}
+	});
+	return 1- ((double) (inter + 2)/ (double) (uni +2));
+}
+
+std::pair<bool,std::vector<node>> SelectiveSCAN::isCore(node u) {
+
+	bool core = false;
+	std::vector<node> similarNeighbors;
+	int count = 0;
+	G.forNeighborsOf(u, [&](node v){
+		if (this->nodeDistance(u, v) <= this->epsilon) {
+			count++;
+			similarNeighbors.push_back(v);
+		}
+	});
+	if (count >= this->mu) {
+		core = true;
+	}
+	return std::pair<bool,std::vector<node>>(core, similarNeighbors);
+}
+
+void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* community,
+		std::unordered_map<node, node>* nodesState, std::vector<node>* candidates) {
+
+	std::pair<bool,std::vector<node>> isCore;
+	community->insert(core);
+	nodesState->find(core)->second = label;
+	for (node v : *candidates) {
+		nodesState->find(v)->second = label;
+		community->insert(v);
+		isCore = this->isCore(v);
+		if (isCore.first) {
+			for (node x : isCore.second) {
+				int tmp = nodesState->find(x)->second;
+				if (tmp < 0) {
+					nodesState->find(x)->second = label;
+					community->insert(x);
+				}
+				if (tmp == -1) {
+					candidates->push_back(x);
+				}
+			}
+		}
+		candidates->erase(candidates->begin());
+	}
 }
 
 } /* namespace NetworKit */
