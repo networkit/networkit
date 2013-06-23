@@ -25,7 +25,7 @@ public:
 
 	virtual std::unordered_map<node, std::unordered_set<node> > run(std::unordered_set<node> seeds) = 0;
 
-protected:
+public:
 
 	Graph& G;	//!< the input graph
 };

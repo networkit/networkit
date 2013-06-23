@@ -25,7 +25,7 @@ std::unordered_set<node> RandomSeedSet::getSeeds(count k) {
 
 	std::unordered_set<node> S;
 	while (S.size() < k) {
-		node r = randInt.generate(0, G.upperNodeIdBound());
+		node r = randInt.generate(0, G.upperNodeIdBound() - 1);
 		if (G.hasNode(r)) {
 			S.insert(r);
 		}

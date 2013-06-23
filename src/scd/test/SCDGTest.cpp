@@ -18,130 +18,130 @@ SCDGTest::~SCDGTest() {
 }
 
 
-//TEST_F(SCDGTest, testGreedyCommunityExpansion) {
-//	// TODO: unit test for GreedyCommunityExpansion
-//}
-//
-//TEST_F(SCDGTest, testConductance) {
-//
-//	Graph G(5);
-//	G.addEdge(0,0);
-//	G.addEdge(0,1);
-//	G.addEdge(0,2);
-//	G.addEdge(0,3);
-//	G.addEdge(1,2);
-//	G.addEdge(1,4);
-//	G.addEdge(2,3);
-//	G.addEdge(2,4);
-//	G.addEdge(3,4);
-//
-//	std::unordered_set<node> first, second, third, fourth, fifth;
-//	first = {};
-//	Conductance conductance1(G, first);
-//	second = {0};
-//	Conductance conductance2(G, second);
-//	conductance2.volume = 4;
-//	conductance2.nBoundaryEdges = 3;
-//	third = {0,1};
-//	Conductance conductance3(G, third);
-//	conductance3.volume = 7;
-//	conductance3.nBoundaryEdges = 4;
-//	fourth = {0,1,2};
-//	Conductance conductance4(G, fourth);
-//	conductance4.volume = 11;
-//	conductance4.nBoundaryEdges = 4;
-//	fifth = {0,1,2,3};
-//	Conductance conductance5(G, fifth);
-//	conductance5.volume = 14;
-//	conductance5.nBoundaryEdges = 3;
-//
-//	double condOne = conductance1.getValue(0);
-//	double condTwo = conductance2.getValue(1);
-//	double condThree = conductance3.getValue(2);
-//	double condFour = conductance4.getValue(3);
-//	double condFive = conductance5.getValue(4);
-//
-//	EXPECT_EQ(0.75, 1-condOne) << "1-clustering should have conductance of 0.75";
-//
-//	EXPECT_GE(0.571429, 1-condTwo) << "2-clustering should have conductance of 4/7";
-//	EXPECT_LE(0.571428, 1-condTwo) << "2-clustering should have conductance of 4/7";
-//
-//	EXPECT_GE(0.666667, 1-condThree) << "3-clustering should have conductance of 2/3";
-//	EXPECT_LE(0.666666, 1-condThree) << "3-clustering should have conductance of 2/3";
-//	EXPECT_EQ(1, 1-condFour) << "4-clustering should have conductance of 1";
-//
-//	EXPECT_EQ(1, 1-condFive) << "5-clustering should have conductance of 1";
-//
-//}
-//
-//TEST_F(SCDGTest, testBoundarySharpnessTrimming) {
-//
-//	Graph G (11);
-//	G.addEdge(0,1);
-//	G.addEdge(0,2);
-//	G.addEdge(0,3);
-//	G.addEdge(0,4);
-//	G.addEdge(1,2);
-//	G.addEdge(1,3);
-//	G.addEdge(1,5);
-//	G.addEdge(2,4);
-//	G.addEdge(3,10);
-//	G.addEdge(4,6);
-//	G.addEdge(4,7);
-//	G.addEdge(5,8);
-//	G.addEdge(5,9);
-//
-//	std::unordered_set<node> cluster = {0,1,2,3,4,5};
-//    DummyTrimming trim;
-//    std::unordered_set<node> community = trim.run(cluster, G);
-//	EXPECT_EQ(6, community.size()) << "The community has 6 nodes";
-//
-//	BoundarySharpness trim2;
-//	std::unordered_set<node> community2 = trim2.run(cluster, G);
-//	EXPECT_EQ(5, community2.size()) << "The community has 5 nodes";
-//
-//}
-//
-//TEST_F(SCDGTest, testLocalMdularityM) {
-//
-//	Graph G(5);
-//	G.addEdge(0,1);
-//	G.addEdge(0,2);
-//	G.addEdge(0,3);
-//	G.addEdge(0,4);
-//	G.addEdge(1,2);
-//	G.addEdge(1,3);
-//	G.addEdge(1,4);
-//	G.addEdge(2,3);
-//	G.addEdge(2,4);
-//	G.addEdge(3,4);
-//	G.addEdge(4,4);
-//
-//	std::unordered_set<node> community = {};
-//	LocalModularityM mod (G, community);
-//	EXPECT_EQ(0, mod.getValue(0)) << "The community should have a local modularity of 0";
-//	EXPECT_EQ(0.25, mod.getValue(4)) << "The community should have a local modularity of 0.25";
-//
-//	community.insert(0);
-//	EXPECT_EQ(0, mod.getValue(0)) << "The community should have a local modularity of 0";
-//	EXPECT_GE(0.16667, mod.getValue(1)) << "The community should have a local modularity of 1/6";
-//	EXPECT_LE(0.16666, mod.getValue(1)) << "The community should have a local modularity of 1/6";
-//	EXPECT_GE(0.33334, mod.getValue(4)) << "The community should have a local modularity of 1/3";
-//	EXPECT_LE(0.33333, mod.getValue(4)) << "The community should have a local modularity of 1/3";
-//
-//	community.insert(1);
-//	EXPECT_EQ(0.5, mod.getValue(2)) << "The community should have a local modularity of 0.5";
-//	EXPECT_GE(0.66667, mod.getValue(4)) << "The community should have a local modularity of 2/3";
-//	EXPECT_LE(0.66666, mod.getValue(4)) << "The community should have a local modularity of 2/3";
-//
-//	community.insert(2);
-//	EXPECT_EQ(1.5, mod.getValue(3)) << "The community should have a local modularity of 1.5";
-//	EXPECT_EQ(1.75, mod.getValue(4)) << "The community should have a local modularity of 1.75";
-//
-//	community.insert(3);
-//	EXPECT_EQ(11, mod.getValue(4)) << "The community should have a local modularity of 11";
-//
-//}
+TEST_F(SCDGTest, testGreedyCommunityExpansion) {
+	// TODO: unit test for GreedyCommunityExpansion
+}
+
+TEST_F(SCDGTest, testConductance) {
+
+	Graph G(5);
+	G.addEdge(0,0);
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(1,2);
+	G.addEdge(1,4);
+	G.addEdge(2,3);
+	G.addEdge(2,4);
+	G.addEdge(3,4);
+
+	std::unordered_set<node> first, second, third, fourth, fifth;
+	first = {};
+	Conductance conductance1(G, first);
+	second = {0};
+	Conductance conductance2(G, second);
+	conductance2.volume = 4;
+	conductance2.nBoundaryEdges = 3;
+	third = {0,1};
+	Conductance conductance3(G, third);
+	conductance3.volume = 7;
+	conductance3.nBoundaryEdges = 4;
+	fourth = {0,1,2};
+	Conductance conductance4(G, fourth);
+	conductance4.volume = 11;
+	conductance4.nBoundaryEdges = 4;
+	fifth = {0,1,2,3};
+	Conductance conductance5(G, fifth);
+	conductance5.volume = 14;
+	conductance5.nBoundaryEdges = 3;
+
+	double condOne = conductance1.getValue(0);
+	double condTwo = conductance2.getValue(1);
+	double condThree = conductance3.getValue(2);
+	double condFour = conductance4.getValue(3);
+	double condFive = conductance5.getValue(4);
+
+	EXPECT_EQ(0.75, 1-condOne) << "1-clustering should have conductance of 0.75";
+
+	EXPECT_GE(0.571429, 1-condTwo) << "2-clustering should have conductance of 4/7";
+	EXPECT_LE(0.571428, 1-condTwo) << "2-clustering should have conductance of 4/7";
+
+	EXPECT_GE(0.666667, 1-condThree) << "3-clustering should have conductance of 2/3";
+	EXPECT_LE(0.666666, 1-condThree) << "3-clustering should have conductance of 2/3";
+	EXPECT_EQ(1, 1-condFour) << "4-clustering should have conductance of 1";
+
+	EXPECT_EQ(1, 1-condFive) << "5-clustering should have conductance of 1";
+
+}
+
+TEST_F(SCDGTest, testBoundarySharpnessTrimming) {
+
+	Graph G (11);
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(0,4);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(1,5);
+	G.addEdge(2,4);
+	G.addEdge(3,10);
+	G.addEdge(4,6);
+	G.addEdge(4,7);
+	G.addEdge(5,8);
+	G.addEdge(5,9);
+
+	std::unordered_set<node> cluster = {0,1,2,3,4,5};
+    DummyTrimming trim;
+    std::unordered_set<node> community = trim.run(cluster, G);
+	EXPECT_EQ(6, community.size()) << "The community has 6 nodes";
+
+	BoundarySharpness trim2;
+	std::unordered_set<node> community2 = trim2.run(cluster, G);
+	EXPECT_EQ(5, community2.size()) << "The community has 5 nodes";
+
+}
+
+TEST_F(SCDGTest, testLocalMdularityM) {
+
+	Graph G(5);
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(0,4);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(1,4);
+	G.addEdge(2,3);
+	G.addEdge(2,4);
+	G.addEdge(3,4);
+	G.addEdge(4,4);
+
+	std::unordered_set<node> community = {};
+	LocalModularityM mod (G, community);
+	EXPECT_EQ(0, mod.getValue(0)) << "The community should have a local modularity of 0";
+	EXPECT_EQ(0.25, mod.getValue(4)) << "The community should have a local modularity of 0.25";
+
+	community.insert(0);
+	EXPECT_EQ(0, mod.getValue(0)) << "The community should have a local modularity of 0";
+	EXPECT_GE(0.16667, mod.getValue(1)) << "The community should have a local modularity of 1/6";
+	EXPECT_LE(0.16666, mod.getValue(1)) << "The community should have a local modularity of 1/6";
+	EXPECT_GE(0.33334, mod.getValue(4)) << "The community should have a local modularity of 1/3";
+	EXPECT_LE(0.33333, mod.getValue(4)) << "The community should have a local modularity of 1/3";
+
+	community.insert(1);
+	EXPECT_EQ(0.5, mod.getValue(2)) << "The community should have a local modularity of 0.5";
+	EXPECT_GE(0.66667, mod.getValue(4)) << "The community should have a local modularity of 2/3";
+	EXPECT_LE(0.66666, mod.getValue(4)) << "The community should have a local modularity of 2/3";
+
+	community.insert(2);
+	EXPECT_EQ(1.5, mod.getValue(3)) << "The community should have a local modularity of 1.5";
+	EXPECT_EQ(1.75, mod.getValue(4)) << "The community should have a local modularity of 1.75";
+
+	community.insert(3);
+	EXPECT_EQ(11, mod.getValue(4)) << "The community should have a local modularity of 11";
+
+}
 
 //Test with dummy acceptance and conductance and dummy trimming
 TEST_F(SCDGTest, testRun) {
@@ -305,32 +305,42 @@ TEST_F(SCDGTest, tryGreedyWithSeedSets) {
 	Graph G = reader.read("input/jazz.graph");
 
 	RandomSeedSet randSeeds(G);
+
 	std::unordered_set<node> seeds = randSeeds.getSeeds(6);
 
 	assert (seeds.size() == 6);
 	GreedyCommunityExpansion GCE(G);
 	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
 
+
 }
 
-
-TEST_F(SCDGTest, benchmarkGreedy) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/pgp.graph");
-
-	RandomSeedSet randSeeds(G);
-
-	GreedyCommunityExpansion GCE(G);
-	count nRuns = 1000;
-	for (count i = 0; i < nRuns; ++i) {
-		std::unordered_set<node> seeds = randSeeds.getSeeds(1);
-		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
-	}
+TEST_F(SCDGTest, SelectiveSCAN) {
+	Graph G (12);
+	// add clique
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(2,3);
 
 
 }
 
-
+//TEST_F(SCDGTest, benchmarkGreedy) {
+//	METISGraphReader reader;
+//	Graph G = reader.read("input/pgp.graph");
+//
+//	RandomSeedSet randSeeds(G);
+//
+//	GreedyCommunityExpansion GCE(G);
+//	count nRuns = 1000;
+//	for (count i = 0; i < nRuns; ++i) {
+//		std::unordered_set<node> seeds = randSeeds.getSeeds(1);
+//		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+//	}
+//}
 
 } /* namespace NetworKit */
 
