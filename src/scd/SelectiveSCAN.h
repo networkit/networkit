@@ -30,12 +30,10 @@ protected:
 
 	virtual double nodeDistance(node u, node v);
 
-
-
 	virtual void expandCore(node core, node label, std::unordered_set<node>* community,
-					std::unordered_map<node, node>* nodesState, std::vector<node>* candidates);
+					std::unordered_map<node, node>* nodesState, std::unordered_set<node>* candidates);
 
-	virtual std::pair<bool,std::vector<node>> isCore(node u);
+	virtual std::pair<bool,std::unordered_set<node>> isCore(node u);
 
 };
 
