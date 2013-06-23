@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveSCAN::SelectiveSCAN(Graph& G): SelectiveCommunityDetector(G), epsilon(0.7), mu(3) {
+SelectiveSCAN::SelectiveSCAN(Graph& G): SelectiveCommunityDetector(G), epsilon(0.4), mu(3) {
 
 }
 
@@ -26,29 +26,32 @@ std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unord
 	G.forNodes ([&](node u){
 		nodesState.insert(std::pair<node,int>(u, -1));
 	});
+
 	for (node u : set) {
-		std::pair<bool,std::vector<node>> isCore = this->isCore(u);
-		std::vector<node> candidates;
-		for(node v : isCore.second){
-			candidates.push_back(v);
-		}
+		std::pair<bool,std::unordered_set<node>> isCore = this->isCore(u);
 		if ((nodesState.find(u))->second == -1  && isCore.first){
-			expandCore(u, u, &community, &nodesState, &candidates);
-		} else if ((nodesState.find(u))->second >= 0) {
+			expandCore(u, u, &community, &nodesState, &isCore.second);
+		} else if (((nodesState.find(u))->second != -1) && ((nodesState.find(u))->second != -2)) {
 			community = communities.find((nodesState.find(u))->second)->second;
 		} else {
 			bool clustered = false;
-			while (!candidates.empty() && !clustered) {
-				if(this->isCore(*candidates.begin()).first) {
-					std::pair<bool,std::vector<node>> isCore = this->isCore(u);
-					expandCore(*candidates.begin(), u, &community, &nodesState, &candidates);
+			nodesState.find(u)->second = -2;
+			std::pair<bool,std::unordered_set<node>> isCore = this->isCore(u);
+			std::pair<bool,std::unordered_set<node>> candidates;
+
+			while (!isCore.second.empty() && !clustered) {
+				node core = *isCore.second.begin();
+				candidates = this->isCore(core);
+				if(candidates.first) {
+					expandCore(core, u, &community, &nodesState, &candidates.second);
 					clustered = true;
 				} else {
-					candidates.erase(candidates.begin());
+					isCore.second.erase(isCore.second.begin());
 				}
 			}
 		}
 		communities.insert({u, community});
+		community.clear();
 	}
 	return communities;
 }
@@ -58,7 +61,7 @@ double SelectiveSCAN::nodeDistance(node u, node v) {
 	int inter = 0;
 	int uni = 0;
 	G.forNeighborsOf(u, [&](node x){
-		if (x != v ) {
+		if (x != v && x!= u ) {
 			if (G.hasEdge(x, v)) {
 				inter++;
 				uni++;
@@ -68,7 +71,7 @@ double SelectiveSCAN::nodeDistance(node u, node v) {
 		}
 	});
 	G.forNeighborsOf(v, [&](node x){
-		if (x != u ) {
+		if (x != u && x != v) {
 			if (!G.hasEdge(x, u)) {
 				uni++;
 			}
@@ -77,30 +80,31 @@ double SelectiveSCAN::nodeDistance(node u, node v) {
 	return 1- ((double) (inter + 2)/ (double) (uni +2));
 }
 
-std::pair<bool,std::vector<node>> SelectiveSCAN::isCore(node u) {
+std::pair<bool,std::unordered_set<node>> SelectiveSCAN::isCore(node u) {
 
 	bool core = false;
-	std::vector<node> similarNeighbors;
+	std::unordered_set<node> similarNeighbors;
 	int count = 0;
 	G.forNeighborsOf(u, [&](node v){
 		if (this->nodeDistance(u, v) <= this->epsilon) {
 			count++;
-			similarNeighbors.push_back(v);
+			similarNeighbors.insert(v);
 		}
 	});
 	if (count >= this->mu) {
 		core = true;
 	}
-	return std::pair<bool,std::vector<node>>(core, similarNeighbors);
+	return std::pair<bool,std::unordered_set<node>>(core, similarNeighbors);
 }
 
 void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* community,
-		std::unordered_map<node, node>* nodesState, std::vector<node>* candidates) {
-
-	std::pair<bool,std::vector<node>> isCore;
+		std::unordered_map<node, node>* nodesState, std::unordered_set<node>* candidates) {
+	std::pair<bool,std::unordered_set<node>> isCore;
 	community->insert(core);
 	nodesState->find(core)->second = label;
-	for (node v : *candidates) {
+
+	while (!candidates->empty()) {
+		node v = *(candidates->begin());
 		nodesState->find(v)->second = label;
 		community->insert(v);
 		isCore = this->isCore(v);
@@ -112,11 +116,11 @@ void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* 
 					community->insert(x);
 				}
 				if (tmp == -1) {
-					candidates->push_back(x);
+					candidates->insert(x);
 				}
 			}
 		}
-		candidates->erase(candidates->begin());
+		candidates->erase(candidates->find(v));
 	}
 }
 
