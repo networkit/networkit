@@ -100,13 +100,21 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 		for (cluster D = 0; D < eta.upperBound(); D++) {
 			count sizeC = size_zeta[C];
 			count sizeD = size_eta[D];
-			if ((sizeC != 0) && (sizeD != 0)) {
-				double factor1 = overlapSizes[intersect[C][D]] / (double) n;
-				assert ((size_zeta[C] * size_eta[D]) != 0);
-				TRACE("union of " << C << " and " << D << ": " << unionSize(C, D));
-				double frac2 = (unionSize(C, D) * n) / (size_zeta[C] * size_eta[D]);
-				double factor2 = log_b(frac2, 2);
-				MI += factor1 * factor2;
+			if ((sizeC != 0) && (sizeD != 0)) { // cluster ids may not correspond to a real cluster
+				// the two clusters may or may not intersect
+				cluster inter = intersect[C][D];
+				if (inter == none) { // clusters do not intersect
+					TRACE("clusters do not intersect: " << C << ", " << D);
+				} else {
+					double factor1 = overlapSizes[inter] / (double) n;
+					assert ((size_zeta[C] * size_eta[D]) != 0);
+					TRACE("union of " << C << " and " << D << " has size: " << unionSize(C, D));
+					TRACE("overlap of " << C << " and " << D << " has size: " << overlapSizes[inter]);
+					double frac2 = (overlapSizes[inter] * n) / (size_zeta[C] * size_eta[D]);
+					double factor2 = log_b(frac2, 2);
+					TRACE("frac2 = " << frac2 << ", factor1 = " << factor1 << ", factor2 = " << factor2);
+					MI += factor1 * factor2;
+				}
 			}
 		}
 	}
@@ -114,7 +122,6 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 	// sanity check
 	assert (! std::isnan(MI));
 	assert (MI >= 0.0);
-	assert (MI <= 1.0);
 
 
 
@@ -160,7 +167,7 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 		NMID = 1.0 - NMI;
 	}
 	// sanity check
-	assert (NMID >= 0.0);
+	// assert (NMID >= 0.0);
 	assert (NMID <= 1.0);
 	return NMID;
 
