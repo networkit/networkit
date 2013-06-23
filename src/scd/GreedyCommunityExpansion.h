@@ -36,7 +36,6 @@ public:
 	virtual std::unordered_map<node, std::unordered_set<node>> run(std::unordered_set<node> set);
 
 	/**
-	 * @param[in]	G	input graph
 	 * @param[in]	s	seed node
 	 *
 	 * @param[out]		community as a set of nodes
@@ -46,9 +45,6 @@ public:
 protected:
 
 	virtual double clusterClusterSimilarity (std::unordered_set<node>& community1, std::unordered_set<node>& community2);
-
-
-
 
 
 };
