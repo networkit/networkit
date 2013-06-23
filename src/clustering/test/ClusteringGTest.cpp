@@ -181,7 +181,7 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 	double modSeq = modularitySeq.getQuality(zeta, G);
 
 	// EXPECT_EQ(modPar, modSeq) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
-	EXPECT_TRUE(NumericTools::equal(modPar, modSeq, 1e-12)) << "Modularity values should be equal within a small error no matter if calculated in parallel or sequentially";
+	EXPECT_TRUE(Aux::NumericTools::equal(modPar, modSeq, 1e-12)) << "Modularity values should be equal within a small error no matter if calculated in parallel or sequentially";
 
 }
 
