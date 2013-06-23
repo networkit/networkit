@@ -12,6 +12,7 @@
 #include "DissimilarityMeasure.h"
 #include "../overlap/HashingOverlapper.h"
 #include "../auxiliary/MissingMath.h"
+#include "../auxiliary/NumericTools.h"
 
 namespace NetworKit {
 

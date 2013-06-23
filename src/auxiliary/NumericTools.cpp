@@ -7,7 +7,7 @@
 
 #include "NumericTools.h"
 
-namespace NetworKit {
+namespace Aux {
 
 NumericTools::NumericTools() {
 	// TODO Auto-generated constructor stub
@@ -19,14 +19,15 @@ NumericTools::~NumericTools() {
 }
 
 bool NumericTools::equal(const double x, const double y, const double error) {
-	// TODO: needs testing
-	double eps;
-	if (error == 0.0) {
-		eps = std::numeric_limits<double>::epsilon();
-	} else {
-		eps = error;
-	}
-	return (x <= (y + eps)) && (x >= (y - eps));
+	return (x <= (y + error)) && (x >= (y - error));
+}
+
+bool NumericTools::le(const double x, const double y, const double error) {
+	return (x <= (y + error));
+}
+
+bool NumericTools::ge(const double x, const double y, const double error) {
+	return (x >= (y - error));
 }
 
 } /* namespace NetworKit */
