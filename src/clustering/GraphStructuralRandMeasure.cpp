@@ -42,4 +42,8 @@ double GraphStructuralRandMeasure::getDissimilarity(Graph& G, Clustering& first,
 	return rand;
 }
 
+double GraphStructuralRandMeasure::getDissimilarity(Graph& G, Clustering& zeta1, Graph& G2, Clustering& zeta2) {
+	// TODO:
+}
+
 } /* namespace NetworKit */

@@ -160,7 +160,24 @@ public:
 
 	Graph(count n);
 
+	Graph(const Graph& other) = default;
+
+	Graph(Graph&& other) = default;
+
 	virtual ~Graph();
+
+
+	/**
+	 * Assignment operator
+	 */
+	Graph& operator=(Graph&& other) = default;
+
+	/**
+	 * Assignment operator
+	 */
+	Graph& operator=(const Graph& other) = default;
+
+
 
 	/**
 	 * Set name of graph.

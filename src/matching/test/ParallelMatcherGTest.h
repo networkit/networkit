@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#ifndef NOGTEST
+
 #ifndef PARALLELMATCHERGTEST_H_
 #define PARALLELMATCHERGTEST_H_
 
@@ -21,3 +23,5 @@ public:
 }
 
 #endif /* PARALLELMATCHERGTEST_H_ */
+
+#endif

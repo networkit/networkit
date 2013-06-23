@@ -20,7 +20,6 @@ DynamicLabelPropagation::DynamicLabelPropagation(count theta, std::string strate
 		updateThreshold(theta),
 		nUpdated(0) {
 
-	this->G = NULL; // G is set in method setGraph
 	// select prep strategy
 	if (strategyName == "Reactivate") {
 		this->prepStrategy = new DynamicLabelPropagation::Reactivate(this);

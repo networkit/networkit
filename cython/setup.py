@@ -43,5 +43,5 @@ setup(name="NetworKit",
 	 cmdclass={"build_ext": build_ext},
 	 ext_modules=modules)
 
-print("[DONE]Êsetup.py")
+print("[Done] setup.py")
 

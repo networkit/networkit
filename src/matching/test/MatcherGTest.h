@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#ifndef NOGTEST
+
 #ifndef MATCHERGTEST_H_
 #define MATCHERGTEST_H_
 
@@ -30,3 +32,5 @@ public:
 }
 
 #endif /* MATCHERGTEST_H_ */
+
+#endif

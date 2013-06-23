@@ -355,6 +355,36 @@ TEST_F(DCDGTest, tryDynamicEnsemble) {
 
 }
 
+TEST_F(DCDGTest, testDynamicLabelPropagation2) {
+
+	DynamicCommunityDetector* dynPLP = new DynamicLabelPropagation(0, "Isolate");
+	INFO("created algorithm: " << dynPLP->toString());
+
+	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
+
+
+	std::vector<DynamicCommunityDetector*> detectors = {dynPLP};
+	DynCDSetup setup(*dynGen, detectors, 1e3, 1e2);
+
+	setup.run();
+
+}
+
+TEST_F(DCDGTest, testTDynamicLabelPropagation) {
+
+	DynamicCommunityDetector* dynPLP = new TDynamicLabelPropagation<Isolate>();
+	INFO("created algorithm: " << dynPLP->toString());
+
+	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
+
+
+	std::vector<DynamicCommunityDetector*> detectors = {dynPLP};
+	DynCDSetup setup(*dynGen, detectors, 1e3, 1e2);
+
+	setup.run();
+
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */

@@ -27,6 +27,8 @@
 #include "../../overlap/HashingOverlapper.h"
 #include "../../auxiliary/Debug.h"
 
+#include "../TDynamicLabelPropagation.h"
+
 
 namespace NetworKit {
 

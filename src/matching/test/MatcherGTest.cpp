@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#ifndef NOGTEST
+
 #include "MatcherGTest.h"
 
 
@@ -74,3 +76,5 @@ TEST_F(MatcherGTest, testPgaMatching) {
 
 
 } // namespace EnsembleClustering
+
+#endif
