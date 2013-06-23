@@ -126,6 +126,34 @@ TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 }
 
 
+TEST_F(OverlapGTest, testHashingOverlapperForCorrectness) {
+	count n = 4;
+	Graph G(n);
+
+	Clustering zeta(n);
+	Clustering eta(n);
+
+	zeta[0] = 0;
+	zeta[1] = 0;
+	zeta[2] = 1;
+	zeta[3] = 1;
+
+	eta[0] = 0;
+	eta[1] = 1;
+	eta[2] = 0;
+	eta[3] = 1;
+
+	std::vector<Clustering> clusterings = {zeta, eta};
+	HashingOverlapper overlapper;
+	Clustering overlap = overlapper.run(G, clusterings);
+
+	INFO("overlap clustering number of clusters: " << overlap.numberOfClusters());
+	INFO("overlap clustering: " << Aux::vectorToString(overlap.getVector()));
+}
+
+
+
+
 } /* namespace NetworKit */
 
 #endif
