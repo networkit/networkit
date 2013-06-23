@@ -51,9 +51,10 @@ Clustering HashingOverlapper::run(Graph& G,
 	auto hash = djb2;
 
 	core.setAll(0);
-	for (Clustering zeta : clusterings) {
+	for (index c = 0; c < clusterings.size(); ++c) {
+		Clustering& zeta = clusterings[c];
 		G.parallelForNodes([&](node v){
-			core[v] += (hash(zeta[v]) & 0xffff);
+			core[v] += (hash((c+2) * zeta[v]) & 0xffff);
 		});
 	}
 	core.compact();
