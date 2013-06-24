@@ -57,6 +57,7 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 
 
 
+	// RegionGrowingOverlapper hashing;
 	HashingOverlapper hashing;
 	std::vector<Clustering> clusterings;
 	clusterings.push_back(zeta);
