@@ -11,6 +11,7 @@
 
 #include "DissimilarityMeasure.h"
 #include "../overlap/HashingOverlapper.h"
+#include "../overlap/RegionGrowingOverlapper.h"
 #include "../auxiliary/MissingMath.h"
 #include "../auxiliary/NumericTools.h"
 
