@@ -18,9 +18,7 @@ SCDGTest::~SCDGTest() {
 }
 //
 //
-//TEST_F(SCDGTest, testGreedyCommunityExpansion) {
-//	// TODO: unit test for GreedyCommunityExpansion
-//}
+
 //
 //TEST_F(SCDGTest, testConductance) {
 //
@@ -143,64 +141,64 @@ SCDGTest::~SCDGTest() {
 //
 //}
 //
-////Test with dummy acceptance and conductance and dummy trimming
-//TEST_F(SCDGTest, testRun) {
-//
-//	Graph G (12);
-//
-//	// add clique
-//	G.addEdge(0,1);
-//	G.addEdge(0,2);
-//	G.addEdge(0,3);
-//	G.addEdge(1,2);
-//	G.addEdge(1,3);
-//	G.addEdge(2,3);
-//
-//	GreedyCommunityExpansion GCE(G);
-//	std::unordered_set<node> community= GCE.expandSeed(0);
-//	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
-//
-//
-//	//add satelites
-//	G.addEdge(0,4);
-//	G.addEdge(1,5);
-//	G.addEdge(2,6);
-//	G.addEdge(3,7);
-//
-//	community = GCE.expandSeed(0);
-//
-//	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
-//
-//	community = GCE.expandSeed(6);
-//	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
-//
-//	// add another clique
-//	G.addEdge(6,8);
-//	G.addEdge(8,9);
-//	G.addEdge(8,10);
-//	G.addEdge(8,11);
-//	G.addEdge(9,10);
-//	G.addEdge(9,11);
-//	G.addEdge(10,11);
-//
-//
-//	community = GCE.expandSeed(0);
-//	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
-//
-//	community = GCE.expandSeed(4);
-//	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
-//
-//	community = GCE.expandSeed(6);
-//	EXPECT_EQ(8, community.size()) << "The community should have 8 nodes";
-//
-//	community = GCE.expandSeed(8);
-//	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
-//
-//
-//	community = GCE.expandSeed(9);
-//	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
-//
-//}
+//Test with dummy acceptance and conductance and dummy trimming
+TEST_F(SCDGTest, testGreedyCommunityExpansion) {
+
+	Graph G(12);
+
+	// add clique
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(2,3);
+
+	GreedyCommunityExpansion GCE(G);
+	std::unordered_set<node> community= GCE.expandSeed(0);
+	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
+
+
+	//add satelites
+	G.addEdge(0,4);
+	G.addEdge(1,5);
+	G.addEdge(2,6);
+	G.addEdge(3,7);
+
+	community = GCE.expandSeed(0);
+
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
+
+	community = GCE.expandSeed(6);
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
+
+	// add another clique
+	G.addEdge(6,8);
+	G.addEdge(8,9);
+	G.addEdge(8,10);
+	G.addEdge(8,11);
+	G.addEdge(9,10);
+	G.addEdge(9,11);
+	G.addEdge(10,11);
+
+
+	community = GCE.expandSeed(0);
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
+
+	community = GCE.expandSeed(4);
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
+
+	community = GCE.expandSeed(6);
+	EXPECT_EQ(8, community.size()) << "The community should have 8 nodes";
+
+	community = GCE.expandSeed(8);
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
+
+
+	community = GCE.expandSeed(9);
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
+
+}
 //
 //TEST_F(SCDGTest, testNodeClusterSimilarity) {
 //
@@ -401,6 +399,7 @@ TEST_F(SCDGTest, tryGreedyWithSeedSets) {
 //
 //}
 
+<<<<<<< local
 //
 //TEST_F(SCDGTest, localJaccardTest) {
 //	node seedNode = 0;
@@ -503,6 +502,233 @@ TEST_F(SCDGTest, tryGreedyWithSeedSets) {
 //
 //	EXPECT_EQ(0.4, index.getDissimilarity(communities, groundTruth))<< "The Precision has a value of 0.4";
 //}
+=======
+	std::unordered_set<node> seeds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	NeighborhoodDistance distMeasure(G);
+	SelectiveSCAN GCE(G, distMeasure);
+	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+
+	for (auto x : result) {
+		std::cout << "-----------" << x.first << "-----------------"
+				<< std::endl;
+
+		for (node u : x.second) {
+			std::cout << u << std::endl;
+		}
+		std::cout << "----------------------------" << std::endl;
+
+	}
+
+}
+
+TEST_F(SCDGTest, testTSelectiveSCAN) {
+	Graph G(10);
+	// add clique
+	G.addEdge(0, 1);
+	G.addEdge(0, 2);
+	G.addEdge(0, 3);
+	G.addEdge(0, 4);
+	G.addEdge(1, 2);
+	G.addEdge(1, 3);
+	G.addEdge(1, 4);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(4, 6);
+	G.addEdge(4, 7);
+	G.addEdge(4, 8);
+	G.addEdge(5, 6);
+	G.addEdge(5, 7);
+	G.addEdge(5, 8);
+	G.addEdge(6, 7);
+	G.addEdge(6, 8);
+	G.addEdge(7, 8);
+	G.addEdge(0, 9);
+
+	std::unordered_set<node> seeds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+	Parameters param;
+	TSelectiveSCAN<TNeighborhoodDistance> GCE(G, param);
+	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+
+	for (auto x : result) {
+		std::cout << "-----------" << x.first << "-----------------" << std::endl;
+
+		for (node u : x.second) {
+			std::cout << u << std::endl;
+		}
+		std::cout << "----------------------------" << std::endl;
+
+	}
+
+}
+
+
+TEST_F(SCDGTest, localJaccardTest) {
+	node seedNode = 0;
+	std::unordered_set<node> cluster = {0,1,2,3};
+	Clustering groundTruth(7);
+	JaccardIndex index;
+
+	groundTruth.addToCluster(0, 1);
+	groundTruth.addToCluster(1, 2);
+	groundTruth.addToCluster(0, 4);
+	groundTruth.addToCluster(1, 5);
+
+
+	EXPECT_EQ(0, index.localDissimilarity(seedNode, cluster, groundTruth)) << "The Jaccard index has a value of 0";
+
+	groundTruth.addToCluster(0, 0);
+	cluster = {1,2,3};
+
+	EXPECT_EQ(0, index.localDissimilarity(seedNode, cluster, groundTruth)) << "The Jaccard index has a value of 0";
+
+	cluster = {0,1,2,3};
+	EXPECT_EQ(0.4, index.localDissimilarity(seedNode, cluster, groundTruth)) << "The Jaccard index has a value of 0.4";
+}
+
+TEST_F(SCDGTest, JaccardTest) {
+	std::unordered_map<node,std::unordered_set<node>> communities;
+	communities.insert({1,{1,4}});
+	communities.insert({2,{2,5}});
+	Clustering groundTruth(8);
+	JaccardIndex index;
+
+	groundTruth.addToCluster(0, 1);
+	groundTruth.addToCluster(0, 6);
+	groundTruth.addToCluster(1, 2);
+	groundTruth.addToCluster(1, 4);
+	groundTruth.addToCluster(1, 7);
+
+	EXPECT_LE(0.33333, index.getDissimilarity(communities, groundTruth))<< "The Jaccard index has a value of 1/3";
+	EXPECT_GE(0.33334, index.getDissimilarity(communities, groundTruth))<< "The Jaccard index has a value of 1/3";
+}
+
+TEST_F(SCDGTest, localPrecisionTest) {
+	node seedNode = 0;
+	std::unordered_set<node> cluster = {0,1,2};
+	Clustering groundTruth(5);
+	Precision index;
+
+	groundTruth.addToCluster(0, 0);
+	groundTruth.addToCluster(0, 1);
+	groundTruth.addToCluster(0, 3);
+	groundTruth.addToCluster(1, 4);
+
+	EXPECT_LE(0.66666, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Precision has a value of 2/3";
+	EXPECT_GE(0.66667, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Precision has a value of 2/3";
+}
+
+TEST_F(SCDGTest, PrecisionTest) {
+	std::unordered_map<node,std::unordered_set<node>> communities;
+		communities.insert({1,{1,4}});
+		communities.insert({2,{2,5}});
+		Clustering groundTruth(8);
+		Precision index;
+
+		groundTruth.addToCluster(0, 1);
+		groundTruth.addToCluster(0, 6);
+		groundTruth.addToCluster(1, 2);
+		groundTruth.addToCluster(1, 4);
+		groundTruth.addToCluster(1, 7);
+
+	EXPECT_EQ(0.5, index.getDissimilarity(communities, groundTruth))<< "The Precision has a value of 0.5";
+}
+
+TEST_F(SCDGTest, localRecallTest) {
+	node seedNode = 0;
+	std::unordered_set<node> cluster = {0,1,2};
+	Clustering groundTruth(5);
+	Recall index;
+
+	groundTruth.addToCluster(0, 0);
+	groundTruth.addToCluster(0, 1);
+	groundTruth.addToCluster(0, 3);
+	groundTruth.addToCluster(1, 4);
+
+	EXPECT_LE(0.66666, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Recall has a value of 2/3";
+	EXPECT_GE(0.66667, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Recall has a value of 2/3";
+}
+
+TEST_F(SCDGTest, RecallTest) {
+	std::unordered_map<node,std::unordered_set<node>> communities;
+		communities.insert({1,{1,4}});
+		communities.insert({2,{2,5}});
+		Clustering groundTruth(8);
+		Recall index;
+
+		groundTruth.addToCluster(0, 1);
+		groundTruth.addToCluster(0, 6);
+		groundTruth.addToCluster(1, 2);
+		groundTruth.addToCluster(1, 4);
+		groundTruth.addToCluster(1, 7);
+
+	EXPECT_EQ(0.4, index.getDissimilarity(communities, groundTruth))<< "The Precision has a value of 0.4";
+}
+
+
+
+TEST_F(SCDGTest, testTGreedyCommunityExpansion) {
+
+	Graph G (12);
+
+	// add clique
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(2,3);
+
+	TGreedyCommunityExpansion<TConductance, TDummyAcceptability, DummyTrimming> GCE(G);
+	std::unordered_set<node> community= GCE.expandSeed(0);
+	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
+
+
+	//add satelites
+	G.addEdge(0,4);
+	G.addEdge(1,5);
+	G.addEdge(2,6);
+	G.addEdge(3,7);
+
+	community = GCE.expandSeed(0);
+
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
+
+	community = GCE.expandSeed(6);
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
+
+	// add another clique
+	G.addEdge(6,8);
+	G.addEdge(8,9);
+	G.addEdge(8,10);
+	G.addEdge(8,11);
+	G.addEdge(9,10);
+	G.addEdge(9,11);
+	G.addEdge(10,11);
+
+
+	community = GCE.expandSeed(0);
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
+
+	community = GCE.expandSeed(4);
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
+
+	community = GCE.expandSeed(6);
+	EXPECT_EQ(8, community.size()) << "The community should have 8 nodes";
+
+	community = GCE.expandSeed(8);
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
+
+
+	community = GCE.expandSeed(9);
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
+
+}
+
+
+>>>>>>> other
 //TEST_F(SCDGTest, benchmarkGreedy) {
 //	METISGraphReader reader;
 //	Graph G = reader.read("input/pgp.graph");

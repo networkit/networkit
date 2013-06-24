@@ -16,6 +16,7 @@
 
 #include "../../graph/Graph.h"
 #include "../GreedyCommunityExpansion.h"
+#include "../TGreedyCommunityExpansion.h"
 #include "../SelectiveSCAN.h"
 #include "../TSelectiveSCAN.h"
 #include "../../graph/Subgraph.h"
@@ -29,6 +30,8 @@
 #include "../SelectiveDissimilarityMeasure.h"
 #include "../../distmeasures/NeighborhoodDistance.h"
 #include "../../distmeasures/TNeighborhoodDistance.h"
+#include "../TQualityObjective.h"
+#include "../TAcceptability.h"
 
 
 

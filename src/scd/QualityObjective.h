@@ -21,7 +21,7 @@ public:
 		 * @param[in]	G	the graph
 		 * @param[in]	community	the currently expanding community
 		 */
-	QualityObjective(Graph& G, std::unordered_set<node>& community);
+	QualityObjective(const Graph& G, std::unordered_set<node>& community);
 
 	virtual ~QualityObjective();
 
@@ -34,7 +34,7 @@ public:
 	virtual double getValue(node v) = 0;
 
 protected:
-	Graph* G;								//!< pointer to the graph
+	const Graph* G;								//!< pointer to the graph
 	std::unordered_set<node>* community;	//!< pointer to the current community
 };
 
@@ -46,7 +46,7 @@ class LocalModularityM : public QualityObjective {
 
 public:
 
-	LocalModularityM(Graph& G, std::unordered_set<node>& community);
+	LocalModularityM(const Graph& G, std::unordered_set<node>& community);
 
 	virtual ~LocalModularityM();
 
@@ -57,7 +57,7 @@ class LocalModularityL : public QualityObjective {
 
 public:
 
-	LocalModularityL(Graph& G, std::unordered_set<node>& community);
+	LocalModularityL(const Graph& G, std::unordered_set<node>& community);
 
 	virtual ~LocalModularityL();
 
@@ -72,7 +72,7 @@ class Conductance : public QualityObjective {
 
 public:
 
-	Conductance(Graph& G, std::unordered_set<node>& community);
+	Conductance(const Graph& G, std::unordered_set<node>& community);
 
 	virtual ~Conductance();
 

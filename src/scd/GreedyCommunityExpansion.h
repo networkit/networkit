@@ -29,7 +29,7 @@ class GreedyCommunityExpansion: public NetworKit::SelectiveCommunityDetector {
 
 public:
 
-	GreedyCommunityExpansion(Graph& G);
+	GreedyCommunityExpansion(const Graph& G);
 
 	virtual ~GreedyCommunityExpansion();
 

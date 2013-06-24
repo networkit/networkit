@@ -28,7 +28,7 @@ public:
 
 public:
 
-	Graph& G;	//!< the input graph
+	const Graph& G;	//!< the input graph
 };
 
 } /* namespace NetworKit */
