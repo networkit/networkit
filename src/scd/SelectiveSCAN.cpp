@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveSCAN::SelectiveSCAN(Graph& G): SelectiveCommunityDetector(G), epsilon(0.4), mu(3) {
+SelectiveSCAN::SelectiveSCAN(Graph& G): SelectiveCommunityDetector(G), epsilon(0.4), mu(2) {
 
 }
 
