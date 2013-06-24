@@ -23,7 +23,7 @@ NetworKit::BoundarySharpness::~BoundarySharpness() {
 }
 
 std::unordered_set<node> NetworKit::BoundarySharpness::run(
-		std::unordered_set<node>& community, Graph& G) {
+		std::unordered_set<node>& community, const Graph& G) {
 
 	std::unordered_set<node> outliers;
 
@@ -55,7 +55,7 @@ NetworKit::DummyTrimming::~DummyTrimming() {
 }
 
 std::unordered_set<node> NetworKit::DummyTrimming::run(
-		std::unordered_set<node>& community, Graph& G) {
+		std::unordered_set<node>& community, const Graph& G) {
 	return community;
 }
 

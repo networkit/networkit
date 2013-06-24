@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveCommunityDetector::SelectiveCommunityDetector(Graph& G) : G(G) {
+SelectiveCommunityDetector::SelectiveCommunityDetector(const Graph& G) : G(G) {
 }
 
 SelectiveCommunityDetector::~SelectiveCommunityDetector() {

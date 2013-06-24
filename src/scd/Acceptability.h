@@ -18,7 +18,7 @@ namespace NetworKit {
  */
 class Acceptability {
 public:
-	Graph* G;								//!< pointer to current graph
+	const Graph* G;								//!< pointer to current graph
 	std::unordered_set<node>* community;	//!< pointer to current community
 	std::unordered_set<node>* shell;		//!< pointer to current shell
 public:
@@ -28,7 +28,7 @@ public:
 	 * @param[in]	community	pointer to current community
 	 * @param[in]	shell		pointer to current shell
 	 */
-	Acceptability(Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
+	Acceptability(const Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
 
 	virtual ~Acceptability();
 
@@ -42,7 +42,7 @@ class DummySimilarity: public Acceptability {
 
 public:
 
-	DummySimilarity(Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
+	DummySimilarity(const Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
 
 	virtual ~DummySimilarity();
 
@@ -58,7 +58,7 @@ class NodeClusterSimilarity: public Acceptability {
 
 public:
 
-	NodeClusterSimilarity(Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
+	NodeClusterSimilarity(const Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
 
 	virtual ~NodeClusterSimilarity();
 
