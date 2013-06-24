@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveSCAN::SelectiveSCAN(Graph& G): SelectiveCommunityDetector(G), epsilon(0.5), mu(2) {
+SelectiveSCAN::SelectiveSCAN(Graph& G, NodeDistance& distMeasure, double epsilon, double mu): SelectiveCommunityDetector(G), distMeasure(&distMeasure), epsilon(epsilon), mu(mu) {
 
 }
 
@@ -56,37 +56,36 @@ std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unord
 	return communities;
 }
 
-double SelectiveSCAN::nodeDistance(node u, node v) {
-
-	int inter = 0;
-	int uni = 0;
-	G.forNeighborsOf(u, [&](node x){
-		if (x != v && x!= u ) {
-			if (G.hasEdge(x, v)) {
-				inter++;
-				uni++;
-			} else {
-				uni++;
-			}
-		}
-	});
-	G.forNeighborsOf(v, [&](node x){
-		if (x != u && x != v) {
-			if (!G.hasEdge(x, u)) {
-				uni++;
-			}
-		}
-	});
-	return 1- ((double) (inter + 2)/ (double) (uni +2));
-}
+//double SelectiveSCAN::nodeDistance(node u, node v) {
+//
+//	int inter = 0;
+//	int uni = 0;
+//	G.forNeighborsOf(u, [&](node x){
+//		if (x != v && x!= u ) {
+//			if (G.hasEdge(x, v)) {
+//				inter++;
+//				uni++;
+//			} else {
+//				uni++;
+//			}
+//		}
+//	});
+//	G.forNeighborsOf(v, [&](node x){
+//		if (x != u && x != v) {
+//			if (!G.hasEdge(x, u)) {
+//				uni++;
+//			}
+//		}
+//	});
+//	return 1- ((double) (inter + 2)/ (double) (uni +2));
+//}
 
 std::pair<bool,std::unordered_set<node>> SelectiveSCAN::isCore(node u) {
-
 	bool core = false;
 	std::unordered_set<node> similarNeighbors;
 	int count = 0;
 	G.forNeighborsOf(u, [&](node v){
-		if (this->nodeDistance(u, v) <= this->epsilon) {
+		if (this->distMeasure->distance(u, v) <= this->epsilon) {
 			count++;
 			similarNeighbors.insert(v);
 		}

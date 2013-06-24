@@ -18,4 +18,5 @@ NodeDistance::~NodeDistance() {
 	// TODO Auto-generated destructor stub
 }
 
+
 } /* namespace NetworKit */
