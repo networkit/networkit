@@ -20,7 +20,7 @@ class SelectiveCommunityDetector {
 
 public:
 
-	SelectiveCommunityDetector(Graph& G);
+	SelectiveCommunityDetector(const Graph& G);
 
 	virtual ~SelectiveCommunityDetector();
 

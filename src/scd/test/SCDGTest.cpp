@@ -301,207 +301,208 @@ TEST_F(SCDGTest, testRandomWalkSeedSet) {
 TEST_F(SCDGTest, tryGreedyWithSeedSets) {
 
 	METISGraphReader reader;
-	Graph G = reader.read("input/lesmis.graph");
+	Graph G = reader.read("input/caidaROuterLevel.graph");
+	Parameters param;
 	RandomSeedSet randSeeds(G);
 
-	std::unordered_set<node> seeds = randSeeds.getSeeds(77);
-	assert (seeds.size() == 77);
+	std::unordered_set<node> seeds = randSeeds.getSeeds(100);
+	assert (seeds.size() == 100);
 
-	GreedyCommunityExpansion GCE1(G);
+	SelectiveSCAN GCE1(G);
 	std::unordered_map<node, std::unordered_set<node>> result1 = GCE1.run(seeds);
 	for(auto u :result1) {
 		std::cout<<u.first<<"-----------"<<u.second.size()<<std::endl;
 	}
 }
 
-TEST_F(SCDGTest, testSelectiveSCAN) {
-	Graph G(10);
-	// add clique
-	G.addEdge(0, 1);
-	G.addEdge(0, 2);
-	G.addEdge(0, 3);
-	G.addEdge(0, 4);
-	G.addEdge(1, 2);
-	G.addEdge(1, 3);
-	G.addEdge(1, 4);
-	G.addEdge(2, 3);
-	G.addEdge(2, 4);
-	G.addEdge(3, 4);
-	G.addEdge(4, 5);
-	G.addEdge(4, 6);
-	G.addEdge(4, 7);
-	G.addEdge(4, 8);
-	G.addEdge(5, 6);
-	G.addEdge(5, 7);
-	G.addEdge(5, 8);
-	G.addEdge(6, 7);
-	G.addEdge(6, 8);
-	G.addEdge(7, 8);
-	G.addEdge(0, 9);
+//TEST_F(SCDGTest, testSelectiveSCAN) {
+//	Graph G(10);
+//	// add clique
+//	G.addEdge(0, 1);
+//	G.addEdge(0, 2);
+//	G.addEdge(0, 3);
+//	G.addEdge(0, 4);
+//	G.addEdge(1, 2);
+//	G.addEdge(1, 3);
+//	G.addEdge(1, 4);
+//	G.addEdge(2, 3);
+//	G.addEdge(2, 4);
+//	G.addEdge(3, 4);
+//	G.addEdge(4, 5);
+//	G.addEdge(4, 6);
+//	G.addEdge(4, 7);
+//	G.addEdge(4, 8);
+//	G.addEdge(5, 6);
+//	G.addEdge(5, 7);
+//	G.addEdge(5, 8);
+//	G.addEdge(6, 7);
+//	G.addEdge(6, 8);
+//	G.addEdge(7, 8);
+//	G.addEdge(0, 9);
+//
+//	std::unordered_set<node> seeds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+//	NeighborhoodDistance distMeasure(G);
+//	SelectiveSCAN GCE(G, distMeasure);
+//	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+//
+//	for (auto x : result) {
+//		std::cout << "-----------" << x.first << "-----------------"
+//				<< std::endl;
+//
+//		for (node u : x.second) {
+//			std::cout << u << std::endl;
+//		}
+//		std::cout << "----------------------------" << std::endl;
+//
+//	}
+//
+//}
+//
+//TEST_F(SCDGTest, testTSelectiveSCAN) {
+//	Graph G(10);
+//	// add clique
+//	G.addEdge(0, 1);
+//	G.addEdge(0, 2);
+//	G.addEdge(0, 3);
+//	G.addEdge(0, 4);
+//	G.addEdge(1, 2);
+//	G.addEdge(1, 3);
+//	G.addEdge(1, 4);
+//	G.addEdge(2, 3);
+//	G.addEdge(2, 4);
+//	G.addEdge(3, 4);
+//	G.addEdge(4, 5);
+//	G.addEdge(4, 6);
+//	G.addEdge(4, 7);
+//	G.addEdge(4, 8);
+//	G.addEdge(5, 6);
+//	G.addEdge(5, 7);
+//	G.addEdge(5, 8);
+//	G.addEdge(6, 7);
+//	G.addEdge(6, 8);
+//	G.addEdge(7, 8);
+//	G.addEdge(0, 9);
+//
+//	std::unordered_set<node> seeds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+//
+//	Parameters param;
+//	TSelectiveSCAN<TNeighborhoodDistance> GCE(G, param);
+//	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+//
+//	for (auto x : result) {
+//		std::cout << "-----------" << x.first << "-----------------" << std::endl;
+//
+//		for (node u : x.second) {
+//			std::cout << u << std::endl;
+//		}
+//		std::cout << "----------------------------" << std::endl;
+//
+//	}
+//
+//}
 
-	std::unordered_set<node> seeds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	NeighborhoodDistance distMeasure(G);
-	SelectiveSCAN GCE(G, distMeasure);
-	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
-
-	for (auto x : result) {
-		std::cout << "-----------" << x.first << "-----------------"
-				<< std::endl;
-
-		for (node u : x.second) {
-			std::cout << u << std::endl;
-		}
-		std::cout << "----------------------------" << std::endl;
-
-	}
-
-}
-
-TEST_F(SCDGTest, testTSelectiveSCAN) {
-	Graph G(10);
-	// add clique
-	G.addEdge(0, 1);
-	G.addEdge(0, 2);
-	G.addEdge(0, 3);
-	G.addEdge(0, 4);
-	G.addEdge(1, 2);
-	G.addEdge(1, 3);
-	G.addEdge(1, 4);
-	G.addEdge(2, 3);
-	G.addEdge(2, 4);
-	G.addEdge(3, 4);
-	G.addEdge(4, 5);
-	G.addEdge(4, 6);
-	G.addEdge(4, 7);
-	G.addEdge(4, 8);
-	G.addEdge(5, 6);
-	G.addEdge(5, 7);
-	G.addEdge(5, 8);
-	G.addEdge(6, 7);
-	G.addEdge(6, 8);
-	G.addEdge(7, 8);
-	G.addEdge(0, 9);
-
-	std::unordered_set<node> seeds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-
-	Parameters param;
-	TSelectiveSCAN<TNeighborhoodDistance> GCE(G, param);
-	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
-
-	for (auto x : result) {
-		std::cout << "-----------" << x.first << "-----------------" << std::endl;
-
-		for (node u : x.second) {
-			std::cout << u << std::endl;
-		}
-		std::cout << "----------------------------" << std::endl;
-
-	}
-
-}
-
-
-TEST_F(SCDGTest, localJaccardTest) {
-	node seedNode = 0;
-	std::unordered_set<node> cluster = {0,1,2,3};
-	Clustering groundTruth(7);
-	JaccardIndex index;
-
-	groundTruth.addToCluster(0, 1);
-	groundTruth.addToCluster(1, 2);
-	groundTruth.addToCluster(0, 4);
-	groundTruth.addToCluster(1, 5);
-
-
-	EXPECT_EQ(0, index.localDissimilarity(seedNode, cluster, groundTruth)) << "The Jaccard index has a value of 0";
-
-	groundTruth.addToCluster(0, 0);
-	cluster = {1,2,3};
-
-	EXPECT_EQ(0, index.localDissimilarity(seedNode, cluster, groundTruth)) << "The Jaccard index has a value of 0";
-
-	cluster = {0,1,2,3};
-	EXPECT_EQ(0.4, index.localDissimilarity(seedNode, cluster, groundTruth)) << "The Jaccard index has a value of 0.4";
-}
-
-TEST_F(SCDGTest, JaccardTest) {
-	std::unordered_map<node,std::unordered_set<node>> communities;
-	communities.insert({1,{1,4}});
-	communities.insert({2,{2,5}});
-	Clustering groundTruth(8);
-	JaccardIndex index;
-
-	groundTruth.addToCluster(0, 1);
-	groundTruth.addToCluster(0, 6);
-	groundTruth.addToCluster(1, 2);
-	groundTruth.addToCluster(1, 4);
-	groundTruth.addToCluster(1, 7);
-
-	EXPECT_LE(0.33333, index.getDissimilarity(communities, groundTruth))<< "The Jaccard index has a value of 1/3";
-	EXPECT_GE(0.33334, index.getDissimilarity(communities, groundTruth))<< "The Jaccard index has a value of 1/3";
-}
-
-TEST_F(SCDGTest, localPrecisionTest) {
-	node seedNode = 0;
-	std::unordered_set<node> cluster = {0,1,2};
-	Clustering groundTruth(5);
-	Precision index;
-
-	groundTruth.addToCluster(0, 0);
-	groundTruth.addToCluster(0, 1);
-	groundTruth.addToCluster(0, 3);
-	groundTruth.addToCluster(1, 4);
-
-	EXPECT_LE(0.66666, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Precision has a value of 2/3";
-	EXPECT_GE(0.66667, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Precision has a value of 2/3";
-}
-
-TEST_F(SCDGTest, PrecisionTest) {
-	std::unordered_map<node,std::unordered_set<node>> communities;
-		communities.insert({1,{1,4}});
-		communities.insert({2,{2,5}});
-		Clustering groundTruth(8);
-		Precision index;
-
-		groundTruth.addToCluster(0, 1);
-		groundTruth.addToCluster(0, 6);
-		groundTruth.addToCluster(1, 2);
-		groundTruth.addToCluster(1, 4);
-		groundTruth.addToCluster(1, 7);
-
-	EXPECT_EQ(0.5, index.getDissimilarity(communities, groundTruth))<< "The Precision has a value of 0.5";
-}
-
-TEST_F(SCDGTest, localRecallTest) {
-	node seedNode = 0;
-	std::unordered_set<node> cluster = {0,1,2};
-	Clustering groundTruth(5);
-	Recall index;
-
-	groundTruth.addToCluster(0, 0);
-	groundTruth.addToCluster(0, 1);
-	groundTruth.addToCluster(0, 3);
-	groundTruth.addToCluster(1, 4);
-
-	EXPECT_LE(0.66666, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Recall has a value of 2/3";
-	EXPECT_GE(0.66667, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Recall has a value of 2/3";
-}
-
-TEST_F(SCDGTest, RecallTest) {
-	std::unordered_map<node,std::unordered_set<node>> communities;
-		communities.insert({1,{1,4}});
-		communities.insert({2,{2,5}});
-		Clustering groundTruth(8);
-		Recall index;
-
-		groundTruth.addToCluster(0, 1);
-		groundTruth.addToCluster(0, 6);
-		groundTruth.addToCluster(1, 2);
-		groundTruth.addToCluster(1, 4);
-		groundTruth.addToCluster(1, 7);
-
-	EXPECT_EQ(0.4, index.getDissimilarity(communities, groundTruth))<< "The Precision has a value of 0.4";
-}
+//
+//TEST_F(SCDGTest, localJaccardTest) {
+//	node seedNode = 0;
+//	std::unordered_set<node> cluster = {0,1,2,3};
+//	Clustering groundTruth(7);
+//	JaccardIndex index;
+//
+//	groundTruth.addToCluster(0, 1);
+//	groundTruth.addToCluster(1, 2);
+//	groundTruth.addToCluster(0, 4);
+//	groundTruth.addToCluster(1, 5);
+//
+//
+//	EXPECT_EQ(0, index.localDissimilarity(seedNode, cluster, groundTruth)) << "The Jaccard index has a value of 0";
+//
+//	groundTruth.addToCluster(0, 0);
+//	cluster = {1,2,3};
+//
+//	EXPECT_EQ(0, index.localDissimilarity(seedNode, cluster, groundTruth)) << "The Jaccard index has a value of 0";
+//
+//	cluster = {0,1,2,3};
+//	EXPECT_EQ(0.4, index.localDissimilarity(seedNode, cluster, groundTruth)) << "The Jaccard index has a value of 0.4";
+//}
+//
+//TEST_F(SCDGTest, JaccardTest) {
+//	std::unordered_map<node,std::unordered_set<node>> communities;
+//	communities.insert({1,{1,4}});
+//	communities.insert({2,{2,5}});
+//	Clustering groundTruth(8);
+//	JaccardIndex index;
+//
+//	groundTruth.addToCluster(0, 1);
+//	groundTruth.addToCluster(0, 6);
+//	groundTruth.addToCluster(1, 2);
+//	groundTruth.addToCluster(1, 4);
+//	groundTruth.addToCluster(1, 7);
+//
+//	EXPECT_LE(0.33333, index.getDissimilarity(communities, groundTruth))<< "The Jaccard index has a value of 1/3";
+//	EXPECT_GE(0.33334, index.getDissimilarity(communities, groundTruth))<< "The Jaccard index has a value of 1/3";
+//}
+//
+//TEST_F(SCDGTest, localPrecisionTest) {
+//	node seedNode = 0;
+//	std::unordered_set<node> cluster = {0,1,2};
+//	Clustering groundTruth(5);
+//	Precision index;
+//
+//	groundTruth.addToCluster(0, 0);
+//	groundTruth.addToCluster(0, 1);
+//	groundTruth.addToCluster(0, 3);
+//	groundTruth.addToCluster(1, 4);
+//
+//	EXPECT_LE(0.66666, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Precision has a value of 2/3";
+//	EXPECT_GE(0.66667, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Precision has a value of 2/3";
+//}
+//
+//TEST_F(SCDGTest, PrecisionTest) {
+//	std::unordered_map<node,std::unordered_set<node>> communities;
+//		communities.insert({1,{1,4}});
+//		communities.insert({2,{2,5}});
+//		Clustering groundTruth(8);
+//		Precision index;
+//
+//		groundTruth.addToCluster(0, 1);
+//		groundTruth.addToCluster(0, 6);
+//		groundTruth.addToCluster(1, 2);
+//		groundTruth.addToCluster(1, 4);
+//		groundTruth.addToCluster(1, 7);
+//
+//	EXPECT_EQ(0.5, index.getDissimilarity(communities, groundTruth))<< "The Precision has a value of 0.5";
+//}
+//
+//TEST_F(SCDGTest, localRecallTest) {
+//	node seedNode = 0;
+//	std::unordered_set<node> cluster = {0,1,2};
+//	Clustering groundTruth(5);
+//	Recall index;
+//
+//	groundTruth.addToCluster(0, 0);
+//	groundTruth.addToCluster(0, 1);
+//	groundTruth.addToCluster(0, 3);
+//	groundTruth.addToCluster(1, 4);
+//
+//	EXPECT_LE(0.66666, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Recall has a value of 2/3";
+//	EXPECT_GE(0.66667, index.localDissimilarity(seedNode, cluster, groundTruth))<< "The Recall has a value of 2/3";
+//}
+//
+//TEST_F(SCDGTest, RecallTest) {
+//	std::unordered_map<node,std::unordered_set<node>> communities;
+//		communities.insert({1,{1,4}});
+//		communities.insert({2,{2,5}});
+//		Clustering groundTruth(8);
+//		Recall index;
+//
+//		groundTruth.addToCluster(0, 1);
+//		groundTruth.addToCluster(0, 6);
+//		groundTruth.addToCluster(1, 2);
+//		groundTruth.addToCluster(1, 4);
+//		groundTruth.addToCluster(1, 7);
+//
+//	EXPECT_EQ(0.4, index.getDissimilarity(communities, groundTruth))<< "The Precision has a value of 0.4";
+//}
 //TEST_F(SCDGTest, benchmarkGreedy) {
 //	METISGraphReader reader;
 //	Graph G = reader.read("input/pgp.graph");
