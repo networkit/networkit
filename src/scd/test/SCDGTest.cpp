@@ -283,36 +283,36 @@ SCDGTest::~SCDGTest() {
 //
 //}
 //
-//TEST_F(SCDGTest, testRandomWalkSeedSet) {
-//	METISGraphReader reader;
-//	Graph G = reader.read("input/jazz.graph");
-//
-//	RandomWalkSeedSet walk(G, 2);
-//
-//	count k = 42;
-//	std::unordered_set<node> S = walk.getSeeds(k);
-//
-//	EXPECT_EQ(k, S.size());
-//
-//	DEBUG("seed set is: " << Aux::setToString(S));
-//
-//}
-//
-//TEST_F(SCDGTest, tryGreedyWithSeedSets) {
-//
-//	METISGraphReader reader;
-//	Graph G = reader.read("input/jazz.graph");
-//	RandomSeedSet randSeeds(G);
-//
-//	std::unordered_set<node> seeds = randSeeds.getSeeds(100);
-//	assert (seeds.size() == 100);
-//
-//	SelectiveSCAN GCE1(G);
-//	std::unordered_map<node, std::unordered_set<node>> result1 = GCE1.run(seeds);
-//	for(auto u :result1) {
-//		std::cout<<u.first<<"-----------"<<u.second.size()<<std::endl;
-//	}
-//}
+TEST_F(SCDGTest, testRandomWalkSeedSet) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+
+	RandomWalkSeedSet walk(G, 2);
+
+	count k = 42;
+	std::unordered_set<node> S = walk.getSeeds(k);
+
+	EXPECT_EQ(k, S.size());
+
+	DEBUG("seed set is: " << Aux::setToString(S));
+
+}
+
+TEST_F(SCDGTest, tryGreedyWithSeedSets) {
+
+	METISGraphReader reader;
+	Graph G = reader.read("input/lesmis.graph");
+	RandomSeedSet randSeeds(G);
+
+	std::unordered_set<node> seeds = randSeeds.getSeeds(77);
+	assert (seeds.size() == 77);
+
+	GreedyCommunityExpansion GCE1(G);
+	std::unordered_map<node, std::unordered_set<node>> result1 = GCE1.run(seeds);
+	for(auto u :result1) {
+		std::cout<<u.first<<"-----------"<<u.second.size()<<std::endl;
+	}
+}
 //
 //TEST_F(SCDGTest, SelectiveSCAN) {
 //	Graph G (10);
