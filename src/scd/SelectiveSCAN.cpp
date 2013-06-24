@@ -121,6 +121,7 @@ void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* 
 			}
 		}
 		candidates->erase(candidates->find(v));
+		// commit test
 	}
 }
 
