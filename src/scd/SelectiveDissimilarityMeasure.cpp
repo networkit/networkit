@@ -36,20 +36,21 @@ double JaccardIndex::localDissimilarity(const node seedNode,
 	if (cluster == -1) {
 		return 0;
 	}
+	if (community.find(seedNode) == community.end()) {
+		return 0;
+	}
 	for(node u = 0; u < groundTruth.numberOfEntries() ; ++u) {
 		if(groundTruth.clusterOf(u) == cluster) {
 			clusterSize++;
 		}
-	}
-	if (community.find(seedNode) == community.end()) {
-		return 0;
 	}
 	for(node u : community) {
 		if (groundTruth.clusterOf(u) == cluster) {
 			intersection++;
 		}
 	}
-	return (double)(intersection) / ((double)(community.size() + clusterSize - intersection));
+
+	return ((double)(intersection)) / ((double)(community.size() + clusterSize - intersection));
 }
 
 Precision::Precision() {
@@ -75,7 +76,7 @@ double Precision::localDissimilarity(const node seedNode,
 			counter++;
 		}
 	}
-	return (double)counter/(double)community.size();
+	return ((double)counter) / ((double)community.size());
 }
 
 Recall::Recall() {
@@ -108,7 +109,7 @@ double Recall::localDissimilarity(const node seedNode,
 			clusterSize++;
 		}
 	}
-	return (double)counter / (double)clusterSize;
+	return ((double)counter) / ((double)clusterSize);
 }
 
 NMI::NMI() {
@@ -142,11 +143,7 @@ double NMI::localDissimilarity(const node seedNode,
 		}
 	}
 
-
 return 0;
-
-
-
 }
 
 double JaccardIndex::getDissimilarity(
@@ -159,32 +156,96 @@ double JaccardIndex::getDissimilarity(
 	std::unordered_set<count> relevantGroundTruthClusters;
 	for (auto u : communities) {
 		cluster = groundTruth.clusterOf(u.first);
-		if (cluster != -1 && relevantGroundTruthClusters.find(cluster) == relevantGroundTruthClusters.end()) {
+		if (cluster != -1) {
 			relevantGroundTruthClusters.insert(cluster);
 		}
 	}
 	for (auto u : communities) {
 		cluster = groundTruth.clusterOf(u.first);
-		for(auto v : u.second) {
-
+		for(node v : u.second) {
+			node tmp = groundTruth.clusterOf(v);
+			if (tmp == cluster) {
+				intersection++;
+			} else if (tmp == -1) {
+				unionSize++;
+			} else if (relevantGroundTruthClusters.find(tmp) == relevantGroundTruthClusters.end()) {
+				unionSize++;
+			}
 		}
 	}
 
-return 0;
-
+	for (node v = 0; v < groundTruth.numberOfEntries(); v += 1) {
+		cluster = groundTruth.clusterOf(v) ;
+		if (relevantGroundTruthClusters.find(cluster) != relevantGroundTruthClusters.end()) {
+			unionSize++;
+		}
+	}
+return ((double)intersection) / ((double)unionSize);
 }
 
 
 double Precision::getDissimilarity(
 		const std::unordered_map<node, std::unordered_set<node> > communities,
 		const Clustering& groundTruth) {
-return 0;
+
+	int intersection = 0;
+	int counter = 0;
+	cluster cluster;
+	std::unordered_set<count> relevantGroundTruthClusters;
+	for (auto u : communities) {
+		cluster = groundTruth.clusterOf(u.first);
+		if (cluster != -1) {
+			relevantGroundTruthClusters.insert(cluster);
+		}
+	}
+	for (auto u : communities) {
+		cluster = groundTruth.clusterOf(u.first);
+		for(node v : u.second) {
+			node tmp = groundTruth.clusterOf(v);
+			if (tmp == cluster) {
+				intersection++;
+			}
+		}
+	}
+
+	for (auto u : communities) {
+		counter = counter + u.second.size();
+	}
+return ((double)intersection) / ((double)counter);
 }
 
 double Recall::getDissimilarity(
 		const std::unordered_map<node, std::unordered_set<node> > communities,
 		const Clustering& groundTruth) {
-return 0;
+
+	int intersection = 0;
+	int counter = 0;
+	cluster cluster;
+	std::unordered_set<count> relevantGroundTruthClusters;
+	for (auto u : communities) {
+		cluster = groundTruth.clusterOf(u.first);
+		if (cluster != -1) {
+			relevantGroundTruthClusters.insert(cluster);
+		}
+	}
+	for (auto u : communities) {
+		cluster = groundTruth.clusterOf(u.first);
+		for(node v : u.second) {
+			node tmp = groundTruth.clusterOf(v);
+			if (tmp == cluster) {
+				intersection++;
+			}
+		}
+	}
+
+	for (node v = 0; v < groundTruth.numberOfEntries(); v += 1) {
+		cluster = groundTruth.clusterOf(v) ;
+		if (relevantGroundTruthClusters.find(cluster) != relevantGroundTruthClusters.end()) {
+			counter++;
+		}
+	}
+	return ((double)intersection) / ((double)counter);
+
 }
 
 double NMI::getDissimilarity(
