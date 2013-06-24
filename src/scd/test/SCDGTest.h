@@ -17,6 +17,7 @@
 #include "../../graph/Graph.h"
 #include "../GreedyCommunityExpansion.h"
 #include "../SelectiveSCAN.h"
+#include "../TSelectiveSCAN.h"
 #include "../../graph/Subgraph.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../io/METISGraphWriter.h"
@@ -26,6 +27,8 @@
 #include "../RandomWalkSeedSet.h"
 #include "../../clustering/Clustering.h"
 #include "../SelectiveDissimilarityMeasure.h"
+#include "../../distmeasures/NeighborhoodDistance.h"
+#include "../../distmeasures/TNeighborhoodDistance.h"
 
 
 

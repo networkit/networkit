@@ -25,7 +25,7 @@ public:
 	 */
 	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega, index norm = 2);
 
-	virtual ~AlgebraicDistance();
+	 ~AlgebraicDistance();
 
 	/**
 	 * Starting with random initialization, compute for all @a numberSystems
@@ -34,7 +34,7 @@ public:
 	 *
 	 * REQ: Needs to be called before algdist delivers meaningful results!
 	 */
-	virtual void preprocess();
+	 virtual void preprocess();
 
 	/**
 	 * @return Extended algebraic distance between node @a u and node @a v in norm @a norm with
@@ -42,7 +42,7 @@ public:
 	 *
 	 * Maximum norm is realized by setting @a norm to 0.
 	 */
-	virtual double distance(node u, node v);
+	 virtual double distance(node u, node v);
 
 protected:
 

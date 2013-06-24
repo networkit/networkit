@@ -9,31 +9,37 @@
 #define SELECTIVESCAN_H_
 
 #include "SelectiveCommunityDetector.h"
+#include "../distmeasures/NodeDistance.h"
 
 namespace NetworKit {
 
 class SelectiveSCAN: public NetworKit::SelectiveCommunityDetector {
 
-public:
-	double epsilon;
-	double mu;
+
 
 public:
 
-	SelectiveSCAN(Graph& G);
+	SelectiveSCAN(Graph& G, NodeDistance& distMeasure, double epsilon=0.5, double mu=2);
 
 	virtual ~SelectiveSCAN();
 
 	virtual std::unordered_map<node, std::unordered_set<node> > run(std::unordered_set<node> seeds);
 
+
 protected:
 
-	virtual double nodeDistance(node u, node v);
 
-	virtual void expandCore(node core, node label, std::unordered_set<node>* community,
+	void expandCore(node core, node label, std::unordered_set<node>* community,
 					std::unordered_map<node, node>* nodesState, std::unordered_set<node>* candidates);
 
-	virtual std::pair<bool,std::unordered_set<node>> isCore(node u);
+	std::pair<bool,std::unordered_set<node>> isCore(node u);
+
+
+	double epsilon;
+	double mu;
+
+	NodeDistance* distMeasure;
+
 
 };
 

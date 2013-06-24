@@ -313,48 +313,93 @@ TEST_F(SCDGTest, tryGreedyWithSeedSets) {
 		std::cout<<u.first<<"-----------"<<u.second.size()<<std::endl;
 	}
 }
-//
-//TEST_F(SCDGTest, SelectiveSCAN) {
-//	Graph G (10);
-//	// add clique
-//	G.addEdge(0,1);
-//	G.addEdge(0,2);
-//	G.addEdge(0,3);
-//	G.addEdge(0,4);
-//	G.addEdge(1,2);
-//	G.addEdge(1,3);
-//	G.addEdge(1,4);
-//	G.addEdge(2,3);
-//	G.addEdge(2,4);
-//	G.addEdge(3,4);
-//	G.addEdge(4,5);
-//	G.addEdge(4,6);
-//	G.addEdge(4,7);
-//	G.addEdge(4,8);
-//	G.addEdge(5,6);
-//	G.addEdge(5,7);
-//	G.addEdge(5,8);
-//	G.addEdge(6,7);
-//	G.addEdge(6,8);
-//	G.addEdge(7,8);
-//	G.addEdge(0,9);
-//
-//	std::unordered_set<node> seeds = {0,1,2,3,4,5,6,7,8,9};
-//	SelectiveSCAN GCE(G);
-//	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
-//
-//	for (auto x : result) {
-//		std::cout<<"-----------"<< x.first <<"-----------------"<<std::endl;
-//
-//		for(node u : x.second){
-//			std::cout<<u<<std::endl;
-//		}
-//		std::cout<<"----------------------------"<<std::endl;
-//
-//	}
-//
-//
-//}
+
+TEST_F(SCDGTest, testSelectiveSCAN) {
+	Graph G(10);
+	// add clique
+	G.addEdge(0, 1);
+	G.addEdge(0, 2);
+	G.addEdge(0, 3);
+	G.addEdge(0, 4);
+	G.addEdge(1, 2);
+	G.addEdge(1, 3);
+	G.addEdge(1, 4);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(4, 6);
+	G.addEdge(4, 7);
+	G.addEdge(4, 8);
+	G.addEdge(5, 6);
+	G.addEdge(5, 7);
+	G.addEdge(5, 8);
+	G.addEdge(6, 7);
+	G.addEdge(6, 8);
+	G.addEdge(7, 8);
+	G.addEdge(0, 9);
+
+	std::unordered_set<node> seeds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	NeighborhoodDistance distMeasure(G);
+	SelectiveSCAN GCE(G, distMeasure);
+	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+
+	for (auto x : result) {
+		std::cout << "-----------" << x.first << "-----------------"
+				<< std::endl;
+
+		for (node u : x.second) {
+			std::cout << u << std::endl;
+		}
+		std::cout << "----------------------------" << std::endl;
+
+	}
+
+}
+
+TEST_F(SCDGTest, testTSelectiveSCAN) {
+	Graph G(10);
+	// add clique
+	G.addEdge(0, 1);
+	G.addEdge(0, 2);
+	G.addEdge(0, 3);
+	G.addEdge(0, 4);
+	G.addEdge(1, 2);
+	G.addEdge(1, 3);
+	G.addEdge(1, 4);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(4, 6);
+	G.addEdge(4, 7);
+	G.addEdge(4, 8);
+	G.addEdge(5, 6);
+	G.addEdge(5, 7);
+	G.addEdge(5, 8);
+	G.addEdge(6, 7);
+	G.addEdge(6, 8);
+	G.addEdge(7, 8);
+	G.addEdge(0, 9);
+
+	std::unordered_set<node> seeds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+	Parameters param;
+	TSelectiveSCAN<TNeighborhoodDistance> GCE(G, param);
+	std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+
+	for (auto x : result) {
+		std::cout << "-----------" << x.first << "-----------------" << std::endl;
+
+		for (node u : x.second) {
+			std::cout << u << std::endl;
+		}
+		std::cout << "----------------------------" << std::endl;
+
+	}
+
+}
+
 
 TEST_F(SCDGTest, localJaccardTest) {
 	node seedNode = 0;

@@ -12,6 +12,7 @@
 
 #include "../graph/Graph.h"
 #include "../clustering/Clustering.h"
+#include "../base/Parameters.h"
 
 namespace NetworKit {
 
