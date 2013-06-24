@@ -24,6 +24,9 @@
 #include "../CommunityTrimming.h"
 #include "../RandomSeedSet.h"
 #include "../RandomWalkSeedSet.h"
+#include "../../clustering/Clustering.h"
+#include "../SelectiveDissimilarityMeasure.h"
+
 
 
 
