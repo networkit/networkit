@@ -20,7 +20,7 @@ public:
 
 	virtual ~CommunityTrimming();
 
-	virtual std::unordered_set<node> run(std::unordered_set<node>& community, Graph& G) = 0;
+	virtual std::unordered_set<node> run(std::unordered_set<node>& community, const Graph& G) = 0;
 };
 
 class BoundarySharpness : public CommunityTrimming {
@@ -29,7 +29,7 @@ public:
 
 	virtual ~BoundarySharpness();
 
-	virtual std::unordered_set<node> run(std::unordered_set<node>& community, Graph& G);
+	virtual std::unordered_set<node> run(std::unordered_set<node>& community, const Graph& G);
 };
 
 class DummyTrimming : public CommunityTrimming {
@@ -38,7 +38,7 @@ public:
 
 	virtual ~DummyTrimming();
 
-	virtual std::unordered_set<node> run(std::unordered_set<node>& community, Graph& G);
+	virtual std::unordered_set<node> run(std::unordered_set<node>& community, const Graph& G);
 };
 
 } /* namespace NetworKit */

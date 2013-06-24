@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-QualityObjective::QualityObjective(Graph& G, std::unordered_set<node>& community) {
+QualityObjective::QualityObjective(const Graph& G, std::unordered_set<node>& community) {
 	this->G = &G;
 	this->community = &community;
 }
@@ -18,7 +18,7 @@ QualityObjective::QualityObjective(Graph& G, std::unordered_set<node>& community
 QualityObjective::~QualityObjective() {
 }
 
-LocalModularityM::LocalModularityM(Graph& G, std::unordered_set<node>& community)
+LocalModularityM::LocalModularityM(const Graph& G, std::unordered_set<node>& community)
 	: QualityObjective(G, community){
 }
 
@@ -59,7 +59,7 @@ double LocalModularityM::getValue(node v) {
 }
 
 
-Conductance::Conductance(Graph& G, std::unordered_set<node>& community) : QualityObjective(G, community), degSum(0), nBoundaryEdges(0), volume(0) {
+Conductance::Conductance(const Graph& G, std::unordered_set<node>& community) : QualityObjective(G, community), degSum(0), nBoundaryEdges(0), volume(0) {
 	// TODO: precomputation of degree sum should not happen more than once for a graph
 	this->degSum = this->G->parallelSumForNodes([&](node u){
 		return this->G->degree(u);
@@ -97,7 +97,7 @@ double Conductance::getValue(node v) {
 	return 1 - ((double)(nBoundaryEdges + 2 * count - this->G->degree(v))/ ((double)std::min(volume + this->G->degree(v), degSum - volume - this->G->degree(v))));
 }
 
-LocalModularityL::LocalModularityL(Graph& G, std::unordered_set<node>& community)
+LocalModularityL::LocalModularityL(const Graph& G, std::unordered_set<node>& community)
 	: QualityObjective(G, community){
 }
 

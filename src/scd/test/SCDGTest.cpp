@@ -18,9 +18,7 @@ SCDGTest::~SCDGTest() {
 }
 //
 //
-//TEST_F(SCDGTest, testGreedyCommunityExpansion) {
-//	// TODO: unit test for GreedyCommunityExpansion
-//}
+
 //
 //TEST_F(SCDGTest, testConductance) {
 //
@@ -143,64 +141,64 @@ SCDGTest::~SCDGTest() {
 //
 //}
 //
-////Test with dummy acceptance and conductance and dummy trimming
-//TEST_F(SCDGTest, testRun) {
-//
-//	Graph G (12);
-//
-//	// add clique
-//	G.addEdge(0,1);
-//	G.addEdge(0,2);
-//	G.addEdge(0,3);
-//	G.addEdge(1,2);
-//	G.addEdge(1,3);
-//	G.addEdge(2,3);
-//
-//	GreedyCommunityExpansion GCE(G);
-//	std::unordered_set<node> community= GCE.expandSeed(0);
-//	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
-//
-//
-//	//add satelites
-//	G.addEdge(0,4);
-//	G.addEdge(1,5);
-//	G.addEdge(2,6);
-//	G.addEdge(3,7);
-//
-//	community = GCE.expandSeed(0);
-//
-//	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
-//
-//	community = GCE.expandSeed(6);
-//	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
-//
-//	// add another clique
-//	G.addEdge(6,8);
-//	G.addEdge(8,9);
-//	G.addEdge(8,10);
-//	G.addEdge(8,11);
-//	G.addEdge(9,10);
-//	G.addEdge(9,11);
-//	G.addEdge(10,11);
-//
-//
-//	community = GCE.expandSeed(0);
-//	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
-//
-//	community = GCE.expandSeed(4);
-//	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
-//
-//	community = GCE.expandSeed(6);
-//	EXPECT_EQ(8, community.size()) << "The community should have 8 nodes";
-//
-//	community = GCE.expandSeed(8);
-//	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
-//
-//
-//	community = GCE.expandSeed(9);
-//	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
-//
-//}
+//Test with dummy acceptance and conductance and dummy trimming
+TEST_F(SCDGTest, testGreedyCommunityExpansion) {
+
+	Graph G(12);
+
+	// add clique
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(2,3);
+
+	GreedyCommunityExpansion GCE(G);
+	std::unordered_set<node> community= GCE.expandSeed(0);
+	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
+
+
+	//add satelites
+	G.addEdge(0,4);
+	G.addEdge(1,5);
+	G.addEdge(2,6);
+	G.addEdge(3,7);
+
+	community = GCE.expandSeed(0);
+
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
+
+	community = GCE.expandSeed(6);
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
+
+	// add another clique
+	G.addEdge(6,8);
+	G.addEdge(8,9);
+	G.addEdge(8,10);
+	G.addEdge(8,11);
+	G.addEdge(9,10);
+	G.addEdge(9,11);
+	G.addEdge(10,11);
+
+
+	community = GCE.expandSeed(0);
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
+
+	community = GCE.expandSeed(4);
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
+
+	community = GCE.expandSeed(6);
+	EXPECT_EQ(8, community.size()) << "The community should have 8 nodes";
+
+	community = GCE.expandSeed(8);
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
+
+
+	community = GCE.expandSeed(9);
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
+
+}
 //
 //TEST_F(SCDGTest, testNodeClusterSimilarity) {
 //
@@ -502,6 +500,68 @@ TEST_F(SCDGTest, RecallTest) {
 
 	EXPECT_EQ(0.4, index.getDissimilarity(communities, groundTruth))<< "The Precision has a value of 0.4";
 }
+
+
+
+TEST_F(SCDGTest, testTGreedyCommunityExpansion) {
+
+	Graph G (12);
+
+	// add clique
+	G.addEdge(0,1);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(2,3);
+
+	TGreedyCommunityExpansion<TConductance, TDummyAcceptability, DummyTrimming> GCE(G);
+	std::unordered_set<node> community= GCE.expandSeed(0);
+	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
+
+
+	//add satelites
+	G.addEdge(0,4);
+	G.addEdge(1,5);
+	G.addEdge(2,6);
+	G.addEdge(3,7);
+
+	community = GCE.expandSeed(0);
+
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
+
+	community = GCE.expandSeed(6);
+	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
+
+	// add another clique
+	G.addEdge(6,8);
+	G.addEdge(8,9);
+	G.addEdge(8,10);
+	G.addEdge(8,11);
+	G.addEdge(9,10);
+	G.addEdge(9,11);
+	G.addEdge(10,11);
+
+
+	community = GCE.expandSeed(0);
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
+
+	community = GCE.expandSeed(4);
+	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
+
+	community = GCE.expandSeed(6);
+	EXPECT_EQ(8, community.size()) << "The community should have 8 nodes";
+
+	community = GCE.expandSeed(8);
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
+
+
+	community = GCE.expandSeed(9);
+	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
+
+}
+
+
 //TEST_F(SCDGTest, benchmarkGreedy) {
 //	METISGraphReader reader;
 //	Graph G = reader.read("input/pgp.graph");

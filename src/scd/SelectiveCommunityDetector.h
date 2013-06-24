@@ -20,7 +20,7 @@ class SelectiveCommunityDetector {
 
 public:
 
-	SelectiveCommunityDetector(Graph& G);
+	SelectiveCommunityDetector(const Graph& G);
 
 	virtual ~SelectiveCommunityDetector();
 
@@ -28,7 +28,7 @@ public:
 
 public:
 
-	Graph& G;	//!< the input graph
+	const Graph& G;	//!< the input graph
 };
 
 } /* namespace NetworKit */

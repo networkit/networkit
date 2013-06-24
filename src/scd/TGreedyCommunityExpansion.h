@@ -1,23 +1,65 @@
 /*
- * GreedyCommunityExpansion.cpp
+ * TGreedyCommunityExpansion.h
  *
- *  Created on: 03.06.2013
+ *  Created on: 24.06.2013
  *      Author: cls
  */
 
-#include "GreedyCommunityExpansion.h"
+#ifndef TGREEDYCOMMUNITYEXPANSION_H_
+#define TGREEDYCOMMUNITYEXPANSION_H_
+
+#include "SelectiveCommunityDetector.h"
+
+#include "Acceptability.h"
 
 namespace NetworKit {
 
-GreedyCommunityExpansion::GreedyCommunityExpansion(const Graph& G) : SelectiveCommunityDetector(G) {
+template <class QualityObjective, class Acceptability, class Trimming> class TGreedyCommunityExpansion: public SelectiveCommunityDetector {
+
+public:
+
+	TGreedyCommunityExpansion(const Graph& G);
+
+	virtual ~TGreedyCommunityExpansion();
+
+	virtual std::unordered_map<node, std::unordered_set<node>> run(std::unordered_set<node> set);
+
+	/**
+	 * @param[in]	s	seed node
+	 *
+	 * @param[out]		community as a set of nodes
+	 */
+	virtual std::unordered_set<node> expandSeed(node s);
+
+protected:
+
+	// TODO: move to postprocessing virtual double clusterClusterSimilarity (std::unordered_set<node>& community1, std::unordered_set<node>& community2);
+};
+
+
+
+template<class QualityObjective, class Acceptability, class Trimming>
+inline TGreedyCommunityExpansion<QualityObjective, Acceptability, Trimming>::TGreedyCommunityExpansion(const Graph& G) : SelectiveCommunityDetector(G) {
 }
 
-GreedyCommunityExpansion::~GreedyCommunityExpansion() {
-	// TODO Auto-generated destructor stub
+template<class QualityObjective, class Acceptability, class Trimming>
+inline TGreedyCommunityExpansion<QualityObjective, Acceptability, Trimming>::~TGreedyCommunityExpansion() {
 }
 
-std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
+template<class QualityObjective, class Acceptability, class Trimming>
+inline std::unordered_map<node, std::unordered_set<node> > TGreedyCommunityExpansion<QualityObjective, Acceptability, Trimming>::run(std::unordered_set<node> set) {
+	std::unordered_map<node, std::unordered_set<node>> communities;
 
+	for (node u : set) {
+		std::unordered_set<node> community = this->expandSeed(u);
+		communities.insert(std::pair<node, std::unordered_set<node>>(u, community));
+	}
+
+	return communities;
+}
+
+template<class QualityObjective, class Acceptability, class Trimming>
+inline std::unordered_set<node> TGreedyCommunityExpansion<QualityObjective, Acceptability, Trimming>::expandSeed(node s) {
 	std::unordered_set<node> community;
 	std::unordered_set<node> shell; // shell are the nodes outside of the
 									// community with edges to nodes inside
@@ -25,8 +67,8 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 	std::unordered_map<node, double> acceptanceValues;
 
 	// TODO: make these selectable later
-	DummySimilarity acceptability(G, community, shell);
-	Conductance objective(G, community);
+	Acceptability acceptability(G, community, shell);
+	QualityObjective objective(G, community);
 
 	double currentObjectiveValue = objective.getValue(s);
 
@@ -120,37 +162,13 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 		} // end while acceptanceValues.size() != 0
 	} // end while expanded
 
-	DummyTrimming trimm;
+	Trimming trimm;
 	trimm.run(community, G);
 
 	return community;
 }
 
-std::unordered_map<node, std::unordered_set<node>> GreedyCommunityExpansion::run(std::unordered_set<node> set) {
-
-	std::unordered_map<node, std::unordered_set<node>> communities;
-
-	GreedyCommunityExpansion GCE(G);
-
-	for (node u : set) {
-		std::unordered_set<node> community = GCE.expandSeed(u);
-		communities.insert(std::pair<node, std::unordered_set<node>>(u, community));
-	}
-
-	return communities;
-}
-
-double GreedyCommunityExpansion::clusterClusterSimilarity(
-		std::unordered_set<node>& community1,
-		std::unordered_set<node>& community2) {
-	double intersection = 0;
-	for (node u : community1) {
-		if (community2.find(u) != community2.end()) {
-			intersection++;
-		}
-	}
-	return intersection / (community1.size() + community2.size() - intersection);
-}
-
 } /* namespace NetworKit */
 
+
+#endif /* TGREEDYCOMMUNITYEXPANSION_H_ */

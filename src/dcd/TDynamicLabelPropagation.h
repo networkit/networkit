@@ -68,7 +68,7 @@ public:
 
 	};
 
-
+	// TODO: not necessary, can be done in the constructor
 	void setAlgorithm(TDynamicLabelPropagation<Isolate>* instance) {
 		this->dynPLP = instance;
 	}
