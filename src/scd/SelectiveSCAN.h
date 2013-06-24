@@ -19,7 +19,7 @@ class SelectiveSCAN: public NetworKit::SelectiveCommunityDetector {
 
 public:
 
-	SelectiveSCAN(Graph& G, NodeDistance& distMeasure, double epsilon=0.5, double mu=2);
+	SelectiveSCAN(const Graph& G, NodeDistance& distMeasure, double epsilon=0.5, double mu=2);
 
 	virtual ~SelectiveSCAN();
 

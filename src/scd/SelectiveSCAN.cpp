@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveSCAN::SelectiveSCAN(Graph& G, NodeDistance& distMeasure, double epsilon, double mu): SelectiveCommunityDetector(G), distMeasure(&distMeasure), epsilon(epsilon), mu(mu) {
+SelectiveSCAN::SelectiveSCAN(const Graph& G, NodeDistance& distMeasure, double epsilon, double mu): SelectiveCommunityDetector(G), distMeasure(&distMeasure), epsilon(epsilon), mu(mu) {
 
 }
 
@@ -120,7 +120,6 @@ void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* 
 			}
 		}
 		candidates->erase(candidates->find(v));
-		// commit test
 	}
 }
 
