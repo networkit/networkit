@@ -36,17 +36,30 @@ public:
 	virtual void run();
 
 	/**
-	 * Return the graph instance.
+	 * Return pointer to the graph instance.
 	 */
 	virtual Graph* getGraph();
 
-private:
+
+	/**
+	 * Return copy of the graph instance.
+	 */
+	virtual Graph getGraphCopy();
+
+
+
+
+
+
+public:
 	DynamicGraphSource* gen;	//!< pointer to dynamic graph generator
 	std::vector<DynamicCommunityDetector*> detectors;	//!< pointer to collection of dynamic community detection algorithms
 	Graph* G;
 	GraphEventProxy* Gproxy;
 	count deltaT;	//!< number of time steps between two algorithm runs
 	count tMax;		//!< maximum number of time steps
+
+	std::vector<std::vector<Clustering> > results; //!< the resulting communities per algorithm per run
 
 };
 

@@ -15,6 +15,7 @@ namespace NetworKit {
 template <class PrepStrategy> class TDynamicLabelPropagation: public DynamicCommunityDetector {
 
 	friend class Isolate; // PrepStrategies must be friend classes to access internal data
+	friend class IsolateNeighbors;
 
 public:
 	TDynamicLabelPropagation(count theta=0);
@@ -118,6 +119,76 @@ public:
 protected:
 
 	TDynamicLabelPropagation<Isolate>* dynPLP;
+};
+
+
+
+/**
+ * Turn nodes affected by a change into singletons. Since this is a label change,
+ * nodes in the neighborhood get activated.
+ */
+class IsolateNeighbors {
+
+public:
+	IsolateNeighbors() : dynPLP(NULL) {
+
+	};
+
+	// TODO: not necessary, can be done in the constructor
+	void setAlgorithm(TDynamicLabelPropagation<IsolateNeighbors>* instance) {
+		this->dynPLP = instance;
+	}
+
+	inline void onNodeAddition(node u) {
+		assert (dynPLP->activeNodes[u] == true);
+		assert (dynPLP->G->degree(u) == 0); // new node has no incident edges
+	};
+
+	inline void onNodeRemoval(node u) {
+		assert (dynPLP->activeNodes[u] == false); // dynPLP has permanently deactivated the node
+		// incident edges must have been removed before, so neighborhood is already active at this point
+	};
+
+	inline void onEdgeAddition(node u, node v, edgeweight w = 1.0) {
+		// turn u, v and their neighbors into singletons, activate 2-neighborhood
+		dynPLP->labels.toSingleton(u);
+		dynPLP->activeNodes[u] = true;
+		dynPLP->labels.toSingleton(v);
+		dynPLP->activeNodes[v] = true;
+		dynPLP->G->forNeighborsOf(u, [&](node x) {
+			dynPLP->labels.toSingleton(x);
+			dynPLP->G->forNeighborsOf(x, [&](node y){
+				dynPLP->activeNodes[y] = true;
+			});
+		});
+		dynPLP->G->forNeighborsOf(v, [&](node x) {
+			dynPLP->labels.toSingleton(x);
+			dynPLP->G->forNeighborsOf(x, [&](node y){
+				dynPLP->activeNodes[y] = true;
+			});
+		});
+
+	};
+
+	inline void onEdgeRemoval(node u, node v, edgeweight w = 1.0) {
+		this->onEdgeAddition(u, v, w);
+	};
+
+	inline void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) {
+		this->onEdgeAddition(u, v, wNew);
+	};
+
+	inline void onTimeStep() {
+		// do nothing
+	};
+
+	inline std::string toString() const {
+		return "Isolate";
+	}
+
+protected:
+
+	TDynamicLabelPropagation<IsolateNeighbors>* dynPLP;
 };
 
 template<class PrepStrategy>
