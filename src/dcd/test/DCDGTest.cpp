@@ -418,6 +418,38 @@ TEST_F(DCDGTest, testTDynamicLabelPropagationStrategyIsolateNeighbors) {
 
 }
 
+TEST_F(DCDGTest, testDynamicEnsembleWithTDynamicLabelPropagation) {
+	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
+	DynamicCommunityDetector* dynLP1 = new TDynamicLabelPropagation<Isolate>();
+	DynamicCommunityDetector* dynLP2 = new TDynamicLabelPropagation<IsolateNeighbors>();
+	Clusterer* PLM = new Louvain();
+
+	DynamicEnsemble* ensemble = new DynamicEnsemble();
+	ensemble->addBaseAlgorithm(*dynLP1);
+	ensemble->addBaseAlgorithm(*dynLP2);
+	ensemble->setFinalAlgorithm(*PLM);
+
+	HashingOverlapper overlapAlgo;
+	ensemble->setOverlapper(overlapAlgo);
+
+	std::vector<DynamicCommunityDetector*> detectors = { ensemble };
+	DynCDSetup setup(*dynGen, detectors, 1e2, 10);
+
+	setup.run();
+
+	Graph G = setup.getGraphCopy();
+	for (std::vector<Clustering> clusteringSequence : setup.results) {
+		for (Clustering zeta : clusteringSequence) {
+			bool proper = zeta.isProper(G);
+			if (proper) {
+				INFO("Clustering is proper");
+			}
+			EXPECT_TRUE(proper);
+		}
+	}
+
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
