@@ -13,13 +13,14 @@ for (dirpath, dirnames, filenames) in os.walk("src"):
 
 
 # exclude files matching following patterns
-xpatterns = []
+xpatterns = ["*-X.cpp"]	# exclude executables, include later depending on target
 excluded = []
 
 for pattern in xpatterns:
 	for name in fnmatch.filter(source, pattern):
 		excluded.append(name)
 
+print("excluded source files: {0}".format(excluded))
 source = [name for name in source if name not in excluded]
 
 
@@ -221,20 +222,43 @@ else:
     exit()
 
 # buildconf flags
-if buildconf == "debug":
+if buildconf == "D":
     env.Append(CFLAGS = debugCFlags)
     env.Append(CPPFLAGS = debugCppFlags)
-elif buildconf == "optimized":
+elif buildconf == "O":
     env.Append(CFLAGS = optimizedCFlags)
     env.Append(CPPFLAGS = optimizedCppFlags)
-elif buildconf == "profile":
+elif buildconf == "P":
 	 env.Append(CFLAGS = profileCFlags)
 	 env.Append(CPPFLAGS = profileCppFlags)
 else:
     print("ERROR: invalid buildconf: %s" % buildconf)
     exit()
 
+
 # TARGET
-env.Program("NetworKit-CommunityDetection-%s" % buildconf, source)
+# openmp yes or no
+AddOption("--target",
+          dest="target",
+          type="string",
+          nargs=1,
+          action="store",
+          help="select target to build")
+
+
+target = GetOption("target")
+
+if target == "CommunityDetection":
+	source.append("src/CommunityDetection-X.cpp")
+elif target == "DynCD":
+	source.append("src/DynamicCommunityDetection-X.cpp")
+elif target == "SelCD":
+	source.append("src/SelectiveCommunityDetection-X.cpp")
+else:
+	print("ERROR: unknown target: %" % target)
+	exit()
+
+
+env.Program("NetworKit-{0}-{1}".format(target, buildconf), source)
 
 # TODO: make unit tests a separate target
