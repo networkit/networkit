@@ -277,10 +277,9 @@ std::string DynamicLabelPropagation::Isolate::toString() {
 }
 
 void DynamicLabelPropagation::Isolate::onNodeAddition(node u) {
-	// dynPLP has already made the new node a singleton
-	dynPLP->G->forNeighborsOf(u, [&](node v) {
-		dynPLP->activeNodes[v] = true;
-	});
+	// dynPLP has already made the new node a singleton and activated it
+	assert (dynPLP->activeNodes[u] == true);
+	assert (dynPLP->G->degree(u) == 0); // new node has no incident edges
 
 }
 
