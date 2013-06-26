@@ -19,7 +19,7 @@ namespace NetworKit {
 class RandomWalkSeedSet: public NetworKit::SeedSetGenerator {
 public:
 
-	RandomWalkSeedSet(const Graph& G, count nSteps);
+	RandomWalkSeedSet(const Graph& G, count nSteps = 2);
 
 	virtual ~RandomWalkSeedSet();
 

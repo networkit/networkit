@@ -40,6 +40,9 @@
 #include "auxiliary/Functions.h"
 #include "auxiliary/StringTools.h"
 #include "graph/Graph.h"
+#include "io/METISGraphReader.h"
+#include "scd/RandomSeedSet.h"
+#include "scd/RandomWalkSeedSet.h"
 
 
 
@@ -108,21 +111,24 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, ALGORITHM, RUNS, SAVE_GRAPH, PROGRESS, SUMMARY, SCALETHREADS, UPDATE_THRESHOLD};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, SEEDS, DETECTOR, QUALITY, GROUND_TRUTH, RUNS, SAVE_GRAPH, PROGRESS, SUMMARY};
 const OptionParser::Descriptor usage[] =
 {
- {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
+ {UNKNOWN, 0, "" , "", OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
                                             "Options:" },
  {HELP,    0,"h" , "help",OptionParser::Arg::None, "  --help  \t Print usage and exit." },
  {LOGLEVEL,    0, "" , "loglevel", OptionParser::Arg::Required, "  --loglevel=<LEVEL>  \t set the log level" },
  {THREADS,    0, "" , "threads", OptionParser::Arg::Required, "  --threads=<NUM>  \t set the maximum number of threads" },
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
- {ALGORITHM, 0, "", "algorithm", OptionParser::Arg::Required, "  --algorithm=<ALGORITHM>:<PARAMS> \t select clustering algorithm"},
+ {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph=<PATH> \t Run ensemble clusterer on graph"},
+ {SEEDS, 0, "", "seeds", OptionParser::Arg::Required, "  --seeds=<NAME> \t Specify seed set generator"},
+ {DETECTOR, 0, "", "detector", OptionParser::Arg::Required, "  --detector=<NAME>:<PARAMS> \t select clustering algorithm"},
+ {QUALITY, 0, "", "quality", OptionParser::Arg::Required, "  --quality=<NAME> \t select quality measure for evaluation"},
+ {GROUND_TRUTH, 0, "", "groundTruth", OptionParser::Arg::Required, "  --groundTruth=<NAME>:<PARAMS> \t select ground truth"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
  {SAVE_GRAPH, 0, "", "saveGraph", OptionParser::Arg::Required, "  --saveGraph=<PATH> \t write the graph to a file"},
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
- {SCALETHREADS, 0, "", "scaleThreads", OptionParser::Arg::Required, "  --scaleThreads=<MAXTHREADS> \t scale number of threads by factor 2 until maximum is reached"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -132,6 +138,47 @@ const OptionParser::Descriptor usage[] =
 // MAIN FUNCTIONS
 
 
+
+/**
+ * Read a graph from a file.
+ */
+Graph readGraph(const std::string& graphPath) {
+
+	// READ GRAPH
+
+	METISGraphReader reader;	// TODO: add support for multiple graph file formats
+
+	// TIMING
+	Aux::Timer readTimer;
+	readTimer.start();
+	//
+	std::cout << "[BEGIN] reading file: " << graphPath << std::endl;
+
+	Graph G = reader.read(graphPath);
+	//
+	readTimer.stop();
+	std::cout << "[DONE] read graph file " << readTimer.elapsedTag() << std::endl;
+	// TIMING
+
+	return G;
+
+}
+
+
+Graph getGraph(OptionParser::Option* options) {
+
+	if (options[GRAPH]) { // graph from file
+		std::string graphPath = options[GRAPH].arg;
+		std::cout << "\t --graph=" << graphPath << std::endl;
+
+		Graph G = readGraph(graphPath);
+		return G;
+	} else {
+		Graph G(0);	// return empty graph
+		G.setName("NONE");
+		return G;
+	}
+}
 
 
 
@@ -241,28 +288,82 @@ int main(int argc, char **argv) {
 
 
 	// RUN PROGRAM
-	// TODO: get source
 
-	// allow for scripted thread scaling
-	if (options[SCALETHREADS]) {
-		// perform scaling
-		int maxThreads = std::atoi(options[SCALETHREADS].arg);
-		for (int nThreads = 1; nThreads <= maxThreads; nThreads *= 2) {
-			setNumberOfThreads(nThreads);
-			// allow for multiple runs
-			for (int run = 0; run < runs; run++) {
-				// TODO: run
-				// TODO: inspect(G, clustering, options);
-			}
 
+	// get graph
+	Graph G = getGraph(options);
+
+	// get seed set generator
+	if (options[SEEDS]) {
+		std::string seedsArg = options[SEEDS].arg;
+		std::string seedsName = Aux::StringTools::split(seedsArg, ':')[0];
+		std::string seedsParam = Aux::StringTools::split(seedsArg, ':')[1];
+
+		SeedSetGenerator* seedGen = NULL;
+
+		if (seedsName == "RandomSeedSet") {
+			seedGen = new RandomSeedSet(G);
+		} else if (seedsName == "RandomWalkSeedSet") {
+			seedGen = new RandomWalkSeedSet(G);
+		} else {
+			std::cout << "[ERROR] unknown argument for option --seeds: " << seedsName << std::endl;
+			exit(1);
+		}
+
+		count nSeeds = std::stoi(seedsParam); // number of seeds
+
+	} else {
+		std::cout << "[ERROR] option --seeds must be supplied" << std::endl;
+		exit(1);
+	}
+
+
+
+	// get algorithms
+	if (options[DETECTOR]) {
+		std::string detectorArg = options[DETECTOR].arg;
+		std::string detectorName = Aux::StringTools::split(detectorArg, ':')[0];
+
+		if (detectorName == "TSelectiveSCAN") {
+			// TODO: instantiate
+		} else if (detectorName == "SelectiveSCAN") {
+			// TODO:
+		} else if (detectorName == "TGreedyCommunityExpansion") {
+			// TODO:
+		} else if (detectorName == "GreedyCommunityExpansion") {
+			// TODO:
 		}
 	} else {
-		// allow for multiple runs
-		for (int run = 0; run < runs; run++) {
-			// TODO: run
-			// TODO: inspect
-		}
+		std::cout << "[ERROR] option --detector=<NAME>:<PARAMS> must be supplied" << std::endl;
+		exit(1);
 	}
+
+	// RUN
+
+	// TODO: run
+
+	// TODO: get multiple seed sets
+
+
+	// EVALUATION
+
+
+	if (options[QUALITY]) {
+		// TODO: @Yassine - get quality measure
+		// TODO: @Yassine - evaluate quality
+	}
+
+
+	// optionally get ground truth
+	if (options[GROUND_TRUTH]) {
+		// TODO: @Alex - get LFR ground truth
+		// TODO: evaluate ground truth
+	} else {
+		std::cout << "[INFO]Êno ground truth supplied" << std::endl;
+	}
+
+
+
 
 	std::cout << "[EXIT] terminated normally" << std::endl;
 	return 0;
