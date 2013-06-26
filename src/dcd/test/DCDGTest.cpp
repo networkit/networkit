@@ -401,6 +401,29 @@ TEST_F(DCDGTest, testDynamicEnsembleWithTDynamicLabelPropagation) {
 
 }
 
+
+TEST_F(DCDGTest, testSetupWithStatic) {
+	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
+	DynamicCommunityDetector* dynLP1 = new TDynamicLabelPropagation<Isolate>();
+
+
+	std::vector<DynamicCommunityDetector*> detectors = { dynLP1 };
+	DynCDSetup setup(*dynGen, detectors, 1e2, 10);
+
+	Clusterer* staticAlgo = new LabelPropagation();
+	setup.setStatic(staticAlgo);
+
+	setup.run();
+
+	Graph G = setup.getGraphCopy();
+	for (std::vector<Clustering> clusteringSequence : setup.results) {
+		Clustering last = clusteringSequence.back();
+		EXPECT_TRUE(last.isProper(G)) << "final clustering in the sequence should be a proper clustering of G";
+	}
+
+
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
