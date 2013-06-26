@@ -351,6 +351,7 @@ int main(int argc, char **argv) {
 	if (options[QUALITY]) {
 		// TODO: @Yassine - get quality measure
 		// TODO: @Yassine - evaluate quality
+		// TODO: allow multiple quality measures at once
 	}
 
 

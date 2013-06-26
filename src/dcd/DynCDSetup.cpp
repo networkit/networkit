@@ -49,11 +49,10 @@ void DynCDSetup::run() {
 
 
 	// for all community detectors, perform run
-	NetworKit::count t = G->time();
-	while (t < tMax) {
+	while (G->time() < tMax) {
 		INFO("time: " << G->time() << " of " << tMax);
 		try {
-			gen->generateTimeSteps(t + deltaT);
+			gen->generateTimeSteps(G->time() + deltaT);
 			for (count i = 0; i < this->detectors.size(); ++i) {
 				DynamicCommunityDetector* dynCD = this->detectors[i];
 				INFO("running dynamic community detector " << dynCD->toString());
