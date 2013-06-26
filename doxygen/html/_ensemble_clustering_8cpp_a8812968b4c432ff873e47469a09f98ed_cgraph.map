@@ -1,0 +1,12 @@
+<map id="testMETIStoSTINGER" name="testMETIStoSTINGER">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_m_e_t_i_sto_s_t_i_n_g_e_r.html#aa2ebf2abdbf30c8878df0302f3b193ec" title="EnsembleClustering\l::METIStoSTINGER::read" alt="" coords="208,263,382,307"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies.html#af4f5ba6e752d80f9d062a7f185ad14c4" title="Create new STINGER instance." alt="" coords="430,5,621,65"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#afa2cbafd7ae746d310bba7b6ae6539ba" title="Open a METIS graph file." alt="" coords="452,89,598,133"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a6c11f188b2ca67435a63fc9c71d261e9" title="Get the METIS graph file header." alt="" coords="436,157,615,201"/>
+<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#aa9adb857b8ff519edfe94b7bc59ef12a" title="Test if graph file has a next line." alt="" coords="443,225,608,269"/>
+<area shape="rect" id="node13" href="$class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies.html#a0057c2a5ea2a4521f51d1f03593e98ad" title="Add next node and its adjacent edges." alt="" coords="430,293,621,353"/>
+<area shape="rect" id="node17" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a473d40949f87385130369a4f5d14b2ae" title="Get adjacencies from the next line in the METIS graph file." alt="" coords="444,377,606,421"/>
+<area shape="rect" id="node19" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a10b501c16294e94701fd231cb0b8d3f4" title="Close input file and clean up." alt="" coords="452,445,599,489"/>
+<area shape="rect" id="node21" href="$class_ensemble_clustering_1_1_s_t_i_n_g_e_r_from_adjacencies.html#a67ea2ddaa606d7de19ab51b495edf6ec" title="EnsembleClustering\l::STINGERFromAdjacencies\l::getGraph" alt="" coords="430,513,621,573"/>
+<area shape="rect" id="node15" href="$class_ensemble_clustering_1_1_graph.html#a78d527f03a3a860ee173dadbaefe1d5c" title="Insert a weighted, undirected edge." alt="" coords="670,301,810,345"/>
+</map>
