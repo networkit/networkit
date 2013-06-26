@@ -1,0 +1,6 @@
+<map id="NetworKit::QualityMeasure" name="NetworKit::QualityMeasure">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_coverage.html" title="NetworKit::Coverage" alt="" coords="268,5,412,33"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_coverage_sequential.html" title="NetworKit::CoverageSequential" alt="" coords="236,57,444,85"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_modularity.html" title="NetworKit::Modularity" alt="" coords="266,109,414,137"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_modularity_sequential.html" title="NetworKit::ModularitySequential" alt="" coords="234,161,446,189"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="EnsembleClustering::ParallelMatcher::run" name="EnsembleClustering::ParallelMatcher::run">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of (non&#45;isolated) nodes in the graph." alt="" coords="202,5,374,49"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#aaac8bcc5d64461cba54ad38ec929be3c" title="Get the first node index (for iteration over all nodes)" alt="" coords="218,73,358,117"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_matching.html#ad2637dece8a3a56d9f62f3c9df4713db" title="Check if the two nodes are matched." alt="" coords="208,141,368,185"/>
+</map>
