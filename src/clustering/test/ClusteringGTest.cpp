@@ -266,7 +266,7 @@ TEST_F(ClusteringGTest, tryNMIDistance) {
 	double distOne = NMID.getDissimilarity(G, one1, one2);
 
 	INFO("NMID for two 1-clusterings: " << distOne);
-	EXPECT_EQ(0.0, distOne) << "NMID of two 1-clusterings should be 0.0";
+	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distOne)) << "NMID of two 1-clusterings should be 0.0";
 
 
 	Clustering singleton1 = clustGen.makeSingletonClustering(G);
@@ -276,13 +276,69 @@ TEST_F(ClusteringGTest, tryNMIDistance) {
 	INFO("NMID for two singleton clusterings: " << distSingleton);
 
 
-	EXPECT_EQ(0.0, distSingleton) << "NMID of two identical singleton clusterings should be 0.0";
+	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distSingleton)) << "NMID of two identical singleton clusterings should be 0.0";
 
 	Clustering random1 = clustGen.makeRandomClustering(G, 2);
 	Clustering random2 = clustGen.makeRandomClustering(G, 2);
 
 	double distRandom = NMID.getDissimilarity(G, random1, random2);
 	INFO("NMID for two random clusterings: " << distRandom);
+
+}
+
+TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
+	// two 1-clusterings should have NMID = 0 because H is 0
+	GraphGenerator gen;
+	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
+
+	ClusteringGenerator clustGen;
+	Clustering one1 = clustGen.makeOneClustering(G);
+	Clustering one2 = clustGen.makeOneClustering(G);
+
+	DynamicNMIDistance dynNMID;
+	double distOne = dynNMID.getDissimilarity(G, one1, one2);
+
+	INFO("Dyn NMID for two 1-clusterings: " << distOne);
+	EXPECT_TRUE(Aux::NumericTools::equal(distOne, 0.0)) << "Dyn NMID of two 1-clusterings should be 0.0";
+
+
+	Clustering singleton1 = clustGen.makeSingletonClustering(G);
+	Clustering singleton2 = clustGen.makeSingletonClustering(G);
+
+	double distSingleton = dynNMID.getDissimilarity(G, singleton1, singleton2);
+	INFO("Dyn NMID for two singleton clusterings: " << distSingleton);
+
+	EXPECT_TRUE(Aux::NumericTools::equal(distSingleton, 0.0)) << "Dyn NMID of two identical singleton clusterings should be 0.0";
+
+	Clustering random1 = clustGen.makeRandomClustering(G, 2);
+	Clustering random2 = clustGen.makeRandomClustering(G, 2);
+
+	double distRandom = dynNMID.getDissimilarity(G, random1, random2);
+	INFO("Dyn NMID for two random clusterings: " << distRandom);
+
+
+	// now dynamic graph(s)
+	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
+	DynamicCommunityDetector* dynLP1 = new TDynamicLabelPropagation<Isolate>();
+
+	std::vector<DynamicCommunityDetector*> detectors = { dynLP1 };
+	count deltaT = 2;
+	count tMax = 10 * deltaT;
+	DynCDSetup setup(*dynGen, detectors, tMax, deltaT);
+
+	setup.run();
+
+	G = setup.getGraphCopy();
+	std::vector<Clustering>& myresults = setup.results[0];
+	for (index i = 1; i < myresults.size(); ++i) {
+		Clustering& oldClustering = myresults[i-1];
+		Clustering& currentClustering = myresults[i];
+
+		EXPECT_TRUE(currentClustering.isProper(G)) << "clustering in the sequence should be a proper clustering of G";
+
+		double distSeq = dynNMID.getDissimilarity(G, oldClustering, currentClustering);
+		INFO("Dyn NMID for current and previous clustering: " << distSeq);
+	}
 
 }
 

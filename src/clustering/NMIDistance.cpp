@@ -153,8 +153,8 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 	H_zeta = -1.0 * H_zeta;
 
 	double H_eta = 0.0;
-	for (cluster C = zeta.lowerBound(); C< zeta.upperBound(); ++C) {
-		if (P_zeta[C] != 0) {
+	for (cluster C = eta.lowerBound(); C < eta.upperBound(); ++C) {
+		if (P_eta[C] != 0) {
 			H_eta += P_eta[C] * log_b(P_eta[C], 2);
 		} // log(0) is not defined
 	}
