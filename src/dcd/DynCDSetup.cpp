@@ -56,12 +56,19 @@ void DynCDSetup::run() {
 		INFO("time: " << G->time() << " of " << tMax);
 		try {
 			gen->generateTimeSteps(G->time() + deltaT);
+			// inspect the current graph
+			INFO("current graph : " << G->toString());
+
 			// run the dynamic community detectors
 			for (count i = 0; i < this->detectors.size(); ++i) {
 				DynamicCommunityDetector* dynCD = this->detectors[i];
 				INFO("running dynamic community detector " << dynCD->toString());
 				results[i].push_back(dynCD->run());
 
+				// evaluations which need the current graph
+				Modularity modularity;
+				double mod = modularity.getQuality(results[i].back(), *G);
+				INFO("found communities have modularity: " << mod);
 			}
 			// optionally also run a static community detector
 			if (staticAlgo != NULL) {
