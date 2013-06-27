@@ -1,0 +1,18 @@
+<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph_generator.html#a8dcd5d1f75f5f04d1cbf98dd60616f31" title="Generate a complete graph." alt="" coords="202,57,385,101"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_clustering_generator.html#ab1fb839d72c6ca2fcf0b7c2896fcd6e3" title="Make a 1&#45;clustering of G, i.e." alt="" coords="190,245,397,289"/>
+<area shape="rect" id="node19" href="$class_networ_kit_1_1_clustering.html#a6d544799c96254b1ec6600b1b23c0fe7" title="E: (u) = (v) &#160;(u) = (v) &#160;(u) &#160;(v) &#160;(u) &#160;(v) $$" alt="" coords="220,449,367,493"/>
+<area shape="rect" id="node31" href="$class_networ_kit_1_1_clustering_generator.html#a0a9dc09f93d77c77562792b3537cf6c1" title="Make a singleton clustering of G, i.e." alt="" coords="190,313,397,357"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a498eb0beb05b992d12b246fcf3b76070" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="453,57,632,101"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="445,5,640,33"/>
+<area shape="rect" id="node11" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="455,313,631,357"/>
+<area shape="rect" id="node13" href="$class_networ_kit_1_1_clustering.html#a17835c3aaee8a0f76c3f49201eaab5ea" title="Call this before assigning nodes to cluster ids." alt="" coords="469,125,616,169"/>
+<area shape="rect" id="node15" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="450,193,635,221"/>
+<area shape="rect" id="node17" href="$class_networ_kit_1_1_clustering.html#a8c6557683ca585e65d349b01368260ea" title="Add a (previously unassigned) node to a cluster." alt="" coords="469,245,616,289"/>
+<area shape="rect" id="node21" href="$class_networ_kit_1_1_graph.html#a22c0e86e32fa99bb6f883bc63c42134a" title="Iterate in parallel over all edges of the graph and call handler (lambda closure)." alt="" coords="456,449,630,493"/>
+<area shape="rect" id="node23" href="$class_networ_kit_1_1_clustering.html#aee9b6c2940d730806cd79f5b52c1d87a" title="Check if two nodes belong to the same cluster." alt="" coords="469,517,616,561"/>
+<area shape="rect" id="node25" href="$class_networ_kit_1_1_clustering.html#afe45f9be7aeb735a8560bd5e95324f95" title="Check if clustering assigns a valid cluster to the node." alt="" coords="688,482,835,526"/>
+<area shape="rect" id="node27" href="$class_networ_kit_1_1_clustering.html#a2c2dfb71bd9d88609fbb569027793be1" title="Return the cluster (id) in which a node is contained." alt="" coords="688,550,835,594"/>
+<area shape="rect" id="node29" href="$class_networ_kit_1_1_index_map.html#ab2bf024de2a5d5cb47e7ae2e7e3e833b" title="Number of nodes for which this clsutering can hold an entry." alt="" coords="884,542,1071,602"/>
+<area shape="rect" id="node34" href="$class_networ_kit_1_1_clustering.html#a777f65aa262cbed40eb1c85721250026" title="Assigns every node to a singleton cluster." alt="" coords="469,381,616,425"/>
+</map>
