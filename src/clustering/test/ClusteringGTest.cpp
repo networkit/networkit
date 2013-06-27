@@ -253,7 +253,7 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 
 
 
-TEST_F(ClusteringGTest, tryNMIDistance) {
+TEST_F(ClusteringGTest, testNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
 	GraphGenerator gen;
 	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
@@ -286,7 +286,7 @@ TEST_F(ClusteringGTest, tryNMIDistance) {
 
 }
 
-TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
+TEST_F(ClusteringGTest, testDynamicNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
 	GraphGenerator gen;
 	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
