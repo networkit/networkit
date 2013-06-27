@@ -65,9 +65,12 @@ bool Clustering::isProper(Graph& G) {
 
 count Clustering::numberOfClusters() const {
 
-	std::vector<bool> exists(this->upperBound(), false);
+	count nc = this->upperBound();
+	std::vector<bool> exists(nc, false);
+//	bool exists[nc];
+//	std::fill(&exists[0], &exists[nc], false);
 
-	// FIXME: parallel iteration yields errors, not really clear why
+	// parallel iteration yields errors with std::vector, not really clear why
 //	this->parallelForEntries([&](node u, cluster C) {
 	this->forEntries([&](node u, cluster C) {
 		if (C != none) {
@@ -75,7 +78,6 @@ count Clustering::numberOfClusters() const {
 		}
 	});
 
-	count nc = exists.size();
 	count k = 0; // number of actually existing clusters
 	#pragma omp parallel for reduction(+:k)
 	for (index i = 0; i < nc; ++i) {

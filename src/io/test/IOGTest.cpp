@@ -278,7 +278,7 @@ TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
 }
 
 
-TEST_F(IOGTest, testMETISGraphReaderWithIsolatedNodes) {
+TEST_F(IOGTest, tryMETISGraphReaderWithIsolatedNodes) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/example.graph");
 	EXPECT_EQ(4, G.numberOfNodes());
