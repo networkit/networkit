@@ -45,6 +45,9 @@
 #include "io/METISGraphReader.h"
 #include "generators/DynamicBarabasiAlbertGenerator.h"
 #include "dcd/DynamicCommunityDetector.h"
+#include "dcd/TDynamicLabelPropagation.h"
+#include "dcd/DynamicLabelPropagation.h"
+#include "dcd/DynCDSetup.h"
 
 using namespace NetworKit;
 
@@ -279,7 +282,7 @@ int main(int argc, char **argv) {
 
 
 	// select algorithms
-	std::vector<DynamicCommunityDetector*> detectors = NULL;
+	std::vector<DynamicCommunityDetector*> detectors;
 	if (options[DETECTORS]){
 
 		std::string detectorsFull = options[DETECTORS].arg;
@@ -299,9 +302,9 @@ int main(int argc, char **argv) {
 			} else if (detectorName == "DynamicLabelPropagation") {
 
 				if (detectorArguments == "Isolate")
-					detectors.push_back(new DynamicLabelPropagation("Isolate"));
+					detectors.push_back(new DynamicLabelPropagation(0, "Isolate"));
 				if (detectorArguments == "IsolateNeighbours")
-					detectors.push_back(new DynamicLabelPropagation("IsolateNeighbors"));
+					detectors.push_back(new DynamicLabelPropagation(0, "IsolateNeighbors"));
 
 			} else if (detectorName == "DynamicEnsemble") {
 				// TODO: Implement
@@ -311,10 +314,13 @@ int main(int argc, char **argv) {
 	}
 
 
-	DynCDSetup dynCDSetup = new DynCDSetup(*source, detectors);
+	count tMax = 10e8;	// TODO: make this configurable
+	count deltaT = 1000;
+
+	DynCDSetup* dynCDSetup = new DynCDSetup(*source, detectors, tMax, deltaT);
 
 	for (int run = 0; run < runs; run++) {
-		dynCDSetup.run();
+		dynCDSetup->run();
 	}
 
 	// TODO: inspection of results

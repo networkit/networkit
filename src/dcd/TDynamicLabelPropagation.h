@@ -12,6 +12,8 @@
 
 namespace NetworKit {
 
+typedef cluster label;
+
 template <class PrepStrategy> class TDynamicLabelPropagation: public DynamicCommunityDetector {
 
 	friend class Isolate; // PrepStrategies must be friend classes to access internal data

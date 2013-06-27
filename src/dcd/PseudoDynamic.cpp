@@ -31,8 +31,10 @@ void PseudoDynamic::generate() {
 
 
 	if (Gstatic.hasNode(u)) {
+		TRACE("static graph has node " << u);
 		// create node in the dynamic graph
 		node uNew = this->Gproxy->addNode();
+		TRACE("creating new node " << uNew);
 
 		// add edges to already existing neighbors
 		Gstatic.forNeighborsOf(u, [&](node v){
