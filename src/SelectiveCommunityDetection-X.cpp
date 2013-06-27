@@ -3,7 +3,7 @@
 // Author      : Christian Staudt (christian.staudt@kit.edu),
 //				 Henning Meyerhenke (henning.meyerhenke@kit.edu)
 // Version     :
-// Copyright   : © 2013, Christian Staudt, Henning Meyerhenke
+// Copyright   : ï¿½ 2013, Christian Staudt, Henning Meyerhenke
 // Description : Framework for engineering selective community detection algorithms
 //============================================================================
 
@@ -43,6 +43,10 @@
 #include "io/METISGraphReader.h"
 #include "scd/RandomSeedSet.h"
 #include "scd/RandomWalkSeedSet.h"
+#include "scd/TSelectiveSCAN.h"
+#include "distmeasures/TAlgebraicDistance.h"
+#include "distmeasures/TNeighborhoodDistance.h"
+#include "distmeasures/TNodeDistance.h"
 
 
 
@@ -292,14 +296,15 @@ int main(int argc, char **argv) {
 
 	// get graph
 	Graph G = getGraph(options);
+	SeedSetGenerator* seedGen = NULL;
+	count nSeeds = 1; // number of seeds
 
 	// get seed set generator
 	if (options[SEEDS]) {
 		std::string seedsArg = options[SEEDS].arg;
 		std::string seedsName = Aux::StringTools::split(seedsArg, ':')[0];
 		std::string seedsParam = Aux::StringTools::split(seedsArg, ':')[1];
-
-		SeedSetGenerator* seedGen = NULL;
+		nSeeds = std::stoi(seedsParam); // number of seeds
 
 		if (seedsName == "RandomSeedSet") {
 			seedGen = new RandomSeedSet(G);
@@ -310,7 +315,6 @@ int main(int argc, char **argv) {
 			exit(1);
 		}
 
-		count nSeeds = std::stoi(seedsParam); // number of seeds
 
 	} else {
 		std::cout << "[ERROR] option --seeds must be supplied" << std::endl;
@@ -320,12 +324,35 @@ int main(int argc, char **argv) {
 
 
 	// get algorithms
+	SelectiveCommunityDetector* algo = NULL;
 	if (options[DETECTOR]) {
 		std::string detectorArg = options[DETECTOR].arg;
 		std::string detectorName = Aux::StringTools::split(detectorArg, ':')[0];
-
+		std::string algoParams;
+		Parameters param;
+		if (Aux::StringTools::split(detectorArg, ':').size() > 1) {
+			algoParams = Aux::StringTools::split(detectorArg, ':').back();
+		}
+		std::string dist = Aux::StringTools::split(algoParams, ':').front();
+		if (dist == "TDN") {
+			if (Aux::StringTools::split(algoParams, ':').size() > 1) {
+				std::string epsilon = Aux::StringTools::split(algoParams, ':').front();
+				param.setDouble("epsilon", std::stof(epsilon));
+				if (Aux::StringTools::split(algoParams, ':').back().size() > 1) {
+					param.setInt("mu", std::stof(Aux::StringTools::split(Aux::StringTools::split(algoParams, ':').back()).front()));
+				}
+			}
+		} else if (dist == "TAD") {
+		} else {
+			std::cout << "[ERROR] unknown distance measure: " << dist << " [EXIT]" << std::endl;
+			exit(1);
+		}
 		if (detectorName == "TSelectiveSCAN") {
-			// TODO: instantiate
+			if (dist == "TDN") {
+				TSelectiveSCAN<TNeighborhoodDistance> algo(G, param);
+			} else if (dist == "TAD") {
+				TSelectiveSCAN<TAlgebraicDistance> algo(G, param);
+			}
 		} else if (detectorName == "SelectiveSCAN") {
 			// TODO:
 		} else if (detectorName == "TGreedyCommunityExpansion") {
@@ -337,12 +364,17 @@ int main(int argc, char **argv) {
 		std::cout << "[ERROR] option --detector=<NAME>:<PARAMS> must be supplied" << std::endl;
 		exit(1);
 	}
-
+std::cout<<"[BEGIN]"<<std::endl;
 	// RUN
-
-	// TODO: run
-
-	// TODO: get multiple seed sets
+	Aux::Timer running;
+	for (int i = 0; i < runs; i++) {
+		running.start();
+		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
+		std::cout<<i<<std::endl;
+		std::unordered_map<node, std::unordered_set<node>> result = algo->run(seeds);
+		running.stop();
+	}
+	std::cout<<"[DONE]"<<std::endl;
 
 
 	// EVALUATION
@@ -360,7 +392,7 @@ int main(int argc, char **argv) {
 		// TODO: @Alex - get LFR ground truth
 		// TODO: evaluate ground truth
 	} else {
-		std::cout << "[INFO]Êno ground truth supplied" << std::endl;
+		std::cout << "[INFO]ï¿½no ground truth supplied" << std::endl;
 	}
 
 

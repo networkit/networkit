@@ -56,11 +56,30 @@ void DynamicDGSParser::generate() {
 			breakTimeStep = true;
 			break;
 
-		} else if (tag.compare("an") == 0 && split.size() == 2) { // add node
+		} else if (tag.compare("an") == 0 && split.size() >= 2) { // add node
 			// Get the node name from the input
 			std::string nodeName = split[1];
 			// Add a node to a graph, mapping it to the node name inside the nodeNames map
 			nodeNames[nodeName] = Gproxy->addNode();
+			if (split.size() == 4) { // DGS with ground truth
+
+				std::string categoriesFullString = split[2]; /// Example: category="cond-mat.stat-mech, q-fin.ST"
+				std::vector<std::string> categoriesFullStringSplit = Aux::StringTools::split(categoriesFullString, '"');
+
+				std::string categoriesCommaSeparated = categoriesFullStringSplit[1]; // Example: cond-mat.stat-mech, q-fin.ST
+				std::vector<std::string> categories = Aux::StringTools::split(categoriesCommaSeparated, ',');
+
+				std::vector<std::string> currentNodeCategories;
+				for (std::string category : categories) {
+					currentNodeCategories.push_back(category);
+				}
+				nodeCategories.push_back(currentNodeCategories);
+
+				std::string dateFullString = split[3]; // Example: date="08-1997"
+				std::vector<std::string> dateFullStringSplit = Aux::StringTools::split(dateFullString, '"');
+				std::string date = dateFullStringSplit[1];
+				nodeDates.push_back(date);
+			}
 
 		} else if (tag.compare("ae") == 0 && split.size() >= 4) { // add edge
 			std::string edge_from = split[2];

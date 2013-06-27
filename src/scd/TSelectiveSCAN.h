@@ -50,7 +50,7 @@ inline TSelectiveSCAN<Distance>::~TSelectiveSCAN() {
 
 template<class Distance>
 inline std::unordered_map<node, std::unordered_set<node> > TSelectiveSCAN<Distance>::run(std::unordered_set<node> seeds) {
-
+	std::cout<<"-------------------"<<std::endl;
 	// initialize distance measure
 	distMeasure.initialize(param);
 

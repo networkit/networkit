@@ -628,22 +628,38 @@ TEST_F(SCDGTest, testTGreedyCommunityExpansionWithTemplates) {
 //	}
 //}
 //
-//TEST_F(SCDGTest, trySelectiveSCANWithSeedSetAndTemplates) {
-//
-//	METISGraphReader reader;
-//	Graph G = reader.read("input/pgp.graph");
-//	NeighborhoodDistance distMeasure(G);
-//	SelectiveSCAN GCE(G, distMeasure);
-//	RandomSeedSet randSeeds(G);
-//
-//		std::unordered_set<node> seeds = randSeeds.getSeeds(10000);
-//		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(
-//				seeds);
-//		for(auto u : result) {
-//			std::cout<<u.first<<"------------------------"<<u.second.size()<<std::endl;
-//		}
-//
-//}
+TEST_F(SCDGTest, trySelectiveSCANWithSeedSetAndTemplates) {
+
+	METISGraphReader reader;
+	Graph G = reader.read("input/pgp.graph");
+	NeighborhoodDistance distMeasure(G);
+	SelectiveSCAN GCE(G, distMeasure);
+	RandomSeedSet randSeeds(G);
+
+		std::unordered_set<node> seeds = randSeeds.getSeeds(10);
+		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(
+				seeds);
+		for(auto u : result) {
+			std::cout<<u.first<<"------------------------"<<u.second.size()<<std::endl;
+		}
+
+}
+TEST_F(SCDGTest, trySelectlates) {
+
+	METISGraphReader reader;
+	Graph G = reader.read("input/pgp.graph");
+	Parameters param;
+	TSelectiveSCAN<TNeighborhoodDistance> GCE(G, param);
+	RandomSeedSet randSeeds(G);
+
+		std::unordered_set<node> seeds = randSeeds.getSeeds(10);
+		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(
+				seeds);
+		for(auto u : result) {
+			std::cout<<u.first<<"------------------------"<<u.second.size()<<std::endl;
+		}
+
+}
 
 
 } /* namespace NetworKit */
