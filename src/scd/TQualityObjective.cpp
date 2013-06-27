@@ -12,7 +12,10 @@ namespace NetworKit {
 } /* namespace NetworKit */
 
 NetworKit::TQualityObjective::TQualityObjective(const Graph& G,
-		std::unordered_set<node>& community) : G(&G), community(&community) {
+		std::unordered_set<node>& community) : G(&G), community(&community), volume(0), nBoundaryEdges(0) {
+	this->degSum = this->G->parallelSumForNodes([&](node u){
+		return this->G->degree(u);
+	});
 }
 
 NetworKit::TQualityObjective::~TQualityObjective() {

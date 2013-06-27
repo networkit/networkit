@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveSCAN::SelectiveSCAN(Graph& G, NodeDistance& distMeasure, double epsilon, double mu): SelectiveCommunityDetector(G), distMeasure(&distMeasure), epsilon(epsilon), mu(mu) {
+SelectiveSCAN::SelectiveSCAN(const Graph& G, NodeDistance& distMeasure, double epsilon, double mu): SelectiveCommunityDetector(G), distMeasure(&distMeasure), epsilon(epsilon), mu(mu) {
 
 }
 
@@ -26,7 +26,6 @@ std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unord
 	G.forNodes ([&](node u){
 		nodesState.insert(std::pair<node,int>(u, -1));
 	});
-
 	for (node u : set) {
 		std::pair<bool,std::unordered_set<node>> isCore = this->isCore(u);
 		if ((nodesState.find(u))->second == -1  && isCore.first){
@@ -93,6 +92,7 @@ std::pair<bool,std::unordered_set<node>> SelectiveSCAN::isCore(node u) {
 	if (count >= this->mu) {
 		core = true;
 	}
+
 	return std::pair<bool,std::unordered_set<node>>(core, similarNeighbors);
 }
 
@@ -120,7 +120,6 @@ void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* 
 			}
 		}
 		candidates->erase(candidates->find(v));
-		// commit test
 	}
 }
 
