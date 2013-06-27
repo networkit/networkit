@@ -9,6 +9,8 @@
 #define DYNAMICDGSPARSER_H_
 
 #include <fstream>
+#include <vector>
+
 
 #include "DynamicGraphSource.h"
 #include "../auxiliary/StringTools.h"
@@ -34,6 +36,8 @@ public:
 protected:
 	bool graphInitialized;	//!< true if initializeGraph has been called and graph has been properly initialized
 	std::unordered_map<std::string, node> nodeNames;
+	std::vector<std::vector<std::string>> nodeCategories;
+	std::vector<std::string> nodeDates;
 	std::ifstream dgsFile;
 
 };
