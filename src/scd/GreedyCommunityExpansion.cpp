@@ -28,8 +28,7 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 	DummySimilarity acceptability(G, community, shell);
 	Conductance objective(G, community);
 
-	double currentObjectiveValue = objective.getValue(s);
-
+	double currentObjectiveValue = objective.getValue(s)[0];
 	community.insert(s);
 	bool expanded = true;	// community has been expanded in the last iteration
 
@@ -41,11 +40,16 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 	if (shell.empty()) {
 		return community;
 	}
-
+	objective.nNodes = 1;
+	objective.nBoundaryNodes = 1;
 	objective.nBoundaryEdges = shell.size();
 	objective.volume = G.degree(s);
+	if (G.hasEdge(s, s)) {
+		objective.nInternEdges++;
+	}
 	node vMax = *(shell.begin()); // initialize vMax with a random node from the shell
 	double acceptanceMax = acceptability.getValue(vMax);// maximum acceptance value
+
 
 	while (expanded) {
 		if (shell.empty()) {
@@ -67,10 +71,10 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 					vMax = x;
 					acceptanceMax = acc;
 				} else if (it->second - acceptanceMax < 0.00001) {
-					if (objective.getValue(x) - objective.getValue(vMax) > 0.00001) {
+					if (objective.getValue(x)[0] - objective.getValue(vMax)[0] > 0.00001) {
 						vMax = x;
 						acceptanceMax = acc;
-					} else if (objective.getValue(vMax) - objective.getValue(x) < 0.00001) {
+					} else if (objective.getValue(vMax)[0] - objective.getValue(x)[0] < 0.00001) {
 						// first tie-breaking by degree
 						if (G.degree(x) > G.degree(vMax)) {
 							vMax = x;
@@ -86,23 +90,17 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 				}
 			}
 
+			std::vector<double> tmp = objective.getValue(vMax);
 			// include only nodes which lead to a strictly positive improvement
-			if (objective.getValue(vMax) > currentObjectiveValue) {
+			if (tmp[0] > currentObjectiveValue) {
 
 				expanded = true;
-				currentObjectiveValue = objective.getValue(vMax);
-				int count = 0;
-				G.forNeighborsOf(vMax, [&](node u){
-					if (community.find(u) == community.end()) {
-						count++;
-					}
-				});
-				if (G.hasEdge(vMax, vMax)) {
-					objective.nBoundaryEdges = objective.nBoundaryEdges + 2 * count - G.degree(vMax) + 1;
-				} else {
-					objective.nBoundaryEdges = objective.nBoundaryEdges + 2 * count - G.degree(vMax);
-				}
+				currentObjectiveValue = tmp[0];
+				objective.nNodes++;
+				objective.nBoundaryEdges = tmp[1];
+				objective.nBoundaryNodes = tmp[2];
 				objective.volume = objective.volume + G.degree(vMax);
+				objective.nInternEdges = tmp[3];
 				community.insert(vMax);
 				shell.erase(vMax);
 				G.forNeighborsOf(vMax, [&](node v) {
