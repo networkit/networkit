@@ -9,6 +9,8 @@
 #define NEIGHBORHOODDISTANCE_H_
 
 #include "NodeDistance.h"
+#include <math.h>
+#include <algorithm>
 
 namespace NetworKit {
 

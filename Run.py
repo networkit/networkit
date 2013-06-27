@@ -16,7 +16,7 @@ else:
 print("performing %d runs each" % runs)
 
 graphFiles = []
-
+os.chdir("/Users/forigem/Downloads/binary_networks")
 for (dirpath, dirnames, filenames) in os.walk(dir):
     for name in fnmatch.filter(filenames, "*.graph"):
         path = os.path.join(dirpath, name)

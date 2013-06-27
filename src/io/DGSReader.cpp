@@ -35,8 +35,10 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 	std::getline(dgsFile, line);
 	std::vector<std::string> split = Aux::StringTools::split(line);
 
-	// TODO: complete implementation
     std::unordered_map<std::string, node> nodeNames;
+    std::vector<std::vector<std::string>> nodeCategories;
+    std::vector<std::string> nodeDates;
+
 
 	while (std::getline(dgsFile, line)) {
 		std::vector<std::string> split = Aux::StringTools::split(line);
@@ -47,11 +49,36 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 		if (tag.compare("st") == 0 && split.size() == 2) { // clock
 			Gproxy.timeStep();
 
-		} else if (tag.compare("an") == 0 && split.size() == 2) { // add node
+		} else if (tag.compare("an") == 0 && split.size() >= 2) { // add node
+			// Example string: an cond_mat_9708143 category="cond-mat.stat-mech, q-fin.ST" date="08-1997"
 			// Get the node name from the input
 			std::string nodeName = split[1];
 			// Add a node to a graph, mapping it to the node name inside the nodeNames map
 			nodeNames[nodeName] = Gproxy.addNode();
+
+			if (split.size() == 4) { // DGS with ground truth
+
+				std::string categoriesFullString = split[2]; /// Example: category="cond-mat.stat-mech, q-fin.ST"
+				std::vector<std::string> categoriesFullStringSplit = Aux::StringTools::split(categoriesFullString, '"');
+
+				std::string categoriesCommaSeparated = categoriesFullStringSplit[1]; // Example: cond-mat.stat-mech, q-fin.ST
+				std::vector<std::string> categories = Aux::StringTools::split(categoriesCommaSeparated, ',');
+
+				std::vector<std::string> currentNodeCategories;
+				for (std::string category : categories) {
+					currentNodeCategories.push_back(category);
+				}
+				nodeCategories.push_back(currentNodeCategories);
+
+				std::string dateFullString = split[3]; // Example: date="08-1997"
+				std::vector<std::string> dateFullStringSplit = Aux::StringTools::split(dateFullString, '"');
+				std::string date = dateFullStringSplit[1];
+				nodeDates.push_back(date);
+			}
+
+
+
+
 
 		} else if (tag.compare("ae") == 0 && split.size() >= 4) { // add edge
 			std::string edge_from = split[2];

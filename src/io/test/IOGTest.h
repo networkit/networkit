@@ -12,6 +12,8 @@
 
 #include <gtest/gtest.h>
 #include <fstream>
+#include <unordered_set>
+#include <vector>
 
 #include "../../auxiliary/Log.h"
 #include "../METISGraphReader.h"
@@ -25,6 +27,7 @@
 #include "../DGSReader.h"
 #include "../EdgeListReader.h"
 #include "../EdgeListClusteringReader.h"
+#include "../SNAPEdgeListClusteringReader.h"
 #include "../../clustering/Clustering.h"
 #include "../../clustering/Modularity.h"
 #include "../../community/LabelPropagation.h"
