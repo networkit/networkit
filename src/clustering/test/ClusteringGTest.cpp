@@ -322,7 +322,7 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 	DynamicCommunityDetector* dynLP1 = new TDynamicLabelPropagation<Isolate>();
 
 	std::vector<DynamicCommunityDetector*> detectors = { dynLP1 };
-	count deltaT = 2;
+	count deltaT = 6;
 	count tMax = 10 * deltaT;
 	DynCDSetup setup(*dynGen, detectors, tMax, deltaT);
 
@@ -330,15 +330,12 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 
 	G = setup.getGraphCopy();
 	std::vector<Clustering>& myresults = setup.results[0];
-	for (index i = 1; i < myresults.size(); ++i) {
-		Clustering& oldClustering = myresults[i-1];
-		Clustering& currentClustering = myresults[i];
+	Clustering& currentClustering = myresults.back();
+	Clustering& oldClustering = myresults[0];
+	EXPECT_TRUE(currentClustering.isProper(G)) << "clustering in the sequence should be a proper clustering of G";
 
-		EXPECT_TRUE(currentClustering.isProper(G)) << "clustering in the sequence should be a proper clustering of G";
-
-		double distSeq = dynNMID.getDissimilarity(G, oldClustering, currentClustering);
-		INFO("Dyn NMID for current and previous clustering: " << distSeq);
-	}
+	double distSeq = dynNMID.getDissimilarity(G, oldClustering, currentClustering);
+	INFO("Dyn NMID for last and first clustering: " << distSeq);
 
 }
 
