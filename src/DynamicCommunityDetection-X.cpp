@@ -16,6 +16,7 @@
 #include <utility>
 #include <cfenv>	// floating point exceptions
 #include <stdexcept>
+#include <vector>
 
 // log4cxx
 #ifndef NOLOG4CXX
@@ -41,7 +42,13 @@
 #include "auxiliary/StringTools.h"
 #include "graph/Graph.h"
 #include "dcd/PseudoDynamic.h"
-
+#include "io/METISGraphReader.h"
+#include "generators/DynamicBarabasiAlbertGenerator.h"
+#include "generators/DynamicDGSParser.h"
+#include "dcd/DynamicCommunityDetector.h"
+#include "dcd/TDynamicLabelPropagation.h"
+#include "dcd/DynamicLabelPropagation.h"
+#include "dcd/DynCDSetup.h"
 
 using namespace NetworKit;
 
@@ -108,7 +115,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, SOURCE, DETECTORS, RUNS, SAVE_GRAPH, PROGRESS, SUMMARY, SCALETHREADS, UPDATE_THRESHOLD};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, SOURCE, DETECTORS, RUNS, SAVE_GRAPH, PROGRESS, SUMMARY, SCALETHREADS, UPDATE_THRESHOLD, SAVE_CLUSTERINGS};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -118,13 +125,14 @@ const OptionParser::Descriptor usage[] =
  {THREADS,    0, "" , "threads", OptionParser::Arg::Required, "  --threads=<NUM>  \t set the maximum number of threads" },
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
  {SOURCE, 0, "", "source", OptionParser::Arg::Required, "  --source=<NAME>:<PARAMS> \t select source of dynamic graph"},
- {DETECTORS, 0, "", "detectors", OptionParser::Arg::Required, "  --detectors=<NAME>:<PARAMS> \t select dynamic community detection algorihtms"},
+ {DETECTORS, 0, "", "detectors", OptionParser::Arg::Required, "  --detectors=<NAME>:<PARAMS> \t select dynamic community detection algorithms"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
  {SAVE_GRAPH, 0, "", "saveGraph", OptionParser::Arg::Required, "  --saveGraph=<PATH> \t write the graph to a file"},
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {SCALETHREADS, 0, "", "scaleThreads", OptionParser::Arg::Required, "  --scaleThreads=<MAXTHREADS> \t scale number of threads by factor 2 until maximum is reached"},
  {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> or --updateThreshold=auto \t number of updated nodes below which label propagation terminates - auto determines this automatically from the size of the graph"},
+ {SAVE_CLUSTERINGS, 0, "", "saveClusterings", OptionParser::Arg::Required, "  --scaleThreads=<PATH> \t save the graph clusterings for this test sequence into a specific directory"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -242,27 +250,33 @@ int main(int argc, char **argv) {
 	// RUN PROGRAM
 
 	// select a dynamic graph source
+	DynamicGraphSource* source = NULL;
+
 	if (options[SOURCE]) {
 		std::string sourceString = options[SOURCE].arg;
 		std::vector<std::string> sourceParts = Aux::StringTools::split(sourceString, ':');
 		std::string sourceName = sourceParts[0];
 
-		DynamicGraphSource* source = NULL;
 
 		if (sourceName == "PseudoDynamic") {
 			if (sourceParts.size() >= 2) {
 				std::string graphFile = sourceParts[1];
-				// TODO: read graph Graph G = (new METISGraphReader())->read(graphFile);
-				// TODO: source = new PseudoDynamic(G);
+				GraphReader* reader = new METISGraphReader();
+				Graph G = reader->read(graphFile);
+				source = new PseudoDynamic(G);
 			} else {
 				throw std::runtime_error("PseudoDynamic source needs a graph file path as argument");
 			}
 		} else if (sourceName == "DynamicBarabasiAlbertGenerator") {
-			// TODO: source = new DynamicBarabasiAlbertGenerator();
+			// TODO: Pass k as a parameter
+			source = new DynamicBarabasiAlbertGenerator(2);
+
 		} else if (sourceName == "DynamicPubWebGenerator") {
 			// TODO:
 		} else if (sourceName == "DGS") {
-			// TODO:
+			std::string graphFile = sourceParts[1];
+			source = new DynamicDGSParser(graphFile);
+
 		}
 	} else {
 		throw std::runtime_error("--source option must be supplied");
@@ -271,48 +285,46 @@ int main(int argc, char **argv) {
 
 
 	// select algorithms
+	std::vector<DynamicCommunityDetector*> detectors;
 	if (options[DETECTORS]){
-		// TODO: split argument at ';' to get detectors
-		// TODO: split each part at ':' to get name and params
-		// TODO: split params
 
-		std::string detectorName;
+		std::string detectorsFull = options[DETECTORS].arg;
+		std::vector<std::string> detectorsString = Aux::StringTools::split(detectorsFull, ';');
 
-		if (detectorName == "TDynamicLabelPropagation") {
-			// TODO:
-		} else if (detectorName == "DynamicLabelPropagation") {
-			// TODO:
-		} else if (detectorName == "DynamicEnsemble") {
-			// TODO:
-		}
-	}
+		for (std::string detector : detectorsString) {
+			std::vector<std::string> detectorParts = Aux::StringTools::split(detector, ':');
+			std::string detectorName = detectorParts[0];
+			std::string detectorArguments = detectorParts[1];
+			if (detectorName == "TDynamicLabelPropagation") {
 
+				if (detectorArguments == "Isolate")
+					detectors.push_back(new TDynamicLabelPropagation<Isolate>());
+				if (detectorArguments == "IsolateNeighbours")
+					detectors.push_back(new TDynamicLabelPropagation<IsolateNeighbors>());
 
-	// TODO: instantiate DynCDSetup with source and detectors
+			} else if (detectorName == "DynamicLabelPropagation") {
 
+				if (detectorArguments == "Isolate")
+					detectors.push_back(new DynamicLabelPropagation(0, "Isolate"));
+				if (detectorArguments == "IsolateNeighbours")
+					detectors.push_back(new DynamicLabelPropagation(0, "IsolateNeighbors"));
 
-	// TODO: thread scaling is not strictly necessary
-	// allow for scripted thread scaling
-	if (options[SCALETHREADS]) {
-		// perform scaling
-		int maxThreads = std::atoi(options[SCALETHREADS].arg);
-		for (int nThreads = 1; nThreads <= maxThreads; nThreads *= 2) {
-			setNumberOfThreads(nThreads);
-			// allow for multiple runs
-			for (int run = 0; run < runs; run++) {
-				// TODO: run
-				// TODO: inspect(G, clustering, options);
+			} else if (detectorName == "DynamicEnsemble") {
+				// TODO: Implement
 			}
+		}
 
-		}
-	} else {
-		// allow for multiple runs
-		for (int run = 0; run < runs; run++) {
-			// TODO: start the setup here
-		}
 	}
 
 
+	count tMax = 10e8;	// TODO: make this configurable
+	count deltaT = 1000;
+
+	DynCDSetup* dynCDSetup = new DynCDSetup(*source, detectors, tMax, deltaT);
+
+	for (int run = 0; run < runs; run++) {
+		dynCDSetup->run();
+	}
 
 	// TODO: inspection of results
 

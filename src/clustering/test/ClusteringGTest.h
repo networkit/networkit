@@ -26,8 +26,14 @@
 #include "../../io/METISGraphReader.h"
 #include "../../io/ClusteringReader.h"
 #include "../NMIDistance.h"
+#include "../DynamicNMIDistance.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../auxiliary/NumericTools.h"
+#include "../../dcd/DynCDSetup.h"
+#include "../../generators/DynamicBarabasiAlbertGenerator.h"
+#include "../../dcd/DynamicLabelPropagation.h"
+#include "../../dcd/TDynamicLabelPropagation.h"
+
 
 namespace NetworKit {
 
