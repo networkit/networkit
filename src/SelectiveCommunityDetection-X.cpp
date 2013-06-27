@@ -349,9 +349,9 @@ int main(int argc, char **argv) {
 		}
 		if (detectorName == "TSelectiveSCAN") {
 			if (dist == "TDN") {
-				TSelectiveSCAN<TNeighborhoodDistance> algo(G, param);
+				algo = new TSelectiveSCAN<TNeighborhoodDistance>(G, param);
 			} else if (dist == "TAD") {
-				TSelectiveSCAN<TAlgebraicDistance> algo(G, param);
+				algo = new TSelectiveSCAN<TAlgebraicDistance>(G, param);
 			}
 		} else if (detectorName == "SelectiveSCAN") {
 			// TODO:
@@ -364,7 +364,10 @@ int main(int argc, char **argv) {
 		std::cout << "[ERROR] option --detector=<NAME>:<PARAMS> must be supplied" << std::endl;
 		exit(1);
 	}
-std::cout<<"[BEGIN]"<<std::endl;
+	std::cout << "[BEGIN]" << std::endl;
+
+	assert (algo != NULL);
+
 	// RUN
 	Aux::Timer running;
 	for (int i = 0; i < runs; i++) {
