@@ -31,11 +31,18 @@ public:
 		 *
 		 * Higher values are better.
 		 */
-	virtual double getValue(node v) = 0;
+	virtual std::vector<double> getValue(node v) = 0;
 
 protected:
 	const Graph* G;								//!< pointer to the graph
 	std::unordered_set<node>* community;	//!< pointer to the current community
+public:
+	count nBoundaryNodes;  //!< current number of boundary nodes
+	count nBoundaryEdges; //!< current number of boundary edges
+	count degSum; //!< degree sum of the graph needed
+	count nNodes; //!< current number of nodes in the community
+	count volume;	//!< current community volume
+	count nInternEdges; //!< current number of intern edges
 };
 
 
@@ -50,7 +57,7 @@ public:
 
 	virtual ~LocalModularityM();
 
-	virtual double getValue(node v);
+	virtual std::vector<double> getValue(node v);
 };
 
 class LocalModularityL : public QualityObjective {
@@ -61,7 +68,7 @@ public:
 
 	virtual ~LocalModularityL();
 
-	virtual double getValue(node v);
+	virtual std::vector<double> getValue(node v);
 };
 /**
  * Conductance as a quality objective function. Unlike standard conductance,
@@ -76,14 +83,7 @@ public:
 
 	virtual ~Conductance();
 
-	virtual double getValue(node v);
-
-public: // TODO: make this protected
-
-	count degSum; //!< degree sum of the graph needed
-	count nBoundaryEdges; //!< current number of boundary edges
-	count volume;	//!< current community volume
-
+	virtual std::vector<double> getValue(node v);
 };
 
 } /* namespace NetworKit */

@@ -23,26 +23,26 @@ void NeighborhoodDistance::preprocess() {
 }
 
 double NeighborhoodDistance::distance(node u, node v) {
+
 	count inter = 0;
-	count uni = 0;
+	int neighborhood1 = G.degree(u);
+	int neighborhood2 = G.degree(v);
+
 	G.forNeighborsOf(u, [&](node x){
 		if (x != v && x!= u ) {
 			if (G.hasEdge(x, v)) {
 				inter++;
-				uni++;
-			} else {
-				uni++;
 			}
 		}
 	});
-	G.forNeighborsOf(v, [&](node x){
-		if (x != u && x != v) {
-			if (!G.hasEdge(x, u)) {
-				uni++;
-			}
-		}
-	});
-	return 1 - ((double) (inter + 2) / (double) (uni +2));
+	if (!G.hasEdge(u, u)) {
+		neighborhood1++;
+	}
+	if (!G.hasEdge(v, v)) {
+		neighborhood2++;
+	}
+
+	return (1 - ((double) (inter + 2)) / (sqrt(neighborhood2 * neighborhood1)));
 }
 
 } /* namespace NetworKit */
