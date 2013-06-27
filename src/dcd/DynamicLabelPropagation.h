@@ -28,7 +28,7 @@ public:
 	/**
 	 * @param[in]	theta	update threshold
 	 */
-	DynamicLabelPropagation(count theta, std::string strategy = "reactivate");
+	DynamicLabelPropagation(count theta = 0, std::string strategy = "Reactivate");
 
 	virtual ~DynamicLabelPropagation();
 
