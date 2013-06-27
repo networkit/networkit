@@ -67,17 +67,20 @@ count Clustering::numberOfClusters() const {
 
 	std::vector<bool> exists(this->upperBound(), false);
 
-	this->parallelForEntries([&](node u, cluster C){
+	// FIXME: parallel iteration yields errors, not really clear why
+//	this->parallelForEntries([&](node u, cluster C) {
+	this->forEntries([&](node u, cluster C) {
 		if (C != none) {
 			exists[C] = true;
 		}
 	});
 
+	count nc = exists.size();
 	count k = 0; // number of actually existing clusters
 	#pragma omp parallel for reduction(+:k)
-	for (index i = 0; i < exists.size(); ++i) {
+	for (index i = 0; i < nc; ++i) {
 		if (exists[i]) {
-			k += 1;
+			k++;
 		}
 	}
 
