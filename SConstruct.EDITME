@@ -1,0 +1,143 @@
+import os
+import fnmatch
+
+home_path = os.environ['HOME']
+
+# SOURCE
+source = []
+
+# walk source directory and find ONLY .cpp files
+for (dirpath, dirnames, filenames) in os.walk("src"):
+    for name in fnmatch.filter(filenames, "*.cpp"):
+        source.append(os.path.join(dirpath, name))
+
+
+# exclude files matching following patterns
+xpatterns = []
+excluded = []
+
+for pattern in xpatterns:
+	for name in fnmatch.filter(source, pattern):
+		excluded.append(name)
+
+source = [name for name in source if name not in excluded]
+
+
+# ENVIRONMENTS
+
+## environment: macbook
+myenv = Environment()
+### include
+myenv.Append(CPPPATH = []) 						# TODO: add include paths here
+
+
+
+### link
+myenv.Append(LIBS = ["gtest", "log4cxx"])
+myenv.Append(LIBPATH = [])						# TODO: add library paths here
+myenv.Append(LINKFLAGS = ["-std=c++11"])
+
+
+# env.Append(CPPDEFINES=['NOLOG4CXX'])    		# if log4cxx is not available
+
+### compiler & flags
+myenv["CC"] = "gcc-4.7"
+myenv["CXX"] = "g++-4.7"
+
+
+
+
+## select environment
+# custom command line options
+AddOption("--machine",
+          dest="machine",
+          type="string",
+          nargs=1,
+          action="store",
+          help="specify the machine (environment) on which to build")
+
+
+environments = {"myenv" : myenv}				# TODO: add available environments/machines here
+
+try:
+    env = environments[GetOption("machine")]
+except:
+    print("ERROR: In order to build call scons with --machine=<MACHINE> where <MACHINE> is one of: %s" % environments.keys())
+    exit()
+
+
+## CONFIGURATIONS
+
+# available build configurations: debug, optimized, profile 
+# select with --buildconf=<CONF>
+
+commonCFlags = ["-c", "-fmessage-length=0", "-std=c99"]
+commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0"]
+
+debugCppFlags = ["-O0", "-g3"]
+debugCFlags = ["-O0", "-g3"]
+
+optimizedCppFlags = ["-O3", "-DNDEBUG"]
+optimizedCFlags = ["-O3"]
+
+profileCppFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
+profileCFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
+
+
+# select configuration
+# custom command line options
+AddOption("--buildconf",
+          dest="buildconf",
+          type="string",
+          nargs=1,
+          action="store",
+          help="specify the buildconfuration to build (Debug, Release)")
+
+
+try:
+    buildconf = GetOption("buildconf")
+except:
+    print("ERROR: Missing option --buildconf=<CONF>")
+    exit()
+
+# append flags
+
+#commmon flags
+env.Append(CFLAGS = commonCFlags)
+env.Append(CPPFLAGS = commonCppFlags)
+
+# openmp yes or no
+AddOption("--openmp",
+          dest="openmp",
+          type="string",
+          nargs=1,
+          action="store",
+          help="-fopenmp: yes or no")
+
+openmp = GetOption("openmp")
+
+if (openmp == "yes") or (openmp == None): # with OpenMP by default
+    env.Append(CPPFLAGS = ["-fopenmp"])
+    env.Append(LINKFLAGS = ["-fopenmp"])
+elif (openmp == "no"):
+    env.Append(LIBS = ["pthread"])
+else:
+    print("ERROR: unrecognized option --openmp=%s" % openmp)
+    exit()
+
+# buildconf flags
+if buildconf == "debug":
+    env.Append(CFLAGS = debugCFlags)
+    env.Append(CPPFLAGS = debugCppFlags)
+elif buildconf == "optimized":
+    env.Append(CFLAGS = optimizedCFlags)
+    env.Append(CPPFLAGS = optimizedCppFlags)
+elif buildconf == "profile":
+	 env.Append(CFLAGS = profileCFlags)
+	 env.Append(CPPFLAGS = profileCppFlags)
+else:
+    print("ERROR: invalid buildconf: %s" % buildconf)
+    exit()
+
+# TARGET
+env.Program("NetworKit-CommunityDetection-%s" % buildconf, source)

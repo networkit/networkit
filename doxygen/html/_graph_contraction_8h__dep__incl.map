@@ -1,0 +1,22 @@
+<map id="src/coarsening/GraphContraction.h" name="src/coarsening/GraphContraction.h">
+<area shape="rect" id="node3" href="$_cluster_contracter_8h.html" title="src/coarsening/ClusterContracter.h" alt="" coords="412,91,637,119"/>
+<area shape="rect" id="node7" href="$_coarsening_g_test_8h.html" title="src/coarsening/test\l/CoarseningGTest.h" alt="" coords="269,177,408,221"/>
+<area shape="rect" id="node11" href="$_ensemble_multilevel_8h.html" title="src/community/EnsembleMultilevel.h" alt="" coords="1110,185,1345,213"/>
+<area shape="rect" id="node37" href="$_clustering_projector_8h.html" title="src/coarsening/Clustering\lProjector.h" alt="" coords="671,83,843,127"/>
+<area shape="rect" id="node50" href="$_graph_contraction_8cpp.html" title="src/coarsening/GraphContraction.cpp" alt="" coords="918,91,1159,119"/>
+<area shape="rect" id="node5" href="$_cluster_contracter_8cpp.html" title="src/coarsening/ClusterContracter.cpp" alt="" coords="5,185,245,213"/>
+<area shape="rect" id="node21" href="$_ensemble_preprocessing_8h.html" title="src/community/EnsemblePreprocessing.h" alt="" coords="624,185,889,213"/>
+<area shape="rect" id="node27" href="$_louvain_8h.html" title="src/community/Louvain.h" alt="" coords="432,185,600,213"/>
+<area shape="rect" id="node9" href="$_coarsening_g_test_8cpp.html" title="src/coarsening/test\l/CoarseningGTest.cpp" alt="" coords="51,270,204,314"/>
+<area shape="rect" id="node13" href="$_ensemble_multilevel_8cpp.html" title="src/community/EnsembleMultilevel.cpp" alt="" coords="1294,278,1545,306"/>
+<area shape="rect" id="node15" href="$_ensemble_g_test_8h.html" title="src/community/test\l/EnsembleGTest.h" alt="" coords="922,270,1053,314"/>
+<area shape="rect" id="node19" href="$_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="1079,278,1269,306"/>
+<area shape="rect" id="node17" href="$_ensemble_g_test_8cpp.html" title="src/community/test\l/EnsembleGTest.cpp" alt="" coords="916,363,1060,407"/>
+<area shape="rect" id="node23" href="$_ensemble_preprocessing_8cpp.html" title="src/community/EnsemblePreprocessing.cpp" alt="" coords="617,278,897,306"/>
+<area shape="rect" id="node29" href="$_louvain_8cpp.html" title="src/community/Louvain.cpp" alt="" coords="229,278,411,306"/>
+<area shape="rect" id="node31" href="$_clustering_algo_g_test_8h.html" title="src/community/test\l/ClusteringAlgoGTest.h" alt="" coords="436,270,593,314"/>
+<area shape="rect" id="node33" href="$_clustering_algo_g_test_8cpp.html" title="src/community/test\l/ClusteringAlgoGTest.cpp" alt="" coords="429,363,600,407"/>
+<area shape="rect" id="node39" href="$_clustering_projector_8cpp.html" title="src/coarsening/Clustering\lProjector.cpp" alt="" coords="914,177,1085,221"/>
+<area shape="rect" id="node45" href="$_parallel_agglomerative_clusterer_8h.html" title="src/community/ParallelAgglomerative\lClusterer.h" alt="" coords="1370,177,1611,221"/>
+<area shape="rect" id="node47" href="$_parallel_agglomerative_clusterer_8cpp.html" title="src/community/ParallelAgglomerative\lClusterer.cpp" alt="" coords="1569,270,1809,314"/>
+</map>

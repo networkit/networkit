@@ -1,0 +1,28 @@
+<map id="NetworKit::ParallelAgglomerativeClusterer::run" name="NetworKit::ParallelAgglomerativeClusterer::run">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#a465160318e06e6e9b03299dd5774cb04" title="ATTRIBUTES." alt="" coords="292,65,476,109"/>
+<area shape="rect" id="node10" href="$class_networ_kit_1_1_modularity_scoring.html#a9c93ca2ca6126a4de8a2c3c196828116" title="NetworKit::ModularityScoring\l::scoreEdges" alt="" coords="287,387,481,431"/>
+<area shape="rect" id="node12" href="$class_networ_kit_1_1_parallel_matcher.html#a9d02fd78f3c61b62fbd7110bd25c91fd" title="NetworKit::ParallelMatcher::run" alt="" coords="281,455,487,483"/>
+<area shape="rect" id="node14" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="569,881,745,925"/>
+<area shape="rect" id="node36" href="$class_networ_kit_1_1_matching_contracter.html#ae63ba5e9dea01c5d6388a15c9f3cf27c" title="Contracts graph according to a matching." alt="" coords="269,667,499,695"/>
+<area shape="rect" id="node54" href="$class_networ_kit_1_1_clustering.html#a777f65aa262cbed40eb1c85721250026" title="Assigns every node to a singleton cluster." alt="" coords="311,771,457,815"/>
+<area shape="rect" id="node56" href="$class_networ_kit_1_1_clustering_projector.html#a9a53bf1165f4c1d98b0ffa97cead81b5" title="Project a clustering ^{i} of the coarse graph G^{i}Êback to the finest graph G^{0}, using the hierarchy of fine&#45;&gt;coarse maps." alt="" coords="284,982,484,1026"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a6625b34904eae267ca384c77a081f333" title="Return the number of edges in the graph." alt="" coords="569,5,745,49"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="821,219,1006,247"/>
+<area shape="rect" id="node17" href="$_functions_8h.html#a603edf7b14c4b441d4f1e6bb461dd98f" title="Given." alt="" coords="624,313,690,341"/>
+<area shape="rect" id="node19" href="$class_networ_kit_1_1_matching.html#abf1ff6be646ccfb468f568ea4951cee5" title="Check if node is matched." alt="" coords="843,745,984,789"/>
+<area shape="rect" id="node21" href="$class_networ_kit_1_1_graph.html#afc892cbb7e1df4a83c718decae4ad377" title="Iterate over all incident edges of a node and call handler (lamdba closure)." alt="" coords="558,125,757,153"/>
+<area shape="rect" id="node23" href="$class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8" title="EDGE ATTRIBUTE GETTERS." alt="" coords="573,589,742,617"/>
+<area shape="rect" id="node27" href="$class_networ_kit_1_1_graph.html#a91cffc25cb2af288ce098fb9c2fcb192" title="NetworKit::Graph::attribute\l_double" alt="" coords="568,417,747,461"/>
+<area shape="rect" id="node30" href="$class_networ_kit_1_1_matching.html#a09ae97510791ef8a5165c76944f8f02e" title="Set two nodes as eachothers matching partners." alt="" coords="587,177,728,221"/>
+<area shape="rect" id="node32" href="$class_networ_kit_1_1_graph.html#a7b0d575c9fa66d075bd6d81c1593f081" title="NEIGHBORHOOD ITERATORS." alt="" coords="547,537,768,565"/>
+<area shape="rect" id="node34" href="$class_networ_kit_1_1_matching.html#ad2920bb96b22c8f860ba7d465217eb59" title="Check if the two nodes are matched." alt="" coords="587,245,728,289"/>
+<area shape="rect" id="node25" href="$class_networ_kit_1_1_graph.html#a4c6dde807d9cd6dd53f3a4794d411528" title="Return the index of v in the adjacency array of u." alt="" coords="837,589,990,617"/>
+<area shape="rect" id="node39" href="$class_networ_kit_1_1_matching.html#abd61defac0cb2868d7c80739b0f6e902" title="NetworKit::Matching\l::matchingSize" alt="" coords="587,813,728,857"/>
+<area shape="rect" id="node43" href="$class_networ_kit_1_1_matching.html#a76cf82e05446a8f29b1c46d1dcdef2f3" title="NetworKit::Matching\l::mate" alt="" coords="587,745,728,789"/>
+<area shape="rect" id="node48" href="$class_networ_kit_1_1_graph.html#ad56d4fada3895f8446e58d7cd33ca274" title="EDGE ATTRIBUTE SETTERS." alt="" coords="562,693,752,721"/>
+<area shape="rect" id="node51" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="816,693,1011,721"/>
+<area shape="rect" id="node58" href="$class_networ_kit_1_1_index_map.html#ab2bf024de2a5d5cb47e7ae2e7e3e833b" title="Number of nodes for which this clsutering can hold an entry." alt="" coords="585,949,730,993"/>
+<area shape="rect" id="node61" href="$class_networ_kit_1_1_clustering.html#a8810a044c480adc30d5e05263dabf67c" title="Set an upper bound for the cluster ids." alt="" coords="584,1017,731,1061"/>
+<area shape="rect" id="node63" href="$class_networ_kit_1_1_clustering.html#a1bf0c38a510c8ef384d2ce25f18e1ab6" title="Return an upper bound for the cluster ids that have been assigned." alt="" coords="584,1085,731,1129"/>
+<area shape="rect" id="node65" href="$class_networ_kit_1_1_graph.html#a8633f553d0f134474f248e94faf3064d" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="570,1153,744,1197"/>
+</map>
