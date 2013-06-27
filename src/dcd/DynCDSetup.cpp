@@ -13,7 +13,8 @@ DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityD
 		gen(&dynGen),
 		detectors(dynDetectors),
 		tMax(tMax),
-		deltaT(deltaT) {
+		deltaT(deltaT),
+		staticAlgo(NULL) {
 	if (deltaT >= tMax) {
 		throw std::runtime_error("deltaT must be smaller than tMax");
 	}
@@ -53,10 +54,16 @@ void DynCDSetup::run() {
 		INFO("time: " << G->time() << " of " << tMax);
 		try {
 			gen->generateTimeSteps(G->time() + deltaT);
+			// run the dynamic community detectors
 			for (count i = 0; i < this->detectors.size(); ++i) {
 				DynamicCommunityDetector* dynCD = this->detectors[i];
 				INFO("running dynamic community detector " << dynCD->toString());
 				results[i].push_back(dynCD->run());
+
+			}
+			// optionally also run a static community detector
+			if (staticAlgo != NULL) {
+				staticClusterings.push_back(staticAlgo->run(*G));
 			}
 		} catch (std::logic_error& e) {
 			INFO("source cannot produce any more events");
@@ -84,6 +91,10 @@ void DynCDSetup::run() {
 
 Graph* DynCDSetup::getGraph() {
 	return this->G;
+}
+
+void DynCDSetup::setStatic(Clusterer* staticAlgo) {
+	this->staticAlgo = staticAlgo;
 }
 
 Graph DynCDSetup::getGraphCopy() {

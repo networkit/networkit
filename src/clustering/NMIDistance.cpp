@@ -140,67 +140,21 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 	assert (! std::isnan(MI));
 	assert (MI >= 0.0);
 
-
-
 	// compute entropy for both clusterings
-	// $H(\zeta):=-\sum_{C\in\zeta}P(C)\cdot\log_{2}(P(C))$
-	double H_zeta = 0.0;
-	for (cluster C = zeta.lowerBound(); C< zeta.upperBound(); ++C) {
-		if (P_zeta[C] != 0) {
-			H_zeta += P_zeta[C] * log_b(P_zeta[C], 2);
-		} // log(0) is not defined
-	}
-	H_zeta = -1.0 * H_zeta;
-
-	double H_eta = 0.0;
-	for (cluster C = zeta.lowerBound(); C< zeta.upperBound(); ++C) {
-		if (P_zeta[C] != 0) {
-			H_eta += P_eta[C] * log_b(P_eta[C], 2);
-		} // log(0) is not defined
-	}
-	H_eta = -1.0 * H_eta;
+	DynamicNMIDistance dynNMID;
+	double H_zeta = dynNMID.entropy(zeta, n, P_zeta);
+	double H_eta = dynNMID.entropy(eta, n, P_eta);
 
 	assert (! std::isnan(H_zeta));
 	assert (! std::isnan(H_eta));
 
-	// entropy values range from 0 for the 1-clustering to log_2(n) for the singleton clustering
-	assert (H_zeta >= 0.0);
-	assert (H_eta >= 0.0);
-	assert (H_zeta <= log_b(n, 2));
-	assert (H_zeta <= log_b(n, 2));
-
-	// calculate NMID
-	// $NMI(\zeta,\eta):=\frac{2\cdot MI(\zeta,\eta)}{H(\zeta)+H\text{(\eta)}}$
-	// $NMID(\zeta,\eta):=\begin{cases}
-	//	1-NMI(\zeta,\eta)\\
-	//	0 & H(\zeta)+H(\eta)=0
-	//	\end{cases}$$
-	double NMID;
-	double NMI;
-	if ((H_zeta + H_eta) == 0) {
-		NMID = 0.0;
-	} else {
-		NMI = (2 * MI) / (H_zeta + H_eta);
-		NMID = 1.0 - NMI;
-	}
-	// sanity check
-
-
-	assert (Aux::NumericTools::ge(NMI, 0.0));
-	assert (Aux::NumericTools::le(NMI, 1.0));
-
-	// if NMID is below 0 because of numerical error
-	if (NMID < 0.0) {
-		if (Aux::NumericTools::equal(NMID, 0.0)) {
-			NMID = 0.0;
-		}
-	}
-
-	assert (Aux::NumericTools::ge(NMID, 0.0));
-	assert (Aux::NumericTools::le(NMID, 1.0));
+	double H_sum = H_zeta + H_eta;
+	double NMI = 0.0;
+	double NMID = 0.0;
+	dynNMID.combineValues(H_sum, MI, NMI, NMID);
+	dynNMID.sanityCheck(NMI, NMID);
 
 	return NMID;
-
 }
 
 } /* namespace NetworKit */

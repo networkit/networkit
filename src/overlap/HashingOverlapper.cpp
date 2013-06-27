@@ -53,8 +53,8 @@ Clustering HashingOverlapper::run(Graph& G,
 	core.setAll(0);
 	for (index c = 0; c < clusterings.size(); ++c) {
 		Clustering& zeta = clusterings[c];
-		G.parallelForNodes([&](node v){
-			core[v] += (hash((c+2) * zeta[v]) & 0xffff);
+		zeta.parallelForEntries([&](node v, cluster clv) {
+			core[v] += (hash((c+2) * clv) & 0xffff);
 		});
 	}
 	core.compact();

@@ -288,12 +288,26 @@ TEST_F(IOGTest, tryReadingSNAP) {
 	std::cout << "[INPUT] SNAP graph file path >" << std::endl;
 	std::getline(std::cin, graphPath);
 
-	EdgeListReader graphReader;
+	EdgeListReader graphReader(1);
 
 	Graph G = graphReader.read(graphPath);
 
 	INFO("n = " << G.numberOfNodes());
 	INFO("m = " << G.numberOfEdges());
+
+}
+
+TEST_F(IOGTest, trySNAPEdgeListClusteringReader) {
+	std::string graphPath;
+
+	std::cout << "[INPUT] SNAP clustering graph file path >" << std::endl;
+	std::getline(std::cin, graphPath);
+
+
+	SNAPEdgeListClusteringReader reader;
+
+	std::vector<std::set<node>> clusterings = reader.read(graphPath);
+	INFO("Number of clusters: " << clusterings.size());
 
 }
 

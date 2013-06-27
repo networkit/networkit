@@ -24,6 +24,7 @@ public:
 
 	virtual ~DissimilarityMeasure();
 
+
 	virtual double getDissimilarity(Graph& G, Clustering& first, Clustering& second) = 0;
 };
 
