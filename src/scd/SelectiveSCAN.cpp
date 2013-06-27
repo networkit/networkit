@@ -26,7 +26,6 @@ std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unord
 	G.forNodes ([&](node u){
 		nodesState.insert(std::pair<node,int>(u, -1));
 	});
-
 	for (node u : set) {
 		std::pair<bool,std::unordered_set<node>> isCore = this->isCore(u);
 		if ((nodesState.find(u))->second == -1  && isCore.first){
@@ -93,6 +92,7 @@ std::pair<bool,std::unordered_set<node>> SelectiveSCAN::isCore(node u) {
 	if (count >= this->mu) {
 		core = true;
 	}
+
 	return std::pair<bool,std::unordered_set<node>>(core, similarNeighbors);
 }
 
