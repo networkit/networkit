@@ -25,7 +25,7 @@
 
 namespace NetworKit {
 
-class PartitioningAlgoGTest: public testing::Test {
+class ClusteringAlgoGTest: public testing::Test {
 };
 
 } /* namespace NetworKit */

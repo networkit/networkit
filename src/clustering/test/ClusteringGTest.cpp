@@ -339,6 +339,23 @@ TEST_F(ClusteringGTest, testDynamicNMIDistance) {
 
 }
 
+
+TEST_F(ClusteringGTest, testNumberOfClusters) {
+	GraphGenerator graphGenerator;
+	count n = 42;
+	count k = 4; // number of clusters
+	Graph G = graphGenerator.makeCompleteGraph(n);
+
+	ClusteringGenerator clusteringGenerator;
+	Clustering singleton = clusteringGenerator.makeSingletonClustering(G);
+	Clustering one = clusteringGenerator.makeOneClustering(G);
+	Clustering random = clusteringGenerator.makeRandomClustering(G, k);
+
+	EXPECT_EQ(n, singleton.numberOfClusters());
+	EXPECT_EQ(1, one.numberOfClusters());
+	EXPECT_EQ(k, random.numberOfClusters());
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */

@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-TEST_F(PartitioningAlgoGTest, testLabelPropagationOnUniformGraph) {
+TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
 	GraphGenerator graphGenerator;
 	int n = 100;
 	Graph G = graphGenerator.makeErdosRenyiGraph(n, 0.2);
@@ -29,7 +29,7 @@ TEST_F(PartitioningAlgoGTest, testLabelPropagationOnUniformGraph) {
 }
 
 
-TEST_F(PartitioningAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters) {
+TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters) {
 	GraphGenerator graphGenerator;
 	int64_t n = 100;
 	count k = 3; // number of clusters
@@ -48,7 +48,7 @@ TEST_F(PartitioningAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfCl
 }
 
 
-TEST_F(PartitioningAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
+TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	int64_t n = 100;
 
 	GraphGenerator graphGen;
@@ -76,7 +76,7 @@ TEST_F(PartitioningAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) 
 
 
 
-TEST_F(PartitioningAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
+TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 	GraphGenerator graphGenerator;
 	int n = 100;
 	int k = 2; // number of clusters
@@ -95,7 +95,7 @@ TEST_F(PartitioningAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 }
 
 
-TEST_F(PartitioningAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
+TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	Graph G(1);
 	node v = 0;
 	G.setWeight(v, v, 42.0);
@@ -115,7 +115,7 @@ TEST_F(PartitioningAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 
 
 
-TEST_F(PartitioningAlgoGTest, testLabelPropagationOnManySmallClusters) {
+TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 	int64_t n = 1000;
 	int k = 100; // number of clusters
 	double pin = 1.0;
@@ -138,7 +138,7 @@ TEST_F(PartitioningAlgoGTest, testLabelPropagationOnManySmallClusters) {
 
 }
 
-TEST_F(PartitioningAlgoGTest, testLouvain) {
+TEST_F(ClusteringAlgoGTest, testLouvain) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -157,7 +157,7 @@ TEST_F(PartitioningAlgoGTest, testLouvain) {
 }
 
 
-TEST_F(PartitioningAlgoGTest, testLouvainParallelSimple) {
+TEST_F(ClusteringAlgoGTest, testLouvainParallelSimple) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -196,7 +196,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallel2Naive) {
 */
 
 
-TEST_F(PartitioningAlgoGTest, testLouvainParallelBalanced) {
+TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -216,7 +216,7 @@ TEST_F(PartitioningAlgoGTest, testLouvainParallelBalanced) {
 
 
 
-TEST_F(PartitioningAlgoGTest, testLouvainIndependent) {
+TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -235,7 +235,7 @@ TEST_F(PartitioningAlgoGTest, testLouvainIndependent) {
 }
 
 
-TEST_F(PartitioningAlgoGTest, testCNM) {
+TEST_F(ClusteringAlgoGTest, testCNM) {
 	count n = 200;
 	count k = 25;
 	double pin = 0.9;
@@ -253,7 +253,7 @@ TEST_F(PartitioningAlgoGTest, testCNM) {
 }
 
 
-TEST_F(PartitioningAlgoGTest, testCNMandLouvain) {
+TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 	Modularity modularity;
 	CNM cnm;
 	Louvain louvain;
@@ -289,7 +289,7 @@ TEST_F(PartitioningAlgoGTest, testCNMandLouvain) {
 }
 
 
-TEST_F(PartitioningAlgoGTest, testAgglomerativeAndLouvain) {
+TEST_F(ClusteringAlgoGTest, testAgglomerativeAndLouvain) {
 	Modularity modularity;
 	ParallelAgglomerativeClusterer aggl;
 	Louvain louvain;
