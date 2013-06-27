@@ -37,6 +37,8 @@ DynCDSetup::~DynCDSetup() {
 }
 
 void DynCDSetup::run() {
+	Aux::Timer runtime;
+	runtime.start();
 
 	// initialize graph
 	gen->initializeGraph();
@@ -76,7 +78,11 @@ void DynCDSetup::run() {
 			break;
 		}
 
-	}
+	} // end while
+
+	runtime.stop();
+	INFO("setup runtime: " << runtime.elapsedTag());
+
 	for (std::vector<Clustering> dynZeta : results) {
 		for (Clustering zeta : dynZeta) {
 			DEBUG("number of clusters: " << zeta.numberOfClusters());
