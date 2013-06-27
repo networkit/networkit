@@ -20,29 +20,29 @@ TNeighborhoodDistance::~TNeighborhoodDistance() {
 
 void TNeighborhoodDistance::initialize(const Parameters& param) {
 	// no initialization needed
+
 }
 
 double TNeighborhoodDistance::distance(node u, node v) {
 	count inter = 0;
-	count uni = 0;
-	G.forNeighborsOf(u, [&](node x){
-		if (x != v && x!= u ) {
-			if (G.hasEdge(x, v)) {
-				inter++;
-				uni++;
-			} else {
-				uni++;
+		int neighborhood1 = G.degree(u);
+		int neighborhood2 = G.degree(v);
+
+		G.forNeighborsOf(u, [&](node x){
+			if (x != v && x!= u ) {
+				if (G.hasEdge(x, v)) {
+					inter++;
+				}
 			}
+		});
+		if (!G.hasEdge(u, u)) {
+			neighborhood1++;
 		}
-	});
-	G.forNeighborsOf(v, [&](node x){
-		if (x != u && x != v) {
-			if (!G.hasEdge(x, u)) {
-				uni++;
-			}
+		if (!G.hasEdge(v, v)) {
+			neighborhood2++;
 		}
-	});
-	return 1 - ((double) (inter + 2) / (double) (uni +2));
+
+		return (1 - ((double) (inter + 2)) / (sqrt(neighborhood2 * neighborhood1)));
 }
 
 } /* namespace NetworKit */

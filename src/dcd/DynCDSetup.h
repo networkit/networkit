@@ -11,6 +11,7 @@
 #include "DynamicCommunityDetector.h"
 #include "../generators/DynamicGraphSource.h"
 #include "../auxiliary/Debug.h"
+#include "../community/Clusterer.h"
 
 namespace NetworKit {
 
@@ -29,6 +30,10 @@ public:
 	DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityDetector*>& dynDetectors, count tMax, count deltaT=1);
 
 	virtual ~DynCDSetup();
+
+
+	virtual void setStatic(Clusterer* staticAlgo);
+
 
 	/**
 	 * Run the setup.
@@ -59,7 +64,10 @@ public:
 	count deltaT;	//!< number of time steps between two algorithm runs
 	count tMax;		//!< maximum number of time steps
 
+	Clusterer* staticAlgo; //!< a static clustering algorithm
+
 	std::vector<std::vector<Clustering> > results; //!< the resulting communities per algorithm per run
+	std::vector<Clustering> staticClusterings; //!< if there is a static algorithm, store its results here
 
 };
 

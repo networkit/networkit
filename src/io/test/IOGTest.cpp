@@ -104,6 +104,7 @@ TEST_F(IOGTest, testMETISGraphWriter) {
 
 }
 
+
 TEST_F(IOGTest, testMETISGraphWriterWithWeights) {
 	std::string path = "input/jazz2.graph";
 	Graph G = Graph(5);
@@ -241,7 +242,7 @@ TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
 }
 
 
-TEST_F(IOGTest, tryMETISGraphReaderWithIsolatedNodes) {
+TEST_F(IOGTest, testMETISGraphReaderWithIsolatedNodes) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/example.graph");
 	EXPECT_EQ(4, G.numberOfNodes());
@@ -287,12 +288,26 @@ TEST_F(IOGTest, tryReadingSNAP) {
 	std::cout << "[INPUT] SNAP graph file path >" << std::endl;
 	std::getline(std::cin, graphPath);
 
-	EdgeListReader graphReader;
+	EdgeListReader graphReader(1);
 
 	Graph G = graphReader.read(graphPath);
 
 	INFO("n = " << G.numberOfNodes());
 	INFO("m = " << G.numberOfEdges());
+
+}
+
+TEST_F(IOGTest, trySNAPEdgeListClusteringReader) {
+	std::string graphPath;
+
+	std::cout << "[INPUT] SNAP clustering graph file path >" << std::endl;
+	std::getline(std::cin, graphPath);
+
+
+	SNAPEdgeListClusteringReader reader;
+
+	std::vector<std::set<node>> clusterings = reader.read(graphPath);
+	INFO("Number of clusters: " << clusterings.size());
 
 }
 

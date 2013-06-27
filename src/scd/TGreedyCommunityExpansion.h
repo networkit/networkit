@@ -40,6 +40,7 @@ protected:
 
 template<class QualityObjective, class Acceptability, class Trimming>
 inline TGreedyCommunityExpansion<QualityObjective, Acceptability, Trimming>::TGreedyCommunityExpansion(const Graph& G) : SelectiveCommunityDetector(G) {
+
 }
 
 template<class QualityObjective, class Acceptability, class Trimming>
@@ -48,6 +49,7 @@ inline TGreedyCommunityExpansion<QualityObjective, Acceptability, Trimming>::~TG
 
 template<class QualityObjective, class Acceptability, class Trimming>
 inline std::unordered_map<node, std::unordered_set<node> > TGreedyCommunityExpansion<QualityObjective, Acceptability, Trimming>::run(std::unordered_set<node> set) {
+
 	std::unordered_map<node, std::unordered_set<node>> communities;
 
 	for (node u : set) {
@@ -56,6 +58,7 @@ inline std::unordered_map<node, std::unordered_set<node> > TGreedyCommunityExpan
 	}
 
 	return communities;
+
 }
 
 template<class QualityObjective, class Acceptability, class Trimming>
@@ -65,16 +68,12 @@ inline std::unordered_set<node> TGreedyCommunityExpansion<QualityObjective, Acce
 									// community with edges to nodes inside
 
 	std::unordered_map<node, double> acceptanceValues;
-
-	// TODO: make these selectable later
 	Acceptability acceptability(G, community, shell);
 	QualityObjective objective(G, community);
 
 	double currentObjectiveValue = objective.getValue(s);
-
 	community.insert(s);
 	bool expanded = true;	// community has been expanded in the last iteration
-
 	// all neighbors of s form the shell
 	G.forNeighborsOf(s, [&](node v) {
 		shell.insert(v);
@@ -90,6 +89,8 @@ inline std::unordered_set<node> TGreedyCommunityExpansion<QualityObjective, Acce
 	double acceptanceMax = acceptability.getValue(vMax);// maximum acceptance value
 
 	while (expanded) {
+
+
 		if (shell.empty()) {
 			break;
 		}
@@ -129,6 +130,7 @@ inline std::unordered_set<node> TGreedyCommunityExpansion<QualityObjective, Acce
 			}
 
 			// include only nodes which lead to a strictly positive improvement
+
 			if (objective.getValue(vMax) > currentObjectiveValue) {
 
 				expanded = true;
