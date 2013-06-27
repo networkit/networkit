@@ -115,7 +115,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, SOURCE, DETECTORS, TMAX, DELTAT, RUNS, SAVE_GRAPH, PROGRESS, SUMMARY, SCALETHREADS, UPDATE_THRESHOLD, SAVE_CLUSTERINGS};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, SOURCE, DETECTORS, TMAX, DELTAT, STATIC, RUNS, SAVE_GRAPH, PROGRESS, SUMMARY, SCALETHREADS, UPDATE_THRESHOLD, SAVE_CLUSTERINGS};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -128,6 +128,7 @@ const OptionParser::Descriptor usage[] =
  {DETECTORS, 0, "", "detectors", OptionParser::Arg::Required, "  --detectors=<NAME>:<PARAMS> \t select dynamic community detection algorithms"},
  {TMAX, 0, "", "tMax", OptionParser::Arg::Required, "  --tMax=<INT> \t maximum number of generator time steps"},
  {DELTAT, 0, "", "deltaT", OptionParser::Arg::Required, "  --deltaT=<INT> \t run the detectors each deltaT time steps"},
+ {STATIC, 0, "", "static", OptionParser::Arg::Required, "  --static=<NAME> \t set number of clusterer runs"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
  {SAVE_GRAPH, 0, "", "saveGraph", OptionParser::Arg::Required, "  --saveGraph=<PATH> \t write the graph to a file"},
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
@@ -320,6 +321,9 @@ int main(int argc, char **argv) {
 
 			} else if (detectorName == "DynamicEnsemble") {
 				// TODO: Implement
+			} else {
+				throw std::runtime_error("unknown detector: ");
+				exit(1);
 			}
 		}
 
@@ -336,6 +340,7 @@ int main(int argc, char **argv) {
 		deltaT = std::stoi(options[DELTAT].arg);
 	}
 
+	INFO("creating setup with tMax=" << tMax << " and deltaT=" << deltaT);
 	DynCDSetup* dynCDSetup = new DynCDSetup(*source, detectors, tMax, deltaT);
 
 	for (int run = 0; run < runs; run++) {
@@ -343,7 +348,6 @@ int main(int argc, char **argv) {
 	}
 
 	// TODO: inspection of results
-
 
 	std::cout << "[EXIT] terminated normally" << std::endl;
 	return 0;

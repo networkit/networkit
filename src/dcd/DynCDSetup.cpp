@@ -40,6 +40,9 @@ void DynCDSetup::run() {
 	Aux::Timer runtime;
 	runtime.start();
 
+	// helpers
+	Modularity modularity;
+
 	// initialize graph
 	gen->initializeGraph();
 
@@ -66,9 +69,10 @@ void DynCDSetup::run() {
 				results[i].push_back(dynCD->run());
 
 				// evaluations which need the current graph
-				Modularity modularity;
-				double mod = modularity.getQuality(results[i].back(), *G);
-				INFO("found communities have modularity: " << mod);
+				if (checkMod) {
+					double mod = modularity.getQuality(results[i].back(), *G);
+					INFO("found communities have modularity: " << mod);
+				}
 			}
 			// optionally also run a static community detector
 			if (staticAlgo != NULL) {
@@ -90,9 +94,12 @@ void DynCDSetup::run() {
 	runtime.stop();
 	INFO("setup runtime: " << runtime.elapsedTag());
 
-	for (std::vector<Clustering> dynZeta : results) {
-		for (Clustering zeta : dynZeta) {
-			DEBUG("number of clusters: " << zeta.numberOfClusters());
+	if (checkNumCom) {
+		for (std::vector<Clustering> dynZeta : results) {
+			for (Clustering zeta : dynZeta) {
+				INFO("calculating number of clusters");
+				DEBUG("number of clusters: " << zeta.numberOfClusters());
+			}
 		}
 	}
 
@@ -112,6 +119,14 @@ void DynCDSetup::setStatic(Clusterer* staticAlgo) {
 
 Graph DynCDSetup::getGraphCopy() {
 	return *(this->G);
+}
+
+void DynCDSetup::checkModularity() {
+	this->checkMod = true;
+}
+
+void DynCDSetup::checkNumberOfCommunities() {
+	this->checkNumCom = true;
 }
 
 } /* namespace NetworKit */

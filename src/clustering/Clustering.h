@@ -213,6 +213,17 @@ public:
 	 */
 	template<typename Callback> void parallelForEntries(Callback handle);
 
+	/**
+	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void forEntries(Callback func) const;
+
+
+	/**
+	 * Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void parallelForEntries(Callback handle) const;
+
 
 	std::vector<count> clusterSizes();
 
@@ -250,5 +261,26 @@ inline void NetworKit::Clustering::parallelForEntries(
 		handle(v, c);
 	}
 }
+
+
+template<typename Callback>
+inline void NetworKit::Clustering::forEntries(Callback func) const {
+	for (node v = 0; v < this->n; v += 1) {
+		cluster c = (*this)[v];
+		func(v, c);
+	}
+
+}
+
+template<typename Callback>
+inline void NetworKit::Clustering::parallelForEntries(
+		Callback handle) const {
+	#pragma omp parallel for
+	for (node v = 0; v < this->n; v += 1) {
+		cluster c = (*this)[v];
+		handle(v, c);
+	}
+}
+
 
 #endif /* CLUSTERING_H_ */
