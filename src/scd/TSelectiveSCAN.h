@@ -15,7 +15,7 @@ namespace NetworKit {
 template <class Distance> class TSelectiveSCAN: public SelectiveCommunityDetector {
 public:
 
-	TSelectiveSCAN(Graph& G, Parameters& param, double epsilon=0.5, double mu=2);
+	TSelectiveSCAN(Graph& G, Parameters& param, double epsilon=0.25, double mu=3);
 
 	virtual ~TSelectiveSCAN();
 
@@ -47,8 +47,6 @@ inline TSelectiveSCAN<Distance>::TSelectiveSCAN(Graph& G, Parameters& param, dou
 template<class Distance>
 inline TSelectiveSCAN<Distance>::~TSelectiveSCAN() {
 }
-
-
 
 template<class Distance>
 inline std::unordered_map<node, std::unordered_set<node> > TSelectiveSCAN<Distance>::run(std::unordered_set<node> seeds) {
@@ -123,7 +121,6 @@ inline void TSelectiveSCAN<Distance>::expandCore(node core,
 			}
 		}
 		candidates->erase(candidates->find(v));
-		// commit test
 	}
 }
 

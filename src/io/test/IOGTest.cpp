@@ -103,6 +103,25 @@ TEST_F(IOGTest, testMETISGraphWriter) {
 	EXPECT_TRUE(exists) << "A file should have been created : " << path;
 
 }
+TEST_F(IOGTest, testMETISGraphReaderAndWriter) {
+	std::string path = "input/dolphins.graph";
+
+	METISGraphReader reader;
+	Graph G = reader.read(path);
+	std::unordered_set<node> cluster = {0,6,18,26,40,53,21,24,25,30,12,31,55,59,4,5,8,56,48,16};
+	for(int i = 0; i < 62; i++){
+
+		G.forNeighborsOf(i, [&](node v){
+			if (cluster.find(i) != cluster.end() || cluster.find(v) != cluster.end()) {
+				G.removeEdge(i,v);
+			}
+		});
+	}
+
+	std::string path1 = "output/dolphins.graph";
+	METISGraphWriter writer;
+	writer.write(G, false, path1);
+}
 
 TEST_F(IOGTest, testMETISGraphWriterWithWeights) {
 	std::string path = "input/jazz2.graph";
