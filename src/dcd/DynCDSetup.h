@@ -12,6 +12,7 @@
 #include "../generators/DynamicGraphSource.h"
 #include "../auxiliary/Debug.h"
 #include "../community/Clusterer.h"
+#include "../clustering/Modularity.h"
 
 namespace NetworKit {
 
