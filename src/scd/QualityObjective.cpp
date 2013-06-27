@@ -10,69 +10,86 @@
 
 namespace NetworKit {
 
-QualityObjective::QualityObjective(const Graph& G, std::unordered_set<node>& community) {
+QualityObjective::QualityObjective(const Graph& G, std::unordered_set<node>& community):nInternEdges(0), nNodes(0), nBoundaryEdges(0), volume(0), nBoundaryNodes(0) {
 	this->G = &G;
 	this->community = &community;
+	this->degSum = this->G->parallelSumForNodes([&](node u){
+		return this->G->degree(u);
+	});
 }
 
 QualityObjective::~QualityObjective() {
 }
 
 LocalModularityM::LocalModularityM(const Graph& G, std::unordered_set<node>& community)
-	: QualityObjective(G, community){
+	: QualityObjective(G, community) {
 }
 
 LocalModularityM::~LocalModularityM() {
 }
 
-double LocalModularityM::getValue(node v) {
+std::vector<double> LocalModularityM::getValue(node v) {
 
-	double inside = 0;
-	double outside = 0;
+	std::vector<double> result;
+	int inside = 0;
+	int outside = 0;
 	bool modified = false;
 	if (community->find(v) == community->end()) {
 		modified = true;
 	}
+	if (!modified) {
+		result.push_back(((double)(this->volume - this->nBoundaryEdges)) / this->nBoundaryEdges);
+		result.push_back(0);
+		result.push_back(0);
+		result.push_back(0);
+		return result;
+	}
 	community->insert(v);
-	for (node u : (*community)) {
-		this->G->forNeighborsOf(u, [&](node x){
-			if (community->find(x) == community->end()){
-				outside ++;
-			} else {
-				if (u == x) {
-					inside++;
-				} else {
-					inside = inside + 0.5;
-				}
+	this->G->forNeighborsOf(v, [&](node x){
+		if (community->find(x) == community->end()){
+			outside ++;
+		} else {
+			if (x != v) {
+				inside++;
 			}
-		});
-	}
+		}
+	});
 
-	if (modified == true) {
-		community->erase(v);
+	community->erase(v);
+	int	boundary = this->nBoundaryEdges - inside + outside;
+	if(G->hasEdge(v, v)) {
+		inside++;
 	}
+	int core = this->nInternEdges + inside;
+	if (boundary == 0) {
+		result.push_back(G->numberOfEdges());
+		result.push_back(0);
+		result.push_back(0);
+		result.push_back(0);
+		return result;
+	}
+	result.push_back(core/((double)boundary));
+	result.push_back(boundary);
+	result.push_back(0);
+	result.push_back(0);
+	result.push_back(core);
+	return result;
 
-	if (outside == 0) {
-		return G->numberOfEdges();
-	}
-	return inside / outside;
 }
 
 
-Conductance::Conductance(const Graph& G, std::unordered_set<node>& community) : QualityObjective(G, community), degSum(0), nBoundaryEdges(0), volume(0) {
-	// TODO: precomputation of degree sum should not happen more than once for a graph
-	this->degSum = this->G->parallelSumForNodes([&](node u){
-		return this->G->degree(u);
-	});
+Conductance::Conductance(const Graph& G, std::unordered_set<node>& community) : QualityObjective(G, community) {
+
 }
 
 Conductance::~Conductance() {
 }
 
-double Conductance::getValue(node v) {
+std::vector<double> Conductance::getValue(node v) {
 
 	int count = 0;
 	bool modified = false;
+	std::vector<double> result;
 	if (community->find(v) == community->end()) {
 		modified = true;
 	}
@@ -88,23 +105,38 @@ double Conductance::getValue(node v) {
 		community->erase(v);
 	}
 	if (degSum - volume - this->G->degree(v)  == 0) {
-		return 0;
+		result.push_back(0);
+		result.push_back(degSum);
+		result.push_back(0);
+		result.push_back(0);
+		return result;
 	}
 	if (G->hasEdge(v, v)) {
-		return 1 - ((double)(nBoundaryEdges + 2 * count - this->G->degree(v) + 1)/ ((double)std::min(volume + this->G->degree(v), degSum - volume - this->G->degree(v))));
+		double tmp = ((double)(nBoundaryEdges + 2 * count - this->G->degree(v) + 1)/ ((double)std::min(volume + this->G->degree(v), degSum - volume - this->G->degree(v))));
+		result.push_back(1-tmp);
+		result.push_back(nBoundaryEdges + 2 * count - this->G->degree(v) + 1);
+		result.push_back(0);
+		result.push_back(0);
+		return result;
 	}
 
-	return 1 - ((double)(nBoundaryEdges + 2 * count - this->G->degree(v))/ ((double)std::min(volume + this->G->degree(v), degSum - volume - this->G->degree(v))));
+	double tmp = ((double)(nBoundaryEdges + 2 * count - this->G->degree(v))/ ((double)std::min(volume + this->G->degree(v), degSum - volume - this->G->degree(v))));
+	result.push_back(1-tmp);
+	result.push_back(nBoundaryEdges + 2 * count - this->G->degree(v));
+	result.push_back(0);
+	result.push_back(0);
+	return result;
 }
 
 LocalModularityL::LocalModularityL(const Graph& G, std::unordered_set<node>& community)
-	: QualityObjective(G, community){
+	: QualityObjective(G, community) {
 }
 
 LocalModularityL::~LocalModularityL() {
 }
 
-double LocalModularityL::getValue(node v) {
+std::vector<double> LocalModularityL::getValue(node v) {
+	std::vector<double> result;
 	double inside = 0;
 	double outside = 0;
 	std::unordered_set<node> boundary;
@@ -133,7 +165,9 @@ double LocalModularityL::getValue(node v) {
 	if (modified == true) {
 		community->erase(v);
 	}
-	return (inside / community->size()) / (outside / boundary.size());
+	return result;
+
+	//return (inside / community->size()) / (outside / boundary.size());
 }
 
 }
