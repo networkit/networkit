@@ -44,6 +44,7 @@
 #include "dcd/PseudoDynamic.h"
 #include "io/METISGraphReader.h"
 #include "generators/DynamicBarabasiAlbertGenerator.h"
+#include "generators/DynamicDGSParser.h"
 #include "dcd/DynamicCommunityDetector.h"
 #include "dcd/TDynamicLabelPropagation.h"
 #include "dcd/DynamicLabelPropagation.h"
@@ -273,7 +274,9 @@ int main(int argc, char **argv) {
 		} else if (sourceName == "DynamicPubWebGenerator") {
 			// TODO:
 		} else if (sourceName == "DGS") {
-			// TODO:
+			std::string graphFile = sourceParts[1];
+			source = new DynamicDGSParser(graphFile);
+
 		}
 	} else {
 		throw std::runtime_error("--source option must be supplied");
