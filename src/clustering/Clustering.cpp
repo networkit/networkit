@@ -66,15 +66,11 @@ bool Clustering::isProper(Graph& G) {
 count Clustering::numberOfClusters() const {
 
 	count nc = this->upperBound();
-	std::vector<bool> exists(nc, false);
-//	bool exists[nc];
-//	std::fill(&exists[0], &exists[nc], false);
+	std::vector<int> exists(nc, 0); // a boolean vector would not be thread-safe
 
-	// parallel iteration yields errors with std::vector, not really clear why
-//	this->parallelForEntries([&](node u, cluster C) {
-	this->forEntries([&](node u, cluster C) {
+	this->parallelForEntries([&](node u, cluster C) {
 		if (C != none) {
-			exists[C] = true;
+			exists[C] = 1;
 		}
 	});
 
