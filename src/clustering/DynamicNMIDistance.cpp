@@ -197,6 +197,7 @@ double DynamicNMIDistance::entropy(const Clustering& clustering, count n, std::v
 }
 
 void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
+	DEBUG("sanity check, NMI: " << NMI);
 	assert (Aux::NumericTools::ge(NMI, 0.0));
 	assert (Aux::NumericTools::le(NMI, 1.0));
 

@@ -115,7 +115,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, SOURCE, DETECTORS, TMAX, DELTAT, STATIC, RUNS, SAVE_GRAPH, PROGRESS, SUMMARY, SCALETHREADS, UPDATE_THRESHOLD, SAVE_CLUSTERINGS};
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, SOURCE, DETECTORS, TMAX, DELTAT, STATIC, CHECK_COMMUNITIES, CHECK_CONTINUITY, RUNS, SAVE_GRAPH, PROGRESS, SUMMARY, UPDATE_THRESHOLD, SAVE_CLUSTERINGS};
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
@@ -129,11 +129,13 @@ const OptionParser::Descriptor usage[] =
  {TMAX, 0, "", "tMax", OptionParser::Arg::Required, "  --tMax=<INT> \t maximum number of generator time steps"},
  {DELTAT, 0, "", "deltaT", OptionParser::Arg::Required, "  --deltaT=<INT> \t run the detectors each deltaT time steps"},
  {STATIC, 0, "", "static", OptionParser::Arg::Required, "  --static=<NAME> \t set number of clusterer runs"},
+ {CHECK_COMMUNITIES, 0, "", "checkCommunities", OptionParser::Arg::None, "  --checkCommunities \t get info about communities"},
+ {CHECK_CONTINUITY, 0, "", "checkContinuity", OptionParser::Arg::None, "  --checkContinuity \t get info about continuity"},
+ {STATIC, 0, "", "static", OptionParser::Arg::Required, "  --static=<NAME> \t set number of clusterer runs"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
  {SAVE_GRAPH, 0, "", "saveGraph", OptionParser::Arg::Required, "  --saveGraph=<PATH> \t write the graph to a file"},
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
- {SCALETHREADS, 0, "", "scaleThreads", OptionParser::Arg::Required, "  --scaleThreads=<MAXTHREADS> \t scale number of threads by factor 2 until maximum is reached"},
  {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> or --updateThreshold=auto \t number of updated nodes below which label propagation terminates - auto determines this automatically from the size of the graph"},
  {SAVE_CLUSTERINGS, 0, "", "saveClusterings", OptionParser::Arg::Required, "  --scaleThreads=<PATH> \t save the graph clusterings for this test sequence into a specific directory"},
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
@@ -340,8 +342,24 @@ int main(int argc, char **argv) {
 		deltaT = std::stoi(options[DELTAT].arg);
 	}
 
+
+
+
+
 	INFO("creating setup with tMax=" << tMax << " and deltaT=" << deltaT);
 	DynCDSetup* dynCDSetup = new DynCDSetup(*source, detectors, tMax, deltaT);
+
+	if (options[CHECK_COMMUNITIES]) {
+		INFO("will check communities");
+		dynCDSetup->checkModularity();
+		dynCDSetup->checkNumberOfCommunities();
+	}
+
+
+	if (options[CHECK_CONTINUITY]) {
+		INFO("will check continuity");
+		dynCDSetup->checkNMIDistance();
+	}
 
 	for (int run = 0; run < runs; run++) {
 		dynCDSetup->run();
