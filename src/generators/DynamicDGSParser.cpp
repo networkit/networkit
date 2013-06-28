@@ -43,7 +43,7 @@ void DynamicDGSParser::generate() {
 		throw std::runtime_error("Can not call generate() before graph was initialized.");
 	}
 	std::string line;
-	bool breakTimeStep; // true if breaking from the while loop was due to a time step event
+	bool breakTimeStep = false; // true if breaking from the while loop was due to a time step event
 
 	while (std::getline(dgsFile, line)) {
 		std::vector<std::string> split = Aux::StringTools::split(line);

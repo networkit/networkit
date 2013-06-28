@@ -16,7 +16,12 @@ DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityD
 		deltaT(deltaT),
 		staticAlgo(NULL) {
 	if (deltaT >= tMax) {
+		ERROR("deltaT >= tMax");
 		throw std::runtime_error("deltaT must be smaller than tMax");
+	} else {
+		INFO("deltaT " << deltaT);
+		INFO("tMax " << tMax);
+
 	}
 
 	// create graph and proxy instances
@@ -58,6 +63,8 @@ void DynCDSetup::run() {
 	while (G->time() < tMax) {
 		INFO("time: " << G->time() << " of " << tMax);
 		try {
+			INFO("G->time() < tMax is TRUE");
+
 			gen->generateTimeSteps(G->time() + deltaT);
 			// inspect the current graph
 			INFO("current graph : " << G->toString());
