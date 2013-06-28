@@ -15,7 +15,7 @@ namespace NetworKit {
 class PseudoDynamic: public NetworKit::DynamicGraphSource {
 public:
 
-	PseudoDynamic(const Graph& Gstatic);
+	PseudoDynamic(Graph& Gstatic);
 
 	virtual ~PseudoDynamic();
 
@@ -24,10 +24,12 @@ public:
 	virtual void generate();
 
 
-protected:
+private:
 
-	const Graph& Gstatic;
-	node u; //!< the current node
+	const Graph Gstatic; // cannot be a reference or a pointer because this object might survive longer than static graph
+
+	std::vector<node> idmap; // maping from static graph id to dynamic graph id
+	node current; // current node
 };
 
 } /* namespace NetworKit */
