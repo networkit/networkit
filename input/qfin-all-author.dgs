@@ -3,9 +3,9 @@ authorGraph 0 0
 st 0
 an 554
 an 941
-ae 554-941 554 941 weight=1
+ae 554-941 554 941 weight=1 
 an 942
-ae 554-942 554 942 weight=1
+ae 554-942 554 942 weight=1 
 ae 941-942 941 942 weight=1
 st 1
 an 2382
