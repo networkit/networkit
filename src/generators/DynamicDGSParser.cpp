@@ -20,10 +20,11 @@ DynamicDGSParser::~DynamicDGSParser() {
 
 void DynamicDGSParser::initializeGraph() {
 	std::string line;
+	std::string cookie = "DGS004";
 
 	// handle first line
 	std::getline(dgsFile, line);
-	if (line == "DGS004") {
+	if (!line.compare(0, cookie.size(), cookie)) { // compare prefix
 		DEBUG("found magic cookie: DGS004");
 	} else {
 		throw std::runtime_error("This does not seem to be a valid DGS file. Expected magic cookie 'DGS004' in first line");
