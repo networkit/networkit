@@ -176,7 +176,8 @@ TEST_F(DCDGTest, tryStaticVsDynamic) {
 
 	METISGraphReader reader;
 
-	DynamicGraphSource* source = new PseudoDynamic(reader.read(path));
+	Graph Gstatic = reader.read(path);
+	DynamicGraphSource* source = new PseudoDynamic(Gstatic);
 	DynamicCommunityDetector* dynCD1 = new DynamicLabelPropagation(0, "Isolate");
 
 	std::vector<DynamicCommunityDetector*> detectors = { dynCD1 };
@@ -193,7 +194,8 @@ TEST_F(DCDGTest, tryStaticVsDynamic) {
 
 
 TEST_F(DCDGTest, testPseudoDynamic) {
-	Graph G(3);
+	Graph G(4);
+	G.removeNode(3);
 	G.addEdge(0, 1);
 	G.addEdge(1, 2);
 

@@ -51,7 +51,7 @@ GraphEventProxy* DynamicGraphSource::newGraph() {
 void DynamicGraphSource::generateTimeSteps(count t) {
 	while (G->time() < t) {
 		TRACE("G->time() = " << G->time());
-		TRACE("t= " << t);
+		TRACE("supposed to generate t= " << t);
 
 		this->generate();
 	}
