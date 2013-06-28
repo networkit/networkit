@@ -1,0 +1,5 @@
+<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#a5c422bd0b1f00f8c40686991f94bcdaa" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="211,5,362,49"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="216,73,357,117"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#a09e93835ed75201769358fa6b35537e8" title="Iterate over all edges of the graph and call handler (lambda closure)." alt="" coords="195,141,378,185"/>
+</map>
