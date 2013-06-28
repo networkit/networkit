@@ -33,6 +33,7 @@ public:
 	 */
 	virtual void generate();
 
+
 protected:
 	bool graphInitialized;	//!< true if initializeGraph has been called and graph has been properly initialized
 	std::unordered_map<std::string, node> nodeNames;

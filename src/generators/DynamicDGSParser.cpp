@@ -138,4 +138,6 @@ void DynamicDGSParser::generate() {
 
 }
 
+
+
 } /* namespace NetworKit */
