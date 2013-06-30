@@ -1,0 +1,12 @@
+<map id="NetworKit::MatchingContracter::run" name="NetworKit::MatchingContracter::run">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="305,5,481,49"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_matching.html#abd61defac0cb2868d7c80739b0f6e902" title="NetworKit::Matching\l::matchingSize" alt="" coords="323,73,464,117"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="301,141,486,169"/>
+<area shape="rect" id="node11" href="$class_networ_kit_1_1_matching.html#a76cf82e05446a8f29b1c46d1dcdef2f3" title="NetworKit::Matching\l::mate" alt="" coords="323,193,464,237"/>
+<area shape="rect" id="node14" href="$class_networ_kit_1_1_graph.html#a7b0d575c9fa66d075bd6d81c1593f081" title="NEIGHBORHOOD ITERATORS." alt="" coords="283,261,504,289"/>
+<area shape="rect" id="node16" href="$class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8" title="EDGE ATTRIBUTE GETTERS." alt="" coords="309,313,478,341"/>
+<area shape="rect" id="node20" href="$class_networ_kit_1_1_graph.html#ad56d4fada3895f8446e58d7cd33ca274" title="EDGE ATTRIBUTE SETTERS." alt="" coords="298,365,488,393"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_matching.html#abf1ff6be646ccfb468f568ea4951cee5" title="Check if node is matched." alt="" coords="579,133,720,177"/>
+<area shape="rect" id="node18" href="$class_networ_kit_1_1_graph.html#a4c6dde807d9cd6dd53f3a4794d411528" title="Return the index of v in the adjacency array of u." alt="" coords="573,313,726,341"/>
+<area shape="rect" id="node23" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="552,365,747,393"/>
+</map>
