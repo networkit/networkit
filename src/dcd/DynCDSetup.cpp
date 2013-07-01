@@ -48,7 +48,7 @@ void DynCDSetup::run() {
 	// helpers
 	Modularity modularity;
 	DynamicNMIDistance NMID;
-	SampledRandMeasure sampledRand;
+	SampledRandMeasure sampledRand(500);
 
 	// initialize graph
 	gen->initializeGraph();
@@ -68,8 +68,15 @@ void DynCDSetup::run() {
 		// run the dynamic community detectors
 		for (index detectorIndex = 0; detectorIndex < this->detectors.size(); ++detectorIndex) {
 			DynamicCommunityDetector* dynCD = this->detectors.at(detectorIndex);
+
 			INFO("running dynamic community detector " << dynCD->toString());
 			results.at(detectorIndex).push_back(dynCD->run());
+
+			// optionally also run a static community detector
+			if (staticAlgo != NULL) {
+				staticClusterings.push_back(staticAlgo->run(*G));
+			}
+
 
 			// evaluations which need the current graph
 			if (checkNumCom) {
@@ -96,12 +103,6 @@ void DynCDSetup::run() {
 				INFO("[RESULT] sampled rand measure for communities at t=" << G->time() << " vs t=" << (G->time() - deltaT) << ": " << dist);
 			}
 		}
-
-		// optionally also run a static community detector
-		if (staticAlgo != NULL) {
-			staticClusterings.push_back(staticAlgo->run(*G));
-		}
-
 
 	};
 
