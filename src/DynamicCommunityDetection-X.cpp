@@ -198,7 +198,7 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE PARALLELISM
-
+	omp_set_nested(1); // enable nested parallelism
 
 
 	if (options[THREADS]) {
@@ -207,8 +207,6 @@ int main(int argc, char **argv) {
 		setNumberOfThreads(nThreads);
 	}
 
-	omp_set_nested(1); // enable nested parallelism
-	INFO("OPENMP: number of available threads: " << omp_get_num_threads());
 
 	// CONFIGURE OUTPUT
 	if (options[PROGRESS]) {
@@ -383,7 +381,6 @@ int main(int argc, char **argv) {
 
 	if (options[CHECK_CONTINUITY]) {
 		INFO("will check continuity");
-		// FIXME: dynCDSetup->checkNMIDistance();
 		dynCDSetup->checkContinuity();
 	}
 
