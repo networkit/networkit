@@ -85,7 +85,7 @@ void DynamicDGSParser::generate() {
 				}
 				nodeCategories.push_back(currentNodeCategories);
 				INFO("NODE CATEGORIES SIZE " << nodeCategories.size());
-
+				assert(nodeCategories.size() > 0);
 				std::string dateFullString = split[3]; // Example: date="08-1997"
 				INFO("DATE SPLIT " << dateFullString);
 

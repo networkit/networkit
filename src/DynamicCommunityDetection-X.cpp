@@ -282,8 +282,9 @@ int main(int argc, char **argv) {
 			// TODO:
 		} else if (sourceName == "DGS") {
 			std::string graphFile = sourceParts[1];
-			sourceDGS = new DynamicDGSParser(graphFile);
-			source = sourceDGS;
+			//sourceDGS = new DynamicDGSParser(graphFile);
+			//source = sourceDGS;
+			source = new DynamicDGSParser(graphFile);
 
 		}
 	} else {
@@ -372,13 +373,15 @@ int main(int argc, char **argv) {
 	// TODO: inspection of results
 
 	if (options[SAVE_CLUSTERINGS]) {
+		/*
 		Clustering last;
 		for (std::vector<Clustering> clusteringSequence : dynCDSetup -> results) {
 			last = clusteringSequence.back();
 		}
 		INFO("I get here" << last.numberOfClusters());
 		assert (sourceDGS != NULL);
-		sourceDGS -> evaluateClusterings(last);
+		//sourceDGS -> evaluateClusterings(last);
+		*/
 	}
 	std::cout << "[EXIT] terminated normally" << std::endl;
 
