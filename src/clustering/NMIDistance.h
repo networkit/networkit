@@ -33,7 +33,6 @@ public:
 
 	virtual double getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta);
 
-
 };
 
 } /* namespace NetworKit */
