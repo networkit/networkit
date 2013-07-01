@@ -16,7 +16,7 @@ class TQualityObjective {
 
 public:
 
-	TQualityObjective(const Graph& G, std::unordered_set<node>& community);
+	TQualityObjective(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
 
 	virtual ~TQualityObjective();
 
@@ -26,16 +26,18 @@ public:
 	 *
 	 * Higher values are better.
 	 */
-	double getValue(node v);
+	std::vector<double> getValue(node v);
 
-public:
-
+protected:
 	const Graph* G;								//!< pointer to the graph
+public:
 	std::unordered_set<node>* community;	//!< pointer to the current community
-
-	count degSum; //!< degree sum of the graph needed
+	std::unordered_map<node,count>* boundary;
 	count nBoundaryEdges; //!< current number of boundary edges
+	count degSum; //!< degree sum of the graph needed
+	count nNodes; //!< current number of nodes in the community
 	count volume;	//!< current community volume
+	count nInternEdges; //!< current number of intern edges
 };
 
 /**
@@ -45,15 +47,25 @@ class TLocalModularityM : public TQualityObjective {
 
 public:
 
-	TLocalModularityM(const Graph& G, std::unordered_set<node>& community);
+	TLocalModularityM(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
 
 	virtual ~TLocalModularityM();
 
-	double getValue(node v);
+	std::vector<double> getValue(node v);
 
 
 };
 
+class TLocalModularityL : public TQualityObjective {
+
+public:
+
+	TLocalModularityL(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
+
+	virtual ~TLocalModularityL();
+
+	std::vector<double> getValue(node v);
+};
 
 /**
  * Conductance as a quality objective function. Unlike standard conductance,
@@ -64,11 +76,11 @@ class TConductance : public TQualityObjective {
 
 public:
 
-	TConductance(const Graph& G, std::unordered_set<node>& community);
+	TConductance(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
 
 	virtual ~TConductance();
 
-	double getValue(node v);
+	std::vector<double> getValue(node v);
 
 
 };

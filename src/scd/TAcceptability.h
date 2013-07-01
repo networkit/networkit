@@ -47,6 +47,15 @@ public:
 	double getValue(node v);
 };
 
+class TNodeClusterSimilarity: public TAcceptability {
 
+public:
+
+	TNodeClusterSimilarity(const Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell);
+
+	virtual ~TNodeClusterSimilarity();
+
+	 double getValue(node v);
+};
 } /* namespace NetworKit */
 #endif /* TACCEPTABILITY_H_ */
