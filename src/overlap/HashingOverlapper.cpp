@@ -53,6 +53,7 @@ Clustering HashingOverlapper::run(Graph& G,
 	core.setAll(0);
 	const count numC = clusterings.size();
 	const count upperId = clusterings.back().upperBound();
+	const count summand = 341;
 	if (numC > 2) {
 		for (index c = 0; c < numC; ++c) {
 			Clustering& zeta = clusterings[c];
@@ -75,7 +76,7 @@ Clustering HashingOverlapper::run(Graph& G,
 					core[v] = none;
 				}
 				else {
-					count key = ((first[v] & 0xffff) << 16) | (second[v] & 0xffff);
+					count key = (((first[v] + summand) & 0xffff) << 16) | ((second[v] + summand) & 0xffff);
 					core[v] = hash(key);
 				}
 			}
