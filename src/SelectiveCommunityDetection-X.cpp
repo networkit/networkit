@@ -347,13 +347,13 @@ int main(int argc, char **argv) {
 
 	if (options[PARAM]) {
 		std::string paramArg = options[PARAM].arg;
-		while (Aux::StringTools::split(paramArg, ';').size() > 0) {
+		while (Aux::StringTools::split(paramArg, ',').size() > 0) {
 			std::string parameter = Aux::StringTools::split(paramArg, ';')[0];
 			if (Aux::StringTools::split(parameter, ':').size() == 2) {
 				std::string first =
-						Aux::StringTools::split(parameter, ';').front();
+						Aux::StringTools::split(parameter, ':').front();
 				std::string second =
-						Aux::StringTools::split(parameter, ';').back();
+						Aux::StringTools::split(parameter, ':').back();
 				if (first == "epsilon") {
 					epsilon = std::stof(second);
 				} else if (first == "mu") {
