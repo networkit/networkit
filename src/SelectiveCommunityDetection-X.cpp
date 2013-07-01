@@ -318,6 +318,7 @@ int main(int argc, char **argv) {
 		std::string seedsArg = options[SEEDS].arg;
 		std::string seedsName = Aux::StringTools::split(seedsArg, ':')[0];
 		std::string seedsParam = Aux::StringTools::split(seedsArg, ':')[1];
+
 		nSeeds = std::stoi(seedsParam); // number of seeds
 
 		if (seedsName == "RandomSeedSet") {
@@ -560,6 +561,7 @@ int main(int argc, char **argv) {
 				exit(1);
 			}
 		} else if (detectorName == "GreedyCommunityExpansion") {
+
 			if (Aux::StringTools::split(detectorArg, ':').size() == 4) {
 				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
 				std::string second =
