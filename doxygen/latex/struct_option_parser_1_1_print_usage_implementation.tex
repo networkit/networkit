@@ -1,0 +1,134 @@
+\hypertarget{struct_option_parser_1_1_print_usage_implementation}{\section{Option\-Parser\-:\-:Print\-Usage\-Implementation Struct Reference}
+\label{struct_option_parser_1_1_print_usage_implementation}\index{Option\-Parser\-::\-Print\-Usage\-Implementation@{Option\-Parser\-::\-Print\-Usage\-Implementation}}
+}
+
+
+{\ttfamily \#include $<$optionparser.\-h$>$}
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_option_parser_1_1_print_usage_implementation_1_1_function_writer}{Function\-Writer}
+\item 
+struct \hyperlink{struct_option_parser_1_1_print_usage_implementation_1_1_i_string_writer}{I\-String\-Writer}
+\item 
+class \hyperlink{class_option_parser_1_1_print_usage_implementation_1_1_line_part_iterator}{Line\-Part\-Iterator}
+\item 
+class \hyperlink{class_option_parser_1_1_print_usage_implementation_1_1_line_wrapper}{Line\-Wrapper}
+\item 
+struct \hyperlink{struct_option_parser_1_1_print_usage_implementation_1_1_o_stream_writer}{O\-Stream\-Writer}
+\item 
+struct \hyperlink{struct_option_parser_1_1_print_usage_implementation_1_1_stream_writer}{Stream\-Writer}
+\item 
+struct \hyperlink{struct_option_parser_1_1_print_usage_implementation_1_1_syscall_writer}{Syscall\-Writer}
+\item 
+struct \hyperlink{struct_option_parser_1_1_print_usage_implementation_1_1_temporary_writer}{Temporary\-Writer}
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{struct_option_parser_1_1_print_usage_implementation_a8517859ff8d035d78b4a5c137be4dab0}{upmax} (int \&i1, int i2)
+\item 
+static void \hyperlink{struct_option_parser_1_1_print_usage_implementation_a4a5d3f07d96ef1bbf7623053d5a5cd48}{indent} (\hyperlink{struct_option_parser_1_1_print_usage_implementation_1_1_i_string_writer}{I\-String\-Writer} \&write, int \&x, int want\-\_\-x)
+\item 
+static bool \hyperlink{struct_option_parser_1_1_print_usage_implementation_a8e21f84e8fb97ceb650973c5918e597c}{is\-Wide\-Char} (unsigned ch)
+\begin{DoxyCompactList}\small\item\em Returns true if ch is the unicode code point of a wide character. \end{DoxyCompactList}\item 
+static void \hyperlink{struct_option_parser_1_1_print_usage_implementation_a3d6989a844051e264fd59bf56262a4c8}{print\-Usage} (\hyperlink{struct_option_parser_1_1_print_usage_implementation_1_1_i_string_writer}{I\-String\-Writer} \&write, const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} \hyperlink{_community_detection_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage}\mbox{[}$\,$\mbox{]}, int width=80, int last\-\_\-column\-\_\-min\-\_\-percent=50, int last\-\_\-column\-\_\-own\-\_\-line\-\_\-max\-\_\-percent=75)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 1698 of file optionparser.\-h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{struct_option_parser_1_1_print_usage_implementation_a4a5d3f07d96ef1bbf7623053d5a5cd48}{\index{Option\-Parser\-::\-Print\-Usage\-Implementation@{Option\-Parser\-::\-Print\-Usage\-Implementation}!indent@{indent}}
+\index{indent@{indent}!OptionParser::PrintUsageImplementation@{Option\-Parser\-::\-Print\-Usage\-Implementation}}
+\subsubsection[{indent}]{\setlength{\rightskip}{0pt plus 5cm}static void Option\-Parser\-::\-Print\-Usage\-Implementation\-::indent (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-String\-Writer} \&}]{write, }
+\item[{int \&}]{x, }
+\item[{int}]{want\-\_\-x}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}}\label{struct_option_parser_1_1_print_usage_implementation_a4a5d3f07d96ef1bbf7623053d5a5cd48}
+
+
+Definition at line 1841 of file optionparser.\-h.
+
+\hypertarget{struct_option_parser_1_1_print_usage_implementation_a8e21f84e8fb97ceb650973c5918e597c}{\index{Option\-Parser\-::\-Print\-Usage\-Implementation@{Option\-Parser\-::\-Print\-Usage\-Implementation}!is\-Wide\-Char@{is\-Wide\-Char}}
+\index{is\-Wide\-Char@{is\-Wide\-Char}!OptionParser::PrintUsageImplementation@{Option\-Parser\-::\-Print\-Usage\-Implementation}}
+\subsubsection[{is\-Wide\-Char}]{\setlength{\rightskip}{0pt plus 5cm}static bool Option\-Parser\-::\-Print\-Usage\-Implementation\-::is\-Wide\-Char (
+\begin{DoxyParamCaption}
+\item[{unsigned}]{ch}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}}\label{struct_option_parser_1_1_print_usage_implementation_a8e21f84e8fb97ceb650973c5918e597c}
+
+
+Returns true if ch is the unicode code point of a wide character. 
+
+\begin{DoxyNote}{Note}
+The following character ranges are treated as wide 
+\begin{DoxyCode}
+1100..115F
+2329..232A  (just 2 characters!)
+2E80..A4C6  except \textcolor{keywordflow}{for} 303F
+A960..A97C
+AC00..D7FB
+F900..FAFF
+FE10..FE6B
+FF01..FF60
+FFE0..FFE6
+1B000......
+\end{DoxyCode}
+ 
+\end{DoxyNote}
+
+
+Definition at line 1877 of file optionparser.\-h.
+
+\hypertarget{struct_option_parser_1_1_print_usage_implementation_a3d6989a844051e264fd59bf56262a4c8}{\index{Option\-Parser\-::\-Print\-Usage\-Implementation@{Option\-Parser\-::\-Print\-Usage\-Implementation}!print\-Usage@{print\-Usage}}
+\index{print\-Usage@{print\-Usage}!OptionParser::PrintUsageImplementation@{Option\-Parser\-::\-Print\-Usage\-Implementation}}
+\subsubsection[{print\-Usage}]{\setlength{\rightskip}{0pt plus 5cm}static void Option\-Parser\-::\-Print\-Usage\-Implementation\-::print\-Usage (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-String\-Writer} \&}]{write, }
+\item[{const {\bf Descriptor}}]{usage\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{width = {\ttfamily 80}, }
+\item[{int}]{last\-\_\-column\-\_\-min\-\_\-percent = {\ttfamily 50}, }
+\item[{int}]{last\-\_\-column\-\_\-own\-\_\-line\-\_\-max\-\_\-percent = {\ttfamily 75}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}}\label{struct_option_parser_1_1_print_usage_implementation_a3d6989a844051e264fd59bf56262a4c8}
+
+
+Definition at line 2421 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{struct_option_parser_1_1_print_usage_implementation_a3d6989a844051e264fd59bf56262a4c8_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{struct_option_parser_1_1_print_usage_implementation_a8517859ff8d035d78b4a5c137be4dab0}{\index{Option\-Parser\-::\-Print\-Usage\-Implementation@{Option\-Parser\-::\-Print\-Usage\-Implementation}!upmax@{upmax}}
+\index{upmax@{upmax}!OptionParser::PrintUsageImplementation@{Option\-Parser\-::\-Print\-Usage\-Implementation}}
+\subsubsection[{upmax}]{\setlength{\rightskip}{0pt plus 5cm}static void Option\-Parser\-::\-Print\-Usage\-Implementation\-::upmax (
+\begin{DoxyParamCaption}
+\item[{int \&}]{i1, }
+\item[{int}]{i2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}}\label{struct_option_parser_1_1_print_usage_implementation_a8517859ff8d035d78b4a5c137be4dab0}
+
+
+Definition at line 1825 of file optionparser.\-h.
+
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/ext/\hyperlink{optionparser_8h}{optionparser.\-h}\end{DoxyCompactItemize}
