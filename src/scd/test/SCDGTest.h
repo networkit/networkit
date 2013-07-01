@@ -32,7 +32,9 @@
 #include "../../distmeasures/TNeighborhoodDistance.h"
 #include "../TQualityObjective.h"
 #include "../TAcceptability.h"
-
+#include "../QualityObjective.h"
+#include "../Acceptability.h"
+#include "../CommunityTrimming.h"
 
 
 

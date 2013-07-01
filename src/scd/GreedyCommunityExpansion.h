@@ -29,7 +29,9 @@ class GreedyCommunityExpansion: public NetworKit::SelectiveCommunityDetector {
 
 public:
 
-	GreedyCommunityExpansion(const Graph& G);
+	GreedyCommunityExpansion(const Graph& G, Acceptability& similarity, QualityObjective& objective,
+			CommunityTrimming& trimming);
+
 
 	virtual ~GreedyCommunityExpansion();
 
@@ -43,6 +45,10 @@ public:
 	virtual std::unordered_set<node> expandSeed(node s);
 
 protected:
+
+	Acceptability* similarity;
+	QualityObjective* objective;
+	CommunityTrimming* trimming;
 
 	virtual double clusterClusterSimilarity (std::unordered_set<node>& community1, std::unordered_set<node>& community2);
 
