@@ -431,10 +431,10 @@ TEST_F(DCDGTest, tryArxivEval) {
 	DynamicCommunityDetector* dynPLP = new TDynamicLabelPropagation<Isolate>();
 	INFO("created algorithm: " << dynPLP->toString());
 
-	DynamicDGSParser* dynGen = new DynamicDGSParser("/Users/forigem/KIT/arXivSpider/src/arxivspider/conference-dataset/conference-qfin-paper.dgs");
+	DynamicDGSParser* dynGen = new DynamicDGSParser("/Users/forigem/KIT/arXivSpider/src/arxivspider/conference-dataset/conference-cs-paper.dgs");
 
 	std::vector<DynamicCommunityDetector*> detectors = {dynPLP};
-	DynCDSetup setup(*dynGen, detectors, 1e3, 1e2);
+	DynCDSetup setup(*dynGen, detectors, 1e10, 1e2);
 
 	setup.run();
 
