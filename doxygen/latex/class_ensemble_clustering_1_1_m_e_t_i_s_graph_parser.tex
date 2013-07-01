@@ -1,0 +1,142 @@
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser}{\section{Ensemble\-Clustering\-:\-:M\-E\-T\-I\-S\-Graph\-Parser Class Reference}
+\label{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser}\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}}
+}
+
+
+A parser for the M\-E\-T\-I\-S graph file format.  
+
+
+
+
+{\ttfamily \#include $<$M\-E\-T\-I\-S\-Graph\-Parser.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a368585c6c1b9cfd6e95bd3ddd6547792}{M\-E\-T\-I\-S\-Graph\-Parser} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a6d946610b24a1ed6cfe996379d3e5284}{$\sim$\-M\-E\-T\-I\-S\-Graph\-Parser} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a28c963c44b2a559f1f26a68ce55b8650}{parse} (std\-::string path)
+\begin{DoxyCompactList}\small\item\em Parses and returns a graph from a M\-E\-T\-I\-S graph file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_ad78da77d9f2eba97f3f3b755c18cf4ba}{init\-Graph} (int n, int m)
+\begin{DoxyCompactList}\small\item\em Initializes the graph data structure before parsing. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a7108ff92f806af29c49461f7e117ebbe}{connect\-Node} (\hyperlink{namespace_ensemble_clustering_a3228848abf8dfd6602f3b08dd459ea20}{id} v, std\-::vector$<$ \hyperlink{namespace_ensemble_clustering_a3228848abf8dfd6602f3b08dd459ea20}{id} $>$ indices)
+\begin{DoxyCompactList}\small\item\em Connects node with to all its neighbors. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A parser for the M\-E\-T\-I\-S graph file format. 
+
+{\bfseries M\-E\-T\-I\-S graph file format}
+
+
+\begin{DoxyItemize}
+\item A\-S\-C\-I\-I
+\item a graph of N nodes is stored in a file of N+1 lines;
+\item the first line lists the number of nodes and the number of edges;
+\item If the first line contains more than two values, the extra values indicate the weights;
+\item each subsequent line lists the \char`\"{}neighbors\char`\"{} of a node;
+\item comment lines begin with a \char`\"{}\%\char`\"{} sign; 
+\end{DoxyItemize}
+
+Definition at line 37 of file M\-E\-T\-I\-S\-Graph\-Parser.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a368585c6c1b9cfd6e95bd3ddd6547792}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}!M\-E\-T\-I\-S\-Graph\-Parser@{M\-E\-T\-I\-S\-Graph\-Parser}}
+\index{M\-E\-T\-I\-S\-Graph\-Parser@{M\-E\-T\-I\-S\-Graph\-Parser}!EnsembleClustering::METISGraphParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}}
+\subsubsection[{M\-E\-T\-I\-S\-Graph\-Parser}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser\-::\-M\-E\-T\-I\-S\-Graph\-Parser (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a368585c6c1b9cfd6e95bd3ddd6547792}
+
+
+Definition at line 19 of file M\-E\-T\-I\-S\-Graph\-Parser.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a6d946610b24a1ed6cfe996379d3e5284}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}!$\sim$\-M\-E\-T\-I\-S\-Graph\-Parser@{$\sim$\-M\-E\-T\-I\-S\-Graph\-Parser}}
+\index{$\sim$\-M\-E\-T\-I\-S\-Graph\-Parser@{$\sim$\-M\-E\-T\-I\-S\-Graph\-Parser}!EnsembleClustering::METISGraphParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}}
+\subsubsection[{$\sim$\-M\-E\-T\-I\-S\-Graph\-Parser}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser\-::$\sim$\-M\-E\-T\-I\-S\-Graph\-Parser (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a6d946610b24a1ed6cfe996379d3e5284}
+
+
+Definition at line 24 of file M\-E\-T\-I\-S\-Graph\-Parser.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a7108ff92f806af29c49461f7e117ebbe}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}!connect\-Node@{connect\-Node}}
+\index{connect\-Node@{connect\-Node}!EnsembleClustering::METISGraphParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}}
+\subsubsection[{connect\-Node}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser\-::connect\-Node (
+\begin{DoxyParamCaption}
+\item[{{\bf id}}]{v, }
+\item[{std\-::vector$<$ {\bf id} $>$}]{indices}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a7108ff92f806af29c49461f7e117ebbe}
+
+
+Connects node with to all its neighbors. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em v} & node id \\
+\hline
+\mbox{\tt in}  & {\em indices} & neighbor node ids \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 111 of file M\-E\-T\-I\-S\-Graph\-Parser.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_ad78da77d9f2eba97f3f3b755c18cf4ba}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}!init\-Graph@{init\-Graph}}
+\index{init\-Graph@{init\-Graph}!EnsembleClustering::METISGraphParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}}
+\subsubsection[{init\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}void Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser\-::init\-Graph (
+\begin{DoxyParamCaption}
+\item[{int}]{n, }
+\item[{int}]{m}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_ad78da77d9f2eba97f3f3b755c18cf4ba}
+
+
+Initializes the graph data structure before parsing. 
+
+
+
+Definition at line 103 of file M\-E\-T\-I\-S\-Graph\-Parser.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a28c963c44b2a559f1f26a68ce55b8650}{\index{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}!parse@{parse}}
+\index{parse@{parse}!EnsembleClustering::METISGraphParser@{Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser}}
+\subsubsection[{parse}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-M\-E\-T\-I\-S\-Graph\-Parser\-::parse (
+\begin{DoxyParamCaption}
+\item[{std\-::string}]{path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_m_e_t_i_s_graph_parser_a28c963c44b2a559f1f26a68ce55b8650}
+
+
+Parses and returns a graph from a M\-E\-T\-I\-S graph file. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em path} & path of the M\-E\-T\-I\-S graph input file\\
+\hline
+\mbox{\tt out}  & {\em graph} & the graph contained in the input file \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 54 of file M\-E\-T\-I\-S\-Graph\-Parser.\-cpp.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/\hyperlink{_m_e_t_i_s_graph_parser_8h}{M\-E\-T\-I\-S\-Graph\-Parser.\-h}\item 
+src/\hyperlink{_m_e_t_i_s_graph_parser_8cpp}{M\-E\-T\-I\-S\-Graph\-Parser.\-cpp}\end{DoxyCompactItemize}
