@@ -318,6 +318,7 @@ int main(int argc, char **argv) {
 		std::string seedsArg = options[SEEDS].arg;
 		std::string seedsName = Aux::StringTools::split(seedsArg, ':')[0];
 		std::string seedsParam = Aux::StringTools::split(seedsArg, ':')[1];
+
 		nSeeds = std::stoi(seedsParam); // number of seeds
 
 		if (seedsName == "RandomSeedSet") {
@@ -339,16 +340,18 @@ int main(int argc, char **argv) {
 
 	Parameters param;
 	double epsilon = 0.3;
-	double mu = 2.0;
+	count mu = 2;
 	double omega = 0.0;
-	int numSystems = 0;
-	int numIters = 0;
-	int norm = 0;
+	count numSystems = 0;
+	count numIters = 0;
+	count norm = 0;
 
 	if (options[PARAM]) {
 		std::string paramArg = options[PARAM].arg;
-		while (Aux::StringTools::split(paramArg, ',').size() > 0) {
-			std::string parameter = Aux::StringTools::split(paramArg, ';')[0];
+		std::vector<std::string> paramVec = Aux::StringTools::split(paramArg, ',');
+		while (paramVec.size() > 0) {
+			TRACE("parsing " << paramArg);
+			std::string parameter = paramVec[0];
 			if (Aux::StringTools::split(parameter, ':').size() == 2) {
 				std::string first =
 						Aux::StringTools::split(parameter, ':').front();
@@ -359,22 +362,22 @@ int main(int argc, char **argv) {
 				} else if (first == "mu") {
 					mu = std::stoi(second);
 				} else if (first == "numSystems") {
-					numSystems = stoi(second);
+					numSystems = std::stoi(second);
 				} else if (first == "numIters") {
-					numIters = stoi(second);
+					numIters = std::stoi(second);
 				} else if (first == "omega") {
-					omega = stof(second);
+					omega = std::stof(second);
 				} else if (first == "norm") {
-					norm = stof(second);
+					norm = std::stoi(second);
 				} else {
-					std::cout << "[ERROR] invalid argument " << std::endl;
+					std::cout << "[ERROR] invalid argument: " << second << std::endl;
 					exit(1);
 				}
 			} else {
-				std::cout << "[ERROR] invalid argument " << std::endl;
+				std::cout << "[ERROR] invalid argument: " << parameter << std::endl;
 				exit(1);
 			}
-			paramArg = Aux::StringTools::split(paramArg, ';').back();
+			paramVec.erase(paramVec.begin());
 		}
 	}
 
@@ -424,11 +427,10 @@ int main(int argc, char **argv) {
 				algo = new SelectiveSCAN(G, *dist, epsilon, mu);
 			}
 		} else if (detectorName == "TGreedyCommunityExpansion") {
-			if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
-				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
-				std::string second =
-						Aux::StringTools::split(detectorArg, ':')[1];
-				std::string third = Aux::StringTools::split(detectorArg, ':')[2];
+			if (Aux::StringTools::split(detectorArg, ':').size() == 4) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
+				std::string second = Aux::StringTools::split(detectorArg, ':')[2];
+				std::string third = Aux::StringTools::split(detectorArg, ':')[3];
 				if (first == "Conductance" && second == "NodeClusterSimilarity"
 						&& third == "BoundarySharpness") {
 					algo = new TGreedyCommunityExpansion<TConductance,
@@ -483,14 +485,14 @@ int main(int argc, char **argv) {
 					algo = new TGreedyCommunityExpansion<TLocalModularityL,
 							TDummyAcceptability, DummyTrimming>(G);
 				} else {
-					std::cout << "[ERROR] invalid arguments " << std::endl;
+					std::cout << "[ERROR] invalid arguments: " << first << " or " << second << " or " << third << std::endl;
 					exit(1);
 				}
 
-			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
-				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
 				std::string second =
-						Aux::StringTools::split(detectorArg, ':')[1];
+						Aux::StringTools::split(detectorArg, ':')[2];
 				if (first == "Conductance") {
 					if (second == "NodeClusterSimilarity") {
 						algo = new TGreedyCommunityExpansion<TConductance,
@@ -534,24 +536,24 @@ int main(int argc, char **argv) {
 						exit(1);
 					}
 				} else {
-					std::cout << "[ERROR] invalid arguments " << std::endl;
+					std::cout << "[ERROR] invalid arguments: " << first << " or " << second << std::endl;
 					exit(1);
 				}
-			} else if (Aux::StringTools::split(detectorArg, ':').size() == 1) {
-				if (Aux::StringTools::split(detectorArg, ':')[0]
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
+				if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "Conductance") {
 					algo = new TGreedyCommunityExpansion<TConductance,
 							TDummyAcceptability, DummyTrimming>(G);
-				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+				} else if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "ModularityM") {
 					algo = new TGreedyCommunityExpansion<TLocalModularityM,
 							TDummyAcceptability, DummyTrimming>(G);
-				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+				} else if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "ModularityL") {
 					algo = new TGreedyCommunityExpansion<TLocalModularityL,
 							TDummyAcceptability, DummyTrimming>(G);
 				} else {
-					std::cout << "[ERROR] invalid arguments " << std::endl;
+					std::cout << "[ERROR] invalid arguments: " << detectorArg << std::endl;
 					exit(1);
 				}
 			} else {
@@ -559,11 +561,12 @@ int main(int argc, char **argv) {
 				exit(1);
 			}
 		} else if (detectorName == "GreedyCommunityExpansion") {
-			if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
-				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+
+			if (Aux::StringTools::split(detectorArg, ':').size() == 4) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
 				std::string second =
-						Aux::StringTools::split(detectorArg, ':')[1];
-				std::string third = Aux::StringTools::split(detectorArg, ':')[2];
+						Aux::StringTools::split(detectorArg, ':')[2];
+				std::string third = Aux::StringTools::split(detectorArg, ':')[3];
 				if (first == "Conductance" && second == "NodeClusterSimilarity"
 						&& third == "BoundarySharpness") {
 					similarity = new NodeClusterSimilarity(G, tmp, tmp);
@@ -646,10 +649,10 @@ int main(int argc, char **argv) {
 					exit(1);
 				}
 
-			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
-				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
 				std::string second =
-						Aux::StringTools::split(detectorArg, ':')[1];
+						Aux::StringTools::split(detectorArg, ':')[2];
 				if (first == "Conductance") {
 					objective = new Conductance(G, tmp, bound);
 					if (second == "NodeClusterSimilarity") {
@@ -708,27 +711,27 @@ int main(int argc, char **argv) {
 					std::cout << "[ERROR] invalid arguments " << std::endl;
 					exit(1);
 				}
-			} else if (Aux::StringTools::split(detectorArg, ':').size() == 1) {
-				if (Aux::StringTools::split(detectorArg, ':')[0]
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
+				if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "Conductance") {
 					objective = new Conductance(G, tmp, bound);
 					similarity = new DummySimilarity(G, tmp, tmp);
 					trimming = new DummyTrimming();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
-				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+				} else if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "ModularityM") {
 					objective = new LocalModularityM(G, tmp, bound);
 					similarity = new DummySimilarity(G, tmp, tmp);
 					trimming = new DummyTrimming();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
-				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+				} else if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "ModularityL") {
 					objective = new LocalModularityL(G, tmp, bound);
 					similarity = new DummySimilarity(G, tmp, tmp);
 					trimming = new DummyTrimming();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
 				} else {
-					std::cout << "[ERROR] invalid arguments " << std::endl;
+					std::cout << "[ERROR] unknown objective: " << Aux::StringTools::split(detectorArg, ':')[0] << std::endl;
 					exit(1);
 				}
 			} else {

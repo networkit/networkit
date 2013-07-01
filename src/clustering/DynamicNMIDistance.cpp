@@ -26,6 +26,10 @@ bool DynamicNMIDistance::isInBoth(node u, const Clustering& oldClustering, const
 }
 
 
+/**
+ * TODO: Needs cleanup!
+ * Formula follows Dhillon, Guan, Kulis: A Unified View of Kernel k-means, ...
+ */
 double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 		Clustering& oldClustering, Clustering& newClustering) {
 

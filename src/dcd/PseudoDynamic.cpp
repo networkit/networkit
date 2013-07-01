@@ -23,7 +23,6 @@ void PseudoDynamic::initializeGraph() {
 }
 
 void PseudoDynamic::generate() {
-	TRACE("calling generate, current node: " << current);
 	// if there are no more nodes left from the input graph, stop
 	if (this->G->numberOfNodes() == Gstatic.numberOfNodes()) {
 		throw std::logic_error("all nodes from the static graph have been generated");
@@ -31,15 +30,12 @@ void PseudoDynamic::generate() {
 
 
 	while (! Gstatic.hasNode(current)) {
-		TRACE("static does not have node " << current);
 		if (current > Gstatic.upperNodeIdBound()) {
-			TRACE(current << " has hit upper id bound for static graph");
 			break;
 		}
 		current += 1;
 	}
 	node x = this->Gproxy->addNode();
-	TRACE("mapping static node " << current << " to dynamic node " << x);
 	idmap[current] = x; // map static node u to dynamic node x
 
 	// add edges to already existing neighbors
@@ -49,7 +45,6 @@ void PseudoDynamic::generate() {
 			node z = idmap[v];
 			assert (y != none);
 			assert (z != none);
-			TRACE("adding edge (" << y << "," << z << ")");
 			this->Gproxy->addEdge(y, z);
 		}
 	});

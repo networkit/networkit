@@ -41,8 +41,8 @@ TLocalModularityM::~TLocalModularityM() {
 std::vector<double> TLocalModularityM::getValue(node v) {
 
 	std::vector<double> result;
-	int inside = 0;
-	int outside = 0;
+	count inside = 0;
+	count outside = 0;
 	bool modified = false;
 	if (community->find(v) == community->end()) {
 		modified = true;
@@ -67,11 +67,11 @@ std::vector<double> TLocalModularityM::getValue(node v) {
 	});
 
 	community->erase(v);
-	int boundary = this->nBoundaryEdges - inside + outside;
+	count boundary = this->nBoundaryEdges - inside + outside;
 	if (G->hasEdge(v, v)) {
 		inside++;
 	}
-	int core = this->nInternEdges + inside;
+	count core = this->nInternEdges + inside;
 	if (boundary == 0) {
 		result.push_back(G->numberOfEdges());
 		result.push_back(0);
@@ -95,7 +95,7 @@ TConductance::~TConductance() {
 
 std::vector<double> TConductance::getValue(node v) {
 
-	int count = 0;
+	count count = 0;
 	bool modified = false;
 	std::vector<double> result;
 	if (community->find(v) == community->end()) {
@@ -150,9 +150,9 @@ TLocalModularityL::~TLocalModularityL() {
 
 std::vector<double> TLocalModularityL::getValue(node v) {
 	std::vector<double> result;
-	int inside = 0;
-	int outside = 0;
-	int bound = this->boundary->size();
+	count inside = 0; 	// number of ingoing edges from v to community
+	count outside = 0;	// number of outgoing edges from v to commmunity
+	count bound = this->boundary->size();
 	bool modified = false;
 	if (community->find(v) == community->end()) {
 		modified = true;
@@ -180,7 +180,7 @@ std::vector<double> TLocalModularityL::getValue(node v) {
 	if (modified == true) {
 		community->erase(v);
 	}
-	int core = inside;
+	count core = inside;
 	if (G->hasEdge(v, v)) {
 		inside++;
 	}
