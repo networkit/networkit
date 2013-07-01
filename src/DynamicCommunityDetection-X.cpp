@@ -51,6 +51,7 @@
 #include "dcd/DynCDSetup.h"
 #include "community/LabelPropagation.h"
 #include "community/Louvain.h"
+#include "dcd/DynamicEnsemble.h"
 
 using namespace NetworKit;
 
@@ -154,6 +155,9 @@ const OptionParser::Descriptor usage[] =
 
 int main(int argc, char **argv) {
 	std::cout << "=== NetworKit - Dynamic Community Detection === " << std::endl;
+
+	Aux::Timer totalRuntime;
+	totalRuntime.start();
 
 	// ENABLE FLOATING POINT EXCEPTIONS (needs GNU extension, apparently only available on Linux)
 #ifdef _GNU_SOURCE
@@ -323,7 +327,35 @@ int main(int argc, char **argv) {
 				}
 
 			} else if (detectorName == "DynamicEnsemble") {
-				// TODO: Implement
+				DynamicEnsemble* dynamicEnsemble = new DynamicEnsemble();
+				// parse params
+				std::string ensembleFrontArg = Aux::StringTools::split(detectorArguments, '+').front();
+				std::string finalClustererArg = Aux::StringTools::split(detectorArguments, '+').back();
+				std::string ensembleSizeArg = Aux::StringTools::split(ensembleFrontArg, '*').front();
+				std::string baseClustererArg = Aux::StringTools::split(ensembleFrontArg, '*').back();
+
+				int ensembleSize = std::atoi(ensembleSizeArg.c_str());
+				// 1. add base clusterers
+				for (int i = 0; i < ensembleSize; i += 1) {
+					Clusterer* base = NULL;
+					if (baseClustererArg == "TDynamicLabelPropagation") {
+						// TODO: decide for templates or not, then implement
+					} else {
+						std::cout << "[ERROR] unknown base clusterer: " << baseClustererArg << std::endl;
+						exit(1);
+					}
+					// TODO: dynamicEnsemble->addBaseClusterer(*base);
+				}
+				// 2. overlap algorithm
+				Overlapper* overlap = new HashingOverlapper();
+				dynamicEnsemble->setOverlapper(*overlap);
+				// 3. Final Clusterer
+				Clusterer* final = new Louvain("simple");
+
+				dynamicEnsemble->setFinalAlgorithm(*final);
+
+				detectors.push_back((DynamicCommunityDetector*) dynamicEnsemble);
+
 			} else {
 				std::cout << "[ERROR] unknown detector name: " << detectorName << std::endl;
 				exit(1);
@@ -388,9 +420,9 @@ int main(int argc, char **argv) {
 		dynCDSetup->run();
 	}
 
-	// TODO: inspection of results
 
-	std::cout << "[EXIT] terminated normally" << std::endl;
+	totalRuntime.stop();
+	std::cout << "[EXIT] terminated normally after " << totalRuntime.elapsedTag() << std::endl;
 	return 0;
 }
 
