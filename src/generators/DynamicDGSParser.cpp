@@ -9,6 +9,8 @@
 
 namespace NetworKit {
 
+std::vector<std::vector<std::string>> localNodeCategories;
+
 DynamicDGSParser::DynamicDGSParser(std::string path) : graphInitialized(false) {
 	dgsFile.open(path.c_str(), std::ifstream::in);
 }
@@ -69,7 +71,7 @@ void DynamicDGSParser::generate() {
 			std::string nodeName = split[1];
 			// Add a node to a graph, mapping it to the node name inside the nodeNames map
 			nodeNames[nodeName] = Gproxy->addNode();
-			if (split.size() == 4) { // DGS with ground truth
+			if (split.size() >= 4) { // DGS with ground truth
 
 				std::string categoriesFullString = split[2]; /// Example: category="cond-mat.stat-mech, q-fin.ST"
 				std::vector<std::string> categoriesFullStringSplit = Aux::StringTools::split(categoriesFullString, '"');
@@ -82,11 +84,20 @@ void DynamicDGSParser::generate() {
 					currentNodeCategories.push_back(category);
 				}
 				nodeCategories.push_back(currentNodeCategories);
+				INFO("NODE CATEGORIES SIZE " << nodeCategories.size());
 
 				std::string dateFullString = split[3]; // Example: date="08-1997"
+				INFO("DATE SPLIT " << dateFullString);
+
 				std::vector<std::string> dateFullStringSplit = Aux::StringTools::split(dateFullString, '"');
+				INFO("DATE SPLIT1 tt" << dateFullStringSplit.size());
+
 				std::string date = dateFullStringSplit[1];
+				INFO("DATE SPLIT2 ");
+
 				nodeDates.push_back(date);
+				INFO("DATE SPLIT3 ");
+
 			}
 
 		} else if (tag.compare("ae") == 0 && split.size() >= 4) { // add edge
@@ -136,8 +147,91 @@ void DynamicDGSParser::generate() {
 	}
 
 
+
 }
 
+void DynamicDGSParser::evaluateClusterings(const Clustering& clustering) {
+	INFO("eval clust");
 
+
+	// Stores the category breakdown for each of the clusterings
+	std::vector<std::unordered_map<std::string, int>> clusterMappings;
+	clusterMappings.reserve(100000000); //should this be clustering.numberOfClusters()?
+
+	// Stores the mapping between  clustring IDs (seem somewhat random
+	// and not sequential) to "normalized" IDSs (0..numberOfClusterings-1)
+	std::unordered_map<cluster, int> clusterIDMap;
+
+	cluster normalizedID = 0;
+	int clusterIDCounter = 0;
+
+	//Vector of cluster sizes
+	std::vector<int> clusterSizes;
+
+	// Iterating through nodes and clusters to which they belong
+	clustering.forEntries([&](node v, cluster c){
+
+		// Checking if the specific cluster has been already assigned with a normalized ID
+		std::unordered_map<cluster, int>::const_iterator gotClusterID = clusterIDMap.find (c);
+
+		// If not, assigning it one
+		if ( gotClusterID == clusterIDMap.end() ) {
+			clusterIDMap[c] = clusterIDCounter;
+			//clusterSizes.push_back(c.g);
+			//c.clusterSize
+			clusterIDCounter++;
+		}
+
+		// Using the normalized ID to address entries in the vector
+		normalizedID = clusterIDMap[c];
+		TRACE("normalizedID " << normalizedID);
+		TRACE("node categories size " << nodeCategories.size());
+		INFO("c " << c);
+		TRACE("v " << v);
+
+		// Assuming 1 to 1 node correspondence (VERIFY),
+		// getting the categories to which this node (a scientific paper) belongs
+		std::vector<std::string> currentNodeCategories = nodeCategories[v];
+
+		for (std::string category : currentNodeCategories) {
+			INFO("category " << category);
+
+			INFO("C was fine " << clusterMappings[normalizedID].size());
+			clusterMappings[normalizedID].reserve(100000);
+			//clusterMappings[normalizedID].insert ( {"dummy_category",1});
+
+			INFO("Dummy ok");
+			clusterMappings[normalizedID].find (category);
+
+			std::unordered_map<std::string, int>::const_iterator got = clusterMappings[normalizedID].find (category);
+			INFO("got was fine");
+
+			if ( got == clusterMappings[normalizedID].end() ) {
+				std::cout << "not found";
+				clusterMappings[normalizedID][category] = 1;
+			} else {
+				std::cout << "Added";
+				clusterMappings[normalizedID][category] = clusterMappings[normalizedID][category] + 1;
+			}
+		}
+	});
+
+	std::ofstream fs("clust.csv");
+	if(!fs) {
+		std::cerr<<"Cannot open the output file" << std::endl;
+	} else {
+		INFO("FILE OK");
+
+		for (int i=0; i<clustering.numberOfClusters(); i++) {
+			fs << "cluster-" << i << '\t';
+			for (const auto &pair : clusterMappings[i]) {
+				fs << pair.first << '\t' << pair.second << '\t';
+			}
+			fs << '\n';
+		}
+	}
+
+	fs.close();
+}
 
 } /* namespace NetworKit */

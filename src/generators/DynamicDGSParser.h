@@ -10,10 +10,15 @@
 
 #include <fstream>
 #include <vector>
-
+#include <unordered_map>
+#include <iterator>
+#include <string>
 
 #include "DynamicGraphSource.h"
 #include "../auxiliary/StringTools.h"
+#include "../auxiliary/Debug.h"
+#include "../clustering/Clustering.h"
+
 
 namespace NetworKit {
 
@@ -33,13 +38,16 @@ public:
 	 */
 	virtual void generate();
 
+	void evaluateClusterings(const Clustering& clustering);
+
 
 protected:
 	bool graphInitialized;	//!< true if initializeGraph has been called and graph has been properly initialized
 	std::unordered_map<std::string, node> nodeNames;
-	std::vector<std::vector<std::string>> nodeCategories;
 	std::vector<std::string> nodeDates;
 	std::ifstream dgsFile;
+	std::vector<std::vector<std::string>> nodeCategories;
+
 
 };
 

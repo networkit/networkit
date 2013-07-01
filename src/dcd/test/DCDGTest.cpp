@@ -426,6 +426,34 @@ TEST_F(DCDGTest, testSetupWithStatic) {
 
 }
 
+TEST_F(DCDGTest, tryArxivEval) {
+
+	DynamicCommunityDetector* dynPLP = new TDynamicLabelPropagation<Isolate>();
+	INFO("created algorithm: " << dynPLP->toString());
+
+	DynamicDGSParser* dynGen = new DynamicDGSParser("/Users/forigem/KIT/arXivSpider/src/arxivspider/conference-dataset/conference-qfin-paper.dgs");
+
+	std::vector<DynamicCommunityDetector*> detectors = {dynPLP};
+	DynCDSetup setup(*dynGen, detectors, 1e3, 1e2);
+
+	setup.run();
+
+	Graph G = setup.getGraphCopy();
+	INFO("Still alive before the loop");
+	Clustering last;
+	for (std::vector<Clustering> clusteringSequence : setup.results) {
+		last = clusteringSequence.back();
+	}
+	INFO("Still alive before the clusterings");
+	dynGen -> evaluateClusterings(last);
+
+//	std::string path = "output-clusts.txg";
+	INFO("Is proper: " << last.isProper(G));
+	INFO("Number of nodes: " << G.numberOfNodes());
+	INFO("Number of edges: " << G.numberOfEdges());
+
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
