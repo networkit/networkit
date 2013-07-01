@@ -9,8 +9,7 @@
 
 namespace NetworKit {
 
-SampledRandMeasure::SampledRandMeasure() {
-	// TODO Auto-generated constructor stub
+SampledRandMeasure::SampledRandMeasure(count maxSamples) : maxSamples(maxSamples) {
 
 }
 
@@ -20,6 +19,7 @@ SampledRandMeasure::~SampledRandMeasure() {
 
 double SampledRandMeasure::getDissimilarity(Graph& G, Clustering& first, Clustering& second) {
 	assert (G.numberOfNodes() > 0);
+	assert (G.numberOfNodes() > maxSamples);
 
 	Aux::RandomInteger randInt;
 
@@ -27,7 +27,6 @@ double SampledRandMeasure::getDissimilarity(Graph& G, Clustering& first, Cluster
 	count n00 = 0;	// number of node pairs for which clusterings disagree
 
 
-	count maxSamples = 1e3;
 	count nSamples = 0;
 
 	index z = G.upperNodeIdBound();
