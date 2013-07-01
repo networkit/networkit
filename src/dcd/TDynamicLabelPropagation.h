@@ -276,7 +276,8 @@ inline void TDynamicLabelPropagation<PrepStrategy>::onNodeAddition(node u) {
 	// update data structures
 	activeNodes.push_back(true); // new node is active
 	weightedDegree.push_back(0.0);
-	labels.append(u); // extend label array by 1 entry and create singleton
+	labels.append(u); // extend label array by 1 entry
+	labels.toSingleton(u); // create singleton
 
 	prepStrategy.onNodeAddition(u);
 }

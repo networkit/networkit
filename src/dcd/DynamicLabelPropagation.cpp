@@ -44,7 +44,9 @@ void DynamicLabelPropagation::onNodeAddition(node u) {
 	// update data structures
 	activeNodes.push_back(true); // new node is active
 	weightedDegree.push_back(0.0);
-	labels.append(u); // extend label array by 1 entry and create singleton
+	labels.append(u); // extend label array by 1 entry
+	labels.toSingleton(u);
+	TRACE("new node " << u << " gets new label " << labels[u]);
 
 	prepStrategy->onNodeAddition(u);
 }
@@ -168,7 +170,6 @@ Clustering DynamicLabelPropagation::run() {
 	runtime.stop();
 	this->timerHistory.push_back(runtime.elapsed().count());
 	INFO("[DONE] iteration #" << nIterations << ", time spent: " << runtime.elapsedTag());
-
 
 	return labels;
 }

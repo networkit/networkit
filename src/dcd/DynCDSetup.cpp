@@ -14,7 +14,10 @@ DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityD
 		detectors(dynDetectors),
 		tMax(tMax),
 		deltaT(deltaT),
-		staticAlgo(NULL) {
+		staticAlgo(NULL),
+		checkMod(false),
+		checkNumCom(false),
+		checkSampledRand(false) {
 	if (deltaT >= tMax) {
 		ERROR("deltaT >= tMax");
 		throw std::runtime_error("deltaT must be smaller than tMax");
@@ -48,6 +51,7 @@ void DynCDSetup::run() {
 	// helpers
 	Modularity modularity;
 	DynamicNMIDistance NMID;
+	SampledRandMeasure sampledRand(500);
 
 	// initialize graph
 	gen->initializeGraph();
@@ -60,53 +64,84 @@ void DynCDSetup::run() {
 	}
 
 
+
 	// for all community detectors, perform run
+	bool sourceEnd = false;
 	while (G->time() < tMax) {
-		INFO("time: " << G->time() << " of " << tMax);
 		try {
-			INFO("G->time() < tMax is TRUE");
-
+			 // try generating the next batch of events
 			gen->generateTimeSteps(G->time() + deltaT);
-			// inspect the current graph
-			INFO("current graph : " << G->toString());
 
-			// run the dynamic community detectors
-			for (index detectorIndex = 0; detectorIndex < this->detectors.size(); ++detectorIndex) {
-				DynamicCommunityDetector* dynCD = this->detectors.at(detectorIndex);
-				INFO("running dynamic community detector " << dynCD->toString());
-				results.at(detectorIndex).push_back(dynCD->run());
+			INFO("=========================== current time step: " << G->time() << " of " << tMax << " ========================================");
 
-				// evaluations which need the current graph
-				if (checkNumCom) {
-
-					INFO("calculating number of clusters");
-					INFO("[RESULT] number of communities: " << results.at(detectorIndex).back().numberOfClusters());
-				}
-
-
-				if (checkMod) {
-					double mod = modularity.getQuality(results.at(detectorIndex).back(), *G);
-					INFO("[RESULT] communities have modularity: " << mod);
-				}
-
-				if (checkNMID && (results[detectorIndex].size() >= 2)) {
-					double nmid = NMID.getDissimilarity(*G, results.at(detectorIndex).at(results.at(detectorIndex).size() - 2), results.at(detectorIndex).back());
-					INFO("[RESULT] NMID for communities at t=" << G->time() << " vs t=" << (G->time() - deltaT) << ": " << nmid);
-				}
-			}
-
-			// optionally also run a static community detector
-			if (staticAlgo != NULL) {
-				staticClusterings.push_back(staticAlgo->run(*G));
-			}
 		} catch (std::logic_error& e) {
-			INFO("source cannot produce any more events");
-			// perform algorithm runs for the last time
-			for (index detectorIndex = 0; detectorIndex < this->detectors.size(); ++detectorIndex) {
-				DynamicCommunityDetector* dynCD = this->detectors.at(detectorIndex);
-				INFO("running dynamic community detector " << dynCD->toString());
-				results.at(detectorIndex).push_back(dynCD->run());
+			INFO("exception caught: " << e.what());
+			sourceEnd = true;
+		}
+
+		// run algorithms and evaluation
+		// inspect the current graph
+		INFO("current graph : " << G->toString());
+
+		// run the dynamic community detectors
+		for (index detectorIndex = 0; detectorIndex < this->detectors.size(); ++detectorIndex) {
+			DynamicCommunityDetector* dynCD = this->detectors.at(detectorIndex);
+
+			INFO("running dynamic community detector " << dynCD->toString());
+			results.at(detectorIndex).push_back(dynCD->run());
+
+			// TRACE("clustering looks like: " << Aux::vectorToString(results.at(detectorIndex).back().getVector()));
+			assert (results.at(detectorIndex).back().isProper(*G));
+
+			// evaluations which need the current graph
+			if (checkNumCom) {
+				INFO("calculating number of clusters");
+				INFO("[RESULT] number of communities \t "<< detectors.at(detectorIndex)->toString() << "\t" << results.at(detectorIndex).back().numberOfClusters());
 			}
+
+			// modularity
+			if (checkMod) {
+				double mod = modularity.getQuality(results.at(detectorIndex).back(), *G);
+				INFO("[RESULT] modularity \t " << detectors.at(detectorIndex)->toString() << " \t " << mod);
+			}
+
+			// continuity by sampling
+			if (checkSampledRand  && (results[detectorIndex].size() >= 2)) {
+				double cont = sampledRand.getDissimilarity(*G, results.at(detectorIndex).at(results.at(detectorIndex).size() - 2), results.at(detectorIndex).back());
+				INFO("[RESULT] continuity \t " << detectors.at(detectorIndex)->toString() << " \t " << cont);
+
+			}
+		} // end for multiple detectors
+
+		// optionally also run a static community detector
+		if (staticAlgo != NULL) {
+			staticClusterings.push_back(staticAlgo->run(*G));
+
+			assert (staticClusterings.back().isProper(*G));
+
+			if (checkNumCom) {
+
+				INFO("calculating number of clusters");
+				INFO("[RESULT] number of communities \t " << staticAlgo->toString() << "\t " << staticClusterings.back().numberOfClusters());
+			}
+
+			// modularity
+			if (checkMod) {
+				double mod = modularity.getQuality(staticClusterings.back(), *G);
+				INFO("[RESULT] modularity \t" << staticAlgo->toString() << "\t " << mod);
+			}
+
+			if (checkSampledRand  && (staticClusterings.size() >= 2)) { // if static algo has been set,
+				double contStatic = sampledRand.getDissimilarity(*G, staticClusterings.at(staticClusterings.size() - 2), staticClusterings.back());
+				INFO("[RESULT] continuity \t " << staticAlgo->toString() <<  " \t " << contStatic);
+			}
+		}
+
+
+
+		// break from the loop if source cannot produce more events
+		if (sourceEnd) {
+			INFO("breaking from loop because of end of source");
 			break;
 		}
 
@@ -143,7 +178,11 @@ void DynCDSetup::checkNumberOfCommunities() {
 }
 
 void DynCDSetup::checkNMIDistance() {
-	this->checkNMID = true;
+	// this->checkNMID = true;
+}
+
+void DynCDSetup::checkContinuity() {
+	this->checkSampledRand = true;
 }
 
 } /* namespace NetworKit */
