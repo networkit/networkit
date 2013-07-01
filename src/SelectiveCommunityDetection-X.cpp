@@ -339,16 +339,18 @@ int main(int argc, char **argv) {
 
 	Parameters param;
 	double epsilon = 0.3;
-	double mu = 2.0;
+	count mu = 2;
 	double omega = 0.0;
-	int numSystems = 0;
-	int numIters = 0;
-	int norm = 0;
+	count numSystems = 0;
+	count numIters = 0;
+	count norm = 0;
 
 	if (options[PARAM]) {
 		std::string paramArg = options[PARAM].arg;
-		while (Aux::StringTools::split(paramArg, ',').size() > 0) {
-			std::string parameter = Aux::StringTools::split(paramArg, ';')[0];
+		std::vector<std::string> paramVec = Aux::StringTools::split(paramArg, ',');
+		while (paramVec.size() > 0) {
+			TRACE("parsing " << paramArg);
+			std::string parameter = paramVec[0];
 			if (Aux::StringTools::split(parameter, ':').size() == 2) {
 				std::string first =
 						Aux::StringTools::split(parameter, ':').front();
@@ -359,22 +361,22 @@ int main(int argc, char **argv) {
 				} else if (first == "mu") {
 					mu = std::stoi(second);
 				} else if (first == "numSystems") {
-					numSystems = stoi(second);
+					numSystems = std::stoi(second);
 				} else if (first == "numIters") {
-					numIters = stoi(second);
+					numIters = std::stoi(second);
 				} else if (first == "omega") {
-					omega = stof(second);
+					omega = std::stof(second);
 				} else if (first == "norm") {
-					norm = stof(second);
+					norm = std::stoi(second);
 				} else {
-					std::cout << "[ERROR] invalid argument " << std::endl;
+					std::cout << "[ERROR] invalid argument: " << second << std::endl;
 					exit(1);
 				}
 			} else {
-				std::cout << "[ERROR] invalid argument " << std::endl;
+				std::cout << "[ERROR] invalid argument: " << parameter << std::endl;
 				exit(1);
 			}
-			paramArg = Aux::StringTools::split(paramArg, ';').back();
+			paramVec.erase(paramVec.begin());
 		}
 	}
 
@@ -483,7 +485,7 @@ int main(int argc, char **argv) {
 					algo = new TGreedyCommunityExpansion<TLocalModularityL,
 							TDummyAcceptability, DummyTrimming>(G);
 				} else {
-					std::cout << "[ERROR] invalid arguments " << std::endl;
+					std::cout << "[ERROR] invalid arguments: " << first << " or " << second << " or " << third << std::endl;
 					exit(1);
 				}
 
@@ -534,7 +536,7 @@ int main(int argc, char **argv) {
 						exit(1);
 					}
 				} else {
-					std::cout << "[ERROR] invalid arguments " << std::endl;
+					std::cout << "[ERROR] invalid arguments: " << first << " or " << second << std::endl;
 					exit(1);
 				}
 			} else if (Aux::StringTools::split(detectorArg, ':').size() == 1) {
@@ -551,7 +553,7 @@ int main(int argc, char **argv) {
 					algo = new TGreedyCommunityExpansion<TLocalModularityL,
 							TDummyAcceptability, DummyTrimming>(G);
 				} else {
-					std::cout << "[ERROR] invalid arguments " << std::endl;
+					std::cout << "[ERROR] invalid arguments: " << detectorArg << std::endl;
 					exit(1);
 				}
 			} else {

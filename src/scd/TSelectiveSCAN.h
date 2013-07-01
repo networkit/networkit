@@ -41,6 +41,9 @@ protected:
 
 template<class Distance>
 inline TSelectiveSCAN<Distance>::TSelectiveSCAN(Graph& G, Parameters& param, double epsilon, double mu) : SelectiveCommunityDetector(G), param(param), epsilon(epsilon), mu(mu), distMeasure(G) {
+	DEBUG("initializing distance measure");
+	// initialize distance measure
+	distMeasure.initialize(param);
 }
 
 
@@ -51,8 +54,6 @@ inline TSelectiveSCAN<Distance>::~TSelectiveSCAN() {
 template<class Distance>
 inline std::unordered_map<node, std::unordered_set<node> > TSelectiveSCAN<Distance>::run(std::unordered_set<node> seeds) {
 
-	// initialize distance measure
-	distMeasure.initialize(param);
 
 	std::unordered_map<node, node> nodesState;
 	std::unordered_map<node, std::unordered_set<node>> communities;
