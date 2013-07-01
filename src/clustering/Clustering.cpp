@@ -168,8 +168,13 @@ void Clustering::compact() {
 	this->forEntries([&](node v, cluster c) {
 		if (compactingMap.count(c) == 0) {
 			// insert and increase nextIndex
-			compactingMap.insert(std::make_pair(c, nextIndex));
-			++nextIndex;
+			if (c != none) {
+				compactingMap.insert(std::make_pair(c, nextIndex));
+				++nextIndex;
+			}
+			else {
+				compactingMap.insert(std::make_pair(none, none));
+			}
 		}
 	});
 
@@ -177,9 +182,7 @@ void Clustering::compact() {
 		data[v] = compactingMap[c];
 	});
 
-	cluster ub = *std::max_element(data.begin(), data.end());
-	setUpperBound(ub+1);
-
+	setUpperBound(nextIndex);
 	TRACE("upperBound: " << upperBound());
 }
 
