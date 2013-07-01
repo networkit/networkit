@@ -730,7 +730,7 @@ int main(int argc, char **argv) {
 					trimming = new DummyTrimming();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
 				} else {
-					std::cout << "[ERROR] invalid arguments " << std::endl;
+					std::cout << "[ERROR] unknown objective: " << Aux::StringTools::split(detectorArg, ':')[0] << std::endl;
 					exit(1);
 				}
 			} else {

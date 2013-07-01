@@ -358,7 +358,8 @@ int main(int argc, char **argv) {
 
 	if (options[CHECK_CONTINUITY]) {
 		INFO("will check continuity");
-		dynCDSetup->checkNMIDistance();
+		// FIXME: dynCDSetup->checkNMIDistance();
+		dynCDSetup->checkContinuity();
 	}
 
 	for (int run = 0; run < runs; run++) {
