@@ -424,11 +424,10 @@ int main(int argc, char **argv) {
 				algo = new SelectiveSCAN(G, *dist, epsilon, mu);
 			}
 		} else if (detectorName == "TGreedyCommunityExpansion") {
-			if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
-				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
-				std::string second =
-						Aux::StringTools::split(detectorArg, ':')[1];
-				std::string third = Aux::StringTools::split(detectorArg, ':')[2];
+			if (Aux::StringTools::split(detectorArg, ':').size() == 4) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
+				std::string second = Aux::StringTools::split(detectorArg, ':')[2];
+				std::string third = Aux::StringTools::split(detectorArg, ':')[3];
 				if (first == "Conductance" && second == "NodeClusterSimilarity"
 						&& third == "BoundarySharpness") {
 					algo = new TGreedyCommunityExpansion<TConductance,
@@ -487,10 +486,10 @@ int main(int argc, char **argv) {
 					exit(1);
 				}
 
-			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
-				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
 				std::string second =
-						Aux::StringTools::split(detectorArg, ':')[1];
+						Aux::StringTools::split(detectorArg, ':')[2];
 				if (first == "Conductance") {
 					if (second == "NodeClusterSimilarity") {
 						algo = new TGreedyCommunityExpansion<TConductance,
@@ -537,16 +536,16 @@ int main(int argc, char **argv) {
 					std::cout << "[ERROR] invalid arguments " << std::endl;
 					exit(1);
 				}
-			} else if (Aux::StringTools::split(detectorArg, ':').size() == 1) {
-				if (Aux::StringTools::split(detectorArg, ':')[0]
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
+				if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "Conductance") {
 					algo = new TGreedyCommunityExpansion<TConductance,
 							TDummyAcceptability, DummyTrimming>(G);
-				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+				} else if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "ModularityM") {
 					algo = new TGreedyCommunityExpansion<TLocalModularityM,
 							TDummyAcceptability, DummyTrimming>(G);
-				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+				} else if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "ModularityL") {
 					algo = new TGreedyCommunityExpansion<TLocalModularityL,
 							TDummyAcceptability, DummyTrimming>(G);
@@ -559,11 +558,11 @@ int main(int argc, char **argv) {
 				exit(1);
 			}
 		} else if (detectorName == "GreedyCommunityExpansion") {
-			if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
-				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+			if (Aux::StringTools::split(detectorArg, ':').size() == 4) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
 				std::string second =
-						Aux::StringTools::split(detectorArg, ':')[1];
-				std::string third = Aux::StringTools::split(detectorArg, ':')[2];
+						Aux::StringTools::split(detectorArg, ':')[2];
+				std::string third = Aux::StringTools::split(detectorArg, ':')[3];
 				if (first == "Conductance" && second == "NodeClusterSimilarity"
 						&& third == "BoundarySharpness") {
 					similarity = new NodeClusterSimilarity(G, tmp, tmp);
@@ -646,10 +645,10 @@ int main(int argc, char **argv) {
 					exit(1);
 				}
 
-			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
-				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
 				std::string second =
-						Aux::StringTools::split(detectorArg, ':')[1];
+						Aux::StringTools::split(detectorArg, ':')[2];
 				if (first == "Conductance") {
 					objective = new Conductance(G, tmp, bound);
 					if (second == "NodeClusterSimilarity") {
@@ -708,20 +707,20 @@ int main(int argc, char **argv) {
 					std::cout << "[ERROR] invalid arguments " << std::endl;
 					exit(1);
 				}
-			} else if (Aux::StringTools::split(detectorArg, ':').size() == 1) {
-				if (Aux::StringTools::split(detectorArg, ':')[0]
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
+				if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "Conductance") {
 					objective = new Conductance(G, tmp, bound);
 					similarity = new DummySimilarity(G, tmp, tmp);
 					trimming = new DummyTrimming();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
-				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+				} else if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "ModularityM") {
 					objective = new LocalModularityM(G, tmp, bound);
 					similarity = new DummySimilarity(G, tmp, tmp);
 					trimming = new DummyTrimming();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
-				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+				} else if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "ModularityL") {
 					objective = new LocalModularityL(G, tmp, bound);
 					similarity = new DummySimilarity(G, tmp, tmp);
