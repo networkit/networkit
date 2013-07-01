@@ -19,6 +19,7 @@ SelectiveSCAN::~SelectiveSCAN() {
 
 std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unordered_set<node> set){
 
+	this->distMeasure->preprocess();
 	std::unordered_map<node, node> nodesState;
 	std::unordered_map<node, std::unordered_set<node>> communities;
 	std::unordered_set<node> community;

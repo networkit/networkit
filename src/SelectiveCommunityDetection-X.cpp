@@ -9,7 +9,6 @@
 
 // includes
 
-
 // includes
 #include <iostream>
 #include <fstream>
@@ -31,7 +30,6 @@
 // OpenMP
 #include <omp.h>
 
-
 // EnsembleClustering
 #include "Globals.h"
 #include "ext/optionparser.h"
@@ -44,18 +42,22 @@
 #include "scd/RandomSeedSet.h"
 #include "scd/RandomWalkSeedSet.h"
 #include "scd/TSelectiveSCAN.h"
+#include "scd/SelectiveSCAN.h"
+#include "scd/TGreedyCommunityExpansion.h"
+#include "scd/TQualityObjective.h"
+#include "scd/TAcceptability.h"
+#include "scd/GreedyCommunityExpansion.h"
+#include "scd/QualityObjective.h"
+#include "scd/Acceptability.h"
+#include "scd/CommunityTrimming.h"
 #include "distmeasures/TAlgebraicDistance.h"
 #include "distmeasures/TNeighborhoodDistance.h"
 #include "distmeasures/TNodeDistance.h"
-
-
+#include "distmeasures/AlgebraicDistance.h"
+#include "distmeasures/NeighborhoodDistance.h"
+#include "distmeasures/NodeDistance.h"
 
 using namespace NetworKit;
-
-
-
-
-
 
 #ifndef NOLOGGING
 #ifndef NOLOG4CXX
@@ -83,65 +85,90 @@ void configureLogging(const std::string& loglevel = "INFO") {
 #endif
 #endif
 
-
 /**
  *  Set the number of threads available to the program.
  */
 void setNumberOfThreads(int nThreads) {
 #ifdef _OPENMP
-		omp_set_num_threads(nThreads);
+	omp_set_num_threads(nThreads);
 #else
-		WARN("Thread option ignored since OpenMP is deactivated.");
+	WARN("Thread option ignored since OpenMP is deactivated.");
 #endif
 }
-
-
 
 // *** Option Parser Configuration ***//
 
 class Arg: public OptionParser::Arg {
 
-static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool msg)
-{
-  if (option.arg != 0)
-    return OptionParser::ARG_OK;
+	static OptionParser::ArgStatus Required(const OptionParser::Option& option,
+			bool msg) {
+		if (option.arg != 0)
+			return OptionParser::ARG_OK;
 
-  if (msg) {
-	  std::cout << "Option '" << option << "' requires an argument" << std::endl;
-  }
-  return OptionParser::ARG_ILLEGAL;
-}
+		if (msg) {
+			std::cout << "Option '" << option << "' requires an argument"
+					<< std::endl;
+		}
+		return OptionParser::ARG_ILLEGAL;
+	}
 
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, SEEDS, DETECTOR, QUALITY, GROUND_TRUTH, RUNS, SAVE_GRAPH, PROGRESS, SUMMARY};
-const OptionParser::Descriptor usage[] =
-{
- {UNKNOWN, 0, "" , "", OptionParser::Arg::None, "USAGE: EnsembleClustering [options]\n\n"
-                                            "Options:" },
- {HELP,    0,"h" , "help",OptionParser::Arg::None, "  --help  \t Print usage and exit." },
- {LOGLEVEL,    0, "" , "loglevel", OptionParser::Arg::Required, "  --loglevel=<LEVEL>  \t set the log level" },
- {THREADS,    0, "" , "threads", OptionParser::Arg::Required, "  --threads=<NUM>  \t set the maximum number of threads" },
- {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
- {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph=<PATH> \t Run ensemble clusterer on graph"},
- {SEEDS, 0, "", "seeds", OptionParser::Arg::Required, "  --seeds=<NAME> \t Specify seed set generator"},
- {DETECTOR, 0, "", "detector", OptionParser::Arg::Required, "  --detector=<NAME>:<PARAMS> \t select clustering algorithm"},
- {QUALITY, 0, "", "quality", OptionParser::Arg::Required, "  --quality=<NAME> \t select quality measure for evaluation"},
- {GROUND_TRUTH, 0, "", "groundTruth", OptionParser::Arg::Required, "  --groundTruth=<NAME>:<PARAMS> \t select ground truth"},
- {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
- {SAVE_GRAPH, 0, "", "saveGraph", OptionParser::Arg::Required, "  --saveGraph=<PATH> \t write the graph to a file"},
- {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
- {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
- {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
-                                            " TODO" },
- {0,0,0,0,0,0}
+enum optionIndex {
+	UNKNOWN,
+	HELP,
+	LOGLEVEL,
+	THREADS,
+	TESTS,
+	GRAPH,
+	SEEDS,
+	DETECTOR,
+	PARAM,
+	QUALITY,
+	GROUND_TRUTH,
+	RUNS,
+	SAVE_GRAPH,
+	PROGRESS,
+	SUMMARY
 };
-
+const OptionParser::Descriptor usage[] =
+		{ { UNKNOWN, 0, "", "", OptionParser::Arg::None,
+				"USAGE: EnsembleClustering [options]\n\n"
+						"Options:" }, { HELP, 0, "h", "help",
+				OptionParser::Arg::None, "  --help  \t Print usage and exit." },
+				{ LOGLEVEL, 0, "", "loglevel", OptionParser::Arg::Required,
+						"  --loglevel=<LEVEL>  \t set the log level" },
+				{ THREADS, 0, "", "threads", OptionParser::Arg::Required,
+						"  --threads=<NUM>  \t set the maximum number of threads" },
+				{ TESTS, 0, "t", "tests", OptionParser::Arg::None,
+						"  --tests \t Run unit tests" }, { GRAPH, 0, "g",
+						"graph", OptionParser::Arg::Required,
+						"  --graph=<PATH> \t Run ensemble clusterer on graph" },
+				{ SEEDS, 0, "", "seeds", OptionParser::Arg::Required,
+						"  --seeds=<NAME> \t Specify seed set generator" },
+				{ DETECTOR, 0, "", "detector", OptionParser::Arg::Required,
+						"  --detector=<NAME>:<PARAMS> \t select clustering algorithm" },
+				{ PARAM, 0, "", "param", OptionParser::Arg::Required,
+						"  --param=<NAME>:<PARAMS> \t select parameters" },
+				{ QUALITY, 0, "", "quality", OptionParser::Arg::Required,
+						"  --quality=<NAME> \t select quality measure for evaluation" },
+				{ GROUND_TRUTH, 0, "", "groundTruth",
+						OptionParser::Arg::Required,
+						"  --groundTruth=<NAME>:<PARAMS> \t select ground truth" },
+				{ RUNS, 0, "", "runs", OptionParser::Arg::Required,
+						"  --runs=<NUMBER> \t set number of clusterer runs" }, {
+						SAVE_GRAPH, 0, "", "saveGraph",
+						OptionParser::Arg::Required,
+						"  --saveGraph=<PATH> \t write the graph to a file" }, {
+						PROGRESS, 0, "", "progress", OptionParser::Arg::None,
+						"  --progress \t print progress bar" },
+				{ SUMMARY, 0, "", "summary", OptionParser::Arg::Required,
+						"  --summary=<PATH> \t append summary as a .csv line to this file" },
+				{ UNKNOWN, 0, "", "", OptionParser::Arg::None, "\nExamples:\n"
+						" TODO" }, { 0, 0, 0, 0, 0, 0 } };
 
 // MAIN FUNCTIONS
-
-
 
 /**
  * Read a graph from a file.
@@ -150,7 +177,7 @@ Graph readGraph(const std::string& graphPath) {
 
 	// READ GRAPH
 
-	METISGraphReader reader;	// TODO: add support for multiple graph file formats
+	METISGraphReader reader; // TODO: add support for multiple graph file formats
 
 	// TIMING
 	Aux::Timer readTimer;
@@ -161,13 +188,13 @@ Graph readGraph(const std::string& graphPath) {
 	Graph G = reader.read(graphPath);
 	//
 	readTimer.stop();
-	std::cout << "[DONE] read graph file " << readTimer.elapsedTag() << std::endl;
+	std::cout << "[DONE] read graph file " << readTimer.elapsedTag()
+			<< std::endl;
 	// TIMING
 
 	return G;
 
 }
-
 
 Graph getGraph(OptionParser::Option* options) {
 
@@ -184,44 +211,38 @@ Graph getGraph(OptionParser::Option* options) {
 	}
 }
 
-
-
-
 int main(int argc, char **argv) {
-	std::cout << "=== NetworKit - Selective Community Detection ===" << std::endl;
+	std::cout << "=== NetworKit - Selective Community Detection ==="
+			<< std::endl;
 
 	// ENABLE FLOATING POINT EXCEPTIONS (needs GNU extension, apparently only available on Linux)
 #ifdef _GNU_SOURCE
 	// feenableexcept(FE_ALL_EXCEPT);
 #endif
 
-
 	/// PARSE OPTIONS
 
-	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
-	OptionParser::Stats  stats(usage, argc, argv);
+	argc -= (argc > 0);
+	argv += (argc > 0); // skip program name argv[0] if present
+	OptionParser::Stats stats(usage, argc, argv);
 	OptionParser::Option options[stats.options_max], buffer[stats.buffer_max];
 	OptionParser::Parser parse(usage, argc, argv, options, buffer);
 
 	if (parse.error())
-	 return 1;
+		return 1;
 
 	if (options[HELP] || argc == 0) {
-	 OptionParser::printUsage(std::cout, usage);
-	 return 0;
+		OptionParser::printUsage(std::cout, usage);
+		return 0;
 	}
 
 	for (OptionParser::Option* opt = options[UNKNOWN]; opt; opt = opt->next())
-	 std::cout << "Unknown option: " << opt->name << "\n";
+		std::cout << "Unknown option: " << opt->name << "\n";
 
 	for (int i = 0; i < parse.nonOptionsCount(); ++i)
-	 std::cout << "Non-option #" << i << ": " << parse.nonOption(i) << "\n";
-
-
-
+		std::cout << "Non-option #" << i << ": " << parse.nonOption(i) << "\n";
 
 	// CONFIGURE LOGGING
-
 
 #ifndef NOLOGGING
 #ifndef NOLOG4CXX
@@ -232,7 +253,6 @@ int main(int argc, char **argv) {
 	}
 #endif
 #endif
-
 
 	// CONFIGURE PARALLELISM
 
@@ -253,7 +273,6 @@ int main(int argc, char **argv) {
 		PRINT_PROGRESS = false;
 	}
 
-
 	// TODO: how to do summary?
 	if (options[SUMMARY]) {
 		// check if file exists by trying to read from it
@@ -263,25 +282,23 @@ int main(int argc, char **argv) {
 		} else {
 			// create it and write CSV header
 			std::ofstream summary(options[SUMMARY].arg);
-			summary << "threads;algo;revision;graph;running;eps;clusters;mod" << std::endl; // TODO: update header
+			summary << "threads;algo;revision;graph;running;eps;clusters;mod"
+					<< std::endl; // TODO: update header
 		}
 	}
-
-
 
 	// RUN UNIT TESTS
 
 	if (options[TESTS]) {
 
 #ifndef NOGTEST
-	   ::testing::InitGoogleTest(&argc, argv);
-	   INFO("=== starting unit tests ===");
-	   return RUN_ALL_TESTS();
+		::testing::InitGoogleTest(&argc, argv);
+		INFO("=== starting unit tests ===");
+		return RUN_ALL_TESTS();
 #else
-	   throw std::runtime_error("unit tests are excluded from build by the NOGTEST preprocessor directive");
+		throw std::runtime_error("unit tests are excluded from build by the NOGTEST preprocessor directive");
 #endif
 	}
-
 
 	// SET NUMBER OF CLUSTERER RUNS
 	int runs = 1;
@@ -289,10 +306,7 @@ int main(int argc, char **argv) {
 		runs = std::atoi(options[RUNS].arg);
 	}
 
-
-
 	// RUN PROGRAM
-
 
 	// get graph
 	Graph G = getGraph(options);
@@ -311,10 +325,10 @@ int main(int argc, char **argv) {
 		} else if (seedsName == "RandomWalkSeedSet") {
 			seedGen = new RandomWalkSeedSet(G);
 		} else {
-			std::cout << "[ERROR] unknown argument for option --seeds: " << seedsName << std::endl;
+			std::cout << "[ERROR] unknown argument for option --seeds: "
+					<< seedsName << std::endl;
 			exit(1);
 		}
-
 
 	} else {
 		std::cout << "[ERROR] option --seeds must be supplied" << std::endl;
@@ -323,69 +337,431 @@ int main(int argc, char **argv) {
 
 
 
+	Parameters param;
+	double epsilon = 0.3;
+	double mu = 2.0;
+	double omega = 0.0;
+	int numSystems = 0;
+	int numIters = 0;
+	int norm = 0;
+
+	if (options[PARAM]) {
+		std::string paramArg = options[PARAM].arg;
+		while (Aux::StringTools::split(paramArg, ';').size() > 0) {
+			std::string parameter = Aux::StringTools::split(paramArg, ';')[0];
+			if (Aux::StringTools::split(parameter, ':').size() == 2) {
+				std::string first =
+						Aux::StringTools::split(parameter, ';').front();
+				std::string second =
+						Aux::StringTools::split(parameter, ';').back();
+				if (first == "epsilon") {
+					epsilon = std::stof(second);
+				} else if (first == "mu") {
+					mu = std::stoi(second);
+				} else if (first == "numSystems") {
+					numSystems = stoi(second);
+				} else if (first == "numIters") {
+					numIters = stoi(second);
+				} else if (first == "omega") {
+					omega = stof(second);
+				} else if (first == "norm") {
+					norm = stof(second);
+				} else {
+					std::cout << "[ERROR] invalid argument " << std::endl;
+					exit(1);
+				}
+			} else {
+				std::cout << "[ERROR] invalid argument " << std::endl;
+				exit(1);
+			}
+			paramArg = Aux::StringTools::split(paramArg, ';').back();
+		}
+	}
+
+	param.setInt("norm", norm);
+	param.setInt("numSystems", numSystems);
+	param.setInt("numIters", numIters);
+	param.setDouble("omega", omega);
+
+
 	// get algorithms
 	SelectiveCommunityDetector* algo = NULL;
+	std::unordered_set<node> tmp;
+	std::unordered_map<node, count> bound;
+	Acceptability* similarity = NULL;
+	QualityObjective* objective = NULL;
+	CommunityTrimming* trimming = NULL;
+	NodeDistance* dist = NULL;
+
 	if (options[DETECTOR]) {
 		std::string detectorArg = options[DETECTOR].arg;
 		std::string detectorName = Aux::StringTools::split(detectorArg, ':')[0];
-		std::string algoParams;
-		Parameters param;
-		if (Aux::StringTools::split(detectorArg, ':').size() > 1) {
-			algoParams = Aux::StringTools::split(detectorArg, ':').back();
-		}
-		std::string dist = Aux::StringTools::split(algoParams, ':').front();
-		if (dist == "TDN") {
-			if (Aux::StringTools::split(algoParams, ':').size() > 1) {
-				std::string epsilon = Aux::StringTools::split(algoParams, ':').front();
-				param.setDouble("epsilon", std::stof(epsilon));
-				if (Aux::StringTools::split(algoParams, ':').back().size() > 1) {
-					param.setInt("mu", std::stof(Aux::StringTools::split(Aux::StringTools::split(algoParams, ':').back()).front()));
-				}
-			}
-		} else if (dist == "TAD") {
-		} else {
-			std::cout << "[ERROR] unknown distance measure: " << dist << " [EXIT]" << std::endl;
-			exit(1);
-		}
+
 		if (detectorName == "TSelectiveSCAN") {
-			if (dist == "TDN") {
-				TSelectiveSCAN<TNeighborhoodDistance> algo(G, param);
-			} else if (dist == "TAD") {
-				TSelectiveSCAN<TAlgebraicDistance> algo(G, param);
+			if (Aux::StringTools::split(detectorArg, ':').size() > 1) {
+				if (Aux::StringTools::split(detectorArg, ':').back() == "TAD") {
+					algo = new TSelectiveSCAN<TAlgebraicDistance>(G, param,
+							epsilon, mu);
+				} else {
+					algo = new TSelectiveSCAN<TNeighborhoodDistance>(G, param,
+							epsilon, mu);
+				}
+			} else {
+				algo = new TSelectiveSCAN<TNeighborhoodDistance>(G, param,
+						epsilon, mu);
 			}
 		} else if (detectorName == "SelectiveSCAN") {
-			// TODO:
+			if (Aux::StringTools::split(detectorArg, ':').size() > 1) {
+				if (Aux::StringTools::split(detectorArg, ':').back() == "AD") {
+					dist = new AlgebraicDistance(G, numSystems, numIters, omega, norm);
+					algo = new SelectiveSCAN(G, *dist, epsilon, mu);
+				} else {
+					dist = new NeighborhoodDistance(G);
+					algo = new SelectiveSCAN(G, *dist, epsilon, mu);
+				}
+			} else {
+				dist = new NeighborhoodDistance(G);
+				algo = new SelectiveSCAN(G, *dist, epsilon, mu);
+			}
 		} else if (detectorName == "TGreedyCommunityExpansion") {
-			// TODO:
+			if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+				std::string second =
+						Aux::StringTools::split(detectorArg, ':')[1];
+				std::string third = Aux::StringTools::split(detectorArg, ':')[2];
+				if (first == "Conductance" && second == "NodeClusterSimilarity"
+						&& third == "BoundarySharpness") {
+					algo = new TGreedyCommunityExpansion<TConductance,
+							TNodeClusterSimilarity, BoundarySharpness>(G);
+				} else if (first == "Conductance"
+						&& second == "NodeClusterSimilarity"
+						&& third == "Dummy") {
+					algo = new TGreedyCommunityExpansion<TConductance,
+							TNodeClusterSimilarity, DummyTrimming>(G);
+				} else if (first == "Conductance" && second == "Dummy"
+						&& third == "BoundarySharpness") {
+					algo = new TGreedyCommunityExpansion<TConductance,
+							TDummyAcceptability, BoundarySharpness>(G);
+				} else if (first == "Conductance" && second == "Dummy"
+						&& third == "Dummy") {
+					algo = new TGreedyCommunityExpansion<TConductance,
+							TDummyAcceptability, DummyTrimming>(G);
+				} else if (first == "ModularityM"
+						&& second == "NodeClusterSimilarity"
+						&& third == "BoundarySharpness") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityM,
+							TNodeClusterSimilarity, BoundarySharpness>(G);
+				} else if (first == "ModularityM"
+						&& second == "NodeClusterSimilarity"
+						&& third == "Dummy") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityM,
+							TNodeClusterSimilarity, DummyTrimming>(G);
+				} else if (first == "ModularityM" && second == "Dummy"
+						&& third == "BoundarySharpness") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityM,
+							TDummyAcceptability, BoundarySharpness>(G);
+				} else if (first == "ModularityM" && second == "Dummy"
+						&& third == "Dummy") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityM,
+							TDummyAcceptability, DummyTrimming>(G);
+				} else if (first == "ModularityL"
+						&& second == "NodeClusterSimilarity"
+						&& third == "BoundarySharpness") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityL,
+							TNodeClusterSimilarity, BoundarySharpness>(G);
+				} else if (first == "ModularityL"
+						&& second == "NodeClusterSimilarity"
+						&& third == "Dummy") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityL,
+							TNodeClusterSimilarity, DummyTrimming>(G);
+				} else if (first == "ModularityL" && second == "Dummy"
+						&& third == "BoundarySharpness") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityL,
+							TDummyAcceptability, BoundarySharpness>(G);
+				} else if (first == "ModularityL" && second == "Dummy"
+						&& third == "Dummy") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityL,
+							TDummyAcceptability, DummyTrimming>(G);
+				} else {
+					std::cout << "[ERROR] invalid arguments " << std::endl;
+					exit(1);
+				}
+
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+				std::string second =
+						Aux::StringTools::split(detectorArg, ':')[1];
+				if (first == "Conductance") {
+					if (second == "NodeClusterSimilarity") {
+						algo = new TGreedyCommunityExpansion<TConductance,
+								TNodeClusterSimilarity, DummyTrimming>(G);
+					} else if (second == "BoundarySharpness") {
+						algo = new TGreedyCommunityExpansion<TConductance,
+								TDummyAcceptability, BoundarySharpness>(G);
+					} else if (second == "Dummy") {
+						algo = new TGreedyCommunityExpansion<TConductance,
+								TDummyAcceptability, DummyTrimming>(G);
+					} else {
+						std::cout << "[ERROR] invalid arguments " << std::endl;
+						exit(1);
+					}
+				} else if (first == "ModularityM") {
+					if (second == "NodeClusterSimilarity") {
+						algo = new TGreedyCommunityExpansion<TLocalModularityM,
+								TNodeClusterSimilarity, DummyTrimming>(G);
+					} else if (second == "BoundarySharpness") {
+						algo = new TGreedyCommunityExpansion<TLocalModularityM,
+								TDummyAcceptability, BoundarySharpness>(G);
+					} else if (second == "Dummy") {
+						algo = new TGreedyCommunityExpansion<TLocalModularityM,
+								TDummyAcceptability, DummyTrimming>(G);
+					} else {
+						std::cout << "[ERROR] invalid arguments " << std::endl;
+						exit(1);
+					}
+				} else if (first == "ModularityL") {
+					if (second == "NodeClusterSimilarity") {
+						algo = new TGreedyCommunityExpansion<TLocalModularityL,
+								TNodeClusterSimilarity, DummyTrimming>(G);
+					} else if (second == "BoundarySharpness") {
+						algo = new TGreedyCommunityExpansion<TLocalModularityL,
+								TDummyAcceptability, BoundarySharpness>(G);
+					} else if (second == "Dummy") {
+						algo = new TGreedyCommunityExpansion<TLocalModularityL,
+								TDummyAcceptability, DummyTrimming>(G);
+					} else {
+						std::cout << "[ERROR] invalid arguments " << std::endl;
+						exit(1);
+					}
+				} else {
+					std::cout << "[ERROR] invalid arguments " << std::endl;
+					exit(1);
+				}
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 1) {
+				if (Aux::StringTools::split(detectorArg, ':')[0]
+						== "Conductance") {
+					algo = new TGreedyCommunityExpansion<TConductance,
+							TDummyAcceptability, DummyTrimming>(G);
+				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+						== "ModularityM") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityM,
+							TDummyAcceptability, DummyTrimming>(G);
+				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+						== "ModularityL") {
+					algo = new TGreedyCommunityExpansion<TLocalModularityL,
+							TDummyAcceptability, DummyTrimming>(G);
+				} else {
+					std::cout << "[ERROR] invalid arguments " << std::endl;
+					exit(1);
+				}
+			} else {
+				std::cout << "[ERROR] invalid argument " << std::endl;
+				exit(1);
+			}
 		} else if (detectorName == "GreedyCommunityExpansion") {
-			// TODO:
+			if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+				std::string second =
+						Aux::StringTools::split(detectorArg, ':')[1];
+				std::string third = Aux::StringTools::split(detectorArg, ':')[2];
+				if (first == "Conductance" && second == "NodeClusterSimilarity"
+						&& third == "BoundarySharpness") {
+					similarity = new NodeClusterSimilarity(G, tmp, tmp);
+					objective = new Conductance(G, tmp, bound);
+					trimming = new BoundarySharpness();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "Conductance"
+						&& second == "NodeClusterSimilarity"
+						&& third == "Dummy") {
+					similarity = new NodeClusterSimilarity(G, tmp, tmp);
+					objective = new Conductance(G, tmp, bound);
+					trimming = new DummyTrimming();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "Conductance" && second == "Dummy"
+						&& third == "BoundarySharpness") {
+					similarity = new DummySimilarity(G, tmp, tmp);
+					objective = new Conductance(G, tmp, bound);
+					trimming = new BoundarySharpness();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "Conductance" && second == "Dummy"
+						&& third == "Dummy") {
+					similarity = new DummySimilarity(G, tmp, tmp);
+					objective = new Conductance(G, tmp, bound);
+					trimming = new DummyTrimming();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "ModularityM"
+						&& second == "NodeClusterSimilarity"
+						&& third == "BoundarySharpness") {
+					similarity = new NodeClusterSimilarity(G, tmp, tmp);
+					objective = new LocalModularityM(G, tmp, bound);
+					trimming = new BoundarySharpness();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "ModularityM"
+						&& second == "NodeClusterSimilarity"
+						&& third == "Dummy") {
+					similarity = new NodeClusterSimilarity(G, tmp, tmp);
+					objective = new LocalModularityM(G, tmp, bound);
+					trimming = new DummyTrimming();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "ModularityM" && second == "Dummy"
+						&& third == "BoundarySharpness") {
+					similarity = new DummySimilarity(G, tmp, tmp);
+					objective = new LocalModularityM(G, tmp, bound);
+					trimming = new BoundarySharpness();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "ModularityM" && second == "Dummy"
+						&& third == "Dummy") {
+					similarity = new DummySimilarity(G, tmp, tmp);
+					objective = new LocalModularityM(G, tmp, bound);
+					trimming = new DummyTrimming();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "ModularityL"
+						&& second == "NodeClusterSimilarity"
+						&& third == "BoundarySharpness") {
+					similarity = new NodeClusterSimilarity(G, tmp, tmp);
+					objective = new LocalModularityL(G, tmp, bound);
+					trimming = new BoundarySharpness();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "ModularityL"
+						&& second == "NodeClusterSimilarity"
+						&& third == "Dummy") {
+					similarity = new NodeClusterSimilarity(G, tmp, tmp);
+					objective = new LocalModularityL(G, tmp, bound);
+					trimming = new DummyTrimming();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "ModularityL" && second == "Dummy"
+						&& third == "BoundarySharpness") {
+					similarity = new DummySimilarity(G, tmp, tmp);
+					objective = new LocalModularityL(G, tmp, bound);
+					trimming = new BoundarySharpness();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (first == "ModularityL" && second == "Dummy"
+						&& third == "Dummy") {
+					similarity = new DummySimilarity(G, tmp, tmp);
+					objective = new LocalModularityL(G, tmp, bound);
+					trimming = new DummyTrimming();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else {
+					std::cout << "[ERROR] invalid arguments " << std::endl;
+					exit(1);
+				}
+
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[0];
+				std::string second =
+						Aux::StringTools::split(detectorArg, ':')[1];
+				if (first == "Conductance") {
+					objective = new Conductance(G, tmp, bound);
+					if (second == "NodeClusterSimilarity") {
+						similarity = new NodeClusterSimilarity(G, tmp, tmp);
+						trimming = new DummyTrimming();
+						algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+					} else if (second == "BoundarySharpness") {
+						similarity = new DummySimilarity(G, tmp, tmp);
+						trimming = new BoundarySharpness();
+						algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+					} else if (second == "Dummy") {
+						similarity = new DummySimilarity(G, tmp, tmp);
+						trimming = new DummyTrimming();
+						algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+					} else {
+						std::cout << "[ERROR] invalid arguments " << std::endl;
+						exit(1);
+					}
+				} else if (first == "ModularityM") {
+					objective = new LocalModularityM(G, tmp, bound);
+					if (second == "NodeClusterSimilarity") {
+						similarity = new NodeClusterSimilarity(G, tmp, tmp);
+						trimming = new DummyTrimming();
+						algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+					} else if (second == "BoundarySharpness") {
+						similarity = new DummySimilarity(G, tmp, tmp);
+						trimming = new BoundarySharpness();
+						algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+					} else if (second == "Dummy") {
+						similarity = new DummySimilarity(G, tmp, tmp);
+						trimming = new DummyTrimming();
+						algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+					} else {
+						std::cout << "[ERROR] invalid arguments " << std::endl;
+						exit(1);
+					}
+				} else if (first == "ModularityL") {
+					objective = new LocalModularityL(G, tmp, bound);
+					if (second == "NodeClusterSimilarity") {
+						similarity = new NodeClusterSimilarity(G, tmp, tmp);
+						trimming = new DummyTrimming();
+						algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+					} else if (second == "BoundarySharpness") {
+						similarity = new DummySimilarity(G, tmp, tmp);
+						trimming = new BoundarySharpness();
+						algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);;
+					} else if (second == "Dummy") {
+						similarity = new DummySimilarity(G, tmp, tmp);
+						trimming = new DummyTrimming();
+						algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+					} else {
+						std::cout << "[ERROR] invalid arguments " << std::endl;
+						exit(1);
+					}
+				} else {
+					std::cout << "[ERROR] invalid arguments " << std::endl;
+					exit(1);
+				}
+			} else if (Aux::StringTools::split(detectorArg, ':').size() == 1) {
+				if (Aux::StringTools::split(detectorArg, ':')[0]
+						== "Conductance") {
+					objective = new Conductance(G, tmp, bound);
+					similarity = new DummySimilarity(G, tmp, tmp);
+					trimming = new DummyTrimming();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+						== "ModularityM") {
+					objective = new LocalModularityM(G, tmp, bound);
+					similarity = new DummySimilarity(G, tmp, tmp);
+					trimming = new DummyTrimming();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else if (Aux::StringTools::split(detectorArg, ':')[0]
+						== "ModularityL") {
+					objective = new LocalModularityL(G, tmp, bound);
+					similarity = new DummySimilarity(G, tmp, tmp);
+					trimming = new DummyTrimming();
+					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
+				} else {
+					std::cout << "[ERROR] invalid arguments " << std::endl;
+					exit(1);
+				}
+			} else {
+				std::cout << "[ERROR] invalid argument " << std::endl;
+				exit(1);
+			}
 		}
 	} else {
-		std::cout << "[ERROR] option --detector=<NAME>:<PARAMS> must be supplied" << std::endl;
+		std::cout
+				<< "[ERROR] option --detector=<NAME>:<PARAMS> must be supplied"
+				<< std::endl;
 		exit(1);
 	}
-std::cout<<"[BEGIN]"<<std::endl;
+	std::cout << "[BEGIN]" << std::endl;
 	// RUN
 	Aux::Timer running;
 	for (int i = 0; i < runs; i++) {
 		running.start();
 		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
-		std::cout<<i<<std::endl;
-		std::unordered_map<node, std::unordered_set<node>> result = algo->run(seeds);
+		std::cout << i << std::endl;
+		std::unordered_map<node, std::unordered_set<node>> result = algo->run(
+				seeds);
 		running.stop();
 	}
-	std::cout<<"[DONE]"<<std::endl;
-
+	std::cout << "[DONE]" << std::endl;
 
 	// EVALUATION
-
 
 	if (options[QUALITY]) {
 		// TODO: @Yassine - get quality measure
 		// TODO: @Yassine - evaluate quality
 		// TODO: allow multiple quality measures at once
 	}
-
 
 	// optionally get ground truth
 	if (options[GROUND_TRUTH]) {
@@ -395,14 +771,7 @@ std::cout<<"[BEGIN]"<<std::endl;
 		std::cout << "[INFO]�no ground truth supplied" << std::endl;
 	}
 
-
-
-
 	std::cout << "[EXIT] terminated normally" << std::endl;
 	return 0;
 }
-
-
-
-
 
