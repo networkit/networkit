@@ -72,12 +72,6 @@ void DynCDSetup::run() {
 			INFO("running dynamic community detector " << dynCD->toString());
 			results.at(detectorIndex).push_back(dynCD->run());
 
-			// optionally also run a static community detector
-			if (staticAlgo != NULL) {
-				staticClusterings.push_back(staticAlgo->run(*G));
-			}
-
-
 			// evaluations which need the current graph
 			if (checkNumCom) {
 
@@ -99,23 +93,37 @@ void DynCDSetup::run() {
 
 			// continuity by sampling
 			if (checkSampledRand  && (results[detectorIndex].size() >= 2)) {
-				double dist = sampledRand.getDissimilarity(*G, results.at(detectorIndex).at(results.at(detectorIndex).size() - 2), results.at(detectorIndex).back());
-				INFO("[RESULT] sampled rand measure for communities at t=" << G->time() << " vs t=" << (G->time() - deltaT) << ": " << dist);
+				double cont = sampledRand.getDissimilarity(*G, results.at(detectorIndex).at(results.at(detectorIndex).size() - 2), results.at(detectorIndex).back());
+				INFO("[RESULT] continuity for " << detectors.at(detectorIndex)->toString() << " at t=" << G->time() << " vs t=" << (G->time() - deltaT) << ": " << cont);
+
+			}
+		} // end for multiple detectors
+
+		// optionally also run a static community detector
+		if (staticAlgo != NULL) {
+			staticClusterings.push_back(staticAlgo->run(*G));
+
+			if (checkSampledRand  && (staticClusterings.size() >= 2)) { // if static algo has been set,
+				double contStatic = sampledRand.getDissimilarity(*G, staticClusterings.at(staticClusterings.size() - 2), staticClusterings.back());
+				INFO("[RESULT] continuity for " << staticAlgo->toString() <<  " at t=" << G->time() << " vs t=" << (G->time() - deltaT) << ": " << contStatic);
 			}
 		}
+
+
 
 	};
 
 	// for all community detectors, perform run
 	bool sourceEnd = false;
 	while (G->time() < tMax) {
-		INFO("time: " << G->time() << " of " << tMax);
 		try {
 			 // try generating the next batch of events
 			gen->generateTimeSteps(G->time() + deltaT);
 
-		} catch (std::logic_error& e) { // TODO: reorder
-			INFO("source cannot produce any more events");
+			INFO("=========================== current time step: " << G->time() << " of " << tMax << " ========================================");
+
+		} catch (std::logic_error& e) {
+			INFO("exception caught: " << e.what());
 			sourceEnd = true;
 		}
 

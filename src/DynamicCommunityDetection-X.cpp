@@ -49,6 +49,8 @@
 #include "dcd/TDynamicLabelPropagation.h"
 #include "dcd/DynamicLabelPropagation.h"
 #include "dcd/DynCDSetup.h"
+#include "community/LabelPropagation.h"
+#include "community/Louvain.h"
 
 using namespace NetworKit;
 
@@ -128,10 +130,9 @@ const OptionParser::Descriptor usage[] =
  {DETECTORS, 0, "", "detectors", OptionParser::Arg::Required, "  --detectors=<NAME>:<PARAMS> \t select dynamic community detection algorithms"},
  {TMAX, 0, "", "tMax", OptionParser::Arg::Required, "  --tMax=<INT> \t maximum number of generator time steps"},
  {DELTAT, 0, "", "deltaT", OptionParser::Arg::Required, "  --deltaT=<INT> \t run the detectors each deltaT time steps"},
- {STATIC, 0, "", "static", OptionParser::Arg::Required, "  --static=<NAME> \t set number of clusterer runs"},
+ {STATIC, 0, "", "static", OptionParser::Arg::Required, "  --static=<NAME> \t select static algorithm"},
  {CHECK_COMMUNITIES, 0, "", "checkCommunities", OptionParser::Arg::None, "  --checkCommunities \t get info about communities"},
  {CHECK_CONTINUITY, 0, "", "checkContinuity", OptionParser::Arg::None, "  --checkContinuity \t get info about continuity"},
- {STATIC, 0, "", "static", OptionParser::Arg::Required, "  --static=<NAME> \t set number of clusterer runs"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
  {SAVE_GRAPH, 0, "", "saveGraph", OptionParser::Arg::Required, "  --saveGraph=<PATH> \t write the graph to a file"},
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
@@ -197,15 +198,17 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE PARALLELISM
-#ifdef _OPENMP
-	omp_set_nested(1); // enable nested parallelism
-#endif
+
+
 
 	if (options[THREADS]) {
 		// set number of threads
 		int nThreads = std::atoi(options[THREADS].arg);
 		setNumberOfThreads(nThreads);
 	}
+
+	omp_set_nested(1); // enable nested parallelism
+	INFO("OPENMP: number of available threads: " << omp_get_num_threads());
 
 	// CONFIGURE OUTPUT
 	if (options[PROGRESS]) {
@@ -284,7 +287,7 @@ int main(int argc, char **argv) {
 
 		}
 	} else {
-		throw std::runtime_error("--source option must be supplied");
+		std::cout << "[ERROR]Ê--source option must be supplied" << std::endl;
 		exit(1);
 	}
 
@@ -331,6 +334,22 @@ int main(int argc, char **argv) {
 
 	}
 
+	// static detector
+
+	Clusterer* staticDetector = NULL;
+	if (options[STATIC]) {
+		std::string staticName = options[STATIC].arg;
+		if (staticName == "PLP") {
+			staticDetector = new LabelPropagation();
+		} else if (staticName == "PLM") {
+			staticDetector = new Louvain("simple");
+		} else {
+			std::cout << "[ERROR] unknown static detector: " << staticName << std::endl;
+			exit(1);
+		}
+	}
+
+
 	count tMax = 1e4;	//!< maximum time steps
 	if (options[TMAX]) {
 		tMax = std::stoi(options[TMAX].arg);
@@ -348,6 +367,12 @@ int main(int argc, char **argv) {
 
 	INFO("creating setup with tMax=" << tMax << " and deltaT=" << deltaT);
 	DynCDSetup* dynCDSetup = new DynCDSetup(*source, detectors, tMax, deltaT);
+
+	if (options[STATIC]) {
+		INFO("setting static detector " << staticDetector->toString());
+		dynCDSetup->setStatic(staticDetector);
+	}
+
 
 	if (options[CHECK_COMMUNITIES]) {
 		INFO("will check communities");
