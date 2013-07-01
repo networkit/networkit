@@ -124,8 +124,8 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 					count sizeO = overlapSizes[O];
 					double factor1 =  sizeO / (double) n;
 					assert ((size_zeta[C] * size_eta[D]) != 0);
-					TRACE("union of " << C << " and " << D << " has size: " << unionSize(C, D));
 					TRACE("overlap of " << C << " and " << D << " has size: " << sizeO);
+					TRACE("union of " << C << " and " << D << " has size: " << unionSize(C, D));
 					double frac2 = (sizeO * n) / (double) (size_zeta[C] * size_eta[D]);
 					assert (frac2 != 0);
 					double factor2 = log_b(frac2, 2);

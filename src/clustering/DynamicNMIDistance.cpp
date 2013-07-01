@@ -21,11 +21,15 @@ DynamicNMIDistance::~DynamicNMIDistance() {
 double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 		Clustering& oldClustering, Clustering& newClustering) {
 
+	auto log_b = Aux::MissingMath::log_b; // import convenient logarithm function
+
 	auto isInBoth = [&](node u, const Clustering& oldClustering, const Clustering& newClustering) {
-		return ((newClustering[u] != none) && (u < oldClustering.numberOfEntries()));
+		return ((newClustering[u] != none) &&
+				(u < oldClustering.numberOfEntries()) &&
+				(oldClustering[u] != none));
 	};
 
-	count n = newGraph.numberOfNodes();
+//	count n = newGraph.numberOfNodes();
 
 	DEBUG("oldClustering=" << Aux::vectorToString(oldClustering.getVector()));
 	DEBUG("newClustering=" << Aux::vectorToString(newClustering.getVector()));
@@ -47,31 +51,20 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	DEBUG("size_old=" << Aux::vectorToString(size_old));
 	DEBUG("size_new=" << Aux::vectorToString(size_new));
 
-	// precompute cluster probabilities
-	std::vector<double> P_old(oldClustering.upperBound(), 0.0);
-	std::vector<double> P_new(newClustering.upperBound(), 0.0);
 
-	double n_double = (double) n;
-	for (cluster C = oldClustering.lowerBound(); C < oldClustering.upperBound(); ++C) {
-		P_old[C] = size_old[C] / n_double;
-	}
-	for (cluster C = newClustering.lowerBound(); C < newClustering.upperBound(); ++C) {
-		P_new[C] = size_new[C] / n_double;
-	}
-
-
-	HashingOverlapper hashing;
+	HashingOverlapper overlapper;
 	std::vector<Clustering> clusterings;
 	clusterings.push_back(oldClustering);
 	clusterings.push_back(newClustering);
 
-	Clustering overlap = hashing.run(newGraph, clusterings);
+	Clustering overlap = overlapper.run(newGraph, clusterings);
 	DEBUG("overlap=" << Aux::vectorToString(overlap.getVector()));
 
 	std::vector<std::vector<cluster> > intersect(oldClustering.upperBound(),
 			std::vector<cluster>(newClustering.upperBound(), none)); // intersect[C][D] returns the overlap cluster
 
 	std::vector<count> overlapSizes(overlap.upperBound(), 0); // overlapSizes[O] returns the size of the overlap cluster
+	TRACE("upperBound = " << overlap.upperBound());
 
 	newGraph.forNodes([&](node u){
 		if (isInBoth(u, oldClustering, newClustering)) {
@@ -82,41 +75,37 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 		}
 	});
 
+	count totalOverlap = 0;
 	newGraph.forNodes([&](node u){
 		if (isInBoth(u, oldClustering, newClustering)) {
 			cluster O = overlap[u];
+			TRACE("O = " << O);
 			overlapSizes[O]++;
+			++totalOverlap;
 		}
 	});
+	const double totalOverlapDouble = (double) totalOverlap;
 
 	DEBUG("overlapSizes=" << Aux::vectorToString(overlapSizes));
 
 
+	// precompute cluster probabilities
+	std::vector<double> P_old(oldClustering.upperBound(), 0.0);
+	std::vector<double> P_new(newClustering.upperBound(), 0.0);
 
-	/**
-	 * Return the size of the union of C and D.
-	 * C is a cluster in zeta, D in eta
-	 */
-	auto unionSize = [&](cluster C, cluster D){
-		cluster O = intersect[C][D];
-		assert (O != none); // entry must be set
-		count sizeC = size_old[C];
-		count sizeD = size_new[D];
-		count sizeO = overlapSizes[O];
-
-		TRACE("clusters sized " << sizeC << " and " << sizeD << " have overlap of " << sizeO);
-		assert (sizeO >= 0);
-		assert (sizeO <= std::max(sizeC, sizeD));
-		return sizeC + sizeD - sizeO;
-	};
-
-
-	auto log_b = Aux::MissingMath::log_b; // import convenient logarithm function
+	for (cluster C = oldClustering.lowerBound(); C < oldClustering.upperBound(); ++C) {
+		P_old[C] = ((double) size_old[C]) / totalOverlapDouble;
+	}
+	for (cluster C = newClustering.lowerBound(); C < newClustering.upperBound(); ++C) {
+		P_new[C] = ((double) size_new[C]) / totalOverlapDouble;
+	}
 
 
 	// calculate mutual information
-	//		 $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C\cup D|\cdot n}{|C|\cdot|D|}\right)$
+	//	wrong (cup):	 $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C\cup D|\cdot n}{|C|\cdot|D|}\right)$
+	//	correct (cap): $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C \cap D| \cdot n}{|C|\cdot|D|}\right)$
 	double MI = 0.0; // mutual information
+//	const double nDouble = (double) n;
 	for (cluster C = 0; C < oldClustering.upperBound(); C++) {
 		for (cluster D = 0; D < newClustering.upperBound(); D++) {
 			count sizeC = size_old[C];
@@ -127,15 +116,19 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 				if (O == none) { // clusters do not intersect
 					TRACE("clusters do not intersect: " << C << ", " << D);
 				} else {
+
+					if ((C == 2501) && (D == 3298)) {
+						DEBUG("overlap 2501 - 3298 = " << intersect[C][D] << ", complete overlap: " << Aux::vectorToString(overlap.getVector()));
+					}
+
 					count sizeO = overlapSizes[O];
-					double factor1 =  sizeO / (double) n;
+ 					double factor1 =  ((double) sizeO) / totalOverlapDouble;
 					assert ((size_old[C] * size_new[D]) != 0);
-					TRACE("union of " << C << " and " << D << " has size: " << unionSize(C, D));
-					TRACE("overlap of " << C << " and " << D << " has size: " << sizeO);
-					double frac2 = (sizeO * n) / (double) (size_old[C] * size_new[D]);
+					DEBUG("overlap of " << C << " and " << D << " has size: " << sizeO);
+					double frac2 = ((double) (sizeO * totalOverlap)) / (double) (size_old[C] * size_new[D]);
 					assert (frac2 != 0);
 					double factor2 = log_b(frac2, 2);
-					TRACE("frac2 = " << frac2 << ", factor1 = " << factor1 << ", factor2 = " << factor2);
+					DEBUG("frac2 = " << frac2 << ", factor1 = " << factor1 << ", factor2 = " << factor2);
 					MI += factor1 * factor2;
 				}
 			}
@@ -148,8 +141,8 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 
 
 	// compute entropy for both clusterings
-	double H_old = entropy(oldClustering, n, P_old);
-	double H_new = entropy(newClustering, n, P_new);
+	double H_old = entropy(oldClustering, totalOverlap, P_old);
+	double H_new = entropy(newClustering, totalOverlap, P_new);
 
 	// calculate NMID
 	// $NMI(\zeta,\eta):=\frac{2\cdot MI(\zeta,\eta)}{H(\zeta)+H\text{(\eta)}}$
@@ -198,15 +191,23 @@ double DynamicNMIDistance::entropy(const Clustering& clustering, count n, std::v
 
 void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
 	DEBUG("sanity check, NMI: " << NMI);
-	assert (Aux::NumericTools::ge(NMI, 0.0));
-	assert (Aux::NumericTools::le(NMI, 1.0));
 
-	// if NMID is close to 0 because of numerical error
-	DEBUG("sanity check, NMID: " << NMID);
 	if (Aux::NumericTools::equal(NMID, 0.0)) {
 		NMID = 0.0;
 	}
-	TRACE("sanity check, NMID after: " << NMID);
+	if (Aux::NumericTools::equal(NMID, 1.0)) {
+		NMID = 1.0;
+	}
+
+	// if NMID is close to 0 because of numerical error
+	if (! Aux::NumericTools::ge(NMID, 0.0)) {
+		ERROR("Set NMID from below 0 to exactly 0: " << NMID);
+		NMID = 0.0;
+	}
+	if (! Aux::NumericTools::le(NMID, 1.0)) {
+		ERROR("Set NMID larger than 1 to exactly 1: " << NMID);
+		NMID = 1.0;
+	}
 
 	assert (Aux::NumericTools::ge(NMID, 0.0));
 	assert (Aux::NumericTools::le(NMID, 1.0));

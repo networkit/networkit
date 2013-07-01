@@ -51,12 +51,38 @@ Clustering HashingOverlapper::run(Graph& G,
 	auto hash = djb2;
 
 	core.setAll(0);
-	for (index c = 0; c < clusterings.size(); ++c) {
-		Clustering& zeta = clusterings[c];
-		zeta.parallelForEntries([&](node v, cluster clv) {
-			core[v] += (hash((c+2) * clv) & 0xffff);
+	const count numC = clusterings.size();
+	const count upperId = clusterings.back().upperBound();
+	const count summand = 341;
+	if (numC > 2) {
+		for (index c = 0; c < numC; ++c) {
+			Clustering& zeta = clusterings[c];
+			zeta.parallelForEntries([&](node v, cluster clv) {
+				core[v] += (hash((c+2) * clv) & 0xffff);
+			});
+		}
+	}
+	else {
+		Clustering& first = clusterings[0];
+		Clustering& second = clusterings[1];
+
+		// Assumption: second has at least as many nodes as first
+		G.parallelForNodes([&](node v) {
+			if (v >= first.numberOfEntries()) {
+				core[v] = none;
+			}
+			else {
+				if (first[v] == none || second[v] == none) {
+					core[v] = none;
+				}
+				else {
+					count key = (((first[v] + summand) & 0xffff) << 16) | ((second[v] + summand) & 0xffff);
+					core[v] = hash(key);
+				}
+			}
 		});
 	}
+
 	core.compact();
 
 	return core;

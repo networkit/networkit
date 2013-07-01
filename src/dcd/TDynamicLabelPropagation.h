@@ -185,7 +185,7 @@ public:
 	};
 
 	inline std::string toString() const {
-		return "Isolate";
+		return "IsolateNeighbors";
 	}
 
 protected:

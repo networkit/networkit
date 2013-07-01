@@ -14,6 +14,7 @@
 #include "../community/Clusterer.h"
 #include "../clustering/Modularity.h"
 #include "../clustering/DynamicNMIDistance.h"
+#include "../clustering/SampledRandMeasure.h"
 
 namespace NetworKit {
 
@@ -67,6 +68,8 @@ public:
 
 	virtual void checkNMIDistance();
 
+	virtual void checkContinuity();
+
 
 
 
@@ -88,6 +91,7 @@ protected:
 	bool checkMod = false; //!< if this is true, we check modularity
 	bool checkNumCom = false; //!< if this is true, we check the number of communities
 	bool checkNMID = false; 	//!< if this is true, we check NMIDistance between consecutive clusterings
+	bool checkSampledRand = false;
 
 };
 

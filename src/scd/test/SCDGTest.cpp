@@ -17,67 +17,79 @@ SCDGTest::SCDGTest() {
 SCDGTest::~SCDGTest() {
 }
 
-TEST_F(SCDGTest, tryCommunitySubgraph) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/lesmis.graph");
-
-	node s = 0; // seed node
-
-	GreedyCommunityExpansion GCE(G);
-	std::unordered_set<node> community = GCE.expandSeed(s);
-
-	// get the subgraph of the community
-	Graph sub = Subgraph::fromNodes(G, community);
-
-	// write it to file
-	METISGraphWriter writer;
-	writer.write(sub, "output/lesmis-comm0.graph");
-
-}
-
-TEST_F(SCDGTest, testRandomSeedSet) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/jazz.graph");
-
-	RandomSeedSet randSeeds(G);
-
-	count k = 42;
-	std::unordered_set<node> S = randSeeds.getSeeds(k);
-
-	EXPECT_EQ(k, S.size());
-
-	DEBUG("seed set is: " << Aux::setToString(S));
-
-}
-
-TEST_F(SCDGTest, testRandomWalkSeedSet) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/jazz.graph");
-
-	RandomWalkSeedSet walk(G, 2);
-
-	count k = 42;
-	std::unordered_set<node> S = walk.getSeeds(k);
-
-	EXPECT_EQ(k, S.size());
-
-	DEBUG("seed set is: " << Aux::setToString(S));
-
-}
-
-TEST_F(SCDGTest, benchmarkGreedy) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/pgp.graph");
-
-	RandomSeedSet randSeeds(G);
-
-	GreedyCommunityExpansion GCE(G);
-	count nRuns = 1000;
-	for (count i = 0; i < nRuns; ++i) {
-		std::unordered_set<node> seeds = randSeeds.getSeeds(1);
-		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
-	}
-}
+//TEST_F(SCDGTest, tryCommunitySubgraph) {
+//	METISGraphReader reader;
+//	Graph G = reader.read("input/lesmis.graph");
+//
+//	node s = 0; // seed node
+//	std::unordered_set<node> tmp = {};
+//	std::unordered_map<node, count> bound =  {};
+//	DummySimilarity similarity(G, tmp, tmp);
+//	Conductance objective(G, tmp, bound);
+//	DummyTrimming trimming;
+//
+//	GreedyCommunityExpansion GCE(G, similarity, objective, trimming);
+//
+//	std::unordered_set<node> community = GCE.expandSeed(s);
+//
+//	// get the subgraph of the community
+//	Graph sub = Subgraph::fromNodes(G, community);
+//
+//	// write it to file
+//	METISGraphWriter writer;
+//	writer.write(sub, "output/lesmis-comm0.graph");
+//
+//}
+//
+//TEST_F(SCDGTest, testRandomSeedSet) {
+//	METISGraphReader reader;
+//	Graph G = reader.read("input/jazz.graph");
+//
+//	RandomSeedSet randSeeds(G);
+//
+//	count k = 42;
+//	std::unordered_set<node> S = randSeeds.getSeeds(k);
+//
+//	EXPECT_EQ(k, S.size());
+//
+//	DEBUG("seed set is: " << Aux::setToString(S));
+//
+//}
+//
+//TEST_F(SCDGTest, testRandomWalkSeedSet) {
+//	METISGraphReader reader;
+//	Graph G = reader.read("input/jazz.graph");
+//
+//	RandomWalkSeedSet walk(G, 2);
+//
+//	count k = 42;
+//	std::unordered_set<node> S = walk.getSeeds(k);
+//
+//	EXPECT_EQ(k, S.size());
+//
+//	DEBUG("seed set is: " << Aux::setToString(S));
+//
+//}
+//
+//TEST_F(SCDGTest, benchmarkGreedy) {
+//	METISGraphReader reader;
+//	Graph G = reader.read("input/pgp.graph");
+//
+//	RandomSeedSet randSeeds(G);
+//
+//	std::unordered_set<node> tmp = {};
+//	std::unordered_map<node, count> bound = {};
+//	DummySimilarity similarity(G, tmp, tmp);
+//	LocalModularityM objective(G, tmp, bound);
+//	BoundarySharpness trimming;
+//
+//	GreedyCommunityExpansion GCE(G, similarity, objective, trimming);
+//	count nRuns = 1000;
+//	for (count i = 0; i < nRuns; ++i) {
+//		std::unordered_set<node> seeds = randSeeds.getSeeds(5);
+//		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(seeds);
+//	}
+//}
 
 // Test Dissimilarity Measures
 TEST_F(SCDGTest, localJaccardTest) {
@@ -254,7 +266,8 @@ TEST_F(SCDGTest, testLocalMdularityM) {
 	G.addEdge(4, 4);
 
 	std::unordered_set<node> community = { };
-	LocalModularityM mod(G, community);
+	std::unordered_map<node, count> bound = {};
+	LocalModularityM mod(G, community, bound);
 	mod.degSum = 11;
 	mod.volume = 0;
 	mod.nInternEdges = 0;
@@ -307,6 +320,101 @@ TEST_F(SCDGTest, testLocalMdularityM) {
 			<< "The community should have a local modularity of 11";
 
 }
+//
+TEST_F(SCDGTest, testLocalMdularityL) {
+
+	Graph G(5);
+	G.addEdge(0, 1);
+	G.addEdge(0, 2);
+	G.addEdge(0, 3);
+	G.addEdge(0, 4);
+	G.addEdge(1, 2);
+	G.addEdge(1, 3);
+	G.addEdge(1, 4);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 4);
+
+	std::unordered_set<node> community = { };
+	std::unordered_map<node, count> bound = {};
+	LocalModularityL mod(G, community, bound);
+	mod.degSum = 11;
+	mod.volume = 0;
+	mod.nInternEdges = 0;
+	EXPECT_EQ(0, mod.getValue(0)[0])
+			<< "The community should have a local modularity of 0";
+
+	EXPECT_EQ(0.25, mod.getValue(4)[0])
+			<< "The community should have a local modularity of 0.25";
+
+	community.insert(0);
+	bound = {{0, 4}};
+	mod.nBoundaryEdges = 4;
+	mod.volume = 4;
+	mod.nInternEdges = 0;
+
+	EXPECT_EQ(0, mod.getValue(0)[0])
+			<< "The community should have a local modularity of 0";
+	EXPECT_GE(0.16667, mod.getValue(1)[0])
+			<< "The community should have a local modularity of 1/6";
+	EXPECT_LE(0.16666, mod.getValue(1)[0])
+			<< "The community should have a local modularity of 1/6";
+	EXPECT_GE(0.33334, mod.getValue(4)[0])
+			<< "The community should have a local modularity of 1/3";
+	EXPECT_LE(0.33333, mod.getValue(4)[0])
+			<< "The community should have a local modularity of 1/3";
+
+	community.insert(1);
+	bound = {{0, 3}, {1, 3}};
+	mod.nBoundaryEdges = 6;
+	mod.volume = 8;
+	mod.nInternEdges = 1;
+	EXPECT_EQ(0.5, mod.getValue(2)[0])
+			<< "The community should have a local modularity of 0.5";
+	EXPECT_GE(0.66667, mod.getValue(4)[0])
+			<< "The community should have a local modularity of 2/3";
+	EXPECT_LE(0.66666, mod.getValue(4)[0])
+			<< "The community should have a local modularity of 2/3";
+
+	community.insert(2);
+	bound = {{0, 2}, {1, 2}, {2, 2}};
+	mod.nBoundaryEdges = 6;
+	mod.volume = 12;
+	mod.nInternEdges = 3;
+	EXPECT_EQ(1.5, mod.getValue(3)[0])
+			<< "The community should have a local modularity of 1.5";
+	EXPECT_EQ(1.75, mod.getValue(4)[0])
+			<< "The community should have a local modularity of 1.75";
+
+	community.insert(3);
+	bound = {{0, 1}, {1, 1},{2, 1}, {3, 1}};
+	mod.nBoundaryEdges = 4;
+	mod.volume = 16;
+	mod.nInternEdges = 6;
+	EXPECT_EQ(11, mod.getValue(4)[0])
+			<< "The community should have a local modularity of 11";
+
+	Graph G1(6);
+	G1.addEdge(0, 1);
+	G1.addEdge(0, 2);
+	G1.addEdge(1, 2);
+	G1.addEdge(1, 3);
+	G1.addEdge(2, 3);
+	G1.addEdge(2, 4);
+	G1.addEdge(2, 5);
+	G1.addEdge(4, 5);
+	std::unordered_set<node> community1 = {0, 1, 2};
+	std::unordered_map<node,count> bound1 = {{1, 1},{2, 2}};
+	LocalModularityL mod1(G1, community1, bound1);
+	mod1.nBoundaryEdges = 4;
+	mod1.volume = 10;
+	mod1.nInternEdges = 3;
+	EXPECT_EQ(0.625, mod1.getValue(3)[0])
+			<< "The community should have a local modularity of 5/8";
+	EXPECT_EQ(1, mod1.getValue(4)[0])
+				<< "The community should have a local modularity of 1";
+}
 
 TEST_F(SCDGTest, testConductance) {
 
@@ -323,21 +431,26 @@ TEST_F(SCDGTest, testConductance) {
 
 	std::unordered_set<node> first, second, third, fourth, fifth;
 	first = {};
-	Conductance conductance1(G, first);
+	std::unordered_map<node, count> bound1 = {};
+	Conductance conductance1(G, first, bound1);
 	second = {0};
-	Conductance conductance2(G, second);
+	std::unordered_map<node, count> bound2 = {{0, 3}};
+	Conductance conductance2(G, second, bound2);
 	conductance2.volume = 4;
 	conductance2.nBoundaryEdges = 3;
 	third = {0,1};
-	Conductance conductance3(G, third);
+	std::unordered_map<node, count> bound3 = {{0, 2},{1, 2}};
+	Conductance conductance3(G, third, bound3);
 	conductance3.volume = 7;
 	conductance3.nBoundaryEdges = 4;
 	fourth = {0,1,2};
-	Conductance conductance4(G, fourth);
+	std::unordered_map<node, count> bound4 = {{0, 1},{1, 1},{2, 2}};
+	Conductance conductance4(G, fourth, bound4);
 	conductance4.volume = 11;
 	conductance4.nBoundaryEdges = 4;
 	fifth = {0,1,2,3};
-	Conductance conductance5(G, fifth);
+	std::unordered_map<node, count> bound5 = {{1, 1},{2, 1},{3, 1}};
+	Conductance conductance5(G, fifth, bound5);
 	conductance5.volume = 14;
 	conductance5.nBoundaryEdges = 3;
 
@@ -408,8 +521,13 @@ TEST_F(SCDGTest, testGreedyCommunityExpansion) {
 	G.addEdge(1, 2);
 	G.addEdge(1, 3);
 	G.addEdge(2, 3);
+	std::unordered_set<node> tmp = {};
+	std::unordered_map<node, count> bound =  {};
+	DummySimilarity similarity(G, tmp, tmp);
+	Conductance objective(G, tmp, bound);
+	DummyTrimming trimming;
+	GreedyCommunityExpansion GCE(G, similarity, objective, trimming);
 
-	GreedyCommunityExpansion GCE(G);
 	std::unordered_set<node> community = GCE.expandSeed(0);
 	EXPECT_EQ(2, community.size()) << "The community should have 2 nodes";
 
@@ -418,10 +536,13 @@ TEST_F(SCDGTest, testGreedyCommunityExpansion) {
 	G.addEdge(1, 5);
 	G.addEdge(2, 6);
 	G.addEdge(3, 7);
+	DummySimilarity similarity1(G, tmp, tmp);
+	Conductance objective1(G, tmp, bound);
+	GreedyCommunityExpansion GCE1(G, similarity1, objective1, trimming);
 
-	community = GCE.expandSeed(0);
+	community = GCE1.expandSeed(0);
 	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
-	community = GCE.expandSeed(6);
+	community = GCE1.expandSeed(6);
 	EXPECT_EQ(4, community.size()) << "The community should have 4 nodes";
 
 	// add another clique
@@ -432,16 +553,18 @@ TEST_F(SCDGTest, testGreedyCommunityExpansion) {
 	G.addEdge(9, 10);
 	G.addEdge(9, 11);
 	G.addEdge(10, 11);
-
-	community = GCE.expandSeed(0);
+	DummySimilarity similarity2(G, tmp, tmp);
+	Conductance objective2(G, tmp, bound);
+	GreedyCommunityExpansion GCE2(G, similarity2, objective2, trimming);
+	community = GCE2.expandSeed(0);
 	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
-	community = GCE.expandSeed(4);
+	community = GCE2.expandSeed(4);
 	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
-	community = GCE.expandSeed(6);
+	community = GCE2.expandSeed(6);
 	EXPECT_EQ(8, community.size()) << "The community should have 8 nodes";
-	community = GCE.expandSeed(8);
+	community = GCE2.expandSeed(8);
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
-	community = GCE.expandSeed(9);
+	community = GCE2.expandSeed(9);
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
 }
 
@@ -628,38 +751,35 @@ TEST_F(SCDGTest, testTGreedyCommunityExpansionWithTemplates) {
 //	}
 //}
 //
-TEST_F(SCDGTest, trySelectiveSCANWithSeedSetAndTemplates) {
-
-	METISGraphReader reader;
-	Graph G = reader.read("input/pgp.graph");
-	NeighborhoodDistance distMeasure(G);
-	SelectiveSCAN GCE(G, distMeasure);
-	RandomSeedSet randSeeds(G);
-
-		std::unordered_set<node> seeds = randSeeds.getSeeds(10);
-		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(
-				seeds);
-		for(auto u : result) {
-			std::cout<<u.first<<"------------------------"<<u.second.size()<<std::endl;
-		}
-
-}
-TEST_F(SCDGTest, trySelectlates) {
-
-	METISGraphReader reader;
-	Graph G = reader.read("input/pgp.graph");
-	Parameters param;
-	TSelectiveSCAN<TNeighborhoodDistance> GCE(G, param);
-	RandomSeedSet randSeeds(G);
-
-		std::unordered_set<node> seeds = randSeeds.getSeeds(10);
-		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(
-				seeds);
-		for(auto u : result) {
-			std::cout<<u.first<<"------------------------"<<u.second.size()<<std::endl;
-		}
-
-}
+//TEST_F(SCDGTest, trySelectiveSCANWithSeedSetAndTemplates) {
+//
+//	METISGraphReader reader;
+//	Graph G = reader.read("input/pgp.graph");
+//	NeighborhoodDistance distMeasure(G);
+//	SelectiveSCAN GCE(G, distMeasure);
+//
+//	RandomSeedSet randSeeds(G);
+//for(int i = 0; i < 1000; i++) {
+//		std::unordered_set<node> seeds = randSeeds.getSeeds(1000);
+//		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(
+//				seeds);
+//}
+//
+//}
+//TEST_F(SCDGTest, trySelectlates) {
+//
+//	METISGraphReader reader;
+//	Graph G = reader.read("input/pgp.graph");
+//	Parameters param;
+//	TSelectiveSCAN<TNeighborhoodDistance> GCE(G, param);
+//	RandomSeedSet randSeeds(G);
+//	for(int i = 0; i < 1000; i++) {
+//		std::unordered_set<node> seeds = randSeeds.getSeeds(1000);
+//		std::unordered_map<node, std::unordered_set<node>> result = GCE.run(
+//				seeds);
+//
+//	}
+//}
 
 
 } /* namespace NetworKit */
