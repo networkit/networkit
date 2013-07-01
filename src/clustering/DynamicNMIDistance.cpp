@@ -116,11 +116,6 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 				if (O == none) { // clusters do not intersect
 					TRACE("clusters do not intersect: " << C << ", " << D);
 				} else {
-
-					if ((C == 2501) && (D == 3298)) {
-						DEBUG("overlap 2501 - 3298 = " << intersect[C][D] << ", complete overlap: " << Aux::vectorToString(overlap.getVector()));
-					}
-
 					count sizeO = overlapSizes[O];
  					double factor1 =  ((double) sizeO) / totalOverlapDouble;
 					assert ((size_old[C] * size_new[D]) != 0);
