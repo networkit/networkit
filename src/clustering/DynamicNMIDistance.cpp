@@ -192,13 +192,20 @@ double DynamicNMIDistance::entropy(const Clustering& clustering, count n, std::v
 void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
 	DEBUG("sanity check, NMI: " << NMI);
 
+	if (Aux::NumericTools::equal(NMID, 0.0)) {
+		NMID = 0.0;
+	}
+	if (Aux::NumericTools::equal(NMID, 1.0)) {
+		NMID = 1.0;
+	}
+
 	// if NMID is close to 0 because of numerical error
 	if (! Aux::NumericTools::ge(NMID, 0.0)) {
-		WARN("Set NMID from below 0 to exactly 0: " << NMID);
+		ERROR("Set NMID from below 0 to exactly 0: " << NMID);
 		NMID = 0.0;
 	}
 	if (! Aux::NumericTools::le(NMID, 1.0)) {
-		WARN("Set NMID larger than 1 to exactly 1: " << NMID);
+		ERROR("Set NMID larger than 1 to exactly 1: " << NMID);
 		NMID = 1.0;
 	}
 
