@@ -10,6 +10,8 @@
 namespace NetworKit {
 
 SelectiveSCAN::SelectiveSCAN(const Graph& G, NodeDistance& distMeasure, double epsilon, double mu): SelectiveCommunityDetector(G), distMeasure(&distMeasure), epsilon(epsilon), mu(mu) {
+	DEBUG("preprocessing node distances");
+	this->distMeasure->preprocess(); // distances depend on the graph, which is constant, and should be calculated only once
 
 }
 
@@ -19,7 +21,6 @@ SelectiveSCAN::~SelectiveSCAN() {
 
 std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unordered_set<node> set){
 
-	this->distMeasure->preprocess();
 	std::unordered_map<node, node> nodesState;
 	std::unordered_map<node, std::unordered_set<node>> communities;
 	std::unordered_set<node> community;
