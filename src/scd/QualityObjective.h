@@ -21,7 +21,7 @@ public:
 		 * @param[in]	G	the graph
 		 * @param[in]	community	the currently expanding community
 		 */
-	QualityObjective(const Graph& G, std::unordered_set<node>& community);
+	QualityObjective(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
 
 	virtual ~QualityObjective();
 
@@ -35,9 +35,9 @@ public:
 
 protected:
 	const Graph* G;								//!< pointer to the graph
-	std::unordered_set<node>* community;	//!< pointer to the current community
 public:
-	count nBoundaryNodes;  //!< current number of boundary nodes
+	std::unordered_set<node>* community;	//!< pointer to the current community
+	std::unordered_map<node,count>* boundary;
 	count nBoundaryEdges; //!< current number of boundary edges
 	count degSum; //!< degree sum of the graph needed
 	count nNodes; //!< current number of nodes in the community
@@ -53,7 +53,7 @@ class LocalModularityM : public QualityObjective {
 
 public:
 
-	LocalModularityM(const Graph& G, std::unordered_set<node>& community);
+	LocalModularityM(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
 
 	virtual ~LocalModularityM();
 
@@ -64,7 +64,7 @@ class LocalModularityL : public QualityObjective {
 
 public:
 
-	LocalModularityL(const Graph& G, std::unordered_set<node>& community);
+	LocalModularityL(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
 
 	virtual ~LocalModularityL();
 
@@ -79,7 +79,7 @@ class Conductance : public QualityObjective {
 
 public:
 
-	Conductance(const Graph& G, std::unordered_set<node>& community);
+	Conductance(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
 
 	virtual ~Conductance();
 

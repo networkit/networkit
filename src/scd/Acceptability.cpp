@@ -12,10 +12,7 @@ namespace NetworKit {
 
 
 Acceptability::Acceptability(
-	const Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell) {
-	this->G = &G;
-	this->community = &community;
-	this->shell = &shell;
+	const Graph& G, std::unordered_set<node>& community, std::unordered_set<node>& shell) : G(&G), community(&community), shell(&shell) {
 }
 
 NodeClusterSimilarity::NodeClusterSimilarity(
