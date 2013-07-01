@@ -324,7 +324,7 @@ int main(int argc, char **argv) {
 			} else if (detectorName == "DynamicEnsemble") {
 				// TODO: Implement
 			} else {
-				throw std::runtime_error("unknown detector: ");
+				std::cout << "[ERROR] unknown detector name: " << detectorName << std::endl;
 				exit(1);
 			}
 		}

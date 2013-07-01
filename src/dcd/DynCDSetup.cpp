@@ -91,7 +91,7 @@ void DynCDSetup::run() {
 			}
 
 			// continuity by sampling
-			if (checkSampledRand) {
+			if (checkSampledRand  && (results[detectorIndex].size() >= 2)) {
 				double dist = sampledRand.getDissimilarity(*G, results.at(detectorIndex).at(results.at(detectorIndex).size() - 2), results.at(detectorIndex).back());
 				INFO("[RESULT] sampled rand measure for communities at t=" << G->time() << " vs t=" << (G->time() - deltaT) << ": " << dist);
 			}
