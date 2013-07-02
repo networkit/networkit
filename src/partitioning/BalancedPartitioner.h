@@ -21,6 +21,9 @@
 namespace NetworKit {
 
 class BalancedPartitioner {
+protected:
+	float balance;
+
 public:
 	BalancedPartitioner();
 	virtual ~BalancedPartitioner();
@@ -32,6 +35,8 @@ public:
 	virtual Clustering& multilevelRerun(Graph& graph, count numParts, Clustering& partition);
 
 	virtual Clustering& postsmooth(Graph& graph, count numBlocks, Clustering& partition) = 0;
+
+	void setBalance(float balanceFactor);
 };
 
 } /* namespace NetworKit */
