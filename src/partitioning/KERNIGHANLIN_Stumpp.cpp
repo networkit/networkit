@@ -79,7 +79,8 @@ Clustering KERNIGHAN_LIN::partition(Graph& g, Clustering& c) {
 				best_v = v;
 			}
 		};
-		g.forNodePairs(computeBestGain);
+		// FIXME: all node pairs from different blocks
+		g.forWeightedEdges(computeBestGain);
 
 		// no more improvements
 		if (currentBest == 0.0)
