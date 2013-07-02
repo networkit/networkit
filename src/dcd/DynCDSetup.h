@@ -92,6 +92,7 @@ public:
 
 	// for static
 	std::vector<Clustering> staticClusteringTimeline; //!< if there is a static algorithm, store its results here
+	std::vector<count> staticTimerTimeline;
 	std::vector<double> staticQualityTimeline;
 	std::vector<count> staticNCommunitiesTimeline;
 	std::vector<double> staticContinuityTimeline;

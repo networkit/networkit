@@ -106,7 +106,13 @@ void DynCDSetup::run() {
 
 		// optionally also run a static community detector
 		if (staticAlgo != NULL) {
+			Aux::Timer staticRuntime;
+			staticRuntime.start();
+			//
 			staticClusteringTimeline.push_back(staticAlgo->run(*G));
+			//
+			staticRuntime.stop();
+			staticTimerTimeline.push_back(staticRuntime.elapsed().count());
 
 			assert (staticClusteringTimeline.back().isProper(*G));
 
@@ -162,12 +168,30 @@ void DynCDSetup::run() {
 	} // end while
 
 	runtime.stop();
+
+	INFO("=============================== RESULTS ===================================");
+
 	INFO("setup runtime: " << runtime.elapsedTag());
 
 
-	for (DynamicCommunityDetector* dynCD : this->detectors){
-		INFO("timer history for algorithm " << dynCD->toString() << ": " << Aux::vectorToString(dynCD->getTimerHistory()));
+	INFO("timeline \t n \t: " << Aux::vectorToString(this->nTimeline));
+	INFO("timeline \t m \t: " << Aux::vectorToString(this->mTimeline));
+
+	for (index detectorIndex = 0; detectorIndex < nDetectors; ++detectorIndex) {
+		INFO("timeline \t " << detectors.at(detectorIndex)->toString() << " \t running time \t: " << Aux::vectorToString(this->detectors.at(detectorIndex)->getTimerHistory()));
+		INFO("timeline \t " << detectors.at(detectorIndex)->toString() << " \t quality \t: " << Aux::vectorToString(this->qualityTimelines.at(detectorIndex)));
+		INFO("timeline \t " << detectors.at(detectorIndex)->toString() << " \t # communities \t: " << Aux::vectorToString(this->nCommunitiesTimelines.at(detectorIndex)));
+		INFO("timeline \t " << detectors.at(detectorIndex)->toString() << " \t continuity \t: " << Aux::vectorToString(this->continuityTimelines.at(detectorIndex)));
 	}
+
+	// static
+	INFO("timeline \t " << this->staticAlgo->toString() << " \t running time \t: " << Aux::vectorToString(this->staticTimerTimeline));
+	INFO("timeline \t " << this->staticAlgo->toString() << " \t quality \t: " << Aux::vectorToString(this->staticQualityTimeline));
+	INFO("timeline \t " << this->staticAlgo->toString() << " \t # communities \t: " << Aux::vectorToString(this->staticNCommunitiesTimeline));
+	INFO("timeline \t " << this->staticAlgo->toString() << " \t continuity \t: " << Aux::vectorToString(this->staticContinuityTimeline));
+
+
+
 
 }
 
