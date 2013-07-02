@@ -329,7 +329,7 @@ TEST_F(ClusteringGTest, testDynamicNMIDistance) {
 	setup.run();
 
 	G = setup.getGraphCopy();
-	std::vector<Clustering>& myresults = setup.results[0];
+	std::vector<Clustering>& myresults = setup.dynamicClusteringTimelines[0];
 	Clustering& currentClustering = myresults.back();
 	Clustering& oldClustering = myresults[0];
 	EXPECT_TRUE(currentClustering.isProper(G)) << "clustering in the sequence should be a proper clustering of G";
