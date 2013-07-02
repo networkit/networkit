@@ -79,7 +79,7 @@ Clustering KERNIGHAN_LIN::partition(Graph& g, Clustering& c) {
 				best_v = v;
 			}
 		};
-		g.forWeightedEdges(computeBestGain);
+		g.forNodePairs(computeBestGain);
 
 		// no more improvements
 		if (currentBest == 0.0)
@@ -97,6 +97,7 @@ Clustering KERNIGHAN_LIN::partition(Graph& g, Clustering& c) {
 		marker[best_u] = 't';
 		marker[best_v] = 't';
 		// recompute gain of nodes in neighbourhood of best two nodes
+		// FIXME: iterate over neighbors of best_u and best_v
 		this->computeGainForNode(g, best_u, c, gain);
 		this->computeGainForNode(g, best_v, c, gain);
 	}
