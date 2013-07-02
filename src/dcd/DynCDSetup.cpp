@@ -22,7 +22,8 @@ DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityD
 		continuityTimelines(nDetectors),
 		checkMod(false),
 		checkNumCom(false),
-		checkSampledRand(false) {
+		checkSampledRand(false),
+		checkNMID(false) {
 	if (deltaT >= tMax) {
 		ERROR("deltaT >= tMax");
 		throw std::runtime_error("deltaT must be smaller than tMax");
@@ -135,6 +136,10 @@ void DynCDSetup::run() {
 				double cont = sampledRand.getDissimilarity(*G, staticClusteringTimeline.at(staticClusteringTimeline.size() - 2), staticClusteringTimeline.back());
 				INFO("[RESULT] continuity \t " << staticAlgo->toString() <<  " \t " << cont);
 				this->staticContinuityTimeline.push_back(cont);
+			} else if (checkNMID && (staticClusteringTimeline.size() >= 2)) {
+				double cont = NMID.getDissimilarity(*G, staticClusteringTimeline.at(staticClusteringTimeline.size() - 2), staticClusteringTimeline.back());
+				INFO("[RESULT] continuity NMID \t " << staticAlgo->toString() <<  " \t " << cont);
+				this->staticContinuityTimeline.push_back(cont);
 			}
 		}
 
@@ -215,12 +220,9 @@ void DynCDSetup::checkNumberOfCommunities() {
 	this->checkNumCom = true;
 }
 
-void DynCDSetup::checkNMIDistance() {
-	// this->checkNMID = true;
-}
-
 void DynCDSetup::checkContinuity() {
-	this->checkSampledRand = true;
+	// this->checkSampledRand = true;
+	this->checkNMID = true;
 }
 
 } /* namespace NetworKit */

@@ -66,8 +66,6 @@ public:
 	virtual void checkNumberOfCommunities();
 
 
-	virtual void checkNMIDistance();
-
 	virtual void checkContinuity();
 
 
@@ -106,6 +104,7 @@ public:
 	bool checkMod; //!< if this is true, we check modularity
 	bool checkNumCom; //!< if this is true, we check the number of communities
 	bool checkSampledRand;
+	bool checkNMID;
 
 };
 

@@ -398,8 +398,6 @@ int main(int argc, char **argv) {
 
 
 
-
-
 	INFO("creating setup with tMax=" << tMax << " and deltaT=" << deltaT);
 	DynCDSetup* dynCDSetup = new DynCDSetup(*source, detectors, tMax, deltaT);
 
