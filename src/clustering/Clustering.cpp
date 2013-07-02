@@ -190,13 +190,20 @@ std::vector<count> Clustering::clusterSizes() {
 	count numC = this->numberOfClusters();
 	std::vector<count> clusterSizes(numC);
 	const count n = this->numberOfNodes();
-	cluster c = none;
+
+// sequential iteration
+//	this->forEntries([&](node v, cluster c) {
+//		c = data[v];
+//		++clusterSizes[c];
+//	});
 
 	// does not work with default parallel iterator!
-	this->forEntries([&](node v, cluster c) {
-		c = data[v];
+#pragma omp parallel for
+	for (index v = 0; v < n; ++v) {
+		cluster c = data[v];
+#pragma omp atomic
 		++clusterSizes[c];
-	});
+	}
 
 	return clusterSizes;
 }
