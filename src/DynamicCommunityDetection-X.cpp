@@ -256,6 +256,15 @@ int main(int argc, char **argv) {
 	}
 
 
+	// determine update threshold / abort criterion for LabelPropagation
+	count theta = 0;
+	if (options[UPDATE_THRESHOLD]) {
+		std::string updateThresholdArg = options[UPDATE_THRESHOLD].arg;
+		theta = std::atoi(updateThresholdArg.c_str());
+	} else {
+		theta = 10;
+	}
+
 
 	// RUN PROGRAM
 
@@ -307,9 +316,9 @@ int main(int argc, char **argv) {
 			std::string detectorArguments = detectorParts[1];
 			if (detectorName == "TDynamicLabelPropagation") {
 				if (detectorArguments == "Isolate") {
-					detectors.push_back(new TDynamicLabelPropagation<Isolate>());
+					detectors.push_back(new TDynamicLabelPropagation<Isolate>(theta));
 				} else if (detectorArguments == "IsolateNeighbors") {
-					detectors.push_back(new TDynamicLabelPropagation<IsolateNeighbors>());
+					detectors.push_back(new TDynamicLabelPropagation<IsolateNeighbors>(theta));
 				} else {
 					std::cout << "[ERROR] unknown detector argument: " << detectorArguments << std::endl;
 					exit(1);
@@ -317,9 +326,9 @@ int main(int argc, char **argv) {
 			} else if (detectorName == "DynamicLabelPropagation") {
 
 				if (detectorArguments == "Isolate") {
-					detectors.push_back(new DynamicLabelPropagation(0, "Isolate"));
+					detectors.push_back(new DynamicLabelPropagation(theta, "Isolate"));
 				} else if (detectorArguments == "IsolateNeighbors") {
-					detectors.push_back(new DynamicLabelPropagation(0, "IsolateNeighbors"));
+					detectors.push_back(new DynamicLabelPropagation(theta, "IsolateNeighbors"));
 				} else {
 					std::cout << "[ERROR] unknown detector argument: " << detectorArguments << std::endl;
 					exit(1);
@@ -338,7 +347,7 @@ int main(int argc, char **argv) {
 				for (int i = 0; i < ensembleSize; i += 1) {
 					Clusterer* base = NULL;
 					if (baseClustererArg == "TDynamicLabelPropagation") {
-						DynamicCommunityDetector* dynLP = new TDynamicLabelPropagation<Isolate>();
+						DynamicCommunityDetector* dynLP = new TDynamicLabelPropagation<Isolate>(theta);
 						dynamicEnsemble->addBaseAlgorithm(*dynLP);
 					} else {
 						std::cout << "[ERROR] unknown base clusterer: " << baseClustererArg << std::endl;
@@ -375,7 +384,7 @@ int main(int argc, char **argv) {
 	if (options[STATIC]) {
 		std::string staticName = options[STATIC].arg;
 		if (staticName == "PLP") {
-			staticDetector = new LabelPropagation();
+			staticDetector = new LabelPropagation(theta);
 		} else if (staticName == "PLM") {
 			staticDetector = new Louvain("simple");
 		} else {
