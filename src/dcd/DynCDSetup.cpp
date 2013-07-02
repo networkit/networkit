@@ -101,7 +101,10 @@ void DynCDSetup::run() {
 				double cont = sampledRand.getDissimilarity(*G, dynamicClusteringTimelines.at(detectorIndex).at(dynamicClusteringTimelines.at(detectorIndex).size() - 2), dynamicClusteringTimelines.at(detectorIndex).back());
 				INFO("[RESULT] continuity \t " << detectors.at(detectorIndex)->toString() << " \t " << cont);
 				continuityTimelines.at(detectorIndex).push_back(cont);
-
+			} else if (checkNMID && (dynamicClusteringTimelines.at(detectorIndex).size() >= 2)) {
+				double cont = NMID.getDissimilarity(*G, dynamicClusteringTimelines.at(detectorIndex).at(dynamicClusteringTimelines.at(detectorIndex).size() - 2), dynamicClusteringTimelines.at(detectorIndex).back());
+				INFO("[RESULT] continuity NMID \t " << detectors.at(detectorIndex)->toString() << " \t " << cont);
+				continuityTimelines.at(detectorIndex).push_back(cont);
 			}
 		} // end for multiple detectors
 
