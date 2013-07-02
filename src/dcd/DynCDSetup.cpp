@@ -12,9 +12,14 @@ namespace NetworKit {
 DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityDetector*>& dynDetectors, count tMax, count deltaT) :
 		gen(&dynGen),
 		detectors(dynDetectors),
+		nDetectors(dynDetectors.size()),
 		tMax(tMax),
 		deltaT(deltaT),
 		staticAlgo(NULL),
+		dynamicClusteringTimelines(nDetectors),
+		qualityTimelines(nDetectors),
+		nCommunitiesTimelines(nDetectors),
+		continuityTimelines(nDetectors),
 		checkMod(false),
 		checkNumCom(false),
 		checkSampledRand(false) {
@@ -56,13 +61,78 @@ void DynCDSetup::run() {
 	// initialize graph
 	gen->initializeGraph();
 
-	// store the resulting clusterings in results
 
-	for (count i = 0; i < this->detectors.size(); ++i) {
-		std::vector<Clustering> dynZeta;
-		results.push_back(dynZeta);
-	}
+	auto runIt = [&](){
+		// run algorithms and evaluation
+		// inspect the current graph
+		INFO("current graph : " << G->toString());
 
+		nTimeline.push_back(G->numberOfNodes());
+		mTimeline.push_back(G->numberOfEdges());
+
+		// run the dynamic community detectors
+		for (index detectorIndex = 0; detectorIndex < this->detectors.size(); ++detectorIndex) {
+			DynamicCommunityDetector* dynCD = this->detectors.at(detectorIndex);
+
+			INFO("running dynamic community detector " << dynCD->toString());
+			dynamicClusteringTimelines.at(detectorIndex).push_back(dynCD->run());
+
+			// TRACE("clustering looks like: " << Aux::vectorToString(results.at(detectorIndex).back().getVector()));
+			assert (dynamicClusteringTimelines.at(detectorIndex).back().isProper(*G));
+
+			// evaluations which need the current graph
+			if (checkNumCom) {
+				INFO("calculating number of clusters");
+				count nCom = dynamicClusteringTimelines.at(detectorIndex).back().numberOfClusters();
+				INFO("[RESULT] number of communities \t "<< detectors.at(detectorIndex)->toString() << "\t" << nCom);
+				nCommunitiesTimelines.at(detectorIndex).push_back(nCom);
+			}
+
+			// modularity
+			if (checkMod) {
+				double mod = modularity.getQuality(dynamicClusteringTimelines.at(detectorIndex).back(), *G);
+				INFO("[RESULT] modularity \t " << detectors.at(detectorIndex)->toString() << " \t " << mod);
+				qualityTimelines.at(detectorIndex).push_back(mod);
+			}
+
+			// continuity by sampling
+			if (checkSampledRand  && (dynamicClusteringTimelines[detectorIndex].size() >= 2)) {
+				double cont = sampledRand.getDissimilarity(*G, dynamicClusteringTimelines.at(detectorIndex).at(dynamicClusteringTimelines.at(detectorIndex).size() - 2), dynamicClusteringTimelines.at(detectorIndex).back());
+				INFO("[RESULT] continuity \t " << detectors.at(detectorIndex)->toString() << " \t " << cont);
+				continuityTimelines.at(detectorIndex).push_back(cont);
+
+			}
+		} // end for multiple detectors
+
+		// optionally also run a static community detector
+		if (staticAlgo != NULL) {
+			staticClusteringTimeline.push_back(staticAlgo->run(*G));
+
+			assert (staticClusteringTimeline.back().isProper(*G));
+
+			if (checkNumCom) {
+
+				INFO("calculating number of communities");
+				count nCom = staticClusteringTimeline.back().numberOfClusters();
+				INFO("[RESULT] number of communities \t " << staticAlgo->toString() << "\t " << nCom);
+				this->staticNCommunitiesTimeline.push_back(nCom);
+			}
+
+			// modularity
+			if (checkMod) {
+				double mod = modularity.getQuality(staticClusteringTimeline.back(), *G);
+				INFO("[RESULT] modularity \t" << staticAlgo->toString() << "\t " << mod);
+				this->staticQualityTimeline.push_back(mod);
+			}
+
+			if (checkSampledRand  && (staticClusteringTimeline.size() >= 2)) { // if static algo has been set,
+				double cont = sampledRand.getDissimilarity(*G, staticClusteringTimeline.at(staticClusteringTimeline.size() - 2), staticClusteringTimeline.back());
+				INFO("[RESULT] continuity \t " << staticAlgo->toString() <<  " \t " << cont);
+				this->staticContinuityTimeline.push_back(cont);
+			}
+		}
+
+	};
 
 
 	// for all community detectors, perform run
@@ -79,64 +149,8 @@ void DynCDSetup::run() {
 			sourceEnd = true;
 		}
 
-		// run algorithms and evaluation
-		// inspect the current graph
-		INFO("current graph : " << G->toString());
-
-		// run the dynamic community detectors
-		for (index detectorIndex = 0; detectorIndex < this->detectors.size(); ++detectorIndex) {
-			DynamicCommunityDetector* dynCD = this->detectors.at(detectorIndex);
-
-			INFO("running dynamic community detector " << dynCD->toString());
-			results.at(detectorIndex).push_back(dynCD->run());
-
-			// TRACE("clustering looks like: " << Aux::vectorToString(results.at(detectorIndex).back().getVector()));
-			assert (results.at(detectorIndex).back().isProper(*G));
-
-			// evaluations which need the current graph
-			if (checkNumCom) {
-				INFO("calculating number of clusters");
-				INFO("[RESULT] number of communities \t "<< detectors.at(detectorIndex)->toString() << "\t" << results.at(detectorIndex).back().numberOfClusters());
-			}
-
-			// modularity
-			if (checkMod) {
-				double mod = modularity.getQuality(results.at(detectorIndex).back(), *G);
-				INFO("[RESULT] modularity \t " << detectors.at(detectorIndex)->toString() << " \t " << mod);
-			}
-
-			// continuity by sampling
-			if (checkSampledRand  && (results[detectorIndex].size() >= 2)) {
-				double cont = sampledRand.getDissimilarity(*G, results.at(detectorIndex).at(results.at(detectorIndex).size() - 2), results.at(detectorIndex).back());
-				INFO("[RESULT] continuity \t " << detectors.at(detectorIndex)->toString() << " \t " << cont);
-
-			}
-		} // end for multiple detectors
-
-		// optionally also run a static community detector
-		if (staticAlgo != NULL) {
-			staticClusterings.push_back(staticAlgo->run(*G));
-
-			assert (staticClusterings.back().isProper(*G));
-
-			if (checkNumCom) {
-
-				INFO("calculating number of clusters");
-				INFO("[RESULT] number of communities \t " << staticAlgo->toString() << "\t " << staticClusterings.back().numberOfClusters());
-			}
-
-			// modularity
-			if (checkMod) {
-				double mod = modularity.getQuality(staticClusterings.back(), *G);
-				INFO("[RESULT] modularity \t" << staticAlgo->toString() << "\t " << mod);
-			}
-
-			if (checkSampledRand  && (staticClusterings.size() >= 2)) { // if static algo has been set,
-				double contStatic = sampledRand.getDissimilarity(*G, staticClusterings.at(staticClusterings.size() - 2), staticClusterings.back());
-				INFO("[RESULT] continuity \t " << staticAlgo->toString() <<  " \t " << contStatic);
-			}
-		}
-
+		// RUN ALGORITHMS AND EVALUTION
+		runIt();
 
 
 		// break from the loop if source cannot produce more events

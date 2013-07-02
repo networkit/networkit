@@ -299,14 +299,13 @@ int main(int argc, char **argv) {
 	if (options[DETECTORS]){
 
 		std::string detectorsFull = options[DETECTORS].arg;
-		std::vector<std::string> detectorsString = Aux::StringTools::split(detectorsFull, ';');
+		std::vector<std::string> detectorsString = Aux::StringTools::split(detectorsFull, '%');
 
 		for (std::string detector : detectorsString) {
 			std::vector<std::string> detectorParts = Aux::StringTools::split(detector, ':');
 			std::string detectorName = detectorParts[0];
 			std::string detectorArguments = detectorParts[1];
 			if (detectorName == "TDynamicLabelPropagation") {
-
 				if (detectorArguments == "Isolate") {
 					detectors.push_back(new TDynamicLabelPropagation<Isolate>());
 				} else if (detectorArguments == "IsolateNeighbors") {
@@ -339,7 +338,8 @@ int main(int argc, char **argv) {
 				for (int i = 0; i < ensembleSize; i += 1) {
 					Clusterer* base = NULL;
 					if (baseClustererArg == "TDynamicLabelPropagation") {
-						// TODO: decide for templates or not, then implement
+						DynamicCommunityDetector* dynLP = new TDynamicLabelPropagation<Isolate>();
+						dynamicEnsemble->addBaseAlgorithm(*dynLP);
 					} else {
 						std::cout << "[ERROR] unknown base clusterer: " << baseClustererArg << std::endl;
 						exit(1);
@@ -360,8 +360,13 @@ int main(int argc, char **argv) {
 				std::cout << "[ERROR] unknown detector name: " << detectorName << std::endl;
 				exit(1);
 			}
+		} // end for detector arguments
+		for (DynamicCommunityDetector* detector : detectors) {
+			INFO("will add " << detector->toString() << " to setup");
 		}
-
+	} else {
+		std::cout << "[ERROR] no community detector given" << std::endl;
+		exit(1);
 	}
 
 	// static detector
