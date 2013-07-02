@@ -33,6 +33,11 @@ bool DynamicNMIDistance::isInBoth(node u, const Clustering& oldClustering, const
 double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 		Clustering& oldClustering, Clustering& newClustering) {
 
+	INFO("compressing clusterings");
+	oldClustering.compact();
+	newClustering.compact();
+	INFO("calculating dissimilarity");
+
 	auto log_b = Aux::MissingMath::log_b; // import convenient logarithm function
 
 //	count n = newGraph.numberOfNodes();
