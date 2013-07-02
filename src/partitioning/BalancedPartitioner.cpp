@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-BalancedPartitioner::BalancedPartitioner() {
+BalancedPartitioner::BalancedPartitioner(): balance(1.0) {
 
 }
 
@@ -81,6 +81,10 @@ Clustering& BalancedPartitioner::multilevelRerun(Graph& graph, count numParts,
 		// postsmooth quasi-deterministically and return
 		return postsmooth(graph, numParts, partition);
 	}
+}
+
+void BalancedPartitioner::setBalance(float balanceFactor) {
+	this->balance = balanceFactor;
 }
 
 } /* namespace NetworKit */
