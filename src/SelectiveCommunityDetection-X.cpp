@@ -752,15 +752,19 @@ int main(int argc, char **argv) {
 
 
 	// RUN
-	Aux::Timer running;
+	Aux::Timer running1;
+	Aux::Timer running2;
+	running1.start();
 	for (int i = 0; i < runs; i++) {
-		running.start();
+		running2.start();
 		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
-		std::cout << i << std::endl;
 		std::unordered_map<node, std::unordered_set<node>> result = algo->run(
 				seeds);
-		running.stop();
+		running2.stop();
+		INFO("The community of the node " << i << " is discovered in " << running2.elapsedMilliseconds() << " ms");
 	}
+	running1.stop();
+	INFO("The communities are discovered in " << running1.elapsedMilliseconds() << " ms");
 	std::cout << "[DONE]" << std::endl;
 
 	// EVALUATION

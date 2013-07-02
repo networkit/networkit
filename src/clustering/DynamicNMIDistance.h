@@ -14,6 +14,8 @@
 
 namespace NetworKit {
 
+typedef std::vector<std::vector<count> > Matrix;
+
 class DynamicNMIDistance: public NetworKit::DissimilarityMeasure {
 public:
 	DynamicNMIDistance();
@@ -32,6 +34,10 @@ public:
 	void sanityCheck(double& NMI, double& NMID) const;
 
 	double entropy(const Clustering& clustering, count n, std::vector<double> probs);
+
+	bool isInBoth(node u, const Clustering& oldClustering, const Clustering& newClustering);
+
+	Matrix confusionMatrix(Graph& G, Clustering& zeta, Clustering& eta);
 };
 
 } /* namespace NetworKit */

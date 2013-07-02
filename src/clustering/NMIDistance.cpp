@@ -109,7 +109,7 @@ double NMIDistance::getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta
 
 
 	// calculate mutual information
-	//		 $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C\cup D|\cdot n}{|C|\cdot|D|}\right)$
+	//		 $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C\cap D|\cdot n}{|C|\cdot|D|}\right)$
 	double MI = 0.0; // mutual information
 	for (cluster C = 0; C < zeta.upperBound(); C++) {
 		for (cluster D = 0; D < eta.upperBound(); D++) {
