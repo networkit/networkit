@@ -193,10 +193,13 @@ void DynCDSetup::run() {
 	}
 
 	// static
-	INFO("timeline \t " << this->staticAlgo->toString() << " \t running time \t: " << Aux::vectorToString(this->staticTimerTimeline));
-	INFO("timeline \t " << this->staticAlgo->toString() << " \t quality \t: " << Aux::vectorToString(this->staticQualityTimeline));
-	INFO("timeline \t " << this->staticAlgo->toString() << " \t # communities \t: " << Aux::vectorToString(this->staticNCommunitiesTimeline));
-	INFO("timeline \t " << this->staticAlgo->toString() << " \t continuity \t: " << Aux::vectorToString(this->staticContinuityTimeline));
+	if (staticAlgo != NULL) {
+		INFO("timeline \t " << this->staticAlgo->toString() << " \t running time \t: " << Aux::vectorToString(this->staticTimerTimeline));
+		INFO("timeline \t " << this->staticAlgo->toString() << " \t quality \t: " << Aux::vectorToString(this->staticQualityTimeline));
+		INFO("timeline \t " << this->staticAlgo->toString() << " \t # communities \t: " << Aux::vectorToString(this->staticNCommunitiesTimeline));
+		INFO("timeline \t " << this->staticAlgo->toString() << " \t continuity \t: " << Aux::vectorToString(this->staticContinuityTimeline));
+	}
+
 
 
 
