@@ -74,6 +74,7 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	 count totalOverlap = numOverlap(confMatrix);
 	 double numDouble = (double) totalOverlap;
 
+#if 0
 	/**
 	 * compute \sum_{i=1}^k n_i^{(D)} with k = number of clusters in first
 	 */
@@ -101,6 +102,7 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 
 		return sum;
 	};
+#endif
 
 	double MI = 0.0; // mutual information
 	for (cluster C = 0; C < oldClustering.upperBound(); C++) {
@@ -218,12 +220,13 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	double H_old = entropy(oldClustering, totalOverlap, P_old);
 	double H_new = entropy(newClustering, totalOverlap, P_new);
 
-	// calculate NMID
-	// $NMI(\zeta,\eta):=\frac{2\cdot MI(\zeta,\eta)}{H(\zeta)+H\text{(\eta)}}$
-	// $NMID(\zeta,\eta):=\begin{cases}
-	//	1-NMI(\zeta,\eta)\\
-	//	0 & H(\zeta)+H(\eta)=0
-	//	\end{cases}$$
+	// calculate NMID:
+	/* $NMI(\zeta,\eta):=\frac{2\cdot MI(\zeta,\eta)}{H(\zeta)+H\text{(\eta)}}$
+	 * $NMID(\zeta,\eta):=\begin{cases}
+	 *	1-NMI(\zeta,\eta)\\
+	 *	0 & H(\zeta)+H(\eta)=0
+	 *	\end{cases}$$
+	 */
 	double NMID = 0.0;
 	double NMI = 0.0;
 	double H_sum = H_old + H_new;

@@ -20,7 +20,7 @@ BalancedLabelPropagation::~BalancedLabelPropagation() {
 Clustering BalancedLabelPropagation::run(Graph& graph, count numParts) {
 	ClusteringGenerator gen;
 	// FIXME: change to region growing from random
-	Clustering partition = gen.makeRandomClustering(graph, numParts);
+	Clustering partition = gen.makeContinuousBalancedClustering(graph, numParts);
 	partition = rerun(graph, numParts, partition);
 	return partition;
 }
@@ -116,7 +116,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 //			DEBUG("partition[" << v << "]: " << partition[v]);
 		});
 
-		DEBUG("cut in iter " << i << ": " << edgeCut.getQuality(partition, graph));
+		DEBUG("cut/balance in iter " << i << ": " << edgeCut.getQuality(partition, graph) << ", " << partition.getImbalance());
 	}
 
 	clusterSizes = partition.clusterSizes();

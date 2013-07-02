@@ -83,9 +83,9 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 	// ML-BLP
 	ClusteringGenerator gen;
 
+#if 0
 	// region growing init FIXME
 	Aux::RandomInteger randInt;
-	Clustering partition(n);
 	airfoil1.forNodes([&](node v) {
 		partition[v] = none;
 	});
@@ -108,12 +108,13 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 			}
 		});
 	}
+#endif
+
+	Clustering partition = gen.makeContinuousBalancedClustering(airfoil1, k);
 	std::vector<count> clusterSizes = partition.clusterSizes();
 	for (index p = 0; p < k; ++p) {
 		DEBUG("size of cluster " << p << ": " << clusterSizes[p]);
 	}
-
-//	partition = gen.makeRandomClustering(airfoil1, k);
 
 	count numVcycles = 5;
 	partition = blp.multilevelRun(airfoil1, k);

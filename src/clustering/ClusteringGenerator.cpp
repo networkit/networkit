@@ -35,13 +35,13 @@ Clustering ClusteringGenerator::makeOneClustering(Graph& G) {
 	return zeta;
 }
 
-Clustering ClusteringGenerator::makeRandomClustering(Graph& G, int k) {
+Clustering ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 	// random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, k-1);
 	//
-	int64_t n = G.numberOfNodes();
+	count n = G.numberOfNodes();
 	Clustering zeta(n);
 
 	for (int64_t i = 0; i < k; ++i) {
@@ -55,6 +55,34 @@ Clustering ClusteringGenerator::makeRandomClustering(Graph& G, int k) {
 
 	assert (zeta.isProper(G));
 	return zeta;
+}
+
+Clustering ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count k) {
+	count n = G.numberOfNodes();
+	Clustering clustering(n);
+
+	std::vector<count> blockSize(k, 0);
+
+	// compute block sizes
+	for (index block = 0; block < k; ++block) {
+		blockSize[block] = n / k + (n % k > block);
+	}
+
+	// compute prefix sums of block sizes
+	for (index block = 1; block < k; ++block) {
+		blockSize[block] += blockSize[block-1];
+	}
+
+	// fill clustering according to blocks
+	node v = 0;
+	for (index block = 0; block < k; ++block) {
+		while (v < blockSize[block]) {
+			clustering[v] = block;
+			++v;
+		}
+	}
+
+	return clustering;
 }
 
 } /* namespace NetworKit */

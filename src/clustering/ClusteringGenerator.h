@@ -37,9 +37,14 @@ public:
 	/**
 	 * Make a clustering with k clusters to which the nodes are randomly assigned.
 	 */
-	virtual Clustering makeRandomClustering(Graph& G, int k);
+	virtual Clustering makeRandomClustering(Graph& G, count k);
 
 
+	/**
+	 * Make a clustering with k clusters. The first n/k nodes are assigned to the
+	 * first cluster, the next n/k nodes to the second cluster and so on.
+	 */
+	virtual Clustering makeContinuousBalancedClustering(Graph& G, count k);
 };
 
 } /* namespace NetworKit */

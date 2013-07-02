@@ -189,16 +189,25 @@ void Clustering::compact() {
 std::vector<count> Clustering::clusterSizes() {
 	count numC = this->numberOfClusters();
 	std::vector<count> clusterSizes(numC);
+	const count n = this->numberOfNodes();
+	cluster c = none;
 
-	this->parallelForEntries([&](node v, cluster c) {
+	// does not work with default parallel iterator!
+	this->forEntries([&](node v, cluster c) {
 		c = data[v];
 		++clusterSizes[c];
 	});
 
-
 	return clusterSizes;
 }
 
+float Clustering::getImbalance() {
+	float avg = ceil((float) this->numberOfNodes() / (float) this->numberOfClusters());
+	std::vector<count> clusterSizes = this->clusterSizes();
+	float maxClusterSize = (float) *std::max_element(clusterSizes.begin(), clusterSizes.end());
+	float imbalance = maxClusterSize / avg;
+	return imbalance;
+}
 
 void Clustering::append(node u) {
 	this->data.push_back(this->defaultValue);
