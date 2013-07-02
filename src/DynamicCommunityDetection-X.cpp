@@ -358,8 +358,16 @@ int main(int argc, char **argv) {
 				// 2. overlap algorithm
 				Overlapper* overlap = new HashingOverlapper();
 				dynamicEnsemble->setOverlapper(*overlap);
-				// 3. Final Clusterer
-				Clusterer* final = new Louvain("simple");
+				// 3. Final Clusterer#
+				Clusterer* final = NULL;
+				if (finalClustererArg == "PLM") {
+					final = new Louvain("simple");
+				} else if (finalClustererArg == "PLP") {
+					final = new LabelPropagation(theta);
+				} else {
+					std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
+					exit(1);
+				}
 
 				dynamicEnsemble->setFinalAlgorithm(*final);
 
@@ -382,11 +390,50 @@ int main(int argc, char **argv) {
 
 	Clusterer* staticDetector = NULL;
 	if (options[STATIC]) {
-		std::string staticName = options[STATIC].arg;
+		std::string staticArg = options[STATIC].arg;
+		std::string staticName = Aux::StringTools::split(staticArg, ':').front();
+		std::string staticParams = Aux::StringTools::split(staticArg, ':').back();
 		if (staticName == "PLP") {
 			staticDetector = new LabelPropagation(theta);
 		} else if (staticName == "PLM") {
 			staticDetector = new Louvain("simple");
+		} else if (staticName == "EPP") {
+			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
+			// parse params
+			std::string ensembleFrontArg = Aux::StringTools::split(staticParams, '+').front();
+			std::string finalClustererArg = Aux::StringTools::split(staticParams, '+').back();
+			std::string ensembleSizeArg = Aux::StringTools::split(ensembleFrontArg, '*').front();
+			std::string baseClustererArg = Aux::StringTools::split(ensembleFrontArg, '*').back();
+
+			int ensembleSize = std::atoi(ensembleSizeArg.c_str());
+			// 1. add base clusterers
+			for (int i = 0; i < ensembleSize; i += 1) {
+				Clusterer* base = NULL;
+				if (baseClustererArg == "PLP") {
+					base = new LabelPropagation(theta);
+				} else {
+					std::cout << "[ERROR] unknown base clusterer: " << baseClustererArg << std::endl;
+					exit(1);
+				}
+				ensemblePre->addBaseClusterer(*base);
+			}
+			// 2. overlap algorithm
+			Overlapper* overlap = new HashingOverlapper();
+			ensemblePre->setOverlapper(*overlap);
+			// 3. Final Clusterer
+			Clusterer* final = NULL;
+			if (finalClustererArg == "PLP") {
+				final = new LabelPropagation();
+			} else if (finalClustererArg == "PLM") {
+				final = new Louvain("balanced");
+			} else {
+				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
+				exit(1);
+			}
+
+			ensemblePre->setFinalClusterer(*final);
+
+			staticDetector = ensemblePre;
 		} else {
 			std::cout << "[ERROR] unknown static detector: " << staticName << std::endl;
 			exit(1);
