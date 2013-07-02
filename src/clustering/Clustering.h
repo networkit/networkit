@@ -192,6 +192,11 @@ public:
 	bool inSameCluster(node u, node v);
 
 
+	/**
+	 * @return Quotient of size of largest cluster and ceil(average cluster size).
+	 */
+	float getImbalance();
+
 
 	/**
 	 * Check if this clustering equals another clustering (with respect to a graph).
