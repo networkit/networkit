@@ -242,7 +242,7 @@ public:
 	/**
 	 * Get the members of a specific cluster.
 	 */
-	std::vector<node> getMembers(cluster C);
+	std::vector<node> getMembers(const cluster C) const;
 
 
 

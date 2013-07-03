@@ -441,6 +441,7 @@ TEST_F(DCDGTest, tryArxivEval) {
 	Graph G = setup.getGraphCopy();
 	INFO("Still alive before the loop");
 	Clustering last;
+	/*
 	for (std::vector<Clustering> clusteringSequence : setup.results) {
 		last = clusteringSequence.back();
 	}
@@ -451,6 +452,7 @@ TEST_F(DCDGTest, tryArxivEval) {
 	INFO("Is proper: " << last.isProper(G));
 	INFO("Number of nodes: " << G.numberOfNodes());
 	INFO("Number of edges: " << G.numberOfEdges());
+	*/
 
 }
 

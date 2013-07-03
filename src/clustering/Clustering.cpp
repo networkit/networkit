@@ -222,7 +222,7 @@ void Clustering::append(node u) {
 	assert (this->data[u] == this->defaultValue); // assumption: push_back creates entry at index u
 }
 
-std::vector<node> Clustering::getMembers(cluster C) {
+std::vector<node> Clustering::getMembers(const cluster C) const{
 	std::vector<node> members;
 	this->forEntries([&](node v, cluster D) {
 		if (D == C) {

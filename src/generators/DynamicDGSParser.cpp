@@ -157,7 +157,6 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 
 	//Vector of cluster sizes
 	std::vector<int> clusterSizes;
-	//std::vector<count> clusterSizesNativeMapping = clustering.clusterSizes();
 	//INFO("SIZE ARRAY SIZE " << clusterSizesNativeMapping.size());
 	//INFO("NUMBER OF CLUSTERS " << clustering.numberOfClusters());
 
@@ -173,8 +172,8 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 			INFO("C " << c);
 			//INFO("CLUSTER SIZES LENGTH" << clusterSizesNativeMapping.size() );
 			//assert (c < clusterSizesNativeMapping.size());
-			//clusterSizes.push_back(clusterSizesNativeMapping[c]);
-			//INFO("Cluster size: " << clusterSizesNativeMapping.at(c));
+			clusterSizes.push_back(clustering.getMembers(c).size());
+			INFO("Cluster size: " << clustering.getMembers(c).size());
 			clusterIDCounter++;
 		}
 
@@ -192,8 +191,6 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 		clusterMappings[normalizedID].reserve(100000);
 
 		for (std::string category : currentNodeCategories) {
-			//clusterMappings[normalizedID].insert ( {"dummy_category",1});
-
 			clusterMappings[normalizedID].find (category);
 
 			std::unordered_map<std::string, int>::const_iterator got = clusterMappings[normalizedID].find (category);
@@ -209,22 +206,17 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 	std::ofstream fs;
 	fs.open (path, std::ofstream::out | std::ofstream::app);
 
+	INFO("Clustering file output");
 
-	/*if(!fs) {
-		std::cerr<<"Cannot open the output file" << std::endl;
-	} else { */
-		INFO("Clustering file output");
+	for (int i=0; i<clustering.numberOfClusters(); i++) {
+		fs << "cluster-" << i << '\t';
+		fs << "size " << '\t' << clusterSizes.at[i] << '\t';
 
-		for (int i=0; i<clustering.numberOfClusters(); i++) {
-			fs << "cluster-" << i << '\t';
-			//fs << "size " << '\t' << clusterSizesNativeMapping.at(i) << '\t';
-
-			for (const auto &pair : clusterMappings[i]) {
-				fs << pair.first << '\t' << pair.second << '\t';
-			}
-			fs << '\n';
+		for (const auto &pair : clusterMappings[i]) {
+			fs << pair.first << '\t' << pair.second << '\t';
 		}
-	//}
+		fs << '\n';
+	}
 
 	fs.close();
 }
