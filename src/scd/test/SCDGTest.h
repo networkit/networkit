@@ -30,12 +30,14 @@
 #include "../SelectiveDissimilarityMeasure.h"
 #include "../../distmeasures/NeighborhoodDistance.h"
 #include "../../distmeasures/TNeighborhoodDistance.h"
+#include "../../distmeasures/AlgebraicDistance.h"
 #include "../TQualityObjective.h"
 #include "../TAcceptability.h"
 #include "../QualityObjective.h"
 #include "../Acceptability.h"
 #include "../CommunityTrimming.h"
 #include "../CommunityQualityMeasure.h"
+
 
 
 

@@ -793,7 +793,8 @@ int main(int argc, char **argv) {
 	// EVALUATION
 	if (options[SUMMARY]) {
 		std::ofstream summary(options[SUMMARY].arg);
-		summary << "Runtime" << ";" << runtime << std::endl;
+		summary << "Node ID" << ";" << "Conductance" << ";" << "Local Modularity" << ";"
+				<< "Community Size" << "Runtime" << std::endl;
 		for (auto u : results) {
 			for (auto v : u.second) {
 				if (measures.size() == 0) {
