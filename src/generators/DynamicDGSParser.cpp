@@ -145,20 +145,18 @@ void DynamicDGSParser::generate() {
 
 void DynamicDGSParser::evaluateClusterings(const std::string path, const Clustering& clustering) {
 	// Stores the category breakdown for each of the clusterings
-	std::vector<std::unordered_map<std::string, int>> clusterMappings;
+	std::vector<std::unordered_map<std::string, index>> clusterMappings;
 	clusterMappings.reserve(100000000); //should this be clustering.numberOfClusters()?
 
 	// Stores the mapping between  clustring IDs (seem somewhat random
 	// and not sequential) to "normalized" IDSs (0..numberOfClusterings-1)
-	std::unordered_map<cluster, int> clusterIDMap;
+	std::unordered_map<cluster, index> clusterIDMap;
 
 	cluster normalizedID = 0;
-	int clusterIDCounter = 0;
+	index clusterIDCounter = 0;
 
 	//Vector of cluster sizes
-	std::vector<int> clusterSizes;
-	//INFO("SIZE ARRAY SIZE " << clusterSizesNativeMapping.size());
-	//INFO("NUMBER OF CLUSTERS " << clustering.numberOfClusters());
+	std::vector<index> clusterSizes;
 
 	// Iterating through nodes and clusters to which they belong
 	clustering.forEntries([&](node v, cluster c){
@@ -169,11 +167,7 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 		// If not, assigning it one
 		if ( gotClusterID == clusterIDMap.end() ) {
 			clusterIDMap[c] = clusterIDCounter;
-			INFO("C " << c);
-			//INFO("CLUSTER SIZES LENGTH" << clusterSizesNativeMapping.size() );
-			//assert (c < clusterSizesNativeMapping.size());
 			clusterSizes.push_back(clustering.getMembers(c).size());
-			INFO("Cluster size: " << clustering.getMembers(c).size());
 			clusterIDCounter++;
 		}
 
@@ -193,7 +187,7 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 		for (std::string category : currentNodeCategories) {
 			clusterMappings[normalizedID].find (category);
 
-			std::unordered_map<std::string, int>::const_iterator got = clusterMappings[normalizedID].find (category);
+			std::unordered_map<std::string, index>::const_iterator got = clusterMappings[normalizedID].find (category);
 
 			if ( got == clusterMappings[normalizedID].end() ) {
 				clusterMappings[normalizedID][category] = 1;
@@ -208,9 +202,9 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 
 	INFO("Clustering file output");
 
-	for (int i=0; i<clustering.numberOfClusters(); i++) {
+	for (index i=0; i<clustering.numberOfClusters(); i++) {
 		fs << "cluster-" << i << '\t';
-		fs << "size " << '\t' << clusterSizes.at[i] << '\t';
+		fs << "size " << '\t' << clusterSizes[i] << '\t';
 
 		for (const auto &pair : clusterMappings[i]) {
 			fs << pair.first << '\t' << pair.second << '\t';
