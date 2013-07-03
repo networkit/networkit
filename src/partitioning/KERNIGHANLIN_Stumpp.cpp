@@ -65,7 +65,7 @@ Clustering KERNIGHAN_LIN::partition(Graph& g, Clustering& c) {
 		node best_u = none;
 		node best_v = none;
 		auto computeBestGain = [&](node u, node v, edgeweight w) {
-			// continue if nodes in same cluster 
+			// continue if nodes in same cluster
 			// or u or v have been vistited already
 			if (c.inSameCluster(u, v) || marker[u] == 't' || marker[v] == 't')
 				return;
