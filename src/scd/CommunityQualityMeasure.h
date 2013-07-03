@@ -20,24 +20,40 @@ namespace NetworKit {
  */
 class CommunityQualityMeasure {
 
+protected:
+
+	Graph* G;
+	count degSum;
+
 public:
 
-	CommunityQualityMeasure();
+	CommunityQualityMeasure(Graph& G);
 
 	virtual ~CommunityQualityMeasure();
 
-	virtual double getQuality(const std::unordered_set<node>& community, const Graph& G) = 0;
+	virtual double getQuality(const std::unordered_set<node>& community) = 0;
 };
 
-class LocalModularity {
+class LocalModularity : public CommunityQualityMeasure{
 
 public:
 
-	LocalModularity();
+	LocalModularity(Graph&G);
 
 	virtual ~LocalModularity();
 
-	virtual double getQuality(const std::unordered_set<node>& community, const Graph& G);
+	virtual double getQuality(const std::unordered_set<node>& community);
+};
+
+class Conduct : public CommunityQualityMeasure{
+
+public:
+
+	Conduct(Graph&G);
+
+	virtual ~Conduct();
+
+	virtual double getQuality(const std::unordered_set<node>& community);
 };
 
 } /* namespace NetworKit */

@@ -35,6 +35,7 @@
 #include "../QualityObjective.h"
 #include "../Acceptability.h"
 #include "../CommunityTrimming.h"
+#include "../CommunityQualityMeasure.h"
 
 
 
