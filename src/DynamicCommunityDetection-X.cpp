@@ -257,6 +257,15 @@ int main(int argc, char **argv) {
 	}
 
 
+	// determine update threshold / abort criterion for LabelPropagation
+	count theta = 0;
+	if (options[UPDATE_THRESHOLD]) {
+		std::string updateThresholdArg = options[UPDATE_THRESHOLD].arg;
+		theta = std::atoi(updateThresholdArg.c_str());
+	} else {
+		theta = 10;
+	}
+
 
 	// RUN PROGRAM
 
@@ -303,18 +312,17 @@ int main(int argc, char **argv) {
 	if (options[DETECTORS]){
 
 		std::string detectorsFull = options[DETECTORS].arg;
-		std::vector<std::string> detectorsString = Aux::StringTools::split(detectorsFull, ';');
+		std::vector<std::string> detectorsString = Aux::StringTools::split(detectorsFull, '%');
 
 		for (std::string detector : detectorsString) {
 			std::vector<std::string> detectorParts = Aux::StringTools::split(detector, ':');
 			std::string detectorName = detectorParts[0];
 			std::string detectorArguments = detectorParts[1];
 			if (detectorName == "TDynamicLabelPropagation") {
-
 				if (detectorArguments == "Isolate") {
-					detectors.push_back(new TDynamicLabelPropagation<Isolate>());
+					detectors.push_back(new TDynamicLabelPropagation<Isolate>(theta));
 				} else if (detectorArguments == "IsolateNeighbors") {
-					detectors.push_back(new TDynamicLabelPropagation<IsolateNeighbors>());
+					detectors.push_back(new TDynamicLabelPropagation<IsolateNeighbors>(theta));
 				} else {
 					std::cout << "[ERROR] unknown detector argument: " << detectorArguments << std::endl;
 					exit(1);
@@ -322,9 +330,9 @@ int main(int argc, char **argv) {
 			} else if (detectorName == "DynamicLabelPropagation") {
 
 				if (detectorArguments == "Isolate") {
-					detectors.push_back(new DynamicLabelPropagation(0, "Isolate"));
+					detectors.push_back(new DynamicLabelPropagation(theta, "Isolate"));
 				} else if (detectorArguments == "IsolateNeighbors") {
-					detectors.push_back(new DynamicLabelPropagation(0, "IsolateNeighbors"));
+					detectors.push_back(new DynamicLabelPropagation(theta, "IsolateNeighbors"));
 				} else {
 					std::cout << "[ERROR] unknown detector argument: " << detectorArguments << std::endl;
 					exit(1);
@@ -343,7 +351,8 @@ int main(int argc, char **argv) {
 				for (int i = 0; i < ensembleSize; i += 1) {
 					Clusterer* base = NULL;
 					if (baseClustererArg == "TDynamicLabelPropagation") {
-						// TODO: decide for templates or not, then implement
+						DynamicCommunityDetector* dynLP = new TDynamicLabelPropagation<Isolate>(theta);
+						dynamicEnsemble->addBaseAlgorithm(*dynLP);
 					} else {
 						std::cout << "[ERROR] unknown base clusterer: " << baseClustererArg << std::endl;
 						exit(1);
@@ -353,8 +362,16 @@ int main(int argc, char **argv) {
 				// 2. overlap algorithm
 				Overlapper* overlap = new HashingOverlapper();
 				dynamicEnsemble->setOverlapper(*overlap);
-				// 3. Final Clusterer
-				Clusterer* final = new Louvain("simple");
+				// 3. Final Clusterer#
+				Clusterer* final = NULL;
+				if (finalClustererArg == "PLM") {
+					final = new Louvain("simple");
+				} else if (finalClustererArg == "PLP") {
+					final = new LabelPropagation(theta);
+				} else {
+					std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
+					exit(1);
+				}
 
 				dynamicEnsemble->setFinalAlgorithm(*final);
 
@@ -364,19 +381,63 @@ int main(int argc, char **argv) {
 				std::cout << "[ERROR] unknown detector name: " << detectorName << std::endl;
 				exit(1);
 			}
+		} // end for detector arguments
+		for (DynamicCommunityDetector* detector : detectors) {
+			INFO("will add " << detector->toString() << " to setup");
 		}
-
+	} else {
+		std::cout << "[ERROR] no community detector given" << std::endl;
+		exit(1);
 	}
 
 	// static detector
 
 	Clusterer* staticDetector = NULL;
 	if (options[STATIC]) {
-		std::string staticName = options[STATIC].arg;
+		std::string staticArg = options[STATIC].arg;
+		std::string staticName = Aux::StringTools::split(staticArg, ':').front();
+		std::string staticParams = Aux::StringTools::split(staticArg, ':').back();
 		if (staticName == "PLP") {
-			staticDetector = new LabelPropagation();
+			staticDetector = new LabelPropagation(theta);
 		} else if (staticName == "PLM") {
 			staticDetector = new Louvain("simple");
+		} else if (staticName == "EPP") {
+			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
+			// parse params
+			std::string ensembleFrontArg = Aux::StringTools::split(staticParams, '+').front();
+			std::string finalClustererArg = Aux::StringTools::split(staticParams, '+').back();
+			std::string ensembleSizeArg = Aux::StringTools::split(ensembleFrontArg, '*').front();
+			std::string baseClustererArg = Aux::StringTools::split(ensembleFrontArg, '*').back();
+
+			int ensembleSize = std::atoi(ensembleSizeArg.c_str());
+			// 1. add base clusterers
+			for (int i = 0; i < ensembleSize; i += 1) {
+				Clusterer* base = NULL;
+				if (baseClustererArg == "PLP") {
+					base = new LabelPropagation(theta);
+				} else {
+					std::cout << "[ERROR] unknown base clusterer: " << baseClustererArg << std::endl;
+					exit(1);
+				}
+				ensemblePre->addBaseClusterer(*base);
+			}
+			// 2. overlap algorithm
+			Overlapper* overlap = new HashingOverlapper();
+			ensemblePre->setOverlapper(*overlap);
+			// 3. Final Clusterer
+			Clusterer* final = NULL;
+			if (finalClustererArg == "PLP") {
+				final = new LabelPropagation();
+			} else if (finalClustererArg == "PLM") {
+				final = new Louvain("balanced");
+			} else {
+				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
+				exit(1);
+			}
+
+			ensemblePre->setFinalClusterer(*final);
+
+			staticDetector = ensemblePre;
 		} else {
 			std::cout << "[ERROR] unknown static detector: " << staticName << std::endl;
 			exit(1);
@@ -394,8 +455,6 @@ int main(int argc, char **argv) {
 	if (options[DELTAT]) {
 		deltaT = std::stoi(options[DELTAT].arg);
 	}
-
-
 
 
 

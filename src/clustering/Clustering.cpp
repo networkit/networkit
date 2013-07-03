@@ -189,21 +189,47 @@ void Clustering::compact() {
 std::vector<count> Clustering::clusterSizes() const{
 	count numC = this->numberOfClusters();
 	std::vector<count> clusterSizes(numC);
+	const count n = this->numberOfNodes();
 
-	this->parallelForEntries([&](node v, cluster c) {
-		c = data[v];
+// sequential iteration
+//	this->forEntries([&](node v, cluster c) {
+//		c = data[v];
+//		++clusterSizes[c];
+//	});
+
+	// does not work with default parallel iterator!
+#pragma omp parallel for
+	for (index v = 0; v < n; ++v) {
+		cluster c = data[v];
+#pragma omp atomic
 		++clusterSizes[c];
-	});
-
+	}
 
 	return clusterSizes;
 }
 
+float Clustering::getImbalance() {
+	float avg = ceil((float) this->numberOfNodes() / (float) this->numberOfClusters());
+	std::vector<count> clusterSizes = this->clusterSizes();
+	float maxClusterSize = (float) *std::max_element(clusterSizes.begin(), clusterSizes.end());
+	float imbalance = maxClusterSize / avg;
+	return imbalance;
+}
 
 void Clustering::append(node u) {
 	this->data.push_back(this->defaultValue);
 	this->n += 1;
 	assert (this->data[u] == this->defaultValue); // assumption: push_back creates entry at index u
+}
+
+std::vector<node> Clustering::getMembers(cluster C) {
+	std::vector<node> members;
+	this->forEntries([&](node v, cluster D) {
+		if (D == C) {
+			members.push_back(v);
+		}
+	});
+	return members;
 }
 
 } /* namespace NetworKit */

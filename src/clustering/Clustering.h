@@ -192,6 +192,11 @@ public:
 	bool inSameCluster(node u, node v);
 
 
+	/**
+	 * @return Quotient of size of largest cluster and ceil(average cluster size).
+	 */
+	float getImbalance();
+
 
 	/**
 	 * Check if this clustering equals another clustering (with respect to a graph).
@@ -232,6 +237,12 @@ public:
 	 * Append a node.
 	 */
 	void append(node u);
+
+
+	/**
+	 * Get the members of a specific cluster.
+	 */
+	std::vector<node> getMembers(cluster C);
 
 
 

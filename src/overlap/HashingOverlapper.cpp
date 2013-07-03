@@ -76,7 +76,7 @@ Clustering HashingOverlapper::run(Graph& G,
 					core[v] = none;
 				}
 				else {
-					count key = (((first[v] + summand) & 0xffff) << 16) | ((second[v] + summand) & 0xffff);
+					count key = ((first[v] ^ 0xffff) << 16) | (second[v] ^ 0xffff);
 					core[v] = hash(key);
 				}
 			}

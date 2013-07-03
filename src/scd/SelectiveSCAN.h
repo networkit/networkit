@@ -21,7 +21,7 @@ public:
 
 	virtual ~SelectiveSCAN();
 
-	virtual std::unordered_map<node, std::unordered_set<node> > run(std::unordered_set<node> seeds);
+	virtual std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> run(std::unordered_set<node> seeds);
 
 
 protected:

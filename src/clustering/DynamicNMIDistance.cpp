@@ -18,16 +18,27 @@ DynamicNMIDistance::~DynamicNMIDistance() {
 	// TODO Auto-generated destructor stub
 }
 
+
+bool DynamicNMIDistance::isInBoth(node u, const Clustering& oldClustering, const Clustering& newClustering) {
+	return ((newClustering[u] != none) &&
+			(u < oldClustering.numberOfEntries()) &&
+			(oldClustering[u] != none));
+}
+
+
+/**
+ * TODO: Needs cleanup!
+ * Formula follows Dhillon, Guan, Kulis: A Unified View of Kernel k-means, ...
+ */
 double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 		Clustering& oldClustering, Clustering& newClustering) {
 
-	auto log_b = Aux::MissingMath::log_b; // import convenient logarithm function
+	INFO("compressing clusterings");
+	oldClustering.compact();
+	newClustering.compact();
+	INFO("calculating dissimilarity");
 
-	auto isInBoth = [&](node u, const Clustering& oldClustering, const Clustering& newClustering) {
-		return ((newClustering[u] != none) &&
-				(u < oldClustering.numberOfEntries()) &&
-				(oldClustering[u] != none));
-	};
+	auto log_b = Aux::MissingMath::log_b; // import convenient logarithm function
 
 //	count n = newGraph.numberOfNodes();
 
@@ -50,6 +61,88 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 
 	DEBUG("size_old=" << Aux::vectorToString(size_old));
 	DEBUG("size_new=" << Aux::vectorToString(size_new));
+
+
+	// confusion matrix
+	std::vector<std::vector<count> > confMatrix = this->confusionMatrix(newGraph, oldClustering, newClustering);
+
+	auto numOverlap = [&](Matrix& confMatrix) {
+		count num = 0;
+		for (Matrix::iterator iter = confMatrix.begin(); iter != confMatrix.end(); ++iter) {
+			for (index i = 0; i < iter->size(); ++i) {
+				num += (*iter)[i];
+			}
+		}
+		return num;
+	};
+
+	 count totalOverlap = numOverlap(confMatrix);
+	 double numDouble = (double) totalOverlap;
+
+#if 0
+	/**
+	 * compute \sum_{i=1}^k n_i^{(D)} with k = number of clusters in first
+	 */
+	auto compAggregate1 = [&](const Matrix& confMatrix, const Clustering& first, cluster D) {
+		count sum = 0;
+		count upperId = first.upperBound();
+
+		for (index i = 0; i < upperId; ++i) {
+			sum += confMatrix[i][D];
+		}
+
+		return sum;
+	};
+
+	/**
+	 * compute \sum_{i=1}^c n_C^{(i)} with c = number of clusters in second
+	 */
+	auto compAggregate2 = [&](const Matrix& confMatrix, cluster C, const Clustering& second) {
+		count sum = 0;
+		count upperId = second.upperBound();
+
+		for (index i = 0; i < upperId; ++i) {
+			sum += confMatrix[C][i];
+		}
+
+		return sum;
+	};
+#endif
+
+	double MI = 0.0; // mutual information
+	for (cluster C = 0; C < oldClustering.upperBound(); C++) {
+		for (cluster D = 0; D < newClustering.upperBound(); D++) {
+			count currOverlap = confMatrix[C][D];
+			if (currOverlap > 0) {
+				double factor1 = (double) currOverlap / (double) numDouble;
+				double nominator = (double) (currOverlap * numDouble);
+				double aggregate1 = (double) size_old[C]; //  compAggregate1(confMatrix, oldClustering, D);
+				double aggregate2 = (double) size_new[D]; // compAggregate2(confMatrix, C, newClustering);
+				double denom = aggregate1 * aggregate2;
+				DEBUG("frac: " << nominator << " / " << denom << " = " << nominator / denom);
+				double factor2 = log_b(nominator / denom, 2);
+				MI += factor1 * factor2;
+
+				DEBUG("contribution of " << C << " and " << D << ": " << factor1 << " * " << factor2 << " = " << factor1 * factor2);
+			}
+		}
+	}
+
+
+	// precompute cluster probabilities
+	std::vector<double> P_old(oldClustering.upperBound(), 0.0);
+	std::vector<double> P_new(newClustering.upperBound(), 0.0);
+	#pragma omp parallel for
+	for (cluster C = oldClustering.lowerBound(); C < oldClustering.upperBound(); ++C) {
+		P_old[C] = ((double) size_old[C]) / numDouble;
+	}
+	#pragma omp parallel for
+	for (cluster C = newClustering.lowerBound(); C < newClustering.upperBound(); ++C) {
+		P_new[C] = ((double) size_new[C]) / numDouble;
+	}
+
+
+#if 0
 
 
 	HashingOverlapper overlapper;
@@ -89,20 +182,13 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	DEBUG("overlapSizes=" << Aux::vectorToString(overlapSizes));
 
 
-	// precompute cluster probabilities
-	std::vector<double> P_old(oldClustering.upperBound(), 0.0);
-	std::vector<double> P_new(newClustering.upperBound(), 0.0);
 
-	for (cluster C = oldClustering.lowerBound(); C < oldClustering.upperBound(); ++C) {
-		P_old[C] = ((double) size_old[C]) / totalOverlapDouble;
-	}
-	for (cluster C = newClustering.lowerBound(); C < newClustering.upperBound(); ++C) {
-		P_new[C] = ((double) size_new[C]) / totalOverlapDouble;
-	}
+
+	double MI = 0.0;
+
 
 
 	// calculate mutual information
-	//	wrong (cup):	 $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C\cup D|\cdot n}{|C|\cdot|D|}\right)$
 	//	correct (cap): $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C \cap D| \cdot n}{|C|\cdot|D|}\right)$
 	double MI = 0.0; // mutual information
 //	const double nDouble = (double) n;
@@ -116,11 +202,6 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 				if (O == none) { // clusters do not intersect
 					TRACE("clusters do not intersect: " << C << ", " << D);
 				} else {
-
-					if ((C == 2501) && (D == 3298)) {
-						DEBUG("overlap 2501 - 3298 = " << intersect[C][D] << ", complete overlap: " << Aux::vectorToString(overlap.getVector()));
-					}
-
 					count sizeO = overlapSizes[O];
  					double factor1 =  ((double) sizeO) / totalOverlapDouble;
 					assert ((size_old[C] * size_new[D]) != 0);
@@ -134,6 +215,7 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 			}
 		}
 	}
+#endif
 
 	// sanity check
 	assert (! std::isnan(MI));
@@ -144,12 +226,13 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	double H_old = entropy(oldClustering, totalOverlap, P_old);
 	double H_new = entropy(newClustering, totalOverlap, P_new);
 
-	// calculate NMID
-	// $NMI(\zeta,\eta):=\frac{2\cdot MI(\zeta,\eta)}{H(\zeta)+H\text{(\eta)}}$
-	// $NMID(\zeta,\eta):=\begin{cases}
-	//	1-NMI(\zeta,\eta)\\
-	//	0 & H(\zeta)+H(\eta)=0
-	//	\end{cases}$$
+	// calculate NMID:
+	/* $NMI(\zeta,\eta):=\frac{2\cdot MI(\zeta,\eta)}{H(\zeta)+H\text{(\eta)}}$
+	 * $NMID(\zeta,\eta):=\begin{cases}
+	 *	1-NMI(\zeta,\eta)\\
+	 *	0 & H(\zeta)+H(\eta)=0
+	 *	\end{cases}$$
+	 */
 	double NMID = 0.0;
 	double NMI = 0.0;
 	double H_sum = H_old + H_new;
@@ -173,6 +256,7 @@ double DynamicNMIDistance::entropy(const Clustering& clustering, count n, std::v
 
 	// $H(\zeta):=-\sum_{C\in\zeta}P(C)\cdot\log_{2}(P(C))$
 	double H = 0.0;
+	#pragma omp parallel for reduction(+:H)
 	for (cluster C = clustering.lowerBound(); C < clustering.upperBound(); ++C) {
 		if (probs[C] != 0) {
 			H += probs[C] * log_b(probs[C], 2);
@@ -212,6 +296,31 @@ void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
 	assert (Aux::NumericTools::ge(NMID, 0.0));
 	assert (Aux::NumericTools::le(NMID, 1.0));
 }
+
+std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(Graph& G,
+		Clustering& first, Clustering& second) {
+	cluster firstUpperId = first.upperBound();
+	cluster secondUpperId = second.upperBound();
+	std::vector<std::vector<count> > confMatrix(firstUpperId);
+
+	for (index i = 0; i < first.upperBound(); ++i) {
+		confMatrix[i].resize(secondUpperId, 0);
+	}
+
+	TRACE("upperId in first, second: " << first.upperBound() << ", " << secondUpperId);
+
+	second.forEntries([&](node u, cluster secondId) {
+		if (this->isInBoth(u, first, second)) {
+			TRACE("node " << u << ", id in first: " << first[u] << ", in second: " << second[u]);
+			cluster firstId = first[u];
+			assert(firstId < confMatrix.size() && secondId < confMatrix[firstId].size());
+			confMatrix[firstId][secondId]++;
+		}
+	});
+
+	return confMatrix;
+}
+
 
 
 } /* namespace NetworKit */

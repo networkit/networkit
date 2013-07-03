@@ -20,7 +20,7 @@ public:
 
 	virtual ~TGreedyCommunityExpansion();
 
-	std::unordered_map<node, std::unordered_set<node>> run(
+	std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> run(
 			std::unordered_set<node> set);
 
 	/**
@@ -47,16 +47,20 @@ inline TGreedyCommunityExpansion<QualityObjective, Acceptability, Trimming>::~TG
 }
 
 template<class QualityObjective, class Acceptability, class Trimming>
-inline std::unordered_map<node, std::unordered_set<node> > TGreedyCommunityExpansion<
+std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> TGreedyCommunityExpansion<
 		QualityObjective, Acceptability, Trimming>::run(
 		std::unordered_set<node> set) {
 
-	std::unordered_map<node, std::unordered_set<node>> communities;
 
+	std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> communities;
+	std::pair<std::unordered_set<node>, int64_t> tmp;
+	Aux::Timer running;
 	for (node u : set) {
+		running.start();
 		std::unordered_set<node> community = this->expandSeed(u);
-		communities.insert(
-				std::pair<node, std::unordered_set<node>>(u, community));
+		running.stop();
+		 tmp = {community, running.elapsedMilliseconds()};
+		communities.insert(std::pair<node, std::pair<std::unordered_set<node>, int64_t>>(u, tmp));
 	}
 
 	return communities;

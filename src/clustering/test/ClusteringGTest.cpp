@@ -329,7 +329,7 @@ TEST_F(ClusteringGTest, testDynamicNMIDistance) {
 	setup.run();
 
 	G = setup.getGraphCopy();
-	std::vector<Clustering>& myresults = setup.results[0];
+	std::vector<Clustering>& myresults = setup.dynamicClusteringTimelines[0];
 	Clustering& currentClustering = myresults.back();
 	Clustering& oldClustering = myresults[0];
 	EXPECT_TRUE(currentClustering.isProper(G)) << "clustering in the sequence should be a proper clustering of G";
@@ -355,6 +355,22 @@ TEST_F(ClusteringGTest, testNumberOfClusters) {
 	EXPECT_EQ(1, one.numberOfClusters());
 	EXPECT_EQ(k, random.numberOfClusters());
 }
+
+
+TEST_F(ClusteringGTest, testGetMembers) {
+	GraphGenerator graphGenerator;
+	count n = 42;
+	Graph G = graphGenerator.makeCompleteGraph(n);
+	ClusteringGenerator clusteringGenerator;
+	Clustering one = clusteringGenerator.makeOneClustering(G);
+	node v = 0; // arbitrary node
+	cluster C = one[v]; // get cluster id
+	std::vector<node> members = one.getMembers(C);
+
+	EXPECT_EQ(n, members.size()) << "all nodes must be in the 1-cluster";
+
+}
+
 
 } /* namespace NetworKit */
 

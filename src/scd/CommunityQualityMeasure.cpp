@@ -9,9 +9,11 @@
 
 namespace NetworKit {
 
-CommunityQualityMeasure::CommunityQualityMeasure() {
-	// TODO Auto-generated constructor stub
-
+CommunityQualityMeasure::CommunityQualityMeasure(Graph& G) {
+	this->G = &G;
+	this->degSum = this->G->parallelSumForNodes([&](node u){
+		return this->G->degree(u);
+	});
 }
 
 CommunityQualityMeasure::~CommunityQualityMeasure() {
@@ -20,7 +22,7 @@ CommunityQualityMeasure::~CommunityQualityMeasure() {
 
 
 
-LocalModularity::LocalModularity() {
+LocalModularity::LocalModularity(Graph&G) : CommunityQualityMeasure(G) {
 }
 
 
@@ -28,13 +30,13 @@ LocalModularity::~LocalModularity() {
 }
 
 double LocalModularity::getQuality(
-		const std::unordered_set<node>& community, const Graph& G) {
+	const std::unordered_set<node>& community) {
 	double inside = 0;
 	double outside = 0;
 	std::unordered_set<node> boundary;
 
 	for (node u : community) {
-		G.forNeighborsOf(u, [&](node x){
+		this->G->forNeighborsOf(u, [&](node x){
 			if (community.find(x) == community.end()){
 				outside ++;
 				if (boundary.find(u) == boundary.end()) {
@@ -49,8 +51,40 @@ double LocalModularity::getQuality(
 			}
 		});
 	}
+	if(outside == 0) {
+		return G->numberOfEdges();
+	}
 	return (inside / community.size()) / (outside / boundary.size());
 }
 
+Conduct::Conduct(Graph& G) : CommunityQualityMeasure(G) {
+}
+
+Conduct::~Conduct() {
+}
+
+double Conduct::getQuality(const std::unordered_set<node>& community) {
+	count outside = 0;
+	count volume = 0;
+	for (node u : community) {
+		this->G->forNeighborsOf(u, [&](node x){
+			if (community.find(x) == community.end()){
+				outside ++;
+			}
+		});
+		volume = volume + G->degree(u);
+	}
+	if (community.empty()) {
+		return 1;
+	}
+	if (volume == 0) {
+		return 1;
+	} else if (degSum-volume == 0) {
+		return 1;
+	}
+	return ((double)outside)/ ((double)std::min((degSum-volume),volume));
+}
 
 } /* namespace NetworKit */
+
+

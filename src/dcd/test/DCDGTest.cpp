@@ -346,7 +346,7 @@ TEST_F(DCDGTest, testTDynamicLabelPropagationStrategyIsolate) {
 
 	Graph G = setup.getGraphCopy();
 
-	for (std::vector<Clustering> clusteringSequence : setup.results) {
+	for (std::vector<Clustering> clusteringSequence : setup.dynamicClusteringTimelines) {
 		Clustering last = clusteringSequence.back();
 		EXPECT_TRUE(last.isProper(G)) << "final clustering in the sequence should be a proper clustering of G";
 	}
@@ -368,7 +368,7 @@ TEST_F(DCDGTest, testTDynamicLabelPropagationStrategyIsolateNeighbors) {
 
 	Graph G = setup.getGraphCopy();
 
-	for (std::vector<Clustering> clusteringSequence : setup.results) {
+	for (std::vector<Clustering> clusteringSequence : setup.dynamicClusteringTimelines) {
 		Clustering last = clusteringSequence.back();
 		EXPECT_TRUE(last.isProper(G)) << "final clustering in the sequence should be a proper clustering of G";
 	}
@@ -395,7 +395,7 @@ TEST_F(DCDGTest, testDynamicEnsembleWithTDynamicLabelPropagation) {
 	setup.run();
 
 	Graph G = setup.getGraphCopy();
-	for (std::vector<Clustering> clusteringSequence : setup.results) {
+	for (std::vector<Clustering> clusteringSequence : setup.dynamicClusteringTimelines) {
 		Clustering last = clusteringSequence.back();
 		EXPECT_TRUE(last.isProper(G)) << "final clustering in the sequence should be a proper clustering of G";
 	}
@@ -418,7 +418,7 @@ TEST_F(DCDGTest, testSetupWithStatic) {
 	setup.run();
 
 	Graph G = setup.getGraphCopy();
-	for (std::vector<Clustering> clusteringSequence : setup.results) {
+	for (std::vector<Clustering> clusteringSequence : setup.dynamicClusteringTimelines) {
 		Clustering last = clusteringSequence.back();
 		EXPECT_TRUE(last.isProper(G)) << "final clustering in the sequence should be a proper clustering of G";
 	}
