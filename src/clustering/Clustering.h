@@ -230,7 +230,7 @@ public:
 	template<typename Callback> void parallelForEntries(Callback handle) const;
 
 
-	std::vector<count> clusterSizes();
+	std::vector<count> clusterSizes() const;
 
 
 	/**

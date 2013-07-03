@@ -9,6 +9,8 @@
 
 namespace NetworKit {
 
+std::vector<std::vector<std::string>> localNodeCategories;
+
 DynamicDGSParser::DynamicDGSParser(std::string path) : graphInitialized(false) {
 	dgsFile.open(path.c_str(), std::ifstream::in);
 }
@@ -69,7 +71,7 @@ void DynamicDGSParser::generate() {
 			std::string nodeName = split[1];
 			// Add a node to a graph, mapping it to the node name inside the nodeNames map
 			nodeNames[nodeName] = Gproxy->addNode();
-			if (split.size() == 4) { // DGS with ground truth
+			if (split.size() >= 4) { // DGS with ground truth
 
 				std::string categoriesFullString = split[2]; /// Example: category="cond-mat.stat-mech, q-fin.ST"
 				std::vector<std::string> categoriesFullStringSplit = Aux::StringTools::split(categoriesFullString, '"');
@@ -82,11 +84,13 @@ void DynamicDGSParser::generate() {
 					currentNodeCategories.push_back(category);
 				}
 				nodeCategories.push_back(currentNodeCategories);
+				assert(nodeCategories.size() > 0);
 
 				std::string dateFullString = split[3]; // Example: date="08-1997"
 				std::vector<std::string> dateFullStringSplit = Aux::StringTools::split(dateFullString, '"');
 				std::string date = dateFullStringSplit[1];
 				nodeDates.push_back(date);
+
 			}
 
 		} else if (tag.compare("ae") == 0 && split.size() >= 4) { // add edge
@@ -136,8 +140,93 @@ void DynamicDGSParser::generate() {
 	}
 
 
+
 }
 
+void DynamicDGSParser::evaluateClusterings(const std::string path, const Clustering& clustering) {
+	// Stores the category breakdown for each of the clusterings
+	std::vector<std::unordered_map<std::string, int>> clusterMappings;
+	clusterMappings.reserve(100000000); //should this be clustering.numberOfClusters()?
 
+	// Stores the mapping between  clustring IDs (seem somewhat random
+	// and not sequential) to "normalized" IDSs (0..numberOfClusterings-1)
+	std::unordered_map<cluster, int> clusterIDMap;
+
+	cluster normalizedID = 0;
+	int clusterIDCounter = 0;
+
+	//Vector of cluster sizes
+	std::vector<int> clusterSizes;
+	//std::vector<count> clusterSizesNativeMapping = clustering.clusterSizes();
+	//INFO("SIZE ARRAY SIZE " << clusterSizesNativeMapping.size());
+	//INFO("NUMBER OF CLUSTERS " << clustering.numberOfClusters());
+
+	// Iterating through nodes and clusters to which they belong
+	clustering.forEntries([&](node v, cluster c){
+
+		// Checking if the specific cluster has been already assigned with a normalized ID
+		auto gotClusterID = clusterIDMap.find (c);
+
+		// If not, assigning it one
+		if ( gotClusterID == clusterIDMap.end() ) {
+			clusterIDMap[c] = clusterIDCounter;
+			INFO("C " << c);
+			//INFO("CLUSTER SIZES LENGTH" << clusterSizesNativeMapping.size() );
+			//assert (c < clusterSizesNativeMapping.size());
+			//clusterSizes.push_back(clusterSizesNativeMapping[c]);
+			//INFO("Cluster size: " << clusterSizesNativeMapping.at(c));
+			clusterIDCounter++;
+		}
+
+		// Using the normalized ID to address entries in the vector
+		normalizedID = clusterIDMap[c];
+
+		TRACE("normalizedID " << normalizedID);
+		TRACE("node categories size " << nodeCategories.size());
+		TRACE("c " << c);
+		TRACE("v " << v);
+
+		// Assuming 1 to 1 node correspondence (VERIFY),
+		// getting the categories to which this node (a scientific paper) belongs
+		std::vector<std::string> currentNodeCategories = nodeCategories[v];
+		clusterMappings[normalizedID].reserve(100000);
+
+		for (std::string category : currentNodeCategories) {
+			//clusterMappings[normalizedID].insert ( {"dummy_category",1});
+
+			clusterMappings[normalizedID].find (category);
+
+			std::unordered_map<std::string, int>::const_iterator got = clusterMappings[normalizedID].find (category);
+
+			if ( got == clusterMappings[normalizedID].end() ) {
+				clusterMappings[normalizedID][category] = 1;
+			} else {
+				clusterMappings[normalizedID][category] = clusterMappings[normalizedID][category] + 1;
+			}
+		}
+	});
+
+	std::ofstream fs;
+	fs.open (path, std::ofstream::out | std::ofstream::app);
+
+
+	/*if(!fs) {
+		std::cerr<<"Cannot open the output file" << std::endl;
+	} else { */
+		INFO("Clustering file output");
+
+		for (int i=0; i<clustering.numberOfClusters(); i++) {
+			fs << "cluster-" << i << '\t';
+			//fs << "size " << '\t' << clusterSizesNativeMapping.at(i) << '\t';
+
+			for (const auto &pair : clusterMappings[i]) {
+				fs << pair.first << '\t' << pair.second << '\t';
+			}
+			fs << '\n';
+		}
+	//}
+
+	fs.close();
+}
 
 } /* namespace NetworKit */
