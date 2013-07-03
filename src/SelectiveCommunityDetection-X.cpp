@@ -357,7 +357,6 @@ int main(int argc, char **argv) {
 				} else if (first == "numSystems") {
 					numSystems = std::stoi(second);
 				} else if (first == "numIters") {
-				std::cout<<(std::stoi(second))<<std::endl;
 					numIters = std::stoi(second);
 				} else if (first == "omega") {
 					omega = std::stof(second);
@@ -374,10 +373,6 @@ int main(int argc, char **argv) {
 			paramVec.erase(paramVec.begin());
 		}
 	}
-	std::cout<<norm<<std::endl;
-	std::cout<<numSystems<<std::endl;
-	std::cout<<numIters<<std::endl;
-	std::cout<<omega<<std::endl;
 
 	param.setInt("norm", norm);
 	param.setInt("numSystems", numSystems);
