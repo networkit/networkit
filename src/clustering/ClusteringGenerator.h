@@ -45,6 +45,7 @@ public:
 	 * first cluster, the next n/k nodes to the second cluster and so on.
 	 */
 	virtual Clustering makeContinuousBalancedClustering(Graph& G, count k);
+
 };
 
 } /* namespace NetworKit */

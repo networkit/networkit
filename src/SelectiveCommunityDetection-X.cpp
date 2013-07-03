@@ -380,7 +380,6 @@ int main(int argc, char **argv) {
 	param.setDouble("omega", omega);
 
 
-
 	std::vector<CommunityQualityMeasure*> measures;
 	if (options[QUALITY]) {
 		std::string qualityArg = options[QUALITY].arg;
@@ -794,7 +793,7 @@ int main(int argc, char **argv) {
 	if (options[SUMMARY]) {
 		std::ofstream summary(options[SUMMARY].arg);
 		summary << "Node ID" << ";" << "Conductance" << ";" << "Local Modularity" << ";"
-				<< "Community Size" << "Runtime" << std::endl;
+				<< "Community Size" << ";" << "Runtime" << std::endl;
 		for (auto u : results) {
 			for (auto v : u.second) {
 				if (measures.size() == 0) {
