@@ -102,7 +102,12 @@ void DynCDSetup::run() {
 				INFO("[RESULT] continuity \t " << detectors.at(detectorIndex)->toString() << " \t " << cont);
 				continuityTimelines.at(detectorIndex).push_back(cont);
 			} else if (checkNMID && (dynamicClusteringTimelines.at(detectorIndex).size() >= 2)) {
+				INFO("calculating continuity with NMID");
+				Aux::Timer nmidTimer;
+				nmidTimer.start();
 				double cont = NMID.getDissimilarity(*G, dynamicClusteringTimelines.at(detectorIndex).at(dynamicClusteringTimelines.at(detectorIndex).size() - 2), dynamicClusteringTimelines.at(detectorIndex).back());
+				nmidTimer.stop();
+				INFO("calculating NMID took " << nmidTimer.elapsedTag());
 				INFO("[RESULT] continuity NMID \t " << detectors.at(detectorIndex)->toString() << " \t " << cont);
 				continuityTimelines.at(detectorIndex).push_back(cont);
 			}
@@ -154,6 +159,7 @@ void DynCDSetup::run() {
 	while (G->time() < tMax) {
 		try {
 			 // try generating the next batch of events
+			INFO("generating next batch of events");
 			gen->generateTimeSteps(G->time() + deltaT);
 
 			INFO("=========================== current time step: " << G->time() << " of " << tMax << " ========================================");
