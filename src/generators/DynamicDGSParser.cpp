@@ -203,13 +203,37 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 	INFO("Clustering file output");
 
 	for (index i=0; i<clustering.numberOfClusters(); i++) {
-		fs << "cluster-" << i << '\t';
-		fs << "size " << '\t' << clusterSizes[i] << '\t';
+		if (clusterSizes[i] >= 20) {
+			fs << "cluster-" << i << '\t';
+			fs << "size " << '\t' << clusterSizes[i] << '\t';
+			/* old output
+			for (const auto &pair : clusterMappings[i]) {
+				fs << pair.first << '\t' << pair.second << '\t';
+			}
+			*/
+			std::vector<count> vals;
+			vals.reserve(clusterMappings.size());
 
-		for (const auto &pair : clusterMappings[i]) {
-			fs << pair.first << '\t' << pair.second << '\t';
+			for(const auto &pair : clusterMappings[i]) {
+			    vals.push_back(pair.second);
+			}
+
+		    std::sort(vals.begin(), vals.end());
+		    std::reverse(vals.begin(), vals.end());
+
+			int maxCategories = 5;
+			int maxCategoriesCounter = 0;
+		    for (const auto &val : vals) {
+		    	if (maxCategoriesCounter < maxCategories) {
+		    		fs << val << '\t';
+		    		maxCategoriesCounter++;
+		    	} else {
+		    		break;
+		    	}
+		    }
+
+			fs << '\n';
 		}
-		fs << '\n';
 	}
 
 	fs.close();
