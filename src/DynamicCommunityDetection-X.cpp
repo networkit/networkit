@@ -139,7 +139,8 @@ const OptionParser::Descriptor usage[] =
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> or --updateThreshold=auto \t number of updated nodes below which label propagation terminates - auto determines this automatically from the size of the graph"},
- {SAVE_CLUSTERINGS, 0, "", "saveClusterings", OptionParser::Arg::Required, "  --scaleThreads=<PATH> \t save the graph clusterings for this test sequence into a specific directory"},
+ {SAVE_CLUSTERINGS, 0, "", "saveClusterings", OptionParser::Arg::Required, "  --saveClusterings=<PATH> \t "},
+
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -261,6 +262,7 @@ int main(int argc, char **argv) {
 
 	// select a dynamic graph source
 	DynamicGraphSource* source = NULL;
+	DynamicDGSParser* sourceDGS  = NULL;
 
 	if (options[SOURCE]) {
 		std::string sourceString = options[SOURCE].arg;
@@ -285,7 +287,9 @@ int main(int argc, char **argv) {
 			// TODO:
 		} else if (sourceName == "DGS") {
 			std::string graphFile = sourceParts[1];
-			source = new DynamicDGSParser(graphFile);
+			sourceDGS = new DynamicDGSParser(graphFile);
+			source = sourceDGS;
+			//source = new DynamicDGSParser(graphFile);
 
 		}
 	} else {
@@ -421,6 +425,13 @@ int main(int argc, char **argv) {
 	}
 
 
+	if (options[SAVE_CLUSTERINGS]) {
+		Clustering last;
+		for (std::vector<Clustering> clusteringSequence : dynCDSetup -> results) {
+			last = clusteringSequence.back();
+		}
+		sourceDGS -> evaluateClusterings(options[SAVE_CLUSTERINGS].arg, last);
+	}
 	totalRuntime.stop();
 	std::cout << "[EXIT] terminated normally after " << totalRuntime.elapsedTag() << std::endl;
 	return 0;
