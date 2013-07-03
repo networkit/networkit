@@ -445,7 +445,7 @@ TEST_F(DCDGTest, tryArxivEval) {
 		last = clusteringSequence.back();
 	}
 	INFO("Still alive before the clusterings");
-	dynGen -> evaluateClusterings(last);
+	dynGen -> evaluateClusterings("clustering-output.txt", last);
 
 //	std::string path = "output-clusts.txg";
 	INFO("Is proper: " << last.isProper(G));

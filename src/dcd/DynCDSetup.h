@@ -90,7 +90,6 @@ protected:
 
 	bool checkMod = false; //!< if this is true, we check modularity
 	bool checkNumCom = false; //!< if this is true, we check the number of communities
-	bool checkNMID = false; 	//!< if this is true, we check NMIDistance between consecutive clusterings
 	bool checkSampledRand = false;
 
 };

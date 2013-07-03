@@ -186,7 +186,7 @@ void Clustering::compact() {
 	TRACE("upperBound: " << upperBound());
 }
 
-std::vector<count> Clustering::clusterSizes() {
+std::vector<count> Clustering::clusterSizes() const{
 	count numC = this->numberOfClusters();
 	std::vector<count> clusterSizes(numC);
 

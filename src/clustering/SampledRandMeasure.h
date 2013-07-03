@@ -18,11 +18,15 @@ class SampledRandMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	SampledRandMeasure();
+	SampledRandMeasure(count maxSamples);
 
 	virtual ~SampledRandMeasure();
 
 	virtual double getDissimilarity(Graph& G, Clustering& first, Clustering& second);
+
+protected:
+
+	count maxSamples;
 
 };
 

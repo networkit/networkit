@@ -38,7 +38,7 @@ public:
 	 */
 	virtual void generate();
 
-	void evaluateClusterings(const Clustering& clustering);
+	void evaluateClusterings(const std::string path, const Clustering& clustering);
 
 
 protected:

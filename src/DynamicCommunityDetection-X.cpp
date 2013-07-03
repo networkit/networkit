@@ -49,6 +49,9 @@
 #include "dcd/TDynamicLabelPropagation.h"
 #include "dcd/DynamicLabelPropagation.h"
 #include "dcd/DynCDSetup.h"
+#include "community/LabelPropagation.h"
+#include "community/Louvain.h"
+#include "dcd/DynamicEnsemble.h"
 
 using namespace NetworKit;
 
@@ -128,16 +131,15 @@ const OptionParser::Descriptor usage[] =
  {DETECTORS, 0, "", "detectors", OptionParser::Arg::Required, "  --detectors=<NAME>:<PARAMS> \t select dynamic community detection algorithms"},
  {TMAX, 0, "", "tMax", OptionParser::Arg::Required, "  --tMax=<INT> \t maximum number of generator time steps"},
  {DELTAT, 0, "", "deltaT", OptionParser::Arg::Required, "  --deltaT=<INT> \t run the detectors each deltaT time steps"},
- {STATIC, 0, "", "static", OptionParser::Arg::Required, "  --static=<NAME> \t set number of clusterer runs"},
+ {STATIC, 0, "", "static", OptionParser::Arg::Required, "  --static=<NAME> \t select static algorithm"},
  {CHECK_COMMUNITIES, 0, "", "checkCommunities", OptionParser::Arg::None, "  --checkCommunities \t get info about communities"},
  {CHECK_CONTINUITY, 0, "", "checkContinuity", OptionParser::Arg::None, "  --checkContinuity \t get info about continuity"},
- {STATIC, 0, "", "static", OptionParser::Arg::Required, "  --static=<NAME> \t set number of clusterer runs"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
  {SAVE_GRAPH, 0, "", "saveGraph", OptionParser::Arg::Required, "  --saveGraph=<PATH> \t write the graph to a file"},
  {PROGRESS, 0, "", "progress", OptionParser::Arg::None, "  --progress \t print progress bar"},
  {SUMMARY, 0, "", "summary", OptionParser::Arg::Required, "  --summary=<PATH> \t append summary as a .csv line to this file"},
  {UPDATE_THRESHOLD, 0, "", "updateThreshold", OptionParser::Arg::Required, "  --updateThreshold=<N> or --updateThreshold=auto \t number of updated nodes below which label propagation terminates - auto determines this automatically from the size of the graph"},
- {SAVE_CLUSTERINGS, 0, "", "saveClusterings", OptionParser::Arg::None, "  --scaleThreads \t save the graph clusterings for this test sequence into a specific directory"},
+ {SAVE_CLUSTERINGS, 0, "", "saveClusterings", OptionParser::Arg::Required, "  --saveClusterings=<PATH> \t "},
 
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
@@ -154,6 +156,9 @@ const OptionParser::Descriptor usage[] =
 
 int main(int argc, char **argv) {
 	std::cout << "=== NetworKit - Dynamic Community Detection === " << std::endl;
+
+	Aux::Timer totalRuntime;
+	totalRuntime.start();
 
 	// ENABLE FLOATING POINT EXCEPTIONS (needs GNU extension, apparently only available on Linux)
 #ifdef _GNU_SOURCE
@@ -198,15 +203,15 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE PARALLELISM
-#ifdef _OPENMP
 	omp_set_nested(1); // enable nested parallelism
-#endif
+
 
 	if (options[THREADS]) {
 		// set number of threads
 		int nThreads = std::atoi(options[THREADS].arg);
 		setNumberOfThreads(nThreads);
 	}
+
 
 	// CONFIGURE OUTPUT
 	if (options[PROGRESS]) {
@@ -282,13 +287,13 @@ int main(int argc, char **argv) {
 			// TODO:
 		} else if (sourceName == "DGS") {
 			std::string graphFile = sourceParts[1];
-			//sourceDGS = new DynamicDGSParser(graphFile);
-			//source = sourceDGS;
-			source = new DynamicDGSParser(graphFile);
+			sourceDGS = new DynamicDGSParser(graphFile);
+			source = sourceDGS;
+			//source = new DynamicDGSParser(graphFile);
 
 		}
 	} else {
-		throw std::runtime_error("--source option must be supplied");
+		std::cout << "[ERROR]Ê--source option must be supplied" << std::endl;
 		exit(1);
 	}
 
@@ -326,14 +331,58 @@ int main(int argc, char **argv) {
 				}
 
 			} else if (detectorName == "DynamicEnsemble") {
-				// TODO: Implement
+				DynamicEnsemble* dynamicEnsemble = new DynamicEnsemble();
+				// parse params
+				std::string ensembleFrontArg = Aux::StringTools::split(detectorArguments, '+').front();
+				std::string finalClustererArg = Aux::StringTools::split(detectorArguments, '+').back();
+				std::string ensembleSizeArg = Aux::StringTools::split(ensembleFrontArg, '*').front();
+				std::string baseClustererArg = Aux::StringTools::split(ensembleFrontArg, '*').back();
+
+				int ensembleSize = std::atoi(ensembleSizeArg.c_str());
+				// 1. add base clusterers
+				for (int i = 0; i < ensembleSize; i += 1) {
+					Clusterer* base = NULL;
+					if (baseClustererArg == "TDynamicLabelPropagation") {
+						// TODO: decide for templates or not, then implement
+					} else {
+						std::cout << "[ERROR] unknown base clusterer: " << baseClustererArg << std::endl;
+						exit(1);
+					}
+					// TODO: dynamicEnsemble->addBaseClusterer(*base);
+				}
+				// 2. overlap algorithm
+				Overlapper* overlap = new HashingOverlapper();
+				dynamicEnsemble->setOverlapper(*overlap);
+				// 3. Final Clusterer
+				Clusterer* final = new Louvain("simple");
+
+				dynamicEnsemble->setFinalAlgorithm(*final);
+
+				detectors.push_back((DynamicCommunityDetector*) dynamicEnsemble);
+
 			} else {
-				throw std::runtime_error("unknown detector: ");
+				std::cout << "[ERROR] unknown detector name: " << detectorName << std::endl;
 				exit(1);
 			}
 		}
 
 	}
+
+	// static detector
+
+	Clusterer* staticDetector = NULL;
+	if (options[STATIC]) {
+		std::string staticName = options[STATIC].arg;
+		if (staticName == "PLP") {
+			staticDetector = new LabelPropagation();
+		} else if (staticName == "PLM") {
+			staticDetector = new Louvain("simple");
+		} else {
+			std::cout << "[ERROR] unknown static detector: " << staticName << std::endl;
+			exit(1);
+		}
+	}
+
 
 	count tMax = 1e4;	//!< maximum time steps
 	if (options[TMAX]) {
@@ -353,6 +402,12 @@ int main(int argc, char **argv) {
 	INFO("creating setup with tMax=" << tMax << " and deltaT=" << deltaT);
 	DynCDSetup* dynCDSetup = new DynCDSetup(*source, detectors, tMax, deltaT);
 
+	if (options[STATIC]) {
+		INFO("setting static detector " << staticDetector->toString());
+		dynCDSetup->setStatic(staticDetector);
+	}
+
+
 	if (options[CHECK_COMMUNITIES]) {
 		INFO("will check communities");
 		dynCDSetup->checkModularity();
@@ -362,7 +417,6 @@ int main(int argc, char **argv) {
 
 	if (options[CHECK_CONTINUITY]) {
 		INFO("will check continuity");
-		// FIXME: dynCDSetup->checkNMIDistance();
 		dynCDSetup->checkContinuity();
 	}
 
@@ -370,21 +424,16 @@ int main(int argc, char **argv) {
 		dynCDSetup->run();
 	}
 
-	// TODO: inspection of results
 
 	if (options[SAVE_CLUSTERINGS]) {
-		/*
 		Clustering last;
 		for (std::vector<Clustering> clusteringSequence : dynCDSetup -> results) {
 			last = clusteringSequence.back();
 		}
-		INFO("I get here" << last.numberOfClusters());
-		assert (sourceDGS != NULL);
-		//sourceDGS -> evaluateClusterings(last);
-		*/
+		sourceDGS -> evaluateClusterings(options[SAVE_CLUSTERINGS].arg, last);
 	}
-	std::cout << "[EXIT] terminated normally" << std::endl;
-
+	totalRuntime.stop();
+	std::cout << "[EXIT] terminated normally after " << totalRuntime.elapsedTag() << std::endl;
 	return 0;
 }
 
