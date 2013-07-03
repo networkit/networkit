@@ -31,7 +31,7 @@ LocalModularityM::~LocalModularityM() {
 
 std::vector<double> LocalModularityM::getValue(node v) {
 
-	std::vector<double> result;
+	std::vector<double> result(3, 0);
 	int inside = 0;
 	int outside = 0;
 	bool modified = false;
@@ -39,9 +39,9 @@ std::vector<double> LocalModularityM::getValue(node v) {
 		modified = true;
 	}
 	if (!modified) {
-		result.push_back(((double)(this->volume - this->nBoundaryEdges)) / this->nBoundaryEdges);
-		result.push_back(0);
-		result.push_back(0);
+		result[0] = ((double)(this->volume - this->nBoundaryEdges)) / this->nBoundaryEdges;
+		result[1] = 0;
+		result[2] = 0;
 		return result;
 	}
 	community->insert(v);
@@ -62,14 +62,14 @@ std::vector<double> LocalModularityM::getValue(node v) {
 	}
 	int core = this->nInternEdges + inside;
 	if (boundary == 0) {
-		result.push_back(G->numberOfEdges());
-		result.push_back(0);
-		result.push_back(G->numberOfEdges());
+		result[0] = G->numberOfEdges();
+		result[1] = 0;
+		result[2] = G->numberOfEdges();
 		return result;
 	}
-	result.push_back(core/((double)boundary));
-	result.push_back(boundary);
-	result.push_back(core);
+	result[0] = ((double)core)/((double)boundary);
+	result[1] = boundary;
+	result[2] = core;
 	return result;
 }
 
@@ -86,7 +86,7 @@ std::vector<double> Conductance::getValue(node v) {
 
 	int count = 0;
 	bool modified = false;
-	std::vector<double> result;
+	std::vector<double> result (3, 0.0);
 	if (community->find(v) == community->end()) {
 		modified = true;
 	}
@@ -103,23 +103,23 @@ std::vector<double> Conductance::getValue(node v) {
 		community->erase(v);
 	}
 	if (degSum - volume - this->G->degree(v)  == 0) {
-		result.push_back(0);
-		result.push_back(0);
-		result.push_back(degSum);
+		result[0] = 0;
+		result[1] = 0;
+		result[2] = degSum;
 		return result;
 	}
 	if (G->hasEdge(v, v)) {
 		double tmp = ((double)(nBoundaryEdges + 2 * count - this->G->degree(v) + 1)/ ((double)std::min(volume + this->G->degree(v), degSum - volume - this->G->degree(v))));
-		result.push_back(1-tmp);
-		result.push_back(nBoundaryEdges + 2 * count - this->G->degree(v) + 1);
-		result.push_back(0);
+		result[0] = 1-tmp;
+		result[1] = nBoundaryEdges + 2 * count - this->G->degree(v) + 1;
+		result[2] = 0;
 		return result;
 	}
 
 	double tmp = (((double)(nBoundaryEdges + 2 * count - this->G->degree(v)))/ ((double)std::min(volume + this->G->degree(v), degSum - volume - this->G->degree(v))));
-	result.push_back(1-tmp);
-	result.push_back(nBoundaryEdges + 2 * count - this->G->degree(v));
-	result.push_back(0);
+	result[0] = 1-tmp;
+	result[1] = nBoundaryEdges + 2 * count - this->G->degree(v);
+	result[2] = 0;
 	return result;
 }
 
@@ -132,7 +132,7 @@ LocalModularityL::~LocalModularityL() {
 
 std::vector<double> LocalModularityL::getValue(node v) {
 
-	std::vector<double> result;
+	std::vector<double> result(3, 0);
 	int inside = 0;
 	int outside = 0;
 	int bound = this->boundary->size();
@@ -170,14 +170,15 @@ std::vector<double> LocalModularityL::getValue(node v) {
 
 
 	if (bound == 0) {
-		result.push_back(G->numberOfEdges());
-		result.push_back(0);
-		result.push_back(G->numberOfEdges());
+		result[0] = G->numberOfEdges();
+		result[1] = 0;
+		result[2] = G->numberOfEdges();
 		return result;
 	}
-	result.push_back((((double)(this->nInternEdges + inside))/(community->size() + 1))/((this->nBoundaryEdges - core + outside)/bound));
-	result.push_back(this->nBoundaryEdges - core + outside);
-	result.push_back(this->nInternEdges + inside);
+
+	result[0] = (((double)(this->nInternEdges + inside))/(community->size() + 1))/((this->nBoundaryEdges - core + outside)/(double)bound);
+	result[1] = this->nBoundaryEdges - core + outside;
+	result[2] = this->nInternEdges + inside;
 	return result;
 }
 

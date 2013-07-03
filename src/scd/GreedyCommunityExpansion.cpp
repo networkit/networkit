@@ -140,15 +140,18 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 	return community;
 }
 
-std::unordered_map<node, std::unordered_set<node>> GreedyCommunityExpansion::run(
+std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> GreedyCommunityExpansion::run(
 		std::unordered_set<node> set) {
 
-	std::unordered_map<node, std::unordered_set<node>> communities;
-
+	std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> communities;
+	Aux::Timer running;
+	std::pair<std::unordered_set<node>, int64_t> tmp;
 	for (node u : set) {
+		running.start();
 		std::unordered_set<node> community = this->expandSeed(u);
-		communities.insert(
-				std::pair<node, std::unordered_set<node>>(u, community));
+		running.stop();
+		tmp = {community, running.elapsedMilliseconds()};
+		communities.insert({u, tmp});
 	}
 
 	return communities;
