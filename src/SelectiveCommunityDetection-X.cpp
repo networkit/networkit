@@ -784,8 +784,7 @@ int main(int argc, char **argv) {
 	runtime = running1.elapsedMilliseconds();
 	std::cout << "[DONE]" << std::endl;
 
-	double tmp1;
-	double tmp2;
+
 	// EVALUATION
 	if (options[SUMMARY]) {
 		std::ofstream summary(options[SUMMARY].arg);
@@ -800,11 +799,9 @@ int main(int argc, char **argv) {
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
 				} else if (measures.size() == 2) {
-					tmp1 = (measures[0])->getQuality(v.second.first);
-					tmp2 = (measures[1])->getQuality(v.second.first);
 					summary << v.first << ";"
-							<< tmp1 + 0.00001 << ";"
-							<< tmp2 + 0.00001 << ";"
+							<< (measures[0])->getQuality(v.second.first) << ";"
+							<< (measures[1])->getQuality(v.second.first) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
 				}
