@@ -132,10 +132,11 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	// precompute cluster probabilities
 	std::vector<double> P_old(oldClustering.upperBound(), 0.0);
 	std::vector<double> P_new(newClustering.upperBound(), 0.0);
-
+	#pragma omp parallel for
 	for (cluster C = oldClustering.lowerBound(); C < oldClustering.upperBound(); ++C) {
 		P_old[C] = ((double) size_old[C]) / numDouble;
 	}
+	#pragma omp parallel for
 	for (cluster C = newClustering.lowerBound(); C < newClustering.upperBound(); ++C) {
 		P_new[C] = ((double) size_new[C]) / numDouble;
 	}
@@ -255,6 +256,7 @@ double DynamicNMIDistance::entropy(const Clustering& clustering, count n, std::v
 
 	// $H(\zeta):=-\sum_{C\in\zeta}P(C)\cdot\log_{2}(P(C))$
 	double H = 0.0;
+	#pragma omp parallel for reduction(+:H)
 	for (cluster C = clustering.lowerBound(); C < clustering.upperBound(); ++C) {
 		if (probs[C] != 0) {
 			H += probs[C] * log_b(probs[C], 2);
