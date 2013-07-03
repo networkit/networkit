@@ -23,7 +23,7 @@ public:
 	 * @param numberIterations Number of iterations in each system
 	 * @param omega Overrelaxation parameter
 	 */
-	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega, index norm = 2);
+	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
 
 	 ~AlgebraicDistance();
 

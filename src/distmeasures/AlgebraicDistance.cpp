@@ -77,7 +77,7 @@ void AlgebraicDistance::randomInit() {
 
 	for (index i = 0; i < numSystems; ++i) {
 		G.forNodes([&](node v) {
-			loads[i][v] = randGen.randomFloat();
+			loads[i][v] = randGen.Aux::RandomProbability::generateFast();
 		});
 	}
 }
