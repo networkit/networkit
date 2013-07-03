@@ -222,5 +222,15 @@ void Clustering::append(node u) {
 	assert (this->data[u] == this->defaultValue); // assumption: push_back creates entry at index u
 }
 
+std::vector<node> Clustering::getMembers(cluster C) {
+	std::vector<node> members;
+	this->forEntries([&](node v, cluster D) {
+		if (D == C) {
+			members.push_back(v);
+		}
+	});
+	return members;
+}
+
 } /* namespace NetworKit */
 

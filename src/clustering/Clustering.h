@@ -239,6 +239,12 @@ public:
 	void append(node u);
 
 
+	/**
+	 * Get the members of a specific cluster.
+	 */
+	std::vector<node> getMembers(cluster C);
+
+
 
 
 
