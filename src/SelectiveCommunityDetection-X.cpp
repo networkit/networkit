@@ -357,6 +357,7 @@ int main(int argc, char **argv) {
 				} else if (first == "numSystems") {
 					numSystems = std::stoi(second);
 				} else if (first == "numIters") {
+				std::cout<<(std::stoi(second))<<std::endl;
 					numIters = std::stoi(second);
 				} else if (first == "omega") {
 					omega = std::stof(second);
