@@ -186,7 +186,7 @@ void Clustering::compact() {
 	TRACE("upperBound: " << upperBound());
 }
 
-std::vector<count> Clustering::clusterSizes() {
+std::vector<count> Clustering::clusterSizes() const{
 	count numC = this->numberOfClusters();
 	std::vector<count> clusterSizes(numC);
 	const count n = this->numberOfNodes();
@@ -220,6 +220,16 @@ void Clustering::append(node u) {
 	this->data.push_back(this->defaultValue);
 	this->n += 1;
 	assert (this->data[u] == this->defaultValue); // assumption: push_back creates entry at index u
+}
+
+std::vector<node> Clustering::getMembers(const cluster C) const{
+	std::vector<node> members;
+	this->forEntries([&](node v, cluster D) {
+		if (D == C) {
+			members.push_back(v);
+		}
+	});
+	return members;
 }
 
 } /* namespace NetworKit */
