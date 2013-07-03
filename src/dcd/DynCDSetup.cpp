@@ -159,7 +159,7 @@ void DynCDSetup::run() {
 	while (G->time() < tMax) {
 		try {
 			 // try generating the next batch of events
-			INFO("generating next batch of events");
+			INFO("receiving next batch of events");
 			gen->generateTimeSteps(G->time() + deltaT);
 
 			INFO("=========================== current time step: " << G->time() << " of " << tMax << " ========================================");
