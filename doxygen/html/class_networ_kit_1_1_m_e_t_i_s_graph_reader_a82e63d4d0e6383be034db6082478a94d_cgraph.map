@@ -1,0 +1,11 @@
+<map id="NetworKit::METISGraphReader::read" name="NetworKit::METISGraphReader::read">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_m_e_t_i_s_parser.html#adb1b00b5e7a3fbba35224b67b9c4d08c" title="Get the METIS graph file header." alt="" coords="275,5,442,49"/>
+<area shape="rect" id="node5" href="$class_aux_1_1_string_tools.html#ac0c0678138b5308c77d7565938027df3" title="Split a string at delimiter and return vector of parts." alt="" coords="284,73,433,101"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#ac40cbd88c3a2b65d33ce74236b805666" title="Set name of graph." alt="" coords="266,125,451,153"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_m_e_t_i_s_parser.html#a52732b9d2ffdead3f05ac8a7fde62c6a" title="Test if graph file has a next line." alt="" coords="275,177,442,221"/>
+<area shape="rect" id="node11" href="$class_networ_kit_1_1_m_e_t_i_s_parser.html#a9146943a37df8c696623019a877bd09c" title="Get adjacencies from the next line in the METIS graph file." alt="" coords="275,245,442,289"/>
+<area shape="rect" id="node13" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="261,313,456,341"/>
+<area shape="rect" id="node15" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="271,365,447,409"/>
+<area shape="rect" id="node17" href="$class_networ_kit_1_1_graph.html#a6625b34904eae267ca384c77a081f333" title="Return the number of edges in the graph." alt="" coords="271,433,447,477"/>
+<area shape="rect" id="node19" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="505,441,690,469"/>
+</map>
