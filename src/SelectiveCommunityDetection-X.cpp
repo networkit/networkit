@@ -56,6 +56,7 @@
 #include "distmeasures/AlgebraicDistance.h"
 #include "distmeasures/NeighborhoodDistance.h"
 #include "distmeasures/NodeDistance.h"
+#include "scd/CommunityQualityMeasure.h"
 
 using namespace NetworKit;
 
@@ -273,19 +274,6 @@ int main(int argc, char **argv) {
 		PRINT_PROGRESS = false;
 	}
 
-	// TODO: how to do summary?
-	if (options[SUMMARY]) {
-		// check if file exists by trying to read from it
-		std::ifstream summary(options[SUMMARY].arg);
-		if (summary) {
-			// file exists
-		} else {
-			// create it and write CSV header
-			std::ofstream summary(options[SUMMARY].arg);
-			summary << "threads;algo;revision;graph;running;eps;clusters;mod"
-					<< std::endl; // TODO: update header
-		}
-	}
 
 	// RUN UNIT TESTS
 
@@ -386,6 +374,29 @@ int main(int argc, char **argv) {
 	param.setInt("numIters", numIters);
 	param.setDouble("omega", omega);
 
+
+
+	std::vector<CommunityQualityMeasure*> measures;
+	if (options[QUALITY]) {
+		std::string qualityArg = options[QUALITY].arg;
+		std::vector<std::string> qualityVec = Aux::StringTools::split(qualityArg, ',');
+		while (qualityVec.size() > 0) {
+			std::string parameter = qualityVec[0];
+			if (parameter == "Conductance") {
+				CommunityQualityMeasure* measure = NULL;
+				measure = new Conduct(G);
+				measures.push_back(measure);
+			} else if ("Modularity") {
+				CommunityQualityMeasure* measure = NULL;
+				measure = new LocalModularity(G);
+				measures.push_back(measure);
+			} else {
+				std::cout << "[ERROR] unknown quality measure: " << parameter << std::endl;
+				exit(1);
+			}
+			qualityVec.erase(qualityVec.begin());
+		}
+	}
 
 	// get algorithms
 	SelectiveCommunityDetector* algo = NULL;
@@ -754,27 +765,52 @@ int main(int argc, char **argv) {
 	// RUN
 	Aux::Timer running1;
 	Aux::Timer running2;
+
+	std::unordered_map<count, int64_t> timeMap;
+	std::unordered_map<count, std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>>> results;
+	int64_t runtime;
+
 	running1.start();
-	for (int i = 0; i < runs; i++) {
+	for (count i = 0; i < runs; i++) {
 		running2.start();
 		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
-		std::unordered_map<node, std::unordered_set<node>> result = algo->run(
+		std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> result = algo->run(
 				seeds);
 		running2.stop();
-		INFO("The community of the node " << i << " is discovered in " << running2.elapsedMilliseconds() << " ms");
+		results.insert({i, result});
+		timeMap.insert({i, running2.elapsedMilliseconds()});
 	}
 	running1.stop();
-	INFO("The communities are discovered in " << running1.elapsedMilliseconds() << " ms");
+	runtime = running1.elapsedMilliseconds();
 	std::cout << "[DONE]" << std::endl;
 
+	double tmp1;
+	double tmp2;
 	// EVALUATION
-
-	if (options[QUALITY]) {
-		// TODO: @Yassine - get quality measure
-		// TODO: @Yassine - evaluate quality
-		// TODO: allow multiple quality measures at once
+	if (options[SUMMARY]) {
+		std::ofstream summary(options[SUMMARY].arg);
+		summary << "Runtime" << ";" << runtime << std::endl;
+		for (auto u : results) {
+			for (auto v : u.second) {
+				if (measures.size() == 0) {
+					summary << v.first << ";" << v.second.second << std::endl;
+				} else if (measures.size() == 1) {
+					summary << v.first << ";"
+							<< (measures[0])->getQuality(v.second.first) << ";"
+							<< v.second.first.size() << ";"
+							<< v.second.second << std::endl;
+				} else if (measures.size() == 2) {
+					tmp1 = (measures[0])->getQuality(v.second.first);
+					tmp2 = (measures[1])->getQuality(v.second.first);
+					summary << v.first << ";"
+							<< tmp1 + 0.00001 << ";"
+							<< tmp2 + 0.00001 << ";"
+							<< v.second.first.size() << ";"
+							<< v.second.second << std::endl;
+				}
+			}
+		}
 	}
-
 	// optionally get ground truth
 	if (options[GROUND_TRUTH]) {
 		// TODO: @Alex - get LFR ground truth
@@ -786,4 +822,6 @@ int main(int argc, char **argv) {
 	std::cout << "[EXIT] terminated normally" << std::endl;
 	return 0;
 }
+
+
 

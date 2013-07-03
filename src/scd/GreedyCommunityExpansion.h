@@ -35,7 +35,7 @@ public:
 
 	virtual ~GreedyCommunityExpansion();
 
-	virtual std::unordered_map<node, std::unordered_set<node>> run(std::unordered_set<node> set);
+	virtual std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> run(std::unordered_set<node> set);
 
 	/**
 	 * @param[in]	s	seed node
