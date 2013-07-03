@@ -19,21 +19,24 @@ SelectiveSCAN::~SelectiveSCAN() {
 	// TODO Auto-generated destructor stub
 }
 
-std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unordered_set<node> set){
+std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> SelectiveSCAN::run(std::unordered_set<node> set){
 
 	std::unordered_map<node, node> nodesState;
-	std::unordered_map<node, std::unordered_set<node>> communities;
+	std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> communities;
 	std::unordered_set<node> community;
+	Aux::Timer running;
+	std::pair<std::unordered_set<node>, int64_t> tmp;
 
 	G.forNodes ([&](node u){
 		nodesState.insert(std::pair<node,int>(u, -1));
 	});
 	for (node u : set) {
+		running.start();
 		std::pair<bool,std::unordered_set<node>> isCore = this->isCore(u);
 		if ((nodesState.find(u))->second == -1  && isCore.first){
 			expandCore(u, u, &community, &nodesState, &isCore.second);
 		} else if (((nodesState.find(u))->second != -1) && ((nodesState.find(u))->second != -2)) {
-			community = communities.find((nodesState.find(u))->second)->second;
+			community = communities.find((nodesState.find(u))->second)->second.first;
 		} else {
 			bool clustered = false;
 			nodesState.find(u)->second = -2;
@@ -51,7 +54,9 @@ std::unordered_map<node, std::unordered_set<node>> SelectiveSCAN::run(std::unord
 				}
 			}
 		}
-		communities.insert({u, community});
+		running.stop();
+		tmp = {community, running.elapsedMilliseconds()};
+		communities.insert({u, tmp});
 		community.clear();
 	}
 	return communities;
