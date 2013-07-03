@@ -486,7 +486,7 @@ int main(int argc, char **argv) {
 
 	if (options[SAVE_CLUSTERINGS]) {
 		Clustering last;
-		for (std::vector<Clustering> clusteringSequence : dynCDSetup -> results) {
+		for (std::vector<Clustering> clusteringSequence : dynCDSetup -> dynamicClusteringTimelines) {
 			last = clusteringSequence.back();
 		}
 		sourceDGS -> evaluateClusterings(options[SAVE_CLUSTERINGS].arg, last);
