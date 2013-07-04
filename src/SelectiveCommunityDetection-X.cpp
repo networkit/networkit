@@ -793,18 +793,22 @@ int main(int argc, char **argv) {
 	if (options[SUMMARY]) {
 		std::ofstream summary(options[SUMMARY].arg);
 		summary << "Node ID" << ";" << "Conductance" << ";" << "Local Modularity" << ";"
-				<< "Community Size" << std::endl;
+				<< "Community Size" << ";" << "Runtime" << std::endl;
 		for (auto u : results) {
 			for (auto v : u.second) {
-				if (measures.size() == 1) {
+				if (measures.size() == 0) {
+					summary << v.first << ";" << v.second.second << std::endl;
+				} else if (measures.size() == 1) {
 					summary << v.first << ";"
 							<< (measures[0])->getQuality(v.second.first) << ";"
-							<< v.second.first.size() << std::endl;
+							<< v.second.first.size() << ";"
+							<< v.second.second << std::endl;
 				} else if (measures.size() == 2) {
 					summary << v.first << ";"
 							<< (measures[0])->getQuality(v.second.first) << ";"
 							<< (measures[1])->getQuality(v.second.first) << ";"
-							<< v.second.first.size() << std::endl;
+							<< v.second.first.size() << ";"
+							<< v.second.second << std::endl;
 				}
 			}
 		}
