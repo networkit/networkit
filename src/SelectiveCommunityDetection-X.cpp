@@ -773,14 +773,11 @@ int main(int argc, char **argv) {
 	std::unordered_map<count, int64_t> timeMap;
 	std::unordered_map<count, std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>>> results;
 	int64_t runtime;
-	std::unordered_set<node> seeds;// = seedGen->getSeeds(nSeeds);
 
-for(int i = 0 ; i < 10000; i++){
-	seeds.insert(i);
-}
 	running1.start();
 	for (count i = 0; i < runs; i++) {
 		running2.start();
+		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
 		std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> result = algo->run(
 				seeds);
 		running2.stop();
