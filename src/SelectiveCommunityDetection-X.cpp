@@ -59,6 +59,9 @@
 #include "distmeasures/NeighborhoodDistance.h"
 #include "distmeasures/NodeDistance.h"
 #include "scd/CommunityQualityMeasure.h"
+#include "io/EdgeListClusteringReader.h"
+#include "io/EdgeListReader.h"
+#include "scd/SelectiveDissimilarityMeasure.h"
 
 using namespace NetworKit;
 
@@ -302,7 +305,20 @@ int main(int argc, char **argv) {
 	// RUN PROGRAM
 
 	// get graph
-	Graph G = getGraph(options);
+	Graph G;
+	Clustering truth;
+	bool groundt = false;
+	if (options[GROUND_TRUTH]) {
+		std::string path = options[GROUND_TRUTH].arg;
+		EdgeListReader graphReader;
+		EdgeListClusteringReader clusteringReader;
+		G = graphReader.read(path);
+		truth = clusteringReader.read(path);
+		groundt = true;
+	} else {
+		G = getGraph(options);
+	}
+
 	SeedSetGenerator* seedGen = NULL;
 	count nSeeds = 1; // number of seeds
 
@@ -380,27 +396,8 @@ int main(int argc, char **argv) {
 	param.setDouble("omega", omega);
 
 
-	std::vector<CommunityQualityMeasure*> measures;
-	if (options[QUALITY]) {
-		std::string qualityArg = options[QUALITY].arg;
-		std::vector<std::string> qualityVec = Aux::StringTools::split(qualityArg, ',');
-		while (qualityVec.size() > 0) {
-			std::string parameter = qualityVec[0];
-			if (parameter == "Conductance") {
-				CommunityQualityMeasure* measure = NULL;
-				measure = new Conduct(G);
-				measures.push_back(measure);
-			} else if ("Modularity") {
-				CommunityQualityMeasure* measure = NULL;
-				measure = new LocalModularity(G);
-				measures.push_back(measure);
-			} else {
-				std::cout << "[ERROR] unknown quality measure: " << parameter << std::endl;
-				exit(1);
-			}
-			qualityVec.erase(qualityVec.begin());
-		}
-	}
+	CommunityQualityMeasure* measure1 = new Conduct(G);
+	CommunityQualityMeasure* measure2 = new LocalModularity(G);
 
 	// get algorithms
 	SelectiveCommunityDetector* algo = NULL;
@@ -765,48 +762,52 @@ int main(int argc, char **argv) {
 
 	assert (algo != NULL);
 
-
-	// RUN
-	Aux::Timer running1;
-	Aux::Timer running2;
-
 	std::unordered_map<count, int64_t> timeMap;
 	std::unordered_map<count, std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>>> results;
-	int64_t runtime;
 
+	// Run
+	Aux::Timer running1;
+	Aux::Timer running2;
+	int64_t runtime;
 	running1.start();
 	for (count i = 0; i < runs; i++) {
 		running2.start();
 		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
-		std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> result = algo->run(
-				seeds);
+		std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> result =
+				algo->run(seeds);
 		running2.stop();
-		results.insert({i, result});
-		timeMap.insert({i, running2.elapsedMilliseconds()});
+		results.insert( { i, result });
+		timeMap.insert( { i, running2.elapsedMilliseconds() });
 	}
 	running1.stop();
 	runtime = running1.elapsedMilliseconds();
 	std::cout << "[DONE]" << std::endl;
 	std::cout << runtime << std::endl;
-
-	// EVALUATION
 	if (options[SUMMARY]) {
 		std::ofstream summary(options[SUMMARY].arg);
-		summary << "Node ID" << ";" << "Conductance" << ";" << "Local Modularity" << ";"
-				<< "Community Size" << ";" << "Runtime" << std::endl;
-		for (auto u : results) {
-			for (auto v : u.second) {
-				if (measures.size() == 0) {
-					summary << v.first << ";" << v.second.second << std::endl;
-				} else if (measures.size() == 1) {
+		if (groundt) {
+			summary << "Node ID" << ";" << "Conductance" << ";" << "Local Modularity" << ";"
+					<< "Jaccard index" << ";" << "Community Size" << ";" << "Runtime" << std::endl;
+			JaccardIndex index;
+			for (auto u : results) {
+				for (auto v : u.second) {
 					summary << v.first << ";"
-							<< (measures[0])->getQuality(v.second.first) << ";"
+							<< (measure1)->getQuality(v.second.first) << ";"
+							<< (measure2)->getQuality(v.second.first) << ";"
+							<< index.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
-				} else if (measures.size() == 2) {
+				}
+			}
+		} else {
+			// EVALUATION
+			summary << "Node ID" << ";" << "Conductance" << ";" << "Local Modularity" << ";"
+					<< "Community Size" << ";" << "Runtime" << std::endl;
+			for (auto u : results) {
+				for (auto v : u.second) {
 					summary << v.first << ";"
-							<< (measures[0])->getQuality(v.second.first) << ";"
-							<< (measures[1])->getQuality(v.second.first) << ";"
+							<< (measure1)->getQuality(v.second.first) << ";"
+							<< (measure2)->getQuality(v.second.first) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
 				}
@@ -827,13 +828,7 @@ int main(int argc, char **argv) {
 			writer.write(sub, path);
 		}
 	}
-	// optionally get ground truth
-	if (options[GROUND_TRUTH]) {
-		// TODO: @Alex - get LFR ground truth
-		// TODO: evaluate ground truth
-	} else {
-		std::cout << "[INFO]�no ground truth supplied" << std::endl;
-	}
+
 
 	std::cout << "[EXIT] terminated normally" << std::endl;
 	return 0;

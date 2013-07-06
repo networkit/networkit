@@ -17,7 +17,8 @@ AlgebraicDistance::~AlgebraicDistance() {
 }
 
 void AlgebraicDistance::preprocess() {
-
+	Aux::Timer running1;
+	running1.start();
 	// random init
 	randomInit();
 
@@ -41,6 +42,8 @@ void AlgebraicDistance::preprocess() {
 			});
 		}
 	}
+	running1.stop();
+	std::cout << running1.elapsedMilliseconds() << std::endl;
 }
 
 double AlgebraicDistance::distance(node u, node v) {
