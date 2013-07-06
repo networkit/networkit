@@ -194,7 +194,7 @@ Clustering LabelPropagation::run(Graph& G) {
 		}
 
 		runtime.stop();
-		INFO("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
+		DEBUG("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
 
 	} // end while
 
