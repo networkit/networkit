@@ -258,7 +258,7 @@ inline Clustering TDynamicLabelPropagation<PrepStrategy>::run() {
 
 	runtime.stop();
 	this->timerHistory.push_back(runtime.elapsed().count());
-	INFO("[DONE] iteration #" << nIterations << ", time spent: " << runtime.elapsedTag());
+	DEBUG("[DONE] iteration #" << nIterations << ", time spent: " << runtime.elapsedTag());
 
 
 	return labels;
