@@ -265,6 +265,17 @@ public:
 	 */
 	void setWeight(node u, node v, edgeweight w);
 
+
+	/**
+	 * Increase the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	void increaseWeight(node u, node v, edgeweight w);
+
 	/**
 	 * Set edge attribute of type double If the edge does not exist,
 	 * it will be inserted.
@@ -539,6 +550,16 @@ public:
 	 */
 	template<typename L> void forEdgesWithAttribute_double(int attrId,
 			L handle);
+
+	/**
+	 * Iterate over all edges of the const graph and call handler (lambda closure).
+	 *
+	 *	@param[in]	attrId		attribute id
+	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *
+	 */
+	template<typename L> void forEdgesWithAttribute_double(int attrId,
+			L handle) const;
 
 	/** NEIGHBORHOOD ITERATORS **/
 
@@ -1036,6 +1057,21 @@ inline void NetworKit::Graph::forNodesWithAttribute(std::string attrKey,
 template<typename L>
 inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
 		L handle) {
+	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
+	for (node u = 0; u < n; ++u) {
+		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
+			node v = this->adja[u][vi];
+			double attr = edgeMap[u][vi];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				handle(u, v, attr);
+			}
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
+		L handle) const {
 	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
 	for (node u = 0; u < n; ++u) {
 		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {

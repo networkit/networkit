@@ -16,6 +16,8 @@ class GreedyMapper: public NetworKit::StaticMapper {
 public:
 	GreedyMapper();
 	virtual ~GreedyMapper();
+
+	virtual std::map<index, index> run(Graph& guest, Graph& host);
 };
 
 } /* namespace NetworKit */

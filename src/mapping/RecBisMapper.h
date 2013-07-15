@@ -16,6 +16,8 @@ class RecBisMapper: public NetworKit::StaticMapper {
 public:
 	RecBisMapper();
 	virtual ~RecBisMapper();
+
+	virtual std::map<index, index> run(Graph& guest, Graph& host);
 };
 
 } /* namespace NetworKit */

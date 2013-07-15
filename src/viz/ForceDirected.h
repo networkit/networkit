@@ -18,8 +18,15 @@ namespace NetworKit {
 class ForceDirected: public NetworKit::SpringEmbedder {
 public:
 
+	/**
+	 * Constructor
+	 */
 	ForceDirected(); // nullary constructor needed for Python shell
 
+	/**
+	 * @param bottomLeft Coordinate of point in bottom/left corner
+	 * @param topRight Coordinate of point in top/right corner
+	 */
 	ForceDirected(Point<float> bottomLeft, Point<float> topRight);
 
 	virtual ~ForceDirected();

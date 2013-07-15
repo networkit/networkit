@@ -18,4 +18,5 @@ StaticMapper::~StaticMapper() {
 	// TODO Auto-generated destructor stub
 }
 
+
 } /* namespace NetworKit */

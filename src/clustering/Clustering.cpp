@@ -232,5 +232,22 @@ std::vector<node> Clustering::getMembers(const cluster C) const{
 	return members;
 }
 
+
+Graph Clustering::communicationGraph(const Graph& graph) {
+	this->compact();
+	count n = this->numberOfClusters();
+	Graph commGraph(n);
+
+	graph.forEdgesWithAttribute_double(0, [&](node u, node v, edgeweight w) {
+		// only undirected graphs and no self-loops => u < v
+		if ((u < v) && (data[u] != data[v])) {
+			commGraph.increaseWeight(data[u], data[v], w);
+		}
+	});
+
+	return commGraph;
+}
+
+
 } /* namespace NetworKit */
 

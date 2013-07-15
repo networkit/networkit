@@ -133,6 +133,10 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 
 }
 
+void Graph::increaseWeight(node u, node v, edgeweight w) {
+	this->setWeight(u, v, w + this->weight(u, v));
+}
+
 bool Graph::hasEdge(node u, node v) const {
 	return (find(u, v) != none);
 }

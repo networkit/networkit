@@ -245,11 +245,11 @@ public:
 	std::vector<node> getMembers(const cluster C) const;
 
 
-
-
-
-
-
+	/**
+	 * Compute communication graph (sometimes called quotient graph) induced by
+	 * graph @a graph and this clustering/partition.
+	 */
+	Graph communicationGraph(const Graph& graph);
 };
 
 } /* namespace NetworKit */

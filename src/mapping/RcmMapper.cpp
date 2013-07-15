@@ -18,4 +18,8 @@ RcmMapper::~RcmMapper() {
 	// TODO Auto-generated destructor stub
 }
 
+std::map<index, index> RcmMapper::run(Graph& guest, Graph& host) {
+	// TODO
+}
+
 } /* namespace NetworKit */
