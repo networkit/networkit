@@ -326,6 +326,20 @@ bool Graph::isMarkedAsWeighted() {
 	return this->weighted;
 }
 
+index Graph::argminDegree() const {
+	index argmin = 0;
+	count mindeg = this->degree(argmin);
+
+	this->forNodes([&](node v) {
+		if (degree(v) < mindeg) {
+			argmin = v;
+			mindeg = degree(v);
+		}
+	});
+
+	return argmin;
+}
+
 std::vector<std::pair<node, node> > Graph::edges() {
 	std::vector<std::pair<node, node> > edges;
 	this->forEdges([&](node u, node v){
