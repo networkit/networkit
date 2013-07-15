@@ -231,9 +231,17 @@ public:
 	count degree(node v) const;
 
 	/**
+	 * @return Index of vertex with smallest neighborhood size (does not have to be
+	 * unique).
+	 */
+	index argminDegree() const;
+
+	/**
 	 * @return Weighted degree of @a v.
 	 */
 	edgeweight weightedDegree(node v) const;
+
+
 
 	/** EDGE ATTRIBUTE GETTERS **/
 
@@ -596,6 +604,16 @@ public:
 	template<typename L> void forEdgesOf(node u, L handle) const;
 
 	/**
+	 * Iterate over all incident edges of a node in neighborhood-size-increasing order and call handler (lamdba closure).
+	 */
+	template<typename L> void forEdgesOfInDegreeIncreasingOrder(node u, L handle);
+
+	/**
+	 * Iterate over all incident edges of a node in neighborhood-size-increasing order and call handler (lamdba closure).
+	 */
+	template<typename L> void forEdgesOfInDegreeIncreasingOrder(node u, L handle) const;
+
+	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 *
 	 * Handle takes parameters (u, v, w) where w is the edge weight.
@@ -902,6 +920,39 @@ inline void NetworKit::Graph::forEdgesOf(node u, L handle) const {
 }
 
 template<typename L>
+void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) const {
+	auto hasSmallerDegree = [&](node v1, node v2) {
+		return degree(v1) < degree(v2); // FIXME
+	};
+
+	std::vector<node> neighbors = adja[u];
+	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
+
+	for (node v : neighbors) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
+}
+
+template<typename L>
+void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) {
+	auto hasSmallerDegree = [&](node v1, node v2) {
+		return degree(v1) < degree(v2); // FIXME
+	};
+
+	std::vector<node> neighbors = adja[u];
+	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
+
+	for (node v : neighbors) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
+}
+
+
+template<typename L>
 inline void NetworKit::Graph::parallelForNodePairs(L handle) {
 #pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
@@ -1135,8 +1186,6 @@ void NetworKit::Graph::forNodesInRandomOrder(L handle) const {
 		}
 	}
 }
-
-
 
 
 #endif /* GRAPH_H_ */
