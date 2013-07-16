@@ -17,7 +17,7 @@ RecBisMapper::~RecBisMapper() {
 
 }
 
-std::map<index, index> RecBisMapper::run(Graph& guest, Graph& host) {
+Mapping RecBisMapper::run(Graph& guest, Graph& host) {
 	// TODO
 }
 

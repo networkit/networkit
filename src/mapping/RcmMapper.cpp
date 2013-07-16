@@ -10,12 +10,11 @@
 namespace NetworKit {
 
 RcmMapper::RcmMapper() {
-	// TODO Auto-generated constructor stub
 
 }
 
 RcmMapper::~RcmMapper() {
-	// TODO Auto-generated destructor stub
+
 }
 
 Permutation RcmMapper::invert(const Permutation& piIn) const {
@@ -30,7 +29,7 @@ Permutation RcmMapper::invert(const Permutation& piIn) const {
 }
 
 Mapping RcmMapper::run(Graph& guest, Graph& host) {
-	std::map<index, index> mapping;
+	Mapping mapping;
 	count n = guest.numberOfNodes();
 	assert(host.numberOfNodes() == n); // assumption: guest and host are of equal size
 
@@ -41,7 +40,7 @@ Mapping RcmMapper::run(Graph& guest, Graph& host) {
 	// permute host graph according to RCM
 	Permutation piHost = permute(host);
 
-	// TODO: fill in mapping according to permutations
+	// fill in mapping according to permutations
 	for (index i = 0; i < n; ++i) {
 		mapping.insert(std::make_pair(i, piHost[piGuestInverted[i]]));
 	}
@@ -50,31 +49,49 @@ Mapping RcmMapper::run(Graph& guest, Graph& host) {
 }
 
 Permutation RcmMapper::permute(const Graph& graph) const {
+	count n = graph.numberOfNodes();
 	Permutation permutation;
-	std::set<index> unvisited;
+	std::vector<bool> unvisited(n, true);
+	count numUnvisited = n;
 
-	// init unvisited => insert all nodes
-	graph.forNodes([&](node v) {
-		unvisited.insert(v);
+	auto remainingArgMinDegree([&](const Graph& graph, const std::vector<bool>& unvisted) {
+		index argmin = 0;
+		count mindeg = std::numeric_limits<count>::max();
+
+		graph.forNodes([&](node v) {
+			if (unvisited.at(v) && graph.degree(v) < mindeg) {
+				mindeg = graph.degree(v);
+				argmin = v;
+			}
+		});
+
+		return argmin;
 	});
 
-	while (! unvisited.empty()) {
+
+	while (numUnvisited > 0) {
 		// for each connected component
-		index argmin = graph.argminDegree();
+		index argmin = remainingArgMinDegree(graph, unvisited); // FIXME: make more efficient
 		std::queue<index> q;
 		q.push(argmin);
+		unvisited.at(argmin) = false;
+		--numUnvisited;
+
+		DEBUG("root of RCM: " << argmin);
 
 		while (! q.empty()) {
 			// process current front node
 			node v = q.front();
 			q.pop();
-			unvisited.erase(v);
 			permutation.push_back(v);
 
 			// enqueue unvisited neighbors in degree-increasing order
 			graph.forEdgesOfInDegreeIncreasingOrder(v, [&](node v, node u) {
-				if (unvisited.count(u) > 0) {
+				if (unvisited.at(u)) {
 					q.push(u);
+					unvisited.at(u) = false;
+					--numUnvisited;
+					TRACE("numUnvisited: " << numUnvisited << ", RCM processes " << v);
 				}
 			});
 		}

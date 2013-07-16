@@ -16,6 +16,7 @@
 #include <queue>
 #include <stdexcept>
 #include <map>
+#include <set>
 #include <sstream>
 #include <limits>
 #include <cstdint>
@@ -202,7 +203,7 @@ public:
 	/**
 	 * Return if this graph has been marked as a weighted graph.
 	 */
-	bool isMarkedAsWeighted();
+	bool isMarkedAsWeighted() const;
 
 	/**
 	 * Get string representation
@@ -240,6 +241,13 @@ public:
 	 * @return Weighted degree of @a v.
 	 */
 	edgeweight weightedDegree(node v) const;
+
+	/**
+	 * @return Distance between @a u and @a v, i.e., the length of the shortest path
+	 * between the two. Zero if u = v, maximal possible value if no path exists.
+	 * FIXME: Implementation is inefficient.
+	 */
+	edgeweight distance(node u, node v) const;
 
 
 

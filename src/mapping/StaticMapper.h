@@ -14,12 +14,21 @@
 
 namespace NetworKit {
 
+typedef std::vector<index> Permutation;
+typedef std::map<index, index> Mapping;
+
 class StaticMapper {
+protected:
+
 public:
 	StaticMapper();
 	virtual ~StaticMapper();
 
-	virtual std::map<index, index> run(Graph& guest, Graph& host) = 0;
+	virtual Mapping run(Graph& guest, Graph& host) = 0;
+
+	virtual Mapping trivial(Graph& guest, Graph& host);
+
+	virtual edgeweight cost(const Graph& guest, const Graph& host, Mapping& mapping);
 };
 
 } /* namespace NetworKit */

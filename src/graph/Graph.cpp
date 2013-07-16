@@ -134,7 +134,12 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 }
 
 void Graph::increaseWeight(node u, node v, edgeweight w) {
-	this->setWeight(u, v, w + this->weight(u, v));
+	if (this->hasEdge(u, v)) {
+		this->setWeight(u, v, w + this->weight(u, v));
+	}
+	else {
+		this->addEdge(u, v, w);
+	}
 }
 
 bool Graph::hasEdge(node u, node v) const {
@@ -322,7 +327,7 @@ void Graph::markAsWeighted() {
 	this->weighted = true;
 }
 
-bool Graph::isMarkedAsWeighted() {
+bool Graph::isMarkedAsWeighted() const {
 	return this->weighted;
 }
 
@@ -339,6 +344,54 @@ index Graph::argminDegree() const {
 
 	return argmin;
 }
+
+edgeweight Graph::distance(node u, node v) const {
+
+	auto relax([&](node u, node v, edgeweight w, std::vector<edgeweight>& distances) {
+		if (distances[v] > distances[u] + weight(u, v)) {
+			distances[v] = distances[u] + weight(u, v);
+		}
+	});
+
+	auto closest([&](const std::vector<edgeweight>& distances, const std::set<index>& unsettled) {
+		// FIXME: inefficient
+		edgeweight mindist = std::numeric_limits<edgeweight>::max();
+		index argmin = 0;
+
+		for (std::set<index>::iterator iter = unsettled.begin(); iter != unsettled.end(); ++iter) {
+			node v = *iter;
+			if (distances[v] < mindist) {
+				mindist = distances[*iter];
+				argmin = v;
+			}
+		}
+
+		return argmin;
+	});
+
+	// init distances
+	std::vector<edgeweight> distances(n, std::numeric_limits<edgeweight>::max());
+	distances[u] = 0;
+	std::set<index> unsettled;
+
+	this->forNodes([&](node v) {
+		unsettled.insert(v);
+	});
+
+	while (unsettled.size() > 0) {
+		node current = closest(distances, unsettled);
+		unsettled.erase(current);
+
+		this->forWeightedEdgesOf(current, [&](node current, node v, edgeweight w) {
+			relax(current, v, w, distances);
+		});
+	}
+
+	TRACE("distance between " << u << " and " << v << ": " << distances[v]);
+
+	return distances[v];
+}
+
 
 std::vector<std::pair<node, node> > Graph::edges() {
 	std::vector<std::pair<node, node> > edges;

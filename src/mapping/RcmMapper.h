@@ -12,9 +12,6 @@
 
 namespace NetworKit {
 
-typedef std::vector<index> Permutation;
-typedef std::map<index, index> Mapping;
-
 class RcmMapper: public NetworKit::StaticMapper {
 public:
 	RcmMapper();
