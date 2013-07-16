@@ -12,14 +12,18 @@
 
 namespace NetworKit {
 
+typedef std::vector<index> Permutation;
+typedef std::map<index, index> Mapping;
+
 class RcmMapper: public NetworKit::StaticMapper {
 public:
 	RcmMapper();
 	virtual ~RcmMapper();
 
-	virtual std::map<index, index> run(Graph& guest, Graph& host);
+	virtual Mapping run(Graph& guest, Graph& host);
 
-	std::vector<index> permute(const Graph& graph) const;
+	Permutation permute(const Graph& graph) const;
+	Permutation invert(const Permutation& piIn) const;
 };
 
 } /* namespace NetworKit */
