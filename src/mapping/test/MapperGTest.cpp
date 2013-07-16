@@ -23,23 +23,33 @@ MapperGTest::~MapperGTest() {
 
 
 TEST_F(MapperGTest, tryRcmMapping) {
-	// TODO: read graph
-	Graph g;
+	// read application graph
+	METISGraphReader graphReader;
+	Graph appGraph = graphReader.read("input/airfoil1.graph");
+	count k = 512;
 
-	// TODO: read host (processor) graph
-	Graph host;
+	// generate or read clustering/partition
+	ClusteringGenerator clusteringGenerator;
+	Clustering partition = clusteringGenerator.makeContinuousBalancedClustering(appGraph, k);
 
-	// TODO: generate or read clustering/partition
-	Clustering partition;
+	// read host (processor) graph
+	Graph host = graphReader.read("input/mapping/grid-8x8x8-dist-arch.graph");
 
-	// TODO: compute communication graph
-	Graph commGraph = partition.communicationGraph(g);
+	// compute communication graph
+	Graph commGraph = partition.communicationGraph(appGraph);
 
-	// call mapping routine
+	// evaluate trivial mapping
 	RcmMapper mapper;
-	std::map<index, index> mapping = mapper.run(commGraph, host);
+	Mapping mapping = mapper.trivial(commGraph, host);
+	edgeweight cost = mapper.cost(commGraph, host, mapping);
+	INFO("Cost of RCM mapping (airfoil1 512 parts onto 8x8x8 grid): " << cost);
 
-	// TODO: check and evaluate mapping
+	// call RCM mapping routine
+	mapping = mapper.run(commGraph, host);
+
+	// check and evaluate mapping
+	cost = mapper.cost(commGraph, host, mapping);
+	INFO("Cost of RCM mapping (airfoil1 512 parts onto 8x8x8 grid): " << cost);
 }
 
 

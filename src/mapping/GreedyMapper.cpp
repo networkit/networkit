@@ -17,7 +17,7 @@ GreedyMapper::~GreedyMapper() {
 
 }
 
-std::map<index, index> GreedyMapper::run(Graph& guest, Graph& host) {
+Mapping GreedyMapper::run(Graph& guest, Graph& host) {
 	// TODO
 }
 
