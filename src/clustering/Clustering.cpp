@@ -263,7 +263,7 @@ Graph Clustering::communicationGraph(const Graph& graph) {
 
 edgeweight Clustering::weightedDegreeWithCluster(const Graph& graph, node u,
 		cluster cid) const {
-	TRACE("start wdeg with cluster...");
+//	TRACE("start wdeg with cluster...");
 	edgeweight wdeg = 0;
 
 	if (graph.isMarkedAsWeighted()) {
@@ -281,7 +281,7 @@ edgeweight Clustering::weightedDegreeWithCluster(const Graph& graph, node u,
 		});
 	}
 
-	TRACE("done");
+//	TRACE("done");
 	return wdeg;
 }
 
