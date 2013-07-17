@@ -3,13 +3,16 @@ import fnmatch
 
 home_path = os.environ['HOME']
 
+
+
 # SOURCE
+srcDir = "src"
 source = []
 
 # walk source directory and find ONLY .cpp files
-for (dirpath, dirnames, filenames) in os.walk("src"):
+for (dirpath, dirnames, filenames) in os.walk(srcDir):
     for name in fnmatch.filter(filenames, "*.cpp"):
-        source.append(os.path.join(dirpath, name))
+		source.append(os.path.join(dirpath, name))
 
 
 # exclude files matching following patterns
@@ -22,6 +25,9 @@ for pattern in xpatterns:
 
 print("excluded source files: {0}".format(excluded))
 source = [name for name in source if name not in excluded]
+
+
+
 
 
 # ENVIRONMENT
@@ -119,7 +125,6 @@ comp_hm["CXX"] = "g++-4.7"
 
 ## environment: mac_hm
 
-# VariantDir('build', 'src', duplicate=0)
 mac_hm = Environment()
 ### include
 mac_hm.Append(CPPPATH = ["/opt/local/include/gcc/c++/4.7.2", \
@@ -196,6 +201,18 @@ except:
     print("ERROR: Missing option --buildconf=<CONF>")
     exit()
 
+
+# create build directory for build configuration
+
+buildDir = ".build{0}".format(buildconf)
+VariantDir(buildDir, srcDir, duplicate=0)
+
+
+# modify source paths for build directory
+source = [name.replace(srcDir + "/", buildDir + "/") for name in source]
+print(source)
+
+
 # append flags
 
 #commmon flags
@@ -249,17 +266,18 @@ AddOption("--target",
 target = GetOption("target")
 
 if target == "CommunityDetection":
-	source.append("src/CommunityDetection-X.cpp")
+	source.append(os.path.join(srcDir, "CommunityDetection-X.cpp"))
 elif target == "DynCD":
-	source.append("src/DynamicCommunityDetection-X.cpp")
+	source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
 elif target == "SelCD":
-	source.append("src/SelectiveCommunityDetection-X.cpp")
+	source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
 else:
 	print("ERROR: unknown target: %" % target)
 	exit()
 
 
 
-env.Program("NetworKit-{0}-{1}".format(target, buildconf), source)
+targetName = "NetworKit-{0}-{1}".format(target, buildconf)
+env.Program(targetName, source)
 
 # TODO: make unit tests a separate target
