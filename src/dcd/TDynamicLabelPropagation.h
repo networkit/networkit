@@ -217,7 +217,7 @@ inline Clustering TDynamicLabelPropagation<PrepStrategy>::run() {
 		throw std::runtime_error("pointer to current graph was not initialized - call setGraph first");
 	}
 
-	INFO("running TDynamicLabelPropagation at t=" << G->time());
+	DEBUG("running TDynamicLabelPropagation at t=" << G->time());
 
 	count nIterations = 0;
 	nUpdated = G->numberOfNodes(); // starts while loop - TODO: correct?
