@@ -39,7 +39,7 @@ TEST_F(MapperGTest, tryRcmMapping) {
 	Graph commGraph = partition.communicationGraph(appGraph);
 
 	// evaluate trivial mapping
-	RcmMapper mapper;
+	RcmMapperWW mapper;
 	Mapping mapping = mapper.trivial(commGraph, host);
 	edgeweight cost = mapper.cost(commGraph, host, mapping);
 	INFO("Cost of RCM mapping (airfoil1 512 parts onto 8x8x8 grid): " << cost);

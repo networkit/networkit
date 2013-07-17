@@ -32,10 +32,17 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 
 	EdgeCut edgeCut;
 
-	std::vector<count> clusterSizes = partition.clusterSizes();
-	for (index p = 0; p < clusterSizes.size(); ++p) {
-		DEBUG("size of cluster " << p << ": " << clusterSizes[p]);
-	}
+
+	auto isMoveAccepted([&](edgeweight gain, count t) {
+		if (gain >= 0) {
+			return true;
+		}
+		else {
+			Aux::RandomProbability probGen;
+			double prob = probGen.generateFast();
+			return (prob <= exp((double) gain / (double) t));
+		}
+	});
 
 	count numIters = 15;
 	if (exponent >= 4.0) {
@@ -43,13 +50,45 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 	}
 	for (index i = 0; i < numIters; ++i) { // FIXME: different termination criterion
 		// read cluster sizes and compute scale values
-		clusterSizes = partition.clusterSizes();
+		TRACE("compute cluster sizes... ");
+		std::vector<count> clusterSizes = partition.clusterSizes();
+		TRACE("done");
 		for (index p = 0; p < numParts; ++p) {
+			DEBUG("size of cluster " << p << ": " << clusterSizes[p]);
 			adjustByFactor[p] = avg / clusterSizes[p];
 		}
 
 		// perform LP
 		graph.forNodes([&](node v) {
+			TRACE("compute random neighbor... ");
+			node neighbor = graph.randomNeighbor(v);
+			TRACE("done");
+
+			TRACE("check if label should be changed");
+			if (neighbor != none) {
+				cluster vBlock = partition[v];
+
+				// *** compute gain of relabeling according to neighbor
+				cluster neighBlock = partition[neighbor];
+
+				// what is the weighted degree with neighCluster?
+				edgeweight wdegNeigh = partition.weightedDegreeWithCluster(graph, v, neighBlock);
+
+				// what is the weighted degree to the current cluster?
+				edgeweight wdegCurrent = partition.weightedDegreeWithCluster(graph, v, vBlock);
+
+				edgeweight gain = adjustByFactor[neighBlock] * wdegNeigh - adjustByFactor[vBlock] * wdegCurrent;
+				// ***
+
+
+				// accept label based on simulated annealing acceptance
+				if (isMoveAccepted(gain, i)) {
+					partition.moveToCluster(neighBlock, v);
+				}
+			}
+			TRACE("done");
+
+#if 0
 
 			std::map<cluster, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 			cluster heaviest = none;
@@ -111,6 +150,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 			if (partition[v] != heaviest) { // UPDATE
 				partition[v] = heaviest;
 			}
+#endif
 
 
 //			DEBUG("partition[" << v << "]: " << partition[v]);
@@ -119,7 +159,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 		DEBUG("cut/balance in iter " << i << ": " << edgeCut.getQuality(partition, graph) << ", " << partition.getImbalance());
 	}
 
-	clusterSizes = partition.clusterSizes();
+	std::vector<count> clusterSizes = partition.clusterSizes();
 	for (index p = 0; p < clusterSizes.size(); ++p) {
 		DEBUG("after: size of cluster " << p << ": " << clusterSizes[p]);
 	}

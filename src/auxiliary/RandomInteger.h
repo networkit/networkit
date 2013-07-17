@@ -27,6 +27,9 @@ public:
 
 	virtual ~RandomInteger();
 
+	/**
+	 * TODO: Christian, please specify if the bounds are in- or exclusive!
+	 */
 	int64_t generate(int64_t lower, int64_t upper);
 };
 

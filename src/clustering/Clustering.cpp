@@ -261,5 +261,29 @@ Graph Clustering::communicationGraph(const Graph& graph) {
 	return commGraph;
 }
 
+edgeweight Clustering::weightedDegreeWithCluster(const Graph& graph, node u,
+		cluster cid) const {
+	TRACE("start wdeg with cluster...");
+	edgeweight wdeg = 0;
+
+	if (graph.isMarkedAsWeighted()) {
+		graph.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+			if (data[v] == cid) {
+				wdeg += w;
+			}
+		});
+	}
+	else {
+		graph.forEdgesOf(u, [&](node u, node v) {
+			if (data[v] == cid) {
+				wdeg += 1;
+			}
+		});
+	}
+
+	TRACE("done");
+	return wdeg;
+}
+
 } /* namespace NetworKit */
 
