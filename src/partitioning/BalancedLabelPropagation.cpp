@@ -43,7 +43,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 		}
 	});
 
-	count numIters = 15;
+	count numIters = 35;
 	if (exponent >= 4.0) {
 		numIters = 3;
 	}
