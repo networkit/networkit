@@ -24,6 +24,7 @@
 
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Debug.h"
+#include "../auxiliary/RandomInteger.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
@@ -113,7 +114,7 @@ protected:
 	bool weighted; //!< true if this graph has been marked as weighted.
 
 	// per node data
-	std::vector<count> deg; //!< degree of each node
+	std::vector<count> deg; //!< degree of each node (size of neighborhood)
 	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
@@ -248,6 +249,11 @@ public:
 	 * FIXME: Implementation is inefficient.
 	 */
 	edgeweight distance(node u, node v) const;
+
+	/**
+	 * @return Random (uuid) neighbor of @a v. None if degree is zero.
+	 */
+	node randomNeighbor(node v) const;
 
 
 

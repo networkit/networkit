@@ -392,6 +392,19 @@ edgeweight Graph::distance(node u, node v) const {
 	return distances[v];
 }
 
+node Graph::randomNeighbor(node v) const {
+	count deg = degree(v);
+	if (deg == 0) {
+		TRACE("random neighbor: none");
+		return none;
+	}
+
+	Aux::RandomInteger randGen;
+	index randIdx = randGen.generate(0, deg-1);
+	assert(randIdx < deg);
+	node randNeigh = adja[v][randIdx];
+	return randNeigh;
+}
 
 std::vector<std::pair<node, node> > Graph::edges() {
 	std::vector<std::pair<node, node> > edges;

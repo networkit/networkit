@@ -15,6 +15,7 @@
 #include "../StaticMapper.h"
 #include "../RecBisMapper.h"
 #include "../RcmMapper.h"
+#include "../RcmMapperWW.h"
 #include "../GreedyMapper.h"
 #include "../../graph/Graph.h"
 #include "../../graph/GraphGenerator.h"
