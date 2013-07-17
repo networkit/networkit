@@ -116,10 +116,11 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 		DEBUG("size of cluster " << p << ": " << clusterSizes[p]);
 	}
 
-	count numVcycles = 5;
+	count numVcycles = 50;
 	partition = blp.multilevelRun(airfoil1, k);
 	for (index vcycle = 1; vcycle < numVcycles; ++vcycle) {
 		partition = blp.multilevelRerun(airfoil1, k, partition);
+		INFO("cut/balance in cycle " << vcycle << ": " << edgeCut.getQuality(partition, airfoil1) << ", " << partition.getImbalance());
 	}
 
 	double cut = edgeCut.getQuality(partition, airfoil1);

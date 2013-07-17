@@ -135,6 +135,7 @@ protected:
 
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
 
+
 	/**
 	 * Return the index of v in the adjacency array of u.
 	 */

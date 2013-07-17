@@ -399,8 +399,17 @@ node Graph::randomNeighbor(node v) const {
 		return none;
 	}
 
-	Aux::RandomInteger randGen;
-	index randIdx = randGen.generate(0, deg-1);
+	/* TODO: move to Aux (actually already there),
+	 * BUT beware of performance implications!!!
+	 */
+	auto generateFast([&](index lower, index upper) {
+		index diff = upper - lower + 1;
+		index r = rand() % diff;
+		r += lower;
+		return r;
+	});
+
+	index randIdx = generateFast(0, deg-1);
 	assert(randIdx < deg);
 	node randNeigh = adja[v][randIdx];
 	return randNeigh;

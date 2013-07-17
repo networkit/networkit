@@ -25,12 +25,14 @@ MapperGTest::~MapperGTest() {
 TEST_F(MapperGTest, tryRcmMapping) {
 	// read application graph
 	METISGraphReader graphReader;
-	Graph appGraph = graphReader.read("input/airfoil1.graph");
+	Graph appGraph = graphReader.read("input/mapping/wave-uncompressed.graph");
 	count k = 512;
 
 	// generate or read clustering/partition
-	ClusteringGenerator clusteringGenerator;
-	Clustering partition = clusteringGenerator.makeContinuousBalancedClustering(appGraph, k);
+	BalancedLabelPropagation partitioner(3.0);
+	Clustering partition = partitioner.run(appGraph, k);
+//	ClusteringGenerator clusteringGenerator;
+//	Clustering partition = clusteringGenerator.makeContinuousBalancedClustering(appGraph, k);
 
 	// read host (processor) graph
 	Graph host = graphReader.read("input/mapping/grid-8x8x8-dist-arch.graph");

@@ -17,6 +17,7 @@
 #include "../RcmMapper.h"
 #include "../RcmMapperWW.h"
 #include "../GreedyMapper.h"
+#include "../../partitioning/BalancedLabelPropagation.h"
 #include "../../graph/Graph.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../io/DibapGraphReader.h"

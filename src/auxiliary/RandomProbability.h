@@ -30,7 +30,12 @@ public:
 
 	double generate();
 
-	double generateFast();
+	/**
+	 * @return Random probability in half-open interval [0 ... 1)
+	 */
+	inline double generateFast() {
+		return ((double) rand()) / (RAND_MAX + 1.0);
+	}
 
 	/**
 	 * @return Random float in [0 ... 1)
