@@ -741,7 +741,6 @@ inline void NetworKit::Graph::forNodes(L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::parallelForNodes(L handle) {
-	node z = n; // store current n in local variable since handle might modify node count
 #pragma omp parallel for
 	for (node v = 0; v < z; ++v) {
 		// call here
@@ -817,7 +816,6 @@ double NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::forEdges(L handle) {
-	node z = n; // store current n in local variable since handle might modify node count
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
@@ -829,7 +827,6 @@ inline void NetworKit::Graph::forEdges(L handle) {
 
 template<typename L>
 inline void NetworKit::Graph::forEdges(L handle) const {
-	node z = n; // store current n in local variable since handle might modify node count
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
@@ -841,7 +838,6 @@ inline void NetworKit::Graph::forEdges(L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::parallelForEdges(L handle) {
-	node z = n; // store current n in local variable since handle might modify node count
 #pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
@@ -854,7 +850,6 @@ inline void NetworKit::Graph::parallelForEdges(L handle) {
 
 template<typename L>
 inline void NetworKit::Graph::parallelForEdges(L handle) const {
-	node z = n; // store current n in local variable since handle might modify node count
 #pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
