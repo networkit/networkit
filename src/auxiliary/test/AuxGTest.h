@@ -26,6 +26,7 @@
 #include "../Timer.h"
 #include "../MissingMath.h"
 #include "../Debug.h"
+#include "../PriorityQueue.h"
 
 
 class AuxGTest: public testing::Test {
