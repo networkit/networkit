@@ -198,4 +198,11 @@ TEST_F(AuxGTest, testVectorDebug) {
 	std::cout << Aux::vectorToString(vec) << std::endl;
 }
 
+
+TEST_F(AuxGTest, tryPriorityQueue) {
+	Aux::PriorityQueue<double, uint64_t> pq;
+	// TODO
+}
+
+
 #endif /*NOGTEST */
