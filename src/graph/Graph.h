@@ -246,6 +246,20 @@ public:
 	edgeweight weightedDegree(node v) const;
 
 	/**
+	 * Dijkstra's SSSP algorithm.
+	 * @return Vector of weighted distances from node @a source, i.e. the
+	 * length of the shortest path from @a source to any other vertex.
+	 */
+	std::vector<edgeweight> dijkstra(node source) const;
+
+	/**
+	 * Breadth-first search from @a source.
+	 * @return Vector of unweighted distances from node @a source, i.e. the
+	 * length (number of edges) of the shortest path from @a source to any other vertex.
+	 */
+	std::vector<count> bfs(node source) const;
+
+	/**
 	 * @return Distance between @a u and @a v, i.e., the length of the shortest path
 	 * between the two. Zero if u = v, maximal possible value if no path exists.
 	 */
