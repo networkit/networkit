@@ -374,8 +374,6 @@ std::vector<edgeweight> Graph::dijkstra(node source) const {
 		});
 	}
 
-	DEBUG("distance between " << u << " and " << v << ": " << distances[v]);
-
 	return distances;
 }
 
@@ -407,6 +405,7 @@ std::vector<count> Graph::bfs(node source) const {
 
 count Graph::unweightedDistance(node u, node v) const {
 	std::vector<count> distances = this->bfs(u);
+	DEBUG("Called BFS, distance between " << u << " and " << v << ": " << distances[v]);
 	return distances[v];
 }
 
@@ -414,6 +413,7 @@ count Graph::unweightedDistance(node u, node v) const {
 // TODO: create method Dijkstra, called from this one
 edgeweight Graph::weightedDistance(node u, node v) const {
 	std::vector<edgeweight> distances = this->dijkstra(u);
+	DEBUG("Called Dijkstra, distance between " << u << " and " << v << ": " << distances[v]);
 	return distances[v];
 }
 
