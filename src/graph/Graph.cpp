@@ -162,7 +162,7 @@ node Graph::addNode() {
 	this->eweights.push_back(edgeWeightVector);
 
 	// update edge attribute data structures
-	for (int attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
+	for (int attrId = 0; attrId < (int) this->edgeMaps_double.size(); ++attrId) {
 		std::vector<double> attrVector;
 		this->edgeMaps_double[attrId].push_back(attrVector);
 	}
@@ -246,12 +246,12 @@ void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 		index vi = find(u, v);
 		index ui = find(v, u);
 		if ((vi != none) && (ui != none)) {
-			// DEBUG
-			int s = this->edgeMaps_double.size();
-			int sm = this->edgeMaps_double[attrId].size();
-			int smu = this->edgeMaps_double[attrId][u].size();
-			int smv = this->edgeMaps_double[attrId][v].size();
-			// DEBUG
+//			// DEBUG
+//			int s = this->edgeMaps_double.size();
+//			int sm = this->edgeMaps_double[attrId].size();
+//			int smu = this->edgeMaps_double[attrId][u].size();
+//			int smv = this->edgeMaps_double[attrId][v].size();
+//			// DEBUG
 
 			this->edgeMaps_double[attrId][u][vi] = attr;
 			this->edgeMaps_double[attrId][v][ui] = attr;
@@ -262,7 +262,7 @@ void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 }
 
 double Graph::attribute_double(node u, node v, int attrId) const {
-	assert (attrId < this->edgeMaps_double.size());
+	assert (attrId < (int) this->edgeMaps_double.size());
 	index vi = find(u, v);
 	if (vi != none) {
 		return this->edgeMaps_double[attrId][u][vi];
@@ -345,32 +345,49 @@ index Graph::argminDegree() const {
 	return argmin;
 }
 
-edgeweight Graph::distance(node u, node v) const {
 
-	auto relax([&](node u, node v, edgeweight w, std::vector<edgeweight>& distances) {
+// TODO: create method BFS, called from this one
+count Graph::unweightedDistance(node u, node v) const {
+	count infDist = std::numeric_limits<count>::max();
+	std::vector<count> distances(n, infDist);
+	std::queue<node> q;
+
+	distances[u] = 0;
+	q.push(u);
+
+	while ((distances[v] == infDist) && (! q.empty())) {
+		node current = q.front();
+		q.pop();
+		TRACE("current node in BFS: " << current);
+
+		// insert untouched neighbors into queue
+		this->forNeighborsOf(current, [&](node neighbor) {
+			if (distances[neighbor] == infDist) {
+				q.push(neighbor);
+				distances[neighbor] = distances[current] + 1;
+			}
+		});
+	}
+
+	return distances[v];
+}
+
+
+// TODO: create method Dijkstra, called from this one
+edgeweight Graph::weightedDistance(node u, node v) const {
+
+	auto relax([&](node u, node v, edgeweight w, std::vector<edgeweight>& distances,
+			Aux::PriorityQueue<edgeweight, node>& pq)
+	{
 		if (distances[v] > distances[u] + weight(u, v)) {
 			distances[v] = distances[u] + weight(u, v);
+			pq.decreaseKey(std::make_pair(distances[v], v));
 		}
-	});
-
-	auto closest([&](const std::vector<edgeweight>& distances, const std::set<index>& unsettled) {
-		// FIXME: inefficient
-		edgeweight mindist = std::numeric_limits<edgeweight>::max();
-		index argmin = 0;
-
-		for (std::set<index>::iterator iter = unsettled.begin(); iter != unsettled.end(); ++iter) {
-			node v = *iter;
-			if (distances[v] < mindist) {
-				mindist = distances[*iter];
-				argmin = v;
-			}
-		}
-
-		return argmin;
 	});
 
 	// init distances
-	std::vector<edgeweight> distances(n, std::numeric_limits<edgeweight>::max());
+	edgeweight infDist = std::numeric_limits<edgeweight>::max();
+	std::vector<edgeweight> distances(n, infDist);
 	distances[u] = 0;
 	std::set<index> unsettled;
 
@@ -378,16 +395,20 @@ edgeweight Graph::distance(node u, node v) const {
 		unsettled.insert(v);
 	});
 
-	while (unsettled.size() > 0) {
-		node current = closest(distances, unsettled);
+	// priority queue with distance-node pairs
+	Aux::PriorityQueue<edgeweight, node> pq(distances);
+
+	while (pq.size() > 0) {
+		node current = pq.extractMin().second;
 		unsettled.erase(current);
+		TRACE("current node in Dijkstra: " << current);
 
 		this->forWeightedEdgesOf(current, [&](node current, node v, edgeweight w) {
-			relax(current, v, w, distances);
+			relax(current, v, w, distances, pq);
 		});
 	}
 
-	TRACE("distance between " << u << " and " << v << ": " << distances[v]);
+	DEBUG("distance between " << u << " and " << v << ": " << distances[v]);
 
 	return distances[v];
 }

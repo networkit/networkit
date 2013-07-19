@@ -25,6 +25,7 @@
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Debug.h"
 #include "../auxiliary/RandomInteger.h"
+#include "../auxiliary/PriorityQueue.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
@@ -247,9 +248,13 @@ public:
 	/**
 	 * @return Distance between @a u and @a v, i.e., the length of the shortest path
 	 * between the two. Zero if u = v, maximal possible value if no path exists.
-	 * FIXME: Implementation is inefficient.
 	 */
-	edgeweight distance(node u, node v) const;
+	edgeweight weightedDistance(node u, node v) const;
+
+	/**
+	 * @return Number of edges on shortest unweighted path between @a u and @a v.
+	 */
+	count unweightedDistance(node u, node v) const;
 
 	/**
 	 * @return Random (uuid) neighbor of @a v. None if degree is zero.

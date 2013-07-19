@@ -32,7 +32,7 @@ edgeweight StaticMapper::cost(const Graph& guest, const Graph& host, Mapping& ma
 	edgeweight cost = 0.0;
 
 	guest.forWeightedEdges([&](node u, node v, edgeweight w) {
-		cost += w * host.distance(mapping[u], mapping[v]);
+		cost += w * host.weightedDistance(mapping[u], mapping[v]);
 	});
 
 	return cost;
