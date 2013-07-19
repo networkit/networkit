@@ -346,16 +346,48 @@ index Graph::argminDegree() const {
 }
 
 
-// TODO: create method BFS, called from this one
-count Graph::unweightedDistance(node u, node v) const {
+std::vector<edgeweight> Graph::dijkstra(node source) const {
+	auto relax([&](node u, node v, edgeweight w, std::vector<edgeweight>& distances,
+			Aux::PriorityQueue<edgeweight, node>& pq)
+	{
+		if (distances[v] > distances[u] + weight(u, v)) {
+			distances[v] = distances[u] + weight(u, v);
+			pq.decreaseKey(std::make_pair(distances[v], v));
+		}
+	});
+
+	// init distances
+	edgeweight infDist = std::numeric_limits<edgeweight>::max();
+	std::vector<edgeweight> distances(n, infDist);
+	distances[source] = 0;
+	std::set<index> unsettled;
+
+	// priority queue with distance-node pairs
+	Aux::PriorityQueue<edgeweight, node> pq(distances);
+
+	while (pq.size() > 0) {
+		node current = pq.extractMin().second;
+		TRACE("current node in Dijkstra: " << current);
+
+		this->forWeightedEdgesOf(current, [&](node current, node v, edgeweight w) {
+			relax(current, v, w, distances, pq);
+		});
+	}
+
+	DEBUG("distance between " << u << " and " << v << ": " << distances[v]);
+
+	return distances;
+}
+
+std::vector<count> Graph::bfs(node source) const {
 	count infDist = std::numeric_limits<count>::max();
 	std::vector<count> distances(n, infDist);
 	std::queue<node> q;
 
-	distances[u] = 0;
-	q.push(u);
+	distances[source] = 0;
+	q.push(source);
 
-	while ((distances[v] == infDist) && (! q.empty())) {
+	while (! q.empty()) {
 		node current = q.front();
 		q.pop();
 		TRACE("current node in BFS: " << current);
@@ -369,47 +401,19 @@ count Graph::unweightedDistance(node u, node v) const {
 		});
 	}
 
+	return distances;
+}
+
+
+count Graph::unweightedDistance(node u, node v) const {
+	std::vector<count> distances = this->bfs(u);
 	return distances[v];
 }
 
 
 // TODO: create method Dijkstra, called from this one
 edgeweight Graph::weightedDistance(node u, node v) const {
-
-	auto relax([&](node u, node v, edgeweight w, std::vector<edgeweight>& distances,
-			Aux::PriorityQueue<edgeweight, node>& pq)
-	{
-		if (distances[v] > distances[u] + weight(u, v)) {
-			distances[v] = distances[u] + weight(u, v);
-			pq.decreaseKey(std::make_pair(distances[v], v));
-		}
-	});
-
-	// init distances
-	edgeweight infDist = std::numeric_limits<edgeweight>::max();
-	std::vector<edgeweight> distances(n, infDist);
-	distances[u] = 0;
-	std::set<index> unsettled;
-
-	this->forNodes([&](node v) {
-		unsettled.insert(v);
-	});
-
-	// priority queue with distance-node pairs
-	Aux::PriorityQueue<edgeweight, node> pq(distances);
-
-	while (pq.size() > 0) {
-		node current = pq.extractMin().second;
-		unsettled.erase(current);
-		TRACE("current node in Dijkstra: " << current);
-
-		this->forWeightedEdgesOf(current, [&](node current, node v, edgeweight w) {
-			relax(current, v, w, distances, pq);
-		});
-	}
-
-	DEBUG("distance between " << u << " and " << v << ": " << distances[v]);
-
+	std::vector<edgeweight> distances = this->dijkstra(u);
 	return distances[v];
 }
 
