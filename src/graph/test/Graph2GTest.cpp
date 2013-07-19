@@ -684,6 +684,50 @@ TEST_F(Graph2GTest, testHasNode) {
 }
 
 
+TEST_F(Graph2GTest, testGraphWeightedDistance) {
+	METISGraphReader reader;
+	Graph g = reader.read("input/mapping/grid-5x5-dist-arch.graph");
+
+	g.forEdges([&](node u, node v) {
+		g.setWeight(u, v, 1.0);
+	});
+
+	edgeweight dist_0_24 = g.weightedDistance(0, 24);
+	edgeweight dist_24_0 = g.weightedDistance(24, 0);
+	edgeweight dist_0_4 = g.weightedDistance(0, 4);
+	edgeweight dist_4_0 = g.weightedDistance(4, 0);
+	edgeweight dist_1_23 = g.weightedDistance(1, 23);
+	edgeweight dist_5_19 = g.weightedDistance(5, 19);
+
+	EXPECT_EQ(dist_0_24, 8);
+	EXPECT_EQ(dist_24_0, 8);
+	EXPECT_EQ(dist_0_4, 4);
+	EXPECT_EQ(dist_4_0, 4);
+	EXPECT_EQ(dist_1_23, 6);
+	EXPECT_EQ(dist_5_19, 6);
+}
+
+TEST_F(Graph2GTest, testGraphUnweightedDistance) {
+	METISGraphReader reader;
+	Graph g = reader.read("input/mapping/grid-5x5-dist-arch.graph");
+
+	edgeweight dist_0_24 = g.unweightedDistance(0, 24);
+	edgeweight dist_24_0 = g.unweightedDistance(24, 0);
+	edgeweight dist_0_4 = g.unweightedDistance(0, 4);
+	edgeweight dist_4_0 = g.unweightedDistance(4, 0);
+	edgeweight dist_1_23 = g.unweightedDistance(1, 23);
+	edgeweight dist_5_19 = g.unweightedDistance(5, 19);
+
+	EXPECT_EQ(dist_0_24, 8);
+	EXPECT_EQ(dist_24_0, 8);
+	EXPECT_EQ(dist_0_4, 4);
+	EXPECT_EQ(dist_4_0, 4);
+	EXPECT_EQ(dist_1_23, 6);
+	EXPECT_EQ(dist_5_19, 6);
+}
+
+
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
