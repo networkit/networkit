@@ -235,7 +235,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testCNM) {
+TEST_F(ClusteringAlgoGTest, tryCNM) {
 	count n = 200;
 	count k = 25;
 	double pin = 0.9;
@@ -253,7 +253,7 @@ TEST_F(ClusteringAlgoGTest, testCNM) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
+TEST_F(ClusteringAlgoGTest, tryCNMandLouvain) {
 	Modularity modularity;
 	CNM cnm;
 	Louvain louvain;

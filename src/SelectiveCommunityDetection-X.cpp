@@ -582,26 +582,26 @@ int main(int argc, char **argv) {
 				if (first == "Conductance" && second == "NodeClusterSimilarity"
 						&& third == "BoundarySharpness") {
 					similarity = new NodeClusterSimilarity(G, tmp, tmp);
-					objective = new Conductance(G, tmp, bound);
+					objective = new ConductanceDistance(G, tmp, bound);
 					trimming = new BoundarySharpness();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
 				} else if (first == "Conductance"
 						&& second == "NodeClusterSimilarity"
 						&& third == "Dummy") {
 					similarity = new NodeClusterSimilarity(G, tmp, tmp);
-					objective = new Conductance(G, tmp, bound);
+					objective = new ConductanceDistance(G, tmp, bound);
 					trimming = new DummyTrimming();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
 				} else if (first == "Conductance" && second == "Dummy"
 						&& third == "BoundarySharpness") {
 					similarity = new DummySimilarity(G, tmp, tmp);
-					objective = new Conductance(G, tmp, bound);
+					objective = new ConductanceDistance(G, tmp, bound);
 					trimming = new BoundarySharpness();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
 				} else if (first == "Conductance" && second == "Dummy"
 						&& third == "Dummy") {
 					similarity = new DummySimilarity(G, tmp, tmp);
-					objective = new Conductance(G, tmp, bound);
+					objective = new ConductanceDistance(G, tmp, bound);
 					trimming = new DummyTrimming();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
 				} else if (first == "ModularityM"
@@ -666,7 +666,7 @@ int main(int argc, char **argv) {
 				std::string second =
 						Aux::StringTools::split(detectorArg, ':')[2];
 				if (first == "Conductance") {
-					objective = new Conductance(G, tmp, bound);
+					objective = new ConductanceDistance(G, tmp, bound);
 					if (second == "NodeClusterSimilarity") {
 						similarity = new NodeClusterSimilarity(G, tmp, tmp);
 						trimming = new DummyTrimming();
@@ -726,7 +726,7 @@ int main(int argc, char **argv) {
 			} else if (Aux::StringTools::split(detectorArg, ':').size() == 2) {
 				if (Aux::StringTools::split(detectorArg, ':')[1]
 						== "Conductance") {
-					objective = new Conductance(G, tmp, bound);
+					objective = new ConductanceDistance(G, tmp, bound);
 					similarity = new DummySimilarity(G, tmp, tmp);
 					trimming = new DummyTrimming();
 					algo = new GreedyCommunityExpansion(G, *similarity, *objective, *trimming);
