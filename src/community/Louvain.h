@@ -21,9 +21,6 @@ namespace NetworKit {
 
 class Louvain: public NetworKit::Clusterer {
 
-protected:
-	bool anyChange;	//!< indicates whether any change was made to the clustering in the last pass over the nodes
-	std::string parallelism; //!< switch for the kind of parallelization strategy to use
 
 
 public:
@@ -32,8 +29,13 @@ public:
 
 	/**
 	 * @param[in]	par		parallelization strategy
+	 * @param[in]	gamma	multi-resolution modularity parameter:
+	 * 							1.0 -> standard modularity
+	 * 							0.0 -> one community
+	 * 							2m 	-> singleton communities
+	 *
 	 */
-	Louvain(std::string par="none");
+	Louvain(std::string par="none", double gamma = 1.0);
 
 	virtual ~Louvain();
 
@@ -45,6 +47,13 @@ public:
 	 * @return string representation of algorithm and parameters.
 	 */
 	virtual std::string toString() const;
+
+
+protected:
+
+	bool anyChange;	//!< indicates whether any change was made to the clustering in the last pass over the nodes
+	std::string parallelism; //!< switch for the kind of parallelization strategy to use
+	double gamma;	//!< multi-resolution modularity parameter
 };
 
 } /* namespace NetworKit */
