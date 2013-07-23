@@ -10,6 +10,7 @@
 
 #include <map>
 #include "../graph/Graph.h"
+#include "../graph/GraphDistance.h"
 #include "../clustering/Clustering.h"
 
 namespace NetworKit {

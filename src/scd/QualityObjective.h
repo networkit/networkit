@@ -75,13 +75,13 @@ public:
  * higher values are better. This measure is defined as
  * $1 - conductance(C) = 1 - \frac{|B(C)|}{|\max \{vol (C), vol(V�\setminus \{ C \} )\}|}$
  */
-class Conductance : public QualityObjective {
+class ConductanceDistance : public QualityObjective {
 
 public:
 
-	Conductance(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
+	ConductanceDistance(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
 
-	virtual ~Conductance();
+	virtual ~ConductanceDistance();
 
 	virtual std::vector<double> getValue(node v);
 };

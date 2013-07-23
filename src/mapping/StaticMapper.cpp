@@ -30,9 +30,10 @@ Mapping StaticMapper::trivial(Graph& guest, Graph& host) {
 
 edgeweight StaticMapper::cost(const Graph& guest, const Graph& host, Mapping& mapping) {
 	edgeweight cost = 0.0;
+	GraphDistance gd;
 
 	guest.forWeightedEdges([&](node u, node v, edgeweight w) {
-		cost += w * host.weightedDistance(mapping[u], mapping[v]);
+		cost += w * gd.weightedDistance(host, mapping[u], mapping[v]);
 	});
 
 	return cost;
