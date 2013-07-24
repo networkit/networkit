@@ -18,6 +18,7 @@
 #include "../GreedyCommunityExpansion.h"
 #include "../TGreedyCommunityExpansion.h"
 #include "../SelectiveSCAN.h"
+#include "../../io/EdgeListReader.h"
 #include "../TSelectiveSCAN.h"
 #include "../../graph/Subgraph.h"
 #include "../../graph/GraphGenerator.h"

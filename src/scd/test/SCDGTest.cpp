@@ -308,9 +308,6 @@ TEST_F(SCDGTest, testLocalModularity) {
 	EXPECT_EQ(1.75, mod.getQuality(set))
 			<< "The community should have a local modularity of 1.75";
 
-	set.insert(3);
-	EXPECT_EQ(11, mod.getQuality(set))
-			<< "The community should have a local modularity of 11";
 
 	Graph G1(6);
 		G1.addEdge(0, 1);
@@ -817,6 +814,15 @@ TEST_F(SCDGTest, testTGreedyCommunityExpansionWithTemplates) {
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
 }
 
+TEST_F(SCDGTest, lol) {
+	Graph G;
+	std::string path = "input/graph1000.dat";
+	std::string path1 = "input/graph1000.graph";
+	EdgeListReader graphReader;
+	G = graphReader.read(path);
+	METISGraphWriter writer;
+	writer.write(G, path1);
+}
 
 //TEST_F(SCDGTest, trySelectiveSCANWithSeedSet) {
 //

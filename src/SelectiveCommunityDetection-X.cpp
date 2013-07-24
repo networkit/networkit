@@ -306,17 +306,14 @@ int main(int argc, char **argv) {
 
 	// get graph
 	Graph G;
+	G = getGraph(options);
 	Clustering truth;
 	bool groundt = false;
 	if (options[GROUND_TRUTH]) {
 		std::string path = options[GROUND_TRUTH].arg;
-		EdgeListReader graphReader;
 		EdgeListClusteringReader clusteringReader;
-		G = graphReader.read(path);
 		truth = clusteringReader.read(path);
 		groundt = true;
-	} else {
-		G = getGraph(options);
 	}
 
 	SeedSetGenerator* seedGen = NULL;
@@ -770,6 +767,7 @@ int main(int argc, char **argv) {
 	Aux::Timer running2;
 	int64_t runtime;
 	running1.start();
+
 	for (count i = 0; i < runs; i++) {
 		running2.start();
 		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
@@ -788,13 +786,15 @@ int main(int argc, char **argv) {
 		if (groundt) {
 			summary << "Node ID" << ";" << "Conductance" << ";" << "Local Modularity" << ";"
 					<< "Jaccard index" << ";" << "Community Size" << ";" << "Runtime" << std::endl;
-			JaccardIndex index;
+			Precision precision;
+			Recall recall;
 			for (auto u : results) {
 				for (auto v : u.second) {
 					summary << v.first << ";"
 							<< (measure1)->getQuality(v.second.first) << ";"
 							<< (measure2)->getQuality(v.second.first) << ";"
-							<< index.localDissimilarity(v.first, v.second.first, truth) << ";"
+							<< precision.localDissimilarity(v.first, v.second.first, truth) << ";"
+							<< recall.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
 				}

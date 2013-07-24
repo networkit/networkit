@@ -51,8 +51,11 @@ double LocalModularity::getQuality(
 			}
 		});
 	}
-	if(outside == 0) {
+	if (community.size() == 0) {
 		return 0;
+	}
+	if(outside == 0 || boundary.size() == 0) {
+		return inside / community.size();
 	}
 	return (inside / community.size()) / (outside / boundary.size());
 }
