@@ -1,0 +1,5 @@
+<map id="OptionParser::Option::count" name="OptionParser::Option::count">
+<area shape="rect" id="node3" href="$class_option_parser_1_1_option.html#aa5f751dbb4de499f2665d4d0b6238037" title="Returns a pointer to the first element of the linked list." alt="" coords="200,5,347,49"/>
+<area shape="rect" id="node7" href="$class_option_parser_1_1_option.html#ad901abe9af59167b9c2b1937b7129fdc" title="Returns true iff this is the last element of the linked list." alt="" coords="200,73,347,117"/>
+<area shape="rect" id="node5" href="$class_option_parser_1_1_option.html#aca0c27907db0b24c320252ea80babf6d" title="Returns true iff this is the first element of the linked list." alt="" coords="395,5,541,49"/>
+</map>
