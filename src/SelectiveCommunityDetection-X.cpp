@@ -207,15 +207,11 @@ Graph readGraph(const std::string& graphPath) {
 
 Graph getGraph(OptionParser::Option* options) {
 
-	if (options[GRAPH] && !options[GROUND_TRUTH]) { // graph from file
 		std::string graphPath = options[GRAPH].arg;
 		std::cout << "\t --graph=" << graphPath << std::endl;
 
 		Graph G = readGraph(graphPath);
 		return G;
-	}
-	Graph G;
-	return G;
 }
 
 int main(int argc, char **argv) {
@@ -304,7 +300,6 @@ int main(int argc, char **argv) {
 
 	// get graph
 	Graph G;
-	G = getGraph(options);
 	Clustering truth;
 	bool groundt = false;
 	if (options[GROUND_TRUTH]) {
@@ -315,6 +310,8 @@ int main(int argc, char **argv) {
 		std::string path1 = options[GRAPH].arg;
 		G = reader.read(path1);
 		groundt = true;
+	} else {
+		G = getGraph(options);
 	}
 
 	SeedSetGenerator* seedGen = NULL;
