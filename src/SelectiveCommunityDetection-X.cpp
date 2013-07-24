@@ -207,17 +207,15 @@ Graph readGraph(const std::string& graphPath) {
 
 Graph getGraph(OptionParser::Option* options) {
 
-	if (options[GRAPH]) { // graph from file
+	if (options[GRAPH] && !options[GROUND_TRUTH]) { // graph from file
 		std::string graphPath = options[GRAPH].arg;
 		std::cout << "\t --graph=" << graphPath << std::endl;
 
 		Graph G = readGraph(graphPath);
 		return G;
-	} else {
-		Graph G(0);	// return empty graph
-		G.setName("NONE");
-		return G;
 	}
+	Graph G;
+	return G;
 }
 
 int main(int argc, char **argv) {
@@ -312,7 +310,10 @@ int main(int argc, char **argv) {
 	if (options[GROUND_TRUTH]) {
 		std::string path = options[GROUND_TRUTH].arg;
 		EdgeListClusteringReader clusteringReader;
+		EdgeListReader reader;
 		truth = clusteringReader.read(path);
+		std::string path1 = options[GRAPH].arg;
+		G = reader.read(path1);
 		groundt = true;
 	}
 
