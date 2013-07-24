@@ -27,7 +27,16 @@ public:
 
 	virtual ~RandomInteger();
 
+	/**
+	 * TODO: Christian, please specify if the bounds are in- or exclusive!
+	 */
 	int64_t generate(int64_t lower, int64_t upper);
+
+	/**
+	 * Generate random integer in closed interval [lower, upper]. Faster generation,
+	 * but without large strength in terms of randomness;
+	 */
+	int64_t generateFast(int64_t lower, int64_t upper);
 };
 
 } /* namespace Aux */

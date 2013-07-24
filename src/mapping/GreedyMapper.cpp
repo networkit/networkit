@@ -10,12 +10,15 @@
 namespace NetworKit {
 
 GreedyMapper::GreedyMapper() {
-	// TODO Auto-generated constructor stub
 
 }
 
 GreedyMapper::~GreedyMapper() {
-	// TODO Auto-generated destructor stub
+
+}
+
+Mapping GreedyMapper::run(Graph& guest, Graph& host) {
+	// TODO
 }
 
 } /* namespace NetworKit */

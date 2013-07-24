@@ -10,12 +10,33 @@
 namespace NetworKit {
 
 StaticMapper::StaticMapper() {
-	// TODO Auto-generated constructor stub
 
 }
 
 StaticMapper::~StaticMapper() {
-	// TODO Auto-generated destructor stub
+
+}
+
+Mapping StaticMapper::trivial(Graph& guest, Graph& host) {
+	Mapping mapping;
+	assert(guest.numberOfNodes() <= host.numberOfNodes());
+
+	guest.forNodes([&](node v) {
+		mapping.insert(std::make_pair(v, v));
+	});
+
+	return mapping;
+}
+
+edgeweight StaticMapper::cost(const Graph& guest, const Graph& host, Mapping& mapping) {
+	edgeweight cost = 0.0;
+	GraphDistance gd;
+
+	guest.forWeightedEdges([&](node u, node v, edgeweight w) {
+		cost += w * gd.weightedDistance(host, mapping[u], mapping[v]);
+	});
+
+	return cost;
 }
 
 } /* namespace NetworKit */

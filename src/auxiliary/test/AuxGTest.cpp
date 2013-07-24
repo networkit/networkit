@@ -198,4 +198,54 @@ TEST_F(AuxGTest, testVectorDebug) {
 	std::cout << Aux::vectorToString(vec) << std::endl;
 }
 
+
+TEST_F(AuxGTest, testPriorityQueue) {
+	typedef std::pair<double, uint64_t> ElemType;
+
+	// fill vector
+	std::vector<ElemType> vec;
+	vec.push_back(std::make_pair(0.5, 0));
+	vec.push_back(std::make_pair(3.5, 1));
+	vec.push_back(std::make_pair(4.5, 2));
+	vec.push_back(std::make_pair(2.5, 3));
+	vec.push_back(std::make_pair(0.75, 4));
+	vec.push_back(std::make_pair(1.5, 5));
+	vec.push_back(std::make_pair(8.5, 6));
+	vec.push_back(std::make_pair(3.25, 7));
+	vec.push_back(std::make_pair(4.75, 8));
+	vec.push_back(std::make_pair(5.0, 9));
+	vec.push_back(std::make_pair(11.5, 10));
+	vec.push_back(std::make_pair(0.25, 11));
+
+	// construct pq from vector
+	Aux::PriorityQueue<double, uint64_t> pq(vec);
+	EXPECT_EQ(pq.size(), vec.size());
+
+	ElemType elem = pq.extractMin();
+	EXPECT_EQ(elem.first, 0.25);
+	EXPECT_EQ(elem.second, 11);
+	EXPECT_EQ(pq.size(), vec.size() - 1);
+
+	elem = pq.extractMin();
+	EXPECT_EQ(elem.first, 0.5);
+	EXPECT_EQ(elem.second, 0);
+	EXPECT_EQ(pq.size(), vec.size() - 2);
+
+	elem = pq.extractMin();
+	EXPECT_EQ(elem.first, 0.75);
+	EXPECT_EQ(elem.second, 4);
+	EXPECT_EQ(pq.size(), vec.size() - 3);
+
+	elem = pq.extractMin();
+	EXPECT_EQ(elem.first, 1.5);
+	EXPECT_EQ(elem.second, 5);
+	EXPECT_EQ(pq.size(), vec.size() - 4);
+
+	elem = pq.extractMin();
+	EXPECT_EQ(elem.first, 2.5);
+	EXPECT_EQ(elem.second, 3);
+	EXPECT_EQ(pq.size(), vec.size() - 5);
+}
+
+
 #endif /*NOGTEST */

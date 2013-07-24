@@ -74,15 +74,15 @@ std::vector<double> LocalModularityM::getValue(node v) {
 }
 
 
-Conductance::Conductance(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary)
+ConductanceDistance::ConductanceDistance(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary)
 		: QualityObjective(G, community, boundary) {
 
 }
 
-Conductance::~Conductance() {
+ConductanceDistance::~ConductanceDistance() {
 }
 
-std::vector<double> Conductance::getValue(node v) {
+std::vector<double> ConductanceDistance::getValue(node v) {
 
 	int count = 0;
 	bool modified = false;
