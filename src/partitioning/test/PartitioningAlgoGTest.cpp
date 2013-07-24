@@ -82,44 +82,17 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 	// *** airfoil1 graph
 	// ML-BLP
 	ClusteringGenerator gen;
-
-#if 0
-	// region growing init FIXME
-	Aux::RandomInteger randInt;
-	airfoil1.forNodes([&](node v) {
-		partition[v] = none;
-	});
-	for (index p = 0; p < k; ++p) {
-		partition[randInt.generate(0, n-1)] = p;
-	}
-
-	bool finished = false;
-	while (! finished) {
-		finished = true;
-		airfoil1.forNodesInRandomOrder([&](node v) {
-			if (partition[v] != none) {
-				// push to non-settled neighbors
-				airfoil1.forNeighborsOf(v, [&](node x) {
-					if (partition[x] == none) {
-						finished = false;
-						partition[x] = partition[v];
-					}
-				});
-			}
-		});
-	}
-#endif
-
 	Clustering partition = gen.makeContinuousBalancedClustering(airfoil1, k);
 	std::vector<count> clusterSizes = partition.clusterSizes();
 	for (index p = 0; p < k; ++p) {
 		DEBUG("size of cluster " << p << ": " << clusterSizes[p]);
 	}
 
-	count numVcycles = 5;
+	count numVcycles = 50;
 	partition = blp.multilevelRun(airfoil1, k);
 	for (index vcycle = 1; vcycle < numVcycles; ++vcycle) {
 		partition = blp.multilevelRerun(airfoil1, k, partition);
+		INFO("cut/balance in cycle " << vcycle << ": " << edgeCut.getQuality(partition, airfoil1) << ", " << partition.getImbalance());
 	}
 
 	double cut = edgeCut.getQuality(partition, airfoil1);

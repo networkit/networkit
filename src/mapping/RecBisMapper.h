@@ -16,6 +16,8 @@ class RecBisMapper: public NetworKit::StaticMapper {
 public:
 	RecBisMapper();
 	virtual ~RecBisMapper();
+
+	virtual Mapping run(Graph& guest, Graph& host);
 };
 
 } /* namespace NetworKit */

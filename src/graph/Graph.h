@@ -16,6 +16,7 @@
 #include <queue>
 #include <stdexcept>
 #include <map>
+#include <set>
 #include <sstream>
 #include <limits>
 #include <cstdint>
@@ -23,6 +24,8 @@
 
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Debug.h"
+#include "../auxiliary/RandomInteger.h"
+#include "../auxiliary/PriorityQueue.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
@@ -112,7 +115,7 @@ protected:
 	bool weighted; //!< true if this graph has been marked as weighted.
 
 	// per node data
-	std::vector<count> deg; //!< degree of each node
+	std::vector<count> deg; //!< degree of each node (size of neighborhood)
 	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
@@ -132,6 +135,7 @@ protected:
 	// defaults
 
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
+
 
 	/**
 	 * Return the index of v in the adjacency array of u.
@@ -202,7 +206,7 @@ public:
 	/**
 	 * Return if this graph has been marked as a weighted graph.
 	 */
-	bool isMarkedAsWeighted();
+	bool isMarkedAsWeighted() const;
 
 	/**
 	 * Get string representation
@@ -231,9 +235,22 @@ public:
 	count degree(node v) const;
 
 	/**
+	 * @return Index of vertex with smallest neighborhood size (does not have to be
+	 * unique).
+	 */
+	index argminDegree() const;
+
+	/**
 	 * @return Weighted degree of @a v.
 	 */
 	edgeweight weightedDegree(node v) const;
+
+	/**
+	 * @return Random (uuid) neighbor of @a v. None if degree is zero.
+	 */
+	node randomNeighbor(node v) const;
+
+
 
 	/** EDGE ATTRIBUTE GETTERS **/
 
@@ -264,6 +281,17 @@ public:
 	 * @param[in]	weight	edge weight
 	 */
 	void setWeight(node u, node v, edgeweight w);
+
+
+	/**
+	 * Increase the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	void increaseWeight(node u, node v, edgeweight w);
 
 	/**
 	 * Set edge attribute of type double If the edge does not exist,
@@ -540,6 +568,16 @@ public:
 	template<typename L> void forEdgesWithAttribute_double(int attrId,
 			L handle);
 
+	/**
+	 * Iterate over all edges of the const graph and call handler (lambda closure).
+	 *
+	 *	@param[in]	attrId		attribute id
+	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *
+	 */
+	template<typename L> void forEdgesWithAttribute_double(int attrId,
+			L handle) const;
+
 	/** NEIGHBORHOOD ITERATORS **/
 
 	/**
@@ -573,6 +611,16 @@ public:
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forEdgesOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all incident edges of a node in neighborhood-size-increasing order and call handler (lamdba closure).
+	 */
+	template<typename L> void forEdgesOfInDegreeIncreasingOrder(node u, L handle);
+
+	/**
+	 * Iterate over all incident edges of a node in neighborhood-size-increasing order and call handler (lamdba closure).
+	 */
+	template<typename L> void forEdgesOfInDegreeIncreasingOrder(node u, L handle) const;
 
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
@@ -687,7 +735,6 @@ inline void NetworKit::Graph::forNodes(L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::parallelForNodes(L handle) {
-	node z = n; // store current n in local variable since handle might modify node count
 #pragma omp parallel for
 	for (node v = 0; v < z; ++v) {
 		// call here
@@ -763,7 +810,6 @@ double NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::forEdges(L handle) {
-	node z = n; // store current n in local variable since handle might modify node count
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
@@ -775,7 +821,6 @@ inline void NetworKit::Graph::forEdges(L handle) {
 
 template<typename L>
 inline void NetworKit::Graph::forEdges(L handle) const {
-	node z = n; // store current n in local variable since handle might modify node count
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
@@ -787,7 +832,6 @@ inline void NetworKit::Graph::forEdges(L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::parallelForEdges(L handle) {
-	node z = n; // store current n in local variable since handle might modify node count
 #pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
@@ -800,7 +844,6 @@ inline void NetworKit::Graph::parallelForEdges(L handle) {
 
 template<typename L>
 inline void NetworKit::Graph::parallelForEdges(L handle) const {
-	node z = n; // store current n in local variable since handle might modify node count
 #pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
@@ -879,6 +922,39 @@ inline void NetworKit::Graph::forEdgesOf(node u, L handle) const {
 		}
 	}
 }
+
+template<typename L>
+void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) const {
+	auto hasSmallerDegree = [&](node v1, node v2) {
+		return degree(v1) < degree(v2); // FIXME
+	};
+
+	std::vector<node> neighbors = adja[u];
+	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
+
+	for (node v : neighbors) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
+}
+
+template<typename L>
+void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) {
+	auto hasSmallerDegree = [&](node v1, node v2) {
+		return degree(v1) < degree(v2); // FIXME
+	};
+
+	std::vector<node> neighbors = adja[u];
+	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
+
+	for (node v : neighbors) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
+}
+
 
 template<typename L>
 inline void NetworKit::Graph::parallelForNodePairs(L handle) {
@@ -1048,6 +1124,21 @@ inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
 	}
 }
 
+template<typename L>
+inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
+		L handle) const {
+	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
+	for (node u = 0; u < n; ++u) {
+		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
+			node v = this->adja[u][vi];
+			double attr = edgeMap[u][vi];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				handle(u, v, attr);
+			}
+		}
+	}
+}
+
 template<typename C, typename L>
 inline void NetworKit::Graph::forNodesWhile(C condition, L handle) {
 	for (node v = 0; v < z; ++v) {
@@ -1099,8 +1190,6 @@ void NetworKit::Graph::forNodesInRandomOrder(L handle) const {
 		}
 	}
 }
-
-
 
 
 #endif /* GRAPH_H_ */

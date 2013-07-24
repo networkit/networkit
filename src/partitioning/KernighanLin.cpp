@@ -19,9 +19,9 @@ KernighanLin::~KernighanLin() {
 }
 
 Clustering KernighanLin::run(Graph& G, count numBlocks) {
+	assert(numBlocks == 2); // FIXME: so far only bipartitioning
 	ClusteringGenerator gen;
-	// TODO: change to something smarter than random
-	Clustering partition = gen.makeRandomClustering(G, numBlocks);
+	Clustering partition = gen.makeContinuousBalancedClustering(G, numBlocks);
 	partition = this->rerun(G, numBlocks, partition);
 	return partition;
 }
@@ -29,7 +29,18 @@ Clustering KernighanLin::run(Graph& G, count numBlocks) {
 Clustering& KernighanLin::rerun(Graph& G, count numBlocks,
 		Clustering& partition) {
 
+	// compute initial gains
+
+	// perform loop:
+
+	// move each vertex once
+
+	// use best result found
+
+
 	// TODO: implement KL
+
+
 
 
 	return partition;

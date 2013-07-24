@@ -245,11 +245,17 @@ public:
 	std::vector<node> getMembers(const cluster C) const;
 
 
+	/**
+	 * Compute communication graph (sometimes called quotient graph) induced by
+	 * graph @a graph and this clustering/partition.
+	 */
+	Graph communicationGraph(const Graph& graph);
 
 
-
-
-
+	/**
+	 * @return Sum of weights of edges that connect @a v with nodes in cluster @a cid.
+	 */
+	edgeweight weightedDegreeWithCluster(const Graph& graph, node v, cluster cid) const;
 };
 
 } /* namespace NetworKit */

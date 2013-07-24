@@ -34,8 +34,27 @@ Clustering CNM::run(Graph &graph) {
 	double bestModularity = modularityInspector.getQuality(clustering, G);
 	Clustering bestClustering(n);
 
+#if 0
+
+	// insert edges into priority queue, key: delta mod score
+	ModularityScoring<double> modScoring(G);
+	std::vector<double, std::pair<node, node> > scores;
+	G.forEdges([&](node u, node v) {
+		scores.push_back(modScoring.edgeScore(u, v), std::make_pair(u, v));
+	});
+	Aux::PriorityQueue<double, index> pq(scores);
+
 	for (count clusters = n; clusters > 1; clusters--) {
-		ModularityScoring<double> modScoring(G);
+		// determine best edge
+		std::pair<node, node> bestEdge = pq.extractMin().second;
+		node best_u = bestEdge.first;
+		node best_v = bestEdge.second;
+
+		// TODO (in graph): merge edge to supernode and adjust neighborhood
+		// mergeEdge(node u, node v, bool discardSelfLoop = false)
+
+
+
 		double bestDelta = std::numeric_limits<double>::lowest();
 		node best_u, best_v;
 
@@ -89,14 +108,16 @@ Clustering CNM::run(Graph &graph) {
 
 		// record best solutions
 		if (newModularity > bestModularity) {
-			DEBUG(newModularity);
+			TRACE("new mod value: " << newModularity);
 			bestModularity = newModularity;
 			bestClustering = clustering;
 		}
 	}
 
+#endif
+
 	return bestClustering;
 }
 
-}
+} // namespace
 

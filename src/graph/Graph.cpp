@@ -133,6 +133,15 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 
 }
 
+void Graph::increaseWeight(node u, node v, edgeweight w) {
+	if (this->hasEdge(u, v)) {
+		this->setWeight(u, v, w + this->weight(u, v));
+	}
+	else {
+		this->addEdge(u, v, w);
+	}
+}
+
 bool Graph::hasEdge(node u, node v) const {
 	return (find(u, v) != none);
 }
@@ -153,7 +162,7 @@ node Graph::addNode() {
 	this->eweights.push_back(edgeWeightVector);
 
 	// update edge attribute data structures
-	for (int attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
+	for (int attrId = 0; attrId < (int) this->edgeMaps_double.size(); ++attrId) {
 		std::vector<double> attrVector;
 		this->edgeMaps_double[attrId].push_back(attrVector);
 	}
@@ -237,12 +246,12 @@ void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 		index vi = find(u, v);
 		index ui = find(v, u);
 		if ((vi != none) && (ui != none)) {
-			// DEBUG
-			int s = this->edgeMaps_double.size();
-			int sm = this->edgeMaps_double[attrId].size();
-			int smu = this->edgeMaps_double[attrId][u].size();
-			int smv = this->edgeMaps_double[attrId][v].size();
-			// DEBUG
+//			// DEBUG
+//			int s = this->edgeMaps_double.size();
+//			int sm = this->edgeMaps_double[attrId].size();
+//			int smu = this->edgeMaps_double[attrId][u].size();
+//			int smv = this->edgeMaps_double[attrId][v].size();
+//			// DEBUG
 
 			this->edgeMaps_double[attrId][u][vi] = attr;
 			this->edgeMaps_double[attrId][v][ui] = attr;
@@ -253,7 +262,7 @@ void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 }
 
 double Graph::attribute_double(node u, node v, int attrId) const {
-	assert (attrId < this->edgeMaps_double.size());
+	assert (attrId < (int) this->edgeMaps_double.size());
 	index vi = find(u, v);
 	if (vi != none) {
 		return this->edgeMaps_double[attrId][u][vi];
@@ -318,8 +327,46 @@ void Graph::markAsWeighted() {
 	this->weighted = true;
 }
 
-bool Graph::isMarkedAsWeighted() {
+bool Graph::isMarkedAsWeighted() const {
 	return this->weighted;
+}
+
+index Graph::argminDegree() const {
+	index argmin = 0;
+	count mindeg = this->degree(argmin);
+
+	this->forNodes([&](node v) {
+		if (degree(v) < mindeg) {
+			argmin = v;
+			mindeg = degree(v);
+		}
+	});
+
+	return argmin;
+}
+
+
+node Graph::randomNeighbor(node v) const {
+	count deg = degree(v);
+	if (deg == 0) {
+		TRACE("random neighbor: none");
+		return none;
+	}
+
+	/* TODO: move to Aux (actually already there),
+	 * BUT beware of performance implications!!!
+	 */
+	auto generateFast([&](index lower, index upper) {
+		index diff = upper - lower + 1;
+		index r = rand() % diff;
+		r += lower;
+		return r;
+	});
+
+	index randIdx = generateFast(0, deg-1);
+	assert(randIdx < deg);
+	node randNeigh = adja[v][randIdx];
+	return randNeigh;
 }
 
 std::vector<std::pair<node, node> > Graph::edges() {

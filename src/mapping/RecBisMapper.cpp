@@ -10,12 +10,15 @@
 namespace NetworKit {
 
 RecBisMapper::RecBisMapper() {
-	// TODO Auto-generated constructor stub
 
 }
 
 RecBisMapper::~RecBisMapper() {
-	// TODO Auto-generated destructor stub
+
+}
+
+Mapping RecBisMapper::run(Graph& guest, Graph& host) {
+	// TODO
 }
 
 } /* namespace NetworKit */

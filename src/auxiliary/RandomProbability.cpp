@@ -21,12 +21,6 @@ double RandomProbability::generate() {
 	return r;
 }
 
-double RandomProbability::generateFast() {
-	return ((double) rand()) / (RAND_MAX + 1.0);
-}
-
-// TODO: for faster generation, use rand() function
-
 float RandomProbability::randomFloat() const {
 	return ((float) rand()) / (RAND_MAX + 1.0f);
 }

@@ -25,7 +25,7 @@ TEST_F(SCDGTest, tryCommunitySubgraph) {
 	std::unordered_set<node> tmp = {};
 	std::unordered_map<node, count> bound =  {};
 	DummySimilarity similarity(G, tmp, tmp);
-	Conductance objective(G, tmp, bound);
+	ConductanceDistance objective(G, tmp, bound);
 	DummyTrimming trimming;
 
 	GreedyCommunityExpansion GCE(G, similarity, objective, trimming);
@@ -510,25 +510,25 @@ TEST_F(SCDGTest, testConductance) {
 	std::unordered_set<node> first, second, third, fourth, fifth;
 	first = {};
 	std::unordered_map<node, count> bound1 = {};
-	Conductance conductance1(G, first, bound1);
+	ConductanceDistance conductance1(G, first, bound1);
 	second = {0};
 	std::unordered_map<node, count> bound2 = {{0, 3}};
-	Conductance conductance2(G, second, bound2);
+	ConductanceDistance conductance2(G, second, bound2);
 	conductance2.volume = 4;
 	conductance2.nBoundaryEdges = 3;
 	third = {0,1};
 	std::unordered_map<node, count> bound3 = {{0, 2},{1, 2}};
-	Conductance conductance3(G, third, bound3);
+	ConductanceDistance conductance3(G, third, bound3);
 	conductance3.volume = 7;
 	conductance3.nBoundaryEdges = 4;
 	fourth = {0,1,2};
 	std::unordered_map<node, count> bound4 = {{0, 1},{1, 1},{2, 2}};
-	Conductance conductance4(G, fourth, bound4);
+	ConductanceDistance conductance4(G, fourth, bound4);
 	conductance4.volume = 11;
 	conductance4.nBoundaryEdges = 4;
 	fifth = {0,1,2,3};
 	std::unordered_map<node, count> bound5 = {{1, 1},{2, 1},{3, 1}};
-	Conductance conductance5(G, fifth, bound5);
+	ConductanceDistance conductance5(G, fifth, bound5);
 	conductance5.volume = 14;
 	conductance5.nBoundaryEdges = 3;
 
@@ -602,7 +602,7 @@ TEST_F(SCDGTest, testGreedyCommunityExpansion) {
 	std::unordered_set<node> tmp = {};
 	std::unordered_map<node, count> bound =  {};
 	DummySimilarity similarity(G, tmp, tmp);
-	Conductance objective(G, tmp, bound);
+	ConductanceDistance objective(G, tmp, bound);
 	DummyTrimming trimming;
 	GreedyCommunityExpansion GCE(G, similarity, objective, trimming);
 
@@ -615,7 +615,7 @@ TEST_F(SCDGTest, testGreedyCommunityExpansion) {
 	G.addEdge(2, 6);
 	G.addEdge(3, 7);
 	DummySimilarity similarity1(G, tmp, tmp);
-	Conductance objective1(G, tmp, bound);
+	ConductanceDistance objective1(G, tmp, bound);
 	GreedyCommunityExpansion GCE1(G, similarity1, objective1, trimming);
 
 	community = GCE1.expandSeed(0);
@@ -632,7 +632,7 @@ TEST_F(SCDGTest, testGreedyCommunityExpansion) {
 	G.addEdge(9, 11);
 	G.addEdge(10, 11);
 	DummySimilarity similarity2(G, tmp, tmp);
-	Conductance objective2(G, tmp, bound);
+	ConductanceDistance objective2(G, tmp, bound);
 	GreedyCommunityExpansion GCE2(G, similarity2, objective2, trimming);
 	community = GCE2.expandSeed(0);
 	EXPECT_EQ(7, community.size()) << "The community should have 7 nodes";
@@ -814,7 +814,7 @@ TEST_F(SCDGTest, testTGreedyCommunityExpansionWithTemplates) {
 	EXPECT_EQ(5, community.size()) << "The community should have 5 nodes";
 }
 
-TEST_F(SCDGTest, lol) {
+TEST_F(SCDGTest, datToGraph) {
 	Graph G;
 	std::string path = "input/graph1000.dat";
 	std::string path1 = "input/graph1000.graph";

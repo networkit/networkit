@@ -10,18 +10,18 @@
 
 namespace NetworKit {
 
-Clustering::Clustering() : NodeMap<cluster>(0, none), name("noname")  {
-	this->nextCluster = 0; // first cluster index is 0
-	this->upperIdBound = 0; // upper id bound = n is okay only for agglomeratively created clusters
-}
-
+Clustering::Clustering() :
+		NodeMap<cluster>(0, none), name("noname") {
+			this->nextCluster = 0; // first cluster index is 0
+				this->upperIdBound = 0;// upper id bound = n is okay only for agglomeratively created clusters
+			}
 
 Clustering::Clustering(count n) :
 		NodeMap<cluster>(n, none), name("noname") {
-	// all entries are initialized to none, which means that the nodes are unclustered
-	this->nextCluster = 0; // first cluster index is 0
-	this->upperIdBound = n; // upper id bound = n is okay only for agglomeratively created clusters
-}
+			// all entries are initialized to none, which means that the nodes are unclustered
+				this->nextCluster = 0;// first cluster index is 0
+				this->upperIdBound = n;// upper id bound = n is okay only for agglomeratively created clusters
+			}
 
 Clustering::~Clustering() {
 	// TODO Auto-generated destructor stub
@@ -75,7 +75,7 @@ count Clustering::numberOfClusters() const {
 	});
 
 	count k = 0; // number of actually existing clusters
-	#pragma omp parallel for reduction(+:k)
+#pragma omp parallel for reduction(+:k)
 	for (index i = 0; i < nc; ++i) {
 		if (exists[i]) {
 			k++;
@@ -160,7 +160,6 @@ void Clustering::setUpperBound(cluster id) {
 	this->upperIdBound = id;
 }
 
-
 void Clustering::compact() {
 	std::map<cluster, cluster> compactingMap;
 	cluster nextIndex = 0;
@@ -186,7 +185,7 @@ void Clustering::compact() {
 	TRACE("upperBound: " << upperBound());
 }
 
-std::vector<count> Clustering::clusterSizes() const{
+std::vector<count> Clustering::clusterSizes() const {
 	count numC = this->numberOfClusters();
 	std::vector<count> clusterSizes(numC);
 	const count n = this->numberOfNodes();
@@ -209,9 +208,11 @@ std::vector<count> Clustering::clusterSizes() const{
 }
 
 float Clustering::getImbalance() {
-	float avg = ceil((float) this->numberOfNodes() / (float) this->numberOfClusters());
+	float avg = ceil(
+			(float) this->numberOfNodes() / (float) this->numberOfClusters());
 	std::vector<count> clusterSizes = this->clusterSizes();
-	float maxClusterSize = (float) *std::max_element(clusterSizes.begin(), clusterSizes.end());
+	float maxClusterSize = (float) *std::max_element(clusterSizes.begin(),
+			clusterSizes.end());
 	float imbalance = maxClusterSize / avg;
 	return imbalance;
 }
@@ -219,10 +220,10 @@ float Clustering::getImbalance() {
 void Clustering::append(node u) {
 	this->data.push_back(this->defaultValue);
 	this->n += 1;
-	assert (this->data[u] == this->defaultValue); // assumption: push_back creates entry at index u
+	assert(this->data[u] == this->defaultValue); // assumption: push_back creates entry at index u
 }
 
-std::vector<node> Clustering::getMembers(const cluster C) const{
+std::vector<node> Clustering::getMembers(const cluster C) const {
 	std::vector<node> members;
 	this->forEntries([&](node v, cluster D) {
 		if (D == C) {
@@ -230,6 +231,58 @@ std::vector<node> Clustering::getMembers(const cluster C) const{
 		}
 	});
 	return members;
+}
+
+Graph Clustering::communicationGraph(const Graph& graph) {
+	this->compact();
+	count n = this->numberOfClusters();
+	Graph commGraph(n);
+
+	if (graph.isMarkedAsWeighted()) {
+		DEBUG("weighted");
+
+		graph.forWeightedEdges([&](node u, node v, edgeweight w) {
+			if (data[u] != data[v]) {
+				commGraph.increaseWeight(data[u], data[v], w);
+				TRACE("increase weight of " << data[u] << " and " << data[v] << " by " << w);
+			}
+		});
+	} else {
+		DEBUG("not weighted");
+
+		graph.forEdges([&](node u, node v) {
+			if (data[u] != data[v]) {
+				commGraph.increaseWeight(data[u], data[v], 1);
+				TRACE("increase weight of " << data[u] << " and " << data[v] << " by 1");
+			}
+		});
+	}
+
+	return commGraph;
+}
+
+edgeweight Clustering::weightedDegreeWithCluster(const Graph& graph, node u,
+		cluster cid) const {
+//	TRACE("start wdeg with cluster...");
+	edgeweight wdeg = 0;
+
+	if (graph.isMarkedAsWeighted()) {
+		graph.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+			if (data[v] == cid) {
+				wdeg += w;
+			}
+		});
+	}
+	else {
+		graph.forEdgesOf(u, [&](node u, node v) {
+			if (data[v] == cid) {
+				wdeg += 1;
+			}
+		});
+	}
+
+//	TRACE("done");
+	return wdeg;
 }
 
 } /* namespace NetworKit */

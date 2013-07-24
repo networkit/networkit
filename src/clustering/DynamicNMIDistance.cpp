@@ -27,7 +27,6 @@ bool DynamicNMIDistance::isInBoth(node u, const Clustering& oldClustering, const
 
 
 /**
- * TODO: Needs cleanup!
  * Formula follows Dhillon, Guan, Kulis: A Unified View of Kernel k-means, ...
  */
 double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
@@ -76,38 +75,8 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 		return num;
 	};
 
-	 count totalOverlap = numOverlap(confMatrix);
-	 double numDouble = (double) totalOverlap;
-
-#if 0
-	/**
-	 * compute \sum_{i=1}^k n_i^{(D)} with k = number of clusters in first
-	 */
-	auto compAggregate1 = [&](const Matrix& confMatrix, const Clustering& first, cluster D) {
-		count sum = 0;
-		count upperId = first.upperBound();
-
-		for (index i = 0; i < upperId; ++i) {
-			sum += confMatrix[i][D];
-		}
-
-		return sum;
-	};
-
-	/**
-	 * compute \sum_{i=1}^c n_C^{(i)} with c = number of clusters in second
-	 */
-	auto compAggregate2 = [&](const Matrix& confMatrix, cluster C, const Clustering& second) {
-		count sum = 0;
-		count upperId = second.upperBound();
-
-		for (index i = 0; i < upperId; ++i) {
-			sum += confMatrix[C][i];
-		}
-
-		return sum;
-	};
-#endif
+	count totalOverlap = numOverlap(confMatrix);
+	double numDouble = (double) totalOverlap;
 
 	double MI = 0.0; // mutual information
 	for (cluster C = 0; C < oldClustering.upperBound(); C++) {
@@ -140,82 +109,6 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	for (cluster C = newClustering.lowerBound(); C < newClustering.upperBound(); ++C) {
 		P_new[C] = ((double) size_new[C]) / numDouble;
 	}
-
-
-#if 0
-
-
-	HashingOverlapper overlapper;
-	std::vector<Clustering> clusterings;
-	clusterings.push_back(oldClustering);
-	clusterings.push_back(newClustering);
-
-	Clustering overlap = overlapper.run(newGraph, clusterings);
-	DEBUG("overlap=" << Aux::vectorToString(overlap.getVector()));
-
-	std::vector<std::vector<cluster> > intersect(oldClustering.upperBound(),
-			std::vector<cluster>(newClustering.upperBound(), none)); // intersect[C][D] returns the overlap cluster
-
-	std::vector<count> overlapSizes(overlap.upperBound(), 0); // overlapSizes[O] returns the size of the overlap cluster
-	TRACE("upperBound = " << overlap.upperBound());
-
-	newGraph.forNodes([&](node u){
-		if (isInBoth(u, oldClustering, newClustering)) {
-			cluster O = overlap[u];
-			cluster C = oldClustering[u];
-			cluster D = newClustering[u];
-			intersect[C][D] = O; // writes are redundant - but this may be efficient
-		}
-	});
-
-	count totalOverlap = 0;
-	newGraph.forNodes([&](node u){
-		if (isInBoth(u, oldClustering, newClustering)) {
-			cluster O = overlap[u];
-			TRACE("O = " << O);
-			overlapSizes[O]++;
-			++totalOverlap;
-		}
-	});
-	const double totalOverlapDouble = (double) totalOverlap;
-
-	DEBUG("overlapSizes=" << Aux::vectorToString(overlapSizes));
-
-
-
-
-	double MI = 0.0;
-
-
-
-	// calculate mutual information
-	//	correct (cap): $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C \cap D| \cdot n}{|C|\cdot|D|}\right)$
-	double MI = 0.0; // mutual information
-//	const double nDouble = (double) n;
-	for (cluster C = 0; C < oldClustering.upperBound(); C++) {
-		for (cluster D = 0; D < newClustering.upperBound(); D++) {
-			count sizeC = size_old[C];
-			count sizeD = size_new[D];
-			if ((sizeC != 0) && (sizeD != 0)) { // cluster ids may not correspond to a real cluster
-				// the two clusters may or may not intersect
-				cluster O = intersect[C][D];
-				if (O == none) { // clusters do not intersect
-					TRACE("clusters do not intersect: " << C << ", " << D);
-				} else {
-					count sizeO = overlapSizes[O];
- 					double factor1 =  ((double) sizeO) / totalOverlapDouble;
-					assert ((size_old[C] * size_new[D]) != 0);
-					DEBUG("overlap of " << C << " and " << D << " has size: " << sizeO);
-					double frac2 = ((double) (sizeO * totalOverlap)) / (double) (size_old[C] * size_new[D]);
-					assert (frac2 != 0);
-					double factor2 = log_b(frac2, 2);
-					DEBUG("frac2 = " << frac2 << ", factor1 = " << factor1 << ", factor2 = " << factor2);
-					MI += factor1 * factor2;
-				}
-			}
-		}
-	}
-#endif
 
 	// sanity check
 	assert (! std::isnan(MI));
