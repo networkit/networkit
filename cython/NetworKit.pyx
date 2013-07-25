@@ -183,10 +183,14 @@ cdef class LabelPropagation(Clusterer):
 cdef extern from "../src/community/Louvain.h":
 	cdef cppclass _Louvain "NetworKit::Louvain":
 		_Louvain() except +
+		_Louvain(string par, double gamma)
 		_Clustering run(_Graph _G)
 		
 cdef class Louvain(Clusterer):
 	cdef _Louvain _this
+	
+	def __cinit__(self, par, gamma):
+		self._this = _Louvain(stdstring(par), gamma)
 	
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))

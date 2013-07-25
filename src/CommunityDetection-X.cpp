@@ -338,13 +338,13 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 	if (options[UPDATE_THRESHOLD]) {
 		std::string updateThresholdArg = options[UPDATE_THRESHOLD].arg;
 		if (updateThresholdArg == "auto") {
-			updateThreshold = (count) (G.numberOfNodes() / 1e3);
+			updateThreshold = (count) (G.numberOfNodes() / 1e5);
 		} else {
 			updateThreshold = std::atoi(updateThresholdArg.c_str());
 		}
 	} else {
 		// default = "auto"
-		updateThreshold = (count) (G.numberOfNodes() / 1e3);
+		updateThreshold = (count) (G.numberOfNodes() / 1e5);
 	}
 
 	// prepare clusterer run

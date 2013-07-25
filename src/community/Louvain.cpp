@@ -10,8 +10,7 @@
 namespace NetworKit {
 
 
-Louvain::Louvain(std::string par) {
-	this->parallelism = par;
+Louvain::Louvain(std::string par, double gamma) : parallelism(par), gamma(gamma), anyChange(false) {
 
 	this->VERSION = "1.0";
 }
@@ -104,17 +103,9 @@ Clustering Louvain::pass(Graph& G) {
 			double volN = 0.0;
 #pragma omp atomic read
 			volN = volNode[u];
-			double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volN) / (2 * total * total);
+			double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + this->gamma * ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volN) / (2 * total * total);
 			return delta;
 		};
-
-	// TODO: remove Luby algorithm
-	Luby luby; // independent set algorithm
-	std::vector<bool> I;
-	if (this->parallelism == "independent") {
-		DEBUG("finding independent set");
-		I = luby.run(G);
-	}
 
 
 	// begin pass
@@ -190,13 +181,6 @@ Clustering Louvain::pass(Graph& G) {
 			G.parallelForNodes(moveNode);
 		} else if (this->parallelism == "balanced") {
 			G.balancedParallelForNodes(moveNode);
-		} else if (this->parallelism == "independent") {
-			// try to move only the nodes in independent set
-			G.parallelForNodes([&](node u) {
-				if (I[u]) {
-					moveNode(u);
-				}
-			});
 		} else {
 			ERROR("unknown parallelization strategy: " << this->parallelism);
 			exit(1);
