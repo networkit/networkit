@@ -207,17 +207,11 @@ Graph readGraph(const std::string& graphPath) {
 
 Graph getGraph(OptionParser::Option* options) {
 
-	if (options[GRAPH]) { // graph from file
 		std::string graphPath = options[GRAPH].arg;
 		std::cout << "\t --graph=" << graphPath << std::endl;
 
 		Graph G = readGraph(graphPath);
 		return G;
-	} else {
-		Graph G(0);	// return empty graph
-		G.setName("NONE");
-		return G;
-	}
 }
 
 int main(int argc, char **argv) {
@@ -310,10 +304,11 @@ int main(int argc, char **argv) {
 	bool groundt = false;
 	if (options[GROUND_TRUTH]) {
 		std::string path = options[GROUND_TRUTH].arg;
-		EdgeListReader graphReader;
 		EdgeListClusteringReader clusteringReader;
-		G = graphReader.read(path);
+		EdgeListReader reader;
 		truth = clusteringReader.read(path);
+		std::string path1 = options[GRAPH].arg;
+		G = reader.read(path1);
 		groundt = true;
 	} else {
 		G = getGraph(options);
@@ -770,6 +765,7 @@ int main(int argc, char **argv) {
 	Aux::Timer running2;
 	int64_t runtime;
 	running1.start();
+
 	for (count i = 0; i < runs; i++) {
 		running2.start();
 		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
@@ -787,14 +783,17 @@ int main(int argc, char **argv) {
 		std::ofstream summary(options[SUMMARY].arg);
 		if (groundt) {
 			summary << "Node ID" << ";" << "Conductance" << ";" << "Local Modularity" << ";"
-					<< "Jaccard index" << ";" << "Community Size" << ";" << "Runtime" << std::endl;
-			JaccardIndex index;
+					<< "Precision" << ";" << "Recall" << ";" << "Community Size" << ";"
+					<< "Runtime" << std::endl;
+			Precision precision;
+			Recall recall;
 			for (auto u : results) {
 				for (auto v : u.second) {
 					summary << v.first << ";"
 							<< (measure1)->getQuality(v.second.first) << ";"
 							<< (measure2)->getQuality(v.second.first) << ";"
-							<< index.localDissimilarity(v.first, v.second.first, truth) << ";"
+							<< precision.localDissimilarity(v.first, v.second.first, truth) << ";"
+							<< recall.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
 				}

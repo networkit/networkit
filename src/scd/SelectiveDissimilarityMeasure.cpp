@@ -49,7 +49,6 @@ double JaccardIndex::localDissimilarity(const node seedNode,
 			intersection++;
 		}
 	}
-
 	return ((double)(intersection)) / ((double)(community.size() + clusterSize - intersection));
 }
 
