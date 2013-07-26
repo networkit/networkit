@@ -783,10 +783,11 @@ int main(int argc, char **argv) {
 		std::ofstream summary(options[SUMMARY].arg);
 		if (groundt) {
 			summary << "Node ID" << ";" << "Conductance" << ";" << "Local Modularity" << ";"
-					<< "Precision" << ";" << "Recall" << ";" << "Community Size" << ";"
-					<< "Runtime" << std::endl;
+					<< "Jaccard index" << ";" << "Precision" << ";" << "Recall" << ";"
+					<< "Community Size" << ";" << "Runtime" << std::endl;
 			Precision precision;
 			Recall recall;
+			JaccardIndex jaccard;
 			for (auto u : results) {
 				for (auto v : u.second) {
 					summary << v.first << ";"
@@ -794,6 +795,7 @@ int main(int argc, char **argv) {
 							<< (measure2)->getQuality(v.second.first) << ";"
 							<< precision.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< recall.localDissimilarity(v.first, v.second.first, truth) << ";"
+							<< jaccard.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
 				}
