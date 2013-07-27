@@ -793,9 +793,9 @@ int main(int argc, char **argv) {
 					summary << v.first << ";"
 							<< (measure1)->getQuality(v.second.first) << ";"
 							<< (measure2)->getQuality(v.second.first) << ";"
+							<< jaccard.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< precision.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< recall.localDissimilarity(v.first, v.second.first, truth) << ";"
-							<< jaccard.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
 				}
