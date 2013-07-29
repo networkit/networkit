@@ -230,6 +230,16 @@ public:
 	void removeEdge(node u, node v);
 
 	/**
+	 * Merges edge {u,v} to become a supernode. Edges to u and v are
+	 * rewired, multiple edges merged and their weights added.
+	 * The vertex weights of @a u and @a v are added.
+	 * A self-loop is only created if @a discardSelfLoop is set to false.
+	 *
+	 * @return New node that has been created if u != v. Otherwise none.
+	 */
+	node mergeEdge(node u, node v, bool discardSelfLoop = true);
+
+	/**
 	 * @return Number of neighbors.
 	 */
 	count degree(node v) const;
