@@ -90,6 +90,11 @@ public:
 	virtual void insert(ElemType elem);
 
 	/**
+	 * Removes key-value pair given by @a elem.
+	 */
+	virtual void remove(const ElemType& elem);
+
+	/**
 	 * Removes the element with minimum key and returns it.
 	 */
 	virtual ElemType extractMin();
@@ -142,9 +147,9 @@ void Aux::PriorityQueue<Key, Val>::init(const std::vector<ElemType>& elems) {
 		heapifyDown(i);
 	}
 
-	for (uint64_t i = 0; i < pq.size(); ++i) {
-		TRACE("binary heap elem  " << i << ": (" << pq[i].first << "," << pq[i].second << ")");
-	}
+//	for (uint64_t i = 0; i < pq.size(); ++i) {
+//		TRACE("binary heap elem  " << i << ": (" << pq[i].first << "," << pq[i].second << ")");
+//	}
 }
 
 
@@ -176,6 +181,7 @@ void Aux::PriorityQueue<Key, Val>::heapifyDown(uint64_t pos) {
 
 	// move element down as long as necessary to restore heap order
 	if (smallest != pos) {
+		TRACE("exchange " << pos << " and " << smallest);
 	      exchange(pos, smallest);
 	      heapifyDown(smallest); // index smallest contains value of pos now
 	}
@@ -196,12 +202,16 @@ uint64_t Aux::PriorityQueue<Key, Val>::heapifyUp(uint64_t pos) {
 
 template<class Key, class Val>
 void Aux::PriorityQueue<Key, Val>::insert(ElemType elem) {
-	assert(elem.second >= pq.size());
+	TRACE("elem.second: " << elem.second << ", pq size: " << pq.size());
+	assert(elem.second == heapIndex.size());
 	pq.push_back(elem);
 
 	// send element up as far as necessary to restore heap order
+	TRACE("call heapifyUp for new elem");
+	heapIndex.push_back(none);
 	uint64_t newElemIdx = heapifyUp(pq.size() - 1);
-	heapIndex.push_back(newElemIdx);
+	TRACE("heapifyUp reports new index " << newElemIdx);
+	heapIndex[heapIndex.size() - 1] = newElemIdx;
 }
 
 template<class Key, class Val>
@@ -224,7 +234,7 @@ template<class Key, class Val>
 void Aux::PriorityQueue<Key, Val>::decreaseKey(ElemType elem) {
 	// find element
 	uint64_t index = find(elem);
-	bool found = index != none;
+	bool found = (index != none);
 
 	if (found) {
 		// change key
@@ -259,7 +269,7 @@ inline uint64_t Aux::PriorityQueue<Key, Val>::parent(uint64_t pos) const {
 
 template<class Key, class Val>
 inline uint64_t Aux::PriorityQueue<Key, Val>::find(const ElemType& elem) const {
-	if (! (elem.second >= 0 && elem.second < heapIndex.size())) {
+	if (! ((elem.second >= 0) && (elem.second < heapIndex.size()))) {
 		WARN("find tries to access heap out of bounds");
 		return none;
 	}
@@ -268,9 +278,11 @@ inline uint64_t Aux::PriorityQueue<Key, Val>::find(const ElemType& elem) const {
 
 template<class Key, class Val>
 inline void Aux::PriorityQueue<Key, Val>::exchange(uint64_t pos1, uint64_t pos2) {
+	TRACE("heapIndex of size " << heapIndex.size() << ", swap indices " << pos1 << " and " << pos2);
 	std::swap(pq[pos1], pq[pos2]);
-	TRACE("swap indices " << pq[pos1].second << " and " << pq[pos2].second);
-	std::swap(heapIndex[pq[pos1].second], heapIndex[pq[pos2].second]);
+	TRACE("elements: " << pq[pos1].second << " and " << pq[pos2].second);
+	heapIndex[pq[pos1].second] = pos1;
+	heapIndex[pq[pos2].second] = pos2;
 }
 
 template<class Key, class Val>
@@ -278,5 +290,25 @@ inline uint64_t Aux::PriorityQueue<Key, Val>::size() const {
 	return pq.size();
 }
 
+template<class Key, class Val>
+inline void Aux::PriorityQueue<Key, Val>::remove(const ElemType& elem) {
+	// find element
+	uint64_t elemIndex = find(elem);
+	bool found = (elemIndex != none);
+
+	if (found) { // remove
+		// swap with last element, delete after swap
+		uint64_t lastIndex = pq.size() - 1;
+		this->exchange(elemIndex, lastIndex);
+		pq.pop_back();
+
+		// put formerly last element into correct heap order
+		this->heapifyDown(elemIndex);
+	}
+	else {	// if not found: insert elem
+		WARN("trying to remove non-existing element with value " << elem.second << " from PQ!");
+	}
+	heapIndex[elem.second] = none;
+}
 
 #endif /* PRIORITYQUEUE_H_ */
