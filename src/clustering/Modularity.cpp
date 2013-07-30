@@ -43,7 +43,7 @@ double Modularity::getQuality(const Clustering& zeta, const Graph& G) {
 	IndexMap<cluster, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
 
 	// compute volume of each cluster
-	G.parallelForNodes([&](node v){
+	G.parallelForNodes([&](node v) {
 		// add to cluster weight
 		cluster c = zeta[v];
 		assert (zeta.lowerBound() <= c);
