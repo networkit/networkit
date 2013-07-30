@@ -244,11 +244,32 @@ TEST_F(ClusteringAlgoGTest, testCNM) {
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
 	Modularity modularity;
-	CNM cnm;
 
+	// CNM with PQ
+	CNM cnm;
 	Clustering clustering = cnm.run(G);
 	INFO("CNM number of clusters: " << clustering.numberOfClusters());
 	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
+	EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
+	EXPECT_TRUE(clustering.isProper(G));
+}
+
+TEST_F(ClusteringAlgoGTest, tryCNM_WW) {
+	count n = 200;
+	count k = 25;
+	double pin = 0.9;
+	double pout = 0.005;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	// slow CNM
+	CNM_WW cnm_ww;
+	Clustering clustering = cnm_ww.run(G);
+	Modularity modularity;
+
+	INFO("CNM_WW number of clusters: " << clustering.numberOfClusters());
+	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
+	EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
 	EXPECT_TRUE(clustering.isProper(G));
 }
 
