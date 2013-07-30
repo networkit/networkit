@@ -115,6 +115,8 @@ public:
 	 * Removes all elements from the PQ.
 	 */
 	virtual void clear();
+
+	virtual void print() const;
 };
 
 } /* namespace Aux */
@@ -146,9 +148,12 @@ void Aux::PriorityQueue<Key, Val>::init(const std::vector<ElemType>& elems) {
 	}
 
 	pq = elems;
-	for (int64_t i = (pq.size()-2) / 2; i >= 0; --i) {
-		TRACE("start heapifyDown for " << i);
-		heapifyDown(i);
+
+	if (n >= 2) {
+		for (int64_t i = (n-2) / 2; i >= 0; --i) {
+			TRACE("start heapifyDown for " << i);
+			heapifyDown(i);
+		}
 	}
 
 //	for (uint64_t i = 0; i < pq.size(); ++i) {
@@ -164,7 +169,7 @@ Aux::PriorityQueue<Key, Val>::~PriorityQueue() {
 
 template<class Key, class Val>
 void Aux::PriorityQueue<Key, Val>::heapifyDown(uint64_t pos) {
-	DEBUG("PQ: heapifyDown");
+	TRACE("PQ: heapifyDown");
 
 	// check if children are smaller
 	uint64_t le = left(pos);
@@ -195,7 +200,7 @@ void Aux::PriorityQueue<Key, Val>::heapifyDown(uint64_t pos) {
 
 template<class Key, class Val>
 uint64_t Aux::PriorityQueue<Key, Val>::heapifyUp(uint64_t pos) {
-	DEBUG("PQ: heapifyUp");
+	TRACE("PQ: heapifyUp");
 
 	// send element up as far as necessary to restore heap order
 	uint64_t index = pos;
@@ -210,16 +215,18 @@ uint64_t Aux::PriorityQueue<Key, Val>::heapifyUp(uint64_t pos) {
 
 template<class Key, class Val>
 void Aux::PriorityQueue<Key, Val>::insert(ElemType elem) {
-	DEBUG("PQ: insert");
+	TRACE("PQ: insert");
 	uint64_t pqPos = pq.size();
 	pq.push_back(elem);
 
 	// send element up as far as necessary to restore heap order
 	TRACE("call heapifyUp for new elem");
 	heapIndex.insert(std::make_pair(elem.second, pqPos));
-	uint64_t newElemIdx = heapifyUp(pqPos);
-	TRACE("heapifyUp reports new index " << newElemIdx);
-	heapIndex[elem.second] = newElemIdx;
+	if (pq.size() > 1) {
+		uint64_t newElemIdx = heapifyUp(pqPos);
+		TRACE("heapifyUp reports new index " << newElemIdx);
+		heapIndex[elem.second] = newElemIdx;
+	}
 }
 
 template<class Key, class Val>
@@ -240,7 +247,7 @@ std::pair<Key, Val> Aux::PriorityQueue<Key, Val>::extractMin() {
 
 template<class Key, class Val>
 void Aux::PriorityQueue<Key, Val>::decreaseKey(ElemType elem) {
-	DEBUG("PQ: decrease key");
+	TRACE("PQ: decrease key");
 
 	// find element
 	uint64_t index = find(elem);
@@ -279,15 +286,15 @@ inline uint64_t Aux::PriorityQueue<Key, Val>::parent(uint64_t pos) const {
 
 template<class Key, class Val>
 inline uint64_t Aux::PriorityQueue<Key, Val>::find(const ElemType& elem) const {
-	DEBUG("PQ: find");
+	TRACE("PQ: find");
 
 	Val val = elem.second;
 	if (heapIndex.count(val) > 0) {
-		DEBUG("PQ: find result: " << heapIndex.find(val)->second);
+		TRACE("PQ: find result: " << heapIndex.find(val)->second);
 		return (heapIndex.find(val)->second); // TODO: avoid double access to map
 	}
 	else {
-		DEBUG("PQ: find result: " << none);
+		TRACE("PQ: find result: " << none);
 		return none;
 	}
 }
@@ -325,7 +332,7 @@ void Aux::PriorityQueue<Key, Val>::remove(const ElemType& elem) {
 		if (performExchange) {
 			// swap with last element, delete after swap
 			uint64_t lastIndex = pqSize - 1;
-			DEBUG("PQ remove, pqSize: " << pqSize << ", elemIndex: " << elemIndex << ", lastIndex: " << lastIndex);
+			TRACE("PQ remove, pqSize: " << pqSize << ", elemIndex: " << elemIndex << ", lastIndex: " << lastIndex);
 			this->exchange(elemIndex, lastIndex);
 		}
 
@@ -347,6 +354,24 @@ template<class Key, class Val>
 inline void Aux::PriorityQueue<Key, Val>::clear() {
 	pq.clear();
 	heapIndex.clear();
+}
+
+template<class Key, class Val>
+inline void Aux::PriorityQueue<Key, Val>::print() const {
+	uint64_t behindLineIndex = 1;
+	uint64_t index = 0;
+	uint64_t size = pq.size();
+
+	if (size > 0) {
+		while (behindLineIndex <= size) {
+			for (uint64_t i = index; i < behindLineIndex; ++i) {
+				std::cout << pq[i].first << "  ";
+			}
+			index = behindLineIndex;
+			behindLineIndex = 2 * behindLineIndex + 1;
+			std::cout << std::endl;
+		}
+	}
 }
 
 #endif /* PRIORITYQUEUE_H_ */

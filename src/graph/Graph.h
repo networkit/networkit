@@ -1066,7 +1066,7 @@ inline void NetworKit::Graph::forWeightedEdgesOf(node u, L handle) {
 		if (v != none) {
 			edgeweight ew = eweights[u][i];
 			handle(u, v, ew);
-			assert(ew == weight(u, v));
+//			assert(ew == weight(u, v));
 		}
 	}
 }
