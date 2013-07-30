@@ -80,8 +80,9 @@ ModularityScoring<T>::~ModularityScoring() {
 template<typename T>
 inline T ModularityScoring<T>::edgeScore(node u, node v) const {
 	double volume = 2.0 * totalEdgeWeight;
+	double unsquaredFrac = (this->G->weightedDegree(u) / volume);
 	double deltaMod = (this->G->weight(u, v) / totalEdgeWeight) -
-			((this->G->weightedDegree(u) / volume) * (this->G->weightedDegree(v) / volume)); // TODO: check!
+			(unsquaredFrac * unsquaredFrac); // TODO: check!
 	return deltaMod;
 }
 
