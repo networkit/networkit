@@ -369,6 +369,57 @@ node Graph::randomNeighbor(node v) const {
 	return randNeigh;
 }
 
+node Graph::mergeEdge(node u, node v, bool discardSelfLoop) {
+	DEBUG("merge edge with nodes " << u << " and " << v);
+
+	if (u != v) {
+		node newNode = this->addNode();
+
+		// self-loop if necessary
+		if (! discardSelfLoop) {
+			TRACE("selfLoopWeight");
+			edgeweight selfLoopWeight = this->weight(u, u) + this->weight(v, v) + this->weight(u, v);
+			this->addEdge(newNode, newNode, selfLoopWeight);
+			TRACE("end selfLoopWeight");
+		}
+
+		// rewire edges from u to newNode
+		this->forWeightedEdgesOf(u, [&](node u, node neighbor, edgeweight w) {
+			if (neighbor != u) {
+				TRACE("neighbor of " << u << ": " << neighbor);
+				this->addEdge(neighbor, newNode, this->weight(u, neighbor)); // TODO: make faster
+				TRACE("end neighbor of u");
+			}
+		});
+
+		// rewire edges from v to newNode
+		this->forWeightedEdgesOf(v, [&](node v, node neighbor, edgeweight w) {
+			if (neighbor != v) {
+				TRACE("neighbor of " << v << ": " << neighbor);
+				this->addEdge(neighbor, newNode, this->weight(v, neighbor));  // TODO: make faster
+				TRACE("end neighbor of v");
+			}
+		});
+
+		// delete edges of nodes to delete
+		this->forEdgesOf(u, [&](node u, node neighbor) {
+			this->removeEdge(u, neighbor);
+		});
+		this->forEdgesOf(v, [&](node v, node neighbor) {
+			this->removeEdge(v, neighbor);
+		});
+
+		// delete nodes
+		this->removeNode(u);
+		this->removeNode(v);
+
+		return newNode;
+	}
+
+	// no new node created
+	return none;
+}
+
 std::vector<std::pair<node, node> > Graph::edges() {
 	std::vector<std::pair<node, node> > edges;
 	this->forEdges([&](node u, node v){
