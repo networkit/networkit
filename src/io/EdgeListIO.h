@@ -1,12 +1,12 @@
 /*
- * EdgeListReader.h
+ * EdgeListIO.h
  *
  *  Created on: 18.06.2013
  *      Author: cls
  */
 
-#ifndef EDGELISTREADER_H_
-#define EDGELISTREADER_H_
+#ifndef EDGELISTIO_H_
+#define EDGELISTIO_H_
 
 #include <fstream>
 #include <iostream>
@@ -23,16 +23,16 @@ namespace NetworKit {
  *
  * 	The starting index is a parameter to enable other edge list formats.
  */
-class EdgeListReader: public NetworKit::GraphReader {
+class EdgeListIO: public NetworKit::GraphReader {
 
 public:
 
 	/**
 	 * @param[in]	firstNode	index of the first node in the file
 	 */
-	EdgeListReader(node firstNode = 1);
+	EdgeListIO(node firstNode = 1);
 
-	virtual ~EdgeListReader();
+	virtual ~EdgeListIO();
 
 	/**
 	 * Given the path of an input file, read the graph contained.
@@ -41,10 +41,17 @@ public:
 	 */
 	virtual Graph read(std::string path);
 
+	/**
+	 * Write the graph to a file.
+	 * @param[in]	G		the graph
+	 * @param[in]	path	the output file path
+	 */
+	virtual void write(const Graph& G, std::string path);
+
 protected:
 
 	node firstNode;
 };
 
 } /* namespace NetworKit */
-#endif /* EDGELISTREADER_H_ */
+#endif /* EDGELISTIO_H_ */

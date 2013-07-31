@@ -144,6 +144,27 @@ cdef class DotGraphWriter:
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
 		self._this.write(G._this, stdstring(path))
+		
+		
+cdef extern from "../src/io/EdgeListIO.h":
+	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
+		_EdgeListIO() except +
+		_EdgeListIO(node firstNode) except +
+		_Graph read(string path)
+		void write(_Graph G, string path)
+
+cdef class EdgeListIO:
+	cdef _EdgeListIO _this
+	
+	def __cinit__(self, firstNode=0):
+		self._this = _EdgeListIO(firstNode)
+		
+	def read(self, path):
+		return Graph().setThis(self._this.read(stdstring(path)))
+	
+	def write(self, Graph G not None, path):
+		 # string needs to be converted to bytes, which are coerced to std::string
+		self._this.write(G._this, stdstring(path))
 	
 
 cdef extern from "../src/clustering/Clustering.h":
@@ -487,5 +508,26 @@ def compactDegreeHistogram(nxG, nbins=10):
 # 			if (self.G.time() % deltaT) == 0:
 # 				zeta = self.dcd.run()
 # 				self.clusterings.append(zeta)
+	
+class GraphConverter:
+	
+	def __init__(self, reader, writer):
+		self.reader = reader
+		self.writer = writer
 		
-			
+	def convert(self, inPath, outPath):
+		G = self.reader.read(inPath)
+		self.writer.write(G, outPath)
+		
+	def __str__(self):
+		return "GraphConverter: {0} => {0}".format(self.reader, self.writer)
+
+def getConverter(fromFormat, toFormat):
+	
+	readers = {"metis": METISGraphReader, "edgelist" : EdgeListIO}	
+	writers = {"edgelist": EdgeListIO}
+	
+	reader = readers[fromFormat]()
+	writer = writers[toFormat]()
+	
+	return GraphConverter(reader, writer)
