@@ -72,6 +72,8 @@ The call to SCons has the following options:
 
 	scons --machine=<MyEnvironment> --buildconf=D|P|O --target=CommunityDetection|DynCD|SelCD
 
+`machine` expects the name of a system environment. Custom environments can be added in the `SConstruct` file.
+
 - `buildconf`
 	- `D` 	debug
 	- `O`	optimized
