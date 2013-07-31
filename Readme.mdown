@@ -70,7 +70,7 @@ We recommend [SCons](http://scons.org) for building the project. Edit the file `
 
 The call to SCons has the following options:
 
-	`scons --machine=<MyEnvironment> --buildconf=D|P|O --target=CommunityDetection|DynCD|SelCD`
+	scons --machine=<MyEnvironment> --buildconf=D|P|O --target=CommunityDetection|DynCD|SelCD
 
 - `buildconf`
 	- `D` 	debug
