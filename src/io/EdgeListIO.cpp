@@ -1,26 +1,26 @@
 /*
- * EdgeListReader.cpp
+ * EdgeListIO.cpp
  *
  *  Created on: 18.06.2013
  *      Author: cls
  */
 
-#include "EdgeListReader.h"
+#include "EdgeListIO.h"
 
 namespace NetworKit {
 
-EdgeListReader::EdgeListReader(node firstNode) : firstNode(firstNode) {
+EdgeListIO::EdgeListIO(node firstNode) : firstNode(firstNode) {
 	// TODO Auto-generated constructor stub
 
 }
 
-EdgeListReader::~EdgeListReader() {
+EdgeListIO::~EdgeListIO() {
 	// TODO Auto-generated destructor stub
 }
 
 
 
-Graph EdgeListReader::read(std::string path) {
+Graph EdgeListIO::read(std::string path) {
 
     std::ifstream file;
     std::string line; // the current line
@@ -73,9 +73,21 @@ Graph EdgeListReader::read(std::string path) {
 
     file.close();
 
-
-
     return G;
+}
+
+void EdgeListIO::write(const Graph& G, std::string path) {
+    std::ofstream file;
+    file.open(path);
+
+    assert (file.good());
+
+    G.forEdges([&](node u, node v){
+    	file << (u + firstNode) << " " << (v + firstNode) << std::endl;
+    });
+
+    file.close();
+
 }
 
 } /* namespace NetworKit */
