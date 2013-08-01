@@ -5,17 +5,20 @@ from Cython.Distutils import build_ext
 
 import os
 import shutil
+try:
+	if (shutil.which("g++-4.8") is not None):
+		os.environ["CC"] = "g++-4.8"
+		os.environ["CXX"] = "g++-4.8"
 
-if (shutil.which("g++-4.8") is not None):
-	os.environ["CC"] = "g++-4.8"
-	os.environ["CXX"] = "g++-4.8"
+	elif (shutil.which("g++-4.7") is not None):
+		os.environ["CC"] = "g++-4.7"
+		os.environ["CXX"] = "g++-4.7"
 
-elif (shutil.which("g++-4.7") is not None):
-	os.environ["CC"] = "g++-4.7"
-	os.environ["CXX"] = "g++-4.7"
-
-else:
-	print("Using: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
+	else:
+		print("Using: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
+except:
+	os.environ["CC"] = "g++"
+	os.environ["CXX"] = "g++"
 
 
 srcDir = "../src"
