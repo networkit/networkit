@@ -295,7 +295,7 @@ cdef extern from "../src/clustering/Modularity.h":
 		_Modularity() except +
 		double getQuality(_Clustering _zeta, _Graph _G)
 		
-		
+
 cdef class Modularity:
 	cdef _Modularity _this
 	
@@ -531,3 +531,5 @@ def getConverter(fromFormat, toFormat):
 	writer = writers[toFormat]()
 	
 	return GraphConverter(reader, writer)
+
+	
