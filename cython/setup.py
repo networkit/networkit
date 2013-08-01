@@ -36,8 +36,8 @@ print("source files: {0}".format(src))
 modules = [Extension("NetworKit",
 					src,
 					language = "c++",
-					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
-					extra_link_args=["-fopenmp", "-std=c++11"],
+					extra_compile_args=["-fPIC", "-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
+					extra_link_args=["-fopenmp", "-std=c++11", "-fPIC"],
 					libraries=["NetworKit-Core-O"],
 					library_dirs=["../", "../Core-O/"])]
 
