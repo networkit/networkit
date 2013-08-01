@@ -1,0 +1,18 @@
+<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph_generator.html#af418835f00a4fc70a76eebe7c70104d2" title="Generate a complete graph." alt="" coords="195,65,418,125"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_clustering_generator.html#a51906150a30e960243d720668fda0ab4" title="Make a singleton clustering of G, i.e." alt="" coords="218,193,395,253"/>
+<area shape="rect" id="node15" href="$class_ensemble_clustering_1_1_clustering_generator.html#aba77ffb1a767d6004f5f79ec0abf82a0" title="Make a 1&#45;clustering of G, i.e." alt="" coords="232,277,381,337"/>
+<area shape="rect" id="node24" href="$class_ensemble_clustering_1_1_coverage.html#a44ae58f30b82353e82edf9f059fce2b9" title="EnsembleClustering\l::Coverage::getQuality" alt="" coords="230,570,384,614"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a5c422bd0b1f00f8c40686991f94bcdaa" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="487,5,638,49"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="492,73,633,117"/>
+<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="477,209,648,253"/>
+<area shape="rect" id="node13" href="$class_ensemble_clustering_1_1_clustering.html#aa93abafed46c4707dac3ca4b0d445f79" title="Assigns every node to a singleton cluster." alt="" coords="470,141,656,185"/>
+<area shape="rect" id="node18" href="$class_ensemble_clustering_1_1_clustering.html#af6a1379873404b3408d513026005f921" title="Call this before assigning nodes to cluster ids." alt="" coords="482,277,643,321"/>
+<area shape="rect" id="node20" href="$class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="492,345,633,389"/>
+<area shape="rect" id="node22" href="$class_ensemble_clustering_1_1_clustering.html#a2f6334480e3938deae8425dc57e6ea86" title="Add a (previously unassigned) node to a cluster." alt="" coords="475,413,650,457"/>
+<area shape="rect" id="node26" href="$class_ensemble_clustering_1_1_graph.html#a7f748dbd6dcc6f5fcee7e3341bf872ac" title="SUMS." alt="" coords="477,481,648,525"/>
+<area shape="rect" id="node28" href="$class_ensemble_clustering_1_1_graph.html#a09e93835ed75201769358fa6b35537e8" title="Iterate over all edges of the graph and call handler (lambda closure)." alt="" coords="707,511,890,555"/>
+<area shape="rect" id="node30" href="$class_ensemble_clustering_1_1_clustering.html#ae0b22bda843f96f9428d05aa582cfe4b" title="Return an upper bound for the cluster ids that have been assigned." alt="" coords="478,601,647,645"/>
+<area shape="rect" id="node33" href="$class_ensemble_clustering_1_1_index_map.html#a12dd2383d0014aefbc3b496998fa1383" title="Number of nodes for which this clsutering can hold an entry." alt="" coords="466,669,659,713"/>
+<area shape="rect" id="node35" href="$class_ensemble_clustering_1_1_clustering.html#ab64cf7248533ea358d7621ca8296b085" title="Return a lower bound for the cluster ids that have been assigned." alt="" coords="479,737,646,781"/>
+</map>

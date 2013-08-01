@@ -1,0 +1,9 @@
+<map id="src/coarsening/ClusteringProjector.cpp" name="src/coarsening/ClusteringProjector.cpp">
+<area shape="rect" id="node3" href="$_clustering_projector_8h.html" title="ClusteringProjector.h" alt="" coords="135,99,280,127"/>
+<area shape="rect" id="node5" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="39,177,203,205"/>
+<area shape="rect" id="node43" href="$_graph_contraction_8h.html" title="GraphContraction.h" alt="" coords="227,177,364,205"/>
+<area shape="rect" id="node9" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="226,254,365,282"/>
+<area shape="rect" id="node11" href="$_graph_8h.html" title="Graph.h" alt="" coords="261,331,331,359"/>
+<area shape="rect" id="node39" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="509,331,643,359"/>
+<area shape="rect" id="node27" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="406,409,497,437"/>
+</map>
