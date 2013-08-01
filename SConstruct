@@ -172,8 +172,8 @@ except:
 
 ## CONFIGURATIONS
 
-commonCFlags = ["-c", "-fmessage-length=0", "-std=c99"]
-commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0"]
+commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC"]
+commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
 
 debugCppFlags = ["-O0", "-g3"]
 debugCFlags = ["-O0", "-g3"]
