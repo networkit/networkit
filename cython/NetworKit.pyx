@@ -293,7 +293,7 @@ cdef class DGSReader:
 cdef extern from "../src/clustering/Modularity.h":
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +
-		double getQuality(const _Clustering _zeta, const _Graph _G)
+		double getQuality(_Clustering _zeta, _Graph _G)
 		
 		
 cdef class Modularity:
