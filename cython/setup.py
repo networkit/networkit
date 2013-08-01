@@ -25,19 +25,14 @@ except:
 
 srcDir = "../src"
 src = ["NetworKit.pyx"]	# list of source files
-# include all .cpp files
-# for (root, dirs, files) in os.walk(srcDir, topdown=False):
-# 	for name in files:
-# 		if name.endswith(".cpp") and (not root.endswith("/test")):
-# 			src.append(os.path.join(root, name))
 			
 print("source files: {0}".format(src))
 
 modules = [Extension("NetworKit",
 					src,
 					language = "c++",
-					extra_compile_args=["-fPIC", "-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
-					extra_link_args=["-fopenmp", "-std=c++11", "-fPIC"],
+					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
+					extra_link_args=["-fopenmp", "-std=c++11"],
 					libraries=["NetworKit-Core-O"],
 					library_dirs=["../", "../Core-O/"])]
 
@@ -49,4 +44,3 @@ setup(name="NetworKit",
 	 ext_modules=modules)
 
 print("[Done] setup.py")
-
