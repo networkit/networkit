@@ -300,7 +300,7 @@ TEST_F(IOGTest, tryReadingLFR) {
 	std::cout << "[INPUT] clustering file path >" << std::endl;
 	std::getline(std::cin, clustPath);
 
-	EdgeListIO graphReader;
+	EdgeListIO graphReader('\t',1);
 	EdgeListClusteringReader clusteringReader;
 
 	Graph G = graphReader.read(graphPath);
