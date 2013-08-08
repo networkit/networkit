@@ -1,13 +1,19 @@
 var searchData=
 [
+  ['u',['u',['../class_networ_kit_1_1_graph_event.html#a89b513bb3302660d9ab085d9de3aaf1a',1,'NetworKit::GraphEvent']]],
   ['uniform',['uniform',['../class_noise.html#aa7025a1f6193c8cf2ce4d225b9f9413f',1,'Noise']]],
-  ['unknown',['UNKNOWN',['../_community_detection_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c',1,'CommunityDetection.cpp']]],
+  ['unknown',['UNKNOWN',['../_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c',1,'UNKNOWN():&#160;CommunityDetection-X.cpp'],['../_dynamic_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c',1,'UNKNOWN():&#160;DynamicCommunityDetection-X.cpp'],['../_selective_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c',1,'UNKNOWN():&#160;SelectiveCommunityDetection-X.cpp']]],
   ['unmatch',['unmatch',['../class_networ_kit_1_1_matching.html#a66a2ced23196544647da2a605956e491',1,'NetworKit::Matching']]],
-  ['update_5fthreshold',['UPDATE_THRESHOLD',['../_community_detection_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a99fee38e3c553496f710e3c0e0a1103c',1,'CommunityDetection.cpp']]],
-  ['updatethreshold',['updateThreshold',['../class_networ_kit_1_1_label_propagation.html#a017f935395202a754b9baeb83755ddf5',1,'NetworKit::LabelPropagation']]],
+  ['unweighteddistance',['unweightedDistance',['../class_networ_kit_1_1_graph_distance.html#a086b95830865d47b1cfff41639ad4cde',1,'NetworKit::GraphDistance']]],
+  ['update_5fthreshold',['UPDATE_THRESHOLD',['../_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a99fee38e3c553496f710e3c0e0a1103c',1,'UPDATE_THRESHOLD():&#160;CommunityDetection-X.cpp'],['../_dynamic_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a99fee38e3c553496f710e3c0e0a1103c',1,'UPDATE_THRESHOLD():&#160;DynamicCommunityDetection-X.cpp']]],
+  ['updatedata',['UpdateData',['../class_networ_kit_1_1_c_n_m.html#a252e7b2d071160e47959eb3815b0afef',1,'NetworKit::CNM']]],
+  ['updateedgeendfractions',['UpdateEdgeEndFractions',['../class_networ_kit_1_1_c_n_m.html#aefcd8ec7df1d1cc267cb803a62a08d0e',1,'NetworKit::CNM']]],
+  ['updatematrix',['UpdateMatrix',['../class_networ_kit_1_1_c_n_m.html#a3a770329c25c2ade503913e2f45f0df9',1,'NetworKit::CNM']]],
+  ['updatethreshold',['updateThreshold',['../class_networ_kit_1_1_label_propagation.html#a017f935395202a754b9baeb83755ddf5',1,'NetworKit::LabelPropagation::updateThreshold()'],['../class_networ_kit_1_1_dynamic_label_propagation.html#aa9c3770b1adf245a45e6f0af2e72c3bb',1,'NetworKit::DynamicLabelPropagation::updateThreshold()'],['../class_networ_kit_1_1_t_dynamic_label_propagation.html#a3345777f5460baa93c756adc94ef23b7',1,'NetworKit::TDynamicLabelPropagation::updateThreshold()']]],
   ['upmax',['upmax',['../struct_option_parser_1_1_print_usage_implementation.html#a8517859ff8d035d78b4a5c137be4dab0',1,'OptionParser::PrintUsageImplementation']]],
   ['upperbound',['upperBound',['../class_noise.html#ae4e9a84fa020eac595826a7a9a95bcb6',1,'Noise::upperBound()'],['../class_networ_kit_1_1_clustering.html#a1bf0c38a510c8ef384d2ce25f18e1ab6',1,'NetworKit::Clustering::upperBound()']]],
   ['upperidbound',['upperIdBound',['../class_networ_kit_1_1_clustering.html#a6fc3b70d463ec65ef29ca5520973d856',1,'NetworKit::Clustering']]],
-  ['usage',['usage',['../_community_detection_8cpp.html#ae4e685e845abde182eb8fc1f87b756ae',1,'CommunityDetection.cpp']]],
+  ['uppernodeidbound',['upperNodeIdBound',['../class_networ_kit_1_1_graph.html#ac4be23441cda30b287dc51043b7a3b75',1,'NetworKit::Graph']]],
+  ['usage',['usage',['../_community_detection-_x_8cpp.html#ae4e685e845abde182eb8fc1f87b756ae',1,'usage():&#160;CommunityDetection-X.cpp'],['../_dynamic_community_detection-_x_8cpp.html#ae4e685e845abde182eb8fc1f87b756ae',1,'usage():&#160;DynamicCommunityDetection-X.cpp'],['../_selective_community_detection-_x_8cpp.html#ae4e685e845abde182eb8fc1f87b756ae',1,'usage():&#160;SelectiveCommunityDetection-X.cpp']]],
   ['userstream',['userstream',['../struct_option_parser_1_1_print_usage_implementation_1_1_temporary_writer.html#ae8dc9ac085535183436307e3d2da6982',1,'OptionParser::PrintUsageImplementation::TemporaryWriter']]]
 ];

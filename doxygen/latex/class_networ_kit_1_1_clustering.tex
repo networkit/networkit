@@ -26,7 +26,9 @@ Collaboration diagram for Networ\-Kit\-:\-:Clustering\-:\nopagebreak
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{class_networ_kit_1_1_clustering_a9df7e0e888aa4e1f4f7a1138e63ca468}{Clustering} (\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} \hyperlink{class_networ_kit_1_1_index_map_aabb9796ff1a0c002446b14ff7d4fffbc}{n})
+\hyperlink{class_networ_kit_1_1_clustering_a7126c414985b7d9ef91b24fb0e4fc521}{Clustering} ()
+\item 
+\hyperlink{class_networ_kit_1_1_clustering_a9df7e0e888aa4e1f4f7a1138e63ca468}{Clustering} (\hyperlink{namespace_networ_kit_a76b399edfa50ae72e4aa86007aaa800a}{count} \hyperlink{class_networ_kit_1_1_index_map_abffdb945755f2789f33b5eb6e95430d8}{n})
 \begin{DoxyCompactList}\small\item\em Construct new clustering. \end{DoxyCompactList}\item 
 virtual \hyperlink{class_networ_kit_1_1_clustering_afbc84dc6577e2ee74c48c790bc61a7b4}{$\sim$\-Clustering} ()
 \item 
@@ -34,23 +36,23 @@ void \hyperlink{class_networ_kit_1_1_clustering_a5be82c60354b7e9652df63567ad7de6
 \begin{DoxyCompactList}\small\item\em Set a human-\/readable identifier (vulg. \end{DoxyCompactList}\item 
 std\-::string \hyperlink{class_networ_kit_1_1_clustering_a3229e9863df6727cd2900e4418295e7e}{get\-Name} () const 
 \begin{DoxyCompactList}\small\item\em Get the human-\/readable identifier (vulg. \end{DoxyCompactList}\item 
-\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} \& \hyperlink{class_networ_kit_1_1_clustering_ad6152fce1c5e9be7906895495e7faa6e}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \&u)
+\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} \& \hyperlink{class_networ_kit_1_1_clustering_ad6152fce1c5e9be7906895495e7faa6e}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} \&u)
 \begin{DoxyCompactList}\small\item\em Index operator. \end{DoxyCompactList}\item 
-const \hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} \& \hyperlink{class_networ_kit_1_1_clustering_aae9dd5303831724e62081bf4d4f9ff07}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} \&u) const 
+const \hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} \& \hyperlink{class_networ_kit_1_1_clustering_aae9dd5303831724e62081bf4d4f9ff07}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} \&u) const 
 \begin{DoxyCompactList}\small\item\em Index operator for const instances of this class. \end{DoxyCompactList}\item 
-\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a2c2dfb71bd9d88609fbb569027793be1}{cluster\-Of} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u) const 
+\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a2c2dfb71bd9d88609fbb569027793be1}{cluster\-Of} (\hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} u) const 
 \begin{DoxyCompactList}\small\item\em Return the cluster (id) in which a node is contained. \end{DoxyCompactList}\item 
-\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a17835c3aaee8a0f76c3f49201eaab5ea}{add\-Cluster} ()
+\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a17835c3aaee8a0f76c3f49201eaab5ea}{add\-Cluster} ()
 \begin{DoxyCompactList}\small\item\em Call this before assigning nodes to cluster ids. \end{DoxyCompactList}\item 
-void \hyperlink{class_networ_kit_1_1_clustering_a8c6557683ca585e65d349b01368260ea}{add\-To\-Cluster} (\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} c, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u)
+void \hyperlink{class_networ_kit_1_1_clustering_a8c6557683ca585e65d349b01368260ea}{add\-To\-Cluster} (\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} c, \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} u)
 \begin{DoxyCompactList}\small\item\em Add a (previously unassigned) node to a cluster. \end{DoxyCompactList}\item 
-void \hyperlink{class_networ_kit_1_1_clustering_abe2ac522cb7634610e5871dc1d20a50f}{move\-To\-Cluster} (\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} c, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u)
+void \hyperlink{class_networ_kit_1_1_clustering_abe2ac522cb7634610e5871dc1d20a50f}{move\-To\-Cluster} (\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} c, \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} u)
 \begin{DoxyCompactList}\small\item\em Move a (previously assigned) node to a cluster. \end{DoxyCompactList}\item 
-void \hyperlink{class_networ_kit_1_1_clustering_a125f8927d49371ee65329f63d31c43cd}{to\-Singleton} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u)
+void \hyperlink{class_networ_kit_1_1_clustering_a125f8927d49371ee65329f63d31c43cd}{to\-Singleton} (\hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} u)
 \begin{DoxyCompactList}\small\item\em Creates a singleton cluster containing the node. \end{DoxyCompactList}\item 
 void \hyperlink{class_networ_kit_1_1_clustering_a777f65aa262cbed40eb1c85721250026}{all\-To\-Singletons} ()
 \begin{DoxyCompactList}\small\item\em Assigns every node to a singleton cluster. \end{DoxyCompactList}\item 
-void \hyperlink{class_networ_kit_1_1_clustering_a24c93a541401003305e358bb03682d22}{merge\-Clusters} (\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} c, \hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} d)
+void \hyperlink{class_networ_kit_1_1_clustering_a24c93a541401003305e358bb03682d22}{merge\-Clusters} (\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} c, \hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} d)
 \begin{DoxyCompactList}\small\item\em Assigns the nodes from both clusters to a new cluster. \end{DoxyCompactList}\item 
 bool \hyperlink{class_networ_kit_1_1_clustering_a65ee5f83e25a5e3ccae11c98eb55a7b8}{is\-Proper} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
 \begin{DoxyCompactList}\small\item\em Check whether this clustering is a proper clustering of the graph, i.\-e. \end{DoxyCompactList}\item 
@@ -58,43 +60,57 @@ bool \hyperlink{class_networ_kit_1_1_clustering_a11ce4cb3018fd1cdf7d7269cc8a7144
 \begin{DoxyCompactList}\small\item\em Check if clustering is a 1-\/clustering, i.\-e. \end{DoxyCompactList}\item 
 bool \hyperlink{class_networ_kit_1_1_clustering_acd4d66f85e524baa081ca6e1306de290}{is\-Singleton\-Clustering} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
 \begin{DoxyCompactList}\small\item\em Check if clustering is a singleton clustering, i.\-e. \end{DoxyCompactList}\item 
-\hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} \hyperlink{class_networ_kit_1_1_clustering_a5d70e71e3c6b0082c0ab4035e1b65f79}{number\-Of\-Clusters} () const 
+\hyperlink{namespace_networ_kit_a76b399edfa50ae72e4aa86007aaa800a}{count} \hyperlink{class_networ_kit_1_1_clustering_a5d70e71e3c6b0082c0ab4035e1b65f79}{number\-Of\-Clusters} () const 
 \begin{DoxyCompactList}\small\item\em Get the current number of clusters in this clustering. \end{DoxyCompactList}\item 
-\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a1bf0c38a510c8ef384d2ce25f18e1ab6}{upper\-Bound} () const 
+\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a1bf0c38a510c8ef384d2ce25f18e1ab6}{upper\-Bound} () const 
 \begin{DoxyCompactList}\small\item\em Return an upper bound for the cluster ids that have been assigned. \end{DoxyCompactList}\item 
-\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} \hyperlink{class_networ_kit_1_1_clustering_aa67805208c7663502ca951801198cb34}{lower\-Bound} () const 
+\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} \hyperlink{class_networ_kit_1_1_clustering_aa67805208c7663502ca951801198cb34}{lower\-Bound} () const 
 \begin{DoxyCompactList}\small\item\em Return a lower bound for the cluster ids that have been assigned. \end{DoxyCompactList}\item 
-void \hyperlink{class_networ_kit_1_1_clustering_a8810a044c480adc30d5e05263dabf67c}{set\-Upper\-Bound} (\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} id)
+void \hyperlink{class_networ_kit_1_1_clustering_a8810a044c480adc30d5e05263dabf67c}{set\-Upper\-Bound} (\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} id)
 \begin{DoxyCompactList}\small\item\em Set an upper bound for the cluster ids. \end{DoxyCompactList}\item 
 void \hyperlink{class_networ_kit_1_1_clustering_a549fac681242b49a0864e0e7faba1004}{compact} ()
 \begin{DoxyCompactList}\small\item\em Change cluster I\-Ds to be consecutive, starting at 0. \end{DoxyCompactList}\item 
-bool \hyperlink{class_networ_kit_1_1_clustering_afe45f9be7aeb735a8560bd5e95324f95}{contains} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v)
+bool \hyperlink{class_networ_kit_1_1_clustering_afe45f9be7aeb735a8560bd5e95324f95}{contains} (\hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} v)
 \begin{DoxyCompactList}\small\item\em Check if clustering assigns a valid cluster to the node. \end{DoxyCompactList}\item 
-bool \hyperlink{class_networ_kit_1_1_clustering_aee9b6c2940d730806cd79f5b52c1d87a}{in\-Same\-Cluster} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} u, \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v)
+bool \hyperlink{class_networ_kit_1_1_clustering_aee9b6c2940d730806cd79f5b52c1d87a}{in\-Same\-Cluster} (\hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} u, \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} v)
 \begin{DoxyCompactList}\small\item\em Check if two nodes belong to the same cluster. \end{DoxyCompactList}\item 
+float \hyperlink{class_networ_kit_1_1_clustering_aef712182c44adf66605ddf5abc2d1fbf}{get\-Imbalance} ()
+\item 
 bool \hyperlink{class_networ_kit_1_1_clustering_a6d544799c96254b1ec6600b1b23c0fe7}{equals} (\hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&other, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
 \begin{DoxyCompactList}\small\item\em E\-: (u) = (v)  (u) = (v)  (u)  (v)  (u)  (v) \$\$ \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Callback $>$ }\\void \hyperlink{class_networ_kit_1_1_clustering_ae8609ce296db036c934efd02aeab8b53}{for\-Entries} (Callback func, std\-::string par=\char`\"{}\char`\"{})
+{\footnotesize template$<$typename Callback $>$ }\\void \hyperlink{class_networ_kit_1_1_clustering_a9035412a53ac05e759d9bf03ae7f3940}{for\-Entries} (Callback func)
 \begin{DoxyCompactList}\small\item\em Iterate over all entries (node, cluster) and execute callback function (lambda closure). \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Callback $>$ }\\void \hyperlink{class_networ_kit_1_1_clustering_a355a49ca8f9d3db188bed8f0812e6e79}{parallel\-For\-Entries} (Callback handle)
 \begin{DoxyCompactList}\small\item\em Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure). \end{DoxyCompactList}\item 
-std\-::vector$<$ \hyperlink{namespace_networ_kit_ad4c536a5339a8bf2f91f418b9a67a7d8}{count} $>$ \hyperlink{class_networ_kit_1_1_clustering_ae9b0dbc21c92389e470ea004a726db43}{cluster\-Sizes} ()
+{\footnotesize template$<$typename Callback $>$ }\\void \hyperlink{class_networ_kit_1_1_clustering_a98107933f1dd9a7ee0603027561806a0}{for\-Entries} (Callback func) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all entries (node, cluster) and execute callback function (lambda closure). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Callback $>$ }\\void \hyperlink{class_networ_kit_1_1_clustering_a6990f6b8c4c12b410eb04b5ea27a40e1}{parallel\-For\-Entries} (Callback handle) const 
+\begin{DoxyCompactList}\small\item\em Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure). \end{DoxyCompactList}\item 
+std\-::vector$<$ \hyperlink{namespace_networ_kit_a76b399edfa50ae72e4aa86007aaa800a}{count} $>$ \hyperlink{class_networ_kit_1_1_clustering_ae8a9188ae1d305c2aee7f905453d0645}{cluster\-Sizes} () const 
+\item 
+void \hyperlink{class_networ_kit_1_1_clustering_a03d111745ecf44e55a2bd77239689c5f}{append} (\hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} u)
+\begin{DoxyCompactList}\small\item\em Append a node. \end{DoxyCompactList}\item 
+std\-::vector$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ \hyperlink{class_networ_kit_1_1_clustering_aa92b0d1b23ba5cf71913f39c0470f437}{get\-Members} (const \hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} C) const 
+\begin{DoxyCompactList}\small\item\em Get the members of a specific cluster. \end{DoxyCompactList}\item 
+\hyperlink{class_networ_kit_1_1_graph}{Graph} \hyperlink{class_networ_kit_1_1_clustering_a6187c02734b9174b335e604840f2bd64}{communication\-Graph} (const \hyperlink{class_networ_kit_1_1_graph}{Graph} \&graph)
+\begin{DoxyCompactList}\small\item\em Compute communication graph (sometimes called quotient graph) induced by graph {\itshape graph} and this clustering/partition. \end{DoxyCompactList}\item 
+\hyperlink{namespace_networ_kit_a831b108dbcd79dad062d9e28b1b4e3dd}{edgeweight} \hyperlink{class_networ_kit_1_1_clustering_a52550f8c7d20b3d61f5cd6dc9b59d927}{weighted\-Degree\-With\-Cluster} (const \hyperlink{class_networ_kit_1_1_graph}{Graph} \&graph, \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} v, \hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} cid) const 
 \end{DoxyCompactItemize}
 \subsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a4a6048b511cd71139d048150e99096b1}{get\-Next\-Cluster} ()
+\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a4a6048b511cd71139d048150e99096b1}{get\-Next\-Cluster} ()
 \item 
-bool \hyperlink{class_networ_kit_1_1_clustering_a734d01f0dc90fcd782dfb2f72aecc9f4}{is\-In\-Range} (\hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} v)
+bool \hyperlink{class_networ_kit_1_1_clustering_a734d01f0dc90fcd782dfb2f72aecc9f4}{is\-In\-Range} (\hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} v)
 \begin{DoxyCompactList}\small\item\em Check if clustering can hold a valid entry for the node because it is in the range mapped. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a3eca30f845e9803f20b92462fd6dc602}{next\-Cluster}
+\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a3eca30f845e9803f20b92462fd6dc602}{next\-Cluster}
 \begin{DoxyCompactList}\small\item\em next free cluster id for new cluster \end{DoxyCompactList}\item 
 std\-::string \hyperlink{class_networ_kit_1_1_clustering_af87d62813784536f46ed1582317d05f5}{name}
 \item 
-\hyperlink{namespace_networ_kit_aee72806475c8d37642866ab18aceab8b}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a6fc3b70d463ec65ef29ca5520973d856}{upper\-Id\-Bound}
+\hyperlink{namespace_networ_kit_a189884f50c41226806b31842d2214b71}{cluster} \hyperlink{class_networ_kit_1_1_clustering_a6fc3b70d463ec65ef29ca5520973d856}{upper\-Id\-Bound}
 \begin{DoxyCompactList}\small\item\em upper bound for cluster ids \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -106,6 +122,17 @@ Definition at line 22 of file Clustering.\-h.
 
 
 \subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_clustering_a7126c414985b7d9ef91b24fb0e4fc521}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!Clustering@{Clustering}}
+\index{Clustering@{Clustering}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
+\subsubsection[{Clustering}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Clustering\-::\-Clustering (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_clustering_a7126c414985b7d9ef91b24fb0e4fc521}
+
+
+Definition at line 13 of file Clustering.\-cpp.
+
 \hypertarget{class_networ_kit_1_1_clustering_a9df7e0e888aa4e1f4f7a1138e63ca468}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!Clustering@{Clustering}}
 \index{Clustering@{Clustering}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
 \subsubsection[{Clustering}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Clustering\-::\-Clustering (
@@ -124,7 +151,7 @@ Construct new clustering.
 \end{DoxyParams}
 
 
-Definition at line 13 of file Clustering.\-cpp.
+Definition at line 19 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_afbc84dc6577e2ee74c48c790bc61a7b4}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!$\sim$\-Clustering@{$\sim$\-Clustering}}
 \index{$\sim$\-Clustering@{$\sim$\-Clustering}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -135,7 +162,7 @@ Definition at line 13 of file Clustering.\-cpp.
 )\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_afbc84dc6577e2ee74c48c790bc61a7b4}
 
 
-Definition at line 20 of file Clustering.\-cpp.
+Definition at line 26 of file Clustering.\-cpp.
 
 
 
@@ -153,7 +180,7 @@ Call this before assigning nodes to cluster ids.
 
 
 
-Definition at line 87 of file Clustering.\-cpp.
+Definition at line 104 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_a8c6557683ca585e65d349b01368260ea}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!add\-To\-Cluster@{add\-To\-Cluster}}
 \index{add\-To\-Cluster@{add\-To\-Cluster}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -169,7 +196,7 @@ Add a (previously unassigned) node to a cluster.
 
 
 
-Definition at line 24 of file Clustering.\-cpp.
+Definition at line 30 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_a777f65aa262cbed40eb1c85721250026}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!all\-To\-Singletons@{all\-To\-Singletons}}
 \index{all\-To\-Singletons@{all\-To\-Singletons}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -184,7 +211,22 @@ Assigns every node to a singleton cluster.
 
 Cluster id is equal to node id. 
 
-Definition at line 80 of file Clustering.\-cpp.
+Definition at line 96 of file Clustering.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_clustering_a03d111745ecf44e55a2bd77239689c5f}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!append@{append}}
+\index{append@{append}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
+\subsubsection[{append}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Clustering\-::append (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_clustering_a03d111745ecf44e55a2bd77239689c5f}
+
+
+Append a node. 
+
+
+
+Definition at line 220 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_a2c2dfb71bd9d88609fbb569027793be1}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!cluster\-Of@{cluster\-Of}}
 \index{cluster\-Of@{cluster\-Of}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -199,7 +241,7 @@ Return the cluster (id) in which a node is contained.
 
 
 
-Definition at line 87 of file Clustering.\-h.
+Definition at line 93 of file Clustering.\-h.
 
 
 
@@ -212,24 +254,52 @@ Here is the call graph for this function\-:\nopagebreak
 \end{figure}
 
 
-\hypertarget{class_networ_kit_1_1_clustering_ae9b0dbc21c92389e470ea004a726db43}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!cluster\-Sizes@{cluster\-Sizes}}
+\hypertarget{class_networ_kit_1_1_clustering_ae8a9188ae1d305c2aee7f905453d0645}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!cluster\-Sizes@{cluster\-Sizes}}
 \index{cluster\-Sizes@{cluster\-Sizes}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
 \subsubsection[{cluster\-Sizes}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$ {\bf count} $>$ Networ\-Kit\-::\-Clustering\-::cluster\-Sizes (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
-)}}\label{class_networ_kit_1_1_clustering_ae9b0dbc21c92389e470ea004a726db43}
+) const}}\label{class_networ_kit_1_1_clustering_ae8a9188ae1d305c2aee7f905453d0645}
 
 
-Definition at line 169 of file Clustering.\-cpp.
+Definition at line 188 of file Clustering.\-cpp.
 
 
 
-Here is the call graph for this function\-:\nopagebreak
+Here is the call graph for this function\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=336pt]{class_networ_kit_1_1_clustering_ae9b0dbc21c92389e470ea004a726db43_cgraph}
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_ae8a9188ae1d305c2aee7f905453d0645_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_clustering_a6187c02734b9174b335e604840f2bd64}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!communication\-Graph@{communication\-Graph}}
+\index{communication\-Graph@{communication\-Graph}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
+\subsubsection[{communication\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Networ\-Kit\-::\-Clustering\-::communication\-Graph (
+\begin{DoxyParamCaption}
+\item[{const {\bf Graph} \&}]{graph}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_clustering_a6187c02734b9174b335e604840f2bd64}
+
+
+Compute communication graph (sometimes called quotient graph) induced by graph {\itshape graph} and this clustering/partition. 
+
+
+
+Definition at line 236 of file Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_a6187c02734b9174b335e604840f2bd64_cgraph}
 \end{center}
 \end{figure}
 
@@ -247,7 +317,7 @@ Change cluster I\-Ds to be consecutive, starting at 0.
 
 
 
-Definition at line 147 of file Clustering.\-cpp.
+Definition at line 163 of file Clustering.\-cpp.
 
 
 
@@ -273,7 +343,7 @@ Check if clustering assigns a valid cluster to the node.
 
 
 
-Definition at line 97 of file Clustering.\-cpp.
+Definition at line 114 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_a6d544799c96254b1ec6600b1b23c0fe7}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!equals@{equals}}
 \index{equals@{equals}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -289,7 +359,7 @@ E\-: (u) = (v)  (u) = (v)  (u)  (v)  (u)  (v) \$\$
 
 
 
-Definition at line 124 of file Clustering.\-cpp.
+Definition at line 141 of file Clustering.\-cpp.
 
 
 
@@ -302,21 +372,88 @@ Here is the call graph for this function\-:\nopagebreak
 \end{figure}
 
 
-\hypertarget{class_networ_kit_1_1_clustering_ae8609ce296db036c934efd02aeab8b53}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!for\-Entries@{for\-Entries}}
+\hypertarget{class_networ_kit_1_1_clustering_a9035412a53ac05e759d9bf03ae7f3940}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!for\-Entries@{for\-Entries}}
 \index{for\-Entries@{for\-Entries}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
 \subsubsection[{for\-Entries}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Callback $>$ void Networ\-Kit\-::\-Clustering\-::for\-Entries (
 \begin{DoxyParamCaption}
-\item[{Callback}]{func, }
-\item[{std\-::string}]{par = {\ttfamily \char`\"{}\char`\"{}}}
+\item[{Callback}]{func}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_clustering_ae8609ce296db036c934efd02aeab8b53}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_clustering_a9035412a53ac05e759d9bf03ae7f3940}
 
 
 Iterate over all entries (node, cluster) and execute callback function (lambda closure). 
 
 
 
-Definition at line 222 of file Clustering.\-h.
+Definition at line 264 of file Clustering.\-h.
+
+\hypertarget{class_networ_kit_1_1_clustering_a98107933f1dd9a7ee0603027561806a0}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!for\-Entries@{for\-Entries}}
+\index{for\-Entries@{for\-Entries}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
+\subsubsection[{for\-Entries}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Callback $>$ void Networ\-Kit\-::\-Clustering\-::for\-Entries (
+\begin{DoxyParamCaption}
+\item[{Callback}]{func}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_clustering_a98107933f1dd9a7ee0603027561806a0}
+
+
+Iterate over all entries (node, cluster) and execute callback function (lambda closure). 
+
+
+
+Definition at line 284 of file Clustering.\-h.
+
+\hypertarget{class_networ_kit_1_1_clustering_aef712182c44adf66605ddf5abc2d1fbf}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!get\-Imbalance@{get\-Imbalance}}
+\index{get\-Imbalance@{get\-Imbalance}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
+\subsubsection[{get\-Imbalance}]{\setlength{\rightskip}{0pt plus 5cm}float Networ\-Kit\-::\-Clustering\-::get\-Imbalance (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_clustering_aef712182c44adf66605ddf5abc2d1fbf}
+\begin{DoxyReturn}{Returns}
+Quotient of size of largest cluster and ceil(average cluster size). 
+\end{DoxyReturn}
+
+
+Definition at line 210 of file Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_aef712182c44adf66605ddf5abc2d1fbf_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_clustering_aa92b0d1b23ba5cf71913f39c0470f437}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!get\-Members@{get\-Members}}
+\index{get\-Members@{get\-Members}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
+\subsubsection[{get\-Members}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$ {\bf node} $>$ Networ\-Kit\-::\-Clustering\-::get\-Members (
+\begin{DoxyParamCaption}
+\item[{const {\bf cluster}}]{C}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_clustering_aa92b0d1b23ba5cf71913f39c0470f437}
+
+
+Get the members of a specific cluster. 
+
+
+
+Definition at line 226 of file Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{class_networ_kit_1_1_clustering_aa92b0d1b23ba5cf71913f39c0470f437_cgraph}
+\end{center}
+\end{figure}
+
 
 \hypertarget{class_networ_kit_1_1_clustering_a3229e9863df6727cd2900e4418295e7e}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!get\-Name@{get\-Name}}
 \index{get\-Name@{get\-Name}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -331,7 +468,7 @@ Get the human-\/readable identifier (vulg.
 
 the \char`\"{}name\char`\"{}) of the graph 
 
-Definition at line 106 of file Clustering.\-cpp.
+Definition at line 123 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_a4a6048b511cd71139d048150e99096b1}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!get\-Next\-Cluster@{get\-Next\-Cluster}}
 \index{get\-Next\-Cluster@{get\-Next\-Cluster}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -358,7 +495,7 @@ Check if two nodes belong to the same cluster.
 
 
 
-Definition at line 118 of file Clustering.\-cpp.
+Definition at line 135 of file Clustering.\-cpp.
 
 
 
@@ -384,7 +521,7 @@ Check if clustering can hold a valid entry for the node because it is in the ran
 
 
 
-Definition at line 93 of file Clustering.\-cpp.
+Definition at line 110 of file Clustering.\-cpp.
 
 
 
@@ -410,7 +547,7 @@ Check if clustering is a 1-\/clustering, i.\-e.
 
 every node is assigned to the same cluster. 
 
-Definition at line 110 of file Clustering.\-cpp.
+Definition at line 127 of file Clustering.\-cpp.
 
 
 
@@ -436,7 +573,7 @@ Check whether this clustering is a proper clustering of the graph, i.\-e.
 
 a disjoint partition of the whole node set. 
 
-Definition at line 47 of file Clustering.\-cpp.
+Definition at line 53 of file Clustering.\-cpp.
 
 
 
@@ -462,7 +599,7 @@ Check if clustering is a singleton clustering, i.\-e.
 
 every node is assigned to a different cluster. 
 
-Definition at line 114 of file Clustering.\-cpp.
+Definition at line 131 of file Clustering.\-cpp.
 
 
 
@@ -488,7 +625,7 @@ Return a lower bound for the cluster ids that have been assigned.
 
 
 
-Definition at line 76 of file Clustering.\-cpp.
+Definition at line 92 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_a24c93a541401003305e358bb03682d22}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!merge\-Clusters@{merge\-Clusters}}
 \index{merge\-Clusters@{merge\-Clusters}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -504,7 +641,7 @@ Assigns the nodes from both clusters to a new cluster.
 
 
 
-Definition at line 38 of file Clustering.\-cpp.
+Definition at line 44 of file Clustering.\-cpp.
 
 
 
@@ -531,7 +668,7 @@ Move a (previously assigned) node to a cluster.
 
 
 
-Definition at line 33 of file Clustering.\-cpp.
+Definition at line 39 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_a5d70e71e3c6b0082c0ab4035e1b65f79}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!number\-Of\-Clusters@{number\-Of\-Clusters}}
 \index{number\-Of\-Clusters@{number\-Of\-Clusters}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -546,7 +683,19 @@ Get the current number of clusters in this clustering.
 
 
 
-Definition at line 59 of file Clustering.\-cpp.
+Definition at line 66 of file Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{class_networ_kit_1_1_clustering_a5d70e71e3c6b0082c0ab4035e1b65f79_cgraph}
+\end{center}
+\end{figure}
+
 
 \hypertarget{class_networ_kit_1_1_clustering_ad6152fce1c5e9be7906895495e7faa6e}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
 \index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -566,7 +715,7 @@ Index operator.
 \end{DoxyParams}
 
 
-Definition at line 71 of file Clustering.\-h.
+Definition at line 77 of file Clustering.\-h.
 
 \hypertarget{class_networ_kit_1_1_clustering_aae9dd5303831724e62081bf4d4f9ff07}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
 \index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -586,7 +735,7 @@ Index operator for const instances of this class.
 \end{DoxyParams}
 
 
-Definition at line 79 of file Clustering.\-h.
+Definition at line 85 of file Clustering.\-h.
 
 \hypertarget{class_networ_kit_1_1_clustering_a355a49ca8f9d3db188bed8f0812e6e79}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!parallel\-For\-Entries@{parallel\-For\-Entries}}
 \index{parallel\-For\-Entries@{parallel\-For\-Entries}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -601,7 +750,22 @@ Iterate over all entries (node, cluster) in parallel and execute callback functi
 
 
 
-Definition at line 234 of file Clustering.\-h.
+Definition at line 273 of file Clustering.\-h.
+
+\hypertarget{class_networ_kit_1_1_clustering_a6990f6b8c4c12b410eb04b5ea27a40e1}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!parallel\-For\-Entries@{parallel\-For\-Entries}}
+\index{parallel\-For\-Entries@{parallel\-For\-Entries}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
+\subsubsection[{parallel\-For\-Entries}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Callback $>$ void Networ\-Kit\-::\-Clustering\-::parallel\-For\-Entries (
+\begin{DoxyParamCaption}
+\item[{Callback}]{handle}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_networ_kit_1_1_clustering_a6990f6b8c4c12b410eb04b5ea27a40e1}
+
+
+Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure). 
+
+
+
+Definition at line 293 of file Clustering.\-h.
 
 \hypertarget{class_networ_kit_1_1_clustering_a5be82c60354b7e9652df63567ad7de63}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!set\-Name@{set\-Name}}
 \index{set\-Name@{set\-Name}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -616,7 +780,7 @@ Set a human-\/readable identifier (vulg.
 
 a \char`\"{}name\char`\"{}) for the graph instance. 
 
-Definition at line 102 of file Clustering.\-cpp.
+Definition at line 119 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_a8810a044c480adc30d5e05263dabf67c}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!set\-Upper\-Bound@{set\-Upper\-Bound}}
 \index{set\-Upper\-Bound@{set\-Upper\-Bound}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -631,7 +795,7 @@ Set an upper bound for the cluster ids.
 
 
 
-Definition at line 142 of file Clustering.\-cpp.
+Definition at line 159 of file Clustering.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_clustering_a125f8927d49371ee65329f63d31c43cd}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!to\-Singleton@{to\-Singleton}}
 \index{to\-Singleton@{to\-Singleton}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
@@ -646,7 +810,7 @@ Creates a singleton cluster containing the node.
 
 
 
-Definition at line 29 of file Clustering.\-cpp.
+Definition at line 35 of file Clustering.\-cpp.
 
 
 
@@ -672,7 +836,35 @@ Return an upper bound for the cluster ids that have been assigned.
 
 (This is the maximum id + 1.) 
 
-Definition at line 72 of file Clustering.\-cpp.
+Definition at line 88 of file Clustering.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_clustering_a52550f8c7d20b3d61f5cd6dc9b59d927}{\index{Networ\-Kit\-::\-Clustering@{Networ\-Kit\-::\-Clustering}!weighted\-Degree\-With\-Cluster@{weighted\-Degree\-With\-Cluster}}
+\index{weighted\-Degree\-With\-Cluster@{weighted\-Degree\-With\-Cluster}!NetworKit::Clustering@{Networ\-Kit\-::\-Clustering}}
+\subsubsection[{weighted\-Degree\-With\-Cluster}]{\setlength{\rightskip}{0pt plus 5cm}{\bf edgeweight} Networ\-Kit\-::\-Clustering\-::weighted\-Degree\-With\-Cluster (
+\begin{DoxyParamCaption}
+\item[{const {\bf Graph} \&}]{graph, }
+\item[{{\bf node}}]{v, }
+\item[{{\bf cluster}}]{cid}
+\end{DoxyParamCaption}
+) const}}\label{class_networ_kit_1_1_clustering_a52550f8c7d20b3d61f5cd6dc9b59d927}
+\begin{DoxyReturn}{Returns}
+Sum of weights of edges that connect {\itshape v} with nodes in cluster {\itshape cid}. 
+\end{DoxyReturn}
+
+
+Definition at line 264 of file Clustering.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_a52550f8c7d20b3d61f5cd6dc9b59d927_cgraph}
+\end{center}
+\end{figure}
+
 
 
 

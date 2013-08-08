@@ -31,6 +31,7 @@ Graph::~Graph() {
 }
 
 
+
 index Graph::find(node u, node v) const {
 	for (index vi = 0; vi < this->adja[u].size(); ++vi) {
 		node x = this->adja[u][vi];
@@ -86,16 +87,20 @@ void Graph::removeEdge(node u, node v) {
 		throw std::runtime_error("edge does not exist");
 		// TODO: what if edge does not exist?
 	} else {
-		this->adja[u][vi] = none;
-		this->adja[v][ui] = none;
+		this->adja[u][vi] = adja[u].back();
+		this->adja[v][ui] = adja[v].back();
+		this->adja[u].pop_back();
+		this->adja[v].pop_back();
 		// decrement degree counters
 		this->deg[u] -= 1;
 		if (u != v) { // self-loops are counted only once
 			this->deg[v] -= 1;
 		}
 		// remove edge weight
-		this->eweights[u][vi] = this->nullWeight;
-		this->eweights[v][ui] = this->nullWeight;
+		this->eweights[u][vi] = this->eweights[u].back();
+		this->eweights[v][ui] = this->eweights[v].back();
+		this->eweights[u].pop_back();
+		this->eweights[v].pop_back();
 		// TODO: remove attributes
 
 		m--; // decreasing the number of edges

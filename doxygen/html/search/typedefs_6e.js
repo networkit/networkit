@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['node',['node',['../namespace_networ_kit.html#a61914158fd771265be48de9942369160',1,'NetworKit']]]
+  ['node',['node',['../namespace_networ_kit.html#a53fe3e4fd04ea024160e4d024dfebadf',1,'NetworKit']]]
 ];

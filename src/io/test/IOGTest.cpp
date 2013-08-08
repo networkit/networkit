@@ -243,7 +243,7 @@ TEST_F(IOGTest, tryDGSReader) {
 }
 
 TEST_F(IOGTest, testEdgeListIO) {
-	EdgeListIO reader;
+	EdgeListIO reader('\t');
 
 	Graph G = reader.read("input/LFR-generator-example/network.dat");
 	EXPECT_EQ(10, G.numberOfNodes());
