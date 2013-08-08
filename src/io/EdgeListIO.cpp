@@ -9,6 +9,10 @@
 
 namespace NetworKit {
 
+
+EdgeListIO::EdgeListIO() {
+}
+
 EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(separator), firstNode(firstNode) {
 	// TODO Auto-generated constructor stub
 
@@ -75,6 +79,8 @@ Graph EdgeListIO::read(std::string path) {
 
     return G;
 }
+
+
 
 void EdgeListIO::write(const Graph& G, std::string path) {
     std::ofstream file;
