@@ -686,18 +686,14 @@ public:
 template<typename L>
 inline void NetworKit::Graph::forNeighborsOf(node u, L handle) {
 	for (node v : this->adja[u]) {
-		if (v != none) {
-			handle(v);
-		}
+		handle(v);
 	}
 }
 
 template<typename L>
 inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
 	for (node v : this->adja[u]) {
-		if (v != none) {
 			handle(v);
-		}
 	}
 }
 
@@ -705,11 +701,9 @@ template<typename L>
 inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) {
 	for (index i = 0; i < (index) adja[u].size(); ++i) {
 		node v = adja[u][i];
-		if (v != none) {
-			edgeweight ew = eweights[u][i];
-			handle(v, ew);
-			assert(ew == weight(u, v));
-		}
+		edgeweight ew = eweights[u][i];
+		handle(v, ew);
+		assert(ew == weight(u, v));
 	}
 }
 
@@ -717,11 +711,9 @@ template<typename L>
 inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) const {
 	for (index i = 0; i < adja[u].size(); ++i) {
 		node v = adja[u][i];
-		if (v != none) {
-			edgeweight ew = eweights[u][i];
-			handle(v, ew);
-			assert(ew == weight(u, v));
-		}
+		edgeweight ew = eweights[u][i];
+		handle(v, ew);
+		assert(ew == weight(u, v));
 	}
 }
 

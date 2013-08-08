@@ -12,7 +12,11 @@
 \item 
 virtual \hyperlink{class_aux_1_1_random_probability_a26406304e21f5208fd9528f883edbf93}{$\sim$\-Random\-Probability} ()
 \item 
-virtual double \hyperlink{class_aux_1_1_random_probability_aa3f2835c364aabb340440c45f6a28e33}{generate} ()
+double \hyperlink{class_aux_1_1_random_probability_aa3f2835c364aabb340440c45f6a28e33}{generate} ()
+\item 
+double \hyperlink{class_aux_1_1_random_probability_a485840c50b8530b72556e1a786286896}{generate\-Fast} ()
+\item 
+float \hyperlink{class_aux_1_1_random_probability_acc6acade47041865801512efb45199b8}{random\-Float} () const 
 \end{DoxyCompactItemize}
 \subsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
@@ -29,7 +33,7 @@ $<$ double $>$ \hyperlink{class_aux_1_1_random_probability_aea37d3428c64a4d88cfe
 \subsection{Detailed Description}
 
 
-Definition at line 15 of file Random\-Probability.\-h.
+Definition at line 16 of file Random\-Probability.\-h.
 
 
 
@@ -65,10 +69,38 @@ Definition at line 15 of file Random\-Probability.\-cpp.
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_random_probability_aa3f2835c364aabb340440c45f6a28e33}
+)}}\label{class_aux_1_1_random_probability_aa3f2835c364aabb340440c45f6a28e33}
 
 
 Definition at line 19 of file Random\-Probability.\-cpp.
+
+\hypertarget{class_aux_1_1_random_probability_a485840c50b8530b72556e1a786286896}{\index{Aux\-::\-Random\-Probability@{Aux\-::\-Random\-Probability}!generate\-Fast@{generate\-Fast}}
+\index{generate\-Fast@{generate\-Fast}!Aux::RandomProbability@{Aux\-::\-Random\-Probability}}
+\subsubsection[{generate\-Fast}]{\setlength{\rightskip}{0pt plus 5cm}double Aux\-::\-Random\-Probability\-::generate\-Fast (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_aux_1_1_random_probability_a485840c50b8530b72556e1a786286896}
+\begin{DoxyReturn}{Returns}
+\hyperlink{class_aux_1_1_random}{Random} probability in half-\/open interval \mbox{[}0 ... 1) 
+\end{DoxyReturn}
+
+
+Definition at line 36 of file Random\-Probability.\-h.
+
+\hypertarget{class_aux_1_1_random_probability_acc6acade47041865801512efb45199b8}{\index{Aux\-::\-Random\-Probability@{Aux\-::\-Random\-Probability}!random\-Float@{random\-Float}}
+\index{random\-Float@{random\-Float}!Aux::RandomProbability@{Aux\-::\-Random\-Probability}}
+\subsubsection[{random\-Float}]{\setlength{\rightskip}{0pt plus 5cm}float Aux\-::\-Random\-Probability\-::random\-Float (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{class_aux_1_1_random_probability_acc6acade47041865801512efb45199b8}
+\begin{DoxyReturn}{Returns}
+\hyperlink{class_aux_1_1_random}{Random} float in \mbox{[}0 ... 1) 
+\end{DoxyReturn}
+
+
+Definition at line 24 of file Random\-Probability.\-cpp.
 
 
 
@@ -78,25 +110,25 @@ Definition at line 19 of file Random\-Probability.\-cpp.
 \subsubsection[{distribution}]{\setlength{\rightskip}{0pt plus 5cm}std\-::uniform\-\_\-real\-\_\-distribution$<$double$>$ Aux\-::\-Random\-Probability\-::distribution\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_aux_1_1_random_probability_aea37d3428c64a4d88cfec092f1fa5d85}
 
 
-Definition at line 21 of file Random\-Probability.\-h.
+Definition at line 22 of file Random\-Probability.\-h.
 
 \hypertarget{class_aux_1_1_random_probability_ae714dbdb46cb0ab965d2e2f544f9ad4a}{\index{Aux\-::\-Random\-Probability@{Aux\-::\-Random\-Probability}!random\-Device@{random\-Device}}
 \index{random\-Device@{random\-Device}!Aux::RandomProbability@{Aux\-::\-Random\-Probability}}
 \subsubsection[{random\-Device}]{\setlength{\rightskip}{0pt plus 5cm}std\-::random\-\_\-device Aux\-::\-Random\-Probability\-::random\-Device\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_aux_1_1_random_probability_ae714dbdb46cb0ab965d2e2f544f9ad4a}
 
 
-Definition at line 19 of file Random\-Probability.\-h.
+Definition at line 20 of file Random\-Probability.\-h.
 
 \hypertarget{class_aux_1_1_random_probability_af8f4edb5271507e52daad5b0ceff1680}{\index{Aux\-::\-Random\-Probability@{Aux\-::\-Random\-Probability}!random\-Engine@{random\-Engine}}
 \index{random\-Engine@{random\-Engine}!Aux::RandomProbability@{Aux\-::\-Random\-Probability}}
 \subsubsection[{random\-Engine}]{\setlength{\rightskip}{0pt plus 5cm}std\-::default\-\_\-random\-\_\-engine Aux\-::\-Random\-Probability\-::random\-Engine\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_aux_1_1_random_probability_af8f4edb5271507e52daad5b0ceff1680}
 
 
-Definition at line 20 of file Random\-Probability.\-h.
+Definition at line 21 of file Random\-Probability.\-h.
 
 
 
 The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
 \item 
-src/aux/\hyperlink{_random_probability_8h}{Random\-Probability.\-h}\item 
-src/aux/\hyperlink{_random_probability_8cpp}{Random\-Probability.\-cpp}\end{DoxyCompactItemize}
+src/auxiliary/\hyperlink{_random_probability_8h}{Random\-Probability.\-h}\item 
+src/auxiliary/\hyperlink{_random_probability_8cpp}{Random\-Probability.\-cpp}\end{DoxyCompactItemize}

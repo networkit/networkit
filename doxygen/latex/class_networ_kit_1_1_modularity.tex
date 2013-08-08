@@ -30,7 +30,7 @@ Collaboration diagram for Networ\-Kit\-:\-:Modularity\-:\nopagebreak
 \item 
 virtual \hyperlink{class_networ_kit_1_1_modularity_aa7c858d24e66c80b2a7018562abf9fee}{$\sim$\-Modularity} ()
 \item 
-virtual double \hyperlink{class_networ_kit_1_1_modularity_a8788753db47a3698219933b3a37357b9}{get\-Quality} (const \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&zeta, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
+virtual double \hyperlink{class_networ_kit_1_1_modularity_a373db8b17481f7acf5457772eb61d6f1}{get\-Quality} (const \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&zeta, const \hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
 \begin{DoxyCompactList}\small\item\em Returns the \hyperlink{class_networ_kit_1_1_modularity}{Modularity} of the given clustering with respect to the graph G. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -67,14 +67,14 @@ Definition at line 18 of file Modularity.\-cpp.
 
 
 \subsection{Member Function Documentation}
-\hypertarget{class_networ_kit_1_1_modularity_a8788753db47a3698219933b3a37357b9}{\index{Networ\-Kit\-::\-Modularity@{Networ\-Kit\-::\-Modularity}!get\-Quality@{get\-Quality}}
+\hypertarget{class_networ_kit_1_1_modularity_a373db8b17481f7acf5457772eb61d6f1}{\index{Networ\-Kit\-::\-Modularity@{Networ\-Kit\-::\-Modularity}!get\-Quality@{get\-Quality}}
 \index{get\-Quality@{get\-Quality}!NetworKit::Modularity@{Networ\-Kit\-::\-Modularity}}
 \subsubsection[{get\-Quality}]{\setlength{\rightskip}{0pt plus 5cm}double Networ\-Kit\-::\-Modularity\-::get\-Quality (
 \begin{DoxyParamCaption}
 \item[{const {\bf Clustering} \&}]{zeta, }
-\item[{{\bf Graph} \&}]{G}
+\item[{const {\bf Graph} \&}]{G}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_modularity_a8788753db47a3698219933b3a37357b9}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_modularity_a373db8b17481f7acf5457772eb61d6f1}
 
 
 Returns the \hyperlink{class_networ_kit_1_1_modularity}{Modularity} of the given clustering with respect to the graph G. 
@@ -83,7 +83,7 @@ Returns the \hyperlink{class_networ_kit_1_1_modularity}{Modularity} of the given
 - \frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$$\end{DoxyVerb}
  $<$ cluster -\/$>$ sum of the weights of incident edges for all nodes 
 
-Implements \hyperlink{class_networ_kit_1_1_quality_measure_a1ca0aecc5d7f564fc627af2baf86239c}{Networ\-Kit\-::\-Quality\-Measure}.
+Implements \hyperlink{class_networ_kit_1_1_quality_measure_af087ed18a264727c7eef24ae45aefe31}{Networ\-Kit\-::\-Quality\-Measure}.
 
 
 
@@ -91,11 +91,12 @@ Definition at line 23 of file Modularity.\-cpp.
 
 
 
-Here is the call graph for this function\-:\nopagebreak
+Here is the call graph for this function\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{class_networ_kit_1_1_modularity_a8788753db47a3698219933b3a37357b9_cgraph}
+\includegraphics[width=350pt]{class_networ_kit_1_1_modularity_a373db8b17481f7acf5457772eb61d6f1_cgraph}
 \end{center}
 \end{figure}
 

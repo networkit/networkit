@@ -8,12 +8,14 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{class_aux_1_1_random_integer_a8d27f51bf560c2c7ee6251137df0da7d}{Random\-Integer} (int64\-\_\-t lower, int64\-\_\-t upper)
+\hyperlink{class_aux_1_1_random_integer_a7c8907db6dc8cdd77822c6d015b05c34}{Random\-Integer} ()
 \item 
 virtual \hyperlink{class_aux_1_1_random_integer_a7806fd3b03deb0704be523a37677d6dd}{$\sim$\-Random\-Integer} ()
 \item 
-virtual int64\-\_\-t \hyperlink{class_aux_1_1_random_integer_a288840111a1aa8cdd93949c5fe88ccaa}{generate} ()
-\end{DoxyCompactItemize}
+int64\-\_\-t \hyperlink{class_aux_1_1_random_integer_ae9b3f587dea87fedd80bafa63f0088ff}{generate} (int64\-\_\-t lower, int64\-\_\-t upper)
+\begin{DoxyCompactList}\small\item\em T\-O\-D\-O\-: Christian, please specify if the bounds are in-\/ or exclusive! \end{DoxyCompactList}\item 
+int64\-\_\-t \hyperlink{class_aux_1_1_random_integer_a0d59c349439038feb44022e3374cc452}{generate\-Fast} (int64\-\_\-t lower, int64\-\_\-t upper)
+\begin{DoxyCompactList}\small\item\em Generate random integer in closed interval \mbox{[}lower, upper\mbox{]}. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -21,7 +23,8 @@ std\-::random\-\_\-device \hyperlink{class_aux_1_1_random_integer_ad53ce69ad3900
 \item 
 std\-::default\-\_\-random\-\_\-engine \hyperlink{class_aux_1_1_random_integer_a5a4fca08fd29e0b6304d8294441c5711}{random\-Engine}
 \item 
-std\-::uniform\-\_\-int\-\_\-distribution \hyperlink{class_aux_1_1_random_integer_afcc41e2a6c0897591c848d7461bd9c5a}{distribution}
+std\-::uniform\-\_\-int\-\_\-distribution\\*
+$<$ int64\-\_\-t $>$ \hyperlink{class_aux_1_1_random_integer_a47ba003fbfaade85bb3072ff1063336e}{distribution}
 \end{DoxyCompactItemize}
 
 
@@ -33,14 +36,13 @@ Definition at line 16 of file Random\-Integer.\-h.
 
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{class_aux_1_1_random_integer_a8d27f51bf560c2c7ee6251137df0da7d}{\index{Aux\-::\-Random\-Integer@{Aux\-::\-Random\-Integer}!Random\-Integer@{Random\-Integer}}
+\hypertarget{class_aux_1_1_random_integer_a7c8907db6dc8cdd77822c6d015b05c34}{\index{Aux\-::\-Random\-Integer@{Aux\-::\-Random\-Integer}!Random\-Integer@{Random\-Integer}}
 \index{Random\-Integer@{Random\-Integer}!Aux::RandomInteger@{Aux\-::\-Random\-Integer}}
 \subsubsection[{Random\-Integer}]{\setlength{\rightskip}{0pt plus 5cm}Aux\-::\-Random\-Integer\-::\-Random\-Integer (
 \begin{DoxyParamCaption}
-\item[{int64\-\_\-t}]{lower, }
-\item[{int64\-\_\-t}]{upper}
+{}
 \end{DoxyParamCaption}
-)}}\label{class_aux_1_1_random_integer_a8d27f51bf560c2c7ee6251137df0da7d}
+)}}\label{class_aux_1_1_random_integer_a7c8907db6dc8cdd77822c6d015b05c34}
 
 
 Definition at line 12 of file Random\-Integer.\-cpp.
@@ -54,28 +56,49 @@ Definition at line 12 of file Random\-Integer.\-cpp.
 )\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_random_integer_a7806fd3b03deb0704be523a37677d6dd}
 
 
-Definition at line 15 of file Random\-Integer.\-cpp.
+Definition at line 16 of file Random\-Integer.\-cpp.
 
 
 
 \subsection{Member Function Documentation}
-\hypertarget{class_aux_1_1_random_integer_a288840111a1aa8cdd93949c5fe88ccaa}{\index{Aux\-::\-Random\-Integer@{Aux\-::\-Random\-Integer}!generate@{generate}}
+\hypertarget{class_aux_1_1_random_integer_ae9b3f587dea87fedd80bafa63f0088ff}{\index{Aux\-::\-Random\-Integer@{Aux\-::\-Random\-Integer}!generate@{generate}}
 \index{generate@{generate}!Aux::RandomInteger@{Aux\-::\-Random\-Integer}}
 \subsubsection[{generate}]{\setlength{\rightskip}{0pt plus 5cm}int64\-\_\-t Aux\-::\-Random\-Integer\-::generate (
 \begin{DoxyParamCaption}
-{}
+\item[{int64\-\_\-t}]{lower, }
+\item[{int64\-\_\-t}]{upper}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_random_integer_a288840111a1aa8cdd93949c5fe88ccaa}
+)}}\label{class_aux_1_1_random_integer_ae9b3f587dea87fedd80bafa63f0088ff}
 
 
-Definition at line 19 of file Random\-Integer.\-cpp.
+T\-O\-D\-O\-: Christian, please specify if the bounds are in-\/ or exclusive! 
+
+
+
+Definition at line 20 of file Random\-Integer.\-cpp.
+
+\hypertarget{class_aux_1_1_random_integer_a0d59c349439038feb44022e3374cc452}{\index{Aux\-::\-Random\-Integer@{Aux\-::\-Random\-Integer}!generate\-Fast@{generate\-Fast}}
+\index{generate\-Fast@{generate\-Fast}!Aux::RandomInteger@{Aux\-::\-Random\-Integer}}
+\subsubsection[{generate\-Fast}]{\setlength{\rightskip}{0pt plus 5cm}int64\-\_\-t Aux\-::\-Random\-Integer\-::generate\-Fast (
+\begin{DoxyParamCaption}
+\item[{int64\-\_\-t}]{lower, }
+\item[{int64\-\_\-t}]{upper}
+\end{DoxyParamCaption}
+)}}\label{class_aux_1_1_random_integer_a0d59c349439038feb44022e3374cc452}
+
+
+Generate random integer in closed interval \mbox{[}lower, upper\mbox{]}. 
+
+Faster generation, but without large strength in terms of randomness; 
+
+Definition at line 25 of file Random\-Integer.\-cpp.
 
 
 
 \subsection{Member Data Documentation}
-\hypertarget{class_aux_1_1_random_integer_afcc41e2a6c0897591c848d7461bd9c5a}{\index{Aux\-::\-Random\-Integer@{Aux\-::\-Random\-Integer}!distribution@{distribution}}
+\hypertarget{class_aux_1_1_random_integer_a47ba003fbfaade85bb3072ff1063336e}{\index{Aux\-::\-Random\-Integer@{Aux\-::\-Random\-Integer}!distribution@{distribution}}
 \index{distribution@{distribution}!Aux::RandomInteger@{Aux\-::\-Random\-Integer}}
-\subsubsection[{distribution}]{\setlength{\rightskip}{0pt plus 5cm}std\-::uniform\-\_\-int\-\_\-distribution Aux\-::\-Random\-Integer\-::distribution\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_aux_1_1_random_integer_afcc41e2a6c0897591c848d7461bd9c5a}
+\subsubsection[{distribution}]{\setlength{\rightskip}{0pt plus 5cm}std\-::uniform\-\_\-int\-\_\-distribution$<$int64\-\_\-t$>$ Aux\-::\-Random\-Integer\-::distribution\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_aux_1_1_random_integer_a47ba003fbfaade85bb3072ff1063336e}
 
 
 Definition at line 22 of file Random\-Integer.\-h.
@@ -98,5 +121,5 @@ Definition at line 21 of file Random\-Integer.\-h.
 
 The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
 \item 
-src/aux/\hyperlink{_random_integer_8h}{Random\-Integer.\-h}\item 
-src/aux/\hyperlink{_random_integer_8cpp}{Random\-Integer.\-cpp}\end{DoxyCompactItemize}
+src/auxiliary/\hyperlink{_random_integer_8h}{Random\-Integer.\-h}\item 
+src/auxiliary/\hyperlink{_random_integer_8cpp}{Random\-Integer.\-cpp}\end{DoxyCompactItemize}

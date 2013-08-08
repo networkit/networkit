@@ -20,7 +20,9 @@ std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point \hyperlink{class_aux_1_1_t
 \begin{DoxyCompactList}\small\item\em Stops the clock permanently for the instance of the \hyperlink{class_aux_1_1_timer}{Timer}. \end{DoxyCompactList}\item 
 virtual std\-::chrono\-::duration\\*
 $<$ int64\-\_\-t, std\-::milli $>$ \hyperlink{class_aux_1_1_timer_a16fdb76113530c5d4d8787e27d1e0aca}{elapsed} ()
-\begin{DoxyCompactList}\small\item\em The number of seconds since the current time that the \hyperlink{class_aux_1_1_timer}{Timer} object was created. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em The number of milliseconds since the current time that the \hyperlink{class_aux_1_1_timer}{Timer} object was created. \end{DoxyCompactList}\item 
+virtual int64\-\_\-t \hyperlink{class_aux_1_1_timer_accb4bddc6c528f7bceebe4fb43d10395}{elapsed\-Milliseconds} ()
+\begin{DoxyCompactList}\small\item\em The number of milliseconds since the current time that the \hyperlink{class_aux_1_1_timer}{Timer} object was created. \end{DoxyCompactList}\item 
 virtual \\*
 std\-::chrono\-::steady\-\_\-clock\-::time\-\_\-point \hyperlink{class_aux_1_1_timer_a767c6de21191f9bee75c35edd9df2c9e}{start\-Time} ()
 \begin{DoxyCompactList}\small\item\em Returns the time at which the instance was started. \end{DoxyCompactList}\item 
@@ -82,11 +84,38 @@ Definition at line 17 of file Timer.\-cpp.
 )\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_a16fdb76113530c5d4d8787e27d1e0aca}
 
 
-The number of seconds since the current time that the \hyperlink{class_aux_1_1_timer}{Timer} object was created. 
+The number of milliseconds since the current time that the \hyperlink{class_aux_1_1_timer}{Timer} object was created. 
 
 If \hyperlink{class_aux_1_1_timer_a14d926626eef461e836f87f7bc3d03b7}{stop()} was called, it is the number of seconds from the instance creation until \hyperlink{class_aux_1_1_timer_a14d926626eef461e836f87f7bc3d03b7}{stop()} was called. 
 
 Definition at line 31 of file Timer.\-cpp.
+
+\hypertarget{class_aux_1_1_timer_accb4bddc6c528f7bceebe4fb43d10395}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!elapsed\-Milliseconds@{elapsed\-Milliseconds}}
+\index{elapsed\-Milliseconds@{elapsed\-Milliseconds}!Aux::Timer@{Aux\-::\-Timer}}
+\subsubsection[{elapsed\-Milliseconds}]{\setlength{\rightskip}{0pt plus 5cm}int64\-\_\-t Aux\-::\-Timer\-::elapsed\-Milliseconds (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_accb4bddc6c528f7bceebe4fb43d10395}
+
+
+The number of milliseconds since the current time that the \hyperlink{class_aux_1_1_timer}{Timer} object was created. 
+
+If \hyperlink{class_aux_1_1_timer_a14d926626eef461e836f87f7bc3d03b7}{stop()} was called, it is the number of seconds from the instance creation until \hyperlink{class_aux_1_1_timer_a14d926626eef461e836f87f7bc3d03b7}{stop()} was called. 
+
+Definition at line 44 of file Timer.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_aux_1_1_timer_accb4bddc6c528f7bceebe4fb43d10395_cgraph}
+\end{center}
+\end{figure}
+
 
 \hypertarget{class_aux_1_1_timer_a428b45cb66f4be47bbea61b0db368142}{\index{Aux\-::\-Timer@{Aux\-::\-Timer}!elapsed\-Tag@{elapsed\-Tag}}
 \index{elapsed\-Tag@{elapsed\-Tag}!Aux::Timer@{Aux\-::\-Timer}}
@@ -97,7 +126,7 @@ Definition at line 31 of file Timer.\-cpp.
 )\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_aux_1_1_timer_a428b45cb66f4be47bbea61b0db368142}
 
 
-Definition at line 44 of file Timer.\-cpp.
+Definition at line 48 of file Timer.\-cpp.
 
 
 
@@ -210,5 +239,5 @@ Definition at line 24 of file Timer.\-h.
 
 The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
 \item 
-src/aux/\hyperlink{_timer_8h}{Timer.\-h}\item 
-src/aux/\hyperlink{_timer_8cpp}{Timer.\-cpp}\end{DoxyCompactItemize}
+src/auxiliary/\hyperlink{_timer_8h}{Timer.\-h}\item 
+src/auxiliary/\hyperlink{_timer_8cpp}{Timer.\-cpp}\end{DoxyCompactItemize}

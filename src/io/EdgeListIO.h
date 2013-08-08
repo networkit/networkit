@@ -28,9 +28,10 @@ class EdgeListIO: public NetworKit::GraphReader {
 public:
 
 	/**
+	 * @param[in]	separator	character used to separate nodes in an edge line
 	 * @param[in]	firstNode	index of the first node in the file
 	 */
-	EdgeListIO(node firstNode = 1);
+	EdgeListIO(char separator = ' ', node firstNode = 1);
 
 	virtual ~EdgeListIO();
 
@@ -50,6 +51,7 @@ public:
 
 protected:
 
+	char separator; 	//!< character separating nodes in an edge line
 	node firstNode;
 };
 
