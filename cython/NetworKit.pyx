@@ -1,3 +1,8 @@
+# cython: language_level=3
+
+#includes
+
+
 # type imports
 from libc.stdint cimport uint64_t
 
@@ -16,7 +21,10 @@ ctypedef double edgeweight
 
 # python module imports
 import networkx as nx
-# TODO: how to import termgraph
+import math
+
+# local modules
+import termgraph
 
 
 
@@ -149,22 +157,25 @@ cdef class DotGraphWriter:
 cdef extern from "../src/io/EdgeListIO.h":
 	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
 		_EdgeListIO() except +
-		_EdgeListIO(node firstNode) except +
+		_EdgeListIO(char separator, node firstNode) except +
 		_Graph read(string path)
 		void write(_Graph G, string path)
 
 cdef class EdgeListIO:
-	cdef _EdgeListIO _this
-	
-	def __cinit__(self, firstNode=0):
-		self._this = _EdgeListIO(firstNode)
-		
-	def read(self, path):
-		return Graph().setThis(self._this.read(stdstring(path)))
-	
-	def write(self, Graph G not None, path):
-		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(G._this, stdstring(path))
+	pass 
+# 	cdef _EdgeListIO _this
+# 	
+# 	
+# 	def __cinit__(self, char separator, node firstNode):
+# 		pass
+# 		# FIXME: self._this = _EdgeListIO(separator, firstNode)
+# 		
+# 	def read(self, path):
+# 		return Graph().setThis(self._this.read(stdstring(path)))
+# 	
+# 	def write(self, Graph G not None, path):
+# 		 # string needs to be converted to bytes, which are coerced to std::string
+# 		self._this.write(G._this, stdstring(path))
 	
 
 cdef extern from "../src/clustering/Clustering.h":
@@ -458,13 +469,28 @@ def properties(nkG):
 	n_clusters = zeta.numberOfClusters()
 	print("Label propagation found: \t{0}".format(n_clusters))
 	
+
+def compressHistogram(hist, nbins=20):
+	""" Compress a histogram to a number of bins"""
+	compressed = [None for i in range(nbins)]
+	labels = [None for i in range(nbins)]
+	nbinsprev = len(hist)
+	binwidth = math.ceil(nbinsprev / nbins)
+	for i in range(nbins):
+		l = i * binwidth
+		u = (i+1) * binwidth
+		compressed[i] = sum(hist[l : u])
+		labels[i] = "{0}-".format(l)
+	return (labels, compressed)
+		
+
 	
-	
-def printDegreeHistogram(nxG):
+def printDegreeHistogram(nxG, nbins=25):
 	""" Prints a degree histogram as a bar chart to the terminal"""
 	hist = nx.degree_histogram(nxG)
-	labels = range(len(hist))
-	# FIXME: termgraph.graph(labels, hist)
+	
+	(labels, hist) = compressHistogram(hist, nbins)
+	termgraph.graph(labels, hist)
 	
 
 
@@ -472,20 +498,6 @@ def hpProperties(nkG):
 	""" For large graphs: get an overview of some properties"""
 	print("min/max degree:")
 	
-	
-def compactDegreeHistogram(nxG, nbins=10):
-	"""
-	Create a compact histogram for the degree distribution. 
-	"""
-	hist = nx.degree_histogram(nxG)
-	maxDeg = len(hist) - 1
-	binsize = len(hist) / nbins
-	labels = []
-	values = []
-	
-	# TODO: range(0, len(hist), binsize)
-	
-	return (labels, values)
 	
 	
 # NetworKit algorithm engineering workflows

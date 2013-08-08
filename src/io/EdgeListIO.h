@@ -27,6 +27,8 @@ class EdgeListIO: public NetworKit::GraphReader {
 
 public:
 
+	EdgeListIO(); //nullary constructor for Python shell
+
 	/**
 	 * @param[in]	separator	character used to separate nodes in an edge line
 	 * @param[in]	firstNode	index of the first node in the file
