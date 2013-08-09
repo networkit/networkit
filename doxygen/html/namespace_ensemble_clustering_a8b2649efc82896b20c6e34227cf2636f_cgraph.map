@@ -1,0 +1,44 @@
+<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
+<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_ensemble_multilevel.html#a2685958be0a4b56fe5f1719ef603ed4a" title="Set quality measure to evaluate clusterings." alt="" coords="226,5,369,65"/>
+<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_ensemble_multilevel.html#a9b07e585d4d1b618de09cc0788f0f06a" title="Add a base clusterer to the ensemble." alt="" coords="226,89,369,149"/>
+<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_ensemble_multilevel.html#a41d1c8b828f043f79cdb7925b71fb771" title="Set overlap algorithm which combines the results of the base clusterers." alt="" coords="226,173,369,233"/>
+<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_ensemble_multilevel.html#a24a9f848556af3d58978c7b1a144cfdb" title="Set final clusterer." alt="" coords="226,257,369,317"/>
+<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_graph_generator.html#aefc6fbc6e23235419d1a2030d688b4bd" title="Creates a clustered random graph:" alt="" coords="449,205,671,265"/>
+<area shape="rect" id="node23" href="$class_ensemble_clustering_1_1_index_map.html#a12dd2383d0014aefbc3b496998fa1383" title="Number of nodes for which this clsutering can hold an entry." alt="" coords="960,703,1136,763"/>
+<area shape="rect" id="node29" href="$class_ensemble_clustering_1_1_graph_i_o.html#aa31e284a79283a18153b40e34f417e7c" title="Writes graph to text file in adjacency list format." alt="" coords="198,393,396,437"/>
+<area shape="rect" id="node34" href="$class_ensemble_clustering_1_1_ensemble_multilevel.html#adc1557bf71810a5fc7f37400917f407e" title="Run the ensemble clusterer." alt="" coords="212,967,382,1011"/>
+<area shape="rect" id="node40" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="730,1189,902,1233"/>
+<area shape="rect" id="node45" href="$class_ensemble_clustering_1_1_modularity.html#a90ed724bb4be6b25207620c20c4be962" title="Returns the Modularity of the given clustering with respect to the graph G." alt="" coords="481,831,639,875"/>
+<area shape="rect" id="node97" href="$class_ensemble_clustering_1_1_clustering.html#a7eb03661a933eff8176af0e073da2ef4" title="Get the current number of clusters in this clustering." alt="" coords="195,1291,400,1335"/>
+<area shape="rect" id="node101" href="$class_ensemble_clustering_1_1_clustering.html#a6ef2d3f0c4a53532067a140caa531449" title="Check whether this clustering is a proper clustering of the graph, i.e." alt="" coords="224,461,370,505"/>
+<area shape="rect" id="node13" href="$class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="978,369,1118,413"/>
+<area shape="rect" id="node15" href="$class_aux_1_1_random_integer.html#a288840111a1aa8cdd93949c5fe88ccaa" title="Aux::RandomInteger\l::generate" alt="" coords="744,145,888,189"/>
+<area shape="rect" id="node17" href="$class_ensemble_clustering_1_1_clustering.html#a2f6334480e3938deae8425dc57e6ea86" title="Add a (previously unassigned) node to a cluster." alt="" coords="729,213,903,257"/>
+<area shape="rect" id="node19" href="$class_ensemble_clustering_1_1_graph.html#a5c422bd0b1f00f8c40686991f94bcdaa" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="740,575,892,619"/>
+<area shape="rect" id="node21" href="$class_ensemble_clustering_1_1_clustering.html#a5c02c6c1b31e8517f713b978d0c079ea" title="Return the cluster (id) in which a node is contained." alt="" coords="741,455,891,499"/>
+<area shape="rect" id="node25" href="$class_aux_1_1_random_probability.html#aa3f2835c364aabb340440c45f6a28e33" title="Aux::RandomProbability\l::generate" alt="" coords="734,281,898,325"/>
+<area shape="rect" id="node27" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="746,25,886,69"/>
+<area shape="rect" id="node32" href="$class_ensemble_clustering_1_1_graph.html#a4d1024eccff37ffb085025959d7e6ae3" title="NEIGHBORHOOD ITERATORS." alt="" coords="478,341,642,385"/>
+<area shape="rect" id="node36" href="$class_ensemble_clustering_1_1_graph.html#a49d3be3a2881ed5f49ba385c3263ec76" title="Get string representation." alt="" coords="490,1171,630,1215"/>
+<area shape="rect" id="node77" href="$class_ensemble_clustering_1_1_jaccard_measure.html#afaac6df875532281f1091634bd861940" title="EnsembleClustering\l::JaccardMeasure::getDissimilarity" alt="" coords="448,763,672,807"/>
+<area shape="rect" id="node81" href="$class_ensemble_clustering_1_1_overlapper.html#a427ef1bf113f2c59e26e3e3f7c3d266b" title="EnsembleClustering\l::Overlapper::run" alt="" coords="490,967,630,1011"/>
+<area shape="rect" id="node83" href="$class_ensemble_clustering_1_1_quality_measure.html#aadeac7e03b1fa099669d3b1e93edd1e9" title="EnsembleClustering\l::QualityMeasure::getQuality" alt="" coords="465,1035,655,1079"/>
+<area shape="rect" id="node85" href="$class_ensemble_clustering_1_1_index_map.html#ac3cb340d385ef58e348f16038017fc3a" title="EnsembleClustering\l::IndexMap::at" alt="" coords="490,1103,630,1147"/>
+<area shape="rect" id="node87" href="$class_ensemble_clustering_1_1_clusterer.html#a9fab8db7082b6399e1d29509512cad91" title="EnsembleClustering\l::Clusterer::run" alt="" coords="490,899,630,943"/>
+<area shape="rect" id="node89" href="$class_ensemble_clustering_1_1_clustering_projector.html#adce0c241a71ed3cc64dcae1e19de6cb6" title="Project a clustering ^{i} of the coarse graph G^{i}Êback to the finest graph G^{0}, using the hierarchy of fine&#45;&gt;coarse maps." alt="" coords="486,1326,634,1386"/>
+<area shape="rect" id="node38" href="$class_ensemble_clustering_1_1_graph.html#a54b144cd2a43777b8e1d845b17ae8448" title="EnsembleClustering\l::Graph::getName" alt="" coords="746,1325,886,1369"/>
+<area shape="rect" id="node42" href="$class_ensemble_clustering_1_1_graph.html#ab019840b239c3247eaf00e5ffcc6bb03" title="Return the number of edges in the graph." alt="" coords="731,882,901,926"/>
+<area shape="rect" id="node50" href="$class_ensemble_clustering_1_1_graph.html#af4556a26cff9aa362b3a38490922c862" title="EnsembleClustering\l::Graph::numberOfSelfLoops" alt="" coords="720,1121,912,1165"/>
+<area shape="rect" id="node54" href="$class_ensemble_clustering_1_1_coverage.html#a44ae58f30b82353e82edf9f059fce2b9" title="EnsembleClustering\l::Coverage::getQuality" alt="" coords="739,950,893,994"/>
+<area shape="rect" id="node56" href="$class_ensemble_clustering_1_1_graph.html#a7f748dbd6dcc6f5fcee7e3341bf872ac" title="SUMS." alt="" coords="963,873,1133,917"/>
+<area shape="rect" id="node60" href="$class_ensemble_clustering_1_1_clustering.html#ae0b22bda843f96f9428d05aa582cfe4b" title="Return an upper bound for the cluster ids that have been assigned." alt="" coords="964,1061,1132,1105"/>
+<area shape="rect" id="node64" href="$class_ensemble_clustering_1_1_clustering.html#ab64cf7248533ea358d7621ca8296b085" title="Return a lower bound for the cluster ids that have been assigned." alt="" coords="965,993,1131,1037"/>
+<area shape="rect" id="node68" href="$class_ensemble_clustering_1_1_graph.html#a80dc95eb3a526de34c6a35ccc1dfc7ef" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="729,1257,903,1301"/>
+<area shape="rect" id="node71" href="$class_ensemble_clustering_1_1_graph.html#a2d7f581bd5da054f4e9fc936de48bd18" title="EnsembleClustering\l::Graph::weightedDegree" alt="" coords="731,814,901,858"/>
+<area shape="rect" id="node73" href="$class_ensemble_clustering_1_1_graph.html#ad24e78f88db1eeadfbf3956cfa1e9ccf" title="EDGE ATTRIBUTE GETTERS." alt="" coords="746,643,886,687"/>
+<area shape="rect" id="node52" href="$class_ensemble_clustering_1_1_graph.html#aa3ebe7aca7e7da22643200dfa6097856" title="EDGE ITERATORS." alt="" coords="978,1129,1118,1173"/>
+<area shape="rect" id="node58" href="$class_ensemble_clustering_1_1_graph.html#a09e93835ed75201769358fa6b35537e8" title="Iterate over all edges of the graph and call handler (lambda closure)." alt="" coords="1185,903,1367,947"/>
+<area shape="rect" id="node75" href="$class_ensemble_clustering_1_1_graph.html#a723838db1433dcbe4ac2679e0707d718" title="Return the index of v in the adjacency array of u." alt="" coords="978,635,1118,679"/>
+<area shape="rect" id="node93" href="$class_ensemble_clustering_1_1_clustering.html#adb704c4cbb2205b7858ac2d7f0f5014f" title="Set an upper bound for the cluster ids." alt="" coords="722,1495,910,1539"/>
+<area shape="rect" id="node104" href="$class_ensemble_clustering_1_1_clustering.html#a53f22ed7ab2a41979f5cdf9b99b5e1de" title="Check if clustering assigns a valid cluster to the node." alt="" coords="487,461,633,505"/>
+</map>
