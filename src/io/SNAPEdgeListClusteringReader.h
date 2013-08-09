@@ -18,6 +18,9 @@
 
 namespace NetworKit {
 
+/**
+ * Reads the clustering files from the SNAP collection.
+ */
 class SNAPEdgeListClusteringReader {
 public:
 	SNAPEdgeListClusteringReader();

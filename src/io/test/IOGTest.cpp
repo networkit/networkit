@@ -242,8 +242,8 @@ TEST_F(IOGTest, tryDGSReader) {
 
 }
 
-TEST_F(IOGTest, testEdgeListReader) {
-	EdgeListReader reader;
+TEST_F(IOGTest, testEdgeListIO) {
+	EdgeListIO reader('\t');
 
 	Graph G = reader.read("input/LFR-generator-example/network.dat");
 	EXPECT_EQ(10, G.numberOfNodes());
@@ -300,7 +300,7 @@ TEST_F(IOGTest, tryReadingLFR) {
 	std::cout << "[INPUT] clustering file path >" << std::endl;
 	std::getline(std::cin, clustPath);
 
-	EdgeListReader graphReader;
+	EdgeListIO graphReader('\t',1);
 	EdgeListClusteringReader clusteringReader;
 
 	Graph G = graphReader.read(graphPath);
@@ -324,7 +324,7 @@ TEST_F(IOGTest, tryReadingSNAP) {
 	std::cout << "[INPUT] SNAP graph file path >" << std::endl;
 	std::getline(std::cin, graphPath);
 
-	EdgeListReader graphReader(1);
+	EdgeListIO graphReader(1);
 
 	Graph G = graphReader.read(graphPath);
 

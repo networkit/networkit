@@ -1,15 +1,26 @@
 var searchData=
 [
+  ['acceptability',['Acceptability',['../class_networ_kit_1_1_acceptability.html#a636c5496a6c02cb690a3ebacc7c0a6d4',1,'NetworKit::Acceptability']]],
   ['add',['add',['../class_noise.html#a2d93027a479f2b41a9e80919563a6f97',1,'Noise::add()'],['../struct_option_parser_1_1_stats.html#ad5da08a239df94c76c601b28ce035513',1,'OptionParser::Stats::add(bool gnu, const Descriptor usage[], int argc, const char **argv, int min_abbr_len=0, bool single_minus_longopt=false)'],['../struct_option_parser_1_1_stats.html#ac36446ea4b4e2f0fc3944f824d133d9a',1,'OptionParser::Stats::add(bool gnu, const Descriptor usage[], int argc, char **argv, int min_abbr_len=0, bool single_minus_longopt=false)'],['../struct_option_parser_1_1_stats.html#a06922c6884d20fda45c9b6625d8f3740',1,'OptionParser::Stats::add(const Descriptor usage[], int argc, const char **argv, int min_abbr_len=0, bool single_minus_longopt=false)'],['../struct_option_parser_1_1_stats.html#a5946b9692114a495a7d01c0c5dc4216b',1,'OptionParser::Stats::add(const Descriptor usage[], int argc, char **argv, int min_abbr_len=0, bool single_minus_longopt=false)']]],
+  ['addbasealgorithm',['addBaseAlgorithm',['../class_networ_kit_1_1_dynamic_ensemble.html#adfddaf4e4969623defaebb285e1d907a',1,'NetworKit::DynamicEnsemble']]],
   ['addbaseclusterer',['addBaseClusterer',['../class_networ_kit_1_1_ensemble_multilevel.html#aa6ee44f370a906b114ca50e9d700fbea',1,'NetworKit::EnsembleMultilevel::addBaseClusterer()'],['../class_networ_kit_1_1_ensemble_preprocessing.html#a1c8de8dd50a3fc55f87ef5c133e6b93e',1,'NetworKit::EnsemblePreprocessing::addBaseClusterer()']]],
   ['addcluster',['addCluster',['../class_networ_kit_1_1_clustering.html#a17835c3aaee8a0f76c3f49201eaab5ea',1,'NetworKit::Clustering']]],
+  ['addcoordinates',['addCoordinates',['../class_networ_kit_1_1_graph_1_1_coordinates.html#a9c350a5756897e30fd4cabeff0a6a489',1,'NetworKit::Graph::Coordinates']]],
+  ['adddelta',['AddDelta',['../class_networ_kit_1_1_row.html#a0bf2a95c4622dd61de79426150e762fb',1,'NetworKit::Row']]],
+  ['addedge',['addEdge',['../class_networ_kit_1_1_graph_event_proxy.html#afb9f98b3f952b9251d27c5a95cdec44a',1,'NetworKit::GraphEventProxy::addEdge()'],['../class_networ_kit_1_1_graph.html#a238dc9601bd643dc909b0211d13b26f7',1,'NetworKit::Graph::addEdge()']]],
   ['addedgeattribute_5fdouble',['addEdgeAttribute_double',['../class_networ_kit_1_1_graph.html#a465160318e06e6e9b03299dd5774cb04',1,'NetworKit::Graph']]],
-  ['addnode',['addNode',['../class_networ_kit_1_1_graph.html#a6f6d56aae8ee494223164a54d30d4ea6',1,'NetworKit::Graph']]],
+  ['addnode',['addNode',['../class_networ_kit_1_1_graph_event_proxy.html#ad9ce28d8ad878e1e2dbfab7776568ed5',1,'NetworKit::GraphEventProxy::addNode()'],['../class_networ_kit_1_1_dynamic_pub_web_generator.html#af7093d3a3aa0c453ec521b41310c8204',1,'NetworKit::DynamicPubWebGenerator::addNode()'],['../class_networ_kit_1_1_pub_web_generator.html#a6bf18a5e2c4115de7227a17a8e740c25',1,'NetworKit::PubWebGenerator::addNode()'],['../class_networ_kit_1_1_graph.html#a6f6d56aae8ee494223164a54d30d4ea6',1,'NetworKit::Graph::addNode()'],['../class_networ_kit_1_1_graph.html#ac5ca224bf38729880c4b120b0a7d323a',1,'NetworKit::Graph::addNode(float x, float y)']]],
+  ['addnodestoarea',['addNodesToArea',['../class_networ_kit_1_1_dynamic_pub_web_generator.html#aa703e7e104aedae797abd51a51bd9b9b',1,'NetworKit::DynamicPubWebGenerator::addNodesToArea()'],['../class_networ_kit_1_1_pub_web_generator.html#af43645abcf811be9aabfbfa11e357ba8',1,'NetworKit::PubWebGenerator::addNodesToArea()']]],
   ['addtocluster',['addToCluster',['../class_networ_kit_1_1_clustering.html#a8c6557683ca585e65d349b01368260ea',1,'NetworKit::Clustering']]],
+  ['algdist',['algdist',['../class_networ_kit_1_1_algebraic_distances.html#ae10748573704037db8c15f8edcf38852',1,'NetworKit::AlgebraicDistances']]],
+  ['algebraicdistance',['AlgebraicDistance',['../class_networ_kit_1_1_algebraic_distance.html#a11d3f2280ff2212fcab2c4e29c066999',1,'NetworKit::AlgebraicDistance']]],
+  ['algebraicdistances',['AlgebraicDistances',['../class_networ_kit_1_1_algebraic_distances.html#a0f1c86fb131ae253bf127affe32c364c',1,'NetworKit::AlgebraicDistances']]],
   ['alltosingletons',['allToSingletons',['../class_networ_kit_1_1_clustering.html#a777f65aa262cbed40eb1c85721250026',1,'NetworKit::Clustering']]],
-  ['append',['append',['../class_option_parser_1_1_option.html#a47a6a9946633001b36826680252065df',1,'OptionParser::Option']]],
+  ['append',['append',['../class_networ_kit_1_1_clustering.html#a03d111745ecf44e55a2bd77239689c5f',1,'NetworKit::Clustering::append()'],['../class_option_parser_1_1_option.html#a47a6a9946633001b36826680252065df',1,'OptionParser::Option::append()']]],
   ['arematched',['areMatched',['../class_networ_kit_1_1_matching.html#ad2920bb96b22c8f860ba7d465217eb59',1,'NetworKit::Matching']]],
   ['argmax',['argmax',['../_functions_8h.html#a603edf7b14c4b441d4f1e6bb461dd98f',1,'Functions.h']]],
+  ['argmindegree',['argminDegree',['../class_networ_kit_1_1_graph.html#a59ba7f101a1151e5353f51d630498d4b',1,'NetworKit::Graph']]],
   ['at',['at',['../class_networ_kit_1_1_index_map.html#adf2c9ecee594a7ef579a42019619b39e',1,'NetworKit::IndexMap']]],
-  ['attribute_5fdouble',['attribute_double',['../class_networ_kit_1_1_graph.html#a91cffc25cb2af288ce098fb9c2fcb192',1,'NetworKit::Graph']]]
+  ['attribute_5fdouble',['attribute_double',['../class_networ_kit_1_1_graph.html#a91cffc25cb2af288ce098fb9c2fcb192',1,'NetworKit::Graph']]],
+  ['averagelocalclusteringcoefficient',['averageLocalClusteringCoefficient',['../class_networ_kit_1_1_graph_properties.html#a7bc0499f45d4174e1888cbea5b265a53',1,'NetworKit::GraphProperties']]]
 ];

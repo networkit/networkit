@@ -1,10 +1,16 @@
 var searchData=
 [
-  ['weight',['weight',['../class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8',1,'NetworKit::Graph']]],
+  ['weight',['weight',['../class_networ_kit_1_1_graph.html#a4cc21c97791b60088e735ef0c36583b8',1,'NetworKit::Graph::weight()'],['../class_networ_kit_1_1_matching.html#a42ddf10c634bca75f36c343bf523572e',1,'NetworKit::Matching::weight()']]],
   ['weighteddegree',['weightedDegree',['../class_networ_kit_1_1_graph.html#a48ace7ae9a931d69999d8fb55e563063',1,'NetworKit::Graph']]],
-  ['willoverflow',['willOverflow',['../class_networ_kit_1_1_numeric_tools.html#af1e2ca4be6dba3013c37aaaf025f21bc',1,'NetworKit::NumericTools']]],
-  ['willunderflow',['willUnderflow',['../class_networ_kit_1_1_numeric_tools.html#a869861d3bce5f6e746bf590016170215',1,'NetworKit::NumericTools']]],
-  ['write',['write',['../class_networ_kit_1_1_clustering_writer.html#a13a0fd79b2fb036a0c9261b994cef36d',1,'NetworKit::ClusteringWriter::write()'],['../class_networ_kit_1_1_graph_writer.html#a3ad1f89d8338c4c5485b0c4b52c6010b',1,'NetworKit::GraphWriter::write()'],['../class_networ_kit_1_1_m_e_t_i_s_graph_writer.html#abdcb33b499d9edc4035fc78a68d0045f',1,'NetworKit::METISGraphWriter::write()']]],
+  ['weighteddegreewithcluster',['weightedDegreeWithCluster',['../class_networ_kit_1_1_clustering.html#a52550f8c7d20b3d61f5cd6dc9b59d927',1,'NetworKit::Clustering']]],
+  ['weighteddistance',['weightedDistance',['../class_networ_kit_1_1_graph_distance.html#ae6d87ee53239a7b00a3fb3f0f084b23a',1,'NetworKit::GraphDistance']]],
+  ['willoverflow',['willOverflow',['../class_aux_1_1_numeric_tools.html#aa021a0353282bd77a5ef862a90d5c89b',1,'Aux::NumericTools']]],
+  ['willunderflow',['willUnderflow',['../class_aux_1_1_numeric_tools.html#adf3385126342a9dcafa3127f7ca456da',1,'Aux::NumericTools']]],
+  ['write',['write',['../class_networ_kit_1_1_clustering_writer.html#a13a0fd79b2fb036a0c9261b994cef36d',1,'NetworKit::ClusteringWriter::write()'],['../class_networ_kit_1_1_dot_clustering_writer.html#a9b4760497bb583f944dfca0f68bc5ddb',1,'NetworKit::DotClusteringWriter::write()'],['../class_networ_kit_1_1_dot_graph_writer.html#a52453c0188bdb1843c9987feffa9f327',1,'NetworKit::DotGraphWriter::write()'],['../class_networ_kit_1_1_edge_list_i_o.html#a6f914bbd73bb5b0eabb3dfec08ebfeb9',1,'NetworKit::EdgeListIO::write()'],['../class_networ_kit_1_1_graph_writer.html#a3ad1f89d8338c4c5485b0c4b52c6010b',1,'NetworKit::GraphWriter::write()'],['../class_networ_kit_1_1_m_e_t_i_s_graph_writer.html#abdcb33b499d9edc4035fc78a68d0045f',1,'NetworKit::METISGraphWriter::write(Graph &amp;G, std::string path)'],['../class_networ_kit_1_1_m_e_t_i_s_graph_writer.html#a1d384d25a93050ed2da5c7b8a33c2099',1,'NetworKit::METISGraphWriter::write(Graph &amp;G, bool weighted, std::string path)'],['../class_networ_kit_1_1_postscript_writer.html#a3d56aaa51f6d5278094f1c0ecce6b0f1',1,'NetworKit::PostscriptWriter::write(Clustering &amp;clustering, std::string filename)'],['../class_networ_kit_1_1_postscript_writer.html#aceb04f4023c4c009bb0c39f77dca781c',1,'NetworKit::PostscriptWriter::write(std::string filename)']]],
   ['writeadjacencylist',['writeAdjacencyList',['../class_networ_kit_1_1_graph_i_o.html#ac9122f7c03ed73752ab7e5c1de2d9565',1,'NetworKit::GraphIO']]],
-  ['writeedgelist',['writeEdgeList',['../class_networ_kit_1_1_graph_i_o.html#a8da55a700826f34d53dda22f389701bc',1,'NetworKit::GraphIO']]]
+  ['writealgebraicdistances',['writeAlgebraicDistances',['../class_networ_kit_1_1_postscript_writer.html#a5112b49fec34963451bbe0b642aabe79',1,'NetworKit::PostscriptWriter']]],
+  ['writeclustering',['writeClustering',['../class_networ_kit_1_1_postscript_writer.html#afc370e20f01f97a34d3c58dd1302f411',1,'NetworKit::PostscriptWriter']]],
+  ['writeedgelist',['writeEdgeList',['../class_networ_kit_1_1_graph_i_o.html#a8da55a700826f34d53dda22f389701bc',1,'NetworKit::GraphIO']]],
+  ['writeheader',['writeHeader',['../class_networ_kit_1_1_postscript_writer.html#a8bc78db91990998c763d6a256616ff4f',1,'NetworKit::PostscriptWriter']]],
+  ['writemacros',['writeMacros',['../class_networ_kit_1_1_postscript_writer.html#a1ab39b0128b688aaac651ca6383bea84',1,'NetworKit::PostscriptWriter']]]
 ];

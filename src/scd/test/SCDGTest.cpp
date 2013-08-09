@@ -818,7 +818,7 @@ TEST_F(SCDGTest, datToGraph) {
 	Graph G;
 	std::string path = "input/graph1000.dat";
 	std::string path1 = "input/graph1000.graph";
-	EdgeListReader graphReader;
+	EdgeListIO graphReader('\t', 1);
 	G = graphReader.read(path);
 	METISGraphWriter writer;
 	writer.write(G, path1);
