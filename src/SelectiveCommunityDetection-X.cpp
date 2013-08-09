@@ -60,7 +60,7 @@
 #include "distmeasures/NodeDistance.h"
 #include "scd/CommunityQualityMeasure.h"
 #include "io/EdgeListClusteringReader.h"
-#include "io/EdgeListReader.h"
+#include "io/EdgeListIO.h"
 #include "scd/SelectiveDissimilarityMeasure.h"
 
 using namespace NetworKit;
@@ -305,7 +305,7 @@ int main(int argc, char **argv) {
 	if (options[GROUND_TRUTH]) {
 		std::string path = options[GROUND_TRUTH].arg;
 		EdgeListClusteringReader clusteringReader;
-		EdgeListReader reader;
+		EdgeListIO reader;
 		truth = clusteringReader.read(path);
 		std::string path1 = options[GRAPH].arg;
 		G = reader.read(path1);
