@@ -51,6 +51,7 @@
 #include "io/METISGraphWriter.h"
 #include "io/ClusteringWriter.h"
 #include "io/DotClusteringWriter.h"
+#include "io/EdgeListIO.h"
 #include "generators/DynamicBarabasiAlbertGenerator.h"
 
 
@@ -118,51 +119,6 @@ Graph generatePreferentialAttachmentGraph(count n, count a) {
 	std::cout << "[DONE] (" << running.elapsed().count() << " ms)" << std::endl;
 
 	return G;
-}
-
-
-/**
- * Read a graph from a file.
- */
-Graph readGraph(const std::string& graphPath) {
-
-
-	GraphReader* reader = NULL;
-
-
-	if (options[FORMAT]) {
-		std::string formatDescr = options[FORMAT].arg;
-		if (formatDescr == "metis") {
-			reader = new METISGraphReader();
-		} else if (formatDescr == "edgelist") {
-			reader = new EdgeListIO('\t', 1); // TODO: make edgelist format configurable
-		} else {
-			std::cout << "[ERROR] unknown file format: " << formatDescr << std::endl;
-			exit(1);
-		}
-
-	} else {
-		// assume METIS as default
-		reader = new METISGraphReader();
-	}
-
-	// READ GRAPH
-
-
-	// TIMING
-	Aux::Timer readTimer;
-	readTimer.start();
-	//
-	std::cout << "[BEGIN] reading file: " << graphPath << std::endl;
-
-	Graph G = reader->read(graphPath);
-	//
-	readTimer.stop();
-	std::cout << "[DONE] read graph file " << readTimer.elapsedTag() << std::endl;
-	// TIMING
-
-	return G;
-
 }
 
 
@@ -281,6 +237,54 @@ const OptionParser::Descriptor usage[] =
 // MAIN FUNCTIONS
 
 
+
+/**
+ * Read a graph from a file.
+ */
+Graph readGraph(const std::string& graphPath, OptionParser::Option* options) {
+
+
+	GraphReader* reader = NULL;
+
+
+	if (options[FORMAT]) {
+		std::string formatDescr = options[FORMAT].arg;
+		if (formatDescr == "metis") {
+			reader = new METISGraphReader();
+		} else if (formatDescr == "edgelist") {
+			reader = new EdgeListIO('\t', 1); // TODO: make edgelist format configurable
+		} else {
+			std::cout << "[ERROR] unknown file format: " << formatDescr << std::endl;
+			exit(1);
+		}
+
+	} else {
+		// assume METIS as default
+		reader = new METISGraphReader();
+	}
+
+	// READ GRAPH
+
+
+	// TIMING
+	Aux::Timer readTimer;
+	readTimer.start();
+	//
+	std::cout << "[BEGIN] reading file: " << graphPath << std::endl;
+
+	Graph G = reader->read(graphPath);
+	//
+	readTimer.stop();
+	std::cout << "[DONE] read graph file " << readTimer.elapsedTag() << std::endl;
+	// TIMING
+
+	return G;
+
+}
+
+
+
+
 Graph getGraph(OptionParser::Option* options) {
 
 	// generated graph
@@ -320,7 +324,7 @@ Graph getGraph(OptionParser::Option* options) {
 		std::string graphPath = options[GRAPH].arg;
 		std::cout << "\t --graph=" << graphPath << std::endl;
 
-		Graph G = readGraph(graphPath);
+		Graph G = readGraph(graphPath, options);
 		return G;
 	} else {
 		Graph G(0);	// return empty graph
