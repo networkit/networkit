@@ -166,9 +166,9 @@ cdef class EdgeListIO:
 
 	cdef _EdgeListIO _this
 
-	def __cinit__(self, char separator, firstNode):
-		cdef node first = firstNode
-		self._this = _EdgeListIO(separator, first)
+	def __cinit__(self, separator, firstNode):
+		cdef char sep = stdstring(separator)[0]
+		self._this = _EdgeListIO(sep, firstNode)
 
 	def read(self, path):
 		return Graph().setThis(self._this.read(stdstring(path)))
