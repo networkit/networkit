@@ -14,12 +14,11 @@ EdgeListIO::EdgeListIO() {
 }
 
 EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(separator), firstNode(firstNode) {
-	// TODO Auto-generated constructor stub
 
 }
 
-EdgeListIO::~EdgeListIO() {
-	// TODO Auto-generated destructor stub
+EdgeListIO::EdgeListIO() {
+
 }
 
 

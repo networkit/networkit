@@ -154,7 +154,7 @@ cdef class DotGraphWriter:
 		 # string needs to be converted to bytes, which are coerced to std::string
 		self._this.write(G._this, stdstring(path))
 		
-		
+
 cdef extern from "../src/io/EdgeListIO.h":
 	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
 		_EdgeListIO() except +
@@ -163,21 +163,43 @@ cdef extern from "../src/io/EdgeListIO.h":
 		void write(_Graph G, string path)
 
 cdef class EdgeListIO:
-	pass 
+
+	cdef _EdgeListIO _this
+
+	def __cinit__(self, char separator, firstNode):
+		cdef node first = firstNode
+		self._this = _EdgeListIO(separator, first)
+
+	def read(self, path):
+		return Graph().setThis(self._this.read(stdstring(path)))
+
+	def write(self, Graph G not None, path):
+		self._this.write(G._this, stdstring(path))
+
+# cdef extern from "../src/io/EdgeListIO.h":
+# 	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
+# 		_EdgeListIO() except +
+# 		_EdgeListIO(char separator, node firstNode) except +
+# 		_Graph read(string path)
+# 		void write(_Graph G, string path)
+
+# cdef class EdgeListIO:
+
 # 	cdef _EdgeListIO _this
-# 	
-# 	
-# 	def __cinit__(self, char separator, node firstNode):
-# 		pass
-# 		# FIXME: self._this = _EdgeListIO(separator, firstNode)
-# 		
+	
+# 	def __cinit__(self, string separator, node firstNode):
+# 		cdef char sep = separator[0]
+# 		self._this = _EdgeListIO(sep, firstNode)
+		
 # 	def read(self, path):
 # 		return Graph().setThis(self._this.read(stdstring(path)))
-# 	
+	
 # 	def write(self, Graph G not None, path):
 # 		 # string needs to be converted to bytes, which are coerced to std::string
 # 		self._this.write(G._this, stdstring(path))
-	
+
+
+
 
 cdef extern from "../src/clustering/Clustering.h":
 	cdef cppclass _Clustering "NetworKit::Clustering":
@@ -387,13 +409,19 @@ cdef class ForceDirected:
 
 #--------- NetworKit Python Shell functions ----------------#
 
-def readGraph(path):
-	"""	Automatically detect input format and read graph"""
+def readGraph(path, format=None):
+	"""	Read graph and return a NetworKit::Graph"""
 	# TODO: detect file format by looking at the file content
-	if path.endswith(".graph"):
-		reader = METISGraphReader()
+	if format is None:	# look at file extension
+		if path.endswith(".graph"):
+			reader = METISGraphReader()
+		else:
+			raise Exception("unknown graph file format")
 	else:
-		raise Exception("unknown graph file format")
+		if (format is "metis"):
+			reader = METISGraphReader()
+		elif (format is "edgelist"):
+			reader = EdgeListIO('\t', 1)
 	G = reader.read(path)
 	return G
 
@@ -490,6 +518,7 @@ def properties(nkG):
 
 	return props
 
+
 def printProperties(nkG):
 
 	propertiesTextBlock = """
@@ -498,7 +527,7 @@ def printProperties(nkG):
 
 	Basic Properties
 	----------------
-	- nodes (n)			{n}
+	- nodes (n){n:16}
 	- edges (m)			{m}
 	- min. degree 			{minDeg}
 	- max. degree 			{maxDeg}

@@ -33,7 +33,7 @@ public:
 	 * @param[in]	separator	character used to separate nodes in an edge line
 	 * @param[in]	firstNode	index of the first node in the file
 	 */
-	EdgeListIO(char separator = ' ', node firstNode = 1);
+	EdgeListIO(char separator, node firstNode);
 
 	virtual ~EdgeListIO();
 

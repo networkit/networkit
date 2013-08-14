@@ -243,7 +243,7 @@ TEST_F(IOGTest, tryDGSReader) {
 }
 
 TEST_F(IOGTest, testEdgeListIO) {
-	EdgeListIO reader('\t');
+	EdgeListIO reader('\t', 1);
 
 	Graph G = reader.read("input/LFR-generator-example/network.dat");
 	EXPECT_EQ(10, G.numberOfNodes());
@@ -324,7 +324,7 @@ TEST_F(IOGTest, tryReadingSNAP) {
 	std::cout << "[INPUT] SNAP graph file path >" << std::endl;
 	std::getline(std::cin, graphPath);
 
-	EdgeListIO graphReader(1);
+	EdgeListIO graphReader(' ', 1);
 
 	Graph G = graphReader.read(graphPath);
 
