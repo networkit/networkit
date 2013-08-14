@@ -19,10 +19,14 @@ ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
 
-# python module imports
-import networkx as nx
+# standard library modules
 import math
 import textwrap
+
+# non standard library modules
+import networkx as nx
+import tabulate
+
 
 # local modules
 import termgraph
@@ -532,6 +536,54 @@ def properties(nkG):
 
 
 def showProperties(nkG):
+	props = properties(nkG)
+	basicProperties = [
+		["nodes (n)", props["n"]],
+		["edges (m)", props["m"]],
+		["min. degree", props["minDeg"]],
+		["max. degree", props["maxDeg"]],
+		["isolated nodes", props["isolates"]],
+		["self-loops", props["loops"]],
+		["density", "{0:.6f}".format(props["dens"])]
+	]
+	pathStructure = [
+		["connected components", props["components"]],
+		["diameter", props["dia"]]
+	]
+	
+	miscProperties = [
+		["degree assortativity", "{0:.6f}".format(props["assort"])],
+		["cliques", props["cliques"]]
+	]
+
+	communityStructure = [
+		["avg. local clustering coefficient", "", "{0:.6f}".format(props["avglcc"])],
+		["PLP community detection", "", ""],
+		["", "communities", props["ncomPLP"]],
+		["", "modularity", "{0:.6f}".format(props["modPLP"])],
+		["PLM community detection", "", ""],
+		["", "communities", props["ncomPLM"]],
+		["", "modularity", "{0:.6f}".format(props["modPLM"])],
+
+	]
+
+	print()
+	print("Basic Properties")
+	print(tabulate.tabulate(basicProperties))
+	print("Path Structure")
+	print(tabulate.tabulate(pathStructure))
+	print("Miscellaneous")
+	print(tabulate.tabulate(miscProperties))
+	print("Community Structure")
+	print(tabulate.tabulate(communityStructure))
+	print("Degree Distribution")
+	print("-------------------")
+	(labels, histo) = props["histo"]
+	termgraph.graph(labels, histo)
+
+
+
+def showPropertiesOld(nkG):
 
 	propertiesTextBlock = """
 	Graph Properties: {name}
