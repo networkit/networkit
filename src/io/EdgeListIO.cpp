@@ -17,7 +17,7 @@ EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(separator), f
 
 }
 
-EdgeListIO::EdgeListIO() {
+EdgeListIO::~EdgeListIO() {
 
 }
 
