@@ -22,6 +22,7 @@ ctypedef double edgeweight
 # python module imports
 import networkx as nx
 import math
+import textwrap
 
 # local modules
 import termgraph
@@ -221,7 +222,7 @@ cdef extern from "../src/community/Louvain.h":
 cdef class Louvain(Clusterer):
 	cdef _Louvain _this
 	
-	def __cinit__(self, par, gamma):
+	def __cinit__(self, par, gamma=1.0):
 		self._this = _Louvain(stdstring(par), gamma)
 	
 	def run(self, Graph G not None):
@@ -398,6 +399,7 @@ def readGraph(path):
 
 
 
+########  CONVERSION ########
 
 def nx2nk(nxG, weightAttr=None):
 	""" 
@@ -431,43 +433,113 @@ def nk2nx(nkG):
 			nxG.add_edge(u, v)
 	return nxG
 	
-	
+
+########  PROPERTIES ########
+
+
 def properties(nkG):
-	""" Get an overview of the properties for the graph"""
-	nxG = nk2nx(nkG)
-	if (nkG.isMarkedAsWeighted()):
-		print("The graph marked as weighted")
-	else: 
-		print("The graph has not been marked as weighed")
-	(n, m) = (nxG.number_of_nodes(), nxG.number_of_edges())
-	print("Number of nodes \t n \t {0}".format(n))
-	print("Number of edges \t n \t {0}".format(m))
-	
-	print("Degree distribution:")
-	printDegreeHistogram(nxG)
+	print("converting to NetworX.Graph for some properties....")
+	nxG = nxG = nk2nx(nkG)
 
-	minMax = GraphProperties.minMaxDegree(nkG);
-	print("Minimum degree \t {0}".format(minMax[0]))
-	print("Maximum degree \t {0}".format(minMax[1]))
+	n = nkG.numberOfNodes()
+	m = nkG.numberOfEdges()
+	minMaxDeg = GraphProperties.minMaxDegree(nkG)
 
-	degree_distribution = GraphProperties.degreeDistribution(nkG)
-	print("Degree distribution:\n{0}".format(degree_distribution))
-	
-	isolated_nodes = nx.isolates(nxG)
-	print("Isolated nodes: \t{0}".format(len(isolated_nodes))) 
+	# calculating diameter for small graphs
+	if (n < 100):
+		print("calculating diameter...")
+		dia = nx.diameter(nxG)
+	else:
+		dia = "[omitted]"
 
-	self_loops = nxG.selfloop_edges()
-	print("Self-loop edges: \t{0}".format(len(self_loops)))
-
-	print("Connected components: \t{0}".format(nx.number_connected_components(nxG)))
-
-	average_Local_clustering = GraphProperties.averageLocalClusteringCoefficient
-	print("Average local clustering coefficient: \t{0}".format(average_Local_clustering))
-
+	# perform PLP and PLM community detection
+	print("performing community detection")
+	# TODO: avoid printout of status bar
 	plp = LabelPropagation()
-	zeta = plp.run(nkG)
-	n_clusters = zeta.numberOfClusters()
-	print("Label propagation found: \t{0}".format(n_clusters))
+	zetaPLP = plp.run(nkG)
+	ncomPLP = zetaPLP.numberOfClusters()
+	modPLP = Modularity().getQuality(zetaPLP, nkG)
+	PLM = Louvain("balanced")
+	zetaPLM = PLM.run(nkG)
+	ncomPLM = zetaPLM.numberOfClusters()
+	modPLM = Modularity().getQuality(zetaPLM, nkG)
+
+	# degree histogram
+
+	histo = nx.degree_histogram(nxG)
+	(labels, histo) = compressHistogram(histo, nbins=25)
+
+	props = {"n": n,
+		 "m": m,
+		 "minDeg": minMaxDeg[0],
+		 "maxDeg": minMaxDeg[1],
+		 "avglcc": GraphProperties.averageLocalClusteringCoefficient(nkG),
+		 "components": nx.number_connected_components(nxG),
+		 "dia": dia,
+		 "isolates": len(nx.isolates(nxG)),
+		 "loops": len(nxG.selfloop_edges()),
+		 "ncomPLP": ncomPLP,
+		 "modPLP": modPLP,
+		 "ncomPLM": ncomPLM,
+		 "modPLM": modPLM,
+		 "dens": nx.density(nxG),
+		 "assort": nx.degree_assortativity_coefficient(nxG),
+		 "cliques": len(list(nx.find_cliques(nxG))),
+		 "histo": (labels, histo),
+		 }
+
+	return props
+
+def printProperties(nkG):
+
+	propertiesTextBlock = """
+	Graph Properties
+	================
+
+	Basic Properties
+	----------------
+	- nodes (n)			{n}
+	- edges (m)			{m}
+	- min. degree 			{minDeg}
+	- max. degree 			{maxDeg}
+	- isolated nodes 		{isolates}
+	- self-loops			{loops}
+	- density			{dens:10.6f}
+
+
+	Path Structure
+	--------------
+	- connected components 		{components}
+	- diameter			{dia}
+
+	Miscellaneous
+	-------------
+	- degree assortativity			{assort:10.6f}
+	- cliques				{cliques}
+
+	Community Structure
+	-------------------
+	- avg. local clustering coefficient 		{avglcc:10.6f}
+	- PLP community detection
+		- communities				{ncomPLP}
+		- modularity 			{modPLP:10.6f}
+	- PLM community detection
+		- communities			{ncomPLM}
+		- modularity 			{modPLM:10.6f}
+
+
+	Distributions
+	-------------
+
+	- degree distribution
+
+	"""
+
+	props = properties(nkG)
+	print(textwrap.dedent(propertiesTextBlock.format(**props)))
+	(labels, histo) = props["histo"]
+	termgraph.graph(labels, histo)
+
 	
 
 def compressHistogram(hist, nbins=20):
