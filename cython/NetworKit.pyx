@@ -42,7 +42,7 @@ def stdstring(pystring):
 cdef extern from "../src/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
-		_Graph(int) except +
+		_Graph(count) except +
 		count numberOfNodes()
 		count numberOfEdges()
 		node addNode()
@@ -56,6 +56,8 @@ cdef extern from "../src/graph/Graph.h":
 		vector[pair[node, node]] edges()
 		void markAsWeighted()
 		bool isMarkedAsWeighted()
+		string toString()
+		string getName()
 		
 
 cdef class Graph:
@@ -106,6 +108,12 @@ cdef class Graph:
 	
 	def isMarkedAsWeighted(self):
 		return self._this.isMarkedAsWeighted()
+
+	def toString(self):
+		return self._this.toString()
+
+	def getName(self):
+		return self._this.getName()
 	
 	
 cdef extern from "../src/graph/GraphGenerator.h":
@@ -481,23 +489,27 @@ def properties(nkG):
 		dia = "[omitted]"
 
 	# perform PLP and PLM community detection
-	print("performing community detection")
+	print("performing community detection: PLP")
 	# TODO: avoid printout of status bar
 	plp = LabelPropagation()
 	zetaPLP = plp.run(nkG)
 	ncomPLP = zetaPLP.numberOfClusters()
 	modPLP = Modularity().getQuality(zetaPLP, nkG)
+	print("performing community detection: PLM")
 	PLM = Louvain("balanced")
 	zetaPLM = PLM.run(nkG)
 	ncomPLM = zetaPLM.numberOfClusters()
 	modPLM = Modularity().getQuality(zetaPLM, nkG)
 
 	# degree histogram
-
+	
+	print("calculating properties")	
 	histo = nx.degree_histogram(nxG)
 	(labels, histo) = compressHistogram(histo, nbins=25)
 
-	props = {"n": n,
+	props = {
+		 "name": nkG.getName(),
+		 "n": n,
 		 "m": m,
 		 "minDeg": minMaxDeg[0],
 		 "maxDeg": minMaxDeg[1],
@@ -519,11 +531,11 @@ def properties(nkG):
 	return props
 
 
-def printProperties(nkG):
+def showProperties(nkG):
 
 	propertiesTextBlock = """
-	Graph Properties
-	================
+	Graph Properties: {name}
+	========================
 
 	Basic Properties
 	----------------
