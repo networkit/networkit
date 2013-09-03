@@ -172,8 +172,8 @@ except:
 
 ## CONFIGURATIONS
 
-commonCFlags = ["-c", "-fmessage-length=0", "-std=c99"]
-commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0"]
+commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC"]
+commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
 
 debugCppFlags = ["-O0", "-g3"]
 debugCFlags = ["-O0", "-g3"]
@@ -264,20 +264,27 @@ AddOption("--target",
 
 
 target = GetOption("target")
+targetName = "NetworKit-{0}-{1}".format(target, buildconf)
 
 if target == "CommunityDetection":
 	source.append(os.path.join(srcDir, "CommunityDetection-X.cpp"))
+	env.Program(targetName, source)
 elif target == "DynCD":
 	source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
+	env.Program(targetName, source)
 elif target == "SelCD":
 	source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
+	env.Program(targetName, source)
+elif target == "Core":
+	# do not append executable
+	env.Append(CPPDEFINES=["NOLOGGING", "NOGTEST"])
+	env.Library("NetworKit-Core-{0}".format(buildconf), source)
 else:
 	print("ERROR: unknown target: %" % target)
 	exit()
 
 
 
-targetName = "NetworKit-{0}-{1}".format(target, buildconf)
-env.Program(targetName, source)
+
 
 # TODO: make unit tests a separate target

@@ -1,8 +1,21 @@
 var searchData=
 [
+  ['sampledrandmeasure',['SampledRandMeasure',['../class_networ_kit_1_1_sampled_rand_measure.html',1,'NetworKit']]],
+  ['scdgtest',['SCDGTest',['../class_networ_kit_1_1_s_c_d_g_test.html',1,'NetworKit']]],
+  ['seedsetgenerator',['SeedSetGenerator',['../class_networ_kit_1_1_seed_set_generator.html',1,'NetworKit']]],
+  ['selectivecommunitydetector',['SelectiveCommunityDetector',['../class_networ_kit_1_1_selective_community_detector.html',1,'NetworKit']]],
+  ['selectivedissimilaritymeasure',['SelectiveDissimilarityMeasure',['../class_networ_kit_1_1_selective_dissimilarity_measure.html',1,'NetworKit']]],
+  ['selectivescan',['SelectiveSCAN',['../class_networ_kit_1_1_selective_s_c_a_n.html',1,'NetworKit']]],
+  ['snapedgelistclusteringreader',['SNAPEdgeListClusteringReader',['../class_networ_kit_1_1_s_n_a_p_edge_list_clustering_reader.html',1,'NetworKit']]],
+  ['springembedder',['SpringEmbedder',['../class_networ_kit_1_1_spring_embedder.html',1,'NetworKit']]],
+  ['staticbarabasialbertgenerator',['StaticBarabasiAlbertGenerator',['../class_networ_kit_1_1_static_barabasi_albert_generator.html',1,'NetworKit']]],
+  ['staticgraphgenerator',['StaticGraphGenerator',['../class_networ_kit_1_1_static_graph_generator.html',1,'NetworKit']]],
+  ['staticmapper',['StaticMapper',['../class_networ_kit_1_1_static_mapper.html',1,'NetworKit']]],
   ['stats',['Stats',['../struct_option_parser_1_1_stats.html',1,'OptionParser']]],
   ['storeoptionaction',['StoreOptionAction',['../class_option_parser_1_1_parser_1_1_store_option_action.html',1,'OptionParser::Parser']]],
   ['streamwriter',['StreamWriter',['../struct_option_parser_1_1_print_usage_implementation_1_1_stream_writer.html',1,'OptionParser::PrintUsageImplementation']]],
   ['stringtools',['StringTools',['../class_aux_1_1_string_tools.html',1,'Aux']]],
+  ['subgraph',['Subgraph',['../class_networ_kit_1_1_subgraph.html',1,'NetworKit']]],
+  ['surprise',['Surprise',['../class_networ_kit_1_1_surprise.html',1,'NetworKit']]],
   ['syscallwriter',['SyscallWriter',['../struct_option_parser_1_1_print_usage_implementation_1_1_syscall_writer.html',1,'OptionParser::PrintUsageImplementation']]]
 ];

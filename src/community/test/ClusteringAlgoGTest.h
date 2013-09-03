@@ -15,6 +15,7 @@
 #include "../LabelPropagation.h"
 #include "../Louvain.h"
 #include "../CNM.h"
+#include "../CNM-WW.h"
 #include "../ParallelAgglomerativeClusterer.h"
 
 #include "../../auxiliary/Log.h"

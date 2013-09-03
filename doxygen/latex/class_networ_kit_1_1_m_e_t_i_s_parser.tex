@@ -12,12 +12,15 @@
 \item 
 virtual \hyperlink{class_networ_kit_1_1_m_e_t_i_s_parser_ae6be699914a8acc8bf720775c6244771}{$\sim$\-M\-E\-T\-I\-S\-Parser} ()
 \item 
-std\-::pair$<$ int, int $>$ \hyperlink{class_networ_kit_1_1_m_e_t_i_s_parser_adb1b00b5e7a3fbba35224b67b9c4d08c}{get\-Header} ()
+std\-::tuple$<$ int, int, int $>$ \hyperlink{class_networ_kit_1_1_m_e_t_i_s_parser_a413bd539051620d54dd6b8c3ef7303bf}{get\-Header} ()
 \begin{DoxyCompactList}\small\item\em Get the M\-E\-T\-I\-S graph file header. \end{DoxyCompactList}\item 
 bool \hyperlink{class_networ_kit_1_1_m_e_t_i_s_parser_a52732b9d2ffdead3f05ac8a7fde62c6a}{has\-Next} ()
 \begin{DoxyCompactList}\small\item\em Test if graph file has a next line. \end{DoxyCompactList}\item 
-std\-::vector$<$ \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} $>$ \hyperlink{class_networ_kit_1_1_m_e_t_i_s_parser_a9146943a37df8c696623019a877bd09c}{get\-Next} ()
-\begin{DoxyCompactList}\small\item\em Get adjacencies from the next line in the M\-E\-T\-I\-S graph file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+std\-::vector$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ \hyperlink{class_networ_kit_1_1_m_e_t_i_s_parser_a9146943a37df8c696623019a877bd09c}{get\-Next} ()
+\begin{DoxyCompactList}\small\item\em Get adjacencies from the next line in the M\-E\-T\-I\-S graph file. \end{DoxyCompactList}\item 
+std\-::vector$<$ std\-::pair$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node}, \\*
+double $>$ $>$ \hyperlink{class_networ_kit_1_1_m_e_t_i_s_parser_aecb8c91b00d90a592b7251c5ac05753c}{get\-Next\-With\-Weights} ()
+\end{DoxyCompactItemize}
 \subsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -28,7 +31,7 @@ std\-::ifstream \hyperlink{class_networ_kit_1_1_m_e_t_i_s_parser_ad4b045bd37a450
 \subsection{Detailed Description}
 
 
-Definition at line 27 of file M\-E\-T\-I\-S\-Parser.\-h.
+Definition at line 29 of file M\-E\-T\-I\-S\-Parser.\-h.
 
 
 
@@ -42,7 +45,7 @@ Definition at line 27 of file M\-E\-T\-I\-S\-Parser.\-h.
 )}}\label{class_networ_kit_1_1_m_e_t_i_s_parser_a62ac589d8023e184e3bd055738a96f28}
 
 
-Definition at line 63 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+Definition at line 83 of file M\-E\-T\-I\-S\-Parser.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_m_e_t_i_s_parser_ae6be699914a8acc8bf720775c6244771}{\index{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}!$\sim$\-M\-E\-T\-I\-S\-Parser@{$\sim$\-M\-E\-T\-I\-S\-Parser}}
 \index{$\sim$\-M\-E\-T\-I\-S\-Parser@{$\sim$\-M\-E\-T\-I\-S\-Parser}!NetworKit::METISParser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}}
@@ -53,25 +56,25 @@ Definition at line 63 of file M\-E\-T\-I\-S\-Parser.\-cpp.
 )\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_m_e_t_i_s_parser_ae6be699914a8acc8bf720775c6244771}
 
 
-Definition at line 72 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+Definition at line 92 of file M\-E\-T\-I\-S\-Parser.\-cpp.
 
 
 
 \subsection{Member Function Documentation}
-\hypertarget{class_networ_kit_1_1_m_e_t_i_s_parser_adb1b00b5e7a3fbba35224b67b9c4d08c}{\index{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}!get\-Header@{get\-Header}}
+\hypertarget{class_networ_kit_1_1_m_e_t_i_s_parser_a413bd539051620d54dd6b8c3ef7303bf}{\index{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}!get\-Header@{get\-Header}}
 \index{get\-Header@{get\-Header}!NetworKit::METISParser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}}
-\subsubsection[{get\-Header}]{\setlength{\rightskip}{0pt plus 5cm}std\-::pair$<$ int, int $>$ Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser\-::get\-Header (
+\subsubsection[{get\-Header}]{\setlength{\rightskip}{0pt plus 5cm}std\-::tuple$<$ int, int, int $>$ Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser\-::get\-Header (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
-)}}\label{class_networ_kit_1_1_m_e_t_i_s_parser_adb1b00b5e7a3fbba35224b67b9c4d08c}
+)}}\label{class_networ_kit_1_1_m_e_t_i_s_parser_a413bd539051620d54dd6b8c3ef7303bf}
 
 
 Get the M\-E\-T\-I\-S graph file header. 
 
 
 
-Definition at line 79 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+Definition at line 97 of file M\-E\-T\-I\-S\-Parser.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_m_e_t_i_s_parser_a9146943a37df8c696623019a877bd09c}{\index{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}!get\-Next@{get\-Next}}
 \index{get\-Next@{get\-Next}!NetworKit::METISParser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}}
@@ -86,7 +89,18 @@ Get adjacencies from the next line in the M\-E\-T\-I\-S graph file.
 
 
 
-Definition at line 113 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+Definition at line 143 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_m_e_t_i_s_parser_aecb8c91b00d90a592b7251c5ac05753c}{\index{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}!get\-Next\-With\-Weights@{get\-Next\-With\-Weights}}
+\index{get\-Next\-With\-Weights@{get\-Next\-With\-Weights}!NetworKit::METISParser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}}
+\subsubsection[{get\-Next\-With\-Weights}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$ std\-::pair$<$ {\bf node}, double $>$ $>$ Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser\-::get\-Next\-With\-Weights (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_m_e_t_i_s_parser_aecb8c91b00d90a592b7251c5ac05753c}
+
+
+Definition at line 164 of file M\-E\-T\-I\-S\-Parser.\-cpp.
 
 \hypertarget{class_networ_kit_1_1_m_e_t_i_s_parser_a52732b9d2ffdead3f05ac8a7fde62c6a}{\index{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}!has\-Next@{has\-Next}}
 \index{has\-Next@{has\-Next}!NetworKit::METISParser@{Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser}}
@@ -101,7 +115,7 @@ Test if graph file has a next line.
 
 
 
-Definition at line 107 of file M\-E\-T\-I\-S\-Parser.\-cpp.
+Definition at line 137 of file M\-E\-T\-I\-S\-Parser.\-cpp.
 
 
 
@@ -111,7 +125,7 @@ Definition at line 107 of file M\-E\-T\-I\-S\-Parser.\-cpp.
 \subsubsection[{graph\-File}]{\setlength{\rightskip}{0pt plus 5cm}std\-::ifstream Networ\-Kit\-::\-M\-E\-T\-I\-S\-Parser\-::graph\-File\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_m_e_t_i_s_parser_ad4b045bd37a450efdedb2918023de55c}
 
 
-Definition at line 32 of file M\-E\-T\-I\-S\-Parser.\-h.
+Definition at line 34 of file M\-E\-T\-I\-S\-Parser.\-h.
 
 
 

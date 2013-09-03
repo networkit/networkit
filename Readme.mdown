@@ -68,7 +68,23 @@ Build
 
 We recommend [SCons](http://scons.org) for building the project. Edit the file `SConstruct.EDITME` We recommend [SCons](http://www.scons.org/) for building the project. Edit the file `SConstruct.EDITME` to set include paths, library paths etc, then rename it to `SConstruct`.
 
+The call to SCons has the following options:
+
+	scons --machine=<MyEnvironment> --buildconf=D|P|O --target=CommunityDetection|DynCD|SelCD
+
+`machine` expects the name of a system environment. Custom environments can be added in the `SConstruct` file.
+
+- `buildconf`
+	- `D` 	debug
+	- `O`	optimized
+	- `P`	profiling
+- `target`
+	- `CommunityDetection` 	static, global community detection algorihtms
+	- `DynCD`				dynamic community detection setup
+	- `SelCD`				selective community detection setup		
+
 Alternatively, the project can be build with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
+
 
 
 Test
@@ -76,13 +92,13 @@ Test
 
 Run all unit tests with 
 
-		./NetworKit-CommunityDetection-debug --tests --gtest_filter=*Test*.test*
+		./CommunityDetection-D --tests --gtest_filter=*Test.test*
 
 The expression after `--gtest_filter=` automatically selects all undebug --tests --gtest_filter=*Test*.try*	
 
 Run performance tests with
 
-		./NetworKit-CommunityDetection-optimized --tests --gtest_filter=*Benchmark*
+		./CommunityDetection-O --tests --gtest_filter=*Benchmark*
 
 
 Run

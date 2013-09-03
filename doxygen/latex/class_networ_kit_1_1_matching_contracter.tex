@@ -31,7 +31,7 @@ Collaboration diagram for Networ\-Kit\-:\-:Matching\-Contracter\-:\nopagebreak
 virtual \hyperlink{class_networ_kit_1_1_matching_contracter_ad5aff6c794367db1ad91f35f62e70fcb}{$\sim$\-Matching\-Contracter} ()
 \item 
 virtual std\-::pair$<$ \hyperlink{class_networ_kit_1_1_graph}{Graph}, \\*
-\hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} $>$ $>$ \hyperlink{class_networ_kit_1_1_matching_contracter_ae63ba5e9dea01c5d6388a15c9f3cf27c}{run} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G, \hyperlink{class_networ_kit_1_1_matching}{Matching} \&M)
+\hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ $>$ \hyperlink{class_networ_kit_1_1_matching_contracter_a2451b854e1dfc30522da757cb11bfa26}{run} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G, \hyperlink{class_networ_kit_1_1_matching}{Matching} \&M, bool no\-Self\-Loops=false)
 \begin{DoxyCompactList}\small\item\em Contracts graph according to a matching. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -63,19 +63,20 @@ Definition at line 12 of file Matching\-Contracter.\-cpp.
 )\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_matching_contracter_ad5aff6c794367db1ad91f35f62e70fcb}
 
 
-Definition at line 17 of file Matching\-Contracter.\-cpp.
+Definition at line 16 of file Matching\-Contracter.\-cpp.
 
 
 
 \subsection{Member Function Documentation}
-\hypertarget{class_networ_kit_1_1_matching_contracter_ae63ba5e9dea01c5d6388a15c9f3cf27c}{\index{Networ\-Kit\-::\-Matching\-Contracter@{Networ\-Kit\-::\-Matching\-Contracter}!run@{run}}
+\hypertarget{class_networ_kit_1_1_matching_contracter_a2451b854e1dfc30522da757cb11bfa26}{\index{Networ\-Kit\-::\-Matching\-Contracter@{Networ\-Kit\-::\-Matching\-Contracter}!run@{run}}
 \index{run@{run}!NetworKit::MatchingContracter@{Networ\-Kit\-::\-Matching\-Contracter}}
 \subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}std\-::pair$<$ {\bf Graph}, {\bf Node\-Map}$<$ {\bf node} $>$ $>$ Networ\-Kit\-::\-Matching\-Contracter\-::run (
 \begin{DoxyParamCaption}
 \item[{{\bf Graph} \&}]{G, }
-\item[{{\bf Matching} \&}]{M}
+\item[{{\bf Matching} \&}]{M, }
+\item[{bool}]{no\-Self\-Loops = {\ttfamily false}}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_matching_contracter_ae63ba5e9dea01c5d6388a15c9f3cf27c}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_matching_contracter_a2451b854e1dfc30522da757cb11bfa26}
 
 
 Contracts graph according to a matching. 
@@ -84,22 +85,26 @@ Contracts graph according to a matching.
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt in}  & {\em G} & fine graph \\
 \hline
-\mbox{\tt in}  & {\em M} & matching\\
+\mbox{\tt in}  & {\em M} & matching \\
 \hline
-\mbox{\tt out}  & {\em coarse} & graph \\
+\mbox{\tt in}  & {\em no\-Self\-Loops} & if true, self-\/loops are not produced\\
 \hline
 \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+coarse graph 
+\end{DoxyReturn}
 
 
-Definition at line 21 of file Matching\-Contracter.\-cpp.
+Definition at line 20 of file Matching\-Contracter.\-cpp.
 
 
 
-Here is the call graph for this function\-:\nopagebreak
+Here is the call graph for this function\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{class_networ_kit_1_1_matching_contracter_ae63ba5e9dea01c5d6388a15c9f3cf27c_cgraph}
+\includegraphics[width=350pt]{class_networ_kit_1_1_matching_contracter_a2451b854e1dfc30522da757cb11bfa26_cgraph}
 \end{center}
 \end{figure}
 

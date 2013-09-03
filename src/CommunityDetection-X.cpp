@@ -51,6 +51,7 @@
 #include "io/METISGraphWriter.h"
 #include "io/ClusteringWriter.h"
 #include "io/DotClusteringWriter.h"
+#include "io/EdgeListIO.h"
 #include "generators/DynamicBarabasiAlbertGenerator.h"
 
 
@@ -118,32 +119,6 @@ Graph generatePreferentialAttachmentGraph(count n, count a) {
 	std::cout << "[DONE] (" << running.elapsed().count() << " ms)" << std::endl;
 
 	return G;
-}
-
-
-/**
- * Read a graph from a file.
- */
-Graph readGraph(const std::string& graphPath) {
-
-	// READ GRAPH
-
-	METISGraphReader reader;	// TODO: add support for multiple graph file formats
-
-	// TIMING
-	Aux::Timer readTimer;
-	readTimer.start();
-	//
-	std::cout << "[BEGIN] reading file: " << graphPath << std::endl;
-
-	Graph G = reader.read(graphPath);
-	//
-	readTimer.stop();
-	std::cout << "[DONE] read graph file " << readTimer.elapsedTag() << std::endl;
-	// TIMING
-
-	return G;
-
 }
 
 
@@ -225,7 +200,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, GENERATE, ALGORITHM, RUNS, SCALETHREADS, NORM_VOTES, SCALESTRENGTH,
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, GRAPH, FORMAT, GENERATE, ALGORITHM, RUNS, SCALETHREADS, NORM_VOTES, SCALESTRENGTH,
 	SAVE_GRAPH, SAVE_CLUSTERING, PROGRESS, SUMMARY, RANDORDER, INACTIVESEEDS, UPDATE_THRESHOLD, OVERLAP, DISSIMILARITY, SAVE_CLUSTERING_DOT};
 const OptionParser::Descriptor usage[] =
 {
@@ -235,7 +210,8 @@ const OptionParser::Descriptor usage[] =
  {LOGLEVEL,    0, "" , "loglevel", OptionParser::Arg::Required, "  --loglevel=<LEVEL>  \t set the log level" },
  {THREADS,    0, "" , "threads", OptionParser::Arg::Required, "  --threads=<NUM>  \t set the maximum number of threads" },
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
- {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph=<PATH> \t Run ensemble clusterer on graph"},
+ {GRAPH, 0, "g", "graph", OptionParser::Arg::Required, "  --graph=<PATH> \t input graph path"},
+ {FORMAT, 0, "", "format", OptionParser::Arg::Required, "  --format=<FORMAT> \t input graph file format"},
  {GENERATE, 0, "", "generate", OptionParser::Arg::Required, "  --generate=<GENERATOR>:<PARAMS> \t generate a graph"},
  {ALGORITHM, 0, "", "algorithm", OptionParser::Arg::Required, "  --algorithm=<ALGORITHM>:<PARAMS> \t select clustering algorithm"},
  {RUNS, 0, "", "runs", OptionParser::Arg::Required, "  --runs=<NUMBER> \t set number of clusterer runs"},
@@ -259,6 +235,54 @@ const OptionParser::Descriptor usage[] =
 
 
 // MAIN FUNCTIONS
+
+
+
+/**
+ * Read a graph from a file.
+ */
+Graph readGraph(const std::string& graphPath, OptionParser::Option* options) {
+
+
+	GraphReader* reader = NULL;
+
+
+	if (options[FORMAT]) {
+		std::string formatDescr = options[FORMAT].arg;
+		if (formatDescr == "metis") {
+			reader = new METISGraphReader();
+		} else if (formatDescr == "edgelist") {
+			reader = new EdgeListIO('\t', 1); // TODO: make edgelist format configurable
+		} else {
+			std::cout << "[ERROR] unknown file format: " << formatDescr << std::endl;
+			exit(1);
+		}
+
+	} else {
+		// assume METIS as default
+		reader = new METISGraphReader();
+	}
+
+	// READ GRAPH
+
+
+	// TIMING
+	Aux::Timer readTimer;
+	readTimer.start();
+	//
+	std::cout << "[BEGIN] reading file: " << graphPath << std::endl;
+
+	Graph G = reader->read(graphPath);
+	//
+	readTimer.stop();
+	std::cout << "[DONE] read graph file " << readTimer.elapsedTag() << std::endl;
+	// TIMING
+
+	return G;
+
+}
+
+
 
 
 Graph getGraph(OptionParser::Option* options) {
@@ -300,7 +324,7 @@ Graph getGraph(OptionParser::Option* options) {
 		std::string graphPath = options[GRAPH].arg;
 		std::cout << "\t --graph=" << graphPath << std::endl;
 
-		Graph G = readGraph(graphPath);
+		Graph G = readGraph(graphPath, options);
 		return G;
 	} else {
 		Graph G(0);	// return empty graph

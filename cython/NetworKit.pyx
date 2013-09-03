@@ -1,3 +1,8 @@
+# cython: language_level=3
+
+#includes
+
+
 # type imports
 from libc.stdint cimport uint64_t
 
@@ -14,9 +19,17 @@ ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
 
-# python module imports
+# standard library modules
+import math
+import textwrap
+
+# non standard library modules
 import networkx as nx
-# TODO: how to import termgraph
+import tabulate
+
+
+# local modules
+import termgraph
 
 
 
@@ -33,7 +46,7 @@ def stdstring(pystring):
 cdef extern from "../src/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
-		_Graph(int) except +
+		_Graph(count) except +
 		count numberOfNodes()
 		count numberOfEdges()
 		node addNode()
@@ -47,6 +60,8 @@ cdef extern from "../src/graph/Graph.h":
 		vector[pair[node, node]] edges()
 		void markAsWeighted()
 		bool isMarkedAsWeighted()
+		string toString()
+		string getName()
 		
 
 cdef class Graph:
@@ -97,6 +112,12 @@ cdef class Graph:
 	
 	def isMarkedAsWeighted(self):
 		return self._this.isMarkedAsWeighted()
+
+	def toString(self):
+		return self._this.toString()
+
+	def getName(self):
+		return self._this.getName()
 	
 	
 cdef extern from "../src/graph/GraphGenerator.h":
@@ -144,7 +165,53 @@ cdef class DotGraphWriter:
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
 		self._this.write(G._this, stdstring(path))
+		
+
+cdef extern from "../src/io/EdgeListIO.h":
+	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
+		_EdgeListIO() except +
+		_EdgeListIO(char separator, node firstNode) except +
+		_Graph read(string path)
+		void write(_Graph G, string path)
+
+cdef class EdgeListIO:
+
+	cdef _EdgeListIO _this
+
+	def __cinit__(self, separator, firstNode):
+		cdef char sep = stdstring(separator)[0]
+		self._this = _EdgeListIO(sep, firstNode)
+
+	def read(self, path):
+		return Graph().setThis(self._this.read(stdstring(path)))
+
+	def write(self, Graph G not None, path):
+		self._this.write(G._this, stdstring(path))
+
+# cdef extern from "../src/io/EdgeListIO.h":
+# 	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
+# 		_EdgeListIO() except +
+# 		_EdgeListIO(char separator, node firstNode) except +
+# 		_Graph read(string path)
+# 		void write(_Graph G, string path)
+
+# cdef class EdgeListIO:
+
+# 	cdef _EdgeListIO _this
 	
+# 	def __cinit__(self, string separator, node firstNode):
+# 		cdef char sep = separator[0]
+# 		self._this = _EdgeListIO(sep, firstNode)
+		
+# 	def read(self, path):
+# 		return Graph().setThis(self._this.read(stdstring(path)))
+	
+# 	def write(self, Graph G not None, path):
+# 		 # string needs to be converted to bytes, which are coerced to std::string
+# 		self._this.write(G._this, stdstring(path))
+
+
+
 
 cdef extern from "../src/clustering/Clustering.h":
 	cdef cppclass _Clustering "NetworKit::Clustering":
@@ -189,7 +256,7 @@ cdef extern from "../src/community/Louvain.h":
 cdef class Louvain(Clusterer):
 	cdef _Louvain _this
 	
-	def __cinit__(self, par, gamma):
+	def __cinit__(self, par, gamma=1.0):
 		self._this = _Louvain(stdstring(par), gamma)
 	
 	def run(self, Graph G not None):
@@ -272,9 +339,9 @@ cdef class DGSReader:
 cdef extern from "../src/clustering/Modularity.h":
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +
-		double getQuality(const _Clustering _zeta, const _Graph _G)
+		double getQuality(_Clustering _zeta, _Graph _G)
 		
-		
+
 cdef class Modularity:
 	cdef _Modularity _this
 	
@@ -354,18 +421,25 @@ cdef class ForceDirected:
 
 #--------- NetworKit Python Shell functions ----------------#
 
-def readGraph(path):
-	"""	Automatically detect input format and read graph"""
+def readGraph(path, format=None):
+	"""	Read graph and return a NetworKit::Graph"""
 	# TODO: detect file format by looking at the file content
-	if path.endswith(".graph"):
-		reader = METISGraphReader()
+	if format is None:	# look at file extension
+		if path.endswith(".graph"):
+			reader = METISGraphReader()
+		else:
+			raise Exception("unknown graph file format")
 	else:
-		raise Exception("unknown graph file format")
+		if (format is "metis"):
+			reader = METISGraphReader()
+		elif (format is "edgelist"):
+			reader = EdgeListIO('\t', 1)
 	G = reader.read(path)
 	return G
 
 
 
+########  CONVERSION ########
 
 def nx2nk(nxG, weightAttr=None):
 	""" 
@@ -399,51 +473,189 @@ def nk2nx(nkG):
 			nxG.add_edge(u, v)
 	return nxG
 	
-	
+
+########  PROPERTIES ########
+
+
 def properties(nkG):
-	""" Get an overview of the properties for the graph"""
-	nxG = nk2nx(nkG)
-	if (nkG.isMarkedAsWeighted()):
-		print("The graph marked as weighted")
-	else: 
-		print("The graph has not been marked as weighed")
-	(n, m) = (nxG.number_of_nodes(), nxG.number_of_edges())
-	print("Number of nodes \t n \t {0}".format(n))
-	print("Number of edges \t n \t {0}".format(m))
-	
-	print("Degree distribution:")
-	printDegreeHistogram(nxG)
+	print("converting to NetworX.Graph for some properties....")
+	nxG = nxG = nk2nx(nkG)
 
-	minMax = GraphProperties.minMaxDegree(nkG);
-	print("Minimum degree \t {0}".format(minMax[0]))
-	print("Maximum degree \t {0}".format(minMax[1]))
+	n = nkG.numberOfNodes()
+	m = nkG.numberOfEdges()
+	minMaxDeg = GraphProperties.minMaxDegree(nkG)
 
-	degree_distribution = GraphProperties.degreeDistribution(nkG)
-	print("Degree distribution:\n{0}".format(degree_distribution))
-	
-	isolated_nodes = nx.isolates(nxG)
-	print("Isolated nodes: \t{0}".format(len(isolated_nodes))) 
+	# calculating diameter for small graphs
+	if (n < 100):
+		print("calculating diameter...")
+		dia = nx.diameter(nxG)
+	else:
+		dia = "[omitted]"
 
-	self_loops = nxG.selfloop_edges()
-	print("Self-loop edges: \t{0}".format(len(self_loops)))
-
-	print("Connected components: \t{0}".format(nx.number_connected_components(nxG)))
-
-	average_Local_clustering = GraphProperties.averageLocalClusteringCoefficient
-	print("Average local clustering coefficient: \t{0}".format(average_Local_clustering))
-
+	# perform PLP and PLM community detection
+	print("performing community detection: PLP")
+	# TODO: avoid printout of status bar
 	plp = LabelPropagation()
-	zeta = plp.run(nkG)
-	n_clusters = zeta.numberOfClusters()
-	print("Label propagation found: \t{0}".format(n_clusters))
+	zetaPLP = plp.run(nkG)
+	ncomPLP = zetaPLP.numberOfClusters()
+	modPLP = Modularity().getQuality(zetaPLP, nkG)
+	print("performing community detection: PLM")
+	PLM = Louvain("balanced")
+	zetaPLM = PLM.run(nkG)
+	ncomPLM = zetaPLM.numberOfClusters()
+	modPLM = Modularity().getQuality(zetaPLM, nkG)
+
+	# degree histogram
 	
+	print("calculating properties")	
+	histo = nx.degree_histogram(nxG)
+	(labels, histo) = compressHistogram(histo, nbins=25)
+
+	props = {
+		 "name": nkG.getName(),
+		 "n": n,
+		 "m": m,
+		 "minDeg": minMaxDeg[0],
+		 "maxDeg": minMaxDeg[1],
+		 "avglcc": GraphProperties.averageLocalClusteringCoefficient(nkG),
+		 "components": nx.number_connected_components(nxG),
+		 "dia": dia,
+		 "isolates": len(nx.isolates(nxG)),
+		 "loops": len(nxG.selfloop_edges()),
+		 "ncomPLP": ncomPLP,
+		 "modPLP": modPLP,
+		 "ncomPLM": ncomPLM,
+		 "modPLM": modPLM,
+		 "dens": nx.density(nxG),
+		 "assort": nx.degree_assortativity_coefficient(nxG),
+		 "cliques": len(list(nx.find_cliques(nxG))),
+		 "histo": (labels, histo),
+		 }
+
+	return props
+
+
+def showProperties(nkG):
+	props = properties(nkG)
+	basicProperties = [
+		["nodes (n)", props["n"]],
+		["edges (m)", props["m"]],
+		["min. degree", props["minDeg"]],
+		["max. degree", props["maxDeg"]],
+		["isolated nodes", props["isolates"]],
+		["self-loops", props["loops"]],
+		["density", "{0:.6f}".format(props["dens"])]
+	]
+	pathStructure = [
+		["connected components", props["components"]],
+		["diameter", props["dia"]]
+	]
 	
+	miscProperties = [
+		["degree assortativity", "{0:.6f}".format(props["assort"])],
+		["cliques", props["cliques"]]
+	]
+
+	communityStructure = [
+		["avg. local clustering coefficient", "", "{0:.6f}".format(props["avglcc"])],
+		["PLP community detection", "", ""],
+		["", "communities", props["ncomPLP"]],
+		["", "modularity", "{0:.6f}".format(props["modPLP"])],
+		["PLM community detection", "", ""],
+		["", "communities", props["ncomPLM"]],
+		["", "modularity", "{0:.6f}".format(props["modPLM"])],
+
+	]
+
+	print()
+	print("Basic Properties")
+	print(tabulate.tabulate(basicProperties))
+	print("Path Structure")
+	print(tabulate.tabulate(pathStructure))
+	print("Miscellaneous")
+	print(tabulate.tabulate(miscProperties))
+	print("Community Structure")
+	print(tabulate.tabulate(communityStructure))
+	print("Degree Distribution")
+	print("-------------------")
+	(labels, histo) = props["histo"]
+	termgraph.graph(labels, histo)
+
+
+
+def showPropertiesOld(nkG):
+
+	propertiesTextBlock = """
+	Graph Properties: {name}
+	========================
+
+	Basic Properties
+	----------------
+	- nodes (n){n:16}
+	- edges (m)			{m}
+	- min. degree 			{minDeg}
+	- max. degree 			{maxDeg}
+	- isolated nodes 		{isolates}
+	- self-loops			{loops}
+	- density			{dens:10.6f}
+
+
+	Path Structure
+	--------------
+	- connected components 		{components}
+	- diameter			{dia}
+
+	Miscellaneous
+	-------------
+	- degree assortativity			{assort:10.6f}
+	- cliques				{cliques}
+
+	Community Structure
+	-------------------
+	- avg. local clustering coefficient 		{avglcc:10.6f}
+	- PLP community detection
+		- communities				{ncomPLP}
+		- modularity 			{modPLP:10.6f}
+	- PLM community detection
+		- communities			{ncomPLM}
+		- modularity 			{modPLM:10.6f}
+
+
+	Distributions
+	-------------
+
+	- degree distribution
+
+	"""
+
+	props = properties(nkG)
+	print(textwrap.dedent(propertiesTextBlock.format(**props)))
+	(labels, histo) = props["histo"]
+	termgraph.graph(labels, histo)
+
 	
-def printDegreeHistogram(nxG):
+
+def compressHistogram(hist, nbins=20):
+	""" Compress a histogram to a number of bins"""
+	compressed = [None for i in range(nbins)]
+	labels = [None for i in range(nbins)]
+	nbinsprev = len(hist)
+	binwidth = math.ceil(nbinsprev / nbins)
+	for i in range(nbins):
+		l = i * binwidth
+		u = (i+1) * binwidth
+		compressed[i] = sum(hist[l : u])
+		labels[i] = "{0}-".format(l)
+	return (labels, compressed)
+		
+
+	
+def printDegreeHistogram(nxG, nbins=25):
 	""" Prints a degree histogram as a bar chart to the terminal"""
 	hist = nx.degree_histogram(nxG)
-	labels = range(len(hist))
-	# FIXME: termgraph.graph(labels, hist)
+	
+	(labels, hist) = compressHistogram(hist, nbins)
+	termgraph.graph(labels, hist)
 	
 
 
@@ -451,20 +663,6 @@ def hpProperties(nkG):
 	""" For large graphs: get an overview of some properties"""
 	print("min/max degree:")
 	
-	
-def compactDegreeHistogram(nxG, nbins=10):
-	"""
-	Create a compact histogram for the degree distribution. 
-	"""
-	hist = nx.degree_histogram(nxG)
-	maxDeg = len(hist) - 1
-	binsize = len(hist) / nbins
-	labels = []
-	values = []
-	
-	# TODO: range(0, len(hist), binsize)
-	
-	return (labels, values)
 	
 	
 # NetworKit algorithm engineering workflows
@@ -487,5 +685,28 @@ def compactDegreeHistogram(nxG, nbins=10):
 # 			if (self.G.time() % deltaT) == 0:
 # 				zeta = self.dcd.run()
 # 				self.clusterings.append(zeta)
+	
+class GraphConverter:
+	
+	def __init__(self, reader, writer):
+		self.reader = reader
+		self.writer = writer
 		
-			
+	def convert(self, inPath, outPath):
+		G = self.reader.read(inPath)
+		self.writer.write(G, outPath)
+		
+	def __str__(self):
+		return "GraphConverter: {0} => {0}".format(self.reader, self.writer)
+
+def getConverter(fromFormat, toFormat):
+	
+	readers = {"metis": METISGraphReader, "edgelist" : EdgeListIO}	
+	writers = {"edgelist": EdgeListIO}
+	
+	reader = readers[fromFormat]()
+	writer = writers[toFormat]()
+	
+	return GraphConverter(reader, writer)
+
+	
