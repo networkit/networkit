@@ -816,8 +816,8 @@ TEST_F(SCDGTest, testTGreedyCommunityExpansionWithTemplates) {
 
 TEST_F(SCDGTest, datToGraph) {
 	Graph G;
-	std::string path = "input/graph1000.dat";
-	std::string path1 = "input/graph1000.graph";
+	std::string path = "input/graph10000.dat";
+	std::string path1 = "input/graph10000.graph";
 	EdgeListReader graphReader;
 	G = graphReader.read(path);
 	METISGraphWriter writer;

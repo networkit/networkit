@@ -767,8 +767,9 @@ int main(int argc, char **argv) {
 	running1.start();
 
 	for (count i = 0; i < runs; i++) {
-		running2.start();
+
 		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
+		running2.start();
 		std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> result =
 				algo->run(seeds);
 		running2.stop();
@@ -798,6 +799,8 @@ int main(int argc, char **argv) {
 							<< recall.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
+					std::cout<<v.second.first.size()<<std::endl;
+
 				}
 			}
 		} else {
@@ -829,6 +832,35 @@ int main(int argc, char **argv) {
 			writer.write(sub, path);
 		}
 	}
+double x=0;
+double y=1;
+double z=0;
+double w=1;
+	G.forEdges([&](node u, node v){
+		if (truth.clusterOf(u) != truth.clusterOf(v)) {
+			if(dist->distance(u,v)>x){
+				x = dist->distance(u,v);
+			}
+			if(dist->distance(u,v)<y) {
+				y = dist->distance(u,v);
+			}
+		}
+	});
+	std::cout<< x << std::endl;
+	std::cout<< y << std::endl;
+
+	std::cout <<  "-----------------------------------" << std::endl;
+	G.forEdges([&](node u, node v){
+		if (truth.clusterOf(u) == truth.clusterOf(v)) {
+					if(dist->distance(u,v)>z){
+						z = dist->distance(u,v);
+					} else if(dist->distance(u,v)<w) {
+						w = dist->distance(u,v);
+					}
+				}
+		});
+	std::cout<< z << std::endl;
+		std::cout<< w << std::endl;
 
 
 	std::cout << "[EXIT] terminated normally" << std::endl;
