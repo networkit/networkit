@@ -14,8 +14,6 @@ namespace NetworKit {
 
 /**
  * Clustering algorithm due to Clauset, Newman and Moore.
- * TODO: Implementation requires faster data structure for handling next merge
- * (priority queue with internal access)
  */
 class CNM : public NetworKit::Clusterer {
 public:
@@ -28,27 +26,6 @@ public:
 	virtual std::string toString() {
 		return "CNM";
 	}
-
-
-	class Edge {
-		public:
-			Edge() {}
-			Edge(node u, node v, double delta) : u(u), v(v), delta(delta) {}
-			virtual ~Edge() {}
-
-			node getU();
-			node getV();
-			double getDelta();
-
-			bool operator>(const Edge &e1) const {
-				return delta > e1.delta;
-			}
-
-		private:
-			node u;
-			node v;
-			double delta;
-	};
 };
 
 }

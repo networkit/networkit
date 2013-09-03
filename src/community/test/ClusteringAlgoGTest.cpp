@@ -215,27 +215,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 }
 
 
-
-TEST_F(ClusteringAlgoGTest, testLouvainIndependent) {
-	count n = 500;
-	count k = 25;
-	double pin = 0.9;
-	double pout = 0.005;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
-
-	Louvain louvain("independent");
-	Clustering zeta = louvain.run(G);
-
-	INFO("number of clusters: " << zeta.numberOfClusters());
-
-	Modularity modularity;
-	INFO("modularity: " << modularity.getQuality(zeta, G));
-
-}
-
-
-TEST_F(ClusteringAlgoGTest, tryCNM) {
+TEST_F(ClusteringAlgoGTest, testCNM) {
 	count n = 200;
 	count k = 25;
 	double pin = 0.9;
@@ -244,16 +224,37 @@ TEST_F(ClusteringAlgoGTest, tryCNM) {
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
 	Modularity modularity;
-	CNM cnm;
 
+	// CNM with PQ
+	CNM cnm;
 	Clustering clustering = cnm.run(G);
 	INFO("CNM number of clusters: " << clustering.numberOfClusters());
 	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
+	EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
+	EXPECT_TRUE(clustering.isProper(G));
+}
+
+TEST_F(ClusteringAlgoGTest, tryCNM_WW) {
+	count n = 200;
+	count k = 25;
+	double pin = 0.9;
+	double pout = 0.005;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	// slow CNM
+	CNM_WW cnm_ww;
+	Clustering clustering = cnm_ww.run(G);
+	Modularity modularity;
+
+	INFO("CNM_WW number of clusters: " << clustering.numberOfClusters());
+	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
+	EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
 	EXPECT_TRUE(clustering.isProper(G));
 }
 
 
-TEST_F(ClusteringAlgoGTest, tryCNMandLouvain) {
+TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 	Modularity modularity;
 	CNM cnm;
 	Louvain louvain;
@@ -289,7 +290,7 @@ TEST_F(ClusteringAlgoGTest, tryCNMandLouvain) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testAgglomerativeAndLouvain) {
+TEST_F(ClusteringAlgoGTest, testParallelAgglomerativeAndLouvain) {
 	Modularity modularity;
 	ParallelAgglomerativeClusterer aggl;
 	Louvain louvain;

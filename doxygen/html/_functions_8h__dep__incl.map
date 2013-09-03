@@ -1,7 +1,25 @@
-<map id="src/aux/Functions.h" name="src/aux/Functions.h">
-<area shape="rect" id="node3" href="$_parallel_matcher_8h.html" title="src/matching/ParallelMatcher.h" alt="" coords="277,83,480,111"/>
-<area shape="rect" id="node9" href="$_community_detection_8cpp.html" title="src/CommunityDetection.cpp" alt="" coords="349,262,540,290"/>
-<area shape="rect" id="node5" href="$_parallel_agglomerative_clusterer_8h.html" title="src/community/ParallelAgglomerative\lClusterer.h" alt="" coords="5,161,245,205"/>
-<area shape="rect" id="node11" href="$_parallel_matcher_8cpp.html" title="src/matching/ParallelMatcher.cpp" alt="" coords="270,169,487,197"/>
-<area shape="rect" id="node7" href="$_parallel_agglomerative_clusterer_8cpp.html" title="src/community/ParallelAgglomerative\lClusterer.cpp" alt="" coords="5,254,245,298"/>
+<map id="src/auxiliary/Functions.h" name="src/auxiliary/Functions.h">
+<area shape="rect" id="node2" href="$_parallel_matcher_8h.html" title="src/matching/ParallelMatcher.h" alt="" coords="841,88,1047,115"/>
+<area shape="rect" id="node7" href="$_community_detection-_x_8cpp.html" title="src/CommunityDetection\l&#45;X.cpp" alt="" coords="1511,262,1677,303"/>
+<area shape="rect" id="node22" href="$_dynamic_community_detection-_x_8cpp.html" title="src/DynamicCommunityDetection\l&#45;X.cpp" alt="" coords="1597,81,1816,122"/>
+<area shape="rect" id="node23" href="$_networ_kit_config_8h.html" title="src/NetworKitConfig.h" alt="" coords="1841,88,1991,115"/>
+<area shape="rect" id="node24" href="$_selective_community_detection-_x_8cpp.html" title="src/SelectiveCommunityDetection\l&#45;X.cpp" alt="" coords="2016,81,2237,122"/>
+<area shape="rect" id="node3" href="$_parallel_agglomerative_clusterer_8h.html" title="src/community/ParallelAgglomerative\lClusterer.h" alt="" coords="1251,171,1492,213"/>
+<area shape="rect" id="node8" href="$_balanced_label_propagation_8h.html" title="src/partitioning/Balanced\lLabelPropagation.h" alt="" coords="252,262,420,303"/>
+<area shape="rect" id="node14" href="$_balanced_partitioner_8h.html" title="src/partitioning/Balanced\lPartitioner.h" alt="" coords="421,171,589,213"/>
+<area shape="rect" id="node18" href="$_parallel_matcher_8cpp.html" title="src/matching/ParallelMatcher.cpp" alt="" coords="613,179,832,205"/>
+<area shape="rect" id="node19" href="$_matcher_g_test_8h.html" title="src/matching/test/Matcher\lGTest.h" alt="" coords="857,171,1031,213"/>
+<area shape="rect" id="node21" href="$_parallel_matcher_g_test_8cpp.html" title="src/matching/test/Parallel\lMatcherGTest.cpp" alt="" coords="1056,171,1227,213"/>
+<area shape="rect" id="node4" href="$_parallel_agglomerative_clusterer_8cpp.html" title="src/community/ParallelAgglomerative\lClusterer.cpp" alt="" coords="1246,262,1487,303"/>
+<area shape="rect" id="node5" href="$_clustering_algo_g_test_8h.html" title="src/community/test\l/ClusteringAlgoGTest.h" alt="" coords="1061,262,1221,303"/>
+<area shape="rect" id="node6" href="$_clustering_algo_g_test_8cpp.html" title="src/community/test\l/ClusteringAlgoGTest.cpp" alt="" coords="1055,353,1228,394"/>
+<area shape="rect" id="node9" href="$_mapper_g_test_8h.html" title="src/mapping/test/MapperGTest.h" alt="" coords="12,360,228,387"/>
+<area shape="rect" id="node11" href="$_balanced_label_propagation_8cpp.html" title="src/partitioning/Balanced\lLabelPropagation.cpp" alt="" coords="252,353,420,394"/>
+<area shape="rect" id="node12" href="$_partitioning_algo_g_test_8h.html" title="src/partitioning/test\l/PartitioningAlgoGTest.h" alt="" coords="445,353,611,394"/>
+<area shape="rect" id="node10" href="$_mapper_g_test_8cpp.html" title="src/mapping/test/MapperGTest.cpp" alt="" coords="5,451,235,477"/>
+<area shape="rect" id="node13" href="$_partitioning_algo_g_test_8cpp.html" title="src/partitioning/test\l/PartitioningAlgoGTest.cpp" alt="" coords="438,443,617,485"/>
+<area shape="rect" id="node15" href="$_balanced_partitioner_8cpp.html" title="src/partitioning/Balanced\lPartitioner.cpp" alt="" coords="444,262,612,303"/>
+<area shape="rect" id="node16" href="$_kernighan_lin_8h.html" title="src/partitioning/Kernighan\lLin.h" alt="" coords="636,262,809,303"/>
+<area shape="rect" id="node17" href="$_kernighan_lin_8cpp.html" title="src/partitioning/Kernighan\lLin.cpp" alt="" coords="636,353,809,394"/>
+<area shape="rect" id="node20" href="$_matcher_g_test_8cpp.html" title="src/matching/test/Matcher\lGTest.cpp" alt="" coords="857,262,1031,303"/>
 </map>

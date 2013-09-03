@@ -25,7 +25,7 @@
 #include "../../clustering/ClusteringGenerator.h"
 #include "../DotGraphWriter.h"
 #include "../DGSReader.h"
-#include "../EdgeListReader.h"
+#include "../EdgeListIO.h"
 #include "../EdgeListClusteringReader.h"
 #include "../SNAPEdgeListClusteringReader.h"
 #include "../../clustering/Clustering.h"

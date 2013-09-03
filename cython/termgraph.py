@@ -78,7 +78,7 @@ def graph(labels, values, width=50):
 def print_blocks(label, count, step):
 	#TODO: add flag to hide data labels
 	blocks = int(count / step)
-	print("{}: ".format(label), end=' ')
+	print("{0:5}: ".format(label), end=' ')
 	if count < step:
 		sys.stdout.write(sm_tick)
 	else:

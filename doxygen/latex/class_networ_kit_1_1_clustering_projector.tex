@@ -12,11 +12,11 @@
 \item 
 virtual \hyperlink{class_networ_kit_1_1_clustering_projector_a82ee263da155814c66fa78d348df6def}{$\sim$\-Clustering\-Projector} ()
 \item 
-virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_projector_a6840a5c75cf9b8c2fd985ca20b0ba19b}{project\-Back} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gcoarse, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gfine, \hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} $>$ \&fine\-To\-Coarse, \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&zeta\-Coarse)
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_projector_a6840a5c75cf9b8c2fd985ca20b0ba19b}{project\-Back} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gcoarse, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gfine, \hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ \&fine\-To\-Coarse, \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&zeta\-Coarse)
 \begin{DoxyCompactList}\small\item\em Given. \end{DoxyCompactList}\item 
-virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_projector_a9a53bf1165f4c1d98b0ffa97cead81b5}{project\-Back\-To\-Finest} (\hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&zeta\-Coarse, std\-::vector$<$ \hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} $>$ $>$ \&maps, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gfinest)
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_projector_a9a53bf1165f4c1d98b0ffa97cead81b5}{project\-Back\-To\-Finest} (\hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&zeta\-Coarse, std\-::vector$<$ \hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ $>$ \&maps, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gfinest)
 \begin{DoxyCompactList}\small\item\em Project a clustering $^\wedge$\{i\} of the coarse graph G$^\wedge$\{i\}Êback to the finest graph G$^\wedge$\{0\}, using the hierarchy of fine-\/$>$coarse maps. \end{DoxyCompactList}\item 
-virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_projector_aa338636fe34f809d97e27d51a7fb5610}{project\-Coarse\-Graph\-To\-Finest\-Clustering} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gcoarse, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gfinest, std\-::vector$<$ \hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a61914158fd771265be48de9942369160}{node} $>$ $>$ \&maps)
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_projector_aa338636fe34f809d97e27d51a7fb5610}{project\-Coarse\-Graph\-To\-Finest\-Clustering} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gcoarse, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gfinest, std\-::vector$<$ \hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ $>$ \&maps)
 \begin{DoxyCompactList}\small\item\em Assuming that the coarse graph resulted from contracting and represents a clustering of the finest graph. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -67,15 +67,18 @@ Definition at line 17 of file Clustering\-Projector.\-cpp.
 
 Given. 
 
-\begin{DoxyVerb}@param[in]  Gcoarse
-@param[in]  Gfine
-@param[in]  fineToCoarse
-@param[in]  zetaCoarse  a clustering of the coarse graph
-\end{DoxyVerb}
 
-
-, project the clustering back to the fine graph to create a clustering of the fine graph. 
 \begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em Gcoarse} & \\
+\hline
+\mbox{\tt in}  & {\em Gfine} & \\
+\hline
+\mbox{\tt in}  & {\em fine\-To\-Coarse} & \\
+\hline
+\mbox{\tt in}  & {\em zeta\-Coarse} & a clustering of the coarse graph \begin{DoxyVerb}, project the clustering back to the fine graph to create a clustering of the fine graph.
+\end{DoxyVerb}
+ \\
+\hline
 \mbox{\tt out}  & {\em a} & clustering of the fine graph \\
 \hline
 \end{DoxyParams}
