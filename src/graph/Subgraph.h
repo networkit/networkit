@@ -18,9 +18,10 @@ namespace NetworKit {
 class Subgraph {
 public:
 	Subgraph();
+
 	virtual ~Subgraph();
 
-	static Graph fromNodes(Graph G, std::unordered_set<node> nodeMap);
+	static Graph fromNodes(const Graph& G, const std::unordered_set<node>& nodes);
 
 };
 

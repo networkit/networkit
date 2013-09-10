@@ -18,14 +18,13 @@ Subgraph::~Subgraph() {
 	// TODO Auto-generated destructor stub
 }
 
-Graph Subgraph::fromNodes(Graph G,
-		std::unordered_set<node> nodeMap) {
+Graph Subgraph::fromNodes(const Graph& G, const std::unordered_set<node>& nodes) {
 
 	Graph returnGraph;
 	std::unordered_map<node,node> setNodesToSubgraphNodes;
 
 	int i = 0;
-	for (node setNode: nodeMap) {
+	for (node setNode: nodes) {
 		i++;
 		node addedNode = returnGraph.addNode();
 		setNodesToSubgraphNodes[setNode] = addedNode;
@@ -37,13 +36,13 @@ Graph Subgraph::fromNodes(Graph G,
 		bool gotU = true;
 		bool gotV = true;
 
-		auto got = nodeMap.find(u);
-		if (got == nodeMap.end())
+		auto got = nodes.find(u);
+		if (got == nodes.end())
 			 gotU = false;
 
 		if (gotU == true) {
-			auto got = nodeMap.find(v);
-			if (got == nodeMap.end())
+			auto got = nodes.find(v);
+			if (got == nodes.end())
 				gotV = false;
 		}
 

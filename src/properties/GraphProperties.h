@@ -46,6 +46,8 @@ public:
 	static std::vector<double> localClusteringCoefficientPerDegree(Graph& G);
 
 	static std::pair<count, count> minMaxDegree(Graph& G);
+
+	static double averageDegree(const Graph& G);
 };
 
 } /* namespace NetworKit */

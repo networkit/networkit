@@ -125,4 +125,17 @@ std::pair<count, count> GraphProperties::minMaxDegree(Graph& G) {
 	return std::pair<count, count>(min, max);
 }
 
+
+double GraphProperties::averageDegree(const Graph& G) {
+
+	count n = G.numberOfNodes();
+
+	count degSum = G.parallelSumForNodes([&](node v){
+		return G.degree(v);
+	});
+
+	double avgDeg = degSum / (double) n;
+	return avgDeg;
+}
+
 } /* namespace NetworKit */

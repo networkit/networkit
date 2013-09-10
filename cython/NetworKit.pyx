@@ -268,6 +268,7 @@ cdef class Louvain(Clusterer):
 cdef extern from "../src/properties/GraphProperties.h" namespace "NetworKit::GraphProperties":
 	# static methods live in the class namespace, so declare them here
 	pair[count, count] minMaxDegree(_Graph _G)
+	double averageDegree(_Graph _G)
 	vector[count] degreeDistribution(_Graph _G)
 	vector[double] localClusteringCoefficients(_Graph _G)
 	double averageLocalClusteringCoefficient(_Graph _G)
@@ -281,6 +282,10 @@ cdef class GraphProperties:
 	@staticmethod
 	def minMaxDegree(Graph G not None):
 		return minMaxDegree(G._this)
+
+	@staticmethod
+	def averageDegree(Graph G not None):
+		return averageDegree(G._this)
 
 	@staticmethod
 	def degreeDistribution(Graph G not None):
@@ -434,8 +439,13 @@ def readGraph(path, format=None):
 			reader = METISGraphReader()
 		elif (format is "edgelist"):
 			reader = EdgeListIO('\t', 1)
-	G = reader.read(path)
-	return G
+
+	with open(path, "r") as file:	# catch a wrong path before it crashes the interpreter
+		G = reader.read(path)
+		return G
+
+	return None
+	
 
 
 
@@ -484,6 +494,7 @@ def properties(nkG):
 	n = nkG.numberOfNodes()
 	m = nkG.numberOfEdges()
 	minMaxDeg = GraphProperties.minMaxDegree(nkG)
+	avgDeg = GraphProperties.averageDegree(nkG)
 
 	# calculating diameter for small graphs
 	if (n < 100):
@@ -491,6 +502,16 @@ def properties(nkG):
 		dia = nx.diameter(nxG)
 	else:
 		dia = "[omitted]"
+
+
+	# calculate eccentricity
+	if (n < 100):
+		eccentricities = nx.eccentricity(G)
+		ecc = sum(val for val in eccentricities.values()) / n
+	else:
+		ecc = "[omitted]"
+
+
 
 	# perform PLP and PLM community detection
 	print("performing community detection: PLP")
@@ -511,15 +532,28 @@ def properties(nkG):
 	histo = nx.degree_histogram(nxG)
 	(labels, histo) = compressHistogram(histo, nbins=25)
 
+	# connected components
+	components nx.connected_components(nxG)
+	nComponents = len(components)
+	componentSizes = [len(component) for component in components]
+	componentSizes.sort(reverse=True) # sort in descending order
+	sizeLargestComponent = componentsSizes[0]
+
+	# betweenness centrality
+	# TODO: average betweenness centrality?
+
 	props = {
 		 "name": nkG.getName(),
 		 "n": n,
 		 "m": m,
 		 "minDeg": minMaxDeg[0],
 		 "maxDeg": minMaxDeg[1],
+		 "avgDeg": 
 		 "avglcc": GraphProperties.averageLocalClusteringCoefficient(nkG),
-		 "components": nx.number_connected_components(nxG),
+		 "nComponents": nComponents,
+		 "sizeLargestComponent": sizeLargestComponent,
 		 "dia": dia,
+		 "ecc": ecc,
 		 "isolates": len(nx.isolates(nxG)),
 		 "loops": len(nxG.selfloop_edges()),
 		 "ncomPLP": ncomPLP,
@@ -542,13 +576,16 @@ def showProperties(nkG):
 		["edges (m)", props["m"]],
 		["min. degree", props["minDeg"]],
 		["max. degree", props["maxDeg"]],
+		["avg. degree", props["avgDeg"]],
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
 		["density", "{0:.6f}".format(props["dens"])]
 	]
 	pathStructure = [
-		["connected components", props["components"]],
-		["diameter", props["dia"]]
+		["connected components", props["nComponents"]],
+		["size of largest component", props["sizeLargestComponent"]],
+		["diameter", props["dia"]],
+		["avg. eccentricity", props["ecc"]],
 	]
 	
 	miscProperties = [
