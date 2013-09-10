@@ -1,0 +1,171 @@
+\hypertarget{class_networ_kit_1_1_clustering_generator}{\section{Networ\-Kit\-:\-:Clustering\-Generator Class Reference}
+\label{class_networ_kit_1_1_clustering_generator}\index{Networ\-Kit\-::\-Clustering\-Generator@{Networ\-Kit\-::\-Clustering\-Generator}}
+}
+
+
+{\ttfamily \#include $<$Clustering\-Generator.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_clustering_generator_a9f953e4296caa047ca8810b1938264b8}{Clustering\-Generator} ()
+\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering_generator_ad63aa03c038650c38d6a1bf767c734ff}{$\sim$\-Clustering\-Generator} ()
+\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_generator_a0a9dc09f93d77c77562792b3537cf6c1}{make\-Singleton\-Clustering} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
+\begin{DoxyCompactList}\small\item\em Make a singleton clustering of G, i.\-e. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_generator_ab1fb839d72c6ca2fcf0b7c2896fcd6e3}{make\-One\-Clustering} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
+\begin{DoxyCompactList}\small\item\em Make a 1-\/clustering of G, i.\-e. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_generator_a07dd355941235150411b8cd17cff1da5}{make\-Random\-Clustering} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G, \hyperlink{namespace_networ_kit_a76b399edfa50ae72e4aa86007aaa800a}{count} k)
+\begin{DoxyCompactList}\small\item\em Make a clustering with k clusters to which the nodes are randomly assigned. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_generator_ad6451e5ec58de33311363fe11f4dee48}{make\-Continuous\-Balanced\-Clustering} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G, \hyperlink{namespace_networ_kit_a76b399edfa50ae72e4aa86007aaa800a}{count} k)
+\begin{DoxyCompactList}\small\item\em Make a clustering with k clusters. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 16 of file Clustering\-Generator.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_clustering_generator_a9f953e4296caa047ca8810b1938264b8}{\index{Networ\-Kit\-::\-Clustering\-Generator@{Networ\-Kit\-::\-Clustering\-Generator}!Clustering\-Generator@{Clustering\-Generator}}
+\index{Clustering\-Generator@{Clustering\-Generator}!NetworKit::ClusteringGenerator@{Networ\-Kit\-::\-Clustering\-Generator}}
+\subsubsection[{Clustering\-Generator}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Clustering\-Generator\-::\-Clustering\-Generator (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_clustering_generator_a9f953e4296caa047ca8810b1938264b8}
+
+
+Definition at line 12 of file Clustering\-Generator.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_clustering_generator_ad63aa03c038650c38d6a1bf767c734ff}{\index{Networ\-Kit\-::\-Clustering\-Generator@{Networ\-Kit\-::\-Clustering\-Generator}!$\sim$\-Clustering\-Generator@{$\sim$\-Clustering\-Generator}}
+\index{$\sim$\-Clustering\-Generator@{$\sim$\-Clustering\-Generator}!NetworKit::ClusteringGenerator@{Networ\-Kit\-::\-Clustering\-Generator}}
+\subsubsection[{$\sim$\-Clustering\-Generator}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Clustering\-Generator\-::$\sim$\-Clustering\-Generator (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_generator_ad63aa03c038650c38d6a1bf767c734ff}
+
+
+Definition at line 17 of file Clustering\-Generator.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_clustering_generator_ad6451e5ec58de33311363fe11f4dee48}{\index{Networ\-Kit\-::\-Clustering\-Generator@{Networ\-Kit\-::\-Clustering\-Generator}!make\-Continuous\-Balanced\-Clustering@{make\-Continuous\-Balanced\-Clustering}}
+\index{make\-Continuous\-Balanced\-Clustering@{make\-Continuous\-Balanced\-Clustering}!NetworKit::ClusteringGenerator@{Networ\-Kit\-::\-Clustering\-Generator}}
+\subsubsection[{make\-Continuous\-Balanced\-Clustering}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Clustering\-Generator\-::make\-Continuous\-Balanced\-Clustering (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{{\bf count}}]{k}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_generator_ad6451e5ec58de33311363fe11f4dee48}
+
+
+Make a clustering with k clusters. 
+
+The first n/k nodes are assigned to the first cluster, the next n/k nodes to the second cluster and so on. 
+
+Definition at line 60 of file Clustering\-Generator.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_generator_ad6451e5ec58de33311363fe11f4dee48_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_clustering_generator_ab1fb839d72c6ca2fcf0b7c2896fcd6e3}{\index{Networ\-Kit\-::\-Clustering\-Generator@{Networ\-Kit\-::\-Clustering\-Generator}!make\-One\-Clustering@{make\-One\-Clustering}}
+\index{make\-One\-Clustering@{make\-One\-Clustering}!NetworKit::ClusteringGenerator@{Networ\-Kit\-::\-Clustering\-Generator}}
+\subsubsection[{make\-One\-Clustering}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Clustering\-Generator\-::make\-One\-Clustering (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_generator_ab1fb839d72c6ca2fcf0b7c2896fcd6e3}
+
+
+Make a 1-\/clustering of G, i.\-e. 
+
+a clustering in which all nodes belong to the same cluster. 
+
+Definition at line 28 of file Clustering\-Generator.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_generator_ab1fb839d72c6ca2fcf0b7c2896fcd6e3_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_clustering_generator_a07dd355941235150411b8cd17cff1da5}{\index{Networ\-Kit\-::\-Clustering\-Generator@{Networ\-Kit\-::\-Clustering\-Generator}!make\-Random\-Clustering@{make\-Random\-Clustering}}
+\index{make\-Random\-Clustering@{make\-Random\-Clustering}!NetworKit::ClusteringGenerator@{Networ\-Kit\-::\-Clustering\-Generator}}
+\subsubsection[{make\-Random\-Clustering}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Clustering\-Generator\-::make\-Random\-Clustering (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{{\bf count}}]{k}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_generator_a07dd355941235150411b8cd17cff1da5}
+
+
+Make a clustering with k clusters to which the nodes are randomly assigned. 
+
+
+
+Definition at line 38 of file Clustering\-Generator.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_generator_a07dd355941235150411b8cd17cff1da5_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_clustering_generator_a0a9dc09f93d77c77562792b3537cf6c1}{\index{Networ\-Kit\-::\-Clustering\-Generator@{Networ\-Kit\-::\-Clustering\-Generator}!make\-Singleton\-Clustering@{make\-Singleton\-Clustering}}
+\index{make\-Singleton\-Clustering@{make\-Singleton\-Clustering}!NetworKit::ClusteringGenerator@{Networ\-Kit\-::\-Clustering\-Generator}}
+\subsubsection[{make\-Singleton\-Clustering}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Clustering\-Generator\-::make\-Singleton\-Clustering (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_generator_a0a9dc09f93d77c77562792b3537cf6c1}
+
+
+Make a singleton clustering of G, i.\-e. 
+
+a clustering in which every node belongs to its own cluster. 
+
+Definition at line 21 of file Clustering\-Generator.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_generator_a0a9dc09f93d77c77562792b3537cf6c1_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/clustering/\hyperlink{_clustering_generator_8h}{Clustering\-Generator.\-h}\item 
+src/clustering/\hyperlink{_clustering_generator_8cpp}{Clustering\-Generator.\-cpp}\end{DoxyCompactItemize}

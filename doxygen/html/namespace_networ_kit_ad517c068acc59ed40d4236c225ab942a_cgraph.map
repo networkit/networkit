@@ -1,0 +1,6 @@
+<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
+<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#a498eb0beb05b992d12b246fcf3b76070" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="197,5,376,49"/>
+<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="189,73,384,101"/>
+<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a8c2ee66ae18da530bca98bfd0a13ed44" title="SUMS." alt="" coords="193,125,380,169"/>
+<area shape="rect" id="node9" href="$class_networ_kit_1_1_graph.html#a5cfc35c769c1edc8805aa9b93ac096cf" title="Iterate over all edges of the graph and call handler (lambda closure)." alt="" coords="432,125,635,169"/>
+</map>
