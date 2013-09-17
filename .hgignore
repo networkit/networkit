@@ -6,6 +6,7 @@ syntax: regexp
 \.mk$
 \.o$
 .DS_Store
+SConstruct
 
 syntax: regexp
 ^output$

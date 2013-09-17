@@ -45,7 +45,7 @@ macbook.Append(CCPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
 
 ### link
 macbook.Append(LIBS = ["gtest", "log4cxx"])
-macbook.Append(LIBPATH = ["/Users/cls/workspace/gtest", \
+macbook.Append(LIBPATH = ["/usr/lib/gtest", \
                             "/usr/local/Cellar/log4cxx/0.10.0/lib"])
 macbook.Append(LINKFLAGS = ["-std=c++11"])
 
@@ -53,6 +53,26 @@ macbook.Append(LINKFLAGS = ["-std=c++11"])
 macbook["CC"] = "gcc-4.7"
 macbook["CXX"] = "g++-4.7"
 
+## environment: lappy
+lappy = Environment()
+### include
+#myenv.Append(CPPPATH = [])
+#lappy.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
+#                          "/Users/cls/workspace/gtest/include", \
+#                          "/usr/local/Cellar/log4cxx/0.10.0/include"])
+#lappy.Append(CCPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
+#                          "/Users/cls/workspace/gtest/include", \
+#                          "/usr/local/Cellar/log4cxx/0.10.0/include"])
+
+
+### link
+lappy.Append(LIBS = ["gtest", "log4cxx"])
+lappy.Append(LIBPATH = ["/usr/src/gtest"])						# TODO: add library paths here # should work like this
+lappy.Append(LINKFLAGS = ["-std=c++11"])
+
+### compiler & flags
+lappy["CC"] = "gcc-4.8"
+lappy["CXX"] = "g++-4.8"
 
 
 ## environment: compute
@@ -69,8 +89,8 @@ compute.Append(LIBPATH = [os.path.join(home_path, "workspace/gtest")])
 compute.Append(LINKFLAGS = ["-std=c++11"])
 
 ### compiler & flags
-compute["CC"] = "gcc-4.7"
-compute["CXX"] = "g++-4.7"
+compute["CC"] = "gcc-4.8"
+compute["CXX"] = "g++-4.8"
 
 # preprocessor defines
 compute.Append(CPPDEFINES=["_GNU_SOURCE"]) 
@@ -161,7 +181,7 @@ AddOption("--machine",
           help="specify the machine (environment) on which to build")
 
 
-environments = {"macbook" : macbook, "compute" : compute, "mac_hm" : mac_hm, "comp_hm" : comp_hm, "ic2": ic2}
+environments = {"macbook" : macbook, "compute" : compute, "mac_hm" : mac_hm, "comp_hm" : comp_hm, "ic2": ic2, "lappy" : lappy}
 
 try:
     env = environments[GetOption("machine")]
