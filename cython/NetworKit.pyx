@@ -533,7 +533,7 @@ def properties(nkG):
 	(labels, histo) = compressHistogram(histo, nbins=25)
 
 	# connected components
-	components nx.connected_components(nxG)
+	components = nx.connected_components(nxG)
 	nComponents = len(components)
 	componentSizes = [len(component) for component in components]
 	componentSizes.sort(reverse=True) # sort in descending order
