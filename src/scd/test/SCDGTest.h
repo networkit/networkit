@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <gtest/gtest.h>
 
+#include "../TSimilarity.h"
 #include "../../graph/Graph.h"
 #include "../GreedyCommunityExpansion.h"
 #include "../TGreedyCommunityExpansion.h"

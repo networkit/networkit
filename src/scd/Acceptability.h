@@ -1,8 +1,8 @@
 /*
  * Acceptability.h
  *
- *  Created on: 16.06.2013
- *      Author: Yassine Marrakchi
+ * Created on: 16.06.2013
+ * Author: cls, Yassine Marrakchi
  */
 
 #ifndef ACCEPTABILITY_H_
@@ -12,13 +12,14 @@
 #include <unordered_set>
 
 namespace NetworKit {
+
 /**
  * Acceptability measures quantify how likely a node from the community shell
  * is to improve the community when it is included.
  */
 class Acceptability {
 public:
-	const Graph* G;								//!< pointer to current graph
+	const Graph* G;							//!< pointer to current graph
 	std::unordered_set<node>* community;	//!< pointer to current community
 	std::unordered_set<node>* shell;		//!< pointer to current shell
 public:
@@ -38,6 +39,11 @@ public:
 	virtual double getValue(node v) = 0;
 };
 
+/**
+ * Return the same value for every node.
+ *
+ * This class is used for variants without acceptability
+ */
 class DummySimilarity: public Acceptability {
 
 public:
