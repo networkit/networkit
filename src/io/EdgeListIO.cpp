@@ -11,9 +11,10 @@ namespace NetworKit {
 
 
 EdgeListIO::EdgeListIO() {
+	separator = '	';
 }
 
-EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(separator), firstNode(firstNode) {
+EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(), firstNode(firstNode) {
 
 }
 

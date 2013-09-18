@@ -20,6 +20,7 @@
 #include "../../graph/GraphGenerator.h"
 
 
+
 namespace NetworKit {
 
 class GraphGTest: public testing::Test {

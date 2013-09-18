@@ -419,9 +419,9 @@ int main(int argc, char **argv) {
 				std::string second = Aux::StringTools::split(detectorArg, ':')[2];
 				if (first == "Conductance" || first == "ModularityM") {
 					if (second == "Dummy") {
-						algo = new TGreedyExpansion<TConductance, TDummySimilarity>(G);
+						algo = new TGreedyExpansion<TLocalModularityM, TDummySimilarity>(G);
 					} else if (second == "NodesSimilarity") {
-						algo = new TGreedyExpansion<TConductance, TNodesSimilarity>(G);
+						algo = new TGreedyExpansion<TLocalModularityM, TNodesSimilarity>(G);
 					}
 				} else if (first == "ModularityL") {
 					if (second == "Dummy") {
