@@ -14,19 +14,28 @@
 
 namespace NetworKit {
 
+/**
+ * Generates seed nodes.
+ */
 class SeedSetGenerator {
 
 public:
 
+	/**
+	 * @param[in] G		pointer to the current graph
+	 */
 	SeedSetGenerator(const Graph& G);
 
 	virtual ~SeedSetGenerator();
 
+	/**
+	 * @param[in] k 	number of required seed nodes
+	 */
 	virtual std::unordered_set<node> getSeeds(count k) = 0;
 
 protected:
 
-	const Graph& G;
+	const Graph& G;  	//!< pointer to current graph
 
 };
 

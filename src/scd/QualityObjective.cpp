@@ -1,22 +1,25 @@
 /*
  * QualityObjective.cpp
-
  *
  *  Created on: 16.06.2013
- *      Author: Yassine Marrakchi
+ *      Author: cls, Yassine Marrakchi
  */
 
 #include "QualityObjective.h"
 
 namespace NetworKit {
 
-QualityObjective::QualityObjective(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary):nInternEdges(0), nNodes(0), nBoundaryEdges(0), volume(0) {
+QualityObjective::QualityObjective(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary){
 	this->G = &G;
 	this->community = &community;
 	this->boundary = &boundary;
 	this->degSum = this->G->parallelSumForNodes([&](node u){
 		return this->G->degree(u);
 	});
+	this->nInternEdges = 0;
+	this->nNodes = 0;
+	this->nBoundaryEdges = 0;
+	this->volume = 0;
 }
 
 QualityObjective::~QualityObjective() {

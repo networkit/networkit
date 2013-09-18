@@ -2,7 +2,7 @@
  * TQualityObjective.cpp
  *
  *  Created on: 24.06.2013
- *      Author: cls
+ *      Author: cls, Yassine Marrakchi
  */
 
 #include "TQualityObjective.h"
@@ -192,7 +192,7 @@ std::vector<double> TLocalModularityL::getValue(node v) {
 		return result;
 	}
 	result.push_back(
-			(((double) (this->nInternEdges + inside)) / (community->size() + 1))
+			(((double) (this->nInternEdges + 2 * inside)) / (community->size() + 1))
 					/ ((this->nBoundaryEdges - core + outside) / bound));
 	result.push_back(this->nBoundaryEdges - core + outside);
 	result.push_back(this->nInternEdges + inside);
