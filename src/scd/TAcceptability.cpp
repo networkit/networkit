@@ -2,7 +2,7 @@
  * TAcceptability.cpp
  *
  *  Created on: 24.06.2013
- *      Author: cls
+ *      Author: cls, Yassine Marrakchi
  */
 
 #include "TAcceptability.h"

@@ -1,8 +1,9 @@
 /*
  * SelectiveDissimilarityMeasure.h
+
  *
  *  Created on: 18.06.2013
- *      Author: cls
+ *      Author: cls, Yassine Marrakchi
  */
 
 #ifndef SELECTIVEDISSIMILARITYMEASURE_H_
@@ -29,11 +30,20 @@ public:
 
 	virtual ~SelectiveDissimilarityMeasure();
 
+	/**
+	 * @param[in] seedNode		seed node
+	 * @param[in] community		pointer to the considered community
+	 * @param[in] groundTruth 	pointer to the ground truth clustering
+	 *
+	 * return dissimilarity value
+	 */
 	virtual double localDissimilarity(const node seedNode,const std::unordered_set<node>& community, const Clustering& groundTruth) = 0;
 
-	virtual double getDissimilarity(const std::unordered_map<node, std::unordered_set<node> > communities, const Clustering& groundTruth) = 0;
 };
 
+/**
+ * Jaccard index as selective similarity measure
+ */
 class JaccardIndex : SelectiveDissimilarityMeasure {
 
 public:
@@ -44,9 +54,11 @@ public:
 
 	virtual double localDissimilarity(const node seedNode,const std::unordered_set<node>& community, const Clustering& groundTruth);
 
-	virtual double getDissimilarity(const std::unordered_map<node, std::unordered_set<node> > communities, const Clustering& groundTruth);
 };
 
+/**
+ * Precision as selective similarity measure
+ */
 class Precision : SelectiveDissimilarityMeasure {
 
 public:
@@ -57,9 +69,11 @@ public:
 
 	double localDissimilarity(const node seedNode,const std::unordered_set<node>& community, const Clustering& groundTruth);
 
-	virtual double getDissimilarity(const std::unordered_map<node, std::unordered_set<node> > communities, const Clustering& groundTruth);
 };
 
+/**
+ * Recall as selective similarity measure
+ */
 class Recall : SelectiveDissimilarityMeasure {
 
 public:
@@ -70,9 +84,11 @@ public:
 
 	double localDissimilarity(const node seedNode,const std::unordered_set<node>& community, const Clustering& groundTruth);
 
-	virtual double getDissimilarity(const std::unordered_map<node, std::unordered_set<node> > communities, const Clustering& groundTruth);
 };
 
+/**
+ * NMI as selective similarity measure
+ */
 class NMI : SelectiveDissimilarityMeasure {
 
 public:
@@ -82,8 +98,6 @@ public:
 	virtual ~NMI();
 
 	double localDissimilarity(const node seedNode,const std::unordered_set<node>& community, const Clustering& groundTruth);
-
-	virtual double getDissimilarity(const std::unordered_map<node, std::unordered_set<node> > communities, const Clustering& groundTruth);
 
 };
 

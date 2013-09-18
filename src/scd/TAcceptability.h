@@ -2,7 +2,7 @@
  * TAcceptability.h
  *
  *  Created on: 24.06.2013
- *      Author: cls
+ *      Author: cls, Yassine Marrakchi
  */
 
 #ifndef TACCEPTABILITY_H_
@@ -12,6 +12,10 @@
 
 namespace NetworKit {
 
+/**
+ * Acceptability measures quantify how likely a node from the community shell
+ * is to improve the community when it is included.
+ */
 class TAcceptability {
 public:
 	/**
@@ -35,7 +39,11 @@ protected:
 
 };
 
-
+/**
+ * Return the same value for every node.
+ *
+ * This class is used for variants without acceptability
+ */
 class TDummyAcceptability: public TAcceptability {
 
 public:
@@ -47,6 +55,11 @@ public:
 	double getValue(node v);
 };
 
+/**
+ * Get the node cluster similarity value for a node.
+ *
+ * 	$\frac{|N(C) \cap N(v) |}{|N(C) \cup N(v)|}$
+ */
 class TNodeClusterSimilarity: public TAcceptability {
 
 public:

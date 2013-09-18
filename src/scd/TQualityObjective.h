@@ -2,7 +2,7 @@
  * TQualityObjective.h
  *
  *  Created on: 24.06.2013
- *      Author: cls
+ *      Author: cls, Yassine Marrakchi
  */
 
 #ifndef TQUALITYOBJECTIVE_H_
@@ -12,10 +12,18 @@
 
 namespace NetworKit {
 
+/**
+ * Quality objective quantifies the goodness of a given community.
+ */
 class TQualityObjective {
 
 public:
 
+	/**
+	 * @param[in]	G			the graph
+	 * @param[in]	community	the currently expanding community
+	 * @param[in]	boundary	the current boundary and the number of outgoing nodes pro node
+	 */
 	TQualityObjective(const Graph& G, std::unordered_set<node>& community, std::unordered_map<node,count>& boundary);
 
 	virtual ~TQualityObjective();
@@ -41,7 +49,9 @@ public:
 };
 
 /**
- * LocalModularityM as a quality objective function
+ * Local modularity M as a quality objective function. Unlike standard local modularity M,
+ * higher values are better. This measure is defined as the ratio of internal edges and
+ * external edges
  */
 class TLocalModularityM : public TQualityObjective {
 
@@ -56,6 +66,11 @@ public:
 
 };
 
+/**
+ * Local modularity L as a quality objective function.
+ * Higher values are better.
+ * This measure is defined as the ratio of internal density and external density.
+ */
 class TLocalModularityL : public TQualityObjective {
 
 public:

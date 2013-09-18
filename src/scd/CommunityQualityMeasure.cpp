@@ -1,8 +1,9 @@
 /*
+ *
  * CommunityQualityMeasure.cpp
  *
- *  Created on: 18.06.2013
- *      Author: cls
+ * Created on: 18.06.2013
+ * Author: cls, Yassine Marrakchi
  */
 
 #include "CommunityQualityMeasure.h"

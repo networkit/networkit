@@ -2,7 +2,7 @@
  * TQualityObjective.cpp
  *
  *  Created on: 24.06.2013
- *      Author: cls
+ *      Author: cls, Yassine Marrakchi
  */
 
 #include "TQualityObjective.h"

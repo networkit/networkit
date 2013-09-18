@@ -1,8 +1,8 @@
 /*
  * CommunityTrimming.cpp
  *
- *  Created on: 10.06.2013
- *      Author: cls
+ * Created on: 10.06.2013
+ * Author: cls, Yassine Marrakchi
  */
 
 #include "CommunityTrimming.h"
