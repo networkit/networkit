@@ -52,6 +52,8 @@
 #include "scd/QualityObjective.h"
 #include "scd/Acceptability.h"
 #include "scd/CommunityTrimming.h"
+#include "scd/TGreedyExpansion.h"
+#include "scd/TSimilarity.h"
 #include "distmeasures/TAlgebraicDistance.h"
 #include "distmeasures/TNeighborhoodDistance.h"
 #include "distmeasures/TNodeDistance.h"
@@ -179,6 +181,9 @@ const OptionParser::Descriptor usage[] =
 
 // MAIN FUNCTIONS
 
+/**
+ * Read a graph from a file.
+ */
 /**
  * Read a graph from a file.
  */
@@ -403,11 +408,34 @@ int main(int argc, char **argv) {
 	CommunityTrimming* trimming = NULL;
 	NodeDistance* dist = NULL;
 
+	std::cout<< G.numberOfNodes() <<std::endl;
 	if (options[DETECTOR]) {
 		std::string detectorArg = options[DETECTOR].arg;
 		std::string detectorName = Aux::StringTools::split(detectorArg, ':')[0];
 
-		if (detectorName == "TSelectiveSCAN") {
+		if (detectorName == "TGE") {
+			if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
+				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
+				std::string second = Aux::StringTools::split(detectorArg, ':')[2];
+				if (first == "Conductance" || first == "ModularityM") {
+					if (second == "Dummy") {
+						algo = new TGreedyExpansion<TConductance, TDummySimilarity>(G);
+					} else if (second == "NodesSimilarity") {
+						algo = new TGreedyExpansion<TConductance, TNodesSimilarity>(G);
+					}
+				} else if (first == "ModularityL") {
+					if (second == "Dummy") {
+						algo = new TGreedyExpansion<TLocalModularityL, TDummySimilarity>(G);
+					} else  if (second == "NodesSimilarity") {
+						algo = new TGreedyExpansion<TLocalModularityL, TNodesSimilarity>(G);
+					}
+			    else {
+						std::cout << "[ERROR] invalid arguments " << std::endl;
+						exit(1);
+					}
+				}
+			}
+		} else if (detectorName == "TSelectiveSCAN") {
 			if (Aux::StringTools::split(detectorArg, ':').size() > 1) {
 				if (Aux::StringTools::split(detectorArg, ':').back() == "TAD") {
 					algo = new TSelectiveSCAN<TAlgebraicDistance>(G, param,
@@ -767,8 +795,9 @@ int main(int argc, char **argv) {
 	running1.start();
 
 	for (count i = 0; i < runs; i++) {
-		running2.start();
+
 		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
+		running2.start();
 		std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> result =
 				algo->run(seeds);
 		running2.stop();
@@ -798,6 +827,8 @@ int main(int argc, char **argv) {
 							<< recall.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
+					std::cout<<v.second.first.size()<<std::endl;
+
 				}
 			}
 		} else {
@@ -829,7 +860,6 @@ int main(int argc, char **argv) {
 			writer.write(sub, path);
 		}
 	}
-
 
 	std::cout << "[EXIT] terminated normally" << std::endl;
 	return 0;

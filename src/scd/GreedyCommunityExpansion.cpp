@@ -2,7 +2,7 @@
  * GreedyCommunityExpansion.cpp
  *
  *  Created on: 03.06.2013
- *      Author: cls
+ *  Author: cls, Yassine Marrakchi
  */
 
 #include "GreedyCommunityExpansion.h"

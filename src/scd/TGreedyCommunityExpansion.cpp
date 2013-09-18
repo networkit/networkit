@@ -2,7 +2,7 @@
  * TGreedyCommunityExpansion.cpp
  *
  *  Created on: 24.06.2013
- *      Author: cls
+ *      Author: cls, Yassie Marrakchi
  */
 
 #include "TGreedyCommunityExpansion.h"

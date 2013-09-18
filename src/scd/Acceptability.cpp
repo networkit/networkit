@@ -1,9 +1,8 @@
 /*
  * Acceptability.cpp
-
  *
  *  Created on: 16.06.2013
- *      Author: Yassine Marrakchi
+ *  Author: cls, Yassine Marrakchi
  */
 
 #include "Acceptability.h"
@@ -25,6 +24,7 @@ NodeClusterSimilarity::~NodeClusterSimilarity() {
 double NodeClusterSimilarity::getValue(node v) {
 
 	double intersection = 0;
+	// Compute the intersection of the node's neighborhood and the current community's neighborhood
 	this->G->forNeighborsOf(v, [&](node u) {
 
 		if (this->community->find(u) != this->community->end()||this->shell->find(u) != this->shell->end()) {

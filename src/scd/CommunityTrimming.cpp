@@ -1,8 +1,8 @@
 /*
  * CommunityTrimming.cpp
  *
- *  Created on: 10.06.2013
- *      Author: cls
+ * Created on: 10.06.2013
+ * Author: cls, Yassine Marrakchi
  */
 
 #include "CommunityTrimming.h"
@@ -27,9 +27,11 @@ std::unordered_set<node> NetworKit::BoundarySharpness::run(
 
 	std::unordered_set<node> outliers;
 
+	int in = 0;
+	int out = 0;
 	for (node u : community) {
-		int in = 0;
-		int out = 0;
+		in = 0;
+		out = 0;
 		G.forNeighborsOf(u, [&](node v){
 			if (community.find(v) == community.end()) {
 				out++;

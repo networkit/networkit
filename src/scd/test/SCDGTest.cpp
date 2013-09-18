@@ -117,24 +117,7 @@ TEST_F(SCDGTest, localJaccardTest) {
 			<< "The Jaccard index has a value of 0.4";
 }
 
-TEST_F(SCDGTest, JaccardTest) {
-	std::unordered_map<node, std::unordered_set<node>> communities;
-	communities.insert( { 1, { 1, 4 } });
-	communities.insert( { 2, { 2, 5 } });
-	Clustering groundTruth(8);
-	JaccardIndex index;
 
-	groundTruth.addToCluster(0, 1);
-	groundTruth.addToCluster(0, 6);
-	groundTruth.addToCluster(1, 2);
-	groundTruth.addToCluster(1, 4);
-	groundTruth.addToCluster(1, 7);
-
-	EXPECT_LE(0.33333, index.getDissimilarity(communities, groundTruth))
-			<< "The Jaccard index has a value of 1/3";
-	EXPECT_GE(0.33334, index.getDissimilarity(communities, groundTruth))
-			<< "The Jaccard index has a value of 1/3";
-}
 
 TEST_F(SCDGTest, localPrecisionTest) {
 	node seedNode = 0;
@@ -153,22 +136,7 @@ TEST_F(SCDGTest, localPrecisionTest) {
 			<< "The Precision has a value of 2/3";
 }
 
-TEST_F(SCDGTest, PrecisionTest) {
-	std::unordered_map<node, std::unordered_set<node>> communities;
-	communities.insert( { 1, { 1, 4 } });
-	communities.insert( { 2, { 2, 5 } });
-	Clustering groundTruth(8);
-	Precision index;
 
-	groundTruth.addToCluster(0, 1);
-	groundTruth.addToCluster(0, 6);
-	groundTruth.addToCluster(1, 2);
-	groundTruth.addToCluster(1, 4);
-	groundTruth.addToCluster(1, 7);
-
-	EXPECT_EQ(0.5, index.getDissimilarity(communities, groundTruth))
-			<< "The Precision has a value of 0.5";
-}
 
 TEST_F(SCDGTest, localRecallTest) {
 	node seedNode = 0;
@@ -187,22 +155,7 @@ TEST_F(SCDGTest, localRecallTest) {
 			<< "The Recall has a value of 2/3";
 }
 
-TEST_F(SCDGTest, RecallTest) {
-	std::unordered_map<node, std::unordered_set<node>> communities;
-	communities.insert( { 1, { 1, 4 } });
-	communities.insert( { 2, { 2, 5 } });
-	Clustering groundTruth(8);
-	Recall index;
 
-	groundTruth.addToCluster(0, 1);
-	groundTruth.addToCluster(0, 6);
-	groundTruth.addToCluster(1, 2);
-	groundTruth.addToCluster(1, 4);
-	groundTruth.addToCluster(1, 7);
-
-	EXPECT_EQ(0.4, index.getDissimilarity(communities, groundTruth))
-			<< "The Precision has a value of 0.4";
-}
 
 // Test Acceptability
 TEST_F(SCDGTest, testNodeClusterSimilarity) {
@@ -816,12 +769,34 @@ TEST_F(SCDGTest, testTGreedyCommunityExpansionWithTemplates) {
 
 TEST_F(SCDGTest, datToGraph) {
 	Graph G;
+
 	std::string path = "input/graph1000.dat";
 	std::string path1 = "input/graph1000.graph";
 	EdgeListIO graphReader('\t', 1);
+
 	G = graphReader.read(path);
 	METISGraphWriter writer;
 	writer.write(G, path1);
+}
+
+TEST_F(SCDGTest, tsimilarityTest) {
+
+	Graph G(6);
+	G.addEdge(0, 1);
+	G.addEdge(0, 2);
+	G.addEdge(0, 3);
+	G.addEdge(0, 4);
+	G.addEdge(1, 2);
+	G.addEdge(1, 3);
+	G.addEdge(2, 5);
+	G.addEdge(3, 5);
+
+	TNodesSimilarity similarity(G);
+	EXPECT_GE(2.5419, similarity.getValue(0, 2))
+			<< "The nodes have similarity smaller than 2.5419";
+	EXPECT_LE(2.5418, similarity.getValue(0, 2))
+			<< "The nodes have similarity bigger than 2.5418";
+
 }
 
 //TEST_F(SCDGTest, trySelectiveSCANWithSeedSet) {

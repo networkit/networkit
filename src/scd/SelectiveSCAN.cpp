@@ -2,7 +2,7 @@
  * SelectiveSCAN.cpp
  *
  *  Created on: 14.06.2013
- *      Author: cls
+ *      Author: cls, Yassine Marrakchi
  */
 
 #include "SelectiveSCAN.h"
@@ -10,7 +10,6 @@
 namespace NetworKit {
 
 SelectiveSCAN::SelectiveSCAN(const Graph& G, NodeDistance& distMeasure, double epsilon, double mu): SelectiveCommunityDetector(G), distMeasure(&distMeasure), epsilon(epsilon), mu(mu) {
-	DEBUG("preprocessing node distances");
 	this->distMeasure->preprocess(); // distances depend on the graph, which is constant, and should be calculated only once
 
 }
@@ -62,34 +61,12 @@ std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> Selective
 	return communities;
 }
 
-//double SelectiveSCAN::nodeDistance(node u, node v) {
-//
-//	int inter = 0;
-//	int uni = 0;
-//	G.forNeighborsOf(u, [&](node x){
-//		if (x != v && x!= u ) {
-//			if (G.hasEdge(x, v)) {
-//				inter++;
-//				uni++;
-//			} else {
-//				uni++;
-//			}
-//		}
-//	});
-//	G.forNeighborsOf(v, [&](node x){
-//		if (x != u && x != v) {
-//			if (!G.hasEdge(x, u)) {
-//				uni++;
-//			}
-//		}
-//	});
-//	return 1- ((double) (inter + 2)/ (double) (uni +2));
-//}
 
 std::pair<bool,std::unordered_set<node>> SelectiveSCAN::isCore(node u) {
 	bool core = false;
 	std::unordered_set<node> similarNeighbors;
 	int count = 0;
+	// test if neighbors of u are close to u
 	G.forNeighborsOf(u, [&](node v){
 		if (this->distMeasure->distance(u, v) <= this->epsilon) {
 			count++;
@@ -109,6 +86,7 @@ void SelectiveSCAN::expandCore(node core, node label, std::unordered_set<node>* 
 	community->insert(core);
 	nodesState->find(core)->second = label;
 
+	// Add candidates to the community and verify if they are cores
 	while (!candidates->empty()) {
 		node v = *(candidates->begin());
 		nodesState->find(v)->second = label;
