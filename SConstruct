@@ -89,8 +89,8 @@ compute.Append(LIBPATH = [os.path.join(home_path, "workspace/gtest")])
 compute.Append(LINKFLAGS = ["-std=c++11"])
 
 ### compiler & flags
-compute["CC"] = "gcc-4.8"
-compute["CXX"] = "g++-4.8"
+compute["CC"] = "gcc-4.7"
+compute["CXX"] = "g++-4.7"
 
 # preprocessor defines
 compute.Append(CPPDEFINES=["_GNU_SOURCE"]) 
