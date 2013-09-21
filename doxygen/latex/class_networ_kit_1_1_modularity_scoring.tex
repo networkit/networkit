@@ -1,0 +1,159 @@
+\hypertarget{class_networ_kit_1_1_modularity_scoring}{\section{Networ\-Kit\-:\-:Modularity\-Scoring$<$ T $>$ Class Template Reference}
+\label{class_networ_kit_1_1_modularity_scoring}\index{Networ\-Kit\-::\-Modularity\-Scoring$<$ T $>$@{Networ\-Kit\-::\-Modularity\-Scoring$<$ T $>$}}
+}
+
+
+{\ttfamily \#include $<$Modularity\-Scoring.\-h$>$}
+
+
+
+Inheritance diagram for Networ\-Kit\-:\-:Modularity\-Scoring$<$ T $>$\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=246pt]{class_networ_kit_1_1_modularity_scoring__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Networ\-Kit\-:\-:Modularity\-Scoring$<$ T $>$\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=246pt]{class_networ_kit_1_1_modularity_scoring__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_modularity_scoring_a0150d4dbef0af9e530410f4b2d98f144}{Modularity\-Scoring} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&\hyperlink{class_networ_kit_1_1_edge_scoring_a236d40c30ccbb022125d3dc915865d8a}{G})
+\item 
+virtual \hyperlink{class_networ_kit_1_1_modularity_scoring_a153adadf776bcb6ad8f3f946b5db5982}{$\sim$\-Modularity\-Scoring} ()
+\item 
+virtual void \hyperlink{class_networ_kit_1_1_modularity_scoring_a9c93ca2ca6126a4de8a2c3c196828116}{score\-Edges} (int attr\-Id)
+\item 
+virtual T \hyperlink{class_networ_kit_1_1_modularity_scoring_af1b95cbb6082e5159d080c392679708a}{edge\-Score} (\hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} u, \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} v) const 
+\begin{DoxyCompactList}\small\item\em Returns an edge score for an edge (u,v) which expresses the modularity increase which can be gained by merging the clusters of u and v. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \hyperlink{class_networ_kit_1_1_modularity_scoring_ae5c47d760a0d0a78349ddc7ed14786a2}{total\-Edge\-Weight}
+\begin{DoxyCompactList}\small\item\em total weight of the graph \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename T$>$class Networ\-Kit\-::\-Modularity\-Scoring$<$ T $>$}
+
+
+
+Definition at line 21 of file Modularity\-Scoring.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_modularity_scoring_a0150d4dbef0af9e530410f4b2d98f144}{\index{Networ\-Kit\-::\-Modularity\-Scoring@{Networ\-Kit\-::\-Modularity\-Scoring}!Modularity\-Scoring@{Modularity\-Scoring}}
+\index{Modularity\-Scoring@{Modularity\-Scoring}!NetworKit::ModularityScoring@{Networ\-Kit\-::\-Modularity\-Scoring}}
+\subsubsection[{Modularity\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf Networ\-Kit\-::\-Modularity\-Scoring}$<$ T $>$\-::{\bf Modularity\-Scoring} (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_modularity_scoring_a0150d4dbef0af9e530410f4b2d98f144}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em G} & a graph instance\\
+\hline
+\end{DoxyParams}
+Do not modify the graph while using this instance of \hyperlink{class_networ_kit_1_1_modularity_scoring}{Modularity\-Scoring}. 
+
+Definition at line 71 of file Modularity\-Scoring.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_modularity_scoring_a0150d4dbef0af9e530410f4b2d98f144_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_modularity_scoring_a153adadf776bcb6ad8f3f946b5db5982}{\index{Networ\-Kit\-::\-Modularity\-Scoring@{Networ\-Kit\-::\-Modularity\-Scoring}!$\sim$\-Modularity\-Scoring@{$\sim$\-Modularity\-Scoring}}
+\index{$\sim$\-Modularity\-Scoring@{$\sim$\-Modularity\-Scoring}!NetworKit::ModularityScoring@{Networ\-Kit\-::\-Modularity\-Scoring}}
+\subsubsection[{$\sim$\-Modularity\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf Networ\-Kit\-::\-Modularity\-Scoring}$<$ T $>$\-::$\sim${\bf Modularity\-Scoring} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_modularity_scoring_a153adadf776bcb6ad8f3f946b5db5982}
+
+
+Definition at line 76 of file Modularity\-Scoring.\-h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_modularity_scoring_af1b95cbb6082e5159d080c392679708a}{\index{Networ\-Kit\-::\-Modularity\-Scoring@{Networ\-Kit\-::\-Modularity\-Scoring}!edge\-Score@{edge\-Score}}
+\index{edge\-Score@{edge\-Score}!NetworKit::ModularityScoring@{Networ\-Kit\-::\-Modularity\-Scoring}}
+\subsubsection[{edge\-Score}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ T {\bf Networ\-Kit\-::\-Modularity\-Scoring}$<$ T $>$\-::edge\-Score (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}}\label{class_networ_kit_1_1_modularity_scoring_af1b95cbb6082e5159d080c392679708a}
+
+
+Returns an edge score for an edge (u,v) which expresses the modularity increase which can be gained by merging the clusters of u and v. 
+
+\begin{DoxyVerb} $$\Delta mod(c, d) := \frac{1}{2 \omega(E)} \left ( 2 \omega(E) \omega(c,d) - \omega(c) \omega(d) \right ) $$
+\end{DoxyVerb}
+
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em u} & source node id \\
+\hline
+\mbox{\tt out}  & {\em v} & target node id \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{class_networ_kit_1_1_edge_scoring_a4e1bac0c08710b103fad6d944c437d74}{Networ\-Kit\-::\-Edge\-Scoring$<$ T $>$}.
+
+
+
+Definition at line 81 of file Modularity\-Scoring.\-h.
+
+\hypertarget{class_networ_kit_1_1_modularity_scoring_a9c93ca2ca6126a4de8a2c3c196828116}{\index{Networ\-Kit\-::\-Modularity\-Scoring@{Networ\-Kit\-::\-Modularity\-Scoring}!score\-Edges@{score\-Edges}}
+\index{score\-Edges@{score\-Edges}!NetworKit::ModularityScoring@{Networ\-Kit\-::\-Modularity\-Scoring}}
+\subsubsection[{score\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf Networ\-Kit\-::\-Modularity\-Scoring}$<$ T $>$\-::score\-Edges (
+\begin{DoxyParamCaption}
+\item[{int}]{attr\-Id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_modularity_scoring_a9c93ca2ca6126a4de8a2c3c196828116}
+
+
+Implements \hyperlink{class_networ_kit_1_1_edge_scoring_a51bb5124be2834ac097ff8d65f63880d}{Networ\-Kit\-::\-Edge\-Scoring$<$ T $>$}.
+
+
+
+Definition at line 90 of file Modularity\-Scoring.\-h.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_networ_kit_1_1_modularity_scoring_ae5c47d760a0d0a78349ddc7ed14786a2}{\index{Networ\-Kit\-::\-Modularity\-Scoring@{Networ\-Kit\-::\-Modularity\-Scoring}!total\-Edge\-Weight@{total\-Edge\-Weight}}
+\index{total\-Edge\-Weight@{total\-Edge\-Weight}!NetworKit::ModularityScoring@{Networ\-Kit\-::\-Modularity\-Scoring}}
+\subsubsection[{total\-Edge\-Weight}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ double {\bf Networ\-Kit\-::\-Modularity\-Scoring}$<$ T $>$\-::total\-Edge\-Weight\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_modularity_scoring_ae5c47d760a0d0a78349ddc7ed14786a2}
+
+
+total weight of the graph 
+
+
+
+Definition at line 25 of file Modularity\-Scoring.\-h.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/scoring/\hyperlink{_modularity_scoring_8h}{Modularity\-Scoring.\-h}\end{DoxyCompactItemize}

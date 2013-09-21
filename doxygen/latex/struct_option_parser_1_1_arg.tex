@@ -1,0 +1,160 @@
+\hypertarget{struct_option_parser_1_1_arg}{\section{Option\-Parser\-:\-:Arg Struct Reference}
+\label{struct_option_parser_1_1_arg}\index{Option\-Parser\-::\-Arg@{Option\-Parser\-::\-Arg}}
+}
+
+
+Functions for checking the validity of option arguments.  
+
+
+
+
+{\ttfamily \#include $<$optionparser.\-h$>$}
+
+
+
+Inheritance diagram for Option\-Parser\-:\-:Arg\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=176pt]{struct_option_parser_1_1_arg__inherit__graph}
+\end{center}
+\end{figure}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4}{Arg\-Status} \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{None} (const \hyperlink{class_option_parser_1_1_option}{Option} \&, bool)
+\begin{DoxyCompactList}\small\item\em For options that don't take an argument\-: Returns A\-R\-G\-\_\-\-N\-O\-N\-E. \end{DoxyCompactList}\item 
+static \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4}{Arg\-Status} \hyperlink{struct_option_parser_1_1_arg_a3fcea82be66b4aff1971cbab6deabdf1}{Optional} (const \hyperlink{class_option_parser_1_1_option}{Option} \&option, bool)
+\begin{DoxyCompactList}\small\item\em Returns A\-R\-G\-\_\-\-O\-K if the argument is attached and A\-R\-G\-\_\-\-I\-G\-N\-O\-R\-E otherwise. \end{DoxyCompactList}\item 
+static \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4}{Arg\-Status} \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{Required} (const \hyperlink{class_option_parser_1_1_option}{Option\-Parser\-::\-Option} \&option, bool msg)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Functions for checking the validity of option arguments. 
+
+Every \hyperlink{class_option_parser_1_1_option}{Option} has such a function assigned in its \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor}. 
+\begin{DoxyCode}
+Descriptor usage[] = \{ \{\hyperlink{_community_detection-_x_8cpp_a0ba79095c558cb72ea2e8b277be1da39a6ce26a62afab55d7606ad4e92428b30c}{UNKNOWN}, 0, \textcolor{stringliteral}{""}, \textcolor{stringliteral}{""}, \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{Arg::None}, \textcolor{stringliteral}{""}\}, ... \};
+\end{DoxyCode}
+
+
+A Check\-Arg function has the following signature\-: 
+\begin{DoxyCode}
+\hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4}{ArgStatus} \hyperlink{namespace_option_parser_aee9955553cc70fd9fd41849622680c6a}{CheckArg}(\textcolor{keyword}{const} Option& option, \textcolor{keywordtype}{bool} msg); 
+\end{DoxyCode}
+
+
+It is used to check if a potential argument would be acceptable for the option. It will even be called if there is no argument. In that case {\ttfamily option.\-arg} will be {\ttfamily N\-U\-L\-L}.
+
+If {\ttfamily msg} is {\ttfamily true} and the function determines that an argument is not acceptable and that this is a fatal error, it should output a message to the user before returning \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a6ea016ff6334ed0d2ec885e96a76c472}{A\-R\-G\-\_\-\-I\-L\-L\-E\-G\-A\-L}. If {\ttfamily msg} is {\ttfamily false} the function should remain silent (or you will get duplicate messages).
+
+See \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4}{Arg\-Status} for the meaning of the return values.
+
+While you can provide your own functions, often the following pre-\/defined checks (which never return \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a6ea016ff6334ed0d2ec885e96a76c472}{A\-R\-G\-\_\-\-I\-L\-L\-E\-G\-A\-L}) will suffice\-:
+
+\begin{DoxyItemize}
+\item {\ttfamily \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{Arg\-::\-None}}  \hyperlink{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{Arg\-::\-None} \item {\ttfamily \hyperlink{struct_option_parser_1_1_arg_a3fcea82be66b4aff1971cbab6deabdf1}{Arg\-::\-Optional}}  \hyperlink{struct_option_parser_1_1_arg_a3fcea82be66b4aff1971cbab6deabdf1}{Arg\-::\-Optional} \end{DoxyItemize}
+The following example code can serve as starting place for writing your own more complex Check\-Arg functions\-: 
+\begin{DoxyCode}
+\textcolor{keyword}{struct }\hyperlink{class_arg}{Arg}: \textcolor{keyword}{public} option::Arg
+\{
+  \textcolor{keyword}{static} \textcolor{keywordtype}{void} printError(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* msg1, \textcolor{keyword}{const} option::Option& opt, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* msg2)
+  \{
+    fprintf(stderr, \textcolor{stringliteral}{"ERROR: %s"}, msg1);
+    fwrite(opt.name, opt.namelen, 1, stderr);
+    fprintf(stderr, \textcolor{stringliteral}{"%s"}, msg2);
+  \}
+
+  \textcolor{keyword}{static} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4}{option::ArgStatus} Unknown(\textcolor{keyword}{const} option::Option& option, \textcolor{keywordtype}{bool} msg)
+  \{
+    \textcolor{keywordflow}{if} (msg) printError(\textcolor{stringliteral}{"Unknown option '"}, option, \textcolor{stringliteral}{"'\(\backslash\)n"});
+    \textcolor{keywordflow}{return} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a6ea016ff6334ed0d2ec885e96a76c472}{option::ARG\_ILLEGAL};
+  \}
+
+  \textcolor{keyword}{static} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4}{option::ArgStatus} \hyperlink{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{Required}(\textcolor{keyword}{const} option::Option& option, \textcolor{keywordtype}{bool} msg)
+  \{
+    \textcolor{keywordflow}{if} (option.arg != 0)
+      \textcolor{keywordflow}{return} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a30360cae1c7e0b0230dc5cca30aaad4e}{option::ARG\_OK};
+
+    \textcolor{keywordflow}{if} (msg) printError(\textcolor{stringliteral}{"Option '"}, option, \textcolor{stringliteral}{"' requires an argument\(\backslash\)n"});
+    \textcolor{keywordflow}{return} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a6ea016ff6334ed0d2ec885e96a76c472}{option::ARG\_ILLEGAL};
+  \}
+
+  \textcolor{keyword}{static} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4}{option::ArgStatus} NonEmpty(\textcolor{keyword}{const} option::Option& option, \textcolor{keywordtype}{bool} msg)
+  \{
+    \textcolor{keywordflow}{if} (option.arg != 0 && option.arg[0] != 0)
+      \textcolor{keywordflow}{return} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a30360cae1c7e0b0230dc5cca30aaad4e}{option::ARG\_OK};
+
+    \textcolor{keywordflow}{if} (msg) printError(\textcolor{stringliteral}{"Option '"}, option, \textcolor{stringliteral}{"' requires a non-empty argument\(\backslash\)n"});
+    \textcolor{keywordflow}{return} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a6ea016ff6334ed0d2ec885e96a76c472}{option::ARG\_ILLEGAL};
+  \}
+
+  \textcolor{keyword}{static} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4}{option::ArgStatus} Numeric(\textcolor{keyword}{const} option::Option& option, \textcolor{keywordtype}{bool} msg)
+  \{
+    \textcolor{keywordtype}{char}* endptr = 0;
+    \textcolor{keywordflow}{if} (option.arg != 0 && strtol(option.arg, &endptr, 10))\{\};
+    \textcolor{keywordflow}{if} (endptr != option.arg && *endptr == 0)
+      \textcolor{keywordflow}{return} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a30360cae1c7e0b0230dc5cca30aaad4e}{option::ARG\_OK};
+
+    \textcolor{keywordflow}{if} (msg) printError(\textcolor{stringliteral}{"Option '"}, option, \textcolor{stringliteral}{"' requires a numeric argument\(\backslash\)n"});
+    \textcolor{keywordflow}{return} \hyperlink{namespace_option_parser_ad237d47d58c66dea8dcf4f53ac11a6e4a6ea016ff6334ed0d2ec885e96a76c472}{option::ARG\_ILLEGAL};
+  \}
+\};
+\end{DoxyCode}
+ 
+
+Definition at line 883 of file optionparser.\-h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}{\index{Option\-Parser\-::\-Arg@{Option\-Parser\-::\-Arg}!None@{None}}
+\index{None@{None}!OptionParser::Arg@{Option\-Parser\-::\-Arg}}
+\subsubsection[{None}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf Arg\-Status} Option\-Parser\-::\-Arg\-::\-None (
+\begin{DoxyParamCaption}
+\item[{const {\bf Option} \&}]{, }
+\item[{bool}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}}\label{struct_option_parser_1_1_arg_afd9e5e7362e4accc619fe7dee7098956}
+
+
+For options that don't take an argument\-: Returns A\-R\-G\-\_\-\-N\-O\-N\-E. 
+
+
+
+Definition at line 888 of file optionparser.\-h.
+
+\hypertarget{struct_option_parser_1_1_arg_a3fcea82be66b4aff1971cbab6deabdf1}{\index{Option\-Parser\-::\-Arg@{Option\-Parser\-::\-Arg}!Optional@{Optional}}
+\index{Optional@{Optional}!OptionParser::Arg@{Option\-Parser\-::\-Arg}}
+\subsubsection[{Optional}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf Arg\-Status} Option\-Parser\-::\-Arg\-::\-Optional (
+\begin{DoxyParamCaption}
+\item[{const {\bf Option} \&}]{option, }
+\item[{bool}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}}\label{struct_option_parser_1_1_arg_a3fcea82be66b4aff1971cbab6deabdf1}
+
+
+Returns A\-R\-G\-\_\-\-O\-K if the argument is attached and A\-R\-G\-\_\-\-I\-G\-N\-O\-R\-E otherwise. 
+
+
+
+Definition at line 894 of file optionparser.\-h.
+
+\hypertarget{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}{\index{Option\-Parser\-::\-Arg@{Option\-Parser\-::\-Arg}!Required@{Required}}
+\index{Required@{Required}!OptionParser::Arg@{Option\-Parser\-::\-Arg}}
+\subsubsection[{Required}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf Arg\-Status} Option\-Parser\-::\-Arg\-::\-Required (
+\begin{DoxyParamCaption}
+\item[{const {\bf Option\-Parser\-::\-Option} \&}]{option, }
+\item[{bool}]{msg}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}}\label{struct_option_parser_1_1_arg_a499af2667b09f9f7f9fa9547dcd36e59}
+
+
+Definition at line 903 of file optionparser.\-h.
+
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/ext/\hyperlink{optionparser_8h}{optionparser.\-h}\end{DoxyCompactItemize}

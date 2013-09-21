@@ -1,0 +1,151 @@
+\hypertarget{class_ensemble_clustering_1_1_graph_contraction}{\section{Ensemble\-Clustering\-:\-:Graph\-Contraction Class Reference}
+\label{class_ensemble_clustering_1_1_graph_contraction}\index{Ensemble\-Clustering\-::\-Graph\-Contraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}}
+}
+
+
+{\ttfamily \#include $<$Graph\-Contraction.\-h$>$}
+
+
+
+Collaboration diagram for Ensemble\-Clustering\-:\-:Graph\-Contraction\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=321pt]{class_ensemble_clustering_1_1_graph_contraction__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_graph_contraction_a02b50c7734ae0b6b61779f7104a58452}{Graph\-Contraction} (\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&\hyperlink{class_ensemble_clustering_1_1_graph_contraction_a5fd6c5e554f4ae2a33537d6e0123deda}{fine}, \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \&\hyperlink{class_ensemble_clustering_1_1_graph_contraction_aa1d4ff053c718f52c97c1d30492a9eeb}{coarse}, \hyperlink{class_ensemble_clustering_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} $>$ \&\hyperlink{class_ensemble_clustering_1_1_graph_contraction_a32c7c2bc182c687a1c5fffaf715f6541}{fine\-To\-Coarse})
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph_contraction_a9068698b454c1cfe129bc8a29c2af802}{$\sim$\-Graph\-Contraction} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \& \hyperlink{class_ensemble_clustering_1_1_graph_contraction_acf8d46c5d27402c4ffb7f8e7cab9829f}{get\-Fine\-Graph} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \& \hyperlink{class_ensemble_clustering_1_1_graph_contraction_a1c74ac898922b4874d1d747faf5ee6b3}{get\-Coarse\-Graph} ()
+\item 
+virtual \hyperlink{class_ensemble_clustering_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} $>$ \& \hyperlink{class_ensemble_clustering_1_1_graph_contraction_aa970f2e787b563dd67962c07a5fc1213}{get\-Fine\-To\-Coarse\-Map} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_graph_contraction_a5fd6c5e554f4ae2a33537d6e0123deda}{fine}
+\begin{DoxyCompactList}\small\item\em the fine graph \end{DoxyCompactList}\item 
+\hyperlink{class_ensemble_clustering_1_1_graph}{Graph} \hyperlink{class_ensemble_clustering_1_1_graph_contraction_aa1d4ff053c718f52c97c1d30492a9eeb}{coarse}
+\begin{DoxyCompactList}\small\item\em the coarse graph \end{DoxyCompactList}\item 
+\hyperlink{class_ensemble_clustering_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_ensemble_clustering_ae829290aeccd1a420b17a37fd901f114}{node} $>$ \hyperlink{class_ensemble_clustering_1_1_graph_contraction_a32c7c2bc182c687a1c5fffaf715f6541}{fine\-To\-Coarse}
+\begin{DoxyCompactList}\small\item\em maps each node in the fine graph to a supernode in the coarse graph \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 15 of file Graph\-Contraction.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_ensemble_clustering_1_1_graph_contraction_a02b50c7734ae0b6b61779f7104a58452}{\index{Ensemble\-Clustering\-::\-Graph\-Contraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}!Graph\-Contraction@{Graph\-Contraction}}
+\index{Graph\-Contraction@{Graph\-Contraction}!EnsembleClustering::GraphContraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}}
+\subsubsection[{Graph\-Contraction}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Graph\-Contraction\-::\-Graph\-Contraction (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{fine, }
+\item[{{\bf Graph} \&}]{coarse, }
+\item[{{\bf Node\-Map}$<$ {\bf node} $>$ \&}]{fine\-To\-Coarse}
+\end{DoxyParamCaption}
+)}}\label{class_ensemble_clustering_1_1_graph_contraction_a02b50c7734ae0b6b61779f7104a58452}
+
+
+Definition at line 12 of file Graph\-Contraction.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_contraction_a9068698b454c1cfe129bc8a29c2af802}{\index{Ensemble\-Clustering\-::\-Graph\-Contraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}!$\sim$\-Graph\-Contraction@{$\sim$\-Graph\-Contraction}}
+\index{$\sim$\-Graph\-Contraction@{$\sim$\-Graph\-Contraction}!EnsembleClustering::GraphContraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}}
+\subsubsection[{$\sim$\-Graph\-Contraction}]{\setlength{\rightskip}{0pt plus 5cm}Ensemble\-Clustering\-::\-Graph\-Contraction\-::$\sim$\-Graph\-Contraction (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_contraction_a9068698b454c1cfe129bc8a29c2af802}
+
+
+Definition at line 17 of file Graph\-Contraction.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ensemble_clustering_1_1_graph_contraction_a1c74ac898922b4874d1d747faf5ee6b3}{\index{Ensemble\-Clustering\-::\-Graph\-Contraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}!get\-Coarse\-Graph@{get\-Coarse\-Graph}}
+\index{get\-Coarse\-Graph@{get\-Coarse\-Graph}!EnsembleClustering::GraphContraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}}
+\subsubsection[{get\-Coarse\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} \& Ensemble\-Clustering\-::\-Graph\-Contraction\-::get\-Coarse\-Graph (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_contraction_a1c74ac898922b4874d1d747faf5ee6b3}
+
+
+Definition at line 25 of file Graph\-Contraction.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_contraction_acf8d46c5d27402c4ffb7f8e7cab9829f}{\index{Ensemble\-Clustering\-::\-Graph\-Contraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}!get\-Fine\-Graph@{get\-Fine\-Graph}}
+\index{get\-Fine\-Graph@{get\-Fine\-Graph}!EnsembleClustering::GraphContraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}}
+\subsubsection[{get\-Fine\-Graph}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} \& Ensemble\-Clustering\-::\-Graph\-Contraction\-::get\-Fine\-Graph (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_contraction_acf8d46c5d27402c4ffb7f8e7cab9829f}
+
+
+Definition at line 21 of file Graph\-Contraction.\-cpp.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_contraction_aa970f2e787b563dd67962c07a5fc1213}{\index{Ensemble\-Clustering\-::\-Graph\-Contraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}!get\-Fine\-To\-Coarse\-Map@{get\-Fine\-To\-Coarse\-Map}}
+\index{get\-Fine\-To\-Coarse\-Map@{get\-Fine\-To\-Coarse\-Map}!EnsembleClustering::GraphContraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}}
+\subsubsection[{get\-Fine\-To\-Coarse\-Map}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Node\-Map}$<$ {\bf node} $>$ \& Ensemble\-Clustering\-::\-Graph\-Contraction\-::get\-Fine\-To\-Coarse\-Map (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_ensemble_clustering_1_1_graph_contraction_aa970f2e787b563dd67962c07a5fc1213}
+
+
+Definition at line 29 of file Graph\-Contraction.\-cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_ensemble_clustering_1_1_graph_contraction_aa1d4ff053c718f52c97c1d30492a9eeb}{\index{Ensemble\-Clustering\-::\-Graph\-Contraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}!coarse@{coarse}}
+\index{coarse@{coarse}!EnsembleClustering::GraphContraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}}
+\subsubsection[{coarse}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-Graph\-Contraction\-::coarse\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_graph_contraction_aa1d4ff053c718f52c97c1d30492a9eeb}
+
+
+the coarse graph 
+
+
+
+Definition at line 20 of file Graph\-Contraction.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_contraction_a5fd6c5e554f4ae2a33537d6e0123deda}{\index{Ensemble\-Clustering\-::\-Graph\-Contraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}!fine@{fine}}
+\index{fine@{fine}!EnsembleClustering::GraphContraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}}
+\subsubsection[{fine}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Graph} Ensemble\-Clustering\-::\-Graph\-Contraction\-::fine\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_graph_contraction_a5fd6c5e554f4ae2a33537d6e0123deda}
+
+
+the fine graph 
+
+
+
+Definition at line 19 of file Graph\-Contraction.\-h.
+
+\hypertarget{class_ensemble_clustering_1_1_graph_contraction_a32c7c2bc182c687a1c5fffaf715f6541}{\index{Ensemble\-Clustering\-::\-Graph\-Contraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}!fine\-To\-Coarse@{fine\-To\-Coarse}}
+\index{fine\-To\-Coarse@{fine\-To\-Coarse}!EnsembleClustering::GraphContraction@{Ensemble\-Clustering\-::\-Graph\-Contraction}}
+\subsubsection[{fine\-To\-Coarse}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Node\-Map}$<${\bf node}$>$ Ensemble\-Clustering\-::\-Graph\-Contraction\-::fine\-To\-Coarse\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_ensemble_clustering_1_1_graph_contraction_a32c7c2bc182c687a1c5fffaf715f6541}
+
+
+maps each node in the fine graph to a supernode in the coarse graph 
+
+
+
+Definition at line 21 of file Graph\-Contraction.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/coarsening/\hyperlink{_graph_contraction_8h}{Graph\-Contraction.\-h}\item 
+src/coarsening/\hyperlink{_graph_contraction_8cpp}{Graph\-Contraction.\-cpp}\end{DoxyCompactItemize}
