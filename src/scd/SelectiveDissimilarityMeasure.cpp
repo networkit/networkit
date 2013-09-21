@@ -42,14 +42,17 @@ double JaccardIndex::localDissimilarity(const node seedNode,
 	}
 	for(node u = 0; u < groundTruth.numberOfEntries() ; ++u) {
 		if(groundTruth.clusterOf(u) == cluster) {
+
 			clusterSize++;
 		}
 	}
+
 	for(node u : community) {
 		if (groundTruth.clusterOf(u) == cluster) {
 			intersection++;
 		}
 	}
+
 	return ((double)(intersection)) / ((double)(community.size() + clusterSize - intersection));
 }
 

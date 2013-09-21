@@ -39,6 +39,8 @@ RM := rm -rf
 -include src/distmeasures/subdir.mk
 -include src/dcd/test/subdir.mk
 -include src/dcd/subdir.mk
+-include src/connectedcomponents/test/subdir.mk
+-include src/connectedcomponents/subdir.mk
 -include src/community/test/subdir.mk
 -include src/community/subdir.mk
 -include src/coarsening/test/subdir.mk

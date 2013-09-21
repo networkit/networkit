@@ -1,5 +1,6 @@
 //============================================================================
 // Name        : SelectiveCommunityDetection.cpp
+
 // Author      : Christian Staudt (christian.staudt@kit.edu),
 //				 Henning Meyerhenke (henning.meyerhenke@kit.edu)
 // Version     :
@@ -54,6 +55,7 @@
 #include "scd/CommunityTrimming.h"
 #include "scd/TGreedyExpansion.h"
 #include "scd/TSimilarity.h"
+#include "scd/TImprove.h"
 #include "distmeasures/TAlgebraicDistance.h"
 #include "distmeasures/TNeighborhoodDistance.h"
 #include "distmeasures/TNodeDistance.h"
@@ -408,12 +410,14 @@ int main(int argc, char **argv) {
 	CommunityTrimming* trimming = NULL;
 	NodeDistance* dist = NULL;
 
-	std::cout<< G.numberOfNodes() <<std::endl;
 	if (options[DETECTOR]) {
 		std::string detectorArg = options[DETECTOR].arg;
 		std::string detectorName = Aux::StringTools::split(detectorArg, ':')[0];
 
-		if (detectorName == "TGE") {
+		if (detectorName == "TI") {
+			algo = new TImprove<TLocalModularityM>(G);
+
+		} else if (detectorName == "TGE") {
 			if (Aux::StringTools::split(detectorArg, ':').size() == 3) {
 				std::string first = Aux::StringTools::split(detectorArg, ':')[1];
 				std::string second = Aux::StringTools::split(detectorArg, ':')[2];
@@ -782,7 +786,6 @@ int main(int argc, char **argv) {
 	}
 	std::cout << "[BEGIN]" << std::endl;
 
-
 	assert (algo != NULL);
 
 	std::unordered_map<count, int64_t> timeMap;
@@ -800,6 +803,7 @@ int main(int argc, char **argv) {
 		running2.start();
 		std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> result =
 				algo->run(seeds);
+
 		running2.stop();
 		results.insert( { i, result });
 		timeMap.insert( { i, running2.elapsedMilliseconds() });
@@ -807,7 +811,7 @@ int main(int argc, char **argv) {
 	running1.stop();
 	runtime = running1.elapsedMilliseconds();
 	std::cout << "[DONE]" << std::endl;
-	std::cout << runtime << std::endl;
+	//std::cout << runtime << std::endl;
 	if (options[SUMMARY]) {
 		std::ofstream summary(options[SUMMARY].arg);
 		if (groundt) {
@@ -818,6 +822,7 @@ int main(int argc, char **argv) {
 			Recall recall;
 			JaccardIndex jaccard;
 			for (auto u : results) {
+
 				for (auto v : u.second) {
 					summary << v.first << ";"
 							<< (measure1)->getQuality(v.second.first) << ";"
@@ -827,7 +832,6 @@ int main(int argc, char **argv) {
 							<< recall.localDissimilarity(v.first, v.second.first, truth) << ";"
 							<< v.second.first.size() << ";"
 							<< v.second.second << std::endl;
-					std::cout<<v.second.first.size()<<std::endl;
 
 				}
 			}
