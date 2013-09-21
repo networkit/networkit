@@ -489,7 +489,7 @@ def nk2nx(nkG):
 
 def properties(nkG):
 	print("converting to NetworX.Graph for some properties....")
-	nxG = nxG = nk2nx(nkG)
+	nxG = nk2nx(nkG)
 
 	n = nkG.numberOfNodes()
 	m = nkG.numberOfEdges()
@@ -506,7 +506,7 @@ def properties(nkG):
 
 	# calculate eccentricity
 	if (n < 100):
-		eccentricities = nx.eccentricity(G)
+		eccentricities = nx.eccentricity(nxG)
 		ecc = sum(val for val in eccentricities.values()) / n
 	else:
 		ecc = "[omitted]"
@@ -533,11 +533,11 @@ def properties(nkG):
 	(labels, histo) = compressHistogram(histo, nbins=25)
 
 	# connected components
-	components nx.connected_components(nxG)
+	components = nx.connected_components(nxG)
 	nComponents = len(components)
 	componentSizes = [len(component) for component in components]
 	componentSizes.sort(reverse=True) # sort in descending order
-	sizeLargestComponent = componentsSizes[0]
+	sizeLargestComponent = componentSizes[0]
 
 	# betweenness centrality
 	# TODO: average betweenness centrality?
@@ -548,7 +548,7 @@ def properties(nkG):
 		 "m": m,
 		 "minDeg": minMaxDeg[0],
 		 "maxDeg": minMaxDeg[1],
-		 "avgDeg": 
+		 "avgDeg": avgDeg,
 		 "avglcc": GraphProperties.averageLocalClusteringCoefficient(nkG),
 		 "nComponents": nComponents,
 		 "sizeLargestComponent": sizeLargestComponent,
