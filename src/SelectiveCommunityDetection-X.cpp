@@ -41,6 +41,7 @@
 #include "graph/Graph.h"
 #include "graph/Subgraph.h"
 #include "io/METISGraphReader.h"
+#include "io/ClusteringReader.h"
 #include "io/METISGraphWriter.h"
 #include "scd/RandomSeedSet.h"
 #include "scd/RandomWalkSeedSet.h"
@@ -183,42 +184,33 @@ const OptionParser::Descriptor usage[] =
 
 // MAIN FUNCTIONS
 
-/**
- * Read a graph from a file.
- */
-/**
- * Read a graph from a file.
- */
-Graph readGraph(const std::string& graphPath) {
-
-	// READ GRAPH
-
-	METISGraphReader reader; // TODO: add support for multiple graph file formats
-
-	// TIMING
-	Aux::Timer readTimer;
-	readTimer.start();
-	//
-	std::cout << "[BEGIN] reading file: " << graphPath << std::endl;
-
-	Graph G = reader.read(graphPath);
-	//
-	readTimer.stop();
-	std::cout << "[DONE] read graph file " << readTimer.elapsedTag()
-			<< std::endl;
-	// TIMING
-
-	return G;
-
-}
-
 Graph getGraph(OptionParser::Option* options) {
 
-		std::string graphPath = options[GRAPH].arg;
-		std::cout << "\t --graph=" << graphPath << std::endl;
+	Graph G;
+	std::string graphArg = options[GRAPH].arg;
+	std::string graphTyp = Aux::StringTools::split(graphArg, ':')[0];
+	std::string graphPath = Aux::StringTools::split(graphArg, ':')[1];
 
-		Graph G = readGraph(graphPath);
-		return G;
+	if (graphTyp == ".graph") {
+		std::cout << "[BEGIN] reading file: " << graphPath << std::endl;
+		METISGraphReader reader;
+		Aux::Timer readTimer;
+		readTimer.start();
+		G = reader.read(graphPath);
+		readTimer.stop();
+		std::cout << "[DONE] read graph file " << readTimer.elapsedTag()
+				  << std::endl;
+	} else if (graphTyp == ".dat") {
+		std::cout << "[BEGIN] reading file: " << graphPath << std::endl;
+		EdgeListIO reader(1, '\t');
+		Aux::Timer readTimer;
+		readTimer.start();
+		G = reader.read(graphPath);
+		readTimer.stop();
+		std::cout << "[DONE] read graph file " << readTimer.elapsedTag()
+	   		      << std::endl;
+	}
+	return G;
 }
 
 int main(int argc, char **argv) {
@@ -310,17 +302,21 @@ int main(int argc, char **argv) {
 	Clustering truth;
 	bool groundt = false;
 	if (options[GROUND_TRUTH]) {
-		std::string path = options[GROUND_TRUTH].arg;
-		EdgeListClusteringReader clusteringReader;
-		EdgeListIO reader;
-		truth = clusteringReader.read(path);
-		std::string path1 = options[GRAPH].arg;
-		G = reader.read(path1);
-		groundt = true;
-	} else {
-		G = getGraph(options);
-	}
+		std::string truthArg = options[GROUND_TRUTH].arg;
+		std::string truthTyp = Aux::StringTools::split(truthArg, ':')[0];
+		std::string truthPath = Aux::StringTools::split(truthArg, ':')[1];
 
+		if (truthTyp == ".dat") {
+			EdgeListClusteringReader clusteringReader;
+			truth = clusteringReader.read(truthPath);
+		} else if (truthTyp == ".txt") {
+				ClusteringReader clusteringReader;
+				truth = clusteringReader.read(truthPath);
+		}
+		groundt = true;
+
+	}
+	G = getGraph(options);
 	SeedSetGenerator* seedGen = NULL;
 	count nSeeds = 1; // number of seeds
 
@@ -864,7 +860,7 @@ int main(int argc, char **argv) {
 			writer.write(sub, path);
 		}
 	}
-
+	std::cout <<running1.elapsedTag()<<std::endl;
 	std::cout << "[EXIT] terminated normally" << std::endl;
 	return 0;
 }
