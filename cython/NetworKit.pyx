@@ -709,7 +709,7 @@ def showPropertiesOld(nkG):
 
 	"""
 
-	props = properties(nkG, settings)
+	props = properties(nkG)
 	print(textwrap.dedent(propertiesTextBlock.format(**props)))
 	(labels, histo) = props["histo"]
 	termgraph.graph(labels, histo)
