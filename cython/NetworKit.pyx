@@ -508,7 +508,7 @@ def components(nxG):
 	return (nComponents, sizeLargestComponent)
 
 
-def properties(nkG, settings=collections.defaultdict(lambda: True)):
+def properties(nkG, settings):
 	print("[...] converting to NetworX.Graph for some properties....")
 	nxG = nk2nx(nkG)
 
@@ -664,7 +664,7 @@ def showProperties(nkG):
 
 
 
-def showPropertiesOld(nkG):
+def showPropertiesOld(nkG, settings=collections.defaultdict(lambda: True)):
 
 	propertiesTextBlock = """
 	Graph Properties: {name}
@@ -709,7 +709,7 @@ def showPropertiesOld(nkG):
 
 	"""
 
-	props = properties(nkG)
+	props = properties(nkG, settings)
 	print(textwrap.dedent(propertiesTextBlock.format(**props)))
 	(labels, histo) = props["histo"]
 	termgraph.graph(labels, histo)
