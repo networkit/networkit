@@ -613,7 +613,7 @@ def properties(nkG, settings):
 	return props
 
 
-def showProperties(nkG):
+def showProperties(nkG, settings=collections.defaultdict(lambda: True)):
 	props = properties(nkG)
 	basicProperties = [
 		["nodes (n)", props["n"]],
@@ -664,7 +664,7 @@ def showProperties(nkG):
 
 
 
-def showPropertiesOld(nkG, settings=collections.defaultdict(lambda: True)):
+def showPropertiesOld(nkG):
 
 	propertiesTextBlock = """
 	Graph Properties: {name}
