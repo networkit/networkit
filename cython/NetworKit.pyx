@@ -614,7 +614,7 @@ def properties(nkG, settings):
 
 
 def showProperties(nkG, settings=collections.defaultdict(lambda: True)):
-	props = properties(nkG)
+	props = properties(nkG, settings)
 	basicProperties = [
 		["nodes (n)", props["n"]],
 		["edges (m)", props["m"]],
