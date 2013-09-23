@@ -43,6 +43,7 @@ Graph EdgeListIO::read(std::string path) {
 	   std::vector<std::string> split = Aux::StringTools::split(line, '\t');
 	   std::string prefix = "#";
 	   if (split.size() == 2 && (split[0].compare(0, prefix.length(), prefix) != 0)) {
+
 		   node u = std::stoi(split[0]);
 		   if (u > maxNode) {
 			   maxNode = u;
@@ -55,6 +56,7 @@ Graph EdgeListIO::read(std::string path) {
     }
 
     maxNode = maxNode - firstNode + 1;
+
     Graph G(maxNode);
 
     file.close();
