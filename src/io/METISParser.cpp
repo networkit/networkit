@@ -18,7 +18,8 @@ namespace NetworKit {
  *
  * @param[out]	indices		node indices extracted from line
  */
-static std::vector<node> parseLine(std::string line) {
+static std::vector<node> parseLine(const std::string& line) {
+	// TODO: pass by const reference
 
 	std::stringstream stream(line);
 	std::string token;
@@ -28,7 +29,7 @@ static std::vector<node> parseLine(std::string line) {
 	// split string and push adjacent nodes
 	while (std::getline(stream, token, delim)) {
 		if (token.size() != 0) {
-			node v = atoi(token.c_str());
+			node v = stoi(token);
 			adjacencies.push_back(v);
 		}
 	}
@@ -46,9 +47,9 @@ static std::vector<std::pair<node,double>> parseWeightedLine(std::string line) {
 	// split string and push adjacent nodes
 	while (std::getline(stream, token, delim)) {
 		if (token.size() != 0) {
-			node v = atoi(token.c_str());
+			node v = stoi(token);
 			std::getline(stream, token, delim);
-			double weight = atof(token.c_str());
+			double weight = stod(token);
 			adjacencies.push_back(std::make_pair(v,weight));
 		}
 

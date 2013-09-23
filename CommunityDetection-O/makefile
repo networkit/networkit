@@ -39,6 +39,8 @@ RM := rm -rf
 -include src/distmeasures/subdir.mk
 -include src/dcd/test/subdir.mk
 -include src/dcd/subdir.mk
+-include src/connectedcomponents/test/subdir.mk
+-include src/connectedcomponents/subdir.mk
 -include src/community/test/subdir.mk
 -include src/community/subdir.mk
 -include src/coarsening/test/subdir.mk
@@ -84,7 +86,7 @@ all: NetworKit-CommunityDetection-O
 NetworKit-CommunityDetection-O: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MacOS X C++ Linker'
-	g++-4.7 -L/home/abuabderrahmen/Arbeitsfläche/eclipse/workspace/gtest-1.6.0/ -L/usr/local/Cellar/log4cxx/0.10.0/lib -fopenmp -std=c++0x -o "NetworKit-CommunityDetection-O" $(OBJS) $(USER_OBJS) $(LIBS)
+	/usr/local/bin/g++-4.7 -L"/Users/cls/workspace/gtest" -L/usr/local/Cellar/log4cxx/0.10.0/lib -fopenmp -std=c++11 -o "NetworKit-CommunityDetection-O" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
