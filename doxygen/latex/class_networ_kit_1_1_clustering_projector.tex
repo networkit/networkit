@@ -1,0 +1,170 @@
+\hypertarget{class_networ_kit_1_1_clustering_projector}{\section{Networ\-Kit\-:\-:Clustering\-Projector Class Reference}
+\label{class_networ_kit_1_1_clustering_projector}\index{Networ\-Kit\-::\-Clustering\-Projector@{Networ\-Kit\-::\-Clustering\-Projector}}
+}
+
+
+{\ttfamily \#include $<$Clustering\-Projector.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_clustering_projector_a153d1430b2604e28356e2e342dc756da}{Clustering\-Projector} ()
+\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering_projector_a82ee263da155814c66fa78d348df6def}{$\sim$\-Clustering\-Projector} ()
+\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_projector_a6840a5c75cf9b8c2fd985ca20b0ba19b}{project\-Back} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gcoarse, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gfine, \hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ \&fine\-To\-Coarse, \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&zeta\-Coarse)
+\begin{DoxyCompactList}\small\item\em Given. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_projector_a9a53bf1165f4c1d98b0ffa97cead81b5}{project\-Back\-To\-Finest} (\hyperlink{class_networ_kit_1_1_clustering}{Clustering} \&zeta\-Coarse, std\-::vector$<$ \hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ $>$ \&maps, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gfinest)
+\begin{DoxyCompactList}\small\item\em Project a clustering $^\wedge$\{i\} of the coarse graph G$^\wedge$\{i\}Êback to the finest graph G$^\wedge$\{0\}, using the hierarchy of fine-\/$>$coarse maps. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_clustering_projector_aa338636fe34f809d97e27d51a7fb5610}{project\-Coarse\-Graph\-To\-Finest\-Clustering} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gcoarse, \hyperlink{class_networ_kit_1_1_graph}{Graph} \&Gfinest, std\-::vector$<$ \hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ $>$ \&maps)
+\begin{DoxyCompactList}\small\item\em Assuming that the coarse graph resulted from contracting and represents a clustering of the finest graph. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 16 of file Clustering\-Projector.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_clustering_projector_a153d1430b2604e28356e2e342dc756da}{\index{Networ\-Kit\-::\-Clustering\-Projector@{Networ\-Kit\-::\-Clustering\-Projector}!Clustering\-Projector@{Clustering\-Projector}}
+\index{Clustering\-Projector@{Clustering\-Projector}!NetworKit::ClusteringProjector@{Networ\-Kit\-::\-Clustering\-Projector}}
+\subsubsection[{Clustering\-Projector}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Clustering\-Projector\-::\-Clustering\-Projector (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_clustering_projector_a153d1430b2604e28356e2e342dc756da}
+
+
+Definition at line 12 of file Clustering\-Projector.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_clustering_projector_a82ee263da155814c66fa78d348df6def}{\index{Networ\-Kit\-::\-Clustering\-Projector@{Networ\-Kit\-::\-Clustering\-Projector}!$\sim$\-Clustering\-Projector@{$\sim$\-Clustering\-Projector}}
+\index{$\sim$\-Clustering\-Projector@{$\sim$\-Clustering\-Projector}!NetworKit::ClusteringProjector@{Networ\-Kit\-::\-Clustering\-Projector}}
+\subsubsection[{$\sim$\-Clustering\-Projector}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Clustering\-Projector\-::$\sim$\-Clustering\-Projector (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_projector_a82ee263da155814c66fa78d348df6def}
+
+
+Definition at line 17 of file Clustering\-Projector.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_clustering_projector_a6840a5c75cf9b8c2fd985ca20b0ba19b}{\index{Networ\-Kit\-::\-Clustering\-Projector@{Networ\-Kit\-::\-Clustering\-Projector}!project\-Back@{project\-Back}}
+\index{project\-Back@{project\-Back}!NetworKit::ClusteringProjector@{Networ\-Kit\-::\-Clustering\-Projector}}
+\subsubsection[{project\-Back}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Clustering\-Projector\-::project\-Back (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{Gcoarse, }
+\item[{{\bf Graph} \&}]{Gfine, }
+\item[{{\bf Node\-Map}$<$ {\bf node} $>$ \&}]{fine\-To\-Coarse, }
+\item[{{\bf Clustering} \&}]{zeta\-Coarse}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_projector_a6840a5c75cf9b8c2fd985ca20b0ba19b}
+
+
+Given. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em Gcoarse} & \\
+\hline
+\mbox{\tt in}  & {\em Gfine} & \\
+\hline
+\mbox{\tt in}  & {\em fine\-To\-Coarse} & \\
+\hline
+\mbox{\tt in}  & {\em zeta\-Coarse} & a clustering of the coarse graph \begin{DoxyVerb}, project the clustering back to the fine graph to create a clustering of the fine graph.
+\end{DoxyVerb}
+ \\
+\hline
+\mbox{\tt out}  & {\em a} & clustering of the fine graph \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 21 of file Clustering\-Projector.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_projector_a6840a5c75cf9b8c2fd985ca20b0ba19b_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_clustering_projector_a9a53bf1165f4c1d98b0ffa97cead81b5}{\index{Networ\-Kit\-::\-Clustering\-Projector@{Networ\-Kit\-::\-Clustering\-Projector}!project\-Back\-To\-Finest@{project\-Back\-To\-Finest}}
+\index{project\-Back\-To\-Finest@{project\-Back\-To\-Finest}!NetworKit::ClusteringProjector@{Networ\-Kit\-::\-Clustering\-Projector}}
+\subsubsection[{project\-Back\-To\-Finest}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Clustering\-Projector\-::project\-Back\-To\-Finest (
+\begin{DoxyParamCaption}
+\item[{{\bf Clustering} \&}]{zeta\-Coarse, }
+\item[{std\-::vector$<$ {\bf Node\-Map}$<$ {\bf node} $>$ $>$ \&}]{maps, }
+\item[{{\bf Graph} \&}]{Gfinest}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_projector_a9a53bf1165f4c1d98b0ffa97cead81b5}
+
+
+Project a clustering $^\wedge$\{i\} of the coarse graph G$^\wedge$\{i\}Êback to the finest graph G$^\wedge$\{0\}, using the hierarchy of fine-\/$>$coarse maps. 
+
+
+
+Definition at line 38 of file Clustering\-Projector.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_projector_a9a53bf1165f4c1d98b0ffa97cead81b5_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_clustering_projector_aa338636fe34f809d97e27d51a7fb5610}{\index{Networ\-Kit\-::\-Clustering\-Projector@{Networ\-Kit\-::\-Clustering\-Projector}!project\-Coarse\-Graph\-To\-Finest\-Clustering@{project\-Coarse\-Graph\-To\-Finest\-Clustering}}
+\index{project\-Coarse\-Graph\-To\-Finest\-Clustering@{project\-Coarse\-Graph\-To\-Finest\-Clustering}!NetworKit::ClusteringProjector@{Networ\-Kit\-::\-Clustering\-Projector}}
+\subsubsection[{project\-Coarse\-Graph\-To\-Finest\-Clustering}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Clustering\-Projector\-::project\-Coarse\-Graph\-To\-Finest\-Clustering (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{Gcoarse, }
+\item[{{\bf Graph} \&}]{Gfinest, }
+\item[{std\-::vector$<$ {\bf Node\-Map}$<$ {\bf node} $>$ $>$ \&}]{maps}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_clustering_projector_aa338636fe34f809d97e27d51a7fb5610}
+
+
+Assuming that the coarse graph resulted from contracting and represents a clustering of the finest graph. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em Gcoarse} & coarse graph \\
+\hline
+\mbox{\tt in}  & {\em Gfinest} & finest graph \\
+\hline
+\mbox{\tt in}  & {\em maps} & hierarchy of maps M$^\wedge$\{i-\/$>$i+1\} mapping nodes in finer graph to supernodes in coarser graph \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 72 of file Clustering\-Projector.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_clustering_projector_aa338636fe34f809d97e27d51a7fb5610_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/coarsening/\hyperlink{_clustering_projector_8h}{Clustering\-Projector.\-h}\item 
+src/coarsening/\hyperlink{_clustering_projector_8cpp}{Clustering\-Projector.\-cpp}\end{DoxyCompactItemize}

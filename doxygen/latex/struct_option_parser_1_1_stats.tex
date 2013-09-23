@@ -1,0 +1,356 @@
+\hypertarget{struct_option_parser_1_1_stats}{\section{Option\-Parser\-:\-:Stats Struct Reference}
+\label{struct_option_parser_1_1_stats}\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}}
+}
+
+
+Determines the minimum lengths of the buffer and options arrays used for \hyperlink{class_option_parser_1_1_parser}{Parser}.  
+
+
+
+
+{\ttfamily \#include $<$optionparser.\-h$>$}
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_option_parser_1_1_stats_1_1_count_options_action}{Count\-Options\-Action}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{struct_option_parser_1_1_stats_af488528dadc4a10c77a0135b1205e23d}{Stats} ()
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{struct_option_parser_1_1_stats}{Stats} object with counts set to 1 (for the sentinel element). \end{DoxyCompactList}\item 
+\hyperlink{struct_option_parser_1_1_stats_adb41f21c1a7c4f494f5831d9b8585b8a}{Stats} (bool gnu, const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} \hyperlink{_selective_community_detection-_x_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage}\mbox{[}$\,$\mbox{]}, int argc, const char $\ast$$\ast$argv, int min\-\_\-abbr\-\_\-len=0, bool single\-\_\-minus\-\_\-longopt=false)
+\begin{DoxyCompactList}\small\item\em Creates a new \hyperlink{struct_option_parser_1_1_stats}{Stats} object and immediately updates it for the given {\ttfamily usage} and argument vector. \end{DoxyCompactList}\item 
+\hyperlink{struct_option_parser_1_1_stats_a75907970e80d82ec01a8db827012b7af}{Stats} (bool gnu, const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} \hyperlink{_selective_community_detection-_x_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage}\mbox{[}$\,$\mbox{]}, int argc, char $\ast$$\ast$argv, int min\-\_\-abbr\-\_\-len=0, bool single\-\_\-minus\-\_\-longopt=false)
+\begin{DoxyCompactList}\small\item\em \hyperlink{struct_option_parser_1_1_stats}{Stats}(...) with non-\/const argv. \end{DoxyCompactList}\item 
+\hyperlink{struct_option_parser_1_1_stats_aed8e2b1777ff408c30b91051fcdd8cfc}{Stats} (const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} \hyperlink{_selective_community_detection-_x_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage}\mbox{[}$\,$\mbox{]}, int argc, const char $\ast$$\ast$argv, int min\-\_\-abbr\-\_\-len=0, bool single\-\_\-minus\-\_\-longopt=false)
+\begin{DoxyCompactList}\small\item\em P\-O\-S\-I\-X \hyperlink{struct_option_parser_1_1_stats}{Stats}(...) (gnu==false). \end{DoxyCompactList}\item 
+\hyperlink{struct_option_parser_1_1_stats_a1db2096d3599352d4d0f8efb7b60d299}{Stats} (const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} \hyperlink{_selective_community_detection-_x_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage}\mbox{[}$\,$\mbox{]}, int argc, char $\ast$$\ast$argv, int min\-\_\-abbr\-\_\-len=0, bool single\-\_\-minus\-\_\-longopt=false)
+\begin{DoxyCompactList}\small\item\em P\-O\-S\-I\-X \hyperlink{struct_option_parser_1_1_stats}{Stats}(...) (gnu==false) with non-\/const argv. \end{DoxyCompactList}\item 
+void \hyperlink{struct_option_parser_1_1_stats_ad5da08a239df94c76c601b28ce035513}{add} (bool gnu, const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} \hyperlink{_selective_community_detection-_x_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage}\mbox{[}$\,$\mbox{]}, int argc, const char $\ast$$\ast$argv, int min\-\_\-abbr\-\_\-len=0, bool single\-\_\-minus\-\_\-longopt=false)
+\begin{DoxyCompactList}\small\item\em Updates this \hyperlink{struct_option_parser_1_1_stats}{Stats} object for the given {\ttfamily usage} and argument vector. \end{DoxyCompactList}\item 
+void \hyperlink{struct_option_parser_1_1_stats_ac36446ea4b4e2f0fc3944f824d133d9a}{add} (bool gnu, const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} \hyperlink{_selective_community_detection-_x_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage}\mbox{[}$\,$\mbox{]}, int argc, char $\ast$$\ast$argv, int min\-\_\-abbr\-\_\-len=0, bool single\-\_\-minus\-\_\-longopt=false)
+\begin{DoxyCompactList}\small\item\em \hyperlink{struct_option_parser_1_1_stats_ad5da08a239df94c76c601b28ce035513}{add()} with non-\/const argv. \end{DoxyCompactList}\item 
+void \hyperlink{struct_option_parser_1_1_stats_a06922c6884d20fda45c9b6625d8f3740}{add} (const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} \hyperlink{_selective_community_detection-_x_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage}\mbox{[}$\,$\mbox{]}, int argc, const char $\ast$$\ast$argv, int min\-\_\-abbr\-\_\-len=0, bool single\-\_\-minus\-\_\-longopt=false)
+\begin{DoxyCompactList}\small\item\em P\-O\-S\-I\-X \hyperlink{struct_option_parser_1_1_stats_ad5da08a239df94c76c601b28ce035513}{add()} (gnu==false). \end{DoxyCompactList}\item 
+void \hyperlink{struct_option_parser_1_1_stats_a5946b9692114a495a7d01c0c5dc4216b}{add} (const \hyperlink{struct_option_parser_1_1_descriptor}{Descriptor} \hyperlink{_selective_community_detection-_x_8cpp_ae4e685e845abde182eb8fc1f87b756ae}{usage}\mbox{[}$\,$\mbox{]}, int argc, char $\ast$$\ast$argv, int min\-\_\-abbr\-\_\-len=0, bool single\-\_\-minus\-\_\-longopt=false)
+\begin{DoxyCompactList}\small\item\em P\-O\-S\-I\-X \hyperlink{struct_option_parser_1_1_stats_ad5da08a239df94c76c601b28ce035513}{add()} (gnu==false) with non-\/const argv. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+unsigned \hyperlink{struct_option_parser_1_1_stats_adc083894c6e07752640cc108a67d6b63}{buffer\-\_\-max}
+\begin{DoxyCompactList}\small\item\em Number of elements needed for a {\ttfamily buffer}\mbox{[}\mbox{]} array to be used for \hyperlink{class_option_parser_1_1_parser_adbde29c0025d0ec88f8b41a656ab45a1}{parsing} the same argument vectors that were fed into this \hyperlink{struct_option_parser_1_1_stats}{Stats} object. \end{DoxyCompactList}\item 
+unsigned \hyperlink{struct_option_parser_1_1_stats_a32b27e18309da5c4c6ebc5ee3e42f98c}{options\-\_\-max}
+\begin{DoxyCompactList}\small\item\em Number of elements needed for an {\ttfamily options}\mbox{[}\mbox{]} array to be used for \hyperlink{class_option_parser_1_1_parser_adbde29c0025d0ec88f8b41a656ab45a1}{parsing} the same argument vectors that were fed into this \hyperlink{struct_option_parser_1_1_stats}{Stats} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Determines the minimum lengths of the buffer and options arrays used for \hyperlink{class_option_parser_1_1_parser}{Parser}. 
+
+Because \hyperlink{class_option_parser_1_1_parser}{Parser} doesn't use dynamic memory its output arrays have to be pre-\/allocated. If you don't want to use fixed size arrays (which may turn out too small, causing command line arguments to be dropped), you can use \hyperlink{struct_option_parser_1_1_stats}{Stats} to determine the correct sizes. \hyperlink{struct_option_parser_1_1_stats}{Stats} work cumulative. You can first pass in your default options and then the real options and afterwards the counts will reflect the union. 
+
+Definition at line 924 of file optionparser.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{struct_option_parser_1_1_stats_af488528dadc4a10c77a0135b1205e23d}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!Stats@{Stats}}
+\index{Stats@{Stats}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{Stats}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Stats\-::\-Stats (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{struct_option_parser_1_1_stats_af488528dadc4a10c77a0135b1205e23d}
+
+
+Creates a \hyperlink{struct_option_parser_1_1_stats}{Stats} object with counts set to 1 (for the sentinel element). 
+
+
+
+Definition at line 953 of file optionparser.\-h.
+
+\hypertarget{struct_option_parser_1_1_stats_adb41f21c1a7c4f494f5831d9b8585b8a}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!Stats@{Stats}}
+\index{Stats@{Stats}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{Stats}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Stats\-::\-Stats (
+\begin{DoxyParamCaption}
+\item[{bool}]{gnu, }
+\item[{const {\bf Descriptor}}]{usage\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{argc, }
+\item[{const char $\ast$$\ast$}]{argv, }
+\item[{int}]{min\-\_\-abbr\-\_\-len = {\ttfamily 0}, }
+\item[{bool}]{single\-\_\-minus\-\_\-longopt = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{struct_option_parser_1_1_stats_adb41f21c1a7c4f494f5831d9b8585b8a}
+
+
+Creates a new \hyperlink{struct_option_parser_1_1_stats}{Stats} object and immediately updates it for the given {\ttfamily usage} and argument vector. 
+
+You may pass 0 for {\ttfamily argc} and/or {\ttfamily argv}, if you just want to update \hyperlink{struct_option_parser_1_1_stats_a32b27e18309da5c4c6ebc5ee3e42f98c}{options\-\_\-max}.
+
+\begin{DoxyNote}{Note}
+The calls to \hyperlink{struct_option_parser_1_1_stats}{Stats} methods must match the later calls to \hyperlink{class_option_parser_1_1_parser}{Parser} methods. See \hyperlink{class_option_parser_1_1_parser_adbde29c0025d0ec88f8b41a656ab45a1}{Parser\-::parse()} for the meaning of the arguments. 
+\end{DoxyNote}
+
+
+Definition at line 967 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=346pt]{struct_option_parser_1_1_stats_adb41f21c1a7c4f494f5831d9b8585b8a_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{struct_option_parser_1_1_stats_a75907970e80d82ec01a8db827012b7af}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!Stats@{Stats}}
+\index{Stats@{Stats}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{Stats}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Stats\-::\-Stats (
+\begin{DoxyParamCaption}
+\item[{bool}]{gnu, }
+\item[{const {\bf Descriptor}}]{usage\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv, }
+\item[{int}]{min\-\_\-abbr\-\_\-len = {\ttfamily 0}, }
+\item[{bool}]{single\-\_\-minus\-\_\-longopt = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{struct_option_parser_1_1_stats_a75907970e80d82ec01a8db827012b7af}
+
+
+\hyperlink{struct_option_parser_1_1_stats}{Stats}(...) with non-\/const argv. 
+
+
+
+Definition at line 975 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=346pt]{struct_option_parser_1_1_stats_a75907970e80d82ec01a8db827012b7af_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{struct_option_parser_1_1_stats_aed8e2b1777ff408c30b91051fcdd8cfc}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!Stats@{Stats}}
+\index{Stats@{Stats}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{Stats}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Stats\-::\-Stats (
+\begin{DoxyParamCaption}
+\item[{const {\bf Descriptor}}]{usage\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{argc, }
+\item[{const char $\ast$$\ast$}]{argv, }
+\item[{int}]{min\-\_\-abbr\-\_\-len = {\ttfamily 0}, }
+\item[{bool}]{single\-\_\-minus\-\_\-longopt = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{struct_option_parser_1_1_stats_aed8e2b1777ff408c30b91051fcdd8cfc}
+
+
+P\-O\-S\-I\-X \hyperlink{struct_option_parser_1_1_stats}{Stats}(...) (gnu==false). 
+
+
+
+Definition at line 983 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=346pt]{struct_option_parser_1_1_stats_aed8e2b1777ff408c30b91051fcdd8cfc_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{struct_option_parser_1_1_stats_a1db2096d3599352d4d0f8efb7b60d299}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!Stats@{Stats}}
+\index{Stats@{Stats}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{Stats}]{\setlength{\rightskip}{0pt plus 5cm}Option\-Parser\-::\-Stats\-::\-Stats (
+\begin{DoxyParamCaption}
+\item[{const {\bf Descriptor}}]{usage\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv, }
+\item[{int}]{min\-\_\-abbr\-\_\-len = {\ttfamily 0}, }
+\item[{bool}]{single\-\_\-minus\-\_\-longopt = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{struct_option_parser_1_1_stats_a1db2096d3599352d4d0f8efb7b60d299}
+
+
+P\-O\-S\-I\-X \hyperlink{struct_option_parser_1_1_stats}{Stats}(...) (gnu==false) with non-\/const argv. 
+
+
+
+Definition at line 991 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=346pt]{struct_option_parser_1_1_stats_a1db2096d3599352d4d0f8efb7b60d299_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{struct_option_parser_1_1_stats_ad5da08a239df94c76c601b28ce035513}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!add@{add}}
+\index{add@{add}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{add}]{\setlength{\rightskip}{0pt plus 5cm}void Option\-Parser\-::\-Stats\-::add (
+\begin{DoxyParamCaption}
+\item[{bool}]{gnu, }
+\item[{const {\bf Descriptor}}]{usage\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{argc, }
+\item[{const char $\ast$$\ast$}]{argv, }
+\item[{int}]{min\-\_\-abbr\-\_\-len = {\ttfamily 0}, }
+\item[{bool}]{single\-\_\-minus\-\_\-longopt = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{struct_option_parser_1_1_stats_ad5da08a239df94c76c601b28ce035513}
+
+
+Updates this \hyperlink{struct_option_parser_1_1_stats}{Stats} object for the given {\ttfamily usage} and argument vector. 
+
+You may pass 0 for {\ttfamily argc} and/or {\ttfamily argv}, if you just want to update \hyperlink{struct_option_parser_1_1_stats_a32b27e18309da5c4c6ebc5ee3e42f98c}{options\-\_\-max}.
+
+\begin{DoxyNote}{Note}
+The calls to \hyperlink{struct_option_parser_1_1_stats}{Stats} methods must match the later calls to \hyperlink{class_option_parser_1_1_parser}{Parser} methods. See \hyperlink{class_option_parser_1_1_parser_adbde29c0025d0ec88f8b41a656ab45a1}{Parser\-::parse()} for the meaning of the arguments. 
+\end{DoxyNote}
+
+
+Definition at line 1496 of file optionparser.\-h.
+
+\hypertarget{struct_option_parser_1_1_stats_ac36446ea4b4e2f0fc3944f824d133d9a}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!add@{add}}
+\index{add@{add}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{add}]{\setlength{\rightskip}{0pt plus 5cm}void Option\-Parser\-::\-Stats\-::add (
+\begin{DoxyParamCaption}
+\item[{bool}]{gnu, }
+\item[{const {\bf Descriptor}}]{usage\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv, }
+\item[{int}]{min\-\_\-abbr\-\_\-len = {\ttfamily 0}, }
+\item[{bool}]{single\-\_\-minus\-\_\-longopt = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{struct_option_parser_1_1_stats_ac36446ea4b4e2f0fc3944f824d133d9a}
+
+
+\hyperlink{struct_option_parser_1_1_stats_ad5da08a239df94c76c601b28ce035513}{add()} with non-\/const argv. 
+
+
+
+Definition at line 1011 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{struct_option_parser_1_1_stats_ac36446ea4b4e2f0fc3944f824d133d9a_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{struct_option_parser_1_1_stats_a06922c6884d20fda45c9b6625d8f3740}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!add@{add}}
+\index{add@{add}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{add}]{\setlength{\rightskip}{0pt plus 5cm}void Option\-Parser\-::\-Stats\-::add (
+\begin{DoxyParamCaption}
+\item[{const {\bf Descriptor}}]{usage\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{argc, }
+\item[{const char $\ast$$\ast$}]{argv, }
+\item[{int}]{min\-\_\-abbr\-\_\-len = {\ttfamily 0}, }
+\item[{bool}]{single\-\_\-minus\-\_\-longopt = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{struct_option_parser_1_1_stats_a06922c6884d20fda45c9b6625d8f3740}
+
+
+P\-O\-S\-I\-X \hyperlink{struct_option_parser_1_1_stats_ad5da08a239df94c76c601b28ce035513}{add()} (gnu==false). 
+
+
+
+Definition at line 1018 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{struct_option_parser_1_1_stats_a06922c6884d20fda45c9b6625d8f3740_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{struct_option_parser_1_1_stats_a5946b9692114a495a7d01c0c5dc4216b}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!add@{add}}
+\index{add@{add}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{add}]{\setlength{\rightskip}{0pt plus 5cm}void Option\-Parser\-::\-Stats\-::add (
+\begin{DoxyParamCaption}
+\item[{const {\bf Descriptor}}]{usage\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv, }
+\item[{int}]{min\-\_\-abbr\-\_\-len = {\ttfamily 0}, }
+\item[{bool}]{single\-\_\-minus\-\_\-longopt = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{struct_option_parser_1_1_stats_a5946b9692114a495a7d01c0c5dc4216b}
+
+
+P\-O\-S\-I\-X \hyperlink{struct_option_parser_1_1_stats_ad5da08a239df94c76c601b28ce035513}{add()} (gnu==false) with non-\/const argv. 
+
+
+
+Definition at line 1025 of file optionparser.\-h.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{struct_option_parser_1_1_stats_a5946b9692114a495a7d01c0c5dc4216b_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{struct_option_parser_1_1_stats_adc083894c6e07752640cc108a67d6b63}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!buffer\-\_\-max@{buffer\-\_\-max}}
+\index{buffer\-\_\-max@{buffer\-\_\-max}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{buffer\-\_\-max}]{\setlength{\rightskip}{0pt plus 5cm}unsigned Option\-Parser\-::\-Stats\-::buffer\-\_\-max}}\label{struct_option_parser_1_1_stats_adc083894c6e07752640cc108a67d6b63}
+
+
+Number of elements needed for a {\ttfamily buffer}\mbox{[}\mbox{]} array to be used for \hyperlink{class_option_parser_1_1_parser_adbde29c0025d0ec88f8b41a656ab45a1}{parsing} the same argument vectors that were fed into this \hyperlink{struct_option_parser_1_1_stats}{Stats} object. 
+
+\begin{DoxyNote}{Note}
+This number is always 1 greater than the actual number needed, to give you a sentinel element. 
+\end{DoxyNote}
+
+
+Definition at line 935 of file optionparser.\-h.
+
+\hypertarget{struct_option_parser_1_1_stats_a32b27e18309da5c4c6ebc5ee3e42f98c}{\index{Option\-Parser\-::\-Stats@{Option\-Parser\-::\-Stats}!options\-\_\-max@{options\-\_\-max}}
+\index{options\-\_\-max@{options\-\_\-max}!OptionParser::Stats@{Option\-Parser\-::\-Stats}}
+\subsubsection[{options\-\_\-max}]{\setlength{\rightskip}{0pt plus 5cm}unsigned Option\-Parser\-::\-Stats\-::options\-\_\-max}}\label{struct_option_parser_1_1_stats_a32b27e18309da5c4c6ebc5ee3e42f98c}
+
+
+Number of elements needed for an {\ttfamily options}\mbox{[}\mbox{]} array to be used for \hyperlink{class_option_parser_1_1_parser_adbde29c0025d0ec88f8b41a656ab45a1}{parsing} the same argument vectors that were fed into this \hyperlink{struct_option_parser_1_1_stats}{Stats} object. 
+
+\begin{DoxyNote}{Note}
+\begin{DoxyItemize}
+\item This number is always 1 greater than the actual number needed, to give you a sentinel element. \item This number depends only on the {\ttfamily usage}, not the argument vectors, because the {\ttfamily options} array needs exactly one slot for each possible \hyperlink{struct_option_parser_1_1_descriptor_ae62860781844b44c0bd4f730c96701d7}{Descriptor\-::index}. \end{DoxyItemize}
+
+\end{DoxyNote}
+
+
+Definition at line 948 of file optionparser.\-h.
+
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/ext/\hyperlink{optionparser_8h}{optionparser.\-h}\end{DoxyCompactItemize}

@@ -1,0 +1,12 @@
+<map id="src/clustering/test/ClusteringTest.h" name="src/clustering/test/ClusteringTest.h">
+<area shape="rect" id="node5" href="$log_8h.html" title="../../aux/log.h" alt="" coords="123,99,220,127"/>
+<area shape="rect" id="node9" href="$_clustering_8h.html" title="../Clustering.h" alt="" coords="308,254,411,282"/>
+<area shape="rect" id="node21" href="$_modularity_8h.html" title="../Modularity.h" alt="" coords="496,99,600,127"/>
+<area shape="rect" id="node32" href="$_clustering_generator_8h.html" title="../ClusteringGenerator.h" alt="" coords="296,99,459,127"/>
+<area shape="rect" id="node35" href="$_graph_generator_8h.html" title="../../graph/GraphGenerator.h" alt="" coords="807,99,995,127"/>
+<area shape="rect" id="node11" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="384,331,523,359"/>
+<area shape="rect" id="node13" href="$_graph_8h.html" title="Graph.h" alt="" coords="525,409,595,437"/>
+<area shape="rect" id="node25" href="$_quality_measure_8h.html" title="QualityMeasure.h" alt="" coords="346,177,472,205"/>
+<area shape="rect" id="node28" href="$_index_map_8h.html" title="../aux/IndexMap.h" alt="" coords="736,177,863,205"/>
+<area shape="rect" id="node38" href="$_random_probability_8h.html" title="../aux/RandomProbability.h" alt="" coords="939,177,1119,205"/>
+</map>

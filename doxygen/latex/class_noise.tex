@@ -1,0 +1,140 @@
+\hypertarget{class_noise}{\section{Noise Class Reference}
+\label{class_noise}\index{Noise@{Noise}}
+}
+
+
+\hyperlink{class_noise}{Noise} is random addition to a signal.  
+
+
+
+
+{\ttfamily \#include $<$Noise.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_noise_ace14f0bb8c81fb41a3c3f8baf860c4b5}{Noise} (double l, double u)
+\item 
+virtual \hyperlink{class_noise_a751f1c229c801b0abd4a84f8bf08d810}{$\sim$\-Noise} ()
+\item 
+double \hyperlink{class_noise_a2d93027a479f2b41a9e80919563a6f97}{add} (double x)
+\begin{DoxyCompactList}\small\item\em Add noise to double. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \hyperlink{class_noise_aea68fa84d28eb99d85078f97e8b5c232}{lower\-Bound}
+\item 
+double \hyperlink{class_noise_ae4e9a84fa020eac595826a7a9a95bcb6}{upper\-Bound}
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\-::uniform\-\_\-real\-\_\-distribution\\*
+$<$ double $>$ \hyperlink{class_noise_aa7025a1f6193c8cf2ce4d225b9f9413f}{uniform}
+\item 
+std\-::default\-\_\-random\-\_\-engine \hyperlink{class_noise_ac334ce93af290c25bb835780c3d25018}{random\-Engine}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{class_noise}{Noise} is random addition to a signal. 
+
+This class provides methods which add random numbers to their inputs in order to enable randomization. 
+
+Definition at line 19 of file Noise.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_noise_ace14f0bb8c81fb41a3c3f8baf860c4b5}{\index{Noise@{Noise}!Noise@{Noise}}
+\index{Noise@{Noise}!Noise@{Noise}}
+\subsubsection[{Noise}]{\setlength{\rightskip}{0pt plus 5cm}Noise\-::\-Noise (
+\begin{DoxyParamCaption}
+\item[{double}]{l, }
+\item[{double}]{u}
+\end{DoxyParamCaption}
+)}}\label{class_noise_ace14f0bb8c81fb41a3c3f8baf860c4b5}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em l} & lower bound for added random number \\
+\hline
+\mbox{\tt in}  & {\em u} & upper bound for added random number \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 12 of file Noise.\-cpp.
+
+\hypertarget{class_noise_a751f1c229c801b0abd4a84f8bf08d810}{\index{Noise@{Noise}!$\sim$\-Noise@{$\sim$\-Noise}}
+\index{$\sim$\-Noise@{$\sim$\-Noise}!Noise@{Noise}}
+\subsubsection[{$\sim$\-Noise}]{\setlength{\rightskip}{0pt plus 5cm}Noise\-::$\sim$\-Noise (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_noise_a751f1c229c801b0abd4a84f8bf08d810}
+
+
+Definition at line 19 of file Noise.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_noise_a2d93027a479f2b41a9e80919563a6f97}{\index{Noise@{Noise}!add@{add}}
+\index{add@{add}!Noise@{Noise}}
+\subsubsection[{add}]{\setlength{\rightskip}{0pt plus 5cm}double Noise\-::add (
+\begin{DoxyParamCaption}
+\item[{double}]{x}
+\end{DoxyParamCaption}
+)}}\label{class_noise_a2d93027a479f2b41a9e80919563a6f97}
+
+
+Add noise to double. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em x} & input \\
+\hline
+\mbox{\tt out}  & {\em input} & plus noise \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 23 of file Noise.\-cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_noise_aea68fa84d28eb99d85078f97e8b5c232}{\index{Noise@{Noise}!lower\-Bound@{lower\-Bound}}
+\index{lower\-Bound@{lower\-Bound}!Noise@{Noise}}
+\subsubsection[{lower\-Bound}]{\setlength{\rightskip}{0pt plus 5cm}double Noise\-::lower\-Bound}}\label{class_noise_aea68fa84d28eb99d85078f97e8b5c232}
+
+
+Definition at line 28 of file Noise.\-h.
+
+\hypertarget{class_noise_ac334ce93af290c25bb835780c3d25018}{\index{Noise@{Noise}!random\-Engine@{random\-Engine}}
+\index{random\-Engine@{random\-Engine}!Noise@{Noise}}
+\subsubsection[{random\-Engine}]{\setlength{\rightskip}{0pt plus 5cm}std\-::default\-\_\-random\-\_\-engine Noise\-::random\-Engine\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_noise_ac334ce93af290c25bb835780c3d25018}
+
+
+Definition at line 24 of file Noise.\-h.
+
+\hypertarget{class_noise_aa7025a1f6193c8cf2ce4d225b9f9413f}{\index{Noise@{Noise}!uniform@{uniform}}
+\index{uniform@{uniform}!Noise@{Noise}}
+\subsubsection[{uniform}]{\setlength{\rightskip}{0pt plus 5cm}std\-::uniform\-\_\-real\-\_\-distribution$<$double$>$ Noise\-::uniform\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_noise_aa7025a1f6193c8cf2ce4d225b9f9413f}
+
+
+Definition at line 23 of file Noise.\-h.
+
+\hypertarget{class_noise_ae4e9a84fa020eac595826a7a9a95bcb6}{\index{Noise@{Noise}!upper\-Bound@{upper\-Bound}}
+\index{upper\-Bound@{upper\-Bound}!Noise@{Noise}}
+\subsubsection[{upper\-Bound}]{\setlength{\rightskip}{0pt plus 5cm}double Noise\-::upper\-Bound}}\label{class_noise_ae4e9a84fa020eac595826a7a9a95bcb6}
+
+
+Definition at line 29 of file Noise.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/auxiliary/\hyperlink{_noise_8h}{Noise.\-h}\item 
+src/auxiliary/\hyperlink{_noise_8cpp}{Noise.\-cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,190 @@
+\hypertarget{class_networ_kit_1_1_label_propagation}{\section{Networ\-Kit\-:\-:Label\-Propagation Class Reference}
+\label{class_networ_kit_1_1_label_propagation}\index{Networ\-Kit\-::\-Label\-Propagation@{Networ\-Kit\-::\-Label\-Propagation}}
+}
+
+
+As described in Ovelgoenne et al\-: An Ensemble Learning Strategy for \hyperlink{class_networ_kit_1_1_graph}{Graph} \hyperlink{class_networ_kit_1_1_clustering}{Clustering} Raghavan et al.  
+
+
+
+
+{\ttfamily \#include $<$Label\-Propagation.\-h$>$}
+
+
+
+Inheritance diagram for Networ\-Kit\-:\-:Label\-Propagation\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{class_networ_kit_1_1_label_propagation__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Networ\-Kit\-:\-:Label\-Propagation\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{class_networ_kit_1_1_label_propagation__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_label_propagation_a4a9267898177f7470717dca8d93de685}{Label\-Propagation} (\hyperlink{namespace_networ_kit_a76b399edfa50ae72e4aa86007aaa800a}{count} theta=0)
+\item 
+virtual \hyperlink{class_networ_kit_1_1_label_propagation_a0c0d1e07f66033a77000b4454bcfeea0}{$\sim$\-Label\-Propagation} ()
+\item 
+virtual \hyperlink{class_networ_kit_1_1_clustering}{Clustering} \hyperlink{class_networ_kit_1_1_label_propagation_ae944bf5e3bb44ce6b76a70f6071c3b31}{run} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G)
+\begin{DoxyCompactList}\small\item\em Run the label propagation clustering algorithm. \end{DoxyCompactList}\item 
+virtual std\-::string \hyperlink{class_networ_kit_1_1_label_propagation_a3e90c309b7463ebe1934ef2560bae6ba}{to\-String} () const 
+\item 
+virtual void \hyperlink{class_networ_kit_1_1_label_propagation_a1525c6b6610b9183c127edb318ebf552}{set\-Update\-Threshold} (\hyperlink{namespace_networ_kit_a76b399edfa50ae72e4aa86007aaa800a}{count} th)
+\begin{DoxyCompactList}\small\item\em The algorithm runs until a number of nodes less than the threshold is updated. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\-::string \hyperlink{class_networ_kit_1_1_label_propagation_a5989d3beabf4c62dfc6d34d5e5a2bfcd}{V\-E\-R\-S\-I\-O\-N}
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespace_networ_kit_a76b399edfa50ae72e4aa86007aaa800a}{count} \hyperlink{class_networ_kit_1_1_label_propagation_a017f935395202a754b9baeb83755ddf5}{update\-Threshold} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+As described in Ovelgoenne et al\-: An Ensemble Learning Strategy for \hyperlink{class_networ_kit_1_1_graph}{Graph} \hyperlink{class_networ_kit_1_1_clustering}{Clustering} Raghavan et al. 
+
+proposed a label propagation algorithm for graph clustering. This algorithm initializes every vertex of a graph with a unique label. Then, in iterative sweeps over the set of vertices the vertex labels are updated. A vertex gets the label that the maximum number of its neighbors have. The procedure is stopped when every vertex has the label that at least half of its neighbors have. 
+
+Definition at line 43 of file Label\-Propagation.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_label_propagation_a4a9267898177f7470717dca8d93de685}{\index{Networ\-Kit\-::\-Label\-Propagation@{Networ\-Kit\-::\-Label\-Propagation}!Label\-Propagation@{Label\-Propagation}}
+\index{Label\-Propagation@{Label\-Propagation}!NetworKit::LabelPropagation@{Networ\-Kit\-::\-Label\-Propagation}}
+\subsubsection[{Label\-Propagation}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Label\-Propagation\-::\-Label\-Propagation (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{theta = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_label_propagation_a4a9267898177f7470717dca8d93de685}
+
+
+Definition at line 12 of file Label\-Propagation.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_label_propagation_a0c0d1e07f66033a77000b4454bcfeea0}{\index{Networ\-Kit\-::\-Label\-Propagation@{Networ\-Kit\-::\-Label\-Propagation}!$\sim$\-Label\-Propagation@{$\sim$\-Label\-Propagation}}
+\index{$\sim$\-Label\-Propagation@{$\sim$\-Label\-Propagation}!NetworKit::LabelPropagation@{Networ\-Kit\-::\-Label\-Propagation}}
+\subsubsection[{$\sim$\-Label\-Propagation}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Label\-Propagation\-::$\sim$\-Label\-Propagation (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_label_propagation_a0c0d1e07f66033a77000b4454bcfeea0}
+
+
+Definition at line 17 of file Label\-Propagation.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_label_propagation_ae944bf5e3bb44ce6b76a70f6071c3b31}{\index{Networ\-Kit\-::\-Label\-Propagation@{Networ\-Kit\-::\-Label\-Propagation}!run@{run}}
+\index{run@{run}!NetworKit::LabelPropagation@{Networ\-Kit\-::\-Label\-Propagation}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Clustering} Networ\-Kit\-::\-Label\-Propagation\-::run (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_label_propagation_ae944bf5e3bb44ce6b76a70f6071c3b31}
+
+
+Run the label propagation clustering algorithm. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em G} & input graph \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+clustering 
+\end{DoxyReturn}
+== Dealing with isolated nodes ==
+
+The pseudocode published does not deal with isolated nodes (and therefore does not terminate if they are present). Isolated nodes stay singletons. They can be ignored in the while loop, but the loop condition must compare to the number of non-\/isolated nodes instead of n.
+
+== Termination criterion ==
+
+The published termination criterion is\-: All nodes have got the label of the majority of their neighbors. In general this does not work. It was changed to\-: No label was changed in last iteration.
+
+Implements \hyperlink{class_networ_kit_1_1_clusterer_ab881df49f4398d2c94b5429d7dfa88f1}{Networ\-Kit\-::\-Clusterer}.
+
+
+
+Definition at line 22 of file Label\-Propagation.\-cpp.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_label_propagation_ae944bf5e3bb44ce6b76a70f6071c3b31_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{class_networ_kit_1_1_label_propagation_a1525c6b6610b9183c127edb318ebf552}{\index{Networ\-Kit\-::\-Label\-Propagation@{Networ\-Kit\-::\-Label\-Propagation}!set\-Update\-Threshold@{set\-Update\-Threshold}}
+\index{set\-Update\-Threshold@{set\-Update\-Threshold}!NetworKit::LabelPropagation@{Networ\-Kit\-::\-Label\-Propagation}}
+\subsubsection[{set\-Update\-Threshold}]{\setlength{\rightskip}{0pt plus 5cm}void Networ\-Kit\-::\-Label\-Propagation\-::set\-Update\-Threshold (
+\begin{DoxyParamCaption}
+\item[{{\bf count}}]{th}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_label_propagation_a1525c6b6610b9183c127edb318ebf552}
+
+
+The algorithm runs until a number of nodes less than the threshold is updated. 
+
+
+
+Definition at line 216 of file Label\-Propagation.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_label_propagation_a3e90c309b7463ebe1934ef2560bae6ba}{\index{Networ\-Kit\-::\-Label\-Propagation@{Networ\-Kit\-::\-Label\-Propagation}!to\-String@{to\-String}}
+\index{to\-String@{to\-String}!NetworKit::LabelPropagation@{Networ\-Kit\-::\-Label\-Propagation}}
+\subsubsection[{to\-String}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Networ\-Kit\-::\-Label\-Propagation\-::to\-String (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_label_propagation_a3e90c309b7463ebe1934ef2560bae6ba}
+\begin{DoxyReturn}{Returns}
+string representation of algorithm and parameters. 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_networ_kit_1_1_clusterer_ae67135b9fb55c4166ca7d50b720939da}{Networ\-Kit\-::\-Clusterer}.
+
+
+
+Definition at line 205 of file Label\-Propagation.\-cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_networ_kit_1_1_label_propagation_a017f935395202a754b9baeb83755ddf5}{\index{Networ\-Kit\-::\-Label\-Propagation@{Networ\-Kit\-::\-Label\-Propagation}!update\-Threshold@{update\-Threshold}}
+\index{update\-Threshold@{update\-Threshold}!NetworKit::LabelPropagation@{Networ\-Kit\-::\-Label\-Propagation}}
+\subsubsection[{update\-Threshold}]{\setlength{\rightskip}{0pt plus 5cm}{\bf count} Networ\-Kit\-::\-Label\-Propagation\-::update\-Threshold = 0\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_label_propagation_a017f935395202a754b9baeb83755ddf5}
+
+
+Definition at line 47 of file Label\-Propagation.\-h.
+
+\hypertarget{class_networ_kit_1_1_label_propagation_a5989d3beabf4c62dfc6d34d5e5a2bfcd}{\index{Networ\-Kit\-::\-Label\-Propagation@{Networ\-Kit\-::\-Label\-Propagation}!V\-E\-R\-S\-I\-O\-N@{V\-E\-R\-S\-I\-O\-N}}
+\index{V\-E\-R\-S\-I\-O\-N@{V\-E\-R\-S\-I\-O\-N}!NetworKit::LabelPropagation@{Networ\-Kit\-::\-Label\-Propagation}}
+\subsubsection[{V\-E\-R\-S\-I\-O\-N}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string Networ\-Kit\-::\-Label\-Propagation\-::\-V\-E\-R\-S\-I\-O\-N}}\label{class_networ_kit_1_1_label_propagation_a5989d3beabf4c62dfc6d34d5e5a2bfcd}
+
+
+Definition at line 51 of file Label\-Propagation.\-h.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/community/\hyperlink{_label_propagation_8h}{Label\-Propagation.\-h}\item 
+src/community/\hyperlink{_label_propagation_8cpp}{Label\-Propagation.\-cpp}\end{DoxyCompactItemize}

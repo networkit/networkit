@@ -1,0 +1,15 @@
+<map id="src/coarsening/test/CoarseningGTest.h" name="src/coarsening/test/CoarseningGTest.h">
+<area shape="rect" id="node5" href="$_graph_8h.html" title="../../graph/Graph.h" alt="" coords="647,347,776,375"/>
+<area shape="rect" id="node33" href="$_graph_generator_8h.html" title="../../graph/GraphGenerator.h" alt="" coords="123,107,311,135"/>
+<area shape="rect" id="node56" href="$_clustering_generator_8h.html" title="../../clustering/Clustering\lGenerator.h" alt="" coords="335,99,499,143"/>
+<area shape="rect" id="node60" href="$_cluster_contracter_8h.html" title="../../coarsening/Cluster\lContracter.h" alt="" coords="720,99,875,143"/>
+<area shape="rect" id="node67" href="$_graph_contraction_8h.html" title="../coarsening/GraphContraction.h" alt="" coords="707,193,924,221"/>
+<area shape="rect" id="node71" href="$_clustering_projector_8h.html" title="../../coarsening/Clustering\lProjector.h" alt="" coords="523,99,695,143"/>
+<area shape="rect" id="node21" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="708,425,799,453"/>
+<area shape="rect" id="node36" href="$_random_probability_8h.html" title="../aux/RandomProbability.h" alt="" coords="211,193,391,221"/>
+<area shape="rect" id="node40" href="$_random_integer_8h.html" title="../aux/RandomInteger.h" alt="" coords="27,193,185,221"/>
+<area shape="rect" id="node45" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="467,193,631,221"/>
+<area shape="rect" id="node49" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="744,270,883,298"/>
+<area shape="rect" id="node52" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="946,347,1080,375"/>
+<area shape="rect" id="node62" href="$_contracter_8h.html" title="Contracter.h" alt="" coords="625,270,719,298"/>
+</map>

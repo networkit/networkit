@@ -1,0 +1,117 @@
+\hypertarget{class_networ_kit_1_1_matching_contracter}{\section{Networ\-Kit\-:\-:Matching\-Contracter Class Reference}
+\label{class_networ_kit_1_1_matching_contracter}\index{Networ\-Kit\-::\-Matching\-Contracter@{Networ\-Kit\-::\-Matching\-Contracter}}
+}
+
+
+{\ttfamily \#include $<$Matching\-Contracter.\-h$>$}
+
+
+
+Inheritance diagram for Networ\-Kit\-:\-:Matching\-Contracter\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=232pt]{class_networ_kit_1_1_matching_contracter__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Networ\-Kit\-:\-:Matching\-Contracter\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=232pt]{class_networ_kit_1_1_matching_contracter__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_matching_contracter_a21fe7ce43777d7338a9cb0d9d5b07762}{Matching\-Contracter} ()
+\item 
+virtual \hyperlink{class_networ_kit_1_1_matching_contracter_ad5aff6c794367db1ad91f35f62e70fcb}{$\sim$\-Matching\-Contracter} ()
+\item 
+virtual std\-::pair$<$ \hyperlink{class_networ_kit_1_1_graph}{Graph}, \\*
+\hyperlink{class_networ_kit_1_1_node_map}{Node\-Map}$<$ \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} $>$ $>$ \hyperlink{class_networ_kit_1_1_matching_contracter_a2451b854e1dfc30522da757cb11bfa26}{run} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&G, \hyperlink{class_networ_kit_1_1_matching}{Matching} \&M, bool no\-Self\-Loops=false)
+\begin{DoxyCompactList}\small\item\em Contracts graph according to a matching. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 17 of file Matching\-Contracter.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_matching_contracter_a21fe7ce43777d7338a9cb0d9d5b07762}{\index{Networ\-Kit\-::\-Matching\-Contracter@{Networ\-Kit\-::\-Matching\-Contracter}!Matching\-Contracter@{Matching\-Contracter}}
+\index{Matching\-Contracter@{Matching\-Contracter}!NetworKit::MatchingContracter@{Networ\-Kit\-::\-Matching\-Contracter}}
+\subsubsection[{Matching\-Contracter}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Matching\-Contracter\-::\-Matching\-Contracter (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_matching_contracter_a21fe7ce43777d7338a9cb0d9d5b07762}
+
+
+Definition at line 12 of file Matching\-Contracter.\-cpp.
+
+\hypertarget{class_networ_kit_1_1_matching_contracter_ad5aff6c794367db1ad91f35f62e70fcb}{\index{Networ\-Kit\-::\-Matching\-Contracter@{Networ\-Kit\-::\-Matching\-Contracter}!$\sim$\-Matching\-Contracter@{$\sim$\-Matching\-Contracter}}
+\index{$\sim$\-Matching\-Contracter@{$\sim$\-Matching\-Contracter}!NetworKit::MatchingContracter@{Networ\-Kit\-::\-Matching\-Contracter}}
+\subsubsection[{$\sim$\-Matching\-Contracter}]{\setlength{\rightskip}{0pt plus 5cm}Networ\-Kit\-::\-Matching\-Contracter\-::$\sim$\-Matching\-Contracter (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_matching_contracter_ad5aff6c794367db1ad91f35f62e70fcb}
+
+
+Definition at line 16 of file Matching\-Contracter.\-cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_matching_contracter_a2451b854e1dfc30522da757cb11bfa26}{\index{Networ\-Kit\-::\-Matching\-Contracter@{Networ\-Kit\-::\-Matching\-Contracter}!run@{run}}
+\index{run@{run}!NetworKit::MatchingContracter@{Networ\-Kit\-::\-Matching\-Contracter}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}std\-::pair$<$ {\bf Graph}, {\bf Node\-Map}$<$ {\bf node} $>$ $>$ Networ\-Kit\-::\-Matching\-Contracter\-::run (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G, }
+\item[{{\bf Matching} \&}]{M, }
+\item[{bool}]{no\-Self\-Loops = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_matching_contracter_a2451b854e1dfc30522da757cb11bfa26}
+
+
+Contracts graph according to a matching. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em G} & fine graph \\
+\hline
+\mbox{\tt in}  & {\em M} & matching \\
+\hline
+\mbox{\tt in}  & {\em no\-Self\-Loops} & if true, self-\/loops are not produced\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+coarse graph 
+\end{DoxyReturn}
+
+
+Definition at line 20 of file Matching\-Contracter.\-cpp.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_networ_kit_1_1_matching_contracter_a2451b854e1dfc30522da757cb11bfa26_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/coarsening/\hyperlink{_matching_contracter_8h}{Matching\-Contracter.\-h}\item 
+src/coarsening/\hyperlink{_matching_contracter_8cpp}{Matching\-Contracter.\-cpp}\end{DoxyCompactItemize}
