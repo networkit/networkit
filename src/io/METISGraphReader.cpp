@@ -26,6 +26,8 @@ Graph METISGraphReader::read(std::string path) {
 	int64_t n = std::get<0>(header);
 	int64_t m = std::get<1>(header);
 	int64_t weighted = std::get<2>(header);
+	//std::tie(n,m,weighted) = header;
+	// TODO: std::tie(n, m, weighted) = header
 
 	Graph G(n);
 

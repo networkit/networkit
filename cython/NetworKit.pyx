@@ -22,6 +22,7 @@ ctypedef double edgeweight
 # standard library modules
 import math
 import textwrap
+import collections
 
 # non standard library modules
 import networkx as nx
@@ -487,21 +488,42 @@ def nk2nx(nkG):
 ########  PROPERTIES ########
 
 
-def properties(nkG):
-	print("converting to NetworX.Graph for some properties....")
-	nxG = nk2nx(nkG)
-
+def nm(nkG):
 	n = nkG.numberOfNodes()
 	m = nkG.numberOfEdges()
+	return (n, m)
+
+def degrees(nkG):
 	minMaxDeg = GraphProperties.minMaxDegree(nkG)
 	avgDeg = GraphProperties.averageDegree(nkG)
+	return (minMaxDeg[0], minMaxDeg[1], avgDeg)
+
+def components(nxG):
+	"""Analyze connected components"""
+	components = nx.connected_components(nxG)
+	nComponents = len(components)
+	componentSizes = [len(component) for component in components]
+	componentSizes.sort(reverse=True) # sort in descending order
+	sizeLargestComponent = componentSizes[0]
+	return (nComponents, sizeLargestComponent)
+
+
+def properties(nkG, settings):
+	print("[...] converting to NetworX.Graph for some properties....")
+	nxG = nk2nx(nkG)
+
+	print("[...] calculating basic properties")
+
+	n, m = nm(nkG)	# n and m
+
+	minDeg, maxDeg, avgDeg = degrees(nkG)
 
 	# calculating diameter for small graphs
 	if (n < 100):
 		print("calculating diameter...")
 		dia = nx.diameter(nxG)
 	else:
-		dia = "[omitted]"
+		dia = None
 
 
 	# calculate eccentricity
@@ -509,35 +531,57 @@ def properties(nkG):
 		eccentricities = nx.eccentricity(nxG)
 		ecc = sum(val for val in eccentricities.values()) / n
 	else:
-		ecc = "[omitted]"
+		ecc = None
 
 
+	# community detection
 
-	# perform PLP and PLM community detection
-	print("performing community detection: PLP")
-	# TODO: avoid printout of status bar
-	plp = LabelPropagation()
-	zetaPLP = plp.run(nkG)
-	ncomPLP = zetaPLP.numberOfClusters()
-	modPLP = Modularity().getQuality(zetaPLP, nkG)
-	print("performing community detection: PLM")
-	PLM = Louvain("balanced")
-	zetaPLM = PLM.run(nkG)
-	ncomPLM = zetaPLM.numberOfClusters()
-	modPLM = Modularity().getQuality(zetaPLM, nkG)
+	ncomPLP, modPLP = None, None
+	ncomPLM, modPLM = None, None
+	if settings["communities"]:
+		print("[...] detecting communities")
+		# perform PLP and PLM community detection
+		print("performing community detection: PLP")
+		# TODO: avoid printout of status bar
+		plp = LabelPropagation()
+		zetaPLP = plp.run(nkG)
+		ncomPLP = zetaPLP.numberOfClusters()
+		modPLP = Modularity().getQuality(zetaPLP, nkG)
+		print("performing community detection: PLM")
+		PLM = Louvain("balanced")
+		zetaPLM = PLM.run(nkG)
+		ncomPLM = zetaPLM.numberOfClusters()
+		modPLM = Modularity().getQuality(zetaPLM, nkG)
 
 	# degree histogram
 	
-	print("calculating properties")	
-	histo = nx.degree_histogram(nxG)
-	(labels, histo) = compressHistogram(histo, nbins=25)
+	labels, histo = None, None
+	if settings["degreeDistribution"]:
+		print("[...] calculating degree histogram")	
+		histo = nx.degree_histogram(nxG)
+		(labels, histo) = compressHistogram(histo, nbins=25)
 
 	# connected components
-	components = nx.connected_components(nxG)
-	nComponents = len(components)
-	componentSizes = [len(component) for component in components]
-	componentSizes.sort(reverse=True) # sort in descending order
-	sizeLargestComponent = componentSizes[0]
+	nComponents, sizeLargestComponent = None, None
+	if settings["components"]:
+		print("[...] finding connected components")	
+		nComponents, sizeLargestComponent = components(nxG)
+
+	# clustering
+	avglcc = None
+	if settings["clustering"]:
+		avglcc = GraphProperties.averageLocalClusteringCoefficient(nkG)
+
+	# degree assortativity
+	assort = None
+	if settings["assortativity"]:
+		assort = nx.degree_assortativity_coefficient(nxG)
+
+	# density
+	dens = None
+	if settings["density"]:
+		dens = nx.density(nxG)
+
 
 	# betweenness centrality
 	# TODO: average betweenness centrality?
@@ -546,10 +590,10 @@ def properties(nkG):
 		 "name": nkG.getName(),
 		 "n": n,
 		 "m": m,
-		 "minDeg": minMaxDeg[0],
-		 "maxDeg": minMaxDeg[1],
+		 "minDeg": minDeg,
+		 "maxDeg": maxDeg,
 		 "avgDeg": avgDeg,
-		 "avglcc": GraphProperties.averageLocalClusteringCoefficient(nkG),
+		 "avglcc": avglcc,
 		 "nComponents": nComponents,
 		 "sizeLargestComponent": sizeLargestComponent,
 		 "dia": dia,
@@ -560,8 +604,8 @@ def properties(nkG):
 		 "modPLP": modPLP,
 		 "ncomPLM": ncomPLM,
 		 "modPLM": modPLM,
-		 "dens": nx.density(nxG),
-		 "assort": nx.degree_assortativity_coefficient(nxG),
+		 "dens": dens,
+		 "assort": assort,
 		 "cliques": len(list(nx.find_cliques(nxG))),
 		 "histo": (labels, histo),
 		 }
@@ -569,8 +613,8 @@ def properties(nkG):
 	return props
 
 
-def showProperties(nkG):
-	props = properties(nkG)
+def showProperties(nkG, settings=collections.defaultdict(lambda: True)):
+	props = properties(nkG, settings)
 	basicProperties = [
 		["nodes (n)", props["n"]],
 		["edges (m)", props["m"]],
