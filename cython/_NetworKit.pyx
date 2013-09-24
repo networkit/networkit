@@ -233,6 +233,18 @@ cdef class LabelPropagation(Clusterer):
 	
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))
+
+
+cdef extern from "../src/community/LPDegreeOrdered.h":
+	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered":
+		_LPDegreeOrdered() except +
+		_Clustering run(_Graph _G)
+
+cdef class LPDegreeOrdered(Clusterer):
+	cdef _LPDegreeOrdered _this
+	
+	def run(self, Graph G not None):
+		return Clustering().setThis(self._this.run(G._this))
 	
 	
 

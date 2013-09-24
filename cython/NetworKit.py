@@ -12,9 +12,9 @@ import collections
 import networkx as nx
 import tabulate
 
-
 # local modules
 import termgraph
+import stopwatch
 
 #--------- NetworKit Python Shell functions ----------------#
 
@@ -380,3 +380,30 @@ def getConverter(fromFormat, toFormat):
     writer = writers[toFormat]()
     
     return GraphConverter(reader, writer)
+
+
+
+def inspectCommunities(zeta, G):
+    """ Show information about communities"""
+    commProps = [
+        ["# communities", zeta.numberOfClusters()],
+        ["modularity", Modularity().getQuality(zeta, G)]
+    ]
+    print(tabulate.tabulate(commProps))
+    
+
+def evalCommunityDetection(algo, G):
+    """ Evaluate a community detection algorithm """
+    
+    t = stopwatch.Timer()
+    zeta = algo.run(G)
+    t.stop()
+    results = [
+        ["time [s]", t.elapsed],
+        ["# communities", zeta.numberOfClusters()],
+        ["modularity", Modularity().getQuality(zeta, G)]
+    ]
+    print(tabulate.tabulate(results))
+    
+    
+    
