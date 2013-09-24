@@ -10,6 +10,8 @@
 
 #include "../graph/Graph.h"
 
+#include <fstream>
+
 namespace NetworKit {
 
 class GraphWriter {
