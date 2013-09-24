@@ -24,11 +24,11 @@ except:
 
 
 srcDir = "../src"
-src = ["NetworKit.pyx"]	# list of source files
+src = ["_NetworKit.pyx"]	# list of source files
 			
 print("source files: {0}".format(src))
 
-modules = [Extension("NetworKit",
+modules = [Extension("_NetworKit",
 					src,
 					language = "c++",
 					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
@@ -39,7 +39,7 @@ modules = [Extension("NetworKit",
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}
 
-setup(name="NetworKit",
+setup(name="_NetworKit",
 	 cmdclass={"build_ext": build_ext},
 	 ext_modules=modules)
 
