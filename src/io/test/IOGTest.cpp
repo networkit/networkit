@@ -348,6 +348,15 @@ TEST_F(IOGTest, trySNAPEdgeListClusteringReader) {
 }
 
 
+TEST_F(IOGTest, testSNAPGraphWriter) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+
+	SNAPGraphWriter writer;
+	writer.write(G, "output/SNAPGraphWriter.gr");
+}
+
+
 
 
 
