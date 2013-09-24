@@ -103,11 +103,16 @@ def properties(nkG, settings):
     print("[...] converting to NetworX.Graph for some properties....")
     nxG = nk2nx(nkG)
 
-    print("[...] calculating basic properties")
-
+    print("[...] calculating basic properties")
+    
+    # size
     n, m = nm(nkG)    # n and m
 
+    # degree
     minDeg, maxDeg, avgDeg = degrees(nkG)
+    
+    # density
+    dens = nx.density(nxG)
 
     # calculating diameter for small graphs
     if (n < 100):
@@ -168,10 +173,7 @@ def properties(nkG, settings):
     if settings["assortativity"]:
         assort = nx.degree_assortativity_coefficient(nxG)
 
-    # density
-    dens = None
-    if settings["density"]:
-        dens = nx.density(nxG)
+
 
 
     # betweenness centrality
@@ -224,19 +226,18 @@ def showProperties(nkG, settings=collections.defaultdict(lambda: True)):
     ]
     
     miscProperties = [
-        ["degree assortativity", "{0:.6f}".format(props["assort"])],
+        ["degree assortativity", "{0:.6f}".format(props["assort"]) if props["assort"] else None],
         ["cliques", props["cliques"]]
     ]
 
     communityStructure = [
-        ["avg. local clustering coefficient", "", "{0:.6f}".format(props["avglcc"])],
+        ["avg. local clustering coefficient", "", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
         ["PLP community detection", "", ""],
         ["", "communities", props["ncomPLP"]],
-        ["", "modularity", "{0:.6f}".format(props["modPLP"])],
+        ["", "modularity", "{0:.6f}".format(props["modPLP"]) if props["modPLP"] else None],
         ["PLM community detection", "", ""],
         ["", "communities", props["ncomPLM"]],
-        ["", "modularity", "{0:.6f}".format(props["modPLM"])],
-
+        ["", "modularity", "{0:.6f}".format(props["modPLM"]) if props["modPLM"] else None],
     ]
 
     print()
@@ -251,7 +252,8 @@ def showProperties(nkG, settings=collections.defaultdict(lambda: True)):
     print("Degree Distribution")
     print("-------------------")
     (labels, histo) = props["histo"]
-    termgraph.graph(labels, histo)
+    if labels and histo:
+        termgraph.graph(labels, histo)
 
 
 
