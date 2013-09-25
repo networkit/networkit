@@ -206,6 +206,8 @@ cdef extern from "../src/clustering/Clustering.h":
 	cdef cppclass _Clustering "NetworKit::Clustering":
 		_Clustering() except +
 		count numberOfClusters()
+		float getImbalance()
+		vector[count] clusterSizes()
 
 cdef class Clustering:
 	cdef _Clustering _this
@@ -216,6 +218,14 @@ cdef class Clustering:
 
 	def numberOfClusters(self):
 		return self._this.numberOfClusters()
+
+	def getImbalance(self):
+		return self._this.getImbalance()
+
+	def clusterSizes(self):
+		return self._this.clusterSizes()
+
+
 
 cdef class Clusterer:
 	""" Abstract base class for static community detection algorithms"""
