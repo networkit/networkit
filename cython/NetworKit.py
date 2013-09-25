@@ -100,8 +100,10 @@ def components(nxG):
 
 
 def properties(nkG, settings):
-    print("[...] converting to NetworX.Graph for some properties....")
-    nxG = nk2nx(nkG)
+    nxG = None
+    if settings["networkx"]:
+        print("[...] converting to NetworX.Graph for some properties....")
+        nxG = nk2nx(nkG)
 
     print("[...] calculating basic properties")
     
@@ -110,24 +112,32 @@ def properties(nkG, settings):
 
     # degree
     minDeg, maxDeg, avgDeg = degrees(nkG)
+
+        # number of isolated nodes
+    isolates = len(nx.isolates(nxG)) if nxG else None
+
+    # number of cliques
+    cliques = len(list(nx.find_cliques(nxG))) if nxG else None
+
+
+    # number of self-loops
+    loops = len(nxG.selfloop_edges()) if nxG else None
     
     # density
-    dens = nx.density(nxG)
+    dens = nx.density(nxG) if nxG else None
 
-    # calculating diameter for small graphs
-    if (n < 100):
+    # diameter
+    dia = None
+    if settings["diameter"]:
         print("calculating diameter...")
         dia = nx.diameter(nxG)
-    else:
-        dia = None
 
 
     # calculate eccentricity
-    if (n < 100):
+    ecc = None
+    if settings["eccentricity"]:
         eccentricities = nx.eccentricity(nxG)
         ecc = sum(val for val in eccentricities.values()) / n
-    else:
-        ecc = None
 
 
     # community detection
@@ -191,15 +201,15 @@ def properties(nkG, settings):
          "sizeLargestComponent": sizeLargestComponent,
          "dia": dia,
          "ecc": ecc,
-         "isolates": len(nx.isolates(nxG)),
-         "loops": len(nxG.selfloop_edges()),
+         "isolates": isolates,
+         "loops": loops,
          "ncomPLP": ncomPLP,
          "modPLP": modPLP,
          "ncomPLM": ncomPLM,
          "modPLM": modPLM,
          "dens": dens,
          "assort": assort,
-         "cliques": len(list(nx.find_cliques(nxG))),
+         "cliques": cliques,
          "histo": (labels, histo),
          }
 
@@ -216,7 +226,7 @@ def showProperties(nkG, settings=collections.defaultdict(lambda: True)):
         ["avg. degree", props["avgDeg"]],
         ["isolated nodes", props["isolates"]],
         ["self-loops", props["loops"]],
-        ["density", "{0:.6f}".format(props["dens"])]
+        ["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None]
     ]
     pathStructure = [
         ["connected components", props["nComponents"]],
@@ -387,9 +397,13 @@ def getConverter(fromFormat, toFormat):
 
 def inspectCommunities(zeta, G):
     """ Show information about communities"""
+    communitySizes = zeta.clusterSizes()
     commProps = [
         ["# communities", zeta.numberOfClusters()],
-        ["modularity", Modularity().getQuality(zeta, G)]
+        ["min/max community size", (min(communitySizes), max(communitySizes))],
+        ["avg. community size", sum(communitySizes) / len(communitySizes)],
+        ["imbalance", zeta.getImbalance()],
+        ["modularity", Modularity().getQuality(zeta, G)],
     ]
     print(tabulate.tabulate(commProps))
     
