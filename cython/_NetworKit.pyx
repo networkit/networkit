@@ -267,7 +267,7 @@ cdef extern from "../src/community/Louvain.h":
 cdef class Louvain(Clusterer):
 	cdef _Louvain _this
 	
-	def __cinit__(self, par, gamma=1.0):
+	def __cinit__(self, par="balanced", gamma=1.0):
 		self._this = _Louvain(stdstring(par), gamma)
 	
 	def run(self, Graph G not None):
