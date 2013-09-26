@@ -128,14 +128,15 @@ def properties(nkG, settings):
 
     # diameter
     dia = None
-    if settings["diameter"]:
+    if settings["diameter"] and (n < 1000):
         print("calculating diameter...")
         dia = nx.diameter(nxG)
 
 
     # calculate eccentricity
     ecc = None
-    if settings["eccentricity"]:
+    if settings["eccentricity"] and (n < 1000):
+        print("calculating eccentricity...")
         eccentricities = nx.eccentricity(nxG)
         ecc = sum(val for val in eccentricities.values()) / n
 
@@ -251,6 +252,8 @@ def showProperties(nkG, settings=collections.defaultdict(lambda: True)):
     ]
 
     print()
+    print("Network Properties")
+    print("==================")
     print("Basic Properties")
     print(tabulate.tabulate(basicProperties))
     print("Path Structure")
@@ -398,12 +401,14 @@ def getConverter(fromFormat, toFormat):
 def inspectCommunities(zeta, G):
     """ Show information about communities"""
     communitySizes = zeta.clusterSizes()
+    mod = Modularity().getQuality(zeta, G)
     commProps = [
         ["# communities", zeta.numberOfClusters()],
-        ["min/max community size", (min(communitySizes), max(communitySizes))],
+        ["min community size", min(communitySizes)],
+        ["max community size", max(communitySizes)],
         ["avg. community size", sum(communitySizes) / len(communitySizes)],
         ["imbalance", zeta.getImbalance()],
-        ["modularity", Modularity().getQuality(zeta, G)],
+        ["modularity", mod],
     ]
     print(tabulate.tabulate(commProps))
     
