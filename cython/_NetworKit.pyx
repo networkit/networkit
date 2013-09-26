@@ -372,6 +372,19 @@ cdef class Modularity:
 	def getQuality(self, Clustering zeta, Graph G):
 		return self._this.getQuality(zeta._this, G._this)
 
+
+
+cdef extern from "../src/io/SNAPGraphWriter.h":
+	cdef cppclass _SNAPGraphWriter "NetworKit::SNAPGraphWriter":
+		_SNAPGraphWriter() except +
+		void write(_Graph G, string path) 
+
+cdef class SNAPGraphWriter:
+	cdef _SNAPGraphWriter _this
+
+	def write(self, Graph G, path):
+		self._this.write(G._this, stdstring(path))
+
 # cdef extern from "../src/dcd/DynamicLabelPropagation.h":
 # 	cdef cppclass _DynamicLabelPropagation "NetworKit::DynamicLabelPropagation":
 # 		_DynamicLabelPropagation() except +
