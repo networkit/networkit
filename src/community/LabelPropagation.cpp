@@ -48,7 +48,7 @@ Clustering LabelPropagation::run(Graph& G) {
 	count nUpdated; // number of nodes which have been updated in last iteration
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
-	count nIterations = 0; // number of iterations
+	nIterations = 0; // number of iterations
 
 	/**
 	 * == Dealing with isolated nodes ==
@@ -215,6 +215,11 @@ std::string LabelPropagation::toString() const {
 
 void LabelPropagation::setUpdateThreshold(count th) {
 	this->updateThreshold = th;
+}
+
+
+count LabelPropagation::numberOfIterations() {
+	return this->nIterations;
 }
 
 } /* namespace NetworKit */
