@@ -35,7 +35,7 @@ Clustering LPDegreeOrdered::run(Graph& G) {
 
 	count nUpdated; // number of nodes which have been updated in last iteration
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
-	count nIterations = 0; // number of iterations
+	nIterations = 0; // number of iterations
 
 	auto propagateLabels = [&](node v){
 		if ((active[v]) && (G.degree(v) > 0)) {
@@ -88,6 +88,11 @@ Clustering LPDegreeOrdered::run(Graph& G) {
 	}
 
 	return labels;
+}
+
+
+count LPDegreeOrdered::numberOfIterations() {
+	return this->nIterations;
 }
 
 } /* namespace NetworKit */

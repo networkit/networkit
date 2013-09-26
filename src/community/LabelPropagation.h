@@ -45,6 +45,8 @@ class LabelPropagation: public NetworKit::Clusterer {
 protected:
 
 	count updateThreshold = 0;
+	count nIterations = 0; //!< number of iterations in last run
+
 
 public:
 
@@ -74,6 +76,13 @@ public:
 	 *
 	 */
 	virtual void setUpdateThreshold(count th);
+
+	/**
+	* Get number of iterations in last run.
+	*/
+	virtual count numberOfIterations();
+
+
 };
 
 } /* namespace NetworKit */
