@@ -5,12 +5,15 @@
 
 # type imports
 from libc.stdint cimport uint64_t
+from libc.stdint cimport int64_t
+
 
 # the C++ standard library
 from libcpp cimport bool
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.string cimport string
+# FIXME: from libcpp.unordered_map import unordered_map
 
 # NetworKit typedefs
 ctypedef uint64_t count
@@ -451,8 +454,50 @@ cdef class ForceDirected:
 	
 	def draw(self, Graph G not None):
 		pass
-	
 
+# Parameters
+
+cdef extern from "../src/base/Parameters.h":
+	cdef cppclass _Parameters "NetworKit::Parameters":
+		_Parameters() except +
+		void setInt(string key, int64_t value)
+		void setDouble(string key, double value)
+		void setString(key, value)
+		void setBool(string key, bool value)
+		int64_t getInt(string key)
+		double getDouble(string key)
+		string getString(string key)
+		bool getBool(string key)
+
+# TODO: wrapper for Parameters
+
+
+# SelectiveSCAN
+
+# cdef extern from "../src/scd/SelectiveSCAN.h":
+# 	cdef cppclass _TSelectiveSCAN "NetworKit::TSelectiveSCAN":
+# 		_TSelectiveSCAN() except +
+# 		_TSelectiveSCAN(_Graph G, _Parameters param, double epsilon, double mu) except +
+# 		unordered_map[node, pair[unordered_set[node], int64_t]] run(unordered_set[node] seeds)
+
+
+# cdef class TSelectiveSCAN:
+# 	pass
+
+
+# LineFileReader
+
+cdef extern from "../src/io/LineFileReader.h":
+	cdef cppclass _LineFileReader "NetworKit::LineFileReader":
+		_LineFileReader() except +
+		vector[string] read(string path)
+
+
+cdef class LineFileReader:
+	cdef _LineFileReader _this
+
+	def read(self, path):
+		return self._this.read(stdstring(path))
 
 # TODO: initialize log4cxx
 
