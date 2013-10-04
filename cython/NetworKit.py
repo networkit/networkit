@@ -99,6 +99,9 @@ def components(nxG):
     return (nComponents, sizeLargestComponent)
 
 
+# TODO: core decomposition
+
+
 def properties(nkG, settings):
     nxG = None
     if settings["networkx"]:
@@ -425,6 +428,18 @@ def evalCommunityDetection(algo, G):
         ["modularity", Modularity().getQuality(zeta, G)]
     ]
     print(tabulate.tabulate(results))
+
+
+
+def retrieveAttributes(nodes, attributes):
+    """
+    For a given collection of nodes and a map (or vector) indexed by node ids
+    return a map from node to attribute.
+    """
+    attrs = dict()
+    for u in nodes:
+        attrs[u] = attributes[u]
+    return attrs
     
     
     
