@@ -211,6 +211,7 @@ cdef extern from "../src/clustering/Clustering.h":
 		count numberOfClusters()
 		float getImbalance()
 		vector[count] clusterSizes()
+		vector[node] getMembers(cluster C)
 
 cdef class Clustering:
 	cdef _Clustering _this
@@ -227,6 +228,9 @@ cdef class Clustering:
 
 	def clusterSizes(self):
 		return self._this.clusterSizes()
+
+	def getMembers(self, C):
+		return self._this.getMembers(C)
 
 
 
