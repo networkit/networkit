@@ -143,7 +143,8 @@ enum optionIndex {
 	SAVE_GRAPH,
 	PROGRESS,
 	SUMMARY,
-	SHOW
+	SHOW,
+	SAVECOMMUNITIES
 };
 const OptionParser::Descriptor usage[] =
 		{ { UNKNOWN, 0, "", "", OptionParser::Arg::None,
@@ -182,6 +183,8 @@ const OptionParser::Descriptor usage[] =
 						"  --summary=<PATH> \t append summary as a .csv line to this file" },
 				{ SHOW, 0, "", "show", OptionParser::Arg::Required,
 						"  --show=<NAME>:<PARAMS> \t select parameters" },
+				{ SAVECOMMUNITIES, 0, "", "saveCommunities", OptionParser::Arg::Required,
+						"  --saveCommunities=<FILE> \t save communities to file" },
 				{ UNKNOWN, 0, "", "", OptionParser::Arg::None, "\nExamples:\n"
 						" TODO" }, { 0, 0, 0, 0, 0, 0 } };
 
@@ -820,11 +823,29 @@ int main(int argc, char **argv) {
 		running2.stop();
 		results.insert( { i, result });
 		timeMap.insert( { i, running2.elapsedMilliseconds() });
+
+		if (options[SAVECOMMUNITIES]) {
+			// save communities to file
+			std::ofstream communityFile(options[SAVECOMMUNITIES].arg);
+			for (auto kv : result) {
+				node seed = kv.first;
+				std::unordered_set<node> community = kv.second.first;
+				communityFile << seed << std::endl;
+				for (node u : community) {
+					communityFile << u << ",";
+				}
+				communityFile << std::endl;
+			}		
+		}
 	}
 	running1.stop();
 	runtime = running1.elapsedMilliseconds();
 	std::cout << "[DONE]" << std::endl;
 	//std::cout << runtime << std::endl;
+
+
+
+
 	if (options[SUMMARY]) {
 		std::ofstream summary(options[SUMMARY].arg);
 		if (groundt) {
