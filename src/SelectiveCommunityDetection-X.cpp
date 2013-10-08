@@ -344,6 +344,8 @@ int main(int argc, char **argv) {
 			exit(1);
 		}
 
+	} else if (options[SEEDLIST]) {
+		// seed list is read where seeds are created
 	} else {
 		std::cout << "[ERROR] option --seeds must be supplied" << std::endl;
 		exit(1);
