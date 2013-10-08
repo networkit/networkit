@@ -827,7 +827,6 @@ int main(int argc, char **argv) {
 		if (options[SAVECOMMUNITIES]) {
 			// save communities to file
 			std::ofstream communityFile(options[SAVECOMMUNITIES].arg);
-			communityFile << "communities" << std::endl;
 			for (auto kv : result) {
 				node seed = kv.first;
 				std::unordered_set<node> community = kv.second.first;
