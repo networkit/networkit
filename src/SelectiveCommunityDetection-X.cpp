@@ -134,6 +134,7 @@ enum optionIndex {
 	TESTS,
 	GRAPH,
 	SEEDS,
+	SEEDLIST,
 	DETECTOR,
 	PARAM,
 	QUALITY,
@@ -159,6 +160,8 @@ const OptionParser::Descriptor usage[] =
 						"  --graph=<PATH> \t Run ensemble clusterer on graph" },
 				{ SEEDS, 0, "", "seeds", OptionParser::Arg::Required,
 						"  --seeds=<NAME> \t Specify seed set generator" },
+						{ SEEDLIST, 0, "", "seedlist", OptionParser::Arg::Required,
+						"  --seedlist=<NAME> \t Specify list of seeds comma separated" },
 				{ DETECTOR, 0, "", "detector", OptionParser::Arg::Required,
 						"  --detector=<NAME>:<PARAMS> \t select clustering algorithm" },
 				{ PARAM, 0, "", "param", OptionParser::Arg::Required,
@@ -798,7 +801,16 @@ int main(int argc, char **argv) {
 
 	for (count i = 0; i < runs; i++) {
 
-		std::unordered_set<node> seeds = seedGen->getSeeds(nSeeds);
+		std::unordered_set<node> seeds;
+		if (options[SEEDS]) {
+			seeds = seedGen->getSeeds(nSeeds);
+		} else if (options[SEEDLIST]) {
+			std::unordered_set<node> seeds;
+			for (std::string seedString : Aux::StringTools::split(options[SEEDLIST].arg)) {
+				seeds.insert(std::stoi(seedString));
+			}
+		}
+
 		running2.start();
 		std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> result =
 				algo->run(seeds);
