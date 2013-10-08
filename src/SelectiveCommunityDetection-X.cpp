@@ -810,12 +810,16 @@ int main(int argc, char **argv) {
 		if (options[SEEDS]) {
 			seeds = seedGen->getSeeds(nSeeds);
 		} else if (options[SEEDLIST]) {
-			std::unordered_set<node> seeds;
-			for (std::string seedString : Aux::StringTools::split(options[SEEDLIST].arg)) {
+			for (std::string seedString : Aux::StringTools::split(options[SEEDLIST].arg, ',')) {
 				seeds.insert(std::stoi(seedString));
 			}
+		} else {
+			std::cout << "[ERROR] no seeds given " << std::endl;
+			exit(1);
 		}
 
+		std::cout << "[INFO] number of seeds: " << seeds.size() << std::endl;
+		std::cout << "[BEGIN] running SCD algorithm" << std::endl;
 		running2.start();
 		std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> result =
 				algo->run(seeds);
@@ -827,6 +831,7 @@ int main(int argc, char **argv) {
 		if (options[SAVECOMMUNITIES]) {
 			// save communities to file
 			std::ofstream communityFile(options[SAVECOMMUNITIES].arg);
+			std::cout << "[BEGIN] writing result of size " << result.size() << std::endl;
 			for (auto kv : result) {
 				node seed = kv.first;
 				std::unordered_set<node> community = kv.second.first;
