@@ -33,6 +33,7 @@ static inline node fast_string_to_node(std::string::iterator it, const std::stri
 std::vector<std::vector<node> > FastMETISParser::parse(std::istream& stream) {
 	std::vector<std::vector<node>> data;
 	std::string line;
+	std::getline(stream, line); // get and discard header
 	while(std::getline(stream, line)) {
 		std::vector<node> tmp_vec;
 		if(line.empty()){

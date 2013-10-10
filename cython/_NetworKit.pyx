@@ -145,6 +145,21 @@ cdef class METISGraphReader:
 		return Graph(0).setThis(_G)
 	
 
+cdef extern from "../src/io/FastMETISGraphReader.h":
+	cdef cppclass _FastMETISGraphReader "NetworKit::FastMETISGraphReader":
+		_FastMETISGraphReader() except +
+		_Graph read(string path)
+
+cdef class FastMETISGraphReader:
+	cdef _FastMETISGraphReader _this
+	
+	def read(self, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		cdef _Graph _G = self._this.read(pathbytes)
+		return Graph(0).setThis(_G)
+	
+	
+
 cdef extern from "../src/io/DotGraphWriter.h":
 	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter":
 		_DotGraphWriter() except +
