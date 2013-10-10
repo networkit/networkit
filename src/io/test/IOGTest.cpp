@@ -358,6 +358,14 @@ TEST_F(IOGTest, testSNAPGraphWriter) {
 
 
 
+TEST_F(IOGTest, testFastMETISGraphReader) {
+	FastMETISGraphReader reader;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+
+	EXPECT_EQ(10680, G.numberOfNodes());
+	EXPECT_EQ(24316, G.numberOfEdges());
+}
+
 
 
 } /* namespace NetworKit */

@@ -32,6 +32,7 @@
 #include "../../clustering/Modularity.h"
 #include "../../community/LabelPropagation.h"
 #include "../SNAPGraphWriter.h"
+#include "../FastMETISGraphReader.h"
 
 
 namespace NetworKit {
