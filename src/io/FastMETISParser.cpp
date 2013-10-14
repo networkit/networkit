@@ -7,6 +7,8 @@
 
 #include "FastMETISParser.h"
 
+#include <fstream>
+
 namespace NetworKit {
 
 FastMETISParser::FastMETISParser() {
@@ -29,25 +31,46 @@ static inline node fast_string_to_node(std::string::iterator it, const std::stri
 	return val;
 }
 
+static inline std::tuple<count, count, int> parseHeader(const std::string& header) {
+	count n;
+	count m;
+	int flag;
 
-std::vector<std::vector<node> > FastMETISParser::parse(std::istream& stream) {
-	std::vector<std::vector<node>> data;
+	std::vector<std::string> parts = Aux::StringTools::split(header);
+	n = std::stoi(parts[0]);
+	m = std::stoi(parts[1]);
+	flag = std::stoi(parts[2]);
+
+	return std::make_tuple(n, m, flag);
+}
+
+
+NetworKit::Graph FastMETISParser::parse(const std::string& path) {
+	std::ifstream stream(path);
 	std::string line;
-	std::getline(stream, line); // get and discard header
+	std::getline(stream, line); // get header
+	count n;
+	count m;
+	int flag; // weight flag
+	std::tie(n, m, flag) = parseHeader(line);
+	Graph G(n);
+	node u = 0;
 	while(std::getline(stream, line)) {
-		std::vector<node> tmp_vec;
+		++u;
 		if(line.empty()){
-			data.emplace_back(std::move(tmp_vec)); // push_back would always make a copy
 			continue;
 		}
 		auto it1 = line.begin();
 		auto end = line.end();
 		auto it2 = std::find(it1, end, ' ');
-		if (line.back() == ' ') {
+		if (line.back() == ' ') { // if line ends with one white space, do this trick...
 			--end;
 		}
 		while(true) {
-			tmp_vec.push_back(fast_string_to_node(it1, it2));
+			node v = fast_string_to_node(it1, it2);
+			if (u < v) {
+				G.addEdge(u, v);
+			}
 			if(it2 == end) {
 				break;
 			}
@@ -55,9 +78,8 @@ std::vector<std::vector<node> > FastMETISParser::parse(std::istream& stream) {
 			it1 = it2;
 			it2 = std::find(it1, end, ' ');
 		}
-		data.emplace_back(std::move(tmp_vec));
 	}
-	return data;
+	return G;
 }
 
 } /* namespace NetworKit */
