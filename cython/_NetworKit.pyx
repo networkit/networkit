@@ -337,6 +337,7 @@ cdef class GraphProperties:
 		return averageLocalClusteringCoefficient(G._this)
 
 
+
 cdef extern from "../src/dynamics/GraphEventHandler.h":
 	cdef cppclass _GraphEventHandler "NetworKit::GraphEventHandler":
 		_GraphEventHandler() except +
@@ -473,6 +474,25 @@ cdef class ForceDirected:
 	
 	def draw(self, Graph G not None):
 		pass
+
+
+cdef extern from "../src/properties/ConnectedComponents.h":
+	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
+		ConnectedComponents() except +
+		ConnectedComponents(_Graph)
+		void run(_Graph)
+		count numberOfComponents()
+		count sizeOfComponent(index component)
+		count componentOfNode(node query)
+		vector[node] getComponent(index component)
+
+cdef class ConnectedComponents:
+	cdef _ConnectedComponents _this
+
+	def __cinit__(self, Graph G):
+		self._this = _ConnectedComponents(G._this)
+
+	# TODO: connected components wrapper
 
 # Parameters
 
