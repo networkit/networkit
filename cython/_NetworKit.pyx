@@ -486,11 +486,11 @@ cdef extern from "../src/properties/ConnectedComponents.h":
 		count componentOfNode(node query)
 		vector[node] getComponent(index component)
 
-cdef class ConnectedComponents:
-	cdef _ConnectedComponents _this
+# cdef class ConnectedComponents:
+# 	cdef _ConnectedComponents _this
 
-	def __cinit__(self, Graph G):
-		self._this = _ConnectedComponents(G._this)
+# 	def __cinit__(self, Graph G):
+# 		self._this = _ConnectedComponents(G._this)
 
 	# TODO: connected components wrapper
 
