@@ -35,10 +35,10 @@ source = [name for name in source if name not in excluded]
 ## environment: macbook
 macbook = Environment()
 ### include
-macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
+macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc48/4.8.1/gcc/include/c++/4.8.", \
                           "/Users/cls/workspace/gtest/include", \
                           "/usr/local/Cellar/log4cxx/0.10.0/include"])
-macbook.Append(CCPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
+macbook.Append(CCPATH = ["/usr/local/Cellar/gcc48/4.8.1/gcc/include/c++/4.8.", \
                           "/Users/cls/workspace/gtest/include", \
                           "/usr/local/Cellar/log4cxx/0.10.0/include"])
 
@@ -50,8 +50,8 @@ macbook.Append(LIBPATH = ["/Users/cls/workspace/gtest", \
 macbook.Append(LINKFLAGS = ["-std=c++11"])
 
 ### compiler & flags
-macbook["CC"] = "gcc-4.7"
-macbook["CXX"] = "g++-4.7"
+macbook["CC"] = "gcc-4.8"
+macbook["CXX"] = "g++-4.8"
 
 ## environment: lappy
 lappy = Environment()
