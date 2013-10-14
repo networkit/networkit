@@ -9,6 +9,7 @@
 #define FASTMETISPARSER_H_
 
 #include "../graph/Graph.h"
+#include "../auxiliary/StringTools.h"
 
 namespace NetworKit {
 
@@ -17,7 +18,7 @@ public:
 	FastMETISParser();
 	virtual ~FastMETISParser();
 
-	std::vector<std::vector<node>> parse(std::istream& stream);
+	Graph parse(const std::string& path);
 };
 
 } /* namespace NetworKit */
