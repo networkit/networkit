@@ -10,7 +10,11 @@ import collections
 
 # non standard library modules
 import networkx as nx
-import tabulate
+try:
+    import tabulate
+except ImportError:
+    raise Exception("""WARNING: module 'tabulate' not installed, which is required by some
+                        functions. In order to install 'tabulate', Python 3.3 is required""")
 
 # local modules
 import termgraph
