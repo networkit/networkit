@@ -19,9 +19,9 @@ FastMETISParser::~FastMETISParser() {
 }
 
 static inline node fast_string_to_node(std::string::iterator it, const std::string::iterator& end) {
-	node val = *it - '0';
+	node val = *it - '0';	// works on ASCII code points
 	++it;
-	while(it != end) {
+	while (it != end) {
 		val *= 10;
 		val += *it  - '0';
 		++it;
@@ -37,13 +37,13 @@ std::vector<std::vector<node> > FastMETISParser::parse(std::istream& stream) {
 	while(std::getline(stream, line)) {
 		std::vector<node> tmp_vec;
 		if(line.empty()){
-			data.emplace_back(std::move(tmp_vec));
+			data.emplace_back(std::move(tmp_vec)); // push_back would always make a copy
 			continue;
 		}
 		auto it1 = line.begin();
 		auto end = line.end();
 		auto it2 = std::find(it1, end, ' ');
-		if(line.back() == ' '){
+		if (line.back() == ' ') {
 			--end;
 		}
 		while(true) {
