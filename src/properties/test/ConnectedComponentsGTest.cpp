@@ -18,7 +18,7 @@ ConnectedComponentsGTest::~ConnectedComponentsGTest() {
 	// TODO Auto-generated destructor stub
 }
 
-TEST_F(ConnectedComponentsGTest, TestRunByCall) {
+TEST_F(ConnectedComponentsGTest, testRunByCall) {
 	// construct graph
 	Graph g;
 	for (count i = 0; i < 20; i++) {
@@ -54,7 +54,7 @@ TEST_F(ConnectedComponentsGTest, TestRunByCall) {
 }
 
 
-TEST_F(ConnectedComponentsGTest, TestGraphWithoutEdges) {
+TEST_F(ConnectedComponentsGTest, testGraphWithoutEdges) {
 	// construct graph
 	Graph g;
 	for (count i = 0; i < 20; i++) {
@@ -71,7 +71,7 @@ TEST_F(ConnectedComponentsGTest, TestGraphWithoutEdges) {
 	EXPECT_TRUE(ccs.componentOfNode(3) != ccs.componentOfNode(7));
 }
 
-TEST_F(ConnectedComponentsGTest, TestGetComponent) {
+TEST_F(ConnectedComponentsGTest, testGetComponent) {
 	// construct graph
 	Graph g;
 	for (count i = 0; i < 20; i++) {
