@@ -39,7 +39,7 @@ static inline std::tuple<count, count, int> parseHeader(const std::string& heade
 	std::vector<std::string> parts = Aux::StringTools::split(header);
 	n = std::stoi(parts[0]);
 	m = std::stoi(parts[1]);
-	if (parts.size > 2) {
+	if (parts.size() > 2) {
 		flag = std::stoi(parts[2]);
 	} else {
 		flag = 0;
