@@ -1,0 +1,6 @@
+var searchData=
+[
+  ['tests',['TESTS',['../_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39ae50941d772adaec4934ce042c59998a5',1,'TESTS():&#160;CommunityDetection-X.cpp'],['../_dynamic_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39ae50941d772adaec4934ce042c59998a5',1,'TESTS():&#160;DynamicCommunityDetection-X.cpp'],['../_selective_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39ae50941d772adaec4934ce042c59998a5',1,'TESTS():&#160;SelectiveCommunityDetection-X.cpp']]],
+  ['threads',['THREADS',['../_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a02278c64c4a4318bce669a93391760c3',1,'THREADS():&#160;CommunityDetection-X.cpp'],['../_dynamic_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a02278c64c4a4318bce669a93391760c3',1,'THREADS():&#160;DynamicCommunityDetection-X.cpp'],['../_selective_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39a02278c64c4a4318bce669a93391760c3',1,'THREADS():&#160;SelectiveCommunityDetection-X.cpp']]],
+  ['tmax',['TMAX',['../_dynamic_community_detection-_x_8cpp.html#a0ba79095c558cb72ea2e8b277be1da39af2e1d02dce62dd02b3645dfd8118b2a1',1,'DynamicCommunityDetection-X.cpp']]]
+];

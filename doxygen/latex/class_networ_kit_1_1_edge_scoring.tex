@@ -1,0 +1,120 @@
+\hypertarget{class_networ_kit_1_1_edge_scoring}{\section{Networ\-Kit\-:\-:Edge\-Scoring$<$ T $>$ Class Template Reference}
+\label{class_networ_kit_1_1_edge_scoring}\index{Networ\-Kit\-::\-Edge\-Scoring$<$ T $>$@{Networ\-Kit\-::\-Edge\-Scoring$<$ T $>$}}
+}
+
+
+{\ttfamily \#include $<$Edge\-Scoring.\-h$>$}
+
+
+
+Inheritance diagram for Networ\-Kit\-:\-:Edge\-Scoring$<$ T $>$\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=246pt]{class_networ_kit_1_1_edge_scoring__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Networ\-Kit\-:\-:Edge\-Scoring$<$ T $>$\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{class_networ_kit_1_1_edge_scoring__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_edge_scoring_a4dc61d79d58927d0354657b4984d6277}{Edge\-Scoring} (\hyperlink{class_networ_kit_1_1_graph}{Graph} \&\hyperlink{class_networ_kit_1_1_edge_scoring_a236d40c30ccbb022125d3dc915865d8a}{G})
+\item 
+virtual \hyperlink{class_networ_kit_1_1_edge_scoring_ab36424d9d938568d6a478c718cf7c508}{$\sim$\-Edge\-Scoring} ()
+\item 
+virtual void \hyperlink{class_networ_kit_1_1_edge_scoring_a51bb5124be2834ac097ff8d65f63880d}{score\-Edges} (int attr\-Id)=0
+\item 
+virtual T \hyperlink{class_networ_kit_1_1_edge_scoring_a4e1bac0c08710b103fad6d944c437d74}{edge\-Score} (\hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} u, \hyperlink{namespace_networ_kit_a53fe3e4fd04ea024160e4d024dfebadf}{node} v) const =0
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_networ_kit_1_1_graph}{Graph} $\ast$ \hyperlink{class_networ_kit_1_1_edge_scoring_a236d40c30ccbb022125d3dc915865d8a}{G}
+\begin{DoxyCompactList}\small\item\em pointer to the graph \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename T$>$class Networ\-Kit\-::\-Edge\-Scoring$<$ T $>$}
+
+
+
+Definition at line 17 of file Edge\-Scoring.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_networ_kit_1_1_edge_scoring_a4dc61d79d58927d0354657b4984d6277}{\index{Networ\-Kit\-::\-Edge\-Scoring@{Networ\-Kit\-::\-Edge\-Scoring}!Edge\-Scoring@{Edge\-Scoring}}
+\index{Edge\-Scoring@{Edge\-Scoring}!NetworKit::EdgeScoring@{Networ\-Kit\-::\-Edge\-Scoring}}
+\subsubsection[{Edge\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf Networ\-Kit\-::\-Edge\-Scoring}$<$ T $>$\-::{\bf Edge\-Scoring} (
+\begin{DoxyParamCaption}
+\item[{{\bf Graph} \&}]{G}
+\end{DoxyParamCaption}
+)}}\label{class_networ_kit_1_1_edge_scoring_a4dc61d79d58927d0354657b4984d6277}
+
+
+Definition at line 36 of file Edge\-Scoring.\-h.
+
+\hypertarget{class_networ_kit_1_1_edge_scoring_ab36424d9d938568d6a478c718cf7c508}{\index{Networ\-Kit\-::\-Edge\-Scoring@{Networ\-Kit\-::\-Edge\-Scoring}!$\sim$\-Edge\-Scoring@{$\sim$\-Edge\-Scoring}}
+\index{$\sim$\-Edge\-Scoring@{$\sim$\-Edge\-Scoring}!NetworKit::EdgeScoring@{Networ\-Kit\-::\-Edge\-Scoring}}
+\subsubsection[{$\sim$\-Edge\-Scoring}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf Networ\-Kit\-::\-Edge\-Scoring}$<$ T $>$\-::$\sim${\bf Edge\-Scoring} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{class_networ_kit_1_1_edge_scoring_ab36424d9d938568d6a478c718cf7c508}
+
+
+Definition at line 41 of file Edge\-Scoring.\-h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_networ_kit_1_1_edge_scoring_a4e1bac0c08710b103fad6d944c437d74}{\index{Networ\-Kit\-::\-Edge\-Scoring@{Networ\-Kit\-::\-Edge\-Scoring}!edge\-Score@{edge\-Score}}
+\index{edge\-Score@{edge\-Score}!NetworKit::EdgeScoring@{Networ\-Kit\-::\-Edge\-Scoring}}
+\subsubsection[{edge\-Score}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ virtual T {\bf Networ\-Kit\-::\-Edge\-Scoring}$<$ T $>$\-::edge\-Score (
+\begin{DoxyParamCaption}
+\item[{{\bf node}}]{u, }
+\item[{{\bf node}}]{v}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_networ_kit_1_1_edge_scoring_a4e1bac0c08710b103fad6d944c437d74}
+
+
+Implemented in \hyperlink{class_networ_kit_1_1_modularity_scoring_af1b95cbb6082e5159d080c392679708a}{Networ\-Kit\-::\-Modularity\-Scoring$<$ T $>$}.
+
+\hypertarget{class_networ_kit_1_1_edge_scoring_a51bb5124be2834ac097ff8d65f63880d}{\index{Networ\-Kit\-::\-Edge\-Scoring@{Networ\-Kit\-::\-Edge\-Scoring}!score\-Edges@{score\-Edges}}
+\index{score\-Edges@{score\-Edges}!NetworKit::EdgeScoring@{Networ\-Kit\-::\-Edge\-Scoring}}
+\subsubsection[{score\-Edges}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ virtual void {\bf Networ\-Kit\-::\-Edge\-Scoring}$<$ T $>$\-::score\-Edges (
+\begin{DoxyParamCaption}
+\item[{int}]{attr\-Id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{class_networ_kit_1_1_edge_scoring_a51bb5124be2834ac097ff8d65f63880d}
+
+
+Implemented in \hyperlink{class_networ_kit_1_1_modularity_scoring_a9c93ca2ca6126a4de8a2c3c196828116}{Networ\-Kit\-::\-Modularity\-Scoring$<$ T $>$}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_networ_kit_1_1_edge_scoring_a236d40c30ccbb022125d3dc915865d8a}{\index{Networ\-Kit\-::\-Edge\-Scoring@{Networ\-Kit\-::\-Edge\-Scoring}!G@{G}}
+\index{G@{G}!NetworKit::EdgeScoring@{Networ\-Kit\-::\-Edge\-Scoring}}
+\subsubsection[{G}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf Graph}$\ast$ {\bf Networ\-Kit\-::\-Edge\-Scoring}$<$ T $>$\-::G\hspace{0.3cm}{\ttfamily [protected]}}}\label{class_networ_kit_1_1_edge_scoring_a236d40c30ccbb022125d3dc915865d8a}
+
+
+pointer to the graph 
+
+
+
+Definition at line 21 of file Edge\-Scoring.\-h.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/scoring/\hyperlink{_edge_scoring_8h}{Edge\-Scoring.\-h}\end{DoxyCompactItemize}
