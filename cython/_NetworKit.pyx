@@ -479,20 +479,31 @@ cdef class ForceDirected:
 cdef extern from "../src/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
 		ConnectedComponents() except +
-		ConnectedComponents(_Graph)
-		void run(_Graph)
+		void run(_Graph G)
 		count numberOfComponents()
 		count sizeOfComponent(index component)
 		count componentOfNode(node query)
 		vector[node] getComponent(index component)
 
-# cdef class ConnectedComponents:
-# 	cdef _ConnectedComponents _this
+cdef class ConnectedComponents:
+	cdef _ConnectedComponents _this
 
-# 	def __cinit__(self, Graph G):
-# 		self._this = _ConnectedComponents(G._this)
+	def run(self, Graph G):
+		self._this.run(G._this)
 
-	# TODO: connected components wrapper
+	def numberOfComponents(self):
+		return self._this.numberOfComponents()
+
+	def sizeOfComponent(self, componentIndex):
+		return self._this.sizeOfComponent(componentIndex)
+
+	def componentOfNode(self, v):
+		return self._this.componentOfNode(v)
+
+	def getComponent(self, componentIndex):
+		return self._this.getComponent(componentIndex)
+
+
 
 # Parameters
 
