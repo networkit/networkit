@@ -1,7 +1,0 @@
-<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph_generator.html#a6b1dfcef57d42bb6bccf2d15ea0aeac1" title="Generate a graph whose nodes and edges form a circle." alt="" coords="195,27,407,87"/>
-<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_graph_i_o.html#aa31e284a79283a18153b40e34f417e7c" title="Writes graph to text file in adjacency list format." alt="" coords="202,111,400,155"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="468,73,609,117"/>
-<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="468,5,609,49"/>
-<area shape="rect" id="node12" href="$class_ensemble_clustering_1_1_graph.html#a4d1024eccff37ffb085025959d7e6ae3" title="NEIGHBORHOOD ITERATORS." alt="" coords="457,141,620,185"/>
-</map>

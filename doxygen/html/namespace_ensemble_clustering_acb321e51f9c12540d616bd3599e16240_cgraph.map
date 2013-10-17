@@ -1,8 +1,0 @@
-<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#a5c422bd0b1f00f8c40686991f94bcdaa" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="200,5,352,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="206,73,346,117"/>
-<area shape="rect" id="node7" href="$class_aux_1_1_timer.html#a3c58e715148a05a6294743619d111bab" title="Start the clock." alt="" coords="217,141,335,169"/>
-<area shape="rect" id="node9" href="$class_aux_1_1_timer.html#a14d926626eef461e836f87f7bc3d03b7" title="Stops the clock permanently for the instance of the Timer." alt="" coords="217,193,335,221"/>
-<area shape="rect" id="node11" href="$class_aux_1_1_timer.html#a428b45cb66f4be47bbea61b0db368142" title="Aux::Timer::elapsedTag" alt="" coords="196,245,356,273"/>
-<area shape="rect" id="node13" href="$class_aux_1_1_timer.html#a16fdb76113530c5d4d8787e27d1e0aca" title="The number of seconds since the current time that the Timer object was created." alt="" coords="406,245,546,273"/>
-</map>

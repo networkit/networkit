@@ -1,4 +1,0 @@
-<map id="EnsembleClustering::Clustering::clusterSizes" name="EnsembleClustering::Clustering::clusterSizes">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_clustering.html#a7eb03661a933eff8176af0e073da2ef4" title="Get the current number of clusters in this clustering." alt="" coords="222,5,426,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_clustering.html#ac73ad4ef868aa0b851f768f1a74186b7" title="Iterate over all entries (node, cluster) and execute callback function (lambda closure)." alt="" coords="247,73,401,117"/>
-</map>

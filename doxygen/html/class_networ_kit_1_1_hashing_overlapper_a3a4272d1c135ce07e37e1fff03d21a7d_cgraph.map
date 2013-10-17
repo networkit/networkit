@@ -1,5 +1,0 @@
-<map id="NetworKit::HashingOverlapper::run" name="NetworKit::HashingOverlapper::run">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="283,5,459,49"/>
-<area shape="rect" id="node5" href="$class_networ_kit_1_1_index_map.html#ac86b82fdac7adf228caaa13e11e8cb89" title="Set all values to one value." alt="" coords="298,73,443,117"/>
-<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a8633f553d0f134474f248e94faf3064d" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="284,141,458,185"/>
-</map>

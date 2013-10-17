@@ -1,8 +1,0 @@
-<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#ab019840b239c3247eaf00e5ffcc6bb03" title="Return the number of edges in the graph." alt="" coords="195,5,365,49"/>
-<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="210,73,350,117"/>
-<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_graph.html#a9be0c0a70204723e4b040b9cba51b15d" title="Check if undirected edge {u,v} exists in G." alt="" coords="210,141,350,185"/>
-<area shape="rect" id="node13" href="$class_ensemble_clustering_1_1_graph.html#a34fa9bfe964382f25d39fb092efd60a0" title="Remove undirected edge between two nodes." alt="" coords="206,209,354,253"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="414,5,554,49"/>
-<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_graph.html#a723838db1433dcbe4ac2679e0707d718" title="Return the index of v in the adjacency array of u." alt="" coords="414,174,554,218"/>
-</map>

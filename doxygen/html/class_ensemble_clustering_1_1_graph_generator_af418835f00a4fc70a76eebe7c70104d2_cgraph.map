@@ -1,4 +1,0 @@
-<map id="EnsembleClustering::GraphGenerator::makeCompleteGraph" name="EnsembleClustering::GraphGenerator::makeCompleteGraph">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#a5c422bd0b1f00f8c40686991f94bcdaa" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="278,5,429,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="283,73,424,117"/>
-</map>

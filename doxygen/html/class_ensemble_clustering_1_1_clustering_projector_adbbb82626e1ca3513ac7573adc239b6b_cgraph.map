@@ -1,7 +1,0 @@
-<map id="EnsembleClustering::ClusteringProjector::projectBack" name="EnsembleClustering::ClusteringProjector::projectBack">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="197,5,368,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a54b144cd2a43777b8e1d845b17ae8448" title="EnsembleClustering\l::Graph::getName" alt="" coords="212,73,353,117"/>
-<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="212,141,353,185"/>
-<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_clustering.html#a5c02c6c1b31e8517f713b978d0c079ea" title="Return the cluster (id) in which a node is contained." alt="" coords="208,209,357,253"/>
-<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_index_map.html#a12dd2383d0014aefbc3b496998fa1383" title="Number of nodes for which this clsutering can hold an entry." alt="" coords="416,201,592,261"/>
-</map>

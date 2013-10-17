@@ -1,6 +1,0 @@
-<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="199,5,340,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a9be0c0a70204723e4b040b9cba51b15d" title="Check if undirected edge {u,v} exists in G." alt="" coords="199,73,340,117"/>
-<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_graph.html#a34fa9bfe964382f25d39fb092efd60a0" title="Remove undirected edge between two nodes." alt="" coords="195,141,344,185"/>
-<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#a723838db1433dcbe4ac2679e0707d718" title="Return the index of v in the adjacency array of u." alt="" coords="392,107,533,151"/>
-</map>

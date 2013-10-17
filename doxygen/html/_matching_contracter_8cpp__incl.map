@@ -1,9 +1,0 @@
-<map id="src/coarsening/MatchingContracter.cpp" name="src/coarsening/MatchingContracter.cpp">
-<area shape="rect" id="node3" href="$_matching_contracter_8h.html" title="MatchingContracter.h" alt="" coords="251,83,399,111"/>
-<area shape="rect" id="node5" href="$_contracter_8h.html" title="Contracter.h" alt="" coords="149,238,243,266"/>
-<area shape="rect" id="node35" href="$_matching_8h.html" title="../matching/Matching.h" alt="" coords="312,161,467,189"/>
-<area shape="rect" id="node7" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="277,315,395,343"/>
-<area shape="rect" id="node23" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="574,393,665,421"/>
-<area shape="rect" id="node39" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="266,238,405,266"/>
-<area shape="rect" id="node42" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="31,315,165,343"/>
-</map>

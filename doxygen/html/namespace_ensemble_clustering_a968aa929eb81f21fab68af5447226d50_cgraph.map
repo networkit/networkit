@@ -1,7 +1,0 @@
-<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#afa2cbafd7ae746d310bba7b6ae6539ba" title="Open a METIS graph file." alt="" coords="211,5,357,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a6c11f188b2ca67435a63fc9c71d261e9" title="Get the METIS graph file header." alt="" coords="195,73,373,117"/>
-<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#aa9adb857b8ff519edfe94b7bc59ef12a" title="Test if graph file has a next line." alt="" coords="201,141,367,185"/>
-<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a473d40949f87385130369a4f5d14b2ae" title="Get adjacencies from the next line in the METIS graph file." alt="" coords="203,209,365,253"/>
-<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_m_e_t_i_s_parser.html#a10b501c16294e94701fd231cb0b8d3f4" title="Close input file and clean up." alt="" coords="210,277,358,321"/>
-</map>

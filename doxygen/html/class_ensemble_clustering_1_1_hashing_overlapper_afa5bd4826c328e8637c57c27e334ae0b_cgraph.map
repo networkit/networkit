@@ -1,5 +1,0 @@
-<map id="EnsembleClustering::HashingOverlapper::run" name="EnsembleClustering::HashingOverlapper::run">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="226,5,398,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_index_map.html#a4e876117022db5f4c0dad88c3dcdfaa6" title="Set all values to one value." alt="" coords="242,73,382,117"/>
-<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#a80dc95eb3a526de34c6a35ccc1dfc7ef" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="225,141,399,185"/>
-</map>

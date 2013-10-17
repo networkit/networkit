@@ -1,6 +1,0 @@
-<map id="EnsembleClustering::METISGraphWriter::write" name="EnsembleClustering::METISGraphWriter::write">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="232,5,403,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#ab019840b239c3247eaf00e5ffcc6bb03" title="Return the number of edges in the graph." alt="" coords="232,73,402,117"/>
-<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="451,103,592,147"/>
-<area shape="rect" id="node10" href="$class_ensemble_clustering_1_1_graph.html#a4d1024eccff37ffb085025959d7e6ae3" title="NEIGHBORHOOD ITERATORS." alt="" coords="236,193,399,237"/>
-</map>

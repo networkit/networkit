@@ -1,5 +1,0 @@
-<map id="NetworKit::GraphGenerator::makeErdosRenyiGraph" name="NetworKit::GraphGenerator::makeErdosRenyiGraph">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#a498eb0beb05b992d12b246fcf3b76070" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="245,5,424,49"/>
-<area shape="rect" id="node5" href="$class_aux_1_1_random_probability.html#aa3f2835c364aabb340440c45f6a28e33" title="Aux::RandomProbability\l::generate" alt="" coords="252,73,417,117"/>
-<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="237,141,432,169"/>
-</map>

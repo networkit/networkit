@@ -1,5 +1,0 @@
-<map id="NetworKit::Matching::isProper" name="NetworKit::Matching::isProper">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="199,5,375,49"/>
-<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a7a646fd6745ba9e7528170ff237232eb" title="Check if undirected edge {u,v} exists in G." alt="" coords="195,73,378,101"/>
-<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a4c6dde807d9cd6dd53f3a4794d411528" title="Return the index of v in the adjacency array of u." alt="" coords="426,73,579,101"/>
-</map>

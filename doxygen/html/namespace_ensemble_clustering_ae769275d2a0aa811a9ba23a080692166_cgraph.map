@@ -1,7 +1,0 @@
-<map id="EnsembleClustering::TEST_F" name="EnsembleClustering::TEST_F">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#a80dc95eb3a526de34c6a35ccc1dfc7ef" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="195,5,370,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a3ea3742cf6aeeaf69dffc4f9cf739f22" title="Insert an undirected edge between two nodes." alt="" coords="212,73,353,117"/>
-<area shape="rect" id="node7" href="$class_ensemble_clustering_1_1_graph.html#ab019840b239c3247eaf00e5ffcc6bb03" title="Return the number of edges in the graph." alt="" coords="198,141,368,185"/>
-<area shape="rect" id="node11" href="$class_ensemble_clustering_1_1_graph.html#a7604c9b72a9b4c3326f8000595755e8f" title="EnsembleClustering\l::Graph::degree" alt="" coords="212,209,353,253"/>
-<area shape="rect" id="node9" href="$class_ensemble_clustering_1_1_graph.html#a345e16f8c997d2113dc5bf7b2e818d36" title="NODE ITERATORS." alt="" coords="419,141,560,185"/>
-</map>

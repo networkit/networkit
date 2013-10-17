@@ -1,5 +1,0 @@
-<map id="NetworKit::EnsembleMultilevel" name="NetworKit::EnsembleMultilevel">
-<area shape="rect" id="node2" href="$class_networ_kit_1_1_clusterer.html" title="NetworKit::Clusterer" alt="" coords="4,6,144,34"/>
-<area shape="rect" id="node4" href="$class_networ_kit_1_1_overlapper.html" title="NetworKit::Overlapper" alt="" coords="169,6,321,34"/>
-<area shape="rect" id="node6" href="$class_networ_kit_1_1_quality_measure.html" title="Abstract base class for all clustering quality measures." alt="" coords="346,6,525,34"/>
-</map>

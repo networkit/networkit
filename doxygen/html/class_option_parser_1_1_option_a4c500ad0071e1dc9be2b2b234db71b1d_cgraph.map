@@ -1,5 +1,0 @@
-<map id="OptionParser::Option::last" name="OptionParser::Option::last">
-<area shape="rect" id="node3" href="$class_option_parser_1_1_option.html#aa5f751dbb4de499f2665d4d0b6238037" title="Returns a pointer to the first element of the linked list." alt="" coords="200,5,347,49"/>
-<area shape="rect" id="node7" href="$class_option_parser_1_1_option.html#aa8caf9f5b9ae5d3900f2432f894dd4b5" title="Returns a pointer to the previous element of the linked list with wrap&#45;around from first() to last()..." alt="" coords="200,73,347,117"/>
-<area shape="rect" id="node5" href="$class_option_parser_1_1_option.html#aca0c27907db0b24c320252ea80babf6d" title="Returns true iff this is the first element of the linked list." alt="" coords="395,5,541,49"/>
-</map>

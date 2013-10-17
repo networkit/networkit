@@ -1,9 +1,0 @@
-<map id="src/overlap/HashingOverlapper.cpp" name="src/overlap/HashingOverlapper.cpp">
-<area shape="rect" id="node3" href="$_hashing_overlapper_8h.html" title="HashingOverlapper.h" alt="" coords="345,83,491,111"/>
-<area shape="rect" id="node7" href="$_overlapper_8h.html" title="Overlapper.h" alt="" coords="426,161,523,189"/>
-<area shape="rect" id="node13" href="$_graph_8h.html" title="../graph/Graph.h" alt="" coords="301,393,419,421"/>
-<area shape="rect" id="node40" href="$_clustering_8h.html" title="../clustering/Clustering.h" alt="" coords="452,238,616,266"/>
-<area shape="rect" id="node28" href="$_log_8h.html" title="../aux/Log.h" alt="" coords="157,470,248,498"/>
-<area shape="rect" id="node43" href="$_node_map_8h.html" title="../graph/NodeMap.h" alt="" coords="461,315,600,343"/>
-<area shape="rect" id="node46" href="$_index_map_8h.html" title="../base/IndexMap.h" alt="" coords="463,393,597,421"/>
-</map>
