@@ -10,7 +10,7 @@
 
 #include <random>
 
-
+namespace Aux {
 
 /**
  * Noise is random addition to a signal. This class provides methods
@@ -47,4 +47,6 @@ public:
 
 };
 
+
+}
 #endif /* NOISE_H_ */

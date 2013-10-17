@@ -7,6 +7,7 @@
 
 #include "Noise.h"
 
+namespace Aux {
 
 
 Noise::Noise(double l, double u) {
@@ -25,3 +26,4 @@ double Noise::add(double x) {
 	return x + r;
 }
 
+}
