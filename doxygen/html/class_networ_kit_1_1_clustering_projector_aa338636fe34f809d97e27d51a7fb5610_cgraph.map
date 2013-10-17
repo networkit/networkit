@@ -1,4 +1,0 @@
-<map id="NetworKit::ClusteringProjector::projectCoarseGraphToFinestClustering" name="NetworKit::ClusteringProjector::projectCoarseGraphToFinestClustering">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="312,5,488,49"/>
-<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a8633f553d0f134474f248e94faf3064d" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="313,73,487,117"/>
-</map>

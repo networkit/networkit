@@ -1,7 +1,0 @@
-<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="207,5,393,33"/>
-<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="203,57,397,85"/>
-<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a7b0d575c9fa66d075bd6d81c1593f081" title="NEIGHBORHOOD ITERATORS." alt="" coords="189,109,411,137"/>
-<area shape="rect" id="node9" href="$class_networ_kit_1_1_graph.html#a7a646fd6745ba9e7528170ff237232eb" title="Check if undirected edge {u,v} exists in G." alt="" coords="208,161,392,189"/>
-<area shape="rect" id="node11" href="$class_networ_kit_1_1_graph.html#a4c6dde807d9cd6dd53f3a4794d411528" title="Return the index of v in the adjacency array of u." alt="" coords="458,161,611,189"/>
-</map>

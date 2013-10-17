@@ -1,7 +1,0 @@
-<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#a8633f553d0f134474f248e94faf3064d" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="200,5,374,49"/>
-<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="189,73,384,101"/>
-<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a6625b34904eae267ca384c77a081f333" title="Return the number of edges in the graph." alt="" coords="199,125,375,169"/>
-<area shape="rect" id="node11" href="$class_networ_kit_1_1_graph.html#a7a9ae1841eed3ab10520f89d94a50539" title="NetworKit::Graph::degree" alt="" coords="200,193,373,221"/>
-<area shape="rect" id="node9" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="433,133,618,161"/>
-</map>

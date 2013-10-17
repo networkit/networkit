@@ -1,4 +1,0 @@
-<map id="NetworKit::JaccardMeasure::getDissimilarity" name="NetworKit::JaccardMeasure::getDissimilarity">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="241,5,417,49"/>
-<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a498eb0beb05b992d12b246fcf3b76070" title="Iterate over all undirected pairs of nodesand call handler (lambda closure)." alt="" coords="240,73,419,117"/>
-</map>

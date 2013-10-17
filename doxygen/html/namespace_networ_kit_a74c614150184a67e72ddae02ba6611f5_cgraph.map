@@ -1,8 +1,0 @@
-<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="189,5,384,33"/>
-<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="199,57,375,101"/>
-<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a6625b34904eae267ca384c77a081f333" title="Return the number of edges in the graph." alt="" coords="199,125,375,169"/>
-<area shape="rect" id="node11" href="$class_networ_kit_1_1_graph.html#a7a646fd6745ba9e7528170ff237232eb" title="Check if undirected edge {u,v} exists in G." alt="" coords="195,193,378,221"/>
-<area shape="rect" id="node9" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="433,133,618,161"/>
-<area shape="rect" id="node13" href="$class_networ_kit_1_1_graph.html#a4c6dde807d9cd6dd53f3a4794d411528" title="Return the index of v in the adjacency array of u." alt="" coords="449,193,602,221"/>
-</map>

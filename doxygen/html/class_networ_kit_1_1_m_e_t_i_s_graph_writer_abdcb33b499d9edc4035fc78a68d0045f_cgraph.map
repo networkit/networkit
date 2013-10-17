@@ -1,6 +1,0 @@
-<map id="NetworKit::METISGraphWriter::write" name="NetworKit::METISGraphWriter::write">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#afe664838b6341ceb708f3b42e0871cd8" title="Return the number of nodes in the graph." alt="" coords="276,5,452,49"/>
-<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a6625b34904eae267ca384c77a081f333" title="Return the number of edges in the graph." alt="" coords="276,73,452,117"/>
-<area shape="rect" id="node7" href="$class_networ_kit_1_1_graph.html#a56bdf60b5d0b9f11d4211fea53f87e7a" title="NODE ITERATORS." alt="" coords="523,111,709,139"/>
-<area shape="rect" id="node10" href="$class_networ_kit_1_1_graph.html#a7b0d575c9fa66d075bd6d81c1593f081" title="NEIGHBORHOOD ITERATORS." alt="" coords="253,193,475,221"/>
-</map>

@@ -1,4 +1,0 @@
-<map id="EnsembleClustering::ClusteringProjector::projectCoarseGraphToFinestClustering" name="EnsembleClustering::ClusteringProjector::projectCoarseGraphToFinestClustering">
-<area shape="rect" id="node3" href="$class_ensemble_clustering_1_1_graph.html#affe61a24e54266aba872272fb9501c61" title="Return the number of nodes in the graph." alt="" coords="256,5,427,49"/>
-<area shape="rect" id="node5" href="$class_ensemble_clustering_1_1_graph.html#a80dc95eb3a526de34c6a35ccc1dfc7ef" title="Iterate in parallel over all nodes of the graph and call handler (lambda closure)." alt="" coords="254,73,429,117"/>
-</map>

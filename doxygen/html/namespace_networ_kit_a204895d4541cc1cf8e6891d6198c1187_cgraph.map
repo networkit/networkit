@@ -1,4 +1,0 @@
-<map id="NetworKit::TEST_F" name="NetworKit::TEST_F">
-<area shape="rect" id="node3" href="$class_networ_kit_1_1_graph.html#ac6c882c23df62222dab60887114c0b6a" title="Insert an undirected edge between two nodes." alt="" coords="189,5,384,33"/>
-<area shape="rect" id="node5" href="$class_networ_kit_1_1_graph.html#a571265128780839333214b2d14d15e1b" title="Iterate over edges in breadth&#45;first search order starting from node r until connected component of r ..." alt="" coords="199,57,375,101"/>
-</map>
