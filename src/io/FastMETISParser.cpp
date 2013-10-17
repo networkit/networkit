@@ -63,7 +63,6 @@ NetworKit::Graph FastMETISParser::parse(const std::string& path) {
 
 	if (flag == 0) {
 		while (std::getline(stream, line)) {
-			++u;
 			if (line.empty()) {
 				continue;
 			}
@@ -74,7 +73,7 @@ NetworKit::Graph FastMETISParser::parse(const std::string& path) {
 				--end;
 			}
 			while (true) {
-				node v = fast_string_to_node(it1, it2);
+				node v = (fast_string_to_node(it1, it2) - 1);
 				if (u < v) {
 					G.addEdge(u, v);
 				}
@@ -85,6 +84,7 @@ NetworKit::Graph FastMETISParser::parse(const std::string& path) {
 				it1 = it2;
 				it2 = std::find(it1, end, ' ');
 			}
+			++u; // next node
 		}
 	} else {
 		ERROR("parsing graphs with weight flag " << flag << " not yet supported");
