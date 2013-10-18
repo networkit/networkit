@@ -3,31 +3,52 @@ import fnmatch
 
 home_path = os.environ['HOME']
 
-
-
-# SOURCE
+# SOURCE files (including executable) will be gathered here
 srcDir = "src"
-source = []
+def getSourceFiles(target, buildconf):
+	source = []
 
-# walk source directory and find ONLY .cpp files
-for (dirpath, dirnames, filenames) in os.walk(srcDir):
-    for name in fnmatch.filter(filenames, "*.cpp"):
-		source.append(os.path.join(dirpath, name))
+	# walk source directory and find ONLY .cpp files
+	for (dirpath, dirnames, filenames) in os.walk(srcDir):
+	    for name in fnmatch.filter(filenames, "*.cpp"):
+			source.append(os.path.join(dirpath, name))
 
+	# exclude files depending on target, executables will be addes later
+	if (target not in ["Tests","LTO"]):
+		# exclude files matching following patterns
+		xpatterns = ["*-X.cpp","*Unittests.cpp","*GTest.cpp","*Benchmark.cpp"]
+		excluded = []
+	else:
+		# exclude files matching following patterns
+		# only the target "Test" requires Benchmark and GTest files
+		xpatterns = ["*-X.cpp","*Unittests.cpp"]
+		excluded = []
 
-# exclude files matching following patterns
-xpatterns = ["*-X.cpp"]	# exclude executables, include later depending on target
-excluded = []
+	for pattern in xpatterns:
+		for name in fnmatch.filter(source, pattern):
+			excluded.append(name)
 
-for pattern in xpatterns:
-	for name in fnmatch.filter(source, pattern):
-		excluded.append(name)
+	print("excluded source files: {0}".format(excluded))
+	source = [name for name in source if name not in excluded]
 
-print("excluded source files: {0}".format(excluded))
-source = [name for name in source if name not in excluded]
+	# add executable
+	if target == "CommunityDetection":
+		source.append(os.path.join(srcDir, "CommunityDetection-X.cpp"))
+	elif target == "DynCD":
+		source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
+	elif target == "SelCD":
+		source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
+	elif target in ["Tests","LTO"]:
+		source.append(os.path.join(srcDir, "Unittests.cpp"))
 
+	# create build directory for build configuration
+	buildDir = ".build{0}".format(buildconf)
+	VariantDir(buildDir, srcDir, duplicate=0)
 
-
+	# modify source paths for build directory
+	source = [name.replace(srcDir + "/", buildDir + "/") for name in source]
+	print(source)
+	return source
 
 
 # ENVIRONMENT
@@ -81,7 +102,7 @@ compute = Environment()
 ### include
 compute.Append(CPPPATH = [os.path.join(home_path, "workspace/gtest/include")])
 compute.Append(CCPATH = [os.path.join(home_path, "workspace/gtest/include")])
-print("compute CPPPATH: %s" % compute["CPPPATH"])
+#print("compute CPPPATH: %s" % compute["CPPPATH"])
 
 ### link
 compute.Append(LIBS = ["gtest", "log4cxx"])
@@ -102,7 +123,7 @@ ic2 = Environment()
 ### include
 ic2.Append(CPPPATH = [os.path.join(home_path, "workspace/gtest/include")])
 ic2.Append(CCPATH = [os.path.join(home_path, "workspace/gtest/include")])
-print("compute CPPPATH: %s" % compute["CPPPATH"])
+#print("compute CPPPATH: %s" % compute["CPPPATH"])
 
 ### link
 ic2.Append(LIBS = ["gtest"])
@@ -127,7 +148,7 @@ comp_hm.Append(CPPPATH = ["/home/henningm/workspace/gtest/include", \
                           "/home/henningm/workspace/STINGER/include"])
 comp_hm.Append(CCPATH = ["/home/henningm/workspace/gtest/include", \
                           "/home/henningm/workspace/STINGER/include"])
-print("comp_hm CPPPATH: %s" % comp_hm["CPPPATH"])
+#print("comp_hm CPPPATH: %s" % comp_hm["CPPPATH"])
 
 ### link
 comp_hm.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
@@ -223,15 +244,8 @@ except:
 
 
 # create build directory for build configuration
-
-buildDir = ".build{0}".format(buildconf)
-VariantDir(buildDir, srcDir, duplicate=0)
-
-
 # modify source paths for build directory
-source = [name.replace(srcDir + "/", buildDir + "/") for name in source]
-print(source)
-
+# moved to getSourceFiles()
 
 # append flags
 
@@ -284,27 +298,48 @@ AddOption("--target",
 
 
 target = GetOption("target")
-targetName = "NetworKit-{0}-{1}".format(target, buildconf)
-
-if target == "CommunityDetection":
-	source.append(os.path.join(srcDir, "CommunityDetection-X.cpp"))
-	env.Program(targetName, source)
-elif target == "DynCD":
-	source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
-	env.Program(targetName, source)
-elif target == "SelCD":
-	source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
-	env.Program(targetName, source)
-elif target == "Core":
-	# do not append executable
-	env.Append(CPPDEFINES=["NOLOGGING", "NOGTEST"])
-	env.Library("NetworKit-Core-{0}".format(buildconf), source)
+availableTargets = ["CommunityDetection","DynCD","SelCD","Core","Tests","LTO"]
+if target in availableTargets:
+	source = getSourceFiles(target,buildconf)
+	targetName = "NetworKit-{0}-{1}".format(target, buildconf)
+	if target == "Core":
+		# do not append executable
+		env.Append(CPPDEFINES=["NOLOGGING", "NOGTEST"])
+		env.Library("NetworKit-Core-{0}".format(buildconf), source)
+	elif target == "LTO":
+		env.Append(CFLAGS = ["-flto"])
+		env.Append(CPPFLAGS = ["-flto"])
+		env.Append(LINKFLAGS = ["-flto"])
+		env.Program(targetName, source)
+	else:
+		env.Program(targetName, source)
 else:
-	print("ERROR: unknown target: %" % target)
+	print("ERROR: unknown target: {0}".format(target))
 	exit()
 
-
-
-
-
-# TODO: make unit tests a separate target
+#if target == "CommunityDetection":
+#	source = getSourceFiles(target,buildconf)
+#	source.append(os.path.join(srcDir, "CommunityDetection-X.cpp"))
+#	env.Program(targetName, source)
+#elif target == "DynCD":
+#	source = getSourceFiles(target,buildconf)
+#	source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
+#	env.Program(targetName, source)
+#elif target == "SelCD":
+#	source = getSourceFiles(target,buildconf)
+#	source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
+#	env.Program(targetName, source)
+#elif target == "Core":
+#	source = getSourceFiles(target,buildconf)
+	# do not append executable
+#	env.Append(CPPDEFINES=["NOLOGGING", "NOGTEST"])
+#	env.Library("NetworKit-Core-{0}".format(buildconf), source)
+#elif target == "Tests":
+#	source = getSourceFiles(target,buildconf)
+#	source.append(os.path.join(srcDir, "Unittests.cpp"))
+#	env.Program(targetName, source)
+#TODO: maybe a benchmark target? unittests can be compiled as debug and optimized, so probably not necessary.
+	
+#else:
+#	print("ERROR: unknown target: %" % target)
+#	exit()
