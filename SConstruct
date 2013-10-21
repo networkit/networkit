@@ -1,5 +1,6 @@
 import os
 import fnmatch
+import ConfigParser
 
 home_path = os.environ['HOME']
 
@@ -53,163 +54,37 @@ def getSourceFiles(target, buildconf):
 
 # ENVIRONMENT
 
-## environment: macbook
-macbook = Environment()
-### include
-macbook.Append(CPPPATH = ["/usr/local/Cellar/gcc48/4.8.1/gcc/include/c++/4.8.", \
-                          "/Users/cls/workspace/gtest/include", \
-                          "/usr/local/Cellar/log4cxx/0.10.0/include"])
-macbook.Append(CCPATH = ["/usr/local/Cellar/gcc48/4.8.1/gcc/include/c++/4.8.", \
-                          "/Users/cls/workspace/gtest/include", \
-                          "/usr/local/Cellar/log4cxx/0.10.0/include"])
+# ENVIRONMENT
+
+## read environment settings from configuration file
+
+env = Environment()
+confPath = "build.conf"
+conf = ConfigParser.ConfigParser()
+conf.read([confPath])     # read the configuration file
+
+## compiler
+cppComp = conf.get("compiler", "cpp", "gcc")
+defines = conf.get("compiler", "defines", [])		# defines are optional
+if defines is not []:
+    defines = defines.split(",")
+
+## includes
+stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
+gtestInclude = conf.get("includes", "gtest")
+log4cxxInclude = conf.get("includes", "log4cxx")
+
+## libraries
+gtestLib = conf.get("libraries", "gtest")
+log4cxxLib = conf.get("libraries", "log4cxx")
 
 
-### link
-macbook.Append(LIBS = ["gtest", "log4cxx"])
-macbook.Append(LIBPATH = ["/Users/cls/workspace/gtest", \
-                            "/usr/local/Cellar/log4cxx/0.10.0/lib"])
-macbook.Append(LINKFLAGS = ["-std=c++11"])
-
-### compiler & flags
-macbook["CC"] = "gcc-4.8"
-macbook["CXX"] = "g++-4.8"
-
-## environment: lappy
-lappy = Environment()
-### include
-#myenv.Append(CPPPATH = [])
-#lappy.Append(CPPPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
-#                          "/Users/cls/workspace/gtest/include", \
-#                          "/usr/local/Cellar/log4cxx/0.10.0/include"])
-#lappy.Append(CCPATH = ["/usr/local/Cellar/gcc/4.7.2/gcc/include/c++/4.7.2", \
-#                          "/Users/cls/workspace/gtest/include", \
-#                          "/usr/local/Cellar/log4cxx/0.10.0/include"])
-
-
-### link
-lappy.Append(LIBS = ["gtest", "log4cxx"])
-lappy.Append(LIBPATH = ["/usr/src/gtest"])						# TODO: add library paths here # should work like this
-lappy.Append(LINKFLAGS = ["-std=c++11"])
-
-### compiler & flags
-lappy["CC"] = "gcc-4.8"
-lappy["CXX"] = "g++-4.8"
-
-
-## environment: compute
-
-compute = Environment()
-### include
-compute.Append(CPPPATH = [os.path.join(home_path, "workspace/gtest/include")])
-compute.Append(CCPATH = [os.path.join(home_path, "workspace/gtest/include")])
-#print("compute CPPPATH: %s" % compute["CPPPATH"])
-
-### link
-compute.Append(LIBS = ["gtest", "log4cxx"])
-compute.Append(LIBPATH = [os.path.join(home_path, "workspace/gtest")])
-compute.Append(LINKFLAGS = ["-std=c++11"])
-
-### compiler & flags
-compute["CC"] = "gcc-4.7"
-compute["CXX"] = "g++-4.7"
-
-# preprocessor defines
-compute.Append(CPPDEFINES=["_GNU_SOURCE"]) 
-
-
-## environment: ic2.scc.kit.edu
-
-ic2 = Environment()
-### include
-ic2.Append(CPPPATH = [os.path.join(home_path, "workspace/gtest/include")])
-ic2.Append(CCPATH = [os.path.join(home_path, "workspace/gtest/include")])
-#print("compute CPPPATH: %s" % compute["CPPPATH"])
-
-### link
-ic2.Append(LIBS = ["gtest"])
-ic2.Append(LIBPATH = [os.path.join(home_path, "workspace/gtest")])
-ic2.Append(LINKFLAGS = ["-std=c++11"])
-
-ic2.Append(CPPDEFINES=['NOLOG4CXX'])    # log4cxx is not available
-
-### compiler & flags
-ic2["CC"] = "/opt/gcc_4.7/bin/gcc"
-ic2["CXX"] = "/opt/gcc_4.7/bin/g++"
-
-
-
-
-
-## environment: comp_hm
-
-comp_hm = Environment()
-### include
-comp_hm.Append(CPPPATH = ["/home/henningm/workspace/gtest/include", \
-                          "/home/henningm/workspace/STINGER/include"])
-comp_hm.Append(CCPATH = ["/home/henningm/workspace/gtest/include", \
-                          "/home/henningm/workspace/STINGER/include"])
-#print("comp_hm CPPPATH: %s" % comp_hm["CPPPATH"])
-
-### link
-comp_hm.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
-comp_hm.Append(LIBPATH = ["/home/henningm/workspace/STINGER",\
-                           "/home/henningm/workspace/gtest/"])
-comp_hm.Append(LINKFLAGS = ["-std=c++11"])
-
-### compiler & flags
-comp_hm["CC"] = "gcc-4.7"
-comp_hm["CXX"] = "g++-4.7"
-
-
-
-
-
-## environment: mac_hm
-
-mac_hm = Environment()
-### include
-mac_hm.Append(CPPPATH = ["/opt/local/include/gcc/c++/4.7.2", \
-                          "/Users/Henning/Documents/workspace/gtest/include", \
-                          "/opt/local/include/log4cxx/", \
-                          "/Users/Henning/Documents/workspace/STINGER/include"])
-mac_hm.Append(CCPATH = ["/opt/local/include/gcc/c++/4.7.2", \
-                          "/Users/Henning/Documents/workspace/gtest/include", \
-                          "/opt/local/include/log4cxx/", \
-                          "/Users/Henning/Documents/workspace/STINGER/include"])
-
-### link
-mac_hm.Append(LIBS = ["STINGER", "gtest", "log4cxx"])
-mac_hm.Append(LIBPATH = ["/Users/Henning/Documents/workspace/STINGER/OpenMP Debug",\
-                           "/Users/Henning/Documents/workspace/gtest/", \
-                            "/opt/local/lib/"])
-mac_hm.Append(LINKFLAGS = ["-std=c++11"])
-# mac_hm.Program('build/CommunityDetection.cpp')
-
-### compiler & flags
-mac_hm["CC"] = "gcc-mp-4.7"
-mac_hm["CXX"] = "g++-mp-4.7"
-
-
-
-
-## select environment
-# custom command line options
-AddOption("--machine",
-          dest="machine",
-          type="string",
-          nargs=1,
-          action="store",
-          help="specify the machine (environment) on which to build")
-
-
-environments = {"macbook" : macbook, "compute" : compute, "mac_hm" : mac_hm, "comp_hm" : comp_hm, "ic2": ic2, "lappy" : lappy}
-
-try:
-    env = environments[GetOption("machine")]
-except:
-    print("ERROR: In order to build call scons with --machine=<MACHINE> where <MACHINE> is one of: %s" % environments.keys())
-    exit()
-
+env["CXX"] = cppComp
+env.Append(CPPDEFINES=defines)
+env.Append(CPPPATH = [stdInclude, gtestInclude, log4cxxInclude])
+env.Append(LIBS = ["gtest", "log4cxx"])
+env.Append(LIBPATH = [gtestLib, log4cxxLib])
+env.Append(LINKFLAGS = ["-std=c++11"])
 
 ## CONFIGURATIONS
 
