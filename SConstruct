@@ -54,12 +54,13 @@ def getSourceFiles(target, optimize):
 
 # ENVIRONMENT
 
-# ENVIRONMENT
-
 ## read environment settings from configuration file
 
 env = Environment()
 confPath = "build.conf"
+if not os.path.isfile(confPath):
+	raise IOError("The configuration file `build.conf` does not exist. You need to create it.")
+
 conf = ConfigParser.ConfigParser()
 conf.read([confPath])     # read the configuration file
 
