@@ -78,12 +78,13 @@ log4cxxInclude = conf.get("includes", "log4cxx")
 ## libraries
 gtestLib = conf.get("libraries", "gtest")
 log4cxxLib = conf.get("libraries", "log4cxx")
+#tbbLib = conf.get("libraries", "tbb", "")
 
 
 env["CXX"] = cppComp
 env.Append(CPPDEFINES=defines)
 env.Append(CPPPATH = [stdInclude, gtestInclude, log4cxxInclude])
-env.Append(LIBS = ["gtest", "log4cxx"])
+env.Append(LIBS = ["gtest", "log4cxx", "tbb"])
 env.Append(LIBPATH = [gtestLib, log4cxxLib])
 env.Append(LINKFLAGS = ["-std=c++11"])
 
