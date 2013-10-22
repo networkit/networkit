@@ -24,6 +24,8 @@ Authors
 - Andreas Bilke
 - Yassine Marrakchi
 - Aleksejs Sazonovs
+- Maximilian Vogel
+- Miriam Beddig
 
 License
 -------
@@ -47,7 +49,7 @@ Requirements
 
 ###Compiler: 
 
-A C++ compiler supporting C++11 (we use GCC 4.7 and 4.8). The compiler and linker flags `-fopenmp -std=c++11` are required.
+A C++ compiler supporting C++11 (we use GCC 4.8). The compiler and linker flags `-fopenmp -std=c++11` are required.
 
 
 ###Libraries:
@@ -66,24 +68,25 @@ The following preprocessor definitions (using the `-D` compiler flag) remove the
 Build
 -----
 
-We recommend [SCons](http://scons.org) for building the project. Edit the file `SConstruct.EDITME` We recommend [SCons](http://www.scons.org/) for building the project. Edit the file `SConstruct.EDITME` to set include paths, library paths etc, then rename it to `SConstruct`.
+We recommend [SCons](http://scons.org) for building the project. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
 
 The call to SCons has the following options:
 
-	scons --machine=<MyEnvironment> --buildconf=D|P|O --target=CommunityDetection|DynCD|SelCD
+	scons --optimize=D|P|O --target=CommunityDetection|DynCD|SelCD|Core
 
-`machine` expects the name of a system environment. Custom environments can be added in the `SConstruct` file.
-
-- `buildconf`
+- `optimize`
 	- `D` 	debug
 	- `O`	optimized
 	- `P`	profiling
 - `target`
-	- `CommunityDetection` 	static, global community detection algorihtms
-	- `DynCD`				dynamic community detection setup
-	- `SelCD`				selective community detection setup		
+	- `Tests`				build executable for the unit tests	
+	- `CommunityDetection` 	build executable for static, global community detection algorihtms
+	- `DynCD`				build dynamic community detection setup
+	- `SelCD`				build selective community detection setup
+	- `Core`				build NetworKit as a library, required by the Python shell		
 
-Alternatively, the project can be build with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
+
+Alternatively, the project can be built with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
 
 
 
@@ -92,17 +95,19 @@ Test
 
 Run all unit tests with 
 
-		./CommunityDetection-D --tests --gtest_filter=*Test.test*
+		./NetworKit-Tests --tests --gtest_filter=*Test.test*
 
 The expression after `--gtest_filter=` automatically selects all undebug --tests --gtest_filter=*Test*.try*	
 
 Run performance tests with
 
-		./CommunityDetection-O --tests --gtest_filter=*Benchmark*
+		./NetworKit-Tests --tests --gtest_filter=*Benchmark*
 
 
-Run
----
+Run Executables
+---------------
+
+## NetworKit-CommunityDetection
 
 Required options for community detection are `--algorithm` and `--graph`.
 
@@ -116,9 +121,9 @@ Main algorithms:
 Example calls:
 
 
-		./NetworKit-CommunityDetection-optimized --algorithm=PLP --graph=path/to/a.graph
-		./NetworKit-CommunityDetection-optimized --algorithm=EPP:4*PLP+PLM --graph=path/to/a.graph
-		./NetworKit-CommunityDetection-optimized --algorithm=PLM --graph=path/to/a.graph --runs=10 --summary=path/to/file.csv
+		./NetworKit-CommunityDetection-O --algorithm=PLP --graph=path/to/a.graph
+		./NetworKit-CommunityDetection-O --algorithm=EPP:4*PLP+PLM --graph=path/to/a.graph
+		./NetworKit-CommunityDetection-O --algorithm=PLM --graph=path/to/a.graph --runs=10 --summary=path/to/file.csv
 
 
 The `--graph` option accepts graph files in a format known as the [METIS file format][metis], a simple adjacency list format. Many example files can be found in the collection of the [10th DIMACS Implementation Challenge][dimacs]. 
@@ -140,6 +145,12 @@ To append key result data to a CSV file, add
 To save the clustering produced, add
 
 	--saveClustering=/path/to/file.clust
+
+
+Interactive Python Shell
+------------------------
+
+TODO:
 
 
 Contribute

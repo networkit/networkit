@@ -6,7 +6,7 @@ home_path = os.environ['HOME']
 
 # SOURCE files (including executable) will be gathered here
 srcDir = "src"
-def getSourceFiles(target, buildconf):
+def getSourceFiles(target, optimize):
 	source = []
 
 	# walk source directory and find ONLY .cpp files
@@ -43,7 +43,7 @@ def getSourceFiles(target, buildconf):
 		source.append(os.path.join(srcDir, "Unittests.cpp"))
 
 	# create build directory for build configuration
-	buildDir = ".build{0}".format(buildconf)
+	buildDir = ".build{0}".format(optimize)
 	VariantDir(buildDir, srcDir, duplicate=0)
 
 	# modify source paths for build directory
@@ -103,18 +103,18 @@ profileCFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
 
 # select configuration
 # custom command line options
-AddOption("--buildconf",
-          dest="buildconf",
+AddOption("--optimize",
+          dest="optimize",
           type="string",
           nargs=1,
           action="store",
-          help="specify the buildconfuration to build (Debug, Release)")
+          help="specify the optimization level to build (Debug, Release, Profile)")
 
 
 try:
-    buildconf = GetOption("buildconf")
+    optimize = GetOption("optimize")
 except:
-    print("ERROR: Missing option --buildconf=<CONF>")
+    print("ERROR: Missing option --optimize=<LEVEL>")
     exit()
 
 
@@ -147,18 +147,18 @@ else:
     print("ERROR: unrecognized option --openmp=%s" % openmp)
     exit()
 
-# buildconf flags
-if buildconf == "D":
+# optimize flags
+if optimize == "D":
     env.Append(CFLAGS = debugCFlags)
     env.Append(CPPFLAGS = debugCppFlags)
-elif buildconf == "O":
+elif optimize == "O":
     env.Append(CFLAGS = optimizedCFlags)
     env.Append(CPPFLAGS = optimizedCppFlags)
-elif buildconf == "P":
+elif optimize == "P":
 	 env.Append(CFLAGS = profileCFlags)
 	 env.Append(CPPFLAGS = profileCppFlags)
 else:
-    print("ERROR: invalid buildconf: %s" % buildconf)
+    print("ERROR: invalid optimize: %s" % optimize)
     exit()
 
 
@@ -175,12 +175,12 @@ AddOption("--target",
 target = GetOption("target")
 availableTargets = ["CommunityDetection","DynCD","SelCD","Core","Tests","LTO"]
 if target in availableTargets:
-	source = getSourceFiles(target,buildconf)
-	targetName = "NetworKit-{0}-{1}".format(target, buildconf)
+	source = getSourceFiles(target,optimize)
+	targetName = "NetworKit-{0}-{1}".format(target, optimize)
 	if target == "Core":
 		# do not append executable
 		env.Append(CPPDEFINES=["NOLOGGING", "NOGTEST"])
-		env.Library("NetworKit-Core-{0}".format(buildconf), source)
+		env.Library("NetworKit-Core-{0}".format(optimize), source)
 	elif target == "LTO":
 		env.Append(CFLAGS = ["-flto"])
 		env.Append(CPPFLAGS = ["-flto"])
@@ -193,24 +193,24 @@ else:
 	exit()
 
 #if target == "CommunityDetection":
-#	source = getSourceFiles(target,buildconf)
+#	source = getSourceFiles(target,optimize)
 #	source.append(os.path.join(srcDir, "CommunityDetection-X.cpp"))
 #	env.Program(targetName, source)
 #elif target == "DynCD":
-#	source = getSourceFiles(target,buildconf)
+#	source = getSourceFiles(target,optimize)
 #	source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
 #	env.Program(targetName, source)
 #elif target == "SelCD":
-#	source = getSourceFiles(target,buildconf)
+#	source = getSourceFiles(target,optimize)
 #	source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
 #	env.Program(targetName, source)
 #elif target == "Core":
-#	source = getSourceFiles(target,buildconf)
+#	source = getSourceFiles(target,optimize)
 	# do not append executable
 #	env.Append(CPPDEFINES=["NOLOGGING", "NOGTEST"])
-#	env.Library("NetworKit-Core-{0}".format(buildconf), source)
+#	env.Library("NetworKit-Core-{0}".format(optimize), source)
 #elif target == "Tests":
-#	source = getSourceFiles(target,buildconf)
+#	source = getSourceFiles(target,optimize)
 #	source.append(os.path.join(srcDir, "Unittests.cpp"))
 #	env.Program(targetName, source)
 #TODO: maybe a benchmark target? unittests can be compiled as debug and optimized, so probably not necessary.
