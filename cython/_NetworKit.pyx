@@ -550,21 +550,23 @@ cdef class LineFileReader:
 		return self._this.read(stdstring(path))
 
 
-cdef extern from "../src/community/PLM2.h":
-	cdef cppclass _PLM2 "NetworKit::PLM2":
-		_PLM2() except +
-		_PLM2(string par, double gamma)
-		_Clustering run(_Graph _G)
-		string toString()
+# PLM2
 
-cdef class PLM2:
-	cdef _PLM2 _this
+#cdef extern from "../src/community/PLM2.h":
+#	cdef cppclass _PLM2 "NetworKit::PLM2":
+#		_PLM2() except +
+#		_PLM2(string par, double gamma)
+#		_Clustering run(_Graph _G)
+#		string toString()
 
-	def run(self, Graph G):
-		return Clustering().setThis(self._this.run(G._this))
+#cdef class PLM2:
+#	cdef _PLM2 _this
 
-	def toString(self):
-		return self._this.toString().decode("utf-8")
+#	def run(self, Graph G):
+#		return Clustering().setThis(self._this.run(G._this))
+
+#	def toString(self):
+#		return self._this.toString().decode("utf-8")
 
 # TODO: initialize log4cxx
 

@@ -72,7 +72,7 @@ We recommend [SCons](http://scons.org) for building the project. Individual sett
 
 The call to SCons has the following options:
 
-	scons --optimize=D|P|O --target=CommunityDetection|DynCD|SelCD|Core
+	scons --optimize=D|P|O --target=CommunityDetection|DynCD|SelCD|Core|Tests
 
 - `optimize`
 	- `D` 	debug
@@ -150,7 +150,30 @@ To save the clustering produced, add
 Interactive Python Shell
 ------------------------
 
-TODO:
+To use NetworKit in the interactive Python Shell (iypthon) it is necessary to install `Python 3.3` aswell as `pip` and `easy_install` for Python 3.3. 
+If you have multiple Python installations, be sure to install ipython, pip and easy_install for Python3.3 to save you some hassle later on.
+At some point during this procedure you might need to install `networkx`, `tabulate` and probably `numpy`. This can be done with easy_install:
+	easy_install-3.3 install `package name`
+For tab completion in ipython you need `readline`. The following should work:
+	easy_install-3.3 install readline ipython
+The next step is to compile NetworKit as a library with
+	scons --optimize=O --target=Core
+After everything is compiled, switch to the cython folder and use the build script (build.sh) or manually call
+	python3.3 setup.py build_ext --inplace
+This will create a module containing all interfaces from NetworKit.pyx. The resulting module can be imported in python:
+	ipython3
+	from NetworKit import *
+Now you should be able to use NetworKit interactively, here are some examples:
+	g = readGraph("../input/jazz.graph")
+	ccs = ConnectedComponents()
+	ccs.run(g)
+	ccs.numberOfComponents()
+	GraphProperties.minMaxDegree(g)
+	GraphProperties.averageLocalClusteringCoefficient(g)
+	...
+
+
+
 
 
 Contribute
