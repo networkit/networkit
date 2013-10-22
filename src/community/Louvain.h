@@ -35,7 +35,7 @@ public:
 	 * 							2m 	-> singleton communities
 	 *
 	 */
-	Louvain(std::string par="none", double gamma = 1.0);
+	Louvain(std::string par="simple", double gamma = 1.0);
 
 	virtual ~Louvain();
 

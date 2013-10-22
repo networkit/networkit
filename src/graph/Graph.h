@@ -471,6 +471,12 @@ public:
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
+	 * Using schedule(guided) to remedy load-imbalances due to e.g. unequal degree distribution.
+	 */
+	template<typename L> void balancedParallelForNodes(L handle) const;
+
+	/**
+	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void parallelForNodes(L handle) const;
 
@@ -767,6 +773,17 @@ inline void NetworKit::Graph::parallelForNodes(L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::balancedParallelForNodes(L handle) {
+#pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
+	for (node v = 0; v < z; ++v) {
+		// call here
+		if (exists[v]) {
+			handle(v);
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::Graph::balancedParallelForNodes(L handle) const {
 #pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
 	for (node v = 0; v < z; ++v) {
 		// call here
