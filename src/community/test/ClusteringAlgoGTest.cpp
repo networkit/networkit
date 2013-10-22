@@ -325,7 +325,7 @@ TEST_F(ClusteringAlgoGTest, testParallelAgglomerativeAndLouvain) {
 	INFO("Louvain modularity blog graph:   " << modularity.getQuality(clustering, blog));
 }
 
-
+/*
 TEST_F(ClusteringAlgoGTest, testPLM2) {
 	count n = 500;
 	count k = 25;
@@ -345,7 +345,7 @@ TEST_F(ClusteringAlgoGTest, testPLM2) {
 	INFO("modularity: " << modularity.getQuality(zeta, G));
 
 }
-
+*/
 
 
 } /* namespace NetworKit */
