@@ -17,13 +17,14 @@
 
 namespace NetworKit {
 
-PLM2::~PLM2() {
-	// TODO Auto-generated destructor stub
-}
-
 
 PLM2::PLM2(std::string par, double gamma) : parallelism(par), gamma(gamma), anyChange(false) {
 }
+
+
+PLM2::~PLM2() {
+}
+
 
 Clustering PLM2::pass(const Graph& G) {
 	// init clustering to singletons
@@ -213,6 +214,7 @@ Clustering PLM2::run(Graph& G) {
 			G, maps);
 	return result;
 }
+
 
 std::string PLM2::toString() const {
 	std::stringstream strm;

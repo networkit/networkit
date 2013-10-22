@@ -20,6 +20,7 @@ namespace NetworKit {
  */
 class PLM2: public NetworKit::Clusterer {
 public:
+
 	/**
 	 * @param[in]	par		parallelization strategy
 	 * @param[in]	gamma	multi-resolution modularity parameter:
