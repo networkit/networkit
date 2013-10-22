@@ -12,8 +12,6 @@
 
 #include <gtest/gtest.h>
 
-
-#include "../EnsembleMultilevel.h"
 #include "../EnsemblePreprocessing.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/Modularity.h"
