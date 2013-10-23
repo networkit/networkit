@@ -189,7 +189,7 @@ TEST_F(Graph2Benchmark, parallelSumForNodes) {
 	count n = 1e+7;
 	Graph G(n);
 
-	double sum = G.parallelSumForNodes([&](node v) {
+	double sum = G.parallelSumForNodes([&](node v) {
 		return 1;
 	});
 
