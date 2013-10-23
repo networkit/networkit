@@ -1,0 +1,209 @@
+NetworKit.CommunityDetection
+============================
+
+This is the first component of the high-performance network analysis package [NetworKit][networkit]. In this component, the focus is on community detection (or graph clustering). 
+
+ The amount of graph-structured data has recently experienced an enormous growth in many applications. To transform such data into useful information, high-performance analytics algorithms and software tools are necessary. One common graph analytics kernel is community detection (or graph clustering). Despite extensive research on heuristic solvers for this task, only few parallel codes exist, although parallelism is often necessary to scale to the data volume of real-world applications.
+
+We address the deficit in computing capability by a flexible and extensible clustering algorithm framework with shared-memory parallelism. Within this framework we implement our parallel variations of known sequential algorithms and combine them by an ensemble approach. In extensive experiments driven by the algorithm engineering paradigm, we have identified the most successful parameters and combinations of these algorithms. The processing rate of our fastest algorithm exceeds 10M edges/second for many large graphs, making it suitable for massive data streams. Moreover, the strongest algorithm we developed yields the best tradeoff between quality and speed for graph clusterers to date. 
+
+[networkit]: http://parco.iti.kit.edu/software/networkit.shtml 
+
+
+Authors
+-------
+
+### Main Developers
+
+- Christian Staudt - `christian.staudt @ kit.edu` - [Homepage](http://parco.iti.kit.edu/staudt/)
+- Henning Meyerhenke - `meyerhenke @ kit.edu` - [Homepage](http://parco.iti.kit.edu/henningm/)
+
+
+### Contributors
+
+- Andreas Bilke
+- Yassine Marrakchi
+- Aleksejs Sazonovs
+- Maximilian Vogel
+- Miriam Beddig
+
+License
+-------
+
+The source code of this program is released under the [MIT License][mitlicense].  We ask you to cite us if you use this code in your project. Feedback is also welcome.
+
+
+External Code
+-------------
+
+This program includes the *[The Lean Mean C++ Option Parser][optparse]* by Matthias S. Benkmann. 
+
+[mitlicense]: http://opensource.org/licenses/MIT
+[optparse]: http://optionparser.sourceforge.net/
+
+
+
+
+Requirements
+------------
+
+###Compiler: 
+
+A C++ compiler supporting C++11 (we use GCC 4.8). The compiler and linker flags `-fopenmp -std=c++11` are required.
+
+
+###Libraries:
+
+- `OpenMP`	
+- `Googletest` 	for unit testing
+- `log4cxx` 	for logging
+
+The following preprocessor definitions (using the `-D` compiler flag) remove these dependencies, but also some functionality:
+
+- `NOLOGGING`	removes all log statements
+- `NOLOG4CXX`	replaces log statements with `std::cout` output if `log4cxx` is not available - loglevel `TRACE` becomes fixed.
+- `NOGTEST`		removes the dependency on Googletest - unit tests are not compiled
+
+
+Build
+-----
+
+We recommend [SCons](http://scons.org) for building the project. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
+
+The call to SCons has the following options:
+
+	scons --optimize=D|P|O --target=CommunityDetection|DynCD|SelCD|Core|Tests
+
+- `optimize`
+	- `D` 	debug
+	- `O`	optimized
+	- `P`	profiling
+- `target`
+	- `Tests`				build executable for the unit tests	
+	- `CommunityDetection` 	build executable for static, global community detection algorihtms
+	- `DynCD`				build dynamic community detection setup
+	- `SelCD`				build selective community detection setup
+	- `Core`				build NetworKit as a library, required by the Python shell		
+
+To speed up the compilation, you can append -jX where X denotes the number of threads to compile with.
+
+Alternatively, the project can be built with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
+
+
+
+Test
+----
+
+Run all unit tests with 
+
+		./NetworKit-Tests --tests --gtest_filter=*Test.test*
+
+The expression after `--gtest_filter=` automatically selects all undebug --tests --gtest_filter=*Test*.try*	
+
+Run performance tests with
+
+		./NetworKit-Tests --tests --gtest_filter=*Benchmark*
+
+
+Run Executables
+---------------
+
+## NetworKit-CommunityDetection
+
+Required options for community detection are `--algorithm` and `--graph`.
+
+Main algorithms:
+
+
+	PLP		Parallel Label Propagation
+	PLM		Parallel Louvain Method
+	EPP		Ensemble Preprocessing
+
+Example calls:
+
+
+		./NetworKit-CommunityDetection-O --algorithm=PLP --graph=path/to/a.graph
+		./NetworKit-CommunityDetection-O --algorithm=EPP:4*PLP+PLM --graph=path/to/a.graph
+		./NetworKit-CommunityDetection-O --algorithm=PLM --graph=path/to/a.graph --runs=10 --summary=path/to/file.csv
+
+
+The `--graph` option accepts graph files in a format known as the [METIS file format][metis], a simple adjacency list format. Many example files can be found in the collection of the [10th DIMACS Implementation Challenge][dimacs]. 
+
+The default loglevel is INFO, add `--loglevel=DEBUG` for more or `--loglevel=ERROR` for less verbose output.
+
+By default, all available threads will be used. To explicitly set the number of threads, use
+
+	--threads=8
+
+To perform 42 runs of the algorithm per graph, add
+
+	--runs=42
+
+To append key result data to a CSV file, add
+
+	--summary=/path/to/file.csv
+
+To save the clustering produced, add
+
+	--saveClustering=/path/to/file.clust
+
+
+Interactive Python Shell
+------------------------
+
+To use NetworKit in the interactive Python Shell (iypthon) it is necessary to install `Python 3.3` aswell as `pip` and `easy_install` for Python 3.3. 
+If you have multiple Python installations, be sure to install ipython, pip and easy_install for Python3.3 to save you some hassle later on.
+At some point during this procedure you might need to install `networkx`, `tabulate` and probably `numpy`. This can be done with easy_install:
+
+	easy_install-3.3 install `package name`
+
+For tab completion in ipython you need `readline`. The following should work:
+
+	easy_install-3.3 install readline ipython
+
+The next step is to compile NetworKit as a library with
+
+	scons --optimize=O --target=Core
+
+After everything is compiled, switch to the cython folder and use the build script (build.sh) or manually call
+
+	python3.3 setup.py build_ext --inplace
+
+This will create a module containing all interfaces from NetworKit.pyx. The resulting module can be imported in python:
+
+	ipython3
+	from NetworKit import *
+
+Now you should be able to use NetworKit interactively, here are some examples:
+
+
+	g = readGraph("../input/jazz.graph")
+	ccs = ConnectedComponents()
+	ccs.run(g)
+	ccs.numberOfComponents()
+	GraphProperties.minMaxDegree(g)
+	GraphProperties.averageLocalClusteringCoefficient(g)
+	...
+
+
+
+
+
+Contribute
+----------
+
+We would like to encourage contributions to the NetworKit source code. For support please contact `christian.staudt @ kit.edu`.
+
+### Code Conventions and Style Guide
+
+- Make sure your code builds correctly before pushing it to the main repository.
+- Use meaningful commit messages.
+- Document classes, methods and attributes in Doxygen style.
+- Use the `count` and `index` integer types for positive integer quantities and indices.
+- Create the appropriate unit tests for each feature in the `test/*GTest` class of the module.
+- prefix standard unit tests with `test` and experimental feature tests with `try`. A `test*` must pass when pushed to the main repository, a `try*` is allowed to fail.
+- For unit tests, keep the size of test data to the minimum needed for testing functionality. Long-running unit tests look like infinite loops.
+- In most cases, objects are passed by reference. New objects are stack-allocated and returned by value. Avoid pointers and `new` where possible.
+- Use the `override` keyword to indicate that a method overrides a virtual method in the superclass.
+- ...
+
