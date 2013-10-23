@@ -37,7 +37,6 @@
 #include "auxiliary/StringTools.h"
 #include "graph/Graph.h"
 #include "graph/GraphGenerator.h"
-#include "community/EnsembleMultilevel.h"
 #include "community/EnsemblePreprocessing.h"
 #include "community/LabelPropagation.h"
 #include "community/ParallelAgglomerativeClusterer.h"
@@ -53,6 +52,7 @@
 #include "io/DotClusteringWriter.h"
 #include "io/EdgeListIO.h"
 #include "generators/DynamicBarabasiAlbertGenerator.h"
+#include "overlap/RegionGrowingOverlapper.h"
 
 
 // revision

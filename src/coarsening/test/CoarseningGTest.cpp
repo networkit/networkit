@@ -9,6 +9,11 @@
 
 #include "CoarseningGTest.h"
 
+#include "../../graph/GraphGenerator.h"
+#include "../../clustering/ClusteringGenerator.h"
+#include "../../coarsening/ClusterContracter.h"
+#include "../../coarsening/ClusteringProjector.h"
+
 namespace NetworKit {
 
 TEST_F(CoarseningGTest, testClusterContracter) {

@@ -7,6 +7,10 @@
 
 #include "DynCDSetup.h"
 
+#include "../clustering/Modularity.h"
+#include "../clustering/DynamicNMIDistance.h"
+#include "../clustering/SampledRandMeasure.h"
+
 namespace NetworKit {
 
 DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityDetector*>& dynDetectors, count tMax, count deltaT) :

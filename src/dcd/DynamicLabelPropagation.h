@@ -8,10 +8,10 @@
 #ifndef DYNAMICLABELPROPAGATION_H_
 #define DYNAMICLABELPROPAGATION_H_
 
-#include <algorithm>
+//#include <algorithm>
 
 #include "DynamicCommunityDetector.h"
-#include "../auxiliary/Timer.h"
+//#include "../auxiliary/Timer.h"
 #include "PrepStrategy.h"
 
 namespace NetworKit {

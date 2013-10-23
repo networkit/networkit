@@ -9,7 +9,6 @@
 #define CLUSTERINGPROJECTOR_H_
 
 #include "../clustering/Clustering.h"
-#include "GraphContraction.h"
 
 namespace NetworKit {
 

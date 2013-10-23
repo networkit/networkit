@@ -9,19 +9,10 @@
 #define ENSEMBLEPREPROCESSING_H_
 
 #include <vector>
-#include <stdexcept>
-
 #include "../community/Clusterer.h"
-
-#include "../auxiliary/Log.h"
-#include "../Globals.h"
 #include "../clustering/Clustering.h"
-#include "../clustering/Modularity.h"
-#include "../overlap/HashingOverlapper.h"
-#include "../coarsening/ClusterContracter.h"
-#include "../coarsening/ClusteringProjector.h"
-#include "../clustering/NodeStructuralRandMeasure.h"
-#include "../clustering/JaccardMeasure.h"
+#include "../overlap/Overlapper.h"
+
 
 namespace NetworKit {
 

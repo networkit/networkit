@@ -7,6 +7,17 @@
 
 #include "EnsemblePreprocessing.h"
 
+
+//#include <stdexcept>
+//#include "../auxiliary/Log.h"
+//#include "../Globals.h"
+//#include "../clustering/Modularity.h"
+//#include "../overlap/HashingOverlapper.h"
+#include "../coarsening/ClusterContracter.h"
+#include "../coarsening/ClusteringProjector.h"
+//#include "../clustering/NodeStructuralRandMeasure.h"
+#include "../clustering/JaccardMeasure.h"
+
 namespace NetworKit {
 
 EnsemblePreprocessing::EnsemblePreprocessing() : Clusterer() {

@@ -6,6 +6,8 @@
  */
 
 #include "DynamicEnsemble.h"
+#include "../coarsening/ClusterContracter.h"
+#include "../coarsening/ClusteringProjector.h"
 
 namespace NetworKit {
 

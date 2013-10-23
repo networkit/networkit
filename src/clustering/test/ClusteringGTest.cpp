@@ -9,6 +9,26 @@
 
 #include "ClusteringGTest.h"
 
+#include "../../auxiliary/Log.h"
+#include "../Clustering.h"
+#include "../Modularity.h"
+#include "../ModularitySequential.h"
+#include "../Coverage.h"
+#include "../ClusteringGenerator.h"
+#include "../JaccardMeasure.h"
+#include "../NodeStructuralRandMeasure.h"
+#include "../GraphStructuralRandMeasure.h"
+#include "../../graph/GraphGenerator.h"
+//#include "../../io/METISGraphReader.h"
+//#include "../../io/ClusteringReader.h"
+#include "../NMIDistance.h"
+#include "../DynamicNMIDistance.h"
+#include "../../auxiliary/NumericTools.h"
+#include "../../dcd/DynCDSetup.h"
+#include "../../generators/DynamicBarabasiAlbertGenerator.h"
+//#include "../../dcd/DynamicLabelPropagation.h"
+#include "../../dcd/TDynamicLabelPropagation.h"
+
 namespace NetworKit {
 
 
