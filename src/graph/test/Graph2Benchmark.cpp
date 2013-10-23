@@ -208,7 +208,7 @@ TEST_F(Graph2Benchmark, nodeInsertion) {
 		node v = G.addNode();
 	}
 
-	EXPECT_TRUE(n, G.numberOfNodes()) << "n nodes should have been added";
+	EXPECT_EQ(n, G.numberOfNodes()) << "n nodes should have been added";
 }
 
 TEST_F(Graph2Benchmark, nodeRemoval) {
@@ -220,7 +220,7 @@ TEST_F(Graph2Benchmark, nodeRemoval) {
 		G.removeNode(u);
 	}
 
-	EXPECT_TRUE(0, G.numberOfNodes()) << "no nodes should be left";
+	EXPECT_EQ(0, G.numberOfNodes()) << "no nodes should be left";
 }
 
 } /* namespace NetworKit */
