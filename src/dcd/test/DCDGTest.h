@@ -12,24 +12,6 @@
 
 #include <gtest/gtest.h>
 
-#include "../DynamicLabelPropagation.h"
-#include "../../community/LabelPropagation.h"
-#include "../../community/Louvain.h"
-#include "../../generators/DynamicBarabasiAlbertGenerator.h"
-#include "../../generators/DynamicPubWebGenerator.h"
-#include "../../generators/DynamicDGSParser.h"
-#include "../DynCDSetup.h"
-#include "../PseudoDynamic.h"
-#include "../../io/METISGraphReader.h"
-#include "../../community/LabelPropagation.h"
-#include "../DynamicEnsemble.h"
-#include "../../community/Louvain.h"
-#include "../../overlap/HashingOverlapper.h"
-#include "../../auxiliary/Debug.h"
-
-#include "../TDynamicLabelPropagation.h"
-
-
 namespace NetworKit {
 
 class DCDGTest: public testing::Test {

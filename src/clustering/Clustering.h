@@ -8,7 +8,7 @@
 #ifndef CLUSTERING_H_
 #define CLUSTERING_H_
 
-#include <set>
+
 
 #include "../graph/NodeMap.h"
 #include <cassert>

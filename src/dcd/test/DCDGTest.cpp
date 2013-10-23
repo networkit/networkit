@@ -10,6 +10,19 @@
 
 #include "DCDGTest.h"
 
+#include "../DynamicLabelPropagation.h"
+#include "../../generators/DynamicBarabasiAlbertGenerator.h"
+#include "../../generators/DynamicDGSParser.h"
+#include "../DynCDSetup.h"
+#include "../PseudoDynamic.h"
+#include "../../io/METISGraphReader.h"
+#include "../../community/LabelPropagation.h"
+#include "../DynamicEnsemble.h"
+#include "../../community/Louvain.h"
+#include "../../overlap/HashingOverlapper.h"
+//#include "../../auxiliary/Debug.h"
+#include "../TDynamicLabelPropagation.h"
+
 namespace NetworKit {
 
 DCDGTest::DCDGTest() {

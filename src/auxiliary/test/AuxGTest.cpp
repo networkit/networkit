@@ -9,6 +9,20 @@
 
 #include "AuxGTest.h"
 
+#include <iostream>
+#include <algorithm>
+#include <chrono>
+#include <thread>
+
+#include "../Log.h"
+#include "../Random.h"
+#include "../RandomInteger.h"
+#include "../RandomProbability.h"
+#include "../Timer.h"
+#include "../MissingMath.h"
+#include "../Debug.h"
+#include "../PriorityQueue.h"
+
 TEST_F(AuxGTest, produceRandomIntegers) {
 	int64_t l = 0; 	// lower bound
 	int64_t u = 100;	// upper bound

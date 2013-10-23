@@ -9,7 +9,6 @@
 #define RANDOMPROBABILITY_H_
 
 #include <random>
-#include <cmath>
 
 namespace Aux {
 

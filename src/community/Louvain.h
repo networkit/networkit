@@ -9,13 +9,6 @@
 #define LOUVAIN_H_
 
 #include "Clusterer.h"
-#include "../coarsening/ClusterContracter.h"
-#include "../coarsening/ClusteringProjector.h"
-#include "../base/IndexMap.h"
-#include "../independentset/Luby.h"
-#include "../Globals.h"
-
-#include "omp.h"
 
 namespace NetworKit {
 

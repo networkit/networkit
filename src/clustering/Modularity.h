@@ -8,16 +8,7 @@
 #ifndef MODULARITY_H_
 #define MODULARITY_H_
 
-#include <unordered_map>
-#include <cmath>
-#include <stdexcept>
-
 #include "QualityMeasure.h"
-#include "Coverage.h"
-
-#include "../base/IndexMap.h"
-#include "../graph/NodeMap.h"
-
 
 namespace NetworKit {
 
