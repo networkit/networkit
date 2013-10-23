@@ -85,6 +85,7 @@ The call to SCons has the following options:
 	- `SelCD`				build selective community detection setup
 	- `Core`				build NetworKit as a library, required by the Python shell		
 
+To speed up the compilation, you can append -jX where X denotes the number of threads to compile with.
 
 Alternatively, the project can be built with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
 
