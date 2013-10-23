@@ -85,7 +85,7 @@ TEST_F(DCDGTest, tryArxivGraphs) {
 //	std::cout << "[INPUT] .dgs file path >" << std::endl;
 //	std::getline(std::cin, graphPath);
 
-	graphPath = "/Users/cls/workspace/Data/arXiv/CS-all-paper.dgs";
+	graphPath = "input/qfin-all-authors.dgs";
 
 	DynamicGraphSource* source = new DynamicDGSParser(graphPath);
 

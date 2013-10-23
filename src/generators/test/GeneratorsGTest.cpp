@@ -112,7 +112,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	psWriter.write(clustering, "output/pubweb-lp-cluster.eps");
 }
 
-
+// FIXME: segmentation fault
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
 	count numInitialNodes = 300;
