@@ -7,6 +7,10 @@
 
 #include "Louvain.h"
 
+#include "../coarsening/ClusterContracter.h"
+#include "../coarsening/ClusteringProjector.h"
+#include "omp.h"
+
 namespace NetworKit {
 
 

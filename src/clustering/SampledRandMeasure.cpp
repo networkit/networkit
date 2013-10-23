@@ -7,6 +7,8 @@
 
 #include "SampledRandMeasure.h"
 
+#include "../auxiliary/RandomInteger.h"
+
 namespace NetworKit {
 
 SampledRandMeasure::SampledRandMeasure(count maxSamples) : maxSamples(maxSamples) {

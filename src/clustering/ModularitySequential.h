@@ -8,15 +8,7 @@
 #ifndef MODULARITYSEQUENTIAL_H_
 #define MODULARITYSEQUENTIAL_H_
 
-#include <unordered_map>
-#include <cmath>
-#include <stdexcept>
-
 #include "QualityMeasure.h"
-#include "CoverageSequential.h"
-
-#include "../base/IndexMap.h"
-#include "../graph/NodeMap.h"
 
 namespace NetworKit {
 

@@ -7,6 +7,12 @@
 
 #include "Modularity.h"
 
+#include <cmath>
+#include <stdexcept>
+#include "Coverage.h"
+#include "../base/IndexMap.h"
+
+
 
 
 namespace NetworKit {

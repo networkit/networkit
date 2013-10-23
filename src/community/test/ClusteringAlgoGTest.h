@@ -12,18 +12,6 @@
 
 #include <gtest/gtest.h>
 
-#include "../LabelPropagation.h"
-#include "../Louvain.h"
-#include "../CNM.h"
-#include "../CNM-WW.h"
-#include "../ParallelAgglomerativeClusterer.h"
-
-#include "../../auxiliary/Log.h"
-#include "../../clustering/Modularity.h"
-#include "../../graph/GraphGenerator.h"
-#include "../../clustering/ClusteringGenerator.h"
-#include "../../io/METISGraphReader.h"
-
 namespace NetworKit {
 
 class ClusteringAlgoGTest: public testing::Test {

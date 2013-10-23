@@ -7,6 +7,14 @@
 
 #include "LabelPropagation.h"
 
+#include <omp.h>
+#include "../Globals.h"
+#include "../auxiliary/Log.h"
+#include "../auxiliary/ProgressMeter.h"
+#include "../auxiliary/Timer.h"
+#include "../auxiliary/RandomInteger.h"
+#include "../graph/NodeMap.h"
+
 namespace NetworKit {
 
 LabelPropagation::LabelPropagation(count theta) : updateThreshold(theta) {
@@ -134,7 +142,8 @@ Clustering LabelPropagation::run(Graph& G) {
 			}
 		}
 
-		Aux::ProgressMeter pm(n, 10000);
+		//Aux::ProgressMeter pm(n, 10000);
+		// Reason: performance decreases for very big graphs
 
 		// removed for performance reasons
 		// count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
@@ -146,9 +155,9 @@ Clustering LabelPropagation::run(Graph& G) {
 			node v = nodes[i];
 
 			// PROGRESS
-			if (printProgress) {
+			/*if (printProgress) {
 				pm.signal(i);
-			}
+			}*/
 
 			if ((activeNodes[v]) && (G.degree(v) > 0)) {
 
@@ -189,9 +198,9 @@ Clustering LabelPropagation::run(Graph& G) {
 		// for each while loop iteration...
 
 		// PROGRESS
-		if (printProgress) {
+		/*if (printProgress) {
 			pm.end();
-		}
+		}*/
 
 		runtime.stop();
 		DEBUG("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
