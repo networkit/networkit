@@ -5,7 +5,6 @@
  *      Author: cls
  */
 
- #if 0
 
 #ifndef PLM2_H_
 #define PLM2_H_
@@ -63,4 +62,3 @@ protected:
 } /* namespace NetworKit */
 #endif /* PLM2_H_ */
 
-#endif
