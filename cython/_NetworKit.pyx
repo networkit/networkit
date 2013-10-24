@@ -297,6 +297,7 @@ cdef extern from "../src/community/Louvain.h":
 		_Louvain() except +
 		_Louvain(string par, double gamma)
 		_Clustering run(_Graph _G)
+		string toString()
 		
 cdef class Louvain(Clusterer):
 	cdef _Louvain _this
@@ -306,6 +307,9 @@ cdef class Louvain(Clusterer):
 	
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))
+
+	def toString(self):
+		return self._this.toString().decode("utf-8")
 
 
 
