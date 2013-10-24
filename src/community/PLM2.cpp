@@ -54,7 +54,7 @@ Clustering PLM2::pass(const Graph& G) {
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
 
 	// parts of formula follow
-	tbb::concurrent_unordered_map<node, double> volNode(n);
+	std::vector<edgeweight> volNode(n, 0.0);
 
 	// calculate and store volume of each node
 	G.parallelForNodes([&](node u) {
@@ -62,7 +62,7 @@ Clustering PLM2::pass(const Graph& G) {
 		volNode[u] += G.weight(u, u); // consider self-loop twice
 		});
 
-	tbb::concurrent_unordered_map<cluster, double> volCluster(n);
+	std::vector<edgeweight> volCluster(n, 0.0);
 	// set volume for all singletons
 	zeta.parallelForEntries([&](node u, cluster C) {
 		volCluster[C] = volNode[u];
