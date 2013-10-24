@@ -29,7 +29,7 @@ def communityDetectionBenchmark(graphPaths, algorithms, outPath):
 			(n, m) = nm(G)
 			for algo in algorithms:
 				algoName = algo.toString()
-				print("evaluating {0} on {0}".format(algoName, graphName))
+				print("evaluating {0} on {1}".format(algoName, graphName))
 				timer = stopwatch.Timer()
 				zeta = algo.run(G)
 				timer.stop()

@@ -570,6 +570,9 @@ cdef extern from "../src/community/PLM2.h":
 cdef class PLM2:
 	cdef _PLM2 _this
 
+	def __cinit__(self, par="balanced", gamma=1.0):
+		self._this = _PLM2(stdstring(par), gamma)
+
 	def run(self, Graph G):
 		return Clustering().setThis(self._this.run(G._this))
 
