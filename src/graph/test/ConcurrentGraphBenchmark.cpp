@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 TEST_F(ConcurrentGraphBenchmark, parallelEdgeInsertion) {
-	count n = 5000;
+	count n = 10000;
 	ConcurrentGraph G(n);
 
 	#pragma omp parallel for
