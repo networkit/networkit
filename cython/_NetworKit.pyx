@@ -259,6 +259,7 @@ cdef extern from "../src/community/LabelPropagation.h":
 		_LabelPropagation() except +
 		_Clustering run(_Graph _G)
 		count numberOfIterations()
+		string toString()
 
 
 cdef class LabelPropagation(Clusterer):
@@ -269,6 +270,9 @@ cdef class LabelPropagation(Clusterer):
 
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
+
+	def toString(self):
+		return self._this.toString().decode("utf-8")
 
 
 cdef extern from "../src/community/LPDegreeOrdered.h":
