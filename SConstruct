@@ -91,8 +91,8 @@ else:
 env["CXX"] = cppComp
 env.Append(CPPDEFINES=defines)
 env.Append(CPPPATH = [stdInclude, gtestInclude, log4cxxInclude, tbbInclude])
-env.Append(LIBS = ["gtest", "log4cxx"]) #, "tbb"
-env.Append(LIBPATH = [gtestLib, log4cxxLib])
+env.Append(LIBS = ["gtest", "log4cxx", "tbb"]) #, "tbb"
+env.Append(LIBPATH = [gtestLib, log4cxxLib, tbbLib])
 env.Append(LINKFLAGS = ["-std=c++11"])
 
 ## CONFIGURATIONS
