@@ -53,6 +53,7 @@
 #include "io/EdgeListIO.h"
 #include "generators/DynamicBarabasiAlbertGenerator.h"
 #include "overlap/RegionGrowingOverlapper.h"
+#include "overlap/HashingOverlapper.h"
 
 
 // revision
