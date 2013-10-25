@@ -9,11 +9,15 @@ import textwrap
 import collections
 
 # non standard library modules
-import networkx as nx
+try:
+    import networkx as nx
+except ImportError:
+    print("""WARNING: module 'networkx' not installed, which is required by some
+                        functions.""")
 try:
     import tabulate
 except ImportError:
-    raise Exception("""WARNING: module 'tabulate' not installed, which is required by some
+    print("""WARNING: module 'tabulate' not installed, which is required by some
                         functions. In order to install 'tabulate', Python 3.3 is required""")
 
 # local modules
@@ -26,7 +30,7 @@ def readGraph(path, format=None):
     """    Read graph and return a NetworKit::Graph"""
     # TODO: detect file format by looking at the file content
     if format is None:    # look at file extension
-        if path.endswith(".graph"):
+        if path.endswith(".graph") or path.endswith(".metis"):
             reader = METISGraphReader()
         else:
             raise Exception("unknown graph file format")
