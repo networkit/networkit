@@ -12,7 +12,7 @@ def getFileList(directory):
 			ls.append(os.path.join(root, filename))
 	return ls
 
-def communityDetectionBenchmark(graphPaths, algorithms, outPath):
+def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
 	"""
 		Evaluate community detection algorithms on a collection of graphs and save benchmark data in .csv format
 		:param	graphPaths	paths to graph files
@@ -29,17 +29,18 @@ def communityDetectionBenchmark(graphPaths, algorithms, outPath):
 			(n, m) = nm(G)
 			for algo in algorithms:
 				algoName = algo.toString()
-				print("evaluating {0} on {1}".format(algoName, graphName))
-				timer = stopwatch.Timer()
-				zeta = algo.run(G)
-				timer.stop()
-				t = timer.elapsed
+				for i in range(repeat):
+					print("evaluating {0} on {1}".format(algoName, graphName))
+					timer = stopwatch.Timer()
+					zeta = algo.run(G)
+					timer.stop()
+					t = timer.elapsed
 
-				mod = Modularity().getQuality(zeta, G)
-				nc = zeta.numberOfClusters()
+					mod = Modularity().getQuality(zeta, G)
+					nc = zeta.numberOfClusters()
 
 
-				row = [graphName, algoName, t, mod, nc]
-				writer.writerow(row)
-				print(row)
+					row = [graphName, algoName, t, mod, nc]
+					writer.writerow(row)
+					print(row)
 
