@@ -143,13 +143,15 @@ Clustering PLM2::pass(const Graph& G) {
 				zeta[u] = best; // move to best cluster
 // #pragma omp atomic read
 				volN = volNode[u];
-#pragma omp atomic write
+// #pragma omp atomic write
 				change = true; // change to clustering has been made
-#pragma omp atomic write
+// #pragma omp atomic write
 				this->anyChange = true; // indicate globally that clustering was modified
 
 				// update the volume of the two clusters
+				#pragma omp atomic update
 				volCluster[C] -= volN;
+				#pragma omp atomic update
 				volCluster[best] += volN;
 			}
 		};
