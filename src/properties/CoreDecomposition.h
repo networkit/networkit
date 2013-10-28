@@ -8,9 +8,9 @@
 #ifndef COREDECOMPOSITION_H_
 #define COREDECOMPOSITION_H_
 
-namespace NetworKit {
-
 #include <vector>
+
+namespace NetworKit {
 
 /**
  * Computes k-core decomposition of a graph.
