@@ -10,12 +10,11 @@
 namespace NetworKit {
 
 CoreDecomposition::CoreDecomposition() {
-	// TODO Auto-generated constructor stub
 
 }
 
 CoreDecomposition::~CoreDecomposition() {
-	// TODO Auto-generated destructor stub
+
 }
 
 std::vector<count> CoreDecomposition::run(const Graph& G) {
