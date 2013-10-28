@@ -20,18 +20,16 @@ CoreDecomposition::~CoreDecomposition() {
 
 std::vector<count> CoreDecomposition::run(const Graph& G) {
 	std::vector<count> coreness;
-	BucketList degrees(0);
 
 	G.forNodes([&](node v) {
-		degrees.insert(v, G.degree(v));
+		// TODO: fill data structure
 	});
 
 	index i = 1;
 	Graph G2 = G;
 	while (G2.numberOfNodes() > 0) {
-		// TODO
+		// TODO: main loop
 	}
-
 
 	return coreness;
 }

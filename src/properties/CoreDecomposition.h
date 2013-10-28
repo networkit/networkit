@@ -11,7 +11,6 @@
 namespace NetworKit {
 
 #include <vector>
-#include "../auxiliary/BucketList.h"
 
 /**
  * Computes k-core decomposition of a graph.
