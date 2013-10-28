@@ -11,7 +11,7 @@
 #include <vector>
 #include <list>
 
-namespace NetworKit {
+namespace aux {
 
 class BucketList {
 private:
@@ -34,5 +34,5 @@ public:
 	void decreaseFirstValue();
 };
 
-} /* namespace NetworKit */
+} /* namespace aux */
 #endif /* BUCKETLIST_H_ */
