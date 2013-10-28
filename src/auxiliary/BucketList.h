@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <list>
+#include <cinttypes>
 
 namespace aux {
 
@@ -25,7 +26,7 @@ public:
 	/**
 	 * Insert node entry @a v into list @a value.
 	 */
-	void insert(node v, count listNum);
+	void insert(uint64_t v, uint64_t listNum);
 
 	/**
 	 * Access first value, move it to next smaller list or
