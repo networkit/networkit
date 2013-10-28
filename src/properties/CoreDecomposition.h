@@ -9,6 +9,7 @@
 #define COREDECOMPOSITION_H_
 
 #include <vector>
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 
