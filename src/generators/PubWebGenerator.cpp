@@ -185,8 +185,7 @@ Graph PubWebGenerator::generate() {
 
 // TODO: NOT tested!
 void PubWebGenerator::removeRandomNode(Graph& g) {
-	Aux::RandomInteger randInt;
-	node u = randInt.generate(0, (n - 1));
+	node u = Aux::RandomInteger::generate(0, (n - 1));
 	g.removeNode(u);
 }
 

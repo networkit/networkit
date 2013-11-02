@@ -63,11 +63,10 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 
 	Graph G(n);
 	Aux::RandomProbability randP;
-	Aux::RandomInteger randInt;
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
 	G.forNodes([&](node v){
-		cluster c = randInt.generate(1, k);
+		cluster c = Aux::RandomInteger::generate(1, k);
 		zeta.addToCluster(c, v);
 	});
 
@@ -94,11 +93,10 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 
 	Graph G(n);
 	Aux::RandomProbability randP;
-	Aux::RandomInteger randInt;
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
 	G.forNodes([&](node v){
-		cluster c = randInt.generate(1, k);
+		cluster c = Aux::RandomInteger::generate(1, k);
 		zeta.addToCluster(c, v);
 	});
 

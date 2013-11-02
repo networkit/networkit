@@ -28,7 +28,6 @@ public:
 protected:
 
 	count nSteps;
-	Aux::RandomInteger randInt;
 	Aux::RandomProbability randProb;
 
 };

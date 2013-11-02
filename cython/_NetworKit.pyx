@@ -133,6 +133,22 @@ cdef class GraphGenerator:
 		cdef _Graph _G = self._this.makeRandomGraph(n, p)
 		return Graph(0).setThis(_G)
 
+cdef extern from "../src/generators/BarabasiAlbertGenerator.h":
+	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator":
+		_BarabasiAlbertGenerator() except +
+		_BarabasiAlbertGenerator(count k, count nMax, count n0) except +
+		_Graph generate()
+
+cdef class BarabasiAlbertGenerator:
+	cdef _BarabasiAlbertGenerator _this
+
+	def __cinit__(self, k, nMax, n0):
+		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
+
+	def generate(self):
+		return Graph().setThis(self._this.generate());
+
+
 
 # Module: io
 

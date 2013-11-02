@@ -21,7 +21,6 @@ class DynamicBarabasiAlbertGenerator: public NetworKit::DynamicGraphSource {
 
 protected:
 
-	Aux::RandomInteger randInt;		//!< random integer generators
 	count k; 						//!< parameter of the BA model: number of edges per new node
 	count degSum; 					//!< degree sum of current graph
 

@@ -28,7 +28,7 @@ std::unordered_set<node> RandomWalkSeedSet::getSeeds(count k) {
 			neighbors.push_back(v);
 		});
 		if (neighbors.size() > 0) {
-			index ri = randInt.generate(0, neighbors.size() - 1);
+			index ri = Aux::RandomInteger::generate(0, neighbors.size() - 1);
 			node next = neighbors.at(ri);
 			return next;
 		} else {
@@ -41,7 +41,7 @@ std::unordered_set<node> RandomWalkSeedSet::getSeeds(count k) {
 
 	node r;
 	do {
-		r = randInt.generate(0, z);
+		r = Aux::RandomInteger::generate(0, z);
 	} while (! G.hasNode(r) && (G.degree(r) > 0));
 
 	S.insert(r);
