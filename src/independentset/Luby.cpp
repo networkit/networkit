@@ -23,8 +23,6 @@ std::vector<bool> Luby::run(const Graph& G) {
 	std::vector<bool> I(G.numberOfNodes(), false); // independent set $I = \emptyset$
 	std::vector<bool> V(G.numberOfNodes(), true); // instead of pruning the graph, store here whether a node in G is still in G'
 
-	Aux::RandomProbability randP;
-
 	// test if there are no active nodes left (G' is empty)
 	auto empty = [&](){
 		for (bool a : V) {
@@ -58,7 +56,7 @@ std::vector<bool> Luby::run(const Graph& G) {
 		std::vector<bool> S(G.numberOfNodes(), false);
 		G.parallelForNodes([&](node u){
 			if (V[u]) {
-				if (randP.generate() < nodeProbability(u)) {
+				if (Aux::RandomProbability::generate() < nodeProbability(u)) {
 					S[u] = true;  // add node to S
 				}
 			}

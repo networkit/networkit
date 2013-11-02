@@ -138,11 +138,10 @@ TEST_F(AuxGTest, testRandomIntegerFaster) {
 
 
 TEST_F(AuxGTest, testRandomProbability) {
-	Aux::RandomProbability randPr;
 	std::vector<double> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
-		double r = randPr.generate();
+		double r = Aux::RandomProbability::generate();
 		assert(0.0 <= r);
 		assert(r <= 1.0);
 		rVector.push_back(r);
