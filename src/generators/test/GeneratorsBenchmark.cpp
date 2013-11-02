@@ -20,12 +20,12 @@ GeneratorsBenchmark::~GeneratorsBenchmark() {
 	// TODO Auto-generated destructor stub
 }
 
-TEST_F(GeneratorsBenchmark, benchmarkStaticBarabasiAlbertGenerator) {
+TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
 	count k = 2;
 	count nMax = 100000;
 	count n0 = 2;
 
-	StaticBarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
+	BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
 	Graph G(0);
 	EXPECT_TRUE(G.isEmpty());
 

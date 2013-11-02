@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 
 
-#include "../StaticBarabasiAlbertGenerator.h"
+#include "../BarabasiAlbertGenerator.h"
 
 namespace NetworKit {
 
