@@ -47,7 +47,6 @@ cdef extern from "../src/graph/Graph.h":
 		node addNode()
 		void removeNode(node u)
 		void addEdge(node u, node v, edgeweight w)
-		# TODO: optional weight argument
 		void removeEdge(node u, node v)
 		bool hasEdge(node u, node v)
 		edgeweight weight(node u, node v)
@@ -409,6 +408,33 @@ cdef class GraphProperties:
 		return averageLocalClusteringCoefficient(G._this)
 
 
+cdef extern from "../src/properties/ConnectedComponents.h":
+	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
+		ConnectedComponents() except +
+		void run(_Graph G)
+		count numberOfComponents()
+		count sizeOfComponent(index component)
+		count componentOfNode(node query)
+		vector[node] getComponent(index component)
+
+cdef class ConnectedComponents:
+	cdef _ConnectedComponents _this
+
+	def run(self, Graph G):
+		self._this.run(G._this)
+
+	def numberOfComponents(self):
+		return self._this.numberOfComponents()
+
+	def sizeOfComponent(self, componentIndex):
+		return self._this.sizeOfComponent(componentIndex)
+
+	def componentOfNode(self, v):
+		return self._this.componentOfNode(v)
+
+	def getComponent(self, componentIndex):
+		return self._this.getComponent(componentIndex)
+
 
 # under construction
 
@@ -439,33 +465,6 @@ cdef class ForceDirected:
 	def draw(self, Graph G not None):
 		pass
 
-
-cdef extern from "../src/properties/ConnectedComponents.h":
-	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
-		ConnectedComponents() except +
-		void run(_Graph G)
-		count numberOfComponents()
-		count sizeOfComponent(index component)
-		count componentOfNode(node query)
-		vector[node] getComponent(index component)
-
-cdef class ConnectedComponents:
-	cdef _ConnectedComponents _this
-
-	def run(self, Graph G):
-		self._this.run(G._this)
-
-	def numberOfComponents(self):
-		return self._this.numberOfComponents()
-
-	def sizeOfComponent(self, componentIndex):
-		return self._this.sizeOfComponent(componentIndex)
-
-	def componentOfNode(self, v):
-		return self._this.componentOfNode(v)
-
-	def getComponent(self, componentIndex):
-		return self._this.getComponent(componentIndex)
 
 
 	
