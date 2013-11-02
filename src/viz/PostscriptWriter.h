@@ -19,7 +19,7 @@
 #include "../graph/Graph.h"
 #include "../clustering/Clustering.h"
 #include "../clustering/ClusteringGenerator.h"
-#include "../distmeasures/AlgebraicDistances.h"
+#include "../distmeasures/AlgebraicDistance.h"
 
 namespace NetworKit {
 
@@ -62,7 +62,6 @@ public:
 
 	void write(Clustering& clustering, std::string filename);
 	void write(std::string filename);
-	void writeAlgebraicDistances(std::string path, const AlgebraicDistances& ad);
 };
 
 } /* namespace NetworKit */

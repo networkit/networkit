@@ -23,10 +23,9 @@ GraphGenerator::~GraphGenerator() {
 
 
 Graph GraphGenerator::makeErdosRenyiGraph(count n, double p) {
-	Aux::RandomProbability randP;
 	Graph G(n);
 	G.forNodePairs([&](node u, node v){
-		if (randP.generate() <= p) {
+		if (Aux::RandomProbability::generate() <= p) {
 			G.addEdge(u, v);
 		}
 	});
@@ -47,8 +46,6 @@ Graph GraphGenerator::makeCircularGraph(count n) {
 }
 
 Graph GraphGenerator::makeCompleteGraph(count n) {
-	// TODO: modernize
-	Aux::RandomProbability randP;
 	Graph G(n);
 	G.forNodePairs([&](node u, node v){
 		G.addEdge(u, v);
@@ -62,7 +59,6 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 	assert(pin >= pout);
 
 	Graph G(n);
-	Aux::RandomProbability randP;
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
 	G.forNodes([&](node v){
@@ -74,11 +70,11 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 
 	G.forNodePairs([&](node u, node v){
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
-			if (randP.generate() <= pin) {
+			if (Aux::RandomProbability::generate() <= pin) {
 				G.addEdge(u, v);
 			}
 		} else {
-			if (randP.generate() <= pout) {
+			if (Aux::RandomProbability::generate() <= pout) {
 				G.addEdge(u, v);
 			}
 		}
@@ -92,7 +88,6 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 	assert(pin >= pout);
 
 	Graph G(n);
-	Aux::RandomProbability randP;
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
 	G.forNodes([&](node v){
@@ -102,11 +97,11 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 
 	G.forNodePairs([&](node u, node v){
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
-			if (randP.generate() <= pin) {
+			if (Aux::RandomProbability::generate() <= pin) {
 				G.addEdge(u, v);
 			}
 		} else {
-			if (randP.generate() <= pout) {
+			if (Aux::RandomProbability::generate() <= pout) {
 				G.addEdge(u, v);
 			}
 		}
@@ -122,14 +117,13 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 	count n = zeta.numberOfNodes();
 	Graph G(n);
 
-	Aux::RandomProbability randP;
 	G.forNodePairs([&](node u, node v){
 		if (zeta.inSameCluster(u, v)) {
-			if (randP.generate() <= pin) {
+			if (Aux::RandomProbability::generate() <= pin) {
 				G.addEdge(u, v);
 			}
 		} else {
-			if (randP.generate() <= pout) {
+			if (Aux::RandomProbability::generate() <= pout) {
 				G.addEdge(u, v);
 			}
 		}

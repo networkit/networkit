@@ -70,7 +70,6 @@ double AlgebraicDistance::distance(node u, node v) {
 
 void AlgebraicDistance::randomInit() {
 	count n = G.numberOfNodes();
-	Aux::RandomProbability randGen;
 
 	// allocate space for loads
 	loads.resize(numSystems);
@@ -80,7 +79,7 @@ void AlgebraicDistance::randomInit() {
 
 	for (index i = 0; i < numSystems; ++i) {
 		G.forNodes([&](node v) {
-			loads[i][v] = randGen.Aux::RandomProbability::randomFloat();
+			loads[i][v] = Aux::RandomProbability::randomFloat();
 		});
 	}
 }

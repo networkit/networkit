@@ -44,6 +44,9 @@ public:
 
 	static uint64_t generateFaster(uint64_t upper);
 
+	/**
+	 * EXPERIMENTAL: Generate random integer in closed interval [lower, upper].
+	 */
 	static uint64_t generateFaster(uint64_t lower, uint64_t upper);
 };
 
