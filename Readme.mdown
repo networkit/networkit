@@ -12,9 +12,56 @@ As of release 2.0, NetworKit is meant to be built into a Python extension module
 Features
 --------
 
-### Core Data Structures
+### Data Structures
 
-### Community Detection
+- undirected graph (with optional weights) for parallel read access
+
+### Handling Data
+
+- Graph Input/Output Formats
+	- METIS
+	- GraphViz
+
+### Algorithms
+
+- Community Detection
+	- Modularity
+	- Parallel Label Propagation
+	- Parallel Louvain Method
+	- Clauset-Newman-Moore
+- Components
+	- Connected Components
+- Generators
+	- Erdös-Renyi
+	- Barabasi-Albert
+- Clustering
+	- Local Clustering Coefficient
+- Traversal
+	- Breadth-First Search
+- Partitioning
+- Coarsening
+- Matching
+- Subgraphs
+- Others
+	- Independent Set
+
+
+Roadmap
+-------
+### Data Structures
+
+- directed graph
+- graphs safe for concurrent modification
+
+### Algorithms
+
+- Cores
+	- k-Core Decomposition
+- Centrality
+	- approximated Betweenness/Closeness
+
+
+
 
 
 ### NetworkX Compatibility
@@ -31,11 +78,6 @@ Release History
 ### 1.0
 
 - static global community detection algorithms
-
-
-Roadmap
--------
-
 
 
 
