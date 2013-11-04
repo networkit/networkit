@@ -292,6 +292,18 @@ cdef extern from "../src/base/Parameters.h":
 
 # Module: community
 
+cdef extern from "../src/clustering/Coverage.h":
+	cdef cppclass _Coverage "NetworKit::Coverage":
+		_Coverage() except +
+		double getQuality(_Clustering _zeta, _Graph _G)
+
+cdef class Coverage:
+	""" Coverage is the fraction of intra-community edges """
+	cdef _Coverage _this
+	
+	def getQuality(self, Clustering zeta, Graph G):
+		return self._this.getQuality(zeta._this, G._this)
+
 
 cdef extern from "../src/clustering/Modularity.h":
 	cdef cppclass _Modularity "NetworKit::Modularity":
@@ -450,36 +462,6 @@ cdef class ConnectedComponents:
 
 	def getComponent(self, componentIndex):
 		return self._this.getComponent(componentIndex)
-
-
-# under construction
-
-cdef extern from "../src/generators/PubWebGenerator.h":
-	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator":
-		_PubWebGenerator() except +
-		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
-		_Graph generate()
-		
-cdef class PubWebGenerator:
-	cdef _PubWebGenerator _this
-	
-	def __cinit__(self, count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors):
-		self._this = _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
-		
-	def generate(self):
-		return Graph().setThis(self._this.generate())	
-
-cdef extern from "../src/viz/ForceDirected.h":
-	cdef cppclass _ForceDirected "NetworKit::ForceDirected":
-		_ForceDirected() except +
-		void draw(_Graph _G)
-
-	
-cdef class ForceDirected:
-	cdef _ForceDirected _this
-	
-	def draw(self, Graph G not None):
-		pass
 
 
 

@@ -21,6 +21,9 @@ typedef uint64_t count; // more expressive name for an integer quantity
 typedef index node; // node indices are 0-based
 typedef double edgeweight; // edge weight type
 
+/**
+* Prototype of a graph data structure which is safe for concurrent modification.
+*/
 class ConcurrentGraph {
 public:
 
