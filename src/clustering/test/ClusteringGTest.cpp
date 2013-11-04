@@ -392,6 +392,22 @@ TEST_F(ClusteringGTest, testGetMembers) {
 }
 
 
+TEST_F(ClusteringGTest, testClusterSizes) {
+	GraphGenerator graphGenerator;
+	count n = 42;
+	Graph G = graphGenerator.makeCompleteGraph(n);
+	ClusteringGenerator clusteringGenerator;
+	Clustering one = clusteringGenerator.makeOneClustering(G);
+
+	std::vector<count> sizes = one.clusterSizes();
+
+	EXPECT_EQ(1, sizes.size()) << "only one entry for 1-clustering";
+	EXPECT_EQ(n, sizes.at(0)) << "size of only cluster should be n";
+}
+
+
+
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
