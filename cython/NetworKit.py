@@ -45,9 +45,6 @@ def readGraph(path, format=None):
         return G
 
     return None
-    
-
-
 
 ########  CONVERSION ########
 
@@ -280,59 +277,6 @@ def showProperties(nkG, settings=collections.defaultdict(lambda: True)):
         termgraph.graph(labels, histo)
 
 
-
-def showPropertiesOld(nkG):
-
-    propertiesTextBlock = """
-    Graph Properties: {name}
-    ========================
-
-    Basic Properties
-    ----------------
-    - nodes (n){n:16}
-    - edges (m)            {m}
-    - min. degree             {minDeg}
-    - max. degree             {maxDeg}
-    - isolated nodes         {isolates}
-    - self-loops            {loops}
-    - density            {dens:10.6f}
-
-
-    Path Structure
-    --------------
-    - connected components         {components}
-    - diameter            {dia}
-
-    Miscellaneous
-    -------------
-    - degree assortativity            {assort:10.6f}
-    - cliques                {cliques}
-
-    Community Structure
-    -------------------
-    - avg. local clustering coefficient         {avglcc:10.6f}
-    - PLP community detection
-        - communities                {ncomPLP}
-        - modularity             {modPLP:10.6f}
-    - PLM community detection
-        - communities            {ncomPLM}
-        - modularity             {modPLM:10.6f}
-
-
-    Distributions
-    -------------
-
-    - degree distribution
-
-    """
-
-    props = properties(nkG)
-    print(textwrap.dedent(propertiesTextBlock.format(**props)))
-    (labels, histo) = props["histo"]
-    termgraph.graph(labels, histo)
-
-    
-
 def compressHistogram(hist, nbins=20):
     """ Compress a histogram to a number of bins"""
     compressed = [None for i in range(nbins)]
@@ -361,53 +305,8 @@ def hpProperties(nkG):
     """ For large graphs: get an overview of some properties"""
     print("min/max degree:")
     
-    
-    
-# NetworKit algorithm engineering workflows
 
-# class DynamicCommunityDetectionWorkflow:
-#     
-#     def __init__(self):
-#         clusterings = []    # list of clusterings
-#     
-#     
-#     def start(self, nMax, deltaT):
-#         
-#         self.G = Graph(0)
-#         self.Gproxy = GraphEventProxy(self.G)
-#         #self.generator = DynamicBarabasiAlbertGenerator(self.Gproxy)
-#         self.dcd = DynamicLabelPropagation(self.Gproxy)
-#         
-#         while (self.G.numberOfNodes() < nMax):
-#             self.generator.generate()
-#             if (self.G.time() % deltaT) == 0:
-#                 zeta = self.dcd.run()
-#                 self.clusterings.append(zeta)
-    
-class GraphConverter:
-    
-    def __init__(self, reader, writer):
-        self.reader = reader
-        self.writer = writer
-        
-    def convert(self, inPath, outPath):
-        G = self.reader.read(inPath)
-        self.writer.write(G, outPath)
-        
-    def __str__(self):
-        return "GraphConverter: {0} => {0}".format(self.reader, self.writer)
-
-def getConverter(fromFormat, toFormat):
-    
-    readers = {"metis": METISGraphReader, "edgelist" : EdgeListIO}    
-    writers = {"edgelist": EdgeListIO}
-    
-    reader = readers[fromFormat]()
-    writer = writers[toFormat]()
-    
-    return GraphConverter(reader, writer)
-
-
+# community detection
 
 def inspectCommunities(zeta, G):
     """ Show information about communities"""
@@ -438,6 +337,7 @@ def evalCommunityDetection(algo, G):
     print(tabulate.tabulate(results))
 
 
+# working with attributes
 
 def retrieveAttributes(nodes, attributes):
     """
