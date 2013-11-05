@@ -21,9 +21,9 @@ public:
 	virtual ~CNM();
 
 
-	virtual Clustering run(Graph &graph);
+	Clustering run(Graph &graph) override;
 
-	virtual std::string toString() {
+	std::string toString() const override {
 		return "CNM";
 	}
 };
