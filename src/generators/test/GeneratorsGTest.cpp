@@ -112,7 +112,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	psWriter.write(clustering, "output/pubweb-lp-cluster.eps");
 }
 
-
+// FIXME: segmentation fault
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
 	count numInitialNodes = 300;
@@ -206,12 +206,12 @@ TEST_F(GeneratorsGTest, tryBTERGeneratorOnARealGraph) {
 }
 
 
-TEST_F(GeneratorsGTest, testStaticBarabasiAlbertGenerator) {
+TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
 	count k = 3;
 	count nMax = 100;
 	count n0 = 3;
 
-	StaticBarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
+	BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
 	Graph G(0);
 	EXPECT_TRUE(G.isEmpty());
 
@@ -225,12 +225,12 @@ TEST_F(GeneratorsGTest, testStaticBarabasiAlbertGenerator) {
 
 }
 
-TEST_F(GeneratorsGTest, generatetStaticBarabasiAlbertGeneratorGraph) {
+TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 		count k = 3;
 		count nMax = 1000;
 		count n0 = 3;
 
-		StaticBarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
+		BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
 
 		Graph G = BarabasiAlbert.generate();
 		GraphIO io;

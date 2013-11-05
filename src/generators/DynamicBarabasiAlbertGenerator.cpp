@@ -62,7 +62,7 @@ void DynamicBarabasiAlbertGenerator::generate() {
 //		}
 
 		// 2) pick a random number that is 0 or greater and is less than the sum of the weights
-		int64_t rand = randInt.generate(0, degSum);
+		int64_t rand = Aux::RandomInteger::generate(0, degSum);
 
 		bool found = false; // break from node iteration when done
 		auto notFound = [&](){ return ! found; };

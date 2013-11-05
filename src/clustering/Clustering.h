@@ -8,7 +8,7 @@
 #ifndef CLUSTERING_H_
 #define CLUSTERING_H_
 
-#include <set>
+
 
 #include "../graph/NodeMap.h"
 #include <cassert>
@@ -231,8 +231,16 @@ public:
 	template<typename Callback> void parallelForEntries(Callback handle) const;
 
 
+	/**
+	 * Get a list of cluster sizes. Indices do not necessarily correspond to cluster ids.
+	 */
 	std::vector<count> clusterSizes() const;
 
+
+	/**
+	 * Get a map from cluster id to size of the cluster.
+	 */
+	std::map<cluster, count> clusterSizeMap() const;
 
 	/**
 	 * Append a node.

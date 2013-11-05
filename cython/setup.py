@@ -33,7 +33,7 @@ modules = [Extension("_NetworKit",
 					language = "c++",
 					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
 					extra_link_args=["-fopenmp", "-std=c++11"],
-					libraries=["NetworKit-Core-O"], #, "tbb"
+					libraries=["NetworKit-Core-O", "tbb"],
 					library_dirs=["../", "../Core-O/"])]
 
 for e in modules:

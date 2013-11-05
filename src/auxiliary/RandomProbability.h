@@ -9,38 +9,35 @@
 #define RANDOMPROBABILITY_H_
 
 #include <random>
-#include <cmath>
 
 namespace Aux {
 
 class RandomProbability {
 
-protected:
+private:
 
-	std::random_device randomDevice;
-	std::default_random_engine randomEngine;
-	std::uniform_real_distribution<double> distribution;
+
+	static std::mt19937_64 randomEngine; 
+	static uint64_t x, y, z;	// Marsaglia's generator needs these states
+
+	RandomProbability() = delete;
 
 
 public:
 
-	RandomProbability();
-
-	virtual ~RandomProbability();
-
-	double generate();
+	static double generate();
 
 	/**
 	 * @return Random probability in half-open interval [0 ... 1)
 	 */
-	inline double generateFast() {
+	static inline double generateFast() {
 		return ((double) rand()) / (RAND_MAX + 1.0);
 	}
 
 	/**
 	 * @return Random float in [0 ... 1)
 	 */
-	float randomFloat() const;
+	static float randomFloat();
 };
 
 }

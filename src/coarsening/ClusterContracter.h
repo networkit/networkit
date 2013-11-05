@@ -11,8 +11,6 @@
 
 #include "Contracter.h"
 #include "../clustering/Clustering.h"
-#include "../base/IndexMap.h"
-#include "../coarsening/GraphContraction.h"
 
 namespace NetworKit {
 

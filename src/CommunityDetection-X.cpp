@@ -37,7 +37,6 @@
 #include "auxiliary/StringTools.h"
 #include "graph/Graph.h"
 #include "graph/GraphGenerator.h"
-#include "community/EnsembleMultilevel.h"
 #include "community/EnsemblePreprocessing.h"
 #include "community/LabelPropagation.h"
 #include "community/ParallelAgglomerativeClusterer.h"
@@ -53,6 +52,8 @@
 #include "io/DotClusteringWriter.h"
 #include "io/EdgeListIO.h"
 #include "generators/DynamicBarabasiAlbertGenerator.h"
+#include "overlap/RegionGrowingOverlapper.h"
+#include "overlap/HashingOverlapper.h"
 
 
 // revision
@@ -102,7 +103,7 @@ Graph generateClusteredRandomGraph(count n, count k, double pin, double pout) {
 
 Graph generatePreferentialAttachmentGraph(count n, count a) {
 
-	// TODO: replace this with StaticBarabasiAlbertGenerator
+	// TODO: replace this with BarabasiAlbertGenerator
 	throw std::runtime_error("currently not implemented");
 
 	std::cout << "[BEGIN] generating preferential attachment graph..." << std::flush;

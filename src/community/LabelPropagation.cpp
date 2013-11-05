@@ -7,6 +7,14 @@
 
 #include "LabelPropagation.h"
 
+#include <omp.h>
+#include "../Globals.h"
+#include "../auxiliary/Log.h"
+#include "../auxiliary/ProgressMeter.h"
+#include "../auxiliary/Timer.h"
+#include "../auxiliary/RandomInteger.h"
+#include "../graph/NodeMap.h"
+
 namespace NetworKit {
 
 LabelPropagation::LabelPropagation(count theta) : updateThreshold(theta) {
@@ -23,7 +31,6 @@ Clustering LabelPropagation::run(Graph& G) {
 	typedef cluster label; // a label is the same as a cluster id
 
 	// get global variables
-	const bool printProgress = PRINT_PROGRESS;
 	const bool randOrder = RAND_ORDER;							// explicitly randomize node order for each iteration
 	const count inactiveSeeds = INACTIVE_SEEDS;					// number of seed nodes which are set inactive for first iteration
 	const bool normalizeVotes = NORMALIZE_VOTES;
@@ -85,9 +92,8 @@ Clustering LabelPropagation::run(Graph& G) {
 	// randomize outcome by deactivating a very small number of nodes
 	// TODO: make this an object attribute
 	if (inactiveSeeds > 0) {
-		Aux::RandomInteger randInt;
 		for (count i = 0; i < inactiveSeeds; i++) {
-			node u = randInt.generate(0, (n-1));
+			node u = Aux::RandomInteger::generate(0, (n-1));
 			activeNodes[u] = false;
 		}
 	}
@@ -134,7 +140,8 @@ Clustering LabelPropagation::run(Graph& G) {
 			}
 		}
 
-		Aux::ProgressMeter pm(n, 10000);
+		//Aux::ProgressMeter pm(n, 10000);
+		// Reason: performance decreases for very big graphs
 
 		// removed for performance reasons
 		// count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
@@ -146,9 +153,10 @@ Clustering LabelPropagation::run(Graph& G) {
 			node v = nodes[i];
 
 			// PROGRESS
-			if (printProgress) {
+			// note: bool printProgress = PRINT_PROGRESS is not defined anymore
+			/*if (printProgress) {
 				pm.signal(i);
-			}
+			}*/
 
 			if ((activeNodes[v]) && (G.degree(v) > 0)) {
 
@@ -189,9 +197,9 @@ Clustering LabelPropagation::run(Graph& G) {
 		// for each while loop iteration...
 
 		// PROGRESS
-		if (printProgress) {
+		/*if (printProgress) {
 			pm.end();
-		}
+		}*/
 
 		runtime.stop();
 		DEBUG("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());

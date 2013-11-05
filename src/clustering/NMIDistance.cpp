@@ -7,6 +7,11 @@
 
 #include "NMIDistance.h"
 
+#include "DynamicNMIDistance.h"
+#include "../overlap/HashingOverlapper.h"
+#include "../auxiliary/MissingMath.h"
+#include "../auxiliary/NumericTools.h"
+
 namespace NetworKit {
 
 NMIDistance::NMIDistance() {

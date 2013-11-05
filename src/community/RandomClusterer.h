@@ -10,8 +10,6 @@
 
 #include "Clusterer.h"
 
-#include "../clustering/ClusteringGenerator.h"
-
 namespace NetworKit {
 
 class RandomClusterer: public NetworKit::Clusterer {

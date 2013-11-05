@@ -74,18 +74,25 @@ if defines is not []:
 stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
 gtestInclude = conf.get("includes", "gtest")
 log4cxxInclude = conf.get("includes", "log4cxx")
+if conf.has_option("includes", "tbb"):
+	tbbInclude = conf.get("includes", "tbb", "")
+else:
+	tbbInclude = ""
 
 ## libraries
 gtestLib = conf.get("libraries", "gtest")
 log4cxxLib = conf.get("libraries", "log4cxx")
-#tbbLib = conf.get("libraries", "tbb", "")
+if conf.has_option("libraries", "tbb"):
+	tbbLib = conf.get("libraries", "tbb", "")
+else:
+	tbbLib = ""
 
 
 env["CXX"] = cppComp
 env.Append(CPPDEFINES=defines)
-env.Append(CPPPATH = [stdInclude, gtestInclude, log4cxxInclude])
-env.Append(LIBS = ["gtest", "log4cxx"]) #, "tbb"
-env.Append(LIBPATH = [gtestLib, log4cxxLib])
+env.Append(CPPPATH = [stdInclude, gtestInclude, log4cxxInclude, tbbInclude])
+env.Append(LIBS = ["gtest", "log4cxx", "tbb"]) #, "tbb"
+env.Append(LIBPATH = [gtestLib, log4cxxLib, tbbLib])
 env.Append(LINKFLAGS = ["-std=c++11"])
 
 ## CONFIGURATIONS

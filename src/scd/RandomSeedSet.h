@@ -27,9 +27,6 @@ public:
 	 */
 	virtual std::unordered_set<node> getSeeds(count k);
 
-protected:
-
-	Aux::RandomInteger randInt;
 };
 
 } /* namespace NetworKit */

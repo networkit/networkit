@@ -24,7 +24,6 @@ Layouter::Layouter() {
 }
 
 void Layouter::randomInitCoordinates(Graph& g) {
-	Aux::RandomProbability randGen;
 
 	float x1 = bottomLeft.getValue(0);
 	float y1 = bottomLeft.getValue(1);
@@ -32,8 +31,8 @@ void Layouter::randomInitCoordinates(Graph& g) {
 	float height = topRight.getValue(1) - y1;
 
 	g.forNodes([&](node u) {
-		float x = randGen.randomFloat() * width + x1;
-		float y = randGen.randomFloat() * height + y1;
+		float x = Aux::RandomProbability::randomFloat() * width + x1;
+		float y = Aux::RandomProbability::randomFloat() * height + y1;
 
 		TRACE("x: " << x);
 		TRACE("y: " << y);

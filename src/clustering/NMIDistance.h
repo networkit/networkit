@@ -10,11 +10,6 @@
 
 
 #include "DissimilarityMeasure.h"
-#include "DynamicNMIDistance.h"
-#include "../overlap/HashingOverlapper.h"
-#include "../overlap/RegionGrowingOverlapper.h"
-#include "../auxiliary/MissingMath.h"
-#include "../auxiliary/NumericTools.h"
 
 namespace NetworKit {
 

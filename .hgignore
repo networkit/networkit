@@ -1,12 +1,13 @@
 
 syntax: regexp
 \.d$
-syntax: regexp
 \.trace$
 \.mk$
 \.o$
 .DS_Store
-SConstruct
+\.pyc
+\.a
+\.so
 
 syntax: regexp
 ^output$

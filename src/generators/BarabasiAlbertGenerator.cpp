@@ -1,27 +1,32 @@
 /*
- * StaticBarabasiAlbertGenerator.cpp
+ * BarabasiAlbertGenerator.cpp
  *
  *  Created on: May 28, 2013
  *      Author: forigem
  */
 
-#include "StaticBarabasiAlbertGenerator.h"
+#include "BarabasiAlbertGenerator.h"
 
 
 namespace NetworKit {
 
-StaticBarabasiAlbertGenerator::StaticBarabasiAlbertGenerator(count k,
+BarabasiAlbertGenerator::BarabasiAlbertGenerator() {
+
+}
+
+
+BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k,
 		count nMax, count n0):k(k), nMax(nMax), n0(n0) {
-	if (n0 == -1) {
+	if (n0 == 0) {
 		n0 = k;
 	}
 }
 
-StaticBarabasiAlbertGenerator::~StaticBarabasiAlbertGenerator() {
+BarabasiAlbertGenerator::~BarabasiAlbertGenerator() {
 	// TODO Auto-generated destructor stub
 }
 
-Graph StaticBarabasiAlbertGenerator::generate() {
+Graph BarabasiAlbertGenerator::generate() {
 	Graph G = initializeGraph();
 	assert (G.numberOfNodes() >= k);
 	Aux::ProgressMeter progress(nMax, 200);
@@ -35,7 +40,7 @@ Graph StaticBarabasiAlbertGenerator::generate() {
 		targets.insert(u);
 		int j = 0;
 		while (targets.size() - 1 < k) {
-			int64_t random = randomInt.generate(0, degreeSum);
+			int64_t random = Aux::RandomInteger::generate(0, degreeSum);
 			j++;
 			///if (j > k) throw std::runtime_error("Possible infinite loop detected.");
 			bool found = false; // break from node iteration when done
@@ -64,7 +69,7 @@ Graph StaticBarabasiAlbertGenerator::generate() {
 	return G;
 }
 
-Graph StaticBarabasiAlbertGenerator::initializeGraph() {
+Graph BarabasiAlbertGenerator::initializeGraph() {
 	Graph G(0);
 
 	// initialize the graph with n0 connected nodes

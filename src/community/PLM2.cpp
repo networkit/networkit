@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
- #if 0
+
 
 #include "PLM2.h"
 #include "../auxiliary/Log.h"
@@ -54,7 +54,7 @@ Clustering PLM2::pass(const Graph& G) {
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
 
 	// parts of formula follow
-	tbb::concurrent_unordered_map<node, double> volNode(n);
+	std::vector<edgeweight> volNode(n, 0.0);
 
 	// calculate and store volume of each node
 	G.parallelForNodes([&](node u) {
@@ -62,7 +62,7 @@ Clustering PLM2::pass(const Graph& G) {
 		volNode[u] += G.weight(u, u); // consider self-loop twice
 		});
 
-	tbb::concurrent_unordered_map<cluster, double> volCluster(n);
+	std::vector<edgeweight> volCluster(n, 0.0);
 	// set volume for all singletons
 	zeta.parallelForEntries([&](node u, cluster C) {
 		volCluster[C] = volNode[u];
@@ -143,13 +143,15 @@ Clustering PLM2::pass(const Graph& G) {
 				zeta[u] = best; // move to best cluster
 // #pragma omp atomic read
 				volN = volNode[u];
-#pragma omp atomic write
+// #pragma omp atomic write
 				change = true; // change to clustering has been made
-#pragma omp atomic write
+// #pragma omp atomic write
 				this->anyChange = true; // indicate globally that clustering was modified
 
 				// update the volume of the two clusters
+				#pragma omp atomic update
 				volCluster[C] -= volN;
+				#pragma omp atomic update
 				volCluster[best] += volN;
 			}
 		};
@@ -225,5 +227,3 @@ std::string PLM2::toString() const {
 }
 
 } /* namespace NetworKit */
-
-#endif

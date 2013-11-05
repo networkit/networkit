@@ -365,8 +365,7 @@ public:
 	/**
 	 * Return the number of edges in the graph.
 	 *
-	 * This involves calculation, so store result if needed multiple times.
-	 */
+	 *	 */
 	count numberOfEdges() const;
 
 	/**

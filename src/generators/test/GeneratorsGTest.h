@@ -22,7 +22,7 @@
 #include "../BTERGenerator.h"
 #include "../../io/METISGraphWriter.h"
 #include "../../io/DotGraphWriter.h"
-#include "../StaticBarabasiAlbertGenerator.h"
+#include "../BarabasiAlbertGenerator.h"
 #include "../../io/GraphIO.h"
 #include "../../io/METISGraphReader.h"
 #include "../../properties/GraphProperties.h"

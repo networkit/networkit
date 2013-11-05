@@ -6,6 +6,7 @@
  */
 
 #include "ClusteringGenerator.h"
+#include <random>
 
 namespace NetworKit {
 
@@ -44,7 +45,7 @@ Clustering ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 	count n = G.numberOfNodes();
 	Clustering zeta(n);
 
-	for (int64_t i = 0; i < k; ++i) {
+	for (uint64_t i = 0; i < k; ++i) {
 		zeta.addCluster();
 	}
 

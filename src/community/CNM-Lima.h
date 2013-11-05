@@ -9,16 +9,16 @@
 #define CNM_H_
 
 #include "Clusterer.h"
-#include "../base/IndexMap.h"
-#include "../independentset/Luby.h"
-#include "../Globals.h"
+//#include "../base/IndexMap.h"
+//#include "../independentset/Luby.h"
+//#include "../Globals.h"
 
-#include "omp.h"
+//#include "omp.h"
 
-#include <algorithm> // max-heap
-#include <vector>
-#include <map> // fraction of edge ends for each single community
-#include <iostream>
+//#include <algorithm> // max-heap
+//#include <vector>
+//#include <map> // fraction of edge ends for each single community
+//#include <iostream>
 
 namespace NetworKit {
 
