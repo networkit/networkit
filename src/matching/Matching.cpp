@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-Matching::Matching(int64_t n) :
+Matching::Matching(uint64_t n) :
 		NodeMap<node>(n, 0) {
 	// initialize each node's matching partner to itself
 	for (index i = 0; i < n; ++i) {
