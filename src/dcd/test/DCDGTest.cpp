@@ -19,7 +19,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../community/PLP.h"
 #include "../DynamicEnsemble.h"
-#include "../../community/Louvain.h"
+#include "../../community/PLM.h"
 #include "../../overlap/HashingOverlapper.h"
 
 namespace NetworKit {
@@ -75,15 +75,15 @@ TEST_F(DCDGTest, testDynamicLabelPropagation) {
 	INFO("number of clusters 2: " << zeta2.numberOfClusters());
 
 
-	PLP PLP;
-	Clustering zetaPLP = PLP.run(*G);
+	PLP plp;
+	Clustering zetaPLP = plp.run(*G);
 	INFO("number of clusters for static PLP: " << zetaPLP.numberOfClusters());
 	EXPECT_TRUE(zetaPLP.isProper(*G));
 
 	INFO("first clustering: " << Aux::vectorToString(zeta1.getVector()));
 
-	Louvain PLM;
-	Clustering zetaPLM = PLM.run(*G);
+	PLM plm;
+	Clustering zetaPLM = plm.run(*G);
 	INFO("number of clusters for static PLM: " << zetaPLM.numberOfClusters());
 	EXPECT_TRUE(zetaPLM.isProper(*G));
 
@@ -312,12 +312,12 @@ TEST_F(DCDGTest, tryDynamicEnsemble) {
 	 DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
 	 DynamicCommunityDetector* dynLP1 = new DynamicLabelPropagation(0, "Isolate");
 	 DynamicCommunityDetector* dynLP2 = new DynamicLabelPropagation(0, "IsolateNeighbors");
-	 Clusterer* PLM = new Louvain();
+	 Clusterer* plm = new PLM();
 
 	 DynamicEnsemble* ensemble = new DynamicEnsemble();
 	 ensemble->addBaseAlgorithm(*dynLP1);
 	 ensemble->addBaseAlgorithm(*dynLP2);
-	 ensemble->setFinalAlgorithm(*PLM);
+	 ensemble->setFinalAlgorithm(*plm);
 
 	 HashingOverlapper overlapAlgo;
 	 ensemble->setOverlapper(overlapAlgo);
@@ -391,12 +391,12 @@ TEST_F(DCDGTest, testDynamicEnsembleWithTDynamicLabelPropagation) {
 	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
 	DynamicCommunityDetector* dynLP1 = new TDynamicLabelPropagation<Isolate>();
 	DynamicCommunityDetector* dynLP2 = new TDynamicLabelPropagation<IsolateNeighbors>();
-	Clusterer* PLM = new Louvain();
+	Clusterer* plm = new PLM();
 
 	DynamicEnsemble* ensemble = new DynamicEnsemble();
 	ensemble->addBaseAlgorithm(*dynLP1);
 	ensemble->addBaseAlgorithm(*dynLP2);
-	ensemble->setFinalAlgorithm(*PLM);
+	ensemble->setFinalAlgorithm(*plm);
 
 	HashingOverlapper overlapAlgo;
 	ensemble->setOverlapper(overlapAlgo);

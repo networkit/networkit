@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
-#include "Louvain.h"
+#include "PLM.h"
 
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
@@ -14,16 +14,16 @@
 namespace NetworKit {
 
 
-Louvain::Louvain(std::string par, double gamma) : parallelism(par), gamma(gamma), anyChange(false) {
+PLM::PLM(std::string par, double gamma) : parallelism(par), gamma(gamma), anyChange(false) {
 
 	this->VERSION = "1.0";
 }
 
-Louvain::~Louvain() {
+PLM::~PLM() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering Louvain::pass(Graph& G) {
+Clustering PLM::pass(Graph& G) {
 
 	// init clustering to singletons
 	count n = G.numberOfNodes();
@@ -205,7 +205,7 @@ Clustering Louvain::pass(Graph& G) {
 	return zeta;
 }
 
-Clustering Louvain::run(Graph& G) {
+Clustering PLM::run(Graph& G) {
 	INFO("starting Louvain method");
 
 	// sub-algorithms
@@ -248,7 +248,7 @@ Clustering Louvain::run(Graph& G) {
 	return result;
 }
 
-std::string Louvain::toString() const {
+std::string PLM::toString() const {
 	std::stringstream strm;
 	strm << "Louvain(" << "version=" << this->VERSION << ",parallelism=" << this->parallelism << ")";
 	return strm.str();

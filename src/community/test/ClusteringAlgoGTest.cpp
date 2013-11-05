@@ -8,7 +8,7 @@
 #include "ClusteringAlgoGTest.h"
 
 #include "../PLP.h"
-#include "../Louvain.h"
+#include "../PLM.h"
 #include "../CNM.h"
 #include "../ParallelAgglomerativeClusterer.h"
 #include "../../clustering/Modularity.h"
@@ -40,7 +40,7 @@ TEST_F(ClusteringAlgoGTest, testEnsemblePreprocessing) {
 	for (count i = 0; i < b; ++i) {
 		ensemble.addBaseClusterer(*(new PLP()));
 	}
-	ensemble.setFinalClusterer(*(new Louvain()));
+	ensemble.setFinalClusterer(*(new PLM()));
 	ensemble.setOverlapper(*(new HashingOverlapper));
 
 	Clustering zeta = ensemble.run(G);
@@ -191,7 +191,7 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	Louvain louvain;
+	PLM louvain;
 	Clustering zeta = louvain.run(G);
 
 	INFO("number of clusters: " << zeta.numberOfClusters());
@@ -210,7 +210,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelSimple) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	Louvain louvain("simple");
+	PLM louvain("simple");
 	Clustering zeta = louvain.run(G);
 
 	INFO("number of clusters: " << zeta.numberOfClusters());
@@ -249,7 +249,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	Louvain louvain("balanced");
+	PLM louvain("balanced");
 	Clustering zeta = louvain.run(G);
 
 	INFO("number of clusters: " << zeta.numberOfClusters());
@@ -284,7 +284,7 @@ TEST_F(ClusteringAlgoGTest, testCNM) {
 TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 	Modularity modularity;
 	CNM cnm;
-	Louvain louvain;
+	PLM louvain;
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 	// this takes much longer than a unit test should
@@ -320,7 +320,7 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 TEST_F(ClusteringAlgoGTest, testParallelAgglomerativeAndLouvain) {
 	Modularity modularity;
 	ParallelAgglomerativeClusterer aggl;
-	Louvain louvain;
+	PLM louvain;
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 	Graph blog = reader.read("input/polblogs.graph");

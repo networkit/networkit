@@ -41,7 +41,7 @@
 #include "community/PLP.h"
 #include "community/ParallelAgglomerativeClusterer.h"
 #include "community/RandomClusterer.h"
-#include "community/Louvain.h"
+#include "community/PLM.h"
 #include "clustering/Clustering.h"
 #include "clustering/Modularity.h"
 #include "clustering/Coverage.h"
@@ -396,9 +396,9 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		} else if (algoName == "PLM") {
 			// algoParams is parallelization strategy
 			if (algoParams.empty()) {
-				algo = new Louvain();
+				algo = new PLM();
 			} else {
-				algo = new Louvain(algoParams);
+				algo = new PLM(algoParams);
 			}
 		} else if (algoName == "EML") {
 			// TODO: call multilevel algorithm
@@ -448,7 +448,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			} else if (finalClustererArg == "Agglomerative") {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "PLM") {
-				final = new Louvain("balanced");
+				final = new PLM("balanced");
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);

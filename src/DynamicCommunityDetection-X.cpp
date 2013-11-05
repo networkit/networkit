@@ -50,7 +50,7 @@
 #include "dcd/DynamicLabelPropagation.h"
 #include "dcd/DynCDSetup.h"
 #include "community/PLP.h"
-#include "community/Louvain.h"
+#include "community/PLM.h"
 #include "dcd/DynamicEnsemble.h"
 
 using namespace NetworKit;
@@ -365,7 +365,7 @@ int main(int argc, char **argv) {
 				// 3. Final Clusterer#
 				Clusterer* final = NULL;
 				if (finalClustererArg == "PLM") {
-					final = new Louvain("simple");
+					final = new PLM("simple");
 				} else if (finalClustererArg == "PLP") {
 					final = new PLP(theta);
 				} else {
@@ -400,7 +400,7 @@ int main(int argc, char **argv) {
 		if (staticName == "PLP") {
 			staticDetector = new PLP(theta);
 		} else if (staticName == "PLM") {
-			staticDetector = new Louvain("simple");
+			staticDetector = new PLM("simple");
 		} else if (staticName == "EPP") {
 			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
 			// parse params
@@ -429,7 +429,7 @@ int main(int argc, char **argv) {
 			if (finalClustererArg == "PLP") {
 				final = new PLP();
 			} else if (finalClustererArg == "PLM") {
-				final = new Louvain("balanced");
+				final = new PLM("balanced");
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);

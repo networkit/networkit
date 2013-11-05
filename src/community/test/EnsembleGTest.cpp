@@ -11,7 +11,7 @@
 
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/Modularity.h"
-#include "../../community/Louvain.h"
+#include "../../community/PLM.h"
 
 namespace NetworKit {
 
