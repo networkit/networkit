@@ -156,8 +156,8 @@ node Graph::addNode() {
 	this->exists.push_back(true);
 
 	// update per edge data structures
-	std::vector<node> adjacencyVector;	// vector of adjacencies for new node
-	std::vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
+	Vector<node> adjacencyVector;	// vector of adjacencies for new node
+	Vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 	this->adja.push_back(adjacencyVector);
 	this->eweights.push_back(edgeWeightVector);
 
