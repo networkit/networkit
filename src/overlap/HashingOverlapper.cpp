@@ -24,7 +24,7 @@ Clustering HashingOverlapper::run(Graph& G,
 	DEBUG("Starting hashing overlapper");
 
 	// hash function sdbm
-	auto sdbm = [](int64_t cid) {
+	/*auto sdbm = [](int64_t cid) {
 		unsigned char* str = (unsigned char*) &cid;
 		unsigned long h = 0;
 		int c;
@@ -32,7 +32,7 @@ Clustering HashingOverlapper::run(Graph& G,
 			h = c + (h << 6) + (h << 16) - h;
 		}
 		return h;
-	};
+	};*/
 
 	auto djb2 = [](int64_t cid) {
 		unsigned char* str = (unsigned char*) &cid;
@@ -52,8 +52,6 @@ Clustering HashingOverlapper::run(Graph& G,
 
 	core.setAll(0);
 	const count numC = clusterings.size();
-	const count upperId = clusterings.back().upperBound();
-	const count summand = 341;
 	if (numC > 2) {
 		for (index c = 0; c < numC; ++c) {
 			Clustering& zeta = clusterings[c];

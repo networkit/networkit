@@ -27,7 +27,7 @@ public:
 	 *
 	 * @param[in]	n 	maximum number of nodes
 	 */
-	Matching(int64_t n);
+	Matching(uint64_t n);
 
 	/**
 	 * Destructor.
