@@ -48,7 +48,6 @@ public:
 	 */
 	Clustering();
 
-	// FIXME: the constructor is outdated and will lead to an error if nodes from the graph have been deleted
 	/**
 	 * Construct new clustering.
 	 *
