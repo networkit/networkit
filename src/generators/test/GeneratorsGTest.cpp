@@ -104,7 +104,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 	EXPECT_EQ(n, G.numberOfNodes()) << "number of generated nodes";
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering clustering = lp.run(G);
 
 	// output to EPS file

@@ -1,11 +1,11 @@
 /*
- * LabelPropagation.cpp
+ * PLP.cpp
  *
  *  Created on: 07.12.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "LabelPropagation.h"
+#include "PLP.h"
 
 #include <omp.h>
 #include "../Globals.h"
@@ -17,17 +17,17 @@
 
 namespace NetworKit {
 
-LabelPropagation::LabelPropagation(count theta) : updateThreshold(theta) {
+PLP::PLP(count theta) : updateThreshold(theta) {
 
 	this->VERSION = "1.0";
 }
 
-LabelPropagation::~LabelPropagation() {
+PLP::~PLP() {
 	// TODO Auto-generated destructor stub
 }
 
 
-Clustering LabelPropagation::run(Graph& G) {
+Clustering PLP::run(Graph& G) {
 	typedef cluster label; // a label is the same as a cluster id
 
 	// get global variables
@@ -210,7 +210,7 @@ Clustering LabelPropagation::run(Graph& G) {
 
 }
 
-std::string LabelPropagation::toString() const {
+std::string PLP::toString() const {
 	std::stringstream strm;
 	// FIXME: report current number of threads
 #ifdef _OPENMP_
@@ -221,12 +221,12 @@ std::string LabelPropagation::toString() const {
 	return strm.str();
 }
 
-void LabelPropagation::setUpdateThreshold(count th) {
+void PLP::setUpdateThreshold(count th) {
 	this->updateThreshold = th;
 }
 
 
-count LabelPropagation::numberOfIterations() {
+count PLP::numberOfIterations() {
 	return this->nIterations;
 }
 

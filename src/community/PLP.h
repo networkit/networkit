@@ -1,12 +1,12 @@
 /*
- * LabelPropagation.h
+ * PLP.h
  *
  *  Created on: 07.12.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef LABELPROPAGATION_H_
-#define LABELPROPAGATION_H_
+#ifndef PLP_H_
+#define PLP_H_
 
 #include "Clusterer.h"
 #include "../clustering/Clustering.h"
@@ -23,7 +23,7 @@ namespace NetworKit {
  *
  *
  */
-class LabelPropagation: public NetworKit::Clusterer {
+class PLP: public NetworKit::Clusterer {
 
 protected:
 
@@ -35,9 +35,9 @@ public:
 
 	std::string VERSION;	// algorithm version number - increment in constructor for significant changes to the implementation
 
-	LabelPropagation(count theta = 0);
+	PLP(count theta = 0);
 
-	virtual ~LabelPropagation();
+	virtual ~PLP();
 
 	/**
 	 * Run the label propagation clustering algorithm.
@@ -69,4 +69,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* LABELPROPAGATION_H_ */
+#endif /* PLP_H_ */

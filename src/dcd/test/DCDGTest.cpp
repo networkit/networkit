@@ -11,17 +11,16 @@
 #include "DCDGTest.h"
 
 #include "../DynamicLabelPropagation.h"
+#include "../TDynamicLabelPropagation.h"
 #include "../../generators/DynamicBarabasiAlbertGenerator.h"
 #include "../../generators/DynamicDGSParser.h"
 #include "../DynCDSetup.h"
 #include "../PseudoDynamic.h"
 #include "../../io/METISGraphReader.h"
-#include "../../community/LabelPropagation.h"
+#include "../../community/PLP.h"
 #include "../DynamicEnsemble.h"
 #include "../../community/Louvain.h"
 #include "../../overlap/HashingOverlapper.h"
-//#include "../../auxiliary/Debug.h"
-#include "../TDynamicLabelPropagation.h"
 
 namespace NetworKit {
 
@@ -76,7 +75,7 @@ TEST_F(DCDGTest, testDynamicLabelPropagation) {
 	INFO("number of clusters 2: " << zeta2.numberOfClusters());
 
 
-	LabelPropagation PLP;
+	PLP PLP;
 	Clustering zetaPLP = PLP.run(*G);
 	INFO("number of clusters for static PLP: " << zetaPLP.numberOfClusters());
 	EXPECT_TRUE(zetaPLP.isProper(*G));
@@ -199,7 +198,7 @@ TEST_F(DCDGTest, tryStaticVsDynamic) {
 	setup.run();
 
 	Graph* G = setup.getGraph();
-	LabelPropagation PLP;
+	PLP PLP;
 	Clustering zetaStatic = PLP.run(*G);
 
 	INFO("number of clusters for static: " << zetaStatic.numberOfClusters());
@@ -425,7 +424,7 @@ TEST_F(DCDGTest, testSetupWithStatic) {
 	std::vector<DynamicCommunityDetector*> detectors = { dynLP1 };
 	DynCDSetup setup(*dynGen, detectors, 1e2, 10);
 
-	Clusterer* staticAlgo = new LabelPropagation();
+	Clusterer* staticAlgo = new PLP();
 	setup.setStatic(staticAlgo);
 
 	setup.run();

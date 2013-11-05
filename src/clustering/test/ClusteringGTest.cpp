@@ -26,7 +26,7 @@
 #include "../../auxiliary/NumericTools.h"
 #include "../../dcd/DynCDSetup.h"
 #include "../../generators/DynamicBarabasiAlbertGenerator.h"
-//#include "../../dcd/DynamicLabelPropagation.h"
+//#include "../../dcd/DynamicPLP.h"
 #include "../../dcd/TDynamicLabelPropagation.h"
 
 namespace NetworKit {

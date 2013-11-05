@@ -306,7 +306,7 @@ TEST_F(IOGTest, tryReadingLFR) {
 	Graph G = graphReader.read(graphPath);
 	Clustering truth = clusteringReader.read(clustPath);
 
-	LabelPropagation PLP;
+	PLP PLP;
 	Clustering zeta = PLP.run(G);
 
 	Modularity mod;
