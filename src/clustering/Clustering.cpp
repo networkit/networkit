@@ -189,9 +189,6 @@ void Clustering::compact() {
 
 
 std::map<cluster, count> Clustering::clusterSizeMap() const {
-	count k = this->numberOfClusters();
-	const count n = this->numberOfNodes();
-
 	std::map<cluster, count> cluster2size;
 
 	this->forEntries([&](node u, cluster c){
