@@ -23,11 +23,11 @@ namespace NetworKit {
  */
 class LocalMaxMatcher: public NetworKit::Matcher {
 private:
-	int attrId; ///< attribute ID of matching scores/weights
+	uint64_t attrId; ///< attribute ID of matching scores/weights
 
 public:
 
-	LocalMaxMatcher(int attrId);
+	LocalMaxMatcher(uint64_t attrId);
 
 	virtual ~LocalMaxMatcher();
 

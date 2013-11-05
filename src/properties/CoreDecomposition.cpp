@@ -24,7 +24,7 @@ std::vector<count> CoreDecomposition::run(const Graph& G) {
 		// TODO: fill data structure
 	});
 
-	index i = 1;
+	//index i = 1;
 	Graph G2 = G;
 	while (G2.numberOfNodes() > 0) {
 		// TODO: main loop

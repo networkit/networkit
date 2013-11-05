@@ -17,8 +17,8 @@ GreedyMapper::~GreedyMapper() {
 
 }
 
-Mapping GreedyMapper::run(Graph& guest, Graph& host) {
+/*Mapping GreedyMapper::run(Graph& guest, Graph& host) {
 	// TODO
-}
+}*/
 
 } /* namespace NetworKit */
