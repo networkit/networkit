@@ -10,6 +10,19 @@
 
 #include "DCDGTest.h"
 
+#include "../DynamicLabelPropagation.h"
+#include "../../generators/DynamicBarabasiAlbertGenerator.h"
+#include "../../generators/DynamicDGSParser.h"
+#include "../DynCDSetup.h"
+#include "../PseudoDynamic.h"
+#include "../../io/METISGraphReader.h"
+#include "../../community/LabelPropagation.h"
+#include "../DynamicEnsemble.h"
+#include "../../community/Louvain.h"
+#include "../../overlap/HashingOverlapper.h"
+//#include "../../auxiliary/Debug.h"
+#include "../TDynamicLabelPropagation.h"
+
 namespace NetworKit {
 
 DCDGTest::DCDGTest() {
@@ -85,7 +98,7 @@ TEST_F(DCDGTest, tryArxivGraphs) {
 //	std::cout << "[INPUT] .dgs file path >" << std::endl;
 //	std::getline(std::cin, graphPath);
 
-	graphPath = "/Users/cls/workspace/Data/arXiv/CS-all-paper.dgs";
+	graphPath = "input/qfin-all-authors.dgs";
 
 	DynamicGraphSource* source = new DynamicDGSParser(graphPath);
 

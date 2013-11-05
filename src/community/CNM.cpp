@@ -21,8 +21,6 @@ CNM::~CNM() {
 }
 
 Clustering CNM::run(Graph &graph) {
-	typedef std::pair<node, node> Edge;
-
 	// copy graph because we make changes due to merges
 	Graph G = graph;
 	count n = G.numberOfNodes();

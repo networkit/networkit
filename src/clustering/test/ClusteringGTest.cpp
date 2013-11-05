@@ -9,6 +9,26 @@
 
 #include "ClusteringGTest.h"
 
+#include "../../auxiliary/Log.h"
+#include "../Clustering.h"
+#include "../Modularity.h"
+#include "../ModularitySequential.h"
+#include "../Coverage.h"
+#include "../ClusteringGenerator.h"
+#include "../JaccardMeasure.h"
+#include "../NodeStructuralRandMeasure.h"
+#include "../GraphStructuralRandMeasure.h"
+#include "../../graph/GraphGenerator.h"
+//#include "../../io/METISGraphReader.h"
+//#include "../../io/ClusteringReader.h"
+#include "../NMIDistance.h"
+#include "../DynamicNMIDistance.h"
+#include "../../auxiliary/NumericTools.h"
+#include "../../dcd/DynCDSetup.h"
+#include "../../generators/DynamicBarabasiAlbertGenerator.h"
+//#include "../../dcd/DynamicLabelPropagation.h"
+#include "../../dcd/TDynamicLabelPropagation.h"
+
 namespace NetworKit {
 
 
@@ -370,6 +390,22 @@ TEST_F(ClusteringGTest, testGetMembers) {
 	EXPECT_EQ(n, members.size()) << "all nodes must be in the 1-cluster";
 
 }
+
+
+TEST_F(ClusteringGTest, testClusterSizes) {
+	GraphGenerator graphGenerator;
+	count n = 42;
+	Graph G = graphGenerator.makeCompleteGraph(n);
+	ClusteringGenerator clusteringGenerator;
+	Clustering one = clusteringGenerator.makeOneClustering(G);
+
+	std::vector<count> sizes = one.clusterSizes();
+
+	EXPECT_EQ(1, sizes.size()) << "only one entry for 1-clustering";
+	EXPECT_EQ(n, sizes.at(0)) << "size of only cluster should be n";
+}
+
+
 
 
 } /* namespace NetworKit */

@@ -25,7 +25,7 @@ ctypedef double edgeweight
 
 
 
-# helper functions
+# Cython helper functions
 
 def stdstring(pystring):
 	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
@@ -34,6 +34,9 @@ def stdstring(pystring):
 
 
 # Cython class definitions
+
+
+## Module: graph
 
 cdef extern from "../src/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
@@ -44,7 +47,6 @@ cdef extern from "../src/graph/Graph.h":
 		node addNode()
 		void removeNode(node u)
 		void addEdge(node u, node v, edgeweight w)
-		# TODO: optional weight argument
 		void removeEdge(node u, node v)
 		bool hasEdge(node u, node v)
 		edgeweight weight(node u, node v)
@@ -110,7 +112,9 @@ cdef class Graph:
 
 	def getName(self):
 		return self._this.getName()
-	
+
+
+# Module: generators
 	
 cdef extern from "../src/graph/GraphGenerator.h":
 	cdef cppclass _GraphGenerator "NetworKit::GraphGenerator":
@@ -129,7 +133,24 @@ cdef class GraphGenerator:
 		cdef _Graph _G = self._this.makeRandomGraph(n, p)
 		return Graph(0).setThis(_G)
 
+cdef extern from "../src/generators/BarabasiAlbertGenerator.h":
+	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator":
+		_BarabasiAlbertGenerator() except +
+		_BarabasiAlbertGenerator(count k, count nMax, count n0) except +
+		_Graph generate()
 
+cdef class BarabasiAlbertGenerator:
+	cdef _BarabasiAlbertGenerator _this
+
+	def __cinit__(self, k, nMax, n0):
+		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
+
+	def generate(self):
+		return Graph().setThis(self._this.generate());
+
+
+
+# Module: io
 
 cdef extern from "../src/io/METISGraphReader.h":
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader":
@@ -195,29 +216,34 @@ cdef class EdgeListIO:
 	def write(self, Graph G not None, path):
 		self._this.write(G._this, stdstring(path))
 
-# cdef extern from "../src/io/EdgeListIO.h":
-# 	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
-# 		_EdgeListIO() except +
-# 		_EdgeListIO(char separator, node firstNode) except +
-# 		_Graph read(string path)
-# 		void write(_Graph G, string path)
-
-# cdef class EdgeListIO:
-
-# 	cdef _EdgeListIO _this
-	
-# 	def __cinit__(self, string separator, node firstNode):
-# 		cdef char sep = separator[0]
-# 		self._this = _EdgeListIO(sep, firstNode)
-		
-# 	def read(self, path):
-# 		return Graph().setThis(self._this.read(stdstring(path)))
-	
-# 	def write(self, Graph G not None, path):
-# 		 # string needs to be converted to bytes, which are coerced to std::string
-# 		self._this.write(G._this, stdstring(path))
 
 
+cdef extern from "../src/io/LineFileReader.h":
+	cdef cppclass _LineFileReader "NetworKit::LineFileReader":
+		_LineFileReader() except +
+		vector[string] read(string path)
+
+
+cdef class LineFileReader:
+	cdef _LineFileReader _this
+
+	def read(self, path):
+		return self._this.read(stdstring(path))
+
+
+cdef extern from "../src/io/SNAPGraphWriter.h":
+	cdef cppclass _SNAPGraphWriter "NetworKit::SNAPGraphWriter":
+		_SNAPGraphWriter() except +
+		void write(_Graph G, string path) 
+
+cdef class SNAPGraphWriter:
+	cdef _SNAPGraphWriter _this
+
+	def write(self, Graph G, path):
+		self._this.write(G._this, stdstring(path))
+
+
+# Module: ?
 
 
 cdef extern from "../src/clustering/Clustering.h":
@@ -248,6 +274,49 @@ cdef class Clustering:
 		return self._this.getMembers(C)
 
 
+# Parameters
+
+cdef extern from "../src/base/Parameters.h":
+	cdef cppclass _Parameters "NetworKit::Parameters":
+		_Parameters() except +
+		void setInt(string key, int64_t value)
+		void setDouble(string key, double value)
+		void setString(key, value)
+		void setBool(string key, bool value)
+		int64_t getInt(string key)
+		double getDouble(string key)
+		string getString(string key)
+		bool getBool(string key)
+
+
+
+# Module: community
+
+cdef extern from "../src/clustering/Coverage.h":
+	cdef cppclass _Coverage "NetworKit::Coverage":
+		_Coverage() except +
+		double getQuality(_Clustering _zeta, _Graph _G)
+
+cdef class Coverage:
+	""" Coverage is the fraction of intra-community edges """
+	cdef _Coverage _this
+	
+	def getQuality(self, Clustering zeta, Graph G):
+		return self._this.getQuality(zeta._this, G._this)
+
+
+cdef extern from "../src/clustering/Modularity.h":
+	cdef cppclass _Modularity "NetworKit::Modularity":
+		_Modularity() except +
+		double getQuality(_Clustering _zeta, _Graph _G)
+		
+
+cdef class Modularity:
+	cdef _Modularity _this
+	
+	def getQuality(self, Clustering zeta, Graph G):
+		return self._this.getQuality(zeta._this, G._this)
+
 
 cdef class Clusterer:
 	""" Abstract base class for static community detection algorithms"""
@@ -259,6 +328,7 @@ cdef extern from "../src/community/LabelPropagation.h":
 		_LabelPropagation() except +
 		_Clustering run(_Graph _G)
 		count numberOfIterations()
+		string toString()
 
 
 cdef class LabelPropagation(Clusterer):
@@ -269,6 +339,9 @@ cdef class LabelPropagation(Clusterer):
 
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
+
+	def toString(self):
+		return self._this.toString().decode("utf-8")
 
 
 cdef extern from "../src/community/LPDegreeOrdered.h":
@@ -293,6 +366,7 @@ cdef extern from "../src/community/Louvain.h":
 		_Louvain() except +
 		_Louvain(string par, double gamma)
 		_Clustering run(_Graph _G)
+		string toString()
 		
 cdef class Louvain(Clusterer):
 	cdef _Louvain _this
@@ -303,7 +377,32 @@ cdef class Louvain(Clusterer):
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))
 
+	def toString(self):
+		return self._this.toString().decode("utf-8")
 
+# PLM2
+
+cdef extern from "../src/community/PLM2.h":
+	cdef cppclass _PLM2 "NetworKit::PLM2":
+		_PLM2() except +
+		_PLM2(string par, double gamma)
+		_Clustering run(_Graph _G)
+		string toString()
+
+cdef class PLM2:
+	cdef _PLM2 _this
+
+	def __cinit__(self, par="balanced", gamma=1.0):
+		self._this = _PLM2(stdstring(par), gamma)
+
+	def run(self, Graph G):
+		return Clustering().setThis(self._this.run(G._this))
+
+	def toString(self):
+		return self._this.toString().decode("utf-8")
+
+
+# Module: properties
 
 # this is an example for using static methods
 cdef extern from "../src/properties/GraphProperties.h" namespace "NetworKit::GraphProperties":
@@ -337,145 +436,6 @@ cdef class GraphProperties:
 		return averageLocalClusteringCoefficient(G._this)
 
 
-
-cdef extern from "../src/dynamics/GraphEventHandler.h":
-	cdef cppclass _GraphEventHandler "NetworKit::GraphEventHandler":
-		_GraphEventHandler() except +
-		void onNodeAddition(node u)
-		void onNodeRemoval(node u)
-		void onEdgeAddition(node u, node v)
-		void onEdgeRemoval(node u, node v)
-		void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew)
-		void onTimeStep()
-
-
-cdef extern from "../src/dynamics/GraphEventProxy.h":
-	cdef cppclass _GraphEventProxy "NetworKit::GraphEventProxy":
-		_GraphEventProxy()	# nullary constructor not valid
-		_GraphEventProxy(_Graph _G)
-		void registerObserver(_GraphEventHandler* _observer)
-		node addNode()
-		void removeNode(node u)
-		void addEdge(node u, node v)
-		# TODO: optional edge weight
-		void removeEdge(node u, node v)
-		void setWeight(node u, node v, edgeweight w)
-		void timeStep()
-		
-cdef class GraphEventProxy:
-	cdef _GraphEventProxy _this
-	
-	def __cinit__(self, Graph G not None):
-		self._this = _GraphEventProxy(G._this)
-	# TODO: delegates
-
-
-
-cdef extern from "../src/io/DGSReader.h":
-	cdef cppclass _DGSReader "NetworKit::DGSReader":
-		_DGSReader() except +
-		void read(string path, _GraphEventProxy _proxy)
-		
-		
-cdef class DGSReader:
-	cdef _DGSReader _this
-	
-	def read(self, path, GraphEventProxy proxy not None):
-		self._this.read(stdstring(path), proxy._this)
-		
-cdef extern from "../src/clustering/Modularity.h":
-	cdef cppclass _Modularity "NetworKit::Modularity":
-		_Modularity() except +
-		double getQuality(_Clustering _zeta, _Graph _G)
-		
-
-cdef class Modularity:
-	cdef _Modularity _this
-	
-	def getQuality(self, Clustering zeta, Graph G):
-		return self._this.getQuality(zeta._this, G._this)
-
-
-
-cdef extern from "../src/io/SNAPGraphWriter.h":
-	cdef cppclass _SNAPGraphWriter "NetworKit::SNAPGraphWriter":
-		_SNAPGraphWriter() except +
-		void write(_Graph G, string path) 
-
-cdef class SNAPGraphWriter:
-	cdef _SNAPGraphWriter _this
-
-	def write(self, Graph G, path):
-		self._this.write(G._this, stdstring(path))
-
-# cdef extern from "../src/dcd/DynamicLabelPropagation.h":
-# 	cdef cppclass _DynamicLabelPropagation "NetworKit::DynamicLabelPropagation":
-# 		_DynamicLabelPropagation() except +
-# 		_DynamicLabelPropagation(_Graph G, count theta, string strategyName) except +
-# 		_Clustering run()
-# 		string toString()
-# 
-# class DynamicCommunityDetector:
-# 	pass	
-# 		
-# cdef class DynamicLabelPropagation:
-# 	cdef _DynamicLabelPropagation _this
-# 	
-# 	def __cinit__(self, Graph G not None, theta, strategyName):
-# 		self._this = _DynamicLabelPropagation(G._this, theta, stdstring(strategyName))
-# 		
-# 	def run(self):
-# 		self._this.run()
-
-
-# FIXME:
-# cdef extern from "../src/generators/DynamicBarabasiAlbertGenerator.h":
-# 	cdef cppclass _DynamicBarabasiAlbertGenerator "NetworKit::DynamicBarabasiAlbertGenerator":
-# 		_DynamicBarabasiAlbertGenerator() except +
-# 		_DynamicBarabasiAlbertGenerator(_GraphEventProxy _Gproxy, count k) except +
-# 		void initializeGraph()
-# 		void generate()
-# 		
-# cdef class DynamicBarabasiAlbertGenerator:
-# 	cdef _DynamicBarabasiAlbertGenerator _this
-# 	
-# 	def __cinit__(self, GraphEventProxy Gproxy not None, k):
-# 		self._this = _DynamicBarabasiAlbertGenerator(Gproxy._this, k)
-# 		
-# 	def generate(self):
-# 		self._this.generate()
-		
-
-
-# under construction
-
-cdef extern from "../src/generators/PubWebGenerator.h":
-	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator":
-		_PubWebGenerator() except +
-		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
-		_Graph generate()
-		
-cdef class PubWebGenerator:
-	cdef _PubWebGenerator _this
-	
-	def __cinit__(self, count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors):
-		self._this = _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
-		
-	def generate(self):
-		return Graph().setThis(self._this.generate())	
-
-cdef extern from "../src/viz/ForceDirected.h":
-	cdef cppclass _ForceDirected "NetworKit::ForceDirected":
-		_ForceDirected() except +
-		void draw(_Graph _G)
-	
-cdef class ForceDirected:
-	cdef _ForceDirected _this
-	
-	def draw(self, Graph G not None):
-		pass
-
-
 cdef extern from "../src/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
 		ConnectedComponents() except +
@@ -504,70 +464,5 @@ cdef class ConnectedComponents:
 		return self._this.getComponent(componentIndex)
 
 
-
-# Parameters
-
-cdef extern from "../src/base/Parameters.h":
-	cdef cppclass _Parameters "NetworKit::Parameters":
-		_Parameters() except +
-		void setInt(string key, int64_t value)
-		void setDouble(string key, double value)
-		void setString(key, value)
-		void setBool(string key, bool value)
-		int64_t getInt(string key)
-		double getDouble(string key)
-		string getString(string key)
-		bool getBool(string key)
-
-# TODO: wrapper for Parameters
-
-
-# SelectiveSCAN
-
-# cdef extern from "../src/scd/SelectiveSCAN.h":
-# 	cdef cppclass _TSelectiveSCAN "NetworKit::TSelectiveSCAN":
-# 		_TSelectiveSCAN() except +
-# 		_TSelectiveSCAN(_Graph G, _Parameters param, double epsilon, double mu) except +
-# 		unordered_map[node, pair[unordered_set[node], int64_t]] run(unordered_set[node] seeds)
-
-
-# cdef class TSelectiveSCAN:
-# 	pass
-
-
-# LineFileReader
-
-cdef extern from "../src/io/LineFileReader.h":
-	cdef cppclass _LineFileReader "NetworKit::LineFileReader":
-		_LineFileReader() except +
-		vector[string] read(string path)
-
-
-cdef class LineFileReader:
-	cdef _LineFileReader _this
-
-	def read(self, path):
-		return self._this.read(stdstring(path))
-
-
-# PLM2
-
-#cdef extern from "../src/community/PLM2.h":
-#	cdef cppclass _PLM2 "NetworKit::PLM2":
-#		_PLM2() except +
-#		_PLM2(string par, double gamma)
-#		_Clustering run(_Graph _G)
-#		string toString()
-
-#cdef class PLM2:
-#	cdef _PLM2 _this
-
-#	def run(self, Graph G):
-#		return Clustering().setThis(self._this.run(G._this))
-
-#	def toString(self):
-#		return self._this.toString().decode("utf-8")
-
-# TODO: initialize log4cxx
 
 	

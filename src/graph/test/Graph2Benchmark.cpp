@@ -114,22 +114,6 @@ TEST_F(Graph2Benchmark, edgeInsertion) {
 
 }
 
-TEST_F(Graph2Benchmark, parallelEdgeInsertion) {
-
-	count n = 1e+4;
-	Graph G(n);
-
-	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
-	run.start();
-
-	// TODO: test parallel edge insertion
-	EXPECT_TRUE(false) << "TODO";
-
-	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
-
-}
 
 TEST_F(Graph2Benchmark, edgeRemoval) {
 	count n = 1e+4;
@@ -154,27 +138,6 @@ TEST_F(Graph2Benchmark, edgeRemoval) {
 
 }
 
-TEST_F(Graph2Benchmark, parallelEdgeRemoval) {
-	count n = 1e+4;
-	Graph G(n);
-
-	// insert edges
-	G.forNodePairs([&](node u, node v){
-		G.addEdge(u, v);
-	});
-
-
-	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
-	run.start();
-
-	// TODO: test parallel edge removal
-	EXPECT_TRUE(false) << "TODO";
-
-	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
-
-}
 
 TEST_F(Graph2Benchmark, edgeIteration) {
 	count n = 1e+4;
@@ -211,8 +174,12 @@ TEST_F(Graph2Benchmark, parallelEdgeIteration) {
 	INFO("[BEGIN] (n=" << n << ")");
 	run.start();
 
-	// TODO: benchmark parallel edge iteration
-	EXPECT_TRUE(false) << "TODO";
+	count i = 0;
+	G.parallelForEdges([&](node u, node v){
+		i += 1;
+	});
+
+	EXPECT_TRUE(true) << "just iterate";
 
 	run.stop();
 	INFO("[DONE]" << run.elapsedTag());
@@ -222,21 +189,38 @@ TEST_F(Graph2Benchmark, parallelSumForNodes) {
 	count n = 1e+7;
 	Graph G(n);
 
-	// TODO:
-	EXPECT_TRUE(false) << "TODO";
+	double sum = G.parallelSumForNodes([&](node v) {
+		return 1;
+	});
+
+	EXPECT_EQ(n, sum) << "each node adds 1";
 
 }
 
 
 
 TEST_F(Graph2Benchmark, nodeInsertion) {
-	// TODO:
-	EXPECT_TRUE(false) << "TODO";
+	count n = 1e+4;
+
+	Graph G(0); // empty graph
+
+	for (count i = 0; i < n; ++i) {
+		node v = G.addNode();
+	}
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "n nodes should have been added";
 }
 
 TEST_F(Graph2Benchmark, nodeRemoval) {
-	// TODO:
-	EXPECT_TRUE(false) << "TODO";
+	count n = 1e+4;
+
+	Graph G(n); // empty graph
+
+	for (node u = 0; u < n; ++u) {
+		G.removeNode(u);
+	}
+
+	EXPECT_EQ(0, G.numberOfNodes()) << "no nodes should be left";
 }
 
 } /* namespace NetworKit */

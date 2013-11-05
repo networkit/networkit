@@ -12,13 +12,6 @@
 
 #include <gtest/gtest.h>
 
-#include "../../graph/Graph.h"
-#include "../../graph/GraphGenerator.h"
-#include "../../clustering/ClusteringGenerator.h"
-#include "../../coarsening/ClusterContracter.h"
-#include "../../coarsening/GraphContraction.h"
-#include "../../coarsening/ClusteringProjector.h"
-
 namespace NetworKit {
 
 /**

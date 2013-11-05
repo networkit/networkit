@@ -367,6 +367,17 @@ TEST_F(IOGTest, testFastMETISGraphReader) {
 }
 
 
+TEST_F(IOGTest, tryReadingMETISFile) {
+	std::string graphPath;
+	std::cout << "[INPUT] graph file path >" << std::endl;
+	std::getline(std::cin, graphPath);
+
+	METISGraphReader reader;
+	Graph G = reader.read(graphPath);
+
+	EXPECT_TRUE(true);
+}
+
 
 } /* namespace NetworKit */
 

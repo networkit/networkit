@@ -14,20 +14,6 @@
 #define _GLIBCXX_USE_NANOSLEEP 1
 
 #include <gtest/gtest.h>
-#include <iostream>
-#include <algorithm>
-#include <chrono>
-#include <thread>
-
-#include "../Log.h"
-#include "../Random.h"
-#include "../RandomInteger.h"
-#include "../RandomProbability.h"
-#include "../Timer.h"
-#include "../MissingMath.h"
-#include "../Debug.h"
-#include "../PriorityQueue.h"
-
 
 class AuxGTest: public testing::Test {
 

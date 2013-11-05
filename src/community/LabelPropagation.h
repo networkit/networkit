@@ -11,23 +11,6 @@
 #include "Clusterer.h"
 #include "../clustering/Clustering.h"
 
-#include <vector>
-#include <map>
-#include <algorithm>
-#include <stdexcept>
-#include <random>
-#include <omp.h>
-
-#include "../Globals.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/ProgressMeter.h"
-#include "../auxiliary/Timer.h"
-#include "../auxiliary/RandomInteger.h"
-#include "../graph/NodeMap.h"
-#include "../base/IndexMap.h"
-#include "../io/GraphIO.h"
-
-
 namespace NetworKit {
 
 /**

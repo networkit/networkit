@@ -6,6 +6,7 @@
  */
 
 #include "RandomClusterer.h"
+#include "../clustering/ClusteringGenerator.h"
 
 namespace NetworKit {
 

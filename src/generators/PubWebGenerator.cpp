@@ -101,12 +101,11 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
 }
 
 void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
-	Aux::RandomProbability randGen;
 
 	for (index j = 0; j < num; ++j) {
 		// compute random angle between [0, 2pi) and distance between [0, width/2]
-		float angle = randGen.randomFloat() * 2.0 * PI;
-		float dist = randGen.randomFloat() * denseAreaXYR[area].rad;
+		float angle = Aux::RandomProbability::randomFloat() * 2.0 * PI;
+		float dist = Aux::RandomProbability::randomFloat() * denseAreaXYR[area].rad;
 
 		// compute coordinates and adjust them
 		float x = denseAreaXYR[area].x + cosf(angle) * dist;
@@ -119,23 +118,21 @@ void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
 }
 
 void PubWebGenerator::fillDenseAreas(Graph& g) {
-	Aux::RandomProbability randGen;
 
 	for (index area = 0; area < numDenseAreas; ++area) {
 		// choose center randomly, ensure complete cluster is within (0,1) without modifications
-		denseAreaXYR[area].x = randGen.randomFloat();
-		denseAreaXYR[area].y = randGen.randomFloat();
+		denseAreaXYR[area].x = Aux::RandomProbability::randomFloat();
+		denseAreaXYR[area].y = Aux::RandomProbability::randomFloat();
 		addNodesToArea(area, numPerArea[area], g);
 	}
 }
 
 void PubWebGenerator::chooseDenseAreaSizes() {
 	denseAreaXYR.reserve(numDenseAreas);
-	Aux::RandomProbability randGen;
 
 	for (index area = 0; area < numDenseAreas; ++area) {
 		// anti-quadratic probability distribution
-		float f = randGen.randomFloat() * MIN_MAX_DENSE_AREA_FACTOR + 1.0f;
+		float f = Aux::RandomProbability::randomFloat() * MIN_MAX_DENSE_AREA_FACTOR + 1.0f;
 		denseAreaXYR[area].rad = (MAX_DENSE_AREA_RADIUS * f * f)
 				/ (MIN_MAX_DENSE_AREA_FACTOR * MIN_MAX_DENSE_AREA_FACTOR);
 	}
@@ -143,11 +140,10 @@ void PubWebGenerator::chooseDenseAreaSizes() {
 
 // randomly spread remaining vertices over whole area
 void PubWebGenerator::spreadRemainingNodes(Graph& g) {
-	Aux::RandomProbability randGen;
 
 	while (g.numberOfNodes() < n) {
-		float x = randGen.randomFloat();
-		float y = randGen.randomFloat();
+		float x = Aux::RandomProbability::randomFloat();
+		float y = Aux::RandomProbability::randomFloat();
 		g.addNode(x, y);
 	}
 }
@@ -185,8 +181,7 @@ Graph PubWebGenerator::generate() {
 
 // TODO: NOT tested!
 void PubWebGenerator::removeRandomNode(Graph& g) {
-	Aux::RandomInteger randInt;
-	node u = randInt.generate(0, (n - 1));
+	node u = Aux::RandomInteger::generate(0, (n - 1));
 	g.removeNode(u);
 }
 
