@@ -38,7 +38,7 @@
 #include "graph/Graph.h"
 #include "graph/GraphGenerator.h"
 #include "community/EnsemblePreprocessing.h"
-#include "community/LabelPropagation.h"
+#include "community/PLP.h"
 #include "community/ParallelAgglomerativeClusterer.h"
 #include "community/RandomClusterer.h"
 #include "community/Louvain.h"
@@ -388,7 +388,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		}
 
 		if (algoName == "PLP") {
-			algo = new LabelPropagation(updateThreshold);
+			algo = new PLP(updateThreshold);
 		} else if (algoName == "Agglomerative") {
 			algo = new ParallelAgglomerativeClusterer();
 		} else if (algoName == "RandomClusterer") {
@@ -415,7 +415,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			for (int i = 0; i < ensembleSize; i += 1) {
 				Clusterer* base = NULL;
 				if (baseClustererArg == "PLP") {
-					base = new LabelPropagation(updateThreshold);
+					base = new PLP(updateThreshold);
 				} else if (baseClustererArg == "Agglomerative") {
 					base = new ParallelAgglomerativeClusterer();
 				} else {
@@ -444,7 +444,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			// 3. Final Clusterer
 			Clusterer* final = NULL;
 			if (finalClustererArg == "PLP") {
-				final = new LabelPropagation();
+				final = new PLP();
 			} else if (finalClustererArg == "Agglomerative") {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "PLM") {

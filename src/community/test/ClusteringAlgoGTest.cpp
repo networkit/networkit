@@ -7,7 +7,7 @@
 
 #include "ClusteringAlgoGTest.h"
 
-#include "../LabelPropagation.h"
+#include "../PLP.h"
 #include "../Louvain.h"
 #include "../CNM.h"
 #include "../ParallelAgglomerativeClusterer.h"
@@ -16,17 +16,52 @@
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../io/METISGraphReader.h"
 #include "../PLM2.h"
+#include "../EnsemblePreprocessing.h"
+#include "../../overlap/HashingOverlapper.h"
+
+
 
 #ifndef NOGTEST
 
 namespace NetworKit {
+
+TEST_F(ClusteringAlgoGTest, testEnsemblePreprocessing) {
+	count n = 1000;
+	count k = 10;
+	double pin = 1.0;
+	double pout = 0.0;
+
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	EnsemblePreprocessing ensemble;
+
+	count b = 4;
+	for (count i = 0; i < b; ++i) {
+		ensemble.addBaseClusterer(*(new PLP()));
+	}
+	ensemble.setFinalClusterer(*(new Louvain()));
+	ensemble.setOverlapper(*(new HashingOverlapper));
+
+	Clustering zeta = ensemble.run(G);
+
+	INFO("number of clusters:" << zeta.numberOfClusters());
+
+	Modularity modularity;
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+
+
+
+}
+
+
 
 TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
 	GraphGenerator graphGenerator;
 	int n = 100;
 	Graph G = graphGenerator.makeErdosRenyiGraph(n, 0.2);
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
@@ -45,7 +80,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClus
 	count k = 3; // number of clusters
 	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.001);
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	Modularity modularity;
@@ -71,7 +106,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 
 	Graph G = graphGen.makeClusteredRandomGraph(reference, 1.0, 0.0);	// LabelPropagation is very bad at discerning clusters and needs this large pin/pout difference
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	Modularity modularity;
@@ -92,7 +127,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 	int k = 2; // number of clusters
 	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.0);
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	Modularity modularity;
@@ -110,7 +145,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	node v = 0;
 	G.setWeight(v, v, 42.0);
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	EXPECT_TRUE(zeta.isProper(G));
@@ -135,7 +170,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 	std::pair<Graph, Clustering> G_ref = graphGen.makeClusteredRandomGraphWithReferenceClustering(n, k, pin, pout);
 
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G_ref.first);
 
 	Modularity modularity;

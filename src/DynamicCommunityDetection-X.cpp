@@ -49,7 +49,7 @@
 #include "dcd/TDynamicLabelPropagation.h"
 #include "dcd/DynamicLabelPropagation.h"
 #include "dcd/DynCDSetup.h"
-#include "community/LabelPropagation.h"
+#include "community/PLP.h"
 #include "community/Louvain.h"
 #include "dcd/DynamicEnsemble.h"
 
@@ -367,7 +367,7 @@ int main(int argc, char **argv) {
 				if (finalClustererArg == "PLM") {
 					final = new Louvain("simple");
 				} else if (finalClustererArg == "PLP") {
-					final = new LabelPropagation(theta);
+					final = new PLP(theta);
 				} else {
 					std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 					exit(1);
@@ -398,7 +398,7 @@ int main(int argc, char **argv) {
 		std::string staticName = Aux::StringTools::split(staticArg, ':').front();
 		std::string staticParams = Aux::StringTools::split(staticArg, ':').back();
 		if (staticName == "PLP") {
-			staticDetector = new LabelPropagation(theta);
+			staticDetector = new PLP(theta);
 		} else if (staticName == "PLM") {
 			staticDetector = new Louvain("simple");
 		} else if (staticName == "EPP") {
@@ -414,7 +414,7 @@ int main(int argc, char **argv) {
 			for (int i = 0; i < ensembleSize; i += 1) {
 				Clusterer* base = NULL;
 				if (baseClustererArg == "PLP") {
-					base = new LabelPropagation(theta);
+					base = new PLP(theta);
 				} else {
 					std::cout << "[ERROR] unknown base clusterer: " << baseClustererArg << std::endl;
 					exit(1);
@@ -427,7 +427,7 @@ int main(int argc, char **argv) {
 			// 3. Final Clusterer
 			Clusterer* final = NULL;
 			if (finalClustererArg == "PLP") {
-				final = new LabelPropagation();
+				final = new PLP();
 			} else if (finalClustererArg == "PLM") {
 				final = new Louvain("balanced");
 			} else {

@@ -18,7 +18,7 @@
 #include "../DynamicPubWebGenerator.h"
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"
-#include "../../community/LabelPropagation.h"
+#include "../../community/PLP.h"
 #include "../../io/METISGraphWriter.h"
 #include "../../io/DotGraphWriter.h"
 #include "../BarabasiAlbertGenerator.h"

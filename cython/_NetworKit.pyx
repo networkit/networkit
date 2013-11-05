@@ -322,16 +322,16 @@ cdef class Clusterer:
 	""" Abstract base class for static community detection algorithms"""
 	pass
 
-cdef extern from "../src/community/LabelPropagation.h":
-	cdef cppclass _LabelPropagation "NetworKit::LabelPropagation":
-		_LabelPropagation() except +
+cdef extern from "../src/community/PLP.h":
+	cdef cppclass _PLP "NetworKit::PLP":
+		_PLP() except +
 		_Clustering run(_Graph _G)
 		count numberOfIterations()
 		string toString()
 
 
-cdef class LabelPropagation(Clusterer):
-	cdef _LabelPropagation _this
+cdef class PLP(Clusterer):
+	cdef _PLP _this
 	
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))
@@ -409,22 +409,6 @@ cdef extern from "../src/community/CNM.h":
 
 cdef class CNM:
 	cdef _CNM _this
-
-	def run(self, Graph G):
-		return Clustering().setThis(self._this.run(G._this))
-
-	def toString(self):
-		return self._this.toString().decode("utf-8")
-
-
-cdef extern from "../src/community/CNM-WW.h":
-	cdef cppclass _CNM_WW "NetworKit::CNM_WW":
-		_CNM_WW() except +
-		_Clustering run(_Graph _G)
-		string toString()
-
-cdef class CNM_WW:
-	cdef _CNM_WW _this
 
 	def run(self, Graph G):
 		return Clustering().setThis(self._this.run(G._this))
