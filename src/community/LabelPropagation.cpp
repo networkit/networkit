@@ -31,7 +31,6 @@ Clustering LabelPropagation::run(Graph& G) {
 	typedef cluster label; // a label is the same as a cluster id
 
 	// get global variables
-	const bool printProgress = PRINT_PROGRESS;
 	const bool randOrder = RAND_ORDER;							// explicitly randomize node order for each iteration
 	const count inactiveSeeds = INACTIVE_SEEDS;					// number of seed nodes which are set inactive for first iteration
 	const bool normalizeVotes = NORMALIZE_VOTES;
@@ -154,6 +153,7 @@ Clustering LabelPropagation::run(Graph& G) {
 			node v = nodes[i];
 
 			// PROGRESS
+			// note: bool printProgress = PRINT_PROGRESS is not defined anymore
 			/*if (printProgress) {
 				pm.signal(i);
 			}*/
