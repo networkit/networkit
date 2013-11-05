@@ -20,6 +20,14 @@ except ImportError:
     print("""WARNING: module 'tabulate' not installed, which is required by some
                         functions. In order to install 'tabulate', Python 3.3 is required""")
 
+# faulthandler prints debug info on errors like segfaults
+try:
+    import faulthandler
+    faulthandler.enable()
+except ImportError:
+    print("""" WARNING: module 'faulthandler' not found. If installed, it will 
+        provide additional debug info on errors like segmentation faults.""")
+
 # local modules
 import termgraph
 import stopwatch
@@ -118,11 +126,13 @@ def properties(nkG, settings):
     # size
     n, m = nm(nkG)    # n and m
 
-    # degree
+    # degrees 
+    degDist = GraphProperties.degreeDistribution(nkG) 
     minDeg, maxDeg, avgDeg = degrees(nkG)
 
-        # number of isolated nodes
-    isolates = len(nx.isolates(nxG)) if nxG else None
+    # number of isolated nodes
+    isolates = degDist[0] if len(degDist > 0) else None
+    satellites = degDist[1] if len(dedDist > 1) else None
 
     # number of cliques
     cliques = len(list(nx.find_cliques(nxG))) if nxG else None
