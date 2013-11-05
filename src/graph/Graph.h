@@ -914,7 +914,6 @@ template<typename L>
 inline void NetworKit::Graph::breadthFirstNodesFrom(node r,
 		std::vector<int>& marked, L handle) {
 	std::queue<node> q;
-	count n = this->numberOfNodes();
 	q.push(r); // enqueue root
 	marked[r] = 1;
 	do {

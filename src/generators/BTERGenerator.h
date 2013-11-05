@@ -61,7 +61,7 @@ public:
 	/**
 	 * Return the affinity blocks as a ground-truth clustering.
 	 */
-	virtual Clustering getAffinityBlocks();
+	//virtual Clustering getAffinityBlocks();
 
 
 

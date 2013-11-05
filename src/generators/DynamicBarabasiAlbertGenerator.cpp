@@ -23,7 +23,7 @@ void DynamicBarabasiAlbertGenerator::initializeGraph() {
 
 	// The network begins with an initial network of m0 nodes. m0 ³ 2 and the degree of each node in the initial network should be at least 1,
 	// otherwise it will always remain disconnected from the rest of the network.
-	for (int i = 0; i < k; ++i) {
+	for (count i = 0; i < k; ++i) {
 		node u = Gproxy->addNode(); // assume node ids are assigned consecutively
 		if (i > 0) {
 			Gproxy->addEdge(u, u - 1); // connect to previous node to create a path
@@ -62,7 +62,7 @@ void DynamicBarabasiAlbertGenerator::generate() {
 //		}
 
 		// 2) pick a random number that is 0 or greater and is less than the sum of the weights
-		int64_t rand = Aux::RandomInteger::generate(0, degSum);
+		uint64_t rand = (uint64_t)Aux::RandomInteger::generate(0, degSum);
 
 		bool found = false; // break from node iteration when done
 		auto notFound = [&](){ return ! found; };

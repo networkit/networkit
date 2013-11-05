@@ -255,11 +255,11 @@ std::vector<count> BTERGenerator::generatePowerLawDegreeDistribution(count n, do
 	return dist;
 }
 
-Clustering BTERGenerator::getAffinityBlocks() {
+/*Clustering BTERGenerator::getAffinityBlocks() {
 
 	// TODO: get block start and end indices
 
-}
+}*/
 
 node BTERGenerator::samplePhaseTwoNode() {
 	degree d = none;
