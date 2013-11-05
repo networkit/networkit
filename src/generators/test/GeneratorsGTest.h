@@ -19,7 +19,6 @@
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../community/LabelPropagation.h"
-#include "../BTERGenerator.h"
 #include "../../io/METISGraphWriter.h"
 #include "../../io/DotGraphWriter.h"
 #include "../BarabasiAlbertGenerator.h"
