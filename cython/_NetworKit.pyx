@@ -402,6 +402,22 @@ cdef class PLM2:
 		return self._this.toString().decode("utf-8")
 
 
+cdef extern from "../src/community/CNM.h":
+	cdef cppclass _CNM "NetworKit::CNM":
+		_CNM() except +
+		_Clustering run(_Graph _G)
+		string toString()
+
+cdef class CNM:
+	cdef _CNM _this
+
+	def run(self, Graph G):
+		return Clustering().setThis(self._this.run(G._this))
+
+	def toString(self):
+		return self._this.toString().decode("utf-8")
+
+
 # Module: properties
 
 # this is an example for using static methods
