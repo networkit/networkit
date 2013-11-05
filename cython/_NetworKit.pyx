@@ -320,8 +320,7 @@ cdef class Modularity:
 
 cdef class Clusterer:
 	""" Abstract base class for static community detection algorithms"""
-	def run(self, Graph G not None):
-		raise NotImplementedError("abstract method")
+	pass
 
 cdef extern from "../src/community/LabelPropagation.h":
 	cdef cppclass _LabelPropagation "NetworKit::LabelPropagation":
@@ -410,6 +409,22 @@ cdef extern from "../src/community/CNM.h":
 
 cdef class CNM:
 	cdef _CNM _this
+
+	def run(self, Graph G):
+		return Clustering().setThis(self._this.run(G._this))
+
+	def toString(self):
+		return self._this.toString().decode("utf-8")
+
+
+cdef extern from "../src/community/CNM-WW.h":
+	cdef cppclass _CNM_WW "NetworKit::CNM_WW":
+		_CNM_WW() except +
+		_Clustering run(_Graph _G)
+		string toString()
+
+cdef class CNM_WW:
+	cdef _CNM_WW _this
 
 	def run(self, Graph G):
 		return Clustering().setThis(self._this.run(G._this))
