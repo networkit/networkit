@@ -243,6 +243,7 @@ TEST_F(ClusteringAlgoGTest, testCNM) {
 	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
 	EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
 	EXPECT_TRUE(clustering.isProper(G));
+
 }
 
 // FIXME: segmentation fault
