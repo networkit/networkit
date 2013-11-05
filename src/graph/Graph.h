@@ -951,6 +951,8 @@ inline void NetworKit::Graph::forEdgesOf(node u, L handle) const {
 
 template<typename L>
 void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) const {
+	// TODO: iterating over neighbors ordered by degree does not need privileged access to graphs data structure and should
+	// therefore be implemented inside the algorithm. - cls
 	auto hasSmallerDegree = [&](node v1, node v2) {
 		return degree(v1) < degree(v2); // FIXME
 	};
