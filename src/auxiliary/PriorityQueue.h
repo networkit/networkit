@@ -255,8 +255,7 @@ void Aux::PriorityQueue<Key, Val>::decreaseKey(ElemType elem) {
 
 	if (found) {
 		// change key
-		ElemType& pqElem = pq[index];
-		assert(elem.first < pqElem.first && elem.second == pqElem.second);
+		assert(elem.first < pq[index].first && elem.second == pq[index].second);
 		pq[index].first = elem.first;
 
 		// send element up as far as necessary to restore heap order
