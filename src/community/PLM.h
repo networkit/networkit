@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-class Louvain: public NetworKit::Clusterer {
+class PLM: public NetworKit::Clusterer {
 
 
 
@@ -28,9 +28,9 @@ public:
 	 * 							2m 	-> singleton communities
 	 *
 	 */
-	Louvain(std::string par="simple", double gamma = 1.0);
+	PLM(std::string par="simple", double gamma = 1.0);
 
-	virtual ~Louvain();
+	virtual ~PLM();
 
 	virtual Clustering pass(Graph& G);
 
