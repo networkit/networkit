@@ -17,11 +17,11 @@ Clustering::Clustering() :
 				this->upperIdBound = 0;// upper id bound = n is okay only for agglomeratively created clusters
 			}
 
-Clustering::Clustering(count n) :
-		NodeMap<cluster>(n, none), name("noname") {
+Clustering::Clustering(count z) :
+		NodeMap<cluster>(z, none), name("noname") {
 			// all entries are initialized to none, which means that the nodes are unclustered
 				this->nextCluster = 0;// first cluster index is 0
-				this->upperIdBound = n;// upper id bound = n is okay only for agglomeratively created clusters
+				this->upperIdBound = z;// upper id bound = n is okay only for agglomeratively created clusters
 			}
 
 Clustering::~Clustering() {
