@@ -293,7 +293,7 @@ int main(int argc, char **argv) {
 			source = new DynamicBarabasiAlbertGenerator(2);
 
 		} else if (sourceName == "DynamicPubWebGenerator") {
-			// TODO:
+			// TODO: enable DynamicPubWebGenerator
 		} else if (sourceName == "DGS") {
 			std::string graphFile = sourceParts[1];
 			sourceDGS = new DynamicDGSParser(graphFile);
