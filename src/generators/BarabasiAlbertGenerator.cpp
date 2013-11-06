@@ -40,7 +40,7 @@ Graph BarabasiAlbertGenerator::generate() {
 		targets.insert(u);
 		int j = 0;
 		while (targets.size() - 1 < k) {
-			int64_t random = Aux::RandomInteger::generate(0, degreeSum);
+			uint64_t random = (uint64_t) Aux::RandomInteger::generate(0, degreeSum);
 			j++;
 			///if (j > k) throw std::runtime_error("Possible infinite loop detected.");
 			bool found = false; // break from node iteration when done

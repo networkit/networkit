@@ -76,7 +76,7 @@ Users of NetworKit are welcome to contribute their modifications. For incrementa
 NetworKit is currently also used as a teaching tool. This section describes the workflow for student teams. Suppose course `Networks101`
 
 1. Fork the main repository via [algohub.iti.kit.edu](http://algohub.iti.kit.edu) and name the fork according to your team.
-2. Make sure that members of your team have the access rights needed to push to the forked repository.
+2. Make sure that the correct access rights for your team are set.
 3. Switch to the appropriate branch for the course (e.g. `Networks101`) and ONLY work on this branch.
 4. Work with the forked repository as you please. Coordinate with your team.
 5. On completion of the exercise, send a pull request from your fork to the main repository.
