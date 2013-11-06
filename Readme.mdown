@@ -58,13 +58,21 @@ Features
 - Subgraphs
 
 
+### NetworkX Compatibility
+
+- conversion
+	- `NetworKit.nk2nx`: `NetworKit.Graph` to `networkx.Graph`
+	- `NetworKit.nx2nk`: `networkx.Graph` to `NetworKit.Graph`
+
 
 Roadmap
 -------
+
 ### Data Structures
 
 - directed graph
 - graphs safe for concurrent modification
+- improved support for attributed graphs
 
 ### Algorithms
 
@@ -77,7 +85,6 @@ Roadmap
 
 
 
-### NetworkX Compatibility
 
 Release History
 ---------------
@@ -128,14 +135,14 @@ The source code of this program is released under the [MIT License][mitlicense].
 Requirements
 ------------
 
-###Compiler: 
+### Compiler: 
 
 A C++ compiler supporting C++11 (we use GCC 4.8). The compiler and linker flags `-fopenmp -std=c++11` are required.
 
 
-###Libraries:
+### Libraries:
 
-- `OpenMP`	
+- `OpenMP`		for parallelism
 - `Googletest` 	for unit testing
 - `log4cxx` 	for logging
 
@@ -143,28 +150,28 @@ The following preprocessor definitions (using the `-D` compiler flag) remove the
 
 - `NOLOGGING`	removes all log statements
 - `NOLOG4CXX`	replaces log statements with `std::cout` output if `log4cxx` is not available - loglevel `TRACE` becomes fixed.
-- `NOGTEST`		removes the dependency on Googletest - unit tests are not compiled
 
 
 Building the Base
 -----------------
 
-We recommend [SCons](http://scons.org) for building the C++ code of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
+We recommend [SCons](http://scons.org) for building the C++ kernels of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
 
 The call to SCons has the following options:
 
-	scons --optimize=D|P|O --target=CommunityDetection|DynCD|SelCD|Core|Tests
+	scons --optimize=<level>--target=<target>
 
-- `optimize`
+where `<level>`can be
 	- `D` 	debug
 	- `O`	optimized
 	- `P`	profiling
-- `target`
-	- `Tests`				build executable for the unit tests	
-	- `CommunityDetection` 	build executable for static, global community detection algorihtms
-	- `DynCD`				build dynamic community detection setup
-	- `SelCD`				build selective community detection setup
+and `<target>` can be
 	- `Core`				build NetworKit as a library, required by the Python shell		
+	- `Tests`				build executable for the unit tests	
+	- `CommunityDetection` 	build executable for static, global community detection algorithms (deprecated)
+
+For example, to build NetworKit as an optimized library, run
+	scons --optimize=O --target=core
 
 To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
 
@@ -175,34 +182,30 @@ Alternatively, the project can be built with Eclipse. Our Eclipse and CDT projec
 Test
 ----
 
-Run all unit tests with 
+Next, verify that the code was built correctly: Run all unit tests with 
 
 		./NetworKit-Tests --tests --gtest_filter=*Test.test*
 
-The expression after `--gtest_filter=` automatically selects all undebug --tests --gtest_filter=*Test*.try*	
+The expression after `--gtest_filter=` selects the tests.
 
 Run performance tests with
 
 		./NetworKit-Tests --tests --gtest_filter=*Benchmark*
 
 
-
-
-
 Building NetworKit as a Python Module
 --------------------------------------
 
-
-To use NetworKit as a Python module, it is necessary to install:
+As of version 2.0 NetworKit is meant to be used as a Python extension module. To build the module, the following is required:
 - Python 3.3 or newer
 - Cython
 
-Additionally, the module requires the following Python packages:
+Additionally, the module uses the following external Python packages:
 
 - `networkx`
 - `tabulate`
 
-These are best installed via `easy_install` or `pip`. (If you have multiple Python installations, be sure you use the commands matching your Python 3 version. In the following examples, `python3` and `pip3` will be used.)
+These are best installed via `easy_install` or `pip`. (If you have multiple Python installations, be sure you use the commands matching your Python 3 version. In the following examples, `python3` and `pip3` will be used.) 
 
 	pip3 install package_name
 
@@ -218,31 +221,28 @@ After everything is compiled, switch to the cython folder and use the build scri
 This will create the extension module `NetworKit`. The resulting module can be imported in python:
 
 	python3
-	import NetworKit
+	>>> import NetworKit
 
 
 Interactive Work with NetworKit
 -------------------------------
 
-With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend IPython as a great environment for scientific computing. IPython can also be installed via `pip` or `easy_install`.  For tab completion in ipython you may need `readline`. The following should work:
-
-	pip3 install readline ipython
+With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend IPython as a great environment for scientific computing. IPython can also be installed via `pip` or `easy_install`.  For tab completion in ipython you may also need to install `readline`. The following should work: `pip3 install readline ipython` 
 
 After the requirements are satisfied, start IPython and import NetworKit.
 
 	ipython3
-	from NetworKit import *
+	>>> from NetworKit import *
 
 Now you should be able to use NetworKit interactively, here are some examples:
 
 
-	G = readGraph("../input/jazz.graph")
-	ccs = ConnectedComponents()
-	ccs.run(G)
-	ccs.numberOfComponents()
-	GraphProperties.minMaxDegree(G)
-	GraphProperties.averageLocalClusteringCoefficient(G)
-	...
+	>>> G = readGraph("../input/jazz.graph")
+	>>> ccs = ConnectedComponents()
+	>>> ccs.run(G)
+	>>> ccs.numberOfComponents()
+	>>> GraphProperties.minMaxDegree(G)
+	>>> GraphProperties.averageLocalClusteringCoefficient(G)
 
 
 
@@ -291,6 +291,8 @@ To save the clustering produced, add
 	--saveClustering=/path/to/file.clust
 
 
+[metis]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+[dimacs]: http://www.cc.gatech.edu/dimacs10/downloads.shtml
 
 Contribute
 ----------
@@ -302,4 +304,16 @@ We would like to encourage contributions to the NetworKit source code. See the d
 Publications
 ------------
 
-TODO:
+The following is a list of publications on the basis of NetworKit. We ask you to cite the appropriate ones if you found NetworKit useful for your own research.
+
+
+		@inproceedings{sm2013ehpcdh,
+			Author = {Christian L. Staudt and Henning Meyerhenke},
+			Booktitle = {proceedings of the 2013 International Conference on Parallel Processing},
+			Date-Added = {2013-10-01 08:13:23 +0000},
+			Date-Modified = {2013-10-01 08:13:23 +0000},
+			Publisher = {Conference Publishing Services (CPS)},
+			Title = {Engineering High-Performance Community Detection Heuristics for Massive Graphs},
+			Year = {2013}}
+
+

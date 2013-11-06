@@ -189,8 +189,9 @@ if target in availableTargets:
 	targetName = "NetworKit-{0}-{1}".format(target, optimize)
 	if target == "Core":
 		# do not append executable
-		env.Append(CPPDEFINES=["NOLOGGING", "NOGTEST"])
+		env.Append(CPPDEFINES=["NOLOGGING"])
 		env.Library("NetworKit-Core-{0}".format(optimize), source)
+	# TODO: Max, remove LTO target
 	elif target == "LTO":
 		env.Append(CFLAGS = ["-flto"])
 		env.Append(CPPFLAGS = ["-flto"])
