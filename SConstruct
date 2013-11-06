@@ -38,7 +38,8 @@ def getSourceFiles(target, optimize):
 	elif target == "DynCD":
 		source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
 	elif target == "SelCD":
-		source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
+		raise Error("target SelCD currently disabled")  # cls
+		# source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
 	elif target in ["Tests","LTO"]:
 		source.append(os.path.join(srcDir, "Unittests.cpp"))
 
