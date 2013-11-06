@@ -488,6 +488,8 @@ cdef class ConnectedComponents:
 		return self._this.getComponent(componentIndex)
 
 
+# module: independentset
+
 cdef extern from "../src/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
