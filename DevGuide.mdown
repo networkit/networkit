@@ -24,7 +24,7 @@ As the name says, `default` is the branch which you are on if you do not switch.
 
 `Dev` is the development branch and most of the development of new features happens in this branch. This is also where new releases are being prepared. When pushing into this branch, think about whether your code ready for the core development team to work with and will be suitable for a release in the foreseeable future.
 
-It can be appropriate to additional more branches for projects, features, developer teams etc. Creation of branches should be coordinated with the core development team.
+It can be appropriate to create additional branches for projects, features, developer teams etc. Creation of branches should be coordinated with the core development team.
 
 ## Tags
 
@@ -57,7 +57,7 @@ Bugfixes are changes that should be immediately visible to users of NetworKit, s
 
 #### Releasing New Features
 
-When new features should be released, the Dev branch is merged into the
+When new features should be released, the `Dev` branch is merged into the `default` branch. Additional testing and cleanup is performed before that happens. The new major or minor release is then tagged with a version number.
 			
 		  ______________________________________________________ 	Dev
 		 /   ^ new feature    prepare release ^ \ < merge Dev into default
@@ -68,7 +68,10 @@ When new features should be released, the Dev branch is merged into the
 ### Contributions
 
 Users of NetworKit are welcome to contribute their modifications. For incremental improvements we recommend working on the `Dev` branch.  We recommend the following workflow:
-- creating a fork of the main repository
+
+1. create a fork of the main repository
+2. commit your changes to the `Dev` branch
+3. send a pull request to the main repository
 
 
 ### Student Exercises
@@ -144,7 +147,7 @@ Every new feature must be covered by a unit test. Omitting unit tests makes it v
 - Each source folder contains `test` folder with `googletest` classes. Create the unit tests for each feature in the appropriate `test/*GTest` class by adding a `TEST_F` function. 
 - Prefix standard unit tests with `test` and experimental feature tests with `try`. A `test*` must pass when pushed to the main repository, a `try*` is allowed to fail.
 - Keep the running time of test functions to the minimum needed for testing functionality. Testing should be fast, long-running unit tests look like infinite loops.
-
+- If the unit test requires a data set, add the file to the `input/` folder. Only small data sets (a few kilobytes maximum) are acceptable in the repository.
 
 ### Code Style
 
@@ -167,4 +170,5 @@ To suggest improvements to workflows and conventions, write to `christian.staudt
 ## Further Reading
 
 - [hginit.com](http://hginit.com)
+- [Working with named branches](http://humblecoder.co.uk/blog/2010/02/24/working-with-named-branches-in-mercurial/)
 - [Managing releases and branchy development](http://hgbook.red-bean.com/read/managing-releases-and-branchy-development.html)
