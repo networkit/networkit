@@ -6,8 +6,6 @@
 #include <gtest/gtest.h>
 
 #include "../BalancedLabelPropagation.h"
-#include "../KernighanLin.h"
-#include "../KERNIGHANLIN_Stumpp.h"
 #include "../../auxiliary/Log.h"
 #include "../../clustering/Modularity.h"
 #include "../../clustering/EdgeCut.h"
