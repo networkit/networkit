@@ -15,7 +15,6 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../io/METISGraphReader.h"
-#include "../PLM2.h"
 #include "../EnsemblePreprocessing.h"
 #include "../../overlap/HashingOverlapper.h"
 
@@ -351,25 +350,25 @@ TEST_F(ClusteringAlgoGTest, testParallelAgglomerativeAndLouvain) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testPLM2) {
-	count n = 500;
-	count k = 25;
-	double pin = 0.9;
-	double pout = 0.005;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+// TEST_F(ClusteringAlgoGTest, testPLM2) {
+// 	count n = 500;
+// 	count k = 25;
+// 	double pin = 0.9;
+// 	double pout = 0.005;
+// 	GraphGenerator graphGen;
+// 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	PLM2 plm2("simple");
-	Clustering zeta = plm2.run(G);
+// 	PLM2 plm2("simple");
+// 	Clustering zeta = plm2.run(G);
 
-	count k2 = zeta.numberOfClusters();
-	INFO("number of clusters: " << k2);
-	EXPECT_EQ(k, k2) << "number of clusters should be " << k;
+// 	count k2 = zeta.numberOfClusters();
+// 	INFO("number of clusters: " << k2);
+// 	EXPECT_EQ(k, k2) << "number of clusters should be " << k;
 
-	Modularity modularity;
-	INFO("modularity: " << modularity.getQuality(zeta, G));
+// 	Modularity modularity;
+// 	INFO("modularity: " << modularity.getQuality(zeta, G));
 
-}
+// }
 
 
 

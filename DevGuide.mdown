@@ -144,6 +144,8 @@ The following general conventions apply to all NetworKit developers.
 
 Every new feature must be covered by a unit test. Omitting unit tests makes it very likely that your feature will break silently as the project develops, leading to unneccessary work in tracing back the source of the error. 
 
+Unit tests for NetworKit are based on the `googletest` library. For more information read the [googletest primer](http://code.google.com/p/googletest/wiki/Primer).
+
 - Each source folder contains `test` folder with `googletest` classes. Create the unit tests for each feature in the appropriate `test/*GTest` class by adding a `TEST_F` function. 
 - Prefix standard unit tests with `test` and experimental feature tests with `try`. A `test*` must pass when pushed to the main repository, a `try*` is allowed to fail.
 - Keep the running time of test functions to the minimum needed for testing functionality. Testing should be fast, long-running unit tests look like infinite loops.
