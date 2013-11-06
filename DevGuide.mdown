@@ -2,15 +2,13 @@
 
 NetworKit is an open-source toolkit for high-performance network analysis. This text is meant to provide some guidelines for the ongoing development of the project. It is meant for core developers, occasional contributors, and students working on the code.
 
-The following text assumes some basic familiarity with the Mercurial version control software. It is not a Mercurial tutorial, because you will find a good one at [hginit.com](http://hginit.com). 
+The following text assumes some basic familiarity with the Mercurial version control software. It is not a Mercurial tutorial, because you will find a good one at [hginit.com](http://hginit.com). Rather, it explains concepts and workflows for the development of this project.
 
 
 
 ## Repositories
 
-Main Repository: 
-
-(technically all repositories are equal).
+The NetworKit main repository is at [http://algohub.iti.kit.edu/parco/NetworKit/NetworKit](http://algohub.iti.kit.edu/parco/NetworKit/NetworKit). This repository has public read access and write access for selected developers.
 
 [algohub.iti.kit.edu](http://algohub.iti.kit.edu) (an installation of [RhodeCode](https://rhodecode.com/)) makes it easy to create and manage forks. Forking is distinct from branching and creates a new repository with a new address, its own access control etc. A fork contains all branches of its parent.
 
