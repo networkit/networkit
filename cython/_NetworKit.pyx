@@ -359,19 +359,19 @@ cdef class LPDegreeOrdered(Clusterer):
 		return self._this.numberOfIterations()
 	
 	
-
-cdef extern from "../src/community/Louvain.h":
-	cdef cppclass _Louvain "NetworKit::Louvain":
-		_Louvain() except +
-		_Louvain(string par, double gamma)
+# PLM / refactored, formerly known as Louvain
+cdef extern from "../src/community/PLM.h":
+	cdef cppclass _PLM "NetworKit::PLM":
+		_PLM() except +
+		_PLM(string par, double gamma)
 		_Clustering run(_Graph _G)
 		string toString()
 		
-cdef class Louvain(Clusterer):
-	cdef _Louvain _this
+cdef class PLM(Clusterer):
+	cdef _PLM _this
 	
 	def __cinit__(self, par="balanced", gamma=1.0):
-		self._this = _Louvain(stdstring(par), gamma)
+		self._this = _PLM(stdstring(par), gamma)
 	
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))
