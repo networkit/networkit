@@ -488,5 +488,5 @@ cdef class ConnectedComponents:
 		return self._this.getComponent(componentIndex)
 
 
-
+# TODO: independent set algorithm
 	
