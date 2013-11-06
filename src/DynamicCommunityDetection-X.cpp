@@ -402,7 +402,7 @@ int main(int argc, char **argv) {
 		} else if (staticName == "PLM") {
 			staticDetector = new PLM("simple");
 		} else if (staticName == "EPP") {
-			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
+			EPP* ensemblePre = new EPP();
 			// parse params
 			std::string ensembleFrontArg = Aux::StringTools::split(staticParams, '+').front();
 			std::string finalClustererArg = Aux::StringTools::split(staticParams, '+').back();

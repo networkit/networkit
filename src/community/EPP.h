@@ -16,7 +16,7 @@
 
 namespace NetworKit {
 
-class EnsemblePreprocessing: public NetworKit::Clusterer {
+class EPP: public NetworKit::Clusterer {
 
 protected:
 
@@ -27,9 +27,9 @@ protected:
 
 public:
 
-	EnsemblePreprocessing();
+	EPP();
 
-	virtual ~EnsemblePreprocessing();
+	virtual ~EPP();
 
 	/**
 	 * Add a base clusterer to the ensemble.

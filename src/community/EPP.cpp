@@ -5,42 +5,37 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "EnsemblePreprocessing.h"
+#include "EPP.h"
 
 
-//#include <stdexcept>
-//#include "../auxiliary/Log.h"
-//#include "../Globals.h"
-//#include "../clustering/Modularity.h"
-//#include "../overlap/HashingOverlapper.h"
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
-//#include "../clustering/NodeStructuralRandMeasure.h"
 #include "../clustering/JaccardMeasure.h"
 
 namespace NetworKit {
 
-EnsemblePreprocessing::EnsemblePreprocessing() : Clusterer() {
+EPP::EPP() : Clusterer() {
 	this->finalClusterer = NULL;
+	this->overlap = NULL;
 }
 
-EnsemblePreprocessing::~EnsemblePreprocessing() {
+EPP::~EPP() {
 	// TODO Auto-generated destructor stub
 }
 
-void EnsemblePreprocessing::addBaseClusterer(Clusterer& base) {
+void EPP::addBaseClusterer(Clusterer& base) {
 	this->baseClusterers.push_back(&base);
 }
 
-void EnsemblePreprocessing::setFinalClusterer(Clusterer& final) {
+void EPP::setFinalClusterer(Clusterer& final) {
 	this->finalClusterer = &final;
 }
 
-void EnsemblePreprocessing::setOverlapper(Overlapper& overlap) {
+void EPP::setOverlapper(Overlapper& overlap) {
 	this->overlap = &overlap;
 }
 
-Clustering EnsemblePreprocessing::run(Graph& G) {
+Clustering EPP::run(Graph& G) {
 	INFO("STARTING EnsemblePreprocessing on G=" << G.toString());
 
 	// fixed sub-algorithms
@@ -86,7 +81,7 @@ Clustering EnsemblePreprocessing::run(Graph& G) {
 	return final;
 }
 
-std::string EnsemblePreprocessing::toString() const {
+std::string EPP::toString() const {
 	std::stringstream strm;
 	strm << "EnsemblePreprocessing(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",final=" << this->finalClusterer->toString() << ")";
 	return strm.str();

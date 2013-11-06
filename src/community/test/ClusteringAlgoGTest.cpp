@@ -15,7 +15,7 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../io/METISGraphReader.h"
-#include "../EnsemblePreprocessing.h"
+#include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
 
 
@@ -33,7 +33,7 @@ TEST_F(ClusteringAlgoGTest, testEnsemblePreprocessing) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	EnsemblePreprocessing ensemble;
+	EPP ensemble;
 
 	count b = 4;
 	for (count i = 0; i < b; ++i) {
