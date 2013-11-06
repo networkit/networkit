@@ -385,7 +385,7 @@ cdef class PLM(Clusterer):
 		return self._this.toString().decode("utf-8")
 
 
-# TODO: EPP
+# TODO: EPP - possible solution would be a rewrite with templates
 
 # FIXME: PLM2 
 # FIXME: CNM
