@@ -361,7 +361,6 @@ cdef class LPDegreeOrdered(Clusterer):
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
 	
-	
 
 cdef extern from "../src/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
@@ -373,6 +372,7 @@ cdef extern from "../src/community/PLM.h":
 cdef class PLM(Clusterer):
 	""" Parallel Louvain method for community detection: 
 	High solution quality, moderate time to solution. """
+
 	cdef _PLM _this
 	
 	def __cinit__(self, par="balanced", gamma=1.0):
