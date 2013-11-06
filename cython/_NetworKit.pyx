@@ -121,7 +121,7 @@ cdef extern from "../src/graph/BFS.h":
 
 cdef class BFS:
 	""" simple breadth-first search"""
-	cdef _BFS
+	cdef _BFS _this
 
 	def run(self, Graph G not None, source):
 		"""
