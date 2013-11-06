@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-SelectiveSCAN::SelectiveSCAN(const Graph& G, NodeDistance& distMeasure, double epsilon, double mu): SelectiveCommunityDetector(G), distMeasure(&distMeasure), epsilon(epsilon), mu(mu) {
+SelectiveSCAN::SelectiveSCAN(const Graph& G, NodeDistance& distMeasure, double epsilon, double mu): SelectiveCommunityDetector(G), epsilon(epsilon), mu(mu), distMeasure(&distMeasure) {
 	this->distMeasure->preprocess(); // distances depend on the graph, which is constant, and should be calculated only once
 
 }

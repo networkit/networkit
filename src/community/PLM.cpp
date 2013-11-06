@@ -14,7 +14,7 @@
 namespace NetworKit {
 
 
-PLM::PLM(std::string par, double gamma) : parallelism(par), gamma(gamma), anyChange(false) {
+PLM::PLM(std::string par, double gamma) : anyChange(false), parallelism(par), gamma(gamma) {
 
 	this->VERSION = "1.0";
 }

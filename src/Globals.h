@@ -8,15 +8,15 @@
 #ifndef GLOBALS_H_
 #define GLOBALS_H_
 
-
+#include <cstdint>
 
 extern bool PRINT_PROGRESS;
 extern bool RAND_ORDER;
-extern int INACTIVE_SEEDS;
+extern uint64_t INACTIVE_SEEDS;
 extern bool NORMALIZE_VOTES;
-extern bool SCALE_STRENGTH;
+extern double SCALE_STRENGTH;
 
-extern int MIN_NUM_COMMUNITIES;
+extern uint64_t MIN_NUM_COMMUNITIES;
 extern double REL_REPEAT_THRSH;
 
 extern bool CALC_DISSIMILARITY;

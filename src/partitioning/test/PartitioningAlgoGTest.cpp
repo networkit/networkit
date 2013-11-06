@@ -77,7 +77,7 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 	double exponent = 2.75;
 	BalancedLabelPropagation blp(exponent);
 	count k = 4;
-	count n = airfoil1.numberOfNodes();
+	//count n = airfoil1.numberOfNodes();
 
 	// *** airfoil1 graph
 	// ML-BLP
