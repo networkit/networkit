@@ -23,12 +23,16 @@ std::string IndependentSetFinder::toString() const {
 }
 
 bool IndependentSetFinder::isIndependentSet(const std::vector<bool>& set, const Graph& G) const {
-	G.parallelForEdges([&](node u, node v) {
-		if (set[u] & set[v]) {
-			return false;
+	bool result = true;
+	G.forEdges([&](node u, node v) {
+		if (u != v) { // exclude self-loop case
+			if (set[u] & set[v]) {
+				result = false;
+			}
 		}
+
 	});
-	return true;
+	return result;
 }
 
 

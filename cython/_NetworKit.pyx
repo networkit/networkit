@@ -462,7 +462,7 @@ cdef class GraphProperties:
 
 cdef extern from "../src/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
-		ConnectedComponents() except +
+		_ConnectedComponents() except +
 		void run(_Graph G)
 		count numberOfComponents()
 		count sizeOfComponent(index component)
@@ -488,5 +488,21 @@ cdef class ConnectedComponents:
 		return self._this.getComponent(componentIndex)
 
 
-# TODO: independent set algorithm
-	
+cdef extern from "../src/independentset/Luby.h":
+	cdef cppclass _Luby "NetworKit::Luby":
+		_Luby() except +
+		vector[bool] run(_Graph G)
+		string toString()
+
+cdef class Luby:
+	""" Luby's parallel maximal independent set algorithm"""
+	cdef _Luby _this
+
+	def run(self, Graph G not None):
+		return self._this.run(G._this)
+
+	def toString(self):
+		return self._this.toString().decode("utf-8")
+
+
+

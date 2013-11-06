@@ -8,16 +8,7 @@
 #include "Luby.h"
 
 namespace NetworKit {
-
-Luby::Luby() {
-	// TODO Auto-generated constructor stub
-
-}
-
-Luby::~Luby() {
-	// TODO Auto-generated destructor stub
-}
-
+	
 std::vector<bool> Luby::run(const Graph& G) {
 
 	std::vector<bool> I(G.numberOfNodes(), false); // independent set $I = \emptyset$

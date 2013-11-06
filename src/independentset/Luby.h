@@ -18,13 +18,13 @@ class Luby: public NetworKit::IndependentSetFinder {
 
 public:
 
-	Luby();
+	Luby() = default;
 
-	virtual ~Luby();
+	virtual ~Luby() = default;
 
-	virtual std::vector<bool> run(const Graph& G);
+	std::vector<bool> run(const Graph& G) override;
 
-	virtual std::string toString() const;
+	std::string toString() const override;
 };
 
 } /* namespace NetworKit */
