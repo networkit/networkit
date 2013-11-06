@@ -2,84 +2,78 @@
 
 NetworKit is an open-source toolkit for high-performance network analysis. This text is meant to provide some guidelines for the ongoing development of the project. It is meant for core developers, occasional contributors, and students working on the code.
 
-## Repositories, Branches and Forks
-
 The following text assumes some basic familiarity with the Mercurial version control software. It is not a Mercurial tutorial, because you will find a good one at [hginit.com](http://hginit.com). 
 
-The `default` branch always exists.
 
 
-## Branching Cheat Sheet
-
-- list all available branches: `hg branches`
-- check on which branch you are: `hg branch`
-- switch to a specific branch: `hg update branchname`
-- start a new branch:	`hg branch branchname`
-- merge `branchY` into `branchX`: `hg update branchX`, `hg merge branchY`
-
-
-# Repositories
+## Repositories
 
 Main Repository: 
 
 (technically all repositories are equal).
 
-# NetworKit Branches
+[algohub.iti.kit.edu](http://algohub.iti.kit.edu) (an installation of [RhodeCode](https://rhodecode.com/)) makes it easy to create and manage forks. Forking is distinct from branching and creates a new repository with a new address, its own access control etc. A fork contains all branches of its parent.
+
+
+## Branches
 
 Currently, the two most important branches of NetworKit are `Dev` and `default`. 
-
-`default` is the release branch. 
-
-`Dev` is the development branch, which is the domain of the core development team. Most of the development of new features happens in this branch. This is also where new releases are being prepared. When pushing into this branch, think about whether your code ready for the core development team to work with and will be suitable for a release in the foreseeable future.
 
 		 ________ 	Dev
 	____/________	default
 
+As the name says, `default` is the branch which you are on if you do not switch. It is therefore the release branch, containing code which is ready for use. Unless you are a core developer preparing a release or fixing an urgent bug, you do not make changes to `default`.
+
+`Dev` is the development branch and most of the development of new features happens in this branch. This is also where new releases are being prepared. When pushing into this branch, think about whether your code ready for the core development team to work with and will be suitable for a release in the foreseeable future.
+
+It can be appropriate to additional more branches for projects, features, developer teams etc. Creation of branches should be coordinated with the core development team.
 
 
-# Workflows
+## Workflows
 
-## Using NetworKit
+This section describes how to work with branches and forks in different scenarios.
+
+### Using NetworKit
 
 If you want to build and use NetworKit and do not plan to contribute changes, simply clone the repository. By default, you will be on the `default` branch, which represents the current release. Follow the setup instructions in the `Readme`.
 
-## Core Development
+### Core Development
 
 This section describes workflows for the core development team.
 
 
-### Bugfixes
+#### Bugfixes
 
 Bugfixes are changes that should be immediately visible to users of NetworKit, such as solutions for urgent errors or improvements of the `Readme` document. In this case, make the changes in the `default` branch and commit. Then switch to the `Dev` branch and merge the `default` branch back into `Dev`. 
 
 
 		  _______________ 	Dev
-		 /			  / < 	merge the bugfix back from default into Dev
+		 /			  / < 	merge default into Dev
 	____/____________/____	default
 				   ^ bugfix
 
 
-### Releasing New Features
+#### Releasing New Features
 
 When new features should be released, the Dev branch is merged into the
 			
-		  __________________________________________________________ 	Dev
-		 /       ^ new feature    prepare release ^ \
-	____/____________________________________________\______________	default
+		  ______________________________________________________ 	Dev
+		 /   ^ new feature    prepare release ^ \ < merge Dev into default
+	____/________________________________________\______________	default
 				   									   ^ tag version
 
 
-## Contributors
+### Contributions
 
 Users of NetworKit are welcome to contribute their modifications. For incremental improvements we recommend working on the `Dev` branch.  We recommend the following workflow:
 - creating a fork of the main repository
 
 
-## Student Exercises
+### Student Exercises
 
 NetworKit is currently also used as a teaching tool. This section describes the workflow for student teams. Suppose course `Networks101`
 
-1. Fork the main repository via `algohub.iti.kit.edu` and name the fork according to your team.
+1. Fork the main repository via [algohub.iti.kit.edu](http://algohub.iti.kit.edu) and name the fork according to your team.
 2. Make sure that members of your team have the access rights needed to push to the forked repository.
 3. Switch to the appropriate branch for the course (e.g. `Networks101`) and ONLY work on this branch.
 4. Work with the forked repository as you please. Coordinate with your team.
@@ -95,11 +89,11 @@ We also ask student teams to adhere to the following conventions:
 
 
 
-## Reviewing Student Exercises
+### Reviewing Student Exercises
 
 
 1. Before the course starts, create an appropriate branch for the course (e.g. `Networks101`). Derive the branch from the `Dev` branch.
-2. Receive pull requests from student teams via `algohub.iti.kit.edu`.
+2. Receive pull requests from student teams via [algohub.iti.kit.edu](http://algohub.iti.kit.edu).
 3. To review a pull request, pull from the forked repository of the student team. Switch to the course branch and review the changes.
 4. You can use the comment section of the pull request to give feedback. 
 5. If the code is okay, change the status of the pull request to accepted.
@@ -107,37 +101,41 @@ We also ask student teams to adhere to the following conventions:
 Good contributions from the student exercises should be merged back into the `Dev` branch.
 
 
-## Student Projects
+### Student Projects
 
 Students with long-term projects like Bachelor's or Master's theses should familiarize themselves with the guidelines and select a forking/branching model with their advisor.
 
 
-# Conventions
+
+## Branching Cheat Sheet
+
+- list all available branches: `hg branches`
+- check on which branch you are: `hg branch`
+- see heads (most recent commits) of all branches: `hg head`
+- see tip (most recent commits) of the branch you are currently working on: `hg tip
+- switch to a specific branch: `hg update branchname`
+- start a new branch:	`hg branch branchname`
+- merge `branchY` into `branchX`: `hg update branchX`, then `hg merge branchY`
+
+
+## Conventions
 
 The following general conventions apply to all NetworKit developers.
 
-## Versioning
-
-### Commit
+### Versioning
 
 - Before you commit, make sure your code compiles and run the unit tests.
 - Commit regularly and often to your local repository. 
 - Use meaningful commit messages.
-
-### Merge
-
 - Get the newest changes from the repository regularly and merge them into your local repository.
-- Make sure you merged correctly and did not break other's work.
-
-### Push
-
+- Make sure that you merged correctly and did not break other's work.
 - Push correct code early if possible. Merging is easier if all developers are up to date.
-- Never push code which breaks the build.
+- Never push code which breaks the build for others.
 - Never `push --force` to the main repository.
 
 
 
-## Unit Tests
+### Unit Tests
 
 Every new feature must be covered by a unit test. Omitting unit tests makes it very likely that your feature will break silently as the project develops, leading to unneccessary work in tracing back the source of the error. 
 
@@ -146,7 +144,7 @@ Every new feature must be covered by a unit test. Omitting unit tests makes it v
 - Keep the running time of test functions to the minimum needed for testing functionality. Testing should be fast, long-running unit tests look like infinite loops.
 
 
-## Code Style
+### Code Style
 
 - Read some code to get used to the code style and try to adopt it.
 - Document classes, methods and attributes in Doxygen style.
@@ -155,7 +153,7 @@ Every new feature must be covered by a unit test. Omitting unit tests makes it v
 - Use the `override` keyword to indicate that a method overrides a virtual method in the superclass.
 
 
-# Contact
+## Contact
 
 To discuss important changes to NetworKit, use the [e-mail list][list].
 
