@@ -17,8 +17,8 @@ RecBisMapper::~RecBisMapper() {
 
 }
 
-Mapping RecBisMapper::run(Graph& guest, Graph& host) {
+/*Mapping RecBisMapper::run(Graph& guest, Graph& host) {
 	// TODO
-}
+}*/
 
 } /* namespace NetworKit */

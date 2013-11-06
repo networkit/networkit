@@ -205,7 +205,8 @@ TEST_F(Graph2Benchmark, nodeInsertion) {
 	Graph G(0); // empty graph
 
 	for (count i = 0; i < n; ++i) {
-		node v = G.addNode();
+		//node v = G.addNode();
+		G.addNode();
 	}
 
 	EXPECT_EQ(n, G.numberOfNodes()) << "n nodes should have been added";

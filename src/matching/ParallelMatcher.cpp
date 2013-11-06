@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-LocalMaxMatcher::LocalMaxMatcher(int attrId_) :
+LocalMaxMatcher::LocalMaxMatcher(uint64_t attrId_) :
 		attrId(attrId_) {
 
 }

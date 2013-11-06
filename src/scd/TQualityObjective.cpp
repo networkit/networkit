@@ -12,7 +12,7 @@ namespace NetworKit {
 TQualityObjective::TQualityObjective(const Graph& G,
 		std::unordered_set<node>& community,
 		std::unordered_map<node, count>& boundary) :
-		nInternEdges(0), nNodes(0), nBoundaryEdges(0), volume(0) {
+		nBoundaryEdges(0), nNodes(0), volume(0), nInternEdges(0){
 	this->G = &G;
 	this->community = &community;
 	this->boundary = &boundary;

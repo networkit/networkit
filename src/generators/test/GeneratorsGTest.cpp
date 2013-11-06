@@ -142,7 +142,7 @@ TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 		PostscriptWriter psWriter(*G, true);
 		char filename[20];
 		assert(iter < 10);
-		sprintf(filename, "output/pubweb-%i.eps", iter);
+		sprintf(filename, "output/pubweb-%i.eps", int(iter));
 		psWriter.write(filename);
 	}
 }
