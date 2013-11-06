@@ -19,9 +19,6 @@ EPP::EPP() : Clusterer() {
 	this->overlap = NULL;
 }
 
-EPP::~EPP() {
-	// TODO Auto-generated destructor stub
-}
 
 void EPP::addBaseClusterer(Clusterer& base) {
 	this->baseClusterers.push_back(&base);

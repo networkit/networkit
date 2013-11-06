@@ -29,7 +29,7 @@ public:
 
 	EPP();
 
-	virtual ~EPP();
+	virtual ~EPP() = default;
 
 	/**
 	 * Add a base clusterer to the ensemble.
