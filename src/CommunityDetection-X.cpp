@@ -37,7 +37,7 @@
 #include "auxiliary/StringTools.h"
 #include "graph/Graph.h"
 #include "graph/GraphGenerator.h"
-#include "community/EnsemblePreprocessing.h"
+#include "community/EPP.h"
 #include "community/PLP.h"
 #include "community/ParallelAgglomerativeClusterer.h"
 #include "community/RandomClusterer.h"
@@ -403,7 +403,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		} else if (algoName == "EML") {
 			// TODO: call multilevel algorithm
 		} else if (algoName == "EPP") {
-			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
+			EPP* ensemblePre = new EPP();
 			// parse params
 			std::string ensembleFrontArg = Aux::StringTools::split(algoParams, '+').front();
 			std::string finalClustererArg = Aux::StringTools::split(algoParams, '+').back();
