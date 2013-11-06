@@ -114,6 +114,25 @@ cdef class Graph:
 		return self._this.getName()
 
 
+cdef extern from "../src/graph/BFS.h":
+	cdef cppclass _BFS "NetworKit::BFS":
+		_BFS() except +
+		vector[count] run(_Graph G, node source)
+
+cdef class BFS:
+	""" simple breadth-first search"""
+	cdef _BFS
+
+	def run(Graph G not None, source):
+		"""
+		Breadth-first search from source.
+		return Vector of unweighted distances from node @a source, i.e. the
+	 		length (number of edges) of the shortest path from source to any other vertex.
+		"""
+		return self._this.run(G._this, source)
+
+
+
 # Module: generators
 	
 cdef extern from "../src/graph/GraphGenerator.h":

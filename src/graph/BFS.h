@@ -14,8 +14,8 @@ namespace NetworKit {
 
 class BFS {
 public:
-	BFS();
-	virtual ~BFS();
+	BFS() = default;
+	virtual ~BFS() = default;
 
 	/**
 	 * Breadth-first search from @a source.
