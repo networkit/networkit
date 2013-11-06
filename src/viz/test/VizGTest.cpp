@@ -76,7 +76,7 @@ TEST_F(VizGTest, testForceDirectedLayouter) {
 
 	// write graph to file
 	PostscriptWriter psWriter(G);
-	psWriter.write(zeta, "testGraph.eps");
+	psWriter.write(zeta, "output/testGraph.eps");
 
 	// draw (independent of clustering) and write again
 	std::vector<float> bottomLeft = {0.0, 0.0};
@@ -85,7 +85,7 @@ TEST_F(VizGTest, testForceDirectedLayouter) {
 	Point<float> tr(topRight);
 	ForceDirected layouter(bl, tr);
 	layouter.draw(G);
-	psWriter.write(zeta, "testForceGraph.eps");
+	psWriter.write(zeta, "output/testForceGraph.eps");
 }
 
 
