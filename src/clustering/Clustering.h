@@ -127,6 +127,7 @@ public:
 	 */
 	void mergeClusters(cluster c, cluster d);
 
+	// TODO: special case - in partition implementation, move this to a tools class
 	/**
 	 * Check whether this clustering is a proper clustering of
 	 * the graph, i.e. a disjoint partition of the whole node set.
@@ -253,13 +254,14 @@ public:
 	std::vector<node> getMembers(const cluster C) const;
 
 
+	// TODO: special case - in partition implementation, move this to a tools class
 	/**
 	 * Compute communication graph (sometimes called quotient graph) induced by
 	 * graph @a graph and this clustering/partition.
 	 */
 	Graph communicationGraph(const Graph& graph);
 
-
+	// TODO: special case - in partition implementation, move this to a tools class
 	/**
 	 * @return Sum of weights of edges that connect @a v with nodes in cluster @a cid.
 	 */
