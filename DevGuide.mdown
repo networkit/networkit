@@ -28,6 +28,10 @@ As the name says, `default` is the branch which you are on if you do not switch.
 
 It can be appropriate to additional more branches for projects, features, developer teams etc. Creation of branches should be coordinated with the core development team.
 
+## Tags
+
+A tag is nothing more than a “symbolic name” for a revision. In NetworKit tags are used to mark release versions in the `default` branch, with a `MAJOR.MINOR` version name scheme.
+
 
 ## Workflows
 
@@ -160,3 +164,9 @@ To discuss important changes to NetworKit, use the [e-mail list][list].
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit
 
 To suggest improvements to workflows and conventions, write to `christian.staudt @ kit.edu`.
+
+
+## Further Reading
+
+- [hginit.com](http://hginit.com)
+- [Managing releases and branchy development](http://hgbook.red-bean.com/read/managing-releases-and-branchy-development.html)
