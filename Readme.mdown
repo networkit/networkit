@@ -13,7 +13,7 @@ As of release 2.0, NetworKit is meant to be built into a Python extension module
 Help
 ----
 
-## E-Mail List
+### E-Mail List
 
 For questions regarding NetworKit, subscribe to our [e-mail list][list] and feel free to ask.
 
@@ -32,15 +32,15 @@ Features
 
 - Graph Input/Output Formats
 	- METIS
+	- Edge List
 	- GraphViz
 
 ### Algorithms
 
 - Community Detection
 	- Modularity
-	- Parallel Label Propagation
-	- Parallel Louvain Method
-	- Clauset-Newman-Moore
+	- Parallel Label Propagation (PLP)
+	- Parallel Louvain Method (PLM)
 - Components
 	- Connected Components
 - Generators
@@ -51,11 +51,12 @@ Features
 - Traversal
 	- Breadth-First Search
 - Partitioning
+- Independent Sets
+	- Luby's parallel independent set algorithm 
 - Coarsening
 - Matching
 - Subgraphs
-- Others
-	- Independent Set
+
 
 
 Roadmap
@@ -137,7 +138,6 @@ A C++ compiler supporting C++11 (we use GCC 4.8). The compiler and linker flags 
 - `OpenMP`	
 - `Googletest` 	for unit testing
 - `log4cxx` 	for logging
-- `Threading Building Blocks`			for concurrent data structures
 
 The following preprocessor definitions (using the `-D` compiler flag) remove these dependencies, but also some functionality:
 
