@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-Partition::Partition() {
+Partition::Partition(index z) {
 	// TODO Auto-generated constructor stub
 
 }
