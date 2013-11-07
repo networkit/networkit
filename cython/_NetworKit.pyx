@@ -130,6 +130,21 @@ cdef class BFS:
 	 		length (number of edges) of the shortest path from source to any other vertex.
 		"""
 		return self._this.run(G._this, source)
+	
+
+cdef extern from "../src/graph/Dijkstra.h":
+	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
+		_Dijkstra() except +
+		vector[edgeweight] run(_Graph G, node source)
+
+cdef class Dijkstra:
+	""" Dijkstra's SSSP algorithm.
+	 	Returns list of weighted distances from node source, i.e. the
+	    length of the shortest path from @a source to any other node."""
+	cdef _Dijkstra _this
+
+	def run(self, Graph G not None, source):
+		return self._this.run(G._this, source)
 
 
 
