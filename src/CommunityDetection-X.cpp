@@ -709,7 +709,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (options[SCALESTRENGTH]) {
-		SCALE_STRENGTH = options[SCALE_STRENGTH].arg;
+		SCALE_STRENGTH = double(std::atof(options[SCALESTRENGTH].arg));
 	}
 
 

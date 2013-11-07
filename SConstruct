@@ -15,7 +15,7 @@ def getSourceFiles(target, optimize):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
-	if (target not in ["Tests","LTO"]):
+	if (target not in ["Tests"]):
 		# exclude files matching following patterns
 		xpatterns = ["*-X.cpp","*Unittests.cpp","*GTest.cpp","*Benchmark.cpp"]
 		excluded = []
@@ -40,8 +40,9 @@ def getSourceFiles(target, optimize):
 	elif target == "SelCD":
 		raise Error("target SelCD currently disabled")  # cls
 		# source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
-	elif target in ["Tests","LTO"]:
+	elif target == "Tests":
 		source.append(os.path.join(srcDir, "Unittests.cpp"))
+	#else case: error?	
 
 	# create build directory for build configuration
 	buildDir = ".build{0}".format(optimize)
@@ -183,7 +184,7 @@ AddOption("--target",
 
 
 target = GetOption("target")
-availableTargets = ["CommunityDetection","DynCD","SelCD","Core","Tests","LTO"]
+availableTargets = ["CommunityDetection","DynCD","SelCD","Core","Tests"]
 if target in availableTargets:
 	source = getSourceFiles(target,optimize)
 	targetName = "NetworKit-{0}-{1}".format(target, optimize)
@@ -191,41 +192,8 @@ if target in availableTargets:
 		# do not append executable
 		env.Append(CPPDEFINES=["NOLOGGING"])
 		env.Library("NetworKit-Core-{0}".format(optimize), source)
-	# TODO: Max, remove LTO target
-	elif target == "LTO":
-		env.Append(CFLAGS = ["-flto"])
-		env.Append(CPPFLAGS = ["-flto"])
-		env.Append(LINKFLAGS = ["-flto"])
-		env.Program(targetName, source)
 	else:
 		env.Program(targetName, source)
 else:
 	print("ERROR: unknown target: {0}".format(target))
 	exit()
-
-#if target == "CommunityDetection":
-#	source = getSourceFiles(target,optimize)
-#	source.append(os.path.join(srcDir, "CommunityDetection-X.cpp"))
-#	env.Program(targetName, source)
-#elif target == "DynCD":
-#	source = getSourceFiles(target,optimize)
-#	source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
-#	env.Program(targetName, source)
-#elif target == "SelCD":
-#	source = getSourceFiles(target,optimize)
-#	source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
-#	env.Program(targetName, source)
-#elif target == "Core":
-#	source = getSourceFiles(target,optimize)
-	# do not append executable
-#	env.Append(CPPDEFINES=["NOLOGGING", "NOGTEST"])
-#	env.Library("NetworKit-Core-{0}".format(optimize), source)
-#elif target == "Tests":
-#	source = getSourceFiles(target,optimize)
-#	source.append(os.path.join(srcDir, "Unittests.cpp"))
-#	env.Program(targetName, source)
-#TODO: maybe a benchmark target? unittests can be compiled as debug and optimized, so probably not necessary.
-	
-#else:
-#	print("ERROR: unknown target: %" % target)
-#	exit()
