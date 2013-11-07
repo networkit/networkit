@@ -190,7 +190,7 @@ if target in availableTargets:
 	targetName = "NetworKit-{0}-{1}".format(target, optimize)
 	if target == "Core":
 		# do not append executable
-		env.Append(CPPDEFINES=["NOLOGGING"])
+		# env.Append(CPPDEFINES=["NOLOGGING"])
 		env.Library("NetworKit-Core-{0}".format(optimize), source)
 	else:
 		env.Program(targetName, source)
