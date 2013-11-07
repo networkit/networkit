@@ -18,11 +18,6 @@
 #include <stdexcept>
 #include <vector>
 
-// log4cxx
-#ifndef NOLOG4CXX
-#include "log4cxx/logger.h"
-#include "log4cxx/basicconfigurator.h"
-#endif
 
 // GoogleTest
 #ifndef NOGTEST
@@ -58,33 +53,6 @@ using namespace NetworKit;
 
 
 
-
-
-#ifndef NOLOGGING
-#ifndef NOLOG4CXX
-/**
- * Call this first to configure logging output.
- */
-void configureLogging(const std::string& loglevel = "INFO") {
-	// configure logging
-	log4cxx::BasicConfigurator::configure();
-	if (loglevel == "TRACE") {
-		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getTrace());
-	} else if (loglevel == "DEBUG") {
-		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
-	} else if (loglevel == "INFO") {
-		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
-	} else if (loglevel == "WARN") {
-		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getWarn());
-	} else if (loglevel == "ERROR") {
-		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getError());
-	} else {
-		ERROR("unknown loglevel: " << loglevel);
-		exit(1);
-	}
-}
-#endif
-#endif
 
 
 /**
@@ -194,9 +162,9 @@ int main(int argc, char **argv) {
 #ifndef NOLOGGING
 #ifndef NOLOG4CXX
 	if (options[LOGLEVEL]) {
-		configureLogging(options[LOGLEVEL].arg);
+		Aux::configureLogging(options[LOGLEVEL].arg);
 	} else {
-		configureLogging();	// with default level
+		Aux::configureLogging();	// with default level
 	}
 #endif
 #endif

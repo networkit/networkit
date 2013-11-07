@@ -33,7 +33,11 @@ def stdstring(pystring):
 	return pybytes
 
 
-# Cython class definitions
+
+# Function definitions
+
+
+# Class definitions
 
 
 ## Module: graph

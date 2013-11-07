@@ -61,11 +61,26 @@ void Cover::toSingleton(index e) {
 }
 
 void Cover::allToSingletons() {
-	// TODO:
+	for (index e = 0; e <= this->z; ++e) {
+		toSingleton(e);
+	}
 }
 
 void Cover::mergeSubets(index s, index t) {
-	// TODO:
+	assert (s <= omega);
+	assert (t <= omega);
+	index m = newSubsetId(); // new id for merged set
+	for (index e = 0; e <= this->z; ++e) {
+		auto its = data[e].find(s);
+		auto itt = data[e].find(t);
+		if (its != data[e].end()) {
+			data[e].erase(its);
+			data[e].insert(m);
+		} else if (itt != data[e].end()) {
+			data[e].erase(itt);
+			data[e].insert(m);
+		}
+	}
 }
 
 index Cover::upperBound() const {

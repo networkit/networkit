@@ -30,7 +30,7 @@ void Partition::toSingleton(index e) {
 
 void Partition::allToSingletons() {
 	for (index e = 0; e <= this->z; ++e) {
-		this->data[e] = newSubsetId();
+		toSingleton(e);
 	}
 }
 
