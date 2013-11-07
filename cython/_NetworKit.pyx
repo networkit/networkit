@@ -77,6 +77,7 @@ cdef extern from "../src/graph/Graph.h":
 		
 
 cdef class Graph:
+	"""An undirected, optionally weighted graph"""
 	cdef _Graph _this
 	
 	def __cinit__(self, n=None):
@@ -138,7 +139,7 @@ cdef extern from "../src/graph/BFS.h":
 		vector[count] run(_Graph G, node source)
 
 cdef class BFS:
-	""" simple breadth-first search"""
+	""" Simple breadth-first search"""
 	cdef _BFS _this
 
 	def run(self, Graph G not None, source):
@@ -228,6 +229,9 @@ cdef extern from "../src/io/METISGraphReader.h":
 		_Graph read(string path)
 
 cdef class METISGraphReader:
+	""" Reads the METIS adjacency file format [1]
+		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+	"""
 	cdef _METISGraphReader _this
 	
 	def read(self, path):
@@ -242,6 +246,9 @@ cdef extern from "../src/io/FastMETISGraphReader.h":
 		_Graph read(string path)
 
 cdef class FastMETISGraphReader:
+	""" A faster but currently experimental implementation of a reader for
+		the METIS format.
+	"""
 	cdef _FastMETISGraphReader _this
 	
 	def read(self, path):
@@ -258,6 +265,7 @@ cdef extern from "../src/io/DotGraphWriter.h":
 
 
 cdef class DotGraphWriter:
+	""" Writes graphs in the .dot/GraphViz format"""
 	cdef _DotGraphWriter _this
 	
 	def write(self, Graph G not None, path):
@@ -273,6 +281,7 @@ cdef extern from "../src/io/EdgeListIO.h":
 		void write(_Graph G, string path)
 
 cdef class EdgeListIO:
+	""" Reads and writes graphs in various edge list formats"""
 
 	cdef _EdgeListIO _this
 
@@ -295,6 +304,7 @@ cdef extern from "../src/io/LineFileReader.h":
 
 
 cdef class LineFileReader:
+	""" Reads a file and puts each line in a list of strings """
 	cdef _LineFileReader _this
 
 	def read(self, path):
@@ -307,6 +317,9 @@ cdef extern from "../src/io/SNAPGraphWriter.h":
 		void write(_Graph G, string path) 
 
 cdef class SNAPGraphWriter:
+	""" Writes graphs in a format suitable for the Georgia Tech SNAP software [1]
+		[1]: http://snap-graph.sourceforge.net/
+	"""
 	cdef _SNAPGraphWriter _this
 
 	def write(self, Graph G, path):
@@ -342,6 +355,9 @@ cdef extern from "../src/clustering/Clustering.h":
 		vector[node] getMembers(cluster C)
 
 cdef class Clustering:
+	"""
+		Represents a partition of the node set into disjoint subsets (clusters).
+	"""
 	cdef _Clustering _this
 	
 	cdef setThis(self, _Clustering other):
@@ -381,6 +397,10 @@ cdef extern from "../src/clustering/Modularity.h":
 		
 
 cdef class Modularity:
+	"""
+		Modularity [1] is a quality index for community detection.
+		[1]: http://en.wikipedia.org/wiki/Modularity_%28networks%29
+	"""
 	cdef _Modularity _this
 	
 	def getQuality(self, Clustering zeta, Graph G):
@@ -513,6 +533,7 @@ cdef extern from "../src/properties/GraphProperties.h" namespace "NetworKit::Gra
 		pass
 
 cdef class GraphProperties:
+	""" Collects various functions for basic graph properties """
 
 	@staticmethod
 	def minMaxDegree(Graph G not None):
@@ -543,6 +564,9 @@ cdef extern from "../src/properties/ConnectedComponents.h":
 
 
 cdef class ConnectedComponents:
+	""" Determines the connected components and associated values for
+		an undirected graph.
+	"""
 	cdef _ConnectedComponents _this
 
 	def run(self, Graph G):
