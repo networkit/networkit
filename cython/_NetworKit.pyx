@@ -32,6 +32,9 @@ def stdstring(pystring):
 	pybytes = pystring.encode("utf-8")
 	return pybytes
 
+def pystring(stdstring):
+	""" convert a std::string (= python byte string) to a normal Python string"""
+	return stdstring.decode("utf-8")
 
 
 # Function definitions
@@ -46,7 +49,7 @@ def configureLogging(loglevel="ERROR"):
 
 def currentLogLevel():
 	""" Get the current log level"""
-	return _currentLogLevel();
+	return pystring(_currentLogLevel());
 
 # Class definitions
 
