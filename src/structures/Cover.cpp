@@ -84,11 +84,11 @@ void Cover::mergeSubets(index s, index t) {
 }
 
 index Cover::upperBound() const {
-	// TODO:
+	return omega + 1;	// to enable usual loop test x < upperBound()
 }
 
 index Cover::lowerBound() const {
-	// TODO:
+	return 0;
 }
 
 std::vector<count> Cover::subsetSizes() const {
