@@ -10,8 +10,6 @@
 
 #include "DissimilarityMeasure.h"
 
-#include "../auxiliary/RandomInteger.h"
-
 namespace NetworKit {
 
 class SampledRandMeasure: public NetworKit::DissimilarityMeasure {

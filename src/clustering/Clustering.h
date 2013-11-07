@@ -8,7 +8,7 @@
 #ifndef CLUSTERING_H_
 #define CLUSTERING_H_
 
-#include <set>
+
 
 #include "../graph/NodeMap.h"
 #include <cassert>
@@ -48,25 +48,24 @@ public:
 	 */
 	Clustering();
 
-	// FIXME: the constructor is outdated and will lead to an error if nodes from the graph have been deleted
 	/**
 	 * Construct new clustering.
 	 *
-	 * @param[in]	n	number of nodes
+	 * @param[in]	z	upper node id bound
 	 */
-	Clustering(count n);
+	Clustering(index z);
 
 	virtual ~Clustering();
 
 
 	/**
-	 * Set a human-readable identifier (vulg. a "name") for the graph instance.
+	 * Set a human-readable identifier for the instance.
 	 */
 	void setName(std::string name);
 
 
 	/**
-	 * Get the human-readable identifier (vulg. the "name") of the graph
+	 * Get the human-readable identifier
 	 */
 	std::string getName() const;
 
@@ -231,8 +230,16 @@ public:
 	template<typename Callback> void parallelForEntries(Callback handle) const;
 
 
+	/**
+	 * Get a list of cluster sizes. Indices do not necessarily correspond to cluster ids.
+	 */
 	std::vector<count> clusterSizes() const;
 
+
+	/**
+	 * Get a map from cluster id to size of the cluster.
+	 */
+	std::map<cluster, count> clusterSizeMap() const;
 
 	/**
 	 * Append a node.

@@ -7,6 +7,7 @@
 
 #include "Clustering.h"
 #include <algorithm>
+#include <map>
 
 namespace NetworKit {
 
@@ -16,11 +17,11 @@ Clustering::Clustering() :
 				this->upperIdBound = 0;// upper id bound = n is okay only for agglomeratively created clusters
 			}
 
-Clustering::Clustering(count n) :
-		NodeMap<cluster>(n, none), name("noname") {
+Clustering::Clustering(count z) :
+		NodeMap<cluster>(z, none), name("noname") {
 			// all entries are initialized to none, which means that the nodes are unclustered
 				this->nextCluster = 0;// first cluster index is 0
-				this->upperIdBound = n;// upper id bound = n is okay only for agglomeratively created clusters
+				this->upperIdBound = z;// upper id bound = n is okay only for agglomeratively created clusters
 			}
 
 Clustering::~Clustering() {
@@ -185,26 +186,28 @@ void Clustering::compact() {
 	TRACE("upperBound: " << upperBound());
 }
 
+
+
+std::map<cluster, count> Clustering::clusterSizeMap() const {
+	std::map<cluster, count> cluster2size;
+
+	this->forEntries([&](node u, cluster c){
+		if (c != none) {
+			cluster2size[c] += 1;
+		}
+	});
+
+	return cluster2size;
+}
+
+
 std::vector<count> Clustering::clusterSizes() const {
-	count numC = this->numberOfClusters();
-	std::vector<count> clusterSizes(numC);
-	const count n = this->numberOfNodes();
-
-// sequential iteration
-//	this->forEntries([&](node v, cluster c) {
-//		c = data[v];
-//		++clusterSizes[c];
-//	});
-
-	// does not work with default parallel iterator!
-#pragma omp parallel for
-	for (index v = 0; v < n; ++v) {
-		cluster c = data[v];
-#pragma omp atomic
-		++clusterSizes[c];
+	std::vector<count> sizes;
+	std::map<cluster, count> map = this->clusterSizeMap();
+	for (auto kv : map) {
+		sizes.push_back(kv.second);
 	}
-
-	return clusterSizes;
+	return sizes;
 }
 
 float Clustering::getImbalance() {
@@ -216,6 +219,8 @@ float Clustering::getImbalance() {
 	float imbalance = maxClusterSize / avg;
 	return imbalance;
 }
+
+
 
 void Clustering::append(node u) {
 	this->data.push_back(this->defaultValue);
@@ -260,6 +265,7 @@ Graph Clustering::communicationGraph(const Graph& graph) {
 
 	return commGraph;
 }
+
 
 edgeweight Clustering::weightedDegreeWithCluster(const Graph& graph, node u,
 		cluster cid) const {

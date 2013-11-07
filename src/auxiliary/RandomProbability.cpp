@@ -9,19 +9,17 @@
 
 namespace Aux {
 
-RandomProbability::RandomProbability() :  randomEngine(this->randomDevice()), distribution(0.0, 1.0) {
-}
+std::mt19937_64 RandomProbability::randomEngine = std::mt19937_64(time(nullptr));	// initialize mersenne twister with current time
 
-RandomProbability::~RandomProbability() {
-	// TODO Auto-generated destructor stub
-}
+
 
 double RandomProbability::generate() {
-	double r = this->distribution(this->randomEngine);
+	std::uniform_real_distribution<double> distribution;
+	double r = distribution(RandomProbability::randomEngine);
 	return r;
 }
 
-float RandomProbability::randomFloat() const {
+float RandomProbability::randomFloat() {
 	return ((float) rand()) / (RAND_MAX + 1.0f);
 }
 

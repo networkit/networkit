@@ -42,7 +42,7 @@ using namespace NetworKit;
 /**
  * Call this first to configure logging output.
  */
-void configureLogging(const std::string& loglevel = "INFO") {
+void configureLogging(const std::string& loglevel = "ERROR") {
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
 	if (loglevel == "TRACE") {

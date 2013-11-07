@@ -8,11 +8,7 @@
 #ifndef CONTRACTER_H_
 #define CONTRACTER_H_
 
-#include "../graph/Graph.h"
-
-
 namespace NetworKit {
-
 
 class Contracter {
 

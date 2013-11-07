@@ -9,13 +9,6 @@
 
 namespace NetworKit {
 
-BFS::BFS() {
-
-}
-
-BFS::~BFS() {
-
-}
 
 std::vector<count> BFS::run(const Graph& g, node source) const {
 	count infDist = std::numeric_limits<count>::max();

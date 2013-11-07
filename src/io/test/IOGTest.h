@@ -30,7 +30,7 @@
 #include "../SNAPEdgeListClusteringReader.h"
 #include "../../clustering/Clustering.h"
 #include "../../clustering/Modularity.h"
-#include "../../community/LabelPropagation.h"
+#include "../../community/PLP.h"
 #include "../SNAPGraphWriter.h"
 #include "../FastMETISGraphReader.h"
 

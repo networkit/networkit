@@ -9,7 +9,6 @@
 #define DYNAMICNMIDISTANCE_H_
 
 #include "DissimilarityMeasure.h"
-#include "../overlap/RegionGrowingOverlapper.h"
 #include "NMIDistance.h"
 
 namespace NetworKit {

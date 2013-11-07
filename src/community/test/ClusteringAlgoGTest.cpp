@@ -7,18 +7,60 @@
 
 #include "ClusteringAlgoGTest.h"
 
-#include "../PLM2.h"
+#include "../PLP.h"
+#include "../PLM.h"
+#include "../CNM.h"
+#include "../ParallelAgglomerativeClusterer.h"
+#include "../../clustering/Modularity.h"
+#include "../../graph/GraphGenerator.h"
+#include "../../clustering/ClusteringGenerator.h"
+#include "../../io/METISGraphReader.h"
+#include "../EPP.h"
+#include "../../overlap/HashingOverlapper.h"
+
+
 
 #ifndef NOGTEST
 
 namespace NetworKit {
+
+TEST_F(ClusteringAlgoGTest, testEnsemblePreprocessing) {
+	count n = 1000;
+	count k = 10;
+	double pin = 1.0;
+	double pout = 0.0;
+
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	EPP ensemble;
+
+	count b = 4;
+	for (count i = 0; i < b; ++i) {
+		ensemble.addBaseClusterer(*(new PLP()));
+	}
+	ensemble.setFinalClusterer(*(new PLM()));
+	ensemble.setOverlapper(*(new HashingOverlapper));
+
+	Clustering zeta = ensemble.run(G);
+
+	INFO("number of clusters:" << zeta.numberOfClusters());
+
+	Modularity modularity;
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+
+
+
+}
+
+
 
 TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
 	GraphGenerator graphGenerator;
 	int n = 100;
 	Graph G = graphGenerator.makeErdosRenyiGraph(n, 0.2);
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
@@ -37,7 +79,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClus
 	count k = 3; // number of clusters
 	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.001);
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	Modularity modularity;
@@ -58,12 +100,12 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 
 	count k = 3; // number of clusters
 	ClusteringGenerator clusteringGen;
-	Clustering reference = clusteringGen.makeRandomClustering(Gtrash, 3);
+	Clustering reference = clusteringGen.makeRandomClustering(Gtrash, k);
 	assert (reference.numberOfClusters() == k);
 
 	Graph G = graphGen.makeClusteredRandomGraph(reference, 1.0, 0.0);	// LabelPropagation is very bad at discerning clusters and needs this large pin/pout difference
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	Modularity modularity;
@@ -84,7 +126,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 	int k = 2; // number of clusters
 	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.0);
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	Modularity modularity;
@@ -102,7 +144,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	node v = 0;
 	G.setWeight(v, v, 42.0);
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G);
 
 	EXPECT_TRUE(zeta.isProper(G));
@@ -127,7 +169,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 	std::pair<Graph, Clustering> G_ref = graphGen.makeClusteredRandomGraphWithReferenceClustering(n, k, pin, pout);
 
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering zeta = lp.run(G_ref.first);
 
 	Modularity modularity;
@@ -148,7 +190,7 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	Louvain louvain;
+	PLM louvain;
 	Clustering zeta = louvain.run(G);
 
 	INFO("number of clusters: " << zeta.numberOfClusters());
@@ -167,7 +209,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelSimple) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	Louvain louvain("simple");
+	PLM louvain("simple");
 	Clustering zeta = louvain.run(G);
 
 	INFO("number of clusters: " << zeta.numberOfClusters());
@@ -206,7 +248,7 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	Louvain louvain("balanced");
+	PLM louvain("balanced");
 	Clustering zeta = louvain.run(G);
 
 	INFO("number of clusters: " << zeta.numberOfClusters());
@@ -234,32 +276,14 @@ TEST_F(ClusteringAlgoGTest, testCNM) {
 	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
 	EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
 	EXPECT_TRUE(clustering.isProper(G));
-}
 
-TEST_F(ClusteringAlgoGTest, tryCNM_WW) {
-	count n = 200;
-	count k = 25;
-	double pin = 0.9;
-	double pout = 0.005;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
-
-	// slow CNM
-	CNM_WW cnm_ww;
-	Clustering clustering = cnm_ww.run(G);
-	Modularity modularity;
-
-	INFO("CNM_WW number of clusters: " << clustering.numberOfClusters());
-	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
-	EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
-	EXPECT_TRUE(clustering.isProper(G));
 }
 
 
 TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 	Modularity modularity;
 	CNM cnm;
-	Louvain louvain;
+	PLM louvain;
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 	// this takes much longer than a unit test should
@@ -295,7 +319,7 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 TEST_F(ClusteringAlgoGTest, testParallelAgglomerativeAndLouvain) {
 	Modularity modularity;
 	ParallelAgglomerativeClusterer aggl;
-	Louvain louvain;
+	PLM louvain;
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 	Graph blog = reader.read("input/polblogs.graph");
@@ -326,25 +350,25 @@ TEST_F(ClusteringAlgoGTest, testParallelAgglomerativeAndLouvain) {
 }
 
 
-TEST_F(ClusteringAlgoGTest, testPLM2) {
-	count n = 500;
-	count k = 25;
-	double pin = 0.9;
-	double pout = 0.005;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+// TEST_F(ClusteringAlgoGTest, testPLM2) {
+// 	count n = 500;
+// 	count k = 25;
+// 	double pin = 0.9;
+// 	double pout = 0.005;
+// 	GraphGenerator graphGen;
+// 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	PLM2 plm2("simple");
-	Clustering zeta = plm2.run(G);
+// 	PLM2 plm2("simple");
+// 	Clustering zeta = plm2.run(G);
 
-	count k2 = zeta.numberOfClusters();
-	INFO("number of clusters: " << k2);
-	EXPECT_EQ(k, k2) << "number of clusters should be " << k;
+// 	count k2 = zeta.numberOfClusters();
+// 	INFO("number of clusters: " << k2);
+// 	EXPECT_EQ(k, k2) << "number of clusters should be " << k;
 
-	Modularity modularity;
-	INFO("modularity: " << modularity.getQuality(zeta, G));
+// 	Modularity modularity;
+// 	INFO("modularity: " << modularity.getQuality(zeta, G));
 
-}
+// }
 
 
 

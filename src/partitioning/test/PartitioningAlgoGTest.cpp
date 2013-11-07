@@ -77,7 +77,7 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 	double exponent = 2.75;
 	BalancedLabelPropagation blp(exponent);
 	count k = 4;
-	count n = airfoil1.numberOfNodes();
+	//count n = airfoil1.numberOfNodes();
 
 	// *** airfoil1 graph
 	// ML-BLP
@@ -113,79 +113,79 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 }
 
 
-TEST_F(PartitioningAlgoGTest, tryMultilevelKernighanLinOnRealGraph) {
-	Modularity modularity;
-	EdgeCut edgeCut;
-#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
-	DibapGraphReader reader;
-	Graph airfoil1 = reader.read("input/airfoil1.gi");
-#else
-	METISGraphReader reader;
-	Graph airfoil1 = reader.read("input/airfoil1.graph");
-#endif
-	KernighanLin partitioner;
-	count k = 4;
+// TEST_F(PartitioningAlgoGTest, tryMultilevelKernighanLinOnRealGraph) {
+// 	Modularity modularity;
+// 	EdgeCut edgeCut;
+// #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
+// 	DibapGraphReader reader;
+// 	Graph airfoil1 = reader.read("input/airfoil1.gi");
+// #else
+// 	METISGraphReader reader;
+// 	Graph airfoil1 = reader.read("input/airfoil1.graph");
+// #endif
+// 	KernighanLin partitioner;
+// 	count k = 4;
 
-	// *** airfoil1 graph
-	// ML-KL
-	count numVcycles = 5;
-	Clustering partition = partitioner.multilevelRun(airfoil1, k);
-	for (index vcycle = 1; vcycle < numVcycles; ++vcycle) {
-		partition = partitioner.multilevelRerun(airfoil1, k, partition);
-	}
+// 	// *** airfoil1 graph
+// 	// ML-KL
+// 	count numVcycles = 5;
+// 	Clustering partition = partitioner.multilevelRun(airfoil1, k);
+// 	for (index vcycle = 1; vcycle < numVcycles; ++vcycle) {
+// 		partition = partitioner.multilevelRerun(airfoil1, k, partition);
+// 	}
 
-	double cut = edgeCut.getQuality(partition, airfoil1);
-	INFO("ML-KL number of airfoil1 blocks: " << partition.numberOfClusters());
-	INFO("ML-KL modularity airfoil1 graph:   " << modularity.getQuality(partition, airfoil1) << ", cut: " << cut);
-	std::vector<count> clusterSizes = partition.clusterSizes();
-	for (index p = 0; p < k; ++p) {
-		DEBUG("size of cluster " << p << ": " << clusterSizes[p]);
-	}
+// 	double cut = edgeCut.getQuality(partition, airfoil1);
+// 	INFO("ML-KL number of airfoil1 blocks: " << partition.numberOfClusters());
+// 	INFO("ML-KL modularity airfoil1 graph:   " << modularity.getQuality(partition, airfoil1) << ", cut: " << cut);
+// 	std::vector<count> clusterSizes = partition.clusterSizes();
+// 	for (index p = 0; p < k; ++p) {
+// 		DEBUG("size of cluster " << p << ": " << clusterSizes[p]);
+// 	}
 
-#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
-	// output to EPS file
-	PostscriptWriter psWriter(airfoil1, false);
-	psWriter.write(partition, "output/airfoil1-mlblp-4p.eps");
-	ClusteringWriter partWriter;
-	partWriter.write(partition, "output/airfoil1-mlblp.4p");
-#endif
-}
+// #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
+// 	// output to EPS file
+// 	PostscriptWriter psWriter(airfoil1, false);
+// 	psWriter.write(partition, "output/airfoil1-mlblp-4p.eps");
+// 	ClusteringWriter partWriter;
+// 	partWriter.write(partition, "output/airfoil1-mlblp.4p");
+// #endif
+// }
 
 
-TEST_F(PartitioningAlgoGTest, tryKernighanLinStumppOnRealGraph) {
-	Modularity modularity;
-	EdgeCut edgeCut;
-#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
-	DibapGraphReader reader;
-	Graph airfoil1 = reader.read("input/airfoil1.gi");
-#else
-	METISGraphReader reader;
-	Graph airfoil1 = reader.read("input/airfoil1.graph");
-#endif
+// TEST_F(PartitioningAlgoGTest, tryKernighanLinStumppOnRealGraph) {
+// 	Modularity modularity;
+// 	EdgeCut edgeCut;
+// #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
+// 	DibapGraphReader reader;
+// 	Graph airfoil1 = reader.read("input/airfoil1.gi");
+// #else
+// 	METISGraphReader reader;
+// 	Graph airfoil1 = reader.read("input/airfoil1.graph");
+// #endif
 
-	KERNIGHAN_LIN partitioner;
-	count k = 2;
+// 	KERNIGHAN_LIN partitioner;
+// 	count k = 2;
 
-	// *** airfoil1 graph
-	// KL
-	Clustering partition = partitioner.run(airfoil1);
+// 	// *** airfoil1 graph
+// 	// KL
+// 	Clustering partition = partitioner.run(airfoil1);
 
-	double cut = edgeCut.getQuality(partition, airfoil1);
-	INFO("ML-KL number of airfoil1 blocks: " << partition.numberOfClusters());
-	INFO("ML-KL modularity airfoil1 graph:   " << modularity.getQuality(partition, airfoil1) << ", cut: " << cut);
-	std::vector<count> clusterSizes = partition.clusterSizes();
-	for (index p = 0; p < k; ++p) {
-		DEBUG("size of cluster " << p << ": " << clusterSizes[p]);
-	}
+// 	double cut = edgeCut.getQuality(partition, airfoil1);
+// 	INFO("ML-KL number of airfoil1 blocks: " << partition.numberOfClusters());
+// 	INFO("ML-KL modularity airfoil1 graph:   " << modularity.getQuality(partition, airfoil1) << ", cut: " << cut);
+// 	std::vector<count> clusterSizes = partition.clusterSizes();
+// 	for (index p = 0; p < k; ++p) {
+// 		DEBUG("size of cluster " << p << ": " << clusterSizes[p]);
+// 	}
 
-#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
-	// output to EPS file
-	PostscriptWriter psWriter(airfoil1, false);
-	psWriter.write(partition, "output/airfoil1-mlblp-4p.eps");
-	ClusteringWriter partWriter;
-	partWriter.write(partition, "output/airfoil1-mlblp.4p");
-#endif
-}
+// #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
+// 	// output to EPS file
+// 	PostscriptWriter psWriter(airfoil1, false);
+// 	psWriter.write(partition, "output/airfoil1-mlblp-4p.eps");
+// 	ClusteringWriter partWriter;
+// 	partWriter.write(partition, "output/airfoil1-mlblp.4p");
+// #endif
+// }
 
 
 

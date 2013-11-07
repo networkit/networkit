@@ -10,6 +10,18 @@
 
 #include "DCDGTest.h"
 
+#include "../DynamicLabelPropagation.h"
+#include "../TDynamicLabelPropagation.h"
+#include "../../generators/DynamicBarabasiAlbertGenerator.h"
+#include "../../generators/DynamicDGSParser.h"
+#include "../DynCDSetup.h"
+#include "../PseudoDynamic.h"
+#include "../../io/METISGraphReader.h"
+#include "../../community/PLP.h"
+#include "../DynamicEnsemble.h"
+#include "../../community/PLM.h"
+#include "../../overlap/HashingOverlapper.h"
+
 namespace NetworKit {
 
 DCDGTest::DCDGTest() {
@@ -63,15 +75,15 @@ TEST_F(DCDGTest, testDynamicLabelPropagation) {
 	INFO("number of clusters 2: " << zeta2.numberOfClusters());
 
 
-	LabelPropagation PLP;
-	Clustering zetaPLP = PLP.run(*G);
+	PLP plp;
+	Clustering zetaPLP = plp.run(*G);
 	INFO("number of clusters for static PLP: " << zetaPLP.numberOfClusters());
 	EXPECT_TRUE(zetaPLP.isProper(*G));
 
 	INFO("first clustering: " << Aux::vectorToString(zeta1.getVector()));
 
-	Louvain PLM;
-	Clustering zetaPLM = PLM.run(*G);
+	PLM plm;
+	Clustering zetaPLM = plm.run(*G);
 	INFO("number of clusters for static PLM: " << zetaPLM.numberOfClusters());
 	EXPECT_TRUE(zetaPLM.isProper(*G));
 
@@ -85,7 +97,7 @@ TEST_F(DCDGTest, tryArxivGraphs) {
 //	std::cout << "[INPUT] .dgs file path >" << std::endl;
 //	std::getline(std::cin, graphPath);
 
-	graphPath = "/Users/cls/workspace/Data/arXiv/CS-all-paper.dgs";
+	graphPath = "input/qfin-all-authors.dgs";
 
 	DynamicGraphSource* source = new DynamicDGSParser(graphPath);
 
@@ -186,7 +198,7 @@ TEST_F(DCDGTest, tryStaticVsDynamic) {
 	setup.run();
 
 	Graph* G = setup.getGraph();
-	LabelPropagation PLP;
+	PLP PLP;
 	Clustering zetaStatic = PLP.run(*G);
 
 	INFO("number of clusters for static: " << zetaStatic.numberOfClusters());
@@ -300,12 +312,12 @@ TEST_F(DCDGTest, tryDynamicEnsemble) {
 	 DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
 	 DynamicCommunityDetector* dynLP1 = new DynamicLabelPropagation(0, "Isolate");
 	 DynamicCommunityDetector* dynLP2 = new DynamicLabelPropagation(0, "IsolateNeighbors");
-	 Clusterer* PLM = new Louvain();
+	 Clusterer* plm = new PLM();
 
 	 DynamicEnsemble* ensemble = new DynamicEnsemble();
 	 ensemble->addBaseAlgorithm(*dynLP1);
 	 ensemble->addBaseAlgorithm(*dynLP2);
-	 ensemble->setFinalAlgorithm(*PLM);
+	 ensemble->setFinalAlgorithm(*plm);
 
 	 HashingOverlapper overlapAlgo;
 	 ensemble->setOverlapper(overlapAlgo);
@@ -379,12 +391,12 @@ TEST_F(DCDGTest, testDynamicEnsembleWithTDynamicLabelPropagation) {
 	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
 	DynamicCommunityDetector* dynLP1 = new TDynamicLabelPropagation<Isolate>();
 	DynamicCommunityDetector* dynLP2 = new TDynamicLabelPropagation<IsolateNeighbors>();
-	Clusterer* PLM = new Louvain();
+	Clusterer* plm = new PLM();
 
 	DynamicEnsemble* ensemble = new DynamicEnsemble();
 	ensemble->addBaseAlgorithm(*dynLP1);
 	ensemble->addBaseAlgorithm(*dynLP2);
-	ensemble->setFinalAlgorithm(*PLM);
+	ensemble->setFinalAlgorithm(*plm);
 
 	HashingOverlapper overlapAlgo;
 	ensemble->setOverlapper(overlapAlgo);
@@ -412,7 +424,7 @@ TEST_F(DCDGTest, testSetupWithStatic) {
 	std::vector<DynamicCommunityDetector*> detectors = { dynLP1 };
 	DynCDSetup setup(*dynGen, detectors, 1e2, 10);
 
-	Clusterer* staticAlgo = new LabelPropagation();
+	Clusterer* staticAlgo = new PLP();
 	setup.setStatic(staticAlgo);
 
 	setup.run();

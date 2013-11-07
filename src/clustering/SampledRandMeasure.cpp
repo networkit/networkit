@@ -7,6 +7,8 @@
 
 #include "SampledRandMeasure.h"
 
+#include "../auxiliary/RandomInteger.h"
+
 namespace NetworKit {
 
 SampledRandMeasure::SampledRandMeasure(count maxSamples) : maxSamples(maxSamples) {
@@ -21,8 +23,6 @@ double SampledRandMeasure::getDissimilarity(Graph& G, Clustering& first, Cluster
 	assert (G.numberOfNodes() > 0);
 	assert (G.numberOfNodes() > maxSamples);
 
-	Aux::RandomInteger randInt;
-
 	count n11 = 0; 	// number of node pairs for which clusterings aggree
 	count n00 = 0;	// number of node pairs for which clusterings disagree
 
@@ -32,8 +32,8 @@ double SampledRandMeasure::getDissimilarity(Graph& G, Clustering& first, Cluster
 	index z = G.upperNodeIdBound();
 
 	while (nSamples < maxSamples) {
-		node u = randInt.generate(0, z);
-		node v = randInt.generate(0, z);
+		node u = Aux::RandomInteger::generate(0, z);
+		node v = Aux::RandomInteger::generate(0, z);
 		if (u != v) { // nodes should be distinct
 			if (G.hasNode(u) && G.hasNode(v)) { // nodes should exist in the graph
 				if ((first[u] == first[v]) && (second[u] == second[v])) {
