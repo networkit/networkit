@@ -140,9 +140,6 @@ public:
 	bool inSameSubset(index e1, index e2) const;
 
 
-	bool equals(const Partition& other, const std::set<index>& elements) const;
-
-
 	/**
 	 * Get a list of subset sizes. Indices do not necessarily correspond to subset ids.
 	 */
@@ -173,6 +170,29 @@ public:
 	count numberOfSubsets() const;
 
 
+		/**
+	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void forEntries(Callback func);
+
+
+	/**
+	 * Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void parallelForEntries(Callback handle);
+
+	/**
+	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void forEntries(Callback func) const;
+
+
+	/**
+	 * Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void parallelForEntries(Callback handle) const;
+
+
 private:
 	index z;	//!< maximum element index that can be mapped
 	index omega;	//!< maximum subset index ever assigned
@@ -189,4 +209,40 @@ private:
 };
 
 } /* namespace NetworKit */
+
+
+template<typename Callback>
+inline void NetworKit::Partition::forEntries(Callback handle) {
+	for (index e = 0; e < this->z; e += 1) {
+		handle(e, data[e]);
+	}
+
+}
+
+template<typename Callback>
+inline void NetworKit::Partition::forEntries(Callback handle) const {
+	for (index e = 0; e < this->z; e += 1) {
+		handle(e, data[e]);
+	}
+}
+
+template<typename Callback>
+inline void NetworKit::Partition::parallelForEntries(
+		Callback handle) {
+	#pragma omp parallel for
+	for (index e = 0; e < this->z; e += 1) {
+		handle(e, data[e]);
+	}
+}
+
+
+template<typename Callback>
+inline void NetworKit::Partition::parallelForEntries(
+		Callback handle) const {
+	#pragma omp parallel for
+	for (index e = 0; e < this->z; e += 1) {
+		handle(e, data[e]);
+	}
+}
+
 #endif /* PARTITION_H_ */

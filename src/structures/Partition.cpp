@@ -60,7 +60,23 @@ bool Partition::isSingletonPartition(const std::set<index>& elements) const {
 }
 
 count Partition::numberOfSubsets() const {
-	// TODO:
+	std::vector<int> exists(upperBound(), 0); // a boolean vector would not be thread-safe
+
+	this->parallelForEntries([&](index e, index s) {
+		if (s != none) {
+			exists[s] = 1;
+		}
+	});
+
+	count k = 0; // number of actually existing clusters
+	#pragma omp parallel for reduction(+:k)
+	for (index i = 0; i < upperBound(); ++i) {
+		if (exists[i]) {
+			k++;
+		}
+	}
+
+	return k;
 }
 
 index Partition::upperBound() const {
@@ -72,7 +88,7 @@ index Partition::lowerBound() const {
 }
 
 void Partition::compact() {
-	// TODO:
+	// TODO: compact partition
 }
 
 bool Partition::contains(index e) const {
@@ -85,16 +101,25 @@ bool Partition::inSameSubset(index e1, index e2) const {
 	return (data[e1] == data[e2]);
 }
 
-bool Partition::equals(const Partition& other,
-		const std::set<index>& elements) const {
-}
-
 std::vector<count> Partition::subsetSizes() const {
-	// TODO:
+	std::vector<count> sizes;
+	std::map<index, count> map = this->subsetSizeMap();
+	for (auto kv : map) {
+		sizes.push_back(kv.second);
+	}
+	return sizes;
 }
 
 std::map<index, count> Partition::subsetSizeMap() const {
-	// TODO:
+	std::map<index, count> subset2size;
+
+	this->forEntries([&](index e, index s){
+		if (s != none) {
+			subset2size[s] += 1;
+		}
+	});
+
+	return subset2size;
 }
 
 std::set<index> Partition::getMembers(const index s) const {
