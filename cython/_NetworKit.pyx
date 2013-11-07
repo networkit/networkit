@@ -165,6 +165,22 @@ cdef class Dijkstra:
 		return self._this.run(G._this, source)
 
 
+cdef extern from "../src/independentset/Luby.h":
+	cdef cppclass _Luby "NetworKit::Luby":
+		_Luby() except +
+		vector[bool] run(_Graph G)
+		string toString()
+
+cdef class Luby:
+	""" Luby's parallel maximal independent set algorithm"""
+	cdef _Luby _this
+
+	def run(self, Graph G not None):
+		return self._this.run(G._this)
+
+	def toString(self):
+		return self._this.toString().decode("utf-8")
+
 
 # Module: generators
 	
@@ -175,6 +191,7 @@ cdef extern from "../src/graph/GraphGenerator.h":
 
 
 cdef class GraphGenerator:
+	""" Provides several functions for graph generation"""
 	cdef _GraphGenerator _this
 	
 	def __cinit__(self):
@@ -192,6 +209,7 @@ cdef extern from "../src/generators/BarabasiAlbertGenerator.h":
 		_Graph generate()
 
 cdef class BarabasiAlbertGenerator:
+	""" Generates a scale-free graph according to the Barabasi-Albert model """
 	cdef _BarabasiAlbertGenerator _this
 
 	def __cinit__(self, k, nMax, n0):
@@ -295,7 +313,24 @@ cdef class SNAPGraphWriter:
 		self._this.write(G._this, stdstring(path))
 
 
-# Module: ?
+
+# Parameters
+
+cdef extern from "../src/base/Parameters.h":
+	cdef cppclass _Parameters "NetworKit::Parameters":
+		_Parameters() except +
+		void setInt(string key, int64_t value)
+		void setDouble(string key, double value)
+		void setString(key, value)
+		void setBool(string key, bool value)
+		int64_t getInt(string key)
+		double getDouble(string key)
+		string getString(string key)
+		bool getBool(string key)
+
+
+
+# Module: community
 
 
 cdef extern from "../src/clustering/Clustering.h":
@@ -325,24 +360,6 @@ cdef class Clustering:
 	def getMembers(self, C):
 		return self._this.getMembers(C)
 
-
-# Parameters
-
-cdef extern from "../src/base/Parameters.h":
-	cdef cppclass _Parameters "NetworKit::Parameters":
-		_Parameters() except +
-		void setInt(string key, int64_t value)
-		void setDouble(string key, double value)
-		void setString(key, value)
-		void setBool(string key, bool value)
-		int64_t getInt(string key)
-		double getDouble(string key)
-		string getString(string key)
-		bool getBool(string key)
-
-
-
-# Module: community
 
 cdef extern from "../src/clustering/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
@@ -522,6 +539,8 @@ cdef extern from "../src/properties/ConnectedComponents.h":
 		count sizeOfComponent(index component)
 		count componentOfNode(node query)
 		vector[node] getComponent(index component)
+		vector[count] getComponentSizes()
+
 
 cdef class ConnectedComponents:
 	cdef _ConnectedComponents _this
@@ -540,25 +559,12 @@ cdef class ConnectedComponents:
 
 	def getComponent(self, componentIndex):
 		return self._this.getComponent(componentIndex)
+	
+	def getComponentSizes(self):
+		return self._this.getComponentSizes()
 
 
-# module: independentset
 
-cdef extern from "../src/independentset/Luby.h":
-	cdef cppclass _Luby "NetworKit::Luby":
-		_Luby() except +
-		vector[bool] run(_Graph G)
-		string toString()
-
-cdef class Luby:
-	""" Luby's parallel maximal independent set algorithm"""
-	cdef _Luby _this
-
-	def run(self, Graph G not None):
-		return self._this.run(G._this)
-
-	def toString(self):
-		return self._this.toString().decode("utf-8")
 
 
 
