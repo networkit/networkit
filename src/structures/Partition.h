@@ -13,19 +13,32 @@
 #include <vector>
 #include <map>
 #include <cassert>
+#include <limits>
 
-// TODO: implementation
 
 namespace NetworKit {
+
+#define none std::numeric_limits<index>::max()	//!< absence of an entry
 
 typedef uint64_t index;
 typedef uint64_t count;
 
+/**
+ * Implements a partition of a set, i.e. a subdivision of the 
+ * set into disjoint subsets.
+ */
 class Partition {
 
 public:
+
+	/**
+	 * Create a new partition data structure for elements up to a maximum element index.
+	 *
+	 * @param[in]	z	maximum index
+	 */
 	Partition(index z);
-	virtual ~Partition();
+
+	virtual ~Partition() = default;
 
 	/**
 	 *  Index operator.
@@ -48,7 +61,7 @@ public:
 	 * Return the set (id) in which a element
 	 * is contained.
 	 */
-	inline index setOf(index e) const {
+	inline index subsetOf(index e) const {
 		assert (e < this->numberOfElements());
 		return this->data[e];
 	}
@@ -67,7 +80,7 @@ public:
 	/**
 	 * Creates a singleton set containing the element.
 	 */
-	void toSingleton(index u);
+	void toSingleton(index e);
 
 	/**
 	 * Assigns every element to a singleton set.
@@ -76,28 +89,24 @@ public:
 	void allToSingletons();
 
 	/**
-	 * Assigns the nodes from both sets to a new set.
+	 * Assigns the elements from both sets to a new set.
 	 */
 	void mergeSubets(index s, index t);
 
 
 	/**
 	 * Check if partition is a 1-partition,
-	 * i.e. every node is assigned to the same set.
+	 * i.e. every element is assigned to the same set.
 	 */
 	bool isOnePartition(const std::set<index>& elements);
 
 
 	/**
 	 * Check if partition is a singleton partition,
-	 * i.e. every node is assigned to a different set.
+	 * i.e. every element is assigned to a different set.
 	 */
 	bool isSingletonPartition(const std::set<index>& elements) const;
 
-	/**
-	 * Get the current number of sets in this partition.
-	 */
-	count numberOfSubsets() const;
 
 
 	/**
@@ -120,13 +129,13 @@ public:
 
 
 	/**
-	 * Check if partition assigns a valid subset to the node.
+	 * Check if partition assigns a valid subset to the element.
 	 */
-	bool contains(index v) const;
+	bool contains(index e) const;
 
 
 	/**
-	 * Check if two nodes belong to the same subset
+	 * Check if two elements belong to the same subset
 	 */
 	bool inSameSubset(index e1, index e2) const;
 
@@ -149,25 +158,34 @@ public:
 	/**
 	 * Get the members of a specific subset.
 	 */
-	std::vector<index> getMembers(const index s) const;
-
-
-	count numberOfElements() const;
-
-
-private:
-	std::vector<index> data;
-	index nextset;	//!< next free set id for new set
-	std::string name;
-	index upperIdBound;	//!< upper bound for set ids
+	std::set<index> getMembers(const index s) const;
 
 
 	/**
-	 * Check if partition can hold a valid entry for the element because
-	 * it is in the range mapped.
+	 * @return number of elements in the partition.
 	 */
-	bool isInRange(index v);
+	count numberOfElements() const;
 
+
+	/**
+	 * Get the current number of sets in this partition.
+	 */
+	count numberOfSubsets() const;
+
+
+private:
+	index z;	//!< maximum element index that can be mapped
+	index omega;	//!< maximum subset index ever assigned
+	std::vector<index> data;  	//!< data container, indexed by element index, containing subset index
+
+	/**
+	 * Allocates and returns a new subset id.
+	 */
+	inline index newSubsetId() {
+		omega++;
+		index s = omega;
+		return s;
+	}
 };
 
 } /* namespace NetworKit */
