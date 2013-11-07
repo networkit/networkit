@@ -1,0 +1,13 @@
+# NetworKit User Guide
+
+
+## Settings
+
+### Verbosity
+
+The C++ kernel of NetworKit outputs text to the terminal via the [log4cxx](http://logging.apache.org/log4cxx/) library. The amount of detail is controlled by the current log level, which is one of `TRACE`, `DEBUG`, `INFO`, `WARN`, and `ERROR`. By default, the log level is `ERROR`. You can set the log level at runtime and do this from the Python shell:
+
+	>>> NetworKit.configureLogging(loglevel="DEBUG")
+	>>> NetworKit.currentLogLevel()
+		'ERROR'
+

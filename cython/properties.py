@@ -5,7 +5,7 @@ from _NetworKit import GraphProperties, ConnectedComponents
 import NetworKit
 import community
 import termgraph
-import aux
+import auxiliary
 
 # other modules
 import textwrap
@@ -37,17 +37,6 @@ def degrees(nkG):
     minMaxDeg = GraphProperties.minMaxDegree(nkG)
     avgDeg = GraphProperties.averageDegree(nkG)
     return (minMaxDeg[0], minMaxDeg[1], avgDeg)
-
-def components_nx(nxG):
-    """Analyze connected components"""
-    # TODO: replace with NetworKit implementation
-    components = nx.connected_components(nxG)
-    nComponents = len(components)
-    componentSizes = [len(component) for component in components]
-    componentSizes.sort(reverse=True) # sort in descending order
-    sizeLargestComponent = componentSizes[0]
-    return (nComponents, sizeLargestComponent)
-
 
 def components(G):
     """ Find and analyze detected components """
