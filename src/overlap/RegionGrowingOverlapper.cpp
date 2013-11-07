@@ -22,14 +22,14 @@ Clustering RegionGrowingOverlapper::run(Graph& G,
 		std::vector<Clustering>& clusterings) {
 	// TODO: test
 
-	int64_t n = G.numberOfNodes();
+	uint64_t n = G.numberOfNodes();
 	Clustering core(n); // "core groups" resulting from overlap of all clustering
 	core.allToSingletons(); // assign all nodes to singletons
 
 	std::vector<int> visited(n, 0); // node -> has been visited (1) or not (0). not <bool> because of thread-safety
 
 	node r = -1; // start node for BFS
-	bool allVisited = false; // have all nodes been visited by BFS?
+	//bool allVisited = false; // have all nodes been visited by BFS?
 
 	std::set<index> unvisited;
 	for (count i = 0; i < n; ++i) {

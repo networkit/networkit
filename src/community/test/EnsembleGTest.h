@@ -12,16 +12,6 @@
 
 #include <gtest/gtest.h>
 
-#include "../EnsemblePreprocessing.h"
-#include "../../graph/GraphGenerator.h"
-#include "../../clustering/Modularity.h"
-#include "../../clustering/JaccardMeasure.h"
-#include "../../clustering/NodeStructuralRandMeasure.h"
-#include "../../community/LabelPropagation.h"
-#include "../../community/Louvain.h"
-#include "../../overlap/HashingOverlapper.h"
-
-
 namespace NetworKit {
 
 class EnsembleGTest: public testing::Test {

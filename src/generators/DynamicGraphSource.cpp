@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynamicGraphSource::DynamicGraphSource() : G(NULL), Gproxy(NULL), graphSet(false), graphInitialized(false) {
+DynamicGraphSource::DynamicGraphSource() : Gproxy(NULL), G(NULL), graphSet(false), graphInitialized(false) {
 	// Graph and GraphEventProxy are set by calling newGraph
 }
 

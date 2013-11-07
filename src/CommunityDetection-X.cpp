@@ -37,12 +37,11 @@
 #include "auxiliary/StringTools.h"
 #include "graph/Graph.h"
 #include "graph/GraphGenerator.h"
-#include "community/EnsembleMultilevel.h"
-#include "community/EnsemblePreprocessing.h"
-#include "community/LabelPropagation.h"
+#include "community/EPP.h"
+#include "community/PLP.h"
 #include "community/ParallelAgglomerativeClusterer.h"
 #include "community/RandomClusterer.h"
-#include "community/Louvain.h"
+#include "community/PLM.h"
 #include "clustering/Clustering.h"
 #include "clustering/Modularity.h"
 #include "clustering/Coverage.h"
@@ -53,6 +52,8 @@
 #include "io/DotClusteringWriter.h"
 #include "io/EdgeListIO.h"
 #include "generators/DynamicBarabasiAlbertGenerator.h"
+#include "overlap/RegionGrowingOverlapper.h"
+#include "overlap/HashingOverlapper.h"
 
 
 // revision
@@ -102,7 +103,7 @@ Graph generateClusteredRandomGraph(count n, count k, double pin, double pout) {
 
 Graph generatePreferentialAttachmentGraph(count n, count a) {
 
-	// TODO: replace this with StaticBarabasiAlbertGenerator
+	// TODO: replace this with BarabasiAlbertGenerator
 	throw std::runtime_error("currently not implemented");
 
 	std::cout << "[BEGIN] generating preferential attachment graph..." << std::flush;
@@ -387,7 +388,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		}
 
 		if (algoName == "PLP") {
-			algo = new LabelPropagation(updateThreshold);
+			algo = new PLP(updateThreshold);
 		} else if (algoName == "Agglomerative") {
 			algo = new ParallelAgglomerativeClusterer();
 		} else if (algoName == "RandomClusterer") {
@@ -395,14 +396,14 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		} else if (algoName == "PLM") {
 			// algoParams is parallelization strategy
 			if (algoParams.empty()) {
-				algo = new Louvain();
+				algo = new PLM();
 			} else {
-				algo = new Louvain(algoParams);
+				algo = new PLM(algoParams);
 			}
 		} else if (algoName == "EML") {
 			// TODO: call multilevel algorithm
 		} else if (algoName == "EPP") {
-			EnsemblePreprocessing* ensemblePre = new EnsemblePreprocessing();
+			EPP* ensemblePre = new EPP();
 			// parse params
 			std::string ensembleFrontArg = Aux::StringTools::split(algoParams, '+').front();
 			std::string finalClustererArg = Aux::StringTools::split(algoParams, '+').back();
@@ -414,7 +415,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			for (int i = 0; i < ensembleSize; i += 1) {
 				Clusterer* base = NULL;
 				if (baseClustererArg == "PLP") {
-					base = new LabelPropagation(updateThreshold);
+					base = new PLP(updateThreshold);
 				} else if (baseClustererArg == "Agglomerative") {
 					base = new ParallelAgglomerativeClusterer();
 				} else {
@@ -443,11 +444,11 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			// 3. Final Clusterer
 			Clusterer* final = NULL;
 			if (finalClustererArg == "PLP") {
-				final = new LabelPropagation();
+				final = new PLP();
 			} else if (finalClustererArg == "Agglomerative") {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "PLM") {
-				final = new Louvain("balanced");
+				final = new PLM("balanced");
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);
@@ -708,7 +709,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (options[SCALESTRENGTH]) {
-		SCALE_STRENGTH = options[SCALE_STRENGTH].arg;
+		SCALE_STRENGTH = double(std::atof(options[SCALESTRENGTH].arg));
 	}
 
 

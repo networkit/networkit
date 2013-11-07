@@ -8,7 +8,6 @@
 #ifndef COMMUNITYGRAPH_H_
 #define COMMUNITYGRAPH_H_
 
-#include "../graph/Graph.h"
 #include "../clustering/Clustering.h"
 
 namespace NetworKit {

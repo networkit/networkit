@@ -104,7 +104,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 	EXPECT_EQ(n, G.numberOfNodes()) << "number of generated nodes";
 
-	LabelPropagation lp;
+	PLP lp;
 	Clustering clustering = lp.run(G);
 
 	// output to EPS file
@@ -112,7 +112,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	psWriter.write(clustering, "output/pubweb-lp-cluster.eps");
 }
 
-
+// FIXME: segmentation fault
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
 	count numInitialNodes = 300;
@@ -142,76 +142,19 @@ TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 		PostscriptWriter psWriter(*G, true);
 		char filename[20];
 		assert(iter < 10);
-		sprintf(filename, "output/pubweb-%i.eps", iter);
+		sprintf(filename, "output/pubweb-%i.eps", int(iter));
 		psWriter.write(filename);
 	}
 }
 
 
-TEST_F(GeneratorsGTest, tryBTERGenerator) {
-	std::vector<count> degreeDistribution { 0, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
-	std::vector<double> clusteringCoefficients {0.0, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 };
-	DEBUG("construct BTERGenerator");
-	BTERGenerator bter(degreeDistribution, clusteringCoefficients, 1.0);
-	std::pair<count, count> nm = bter.desiredGraphSize();
-	DEBUG("call BTERGenerator");
-	Graph G = bter.generate();
 
-	EXPECT_EQ(nm.first, G.numberOfNodes());
-	EXPECT_EQ(nm.second, G.numberOfEdges());
-
-	METISGraphWriter writer;
-	writer.write(G, "output/BTERTest.graph");
-}
-
-
-TEST_F(GeneratorsGTest, tryBTERGeneratorWithPowerLawDistribution) {
-	std::vector<double> clusteringCoefficients {0.0, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 };
-	std::vector<count> degreeDistribution = BTERGenerator::generatePowerLawDegreeDistribution(14, 0.5);
-	DEBUG("construct BTERGenerator");
-	BTERGenerator bter(degreeDistribution, clusteringCoefficients, 1.0);
-	std::pair<count, count> nm = bter.desiredGraphSize();
-	DEBUG("call BTERGenerator");
-	Graph G = bter.generate();
-
-	EXPECT_EQ(nm.first, G.numberOfNodes());
-	EXPECT_EQ(nm.second, G.numberOfEdges());
-
-	METISGraphWriter writer;
-	writer.write(G, "output/BTERTest.graph");
-}
-
-TEST_F(GeneratorsGTest, tryBTERGeneratorOnARealGraph) {
-	// read example graph
-	METISGraphReader reader;
-	Graph Gin = reader.read("input/jazz.graph");
-
-	// get input parameters
-	std::vector<double> clusteringCoefficients = GraphProperties::localClusteringCoefficientPerDegree(Gin);
-	std::vector<count> degreeDistribution = GraphProperties::degreeDistribution(Gin);
-
-	DEBUG("construct BTERGenerator");
-	BTERGenerator bter(degreeDistribution, clusteringCoefficients, 1.0);
-	std::pair<count, count> nm = bter.desiredGraphSize();
-	DEBUG("desired graph size is: n=" << nm.first << ", m= " << nm.second);
-	DEBUG("call BTERGenerator");
-	Graph G = bter.generate();
-
-	EXPECT_EQ(nm.first, G.numberOfNodes());
-	EXPECT_EQ(nm.second, G.numberOfEdges());
-
-	METISGraphWriter writer;
-	writer.write(G, "output/BTERTest.graph");
-
-}
-
-
-TEST_F(GeneratorsGTest, testStaticBarabasiAlbertGenerator) {
+TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
 	count k = 3;
 	count nMax = 100;
 	count n0 = 3;
 
-	StaticBarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
+	BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
 	Graph G(0);
 	EXPECT_TRUE(G.isEmpty());
 
@@ -225,12 +168,12 @@ TEST_F(GeneratorsGTest, testStaticBarabasiAlbertGenerator) {
 
 }
 
-TEST_F(GeneratorsGTest, generatetStaticBarabasiAlbertGeneratorGraph) {
+TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 		count k = 3;
 		count nMax = 1000;
 		count n0 = 3;
 
-		StaticBarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
+		BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
 
 		Graph G = BarabasiAlbert.generate();
 		GraphIO io;

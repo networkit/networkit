@@ -74,7 +74,6 @@ double TAlgebraicDistance::distance(node u, node v) {
 
 void TAlgebraicDistance::randomInit() {
 	count n = G.numberOfNodes();
-	Aux::RandomProbability randGen;
 
 	// allocate space for loads
 	loads.resize(numSystems);
@@ -84,7 +83,7 @@ void TAlgebraicDistance::randomInit() {
 
 	for (index i = 0; i < numSystems; ++i) {
 		G.forNodes([&](node v) {
-			loads[i][v] = randGen.randomFloat();
+			loads[i][v] = Aux::RandomProbability::randomFloat();
 		});
 	}
 }

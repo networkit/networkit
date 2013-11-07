@@ -9,8 +9,8 @@
 #define DYNAMICENSEMBLE_H_
 
 #include "DynamicCommunityDetector.h"
-
-#include "../community/EnsemblePreprocessing.h"
+#include "../community/Clusterer.h"
+#include "../overlap/Overlapper.h"
 
 namespace NetworKit {
 

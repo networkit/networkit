@@ -29,16 +29,15 @@ Clustering BalancedLabelPropagation::run(Graph& graph, count numParts) {
 Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Clustering& partition) {
 	float avg = ceil((float) graph.numberOfNodes() / (float) numParts);
 	std::vector<float> adjustByFactor(numParts);
-	Aux::RandomProbability probGen;
 	EdgeCut edgeCut;
 
 
-	auto isMoveAccepted([&](edgeweight gain, count t, Aux::RandomProbability& probGen) {
+	auto isMoveAccepted([&](edgeweight gain, count t) {
 		if (gain >= 0) {
 			return true;
 		}
 		else {
-			double prob = probGen.generateFast();
+			double prob = Aux::RandomProbability::generateFast();
 			return (prob <= exp((double) gain / (double) t));
 		}
 	});
@@ -133,7 +132,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 					prefixSum += temp;
 				}
 
-				double prob = probGen.generateFast();
+				double prob = Aux::RandomProbability::generateFast();
 
 				for (std::vector<std::pair<cluster, double>>::iterator iter = neighborhood.begin();
 						iter != neighborhood.end(); ++iter) {

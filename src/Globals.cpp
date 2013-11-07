@@ -5,16 +5,18 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#include "Globals.h"
+
 bool PRINT_PROGRESS = true;
 bool RAND_ORDER = false; 	///< don't randomize LabelPropagation node order by default, since this seems to be faster and slightly better
-int INACTIVE_SEEDS = 0;		///< number of seed nodes which are set inactive for first iteration
+uint64_t INACTIVE_SEEDS = 0;		///< number of seed nodes which are set inactive for first iteration
 bool NORMALIZE_VOTES = false; ///< if set, normalize votes of LP by dividing edge weight by weighted degree
 
 
 double SCALE_STRENGTH = 0.0; ///< if set, scale cluster strengths in LP
 
 
-int MIN_NUM_COMMUNITIES = 2; ///< minimum number of communities, so far only used by agglomerative clustering
+uint64_t MIN_NUM_COMMUNITIES = 2; ///< minimum number of communities, so far only used by agglomerative clustering
 double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching edges relative to number of vertices to proceed agglomeration
 
 bool CALC_DISSIMILARITY = false; ///< if set, calculate and print base clustering dissimilarity for ensemble (expensive!)

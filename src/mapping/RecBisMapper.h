@@ -17,7 +17,7 @@ public:
 	RecBisMapper();
 	virtual ~RecBisMapper();
 
-	virtual Mapping run(Graph& guest, Graph& host);
+	//virtual Mapping run(Graph& guest, Graph& host);
 };
 
 } /* namespace NetworKit */

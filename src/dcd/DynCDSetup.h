@@ -10,11 +10,8 @@
 
 #include "DynamicCommunityDetector.h"
 #include "../generators/DynamicGraphSource.h"
-#include "../auxiliary/Debug.h"
 #include "../community/Clusterer.h"
-#include "../clustering/Modularity.h"
-#include "../clustering/DynamicNMIDistance.h"
-#include "../clustering/SampledRandMeasure.h"
+
 
 namespace NetworKit {
 

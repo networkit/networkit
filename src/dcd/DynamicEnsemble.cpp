@@ -6,10 +6,12 @@
  */
 
 #include "DynamicEnsemble.h"
+#include "../coarsening/ClusterContracter.h"
+#include "../coarsening/ClusteringProjector.h"
 
 namespace NetworKit {
 
-DynamicEnsemble::DynamicEnsemble() : overlapAlgo(NULL), finalAlgo(NULL) {
+DynamicEnsemble::DynamicEnsemble() : finalAlgo(NULL), overlapAlgo(NULL) {
 	// TODO Auto-generated constructor stub
 
 }

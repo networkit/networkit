@@ -306,7 +306,7 @@ TEST_F(IOGTest, tryReadingLFR) {
 	Graph G = graphReader.read(graphPath);
 	Clustering truth = clusteringReader.read(clustPath);
 
-	LabelPropagation PLP;
+	PLP PLP;
 	Clustering zeta = PLP.run(G);
 
 	Modularity mod;
@@ -366,6 +366,17 @@ TEST_F(IOGTest, testFastMETISGraphReader) {
 	EXPECT_EQ(24316, G.numberOfEdges());
 }
 
+
+TEST_F(IOGTest, tryReadingMETISFile) {
+	std::string graphPath;
+	std::cout << "[INPUT] graph file path >" << std::endl;
+	std::getline(std::cin, graphPath);
+
+	METISGraphReader reader;
+	Graph G = reader.read(graphPath);
+
+	EXPECT_TRUE(true);
+}
 
 
 } /* namespace NetworKit */
