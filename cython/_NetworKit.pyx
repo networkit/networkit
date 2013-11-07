@@ -36,6 +36,17 @@ def stdstring(pystring):
 
 # Function definitions
 
+cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
+	void _configureLogging "Aux::configureLogging" (string loglevel)
+	string _currentLogLevel "Aux::currentLogLevel" ()
+	
+def configureLogging(loglevel="ERROR"):
+	""" Set the loglevel of the LOG4CXX module"""
+	_configureLogging(stdstring(loglevel))
+
+def currentLogLevel():
+	""" Get the current log level"""
+	return _currentLogLevel();
 
 # Class definitions
 

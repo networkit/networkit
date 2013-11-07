@@ -76,6 +76,15 @@ inline void configureLogging(const std::string& loglevel = "ERROR") {
 		exit(1);
 	}
 }
+
+/**
+ * Get the current log level.
+ */
+inline std::string currentLogLevel() {
+	std::ostringstream s;
+	s << log4cxx::Logger::getRootLogger()->getLevel()->toString();
+	return s.str();
+}
 #endif
 #endif
 

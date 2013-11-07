@@ -32,6 +32,17 @@ except ImportError:
 import termgraph
 import stopwatch
 
+
+#-------- Setup ---------- #
+
+def setup():
+    """ This function is run once on module import to configure initial settings """
+    configureLogging("ERROR")    # set default loglevel to error
+    
+
+setup() # here the setup function is called once on import
+
+
 #--------- NetworKit Python Shell functions ----------------#
 
 def readGraph(path, format=None):
