@@ -50,6 +50,13 @@ public:
 	 */
 	std::vector<node> getComponent(index component);
 
+
+	/**
+	 * This method returns a vector of component sizes.
+	 *
+	 */
+	std::vector<count> getComponentSizes();
+
 private:
 	std::vector<node> assignedComponent;
 	std::vector<count> componentSizes;
