@@ -119,7 +119,7 @@ def properties(nkG, settings):
     labels, histo = None, None
     if settings["degreeDistribution"]:
         print("[...] calculating degree histogram")    
-        histo = nx.degree_histogram(nxG)
+        histo = GraphProperties.degreeDistribution(nkG)
         (labels, histo) = compressHistogram(histo, nbins=25)
 
     # connected components
@@ -238,9 +238,9 @@ def compressHistogram(hist, nbins=20):
         
 
     
-def printDegreeHistogram(nxG, nbins=25):
+def printDegreeHistogram(G, nbins=25):
     """ Prints a degree histogram as a bar chart to the terminal"""
-    hist = nx.degree_histogram(nxG)
+    hist = GraphProperties.degreeDistribution(G)
     
     (labels, hist) = compressHistogram(hist, nbins)
     termgraph.graph(labels, hist)
