@@ -105,12 +105,8 @@ x
 			# output omitted for brevity
 
 
-## Overview Network Properties
+To target very large graphs (in the order of billions of edges), we recommend the `PLP` parallel label propagation method.
 
-Let us now inspect more basic properties of the graph. The functions for this are mostly located in the `properties` module (though module structure is subject to change). For example, this function gives us a tuple containing the number of nodes and the number of edges:
-
-	In [7]: properties.nm(G)
-	Out[7]: (10680, 24316)
 
 
 ## Compatibility with NetworkX
@@ -128,13 +124,68 @@ The function `nk2nx` converts a `NetworKit.Graph` to a `networkx.Graph`:
 	Out[5]: <networkx.classes.graph.Graph at 0x7fb1a453f390>
 
 
-Now we can also use some of the many NetworkX functions, e.g.
+Now we can also use some of the numerous NetworkX functions, e.g.
 
 	In [13]: networkx.degree_assortativity_coefficient(nxG)
 	Out[13]: 0.23821137170818882
 
-Note however that NetworkX data structures are more memory-intensive and its algorithms do not target very large graphs. You are likely to reach limits of your machine for graphs with millions of edges, while NetworKit aims for good performance three magnitudes larger.
+The function `nx2nk` handles the other direction. For example, we can use graph generators not implemented by NetworKit:
 
+	In [3]: wsG = nx2nk(networkx.generators.watts_strogatz_graph(1000, 2, 0.1))
+
+This opens up a wide range of possibilities which are not yet or will never be implemented within NetworKit. Note however that NetworkX is written mostly in pure Python, its data structures are more memory-intensive and its algorithms do not target very large graphs. You are likely to reach limits of your machine for graphs with millions of edges, while NetworKit aims for good performance for three more orders of magnitude. 
+
+
+## Overview of Network Properties
+
+Let us now inspect more basic properties of the graph. The functions for this are mostly located in the `properties` module (though module structure is subject to change). For example, this function gives us a tuple containing the number of nodes and the number of edges:
+
+	In [7]: properties.nm(G)
+	Out[7]: (10680, 24316)
+
+
+To see the most important features of a network at a glance, try the function `properties.showProperties`. It prints a tabular overview (and can also display histograms on the terminal). For example, this is what it tells us about `PGPgiantcompo`:
+
+
+	In [11]: properties.showProperties(G)
+
+		Network Properties
+		==================
+		Basic Properties
+		--------------  ------------
+		nodes (n)       10680
+		edges (m)       24316
+		min. degree         1
+		max. degree       205
+		avg. degree         4.55356
+		isolated nodes      0
+		self-loops          0
+		density             0.000426
+		--------------  ------------
+		Path Structure
+		-------------------------  -----
+		connected components           1
+		size of largest component  10680
+		diameter
+		avg. eccentricity
+		-------------------------  -----
+		Miscellaneous
+		--------------------  ------------
+		degree assortativity      0.238211
+		cliques               13814
+		--------------------  ------------
+		Community Structure
+		---------------------------------  -----------  --------
+		avg. local clustering coefficient               0.265945
+		PLP community detection
+		                                   communities  1196
+		                                   modularity   0.787809
+		PLM community detection
+		                                   communities  90
+		                                   modularity   0.872310
+		---------------------------------  -----------  --------
+
+Some properties have not been calculated because they would take too much time. For some features, it is currently still necessary to convert the graph to NetworkX. The `showProperties` function is work in progress and will be continually improved.
 
 ## Settings
 

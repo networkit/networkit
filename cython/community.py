@@ -2,6 +2,8 @@
 
 from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM
 
+import tabulate
+
 def detectCommunities(G, Algorithm=PLM, inspect=False):
     """ Perform high-performance community detection on the graph.
         :param    G    the graph
