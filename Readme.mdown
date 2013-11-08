@@ -1,9 +1,26 @@
 NetworKit
 =========
 
-[NetworKit][networkit] is a growing open-source toolkit for high-performance network analysis. Its aim is to provide tools for the analysis of large networks in the size range from thousands to billions of edges. For this purpose, it implements efficient graph algorithms, many of them parallel to utilize multicore architectures. These are meant to compute standard measures of network analysis, such as degree sequences, clustering coefficients and centrality (see next sections of this document for a list of existing features and a roadmap of planned features). In this respect, NetworKit is comparable to packages such as [NetworkX][networkx], albeit with a focus on parallelism and scalability. NetworKit is also a testbed for algorithm engineering and contains a few novel algorithms from recently published research, especially in the area of community detection (see list of publications below).
+[NetworKit][networkit] is a growing open-source toolkit for high-performance
+network analysis. Its aim is to provide tools for the analysis of large
+networks in the size range from thousands to billions of edges. For this
+purpose, it implements efficient graph algorithms, many of them parallel to
+utilize multicore architectures. These are meant to compute standard measures
+of network analysis, such as degree sequences, clustering coefficients and
+centrality (see next sections of this document for a list of existing features
+and a roadmap of planned features). In this respect, NetworKit is comparable
+to packages such as [NetworkX][networkx], albeit with a focus on parallelism 
+and scalability. NetworKit is also a testbed for algorithm engineering and
+contains a few novel algorithms from recently published research, especially
+in the area of community detection (see list of publications below).
 
-As of release 2.0, NetworKit is meant to be built into a Python extension module. High-performance algorithms are written in C++ and exposed to Python via Cython. Python in turn gives us the ability to work interactively and a rich environment of tools for data analysis and scientific computing, such as `pandas`, `matplotlib`, `networkx`, `numpy` and `scipy`. A static command line program for community detection can still be built, but will be phased out (see build instructions below).
+As of release 2.0, NetworKit is meant to be built into a Python extension
+module. High-performance algorithms are written in C++ and exposed to Python
+via Cython. Python in turn gives us the ability to work interactively and a
+rich environment of tools for data analysis and scientific computing, such as
+`pandas`, `matplotlib`, `networkx`, `numpy` and `scipy`. A static command line
+program for community detection can still be built (see build instructions
+below), but we focus our efforts on the interactive Python environment.
 
 
 [networkit]: http://parco.iti.kit.edu/software/networkit.shtml 
