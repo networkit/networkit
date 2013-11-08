@@ -142,7 +142,7 @@ cdef class BFS:
 	""" Simple breadth-first search"""
 	cdef _BFS _this
 
-	cdef run(self, Graph G not None, source):
+	def run(self, Graph G not None, source):
 		"""
 		Breadth-first search from source.
 		return Vector of unweighted distances from node @a source, i.e. the
