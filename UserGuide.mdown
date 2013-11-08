@@ -5,29 +5,29 @@ This text is meant as an introduction to using NetworKit for network analysis. W
 
 ## Startup
 
-Start a Python 3 shell. The standard shell works fine, although [IPython](http://ipython.org/) is what you really want for data interactive programming and data analysis. These example sessions were created with IPython.
+Start a Python 3 shell. The standard shell works fine, although [IPython](http://ipython.org/) may be what you really want for interactive programming and data analysis. These example sessions were created with IPython.
 
 NetworKit can be imported like a standard Python module:
 
-	In[] import NetworKit
+	In[1]: import NetworKit
 
 or
 
-	In[] from NetworKit import *
+	In[2]: from NetworKit import *
 
 In the following, we will assume the latter way for brevity.
 
 ## Reading Graphs from Disk
 
-There is a large variety of formats for storing graph data in files. For NetworKit, the currently best supported format is the [METIS adjacency format](http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html). Various example graphs in this format can be found [here](http://www.cc.gatech.edu/dimacs10/downloads.shtml). Assume we download the file [PGPgiantcompo.graph](http://www.cc.gatech.edu/dimacs10/archive/data/clustering/PGPgiantcompo.graph.bz2). There is a reader class named `METISGraphReader` in the `graphio` submodule:
+There is a large variety of formats for storing graph data in files. For NetworKit, the currently best supported format is the [METIS adjacency format](http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html). Various example graphs in this format can be found [here](http://www.cc.gatech.edu/dimacs10/downloads.shtml). We download the file [PGPgiantcompo.graph](http://www.cc.gatech.edu/dimacs10/archive/data/clustering/PGPgiantcompo.graph.bz2) to disk. The needed reader class named `METISGraphReader` is in the `graphio` submodule:
 
-	In[] G = graphio.METISGraphReader().read("PGPgiantcompo.graph")
+	In[3]: G = graphio.METISGraphReader().read("PGPgiantcompo.graph")
 		[BEGIN] reading graph G(n=10680, m=24316) from METIS file: 10% 20.0094%
 		 30.0187% 40.0281% 50.0375% 60.0468% 70.0562% 80.0655% 90.0749% [DONE]
 
-More reader classes can be found in the `graphio` module. However, there is also a convenient input function which tries to guess the input format and select the appropriate reader:
+More reader classes can be found in the `graphio` module. However, there is also a convenient function in the top namespace which tries to guess the input format and select the appropriate reader:
 
-	In[] G = readGraph("PGPgiantcompo.graph")
+	In[4]: G = readGraph("PGPgiantcompo.graph")
 		[BEGIN] reading graph G(n=10680, m=24316) from METIS file: 10% 20.0094%
 		 30.0187% 40.0281% 50.0375% 60.0468% 70.0562% 80.0655% 90.0749% [DONE]
 
@@ -52,12 +52,14 @@ For example, we could check if nodes 42 and 43 are connected:
 	In [20]: G.hasEdge(42,43)
 	Out[20]: False
 
+To work with the raw list of nodes or edges, call `G.nodes()` and `G.edges()` respectively.
+
 
 ## Using Algorithms
 
 ### Connected Components
 
-Our first example of a network analysis algorithm is `ConnectedComponents. In order to determine the connected components of the network, enter the following:
+As a first example of a network analysis kernel, we determine the connected components of the graph by issuing the following commands:
 
 	In [22]: cc = properties.ConnectedComponents()
 
@@ -97,15 +99,39 @@ We see that 90 communities have been found. Let's examine their sizes:
 	    12, 14, 7, 18, 24, 14, 25, 9, 11]
 
 It becomes clear that the communities are quite unevenly sized. We can also ask for the community of a specific node:
-x
+
 	In [14]: zeta.clusterOf(42)
 	Out[14]: 10
 
 	In [15]: zeta.getMembers(10)
-			# output omitted for brevity
+			# output omitted
+
+To get an overview of the community detection result, use the function `communities.inspectCommunities`. This displays a table with information about community sizes as well as the modularity value, a measure of the goodness of the partition and the presence of modular structure in the network.
+
+	In [5]: community.inspectCommunities(zeta, G)
+	-------------------  ---------
+	# communities         82
+	min community size     6
+	max community size   888
+	avg. community size  130.244
+	imbalance              6.77863
+	modularity             0.87673
+	-------------------  ---------
 
 
-To target very large graphs (in the order of billions of edges), we recommend the `PLP` parallel label propagation method.
+To target very large graphs (in the order of billions of edges), we recommend the `PLP` parallel label propagation method, which is faster and scales very well with the number of processors. Be aware however that the two methods can arrive at quite different results:
+
+
+	In [7]: community.inspectCommunities(community.PLP().run(G), G)
+	-------------------  ----------
+	# communities        979
+	min community size     2
+	max community size   411
+	avg. community size   10.9091
+	imbalance             37.3636
+	modularity             0.799206
+	-------------------  ----------
+
 
 
 
