@@ -221,7 +221,7 @@ cdef class BarabasiAlbertGenerator:
 
 
 
-# Module: io
+# Module: graphio
 
 cdef extern from "../src/io/METISGraphReader.h":
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader":
@@ -325,6 +325,37 @@ cdef class SNAPGraphWriter:
 	def write(self, Graph G, path):
 		self._this.write(G._this, stdstring(path))
 
+
+cdef extern from "../src/io/ClusteringReader.h":
+	cdef cppclass _ClusteringReader "NetworKit::ClusteringReader":
+		_ClusteringReader() except +
+		_Clustering read(string path)
+
+
+cdef class ClusteringReader:
+	""" Reads a partition from a file.
+		File format: line i contains subset id of element i.
+	 """
+	cdef _ClusteringReader _this
+
+	def read(self, path):
+		return self._this.read(stdstring(path))
+
+
+cdef extern from "../src/io/ClusteringWriter.h":
+	cdef cppclass _ClusteringWriter "NetworKit::ClusteringWriter":
+		_ClusteringWriter() except +
+		void write(_Clustering, string path)
+
+
+cdef class ClusteringWriter:
+	""" Writes a partition to a file.
+		File format: line i contains subset id of element i.
+	 """
+	cdef _ClusteringWriter _this
+
+	def write(self, Clustering zeta, path):
+		self._this.write(zeta._this, stdstring(path))
 
 
 # Parameters
