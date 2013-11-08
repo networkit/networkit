@@ -1,5 +1,5 @@
 from _NetworKit import (METISGraphReader, FastMETISGraphReader, DotGraphWriter, EdgeListIO, \
-						 LineFileReader, SNAPGraphWriter)
+						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter)
 
 class GraphConverter:
     
