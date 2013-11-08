@@ -31,6 +31,9 @@
 
 namespace NetworKit {
 
+/**
+ * TODO: class documentation
+ */
 class DibapGraphReader: public NetworKit::GraphReader {
 public:
 	DibapGraphReader();

@@ -23,6 +23,9 @@
 
 namespace NetworKit {
 
+/**
+ * TODO: class documentation
+ */
 class PostscriptWriter {
 
 	struct float_triple {
