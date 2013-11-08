@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * Abstract base class for graph readers.
+ */
 class GraphReader {
 
 public:

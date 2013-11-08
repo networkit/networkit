@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * Determines the connected components of an undirected graph.
+ */
 class ConnectedComponents {
 public:
 	ConnectedComponents();

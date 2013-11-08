@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * TODO: class documentation
+ */
 class RecBisMapper: public NetworKit::StaticMapper {
 public:
 	RecBisMapper();

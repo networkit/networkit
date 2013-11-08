@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * Luby's parallel independent set algorithm.
+ */
 class Luby: public NetworKit::IndependentSetFinder {
 
 public:

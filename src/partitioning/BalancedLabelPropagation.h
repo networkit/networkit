@@ -22,6 +22,9 @@
 
 namespace NetworKit {
 
+/**
+ * TODO: class documentation
+ */
 class BalancedLabelPropagation: public BalancedPartitioner {
 protected:
 	double exponent;

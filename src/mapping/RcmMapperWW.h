@@ -15,6 +15,9 @@ namespace NetworKit {
 
 typedef std::vector<node> permutation;
 
+/**
+ * TODO: class documentation
+ */
 class RcmMapperWW: public NetworKit::StaticMapper {
 public:
 	RcmMapperWW();

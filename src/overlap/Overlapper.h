@@ -17,6 +17,9 @@
 namespace NetworKit {
 
 
+/**
+ * Abstract base class for algorithms which determine the overlap of multiple partitions.
+ */
 class Overlapper {
 
 public:
