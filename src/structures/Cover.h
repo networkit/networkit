@@ -65,7 +65,7 @@ public:
 	 * 	 @param[in]	e	an element
 	 */
 	inline std::set<index> subsetsOf(index e) const {
-		assert (e < this->numberOfElements());
+		// TODO: assert (e < this->numberOfElements());
 		return this->data[e];
 	}
 
