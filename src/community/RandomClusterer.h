@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * Dummy community detection algorithm: Creates a random partition of a network.
+ */
 class RandomClusterer: public NetworKit::Clusterer {
 public:
 	RandomClusterer();

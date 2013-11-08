@@ -12,6 +12,9 @@
 
 namespace Aux {
 
+/**
+ * A rudimentary console progress bar.
+ */
 class ProgressMeter {
 
 protected:
@@ -24,7 +27,9 @@ public:
 
 	virtual ~ProgressMeter();
 
-
+	/**
+ 	* Send a signal to the progress meter - constructor parameters decide when output is produced.
+ 	*/
 	inline void signal(int64_t v) {
 		if ((v % this->i) == 0) {
 			std::cout << "." << std::flush;
@@ -38,7 +43,9 @@ public:
 			}
 	}
 
-
+	/**
+ 	* Call this when process finished.
+ 	*/
 	inline void end() {
 		std::cout << std::endl;
 	}

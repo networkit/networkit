@@ -14,7 +14,9 @@
 namespace Aux {
 
 
-
+/**
+ * A timer for running time measurements.
+ */
 class Timer {
 
 protected:

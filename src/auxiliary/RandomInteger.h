@@ -12,6 +12,9 @@
 
 namespace Aux {
 
+/**
+ * Random integer number generators.
+ */
 class RandomInteger {
 
 

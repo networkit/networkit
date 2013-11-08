@@ -14,6 +14,9 @@
 
 namespace Aux {
 
+/**
+ * Missing string functions.
+ */
 class StringTools {
 public:
 	StringTools();

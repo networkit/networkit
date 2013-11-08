@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * Provides several methods for generating special clusterings.
+ */
 class ClusteringGenerator {
 
 public:
