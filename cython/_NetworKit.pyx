@@ -382,6 +382,7 @@ cdef extern from "../src/clustering/Clustering.h":
 	cdef cppclass _Clustering "NetworKit::Clustering":
 		_Clustering() except +
 		count numberOfClusters()
+		cluster clusterOf(node)
 		float getImbalance()
 		vector[count] clusterSizes()
 		vector[node] getMembers(cluster C)
@@ -407,6 +408,9 @@ cdef class Clustering:
 
 	def getMembers(self, C):
 		return self._this.getMembers(C)
+
+	def clusterOf(self, v):
+		return self._this.clusterOf(v)
 
 
 cdef extern from "../src/clustering/Coverage.h":
