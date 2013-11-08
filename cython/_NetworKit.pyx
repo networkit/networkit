@@ -172,6 +172,7 @@ cdef extern from "../src/independentset/Luby.h":
 		vector[bool] run(_Graph G)
 		string toString()
 
+# FIXME: check correctness
 cdef class Luby:
 	""" Luby's parallel maximal independent set algorithm"""
 	cdef _Luby _this

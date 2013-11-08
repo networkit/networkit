@@ -22,7 +22,7 @@ IndependentSetGTest::~IndependentSetGTest() {
 }
 
 
-TEST_F(IndependentSetGTest, testLuby) {
+TEST_F(IndependentSetGTest, tryLuby) {
 	count n = 500;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeRandomGraph(n, 0.001);
@@ -42,7 +42,7 @@ TEST_F(IndependentSetGTest, testLuby) {
 	INFO("independent set size: " << size << "/" << n);
 }
 
-TEST_F(IndependentSetGTest, testLubyWithSelfLoops) {
+TEST_F(IndependentSetGTest, tryLubyWithSelfLoops) {
 	count n = 500;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeRandomGraph(n, 0.001);

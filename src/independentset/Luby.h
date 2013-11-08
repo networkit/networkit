@@ -25,6 +25,7 @@ public:
 
 	virtual ~Luby() = default;
 
+	// FIXME: check correctness of implementation
 	std::vector<bool> run(const Graph& G) override;
 
 	std::string toString() const override;
