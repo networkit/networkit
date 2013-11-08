@@ -339,7 +339,7 @@ cdef class ClusteringReader:
 	cdef _ClusteringReader _this
 
 	def read(self, path):
-		return self._this.read(stdstring(path))
+		return Clustering().setThis(self._this.read(stdstring(path)))
 
 
 cdef extern from "../src/io/ClusteringWriter.h":
