@@ -36,6 +36,7 @@ from _NetworKit import configureLogging, currentLogLevel
 
 # NetworKit submodules
 import graph
+from graph import Graph 
 import graphio
 import community
 import generators
