@@ -16,6 +16,13 @@
 
 namespace NetworKit {
 
+/**
+ * EPP - Ensemble Preprocessing community detection algorithm.
+ * Combines multiple base algorithms and a final algorithm. A consensus of the
+ * solutions of the base algorithms is formed and the graph is coarsened accordingly.
+ * Then the final algorithm operates on the coarse graph and determines a solution
+ * for the input graph.
+ */
 class EPP: public NetworKit::Clusterer {
 
 protected:

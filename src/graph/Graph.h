@@ -44,6 +44,9 @@ typedef double edgeweight; // edge weight type
 
 #define Vector std::vector // TODO: test tbb::concurrent_vector
 
+/**
+ * An undirected graph (with optional weights) and parallel iterator methods.
+ */
 class Graph {
 
 protected:

@@ -19,6 +19,9 @@ namespace NetworKit {
 
 typedef index cluster;	//!< cluster is represented as a 0-based index
 
+/**
+ * A clustering is a partition of the node set of a graph into disjoint subsets (clusters).
+ */
 class Clustering: public NodeMap<cluster> {
 
 protected:
@@ -28,7 +31,6 @@ protected:
 	cluster upperIdBound;	//!< upper bound for cluster ids
 
 	inline cluster getNextCluster() {
-		// TODO: performance - is this a bottleneck?
 		cluster c = this->nextCluster;
 		this->nextCluster++;
 		this->upperIdBound++;
