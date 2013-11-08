@@ -171,7 +171,7 @@ and `<target>` can be
 	- `CommunityDetection` 	build executable for static, global community detection algorithms (deprecated)
 
 For example, to build NetworKit as an optimized library, run
-	scons --optimize=O --target=core
+	scons --optimize=O --target=Core
 
 To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
 
