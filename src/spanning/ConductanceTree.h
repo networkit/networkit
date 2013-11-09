@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * TODO: class documentation
+ */
 class ConductanceTree {
 public:
 	ConductanceTree();

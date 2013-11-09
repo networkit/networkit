@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * Determines the connected components of an undirected graph.
+ */
 class ConnectedComponents {
 public:
 	ConnectedComponents();
@@ -49,6 +52,13 @@ public:
 	 * @param[in]	component	the index of the component that is asked for
 	 */
 	std::vector<node> getComponent(index component);
+
+
+	/**
+	 * This method returns a vector of component sizes.
+	 *
+	 */
+	std::vector<count> getComponentSizes();
 
 private:
 	std::vector<node> assignedComponent;

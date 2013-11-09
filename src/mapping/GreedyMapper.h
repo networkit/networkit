@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * TODO: class documentation
+ */
 class GreedyMapper: public NetworKit::StaticMapper {
 public:
 	GreedyMapper();

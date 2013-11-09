@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * Determines the overlap of multiple partitions by hashing partition identifiers.
+ */
 class HashingOverlapper: public NetworKit::Overlapper {
 
 public:

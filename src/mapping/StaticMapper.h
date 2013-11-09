@@ -18,6 +18,9 @@ namespace NetworKit {
 typedef std::vector<index> Permutation;
 typedef std::map<index, index> Mapping;
 
+/**
+ * TODO: class documentation
+ */
 class StaticMapper {
 protected:
 

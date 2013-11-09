@@ -12,8 +12,13 @@
 
 namespace NetworKit {
 
-class PLM: public NetworKit::Clusterer {
 
+/**
+ * PLM - Parallel Louvain Method community detection algorithm
+ * The Lovain method is a locally greedy procedure for maximizing modularity. 
+ * This is a parallel implementation.
+ */
+class PLM: public NetworKit::Clusterer {
 
 
 public:

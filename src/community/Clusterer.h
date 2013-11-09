@@ -12,7 +12,9 @@
 
 namespace NetworKit {
 
-
+/**
+ * Abstract base class for community detection/graph clustering algorithms.
+ */
 class Clusterer {
 public:
 
@@ -20,6 +22,10 @@ public:
 
 	virtual ~Clusterer();
 
+	/**
+	 * Apply algorithm to graph
+	 * @return partition of the node set
+	 */
 	virtual Clustering run(Graph& G) = 0;
 
 	/**

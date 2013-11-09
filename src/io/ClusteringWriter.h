@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * Write a clustering to a file.
+ */
 class ClusteringWriter {
 
 public:

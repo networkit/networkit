@@ -10,6 +10,9 @@
 
 namespace NetworKit {
 
+/**
+ * Abstract base class for graph coarsening/contraction algorithms.
+ */
 class Contracter {
 
 public:

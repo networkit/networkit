@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * Dijkstra's SSSP algorithm.
+ */
 class Dijkstra {
 protected:
 
