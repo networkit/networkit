@@ -89,8 +89,9 @@ if conf.has_option("libraries", "tbb"):
 else:
 	tbbLib = ""
 
-
+env["CC"] = cppComp
 env["CXX"] = cppComp
+
 env.Append(CPPDEFINES=defines)
 env.Append(CPPPATH = [stdInclude, gtestInclude, log4cxxInclude, tbbInclude])
 env.Append(LIBS = ["gtest", "log4cxx"])
