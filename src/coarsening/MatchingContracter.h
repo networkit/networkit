@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * Contracts graph according to a matching.
+ */
 class MatchingContracter: public Contracter {
 
 public:

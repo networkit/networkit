@@ -12,6 +12,11 @@
 
 namespace NetworKit {
 
+/**
+ * The node-structural Rand measure assigns a similarity value in [0,1]
+ * to two partitions of a graph, by considering pairs of nodes.
+ * This implementation approximates the index by sampling.
+ */
 class SampledRandMeasure: public NetworKit::DissimilarityMeasure {
 
 public:

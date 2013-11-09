@@ -13,6 +13,9 @@
 namespace NetworKit {
 
 
+/**
+ * Abstract base class for algorithms associating a score with an edge.
+ */
 template<typename T>
 class EdgeScoring {
 

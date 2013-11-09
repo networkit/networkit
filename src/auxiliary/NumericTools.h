@@ -14,6 +14,9 @@
 
 namespace Aux {
 
+/**
+ * Tools to deal with limited precision in numeric computations.
+ */
 class NumericTools {
 public:
 

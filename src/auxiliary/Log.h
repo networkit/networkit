@@ -16,6 +16,7 @@
 
 #ifndef NOLOG4CXX
 #include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
 #endif
 
 namespace Aux {
@@ -52,7 +53,40 @@ namespace Aux {
 #endif
 
 
+#ifndef NOLOGGING
+#ifndef NOLOG4CXX
+/**
+ * Call this first to configure logging output.
+ */
+inline void configureLogging(const std::string& loglevel = "ERROR") {
+	// configure logging
+	log4cxx::BasicConfigurator::configure();
+	if (loglevel == "TRACE") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getTrace());
+	} else if (loglevel == "DEBUG") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+	} else if (loglevel == "INFO") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getInfo());
+	} else if (loglevel == "WARN") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getWarn());
+	} else if (loglevel == "ERROR") {
+		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getError());
+	} else {
+		ERROR("unknown loglevel: " << loglevel);
+		exit(1);
+	}
+}
 
+/**
+ * Get the current log level.
+ */
+inline std::string currentLogLevel() {
+	std::ostringstream s;
+	s << log4cxx::Logger::getRootLogger()->getLevel()->toString();
+	return s.str();
+}
+#endif
+#endif
 
 
 #define PRINTMAP(M) std::cout << M << std::endl;

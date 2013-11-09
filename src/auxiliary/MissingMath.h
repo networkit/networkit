@@ -15,6 +15,9 @@
 
 namespace Aux {
 
+/**
+ * Math functions not provided by the standard library.
+ */
 class MissingMath {
 
 public:

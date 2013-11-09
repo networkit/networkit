@@ -19,6 +19,9 @@ namespace NetworKit {
 
 typedef index cluster;	//!< cluster is represented as a 0-based index
 
+/**
+ * A clustering is a partition of the node set of a graph into disjoint subsets (clusters).
+ */
 class Clustering: public NodeMap<cluster> {
 
 protected:
@@ -28,7 +31,6 @@ protected:
 	cluster upperIdBound;	//!< upper bound for cluster ids
 
 	inline cluster getNextCluster() {
-		// TODO: performance - is this a bottleneck?
 		cluster c = this->nextCluster;
 		this->nextCluster++;
 		this->upperIdBound++;
@@ -127,6 +129,7 @@ public:
 	 */
 	void mergeClusters(cluster c, cluster d);
 
+	// TODO: special case - in partition implementation, move this to a tools class
 	/**
 	 * Check whether this clustering is a proper clustering of
 	 * the graph, i.e. a disjoint partition of the whole node set.
@@ -253,13 +256,14 @@ public:
 	std::vector<node> getMembers(const cluster C) const;
 
 
+	// TODO: special case - in partition implementation, move this to a tools class
 	/**
 	 * Compute communication graph (sometimes called quotient graph) induced by
 	 * graph @a graph and this clustering/partition.
 	 */
 	Graph communicationGraph(const Graph& graph);
 
-
+	// TODO: special case - in partition implementation, move this to a tools class
 	/**
 	 * @return Sum of weights of edges that connect @a v with nodes in cluster @a cid.
 	 */

@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * TODO: class documentation
+ */
 class RcmMapper: public NetworKit::StaticMapper {
 public:
 	RcmMapper();

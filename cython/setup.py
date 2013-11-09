@@ -17,11 +17,12 @@ try:
 		os.environ["CXX"] = "g++-4.7"
 
 	else:
-		print("Using: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
+		pass
 except:
 	os.environ["CC"] = "g++"
 	os.environ["CXX"] = "g++"
 
+print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
 
 srcDir = "../src"
 src = ["_NetworKit.pyx"]	# list of source files
@@ -31,9 +32,9 @@ print("source files: {0}".format(src))
 modules = [Extension("_NetworKit",
 					src,
 					language = "c++",
-					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOLOG4CXX", "-DNOGTEST"],
+					extra_compile_args=["-fopenmp", "-std=c++11", "-DNOGTEST"],
 					extra_link_args=["-fopenmp", "-std=c++11"],
-					libraries=["NetworKit-Core-O"],
+					libraries=["NetworKit-Core-O", "log4cxx"],
 					library_dirs=["../", "../Core-O/"])]
 
 for e in modules:

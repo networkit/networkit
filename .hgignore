@@ -31,7 +31,6 @@ syntax: regexp
 /NetworKit-Comm*$
 syntax: regexp
 /*.orig
-/*.pdf
 /*.eps
 syntax: regexp
 ^doxygen$

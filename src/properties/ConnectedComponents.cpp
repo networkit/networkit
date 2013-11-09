@@ -44,6 +44,10 @@ void ConnectedComponents::run(const Graph& g) {
 
 }
 
+std::vector<count> ConnectedComponents::getComponentSizes() {
+	return this->componentSizes;
+}
+
 node ConnectedComponents::findStartNode() {
 	count infDist = std::numeric_limits<count>::max();
 	//TODO: use iterator G.forNodes()?

@@ -30,6 +30,12 @@ below), but we focus our efforts on the interactive Python environment.
 Help
 ----
 
+### Documentation
+
+In addition to this `Readme`, the `UserGuide` provides an introduction to the NetworKit tools. The `DevGuide` is meant for developers who would like to contribute. When using NetworKit as a Python module, refer to the docstrings of classes, methods and functions. C++ sources are also documented in Doxygen format.
+
+To convert the documentation to PDF install the [pandoc](http://code.google.com/p/pandoc/downloads/list) utility and call the script `docs2pdf.sh`.
+
 ### E-Mail List
 
 For questions regarding NetworKit, subscribe to our [e-mail list][list] and feel free to ask.
@@ -41,49 +47,43 @@ For questions regarding NetworKit, subscribe to our [e-mail list][list] and feel
 Features
 --------
 
+A not necessarily complete list of features:
+
 ### Data Structures
 
-- undirected graph (with optional weights) for parallel read access
-
-### Handling Data
-
-- Graph Input/Output Formats
-	- METIS
-	- Edge List
-	- GraphViz
+- undirected graph with optional weights
 
 ### Algorithms
 
-- Community Detection
-	- Modularity
-	- Parallel Label Propagation (PLP)
-	- Parallel Louvain Method (PLM)
-- Components
-	- Connected Components
-- Generators
-	- Erdös-Renyi
-	- Barabasi-Albert
-- Clustering
-	- Local Clustering Coefficient
-- Traversal
-	- Breadth-First Search
-- Partitioning
-- Independent Sets
-	- Luby's parallel independent set algorithm 
-- Coarsening
-- Matching
-- Subgraphs
+- high-performance community detection
+	- Modularity index (`community.Modularity`)
+	- parallel Label propagation algorithm (`community.PLP`)
+	- parallel Louvain method (`community.PLM`)
+- various network properties
+	- degree distribution (`properties.GraphProperties.averageLocalClusteringCoefficient`)
+	- connected components (`properties.ConnectedComponents`)
+	- local clustering coefficient (e.g. `properties.GraphProperties.averageLocalClusteringCoefficient`)
+- graph generators
+	- Erdös-Renyi (`generators.GraphGenerator.makeRandomGraph`)
+	- Barabasi-Albert (`generators.GraphGenerator.makeRandomGraph`)
+- traversal
+	- breadth-first search (`graph.BFS`)
+	- Dijkstra's algorithm (`graph.Dijkstra`)
 
+### Input/Output
 
-### NetworkX Compatibility
+- graph input/output formats
+	- METIS
+	- edge list
+	- GraphViz
+- `NetworkX` compatibility
 
-- conversion
-	- `NetworKit.nk2nx`: `NetworKit.Graph` to `networkx.Graph`
-	- `NetworKit.nx2nk`: `networkx.Graph` to `NetworKit.Graph`
 
 
 Roadmap
 -------
+
+A list of features likely to appear in future releases:
 
 ### Data Structures
 
@@ -93,28 +93,38 @@ Roadmap
 
 ### Algorithms
 
-- Cores
-	- k-Core Decomposition
-- Centrality
-	- approximated Betweenness/Closeness
+- core decomposition
+- centrality
+- dynamic community detection
+- selective/local community detection
+- coarsening
+- matching
+- partitioning
+- layout and visualization
 
+### Input/Output
 
-
-
+- file formats: gexf (Gephi), ...
 
 
 Release History
 ---------------
 
-### 2.0
+### 2.0 (11/11/2013)
 
-- NetworKit becomes a Python extension module
+- NetworKit's becomes a Python extension module
+- network analysis tools: degree distribution, clustering coefficient, connected components...
+- added graph generators
+- added I/O formats
+- basic traversal algorithms
 
 
 
-### 1.0
+### 1.0 (20/03/2013)
 
-- static global community detection algorithms
+- parallel community detection algorithms: PLP, PLM, EPP
+- community detection metrics
+- basic data structures
 
 
 
@@ -174,20 +184,23 @@ The following preprocessor definitions (using the `-D` compiler flag) remove the
 Building the Base
 -----------------
 
-We recommend [SCons](http://scons.org) for building the C++ kernels of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
+We recommend [SCons](http://scons.org) for building the C++ part of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
 
 The call to SCons has the following options:
 
-	scons --optimize=<level>--target=<target>
+	scons --optimize=<level> --target=<target>
 
-where `<level>`can be
-	- `D` 	debug
-	- `O`	optimized
-	- `P`	profiling
+where `<level>` can be
+
+- `D` 	debug
+- `O`	optimized
+- `P`	profiling
+
 and `<target>` can be
-	- `Core`				build NetworKit as a library, required by the Python shell		
-	- `Tests`				build executable for the unit tests	
-	- `CommunityDetection` 	build executable for static, global community detection algorithms (deprecated)
+
+- `Core`				build NetworKit as a library, required by the Python shell		
+- `Tests`				build executable for the unit tests	
+- `CommunityDetection` 	build executable for static, global community detection algorithms (deprecated)
 
 For example, to build NetworKit as an optimized library, run
 	scons --optimize=O --target=Core
@@ -216,7 +229,7 @@ Building NetworKit as a Python Module
 --------------------------------------
 
 As of version 2.0 NetworKit is meant to be used as a Python extension module. To build the module, the following is required:
-- Python 3.3 or newer
+- Python 3 (>= 3.3 recommended)
 - Cython
 
 Additionally, the module uses the following external Python packages:
@@ -246,27 +259,18 @@ This will create the extension module `NetworKit`. The resulting module can be i
 Interactive Work with NetworKit
 -------------------------------
 
-With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend IPython as a great environment for scientific computing. IPython can also be installed via `pip` or `easy_install`.  For tab completion in ipython you may also need to install `readline`. The following should work: `pip3 install readline ipython` 
+With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend IPython as a great environment for scientific computing. IPython can also be installed via `pip` or `easy_install`.  For tab completion in ipython you may also need to install `readline`. The following should work: `pip3 install readline ipython`. 
 
 After the requirements are satisfied, start IPython and import NetworKit.
 
 	ipython3
 	>>> from NetworKit import *
 
-Now you should be able to use NetworKit interactively, here are some examples:
+Now you should be able to use NetworKit interactively. For usage examples, refer to the `UserGuide`.
 
 
-	>>> G = readGraph("../input/jazz.graph")
-	>>> ccs = ConnectedComponents()
-	>>> ccs.run(G)
-	>>> ccs.numberOfComponents()
-	>>> GraphProperties.minMaxDegree(G)
-	>>> GraphProperties.averageLocalClusteringCoefficient(G)
-
-
-
-Running the Executables
------------------------
+Running Executables
+-------------------
 
 Warning: As of version 2.0, NetworKit is meant to be used as a Python module, so the following interface will be phased out and is deprecated.
 
