@@ -132,7 +132,7 @@ To target very large graphs (in the order of billions of edges), we recommend th
 	modularity             0.799206
 	-------------------  ----------
 
-
+For convenience the function `community.detectCommunities` is also provided, which accepts a graph and options like algorithm type etc.
 
 
 ## Compatibility with NetworkX
