@@ -24,7 +24,7 @@ As the name says, `default` is the branch which you are on if you do not switch.
 
 `Dev` is the development branch and most of the development of new features happens in this branch. This is also where new releases are being prepared. When pushing into this branch, think about whether your code is ready for the core development team to work with and will be suitable for a release in the foreseeable future.
 
-It can be appropriate to create additional branches for projects, features, developer teams etc. Creation of branches should be coordinated with the core development team. For this purpose, post the the [e-mail list][list].
+It can be appropriate to create additional branches for projects, features, developer teams etc. Creation of branches should be coordinated with the core development team. For this purpose, post to the [developers e-mail list][list].
 
 ## Tags
 
@@ -78,17 +78,17 @@ Users of NetworKit are welcome to contribute their modifications. For incrementa
 
 NetworKit is currently also used as a teaching tool. This section describes the workflow for student teams. Suppose the course is named, "Networks 101", then there will be a dedicated branch `Networks101` for student exercises.
 
-1. Fork the main repository via [algohub.iti.kit.edu](http://algohub.iti.kit.edu) and name the fork according to your team.
-2. Make sure that the correct access rights for your team are set.
-3. Switch to the appropriate branch for the course (e.g. `Networks101`) and ONLY work on this branch.
+1. Fork the main repository via [algohub.iti.kit.edu](http://algohub.iti.kit.edu) and name the fork according to your team. (On the repository page, click `Options -> Fork)
+2. Make sure that the correct access rights for your team are set. (On the repository page: `Options -> Settings`)
+3. Switch to the appropriate branch for the course (e.g. `hg up Networks101`) and ONLY work on this branch.
 4. Work with the forked repository as you please. Coordinate with your team.
-5. On completion of the exercise, send a pull request from your fork to the main repository.
+5. On completion of the exercise, send a pull request from your fork to the main repository. (On the repository page, click `Options -> Create Pull Request`)
 6. The pull request is now under review. Watch for and react to comments from the reviewer.
 
 We also ask student teams to adhere to the following conventions:
 
 - With multiple teams working on the same exercise, append your team name to the class and file names as well as the names of unit tests to avoid naming clashes.
-- If you plan to make modifications to existing parts of NetworKit, discuss them with the core developers first, e.g. by posting to the [e-mail list][list].
+- If you plan to make modifications to existing parts of NetworKit, discuss them with the core developers first, e.g. by posting to the [developers e-mail list][list].
 - Delete forked repositories when they are no longer needed.
 
 
@@ -99,7 +99,8 @@ Incoming pull requests appear as notifications on [algohub.iti.kit.edu](http://a
 
 1. Before the course starts, create an appropriate branch for the course (e.g. `Networks101`). Derive the branch from the `Dev` branch.
 2. Receive pull requests from student teams via [algohub.iti.kit.edu](http://algohub.iti.kit.edu).
-3. To review a pull request, pull from the forked repository of the student team. Switch to the course branch and review the changes.
+3. To review a pull request, switch to the course branch and pull from the forked repository of the student team. Make sure to pull the revision associated with the pull request (e.g. `hg pull -r<rev> <path/to/forked/repo>)
+4. If everything is okay, change the status of the pull request to `Accepted` (click `Change Status` above the comment field). The comment field can be used to send feedback, creators of the request will be notified via email.
 
 Good contributions from the student exercises should be merged back into the `Dev` branch.
 
@@ -151,6 +152,7 @@ Unit tests for NetworKit are based on the `googletest` library. For more informa
 
 ### Code Style
 
+- Compiler warnings are likely to turn  into future errors. Try to fix them as soon as they appear.
 - Read some code to get used to the code style and try to adopt it.
 - Document classes, methods and attributes in Doxygen style.
 - Use the `count` and `index` integer types for non-negative integer quantities and indices.
@@ -164,9 +166,9 @@ TODO - documentation coming soon
 
 ## Contact
 
-To discuss important changes to NetworKit, use the [e-mail list][list].
+To discuss important changes to NetworKit, use the [developers e-mail list][list].
 
-[list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit
+[list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit-dev
 
 To suggest improvements to workflows and conventions, write to `christian.staudt @ kit.edu`.
 
