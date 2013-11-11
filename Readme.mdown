@@ -175,7 +175,7 @@ A C++ compiler supporting C++11 (we use GCC 4.8). The compiler and linker flags 
 - `Googletest` 	for unit testing
 - `log4cxx` 	for logging
 
-The following preprocessor definitions (using the `-D` compiler flag) remove these dependencies, but also some functionality:
+To avoid possible binary incompatibilities, try to build these libraries with the same compiler that will be used to build NetworKit. If all fails, the following preprocessor definitions (using the `-D` compiler flag) remove these dependencies, but also functionality:
 
 - `NOLOGGING`	removes all log statements
 - `NOLOG4CXX`	replaces log statements with `std::cout` output if `log4cxx` is not available - loglevel `TRACE` becomes fixed.
