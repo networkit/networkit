@@ -46,3 +46,17 @@ def evalCommunityDetection(algo, G):
         ["modularity", Modularity().getQuality(zeta, G)]
     ]
     print(tabulate.tabulate(results))
+
+
+def readCommunities(path):
+    """ Read a partition into communities from a file"""
+    communities = ClusteringReader().read(path)
+    print("read communities from: {0}".format(path))
+    return communities
+
+
+def writeCommunities(communities, path):
+    """ Write a partition into communities to a file"""
+    ClusteringWriter().write(communities, path)
+    print("wrote communities to: {0}".format(path))
+
