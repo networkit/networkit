@@ -36,18 +36,21 @@ from _NetworKit import configureLogging, currentLogLevel
 
 # NetworKit submodules
 import graph
-from graph import Graph 
 import graphio
 import community
 import generators
 import properties
 
+# top level imports
+
+from graph import Graph 
+from graphio import readGraph
 
 #-------- Setup ---------- #
 
 def setup():
 	""" This function is run once on module import to configure initial settings """
-	configureLogging("ERROR")    # set default loglevel to error
+	configureLogging(loglevel="ERROR")    # set default loglevel to error
 	
 
 setup() # here the setup function is called once on import
@@ -55,25 +58,7 @@ setup() # here the setup function is called once on import
 
 #--------- NetworKit Python Shell functions ----------------#
 
-def readGraph(path, format=None):
-	"""    Read graph and return a NetworKit::Graph"""
-	# TODO: detect file format by looking at the file content
-	if format is None:    # look at file extension
-		if path.endswith(".graph") or path.endswith(".metis") or path.endswith(".dimacs"):
-			reader = graphio.METISGraphReader()
-		else:
-			raise Exception("unknown graph file format")
-	else:
-		if (format is "metis"):
-			reader = graphio.METISGraphReader()
-		elif (format is "edgelist"):
-			reader = graphio.EdgeListIO('\t', 1)
 
-	with open(path, "r") as file:    # catch a wrong path before it crashes the interpreter
-		G = reader.read(path)
-		return G
-
-	return None
 
 ########  CONVERSION ########
 

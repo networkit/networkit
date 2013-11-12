@@ -42,6 +42,7 @@ def pystring(stdstring):
 cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
 	void _configureLogging "Aux::configureLogging" (string loglevel)
 	string _currentLogLevel "Aux::currentLogLevel" ()
+	void _setLoglevel "Aux::setLoglevel" (string loglevel)
 	
 def configureLogging(loglevel="ERROR"):
 	""" Set the loglevel of the LOG4CXX module"""
@@ -50,6 +51,10 @@ def configureLogging(loglevel="ERROR"):
 def currentLogLevel():
 	""" Get the current log level"""
 	return pystring(_currentLogLevel());
+
+def setLoglevel(loglevel):
+	""" Set the current loglevel"""
+	_setLoglevel(stdstring(loglevel))
 
 # Class definitions
 
@@ -244,7 +249,7 @@ cdef class METISGraphReader:
 cdef extern from "../src/io/FastMETISGraphReader.h":
 	cdef cppclass _FastMETISGraphReader "NetworKit::FastMETISGraphReader":
 		_FastMETISGraphReader() except +
-		_Graph read(string path)
+		_Graph read(string path) except +
 
 cdef class FastMETISGraphReader:
 	""" A faster but currently experimental implementation of a reader for
@@ -509,8 +514,6 @@ cdef class PLM(Clusterer):
 	def toString(self):
 		return self._this.toString().decode("utf-8")
 
-
-# TODO: EPP - possible solution would be a rewrite with templates
 
 # FIXME: PLM2 
 # FIXME: CNM

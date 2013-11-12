@@ -364,6 +364,11 @@ TEST_F(IOGTest, testFastMETISGraphReader) {
 
 	EXPECT_EQ(10680, G.numberOfNodes());
 	EXPECT_EQ(24316, G.numberOfEdges());
+
+	Graph W = reader.read("input/lesmis.graph");
+
+	EXPECT_EQ(77, W.numberOfNodes());
+	EXPECT_EQ(254, W.numberOfEdges());
 }
 
 

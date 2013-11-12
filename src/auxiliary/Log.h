@@ -61,6 +61,10 @@ namespace Aux {
 inline void configureLogging(const std::string& loglevel = "ERROR") {
 	// configure logging
 	log4cxx::BasicConfigurator::configure();
+	setLoglevel(loglevel);
+}
+
+inline void setLoglevel(const std::string& loglevel) {
 	if (loglevel == "TRACE") {
 		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getTrace());
 	} else if (loglevel == "DEBUG") {
