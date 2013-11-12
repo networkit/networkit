@@ -159,6 +159,7 @@ Unit tests for NetworKit are based on the `googletest` library. For more informa
 - Use the `count` and `index` integer types for non-negative integer quantities and indices.
 - In most cases, objects are passed by reference. New objects are stack-allocated and returned by value. Avoid pointers and `new` where possible.
 - Use the `override` keyword to indicate that a method overrides a virtual method in the superclass.
+- In Python, indent using tabs, not spaces.
 
 
 ### Exposing C++ Code to Python

@@ -553,6 +553,41 @@ cdef class PLM(Clusterer):
 # 		return self._this.toString().decode("utf-8")
 
 
+cdef class DissimilarityMeasure:
+	""" Abstract base class for partition/community dissimilarity measures"""
+	pass
+
+
+cdef extern from "../src/clustering/NodeStructuralRandMeasure.h":
+	cdef cppclass _NodeStructuralRandMeasure "NetworKit::NodeStructuralRandMeasure":
+		_NodeStructuralRandMeasure() except +
+		double getDissimilarity(_Graph G, _Clustering first, _Clustering second)
+
+cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
+	""" The node-structural Rand measure assigns a similarity value in [0,1]
+		to two partitions of a graph, by considering all pairs of nodes.
+	"""
+	cdef _NodeStructuralRandMeasure _this
+
+	def getDissimilarity(self, Graph G, Clustering first, Clustering second):
+		return self._this.getDissimilarity(G._this, first._this, second._this)
+
+
+cdef extern from "../src/clustering/GraphStructuralRandMeasure.h":
+	cdef cppclass _GraphStructuralRandMeasure "NetworKit::GraphStructuralRandMeasure":
+		_GraphStructuralRandMeasure() except +
+		double getDissimilarity(_Graph G, _Clustering first, _Clustering second)
+
+cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
+	""" The graph-structural Rand measure assigns a similarity value in [0,1]
+		to two partitions of a graph, by considering connected pairs of nodes.
+	"""
+	cdef _GraphStructuralRandMeasure _this
+
+	def getDissimilarity(self, Graph G, Clustering first, Clustering second):
+		return self._this.getDissimilarity(G._this, first._this, second._this)
+
+
 # Module: properties
 
 # this is an example for using static methods
