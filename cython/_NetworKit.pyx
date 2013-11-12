@@ -588,6 +588,39 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 		return self._this.getDissimilarity(G._this, first._this, second._this)
 
 
+cdef extern from "../src/community/EPP.h":
+	cdef cppclass _EPP "NetworKit::EPP":
+		_Clustering run(_Graph G)
+		string toString()
+
+cdef class EPP(Clusterer):
+	""" EPP - Ensemble Preprocessing """
+	cdef _EPP _this
+
+	def run(self, Graph G):
+		return Clustering().setThis(self._this.run(G._this))
+
+	def toString(self):
+		return self._this.toString()
+
+	cdef setThis(self, _EPP other):
+		self._this = other
+		return self
+
+
+cdef extern from "../src/community/EPPFactory.h":
+	cdef cppclass _EPPFactory "NetworKit::EPPFactory":
+		_EPP make(count ensembleSize, string baseAlgorithm, string finalAlgorithm)
+
+cdef class EPPFactory:
+	""" This class makes instaces of the EPP community detection algorithm"""
+	cdef _EPPFactory _this
+	
+	def make(self, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
+		return EPP().setThis(self._this.make(ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
+
+
+
 # Module: properties
 
 # this is an example for using static methods
