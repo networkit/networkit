@@ -55,16 +55,13 @@ namespace Aux {
 
 #ifndef NOLOGGING
 #ifndef NOLOG4CXX
-/**
- * Call this first to configure logging output.
- */
-inline void configureLogging(const std::string& loglevel = "ERROR") {
-	// configure logging
-	log4cxx::BasicConfigurator::configure();
-	setLoglevel(loglevel);
-}
 
-inline void setLoglevel(const std::string& loglevel) {
+
+/**
+ * Set the current loglevel.
+ * @param loglevel 
+ */
+inline void setLoglevel(const std::string& loglevel) {
 	if (loglevel == "TRACE") {
 		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getTrace());
 	} else if (loglevel == "DEBUG") {
@@ -80,6 +77,17 @@ inline void setLoglevel(const std::string& loglevel) {
 		exit(1);
 	}
 }
+
+
+/**
+ * Call this first to configure logging output.
+ */
+inline void configureLogging(const std::string& loglevel = "ERROR") {
+	// configure logging
+	log4cxx::BasicConfigurator::configure();
+	setLoglevel(loglevel);
+}
+
 
 /**
  * Get the current log level.
