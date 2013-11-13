@@ -56,6 +56,24 @@ def setLoglevel(loglevel):
 	""" Set the current loglevel"""
 	_setLoglevel(stdstring(loglevel))
 
+
+cdef extern from "../src/auxiliary/Parallelism.h" namespace "Aux":
+	void _setNumberOfThreads "Aux::setNumberOfThreads" (int)
+	int _getCurrentNumberOfThreads "Aux::getCurrentNumberOfThreads" ()
+	int _getMaxNumberOfThreads "Aux::getMaxNumberOfThreads" ()
+
+def setNumberOfThreads(nThreads):
+	""" Set the number of OpenMP threads """
+	_setNumberOfThreads(nThreads)
+
+def getCurrentNumberOfThreads():
+	""" Get the number of currently running threads"""
+	return _getCurrentNumberOfThreads()
+
+def getMaxNumberOfThreads():
+	""" Get the maximum number of available threads"""
+	return _getMaxNumberOfThreads()
+
 # Class definitions
 
 
