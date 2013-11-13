@@ -37,23 +37,37 @@ Graph EdgeListIO::read(std::string path) {
    std::string previousLine;
    node maxNode = 0;
 
+   std::string commentPrefix = "#";
+
    // first find out the maximum node id
+   DEBUG("first pass");
    while (file.good()) {
 
-	   std::getline(file, line);
-	   std::vector<std::string> split = Aux::StringTools::split(line, separator);
-	   std::string prefix = "#";
-	   if (split.size() == 2 && (split[0].compare(0, prefix.length(), prefix) != 0)) {
+        std::getline(file, line);
 
-		   node u = std::stoi(split[0]);
-		   if (u > maxNode) {
-			   maxNode = u;
-		   }
-		   node v = std::stoi(split[1]);
-		   if (v > maxNode) {
-			   maxNode = v;
-		   }
-	   }
+        if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
+            TRACE("ignoring comment: " << line);
+        } else if (line.length() == 0) {
+            TRACE("ignoring empty line");
+        } else {
+            TRACE("edge line: " << line);
+            std::vector<std::string> split = Aux::StringTools::split(line, separator);
+       
+            if (split.size() == 2) {
+
+                node u = std::stoi(split[0]);
+                if (u > maxNode) {
+                    maxNode = u;
+                }
+                node v = std::stoi(split[1]);
+                if (v > maxNode) {
+                    maxNode = v;
+                }
+            } else {
+                throw std::runtime_error("malformed line in edge list file");
+            }
+        }
+
     }
 
     maxNode = maxNode - firstNode + 1;
@@ -63,22 +77,28 @@ Graph EdgeListIO::read(std::string path) {
 
     file.close();
 
+    DEBUG("second pass");
     file.open(path);
 
     // split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
     while(std::getline(file,line)){
 
-    	std::vector<std::string> split = Aux::StringTools::split(line, separator);
-    	std::string prefix = "#";
-    	std::string splitZero = split[0];
-    	bool notHash = (splitZero.compare(0, prefix.length(), prefix) != 0);
-		if (split.size() == 2 && notHash) {
-			node u = std::stoi(split[0]) - firstNode;
-			node v = std::stoi(split[1]) - firstNode;
-			if (!G.hasEdge(u,v) && !G.hasEdge(v,u)) {
-				G.addEdge(u, v);
-			}
-		}
+        if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
+            TRACE("ignoring comment: " << line);
+        } else {
+            TRACE("edge line: " << line);
+            std::vector<std::string> split = Aux::StringTools::split(line, separator);
+            std::string splitZero = split[0];
+            if (split.size() == 2) {
+                node u = std::stoi(split[0]) - firstNode;
+                node v = std::stoi(split[1]) - firstNode;
+                if (!G.hasEdge(u,v) && !G.hasEdge(v,u)) {
+                    G.addEdge(u, v);
+                }
+            } else {
+                throw std::runtime_error("malformed line in edge list file");
+            }
+        }
     }
 
     file.close();
