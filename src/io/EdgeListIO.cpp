@@ -46,11 +46,11 @@ Graph EdgeListIO::read(std::string path) {
         std::getline(file, line);
 
         if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
-            TRACE("ignoring comment: " << line);
+            // TRACE("ignoring comment: " << line);
         } else if (line.length() == 0) {
-            TRACE("ignoring empty line");
+            // TRACE("ignoring empty line");
         } else {
-            TRACE("edge line: " << line);
+            // TRACE("edge line: " << line);
             std::vector<std::string> split = Aux::StringTools::split(line, separator);
        
             if (split.size() == 2) {
@@ -84,9 +84,9 @@ Graph EdgeListIO::read(std::string path) {
     while(std::getline(file,line)){
 
         if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
-            TRACE("ignoring comment: " << line);
+            // TRACE("ignoring comment: " << line);
         } else {
-            TRACE("edge line: " << line);
+            // TRACE("edge line: " << line);
             std::vector<std::string> split = Aux::StringTools::split(line, separator);
             std::string splitZero = split[0];
             if (split.size() == 2) {
