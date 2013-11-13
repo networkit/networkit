@@ -32,7 +32,7 @@ import stopwatch
 
 
 # import from extension module into NetworKit namespace
-from _NetworKit import configureLogging, currentLogLevel
+from _NetworKit import configureLogging, currentLogLevel, setLoglevel
 
 # NetworKit submodules
 import graph

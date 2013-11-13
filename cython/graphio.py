@@ -1,7 +1,7 @@
 from _NetworKit import (METISGraphReader, FastMETISGraphReader, DotGraphWriter, EdgeListIO, \
 						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter)
 
-def readGraph(path, format=None, fast=False):
+def readGraph(path, format=None, fast=False, separator='\t', firstNode=1):
 	"""    Read graph and return a NetworKit::Graph"""
 	# TODO: detect file format by looking at the file content
 	if format is None:    # look at file extension
@@ -21,7 +21,7 @@ def readGraph(path, format=None, fast=False):
 			else:
 				reader = METISGraphReader()
 		elif (format is "edgelist"):
-			reader = EdgeListIO('\t', 1)
+			reader = EdgeListIO(separator, firstNode)
 
 	with open(path, "r") as file:    # catch a wrong path before it crashes the interpreter
 		G = reader.read(path)
