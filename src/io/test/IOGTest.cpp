@@ -252,6 +252,22 @@ TEST_F(IOGTest, testEdgeListIO) {
 	EXPECT_TRUE(G.hasEdge(2, 9));
 	EXPECT_TRUE(G.hasEdge(1, 7));
 
+
+	EdgeListIO reader2('\t', 1);
+	Graph G2 = reader2.read("input/example.edgelist");
+	EXPECT_EQ(10, G2.numberOfEdges());
+	EXPECT_TRUE(G2.hasEdge(0, 4));
+
+	EdgeListIO reader3(' ', 1);
+	Graph G3 = reader3.read("input/spaceseparated.edgelist");
+	EXPECT_EQ(10, G3.numberOfEdges());
+	EXPECT_TRUE(G3.hasEdge(0, 4));
+
+	EdgeListIO reader4('\t', 1);
+	Graph G4 = reader4.read("input/comments.edgelist");
+	EXPECT_EQ(10, G4.numberOfEdges());
+	EXPECT_TRUE(G4.hasEdge(0, 4));
+
 }
 
 TEST_F(IOGTest, testEdgeListClusteringReader) {

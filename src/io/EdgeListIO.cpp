@@ -14,7 +14,7 @@ EdgeListIO::EdgeListIO() {
 
 }
 
-EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(), firstNode(firstNode) {
+EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(separator), firstNode(firstNode) {
 
 }
 
@@ -37,10 +37,11 @@ Graph EdgeListIO::read(std::string path) {
    std::string previousLine;
    node maxNode = 0;
 
+   // first find out the maximum node id
    while (file.good()) {
 
 	   std::getline(file, line);
-	   std::vector<std::string> split = Aux::StringTools::split(line, '\t');
+	   std::vector<std::string> split = Aux::StringTools::split(line, separator);
 	   std::string prefix = "#";
 	   if (split.size() == 2 && (split[0].compare(0, prefix.length(), prefix) != 0)) {
 
@@ -56,6 +57,7 @@ Graph EdgeListIO::read(std::string path) {
     }
 
     maxNode = maxNode - firstNode + 1;
+    TRACE("max. node id found: " << maxNode);
 
     Graph G(maxNode);
 
@@ -66,7 +68,7 @@ Graph EdgeListIO::read(std::string path) {
     // split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
     while(std::getline(file,line)){
 
-    	std::vector<std::string> split = Aux::StringTools::split(line, '\t');
+    	std::vector<std::string> split = Aux::StringTools::split(line, separator);
     	std::string prefix = "#";
     	std::string splitZero = split[0];
     	bool notHash = (splitZero.compare(0, prefix.length(), prefix) != 0);
