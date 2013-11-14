@@ -14,9 +14,11 @@
 #include <vector>
 #include <sstream>
 
+#ifndef NOLOGGING
 #ifndef NOLOG4CXX
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
+#endif
 #endif
 
 namespace Aux {
