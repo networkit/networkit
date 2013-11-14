@@ -254,7 +254,7 @@ cdef class BarabasiAlbertGenerator:
 cdef extern from "../src/io/METISGraphReader.h":
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader":
 		_METISGraphReader() except +
-		_Graph read(string path)
+		_Graph read(string path) except +
 
 cdef class METISGraphReader:
 	""" Reads the METIS adjacency file format [1]

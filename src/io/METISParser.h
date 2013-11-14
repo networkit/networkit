@@ -25,6 +25,7 @@ namespace NetworKit {
 
 typedef uint64_t index;
 typedef index node;
+typedef uint64_t count;
 
 /**
  * Parser for the METIS file format.
@@ -46,7 +47,7 @@ public:
 	/**
 	 * Get the METIS graph file header
 	 */
-	std::tuple<int, int, int> getHeader();
+	std::tuple<count, count, index> getHeader();
 
 	/**
 	 * Test if graph file has a next line.
