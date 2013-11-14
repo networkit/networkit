@@ -1,5 +1,5 @@
 /*
- * ClusteringCoefficient.h
+ * ApproximateClusteringCoefficient.h
  *
  *  Created on: 08.04.2013
  *      Author: dhoske, 14.11.2013

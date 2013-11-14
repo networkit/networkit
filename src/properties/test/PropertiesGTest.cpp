@@ -44,21 +44,9 @@ static void test_cluster_coeff(std::string name) {
     out << "Average local: " << ApproximateClusteringCoefficient::calculate(false, G, CLUSTER_ITER) << "\n";
 
     out << "\n";
-    out << "Actual cluster coefficient:\n";
-
-    /* Average local coeff. with definition that disregards v with deg(v) <= 1 when averaging. */
-    std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
-	double sum = 0.0;
-	count nnodes = 0;
-	G.forNodes([&] (node u) {
-		sum += coefficients[u];
-		if (G.degree(u) >= 2) {
-			nnodes++;
-		}
-	});
-	double avg = nnodes != 0 ? sum / nnodes : 0.0;
-
-    out << "Average local: " << avg << "\n";
+    out << "Exact cluster coefficient:\n";
+    out << "Global:        " << ExactClusteringCoefficient::calculate(true, G) << "\n";
+    out << "Average local: " << ExactClusteringCoefficient::calculate(false, G) << "\n";
 }
 
 /* Tests the approximate clustering coefficient on some DIMACS graphs. */

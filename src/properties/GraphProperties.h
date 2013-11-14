@@ -35,7 +35,7 @@ public:
 	 * @param[in]	G	the graph
 	 * @param[out]		node -> local clustering coefficient
 	 */
-	static std::vector<double> localClusteringCoefficients(Graph& G);
+	static std::vector<double> localClusteringCoefficients(const Graph& G);
 
 
 	/**

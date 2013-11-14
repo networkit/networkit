@@ -30,7 +30,7 @@ std::vector<count> GraphProperties::degreeDistribution(Graph& G) {
 }
 
 
-std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
+std::vector<double> GraphProperties::localClusteringCoefficients(const Graph& G) {
 	count n = G.numberOfNodes();
 	std::vector<double> numerator(n); //
 	std::vector<double> denominator(n); // $\deg(u) \cdot ( \deg(u) - 1 )$
