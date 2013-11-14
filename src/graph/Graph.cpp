@@ -331,18 +331,52 @@ bool Graph::isMarkedAsWeighted() const {
 	return this->weighted;
 }
 
+count Graph::minDegree() const {
+	count mindeg = this->degree(0);
+
+	this->forNodes([&](node v) {
+    mindeg = std::min(mindeg, this->degree(v));
+	});
+
+	return mindeg;
+}
+
 index Graph::argminDegree() const {
 	index argmin = 0;
 	count mindeg = this->degree(argmin);
 
 	this->forNodes([&](node v) {
-		if (degree(v) < mindeg) {
+		if (this->degree(v) < mindeg) {
 			argmin = v;
-			mindeg = degree(v);
+			mindeg = this->degree(v);
 		}
 	});
 
 	return argmin;
+}
+
+count Graph::maxDegree() const {
+	count maxdeg = this->degree(0);
+
+	this->forNodes([&](node v) {
+    maxdeg = std::max(maxdeg, this->degree(v));
+	});
+
+	return maxdeg;
+}
+
+index Graph::argmaxDegree() const {
+	index argmax = 0;
+	count maxdeg = this->degree(argmax);
+
+	this->forNodes([&](node v) {
+		if (this->degree(v) > maxdeg) {
+			argmax = v;
+			maxdeg = this->degree(v);
+		}
+	});
+
+	return argmax;
 }
 
 
