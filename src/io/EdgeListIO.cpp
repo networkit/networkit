@@ -135,7 +135,7 @@ void EdgeListIO::write(const Graph& G, std::string path) {
     assert (file.good());
 
     G.forEdges([&](node u, node v){
-    	file << (u + firstNode) << " " << (v + firstNode) << std::endl;
+    	file << (u + firstNode) << separator << (v + firstNode) << std::endl;
     });
 
     file.close();
