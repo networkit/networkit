@@ -2,35 +2,40 @@
  * CoreDecomposition.cpp
  *
  *  Created on: Oct 28, 2013
- *      Author: Henning
+ *      Author: Henning, Barth, Weiß
  */
 
+#include "../auxiliary/ShellList.h"
 #include "CoreDecomposition.h"
 
 namespace NetworKit {
 
 CoreDecomposition::CoreDecomposition() {
-
 }
 
 CoreDecomposition::~CoreDecomposition() {
-
 }
 
 std::vector<count> CoreDecomposition::run(const Graph& G) {
-	std::vector<count> coreness;
+	Aux::ShellList sl(&G);
 
-	G.forNodes([&](node v) {
-		// TODO: fill data structure
-	});
+  /* Main Loop
+   * Iterates over all shells beginning with the first. The zero shell can safely be ignored!
+   */
+  for (count i = 1; i < sl.size(); i++) {
+    sl.forEachNodeInShell(i, [&](node v) {
+      /* Shell Nodes Loop
+       * Within each shell, all neighbors of the current node fall down one shell if they are in a higher one.
+       */
+      G.forNeighborsOf(v, [&](node w) {
+        if (sl.getShell(w) > i) {
+          sl.decreaseShell(w);
+        }
+      });
+    });
+  }
 
-	//index i = 1;
-	Graph G2 = G;
-	while (G2.numberOfNodes() > 0) {
-		// TODO: main loop
-	}
-
-	return coreness;
+	return sl.getShells();
 }
 
 } /* namespace NetworKit */

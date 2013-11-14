@@ -148,7 +148,26 @@ TEST_F(PropertiesGTest, tryCoreDecomposition) {
 	EXPECT_EQ(2, coreness[15]) << "expected coreness";
 }
 
-
+TEST_F(PropertiesGTest, runCoreDecompositionOnGraphFiles) {
+	CoreDecomposition coreDec;
+  METISGraphReader input;
+  
+  Graph G;
+  std::vector<count> corenesses;
+  std::ofstream output;
+  
+  std::list<std::string> graphList = {"celegans_metabolic", "polblogs", "hep-th"};
+  
+  std::for_each(graphList.begin(), graphList.end(), [&](std::string filename){
+    G = input.read("input/" << filename << ".graph");
+    corenesses = coreDec.run(G);
+    output.open(filename << ".sol");
+    std::for_each(corenesses.begin(), corenesses.end(), [&](count coreness){
+      output << coreness << std::endl;
+    });
+    output.close();
+  });
+}
 
 
 
