@@ -15,6 +15,7 @@
 #include <iterator> // for ostream_iterator
 
 #include "../ClusteringCoefficient.h"
+#include "../ApproximateClusteringCoefficient_Hoske.h"
 #include "../CoreDecomposition.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../properties/GraphProperties.h"

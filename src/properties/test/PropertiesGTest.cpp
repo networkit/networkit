@@ -9,7 +9,6 @@
 
 #include "PropertiesGTest.h"
 
-
 namespace NetworKit {
 
 PropertiesGTest::PropertiesGTest() {
@@ -21,9 +20,55 @@ PropertiesGTest::~PropertiesGTest() {
 	// TODO Auto-generated destructor stub
 }
 
+static const double CLUSTER_VARIANCE = 1e-2;
+static const double CLUSTER_ERROR = 1e-2;
+static const double CLUSTER_ITER = ApproximateClusteringCoefficient::niters(CLUSTER_VARIANCE, CLUSTER_ERROR);
+
+TEST_F(PropertiesGTest, testApproximateClusteringCoefficient) {
+	GraphGenerator gen;
+	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
+	double cc = ApproximateClusteringCoefficient::calculate(true, G, CLUSTER_ITER);
+	EXPECT_EQ(1.0, cc);
+}
+
+/* Compute approximate cluster coefficient of graph input/name.graph
+   and store it into output/name.sol. */
+static void test_cluster_coeff(std::string name) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/" + name + ".graph");
+    std::ofstream out("output/" + name + ".sol");
+
+    out << "Approximate cluster coefficient with variance " << CLUSTER_VARIANCE;
+    out << " and error prob. " << CLUSTER_ERROR << " (" << CLUSTER_ITER << " iterations)\n";
+    out << "Global:        " << ApproximateClusteringCoefficient::calculate(true, G, CLUSTER_ITER) << "\n";
+    out << "Average local: " << ApproximateClusteringCoefficient::calculate(false, G, CLUSTER_ITER) << "\n";
+
+    out << "\n";
+    out << "Actual cluster coefficient:\n";
+
+    /* Average local coeff. with definition that disregards v with deg(v) <= 1 when averaging. */
+    std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
+	double sum = 0.0;
+	count nnodes = 0;
+	G.forNodes([&] (node u) {
+		sum += coefficients[u];
+		if (G.degree(u) >= 2) {
+			nnodes++;
+		}
+	});
+	double avg = nnodes != 0 ? sum / nnodes : 0.0;
+
+    out << "Average local: " << avg << "\n";
+}
+
+/* Tests the approximate clustering coefficient on some DIMACS graphs. */
+TEST_F(PropertiesGTest, testApproximateClusteringCoefficientDIMACS) {
+    test_cluster_coeff("celegans_metabolic");
+    test_cluster_coeff("hep-th");
+    test_cluster_coeff("polblogs");
+}
 
 TEST_F(PropertiesGTest, testClusteringCoefficient) {
-
 	GraphGenerator gen;
 	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
 
@@ -31,7 +76,6 @@ TEST_F(PropertiesGTest, testClusteringCoefficient) {
 	double cc = clusteringCoefficient.calculate(G);
 
 	EXPECT_EQ(1.0, cc);
-
 }
 
 TEST_F(PropertiesGTest, testDegreeDistribution) {

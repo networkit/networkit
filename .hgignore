@@ -8,7 +8,11 @@ syntax: regexp
 \.pyc
 \.a
 \.so
-
+^build.conf$
+^NetworKit-Tests-
+.swp$
+^.sconsign.dblite$
+.sublime-.*$
 syntax: regexp
 ^output$
 syntax: regexp
