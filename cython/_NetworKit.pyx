@@ -305,8 +305,8 @@ cdef extern from "../src/io/EdgeListIO.h":
 	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
 		_EdgeListIO() except +
 		_EdgeListIO(char separator, node firstNode) except +
-		_Graph read(string path)
-		void write(_Graph G, string path)
+		_Graph read(string path) except +
+		void write(_Graph G, string path) except +
 
 cdef class EdgeListIO:
 	""" Reads and writes graphs in various edge list formats"""

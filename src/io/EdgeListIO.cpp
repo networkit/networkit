@@ -7,6 +7,8 @@
 
 #include "EdgeListIO.h"
 
+#include <sstream>
+
 namespace NetworKit {
 
 
@@ -34,27 +36,34 @@ Graph EdgeListIO::read(std::string path) {
 
    file.open(path);
 
+   if (! file.good()) {
+        throw std::runtime_error("unable to read from file");
+   }
+
    std::string previousLine;
    node maxNode = 0;
 
    std::string commentPrefix = "#";
 
+   DEBUG("separator: " << separator);
+   DEBUG("first node: " << firstNode);
    // first find out the maximum node id
    DEBUG("first pass");
+   count i = 0;
    while (file.good()) {
-
+        ++i;
         std::getline(file, line);
+        // TRACE("read line: " << line);
 
         if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
             // TRACE("ignoring comment: " << line);
         } else if (line.length() == 0) {
             // TRACE("ignoring empty line");
         } else {
-            // TRACE("edge line: " << line);
             std::vector<std::string> split = Aux::StringTools::split(line, separator);
        
             if (split.size() == 2) {
-
+                TRACE("split into : " << split[0] << " and " << split[1]);
                 node u = std::stoi(split[0]);
                 if (u > maxNode) {
                     maxNode = u;
@@ -64,25 +73,32 @@ Graph EdgeListIO::read(std::string path) {
                     maxNode = v;
                 }
             } else {
-                throw std::runtime_error("malformed line in edge list file");
+                std::stringstream message;
+                message << "malformed line ";
+                message << i << ": ";
+                message << line;
+                throw std::runtime_error(message.str());
             }
         }
 
     }
 
+    file.close();
+
     maxNode = maxNode - firstNode + 1;
-    TRACE("max. node id found: " << maxNode);
+    DEBUG("max. node id found: " << maxNode);
 
     Graph G(maxNode);
 
-    file.close();
+
 
     DEBUG("second pass");
     file.open(path);
 
     // split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
+    i = 0; // count lines
     while(std::getline(file,line)){
-
+        ++i;
         if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
             // TRACE("ignoring comment: " << line);
         } else {
@@ -96,7 +112,11 @@ Graph EdgeListIO::read(std::string path) {
                     G.addEdge(u, v);
                 }
             } else {
-                throw std::runtime_error("malformed line in edge list file");
+                std::stringstream message;
+                message << "malformed line ";
+                message << i << ": ";
+                message << line;
+                throw std::runtime_error(message.str());
             }
         }
     }
