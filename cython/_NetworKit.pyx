@@ -41,8 +41,8 @@ def pystring(stdstring):
 
 cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
 	void _configureLogging "Aux::configureLogging" (string loglevel)
-	string _currentLogLevel "Aux::currentLogLevel" ()
-	void _setLoglevel "Aux::setLoglevel" (string loglevel)
+	string _currentLogLevel "Aux::currentLogLevel" () except +
+	void _setLoglevel "Aux::setLoglevel" (string loglevel) except +
 	
 def configureLogging(loglevel="ERROR"):
 	""" Set the loglevel of the LOG4CXX module"""
@@ -87,20 +87,20 @@ cdef extern from "../src/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count) except +
-		count numberOfNodes()
-		count numberOfEdges()
-		node addNode()
-		void removeNode(node u)
-		void addEdge(node u, node v, edgeweight w)
-		void removeEdge(node u, node v)
-		bool hasEdge(node u, node v)
-		edgeweight weight(node u, node v)
-		vector[node] nodes()
-		vector[pair[node, node]] edges()
-		void markAsWeighted()
-		bool isMarkedAsWeighted()
-		string toString()
-		string getName()
+		count numberOfNodes() except +
+		count numberOfEdges() except +
+		node addNode() except +
+		void removeNode(node u) except +
+		void addEdge(node u, node v, edgeweight w) except +
+		void removeEdge(node u, node v) except +
+		bool hasEdge(node u, node v) except +
+		edgeweight weight(node u, node v) except +
+		vector[node] nodes() except +
+		vector[pair[node, node]] edges() except +
+		void markAsWeighted() except +
+		bool isMarkedAsWeighted() except +
+		string toString() except +
+		string getName() except +
 		
 
 cdef class Graph:
@@ -254,7 +254,7 @@ cdef class BarabasiAlbertGenerator:
 cdef extern from "../src/io/METISGraphReader.h":
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader":
 		_METISGraphReader() except +
-		_Graph read(string path)
+		_Graph read(string path) except +
 
 cdef class METISGraphReader:
 	""" Reads the METIS adjacency file format [1]
@@ -289,7 +289,7 @@ cdef class FastMETISGraphReader:
 cdef extern from "../src/io/DotGraphWriter.h":
 	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter":
 		_DotGraphWriter() except +
-		void write(_Graph G, string path)
+		void write(_Graph G, string path) except +
 
 
 cdef class DotGraphWriter:
