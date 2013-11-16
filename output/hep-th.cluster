@@ -1,0 +1,12 @@
+Test of approximate cluster coefficient for 'hep-th'.
+Parameters:
+  Variance:          0.01
+  Error probability: 0.01
+
+Global cluster coefficient:
+  Approximate: 0.325198
+  Exact:       0.329576
+
+Average local cluster coefficient:
+  Approximate: 0.633197
+  Exact:       0.636456

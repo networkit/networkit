@@ -1,0 +1,12 @@
+Test of approximate cluster coefficient for 'polblogs'.
+Parameters:
+  Variance:          0.01
+  Error probability: 0.01
+
+Global cluster coefficient:
+  Approximate: 0.224442
+  Exact:       0.225959
+
+Average local cluster coefficient:
+  Approximate: 0.360006
+  Exact:       0.360029

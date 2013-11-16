@@ -24,6 +24,7 @@ static const double CLUSTER_VARIANCE = 1e-2;
 static const double CLUSTER_ERROR = 1e-2;
 static const double CLUSTER_ITER = ApproximateClusteringCoefficient::niters(CLUSTER_VARIANCE, CLUSTER_ERROR);
 
+/* Tests the approximate clustering coefficient on a complete graph. */
 TEST_F(PropertiesGTest, testApproximateClusteringCoefficient) {
 	GraphGenerator gen;
 	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
@@ -32,21 +33,24 @@ TEST_F(PropertiesGTest, testApproximateClusteringCoefficient) {
 }
 
 /* Compute approximate cluster coefficient of graph input/name.graph
-   and store it into output/name.sol. */
+   and store it in output/name.cluster. */
 static void test_cluster_coeff(std::string name) {
     METISGraphReader reader;
     Graph G = reader.read("input/" + name + ".graph");
-    std::ofstream out("output/" + name + ".sol");
+    std::ofstream out("output/" + name + ".cluster");
 
-    out << "Approximate cluster coefficient with variance " << CLUSTER_VARIANCE;
-    out << " and error prob. " << CLUSTER_ERROR << " (" << CLUSTER_ITER << " iterations)\n";
-    out << "Global:        " << ApproximateClusteringCoefficient::calculate(true, G, CLUSTER_ITER) << "\n";
-    out << "Average local: " << ApproximateClusteringCoefficient::calculate(false, G, CLUSTER_ITER) << "\n";
+    out << "Test of approximate cluster coefficient for '" << name << "'.\n";
+    out << "Parameters:\n";
+    out << "  Variance:          " << CLUSTER_VARIANCE << "\n";
+    out << "  Error probability: " << CLUSTER_ERROR << "\n\n";
 
-    out << "\n";
-    out << "Exact cluster coefficient:\n";
-    out << "Global:        " << ExactClusteringCoefficient::calculate(true, G) << "\n";
-    out << "Average local: " << ExactClusteringCoefficient::calculate(false, G) << "\n";
+    out << "Global cluster coefficient:\n";
+    out << "  Approximate: " << ApproximateClusteringCoefficient::calculate(true, G, CLUSTER_ITER) << "\n";
+    out << "  Exact:       " << ExactClusteringCoefficient::calculate(true, G) << "\n\n";
+    
+    out << "Average local cluster coefficient:\n";
+    out << "  Approximate: " << ApproximateClusteringCoefficient::calculate(false, G, CLUSTER_ITER) << "\n";
+    out << "  Exact:       " << ExactClusteringCoefficient::calculate(false, G) << "\n";
 }
 
 /* Tests the approximate clustering coefficient on some DIMACS graphs. */

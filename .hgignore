@@ -14,8 +14,6 @@ syntax: regexp
 ^.sconsign.dblite$
 .sublime-.*$
 syntax: regexp
-^output$
-syntax: regexp
 ^sandbox$
 syntax: regexp
 ^profiling$
