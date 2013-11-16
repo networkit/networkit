@@ -25,7 +25,7 @@ ShellList::ShellList(const Graph *graph):
 }
 
 void 
-ShellList::decreaseDegree(const node v) 
+ShellList::decreaseShell(const node v) 
 {
   count shell = this->nodeShell[v];
   assert(shell > 0);
