@@ -51,6 +51,7 @@
 #include "overlap/HashingOverlapper.h"
 #include "properties/Aproximative_ClusterCoefficient.h"
 #include "properties/ClusteringCoefficient.h"
+#include "input/celegans_metabolic.graph"
 
 // revision
 static const std::string REVISION = "r008";
