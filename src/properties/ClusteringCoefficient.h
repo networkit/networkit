@@ -28,13 +28,13 @@ public:
 	 * where $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 	 */
 	virtual double avgLocal(Graph& G) const;
-  	virtual double approxAvgLocal(Graph& G) const;
+  	virtual double approxAvgLocal(Graph& G, const count tries) const;
 
 	/**
 	 * This calculates the global clustering coefficient
 	 */
   	virtual double global(Graph& G) const;
-  	virtual double approxGlobal(Graph& G) const;
+  	virtual double approxGlobal(Graph& G, const count tries) const;
   
 };
 
