@@ -52,10 +52,40 @@ ClusteringCoefficient::avgLocal(Graph& G) const
 }
 
 double
-ClusteringCoefficient::approxAvgLocal(Graph& G) const
+ClusteringCoefficient::approxAvgLocal(Graph& G, count tries) const
 {
-  // TODO implement approximative algorithm for average local cc
-	return 0.0;
+	count n = G.numberOfNodes();
+
+	// WARNING: I assume RAND_MAX to be larger than n. If this should not hold for an application
+	// or implementation of the standard library, a more sophisticated version of determining a 
+	// vertex uniformly at random must be used.
+
+	count triangles = 0;
+	for (count k = 0; k < tries; ++k) {
+		node v = rand() % n;
+
+		if (G.degree(v) < 2) {
+			// this iteration is ignored, since this vertex can never be part of a triangle,
+			// nor middle point of a path of length 3
+
+			--k;
+			continue;
+		}
+
+		node u = G.randomNeighbor(v);
+		node w = G.randomNeighbor(v);
+
+		// TODO This could be sped up for degree(v) == 2...
+		while (u == w) {
+			w = G.randomNeighbor(v);
+		}
+
+		if (G.hasEdge(u,w)) {
+			triangles++;
+		}
+	}
+
+	return triangles / tries;
 }
 
 
