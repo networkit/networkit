@@ -20,8 +20,8 @@ ClusteringCoefficient::~ClusteringCoefficient()
 	// TODO Auto-generated destructor stub
 }
 
-double
-ClusteringCoefficient::avgLocal(Graph& G) const
+std::vector<double>
+ClusteringCoefficient::local(Graph &G) const
 {
 	count n = G.numberOfNodes();
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
@@ -43,6 +43,17 @@ ClusteringCoefficient::avgLocal(Graph& G) const
       coefficient[u] = (double)triangles / (double)(d * (d - 1));
     }
 	});
+
+	return coefficient;
+}
+
+double
+ClusteringCoefficient::avgLocal(Graph& G) const
+{
+	count n = G.numberOfNodes();
+	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+
+	coefficient = this->local(G);
 
 	double cc = G.parallelSumForNodes([&](node u){
 		return coefficient[u];
@@ -101,17 +112,17 @@ ClusteringCoefficient::global(Graph& G) const
 
 	G.parallelForNodes([&](node u){
 		count tr = 0;
-    if (G.degree(u) > 1) {
-      G.forEdgesOf(u, [&](node u, node v) {
-        G.forEdgesOf(v, [&](node v, node w){
-          if (G.hasEdge(u, w)) {
-            tr += 1;
-          }
-        });
-      });
-    }
+    	if (G.degree(u) > 1) {
+     	 	G.forEdgesOf(u, [&](node u, node v) {
+       			G.forEdgesOf(v, [&](node v, node w){
+         			if (G.hasEdge(u, w)) {
+            			tr += 1;
+          			}
+        		});
+      		});
+    	}
     
-    triangles[u] = tr;
+    	triangles[u] = tr;
 	});
   
   double denominator = G.parallelSumForNodes([&](node u){
@@ -122,7 +133,7 @@ ClusteringCoefficient::global(Graph& G) const
 		return triangles[u];
 	});
 
-	cc /= (2 * denominator); // factor 2 because triangles counted six times, but need them three times
+	cc /= (denominator); // factor 2 because triangles counted six times, but need them three times
 
 	return cc;
 }

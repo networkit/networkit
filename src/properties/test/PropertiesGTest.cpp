@@ -9,6 +9,7 @@
 
 #include "PropertiesGTest.h"
 
+#define EPSILON 0.0000001
 
 namespace NetworKit {
 
@@ -28,7 +29,7 @@ TEST_F(PropertiesGTest, testClusteringCoefficient) {
 	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
 
 	ClusteringCoefficient clusteringCoefficient;
-	double cc = clusteringCoefficient.calculate(G);
+	double cc = clusteringCoefficient.global(G);
 
 	EXPECT_EQ(1.0, cc);
 
@@ -55,7 +56,9 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 	GraphGenerator gen;
 	Graph G_complete = gen.makeCompleteGraph(4);
 
-	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G_complete);
+	ClusteringCoefficient clusteringCoefficient;
+	std::vector<double> coefficients = clusteringCoefficient.local(G_complete);
+
 	for (double cc : coefficients) {
 		EXPECT_EQ(1.0, cc) << "In a clique all possible triangles are closed so all local clustering coefficients are 1";
 	}
@@ -67,7 +70,7 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 	G1.addEdge(1, 2);
 	G1.addEdge(2, 3);
 
-	std::vector<double> coefficients_G1 = GraphProperties::localClusteringCoefficients(G1);
+	std::vector<double> coefficients_G1 = clusteringCoefficient.local(G1);
 
 	EXPECT_EQ(0, coefficients_G1[0]);
 	EXPECT_EQ(0, coefficients_G1[1]);
@@ -80,7 +83,7 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 	G2.addEdge(1, 2);
 	G2.addEdge(2, 3);
 	G2.addNode();
-	std::vector<double> coefficients_G2 = GraphProperties::localClusteringCoefficients(G2);
+	std::vector<double> coefficients_G2 = clusteringCoefficient.local(G2);
 
 	EXPECT_EQ(0, coefficients_G2[0]);
 	EXPECT_EQ(0, coefficients_G2[1]);
@@ -88,6 +91,31 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 
 }
 
+TEST_F(PropertiesGTest, benchCoreDecomposition) {
+	count n = 16;
+	METISGraphReader mgr;
+	Graph G = mgr.read("/tmp/celegans_metabolic.graph");
+	CoreDecomposition coreDec;
+
+	// compute core decomposition
+	coreDec.run(G);
+
+	coreDec.write("/tmp/celegans_metabolic.sol");
+
+	G = mgr.read("/tmp/polblogs.graph");
+
+	// compute core decomposition
+	coreDec.run(G);
+
+	coreDec.write("/tmp/polblogs.sol");
+
+	G = mgr.read("/tmp/hep-th.graph");
+
+	// compute core decomposition
+	coreDec.run(G);
+
+	coreDec.write("/tmp/hep-th.sol");
+}
 
 TEST_F(PropertiesGTest, tryCoreDecomposition) {
 	count n = 16;
@@ -148,26 +176,7 @@ TEST_F(PropertiesGTest, tryCoreDecomposition) {
 	EXPECT_EQ(2, coreness[15]) << "expected coreness";
 }
 
-TEST_F(PropertiesGTest, runCoreDecompositionOnGraphFiles) {
-	CoreDecomposition coreDec;
-  METISGraphReader input;
-  
-  Graph G;
-  std::vector<count> corenesses;
-  std::ofstream output;
-  
-  std::list<std::string> graphList = {"celegans_metabolic", "polblogs", "hep-th"};
-  
-  std::for_each(graphList.begin(), graphList.end(), [&](std::string filename){
-    G = input.read("input/" << filename << ".graph");
-    corenesses = coreDec.run(G);
-    output.open(filename << ".sol");
-    std::for_each(corenesses.begin(), corenesses.end(), [&](count coreness){
-      output << coreness << std::endl;
-    });
-    output.close();
-  });
-}
+
 
 
 
@@ -177,7 +186,9 @@ TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 	GraphGenerator gen;
 	Graph G_complete = gen.makeCompleteGraph(4);
 
-	EXPECT_EQ(1.0, GraphProperties::averageLocalClusteringCoefficient(G_complete)) << "should be 1.0 for a complete graph";
+	ClusteringCoefficient clusteringCoefficient;
+
+	EXPECT_EQ(1.0, clusteringCoefficient.avgLocal(G_complete)) << "should be 1.0 for a complete graph";
 
 	// Test case for graph with degree-1 nodes
 	Graph G_path(4);
@@ -186,7 +197,7 @@ TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 	G_path.addEdge(1, 2);
 	G_path.addEdge(2, 3);
 
-	EXPECT_EQ(0.0, GraphProperties::averageLocalClusteringCoefficient(G_path)) << "should be 0.0 for a path";
+	EXPECT_EQ(0.0, clusteringCoefficient.avgLocal(G_path)) << "should be 0.0 for a path";
 
 	// Test case for graph with degree-1 nodes
 	Graph G_path_isolated(4);
@@ -196,7 +207,7 @@ TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 	G_path_isolated.addEdge(2, 3);
 	G_path_isolated.addNode();
 
-	EXPECT_EQ(0.0, GraphProperties::averageLocalClusteringCoefficient(G_path_isolated)) << "should be 0.0 for a path";
+	EXPECT_EQ(0.0, clusteringCoefficient.avgLocal(G_path_isolated)) << "should be 0.0 for a path";
 
 
 }
@@ -248,11 +259,13 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
 	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
 
+	ClusteringCoefficient clusteringCoefficient;
+
 	// Calculating the parameters
 	std::vector<count> 	degreeDist = GraphProperties::degreeDistribution(G);
-	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
+	std::vector<double> coefficients = clusteringCoefficient.local(G);
 	std::vector<double> coefficientsPerDegree = GraphProperties::localClusteringCoefficientPerDegree(G);
-	double avgCoefficient = GraphProperties::averageLocalClusteringCoefficient(G);
+	double avgCoefficient = clusteringCoefficient.avgLocal(G);
 
 
 
@@ -313,9 +326,9 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 	// Networkx: nx.average_clustering(G)
 	double avgCoefficientNetworkX = 0.6174507021536301;
 
-	EXPECT_EQ(avgCoefficientNetworkX, avgCoefficient);
-
-
+	// Amount for floating-point precision
+	EXPECT_TRUE(avgCoefficient > (avgCoefficientNetworkX - EPSILON));
+	EXPECT_TRUE(avgCoefficient < (avgCoefficientNetworkX + EPSILON));
 
 }
 
@@ -326,4 +339,4 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 } /* namespace NetworKit */
 
-#endif /*NOGTEST*/
+#endif NOGTEST

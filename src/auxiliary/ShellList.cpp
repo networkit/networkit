@@ -2,50 +2,75 @@
  * ShellList.cpp
  *
  *  Created on: Nov 4, 2013
- *      Author: Lukas Barth, David Weiß
+ *      Author: Lukas Barth
  */
 
-#include <algorithm> // std::for_each, loop iterating over containers and executing a given function for each element
 #include "ShellList.h"
 
 namespace Aux {
 
-ShellList::ShellList(const Graph *graph):
-	g(graph),
-	shells(std::vector<std::list<node>>(graph->maxDegree(), std::list<node>())),
-  nodeHandle(std::vector<count>(graph->numberOfNodes())),
-  nodeShell(std::vector<count>(graph->numberOfNodes()))
+ShellList::ShellList(const Graph *orig_g):
+	g(orig_g),
+	shells(std::vector<std::list<node>>(orig_g->numberOfNodes(), std::list<node>()))
+	{
+}
+
+void
+ShellList::insert(node n) 
 {
- 	this->g->forNodes([&](node v) {
-    int shell = this->g->degree(v)
-    this->shells[shell].push_front(v);
-    this->nodeHandle[v] = this->shells[shell].begin();
-    this->nodeShell[v] = shell;
- 	});
+	this->shells[this->g->degree(n)].push_front(n);
+	this->nodeToShell[n] = this->g->degree(n);
+	this->listHandle[n] = this->shells[this->g->degree(n)].begin();
 }
 
 void 
-ShellList::decreaseShell(const node v) 
+ShellList::decreaseDegree(node n) 
 {
-  count shell = this->nodeShell[v];
-  assert(shell > 0);
-  
-	this->shells[shell].erase(this->nodeHandle[v]);
-  
-  --this->nodeShell[v];
-  --shell;
-  
-	this->shells[shell].push_back(v);
-	this->nodeHandle[v] = this->shells[shell].end();
-	--this->nodeHandle[v]; // iterator arithmetic, necessary because .end() does not point on the last element but after it
+	std::list<node>::iterator nIt = this->listHandle[n];
+	count curDeg = this->nodeToShell[n];
+
+	this->shells[curDeg].erase(nIt);
+	this->shells[curDeg-1].push_back(n);
+
+	this->nodeToShell[n] -= 1;
+	this->listHandle[n] = this->shells[curDeg-1].end();
+	--this->listHandle[n];
+}
+
+count
+ShellList::getCurrentShell(node n) 
+{
+	return this->nodeToShell[n];
+}
+
+std::list<node>::iterator
+ShellList::getShelliterator(count shell) 
+{
+	return this->shells[shell].begin();
+}
+
+count
+ShellList::size()
+{
+	return this->shells.size();
 }
 
 void 
-ShellList::forEachNodeInShell(const count shell, std::function<void (node)> func)
+ShellList::forEachNodeInShell(count shell, std::function<void (node)> func)
 {
-  assert(shell >= 0);
-  assert(shell < this->shells.size());
-	std::for_each(this->shells[shell].begin(), this->shells[shell].end(), func);
+	for_each(this->shells[shell].begin(), this->shells[shell].end(), func);
 }
 
-}//namespace Aux
+std::vector<count>
+ShellList::getCoreness()
+{
+	std::vector<count> coreness(this->nodeToShell.size());
+
+	for (auto it = this->nodeToShell.begin(); it != this->nodeToShell.end(); ++it) {
+		coreness[it->first] = it->second;
+	}
+
+	return coreness;
+}
+
+}

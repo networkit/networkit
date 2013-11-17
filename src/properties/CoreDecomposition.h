@@ -9,7 +9,10 @@
 #define COREDECOMPOSITION_H_
 
 #include <vector>
+#include <fstream>
+#include <string>
 #include "../graph/Graph.h"
+#include "../auxiliary/ShellList.h"
 
 namespace NetworKit {
 
@@ -17,6 +20,10 @@ namespace NetworKit {
  * Computes k-core decomposition of a graph.
  */
 class CoreDecomposition {
+
+private:
+	std::vector<count> coreness;
+
 public:
 	CoreDecomposition();
 	virtual ~CoreDecomposition();
@@ -25,6 +32,8 @@ public:
 	 * @return k-core decomposition of graph @a G.
 	 */
 	std::vector<count> run(const Graph& G);
+
+	void write(std::string filename);
 };
 
 } /* namespace NetworKit */
