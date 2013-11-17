@@ -6,6 +6,7 @@
  */
 
 #include "ApproximateClusteringCoefficient.h"
+#include <random>
 
 namespace NetworKit {
 
