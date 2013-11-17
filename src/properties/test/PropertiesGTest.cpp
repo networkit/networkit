@@ -34,6 +34,18 @@ TEST_F(PropertiesGTest, testClusteringCoefficient) {
 
 }
 
+TEST_F(PropertiesGTest, testApproximateClusteringCoefficient) {
+
+	GraphGenerator gen;
+	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
+
+	ApproximateClusteringCoefficient approximateClusteringCoefficient;
+	double acc = approximateClusteringCoefficient.calculate(G);
+
+	EXPECT_EQ(1.0, acc);
+
+}
+
 TEST_F(PropertiesGTest, testDegreeDistribution) {
 	Graph G(3);
 	std::vector<count> degreeDist = GraphProperties::degreeDistribution(G);
