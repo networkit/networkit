@@ -89,7 +89,7 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 }
 
 
-TEST_F(PropertiesGTest, tryCoreDecomposition) {
+/*TEST_F(PropertiesGTest, tryCoreDecomposition) {
 	count n = 16;
 	Graph G(n);
 
@@ -146,6 +146,36 @@ TEST_F(PropertiesGTest, tryCoreDecomposition) {
 	EXPECT_EQ(4, coreness[13]) << "expected coreness";
 	EXPECT_EQ(3, coreness[14]) << "expected coreness";
 	EXPECT_EQ(2, coreness[15]) << "expected coreness";
+}*/
+
+TEST_F(PropertiesGTest, tryAproximative_ClusterCoefficientDimacsGraphs) {
+  METISGraphReader reader = METISGraphReader();
+  int k=10000;
+  std::vector<std::string> graphPaths;
+  graphPaths.push_back("input/celegans_metabolic.graph");
+  graphPaths.push_back("input/polblogs.graph");
+  graphPaths.push_back("input/hep-th.graph");
+
+  for(std::string path: graphPaths) {
+    std::cout << "Graph: " << path << std::endl;
+    Graph G = reader.read(path);
+
+    GlobalClusteringCoefficient GCC;
+    float GlobalCC = GCC.run(G);
+
+    Aproximative_ClusterCoefficient APPR;
+    float Apro = APPR.run(G, k);
+
+      if(Apro != GlobalCC) {
+        std::cout <<" expected=" << GlobalCC << " result=" << Apro << std::endl;
+        EXPECT_LT(GlobalCC-Apro, 0.01) << "expected ClusterCoefficient";
+	EXPECT_LT(Apro-GlobalCC,0.01);
+      }
+    
+    std::ofstream solutionFile(path.substr(0, path.size() - 6) + ".sol", std::ofstream::out);
+    solutionFile << Apro << std::endl;
+   
+  }
 }
 
 
