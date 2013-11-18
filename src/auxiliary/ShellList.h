@@ -54,7 +54,7 @@ public:
    */
 	count size() const
   {
-    return this->nodeShell.size();
+    return this->shells.size();
   }
 
 private:

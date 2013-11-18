@@ -12,7 +12,7 @@ namespace Aux {
 
 ShellList::ShellList(const Graph *graph):
 	g(graph),
-	shells(std::vector<std::list<node>>(graph->maxDegree(), std::list<node>())),
+	shells(std::vector<std::list<node>>(graph->maxDegree()+1, std::list<node>())),
   nodeHandle(std::vector<std::list<node>::iterator>(graph->numberOfNodes())),
   nodeShell(std::vector<count>(graph->numberOfNodes()))
 {
