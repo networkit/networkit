@@ -80,11 +80,8 @@ ClusteringCoefficient::approxAvgLocal(Graph& G, const count tries) const
 		node v = rand() % n;
 
 		if (G.degree(v) < 2) {
-			// this iteration is ignored, since this vertex can never be part of a triangle,
+			// this vertex can never be part of a triangle,
 			// nor middle point of a path of length 3
-
-			// We may not really ignore it, since this may cause endless loops for certain graphs
-			//--k;
 			continue;
 		}
 
@@ -136,7 +133,7 @@ ClusteringCoefficient::global(Graph& G) const
 		return triangles[u];
 	});
 
-	cc /= (denominator); 
+	cc /= denominator; 
 
 	return cc;
 }
@@ -147,11 +144,10 @@ ClusteringCoefficient::approxGlobal(Graph& G, const count tries) const
 {
 	count n = G.numberOfNodes();
 
-  	// Calculate prefix sum over the nodes where each node v counts deg(v)*(deg(v)-1) times
+  // Calculate prefix sum over the nodes where each node v counts deg(v)*(deg(v)-1) times
 	std::vector<count> weight(n);
-	count psum = G.degree(0) * (G.degree(0) - 1);
-	weight[0] = psum;
-	for (node i = 1; i < n; i++) {
+	count psum = 0;
+	for (index i = 0; i < n; i++) {
 		psum += G.degree(i) * (G.degree(i) - 1);
 		weight[i] = psum;
 	}
@@ -162,23 +158,9 @@ ClusteringCoefficient::approxGlobal(Graph& G, const count tries) const
 
 	double triangles = 0;
 	for (count k = 0; k < tries; ++k) {
-		count r = rand() % psum;
+		count r = rand() % (psum+1);
 
-    	// binary search for node index in weight array
-    	/*
-		index v = n/2;
-		for (index step = n/4; ; step /= 2) {
-			if (weight[v] < r) {
-				v += step;
-			}
-			else if (weight[v-1] >= r) {
-				v -= step;
-			}
-			else break;
-		}
-		*/
-		// don't get it, sorry. Seems to be an endless loop, at least in some cases - Lukas
-		// replaced it by plain old binary search:
+		// plain old binary search:
 		index low = 0; 
 		index high = G.numberOfNodes();
 		while (low < high) {
@@ -196,11 +178,8 @@ ClusteringCoefficient::approxGlobal(Graph& G, const count tries) const
 		node v = low; // ewww.. setting a vertex to an index.. but works.
 
 		if (G.degree(v) < 2) {
-			// this iteration is ignored, since this vertex can never be part of a triangle,
+			// this vertex can never be part of a triangle,
 			// nor middle point of a path of length 3
-
-			// We may not really ignore it, since this may cause endless loops for certain graphs
-			//--k;
 			continue;
 		}
 
