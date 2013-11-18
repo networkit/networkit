@@ -13,6 +13,9 @@
 #include <gtest/gtest.h>
 #include <algorithm> // for copy
 #include <iterator> // for ostream_iterator
+#include <fstream> // for ofstream
+#include <string>
+#include <list>
 
 #include "../ClusteringCoefficient.h"
 #include "../CoreDecomposition.h"

@@ -28,7 +28,7 @@ TEST_F(PropertiesGTest, testClusteringCoefficient) {
 	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
 
 	ClusteringCoefficient clusteringCoefficient;
-	double cc = clusteringCoefficient.calculate(G);
+	double cc = clusteringCoefficient.avgLocal(G);
 
 	EXPECT_EQ(1.0, cc);
 
@@ -89,7 +89,7 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 }
 
 
-TEST_F(PropertiesGTest, tryCoreDecomposition) {
+TEST_F(PropertiesGTest, testCoreDecomposition) {
 	count n = 16;
 	Graph G(n);
 
@@ -148,7 +148,7 @@ TEST_F(PropertiesGTest, tryCoreDecomposition) {
 	EXPECT_EQ(2, coreness[15]) << "expected coreness";
 }
 
-TEST_F(PropertiesGTest, runCoreDecompositionOnGraphFiles) {
+TEST_F(PropertiesGTest, testCoreDecompositionOnGraphFiles) {
 	CoreDecomposition coreDec;
   METISGraphReader input;
   
@@ -159,9 +159,9 @@ TEST_F(PropertiesGTest, runCoreDecompositionOnGraphFiles) {
   std::list<std::string> graphList = {"celegans_metabolic", "polblogs", "hep-th"};
   
   std::for_each(graphList.begin(), graphList.end(), [&](std::string filename){
-    G = input.read("input/" << filename << ".graph");
+    G = input.read(std::string("input/") + filename.str() + ".graph");
     corenesses = coreDec.run(G);
-    output.open(filename << ".sol");
+    output.open(std::string("output/") + filename + ".sol");
     std::for_each(corenesses.begin(), corenesses.end(), [&](count coreness){
       output << coreness << std::endl;
     });
