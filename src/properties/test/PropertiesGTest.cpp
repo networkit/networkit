@@ -10,6 +10,7 @@
 #include "PropertiesGTest.h"
 
 #define EPSILON 0.0000001
+#define PRECISION 0.05
 
 namespace NetworKit {
 
@@ -23,16 +24,18 @@ PropertiesGTest::~PropertiesGTest() {
 }
 
 
-TEST_F(PropertiesGTest, testClusteringCoefficient) {
+TEST_F(PropertiesGTest, testClusteringCefficient) {
 
 	GraphGenerator gen;
 	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
 
 	ClusteringCoefficient clusteringCoefficient;
 	double cc = clusteringCoefficient.global(G);
+	double approxCC = clusteringCoefficient.approxGlobal(G, 90);
 
 	EXPECT_EQ(1.0, cc);
-
+	EXPECT_TRUE(approxCC > (1.0 - PRECISION));
+	EXPECT_TRUE(approxCC <= 1.0);
 }
 
 TEST_F(PropertiesGTest, testDegreeDistribution) {
@@ -92,7 +95,6 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 }
 
 TEST_F(PropertiesGTest, benchCoreDecomposition) {
-	count n = 16;
 	METISGraphReader mgr;
 	Graph G = mgr.read("/tmp/celegans_metabolic.graph");
 	CoreDecomposition coreDec;
@@ -189,7 +191,7 @@ TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 	ClusteringCoefficient clusteringCoefficient;
 
 	EXPECT_EQ(1.0, clusteringCoefficient.avgLocal(G_complete)) << "should be 1.0 for a complete graph";
-
+	EXPECT_EQ(1.0, clusteringCoefficient.approxAvgLocal(G_complete, 50));
 	// Test case for graph with degree-1 nodes
 	Graph G_path(4);
 	//build a path
@@ -198,6 +200,7 @@ TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 	G_path.addEdge(2, 3);
 
 	EXPECT_EQ(0.0, clusteringCoefficient.avgLocal(G_path)) << "should be 0.0 for a path";
+	EXPECT_EQ(0.0, clusteringCoefficient.approxAvgLocal(G_path, 50));
 
 	// Test case for graph with degree-1 nodes
 	Graph G_path_isolated(4);
@@ -208,7 +211,7 @@ TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 	G_path_isolated.addNode();
 
 	EXPECT_EQ(0.0, clusteringCoefficient.avgLocal(G_path_isolated)) << "should be 0.0 for a path";
-
+	EXPECT_EQ(0.0, clusteringCoefficient.approxAvgLocal(G_path_isolated, 50));
 
 }
 
@@ -244,6 +247,38 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
 	EXPECT_EQ(0, coefficients1[0]);
 	EXPECT_EQ(0, coefficients1[1]);
 	EXPECT_EQ(1.0, coefficients1[2]);
+
+}
+
+TEST_F(PropertiesGTest, testClusteringApprox) {
+	std::vector<std::string> paths;
+
+	paths.push_back("input/celegans_metabolic.graph");
+	paths.push_back("input/hep-th.graph");
+	paths.push_back("input/polblogs.graph");
+
+	METISGraphReader reader;
+
+	ClusteringCoefficient clusteringCoefficient;
+
+	for (auto it = paths.begin(); it != paths.end(); ++it) {
+
+		Graph G = reader.read(*it);
+
+		double avgLocal = clusteringCoefficient.avgLocal(G);
+
+		double approxAvgLocal = clusteringCoefficient.approxAvgLocal(G, 5000); // TODO why 1000?
+
+		EXPECT_TRUE(approxAvgLocal > (avgLocal - PRECISION));
+		EXPECT_TRUE(approxAvgLocal < (avgLocal + PRECISION));
+
+		double global = clusteringCoefficient.global(G);
+		double approxGlobal = clusteringCoefficient.approxGlobal(G, 5000); // TODO see above
+
+		EXPECT_TRUE(approxGlobal > (global - PRECISION));
+		EXPECT_TRUE(approxGlobal < (global + PRECISION));
+	}
+
 
 }
 
@@ -339,4 +374,4 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 } /* namespace NetworKit */
 
-#endif NOGTEST
+#endif  // NOGTEST

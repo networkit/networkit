@@ -7,6 +7,8 @@
 
 #include "ClusteringCoefficient.h"
 
+#include <iostream>
+
 namespace NetworKit {
 
 ClusteringCoefficient::ClusteringCoefficient()
@@ -27,21 +29,21 @@ ClusteringCoefficient::local(Graph &G) const
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	G.parallelForNodes([&](node u){
-    count d = G.degree(u);
-    
-    if (d < 2) {
-      coefficient[u] = 0.0;
-    } else {
-      count triangles = 0;
-      G.forEdgesOf(u, [&](node u, node v) {
-        G.forEdgesOf(v, [&](node v, node w){
-          if (G.hasEdge(u, w)) {
-            triangles += 1;
-          }
-        });
-      });
-      coefficient[u] = (double)triangles / (double)(d * (d - 1));
-    }
+	    count d = G.degree(u);
+	    
+	    if (d < 2) {
+	      coefficient[u] = 0.0;
+	    } else {
+	      count triangles = 0;
+	      G.forEdgesOf(u, [&](node u, node v) {
+	        G.forEdgesOf(v, [&](node v, node w){
+	          if (G.hasEdge(u, w)) {
+	            triangles += 1;
+	          }
+	        });
+	      });
+	      coefficient[u] = (double)triangles / (double)(d * (d - 1));
+	    }
 	});
 
 	return coefficient;
@@ -73,7 +75,7 @@ ClusteringCoefficient::approxAvgLocal(Graph& G, const count tries) const
 	// or implementation of the standard library, a more sophisticated version of determining a 
 	// vertex uniformly at random must be used.
 
-	count triangles = 0;
+	double triangles = 0;
 	for (count k = 0; k < tries; ++k) {
 		node v = rand() % n;
 
@@ -81,14 +83,15 @@ ClusteringCoefficient::approxAvgLocal(Graph& G, const count tries) const
 			// this iteration is ignored, since this vertex can never be part of a triangle,
 			// nor middle point of a path of length 3
 
-			--k;
+			// We may not really ignore it, since this may cause endless loops for certain graphs
+			//--k;
 			continue;
 		}
 
 		node u = G.randomNeighbor(v);
 		node w = G.randomNeighbor(v);
 
-		// TODO This could be sped up for degree(v) == 2...
+		// TODO This could be speed up for degree(v) == 2...
 		while (u == w) {
 			w = G.randomNeighbor(v);
 		}
@@ -98,7 +101,7 @@ ClusteringCoefficient::approxAvgLocal(Graph& G, const count tries) const
 		}
 	}
 
-	return triangles / tries;
+	return triangles / (double)tries;
 }
 
 
@@ -133,7 +136,7 @@ ClusteringCoefficient::global(Graph& G) const
 		return triangles[u];
 	});
 
-	cc /= (denominator); // factor 2 because triangles counted six times, but need them three times
+	cc /= (denominator); 
 
 	return cc;
 }
@@ -143,41 +146,61 @@ double
 ClusteringCoefficient::approxGlobal(Graph& G, const count tries) const
 {
 	count n = G.numberOfNodes();
-  
-  // Calculate prefix sum over the nodes where each node v counts deg(v)*(deg(v)-1) times
-  std::vector<count> weight(n);
-  count psum = G.degree(0) * (G.degree(0) - 1);
-  weight[0] = psum;
-  for (node i = 1; i < n; i++) {
-    psum += G.degree(i) * (G.degree(i) - 1);
-    weight[i] = psum;
-  }
 
-	// WARNING: I assume RAND_MAX to be larger than n. If this should not hold for an application
+  	// Calculate prefix sum over the nodes where each node v counts deg(v)*(deg(v)-1) times
+	std::vector<count> weight(n);
+	count psum = G.degree(0) * (G.degree(0) - 1);
+	weight[0] = psum;
+	for (node i = 1; i < n; i++) {
+		psum += G.degree(i) * (G.degree(i) - 1);
+		weight[i] = psum;
+	}
+
+	// WARNING: I assume RAND_MAX to be larger than PSUM. If this should not hold for an application
 	// or implementation of the standard library, a more sophisticated version of determining a 
 	// vertex uniformly at random must be used.
 
-	count triangles = 0;
+	double triangles = 0;
 	for (count k = 0; k < tries; ++k) {
 		count r = rand() % psum;
-    
-    // binary search for node index in weight array
-    index v = n/2;
-    for (index step = n/4; ; step /= 2) {
-      if (weight[v] < r) {
-        v += step;
-      }
-      else if (weight[v-1] >= r) {
-        v -= step;
-      }
-      else break;
-    }
+
+    	// binary search for node index in weight array
+    	/*
+		index v = n/2;
+		for (index step = n/4; ; step /= 2) {
+			if (weight[v] < r) {
+				v += step;
+			}
+			else if (weight[v-1] >= r) {
+				v -= step;
+			}
+			else break;
+		}
+		*/
+		// don't get it, sorry. Seems to be an endless loop, at least in some cases - Lukas
+		// replaced it by plain old binary search:
+		index low = 0; 
+		index high = G.numberOfNodes();
+		while (low < high) {
+			index middle = (low + high) / 2;
+
+			if (weight[middle] < r) {
+				low = middle + 1;
+			} else if (weight[middle] > r) {
+				high = middle;
+			} else {
+				low = high = middle;
+			}
+		}
+
+		node v = low; // ewww.. setting a vertex to an index.. but works.
 
 		if (G.degree(v) < 2) {
 			// this iteration is ignored, since this vertex can never be part of a triangle,
 			// nor middle point of a path of length 3
 
-			--k;
+			// We may not really ignore it, since this may cause endless loops for certain graphs
+			//--k;
 			continue;
 		}
 
