@@ -7,8 +7,6 @@
 
 #include "ClusteringCoefficient.h"
 
-#include <iostream>
-
 namespace NetworKit {
 
 ClusteringCoefficient::ClusteringCoefficient()
