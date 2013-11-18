@@ -15,9 +15,6 @@
 #include <iterator> // for ostream_iterator
 
 #include "../ClusteringCoefficient.h"
-#include "../GlobalClusteringCoefficient.h"
-#include "../Aproximative_ClusterCoefficient.h"
-#include "../CoreDecomposition.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../properties/GraphProperties.h"
 #include "../../io/METISGraphReader.h"

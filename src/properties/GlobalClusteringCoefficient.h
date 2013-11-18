@@ -1,8 +1,7 @@
 /*
- * ClusteringCoefficient.h
+ * GlobalClusteringCoefficient.h
  *
- *  Created on: 08.04.2013
- *      Author: cls
+ *  Created on: 12.11.2013
  */
 
 #ifndef GLOBALCLUSTERINGCOEFFICIENT_H_
@@ -12,45 +11,14 @@
 
 namespace NetworKit {
 
-// TODO: is class necessary?
 class GlobalClusteringCoefficient {
 
 public:
-
-	GlobalClusteringCoefficient();
-
-	virtual ~GlobalClusteringCoefficient();
-
-	virtual float run(Graph& G);
+  GlobalClusteringCoefficient() {}
+  virtual ~GlobalClusteringCoefficient() {}
+  
+  virtual double approximate(const Graph& G, int k);
 };
 
-}
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+} /* namespace NetworKit */
+#endif /* GLOBALCLUSTERINGCOEFFICIENT_H_ */
