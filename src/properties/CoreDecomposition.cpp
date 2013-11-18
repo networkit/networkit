@@ -2,40 +2,57 @@
  * CoreDecomposition.cpp
  *
  *  Created on: Oct 28, 2013
- *      Author: Henning, Barth, Weiß
+ *      Author: Henning
  */
 
-#include "../auxiliary/ShellList.h"
 #include "CoreDecomposition.h"
 
 namespace NetworKit {
 
 CoreDecomposition::CoreDecomposition() {
+
 }
 
 CoreDecomposition::~CoreDecomposition() {
+
 }
 
 std::vector<count> CoreDecomposition::run(const Graph& G) {
+	std::vector<count> coreness;
+
 	Aux::ShellList sl(&G);
 
-  /* Main Loop
-   * Iterates over all shells beginning with the first. The zero shell can safely be ignored!
-   */
-  for (count i = 1; i < sl.size(); i++) {
-    sl.forEachNodeInShell(i, [&](node v) {
-      /* Shell Nodes Loop
-       * Within each shell, all neighbors of the current node fall down one shell if they are in a higher one.
-       */
-      G.forNeighborsOf(v, [&](node w) {
-        if (sl.getShell(w) > i) {
-          sl.decreaseShell(w);
-        }
-      });
-    });
-  }
+	G.forNodes([&](node v) {
+		sl.insert(v);
+	});
 
-	return sl.getShells();
+	for (int i = 0; i < sl.size(); i++) {
+		std::list<node>::iterator it = sl.getShelliterator(i);
+
+		sl.forEachNodeInShell(i, [&](node n) {
+			G.forNeighborsOf(n, [&](node m) {
+				if (sl.getCurrentShell(m) > i) {
+					sl.decreaseDegree(m);
+				}
+			});
+		});
+	}
+
+	this->coreness = sl.getCoreness();
+	return this->coreness;
+
 }
+
+void
+CoreDecomposition::write(std::string filename) {
+	std::ofstream out;
+  	out.open(filename);
+
+  	for (auto it = this->coreness.begin(); it != this->coreness.end(); ++it) {
+  		out << *it << std::endl;
+  	}
+
+  	out.close();
+ }
 
 } /* namespace NetworKit */

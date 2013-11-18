@@ -21,6 +21,8 @@ public:
 
 	virtual ~ClusteringCoefficient();
 
+	std::vector<double> local(Graph &G) const;
+	
 	/**
 	 * This calculates the average local clustering coefficient
 	 * $$c(G) := \frac{1}{n} \sum_{u \in V} c(u)$$
