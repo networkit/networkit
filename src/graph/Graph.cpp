@@ -335,7 +335,8 @@ count Graph::minDegree() const {
 	count mindeg = this->degree(0);
 
 	this->forNodes([&](node v) {
-    mindeg = std::min(mindeg, this->degree(v));
+		if (this->degree(v) < mindeg)
+      mindeg = this->degree(v);
 	});
 
 	return mindeg;
@@ -359,7 +360,8 @@ count Graph::maxDegree() const {
 	count maxdeg = this->degree(0);
 
 	this->forNodes([&](node v) {
-    maxdeg = std::max(maxdeg, this->degree(v));
+		if (this->degree(v) > maxdeg)
+      maxdeg = this->degree(v);
 	});
 
 	return maxdeg;
