@@ -21,9 +21,6 @@ namespace NetworKit {
  */
 class CoreDecomposition {
 
-private:
-	std::vector<count> coreness;
-
 public:
 	CoreDecomposition();
 	virtual ~CoreDecomposition();
@@ -32,8 +29,6 @@ public:
 	 * @return k-core decomposition of graph @a G.
 	 */
 	std::vector<count> run(const Graph& G);
-
-	void write(std::string filename);
 };
 
 } /* namespace NetworKit */
