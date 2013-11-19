@@ -4,9 +4,9 @@ Parameters:
   Error probability: 0.01
 
 Global cluster coefficient:
-  Approximate: 0.124381
+  Approximate: 0.122579
   Exact:       0.124436
 
 Average local cluster coefficient:
-  Approximate: 0.654456
+  Approximate: 0.653001
   Exact:       0.65514
