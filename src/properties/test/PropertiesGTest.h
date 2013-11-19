@@ -17,6 +17,7 @@
 #include "../ClusteringCoefficient.h"
 #include "../ApproximateClusteringCoefficient_Hoske.h"
 #include "../ExactClusteringCoefficient_Hoske.h"
+#include "../ApproximateClusteringCoefficient.h"
 #include "../CoreDecomposition.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../properties/GraphProperties.h"
