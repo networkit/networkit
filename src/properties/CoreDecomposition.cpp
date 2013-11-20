@@ -2,7 +2,7 @@
  * CoreDecomposition.cpp
  *
  *  Created on: Oct 28, 2013
- *      Author: Henning
+ *      Author: Lukas Barth, David Weiß
  */
 
 #include "CoreDecomposition.h"

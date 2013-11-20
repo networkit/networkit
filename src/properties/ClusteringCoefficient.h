@@ -2,7 +2,7 @@
  * ClusteringCoefficient.h
  *
  *  Created on: 08.04.2013
- *      Author: cls
+ *      Author: Lukas Barth, David Weiß
  */
 
 #ifndef CLUSTERINGCOEFFICIENT_H_

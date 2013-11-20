@@ -2,7 +2,7 @@
  * CoreDecomposition.h
  *
  *  Created on: Oct 28, 2013
- *      Author: Henning
+ *      Author: Lukas Barth, David Weiß
  */
 
 #ifndef COREDECOMPOSITION_H_

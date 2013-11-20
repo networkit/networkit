@@ -2,7 +2,7 @@
  * ClusteringCoefficient.cpp
  *
  *  Created on: 08.04.2013
- *      Author: cls
+ *      Author: Lukas Barth, David Weiß
  */
 
 #include "ClusteringCoefficient.h"
