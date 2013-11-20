@@ -46,13 +46,23 @@ This section describes workflows for the core development team.
 
 #### Bugfixes
 
-Bugfixes are changes that should be immediately visible to users of NetworKit, such as solutions for urgent errors or improvements of the `Readme` document. In this case, make the changes in the `default` branch and commit. Then switch to the `Dev` branch and merge the `default` branch back into `Dev`. 
+Bugfixes are changes that should be immediately visible to users of NetworKit, such as solutions for urgent errors or improvements of the `Readme` document. In this case, make the changes in the `default` branch and commit. Then switch to the `Dev` branch and merge the `default` branch back into `Dev`.
 
 
 		  _______________ 	Dev
 		 /			  / < 	merge default into Dev
 	____/____________/____	default
 				   ^ bugfix
+
+
+Example:
+	
+	hg up default
+	...
+	hg com -m "fixed bug xyz"
+	hg up Dev
+	hg merge default
+	hg com -m "backmerge bugfix xyz"
 
 
 #### Releasing New Features
@@ -63,6 +73,20 @@ When new features should be released, the `Dev` branch is merged into the `defau
 		 /   ^ new feature    prepare release ^ \ < merge Dev into default
 	____/________________________________________\______________	default
 				   									   ^ tag version
+
+
+Example: 
+
+	hg up Dev
+	hg com -m "ready for release X.Y"
+	hg up default
+	hg merge Dev
+	hg com -m "release X.Y"
+
+
+#### Multiple heads in multiple branches
+
+If remote changes have happened in multiple branches and you pull them, these branch will have multiple heads. Merging now needs to happen for each of the affected branches before you can push. Switch to each branch and perform a merge as usual.
 
 
 ### Contributions
@@ -109,6 +133,7 @@ Good contributions from the student exercises should be merged back into the `De
 ### Student Projects
 
 Students with long-term projects like Bachelor's or Master's theses should familiarize themselves with the guidelines and select a forking/branching model with their advisor.
+
 
 
 
