@@ -18,6 +18,7 @@ CoreDecomposition::~CoreDecomposition() {
 }
 
 std::vector<count> CoreDecomposition::run(const Graph& G) {
+#if 0 // list does not compile after pull and merge with Brueckner code
 
     using namespace std;
 
@@ -52,6 +53,7 @@ std::vector<count> CoreDecomposition::run(const Graph& G) {
     }
 
     return coreness;
+#endif
 }
 
 } /* namespace NetworKit */

@@ -5,21 +5,20 @@
  *      Author: gbrueckner
  */
 
-#include "ApproximateClusteringCoefficient.h"
+#include "ApproximateClusteringCoefficient_Brueckner.h"
 #include <random>
 
 namespace NetworKit {
 
-ApproximateClusteringCoefficient::ApproximateClusteringCoefficient() {
-	// TODO Auto-generated constructor stub
+ApproximateClusteringCoefficient_Brueckner::ApproximateClusteringCoefficient_Brueckner() {
 
 }
 
-ApproximateClusteringCoefficient::~ApproximateClusteringCoefficient() {
-	// TODO Auto-generated destructor stub
+ApproximateClusteringCoefficient_Brueckner::~ApproximateClusteringCoefficient_Brueckner() {
+
 }
 
-double ClusteringCoefficient::calculate(Graph& G, int k) {
+double ApproximateClusteringCoefficient_Brueckner::calculate(Graph& G, int k) {
 
     using namespace std;
 

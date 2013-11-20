@@ -20,15 +20,18 @@ PropertiesGTest::~PropertiesGTest() {
 	// TODO Auto-generated destructor stub
 }
 
-static const double CLUSTER_VARIANCE = 1e-2;
-static const double CLUSTER_ERROR = 1e-2;
-static const double CLUSTER_ITER = ApproximateClusteringCoefficient::niters(CLUSTER_VARIANCE, CLUSTER_ERROR);
 
 /* Tests the approximate clustering coefficient on a complete graph. */
-TEST_F(PropertiesGTest, testApproximateClusteringCoefficient) {
+TEST_F(PropertiesGTest, testApproximateClusteringCoefficient_Hoske) {
 	GraphGenerator gen;
 	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
-	double cc = ApproximateClusteringCoefficient::calculate(true, G, CLUSTER_ITER);
+	ApproximateClusteringCoefficient_Hoske acc;
+
+	static const double CLUSTER_VARIANCE = 1e-2;
+	static const double CLUSTER_ERROR = 1e-2;
+	static const double CLUSTER_ITER = acc.niters(CLUSTER_VARIANCE, CLUSTER_ERROR);
+
+	double cc = acc.calculate(true, G, CLUSTER_ITER);
 	EXPECT_EQ(1.0, cc);
 }
 
@@ -36,8 +39,13 @@ TEST_F(PropertiesGTest, testApproximateClusteringCoefficient) {
    and store it in output/name.cluster. */
 static void test_cluster_coeff(std::string name) {
     METISGraphReader reader;
+    ApproximateClusteringCoefficient_Hoske acc;
     Graph G = reader.read("input/" + name + ".graph");
     std::ofstream out("output/" + name + ".cluster");
+
+    static const double CLUSTER_VARIANCE = 1e-2;
+    static const double CLUSTER_ERROR = 1e-2;
+    static const double CLUSTER_ITER = acc.niters(CLUSTER_VARIANCE, CLUSTER_ERROR);
 
     out << "Test of approximate cluster coefficient for '" << name << "'.\n";
     out << "Parameters:\n";
@@ -45,16 +53,16 @@ static void test_cluster_coeff(std::string name) {
     out << "  Error probability: " << CLUSTER_ERROR << "\n\n";
 
     out << "Global cluster coefficient:\n";
-    out << "  Approximate: " << ApproximateClusteringCoefficient::calculate(true, G, CLUSTER_ITER) << "\n";
+    out << "  Approximate: " << acc.calculate(true, G, CLUSTER_ITER) << "\n";
     out << "  Exact:       " << ExactClusteringCoefficient::calculate(true, G) << "\n\n";
     
     out << "Average local cluster coefficient:\n";
-    out << "  Approximate: " << ApproximateClusteringCoefficient::calculate(false, G, CLUSTER_ITER) << "\n";
+    out << "  Approximate: " << acc.calculate(false, G, CLUSTER_ITER) << "\n";
     out << "  Exact:       " << ExactClusteringCoefficient::calculate(false, G) << "\n";
 }
 
 /* Tests the approximate clustering coefficient on some DIMACS graphs. */
-TEST_F(PropertiesGTest, testApproximateClusteringCoefficientDIMACS) {
+TEST_F(PropertiesGTest, testApproximateClusteringCoefficientDIMACS_Hoske) {
     test_cluster_coeff("celegans_metabolic");
     test_cluster_coeff("hep-th");
     test_cluster_coeff("polblogs");
@@ -70,13 +78,14 @@ TEST_F(PropertiesGTest, testClusteringCoefficient) {
 	EXPECT_EQ(1.0, cc);
 }
 
-TEST_F(PropertiesGTest, testApproximateClusteringCoefficient) {
+TEST_F(PropertiesGTest, testApproximateClusteringCoefficient_Brueckner) {
 
 	GraphGenerator gen;
 	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
 
-	ApproximateClusteringCoefficient approximateClusteringCoefficient;
-	double acc = approximateClusteringCoefficient.calculate(G);
+	ApproximateClusteringCoefficient_Brueckner approxcc;
+	count numIters = 100; // NOTE: inserted by HM, was missing, led to compile error
+	double acc = approxcc.calculate(G, numIters);
 
 	EXPECT_EQ(1.0, acc);
 
@@ -349,7 +358,10 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 }
 
 
-
+TEST_F(PropertiesGTest, tryEstimatedDiameterRange) {
+	// TODO: Assignment #7 of AMzN
+	// TODO: Students, please rename this method by appending your group name
+}
 
 
 

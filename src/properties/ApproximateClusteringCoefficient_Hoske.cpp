@@ -9,16 +9,16 @@
 #include <random>
 #include <cmath>
 
-namespace NetworKit { namespace ApproximateClusteringCoefficient {
+namespace NetworKit {
 
 /* TODO: set seed. */
 static std::default_random_engine random;
 
-count niters(double variance, double error) {
+count ApproximateClusteringCoefficient_Hoske::niters(double variance, double error) {
 	return ceil(-log(error) / (variance * variance));
 }
 
-double calculate(bool global, const Graph& G, count k) {
+double ApproximateClusteringCoefficient_Hoske::calculate(bool global, const Graph& G, count k) {
 	/* Distribution for choosing vertices: v weighted by d(v) * (d(v) - 1). */
 	std::vector<count> weights(G.numberOfNodes());
 	G.parallelForNodes([&](node u){
@@ -64,4 +64,4 @@ double calculate(bool global, const Graph& G, count k) {
 	}
 }
 
-}} /* namespace NetworKit */
+} /* namespace NetworKit */

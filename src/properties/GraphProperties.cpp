@@ -11,15 +11,14 @@
 namespace NetworKit {
 
 GraphProperties::GraphProperties() {
-	// TODO Auto-generated constructor stub
 
 }
 
 GraphProperties::~GraphProperties() {
-	// TODO Auto-generated destructor stub
+
 }
 
-std::vector<count> GraphProperties::degreeDistribution(Graph& G) {
+std::vector<count> GraphProperties::degreeDistribution(const Graph& G) {
 	count maxDegree = minMaxDegree(G).second;
 	std::vector<count> distribution(maxDegree+1, 0);
 	G.forNodes([&](node v){
@@ -64,7 +63,7 @@ std::vector<double> GraphProperties::localClusteringCoefficients(const Graph& G)
 	return coefficient;
 }
 
-std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& G) {
+std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(const Graph& G) {
 
 	std::vector<count> degDist = degreeDistribution(G);
 	std::vector<double> coefficient;
@@ -97,7 +96,7 @@ std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& 
 	return perDegree;
 }
 
-double GraphProperties::averageLocalClusteringCoefficient(Graph& G) {
+double GraphProperties::averageLocalClusteringCoefficient(const Graph& G) {
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
 	double sum = 0.0;
 	for (double c : coefficients) {
@@ -107,7 +106,7 @@ double GraphProperties::averageLocalClusteringCoefficient(Graph& G) {
 	return avg;
 }
 
-std::pair<count, count> GraphProperties::minMaxDegree(Graph& G) {
+std::pair<count, count> GraphProperties::minMaxDegree(const Graph& G) {
 
 	count min = G.numberOfNodes();
 	count max = 0;
@@ -138,4 +137,24 @@ double GraphProperties::averageDegree(const Graph& G) {
 	return avgDeg;
 }
 
+double GraphProperties::approximateGlobalClusteringCoefficient(
+		const Graph& G, double approximationError, double probabilityError) {
+	ApproximateClusteringCoefficient_Hoske acc;
+	count numIters = acc.niters(approximationError, probabilityError);
+	return acc.calculate(true, G, numIters);
+}
+
+
+std::pair<count, count> GraphProperties::estimatedDiameterRange(
+		const Graph& G) {
+	count lowerBound = 0;
+	count upperBound = std::numeric_limits<count>::max();
+
+	// TODO: Assignment #7 of AMzN
+	// TODO: Students, please rename this method by appending your group name
+
+	return std::make_pair(lowerBound, upperBound);
+}
+
 } /* namespace NetworKit */
+

@@ -12,14 +12,13 @@
 
 namespace NetworKit {
 
-// TODO: is class necessary?
-class ApproximateClusteringCoefficient {
+class ApproximateClusteringCoefficient_Brueckner {
 
 public:
 
-	ApproximateClusteringCoefficient();
+	ApproximateClusteringCoefficient_Brueckner();
 
-	virtual ~ApproximateClusteringCoefficient();
+	virtual ~ApproximateClusteringCoefficient_Brueckner();
 
 	virtual double calculate(Graph& G, int k);
 };

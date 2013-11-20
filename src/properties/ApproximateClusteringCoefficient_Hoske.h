@@ -11,9 +11,10 @@
 #include "../graph/Graph.h"
 
 namespace NetworKit {
-	namespace ApproximateClusteringCoefficient {
+	class ApproximateClusteringCoefficient_Hoske {
+	public:
 		/**
-		 * Calculates the clustering coefficient with
+		 * Calculates the approximate clustering coefficient with
 		 * a probabilistic approach.
 		 *
 		 *   global: global or average local coefficient?

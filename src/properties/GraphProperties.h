@@ -11,6 +11,7 @@
 
 #include "../graph/Graph.h"
 #include "../io/METISGraphReader.h"
+#include "ApproximateClusteringCoefficient_Hoske.h"
 
 namespace NetworKit {
 
@@ -22,7 +23,7 @@ public:
 	GraphProperties();
 	virtual ~GraphProperties();
 
-	static std::vector<count> degreeDistribution(Graph& G);
+	static std::vector<count> degreeDistribution(const Graph& G);
 
 
 	/**
@@ -44,13 +45,24 @@ public:
 	 *
 	 * @param[in]	G	the graph
 	 */
-	static double averageLocalClusteringCoefficient(Graph& G);
+	static double averageLocalClusteringCoefficient(const Graph& G);
 
-	static std::vector<double> localClusteringCoefficientPerDegree(Graph& G);
+	static std::vector<double> localClusteringCoefficientPerDegree(const Graph& G);
 
-	static std::pair<count, count> minMaxDegree(Graph& G);
+	static std::pair<count, count> minMaxDegree(const Graph& G);
 
 	static double averageDegree(const Graph& G);
+
+	static double approximateGlobalClusteringCoefficient(const Graph& G, double approximationError, double probabilityError);
+
+	/**
+	 * Estimates a range for the diameter of @a G. Based on the algorithm suggested in
+	 * C. Magnien, M. Latapy, M. Habib: Fast Computation of Empirically Tight Bounds for
+	 * the Diameter of Massive Graphs. Journal of Experimental Algorithmics, Volume 13, Feb 2009.
+	 *
+	 * @return Pair of lower and upper bound for diameter.
+	 */
+	static std::pair<count, count> estimatedDiameterRange(const Graph& G);
 };
 
 } /* namespace NetworKit */

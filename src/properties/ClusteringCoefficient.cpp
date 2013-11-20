@@ -10,12 +10,11 @@
 namespace NetworKit {
 
 ClusteringCoefficient::ClusteringCoefficient() {
-	// TODO Auto-generated constructor stub
 
 }
 
 ClusteringCoefficient::~ClusteringCoefficient() {
-	// TODO Auto-generated destructor stub
+
 }
 
 double ClusteringCoefficient::calculate(Graph& G) {
