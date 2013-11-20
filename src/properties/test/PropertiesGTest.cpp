@@ -9,21 +9,65 @@
 
 #include "PropertiesGTest.h"
 
-
 namespace NetworKit {
 
 PropertiesGTest::PropertiesGTest() {
-	// TODO Auto-generated constructor stub
 
 }
 
 PropertiesGTest::~PropertiesGTest() {
-	// TODO Auto-generated destructor stub
+
 }
 
 
-TEST_F(PropertiesGTest, testClusteringCoefficient) {
+/* Tests the approximate clustering coefficient on a complete graph. */
+TEST_F(PropertiesGTest, testApproximateClusteringCoefficient_Hoske) {
+	GraphGenerator gen;
+	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
+	ApproximateClusteringCoefficient_Hoske acc;
 
+	static const double CLUSTER_VARIANCE = 1e-2;
+	static const double CLUSTER_ERROR = 1e-2;
+	static const double CLUSTER_ITER = acc.niters(CLUSTER_VARIANCE, CLUSTER_ERROR);
+
+	double cc = acc.calculate(true, G, CLUSTER_ITER);
+	EXPECT_EQ(1.0, cc);
+}
+
+/* Compute approximate cluster coefficient of graph input/name.graph
+   and store it in output/name.cluster. */
+static void test_cluster_coeff(std::string name) {
+    METISGraphReader reader;
+    ApproximateClusteringCoefficient_Hoske acc;
+    Graph G = reader.read("input/" + name + ".graph");
+    std::ofstream out("output/" + name + ".cluster");
+
+    static const double CLUSTER_VARIANCE = 1e-2;
+    static const double CLUSTER_ERROR = 1e-2;
+    static const double CLUSTER_ITER = acc.niters(CLUSTER_VARIANCE, CLUSTER_ERROR);
+
+    out << "Test of approximate cluster coefficient for '" << name << "'.\n";
+    out << "Parameters:\n";
+    out << "  Variance:          " << CLUSTER_VARIANCE << "\n";
+    out << "  Error probability: " << CLUSTER_ERROR << "\n\n";
+
+    out << "Global cluster coefficient:\n";
+    out << "  Approximate: " << acc.calculate(true, G, CLUSTER_ITER) << "\n";
+    out << "  Exact:       " << ExactClusteringCoefficient::calculate(true, G) << "\n\n";
+    
+    out << "Average local cluster coefficient:\n";
+    out << "  Approximate: " << acc.calculate(false, G, CLUSTER_ITER) << "\n";
+    out << "  Exact:       " << ExactClusteringCoefficient::calculate(false, G) << "\n";
+}
+
+/* Tests the approximate clustering coefficient on some DIMACS graphs. */
+TEST_F(PropertiesGTest, testApproximateClusteringCoefficientDIMACS_Hoske) {
+    test_cluster_coeff("celegans_metabolic");
+    test_cluster_coeff("hep-th");
+    test_cluster_coeff("polblogs");
+}
+
+TEST_F(PropertiesGTest, testClusteringCoefficient) {
 	GraphGenerator gen;
 	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
 
@@ -31,6 +75,18 @@ TEST_F(PropertiesGTest, testClusteringCoefficient) {
 	double cc = clusteringCoefficient.calculate(G);
 
 	EXPECT_EQ(1.0, cc);
+}
+
+TEST_F(PropertiesGTest, testApproximateClusteringCoefficient_Brueckner) {
+
+	GraphGenerator gen;
+	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
+
+	ApproximateClusteringCoefficient_Brueckner approxcc;
+	count numIters = 100; // NOTE: inserted by HM, was missing, led to compile error
+	double acc = approxcc.calculate(G, numIters);
+
+	EXPECT_EQ(1.0, acc);
 
 }
 
@@ -41,9 +97,11 @@ TEST_F(PropertiesGTest, testDegreeDistribution) {
 	G.addEdge(1,2);
 	G.addEdge(2,0);
 	degreeDist = GraphProperties::degreeDistribution(G);
-	EXPECT_EQ(0, degreeDist[0]);
-	EXPECT_EQ(0, degreeDist[1]);
-	EXPECT_EQ(3, degreeDist[2]);
+	count zero = 0;
+	count three = 3;
+	EXPECT_EQ(zero, degreeDist[0]);
+	EXPECT_EQ(zero, degreeDist[1]);
+	EXPECT_EQ(three, degreeDist[2]);
 
 }
 
@@ -123,29 +181,35 @@ TEST_F(PropertiesGTest, tryCoreDecomposition) {
 	G.addEdge(13, 14);
 	G.addEdge(14, 15);
 
+	count m = 24;
 	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
-	EXPECT_EQ(24, G.numberOfEdges()) << "should have 24 edges";
+	EXPECT_EQ(m, G.numberOfEdges()) << "should have 24 edges";
 
 	// compute core decomposition
 	CoreDecomposition coreDec;
 	std::vector<count> coreness = coreDec.run(G);
 
-	EXPECT_EQ(0, coreness[0]) << "expected coreness";
-	EXPECT_EQ(0, coreness[1]) << "expected coreness";
-	EXPECT_EQ(1, coreness[2]) << "expected coreness";
-	EXPECT_EQ(1, coreness[3]) << "expected coreness";
-	EXPECT_EQ(1, coreness[4]) << "expected coreness";
-	EXPECT_EQ(1, coreness[5]) << "expected coreness";
-	EXPECT_EQ(3, coreness[6]) << "expected coreness";
-	EXPECT_EQ(2, coreness[7]) << "expected coreness";
-	EXPECT_EQ(4, coreness[8]) << "expected coreness";
-	EXPECT_EQ(4, coreness[9]) << "expected coreness";
-	EXPECT_EQ(4, coreness[10]) << "expected coreness";
-	EXPECT_EQ(4, coreness[11]) << "expected coreness";
-	EXPECT_EQ(2, coreness[12]) << "expected coreness";
-	EXPECT_EQ(4, coreness[13]) << "expected coreness";
-	EXPECT_EQ(3, coreness[14]) << "expected coreness";
-	EXPECT_EQ(2, coreness[15]) << "expected coreness";
+	count zero = 0;
+	count one = 1;
+	count two = 2;
+	count three = 3;
+	count four = 4;
+	EXPECT_EQ(zero, coreness[0]) << "expected coreness";
+	EXPECT_EQ(zero, coreness[1]) << "expected coreness";
+	EXPECT_EQ(one, coreness[2]) << "expected coreness";
+	EXPECT_EQ(one, coreness[3]) << "expected coreness";
+	EXPECT_EQ(one, coreness[4]) << "expected coreness";
+	EXPECT_EQ(one, coreness[5]) << "expected coreness";
+	EXPECT_EQ(three, coreness[6]) << "expected coreness";
+	EXPECT_EQ(two, coreness[7]) << "expected coreness";
+	EXPECT_EQ(four, coreness[8]) << "expected coreness";
+	EXPECT_EQ(four, coreness[9]) << "expected coreness";
+	EXPECT_EQ(four, coreness[10]) << "expected coreness";
+	EXPECT_EQ(four, coreness[11]) << "expected coreness";
+	EXPECT_EQ(two, coreness[12]) << "expected coreness";
+	EXPECT_EQ(four, coreness[13]) << "expected coreness";
+	EXPECT_EQ(three, coreness[14]) << "expected coreness";
+	EXPECT_EQ(two, coreness[15]) << "expected coreness";
 }
 
 
@@ -301,7 +365,10 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 }
 
 
-
+//TEST_F(PropertiesGTest, tryEstimatedDiameterRange) {
+//	// TODO: Assignment #7 of AMzN
+//	// TODO: Students, please rename this method by appending your group name
+//}
 
 
 
