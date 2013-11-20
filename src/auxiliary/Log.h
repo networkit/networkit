@@ -14,9 +14,11 @@
 #include <vector>
 #include <sstream>
 
+#ifndef NOLOGGING
 #ifndef NOLOG4CXX
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
+#endif
 #endif
 
 namespace Aux {
@@ -55,12 +57,13 @@ namespace Aux {
 
 #ifndef NOLOGGING
 #ifndef NOLOG4CXX
+
+
 /**
- * Call this first to configure logging output.
+ * Set the current loglevel.
+ * @param loglevel 
  */
-inline void configureLogging(const std::string& loglevel = "ERROR") {
-	// configure logging
-	log4cxx::BasicConfigurator::configure();
+inline void setLoglevel(const std::string& loglevel) {
 	if (loglevel == "TRACE") {
 		log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getTrace());
 	} else if (loglevel == "DEBUG") {
@@ -76,6 +79,17 @@ inline void configureLogging(const std::string& loglevel = "ERROR") {
 		exit(1);
 	}
 }
+
+
+/**
+ * Call this first to configure logging output.
+ */
+inline void configureLogging(const std::string& loglevel = "ERROR") {
+	// configure logging
+	log4cxx::BasicConfigurator::configure();
+	setLoglevel(loglevel);
+}
+
 
 /**
  * Get the current log level.

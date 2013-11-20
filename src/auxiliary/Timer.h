@@ -48,7 +48,7 @@ public:
         object was created.  If stop() was called, it is the number
         of seconds from the instance creation until stop() was called.
 	 */
-	virtual std::chrono::duration<int64_t, std::milli> elapsed();
+	virtual std::chrono::duration<uint64_t, std::milli> elapsed();
 
 
 	/**
@@ -56,7 +56,7 @@ public:
         object was created.  If stop() was called, it is the number
         of seconds from the instance creation until stop() was called.
 	 */
-	virtual int64_t elapsedMilliseconds();
+	virtual uint64_t elapsedMilliseconds();
 
 	/**
 	 * Returns the time at which the instance was started.

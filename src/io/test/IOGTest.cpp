@@ -245,12 +245,35 @@ TEST_F(IOGTest, tryDGSReader) {
 TEST_F(IOGTest, testEdgeListIO) {
 	EdgeListIO reader('\t', 1);
 
-	Graph G = reader.read("input/LFR-generator-example/network.dat");
+	std::string path = "input/LFR-generator-example/network.dat";
+	DEBUG("reading file: " << path);
+	Graph G = reader.read(path);
 	EXPECT_EQ(10, G.numberOfNodes());
 	EXPECT_EQ(10, G.numberOfEdges());
 	EXPECT_TRUE(G.hasEdge(0, 5));
 	EXPECT_TRUE(G.hasEdge(2, 9));
 	EXPECT_TRUE(G.hasEdge(1, 7));
+
+	path = "input/example.edgelist";
+	DEBUG("reading file: " << path);
+	EdgeListIO reader2('\t', 1);
+	Graph G2 = reader2.read(path);
+	EXPECT_EQ(10, G2.numberOfEdges());
+	EXPECT_TRUE(G2.hasEdge(0, 4));
+
+	path = "input/spaceseparated.edgelist";
+	DEBUG("reading file: " << path);
+	EdgeListIO reader3(' ', 1);
+	Graph G3 = reader3.read(path);
+	EXPECT_EQ(10, G3.numberOfEdges());
+	EXPECT_TRUE(G3.hasEdge(0, 4));
+
+	path = "input/comments.edgelist";
+	DEBUG("reading file: " << path);
+	EdgeListIO reader4('\t', 1);
+	Graph G4 = reader4.read(path);
+	EXPECT_EQ(10, G4.numberOfEdges());
+	EXPECT_TRUE(G4.hasEdge(0, 4));
 
 }
 
@@ -364,6 +387,11 @@ TEST_F(IOGTest, testFastMETISGraphReader) {
 
 	EXPECT_EQ(10680, G.numberOfNodes());
 	EXPECT_EQ(24316, G.numberOfEdges());
+
+	Graph W = reader.read("input/lesmis.graph");
+
+	EXPECT_EQ(77, W.numberOfNodes());
+	EXPECT_EQ(254, W.numberOfEdges());
 }
 
 

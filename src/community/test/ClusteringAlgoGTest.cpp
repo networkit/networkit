@@ -17,6 +17,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
+#include "../EPPFactory.h"
 
 
 
@@ -370,7 +371,19 @@ TEST_F(ClusteringAlgoGTest, testParallelAgglomerativeAndLouvain) {
 
 // }
 
+TEST_F(ClusteringAlgoGTest, testEPPFactory) {
 
+	EPPFactory factory;
+	EPP epp = factory.make(4, "PLP", "PLM");
+
+	METISGraphReader reader;
+	Graph jazz = reader.read("input/jazz.graph");
+	Clustering zeta = epp.run(jazz);
+
+	INFO("number of clusters: " << zeta.numberOfClusters());
+
+	EXPECT_TRUE(zeta.isProper(jazz));
+}
 
 } /* namespace NetworKit */
 
