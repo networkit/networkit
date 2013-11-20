@@ -12,12 +12,11 @@
 namespace NetworKit {
 
 PropertiesGTest::PropertiesGTest() {
-	// TODO Auto-generated constructor stub
 
 }
 
 PropertiesGTest::~PropertiesGTest() {
-	// TODO Auto-generated destructor stub
+
 }
 
 
@@ -98,9 +97,11 @@ TEST_F(PropertiesGTest, testDegreeDistribution) {
 	G.addEdge(1,2);
 	G.addEdge(2,0);
 	degreeDist = GraphProperties::degreeDistribution(G);
-	EXPECT_EQ(0, degreeDist[0]);
-	EXPECT_EQ(0, degreeDist[1]);
-	EXPECT_EQ(3, degreeDist[2]);
+	count zero = 0;
+	count three = 3;
+	EXPECT_EQ(zero, degreeDist[0]);
+	EXPECT_EQ(zero, degreeDist[1]);
+	EXPECT_EQ(three, degreeDist[2]);
 
 }
 
@@ -180,29 +181,35 @@ TEST_F(PropertiesGTest, tryCoreDecomposition) {
 	G.addEdge(13, 14);
 	G.addEdge(14, 15);
 
+	count m = 24;
 	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
-	EXPECT_EQ(24, G.numberOfEdges()) << "should have 24 edges";
+	EXPECT_EQ(m, G.numberOfEdges()) << "should have 24 edges";
 
 	// compute core decomposition
 	CoreDecomposition coreDec;
 	std::vector<count> coreness = coreDec.run(G);
 
-	EXPECT_EQ(0, coreness[0]) << "expected coreness";
-	EXPECT_EQ(0, coreness[1]) << "expected coreness";
-	EXPECT_EQ(1, coreness[2]) << "expected coreness";
-	EXPECT_EQ(1, coreness[3]) << "expected coreness";
-	EXPECT_EQ(1, coreness[4]) << "expected coreness";
-	EXPECT_EQ(1, coreness[5]) << "expected coreness";
-	EXPECT_EQ(3, coreness[6]) << "expected coreness";
-	EXPECT_EQ(2, coreness[7]) << "expected coreness";
-	EXPECT_EQ(4, coreness[8]) << "expected coreness";
-	EXPECT_EQ(4, coreness[9]) << "expected coreness";
-	EXPECT_EQ(4, coreness[10]) << "expected coreness";
-	EXPECT_EQ(4, coreness[11]) << "expected coreness";
-	EXPECT_EQ(2, coreness[12]) << "expected coreness";
-	EXPECT_EQ(4, coreness[13]) << "expected coreness";
-	EXPECT_EQ(3, coreness[14]) << "expected coreness";
-	EXPECT_EQ(2, coreness[15]) << "expected coreness";
+	count zero = 0;
+	count one = 1;
+	count two = 2;
+	count three = 3;
+	count four = 4;
+	EXPECT_EQ(zero, coreness[0]) << "expected coreness";
+	EXPECT_EQ(zero, coreness[1]) << "expected coreness";
+	EXPECT_EQ(one, coreness[2]) << "expected coreness";
+	EXPECT_EQ(one, coreness[3]) << "expected coreness";
+	EXPECT_EQ(one, coreness[4]) << "expected coreness";
+	EXPECT_EQ(one, coreness[5]) << "expected coreness";
+	EXPECT_EQ(three, coreness[6]) << "expected coreness";
+	EXPECT_EQ(two, coreness[7]) << "expected coreness";
+	EXPECT_EQ(four, coreness[8]) << "expected coreness";
+	EXPECT_EQ(four, coreness[9]) << "expected coreness";
+	EXPECT_EQ(four, coreness[10]) << "expected coreness";
+	EXPECT_EQ(four, coreness[11]) << "expected coreness";
+	EXPECT_EQ(two, coreness[12]) << "expected coreness";
+	EXPECT_EQ(four, coreness[13]) << "expected coreness";
+	EXPECT_EQ(three, coreness[14]) << "expected coreness";
+	EXPECT_EQ(two, coreness[15]) << "expected coreness";
 }
 
 
@@ -358,10 +365,10 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 }
 
 
-TEST_F(PropertiesGTest, tryEstimatedDiameterRange) {
-	// TODO: Assignment #7 of AMzN
-	// TODO: Students, please rename this method by appending your group name
-}
+//TEST_F(PropertiesGTest, tryEstimatedDiameterRange) {
+//	// TODO: Assignment #7 of AMzN
+//	// TODO: Students, please rename this method by appending your group name
+//}
 
 
 
