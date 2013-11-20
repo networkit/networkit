@@ -2,7 +2,10 @@
 
 from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM, ClusteringReader, ClusteringWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure
 
-import tabulate
+try:
+	import tabulate
+except ImportError:
+	print(""" WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit """)
 import stopwatch
 
 def detectCommunities(G, algorithm=PLM, inspect=False):

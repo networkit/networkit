@@ -1,4 +1,4 @@
-from _NetworKit import (METISGraphReader, FastMETISGraphReader, DotGraphWriter, EdgeListIO, \
+from _NetworKit import (METISGraphReader, FastMETISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
 						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter)
 
 import os
@@ -52,10 +52,26 @@ class GraphConverter:
 
 def getConverter(fromFormat, toFormat):
 	
-	readers = {"metis": METISGraphReader, "edgelist" : EdgeListIO}    
-	writers = {"edgelist": EdgeListIO}
+	readers = {"metis": METISGraphReader(),
+				"edgelist-t1" : EdgeListIO('\t', 1),
+				 "edgelist-t0": EdgeListIO('\t', 0),
+				 "edgelist-s1": EdgeListIO(' ', 1), 
+				 "edgelist-s0": EdgeListIO(' ', 1)}    
+	writers = {"metis": METISGraphWriter(),
+				"edgelist-t1" : EdgeListIO('\t', 1),
+				 "edgelist-t0": EdgeListIO('\t', 0),
+				 "edgelist-s1": EdgeListIO(' ', 1), 
+				 "edgelist-s0": EdgeListIO(' ', 1)}   
 	
-	reader = readers[fromFormat]()
-	writer = writers[toFormat]()
+	reader = readers[fromFormat]
+	writer = writers[toFormat]
 	
 	return GraphConverter(reader, writer)
+
+
+def convertGraph(fromFormat, toFormat, fromPath, toPath=None):
+	converter = getConverter(fromFormat, toFormat)
+	if toPath is None:
+		toPath = "{0}.{1}.graph".format(fromPath.split(".")[0], toFormat)
+	converter.convert(fromPath, toPath)
+	print("converted {0} to {1}".format(fromPath, toPath))
