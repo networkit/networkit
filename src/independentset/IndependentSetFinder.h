@@ -12,7 +12,9 @@
 
 namespace NetworKit {
 
-
+/**
+ * Abstract base class for independent set algorithms.
+ */
 class IndependentSetFinder {
 
 

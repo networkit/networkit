@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * A class for transporting parameters.
+ */
 class Parameters {
 public:
 	Parameters();

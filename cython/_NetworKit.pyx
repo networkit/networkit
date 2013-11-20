@@ -32,8 +32,26 @@ def stdstring(pystring):
 	pybytes = pystring.encode("utf-8")
 	return pybytes
 
+def pystring(stdstring):
+	""" convert a std::string (= python byte string) to a normal Python string"""
+	return stdstring.decode("utf-8")
 
-# Cython class definitions
+
+# Function definitions
+
+cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
+	void _configureLogging "Aux::configureLogging" (string loglevel)
+	string _currentLogLevel "Aux::currentLogLevel" ()
+	
+def configureLogging(loglevel="ERROR"):
+	""" Set the loglevel of the LOG4CXX module"""
+	_configureLogging(stdstring(loglevel))
+
+def currentLogLevel():
+	""" Get the current log level"""
+	return pystring(_currentLogLevel());
+
+# Class definitions
 
 
 ## Module: graph
@@ -59,6 +77,7 @@ cdef extern from "../src/graph/Graph.h":
 		
 
 cdef class Graph:
+	"""An undirected, optionally weighted graph"""
 	cdef _Graph _this
 	
 	def __cinit__(self, n=None):
@@ -120,7 +139,7 @@ cdef extern from "../src/graph/BFS.h":
 		vector[count] run(_Graph G, node source)
 
 cdef class BFS:
-	""" simple breadth-first search"""
+	""" Simple breadth-first search"""
 	cdef _BFS _this
 
 	def run(self, Graph G not None, source):
@@ -130,7 +149,39 @@ cdef class BFS:
 	 		length (number of edges) of the shortest path from source to any other vertex.
 		"""
 		return self._this.run(G._this, source)
+	
 
+cdef extern from "../src/graph/Dijkstra.h":
+	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
+		_Dijkstra() except +
+		vector[edgeweight] run(_Graph G, node source)
+
+cdef class Dijkstra:
+	""" Dijkstra's SSSP algorithm.
+	 	Returns list of weighted distances from node source, i.e. the
+	    length of the shortest path from @a source to any other node."""
+	cdef _Dijkstra _this
+
+	def run(self, Graph G not None, source):
+		return self._this.run(G._this, source)
+
+
+cdef extern from "../src/independentset/Luby.h":
+	cdef cppclass _Luby "NetworKit::Luby":
+		_Luby() except +
+		vector[bool] run(_Graph G)
+		string toString()
+
+# FIXME: check correctness
+cdef class Luby:
+	""" Luby's parallel maximal independent set algorithm"""
+	cdef _Luby _this
+
+	def run(self, Graph G not None):
+		return self._this.run(G._this)
+
+	def toString(self):
+		return self._this.toString().decode("utf-8")
 
 
 # Module: generators
@@ -142,6 +193,7 @@ cdef extern from "../src/graph/GraphGenerator.h":
 
 
 cdef class GraphGenerator:
+	""" Provides several functions for graph generation"""
 	cdef _GraphGenerator _this
 	
 	def __cinit__(self):
@@ -159,6 +211,7 @@ cdef extern from "../src/generators/BarabasiAlbertGenerator.h":
 		_Graph generate()
 
 cdef class BarabasiAlbertGenerator:
+	""" Generates a scale-free graph according to the Barabasi-Albert model """
 	cdef _BarabasiAlbertGenerator _this
 
 	def __cinit__(self, k, nMax, n0):
@@ -169,7 +222,7 @@ cdef class BarabasiAlbertGenerator:
 
 
 
-# Module: io
+# Module: graphio
 
 cdef extern from "../src/io/METISGraphReader.h":
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader":
@@ -177,6 +230,9 @@ cdef extern from "../src/io/METISGraphReader.h":
 		_Graph read(string path)
 
 cdef class METISGraphReader:
+	""" Reads the METIS adjacency file format [1]
+		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+	"""
 	cdef _METISGraphReader _this
 	
 	def read(self, path):
@@ -191,6 +247,9 @@ cdef extern from "../src/io/FastMETISGraphReader.h":
 		_Graph read(string path)
 
 cdef class FastMETISGraphReader:
+	""" A faster but currently experimental implementation of a reader for
+		the METIS format.
+	"""
 	cdef _FastMETISGraphReader _this
 	
 	def read(self, path):
@@ -207,6 +266,7 @@ cdef extern from "../src/io/DotGraphWriter.h":
 
 
 cdef class DotGraphWriter:
+	""" Writes graphs in the .dot/GraphViz format"""
 	cdef _DotGraphWriter _this
 	
 	def write(self, Graph G not None, path):
@@ -222,6 +282,7 @@ cdef extern from "../src/io/EdgeListIO.h":
 		void write(_Graph G, string path)
 
 cdef class EdgeListIO:
+	""" Reads and writes graphs in various edge list formats"""
 
 	cdef _EdgeListIO _this
 
@@ -244,6 +305,7 @@ cdef extern from "../src/io/LineFileReader.h":
 
 
 cdef class LineFileReader:
+	""" Reads a file and puts each line in a list of strings """
 	cdef _LineFileReader _this
 
 	def read(self, path):
@@ -256,41 +318,45 @@ cdef extern from "../src/io/SNAPGraphWriter.h":
 		void write(_Graph G, string path) 
 
 cdef class SNAPGraphWriter:
+	""" Writes graphs in a format suitable for the Georgia Tech SNAP software [1]
+		[1]: http://snap-graph.sourceforge.net/
+	"""
 	cdef _SNAPGraphWriter _this
 
 	def write(self, Graph G, path):
 		self._this.write(G._this, stdstring(path))
 
 
-# Module: ?
+cdef extern from "../src/io/ClusteringReader.h":
+	cdef cppclass _ClusteringReader "NetworKit::ClusteringReader":
+		_ClusteringReader() except +
+		_Clustering read(string path)
 
 
-cdef extern from "../src/clustering/Clustering.h":
-	cdef cppclass _Clustering "NetworKit::Clustering":
-		_Clustering() except +
-		count numberOfClusters()
-		float getImbalance()
-		vector[count] clusterSizes()
-		vector[node] getMembers(cluster C)
+cdef class ClusteringReader:
+	""" Reads a partition from a file.
+		File format: line i contains subset id of element i.
+	 """
+	cdef _ClusteringReader _this
 
-cdef class Clustering:
-	cdef _Clustering _this
-	
-	cdef setThis(self, _Clustering other):
-		self._this = other
-		return self
+	def read(self, path):
+		return Clustering().setThis(self._this.read(stdstring(path)))
 
-	def numberOfClusters(self):
-		return self._this.numberOfClusters()
 
-	def getImbalance(self):
-		return self._this.getImbalance()
+cdef extern from "../src/io/ClusteringWriter.h":
+	cdef cppclass _ClusteringWriter "NetworKit::ClusteringWriter":
+		_ClusteringWriter() except +
+		void write(_Clustering, string path)
 
-	def clusterSizes(self):
-		return self._this.clusterSizes()
 
-	def getMembers(self, C):
-		return self._this.getMembers(C)
+cdef class ClusteringWriter:
+	""" Writes a partition to a file.
+		File format: line i contains subset id of element i.
+	 """
+	cdef _ClusteringWriter _this
+
+	def write(self, Clustering zeta, path):
+		self._this.write(zeta._this, stdstring(path))
 
 
 # Parameters
@@ -310,6 +376,42 @@ cdef extern from "../src/base/Parameters.h":
 
 
 # Module: community
+
+
+cdef extern from "../src/clustering/Clustering.h":
+	cdef cppclass _Clustering "NetworKit::Clustering":
+		_Clustering() except +
+		count numberOfClusters()
+		cluster clusterOf(node)
+		float getImbalance()
+		vector[count] clusterSizes()
+		vector[node] getMembers(cluster C)
+
+cdef class Clustering:
+	"""
+		Represents a partition of the node set into disjoint subsets (clusters).
+	"""
+	cdef _Clustering _this
+	
+	cdef setThis(self, _Clustering other):
+		self._this = other
+		return self
+
+	def numberOfClusters(self):
+		return self._this.numberOfClusters()
+
+	def getImbalance(self):
+		return self._this.getImbalance()
+
+	def clusterSizes(self):
+		return self._this.clusterSizes()
+
+	def getMembers(self, C):
+		return self._this.getMembers(C)
+
+	def clusterOf(self, v):
+		return self._this.clusterOf(v)
+
 
 cdef extern from "../src/clustering/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
@@ -331,6 +433,10 @@ cdef extern from "../src/clustering/Modularity.h":
 		
 
 cdef class Modularity:
+	"""
+		Modularity [1] is a quality index for community detection.
+		[1]: http://en.wikipedia.org/wiki/Modularity_%28networks%29
+	"""
 	cdef _Modularity _this
 	
 	def getQuality(self, Clustering zeta, Graph G):
@@ -463,6 +569,7 @@ cdef extern from "../src/properties/GraphProperties.h" namespace "NetworKit::Gra
 		pass
 
 cdef class GraphProperties:
+	""" Collects various functions for basic graph properties """
 
 	@staticmethod
 	def minMaxDegree(Graph G not None):
@@ -489,8 +596,13 @@ cdef extern from "../src/properties/ConnectedComponents.h":
 		count sizeOfComponent(index component)
 		count componentOfNode(node query)
 		vector[node] getComponent(index component)
+		vector[count] getComponentSizes()
+
 
 cdef class ConnectedComponents:
+	""" Determines the connected components and associated values for
+		an undirected graph.
+	"""
 	cdef _ConnectedComponents _this
 
 	def run(self, Graph G):
@@ -507,25 +619,12 @@ cdef class ConnectedComponents:
 
 	def getComponent(self, componentIndex):
 		return self._this.getComponent(componentIndex)
+	
+	def getComponentSizes(self):
+		return self._this.getComponentSizes()
 
 
-# module: independentset
 
-cdef extern from "../src/independentset/Luby.h":
-	cdef cppclass _Luby "NetworKit::Luby":
-		_Luby() except +
-		vector[bool] run(_Graph G)
-		string toString()
-
-cdef class Luby:
-	""" Luby's parallel maximal independent set algorithm"""
-	cdef _Luby _this
-
-	def run(self, Graph G not None):
-		return self._this.run(G._this)
-
-	def toString(self):
-		return self._this.toString().decode("utf-8")
 
 
 

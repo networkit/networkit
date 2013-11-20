@@ -14,6 +14,7 @@
 
 namespace NetworKit {
 
+// TODO: inherit from NodeDistance
 class GraphDistance {
 public:
 	GraphDistance();

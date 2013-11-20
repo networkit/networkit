@@ -12,6 +12,9 @@
 
 namespace Aux {
 
+/**
+ * Random probability value generators.
+ */
 class RandomProbability {
 
 private:

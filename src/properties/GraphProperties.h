@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * Collection of methods for basic network properties.
+ */
 class GraphProperties {
 public:
 	GraphProperties();

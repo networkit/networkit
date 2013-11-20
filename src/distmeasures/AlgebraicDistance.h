@@ -16,7 +16,10 @@
 
 namespace NetworKit {
 
-
+/**
+ * Algebraic distance assigns a distance value to pairs of nodes
+ * according to their structural closeness in the graph. 
+ */
 class AlgebraicDistance: public NetworKit::NodeDistance {
 public:
 

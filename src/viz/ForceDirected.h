@@ -15,6 +15,9 @@
 
 namespace NetworKit {
 
+/**
+ * TODO: class documentation
+ */
 class ForceDirected: public NetworKit::SpringEmbedder {
 public:
 
