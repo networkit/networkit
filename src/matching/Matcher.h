@@ -12,7 +12,9 @@
 
 namespace NetworKit {
 
-
+/**
+ * Abstract base class for matching algorithms.
+ */
 class Matcher {
 
 public:

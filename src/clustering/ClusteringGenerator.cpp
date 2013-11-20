@@ -6,7 +6,7 @@
  */
 
 #include "ClusteringGenerator.h"
-#include <random>
+#include "../auxiliary/RandomInteger.h"
 
 namespace NetworKit {
 
@@ -37,11 +37,7 @@ Clustering ClusteringGenerator::makeOneClustering(Graph& G) {
 }
 
 Clustering ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
-	// random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, k-1);
-	//
+
 	count n = G.numberOfNodes();
 	Clustering zeta(n);
 
@@ -50,7 +46,7 @@ Clustering ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 	}
 
 	G.parallelForNodes([&](node v){
-		cluster c = dis(gen);
+		cluster c = Aux::RandomInteger::generate(0, (k-1));
 		zeta.addToCluster(c, v);
 	});
 

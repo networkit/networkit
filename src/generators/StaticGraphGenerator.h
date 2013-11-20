@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * Abstract base class for static graph generators.
+ */
 class StaticGraphGenerator {
 
 public:

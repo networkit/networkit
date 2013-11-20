@@ -11,7 +11,10 @@
 #include "QualityMeasure.h"
 
 namespace NetworKit {
-
+	
+/**
+ * Coverage is the fraction of intra-cluster edges.
+ */
 class Coverage: public NetworKit::QualityMeasure {
 public:
 	Coverage();

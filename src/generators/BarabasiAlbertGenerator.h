@@ -16,6 +16,9 @@
 
 namespace NetworKit {
 
+/**
+ * Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
+ */
 class BarabasiAlbertGenerator: public NetworKit::StaticGraphGenerator {
 private:
 	count k; //!< Attachments made per node
@@ -32,10 +35,8 @@ public:
 	BarabasiAlbertGenerator(count k, count nMax, count n0 = 0);
 
 	virtual ~BarabasiAlbertGenerator();
-	/**
-	 * Generate a graph using the Barabasi-Albert preferential generator
-	 */
-	virtual Graph generate() override;
+
+	Graph generate() override;
 };
 
 } /* namespace NetworKit */

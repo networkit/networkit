@@ -15,6 +15,9 @@
 
 namespace NetworKit {
 
+/**
+ * Simple methods for graph generation.
+ */
 class GraphGenerator {
 
 public:

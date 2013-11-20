@@ -14,6 +14,7 @@ namespace NetworKit {
 
 /**
  * Clustering algorithm due to Clauset, Newman and Moore.
+ * TODO: needs testing.
  */
 class CNM : public NetworKit::Clusterer {
 public:

@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * TODO: class documentation
+ */
 class PathGrowingMatcher: public NetworKit::Matcher {
 protected:
 

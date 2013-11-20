@@ -15,12 +15,20 @@
 
 namespace NetworKit {
 
+/**
+ * Methods for creating subgraphs.
+ */
 class Subgraph {
 public:
 	Subgraph();
 
 	virtual ~Subgraph();
 
+	/**
+	 * Create a subgraph induced by a set of nodes.
+	 * The returned graph G' is isomorphic (structurally identical) to the subgraph in G,
+	 * but node indices are not preserved.
+	 */
 	static Graph fromNodes(const Graph& G, const std::unordered_set<node>& nodes);
 
 };

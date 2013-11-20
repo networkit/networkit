@@ -21,6 +21,9 @@ struct circle {
 	float rad;
 };
 
+/**
+ * TODO: class description
+ */
 class PubWebGenerator: public NetworKit::StaticGraphGenerator {
 
 	friend class DynamicPubWebGenerator;
