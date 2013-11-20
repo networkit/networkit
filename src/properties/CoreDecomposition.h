@@ -9,7 +9,10 @@
 #define COREDECOMPOSITION_H_
 
 #include <vector>
+#include <fstream>
+#include <string>
 #include "../graph/Graph.h"
+#include "../auxiliary/ShellList.h"
 
 namespace NetworKit {
 
@@ -17,6 +20,7 @@ namespace NetworKit {
  * Computes k-core decomposition of a graph.
  */
 class CoreDecomposition {
+
 public:
 	CoreDecomposition();
 	virtual ~CoreDecomposition();

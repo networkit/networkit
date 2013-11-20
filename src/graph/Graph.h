@@ -248,10 +248,26 @@ public:
 	count degree(node v) const;
 
 	/**
+	 * @return Smallest neighborhood size (does not have to be unique).
+	 */
+	count minDegree() const;
+
+	/**
 	 * @return Index of vertex with smallest neighborhood size (does not have to be
 	 * unique).
 	 */
 	index argminDegree() const;
+
+	/**
+	 * @return Largest neighborhood size (does not have to be unique).
+	 */
+	count maxDegree() const;
+
+	/**
+	 * @return Index of vertex with largest neighborhood size (does not have to be
+	 * unique).
+	 */
+	index argmaxDegree() const;
 
 	/**
 	 * @return Weighted degree of @a v.

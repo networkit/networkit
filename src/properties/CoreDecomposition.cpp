@@ -18,19 +18,19 @@ CoreDecomposition::~CoreDecomposition() {
 }
 
 std::vector<count> CoreDecomposition::run(const Graph& G) {
-	std::vector<count> coreness;
+	Aux::ShellList sl(&G);
 
-	G.forNodes([&](node v) {
-		// TODO: fill data structure
-	});
-
-	//index i = 1;
-	Graph G2 = G;
-	while (G2.numberOfNodes() > 0) {
-		// TODO: main loop
+	for (count i = 0; i < sl.size(); i++) {
+		sl.forEachNodeInShell(i, [&](node v) {
+			G.forNeighborsOf(v, [&](node w) {
+				if (sl.getCurrentShell(w) > i) {
+					sl.decreaseShell(w);
+				}
+			});
+		});
 	}
+	return sl.getCoreness();
 
-	return coreness;
 }
 
 } /* namespace NetworKit */
