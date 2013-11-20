@@ -17,7 +17,7 @@ ShellList::ShellList(const Graph *graph):
   nodeShell(std::vector<count>(graph->numberOfNodes()))
 {
  	this->g->forNodes([&](node v) {
-    int shell = this->g->degree(v);
+    count shell = this->g->degree(v);
     this->shells[shell].push_front(v);
     this->nodeHandle[v] = this->shells[shell].begin();
     this->nodeShell[v] = shell;
@@ -36,8 +36,7 @@ ShellList::decreaseShell(const node v)
   --shell;
   
 	this->shells[shell].push_back(v);
-	this->nodeHandle[v] = this->shells[shell].end();
-	--this->nodeHandle[v]; // iterator arithmetic, necessary because .end() does not point on the last element but after it
+	this->nodeHandle[v] = std::prev(this->shells[shell].end());
 }
 
 void 
