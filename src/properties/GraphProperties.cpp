@@ -138,4 +138,15 @@ double GraphProperties::averageDegree(const Graph& G) {
 	return avgDeg;
 }
 
+//std::pair<count, count> GraphProperties::estimatedDiameterRange(
+//		const Graph& G) {
+//	count lowerBound = 0;
+//	count upperBound = std::numeric_limits<count>::max();
+//
+//	// TODO: Assignment #7 of AMzN
+//	// TODO: Students, please rename this method by appending your group name
+//
+//	return std::make_pair(lowerBound, upperBound);
+//}
+
 } /* namespace NetworKit */

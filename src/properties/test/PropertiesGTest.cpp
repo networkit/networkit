@@ -236,10 +236,10 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 }
 
-
-
-
-
+//TEST_F(PropertiesGTest, tryEstimatedDiameterRange) {
+//	// TODO: Assignment #7 of AMzN
+//	// TODO: Students, please rename this method by appending your group name
+//}
 
 } /* namespace NetworKit */
 
