@@ -17,6 +17,7 @@ public:
   GlobalClusteringCoefficient() {}
   virtual ~GlobalClusteringCoefficient() {}
   
+  virtual double calculate(const Graph& G);
   virtual double approximate(const Graph& G, int k);
 };
 

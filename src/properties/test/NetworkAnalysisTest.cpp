@@ -93,7 +93,31 @@ TEST_F(NetworkAnalysisTest, tryCoreDecompositionDimacsGraphs) {
   }
 }
 
-TEST_F(NetworkAnalysisTest, testClusteringCoefficient) {
+TEST_F(NetworkAnalysisTest, testExactClusteringCoefficient) {
+	count n = 10;
+	Graph G(n);
+
+  G.addEdge(0, 1);
+  G.addEdge(1, 2);
+  G.addEdge(2, 3);
+  G.addEdge(3, 4);
+  G.addEdge(4, 5);
+
+	G.addEdge(6, 7);
+	G.addEdge(6, 8);
+	G.addEdge(6, 9);
+	G.addEdge(7, 8);
+	G.addEdge(7, 9);
+  G.addEdge(8, 9);
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
+	EXPECT_EQ(11, G.numberOfEdges()) << "should have 11 edges";
+
+  GlobalClusteringCoefficient cc;
+  EXPECT_NEAR(0.75, cc.calculate(G), 0.01);
+}
+
+TEST_F(NetworkAnalysisTest, testApproximateClusteringCoefficient) {
 	count n = 10;
 	Graph G(n);
 
