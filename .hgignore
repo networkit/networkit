@@ -36,3 +36,9 @@ syntax: regexp
 /*.eps
 syntax: regexp
 ^doxygen$
+
+
+sconsign.dblite
+NetworKit-
+NetworKit.sublime-
+build.conf
