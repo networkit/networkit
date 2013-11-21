@@ -610,6 +610,11 @@ public:
 	 */
 	template<typename L> void forNeighborsOf(node u, L handle) const;
 
+	/** 
+	 * Iterate over all pairs of neighbors of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forTwoNeighborsOf(node u, L handle) const;
+
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
 	 */
@@ -702,6 +707,15 @@ inline void NetworKit::Graph::forNeighborsOf(node u, L handle) {
 
 template<typename L>
 inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
+	for (node v : this->adja[u]) {
+		if (v != none) {
+			handle(v);
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::Graph::forNeighborsOf(node u, L handle) {
 	for (node v : this->adja[u]) {
 		if (v != none) {
 			handle(v);
