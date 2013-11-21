@@ -18,7 +18,8 @@ CoreDecomposition::~CoreDecomposition() {
 }
 
 std::vector<count> CoreDecomposition::run(const Graph& G) {
-	std::vector<count> coreness;
+	const count n = G.numberOfNodes();
+	std::vector<count> coreness(n, 0);
 
 	G.forNodes([&](node v) {
 		// TODO: fill data structure
@@ -26,9 +27,9 @@ std::vector<count> CoreDecomposition::run(const Graph& G) {
 
 	//index i = 1;
 	Graph G2 = G;
-	while (G2.numberOfNodes() > 0) {
+	// while (G2.numberOfNodes() > 0) {
 		// TODO: main loop
-	}
+	// }
 
 	return coreness;
 }
