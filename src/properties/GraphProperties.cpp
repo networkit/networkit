@@ -145,16 +145,83 @@ double GraphProperties::approximateGlobalClusteringCoefficient(
 }
 
 
-//std::pair<count, count> GraphProperties::estimatedDiameterRange(
-//		const Graph& G) {
-//	count lowerBound = 0;
-//	count upperBound = std::numeric_limits<count>::max();
-//
-//	// TODO: Assignment #7 of AMzN
-//	// TODO: Students, please rename this method by appending your group name
-//
-//	return std::make_pair(lowerBound, upperBound);
-//}
+std::pair<count, count> GraphProperties::estimatedDiameterRange_Hoske(const Graph& G, double error) {
+	using namespace std;
+
+	/* Determines a node v with dist(u, v) = ecc_G(u) and the dist(u, v). */
+	auto compute_ecc = [&] (const Graph& G, node u) -> pair<node, count> {
+		static BFS bfs;
+		auto dists = bfs.run(G, u);
+		auto max_iter = max_element(begin(dists), end(dists));
+		return {distance(begin(dists), max_iter), *max_iter};
+	};
+
+	/* BFS that calls f with the visited edges. */
+	/* Note: the function Graph::breadthFirstEdgesFrom that should
+	   do the same has not been implemented! */
+	auto bfs_edges = [&] (const Graph& G, node u, function<void(node, node)> f) {
+		queue<node> q;
+		vector<bool> visited(G.numberOfNodes(), false);
+		q.push(u);
+		visited[u] = true;
+
+		while (!q.empty()) {
+			node x = q.front(); q.pop();
+			G.forNeighborsOf(x, [&] (node y) {
+				if (!visited[y]) {
+					f(x, y);
+					visited[y] = true;
+					q.push(y);
+				}
+			});
+		}
+	};
+
+	/* Diameter estimate: lowerBounds <= diam(G) <= upperBound. */
+	count lowerBound = 0;
+	count upperBound = numeric_limits<count>::max();
+	const count n = G.numberOfNodes();
+
+	/* Nodes sorted by decreasingly by degree. */
+	vector<node> high_deg(n);
+	iota(begin(high_deg), end(high_deg), 0);
+	sort(begin(high_deg), end(high_deg), [&] (node u, node v) {
+		return G.degree(u) > G.degree(v);
+	});
+
+	/* Random node. */
+	static const default_random_engine random;
+	auto random_node = bind(uniform_int_distribution<node>(0, n - 1), random);
+
+	/* While not converged: update estimate. */
+	count niter = 0;
+	while ((upperBound - lowerBound) >= error*lowerBound && niter < n) {
+		count ecc;
+
+		/* ecc(u) <= diam(G) */
+		node u = random_node();
+		tie(ignore, ecc) = compute_ecc(G, u);
+		lowerBound = max(lowerBound, ecc);
+
+		/* diam(G) <= diam(BFS_Tree(v)) */
+		node v = high_deg[niter];
+		Graph bfs_tree(n);
+		bfs_edges(G, v, [&] (node a, node b) {
+			bfs_tree.addEdge(a, b);
+		});
+		/* Note: A bit inefficient. One BFS per iteration too many. */
+		node w;
+		tie(w, ecc) = compute_ecc(G, u);
+		lowerBound = max(lowerBound, ecc);
+		/* diam(T) = ecc_T(w) by problem 4. */
+		tie(ignore, ecc) = compute_ecc(bfs_tree, w);
+		upperBound = min(upperBound, ecc);
+
+		niter++;
+	}
+
+	return {lowerBound, upperBound};
+}
 
 } /* namespace NetworKit */
 

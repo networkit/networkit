@@ -54,7 +54,7 @@ static void test_cluster_coeff(std::string name) {
     out << "Global cluster coefficient:\n";
     out << "  Approximate: " << acc.calculate(true, G, CLUSTER_ITER) << "\n";
     out << "  Exact:       " << ExactClusteringCoefficient::calculate(true, G) << "\n\n";
-    
+
     out << "Average local cluster coefficient:\n";
     out << "  Approximate: " << acc.calculate(false, G, CLUSTER_ITER) << "\n";
     out << "  Exact:       " << ExactClusteringCoefficient::calculate(false, G) << "\n";
@@ -364,13 +364,25 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 }
 
+static void test_diameter_Hoske(std::string name) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/" + name + ".graph");
+    std::ofstream out("output/" + name + "_hoske.diam");
 
-//TEST_F(PropertiesGTest, tryEstimatedDiameterRange) {
-//	// TODO: Assignment #7 of AMzN
-//	// TODO: Students, please rename this method by appending your group name
-//}
+    /* Graph should be connected!!! */
+    ConnectedComponents comps;
+    comps.run(G);
+    EXPECT_EQ(comps.numberOfComponents(), count(1));
 
+    static const double ERROR = 0.2;
+    auto bounds = GraphProperties::estimatedDiameterRange_Hoske(G, ERROR);
+    out << bounds.first << " " << bounds.second << "\n";
+}
 
+TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Hoske) {
+	test_diameter_Hoske("cnr-2000");
+	test_diameter_Hoske("caidaRouterLevel");
+}
 
 } /* namespace NetworKit */
 

@@ -10,6 +10,7 @@
 
 
 #include "../graph/Graph.h"
+#include "../graph/BFS.h"
 #include "../io/METISGraphReader.h"
 #include "ApproximateClusteringCoefficient_Hoske.h"
 
@@ -63,6 +64,7 @@ public:
 	 * @return Pair of lower and upper bound for diameter.
 	 */
 	static std::pair<count, count> estimatedDiameterRange(const Graph& G);
+	static std::pair<count, count> estimatedDiameterRange_Hoske(const Graph& G, double error);
 };
 
 } /* namespace NetworKit */
