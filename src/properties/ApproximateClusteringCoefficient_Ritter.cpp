@@ -1,23 +1,23 @@
 /*
- * ApproximatedClusteringCoefficient_Ritter.cpp
+ * ApproximateClusteringCoefficient_Ritter.cpp
  */
 
 #include <stdlib.h>
 #include <time.h>
 #include <random>
 
-#include "ApproximatedClusteringCoefficient_Ritter.h"
+#include "ApproximateClusteringCoefficient_Ritter.h"
 
 namespace NetworKit {
 
-ApproximatedClusteringCoefficient_Ritter::ApproximatedClusteringCoefficient_Ritter() {
+ApproximateClusteringCoefficient_Ritter::ApproximateClusteringCoefficient_Ritter() {
 	srand(time(NULL));
 }
 
-ApproximatedClusteringCoefficient_Ritter::~ApproximatedClusteringCoefficient_Ritter() {
+ApproximateClusteringCoefficient_Ritter::~ApproximateClusteringCoefficient_Ritter() {
 }
 
-double ApproximatedClusteringCoefficient_Ritter::calculate(Graph& G, count k) {
+double ApproximateClusteringCoefficient_Ritter::calculate(Graph& G, count k) {
 	const count n = G.numberOfNodes();
 	count degree[n];
 	count cumulated_propabilities[n];
@@ -56,7 +56,7 @@ double ApproximatedClusteringCoefficient_Ritter::calculate(Graph& G, count k) {
 /*
  * Binary search for the index i that fulfils array[i - 1] < key <= array[i]
  */
-index ApproximatedClusteringCoefficient_Ritter::indexOfBiggestValueLoEq(count* array, count size, count key) {
+index ApproximateClusteringCoefficient_Ritter::indexOfBiggestValueLoEq(count* array, count size, count key) {
 	// edge cases
 	if (key <= array[0])
 		return 0;
@@ -97,7 +97,7 @@ count uniformRandom(count min, count max) {
 	return offset = (value + offset) % max;
 }
 
-index ApproximatedClusteringCoefficient_Ritter::randomNode(count* cumulated_propabilities, count n, count propability_sum) {
+index ApproximateClusteringCoefficient_Ritter::randomNode(count* cumulated_propabilities, count n, count propability_sum) {
 	// std::random_device rd;
 	// std::mt19937 gen(rd());
 	// return std::uniform_int_distribution<count>(0, propability_sum);
