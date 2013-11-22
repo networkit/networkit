@@ -7,14 +7,6 @@
 
 namespace NetworKit {
 
-CoreDecomposition_Ritter_ownList::CoreDecomposition_Ritter_ownList() {
-
-}
-
-CoreDecomposition_Ritter_ownList::~CoreDecomposition_Ritter_ownList() {
-
-}
-
 std::vector<count> CoreDecomposition_Ritter_ownList::run(const Graph& G) {
 	const count n = G.numberOfNodes();
 

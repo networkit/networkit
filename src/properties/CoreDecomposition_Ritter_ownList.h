@@ -7,17 +7,15 @@
 
 #include <vector>
 #include "../graph/Graph.h"
+#include "CoreDecomposition.h"
 
 namespace NetworKit {
 
 /**
  * Computes k-core decomposition of a graph.
  */
-class CoreDecomposition_Ritter_ownList {
+class CoreDecomposition_Ritter_ownList : public CoreDecomposition {
 public:
-	CoreDecomposition_Ritter_ownList();
-	virtual ~CoreDecomposition_Ritter_ownList();
-
 	/**
 	 * @return k-core decomposition of graph @a G.
 	 */

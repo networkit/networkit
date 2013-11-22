@@ -7,14 +7,6 @@
 
 namespace NetworKit {
 
-CoreDecomposition_Ritter::CoreDecomposition_Ritter() {
-
-}
-
-CoreDecomposition_Ritter::~CoreDecomposition_Ritter() {
-
-}
-
 std::vector<count> CoreDecomposition_Ritter::run(const Graph& G) {
 	const count n = G.numberOfNodes();
 	std::vector<count> coreness(n, 0);
