@@ -2,7 +2,7 @@
 #define PRINTHOSKE_H
 
 #include <iostream>
-#include "graph.h"
+#include "Graph.h"
 
 namespace NetworKit {
 

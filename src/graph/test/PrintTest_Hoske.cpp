@@ -25,6 +25,8 @@ TEST_F(PrintTest_Hoske, testConvert_Hoske) {
 	test_convert_hoske("3elt");
 	test_convert_hoske("uk");
 	test_convert_hoske("add32");
+    test_convert_hoske("cnr-2000");
+    test_convert_hoske("caidaRouterLevel");
 }
 
 }

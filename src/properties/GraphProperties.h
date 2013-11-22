@@ -65,6 +65,13 @@ public:
 	 */
 	static std::pair<count, count> estimatedDiameterRange(const Graph& G);
 	static std::pair<count, count> estimatedDiameterRange_Hoske(const Graph& G, double error);
+
+    /**
+     * Computes the ecc_G(u) and returns a vertex v with largest distance from u. 
+     *
+     * @return pair of node v and eccentricity.
+     */
+    static std::pair<node, count> eccentricity_Hoske(const Graph& G, node u);
 };
 
 } /* namespace NetworKit */
