@@ -25,6 +25,8 @@ PLM::~PLM() {
 
 Clustering PLM::pass(Graph& G) {
 
+	// FIXME: PLM cannot deal with deleted nodes
+
 	// init clustering to singletons
 	count n = G.numberOfNodes();
 	Clustering zeta(n);
@@ -39,11 +41,11 @@ Clustering PLM::pass(Graph& G) {
 			G.numberOfNodes());
 	G.parallelForNodes([&](node u) {
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-					cluster C = zeta[v];
-					if (u != v) {
-						incidenceWeight[u][C] += w;
-					}
-				});
+			cluster C = zeta[v];
+			if (u != v) {
+				incidenceWeight[u][C] += w;
+			}
+		});
 	});
 
 #ifdef _OPENMP

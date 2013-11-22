@@ -18,6 +18,7 @@
 #include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
+#include "../MLPLM.h"
 
 
 
@@ -384,6 +385,17 @@ TEST_F(ClusteringAlgoGTest, testEPPFactory) {
 
 	EXPECT_TRUE(zeta.isProper(jazz));
 }
+
+TEST_F(ClusteringAlgoGTest, testMLPLMP) {
+	METISGraphReader reader;
+	Graph jazz = reader.read("input/jazz.graph");
+
+	MLPLM mlplm;
+	Clustering zeta = mlplm.run(jazz);
+
+
+}
+
 
 } /* namespace NetworKit */
 
