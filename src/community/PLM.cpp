@@ -48,6 +48,7 @@ Clustering PLM::pass(Graph& G) {
 		});
 	});
 
+// TODO: why are the locks created AFTER initialization?
 #ifdef _OPENMP
 	// create and init locks
 	std::vector<omp_lock_t> mapLocks(n);

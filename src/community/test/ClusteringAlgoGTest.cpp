@@ -390,9 +390,11 @@ TEST_F(ClusteringAlgoGTest, testMLPLMP) {
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 
-	MLPLM mlplm;
+	MLPLM mlplm("none", false, 1.0);
 	Clustering zeta = mlplm.run(jazz);
 
+	INFO("number of clusters: " << zeta.numberOfClusters());
+	EXPECT_TRUE(zeta.isProper(jazz));
 
 }
 
