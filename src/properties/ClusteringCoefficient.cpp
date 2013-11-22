@@ -86,7 +86,7 @@ ClusteringCoefficient::approxAvgLocal(Graph& G, const count tries) const
 		node u = G.randomNeighbor(v);
 		node w = G.randomNeighbor(v);
 
-		// TODO This could be speed up for degree(v) == 2...
+		// TODO This could be sped up for degree(v) == 2...
 		while (u == w) {
 			w = G.randomNeighbor(v);
 		}
