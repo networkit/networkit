@@ -236,10 +236,44 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 }
 
-//TEST_F(PropertiesGTest, tryEstimatedDiameterRange) {
-//	// TODO: Assignment #7 of AMzN
-//	// TODO: Students, please rename this method by appending your group name
-//}
+TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
+  // Clique
+  {
+    count n = 5;
+	  Graph G(n);
+
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+    G.addEdge(0, 3);
+    G.addEdge(0, 4);
+    G.addEdge(1, 2);
+    G.addEdge(1, 3);
+    G.addEdge(1, 4);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 4);
+
+    EXPECT_EQ(1, GraphProperties::estimateDiameter_ck(G).first);
+    EXPECT_EQ(1, GraphProperties::estimateDiameter_ck(G).second);
+  }
+
+  // Lollipop
+  {
+    count n = 7;
+	  Graph G(n);
+
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(3, 0);
+    G.addEdge(3, 4);
+    G.addEdge(4, 5);
+    G.addEdge(5, 6);
+
+    EXPECT_EQ(5, GraphProperties::estimateDiameter_ck(G).first);
+    EXPECT_EQ(5, GraphProperties::estimateDiameter_ck(G).second);
+  }
+}
 
 } /* namespace NetworKit */
 
