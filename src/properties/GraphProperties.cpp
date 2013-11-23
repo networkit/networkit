@@ -155,7 +155,7 @@ std::pair<node, count> GraphProperties::eccentricity_Hoske(const Graph& G, node 
 std::pair<count, count> GraphProperties::estimatedDiameterRange_Hoske(const Graph& G, double error) {
 	using namespace std;
 
-	/* BFS that calls f with the visited edges and returns the node with highest distance from u. */
+	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
 	/* Note: the function Graph::breadthFirstEdgesFrom that should
 	   do the same has not been implemented! */
 	auto bfs_edges = [&] (const Graph& G, node u, function<void(node, node)> f) -> node {

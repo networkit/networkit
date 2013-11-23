@@ -379,7 +379,7 @@ static void test_diameter_Hoske(std::string name, count actual_diam) {
         EXPECT_LE(lower, actual_diam);
         EXPECT_LE(actual_diam, upper);
     }
-    out << lower << " " << upper << "\n";
+    out << lower << " <= diam(" << name << ") <= " << upper << "\n";
 }
 
 TEST_F(PropertiesGTest, testEstimatedDiameterRange_Hoske) {
