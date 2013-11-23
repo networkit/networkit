@@ -159,54 +159,47 @@ std::pair<count, count> GraphProperties::estimateDiameter_ck(const Graph& G) {
   count upperBound = std::numeric_limits<count>::max();
 
   int n = G.numberOfNodes();
-  int maxi = minMaxDegree(G).second;
-  int i = 1;
-  int j = 0;
-  std::vector<node> distances;
-  std::vector<node> distance;
-  
-  std::vector<int> degree[maxi+1];
-  count max;
-  count v;
-  
-  G.forNodes([&](node u)
-    {
-      degree[G.degree(u)].push_back(u);           
-    });
-  int k = degree[maxi].back();
-  std::cout<<k<<std::endl;
+  int maxDegree = minMaxDegree(G).second;
 
-  while((upperBound- lowerBound) > 5)
-  {
-    while((degree[i].empty())&&(i <= (maxi/2)+1))               // improving lowerbound by computing ecc for a node with smallest degree       
-    {
+  std::vector<node> nodesWithDegree[maxDegree + 1];
+  
+  G.forNodes([&](node u) {
+    nodesWithDegree[G.degree(u)].push_back(u);           
+  });
+
+  int i = 1, j = 0;
+  while(upperBound - lowerBound > 5) {
+    // improving lower bound by computing ecc for a node with smallest degree
+    while(nodesWithDegree[i].empty() && i <= maxDegree/2 + 1) {
       i++;
     }
-    node u = degree[i].back();
-    distances = BFS().run(G,u);
-    count ecc_result = ecc(distances,distances.size()).first; // yields ecc(u)
-    if(ecc_result >= lowerBound)
+    node u = nodesWithDegree[i].back();
+    std::vector<node> distances = BFS().run(G, u);
+    count ecc_result = ecc(distances, distances.size()).first; // yields ecc(u)
+    if(ecc_result > lowerBound) {
       lowerBound = ecc_result;
-    degree[i].pop_back();
-    std::cout<< degree[i].size()<<std::endl;
-    std::cout<<"lowerBound="<<lowerBound<<std::endl;
+    }
+    nodesWithDegree[i].pop_back();
 
-    while(degree[maxi-j].empty())          //improving upperbound by computing the diameter of spanning                           tree with root = node with highest degree.
-    {
+    // improving upper bound by computing the diameter of spanning
+    // tree with root = node with highest degree.
+    while(nodesWithDegree[maxDegree - j].empty()) {
       j++;
     }
-    distances = BFS().run(G,degree[maxi-j].back());
-    max = ecc(distances,n).first;
-    if(max >= lowerBound)
-      lowerBound = max;
-    std::cout<<"max="<< max <<std::endl;
-    v = ecc(distances,n).second;
-    std::cout<<"v="<< v <<std:: endl;
-    distance = BFS().run(G,v);
-    if((ecc(distance,n).first)<= upperBound)
-      upperBound = ecc(distance,n).first;
-    std::cout<<"upperBound="<< upperBound<<std::endl;
-    degree[maxi-j].pop_back();
+    u = nodesWithDegree[maxDegree - j].back();
+    distances = BFS().run(G, u);
+    ecc_result = ecc(distances, n).first;
+    if(ecc_result > lowerBound) {
+      lowerBound = ecc_result;
+    }
+
+    u = ecc(distances,n).second;
+    distances = BFS().run(G, u);
+    ecc_result = ecc(distances, n).first;
+    if(ecc_result < upperBound) {
+      upperBound = ecc_result;
+    }
+    nodesWithDegree[maxDegree - j].pop_back();
   }
   return std::make_pair(lowerBound, upperBound);
 }
