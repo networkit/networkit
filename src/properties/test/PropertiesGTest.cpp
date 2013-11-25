@@ -34,6 +34,7 @@ TEST_F(PropertiesGTest, testApproximateClusteringCoefficient_Hoske) {
 	EXPECT_EQ(1.0, cc);
 }
 
+
 /* Compute approximate cluster coefficient of graph input/name.graph
    and store it in output/name.cluster. */
 static void test_cluster_coeff(std::string name) {
@@ -58,12 +59,13 @@ static void test_cluster_coeff(std::string name) {
     out << "Average local cluster coefficient:\n";
     out << "  Approximate: " << acc.calculate(false, G, CLUSTER_ITER) << "\n";
     out << "  Exact:       " << ExactClusteringCoefficient::calculate(false, G) << "\n";
+    
 }
 
 /* Tests the approximate clustering coefficient on some DIMACS graphs. */
 TEST_F(PropertiesGTest, testApproximateClusteringCoefficientDIMACS_Hoske) {
-    test_cluster_coeff("celegans_metabolic");
-    test_cluster_coeff("hep-th");
+    //test_cluster_coeff("celegans_metabolic");
+    //test_cluster_coeff("hep-th");
     test_cluster_coeff("polblogs");
 }
 
@@ -104,8 +106,6 @@ TEST_F(PropertiesGTest, testDegreeDistribution) {
 	EXPECT_EQ(three, degreeDist[2]);
 
 }
-
-
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 
@@ -281,6 +281,34 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
 
 }
 
+
+static void run_estimatedDiameterRange_Feist(std::string name) {
+
+    METISGraphReader reader;
+    Graph G = reader.read("input/" + name + ".graph");
+    count p = 5;
+    std::pair<count, count> result = GraphProperties::estimatedDiameterRange_Feist(G, p);
+
+    std::ofstream out("output/" + name + ".diameter");
+    out << "Results of algorithm 'Estimate Diameter' on Graph " << name << ".\n";
+    out << "Given treshold value: " << p << ".\n";
+    out << "_Estimated_ Diameter Range: [" << result.first << "," << result.second << "]" << "\n";
+
+    std::cout << "*Estimated* Diameter Range: [" << result.first << "," << result.second << "]" << std::endl;
+}
+
+static void run_DiameterRange_Feist(std::string name) {
+
+    METISGraphReader reader;
+    Graph G = reader.read("input/" + name + ".graph");
+    count result = GraphProperties::DiameterRange_Feist(G);
+
+    std::cout << "*Exact* Diameter Range: " << result << std::endl;
+}
+
+
+
+
 TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 	// Reading the graph
 	std::string path = "input/jazz.graph";
@@ -293,7 +321,7 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
 	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
 
-	// Calculating the parameters
+        // Calculating the parameters
 	std::vector<count> 	degreeDist = GraphProperties::degreeDistribution(G);
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
 	std::vector<double> coefficientsPerDegree = GraphProperties::localClusteringCoefficientPerDegree(G);
@@ -359,17 +387,20 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 	double avgCoefficientNetworkX = 0.6174507021536301;
 
 	EXPECT_EQ(avgCoefficientNetworkX, avgCoefficient);
-
-
-
+          
+        run_estimatedDiameterRange_Feist("cnr-2000"); 
+        run_estimatedDiameterRange_Feist("caidaRouterLevel");
 }
 
 
-//TEST_F(PropertiesGTest, tryEstimatedDiameterRange) {
-//	// TODO: Assignment #7 of AMzN
-//	// TODO: Students, please rename this method by appending your group name
-//}
-
+TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Feist) {
+    // TODO: Assignment #7 of AMzN
+    // TODO: Students, please rename this method by appending your group name
+    
+    run_estimatedDiameterRange_Feist("cnr-2000");  
+    run_estimatedDiameterRange_Feist("caidaRouterLevel");
+  
+}
 
 
 } /* namespace NetworKit */

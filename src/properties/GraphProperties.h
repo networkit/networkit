@@ -12,6 +12,8 @@
 #include "../graph/Graph.h"
 #include "../io/METISGraphReader.h"
 #include "ApproximateClusteringCoefficient_Hoske.h"
+#include "../graph/BFS.h"
+#include "../graph/GraphDistance.h"
 
 namespace NetworKit {
 
@@ -62,7 +64,10 @@ public:
 	 *
 	 * @return Pair of lower and upper bound for diameter.
 	 */
-	static std::pair<count, count> estimatedDiameterRange(const Graph& G);
+        static std::pair<count, count> estimatedDiameterRange_Feist(const Graph& G, count k);
+    
+        static count DiameterRange_Feist(const Graph& G);
+
 };
 
 } /* namespace NetworKit */
