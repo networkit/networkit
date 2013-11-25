@@ -307,7 +307,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 	// if getGraph returns empty graph, abort
 	if (G.isEmpty() && (G.getName() == "NONE")) {
-		std::cout << "[ERROR]�no graph instance provided." << std::endl;
+		std::cout << "[ERROR] no graph instance provided." << std::endl;
 		std::cout << "[EXIT]" << std::endl;
 		exit(1);
 	}
