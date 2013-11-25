@@ -253,7 +253,7 @@ Clustering PLM::run(Graph& G) {
 
 std::string PLM::toString() const {
 	std::stringstream strm;
-	strm << "Louvain(" << "version=" << this->VERSION << ",parallelism=" << this->parallelism << ")";
+	strm << "PLM(" << this->parallelism << ")";
 	return strm.str();
 }
 

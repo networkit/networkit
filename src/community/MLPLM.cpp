@@ -10,6 +10,8 @@
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
 
+#include <sstream>
+
 namespace NetworKit {
 
 MLPLM::MLPLM(std::string par, bool refine, double gamma) : parallelism(par), refine(refine), gamma(gamma){
@@ -226,7 +228,17 @@ Clustering MLPLM::run(Graph& G) {
 }
 
 std::string NetworKit::MLPLM::toString() const {
-	return "MLPLM";
+	std::string refined;
+	if (refine) {
+		refined = "refinement";
+	} else {
+		refined = "";
+	}
+
+	std::stringstream stream;
+	stream << "MLPM(" << parallelism << "," << refined << ")";
+
+	return stream.str();
 }
 
 std::pair<Graph, std::vector<node> > MLPLM::coarsen(const Graph& G, const Clustering& zeta) {

@@ -160,6 +160,65 @@ cdef class Graph:
 		return self._this.getName()
 
 
+cdef class Graph2:
+	"""An undirected, optionally weighted graph"""
+	cdef _Graph* _this
+	
+	def __cinit__(self, n=0):
+		self._this = new _Graph(n)
+		
+	# any _thisect which appears as a return type needs to implement setThis
+	cdef setThis(self, _Graph* other):
+		del self._this
+		self._this = other
+		return self
+
+	def __dealloc__(self):
+		del self._this
+	
+	def numberOfNodes(self):
+		return self._this.numberOfNodes()
+	
+	def numberOfEdges(self):
+		return self._this.numberOfEdges()
+	
+	def addNode(self):
+		return self._this.addNode()
+	
+	def removeNode(self, u):
+		self._this.removeNode(u)
+		
+	def addEdge(self, u, v, w=1.0):
+		self._this.addEdge(u, v, w)
+		
+	def removeEdge(self, u, v):
+		self._this.removeEdge(u, v)
+		
+	def hasEdge(self, u, v):
+		return self._this.hasEdge(u, v)
+		
+	def weight(self, u, v):
+		return self._this.weight(u, v)
+		
+	def nodes(self):
+		return self._this.nodes()
+	
+	def edges(self):
+		return self._this.edges()
+	
+	def markAsWeighted(self):
+		self._this.markAsWeighted()
+	
+	def isMarkedAsWeighted(self):
+		return self._this.isMarkedAsWeighted()
+
+	def toString(self):
+		return self._this.toString()
+
+	def getName(self):
+		return self._this.getName()
+
+
 cdef extern from "../src/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
 		_BFS() except +
@@ -255,6 +314,7 @@ cdef extern from "../src/io/METISGraphReader.h":
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader":
 		_METISGraphReader() except +
 		_Graph read(string path) except +
+		_Graph* readToHeap(string path) except +
 
 cdef class METISGraphReader:
 	""" Reads the METIS adjacency file format [1]
@@ -265,6 +325,9 @@ cdef class METISGraphReader:
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this.read(pathbytes))
+
+	def readToHeap(self, path):
+		return Graph2(0).setThis(self._this.readToHeap(path.encode("utf-8")))
 
 
 cdef extern from "../src/io/FastMETISGraphReader.h":

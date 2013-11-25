@@ -84,4 +84,8 @@ Graph METISGraphReader::read(std::string path) {
 	}
 }
 
+Graph* METISGraphReader::readToHeap(std::string path) {
+	return new Graph(this->read(path));
+}
+
 } /* namespace NetworKit */

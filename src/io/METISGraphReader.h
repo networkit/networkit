@@ -25,6 +25,8 @@ public:
 
 	virtual Graph read(std::string path);
 
+	virtual Graph* readToHeap(std::string path);
+
 };
 
 } /* namespace NetworKit */
