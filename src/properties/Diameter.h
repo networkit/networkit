@@ -18,8 +18,7 @@ using namespace NetworKit;
 class Diameter {
 
 private:
-	virtual count randomUpperBound(const Graph& G);
-	virtual count randomLowerBound(const Graph& G);
+  count getUpperBound(const Graph &G, const node root) const;
 
 public:
 
@@ -27,7 +26,7 @@ public:
 
 	virtual ~Diameter();
 
-	virtual std::pair<count,count> estimateDiameterRange(const Graph& G);  
+	virtual std::pair<count,count> estimateDiameterRange(const Graph& G) const;  
 };
 
 } /* namespace Graubart */

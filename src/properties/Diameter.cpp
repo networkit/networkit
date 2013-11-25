@@ -22,38 +22,43 @@ Diameter::~Diameter()
 	// TODO Auto-generated destructor stub
 }
 
-count
-Diameter::randomLowerBound(const Graph &G) 
+std::pair<count,count>
+estimateDiameterRange(const Graph& G) const
 {
-	// TODO implement me
+  count lower = 0;
+  count upper = std::numeric_limits<count>::max();
+  node root = 0;
+  count dist = 0;
+  std::vector<count> BFSdist;
+  
+  for (int i = 0; (i < k) && (upper - lower > 2); i++ {
+    // improve lower bound
+    root = random() % (G.nodeCount());
+    BFSdist = BFS().run(G, root);
+    dist = *(std::max_element(BFSdist.begin(), BFSdist.end()));
+    
+    if (dist > lower) {
+      lower = dist;
+    }
+    
+    // improve upper bound
+    root = random() % (G.nodeCount());
+    dist = getUpperBound(G, root);
+    
+    if (dist < upper) {
+      upper = dist;
+    }
+  }
+  
+  return std::pair<count, count>(lower, upper);
 }
 
 count
-Diameter::randomUpperBound(const Graph &G) 
+getUpperBound(const Graph &G, const node root) const
 {
-	// First, build BFS from a random node 
-
-	// TODO make sure this is a node with high degree
-
-	node root = random() % (G.nodeCount());
-
-	std::vector<count> BFSdist = BFS().run(G, root);
-
-	// Now determine vertex with maximum eccentricity in the spanning tree
-	node max = 0;
-	count maxDist = 0;
-	node cur = 0;
-	for (auto it = BFSdist.begin(); it != BFSdist.end(); ++it) {
-		count dist = *it;
-
-		if (dist > maxDist) {
-			maxDist = dist;
-			max = cur;
-		}
-		cur++;
-	}
-
-	// OK, now let's find the vertex with maximum distance vom max within the tree. 
+  // TODO: build BFS tree for high-degree node
+  // in BFS tree find node v with d(root,v) = ecc(root)
+  // in same tree find ecc(v) and return
 }
 
 } /* namespace NetworKit */
