@@ -379,7 +379,7 @@ TEST_F(PropertiesGTest, tryExactDiameter_Brueckner) {
                                                 pair<string, count>("jazz", 6),
                                                 pair<string, count>("lesmis", 5),
                                                 pair<string, count>("polblogs", infDist),
-                                                //pair<string, count>("cnr-2000", 34),
+                                                pair<string, count>("cnr-2000", 34),
                                                };
 
     for (auto testInstance : testInstances) {
@@ -405,7 +405,7 @@ TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Brueckner) {
                                                 pair<string, count>("jazz", 6),
                                                 pair<string, count>("lesmis", 5),
                                                 pair<string, count>("polblogs", infDist),
-                                                //pair<string, count>("cnr-2000", 34),
+                                                pair<string, count>("cnr-2000", 34),
                                                };
 
     for (auto testInstance : testInstances) {
