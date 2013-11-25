@@ -137,22 +137,19 @@ double GraphProperties::averageDegree(const Graph& G) {
 	return avgDeg;
 }
 
+// returns the maximum entry of an unsorted array and its index
+std::pair<count, count> ecc(std::vector<node> distances) {
+  count max_distance = std::numeric_limits<count>::min();
+  node max_distance_node = 0;
 
-  std::pair<count,count> ecc(std::vector<node> array,int size) // returns the maximum entry of an unsorted array and its index
-  {
-    count j;
-    count distance_max=0;
-    for(int i=0; i<= size-1;i++)
-    {
-      if(array[i] > distance_max)
-        {
-          distance_max =array[i];
-          j=i;
-        }
+  for(int i = 0; i < distances.size(); i++) {
+    if(distances[i] > max_distance) {
+      max_distance = distances[i];
+      max_distance_node = i;
     }
-    return std::make_pair (distance_max,j);
-
   }
+  return std::make_pair(max_distance, max_distance_node);
+}
 
 std::pair<count, count> GraphProperties::estimateDiameter_ck(const Graph& G) {
   count lowerBound = 0;
@@ -175,7 +172,7 @@ std::pair<count, count> GraphProperties::estimateDiameter_ck(const Graph& G) {
     }
     node u = nodesWithDegree[i].back();
     std::vector<node> distances = BFS().run(G, u);
-    count ecc_result = ecc(distances, distances.size()).first; // yields ecc(u)
+    count ecc_result = ecc(distances).first; // yields ecc(u)
     if(ecc_result > lowerBound) {
       lowerBound = ecc_result;
     }
@@ -188,14 +185,23 @@ std::pair<count, count> GraphProperties::estimateDiameter_ck(const Graph& G) {
     }
     u = nodesWithDegree[maxDegree - j].back();
     distances = BFS().run(G, u);
-    ecc_result = ecc(distances, n).first;
+    auto ecc_pair = ecc(distances);
+    ecc_result = ecc_pair.first;
     if(ecc_result > lowerBound) {
       lowerBound = ecc_result;
     }
 
-    u = ecc(distances,n).second;
-    distances = BFS().run(G, u);
-    ecc_result = ecc(distances, n).first;
+    Graph T(n);
+    G.forNodes([&](node w) {
+      G.forEdgesOf(w, [&](node u, node v) {
+        if(distances[u] == distances[v] + 1) {
+          T.addEdge(u,v);
+        }
+      });
+    });
+    u = ecc_pair.second;
+    distances = BFS().run(T, u);
+    ecc_result = ecc(distances).first;
     if(ecc_result < upperBound) {
       upperBound = ecc_result;
     }

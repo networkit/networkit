@@ -253,8 +253,8 @@ TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
     G.addEdge(2, 4);
     G.addEdge(3, 4);
 
-    EXPECT_EQ(1, GraphProperties::estimateDiameter_ck(G).first);
-    EXPECT_EQ(1, GraphProperties::estimateDiameter_ck(G).second);
+    EXPECT_GE(1, GraphProperties::estimateDiameter_ck(G).first);
+    EXPECT_LE(1, GraphProperties::estimateDiameter_ck(G).second);
   }
 
   // Lollipop
@@ -270,8 +270,8 @@ TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
     G.addEdge(4, 5);
     G.addEdge(5, 6);
 
-    EXPECT_EQ(5, GraphProperties::estimateDiameter_ck(G).first);
-    EXPECT_EQ(5, GraphProperties::estimateDiameter_ck(G).second);
+    EXPECT_GE(5, GraphProperties::estimateDiameter_ck(G).first);
+    EXPECT_LE(5, GraphProperties::estimateDiameter_ck(G).second);
   }
 }
 
