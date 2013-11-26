@@ -20,12 +20,12 @@ except ImportError:
 						functions.""")
 
 # faulthandler prints debug info on errors like segfaults
-try:
-	import faulthandler
-	faulthandler.enable()
-except ImportError:
-	print("""" WARNING: module 'faulthandler' not found. If installed, it will 
-		provide additional debug info on errors like segmentation faults.""")
+# try:
+# 	import faulthandler
+# 	faulthandler.enable()
+# except ImportError:
+# 	print("""" WARNING: module 'faulthandler' not found. If installed, it will 
+# 		provide additional debug info on errors like segmentation faults.""")
 
 # local modules
 import stopwatch

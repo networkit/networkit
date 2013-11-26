@@ -101,4 +101,19 @@ Clustering ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoa
 
 }
 
+Clustering ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse, Clustering& zetaCoarse) {
+
+	Clustering zetaFine(Gfine.numberOfNodes());
+
+	Gfine.forNodes([&](node v) {
+		node sv = fineToCoarse[v];
+		cluster cv = zetaCoarse.clusterOf(sv);
+		zetaFine[v] = cv;
+	});
+
+	return zetaFine;
+}
+
 } /* namespace NetworKit */
+
+

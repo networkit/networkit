@@ -18,6 +18,7 @@
 #include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
+#include "../MLPLM.h"
 
 
 
@@ -384,6 +385,28 @@ TEST_F(ClusteringAlgoGTest, testEPPFactory) {
 
 	EXPECT_TRUE(zeta.isProper(jazz));
 }
+
+TEST_F(ClusteringAlgoGTest, testMLPLMP) {
+	METISGraphReader reader;
+	Modularity modularity;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+
+	MLPLM mlplm("none", false, 1.0);
+	Clustering zeta = mlplm.run(G);
+
+	INFO("number of clusters: " << zeta.numberOfClusters());
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+	EXPECT_TRUE(zeta.isProper(G));
+
+	MLPLM mlplm2("none", true, 1.0);
+	Clustering zeta2 = mlplm2.run(G);
+
+	INFO("number of clusters: " << zeta2.numberOfClusters());
+	INFO("modularity: " << modularity.getQuality(zeta2, G));
+	EXPECT_TRUE(zeta2.isProper(G));
+
+}
+
 
 } /* namespace NetworKit */
 

@@ -25,6 +25,8 @@ PLM::~PLM() {
 
 Clustering PLM::pass(Graph& G) {
 
+	// FIXME: PLM cannot deal with deleted nodes
+
 	// init clustering to singletons
 	count n = G.numberOfNodes();
 	Clustering zeta(n);
@@ -39,13 +41,14 @@ Clustering PLM::pass(Graph& G) {
 			G.numberOfNodes());
 	G.parallelForNodes([&](node u) {
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-					cluster C = zeta[v];
-					if (u != v) {
-						incidenceWeight[u][C] += w;
-					}
-				});
+			cluster C = zeta[v];
+			if (u != v) {
+				incidenceWeight[u][C] += w;
+			}
+		});
 	});
 
+// TODO: why are the locks created AFTER initialization?
 #ifdef _OPENMP
 	// create and init locks
 	std::vector<omp_lock_t> mapLocks(n);
@@ -250,7 +253,7 @@ Clustering PLM::run(Graph& G) {
 
 std::string PLM::toString() const {
 	std::stringstream strm;
-	strm << "Louvain(" << "version=" << this->VERSION << ",parallelism=" << this->parallelism << ")";
+	strm << "PLM(" << this->parallelism << ")";
 	return strm.str();
 }
 

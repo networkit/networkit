@@ -41,8 +41,8 @@ def pystring(stdstring):
 
 cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
 	void _configureLogging "Aux::configureLogging" (string loglevel)
-	string _currentLogLevel "Aux::currentLogLevel" ()
-	void _setLoglevel "Aux::setLoglevel" (string loglevel)
+	string _currentLogLevel "Aux::currentLogLevel" () except +
+	void _setLoglevel "Aux::setLoglevel" (string loglevel) except +
 	
 def configureLogging(loglevel="ERROR"):
 	""" Set the loglevel of the LOG4CXX module"""
@@ -87,20 +87,20 @@ cdef extern from "../src/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count) except +
-		count numberOfNodes()
-		count numberOfEdges()
-		node addNode()
-		void removeNode(node u)
-		void addEdge(node u, node v, edgeweight w)
-		void removeEdge(node u, node v)
-		bool hasEdge(node u, node v)
-		edgeweight weight(node u, node v)
-		vector[node] nodes()
-		vector[pair[node, node]] edges()
-		void markAsWeighted()
-		bool isMarkedAsWeighted()
-		string toString()
-		string getName()
+		count numberOfNodes() except +
+		count numberOfEdges() except +
+		node addNode() except +
+		void removeNode(node u) except +
+		void addEdge(node u, node v, edgeweight w) except +
+		void removeEdge(node u, node v) except +
+		bool hasEdge(node u, node v) except +
+		edgeweight weight(node u, node v) except +
+		vector[node] nodes() except +
+		vector[pair[node, node]] edges() except +
+		void markAsWeighted() except +
+		bool isMarkedAsWeighted() except +
+		string toString() except +
+		string getName() except +
 		
 
 cdef class Graph:
@@ -116,6 +116,65 @@ cdef class Graph:
 		#del self._this
 		self._this = other
 		return self
+	
+	def numberOfNodes(self):
+		return self._this.numberOfNodes()
+	
+	def numberOfEdges(self):
+		return self._this.numberOfEdges()
+	
+	def addNode(self):
+		return self._this.addNode()
+	
+	def removeNode(self, u):
+		self._this.removeNode(u)
+		
+	def addEdge(self, u, v, w=1.0):
+		self._this.addEdge(u, v, w)
+		
+	def removeEdge(self, u, v):
+		self._this.removeEdge(u, v)
+		
+	def hasEdge(self, u, v):
+		return self._this.hasEdge(u, v)
+		
+	def weight(self, u, v):
+		return self._this.weight(u, v)
+		
+	def nodes(self):
+		return self._this.nodes()
+	
+	def edges(self):
+		return self._this.edges()
+	
+	def markAsWeighted(self):
+		self._this.markAsWeighted()
+	
+	def isMarkedAsWeighted(self):
+		return self._this.isMarkedAsWeighted()
+
+	def toString(self):
+		return self._this.toString()
+
+	def getName(self):
+		return self._this.getName()
+
+
+cdef class Graph2:
+	"""An undirected, optionally weighted graph"""
+	cdef _Graph* _this
+	
+	def __cinit__(self, n=0):
+		self._this = new _Graph(n)
+		
+	# any _thisect which appears as a return type needs to implement setThis
+	cdef setThis(self, _Graph* other):
+		del self._this
+		self._this = other
+		return self
+
+	def __dealloc__(self):
+		del self._this
 	
 	def numberOfNodes(self):
 		return self._this.numberOfNodes()
@@ -254,7 +313,8 @@ cdef class BarabasiAlbertGenerator:
 cdef extern from "../src/io/METISGraphReader.h":
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader":
 		_METISGraphReader() except +
-		_Graph read(string path)
+		_Graph read(string path) except +
+		_Graph* readToHeap(string path) except +
 
 cdef class METISGraphReader:
 	""" Reads the METIS adjacency file format [1]
@@ -264,8 +324,10 @@ cdef class METISGraphReader:
 	
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
-		cdef _Graph _G = self._this.read(pathbytes)
-		return Graph(0).setThis(_G)
+		return Graph(0).setThis(self._this.read(pathbytes))
+
+	def readToHeap(self, path):
+		return Graph2(0).setThis(self._this.readToHeap(path.encode("utf-8")))
 
 
 cdef extern from "../src/io/FastMETISGraphReader.h":
@@ -283,13 +345,26 @@ cdef class FastMETISGraphReader:
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		cdef _Graph _G = self._this.read(pathbytes)
 		return Graph(0).setThis(_G)
+
+cdef extern from "../src/io/METISGraphWriter.h":
+	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
+		_METISGraphWriter() except +
+		void write(_Graph G, string path) except +
+
+
+cdef class METISGraphWriter:
+	""" Writes graphs in the METIS format"""
+	cdef _METISGraphWriter _this
 	
+	def write(self, Graph G not None, path):
+		 # string needs to be converted to bytes, which are coerced to std::string
+		self._this.write(G._this, stdstring(path)) 
 	
 
 cdef extern from "../src/io/DotGraphWriter.h":
 	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter":
 		_DotGraphWriter() except +
-		void write(_Graph G, string path)
+		void write(_Graph G, string path) except +
 
 
 cdef class DotGraphWriter:
@@ -305,8 +380,8 @@ cdef extern from "../src/io/EdgeListIO.h":
 	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
 		_EdgeListIO() except +
 		_EdgeListIO(char separator, node firstNode) except +
-		_Graph read(string path)
-		void write(_Graph G, string path)
+		_Graph read(string path) except +
+		void write(_Graph G, string path) except +
 
 cdef class EdgeListIO:
 	""" Reads and writes graphs in various edge list formats"""
@@ -535,7 +610,30 @@ cdef class PLM(Clusterer):
 
 	def toString(self):
 		return self._this.toString().decode("utf-8")
+		
+		
+cdef extern from "../src/community/MLPLM.h":
+	cdef cppclass _MLPLM "NetworKit::MLPLM":
+		_MLPLM() except +
+		_MLPLM(string par,  bool refine, double gamma) except +
+		string toString() except +
+		_Clustering run(_Graph G) except +
 
+
+cdef class MLPLM(Clusterer):
+	""" MultiLevel Parallel LocalMover - the Louvain method principle extended to
+		a full multi-level algorithm with refinement"""
+		
+	cdef _MLPLM _this
+	
+	def __cinit__(self, par="balanced", refine=True, gamma=1.0):
+		self._this = _MLPLM(stdstring(par), refine, gamma)
+		
+	def toString(self):
+		return self._this.toString().decode("utf-8")
+		
+	def run(self, Graph G not None):
+		return Clustering().setThis(self._this.run(G._this))
 
 # FIXME: PLM2 
 # FIXME: CNM
