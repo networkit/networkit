@@ -62,7 +62,7 @@ public:
 	 *
 	 * @return Pair of lower and upper bound for diameter.
 	 */
-	static std::pair<count, count> estimatedDiameterRange(const Graph& G);
+	static std::pair<count, count> estimatedDiameterRange_Ritter(const Graph& G);
 };
 
 } /* namespace NetworKit */
