@@ -365,10 +365,16 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 }
 
 
-//TEST_F(PropertiesGTest, tryEstimatedDiameterRange) {
-//	// TODO: Assignment #7 of AMzN
-//	// TODO: Students, please rename this method by appending your group name
-//}
+
+
+TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Ritter) {
+    Graph G = METISGraphReader().read("input/cnr-2000.graph");
+    std::pair<count, count> bounds = GraphProperties::estimatedDiameterRange_Ritter(G);
+    std::ofstream out("output/cnr-2000.graph.diameter");
+    out << "Results of algorithm 'Estimate Diameter' on Graph cnr-2000.graph.\n";
+    out << "_Estimated_ Diameter Range: [" << bounds.first << "," << bounds.second << "]" << "\n";
+    std::cout << "*Estimated* Diameter Range: [" << bounds.first << "," << bounds.second << "]" << std::endl;
+}
 
 
 

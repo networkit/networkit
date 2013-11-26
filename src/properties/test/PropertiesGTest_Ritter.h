@@ -23,6 +23,18 @@ class PropertiesGTest_Ritter: public testing::Test {
 public:
 	PropertiesGTest_Ritter();
 	virtual ~PropertiesGTest_Ritter();
+
+	Graph readGraph(std::string name) {
+		return METISGraphReader().read("input/dimacs10/clustering/" + name + ".graph");
+	}
+
+	template<typename L> void withOutputFile(std::string filename, L handle) {
+		std::ofstream file("output/Ritter/" + filename);
+		if (file.is_open()) {
+			handle(file);
+			file.close();
+		}
+	}
 };
 
 } /* namespace NetworKit */

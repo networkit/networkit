@@ -7,6 +7,8 @@
 #include "PropertiesGTest_Ritter.h"
 
 #include "../CoreDecomposition_Ritter.h"
+#include "../GlobalClusteringCoefficient_Ritter.h"
+#include "../ApproximateClusteringCoefficient_Ritter.h"
 #include "../GraphProperties_Ritter.h"
 
 namespace NetworKit {
@@ -19,12 +21,7 @@ PropertiesGTest_Ritter::~PropertiesGTest_Ritter() {
 
 }
 
-bool goodDiameterEstimate(count diameter, count lowerBound, count upperBound) {
-	return lowerBound <= diameter &&
-			upperBound >= diameter &&
-			(diameter < 3 || lowerBound > diameter - 3) &&
-			upperBound < diameter + 3;
-}
+
 
 TEST_F(PropertiesGTest_Ritter, testEstimateDiameterRangeEmptyGraph) {
 	Graph G(2);
@@ -37,7 +34,13 @@ TEST_F(PropertiesGTest_Ritter, testEstimateDiameterRangeGraphNotConnected) {
 	G.addEdge(0, 1);
 	EXPECT_EQ(GraphProperties_Ritter::INF_DIST, GraphProperties::estimatedDiameterRange_Ritter(G).first);
 	EXPECT_EQ(GraphProperties_Ritter::INF_DIST, GraphProperties::estimatedDiameterRange_Ritter(G).second);
+}
 
+bool goodDiameterEstimate(count diameter, count lowerBound, count upperBound) {
+	return lowerBound <= diameter &&
+			upperBound >= diameter &&
+			(diameter < 3 || lowerBound > diameter - 3) &&
+			upperBound < diameter + 3;
 }
 
 TEST_F(PropertiesGTest_Ritter, testEstimateDiameterRange) {
@@ -76,13 +79,16 @@ TEST_F(PropertiesGTest_Ritter, testEstimateDiameterRange) {
 TEST_F(PropertiesGTest_Ritter, testDiameter) {
 	Graph G(0);
 
-	EXPECT_EQ(0, GraphProperties_Ritter::diameter(G)) << "Graph with 0 edges";
+	EXPECT_EQ(0, GraphProperties_Ritter::diameter(G)) << "empty graph";
 
 	G.addNode();
 	G.addNode();
+	EXPECT_EQ(GraphProperties_Ritter::INF_DIST, GraphProperties_Ritter::diameter(G)) << "graph without edges";
+
 	G.addEdge(0, 1);
 	EXPECT_EQ(1, GraphProperties_Ritter::diameter(G)) << "Graph with 1 edge";
 
+	G.addNode();
 	G.addEdge(1, 2);
 	EXPECT_EQ(2, GraphProperties_Ritter::diameter(G)) << "Graph with 2 edges";
 
@@ -103,22 +109,24 @@ TEST_F(PropertiesGTest_Ritter, testDiameter) {
 
 	G.addNode();
 	G.addEdge(6, 7);
-	EXPECT_EQ(4, GraphProperties_Ritter::diameter(G)) << "Graph with 7 edges";
+	EXPECT_EQ(GraphProperties_Ritter::INF_DIST, GraphProperties_Ritter::diameter(G)) << "not connected graph";
+}
 
-	G.addNode();
-	G.addNode();
-	G.addNode();
-	G.addEdge(7, 8);
-	G.addEdge(8, 9);
-	G.addEdge(9, 10);
-	EXPECT_EQ(4, GraphProperties_Ritter::diameter(G)) << "Graph with 10 edges";
+TEST_F(PropertiesGTest_Ritter, testClusteringCoefficient) {
+	std::vector<std::string> graphs = {"celegans_metabolic", "hep-th", "polblogs"};
+	std::vector<double> realCoeffs = {0.124436, 0.329576, 0.225959};
+
+	GlobalClusteringCoefficient_Ritter gcc;
+	ApproximateClusteringCoefficient_Ritter acc;
+	const count k = 100000LL;
 	
-	G.addNode();
-	G.addEdge(10, 11);
-	EXPECT_EQ(5, GraphProperties_Ritter::diameter(G)) << "Graph with 11 edges";
-
-	G.addEdge(8, 0);
-	EXPECT_EQ(7, GraphProperties_Ritter::diameter(G)) << "Graph with 12 edges";
+	for (int i = 0; i < graphs.size(); i++) {
+		const Graph G = readGraph(graphs[i]);
+		double globalCoeff = gcc.calculate(G);
+		double approximatedCoeff = acc.calculate(G, k);
+		EXPECT_NEAR(realCoeffs[i], globalCoeff, 0.0001);
+		EXPECT_NEAR(realCoeffs[i], approximatedCoeff, 0.01);
+	}
 }
 
 TEST_F(PropertiesGTest_Ritter, testCoreDecomposition) {
@@ -179,6 +187,53 @@ TEST_F(PropertiesGTest_Ritter, testCoreDecomposition) {
 	EXPECT_EQ(4, coreness[13]) << "expected coreness";
 	EXPECT_EQ(3, coreness[14]) << "expected coreness";
 	EXPECT_EQ(2, coreness[15]) << "expected coreness";
+}
+
+TEST_F(PropertiesGTest_Ritter, testExercise3) {
+	CoreDecomposition_Ritter coreDec;
+
+	std::vector<std::string> graphs = {"celegans_metabolic", "polblogs", "hep-th"};
+	for (auto& graphName : graphs) {
+		const Graph G = readGraph(graphName);
+		withOutputFile(graphName + ".sol", [&] (std::ofstream& out) {
+			std::vector<count> coreness = coreDec.run(G);
+			for (index i = 0; i < coreness.size(); i++) {
+				out << coreness[i] << std::endl;
+			}
+		});
+	}
+}
+
+TEST_F(PropertiesGTest_Ritter, testExercise6) {
+	GlobalClusteringCoefficient_Ritter gcc;
+	ApproximateClusteringCoefficient_Ritter acc;
+	const count k = 1000000LL;
+
+	std::vector<std::string> graphs = {"celegans_metabolic", "polblogs", "hep-th"};
+	for (auto& graphName : graphs) {
+		const Graph G = readGraph(graphName);
+		withOutputFile(graphName + ".coeff", [&] (std::ofstream& out) {
+			double coeff = gcc.calculate(G);
+			double approxCoeff = acc.calculate(G, k);
+			out << "Global Clustering Coefficient: " << coeff << std::endl;
+			out << "Approximate Clustering Coefficient: " << approxCoeff << std::endl;
+		});
+	}
+}
+
+TEST_F(PropertiesGTest_Ritter, testExercise7) {
+	std::vector<std::string> graphs = {"cnr-2000", "caidaRouterLevel"};
+	for (auto& graphName : graphs) {
+		const Graph G = readGraph(graphName);
+		withOutputFile(graphName + ".diameter", [&] (std::ofstream& out) {
+			std::pair<count, count> bounds = GraphProperties::estimatedDiameterRange_Ritter(G);
+			out << "Lower diameter bound: " << bounds.first << std::endl;
+			out << "Upper diameter bound: " << bounds.second << std::endl;
+			if (bounds.first == GraphProperties_Ritter::INF_DIST) {
+				out << "Lower and upper diameter bounds are infinity. Graph not connected." << std::endl;
+			}
+		});
+	}
 }
 
 } /* namespace NetworKit */

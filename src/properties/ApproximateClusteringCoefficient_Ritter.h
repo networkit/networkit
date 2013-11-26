@@ -17,11 +17,10 @@ public:
 
 	virtual ~ApproximateClusteringCoefficient_Ritter();
 
-	virtual double calculate(Graph& G, count k);
+	virtual double calculate(const Graph& G, count k);
 	
 private:
-	index indexOfBiggestValueLoEq(count* array, count size, count key);
-	count randomNode(count* cumulated_propabilities, count n, count propability_sum);
+	index indexOfBiggestValueLoEq(std::vector<count> values, count key);
 };
 
 } /* namespace NetworKit */

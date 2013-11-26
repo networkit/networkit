@@ -25,7 +25,6 @@ count GraphProperties_Ritter::diameter(const Graph& G) {
 
 	// the diameter is the maximum eccentricity of all nodes
 	G.forNodes([&] (node v) {
-		printf("v=%u, diameter: %u\n", v, max_ecc);
 		count ecc = eccentricity(G, v);
 		if (ecc > max_ecc) {
 			max_ecc = ecc;
@@ -46,42 +45,53 @@ count GraphProperties_Ritter::eccentricity(const Graph& G, node v) {
 
 std::pair<count, index> GraphProperties_Ritter::eccentricityWithNode(const Graph& G, node v) {
 	const count n = G.numberOfNodes();
-	std::vector<count> distances = BFS().run(G, v);
-	index maxDistanceIndex = 0;
-	for (index i = 1; i < n; i++) {
-		if (distances[i] > distances[maxDistanceIndex]) {
-			maxDistanceIndex = i;
-		}
-	}
-	return std::make_pair(distances[maxDistanceIndex], maxDistanceIndex);
-
-	// for the following G needs to be connected
-	// const count infDist = std::numeric_limits<count>::max();
-	// const count n = G.numberOfNodes();
-
-	// std::vector<count> distances(n, infDist);
-	// std::queue<node> que;
-
-	// distances[v] = 0;
-	// que.push(v);
-
-	// node lastNode;
-	// while (!que.empty()) {
-	// 	node current = que.front();
-	// 	que.pop();
-
-	// 	// insert untouched neighbors into queue
-	// 	G.forNeighborsOf(current, [&](node neighbor) {
-	// 		if (distances[neighbor] == infDist) {
-	// 			que.push(neighbor);
-	// 			distances[neighbor] = distances[current] + 1;
-	// 		}
-	// 	});
-
-	// 	lastNode = current;
+	/*
+	 * 2 possible ways:
+	 * a) use BFS class and search for index with max distance => runtime = 2 n
+	 * b) do BFS our self and remember last index (also one with highest distance) => runtime = n
+ 	 */
+	// a)
+	// std::vector<count> distances = BFS().run(G, v);
+	// index maxDistanceIndex = 0;
+	// for (index i = 1; i < n; i++) {
+	// 	if (distances[i] > distances[maxDistanceIndex]) {
+	// 		maxDistanceIndex = i;
+	// 	}
 	// }
+	// return std::make_pair(distances[maxDistanceIndex], maxDistanceIndex);
 
-	// return std::make_pair(distances[lastNode], lastNode);
+	// b)
+	std::vector<count> distances(n, INF_DIST);
+	std::queue<node> que;
+
+	distances[v] = 0;
+	que.push(v);
+
+	node lastNode;
+	count processedNodes = 0;
+	while (!que.empty()) {
+		processedNodes++;
+		node current = que.front();
+		que.pop();
+
+		// insert untouched neighbors into queue
+		G.forNeighborsOf(current, [&](node neighbor) {
+			if (distances[neighbor] == INF_DIST) {
+				que.push(neighbor);
+				distances[neighbor] = distances[current] + 1;
+			}
+		});
+
+		lastNode = current;
+	}
+
+	if (processedNodes == n) {
+		// all nodes were visited => G is connected
+		return std::make_pair(distances[lastNode], lastNode);
+	} else {
+		// at least one node was not visited and has distance = infinity (G is not connected)
+		return std::make_pair(INF_DIST, 0);
+	}
 }
 
 Graph GraphProperties_Ritter::spanningTree(const Graph& G, node root) {

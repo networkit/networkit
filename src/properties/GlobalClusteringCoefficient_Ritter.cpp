@@ -13,7 +13,7 @@ GlobalClusteringCoefficient_Ritter::GlobalClusteringCoefficient_Ritter() {
 GlobalClusteringCoefficient_Ritter::~GlobalClusteringCoefficient_Ritter() {
 }
 
-double GlobalClusteringCoefficient_Ritter::calculate(Graph& G) {
+double GlobalClusteringCoefficient_Ritter::calculate(const Graph& G) {
 	std::mutex mtx;
 
 	count numerator = 0;

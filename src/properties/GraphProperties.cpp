@@ -9,6 +9,7 @@
 #include "GraphProperties_Ritter.h"
 
 #include <list>
+#include <random>
 
 namespace NetworKit {
 
@@ -149,6 +150,10 @@ double GraphProperties::approximateGlobalClusteringCoefficient(
 std::pair<count, count> GraphProperties::estimatedDiameterRange_Ritter(const Graph& G) {
 	static const count p = 5;
 
+	const count n = G.numberOfNodes();
+	std::mt19937_64 randGen;
+	std::uniform_int_distribution<node> distribution(0, n - 1);
+
 	if (G.numberOfEdges() == 0) {
 		// empty graph
 		return std::make_pair(0, 0);
@@ -172,7 +177,6 @@ std::pair<count, count> GraphProperties::estimatedDiameterRange_Ritter(const Gra
 	index min_d = 0;
 	index max_d = maxDegree;
 	while (upperBound - lowerBound > p) {
-		printf("lower bound: %u, upper bound: %u\n", lowerBound, upperBound);
 		// let min_d and max_d point to non empty list again
 		while (nodesByDegree[min_d].empty() && min_d < maxDegree) min_d++;
 		while (nodesByDegree[max_d].empty() && max_d > 0) max_d--;
@@ -183,20 +187,11 @@ std::pair<count, count> GraphProperties::estimatedDiameterRange_Ritter(const Gra
 		}
 
 		// try to improve lower bound
+		node v = distribution(randGen);
+
 		// using the eccentricity of a low degree node v
-		node v = nodesByDegree[min_d].front();
-		nodesByDegree[min_d].pop_front();
-
-
-	auto generateFast([&](index lower, index upper) {
-		index diff = upper - lower + 1;
-		index r = rand() % diff;
-		r += lower;
-		return r;
-	});
-
-	v = generateFast(0, G.numberOfNodes()-1);
-
+		// node v = nodesByDegree[min_d].front();
+		// nodesByDegree[min_d].pop_front();
 
 		count ecc = GraphProperties_Ritter::eccentricity(G, v);
 		if (ecc > lowerBound) {
@@ -207,16 +202,13 @@ std::pair<count, count> GraphProperties::estimatedDiameterRange_Ritter(const Gra
 		// using the diameter of a spanning tree T from a high degree node u
 		node u = nodesByDegree[max_d].front();
 
-	
-	// u = generateFast(0, G.numberOfNodes()-1);
-
-	
 		nodesByDegree[max_d].pop_front();
 		Graph T = GraphProperties_Ritter::spanningTree(G, u);
 		count dia = GraphProperties_Ritter::diameterOfTree(T, u);
 		if (dia < upperBound) {
 			upperBound = dia;
 		}
+		// printf("lower bound: %u, upper bound: %u\n", lowerBound, upperBound);
 	}
 
 	return std::make_pair(lowerBound, upperBound);

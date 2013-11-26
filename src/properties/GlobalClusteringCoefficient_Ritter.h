@@ -17,7 +17,7 @@ public:
 
 	virtual ~GlobalClusteringCoefficient_Ritter();
 
-	virtual double calculate(Graph& G);
+	virtual double calculate(const Graph& G);
 };
 
 }
