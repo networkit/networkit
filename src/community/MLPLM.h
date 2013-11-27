@@ -28,7 +28,7 @@ public:
 	 * 							2m 	-> singleton communities
 	 *
 	 */
-	MLPLM(std::string par="simple",  bool refine=false, double gamma = 1.0);
+	MLPLM(std::string par="simple",  bool refine=true, double gamma = 1.0);
 
 
 	std::string toString() const override;
