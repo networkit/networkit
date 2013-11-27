@@ -98,7 +98,7 @@ def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
 
 	# write results
 	with open(outPath, 'w') as outFile:
-		writer = csv.writer(outFile, delimiter=';')
+		writer = csv.writer(outFile, delimiter='\t')
 		for graphPath in graphPaths:
 			print("reading graph: {0}".format(graphPath))
 			G = readGraph(graphPath)
