@@ -48,7 +48,6 @@ Clustering PLM::pass(Graph& G) {
 		});
 	});
 
-// TODO: why are the locks created AFTER initialization?
 #ifdef _OPENMP
 	// create and init locks
 	std::vector<omp_lock_t> mapLocks(n);
@@ -79,10 +78,9 @@ Clustering PLM::pass(Graph& G) {
 	auto volClusterMinusNode = [&](cluster C, node x) {
 		double volC = 0.0;
 		double volN = 0.0;
-#pragma omp atomic read
+// #pragma omp atomic read
 		volC = volCluster[C];
 		if (zeta[x] == C) {
-#pragma omp atomic read
 			volN = volNode[x];
 			return volC - volN;
 		} else {
@@ -96,7 +94,7 @@ Clustering PLM::pass(Graph& G) {
 #ifdef _OPENMP
 		omp_set_lock(&mapLocks[u]);
 #endif
-		// #pragma omp atomic read
+		#pragma omp atomic read
 		w = incidenceWeight[u][C];
 #ifdef _OPENMP
 		omp_unset_lock(&mapLocks[u]);
@@ -108,7 +106,7 @@ Clustering PLM::pass(Graph& G) {
 	auto deltaMod =
 			[&](node u, cluster C, cluster D) {
 			double volN = 0.0;
-#pragma omp atomic read
+// #pragma omp atomic read
 			volN = volNode[u];
 			double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + this->gamma * ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volN) / (2 * total * total);
 			return delta;
@@ -125,19 +123,18 @@ Clustering PLM::pass(Graph& G) {
 
 		// try to improve modularity by moving a node to neighboring clusters
 		auto moveNode = [&](node u) {
-//			std::cout << u << " ";
 
 			cluster best = none;
 			cluster C = none;
 			cluster D = none;
 			double deltaBest = -0.5;
 
-#pragma omp atomic read
+// #pragma omp atomic read
 			C = zeta[u];
 
 //			TRACE("Processing neighborhood of node " << u << ", which is in cluster " << C);
 			G.forNeighborsOf(u, [&](node v) {
-#pragma omp atomic read
+// #pragma omp atomic read
 				D = zeta[v];
 //				TRACE("Neighbor " << v << ", which is still in cluster " << zeta[v]);
 				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
@@ -164,13 +161,13 @@ Clustering PLM::pass(Graph& G) {
 					omp_unset_lock(&mapLocks[v]);
 #endif
 				});
-#pragma omp atomic write
+// #pragma omp atomic write
 				zeta[u] = best; // move to best cluster
-#pragma omp atomic read
+// #pragma omp atomic read
 				volN = volNode[u];
-#pragma omp atomic write
+// #pragma omp atomic write
 				change = true; // change to clustering has been made
-#pragma omp atomic write
+// #pragma omp atomic write
 				this->anyChange = true; // indicate globally that clustering was modified
 
 				// update the volume of the two clusters
