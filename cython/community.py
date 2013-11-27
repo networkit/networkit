@@ -1,7 +1,7 @@
 """ This module handles community detection, i.e. the discovery of densely connected groups in networks."""
 
-from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM, MLPLM, \
-ClusteringReader, ClusteringWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, EPP, EPPFactory
+from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM, MLPLM, ClusteringReader, ClusteringWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure
+
 
 try:
 	import tabulate
@@ -9,18 +9,18 @@ except ImportError:
 	print(""" WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit """)
 import stopwatch
 
-def detectCommunities(G, algorithm=None, inspect=True):
+def detectCommunities(G, algo=None, inspect=False):
 	""" Perform high-performance community detection on the graph.
 		:param    G    the graph
 		:param     algorithm    community detection algorithm instance
 		:return communities (as type Clustering)
 		"""
-	if algorithm is None:
-		algorithm = PLM()
+	if algo is None:
+		algo = PLM()
 	t = stopwatch.Timer()
-	zeta = algorithm.run(G)
+	zeta = algo.run(G)
 	t.stop()
-	print("{0} detected communities in {1} [s]".format(algorithm.toString(), t.elapsed))
+	print("{0} detected communities in {1} [s]".format(algo.toString(), t.elapsed))
 	if inspect:
 		print ("solution properties:")
 		inspectCommunities(zeta, G)
@@ -74,51 +74,3 @@ def writeCommunities(communities, path):
 def compareCommunities(G, zeta1, zeta2):
 	""" Compare the partitions with respect to several (dis)similarity measures"""
 	pass # TODO
-
-
-import stopwatch
-import csv
-import os
-
-
-def getFileList(directory):
-	""" Get list of graph files in directory"""
-	ls = []
-	for (root, _, filenames) in os.walk(directory):
-		for filename in filenames:
-			ls.append(os.path.join(root, filename))
-	return ls
-
-def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
-	"""
-		Evaluate community detection algorithms on a collection of graphs and save benchmark data in .csv format
-		:param	graphPaths	paths to graph files
-		:param 	algorithms	list of algorithms
-	"""
-
-	# write results
-	with open(outPath, 'w') as outFile:
-		writer = csv.writer(outFile, delimiter='\t')
-		for graphPath in graphPaths:
-			print("reading graph: {0}".format(graphPath))
-			G = readGraph(graphPath)
-			graphName = os.path.basename(graphPath).split(".")[0]
-			(n, m) = nm(G)
-			for algo in algorithms:
-				algoName = algo.toString()
-				for i in range(repeat):
-					print("evaluating {0} on {1}".format(algoName, graphName))
-					timer = stopwatch.Timer()
-					zeta = algo.run(G)
-					timer.stop()
-					time = timer.elapsed
-
-					mod = Modularity().getQuality(zeta, G)
-					#nc = zeta.numberOfClusters()
-
-
-					row = [graphName, algoName, time, mod]
-					writer.writerow(row)
-					print(row)
-
-
