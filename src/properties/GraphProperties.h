@@ -10,8 +10,11 @@
 
 
 #include "../graph/Graph.h"
+#include "../graph/BFS.h"
 #include "../io/METISGraphReader.h"
 #include "ApproximateClusteringCoefficient_Hoske.h"
+#include "../graph/BFS.h"
+#include "../graph/GraphDistance.h"
 
 namespace NetworKit {
 
@@ -62,6 +65,24 @@ public:
 	 *
 	 * @return Pair of lower and upper bound for diameter.
 	 */
+	static std::pair<count, count> estimatedDiameterRange(const Graph& G);
+	static std::pair<count, count> estimatedDiameterRange_Hoske(const Graph& G, double error);
+
+    /**
+     * Computes the ecc_G(u) and returns a vertex v with largest distance from u. 
+     *
+     * @return pair of node v and eccentricity.
+     */
+    static std::pair<node, count> eccentricity_Hoske(const Graph& G, node u);
+
+    static std::pair<count, count> estimateDiameter_ck(const Graph& G);
+
+    static std::pair<count, count> estimatedDiameterRange_Feist(const Graph& G, count k);
+    static count DiameterRange_Feist(const Graph& G);
+
+    static std::pair<count, count> estimatedDiameterRange_Brueckner(const Graph& G);
+	static count exactDiameter_Brueckner(const Graph& G);
+
 	static std::pair<count, count> estimatedDiameterRange_Ritter(const Graph& G);
 };
 

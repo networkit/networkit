@@ -37,4 +37,10 @@ syntax: regexp
 /*.eps
 syntax: regexp
 ^doxygen$
+syntax: regexp
+vc2012
+build.conf
+.sconsign.dblite
+NetworKit-.*
+.*~
 

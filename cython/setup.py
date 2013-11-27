@@ -8,9 +8,9 @@ import shutil
 
 # try-catch block when shutil.which is not available
 try:
-	if (shutil.which("g++-4.8") is not None):
-		os.environ["CC"] = "g++-4.8"
-		os.environ["CXX"] = "g++-4.8"
+	if (shutil.which("g++") is not None):
+		os.environ["CC"] = "g++"
+		os.environ["CXX"] = "g++"
 
 	elif (shutil.which("g++-4.7") is not None):
 		os.environ["CC"] = "g++-4.7"
@@ -22,7 +22,7 @@ except:
 	os.environ["CC"] = "g++"
 	os.environ["CXX"] = "g++"
 
-print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
+#print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
 
 srcDir = "../src"
 src = ["_NetworKit.pyx"]	# list of source files
