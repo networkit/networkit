@@ -47,6 +47,10 @@ Clustering PLP::run(Graph& G) {
 	}
 
 	count n = G.numberOfNodes();
+	// update threshold heuristic
+	if (updateThreshold == none) {
+		updateThreshold = (count) (n / 1e5);
+	}
 
 	// set unique label for each node
 	Clustering labels(n);

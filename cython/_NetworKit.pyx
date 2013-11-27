@@ -552,9 +552,10 @@ cdef class Clusterer:
 cdef extern from "../src/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP":
 		_PLP() except +
-		_Clustering run(_Graph _G)
-		count numberOfIterations()
-		string toString()
+		_PLP(count updateThreshold) except +
+		_Clustering run(_Graph _G) except +
+		count numberOfIterations() except +
+		string toString() except +
 
 
 cdef class PLP(Clusterer):
@@ -562,6 +563,13 @@ cdef class PLP(Clusterer):
 		Moderate solution quality, very short time to solution.
 	 """
 	cdef _PLP _this
+
+	def __cinit__(self, updateThreshold=None):
+		if updateThreshold is None:
+			self._this = _PLP()
+		else:
+			self._this = _PLP(updateThreshold)
+
 	
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))
