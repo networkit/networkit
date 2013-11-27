@@ -75,6 +75,7 @@ public:
      */
     static std::pair<node, count> eccentricity_Hoske(const Graph& G, node u);
     static std::pair<count, count> estimatedDiameterRange_Feist(const Graph& G, count k);
+    static std::pair<count, count> estimateDiameter_ck(const Graph& G);
     static count DiameterRange_Feist(const Graph& G);
 };
 

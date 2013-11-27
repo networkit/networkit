@@ -439,6 +439,46 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange_Hoske) {
 	test_diameter_Hoske("caidaRouterLevel", INF);
 }
 
+
+TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
+  // Clique
+  {
+    count n = 5;
+	  Graph G(n);
+
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+    G.addEdge(0, 3);
+    G.addEdge(0, 4);
+    G.addEdge(1, 2);
+    G.addEdge(1, 3);
+    G.addEdge(1, 4);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 4);
+
+    EXPECT_GE(1, GraphProperties::estimateDiameter_ck(G).first);
+    EXPECT_LE(1, GraphProperties::estimateDiameter_ck(G).second);
+  }
+
+  // Lollipop
+  {
+    count n = 7;
+	  Graph G(n);
+
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(3, 0);
+    G.addEdge(3, 4);
+    G.addEdge(4, 5);
+    G.addEdge(5, 6);
+
+    EXPECT_GE(5, GraphProperties::estimateDiameter_ck(G).first);
+    EXPECT_LE(5, GraphProperties::estimateDiameter_ck(G).second);
+  }
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST*/

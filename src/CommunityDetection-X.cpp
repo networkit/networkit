@@ -49,7 +49,9 @@
 #include "generators/DynamicBarabasiAlbertGenerator.h"
 #include "overlap/RegionGrowingOverlapper.h"
 #include "overlap/HashingOverlapper.h"
-
+#include "properties/ClusteringCoefficient.h"
+#include "properties/Aproximative_ClusterCoefficient.h"
+#include "properties/GlobalClusteringCoefficient.h"
 
 // revision
 static const std::string REVISION = "r008";
@@ -705,6 +707,29 @@ int main(int argc, char **argv) {
 
 	// RUN PROGRAM
 	Graph G = getGraph(options);
+
+	if (strcmp(options[ALGORITHM].arg, "APPR") == 0) {
+		Aproximative_ClusterCoefficient APPR;
+		int k = 100000;
+		float x = APPR.run(G, k);
+		std::cout << "done\n";
+		return 0;
+	}
+	if (strcmp(options[ALGORITHM].arg, "GCC") == 0) {
+		GlobalClusteringCoefficient GCC;
+		float x = GCC.run(G);
+		std::cout <<"x="<<x << "done\n";
+		return 0;
+	}
+	
+
+	if (strcmp(options[ALGORITHM].arg, "CC") == 0) {
+		ClusteringCoefficient CC;
+		float x = CC.calculate(G);
+		std::cout <<"x="<<x << "done\n";
+		return 0;
+	}
+
 
 	// allow for scripted thread scaling
 	if (options[SCALETHREADS]) {
