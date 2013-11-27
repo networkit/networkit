@@ -111,13 +111,13 @@ def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
 					timer = stopwatch.Timer()
 					zeta = algo.run(G)
 					timer.stop()
-					t = timer.elapsed
+					time = timer.elapsed
 
 					mod = Modularity().getQuality(zeta, G)
-					nc = zeta.numberOfClusters()
+					#nc = zeta.numberOfClusters()
 
 
-					row = [graphName, algoName, t, mod, nc]
+					row = [graphName, algoName, time, mod]
 					writer.writerow(row)
 					print(row)
 
