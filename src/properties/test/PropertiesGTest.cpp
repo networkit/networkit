@@ -41,7 +41,7 @@ static void test_cluster_coeff(std::string name) {
     METISGraphReader reader;
     ApproximateClusteringCoefficient_Hoske acc;
     Graph G = reader.read("input/" + name + ".graph");
-    std::ofstream out("output/" + name + ".cluster");
+    std::ofstream out("output/" + name + "_hoske.cluster");
 
     static const double CLUSTER_VARIANCE = 1e-2;
     static const double CLUSTER_ERROR = 1e-2;
@@ -55,7 +55,7 @@ static void test_cluster_coeff(std::string name) {
     out << "Global cluster coefficient:\n";
     out << "  Approximate: " << acc.calculate(true, G, CLUSTER_ITER) << "\n";
     out << "  Exact:       " << ExactClusteringCoefficient::calculate(true, G) << "\n\n";
-    
+
     out << "Average local cluster coefficient:\n";
     out << "  Approximate: " << acc.calculate(false, G, CLUSTER_ITER) << "\n";
     out << "  Exact:       " << ExactClusteringCoefficient::calculate(false, G) << "\n";
@@ -402,6 +402,42 @@ TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Feist) {
   
 }
 
+/* Fromat value that can be infinity nicely. */
+template <typename T>
+static std::string format_infinity_Hoske(T val) {
+    std::ostringstream out;
+    static const count INF = std::numeric_limits<T>::max();
+    if (val == INF) {
+        out << "infinity";
+    } else {
+        out << val;
+    }
+    return out.str();
+}
+
+static void test_diameter_Hoske(std::string name, count actual_diam) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/" + name + ".graph");
+    std::ofstream out("output/" + name + "_hoske.diam");
+
+    /* Compute and test graph. */
+    static const double ERROR = 0.2;
+    count lower, upper;
+    std::tie(lower, upper) = GraphProperties::estimatedDiameterRange_Hoske(G, ERROR);
+    EXPECT_LT(upper - lower, ERROR * lower);
+    if (actual_diam != 0) {
+        EXPECT_LE(lower, actual_diam);
+        EXPECT_LE(actual_diam, upper);
+    }
+    out << format_infinity_Hoske(lower) << " <= diam(" << name << ") <= " << format_infinity_Hoske(upper) << "\n";
+}
+
+TEST_F(PropertiesGTest, testEstimatedDiameterRange_Hoske) {
+    static const count INF = std::numeric_limits<count>::max();
+
+	test_diameter_Hoske("cnr-2000", 34);
+	test_diameter_Hoske("caidaRouterLevel", INF);
+}
 
 } /* namespace NetworKit */
 

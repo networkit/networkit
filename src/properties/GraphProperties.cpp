@@ -257,6 +257,81 @@ count GraphProperties::DiameterRange_Feist(const Graph& G) {
     return diameter;
 }
 
+std::pair<node, count> GraphProperties::eccentricity_Hoske(const Graph& G, node u) {
+    static BFS bfs;
+    auto dists = bfs.run(G, u);
+    auto max_iter = max_element(begin(dists), end(dists));
+    return {distance(begin(dists), max_iter), *max_iter};
+}
+
+std::pair<count, count> GraphProperties::estimatedDiameterRange_Hoske(const Graph& G, double error) {
+	using namespace std;
+
+	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
+	/* Note: the function Graph::breadthFirstEdgesFrom that should
+	   do the same has not been implemented! */
+	auto bfs_edges = [&] (const Graph& G, node u, function<void(node, node)> f) -> node {
+		queue<node> q;
+		vector<bool> visited(G.numberOfNodes(), false);
+		q.push(u);
+		visited[u] = true;
+
+		node x = u;
+		while (!q.empty()) {
+			x = q.front(); q.pop();
+			G.forNeighborsOf(x, [&] (node y) {
+				if (!visited[y]) {
+					f(x, y);
+					visited[y] = true;
+					q.push(y);
+				}
+			});
+		}
+		return x;
+	};
+
+	/* Diameter estimate: lowerBounds <= diam(G) <= upperBound. */
+	count lowerBound = 0;
+	count upperBound = numeric_limits<count>::max();
+	const count n = G.numberOfNodes();
+
+	/* Nodes sorted decreasingly by degree. */
+	vector<node> high_deg(n);
+	iota(begin(high_deg), end(high_deg), 0);
+	sort(begin(high_deg), end(high_deg), [&] (node u, node v) {
+		return G.degree(u) > G.degree(v);
+	});
+
+	/* Random node. */
+	static const default_random_engine random;
+	auto random_node = bind(uniform_int_distribution<node>(0, n - 1), random);
+
+	/* While not converged: update estimate. */
+	count niter = 0;
+	while ((upperBound - lowerBound) >= error*lowerBound && niter < n) {
+		count ecc;
+
+		/* ecc(u) <= diam(G) */
+		node u = random_node();
+		tie(ignore, ecc) = eccentricity_Hoske(G, u);
+		lowerBound = max(lowerBound, ecc);
+
+		/* diam(G) <= diam(BFS_Tree(v)) */
+		node v = high_deg[niter];
+		Graph bfs_tree(n);
+		node w = bfs_edges(G, v, [&] (node a, node b) {
+			bfs_tree.addEdge(a, b);
+		});
+		lowerBound = max(lowerBound, ecc);
+		/* diam(T) = ecc_T(w) by problem 4. */
+		tie(ignore, ecc) = eccentricity_Hoske(bfs_tree, w);
+		upperBound = min(upperBound, ecc);
+
+		niter++;
+	}
+
+	return {lowerBound, upperBound};
+}
 
 } /* namespace NetworKit */
 

@@ -20,7 +20,9 @@
 #include "../ApproximateClusteringCoefficient_Brueckner.h"
 #include "../CoreDecomposition.h"
 #include "../../graph/GraphGenerator.h"
+#include "../../graph/Print_Hoske.h"
 #include "../../properties/GraphProperties.h"
+#include "../../properties/ConnectedComponents.h"
 #include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
