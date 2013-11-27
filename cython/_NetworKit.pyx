@@ -61,6 +61,7 @@ cdef extern from "../src/auxiliary/Parallelism.h" namespace "Aux":
 	void _setNumberOfThreads "Aux::setNumberOfThreads" (int)
 	int _getCurrentNumberOfThreads "Aux::getCurrentNumberOfThreads" ()
 	int _getMaxNumberOfThreads "Aux::getMaxNumberOfThreads" ()
+	void _enableNestedParallelism "Aux::enableNestedParallelism" ()
 
 def setNumberOfThreads(nThreads):
 	""" Set the number of OpenMP threads """
@@ -73,6 +74,10 @@ def getCurrentNumberOfThreads():
 def getMaxNumberOfThreads():
 	""" Get the maximum number of available threads"""
 	return _getMaxNumberOfThreads()
+
+def enableNestedParallelism():
+	""" Enable nested parallelism for OpenMP"""
+	_enableNestedParallelism()
 
 # Class definitions
 

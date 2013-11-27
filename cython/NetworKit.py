@@ -32,7 +32,7 @@ import stopwatch
 
 
 # import from extension module into NetworKit namespace
-from _NetworKit import configureLogging, currentLogLevel, setLoglevel
+from _NetworKit import configureLogging, currentLogLevel, setLoglevel, enableNestedParallelism
 
 # NetworKit submodules
 import graph
@@ -52,6 +52,8 @@ from graphio import readGraph
 def setup():
 	""" This function is run once on module import to configure initial settings """
 	configureLogging(loglevel="ERROR")    # set default loglevel to error
+	enableNestedParallelism()	# enable nested parallelism
+
 	
 
 setup() # here the setup function is called once on import
