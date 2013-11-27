@@ -1,6 +1,7 @@
 """ This module handles community detection, i.e. the discovery of densely connected groups in networks."""
 
-from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM, MLPLM, ClusteringReader, ClusteringWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure
+from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM, MLPLM, ClusteringReader, ClusteringWriter, \
+ NodeStructuralRandMeasure, GraphStructuralRandMeasure, EPP, EPPFactory
 
 
 try:
