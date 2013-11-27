@@ -6,7 +6,10 @@
  */
 
 #include "GraphProperties.h"
-#include "random"
+#include "../graph/BFS.h"
+#include "../graph/BFSTree.h"
+#include <random>
+#include <algorithm>
 
 
 namespace NetworKit {
@@ -407,5 +410,67 @@ std::pair<count, count> GraphProperties::estimateDiameter_ck(const Graph& G) {
   return std::make_pair(lowerBound, upperBound);
 }
 
+std::pair<count, count> GraphProperties::estimatedDiameterRange_Brueckner(
+		const Graph& G) {
+
+    using namespace std;
+
+    count infDist = numeric_limits<count>::max();
+
+    default_random_engine e;
+    e.seed(random_device()());
+
+    // Pick nodes randomly, weighted by their degree.
+    vector<count> nodeWeights(G.numberOfNodes());
+    G.forNodes([&](node v) {
+            nodeWeights[v] = G.degree(v);
+        });
+
+	count lowerBound = 0;
+	count upperBound = infDist;
+
+    for (count i = 0;
+         i < G.numberOfNodes() && upperBound - lowerBound > 5;
+         i++) {
+
+        discrete_distribution<node> nodeDistribution(nodeWeights.begin(), nodeWeights.end());
+        node v = nodeDistribution(e);
+        nodeWeights[v] = 0;
+        BFSTree T(G, v);
+        if (!T.spanning())
+            return make_pair(infDist, infDist);
+        else {
+            lowerBound = max(lowerBound, T.depth());
+            upperBound = min(upperBound, 2 * T.depth());
+            BFS bfs;
+            std::vector<count> dists = bfs.run(T, T.deepest());
+            count maxDist = 0;
+            for (auto dist : dists)
+                maxDist = max(maxDist, dist);
+            upperBound = min(upperBound, maxDist);
+        }
+    }
+
+	return make_pair(lowerBound, upperBound);
+}
+
+count GraphProperties::exactDiameter_Brueckner(
+        const Graph& G) {
+
+    using namespace std;
+
+    count diameter = 0;
+
+	G.forNodesInRandomOrder([&](node v){
+            BFS bfs;
+            vector<count> distances = bfs.run(G, v);
+            for (auto distance : distances) {
+                if (diameter < distance)
+                    diameter = distance;
+            }
+    });
+
+    return diameter;
+}
 
 } /* namespace NetworKit */

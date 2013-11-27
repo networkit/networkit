@@ -598,6 +598,9 @@ public:
 
 	/** NEIGHBORHOOD ITERATORS **/
 
+    template<typename L> void forNeighborsOfInRandomOrder(node u, L handle);
+    template<typename L> void forNeighborsOfInRandomOrder(node u, L handle) const;
+
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 *
@@ -690,6 +693,33 @@ public:
 };
 
 } /* namespace NetworKit */
+
+
+template<typename L>
+inline void NetworKit::Graph::forNeighborsOfInRandomOrder(node u, L handle) {
+    std::vector<node> neighbors;
+	for (node v : this->adja[u]) {
+		if (v != none)
+            neighbors.push_back(v);
+	}
+    std::random_shuffle(neighbors.begin(), neighbors.end());
+    for (node v : neighbors) {
+        handle(v);
+    }
+}
+
+template<typename L>
+inline void NetworKit::Graph::forNeighborsOfInRandomOrder(node u, L handle) const {
+    std::vector<node> neighbors;
+	for (node v : this->adja[u]) {
+		if (v != none)
+            neighbors.push_back(v);
+	}
+    std::random_shuffle(neighbors.begin(), neighbors.end());
+    for (node v : neighbors) {
+        handle(v);
+    }
+}
 
 template<typename L>
 inline void NetworKit::Graph::forNeighborsOf(node u, L handle) {

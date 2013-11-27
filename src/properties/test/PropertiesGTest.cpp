@@ -479,6 +479,59 @@ TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
   }
 }
 
+TEST_F(PropertiesGTest, tryExactDiameter_Brueckner) {
+
+    using namespace std;
+
+    count infDist = numeric_limits<count>::max();
+
+    vector<pair<string, count>> testInstances= {pair<string, count>("airfoil1", 65),
+                                                pair<string, count>("astro-ph", infDist),
+                                                pair<string, count>("caidaRouterLevel", infDist),
+                                                pair<string, count>("celegans_metabolic", 7),
+                                                pair<string, count>("hep-th", infDist),
+                                                pair<string, count>("jazz", 6),
+                                                pair<string, count>("lesmis", 5),
+                                                pair<string, count>("polblogs", infDist),
+                                                pair<string, count>("cnr-2000", 34),
+                                               };
+
+    for (auto testInstance : testInstances) {
+        METISGraphReader reader;
+        Graph G = reader.read("input/" + testInstance.first + ".graph");
+        count diameter = GraphProperties::exactDiameter_Brueckner(G);
+        EXPECT_EQ(diameter, testInstance.second);
+    }
+}
+
+
+TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Brueckner) {
+
+    using namespace std;
+
+    count infDist = numeric_limits<count>::max();
+
+    vector<pair<string, count>> testInstances= {pair<string, count>("airfoil1", 65),
+                                                pair<string, count>("astro-ph", infDist),
+                                                pair<string, count>("caidaRouterLevel", infDist),
+                                                pair<string, count>("celegans_metabolic", 7),
+                                                pair<string, count>("hep-th", infDist),
+                                                pair<string, count>("jazz", 6),
+                                                pair<string, count>("lesmis", 5),
+                                                pair<string, count>("polblogs", infDist),
+                                                pair<string, count>("cnr-2000", 34),
+                                               };
+
+    for (auto testInstance : testInstances) {
+        METISGraphReader reader;
+        Graph G = reader.read("input/" + testInstance.first + ".graph");
+        std::pair<count, count> range = GraphProperties::estimatedDiameterRange_Brueckner(G);
+        EXPECT_GE(testInstance.second, range.first);
+        EXPECT_LE(testInstance.second, range.second);
+    }
+}
+
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST*/
