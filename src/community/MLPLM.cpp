@@ -88,7 +88,6 @@ Clustering MLPLM::run(Graph& G) {
 		auto omegaCut = [&](node u, cluster C) {
 			edgeweight w = 0.0;
 			omp_set_lock(&mapLocks[u]);
-			// #pragma omp atomic read
 			w = incidenceWeight[u][C];
 			omp_unset_lock(&mapLocks[u]);
 			return w;
@@ -96,7 +95,6 @@ Clustering MLPLM::run(Graph& G) {
 
 		auto modGain = [&](node u, cluster C, cluster D) {
 			double volN = 0.0;
-			#pragma omp atomic read // TODO: needed?
 			volN = volNode[u];
 			double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / (2 * total * total);
 			TRACE("(" << omegaCut(u, D) << " - " << omegaCut(u, C) << ") / " << total << " + " << this->gamma << " * ((" << volCommunityMinusNode(C, u) << " - " << volCommunityMinusNode(D, u) << ") *" << volN << ") / 2 * " << (total * total));
@@ -114,7 +112,6 @@ Clustering MLPLM::run(Graph& G) {
 			});
 
 			double volN = 0.0;
-			#pragma omp atomic read
 			volN = volNode[u];
 			// update the volume of the two clusters
 			#pragma omp atomic update
@@ -147,14 +144,10 @@ Clustering MLPLM::run(Graph& G) {
 		if (deltaBest > 0) { // if modularity improvement possible
 			assert (best != C && best != none);// do not "move" to original cluster
 
-			#pragma omp atomic write // FIXME:probably not needed
 			zeta[u] = best; // move to best cluster
 			TRACE("node " << u << " moved");
 			modUpdate(u, C, best);
 
-			// TODO: replace with reduction?
-			// FIXME: atomic probably not needed
-			#pragma omp atomic write
 			moved = true; // change to clustering has been made
 
 		} else {
@@ -179,7 +172,6 @@ Clustering MLPLM::run(Graph& G) {
 
 	if (moved) {
 		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
-		// TODO: return map from node to supernode
 		Clustering zetaCoarse = run(coarsened.first);
 
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
@@ -276,7 +268,7 @@ std::pair<Graph, std::vector<node> > MLPLM::coarsen(const Graph& G, const Cluste
 			// add edge weight to weight between two supernodes (or insert edge)
 			Gcoarse.setWeight(su, sv, Gcoarse.weight(su, sv) + ew);
 		}
-	}); // TODO: parallel?
+	}); 
 
 	return std::make_pair(Gcoarse, nodeToMetaNode);
 
