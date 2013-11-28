@@ -23,13 +23,13 @@ std::vector<count> CoreDecomposition::run(const Graph& G) {
 	for (count i = 0; i < sl.size(); i++) {
 		sl.forEachNodeInShell(i, [&](node v) {
 			G.forNeighborsOf(v, [&](node w) {
-				if (sl.getCurrentShell(w) > i) {
+				if (sl.getShell(w) > i) {
 					sl.decreaseShell(w);
 				}
 			});
 		});
 	}
-	return sl.getCoreness();
+	return sl.getShells();
 
 }
 
