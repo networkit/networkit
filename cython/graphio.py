@@ -7,7 +7,7 @@ def readGraph(path, format=None, fast=False, separator='\t', firstNode=1):
 	"""    Read graph and return a NetworKit::Graph"""
 	# TODO: detect file format by looking at the file content
 	if format is None:    # look at file extension
-		if path.endswith(".graph") or path.endswith(".metis") or path.endswith(".dimacs"):
+		if path.endswith(".graph") or path.endswith(".metis") or path.endswith(".dimacs") or path.endswith(".metis.graph"):
 			if fast:
 				print("using experimental fast reader")
 				reader = FastMETISGraphReader()
