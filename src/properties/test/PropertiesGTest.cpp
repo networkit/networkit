@@ -47,6 +47,73 @@ TEST_F(PropertiesGTest, testDegreeDistribution) {
 
 }
 
+TEST_F(PropertiesGTest, tryEstimatedEVZ_OckerReichard) {
+
+std::vector<std::string> graphPaths;
+METISGraphReader reader = METISGraphReader();
+//graphPaths.push_back("input/marvin.graph");
+graphPaths.push_back("input/3elt.graph");
+graphPaths.push_back("input/add20.graph");
+graphPaths.push_back("input/add32.graph");
+graphPaths.push_back("input/data.graph");
+graphPaths.push_back("input/uk.graph");
+
+for(std::string path: graphPaths) {
+    std::cout << "Graph: " << path << std::endl;
+    Graph G = reader.read(path);
+std::vector<double> EVZ = GraphProperties().EVZ_OckerReichard(G);
+double maximal_EVZ = 0;
+int maximizing_i;
+
+for(int i=0; i<= G.numberOfNodes()-1;i++)
+{
+	std::cout << " EVZ["<<i<<"]="<<EVZ[i]<<std::endl; 
+	if(EVZ[i] >maximal_EVZ)
+		{maximal_EVZ = EVZ[i];
+		maximizing_i=i;
+		}
+	
+}
+std::ofstream solutionFile(path.substr(0, path.size() - 6) + ".sol", std::ofstream::out);
+for(int i=0; i<= G.numberOfNodes()-1;i++)
+{
+	solutionFile << " EVZ["<<i<<"]="<<EVZ[i]<<std::endl; 
+}
+	solutionFile<< "node " <<maximizing_i<<" has maximal EVZ-value = "<<maximal_EVZ<<std::endl;
+
+}
+}
+TEST_F(PropertiesGTest, tryEstimatedDiameterRange_OckerReichard) {
+
+METISGraphReader reader = METISGraphReader();
+
+  std::vector<std::string> graphPaths;
+  graphPaths.push_back("input/cnr-2000.graph");
+  //graphPaths.push_back("input/smallworld.graph");
+  //graphPaths.push_back("input/kleinergraph.graph");
+  //graphPaths.push_back("input/schlimmergraph.graph");
+  //graphPaths.push_back("input/asia.osm.graph");
+
+  for(std::string path: graphPaths) {
+    std::cout << "Graph: " << path << std::endl;
+    Graph G = reader.read(path);
+
+    std::pair<count, count> Diameter = GraphProperties().estimatedDiameterRange_OckerReichard(G);
+    //count expDiameter = GraphProperties().Diameter_OckerReichard(G);
+    count lowerBound= Diameter.first;
+    count upperBound= Diameter.second;
+    //EXPECT_LE(expDiameter,upperBound);
+    //EXPECT_LE(lowerBound, expDiameter);
+
+        std::cout << " lowerBound =" << Diameter.first << "upperBound=" << Diameter.second << std::endl;
+    
+    std::ofstream solutionFile(path.substr(0, path.size() - 6) + ".sol", std::ofstream::out);
+      solutionFile << " lowerBound =" << Diameter.first << "upperBound=" << Diameter.second << std::endl;
+
+	
+}
+
+}
 
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
