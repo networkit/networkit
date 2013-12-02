@@ -91,10 +91,11 @@ If remote changes have happened in multiple branches and you pull them, these br
 
 ### Contributions
 
-Users of NetworKit are welcome to contribute their modifications. For incremental improvements we recommend working on the `Dev` branch.  We recommend the following workflow:
+Users of NetworKit are welcome to contribute their modifications. New features must be added to the `Dev` branch, not the `default` branch.  We recommend the following workflow:
 
 1. create a fork of the main repository
-2. commit your changes to the `Dev` branch
+2. switch to the `Dev` branch
+2. make and commit your changes while being on the `Dev` branch
 3. send a pull request to the main repository
 
 
