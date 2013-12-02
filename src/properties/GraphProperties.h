@@ -54,6 +54,8 @@ public:
 	static double averageDegree(const Graph& G);
 
   static std::pair<count, count> estimateDiameter_ck(const Graph& G);
+	
+	static std::vector<double> EVZ_OckerReichard(const Graph& G);
 };
 
 } /* namespace NetworKit */
