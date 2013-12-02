@@ -29,6 +29,103 @@ std::vector<count> GraphProperties::degreeDistribution(const Graph& G) {
 	return distribution;
 }
 
+	std::pair<count,count> ecc(std::vector<node> array,int size) 
+	{
+		count infDist = std::numeric_limits<count>::max();
+		count distance_max=0;
+		count j=0;
+		for(int i=0; i<= size-1;i++)
+		{
+			if((array[i] > distance_max)&&(array[i]<infDist))
+				{
+				  distance_max = array[i];
+				  j=i;
+				}
+		}
+		return std::make_pair(distance_max,j);
+
+	}
+
+std::pair<std::vector<double>,double> normed_OckerReichard(std::vector<double> nextVector, int n){
+double norm=0;
+for(int i=0; i<= n-1; i++)
+	{
+		norm = norm + (nextVector[i]*nextVector[i]);
+	}
+	norm = (double) sqrt(norm);
+	//std::cout<<"norm="<<norm<<std::endl;
+	for(int i=0; i<= n-1; i++)
+	{
+		nextVector[i]=nextVector[i]/norm;
+		
+	}
+	return make_pair(nextVector,norm);
+std::vector<double> Matrixmultiplication_OckerReichard(std::vector<std::vector<double>> adjacencymatrix,int n, std::vector<double> vec){
+
+double sum=0;
+std::vector<double> nextVector(n);
+for(int i=0; i <= n-1; i++)
+	{
+		for(int j=0; j<= n-1; j++)
+		{
+			sum=sum+adjacencymatrix[i][j]*vec[j];
+		}
+	nextVector[i]=sum;
+	sum=0;
+	}
+	return nextVector;
+
+}
+
+std::vector<double> GraphProperties::EVZ_OckerReichard(Graph& G) {
+int n= G.numberOfNodes();
+std::vector<double> Vector_current(n);
+std::vector<double> Vector_next(n);
+
+std::vector<double> distance(n);
+double distanc;
+double epsilon= 0.001;
+double sum=0;
+
+for(int i=0; i<= n-1; i++)
+{
+	Vector_current[i]=1;
+	Vector_next[i]=1;
+}
+std::cout<<"Push_backed"<<std::endl;
+std::vector< std::vector<double> > adjacencymatrix(n, std::vector<double>(n));
+for(node i=0; i<= n-1; i++)
+{
+	for(node j=0; j<= n-1; j++)
+	{
+		if(G.hasEdge(i,j))
+			adjacencymatrix[i][j]=1;
+		else{
+			adjacencymatrix[i][j]=0;
+		}
+		
+	}
+}
+
+do{
+	Vector_current = Vector_next;
+	Vector_next = Matrixmultiplication_OckerReichard(adjacencymatrix, n, Vector_current);
+	Vector_next =normed_OckerReichard(Vector_next,n).first;
+	for(int i=0; i<= n-1; i++)
+	{
+		//std::cout<<"Vector["<<i<<"]="<<Vector_next[i]<<std::endl;
+	}
+	for(int i=0; i<= n-1; i++)
+	{
+		distance[i]=Vector_next[i]-Vector_current[i];
+		//std::cout<<"distance["<<i<<"]="<<distance[i]<<std::endl;
+	}
+
+	distanc=normed_OckerReichard(distance, n).second;
+	//std::cout<<distanc<<std::endl;
+  }while(distanc>epsilon);
+return Vector_next;
+}
 
 std::vector<double> GraphProperties::localClusteringCoefficients(const Graph& G) {
 	count n = G.numberOfNodes();
