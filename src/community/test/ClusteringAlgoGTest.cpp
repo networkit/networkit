@@ -18,7 +18,7 @@
 #include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
-#include "../MLPLM.h"
+#include "../PLMR.h"
 
 
 
@@ -391,15 +391,15 @@ TEST_F(ClusteringAlgoGTest, testMLPLMP) {
 	Modularity modularity;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
 
-	MLPLM mlplm("none", false, 1.0);
-	Clustering zeta = mlplm.run(G);
+	PLMR plmr("none", false, 1.0);
+	Clustering zeta = plmr.run(G);
 
 	INFO("number of clusters: " << zeta.numberOfClusters());
 	INFO("modularity: " << modularity.getQuality(zeta, G));
 	EXPECT_TRUE(zeta.isProper(G));
 
-	MLPLM mlplm2("none", true, 1.0);
-	Clustering zeta2 = mlplm2.run(G);
+	PLMR plmr2("none", true, 1.0);
+	Clustering zeta2 = plmr2.run(G);
 
 	INFO("number of clusters: " << zeta2.numberOfClusters());
 	INFO("modularity: " << modularity.getQuality(zeta2, G));

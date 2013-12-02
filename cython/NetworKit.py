@@ -120,11 +120,12 @@ def retrieveAttributes(nodes, attributes):
 # batch processing
 
 
-def batch(graphDir, match, function, outPath, header=None):
+def batch(graphDir, match, format, function, outPath, header=None):
 	"""
 	Read graphs from a directory, apply a function and store result in CSV format.
 	:param	graphDir	a directory containing graph files 
 	:param	match		a pattern that must match the filename so the file is treated as a graph
+	:param 	format		graph file format
 	:param  function	any function from Graph to list/tuple of values
 	:param	header		CSV file header
 	"""

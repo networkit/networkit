@@ -2,7 +2,7 @@
 #include "PLM.h"
 #include "PLP.h"
 #include "../overlap/HashingOverlapper.h"
-#include "MLPLM.h"
+#include "PLMR.h"
 
 namespace NetworKit {
 
@@ -24,7 +24,7 @@ EPP EPPFactory::make(count ensembleSize, std::string baseAlgorithm, std::string 
 	} else if (finalAlgorithm == "PLP") {
 		ensemble.setFinalClusterer(*(new PLM()));
 	} else if (finalAlgorithm == "MLPLM") {
-		ensemble.setFinalClusterer(*(new MLPLM()));
+		ensemble.setFinalClusterer(*(new PLMR()));
 	}
 
 	ensemble.setOverlapper(*(new HashingOverlapper));

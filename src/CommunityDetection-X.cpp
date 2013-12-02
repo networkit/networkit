@@ -417,6 +417,8 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "PLM") {
 				final = new PLM("balanced");
+			} else if (finalClustererArg == "PLMR") {
+				final = new MLPLM();
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);

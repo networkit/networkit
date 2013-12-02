@@ -625,22 +625,22 @@ cdef class PLM(Clusterer):
 		return self._this.toString().decode("utf-8")
 		
 		
-cdef extern from "../src/community/MLPLM.h":
-	cdef cppclass _MLPLM "NetworKit::MLPLM":
-		_MLPLM() except +
-		_MLPLM(string par,  bool refine, double gamma) except +
+cdef extern from "../src/community/PLMR.h":
+	cdef cppclass _PLMR "NetworKit::PLMR":
+		_PLMR() except +
+		_PLMR(string par,  bool refine, double gamma) except +
 		string toString() except +
 		_Clustering run(_Graph G) except +
 
 
-cdef class MLPLM(Clusterer):
+cdef class PLMR(Clusterer):
 	""" MultiLevel Parallel LocalMover - the Louvain method principle extended to
 		a full multi-level algorithm with refinement"""
 		
-	cdef _MLPLM _this
+	cdef _PLMR _this
 	
 	def __cinit__(self, par="balanced", refine=True, gamma=1.0):
-		self._this = _MLPLM(stdstring(par), refine, gamma)
+		self._this = _PLMR(stdstring(par), refine, gamma)
 		
 	def toString(self):
 		return self._this.toString().decode("utf-8")
