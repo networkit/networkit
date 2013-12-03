@@ -10,8 +10,6 @@ import sys
 import networkx as nx
 import logging
 
-import util.stopwatch
-
 
 class METISGraphReader:
 	"""
@@ -258,11 +256,6 @@ def appendNodeAttributes(G, map, attrname):
 
 
 if __name__ == "__main__":
-	reader = METISGraphReader()
-	logging.info("[BEGIN] reading graph")
-	t = util.stopwatch.Timer()
-	G = reader.read(sys.argv[1])
-	logging.info("[DONE]:  {0}".format(t.elapsed))
-	logging.info("n={0} m={1}".format(G.number_of_nodes(), G.number_of_edges()))
+	pass
 	
 
