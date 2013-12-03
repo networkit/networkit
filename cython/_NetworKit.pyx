@@ -688,7 +688,6 @@ cdef class PLMR(Clusterer):
 # 	def toString(self):
 # 		return self._this.toString().decode("utf-8")
 
-
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures"""
 	pass
@@ -755,7 +754,17 @@ cdef class EPPFactory:
 	def make(self, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
 		return EPP().setThis(self._this.make(ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
 
+cdef extern from "../src/community/CommunityGraph.h":
+	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":
+		pair[_Graph, vector[node]] get(_Graph G, _Clustering zeta) except +
 
+cdef class CommunityGraph:
+	""" Coarsen a graph according to communities """
+	cdef _CommunityGraph _this
+
+	def get(self, Graph G, Clustering zeta):
+		cdef pair[_Graph, vector[node]] result = self._this.get(G._this, zeta._this)
+		return (Graph().setThis(result.first), result.second)
 
 # Module: properties
 

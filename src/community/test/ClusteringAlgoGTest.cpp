@@ -19,6 +19,7 @@
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
 #include "../PLMR.h"
+#include "../CommunityGraph.h"
 
 
 
@@ -405,6 +406,22 @@ TEST_F(ClusteringAlgoGTest, testMLPLMP) {
 	INFO("modularity: " << modularity.getQuality(zeta2, G));
 	EXPECT_TRUE(zeta2.isProper(G));
 
+}
+
+TEST_F(ClusteringAlgoGTest, testCommunityGraph) {
+	CommunityGraph com;
+	METISGraphReader reader;
+	Graph G = reader.read("input/jazz.graph");
+	ClusteringGenerator clusteringGen;
+	Clustering one = clusteringGen.makeOneClustering(G);
+
+	EXPECT_EQ(1, com.get(G, one).first.numberOfNodes());
+
+	Clustering singleton = clusteringGen.makeSingletonClustering(G);
+	EXPECT_EQ(G.numberOfNodes(), com.get(G, singleton).first.numberOfNodes());
+
+	Clustering zeta = (new PLP())->run(G);
+	EXPECT_EQ(zeta.numberOfClusters(), com.get(G, zeta).first.numberOfNodes());
 }
 
 

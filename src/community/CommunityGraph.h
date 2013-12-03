@@ -23,7 +23,7 @@ public:
 	 * Create a graph coarsened according to communities. Edge weights are the weights of
 	 * inter-community cuts.
 	 */
-	virtual Graph get(const Graph& G, const Clustering& zeta);
+	virtual std::pair<Graph, std::vector<node> > get(const Graph& G, const Clustering& zeta);
 };
 
 } /* namespace NetworKit */

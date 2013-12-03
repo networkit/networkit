@@ -18,44 +18,48 @@ CommunityGraph::~CommunityGraph() {
 	// TODO Auto-generated destructor stub
 }
 
-Graph CommunityGraph::get(const Graph& G, const Clustering& zeta) {
+std::pair<Graph, std::vector<node> > CommunityGraph::get(const Graph& G, const Clustering& zeta) {
 	Graph Gcom(0); // empty graph
 	Gcom.markAsWeighted(); // Gcon will be a weighted graph
 
-	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
+	std::vector<node> communityToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
 
+	DEBUG("map cluster -> supernode");
 	// populate map cluster -> supernode
 	G.forNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
-		if (! clusterToSuperNode.hasBeenSet(c)) {
-			clusterToSuperNode[c] = Gcom.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
+		if (communityToSuperNode[c] == none) {
+			communityToSuperNode[c] = Gcom.addNode();
 		}
 	});
 
+	DEBUG("Gcom number of nodes: " << Gcom.numberOfNodes());
 
-	count n = G.numberOfNodes();
-	NodeMap<node> nodeToSuperNode(n);
 
+	index z = G.upperNodeIdBound();
+	std::vector<node> nodeToSuperNode(z);
+
+	DEBUG("node -> supernode");
 	// set entries node -> supernode
 	G.parallelForNodes([&](node v){
-		nodeToSuperNode[v] = clusterToSuperNode[zeta.clusterOf(v)];
+		nodeToSuperNode[v] = communityToSuperNode[zeta.clusterOf(v)];
 	});
 
+
+	DEBUG("create edges");
 
 	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
 	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
-		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
-			// add edge weight to supernode (self-loop) weight
+		if (Gcom.hasEdge(su, sv)) {
 			Gcom.setWeight(su, su, Gcom.weight(su, su) + ew);
 		} else {
-			// add edge weight to weight between two supernodes (or insert edge)
-			Gcom.setWeight(su, sv, Gcom.weight(su, sv) + ew);
+			Gcom.addEdge(su, sv, ew);
 		}
 	});
 
-	return Gcom;
+	return std::make_pair(Gcom, communityToSuperNode);
 
 }
 
