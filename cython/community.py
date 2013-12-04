@@ -1,6 +1,6 @@
 """ This module handles community detection, i.e. the discovery of densely connected groups in networks."""
 
-from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM, PLMR, ClusteringReader, ClusteringWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, EPP, EPPFactory
+from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM, PLMR, ClusteringReader, ClusteringWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, EPP, EPPFactory, CommunityGraph
 
 try:
 	import tabulate
@@ -8,7 +8,7 @@ except ImportError:
 	print(""" WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit """)
 import stopwatch
 
-def detectCommunities(G, algo=None, inspect=False):
+def detectCommunities(G, algo=None, inspect=True):
 	""" Perform high-performance community detection on the graph.
 		:param    G    the graph
 		:param     algorithm    community detection algorithm instance

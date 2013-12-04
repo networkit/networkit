@@ -10,19 +10,19 @@
 namespace NetworKit {
 
 CommunityGraph::CommunityGraph() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CommunityGraph::~CommunityGraph() {
-	// TODO Auto-generated destructor stub
 }
 
-std::pair<Graph, std::vector<node> > CommunityGraph::get(const Graph& G, const Clustering& zeta) {
-	Graph Gcom(0); // empty graph
+void CommunityGraph::run(const Graph& G, const Clustering& zeta) {
+
+	Gcom = Graph(0);
 	Gcom.markAsWeighted(); // Gcon will be a weighted graph
 
-	std::vector<node> communityToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
+
+	communityToSuperNode.clear();
+	communityToSuperNode.resize(zeta.upperBound(), none); // there is one supernode for each cluster
 
 	DEBUG("map cluster -> supernode");
 	// populate map cluster -> supernode
@@ -59,8 +59,33 @@ std::pair<Graph, std::vector<node> > CommunityGraph::get(const Graph& G, const C
 		}
 	});
 
-	return std::make_pair(Gcom, communityToSuperNode);
+}
 
+
+Graph CommunityGraph::getGraph() {
+	return Gcom;
+}
+
+std::map<index, node> CommunityGraph::getCommunityToNodeMap() {
+	std::map<index, node> communityToNodeMap;
+	for (index com = 0; com < communityToSuperNode.size(); ++com) {
+		if (communityToSuperNode[com] != none) {
+			communityToNodeMap[com] = communityToSuperNode[com];
+		}
+	}
+	return communityToNodeMap;
+}
+
+
+std::map<node, index> CommunityGraph::getNodeToCommunityMap() {
+	std::map<node, index> nodeToCommunityMap;
+	for (index com = 0; com < communityToSuperNode.size(); ++com) {
+		if (communityToSuperNode[com] != none) {
+			node s = communityToSuperNode[com];
+			nodeToCommunityMap[s] = com;
+		}
+	}
+	return nodeToCommunityMap;
 }
 
 } /* namespace NetworKit */

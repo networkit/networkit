@@ -413,15 +413,18 @@ TEST_F(ClusteringAlgoGTest, testCommunityGraph) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/jazz.graph");
 	ClusteringGenerator clusteringGen;
-	Clustering one = clusteringGen.makeOneClustering(G);
 
-	EXPECT_EQ(1, com.get(G, one).first.numberOfNodes());
+	Clustering one = clusteringGen.makeOneClustering(G);
+	com.run(G, one);
+	EXPECT_EQ(1, com.getGraph().numberOfNodes());
 
 	Clustering singleton = clusteringGen.makeSingletonClustering(G);
-	EXPECT_EQ(G.numberOfNodes(), com.get(G, singleton).first.numberOfNodes());
+	com.run(G, singleton);
+	EXPECT_EQ(G.numberOfNodes(), com.getGraph().numberOfNodes());
 
 	Clustering zeta = (new PLP())->run(G);
-	EXPECT_EQ(zeta.numberOfClusters(), com.get(G, zeta).first.numberOfNodes());
+	com.run(G, zeta);
+	EXPECT_EQ(zeta.numberOfClusters(), com.getGraph().numberOfNodes());
 }
 
 

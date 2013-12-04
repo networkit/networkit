@@ -12,6 +12,7 @@ from libc.stdint cimport int64_t
 from libcpp cimport bool
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
+from libcpp.map cimport map
 from libcpp.string cimport string
 # FIXME: from libcpp.unordered_map import unordered_map
 
@@ -756,15 +757,26 @@ cdef class EPPFactory:
 
 cdef extern from "../src/community/CommunityGraph.h":
 	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":
-		pair[_Graph, vector[node]] get(_Graph G, _Clustering zeta) except +
+		void run(_Graph G, _Clustering zeta) except +
+		_Graph getGraph() except +
+		map[index, node] getCommunityToNodeMap() except +
+		map[node, index] getNodeToCommunityMap() except +
 
 cdef class CommunityGraph:
 	""" Coarsen a graph according to communities """
 	cdef _CommunityGraph _this
 
-	def get(self, Graph G, Clustering zeta):
-		cdef pair[_Graph, vector[node]] result = self._this.get(G._this, zeta._this)
-		return (Graph().setThis(result.first), result.second)
+	def run(self, Graph G, Clustering zeta):
+		self._this.run(G._this, zeta._this)
+
+	def getGraph(self):
+		return Graph().setThis(self._this.getGraph())
+
+	def getCommunityToNodeMap(self):
+		return self._this.getCommunityToNodeMap()
+
+	def getNodeToCommunityMap(self):
+		return self._this.getNodeToCommunityMap()
 
 # Module: properties
 
