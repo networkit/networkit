@@ -44,7 +44,7 @@ import community
 import generators
 import properties
 import engineering
-import graphdebugger
+import viztools
 
 # top level imports
 
