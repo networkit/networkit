@@ -489,11 +489,12 @@ cdef extern from "../src/base/Parameters.h":
 cdef extern from "../src/clustering/Clustering.h":
 	cdef cppclass _Clustering "NetworKit::Clustering":
 		_Clustering() except +
-		count numberOfClusters()
-		cluster clusterOf(node)
-		float getImbalance()
-		vector[count] clusterSizes()
-		vector[node] getMembers(cluster C)
+		count numberOfClusters() except +
+		cluster clusterOf(node) except +
+		float getImbalance() except +
+		vector[count] clusterSizes() except +
+		map[index, count] clusterSizeMap() except +
+		vector[node] getMembers(cluster C) except +
 
 cdef class Clustering:
 	"""
@@ -513,6 +514,9 @@ cdef class Clustering:
 
 	def clusterSizes(self):
 		return self._this.clusterSizes()
+
+	def clusterSizeMap(self):
+		return self._this.clusterSizeMap()
 
 	def getMembers(self, C):
 		return self._this.getMembers(C)
