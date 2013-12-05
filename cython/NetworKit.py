@@ -44,7 +44,12 @@ import community
 import generators
 import properties
 import engineering
-import viztools
+try:
+	import viztools
+except ImportError as importError:
+	print("""WARNING: some dependencies are not satisfied which are needed to use the
+		'viztools' submodule""")
+	print(importError)
 
 # top level imports
 
