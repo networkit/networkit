@@ -6,6 +6,7 @@
  */
 
 
+#if 0
 
 #include "PLM2.h"
 #include "../auxiliary/Log.h"
@@ -227,3 +228,5 @@ std::string PLM2::toString() const {
 }
 
 } /* namespace NetworKit */
+
+#endif

@@ -1,13 +1,14 @@
 /*
  * PLM2.h
  *
+ * Was unsuccessful in evaluation, requires TBB, therefore excluded from build.
+ *
  *  Created on: 22.10.2013
  *      Author: cls
  */
 
+#if 0
  
-
-
 #ifndef PLM2_H_
 #define PLM2_H_
 
@@ -63,5 +64,7 @@ protected:
 
 } /* namespace NetworKit */
 #endif /* PLM2_H_ */
+
+#endif
 
 

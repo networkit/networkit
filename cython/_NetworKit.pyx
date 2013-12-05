@@ -658,24 +658,24 @@ cdef class PLMR(Clusterer):
 
 # # PLM2
 
-cdef extern from "../src/community/PLM2.h":
-	cdef cppclass _PLM2 "NetworKit::PLM2":
-		_PLM2() except +
-		_PLM2(string par, double gamma)
-		_Clustering run(_Graph _G)
-		string toString()
+# cdef extern from "../src/community/PLM2.h":
+# 	cdef cppclass _PLM2 "NetworKit::PLM2":
+# 		_PLM2() except +
+# 		_PLM2(string par, double gamma)
+# 		_Clustering run(_Graph _G)
+# 		string toString()
 
-cdef class PLM2:
-	cdef _PLM2 _this
+# cdef class PLM2:
+# 	cdef _PLM2 _this
 
-	def __cinit__(self, par="balanced", gamma=1.0):
-		self._this = _PLM2(stdstring(par), gamma)
+# 	def __cinit__(self, par="balanced", gamma=1.0):
+# 		self._this = _PLM2(stdstring(par), gamma)
 
-	def run(self, Graph G):
-		return Clustering().setThis(self._this.run(G._this))
+# 	def run(self, Graph G):
+# 		return Clustering().setThis(self._this.run(G._this))
 
-	def toString(self):
-		return self._this.toString().decode("utf-8")
+# 	def toString(self):
+# 		return self._this.toString().decode("utf-8")
 
 
 # cdef extern from "../src/community/CNM.h":
