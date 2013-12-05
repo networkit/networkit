@@ -210,7 +210,6 @@ std::pair<count, count> GraphProperties::estimatedDiameterRange_Hoske(const Grap
 		node w = bfs_edges(G, v, [&] (node a, node b) {
 			bfs_tree.addEdge(a, b);
 		});
-		lowerBound = max(lowerBound, ecc);
 		/* diam(T) = ecc_T(w) by problem 4. */
 		tie(ignore, ecc) = eccentricity_Hoske(bfs_tree, w);
 		upperBound = min(upperBound, ecc);
