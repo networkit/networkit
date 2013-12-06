@@ -18,24 +18,24 @@ namespace NetworKit {
  */
 class DegreeSequenceGenerator_Hoske: public NetworKit::StaticGraphGenerator {
 protected:
-	std::vector<count> deg_seg; /* Desired degree sequence. */
+    std::vector<count> deg_seg; /* Desired degree sequence. */
     count n;                    /* Number of nodes. */
 
 public:
     /** nullary constructor needed for Python Shell - do not use this to construct instance */
-	DegreeSequenceGenerator_Hoske() {
+    DegreeSequenceGenerator_Hoske() {
     }; 	
 
     /** Constructor that takes a degree sequence. */
-	DegreeSequenceGenerator_Hoske(const std::vector<count>& degree_sequence) 
+    DegreeSequenceGenerator_Hoske(const std::vector<count>& degree_sequence) 
         : deg_seg(degree_sequence), n(count(degree_sequence.size())) {
     }; 	
 
     /** Default destrutor. */
-	virtual ~DegreeSequenceGenerator_Hoske() override = default;
+    virtual ~DegreeSequenceGenerator_Hoske() override = default;
 
     /** Generates a graph with the given degree sequence. */
-	virtual Graph generate() override;
+    virtual Graph generate() override;
 };
 
 } /* namespace NetworKit */

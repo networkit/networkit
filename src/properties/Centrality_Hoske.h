@@ -9,6 +9,7 @@
 #define CENTRALITYHOSKE_H_
 
 #include "../graph/Graph.h"
+#include <stack>
 
 namespace NetworKit {
 

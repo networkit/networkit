@@ -406,9 +406,9 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange_Hoske) {
 
 /* Computes the betweeness scores in the graph 'name'. */
 static void test_betweenness_Hoske(std::string name) {
-	using namespace std;
+    using namespace std;
 
-	METISGraphReader reader;
+    METISGraphReader reader;
     Graph G = reader.read("input/" + name + ".graph");
     ofstream out_all("output/" + name + "-bc_hoske.sol");
     ofstream out_max("output/" + name + "-bc-max_hoske.sol");
@@ -421,15 +421,15 @@ static void test_betweenness_Hoske(std::string name) {
 
     /* Output the maximum score. */
     auto max_iter = max_element(begin(betweenness), end(betweenness));
-    out_max << "The node with maximum betweenness score in 'name' is node ";
+    out_max << "The node with maximum betweenness score in '" << name << "' is node ";
     out_max << distance(begin(betweenness), max_iter);
-    out_max << " with score " << (*max_iter) << "\n";
+    out_max << " with score " << (*max_iter) << ".\n";
 }
 
 TEST_F(PropertiesGTest, testBetweennessCentrality_Hoske) {
-	test_betweenness_Hoske("celegans_metabolic");
-	test_betweenness_Hoske("polblogs");
-	test_betweenness_Hoske("hep-th");
+    test_betweenness_Hoske("celegans_metabolic");
+    test_betweenness_Hoske("polblogs");
+    test_betweenness_Hoske("hep-th");
 }
 
 } /* namespace NetworKit */
