@@ -93,10 +93,37 @@ index Cover::lowerBound() const {
 
 std::vector<count> Cover::subsetSizes() const {
 	// TODO:
+	std::map<index,count> mapping;
+	std::vector<count> sizes;
+	count newIndex = 0;
+	for (index e = 0; e <= this->z; ++e) { // stores sizes in a vector
+		for (index t : data[e]) {
+			if (mapping.find(t) == mapping.end()) {
+				mapping[t] = newIndex++;
+				sizes.push_back(1);
+			}
+			sizes[mapping[t]]++;
+		}
+
+	}
+	// TODO: TEST
+	return sizes;
 }
 
 std::map<index, count> Cover::subsetSizeMap() const {
 	// TODO:
+	std::map<index,count> sizeMap;
+	for (index e = 0; e <= this->z; ++e) { // stores sizes of subsets in a map
+		for (index t : data[e]) {
+			if (sizeMap.find(t) == sizeMap.end()) {
+				sizeMap[t] = 1;
+			} else {
+				sizeMap[t]++;
+			}
+		}
+	}
+	// TODO: TEST
+	return sizeMap;
 }
 
 
