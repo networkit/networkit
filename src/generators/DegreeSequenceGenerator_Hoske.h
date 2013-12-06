@@ -1,8 +1,8 @@
 /*
  * DegreeSequenceGenerator_Hoske.h
  *
- *  Created on: 05-12-2013 
- *      Author: dhoske 
+ *  Created on: 05-12-2013
+ *      Author: dhoske
  */
 
 #ifndef DEGREESEQUENCEGENERATOR_HOSKE_H_
@@ -14,22 +14,22 @@
 namespace NetworKit {
 
 /**
- * Generates a graph with a given degree sequence. 
+ * Generates a graph with a given degree sequence.
  */
 class DegreeSequenceGenerator_Hoske: public NetworKit::StaticGraphGenerator {
 protected:
-    std::vector<count> deg_seg; /* Desired degree sequence. */
+    std::vector<count> deg_seq; /* Desired degree sequence. */
     count n;                    /* Number of nodes. */
 
 public:
     /** nullary constructor needed for Python Shell - do not use this to construct instance */
     DegreeSequenceGenerator_Hoske() {
-    }; 	
+    };
 
     /** Constructor that takes a degree sequence. */
-    DegreeSequenceGenerator_Hoske(const std::vector<count>& degree_sequence) 
-        : deg_seg(degree_sequence), n(count(degree_sequence.size())) {
-    }; 	
+    DegreeSequenceGenerator_Hoske(const std::vector<count>& degree_sequence)
+        : deg_seq(degree_sequence), n(count(degree_sequence.size())) {
+    };
 
     /** Default destrutor. */
     virtual ~DegreeSequenceGenerator_Hoske() override = default;
