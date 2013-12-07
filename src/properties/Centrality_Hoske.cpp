@@ -21,12 +21,13 @@ std::vector<double> betweennessCentrality_Hoske(const Graph& G) {
 		stack<node> increasing;
 
 		/* Determine the shortest path dag from s via bfs. */
-		vector<vector<node>> parents(n);         /* Parents in dag. */
-		vector<count> nshort(n), lshort(n, INF);  /* Number and length of shortest paths. */
-		queue<node> bfs_queue;                   /* Working queue. */
+		vector<vector<node>> parents(n);          /* Parents in dag. */
+		vector<count> nshort(n), lshort(n, INF);  /* Number and length of shortest paths (= INF means unvisited). */
+		queue<node> bfs_queue;                    /* Working queue. */
 
+        /* BFS that also computes the shortest path dag. */
 		bfs_queue.push(s);
-		lshort[s] = 0; /* lshort < 0 marks a vertex that has not been visited! */
+		lshort[s] = 0; 
 		nshort[s] = 1;
 		while (!bfs_queue.empty()) {
 			node v = bfs_queue.front(); bfs_queue.pop();
@@ -51,7 +52,6 @@ std::vector<double> betweennessCentrality_Hoske(const Graph& G) {
 		vector<double> dependency(n);
 		while (!increasing.empty()) {
 			node w = increasing.top(); increasing.pop();
-			//cout << "Node: " << w << " " << s << endl;
 			for (node v: parents[w]) {
 				/* Recursive formula: see lecture. */
 				dependency[v] += double(nshort[v])/nshort[w] * (1 + dependency[w]);
