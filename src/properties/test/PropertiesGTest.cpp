@@ -98,7 +98,7 @@ METISGraphReader reader = METISGraphReader();
     std::cout << "Graph: " << path << std::endl;
     Graph G = reader.read(path);
 
-    std::pair<count, count> Diameter = GraphProperties().estimatedDiameterRange_OckerReichard(G);
+    std::pair<count, count> Diameter = GraphProperties().estimateDiameter_ck(G);
     //count expDiameter = GraphProperties().Diameter_OckerReichard(G);
     count lowerBound= Diameter.first;
     count upperBound= Diameter.second;
@@ -340,6 +340,34 @@ TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
     EXPECT_GE(5, GraphProperties::estimateDiameter_ck(G).first);
     EXPECT_LE(5, GraphProperties::estimateDiameter_ck(G).second);
   }
+}
+
+TEST_F(PropertiesGTest, tryBetweennessCentrality) {
+  /* Graph:
+     0    3
+      \  / \
+       2    5
+      /  \ /
+     1    4
+  */
+  count n = 6;
+	Graph G(n);
+
+  G.addEdge(0, 2);
+  G.addEdge(1, 2);
+  G.addEdge(2, 3);
+  G.addEdge(2, 4);
+  G.addEdge(3, 5);
+  G.addEdge(4, 5);
+
+  std::vector<double> bc = GraphProperties::betweennessCentrality_OckerReichard(G);
+    
+  EXPECT_NEAR(0.0, bc[0], 0.001);
+  EXPECT_NEAR(0.0, bc[1], 0.001);
+  EXPECT_NEAR(8.0, bc[2], 0.001);
+  EXPECT_NEAR(1.5, bc[3], 0.001);
+  EXPECT_NEAR(1.5, bc[4], 0.001);
+  EXPECT_NEAR(0.0, bc[5], 0.001);
 }
 
 } /* namespace NetworKit */

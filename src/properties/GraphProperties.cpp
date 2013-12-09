@@ -60,6 +60,8 @@ for(int i=0; i<= n-1; i++)
 		
 	}
 	return make_pair(nextVector,norm);
+}
+
 std::vector<double> Matrixmultiplication_OckerReichard(std::vector<std::vector<double>> adjacencymatrix,int n, std::vector<double> vec){
 
 double sum=0;
@@ -77,7 +79,7 @@ for(int i=0; i <= n-1; i++)
 
 }
 
-std::vector<double> GraphProperties::EVZ_OckerReichard(Graph& G) {
+std::vector<double> GraphProperties::EVZ_OckerReichard(const Graph& G) {
 int n= G.numberOfNodes();
 std::vector<double> Vector_current(n);
 std::vector<double> Vector_next(n);
@@ -305,6 +307,13 @@ std::pair<count, count> GraphProperties::estimateDiameter_ck(const Graph& G) {
     nodesWithDegree[maxDegree - j].pop_back();
   }
   return std::make_pair(lowerBound, upperBound);
+}
+
+std::vector<double> GraphProperties::betweennessCentrality_OckerReichard(const Graph& g) {
+  const int n = g.numberOfNodes();
+  std::vector<double> centrality(n, .0);
+
+  return centrality;
 }
 
 } /* namespace NetworKit */

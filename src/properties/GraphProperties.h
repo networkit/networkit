@@ -56,6 +56,14 @@ public:
   static std::pair<count, count> estimateDiameter_ck(const Graph& G);
 	
 	static std::vector<double> EVZ_OckerReichard(const Graph& G);
+
+  /**
+   * Calculates the betweenness centrality of all nodes for an unweighted graph.
+   * @param g The input graph.
+   * @result A vector. Each entry corresponds to the betweenness centrality of
+   * the node represented by the index.
+   */
+  static std::vector<double> betweennessCentrality_OckerReichard(const Graph& g);
 };
 
 } /* namespace NetworKit */
