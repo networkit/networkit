@@ -5,8 +5,9 @@
  *      Author: cls
  */
 
-#include "GraphProperties.h"
+#include <list>
 
+#include "GraphProperties.h"
 
 namespace NetworKit {
 
@@ -311,7 +312,55 @@ std::pair<count, count> GraphProperties::estimateDiameter_ck(const Graph& G) {
 
 std::vector<double> GraphProperties::betweennessCentrality_OckerReichard(const Graph& g) {
   const int n = g.numberOfNodes();
-  std::vector<double> centrality(n, .0);
+  std::vector<double> centrality(n, 0.0);
+
+  g.forNodes([&](node s) {
+    std::vector<std::vector<node>> predecessors(n, std::vector<node>());
+    std::vector<int> distance(n, -1);
+    std::vector<double> sigma(n, 0.0);
+    std::vector<node> visitedNodes;
+    std::list<node> nodesToVisit;
+
+    distance[s] = 0;
+    sigma[s] = 1.0;
+    nodesToVisit.push_back(s);
+
+    // BFS
+    while(!nodesToVisit.empty()) {
+      node v = nodesToVisit.front();
+      nodesToVisit.pop_front();
+      visitedNodes.push_back(v);
+
+      g.forNeighborsOf(v, [&](node w) {
+        if(distance[w] < 0) {
+          // We are visiting w the first time
+          nodesToVisit.push_back(w);
+          distance[w] = distance[v] + 1;
+        }
+
+        if(distance[w] == distance[v] + 1) {
+          sigma[w] += sigma[v];
+          predecessors[w].push_back(v);
+        }
+      });
+    }
+
+    std::vector<double> delta(n, 0.0);
+
+    // Traverse nodes in order of non-increasing distance
+    while(!visitedNodes.empty()) {
+      node w = visitedNodes.back();
+      visitedNodes.pop_back();
+
+      for(node v: predecessors[w]) {
+        delta[v] += sigma[v] / sigma[w] * (1.0 + delta[w]);
+      }
+
+      if(w != s) {
+        centrality[w] += delta[w];
+      }
+    }
+  });
 
   return centrality;
 }

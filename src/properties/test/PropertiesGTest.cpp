@@ -303,7 +303,7 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 }
 
-TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
+TEST_F(PropertiesGTest, testEstimateDiameter_ck) {
   // Clique
   {
     count n = 5;
@@ -342,7 +342,7 @@ TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
   }
 }
 
-TEST_F(PropertiesGTest, tryBetweennessCentrality) {
+TEST_F(PropertiesGTest, testBetweennessCentrality) {
   /* Graph:
      0    3
       \  / \
@@ -364,10 +364,41 @@ TEST_F(PropertiesGTest, tryBetweennessCentrality) {
     
   EXPECT_NEAR(0.0, bc[0], 0.001);
   EXPECT_NEAR(0.0, bc[1], 0.001);
-  EXPECT_NEAR(8.0, bc[2], 0.001);
-  EXPECT_NEAR(1.5, bc[3], 0.001);
-  EXPECT_NEAR(1.5, bc[4], 0.001);
-  EXPECT_NEAR(0.0, bc[5], 0.001);
+  EXPECT_NEAR(15.0, bc[2], 0.001);
+  EXPECT_NEAR(3.0, bc[3], 0.001);
+  EXPECT_NEAR(3.0, bc[4], 0.001);
+  EXPECT_NEAR(1.0, bc[5], 0.001);
+}
+
+TEST_F(PropertiesGTest, tryBetweennessCentralityDimacsGraphs) {
+  METISGraphReader reader = METISGraphReader();
+
+  std::vector<std::string> graphPaths;
+  graphPaths.push_back("dimacs/celegans_metabolic.graph");
+  graphPaths.push_back("dimacs/polblogs.graph");
+  graphPaths.push_back("dimacs/hep-th.graph");
+
+  for(std::string path: graphPaths) {
+    std::cout << "Graph: " << path << std::endl;
+    Graph G = reader.read(std::string("input/") + path);
+
+    std::vector<double> bc = GraphProperties::betweennessCentrality_OckerReichard(G);
+    
+    std::ofstream solutionFile(std::string("output/") + path.substr(0, path.size() - 6) + "-bc.sol", std::ofstream::out);
+    
+    double maxValue = -1;
+    int maxValueNode = -1;
+    for(int i = 0; i < G.numberOfNodes(); i++) {
+      double value = bc[i];
+      solutionFile << value << std::endl;
+
+      if(value > maxValue) {
+        maxValue = value;
+        maxValueNode = i;
+      }
+    }
+    std::cout << "Maximum betweenness centrality is " << maxValue << " (node " << maxValueNode << ")" << std::endl;
+  }
 }
 
 } /* namespace NetworKit */
