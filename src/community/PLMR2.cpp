@@ -48,22 +48,6 @@ Clustering PLMR2::run(Graph& G) {
 		volCommunity[C] = volNode[u];
 	});
 
-	// TODO: replace std::vector<std::map<cluster, edgeweight> > incidenceWeight(z); // For each node we store a map that maps from cluster ID to weight of edges to that cluster, this needs to be updated when a change occurs
-
-	// std::vector<omp_lock_t> mapLocks(z); // create and init locks
-	// G.parallelForNodes([&](node u) {
-	// 	omp_init_lock(&mapLocks[u]);
-	// });
-
-	// G.parallelForNodes([&](node u) {
-	// 	G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-	// 		cluster C = zeta[v];
-	// 		if (u != v) {
-	// 			incidenceWeight[u][C] += w;
-	// 		}
-	// 	});
-	// });
-
 	bool moved = false; // indicates whether any node has been moved
 
 
@@ -111,14 +95,6 @@ Clustering PLMR2::run(Graph& G) {
 
 
 		auto modUpdate = [&](node u, cluster C, cluster D) {
-			// update weight of edges to incident clusters
-			// G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
-			// 	omp_set_lock(&mapLocks[v]);
-			// 	incidenceWeight[v][D] += w;
-			// 	incidenceWeight[v][C] -= w;
-			// 	omp_unset_lock(&mapLocks[v]);
-			// });
-
 			double volN = 0.0;
 			volN = volNode[u];
 			// update the volume of the two clusters
@@ -196,18 +172,6 @@ Clustering PLMR2::run(Graph& G) {
 				#pragma omp atomic update
 				volCommunity[C] += volN;
 			});
-
-			// incidenceWeight.clear(); // For each node we store a map that maps from cluster ID to weight of edges to that cluster, this needs to be updated when a change occurs
-			// incidenceWeight.resize(z);
-			// G.parallelForNodes([&](node u) {
-			// 	G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-			// 		cluster C = zeta[v];
-			// 		if (u != v) {
-			// 			#pragma omp atomic update
-			// 			incidenceWeight[u][C] += w;
-			// 		}
-			// 	});
-			// });
 
 			// second move phase
 			moved = false;
