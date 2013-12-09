@@ -19,6 +19,7 @@
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
 #include "../PLMR.h"
+#include "../PLMR2.h"
 #include "../CommunityGraph.h"
 #include "../PLM2.h"
 
@@ -388,7 +389,7 @@ TEST_F(ClusteringAlgoGTest, testEPPFactory) {
 	EXPECT_TRUE(zeta.isProper(jazz));
 }
 
-TEST_F(ClusteringAlgoGTest, testMLPLMP) {
+TEST_F(ClusteringAlgoGTest, testPLMR) {
 	METISGraphReader reader;
 	Modularity modularity;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
@@ -401,6 +402,28 @@ TEST_F(ClusteringAlgoGTest, testMLPLMP) {
 	EXPECT_TRUE(zeta.isProper(G));
 
 	PLMR plmr2("none", true, 1.0);
+	Clustering zeta2 = plmr2.run(G);
+
+	INFO("number of clusters: " << zeta2.numberOfClusters());
+	INFO("modularity: " << modularity.getQuality(zeta2, G));
+	EXPECT_TRUE(zeta2.isProper(G));
+
+}
+
+
+TEST_F(ClusteringAlgoGTest, testPLMR2) {
+	METISGraphReader reader;
+	Modularity modularity;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+
+	PLMR2 plmr("none", false, 1.0);
+	Clustering zeta = plmr.run(G);
+
+	INFO("number of clusters: " << zeta.numberOfClusters());
+	INFO("modularity: " << modularity.getQuality(zeta, G));
+	EXPECT_TRUE(zeta.isProper(G));
+
+	PLMR2 plmr2("none", true, 1.0);
 	Clustering zeta2 = plmr2.run(G);
 
 	INFO("number of clusters: " << zeta2.numberOfClusters());

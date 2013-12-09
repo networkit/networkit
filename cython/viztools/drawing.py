@@ -11,7 +11,7 @@ import pylab
 
 class GraphDrawer:
 	
-	def __init__(self, layout=nx.spring_layout, size=(10,8), nodeOpts={}, edgeOpts={}, labelOpts={}, labelled=False, emphasizeCliques=False):
+	def __init__(self, layout=nx.spring_layout, size=(8,8), nodeOpts={}, edgeOpts={}, labelOpts={}, labelled=False, emphasizeCliques=False):
 		"""
 
 		:param layout: The layout of the graph
