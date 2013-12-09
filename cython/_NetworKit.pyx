@@ -653,6 +653,30 @@ cdef class PLMR(Clusterer):
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))
 
+
+cdef extern from "../src/community/PLMR2.h":
+	cdef cppclass _PLMR2 "NetworKit::PLMR2":
+		_PLMR2() except +
+		_PLMR2(string par,  bool refine, double gamma) except +
+		string toString() except +
+		_Clustering run(_Graph G) except +
+
+
+cdef class PLMR2(Clusterer):
+	""" MultiLevel Parallel LocalMover - the Louvain method principle extended to
+		a full multi-level algorithm with refinement"""
+		
+	cdef _PLMR2 _this
+	
+	def __cinit__(self, par="balanced", refine=True, gamma=1.0):
+		self._this = _PLMR2(stdstring(par), refine, gamma)
+		
+	def toString(self):
+		return self._this.toString().decode("utf-8")
+		
+	def run(self, Graph G not None):
+		return Clustering().setThis(self._this.run(G._this))
+
 # FIXME: PLM2 
 # FIXME: CNM
 

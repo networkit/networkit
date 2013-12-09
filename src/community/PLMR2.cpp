@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "PLMR.h"
+#include "PLMR2.h"
 #include <omp.h>
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
@@ -14,12 +14,12 @@
 
 namespace NetworKit {
 
-PLMR::PLMR(std::string par, bool refine, double gamma) : parallelism(par), refine(refine), gamma(gamma){
+PLMR2::PLMR2(std::string par, bool refine, double gamma) : parallelism(par), refine(refine), gamma(gamma){
 
 }
 
 
-Clustering PLMR::run(Graph& G) {
+Clustering PLMR2::run(Graph& G) {
 	INFO("calling run method on " << G.toString());
 
 	count z = G.upperNodeIdBound();
@@ -48,27 +48,39 @@ Clustering PLMR::run(Graph& G) {
 		volCommunity[C] = volNode[u];
 	});
 
-	std::vector<std::map<cluster, edgeweight> > incidenceWeight(z); // For each node we store a map that maps from cluster ID to weight of edges to that cluster, this needs to be updated when a change occurs
+	// TODO: replace std::vector<std::map<cluster, edgeweight> > incidenceWeight(z); // For each node we store a map that maps from cluster ID to weight of edges to that cluster, this needs to be updated when a change occurs
 
-	std::vector<omp_lock_t> mapLocks(z); // create and init locks
-	G.parallelForNodes([&](node u) {
-		omp_init_lock(&mapLocks[u]);
-	});
+	// std::vector<omp_lock_t> mapLocks(z); // create and init locks
+	// G.parallelForNodes([&](node u) {
+	// 	omp_init_lock(&mapLocks[u]);
+	// });
 
-	G.parallelForNodes([&](node u) {
-		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-			cluster C = zeta[v];
-			if (u != v) {
-				incidenceWeight[u][C] += w;
-			}
-		});
-	});
+	// G.parallelForNodes([&](node u) {
+	// 	G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+	// 		cluster C = zeta[v];
+	// 		if (u != v) {
+	// 			incidenceWeight[u][C] += w;
+	// 		}
+	// 	});
+	// });
+
 	bool moved = false; // indicates whether any node has been moved
 
 
 	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
-		//TRACE("trying to move node " << u);
+		// TRACE("trying to move node " << u);
+
+		// collect edge weight to neighbor clusters
+		std::map<cluster, edgeweight> affinity;
+		G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
+			if (u != v) {
+				cluster C = zeta[v];
+				affinity[C] += weight;
+			}
+		});
+
+
 		// sub-functions
 
 		// $\vol(C \ {x})$ - volume of cluster C excluding node x
@@ -84,32 +96,28 @@ Clustering PLMR::run(Graph& G) {
 			}
 		};
 
-		// $\omega(u | C \ u)$
-		auto omegaCut = [&](node u, cluster C) {
-			edgeweight w = 0.0;
-			omp_set_lock(&mapLocks[u]);
-			w = incidenceWeight[u][C];
-			omp_unset_lock(&mapLocks[u]);
-			return w;
-		};
+		// // $\omega(u | C \ u)$
+		// auto omegaCut = [&](node u, cluster C) {
+		// 	return affinity[C];
+		// };
 
 		auto modGain = [&](node u, cluster C, cluster D) {
 			double volN = 0.0;
 			volN = volNode[u];
-			double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / (2 * total * total);
-			// TRACE("(" << omegaCut(u, D) << " - " << omegaCut(u, C) << ") / " << total << " + " << this->gamma << " * ((" << volCommunityMinusNode(C, u) << " - " << volCommunityMinusNode(D, u) << ") *" << volN << ") / 2 * " << (total * total));
+			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / (2 * total * total); // TODO: vorberechnung
+			//TRACE("(" << affinity[D] << " - " << affinity[C] << ") / " << total << " + " << this->gamma << " * ((" << volCommunityMinusNode(C, u) << " - " << volCommunityMinusNode(D, u) << ") *" << volN << ") / 2 * " << (total * total));
 			return delta;
 		};
 
 
 		auto modUpdate = [&](node u, cluster C, cluster D) {
 			// update weight of edges to incident clusters
-			G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
-				omp_set_lock(&mapLocks[v]);
-				incidenceWeight[v][D] += w;
-				incidenceWeight[v][C] -= w;
-				omp_unset_lock(&mapLocks[v]);
-			});
+			// G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
+			// 	omp_set_lock(&mapLocks[v]);
+			// 	incidenceWeight[v][D] += w;
+			// 	incidenceWeight[v][C] -= w;
+			// 	omp_unset_lock(&mapLocks[v]);
+			// });
 
 			double volN = 0.0;
 			volN = volNode[u];
@@ -189,17 +197,17 @@ Clustering PLMR::run(Graph& G) {
 				volCommunity[C] += volN;
 			});
 
-			incidenceWeight.clear(); // For each node we store a map that maps from cluster ID to weight of edges to that cluster, this needs to be updated when a change occurs
-			incidenceWeight.resize(z);
-			G.parallelForNodes([&](node u) {
-				G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-					cluster C = zeta[v];
-					if (u != v) {
-						#pragma omp atomic update
-						incidenceWeight[u][C] += w;
-					}
-				});
-			});
+			// incidenceWeight.clear(); // For each node we store a map that maps from cluster ID to weight of edges to that cluster, this needs to be updated when a change occurs
+			// incidenceWeight.resize(z);
+			// G.parallelForNodes([&](node u) {
+			// 	G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+			// 		cluster C = zeta[v];
+			// 		if (u != v) {
+			// 			#pragma omp atomic update
+			// 			incidenceWeight[u][C] += w;
+			// 		}
+			// 	});
+			// });
 
 			// second move phase
 			moved = false;
@@ -220,7 +228,7 @@ Clustering PLMR::run(Graph& G) {
 	return zeta;
 }
 
-std::string NetworKit::PLMR::toString() const {
+std::string NetworKit::PLMR2::toString() const {
 	std::string refined;
 	if (refine) {
 		refined = "refinement";
@@ -234,7 +242,7 @@ std::string NetworKit::PLMR::toString() const {
 	return stream.str();
 }
 
-std::pair<Graph, std::vector<node> > PLMR::coarsen(const Graph& G, const Clustering& zeta) {
+std::pair<Graph, std::vector<node> > PLMR2::coarsen(const Graph& G, const Clustering& zeta) {
 	Graph Gcoarse(0); // empty graph
 	Gcoarse.markAsWeighted(); // Gcon will be a weighted graph
 
@@ -275,7 +283,7 @@ std::pair<Graph, std::vector<node> > PLMR::coarsen(const Graph& G, const Cluster
 
 }
 
-Clustering PLMR::prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
+Clustering PLMR2::prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
 	Clustering zetaFine(Gfine.upperNodeIdBound());
 
 	Gfine.forNodes([&](node v) {
