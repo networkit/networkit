@@ -148,6 +148,7 @@ TEST_F(PropertiesGTest, testCoreDecomposition) {
 	EXPECT_EQ(2, coreness[15]) << "expected coreness";
 }
 
+/*
 TEST_F(PropertiesGTest, testCoreDecompositionOnGraphFiles) {
 	CoreDecomposition coreDec;
   METISGraphReader input;
@@ -168,7 +169,7 @@ TEST_F(PropertiesGTest, testCoreDecompositionOnGraphFiles) {
     output.close();
   });
 }
-
+*/
 
 
 TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
