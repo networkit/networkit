@@ -1,31 +1,26 @@
 /*
- * PLM2.h
+ * MLPLM.h
  *
- * Was unsuccessful in evaluation, requires TBB, therefore excluded from build.
- *
- *  Created on: 22.10.2013
+ *  Created on: 20.11.2013
  *      Author: cls
  */
 
-#if 0
- 
-#ifndef PLM2_H_
-#define PLM2_H_
+#ifndef PLMR2_H_
+#define PLMR2_H_
 
 #include "Clusterer.h"
-
-
 
 namespace NetworKit {
 
 /**
- * Lock-free parallel implementation of the Louvain method
- * for community detection in networks.
+ * MultiLevel Parallel LocalMover - a multi-level modularity maximizer.
  */
 class PLM2: public NetworKit::Clusterer {
+
 public:
 
 	/**
+	 * @param[in]	refine	add a second move phase to refine the communities
 	 * @param[in]	par		parallelization strategy
 	 * @param[in]	gamma	multi-resolution modularity parameter:
 	 * 							1.0 -> standard modularity
@@ -33,38 +28,27 @@ public:
 	 * 							2m 	-> singleton communities
 	 *
 	 */
-	PLM2(std::string par="simple", double gamma = 1.0);
+	PLM2(bool refine=false, double gamma = 1.0, std::string par="simple");
 
-	virtual ~PLM2();
 
-	/**
-	 * Perform one optimization pass.
-	 */
-	virtual Clustering pass(const Graph& G);
-
+	std::string toString() const override;
 
 	/**
-	 * Run the algorithm.
+	 * Detect communities in the given graph.
 	 */
 	Clustering run(Graph& G) override;
 
+	std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Clustering& zeta);
 
-	/**
-	 * @return string representation of algorithm and parameters.
-	 */
-	std::string toString() const override;
+	Clustering prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
 
-protected:
+private:
 
-	std::string parallelism; //!< switch for the kind of parallelization strategy to use
-	double gamma;	//!< multi-resolution modularity parameter
-	bool anyChange;	//!< indicates whether any change was made to the clustering in the last pass over the nodes
-
+	std::string parallelism;
+	bool refine;
+	double gamma = 1.0;
 };
 
 } /* namespace NetworKit */
-#endif /* PLM2_H_ */
 
-#endif
-
-
+#endif /* MLPLM_H_ */
