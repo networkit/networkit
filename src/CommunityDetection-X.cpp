@@ -49,6 +49,7 @@
 #include "generators/DynamicBarabasiAlbertGenerator.h"
 #include "overlap/RegionGrowingOverlapper.h"
 #include "overlap/HashingOverlapper.h"
+#include "community/PLMR.h"
 
 
 // revision
@@ -307,7 +308,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 	// if getGraph returns empty graph, abort
 	if (G.isEmpty() && (G.getName() == "NONE")) {
-		std::cout << "[ERROR]�no graph instance provided." << std::endl;
+		std::cout << "[ERROR] no graph instance provided." << std::endl;
 		std::cout << "[EXIT]" << std::endl;
 		exit(1);
 	}
@@ -417,6 +418,8 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "PLM") {
 				final = new PLM("balanced");
+			} else if (finalClustererArg == "PLMR") {
+				final = new PLMR();
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);

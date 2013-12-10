@@ -10,7 +10,8 @@ __version__ = "2.1"
 
 
 # standard library modules
-
+import csv
+import os
 
 # non standard library modules
 try:
@@ -31,8 +32,10 @@ except ImportError:
 import stopwatch
 
 
+
+
 # import from extension module into NetworKit namespace
-from _NetworKit import configureLogging, currentLogLevel, setLoglevel
+from _NetworKit import configureLogging, currentLogLevel, setLoglevel, enableNestedParallelism
 
 # NetworKit submodules
 import graph
@@ -41,6 +44,12 @@ import community
 import generators
 import properties
 import engineering
+try:
+	import viztools
+except ImportError as importError:
+	print("""WARNING: some dependencies are not satisfied which are needed to use the
+		'viztools' submodule""")
+	print(importError)
 
 # top level imports
 
@@ -52,6 +61,8 @@ from graphio import readGraph
 def setup():
 	""" This function is run once on module import to configure initial settings """
 	configureLogging(loglevel="ERROR")    # set default loglevel to error
+	enableNestedParallelism()	# enable nested parallelism
+
 	
 
 setup() # here the setup function is called once on import
@@ -111,5 +122,33 @@ def retrieveAttributes(nodes, attributes):
 		attrs[u] = attributes[u]
 	return attrs
 	
-	
+
+# batch processing
+
+
+def batch(graphDir, match, format, function, outPath, header=None):
+	"""
+	Read graphs from a directory, apply a function and store result in CSV format.
+	:param	graphDir	a directory containing graph files 
+	:param	match		a pattern that must match the filename so the file is treated as a graph
+	:param 	format		graph file format
+	:param  function	any function from Graph to list/tuple of values
+	:param	header		CSV file header
+	"""
+	with open(outPath, 'w') as outFile:
+		writer = csv.writer(outFile, delimiter='\t')
+		if header:
+			writer.writerow(header)
+		for root, _, filenames in os.walk(graphDir):
+			for filename in filenames:
+				if match in filename:
+					print("processing {0}".format(filename))
+					graphPath = os.path.join(root, filename)
+					timer = stopwatch.Timer()
+					G = graphio.readGraph(graphPath)
+					timer.stop()
+					row = function(G)
+					row = [filename, timer.elapsed] + list(row)
+					writer.writerow(row)
+
 	

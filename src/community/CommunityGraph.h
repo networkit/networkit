@@ -23,7 +23,25 @@ public:
 	 * Create a graph coarsened according to communities. Edge weights are the weights of
 	 * inter-community cuts.
 	 */
-	virtual Graph get(const Graph& G, const Clustering& zeta);
+	virtual void run(const Graph& G, const Clustering& zeta);
+
+	virtual Graph getGraph();
+
+	/** 
+	 * Maps community id to id of node in the community graph.
+	 */
+	virtual std::map<index, node> getCommunityToNodeMap();
+
+	/** 
+	 * Maps node id in the community graph to community id.
+	 */
+	virtual std::map<node, index> getNodeToCommunityMap(); 
+
+
+private:
+	Graph Gcom;		//!< the current community graph
+	std::vector<node> communityToSuperNode;		//!< community id -> node id in community graph
+
 };
 
 } /* namespace NetworKit */

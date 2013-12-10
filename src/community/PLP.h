@@ -35,7 +35,7 @@ public:
 
 	std::string VERSION;	// algorithm version number - increment in constructor for significant changes to the implementation
 
-	PLP(count theta = 0);
+	PLP(count theta = none);
 
 	virtual ~PLP();
 

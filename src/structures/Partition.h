@@ -91,7 +91,7 @@ public:
 	/**
 	 * Assigns the elements from both sets to a new set.
 	 */
-	void mergeSubets(index s, index t);
+	void mergeSubsets(index s, index t);
 
 
 	/**

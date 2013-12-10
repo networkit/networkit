@@ -34,3 +34,11 @@ int Aux::getMaxNumberOfThreads() {
 	#endif
 }
 
+void Aux::enableNestedParallelism() {
+	#ifdef _OPENMP
+	omp_set_nested(1); // enable nested parallelism
+	#else
+	ERROR("OpenMP is not available")
+	#endif
+}
+

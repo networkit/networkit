@@ -21,6 +21,8 @@ public:
 	virtual ~ClusteringProjector();
 
 	/**
+	 * DEPRECATED
+	 *
 	 * Given
 	 * 		@param[in]	Gcoarse
 	 * 		@param[in] 	Gfine
@@ -32,6 +34,21 @@ public:
 	 **/
 	virtual Clustering projectBack(Graph& Gcoarse, Graph& Gfine, NodeMap<node>& fineToCoarse,
 			Clustering& zetaCoarse);
+
+
+	/**
+	 * Given
+	 * 		@param[in]	Gcoarse
+	 * 		@param[in] 	Gfine
+	 * 		@param[in]	fineToCoarse
+	 * 		@param[in]	zetaCoarse	a clustering of the coarse graph
+	 *
+	 * 	, project the clustering back to the fine graph to create a clustering of the fine graph.
+	 * 		@param[out] 			a clustering of the fine graph
+	 **/
+	virtual Clustering projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse,
+			Clustering& zetaCoarse);
+
 
 
 	/**

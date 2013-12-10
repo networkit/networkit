@@ -1,7 +1,8 @@
-from NetworKit import *
 import stopwatch
 import csv
 import os
+
+from NetworKit import *
 
 
 def getFileList(directory):
@@ -21,12 +22,14 @@ def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
 
 	# write results
 	with open(outPath, 'w') as outFile:
-		writer = csv.writer(outFile, delimiter=';')
+		writer = csv.writer(outFile, delimiter='\t')
+		header = ["graph", "algo", "time", "modularity"]
+		writer.writerow(header)
 		for graphPath in graphPaths:
 			print("reading graph: {0}".format(graphPath))
-			G = readGraph(graphPath)
+			G = graphio.readGraph(graphPath)
 			graphName = os.path.basename(graphPath).split(".")[0]
-			(n, m) = nm(G)
+			(n, m) = properties.nm(G)
 			for algo in algorithms:
 				algoName = algo.toString()
 				for i in range(repeat):
@@ -34,13 +37,13 @@ def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
 					timer = stopwatch.Timer()
 					zeta = algo.run(G)
 					timer.stop()
-					t = timer.elapsed
+					time = timer.elapsed
 
-					mod = Modularity().getQuality(zeta, G)
-					nc = zeta.numberOfClusters()
+					mod = community.Modularity().getQuality(zeta, G)
+					# nc = zeta.numberOfClusters()
 
-
-					row = [graphName, algoName, t, mod, nc]
+					row = [graphName, algoName, time, mod]
 					writer.writerow(row)
 					print(row)
+
 

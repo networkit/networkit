@@ -93,9 +93,9 @@ env["CC"] = cppComp
 env["CXX"] = cppComp
 
 env.Append(CPPDEFINES=defines)
-env.Append(CPPPATH = [stdInclude, gtestInclude, log4cxxInclude, tbbInclude])
-env.Append(LIBS = ["gtest", "log4cxx"])
-env.Append(LIBPATH = [gtestLib, log4cxxLib, tbbLib])
+env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude]) #, log4cxxInclude
+env.Append(LIBS = ["gtest"]) #, "log4cxx"
+env.Append(LIBPATH = [gtestLib, tbbLib]) #, log4cxxLib
 env.Append(LINKFLAGS = ["-std=c++11"])
 
 ## CONFIGURATIONS
@@ -140,6 +140,26 @@ except:
 env.Append(CFLAGS = commonCFlags)
 env.Append(CPPFLAGS = commonCppFlags)
 
+#option to specify Logging type
+AddOption("--logging",
+          dest="logging",
+          type="string",
+          nargs=1,
+          action="store",
+          help="choose logging type: NOLOGGING or NOLOG4CXX")
+try:
+	logging = GetOption("logging")
+	print("specified logging type is "+logging)
+	if logging in ["NOLOGGING","NOLOG4CXX","SIMPLE"]:
+		env.Append(CPPDEFINES=[logging])
+except:
+	print("No logging type specified, using LOG4CXX")
+	env.Append(CPPPATH = [log4cxxInclude])
+	env.Append(LIBS = ["log4cxx"])
+	env.Append(LIBPATH = [log4cxxLib])
+
+
+
 # openmp yes or no
 AddOption("--openmp",
           dest="openmp",
@@ -175,7 +195,6 @@ else:
 
 
 # TARGET
-# openmp yes or no
 AddOption("--target",
           dest="target",
           type="string",

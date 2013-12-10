@@ -166,6 +166,9 @@ public:
 
 	Graph();
 
+	/** 
+	 * Create a graph of n nodes.
+	 */
 	Graph(count n);
 
 	Graph(const Graph& other) = default;
@@ -174,15 +177,8 @@ public:
 
 	virtual ~Graph();
 
-
-	/**
-	 * Assignment operator
-	 */
 	Graph& operator=(Graph&& other) = default;
 
-	/**
-	 * Assignment operator
-	 */
 	Graph& operator=(const Graph& other) = default;
 
 

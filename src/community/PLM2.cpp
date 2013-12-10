@@ -1,32 +1,35 @@
 /*
- * Louvain.cpp
+ * PLM2.cpp
  *
- *  Created on: 25.02.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
+ *  Created on: 22.10.2013
+ *      Author: cls
  */
 
-#include "PLM.h"
 
+#if 0
+
+#include "PLM2.h"
+#include "../auxiliary/Log.h"
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
-#include "omp.h"
+
+#include <tbb/concurrent_unordered_map.h>
+#include <tbb/concurrent_vector.h>
+
+
 
 namespace NetworKit {
 
 
-PLM::PLM(std::string par, double gamma) : anyChange(false), parallelism(par), gamma(gamma) {
-
-	this->VERSION = "1.0";
+PLM2::PLM2(std::string par, double gamma) : parallelism(par), gamma(gamma), anyChange(false) {
 }
 
-PLM::~PLM() {
-	// TODO Auto-generated destructor stub
+
+PLM2::~PLM2() {
 }
 
-Clustering PLM::pass(Graph& G) {
 
-	// FIXME: PLM cannot deal with deleted nodes
-
+Clustering PLM2::pass(const Graph& G) {
 	// init clustering to singletons
 	count n = G.numberOfNodes();
 	Clustering zeta(n);
@@ -37,48 +40,40 @@ Clustering PLM::pass(Graph& G) {
 
 	// For each node we store a map that maps from cluster ID
 	// to weight of edges to that cluster, this needs to be updated when a change occurs
-	std::vector<std::map<cluster, edgeweight> > incidenceWeight(
-			G.numberOfNodes());
+	std::vector<tbb::concurrent_unordered_map<cluster, edgeweight> > incidenceWeight(n);
+
 	G.parallelForNodes([&](node u) {
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-			cluster C = zeta[v];
-			if (u != v) {
-				incidenceWeight[u][C] += w;
-			}
-		});
+					cluster C = zeta[v];
+					if (u != v) {
+						incidenceWeight[u][C] += w;
+					}
+				});
 	});
-
-#ifdef _OPENMP
-	// create and init locks
-	std::vector<omp_lock_t> mapLocks(n);
-	G.parallelForNodes([&](node u) {
-				omp_init_lock(&mapLocks[u]);
-			});
-#endif
 
 	// modularity update formula for node moves
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
 
 	// parts of formula follow
-	NodeMap<double> volNode(G.numberOfNodes(), 0.0);
+	std::vector<edgeweight> volNode(n, 0.0);
+
 	// calculate and store volume of each node
 	G.parallelForNodes([&](node u) {
 		volNode[u] += G.weightedDegree(u);
 		volNode[u] += G.weight(u, u); // consider self-loop twice
 		});
 
-	IndexMap<cluster, double> volCluster(G.numberOfNodes(), 0.0);
+	std::vector<edgeweight> volCluster(n, 0.0);
 	// set volume for all singletons
 	zeta.parallelForEntries([&](node u, cluster C) {
 		volCluster[C] = volNode[u];
 	});
-	// end of initialization, set barrier for safety reasons
+
 
 	// $\vol(C \ {x})$ - volume of cluster C excluding node x
 	auto volClusterMinusNode = [&](cluster C, node x) {
 		double volC = 0.0;
 		double volN = 0.0;
-// #pragma omp atomic read
 		volC = volCluster[C];
 		if (zeta[x] == C) {
 			volN = volNode[x];
@@ -88,25 +83,18 @@ Clustering PLM::pass(Graph& G) {
 		}
 	};
 
+
 	// $\omega(u | C \ u)$
+	// TODO: function can be replaced by map lookup
 	auto omegaCut = [&](node u, cluster C) {
 		edgeweight w = 0.0;
-#ifdef _OPENMP
-		omp_set_lock(&mapLocks[u]);
-#endif
-		#pragma omp atomic read
 		w = incidenceWeight[u][C];
-#ifdef _OPENMP
-		omp_unset_lock(&mapLocks[u]);
-#endif
 		return w;
 	};
 
 	// difference in modularity when moving node u from cluster C to D
-	auto deltaMod =
-			[&](node u, cluster C, cluster D) {
+	auto deltaMod = [&](node u, cluster C, cluster D) {
 			double volN = 0.0;
-// #pragma omp atomic read
 			volN = volNode[u];
 			double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + this->gamma * ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volN) / (2 * total * total);
 			return delta;
@@ -118,25 +106,22 @@ Clustering PLM::pass(Graph& G) {
 	bool change = false; // change in last iteration?
 	do {
 		i += 1;
-		DEBUG("---> Louvain pass: iteration # " << i << ", parallelism: " << this->parallelism);
+		DEBUG("---> PLM2 pass: iteration # " << i << ", parallelism: " << this->parallelism);
 		change = false; // is clustering stable?
 
 		// try to improve modularity by moving a node to neighboring clusters
 		auto moveNode = [&](node u) {
+//			std::cout << u << " ";
 
 			cluster best = none;
 			cluster C = none;
 			cluster D = none;
 			double deltaBest = -0.5;
-
 // #pragma omp atomic read
 			C = zeta[u];
 
-//			TRACE("Processing neighborhood of node " << u << ", which is in cluster " << C);
 			G.forNeighborsOf(u, [&](node v) {
-// #pragma omp atomic read
 				D = zeta[v];
-//				TRACE("Neighbor " << v << ", which is still in cluster " << zeta[v]);
 				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 					double delta = deltaMod(u, C, D);
 					if (delta > deltaBest) {
@@ -152,14 +137,8 @@ Clustering PLM::pass(Graph& G) {
 
 				// update weight of edges to incident clusters
 				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
-#ifdef _OPENMP
-					omp_set_lock(&mapLocks[v]);
-#endif
 					incidenceWeight[v][best] += w;
 					incidenceWeight[v][C] -= w;
-#ifdef _OPENMP
-					omp_unset_lock(&mapLocks[v]);
-#endif
 				});
 // #pragma omp atomic write
 				zeta[u] = best; // move to best cluster
@@ -171,9 +150,9 @@ Clustering PLM::pass(Graph& G) {
 				this->anyChange = true; // indicate globally that clustering was modified
 
 				// update the volume of the two clusters
-#pragma omp atomic update
+				#pragma omp atomic update
 				volCluster[C] -= volN;
-#pragma omp atomic update
+				#pragma omp atomic update
 				volCluster[best] += volN;
 			}
 		};
@@ -190,22 +169,15 @@ Clustering PLM::pass(Graph& G) {
 			exit(1);
 		}
 
-//		std::cout << std::endl;
-	} while (change && i < MAX_LOUVAIN_ITERATIONS);
-
-	// free lock mem
-#ifdef _OPENMP
-#pragma omp barrier
-	DEBUG("about to destroy locks in Louvain pass");
-	G.parallelForNodes([&](node u) {
-				omp_destroy_lock(&mapLocks[u]);
-			});
-#endif
+	} while (change);
 
 	return zeta;
+
 }
 
-Clustering PLM::run(Graph& G) {
+
+
+Clustering PLM2::run(Graph& G) {
 	INFO("starting Louvain method");
 
 	// sub-algorithms
@@ -248,10 +220,13 @@ Clustering PLM::run(Graph& G) {
 	return result;
 }
 
-std::string PLM::toString() const {
+
+std::string PLM2::toString() const {
 	std::stringstream strm;
-	strm << "PLM(" << this->parallelism << ")";
+	strm << "PLM2(" << "parallelism=" << this->parallelism << ")";
 	return strm.str();
 }
 
 } /* namespace NetworKit */
+
+#endif
