@@ -170,7 +170,7 @@ TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
 
 }
 
-TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
+TEST_F(GeneratorsGTest, generateBarabasiAlbertGeneratorGraph) {
 		count k = 3;
 		count nMax = 1000;
 		count n0 = 3;
@@ -181,6 +181,35 @@ TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 		GraphIO io;
 		io.writeAdjacencyList(G, "output/"
 				"BarabasiGraph.txt");
+}
+
+
+// TODO: Students, please copy this method, put it below this one and rename it, then adapt
+TEST_F(GeneratorsGTest, tryHavelHakimiGenerator_Meyerhenke) {
+	count n = 200;
+	count maxDegree = n / 8;
+	std::vector<count> sequence(n);
+	bool realizable = false;
+
+	do {
+		// fill sequence with random values (this is not power-law, of course!)
+		for (index i = 0; i < n; ++i) {
+			sequence[i] = rand() % maxDegree;
+		}
+
+		// sort to ensure non-increasing order
+		std::sort(sequence.begin(), sequence.end(), std::greater<count>());
+
+		// check if sequence is realizable
+		HavelHakimiGenerator hhgen(sequence); // TODO: Students, please construct your own object
+		realizable = hhgen.isRealizable();
+
+		if (realizable) {
+			Graph G = hhgen.generate();
+			count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+			EXPECT_EQ(volume, G.numberOfEdges());
+		}
+	} while (! realizable);
 }
 
 
