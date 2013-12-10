@@ -29,7 +29,7 @@ def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
 			print("reading graph: {0}".format(graphPath))
 			G = graphio.readGraph(graphPath)
 			graphName = os.path.basename(graphPath).split(".")[0]
-			(n, m) = properties.nm(G)
+			(n, m) = properties.size(G)
 			for algo in algorithms:
 				algoName = algo.toString()
 				for i in range(repeat):
