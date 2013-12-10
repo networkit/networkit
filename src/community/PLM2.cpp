@@ -35,6 +35,7 @@ Clustering PLM2::run(Graph& G) {
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();
 	DEBUG("total edge weight: " << total);
+	edgeweight divisor = (2 * total * total); // needed in modularity calculation
 
 	G.parallelForNodes([&](node u) { // calculate and store volume of each node
 		volNode[u] += G.weightedDegree(u);
@@ -88,7 +89,7 @@ Clustering PLM2::run(Graph& G) {
 		auto modGain = [&](node u, cluster C, cluster D) {
 			double volN = 0.0;
 			volN = volNode[u];
-			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / (2 * total * total); // TODO: vorberechnung
+			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor; 
 			//TRACE("(" << affinity[D] << " - " << affinity[C] << ") / " << total << " + " << this->gamma << " * ((" << volCommunityMinusNode(C, u) << " - " << volCommunityMinusNode(D, u) << ") *" << volN << ") / 2 * " << (total * total));
 			return delta;
 		};

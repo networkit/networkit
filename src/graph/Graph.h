@@ -710,14 +710,6 @@ inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
 	}
 }
 
-template<typename L>
-inline void NetworKit::Graph::forNeighborsOf(node u, L handle) {
-	for (node v : this->adja[u]) {
-		if (v != none) {
-			handle(v);
-		}
-	}
-}
 
 template<typename L>
 inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) {
