@@ -201,7 +201,7 @@ std::string NetworKit::PLMR2::toString() const {
 	}
 
 	std::stringstream stream;
-	stream << "MLPM(" << parallelism << "," << refined << ")";
+	stream << "PLMR(" << parallelism << "," << refined << ")";
 
 	return stream.str();
 }
