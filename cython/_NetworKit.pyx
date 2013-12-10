@@ -630,22 +630,22 @@ cdef class PLM(Clusterer):
 		return self._this.toString().decode("utf-8")
 		
 		
-cdef extern from "../src/community/PLMR.h":
-	cdef cppclass _PLMR "NetworKit::PLMR":
-		_PLMR() except +
-		_PLMR(string par,  bool refine, double gamma) except +
+cdef extern from "../src/community/PLM2.h":
+	cdef cppclass _PLM2 "NetworKit::PLM2":
+		_PLM2() except +
+		_PLM2(bool refine, double gamma, string par) except +
 		string toString() except +
 		_Clustering run(_Graph G) except +
 
 
-cdef class PLMR(Clusterer):
-	""" MultiLevel Parallel LocalMover - the Louvain method principle extended to
+cdef class PLM2(Clusterer):
+	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement"""
 		
-	cdef _PLMR _this
+	cdef _PLM2 _this
 	
-	def __cinit__(self, par="balanced", refine=True, gamma=1.0):
-		self._this = _PLMR(stdstring(par), refine, gamma)
+	def __cinit__(self, refine=True, gamma=1.0, par="balanced"):
+		self._this = _PLM2(refine, gamma, stdstring(par))
 		
 	def toString(self):
 		return self._this.toString().decode("utf-8")
@@ -653,69 +653,6 @@ cdef class PLMR(Clusterer):
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))
 
-
-cdef extern from "../src/community/PLMR2.h":
-	cdef cppclass _PLMR2 "NetworKit::PLMR2":
-		_PLMR2() except +
-		_PLMR2(string par,  bool refine, double gamma) except +
-		string toString() except +
-		_Clustering run(_Graph G) except +
-
-
-cdef class PLMR2(Clusterer):
-	""" MultiLevel Parallel LocalMover - the Louvain method principle extended to
-		a full multi-level algorithm with refinement"""
-		
-	cdef _PLMR2 _this
-	
-	def __cinit__(self, par="balanced", refine=True, gamma=1.0):
-		self._this = _PLMR2(stdstring(par), refine, gamma)
-		
-	def toString(self):
-		return self._this.toString().decode("utf-8")
-		
-	def run(self, Graph G not None):
-		return Clustering().setThis(self._this.run(G._this))
-
-# FIXME: PLM2 
-# FIXME: CNM
-
-# # PLM2
-
-# cdef extern from "../src/community/PLM2.h":
-# 	cdef cppclass _PLM2 "NetworKit::PLM2":
-# 		_PLM2() except +
-# 		_PLM2(string par, double gamma)
-# 		_Clustering run(_Graph _G)
-# 		string toString()
-
-# cdef class PLM2:
-# 	cdef _PLM2 _this
-
-# 	def __cinit__(self, par="balanced", gamma=1.0):
-# 		self._this = _PLM2(stdstring(par), gamma)
-
-# 	def run(self, Graph G):
-# 		return Clustering().setThis(self._this.run(G._this))
-
-# 	def toString(self):
-# 		return self._this.toString().decode("utf-8")
-
-
-# cdef extern from "../src/community/CNM.h":
-# 	cdef cppclass _CNM "NetworKit::CNM":
-# 		_CNM() except +
-# 		_Clustering run(_Graph _G)
-# 		string toString()
-
-# cdef class CNM:
-# 	cdef _CNM _this
-
-# 	def run(self, Graph G):
-# 		return Clustering().setThis(self._this.run(G._this))
-
-# 	def toString(self):
-# 		return self._this.toString().decode("utf-8")
 
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures"""

@@ -371,9 +371,9 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 				algo = new PLM(algoParams);
 			}
 		} else if (algoName == "PLM2") {
-			algo = new PLMR2("balanced", false);
+			algo = new PLM2("balanced", false);
 		} else if (algoName == "PLMR2") {
-			algo = new PLMR2("balanced", true);
+			algo = new PLM2("balanced", true);
 		} else if (algoName == "EML") {
 			// TODO: call multilevel algorithm
 		} else if (algoName == "EPP") {

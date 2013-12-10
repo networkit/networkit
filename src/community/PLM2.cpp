@@ -1,232 +1,263 @@
 /*
- * PLM2.cpp
+ * MLPLM.cpp
  *
- *  Created on: 22.10.2013
+ *  Created on: 20.11.2013
  *      Author: cls
  */
 
-
-#if 0
-
 #include "PLM2.h"
-#include "../auxiliary/Log.h"
+#include <omp.h>
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
 
-#include <tbb/concurrent_unordered_map.h>
-#include <tbb/concurrent_vector.h>
-
-
+#include <sstream>
 
 namespace NetworKit {
 
+PLM2::PLM2(bool refine, double gamma, std::string par) : parallelism(par), refine(refine), gamma(gamma){
 
-PLM2::PLM2(std::string par, double gamma) : parallelism(par), gamma(gamma), anyChange(false) {
 }
 
 
-PLM2::~PLM2() {
-}
+Clustering PLM2::run(Graph& G) {
+	INFO("calling run method on " << G.toString());
+
+	count z = G.upperNodeIdBound();
 
 
-Clustering PLM2::pass(const Graph& G) {
-	// init clustering to singletons
-	count n = G.numberOfNodes();
-	Clustering zeta(n);
+	// init communities to singletons
+	Clustering zeta(z);
 	zeta.allToSingletons();
+	index o = zeta.upperBound();
 
+	// init graph-dependent temporaries
+	std::vector<double> volNode(z, 0.0);
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();
+	DEBUG("total edge weight: " << total);
 
-	// For each node we store a map that maps from cluster ID
-	// to weight of edges to that cluster, this needs to be updated when a change occurs
-	std::vector<tbb::concurrent_unordered_map<cluster, edgeweight> > incidenceWeight(n);
-
-	G.parallelForNodes([&](node u) {
-		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-					cluster C = zeta[v];
-					if (u != v) {
-						incidenceWeight[u][C] += w;
-					}
-				});
-	});
-
-	// modularity update formula for node moves
-	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
-
-	// parts of formula follow
-	std::vector<edgeweight> volNode(n, 0.0);
-
-	// calculate and store volume of each node
-	G.parallelForNodes([&](node u) {
+	G.parallelForNodes([&](node u) { // calculate and store volume of each node
 		volNode[u] += G.weightedDegree(u);
 		volNode[u] += G.weight(u, u); // consider self-loop twice
-		});
-
-	std::vector<edgeweight> volCluster(n, 0.0);
-	// set volume for all singletons
-	zeta.parallelForEntries([&](node u, cluster C) {
-		volCluster[C] = volNode[u];
+		// TRACE("init volNode[" << u << "] to " << volNode[u]);
 	});
 
+	// init community-dependent temporaries
+	std::vector<double> volCommunity(o, 0.0);
+	zeta.parallelForEntries([&](node u, cluster C) { 	// set volume for all communities
+		volCommunity[C] = volNode[u];
+	});
 
-	// $\vol(C \ {x})$ - volume of cluster C excluding node x
-	auto volClusterMinusNode = [&](cluster C, node x) {
-		double volC = 0.0;
-		double volN = 0.0;
-		volC = volCluster[C];
-		if (zeta[x] == C) {
-			volN = volNode[x];
-			return volC - volN;
-		} else {
-			return volC;
-		}
-	};
+	bool moved = false; // indicates whether any node has been moved
 
 
-	// $\omega(u | C \ u)$
-	// TODO: function can be replaced by map lookup
-	auto omegaCut = [&](node u, cluster C) {
-		edgeweight w = 0.0;
-		w = incidenceWeight[u][C];
-		return w;
-	};
+	// try to improve modularity by moving a node to neighboring clusters
+	auto tryMove = [&](node u) {
+		// TRACE("trying to move node " << u);
 
-	// difference in modularity when moving node u from cluster C to D
-	auto deltaMod = [&](node u, cluster C, cluster D) {
+		// collect edge weight to neighbor clusters
+		std::map<cluster, edgeweight> affinity;
+		G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
+			if (u != v) {
+				cluster C = zeta[v];
+				affinity[C] += weight;
+			}
+		});
+
+
+		// sub-functions
+
+		// $\vol(C \ {x})$ - volume of cluster C excluding node x
+		auto volCommunityMinusNode = [&](cluster C, node x) {
+			double volC = 0.0;
+			double volN = 0.0;
+			volC = volCommunity[C];
+			if (zeta[x] == C) {
+				volN = volNode[x];
+				return volC - volN;
+			} else {
+				return volC;
+			}
+		};
+
+		// // $\omega(u | C \ u)$
+		// auto omegaCut = [&](node u, cluster C) {
+		// 	return affinity[C];
+		// };
+
+		auto modGain = [&](node u, cluster C, cluster D) {
 			double volN = 0.0;
 			volN = volNode[u];
-			double delta = (omegaCut(u, D) - omegaCut(u, C)) / total + this->gamma * ((volClusterMinusNode(C, u) - volClusterMinusNode(D, u)) * volN) / (2 * total * total);
+			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / (2 * total * total); // TODO: vorberechnung
+			//TRACE("(" << affinity[D] << " - " << affinity[C] << ") / " << total << " + " << this->gamma << " * ((" << volCommunityMinusNode(C, u) << " - " << volCommunityMinusNode(D, u) << ") *" << volN << ") / 2 * " << (total * total));
 			return delta;
 		};
 
 
-	// begin pass
-	int i = 0;
-	bool change = false; // change in last iteration?
-	do {
-		i += 1;
-		DEBUG("---> PLM2 pass: iteration # " << i << ", parallelism: " << this->parallelism);
-		change = false; // is clustering stable?
-
-		// try to improve modularity by moving a node to neighboring clusters
-		auto moveNode = [&](node u) {
-//			std::cout << u << " ";
-
-			cluster best = none;
-			cluster C = none;
-			cluster D = none;
-			double deltaBest = -0.5;
-// #pragma omp atomic read
-			C = zeta[u];
-
-			G.forNeighborsOf(u, [&](node v) {
-				D = zeta[v];
-				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
-					double delta = deltaMod(u, C, D);
-					if (delta > deltaBest) {
-						deltaBest = delta;
-						best = D;
-					}
-				}
-			});
-
-			if (deltaBest > 0.0) { // if modularity improvement possible
-				assert (best != C && best != none);// do not "move" to original cluster
-				double volN = 0.0;
-
-				// update weight of edges to incident clusters
-				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
-					incidenceWeight[v][best] += w;
-					incidenceWeight[v][C] -= w;
-				});
-// #pragma omp atomic write
-				zeta[u] = best; // move to best cluster
-// #pragma omp atomic read
-				volN = volNode[u];
-// #pragma omp atomic write
-				change = true; // change to clustering has been made
-// #pragma omp atomic write
-				this->anyChange = true; // indicate globally that clustering was modified
-
-				// update the volume of the two clusters
-				#pragma omp atomic update
-				volCluster[C] -= volN;
-				#pragma omp atomic update
-				volCluster[best] += volN;
-			}
+		auto modUpdate = [&](node u, cluster C, cluster D) {
+			double volN = 0.0;
+			volN = volNode[u];
+			// update the volume of the two clusters
+			#pragma omp atomic update
+			volCommunity[C] -= volN;
+			#pragma omp atomic update
+			volCommunity[D] += volN;
 		};
 
-		// apply node movement according to parallelization strategy
-		if (this->parallelism == "none") {
-			G.forNodes(moveNode);
-		} else if (this->parallelism == "simple") {
-			G.parallelForNodes(moveNode);
-		} else if (this->parallelism == "balanced") {
-			G.balancedParallelForNodes(moveNode);
-		} else {
-			ERROR("unknown parallelization strategy: " << this->parallelism);
-			exit(1);
-		}
+		cluster best = none;
+		cluster C = none;
+		cluster D = none;
+		double deltaBest = -1;
 
-	} while (change);
+		C = zeta[u];
+
+//			TRACE("Processing neighborhood of node " << u << ", which is in cluster " << C);
+		G.forNeighborsOf(u, [&](node v) {
+			D = zeta[v];
+			if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
+				double delta = modGain(u, C, D);
+				// TRACE("mod gain: " << delta); // FIXME: all mod gains are negative
+				if (delta > deltaBest) {
+					deltaBest = delta;
+					best = D;
+				}
+			}
+		});
+
+		// TRACE("deltaBest=" << deltaBest); // FIXME: best mod gain is negative
+		if (deltaBest > 0) { // if modularity improvement possible
+			assert (best != C && best != none);// do not "move" to original cluster
+
+			zeta[u] = best; // move to best cluster
+			// TRACE("node " << u << " moved");
+			modUpdate(u, C, best);
+
+			moved = true; // change to clustering has been made
+
+		} else {
+			// TRACE("node " << u << " not moved");
+		}
+	};
+
+	// first move phase
+
+	// apply node movement according to parallelization strategy
+	if (this->parallelism == "none") {
+		G.forNodes(tryMove);
+	} else if (this->parallelism == "simple") {
+		G.parallelForNodes(tryMove);
+	} else if (this->parallelism == "balanced") {
+		G.balancedParallelForNodes(tryMove);
+	} else {
+		ERROR("unknown parallelization strategy: " << this->parallelism);
+		throw std::runtime_error("unknown parallelization strategy");
+	}
+
+
+	if (moved) {
+		DEBUG("nodes moved, so begin coarsening and recursive call");
+		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
+		Clustering zetaCoarse = run(coarsened.first);
+
+		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
+		// refinement phase
+		if (refine) {
+			INFO("refinement phase");
+			// reinit community-dependent temporaries
+			o = zeta.upperBound();
+			volCommunity.clear();
+			volCommunity.resize(o, 0.0);
+			zeta.parallelForEntries([&](node u, cluster C) { 	// set volume for all communities
+				edgeweight volN = volNode[u];
+				#pragma omp atomic update
+				volCommunity[C] += volN;
+			});
+
+			// second move phase
+			moved = false;
+			// apply node movement according to parallelization strategy
+			if (this->parallelism == "none") {
+				G.forNodes(tryMove);
+			} else if (this->parallelism == "simple") {
+				G.parallelForNodes(tryMove);
+			} else if (this->parallelism == "balanced") {
+				G.balancedParallelForNodes(tryMove);
+			} else {
+				ERROR("unknown parallelization strategy: " << this->parallelism);
+				throw std::runtime_error("unknown parallelization strategy");
+			}
+		}
+	}
 
 	return zeta;
-
 }
 
+std::string NetworKit::PLM2::toString() const {
+	std::string refined;
+	if (refine) {
+		refined = "refinement";
+	} else {
+		refined = "";
+	}
 
+	std::stringstream stream;
+	stream << "PLM2(" << parallelism << "," << refined << ")";
 
-Clustering PLM2::run(Graph& G) {
-	INFO("starting Louvain method");
+	return stream.str();
+}
 
-	// sub-algorithms
-	ClusterContracter contracter;
-	ClusteringProjector projector;
+std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Clustering& zeta) {
+	Graph Gcoarse(0); // empty graph
+	Gcoarse.markAsWeighted(); // Gcon will be a weighted graph
 
-	// hierarchies
-	std::vector<std::pair<Graph, NodeMap<node> > > hierarchy; // hierarchy of graphs G^{i} and maps M^{i->i+1}
-	std::vector<NodeMap<node> > maps; // hierarchy of maps M^{i->i+1}
+	std::vector<node> communityToMetaNode(zeta.upperBound(), none); // there is one meta-node for each community
 
-	int h = -1; // finest hierarchy level
-	bool done = false; //
-
-	Graph* graph = &G;
-
-	do {
-		h += 1; // begin new hierarchy level
-		DEBUG("Louvain hierarchy level " << h);
-		// one local optimization pass
-		DEBUG("starting Louvain pass");
-		Clustering clustering = this->pass(*graph);
-		if (this->anyChange) {
-			// contract the graph according to clustering
-			DEBUG("starting contraction");
-			hierarchy.push_back(contracter.run(*graph, clustering));
-			maps.push_back(hierarchy[h].second);
-			graph = &hierarchy[h].first;
-
-			done = false; // new hierarchy level, continue with loop
-			this->anyChange = false; // reset change flag
-		} else {
-			done = true; // if clustering was not modified, do not contract and exit loop
+	// populate map cluster -> meta-node
+	G.forNodes([&](node v){
+		cluster c = zeta[v];
+		if (communityToMetaNode[c] == none) {
+			communityToMetaNode[c] = Gcoarse.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
 		}
-	} while (!done);
+	});
 
-	DEBUG("starting projection");
-	// project fine graph to result clustering
-	Clustering result = projector.projectCoarseGraphToFinestClustering(*graph,
-			G, maps);
-	return result;
+
+	count z = G.upperNodeIdBound();
+	std::vector<node> nodeToMetaNode(z);
+
+	// set entries node -> supernode
+	G.parallelForNodes([&](node v){
+		nodeToMetaNode[v] = communityToMetaNode[zeta[v]];
+	});
+
+
+	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
+	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
+		node su = nodeToMetaNode[u];
+		node sv = nodeToMetaNode[v];
+		if (zeta[u] == zeta[v]) {
+			// add edge weight to supernode (self-loop) weight
+			Gcoarse.setWeight(su, su, Gcoarse.weight(su, su) + ew);
+		} else {
+			// add edge weight to weight between two supernodes (or insert edge)
+			Gcoarse.setWeight(su, sv, Gcoarse.weight(su, sv) + ew);
+		}
+	}); 
+
+	return std::make_pair(Gcoarse, nodeToMetaNode);
+
 }
 
+Clustering PLM2::prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
+	Clustering zetaFine(Gfine.upperNodeIdBound());
 
-std::string PLM2::toString() const {
-	std::stringstream strm;
-	strm << "PLM2(" << "parallelism=" << this->parallelism << ")";
-	return strm.str();
+	Gfine.forNodes([&](node v) {
+		node mv = nodeToMetaNode[v];
+		cluster cv = zetaCoarse[mv];
+		zetaFine[v] = cv;
+	});
+
+	return zetaFine;
 }
 
 } /* namespace NetworKit */
 
-#endif
