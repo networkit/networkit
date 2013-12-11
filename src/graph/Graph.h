@@ -598,6 +598,9 @@ public:
 
 	/** NEIGHBORHOOD ITERATORS **/
 
+    template<typename L> void forNeighborsOfInRandomOrder(node u, L handle);
+    template<typename L> void forNeighborsOfInRandomOrder(node u, L handle) const;
+
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 *
@@ -609,6 +612,11 @@ public:
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forNeighborsOf(node u, L handle) const;
+
+	/** 
+	 * Iterate over all pairs of neighbors of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forTwoNeighborsOf(node u, L handle) const;
 
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
@@ -691,6 +699,33 @@ public:
 
 } /* namespace NetworKit */
 
+
+template<typename L>
+inline void NetworKit::Graph::forNeighborsOfInRandomOrder(node u, L handle) {
+    std::vector<node> neighbors;
+	for (node v : this->adja[u]) {
+		if (v != none)
+            neighbors.push_back(v);
+	}
+    std::random_shuffle(neighbors.begin(), neighbors.end());
+    for (node v : neighbors) {
+        handle(v);
+    }
+}
+
+template<typename L>
+inline void NetworKit::Graph::forNeighborsOfInRandomOrder(node u, L handle) const {
+    std::vector<node> neighbors;
+	for (node v : this->adja[u]) {
+		if (v != none)
+            neighbors.push_back(v);
+	}
+    std::random_shuffle(neighbors.begin(), neighbors.end());
+    for (node v : neighbors) {
+        handle(v);
+    }
+}
+
 template<typename L>
 inline void NetworKit::Graph::forNeighborsOf(node u, L handle) {
 	for (node v : this->adja[u]) {
@@ -705,6 +740,16 @@ inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
 	for (node v : this->adja[u]) {
 		if (v != none) {
 			handle(v);
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::Graph::forTwoNeighborsOf(node u, L handle) const {
+	const node neighbors_count = this->adja[u].size();
+	for (int i = 0; i < neighbors_count - 1; i++) {
+		for (int j = i + 1; j < neighbors_count; j++) {
+			handle(this->adja[u][i], this->adja[u][j]);
 		}
 	}
 }

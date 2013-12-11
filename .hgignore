@@ -10,6 +10,7 @@ syntax: regexp
 \.so
 ^build.conf$
 ^NetworKit-Tests-
+^NetworKit-CommunityDetection-
 .swp$
 ^.sconsign.dblite$
 .sublime-.*$
@@ -36,3 +37,10 @@ syntax: regexp
 /*.eps
 syntax: regexp
 ^doxygen$
+syntax: regexp
+vc2012
+build.conf
+.sconsign.dblite
+NetworKit-.*
+.*~
+

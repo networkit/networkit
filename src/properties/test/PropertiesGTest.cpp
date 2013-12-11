@@ -34,6 +34,7 @@ TEST_F(PropertiesGTest, testApproximateClusteringCoefficient_Hoske) {
 	EXPECT_EQ(1.0, cc);
 }
 
+
 /* Compute approximate cluster coefficient of graph input/name.graph
    and store it in output/name.cluster. */
 static void test_cluster_coeff(std::string name) {
@@ -58,6 +59,7 @@ static void test_cluster_coeff(std::string name) {
     out << "Average local cluster coefficient:\n";
     out << "  Approximate: " << acc.calculate(false, G, CLUSTER_ITER) << "\n";
     out << "  Exact:       " << ExactClusteringCoefficient::calculate(false, G) << "\n";
+    
 }
 
 /* Tests the approximate clustering coefficient on some DIMACS graphs. */
@@ -281,6 +283,34 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
 
 }
 
+
+static void run_estimatedDiameterRange_Feist(std::string name) {
+
+    METISGraphReader reader;
+    Graph G = reader.read("input/" + name + ".graph");
+    count p = 5;
+    std::pair<count, count> result = GraphProperties::estimatedDiameterRange_Feist(G, p);
+
+    std::ofstream out("output/" + name + ".diameter");
+    out << "Results of algorithm 'Estimate Diameter' on Graph " << name << ".\n";
+    out << "Given treshold value: " << p << ".\n";
+    out << "_Estimated_ Diameter Range: [" << result.first << "," << result.second << "]" << "\n";
+
+    std::cout << "*Estimated* Diameter Range: [" << result.first << "," << result.second << "]" << std::endl;
+}
+
+static void run_DiameterRange_Feist(std::string name) {
+
+    METISGraphReader reader;
+    Graph G = reader.read("input/" + name + ".graph");
+    count result = GraphProperties::DiameterRange_Feist(G);
+
+    std::cout << "*Exact* Diameter Range: " << result << std::endl;
+}
+
+
+
+
 TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 	// Reading the graph
 	std::string path = "input/jazz.graph";
@@ -293,7 +323,7 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
 	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
 
-	// Calculating the parameters
+        // Calculating the parameters
 	std::vector<count> 	degreeDist = GraphProperties::degreeDistribution(G);
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
 	std::vector<double> coefficientsPerDegree = GraphProperties::localClusteringCoefficientPerDegree(G);
@@ -359,16 +389,26 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 	double avgCoefficientNetworkX = 0.6174507021536301;
 
 	EXPECT_EQ(avgCoefficientNetworkX, avgCoefficient);
+          
+        run_estimatedDiameterRange_Feist("cnr-2000"); 
+        run_estimatedDiameterRange_Feist("caidaRouterLevel");
+}
 
 
-
+TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Feist) {
+    // TODO: Assignment #7 of AMzN
+    // TODO: Students, please rename this method by appending your group name
+    
+    run_estimatedDiameterRange_Feist("cnr-2000");  
+    run_estimatedDiameterRange_Feist("caidaRouterLevel");
+  
 }
 
 /* Fromat value that can be infinity nicely. */
 template <typename T>
 static std::string format_infinity_Hoske(T val) {
     std::ostringstream out;
-    static const T INF = std::numeric_limits<T>::max();
+    static const count INF = std::numeric_limits<T>::max();
     if (val == INF) {
         out << "infinity";
     } else {
@@ -404,33 +444,108 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange_Hoske) {
 
 /* Tests for the betweeness centrality measure. */
 
-/* Computes the betweeness scores in the graph 'name'. */
-static void test_betweenness_Hoske(std::string name) {
+TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
+  // Clique
+  {
+    count n = 5;
+	  Graph G(n);
+
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+    G.addEdge(0, 3);
+    G.addEdge(0, 4);
+    G.addEdge(1, 2);
+    G.addEdge(1, 3);
+    G.addEdge(1, 4);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 4);
+
+    EXPECT_GE(1, GraphProperties::estimateDiameter_ck(G).first);
+    EXPECT_LE(1, GraphProperties::estimateDiameter_ck(G).second);
+  }
+
+  // Lollipop
+  {
+    count n = 7;
+	  Graph G(n);
+
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(3, 0);
+    G.addEdge(3, 4);
+    G.addEdge(4, 5);
+    G.addEdge(5, 6);
+
+    EXPECT_GE(5, GraphProperties::estimateDiameter_ck(G).first);
+    EXPECT_LE(5, GraphProperties::estimateDiameter_ck(G).second);
+  }
+}
+
+TEST_F(PropertiesGTest, tryExactDiameter_Brueckner) {
+
     using namespace std;
 
-    METISGraphReader reader;
-    Graph G = reader.read("input/" + name + ".graph");
-    ofstream out_all("output/" + name + "-bc_hoske.sol");
-    ofstream out_max("output/" + name + "-bc-max_hoske.sol");
+    count infDist = numeric_limits<count>::max();
 
-    /* Output all scores. */
-    auto betweenness = betweennessCentrality_Hoske(G);
-    for (double b: betweenness) {
-    	out_all << b << "\n";
+    vector<pair<string, count>> testInstances= {pair<string, count>("airfoil1", 65),
+                                                pair<string, count>("astro-ph", infDist),
+                                                pair<string, count>("caidaRouterLevel", infDist),
+                                                pair<string, count>("celegans_metabolic", 7),
+                                                pair<string, count>("hep-th", infDist),
+                                                pair<string, count>("jazz", 6),
+                                                pair<string, count>("lesmis", 5),
+                                                pair<string, count>("polblogs", infDist),
+                                                pair<string, count>("cnr-2000", 34),
+                                               };
+
+    for (auto testInstance : testInstances) {
+        METISGraphReader reader;
+        Graph G = reader.read("input/" + testInstance.first + ".graph");
+        count diameter = GraphProperties::exactDiameter_Brueckner(G);
+        EXPECT_EQ(diameter, testInstance.second);
     }
-
-    /* Output the maximum score. */
-    auto max_iter = max_element(begin(betweenness), end(betweenness));
-    out_max << "The node with maximum betweenness score in '" << name << "' is node ";
-    out_max << distance(begin(betweenness), max_iter);
-    out_max << " with score " << (*max_iter) << ".\n";
 }
 
-TEST_F(PropertiesGTest, testBetweennessCentrality_Hoske) {
-    test_betweenness_Hoske("celegans_metabolic");
-    test_betweenness_Hoske("polblogs");
-    test_betweenness_Hoske("hep-th");
+
+TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Brueckner) {
+
+    using namespace std;
+
+    count infDist = numeric_limits<count>::max();
+
+    vector<pair<string, count>> testInstances= {pair<string, count>("airfoil1", 65),
+                                                pair<string, count>("astro-ph", infDist),
+                                                pair<string, count>("caidaRouterLevel", infDist),
+                                                pair<string, count>("celegans_metabolic", 7),
+                                                pair<string, count>("hep-th", infDist),
+                                                pair<string, count>("jazz", 6),
+                                                pair<string, count>("lesmis", 5),
+                                                pair<string, count>("polblogs", infDist),
+                                                pair<string, count>("cnr-2000", 34),
+                                               };
+
+    for (auto testInstance : testInstances) {
+        METISGraphReader reader;
+        Graph G = reader.read("input/" + testInstance.first + ".graph");
+        std::pair<count, count> range = GraphProperties::estimatedDiameterRange_Brueckner(G);
+        EXPECT_GE(testInstance.second, range.first);
+        EXPECT_LE(testInstance.second, range.second);
+    }
 }
+
+
+TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Ritter) {
+    Graph G = METISGraphReader().read("input/cnr-2000.graph");
+    std::pair<count, count> bounds = GraphProperties::estimatedDiameterRange_Ritter(G);
+    std::ofstream out("output/cnr-2000.graph.diameter");
+    out << "Results of algorithm 'Estimate Diameter' on Graph cnr-2000.graph.\n";
+    out << "_Estimated_ Diameter Range: [" << bounds.first << "," << bounds.second << "]" << "\n";
+    std::cout << "*Estimated* Diameter Range: [" << bounds.first << "," << bounds.second << "]" << std::endl;
+}
+
+
 
 } /* namespace NetworKit */
 #endif /*NOGTEST*/

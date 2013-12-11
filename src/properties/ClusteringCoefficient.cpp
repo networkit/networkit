@@ -39,6 +39,7 @@ double ClusteringCoefficient::calculate(Graph& G) {
 	});
 
 	G.parallelForNodes([&](node u){
+		if(G.degree(u)>=2)
 		denominator[u] = G.degree(u) * (G.degree(u) - 1);
 	});
 

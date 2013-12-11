@@ -13,6 +13,8 @@
 #include "../graph/BFS.h"
 #include "../io/METISGraphReader.h"
 #include "ApproximateClusteringCoefficient_Hoske.h"
+#include "../graph/BFS.h"
+#include "../graph/GraphDistance.h"
 
 namespace NetworKit {
 
@@ -72,6 +74,16 @@ public:
      * @return pair of node v and eccentricity.
      */
     static std::pair<node, count> eccentricity_Hoske(const Graph& G, node u);
+
+    static std::pair<count, count> estimateDiameter_ck(const Graph& G);
+
+    static std::pair<count, count> estimatedDiameterRange_Feist(const Graph& G, count k);
+    static count DiameterRange_Feist(const Graph& G);
+
+    static std::pair<count, count> estimatedDiameterRange_Brueckner(const Graph& G);
+	static count exactDiameter_Brueckner(const Graph& G);
+
+	static std::pair<count, count> estimatedDiameterRange_Ritter(const Graph& G);
 };
 
 } /* namespace NetworKit */

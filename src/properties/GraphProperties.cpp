@@ -6,7 +6,14 @@
  */
 
 #include "GraphProperties.h"
+#include "../graph/BFS.h"
+#include "../graph/BFSTree.h"
+#include <random>
+#include <algorithm>
+#include "GraphProperties_Ritter.h"
 
+#include <list>
+#include <random>
 
 namespace NetworKit {
 
@@ -144,6 +151,117 @@ double GraphProperties::approximateGlobalClusteringCoefficient(
 	return acc.calculate(true, G, numIters);
 }
 
+std::pair<count, count> GraphProperties::estimatedDiameterRange_Feist(const Graph& G, count p) {
+    count lowerBound = 0;
+    count upperBound = std::numeric_limits<count>::max();
+
+    node startNode;
+    count inc = 0;
+    count infDist = std::numeric_limits<count>::max();
+    count n = G.numberOfNodes();       
+    std::pair<std::vector<count>, node> resultOfBFS;
+
+    std::default_random_engine rand;
+    rand.seed(std::random_device()());
+    std::uniform_int_distribution<node> range(0, n-1);
+
+    std::vector<count> highToLow(n);
+    std::iota(begin(highToLow), end(highToLow), 0);
+    std::sort(begin(highToLow), end(highToLow), [&] (node v1, node v2) {
+            return G.degree(v1) > G.degree(v2);
+        });
+  
+    // check if G is a connected Graph
+    {
+        startNode = range(rand);
+
+        BFS bfs;    
+        resultOfBFS = bfs.run_Feist(G, startNode); 
+
+        for(count& e : resultOfBFS.first){
+            if (e == infDist) {
+                lowerBound = infDist;
+                upperBound = infDist;                    
+                return std::make_pair(lowerBound, upperBound);
+            }
+        }        
+    }
+
+    while (upperBound - lowerBound >= p) {
+
+        // 1. compute double sweep lower bound
+        {
+            startNode = range(rand);
+
+            BFS bfs;    
+            resultOfBFS = bfs.run_Feist(G, startNode); 
+            node max_distance_node = resultOfBFS.second;             
+                 
+            BFS bfs2;
+            resultOfBFS = bfs.run_Feist(G, max_distance_node);
+                        
+            if (resultOfBFS.first[resultOfBFS.second] > lowerBound)
+                lowerBound = resultOfBFS.first[resultOfBFS.second];
+    
+        } // (1)
+
+        // 2. compute tree upper bound 
+        {        
+            //startNode = d(e);
+            startNode = highToLow[inc];
+            std::vector<count> distances(n, infDist);
+            std::queue<node> q;     
+   
+            distances[startNode] = 0;
+            q.push(startNode);
+        
+            Graph spanningTree(n);
+
+            while (! q.empty()) {
+                node current = q.front();
+                q.pop();
+                        
+                G.forNeighborsOf(current, [&](node neighbor) {
+                        if (distances[neighbor] == infDist) {
+                            q.push(neighbor);
+                            distances[neighbor] = distances[current] + 1;
+                            spanningTree.addEdge(current, neighbor);
+                            startNode = neighbor;
+                        }                               
+                    });
+            }                             
+            
+            BFS bfs;    
+            resultOfBFS = bfs.run_Feist(spanningTree, startNode);    
+
+            if (resultOfBFS.first[resultOfBFS.second] < upperBound) 
+                upperBound = resultOfBFS.first[resultOfBFS.second];          
+            
+            inc++;
+    
+        } // (2)
+
+    } //while
+   
+    return std::make_pair(lowerBound, upperBound);
+}
+
+count GraphProperties::DiameterRange_Feist(const Graph& G) {
+    
+    count diameter = 0;
+    count current = 0;
+
+    GraphDistance dist;
+
+    G.forNodePairs([&](node u, node v){
+            current = dist.unweightedDistance(G, u, v);
+            if (current > diameter)
+                diameter = current;
+	});    
+
+
+    return diameter;
+}
 
 std::pair<node, count> GraphProperties::eccentricity_Hoske(const Graph& G, node u) {
     static BFS bfs;
@@ -220,5 +338,207 @@ std::pair<count, count> GraphProperties::estimatedDiameterRange_Hoske(const Grap
 	return {lowerBound, upperBound};
 }
 
-} /* namespace NetworKit */
 
+// returns the maximum entry of an unsorted array and its index
+static std::pair<count, count> ecc(std::vector<node> distances) {
+  count max_distance = std::numeric_limits<count>::min();
+  node max_distance_node = 0;
+
+  for(int i = 0; i < distances.size(); i++) {
+    if(distances[i] > max_distance) {
+      max_distance = distances[i];
+      max_distance_node = i;
+    }
+  }
+  return std::make_pair(max_distance, max_distance_node);
+}
+
+std::pair<count, count> GraphProperties::estimateDiameter_ck(const Graph& G) {
+  count lowerBound = 0;
+  count upperBound = std::numeric_limits<count>::max();
+
+  int n = G.numberOfNodes();
+  int maxDegree = minMaxDegree(G).second;
+
+  std::vector<node> nodesWithDegree[maxDegree + 1];
+
+  G.forNodes([&](node u) {
+    nodesWithDegree[G.degree(u)].push_back(u);
+  });
+
+  int i = 1, j = 0;
+  while(upperBound - lowerBound > 5) {
+    // improving lower bound by computing ecc for a node with smallest degree
+    while(nodesWithDegree[i].empty() && i <= maxDegree/2 + 1) {
+      i++;
+    }
+    node u = nodesWithDegree[i].back();
+    std::vector<node> distances = BFS().run(G, u);
+    count ecc_result = ecc(distances).first; // yields ecc(u)
+    if(ecc_result > lowerBound) {
+      lowerBound = ecc_result;
+    }
+    nodesWithDegree[i].pop_back();
+
+    // improving upper bound by computing the diameter of spanning
+    // tree with root = node with highest degree.
+    while(nodesWithDegree[maxDegree - j].empty()) {
+      j++;
+    }
+    u = nodesWithDegree[maxDegree - j].back();
+    distances = BFS().run(G, u);
+    auto ecc_pair = ecc(distances);
+    ecc_result = ecc_pair.first;
+    if(ecc_result > lowerBound) {
+      lowerBound = ecc_result;
+    }
+
+    Graph T(n);
+    G.forNodes([&](node w) {
+      G.forEdgesOf(w, [&](node u, node v) {
+        if(distances[u] == distances[v] + 1) {
+          T.addEdge(u,v);
+        }
+      });
+    });
+    u = ecc_pair.second;
+    distances = BFS().run(T, u);
+    ecc_result = ecc(distances).first;
+    if(ecc_result < upperBound) {
+      upperBound = ecc_result;
+    }
+    nodesWithDegree[maxDegree - j].pop_back();
+  }
+  return std::make_pair(lowerBound, upperBound);
+}
+
+std::pair<count, count> GraphProperties::estimatedDiameterRange_Brueckner(
+		const Graph& G) {
+
+    using namespace std;
+
+    count infDist = numeric_limits<count>::max();
+
+    default_random_engine e;
+    e.seed(random_device()());
+
+    // Pick nodes randomly, weighted by their degree.
+    vector<count> nodeWeights(G.numberOfNodes());
+    G.forNodes([&](node v) {
+            nodeWeights[v] = G.degree(v);
+        });
+
+	count lowerBound = 0;
+	count upperBound = infDist;
+
+    for (count i = 0;
+         i < G.numberOfNodes() && upperBound - lowerBound > 5;
+         i++) {
+
+        discrete_distribution<node> nodeDistribution(nodeWeights.begin(), nodeWeights.end());
+        node v = nodeDistribution(e);
+        nodeWeights[v] = 0;
+        BFSTree T(G, v);
+        if (!T.spanning())
+            return make_pair(infDist, infDist);
+        else {
+            lowerBound = max(lowerBound, T.depth());
+            upperBound = min(upperBound, 2 * T.depth());
+            BFS bfs;
+            std::vector<count> dists = bfs.run(T, T.deepest());
+            count maxDist = 0;
+            for (auto dist : dists)
+                maxDist = max(maxDist, dist);
+            upperBound = min(upperBound, maxDist);
+        }
+    }
+
+	return make_pair(lowerBound, upperBound);
+}
+
+count GraphProperties::exactDiameter_Brueckner(
+        const Graph& G) {
+
+    using namespace std;
+
+    count diameter = 0;
+
+	G.forNodesInRandomOrder([&](node v){
+            BFS bfs;
+            vector<count> distances = bfs.run(G, v);
+            for (auto distance : distances) {
+                if (diameter < distance)
+                    diameter = distance;
+            }
+    });
+
+    return diameter;
+}
+
+std::pair<count, count> GraphProperties::estimatedDiameterRange_Ritter(const Graph& G) {
+	static const count p = 5;
+	const count n = G.numberOfNodes();
+	std::mt19937_64 randGen;
+	std::uniform_int_distribution<node> distribution(0, n - 1);
+
+	if (G.numberOfEdges() == 0) {
+		// empty graph
+		return std::make_pair(0, 0);
+	}
+
+	if (GraphProperties_Ritter::eccentricity(G, 0) == GraphProperties_Ritter::INF_DIST) {
+		// Graph G is not connected
+		return std::make_pair(GraphProperties_Ritter::INF_DIST, GraphProperties_Ritter::INF_DIST);
+	}
+
+	count lowerBound = 1;
+	count upperBound = std::numeric_limits<count>::max();
+
+	const count maxDegree = minMaxDegree(G).second;
+
+	std::list<node> nodesByDegree[maxDegree + 1];
+	G.forNodes([&] (node v) {
+		nodesByDegree[G.degree(v)].push_front(v);
+	});
+
+	index min_d = 0;
+	index max_d = maxDegree;
+	while (upperBound - lowerBound > p) {
+		// let min_d and max_d point to non empty list again
+		while (nodesByDegree[min_d].empty() && min_d < maxDegree) min_d++;
+		while (nodesByDegree[max_d].empty() && max_d > 0) max_d--;
+
+		// we need at least 2 nodes in nodesByDegree to continue
+		if (max_d < min_d || (min_d == max_d && nodesByDegree[min_d].size() < 2)) {
+			break;
+		}
+
+		// try to improve lower bound
+		node v = distribution(randGen);
+
+		// using the eccentricity of a low degree node v
+		// node v = nodesByDegree[min_d].front();
+		// nodesByDegree[min_d].pop_front();
+
+		count ecc = GraphProperties_Ritter::eccentricity(G, v);
+		if (ecc > lowerBound) {
+			lowerBound = ecc;
+		}
+
+		// try to improve upper bound
+		// using the diameter of a spanning tree T from a high degree node u
+		node u = nodesByDegree[max_d].front();
+
+		nodesByDegree[max_d].pop_front();
+		Graph T = GraphProperties_Ritter::spanningTree(G, u);
+		count dia = GraphProperties_Ritter::diameterOfTree(T, u);
+		if (dia < upperBound) {
+			upperBound = dia;
+		}
+		// printf("lower bound: %u, upper bound: %u\n", lowerBound, upperBound);
+	}
+
+	return std::make_pair(lowerBound, upperBound);
+}
+
+} /* namespace NetworKit */
