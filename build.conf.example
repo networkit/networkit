@@ -1,0 +1,12 @@
+[compiler]
+cpp=g++-4.8
+defines=
+
+[includes]
+std=/usr/local/Cellar/gcc48/4.8.1/gcc/include/c++/4.8.
+gtest=/Users/cls/workspace/gtest/include
+log4cxx=/usr/local/Cellar/log4cxx/0.10.0/include
+
+[libraries]
+gtest=/Users/cls/workspace/gtest
+log4cxx=/usr/local/Cellar/log4cxx/0.10.0/lib
