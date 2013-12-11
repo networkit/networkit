@@ -39,7 +39,8 @@ namespace Aux {
 #elif defined SIMPLE
 	#define LOG_TEST_CONDITION        output
 	#define LOG_TEST_LEVEL(v)   (v) <= DebugCake::DebugLevel
-
+	//TODO: rename semantically, D=> LOGSTREAM, struct => class
+	//TODO: move to own class with header and source.
 	template<typename C,typename T = std::char_traits<C> >
 	struct DInfo {
 	    typedef std::basic_ostream<C,T>& (*StrFunc)(std::basic_ostream<C,T>&);
@@ -92,12 +93,12 @@ namespace Aux {
 	typedef D<char>    SIMPLELOG;
 	typedef D<wchar_t> WDebug;
 	int DebugCake::DebugLevel = 3;
-	#define FATAL(X) D<char>(5) << "[FATAL] " << LOCATION << X << std::endl;
-	#define ERROR(X) D<char>(4) << "[ERROR] " << LOCATION << X << std::endl;
-	#define WARN(X) D<char>(3) << "[WARN] " << LOCATION << X << std::endl;
-	#define INFO(X) D<char>(2) << "[INFO] " << LOCATION << X << std::endl;
-	#define DEBUG(X) D<char>(1) << "[DEBUG] " << LOCATION << X << std::endl;
-	#define TRACE(X) D<char>(0) << "[TRACE] " << LOCATION << X << std::endl;
+	#define FATAL(X) Aux::D<char>(5) << "[FATAL] " << LOCATION << X << std::endl;
+	#define ERROR(X) Aux::D<char>(4) << "[ERROR] " << LOCATION << X << std::endl;
+	#define WARN(X) Aux::D<char>(3) << "[WARN] " << LOCATION << X << std::endl;
+	#define INFO(X) Aux::D<char>(2) << "[INFO] " << LOCATION << X << std::endl;
+	#define DEBUG(X) Aux::D<char>(1) << "[DEBUG] " << LOCATION << X << std::endl;
+	#define TRACE(X) Aux::D<char>(0) << "[TRACE] " << LOCATION << X << std::endl;
 /**
  * Set the current loglevel.
  * @param loglevel 
