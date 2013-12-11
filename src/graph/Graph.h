@@ -606,11 +606,6 @@ public:
 	 */
 	template<typename L> void forNeighborsOf(node u, L handle) const;
 
-	/** 
-	 * Iterate over all pairs of neighbors of a node and call handler (lamdba closure).
-	 */
-	template<typename L> void forTwoNeighborsOf(node u, L handle) const;
-
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
 	 */
