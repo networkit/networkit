@@ -22,42 +22,23 @@ TEST_F(PartitionGTest, testAllToSingletons) {
 	Partition p(10);
 	p.allToSingletons();
 	for (int i = 0; i < 10; i++) {
-		EXPECT_TRUE(p[i] != p[i+1]);
+		EXPECT_TRUE(p[i] != p[(i+1)%10]);
 	}
 }
 
 TEST_F(PartitionGTest, testAddToSubsetSuccess) {
+	// Add to Subset really necessary?
 	Partition p(10);
-	p.addToSubset(8,2);
-	p.addToSubset(3,2);
-	EXPECT_TRUE(p[8] == p[3]);	
-}
-
-TEST_F(PartitionGTest, tryAddToSubsetWrongNodeID) {
-	Partition p(10);
-	p.addToSubset(30,15);
-	// TODO: which behaviour is wanted? user/programmer has to take care of IDs?
-}
-
-TEST_F(PartitionGTest, tryAddToSubsetWrongSubsetID) {
-	Partition p(10);
-	p.addToSubset(15,8);
-	EXPECT_TRUE(p[8] == none);
-	// TODO: which behaviour is wanted? user/programmer has to take care of IDs with upperBound()?
+	p.addToSubset(0,8);
+	p.addToSubset(0,3);
+	EXPECT_EQ(p[8],p[3]);	
 }
 
 TEST_F(PartitionGTest, testMoveToSubsetSuccess) {
 	Partition p(10);
 	p.allToSingletons();
 	p.moveToSubset(p[3],8);
-	EXPECT_TRUE(p[8] == p[3]);
-}
-
-TEST_F(PartitionGTest, tryMoveToSubsetWrongSubsetID) {
-	Partition p(10);
-	p.allToSingletons();
-	p.moveToSubset(30,4);
-	// TODO: which behaviour is wanted? user/programmer has to take care of IDs with upperBound()?
+	EXPECT_EQ(p[8],p[3]);
 }
 
 TEST_F(PartitionGTest, testMergeSubsets) {
@@ -68,7 +49,7 @@ TEST_F(PartitionGTest, testMergeSubsets) {
 	p.mergeSubsets(p[2],p[7]);
 	p.mergeSubsets(p[0],p[1]);
 	p.mergeSubsets(p[1],p[2]);
-	EXPECT_TRUE(p[9] == p[7]);
+	EXPECT_EQ(p[9],p[7]);
 }
 
 TEST_F(PartitionGTest, testIsOnePartitionFalse) {
@@ -81,8 +62,7 @@ TEST_F(PartitionGTest, testIsOnePartitionFalse2) {
 	Partition p(10);
 	p.allToSingletons();
 	p.forEntries([&](index e,index s){
-		index n = (e==9)?0:e+1;
-		p.mergeSubsets(p[e],p[n]);
+		p.moveToSubset(p[0],e);
 	});
 	p.toSingleton(9);
 	EXPECT_FALSE(p.isOnePartition({}));
@@ -148,8 +128,8 @@ TEST_F(PartitionGTest, testUpperBound) {
 	count n = 6542;
 	Partition p(n);
 	p.allToSingletons();
-	// ID start with 1, plus 1 for upper bound
-	count ub = n+2;
+	// ID start with 1, plus 1 for hard upper bound
+	count ub = n+1;
 	EXPECT_EQ(p.upperBound(),ub);
 }
 
@@ -161,9 +141,9 @@ TEST_F(PartitionGTest, testUpperBound2) {
 		p.mergeSubsets(p[i],p[i+1]);
 	}
 	// 6542 because of singletons
-	// +(6542/2) merge operations
-	// +1 for "hard" upper bound = 9815
-	EXPECT_EQ(p.upperBound(),9815);
+	// +(6542/2) = 3271 merge operations
+	// +1 for "hard" upper bound = 9814
+	EXPECT_EQ(p.upperBound(),9814);
 }
 
 TEST_F(PartitionGTest, testContainsSuccessSingletons) {
@@ -171,7 +151,6 @@ TEST_F(PartitionGTest, testContainsSuccessSingletons) {
 	p.allToSingletons();
 	EXPECT_TRUE(p.contains(8));
 }
-
 
 TEST_F(PartitionGTest, testContainsSuccessAfterMerges) {
 	Partition p(10);
@@ -228,8 +207,72 @@ TEST_F(PartitionGTest, testCompact) {
 	p.mergeSubsets(p[0],p[1]);
 	p.mergeSubsets(p[1],p[2]);
 	p.compact();
-	EXPECT_EQ(p.upperBound(),6);
+	EXPECT_EQ(p.upperBound(),6); // This is only a weak test
+	// maybe implement additional unittests which explicitly check the new partition ids as well as partition strussctures
+} 
+
+
+TEST_F(PartitionGTest, testSubsetSizes) {
+	Partition p(10);
+	p.allToSingletons();
+	p.mergeSubsets(p[0],p[9]);
+	p.mergeSubsets(p[1],p[8]);
+	p.mergeSubsets(p[2],p[7]);
+	p.mergeSubsets(p[0],p[1]);
+	p.mergeSubsets(p[1],p[2]);
+	std::vector<count> sizesFunction = p.subsetSizes();
+	std::vector<count> sizesControl = {1,1,1,1,6};
+	for (index i = 0; i < sizesFunction.size(); i ++) {
+		EXPECT_EQ(sizesFunction[i],sizesControl[i]);
+	}
 }
+
+TEST_F(PartitionGTest, testSubsetSizeMap) {
+	Partition p(10);
+	p.allToSingletons();
+	p.mergeSubsets(p[0],p[9]);
+	p.mergeSubsets(p[1],p[8]);
+	p.mergeSubsets(p[2],p[7]);
+	p.mergeSubsets(p[0],p[1]);
+	p.mergeSubsets(p[1],p[2]);
+	auto subsizemap = p.subsetSizeMap();
+	EXPECT_EQ(subsizemap[p[0]],6);
+	EXPECT_EQ(subsizemap[p[3]],1);
+	EXPECT_EQ(subsizemap[p[4]],1);
+	EXPECT_EQ(subsizemap[p[5]],1);
+	EXPECT_EQ(subsizemap[p[6]],1);
+}
+
+TEST_F(PartitionGTest, testGetMembers) {
+	Partition p(10);
+	p.allToSingletons();
+	p.mergeSubsets(p[0],p[9]);
+	p.mergeSubsets(p[1],p[8]);
+	p.mergeSubsets(p[2],p[7]);
+	p.mergeSubsets(p[0],p[1]);
+	p.mergeSubsets(p[1],p[2]);
+	auto members = p.getMembers(p[0]);
+	std::vector<index> membersControl = {0,1,2,7,8,9};
+	index i = 0;
+	for (auto it = members.begin(); it != members.end(); it++) {
+		EXPECT_EQ(*it,membersControl[i]);
+		i++;
+	}
+}
+
+TEST_F(PartitionGTest, testNumberOfElements) {
+	index n = 10;
+	Partition p(n);
+	p.allToSingletons();
+	p.mergeSubsets(p[0],p[9]);
+	p.mergeSubsets(p[1],p[8]);
+	p.mergeSubsets(p[2],p[7]);
+	p.mergeSubsets(p[0],p[1]);
+	p.mergeSubsets(p[1],p[2]);
+	EXPECT_EQ(p.numberOfElements(),n);
+}
+
+
 
 
 } /* namespace NetworKit */
