@@ -207,7 +207,7 @@ TEST_F(GeneratorsGTest, tryHavelHakimiGenerator_Meyerhenke) {
 		if (realizable) {
 			Graph G = hhgen.generate();
 			count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
-			EXPECT_EQ(volume, G.numberOfEdges());
+			EXPECT_EQ(volume, 2 * G.numberOfEdges());
 		}
 	} while (! realizable);
 }
