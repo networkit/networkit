@@ -37,10 +37,12 @@ void Partition::allToSingletons() {
 void Partition::mergeSubsets(index s, index t) {
 	assert (s <= omega);
 	assert (t <= omega);
-	index m = newSubsetId(); // new id for merged set
-	for (index e = 0; e <= this->z; ++e) {
-		if (data[e] == s || data[e] == t) {
-			data[e] = m;
+	if (s != t) {
+		index m = newSubsetId(); // new id for merged set
+		for (index e = 0; e <= this->z; ++e) {
+			if (data[e] == s || data[e] == t) {
+				data[e] = m;
+			}
 		}
 	}
 }
