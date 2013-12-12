@@ -573,12 +573,72 @@ static void test_betweenness_Hoske(std::string name) {
     		<< distance(begin(betweenness), max_iter) << " with score " << (*max_iter) << ".\n";
 }
 
-TEST_F(PropertiesGTest, testBetweennessCentrality_Hoske) {
+TEST_F(PropertiesGTest, tryBetweennessCentrality_Hoske) {
     test_betweenness_Hoske("celegans_metabolic");
     test_betweenness_Hoske("polblogs");
     test_betweenness_Hoske("hep-th");
 }
 
 
+TEST_F(PropertiesGTest, tryBetweennessCentrality_OckerReichard) {
+  /* Graph:
+     0    3
+      \  / \
+       2    5
+      /  \ /
+     1    4
+  */
+  count n = 6;
+	Graph G(n);
+
+  G.addEdge(0, 2);
+  G.addEdge(1, 2);
+  G.addEdge(2, 3);
+  G.addEdge(2, 4);
+  G.addEdge(3, 5);
+  G.addEdge(4, 5);
+
+  std::vector<double> bc = GraphProperties::betweennessCentrality_OckerReichard(G);
+    
+  EXPECT_NEAR(0.0, bc[0], 0.001);
+  EXPECT_NEAR(0.0, bc[1], 0.001);
+  EXPECT_NEAR(15.0, bc[2], 0.001);
+  EXPECT_NEAR(3.0, bc[3], 0.001);
+  EXPECT_NEAR(3.0, bc[4], 0.001);
+  EXPECT_NEAR(1.0, bc[5], 0.001);
+}
+
+TEST_F(PropertiesGTest, tryBetweennessCentralityDimacsGraphs) {
+  METISGraphReader reader = METISGraphReader();
+
+  std::vector<std::string> graphPaths;
+  graphPaths.push_back("dimacs/celegans_metabolic.graph");
+  graphPaths.push_back("dimacs/polblogs.graph");
+  graphPaths.push_back("dimacs/hep-th.graph");
+
+  for(std::string path: graphPaths) {
+    std::cout << "Graph: " << path << std::endl;
+    Graph G = reader.read(std::string("input/") + path);
+
+    std::vector<double> bc = GraphProperties::betweennessCentrality_OckerReichard(G);
+    
+    std::ofstream solutionFile(std::string("output/") + path.substr(0, path.size() - 6) + "-bc.sol", std::ofstream::out);
+    
+    double maxValue = -1;
+    int maxValueNode = -1;
+    for(int i = 0; i < G.numberOfNodes(); i++) {
+      double value = bc[i];
+      solutionFile << value << std::endl;
+
+      if(value > maxValue) {
+        maxValue = value;
+        maxValueNode = i;
+      }
+    }
+    std::cout << "Maximum betweenness centrality is " << maxValue << " (node " << maxValueNode << ")" << std::endl;
+  }
+}
+
 } /* namespace NetworKit */
+
 #endif /*NOGTEST*/
