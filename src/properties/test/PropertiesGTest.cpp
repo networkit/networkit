@@ -442,8 +442,6 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange_Hoske) {
 	test_diameter_Hoske("caidaRouterLevel", INF);
 }
 
-/* Tests for the betweeness centrality measure. */
-
 TEST_F(PropertiesGTest, tryEstimateDiameter_ck) {
   // Clique
   {
@@ -545,6 +543,41 @@ TEST_F(PropertiesGTest, tryEstimatedDiameterRange_Ritter) {
     std::cout << "*Estimated* Diameter Range: [" << bounds.first << "," << bounds.second << "]" << std::endl;
 }
 
+
+/* Tests for the betweeness centrality measure. */
+
+
+/* Computes the betweeness scores in the graph 'name'. */
+
+static void test_betweenness_Hoske(std::string name) {
+
+    using namespace std;
+    METISGraphReader reader;
+    Graph G = reader.read("input/" + name + ".graph");
+    ofstream out_all("output/" + name + "-bc_hoske.sol");
+    ofstream out_max("output/" + name + "-bc-max_hoske.sol");
+
+    /* Output all scores. */
+    auto betweenness = betweennessCentrality_Hoske(G);
+    for (double b: betweenness) {
+    	out_all << b << "\n";
+    }
+
+    /* Output the maximum score. */
+    auto max_iter = std::max_element(begin(betweenness), end(betweenness));
+    out_max << "The node with maximum betweenness score in '" << name << "' is node ";
+    out_max << distance(begin(betweenness), max_iter);
+    out_max << " with score " << (*max_iter) << ".\n";
+
+    std::cout << "The node with maximum betweenness score in '" << name << "' is node "
+    		<< distance(begin(betweenness), max_iter) << " with score " << (*max_iter) << ".\n";
+}
+
+TEST_F(PropertiesGTest, testBetweennessCentrality_Hoske) {
+    test_betweenness_Hoske("celegans_metabolic");
+    test_betweenness_Hoske("polblogs");
+    test_betweenness_Hoske("hep-th");
+}
 
 
 } /* namespace NetworKit */
