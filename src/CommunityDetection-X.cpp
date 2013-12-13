@@ -49,8 +49,8 @@
 #include "generators/DynamicBarabasiAlbertGenerator.h"
 #include "overlap/RegionGrowingOverlapper.h"
 #include "overlap/HashingOverlapper.h"
-#include "community/PLMR.h"
-#include "community/PLMR2.h"
+#include "community/PLM2.h"
+
 
 
 // revision
@@ -424,7 +424,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			} else if (finalClustererArg == "PLM") {
 				final = new PLM("balanced");
 			} else if (finalClustererArg == "PLMR") {
-				final = new PLMR();
+				final = new PLM2(true);
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);
