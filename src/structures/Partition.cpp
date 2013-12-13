@@ -9,18 +9,18 @@
 
 namespace NetworKit {
 
-Partition::Partition(index z) : z(z-1), omega(0), data(z, none) { // FIXME: data is initialized with z+1, is that correct?
+Partition::Partition(index z) : z(z-1), omega(0), data(z, none) { 
 
 }
 
 void Partition::addToSubset(index s, index e) {
 	assert (data[e] == none);	// guarantee that element was unassigned
-	assert (s <= omega); // do not create new subset ids
+	assert (s <= omega);		// do not create new subset ids
 	data[e] = s;
 }
 
 void Partition::moveToSubset(index s, index e) {
-	assert (s <= omega); // do not create new subset ids
+	assert (s <= omega); 		// do not create new subset ids
 	data[e] = s;
 }
 
@@ -91,12 +91,10 @@ index Partition::lowerBound() const {
 }
 
 void Partition::compact() {
-	// TODO: compact partition
 	std::map<index,index> compactingMap; // first index is the old partition index, "value" is the index of the compacted index
-	index i = 0;
+	index i = 1;
 	this->forEntries([&](index e, index s){ // get assigned SubsetIDs and create a map with new IDs
 		if (s!= none) { 
-			//std::pair<std::iterator,bool> result;
 			auto result = compactingMap.insert(std::make_pair(s,i));
 			if (result.second) ++i;
 		}
@@ -104,9 +102,7 @@ void Partition::compact() {
 	this->parallelForEntries([&](index e, index s){ // replace old SubsetIDs with the new IDs
 		data[e] = compactingMap[s];
 	});
-	omega = i; // necessary or not?
-	// TODO: test implementation
-	
+	omega = (i-1); // necessary or not?	
 }
 
 bool Partition::contains(index e) const {
