@@ -1,5 +1,5 @@
 /*
- * ClusteringAlgoGTest.cpp
+ * PartitionGTest.cpp
  *
  *  Created on: 04.12.2013
  *      Author: Maximilian Vogel (uocvf@student.kit.edu)
@@ -9,14 +9,19 @@
 
 #include "../Partition.h"
 
-#include <iostream>
-
 #ifndef NOGTEST
 
 namespace NetworKit {
 
 /*TEST_F(PartitionGTest, test*) {
 }*/
+
+TEST_F(PartitionGTest, testConstructor) {
+	Partition p(10);
+	EXPECT_EQ(0,p.lowerBound());
+	EXPECT_EQ(1,p.upperBound());
+}
+
 
 TEST_F(PartitionGTest, testAllToSingletons) {
 	Partition p(10);
@@ -208,7 +213,12 @@ TEST_F(PartitionGTest, testCompact) {
 	p.mergeSubsets(p[1],p[2]);
 	p.compact();
 	EXPECT_EQ(p.upperBound(),6); // This is only a weak test
-	// maybe implement additional unittests which explicitly check the new partition ids as well as partition strussctures
+
+	// the following is a deeper test that checks if partition ids and structures match
+	std::vector<index> controlSet = {1,1,1,2,3,4,5,1,1,1};
+	p.forEntries([&](index e,index s){
+		EXPECT_EQ(controlSet[e],s);
+	});
 } 
 
 
