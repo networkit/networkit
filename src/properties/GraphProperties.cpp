@@ -36,7 +36,7 @@ std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 	std::vector<double> denominator(n); // $\deg(u) \cdot ( \deg(u) - 1 )$
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
-	G.parallelForNodes([&](node u){
+	G.balancedParallelForNodes([&](node u){
 		count edgeCount = 0;
 		G.forEdgesOf(u, [&](node u, node v) {
 			G.forEdgesOf(v, [&](node v, node w){
@@ -49,11 +49,11 @@ std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 		numerator[u] = edgeCount; // factor 2 is omitted because each edge has been counted twice
 	});
 
-	G.parallelForNodes([&](node u){
+	G.balancedParallelForNodes([&](node u){
 		denominator[u] = G.degree(u) * (G.degree(u) - 1);
 	});
 
-	G.parallelForNodes([&](node u){
+	G.balancedParallelForNodes([&](node u){
 		if (denominator[u] == 0.0) {
 			coefficient[u] = 0.0;
 		} else {
