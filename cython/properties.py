@@ -43,6 +43,12 @@ def degreeDistribution(G):
 	""" Return the degree distribution of a graph"""
 	return GraphProperties.degreeDistribution(G)
 
+
+def density(G):
+	""" Return the density of the graph"""
+	(n, m) = size(G)
+	return (2 * m) / (n * (n-1))
+
 def components(G):
 	""" Find and analyze detected components """
 	logging.info("[...] finding connected components....")
@@ -53,6 +59,12 @@ def components(G):
 	componentSizes.sort(reverse=True) # sort in descending order
 	sizeLargestComponent = componentSizes[0]
 	return (nComponents, sizeLargestComponent)
+
+def clustering(G):
+	""" Get clustering properties of the graph:
+		Returns average local clustering coefficient
+	"""
+	return GraphProperties.averageLocalClusteringCoefficient(G)
 	
 
 
@@ -83,7 +95,7 @@ def properties(nkG, settings):
 	loops = len(nxG.selfloop_edges()) if nxG else None
 	
 	# density
-	dens = nx.density(nxG) if nxG else None
+	dens = density(G)
 
 	# diameter
 	dia = None
