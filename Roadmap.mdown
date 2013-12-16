@@ -3,7 +3,7 @@
 This document is about the current and future development of the NetworKit package.
 
 
-# Feature Wishlist
+# Feature Wish List
 
 ## Algorithms
 
@@ -22,7 +22,7 @@ This document is about the current and future development of the NetworKit packa
 ## Algorithms
 
 - hyperbolic graph generator
-- Havel-Hakimi graph generator
+- Havel-Hakimi graph generator (recreates degree sequences)
 - betweenness centrality (Brandes algorithm)
 - core decomposition
 - approximation of clustering coefficient
