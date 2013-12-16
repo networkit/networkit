@@ -56,9 +56,7 @@ def components(G):
 	cc.run(G)
 	nComponents = cc.numberOfComponents()
 	componentSizes = cc.getComponentSizes()
-	componentSizes.sort(reverse=True) # sort in descending order
-	sizeLargestComponent = componentSizes[0]
-	return (nComponents, sizeLargestComponent)
+	return (nComponents, componentSizes)
 
 def clustering(G):
 	""" Get clustering properties of the graph:
