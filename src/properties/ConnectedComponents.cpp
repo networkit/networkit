@@ -1,25 +1,26 @@
 /*
- * ParallelConnectedComponents.cpp
+ * ConnectedComponents.cpp
  *
- *  Created on: Sep 17, 2013
- *      Author: Maximilian Vogel
+ *  Created on: Dec 16, 2013
+ *      Author: cls
  */
 
-#include "ParallelConnectedComponents.h"
+#include "ConnectedComponents.h"
 
 #include <set>
 
 namespace NetworKit {
 
-ParallelConnectedComponents::ParallelConnectedComponents() {
+ConnectedComponents::ConnectedComponents() {
 
 }
 
-ParallelConnectedComponents::~ParallelConnectedComponents() {
+ConnectedComponents::~ConnectedComponents() {
 
 }
 
-void ParallelConnectedComponents::run(const Graph& G) {
+void ConnectedComponents::run(const Graph& G) {
+	// calculate connected components by label propagation
 	count z = G.numberOfNodes();
 	this->component = std::vector<node>(z, none);
 
@@ -44,11 +45,11 @@ void ParallelConnectedComponents::run(const Graph& G) {
 }
 
 
-std::vector<index> ParallelConnectedComponents::getComponentData() {
+std::vector<index> ConnectedComponents::getComponentData() {
 	return this->component;
 }
 
-std::map<index, count> ParallelConnectedComponents::getComponentSizes() {
+std::map<index, count> ConnectedComponents::getComponentSizes() {
 	std::map<index, count> componentSize;
 	for (node u = 0; u < component.size(); ++u) {
 		if (component[u] != none) {
@@ -59,7 +60,7 @@ std::map<index, count> ParallelConnectedComponents::getComponentSizes() {
 }
 
 
-std::vector<node> ParallelConnectedComponents::getComponent(index label) {
+std::vector<node> ConnectedComponents::getComponent(index label) {
 	std::vector<node> nodesOfComponent;
 	for (node u = 0; u < component.size(); ++u) {
 		if (this->component[u] == label) {
@@ -69,7 +70,7 @@ std::vector<node> ParallelConnectedComponents::getComponent(index label) {
 	return nodesOfComponent;
 }
 
-count ParallelConnectedComponents::numberOfComponents() {
+count ConnectedComponents::numberOfComponents() {
 	count nc = 0;
 	std::set<index> componentLabels;
 	for (index i = 0; i < component.size(); ++i) {
@@ -82,7 +83,7 @@ count ParallelConnectedComponents::numberOfComponents() {
 	return nc;
 }
 
-count ParallelConnectedComponents::componentOfNode(node u) {
+count ConnectedComponents::componentOfNode(node u) {
 	assert (component[u] != none);
 	return component[u];
 }

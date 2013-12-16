@@ -1,12 +1,12 @@
 /*
- * ParallelConnectedComponents.h
+ * ConnectedComponents.cpp
  *
- *  Created on: Sep 17, 2013
- *      Author: Maximilian Vogel
+ *  Created on: Dec 16, 2013
+ *      Author: cls
  */
 
-#ifndef PARALLELCONNECTEDCOMPONENTS_H_
-#define PARALLELCONNECTEDCOMPONENTS_H_
+#ifndef CONNECTEDCOMPONENTS_H_
+#define CONNECTEDCOMPONENTS_H_
 
 #include "../graph/Graph.h"
 #include "../graph/BFS.h"
@@ -16,10 +16,10 @@ namespace NetworKit {
 /**
  * Determines the connected components of an undirected graph.
  */
-class ParallelConnectedComponents {
+class ConnectedComponents {
 public:
-	ParallelConnectedComponents();
-	virtual ~ParallelConnectedComponents();
+	ConnectedComponents();
+	virtual ~ConnectedComponents();
 	/**
 	 * This method determines the connected components for the graph g.
 	 *
@@ -63,10 +63,9 @@ public:
 
 private:
 	std::vector<node> component;
-	std::vector<count> componentSizes;
 };
 
 }
 
 
-#endif /* PARALLELCONNECTEDCOMPONENTS_H_ */
+#endif /* CONNECTEDCOMPONENTS_H_ */
