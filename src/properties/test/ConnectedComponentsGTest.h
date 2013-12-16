@@ -11,7 +11,7 @@
 #define CONNECTEDCOMPONENTSGTEST_H_
 
 #include <gtest/gtest.h>
-#include "../ConnectedComponents.h"
+
 //#include "../../io/METISGraphReader.h"
 
 namespace NetworKit {

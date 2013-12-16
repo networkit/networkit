@@ -10,6 +10,7 @@ This document is about the current and future development of the NetworKit packa
 - parallel connected components
 - betweenness centrality approximation
 - (parallel) Chung-Lu graph generator
+- diameter approximation
 
 ## Data Structures
 

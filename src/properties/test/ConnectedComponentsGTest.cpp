@@ -7,6 +7,9 @@
 #ifndef NOGTEST
 
 #include "ConnectedComponentsGTest.h"
+#include "../ConnectedComponents.h"
+#include "../ParallelConnectedComponents.h"
+#include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
 
@@ -110,6 +113,14 @@ TEST_F(ConnectedComponentsGTest, testGetComponent) {
 	EXPECT_TRUE(comp.at(4) == 8);
 	EXPECT_TRUE(comp.at(5) == 16);
 	EXPECT_TRUE(comp.at(6) == 19);
+}
+
+TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
+	// construct graph
+	Graph G = (new METISGraphReader())->read("input/PGPgiantcompo.graph");
+	ParallelConnectedComponents pcc;
+	pcc.run(G);
+	EXPECT_EQ(1, pcc.numberOfComponents());
 }
 
 } /* namespace NetworKit */

@@ -814,6 +814,40 @@ cdef class ConnectedComponents:
 		return self._this.getComponentSizes()
 
 
+cdef extern from "../src/properties/ParallelConnectedComponents.h":
+	cdef cppclass _ParallelConnectedComponents "NetworKit::ParallelConnectedComponents":
+		_ParallelConnectedComponents() except +
+		void run(_Graph G) except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		vector[node] getComponent(index component) except +
+		map[index, count] getComponentSizes() except +
+
+
+cdef class ParallelConnectedComponents:
+	""" Determines the connected components and associated values for
+		an undirected graph.
+	"""
+	cdef _ParallelConnectedComponents _this
+
+	def run(self, Graph G):
+		self._this.run(G._this)
+
+	def numberOfComponents(self):
+		return self._this.numberOfComponents()
+
+
+	def componentOfNode(self, v):
+		return self._this.componentOfNode(v)
+
+	def getComponent(self, componentIndex):
+		return self._this.getComponent(componentIndex)
+	
+	def getComponentSizes(self):
+		return self._this.getComponentSizes()
+
+
+
 
 
 
