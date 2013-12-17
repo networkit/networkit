@@ -33,7 +33,7 @@ public:
 	 * 							2m 	-> singleton communities
 	 *
 	 */
-	PLM(std::string par="simple", double gamma = 1.0);
+	PLM(std::string par="balanced", double gamma = 1.0);
 
 	virtual ~PLM();
 

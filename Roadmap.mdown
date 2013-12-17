@@ -7,7 +7,6 @@ This document is about the current and future development of the NetworKit packa
 
 ## Algorithms
 
-- parallel connected components
 - betweenness centrality approximation
 - (parallel) Chung-Lu graph generator
 - diameter approximation
@@ -39,6 +38,7 @@ This document is about the current and future development of the NetworKit packa
 
 ## Algorithms
 
+- parallel connected components
 - sequential connected components
 - parallel exact clustering coefficient
 
