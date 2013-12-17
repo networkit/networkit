@@ -28,7 +28,7 @@ public:
 	 * 							2m 	-> singleton communities
 	 *
 	 */
-	PLM2(bool refine=false, double gamma = 1.0, std::string par="simple");
+	PLM2(bool refine=false, double gamma = 1.0, std::string par="balanced");
 
 
 	std::string toString() const override;

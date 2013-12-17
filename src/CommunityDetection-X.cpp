@@ -366,14 +366,14 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		} else if (algoName == "PLM") {
 			// algoParams is parallelization strategy
 			if (algoParams.empty()) {
-				algo = new PLM();
+				algo = new PLM2();
 			} else {
-				algo = new PLM(algoParams);
+				algo = new PLM2();
 			}
-		} else if (algoName == "PLM2") {
-			algo = new PLM2("balanced", false);
-		} else if (algoName == "PLMR2") {
-			algo = new PLM2("balanced", true);
+		} else if (algoName == "PLM") {
+			algo = new PLM2(false);
+		} else if (algoName == "PLMR") {
+			algo = new PLM2(true);
 		} else if (algoName == "EML") {
 			// TODO: call multilevel algorithm
 		} else if (algoName == "EPP") {
@@ -422,7 +422,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			} else if (finalClustererArg == "Agglomerative") {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "PLM") {
-				final = new PLM("balanced");
+				final = new PLM2();
 			} else if (finalClustererArg == "PLMR") {
 				final = new PLM2(true);
 			} else {
