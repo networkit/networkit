@@ -47,6 +47,7 @@ class GraphDrawer:
 
 		:param G: The graph object
 		:param pos: optional predefined node positions
+		:param nodeSizes: optional node sizes
 		"""
 		
 		plt.figure(figsize=self.size)
@@ -78,12 +79,13 @@ class GraphDrawer:
 		
 
 
-	def emphasizeCliques(self, G):
-		"""emphasizes cliques of a graph
+	def emphasizeCliques(self, G, pos=None):
+		""" Emphasize cliques of a graph
 		It creates a list with values for the edge transparency.
 		The more the nodes have common neighbors, the darker will be the edges
 
 		:param G: The graph object
+		:param pos: optional predefined node positions
 		"""
 
 		alpha = []
@@ -94,7 +96,8 @@ class GraphDrawer:
 			union = nu.union(nv) #all neighbors
 			average = (len(intersection)+len(union))/2
 			alpha += [round(len(intersection)/average, 1)]
-			
+
+		# set minimum for edge transparency
 		for i in range(len(G.edges())):
 			if alpha[i] < 0.1:
 				alpha[i] = 0.1
@@ -107,8 +110,10 @@ class GraphDrawer:
 		Draw graph unweighted and visualize seed and core nodes
 
 		:param G: The graph object
+		:param pos: optional predefined node positions
 		:param seeds: List of seed nodes
 		:param cores: List of core nodes
+		:param communities: 
 		"""
 		
 		plt.figure(figsize=self.size)
@@ -180,6 +185,7 @@ class GraphDrawer:
 		Draw a weighted graph so that the more weighted edges appear in a darker color
 
 		:param G: The graph object
+		:param pos: optional predefined node positions
 		:param edge_cmap: Matplotlib colormap for edgecolors
 		:param node_color: The color of nodes
 		:param pos: node positions
@@ -215,7 +221,7 @@ class GraphDrawer:
 
 		# extra edgeOpts needed for visualising weighted edges	
 		edgeOpts = {"edge_color": colors, "edge_cmap": edge_cmap, "edge_vmin": edge_vmin, "edge_vmax": edge_vmax}
-		edge_labelOpts = {"alpha": 0.8, "edge_labels": label, "font_size":10}
+		edge_labelOpts = {"alpha": 0.8, "edge_labels": label, "font_size": 10}
 
 		# draw edges
 		# TODO: drawWeighted should also work if emphasizeCliques is true
@@ -245,13 +251,14 @@ class GraphDrawer:
 
 		
 		
-	def drawClustered(self, G, clustering, cmap=plt.cm.Accent, pos=None):
+	def drawClustered(self, G, clustering, cmap=plt.cm.Accent):
 		"""
 		Draw a graph with a clustering so that the nodes appear in different colors
 
 		:param G: The graph object
+		:param pos: optional predefined node positions
 		:param clustering: Cluster of graph G
-		:param pos: predefined node positions
+		:param cmap: colormap for visualizing cluster. Default is Accent from Matplotlib
 		"""
 		if not pos:
 			pos = self.layout(G)
