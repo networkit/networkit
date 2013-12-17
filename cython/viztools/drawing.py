@@ -88,7 +88,13 @@ class GraphDrawer:
 		:param pos: optional predefined node positions
 		"""
 
+                plt.figure(figsize=self.size)
+		plt.axis("off")
+		if not pos:
+			pos = self.layout(G)
+			
 		alpha = []
+		
 		for u,v in G.edges():
 			nu = set(G.neighbors(u)+[u]) #neighbors from u
 			nv = set(G.neighbors(v)+[v]) #neighbors from v
@@ -105,7 +111,7 @@ class GraphDrawer:
 		return alpha
 
 
-	def drawSelSCAN(self, G, seeds, cores, communities):
+	def drawSelSCAN(self, G, seeds, cores, communities, pos=None):
 		"""
 		Draw graph unweighted and visualize seed and core nodes
 
@@ -117,7 +123,8 @@ class GraphDrawer:
 		"""
 		
 		plt.figure(figsize=self.size)
-		pos = self.layout(G)
+		if not pos:
+			pos = self.layout(G)
 		plt.axis("off")
 
 		colors = []
@@ -157,7 +164,7 @@ class GraphDrawer:
 		
 		
 		
-	def drawEdgeSets(self, G, edgeSets, palette, nodeOpts={}, labelOpts={}, edgeOpts={}):
+	def drawEdgeSets(self, G, edgeSets, palette, nodeOpts={}, labelOpts={}, edgeOpts={}, pos=None):
 		"""
 		Draw different set of edges in different colors
 
@@ -170,7 +177,9 @@ class GraphDrawer:
 		
 		plt.figure(figsize=self.size)
 		plt.axis("off")
-		pos = self.layout(G)
+		if not pos:
+			pos = self.layout(G)
+		
 		# draw nodes
 		nx.draw_networkx_nodes(G, pos, **nodeOpts)
 		# draw labels
@@ -251,7 +260,7 @@ class GraphDrawer:
 
 		
 		
-	def drawClustered(self, G, clustering, cmap=plt.cm.Accent):
+	def drawClustered(self, G, clustering, cmap=plt.cm.Accent, pos=None):
 		"""
 		Draw a graph with a clustering so that the nodes appear in different colors
 
