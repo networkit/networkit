@@ -52,7 +52,7 @@ def testPLPThreshold(graphPaths, thresholdFactors, outPath, repeat=1):
 
 	with open(outPath, 'w') as outFile:
 		writer = csv.writer(outFile, delimiter='\t')
-		header = ["graph", "algorithm", "threshold", "time", "modularity"]
+		header = ["graph", "algorithm","factor", "threshold", "time", "modularity"]
 		writer.writerow(header)
 		for graphPath in graphPaths:
 			print("reading graph: {0}".format(graphPath))
@@ -70,7 +70,7 @@ def testPLPThreshold(graphPaths, thresholdFactors, outPath, repeat=1):
 					time = timer.elapsed
 
 					mod = community.Modularity().getQuality(zeta, G)
-					row = [graphName, "PLP", theta,  time, mod]
+					row = [graphName, "PLP", factor, theta,  time, mod]
 					writer.writerow(row)
 					print(row)
 
