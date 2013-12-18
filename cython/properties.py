@@ -74,6 +74,9 @@ def clustering(G):
 def powerLawExponent(G):
     """ Estimate power law exponent as a linear regression line through a log-log plot
     of the degree distribution"""
+    def logarithmic(data):
+    	return [(math.log(x) if x != 0 else 0) for x in data]
+
     dd = degreeDistribution(G)
     degrange = range(len(dd))
     (slope,_,_,_,_) = stats.linregress(logarithmic(degrange), logarithmic(dd))
