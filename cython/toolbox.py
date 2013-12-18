@@ -3,6 +3,7 @@ This module contains general purpose code.
 """
 import os
 import csv
+import fnmatch
 
 import stopwatch
 import graphio
@@ -26,7 +27,7 @@ def batch(graphDir, match, format, function, outPath, header=None):
 			writer.writerow(header)
 		for root, _, filenames in os.walk(graphDir):
 			for filename in filenames:
-				if match in filename:
+				if fnmatch.fnmatch(filename, match):
 					print("processing {0}".format(filename))
 					graphPath = os.path.join(root, filename)
 					timer = stopwatch.Timer()
