@@ -24,6 +24,12 @@ except ImportError:
 	logging.warning("""WARNING: module 'tabulate' not installed, which is required by some
 						functions. In order to install 'tabulate', Python 3.3 is required""")
 
+try:
+	from scipy import stats
+except ImportError:
+	logging.warning("""WARNING: module 'scipy' not installed, which is required by some
+						functions.""")
+
 
 ########  PROPERTIES ########
 
