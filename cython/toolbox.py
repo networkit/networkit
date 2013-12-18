@@ -1,7 +1,11 @@
 """
 This module contains general purpose code.
 """
+import os
+import csv
 
+import stopwatch
+import graphio
 
 # batch processing
 
@@ -13,6 +17,7 @@ def batch(graphDir, match, format, function, outPath, header=None):
 	:param	match		a pattern that must match the filename so the file is treated as a graph
 	:param 	format		graph file format
 	:param  function	any function from Graph to list/tuple of values
+	:param	outPath		path of output CSV file
 	:param	header		CSV file header
 	"""
 	with open(outPath, 'w') as outFile:
