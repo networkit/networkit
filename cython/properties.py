@@ -63,6 +63,17 @@ def clustering(G):
 		Returns average local clustering coefficient
 	"""
 	return GraphProperties.averageLocalClusteringCoefficient(G)
+
+
+def powerLawExponent(G):
+    """ Estimate power law exponent as a linear regression line through a log-log plot
+    of the degree distribution"""
+    dd = properties.degreeDistribution(G)
+    degrange = range(len(dd))
+    (slope,_,_,_,_) = stats.linregress(logarithmic(degrange), logarithmic(dd))
+    gamma = -1 * slope
+    return gamma
+    
 	
 
 
