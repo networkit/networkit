@@ -31,9 +31,7 @@ namespace Aux {
 	#define DEBUG(X)
 	#define TRACE(X)
 #else
-
-	//int LogLevel::current = 3;
-	#define LOG_TEST_LEVEL(v)   (v) <= Aux::LogLevel::current
+	#define LOG_TEST_LEVEL(v)   v >= Aux::LogLevel::getLevel()
 	#define FATAL(X) if(LOG_TEST_LEVEL(5)) std::cout << "[FATAL] " << LOCATION << X << std::endl;
 	#define ERROR(X) if(LOG_TEST_LEVEL(4)) std::cout << "[ERROR] " << LOCATION << X << std::endl;
 	#define WARN(X) if(LOG_TEST_LEVEL(3)) std::cout << "[WARN] " << LOCATION << X << std::endl;
@@ -46,15 +44,15 @@ namespace Aux {
  */
 inline void setLoglevel(const std::string& loglevel) {
 	if (loglevel == "TRACE") {
-		Aux::LogLevel::current = 0;
+		Aux::LogLevel::setLevel(0);
 	} else if (loglevel == "DEBUG") {
-		Aux::LogLevel::current = 1;
+		Aux::LogLevel::setLevel(1);
 	} else if (loglevel == "INFO") {
-		Aux::LogLevel::current = 2;
+		Aux::LogLevel::setLevel(2);
 	} else if (loglevel == "WARN") {
-		Aux::LogLevel::current = 3;
+		Aux::LogLevel::setLevel(3);
 	} else if (loglevel == "ERROR") {
-		Aux::LogLevel::current = 4;
+		Aux::LogLevel::setLevel(4);
 	} else {
 		ERROR("unknown loglevel: " << loglevel);
 		exit(1);
@@ -77,7 +75,7 @@ inline void configureLogging(const std::string& loglevel = "ERROR") {
  */
 inline std::string currentLogLevel() {
 	std::string s;
-	switch (Aux::LogLevel::current) {
+	switch (Aux::LogLevel::getLevel()) {
 		case 5: s = "FATAL"; break;
 		case 4: s = "ERROR"; break;
 		case 3: s = "WARN"; break;
