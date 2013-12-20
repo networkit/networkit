@@ -289,5 +289,34 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	EXPECT_EQ(pq.size(), vec.size() - 5);
 }
 
+TEST_F(AuxGTest, testLogging) {
+	FATAL("This shouldn't actually be there at all");
+	ERROR("This may be here");
+	Aux::setLoglevel("ERROR");
+	//EXPECT_EQ("WARN",Aux::currentLogLevel());
+	FATAL("fatal error"<<3<<2.f);
+	ERROR("normal error"<<3<<2.f);
+	WARN("just a warning"<<3<<2.f);
+	INFO("for the sake of information"<<3<<2.f);
+	DEBUG("important debug outputs"<<3<<2.f);
+	TRACE("trace"<<3<<2.f);
+	Aux::setLoglevel("INFO");
+	EXPECT_EQ("INFO",Aux::currentLogLevel());
+	FATAL("fatal error"<<3<<2.f);
+	ERROR("normal error"<<3<<2.f);
+	WARN("just a warning"<<3<<2.f);
+	INFO("for the sake of information"<<3<<2.f);
+	DEBUG("important debug outputs"<<3<<2.f);
+	TRACE("trace"<<3<<2.f);
+	Aux::setLoglevel("TRACE");
+	EXPECT_EQ("TRACE",Aux::currentLogLevel());
+	FATAL("fatal error"<<3<<2.f);
+	ERROR("normal error"<<3<<2.f);
+	WARN("just a warning"<<3<<2.f);
+	INFO("for the sake of information"<<3<<2.f);
+	DEBUG("important debug outputs"<<3<<2.f);
+	TRACE("trace"<<3<<2.f);
+}
+
 
 #endif /*NOGTEST */
