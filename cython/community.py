@@ -15,7 +15,7 @@ def detectCommunities(G, algo=None, inspect=True):
 		:return communities (as type Clustering)
 		"""
 	if algo is None:
-		algo = PLM()
+		algo = PLM2(refinement=False)
 	t = stopwatch.Timer()
 	zeta = algo.run(G)
 	t.stop()

@@ -97,7 +97,7 @@ const OptionParser::Descriptor usage[] =
 
 
 int main(int argc, char **argv) {
-	std::cout << "*** NetworKit-CommunityDetection *** " << std::endl;
+	std::cout << "*** NetworKit Unit Tests *** " << std::endl;
 
 	// ENABLE FLOATING POINT EXCEPTIONS (needs GNU extension, apparently only available on Linux)
 #ifdef _GNU_SOURCE
