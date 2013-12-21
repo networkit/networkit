@@ -139,6 +139,7 @@ int main(int argc, char **argv) {
 	} else {
 		Aux::configureLogging();	// with default level
 	}
+	std::cout << Aux::currentLogLevel() << std::endl;
 #endif
 #endif
 
