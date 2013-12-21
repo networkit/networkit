@@ -6,6 +6,8 @@ Created on 19.03.2013
 .. module:: graphio
 '''
 
+#TODO: check functions and update docstrings if necessary
+
 import sys
 import networkx as nx
 import logging

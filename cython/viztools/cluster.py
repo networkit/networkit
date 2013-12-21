@@ -1,14 +1,19 @@
-import networkx as nx
 
 
 class ClusteringGenerator:
+	"""
+	Generation of Clusterings:
+	
+                Clusterings are saved in dictionaries, so that clustering[i] contains the cluster id for node i.
+	"""
 
 	def generateOneClustering(self, G):
 		"""
-		Generate one-clustering of a networkx graph
+		Generate one-clustering of a networkx graph.
+		In a one-clustering every node is in cluster 0.
 
 		:param G: The graph object
-		:rtype: clustering 
+		:rtype: dictionary
 		"""
 
 		clustering = {}
@@ -20,20 +25,17 @@ class ClusteringGenerator:
 
 	def generateSingletonClustering(self, G):
 		"""
-		Generate singleton clustering of a networkx graph
+                Generate singleton clustering of a networkx graph.
+                In a singleton clustering node i is in cluster i.
 
 		:param G: The graph object
-		:rtype: clustering
+		:rtype: dictionary
 		"""
-
-		clust = []
-		u = 0
-		while u < G.number_of_nodes():
-			clust += [u]
-			u += 1
-
+		
 		clustering = {}
+		clust = range(len(G.nodes()))
 		u = 0
+
 		for v in G.nodes():
 			clustering[v] = clust[u]
 			u += 1
@@ -52,6 +54,8 @@ class ClusteringReader:
 
 		"""Read a clustering from a .clust file.
 
+		:param path: Path to the .clust file of a clustering
+		:rtype: dictionary
 		"""
 
 		zeta = {}
@@ -80,14 +84,16 @@ class ClusteringWriter:
 
 	def write(self, zeta, path):
 
-		"""Write a clustering to .clust file format"""
+		"""Write a clustering to .clust file format
 
-		maxu = max(zeta.keys())
+		:param zeta: The clustering
+		:param path: path to the .clust file where the clustering shall be written to
+		"""
 
-		
 
 		with open(path, "w") as file:
 
-			for u in range(0, maxu + 1):
-
-				file.write("%d\n".format(u))
+			for u in range(0, len(zeta)):
+				
+				file.write(str(zeta[u]) + "\n")
+				

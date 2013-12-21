@@ -1,3 +1,4 @@
+# TODO: check functions and update docstrings if necessary
 '''
 Created on May 23, 2013
 
@@ -6,7 +7,7 @@ Created on May 23, 2013
 
 def EdgeMapWriter(d, path):
 	"""
-	write an edgemap
+	Write an edgemap
 
 	:param path: Path to the file where the edgemap is written to 
 	"""
