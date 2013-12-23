@@ -8,9 +8,19 @@
 #ifndef GRAPHPROPERTIES_H_
 #define GRAPHPROPERTIES_H_
 
-
 #include "../graph/Graph.h"
+#include "../graph/BFS.h"
+#include "../graph/BFSTree.h"
 #include "../io/METISGraphReader.h"
+#include "../graph/GraphDistance.h"
+
+#include "ApproximateClusteringCoefficient_Hoske.h"
+
+#include <list>
+#include <random>
+#include <algorithm>
+#include <cstddef>
+
 
 namespace NetworKit {
 
@@ -22,8 +32,7 @@ public:
 	GraphProperties();
 	virtual ~GraphProperties();
 
-	static std::vector<count> degreeDistribution(Graph& G);
-
+	static std::vector<count> degreeDistribution(const Graph& G);
 
 	/**
 	 * The local clustering coefficient for a node is the number of edges among its
@@ -35,8 +44,7 @@ public:
 	 * @param[in]	G	the graph
 	 * @param[out]		node -> local clustering coefficient
 	 */
-	static std::vector<double> localClusteringCoefficients(Graph& G);
-
+	static std::vector<double> localClusteringCoefficients(const Graph& G);
 
 	/**
 	 * The average local clustering coefficient for the graph.
@@ -44,13 +52,59 @@ public:
 	 *
 	 * @param[in]	G	the graph
 	 */
-	static double averageLocalClusteringCoefficient(Graph& G);
+	static double averageLocalClusteringCoefficient(const Graph& G);
 
-	static std::vector<double> localClusteringCoefficientPerDegree(Graph& G);
+	static std::vector<double> localClusteringCoefficientPerDegree(
+			const Graph& G);
 
-	static std::pair<count, count> minMaxDegree(Graph& G);
+	static std::pair<count, count> minMaxDegree(const Graph& G);
 
 	static double averageDegree(const Graph& G);
+
+	static double approximateGlobalClusteringCoefficient(const Graph& G,
+			double approximationError, double probabilityError);
+
+	/**
+	 * Estimates a range for the diameter of @a G. Based on the algorithm suggested in
+	 * C. Magnien, M. Latapy, M. Habib: Fast Computation of Empirically Tight Bounds for
+	 * the Diameter of Massive Graphs. Journal of Experimental Algorithmics, Volume 13, Feb 2009.
+	 *
+	 * @return Pair of lower and upper bound for diameter.
+	 */
+	static std::pair<count, count> estimatedDiameterRange(const Graph& G);
+	static std::pair<count, count> estimatedDiameterRange_Hoske(const Graph& G,
+			double error);
+
+	/**
+	 * Computes the ecc_G(u) and returns a vertex v with largest distance from u.
+	 *
+	 * @return pair of node v and eccentricity.
+	 */
+	static std::pair<node, count> eccentricity_Hoske(const Graph& G, node u);
+
+	static std::pair<count, count> estimateDiameter_ck(const Graph& G);
+
+	static std::pair<count, count> estimatedDiameterRange_Feist(const Graph& G,
+			count k);
+	static count DiameterRange_Feist(const Graph& G);
+
+	static std::pair<count, count> estimatedDiameterRange_Brueckner(
+			const Graph& G);
+	static count exactDiameter_Brueckner(const Graph& G);
+
+	static std::pair<count, count> estimatedDiameterRange_Ritter(
+			const Graph& G);
+
+	static std::vector<double> EVZ_OckerReichard(const Graph& G);
+
+	/**
+	 * Calculates the betweenness centrality of all nodes for an unweighted graph.
+	 * @param g The input graph.
+	 * @result A vector. Each entry corresponds to the betweenness centrality of
+	 * the node represented by the index.
+	 */
+	static std::vector<double> betweennessCentrality_OckerReichard(
+			const Graph& g);
 };
 
 } /* namespace NetworKit */

@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-Cover::Cover(index z) : z(z), omega(0), data(z+1) {
+Cover::Cover(index z) : z(z-1), omega(0), data(z) {
 }
 
 bool Cover::contains(index e) const {
@@ -54,10 +54,12 @@ void Cover::moveToSubset(index s, index e) {
 	data[e].insert(s);
 }
 
-void Cover::toSingleton(index e) {
+index Cover::toSingleton(index e) {
 	assert (e <= z);
 	data[e].clear();
-	data[e].insert(newSubsetId());
+	index sid = newSubsetId();
+	data[e].insert(sid);
+	return sid;
 }
 
 void Cover::allToSingletons() {
@@ -66,19 +68,23 @@ void Cover::allToSingletons() {
 	}
 }
 
-void Cover::mergeSubets(index s, index t) {
+void Cover::mergeSubsets(index s, index t) {
 	assert (s <= omega);
 	assert (t <= omega);
-	index m = newSubsetId(); // new id for merged set
-	for (index e = 0; e <= this->z; ++e) {
-		auto its = data[e].find(s);
-		auto itt = data[e].find(t);
-		if (its != data[e].end()) {
-			data[e].erase(its);
-			data[e].insert(m);
-		} else if (itt != data[e].end()) {
-			data[e].erase(itt);
-			data[e].insert(m);
+	if ( s != t ) {
+		index m = newSubsetId(); // new id for merged set
+		for (index e = 0; e <= this->z; ++e) {
+			auto its = data[e].find(s);
+			auto itt = data[e].find(t);
+			if (its != data[e].end()) {
+				data[e].erase(its);
+				data[e].insert(m);
+			}
+			// was else if. makes errors, in case an element is in s as well as t
+			if (itt != data[e].end()) {
+				data[e].erase(itt);
+				data[e].insert(m);
+			}
 		}
 	}
 }
@@ -92,7 +98,6 @@ index Cover::lowerBound() const {
 }
 
 std::vector<count> Cover::subsetSizes() const {
-	// TODO:
 	std::map<index,count> mapping;
 	std::vector<count> sizes;
 	count newIndex = 0;
@@ -101,17 +106,16 @@ std::vector<count> Cover::subsetSizes() const {
 			if (mapping.find(t) == mapping.end()) {
 				mapping[t] = newIndex++;
 				sizes.push_back(1);
+			} else {
+				sizes[mapping[t]]++;
 			}
-			sizes[mapping[t]]++;
 		}
 
 	}
-	// TODO: TEST
 	return sizes;
 }
 
 std::map<index, count> Cover::subsetSizeMap() const {
-	// TODO:
 	std::map<index,count> sizeMap;
 	for (index e = 0; e <= this->z; ++e) { // stores sizes of subsets in a map
 		for (index t : data[e]) {
@@ -122,8 +126,30 @@ std::map<index, count> Cover::subsetSizeMap() const {
 			}
 		}
 	}
-	// TODO: TEST
 	return sizeMap;
+}
+
+count Cover::numberOfSubsets() const {
+	std::vector<int> exists(upperBound(), 0); // a boolean vector would not be thread-safe
+
+	this->parallelForEntries([&](index e, std::set<index> s) {
+		if (!s.empty()) {
+			for (auto it = s.begin(); it != s.end(); it++) {
+				index currentSubset = *it;
+				exists[currentSubset] = 1;
+			}
+		}
+	});
+
+	count k = 0; // number of actually existing clusters
+	#pragma omp parallel for reduction(+:k)
+	for (index i = 0; i < upperBound(); ++i) {
+		if (exists[i]) {
+			k++;
+		}
+	}
+
+	return k;
 }
 
 

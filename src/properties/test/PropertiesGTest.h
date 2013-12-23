@@ -18,9 +18,17 @@
 #include <list>
 
 #include "../ClusteringCoefficient.h"
+#include "../ApproximateClusteringCoefficient_Hoske.h"
+#include "../ExactClusteringCoefficient_Hoske.h"
+#include "../ApproximateClusteringCoefficient_Brueckner.h"
+#include "../Centrality_Hoske.h"
+#include "../GlobalClusteringCoefficient_Ritter.h"
+#include "../ApproximateClusteringCoefficient_Ritter.h"
 #include "../CoreDecomposition.h"
 #include "../../graph/GraphGenerator.h"
+#include "../../graph/Print_Hoske.h"
 #include "../../properties/GraphProperties.h"
+#include "../../properties/ConnectedComponents.h"
 #include "../../io/METISGraphReader.h"
 
 

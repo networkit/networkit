@@ -11,10 +11,13 @@
 #define GENERATORSGTEST_H_
 
 #include <gtest/gtest.h>
+#include <numeric>
 
 #include "../DynamicGraphSource.h"
 #include "../DynamicBarabasiAlbertGenerator.h"
 #include "../PubWebGenerator.h"
+#include "../HavelHakimiGenerator.h"
+#include "../ChungLuGenerator.h"
 #include "../DynamicPubWebGenerator.h"
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"

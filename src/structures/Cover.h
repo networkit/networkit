@@ -110,7 +110,7 @@ public:
 	 * Creates a singleton set containing the element.
 	 * @param[in]	e	an element
 	 */
-	void toSingleton(index e);
+	index toSingleton(index e);
 
 
 	/**
@@ -125,7 +125,7 @@ public:
 	 * @param[in]	s	a subset
 	 * @param[in]	t	a subset
 	 */
-	void mergeSubets(index s, index t);
+	void mergeSubsets(index s, index t);
 
 
 	/**
@@ -153,6 +153,34 @@ public:
 	std::map<index, count> subsetSizeMap() const;
 
 
+	/**
+	 * Get the current number of sets in this cover.
+	 */
+	count numberOfSubsets() const;
+
+	/**
+	 * Iterate over all entries (node, set of subset IDs) and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void forEntries(Callback func);
+
+
+	/**
+	 * Iterate over all entries (node, set of subset IDs) in parallel and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void parallelForEntries(Callback handle);
+
+	/**
+	 * Iterate over all entries (node, set of subset IDs) and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void forEntries(Callback func) const;
+
+
+	/**
+	 * Iterate over all entries (node, set of subset IDs) in parallel and execute callback function (lambda closure).
+	 */
+	template<typename Callback> void parallelForEntries(Callback handle) const;
+
+
 
 
 private:
@@ -174,4 +202,41 @@ private:
 };
 
 } /* namespace NetworKit */
+
+
+template<typename Callback>
+inline void NetworKit::Cover::forEntries(Callback handle) {
+	for (index e = 0; e <= this->z; e += 1) {
+		handle(e, data[e]);
+	}
+
+}
+
+template<typename Callback>
+inline void NetworKit::Cover::forEntries(Callback handle) const {
+	for (index e = 0; e <= this->z; e += 1) {
+		handle(e, data[e]);
+	}
+}
+
+template<typename Callback>
+inline void NetworKit::Cover::parallelForEntries(
+		Callback handle) {
+	#pragma omp parallel for
+	for (index e = 0; e <= this->z; e += 1) {
+		handle(e, data[e]);
+	}
+}
+
+
+template<typename Callback>
+inline void NetworKit::Cover::parallelForEntries(
+		Callback handle) const {
+	#pragma omp parallel for
+	for (index e = 0; e <= this->z; e += 1) {
+		handle(e, data[e]);
+	}
+}
+
+
 #endif /* COVER_H_ */

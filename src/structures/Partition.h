@@ -16,6 +16,7 @@
 #include <limits>
 
 
+
 namespace NetworKit {
 
 #define none std::numeric_limits<index>::max()	//!< absence of an entry
@@ -170,7 +171,7 @@ public:
 	count numberOfSubsets() const;
 
 
-		/**
+	/**
 	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
 	 */
 	template<typename Callback> void forEntries(Callback func);
@@ -213,7 +214,7 @@ private:
 
 template<typename Callback>
 inline void NetworKit::Partition::forEntries(Callback handle) {
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e <= this->z; e += 1) {
 		handle(e, data[e]);
 	}
 
@@ -221,7 +222,7 @@ inline void NetworKit::Partition::forEntries(Callback handle) {
 
 template<typename Callback>
 inline void NetworKit::Partition::forEntries(Callback handle) const {
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e <= this->z; e += 1) {
 		handle(e, data[e]);
 	}
 }
@@ -230,7 +231,7 @@ template<typename Callback>
 inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) {
 	#pragma omp parallel for
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e <= this->z; e += 1) {
 		handle(e, data[e]);
 	}
 }
@@ -240,7 +241,7 @@ template<typename Callback>
 inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) const {
 	#pragma omp parallel for
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e <= this->z; e += 1) {
 		handle(e, data[e]);
 	}
 }

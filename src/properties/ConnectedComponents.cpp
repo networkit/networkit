@@ -1,11 +1,13 @@
 /*
  * ConnectedComponents.cpp
  *
- *  Created on: Sep 17, 2013
- *      Author: Maximilian Vogel
+ *  Created on: Dec 16, 2013
+ *      Author: cls
  */
 
 #include "ConnectedComponents.h"
+
+#include <set>
 
 namespace NetworKit {
 
@@ -17,71 +19,73 @@ ConnectedComponents::~ConnectedComponents() {
 
 }
 
-void ConnectedComponents::run(const Graph& g) {
-	BFS bfs;
-	count infDist = std::numeric_limits<count>::max();
-	count n = g.numberOfNodes();
-	this->assignedComponent = std::vector<node>(n,infDist);
-	node startNode = 0;
-	count idOfCC = 0;
-	std::vector<count> resultOfBFS;
+void ConnectedComponents::run(const Graph& G) {
+	// calculate connected components by label propagation
+	count z = G.numberOfNodes();
+	this->component = std::vector<node>(z, none);
 
+	G.parallelForNodes([&](node v){
+		component[v] = v;
+	});
+
+	bool change = false;
 	do {
-		resultOfBFS = bfs.run(g,startNode);
-		startNode = infDist;
-		count nodesInCC = 0;
-		for (count i = 0; i < n;i++) {
-			if (resultOfBFS.at(i) != infDist) {
-				//TODO  what if the above and  'nodes[i] != infDist'?
-				this->assignedComponent[i] = idOfCC;
-				nodesInCC++;
-			}
-		}
-		startNode = this->findStartNode();
-		this->componentSizes.push_back(nodesInCC);
-		idOfCC++;
-	} while (startNode != infDist);
-
+		DEBUG("next iteration");
+		change = false;
+		G.parallelForNodes([&](node u) {
+			G.forNeighborsOf(u, [&](node v) {
+				if (component[v] < component[u]) {
+					component[u] = component[v];
+					change = true;
+				}
+			});
+			// minimum neighboring label assigned
+		});
+	} while (change);
 }
 
-std::vector<count> ConnectedComponents::getComponentSizes() {
-	return this->componentSizes;
+
+std::vector<index> ConnectedComponents::getComponentData() {
+	return this->component;
 }
 
-node ConnectedComponents::findStartNode() {
-	count infDist = std::numeric_limits<count>::max();
-	//TODO: use iterator G.forNodes()?
-	for (count i = 0; i < this->assignedComponent.size(); i++) {
-		if (this->assignedComponent[i] == infDist) {
-			return (node)i;
+std::map<index, count> ConnectedComponents::getComponentSizes() {
+	std::map<index, count> componentSize;
+	for (node u = 0; u < component.size(); ++u) {
+		if (component[u] != none) {
+			componentSize[component[u]] += 1;
 		}
 	}
-	return infDist;
+	return componentSize;
 }
 
-std::vector<node> ConnectedComponents::getComponent(index component) {
+
+std::vector<node> ConnectedComponents::getComponent(index label) {
 	std::vector<node> nodesOfComponent;
-	count i = 0;
-	//TODO: use iterator G.forNodes()?
-	while (nodesOfComponent.size() < this->componentSizes.at(component)) {
-		if (this->assignedComponent.at(i) == component) {
-			nodesOfComponent.push_back(i);
+	for (node u = 0; u < component.size(); ++u) {
+		if (this->component[u] == label) {
+			nodesOfComponent.push_back(u);
 		}
-		i++;
 	}
 	return nodesOfComponent;
 }
 
 count ConnectedComponents::numberOfComponents() {
-	return componentSizes.size();
+	count nc = 0;
+	std::set<index> componentLabels;
+	for (index i = 0; i < component.size(); ++i) {
+		index c = component[i];
+		if ((componentLabels.find(c) == componentLabels.end()) && (c != none)) { // label not encountered yet
+			componentLabels.insert(c);
+			nc++;
+		}
+	}
+	return nc;
 }
 
-count ConnectedComponents::sizeOfComponent(index component) {
-	return componentSizes[component];
-}
-
-count ConnectedComponents::componentOfNode(node query) {
-	return assignedComponent[query];
+count ConnectedComponents::componentOfNode(node u) {
+	assert (component[u] != none);
+	return component[u];
 }
 
 }

@@ -54,9 +54,11 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 	Graph* G = Gproxy->G;
 
 	gen->initializeGraph();
+	count initV = 2;
+	count initE = 1;
 
-	EXPECT_EQ(2, G->numberOfNodes()) << "initially the generator creates two connected nodes";
-	EXPECT_EQ(1, G->numberOfEdges()) << "initially the generator creates two connected nodes";
+	EXPECT_EQ(initV, G->numberOfNodes()) << "initially the generator creates two connected nodes";
+	EXPECT_EQ(initE, G->numberOfEdges()) << "initially the generator creates two connected nodes";
 
 	count n = 100;
 
@@ -168,7 +170,7 @@ TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
 
 }
 
-TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
+TEST_F(GeneratorsGTest, generateBarabasiAlbertGeneratorGraph) {
 		count k = 3;
 		count nMax = 1000;
 		count n0 = 3;
@@ -179,6 +181,58 @@ TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 		GraphIO io;
 		io.writeAdjacencyList(G, "output/"
 				"BarabasiGraph.txt");
+}
+
+
+TEST_F(GeneratorsGTest, tryHavelHakimiGenerator) {
+	count n = 200;
+	count maxDegree = n / 8;
+	std::vector<count> sequence(n);
+	bool realizable = false;
+
+	do {
+		// fill sequence with random values (this is not power-law, of course!)
+		for (index i = 0; i < n; ++i) {
+			sequence[i] = rand() % maxDegree;
+		}
+
+		// sort to ensure non-increasing order
+		std::sort(sequence.begin(), sequence.end(), std::greater<count>());
+
+		// check if sequence is realizable
+		HavelHakimiGenerator hhgen(sequence); // TODO: Students, please construct your own object
+		realizable = hhgen.isRealizable();
+
+		if (realizable) {
+			Graph G = hhgen.generate();
+			count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+			EXPECT_EQ(volume, 2 * G.numberOfEdges());
+		}
+	} while (! realizable);
+}
+
+
+TEST_F(GeneratorsGTest, tryHChungLuGenerator) {
+	count n = 200;
+	count maxDegree = n / 8;
+	std::vector<count> sequence(n);
+	count expVolume = 0;
+	count actualVolume = 0;
+
+	// fill sequence with random values (this is not power-law, of course!)
+	for (index i = 0; i < n; ++i) {
+		sequence[i] = rand() % maxDegree;
+		expVolume += sequence[i];
+	}
+
+	ChungLuGenerator gen(sequence);
+	Graph G = gen.generate();
+
+	EXPECT_EQ(n, G.numberOfNodes());
+	G.forNodes([&](node v) {
+		actualVolume += G.degree(v);
+	});
+	INFO("expected volume: " << expVolume << ", actual volume: " << actualVolume);
 }
 
 

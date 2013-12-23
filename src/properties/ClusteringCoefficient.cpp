@@ -9,15 +9,12 @@
 
 namespace NetworKit {
 
-ClusteringCoefficient::ClusteringCoefficient()
-{
-	// TODO Auto-generated constructor stub
+ClusteringCoefficient::ClusteringCoefficient() {
 
 }
 
-ClusteringCoefficient::~ClusteringCoefficient()
-{
-	// TODO Auto-generated destructor stub
+ClusteringCoefficient::~ClusteringCoefficient() {
+
 }
 
 std::vector<double>
@@ -123,7 +120,7 @@ ClusteringCoefficient::global(Graph& G) const
     	triangles[u] = tr;
 	});
   
-  double denominator = G.parallelSumForNodes([&](node u){
+    double denominator = G.parallelSumForNodes([&](node u){
 		return G.degree(u) * (G.degree(u) - 1);
 	});
 
