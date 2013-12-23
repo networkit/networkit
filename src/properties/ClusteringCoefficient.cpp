@@ -10,12 +10,11 @@
 namespace NetworKit {
 
 ClusteringCoefficient::ClusteringCoefficient() {
-	// TODO Auto-generated constructor stub
 
 }
 
 ClusteringCoefficient::~ClusteringCoefficient() {
-	// TODO Auto-generated destructor stub
+
 }
 
 double ClusteringCoefficient::calculate(Graph& G) {
@@ -40,6 +39,7 @@ double ClusteringCoefficient::calculate(Graph& G) {
 	});
 
 	G.parallelForNodes([&](node u){
+		if(G.degree(u)>=2)
 		denominator[u] = G.degree(u) * (G.degree(u) - 1);
 	});
 

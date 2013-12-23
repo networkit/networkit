@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-// TODO: is class necessary?
+
 class ClusteringCoefficient {
 
 public:

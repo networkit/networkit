@@ -1,0 +1,12 @@
+Test of approximate cluster coefficient for 'celegans_metabolic'.
+Parameters:
+  Variance:          0.01
+  Error probability: 0.01
+
+Global cluster coefficient:
+  Approximate: 0.122579
+  Exact:       0.124436
+
+Average local cluster coefficient:
+  Approximate: 0.653001
+  Exact:       0.65514

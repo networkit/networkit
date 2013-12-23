@@ -49,6 +49,8 @@
 #include "generators/DynamicBarabasiAlbertGenerator.h"
 #include "overlap/RegionGrowingOverlapper.h"
 #include "overlap/HashingOverlapper.h"
+#include "properties/ClusteringCoefficient.h"
+#include "properties/GlobalClusteringCoefficient.h"
 #include "community/PLM2.h"
 
 
@@ -713,6 +715,7 @@ int main(int argc, char **argv) {
 
 	// RUN PROGRAM
 	Graph G = getGraph(options);
+
 
 	// allow for scripted thread scaling
 	if (options[SCALETHREADS]) {
