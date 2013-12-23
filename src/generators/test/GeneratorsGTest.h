@@ -17,6 +17,7 @@
 #include "../DynamicBarabasiAlbertGenerator.h"
 #include "../PubWebGenerator.h"
 #include "../HavelHakimiGenerator.h"
+#include "../ChungLuGenerator.h"
 #include "../DynamicPubWebGenerator.h"
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"

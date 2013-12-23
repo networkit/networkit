@@ -184,8 +184,7 @@ TEST_F(GeneratorsGTest, generateBarabasiAlbertGeneratorGraph) {
 }
 
 
-// TODO: Students, please copy this method, put it below this one and rename it, then adapt
-TEST_F(GeneratorsGTest, tryHavelHakimiGenerator_Meyerhenke) {
+TEST_F(GeneratorsGTest, tryHavelHakimiGenerator) {
 	count n = 200;
 	count maxDegree = n / 8;
 	std::vector<count> sequence(n);
@@ -210,6 +209,21 @@ TEST_F(GeneratorsGTest, tryHavelHakimiGenerator_Meyerhenke) {
 			EXPECT_EQ(volume, 2 * G.numberOfEdges());
 		}
 	} while (! realizable);
+}
+
+
+TEST_F(GeneratorsGTest, tryHChungLuGenerator) {
+	count n = 200;
+	count maxDegree = n / 8;
+	std::vector<count> sequence(n);
+
+	// fill sequence with random values (this is not power-law, of course!)
+	for (index i = 0; i < n; ++i) {
+		sequence[i] = rand() % maxDegree;
+	}
+
+	ChungLuGenerator gen(sequence);
+	Graph G = gen.generate();
 }
 
 

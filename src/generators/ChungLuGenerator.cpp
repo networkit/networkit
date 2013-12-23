@@ -9,16 +9,16 @@
 
 namespace NetworKit {
 
-ChungLu::ChungLu(const std::vector<count>& degreeSequence) {
+ChungLuGenerator::ChungLuGenerator(const std::vector<count>& degreeSequence) {
 	// TODO Auto-generated constructor stub
 
 }
 
-ChungLu::~ChungLu() {
+ChungLuGenerator::~ChungLuGenerator() {
 	// TODO Auto-generated destructor stub
 }
 
-Graph ChungLu::generate() {
+Graph ChungLuGenerator::generate() {
 	Graph G;
 
 	// TODO
