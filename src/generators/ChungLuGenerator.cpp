@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include "ChungLu.h"
+#include "ChungLuGenerator.h"
 
 namespace NetworKit {
 

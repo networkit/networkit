@@ -216,14 +216,23 @@ TEST_F(GeneratorsGTest, tryHChungLuGenerator) {
 	count n = 200;
 	count maxDegree = n / 8;
 	std::vector<count> sequence(n);
+	count expVolume = 0;
+	count actualVolume = 0;
 
 	// fill sequence with random values (this is not power-law, of course!)
 	for (index i = 0; i < n; ++i) {
 		sequence[i] = rand() % maxDegree;
+		expVolume += sequence[i];
 	}
 
 	ChungLuGenerator gen(sequence);
 	Graph G = gen.generate();
+
+	EXPECT_EQ(n, G.numberOfNodes());
+	G.forNodes([&](node v) {
+		actualVolume += G.degree(v);
+	});
+	INFO("expected volume: " << expVolume << ", actual volume: " << actualVolume);
 }
 
 
