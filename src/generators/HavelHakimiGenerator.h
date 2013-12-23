@@ -16,7 +16,7 @@
 namespace NetworKit {
 
 class HavelHakimiGenerator: public NetworKit::StaticGraphGenerator  {
-private:
+protected:
 	std::vector<count> seq;
 	bool realizable;
 
@@ -33,7 +33,8 @@ public:
 	virtual bool isRealizable();
 
 	/**
-	 * Generates
+	 * Generates degree sequence seq (if it is realizable).
+	 * @return Empty graph if graph is not realizable, otherwise graph with degree sequence seq.
 	 */
 	virtual Graph generate();
 };
