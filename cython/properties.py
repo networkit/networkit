@@ -6,6 +6,7 @@ import community
 import termgraph
 import auxiliary
 import nxadapter
+import powerlaw
 
 # other modules
 import textwrap
@@ -72,6 +73,11 @@ def clustering(G):
 
 
 def powerLawExponent(G):
+	fit = powerlaw.Fit(degreeDistribution(G))
+	return fit.alpha
+
+
+def powerLawExponent_(G):
     """ Estimate power law exponent as a linear regression line through a log-log plot
     of the degree distribution"""
     def logarithmic(data):
