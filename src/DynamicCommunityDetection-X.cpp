@@ -46,7 +46,10 @@
 #include "dcd/DynCDSetup.h"
 #include "community/PLP.h"
 #include "community/PLM.h"
+#include "community/EPP.h"
 #include "dcd/DynamicEnsemble.h"
+#include "overlap/Overlapper.h"
+#include "overlap/HashingOverlapper.h"
 
 using namespace NetworKit;
 
