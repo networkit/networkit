@@ -24,7 +24,8 @@ public:
 		NODE_REMOVAL,
 		EDGE_ADDITION,
 		EDGE_REMOVAL,
-		EDGE_WEIGHT_UPDATE
+		EDGE_WEIGHT_UPDATE,
+		TIME_STEP
 	};
 
 	Type type;	//!< type of graph event
