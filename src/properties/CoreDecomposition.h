@@ -2,7 +2,7 @@
  * CoreDecomposition.h
  *
  *  Created on: Oct 28, 2013
- *      Author: Henning
+ *      Author: Lukas Barth, David Weiß
  */
 
 #ifndef COREDECOMPOSITION_H_
@@ -10,7 +10,10 @@
 
 #include <vector>
 #include <list>
+#include <fstream>
+#include <string>
 #include "../graph/Graph.h"
+#include "../auxiliary/ShellList.h"
 
 namespace NetworKit {
 
@@ -18,6 +21,7 @@ namespace NetworKit {
  * Computes k-core decomposition of a graph.
  */
 class CoreDecomposition {
+
 public:
 	CoreDecomposition();
 	virtual ~CoreDecomposition();

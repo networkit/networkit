@@ -2,7 +2,7 @@
  * CoreDecomposition.cpp
  *
  *  Created on: Oct 28, 2013
- *      Author: Henning
+ *      Author: Lukas Barth, David Weiß
  */
 
 #include "CoreDecomposition.h"
@@ -21,18 +21,19 @@ struct NodeWithDegree {
   count degree;
 };
 
+// TODO: check and put in Dev and default branch
 std::vector<count> CoreDecomposition::run(const Graph& G) {
   const count n = G.numberOfNodes();
   std::vector<count> coreness = std::vector<count>(n, 0);
 
-  //Knotengrad bestimmen
+  // determine node degrees
   std::vector<count> degree = std::vector<count>(n, 0);
   G.forEdges([&](node u, node v) {
     degree[u]++;
     degree[v]++;
   });
 
-  // Knoten in entsprechende Liste stecken
+  // put nodes in appropriate lists
   auto nodesByDegree = new std::list<NodeWithDegree>[n];
   std::vector<std::list<NodeWithDegree>::iterator> nodePointer;
   for(node v = 0; v < n; v++) {
