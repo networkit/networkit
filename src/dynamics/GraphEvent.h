@@ -36,7 +36,11 @@ public:
 
 	GraphEvent(Type type, node u = none, node v = none, edgeweight w = none);
 
-	virtual ~GraphEvent();
+	/**
+	 * Return string representation.
+	 */
+	std::string toString();
+
 };
 
 } /* namespace NetworKit */
