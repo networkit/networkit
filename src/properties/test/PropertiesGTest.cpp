@@ -13,12 +13,11 @@
 namespace NetworKit {
 
 PropertiesGTest::PropertiesGTest() {
-	// TODO Auto-generated constructor stub
 
 }
 
 PropertiesGTest::~PropertiesGTest() {
-	// TODO Auto-generated destructor stub
+
 }
 
 
