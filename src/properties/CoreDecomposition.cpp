@@ -10,27 +10,61 @@
 namespace NetworKit {
 
 CoreDecomposition::CoreDecomposition() {
-
 }
 
 CoreDecomposition::~CoreDecomposition() {
-
 }
 
-std::vector<count> CoreDecomposition::run(const Graph& G) {
-	Aux::ShellList sl(&G);
+struct NodeWithDegree {
+	NodeWithDegree(node _v, count _degree) :
+			v(_v), degree(_degree) {
+	}
+	node v;
+	count degree;
+};
 
-	for (count i = 0; i < sl.size(); i++) {
-		sl.forEachNodeInShell(i, [&](node v) {
-			G.forNeighborsOf(v, [&](node w) {
-				if (sl.getShell(w) > i) {
-					sl.decreaseShell(w);
+// TODO: check if error-free and suitable for default
+std::vector<count> CoreDecomposition::run(const Graph& G) {
+	const count n = G.numberOfNodes();
+	std::vector<count> coreness = std::vector<count>(n, 0);
+
+	// determine node degree
+	std::vector<count> degree = std::vector<count>(n, 0);
+	G.forEdges([&](node u, node v) {
+		degree[u]++;
+		degree[v]++;
+	});
+
+	// put nodes in appropriate lists
+	auto nodesByDegree = new std::list<NodeWithDegree>[n];
+	std::vector<std::list<NodeWithDegree>::iterator> nodePointer;
+	for (node v = 0; v < n; v++) {
+		nodesByDegree[degree[v]].push_front(NodeWithDegree(v, degree[v]));
+		nodePointer.push_back(nodesByDegree[degree[v]].begin());
+	}
+
+	index i = 1;
+	Graph G2 = G;
+	while (i - 1 < n) {
+		while (!nodesByDegree[i - 1].empty()) {
+			auto pv = nodesByDegree[i - 1].begin();
+			coreness[pv->v] = i - 1;
+			G2.forEdgesOf(pv->v, [&](node w, node u) {
+				auto pu = nodePointer[u];
+				if(pu->degree > i - 1) {
+					auto &oldList = nodesByDegree[pu->degree];
+					auto &newList = nodesByDegree[pu->degree - 1];
+					newList.splice(newList.begin(), oldList, pu);
+					pu->degree--;
 				}
 			});
-		});
+			nodesByDegree[pv->degree].erase(pv);
+		}
+		i++;
 	}
-	return sl.getShells();
 
+	delete[] nodesByDegree;
+	return coreness;
 }
 
 } /* namespace NetworKit */

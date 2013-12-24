@@ -709,6 +709,7 @@ int main(int argc, char **argv) {
 	// RUN PROGRAM
 	Graph G = getGraph(options);
 
+
 	// allow for scripted thread scaling
 	if (options[SCALETHREADS]) {
 		// perform scaling

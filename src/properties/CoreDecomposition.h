@@ -11,6 +11,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <list>
 #include "../graph/Graph.h"
 #include "../auxiliary/ShellList.h"
 
@@ -25,10 +26,10 @@ public:
 	CoreDecomposition();
 	virtual ~CoreDecomposition();
 
-	/**
+  /**
 	 * @return k-core decomposition of graph @a G.
 	 */
-	std::vector<count> run(const Graph& G);
+  std::vector<count> run(const Graph& G);
 };
 
 } /* namespace NetworKit */
