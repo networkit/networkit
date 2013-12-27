@@ -62,6 +62,18 @@ bool Partition::isSingletonPartition(const std::set<index>& elements) const { //
 	return (numberOfElements() == numberOfSubsets());
 }
 
+index Partition::extend() {
+	data.push_back(none);
+	z++;
+	assert (z == (data.size() - 1));
+	return z;
+}
+
+void Partition::remove(index e) {
+	assert (e <= z);
+	data[e] = none;
+}
+
 count Partition::numberOfSubsets() const {
 	std::vector<int> exists(upperBound(), 0); // a boolean vector would not be thread-safe
 
