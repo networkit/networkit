@@ -15,14 +15,13 @@
 #include <cassert>
 #include <limits>
 
+#include "../graph/Graph.h"
+
 
 
 namespace NetworKit {
 
-#define none std::numeric_limits<index>::max()	//!< absence of an entry
 
-typedef uint64_t index;
-typedef uint64_t count;
 
 /**
  * Implements a partition of a set, i.e. a subdivision of the 
@@ -67,6 +66,19 @@ public:
 		return this->data[e];
 	}
 
+
+	/**
+	 * Extend the data structure and creat a slot
+	 * for one more element. Initializes the entry to none
+	 * and returns the index of the entry.
+	 */
+	index extend();
+
+	/**
+	 * Removes the entry for the given element
+	 * by setting it to none.
+	 */
+	void remove(index e);
 
 	/**
 	 * Add a (previously unassigned) element to a set
