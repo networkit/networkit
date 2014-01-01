@@ -683,6 +683,12 @@ public:
 	std::vector<std::pair<node, node> > edges();
 
 
+	/**
+	 * Return list of neighbors for given node.
+	 */
+	std::vector<node> neighbors(node u);
+
+
 };
 
 } /* namespace NetworKit */
