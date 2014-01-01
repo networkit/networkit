@@ -103,6 +103,7 @@ cdef extern from "../src/graph/Graph.h":
 		edgeweight weight(node u, node v) except +
 		vector[node] nodes() except +
 		vector[pair[node, node]] edges() except +
+		vector[node] neighbors(node u) except +
 		void markAsWeighted() except +
 		bool isMarkedAsWeighted() except +
 		string toString() except +
@@ -152,6 +153,9 @@ cdef class Graph:
 	
 	def edges(self):
 		return self._this.edges()
+		
+	def neighbors(self, u):
+		return self._this.neighbors(u)
 	
 	def markAsWeighted(self):
 		self._this.markAsWeighted()
