@@ -11,7 +11,7 @@ import pylab
 
 class GraphDrawer:
 	
-	def __init__(self, layout=nx.spring_layout, size=(10,8), nodeOpts={}, edgeOpts={}, labelOpts={}, labelled=False, emphasizeCliques=False):
+	def __init__(self, layout=nx.spring_layout, size=(8,8), nodeOpts={}, edgeOpts={}, labelOpts={}, labelled=False, emphasizeCliques=False):
 		"""
 
 		:param layout: The layout of the graph
@@ -47,6 +47,7 @@ class GraphDrawer:
 
 		:param G: The graph object
 		:param pos: optional predefined node positions
+		:param nodeSizes: optional node sizes
 		"""
 		
 		plt.figure(figsize=self.size)
@@ -78,15 +79,24 @@ class GraphDrawer:
 		
 
 
-	def emphasizeCliques(self, G):
-		"""emphasizes cliques of a graph
+	def emphasizeCliques(self, G, pos=None):
+		""" Emphasize cliques of a graph.
 		It creates a list with values for the edge transparency.
 		The more the nodes have common neighbors, the darker will be the edges
 
 		:param G: The graph object
+		:param pos: optional predefined node positions
+		:rtype: list
 		"""
 
+		plt.figure(figsize=self.size)
+		plt.axis("off")
+		if not pos:
+			pos = self.layout(G)
+			
 		alpha = []
+
+		# values for alpha are calculated depending on common neighbors between each two nodes
 		for u,v in G.edges():
 			nu = set(G.neighbors(u)+[u]) #neighbors from u
 			nv = set(G.neighbors(v)+[v]) #neighbors from v
@@ -94,7 +104,8 @@ class GraphDrawer:
 			union = nu.union(nv) #all neighbors
 			average = (len(intersection)+len(union))/2
 			alpha += [round(len(intersection)/average, 1)]
-			
+
+		# set minimum for edge transparency
 		for i in range(len(G.edges())):
 			if alpha[i] < 0.1:
 				alpha[i] = 0.1
@@ -102,17 +113,20 @@ class GraphDrawer:
 		return alpha
 
 
-	def drawSelSCAN(self, G, seeds, cores, communities):
+	def drawSelSCAN(self, G, seeds, cores, communities, pos=None):
 		"""
 		Draw graph unweighted and visualize seed and core nodes
 
 		:param G: The graph object
 		:param seeds: List of seed nodes
 		:param cores: List of core nodes
+		:param communities: Dictionary of communities. Nodes in the same community have the same color.
+		:param pos: optional predefined node positions
 		"""
 		
 		plt.figure(figsize=self.size)
-		pos = self.layout(G)
+		if not pos:
+			pos = self.layout(G)
 		plt.axis("off")
 
 		colors = []
@@ -152,12 +166,13 @@ class GraphDrawer:
 		
 		
 		
-	def drawEdgeSets(self, G, edgeSets, palette, nodeOpts={}, labelOpts={}, edgeOpts={}):
+	def drawEdgeSets(self, G, edgeSets, palette, nodeOpts={}, labelOpts={}, edgeOpts={}, pos=None):
 		"""
 		Draw different set of edges in different colors
 
 		:param G: The graph object
-		:param edgeSets:
+		:param edgeSets: List of edgesets
+		:param palette: List of colors. Every edgeset is drawn in another color of palette.
 		:param nodeOpts: Dictionary that contains the node attributes
 		:param labelOpts: Dictionary that contains the label attributes
 		:param edgeOpts: Dictionary that contains the edge attributes
@@ -165,7 +180,9 @@ class GraphDrawer:
 		
 		plt.figure(figsize=self.size)
 		plt.axis("off")
-		pos = self.layout(G)
+		if not pos:
+			pos = self.layout(G)
+		
 		# draw nodes
 		nx.draw_networkx_nodes(G, pos, **nodeOpts)
 		# draw labels
@@ -175,20 +192,21 @@ class GraphDrawer:
 			nx.draw_networkx_edges(G, pos, edgeSets[i], edge_color=palette[i], **edgeOpts)
 		
 		
-	def drawWeighted(self, G, edge_cmap=plt.cm.Blues, edge_vmin=0, edge_vmax=2.5, node_color='c', pos=None):
+	def drawWeighted(self, G, edge_cmap=plt.cm.Blues, node_color='c', pos=None):
 		"""
 		Draw a weighted graph so that the more weighted edges appear in a darker color
 
 		:param G: The graph object
 		:param edge_cmap: Matplotlib colormap for edgecolors
 		:param node_color: The color of nodes
-		:param pos: node positions
+		:param pos: optional predefined node positions
 		"""
 		
 		plt.figure(figsize=self.size)
 		plt.axis("off")
 		if not pos:
 			pos = self.layout(G)
+
 		
 		# check if G is weighted
 		# if there is at least one weighted edge, the graph is weighted
@@ -214,8 +232,8 @@ class GraphDrawer:
 			colors += [1 for (u,v) in G.edges()]
 
 		# extra edgeOpts needed for visualising weighted edges	
-		edgeOpts = {"edge_color": colors, "edge_cmap": edge_cmap, "edge_vmin": edge_vmin, "edge_vmax": edge_vmax}
-		edge_labelOpts = {"alpha": 0.8, "edge_labels": label, "font_size":10}
+		edgeOpts = {"edge_color": colors, "edge_cmap": edge_cmap, "edge_vmin": 0, "edge_vmax": 2.5}
+		edge_labelOpts = {"alpha": 0.8, "edge_labels": label, "font_size": 10}
 
 		# draw edges
 		# TODO: drawWeighted should also work if emphasizeCliques is true
@@ -247,11 +265,12 @@ class GraphDrawer:
 		
 	def drawClustered(self, G, clustering, cmap=plt.cm.Accent, pos=None):
 		"""
-		Draw a graph with a clustering so that the nodes appear in different colors
+		Draw a graph with a clustering so that nodes in different clusterings appear in different colors
 
 		:param G: The graph object
+		:param pos: optional predefined node positions
 		:param clustering: Cluster of graph G
-		:param pos: predefined node positions
+		:param cmap: colormap for visualizing cluster. Default is Accent from Matplotlib
 		"""
 		if not pos:
 			pos = self.layout(G)
@@ -283,5 +302,6 @@ class GraphDrawer:
 		if self.labelled:
 			nx.draw_networkx_labels(G, pos, **self.labelOpts)
 		
+
 
 

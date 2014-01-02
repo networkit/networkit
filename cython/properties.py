@@ -2,65 +2,106 @@
 from _NetworKit import GraphProperties, ConnectedComponents
 
 # other submodules
-import NetworKit
 import community
 import termgraph
 import auxiliary
+import nxadapter
+import powerlaw
 
 # other modules
 import textwrap
 import collections
 import math
+import logging
 
 try:
 	import networkx as nx
 except ImportError:
-	print("""WARNING: module 'networkx' not installed, which is required by some
+	logging.warning("""WARNING: module 'networkx' not installed, which is required by some
 						functions.""")
 try:
 	import tabulate
 except ImportError:
-	print("""WARNING: module 'tabulate' not installed, which is required by some
+	logging.warning("""WARNING: module 'tabulate' not installed, which is required by some
 						functions. In order to install 'tabulate', Python 3.3 is required""")
+
+try:
+	from scipy import stats
+except ImportError:
+	logging.warning("""WARNING: module 'scipy' not installed, which is required by some
+						functions.""")
 
 
 ########  PROPERTIES ########
 
-# TODO: test properties
-
-def nm(nkG):
-	n = nkG.numberOfNodes()
-	m = nkG.numberOfEdges()
+def size(G):
+	""" Return number of nodes and number of edges"""
+	n = G.numberOfNodes()
+	m = G.numberOfEdges()
 	return (n, m)
 
-def degrees(nkG):
-	minMaxDeg = GraphProperties.minMaxDegree(nkG)
-	avgDeg = GraphProperties.averageDegree(nkG)
+def degrees(G):
+	""" Return min/max/avg degree"""
+	minMaxDeg = GraphProperties.minMaxDegree(G)
+	avgDeg = GraphProperties.averageDegree(G)
 	return (minMaxDeg[0], minMaxDeg[1], avgDeg)
+
+def degreeDistribution(G):
+	""" Return the degree distribution of a graph"""
+	return GraphProperties.degreeDistribution(G)
+
+
+def density(G):
+	""" Return the density of the graph"""
+	(n, m) = size(G)
+	return (2 * m) / (n * (n-1))
 
 def components(G):
 	""" Find and analyze detected components """
-	print("[...] finding connected components....")
+	logging.info("[...] finding connected components....")
 	cc = ConnectedComponents()
 	cc.run(G)
 	nComponents = cc.numberOfComponents()
 	componentSizes = cc.getComponentSizes()
-	componentSizes.sort(reverse=True) # sort in descending order
-	sizeLargestComponent = componentSizes[0]
-	return (nComponents, sizeLargestComponent)
+	return (nComponents, componentSizes)
+
+def clustering(G):
+	""" Get clustering properties of the graph:
+		Returns average local clustering coefficient
+	"""
+	return GraphProperties.averageLocalClusteringCoefficient(G)
+
+
+def powerLawExponent(G):
+	fit = powerlaw.Fit(degreeDistribution(G))
+	return fit.alpha
+
+
+def powerLawExponent_(G):
+    """ Estimate power law exponent as a linear regression line through a log-log plot
+    of the degree distribution"""
+    def logarithmic(data):
+    	return [(math.log(x) if x != 0 else 0) for x in data]
+
+    dd = degreeDistribution(G)
+    degrange = range(len(dd))
+    (slope,_,_,_,_) = stats.linregress(logarithmic(degrange), logarithmic(dd))
+    gamma = -1 * slope
+    return gamma
+    
 	
 
 
 def properties(nkG, settings):
 	nxG = None
 	if settings["networkx"]:
-		print("[...] converting to NetworX.Graph for some properties....")
-		nxG = NetworKit.nk2nx(nkG)
+		logging.info("[...] converting to NetworX.Graph for some properties....")
+		nxG = nxadapter.nk2nx(nkG)
 
-	print("[...] calculating basic properties")
+	logging.info("[...] calculating basic properties")
 	
 	# size
-	n, m = nm(nkG)    # n and m
+	n, m = size(nkG)    # n and m
 
 	# degrees 
 	degDist = GraphProperties.degreeDistribution(nkG) 
@@ -78,19 +119,19 @@ def properties(nkG, settings):
 	loops = len(nxG.selfloop_edges()) if nxG else None
 	
 	# density
-	dens = nx.density(nxG) if nxG else None
+	dens = density(G)
 
 	# diameter
 	dia = None
 	if settings["diameter"] and (n < 1000):
-		print("calculating diameter...")
+		logging.info("calculating diameter...")
 		dia = nx.diameter(nxG)
 
 
 	# calculate eccentricity
 	ecc = None
 	if settings["eccentricity"] and (n < 1000):
-		print("calculating eccentricity...")
+		logging.info("calculating eccentricity...")
 		eccentricities = nx.eccentricity(nxG)
 		ecc = sum(val for val in eccentricities.values()) / n
 
@@ -100,15 +141,15 @@ def properties(nkG, settings):
 	ncomPLP, modPLP = None, None
 	ncomPLM, modPLM = None, None
 	if settings["communities"]:
-		print("[...] detecting communities")
+		logging.info("[...] detecting communities")
 		# perform PLP and PLM community detection
-		print("performing community detection: PLP")
+		logging.debug("performing community detection: PLP")
 		# TODO: avoid printout of status bar
 		plp = community.PLP()
 		zetaPLP = plp.run(nkG)
 		ncomPLP = zetaPLP.numberOfClusters()
 		modPLP = community.Modularity().getQuality(zetaPLP, nkG)
-		print("performing community detection: PLM")
+		logging.info("performing community detection: PLM")
 		plm = community.PLM("balanced")
 		zetaPLM = plm.run(nkG)
 		ncomPLM = zetaPLM.numberOfClusters()
@@ -118,14 +159,14 @@ def properties(nkG, settings):
 	
 	labels, histo = None, None
 	if settings["degreeDistribution"]:
-		print("[...] calculating degree histogram")    
+		logging.info("[...] calculating degree histogram")    
 		histo = GraphProperties.degreeDistribution(nkG)
 		(labels, histo) = compressHistogram(histo, nbins=25)
 
 	# connected components
 	nComponents, sizeLargestComponent = None, None
 	if settings["components"]:
-		print("[...] finding connected components")    
+		logging.info("[...] finding connected components")    
 		nComponents, sizeLargestComponent = components(nkG)
 
 	# clustering

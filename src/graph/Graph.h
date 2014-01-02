@@ -699,6 +699,12 @@ public:
 	std::vector<std::pair<node, node> > edges();
 
 
+	/**
+	 * Return list of neighbors for given node.
+	 */
+	std::vector<node> neighbors(node u);
+
+
 };
 
 } /* namespace NetworKit */
@@ -720,6 +726,7 @@ inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
 		}
 	}
 }
+
 
 template<typename L>
 inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) {

@@ -1,3 +1,4 @@
+# TODO: check functions and update docstrings if necessary
 '''
 Created on May 23, 2013
 

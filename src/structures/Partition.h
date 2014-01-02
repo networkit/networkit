@@ -15,13 +15,13 @@
 #include <cassert>
 #include <limits>
 
+#include "../graph/Graph.h"
+
+
 
 namespace NetworKit {
 
-#define none std::numeric_limits<index>::max()	//!< absence of an entry
 
-typedef uint64_t index;
-typedef uint64_t count;
 
 /**
  * Implements a partition of a set, i.e. a subdivision of the 
@@ -66,6 +66,19 @@ public:
 		return this->data[e];
 	}
 
+
+	/**
+	 * Extend the data structure and creat a slot
+	 * for one more element. Initializes the entry to none
+	 * and returns the index of the entry.
+	 */
+	index extend();
+
+	/**
+	 * Removes the entry for the given element
+	 * by setting it to none.
+	 */
+	void remove(index e);
 
 	/**
 	 * Add a (previously unassigned) element to a set
@@ -170,7 +183,7 @@ public:
 	count numberOfSubsets() const;
 
 
-		/**
+	/**
 	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
 	 */
 	template<typename Callback> void forEntries(Callback func);
@@ -213,7 +226,7 @@ private:
 
 template<typename Callback>
 inline void NetworKit::Partition::forEntries(Callback handle) {
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e <= this->z; e += 1) {
 		handle(e, data[e]);
 	}
 
@@ -221,7 +234,7 @@ inline void NetworKit::Partition::forEntries(Callback handle) {
 
 template<typename Callback>
 inline void NetworKit::Partition::forEntries(Callback handle) const {
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e <= this->z; e += 1) {
 		handle(e, data[e]);
 	}
 }
@@ -230,7 +243,7 @@ template<typename Callback>
 inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) {
 	#pragma omp parallel for
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e <= this->z; e += 1) {
 		handle(e, data[e]);
 	}
 }
@@ -240,7 +253,7 @@ template<typename Callback>
 inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) const {
 	#pragma omp parallel for
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e <= this->z; e += 1) {
 		handle(e, data[e]);
 	}
 }

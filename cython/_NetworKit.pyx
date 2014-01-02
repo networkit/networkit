@@ -103,6 +103,7 @@ cdef extern from "../src/graph/Graph.h":
 		edgeweight weight(node u, node v) except +
 		vector[node] nodes() except +
 		vector[pair[node, node]] edges() except +
+		vector[node] neighbors(node u) except +
 		void markAsWeighted() except +
 		bool isMarkedAsWeighted() except +
 		string toString() except +
@@ -152,6 +153,9 @@ cdef class Graph:
 	
 	def edges(self):
 		return self._this.edges()
+		
+	def neighbors(self, u):
+		return self._this.neighbors(u)
 	
 	def markAsWeighted(self):
 		self._this.markAsWeighted()
@@ -630,22 +634,22 @@ cdef class PLM(Clusterer):
 		return self._this.toString().decode("utf-8")
 		
 		
-cdef extern from "../src/community/PLMR.h":
-	cdef cppclass _PLMR "NetworKit::PLMR":
-		_PLMR() except +
-		_PLMR(string par,  bool refine, double gamma) except +
+cdef extern from "../src/community/PLM2.h":
+	cdef cppclass _PLM2 "NetworKit::PLM2":
+		_PLM2() except +
+		_PLM2(bool refine, double gamma, string par) except +
 		string toString() except +
 		_Clustering run(_Graph G) except +
 
 
-cdef class PLMR(Clusterer):
-	""" MultiLevel Parallel LocalMover - the Louvain method principle extended to
+cdef class PLM2(Clusterer):
+	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement"""
 		
-	cdef _PLMR _this
+	cdef _PLM2 _this
 	
-	def __cinit__(self, par="balanced", refine=True, gamma=1.0):
-		self._this = _PLMR(stdstring(par), refine, gamma)
+	def __cinit__(self, refine=True, gamma=1.0, par="balanced"):
+		self._this = _PLM2(refine, gamma, stdstring(par))
 		
 	def toString(self):
 		return self._this.toString().decode("utf-8")
@@ -653,45 +657,6 @@ cdef class PLMR(Clusterer):
 	def run(self, Graph G not None):
 		return Clustering().setThis(self._this.run(G._this))
 
-# FIXME: PLM2 
-# FIXME: CNM
-
-# # PLM2
-
-# cdef extern from "../src/community/PLM2.h":
-# 	cdef cppclass _PLM2 "NetworKit::PLM2":
-# 		_PLM2() except +
-# 		_PLM2(string par, double gamma)
-# 		_Clustering run(_Graph _G)
-# 		string toString()
-
-# cdef class PLM2:
-# 	cdef _PLM2 _this
-
-# 	def __cinit__(self, par="balanced", gamma=1.0):
-# 		self._this = _PLM2(stdstring(par), gamma)
-
-# 	def run(self, Graph G):
-# 		return Clustering().setThis(self._this.run(G._this))
-
-# 	def toString(self):
-# 		return self._this.toString().decode("utf-8")
-
-
-# cdef extern from "../src/community/CNM.h":
-# 	cdef cppclass _CNM "NetworKit::CNM":
-# 		_CNM() except +
-# 		_Clustering run(_Graph _G)
-# 		string toString()
-
-# cdef class CNM:
-# 	cdef _CNM _this
-
-# 	def run(self, Graph G):
-# 		return Clustering().setThis(self._this.run(G._this))
-
-# 	def toString(self):
-# 		return self._this.toString().decode("utf-8")
 
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures"""
@@ -817,15 +782,16 @@ cdef class GraphProperties:
 		return averageLocalClusteringCoefficient(G._this)
 
 
+
+
 cdef extern from "../src/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
 		_ConnectedComponents() except +
-		void run(_Graph G)
-		count numberOfComponents()
-		count sizeOfComponent(index component)
-		count componentOfNode(node query)
-		vector[node] getComponent(index component)
-		vector[count] getComponentSizes()
+		void run(_Graph G) except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		vector[node] getComponent(index component) except +
+		map[index, count] getComponentSizes() except +
 
 
 cdef class ConnectedComponents:
@@ -840,9 +806,6 @@ cdef class ConnectedComponents:
 	def numberOfComponents(self):
 		return self._this.numberOfComponents()
 
-	def sizeOfComponent(self, componentIndex):
-		return self._this.sizeOfComponent(componentIndex)
-
 	def componentOfNode(self, v):
 		return self._this.componentOfNode(v)
 
@@ -851,6 +814,7 @@ cdef class ConnectedComponents:
 	
 	def getComponentSizes(self):
 		return self._this.getComponentSizes()
+
 
 
 
