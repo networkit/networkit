@@ -13,7 +13,6 @@
 #include "../clustering/EdgeCut.h"
 #include "../io/ClusteringWriter.h"
 #include "../clustering/Clustering.h"
-#include "../auxiliary/RandomProbability.h"
 #include "../coarsening/MatchingContracter.h"
 #include "../matching/ParallelMatcher.h"
 #include "../coarsening/ClusteringProjector.h"

@@ -16,8 +16,6 @@
 
 #include "../Log.h"
 #include "../Random.h"
-#include "../RandomInteger.h"
-#include "../RandomProbability.h"
 #include "../Timer.h"
 #include "../MissingMath.h"
 #include "../Debug.h"
@@ -28,7 +26,7 @@ TEST_F(AuxGTest, produceRandomIntegers) {
 	int64_t u = 100;	// upper bound
 
 	for (int i = 0; i < 100; ++i) {
-		TRACE(Aux::RandomInteger::generate(l, u));
+		TRACE(Aux::Random::integer(l, u));
 	}
 }
 
@@ -46,7 +44,7 @@ TEST_F(AuxGTest, testRandomInteger) {
 	std::vector<int64_t> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
-		int64_t r = Aux::RandomInteger::generate(l, u);
+		int64_t r = Aux::Random::integer(l, u);
 		assert(l <= r);
 		assert(r <= u);
 		rVector.push_back(r);
@@ -108,7 +106,7 @@ TEST_F(AuxGTest, testRandomIntegerFaster) {
 	std::vector<int64_t> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
-		int64_t r = Aux::RandomInteger::generateFaster(l, u);
+		int64_t r = Aux::Random::integer(l, u);
 		assert(l <= r);
 		assert(r <= u);
 		rVector.push_back(r);
@@ -137,7 +135,7 @@ TEST_F(AuxGTest, testRandomProbability) {
 	std::vector<double> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
-		double r = Aux::RandomProbability::generate();
+		double r = Aux::Random::real();
 		assert(0.0 <= r);
 		assert(r <= 1.0);
 		rVector.push_back(r);
