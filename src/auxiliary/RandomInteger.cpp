@@ -11,7 +11,8 @@
 
 namespace Aux {
 
-std::mt19937_64 RandomInteger::randomEngine = std::mt19937_64(time(nullptr));	// initialize mersenne twister with current time
+// initialize mersenne twister from random_device:
+std::mt19937_64 RandomInteger::randomEngine = std::mt19937_64(std::random_device{}());
 
 
 int64_t RandomInteger::generate(int64_t lower, int64_t upper) {
