@@ -464,6 +464,15 @@ std::vector<std::pair<node, node> > Graph::edges() {
 	return edges;
 }
 
+
+std::vector<node> Graph::neighbors(node u) {
+	std::vector<node> neighbors;
+	this->forNeighborsOf(u, [&](node v) {
+		neighbors.push_back(v);
+	});
+	return neighbors;
+}
+
 void Graph::timeStep() {
 	this->t += 1;
 }
@@ -476,6 +485,9 @@ count Graph::time() {
 index Graph::upperNodeIdBound() const {
 	return this->z;
 }
+
+
+
 
 
 } /* namespace NetworKit */

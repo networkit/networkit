@@ -1,8 +1,8 @@
 /*
- * ConnectedComponents.h
+ * ConnectedComponents.cpp
  *
- *  Created on: Sep 17, 2013
- *      Author: Maximilian Vogel
+ *  Created on: Dec 16, 2013
+ *      Author: cls
  */
 
 #ifndef CONNECTEDCOMPONENTS_H_
@@ -23,9 +23,9 @@ public:
 	/**
 	 * This method determines the connected components for the graph g.
 	 *
-	 * @param[in]	g	graph 
+	 * @param[in]	G	graph 
 	 */
-	void run(const Graph& g);
+	void run(const Graph& G);
 
 	/**
 	 * This method returns the number of connected components.
@@ -33,18 +33,18 @@ public:
 	count numberOfComponents();
 
 	/**
-	 * This method returns the size of the given component.
-	 *
-	 * @param[in]	component	the index of questioned component
-	 */
-	count sizeOfComponent(index component);
-
-	/**
 	 * This method returns the the component in which node query is situated.
 	 *
 	 * @param[in]	query	the node whose component is asked for
 	 */
-	count componentOfNode(node query);
+	count componentOfNode(node u);
+
+
+	/** 
+	 * Return a vector which contains the
+	 * component label indexed by each node
+	 */
+	std::vector<index> getComponentData();
 
 	/**
 	 * This method returns a component consisting of a vector of nodes
@@ -55,15 +55,14 @@ public:
 
 
 	/**
-	 * This method returns a vector of component sizes.
+	 * This method returns a map of component index
+	 * to size of the component.
 	 *
 	 */
-	std::vector<count> getComponentSizes();
+	std::map<index, count> getComponentSizes();
 
 private:
-	std::vector<node> assignedComponent;
-	std::vector<count> componentSizes;
-	node findStartNode();
+	std::vector<node> component;
 };
 
 }

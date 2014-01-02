@@ -49,7 +49,8 @@
 #include "generators/DynamicBarabasiAlbertGenerator.h"
 #include "overlap/RegionGrowingOverlapper.h"
 #include "overlap/HashingOverlapper.h"
-#include "community/PLMR.h"
+#include "community/PLM2.h"
+
 
 
 // revision
@@ -365,10 +366,14 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 		} else if (algoName == "PLM") {
 			// algoParams is parallelization strategy
 			if (algoParams.empty()) {
-				algo = new PLM();
+				algo = new PLM2();
 			} else {
-				algo = new PLM(algoParams);
+				algo = new PLM2();
 			}
+		} else if (algoName == "PLM") {
+			algo = new PLM2(false);
+		} else if (algoName == "PLMR") {
+			algo = new PLM2(true);
 		} else if (algoName == "EML") {
 			// TODO: call multilevel algorithm
 		} else if (algoName == "EPP") {
@@ -417,9 +422,9 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			} else if (finalClustererArg == "Agglomerative") {
 				final = new ParallelAgglomerativeClusterer();
 			} else if (finalClustererArg == "PLM") {
-				final = new PLM("balanced");
+				final = new PLM2();
 			} else if (finalClustererArg == "PLMR") {
-				final = new PLMR();
+				final = new PLM2(true);
 			} else {
 				std::cout << "[ERROR] unknown final clusterer: " << finalClustererArg << std::endl;
 				exit(1);

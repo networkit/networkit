@@ -1,6 +1,6 @@
 """ This module handles community detection, i.e. the discovery of densely connected groups in networks."""
 
-from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM, PLMR, ClusteringReader, ClusteringWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, EPP, EPPFactory, CommunityGraph
+from _NetworKit import Clustering, Coverage, Modularity, Clusterer, PLP, LPDegreeOrdered, PLM, PLM2, ClusteringReader, ClusteringWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, EPP, EPPFactory, CommunityGraph
 
 try:
 	import tabulate
@@ -15,7 +15,7 @@ def detectCommunities(G, algo=None, inspect=True):
 		:return communities (as type Clustering)
 		"""
 	if algo is None:
-		algo = PLM()
+		algo = PLM2(refine=False)
 	t = stopwatch.Timer()
 	zeta = algo.run(G)
 	t.stop()

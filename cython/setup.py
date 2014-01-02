@@ -24,7 +24,6 @@ except:
 
 print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
 
-srcDir = "../src"
 src = ["_NetworKit.pyx"]	# list of source files
 			
 print("source files: {0}".format(src))

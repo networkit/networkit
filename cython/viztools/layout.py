@@ -22,8 +22,8 @@ class ForceDirected(Layout):
 
 	def __init__(self, repConst=0.4, step=0.05, scale=1, iterations=30):
 		"""
-		formula of attractive force: $\frac{distance}{springLength}$
-		formula of repelling force: $\frac{repel}{distance}$
+		Formula of attractive force: $\frac{distance}{springLength}$
+		Formula of repelling force: $\frac{repConst}{distance}$
 
 		:param repConst: constant of repelling force. The higher repConst the higher becomes the repelling force
 		:param step: step determines how much the nodes are moved in each iteration
@@ -43,13 +43,14 @@ class ForceDirected(Layout):
 		"""An attractor is a point on the canvas which attracts (or repels)
 		nodes matching a certain criterion.
 		
-		:param attractor: coordinates of the attractor
-		:param criterion: function with a node as parameter. If criterion returns True the node is attracted.
-				  example: criterion=lambda v: G.degree(v) == 0
-		:param strength: strength of the acting force of the attractor (default = 10)
+		:param attractor: Coordinates of the attractor
+		:param criterion: Function with a node as parameter. If criterion returns True the node is attracted (or repelled).
+				  Example: criterion=lambda v: G.degree(v) == 0
+		:param strength: Strength of the acting force of the attractor (default = 10).
+                                 The force is repelling if strength is negativ.
 		"""
 		
-		# if attractor, criterion or strength=[] layout doesn't change
+		# if attractor, criterion or strength =[] layout does not change
 		if attractor==[] or criterion==[] or strength==[]:
 			pass
 			
@@ -102,7 +103,7 @@ class ForceDirected(Layout):
 				d = 0.000001
 			value = self.repConst/d       
 			direction = p1 - p2
-			force = (direction/d)*value # = unit vector * value of the force
+			force = (direction/d) * value # = unit vector * value of the force
 			return force
 
 		def attractorForce(G):
@@ -129,7 +130,7 @@ class ForceDirected(Layout):
 	
 		def move(p, force):
 			""" Move the point along the direction of the force"""
-#			p = np.array(p)
+			
 			p = p + force*self.step
 			return p
 
@@ -137,12 +138,14 @@ class ForceDirected(Layout):
 			""" Rescale to (0,scale) in all axes
 			Source: http://networkx.github.io/documentation/networkx-1.8/_modules/networkx/drawing/layout.html
 			"""
+			
 			# shift origin to (0,0)
 			lim = 0 # max coordinate for all axes
 			for i in range(2):
 				for u in range(nx.number_of_nodes(G)):
 					pos[u][i] -= min(pos[u][i] for u in range(nx.number_of_nodes(G)))
 				lim=max(max(pos[u][i] for u in range(nx.number_of_nodes(G))),lim)
+				
 			# rescale to (0,scale) in all directions, preserves aspect
 			for i in range(2):
 				for u in range(nx.number_of_nodes(G)):
@@ -168,6 +171,7 @@ class ForceDirected(Layout):
 			M += 1
 			
 			for (u, v) in itertools.combinations(G.nodes(), 2): # all node pairs
+                                
 				# 1) repelling forces between nodes
 				forces[u] += repellingForce(self.coord[u], self.coord[v])
 				forces[v] += repellingForce(self.coord[v], self.coord[u])
@@ -181,7 +185,7 @@ class ForceDirected(Layout):
 				# 3) optional user-defined forces, e.g. forces that separate classes of nodes
 
 			# optional attractors
-			if not len(self.attractors)==0:				
+			if self.attractors:				
 				for u in G.nodes():
 					forces[u] += attractorForce(G)[u]
 
