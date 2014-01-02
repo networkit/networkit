@@ -5,15 +5,20 @@
  *      Author: FJW
  */
 
+#include <cmath>
+#include <random>
+
 #include "Random.h"
 
-#include <random>
-#include <cmath>
 
 namespace Aux {
 namespace Random {
 
 namespace {
+
+/**
+ * private helper that provides access to a thread-local URNG (uniform random number generator)
+ */
 std::mt19937_64& getURNG();
 }
 

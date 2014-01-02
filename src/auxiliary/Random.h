@@ -14,7 +14,7 @@ namespace Aux {
 
 /**
  * Provides several functions for random-numbers.
- * 
+ *
  * All functions are guaranteed to be thread-safe
  */
 namespace Random {
