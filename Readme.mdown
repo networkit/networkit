@@ -144,6 +144,7 @@ Credits
 - Aleksejs Sazonovs
 - Maximilian Vogel
 - Miriam Beddig
+- Florian Weber
 
 ### External Code
 
