@@ -77,17 +77,17 @@ def powerLawExponent(G):
 	return fit.alpha
 
 
-def powerLawExponent_(G):
-    """ Estimate power law exponent as a linear regression line through a log-log plot
-    of the degree distribution"""
-    def logarithmic(data):
-    	return [(math.log(x) if x != 0 else 0) for x in data]
+# def powerLawExponent_(G):
+#     """ Estimate power law exponent as a linear regression line through a log-log plot
+#     of the degree distribution"""
+#     def logarithmic(data):
+#     	return [(math.log(x) if x != 0 else 0) for x in data]
 
-    dd = degreeDistribution(G)
-    degrange = range(len(dd))
-    (slope,_,_,_,_) = stats.linregress(logarithmic(degrange), logarithmic(dd))
-    gamma = -1 * slope
-    return gamma
+#     dd = degreeDistribution(G)
+#     degrange = range(len(dd))
+#     (slope,_,_,_,_) = stats.linregress(logarithmic(degrange), logarithmic(dd))
+#     gamma = -1 * slope
+#     return gamma
     
 	
 
@@ -119,7 +119,7 @@ def properties(nkG, settings):
 	loops = len(nxG.selfloop_edges()) if nxG else None
 	
 	# density
-	dens = density(G)
+	dens = density(nkG)
 
 	# diameter
 	dia = None
@@ -164,10 +164,10 @@ def properties(nkG, settings):
 		(labels, histo) = compressHistogram(histo, nbins=25)
 
 	# connected components
-	nComponents, sizeLargestComponent = None, None
+	nComponents, componentSizes = None, None
 	if settings["components"]:
 		logging.info("[...] finding connected components")    
-		nComponents, sizeLargestComponent = components(nkG)
+		nComponents, componentSizes = components(nkG)
 
 	# clustering
 	avglcc = None
@@ -194,7 +194,7 @@ def properties(nkG, settings):
 		 "avgDeg": avgDeg,
 		 "avglcc": avglcc,
 		 "nComponents": nComponents,
-		 "sizeLargestComponent": sizeLargestComponent,
+		 "sizeLargestComponent": max(componentSizes.values()),
 		 "dia": dia,
 		 "ecc": ecc,
 		 "isolates": isolates,
@@ -212,7 +212,10 @@ def properties(nkG, settings):
 	return props
 
 
-def showProperties(nkG, settings=collections.defaultdict(lambda: True)):
+def overview(nkG, settings=collections.defaultdict(lambda: True)):
+	"""
+	Print an overview of important network properties to the terminal.
+	"""
 	props = properties(nkG, settings)
 	basicProperties = [
 		["nodes (n)", props["n"]],
