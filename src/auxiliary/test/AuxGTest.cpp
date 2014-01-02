@@ -30,14 +30,6 @@ TEST_F(AuxGTest, produceRandomIntegers) {
 	}
 }
 
-TEST_F(AuxGTest, produceRandomIntegersNew) {
-	int64_t l = 0; 	// lower bound
-	int64_t u = 100;	// upper bound
-	for (int i = 0; i < 100; ++i) {
-		TRACE(Aux::Random::integer(l, u));
-	}
-}
-
 TEST_F(AuxGTest, testRandomInteger) {
 	int64_t l = 0; 	// lower bound
 	int64_t u = 10;	// upper bound
@@ -68,69 +60,6 @@ TEST_F(AuxGTest, testRandomInteger) {
 	EXPECT_GE(avg, 4.0);
 }
 
-
-TEST_F(AuxGTest, testRandomIntegerNew) {
-	int64_t l = 0; 	// lower bound
-	int64_t u = 10;	// upper bound
-	std::vector<int64_t> rVector;
-	int n = 1000;
-	for (int i = 0; i < n; ++i) {
-		int64_t r = Aux::Random::integer(l, u);
-		assert(l <= r);
-		assert(r <= u);
-		rVector.push_back(r);
-	}
-
-	int64_t minR = *(min_element(rVector.begin(), rVector.end()));
-	int64_t maxR = *(max_element(rVector.begin(), rVector.end()));
-
-	EXPECT_EQ(minR, l);
-	EXPECT_EQ(maxR, u);
-
-	double sum = 0.0;
-	for (int64_t r : rVector) {
-		sum += r;
-	}
-	double avg = sum / n;
-
-
-	DEBUG("avg rand integer: " << avg);
-	EXPECT_LE(avg, 6.0);
-	EXPECT_GE(avg, 4.0);
-}
-
-
-TEST_F(AuxGTest, testRandomIntegerFaster) {
-	int64_t l = 0; 	// lower bound
-	int64_t u = 10;	// upper bound
-	std::vector<int64_t> rVector;
-	int n = 1000;
-	for (int i = 0; i < n; ++i) {
-		int64_t r = Aux::Random::integer(l, u);
-		assert(l <= r);
-		assert(r <= u);
-		rVector.push_back(r);
-	}
-
-	int64_t minR = *(min_element(rVector.begin(), rVector.end()));
-	int64_t maxR = *(max_element(rVector.begin(), rVector.end()));
-
-	EXPECT_EQ(minR, l);
-	EXPECT_EQ(maxR, u);
-
-	double sum = 0.0;
-	for (int64_t r : rVector) {
-		sum += r;
-	}
-	double avg = sum / n;
-
-
-	DEBUG("avg rand integer: " << avg);
-	EXPECT_LE(avg, 6.0);
-	EXPECT_GE(avg, 4.0);
-}
-
-
 TEST_F(AuxGTest, testRandomProbability) {
 	std::vector<double> rVector;
 	int n = 1000;
@@ -152,31 +81,6 @@ TEST_F(AuxGTest, testRandomProbability) {
 	EXPECT_LE(avg, 0.6);
 	EXPECT_GE(avg, 0.4);
 }
-
-
-TEST_F(AuxGTest, testRandomProbabilityNew) {
-	std::vector<double> rVector;
-	int n = 1000;
-	for (int i = 0; i < n; ++i) {
-		double r = Aux::Random::probability();
-		assert(0.0 <= r);
-		assert(r <= 1.0);
-		rVector.push_back(r);
-	}
-
-	double sum = 0.0;
-	for (double r : rVector) {
-		sum += r;
-	}
-	double avg = sum / n;
-
-
-	DEBUG("avg rand probability: " << avg);
-	EXPECT_LE(avg, 0.6);
-	EXPECT_GE(avg, 0.4);
-}
-
-
 
 
 TEST_F(AuxGTest, testTimer) {
