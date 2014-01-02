@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include "../auxiliary/Random.h"
+
 #include "PubWebGenerator.h"
 
 namespace NetworKit {
@@ -181,7 +183,7 @@ Graph PubWebGenerator::generate() {
 
 // TODO: NOT tested!
 void PubWebGenerator::removeRandomNode(Graph& g) {
-	node u = Aux::RandomInteger::generate(0, (n - 1));
+	node u = Aux::Random::integer(n - 1);
 	g.removeNode(u);
 }
 

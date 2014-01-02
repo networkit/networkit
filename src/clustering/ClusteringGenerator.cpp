@@ -6,7 +6,7 @@
  */
 
 #include "ClusteringGenerator.h"
-#include "../auxiliary/RandomInteger.h"
+#include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
@@ -46,7 +46,7 @@ Clustering ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 	}
 
 	G.parallelForNodes([&](node v){
-		cluster c = Aux::RandomInteger::generate(0, (k-1));
+		cluster c = Aux::Random::integer(k-1);
 		zeta.addToCluster(c, v);
 	});
 

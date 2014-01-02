@@ -7,6 +7,8 @@
 
 #include "GraphGenerator.h"
 
+#include "../auxiliary/Random.h"
+
 namespace NetworKit {
 
 GraphGenerator::GraphGenerator() {
@@ -62,7 +64,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
 	G.forNodes([&](node v){
-		cluster c = Aux::RandomInteger::generate(1, k);
+		cluster c = Aux::Random::integer(1, k);
 		zeta.addToCluster(c, v);
 	});
 
@@ -91,7 +93,7 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 	// assign nodes evenly to clusters
 	Clustering zeta(n);
 	G.forNodes([&](node v){
-		cluster c = Aux::RandomInteger::generate(1, k);
+		cluster c = Aux::Random::integer(1, k);
 		zeta.addToCluster(c, v);
 	});
 

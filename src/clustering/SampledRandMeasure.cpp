@@ -7,7 +7,7 @@
 
 #include "SampledRandMeasure.h"
 
-#include "../auxiliary/RandomInteger.h"
+#include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
@@ -32,8 +32,8 @@ double SampledRandMeasure::getDissimilarity(Graph& G, Clustering& first, Cluster
 	index z = G.upperNodeIdBound();
 
 	while (nSamples < maxSamples) {
-		node u = Aux::RandomInteger::generate(0, z);
-		node v = Aux::RandomInteger::generate(0, z);
+		node u = Aux::Random::integer(z);
+		node v = Aux::Random::integer(z);
 		if (u != v) { // nodes should be distinct
 			if (G.hasNode(u) && G.hasNode(v)) { // nodes should exist in the graph
 				if ((first[u] == first[v]) && (second[u] == second[v])) {
