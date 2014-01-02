@@ -5,6 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#include "../auxiliary/Random.h"
+
 #include "Luby.h"
 
 namespace NetworKit {
@@ -47,7 +49,7 @@ std::vector<bool> Luby::run(const Graph& G) {
 		std::vector<bool> S(G.numberOfNodes(), false);
 		G.parallelForNodes([&](node u){
 			if (V[u]) {
-				if (Aux::RandomProbability::generate() < nodeProbability(u)) {
+				if (Aux::Random::probability() < nodeProbability(u)) {
 					S[u] = true;  // add node to S
 				}
 			}

@@ -27,7 +27,7 @@ GraphGenerator::~GraphGenerator() {
 Graph GraphGenerator::makeErdosRenyiGraph(count n, double p) {
 	Graph G(n);
 	G.forNodePairs([&](node u, node v){
-		if (Aux::RandomProbability::generate() <= p) {
+		if (Aux::Random::probability() <= p) {
 			G.addEdge(u, v);
 		}
 	});
@@ -72,11 +72,11 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 
 	G.forNodePairs([&](node u, node v){
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
-			if (Aux::RandomProbability::generate() <= pin) {
+			if (Aux::Random::probability() <= pin) {
 				G.addEdge(u, v);
 			}
 		} else {
-			if (Aux::RandomProbability::generate() <= pout) {
+			if (Aux::Random::probability() <= pout) {
 				G.addEdge(u, v);
 			}
 		}
@@ -99,11 +99,11 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 
 	G.forNodePairs([&](node u, node v){
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
-			if (Aux::RandomProbability::generate() <= pin) {
+			if (Aux::Random::probability() <= pin) {
 				G.addEdge(u, v);
 			}
 		} else {
-			if (Aux::RandomProbability::generate() <= pout) {
+			if (Aux::Random::probability() <= pout) {
 				G.addEdge(u, v);
 			}
 		}
@@ -121,11 +121,11 @@ Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
 
 	G.forNodePairs([&](node u, node v){
 		if (zeta.inSameCluster(u, v)) {
-			if (Aux::RandomProbability::generate() <= pin) {
+			if (Aux::Random::probability() <= pin) {
 				G.addEdge(u, v);
 			}
 		} else {
-			if (Aux::RandomProbability::generate() <= pout) {
+			if (Aux::Random::probability() <= pout) {
 				G.addEdge(u, v);
 			}
 		}

@@ -106,8 +106,8 @@ void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
 
 	for (index j = 0; j < num; ++j) {
 		// compute random angle between [0, 2pi) and distance between [0, width/2]
-		float angle = Aux::RandomProbability::randomFloat() * 2.0 * PI;
-		float dist = Aux::RandomProbability::randomFloat() * denseAreaXYR[area].rad;
+		float angle = Aux::Random::real() * 2.0 * PI;
+		float dist = Aux::Random::real() * denseAreaXYR[area].rad;
 
 		// compute coordinates and adjust them
 		float x = denseAreaXYR[area].x + cosf(angle) * dist;
@@ -123,8 +123,8 @@ void PubWebGenerator::fillDenseAreas(Graph& g) {
 
 	for (index area = 0; area < numDenseAreas; ++area) {
 		// choose center randomly, ensure complete cluster is within (0,1) without modifications
-		denseAreaXYR[area].x = Aux::RandomProbability::randomFloat();
-		denseAreaXYR[area].y = Aux::RandomProbability::randomFloat();
+		denseAreaXYR[area].x = Aux::Random::real();
+		denseAreaXYR[area].y = Aux::Random::real();
 		addNodesToArea(area, numPerArea[area], g);
 	}
 }
@@ -134,7 +134,7 @@ void PubWebGenerator::chooseDenseAreaSizes() {
 
 	for (index area = 0; area < numDenseAreas; ++area) {
 		// anti-quadratic probability distribution
-		float f = Aux::RandomProbability::randomFloat() * MIN_MAX_DENSE_AREA_FACTOR + 1.0f;
+		float f = Aux::Random::real() * MIN_MAX_DENSE_AREA_FACTOR + 1.0f;
 		denseAreaXYR[area].rad = (MAX_DENSE_AREA_RADIUS * f * f)
 				/ (MIN_MAX_DENSE_AREA_FACTOR * MIN_MAX_DENSE_AREA_FACTOR);
 	}
@@ -144,8 +144,8 @@ void PubWebGenerator::chooseDenseAreaSizes() {
 void PubWebGenerator::spreadRemainingNodes(Graph& g) {
 
 	while (g.numberOfNodes() < n) {
-		float x = Aux::RandomProbability::randomFloat();
-		float y = Aux::RandomProbability::randomFloat();
+		float x = Aux::Random::real();
+		float y = Aux::Random::real();
 		g.addNode(x, y);
 	}
 }

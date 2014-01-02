@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include "../auxiliary/Random.h"
+
 #include "BalancedLabelPropagation.h"
 
 namespace NetworKit {
@@ -37,7 +39,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 			return true;
 		}
 		else {
-			double prob = Aux::RandomProbability::generateFast();
+			double prob = Aux::Random::real();
 			return (prob <= exp((double) gain / (double) t));
 		}
 	});
@@ -132,7 +134,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 					prefixSum += temp;
 				}
 
-				double prob = Aux::RandomProbability::generateFast();
+				double prob = Aux::Random::real();
 
 				for (std::vector<std::pair<cluster, double>>::iterator iter = neighborhood.begin();
 						iter != neighborhood.end(); ++iter) {
