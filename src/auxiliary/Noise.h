@@ -17,25 +17,20 @@ namespace Aux {
  * which add random numbers to their inputs in order to enable randomization.
  */
 class Noise {
-
 protected:
-
+	
 	std::uniform_real_distribution<double> uniform;
 	std::default_random_engine randomEngine;
-
+	
 public:
-
-	double lowerBound;
-	double upperBound;
-
 	/**
 	 * @param[in]	l	lower bound for added random number
 	 * @param[in]	u	upper bound for added random number
 	 */
 	Noise(double l, double u);
-
-	virtual ~Noise();
-
+	
+	virtual ~Noise() = default;
+	
 	/**
 	 * Add noise to double.
 	 *
@@ -43,8 +38,8 @@ public:
 	 * @param[out]		input plus noise
 	 */
 	double add(double x);
-
-
+	
+	
 };
 
 
