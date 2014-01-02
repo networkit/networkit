@@ -1,57 +1,56 @@
-/*
- * Random.h
- *
- *  Created on: 11.04.2013
- *      Author: cls
- */
-
 #ifndef RANDOM_H_
 #define RANDOM_H_
 
-#include <random>
+/*
+ * Random.h
+ *
+ *  Created on: 02.01.2014
+ *      Author: FJW
+ */
+
+#include <cstdint>
 
 namespace Aux {
 
-class Random {
+/**
+ * Provides several functions for random-numbers.
+ * 
+ * All functions are guaranteed to be thread-safe
+ */
+namespace Random {
 
-public:
+/**
+ * @returns a high-quality random seed for an URNG.
+ */
+uint64_t getSeed();
 
-	Random();
+/**
+ * @returns an integer in an inclusive range;
+ * @param upperBound the upper bound, default = UNINT64_T_MAX
+ * @param lowerBound the lower bound, default = 0
+ */
+uint64_t integer();
+uint64_t integer(uint64_t upperBound);
+uint64_t integer(uint64_t lowerBound, uint64_t upperBound);
 
-	virtual ~Random();
+/**
+ * @returns a double in a half-open range: [lowerBound, upperBound)
+ * @param upperBound default = 1.0
+ * @param lowerBound default = 0.0
+ */
+double real();
+double real(double upperBound);
+double real(double lowerBound, double upperBound);
 
-	/**
-	 * @return a uniformly random probability
-	 */
-	double probability();
+/**
+ * @returns a double in the range [0, 1]
+ * @note this differs from real() in returning a value in a closed instead of a half-open range.
+ */
+double probability();
 
-	/**
-	 * @return a uniformly random integer from the interval [l, u]
-	 */
-	int64_t integer(int64_t l, int64_t u);
+} // namespace Random
+} // namespace Aux
 
-	/**
-	 * @return a uniformly random element from a vector
-	 */
-	template<typename T> T choice(std::vector<T>& vec);
-
-protected:
-
-	std::random_device randomDevice;
-	std::default_random_engine randomEngine;
-
-	std::uniform_real_distribution<double> probabilityDistribution;
-	std::uniform_int_distribution<int64_t> integerDistribution;
-
-
-};
-
-} /* namespace Aux */
-
-template<typename T>
-inline T Aux::Random::choice(std::vector<T>& vec) {
-	int64_t i = this->integer(0, vec.size() - 1);
-	return vec[i];
-}
 
 #endif /* RANDOM_H_ */
+

@@ -32,6 +32,7 @@ TEST_F(AuxGTest, produceRandomIntegers) {
 	}
 }
 
+/*
 TEST_F(AuxGTest, produceRandomIntegersNew) {
 	int64_t l = 0; 	// lower bound
 	int64_t u = 100;	// upper bound
@@ -41,7 +42,7 @@ TEST_F(AuxGTest, produceRandomIntegersNew) {
 		TRACE(rand.integer(l, u));
 	}
 }
-
+*/
 
 TEST_F(AuxGTest, testRandomInteger) {
 	int64_t l = 0; 	// lower bound
@@ -74,6 +75,7 @@ TEST_F(AuxGTest, testRandomInteger) {
 }
 
 
+/*
 TEST_F(AuxGTest, testRandomIntegerNew) {
 	int64_t l = 0; 	// lower bound
 	int64_t u = 10;	// upper bound
@@ -104,6 +106,7 @@ TEST_F(AuxGTest, testRandomIntegerNew) {
 	EXPECT_LE(avg, 6.0);
 	EXPECT_GE(avg, 4.0);
 }
+*/
 
 
 TEST_F(AuxGTest, testRandomIntegerFaster) {
@@ -160,6 +163,7 @@ TEST_F(AuxGTest, testRandomProbability) {
 }
 
 
+/*
 TEST_F(AuxGTest, testRandomProbabilityNew) {
 	Aux::Random rand;
 	std::vector<double> rVector;
@@ -182,7 +186,7 @@ TEST_F(AuxGTest, testRandomProbabilityNew) {
 	EXPECT_LE(avg, 0.6);
 	EXPECT_GE(avg, 0.4);
 }
-
+*/
 
 
 
