@@ -12,7 +12,7 @@
 #include "../auxiliary/Log.h"
 #include "../auxiliary/ProgressMeter.h"
 #include "../auxiliary/Timer.h"
-#include "../auxiliary/RandomInteger.h"
+#include "../auxiliary/Random.h"
 #include "../graph/NodeMap.h"
 
 namespace NetworKit {
@@ -97,7 +97,7 @@ Clustering PLP::run(Graph& G) {
 	// TODO: make this an object attribute
 	if (inactiveSeeds > 0) {
 		for (count i = 0; i < inactiveSeeds; i++) {
-			node u = Aux::RandomInteger::generate(0, (n-1));
+			node u = Aux::Random::integer(n-1);
 			activeNodes[u] = false;
 		}
 	}

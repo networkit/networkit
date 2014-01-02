@@ -10,7 +10,6 @@
 
 #include "Graph.h"
 #include "../auxiliary/RandomProbability.h"
-#include "../auxiliary/RandomInteger.h"
 #include "../clustering/Clustering.h"
 
 namespace NetworKit {

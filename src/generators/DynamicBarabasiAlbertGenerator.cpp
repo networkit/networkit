@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#include "../auxiliary/Random.h"
+
 #include "DynamicBarabasiAlbertGenerator.h"
 
 namespace NetworKit {
@@ -62,7 +64,7 @@ void DynamicBarabasiAlbertGenerator::generate() {
 //		}
 
 		// 2) pick a random number that is 0 or greater and is less than the sum of the weights
-		uint64_t rand = (uint64_t)Aux::RandomInteger::generate(0, degSum);
+		uint64_t rand = Aux::Random::integer(degSum);
 
 		bool found = false; // break from node iteration when done
 		auto notFound = [&](){ return ! found; };
