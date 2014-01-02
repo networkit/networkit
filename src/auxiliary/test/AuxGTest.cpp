@@ -48,10 +48,7 @@ TEST_F(AuxGTest, testRandomInteger) {
 	EXPECT_EQ(minR, l);
 	EXPECT_EQ(maxR, u);
 
-	double sum = 0.0;
-	for (int64_t r : rVector) {
-		sum += r;
-	}
+	double sum = std::accumulate(rVector.begin(), rVector.end(), uint64_t{0});
 	double avg = sum / n;
 
 
@@ -60,20 +57,36 @@ TEST_F(AuxGTest, testRandomInteger) {
 	EXPECT_GE(avg, 4.0);
 }
 
-TEST_F(AuxGTest, testRandomProbability) {
+TEST_F(AuxGTest, testRandomReal) {
 	std::vector<double> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
 		double r = Aux::Random::real();
 		assert(0.0 <= r);
+		assert(r < 1.0);
+		rVector.push_back(r);
+	}
+
+	double sum = std::accumulate(rVector.begin(), rVector.end(), 0.0);
+	double avg = sum / n;
+
+
+	DEBUG("avg rand probability: " << avg);
+	EXPECT_LE(avg, 0.6);
+	EXPECT_GE(avg, 0.4);
+}
+
+TEST_F(AuxGTest, testRandomProbability) {
+	std::vector<double> rVector;
+	int n = 1000;
+	for (int i = 0; i < n; ++i) {
+		double r = Aux::Random::probability();
+		assert(0.0 <= r);
 		assert(r <= 1.0);
 		rVector.push_back(r);
 	}
 
-	double sum = 0.0;
-	for (double r : rVector) {
-		sum += r;
-	}
+	double sum = std::accumulate(rVector.begin(), rVector.end(), 0.0);
 	double avg = sum / n;
 
 
