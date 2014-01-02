@@ -23,7 +23,7 @@ template <typename T> std::string vectorToString(const std::vector<T>& vec) {
 	std::ostringstream ss;
 	ss << '[';
 	bool first = true;
-	for (T element : vec) {
+	for (const auto& element : vec) {
 	    if (!first) {
 	        ss << ", ";
 	    }
@@ -42,7 +42,7 @@ template <typename T> std::string setToString(const std::unordered_set<T>& set) 
 	std::ostringstream ss;
 	ss << '[';
 	bool first = true;
-	for (T element : set) {
+	for (const auto& element : set) {
 	    if (!first) {
 	        ss << ", ";
 	    }
