@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#include "../auxiliary/Random.h"
+
 #include "AlgebraicDistance.h"
 
 namespace NetworKit {
@@ -79,7 +81,7 @@ void AlgebraicDistance::randomInit() {
 
 	for (index i = 0; i < numSystems; ++i) {
 		G.forNodes([&](node v) {
-			loads[i][v] = Aux::RandomProbability::randomFloat();
+			loads[i][v] = Aux::Random::real();
 		});
 	}
 }

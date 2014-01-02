@@ -9,7 +9,6 @@
 #define PUBWEBGENERATOR_H_
 
 #include "StaticGraphGenerator.h"
-#include "../auxiliary/RandomProbability.h"
 #include <cmath>
 
 namespace NetworKit {

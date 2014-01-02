@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include "../auxiliary/Random.h"
+
 #include "Layouter.h"
 
 namespace NetworKit {
@@ -31,8 +33,8 @@ void Layouter::randomInitCoordinates(Graph& g) {
 	float height = topRight.getValue(1) - y1;
 
 	g.forNodes([&](node u) {
-		float x = Aux::RandomProbability::randomFloat() * width + x1;
-		float y = Aux::RandomProbability::randomFloat() * height + y1;
+		float x = Aux::Random::real() * width + x1;
+		float y = Aux::Random::real() * height + y1;
 
 		TRACE("x: " << x);
 		TRACE("y: " << y);
