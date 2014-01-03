@@ -27,6 +27,8 @@ private:
 
 	count updateThreshold = 0;
 	count nIterations = 0; //!< number of iterations in last run
+
+	// TODO: std::vector<bool> activeNodes;
 };
 
 } /* namespace NetworKit */
