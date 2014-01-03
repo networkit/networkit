@@ -38,9 +38,9 @@ public:
 	 */
 	Clustering run(Graph& G) override;
 
-	std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Clustering& zeta);
+	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Clustering& zeta);
 
-	Clustering prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
+	static Clustering prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
 
 private:
 

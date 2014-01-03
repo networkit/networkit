@@ -203,6 +203,14 @@ edgeweight Graph::weightedDegree(node v) const {
 }
 
 
+edgeweight Graph::volume(node v) const {
+	edgeweight vol = this->weightedDegree(v);
+	vol += this->weight(v, v);
+	return vol;
+}
+
+
+
 count Graph::numberOfEdges() const {
 	// returns a field which is updated on addEdge() and removeEdge()
 	return m;
@@ -491,4 +499,3 @@ index Graph::upperNodeIdBound() const {
 
 
 } /* namespace NetworKit */
-
