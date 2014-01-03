@@ -9,4 +9,9 @@
 
 namespace NetworKit {
 
+DynCommunityDetector::DynCommunityDetector(Graph& G) : G(G) {
+}
+
+
 } /* namespace NetworKit */
+

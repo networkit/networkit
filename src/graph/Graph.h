@@ -270,6 +270,12 @@ public:
 	edgeweight weightedDegree(node v) const;
 
 	/**
+	 * @return Volume of the node, which is the
+	 * weighted degree with self-loops counted twice.
+	 */
+	edgeweight volume(node v) const;
+
+	/**
 	 * @return Random (uuid) neighbor of @a v. None if degree is zero.
 	 */
 	node randomNeighbor(node v) const;

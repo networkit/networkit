@@ -8,7 +8,8 @@
 #ifndef DYNCOMMUNITYDETECTOR_H_
 #define DYNCOMMUNITYDETECTOR_H_
 
-#include "../structures/Partition.h"
+#include "../dynamics/GraphEvent.h"
+#include "../clustering/Clustering.h"
 #include "../graph/Graph.h"
 
 
@@ -18,7 +19,16 @@ class DynCommunityDetector {
 
 public:
 
-	virtual void run(const Graph& G, Partition& communities) = 0;
+	DynCommunityDetector(Graph& G);
+
+	virtual void process(std::vector<GraphEvent>& stream) = 0;
+
+	virtual Clustering retrieve() = 0;
+
+protected:
+
+	Graph& G;
+	Clustering zeta;
 };
 
 } /* namespace NetworKit */
