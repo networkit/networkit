@@ -2,6 +2,8 @@
 This module handles compatibility between NetworKit and NetworkX
 """
 
+import graph
+
 # non standard library modules
 try:
 	import networkx as nx
@@ -17,7 +19,7 @@ def nx2nk(nxG, weightAttr=None):
 	 """
 	# TODO: consider weights
 	n = nxG.number_of_nodes()
-	nkG = Graph(n)
+	nkG = graph.Graph(n)
 	
 	if weightAttr is not None:
 		nkG.markAsWeighted()

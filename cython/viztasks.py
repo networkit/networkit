@@ -7,10 +7,11 @@ def save(name, dir="."):
 	savefig(os.path.join(dir, "{0}.pdf".format(name)), bbox_inches="tight", transparent=True)
 
 
-def drawGraph(G):
+def drawGraph(G, figsize=(7,7), labelled=False):
 	""" Draw a graph"""
-	nxG = nxadapter.nknx(G)
-	raise NotImplementedError("TODO")
+	nxG = nxadapter.nk2nx(G)
+	drawer = viztools.drawing.GraphDrawer(size=figsize, labelled=labelled)
+	drawer.draw(nxG)
 
 
 def drawCommunityGraph(G, zeta, labelled=False, figsize=(7,7)):
