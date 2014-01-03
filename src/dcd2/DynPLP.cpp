@@ -58,6 +58,24 @@ Clustering DynPLP::retrieve() {
 	typedef cluster label; // a label is the same as a cluster id
 	count nUpdated; // number of nodes which have been updated in last iteration
 
+	nIterations = 0; // number of iterations
+
+
+	// propagate labels
+	while (nUpdated > this->updateThreshold) {
+
+		auto propagate = [&](node v) {
+			if (G.degree(v) > 0) {
+				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
+
+			}
+		};
+
+		G.balancedParallelForNodes(propagate);
+
+	}
+
+
 }
 
 } /* namespace NetworKit */

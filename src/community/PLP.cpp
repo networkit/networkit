@@ -74,15 +74,6 @@ Clustering PLP::run(Graph& G) {
 	 * In general this does not work. It was changed to: No label was changed in last iteration.
 	 */
 
-	// PERFORMANCE: precompute and store incident edge weight for all nodes
-	DEBUG("[BEGIN] Label Propagation: precomputing incident weight");
-	NodeMap<double> weightedDegree(n, 0.0);
-	G.parallelForNodes([&](node v) {
-		weightedDegree[v] = G.weightedDegree(v);
-	});
-
-
-
 	// prepare nodes for randomized iteration order
 	std::vector<node> nodes(n);
 	G.parallelForNodes([&](node v) {
