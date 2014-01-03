@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+typedef index label; // a label is the same as a community id
+
+
 /*
  *
  */
@@ -28,7 +31,8 @@ private:
 	count updateThreshold = 0;
 	count nIterations = 0; //!< number of iterations in last run
 
-	// TODO: std::vector<bool> activeNodes;
+	std::vector<label> labels;
+	std::vector<bool> activeNodes;
 };
 
 } /* namespace NetworKit */
