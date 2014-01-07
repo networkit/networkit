@@ -17,7 +17,13 @@ class GraphUpdater {
 
 public:
 
-	void update(Graph& G, std::vector<GraphEvent>& stream);
+	GraphUpdater(Graph& G);
+
+	void update(std::vector<GraphEvent>& stream);
+
+private:
+
+	Graph& G;
 };
 
 } /* namespace NetworKit */

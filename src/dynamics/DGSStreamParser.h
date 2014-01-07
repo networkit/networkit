@@ -21,13 +21,18 @@ class DGSStreamParser {
 
 public:
 
-	DGSStreamParser(std::string path);
+	DGSStreamParser(std::string path, bool mapped=true, node baseIndex=0);
 
 	virtual std::vector<GraphEvent> getStream();
 
 private:
 
 	std::ifstream dgsFile;
+	bool mapped;
+	std::map<std::string, node> key2id;
+	node baseIndex;
+	node nextNode;
+
 
 };
 
