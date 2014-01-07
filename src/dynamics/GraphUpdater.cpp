@@ -9,7 +9,10 @@
 
 namespace NetworKit {
 
-void GraphUpdater::update(Graph& G, std::vector<GraphEvent>& stream) {
+GraphUpdater::GraphUpdater(Graph& G) : G(G) {
+}
+
+void GraphUpdater::update(std::vector<GraphEvent>& stream) {
 	for (GraphEvent ev : stream) {
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
@@ -45,5 +48,6 @@ void GraphUpdater::update(Graph& G, std::vector<GraphEvent>& stream) {
 }
 
 } /* namespace NetworKit */
+
 
 
