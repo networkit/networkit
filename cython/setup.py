@@ -33,8 +33,8 @@ modules = [Extension("_NetworKit",
 					language = "c++",
 					extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
 					extra_link_args=["-fopenmp", "-std=c++11"],
-					libraries=["NetworKit-Core-O", "log4cxx"],
-					library_dirs=["../", "../Core-O/"])]
+					libraries=["NetworKit-Core-O"],
+					library_dirs=["../"])]
 
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}
