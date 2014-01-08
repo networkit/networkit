@@ -20,9 +20,12 @@ void DynPLP::process(std::vector<GraphEvent>& stream) {
 	};
 
 	for (GraphEvent ev : stream) {
+		// TODO: remove trace
+		TRACE("event: " << ev.toString());
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
 				zeta.append(ev.u);
+				activeNodes.push_back(true);
 				zeta[ev.u] = zeta.addCluster();
 				break;
 			}
@@ -69,14 +72,14 @@ Clustering DynPLP::retrieve() {
 				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 				// weigh the labels in the neighborhood of v
 				G.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
-					labelWeights[labels[w]] += weight; // add weight of edge {v, w}
+					labelWeights[zeta[w]] += weight; // add weight of edge {v, w}
 				});
 
 				// get dominant label
 				label dominant = std::max_element(labelWeights.begin(), labelWeights.end(), [](const std::pair<label, edgeweight>& p1, const std::pair<label, edgeweight>& p2) {return p1.second < p2.second;})->first;
 
-				if (labels[v] != dominant) { // UPDATE
-					labels[v] = dominant;
+				if (zeta[v] != dominant) { // UPDATE
+					zeta[v] = dominant;
 					nUpdated += 1; // TODO: atomic update?
 					G.forNeighborsOf(v, [&](node u) {
 						activeNodes[u] = true;
@@ -91,6 +94,7 @@ Clustering DynPLP::retrieve() {
 
 	}
 
+	return zeta;
 
 }
 
