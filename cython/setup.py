@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 from distutils.extension import Extension
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
@@ -41,6 +41,7 @@ for e in modules:
 
 setup(name="_NetworKit",
 	 cmdclass={"build_ext": build_ext},
-	 ext_modules=modules)
+	 ext_modules=modules,
+	 py_modules = ["NetworKit.py"])
 
 print("[Done] setup.py")
