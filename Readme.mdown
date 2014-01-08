@@ -174,12 +174,8 @@ A C++ compiler supporting C++11 (we use GCC 4.8). The compiler and linker flags 
 
 - `OpenMP`		for parallelism
 - `Googletest` 	for unit testing
-- `log4cxx` 	for logging
 
-To avoid possible binary incompatibilities, try to build these libraries with the same compiler that will be used to build NetworKit. If all fails, the following preprocessor definitions (using the `-D` compiler flag) remove these dependencies, but also functionality:
-
-- `NOLOGGING`	removes all log statements
-- `NOLOG4CXX`	replaces log statements with `std::cout` output if `log4cxx` is not available - loglevel `TRACE` becomes fixed.
+To avoid possible binary incompatibilities, try to build these libraries with the same compiler that will be used to build NetworKit. 
 
 
 Building the Base
@@ -207,6 +203,10 @@ For example, to build NetworKit as an optimized library, run
 	scons --optimize=O --target=Core
 
 To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
+
+Logging is enabled by default. If you want to disable logging functionality, add the following to your scons call:
+
+	--logging=no
 
 Alternatively, the project can be built with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
 
