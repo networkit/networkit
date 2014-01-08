@@ -83,7 +83,9 @@ void Graph::removeEdge(node u, node v) {
 	index vi = find(u, v);
 
 	if (vi == none) {
-		throw std::runtime_error("edge does not exist");
+		std::stringstream strm;
+		strm << "edge (" << u << "," << v << ") does not exist";
+		throw std::runtime_error(strm.str());
 		// TODO: what if edge does not exist?
 	} else {
 		this->adja[u][vi] = none;
