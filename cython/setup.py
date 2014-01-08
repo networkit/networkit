@@ -39,9 +39,16 @@ modules = [Extension("_NetworKit",
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}
 
-setup(name="_NetworKit",
-	 cmdclass={"build_ext": build_ext},
-	 ext_modules=modules,
-	 py_modules = ["NetworKit.py"])
+setup(name="NetworKit",
+	author="Christian L. Staudt",
+	author_email = "christian.staudt@kit.edu",
+	description = "NetworKit is a toolbox for high-performance network analysis",
+	license = "MIT",
+	keywords = "graph algorithm network analysis social network",
+	homepage = "http://parco.iti.kit.edu/software/networkit.shtml",
+	version="2.1",
+	cmdclass={"build_ext": build_ext},
+	ext_modules=modules,
+	py_modules = ["NetworKit.py"])
 
 print("[Done] setup.py")
