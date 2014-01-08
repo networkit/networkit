@@ -31,7 +31,6 @@ private:
 	count updateThreshold = 0;
 	count nIterations = 0; //!< number of iterations in last run
 
-	std::vector<label> labels;
 	std::vector<bool> activeNodes;
 };
 
