@@ -270,6 +270,20 @@ After the requirements are satisfied, start IPython and import NetworKit.
 Now you should be able to use NetworKit interactively. For usage examples, refer to the `UserGuide`.
 
 
+IPython Notebook
+----------------
+
+The `UserGuide` clearly shows you how to use NetworKit for network analysis, however we recommend getting familiar with NetworKit through experimenting with the interactive IPython Notebook `UserGuide.ipynb` located in the folder:
+
+	./NetworKit/cython/Notebooks
+
+To display and work with these notebooks, you have to start a local notebook server from the terminal with:
+
+	ipython3 notebook --pylab inline
+
+Your default browser should open a web interface named "IPython Dashboard". Follow the instructions there to add the user guide from the above mentioned location. Then, the notebook should appear in the list and you can start it by clicking on it. Now you should be able to work yourself through the notebook.
+
+
 Running Executables
 -------------------
 
