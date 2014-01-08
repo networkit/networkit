@@ -75,7 +75,6 @@ if defines is not []:
 ## includes
 stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
 gtestInclude = conf.get("includes", "gtest")
-log4cxxInclude = conf.get("includes", "log4cxx")
 if conf.has_option("includes", "tbb"):
 	tbbInclude = conf.get("includes", "tbb", "")
 else:
@@ -83,7 +82,6 @@ else:
 
 ## libraries
 gtestLib = conf.get("libraries", "gtest")
-log4cxxLib = conf.get("libraries", "log4cxx")
 if conf.has_option("libraries", "tbb"):
 	tbbLib = conf.get("libraries", "tbb", "")
 else:
@@ -93,9 +91,9 @@ env["CC"] = cppComp
 env["CXX"] = cppComp
 
 env.Append(CPPDEFINES=defines)
-env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude]) #, log4cxxInclude
-env.Append(LIBS = ["gtest"]) #, "log4cxx"
-env.Append(LIBPATH = [gtestLib, tbbLib]) #, log4cxxLib
+env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude])
+env.Append(LIBS = ["gtest"])
+env.Append(LIBPATH = [gtestLib, tbbLib])
 env.Append(LINKFLAGS = ["-std=c++11"])
 
 ## CONFIGURATIONS
@@ -140,25 +138,22 @@ except:
 env.Append(CFLAGS = commonCFlags)
 env.Append(CPPFLAGS = commonCppFlags)
 
-#option to specify Logging type
+# logging yes or no
 AddOption("--logging",
           dest="logging",
           type="string",
           nargs=1,
           action="store",
-          help="choose logging type: NOLOGGING or NOLOG4CXX")
-try:
-	logging = GetOption("logging")
-	print("specified logging type is "+logging)
-	if logging in ["NOLOGGING","NOLOG4CXX","SIMPLE"]:
-		env.Append(CPPDEFINES=[logging])
-except:
-	print("No logging type specified, using LOG4CXX")
-	env.Append(CPPPATH = [log4cxxInclude])
-	env.Append(LIBS = ["log4cxx"])
-	env.Append(LIBPATH = [log4cxxLib])
+          help="enable logging: yes or no")
 
+logging = GetOption("logging")
 
+if logging == "no":
+	env.Append(CPPDEFINES=["NOLOGGING"]) # logging is enabled by default
+	print("INFO: Logging is now disabled")
+elif (logging != "yes") and (logging != None):
+	print("INFO: unrecognized option --logging=%s" % logging)
+	print("Logging is enabled by default")
 
 # openmp yes or no
 AddOption("--openmp",

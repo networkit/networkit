@@ -38,6 +38,7 @@ namespace Aux {
 	#define INFO(X) if(LOG_TEST_LEVEL(2)) std::cout << "[INFO] " << LOCATION << X << std::endl;
 	#define DEBUG(X) if(LOG_TEST_LEVEL(1)) std::cout << "[DEBUG] " << LOCATION << X << std::endl;
 	#define TRACE(X) if(LOG_TEST_LEVEL(0)) std::cout << "[TRACE] " << LOCATION << X << std::endl;
+#endif
 /**
  * Set the current loglevel.
  * @param loglevel 
@@ -65,7 +66,6 @@ inline void setLoglevel(const std::string& loglevel) {
  */
 inline void configureLogging(const std::string& loglevel = "ERROR") {
 	// configure logging
-	//log4cxx::BasicConfigurator::configure();
 	setLoglevel(loglevel);
 }
 
@@ -86,7 +86,7 @@ inline std::string currentLogLevel() {
 	}
 	return s;
 }
-#endif
+//#endif
 
 
 #define PRINTMAP(M) std::cout << M << std::endl;
