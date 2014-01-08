@@ -14,6 +14,7 @@ GraphUpdater::GraphUpdater(Graph& G) : G(G) {
 
 void GraphUpdater::update(std::vector<GraphEvent>& stream) {
 	for (GraphEvent ev : stream) {
+		TRACE("event: " << ev.toString());
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
 				node u = G.addNode();
@@ -29,7 +30,7 @@ void GraphUpdater::update(std::vector<GraphEvent>& stream) {
 				break;
 			}
 			case GraphEvent::EDGE_REMOVAL : {
-				G.removeEdge(ev.u, ev.w);
+				G.removeEdge(ev.u, ev.v);
 				break;
 			}
 			case GraphEvent::EDGE_WEIGHT_UPDATE : {
