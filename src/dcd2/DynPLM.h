@@ -16,6 +16,8 @@ namespace NetworKit {
 
 class DynPLM: public NetworKit::DynCommunityDetector {
 
+public:
+
 	/**
 	 * @param[in]	refine	add a second move phase to refine the communities
 	 * @param[in]	par		parallelization strategy
