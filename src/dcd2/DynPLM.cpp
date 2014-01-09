@@ -9,7 +9,7 @@
 
 namespace	 NetworKit {
 
-DynPLM::DynPLM(Graph& G, bool refine, double gamma, std::string par) : DynCommunityDetector(G) {
+DynPLM::DynPLM(Graph& G, bool refine, double gamma, std::string par) : DynCommunityDetector(G), parallelism(par), refine(refine), gamma(gamma) {
 	if (G.numberOfNodes() != 0) {
 		throw std::runtime_error("DynPLM must be initialized with an empty graph");
 	}
@@ -18,24 +18,26 @@ DynPLM::DynPLM(Graph& G, bool refine, double gamma, std::string par) : DynCommun
 }
 
 void DynPLM::process(std::vector<GraphEvent>& stream) {
+	DEBUG("processing event stream");
 
 	auto isolate = [&](node u) {
 		edgeweight vol = G.volume(u);
-		volCommunity[zeta[u]] -= vol;
+		// volCommunity[zeta[u]] -= vol;
 		zeta[u] = zeta.addCluster();
-		volCommunity[zeta[u]] = vol;
+		// volCommunity[zeta[u]] = vol;
 	};
 
 	for (GraphEvent ev : stream) {
+		TRACE("event: " << ev.toString());
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
 				zeta.append(ev.u);
 				zeta[ev.u] = zeta.addCluster();
-				volCommunity[zeta[ev.u]] = G.volume(ev.u);
+				// volCommunity[zeta[ev.u]] = G.volume(ev.u);
 				break;
 			}
 			case GraphEvent::NODE_REMOVAL : {
-				volCommunity[zeta[ev.u]] -= G.volume(ev.u);
+				// volCommunity[zeta[ev.u]] -= G.volume(ev.u);
 				zeta[ev.u] = none;
 				break;
 			}
@@ -65,6 +67,7 @@ void DynPLM::process(std::vector<GraphEvent>& stream) {
 }
 
 Clustering DynPLM::retrieve() {
+	DEBUG("retrieving solution");
 	return this->run(this->G);
 }
 
@@ -75,19 +78,12 @@ Clustering DynPLM::run(Graph& G) {
 	edgeweight divisor = (2 * total * total); // needed in modularity calculation
 
 
-	// init graph-dependent temporaries
-	std::vector<double> volNode(G.upperNodeIdBound(), 0.0);
-
-	G.parallelForNodes([&](node u) { // calculate and store volume of each node
-		volNode[u] += G.weightedDegree(u);
-		volNode[u] += G.weight(u, u); // consider self-loop twice
-		// TRACE("init volNode[" << u << "] to " << volNode[u]);
-	});
 
 	// init community-dependent temporaries
-	std::vector<double> volCommunity(zeta.upperBound(), 0.0);
-	zeta.parallelForEntries([&](node u, cluster C) { 	// set volume for all communities
-		volCommunity[C] = volNode[u];
+	std::map<cluster, double> volCommunity;
+	// std::vector<double> volCommunity(zeta.upperBound(), 0.0);
+	zeta.forEntries([&](node u, cluster C) { 	// set volume for all communities
+		volCommunity[C] += G.volume(u);
 	});
 
 	bool moved = false; // indicates whether any node has been moved
@@ -199,11 +195,8 @@ Clustering DynPLM::run(Graph& G) {
 			// reinit community-dependent temporaries
 			cluster o = zeta.upperBound();
 			volCommunity.clear();
-			volCommunity.resize(o, 0.0);
-			zeta.parallelForEntries([&](node u, cluster C) { 	// set volume for all communities
-				edgeweight volN = G.volume(u);
-				#pragma omp atomic update
-				volCommunity[C] += volN;
+			zeta.forEntries([&](node u, cluster C) { 	// set volume for all communities
+				volCommunity[C] += G.volume(u);
 			});
 
 			// second move phase

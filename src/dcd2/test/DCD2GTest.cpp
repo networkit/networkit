@@ -8,6 +8,7 @@
 #include "DCD2GTest.h"
 
 #include "../DynPLP.h"
+#include "../DynPLM.h"
 #include "../../dynamics/DGSStreamParser.h"
 #include "../../dynamics/GraphUpdater.h"
 
@@ -39,9 +40,27 @@ TEST_F(DCD2GTest, testDynPLP) {
 	dynPLP.process(stream);
 	Clustering zeta = dynPLP.retrieve();
 
-
+	// TODO: test conditions
 
 }
+
+
+TEST_F(DCD2GTest, testDynPLM) {
+	DGSStreamParser parser("input/example2.dgs");
+	std::vector<GraphEvent> stream = parser.getStream();
+	Graph G;
+	DynPLM dynPLM(G, 0);
+
+	GraphUpdater gu(G);
+	gu.update(stream);
+
+	dynPLM.process(stream);
+	Clustering zeta = dynPLM.retrieve();
+
+	// TODO: test conditions
+
+}
+
 
 
 
