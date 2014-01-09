@@ -59,16 +59,21 @@ void DynPLP::process(std::vector<GraphEvent>& stream) {
 }
 
 Clustering DynPLP::retrieve() {
-	count nUpdated; // number of nodes which have been updated in last iteration
 
 	nIterations = 0; // number of iterations
 
+	count nUpdated;
 
 	// propagate labels
-	while (nUpdated > this->updateThreshold) {
+	do {
+		nUpdated = 0; // number of nodes which have been updated in last iteration
+		nIterations++;
+		TRACE("iteration " << nIterations);
 
 		auto propagate = [&](node v) {
+			TRACE("scanning node " << v);
 			if ((activeNodes[v]) && (G.degree(v) > 0)) {
+				TRACE("processing node " << v);
 				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 				// weigh the labels in the neighborhood of v
 				G.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
@@ -92,7 +97,9 @@ Clustering DynPLP::retrieve() {
 
 		G.balancedParallelForNodes(propagate);
 
-	}
+		TRACE("nodes updated: " << nUpdated);
+
+	} while (nUpdated > this->updateThreshold);
 
 	return zeta;
 

@@ -37,6 +37,7 @@ TEST_F(DCD2GTest, testDynPLP) {
 	gu.update(stream);
 
 	dynPLP.process(stream);
+	Clustering zeta = dynPLP.retrieve();
 
 
 
