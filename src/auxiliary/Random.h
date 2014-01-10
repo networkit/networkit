@@ -15,7 +15,7 @@ namespace Aux {
 /**
  * Provides several functions for random-numbers.
  *
- * All functions are guaranteed to be thread-safe
+ * All functions are guaranteed to be thread-safe if and only if at least GCC 4.8 is used
  */
 namespace Random {
 
