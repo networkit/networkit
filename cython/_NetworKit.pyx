@@ -817,6 +817,33 @@ cdef class ConnectedComponents:
 
 
 
+# Module: dynamic
+
+cdef extern from "../src/dynamics/GraphEvent.h":
+	enum _Type "NetworKit::GraphEvent::Type": 		
+		NODE_ADDITION,
+		NODE_REMOVAL,
+		EDGE_ADDITION,
+		EDGE_REMOVAL,
+		EDGE_WEIGHT_UPDATE,
+		TIME_STEP
+
+cdef extern from "../src/dynamics/GraphEvent.h":
+	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
+
+		_GraphEvent() except +
+		_GraphEvent(_Type type, node u, node v, edgeweight w) except +
+		string toString() except +
+		
+cdef class GraphEvent:
+	cdef _GraphEvent _this
+	
+	def __cinit__(self, type, u, v, w):
+		self._this = _GraphEvent(type, u, v, w)
+		
+	def toString(self):
+		return self._this.toString().decode("utf-8")
+
 
 
 
