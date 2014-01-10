@@ -30,9 +30,9 @@ void DynamicCommunityDetection::run(std::string inputPath, std::string algoName)
 
 	DynCommunityDetector* algo = NULL;
 	if (algoName == "DynPLP") {
-		algo = new DynPLP(0);
+		algo = new DynPLP();
 	} else if (algoName == "DynPLM") {
-		algo = new DynPLM(0);
+		algo = new DynPLM();
 	}
 
 	algo->attachGraph(G);

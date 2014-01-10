@@ -845,6 +845,22 @@ cdef class GraphEvent:
 		return self._this.toString().decode("utf-8")
 
 
+cdef extern from "../src/dynamics/DGSStreamParser.h":
+	cdef cppclass _DGSStreamParser "NetworKit::DGSStreamParser":
+		_DGSStreamParser(string path, bool mapped, node baseIndex) except +
+		vector[_GraphEvent] getStream() except +
+
+cdef class DGSStreamParser:
+	cdef _DGSStreamParser* _this
+
+	def __cinit__(self, path, mapped, baseIndex):
+		self._this = new _DGSStreamParser(stdstring(path), mapped, baseIndex)
+
+	def getStream(self):
+		raise NotImplementedError("TODO")
+
+
+
 
 
 

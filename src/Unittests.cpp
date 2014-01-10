@@ -87,16 +87,7 @@ int main(int argc, char **argv) {
 
 
 	/// PARSE OPTIONS
-	for (int i = 0; i < argc; ++i) {
-		std::cout << argv[i] << std::endl;
-	}
-
 	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
-
-	for (int i = 0; i < argc; ++i) {
-		std::cout << argv[i] << std::endl;
-	}
-
 
 	OptionParser::Stats  stats(usage, argc, argv);
 	OptionParser::Option options[stats.options_max], buffer[stats.buffer_max];
