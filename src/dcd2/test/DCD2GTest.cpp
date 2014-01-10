@@ -65,11 +65,21 @@ TEST_F(DCD2GTest, testDynPLM) {
 }
 
 
-TEST_F(DCD2GTest, testDynamicCommunityDetection) {
+TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLP) {
 
 	DynamicCommunityDetection dynCD;
 	std::string path = "input/arxiv-qfin-author.dgs";
-	dynCD.run(path, "DynPLP", 50);
+	dynCD.run(path, "DynPLP", 100);
+
+}
+
+
+
+TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLM) {
+
+	DynamicCommunityDetection dynCD;
+	std::string path = "input/arxiv-qfin-author.dgs";
+	dynCD.run(path, "DynPLM", 100);
 
 }
 

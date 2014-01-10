@@ -37,12 +37,13 @@ private:
 
 	Clustering run(Graph& G);
 
-
 	std::vector<double> volCommunity;
 
 	std::string parallelism;
 	bool refine;
 	double gamma = 1.0;
+
+	PLM2 plm2; // instance of the static algorithm
 
 };
 
