@@ -14,6 +14,7 @@ DynPLP::DynPLP(count theta) : updateThreshold(theta) {
 }
 
 void DynPLP::process(std::vector<GraphEvent>& stream) {
+	DEBUG("processing event stream of length " << stream.size());
 	auto isolate = [&](node u) {
 		zeta[u] = zeta.addCluster();
 		activeNodes[u] = true;
@@ -59,6 +60,7 @@ void DynPLP::process(std::vector<GraphEvent>& stream) {
 }
 
 Clustering DynPLP::retrieve() {
+	DEBUG("retrieving communities");
 
 	nIterations = 0; // number of iterations
 
