@@ -20,9 +20,28 @@ namespace NetworKit {
  */
 class DynamicCommunityDetection {
 public:
-	DynamicCommunityDetection();
+	DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval=1);
 
-	void run(std::string inputPath, std::string algoName, count interval=1);
+	void run();
+
+	std::vector<count> getUpdateTimeline();
+
+	std::vector<count> getDetectTimeline();
+
+	std::vector<double> getQualityTimeline();
+
+	std::vector<double> getContinuityTimeline();
+
+private:
+
+	std::string inputPath;
+	std::string algoName;
+	count interval;
+
+	std::vector<double> quality;
+	std::vector<count> updateTime;
+	std::vector<count> detectTime;
+	std::vector<double> continuity;
 
 };
 

@@ -12,15 +12,14 @@
 #include "../dynamics/DGSStreamParser.h"
 #include "../dynamics/GraphUpdater.h"
 #include "../clustering/Modularity.h"
+#include "../auxiliary/Timer.h"
 
 namespace NetworKit {
 
-DynamicCommunityDetection::DynamicCommunityDetection() {
-	// TODO Auto-generated constructor stub
-
+DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval) : inputPath(inputPath), algoName(algoName), interval(interval) {
 }
 
-void DynamicCommunityDetection::run(std::string inputPath, std::string algoName, count interval) {
+void DynamicCommunityDetection::run() {
 	DEBUG("reading full event stream from file");
 	DGSStreamParser parser(inputPath, true, 1);
 	std::vector<GraphEvent> stream = parser.getStream();
@@ -38,11 +37,14 @@ void DynamicCommunityDetection::run(std::string inputPath, std::string algoName,
 
 	algo->attachGraph(G);
 
+	Aux::Timer timer;
+
+
 	// slicing stream by timesteps
 	auto i = stream.begin();
 	auto j = stream.begin();
 
-
+	// advance the iterators forward to the next <interval> time steps
 	auto advance = [&](){
 		count steps = 0;
 		i = j;
@@ -54,7 +56,6 @@ void DynamicCommunityDetection::run(std::string inputPath, std::string algoName,
 	};
 
 
-
 	while (j != stream.end()) {
 		advance(); // advance iterators
 		std::vector<GraphEvent> slice(i, j);
@@ -62,19 +63,49 @@ void DynamicCommunityDetection::run(std::string inputPath, std::string algoName,
 		gu.update(slice);
 		DEBUG("number of nodes: " << G.numberOfNodes());
 
-		algo->process(slice);
-		Clustering zeta = algo->retrieve();
+
+		timer.start();
+		//
+		algo->update(slice);
+		//
+		timer.stop();
+		updateTime.push_back(timer.elapsedMilliseconds());
+
+		timer.start();
+		//
+		Clustering zeta = algo->detect();
+		//
+		timer.stop();
+		detectTime.push_back(timer.elapsedMilliseconds());
+
 		DEBUG("upper community id bound: " << zeta.upperBound());
 		// DEBUG("zeta at time " << G.time() << ": " << Aux::vectorToString(zeta.getVector()));
 
 		Modularity mod;
-		INFO("modularity at time " << G.time() << ": " << mod.getQuality(zeta, G));
+		quality.push_back(mod.getQuality(zeta, G));
+		INFO("modularity at time " << G.time() << ": " << quality.back());
 
 	}
 
 
 
 
+}
+
+std::vector<count> DynamicCommunityDetection::getUpdateTimeline() {
+	return updateTime;
+}
+
+std::vector<count> DynamicCommunityDetection::getDetectTimeline() {
+	return detectTime;
+}
+
+std::vector<double> DynamicCommunityDetection::getQualityTimeline() {
+	return quality;
+}
+
+std::vector<double> DynamicCommunityDetection::getContinuityTimeline() {
+	return continuity;
 }
 
 } /* namespace NetworKit */
