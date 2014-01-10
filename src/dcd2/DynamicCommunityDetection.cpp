@@ -40,22 +40,28 @@ void DynamicCommunityDetection::run(std::string inputPath, std::string algoName,
 	// slicing stream
 	auto i = stream.begin();
 	auto j = i + interval;
+	if (j > stream.end()) {
+		j = stream.end();
+	}
 
 	while (i < stream.end()) { // TODO: rest of stream
 		std::vector<GraphEvent> slice(i, j);
+		DEBUG("updating graph");
 		gu.update(slice);
-		INFO("number of nodes: " << G.numberOfNodes());
+		DEBUG("number of nodes: " << G.numberOfNodes());
 
 		algo->process(slice);
-
 		Clustering zeta = algo->retrieve();
+
 
 		//
 		i = j;
 		j = i + interval;
+		if (j > stream.end()) {
+			j = stream.end();
+		}
 	}
 
-	DEBUG("updating graph");
 
 
 
