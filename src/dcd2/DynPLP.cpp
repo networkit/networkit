@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynPLP::DynPLP(Graph& G, count theta) : DynCommunityDetector(G), updateThreshold(theta) {
+DynPLP::DynPLP(count theta) : updateThreshold(theta) {
 
 }
 
@@ -72,11 +72,11 @@ Clustering DynPLP::retrieve() {
 
 		auto propagate = [&](node v) {
 			TRACE("scanning node " << v);
-			if ((activeNodes[v]) && (G.degree(v) > 0)) {
+			if ((activeNodes[v]) && (G->degree(v) > 0)) {
 				TRACE("processing node " << v);
 				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 				// weigh the labels in the neighborhood of v
-				G.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
+				G->forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
 					labelWeights[zeta[w]] += weight; // add weight of edge {v, w}
 				});
 
@@ -86,7 +86,7 @@ Clustering DynPLP::retrieve() {
 				if (zeta[v] != dominant) { // UPDATE
 					zeta[v] = dominant;
 					nUpdated += 1; // TODO: atomic update?
-					G.forNeighborsOf(v, [&](node u) {
+					G->forNeighborsOf(v, [&](node u) {
 						activeNodes[u] = true;
 					});
 				} else {
@@ -95,7 +95,7 @@ Clustering DynPLP::retrieve() {
 			}
 		};
 
-		G.balancedParallelForNodes(propagate);
+		G->balancedParallelForNodes(propagate);
 
 		TRACE("nodes updated: " << nUpdated);
 

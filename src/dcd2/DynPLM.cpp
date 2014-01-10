@@ -9,11 +9,7 @@
 
 namespace	 NetworKit {
 
-DynPLM::DynPLM(Graph& G, bool refine, double gamma, std::string par) : DynCommunityDetector(G), parallelism(par), refine(refine), gamma(gamma) {
-	if (G.numberOfNodes() != 0) {
-		throw std::runtime_error("DynPLM must be initialized with an empty graph");
-	}
-
+DynPLM::DynPLM(bool refine, double gamma, std::string par) : parallelism(par), refine(refine), gamma(gamma) {
 
 }
 
@@ -21,7 +17,7 @@ void DynPLM::process(std::vector<GraphEvent>& stream) {
 	DEBUG("processing event stream");
 
 	auto isolate = [&](node u) {
-		edgeweight vol = G.volume(u);
+		edgeweight vol = G->volume(u);
 		// volCommunity[zeta[u]] -= vol;
 		zeta[u] = zeta.addCluster();
 		// volCommunity[zeta[u]] = vol;
@@ -68,7 +64,7 @@ void DynPLM::process(std::vector<GraphEvent>& stream) {
 
 Clustering DynPLM::retrieve() {
 	DEBUG("retrieving solution");
-	return this->run(this->G);
+	return this->run(*this->G);
 }
 
 Clustering DynPLM::run(Graph& G) {
