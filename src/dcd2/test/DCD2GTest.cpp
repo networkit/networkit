@@ -23,6 +23,7 @@ TEST_F(DCD2GTest, testGraphUpdater) {
 	GraphUpdater gu(G);
 	DEBUG("updating graph");
 	gu.update(stream);
+
 	EXPECT_EQ(3, G.numberOfNodes());
 
 }
@@ -40,7 +41,7 @@ TEST_F(DCD2GTest, testDynPLP) {
 	dynPLP.process(stream);
 	Clustering zeta = dynPLP.retrieve();
 
-	// TODO: test conditions
+	EXPECT_TRUE(zeta.isProper(G));
 
 }
 
@@ -57,8 +58,7 @@ TEST_F(DCD2GTest, testDynPLM) {
 	dynPLM.process(stream);
 	Clustering zeta = dynPLM.retrieve();
 
-	// TODO: test conditions
-
+	EXPECT_TRUE(zeta.isProper(G));
 }
 
 
