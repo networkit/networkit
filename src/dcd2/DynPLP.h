@@ -20,7 +20,7 @@ typedef index label; // a label is the same as a community id
  */
 class DynPLP: public NetworKit::DynCommunityDetector {
 public:
-	DynPLP(Graph& G, count theta);
+	DynPLP(count theta);
 
 	void process(std::vector<GraphEvent>& stream) override;
 

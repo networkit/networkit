@@ -9,9 +9,17 @@
 
 namespace NetworKit {
 
-DynCommunityDetector::DynCommunityDetector(Graph& G) : G(G) {
+DynCommunityDetector::DynCommunityDetector() : G(NULL) {
+}
+
+void DynCommunityDetector::attachGraph(Graph& G) {
+	if (G.numberOfNodes() != 0) {
+		throw std::runtime_error("must be initialized with an empty graph");
+	}
+	this->G = &G;
 }
 
 
 } /* namespace NetworKit */
+
 

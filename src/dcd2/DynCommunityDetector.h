@@ -19,7 +19,9 @@ class DynCommunityDetector {
 
 public:
 
-	DynCommunityDetector(Graph& G);
+	DynCommunityDetector();
+
+	virtual void attachGraph(Graph& G);
 
 	virtual void process(std::vector<GraphEvent>& stream) = 0;
 
@@ -27,7 +29,7 @@ public:
 
 protected:
 
-	Graph& G;
+	Graph* G;
 	Clustering zeta;
 };
 

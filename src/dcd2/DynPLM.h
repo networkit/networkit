@@ -27,7 +27,7 @@ public:
 	 * 							2m 	-> singleton communities
 	 *
 	 */
-	DynPLM(Graph& G, bool refine=false, double gamma = 1.0, std::string par="balanced");
+	DynPLM(bool refine=false, double gamma = 1.0, std::string par="balanced");
 
 	void process(std::vector<GraphEvent>& stream) override;
 
