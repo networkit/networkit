@@ -9,7 +9,7 @@
 
 namespace	 NetworKit {
 
-DynPLM::DynPLM(bool refine, double gamma, std::string par) : parallelism(par), refine(refine), gamma(gamma) {
+DynPLM::DynPLM(bool refine, double gamma, std::string par) : parallelism(par), refine(refine), gamma(gamma), plm2(refine, gamma, par) {
 
 }
 
@@ -72,7 +72,6 @@ Clustering DynPLM::run(Graph& G) {
 
 	edgeweight total = G.totalEdgeWeight();
 	edgeweight divisor = (2 * total * total); // needed in modularity calculation
-
 
 
 	// init community-dependent temporaries
@@ -181,10 +180,10 @@ Clustering DynPLM::run(Graph& G) {
 
 	if (moved) {
 		DEBUG("nodes moved, so begin coarsening and recursive call");
-		std::pair<Graph, std::vector<node>> coarsened = PLM2::coarsen(G, zeta);	// coarsen graph according to communitites
-		Clustering zetaCoarse = run(coarsened.first);
+		std::pair<Graph, std::vector<node>> coarsened = plm2.coarsen(G, zeta);	// coarsen graph according to communitites
+		Clustering zetaCoarse = plm2.run(coarsened.first);
 
-		zeta = PLM2::prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
+		zeta = plm2.prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {
 			INFO("refinement phase");
