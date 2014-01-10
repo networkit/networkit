@@ -22,9 +22,9 @@ class DynPLP: public NetworKit::DynCommunityDetector {
 public:
 	DynPLP(count theta=0);
 
-	void process(std::vector<GraphEvent>& stream) override;
+	void update(std::vector<GraphEvent>& stream) override;
 
-	Clustering retrieve() override;
+	Clustering detect() override;
 
 private:
 

@@ -13,7 +13,7 @@ DynPLM::DynPLM(bool refine, double gamma, std::string par) : parallelism(par), r
 
 }
 
-void DynPLM::process(std::vector<GraphEvent>& stream) {
+void DynPLM::update(std::vector<GraphEvent>& stream) {
 	DEBUG("processing event stream");
 
 	auto isolate = [&](node u) {
@@ -62,7 +62,7 @@ void DynPLM::process(std::vector<GraphEvent>& stream) {
 	} // end event loop
 }
 
-Clustering DynPLM::retrieve() {
+Clustering DynPLM::detect() {
 	DEBUG("retrieving solution");
 	return this->run(*this->G);
 }

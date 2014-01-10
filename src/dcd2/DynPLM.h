@@ -29,9 +29,9 @@ public:
 	 */
 	DynPLM(bool refine=false, double gamma = 1.0, std::string par="balanced");
 
-	void process(std::vector<GraphEvent>& stream) override;
+	void update(std::vector<GraphEvent>& stream) override;
 
-	Clustering retrieve() override;
+	Clustering detect() override;
 
 private:
 

@@ -40,8 +40,8 @@ TEST_F(DCD2GTest, testDynPLP) {
 	GraphUpdater gu(G);
 	gu.update(stream);
 
-	dynPLP.process(stream);
-	Clustering zeta = dynPLP.retrieve();
+	dynPLP.update(stream);
+	Clustering zeta = dynPLP.detect();
 
 	EXPECT_TRUE(zeta.isProper(G));
 
@@ -58,28 +58,29 @@ TEST_F(DCD2GTest, testDynPLM) {
 	GraphUpdater gu(G);
 	gu.update(stream);
 
-	dynPLM.process(stream);
-	Clustering zeta = dynPLM.retrieve();
+	dynPLM.update(stream);
+	Clustering zeta = dynPLM.detect();
 
 	EXPECT_TRUE(zeta.isProper(G));
 }
 
 
 TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLP) {
-
-	DynamicCommunityDetection dynCD;
 	std::string path = "input/arxiv-qfin-author.dgs";
-	dynCD.run(path, "DynPLP", 100);
+	DynamicCommunityDetection dynCD(path, "DynPLP", 100);
+	dynCD.run();
 
+	INFO("quality timeline: " << Aux::vectorToString(dynCD.getQualityTimeline()));
 }
 
 
 
 TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLM) {
-
-	DynamicCommunityDetection dynCD;
 	std::string path = "input/arxiv-qfin-author.dgs";
-	dynCD.run(path, "DynPLM", 100);
+	DynamicCommunityDetection dynCD(path, "DynPLM", 100);
+	dynCD.run();
+
+	INFO("quality timeline: " << Aux::vectorToString(dynCD.getQualityTimeline()));
 
 }
 
