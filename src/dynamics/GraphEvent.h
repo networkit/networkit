@@ -34,6 +34,8 @@ public:
 	edgeweight w;			//!< edge weight parameter
 
 
+	GraphEvent() = default;
+
 	GraphEvent(Type type, node u = none, node v = none, edgeweight w = none);
 
 	/**
