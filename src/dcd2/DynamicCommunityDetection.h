@@ -11,6 +11,8 @@
 
 #include <string>
 
+#include "../graph/Graph.h"
+
 namespace NetworKit {
 
 /*
@@ -20,7 +22,7 @@ class DynamicCommunityDetection {
 public:
 	DynamicCommunityDetection();
 
-	void run(std::string inputPath, std::string algoName);
+	void run(std::string inputPath, std::string algoName, count interval=1);
 
 };
 
