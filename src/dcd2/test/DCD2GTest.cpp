@@ -9,6 +9,7 @@
 
 #include "../DynPLP.h"
 #include "../DynPLM.h"
+#include "../DynamicCommunityDetection.h"
 #include "../../dynamics/DGSStreamParser.h"
 #include "../../dynamics/GraphUpdater.h"
 
@@ -61,6 +62,15 @@ TEST_F(DCD2GTest, testDynPLM) {
 	Clustering zeta = dynPLM.retrieve();
 
 	EXPECT_TRUE(zeta.isProper(G));
+}
+
+
+TEST_F(DCD2GTest, testDynamicCommunityDetection) {
+
+	DynamicCommunityDetection dynCD;
+	std::string path = "input/arxiv-qfin-author.dgs";
+	dynCD.run(path, "DynPLP", 1000);
+
 }
 
 

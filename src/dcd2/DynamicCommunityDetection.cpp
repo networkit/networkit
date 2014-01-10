@@ -19,15 +19,15 @@ DynamicCommunityDetection::DynamicCommunityDetection() {
 
 }
 
-void DynamicCommunityDetection::run(std::string inputPath, std::string algoName) {
+void DynamicCommunityDetection::run(std::string inputPath, std::string algoName, count interval) {
+	DEBUG("reading full event stream from file");
 	DGSStreamParser parser(inputPath, true, 1);
-	DEBUG("getting event stream");
 	std::vector<GraphEvent> stream = parser.getStream();
+	DEBUG("setting up graph");
 	Graph G;
 	GraphUpdater gu(G);
-	DEBUG("updating graph");
-	gu.update(stream);
 
+	DEBUG("setting up algorithms");
 	DynCommunityDetector* algo = NULL;
 	if (algoName == "DynPLP") {
 		algo = new DynPLP();
@@ -36,6 +36,27 @@ void DynamicCommunityDetection::run(std::string inputPath, std::string algoName)
 	}
 
 	algo->attachGraph(G);
+
+	// slicing stream
+	auto i = stream.begin();
+	auto j = i + interval;
+
+	while (i < stream.end()) { // TODO: rest of stream
+		std::vector<GraphEvent> slice(i, j);
+		gu.update(slice);
+		INFO("number of nodes: " << G.numberOfNodes());
+
+		algo->process(slice);
+
+		Clustering zeta = algo->retrieve();
+
+		//
+		i = j;
+		j = i + interval;
+	}
+
+	DEBUG("updating graph");
+
 
 
 }
