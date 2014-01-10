@@ -9,10 +9,13 @@
 
 #include "DynPLP.h"
 #include "DynPLM.h"
+#include "StaticAdapter.h"
 #include "../dynamics/DGSStreamParser.h"
 #include "../dynamics/GraphUpdater.h"
 #include "../clustering/Modularity.h"
 #include "../auxiliary/Timer.h"
+#include "../community/PLP.h"
+#include "../community/PLM2.h"
 
 namespace NetworKit {
 
@@ -33,8 +36,13 @@ void DynamicCommunityDetection::run() {
 		algo = new DynPLP();
 	} else if (algoName == "DynPLM") {
 		algo = new DynPLM();
+	} else if (algoName == "PLP") {
+		algo = new StaticAdapter(new PLP());
+	} else if (algoName == "PLM") {
+		algo = new StaticAdapter(new PLM2());
 	}
 
+	DEBUG("attaching graph");
 	algo->attachGraph(G);
 
 	Aux::Timer timer;
@@ -55,7 +63,7 @@ void DynamicCommunityDetection::run() {
 		}
 	};
 
-
+	DEBUG("advancing dynamic graph");
 	while (j != stream.end()) {
 		advance(); // advance iterators
 		std::vector<GraphEvent> slice(i, j);

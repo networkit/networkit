@@ -85,6 +85,15 @@ TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLM) {
 }
 
 
+TEST_F(DCD2GTest, testDynamicCommunityDetectionWithStatic) {
+	std::string path = "input/arxiv-qfin-author.dgs";
+	DynamicCommunityDetection dynCD(path, "PLP", 100);
+	dynCD.run();
+
+	INFO("quality timeline: " << Aux::vectorToString(dynCD.getQualityTimeline()));
+}
+
+
 
 
 
