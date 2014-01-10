@@ -108,31 +108,30 @@ TEST_F(Graph2GTest, testNodeIteration) {
 }
 
 
-//TEST_F(Graph2GTest, testParallelEdgeInsertion) {
-//	EXPECT_TRUE(false) << "TODO: implement";
-//	return;
-//
-//
-//	int64_t n = 500;
-//	int64_t offset = 100;
-//	Graph G(n);
-//
-//	try {
-//		G.parallelForNodes([&](node v) {
-//			G.addEdge(v, (v+offset) % n);
-//		});
-//
-//	} catch (...) {
-//		EXPECT_TRUE(false) << "exception thrown - fail test";
-//	}
-//
-//	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
-//
-//	G.forNodes([&](node v) {
-//		EXPECT_EQ(2, G.degree(v)) << "degree should be two";
-//	});
-//
-//}
+TEST_F(Graph2GTest, testParallelEdgeInsertion) {
+
+	int64_t n = 500;
+	int64_t offset = 100;
+	Graph G(n);
+
+	try {
+		G.parallelForNodes([&](node u) {
+			node v = ((u + offset) % n);
+			TRACE("inserting edge " << u << "," << v);
+			G.addEdge(u, v);
+		});
+
+	} catch (...) {
+		EXPECT_TRUE(false) << "exception thrown - fail test";
+	}
+
+	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
+
+	G.forNodes([&](node v) {
+		EXPECT_EQ(2, G.degree(v)) << "degree should be two";
+	});
+
+}
 
 
 //TEST_F(Graph2GTest, testParallelEdgeRemoval) {
@@ -181,27 +180,24 @@ TEST_F(Graph2GTest, testEdgeIteration) {
 	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
 }
 
-//TEST_F(Graph2GTest, testParallelEdgeModification) {
-//	EXPECT_TRUE(false) << "TODO: implement";
-//	return;
-//
-//
-//	int64_t n = 500;
-//	int64_t offset = 100;
-//	Graph G(n);
-//
-//	G.parallelForNodes([&](node v) {
-//		G.addEdge(v, (v+offset) % n);
-//	});
-//
-//	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
-//
-//	G.parallelForEdges([&](node u, node v) {
-//		G.removeEdge(u, v);
-//	});
-//
-//	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
-//}
+TEST_F(Graph2GTest, testParallelEdgeModification) {
+
+	int64_t n = 500;
+	int64_t offset = 100;
+	Graph G(n);
+
+	G.parallelForNodes([&](node v) {
+		G.addEdge(v, (v+offset) % n);
+	});
+
+	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
+
+	G.parallelForEdges([&](node u, node v) {
+		G.removeEdge(u, v);
+	});
+
+	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
+}
 
 TEST_F(Graph2GTest, testNeighborIteration) {
 	int64_t n = 50;

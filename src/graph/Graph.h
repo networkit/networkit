@@ -21,7 +21,7 @@
 #include <limits>
 #include <cstdint>
 #include <algorithm>
-// #include <tbb/concurrent_vector.h>
+#include <tbb/concurrent_vector.h>
 
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Debug.h"
@@ -41,7 +41,7 @@ typedef double edgeweight; // edge weight type
 
 #define none std::numeric_limits<index>::max()
 
-#define Vector std::vector // TODO: test tbb::concurrent_vector
+#define Vector tbb::concurrent_vector // TODO: test tbb::concurrent_vector
 
 /**
  * An undirected graph (with optional weights) and parallel iterator methods.
