@@ -11,6 +11,7 @@
 #include "DynPLM.h"
 #include "../dynamics/DGSStreamParser.h"
 #include "../dynamics/GraphUpdater.h"
+#include "../clustering/Modularity.h"
 
 namespace NetworKit {
 
@@ -52,7 +53,11 @@ void DynamicCommunityDetection::run(std::string inputPath, std::string algoName,
 
 		algo->process(slice);
 		Clustering zeta = algo->retrieve();
+		DEBUG("upper community id bound: " << zeta.upperBound());
+		// DEBUG("zeta at time " << G.time() << ": " << Aux::vectorToString(zeta.getVector()));
 
+		Modularity mod;
+		INFO("modularity at time " << G.time() << ": " << mod.getQuality(zeta, G));
 
 		//
 		i = j;
