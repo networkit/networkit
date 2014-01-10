@@ -103,8 +103,7 @@ void Clustering::allToSingletons() {
 }
 
 cluster Clustering::addCluster() {
-	cluster c = this->nextCluster;
-	this->nextCluster += 1;
+	cluster c = getNextCluster();
 	return c;
 }
 
