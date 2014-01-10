@@ -95,6 +95,7 @@ cdef extern from "../src/graph/Graph.h":
 		_Graph(count) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
+		count degree(node u) except +
 		node addNode() except +
 		void removeNode(node u) except +
 		void addEdge(node u, node v, edgeweight w) except +
@@ -129,6 +130,9 @@ cdef class Graph:
 	
 	def numberOfEdges(self):
 		return self._this.numberOfEdges()
+
+	def degree(self, u):
+		return self._this.degree(u)
 	
 	def addNode(self):
 		return self._this.addNode()

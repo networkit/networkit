@@ -26,6 +26,7 @@ import properties
 import engineering
 import toolbox
 import dynamic
+import algebraic
 
 try:
 	import viztools
