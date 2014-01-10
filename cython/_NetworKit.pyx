@@ -860,6 +860,35 @@ cdef class DGSStreamParser:
 		raise NotImplementedError("TODO")
 
 
+cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
+	cdef cppclass _DynamicCommunityDetection "NetworKit::DynamicCommunityDetection":
+		_DynamicCommunityDetection(string inputPath, string algoName, count interval) except +
+		void run() except +
+		vector[count] getUpdateTimeline() except +
+		vector[count] getDetectTimeline() except +
+		vector[double] getQualityTimeline() except +
+		vector[double] getContinuityTimeline() except +
+
+cdef class DynamicCommunityDetection:
+	cdef _DynamicCommunityDetection* _this
+
+	def __cinit__(self, inputPath, algoName, interval):
+		self._this = new _DynamicCommunityDetection(stdstring(inputPath), stdstring(algoName), interval)
+
+	def run(self):
+		self._this.run()
+
+	def getUpdateTimeline(self):
+		return self._this.getUpdateTimeline()
+
+	def getDetectTimeline(self):
+		return self._this.getDetectTimeline()
+
+	def getQualityTimeline(self):
+		return self._this.getQualityTimeline()
+
+	def getContinuityTimeline(self):
+		return self._this.getContinuityTimeline()
 
 
 

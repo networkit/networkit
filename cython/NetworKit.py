@@ -25,6 +25,7 @@ import generators
 import properties
 import engineering
 import toolbox
+import dynamic
 
 try:
 	import viztools

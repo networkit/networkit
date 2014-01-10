@@ -1,1 +1,1 @@
-from _NetworKit import GraphEvent
+from _NetworKit import GraphEvent, DynamicCommunityDetection
