@@ -38,14 +38,25 @@ void DynamicCommunityDetection::run(std::string inputPath, std::string algoName,
 
 	algo->attachGraph(G);
 
-	// slicing stream
+	// slicing stream by timesteps
 	auto i = stream.begin();
-	auto j = i + interval;
-	if (j > stream.end()) {
-		j = stream.end();
-	}
+	auto j = stream.begin();
 
-	while (i < stream.end()) { // TODO: rest of stream
+
+	auto advance = [&](){
+		count steps = 0;
+		i = j;
+		for (; (steps < interval) && (j < stream.end()); ++j) {
+			if (j->type == GraphEvent::TIME_STEP) {
+				steps++;
+			}
+		}
+	};
+
+
+
+	while (j != stream.end()) {
+		advance(); // advance iterators
 		std::vector<GraphEvent> slice(i, j);
 		DEBUG("updating graph");
 		gu.update(slice);
@@ -59,12 +70,6 @@ void DynamicCommunityDetection::run(std::string inputPath, std::string algoName,
 		Modularity mod;
 		INFO("modularity at time " << G.time() << ": " << mod.getQuality(zeta, G));
 
-		//
-		i = j;
-		j = i + interval;
-		if (j > stream.end()) {
-			j = stream.end();
-		}
 	}
 
 
