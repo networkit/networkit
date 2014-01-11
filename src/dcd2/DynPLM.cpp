@@ -16,11 +16,9 @@ DynPLM::DynPLM(bool refine, double gamma, std::string par) : parallelism(par), r
 void DynPLM::update(std::vector<GraphEvent>& stream) {
 	DEBUG("processing event stream");
 
+	// turn a node into a singleton
 	auto isolate = [&](node u) {
-		edgeweight vol = G->volume(u);
-		// volCommunity[zeta[u]] -= vol;
 		zeta[u] = zeta.addCluster();
-		// volCommunity[zeta[u]] = vol;
 	};
 
 	for (GraphEvent ev : stream) {
@@ -28,12 +26,10 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
 				zeta.append(ev.u);
-				zeta[ev.u] = zeta.addCluster();
-				// volCommunity[zeta[ev.u]] = G.volume(ev.u);
+				isolate(ev.u)
 				break;
 			}
 			case GraphEvent::NODE_REMOVAL : {
-				// volCommunity[zeta[ev.u]] -= G.volume(ev.u);
 				zeta[ev.u] = none;
 				break;
 			}
@@ -75,8 +71,8 @@ Clustering DynPLM::run(Graph& G) {
 
 
 	// init community-dependent temporaries
-	std::map<cluster, double> volCommunity;
-	// std::vector<double> volCommunity(zeta.upperBound(), 0.0);
+	// 
+	std::map<cluster, double> volCommunity; // a map to save memory
 	zeta.forEntries([&](node u, cluster C) { 	// set volume for all communities
 		volCommunity[C] += G.volume(u);
 	});
@@ -87,7 +83,6 @@ Clustering DynPLM::run(Graph& G) {
 	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
 		// TRACE("trying to move node " << u);
-
 		// collect edge weight to neighbor clusters
 		std::map<cluster, edgeweight> affinity;
 		G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
@@ -96,7 +91,6 @@ Clustering DynPLM::run(Graph& G) {
 				affinity[C] += weight;
 			}
 		});
-
 
 		// sub-functions
 
@@ -151,11 +145,9 @@ Clustering DynPLM::run(Graph& G) {
 		// TRACE("deltaBest=" << deltaBest); // FIXME: best mod gain is negative
 		if (deltaBest > 0) { // if modularity improvement possible
 			assert (best != C && best != none);// do not "move" to original cluster
-
 			zeta[u] = best; // move to best cluster
 			// TRACE("node " << u << " moved");
 			modUpdate(u, C, best);
-
 			moved = true; // change to clustering has been made
 
 		} else {
