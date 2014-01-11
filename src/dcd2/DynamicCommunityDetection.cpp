@@ -19,7 +19,7 @@
 
 namespace NetworKit {
 
-DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval) : inputPath(inputPath), algoName(algoName), interval(interval) {
+DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval, bool recordQuality) : inputPath(inputPath), algoName(algoName), interval(interval), recordQuality(recordQuality) {
 }
 
 void DynamicCommunityDetection::run() {
@@ -89,10 +89,11 @@ void DynamicCommunityDetection::run() {
 		DEBUG("upper community id bound: " << zeta.upperBound());
 		// DEBUG("zeta at time " << G.time() << ": " << Aux::vectorToString(zeta.getVector()));
 
-		Modularity mod;
-		quality.push_back(mod.getQuality(zeta, G));
-		INFO("modularity at time " << G.time() << ": " << quality.back());
-
+		if (recordQuality) {
+			Modularity mod;
+			quality.push_back(mod.getQuality(zeta, G));
+			INFO("modularity at time " << G.time() << ": " << quality.back());
+		}
 	}
 
 
