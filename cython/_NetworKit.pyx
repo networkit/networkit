@@ -872,6 +872,7 @@ cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
 		vector[count] getDetectTimeline() except +
 		vector[double] getQualityTimeline() except +
 		vector[double] getContinuityTimeline() except +
+		vector[pair[count, count]] getGraphSizeTimeline() except +
 
 cdef class DynamicCommunityDetection:
 	cdef _DynamicCommunityDetection* _this
@@ -893,6 +894,9 @@ cdef class DynamicCommunityDetection:
 
 	def getContinuityTimeline(self):
 		return self._this.getContinuityTimeline()
+
+	def getGraphSizeTimeline(self):
+		return self._this.getGraphSizeTimeline()
 
 
 

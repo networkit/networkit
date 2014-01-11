@@ -32,6 +32,8 @@ public:
 
 	std::vector<double> getContinuityTimeline();
 
+	std::vector<std::pair<count, count> > getGraphSizeTimeline();
+
 private:
 
 	std::string inputPath;
@@ -42,6 +44,7 @@ private:
 	std::vector<count> updateTime;
 	std::vector<count> detectTime;
 	std::vector<double> continuity;
+	std::vector<std::pair<count, count> > size; // records graph size
 
 };
 

@@ -96,7 +96,8 @@ void DynamicCommunityDetection::run() {
 	}
 
 
-
+	// record graph size
+	size = gu.getSizeTimeline();
 
 }
 
@@ -114,6 +115,10 @@ std::vector<double> DynamicCommunityDetection::getQualityTimeline() {
 
 std::vector<double> DynamicCommunityDetection::getContinuityTimeline() {
 	return continuity;
+}
+
+std::vector<std::pair<count, count> > DynamicCommunityDetection::getGraphSizeTimeline() {
+	return size;
 }
 
 } /* namespace NetworKit */

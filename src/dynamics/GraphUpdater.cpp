@@ -47,6 +47,12 @@ void GraphUpdater::update(std::vector<GraphEvent>& stream) {
 			}
 		}
 	}
+	// record graph size
+	size.push_back(std::make_pair(G.numberOfNodes(), G.numberOfEdges()));
+}
+
+std::vector<std::pair<count, count> > GraphUpdater::getSizeTimeline() {
+	return size;
 }
 
 } /* namespace NetworKit */

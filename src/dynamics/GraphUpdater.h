@@ -21,9 +21,12 @@ public:
 
 	void update(std::vector<GraphEvent>& stream);
 
+	std::vector<std::pair<count, count> > getSizeTimeline();
+
 private:
 
 	Graph& G;
+	std::vector<std::pair<count, count> > size;
 };
 
 } /* namespace NetworKit */
