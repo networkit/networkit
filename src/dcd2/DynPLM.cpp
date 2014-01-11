@@ -26,7 +26,7 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
 				zeta.append(ev.u);
-				isolate(ev.u)
+				isolate(ev.u);
 				break;
 			}
 			case GraphEvent::NODE_REMOVAL : {

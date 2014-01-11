@@ -12,6 +12,7 @@
 #include <string>
 
 #include "../graph/Graph.h"
+ #include "../clustering/Clustering.h"
 
 namespace NetworKit {
 
@@ -20,7 +21,8 @@ namespace NetworKit {
  */
 class DynamicCommunityDetection {
 public:
-	DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval=1, bool recordQuality=true);
+	DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval=1, 
+		bool recordQuality=true, bool recordContinuity=true);
 
 	void run();
 
@@ -41,12 +43,15 @@ private:
 	count interval;
 
 	bool recordQuality;
+	bool recordContinuity;
 
 	std::vector<double> quality;
 	std::vector<count> updateTime;
 	std::vector<count> detectTime;
 	std::vector<double> continuity;
 	std::vector<std::pair<count, count> > size; // records graph size
+
+	Clustering previous; // communities from the previous run
 
 };
 

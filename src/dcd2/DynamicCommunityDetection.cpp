@@ -16,10 +16,14 @@
 #include "../auxiliary/Timer.h"
 #include "../community/PLP.h"
 #include "../community/PLM2.h"
+#include "../clustering/SampledRandMeasure.h"
+
 
 namespace NetworKit {
 
-DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval, bool recordQuality) : inputPath(inputPath), algoName(algoName), interval(interval), recordQuality(recordQuality) {
+DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval, 
+	bool recordQuality, bool recordContinuity) :
+	 inputPath(inputPath), algoName(algoName), interval(interval), recordQuality(recordQuality), recordContinuity(recordContinuity) {
 }
 
 void DynamicCommunityDetection::run() {
@@ -52,6 +56,8 @@ void DynamicCommunityDetection::run() {
 	auto i = stream.begin();
 	auto j = stream.begin();
 
+	count run = 0;
+
 	// advance the iterators forward to the next <interval> time steps
 	auto advance = [&](){
 		count steps = 0;
@@ -65,6 +71,7 @@ void DynamicCommunityDetection::run() {
 
 	DEBUG("advancing dynamic graph");
 	while (j != stream.end()) {
+		run++; // next run
 		advance(); // advance iterators
 		std::vector<GraphEvent> slice(i, j);
 		DEBUG("updating graph");
@@ -94,6 +101,14 @@ void DynamicCommunityDetection::run() {
 			quality.push_back(mod.getQuality(zeta, G));
 			INFO("modularity at time " << G.time() << ": " << quality.back());
 		}
+
+		if (recordContinuity && (run >= 2)) {
+			SampledRandMeasure sampledRand(500);
+			double cont = sampledRand.getDissimilarity(G, zeta, previous);
+		}
+
+		previous = zeta; // save last solution for next run
+
 	}
 
 
