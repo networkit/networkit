@@ -67,7 +67,7 @@ TEST_F(DCD2GTest, testDynPLM) {
 
 TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLP) {
 	std::string path = "input/arxiv-qfin-author.dgs";
-	DynamicCommunityDetection dynCD(path, "DynPLP", 100);
+	DynamicCommunityDetection dynCD(path, "DynPLP", "isolate", 100);
 	dynCD.run();
 
 	INFO("quality timeline: " << Aux::vectorToString(dynCD.getQualityTimeline()));
@@ -77,7 +77,7 @@ TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLP) {
 
 TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLM) {
 	std::string path = "input/arxiv-qfin-author.dgs";
-	DynamicCommunityDetection dynCD(path, "DynPLM", 100);
+	DynamicCommunityDetection dynCD(path, "DynPLM", "isolate", 100);
 	dynCD.run();
 
 	INFO("quality timeline: " << Aux::vectorToString(dynCD.getQualityTimeline()));
@@ -87,7 +87,7 @@ TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLM) {
 
 TEST_F(DCD2GTest, testDynamicCommunityDetectionWithStatic) {
 	std::string path = "input/arxiv-qfin-author.dgs";
-	DynamicCommunityDetection dynCD(path, "PLP", 100);
+	DynamicCommunityDetection dynCD(path, "PLP", "isolate", 100);
 	dynCD.run();
 
 	INFO("quality timeline: " << Aux::vectorToString(dynCD.getQualityTimeline()));

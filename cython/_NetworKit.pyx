@@ -866,7 +866,7 @@ cdef class DGSStreamParser:
 
 cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
 	cdef cppclass _DynamicCommunityDetection "NetworKit::DynamicCommunityDetection":
-		_DynamicCommunityDetection(string inputPath, string algoName, string updateStrategy, count interval, bool recordQuality, bool recordContinuity) except +
+		_DynamicCommunityDetection(string inputPath, string algoName, string updateStrategy, count interval, vector[string] recordSettings) except +
 		void run() except +
 		vector[count] getUpdateTimeline() except +
 		vector[count] getDetectTimeline() except +
@@ -877,8 +877,8 @@ cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
 cdef class DynamicCommunityDetection:
 	cdef _DynamicCommunityDetection* _this
 
-	def __cinit__(self, inputPath, algoName, updateStrategy, interval, recordQuality=True, recordContinuity=True):
-		self._this = new _DynamicCommunityDetection(stdstring(inputPath), stdstring(algoName), stdstring(updateStrategy), interval, recordQuality, recordContinuity)
+	def __cinit__(self, inputPath, algoName, updateStrategy, interval, recordSettings):
+		self._this = new _DynamicCommunityDetection(stdstring(inputPath), stdstring(algoName), stdstring(updateStrategy), interval, recordSettings)
 
 	def run(self):
 		self._this.run()
