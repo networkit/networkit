@@ -9,7 +9,9 @@
 
 namespace	 NetworKit {
 
-DynPLM::DynPLM(bool refine, double gamma, std::string par) : parallelism(par), refine(refine), gamma(gamma), plm2(refine, gamma, par) {
+DynPLM::DynPLM(std::string updateStrategy, bool refine, double gamma,
+		std::string par) :
+		updateStrategy(updateStrategy), parallelism(par), refine(refine), gamma(gamma), plm2(refine, gamma, par) {
 
 }
 
@@ -21,41 +23,97 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 		zeta[u] = zeta.addCluster();
 	};
 
-	for (GraphEvent ev : stream) {
-		TRACE("event: " << ev.toString());
-		switch (ev.type) {
-			case GraphEvent::NODE_ADDITION : {
-				zeta.append(ev.u);
-				isolate(ev.u);
-				break;
+	if (updateStrategy == "isolate") {
+		for (GraphEvent ev : stream) {
+			TRACE("event: " << ev.toString());
+			switch (ev.type) {
+				case GraphEvent::NODE_ADDITION : {
+					zeta.append(ev.u);
+					isolate(ev.u);
+					break;
+				}
+				case GraphEvent::NODE_REMOVAL : {
+					zeta[ev.u] = none;
+					break;
+				}
+				case GraphEvent::EDGE_ADDITION : {
+					isolate(ev.u);
+					isolate(ev.v);
+					break;
+				}
+				case GraphEvent::EDGE_REMOVAL : {
+					isolate(ev.u);
+					isolate(ev.v);
+					break;
+				}
+				case GraphEvent::EDGE_WEIGHT_UPDATE : {
+					isolate(ev.u);
+					isolate(ev.v);
+					break;
+				}
+				case GraphEvent::TIME_STEP : {
+					break;
+				}
+				default: {
+					throw std::runtime_error("unknown event type");
+				}
 			}
-			case GraphEvent::NODE_REMOVAL : {
-				zeta[ev.u] = none;
-				break;
+		} // end event loop
+	} else if (updateStrategy == "isolate_neighbors") {
+		for (GraphEvent ev : stream) {
+			TRACE("event: " << ev.toString());
+			switch (ev.type) {
+				case GraphEvent::NODE_ADDITION : {
+					zeta.append(ev.u);
+					isolate(ev.u);
+					break;
+				}
+				case GraphEvent::NODE_REMOVAL : {
+					zeta[ev.u] = none;
+					break;
+				}
+				case GraphEvent::EDGE_ADDITION : {
+					isolate(ev.u);
+					isolate(ev.v);
+					G->forNeighborsOf(ev.u, [&](node v) {
+						isolate(v);
+					});
+					G->forNeighborsOf(ev.v, [&](node v) {
+						isolate(v);
+					});
+					break;
+				}
+				case GraphEvent::EDGE_REMOVAL : {
+					isolate(ev.u);
+					isolate(ev.v);
+					G->forNeighborsOf(ev.u, [&](node v) {
+						isolate(v);
+					});
+					G->forNeighborsOf(ev.v, [&](node v) {
+						isolate(v);
+					});
+					break;
+				}
+				case GraphEvent::EDGE_WEIGHT_UPDATE : {
+					isolate(ev.u);
+					isolate(ev.v);
+					G->forNeighborsOf(ev.u, [&](node v) {
+						isolate(v);
+					});
+					G->forNeighborsOf(ev.v, [&](node v) {
+						isolate(v);
+					});
+					break;
+				}
+				case GraphEvent::TIME_STEP : {
+					break;
+				}
+				default: {
+					throw std::runtime_error("unknown event type");
+				}
 			}
-			case GraphEvent::EDGE_ADDITION : {
-				isolate(ev.u);
-				isolate(ev.v);
-				break;
-			}
-			case GraphEvent::EDGE_REMOVAL : {
-				isolate(ev.u);
-				isolate(ev.v);
-				break;
-			}
-			case GraphEvent::EDGE_WEIGHT_UPDATE : {
-				isolate(ev.u);
-				isolate(ev.v);
-				break;
-			}
-			case GraphEvent::TIME_STEP : {
-				break;
-			}
-			default: {
-				throw std::runtime_error("unknown event type");
-			}
-		}
-	} // end event loop
+		} // end event loop
+	}
 }
 
 Clustering DynPLM::detect() {
