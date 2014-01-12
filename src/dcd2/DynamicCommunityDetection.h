@@ -22,7 +22,7 @@ namespace NetworKit {
 class DynamicCommunityDetection {
 public:
 	DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy="isolate", count interval=1,
-		bool recordQuality=true, bool recordContinuity=true);
+		std::vector<std::string> recordSettings = {"quality", "graphSize"});
 
 	void run();
 
@@ -43,14 +43,14 @@ private:
 	std::string updateStrategy;
 	count interval;
 
-	bool recordQuality;
-	bool recordContinuity;
+	std::vector<std::string> recordSettings; // determines which properties to record
 
 	std::vector<double> quality;
 	std::vector<count> updateTime;
 	std::vector<count> detectTime;
 	std::vector<double> continuity;
 	std::vector<std::pair<count, count> > size; // records graph size
+	std::vector<std::vector<count>> communitySizes;
 
 	Clustering previous; // communities from the previous run
 

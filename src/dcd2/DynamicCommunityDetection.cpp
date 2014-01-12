@@ -22,11 +22,17 @@
 namespace NetworKit {
 
 DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy, count interval,
-	bool recordQuality, bool recordContinuity) :
-	 inputPath(inputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), recordQuality(recordQuality), recordContinuity(recordContinuity) {
+	std::vector<std::string> recordSettings) :
+	 inputPath(inputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), recordSettings(recordSettings) {
 }
 
 void DynamicCommunityDetection::run() {
+
+	// check if property with the given name should be recorded
+	auto record = [&](std::string key) {
+		return std::find(recordSettings.begin(), recordSettings.end(), key) != recordSettings.end();
+	};
+
 	DEBUG("reading full event stream from file");
 	DGSStreamParser parser(inputPath, true, 1);
 	std::vector<GraphEvent> stream = parser.getStream();
@@ -96,15 +102,22 @@ void DynamicCommunityDetection::run() {
 		DEBUG("upper community id bound: " << zeta.upperBound());
 		// DEBUG("zeta at time " << G.time() << ": " << Aux::vectorToString(zeta.getVector()));
 
-		if (recordQuality) {
+		if (record("quality")) {
 			Modularity mod;
 			quality.push_back(mod.getQuality(zeta, G));
 			INFO("modularity at time " << G.time() << ": " << quality.back());
 		}
 
-		if (recordContinuity && (run >= 2)) {
+		if (record("communitySize")) {
+			std::vector<count> sizes = zeta.clusterSizes();
+			// double avgSize = std::accumulate(sizes.begin(), sizes.end(), 0) / (double) sizes.size();
+			communitySizes.push_back(sizes);
+		}
+
+		if (record("continuity") && (run >= 2)) {
 			SampledRandMeasure sampledRand(500);
 			double cont = sampledRand.getDissimilarity(G, zeta, previous);
+			continuity.push_back(cont);
 		}
 
 		previous = zeta; // save last solution for next run
