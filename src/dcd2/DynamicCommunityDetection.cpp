@@ -21,9 +21,9 @@
 
 namespace NetworKit {
 
-DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval, 
+DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy, count interval,
 	bool recordQuality, bool recordContinuity) :
-	 inputPath(inputPath), algoName(algoName), interval(interval), recordQuality(recordQuality), recordContinuity(recordContinuity) {
+	 inputPath(inputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), recordQuality(recordQuality), recordContinuity(recordContinuity) {
 }
 
 void DynamicCommunityDetection::run() {
@@ -39,7 +39,7 @@ void DynamicCommunityDetection::run() {
 	if (algoName == "DynPLP") {
 		algo = new DynPLP();
 	} else if (algoName == "DynPLM") {
-		algo = new DynPLM();
+		algo = new DynPLM(updateStrategy);
 	} else if (algoName == "PLP") {
 		algo = new StaticAdapter(new PLP());
 	} else if (algoName == "PLM") {

@@ -21,7 +21,7 @@ namespace NetworKit {
  */
 class DynamicCommunityDetection {
 public:
-	DynamicCommunityDetection(std::string inputPath, std::string algoName, count interval=1, 
+	DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy="isolate", count interval=1,
 		bool recordQuality=true, bool recordContinuity=true);
 
 	void run();
@@ -40,6 +40,7 @@ private:
 
 	std::string inputPath;
 	std::string algoName;
+	std::string updateStrategy;
 	count interval;
 
 	bool recordQuality;
