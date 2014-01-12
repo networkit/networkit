@@ -116,11 +116,11 @@ int main(int argc, char **argv) {
 #ifndef NOLOGGING
 #ifndef NOLOG4CXX
 	if (options[LOGLEVEL]) {
-		Aux::configureLogging(options[LOGLEVEL].arg);
+		Aux::Log::setLogLevel(options[LOGLEVEL].arg);
 	} else {
-		Aux::configureLogging();	// with default level
+		Aux::Log::setLogLevel("ERROR");	// with default level
 	}
-	std::cout << Aux::currentLogLevel() << std::endl;
+	std::cout << Aux::Log::getLogLevel() << std::endl;
 #endif
 #endif
 
