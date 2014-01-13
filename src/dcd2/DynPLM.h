@@ -27,7 +27,7 @@ public:
 	 * 							2m 	-> singleton communities
 	 *
 	 */
-	DynPLM(std::string updateStrategy="isolate", bool refine=false, double gamma = 1.0, std::string par="balanced");
+	DynPLM(std::string prepStrategy="isolate", bool refine=false, double gamma = 1.0, std::string par="balanced");
 
 	void update(std::vector<GraphEvent>& stream) override;
 
@@ -37,7 +37,7 @@ private:
 
 	Clustering run(Graph& G);
 
-	std::string updateStrategy; // determines which dynamization strategy to use
+	std::string prepStrategy; // determines which dynamization strategy to use
 	std::string parallelism;
 	bool refine;
 	double gamma = 1.0;

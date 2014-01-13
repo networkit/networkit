@@ -11,7 +11,7 @@ namespace	 NetworKit {
 
 DynPLM::DynPLM(std::string updateStrategy, bool refine, double gamma,
 		std::string par) :
-		updateStrategy(updateStrategy), parallelism(par), refine(refine), gamma(gamma), plm2(refine, gamma, par) {
+		prepStrategy(prepStrategy), parallelism(par), refine(refine), gamma(gamma), plm2(refine, gamma, par) {
 
 }
 
@@ -23,7 +23,7 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 		zeta[u] = zeta.addCluster();
 	};
 
-	if (updateStrategy == "isolate") {
+	if (prepStrategy == "isolate") {
 		for (GraphEvent ev : stream) {
 			TRACE("event: " << ev.toString());
 			switch (ev.type) {
@@ -59,7 +59,7 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 				}
 			}
 		} // end event loop
-	} else if (updateStrategy == "isolate_neighbors") {
+	} else if (prepStrategy == "isolateNeighbors") {
 		for (GraphEvent ev : stream) {
 			TRACE("event: " << ev.toString());
 			switch (ev.type) {
