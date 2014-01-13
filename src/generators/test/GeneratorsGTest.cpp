@@ -93,9 +93,9 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 
 
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
-	count n = 1600;
-	count numCluster = 16;
-	count maxNumNeighbors = 20;
+	count n = 2400;
+	count numCluster = 15;
+	count maxNumNeighbors = 18;
 	float rad = 0.25;
 
 	PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
@@ -125,6 +125,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	Modularity mod;
 	double modVal = mod.getQuality(clustering, G);
 	EXPECT_GE(modVal, 0.3) << "modularity of clustering";
+	DEBUG("Modularity of clustering: " << modVal);
 }
 
 

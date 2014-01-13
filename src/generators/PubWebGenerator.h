@@ -62,11 +62,10 @@ protected:
 	count numDenseAreas; //!< number of areas with more nodes (denser)
 	float neighRad; //!< neighborhood radius
 	count maxNeigh; //!< maximum number of neighbors
-	std::vector<circle> denseAreaXYR;
-	std::vector<count> numPerArea;
+	std::vector<circle> denseAreaXYR; //!< position of each circular dense area
+	std::vector<count> numPerArea; //!< number of points in each circular area
 
 	void determineNeighbors(Graph& g);
-	void determineNeighborsOf(Graph& g, node u);
 	void moveNodeIntoUnitSquare(float& x, float& y);
 	float squaredDistanceInUnitTorus(float x1, float y1, float x2, float y2);
 	void chooseDenseAreaSizes();

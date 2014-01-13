@@ -75,16 +75,7 @@ bool PubWebGenerator::isValidEdge(Graph& g, node u, node v, edgeweight& weight) 
 	return isValid(u, v, sqrDist);
 }
 
-//void PubWebGenerator::determineNeighborsOf(Graph& g, node u) {
-//	edgeweight ew = 0.0;
-//	g.forNodes([&](node v) {
-//		if (isValidEdge(g, u, v, ew)) {
-//			g.addEdge(u, v, ew);
-//		}
-//	});
-//}
 
-// FIXME: Select up to $k$ _nearest_ neighbors!
 void PubWebGenerator::determineNeighbors(Graph& g) {
 
 	float sqrNeighRad = neighRad * neighRad;
@@ -127,15 +118,6 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
 			}
 		}
 	});
-
-
-
-//	edgeweight ew = 0.0;
-//	g.forNodePairs([&](node u, node v) { // TODO: improve quadratic loop!
-//		if (isValidEdge(g, u, v, ew)) {
-//			g.addEdge(u, v, ew);
-//		}
-//	});
 }
 
 void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {

@@ -143,7 +143,7 @@ void PostscriptWriter::writeClustering(Clustering& clustering,
 });
 
 	/* Knoten zeichnen */
-	float dotsize = 3.6;
+	float dotsize = 2.0;
 	g.forNodes([&](node u) {
 		if (clustering[u] != none) {
 			// change color
