@@ -26,15 +26,9 @@ public:
 
 	void run();
 
-	std::vector<count> getUpdateTimeline();
-
-	std::vector<count> getDetectTimeline();
-
-	std::vector<double> getQualityTimeline();
-
-	std::vector<double> getContinuityTimeline();
-
 	std::vector<std::pair<count, count> > getGraphSizeTimeline();
+
+	std::vector<double> getTimeline(std::string key);
 
 private:
 
@@ -46,8 +40,8 @@ private:
 	std::vector<std::string> recordSettings; // determines which properties to record
 
 	std::vector<double> quality;
-	std::vector<count> updateTime;
-	std::vector<count> detectTime;
+	std::vector<double> updateTime;
+	std::vector<double> detectTime;
 	std::vector<double> continuity;
 	std::vector<std::pair<count, count> > size; // records graph size
 	std::vector<std::vector<count>> communitySizes;
