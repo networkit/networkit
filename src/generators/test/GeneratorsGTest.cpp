@@ -93,10 +93,15 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 
 
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
-	count n = 2400;
-	count numCluster = 15;
-	count maxNumNeighbors = 18;
-	float rad = 0.25;
+//	count n = 2400;
+//	count numCluster = 15;
+//	count maxNumNeighbors = 20;
+//	float rad = 0.25;
+
+	count n = 100;
+	count numCluster = 10;
+	count maxNumNeighbors = 10;
+	float rad = 0.1;
 
 	PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
 	Graph G = gen.generate();
@@ -126,13 +131,14 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	double modVal = mod.getQuality(clustering, G);
 	EXPECT_GE(modVal, 0.3) << "modularity of clustering";
 	DEBUG("Modularity of clustering: " << modVal);
+	DEBUG("Total edge weight: " << G.totalEdgeWeight());
 }
 
 
 // FIXME: segmentation fault
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
-	count numInitialNodes = 300;
+	count numInitialNodes = 400;
 	count numberOfDenseAreas = 10;
 	float neighborhoodRadius = 0.125;
 	count maxNumberOfNeighbors = 16;
