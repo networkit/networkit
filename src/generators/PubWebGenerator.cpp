@@ -56,7 +56,8 @@ PubWebGenerator::~PubWebGenerator() {
 
 }
 
-bool PubWebGenerator::isValidEdge(Graph& g, node u, node v) {
+bool PubWebGenerator::isValidEdge(Graph& g, node u, node v, edgeweight& weight) {
+
 	auto isValid([&](node u, node v, float squaredDistance) {
 		return ((squaredDistance <= neighRad * neighRad)
 				&& (g.degree(u) < maxNeigh)
@@ -69,23 +70,72 @@ bool PubWebGenerator::isValidEdge(Graph& g, node u, node v) {
 	float y2 = g.getCoordinate(v, 1);
 	float sqrDist = squaredDistanceInUnitTorus(x1, y1, x2, y2);
 
+	weight = BASE_WEIGHT /  sqrt(sqrDist);
+
 	return isValid(u, v, sqrDist);
 }
 
-void PubWebGenerator::determineNeighborsOf(Graph& g, node u) {
-	g.forNodes([&](node v) {
-		if (isValidEdge(g, u, v)) {
-			g.addEdge(u, v);
-		}
-	});
-}
+//void PubWebGenerator::determineNeighborsOf(Graph& g, node u) {
+//	edgeweight ew = 0.0;
+//	g.forNodes([&](node v) {
+//		if (isValidEdge(g, u, v, ew)) {
+//			g.addEdge(u, v, ew);
+//		}
+//	});
+//}
 
+// FIXME: Select up to $k$ _nearest_ neighbors!
 void PubWebGenerator::determineNeighbors(Graph& g) {
-	g.forNodePairs([&](node u, node v) { // TODO: improve quadratic loop!
-		if (isValidEdge(g, u, v)) {
-			g.addEdge(u, v);
+
+	float sqrNeighRad = neighRad * neighRad;
+	std::set<edge> eligibleEdges;
+
+	auto isInRange([&](float squaredDistance) {
+		return (squaredDistance <= sqrNeighRad);
+	});
+
+	g.forNodes([&](node u) {
+		std::priority_queue<std::pair<distance, edge> > pq;
+		float x1 = g.getCoordinate(u, 0);
+		float y1 = g.getCoordinate(u, 1);
+
+		// fill PQ with neighbors in range
+		g.forNodes([&](node v) {
+			float x2 = g.getCoordinate(v, 0);
+			float y2 = g.getCoordinate(v, 1);
+			float sqrDist = squaredDistanceInUnitTorus(x1, y1, x2, y2);
+
+			if (isInRange(sqrDist)) {
+				edge e = std::make_pair(std::min(u, v), std::max(u, v));
+				pq.push(std::make_pair(-sqrDist, e));
+			}
+		});
+
+		// mark maxNeigh nearest neighbors as eligible or insert them into graph g
+		for (index i = 0; i < maxNeigh; ++i) {
+			std::pair<distance, edge> currentBest = pq.top();
+			pq.pop();
+
+			if (eligibleEdges.count(currentBest.second) > 0) {
+				// edge is already marked => insert it
+				edgeweight ew = BASE_WEIGHT / -currentBest.first;
+				g.addEdge(currentBest.second.first, currentBest.second.second, ew);
+			}
+			else {
+				// mark edge as eligible
+				eligibleEdges.insert(currentBest.second);
+			}
 		}
 	});
+
+
+
+//	edgeweight ew = 0.0;
+//	g.forNodePairs([&](node u, node v) { // TODO: improve quadratic loop!
+//		if (isValidEdge(g, u, v, ew)) {
+//			g.addEdge(u, v, ew);
+//		}
+//	});
 }
 
 void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {

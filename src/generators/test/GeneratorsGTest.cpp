@@ -93,10 +93,10 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 
 
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
-	count n = 1000;
-	count numCluster = 10;
+	count n = 1600;
+	count numCluster = 16;
 	count maxNumNeighbors = 20;
-	float rad = 0.1;
+	float rad = 0.25;
 
 	PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
 	Graph G = gen.generate();
