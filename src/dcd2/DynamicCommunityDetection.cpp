@@ -130,21 +130,18 @@ void DynamicCommunityDetection::run() {
 
 }
 
-std::vector<count> DynamicCommunityDetection::getUpdateTimeline() {
-	return updateTime;
+std::vector<double> DynamicCommunityDetection::getTimeline(std::string key) {
+	if (key == "updateTime") {
+		return updateTime;
+	} else if (key == "detectTime") {
+		return detectTime;
+	} else if (key == "quality") {
+		return quality;
+	} else if (key == "continuity") {
+		return continuity;
+	}	
 }
 
-std::vector<count> DynamicCommunityDetection::getDetectTimeline() {
-	return detectTime;
-}
-
-std::vector<double> DynamicCommunityDetection::getQualityTimeline() {
-	return quality;
-}
-
-std::vector<double> DynamicCommunityDetection::getContinuityTimeline() {
-	return continuity;
-}
 
 std::vector<std::pair<count, count> > DynamicCommunityDetection::getGraphSizeTimeline() {
 	return size;

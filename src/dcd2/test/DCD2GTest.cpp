@@ -70,7 +70,7 @@ TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLP) {
 	DynamicCommunityDetection dynCD(path, "DynPLP", "isolate", 100);
 	dynCD.run();
 
-	INFO("quality timeline: " << Aux::vectorToString(dynCD.getQualityTimeline()));
+	INFO("quality timeline: " << Aux::vectorToString(dynCD.getTimeline("quality")));
 }
 
 
@@ -80,7 +80,7 @@ TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLM) {
 	DynamicCommunityDetection dynCD(path, "DynPLM", "isolate", 100);
 	dynCD.run();
 
-	INFO("quality timeline: " << Aux::vectorToString(dynCD.getQualityTimeline()));
+	INFO("quality timeline: " << Aux::vectorToString(dynCD.getTimeline("quality")));
 
 }
 
@@ -90,7 +90,7 @@ TEST_F(DCD2GTest, testDynamicCommunityDetectionWithStatic) {
 	DynamicCommunityDetection dynCD(path, "PLP", "isolate", 100);
 	dynCD.run();
 
-	INFO("quality timeline: " << Aux::vectorToString(dynCD.getQualityTimeline()));
+	INFO("quality timeline: " << Aux::vectorToString(dynCD.getTimeline("quality")));
 }
 
 
