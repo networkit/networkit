@@ -103,15 +103,10 @@ void DynamicCommunityDetection::run() {
 		// DEBUG("zeta at time " << G.time() << ": " << Aux::vectorToString(zeta.getVector()));
 
 		if (record("quality")) {
+			DEBUG("recording quality");
 			Modularity mod;
 			quality.push_back(mod.getQuality(zeta, G));
 			INFO("modularity at time " << G.time() << ": " << quality.back());
-		}
-
-		if (record("communitySize")) {
-			std::vector<count> sizes = zeta.clusterSizes();
-			// double avgSize = std::accumulate(sizes.begin(), sizes.end(), 0) / (double) sizes.size();
-			communitySizes.push_back(sizes);
 		}
 
 		if (record("continuity") && (run >= 2)) {
@@ -119,6 +114,20 @@ void DynamicCommunityDetection::run() {
 			double cont = sampledRand.getDissimilarity(G, zeta, previous);
 			continuity.push_back(cont);
 		}
+
+		if (record("communityCount")) {
+			DEBUG("recording community count");
+			communityCount.push_back(zeta.numberOfClusters());
+		}
+
+		if (record("communitySizes")) {
+			DEBUG("recording community sizes");
+			std::vector<count> sizes = zeta.clusterSizes();
+
+			// double avgSize = std::accumulate(sizes.begin(), sizes.end(), 0) / (double) sizes.size();
+			communitySizes.push_back(sizes);
+		}
+
 
 		previous = zeta; // save last solution for next run
 
@@ -139,7 +148,9 @@ std::vector<double> DynamicCommunityDetection::getTimeline(std::string key) {
 		return quality;
 	} else if (key == "continuity") {
 		return continuity;
-	}	
+	} else if (key == "communityCount") {
+		return communityCount;
+	}
 }
 
 

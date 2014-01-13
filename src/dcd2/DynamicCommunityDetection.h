@@ -43,8 +43,12 @@ private:
 	std::vector<double> updateTime;
 	std::vector<double> detectTime;
 	std::vector<double> continuity;
-	std::vector<std::pair<count, count> > size; // records graph size
+
 	std::vector<std::vector<count>> communitySizes;
+	std::vector<double> communityCount;
+
+	std::vector<std::pair<count, count> > size; // records graph size
+
 
 	Clustering previous; // communities from the previous run
 
