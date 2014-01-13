@@ -20,6 +20,10 @@ namespace NetworKit {
 const int MAX_RAND_VAL = 1000;
 const float MAX_DENSE_AREA_RADIUS = 0.35f;
 const float MIN_MAX_DENSE_AREA_FACTOR = 5.0f;
+const edgeweight BASE_WEIGHT = 0.01f;
+
+typedef float distance;
+typedef std::pair<node, node> edge;
 
 
 struct circle {
@@ -70,7 +74,7 @@ protected:
 	void spreadRemainingNodes(Graph& g);
 	void chooseClusterSizes();
 	void addNodesToArea(index area, count num, Graph& g);
-	bool isValidEdge(Graph& g, node u, node v);
+	bool isValidEdge(Graph& g, node u, node v, edgeweight& ew);
 
 public:
 	PubWebGenerator() {} // nullary constructor needed for Python Shell - do not use this to construct instance
