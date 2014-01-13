@@ -8,7 +8,7 @@
 
 namespace NetworKit {
 
-Graph::Graph(): n(0), m(0), z(n), t(0), weighted(false), deg(z, 0), exists(z, true), adja(z), eweights(z) {
+Graph::Graph(): n(0), z(n), t(0), weighted(false), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;
@@ -18,7 +18,7 @@ Graph::Graph(): n(0), m(0), z(n), t(0), weighted(false), deg(z, 0), exists(z, tr
 }
 
 // TODO: z should probably be n-1, but it breaks some tests
-Graph::Graph(count n) : n(n), m(0), z(n), t(0), weighted(false), deg(z, 0), exists(z, true), adja(z), eweights(z) {
+Graph::Graph(count n) : n(n), z(n), t(0), weighted(false), exists(z, true), adja(z), eweights(z) {
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;
@@ -50,7 +50,6 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 
 	if (u == v) { // self-loop case
 		this->adja[u].push_back(u);
-		this->deg[u] += 1;
 		this->eweights[u].push_back(weight);
 		for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
 			double defaultAttr = this->edgeAttrDefaults_double[attrId];
@@ -61,8 +60,6 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 		this->adja[u].push_back(v);
 		this->adja[v].push_back(u);
 		// increment degree counters
-		this->deg[u] += 1;
-		this->deg[v] += 1;
 		// set edge weight
 		this->eweights[u].push_back(weight);
 		this->eweights[v].push_back(weight);
@@ -74,7 +71,6 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 		}
 	}
 
-	m++; // increasing the number of edges
 }
 
 void Graph::removeEdge(node u, node v) {
@@ -90,18 +86,10 @@ void Graph::removeEdge(node u, node v) {
 	} else {
 		this->adja[u][vi] = none;
 		this->adja[v][ui] = none;
-		// decrement degree counters
-		this->deg[u] -= 1;
-		if (u != v) { // self-loops are counted only once
-			this->deg[v] -= 1;
-		}
 		// remove edge weight
 		this->eweights[u][vi] = this->nullWeight;
 		this->eweights[v][ui] = this->nullWeight;
 		// TODO: remove attributes
-
-		m--; // decreasing the number of edges
-
 	}
 }
 
@@ -154,7 +142,6 @@ node Graph::addNode() {
 	this->n += 1;	// increment node count
 
 	//update per node data structures
-	this->deg.push_back(0);
 	this->exists.push_back(true);
 
 	// update per edge data structures
@@ -192,7 +179,13 @@ count Graph::numberOfNodes() const {
 count Graph::degree(node v) const {
 	assert (v >= 0);
 	assert (v <= this->z); // node ids must be in range
-	return deg[v];
+	count k = 0;
+	for (node u : this->adja[v]) {
+		if (u != none) {
+			k += 1;
+		}
+	}
+	return k;
 }
 
 edgeweight Graph::weightedDegree(node v) const {
@@ -214,7 +207,9 @@ edgeweight Graph::volume(node v) const {
 
 
 count Graph::numberOfEdges() const {
-	// returns a field which is updated on addEdge() and removeEdge()
+	count m =  this->parallelSumForEdges([](node u, node v){
+		return 1;
+	});
 	return m;
 }
 
