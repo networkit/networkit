@@ -34,7 +34,7 @@ TEST_F(DCD2GTest, testDynPLP) {
 	DGSStreamParser parser("input/example2.dgs");
 	std::vector<GraphEvent> stream = parser.getStream();
 	Graph G;
-	DynPLP dynPLP(0);
+	DynPLP dynPLP;
 	dynPLP.attachGraph(G);
 
 	GraphUpdater gu(G);
@@ -82,7 +82,7 @@ TEST_F(DCD2GTest, testDynPLM) {
 	DGSStreamParser parser("input/example2.dgs");
 	std::vector<GraphEvent> stream = parser.getStream();
 	Graph G;
-	DynPLM dynPLM(0);
+	DynPLM dynPLM;
 	dynPLM.attachGraph(G);
 
 	GraphUpdater gu(G);
