@@ -113,7 +113,7 @@ bool Clustering::isInRange(node v) {
 
 bool Clustering::contains(node v) {
 	// assert (this->isInRange(v));	// assume that node is in range
-	return (this->data[v] != this->defaultValue); // check if node is assigned to cluster, i.e. entry is not null
+	return (this->isInRange(v)) && (this->data[v] != this->defaultValue); // check if node is assigned to cluster, i.e. entry is not null
 }
 
 void Clustering::setName(std::string name) {
