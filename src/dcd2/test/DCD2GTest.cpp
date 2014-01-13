@@ -47,6 +47,36 @@ TEST_F(DCD2GTest, testDynPLP) {
 
 }
 
+TEST_F(DCD2GTest, testDynPLPPrepStrategies) {
+	DGSStreamParser parser("input/example2.dgs");
+	std::vector<GraphEvent> stream = parser.getStream();
+
+	Graph G;
+	DynPLP dynPLP("isolate", 0);
+	dynPLP.attachGraph(G);
+
+	GraphUpdater gu(G);
+	gu.update(stream);
+
+	dynPLP.update(stream);
+	Clustering zeta = dynPLP.detect();
+
+	EXPECT_TRUE(zeta.isProper(G));
+
+	Graph G2;
+	DynPLP dynPLP2("isolateNeighbors", 0);
+	dynPLP2.attachGraph(G2);
+
+	GraphUpdater gu2(G2);
+	gu2.update(stream);
+
+	dynPLP2.update(stream);
+	Clustering zeta2 = dynPLP2.detect();
+
+	EXPECT_TRUE(zeta2.isProper(G));
+
+}
+
 
 TEST_F(DCD2GTest, testDynPLM) {
 	DGSStreamParser parser("input/example2.dgs");

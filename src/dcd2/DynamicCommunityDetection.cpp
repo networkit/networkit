@@ -150,6 +150,9 @@ std::vector<double> DynamicCommunityDetection::getTimeline(std::string key) {
 		return continuity;
 	} else if (key == "communityCount") {
 		return communityCount;
+	} else {
+		throw std::runtime_error("unknown timeline key");
+		return {};
 	}
 }
 
