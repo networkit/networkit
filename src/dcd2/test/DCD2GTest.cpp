@@ -95,6 +95,37 @@ TEST_F(DCD2GTest, testDynPLM) {
 }
 
 
+TEST_F(DCD2GTest, testDynPLMPrepStrategies) {
+	DGSStreamParser parser("input/example2.dgs");
+	std::vector<GraphEvent> stream = parser.getStream();
+
+	Graph G;
+	DynPLM dynPLM("isolate", 0);
+	dynPLM.attachGraph(G);
+
+	GraphUpdater gu(G);
+	gu.update(stream);
+
+	dynPLM.update(stream);
+	Clustering zeta = dynPLM.detect();
+
+	EXPECT_TRUE(zeta.isProper(G));
+
+	Graph G2;
+	DynPLM dynPLM2("isolateNeighbors", 0);
+	dynPLM2.attachGraph(G2);
+
+	GraphUpdater gu2(G2);
+	gu2.update(stream);
+
+	dynPLM2.update(stream);
+	Clustering zeta2 = dynPLM2.detect();
+
+	EXPECT_TRUE(zeta2.isProper(G));
+
+}
+
+
 TEST_F(DCD2GTest, testDynamicCommunityDetectionWithPLP) {
 	std::string path = "input/arxiv-qfin-author.dgs";
 	DynamicCommunityDetection dynCD(path, "DynPLP", "isolate", 100);
