@@ -9,9 +9,9 @@
 
 namespace	 NetworKit {
 
-DynPLM::DynPLM(std::string updateStrategy, bool refine, double gamma,
+DynPLM::DynPLM(std::string prepStrategy, bool refine, double gamma,
 		std::string par) :
-		updateStrategy(updateStrategy), parallelism(par), refine(refine), gamma(gamma), plm2(refine, gamma, par) {
+		prepStrategy(prepStrategy), parallelism(par), refine(refine), gamma(gamma), plm2(refine, gamma, par) {
 
 }
 
@@ -20,10 +20,12 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 
 	// turn a node into a singleton
 	auto isolate = [&](node u) {
+		TRACE("isolating " << u);
 		zeta[u] = zeta.addCluster();
+		TRACE("by creating singleton " << zeta[u]);
 	};
 
-	if (updateStrategy == "isolate") {
+	if (prepStrategy == "isolate") {
 		for (GraphEvent ev : stream) {
 			TRACE("event: " << ev.toString());
 			switch (ev.type) {
@@ -59,11 +61,21 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 				}
 			}
 		} // end event loop
-	} else if (updateStrategy == "isolate_neighbors") {
+	} else if (prepStrategy == "isolateNeighbors") {
+
+		// turn a node into a singleton
+		auto tryIsolate = [&](node u) {
+			if (zeta.contains(u)) {
+				zeta[u] = zeta.addCluster();
+			}
+		};
+
 		for (GraphEvent ev : stream) {
 			TRACE("event: " << ev.toString());
+			TRACE("zeta: " << Aux::vectorToString(zeta.getVector()));
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
+					// FIXME: segmentation fault 
 					zeta.append(ev.u);
 					isolate(ev.u);
 					break;
@@ -76,10 +88,10 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					break;
 				}
@@ -87,10 +99,10 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					break;
 				}
@@ -98,10 +110,10 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					break;
 				}
@@ -113,6 +125,9 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 				}
 			}
 		} // end event loop
+	} else {
+		ERROR("unknown prep strategy" << prepStrategy);
+		throw std::runtime_error("unknown prep strategy");
 	}
 }
 
@@ -129,7 +144,7 @@ Clustering DynPLM::run(Graph& G) {
 
 
 	// init community-dependent temporaries
-	// 
+	DEBUG("initializing community volume map");
 	std::map<cluster, double> volCommunity; // a map to save memory
 	zeta.forEntries([&](node u, cluster C) { 	// set volume for all communities
 		volCommunity[C] += G.volume(u);
@@ -140,12 +155,15 @@ Clustering DynPLM::run(Graph& G) {
 
 	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
-		// TRACE("trying to move node " << u);
+		TRACE("trying to move node " << u);
+
+		TRACE("zeta: " << Aux::vectorToString(zeta.getVector()));
 		// collect edge weight to neighbor clusters
 		std::map<cluster, edgeweight> affinity;
 		G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
 			if (u != v) {
-				cluster C = zeta[v];
+				TRACE(u << " " << v);
+				cluster C = zeta[v]; // FIXME: zeta[v] does not exist
 				affinity[C] += weight;
 			}
 		});
@@ -187,12 +205,12 @@ Clustering DynPLM::run(Graph& G) {
 
 		C = zeta[u];
 
-//			TRACE("Processing neighborhood of node " << u << ", which is in cluster " << C);
+		TRACE("Processing neighborhood of node " << u << ", which is in cluster " << C);
 		G.forNeighborsOf(u, [&](node v) {
 			D = zeta[v];
 			if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 				double delta = modGain(u, C, D);
-				// TRACE("mod gain: " << delta); // FIXME: all mod gains are negative
+				TRACE("mod gain: " << delta);
 				if (delta > deltaBest) {
 					deltaBest = delta;
 					best = D;
@@ -200,7 +218,7 @@ Clustering DynPLM::run(Graph& G) {
 			}
 		});
 
-		// TRACE("deltaBest=" << deltaBest); // FIXME: best mod gain is negative
+		TRACE("deltaBest=" << deltaBest); // FIXME: best mod gain is negative
 		if (deltaBest > 0) { // if modularity improvement possible
 			assert (best != C && best != none);// do not "move" to original cluster
 			zeta[u] = best; // move to best cluster
@@ -216,6 +234,7 @@ Clustering DynPLM::run(Graph& G) {
 	// first move phase
 
 	// apply node movement according to parallelization strategy
+	DEBUG("starting move phase");
 	if (this->parallelism == "none") {
 		G.forNodes(tryMove);
 	} else if (this->parallelism == "simple") {

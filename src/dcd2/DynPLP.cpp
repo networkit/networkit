@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-DynPLP::DynPLP(count theta) : updateThreshold(theta) {
+DynPLP::DynPLP(std::string prepStrategy, count theta) : prepStrategy(prepStrategy), updateThreshold(theta) {
 
 }
 
@@ -20,43 +20,103 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 		activeNodes[u] = true;
 	};
 
-	for (GraphEvent ev : stream) {
-		// TODO: remove trace
-		TRACE("event: " << ev.toString());
-		switch (ev.type) {
-			case GraphEvent::NODE_ADDITION : {
-				zeta.append(ev.u);
-				activeNodes.push_back(true);
-				zeta[ev.u] = zeta.addCluster();
-				break;
+	if (prepStrategy == "isolate") {
+		for (GraphEvent ev : stream) {
+			// TODO: remove trace
+			TRACE("event: " << ev.toString());
+			switch (ev.type) {
+				case GraphEvent::NODE_ADDITION : {
+					zeta.append(ev.u);
+					activeNodes.push_back(true);
+					zeta[ev.u] = zeta.addCluster();
+					break;
+				}
+				case GraphEvent::NODE_REMOVAL : {
+					zeta[ev.u] = none;
+					break;
+				}
+				case GraphEvent::EDGE_ADDITION : {
+					isolate(ev.u);
+					isolate(ev.v);
+					break;
+				}
+				case GraphEvent::EDGE_REMOVAL : {
+					isolate(ev.u);
+					isolate(ev.v);
+					break;
+				}
+				case GraphEvent::EDGE_WEIGHT_UPDATE : {
+					isolate(ev.u);
+					isolate(ev.v);
+					break;
+				}
+				case GraphEvent::TIME_STEP : {
+					break;
+				}
+				default: {
+					throw std::runtime_error("unknown event type");
+				}
 			}
-			case GraphEvent::NODE_REMOVAL : {
-				zeta[ev.u] = none;
-				break;
+		} // end event loop
+	} else if (prepStrategy == "isolateNeighbors") {
+		for (GraphEvent ev : stream) {
+			TRACE("event: " << ev.toString());
+			switch (ev.type) {
+				case GraphEvent::NODE_ADDITION : {
+					zeta.append(ev.u);
+					activeNodes.push_back(true);
+					isolate(ev.u);
+					break;
+				}
+				case GraphEvent::NODE_REMOVAL : {
+					zeta[ev.u] = none;
+					break;
+				}
+				case GraphEvent::EDGE_ADDITION : {
+					isolate(ev.u);
+					isolate(ev.v);
+					G->forNeighborsOf(ev.u, [&](node v) {
+						isolate(v);
+					});
+					G->forNeighborsOf(ev.v, [&](node v) {
+						isolate(v);
+					});
+					break;
+				}
+				case GraphEvent::EDGE_REMOVAL : {
+					isolate(ev.u);
+					isolate(ev.v);
+					G->forNeighborsOf(ev.u, [&](node v) {
+						isolate(v);
+					});
+					G->forNeighborsOf(ev.v, [&](node v) {
+						isolate(v);
+					});
+					break;
+				}
+				case GraphEvent::EDGE_WEIGHT_UPDATE : {
+					isolate(ev.u);
+					isolate(ev.v);
+					G->forNeighborsOf(ev.u, [&](node v) {
+						isolate(v);
+					});
+					G->forNeighborsOf(ev.v, [&](node v) {
+						isolate(v);
+					});
+					break;
+				}
+				case GraphEvent::TIME_STEP : {
+					break;
+				}
+				default: {
+					throw std::runtime_error("unknown event type");
+				}
 			}
-			case GraphEvent::EDGE_ADDITION : {
-				isolate(ev.u);
-				isolate(ev.v);
-				break;
-			}
-			case GraphEvent::EDGE_REMOVAL : {
-				isolate(ev.u);
-				isolate(ev.v);
-				break;
-			}
-			case GraphEvent::EDGE_WEIGHT_UPDATE : {
-				isolate(ev.u);
-				isolate(ev.v);
-				break;
-			}
-			case GraphEvent::TIME_STEP : {
-				break;
-			}
-			default: {
-				throw std::runtime_error("unknown event type");
-			}
-		}
-	} // end event loop
+		} // end event loop
+	} else {
+		ERROR("unknown prep strategy: " << prepStrategy);
+		throw std::runtime_error("unknown prep strategy");
+	}
 }
 
 Clustering DynPLP::detect() {
