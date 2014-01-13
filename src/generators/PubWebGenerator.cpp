@@ -11,16 +11,6 @@
 
 namespace NetworKit {
 
-// FIXME: change to constants
-#define THRSH_CENTER_ITER 10
-#define ONE_DIM_SCALE 0.0f
-#define MAX_RAND_VAL 1000
-#define BENEFIT_INC 0.25f
-#define PI 3.141f
-#define MAX_DENSE_AREA_RADIUS 0.25f
-#define MIN_MAX_DENSE_AREA_FACTOR 5 // ###
-#define PART_CHANGE_FACTOR 0.0001f
-#define INIT_LOAD 100.0f
 
 void PubWebGenerator::moveNodeIntoUnitSquare(float& x, float& y) {
 	auto move([&](float& z) {
@@ -54,27 +44,23 @@ float PubWebGenerator::squaredDistanceInUnitTorus(float x1, float y1, float x2,
 	return (distx * distx + disty * disty);
 }
 
-PubWebGenerator::PubWebGenerator() {
-}
-
 
 PubWebGenerator::PubWebGenerator(count numNodes, count numberOfDenseAreas,
 		float neighborhoodRadius, count maxNumberOfNeighbors) :
 		n(numNodes), numDenseAreas(numberOfDenseAreas), neighRad(
 				neighborhoodRadius), maxNeigh(maxNumberOfNeighbors) {
-	// TODO Auto-generated constructor stub
 
 }
 
 PubWebGenerator::~PubWebGenerator() {
-	// TODO Auto-generated destructor stub
+
 }
 
 bool PubWebGenerator::isValidEdge(Graph& g, node u, node v) {
 	auto isValid([&](node u, node v, float squaredDistance) {
 		return ((squaredDistance <= neighRad * neighRad)
-				&& (g.degree(u) <= maxNeigh)
-				&& (g.degree(v) <= maxNeigh));
+				&& (g.degree(u) < maxNeigh)
+				&& (g.degree(v) < maxNeigh));
 	});
 
 	float x1 = g.getCoordinate(u, 0);
@@ -106,7 +92,7 @@ void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
 
 	for (index j = 0; j < num; ++j) {
 		// compute random angle between [0, 2pi) and distance between [0, width/2]
-		float angle = Aux::Random::real() * 2.0 * PI;
+		float angle = Aux::Random::real() * 2.0 * M_PI;
 		float dist = Aux::Random::real() * denseAreaXYR[area].rad;
 
 		// compute coordinates and adjust them

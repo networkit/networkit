@@ -9,9 +9,18 @@
 #define PUBWEBGENERATOR_H_
 
 #include "StaticGraphGenerator.h"
+
+#define _USE_MATH_DEFINES // to be able to use M_PI
 #include <cmath>
 
+
+
 namespace NetworKit {
+
+const int MAX_RAND_VAL = 1000;
+const float MAX_DENSE_AREA_RADIUS = 0.35f;
+const float MIN_MAX_DENSE_AREA_FACTOR = 5.0f;
+
 
 struct circle {
 	float x;
@@ -20,7 +29,25 @@ struct circle {
 };
 
 /**
- * TODO: class description
+ * Generates a static graph that resembles an assumed geometric distribution of nodes in
+ * a P2P network. The basic structure is to distribute points randomly in the unit torus
+ * and to connect vertices close to each other (at most @a neighRad distance and none of
+ * them already has @a maxNeigh neighbors). The distribution is chosen to get some areas with
+ * high density and others with low density. There are @a numDenseAreas dense areas, which can
+ * overlap. Each area is circular, has a certain position and radius and number of points.
+ * These values are strored in @a denseAreaXYR and @a numPerArea, respectively.
+ *
+ * Used and described in more detail in J. Gehweiler, H. Meyerhenke: A Distributed
+ * Diffusive Heuristic for Clustering a Virtual P2P Supercomputer. In Proc. 7th High-Performance
+ * Grid Computing Workshop (HPGC'10), in conjunction with 24th IEEE Internatl. Parallel and
+ * Distributed Processing Symposium (IPDPS'10), IEEE, 2010.
+ *
+ * Reasonable parameters for constructor:
+ * - numNodes: up to a few thousand (possibly more if visualization is not desired and quadratic
+ *   time complexity has been resolved)
+ * - numberOfDenseAreas: [10, 50]
+ * - neighborhoodRadius: [0.1, 0.35]
+ * - maxNumberOfNeighbors: [4, 40]
  */
 class PubWebGenerator: public NetworKit::StaticGraphGenerator {
 
@@ -46,9 +73,8 @@ protected:
 	bool isValidEdge(Graph& g, node u, node v);
 
 public:
-	PubWebGenerator(); // nullary constructor needed for Python Shell - do not use this to construct instance
+	PubWebGenerator() {} // nullary constructor needed for Python Shell - do not use this to construct instance
 
-	// TODO: provide reasonable default parameters in documentation or as default arguments to constructor
 	PubWebGenerator(count numNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors);
 	virtual ~PubWebGenerator();

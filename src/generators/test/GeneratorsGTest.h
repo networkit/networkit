@@ -19,12 +19,14 @@
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../community/PLP.h"
+#include "../../community/PLM2.h"
 #include "../../io/METISGraphWriter.h"
 #include "../../io/DotGraphWriter.h"
 #include "../BarabasiAlbertGenerator.h"
 #include "../../io/GraphIO.h"
 #include "../../io/METISGraphReader.h"
 #include "../../properties/GraphProperties.h"
+#include "../../clustering/Modularity.h"
 
 namespace NetworKit {
 
