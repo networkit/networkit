@@ -20,7 +20,9 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 
 	// turn a node into a singleton
 	auto isolate = [&](node u) {
+		TRACE("isolating " << u);
 		zeta[u] = zeta.addCluster();
+		TRACE("by creating singleton " << zeta[u]);
 	};
 
 	if (prepStrategy == "isolate") {
@@ -60,10 +62,20 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 			}
 		} // end event loop
 	} else if (prepStrategy == "isolateNeighbors") {
+
+		// turn a node into a singleton
+		auto tryIsolate = [&](node u) {
+			if (zeta.contains(u)) {
+				zeta[u] = zeta.addCluster();
+			}
+		};
+
 		for (GraphEvent ev : stream) {
 			TRACE("event: " << ev.toString());
+			TRACE("zeta: " << Aux::vectorToString(zeta.getVector()));
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
+					// FIXME: segmentation fault 
 					zeta.append(ev.u);
 					isolate(ev.u);
 					break;
@@ -76,10 +88,10 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					break;
 				}
@@ -87,10 +99,10 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					break;
 				}
@@ -98,10 +110,10 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					break;
 				}
