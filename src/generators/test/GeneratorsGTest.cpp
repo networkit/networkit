@@ -92,25 +92,42 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 }
 
 
-
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
-	count n = 800;
-	count numCluster = 40;
-	count maxNumNeighbors = 20;
-	float rad = 0.125;
+	count n = 2400;
+	count numCluster = 15;
+	count maxNumNeighbors = 18;
+	float rad = 0.25;
 
 	PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
 	Graph G = gen.generate();
 
 	EXPECT_EQ(n, G.numberOfNodes()) << "number of generated nodes";
 
-	PLP lp;
-	Clustering clustering = lp.run(G);
+	// check degree
+	G.forNodes([&](node v) {
+		EXPECT_LE(G.degree(v), maxNumNeighbors) << "maximum degree";
+	});
+
+	// 1-clustering
+	ClusteringGenerator clusterGen;
+	Clustering oneClustering = clusterGen.makeOneClustering(G);
 
 	// output to EPS file
 	PostscriptWriter psWriter(G, true);
-	psWriter.write(clustering, "output/pubweb-lp-cluster.eps");
+	psWriter.write(oneClustering, "output/pubweb.eps");
+
+	// clustering
+	PLM2 clusterAlgo;
+	Clustering clustering = clusterAlgo.run(G);
+	PostscriptWriter psWriter2(G, true);
+	psWriter2.write(clustering, "output/pubweb-clustered-plm2.eps");
+
+	Modularity mod;
+	double modVal = mod.getQuality(clustering, G);
+	EXPECT_GE(modVal, 0.3) << "modularity of clustering";
+	DEBUG("Modularity of clustering: " << modVal);
 }
+
 
 // FIXME: segmentation fault
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
