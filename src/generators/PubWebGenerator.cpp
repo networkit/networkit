@@ -103,7 +103,8 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
 		});
 
 		// mark maxNeigh nearest neighbors as eligible or insert them into graph g
-		for (index i = 0; i < maxNeigh; ++i) {
+		count end = std::min(maxNeigh, (count) pq.size());
+		for (index i = 0; i < end; ++i) {
 			std::pair<distance, edge> currentBest = pq.top();
 			pq.pop();
 
