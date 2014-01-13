@@ -113,6 +113,9 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 				}
 			}
 		} // end event loop
+	} else {
+		ERROR("unknown prep strategy: " << prepStrategy);
+		throw std::runtime_error("unknown prep strategy");
 	}
 }
 
