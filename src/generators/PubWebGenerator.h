@@ -47,11 +47,12 @@ struct circle {
  * Distributed Processing Symposium (IPDPS'10), IEEE, 2010.
  *
  * Reasonable parameters for constructor:
- * - numNodes: up to a few thousand (possibly more if visualization is not desired and quadratic
- *   time complexity has been resolved)
- * - numberOfDenseAreas: [10, 50]
- * - neighborhoodRadius: [0.1, 0.35]
- * - maxNumberOfNeighbors: [4, 40]
+ * - numNodes: from several hundred up to a few thousand
+ *   (possibly more if visualization is not desired and quadratic time
+ *   complexity has been resolved)
+ * - numberOfDenseAreas: depending on number of nodes, e.g. [8, 50]
+ * - neighborhoodRadius: the higher, the better the connectivity [0.1, 0.35]
+ * - maxNumberOfNeighbors: maximum degree, a higher value corresponds to better connectivity [4, 40]
  */
 class PubWebGenerator: public NetworKit::StaticGraphGenerator {
 
