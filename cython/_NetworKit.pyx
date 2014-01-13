@@ -109,6 +109,7 @@ cdef extern from "../src/graph/Graph.h":
 		bool isMarkedAsWeighted() except +
 		string toString() except +
 		string getName() except +
+		edgeweight totalEdgeWeight() except +
 		
 
 cdef class Graph:
@@ -172,6 +173,9 @@ cdef class Graph:
 
 	def getName(self):
 		return self._this.getName()
+
+	def totalEdgeWeight(self):
+		return self._this.totalEdgeWeight()
 
 
 cdef class Graph2:
@@ -319,6 +323,43 @@ cdef class BarabasiAlbertGenerator:
 
 	def generate(self):
 		return Graph().setThis(self._this.generate());
+
+
+cdef extern from "../src/generators/PubWebGenerator.h":
+	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator":
+		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
+		_Graph generate() except +
+
+cdef class PubWebGenerator:
+	"""
+	 Generates a static graph that resembles an assumed geometric distribution of nodes in
+	 a P2P network. The basic structure is to distribute points randomly in the unit torus
+	 and to connect vertices close to each other (at most @a neighRad distance and none of
+	 them already has @a maxNeigh neighbors). The distribution is chosen to get some areas with
+	 high density and others with low density. There are @a numDenseAreas dense areas, which can
+	 overlap. Each area is circular, has a certain position and radius and number of points.
+	 These values are strored in @a denseAreaXYR and @a numPerArea, respectively.
+
+	 Used and described in more detail in J. Gehweiler, H. Meyerhenke: A Distributed
+	 Diffusive Heuristic for Clustering a Virtual P2P Supercomputer. In Proc. 7th High-Performance
+	 Grid Computing Workshop (HPGC'10), in conjunction with 24th IEEE Internatl. Parallel and
+	 Distributed Processing Symposium (IPDPS'10), IEEE, 2010.
+
+	 Reasonable parameters for constructor:
+	 - numNodes: up to a few thousand (possibly more if visualization is not desired and quadratic
+	   time complexity has been resolved)
+	 - numberOfDenseAreas: [10, 50]
+	 - neighborhoodRadius: [0.1, 0.35]
+	 - maxNumberOfNeighbors: [4, 40]
+	"""
+	cdef _PubWebGenerator* _this
+
+	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
+		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
 
 
 

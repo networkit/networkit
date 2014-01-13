@@ -84,6 +84,8 @@ public:
 
 	virtual Graph generate();
 
+protected:
+
 	/**
 	 * Adds nodes randomly, distribution respects original one.
 	 */

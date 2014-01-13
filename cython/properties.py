@@ -121,19 +121,6 @@ def properties(nkG, settings):
 	# density
 	dens = density(nkG)
 
-	# diameter
-	dia = None
-	if settings["diameter"] and (n < 1000):
-		logging.info("calculating diameter...")
-		dia = nx.diameter(nxG)
-
-
-	# calculate eccentricity
-	ecc = None
-	if settings["eccentricity"] and (n < 1000):
-		logging.info("calculating eccentricity...")
-		eccentricities = nx.eccentricity(nxG)
-		ecc = sum(val for val in eccentricities.values()) / n
 
 
 	# community detection
@@ -168,6 +155,21 @@ def properties(nkG, settings):
 	if settings["components"]:
 		logging.info("[...] finding connected components")    
 		nComponents, componentSizes = components(nkG)
+
+	# diameter
+	dia = None
+	if settings["diameter"] and (n < 1000) and (nComponents is 1):
+		logging.info("calculating diameter...")
+		dia = nx.diameter(nxG)
+
+
+	# calculate eccentricity
+	ecc = None
+	if settings["eccentricity"] and (n < 1000) and (nComponents is 1):
+		logging.info("calculating eccentricity...")
+		eccentricities = nx.eccentricity(nxG)
+		ecc = sum(val for val in eccentricities.values()) / n
+
 
 	# clustering
 	avglcc = None
