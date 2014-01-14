@@ -39,6 +39,7 @@ private:
 
 	std::vector<std::string> recordSettings; // determines which properties to record
 
+	std::vector<double> step; // time steps
 	std::vector<double> quality;
 	std::vector<double> updateTime;
 	std::vector<double> detectTime;

@@ -101,6 +101,10 @@ void DynamicCommunityDetection::run() {
 
 		DEBUG("upper community id bound: " << zeta.upperBound());
 		// DEBUG("zeta at time " << G.time() << ": " << Aux::vectorToString(zeta.getVector()));
+		// 
+		
+		// record time step
+		step.push_back(G.time());
 
 		if (record("quality")) {
 			DEBUG("recording quality");
@@ -109,10 +113,16 @@ void DynamicCommunityDetection::run() {
 			INFO("modularity at time " << G.time() << ": " << quality.back());
 		}
 
-		if (record("continuity") && (run >= 2)) {
-			SampledRandMeasure sampledRand(1000);
-			double cont = sampledRand.getDissimilarity(G, zeta, previous);
-			continuity.push_back(cont);
+		if (record("continuity")) {
+
+			if (run >= 2) {
+				SampledRandMeasure sampledRand(1000);
+				double cont = sampledRand.getDissimilarity(G, zeta, previous);
+				continuity.push_back(cont);
+			} else {
+				continuity.push_back(0.0); // to make timelines the same length
+			}
+
 		}
 
 		if (record("communityCount")) {
@@ -150,6 +160,8 @@ std::vector<double> DynamicCommunityDetection::getTimeline(std::string key) {
 		return continuity;
 	} else if (key == "communityCount") {
 		return communityCount;
+	} else if (key == "step") {
+		return step;
 	} else {
 		throw std::runtime_error("unknown timeline key");
 		return {};
