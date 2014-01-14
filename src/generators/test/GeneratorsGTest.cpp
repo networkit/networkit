@@ -9,6 +9,8 @@ Dy * GeneratorsTest.cpp
 
 #include "GeneratorsGTest.h"
 
+#include "../DynamicPathGenerator.h"
+
 namespace NetworKit {
 
 GeneratorsGTest::GeneratorsGTest() {
@@ -197,6 +199,15 @@ TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 		GraphIO io;
 		io.writeAdjacencyList(G, "output/"
 				"BarabasiGraph.txt");
+}
+
+
+TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
+	DynamicPathGenerator gen;
+	auto stream = gen.generate(42);
+	for (auto ev : stream) {
+		TRACE(ev.toString());
+	}
 }
 
 
