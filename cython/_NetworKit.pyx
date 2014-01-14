@@ -928,6 +928,11 @@ cdef class DynamicCommunityDetection:
 		return self._this.getGraphSizeTimeline()
 
 
+cdef extern from "../src/generators/DynamicPathGenerator.h":
+	cdef cppclass _DynamicPathGenerator "NetworKit::DynamicPathGenerator":
+		_DynamicPathGenerator() except +
+		# TODO: stream
+
 
 
 
