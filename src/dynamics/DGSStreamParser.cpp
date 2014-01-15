@@ -58,6 +58,7 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 			TRACE(line);
 			lc++;
 			std::vector<std::string> split = Aux::StringTools::split(line);
+			TRACE("split line: " << Aux::vectorToString(split));
 			std::string tag = split[0];
 
 			// TODO: remove TRACE
@@ -73,7 +74,10 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 			} else if (tag.compare("ae") == 0) { // add edge
 				node u = map(split[2]);
 				node v = map(split[3]);
-				edgeweight w = std::stod(Aux::StringTools::split(split[4], '=')[1]); // weight=<w>
+				edgeweight w = 1.0;
+				if (split.size() >= 5) {
+					w = std::stod(Aux::StringTools::split(split[4], '=')[1]); // weight=<w>
+				}
 				auto ev = GraphEvent(GraphEvent::EDGE_ADDITION, u, v, w);
 				TRACE(ev.toString());
 				stream.push_back(ev);
