@@ -5,15 +5,15 @@
  *      Author: Henning
  */
 
-#ifndef DYNAMICPUBWEBGENERATOR_H_
-#define DYNAMICPUBWEBGENERATOR_H_
+#ifndef DYNAMICPUBWEBGENERATOR_OLD_H_
+#define DYNAMICPUBWEBGENERATOR_OLD_H_
 
 #include "DynamicGraphSource.h"
 #include "PubWebGenerator.h"
 
 namespace NetworKit {
 
-class DynamicPubWebGenerator: public DynamicGraphSource {
+class DynamicPubWebGeneratorOld: public DynamicGraphSource {
 protected:
 //	PubWebGenerator staticGen;
 
@@ -31,9 +31,9 @@ protected:
 	void moveNodesRandomly();
 
 public:
-	DynamicPubWebGenerator(count numInitialNodes, count numberOfDenseAreas,
+	DynamicPubWebGeneratorOld(count numInitialNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors);
-	virtual ~DynamicPubWebGenerator();
+	virtual ~DynamicPubWebGeneratorOld();
 
 	/**
 	 * The generator may expect the graph to be in a certain initial state. Call this method first.

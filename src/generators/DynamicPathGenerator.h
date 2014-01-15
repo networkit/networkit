@@ -9,6 +9,7 @@
 #define DYNAMICPATHGENERATOR_H_
 
 #include "DynamicGraphGenerator.h"
+#include <map>
 
 namespace NetworKit {
 

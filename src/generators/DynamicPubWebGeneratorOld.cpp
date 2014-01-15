@@ -5,25 +5,25 @@
  *      Author: Henning
  */
 
-#include "DynamicPubWebGenerator.h"
+#include "DynamicPubWebGeneratorOld.h"
 
 namespace NetworKit {
 
-DynamicPubWebGenerator::DynamicPubWebGenerator(count numInitialNodes,
+DynamicPubWebGeneratorOld::DynamicPubWebGeneratorOld(count numInitialNodes,
 		count numberOfDenseAreas, float neighborhoodRadius,
 		count maxNumberOfNeighbors) :
 		DynamicGraphSource() {
 	// FIXME: init member variables
 }
 
-DynamicPubWebGenerator::~DynamicPubWebGenerator() {
+DynamicPubWebGeneratorOld::~DynamicPubWebGeneratorOld() {
 	// TODO Auto-generated destructor stub
 }
 
 /**
  * Assumption: Static PubWeb graph already exists.
  */
-void DynamicPubWebGenerator::initializeGraph() {
+void DynamicPubWebGeneratorOld::initializeGraph() {
 	// add vertices according to PubWeb distribution
 	// TODO: disable comment
 //	this->chooseDenseAreaSizes();
@@ -83,7 +83,7 @@ void Move(int V, float vmin, float vmax, int stop, float * xy, float * way, floa
 }
 #endif
 
-void DynamicPubWebGenerator::moveNodesRandomly() {
+void DynamicPubWebGeneratorOld::moveNodesRandomly() {
 #if 0
 	Aux::RandomProbability randGen;
 
@@ -112,7 +112,7 @@ void DynamicPubWebGenerator::moveNodesRandomly() {
 #endif
 }
 
-void DynamicPubWebGenerator::generate() {
+void DynamicPubWebGeneratorOld::generate() {
 #if 0
 	// nodes move to new position
 	moveNodesRandomly();
@@ -154,7 +154,7 @@ void DynamicPubWebGenerator::generate() {
 #define PART_CHANGE_FACTOR 0.0001f
 #define INIT_LOAD 100.0f
 
-void DynamicPubWebGenerator::moveNodeIntoUnitSquare(float& x, float& y) {
+void DynamicPubWebGeneratorOld::moveNodeIntoUnitSquare(float& x, float& y) {
 	auto move([&](float& z) {
 				if (z > 1.0f) {
 					z -= 1.0f;
@@ -167,7 +167,7 @@ void DynamicPubWebGenerator::moveNodeIntoUnitSquare(float& x, float& y) {
 	move(y);
 }
 
-float DynamicPubWebGenerator::squaredDistanceInUnitTorus(float x1, float y1, float x2,
+float DynamicPubWebGeneratorOld::squaredDistanceInUnitTorus(float x1, float y1, float x2,
 		float y2) {
 	auto adjustForUnitTorus([&](float& z) {
 				if (z > 0.5) {
@@ -186,7 +186,7 @@ float DynamicPubWebGenerator::squaredDistanceInUnitTorus(float x1, float y1, flo
 	return (distx * distx + disty * disty);
 }
 
-bool DynamicPubWebGenerator::isValidEdge(Graph& g, node u, node v) {
+bool DynamicPubWebGeneratorOld::isValidEdge(Graph& g, node u, node v) {
 	auto isValid([&](node u, node v, float squaredDistance) {
 				return ((squaredDistance <= neighRad * neighRad)
 						&& (g.degree(u) <= maxNeigh)
@@ -202,7 +202,7 @@ bool DynamicPubWebGenerator::isValidEdge(Graph& g, node u, node v) {
 	return isValid(u, v, sqrDist);
 }
 
-void DynamicPubWebGenerator::determineNeighborsOf(Graph& g, node u) {
+void DynamicPubWebGeneratorOld::determineNeighborsOf(Graph& g, node u) {
 	g.forNodes([&](node v) {
 				if (isValidEdge(g, u, v)) {
 					g.addEdge(u, v);
@@ -210,7 +210,7 @@ void DynamicPubWebGenerator::determineNeighborsOf(Graph& g, node u) {
 			});
 }
 
-void DynamicPubWebGenerator::determineNeighbors(Graph& g) {
+void DynamicPubWebGeneratorOld::determineNeighbors(Graph& g) {
 	g.forNodePairs([&](node u, node v) { // TODO: improve quadratic loop!
 				if (isValidEdge(g, u, v)) {
 					g.addEdge(u, v);
@@ -218,7 +218,7 @@ void DynamicPubWebGenerator::determineNeighbors(Graph& g) {
 			});
 }
 
-void DynamicPubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
+void DynamicPubWebGeneratorOld::addNodesToArea(index area, count num, Graph& g) {
 	Aux::RandomProbability randGen;
 
 	for (index j = 0; j < num; ++j) {
@@ -236,7 +236,7 @@ void DynamicPubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
 	}
 }
 
-void DynamicPubWebGenerator::fillDenseAreas(Graph& g) {
+void DynamicPubWebGeneratorOld::fillDenseAreas(Graph& g) {
 	Aux::RandomProbability randGen;
 
 	for (index area = 0; area < numDenseAreas; ++area) {
@@ -247,7 +247,7 @@ void DynamicPubWebGenerator::fillDenseAreas(Graph& g) {
 	}
 }
 
-void DynamicPubWebGenerator::chooseDenseAreaSizes() {
+void DynamicPubWebGeneratorOld::chooseDenseAreaSizes() {
 	denseAreaXYR.reserve(numDenseAreas);
 	Aux::RandomProbability randGen;
 
@@ -260,7 +260,7 @@ void DynamicPubWebGenerator::chooseDenseAreaSizes() {
 }
 
 // randomly spread remaining vertices over whole area
-void DynamicPubWebGenerator::spreadRemainingNodes(Graph& g) {
+void DynamicPubWebGeneratorOld::spreadRemainingNodes(Graph& g) {
 	Aux::RandomProbability randGen;
 
 	while (g.numberOfNodes() < n) {
@@ -271,7 +271,7 @@ void DynamicPubWebGenerator::spreadRemainingNodes(Graph& g) {
 }
 
 // compute number of nodes per cluster, each cluster has approx. same density
-void DynamicPubWebGenerator::chooseClusterSizes() {
+void DynamicPubWebGeneratorOld::chooseClusterSizes() {
 	float f = 0.0;
 	for (index i = 0; i < numDenseAreas; ++i) {
 		f += pow(denseAreaXYR[i].rad, 1.5);
@@ -286,7 +286,7 @@ void DynamicPubWebGenerator::chooseClusterSizes() {
 	}
 }
 
-Graph DynamicPubWebGenerator::generate() {
+Graph DynamicPubWebGeneratorOld::generate() {
 	// init
 	Graph g(0);
 
@@ -301,7 +301,7 @@ Graph DynamicPubWebGenerator::generate() {
 }
 
 // TODO: NOT tested!
-void DynamicPubWebGenerator::removeRandomNode(Graph& g) {
+void DynamicPubWebGeneratorOld::removeRandomNode(Graph& g) {
 	Aux::RandomInteger randInt;
 	node u = randInt.generate(0, (n - 1));
 	g.removeNode(u);

@@ -76,6 +76,8 @@ bool PubWebGenerator::isValidEdge(Graph& g, node u, node v, edgeweight& weight) 
 }
 
 
+// TODO: use ANN or similar library with appropriate space-partitioning data structure to
+//       get rid of quadratic time complexity
 void PubWebGenerator::determineNeighbors(Graph& g) {
 
 	float sqrNeighRad = neighRad * neighRad;
@@ -112,6 +114,7 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
 				// edge is already marked => insert it
 				edgeweight ew = BASE_WEIGHT / -currentBest.first;
 				g.addEdge(currentBest.second.first, currentBest.second.second, ew);
+//				TRACE("add edge " << currentBest.second.first << "/" << currentBest.second.second);
 			}
 			else {
 				// mark edge as eligible
