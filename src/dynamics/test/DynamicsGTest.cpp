@@ -27,10 +27,6 @@ TEST_F(DynamicsGTest, tryDGSStreamParserOnRealGraph) {
 	std::cin >> path;
 	DGSStreamParser parser(path);
 	auto stream = parser.getStream();
-	for (auto event : stream) {
-		std::cout << event.toString() << " ";
-	}
-	std::cout << std::endl;
 }
 
 } /* namespace NetworKit */
