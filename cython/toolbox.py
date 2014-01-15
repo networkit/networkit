@@ -33,6 +33,12 @@ def batch(graphDir, match, format, function, outPath, header=None):
 					timer = stopwatch.Timer()
 					G = graphio.readGraph(graphPath)
 					timer.stop()
-					row = function(G)
+					result = function(G)
+					if type(result) is tuple:
+						row = list(result)
+					elif type(result) is list:
+						row = result
+					else:
+						row = [result]
 					row = [filename, timer.elapsed] + list(row)
 					writer.writerow(row)
