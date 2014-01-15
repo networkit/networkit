@@ -875,7 +875,9 @@ cdef extern from "../src/dynamics/GraphEvent.h":
 
 cdef extern from "../src/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
-
+		node u, v
+		edgeweight w
+		_Type type
 		_GraphEvent() except +
 		_GraphEvent(_Type type, node u, node v, edgeweight w) except +
 		string toString() except +
@@ -885,9 +887,12 @@ cdef class GraphEvent:
 	
 	def __cinit__(self, type, u, v, w):
 		self._this = _GraphEvent(type, u, v, w)
-		
+
 	def toString(self):
 		return self._this.toString().decode("utf-8")
+
+	def __repr__(self):
+		return self.toString()
 
 
 cdef extern from "../src/dynamics/DGSStreamParser.h":
@@ -898,11 +903,11 @@ cdef extern from "../src/dynamics/DGSStreamParser.h":
 cdef class DGSStreamParser:
 	cdef _DGSStreamParser* _this
 
-	def __cinit__(self, path, mapped, baseIndex):
+	def __cinit__(self, path, mapped=True, baseIndex=0):
 		self._this = new _DGSStreamParser(stdstring(path), mapped, baseIndex)
 
 	def getStream(self):
-		raise NotImplementedError("TODO")
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.getStream()]
 
 
 cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
