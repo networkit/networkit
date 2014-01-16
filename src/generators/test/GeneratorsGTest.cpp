@@ -133,15 +133,21 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 
 // FIXME: segmentation fault
-//TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
-//
-//	count numInitialNodes = 400;
-//	count numberOfDenseAreas = 10;
-//	float neighborhoodRadius = 0.125;
-//	count maxNumberOfNeighbors = 16;
-//	count numIterations = 10;
-//
-//
+TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
+
+	count numInitialNodes = 400;
+	count numberOfDenseAreas = 10;
+	float neighborhoodRadius = 0.125;
+	count maxNumberOfNeighbors = 16;
+	count numIterations = 10;
+
+	DynamicPubWebGenerator dyn(numInitialNodes, numberOfDenseAreas, neighborhoodRadius,
+			maxNumberOfNeighbors);
+
+	dyn.generate(numIterations);
+
+	// TODO: output before/after???
+
 //	DynamicGraphSource* gen = new DynamicPubWebGeneratorOld(numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
 //
 //	GraphEventProxy* Gproxy = gen->newGraph();
@@ -165,7 +171,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 //		sprintf(filename, "output/pubweb-%i.eps", int(iter));
 //		psWriter.write(filename);
 //	}
-//}
+}
 
 
 
