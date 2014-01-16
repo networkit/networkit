@@ -131,14 +131,21 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			if (edgePair.second >= 2) {
 				node u = edgePair.first.first;
 				node v = edgePair.first.second;
+				// TODO: make common routine
+				edgeweight ew = BASE_WEIGHT / initGen.squaredDistanceInUnitTorus(
+						G.getCoordinate(u, 0), G.getCoordinate(u, 1), G.getCoordinate(v, 0), G.getCoordinate(v, 1));
 				G.addEdge(u, v);
-				GraphEvent event(GraphEvent::EDGE_ADDITION, u, v);
+				GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, ew);
 				eventStream.push_back(event);
 			}
 		}
 
 		eventStream.push_back(GraphEvent(GraphEvent::TIME_STEP));
 	}
+
+	// TODO: remove this test
+	DGSWriter dgsWriter;
+	dgsWriter.write(eventStream, "output/eventStream.dgs");
 
 	return eventStream;
 }

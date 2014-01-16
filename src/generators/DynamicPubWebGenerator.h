@@ -11,6 +11,7 @@
 #include "DynamicGraphGenerator.h"
 #include "PubWebGenerator.h"
 #include "../dynamics/GraphEvent.h"
+#include "../dynamics/DGSWriter.h"
 #include "../auxiliary/Random.h"
 
 namespace NetworKit {
