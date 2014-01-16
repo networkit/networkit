@@ -132,7 +132,6 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 }
 
 
-// FIXME: segmentation fault
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
 	count numInitialNodes = 400;
