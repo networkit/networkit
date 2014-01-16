@@ -76,9 +76,11 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
+						TRACE("neighbor " << v);
 						isolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
+						TRACE("neighbor" << v);
 						isolate(v);
 					});
 					break;
