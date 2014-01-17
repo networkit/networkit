@@ -143,10 +143,6 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 		eventStream.push_back(GraphEvent(GraphEvent::TIME_STEP));
 	}
 
-	// TODO: remove this test
-	DGSWriter dgsWriter;
-	dgsWriter.write(eventStream, "output/eventStream.dgs");
-
 	return eventStream;
 }
 
