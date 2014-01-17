@@ -69,6 +69,11 @@ double probability() {
 	return dist(getURNG());
 }
 
+uint64_t binomial(uint64_t n, double p) {
+	AUX_THREAD_LOCAL static std::binomial_distribution<uint64_t> dist{n, p};
+	return dist(getURNG());
+}
+
 namespace {
 std::mt19937_64& getURNG() {
 	AUX_THREAD_LOCAL static std::mt19937_64 generator{getSeed()};
