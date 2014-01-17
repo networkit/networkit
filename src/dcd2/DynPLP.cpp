@@ -59,6 +59,15 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 			}
 		} // end event loop
 	} else if (prepStrategy == "isolateNeighbors") {
+
+		auto tryIsolate = [&](node u) {
+			if (zeta.contains(u)) {
+				// because the graph can be in the future, data structures do not necessarily know neighbor node u
+				zeta[u] = zeta.addCluster();
+				activeNodes[u] = true;
+			}
+		};
+
 		for (GraphEvent ev : stream) {
 			TRACE("event: " << ev.toString());
 			switch (ev.type) {
@@ -77,11 +86,11 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
 						TRACE("neighbor " << v);
-						isolate(v);
+						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
 						TRACE("neighbor" << v);
-						isolate(v);
+						tryIsolate(v);
 					});
 					break;
 				}
@@ -89,10 +98,10 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					break;
 				}
@@ -100,10 +109,10 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
-						isolate(v);
+						tryIsolate(v);
 					});
 					break;
 				}
