@@ -39,7 +39,7 @@ typedef uint64_t count; // more expressive name for an integer quantity
 typedef index node; // node indices are 0-based
 typedef double edgeweight; // edge weight type
 
-#define none std::numeric_limits<index>::max()
+constexpr index none = std::numeric_limits<index>::max();
 
 #define Vector std::vector // TODO: test tbb::concurrent_vector
 
