@@ -42,8 +42,7 @@ typedef double edgeweight; // edge weight type
 constexpr index none = std::numeric_limits<index>::max();
 
 //#define Vector std::vector // TODO: test tbb::concurrent_vector
-template <typename T>
-using Vector = std::vector<T>;
+template <typename T> using Vector = std::vector<T>;
 
 /**
  * An undirected graph (with optional weights) and parallel iterator methods.
