@@ -145,6 +145,7 @@ Credits
 - Maximilian Vogel
 - Miriam Beddig
 - Florian Weber
+- Patrick Flick
 
 ### External Code
 
