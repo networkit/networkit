@@ -22,8 +22,10 @@
 namespace NetworKit {
 
 DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy, count interval,
-	std::vector<std::string> recordSettings) :
-	 inputPath(inputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), recordSettings(recordSettings) {
+	std::vector<std::string> recordSettings, std::string graphOutputPath) :
+	 inputPath(inputPath), graphOutputPath(graphOutputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), recordSettings(recordSettings)
+{
+
 }
 
 void DynamicCommunityDetection::run() {
@@ -57,6 +59,13 @@ void DynamicCommunityDetection::run() {
 
 	Aux::Timer timer;
 
+	METISGraphWriter graphWriter;
+	if (! graphOutputPath.empty()) {
+		std::string path = graphOutputPath;
+		path.append("-0000.graph");
+		graphWriter.write(G, path);
+	}
+
 
 	// slicing stream by timesteps
 	auto i = stream.begin();
@@ -83,6 +92,14 @@ void DynamicCommunityDetection::run() {
 		DEBUG("updating graph");
 		gu.update(slice);
 		DEBUG("number of nodes: " << G.numberOfNodes());
+
+		if (! graphOutputPath.empty()) {
+			char suffix[12];
+			sprintf(suffix, "-%4llu.graph", run);
+			std::string path = graphOutputPath;
+			path.append(suffix);
+			graphWriter.write(G, path);
+		}
 
 
 		timer.start();

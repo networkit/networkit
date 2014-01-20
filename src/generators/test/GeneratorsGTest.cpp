@@ -121,8 +121,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	// clustering
 	PLM2 clusterAlgo;
 	Clustering clustering = clusterAlgo.run(G);
-	PostscriptWriter psWriter2(G, true);
-	psWriter2.write(clustering, "output/pubweb-clustered-plm2.eps");
+	psWriter.write(clustering, "output/pubweb-clustered-plm2.eps");
 
 	Modularity mod;
 	double modVal = mod.getQuality(clustering, G);
@@ -134,44 +133,43 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
-	count numInitialNodes = 400;
-	count numberOfDenseAreas = 10;
-	float neighborhoodRadius = 0.125;
-	count maxNumberOfNeighbors = 16;
-	count numIterations = 10;
+	count nSteps = 1;
+	count n = 250;
+	count numCluster = 12;
+	count maxNumNeighbors = 36;
+	float rad = 0.15;
 
-	DynamicPubWebGenerator dyn(numInitialNodes, numberOfDenseAreas, neighborhoodRadius,
-			maxNumberOfNeighbors);
+	DynamicPubWebGenerator dynGen(n, numCluster, rad, maxNumNeighbors);
+	Graph G = dynGen.getGraph();
+	GraphUpdater gu(G);
+	std::vector<GraphEvent> stream;
 
-	dyn.generate(numIterations);
+	PostscriptWriter psWriter(G, true);
+	psWriter.write("output/pubweb-0000.eps");
 
-	// TODO: output before/after???
+	for (index i = 1; i <= nSteps; ++i) {
+		stream = dynGen.generate(1);
+		DEBUG("updating graph");
+		gu.update(stream);
 
-//	DynamicGraphSource* gen = new DynamicPubWebGeneratorOld(numInitialNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors);
-//
-//	GraphEventProxy* Gproxy = gen->newGraph();
-//	Graph* G = Gproxy->G;
-//
-//	TRACE("before init graph");
-//	gen->initializeGraph();
-//	TRACE("after init graph");
-//
-//	EXPECT_EQ(numInitialNodes, G->numberOfNodes()) << "initial number of nodes";
-//
-//	TRACE("m = " << G->numberOfEdges());
-//
-//	for (index iter = 0; iter < numIterations; ++iter) {
-//		gen->generate();
-//		TRACE("m = " << G->numberOfEdges());
-//
-//		PostscriptWriter psWriter(*G, true);
-//		char filename[20];
-//		assert(iter < 10);
-//		sprintf(filename, "output/pubweb-%i.eps", int(iter));
-//		psWriter.write(filename);
-//	}
+		// update coordinates
+		std::map<node, Point<float> > newCoordinates = dynGen.getNewCoordinates();
+		for (std::map<node, Point<float> >::iterator iter = newCoordinates.begin();
+				iter != newCoordinates.end(); ++iter) {
+			node v = iter->first;
+			Point<float> p = iter->second;
+			G.setCoordinate(v, 0, p.getValue(0));
+			G.setCoordinate(v, 1, p.getValue(1));
+		}
+
+		DEBUG("updated graph, new (n, m) = (" << G.numberOfNodes() << ", " << G.numberOfEdges() << ")");
+		char path[23];
+		sprintf(path, "output/pubweb-%04llu.eps", i);
+		DEBUG("path: " << path);
+		PostscriptWriter psWriter(G, true);
+		psWriter.write(path);
+	}
 }
-
 
 
 TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
