@@ -62,7 +62,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS };
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, TRIALS, BENCHMARKS, FILTER };
 const OptionParser::Descriptor usage[] =
 {
  {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, ""
@@ -71,6 +71,9 @@ const OptionParser::Descriptor usage[] =
  {LOGLEVEL,    0, "" , "loglevel", OptionParser::Arg::Required, "  --loglevel=<LEVEL>  \t set the log level" },
  {THREADS,    0, "" , "threads", OptionParser::Arg::Required, "  --threads=<NUM>  \t set the maximum number of threads" },
  {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
+ {TRIALS, 0, "e", "trials", OptionParser::Arg::None, "  --trials \t Run experimental tests"},
+ {BENCHMARKS, 0, "b", "benchmarks", OptionParser::Arg::None, "  --benchmarks \t Run benchmarks"},
+ {FILTER, 0, "f", "gtest_filter", OptionParser::Arg::Required, "  --gtest_filter=<FILTER_PATTERN> \t Run tests that match the filter pattern" },
  {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
                                             " TODO" },
  {0,0,0,0,0,0}
@@ -114,14 +117,12 @@ int main(int argc, char **argv) {
 
 
 #ifndef NOLOGGING
-#ifndef NOLOG4CXX
 	if (options[LOGLEVEL]) {
 		Aux::configureLogging(options[LOGLEVEL].arg);
 	} else {
 		Aux::configureLogging();	// with default level
 	}
-	std::cout << Aux::currentLogLevel() << std::endl;
-#endif
+	//std::cout << Aux::currentLogLevel() << std::endl;
 #endif
 
 
@@ -139,9 +140,19 @@ int main(int argc, char **argv) {
 
 
 #ifndef NOGTEST
-	   ::testing::InitGoogleTest(&argc, argv);
-	   INFO("=== starting unit tests ===");
-	   return RUN_ALL_TESTS();
+	if (options[TESTS]) {
+		::testing::GTEST_FLAG(filter) = "*Test.test*";
+	} else if (options[TRIALS]) {
+		::testing::GTEST_FLAG(filter) = "*Test.try*";
+	} else if (options[BENCHMARKS]) {
+		::testing::GTEST_FLAG(filter) = "*Benchmark*";
+	} else if (options[FILTER]) {
+		std::cout << options[FILTER].arg << std::endl;
+		::testing::GTEST_FLAG(filter) = options[FILTER].arg;
+	}
+	::testing::InitGoogleTest(&argc, argv);
+	INFO("=== starting unit tests ===");
+	return RUN_ALL_TESTS();
 #else
 	   throw std::runtime_error("unit tests are excluded from build by the NOGTEST preprocessor directive");
 #endif

@@ -41,7 +41,7 @@ def getSourceFiles(target, optimize):
 		raise Error("target SelCD currently disabled")  # cls
 		# source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
 	elif target == "Tests":
-		source.append(os.path.join(srcDir, "Unittests.cpp"))
+		source.append(os.path.join(srcDir, "Unittests-X.cpp"))
 	#else case: error?	
 
 	# create build directory for build configuration
