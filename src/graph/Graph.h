@@ -434,7 +434,7 @@ public:
 	}
 
 	void initCoordinates() {
-		coordinates.init(n);
+		coordinates.init(z);
 	}
 
 	/** ATTRIBUTES **/

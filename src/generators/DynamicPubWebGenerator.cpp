@@ -23,8 +23,8 @@ DynamicPubWebGenerator::~DynamicPubWebGenerator() {
 
 std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 
-	count numToDel = (count) (G.numberOfNodes() * 0.02); // TODO: externalize, possibly randomize
-	count numToIns = (count) (G.numberOfNodes() * 0.02); // TODO: externalize, possibly randomize
+	count numToDel = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
+	count numToIns = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
 	std::vector<GraphEvent> eventStream;
 	coordinates.clear();
 
@@ -35,19 +35,21 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			// draw a certain (random) number of vertices to be deleted
 			node nodeToDel = Aux::Random::integer(numToDel - 1);
 
-			// delete incident edges first
-			G.forNeighborsOf(nodeToDel, [&](node neigh) {
-				G.removeEdge(nodeToDel, neigh);
-				GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
-				TRACE("Event: REMOVE edge " << nodeToDel << "-" << neigh);
-				eventStream.push_back(event);
-			});
+			if (G.hasNode(nodeToDel)) {
+				// delete incident edges first
+				G.forNeighborsOf(nodeToDel, [&](node neigh) {
+					G.removeEdge(nodeToDel, neigh);
+					GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
+					TRACE("Event: REMOVE edge " << nodeToDel << "-" << neigh);
+					eventStream.push_back(event);
+				});
 
-			// eventually delete vertex
-//			G.removeNode(nodeToDel);
-			GraphEvent event(GraphEvent::NODE_REMOVAL, nodeToDel);
-			TRACE("Event: REMOVE node " << nodeToDel);
-			eventStream.push_back(event);
+				// eventually delete vertex
+				G.removeNode(nodeToDel);
+				GraphEvent event(GraphEvent::NODE_REMOVAL, nodeToDel);
+				TRACE("Event: REMOVE node " << nodeToDel);
+				eventStream.push_back(event);
+			}
 		}
 
 		// insert nodes
@@ -125,7 +127,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 		G.forEdges([&](node u, node v) {
 			edge e = std::make_pair(std::min(u, v), std::max(u, v));
 			if (eligibleEdges[e] < 2) {
-//				G.removeEdge(u, v);
+				G.removeEdge(u, v);
 				GraphEvent event(GraphEvent::EDGE_REMOVAL, u, v);
 				TRACE("Event: REMOVE edge " << u << "-" << v);
 				eventStream.push_back(event);
@@ -141,7 +143,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 				// TODO: make common routine
 				edgeweight ew = BASE_WEIGHT / initGen.squaredDistanceInUnitTorus(
 						G.getCoordinate(u, 0), G.getCoordinate(u, 1), G.getCoordinate(v, 0), G.getCoordinate(v, 1));
-//				G.addEdge(u, v);
+				G.addEdge(u, v);
 				GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, ew);
 				TRACE("Event: ADD edge " << u << "-" << v);
 				eventStream.push_back(event);
