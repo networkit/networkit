@@ -133,7 +133,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
-	count nSteps = 1;
+	count nSteps = 20;
 	count n = 250;
 	count numCluster = 12;
 	count maxNumNeighbors = 36;
@@ -144,6 +144,8 @@ TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 
+	// TODO: static clustering algorithm for better visual output
+
 	PostscriptWriter psWriter(G, true);
 	psWriter.write("output/pubweb-0000.eps");
 
@@ -151,6 +153,9 @@ TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 		stream = dynGen.generate(1);
 		DEBUG("updating graph");
 		gu.update(stream);
+		G.initCoordinates();
+
+		DEBUG("updated graph, new (n, m) = (" << G.numberOfNodes() << ", " << G.numberOfEdges() << ")");
 
 		// update coordinates
 		std::map<node, Point<float> > newCoordinates = dynGen.getNewCoordinates();
@@ -162,7 +167,6 @@ TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 			G.setCoordinate(v, 1, p.getValue(1));
 		}
 
-		DEBUG("updated graph, new (n, m) = (" << G.numberOfNodes() << ", " << G.numberOfEdges() << ")");
 		char path[23];
 		sprintf(path, "output/pubweb-%04llu.eps", i);
 		DEBUG("path: " << path);
