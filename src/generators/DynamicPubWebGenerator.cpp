@@ -26,25 +26,30 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 	count numToDel = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
 	count numToIns = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
 	std::vector<GraphEvent> eventStream;
+	coordinates.clear();
 
 	for (index step = 0; step < nSteps; ++step) {
 
 		// delete nodes
 		for (index i = 0; i < numToDel; ++i) {
 			// draw a certain (random) number of vertices to be deleted
-			node nodeToDel = Aux::Random::integer(numToDel - 1);
+			node nodeToDel = Aux::Random::integer(G.upperNodeIdBound() - 1);
 
-			// delete incident edges first
-			G.forNeighborsOf(nodeToDel, [&](node neigh) {
-				G.removeEdge(nodeToDel, neigh);
-				GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
+			if (G.hasNode(nodeToDel)) {
+				// delete incident edges first
+				G.forNeighborsOf(nodeToDel, [&](node neigh) {
+					G.removeEdge(nodeToDel, neigh);
+					GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
+					TRACE("Event: REMOVE edge " << nodeToDel << "-" << neigh);
+					eventStream.push_back(event);
+				});
+
+				// eventually delete vertex
+				G.removeNode(nodeToDel);
+				GraphEvent event(GraphEvent::NODE_REMOVAL, nodeToDel);
+				TRACE("Event: REMOVE node " << nodeToDel);
 				eventStream.push_back(event);
-			});
-
-			// eventually delete vertex
-			G.removeNode(nodeToDel);
-			GraphEvent event(GraphEvent::NODE_REMOVAL, nodeToDel);
-			eventStream.push_back(event);
+			}
 		}
 
 		// insert nodes
@@ -52,8 +57,8 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			// draw a cluster where the vertex should be inserted, +1 to account for the noise
 			count clusterToIns = Aux::Random::integer(
 					initGen.numDenseAreas + 1);
-			double x; // x-coordinate of new node
-			double y; // y-coordinate of new node
+			float x; // x-coordinate of new node
+			float y; // y-coordinate of new node
 
 			if (clusterToIns < initGen.numDenseAreas) {
 				// real cluster, FIXME: DRY!
@@ -63,9 +68,9 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 						* initGen.denseAreaXYR[clusterToIns].rad;
 
 				// compute coordinates and adjust them
-				float x = initGen.denseAreaXYR[clusterToIns].x
+				x = initGen.denseAreaXYR[clusterToIns].x
 						+ cosf(angle) * dist;
-				float y = initGen.denseAreaXYR[clusterToIns].y
+				y = initGen.denseAreaXYR[clusterToIns].y
 						+ sinf(angle) * dist;
 				initGen.moveNodeIntoUnitSquare(x, y);
 			} else {
@@ -76,7 +81,10 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 
 			// create vertex with these coordinates
 			node newNode = G.addNode(x, y);
+			Point<float> p(x, y);
+			coordinates[newNode] = p;
 			GraphEvent event(GraphEvent::NODE_ADDITION, newNode);
+			TRACE("Event: ADD node " << newNode);
 			eventStream.push_back(event);
 		}
 
@@ -121,6 +129,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			if (eligibleEdges[e] < 2) {
 				G.removeEdge(u, v);
 				GraphEvent event(GraphEvent::EDGE_REMOVAL, u, v);
+				TRACE("Event: REMOVE edge " << u << "-" << v);
 				eventStream.push_back(event);
 			}
 			eligibleEdges.erase(e);
@@ -136,6 +145,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 						G.getCoordinate(u, 0), G.getCoordinate(u, 1), G.getCoordinate(v, 0), G.getCoordinate(v, 1));
 				G.addEdge(u, v);
 				GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, ew);
+				TRACE("Event: ADD edge " << u << "-" << v);
 				eventStream.push_back(event);
 			}
 		}
@@ -143,7 +153,15 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 		eventStream.push_back(GraphEvent(GraphEvent::TIME_STEP));
 	}
 
+	// TODO: remove this test
+	DGSWriter dgsWriter;
+	dgsWriter.write(eventStream, "output/eventStream.dgs");
+
 	return eventStream;
+}
+
+std::map<node, Point<float> > DynamicPubWebGenerator::getNewCoordinates() const {
+	return coordinates;
 }
 
 } /* namespace NetworKit */
