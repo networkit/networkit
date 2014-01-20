@@ -145,7 +145,7 @@ TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 	std::vector<GraphEvent> stream;
 
 	// static clustering algorithm for better visual output
-	PLM2 clusterAlgo;
+	PLP clusterAlgo;
 	Clustering clustering = clusterAlgo.run(G);
 	PostscriptWriter psWriter(G, true);
 	psWriter.write(clustering, "output/pubweb-0000.eps");
