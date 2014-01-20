@@ -33,7 +33,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 		// delete nodes
 		for (index i = 0; i < numToDel; ++i) {
 			// draw a certain (random) number of vertices to be deleted
-			node nodeToDel = Aux::Random::integer(numToDel - 1);
+			node nodeToDel = Aux::Random::integer(G.upperNodeIdBound() - 1);
 
 			if (G.hasNode(nodeToDel)) {
 				// delete incident edges first

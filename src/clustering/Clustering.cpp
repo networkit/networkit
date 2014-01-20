@@ -29,6 +29,7 @@ Clustering::~Clustering() {
 }
 
 void Clustering::addToCluster(cluster c, node u) {
+	assert(u < data.size());
 	assert((*this)[u] == this->defaultValue);
 	(*this)[u] = c;
 }
