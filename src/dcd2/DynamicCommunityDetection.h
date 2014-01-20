@@ -12,7 +12,8 @@
 #include <string>
 
 #include "../graph/Graph.h"
- #include "../clustering/Clustering.h"
+#include "../clustering/Clustering.h"
+#include "../io/METISGraphWriter.h"
 
 namespace NetworKit {
 
@@ -22,7 +23,7 @@ namespace NetworKit {
 class DynamicCommunityDetection {
 public:
 	DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy="isolate", count interval=1,
-		std::vector<std::string> recordSettings = {"quality"});
+		std::vector<std::string> recordSettings = {"quality"}, std::string graphOutputPath="");
 
 	void run();
 
@@ -33,6 +34,8 @@ public:
 private:
 
 	std::string inputPath;
+	std::string graphOutputPath; //!< prefix (directory and file prefix for graph timeline output)
+
 	std::string algoName;
 	std::string updateStrategy;
 	count interval;

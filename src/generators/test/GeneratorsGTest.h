@@ -27,6 +27,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../properties/GraphProperties.h"
 #include "../../clustering/Modularity.h"
+#include "../../dynamics/GraphUpdater.h"
 
 namespace NetworKit {
 
