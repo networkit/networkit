@@ -88,8 +88,8 @@ int main(int argc, char **argv) {
 	// feenableexcept(FE_ALL_EXCEPT);
 #endif
 
-
-	/// PARSE OPTIONS
+	std::string program_name = argv[0];
+	// PARSE OPTIONS
 	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
 
 	OptionParser::Stats  stats(usage, argc, argv);
@@ -137,7 +137,10 @@ int main(int argc, char **argv) {
 		int nThreads = std::atoi(options[THREADS].arg);
 		setNumberOfThreads(nThreads);
 	}
-
+	
+	// get program name (currently only for unix)
+	auto pos = program_name.find_last_of("/");
+	program_name = program_name.substr(pos+1,program_name.length()-1);
 
 #ifndef NOGTEST
 	if (options[TESTS]) {
@@ -145,6 +148,9 @@ int main(int argc, char **argv) {
 	} else if (options[TRIALS]) {
 		::testing::GTEST_FLAG(filter) = "*Test.try*";
 	} else if (options[BENCHMARKS]) {
+		if (program_name != "NetworKit-Tests-O") {
+			std::cout << "Hint: Performance tests should be run in optimized mode" << std::endl;
+		}
 		::testing::GTEST_FLAG(filter) = "*Benchmark*";
 	} else if (options[FILTER]) {
 		std::cout << options[FILTER].arg << std::endl;
