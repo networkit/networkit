@@ -134,7 +134,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 
 	count nSteps = 20;
-	count n = 250;
+	count n = 500;
 	count numCluster = 12;
 	count maxNumNeighbors = 36;
 	float rad = 0.15;
@@ -144,10 +144,15 @@ TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 
-	// TODO: static clustering algorithm for better visual output
-
+	// static clustering algorithm for better visual output
+	PLM2 clusterAlgo;
+	Clustering clustering = clusterAlgo.run(G);
 	PostscriptWriter psWriter(G, true);
-	psWriter.write("output/pubweb-0000.eps");
+	psWriter.write(clustering, "output/pubweb-0000.eps");
+	Modularity mod;
+	double modVal = mod.getQuality(clustering, G);
+	EXPECT_GE(modVal, 0.3) << "modularity of clustering";
+	DEBUG("Modularity of clustering: " << modVal);
 
 	for (index i = 1; i <= nSteps; ++i) {
 		stream = dynGen.generate(1);
@@ -167,11 +172,17 @@ TEST_F(GeneratorsGTest, tryDynamicPubWebGenerator) {
 			G.setCoordinate(v, 1, p.getValue(1));
 		}
 
+		// output in clustered way for better visual inspection
+		clustering = clusterAlgo.run(G);
 		char path[23];
 		sprintf(path, "output/pubweb-%04llu.eps", i);
 		DEBUG("path: " << path);
 		PostscriptWriter psWriter(G, true);
-		psWriter.write(path);
+		psWriter.write(clustering, path);
+
+		Modularity mod;
+		double modVal = mod.getQuality(clustering, G);
+		DEBUG("Modularity of clustering: " << modVal);
 	}
 }
 

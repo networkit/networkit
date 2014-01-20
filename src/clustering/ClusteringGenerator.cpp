@@ -11,23 +11,22 @@
 namespace NetworKit {
 
 ClusteringGenerator::ClusteringGenerator() {
-	// TODO Auto-generated constructor stub
 
 }
 
 ClusteringGenerator::~ClusteringGenerator() {
-	// TODO Auto-generated destructor stub
+
 }
 
 Clustering ClusteringGenerator::makeSingletonClustering(Graph& G) {
-	count n = G.numberOfNodes();
+	count n = G.upperNodeIdBound();
 	Clustering zeta(n);
 	zeta.allToSingletons();
 	return zeta;
 }
 
 Clustering ClusteringGenerator::makeOneClustering(Graph& G) {
-	count n = G.numberOfNodes();
+	count n = G.upperNodeIdBound();
 	Clustering zeta(n);
 	cluster one = zeta.addCluster();
 	G.forNodes([&](node v){
@@ -37,8 +36,7 @@ Clustering ClusteringGenerator::makeOneClustering(Graph& G) {
 }
 
 Clustering ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
-
-	count n = G.numberOfNodes();
+	count n = G.upperNodeIdBound();
 	Clustering zeta(n);
 
 	for (uint64_t i = 0; i < k; ++i) {
@@ -55,7 +53,7 @@ Clustering ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 }
 
 Clustering ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count k) {
-	count n = G.numberOfNodes();
+	count n = G.upperNodeIdBound();
 	Clustering clustering(n);
 
 	std::vector<count> blockSize(k, 0);
