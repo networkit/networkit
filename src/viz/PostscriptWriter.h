@@ -25,6 +25,7 @@ namespace NetworKit {
 
 /**
  * TODO: class documentation
+ * TODO: decouple coordinates used here from those in graph
  */
 class PostscriptWriter {
 

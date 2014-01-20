@@ -13,6 +13,7 @@
 #include "../dynamics/GraphEvent.h"
 #include "../dynamics/DGSWriter.h"
 #include "../auxiliary/Random.h"
+#include "../viz/Point.h"
 
 namespace NetworKit {
 
@@ -21,6 +22,7 @@ class DynamicPubWebGenerator: public NetworKit::DynamicGraphGenerator
 
 protected:
 	PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
+	std::map<node, Point<float> > coordinates; //<! new and changed coordinates
 
 public:
 	DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
@@ -28,12 +30,18 @@ public:
 
 	virtual ~DynamicPubWebGenerator();
 
+	Graph getGraph() const { return G; }
+
 	/**
 	 * Generate event stream.
 	 *
 	 * @param[in]	nSteps	number of time steps in the event stream
 	 */
 	virtual std::vector<GraphEvent> generate(count nSteps);
+
+
+	virtual std::map<node, Point<float> > getNewCoordinates() const;
+
 };
 
 } /* namespace NetworKit */
