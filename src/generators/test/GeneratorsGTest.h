@@ -11,11 +11,13 @@
 #define GENERATORSGTEST_H_
 
 #include <gtest/gtest.h>
+#include <cmath>
 
 #include "../DynamicGraphSource.h"
 #include "../DynamicBarabasiAlbertGenerator.h"
 #include "../PubWebGenerator.h"
 #include "../DynamicPubWebGenerator.h"
+#include "../ErdosRenyiGenerator.h"
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../community/PLP.h"
@@ -28,6 +30,7 @@
 #include "../../properties/GraphProperties.h"
 #include "../../clustering/Modularity.h"
 #include "../../dynamics/GraphUpdater.h"
+#include "../../auxiliary/MissingMath.h"
 
 namespace NetworKit {
 
