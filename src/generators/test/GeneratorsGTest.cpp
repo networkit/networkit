@@ -218,6 +218,25 @@ TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
 }
 
 
+TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
+	count n = 2000;
+	double p = 1.5 * (log(n) / (double) n);
+
+	ErdosRenyiGenerator generator(n, p);
+	Graph G = generator.generate();
+	EXPECT_EQ(n, G.numberOfNodes());
+	EXPECT_FALSE(G.isEmpty());
+
+	count nPairs = (n * (n-1)) / 2;
+	count nEdges = G.numberOfEdges();
+	EXPECT_GE(nEdges, 0.75 * p * nPairs);
+	EXPECT_LE(nEdges, 1.25 * p * nPairs);
+
+	DEBUG("Number of edges with probability " << p << " (actual/expected): " << nEdges << " / " << (nPairs * p));
+}
+
+
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
