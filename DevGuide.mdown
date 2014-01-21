@@ -194,7 +194,7 @@ TODO - documentation coming soon
 
 ## Contact
 
-To discuss important changes to NetworKit, use the [developers e-mail list][list].
+To discuss important changes to NetworKit, use the [developers e-mail list][list] (`networkit-dev@ira.uka.de`).
 
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit-dev
 

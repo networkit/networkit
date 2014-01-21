@@ -38,7 +38,7 @@ To convert the documentation to PDF install the [pandoc](http://code.google.com/
 
 ### E-Mail List
 
-For questions regarding NetworKit, subscribe to our [e-mail list][list] and feel free to ask.
+For questions regarding NetworKit, subscribe to our [e-mail list][list] (`networkit@ira.uka.de`) and feel free to ask.
 
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit
 

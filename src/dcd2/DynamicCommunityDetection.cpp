@@ -133,7 +133,7 @@ void DynamicCommunityDetection::run() {
 		if (record("continuity")) {
 
 			if (run >= 2) {
-				SampledRandMeasure sampledRand(1000);
+				SampledRandMeasure sampledRand(5000);
 				double cont = sampledRand.getDissimilarity(G, zeta, previous);
 				continuity.push_back(cont);
 			} else {
