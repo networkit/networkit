@@ -25,7 +25,7 @@ Clustering::Clustering(count z) :
 			}
 
 Clustering::~Clustering() {
-	// TODO Auto-generated destructor stub
+
 }
 
 void Clustering::addToCluster(cluster c, node u) {
