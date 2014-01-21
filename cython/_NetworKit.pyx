@@ -14,6 +14,7 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.map cimport map
 from libcpp.string cimport string
+from unordered_set cimport unordered_set
 # FIXME: from libcpp.unordered_map import unordered_map
 
 # NetworKit typedefs
@@ -270,11 +271,28 @@ cdef class Dijkstra:
 		return self._this.run(G._this, source)
 
 
+
+cdef extern from "../src/graph/Subgraph.h":
+	cdef cppclass _Subgraph "NetworKit::Subgraph":
+		_Subgraph() except +
+		_Graph fromNodes(_Graph G, unordered_set[node] nodes)
+
+cdef class Subgraph:
+	""" Methods for creating subgraphs"""
+	cdef _Subgraph _this
+
+	def fromNodes(self, Graph G, nodes): #unordered_set[node]
+		cdef unordered_set[node] nnodes
+		for node in nodes:
+			nnodes.insert(node);
+		return Graph().setThis(self._this.fromNodes(G._this, nnodes))
+
 cdef extern from "../src/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
 		vector[bool] run(_Graph G)
 		string toString()
+
 
 # FIXME: check correctness
 cdef class Luby:
