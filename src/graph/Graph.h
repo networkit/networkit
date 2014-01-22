@@ -54,7 +54,7 @@ protected:
 	template<class T>
 	class Coordinates {
 	private:
-		std::vector<Point<T> > data;
+		Vector<Point<T> > data;
 
 	public:
 		Coordinates() {}
@@ -132,6 +132,7 @@ protected:
 
 	//	attribute maps storage
 
+	// FIXME: remove or make threadsafe 
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
 
 	// defaults
