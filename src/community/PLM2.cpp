@@ -49,8 +49,9 @@ Clustering PLM2::run(Graph& G) {
 		volCommunity[C] = volNode[u];
 	});
 
-	bool moved = false; // indicates whether any node has been moved
-
+	// first move phase
+	bool moved = false; // indicates whether any node has been moved in the last pass
+	bool change = false; // indicates whether the communities have changed at all 
 
 	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
@@ -140,22 +141,24 @@ Clustering PLM2::run(Graph& G) {
 		}
 	};
 
-	// first move phase
+	do {
+		moved = false;
+		// apply node movement according to parallelization strategy
+		if (this->parallelism == "none") {
+			G.forNodes(tryMove);
+		} else if (this->parallelism == "simple") {
+			G.parallelForNodes(tryMove);
+		} else if (this->parallelism == "balanced") {
+			G.balancedParallelForNodes(tryMove);
+		} else {
+			ERROR("unknown parallelization strategy: " << this->parallelism);
+			throw std::runtime_error("unknown parallelization strategy");
+		}
+		if (moved) change = true;
+	} while (moved);
 
-	// apply node movement according to parallelization strategy
-	if (this->parallelism == "none") {
-		G.forNodes(tryMove);
-	} else if (this->parallelism == "simple") {
-		G.parallelForNodes(tryMove);
-	} else if (this->parallelism == "balanced") {
-		G.balancedParallelForNodes(tryMove);
-	} else {
-		ERROR("unknown parallelization strategy: " << this->parallelism);
-		throw std::runtime_error("unknown parallelization strategy");
-	}
 
-
-	if (moved) {
+	if (change) {
 		DEBUG("nodes moved, so begin coarsening and recursive call");
 		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
 		Clustering zetaCoarse = run(coarsened.first);
@@ -175,18 +178,20 @@ Clustering PLM2::run(Graph& G) {
 			});
 
 			// second move phase
-			moved = false;
-			// apply node movement according to parallelization strategy
-			if (this->parallelism == "none") {
-				G.forNodes(tryMove);
-			} else if (this->parallelism == "simple") {
-				G.parallelForNodes(tryMove);
-			} else if (this->parallelism == "balanced") {
-				G.balancedParallelForNodes(tryMove);
-			} else {
-				ERROR("unknown parallelization strategy: " << this->parallelism);
-				throw std::runtime_error("unknown parallelization strategy");
-			}
+			do {
+				moved = false;
+				// apply node movement according to parallelization strategy
+				if (this->parallelism == "none") {
+					G.forNodes(tryMove);
+				} else if (this->parallelism == "simple") {
+					G.parallelForNodes(tryMove);
+				} else if (this->parallelism == "balanced") {
+					G.balancedParallelForNodes(tryMove);
+				} else {
+					ERROR("unknown parallelization strategy: " << this->parallelism);
+					throw std::runtime_error("unknown parallelization strategy");
+				}
+			} while (moved);
 		}
 	}
 
