@@ -42,21 +42,21 @@ def pystring(stdstring):
 # Function definitions
 
 cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
-	void _configureLogging "Aux::configureLogging" (string loglevel)
-	string _currentLogLevel "Aux::currentLogLevel" () except +
-	void _setLoglevel "Aux::setLoglevel" (string loglevel) except +
+	#void _configureLogging "Aux::configureLogging" (string loglevel)
+	string _getLogLevel "Aux::Log::getLogLevel" () except +
+	void _setLogLevel "Aux::Log::setLogLevel" (string loglevel) except +
 	
-def configureLogging(loglevel="ERROR"):
-	""" Set the loglevel of the LOG4CXX module"""
-	_configureLogging(stdstring(loglevel))
+#def configureLogging(loglevel="ERROR"):
+	#""" Set the loglevel of the LOG4CXX module"""
+	#_configureLogging(stdstring(loglevel))
 
 def currentLogLevel():
 	""" Get the current log level"""
-	return pystring(_currentLogLevel());
+	return pystring(_getLogLevel());
 
-def setLoglevel(loglevel):
+def setLogLevel(loglevel):
 	""" Set the current loglevel"""
-	_setLoglevel(stdstring(loglevel))
+	_setLogLevel(stdstring(loglevel))
 
 
 cdef extern from "../src/auxiliary/Parallelism.h" namespace "Aux":
