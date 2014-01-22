@@ -6,6 +6,7 @@
  */
 
 #include "LPDegreeOrdered.h"
+#include <unordered_map>
 
 namespace NetworKit {
 
@@ -21,7 +22,7 @@ LPDegreeOrdered::~LPDegreeOrdered() {
 Clustering LPDegreeOrdered::run(Graph& G) {
 	count n = G.numberOfNodes();
 	count theta = n / 1e5;
-	DEBUG("theta: " << theta);
+	DEBUG("theta: " , theta);
 
 	index z = G.upperNodeIdBound();
 	Clustering labels(z);
@@ -83,7 +84,7 @@ Clustering LPDegreeOrdered::run(Graph& G) {
 			propagateLabels(v);
 		}
 
-		INFO("updated labels: " << nUpdated);
+		INFO("updated labels: " , nUpdated);
 		nIterations += 1;
 	}
 

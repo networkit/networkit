@@ -25,7 +25,7 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 		throw std::runtime_error("DGS input file could not be opened.");
 	}
 	else {
-		DEBUG("Opened DGS file " << path);
+		DEBUG("Opened DGS file " , path);
 
 		std::string line;
 
@@ -34,7 +34,7 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 		if (line.compare("DGS004") == 0) {
 			DEBUG("found magic cookie: DGS004");
 		} else {
-			DEBUG("First line: " << line);
+			DEBUG("First line: " , line);
 			throw std::runtime_error("This does not seem to be a valid DGS file. Expected magic cookie 'DGS004' in first line");
 		}
 
@@ -123,8 +123,8 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 				std::string edge_to = edgesSplit[1];
 				node u = nodeNames[edge_from];
 				node v = nodeNames[edge_to];
-				//			TRACE("u: " << edge_from << " " << u);
-				//			TRACE("v: " << edge_to << " " << v);
+				//			TRACE("u: " , edge_from , " " , u);
+				//			TRACE("v: " , edge_to , " " , v);
 
 				Gproxy.removeEdge(u, v);
 			}

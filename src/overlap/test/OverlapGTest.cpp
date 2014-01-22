@@ -34,7 +34,7 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
 	bool isOneClustering = true;
 	G.forNodes([&](node v) {
 		cluster c = core.clusterOf(v);
-		DEBUG("CLUSTER! c = " << c);
+		DEBUG("CLUSTER! c = " , c);
 		isOneClustering = isOneClustering && (c == one);
 	});
 
@@ -117,7 +117,7 @@ TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 	bool isOneClustering = true;
 	G.forNodes([&](node v) {
 		cluster c = core.clusterOf(v);
-		DEBUG("CLUSTER! c = " << c);
+		DEBUG("CLUSTER! c = " , c);
 		isOneClustering = isOneClustering && (c == one);
 	});
 
@@ -147,8 +147,8 @@ TEST_F(OverlapGTest, testHashingOverlapperForCorrectness) {
 	HashingOverlapper overlapper;
 	Clustering overlap = overlapper.run(G, clusterings);
 
-	INFO("overlap clustering number of clusters: " << overlap.numberOfClusters());
-	INFO("overlap clustering: " << Aux::vectorToString(overlap.getVector()));
+	INFO("overlap clustering number of clusters: " , overlap.numberOfClusters());
+	INFO("overlap clustering: " , Aux::vectorToString(overlap.getVector()));
 }
 
 

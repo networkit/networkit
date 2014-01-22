@@ -40,14 +40,14 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 				G.forNeighborsOf(nodeToDel, [&](node neigh) {
 					G.removeEdge(nodeToDel, neigh);
 					GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
-					TRACE("Event: REMOVE edge " << nodeToDel << "-" << neigh);
+					TRACE("Event: REMOVE edge " , nodeToDel , "-" , neigh);
 					eventStream.push_back(event);
 				});
 
 				// eventually delete vertex
 				G.removeNode(nodeToDel);
 				GraphEvent event(GraphEvent::NODE_REMOVAL, nodeToDel);
-				TRACE("Event: REMOVE node " << nodeToDel);
+				TRACE("Event: REMOVE node " , nodeToDel);
 				eventStream.push_back(event);
 			}
 		}
@@ -84,7 +84,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			Point<float> p(x, y);
 			coordinates[newNode] = p;
 			GraphEvent event(GraphEvent::NODE_ADDITION, newNode);
-			TRACE("Event: ADD node " << newNode);
+			TRACE("Event: ADD node " , newNode);
 			eventStream.push_back(event);
 		}
 
@@ -129,7 +129,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			if (eligibleEdges[e] < 2) {
 				G.removeEdge(u, v);
 				GraphEvent event(GraphEvent::EDGE_REMOVAL, u, v);
-				TRACE("Event: REMOVE edge " << u << "-" << v);
+				TRACE("Event: REMOVE edge " , u , "-" , v);
 				eventStream.push_back(event);
 			}
 			eligibleEdges.erase(e);
@@ -145,7 +145,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 						G.getCoordinate(u, 0), G.getCoordinate(u, 1), G.getCoordinate(v, 0), G.getCoordinate(v, 1));
 				G.addEdge(u, v);
 				GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, ew);
-				TRACE("Event: ADD edge " << u << "-" << v);
+				TRACE("Event: ADD edge " , u , "-" , v);
 				eventStream.push_back(event);
 			}
 		}

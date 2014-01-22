@@ -51,7 +51,7 @@ Clustering RegionGrowingOverlapper::run(Graph& G,
 		r = *unvisited.begin();
 		unvisited.erase(r);
 
-		DEBUG("starting BFS from node: " << r);
+		DEBUG("starting BFS from node: " , r);
 
 		// start BFS
 		G.breadthFirstNodesFrom(r, visited, [&](node u) {

@@ -20,7 +20,7 @@ PLM2::PLM2(bool refine, double gamma, std::string par) : parallelism(par), refin
 
 
 Clustering PLM2::run(Graph& G) {
-	INFO("calling run method on " << G.toString());
+	INFO("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();
 
@@ -34,13 +34,13 @@ Clustering PLM2::run(Graph& G) {
 	std::vector<double> volNode(z, 0.0);
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();
-	DEBUG("total edge weight: " << total);
+	DEBUG("total edge weight: " , total);
 	edgeweight divisor = (2 * total * total); // needed in modularity calculation
 
 	G.parallelForNodes([&](node u) { // calculate and store volume of each node
 		volNode[u] += G.weightedDegree(u);
 		volNode[u] += G.weight(u, u); // consider self-loop twice
-		// TRACE("init volNode[" << u << "] to " << volNode[u]);
+		// TRACE("init volNode[" , u , "] to " , volNode[u]);
 	});
 
 	// init community-dependent temporaries
@@ -55,7 +55,7 @@ Clustering PLM2::run(Graph& G) {
 
 	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
-		// TRACE("trying to move node " << u);
+		// TRACE("trying to move node " , u);
 
 		// collect edge weight to neighbor clusters
 		std::map<cluster, edgeweight> affinity;
@@ -91,7 +91,7 @@ Clustering PLM2::run(Graph& G) {
 			double volN = 0.0;
 			volN = volNode[u];
 			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor; 
-			//TRACE("(" << affinity[D] << " - " << affinity[C] << ") / " << total << " + " << this->gamma << " * ((" << volCommunityMinusNode(C, u) << " - " << volCommunityMinusNode(D, u) << ") *" << volN << ") / 2 * " << (total * total));
+			//TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
 			return delta;
 		};
 
@@ -113,12 +113,12 @@ Clustering PLM2::run(Graph& G) {
 
 		C = zeta[u];
 
-//			TRACE("Processing neighborhood of node " << u << ", which is in cluster " << C);
+//			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
 		G.forNeighborsOf(u, [&](node v) {
 			D = zeta[v];
 			if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 				double delta = modGain(u, C, D);
-				// TRACE("mod gain: " << delta); // FIXME: all mod gains are negative
+				// TRACE("mod gain: " , delta); // FIXME: all mod gains are negative
 				if (delta > deltaBest) {
 					deltaBest = delta;
 					best = D;
@@ -126,18 +126,18 @@ Clustering PLM2::run(Graph& G) {
 			}
 		});
 
-		// TRACE("deltaBest=" << deltaBest); // FIXME: best mod gain is negative
+		// TRACE("deltaBest=" , deltaBest); // FIXME: best mod gain is negative
 		if (deltaBest > 0) { // if modularity improvement possible
 			assert (best != C && best != none);// do not "move" to original cluster
 
 			zeta[u] = best; // move to best cluster
-			// TRACE("node " << u << " moved");
+			// TRACE("node " , u , " moved");
 			modUpdate(u, C, best);
 
 			moved = true; // change to clustering has been made
 
 		} else {
-			// TRACE("node " << u << " not moved");
+			// TRACE("node " , u , " not moved");
 		}
 	};
 
@@ -151,7 +151,7 @@ Clustering PLM2::run(Graph& G) {
 		} else if (this->parallelism == "balanced") {
 			G.balancedParallelForNodes(tryMove);
 		} else {
-			ERROR("unknown parallelization strategy: " << this->parallelism);
+			ERROR("unknown parallelization strategy: " , this->parallelism);
 			throw std::runtime_error("unknown parallelization strategy");
 		}
 		if (moved) change = true;
@@ -188,7 +188,7 @@ Clustering PLM2::run(Graph& G) {
 				} else if (this->parallelism == "balanced") {
 					G.balancedParallelForNodes(tryMove);
 				} else {
-					ERROR("unknown parallelization strategy: " << this->parallelism);
+					ERROR("unknown parallelization strategy: " , this->parallelism);
 					throw std::runtime_error("unknown parallelization strategy");
 				}
 			} while (moved);

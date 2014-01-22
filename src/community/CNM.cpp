@@ -93,10 +93,10 @@ Clustering CNM::run(Graph &graph) {
 			pq.print();
 			pq2.print();
 
-			INFO("bestDelta: " << bestDelta << " at edge " << best_u << "," << best_v);
+			INFO("bestDelta: " , bestDelta , " at edge " , best_u , "," , best_v);
 			best_u = (pqMin.second).first;
 			best_v = (pqMin.second).second;
-			INFO("pqMin.first: " << pqMin.first << " at edge " << best_u << "," << best_v << ", pqMin2.first: " << pqMin2.first);
+			INFO("pqMin.first: " , pqMin.first , " at edge " , best_u , "," , best_v , ", pqMin2.first: " , pqMin2.first);
 
 			assert(pqMin.first == -bestDelta);
 			assert(pqMin.first == pqMin2.first);
@@ -106,14 +106,14 @@ Clustering CNM::run(Graph &graph) {
 		best_u = (pqMin.second).first;
 		best_v = (pqMin.second).second;
 
-		DEBUG("best_u: " << best_u << ", best_v: " << best_v);
+		DEBUG("best_u: " , best_u , ", best_v: " , best_v);
 		TRACE("rewiring of edges incident to best_v and removing them from PQ");
 
 		// remove best_u edges from PQ (has to be done first)
 		G.forWeightedEdgesOf(best_u, [&](node best_u, node neighbor, edgeweight ew) {
 			std::pair<node, node> edge = (best_u <= neighbor) ? (std::make_pair(best_u, neighbor)) : (std::make_pair(neighbor, best_u));
 			if (best_u != neighbor) {
-				DEBUG("remove from PQ: " << -ew << " for " << best_u << " and " << neighbor);
+				DEBUG("remove from PQ: " , -ew , " for " , best_u , " and " , neighbor);
 				pq.remove(std::make_pair(ew, edge));
 			}
 		});
@@ -122,7 +122,7 @@ Clustering CNM::run(Graph &graph) {
 		G.forWeightedEdgesOf(best_v, [&](node best_v, node neighbor, edgeweight ew) {
 			std::pair<node, node> edge = (best_v <= neighbor) ? (std::make_pair(best_v, neighbor)) : (std::make_pair(neighbor, best_v));
 			if (best_v != neighbor) {
-				DEBUG("remove from PQ: " << -ew << " for " << best_v << " and " << neighbor);
+				DEBUG("remove from PQ: " , -ew , " for " , best_v , " and " , neighbor);
 				pq.remove(std::make_pair(ew, edge));
 			}
 		});
@@ -134,12 +134,12 @@ Clustering CNM::run(Graph &graph) {
 			if (G.hasEdge(best_u, endPoint)) {
 				// increase weight of existing edge
 				G.increaseWeight(best_u, endPoint, ew);
-				DEBUG("increase weight of edge " << best_u << "," << endPoint << " by " << ew);
+				DEBUG("increase weight of edge " , best_u , "," , endPoint , " by " , ew);
 			}
 			else {
 				// insert new edge to best_u
 				G.addEdge(best_u, endPoint, ew);
-				DEBUG("insert edge " << best_u << "," << endPoint);
+				DEBUG("insert edge " , best_u , "," , endPoint);
 			}
 		});
 
@@ -165,7 +165,7 @@ Clustering CNM::run(Graph &graph) {
 			if (best_u != neighbor) {
 				std::pair<node, node> edge = (best_u <= neighbor) ? (std::make_pair(best_u, neighbor)) : (std::make_pair(neighbor, best_u));
 				double deltaMod = modScoring.edgeScore(best_u, neighbor);
-				DEBUG("insert into PQ: " << -deltaMod << " for " << best_u << " and " << neighbor);
+				DEBUG("insert into PQ: " , -deltaMod , " for " , best_u , " and " , neighbor);
 				std::pair<double, std::pair<node, node> > elem = std::make_pair(-deltaMod, edge);
 				pq.insert(elem);
 			}
@@ -176,7 +176,7 @@ Clustering CNM::run(Graph &graph) {
 
 		// record best solutions
 		if (newModularity > bestModularity) {
-			TRACE("new mod value: " << newModularity);
+			TRACE("new mod value: " , newModularity);
 			bestModularity = newModularity;
 			bestClustering = clustering;
 		}

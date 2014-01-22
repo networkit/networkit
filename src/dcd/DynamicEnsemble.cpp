@@ -33,7 +33,7 @@ void DynamicEnsemble::setGraph(Graph& G) {
 }
 
 Clustering DynamicEnsemble::run() {
-	INFO("STARTING DynamicEnsemble on G=" << G->toString());
+	INFO("STARTING DynamicEnsemble on G=" , G->toString());
 	this->runtime.start(); // start timer
 
 	// fixed sub-algorithms

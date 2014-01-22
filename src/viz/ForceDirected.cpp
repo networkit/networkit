@@ -31,7 +31,7 @@ void ForceDirected::draw(Graph& g) {
 	int area = width * height;
 	count n = g.numberOfNodes();
 	double optPairDist = 0.95 * sqrt((double) area / (double) n);
-	TRACE("k: " << optPairDist);
+	TRACE("k: " , optPairDist);
 
 	// initialize randomly
 	randomInitCoordinates(g);
@@ -79,7 +79,7 @@ void ForceDirected::draw(Graph& g) {
 			change += oldLayout[i].distance(newLayout[i]);
 		}
 
-		TRACE("change: " << change);
+		TRACE("change: " , change);
 
 		return (change < eps);
 	});
@@ -125,17 +125,17 @@ void ForceDirected::draw(Graph& g) {
 		g.forNodes([&](node u) {
 			move(layout[u], forces[u], step);
 
-//			DEBUG("moved " << u);
-//			DEBUG("by: " << forces[u].getValue(0) << " and " << forces[u].getValue(1));
-//			DEBUG("new x: " << layout[u].getValue(0));
-//			DEBUG("new y: " << layout[u].getValue(1));
+//			DEBUG("moved " , u);
+//			DEBUG("by: " , forces[u].getValue(0) , " and " , forces[u].getValue(1));
+//			DEBUG("new x: " , layout[u].getValue(0));
+//			DEBUG("new y: " , layout[u].getValue(1));
 		});
 
 		++numIter;
 		step = updateStepLength(step, previousLayout, layout);
 		converged = isConverged(previousLayout, layout) || numIter >= MAX_ITER;
 
-		TRACE("Iteration finished: " << numIter);
+		TRACE("Iteration finished: " , numIter);
 	}
 
 	// copy layout into graph

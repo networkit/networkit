@@ -94,7 +94,7 @@ void DynamicCommunityDetection::run() {
 		std::vector<GraphEvent> slice(i, j);
 		DEBUG("updating graph");
 		gu.update(slice);
-		DEBUG("number of nodes: " << G.numberOfNodes());
+		DEBUG("number of nodes: " , G.numberOfNodes());
 
 		if (! graphOutputPath.empty()) {
 			char suffix[12];
@@ -119,8 +119,8 @@ void DynamicCommunityDetection::run() {
 		timer.stop();
 		detectTime.push_back(timer.elapsedMilliseconds());
 
-		DEBUG("upper community id bound: " << zeta.upperBound());
-		// DEBUG("zeta at time " << G.time() << ": " << Aux::vectorToString(zeta.getVector()));
+		DEBUG("upper community id bound: " , zeta.upperBound());
+		// DEBUG("zeta at time " , G.time() , ": " , Aux::vectorToString(zeta.getVector()));
 		// 
 		
 		// record time step
@@ -130,7 +130,7 @@ void DynamicCommunityDetection::run() {
 			DEBUG("recording quality");
 			Modularity mod;
 			quality.push_back(mod.getQuality(zeta, G));
-			INFO("modularity at time " << G.time() << ": " << quality.back());
+			INFO("modularity at time " , G.time() , ": " , quality.back());
 		}
 
 		if (record("continuity")) {

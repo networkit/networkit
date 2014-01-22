@@ -22,7 +22,7 @@ std::vector<count> BFS::run(const Graph& g, node source) const {
 	while (! q.empty()) {
 		node current = q.front();
 		q.pop();
-		TRACE("current node in BFS: " << current);
+		TRACE("current node in BFS: " , current);
 
 		// insert untouched neighbors into queue
 		g.forNeighborsOf(current, [&](node neighbor) {

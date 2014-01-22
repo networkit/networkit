@@ -43,7 +43,7 @@ TEST_F(MatcherGTest, testLocalMaxMatching) {
 	M = localMaxMatcher.run(airfoil1);
 	isProper = M.isProper(airfoil1);
 	EXPECT_TRUE(isProper);
-	DEBUG("LocalMax on airfoil1 produces matching of size: " << M.size());
+	DEBUG("LocalMax on airfoil1 produces matching of size: " , M.size());
 #endif
 }
 
@@ -69,7 +69,7 @@ TEST_F(MatcherGTest, testPgaMatching) {
 	M = pgaMatcher.run(airfoil1);
 	isProper = M.isProper(airfoil1);
 	EXPECT_TRUE(isProper);
-	DEBUG("PGA on airfoil1 produces matching of size: " << M.size());
+	DEBUG("PGA on airfoil1 produces matching of size: " , M.size());
 #endif
 }
 

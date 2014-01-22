@@ -354,7 +354,7 @@ int main(int argc, char **argv) {
 			}
 		} // end for detector arguments
 		for (DynamicCommunityDetector* detector : detectors) {
-			INFO("will add " << detector->toString() << " to setup");
+			INFO("will add " , detector->toString() , " to setup");
 		}
 	} else {
 		std::cout << "[ERROR] no community detector given" << std::endl;
@@ -429,11 +429,11 @@ int main(int argc, char **argv) {
 
 
 
-	INFO("creating setup with tMax=" << tMax << " and deltaT=" << deltaT);
+	INFO("creating setup with tMax=" , tMax , " and deltaT=" , deltaT);
 	DynCDSetup* dynCDSetup = new DynCDSetup(*source, detectors, tMax, deltaT);
 
 	if (options[STATIC]) {
-		INFO("setting static detector " << staticDetector->toString());
+		INFO("setting static detector " , staticDetector->toString());
 		dynCDSetup->setStatic(staticDetector);
 	}
 

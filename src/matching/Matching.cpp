@@ -37,7 +37,7 @@ bool Matching::isProper(Graph& G) const {
 	for (node v = 0; v < G.numberOfNodes(); ++v) {
 		sym = (((*this)[v] == v) || ((*this)[(*this)[v]] == v));
 		if (!sym) {
-			DEBUG("node " << v << " is not symmetrically matched");
+			DEBUG("node " , v , " is not symmetrically matched");
 			return false;
 		}
 	}
@@ -49,7 +49,7 @@ bool Matching::isProper(Graph& G) const {
 		if (v != w) {
 			inGraph = G.hasEdge(v, w);
 			if (!inGraph) {
-				DEBUG("matched pair (" << v << "," << w << ") is not an edge");
+				DEBUG("matched pair (" , v , "," , w , ") is not an edge");
 				return false;
 			}
 		}

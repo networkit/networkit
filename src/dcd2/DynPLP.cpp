@@ -14,7 +14,7 @@ DynPLP::DynPLP(std::string prepStrategy, count theta) : prepStrategy(prepStrateg
 }
 
 void DynPLP::update(std::vector<GraphEvent>& stream) {
-	DEBUG("processing event stream of length " << stream.size());
+	DEBUG("processing event stream of length " , stream.size());
 	auto isolate = [&](node u) {
 		zeta[u] = zeta.addCluster();
 		activeNodes[u] = true;
@@ -23,7 +23,7 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 	if (prepStrategy == "isolate") {
 		for (GraphEvent ev : stream) {
 			// TODO: remove trace
-			// TRACE("event: " << ev.toString());
+			// TRACE("event: " , ev.toString());
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
 					zeta.append(ev.u);
@@ -69,7 +69,7 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 		};
 
 		for (GraphEvent ev : stream) {
-			// TRACE("event: " << ev.toString());
+			// TRACE("event: " , ev.toString());
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
 					zeta.append(ev.u);
@@ -85,11 +85,11 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 					isolate(ev.u);
 					isolate(ev.v);
 					G->forNeighborsOf(ev.u, [&](node v) {
-						// TRACE("neighbor " << v);
+						// TRACE("neighbor " , v);
 						tryIsolate(v);
 					});
 					G->forNeighborsOf(ev.v, [&](node v) {
-						// TRACE("neighbor" << v);
+						// TRACE("neighbor" , v);
 						tryIsolate(v);
 					});
 					break;
@@ -125,7 +125,7 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 			}
 		} // end event loop
 	} else {
-		ERROR("unknown prep strategy: " << prepStrategy);
+		ERROR("unknown prep strategy: " , prepStrategy);
 		throw std::runtime_error("unknown prep strategy");
 	}
 }
@@ -141,12 +141,12 @@ Clustering DynPLP::detect() {
 	do {
 		nUpdated = 0; // number of nodes which have been updated in last iteration
 		nIterations++;
-		// TRACE("iteration " << nIterations);
+		// TRACE("iteration " , nIterations);
 
 		auto propagate = [&](node v) {
-			// TRACE("scanning node " << v);
+			// TRACE("scanning node " , v);
 			if ((activeNodes[v]) && (G->degree(v) > 0)) {
-				// TRACE("processing node " << v);
+				// TRACE("processing node " , v);
 				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 				// weigh the labels in the neighborhood of v
 				G->forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
@@ -170,7 +170,7 @@ Clustering DynPLP::detect() {
 
 		G->balancedParallelForNodes(propagate);
 
-		DEBUG("nodes updated: " << nUpdated);
+		DEBUG("nodes updated: " , nUpdated);
 
 	} while (nUpdated > this->updateThreshold);
 
