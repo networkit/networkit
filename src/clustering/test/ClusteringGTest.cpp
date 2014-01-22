@@ -34,6 +34,8 @@
 #include "../ClusteringGenerator2.h"
 #include "../Modularity2.h"
 #include "../Coverage2.h"
+#include "../JaccardMeasure2.h"
+#include "../NodeStructuralRandMeasure2.h"
 
 
 
@@ -72,7 +74,7 @@ TEST_F(ClusteringGTest, testStructuresOnCG) {
 	
 	// simple check for "same results"
 	EXPECT_EQ(cg_random.numberOfClusters(),cg2_random.numberOfSubsets()); 
-	// testing cluster sizes for random clusters makes no sense...
+	// testing cluster sizes for random clusters makes no sense...only if the seed is controlled.
 	
 	// thourough checks would need to compare each element...
 }
@@ -110,8 +112,73 @@ TEST_F(ClusteringGTest, testStructuresOnModularity) {
 
 }
 
+TEST_F(ClusteringGTest, testStructuresOnCoverage) {
+	GraphGenerator graphGenerator;
+
+	count n = 100;
+
+	DEBUG("testing coverage on clustering of complete graph with " << n << " nodes");
 
 
+	Graph G = graphGenerator.makeCompleteGraph(n);
+
+	ClusteringGenerator2 clusteringGenerator;
+
+	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
+	Partition one = clusteringGenerator.makeOneClustering(G);
+
+	Coverage2 coverage;
+
+	DEBUG("calculating coverage for singleton clustering");
+	double covSingleton = coverage.getQuality(singleton, G);
+
+	DEBUG("calculating coverage for 1-clustering");
+	double covOne = coverage.getQuality(one, G);
+
+	DEBUG("mod(singleton-clustering) = " << covSingleton);
+	DEBUG("mod(1-clustering) = " << covOne);
+
+
+	EXPECT_EQ(1.0, covOne) << "1-clustering should have coverage of 1.0";
+	EXPECT_GE(0.0, covSingleton) << "singleton clustering should have coverage of 0.0";
+
+}
+
+
+TEST_F(ClusteringGTest, testStructuresOnJaccardMeasure) {
+	count n = 100;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCompleteGraph(n);
+
+	ClusteringGenerator2 clusteringGen;
+	Partition singleton = clusteringGen.makeSingletonClustering(G);
+	Partition random = clusteringGen.makeRandomClustering(G, 10);
+
+	JaccardMeasure2 jaccard;
+	double j = jaccard.getDissimilarity(G, singleton, random);
+
+	EXPECT_EQ(1.0, j) << "The singleton clustering and any other clustering compare with a dissimilarity of 1.0";
+
+}
+
+TEST_F(ClusteringGTest, testStructuresOnNodeStructuralRandMeasure) {
+	count n = 100;
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeCompleteGraph(n);
+
+	ClusteringGenerator2 clusteringGen;
+	Partition one1 = clusteringGen.makeOneClustering(G);
+	Partition one2 = clusteringGen.makeOneClustering(G);
+
+	NodeStructuralRandMeasure2 rand;
+	double r = rand.getDissimilarity(G, one1, one2);
+
+	EXPECT_EQ(0.0, r) << "Identical clusterings should compare with a dissimilarity of 0.0";
+
+}
+
+/** #####################################################################
+	##################################################################### */
 
 
 TEST_F(ClusteringGTest, testModularity) {
