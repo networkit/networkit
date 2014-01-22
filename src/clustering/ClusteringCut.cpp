@@ -17,17 +17,17 @@ ClusteringCut::~ClusteringCut(){
 
 }
 
-cutEdges ClusteringCut::getAllCutEdges(const Graph& G, const Clustering& zeta){
+cutEdges ClusteringCut::getAllCutEdges(const Graph& G, const Partition& zeta){
 	cutEdges cuttingEdges;
 	G.forEdges([&](node u, node v) {
-		if (zeta.clusterOf(u) != zeta.clusterOf(v)) {
+		if (zeta[u] != zeta[v]) {
 			cuttingEdges.insert(std::pair<node, node>(u, v));
 		}
 	});
 	return cuttingEdges;
 }
 
-cuttingMap ClusteringCut::getClusterToCutMatrixMap(const Graph& G, const Clustering& zeta){
+cuttingMap ClusteringCut::getClusterToCutMatrixMap(const Graph& G, const Partition& zeta){
 
 	cuttingMap cMap; // map to return
 
@@ -35,10 +35,10 @@ cuttingMap ClusteringCut::getClusterToCutMatrixMap(const Graph& G, const Cluster
 	cutEdges cuttingEdges; // cutting edges, group of edges
 
 	G.forEdges([&](node u, node v) {
-		clst1 = zeta.clusterOf(u);
-		clst2 = zeta.clusterOf(v);
+		clst1 = zeta[u];
+		clst2 = zeta[v];
 		std::pair<cluster, cluster> key (clst1, clst2);
-		if (zeta.clusterOf(u) != zeta.clusterOf(v)) {
+		if (zeta[u] != zeta[v]) {
 
 			cuttingMap::const_iterator got = cMap.find(key);
 			 if ( got != cMap.end() ){

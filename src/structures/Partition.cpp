@@ -167,5 +167,9 @@ count Partition::numberOfElements() const {
 	return (z+1);	// z is the maximum element id
 }
 
+std::vector<index> getVector() {
+	return std::copy(this->data); //FIXME is this appropriate?
+}
+
 
 } /* namespace NetworKit */

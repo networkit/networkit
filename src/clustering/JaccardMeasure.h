@@ -20,7 +20,7 @@ public:
 
 	virtual ~JaccardMeasure();
 
-	virtual double getDissimilarity(Graph& G, Clustering& first, Clustering& second);
+	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second);
 };
 
 } /* namespace NetworKit */
