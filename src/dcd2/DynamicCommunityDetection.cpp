@@ -17,16 +17,25 @@
 #include "../community/PLP.h"
 #include "../community/PLM2.h"
 #include "../clustering/SampledRandMeasure.h"
+#include "../community/CommunityGraph.h"
 
 
 namespace NetworKit {
 
 DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy, count interval,
-	bool recordQuality, bool recordContinuity) :
-	 inputPath(inputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), recordQuality(recordQuality), recordContinuity(recordContinuity) {
+	std::vector<std::string> recordSettings, std::string graphOutputPath) :
+	 inputPath(inputPath), graphOutputPath(graphOutputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), recordSettings(recordSettings)
+{
+
 }
 
 void DynamicCommunityDetection::run() {
+
+	// check if property with the given name should be recorded
+	auto record = [&](std::string key) {
+		return std::find(recordSettings.begin(), recordSettings.end(), key) != recordSettings.end();
+	};
+
 	DEBUG("reading full event stream from file");
 	DGSStreamParser parser(inputPath, true, 1);
 	std::vector<GraphEvent> stream = parser.getStream();
@@ -44,12 +53,21 @@ void DynamicCommunityDetection::run() {
 		algo = new StaticAdapter(new PLP());
 	} else if (algoName == "PLM") {
 		algo = new StaticAdapter(new PLM2());
+	} else {
+		throw std::runtime_error("unknown algorithm");
 	}
 
 	DEBUG("attaching graph");
 	algo->attachGraph(G);
 
 	Aux::Timer timer;
+
+	METISGraphWriter graphWriter;
+	if (! graphOutputPath.empty()) {
+		std::string path = graphOutputPath;
+		path.append("-0000.graph");
+		graphWriter.write(G, path);
+	}
 
 
 	// slicing stream by timesteps
@@ -78,6 +96,14 @@ void DynamicCommunityDetection::run() {
 		gu.update(slice);
 		DEBUG("number of nodes: " << G.numberOfNodes());
 
+		if (! graphOutputPath.empty()) {
+			char suffix[12];
+			sprintf(suffix, "-%4llu.graph", run);
+			std::string path = graphOutputPath;
+			path.append(suffix);
+			graphWriter.write(G, path);
+		}
+
 
 		timer.start();
 		//
@@ -95,17 +121,47 @@ void DynamicCommunityDetection::run() {
 
 		DEBUG("upper community id bound: " << zeta.upperBound());
 		// DEBUG("zeta at time " << G.time() << ": " << Aux::vectorToString(zeta.getVector()));
+		// 
+		
+		// record time step
+		step.push_back(G.time());
 
-		if (recordQuality) {
+		if (record("quality")) {
+			DEBUG("recording quality");
 			Modularity mod;
 			quality.push_back(mod.getQuality(zeta, G));
 			INFO("modularity at time " << G.time() << ": " << quality.back());
 		}
 
-		if (recordContinuity && (run >= 2)) {
-			SampledRandMeasure sampledRand(500);
-			double cont = sampledRand.getDissimilarity(G, zeta, previous);
+		if (record("continuity")) {
+
+			if (run >= 2) {
+				SampledRandMeasure sampledRand(5000);
+				double cont = sampledRand.getDissimilarity(G, zeta, previous);
+				continuity.push_back(cont);
+			} else {
+				continuity.push_back(0.0); // to make timelines the same length
+			}
+
 		}
+
+		if (record("communityCount")) {
+			DEBUG("recording community count");
+			communityCount.push_back(zeta.numberOfClusters());
+		}
+
+		if (record("communitySizes")) {
+			DEBUG("recording community sizes");
+			std::vector<count> sizes = zeta.clusterSizes();
+
+			// double avgSize = std::accumulate(sizes.begin(), sizes.end(), 0) / (double) sizes.size();
+			communitySizes.push_back(sizes);
+		}
+
+		if (record("results")) {
+			results.push_back(std::make_pair(G, zeta));
+		}
+
 
 		previous = zeta; // save last solution for next run
 
@@ -117,24 +173,32 @@ void DynamicCommunityDetection::run() {
 
 }
 
-std::vector<count> DynamicCommunityDetection::getUpdateTimeline() {
-	return updateTime;
+std::vector<double> DynamicCommunityDetection::getTimeline(std::string key) {
+	if (key == "updateTime") {
+		return updateTime;
+	} else if (key == "detectTime") {
+		return detectTime;
+	} else if (key == "quality") {
+		return quality;
+	} else if (key == "continuity") {
+		return continuity;
+	} else if (key == "communityCount") {
+		return communityCount;
+	} else if (key == "step") {
+		return step;
+	} else {
+		throw std::runtime_error("unknown timeline key");
+		return {};
+	}
 }
 
-std::vector<count> DynamicCommunityDetection::getDetectTimeline() {
-	return detectTime;
-}
-
-std::vector<double> DynamicCommunityDetection::getQualityTimeline() {
-	return quality;
-}
-
-std::vector<double> DynamicCommunityDetection::getContinuityTimeline() {
-	return continuity;
-}
 
 std::vector<std::pair<count, count> > DynamicCommunityDetection::getGraphSizeTimeline() {
 	return size;
+}
+
+std::vector<std::pair<Graph, Clustering> > DynamicCommunityDetection::getResultTimeline() {
+	return results;
 }
 
 } /* namespace NetworKit */

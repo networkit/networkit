@@ -1,51 +1,47 @@
 /*
  * DynamicPubWebGenerator.h
  *
- *  Created on: Apr 11, 2013
+ *  Created on: 15.01.2014
  *      Author: Henning
  */
 
 #ifndef DYNAMICPUBWEBGENERATOR_H_
 #define DYNAMICPUBWEBGENERATOR_H_
 
-#include "DynamicGraphSource.h"
+#include "DynamicGraphGenerator.h"
 #include "PubWebGenerator.h"
+#include "../dynamics/GraphEvent.h"
+#include "../dynamics/DGSWriter.h"
+#include "../auxiliary/Random.h"
+#include "../viz/Point.h"
 
 namespace NetworKit {
 
-class DynamicPubWebGenerator: public DynamicGraphSource {
+class DynamicPubWebGenerator: public NetworKit::DynamicGraphGenerator
+{
+
 protected:
-//	PubWebGenerator staticGen;
-
-	void determineNeighbors(Graph& g);
-	void determineNeighborsOf(Graph& g, node u);
-	void moveNodeIntoUnitSquare(float& x, float& y);
-	float squaredDistanceInUnitTorus(float x1, float y1, float x2, float y2);
-	void chooseDenseAreaSizes();
-	void fillDenseAreas(Graph& g);
-	void spreadRemainingNodes(Graph& g);
-	void chooseClusterSizes();
-	void addNodesToArea(index area, count num, Graph& g);
-	bool isValidEdge(Graph& g, node u, node v);
-
-	void moveNodesRandomly();
+	PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
+	std::map<node, Point<float> > coordinates; //<! new and changed coordinates
 
 public:
-	DynamicPubWebGenerator(count numInitialNodes, count numberOfDenseAreas,
+	DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors);
+
 	virtual ~DynamicPubWebGenerator();
 
+	Graph getGraph() const { return G; }
+
 	/**
-	 * The generator may expect the graph to be in a certain initial state. Call this method first.
+	 * Generate event stream.
+	 *
+	 * @param[in]	nSteps	number of time steps in the event stream
 	 */
-	virtual void initializeGraph();
+	virtual std::vector<GraphEvent> generate(count nSteps);
 
-	/*
-	 * Send graph events to the proxy until termination function becomes true.
-	 */
-	virtual void generate();
 
-	node addNode();
+	virtual std::map<node, Point<float> > getNewCoordinates() const;
+
 };
 
 } /* namespace NetworKit */

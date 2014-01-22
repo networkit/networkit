@@ -44,9 +44,11 @@ except ImportError as importError:
 
 # Some functions and classes should be directly available from the top module
 
-from _NetworKit import configureLogging, currentLogLevel, setLoglevel, enableNestedParallelism
+# TODO: introduce settings module
+
+from _NetworKit import configureLogging, currentLogLevel, setLoglevel, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 from graph import Graph 
-from graphio import readGraph
+from graphio import readGraph, writeGraph
 from nxadapter import nk2nx, nx2nk
 from toolbox import batch
 from community import detectCommunities

@@ -76,9 +76,13 @@ void PostscriptWriter::writeMacros(std::ofstream& file) {
 // TODO: node and edge weights and thicker nodes/edges
 void PostscriptWriter::writeClustering(Clustering& clustering,
 		std::ofstream& file) {
+	TRACE("start ps writeClustering");
+
 	auto adjust([&](float& val) {
 		val += 10.0;
 	});
+
+	TRACE("start edge loop in writeClustering");
 
 	/* Kanten zeichnen */
 	g.forEdges([&](node u, node v) {
@@ -143,7 +147,7 @@ void PostscriptWriter::writeClustering(Clustering& clustering,
 });
 
 	/* Knoten zeichnen */
-	float dotsize = 3.6;
+	float dotsize = 2.0;
 	g.forNodes([&](node u) {
 		if (clustering[u] != none) {
 			// change color
@@ -177,11 +181,14 @@ void PostscriptWriter::writeClustering(Clustering& clustering,
 }
 
 void PostscriptWriter::init(std::string path, std::ofstream& file) {
+	TRACE("start ps init");
+
 	file.open(path.c_str());
 	if (true || wrapAround) { // FIXME
 		file.precision(3);
 		// adjust coordinates for postscript output
 		g.forNodes([&](node u) {
+			TRACE("change coordinate for node " << u);
 			g.setCoordinate(u, 0, 1000.0 * g.getCoordinate(u, 0));
 			g.setCoordinate(u, 1, 1000.0 * g.getCoordinate(u, 1));
 		});
@@ -192,6 +199,8 @@ void PostscriptWriter::init(std::string path, std::ofstream& file) {
 }
 
 void PostscriptWriter::write(Clustering& clustering, std::string path) {
+	TRACE("start ps write clustering");
+
 	std::ofstream file;
 	init(path, file);
 	writeHeader(file);
@@ -208,6 +217,8 @@ void PostscriptWriter::write(Clustering& clustering, std::string path) {
 }
 
 void PostscriptWriter::write(std::string path) {
+	TRACE("start ps write");
+
 	std::ofstream file;
 	init(path, file);
 	writeHeader(file);

@@ -25,7 +25,7 @@ namespace Random {
 uint64_t getSeed();
 
 /**
- * @returns an integer in an inclusive range;
+ * @returns an integer distributed uniformly in an inclusive range;
  * @param upperBound the upper bound, default = UNINT64_T_MAX
  * @param lowerBound the lower bound, default = 0
  */
@@ -34,7 +34,7 @@ uint64_t integer(uint64_t upperBound);
 uint64_t integer(uint64_t lowerBound, uint64_t upperBound);
 
 /**
- * @returns a double in a half-open range: [lowerBound, upperBound)
+ * @returns a double distributed uniformly in a half-open range: [lowerBound, upperBound)
  * @param upperBound default = 1.0
  * @param lowerBound default = 0.0
  */
@@ -43,10 +43,17 @@ double real(double upperBound);
 double real(double lowerBound, double upperBound);
 
 /**
- * @returns a double in the range [0, 1]
+ * @returns a double disributed unformly in the range [0, 1]
  * @note this differs from real() in returning a value in a closed instead of a half-open range.
  */
 double probability();
+
+/** 
+ * @returns an integer distributed binomially
+ * @param n 	number of trials
+ * @param p 	success probability
+ */
+uint64_t binomial(double n, double p);
 
 } // namespace Random
 } // namespace Aux

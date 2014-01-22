@@ -25,10 +25,11 @@ Clustering::Clustering(count z) :
 			}
 
 Clustering::~Clustering() {
-	// TODO Auto-generated destructor stub
+
 }
 
 void Clustering::addToCluster(cluster c, node u) {
+	assert(u < data.size());
 	assert((*this)[u] == this->defaultValue);
 	(*this)[u] = c;
 }
@@ -113,7 +114,7 @@ bool Clustering::isInRange(node v) {
 
 bool Clustering::contains(node v) {
 	// assert (this->isInRange(v));	// assume that node is in range
-	return (this->data[v] != this->defaultValue); // check if node is assigned to cluster, i.e. entry is not null
+	return (this->isInRange(v)) && (this->data[v] != this->defaultValue); // check if node is assigned to cluster, i.e. entry is not null
 }
 
 void Clustering::setName(std::string name) {

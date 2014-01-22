@@ -12,7 +12,8 @@
 #include <string>
 
 #include "../graph/Graph.h"
- #include "../clustering/Clustering.h"
+#include "../clustering/Clustering.h"
+#include "../io/METISGraphWriter.h"
 
 namespace NetworKit {
 
@@ -22,35 +23,39 @@ namespace NetworKit {
 class DynamicCommunityDetection {
 public:
 	DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy="isolate", count interval=1,
-		bool recordQuality=true, bool recordContinuity=true);
+		std::vector<std::string> recordSettings = {"quality"}, std::string graphOutputPath="");
 
 	void run();
 
-	std::vector<count> getUpdateTimeline();
-
-	std::vector<count> getDetectTimeline();
-
-	std::vector<double> getQualityTimeline();
-
-	std::vector<double> getContinuityTimeline();
-
 	std::vector<std::pair<count, count> > getGraphSizeTimeline();
+
+	std::vector<double> getTimeline(std::string key);
+
+	std::vector<std::pair<Graph, Clustering> > getResultTimeline(); 
 
 private:
 
 	std::string inputPath;
+	std::string graphOutputPath; //!< prefix (directory and file prefix for graph timeline output)
+
 	std::string algoName;
 	std::string updateStrategy;
 	count interval;
 
-	bool recordQuality;
-	bool recordContinuity;
+	std::vector<std::string> recordSettings; // determines which properties to record
 
+	std::vector<double> step; // time steps
 	std::vector<double> quality;
-	std::vector<count> updateTime;
-	std::vector<count> detectTime;
+	std::vector<double> updateTime;
+	std::vector<double> detectTime;
 	std::vector<double> continuity;
+
+	std::vector<std::vector<count>> communitySizes;
+	std::vector<double> communityCount;
+
 	std::vector<std::pair<count, count> > size; // records graph size
+
+	std::vector<std::pair<Graph, Clustering> > results;
 
 	Clustering previous; // communities from the previous run
 

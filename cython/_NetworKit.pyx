@@ -14,6 +14,7 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.map cimport map
 from libcpp.string cimport string
+from unordered_set cimport unordered_set
 # FIXME: from libcpp.unordered_map import unordered_map
 
 # NetworKit typedefs
@@ -109,6 +110,7 @@ cdef extern from "../src/graph/Graph.h":
 		bool isMarkedAsWeighted() except +
 		string toString() except +
 		string getName() except +
+		edgeweight totalEdgeWeight() except +
 		
 
 cdef class Graph:
@@ -172,6 +174,9 @@ cdef class Graph:
 
 	def getName(self):
 		return self._this.getName()
+
+	def totalEdgeWeight(self):
+		return self._this.totalEdgeWeight()
 
 
 cdef class Graph2:
@@ -266,11 +271,28 @@ cdef class Dijkstra:
 		return self._this.run(G._this, source)
 
 
+
+cdef extern from "../src/graph/Subgraph.h":
+	cdef cppclass _Subgraph "NetworKit::Subgraph":
+		_Subgraph() except +
+		_Graph fromNodes(_Graph G, unordered_set[node] nodes)
+
+cdef class Subgraph:
+	""" Methods for creating subgraphs"""
+	cdef _Subgraph _this
+
+	def fromNodes(self, Graph G, nodes): #unordered_set[node]
+		cdef unordered_set[node] nnodes
+		for node in nodes:
+			nnodes.insert(node);
+		return Graph().setThis(self._this.fromNodes(G._this, nnodes))
+
 cdef extern from "../src/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
 		vector[bool] run(_Graph G)
 		string toString()
+
 
 # FIXME: check correctness
 cdef class Luby:
@@ -319,6 +341,68 @@ cdef class BarabasiAlbertGenerator:
 
 	def generate(self):
 		return Graph().setThis(self._this.generate());
+
+
+cdef extern from "../src/generators/PubWebGenerator.h":
+	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator":
+		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
+		_Graph generate() except +
+
+cdef class PubWebGenerator:
+	"""
+	 Generates a static graph that resembles an assumed geometric distribution of nodes in
+	 a P2P network. The basic structure is to distribute points randomly in the unit torus
+	 and to connect vertices close to each other (at most @a neighRad distance and none of
+	 them already has @a maxNeigh neighbors). The distribution is chosen to get some areas with
+	 high density and others with low density. There are @a numDenseAreas dense areas, which can
+	 overlap. Each area is circular, has a certain position and radius and number of points.
+	 These values are strored in @a denseAreaXYR and @a numPerArea, respectively.
+
+	 Used and described in more detail in J. Gehweiler, H. Meyerhenke: A Distributed
+	 Diffusive Heuristic for Clustering a Virtual P2P Supercomputer. In Proc. 7th High-Performance
+	 Grid Computing Workshop (HPGC'10), in conjunction with 24th IEEE Internatl. Parallel and
+	 Distributed Processing Symposium (IPDPS'10), IEEE, 2010.
+
+	 Reasonable parameters for constructor:
+	 - numNodes: up to a few thousand (possibly more if visualization is not desired and quadratic
+	   time complexity has been resolved)
+	 - numberOfDenseAreas: [10, 50]
+	 - neighborhoodRadius: [0.1, 0.35]
+	 - maxNumberOfNeighbors: [4, 40]
+	"""
+	cdef _PubWebGenerator* _this
+
+	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
+		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+
+cdef extern from "../src/generators/ErdosRenyiGenerator.h":
+	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator":
+		_ErdosRenyiGenerator(count nNodes, double prob) except +
+		_Graph generate() except +
+
+cdef class ErdosRenyiGenerator:
+	"""
+	  Creates random graphs in the G(n,p) model.
+	  The generation follows Vladimir Batagelj and Ulrik Brandes: "Efficient
+	  generation of large random networks", Phys Rev E 71, 036113 (2005).
+	 
+	 Parameters:
+	  - nNodes Number of nodes n in the graph.
+	  - prob Probability of existence for each edge p.
+	"""
+
+	cdef _ErdosRenyiGenerator* _this
+
+	def __cinit__(self, nNodes, prob):
+		self._this = new _ErdosRenyiGenerator(nNodes, prob)
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
 
 
 
@@ -834,7 +918,9 @@ cdef extern from "../src/dynamics/GraphEvent.h":
 
 cdef extern from "../src/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
-
+		node u, v
+		edgeweight w
+		_Type type
 		_GraphEvent() except +
 		_GraphEvent(_Type type, node u, node v, edgeweight w) except +
 		string toString() except +
@@ -844,9 +930,12 @@ cdef class GraphEvent:
 	
 	def __cinit__(self, type, u, v, w):
 		self._this = _GraphEvent(type, u, v, w)
-		
+
 	def toString(self):
 		return self._this.toString().decode("utf-8")
+
+	def __repr__(self):
+		return self.toString()
 
 
 cdef extern from "../src/dynamics/DGSStreamParser.h":
@@ -857,47 +946,50 @@ cdef extern from "../src/dynamics/DGSStreamParser.h":
 cdef class DGSStreamParser:
 	cdef _DGSStreamParser* _this
 
-	def __cinit__(self, path, mapped, baseIndex):
+	def __cinit__(self, path, mapped=True, baseIndex=0):
 		self._this = new _DGSStreamParser(stdstring(path), mapped, baseIndex)
 
 	def getStream(self):
-		raise NotImplementedError("TODO")
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.getStream()]
 
 
 cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
 	cdef cppclass _DynamicCommunityDetection "NetworKit::DynamicCommunityDetection":
-		_DynamicCommunityDetection(string inputPath, string algoName, string updateStrategy, count interval, bool recordQuality, bool recordContinuity) except +
+		_DynamicCommunityDetection(string inputPath, string algoName, string updateStrategy, count interval, vector[string] recordSettings) except +
 		void run() except +
-		vector[count] getUpdateTimeline() except +
-		vector[count] getDetectTimeline() except +
-		vector[double] getQualityTimeline() except +
-		vector[double] getContinuityTimeline() except +
+		vector[double] getTimeline(string key) except +
 		vector[pair[count, count]] getGraphSizeTimeline() except +
+		vector[pair[_Graph, _Clustering]] getResultTimeline() except +
 
 cdef class DynamicCommunityDetection:
 	cdef _DynamicCommunityDetection* _this
 
-	def __cinit__(self, inputPath, algoName, updateStrategy, interval, recordQuality=True, recordContinuity=True):
-		self._this = new _DynamicCommunityDetection(stdstring(inputPath), stdstring(algoName), stdstring(updateStrategy), interval, recordQuality, recordContinuity)
+	def __cinit__(self, inputPath, algoName, updateStrategy, interval, recordSettings):
+		self._this = new _DynamicCommunityDetection(stdstring(inputPath), stdstring(algoName), stdstring(updateStrategy), interval, [stdstring(key) for key in recordSettings])
 
 	def run(self):
 		self._this.run()
 
-	def getUpdateTimeline(self):
-		return self._this.getUpdateTimeline()
-
-	def getDetectTimeline(self):
-		return self._this.getDetectTimeline()
-
-	def getQualityTimeline(self):
-		return self._this.getQualityTimeline()
-
-	def getContinuityTimeline(self):
-		return self._this.getContinuityTimeline()
+	def getTimeline(self, key):
+		return self._this.getTimeline(stdstring(key))
 
 	def getGraphSizeTimeline(self):
 		return self._this.getGraphSizeTimeline()
 
+	def getResultTimeline(self):
+		timeline = []
+		for pair in self._this.getResultTimeline():
+			_G = pair.first
+			_zeta = pair.second
+			timeline.append((Graph().setThis(_G), Clustering().setThis(_zeta)))
+		return timeline
+			
+
+
+cdef extern from "../src/generators/DynamicPathGenerator.h":
+	cdef cppclass _DynamicPathGenerator "NetworKit::DynamicPathGenerator":
+		_DynamicPathGenerator() except +
+		# TODO: stream
 
 
 

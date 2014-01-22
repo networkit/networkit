@@ -22,6 +22,7 @@ typedef uint64_t count; // more expressive name for an integer quantity
 
 /**
  * Points in any dimension of templated type.
+ * TODO: Overloaded [] operator.
  */
 template<class T>
 class Point {
@@ -30,6 +31,7 @@ protected:
 
 public:
 	Point() { data = {0.0, 0.0}; }
+	Point(T x, T y) { data = {x, y}; }
 	Point(std::vector<T>& values): data(values) {}
 	virtual ~Point() {}
 

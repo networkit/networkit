@@ -41,7 +41,7 @@ def getSourceFiles(target, optimize):
 		raise Error("target SelCD currently disabled")  # cls
 		# source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
 	elif target == "Tests":
-		source.append(os.path.join(srcDir, "Unittests.cpp"))
+		source.append(os.path.join(srcDir, "Unittests-X.cpp"))
 	#else case: error?	
 
 	# create build directory for build configuration
@@ -118,7 +118,14 @@ AddOption("--optimize",
           type="string",
           nargs=1,
           action="store",
-          help="specify the optimization level to build (Debug, Release, Profile)")
+          help="specify the optimization level to build: D(ebug), O(ptimize), P(rofile)")
+
+AddOption("--sanitize",
+          dest="sanitize",
+          type="string",
+          nargs=1,
+          action="store",
+          help="switch on address sanitizer")
 
 
 try:
@@ -126,6 +133,13 @@ try:
 except:
     print("ERROR: Missing option --optimize=<LEVEL>")
     exit()
+
+sanitize = None
+try:
+	sanitize = GetOption("sanitize")
+except:
+	pass
+	
 
 
 # create build directory for build configuration
@@ -187,6 +201,15 @@ elif optimize == "P":
 else:
     print("ERROR: invalid optimize: %s" % optimize)
     exit()
+
+# sanitize
+if sanitize:
+	if sanitize == "address":
+		env.Append(CPPFLAGS = ["-fsanitize=address"])
+		env.Append(LINKFLAGS = ["-fsanitize=address"])
+	else:
+		print("ERROR: invalid sanitize option")
+		exit()
 
 
 # TARGET

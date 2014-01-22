@@ -25,7 +25,7 @@ EPP EPPFactory::make(count ensembleSize, std::string baseAlgorithm, std::string 
 		ensemble.setFinalClusterer(*(new PLP()));
 	} else if (finalAlgorithm == "PLMR") {
 		ensemble.setFinalClusterer(*(new PLM2(true)));
-	}
+	} else throw std::runtime_error("unknown final algorithm name");
 
 	ensemble.setOverlapper(*(new HashingOverlapper));
 

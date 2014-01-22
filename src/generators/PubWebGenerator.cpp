@@ -11,16 +11,6 @@
 
 namespace NetworKit {
 
-// FIXME: change to constants
-#define THRSH_CENTER_ITER 10
-#define ONE_DIM_SCALE 0.0f
-#define MAX_RAND_VAL 1000
-#define BENEFIT_INC 0.25f
-#define PI 3.141f
-#define MAX_DENSE_AREA_RADIUS 0.25f
-#define MIN_MAX_DENSE_AREA_FACTOR 5 // ###
-#define PART_CHANGE_FACTOR 0.0001f
-#define INIT_LOAD 100.0f
 
 void PubWebGenerator::moveNodeIntoUnitSquare(float& x, float& y) {
 	auto move([&](float& z) {
@@ -54,27 +44,24 @@ float PubWebGenerator::squaredDistanceInUnitTorus(float x1, float y1, float x2,
 	return (distx * distx + disty * disty);
 }
 
-PubWebGenerator::PubWebGenerator() {
-}
-
 
 PubWebGenerator::PubWebGenerator(count numNodes, count numberOfDenseAreas,
 		float neighborhoodRadius, count maxNumberOfNeighbors) :
 		n(numNodes), numDenseAreas(numberOfDenseAreas), neighRad(
 				neighborhoodRadius), maxNeigh(maxNumberOfNeighbors) {
-	// TODO Auto-generated constructor stub
 
 }
 
 PubWebGenerator::~PubWebGenerator() {
-	// TODO Auto-generated destructor stub
+
 }
 
-bool PubWebGenerator::isValidEdge(Graph& g, node u, node v) {
+bool PubWebGenerator::isValidEdge(Graph& g, node u, node v, edgeweight& weight) {
+
 	auto isValid([&](node u, node v, float squaredDistance) {
 		return ((squaredDistance <= neighRad * neighRad)
-				&& (g.degree(u) <= maxNeigh)
-				&& (g.degree(v) <= maxNeigh));
+				&& (g.degree(u) < maxNeigh)
+				&& (g.degree(v) < maxNeigh));
 	});
 
 	float x1 = g.getCoordinate(u, 0);
@@ -83,21 +70,56 @@ bool PubWebGenerator::isValidEdge(Graph& g, node u, node v) {
 	float y2 = g.getCoordinate(v, 1);
 	float sqrDist = squaredDistanceInUnitTorus(x1, y1, x2, y2);
 
+	weight = BASE_WEIGHT /  sqrt(sqrDist);
+
 	return isValid(u, v, sqrDist);
 }
 
-void PubWebGenerator::determineNeighborsOf(Graph& g, node u) {
-	g.forNodes([&](node v) {
-		if (isValidEdge(g, u, v)) {
-			g.addEdge(u, v);
-		}
-	});
-}
 
+// TODO: use ANN or similar library with appropriate space-partitioning data structure to
+//       get rid of quadratic time complexity
 void PubWebGenerator::determineNeighbors(Graph& g) {
-	g.forNodePairs([&](node u, node v) { // TODO: improve quadratic loop!
-		if (isValidEdge(g, u, v)) {
-			g.addEdge(u, v);
+
+	float sqrNeighRad = neighRad * neighRad;
+	std::set<edge> eligibleEdges;
+
+	auto isInRange([&](float squaredDistance) {
+		return (squaredDistance <= sqrNeighRad);
+	});
+
+	g.forNodes([&](node u) {
+		std::priority_queue<std::pair<distance, edge> > pq;
+		float x1 = g.getCoordinate(u, 0);
+		float y1 = g.getCoordinate(u, 1);
+
+		// fill PQ with neighbors in range
+		g.forNodes([&](node v) {
+			float x2 = g.getCoordinate(v, 0);
+			float y2 = g.getCoordinate(v, 1);
+			float sqrDist = squaredDistanceInUnitTorus(x1, y1, x2, y2);
+
+			if (isInRange(sqrDist)) {
+				edge e = std::make_pair(std::min(u, v), std::max(u, v));
+				pq.push(std::make_pair(-sqrDist, e));
+			}
+		});
+
+		// mark maxNeigh nearest neighbors as eligible or insert them into graph g
+		count end = std::min(maxNeigh, (count) pq.size());
+		for (index i = 0; i < end; ++i) {
+			std::pair<distance, edge> currentBest = pq.top();
+			pq.pop();
+
+			if (eligibleEdges.count(currentBest.second) > 0) {
+				// edge is already marked => insert it
+				edgeweight ew = BASE_WEIGHT / -currentBest.first;
+				g.addEdge(currentBest.second.first, currentBest.second.second, ew);
+//				TRACE("add edge " << currentBest.second.first << "/" << currentBest.second.second);
+			}
+			else {
+				// mark edge as eligible
+				eligibleEdges.insert(currentBest.second);
+			}
 		}
 	});
 }
@@ -106,7 +128,7 @@ void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
 
 	for (index j = 0; j < num; ++j) {
 		// compute random angle between [0, 2pi) and distance between [0, width/2]
-		float angle = Aux::Random::real() * 2.0 * PI;
+		float angle = Aux::Random::real() * 2.0 * M_PI;
 		float dist = Aux::Random::real() * denseAreaXYR[area].rad;
 
 		// compute coordinates and adjust them

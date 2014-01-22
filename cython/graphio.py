@@ -2,6 +2,7 @@ from _NetworKit import (METISGraphReader, FastMETISGraphReader, METISGraphWriter
 						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter)
 
 import os
+import logging
 
 def readGraph(path, format=None, fast=False, separator='\t', firstNode=1):
 	"""    Read graph and return a NetworKit::Graph"""
@@ -36,6 +37,15 @@ def readGraph(path, format=None, fast=False, separator='\t', firstNode=1):
 			return G
 
 	return None
+
+
+def writeGraph(G, path, format="metis"):
+	if format is "metis":
+		writer = METISGraphWriter()
+		writer.write(G, path)
+		logging.info("wrote graph {0} to file {1}".format(G, path))
+	else:
+		raise Exception("format {0} currently not supported".format(format))		
 
 class GraphConverter:
 	

@@ -38,7 +38,7 @@ To convert the documentation to PDF install the [pandoc](http://code.google.com/
 
 ### E-Mail List
 
-For questions regarding NetworKit, subscribe to our [e-mail list][list] and feel free to ask.
+For questions regarding NetworKit, subscribe to our [e-mail list][list] (`networkit@ira.uka.de`) and feel free to ask.
 
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit
 
@@ -145,6 +145,7 @@ Credits
 - Maximilian Vogel
 - Miriam Beddig
 - Florian Weber
+- Patrick Flick
 
 ### External Code
 
@@ -217,13 +218,21 @@ Test
 
 Next, verify that the code was built correctly: Run all unit tests with 
 
-		./NetworKit-Tests --tests --gtest_filter=*Test.test*
+		./NetworKit-Tests-D --tests
 
-The expression after `--gtest_filter=` selects the tests.
+Performance tests will be selected with
 
-Run performance tests with
+		./NetworKit-Tests-D --benchmarks
 
-		./NetworKit-Tests --tests --gtest_filter=*Benchmark*
+while experimental tests are called with
+
+		./NetworKit-Tests-D --trials
+
+To run only specific unit tests, you can also add a filter expression, e. g.:
+
+		./NetworKit-Tests --gtest_filter=*PartitionGTest*
+
+runs only unit tests for the Partition data structure.
 
 
 Building NetworKit as a Python Module
