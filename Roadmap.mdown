@@ -1,0 +1,48 @@
+# NetworKit Roadmap
+
+This document is about the current and future development of the NetworKit package.
+
+
+# Feature Wish List
+
+## Algorithms
+
+- betweenness centrality approximation
+- (parallel) Chung-Lu graph generator
+- diameter approximation
+
+## Data Structures
+
+- concurrent graph (to replace `Graph`)
+- directed graph
+
+
+# Features in Development
+
+## Algorithms
+
+- hyperbolic graph generator
+- Havel-Hakimi graph generator (recreates degree sequences)
+- betweenness centrality (Brandes algorithm)
+- core decomposition
+- approximation of clustering coefficient
+- eigenvector centrality
+
+## Data Structures
+
+- `Partition`: a data structure for disjoint partitions of a set, to replace `Clustering`
+- `Cover`: a data structure for overlapping subsets of a set
+
+
+# Completed Features
+
+## Algorithms
+
+- parallel connected components
+- sequential connected components
+- parallel exact clustering coefficient
+
+
+# Rejected Features
+
+- native graphical user interface - use IPython Notebook instead
