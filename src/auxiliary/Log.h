@@ -1,127 +1,127 @@
-/*
- * log.h
- *
- *  Created on: 28.11.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
- */
-
 #ifndef LOG_H_
 #define LOG_H_
 
 #include <iostream>
-#include <map>
-#include <unordered_map>
-#include <vector>
-#include <sstream>
-#include "Loglevel.h"
+#include <mutex>
 
-namespace Aux {
+#include "StringBuilder.h"
 
-// prepends the function name
-#define LOCATION "in " << __PRETTY_FUNCTION__ << ": "
+#ifdef NOLOGGING
+
+#define FATAL(...) do{}while(false)
+#define ERROR(...) do{}while(false)
+#define WARN(...)  do{}while(false)
+#define INFO(...)  do{}while(false)
+#define DEBUG(...) do{}while(false)
+#define TRACE(...) do{}while(false)
+
+#define FATALF(...) do{}while(false)
+#define ERRORF(...) do{}while(false)
+#define WARNF(...)  do{}while(false)
+#define INFOF(...)  do{}while(false)
+#define DEBUGF(...) do{}while(false)
+#define TRACEF(...) do{}while(false)
+
+#define TRACEPOINT do{}while(false)
+
+#else // NOLOGGING
+
+#define FATAL(...) ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::fatal, __VA_ARGS__)
+#define ERROR(...) ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::error, __VA_ARGS__)
+#define WARN(...)  ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::warn,  __VA_ARGS__)
+#define INFO(...)  ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::info,  __VA_ARGS__)
+#define DEBUG(...) ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::debug, __VA_ARGS__)
+#define TRACE(...) ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::trace, __VA_ARGS__)
+
+#define FATALF(...) ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::fatal, __VA_ARGS__)
+#define ERRORF(...) ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::error, __VA_ARGS__)
+#define WARNF(...)  ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::warn,  __VA_ARGS__)
+#define INFOF(...)  ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::info,  __VA_ARGS__)
+#define DEBUGF(...) ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::debug, __VA_ARGS__)
+#define TRACEF(...) ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::trace, __VA_ARGS__)
+
+#define TRACEPOINT ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+		::Aux::Log::LogLevel::trace, "tracepoint")
+
+#endif // NOLOGGING
+
+namespace Aux { namespace Log {
+
+struct Location {
+	const char* file;
+	const char* function;
+	const int line;
+};
+
+enum class LogLevel {
+	trace,
+	debug,
+	info,
+	warn,
+	error,
+	fatal
+};
+
+/**
+ * Accept loglevel as string and set.
+ * @param logLevel as string
+ */
+void setLogLevel(std::string logLevel);
+
+/**
+ * @return current loglevel as string
+ */
+std::string getLogLevel();
+
+namespace Settings {
+
+LogLevel getLogLevel();
+void setLogLevel(LogLevel p = LogLevel::info);
+
+void setPrintTime(bool b);
+bool getPrintTime();
+
+void setPrintLocation(bool b);
+bool getPrintLocation();
+
+void setLogfile(const std::string& filename);
+}
+
+namespace Impl {
+void log(const Location& loc, LogLevel p, const std::string msg);
+} //namespace impl
+
+template<typename...T>
+void log(const Location& loc, LogLevel p, const T&...args) {
+	if(p >= Settings::getLogLevel()) {
+		std::stringstream stream;
+		printToStream(stream, args...);
+		Impl::log(loc, p, stream.str());
+	}
+}
+
+template<typename...T>
+void logF(const Location& loc, LogLevel p, const std::string& format, const T&...args) {
+	if(p >= Settings::getLogLevel()) {
+		std::stringstream stream;
+		printToStreamF(stream, format, args...);
+		Impl::log(loc, p, stream.str());
+	}
+}
 
 
-// short macros for logging statements
-#if defined NOLOGGING
-	// define logging macros to nothing
-	#define FATAL(X)
-	#define ERROR(X)
-	#define WARN(X)
-	#define INFO(X)
-	#define DEBUG(X)
-	#define TRACE(X)
-#else
-	#define LOG_TEST_LEVEL(v)   v >= Aux::LogLevel::getLevel()
-	#define FATAL(X) if(LOG_TEST_LEVEL(5)) std::cout << "[FATAL] " << LOCATION << X << std::endl;
-	#define ERROR(X) if(LOG_TEST_LEVEL(4)) std::cout << "[ERROR] " << LOCATION << X << std::endl;
-	#define WARN(X) if(LOG_TEST_LEVEL(3)) std::cout << "[WARN] " << LOCATION << X << std::endl;
-	#define INFO(X) if(LOG_TEST_LEVEL(2)) std::cout << "[INFO] " << LOCATION << X << std::endl;
-	#define DEBUG(X) if(LOG_TEST_LEVEL(1)) std::cout << "[DEBUG] " << LOCATION << X << std::endl;
-	#define TRACE(X) if(LOG_TEST_LEVEL(0)) std::cout << "[TRACE] " << LOCATION << X << std::endl;
+}} // namespace Aux::Log
+
 #endif
-/**
- * Set the current loglevel.
- * @param loglevel 
- */
-inline void setLoglevel(const std::string& loglevel) {
-	if (loglevel == "TRACE") {
-		Aux::LogLevel::setLevel(0);
-	} else if (loglevel == "DEBUG") {
-		Aux::LogLevel::setLevel(1);
-	} else if (loglevel == "INFO") {
-		Aux::LogLevel::setLevel(2);
-	} else if (loglevel == "WARN") {
-		Aux::LogLevel::setLevel(3);
-	} else if (loglevel == "ERROR") {
-		Aux::LogLevel::setLevel(4);
-	} else {
-		ERROR("unknown loglevel: " << loglevel);
-		exit(1);
-	}
-}
-
-
-/**
- * Call this first to configure logging output.
- */
-inline void configureLogging(const std::string& loglevel = "ERROR") {
-	// configure logging
-	setLoglevel(loglevel);
-}
-
-
-/**
- * Get the current log level.
- */
-inline std::string currentLogLevel() {
-	std::string s;
-	switch (Aux::LogLevel::getLevel()) {
-		case 5: s = "FATAL"; break;
-		case 4: s = "ERROR"; break;
-		case 3: s = "WARN"; break;
-		case 2: s = "INFO"; break;
-		case 1: s = "DEBUG"; break;
-		case 0: s = "TRACE"; break;
-		default: s = "Loglevel is messed up, call setLoglevel([ERROR|WARN|INFO|DEBUG|TRACE])"; break;
-	}
-	return s;
-}
-//#endif
-
-
-#define PRINTMAP(M) std::cout << M << std::endl;
-/**
- * Print a map for debugging.
- */
-template <typename K, typename V>
-std::ostream& operator<<(std::ostream& os, const std::map<K, V>& m)
-{
-    os << "{ ";
-    for (auto& kv : m)
-    {
-        os << kv.first << ": " << kv.second << ", ";
-    }
-    return os << " }";
-}
-
-/**
- * Print an unordered_map for debugging.
- */
-template <typename K, typename V>
-std::ostream& operator<<(std::ostream& os, const std::unordered_map<K, V>& m)
-{
-    os << "{ ";
-    for (typename std::unordered_map<K, V>::const_iterator i = m.begin(); i != m.end(); ++i)
-    {
-        if (i != m.begin()) os << ", ";
-        os << i->first << ": " << i->second;
-    }
-    return os << " }";
-}
-
-
-} // end namespace
-
-
-
-#endif /* LOG_H_ */
