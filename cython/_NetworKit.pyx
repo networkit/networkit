@@ -959,6 +959,7 @@ cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
 		void run() except +
 		vector[double] getTimeline(string key) except +
 		vector[pair[count, count]] getGraphSizeTimeline() except +
+		vector[_Graph] getCommunityGraphTimeline() except +
 
 cdef class DynamicCommunityDetection:
 	cdef _DynamicCommunityDetection* _this
@@ -974,6 +975,9 @@ cdef class DynamicCommunityDetection:
 
 	def getGraphSizeTimeline(self):
 		return self._this.getGraphSizeTimeline()
+
+	def getCommunityGraphTimeline(self):
+		return [Graph(0).setThis(_G) for _G in self._this.getCommunityGraphTimeline()]
 
 
 cdef extern from "../src/generators/DynamicPathGenerator.h":
