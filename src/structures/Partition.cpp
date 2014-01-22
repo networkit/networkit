@@ -94,6 +94,10 @@ count Partition::numberOfSubsets() const {
 	return k;
 }
 
+void Partition::setUpperBound(index upper) {
+	this->omega = upper-1;
+}
+
 index Partition::upperBound() const {
 	return omega + 1;
 }

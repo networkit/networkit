@@ -120,7 +120,12 @@ public:
 	 */
 	bool isSingletonPartition(const std::set<index>& elements) const;
 
-
+	/**
+	 * Sets an upper bound for the subset ids that CAN be assigned.
+	 *
+	 * (This is the maximum id + 1.)
+	 */
+	void setUpperBound(index upper);
 
 	/**
 	 * Return an upper bound for the subset ids that have been assigned.

@@ -29,7 +29,88 @@
 //#include "../../dcd/DynamicPLP.h"
 #include "../../dcd/TDynamicLabelPropagation.h"
 
+#include "../../structures/Partition.h"
+// classes with replaced clustering structure
+#include "../ClusteringGenerator2.h"
+#include "../Modularity2.h"
+#include "../Coverage2.h"
+
+
+
 namespace NetworKit {
+
+TEST_F(ClusteringGTest, testStructuresOnCG) {
+	ClusteringGenerator cg;
+	ClusteringGenerator2 cg2;
+	
+	count n = 100;
+	count k = 6;
+	
+	Graph G(n);
+	
+	Clustering cg_singleton = cg.makeSingletonClustering(G);
+	Clustering cg_one = cg.makeOneClustering(G);
+	Clustering cg_balanced = cg.makeContinuousBalancedClustering(G,6);
+	Clustering cg_random = cg.makeRandomClustering(G,6);
+	
+	Partition cg2_singleton = cg2.makeSingletonClustering(G);
+	Partition cg2_one = cg2.makeOneClustering(G);
+	Partition cg2_balanced = cg2.makeContinuousBalancedClustering(G,6);
+	Partition cg2_random = cg2.makeRandomClustering(G,6);
+	
+	// simple check for "same results"
+	EXPECT_EQ(cg_singleton.numberOfClusters(),cg2_singleton.numberOfSubsets());
+	EXPECT_EQ(cg_singleton.clusterSizes(),cg2_singleton.subsetSizes());
+	
+	// simple check for "same results"
+	EXPECT_EQ(cg_one.numberOfClusters(),cg2_one.numberOfSubsets()); 
+	EXPECT_EQ(cg_one.clusterSizes(),cg2_one.subsetSizes());
+	
+	// simple check for "same results"
+	EXPECT_EQ(cg_balanced.numberOfClusters(),cg2_balanced.numberOfSubsets()); 
+	EXPECT_EQ(cg_balanced.clusterSizes(),cg2_balanced.subsetSizes());
+	
+	// simple check for "same results"
+	EXPECT_EQ(cg_random.numberOfClusters(),cg2_random.numberOfSubsets()); 
+	// testing cluster sizes for random clusters makes no sense...
+	
+	// thourough checks would need to compare each element...
+}
+
+TEST_F(ClusteringGTest, testStructuresOnModularity) {
+	GraphGenerator graphGenerator;
+
+	count n = 100;
+
+	DEBUG("testing modularity on clustering of complete graph with " << n << " nodes");
+
+
+	Graph G = graphGenerator.makeCompleteGraph(n);
+	DEBUG("total edge weight: " << G.totalEdgeWeight());
+
+	ClusteringGenerator2 clusteringGenerator;
+
+	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
+	Partition one = clusteringGenerator.makeOneClustering(G);
+
+	Modularity2 modularity;
+
+	DEBUG("calculating modularity for singleton clustering");
+	double modSingleton = modularity.getQuality(singleton, G);
+
+	DEBUG("calculating modularity for 1-clustering");
+	double modOne = modularity.getQuality(one, G);
+
+	DEBUG("mod(singleton-clustering) = " << modSingleton);
+	DEBUG("mod(1-clustering) = " << modOne);
+
+
+	EXPECT_EQ(0.0, modOne) << "1-clustering should have modularity of 0.0";
+	EXPECT_GE(0.0, modSingleton) << "singleton clustering should have modularity less than 0.0";
+
+}
+
+
 
 
 
@@ -410,3 +491,4 @@ TEST_F(ClusteringGTest, testClusterSizes) {
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
+
