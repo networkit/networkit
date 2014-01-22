@@ -158,10 +158,8 @@ void DynamicCommunityDetection::run() {
 			communitySizes.push_back(sizes);
 		}
 
-		if (record("communityGraph")) {
-			CommunityGraph cg;
-			cg.run(G, zeta);
-			communityGraphs.push_back(cg.getGraph());
+		if (record("results")) {
+			results.push_back(std::make_pair(G, zeta));
 		}
 
 
@@ -199,8 +197,8 @@ std::vector<std::pair<count, count> > DynamicCommunityDetection::getGraphSizeTim
 	return size;
 }
 
-std::vector<Graph > DynamicCommunityDetection::getCommunityGraphTimeline() {
-	return communityGraphs;
+std::vector<std::pair<Graph, Clustering> > DynamicCommunityDetection::getResultTimeline() {
+	return results;
 }
 
 } /* namespace NetworKit */
