@@ -18,8 +18,8 @@ JaccardMeasure::~JaccardMeasure() {
 	// TODO Auto-generated destructor stub
 }
 
-double JaccardMeasure::getDissimilarity(Graph& G, Clustering& first,
-		Clustering& second) {
+double JaccardMeasure::getDissimilarity(Graph& G, Partition& first,
+		Partition& second) {
 
 	int64_t n = G.numberOfNodes();
 	assert (n > 0);

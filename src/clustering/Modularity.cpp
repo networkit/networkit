@@ -26,8 +26,8 @@ Modularity::~Modularity() {
 }
 
 
-double Modularity::getQuality(const Clustering& zeta, const Graph& G) {
-	assert (G.numberOfNodes() <= zeta.numberOfNodes());
+double Modularity::getQuality(const Partition& zeta, const Graph& G) {
+	assert (G.numberOfNodes() <= zeta.numberOfElements());
 
 	DEBUG("m = " << G.numberOfEdges());
 	DEBUG("l = " << G.numberOfSelfLoops());
@@ -51,7 +51,7 @@ double Modularity::getQuality(const Clustering& zeta, const Graph& G) {
 	// compute volume of each cluster
 	G.parallelForNodes([&](node v) {
 		// add to cluster weight
-		cluster c = zeta[v];
+		index c = zeta[v];
 		assert (zeta.lowerBound() <= c);
 		assert (c < zeta.upperBound());
 #pragma omp atomic
@@ -65,7 +65,7 @@ double Modularity::getQuality(const Clustering& zeta, const Graph& G) {
 //	assert (divisor != 0);	// do not divide by 0
 
 	#pragma omp parallel for reduction(+:expCov)
-	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
+	for (index c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		expCov += ((incidentWeightSum[c] / totalEdgeWeight) * (incidentWeightSum[c] / totalEdgeWeight )) / 4;	// squared
 	}
 

@@ -17,7 +17,7 @@ public:
 	EdgeCut();
 	virtual ~EdgeCut();
 
-	virtual double getQuality(const Clustering& zeta, const Graph& G);
+	virtual double getQuality(const Partition& zeta, const Graph& G);
 };
 
 } /* namespace NetworKit */

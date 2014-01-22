@@ -186,6 +186,12 @@ public:
 	 * Get the current number of sets in this partition.
 	 */
 	count numberOfSubsets() const;
+	
+	/**
+	 * Get the acutal vector representing the partition datastructure.
+	 * @return vector containing information about partitions
+	 */
+	 std::vector<index> getVector();
 
 
 	/**
