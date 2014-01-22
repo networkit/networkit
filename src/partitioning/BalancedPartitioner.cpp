@@ -19,7 +19,7 @@ BalancedPartitioner::~BalancedPartitioner() {
 
 
 Clustering BalancedPartitioner::multilevelRun(Graph& graph, count numParts) {
-	DEBUG("Start level with " << graph.numberOfNodes() << " nodes");
+	DEBUG("Start level with " , graph.numberOfNodes() , " nodes");
 
 	if (graph.numberOfNodes() <= 48 * numParts) {
 		// terminate recursion
@@ -50,7 +50,7 @@ Clustering BalancedPartitioner::multilevelRun(Graph& graph, count numParts) {
 Clustering& BalancedPartitioner::multilevelRerun(Graph& graph, count numParts,
 		Clustering& partition) {
 
-	DEBUG("Start level with " << graph.numberOfNodes() << " nodes");
+	DEBUG("Start level with " , graph.numberOfNodes() , " nodes");
 
 	if (graph.numberOfNodes() <= 48 * numParts) {
 		// terminate recursion

@@ -46,7 +46,7 @@ double SampledRandMeasure::getDissimilarity(Graph& G, Clustering& first, Cluster
 		}
 	}
 
-	DEBUG("n11 = " << n11 << " n00 = " << n00 << " nSamples = " << nSamples);
+	DEBUG("n11 = " , n11 , " n00 = " , n00 , " nSamples = " , nSamples);
 
 	double dis = 1 - ((n00 + n11) / (double) nSamples);
 	return dis;

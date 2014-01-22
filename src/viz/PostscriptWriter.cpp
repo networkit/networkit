@@ -174,8 +174,8 @@ void PostscriptWriter::writeClustering(Clustering& clustering,
 //			file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a\n";
 //		}
 
-//		DEBUG("x: " << x);
-//		DEBUG("y: " << y);
+//		DEBUG("x: " , x);
+//		DEBUG("y: " , y);
 
 	});
 }
@@ -188,7 +188,7 @@ void PostscriptWriter::init(std::string path, std::ofstream& file) {
 		file.precision(3);
 		// adjust coordinates for postscript output
 		g.forNodes([&](node u) {
-			TRACE("change coordinate for node " << u);
+			TRACE("change coordinate for node " , u);
 			g.setCoordinate(u, 0, 1000.0 * g.getCoordinate(u, 0));
 			g.setCoordinate(u, 1, 1000.0 * g.getCoordinate(u, 1));
 		});

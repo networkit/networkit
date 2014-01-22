@@ -33,7 +33,7 @@ TEST_F(BasicsBenchmark, sequentialSum) {
 	}
 	runtime.stop();
 
-	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+	INFO("sum = " , sum , " [" , runtime.elapsed().count() , " ms ]");
 }
 
 TEST_F(BasicsBenchmark, parallelSumIncorrect) {
@@ -48,7 +48,7 @@ TEST_F(BasicsBenchmark, parallelSumIncorrect) {
 	}
 	runtime.stop();
 
-	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+	INFO("sum = " , sum , " [" , runtime.elapsed().count() , " ms ]");
 }
 
 TEST_F(BasicsBenchmark, parallelSumAtomicUpdate) {
@@ -64,7 +64,7 @@ TEST_F(BasicsBenchmark, parallelSumAtomicUpdate) {
 	}
 	runtime.stop();
 
-	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+	INFO("sum = " , sum , " [" , runtime.elapsed().count() , " ms ]");
 
 }
 
@@ -81,7 +81,7 @@ TEST_F(BasicsBenchmark, parallelSumReduction) {
 	}
 	runtime.stop();
 
-	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+	INFO("sum = " , sum , " [" , runtime.elapsed().count() , " ms ]");
 
 }
 
@@ -99,7 +99,7 @@ TEST_F(BasicsBenchmark, parallelSumReduction) {
 //	}
 //	runtime.stop();
 //
-//	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+//	INFO("sum = " , sum , " [" , runtime.elapsed().count() , " ms ]");
 //
 //}
 
@@ -117,7 +117,7 @@ TEST_F(BasicsBenchmark, seqVectorWrite) {
 	}
 	runtime.stop();
 
-	INFO("vector written in [" << runtime.elapsed().count() << " ms ]");
+	INFO("vector written in [" , runtime.elapsed().count() , " ms ]");
 }
 
 
@@ -136,7 +136,7 @@ TEST_F(BasicsBenchmark, parVectorWrite) {
 	}
 	runtime.stop();
 
-	INFO("vector written in [" << runtime.elapsed().count() << " ms ]");
+	INFO("vector written in [" , runtime.elapsed().count() , " ms ]");
 }
 
 
@@ -157,7 +157,7 @@ TEST_F(BasicsBenchmark, lambdaSummation_seq) {
 	}
 	runtime.stop();
 
-	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+	INFO("sum = " , sum , " [" , runtime.elapsed().count() , " ms ]");
 }
 
 TEST_F(BasicsBenchmark, lambdaSummation_parWrong) {
@@ -176,7 +176,7 @@ TEST_F(BasicsBenchmark, lambdaSummation_parWrong) {
 	}
 	runtime.stop();
 
-	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+	INFO("sum = " , sum , " [" , runtime.elapsed().count() , " ms ]");
 }
 
 
@@ -197,7 +197,7 @@ TEST_F(BasicsBenchmark, lambdaSummation_par_atomic) {
 	}
 	runtime.stop();
 
-	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+	INFO("sum = " , sum , " [" , runtime.elapsed().count() , " ms ]");
 }
 
 TEST_F(BasicsBenchmark, lambdaSummation_par_reduction) {
@@ -216,7 +216,7 @@ TEST_F(BasicsBenchmark, lambdaSummation_par_reduction) {
 	}
 	runtime.stop();
 
-	INFO("sum = " << sum << " [" << runtime.elapsed().count() << " ms ]");
+	INFO("sum = " , sum , " [" , runtime.elapsed().count() , " ms ]");
 }
 
 
@@ -238,7 +238,7 @@ TEST_F(BasicsBenchmark, lambdaVectorWrite_seq) {
 	}
 	runtime.stop();
 
-	INFO("vector written in [" << runtime.elapsed().count() << " ms ]");
+	INFO("vector written in [" , runtime.elapsed().count() , " ms ]");
 }
 
 TEST_F(BasicsBenchmark, lambdaVectorWrite_par) {
@@ -259,7 +259,7 @@ TEST_F(BasicsBenchmark, lambdaVectorWrite_par) {
 	}
 	runtime.stop();
 
-	INFO("vector written in [" << runtime.elapsed().count() << " ms ]");
+	INFO("vector written in [" , runtime.elapsed().count() , " ms ]");
 }
 
 } /* namespace NetworKit */

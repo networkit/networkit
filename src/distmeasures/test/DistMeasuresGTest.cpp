@@ -34,7 +34,7 @@ TEST_F(DistMeasuresGTest, testAlgebraicDistance) {
 		adSum += ad->distance(u, v);
 	});
 
-	INFO("sum of algebraic distances: " << adSum);
+	INFO("sum of algebraic distances: " , adSum);
 	EXPECT_GE(1e-12, adSum) << "algebraic distances should converge towards zero";
 
 }

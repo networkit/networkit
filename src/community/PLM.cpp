@@ -118,7 +118,7 @@ Clustering PLM::pass(Graph& G) {
 	bool change = false; // change in last iteration?
 	do {
 		i += 1;
-		DEBUG("---> Louvain pass: iteration # " << i << ", parallelism: " << this->parallelism);
+		DEBUG("---> Louvain pass: iteration # " , i , ", parallelism: " , this->parallelism);
 		change = false; // is clustering stable?
 
 		// try to improve modularity by moving a node to neighboring clusters
@@ -132,11 +132,11 @@ Clustering PLM::pass(Graph& G) {
 // #pragma omp atomic read
 			C = zeta[u];
 
-//			TRACE("Processing neighborhood of node " << u << ", which is in cluster " << C);
+//			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
 			G.forNeighborsOf(u, [&](node v) {
 // #pragma omp atomic read
 				D = zeta[v];
-//				TRACE("Neighbor " << v << ", which is still in cluster " << zeta[v]);
+//				TRACE("Neighbor " , v , ", which is still in cluster " , zeta[v]);
 				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 					double delta = deltaMod(u, C, D);
 					if (delta > deltaBest) {
@@ -186,7 +186,7 @@ Clustering PLM::pass(Graph& G) {
 		} else if (this->parallelism == "balanced") {
 			G.balancedParallelForNodes(moveNode);
 		} else {
-			ERROR("unknown parallelization strategy: " << this->parallelism);
+			ERROR("unknown parallelization strategy: " , this->parallelism);
 			exit(1);
 		}
 
@@ -223,7 +223,7 @@ Clustering PLM::run(Graph& G) {
 
 	do {
 		h += 1; // begin new hierarchy level
-		DEBUG("Louvain hierarchy level " << h);
+		DEBUG("Louvain hierarchy level " , h);
 		// one local optimization pass
 		DEBUG("starting Louvain pass");
 		Clustering clustering = this->pass(*graph);

@@ -47,10 +47,10 @@ TEST_F(ClusteringAlgoGTest, testEnsemblePreprocessing) {
 
 	Clustering zeta = ensemble.run(G);
 
-	INFO("number of clusters:" << zeta.numberOfClusters());
+	INFO("number of clusters:" , zeta.numberOfClusters());
 
 	Modularity modularity;
-	INFO("modularity: " << modularity.getQuality(zeta, G));
+	INFO("modularity: " , modularity.getQuality(zeta, G));
 
 
 
@@ -70,7 +70,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " << mod);
+	DEBUG("modularity produced by LabelPropagation: " , mod);
 	EXPECT_GE(1.0, mod) << "valid modularity values are in [-0.5, 1]";
 	EXPECT_LE(-0.5, mod) << "valid modularity values are in [-0.5, 1]";
 }
@@ -87,7 +87,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClus
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " << mod);
+	DEBUG("modularity produced by LabelPropagation: " , mod);
 
 	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters are easy to detect";
@@ -113,8 +113,8 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " << mod);
-	DEBUG("number of clusters produced by LabelPropagation: k=" << zeta.numberOfClusters());
+	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfClusters());
 
 	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
 	EXPECT_TRUE(zeta.equals(reference, G)) << "LP should detect exactly the reference clustering";
@@ -134,7 +134,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " << mod);
+	DEBUG("modularity produced by LabelPropagation: " , mod);
 
 	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters are easy to detect";
@@ -156,7 +156,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " << mod);
+	DEBUG("modularity produced by LabelPropagation: " , mod);
 
 }
 
@@ -177,8 +177,8 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G_ref.first);
-	DEBUG("modularity produced by LabelPropagation: " << mod);
-	DEBUG("number of clusters produced by LabelPropagation: k=" << zeta.numberOfClusters());
+	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfClusters());
 
 	EXPECT_TRUE(zeta.isProper(G_ref.first)) << "the resulting partition should be a proper clustering";
 	EXPECT_TRUE(zeta.equals(G_ref.second, G_ref.first)) << "Can LabelPropagation detect the reference clustering?";
@@ -196,10 +196,10 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 	PLM louvain;
 	Clustering zeta = louvain.run(G);
 
-	INFO("number of clusters: " << zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfClusters());
 
 	Modularity modularity;
-	INFO("modularity: " << modularity.getQuality(zeta, G));
+	INFO("modularity: " , modularity.getQuality(zeta, G));
 
 }
 
@@ -215,10 +215,10 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelSimple) {
 	PLM louvain("simple");
 	Clustering zeta = louvain.run(G);
 
-	INFO("number of clusters: " << zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfClusters());
 
 	Modularity modularity;
-	INFO("modularity: " << modularity.getQuality(zeta, G));
+	INFO("modularity: " , modularity.getQuality(zeta, G));
 
 }
 
@@ -234,10 +234,10 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallel2Naive) {
 	LouvainParallel louvain;
 	Clustering zeta = louvain.run(G);
 
-	INFO("number of clusters: " << zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfClusters());
 
 	Modularity modularity;
-	INFO("modularity: " << modularity.getQuality(zeta, G));
+	INFO("modularity: " , modularity.getQuality(zeta, G));
 
 }
 */
@@ -254,10 +254,10 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 	PLM louvain("balanced");
 	Clustering zeta = louvain.run(G);
 
-	INFO("number of clusters: " << zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfClusters());
 
 	Modularity modularity;
-	INFO("modularity: " << modularity.getQuality(zeta, G));
+	INFO("modularity: " , modularity.getQuality(zeta, G));
 
 }
 
@@ -275,8 +275,8 @@ TEST_F(ClusteringAlgoGTest, testCNM) {
 	// CNM with PQ
 	CNM cnm;
 	Clustering clustering = cnm.run(G);
-	INFO("CNM number of clusters: " << clustering.numberOfClusters());
-	INFO("modularity clustered random graph: " << modularity.getQuality(clustering, G));
+	INFO("CNM number of clusters: " , clustering.numberOfClusters());
+	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
 	// EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
 	EXPECT_TRUE(clustering.isProper(G));
 
@@ -297,25 +297,25 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 	// *** jazz graph
 	// CNM
 	Clustering clustering = cnm.run(jazz);
-	INFO("CNM number of jazz clusters: " << clustering.numberOfClusters());
-	INFO("CNM modularity jazz graph: " << modularity.getQuality(clustering, jazz));
+	INFO("CNM number of jazz clusters: " , clustering.numberOfClusters());
+	INFO("CNM modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 
 	// Louvain
 	clustering = louvain.run(jazz);
-	INFO("Louvain number of jazz clusters: " << clustering.numberOfClusters());
-	INFO("Louvain modularity jazz graph: " << modularity.getQuality(clustering, jazz));
+	INFO("Louvain number of jazz clusters: " , clustering.numberOfClusters());
+	INFO("Louvain modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 
 
 //	// *** blog graph
 //	// CNM
 //	clustering = cnm.run(blog);
-//	INFO("CNM number of blog clusters: " << clustering.numberOfClusters());
-//	INFO("CNM modularity blog graph: " << modularity.getQuality(clustering, jazz));
+//	INFO("CNM number of blog clusters: " , clustering.numberOfClusters());
+//	INFO("CNM modularity blog graph: " , modularity.getQuality(clustering, jazz));
 //
 //	// Louvain
 //	clustering = louvain.run(blog);
-//	INFO("Louvain number of blog clusters: " << clustering.numberOfClusters());
-//	INFO("Louvain modularity blog graph: " << modularity.getQuality(clustering, jazz));
+//	INFO("Louvain number of blog clusters: " , clustering.numberOfClusters());
+//	INFO("Louvain modularity blog graph: " , modularity.getQuality(clustering, jazz));
 }
 
 
@@ -331,25 +331,25 @@ TEST_F(ClusteringAlgoGTest, testParallelAgglomerativeAndLouvain) {
 	// *** jazz graph
 	// aggl
 	Clustering clustering = aggl.run(jazz);
-	INFO("Match-AGGL number of jazz clusters: " << clustering.numberOfClusters());
-	INFO("Match-AGGL modularity jazz graph:   " << modularity.getQuality(clustering, jazz));
+	INFO("Match-AGGL number of jazz clusters: " , clustering.numberOfClusters());
+	INFO("Match-AGGL modularity jazz graph:   " , modularity.getQuality(clustering, jazz));
 
 	// Louvain
 	clustering = louvain.run(jazz);
-	INFO("Louvain number of jazz clusters: " << clustering.numberOfClusters());
-	INFO("Louvain modularity jazz graph:   " << modularity.getQuality(clustering, jazz));
+	INFO("Louvain number of jazz clusters: " , clustering.numberOfClusters());
+	INFO("Louvain modularity jazz graph:   " , modularity.getQuality(clustering, jazz));
 
 
 	// *** blog graph
 	// CNM
 	clustering = aggl.run(blog);
-	INFO("Match-AGGL number of blog clusters: " << clustering.numberOfClusters());
-	INFO("Match-AGGL modularity blog graph:   " << modularity.getQuality(clustering, blog));
+	INFO("Match-AGGL number of blog clusters: " , clustering.numberOfClusters());
+	INFO("Match-AGGL modularity blog graph:   " , modularity.getQuality(clustering, blog));
 
 	// Louvain
 	clustering = louvain.run(blog);
-	INFO("Louvain number of blog clusters: " << clustering.numberOfClusters());
-	INFO("Louvain modularity blog graph:   " << modularity.getQuality(clustering, blog));
+	INFO("Louvain number of blog clusters: " , clustering.numberOfClusters());
+	INFO("Louvain modularity blog graph:   " , modularity.getQuality(clustering, blog));
 }
 
 
@@ -364,7 +364,7 @@ TEST_F(ClusteringAlgoGTest, testEPPFactory) {
 	Graph jazz = reader.read("input/jazz.graph");
 	Clustering zeta = epp.run(jazz);
 
-	INFO("number of clusters: " << zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfClusters());
 
 	EXPECT_TRUE(zeta.isProper(jazz));
 }
@@ -379,15 +379,15 @@ TEST_F(ClusteringAlgoGTest, testPLM2) {
 	PLM2 plm(false, 1.0);
 	Clustering zeta = plm.run(G);
 
-	INFO("number of clusters: " << zeta.numberOfClusters());
-	INFO("modularity: " << modularity.getQuality(zeta, G));
+	INFO("number of clusters: " , zeta.numberOfClusters());
+	INFO("modularity: " , modularity.getQuality(zeta, G));
 	EXPECT_TRUE(zeta.isProper(G));
 
 	PLM2 plmr(true, 1.0);
 	Clustering zeta2 = plmr.run(G);
 
-	INFO("number of clusters: " << zeta2.numberOfClusters());
-	INFO("modularity: " << modularity.getQuality(zeta2, G));
+	INFO("number of clusters: " , zeta2.numberOfClusters());
+	INFO("modularity: " , modularity.getQuality(zeta2, G));
 	EXPECT_TRUE(zeta2.isProper(G));
 
 }

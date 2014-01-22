@@ -103,7 +103,7 @@ Clustering PLP::run(Graph& G) {
 	while (nUpdated > this->updateThreshold) { // as long as a label has changed...
 		runtime.start();
 		nIterations += 1;
-		INFO("[BEGIN] LabelPropagation: iteration #" << nIterations);
+		INFO("[BEGIN] LabelPropagation: iteration #" , nIterations);
 
 		// reset updated
 		nUpdated = 0;
@@ -129,7 +129,7 @@ Clustering PLP::run(Graph& G) {
 			// TODO: documentation?
 			std::vector<count> clusterSizes = labels.clusterSizes();
 			scale.resize(clusterSizes.size());
-			INFO("Scaling cluster strengths with exponent " << SCALE_STRENGTH);
+			INFO("Scaling cluster strengths with exponent " , SCALE_STRENGTH);
 			for (index i = 0; i < clusterSizes.size(); ++i) {
 				scale[i] = pow((double) clusterSizes[i], SCALE_STRENGTH);
 			}
@@ -140,7 +140,7 @@ Clustering PLP::run(Graph& G) {
 
 		// removed for performance reasons
 		// count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
-		// INFO("number of active nodes: " << nActive);
+		// INFO("number of active nodes: " , nActive);
 
 // TODO: make this forNodes loop
 #pragma omp parallel for schedule(guided) shared(nUpdated)
@@ -197,7 +197,7 @@ Clustering PLP::run(Graph& G) {
 		}*/
 
 		runtime.stop();
-		DEBUG("[DONE] LabelPropagation: iteration #" << nIterations << " - updated " << nUpdated << " labels, time spent: " << runtime.elapsedTag());
+		DEBUG("[DONE] LabelPropagation: iteration #" , nIterations , " - updated " , nUpdated , " labels, time spent: " , runtime.elapsedTag());
 
 	} // end while
 

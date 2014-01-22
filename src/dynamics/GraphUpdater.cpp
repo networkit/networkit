@@ -14,11 +14,11 @@ GraphUpdater::GraphUpdater(Graph& G) : G(G) {
 
 void GraphUpdater::update(std::vector<GraphEvent>& stream) {
 	for (GraphEvent ev : stream) {
-		TRACE("event: " << ev.toString());
+		TRACE("event: " , ev.toString());
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
 				node u = G.addNode();
-				TRACE("added node " << u);
+				TRACE("added node " , u);
 				assert (u == ev.u);
 				break;
 			}

@@ -26,7 +26,7 @@ TEST_F(IndependentSetGTest, tryLuby) {
 	count n = 500;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeRandomGraph(n, 0.001);
-	INFO("G: " << G.toString());
+	INFO("G: " , G.toString());
 
 	Luby luby;
 	std::vector<bool> I = luby.run(G);
@@ -39,7 +39,7 @@ TEST_F(IndependentSetGTest, tryLuby) {
 			size += 1;
 		}
 	}
-	INFO("independent set size: " << size << "/" << n);
+	INFO("independent set size: " , size , "/" , n);
 }
 
 TEST_F(IndependentSetGTest, tryLubyWithSelfLoops) {
@@ -50,7 +50,7 @@ TEST_F(IndependentSetGTest, tryLubyWithSelfLoops) {
 		G.addEdge(u,u);
 	});
 
-	INFO("G: " << G.toString());
+	INFO("G: " , G.toString());
 
 	Luby luby;
 	std::vector<bool> I = luby.run(G);
@@ -63,7 +63,7 @@ TEST_F(IndependentSetGTest, tryLubyWithSelfLoops) {
 			size += 1;
 		}
 	}
-	INFO("independent set size: " << size << "/" << n);
+	INFO("independent set size: " , size , "/" , n);
 }
 
 } /* namespace NetworKit */

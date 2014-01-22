@@ -58,7 +58,7 @@ bool Clustering::isProper(Graph& G) {
 	G.forNodes([&](node v) {
 		bool contained = this->contains(v);
 		if (!contained) {
-			ERROR("Clustering does not contain node " << v);
+			ERROR("Clustering does not contain node " , v);
 			success = false;
 		}
 	});
@@ -96,7 +96,7 @@ cluster Clustering::lowerBound() const {
 }
 
 void Clustering::allToSingletons() {
-	DEBUG("this->n is " << this->n);
+	DEBUG("this->n is " , this->n);
 	for (node u = 0; u < this->n; ++u) {
 		this->data[u] = u;
 	}
@@ -183,7 +183,7 @@ void Clustering::compact() {
 	});
 
 	setUpperBound(nextIndex);
-	TRACE("upperBound: " << upperBound());
+	TRACE("upperBound: " , upperBound());
 }
 
 
@@ -249,7 +249,7 @@ Graph Clustering::communicationGraph(const Graph& graph) {
 		graph.forWeightedEdges([&](node u, node v, edgeweight w) {
 			if (data[u] != data[v]) {
 				commGraph.increaseWeight(data[u], data[v], w);
-				TRACE("increase weight of " << data[u] << " and " << data[v] << " by " << w);
+				TRACE("increase weight of " , data[u] , " and " , data[v] , " by " , w);
 			}
 		});
 	} else {
@@ -258,7 +258,7 @@ Graph Clustering::communicationGraph(const Graph& graph) {
 		graph.forEdges([&](node u, node v) {
 			if (data[u] != data[v]) {
 				commGraph.increaseWeight(data[u], data[v], 1);
-				TRACE("increase weight of " << data[u] << " and " << data[v] << " by 1");
+				TRACE("increase weight of " , data[u] , " and " , data[v] , " by 1");
 			}
 		});
 	}

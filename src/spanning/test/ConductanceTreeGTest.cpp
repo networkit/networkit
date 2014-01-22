@@ -32,7 +32,7 @@ TEST_F(ConductanceTreeGTest, tryConductanceTree) {
 	node root = 0;
 	Clustering condBest = tree.bestCutInBfsTree(graph, root);
 //	double condVal = ;
-//	INFO("Conductance value of best cut found: " << condVal);
+//	INFO("Conductance value of best cut found: " , condVal);
 
 	// TODO evaluate conductance with method in clustering; test fixed value
 }

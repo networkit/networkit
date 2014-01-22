@@ -33,7 +33,7 @@ void CommunityGraph::run(const Graph& G, const Clustering& zeta) {
 		}
 	});
 
-	DEBUG("Gcom number of nodes: " << Gcom.numberOfNodes());
+	DEBUG("Gcom number of nodes: " , Gcom.numberOfNodes());
 
 
 	index z = G.upperNodeIdBound();

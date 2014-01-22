@@ -19,8 +19,8 @@ int Aux::getCurrentNumberOfThreads() {
 	#ifdef _OPENMP
 		return omp_get_num_threads();
 	#else
-		return 1
-		ERROR("OpenMP is not available")
+		return 1;
+		ERROR("OpenMP is not available");
 	#endif
 }
 
@@ -29,8 +29,8 @@ int Aux::getMaxNumberOfThreads() {
 	#ifdef _OPENMP
 		return omp_get_max_threads();
 	#else
-		return 1
-		ERROR("OpenMP is not available")
+		return 1;
+		ERROR("OpenMP is not available");
 	#endif
 }
 
@@ -38,7 +38,7 @@ void Aux::enableNestedParallelism() {
 	#ifdef _OPENMP
 	omp_set_nested(1); // enable nested parallelism
 	#else
-	ERROR("OpenMP is not available")
+	ERROR("OpenMP is not available");
 	#endif
 }
 

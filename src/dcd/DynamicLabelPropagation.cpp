@@ -46,7 +46,7 @@ void DynamicLabelPropagation::onNodeAddition(node u) {
 	weightedDegree.push_back(0.0);
 	labels.append(u); // extend label array by 1 entry
 	labels.toSingleton(u);
-	TRACE("new node " << u << " gets new label " << labels[u]);
+	TRACE("new node " , u , " gets new label " , labels[u]);
 
 	prepStrategy->onNodeAddition(u);
 }
@@ -128,7 +128,7 @@ Clustering DynamicLabelPropagation::run() {
 		throw std::runtime_error("pointer to current graph was not initialized - call setGraph first");
 	}
 
-	INFO("running DynamicLabelPropagation at t=" << G->time());
+	INFO("running DynamicLabelPropagation at t=" , G->time());
 
 	count nIterations = 0;
 	nUpdated = G->numberOfNodes(); // starts while loop - TODO: correct?
@@ -164,12 +164,12 @@ Clustering DynamicLabelPropagation::run() {
 				}
 			} else { /* node is isolated */ }
 		}); // end parallel for nodes
-		TRACE("nUpdated = " << nUpdated);
+		TRACE("nUpdated = " , nUpdated);
 	} // end while
 
 	runtime.stop();
 	this->timerHistory.push_back(runtime.elapsed().count());
-	INFO("[DONE] iteration #" << nIterations << ", time spent: " << runtime.elapsedTag());
+	INFO("[DONE] iteration #" , nIterations , ", time spent: " , runtime.elapsedTag());
 
 	return labels;
 }

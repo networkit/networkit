@@ -38,11 +38,11 @@ TEST_F(ClusteringGTest, testModularity) {
 
 	count n = 100;
 
-	DEBUG("testing modularity on clustering of complete graph with " << n << " nodes");
+	DEBUG("testing modularity on clustering of complete graph with " , n , " nodes");
 
 
 	Graph G = graphGenerator.makeCompleteGraph(n);
-	DEBUG("total edge weight: " << G.totalEdgeWeight());
+	DEBUG("total edge weight: " , G.totalEdgeWeight());
 
 	ClusteringGenerator clusteringGenerator;
 
@@ -57,8 +57,8 @@ TEST_F(ClusteringGTest, testModularity) {
 	DEBUG("calculating modularity for 1-clustering");
 	double modOne = modularity.getQuality(one, G);
 
-	DEBUG("mod(singleton-clustering) = " << modSingleton);
-	DEBUG("mod(1-clustering) = " << modOne);
+	DEBUG("mod(singleton-clustering) = " , modSingleton);
+	DEBUG("mod(1-clustering) = " , modOne);
 
 
 	EXPECT_EQ(0.0, modOne) << "1-clustering should have modularity of 0.0";
@@ -71,7 +71,7 @@ TEST_F(ClusteringGTest, testCoverage) {
 
 	count n = 100;
 
-	DEBUG("testing coverage on clustering of complete graph with " << n << " nodes");
+	DEBUG("testing coverage on clustering of complete graph with " , n , " nodes");
 
 
 	Graph G = graphGenerator.makeCompleteGraph(n);
@@ -89,8 +89,8 @@ TEST_F(ClusteringGTest, testCoverage) {
 	DEBUG("calculating coverage for 1-clustering");
 	double covOne = coverage.getQuality(one, G);
 
-	DEBUG("mod(singleton-clustering) = " << covSingleton);
-	DEBUG("mod(1-clustering) = " << covOne);
+	DEBUG("mod(singleton-clustering) = " , covSingleton);
+	DEBUG("mod(1-clustering) = " , covOne);
 
 
 	EXPECT_EQ(1.0, covOne) << "1-clustering should have coverage of 1.0";
@@ -240,30 +240,30 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 //	std::cout << "[INPUT] .eval file path >" << std::endl;
 //	std::getline(std::cin, evalPath);
 //
-//	INFO("reading graph from: " << graphPath);
+//	INFO("reading graph from: " , graphPath);
 //	METISGraphReader graphReader;
 //	Graph G = graphReader.read(graphPath);
 //
 //	ClusteringReader clusteringReader;
-//	INFO("reading clustering from: " << clusteringPath);
+//	INFO("reading clustering from: " , clusteringPath);
 //	Clustering zeta = clusteringReader.read(clusteringPath);
 //
-//	INFO("reading modularity value from .eval file: " << evalPath);
+//	INFO("reading modularity value from .eval file: " , evalPath);
 //	std::ifstream evalFile(evalPath);
 //	std::string evalLine;
 //	std::getline(evalFile, evalLine);
 //	double evalMod = std::atof(evalLine.c_str());
-//	INFO("modularity from .eval file: " << evalMod);
+//	INFO("modularity from .eval file: " , evalMod);
 //
 //	Modularity modularity;
 //	INFO("calculating modularity in parallel");
 //	double modPar = modularity.getQuality(zeta, G);
-//	INFO("modPar: " << modPar);
+//	INFO("modPar: " , modPar);
 //
 //	ModularitySequential modularitySeq;
 //	INFO("calculating modularity sequentially");
 //	double modSeq = modularitySeq.getQuality(zeta, G);
-//	INFO("modSeq: " << modSeq);
+//	INFO("modSeq: " , modSeq);
 //
 //	EXPECT_EQ(modSeq, modPar) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
 //	EXPECT_EQ(modSeq, evalMod) << "modSeq should be agree with DIMACS challenge evaluation";
@@ -285,7 +285,7 @@ TEST_F(ClusteringGTest, testNMIDistance) {
 	NMIDistance NMID;
 	double distOne = NMID.getDissimilarity(G, one1, one2);
 
-	INFO("NMID for two 1-clusterings: " << distOne);
+	INFO("NMID for two 1-clusterings: " , distOne);
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distOne)) << "NMID of two 1-clusterings should be 0.0";
 
 
@@ -293,7 +293,7 @@ TEST_F(ClusteringGTest, testNMIDistance) {
 	Clustering singleton2 = clustGen.makeSingletonClustering(G);
 
 	double distSingleton = NMID.getDissimilarity(G, singleton1, singleton2);
-	INFO("NMID for two singleton clusterings: " << distSingleton);
+	INFO("NMID for two singleton clusterings: " , distSingleton);
 
 
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distSingleton)) << "NMID of two identical singleton clusterings should be 0.0";
@@ -302,7 +302,7 @@ TEST_F(ClusteringGTest, testNMIDistance) {
 	Clustering random2 = clustGen.makeRandomClustering(G, 2);
 
 	double distRandom = NMID.getDissimilarity(G, random1, random2);
-	INFO("NMID for two random clusterings: " << distRandom);
+	INFO("NMID for two random clusterings: " , distRandom);
 
 }
 
@@ -319,7 +319,7 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 	DynamicNMIDistance dynNMID;
 	double distOne = dynNMID.getDissimilarity(G, one1, one2);
 
-	INFO("Dyn NMID for two 1-clusterings: " << distOne);
+	INFO("Dyn NMID for two 1-clusterings: " , distOne);
 	EXPECT_TRUE(Aux::NumericTools::equal(distOne, 0.0)) << "Dyn NMID of two 1-clusterings should be 0.0";
 
 
@@ -327,7 +327,7 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 	Clustering singleton2 = clustGen.makeSingletonClustering(G);
 
 	double distSingleton = dynNMID.getDissimilarity(G, singleton1, singleton2);
-	INFO("Dyn NMID for two singleton clusterings: " << distSingleton);
+	INFO("Dyn NMID for two singleton clusterings: " , distSingleton);
 
 	EXPECT_TRUE(Aux::NumericTools::equal(distSingleton, 0.0)) << "Dyn NMID of two identical singleton clusterings should be 0.0";
 
@@ -335,7 +335,7 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 	Clustering random2 = clustGen.makeRandomClustering(G, 2);
 
 	double distRandom = dynNMID.getDissimilarity(G, random1, random2);
-	INFO("Dyn NMID for two random clusterings: " << distRandom);
+	INFO("Dyn NMID for two random clusterings: " , distRandom);
 
 
 	// now dynamic graph(s)
@@ -356,7 +356,7 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 	EXPECT_TRUE(currentClustering.isProper(G)) << "clustering in the sequence should be a proper clustering of G";
 
 	double distSeq = dynNMID.getDissimilarity(G, oldClustering, currentClustering);
-	INFO("Dyn NMID for last and first clustering: " << distSeq);
+	INFO("Dyn NMID for last and first clustering: " , distSeq);
 
 }
 

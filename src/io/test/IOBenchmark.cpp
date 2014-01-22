@@ -29,12 +29,12 @@ TEST_F(IOBenchmark, timeMETISGraphReader) {
 
 	Aux::Timer runtime;
 
-	INFO("[BEGIN] reading graph: " << path);
+	INFO("[BEGIN] reading graph: " , path);
 	runtime.start();
 	METISGraphReader reader;
 	Graph G = reader.read(path);
 	runtime.stop();
-	INFO("[DONE] reading graph " << runtime.elapsedTag());
+	INFO("[DONE] reading graph " , runtime.elapsedTag());
 
 	EXPECT_TRUE(! G.isEmpty());
 

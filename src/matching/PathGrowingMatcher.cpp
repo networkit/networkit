@@ -29,7 +29,7 @@ Matching PathGrowingMatcher::run(Graph& G) {
 
 	// main loop
 	while (graph.numberOfEdges() > 0) {
-		TRACE("Remaining edges: " << graph.numberOfEdges());
+		TRACE("Remaining edges: " , graph.numberOfEdges());
 
 		// use arbitrary vertex with positive degree
 		node v = 0;
@@ -39,7 +39,7 @@ Matching PathGrowingMatcher::run(Graph& G) {
 
 		// path growing
 		while (graph.degree(v) > 0) {
-			TRACE("Current vertex: " << v);
+			TRACE("Current vertex: " , v);
 
 			// find heaviest incident edge
 			node bestNeighbor = 0;
@@ -63,11 +63,11 @@ Matching PathGrowingMatcher::run(Graph& G) {
 			}
 
 			// remove current vertex and its incident edges from graph
-			TRACE("Remove edges of node " << v << ", which has degree " << graph.degree(v));
+			TRACE("Remove edges of node " , v , ", which has degree " , graph.degree(v));
 			graph.forEdgesOf(v, [&](node v, node u) {
 				graph.removeEdge(v, u);
 			});
-			TRACE("Remove node " << v << " of degree " << graph.degree(v));
+			TRACE("Remove node " , v , " of degree " , graph.degree(v));
 			graph.removeNode(v);
 
 			// start next iteration from best neighbor

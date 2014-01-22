@@ -44,7 +44,7 @@ std::vector<bool> Luby::run(const Graph& G) {
 	int i = 0;
 	while (! empty()) {
 		i += 1;
-		DEBUG("Luby iteration #" << i);
+		DEBUG("Luby iteration #" , i);
 		// choose set S - weighted choice of active nodes with probability $1 / 2 \omega(v)$
 		std::vector<bool> S(G.numberOfNodes(), false);
 		G.parallelForNodes([&](node u){

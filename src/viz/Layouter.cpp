@@ -36,8 +36,8 @@ void Layouter::randomInitCoordinates(Graph& g) {
 		float x = Aux::Random::real() * width + x1;
 		float y = Aux::Random::real() * height + y1;
 
-		TRACE("x: " << x);
-		TRACE("y: " << y);
+		TRACE("x: " , x);
+		TRACE("y: " , y);
 
 		std::vector<float> coords = {x, y};
 		Point<float> p(coords);

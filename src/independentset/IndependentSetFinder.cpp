@@ -27,7 +27,7 @@ bool IndependentSetFinder::isIndependentSet(const std::vector<bool>& set, const 
 	G.forEdges([&](node u, node v) {
 		if (u != v) { // exclude self-loop case
 			if (set[u] & set[v]) {
-				DEBUG("connected nodes " << u << " and " << v << " are in the set");
+				DEBUG("connected nodes " , u , " and " , v , " are in the set");
 				result = false;
 			}
 		}

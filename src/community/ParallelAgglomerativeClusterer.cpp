@@ -33,7 +33,7 @@ Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
 		int attrId = G.addEdgeAttribute_double(0.0);
 
 		// perform scoring
-		TRACE("before scoring graph of size " << G.numberOfNodes());
+		TRACE("before scoring graph of size " , G.numberOfNodes());
 		ModularityScoring<double> modScoring(G);
 		modScoring.scoreEdges(attrId);
 
@@ -59,7 +59,7 @@ Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
 		if (repeat) {
 			G = GandMap.first;
 			mapHierarchy.push_back(GandMap.second);
-			TRACE("Repeat agglomeration with graph of size " << G.numberOfNodes());
+			TRACE("Repeat agglomeration with graph of size " , G.numberOfNodes());
 		}
 	} while (repeat);
 

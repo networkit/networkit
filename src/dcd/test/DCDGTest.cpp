@@ -71,23 +71,23 @@ TEST_F(DCDGTest, testDynamicLabelPropagation) {
 	EXPECT_TRUE(zeta2.isProper(*G)) << "second dynamic clustering should be a proper clustering of G";
 
 
-	INFO("number of clusters 1: " << zeta1.numberOfClusters());
-	INFO("number of clusters 2: " << zeta2.numberOfClusters());
+	INFO("number of clusters 1: " , zeta1.numberOfClusters());
+	INFO("number of clusters 2: " , zeta2.numberOfClusters());
 
 
 	PLP plp;
 	Clustering zetaPLP = plp.run(*G);
-	INFO("number of clusters for static PLP: " << zetaPLP.numberOfClusters());
+	INFO("number of clusters for static PLP: " , zetaPLP.numberOfClusters());
 	EXPECT_TRUE(zetaPLP.isProper(*G));
 
-	INFO("first clustering: " << Aux::vectorToString(zeta1.getVector()));
+	INFO("first clustering: " , Aux::vectorToString(zeta1.getVector()));
 
 	PLM plm;
 	Clustering zetaPLM = plm.run(*G);
-	INFO("number of clusters for static PLM: " << zetaPLM.numberOfClusters());
+	INFO("number of clusters for static PLM: " , zetaPLM.numberOfClusters());
 	EXPECT_TRUE(zetaPLM.isProper(*G));
 
-	INFO("second clustering: " << Aux::vectorToString(zeta1.getVector()));
+	INFO("second clustering: " , Aux::vectorToString(zeta1.getVector()));
 
 }
 
@@ -146,7 +146,7 @@ TEST_F(DCDGTest, tryDynamicBarabasiAlbertGeneratorAsSource) {
 	}
 
 	for (Clustering zeta : results) {
-		DEBUG("number of clusters: " << zeta.numberOfClusters());
+		DEBUG("number of clusters: " , zeta.numberOfClusters());
 	}
 
 }
@@ -201,7 +201,7 @@ TEST_F(DCDGTest, tryStaticVsDynamic) {
 	PLP PLP;
 	Clustering zetaStatic = PLP.run(*G);
 
-	INFO("number of clusters for static: " << zetaStatic.numberOfClusters());
+	INFO("number of clusters for static: " , zetaStatic.numberOfClusters());
 }
 
 
@@ -332,7 +332,7 @@ TEST_F(DCDGTest, tryDynamicEnsemble) {
 TEST_F(DCDGTest, testDynamicLabelPropagation2) {
 
 	DynamicCommunityDetector* dynPLP = new DynamicLabelPropagation(0, "Isolate");
-	INFO("created algorithm: " << dynPLP->toString());
+	INFO("created algorithm: " , dynPLP->toString());
 
 	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
 
@@ -347,7 +347,7 @@ TEST_F(DCDGTest, testDynamicLabelPropagation2) {
 TEST_F(DCDGTest, testTDynamicLabelPropagationStrategyIsolate) {
 
 	DynamicCommunityDetector* dynPLP = new TDynamicLabelPropagation<Isolate>();
-	INFO("created algorithm: " << dynPLP->toString());
+	INFO("created algorithm: " , dynPLP->toString());
 
 	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
 
@@ -369,7 +369,7 @@ TEST_F(DCDGTest, testTDynamicLabelPropagationStrategyIsolate) {
 TEST_F(DCDGTest, testTDynamicLabelPropagationStrategyIsolateNeighbors) {
 
 	DynamicCommunityDetector* dynPLP = new TDynamicLabelPropagation<IsolateNeighbors>();
-	INFO("created algorithm: " << dynPLP->toString());
+	INFO("created algorithm: " , dynPLP->toString());
 
 	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
 
@@ -441,7 +441,7 @@ TEST_F(DCDGTest, testSetupWithStatic) {
 TEST_F(DCDGTest, tryArxivEval) {
 
 	DynamicCommunityDetector* dynPLP = new TDynamicLabelPropagation<Isolate>();
-	INFO("created algorithm: " << dynPLP->toString());
+	INFO("created algorithm: " , dynPLP->toString());
 
 	DynamicDGSParser* dynGen = new DynamicDGSParser("/Users/forigem/KIT/arXivSpider/src/arxivspider/conference-dataset/conference-cs-paper.dgs");
 
@@ -461,9 +461,9 @@ TEST_F(DCDGTest, tryArxivEval) {
 	dynGen -> evaluateClusterings("clustering-output.txt", last);
 
 //	std::string path = "output-clusts.txg";
-	INFO("Is proper: " << last.isProper(G));
-	INFO("Number of nodes: " << G.numberOfNodes());
-	INFO("Number of edges: " << G.numberOfEdges());
+	INFO("Is proper: " , last.isProper(G));
+	INFO("Number of nodes: " , G.numberOfNodes());
+	INFO("Number of edges: " , G.numberOfEdges());
 	*/
 
 }

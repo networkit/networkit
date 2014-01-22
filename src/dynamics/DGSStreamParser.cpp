@@ -29,7 +29,7 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 	std::getline(dgsFile, line); // get DGS version
 	lc++;
 	if (line.compare(0, cookie.size(), cookie)) {
-		ERROR("found " << line << " instead of " << cookie << " in first line");
+		ERROR("found " , line , " instead of " , cookie , " in first line");
 		throw std::runtime_error("expected cookie in first line");
 	}
 
@@ -58,7 +58,7 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 			TRACE(line);
 			lc++;
 			std::vector<std::string> split = Aux::StringTools::split(line);
-			TRACE("split line: " << Aux::vectorToString(split));
+			TRACE("split line: " , Aux::vectorToString(split));
 			std::string tag = split[0];
 
 			// TODO: remove TRACE
@@ -102,7 +102,7 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 				TRACE(ev.toString());
 				stream.push_back(ev);
 			} else {
-				ERROR("malformed line (" << lc << ") : " << line);
+				ERROR("malformed line (" , lc , ") : " , line);
 				throw std::runtime_error("malformed line in .DGS file");
 			}
 		}
@@ -133,7 +133,7 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 				stream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, w));
 			} else if (tag.compare("ce") == 0) { // update edge. Only the "weight" attribute is supported so far
 				std::vector<std::string> uvs = Aux::StringTools::split(split[1], '-');
-				TRACE(uvs[0] << " " << uvs[1]);
+				TRACE(uvs[0] , " " , uvs[1]);
 				node u = offset(std::stoul(uvs[0]));
 				node v = offset(std::stoul(uvs[1]));
 				edgeweight w = std::stod(Aux::StringTools::split(split[2], '=')[1]); // weight=<w>
@@ -147,7 +147,7 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 				node u = offset(std::stoul(split[1]));
 				stream.push_back(GraphEvent(GraphEvent::NODE_REMOVAL, u));
 			} else {
-				ERROR("malformed line (" << lc << ") : " << line);
+				ERROR("malformed line (" , lc , ") : " , line);
 				throw std::runtime_error("malformed line in .DGS file");
 			}
 		}
