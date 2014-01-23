@@ -8,7 +8,7 @@
 #ifndef FORCEDIRECTED_H_
 #define FORCEDIRECTED_H_
 
-#include "SpringEmbedder.h"
+#include "Layouter.h"
 #include "Point.h"
 #include <vector>
 #include <cmath>
@@ -18,7 +18,7 @@ namespace NetworKit {
 /**
  * TODO: class documentation
  */
-class ForceDirected: public NetworKit::Layouter {
+class FruchtermanReingold: public NetworKit::Layouter {
 private:
 	const count MAX_ITER = 200;
 
@@ -27,15 +27,15 @@ public:
 	/**
 	 * Constructor
 	 */
-	ForceDirected(); // nullary constructor needed for Python shell
+	FruchtermanReingold(); // nullary constructor needed for Python shell
 
 	/**
 	 * @param bottomLeft Coordinate of point in bottom/left corner
 	 * @param topRight Coordinate of point in top/right corner
 	 */
-	ForceDirected(Point<float> bottomLeft, Point<float> topRight);
+	FruchtermanReingold(Point<float> bottomLeft, Point<float> topRight);
 
-	virtual ~ForceDirected();
+	virtual ~FruchtermanReingold();
 
 	/**
 	 * Assigns coordinates to vertices in graph @a g

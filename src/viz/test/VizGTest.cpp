@@ -75,7 +75,7 @@ TEST_F(VizGTest, testLayouter) {
 	Point<float> bl(bottomLeft);
 	Point<float> tr(topRight);
 
-	ForceDirected fdLayouter(bl, tr);
+	FruchtermanReingold fdLayouter(bl, tr);
 	fdLayouter.draw(G);
 	PostscriptWriter psWriter2(G, true);
 	psWriter2.write("output/testForceGraph.eps");
