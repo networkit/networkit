@@ -9,8 +9,6 @@
 
 namespace NetworKit {
 
-FruchtermanReingold::FruchtermanReingold() {
-}
 
 FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right):
 		Layouter(bottom_left, top_right) {
@@ -21,18 +19,17 @@ FruchtermanReingold::~FruchtermanReingold() {
 
 }
 
-
-
 void FruchtermanReingold::draw(Graph& g) {
-	const float INITIAL_STEP_LENGTH = 1.0;
+	const float INITIAL_STEP_LENGTH = 1.0; // TODO: externalize
+	const float OPT_PAIR_SQR_DIST_SCALE = 0.25; // TODO: externalize
 
 	int width = (topRight[0] - bottomLeft[0]);
 	int height = (topRight[1] - bottomLeft[1]);
 	int area = width * height;
 	count n = g.numberOfNodes();
-	double optPairDist = 0.1 * sqrt((double) area / (double) n);
-	double optSqr = optPairDist * optPairDist;
-	DEBUG("k: " << optPairDist);
+	float optPairSqrDist = OPT_PAIR_SQR_DIST_SCALE * (float) area / (float) n;
+	float optPairDist = sqrt(optPairSqrDist);
+	DEBUG("optPairDist: " << optPairDist);
 
 	// initialize randomly
 	randomInitCoordinates(g);
@@ -43,26 +40,31 @@ void FruchtermanReingold::draw(Graph& g) {
 
 		float dist = force.length();
 		float strength = dist / optPairDist;
-		force.scale(-strength);
+		force.scale(strength);
 
 		return force;
 	});
 
 
 
-	auto repellingForce([&](Point<float>& p1, Point<float>& p2) {
+	auto repulsiveForce([&](Point<float>& p1, Point<float>& p2) {
 		Point<float> force = p1 - p2;
 
 		float sqrDist = force.squaredLength();
-		float strength = optSqr / sqrDist;
-		force.scale(strength);
+		if (sqrDist > 0) {
+			float strength = optPairSqrDist / sqrDist;
+			force.scale(strength);
+		}
 
 		return force;
 	});
 
 	auto move([&](Point<float>& p, Point<float>& force, float step) {
 		// x_i := x_i + step * (f / ||f||)
-		p += force.scale(step / force.length());
+		float len = force.length();
+		if (len > 0) {
+			p += force.scale(step / len);
+		}
 
 		// position inside frame
 		p[0] = fmax(p[0], 0.0);
@@ -88,27 +90,34 @@ void FruchtermanReingold::draw(Graph& g) {
 	auto updateStepLength([&](float step, std::vector<Point<float> >& oldLayout,
 			std::vector<Point<float> >& newLayout) {
 		float newStep = 1.0 / step;
-		newStep += 0.5;
+		newStep += 0.1; // TODO: externalize
 
 		return 1.0 / newStep;
+//		return step * 0.975; // TODO: externalize
 	});
 
 
 	bool converged = false;
 	float step = INITIAL_STEP_LENGTH;
 	std::vector<float> origin = {0.0, 0.0};
-	count numIter = 0;
+	count iter = 0;
 	std::vector<Point<float> > forces(n, origin);
 
 	while (! converged) {
 		std::vector<Point<float> > previousLayout = layout;
+
+		// DEBUGGING
+		char path[26];
+		sprintf(path, "output/forceGraph-%03llu.eps", iter);
+		PostscriptWriter writer(g, true);
+		writer.write(path);
 
 		// repulsive forces
 		g.forNodes([&](node u) {
 			forces[u] = origin;
 			g.forNodes([&](node v) {
 				if (u != v) {
-					forces[u] += repellingForce(previousLayout[u], previousLayout[v]);
+					forces[u] += repulsiveForce(previousLayout[u], previousLayout[v]);
 				}
 			});
 		});
@@ -117,7 +126,7 @@ void FruchtermanReingold::draw(Graph& g) {
 		// attractive forces
 		g.forEdges([&](node u, node v) {
 			Point<float> attr = attractiveForce(previousLayout[u], previousLayout[v]);
-			forces[u] += attr;
+			forces[u] -= attr;
 			forces[v] += attr;
 		});
 
@@ -128,23 +137,30 @@ void FruchtermanReingold::draw(Graph& g) {
 
 			DEBUG("moved " << u);
 			DEBUG("by: " << forces[u][0] << " and " << forces[u][1]);
-			DEBUG("old x: " << previousLayout[u][0] << ", new x: " << layout[u][0]);
-			DEBUG("old y: " << previousLayout[u][1] << ", new y: " << layout[u][1]);
+			DEBUG("old pos: " << previousLayout[u] << ", new pos: " << layout[u]);
 		});
 
-		++numIter;
+		++iter;
 		step = updateStepLength(step, previousLayout, layout);
-		converged = isConverged(previousLayout, layout) || numIter >= MAX_ITER;
+		converged = isConverged(previousLayout, layout) || iter >= MAX_ITER;
 
-		TRACE("Iteration finished: " << numIter);
+		DEBUG("new step length: " << step << ", iteration finished: " << iter);
+
+		// copy layout into graph, FIXME: do only once in production code
+		g.forNodes([&](node u) {
+			for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop
+				g.setCoordinate(u, d, layout[u][d]);
+			}
+		});
+
 	}
 
-	// copy layout into graph
-	g.forNodes([&](node u) {
-		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop
-			g.setCoordinate(u, d, layout[u][d]);
-		}
-	});
+	// DEBUGGING
+	char path[26];
+	sprintf(path, "output/finalForceGraph.eps");
+	PostscriptWriter writer(g, true);
+	writer.write(path);
+
 }
 
 

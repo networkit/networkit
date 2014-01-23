@@ -52,28 +52,19 @@ TEST_F(VizGTest, testPostscriptWriter) {
 
 TEST_F(VizGTest, testLayouter) {
 	// create graph
-	count n = 50;
-	count numClusters = 2;
-	double pin = 0.35;
-	double pout = 0.05;
+	count n = 120;
+	count numClusters = 3;
+	double pin = 0.175;
+	double pout = 0.005;
 
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
 	G.initCoordinates();
 	INFO("Number of edges: " << G.numberOfEdges());
 
-	// create clustering
-	ClusteringGenerator clusteringGen;
-
-	// write graph to file
-	PostscriptWriter psWriter(G, true);
-	psWriter.write("output/testGraph.eps");
-
 	// draw (independent of clustering) and write again
-	std::vector<float> bottomLeft = {0.0, 0.0};
-	std::vector<float> topRight = {1.0, 1.0};
-	Point<float> bl(bottomLeft);
-	Point<float> tr(topRight);
+	Point<float> bl(0.0, 0.0);
+	Point<float> tr(1.0, 1.0);
 
 	FruchtermanReingold fdLayouter(bl, tr);
 	fdLayouter.draw(G);

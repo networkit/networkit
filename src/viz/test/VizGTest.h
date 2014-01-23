@@ -21,6 +21,7 @@
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../io/ClusteringWriter.h"
 #include "../../io/METISGraphReader.h"
+#include "../../generators/PubWebGenerator.h"
 
 
 namespace NetworKit {

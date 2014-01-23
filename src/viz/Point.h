@@ -13,11 +13,18 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 
 namespace NetworKit {
 
 typedef uint64_t index; // more expressive name for an index into an array
 typedef uint64_t count; // more expressive name for an integer quantity
+
+template<class T> class Point;
+
+template<class T>
+std::ostream& operator <<(std::ostream& out, Point<T>& point);
+
 
 
 /**
@@ -40,6 +47,7 @@ public:
 	T squaredDistance(const Point<T>& p) const;
 
 	Point& operator+=(const Point<T>& p);
+	Point& operator-=(const Point<T>& p);
 	Point& scale(const T factor);
 
 	Point operator-(const Point<T>& other);
@@ -48,6 +56,8 @@ public:
 	T squaredLength() const;
 
 	T& operator[](const index i);
+
+	friend std::ostream& operator<< <>(std::ostream &out, Point<T>& point);
 };
 
 template<class T>
@@ -96,6 +106,15 @@ Point<T>& Point<T>::operator+=(const Point<T>& p) {
 }
 
 template<class T>
+Point<T>& Point<T>::operator-=(const Point<T>& p) {
+	assert(this->data.size() == p.data.size());
+	for (index i = 0; i < data.size(); ++i) {
+		this->data[i] -= p.data[i];
+	}
+	return *this;
+}
+
+template<class T>
 Point<T> Point<T>::operator-(const Point<T>& other) {
 	Point<T> result(*this);
 	assert(result.data.size() == other.data.size());
@@ -114,14 +133,24 @@ Point<T>& Point<T>::scale(const T factor) {
 	return *this;
 }
 
-
-} /* namespace NetworKit */
-
 template<class T>
-inline T& NetworKit::Point<T>::operator [](index i) {
+inline T& Point<T>::operator [](index i) {
 	assert(i >= 0 && i < data.size());
 	return data[i];
 }
 
+template<class T>
+std::ostream& operator <<(std::ostream& out, Point<T>& point)
+{
+	assert(point.data.size() > 0);
+	out << "(" << point[0];
+	for (index i = 1; i < point.data.size(); ++i) {
+		out << ", " << point.data[i];
+	}
+	out << ")";
+	return out;
+}
+
+} /* namespace NetworKit */
 
 #endif /* POINT_H_ */
