@@ -82,17 +82,17 @@ void setLogfile(const std::string& filename) {
 void printLogLevel(std::ostream& stream, LogLevel p) {
 	switch(p) {
 		case LogLevel::fatal:
-			stream << "[Fatal]"; break;
+			stream << "[FATAL]"; break;
 		case LogLevel::error:
-			stream << "[Error]"; break;
+			stream << "[ERROR]"; break;
 		case LogLevel::warn:
-			stream << "[Warn ]"; break;
+			stream << "[WARN ]"; break;
 		case LogLevel::info:
-			stream << "[Info ]"; break;
+			stream << "[INFO ]"; break;
 		case LogLevel::debug:
-			stream << "[Debug]"; break;
+			stream << "[DEBUG]"; break;
 		case LogLevel::trace:
-			stream << "[Trace]"; break;
+			stream << "[TRACE]"; break;
 	}
 }
 
