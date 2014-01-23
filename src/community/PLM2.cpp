@@ -122,10 +122,7 @@ Clustering PLM2::run(Graph& G) {
 			assert (best != C && best != none);// do not "move" to original cluster
 
 			zeta[u] = best; // move to best cluster
-			// TRACE("node " << u << " moved");
-			//
-			// FIXME: modUpdate
-			
+			// TRACE("node " << u << " moved");			
 			double volN = 0.0;
 			volN = volNode[u];
 			// update the volume of the two clusters

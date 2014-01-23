@@ -127,11 +127,25 @@ void Graph::setWeight(node u, node v, edgeweight w) {
 }
 
 void Graph::increaseWeight(node u, node v, edgeweight w) {
-	if (this->hasEdge(u, v)) {
-		this->setWeight(u, v, w + this->weight(u, v));
-	}
-	else {
-		this->addEdge(u, v, w);
+	if (u == v) { 		// self-loop case
+		index ui = find(u, u);
+		if (ui != none) {
+			#pragma omp atomic update
+			this->eweights[u][ui] += w;
+		} else {
+			addEdge(u, u, w);
+		}
+	} else {
+		index vi = find(u, v);
+		index ui = find(v, u);
+		if ((vi != none) && (ui != none)) {
+			#pragma omp atomic update
+			this->eweights[u][vi] += w;
+			#pragma omp atomic update
+			this->eweights[v][ui] += w;
+		} else {
+			addEdge(u, v, w);
+		}
 	}
 }
 

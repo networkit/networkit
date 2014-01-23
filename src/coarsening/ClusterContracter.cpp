@@ -49,10 +49,10 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 		node sv = nodeToSuperNode[v];
 		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
 			// add edge weight to supernode (self-loop) weight
-			Gcon.setWeight(su, su, Gcon.weight(su, su) + ew);
+			Gcon.increaseWeight(su, su, ew);
 		} else {
 			// add edge weight to weight between two supernodes (or insert edge)
-			Gcon.setWeight(su, sv, Gcon.weight(su, sv) + ew);
+			Gcon.increaseWeight(su, sv, ew);
 		}
 	});
 
