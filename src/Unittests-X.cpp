@@ -119,8 +119,10 @@ int main(int argc, char **argv) {
 #ifndef NOLOGGING
 	if (options[LOGLEVEL]) {
 		Aux::Log::setLogLevel(options[LOGLEVEL].arg);
+		Aux::Log::Settings::setPrintLocation(true);
 	} else {
 		Aux::Log::setLogLevel("ERROR");	// with default level
+		Aux::Log::Settings::setPrintLocation(true);
 	}
 #endif
 

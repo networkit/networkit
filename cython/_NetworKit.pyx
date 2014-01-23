@@ -45,6 +45,7 @@ cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
 	#void _configureLogging "Aux::configureLogging" (string loglevel)
 	string _getLogLevel "Aux::Log::getLogLevel" () except +
 	void _setLogLevel "Aux::Log::setLogLevel" (string loglevel) except +
+	void _setPrintLocation "Aux::Log::Settings::setPrintLocation" (bool) except +
 	
 #def configureLogging(loglevel="ERROR"):
 	#""" Set the loglevel of the LOG4CXX module"""
@@ -58,6 +59,9 @@ def setLogLevel(loglevel):
 	""" Set the current loglevel"""
 	_setLogLevel(stdstring(loglevel))
 
+def setPrintLocation(flag):
+	""" Switch locations in log statements on or off"""
+	_setPrintLocation(flag)
 
 cdef extern from "../src/auxiliary/Parallelism.h" namespace "Aux":
 	void _setNumberOfThreads "Aux::setNumberOfThreads" (int)
