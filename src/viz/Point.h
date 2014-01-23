@@ -22,7 +22,6 @@ typedef uint64_t count; // more expressive name for an integer quantity
 
 /**
  * Points in any dimension of templated type.
- * TODO: Overloaded [] operator.
  */
 template<class T>
 class Point {
@@ -36,8 +35,6 @@ public:
 	virtual ~Point() {}
 
 	count getDimensions() { return data.size(); }
-	T getValue(index dim) { return data.at(dim); }
-	void setValue(index dim, T value) { data.at(dim) = value; }
 
 	T distance(const Point<T>& p) const;
 	T squaredDistance(const Point<T>& p) const;
@@ -49,6 +46,8 @@ public:
 
 	T length() const;
 	T squaredLength() const;
+
+	T& operator[](const index i);
 };
 
 template<class T>
@@ -117,4 +116,12 @@ Point<T>& Point<T>::scale(const T factor) {
 
 
 } /* namespace NetworKit */
+
+template<class T>
+inline T& NetworKit::Point<T>::operator [](index i) {
+	assert(i >= 0 && i < data.size());
+	return data[i];
+}
+
+
 #endif /* POINT_H_ */
