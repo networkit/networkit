@@ -21,7 +21,7 @@
 #include <limits>
 #include <cstdint>
 #include <algorithm>
-// #include <tbb/concurrent_vector.h>
+#include <tbb/concurrent_vector.h>
 
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Debug.h"
@@ -39,10 +39,9 @@ typedef uint64_t count; // more expressive name for an integer quantity
 typedef index node; // node indices are 0-based
 typedef double edgeweight; // edge weight type
 
-constexpr index none = std::numeric_limits<index>::max();
+static const index none = std::numeric_limits<index>::max();
+template<typename T> using Vector = tbb::concurrent_vector<T>;
 
-//#define Vector std::vector // TODO: test tbb::concurrent_vector
-template <typename T> using Vector = std::vector<T>;
 
 /**
  * An undirected graph (with optional weights) and parallel iterator methods.
@@ -55,7 +54,7 @@ protected:
 	template<class T>
 	class Coordinates {
 	private:
-		std::vector<Point<T> > data;
+		Vector<Point<T> > data;
 
 	public:
 		Coordinates() {}
@@ -112,13 +111,13 @@ protected:
 	// scalars
 
 	count n; //!< current number of nodes
-	count m; //!< current number of edges
+	// removed for concurrency: count m; //!< current number of edges
 	node z; //!< current upper bound of node ids
 	count t; //!< current time step
 	bool weighted; //!< true if this graph has been marked as weighted.
 
 	// per node data
-	Vector<count> deg; //!< degree of each node (size of neighborhood)
+	// Vector<count> deg; //!< degree of each node (size of neighborhood)
 	Vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
@@ -133,6 +132,7 @@ protected:
 
 	//	attribute maps storage
 
+	// FIXME: remove or make threadsafe 
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
 
 	// defaults
@@ -692,6 +692,12 @@ public:
 	template<typename L> double parallelSumForWeightedEdges(L handle) const;
 
 
+	/**
+	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> double parallelSumForEdges(L handle) const;
+
+
 	/** Collections **/
 
 	/**
@@ -841,6 +847,22 @@ inline double NetworKit::Graph::parallelSumForNodes(L handle) const {
 		// call here
 		if (exists[v]) {
 			sum += handle(v);
+		}
+	}
+	return sum;
+}
+
+
+template<typename L>
+double NetworKit::Graph::parallelSumForEdges(L handle) const {
+	double sum = 0.0;
+#pragma omp parallel for reduction(+:sum)
+	for (node u = 0; u < z; ++u) {
+		for (index i = 0; i < this->adja[u].size(); ++i) {
+			node v = this->adja[u][i];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				sum += handle(u, v);
+			}
 		}
 	}
 	return sum;
