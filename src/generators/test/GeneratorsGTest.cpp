@@ -162,8 +162,8 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 				iter != newCoordinates.end(); ++iter) {
 			node v = iter->first;
 			Point<float> p = iter->second;
-			G.setCoordinate(v, 0, p.getValue(0));
-			G.setCoordinate(v, 1, p.getValue(1));
+			G.setCoordinate(v, 0, p[0]);
+			G.setCoordinate(v, 1, p[1]);
 		}
 
 		// output in clustered way for better visual inspection
