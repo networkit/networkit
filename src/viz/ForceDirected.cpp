@@ -13,7 +13,7 @@ ForceDirected::ForceDirected() {
 }
 
 ForceDirected::ForceDirected(Point<float> bottom_left, Point<float> top_right):
-		SpringEmbedder(bottom_left, top_right) {
+		Layouter(bottom_left, top_right) {
 
 }
 
@@ -26,12 +26,13 @@ ForceDirected::~ForceDirected() {
 void ForceDirected::draw(Graph& g) {
 	const float INITIAL_STEP_LENGTH = 1.0;
 
-	int width = (topRight.getValue(0) - bottomLeft.getValue(0));
-	int height = (topRight.getValue(1) - bottomLeft.getValue(1));
+	int width = (topRight[0] - bottomLeft[0]);
+	int height = (topRight[1] - bottomLeft[1]);
 	int area = width * height;
 	count n = g.numberOfNodes();
-	double optPairDist = 0.95 * sqrt((double) area / (double) n);
-	TRACE("k: " << optPairDist);
+	double optPairDist = 0.1 * sqrt((double) area / (double) n);
+	double optSqr = optPairDist * optPairDist;
+	DEBUG("k: " << optPairDist);
 
 	// initialize randomly
 	randomInitCoordinates(g);
@@ -53,7 +54,7 @@ void ForceDirected::draw(Graph& g) {
 		Point<float> force = p1 - p2;
 
 		float sqrDist = force.squaredLength();
-		float strength = optPairDist * optPairDist / sqrDist; // TODO: store square
+		float strength = optSqr / sqrDist;
 		force.scale(strength);
 
 		return force;
@@ -64,10 +65,10 @@ void ForceDirected::draw(Graph& g) {
 		p += force.scale(step / force.length());
 
 		// position inside frame
-		p.setValue(0, fmax(p.getValue(0), 0.0));
-		p.setValue(1, fmax(p.getValue(1), 0.0));
-		p.setValue(0, fmin(p.getValue(0), 1.0));
-		p.setValue(1, fmin(p.getValue(1), 1.0));
+		p[0] = fmax(p[0], 0.0);
+		p[1] = fmax(p[1], 0.0);
+		p[0] = fmin(p[0], 1.0);
+		p[1] = fmin(p[1], 1.0);
 	});
 
 	auto isConverged([&](std::vector<Point<float> >& oldLayout,
@@ -115,9 +116,9 @@ void ForceDirected::draw(Graph& g) {
 
 		// attractive forces
 		g.forEdges([&](node u, node v) {
-			// TOOD: store result instead of computing it twice; requires point operations
-			forces[u] += attractiveForce(previousLayout[u], previousLayout[v]);
-			forces[v] += attractiveForce(previousLayout[v], previousLayout[u]);
+			Point<float> attr = attractiveForce(previousLayout[u], previousLayout[v]);
+			forces[u] += attr;
+			forces[v] += attr;
 		});
 
 
@@ -125,10 +126,10 @@ void ForceDirected::draw(Graph& g) {
 		g.forNodes([&](node u) {
 			move(layout[u], forces[u], step);
 
-//			DEBUG("moved " << u);
-//			DEBUG("by: " << forces[u].getValue(0) << " and " << forces[u].getValue(1));
-//			DEBUG("new x: " << layout[u].getValue(0));
-//			DEBUG("new y: " << layout[u].getValue(1));
+			DEBUG("moved " << u);
+			DEBUG("by: " << forces[u][0] << " and " << forces[u][1]);
+			DEBUG("old x: " << previousLayout[u][0] << ", new x: " << layout[u][0]);
+			DEBUG("old y: " << previousLayout[u][1] << ", new y: " << layout[u][1]);
 		});
 
 		++numIter;
@@ -141,7 +142,7 @@ void ForceDirected::draw(Graph& g) {
 	// copy layout into graph
 	g.forNodes([&](node u) {
 		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop
-			g.setCoordinate(u, d, layout[u].getValue(d));
+			g.setCoordinate(u, d, layout[u][d]);
 		}
 	});
 }

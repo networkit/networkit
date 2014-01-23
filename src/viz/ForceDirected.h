@@ -18,7 +18,10 @@ namespace NetworKit {
 /**
  * TODO: class documentation
  */
-class ForceDirected: public NetworKit::SpringEmbedder {
+class ForceDirected: public NetworKit::Layouter {
+private:
+	const count MAX_ITER = 200;
+
 public:
 
 	/**
