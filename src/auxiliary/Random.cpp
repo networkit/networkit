@@ -70,7 +70,7 @@ double probability() {
 }
 
 uint64_t binomial(double n, double p) {
-	AUX_THREAD_LOCAL static std::binomial_distribution<uint64_t> dist{n, p};
+	AUX_THREAD_LOCAL static std::binomial_distribution<uint64_t> dist(n, p);
 	return dist(getURNG());
 }
 

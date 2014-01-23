@@ -188,16 +188,6 @@ Clustering DynPLM::run(Graph& G) {
 		};
 
 
-		auto modUpdate = [&](node u, cluster C, cluster D) {
-			double volN = 0.0;
-			volN = G.volume(u);
-			// update the volume of the two clusters
-			#pragma omp atomic update
-			volCommunity[C] -= volN;
-			#pragma omp atomic update
-			volCommunity[D] += volN;
-		};
-
 		cluster best = none;
 		cluster C = none;
 		cluster D = none;
@@ -223,7 +213,15 @@ Clustering DynPLM::run(Graph& G) {
 			assert (best != C && best != none);// do not "move" to original cluster
 			zeta[u] = best; // move to best cluster
 			// TRACE("node " << u << " moved");
-			modUpdate(u, C, best);
+			// modUpdate
+			double volN = 0.0;
+			volN = G.volume(u);
+			// update the volume of the two clusters
+			#pragma omp atomic update
+			volCommunity[C] -= volN;
+			#pragma omp atomic update
+			volCommunity[D] += volN;
+			
 			moved = true; // change to clustering has been made
 
 		} else {
