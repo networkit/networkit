@@ -9,9 +9,12 @@
 
 namespace NetworKit {
 
+const float FruchtermanReingold::INITIAL_STEP_LENGTH = 1.0;
+const float FruchtermanReingold::OPT_PAIR_SQR_DIST_SCALE = 0.35;
 
-FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right):
-		Layouter(bottom_left, top_right)
+
+FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right, count maxIterations, float precision):
+		Layouter(bottom_left, top_right), maxIter(maxIterations), prec(precision), step(INITIAL_STEP_LENGTH)
 {
 
 }
@@ -21,8 +24,6 @@ FruchtermanReingold::~FruchtermanReingold() {
 }
 
 void FruchtermanReingold::draw(Graph& g) {
-	const float INITIAL_STEP_LENGTH = 1.0; // TODO: externalize
-	const float OPT_PAIR_SQR_DIST_SCALE = 0.25; // TODO: externalize
 
 	int width = (topRight[0] - bottomLeft[0]);
 	int height = (topRight[1] - bottomLeft[1]);
@@ -37,6 +38,9 @@ void FruchtermanReingold::draw(Graph& g) {
 	randomInitCoordinates(g);
 
 
+	//////////////////////////////////////////////////////////
+	// Force calculations
+	//////////////////////////////////////////////////////////
 	auto attractiveForce([&](Point<float>& p1, Point<float>& p2) {
 		Point<float> force = p1 - p2;
 
@@ -46,8 +50,6 @@ void FruchtermanReingold::draw(Graph& g) {
 
 		return force;
 	});
-
-
 
 	auto repulsiveForce([&](Point<float>& p1, Point<float>& p2) {
 		Point<float> force = p1 - p2;
@@ -61,6 +63,11 @@ void FruchtermanReingold::draw(Graph& g) {
 		return force;
 	});
 
+
+
+	//////////////////////////////////////////////////////////
+	// Move vertices according to forces
+	//////////////////////////////////////////////////////////
 	auto move([&](Point<float>& p, Point<float>& force, float step) {
 		// x_i := x_i + step * (f / ||f||)
 		float len = force.length();
@@ -75,36 +82,47 @@ void FruchtermanReingold::draw(Graph& g) {
 		p[1] = fmin(p[1], 1.0);
 	});
 
+
+	//////////////////////////////////////////////////////////
+	// Cooling schedule
+	//////////////////////////////////////////////////////////
+	auto updateStepLength([&](std::vector<Point<float> >& oldLayout,
+			std::vector<Point<float> >& newLayout) {
+		step += 0.2; // TODO: externalize
+		return 1.0 / step;
+	});
+
+
+	//////////////////////////////////////////////////////////
+	// Check convergence
+	//////////////////////////////////////////////////////////
 	auto isConverged([&](std::vector<Point<float> >& oldLayout,
 			std::vector<Point<float> >& newLayout) {
-		float eps = 1e-1;
 		float change = 0.0;
 
 		for (index i = 0; i < oldLayout.size(); ++i) {
 			change += oldLayout[i].distance(newLayout[i]);
 		}
+//		change = sqrt(change);
+		DEBUG("change: " << change);
 
-		TRACE("change: " , change);
-
-		return (change < eps);
-	});
-
-	auto updateStepLength([&](float step, std::vector<Point<float> >& oldLayout,
-			std::vector<Point<float> >& newLayout) {
-		float newStep = 1.0 / step;
-		newStep += 0.1; // TODO: externalize
-
-		return 1.0 / newStep;
-//		return step * 0.975; // TODO: externalize
+		return (change < prec);
 	});
 
 
+
+	//////////////////////////////////////////////////////////
+	// Preparations for main loop
+	//////////////////////////////////////////////////////////
 	bool converged = false;
-	float step = INITIAL_STEP_LENGTH;
 	std::vector<float> origin = {0.0, 0.0};
-	count iter = 0;
 	std::vector<Point<float> > forces(n, origin);
+	float actualStep = INITIAL_STEP_LENGTH;
+	count iter = 0;
 
+	//////////////////////////////////////////////////////////
+	// Main loop
+	//////////////////////////////////////////////////////////
 	while (! converged) {
 		std::vector<Point<float> > previousLayout = layout;
 
@@ -129,27 +147,25 @@ void FruchtermanReingold::draw(Graph& g) {
 
 		// move nodes
 		g.forNodes([&](node u) {
-			move(layout[u], forces[u], step);
+			move(layout[u], forces[u], actualStep);
 
-			DEBUG("moved ", u);
-			DEBUG("by: ", forces[u][0], " and ", forces[u][1]);
-			DEBUG("old pos: ", previousLayout[u].toString(), ", new pos: ", layout[u].toString());
+			TRACE("moved " << u << " by: " << forces[u][0] << " and " << forces[u][1]);
+			TRACE("old pos: " << previousLayout[u] << ", new pos: " << layout[u]);
 		});
 
 		++iter;
-		step = updateStepLength(step, previousLayout, layout);
-		converged = isConverged(previousLayout, layout) || iter >= MAX_ITER;
+		actualStep = updateStepLength(previousLayout, layout);
+		converged = isConverged(previousLayout, layout) || iter >= maxIter;
 
-		DEBUG("new step length: ", step, ", iteration finished: ", iter);
-
-		// copy layout into graph, FIXME: do only once in production code
-		g.forNodes([&](node u) {
-			for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop
-				g.setCoordinate(u, d, layout[u][d]);
-			}
-		});
-
+		DEBUG("new step length: " << actualStep << ", iteration finished: " << iter);
 	}
+
+	// copy layout into graph
+	g.forNodes([&](node u) {
+		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop
+			g.setCoordinate(u, d, layout[u][d]);
+		}
+	});
 }
 
 
