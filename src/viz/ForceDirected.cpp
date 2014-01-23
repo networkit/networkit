@@ -9,21 +9,21 @@
 
 namespace NetworKit {
 
-ForceDirected::ForceDirected() {
+FruchtermanReingold::FruchtermanReingold() {
 }
 
-ForceDirected::ForceDirected(Point<float> bottom_left, Point<float> top_right):
+FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right):
 		Layouter(bottom_left, top_right) {
 
 }
 
-ForceDirected::~ForceDirected() {
+FruchtermanReingold::~FruchtermanReingold() {
 
 }
 
 
 
-void ForceDirected::draw(Graph& g) {
+void FruchtermanReingold::draw(Graph& g) {
 	const float INITIAL_STEP_LENGTH = 1.0;
 
 	int width = (topRight[0] - bottomLeft[0]);
