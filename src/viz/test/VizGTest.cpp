@@ -13,12 +13,11 @@
 namespace NetworKit {
 
 VizGTest::VizGTest() {
-	// TODO Auto-generated constructor stub
 
 }
 
 VizGTest::~VizGTest() {
-	// TODO Auto-generated destructor stub
+
 }
 
 
@@ -51,43 +50,32 @@ TEST_F(VizGTest, testPostscriptWriter) {
 }
 
 
-TEST_F(VizGTest, testForceDirectedLayouter) {
-	// create graph
-	count n = 30;
-	count numClusters = 2;
-	double pin = 0.35;
-	double pout = 0.05;
+// TEST_F(VizGTest, testLayouter) {
+// 	// create graph
+// 	count n = 120;
+// 	count numClusters = 3;
+// 	double pin = 0.175;
+// 	double pout = 0.005;
 
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
-	G.initCoordinates();
+// 	GraphGenerator graphGen;
+// 	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
+// 	G.initCoordinates();
+// 	INFO("Number of edges: " << G.numberOfEdges());
 
-	// create coordinates
-	G.forNodes([&](node u) {
-		float x = (float) drand48();
-		float y = (float) drand48();
-		G.setCoordinate(u, 0, x);
-		G.setCoordinate(u, 1, y);
-	});
+// 	// draw (independent of clustering) and write again
+// 	Point<float> bl(0.0, 0.0);
+// 	Point<float> tr(1.0, 1.0);
 
-	// create clustering
-	ClusteringGenerator clusteringGen;
-	Clustering zeta = clusteringGen.makeOneClustering(G);
+// 	FruchtermanReingold fdLayouter(bl, tr);
+// 	fdLayouter.draw(G);
+// 	PostscriptWriter psWriter2(G, true);
+// 	psWriter2.write("output/testForceGraph.eps");
 
-	// write graph to file
-	PostscriptWriter psWriter(G);
-	psWriter.write(zeta, "output/testGraph.eps");
-
-	// draw (independent of clustering) and write again
-	std::vector<float> bottomLeft = {0.0, 0.0};
-	std::vector<float> topRight = {1.0, 1.0};
-	Point<float> bl(bottomLeft);
-	Point<float> tr(topRight);
-	ForceDirected layouter(bl, tr);
-	layouter.draw(G);
-	psWriter.write(zeta, "output/testForceGraph.eps");
-}
-
+// 	MaxentStress msLayouter(bl, tr);
+// 	msLayouter.draw(G);
+// 	PostscriptWriter psWriter3(G, true);
+// 	psWriter3.write("output/testMaxentGraph.eps");
+// }
 
 
 

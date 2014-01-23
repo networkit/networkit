@@ -13,16 +13,23 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
+#include <sstream>
 
 namespace NetworKit {
 
 typedef uint64_t index; // more expressive name for an index into an array
 typedef uint64_t count; // more expressive name for an integer quantity
 
+template<class T> class Point;
+
+template<class T>
+std::ostream& operator <<(std::ostream& out, Point<T>& point);
+
+
 
 /**
  * Points in any dimension of templated type.
- * TODO: Overloaded [] operator.
  */
 template<class T>
 class Point {
@@ -36,19 +43,24 @@ public:
 	virtual ~Point() {}
 
 	count getDimensions() { return data.size(); }
-	T getValue(index dim) { return data.at(dim); }
-	void setValue(index dim, T value) { data.at(dim) = value; }
 
 	T distance(const Point<T>& p) const;
 	T squaredDistance(const Point<T>& p) const;
 
 	Point& operator+=(const Point<T>& p);
+	Point& operator-=(const Point<T>& p);
 	Point& scale(const T factor);
 
 	Point operator-(const Point<T>& other);
 
 	T length() const;
 	T squaredLength() const;
+
+	T& operator[](const index i);
+
+	std::string toString();
+
+	friend std::ostream& operator<< <>(std::ostream &out, Point<T>& point);
 };
 
 template<class T>
@@ -97,6 +109,15 @@ Point<T>& Point<T>::operator+=(const Point<T>& p) {
 }
 
 template<class T>
+Point<T>& Point<T>::operator-=(const Point<T>& p) {
+	assert(this->data.size() == p.data.size());
+	for (index i = 0; i < data.size(); ++i) {
+		this->data[i] -= p.data[i];
+	}
+	return *this;
+}
+
+template<class T>
 Point<T> Point<T>::operator-(const Point<T>& other) {
 	Point<T> result(*this);
 	assert(result.data.size() == other.data.size());
@@ -115,6 +136,37 @@ Point<T>& Point<T>::scale(const T factor) {
 	return *this;
 }
 
+template<class T>
+inline T& Point<T>::operator [](index i) {
+	assert(i >= 0 && i < data.size());
+	return data[i];
+}
+
+template<class T>
+std::ostream& operator <<(std::ostream& out, Point<T>& point)
+{
+	assert(point.data.size() > 0);
+	out << "(" << point[0];
+	for (index i = 1; i < point.data.size(); ++i) {
+		out << ", " << point.data[i];
+	}
+	out << ")";
+	return out;
+}
+
+template<class T>
+std::string Point<T>::toString() {
+	assert(this->data.size() > 0);
+	std::stringstream out;
+	out << "(" << (*this)[0];
+	for (index i = 1; i < this->data.size(); ++i) {
+		out << ", " << this->data[i];
+	}
+	out << ")";
+	return out.str();
+}
+
 
 } /* namespace NetworKit */
+
 #endif /* POINT_H_ */
