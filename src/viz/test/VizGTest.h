@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "../PostscriptWriter.h"
-#include "../ForceDirected.h"
+#include "../FruchtermanReingold.h"
 #include "../MaxentStress.h"
 #include "../../graph/Graph.h"
 #include "../../graph/GraphGenerator.h"
