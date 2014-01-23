@@ -11,7 +11,8 @@ namespace NetworKit {
 
 
 FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right):
-		Layouter(bottom_left, top_right) {
+		Layouter(bottom_left, top_right)
+{
 
 }
 
@@ -106,12 +107,6 @@ void FruchtermanReingold::draw(Graph& g) {
 	while (! converged) {
 		std::vector<Point<float> > previousLayout = layout;
 
-		// DEBUGGING
-		char path[26];
-		sprintf(path, "output/forceGraph-%03llu.eps", iter);
-		PostscriptWriter writer(g, true);
-		writer.write(path);
-
 		// repulsive forces
 		g.forNodes([&](node u) {
 			forces[u] = origin;
@@ -154,13 +149,6 @@ void FruchtermanReingold::draw(Graph& g) {
 		});
 
 	}
-
-	// DEBUGGING
-	char path[26];
-	sprintf(path, "output/finalForceGraph.eps");
-	PostscriptWriter writer(g, true);
-	writer.write(path);
-
 }
 
 
