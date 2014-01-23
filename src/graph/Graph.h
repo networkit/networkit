@@ -65,17 +65,17 @@ protected:
 		}
 
 		void setCoordinate(node v, count dim, T value) {
-			data[v].setValue(dim, value);
+			data[v][dim] = value;
 		}
 
 		T getCoordinate(node v, count dim) {
-			return data[v].getValue(dim);
+			return data[v][dim];
 		}
 
 		T minCoordinate(count dim) {
-			T value = data[0].getValue(dim);
+			T value = data[0][dim];
 			for (index i = 1; i < data.size(); ++i) {
-				T temp = data[i].getValue(dim);
+				T temp = data[i][dim];
 				if (temp < value) {
 					value = temp;
 				}
@@ -84,9 +84,9 @@ protected:
 		}
 
 		T maxCoordinate(count dim) {
-			T value = data[0].getValue(dim);
+			T value = data[0][dim];
 			for (index i = 1; i < data.size(); ++i) {
-				T temp = data[i].getValue(dim);
+				T temp = data[i][dim];
 				if (temp > value) {
 					value = temp;
 				}
