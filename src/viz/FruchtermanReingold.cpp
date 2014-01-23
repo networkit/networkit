@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include "ForceDirected.h"
+#include "FruchtermanReingold.h"
 
 namespace NetworKit {
 
