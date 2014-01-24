@@ -13,8 +13,8 @@ const float FruchtermanReingold::INITIAL_STEP_LENGTH = 1.0;
 const float FruchtermanReingold::OPT_PAIR_SQR_DIST_SCALE = 0.35;
 
 
-FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right, count maxIterations, float precision):
-		Layouter(bottom_left, top_right), maxIter(maxIterations), prec(precision), step(INITIAL_STEP_LENGTH)
+FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right, count maxIterations, float precision, bool useGivenCoordinates):
+		Layouter(bottom_left, top_right), maxIter(maxIterations), prec(precision), step(INITIAL_STEP_LENGTH), initNecessary(! useGivenCoordinates)
 {
 
 }
@@ -34,9 +34,10 @@ void FruchtermanReingold::draw(Graph& g) {
 	float optPairDist = sqrt(optPairSqrDist);
 	DEBUG("optPairDist: ", optPairDist);
 
-	// initialize randomly
-	randomInitCoordinates(g);
-
+	if (initNecessary) {
+		// initialize randomly
+		randomInitCoordinates(g);
+	}
 
 	//////////////////////////////////////////////////////////
 	// Force calculations
@@ -126,19 +127,20 @@ void FruchtermanReingold::draw(Graph& g) {
 	while (! converged) {
 		std::vector<Point<float> > previousLayout = layout;
 
-		// repulsive forces
-		g.forNodes([&](node u) {
+		// init for current iteration
+		g.parallelForNodes([&](node u) {
 			forces[u] = origin;
-			g.forNodes([&](node v) {
-				if (u != v) {
-					forces[u] += repulsiveForce(previousLayout[u], previousLayout[v]);
-				}
-			});
 		});
 
+		// repulsive forces
+		g.parallelForNodePairs([&](node u, node v) {
+			Point<float> force = repulsiveForce(previousLayout[u], previousLayout[v]);
+			forces[u] += force;
+			forces[v] -= force;
+		});
 
 		// attractive forces
-		g.forEdges([&](node u, node v) {
+		g.parallelForEdges([&](node u, node v) {
 			Point<float> attr = attractiveForce(previousLayout[u], previousLayout[v]);
 			forces[u] -= attr;
 			forces[v] += attr;
@@ -146,7 +148,7 @@ void FruchtermanReingold::draw(Graph& g) {
 
 
 		// move nodes
-		g.forNodes([&](node u) {
+		g.parallelForNodes([&](node u) {
 			move(layout[u], forces[u], actualStep);
 
 			TRACE("moved ", u, " by: ", forces[u][0], " and ", forces[u][1]);
@@ -161,8 +163,8 @@ void FruchtermanReingold::draw(Graph& g) {
 	}
 
 	// copy layout into graph
-	g.forNodes([&](node u) {
-		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop
+	g.parallelForNodes([&](node u) {
+		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop, needs Point<T> as coordinate type in graph.h
 			g.setCoordinate(u, d, layout[u][d]);
 		}
 	});
