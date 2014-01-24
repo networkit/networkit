@@ -150,7 +150,7 @@ void FruchtermanReingold::draw(Graph& g) {
 			move(layout[u], forces[u], actualStep);
 
 			TRACE("moved ", u, " by: ", forces[u][0], " and ", forces[u][1]);
-// FIXME			TRACE("old pos: ", previousLayout[u], ", new pos: ", layout[u]);
+			TRACE("old pos: ", previousLayout[u].toString(), ", new pos: ", layout[u].toString());
 		});
 
 		++iter;
