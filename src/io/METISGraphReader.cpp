@@ -35,7 +35,7 @@ Graph METISGraphReader::read(std::string path) {
 
 	G.setName(graphName);
 
-	DEBUG("[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);	// progress bar follows
+	INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);	// progress bar follows
 
 	double p = 0.0; // percentage for progress bar
 	node u = 0; // begin with 0
@@ -57,7 +57,7 @@ Graph METISGraphReader::read(std::string path) {
 				DEBUG(p, "% ");
 			}
 		}
-		DEBUG("[DONE]\n");
+		INFO("\n[DONE]\n");
 		return G;
 	} else {
 		while (parser.hasNext()) {
@@ -79,7 +79,7 @@ Graph METISGraphReader::read(std::string path) {
 				DEBUG(p, "% ");
 			}
 		}
-		DEBUG("[DONE]\n");
+		INFO("\n[DONE]\n");
 		return G;
 	}
 }
@@ -100,7 +100,7 @@ Graph* METISGraphReader::readToHeap(std::string path) {
 
 	G->setName(graphName);
 
-	DEBUG("[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);	// progress bar follows
+	INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);	// progress bar follows
 
 	double p = 0.0; // percentage for progress bar
 	node u = 0; // begin with 0
@@ -122,7 +122,7 @@ Graph* METISGraphReader::readToHeap(std::string path) {
 				DEBUG(p, "% ");
 			}
 		}
-		DEBUG("[DONE]\n");
+		INFO("\n[DONE]\n");
 		return G;
 	} else {
 		while (parser.hasNext()) {
@@ -144,7 +144,7 @@ Graph* METISGraphReader::readToHeap(std::string path) {
 				std::cout << p << "% " << std::flush;
 			}
 		}
-		DEBUG("[DONE]\n");
+		INFO("\n[DONE]\n");
 		return G;
 	}}
 
