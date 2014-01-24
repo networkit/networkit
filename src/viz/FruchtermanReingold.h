@@ -34,6 +34,7 @@ private:
 	count maxIter;
 	float prec;
 	float step;
+	bool initNecessary;
 
 public:
 
@@ -48,7 +49,7 @@ public:
 	 * @param[in] bottomLeft Coordinate of point in bottom/left corner
 	 * @param[in] topRight Coordinate of point in top/right corner
 	 */
-	FruchtermanReingold(Point<float> bottomLeft, Point<float> topRight, count maxIterations = MAX_ITER, float precision = EPS);
+	FruchtermanReingold(Point<float> bottomLeft, Point<float> topRight, count maxIterations = MAX_ITER, float precision = EPS, bool useGivenCoordinates = false);
 
 	virtual ~FruchtermanReingold();
 
