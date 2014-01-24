@@ -71,10 +71,10 @@ TEST_F(VizGTest, testPostscriptWriter) {
  	PostscriptWriter psWriter2(G, true);
  	psWriter2.write("output/testForceGraph.eps");
 
- 	MaxentStress msLayouter(bl, tr);
- 	msLayouter.draw(G);
- 	PostscriptWriter psWriter3(G, true);
- 	psWriter3.write("output/testMaxentGraph.eps");
+// 	MaxentStress msLayouter(bl, tr);
+//	msLayouter.draw(G);
+// 	PostscriptWriter psWriter3(G, true);
+// 	psWriter3.write("output/testMaxentGraph.eps");
  }
 
 
