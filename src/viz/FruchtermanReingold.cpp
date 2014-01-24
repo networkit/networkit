@@ -102,9 +102,8 @@ void FruchtermanReingold::draw(Graph& g) {
 		float change = 0.0;
 
 		for (index i = 0; i < oldLayout.size(); ++i) {
-			change += oldLayout[i].distance(newLayout[i]);
+			change += oldLayout[i].distance(newLayout[i]); // could be accelerated by squared distance
 		}
-//		change = sqrt(change);
 		DEBUG("change: ", change);
 
 		return (change < prec);
