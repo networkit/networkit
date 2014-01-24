@@ -15,9 +15,9 @@ TEST_F(DynamicsGTest, testDGSStreamParser) {
 	DGSStreamParser parser("input/example2.dgs");
 	auto stream = parser.getStream();
 	for (auto event : stream) {
-		std::cout << event.toString() << " ";
+		INFO(event.toString(), " ");
 	}
-	std::cout << std::endl;
+	INFO("\n");
 }
 
 
