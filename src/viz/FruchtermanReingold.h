@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-const count MAX_ITER = 750;
+const count MAX_ITER = 500;
 const double EPS = 0.1;
 
 /**

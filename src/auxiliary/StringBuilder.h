@@ -154,8 +154,8 @@ inline std::tuple<std::string::const_iterator, bool> printFormatPartToStream(std
 	}
 }
 
-// Brace Yourself: Templatemetaprogramming is comming
-/////////////////////////////////////////////////////
+// Brace Yourself: Templatemetaprogramming is coming
+////////////////////////////////////////////////////
 
 // Iteratable
 struct IsIteratableHelper {
