@@ -104,7 +104,7 @@ void FruchtermanReingold::draw(Graph& g) {
 			change += oldLayout[i].distance(newLayout[i]);
 		}
 //		change = sqrt(change);
-		DEBUG("change: " << change);
+		DEBUG("change: ", change);
 
 		return (change < prec);
 	});
@@ -149,15 +149,15 @@ void FruchtermanReingold::draw(Graph& g) {
 		g.forNodes([&](node u) {
 			move(layout[u], forces[u], actualStep);
 
-			TRACE("moved " << u << " by: " << forces[u][0] << " and " << forces[u][1]);
-			TRACE("old pos: " << previousLayout[u] << ", new pos: " << layout[u]);
+			TRACE("moved ", u, " by: ", forces[u][0], " and ", forces[u][1]);
+// FIXME			TRACE("old pos: ", previousLayout[u], ", new pos: ", layout[u]);
 		});
 
 		++iter;
 		actualStep = updateStepLength(previousLayout, layout);
 		converged = isConverged(previousLayout, layout) || iter >= maxIter;
 
-		DEBUG("new step length: " << actualStep << ", iteration finished: " << iter);
+		DEBUG("new step length: ", actualStep, ", iteration finished: ", iter);
 	}
 
 	// copy layout into graph

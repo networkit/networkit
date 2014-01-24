@@ -146,7 +146,7 @@ TEST_F(AuxGTest, benchmarkBinomial) {
 
 TEST_F(AuxGTest, testVectorDebug) {
 	std::vector<int> vec(10, 42);
-	std::cout << Aux::vectorToString(vec) << std::endl;
+	INFO(Aux::vectorToString(vec), "\n");
 }
 
 

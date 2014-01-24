@@ -98,7 +98,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	count n = 1800;
 	count numCluster = 24;
 	count maxNumNeighbors = 36;
-	float rad = 0.06;
+	float rad = 0.075;
 
 	PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
 	Graph G = gen.generate();
@@ -125,7 +125,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 	Modularity mod;
 	double modVal = mod.getQuality(clustering, G);
-	EXPECT_GE(modVal, 0.3) << "modularity of clustering";
+	EXPECT_GE(modVal, 0.2) << "modularity of clustering";
 	DEBUG("Modularity of clustering: " , modVal);
 	DEBUG("Total edge weight: " , G.totalEdgeWeight());
 }
