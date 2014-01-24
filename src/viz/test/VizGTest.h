@@ -15,7 +15,7 @@
 
 #include "../PostscriptWriter.h"
 #include "../FruchtermanReingold.h"
-//#include "../MaxentStress.h"
+#include "../MaxentStress.h"
 #include "../../graph/Graph.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
