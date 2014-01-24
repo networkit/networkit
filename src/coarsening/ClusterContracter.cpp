@@ -45,16 +45,11 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 
 	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
 	G.parallelForWeightedEdges([&](node u, node v, edgeweight ew) {
+		TRACE("reading supernodes");
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
-		TRACE("edge (", su, ", ", sv, ")");
-		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
-			// add edge weight to supernode (self-loop) weight
-			Gcon.increaseWeight(su, su, ew);
-		} else {
-			// add edge weight to weight between two supernodes (or insert edge)
-			Gcon.increaseWeight(su, sv, ew);
-		}
+		TRACE("modifying edge (", su, ", ", sv, ")");
+		Gcon.increaseWeight(su, sv, ew);
 	});
 
 	return std::make_pair(Gcon, nodeToSuperNode);
