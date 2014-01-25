@@ -114,7 +114,7 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
 				// edge is already marked => insert it
 				edgeweight ew = BASE_WEIGHT / -currentBest.first;
 				g.addEdge(currentBest.second.first, currentBest.second.second, ew);
-//				TRACE("add edge " << currentBest.second.first << "/" << currentBest.second.second);
+//				TRACE("add edge " , currentBest.second.first , "/" , currentBest.second.second);
 			}
 			else {
 				// mark edge as eligible

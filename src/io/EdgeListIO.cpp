@@ -45,25 +45,25 @@ Graph EdgeListIO::read(std::string path) {
 
    std::string commentPrefix = "#";
 
-   DEBUG("separator: " << separator);
-   DEBUG("first node: " << firstNode);
+   DEBUG("separator: " , separator);
+   DEBUG("first node: " , firstNode);
    // first find out the maximum node id
    DEBUG("first pass");
    count i = 0;
    while (file.good()) {
         ++i;
         std::getline(file, line);
-        // TRACE("read line: " << line);
+        // TRACE("read line: " , line);
 
         if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
-            // TRACE("ignoring comment: " << line);
+            // TRACE("ignoring comment: " , line);
         } else if (line.length() == 0) {
             // TRACE("ignoring empty line");
         } else {
             std::vector<std::string> split = Aux::StringTools::split(line, separator);
        
             if (split.size() == 2) {
-                TRACE("split into : " << split[0] << " and " << split[1]);
+                TRACE("split into : " , split[0] , " and " , split[1]);
                 node u = std::stoi(split[0]);
                 if (u > maxNode) {
                     maxNode = u;
@@ -86,7 +86,7 @@ Graph EdgeListIO::read(std::string path) {
     file.close();
 
     maxNode = maxNode - firstNode + 1;
-    DEBUG("max. node id found: " << maxNode);
+    DEBUG("max. node id found: " , maxNode);
 
     Graph G(maxNode);
 
@@ -100,9 +100,9 @@ Graph EdgeListIO::read(std::string path) {
     while(std::getline(file,line)){
         ++i;
         if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
-            // TRACE("ignoring comment: " << line);
+            // TRACE("ignoring comment: " , line);
         } else {
-            // TRACE("edge line: " << line);
+            // TRACE("edge line: " , line);
             std::vector<std::string> split = Aux::StringTools::split(line, separator);
             std::string splitZero = split[0];
             if (split.size() == 2) {

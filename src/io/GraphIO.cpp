@@ -28,7 +28,7 @@ void GraphIO::writeEdgeList(Graph& G, std::string path) {
 	});
 
 	file.close();
-	INFO("wrote graph to file: " << path);
+	INFO("wrote graph to file: " , path);
 
 }
 
@@ -43,7 +43,7 @@ void GraphIO::writeAdjacencyList(Graph& G, std::string path) {
 		});
 		file << std::endl;
 	});
-	INFO("wrote graph to file: " << path);
+	INFO("wrote graph to file: " , path);
 }
 
 } /* namespace NetworKit */

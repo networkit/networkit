@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 PseudoDynamic::PseudoDynamic(Graph& Gstatic) : Gstatic(Gstatic), idmap(Gstatic.upperNodeIdBound(), none), current(0) {
-	TRACE("current node has been initialized to " << current);
+	TRACE("current node has been initialized to " , current);
 
 }
 

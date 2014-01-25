@@ -93,8 +93,8 @@ Clustering ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoa
 		zeta[v] = super[v];
 	});
 
-	DEBUG("number of clusters in projected clustering: " << zeta.numberOfClusters());
-	DEBUG("number of nodes in coarse graph: " << Gcoarse.numberOfNodes());
+	DEBUG("number of clusters in projected clustering: " , zeta.numberOfClusters());
+	DEBUG("number of nodes in coarse graph: " , Gcoarse.numberOfNodes());
 	assert (zeta.numberOfClusters() == Gcoarse.numberOfNodes());
 
 	return zeta;

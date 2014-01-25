@@ -34,7 +34,7 @@ void DynamicDGSParser::initializeGraph() {
 		if (!line.compare(0, cookie.size(), cookie)) { // compare prefix
 			DEBUG("found magic cookie: DGS004");
 		} else {
-			DEBUG("First line: " << line);
+			DEBUG("First line: " , line);
 			throw std::runtime_error("This does not seem to be a valid DGS file. Expected magic cookie 'DGS004' in first line");
 		}
 
@@ -174,10 +174,10 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 		// Using the normalized ID to address entries in the vector
 		normalizedID = clusterIDMap[c];
 
-		TRACE("normalizedID " << normalizedID);
-		TRACE("node categories size " << nodeCategories.size());
-		TRACE("c " << c);
-		TRACE("v " << v);
+		TRACE("normalizedID " , normalizedID);
+		TRACE("node categories size " , nodeCategories.size());
+		TRACE("c " , c);
+		TRACE("v " , v);
 
 		// Assuming 1 to 1 node correspondence (VERIFY),
 		// getting the categories to which this node (a scientific paper) belongs

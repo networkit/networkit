@@ -46,7 +46,7 @@ except ImportError as importError:
 
 # TODO: introduce settings module
 
-from _NetworKit import configureLogging, currentLogLevel, setLoglevel, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
+from _NetworKit import currentLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 from graph import Graph 
 from graphio import readGraph, writeGraph
 from nxadapter import nk2nx, nx2nk
@@ -58,7 +58,8 @@ from community import detectCommunities
 
 def setup():
 	""" This function is run once on module import to configure initial settings """
-	configureLogging(loglevel="ERROR")    # set default loglevel for C++ code
+	setLogLevel("ERROR")    # set default loglevel for C++ code
+	setPrintLocation(True)
 	enableNestedParallelism()	# enable nested parallelism
 	logging.basicConfig(level=logging.INFO)	# set default loglevel for Python code
 

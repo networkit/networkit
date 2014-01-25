@@ -77,7 +77,7 @@ Permutation RcmMapper::permute(const Graph& graph) const {
 		unvisited.at(argmin) = false;
 		--numUnvisited;
 
-		DEBUG("root of RCM: " << argmin);
+		DEBUG("root of RCM: " , argmin);
 
 		while (! q.empty()) {
 			// process current front node
@@ -91,7 +91,7 @@ Permutation RcmMapper::permute(const Graph& graph) const {
 					q.push(u);
 					unvisited.at(u) = false;
 					--numUnvisited;
-					TRACE("numUnvisited: " << numUnvisited << ", RCM processes " << v);
+					TRACE("numUnvisited: " , numUnvisited , ", RCM processes " , v);
 				}
 			});
 		}

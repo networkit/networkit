@@ -44,8 +44,8 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 
 //	count n = newGraph.numberOfNodes();
 
-	DEBUG("oldClustering=" << Aux::vectorToString(oldClustering.getVector())); // getVector() not existing in both Clustering and Partition.
-	DEBUG("newClustering=" << Aux::vectorToString(newClustering.getVector()));
+	DEBUG("oldClustering=" , Aux::vectorToString(oldClustering.getVector())); // getVector() not existing in both Clustering and Partition.
+	DEBUG("newClustering=" , Aux::vectorToString(newClustering.getVector()));
 
 
 	std::vector<count> size_old(oldClustering.upperBound());
@@ -61,8 +61,8 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 		}
 	});
 
-	DEBUG("size_old=" << Aux::vectorToString(size_old));
-	DEBUG("size_new=" << Aux::vectorToString(size_new));
+	DEBUG("size_old=" , Aux::vectorToString(size_old));
+	DEBUG("size_new=" , Aux::vectorToString(size_new));
 
 
 	// confusion matrix
@@ -91,11 +91,11 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 				double aggregate1 = (double) size_old[C]; //  compAggregate1(confMatrix, oldClustering, D);
 				double aggregate2 = (double) size_new[D]; // compAggregate2(confMatrix, C, newClustering);
 				double denom = aggregate1 * aggregate2;
-				DEBUG("frac: " << nominator << " / " << denom << " = " << nominator / denom);
+				DEBUG("frac: " , nominator , " / " , denom , " = " , nominator / denom);
 				double factor2 = log_b(nominator / denom, 2);
 				MI += factor1 * factor2;
 
-				DEBUG("contribution of " << C << " and " << D << ": " << factor1 << " * " << factor2 << " = " << factor1 * factor2);
+				DEBUG("contribution of " , C , " and " , D , ": " , factor1 , " * " , factor2 , " = " , factor1 * factor2);
 			}
 		}
 	}
@@ -170,7 +170,7 @@ double DynamicNMIDistance::entropy(const Partition& clustering, count n, std::ve
 }
 
 void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
-	DEBUG("sanity check, NMI: " << NMI);
+	DEBUG("sanity check, NMI: " , NMI);
 
 	if (Aux::NumericTools::equal(NMID, 0.0)) {
 		NMID = 0.0;
@@ -181,11 +181,11 @@ void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
 
 	// if NMID is close to 0 because of numerical error
 	if (! Aux::NumericTools::ge(NMID, 0.0)) {
-		ERROR("Set NMID from below 0 to exactly 0: " << NMID);
+		ERROR("Set NMID from below 0 to exactly 0: " , NMID);
 		NMID = 0.0;
 	}
 	if (! Aux::NumericTools::le(NMID, 1.0)) {
-		ERROR("Set NMID larger than 1 to exactly 1: " << NMID);
+		ERROR("Set NMID larger than 1 to exactly 1: " , NMID);
 		NMID = 1.0;
 	}
 
@@ -203,11 +203,11 @@ std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(Graph& G,
 		confMatrix[i].resize(secondUpperId, 0);
 	}
 
-	TRACE("upperId in first, second: " << first.upperBound() << ", " << secondUpperId);
+	TRACE("upperId in first, second: " , first.upperBound() , ", " , secondUpperId);
 
 	second.forEntries([&](node u, index secondId) {
 		if (this->isInBoth(u, first, second)) {
-			TRACE("node " << u << ", id in first: " << first[u] << ", in second: " << second[u]);
+			TRACE("node " , u , ", id in first: " , first[u] , ", in second: " , second[u]);
 			index firstId = first[u];
 			assert(firstId < confMatrix.size() && secondId < confMatrix[firstId].size());
 			confMatrix[firstId][secondId]++;

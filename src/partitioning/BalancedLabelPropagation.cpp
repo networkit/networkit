@@ -48,7 +48,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 	if (exponent >= 4.0) {
 		numIters = 3;
 	}
-	DEBUG("cut/balance before loop: " << edgeCut.getQuality(partition, graph) << ", " << partition.getImbalance());
+	DEBUG("cut/balance before loop: " , edgeCut.getQuality(partition, graph) , ", " , partition.getImbalance());
 
 	for (index i = 0; i < numIters; ++i) { // FIXME: different termination criterion
 		// read cluster sizes and compute scale values
@@ -56,7 +56,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 		std::vector<count> clusterSizes = partition.clusterSizes();
 		TRACE("done");
 		for (index p = 0; p < numParts; ++p) {
-			TRACE("size of cluster " << p << ": " << clusterSizes[p]);
+			TRACE("size of cluster " , p , ": " , clusterSizes[p]);
 			adjustByFactor[p] = avg / clusterSizes[p];
 		}
 
@@ -151,15 +151,15 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 #endif
 
 
-//			DEBUG("partition[" << v << "]: " << partition[v]);
+//			DEBUG("partition[" , v , "]: " , partition[v]);
 		});
 
-		DEBUG("cut/balance in iter " << i << ": " << edgeCut.getQuality(partition, graph) << ", " << partition.getImbalance());
+		DEBUG("cut/balance in iter " , i , ": " , edgeCut.getQuality(partition, graph) , ", " , partition.getImbalance());
 	}
 
 	std::vector<count> clusterSizes = partition.clusterSizes();
 	for (index p = 0; p < clusterSizes.size(); ++p) {
-		DEBUG("after: size of cluster " << p << ": " << clusterSizes[p]);
+		DEBUG("after: size of cluster " , p , ": " , clusterSizes[p]);
 	}
 
 	return partition;

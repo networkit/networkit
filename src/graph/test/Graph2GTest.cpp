@@ -173,9 +173,9 @@ TEST_F(Graph2GTest, testEdgeIteration) {
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
 
 	G.forEdges([&](node u, node v) {
-		DEBUG("about to remove edge " << u << ", " << v);
+		DEBUG("about to remove edge " , u , ", " , v);
 		G.removeEdge(u, v);
-		DEBUG("have removed edge " << u << ", " << v);
+		DEBUG("have removed edge " , u , ", " , v);
 	});
 
 	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
@@ -605,7 +605,7 @@ TEST_F(Graph2GTest, testTotalEdgeWeight) {
 	double total = G.totalEdgeWeight();
 	EXPECT_EQ(m, total) << "total edge weight should be n * (n -1) / 2";
 
-	INFO("difference: " << (total - m));
+	INFO("difference: " , (total - m));
 
 }
 

@@ -45,7 +45,7 @@ void AlgebraicDistance::preprocess() {
 		}
 	}
 	running1.stop();
-	std::cout << running1.elapsedMilliseconds() << std::endl;
+	INFO("elapsed millisecs for AD preprocessing: ", running1.elapsedMilliseconds(), "\n");
 }
 
 double AlgebraicDistance::distance(node u, node v) {

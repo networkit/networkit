@@ -13,7 +13,7 @@ namespace NetworKit {
 
 GraphBenchmark::GraphBenchmark() {
 	this->n = 1000;
-	INFO("n = " << this->n);
+	INFO("n = " , this->n);
 }
 
 GraphBenchmark::~GraphBenchmark() {
@@ -36,9 +36,9 @@ TEST_F(GraphBenchmark, edgeInsertions_noop_seq) {
 	});
 	runtime.stop();
 
-	TRACE("counted i = " << i);
+	TRACE("counted i = " , i);
 
-	INFO("[DONE] edgeInsertions_noop_seq (" << runtime.elapsed().count() << " ms)");
+	INFO("[DONE] edgeInsertions_noop_seq (" , runtime.elapsed().count() , " ms)");
 
 }
 
@@ -55,9 +55,9 @@ TEST_F(GraphBenchmark, edgeInsertions_noop_par) {
 	});
 	runtime.stop();
 
-	TRACE("counted i = " << i);
+	TRACE("counted i = " , i);
 
-	INFO("[DONE] edgeInsertions_noop_par (" << runtime.elapsed().count() << " ms)");
+	INFO("[DONE] edgeInsertions_noop_par (" , runtime.elapsed().count() , " ms)");
 
 }
 
@@ -72,7 +72,7 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 	});
 	runtime.stop();
 
-	INFO("[DONE] edgeInsertions_standard_seq (" << runtime.elapsed().count() << " ms)");
+	INFO("[DONE] edgeInsertions_standard_seq (" , runtime.elapsed().count() , " ms)");
 	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
 
 
@@ -89,7 +89,7 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 //	});
 //	runtime.stop();
 //
-//	INFO("[DONE] edgeInsertions_standard_par(" << runtime.elapsed().count() << " ms)");
+//	INFO("[DONE] edgeInsertions_standard_par(" , runtime.elapsed().count() , " ms)");
 //	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
 //
 //}
@@ -110,7 +110,7 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 //	runtime.stop();
 //
 //
-//	INFO("[DONE] edgeInsertions_raw_seq (" << runtime.elapsed().count() << " ms)");
+//	INFO("[DONE] edgeInsertions_raw_seq (" , runtime.elapsed().count() , " ms)");
 //	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
 //
 //
@@ -132,7 +132,7 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 //	}
 //	runtime.stop();
 //
-//	INFO("[DONE] edgeInsertions_raw_par (" << runtime.elapsed().count() << " ms)");
+//	INFO("[DONE] edgeInsertions_raw_par (" , runtime.elapsed().count() , " ms)");
 //	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
 //
 //}
@@ -159,7 +159,7 @@ TEST_F(GraphBenchmark, weightedDegree_standard_seq) {
 	});
 	runtime.stop();
 
-	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
+	INFO("[DONE] (" , runtime.elapsed().count() , " ms)");
 
 	// test correctness of result
 	bool correct = true;
@@ -192,7 +192,7 @@ TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 	});
 	runtime.stop();
 
-	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
+	INFO("[DONE] (" , runtime.elapsed().count() , " ms)");
 
 	// test correctness of result
 	bool correct = true;
@@ -226,7 +226,7 @@ TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 //	}
 //	runtime.stop();
 //
-//	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
+//	INFO("[DONE] (" , runtime.elapsed().count() , " ms)");
 //
 //	// test correctness of result
 //	bool correct = true;
@@ -260,7 +260,7 @@ TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 //	}
 //	runtime.stop();
 //
-//	INFO("[DONE] (" << runtime.elapsed().count() << " ms)");
+//	INFO("[DONE] (" , runtime.elapsed().count() , " ms)");
 //
 //	// test correctness of result
 //	bool correct = true;

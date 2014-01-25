@@ -17,6 +17,7 @@
 #include "../community/PLP.h"
 #include "../community/PLM2.h"
 #include "../clustering/SampledRandMeasure.h"
+#include "../community/CommunityGraph.h"
 
 
 namespace NetworKit {
@@ -52,6 +53,8 @@ void DynamicCommunityDetection::run() {
 		algo = new StaticAdapter(new PLP());
 	} else if (algoName == "PLM") {
 		algo = new StaticAdapter(new PLM2());
+	} else {
+		throw std::runtime_error("unknown algorithm");
 	}
 
 	DEBUG("attaching graph");
@@ -91,7 +94,7 @@ void DynamicCommunityDetection::run() {
 		std::vector<GraphEvent> slice(i, j);
 		DEBUG("updating graph");
 		gu.update(slice);
-		DEBUG("number of nodes: " << G.numberOfNodes());
+		DEBUG("number of nodes: " , G.numberOfNodes());
 
 		if (! graphOutputPath.empty()) {
 			char suffix[12];
@@ -116,8 +119,8 @@ void DynamicCommunityDetection::run() {
 		timer.stop();
 		detectTime.push_back(timer.elapsedMilliseconds());
 
-		DEBUG("upper community id bound: " << zeta.upperBound());
-		// DEBUG("zeta at time " << G.time() << ": " << Aux::vectorToString(zeta.getVector()));
+		DEBUG("upper community id bound: " , zeta.upperBound());
+		// DEBUG("zeta at time " , G.time() , ": " , Aux::vectorToString(zeta.getVector()));
 		// 
 		
 		// record time step
@@ -127,7 +130,7 @@ void DynamicCommunityDetection::run() {
 			DEBUG("recording quality");
 			Modularity mod;
 			quality.push_back(mod.getQuality(zeta, G));
-			INFO("modularity at time " << G.time() << ": " << quality.back());
+			INFO("modularity at time " , G.time() , ": " , quality.back());
 		}
 
 		if (record("continuity")) {
@@ -153,6 +156,10 @@ void DynamicCommunityDetection::run() {
 
 			// double avgSize = std::accumulate(sizes.begin(), sizes.end(), 0) / (double) sizes.size();
 			communitySizes.push_back(sizes);
+		}
+
+		if (record("results")) {
+			results.push_back(std::make_pair(G, zeta));
 		}
 
 
@@ -188,6 +195,10 @@ std::vector<double> DynamicCommunityDetection::getTimeline(std::string key) {
 
 std::vector<std::pair<count, count> > DynamicCommunityDetection::getGraphSizeTimeline() {
 	return size;
+}
+
+std::vector<std::pair<Graph, Clustering> > DynamicCommunityDetection::getResultTimeline() {
+	return results;
 }
 
 } /* namespace NetworKit */

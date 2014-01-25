@@ -118,11 +118,12 @@ int main(int argc, char **argv) {
 
 #ifndef NOLOGGING
 	if (options[LOGLEVEL]) {
-		Aux::configureLogging(options[LOGLEVEL].arg);
+		Aux::Log::setLogLevel(options[LOGLEVEL].arg);
+		Aux::Log::Settings::setPrintLocation(true);
 	} else {
-		Aux::configureLogging();	// with default level
+		Aux::Log::setLogLevel("ERROR");	// with default level
+		Aux::Log::Settings::setPrintLocation(true);
 	}
-	//std::cout << Aux::currentLogLevel() << std::endl;
 #endif
 
 
@@ -153,7 +154,6 @@ int main(int argc, char **argv) {
 		}
 		::testing::GTEST_FLAG(filter) = "*Benchmark*";
 	} else if (options[FILTER]) {
-		std::cout << options[FILTER].arg << std::endl;
 		::testing::GTEST_FLAG(filter) = options[FILTER].arg;
 	}
 	::testing::InitGoogleTest(&argc, argv);

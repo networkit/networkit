@@ -24,7 +24,7 @@ double Coverage::getQuality(const Partition& zeta, const Graph& G) {
 
 	double cov = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
-	DEBUG("total edge weight = " << totalEdgeWeight)
+	DEBUG("total edge weight = " , totalEdgeWeight);
 
 	if (totalEdgeWeight == 0.0) {
 		throw std::invalid_argument(
@@ -44,7 +44,7 @@ double Coverage::getQuality(const Partition& zeta, const Graph& G) {
 				if (c == d) {
 #ifdef DEBUG
 					if ((c >= zeta.upperBound()) || (c < zeta.lowerBound())) {
-						ERROR("c=" << c << " = zeta(" << u << ") is larger than upper bound: " << zeta.upperBound());
+						ERROR("c=" , c , " = zeta(" , u , ") is larger than upper bound: " , zeta.upperBound());
 					}
 #endif
 					assert ((zeta.lowerBound()) <= c && (c < zeta.upperBound()));
@@ -57,11 +57,11 @@ double Coverage::getQuality(const Partition& zeta, const Graph& G) {
 	for (index c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		intraEdgeWeightSum += intraEdgeWeight[c];
 	}
-	DEBUG("total intra-cluster edge weight = " << intraEdgeWeightSum);
+	DEBUG("total intra-cluster edge weight = " , intraEdgeWeightSum);
 
 
 	cov = intraEdgeWeightSum / totalEdgeWeight;
-	DEBUG("coverage = " << cov);
+	DEBUG("coverage = " , cov);
 
 	assert(cov <= 1.0);
 	assert(cov >= 0.0);

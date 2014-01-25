@@ -33,7 +33,7 @@ void EPP::setOverlapper(Overlapper& overlap) {
 }
 
 Clustering EPP::run(Graph& G) {
-	INFO("STARTING EnsemblePreprocessing on G=" << G.toString());
+	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
 
 	// fixed sub-algorithms
 	ClusterContracter contracter;

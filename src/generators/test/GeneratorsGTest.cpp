@@ -67,7 +67,7 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 			});
 
 	EXPECT_EQ(n, G->numberOfNodes());
-	DEBUG("m = " << G->numberOfEdges());
+	DEBUG("m = " , G->numberOfEdges());
 
 	// resume generator
 
@@ -98,7 +98,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	count n = 1800;
 	count numCluster = 24;
 	count maxNumNeighbors = 36;
-	float rad = 0.06;
+	float rad = 0.075;
 
 	PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
 	Graph G = gen.generate();
@@ -125,9 +125,9 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 	Modularity mod;
 	double modVal = mod.getQuality(clustering, G);
-	EXPECT_GE(modVal, 0.3) << "modularity of clustering";
-	DEBUG("Modularity of clustering: " << modVal);
-	DEBUG("Total edge weight: " << G.totalEdgeWeight());
+	EXPECT_GE(modVal, 0.2) << "modularity of clustering";
+	DEBUG("Modularity of clustering: " , modVal);
+	DEBUG("Total edge weight: " , G.totalEdgeWeight());
 }
 
 
@@ -154,7 +154,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 		gu.update(stream);
 		G.initCoordinates();
 
-		DEBUG("updated graph, new (n, m) = (" << G.numberOfNodes() << ", " << G.numberOfEdges() << ")");
+		DEBUG("updated graph, new (n, m) = (" , G.numberOfNodes() , ", " , G.numberOfEdges() , ")");
 
 		// update coordinates
 		std::map<node, Point<float> > newCoordinates = dynGen.getNewCoordinates();
@@ -162,14 +162,14 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 				iter != newCoordinates.end(); ++iter) {
 			node v = iter->first;
 			Point<float> p = iter->second;
-			G.setCoordinate(v, 0, p.getValue(0));
-			G.setCoordinate(v, 1, p.getValue(1));
+			G.setCoordinate(v, 0, p[0]);
+			G.setCoordinate(v, 1, p[1]);
 		}
 
 		// output in clustered way for better visual inspection
 		char path[23];
 		sprintf(path, "output/pubweb-%04llu.eps", i);
-		TRACE("path: " << path);
+		TRACE("path: " , path);
 		PostscriptWriter psWriter(G, true);
 		psWriter.write(path);
 	}
@@ -232,7 +232,7 @@ TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 	EXPECT_GE(nEdges, 0.75 * p * nPairs);
 	EXPECT_LE(nEdges, 1.25 * p * nPairs);
 
-	DEBUG("Number of edges with probability " << p << " (actual/expected): " << nEdges << " / " << (nPairs * p));
+	DEBUG("Number of edges with probability " , p , " (actual/expected): " , nEdges , " / " , (nPairs * p));
 }
 
 

@@ -163,13 +163,11 @@ int main(int argc, char **argv) {
 
 	// CONFIGURE LOGGING
 #ifndef NOLOGGING
-#ifndef NOLOG4CXX
 	if (options[LOGLEVEL]) {
-		Aux::configureLogging(options[LOGLEVEL].arg);
+		Aux::Log::setLogLevel(options[LOGLEVEL].arg);
 	} else {
-		Aux::configureLogging();	// with default level
+		Aux::Log::setLogLevel("ERROR");	// with default level
 	}
-#endif
 #endif
 
 
@@ -354,7 +352,7 @@ int main(int argc, char **argv) {
 			}
 		} // end for detector arguments
 		for (DynamicCommunityDetector* detector : detectors) {
-			INFO("will add " << detector->toString() << " to setup");
+			INFO("will add " , detector->toString() , " to setup");
 		}
 	} else {
 		std::cout << "[ERROR] no community detector given" << std::endl;
@@ -429,11 +427,11 @@ int main(int argc, char **argv) {
 
 
 
-	INFO("creating setup with tMax=" << tMax << " and deltaT=" << deltaT);
+	INFO("creating setup with tMax=" , tMax , " and deltaT=" , deltaT);
 	DynCDSetup* dynCDSetup = new DynCDSetup(*source, detectors, tMax, deltaT);
 
 	if (options[STATIC]) {
-		INFO("setting static detector " << staticDetector->toString());
+		INFO("setting static detector " , staticDetector->toString());
 		dynCDSetup->setStatic(staticDetector);
 	}
 

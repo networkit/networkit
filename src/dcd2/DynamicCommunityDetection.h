@@ -31,6 +31,8 @@ public:
 
 	std::vector<double> getTimeline(std::string key);
 
+	std::vector<std::pair<Graph, Clustering> > getResultTimeline(); 
+
 private:
 
 	std::string inputPath;
@@ -53,6 +55,7 @@ private:
 
 	std::vector<std::pair<count, count> > size; // records graph size
 
+	std::vector<std::pair<Graph, Clustering> > results;
 
 	Clustering previous; // communities from the previous run
 

@@ -44,14 +44,14 @@ TEST_F(MapperGTest, tryRcmMapping) {
 	RcmMapper mapper;
 	Mapping mapping = mapper.trivial(commGraph, host);
 	edgeweight cost = mapper.cost(commGraph, host, mapping);
-	INFO("Cost of trivial mapping (airfoil1 " << k << " parts onto 5x5 grid): " << cost);
+	INFO("Cost of trivial mapping (airfoil1 " , k , " parts onto 5x5 grid): " , cost);
 
 	// call RCM mapping routine
 	mapping = mapper.run(commGraph, host);
 
 	// check and evaluate mapping
 	cost = mapper.cost(commGraph, host, mapping);
-	INFO("Cost of RCM mapping (airfoil1 " << k << " parts onto 5x5 grid): " << cost);
+	INFO("Cost of RCM mapping (airfoil1 " , k , " parts onto 5x5 grid): " , cost);
 }
 
 

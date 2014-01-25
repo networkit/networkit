@@ -32,8 +32,8 @@ DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityD
 		ERROR("deltaT >= tMax");
 		throw std::runtime_error("deltaT must be smaller than tMax");
 	} else {
-		INFO("deltaT " << deltaT);
-		INFO("tMax " << tMax);
+		INFO("deltaT " , deltaT);
+		INFO("tMax " , tMax);
 
 	}
 
@@ -41,7 +41,7 @@ DynCDSetup::DynCDSetup(DynamicGraphSource& dynGen, std::vector<DynamicCommunityD
 	Gproxy = this->gen->newGraph();
 	G = Gproxy->G;
 
-	DEBUG("setting up " << detectors.size() << " community detection algorithms");
+	DEBUG("setting up " , detectors.size() , " community detection algorithms");
 	// register algorithms
 	for (DynamicCommunityDetector* dynCD : detectors) {
 		Gproxy->registerObserver(dynCD); 	// register community detection algorithm as observer
@@ -70,7 +70,7 @@ void DynCDSetup::run() {
 	auto runIt = [&](){
 		// run algorithms and evaluation
 		// inspect the current graph
-		INFO("current graph : " << G->toString());
+		INFO("current graph : " , G->toString());
 
 		nTimeline.push_back(G->numberOfNodes());
 		mTimeline.push_back(G->numberOfEdges());
@@ -79,31 +79,31 @@ void DynCDSetup::run() {
 		for (index detectorIndex = 0; detectorIndex < this->detectors.size(); ++detectorIndex) {
 			DynamicCommunityDetector* dynCD = this->detectors.at(detectorIndex);
 
-			INFO("running dynamic community detector " << dynCD->toString());
+			INFO("running dynamic community detector " , dynCD->toString());
 			dynamicClusteringTimelines.at(detectorIndex).push_back(dynCD->run());
 
-			// TRACE("clustering looks like: " << Aux::vectorToString(results.at(detectorIndex).back().getVector()));
+			// TRACE("clustering looks like: " , Aux::vectorToString(results.at(detectorIndex).back().getVector()));
 			assert (dynamicClusteringTimelines.at(detectorIndex).back().isProper(*G));
 
 			// evaluations which need the current graph
 			if (checkNumCom) {
 				INFO("calculating number of clusters");
 				count nCom = dynamicClusteringTimelines.at(detectorIndex).back().numberOfClusters();
-				INFO("[RESULT] number of communities \t "<< detectors.at(detectorIndex)->toString() << "\t" << nCom);
+				INFO("[RESULT] number of communities \t ", detectors.at(detectorIndex)->toString() , "\t" , nCom);
 				nCommunitiesTimelines.at(detectorIndex).push_back(nCom);
 			}
 
 			// modularity
 			if (checkMod) {
 				double mod = modularity.getQuality(dynamicClusteringTimelines.at(detectorIndex).back(), *G);
-				INFO("[RESULT] modularity \t " << detectors.at(detectorIndex)->toString() << " \t " << mod);
+				INFO("[RESULT] modularity \t " , detectors.at(detectorIndex)->toString() , " \t " , mod);
 				qualityTimelines.at(detectorIndex).push_back(mod);
 			}
 
 			// continuity by sampling
 			if (checkSampledRand  && (dynamicClusteringTimelines[detectorIndex].size() >= 2)) {
 				double cont = sampledRand.getDissimilarity(*G, dynamicClusteringTimelines.at(detectorIndex).at(dynamicClusteringTimelines.at(detectorIndex).size() - 2), dynamicClusteringTimelines.at(detectorIndex).back());
-				INFO("[RESULT] continuity \t " << detectors.at(detectorIndex)->toString() << " \t " << cont);
+				INFO("[RESULT] continuity \t " , detectors.at(detectorIndex)->toString() , " \t " , cont);
 				continuityTimelines.at(detectorIndex).push_back(cont);
 			} else if (checkNMID && (dynamicClusteringTimelines.at(detectorIndex).size() >= 2)) {
 				INFO("calculating continuity with NMID");
@@ -111,8 +111,8 @@ void DynCDSetup::run() {
 				nmidTimer.start();
 				double cont = NMID.getDissimilarity(*G, dynamicClusteringTimelines.at(detectorIndex).at(dynamicClusteringTimelines.at(detectorIndex).size() - 2), dynamicClusteringTimelines.at(detectorIndex).back());
 				nmidTimer.stop();
-				INFO("calculating NMID took " << nmidTimer.elapsedTag());
-				INFO("[RESULT] continuity NMID \t " << detectors.at(detectorIndex)->toString() << " \t " << cont);
+				INFO("calculating NMID took " , nmidTimer.elapsedTag());
+				INFO("[RESULT] continuity NMID \t " , detectors.at(detectorIndex)->toString() , " \t " , cont);
 				continuityTimelines.at(detectorIndex).push_back(cont);
 			}
 		} // end for multiple detectors
@@ -133,24 +133,24 @@ void DynCDSetup::run() {
 
 				INFO("calculating number of communities");
 				count nCom = staticClusteringTimeline.back().numberOfClusters();
-				INFO("[RESULT] number of communities \t " << staticAlgo->toString() << "\t " << nCom);
+				INFO("[RESULT] number of communities \t " , staticAlgo->toString() , "\t " , nCom);
 				this->staticNCommunitiesTimeline.push_back(nCom);
 			}
 
 			// modularity
 			if (checkMod) {
 				double mod = modularity.getQuality(staticClusteringTimeline.back(), *G);
-				INFO("[RESULT] modularity \t" << staticAlgo->toString() << "\t " << mod);
+				INFO("[RESULT] modularity \t" , staticAlgo->toString() , "\t " , mod);
 				this->staticQualityTimeline.push_back(mod);
 			}
 
 			if (checkSampledRand  && (staticClusteringTimeline.size() >= 2)) { // if static algo has been set,
 				double cont = sampledRand.getDissimilarity(*G, staticClusteringTimeline.at(staticClusteringTimeline.size() - 2), staticClusteringTimeline.back());
-				INFO("[RESULT] continuity \t " << staticAlgo->toString() <<  " \t " << cont);
+				INFO("[RESULT] continuity \t " , staticAlgo->toString() ,  " \t " , cont);
 				this->staticContinuityTimeline.push_back(cont);
 			} else if (checkNMID && (staticClusteringTimeline.size() >= 2)) {
 				double cont = NMID.getDissimilarity(*G, staticClusteringTimeline.at(staticClusteringTimeline.size() - 2), staticClusteringTimeline.back());
-				INFO("[RESULT] continuity NMID \t " << staticAlgo->toString() <<  " \t " << cont);
+				INFO("[RESULT] continuity NMID \t " , staticAlgo->toString() ,  " \t " , cont);
 				this->staticContinuityTimeline.push_back(cont);
 			}
 		}
@@ -166,10 +166,10 @@ void DynCDSetup::run() {
 			INFO("receiving next batch of events");
 			gen->generateTimeSteps(G->time() + deltaT);
 
-			INFO("=========================== current time step: " << G->time() << " of " << tMax << " ========================================");
+			INFO("=========================== current time step: " , G->time() , " of " , tMax , " ========================================");
 
 		} catch (std::logic_error& e) {
-			INFO("exception caught: " << e.what());
+			INFO("exception caught: " , e.what());
 			sourceEnd = true;
 		}
 
@@ -189,25 +189,25 @@ void DynCDSetup::run() {
 
 	INFO("=============================== RESULTS ===================================");
 
-	INFO("setup runtime: " << runtime.elapsedTag());
+	INFO("setup runtime: " , runtime.elapsedTag());
 
 
-	INFO("timeline \t n \t: " << Aux::vectorToString(this->nTimeline));
-	INFO("timeline \t m \t: " << Aux::vectorToString(this->mTimeline));
+	INFO("timeline \t n \t: " , Aux::vectorToString(this->nTimeline));
+	INFO("timeline \t m \t: " , Aux::vectorToString(this->mTimeline));
 
 	for (index detectorIndex = 0; detectorIndex < nDetectors; ++detectorIndex) {
-		INFO("timeline \t " << detectors.at(detectorIndex)->toString() << " \t running time \t: " << Aux::vectorToString(this->detectors.at(detectorIndex)->getTimerHistory()));
-		INFO("timeline \t " << detectors.at(detectorIndex)->toString() << " \t quality \t: " << Aux::vectorToString(this->qualityTimelines.at(detectorIndex)));
-		INFO("timeline \t " << detectors.at(detectorIndex)->toString() << " \t # communities \t: " << Aux::vectorToString(this->nCommunitiesTimelines.at(detectorIndex)));
-		INFO("timeline \t " << detectors.at(detectorIndex)->toString() << " \t continuity \t: " << Aux::vectorToString(this->continuityTimelines.at(detectorIndex)));
+		INFO("timeline \t " , detectors.at(detectorIndex)->toString() , " \t running time \t: " , Aux::vectorToString(this->detectors.at(detectorIndex)->getTimerHistory()));
+		INFO("timeline \t " , detectors.at(detectorIndex)->toString() , " \t quality \t: " , Aux::vectorToString(this->qualityTimelines.at(detectorIndex)));
+		INFO("timeline \t " , detectors.at(detectorIndex)->toString() , " \t # communities \t: " , Aux::vectorToString(this->nCommunitiesTimelines.at(detectorIndex)));
+		INFO("timeline \t " , detectors.at(detectorIndex)->toString() , " \t continuity \t: " , Aux::vectorToString(this->continuityTimelines.at(detectorIndex)));
 	}
 
 	// static
 	if (staticAlgo != NULL) {
-		INFO("timeline \t " << this->staticAlgo->toString() << " \t running time \t: " << Aux::vectorToString(this->staticTimerTimeline));
-		INFO("timeline \t " << this->staticAlgo->toString() << " \t quality \t: " << Aux::vectorToString(this->staticQualityTimeline));
-		INFO("timeline \t " << this->staticAlgo->toString() << " \t # communities \t: " << Aux::vectorToString(this->staticNCommunitiesTimeline));
-		INFO("timeline \t " << this->staticAlgo->toString() << " \t continuity \t: " << Aux::vectorToString(this->staticContinuityTimeline));
+		INFO("timeline \t " , this->staticAlgo->toString() , " \t running time \t: " , Aux::vectorToString(this->staticTimerTimeline));
+		INFO("timeline \t " , this->staticAlgo->toString() , " \t quality \t: " , Aux::vectorToString(this->staticQualityTimeline));
+		INFO("timeline \t " , this->staticAlgo->toString() , " \t # communities \t: " , Aux::vectorToString(this->staticNCommunitiesTimeline));
+		INFO("timeline \t " , this->staticAlgo->toString() , " \t continuity \t: " , Aux::vectorToString(this->staticContinuityTimeline));
 	}
 
 

@@ -64,7 +64,7 @@ NetworKit::Graph FastMETISParser::parse(const std::string& path) {
 	// TODO: handle comment lines
 
 	if (flag == 0) {
-		DEBUG("reading unweighted graph")
+		DEBUG("reading unweighted graph");
 		// unweighted edges
 		while (std::getline(stream, line)) {
 			if (line.empty()) {
@@ -91,7 +91,7 @@ NetworKit::Graph FastMETISParser::parse(const std::string& path) {
 			++u; // next node
 		}
 	} else if (flag == 1) {
-		DEBUG("reading weighted graph")
+		DEBUG("reading weighted graph");
 		// weighted edges - WARNING: supports only non-negative integer weights
 		while (std::getline(stream, line)) {
 			if (line.empty()) {
@@ -105,14 +105,14 @@ NetworKit::Graph FastMETISParser::parse(const std::string& path) {
 			}
 			while (true) {
 				node v = (fast_string_to_integer(it1, it2) - 1);
-				TRACE("read node " << v);
+				TRACE("read node " , v);
 				// advance
 				++it2;
 				it1 = it2;
 				it2 = std::find(it1, end, ' ');
 				// get weight
 				uint64_t weight = (fast_string_to_integer(it1, it2));
-				TRACE("read weight " << weight);
+				TRACE("read weight " , weight);
 				++it2;
 				it1 = it2;
 				it2 = std::find(it1, end, ' ');
@@ -130,7 +130,7 @@ NetworKit::Graph FastMETISParser::parse(const std::string& path) {
 		ERROR("weighted nodes are not supported");
 		throw std::runtime_error("weighted nodes are not supported");
 	} else {
-		ERROR("invalid weight flag in header of METIS file: " << flag);
+		ERROR("invalid weight flag in header of METIS file: " , flag);
 		throw std::runtime_error("invalid weight flag in header of METIS file");
 	}
 

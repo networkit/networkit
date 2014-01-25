@@ -27,17 +27,17 @@ Layouter::Layouter() {
 
 void Layouter::randomInitCoordinates(Graph& g) {
 
-	float x1 = bottomLeft.getValue(0);
-	float y1 = bottomLeft.getValue(1);
-	float width = topRight.getValue(0) - x1;
-	float height = topRight.getValue(1) - y1;
+	float x1 = bottomLeft[0];
+	float y1 = bottomLeft[1];
+	float width = topRight[0] - x1;
+	float height = topRight[1] - y1;
 
 	g.forNodes([&](node u) {
 		float x = Aux::Random::real() * width + x1;
 		float y = Aux::Random::real() * height + y1;
 
-		TRACE("x: " << x);
-		TRACE("y: " << y);
+		TRACE("x: " , x);
+		TRACE("y: " , y);
 
 		std::vector<float> coords = {x, y};
 		Point<float> p(coords);

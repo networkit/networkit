@@ -27,19 +27,19 @@ ModularitySequential::~ModularitySequential() {
 double ModularitySequential::getQuality(const Partition& zeta, const Graph& G) {
 	assert (G.numberOfNodes() <= zeta.numberOfElements());
 
-	DEBUG("m = " << G.numberOfEdges());
-	DEBUG("l = " << G.numberOfSelfLoops());
+	DEBUG("m = " , G.numberOfEdges());
+	DEBUG("l = " , G.numberOfSelfLoops());
 
 	CoverageSequential coverage;
 	double cov = coverage.getQuality(zeta, G);
-	DEBUG("coverage = " << cov);
+	DEBUG("coverage = " , cov);
 	double expCov; // expected coverage - term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
 	double modularity; 	// mod = coverage - expected coverage
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
-	DEBUG("total edge weight: " << totalEdgeWeight)
+	DEBUG("total edge weight: " , totalEdgeWeight);
 
 	if (totalEdgeWeight == 0.0) {
-		ERROR("G: m=" << G.numberOfEdges() << "n=" << G.numberOfNodes());
+		ERROR("G: m=" , G.numberOfEdges() , "n=" , G.numberOfNodes());
 		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
 	}
 
@@ -64,7 +64,7 @@ double ModularitySequential::getQuality(const Partition& zeta, const Graph& G) {
 		expCov += ((incidentWeightSum[c] / totalEdgeWeight) * (incidentWeightSum[c] / totalEdgeWeight )) / 4;	// squared
 	}
 
-	DEBUG("expected coverage: " << expCov);
+	DEBUG("expected coverage: " , expCov);
 
 	// assert ranges of coverage
 	assert(cov <= 1.0);
@@ -73,7 +73,7 @@ double ModularitySequential::getQuality(const Partition& zeta, const Graph& G) {
 	assert(expCov >= 0.0);
 
 	modularity = cov - expCov;
-	DEBUG("modularity = " << modularity)
+	DEBUG("modularity = " , modularity);
 
 	assert(! std::isnan(modularity));	// do not return NaN
 	// do not return anything not in the range of modularity values

@@ -606,18 +606,13 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE LOGGING
-
-
 #ifndef NOLOGGING
-#ifndef NOLOG4CXX
 	if (options[LOGLEVEL]) {
-		Aux::configureLogging(options[LOGLEVEL].arg);
+		Aux::Log::setLogLevel(options[LOGLEVEL].arg);
 	} else {
-		Aux::configureLogging();	// with default level
+		Aux::Log::setLogLevel("ERROR");	// with default level
 	}
 #endif
-#endif
-
 
 	// CONFIGURE PARALLELISM
 

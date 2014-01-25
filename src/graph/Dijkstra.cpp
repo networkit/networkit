@@ -40,7 +40,7 @@ std::vector<edgeweight> Dijkstra::run(const Graph& g, node source) {
 
 	while (pq.size() > 0) {
 		node current = pq.extractMin().second;
-		TRACE("current node in Dijkstra: " << current);
+		TRACE("current node in Dijkstra: " , current);
 
 		g.forWeightedEdgesOf(current, [&](node current, node v, edgeweight w) {
 			relax(current, v, w, distances, pq);

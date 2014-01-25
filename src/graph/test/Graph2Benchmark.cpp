@@ -24,13 +24,13 @@ TEST_F(Graph2Benchmark, graphConstruction) {
 	count n = 1e+7;;
 
 	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
+	INFO("[BEGIN] (n=" , n , ")");
 	run.start();
 
 	Graph G(n);
 
 	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
+	INFO("[DONE]" , run.elapsedTag());
 }
 
 
@@ -42,7 +42,7 @@ TEST_F(Graph2Benchmark, nodeIteration) {
 	std::vector<node> nodes(n, 0);
 
 	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
+	INFO("[BEGIN] (n=" , n , ")");
 	run.start();
 
 	G.forNodes([&](node v){
@@ -50,7 +50,7 @@ TEST_F(Graph2Benchmark, nodeIteration) {
 	});
 
 	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
+	INFO("[DONE]" , run.elapsedTag());
 
 }
 
@@ -62,7 +62,7 @@ TEST_F(Graph2Benchmark, parallelNodeIteration) {
 	std::vector<node> nodes(n, 0);
 
 	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
+	INFO("[BEGIN] (n=" , n , ")");
 	run.start();
 
 	G.parallelForNodes([&](node v){
@@ -70,7 +70,7 @@ TEST_F(Graph2Benchmark, parallelNodeIteration) {
 	});
 
 	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
+	INFO("[DONE]" , run.elapsedTag());
 }
 
 
@@ -80,7 +80,7 @@ TEST_F(Graph2Benchmark, nodePairIteration) {
 
 
 	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
+	INFO("[BEGIN] (n=" , n , ")");
 	run.start();
 
 	count p = 0;
@@ -89,7 +89,7 @@ TEST_F(Graph2Benchmark, nodePairIteration) {
 	});
 
 	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
+	INFO("[DONE]" , run.elapsedTag());
 
 	EXPECT_EQ((n * (n-1)) / 2, p);
 }
@@ -101,7 +101,7 @@ TEST_F(Graph2Benchmark, edgeInsertion) {
 	Graph G(n);
 
 	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
+	INFO("[BEGIN] (n=" , n , ")");
 	run.start();
 
 	G.forNodePairs([&](node u, node v){
@@ -110,7 +110,7 @@ TEST_F(Graph2Benchmark, edgeInsertion) {
 
 
 	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
+	INFO("[DONE]" , run.elapsedTag());
 
 }
 
@@ -126,7 +126,7 @@ TEST_F(Graph2Benchmark, edgeRemoval) {
 
 
 	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
+	INFO("[BEGIN] (n=" , n , ")");
 	run.start();
 
 	G.forNodePairs([&](node u, node v){
@@ -134,7 +134,7 @@ TEST_F(Graph2Benchmark, edgeRemoval) {
 	});
 
 	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
+	INFO("[DONE]" , run.elapsedTag());
 
 }
 
@@ -150,7 +150,7 @@ TEST_F(Graph2Benchmark, edgeIteration) {
 
 
 	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
+	INFO("[BEGIN] (n=" , n , ")");
 	run.start();
 
 	G.forEdges([&](node u, node v){
@@ -158,7 +158,7 @@ TEST_F(Graph2Benchmark, edgeIteration) {
 	});
 
 	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
+	INFO("[DONE]" , run.elapsedTag());
 }
 
 TEST_F(Graph2Benchmark, parallelEdgeIteration) {
@@ -171,7 +171,7 @@ TEST_F(Graph2Benchmark, parallelEdgeIteration) {
 	});
 
 	Aux::Timer run;
-	INFO("[BEGIN] (n=" << n << ")");
+	INFO("[BEGIN] (n=" , n , ")");
 	run.start();
 
 	count i = 0;
@@ -182,7 +182,7 @@ TEST_F(Graph2Benchmark, parallelEdgeIteration) {
 	EXPECT_TRUE(true) << "just iterate";
 
 	run.stop();
-	INFO("[DONE]" << run.elapsedTag());
+	INFO("[DONE]" , run.elapsedTag());
 }
 
 TEST_F(Graph2Benchmark, parallelSumForNodes) {

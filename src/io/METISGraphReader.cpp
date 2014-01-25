@@ -35,7 +35,7 @@ Graph METISGraphReader::read(std::string path) {
 
 	G.setName(graphName);
 
-	std::cout << "[BEGIN] reading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// progress bar follows
+	INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);	// progress bar follows
 
 	double p = 0.0; // percentage for progress bar
 	node u = 0; // begin with 0
@@ -54,10 +54,10 @@ Graph METISGraphReader::read(std::string path) {
 			u++; // next node
 			if ((u % ((n + 10)/10)) == 0) {
 				p = ((double) (u-1) / (double) n) * 100;
-				std::cout << p << "% " << std::flush;
+				DEBUG(p, "% ");
 			}
 		}
-		std::cout << "[DONE]" << std::endl;
+		INFO("\n[DONE]\n");
 		return G;
 	} else {
 		while (parser.hasNext()) {
@@ -76,10 +76,10 @@ Graph METISGraphReader::read(std::string path) {
 			u += 1; // next node
 			if ((u % ((n + 10)/10)) == 0) {
 				p = ((double) (u-1) / (double) n) * 100;
-				std::cout << p << "% " << std::flush;
+				DEBUG(p, "% ");
 			}
 		}
-		std::cout << "[DONE]" << std::endl;
+		INFO("\n[DONE]\n");
 		return G;
 	}
 }
@@ -100,7 +100,7 @@ Graph* METISGraphReader::readToHeap(std::string path) {
 
 	G->setName(graphName);
 
-	std::cout << "[BEGIN] reading graph G(n=" << n << ", m=" << m << ") from METIS file: " << std::flush;	// progress bar follows
+	INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);	// progress bar follows
 
 	double p = 0.0; // percentage for progress bar
 	node u = 0; // begin with 0
@@ -119,10 +119,10 @@ Graph* METISGraphReader::readToHeap(std::string path) {
 			u++; // next node
 			if ((u % ((n + 10)/10)) == 0) {
 				p = ((double) (u-1) / (double) n) * 100;
-				std::cout << p << "% " << std::flush;
+				DEBUG(p, "% ");
 			}
 		}
-		std::cout << "[DONE]" << std::endl;
+		INFO("\n[DONE]\n");
 		return G;
 	} else {
 		while (parser.hasNext()) {
@@ -144,7 +144,7 @@ Graph* METISGraphReader::readToHeap(std::string path) {
 				std::cout << p << "% " << std::flush;
 			}
 		}
-		std::cout << "[DONE]" << std::endl;
+		INFO("\n[DONE]\n");
 		return G;
 	}}
 

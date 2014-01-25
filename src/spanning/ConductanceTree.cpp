@@ -60,14 +60,14 @@ Clustering ConductanceTree::bestCutInBfsTree(const Graph& g, node root) {
 		bndWeight = boundaryWeight(bndWeight, current);
 		conductance = getConductance(bndWeight, volume);
 
-		DEBUG("conductance: " << conductance);
+		DEBUG("conductance: " , conductance);
 
 		if ((conductance < bestCond) && (iterNum < n)) { // do not compute conductance for visited == V
 			bestCond = conductance;
 			bestCut = visited;
 		}
 
-		TRACE("current node in BFS tree: " << current);
+		TRACE("current node in BFS tree: " , current);
 
 		// insert untouched neighbors into queue
 		g.forNeighborsOf(current, [&](node neighbor) {
@@ -80,7 +80,7 @@ Clustering ConductanceTree::bestCutInBfsTree(const Graph& g, node root) {
 		++iterNum;
 	}
 
-	INFO("Conductance value of best cut found: " << bestCond);
+	INFO("Conductance value of best cut found: " , bestCond);
 
 	return bestCut;
 }

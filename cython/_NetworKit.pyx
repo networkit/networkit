@@ -42,22 +42,26 @@ def pystring(stdstring):
 # Function definitions
 
 cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
-	void _configureLogging "Aux::configureLogging" (string loglevel)
-	string _currentLogLevel "Aux::currentLogLevel" () except +
-	void _setLoglevel "Aux::setLoglevel" (string loglevel) except +
+	#void _configureLogging "Aux::configureLogging" (string loglevel)
+	string _getLogLevel "Aux::Log::getLogLevel" () except +
+	void _setLogLevel "Aux::Log::setLogLevel" (string loglevel) except +
+	void _setPrintLocation "Aux::Log::Settings::setPrintLocation" (bool) except +
 	
-def configureLogging(loglevel="ERROR"):
-	""" Set the loglevel of the LOG4CXX module"""
-	_configureLogging(stdstring(loglevel))
+#def configureLogging(loglevel="ERROR"):
+	#""" Set the loglevel of the LOG4CXX module"""
+	#_configureLogging(stdstring(loglevel))
 
 def currentLogLevel():
 	""" Get the current log level"""
-	return pystring(_currentLogLevel());
+	return pystring(_getLogLevel());
 
-def setLoglevel(loglevel):
+def setLogLevel(loglevel):
 	""" Set the current loglevel"""
-	_setLoglevel(stdstring(loglevel))
+	_setLogLevel(stdstring(loglevel))
 
+def setPrintLocation(flag):
+	""" Switch locations in log statements on or off"""
+	_setPrintLocation(flag)
 
 cdef extern from "../src/auxiliary/Parallelism.h" namespace "Aux":
 	void _setNumberOfThreads "Aux::setNumberOfThreads" (int)
@@ -374,6 +378,31 @@ cdef class PubWebGenerator:
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+
+cdef extern from "../src/generators/ErdosRenyiGenerator.h":
+	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator":
+		_ErdosRenyiGenerator(count nNodes, double prob) except +
+		_Graph generate() except +
+
+cdef class ErdosRenyiGenerator:
+	"""
+	  Creates random graphs in the G(n,p) model.
+	  The generation follows Vladimir Batagelj and Ulrik Brandes: "Efficient
+	  generation of large random networks", Phys Rev E 71, 036113 (2005).
+	 
+	 Parameters:
+	  - nNodes Number of nodes n in the graph.
+	  - prob Probability of existence for each edge p.
+	"""
+
+	cdef _ErdosRenyiGenerator* _this
+
+	def __cinit__(self, nNodes, prob):
+		self._this = new _ErdosRenyiGenerator(nNodes, prob)
 
 	def generate(self):
 		return Graph(0).setThis(self._this.generate())
@@ -934,6 +963,7 @@ cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
 		void run() except +
 		vector[double] getTimeline(string key) except +
 		vector[pair[count, count]] getGraphSizeTimeline() except +
+		vector[pair[_Graph, _Clustering]] getResultTimeline() except +
 
 cdef class DynamicCommunityDetection:
 	cdef _DynamicCommunityDetection* _this
@@ -949,6 +979,15 @@ cdef class DynamicCommunityDetection:
 
 	def getGraphSizeTimeline(self):
 		return self._this.getGraphSizeTimeline()
+
+	def getResultTimeline(self):
+		timeline = []
+		for pair in self._this.getResultTimeline():
+			_G = pair.first
+			_zeta = pair.second
+			timeline.append((Graph().setThis(_G), Clustering().setThis(_zeta)))
+		return timeline
+			
 
 
 cdef extern from "../src/generators/DynamicPathGenerator.h":
