@@ -120,7 +120,12 @@ public:
 	 */
 	bool isSingletonPartition(const std::set<index>& elements) const;
 
-
+	/**
+	 * Sets an upper bound for the subset ids that CAN be assigned.
+	 *
+	 * (This is the maximum id + 1.)
+	 */
+	void setUpperBound(index upper);
 
 	/**
 	 * Return an upper bound for the subset ids that have been assigned.
@@ -181,6 +186,12 @@ public:
 	 * Get the current number of sets in this partition.
 	 */
 	count numberOfSubsets() const;
+	
+	/**
+	 * Get the acutal vector representing the partition datastructure.
+	 * @return vector containing information about partitions
+	 */
+	 std::vector<index> getVector();
 
 
 	/**

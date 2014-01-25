@@ -94,6 +94,10 @@ count Partition::numberOfSubsets() const {
 	return k;
 }
 
+void Partition::setUpperBound(index upper) {
+	this->omega = upper-1;
+}
+
 index Partition::upperBound() const {
 	return omega + 1;
 }
@@ -161,6 +165,10 @@ std::set<index> Partition::getMembers(const index s) const {
 
 count Partition::numberOfElements() const {
 	return (z+1);	// z is the maximum element id
+}
+
+std::vector<index> getVector() {
+	return std::copy(this->data); //FIXME is this appropriate?
 }
 
 

@@ -24,8 +24,8 @@ ModularitySequential::~ModularitySequential() {
 	// TODO Auto-generated destructor stub
 }
 
-double ModularitySequential::getQuality(const Clustering& zeta, const Graph& G) {
-	assert (G.numberOfNodes() <= zeta.numberOfNodes());
+double ModularitySequential::getQuality(const Partition& zeta, const Graph& G) {
+	assert (G.numberOfNodes() <= zeta.numberOfElements());
 
 	DEBUG("m = " , G.numberOfEdges());
 	DEBUG("l = " , G.numberOfSelfLoops());
@@ -48,7 +48,7 @@ double ModularitySequential::getQuality(const Clustering& zeta, const Graph& G) 
 	// compute volume of each cluster
 	G.forNodes([&](node v){
 		// add to cluster weight
-		cluster c = zeta[v];
+		index c = zeta[v];
 		assert (zeta.lowerBound() <= c);
 		assert (c < zeta.upperBound());
 		incidentWeightSum[c] += G.weightedDegree(v) + G.weight(v,v); // account for self-loops a second time
@@ -60,7 +60,7 @@ double ModularitySequential::getQuality(const Clustering& zeta, const Graph& G) 
 //	double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
 //	assert (divisor != 0);	// do not divide by 0
 
-	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
+	for (index c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		expCov += ((incidentWeightSum[c] / totalEdgeWeight) * (incidentWeightSum[c] / totalEdgeWeight )) / 4;	// squared
 	}
 

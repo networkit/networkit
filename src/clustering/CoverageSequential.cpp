@@ -18,7 +18,7 @@ CoverageSequential::~CoverageSequential() {
 	// TODO Auto-generated destructor stub
 }
 
-double CoverageSequential::getQuality(const Clustering& zeta, const Graph& G) {
+double CoverageSequential::getQuality(const Partition& zeta, const Graph& G) {
 
 	double cov = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
@@ -30,17 +30,17 @@ double CoverageSequential::getQuality(const Clustering& zeta, const Graph& G) {
 				"Coverage is undefined for graphs without edges (including self-loops).");
 	}
 
-	IndexMap<cluster, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
+	IndexMap<index, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
 
 	// TODO: sum only over intra-cluster edges, not over clusters
 
 	// compute intra-cluster edge weights per cluster
 	G.forWeightedEdges(
 			[&](node u, node v, edgeweight ew) {
-				assert (u < zeta.numberOfNodes());
-				assert (v < zeta.numberOfNodes());
-				cluster c = zeta[u];
-				cluster d = zeta[v];
+				assert (u < zeta.numberOfElements());
+				assert (v < zeta.numberOfElements());
+				index c = zeta[u];
+				index d = zeta[v];
 				if (c == d) {
 #ifdef DEBUG
 					if ((c >= zeta.upperBound()) || (c < zeta.lowerBound())) {
@@ -53,7 +53,7 @@ double CoverageSequential::getQuality(const Clustering& zeta, const Graph& G) {
 			});
 
 	double intraEdgeWeightSum = 0.0; //!< term $\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)$
-	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
+	for (index c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		intraEdgeWeightSum += intraEdgeWeight[c];
 	}
 	DEBUG("total intra-cluster edge weight = " , intraEdgeWeightSum);

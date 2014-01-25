@@ -31,8 +31,6 @@
 
 namespace NetworKit {
 
-
-
 TEST_F(ClusteringGTest, testModularity) {
 	GraphGenerator graphGenerator;
 
@@ -410,3 +408,4 @@ TEST_F(ClusteringGTest, testClusterSizes) {
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
+

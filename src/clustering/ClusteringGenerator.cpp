@@ -18,16 +18,16 @@ ClusteringGenerator::~ClusteringGenerator() {
 
 }
 
-Clustering ClusteringGenerator::makeSingletonClustering(Graph& G) {
+Partition ClusteringGenerator::makeSingletonClustering(Graph& G) {
 	count n = G.upperNodeIdBound();
-	Clustering zeta(n);
+	Partition zeta(n);
 	zeta.allToSingletons();
 	return zeta;
 }
 
-Clustering ClusteringGenerator::makeOneClustering(Graph& G) {
+Partition ClusteringGenerator::makeOneClustering(Graph& G) {
 	count n = G.upperNodeIdBound();
-	Clustering zeta(n);
+	Partition zeta(n);
 	cluster one = zeta.addCluster();
 	G.forNodes([&](node v){
 		zeta.addToCluster(one, v);
@@ -35,26 +35,24 @@ Clustering ClusteringGenerator::makeOneClustering(Graph& G) {
 	return zeta;
 }
 
-Clustering ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
+Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 	count n = G.upperNodeIdBound();
-	Clustering zeta(n);
+	Partition zeta(n);
 
-	for (uint64_t i = 0; i < k; ++i) {
-		zeta.addCluster();
-	}
+	zeta.setUpperBound(k-1);
 
 	G.parallelForNodes([&](node v){
 		cluster c = Aux::Random::integer(k-1);
 		zeta.addToCluster(c, v);
 	});
 
-	assert (zeta.isProper(G));
+	//assert (zeta.isProper(G)); there is no function isProper() in Partition
 	return zeta;
 }
 
-Clustering ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count k) {
+Partition ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count k) {
 	count n = G.upperNodeIdBound();
-	Clustering clustering(n);
+	Partition clustering(n);
 
 	std::vector<count> blockSize(k, 0);
 
