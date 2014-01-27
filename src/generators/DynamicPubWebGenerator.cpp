@@ -101,13 +101,15 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 
 		G.forNodes([&](node u) {
 			std::priority_queue<std::pair<distance, edge> > pq;
-			float x1 = G.getCoordinate(u, 0);
-			float y1 = G.getCoordinate(u, 1);
+			Point<float> p1 = G.getCoordinate(u);
+			float& x1 = p1[0];
+			float& y1 = p1[1];
 
 			// fill PQ with neighbors in range
 			G.forNodes([&](node v) {
-				float x2 = G.getCoordinate(v, 0);
-				float y2 = G.getCoordinate(v, 1);
+				Point<float> p2 = G.getCoordinate(v);
+				float& x2 = p2[0];
+				float& y2 = p2[1];
 				float sqrDist = initGen.squaredDistanceInUnitTorus(x1, y1, x2, y2);
 
 				if (isInRange(sqrDist)) {
@@ -142,9 +144,9 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			if (edgePair.second >= 2) {
 				node u = edgePair.first.first;
 				node v = edgePair.first.second;
-				// TODO: make common routine
-				edgeweight ew = BASE_WEIGHT / initGen.squaredDistanceInUnitTorus(
-						G.getCoordinate(u, 0), G.getCoordinate(u, 1), G.getCoordinate(v, 0), G.getCoordinate(v, 1));
+				Point<float> p1 = G.getCoordinate(u);
+				Point<float> p2 = G.getCoordinate(v);
+				edgeweight ew = BASE_WEIGHT / initGen.squaredDistanceInUnitTorus(p1[0], p1[1], p2[0], p2[1]);
 				G.addEdge(u, v);
 				GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, ew);
 				TRACE("Event: ADD edge " , u , "-" , v);

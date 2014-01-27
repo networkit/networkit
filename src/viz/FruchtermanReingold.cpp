@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 const float FruchtermanReingold::INITIAL_STEP_LENGTH = 1.0;
-const float FruchtermanReingold::OPT_PAIR_SQR_DIST_SCALE = 0.35;
+const float FruchtermanReingold::OPT_PAIR_SQR_DIST_SCALE = 0.3;
 
 
 FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right, bool useGivenCoordinates, count maxIterations, float precision):
@@ -42,7 +42,7 @@ void FruchtermanReingold::draw(Graph& g) {
 	else {
 		// push coordinates from g into layout
 		g.forNodes([&](node v) {
-			Point<float> p({g.getCoordinate(v, 0), g.getCoordinate(v, 1)});
+			Point<float> p = g.getCoordinate(v);
 			layout.push_back(p);
 		});
 	}
@@ -97,7 +97,7 @@ void FruchtermanReingold::draw(Graph& g) {
 	//////////////////////////////////////////////////////////
 	auto updateStepLength([&](std::vector<Point<float> >& oldLayout,
 			std::vector<Point<float> >& newLayout) {
-		step += 0.2; // TODO: externalize
+		step += 0.1; // TODO: externalize
 		return 1.0 / step;
 	});
 
@@ -172,7 +172,7 @@ void FruchtermanReingold::draw(Graph& g) {
 	// copy layout into graph
 	g.parallelForNodes([&](node u) {
 		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop, needs Point<T> as coordinate type in graph.h
-			g.setCoordinate(u, d, layout[u][d]);
+			g.setCoordinate(u, layout[u]);
 		}
 	});
 }

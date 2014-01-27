@@ -29,13 +29,13 @@ void MaxentStress::draw(Graph& G) {
 	float alpha = 1.0; // FIXME: make alpha dependent on iteration
 
 	G.forNodes([&](node u) {
-		Point<float> uPoint(G.getCoordinate(u, 0), G.getCoordinate(u, 1));
+		Point<float> uPoint = G.getCoordinate(u);
 		Point<float> attractiveForce(0.0, 0.0);
 		Point<float> repulsiveForce(0.0, 0.0);
 
 		G.forNodes([&](node v) {
 			if (u < v) { // only unordered pairs
-				Point<float> vPoint(G.getCoordinate(v, 0), G.getCoordinate(v, 1));
+				Point<float> vPoint = G.getCoordinate(v);
 				float diffX = uPoint[0] - vPoint[0];
 				float diffY = uPoint[1] - vPoint[1];
 				Point<float> diffVec(diffX, diffY);

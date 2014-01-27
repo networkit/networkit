@@ -26,6 +26,10 @@ void MultilevelLayouter::prolongCoordinates(Graph& Gcon, Graph& G) {
 }
 
 void MultilevelLayouter::draw(Graph& G) {
+	drawWrapper(G, 0);
+}
+
+void MultilevelLayouter::drawWrapper(Graph& G, count level) {
 	count n = G.numberOfNodes();
 
 	if (n <= N_THRSH) {
@@ -45,22 +49,20 @@ void MultilevelLayouter::draw(Graph& G) {
 		NodeMap<node>& mapping = mypair.second;
 
 		// make recursive call
-		draw(Gcon);
+		drawWrapper(Gcon, level + 1);
 
 		// apply recursive solution to current graph
 		G.initCoordinates();
 		G.forNodes([&](node v) {
-			G.setCoordinate(v, 0, Gcon.getCoordinate(mapping[v], 0));
-			G.setCoordinate(v, 1, Gcon.getCoordinate(mapping[v], 1));
+			G.setCoordinate(v, Gcon.getCoordinate(mapping[v]));
 //			TRACE("coordinate of ", v, ": ", G.getCoordinate(v, 0), " / ", G.getCoordinate(v, 1));
 		});
 		DEBUG("local refinement of graph of size ", n);
 
 		// run drawing code on current graph
-		FruchtermanReingold layouter(bottomLeft, topRight, true, 100);
+		FruchtermanReingold layouter(bottomLeft, topRight, true, 150 * (level + 1), 0.1); // TODO: externalize
 		layouter.draw(G);
 	}
-
 }
 
 } /* namespace NetworKit */

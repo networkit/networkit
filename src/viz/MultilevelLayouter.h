@@ -27,6 +27,7 @@ public:
 	virtual ~MultilevelLayouter();
 
 	virtual void draw(Graph& G);
+	virtual void drawWrapper(Graph& G, count level);
 
 	virtual void prolongCoordinates(Graph& Gcon, Graph& G);
 };

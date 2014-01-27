@@ -64,10 +64,12 @@ bool PubWebGenerator::isValidEdge(Graph& g, node u, node v, edgeweight& weight) 
 				&& (g.degree(v) < maxNeigh));
 	});
 
-	float x1 = g.getCoordinate(u, 0);
-	float y1 = g.getCoordinate(u, 1);
-	float x2 = g.getCoordinate(v, 0);
-	float y2 = g.getCoordinate(v, 1);
+	Point<float> pu = g.getCoordinate(u);
+	Point<float> pv = g.getCoordinate(v);
+	float& x1 = pu[0];
+	float& y1 = pu[1];
+	float& x2 = pv[0];
+	float& y2 = pv[1];
 	float sqrDist = squaredDistanceInUnitTorus(x1, y1, x2, y2);
 
 	weight = BASE_WEIGHT /  sqrt(sqrDist);
@@ -89,13 +91,15 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
 
 	g.forNodes([&](node u) {
 		std::priority_queue<std::pair<distance, edge> > pq;
-		float x1 = g.getCoordinate(u, 0);
-		float y1 = g.getCoordinate(u, 1);
+		Point<float> p1 = g.getCoordinate(u);
+		float& x1 = p1[0];
+		float& y1 = p1[1];
 
 		// fill PQ with neighbors in range
 		g.forNodes([&](node v) {
-			float x2 = g.getCoordinate(v, 0);
-			float y2 = g.getCoordinate(v, 1);
+			Point<float> p2 = g.getCoordinate(v);
+			float& x2 = p2[0];
+			float& y2 = p2[1];
 			float sqrDist = squaredDistanceInUnitTorus(x1, y1, x2, y2);
 
 			if (isInRange(sqrDist)) {

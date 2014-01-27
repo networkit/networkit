@@ -38,10 +38,8 @@ TEST_F(VizGTest, testPostscriptWriter) {
 
 	// create coordinates
 	G.forNodes([&](node u) {
-		float x = (float) drand48();
-		float y = (float) drand48();
-		G.setCoordinate(u, 0, x);
-		G.setCoordinate(u, 1, y);
+		Point<float> p(drand48(), drand48());
+		G.setCoordinate(u, p);
 	});
 
 	// write graph to file
@@ -145,7 +143,7 @@ TEST_F(VizGTest, testFRLayouter) {
  TEST_F(VizGTest, testMultilevelDrawing) {
   	// read graph
 	METISGraphReader reader;
-	Graph G = reader.read("input/airfoil1.graph");
+	Graph G = reader.read("input/jazz.graph");
 
   	// draw
   	Point<float> bl(0.0, 0.0);
@@ -153,7 +151,7 @@ TEST_F(VizGTest, testFRLayouter) {
    	MultilevelLayouter mlLayouter(bl, tr);
    	mlLayouter.draw(G);
    	PostscriptWriter psWriter4(G, true);
-   	psWriter4.write("output/testAirfoil1Ml.eps");
+   	psWriter4.write("output/testJazzMl.eps");
  }
 
 

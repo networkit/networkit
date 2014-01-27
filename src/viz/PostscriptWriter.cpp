@@ -99,10 +99,12 @@ void PostscriptWriter::writeClustering(Clustering& clustering,
 			file << "0.80 0.80 0.80 c 1.0 w ";
 		}
 
-		float startx = g.getCoordinate(u, 0);
-		float starty = g.getCoordinate(u, 1);
-		float endx = g.getCoordinate(v, 0);
-		float endy = g.getCoordinate(v, 1);
+		Point<float> start = g.getCoordinate(u);
+		Point<float> end = g.getCoordinate(v);
+		float& startx = start[0];
+		float& starty = start[1];
+		float& endx = end[0];
+		float& endy = end[1];
 
 		if (wrapAround) {
 			auto adjust1([&](float& val) {
@@ -160,8 +162,9 @@ void PostscriptWriter::writeClustering(Clustering& clustering,
 			file << "0.0 0.0 0.0 c ";
 		}
 
-		float x = g.getCoordinate(u, 0);
-		float y = g.getCoordinate(u, 1);
+		Point<float> point = g.getCoordinate(u);
+		float& x = point[0];
+		float& y = point[1];
 
 //		if (wrapAround) {
 		adjust(x);
@@ -189,8 +192,7 @@ void PostscriptWriter::init(std::string path, std::ofstream& file) {
 		// adjust coordinates for postscript output
 		g.forNodes([&](node u) {
 			TRACE("change coordinate for node " , u);
-			g.setCoordinate(u, 0, 1000.0 * g.getCoordinate(u, 0));
-			g.setCoordinate(u, 1, 1000.0 * g.getCoordinate(u, 1));
+			g.getCoordinate(u).scale(1000.0);
 		});
 	} else {
 		file.precision(2);
