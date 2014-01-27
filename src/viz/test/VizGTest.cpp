@@ -50,7 +50,7 @@ TEST_F(VizGTest, testPostscriptWriter) {
 }
 
 
- TEST_F(VizGTest, testLayouter) {
+ TEST_F(VizGTest, testFRLayouter) {
  	// create graph
  	count n = 120;
  	count numClusters = 3;
@@ -70,11 +70,50 @@ TEST_F(VizGTest, testPostscriptWriter) {
  	fdLayouter.draw(G);
  	PostscriptWriter psWriter2(G, true);
  	psWriter2.write("output/testForceGraph.eps");
+}
 
-// 	MaxentStress msLayouter(bl, tr);
-//	msLayouter.draw(G);
-// 	PostscriptWriter psWriter3(G, true);
-// 	psWriter3.write("output/testMaxentGraph.eps");
+ TEST_F(VizGTest, tryMaxentLayouter) {
+  	// create graph
+  	count n = 120;
+  	count numClusters = 3;
+  	double pin = 0.175;
+  	double pout = 0.005;
+
+  	GraphGenerator graphGen;
+  	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
+  	G.initCoordinates();
+  	INFO("Number of edges: ", G.numberOfEdges());
+
+  	// draw (independent of clustering) and write again
+  	Point<float> bl(0.0, 0.0);
+  	Point<float> tr(1.0, 1.0);
+
+  	MaxentStress msLayouter(bl, tr);
+ 	msLayouter.draw(G);
+  	PostscriptWriter psWriter3(G, true);
+  	psWriter3.write("output/testMaxentGraph.eps");
+}
+
+ TEST_F(VizGTest, testMultilevelLayouter) {
+  	// create graph
+  	count n = 120;
+  	count numClusters = 3;
+  	double pin = 0.175;
+  	double pout = 0.005;
+
+  	GraphGenerator graphGen;
+  	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
+  	G.initCoordinates();
+  	INFO("Number of edges: ", G.numberOfEdges());
+
+  	// draw (independent of clustering) and write again
+  	Point<float> bl(0.0, 0.0);
+  	Point<float> tr(1.0, 1.0);
+
+  	MultilevelLayouter mlLayouter(bl, tr);
+  	mlLayouter.draw(G);
+  	PostscriptWriter psWriter4(G, true);
+  	psWriter4.write("output/testMultilevelGraph.eps");
  }
 
 
