@@ -11,8 +11,8 @@ namespace NetworKit {
 
 const count MultilevelLayouter::N_THRSH = 15;
 
-MultilevelLayouter::MultilevelLayouter(Point<float> bottomLeft, Point<float> topRight):
-		Layouter(bottomLeft, topRight)
+MultilevelLayouter::MultilevelLayouter(Point<float> bottomLeft, Point<float> topRight, bool useGivenLayout):
+		Layouter(bottomLeft, topRight, useGivenLayout)
 {
 
 }

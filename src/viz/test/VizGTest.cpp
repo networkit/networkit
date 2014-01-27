@@ -47,6 +47,17 @@ TEST_F(VizGTest, testPostscriptWriter) {
 	psWriter.write(zeta, "testGraph.eps");
 }
 
+static float edgeDistanceSum(Graph& G) {
+	float dist = 0.0f;
+
+	G.forEdges([&](node u, node v) {
+		Point<float> p = G.getCoordinate(u) - G.getCoordinate(v);
+		dist += p.length();
+	});
+
+	return dist;
+}
+
 TEST_F(VizGTest, testFRLayouter) {
  	// create graph
  	count n = 120;
@@ -67,6 +78,12 @@ TEST_F(VizGTest, testFRLayouter) {
  	fdLayouter.draw(G);
  	PostscriptWriter psWriter2(G, true);
  	psWriter2.write("output/testForceGraph.eps");
+
+ 	// test edge distances
+ 	float dist = edgeDistanceSum(G);
+ 	float avg = dist / (float) G.numberOfEdges();
+ 	INFO("avg edge length: ", avg);
+ 	EXPECT_LE(avg, 0.25);
 }
 
  TEST_F(VizGTest, tryMaxentLayouter) {
@@ -89,6 +106,12 @@ TEST_F(VizGTest, testFRLayouter) {
  	msLayouter.draw(G);
   	PostscriptWriter psWriter3(G, true);
   	psWriter3.write("output/testMaxentGraph.eps");
+
+ 	// test edge distances
+ 	float dist = edgeDistanceSum(G);
+ 	float avg = dist / (float) G.numberOfEdges();
+ 	DEBUG("avg edge length: ", avg);
+ 	EXPECT_LE(avg, 0.25);
 }
 
  TEST_F(VizGTest, testMultilevelLayouter) {
@@ -111,9 +134,15 @@ TEST_F(VizGTest, testFRLayouter) {
   	mlLayouter.draw(G);
   	PostscriptWriter psWriter4(G, true);
   	psWriter4.write("output/testMultilevelGraph.eps");
- }
 
- TEST_F(VizGTest, testAllLayouters) {
+  	// test edge distances
+ 	float dist = edgeDistanceSum(G);
+ 	float avg = dist / (float) G.numberOfEdges();
+ 	DEBUG("avg edge length: ", avg);
+ 	EXPECT_LE(avg, 0.25);
+}
+
+ TEST_F(VizGTest, testGraphDrawing) {
  	// create graph
  	count n = 120;
  	count numClusters = 3;
@@ -152,8 +181,13 @@ TEST_F(VizGTest, testFRLayouter) {
    	mlLayouter.draw(G);
    	PostscriptWriter psWriter4(G, true);
    	psWriter4.write("output/testJazzMl.eps");
- }
 
+ 	// test edge distances
+ 	float dist = edgeDistanceSum(G);
+ 	float avg = dist / (float) G.numberOfEdges();
+ 	INFO("avg edge length: ", avg);
+ 	EXPECT_LE(avg, 0.25);
+}
 
 
 

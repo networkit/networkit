@@ -34,7 +34,6 @@ private:
 	count maxIter;
 	float prec;
 	float step;
-	bool initNecessary;
 
 public:
 
