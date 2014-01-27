@@ -131,9 +131,12 @@ void Graph::increaseWeight(node u, node v, edgeweight w) {
 		index ui = find(u, u);
 		if (ui != none) {
 			#pragma omp atomic update
-			this->eweights[u][ui] += w;
+			this->eweights[u][ui] += w; // FIXME:
 		} else {
-			addEdge(u, u, w);
+			#pragma omp critical
+			{
+				addEdge(u, u, w);
+			}
 		}
 	} else {
 		index vi = find(u, v);
@@ -142,9 +145,12 @@ void Graph::increaseWeight(node u, node v, edgeweight w) {
 			#pragma omp atomic update
 			this->eweights[u][vi] += w;
 			#pragma omp atomic update
-			this->eweights[v][ui] += w;
+			this->eweights[v][ui] += w; // FIXME:
 		} else {
-			addEdge(u, v, w);
+			#pragma omp critical
+			{
+				addEdge(u, v, w);
+			}
 		}
 	}
 }

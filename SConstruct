@@ -192,6 +192,7 @@ else:
 if optimize == "D":
     env.Append(CFLAGS = debugCFlags)
     env.Append(CPPFLAGS = debugCppFlags)
+    env.Append(LINKFLAGS = debugCppFlags)
 elif optimize == "O":
     env.Append(CFLAGS = optimizedCFlags)
     env.Append(CPPFLAGS = optimizedCppFlags)
