@@ -95,8 +95,6 @@ Clustering PLM2::run(Graph& G) {
 			return delta;
 		};
 
-
-
 		cluster best = none;
 		cluster C = none;
 		cluster D = none;
@@ -122,6 +120,7 @@ Clustering PLM2::run(Graph& G) {
 			assert (best != C && best != none);// do not "move" to original cluster
 
 			zeta[u] = best; // move to best cluster
+			// TRACE("node " , u , " moved");
 
 			// mod update
 			double volN = 0.0;
@@ -130,7 +129,7 @@ Clustering PLM2::run(Graph& G) {
 			#pragma omp atomic update
 			volCommunity[C] -= volN;
 			#pragma omp atomic update
-			volCommunity[D] += volN;
+			volCommunity[best] += volN;
 
 			moved = true; // change to clustering has been made
 

@@ -221,7 +221,7 @@ Clustering DynPLM::run(Graph& G) {
 			#pragma omp atomic update
 			volCommunity[C] -= volN;
 			#pragma omp atomic update
-			volCommunity[D] += volN;
+			volCommunity[best] += volN;
 			
 			moved = true; // change to clustering has been made
 
