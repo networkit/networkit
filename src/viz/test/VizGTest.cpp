@@ -94,7 +94,7 @@ TEST_F(VizGTest, testPostscriptWriter) {
   	psWriter3.write("output/testMaxentGraph.eps");
 }
 
- TEST_F(VizGTest, testMultilevelLayouter) {
+ TEST_F(VizGTest, tryMultilevelLayouter) {
   	// create graph
   	count n = 120;
   	count numClusters = 3;
