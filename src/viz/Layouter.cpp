@@ -11,18 +11,29 @@
 
 namespace NetworKit {
 
-Layouter::Layouter(Point<float> bottom_left, Point<float> top_right) :
-		bottomLeft(bottom_left), topRight(top_right)
+Layouter::Layouter(Point<float> bottom_left, Point<float> top_right, bool useGivenLayout) :
+		bottomLeft(bottom_left), topRight(top_right), initNecessary(! useGivenLayout)
 {
-	// TODO Auto-generated constructor stub
 
 }
 
 Layouter::~Layouter() {
-	// TODO Auto-generated destructor stub
+
 }
 
-Layouter::Layouter() {
+void Layouter::initialize(Graph& G) {
+	if (initNecessary) {
+		// initialize randomly
+		randomInitCoordinates(G);
+		G.initCoordinates();
+	}
+	else {
+		// feed coordinates from g into layout
+		layout.resize(G.numberOfNodes());
+		G.parallelForNodes([&](node v) {
+			layout[v] = G.getCoordinate(v);
+		});
+	}
 }
 
 void Layouter::randomInitCoordinates(Graph& g) {
@@ -32,16 +43,17 @@ void Layouter::randomInitCoordinates(Graph& g) {
 	float width = topRight[0] - x1;
 	float height = topRight[1] - y1;
 
-	g.forNodes([&](node u) {
+	layout.resize(g.numberOfNodes());
+
+	g.parallelForNodes([&](node u) {
 		float x = Aux::Random::real() * width + x1;
 		float y = Aux::Random::real() * height + y1;
 
-		TRACE("x: " , x);
-		TRACE("y: " , y);
+//		TRACE("x: " , x);
+//		TRACE("y: " , y);
 
-		std::vector<float> coords = {x, y};
-		Point<float> p(coords);
-		layout.push_back(p);
+		Point<float> p(x, y);
+		layout[u] = p;
 	});
 }
 

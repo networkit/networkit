@@ -17,14 +17,19 @@ protected:
 	Point<float> bottomLeft;
 	Point<float> topRight;
 	std::vector<Point<float> > layout;
+	bool initNecessary;
 
 public:
-	Layouter(); // nullary constructor needed for Python shell
-	Layouter(Point<float> bottomLeft, Point<float> topRight);
+	/**
+	 * DO NOT use to construct objects. Nullary constructor needed for Python shell.
+	 */
+	Layouter() {}
+	Layouter(Point<float> bottomLeft, Point<float> topRight, bool useGivenLayout = false);
 	virtual ~Layouter();
 
 	virtual void draw(Graph& g) = 0;
 
+	virtual void initialize(Graph& g);
 	virtual void randomInitCoordinates(Graph& g);
 };
 

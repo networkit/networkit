@@ -23,7 +23,7 @@ protected:
 	static const count N_THRSH;
 
 public:
-	MultilevelLayouter(Point<float> bottomLeft, Point<float> topRight);
+	MultilevelLayouter(Point<float> bottomLeft, Point<float> topRight, bool useGivenLayout = false);
 	virtual ~MultilevelLayouter();
 
 	virtual void draw(Graph& G);

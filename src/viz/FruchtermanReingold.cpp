@@ -14,7 +14,7 @@ const float FruchtermanReingold::OPT_PAIR_SQR_DIST_SCALE = 0.3;
 
 
 FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right, bool useGivenCoordinates, count maxIterations, float precision):
-		Layouter(bottom_left, top_right), maxIter(maxIterations), prec(precision), step(INITIAL_STEP_LENGTH), initNecessary(! useGivenCoordinates)
+		Layouter(bottom_left, top_right, useGivenCoordinates), maxIter(maxIterations), prec(precision), step(INITIAL_STEP_LENGTH)
 {
 
 }
@@ -34,18 +34,7 @@ void FruchtermanReingold::draw(Graph& g) {
 	float optPairDist = sqrt(optPairSqrDist);
 	DEBUG("optPairDist: ", optPairDist);
 
-	if (initNecessary) {
-		// initialize randomly
-		randomInitCoordinates(g);
-		g.initCoordinates();
-	}
-	else {
-		// push coordinates from g into layout
-		g.forNodes([&](node v) {
-			Point<float> p = g.getCoordinate(v);
-			layout.push_back(p);
-		});
-	}
+	initialize(g);
 
 	//////////////////////////////////////////////////////////
 	// Force calculations
@@ -107,11 +96,9 @@ void FruchtermanReingold::draw(Graph& g) {
 	//////////////////////////////////////////////////////////
 	auto isConverged([&](std::vector<Point<float> >& oldLayout,
 			std::vector<Point<float> >& newLayout) {
-		float change = 0.0;
-
-		for (index i = 0; i < oldLayout.size(); ++i) {
-			change += oldLayout[i].distance(newLayout[i]); // could be accelerated by squared distance
-		}
+		float change = g.parallelSumForNodes([&](node i) {
+			return oldLayout[i].distance(newLayout[i]); // could be accelerated by squared distance
+		});
 		DEBUG("change: ", change);
 
 		return (change < prec);
