@@ -931,6 +931,30 @@ cdef extern from "../src/dynamics/GraphEvent.h":
 		
 cdef class GraphEvent:
 	cdef _GraphEvent _this
+
+	property type:
+		def __get__(self): 
+			return self._this.type
+		def __set__(self, t):
+			self._this.type = t
+
+	property u:
+		def __get__(self): 
+			return self._this.u
+		def __set__(self, u):
+			self._this.u = u
+
+	property v:
+		def __get__(self): 
+			return self._this.v
+		def __set__(self, v):
+			self._this.type = v
+
+	property w:
+		def __get__(self): 
+			return self._this.w
+		def __set__(self, w):
+			self._this.type = w			
 	
 	def __cinit__(self, type, u, v, w):
 		self._this = _GraphEvent(type, u, v, w)
@@ -993,8 +1017,58 @@ cdef class DynamicCommunityDetection:
 cdef extern from "../src/generators/DynamicPathGenerator.h":
 	cdef cppclass _DynamicPathGenerator "NetworKit::DynamicPathGenerator":
 		_DynamicPathGenerator() except +
-		# TODO: stream
+		vector[_GraphEvent] generate(count nSteps) except +
 
 
+cdef class DynamicPathGenerator:
+	cdef _DynamicPathGenerator* _this
+
+	def __cinit__(self):
+		self._this = new _DynamicPathGenerator()
+
+	def generate(self, nSteps):
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+
+
+
+
+cdef extern from "../src/generators/DynamicPubWebGenerator.h":
+	cdef cppclass _DynamicPubWebGenerator "NetworKit::DynamicPubWebGenerator":
+		_DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
+			float neighborhoodRadius, count maxNumberOfNeighbors) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
+
+
+cdef class DynamicPubWebGenerator:
+	cdef _DynamicPubWebGenerator* _this
+
+	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
+		self._this = new _DynamicPubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+
+	def generate(self, nSteps):
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+	def getGraph(self):
+		return Graph().setThis(self._this.getGraph())
+
+cdef extern from "../src/dynamics/GraphUpdater.h":
+	cdef cppclass _GraphUpdater "NetworKit::GraphUpdater":
+		_GraphUpdater(_Graph G) except +
+		void update(vector[_GraphEvent] stream) except +
+		vector[pair[count, count]] getSizeTimeline() except +
+
+cdef class GraphUpdater:
+	cdef _GraphUpdater* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _GraphUpdater(G._this)
+
+	def update(self, stream):
+		cdef vector[_GraphEvent] _stream
+		for ev in stream:
+			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.update(_stream)
 
 
