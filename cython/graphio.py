@@ -1,5 +1,5 @@
 from _NetworKit import (METISGraphReader, FastMETISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
-						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter)
+						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter, DGSWriter, DGSStreamParser)
 
 import os
 import logging
