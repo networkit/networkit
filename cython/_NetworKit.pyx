@@ -981,6 +981,24 @@ cdef class DGSStreamParser:
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.getStream()]
 
 
+cdef extern from "../src/dynamics/DGSWriter.h":
+	cdef cppclass _DGSWriter "NetworKit::DGSWriter":
+		void write(vector[_GraphEvent] stream, string path) except +
+
+
+cdef class DGSWriter:
+	cdef _DGSWriter* _this
+
+	def __cinit__(self):
+		self._this = new _DGSWriter()
+
+	def write(self, stream, path):
+		cdef vector[_GraphEvent] _stream
+		for ev in stream:
+			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.write(_stream, stdstring(path))
+
+
 cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
 	cdef cppclass _DynamicCommunityDetection "NetworKit::DynamicCommunityDetection":
 		_DynamicCommunityDetection(string inputPath, string algoName, string updateStrategy, count interval, vector[string] recordSettings) except +

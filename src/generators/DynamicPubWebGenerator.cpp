@@ -28,7 +28,18 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 	std::vector<GraphEvent> eventStream;
 	coordinates.clear();
 
-	for (index step = 0; step < nSteps; ++step) {
+	// write initial graph to stream
+	G.forNodes([&](node v){
+		eventStream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, v));
+	});
+
+	G.forWeightedEdges([&](node u, node v, edgeweight ew){
+		eventStream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, ew));
+	});	
+
+	eventStream.push_back(GraphEvent(GraphEvent::TIME_STEP));
+
+	for (index step = 1; step < nSteps; ++step) {
 
 		// delete nodes
 		for (index i = 0; i < numToDel; ++i) {
@@ -157,9 +168,9 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 		eventStream.push_back(GraphEvent(GraphEvent::TIME_STEP));
 	}
 
-	// TODO: remove this test
-	DGSWriter dgsWriter;
-	dgsWriter.write(eventStream, "output/eventStream.dgs");
+//	// TODO: remove this test
+//	DGSWriter dgsWriter;
+//	dgsWriter.write(eventStream, "output/eventStream.dgs");
 
 	return eventStream;
 }
