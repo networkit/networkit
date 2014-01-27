@@ -48,7 +48,7 @@ void MultilevelLayouter::draw(Graph& G) {
 		draw(Gcon);
 
 		// apply recursive solution to current graph
-		Gcon.initCoordinates();
+		G.initCoordinates();
 		G.forNodes([&](node v) {
 			G.setCoordinate(v, 0, Gcon.getCoordinate(mapping[v], 0));
 			G.setCoordinate(v, 1, Gcon.getCoordinate(mapping[v], 1));
