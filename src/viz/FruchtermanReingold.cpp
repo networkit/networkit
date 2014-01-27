@@ -13,7 +13,7 @@ const float FruchtermanReingold::INITIAL_STEP_LENGTH = 1.0;
 const float FruchtermanReingold::OPT_PAIR_SQR_DIST_SCALE = 0.35;
 
 
-FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right, count maxIterations, float precision, bool useGivenCoordinates):
+FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> top_right, bool useGivenCoordinates, count maxIterations, float precision):
 		Layouter(bottom_left, top_right), maxIter(maxIterations), prec(precision), step(INITIAL_STEP_LENGTH), initNecessary(! useGivenCoordinates)
 {
 
