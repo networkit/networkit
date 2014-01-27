@@ -49,8 +49,7 @@ TEST_F(VizGTest, testPostscriptWriter) {
 	psWriter.write(zeta, "testGraph.eps");
 }
 
-
- TEST_F(VizGTest, testFRLayouter) {
+TEST_F(VizGTest, testFRLayouter) {
  	// create graph
  	count n = 120;
  	count numClusters = 3;
@@ -94,7 +93,7 @@ TEST_F(VizGTest, testPostscriptWriter) {
   	psWriter3.write("output/testMaxentGraph.eps");
 }
 
- TEST_F(VizGTest, tryMultilevelLayouter) {
+ TEST_F(VizGTest, testMultilevelLayouter) {
   	// create graph
   	count n = 120;
   	count numClusters = 3;
@@ -115,6 +114,48 @@ TEST_F(VizGTest, testPostscriptWriter) {
   	PostscriptWriter psWriter4(G, true);
   	psWriter4.write("output/testMultilevelGraph.eps");
  }
+
+ TEST_F(VizGTest, testAllLayouters) {
+ 	// create graph
+ 	count n = 120;
+ 	count numClusters = 3;
+ 	double pin = 0.175;
+ 	double pout = 0.005;
+
+ 	GraphGenerator graphGen;
+ 	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
+ 	G.initCoordinates();
+ 	INFO("Number of edges: ", G.numberOfEdges());
+
+ 	// draw (independent of clustering) and write again
+ 	Point<float> bl(0.0, 0.0);
+ 	Point<float> tr(1.0, 1.0);
+
+ 	FruchtermanReingold fdLayouter(bl, tr);
+ 	fdLayouter.draw(G);
+ 	PostscriptWriter psWriter2(G, true);
+ 	psWriter2.write("output/testForceGraph.eps");
+
+  	MultilevelLayouter mlLayouter(bl, tr);
+  	mlLayouter.draw(G);
+  	PostscriptWriter psWriter4(G, true);
+  	psWriter4.write("output/testMultilevelGraph.eps");
+}
+
+ TEST_F(VizGTest, testMultilevelDrawing) {
+  	// read graph
+	METISGraphReader reader;
+	Graph G = reader.read("input/airfoil1.graph");
+
+  	// draw
+  	Point<float> bl(0.0, 0.0);
+  	Point<float> tr(1.0, 1.0);
+   	MultilevelLayouter mlLayouter(bl, tr);
+   	mlLayouter.draw(G);
+   	PostscriptWriter psWriter4(G, true);
+   	psWriter4.write("output/testAirfoil1Ml.eps");
+ }
+
 
 
 

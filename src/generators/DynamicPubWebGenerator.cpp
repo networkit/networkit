@@ -33,23 +33,25 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 		// delete nodes
 		for (index i = 0; i < numToDel; ++i) {
 			// draw a certain (random) number of vertices to be deleted
-			node nodeToDel = Aux::Random::integer(G.upperNodeIdBound() - 1);
+			node nodeToDel = none;
 
-			if (G.hasNode(nodeToDel)) {
-				// delete incident edges first
-				G.forNeighborsOf(nodeToDel, [&](node neigh) {
-					G.removeEdge(nodeToDel, neigh);
-					GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
-					TRACE("Event: REMOVE edge " , nodeToDel , "-" , neigh);
-					eventStream.push_back(event);
-				});
+			do {
+				nodeToDel = Aux::Random::integer(G.upperNodeIdBound() - 1);
+			} while (! G.hasNode(nodeToDel));
 
-				// eventually delete vertex
-				G.removeNode(nodeToDel);
-				GraphEvent event(GraphEvent::NODE_REMOVAL, nodeToDel);
-				TRACE("Event: REMOVE node " , nodeToDel);
+			// delete incident edges first
+			G.forNeighborsOf(nodeToDel, [&](node neigh) {
+				G.removeEdge(nodeToDel, neigh);
+				GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
+				TRACE("Event: REMOVE edge " , nodeToDel , "-" , neigh);
 				eventStream.push_back(event);
-			}
+			});
+
+			// eventually delete vertex
+			G.removeNode(nodeToDel);
+			GraphEvent event(GraphEvent::NODE_REMOVAL, nodeToDel);
+			TRACE("Event: REMOVE node " , nodeToDel);
+			eventStream.push_back(event);
 		}
 
 		// insert nodes

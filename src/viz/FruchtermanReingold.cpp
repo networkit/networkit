@@ -39,6 +39,13 @@ void FruchtermanReingold::draw(Graph& g) {
 		randomInitCoordinates(g);
 		g.initCoordinates();
 	}
+	else {
+		// push coordinates from g into layout
+		g.forNodes([&](node v) {
+			Point<float> p({g.getCoordinate(v, 0), g.getCoordinate(v, 1)});
+			layout.push_back(p);
+		});
+	}
 
 	//////////////////////////////////////////////////////////
 	// Force calculations
@@ -151,8 +158,8 @@ void FruchtermanReingold::draw(Graph& g) {
 		g.parallelForNodes([&](node u) {
 			move(layout[u], forces[u], actualStep);
 
-			TRACE("moved ", u, " by: ", forces[u][0], " and ", forces[u][1]);
-			TRACE("old pos: ", previousLayout[u].toString(), ", new pos: ", layout[u].toString());
+//			TRACE("moved ", u, " by: ", forces[u][0], " and ", forces[u][1]);
+//			TRACE("old pos: ", previousLayout[u].toString(), ", new pos: ", layout[u].toString());
 		});
 
 		++iter;
