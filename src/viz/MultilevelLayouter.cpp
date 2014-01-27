@@ -48,10 +48,14 @@ void MultilevelLayouter::draw(Graph& G) {
 		draw(Gcon);
 
 		// apply recursive solution to current graph
+		G.initCoordinates();
 		G.forNodes([&](node v) {
 			G.setCoordinate(v, 0, Gcon.getCoordinate(mapping[v], 0));
 			G.setCoordinate(v, 1, Gcon.getCoordinate(mapping[v], 1));
+
+			DEBUG("coordinate of ", v, ": ", G.getCoordinate(v, 0), " / ", G.getCoordinate(v, 1));
 		});
+		DEBUG("local refinement of graph of size ", n);
 
 		// run drawing code on current graph
 		FruchtermanReingold layouter(bottomLeft, topRight, true);

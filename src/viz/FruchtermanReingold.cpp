@@ -37,6 +37,7 @@ void FruchtermanReingold::draw(Graph& g) {
 	if (initNecessary) {
 		// initialize randomly
 		randomInitCoordinates(g);
+		g.initCoordinates();
 	}
 
 	//////////////////////////////////////////////////////////
