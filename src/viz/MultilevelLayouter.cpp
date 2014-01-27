@@ -31,7 +31,7 @@ void MultilevelLayouter::draw(Graph& G) {
 	if (n <= N_THRSH) {
 		// unrecursive part: call drawing routine
 		FruchtermanReingold layouter(bottomLeft, topRight, false);
-
+		layouter.draw(G);
 	}
 	else {
 		// compute matching
