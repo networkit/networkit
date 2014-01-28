@@ -33,7 +33,7 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 		}
 	});
 
-
+	// FIXME: upper node id bound
 	int64_t n = G.numberOfNodes();
 	NodeMap<node> nodeToSuperNode(n);
 
