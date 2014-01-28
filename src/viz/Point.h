@@ -21,10 +21,10 @@ namespace NetworKit {
 typedef uint64_t index; // more expressive name for an index into an array
 typedef uint64_t count; // more expressive name for an integer quantity
 
-template<class T> class Point;
-
-template<class T>
-std::ostream& operator <<(std::ostream& out, Point<T>& point);
+//template<class T> class Point;
+//
+//template<class T>
+//std::ostream& operator <<(std::ostream& out, Point<T>& point);
 
 
 
@@ -59,8 +59,9 @@ public:
 	T& operator[](const index i);
 
 	std::string toString();
+	std::string toCsvString();
 
-	friend std::ostream& operator<< <>(std::ostream &out, Point<T>& point);
+//	friend std::ostream& operator<< <>(std::ostream &out, Point<T>& point);
 };
 
 template<class T>
@@ -156,17 +157,23 @@ std::ostream& operator <<(std::ostream& out, Point<T>& point)
 
 template<class T>
 std::string Point<T>::toString() {
-	assert(this->data.size() > 0);
 	std::stringstream out;
-	out << "(" << (*this)[0];
-	for (index i = 1; i < this->data.size(); ++i) {
-		out << ", " << this->data[i];
-	}
-	out << ")";
+	out << "(" << toCsvString() << ")";
 	return out.str();
 }
 
+template<class T>
+inline std::string NetworKit::Point<T>::toCsvString() {
+	assert(this->data.size() > 0);
+	std::stringstream out;
+	out << (*this)[0];
+	for (index i = 1; i < this->data.size(); ++i) {
+		out << ", " << this->data[i];
+	}
+	return out.str();
+}
 
 } /* namespace NetworKit */
+
 
 #endif /* POINT_H_ */
