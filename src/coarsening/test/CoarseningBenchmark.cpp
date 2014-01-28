@@ -36,7 +36,8 @@ TEST_F(CoarseningBenchmark, benchmarkClusterContracter) {
 		zeta[u] = u / redF;
 	});
 
-	DEBUG("number of subsets: ", zeta.numberOfClusters());
+	count k = zeta.numberOfClusters();
+	DEBUG("number of subsets: ", k);
 
 	INFO("sequential coarsening");
 	Aux::Timer timer;
@@ -55,6 +56,9 @@ TEST_F(CoarseningBenchmark, benchmarkClusterContracter) {
 	timer.stop();
 	Graph Gc2 = result2.first;
 	INFO("parallel coarsening: ", timer.elapsedTag());
+
+	EXPECT_EQ(k, Gc1.numberOfNodes());
+	EXPECT_EQ(k, Gc2.numberOfNodes());
 
 
 }
