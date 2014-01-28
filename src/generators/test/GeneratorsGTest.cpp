@@ -139,7 +139,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 	count maxNumNeighbors = 36;
 	float rad = 0.125;
 
-	DynamicPubWebGenerator dynGen(n, numCluster, rad, maxNumNeighbors);
+	DynamicPubWebGenerator dynGen(n, numCluster, rad, maxNumNeighbors, false);
 	Graph G = dynGen.getGraph();
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
