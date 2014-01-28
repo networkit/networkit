@@ -12,9 +12,10 @@
 namespace NetworKit {
 
 
-std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(Graph& G, Clustering& zeta) {
+std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const Graph& G, const Clustering& zeta) {
 
 	Graph Ginit(0); // initial graph containing supernodes
+	Ginit.markAsWeighted(); // Gcon will be a weighted graph
 	std::vector<node> subsetToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
 
 	// populate map subset -> supernode
