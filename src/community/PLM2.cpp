@@ -7,7 +7,7 @@
 
 #include "PLM2.h"
 #include <omp.h>
-#include "../coarsening/ClusterContracter.h"
+#include "../coarsening/PartitionCoarsening.h"
 #include "../coarsening/ClusteringProjector.h"
 
 #include <sstream>
@@ -210,44 +210,8 @@ std::string NetworKit::PLM2::toString() const {
 }
 
 std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Clustering& zeta) {
-	Graph Gcoarse(0); // empty graph
-	Gcoarse.markAsWeighted(); // Gcon will be a weighted graph
-
-	std::vector<node> communityToMetaNode(zeta.upperBound(), none); // there is one meta-node for each community
-
-	// populate map cluster -> meta-node
-	G.forNodes([&](node v){
-		cluster c = zeta[v];
-		if (communityToMetaNode[c] == none) {
-			communityToMetaNode[c] = Gcoarse.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
-		}
-	});
-
-
-	count z = G.upperNodeIdBound();
-	std::vector<node> nodeToMetaNode(z);
-
-	// set entries node -> supernode
-	G.parallelForNodes([&](node v){
-		nodeToMetaNode[v] = communityToMetaNode[zeta[v]];
-	});
-
-
-	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
-	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
-		node su = nodeToMetaNode[u];
-		node sv = nodeToMetaNode[v];
-		if (zeta[u] == zeta[v]) {
-			// add edge weight to supernode (self-loop) weight
-			Gcoarse.setWeight(su, su, Gcoarse.weight(su, su) + ew);
-		} else {
-			// add edge weight to weight between two supernodes (or insert edge)
-			Gcoarse.setWeight(su, sv, Gcoarse.weight(su, sv) + ew);
-		}
-	}); 
-
-	return std::make_pair(Gcoarse, nodeToMetaNode);
-
+	PartitionCoarsening coarsening;
+	return coarsening.run(G, zeta);
 }
 
 Clustering PLM2::prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
