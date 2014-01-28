@@ -21,6 +21,7 @@ public:
 	DynamicPathGenerator();
 
 	std::vector<GraphEvent> generate(count nSteps) override;
+
 };
 
 } /* namespace NetworKit */
