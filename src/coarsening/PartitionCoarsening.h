@@ -18,6 +18,8 @@ namespace NetworKit {
  */
 class PartitionCoarsening: public NetworKit::GraphCoarsening {
 
+public:
+
 	virtual std::pair<Graph, std::vector<node> > run(Graph& G, Clustering& zeta);
 
 

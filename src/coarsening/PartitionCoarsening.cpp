@@ -14,14 +14,14 @@ namespace NetworKit {
 
 std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(Graph& G, Clustering& zeta) {
 
-	Graph Gcon(0); // initial graph containing supernodes
+	Graph Ginit(0); // initial graph containing supernodes
 	std::vector<node> subsetToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
 
 	// populate map subset -> supernode
 	G.forNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
 		if (subsetToSuperNode[c] == none) {
-			subsetToSuperNode[c] = Gcon.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
+			subsetToSuperNode[c] = Ginit.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
 		}
 	});
 
@@ -34,25 +34,29 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(Graph& 
 	});
 
 	// make copies of initial graph
-	int nThreads = omp_get_max_threads();
-	std::vector<Graph> localGraphs(nThreads, Gcon);
+	count nThreads = omp_get_max_threads();
+	std::vector<Graph> localGraphs(nThreads, Ginit); // thread-local graphs
 
-	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
+	// iterate over edges of G and create edges in coarse graph or update edge and node weights in Gcon
 	G.parallelForWeightedEdges([&](node u, node v, edgeweight ew) {
-		int t = omp_get_thread_num();
+		index t = omp_get_thread_num();
 
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
+		localGraphs.at(t).increaseWeight(su, sv, ew);
 
-		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
-			// add edge weight to supernode (self-loop) weight
-			// TODO: Gcon.setWeight(su, su, Gcon.weight(su, su) + ew);
-		} else {
-			// add edge weight to weight between two supernodes (or insert edge)
-		}
 	});
 
-	return std::make_pair(Gcon, nodeToSuperNode);
+	// combine local graphs
+	for (index i = 0; i < (nThreads - 1); ++i) {
+		localGraphs[i].forWeightedEdges([&](node u, node v, edgeweight ew) {
+			localGraphs.at(i+1).increaseWeight(u, v, ew);
+		});
+	}
+
+
+
+	return std::make_pair(localGraphs.back(), nodeToSuperNode);
 
 }
 
