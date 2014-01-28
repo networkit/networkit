@@ -9,12 +9,12 @@
 #define CLUSTERCONTRACTER_H_
 
 
-#include "Contracter.h"
+#include "GraphCoarsening.h"
 #include "../clustering/Clustering.h"
 
 namespace NetworKit {
 
-class ClusterContracter: public Contracter {
+class ClusterContracter: public GraphCoarsening {
 
 public:
 

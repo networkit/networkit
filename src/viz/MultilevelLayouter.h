@@ -10,7 +10,7 @@
 
 #include "Layouter.h"
 #include "FruchtermanReingold.h"
-#include "../coarsening/Contracter.h"
+#include "../coarsening/GraphCoarsening.h"
 #include "../coarsening/MatchingContracter.h"
 #include "../matching/ParallelMatcher.h"
 #include "../matching/Matching.h"
