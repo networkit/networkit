@@ -18,7 +18,7 @@ void GraphUpdater::update(std::vector<GraphEvent>& stream) {
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
 				node u = G.addNode();
-				TRACE("added node " , u);
+				TRACE("added node " , u, ", ev.u: ", ev.u);
 				assert (u == ev.u);
 				break;
 			}
