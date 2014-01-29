@@ -85,3 +85,19 @@ def convertGraph(fromFormat, toFormat, fromPath, toPath=None):
 		toPath = "{0}.{1}.graph".format(fromPath.split(".")[0], toFormat)
 	converter.convert(fromPath, toPath)
 	print("converted {0} to {1}".format(fromPath, toPath))
+
+
+
+# dynamic
+
+def readStream(path, mapped=True, baseIndex=0):
+	"""
+		Read a graph event stream from a file.
+	"""
+	return DGSStreamParser(path, mapped, baseIndex).getStream()
+
+def writeStream(stream, path):
+	"""
+		Write a graph event stream to a file.
+	"""
+	DGSWriter().write(stream, path)
