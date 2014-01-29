@@ -58,8 +58,22 @@ public:
 
 	T& operator[](const index i);
 
+	/**
+	 * Default point to string conversion.
+	 */
 	std::string toString();
+
+	/**
+	 * Point to comma separated string.
+	 */
 	std::string toCsvString();
+
+	/**
+	 * Point to space separated string.
+	 */
+	std::string toSsvString();
+
+	std::string genericToString(const std::string& start, const std::string& sep, const std::string& end);
 
 //	friend std::ostream& operator<< <>(std::ostream &out, Point<T>& point);
 };
@@ -157,23 +171,34 @@ std::ostream& operator <<(std::ostream& out, Point<T>& point)
 
 template<class T>
 std::string Point<T>::toString() {
-	std::stringstream out;
-	out << "(" << toCsvString() << ")";
-	return out.str();
+	return genericToString("", ", ", "");
 }
 
 template<class T>
 inline std::string NetworKit::Point<T>::toCsvString() {
+	return genericToString("(", ", ", ")");
+}
+
+template<class T>
+inline std::string NetworKit::Point<T>::toSsvString() {
+	return genericToString("", " ", "");
+}
+
+template<class T>
+inline std::string NetworKit::Point<T>::genericToString(
+		const std::string& start, const std::string& sep,
+		const std::string& end)
+{
 	assert(this->data.size() > 0);
 	std::stringstream out;
-	out << (*this)[0];
+	out << start << (*this)[0];
 	for (index i = 1; i < this->data.size(); ++i) {
-		out << ", " << this->data[i];
+		out << sep << this->data[i];
 	}
+	out << end;
 	return out.str();
 }
 
 } /* namespace NetworKit */
-
 
 #endif /* POINT_H_ */

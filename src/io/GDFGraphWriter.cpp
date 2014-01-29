@@ -38,9 +38,14 @@ void GDFGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, cou
 		file << "nodedef>name VARCHAR,x DOUBLE,y DOUBLE,z DOUBLE" << std::endl;
 		break;
 	}
+	default: {
+		WARN("Dimension ", dim, " not supported by file format GDF. Skip writing file.");
+		file.close();
+		return;
+	}
 	}
 
-	Point<float> point; // needs to be float since Graph uses float
+	Point<float> point; // HM: needs to be float since Graph uses float
 	G.forNodes([&](node u) {
 		point = G.getCoordinate(u);
 		file << u << "," << point.toCsvString() << std::endl;

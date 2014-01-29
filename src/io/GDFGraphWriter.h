@@ -26,6 +26,7 @@ protected:
 	 * @param[in]	G			Graph of type Networkit with 2D or 3D coordinates
 	 * @param[in]	weighted	true if G is weighted (makes no difference whether is true or not)
 	 * @param[in]	path		path to file
+	 * @param[in]	dim			dimension of coordinates
 	 */
 	virtual void writeGeneric(Graph& G, bool weighted, std::string path, count dim);
 
