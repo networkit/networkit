@@ -7,12 +7,16 @@
 
 #include "PartitionCoarsening.h"
 #include <omp.h>
+#include "../auxiliary/Timer.h"
 
 
 namespace NetworKit {
 
 
 std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const Graph& G, const Clustering& zeta) {
+
+	Aux::Timer timer;
+	timer.start();
 
 	Graph Ginit(0); // initial graph containing supernodes
 	Ginit.markAsWeighted(); // Gcon will be a weighted graph
@@ -56,6 +60,8 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const G
 	}
 
 
+	timer.stop();
+	INFO("parallel coarsening took ", timer.elapsedTag());
 
 	return std::make_pair(localGraphs.back(), nodeToSuperNode);
 
