@@ -139,25 +139,35 @@ Clustering PLM2::run(Graph& G) {
 		}
 	};
 
-	count iter = 0;
-	do {
-		iter += 1;
-		moved = false;
-		// apply node movement according to parallelization strategy
-		if (this->parallelism == "none") {
-			G.forNodes(tryMove);
-		} else if (this->parallelism == "simple") {
-			G.parallelForNodes(tryMove);
-		} else if (this->parallelism == "balanced") {
-			G.balancedParallelForNodes(tryMove);
-		} else {
-			ERROR("unknown parallelization strategy: " , this->parallelism);
-			throw std::runtime_error("unknown parallelization strategy");
-		}
-		if (moved) change = true;
-	} while (moved && (iter <= maxIter));
-	INFO("iterations in move phase: ", iter);
+	// performs node moves
+	auto movePhase = [&](){
+		count iter = 0;
+		do {
+			iter += 1;
+			moved = false;
+			// apply node movement according to parallelization strategy
+			if (this->parallelism == "none") {
+				G.forNodes(tryMove);
+			} else if (this->parallelism == "simple") {
+				G.parallelForNodes(tryMove);
+			} else if (this->parallelism == "balanced") {
+				G.balancedParallelForNodes(tryMove);
+			} else {
+				ERROR("unknown parallelization strategy: " , this->parallelism);
+				throw std::runtime_error("unknown parallelization strategy");
+			}
+			if (moved) change = true;
 
+			if (iter == maxIter) {
+				moved = false;
+				WARN("move phase has been aborted after ", maxIter, " iterations");
+			}
+		} while (moved && (iter <= maxIter));
+		INFO("iterations in move phase: ", iter);
+	};
+
+	// first move phase
+	movePhase();
 
 	if (change) {
 		DEBUG("nodes moved, so begin coarsening and recursive call");
@@ -179,23 +189,7 @@ Clustering PLM2::run(Graph& G) {
 			});
 
 			// second move phase
-			iter = 0;
-			do {
-				iter += 1;
-				moved = false;
-				// apply node movement according to parallelization strategy
-				if (this->parallelism == "none") {
-					G.forNodes(tryMove);
-				} else if (this->parallelism == "simple") {
-					G.parallelForNodes(tryMove);
-				} else if (this->parallelism == "balanced") {
-					G.balancedParallelForNodes(tryMove);
-				} else {
-					ERROR("unknown parallelization strategy: " , this->parallelism);
-					throw std::runtime_error("unknown parallelization strategy");
-				}
-			} while (moved && (iter <= maxIter));
-			INFO("iterations in refinement move phase: ", iter);
+			movePhase();
 		}
 	}
 
