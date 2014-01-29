@@ -139,25 +139,34 @@ Clustering PLM2::run(Graph& G) {
 		}
 	};
 
-	count iter = 0;
-	do {
-		iter += 1;
-		moved = false;
-		// apply node movement according to parallelization strategy
-		if (this->parallelism == "none") {
-			G.forNodes(tryMove);
-		} else if (this->parallelism == "simple") {
-			G.parallelForNodes(tryMove);
-		} else if (this->parallelism == "balanced") {
-			G.balancedParallelForNodes(tryMove);
-		} else {
-			ERROR("unknown parallelization strategy: " , this->parallelism);
-			throw std::runtime_error("unknown parallelization strategy");
-		}
-		if (moved) change = true;
-	} while (moved && (iter <= maxIter));
-	INFO("iterations in move phase: ", iter);
+	// performs node moves
+	auto movePhase = [&](){
+		count iter = 0;
+		do {
+			moved = false;
+			// apply node movement according to parallelization strategy
+			if (this->parallelism == "none") {
+				G.forNodes(tryMove);
+			} else if (this->parallelism == "simple") {
+				G.parallelForNodes(tryMove);
+			} else if (this->parallelism == "balanced") {
+				G.balancedParallelForNodes(tryMove);
+			} else {
+				ERROR("unknown parallelization strategy: " , this->parallelism);
+				throw std::runtime_error("unknown parallelization strategy");
+			}
+			if (moved) change = true;
 
+			if (iter == maxIter) {
+				WARN("move phase aborted after ", maxIter, " iterations");
+			}
+			iter += 1;
+		} while (moved && (iter <= maxIter));
+		INFO("iterations in move phase: ", iter);
+	};
+
+	// first move phase
+	movePhase();
 
 	if (change) {
 		DEBUG("nodes moved, so begin coarsening and recursive call");
@@ -179,23 +188,7 @@ Clustering PLM2::run(Graph& G) {
 			});
 
 			// second move phase
-			iter = 0;
-			do {
-				iter += 1;
-				moved = false;
-				// apply node movement according to parallelization strategy
-				if (this->parallelism == "none") {
-					G.forNodes(tryMove);
-				} else if (this->parallelism == "simple") {
-					G.parallelForNodes(tryMove);
-				} else if (this->parallelism == "balanced") {
-					G.balancedParallelForNodes(tryMove);
-				} else {
-					ERROR("unknown parallelization strategy: " , this->parallelism);
-					throw std::runtime_error("unknown parallelization strategy");
-				}
-			} while (moved && (iter <= maxIter));
-			INFO("iterations in refinement move phase: ", iter);
+			movePhase();
 		}
 	}
 
@@ -217,7 +210,7 @@ std::string NetworKit::PLM2::toString() const {
 }
 
 std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Clustering& zeta) {
-	bool parallelCoarsening = false; // switch between parallel and sequential coarsening
+	bool parallelCoarsening = true; // switch between parallel and sequential coarsening
 	if (parallelCoarsening) {
 		PartitionCoarsening parCoarsening;
 		return parCoarsening.run(G, zeta);
