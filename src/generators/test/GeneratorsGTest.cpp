@@ -132,7 +132,6 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 
 TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
-
 	count nSteps = 10;
 	count n = 400;
 	count numCluster = 12;
