@@ -408,6 +408,25 @@ cdef class ErdosRenyiGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 
+cdef extern from "../src/generators/ChungLuGenerator.h":
+	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
+		_ChungLuGenerator(vector[unsigned long long] degreeSequence) except +
+		_Graph generate() except +
+
+cdef class ChungLuGenerator:
+	"""
+		TODO:
+	"""
+
+	cdef _ChungLuGenerator* _this
+
+	def __cinit__(self, degreeSequence):
+		self._this = new _ChungLuGenerator(degreeSequence)
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+
 
 
 # Module: graphio

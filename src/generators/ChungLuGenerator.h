@@ -20,7 +20,7 @@ protected:
 	count n;
 
 public:
-	ChungLuGenerator(const std::vector<count>& degreeSequence);
+	ChungLuGenerator(const std::vector<unsigned long long>& degreeSequence);
 	virtual ~ChungLuGenerator();
 
 	/**

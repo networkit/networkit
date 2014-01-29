@@ -1,1 +1,1 @@
-from _NetworKit import GraphGenerator, BarabasiAlbertGenerator, PubWebGenerator, ErdosRenyiGenerator, DynamicPubWebGenerator
+from _NetworKit import GraphGenerator, BarabasiAlbertGenerator, PubWebGenerator, ErdosRenyiGenerator, DynamicPubWebGenerator, DynamicPathGenerator, ChungLuGenerator
