@@ -729,7 +729,7 @@ cdef class PLM(Clusterer):
 cdef extern from "../src/community/PLM2.h":
 	cdef cppclass _PLM2 "NetworKit::PLM2":
 		_PLM2() except +
-		_PLM2(bool refine, double gamma, string par) except +
+		_PLM2(bool refine, double gamma, string par, count maxIter) except +
 		string toString() except +
 		_Clustering run(_Graph G) except +
 
@@ -740,8 +740,8 @@ cdef class PLM2(Clusterer):
 		
 	cdef _PLM2 _this
 	
-	def __cinit__(self, refine=True, gamma=1.0, par="balanced"):
-		self._this = _PLM2(refine, gamma, stdstring(par))
+	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=50):
+		self._this = _PLM2(refine, gamma, stdstring(par), maxIter)
 		
 	def toString(self):
 		return self._this.toString().decode("utf-8")
