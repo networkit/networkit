@@ -210,7 +210,7 @@ std::string NetworKit::PLM2::toString() const {
 }
 
 std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Clustering& zeta) {
-	bool parallelCoarsening = true; // switch between parallel and sequential coarsening
+	bool parallelCoarsening = false; // switch between parallel and sequential coarsening
 	if (parallelCoarsening) {
 		PartitionCoarsening parCoarsening;
 		return parCoarsening.run(G, zeta);
