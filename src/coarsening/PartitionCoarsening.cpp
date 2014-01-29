@@ -61,7 +61,7 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const G
 		});
 	}
 	timer2.stop();
-	INFO("combining coarse graphs took ", timer.elapsedTag());
+	INFO("combining coarse graphs took ", timer2.elapsedTag());
 
 	timer.stop();
 	INFO("parallel coarsening took ", timer.elapsedTag());
