@@ -144,6 +144,7 @@ Credits
 - Aleksejs Sazonovs
 - Maximilian Vogel
 - Miriam Beddig
+- Stefan Bertsch
 - Florian Weber
 - Patrick Flick
 
