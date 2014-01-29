@@ -52,13 +52,16 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const G
 
 	});
 
+	Aux::Timer timer2;
+	timer2.start();
 	// combine local graphs
 	for (index i = 0; i < (nThreads - 1); ++i) {
 		localGraphs[i].forWeightedEdges([&](node u, node v, edgeweight ew) {
 			localGraphs.at(i+1).increaseWeight(u, v, ew);
 		});
 	}
-
+	timer2.stop();
+	INFO("combining coarse graphs took ", timer.elapsedTag());
 
 	timer.stop();
 	INFO("parallel coarsening took ", timer.elapsedTag());
