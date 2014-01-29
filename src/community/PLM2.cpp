@@ -8,13 +8,14 @@
 #include "PLM2.h"
 #include <omp.h>
 #include "../coarsening/PartitionCoarsening.h"
+ #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
 
 #include <sstream>
 
 namespace NetworKit {
 
-PLM2::PLM2(bool refine, double gamma, std::string par) : parallelism(par), refine(refine), gamma(gamma){
+PLM2::PLM2(bool refine, double gamma, std::string par, count maxIter) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter) {
 
 }
 
@@ -138,7 +139,9 @@ Clustering PLM2::run(Graph& G) {
 		}
 	};
 
+	count iter = 0;
 	do {
+		iter += 1;
 		moved = false;
 		// apply node movement according to parallelization strategy
 		if (this->parallelism == "none") {
@@ -152,7 +155,8 @@ Clustering PLM2::run(Graph& G) {
 			throw std::runtime_error("unknown parallelization strategy");
 		}
 		if (moved) change = true;
-	} while (moved);
+	} while (moved && (iter <= maxIter));
+	INFO("iterations in move phase: ", iter);
 
 
 	if (change) {
@@ -175,7 +179,9 @@ Clustering PLM2::run(Graph& G) {
 			});
 
 			// second move phase
+			iter = 0;
 			do {
+				iter += 1;
 				moved = false;
 				// apply node movement according to parallelization strategy
 				if (this->parallelism == "none") {
@@ -188,7 +194,8 @@ Clustering PLM2::run(Graph& G) {
 					ERROR("unknown parallelization strategy: " , this->parallelism);
 					throw std::runtime_error("unknown parallelization strategy");
 				}
-			} while (moved);
+			} while (moved && (iter <= maxIter));
+			INFO("iterations in refinement move phase: ", iter);
 		}
 	}
 
@@ -210,8 +217,15 @@ std::string NetworKit::PLM2::toString() const {
 }
 
 std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Clustering& zeta) {
-	PartitionCoarsening coarsening;
-	return coarsening.run(G, zeta);
+	bool parallelCoarsening = false; // switch between parallel and sequential coarsening
+	if (parallelCoarsening) {
+		PartitionCoarsening parCoarsening;
+		return parCoarsening.run(G, zeta);
+	} else {
+		ClusterContracter seqCoarsening;
+		return seqCoarsening.run(G, zeta);
+	}
+
 }
 
 Clustering PLM2::prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {

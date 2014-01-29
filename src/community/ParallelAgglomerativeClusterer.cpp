@@ -25,7 +25,7 @@ ParallelAgglomerativeClusterer::~ParallelAgglomerativeClusterer() {
 
 Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
 	Graph G = graph; // G is the community graph, starts with singletons
-	std::vector<NodeMap<node> > mapHierarchy;
+	std::vector<std::vector<node> > mapHierarchy;
 
 	bool repeat = true;
 	do {
@@ -44,7 +44,7 @@ Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
 
 		// contract graph according to matching, TODO: (and star-like structures)
 		MatchingContracter matchingContracter;
-		std::pair<Graph, NodeMap<node> > GandMap = matchingContracter.run(G, M);
+		auto GandMap = matchingContracter.run(G, M);
 
 		// determine if it makes sense to proceed
 		count n = G.numberOfNodes();

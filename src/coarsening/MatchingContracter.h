@@ -34,7 +34,7 @@ public:
 	 *
 	 * @return		coarse graph
 	 */
-	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Matching& M,
+	virtual std::pair<Graph, std::vector<node> > run(Graph& G, Matching& M,
 			bool noSelfLoops = false);
 };
 

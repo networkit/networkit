@@ -44,9 +44,9 @@ void MultilevelLayouter::drawWrapper(Graph& G, count level) {
 
 		// coarsen by matching
 		MatchingContracter contracter;
-		std::pair<Graph, NodeMap<node> > mypair = contracter.run(G, M, true);
+		auto mypair = contracter.run(G, M, true);
 		Graph& Gcon = mypair.first;
-		NodeMap<node>& mapping = mypair.second;
+		auto mapping = mypair.second;
 
 		// make recursive call
 		drawWrapper(Gcon, level + 1);
