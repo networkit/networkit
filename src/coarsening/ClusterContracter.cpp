@@ -6,6 +6,8 @@
  */
 
 #include "ClusterContracter.h"
+#include "../auxiliary/Timer.h"
+
 
 namespace NetworKit {
 
@@ -18,23 +20,26 @@ ClusterContracter::~ClusterContracter() {
 	// TODO Auto-generated destructor stub
 }
 
-std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& zeta) {
+std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, const Clustering& zeta) {
+
+	Aux::Timer timer;
+	timer.start();
 
 	Graph Gcon(0); // empty graph
 	Gcon.markAsWeighted(); // Gcon will be a weighted graph
 
-	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
+	std::vector<node> clusterToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
 
 	// populate map cluster -> supernode
 	G.forNodes([&](node v){
 		cluster c = zeta.clusterOf(v);
-		if (! clusterToSuperNode.hasBeenSet(c)) {
+		if (clusterToSuperNode[c] == none) {
 			clusterToSuperNode[c] = Gcon.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
 		}
 	});
 
 	index z = G.upperNodeIdBound();
-	NodeMap<node> nodeToSuperNode(z);
+	std::vector<node> nodeToSuperNode(z, none);
 
 	// set entries node -> supernode
 	G.parallelForNodes([&](node v){
@@ -47,14 +52,12 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
 		// TRACE("edge (", su, ", ", sv, ")");
-		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
-			// add edge weight to supernode (self-loop) weight
-			Gcon.setWeight(su, su, Gcon.weight(su, su) + ew);
-		} else {
-			// add edge weight to weight between two supernodes (or insert edge)
-			Gcon.setWeight(su, sv, Gcon.weight(su, sv) + ew);
-		}
-	}); // TODO: parallel?
+		// add edge weight to weight between two supernodes (or insert edge)
+		Gcon.increaseWeight(su, sv, ew);
+	}); 
+
+	timer.stop();
+	INFO("sequential coarsening took ", timer.elapsedTag());
 
 	return std::make_pair(Gcon, nodeToSuperNode);
 

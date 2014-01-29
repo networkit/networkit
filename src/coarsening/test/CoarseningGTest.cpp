@@ -87,7 +87,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	// contract G0 according to 1-clusterings
 	ClusterContracter contract;
 	auto con = contract.run(G0, zeta0);
-	std::vector<NodeMap<node> > maps;
+	std::vector<std::vector<node> > maps;
 	Graph G1 = con.first;
 	maps.push_back(con.second);
 
@@ -112,7 +112,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 	// contract G0 according to 1-clusterings
 	ClusterContracter contract;
 	auto con = contract.run(G0, zeta0);
-	std::vector<NodeMap<node> > maps;
+	std::vector<std::vector<node> > maps;
 	Graph G1 = con.first;
 	maps.push_back(con.second);
 
