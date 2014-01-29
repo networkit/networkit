@@ -6,6 +6,8 @@
  */
 
 #include "ClusterContracter.h"
+#include "../auxiliary/Timer.h"
+
 
 namespace NetworKit {
 
@@ -19,6 +21,9 @@ ClusterContracter::~ClusterContracter() {
 }
 
 std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, const Clustering& zeta) {
+
+	Aux::Timer timer;
+	timer.start();
 
 	Graph Gcon(0); // empty graph
 	Gcon.markAsWeighted(); // Gcon will be a weighted graph
@@ -50,6 +55,9 @@ std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, cons
 		// add edge weight to weight between two supernodes (or insert edge)
 		Gcon.increaseWeight(su, sv, ew);
 	}); 
+
+	timer.stop();
+	INFO("sequential coarsening took ", timer.elapsedTag());
 
 	return std::make_pair(Gcon, nodeToSuperNode);
 
