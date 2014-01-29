@@ -8,6 +8,7 @@
 #include "PLM2.h"
 #include <omp.h>
 #include "../coarsening/PartitionCoarsening.h"
+ #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
 
 #include <sstream>
@@ -210,8 +211,15 @@ std::string NetworKit::PLM2::toString() const {
 }
 
 std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Clustering& zeta) {
-	PartitionCoarsening coarsening;
-	return coarsening.run(G, zeta);
+	bool parallelCoarsening = false; // switch between parallel and sequential coarsening
+	if (parallelCoarsening) {
+		PartitionCoarsening parCoarsening;
+		return parCoarsening.run(G, zeta);
+	} else {
+		ClusterContracter seqCoarsening;
+		return seqCoarsening.run(G, zeta);
+	}
+
 }
 
 Clustering PLM2::prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {

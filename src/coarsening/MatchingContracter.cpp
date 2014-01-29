@@ -17,14 +17,15 @@ MatchingContracter::~MatchingContracter() {
 
 }
 
-std::pair<Graph, NodeMap<node> > MatchingContracter::run(Graph& G, Matching& M, bool noSelfLoops) {
+std::pair<Graph, std::vector<node> > MatchingContracter::run(Graph& G, Matching& M, bool noSelfLoops) {
 	count n = G.numberOfNodes();
+	index z = G.upperNodeIdBound();
 	count cn = n - M.size();
 	Graph cG(cn);
 
 	// compute map: old ID -> new coarse ID
 	index idx = 0;
-	NodeMap<node> mapFineToCoarse(n);
+	std::vector<node> mapFineToCoarse(z, none);
 	G.forNodes([&](node v) { // TODO: difficult in parallel
 		index mate = M.mate(v);
 		if ((mate == none) || (v < mate)) {

@@ -22,7 +22,7 @@ public:
 
 	virtual ~ClusterContracter();
 
-	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Clustering& zeta);
+	virtual std::pair<Graph, std::vector<node> > run(const Graph& G, const Clustering& zeta);
 
 
 
