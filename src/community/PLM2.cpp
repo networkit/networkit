@@ -15,7 +15,7 @@
 
 namespace NetworKit {
 
-PLM2::PLM2(bool refine, double gamma, std::string par) : parallelism(par), refine(refine), gamma(gamma){
+PLM2::PLM2(bool refine, double gamma, std::string par, count maxIter) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter) {
 
 }
 
@@ -139,7 +139,9 @@ Clustering PLM2::run(Graph& G) {
 		}
 	};
 
+	count iter = 0;
 	do {
+		iter += 1;
 		moved = false;
 		// apply node movement according to parallelization strategy
 		if (this->parallelism == "none") {
@@ -153,7 +155,8 @@ Clustering PLM2::run(Graph& G) {
 			throw std::runtime_error("unknown parallelization strategy");
 		}
 		if (moved) change = true;
-	} while (moved);
+	} while (moved && (iter <= maxIter));
+	INFO("iterations in move phase: ", iter);
 
 
 	if (change) {
@@ -176,7 +179,9 @@ Clustering PLM2::run(Graph& G) {
 			});
 
 			// second move phase
+			iter = 0;
 			do {
+				iter += 1;
 				moved = false;
 				// apply node movement according to parallelization strategy
 				if (this->parallelism == "none") {
@@ -189,7 +194,8 @@ Clustering PLM2::run(Graph& G) {
 					ERROR("unknown parallelization strategy: " , this->parallelism);
 					throw std::runtime_error("unknown parallelization strategy");
 				}
-			} while (moved);
+			} while (moved && (iter <= maxIter));
+			INFO("iterations in refinement move phase: ", iter);
 		}
 	}
 
