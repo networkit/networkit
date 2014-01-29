@@ -15,7 +15,7 @@ namespace NetworKit {
 
 class ChungLuGenerator: public StaticGraphGenerator {
 protected:
-	std::vector<count> seq;
+	std::vector<unsigned long long> seq;
 	count sum_deg;
 	count n;
 
