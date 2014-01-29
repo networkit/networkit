@@ -143,7 +143,6 @@ Clustering PLM2::run(Graph& G) {
 	auto movePhase = [&](){
 		count iter = 0;
 		do {
-			iter += 1;
 			moved = false;
 			// apply node movement according to parallelization strategy
 			if (this->parallelism == "none") {
@@ -159,9 +158,9 @@ Clustering PLM2::run(Graph& G) {
 			if (moved) change = true;
 
 			if (iter == maxIter) {
-				moved = false;
-				WARN("move phase has been aborted after ", maxIter, " iterations");
+				WARN("move phase aborted after ", maxIter, " iterations");
 			}
+			iter += 1;
 		} while (moved && (iter <= maxIter));
 		INFO("iterations in move phase: ", iter);
 	};
