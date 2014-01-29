@@ -39,9 +39,7 @@ void GDFGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, cou
 		break;
 	}
 	default: {
-		WARN("Dimension ", dim, " not supported by file format GDF. Skip writing file.");
-		file.close();
-		return;
+		throw std::runtime_error("Dimension not supported by file format GDF. Skip writing file.");
 	}
 	}
 
