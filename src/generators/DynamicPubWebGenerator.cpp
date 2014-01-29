@@ -11,11 +11,11 @@ namespace NetworKit {
 
 DynamicPubWebGenerator::DynamicPubWebGenerator(count numNodes,
 		count numberOfDenseAreas, float neighborhoodRadius,
-		count maxNumberOfNeighbors) :
+		count maxNumberOfNeighbors, bool writeInitialGraphToStream) :
 		initGen(numNodes, numberOfDenseAreas, neighborhoodRadius,
-				maxNumberOfNeighbors) {
+				maxNumberOfNeighbors), writeInitialGraphToStream(writeInitialGraphToStream)
+{
 	G = initGen.generate();
-	firstCall = true;
 }
 
 DynamicPubWebGenerator::~DynamicPubWebGenerator() {
@@ -29,7 +29,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 	std::vector<GraphEvent> eventStream;
 	coordinates.clear();
 
-	if (firstCall) {
+	if (writeInitialGraphToStream) {
 		// write initial graph to stream
 		G.forNodes([&](node v){
 			eventStream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, v));
@@ -41,9 +41,8 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 
 		eventStream.push_back(GraphEvent(GraphEvent::TIME_STEP));
 
-		firstCall = false;
+		writeInitialGraphToStream = false;
 	}
-
 
 
 	for (index step = 0; step < nSteps; ++step) {
@@ -178,6 +177,10 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 //	// TODO: remove this test
 //	DGSWriter dgsWriter;
 //	dgsWriter.write(eventStream, "output/eventStream.dgs");
+
+	for (auto event : eventStream) {
+		TRACE("event: ", event.type, ", node: ", event.u);
+	}
 
 	return eventStream;
 }
