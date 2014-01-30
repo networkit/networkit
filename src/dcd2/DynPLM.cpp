@@ -10,7 +10,7 @@
 namespace	 NetworKit {
 
 DynPLM::DynPLM(std::string prepStrategy, bool refine, double gamma,
-		std::string par) :
+		std::string par, count maxIter) :
 		prepStrategy(prepStrategy), parallelism(par), refine(refine), gamma(gamma), plm2(refine, gamma, par) {
 
 }
@@ -230,25 +230,36 @@ Clustering DynPLM::run(Graph& G) {
 		}
 	};
 
-	// first move phase
 
-	// apply node movement according to parallelization strategy
-	DEBUG("starting move phase");
-	do {
-		moved = false;
-		// apply node movement according to parallelization strategy
-		if (this->parallelism == "none") {
-			G.forNodes(tryMove);
-		} else if (this->parallelism == "simple") {
-			G.parallelForNodes(tryMove);
-		} else if (this->parallelism == "balanced") {
-			G.balancedParallelForNodes(tryMove);
-		} else {
-			ERROR("unknown parallelization strategy: " , this->parallelism);
-			throw std::runtime_error("unknown parallelization strategy");
-		}
-		if (moved) change = true;
-	} while (moved);
+		// performs node moves
+	auto movePhase = [&](){
+		count iter = 0;
+		do {
+			moved = false;
+			// apply node movement according to parallelization strategy
+			if (this->parallelism == "none") {
+				G.forNodes(tryMove);
+			} else if (this->parallelism == "simple") {
+				G.parallelForNodes(tryMove);
+			} else if (this->parallelism == "balanced") {
+				G.balancedParallelForNodes(tryMove);
+			} else {
+				ERROR("unknown parallelization strategy: " , this->parallelism);
+				throw std::runtime_error("unknown parallelization strategy");
+			}
+			if (moved) change = true;
+
+			if (iter == maxIter) {
+				WARN("move phase aborted after ", maxIter, " iterations");
+			}
+			iter += 1;
+		} while (moved && (iter <= maxIter));
+		INFO("iterations in move phase: ", iter);
+	};
+
+
+	// first move phase
+	movePhase();
 
 
 	if (change) {
@@ -261,27 +272,13 @@ Clustering DynPLM::run(Graph& G) {
 		if (refine) {
 			INFO("refinement phase");
 			// reinit community-dependent temporaries
-			cluster o = zeta.upperBound();
 			volCommunity.clear();
 			zeta.forEntries([&](node u, cluster C) { 	// set volume for all communities
 				volCommunity[C] += G.volume(u);
 			});
 
 			// second move phase
-			do {
-				moved = false;
-				// apply node movement according to parallelization strategy
-				if (this->parallelism == "none") {
-					G.forNodes(tryMove);
-				} else if (this->parallelism == "simple") {
-					G.parallelForNodes(tryMove);
-				} else if (this->parallelism == "balanced") {
-					G.balancedParallelForNodes(tryMove);
-				} else {
-					ERROR("unknown parallelization strategy: " , this->parallelism);
-					throw std::runtime_error("unknown parallelization strategy");
-				}
-			} while (moved);
+			movePhase();
 		}
 	}
 
