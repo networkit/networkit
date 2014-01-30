@@ -993,7 +993,7 @@ inline void NetworKit::Graph::breadthFirstEdgesFrom(node r, L handle) {
 
 template<typename L>
 inline void NetworKit::Graph::forWeightedEdges(L handle) {
-	for (node u = 0; u < n; ++u) {
+	for (node u = 0; u < z; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
@@ -1006,7 +1006,7 @@ inline void NetworKit::Graph::forWeightedEdges(L handle) {
 
 template<typename L>
 inline void NetworKit::Graph::forWeightedEdges(L handle) const {
-	for (node u = 0; u < n; ++u) {
+	for (node u = 0; u < z; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
@@ -1020,7 +1020,7 @@ inline void NetworKit::Graph::forWeightedEdges(L handle) const {
 template<typename L>
 inline void NetworKit::Graph::parallelForWeightedEdges(L handle) {
 #pragma omp parallel for
-	for (node u = 0; u < n; ++u) {
+	for (node u = 0; u < z; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
@@ -1034,7 +1034,7 @@ inline void NetworKit::Graph::parallelForWeightedEdges(L handle) {
 template<typename L>
 inline void NetworKit::Graph::parallelForWeightedEdges(L handle) const {
 #pragma omp parallel for
-	for (node u = 0; u < n; ++u) {
+	for (node u = 0; u < z; ++u) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
@@ -1110,7 +1110,7 @@ template<typename L>
 inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
 		L handle) {
 	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
-	for (node u = 0; u < n; ++u) {
+	for (node u = 0; u < z; ++u) {
 		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			double attr = edgeMap[u][vi];
@@ -1125,7 +1125,7 @@ template<typename L>
 inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
 		L handle) const {
 	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
-	for (node u = 0; u < n; ++u) {
+	for (node u = 0; u < z; ++u) {
 		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			double attr = edgeMap[u][vi];
