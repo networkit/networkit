@@ -35,7 +35,7 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 
 	std::getline(dgsFile, line);
 	lc++;
-	// TODO: handle second line
+	INFO("DGS stream description: ", line);
 
 	if (mapped) {
 		// mapped format
