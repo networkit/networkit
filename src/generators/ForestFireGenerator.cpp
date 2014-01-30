@@ -17,36 +17,17 @@ ForestFireGenerator::ForestFireGenerator(double p) :p(p) {
 
 std::vector<GraphEvent> ForestFireGenerator::generate(count nSteps) {
 
-	std::unordered_map<node, bool> visited;
+	std::vector<GraphEvent> stream;
+	std::set<node> empty;
 
 
+	/** 
+	 * Random binomially distributed number depending on "burning probability".
+	 */
 	auto x = [&]() {
 		return Aux::Random::binomial(1 / (p * (1-p)), p);
 	};
 
-	// select k "edges" of node u
-	auto selectEdges = [&](count k, node u) {
-		count i = 0;
-		std::set<node> edges;
-		G.forNeighborsOf(u, [&](node v) {
-			if (i < k) {
-				edges.insert(v);
-				i++;
-			}
-		});
-		return edges;
-	};
-
-	auto selectNeighbors = [&](count k, node u) {
-		std::set<node> neighbors;
-		for (node c : selectEdges(k, u)) {
-			if (! visited[c]) {
-				neighbors.insert(c);
-				visited[c] = true;
-			}
-		}
-		return neighbors;
-	};
 
 	/** 
 	 * Union of multiple sets.
@@ -59,27 +40,97 @@ std::vector<GraphEvent> ForestFireGenerator::generate(count nSteps) {
 		return all;
 	};
 
-	std::vector<GraphEvent> stream;
-	for (index step = 0; step < nSteps; ++step) {
+
+
+
+
+	auto connectNewNode = [&]() {
+
+		std::unordered_map<node, bool> visited;
+
+		// select k "edges" of node u
+		auto selectEdges = [&](node u, count k) {
+			count i = 0;
+			std::set<node> edges;
+			G.forNeighborsOf(u, [&](node v) {
+				if (i < k) {
+					edges.insert(v);
+					i++;
+				}
+			});
+			return edges;
+		};
+
+		/** 
+		 * Given a node, select a set of neighbors according to 
+		 */
+		auto select = [&](node u, count k) {
+			std::set<node> neighbors;
+			for (node c : selectEdges(k, u)) {
+				if (! visited[c]) {
+					neighbors.insert(c);
+					visited[c] = true;
+				}
+			}
+			return neighbors;
+		};
+
+
+		std::function<std::set<node>(std::set<node>)> foo = [&](std::set<node> V) {
+			std::vector<std::set<node> > S;
+			for (node v : V) {
+				TRACE("scanning: ", v);
+				S.push_back(select(v, x()));
+			}
+			DEBUG("S is now: ", S);
+			std::set<node> U = unite(S);
+			if (U.empty()) {
+				return empty;
+			} else {
+				std::set<node> Z = foo(U);
+				U.insert(Z.begin(), Z.end());
+				return U;
+			}
+		};
+
+
 		// select ambassador node
 		node a = none;
 		do {
 			a = Aux::Random::integer(G.upperNodeIdBound());
 		} while (! G.hasNode(a));
 		assert (a != none);
-
-		std::set<node> candidates;
-		visited[a] = true;
-
-		node s = a;
-		do {
-			auto neighbors = selectNeighbors(x(), a);
-		} while (false); // TODO
-
+		DEBUG("selected ambassador: ", a);
 
 		node v = G.addNode();
 		stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, v));
+		DEBUG("created node ", v);
+
+		visited[a] = true;
+		TRACE("marked as visited: ", a);
+		std::set<node> candidates = {a};
+		std::set<node> additional = foo(candidates);
+		candidates.insert(additional.begin(), additional.end());
+		DEBUG("candidates: ", candidates);
+
+		for (node c : candidates) {
+			G.addEdge(v, c);
+			stream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v, c));
+		}
+	};
+
+	// initial graph
+	node s = G.addNode();
+	stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, s));
+	node t = G.addNode();
+	stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, t));
+	G.addEdge(s, t);
+	stream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, s, t));
+
+	for (index step = 0; step < nSteps; ++step) {
+		connectNewNode();
 	}
+	return stream;
 }
 
 

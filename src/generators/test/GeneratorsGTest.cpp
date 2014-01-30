@@ -10,6 +10,7 @@ Dy * GeneratorsTest.cpp
 #include "GeneratorsGTest.h"
 
 #include "../DynamicPathGenerator.h"
+#include "../ForestFireGenerator.h"
 
 namespace NetworKit {
 
@@ -257,6 +258,11 @@ TEST_F(GeneratorsGTest, testChungLuGenerator) {
 	INFO("expected volume: ", expVolume, ", actual volume: ", actualVolume);
 }
 
+
+TEST_F(GeneratorsGTest, testForestFireGenerator) {
+	ForestFireGenerator ffg(0.5);
+	ffg.generate(10);
+}
 
 } /* namespace NetworKit */
 

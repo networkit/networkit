@@ -43,6 +43,7 @@ public:
 private:
 
 	 double p;
+
 };
 
 } /* namespace NetworKit */
