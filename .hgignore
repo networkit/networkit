@@ -8,6 +8,7 @@ syntax: regexp
 \.pyc
 \.a
 \.so
+\checkpoint.ipynb
 
 syntax: regexp
 ^output$
