@@ -415,7 +415,10 @@ cdef extern from "../src/generators/ChungLuGenerator.h":
 
 cdef class ChungLuGenerator:
 	"""
-		TODO:
+		Given an arbitrary degree sequence, the Chung-Lu generative model
+		will produce a random graph with the same degree sequence. 
+
+ 		see Aiello, Chung, Lu: A Random Graph Model for Massive Graphs
 	"""
 
 	cdef _ChungLuGenerator* _this
