@@ -29,7 +29,7 @@ public:
 	 * @param[in]	maxIter		maximum number of iterations for move phase	
 	 *
 	 */
-	PLM2(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=50);
+	PLM2(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32);
 
 
 	std::string toString() const override;

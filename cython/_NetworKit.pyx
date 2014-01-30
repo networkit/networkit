@@ -759,7 +759,7 @@ cdef class PLM2(Clusterer):
 		
 	cdef _PLM2 _this
 	
-	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=50):
+	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=32):
 		self._this = _PLM2(refine, gamma, stdstring(par), maxIter)
 		
 	def toString(self):

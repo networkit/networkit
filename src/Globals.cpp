@@ -21,4 +21,4 @@ double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching ed
 
 bool CALC_DISSIMILARITY = false; ///< if set, calculate and print base clustering dissimilarity for ensemble (expensive!)
 
-int MAX_LOUVAIN_ITERATIONS = 50; ///< maximum number of iterations within contractions in Louvain algorithm
+int MAX_LOUVAIN_ITERATIONS = 32; ///< maximum number of iterations within contractions in Louvain algorithm
