@@ -646,7 +646,7 @@ cdef class Clustering:
 cdef extern from "../src/clustering/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
 		_Coverage() except +
-		double getQuality(_Clustering _zeta, _Graph _G)
+		double getQuality(_Clustering _zeta, _Graph _G) except +
 
 cdef class Coverage:
 	""" Coverage is the fraction of intra-community edges """
@@ -659,7 +659,7 @@ cdef class Coverage:
 cdef extern from "../src/clustering/Modularity.h":
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +
-		double getQuality(_Clustering _zeta, _Graph _G)
+		double getQuality(_Clustering _zeta, _Graph _G) except +
 		
 
 cdef class Modularity:

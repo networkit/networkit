@@ -1,5 +1,5 @@
-from _NetworKit import (METISGraphReader, FastMETISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
-						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter, DGSWriter, DGSStreamParser)
+from _NetworKit import (Graph, METISGraphReader, FastMETISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
+						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter, DGSWriter, DGSStreamParser, GraphUpdater)
 
 import os
 import logging
@@ -101,3 +101,11 @@ def writeStream(stream, path):
 		Write a graph event stream to a file.
 	"""
 	DGSWriter().write(stream, path)
+
+
+def graphFromStream(path, mapped=True, baseIndex=0):
+	stream = readStream(path, mapped, baseIndex)
+	G = Graph()
+	gu = GraphUpdater(G)
+	gu.update(stream)
+	return G
