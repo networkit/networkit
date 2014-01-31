@@ -25,7 +25,9 @@ std::vector<GraphEvent> ForestFireGenerator::generate(count nSteps) {
 	 * Random binomially distributed number depending on "burning probability".
 	 */
 	auto x = [&]() {
-		return Aux::Random::binomial(1 / (p * (1-p)), p);
+		count k = Aux::Random::binomial(1 / (p * (1-p)), p);
+		TRACE("k = ", k);
+		return k;
 	};
 
 
@@ -79,10 +81,8 @@ std::vector<GraphEvent> ForestFireGenerator::generate(count nSteps) {
 		std::function<std::set<node>(std::set<node>)> foo = [&](std::set<node> V) {
 			std::vector<std::set<node> > S;
 			for (node v : V) {
-				TRACE("scanning: ", v);
 				S.push_back(select(v, x()));
 			}
-			DEBUG("S is now: ", S);
 			std::set<node> U = unite(S);
 			if (U.empty()) {
 				return empty;
@@ -107,7 +107,6 @@ std::vector<GraphEvent> ForestFireGenerator::generate(count nSteps) {
 		DEBUG("created node ", v);
 
 		visited[a] = true;
-		TRACE("marked as visited: ", a);
 		std::set<node> candidates = {a};
 		std::set<node> additional = foo(candidates);
 		candidates.insert(additional.begin(), additional.end());
