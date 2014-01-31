@@ -186,7 +186,7 @@ void PubWebGenerator::chooseClusterSizes() {
 			/ f;
 	// TODO: better formula?
 
-	numPerArea.reserve(numDenseAreas);
+	numPerArea.resize(numDenseAreas);
 	for (index i = 0; i < numDenseAreas; ++i) {
 		numPerArea[i] = roundf(f * pow(denseAreaXYR[i].rad, 1.5));
 	}

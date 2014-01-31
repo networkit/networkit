@@ -102,6 +102,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 				// noise -> random coordinate
 				x = Aux::Random::probability();
 				y = Aux::Random::probability();
+//				DEBUG("completely random placement");
 			}
 
 			// create vertex with these coordinates
@@ -124,6 +125,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 		});
 
 		// find for each node the rad-neighborhood
+		// FIXME: get rid of quadratic running time!
 		G.forNodes([&](node u) {
 			std::priority_queue<std::pair<distance, edge> > pq;
 			Point<float> p1 = G.getCoordinate(u);
