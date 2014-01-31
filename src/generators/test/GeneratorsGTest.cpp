@@ -262,10 +262,11 @@ TEST_F(GeneratorsGTest, testChungLuGenerator) {
 }
 
 
-TEST_F(GeneratorsGTest, tryHavelHakimiGeneratorOnRandomSequence) {
+TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 	count n = 400;
-	count maxDegree = n / 8;
+	count maxDegree = n / 10;
 	std::vector<count> sequence(n);
+//	std::vector<count> sequence = {5, 4, 4, 3, 2, 2, 2, 2, 2, 2};
 	bool realizable = false;
 
 	do {
@@ -286,17 +287,30 @@ TEST_F(GeneratorsGTest, tryHavelHakimiGeneratorOnRandomSequence) {
 	} while (! realizable);
 }
 
-TEST_F(GeneratorsGTest, tryHavelHakimiGeneratorOnRealSequence) {
+TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/astro-ph.graph");
-	count n = G.numberOfNodes();
-	std::vector<count> sequence = GraphProperties::degreeSequence(G);
+	std::vector<std::string> graphs = {"input/PGPgiantcompo.graph", "input/jazz.graph",
+			"input/lesmis.graph"};
 
-	HavelHakimiGenerator hhgen(sequence);
-	Graph G2 = hhgen.generate();
+	for (auto path : graphs) {
+		Graph G = reader.read(path);
+		count n = G.numberOfNodes();
+		std::vector<count> sequence = GraphProperties::degreeSequence(G);
 
-	count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
-	EXPECT_EQ(volume, 2 * G2.numberOfEdges());
+		HavelHakimiGenerator hhgen(sequence);
+		Graph G2 = hhgen.generate();
+
+		count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
+
+		std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
+		std::sort(testSequence.begin(), testSequence.end(), std::greater<count>());
+		std::sort(sequence.begin(), sequence.end(), std::greater<count>());
+
+		for (index i = 0; i < n; ++i) {
+			EXPECT_EQ(sequence[i], testSequence[i]);
+		}
+	}
 }
 
 
