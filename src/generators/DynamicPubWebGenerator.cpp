@@ -23,10 +23,10 @@ DynamicPubWebGenerator::~DynamicPubWebGenerator() {
 }
 
 std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
-
 	count numToDel = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
 	count numToIns = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
 	std::vector<GraphEvent> eventStream;
+	std::vector<std::pair<node, node> > edgesToDelete;
 	coordinates.clear();
 
 	if (writeInitialGraphToStream) {
@@ -56,20 +56,26 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 				nodeToDel = Aux::Random::integer(G.upperNodeIdBound() - 1);
 			} while (! G.hasNode(nodeToDel));
 
-			// delete incident edges first
+			// mark incident edges first for deletion, delete them outside of neighborhood iterator
 			G.forNeighborsOf(nodeToDel, [&](node neigh) {
+				edgesToDelete.push_back(std::make_pair(nodeToDel, neigh));
+			});
+			for (auto elem : edgesToDelete) {
+				node& neigh = elem.second;
 				G.removeEdge(nodeToDel, neigh);
 				GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
-				TRACE("Event: REMOVE edge " , nodeToDel , "-" , neigh);
+//				TRACE("Event: REMOVE edge " , nodeToDel , "-" , neigh);
 				eventStream.push_back(event);
-			});
+			}
+			edgesToDelete.clear();
 
 			// eventually delete vertex
 			G.removeNode(nodeToDel);
 			GraphEvent event(GraphEvent::NODE_REMOVAL, nodeToDel);
-			TRACE("Event: REMOVE node " , nodeToDel);
+//			TRACE("Event: REMOVE node " , nodeToDel);
 			eventStream.push_back(event);
 		}
+
 
 		// insert nodes
 		for (index i = 0; i < numToIns; ++i) {
@@ -103,9 +109,10 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			Point<float> p(x, y);
 			coordinates[newNode] = p;
 			GraphEvent event(GraphEvent::NODE_ADDITION, newNode);
-			TRACE("Event: ADD node " , newNode);
+//			TRACE("Event: ADD node " , newNode);
 			eventStream.push_back(event);
 		}
+
 
 		// determine events by computing new graph structure
 
@@ -116,6 +123,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			return (squaredDistance <= sqrNeighRad);
 		});
 
+		// find for each node the rad-neighborhood
 		G.forNodes([&](node u) {
 			std::priority_queue<std::pair<distance, edge> > pq;
 			Point<float> p1 = G.getCoordinate(u);
@@ -144,43 +152,65 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			}
 		});
 
+
 		// check if edges have to be deleted (was there, but not eligible twice any more)
 		G.forEdges([&](node u, node v) {
 			edge e = std::make_pair(std::min(u, v), std::max(u, v));
 			if (eligibleEdges[e] < 2) {
-				G.removeEdge(u, v);
-				GraphEvent event(GraphEvent::EDGE_REMOVAL, u, v);
-				TRACE("Event: REMOVE edge " , u , "-" , v);
+				edgesToDelete.push_back(std::make_pair(u, v));
+			}
+			else {
+				assert(G.hasEdge(u, v));
+				Point<float> p1 = G.getCoordinate(u);
+				Point<float> p2 = G.getCoordinate(v);
+				edgeweight ew = BASE_WEIGHT / initGen.squaredDistanceInUnitTorus(p1[0], p1[1], p2[0], p2[1]);
+				G.setWeight(u, v, ew);
+				GraphEvent event(GraphEvent::EDGE_WEIGHT_UPDATE, u, v, ew);
+//				TRACE("Event: UPD edge weight " , u , "-" , v, ", weight: ", ew);
 				eventStream.push_back(event);
 			}
 			eligibleEdges.erase(e);
 		});
+
+		// now really delete the edges after leaving the G.forEdges iterator
+		for (auto elem : edgesToDelete) {
+			node& u = elem.first;
+			node& v = elem.second;
+			G.removeEdge(u, v);
+			GraphEvent event(GraphEvent::EDGE_REMOVAL, u, v);
+//			TRACE("Event: REMOVE edge " , u , "-" , v);
+			eventStream.push_back(event);
+		}
+		edgesToDelete.clear();
+
 
 		// check if edges have to be inserted
 		for (auto edgePair : eligibleEdges) {
 			if (edgePair.second >= 2) {
 				node u = edgePair.first.first;
 				node v = edgePair.first.second;
+				assert(! G.hasEdge(u, v) && G.hasNode(u) && G.hasNode(v));
+
 				Point<float> p1 = G.getCoordinate(u);
 				Point<float> p2 = G.getCoordinate(v);
 				edgeweight ew = BASE_WEIGHT / initGen.squaredDistanceInUnitTorus(p1[0], p1[1], p2[0], p2[1]);
-				G.addEdge(u, v);
+				G.addEdge(u, v, ew);
+				assert(G.hasEdge(u, v));
 				GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, ew);
-				TRACE("Event: ADD edge " , u , "-" , v);
+//				TRACE("Event: ADD edge " , u , "-" , v, ", weight: ", ew);
 				eventStream.push_back(event);
 			}
 		}
 
+
 		eventStream.push_back(GraphEvent(GraphEvent::TIME_STEP));
 	}
 
-//	// TODO: remove this test
 //	DGSWriter dgsWriter;
 //	dgsWriter.write(eventStream, "output/eventStream.dgs");
-
-	for (auto event : eventStream) {
-		TRACE("event: ", event.type, ", node: ", event.u);
-	}
+//	for (auto event : eventStream) {
+//		TRACE("event: ", event.type, ", node: ", event.u);
+//	}
 
 	return eventStream;
 }

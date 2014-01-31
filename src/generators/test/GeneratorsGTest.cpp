@@ -133,7 +133,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 
 TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
-	count nSteps = 10;
+	count nSteps = 15;
 	count n = 400;
 	count numCluster = 12;
 	count maxNumNeighbors = 36;
@@ -155,6 +155,9 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 		G.initCoordinates();
 
 		DEBUG("updated graph, new (n, m) = (" , G.numberOfNodes() , ", " , G.numberOfEdges() , ")");
+		edgeweight tew = G.totalEdgeWeight();
+		DEBUG("1/2 graph volume: ", tew);
+		EXPECT_GT(tew, 0);
 
 		// update coordinates
 		std::map<node, Point<float> > newCoordinates = dynGen.getNewCoordinates();
@@ -235,7 +238,7 @@ TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 }
 
 TEST_F(GeneratorsGTest, testChungLuGenerator) {
-	count n = 200;
+	count n = 400;
 	count maxDegree = n / 8;
 	std::vector<count> sequence(n);
 	count expVolume = 0;
@@ -256,6 +259,44 @@ TEST_F(GeneratorsGTest, testChungLuGenerator) {
 	});
 
 	INFO("expected volume: ", expVolume, ", actual volume: ", actualVolume);
+}
+
+
+TEST_F(GeneratorsGTest, tryHavelHakimiGeneratorOnRandomSequence) {
+	count n = 400;
+	count maxDegree = n / 8;
+	std::vector<count> sequence(n);
+	bool realizable = false;
+
+	do {
+		// fill sequence with random values (this is not power-law, of course!)
+		for (index i = 0; i < n; ++i) {
+			sequence[i] = rand() % maxDegree;
+		}
+
+		// check if sequence is realizable
+		HavelHakimiGenerator hhgen(sequence);
+		realizable = hhgen.getRealizable();
+
+		if (realizable) {
+			Graph G = hhgen.generate();
+			count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+			EXPECT_EQ(volume, 2 * G.numberOfEdges());
+		}
+	} while (! realizable);
+}
+
+TEST_F(GeneratorsGTest, tryHavelHakimiGeneratorOnRealSequence) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/astro-ph.graph");
+	count n = G.numberOfNodes();
+	std::vector<count> sequence = GraphProperties::degreeSequence(G);
+
+	HavelHakimiGenerator hhgen(sequence);
+	Graph G2 = hhgen.generate();
+
+	count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+	EXPECT_EQ(volume, 2 * G2.numberOfEdges());
 }
 
 

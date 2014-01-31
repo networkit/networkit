@@ -60,7 +60,7 @@ void MultilevelLayouter::drawWrapper(Graph& G, count level) {
 		DEBUG("local refinement of graph of size ", n);
 
 		// run drawing code on current graph
-		FruchtermanReingold layouter(bottomLeft, topRight, true, 150 * (level + 1), 0.1); // TODO: externalize
+		FruchtermanReingold layouter(bottomLeft, topRight, true, 50 * (level + 1), 0.1); // TODO: externalize
 		layouter.draw(G);
 	}
 }
