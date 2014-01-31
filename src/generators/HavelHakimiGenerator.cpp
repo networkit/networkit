@@ -129,7 +129,7 @@ Graph HavelHakimiGenerator::generate() {
 					if (neighDef > 0) {
 						// insert adapted values
 						iter->first = neighDef;
-						nodesByDeficit[neighDef].push_front(* iter);
+						nodesByDeficit[neighDef].push_back(* iter);
 					}
 				}
 			}
