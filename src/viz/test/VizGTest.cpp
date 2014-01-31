@@ -60,7 +60,7 @@ static float edgeDistanceSum(Graph& G) {
 
 TEST_F(VizGTest, testFRLayouter) {
  	// create graph
- 	count n = 120;
+ 	count n = 80;
  	count numClusters = 3;
  	double pin = 0.175;
  	double pout = 0.005;
@@ -88,7 +88,7 @@ TEST_F(VizGTest, testFRLayouter) {
 
  TEST_F(VizGTest, tryMaxentLayouter) {
   	// create graph
-  	count n = 120;
+  	count n = 80;
   	count numClusters = 3;
   	double pin = 0.175;
   	double pout = 0.005;
@@ -116,7 +116,7 @@ TEST_F(VizGTest, testFRLayouter) {
 
  TEST_F(VizGTest, testMultilevelLayouter) {
   	// create graph
-  	count n = 120;
+  	count n = 80;
   	count numClusters = 3;
   	double pin = 0.175;
   	double pout = 0.005;
@@ -145,7 +145,7 @@ TEST_F(VizGTest, testFRLayouter) {
  TEST_F(VizGTest, testGraphDrawing) {
  	// create graph
 	METISGraphReader reader;
-	Graph G = reader.read("input/jazz.graph");
+	Graph G = reader.read("input/lesmis.graph");
 
  	// draw (independent of clustering) and write again
  	Point<float> bl(0.0, 0.0);
@@ -154,7 +154,7 @@ TEST_F(VizGTest, testFRLayouter) {
  	FruchtermanReingold fdLayouter(bl, tr);
  	fdLayouter.draw(G);
  	PostscriptWriter psWriter2(G, true);
- 	psWriter2.write("output/testJazzFR.eps");
+ 	psWriter2.write("output/testLesmisFR.eps");
 
  	// test edge distances
  	float dist = edgeDistanceSum(G);
@@ -165,7 +165,7 @@ TEST_F(VizGTest, testFRLayouter) {
  	MultilevelLayouter mlLayouter(bl, tr);
   	mlLayouter.draw(G);
   	PostscriptWriter psWriter4(G, true);
-  	psWriter4.write("output/testJazzMl.eps");
+  	psWriter4.write("output/testLesmisMl.eps");
 
  	// test edge distances
  	dist = edgeDistanceSum(G);
