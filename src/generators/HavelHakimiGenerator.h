@@ -30,9 +30,12 @@ protected:
 
 public:
 	/**
-	 * @param sequence Degree sequence to realize. Must be non-increasing.
+	 * @param[in] sequence Degree sequence to realize. Must be non-increasing.
+	 * @param[in] skipTest If true, the test if the sequence is realizable is skipped.
+	 *            Default value is false. Set ONLY to true if you are certain that the
+	 *            sequence is realizable.
 	 */
-	HavelHakimiGenerator(const std::vector<count>& sequence);
+	HavelHakimiGenerator(const std::vector<count>& sequence, bool skipTest = false);
 	virtual ~HavelHakimiGenerator() = default;
 
 	/**

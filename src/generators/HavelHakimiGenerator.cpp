@@ -10,10 +10,15 @@
 
 namespace NetworKit {
 
-HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<count>& sequence) :
+HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<count>& sequence, bool skipTest) :
 		seq(sequence) {
 	std::sort(seq.begin(), seq.end(), std::greater<count>());
-	realizable = isRealizable();
+	if (skipTest) {
+		realizable = true;
+	}
+	else {
+		realizable = isRealizable();
+	}
 }
 
 bool HavelHakimiGenerator::isRealizable() {
