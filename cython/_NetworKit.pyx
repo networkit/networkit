@@ -410,7 +410,7 @@ cdef class ErdosRenyiGenerator:
 
 cdef extern from "../src/generators/ChungLuGenerator.h":
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
-		_ChungLuGenerator(vector[unsigned long long] degreeSequence) except +
+		_ChungLuGenerator(vector[uint64_t] degreeSequence) except +
 		_Graph generate() except +
 
 cdef class ChungLuGenerator:
@@ -1092,6 +1092,25 @@ cdef class DynamicPubWebGenerator:
 
 	def getGraph(self):
 		return Graph().setThis(self._this.getGraph())
+
+
+cdef extern from "../src/generators/ForestFireGenerator.h":
+	cdef cppclass _ForestFireGenerator "NetworKit::ForestFireGenerator":
+		_ForestFireGenerator(double p) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
+
+
+cdef class ForestFireGenerator:
+	cdef _ForestFireGenerator* _this
+
+	def __cinit__(self, p):
+		self._this = new _ForestFireGenerator(p)
+
+	def generate(self, nSteps):
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+
 
 cdef extern from "../src/dynamics/GraphUpdater.h":
 	cdef cppclass _GraphUpdater "NetworKit::GraphUpdater":
