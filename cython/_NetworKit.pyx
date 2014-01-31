@@ -410,7 +410,7 @@ cdef class ErdosRenyiGenerator:
 
 cdef extern from "../src/generators/ChungLuGenerator.h":
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
-		_ChungLuGenerator(vector[uint64_t] degreeSequence) except +
+		_ChungLuGenerator(vector[unsigned long long] degreeSequence) except +
 		_Graph generate() except +
 
 cdef class ChungLuGenerator:
