@@ -9,6 +9,7 @@
 #define HAVELHAKIMIGENERATOR_H_
 
 #include <vector>
+#include <stack>
 
 #include "../graph/Graph.h"
 #include "../auxiliary/ShellList.h"
@@ -16,6 +17,12 @@
 
 namespace NetworKit {
 
+/**
+ * 	Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
+ * 	The sequence, if it is realizable, is reconstructed exactly.
+ *  The resulting graph usually has a high clustering coefficient.
+ *  Construction runs in linear time O(m).
+ */
 class HavelHakimiGenerator: public NetworKit::StaticGraphGenerator  {
 protected:
 	std::vector<count> seq;
