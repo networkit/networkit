@@ -64,7 +64,6 @@ bool HavelHakimiGenerator::getRealizable() const {
 
 Graph HavelHakimiGenerator::generate() {
 	count n = seq.size();
-	count vol = std::accumulate(seq.begin(), seq.end(), 0);
 
 	if (!realizable) {
 		WARN("Degree sequence not realizable or not checked for realizability yet! Will return empty graph!");
