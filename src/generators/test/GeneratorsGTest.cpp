@@ -133,11 +133,13 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 
 TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
+//	count nSteps = 100;
+//	count n = 1200;
 	count nSteps = 15;
-	count n = 400;
-	count numCluster = 12;
-	count maxNumNeighbors = 36;
-	float rad = 0.125;
+	count n = 300;
+	count numCluster = 30;
+	count maxNumNeighbors = 40;
+	float rad = 0.08;
 
 	DynamicPubWebGenerator dynGen(n, numCluster, rad, maxNumNeighbors, false);
 	Graph G = dynGen.getGraph();
@@ -290,7 +292,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 	METISGraphReader reader;
 	std::vector<std::string> graphs = {"input/jazz.graph",
-			"input/lesmis.graph"}; // , "input/PGPgiantcompo.graph", "input/coAuthorsDBLP.graph"};
+			"input/lesmis.graph"}; //, "input/PGPgiantcompo.graph", "input/coAuthorsDBLP.graph"};
 
 	for (auto path : graphs) {
 		Graph G = reader.read(path);
