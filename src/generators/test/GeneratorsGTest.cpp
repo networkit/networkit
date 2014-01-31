@@ -261,7 +261,7 @@ TEST_F(GeneratorsGTest, testChungLuGenerator) {
 }
 
 
-TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
+TEST_F(GeneratorsGTest, tryHavelHakimiGeneratorOnRandomSequence) {
 	count n = 400;
 	count maxDegree = n / 8;
 	std::vector<count> sequence(n);
@@ -286,7 +286,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 }
 
 
-TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
+TEST_F(GeneratorsGTest, tryHavelHakimiGeneratorOnRealSequence) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/astro-ph.graph");
 	count n = G.numberOfNodes();
