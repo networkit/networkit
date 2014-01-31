@@ -19,6 +19,7 @@
 #include "../DynamicPubWebGenerator.h"
 #include "../ErdosRenyiGenerator.h"
 #include "../ChungLuGenerator.h"
+#include "../HavelHakimiGenerator.h"
 #include "../../viz/PostscriptWriter.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../community/PLP.h"

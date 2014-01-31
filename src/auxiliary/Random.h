@@ -43,7 +43,7 @@ double real(double upperBound);
 double real(double lowerBound, double upperBound);
 
 /**
- * @returns a double disributed unformly in the range [0, 1]
+ * @returns a double distributed uniformly in the range [0, 1]
  * @note this differs from real() in returning a value in a closed instead of a half-open range.
  */
 double probability();
