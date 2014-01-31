@@ -289,26 +289,29 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 
 TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 	METISGraphReader reader;
-	std::vector<std::string> graphs = {"input/PGPgiantcompo.graph", "input/jazz.graph",
-			"input/lesmis.graph"};
+	std::vector<std::string> graphs = {"input/jazz.graph",
+			"input/lesmis.graph"}; // , "input/PGPgiantcompo.graph", "input/coAuthorsDBLP.graph"};
 
 	for (auto path : graphs) {
 		Graph G = reader.read(path);
 		count n = G.numberOfNodes();
 		std::vector<count> sequence = GraphProperties::degreeSequence(G);
 
-		HavelHakimiGenerator hhgen(sequence);
+		bool skipTest = true;
+		HavelHakimiGenerator hhgen(sequence, skipTest);
 		Graph G2 = hhgen.generate();
 
 		count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
 		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
 
-		std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
-		std::sort(testSequence.begin(), testSequence.end(), std::greater<count>());
-		std::sort(sequence.begin(), sequence.end(), std::greater<count>());
+		if (volume < 50000) {
+			std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
+			std::sort(testSequence.begin(), testSequence.end(), std::greater<count>());
+			std::sort(sequence.begin(), sequence.end(), std::greater<count>());
 
-		for (index i = 0; i < n; ++i) {
-			EXPECT_EQ(sequence[i], testSequence[i]);
+			for (index i = 0; i < n; ++i) {
+				EXPECT_EQ(sequence[i], testSequence[i]);
+			}
 		}
 	}
 }
