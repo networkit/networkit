@@ -92,6 +92,8 @@ Graph HavelHakimiGenerator::generate() {
 		index maxDeficit = numDegVals - 1;
 
 		while (maxDeficit > 0) {
+			DEBUG("maxDeficit: ", maxDeficit);
+
 			// process node in largest bucket
 			while(! nodesByDeficit[maxDeficit].empty()) {
 				// get element
@@ -106,6 +108,9 @@ Graph HavelHakimiGenerator::generate() {
 				// connect corresponding vertex with the following ones
 				index currentNeighborList = maxDeficit;
 				while (deficit > 0) {
+					DEBUG("deficit: ", deficit);
+					DEBUG("currentNeighborList: ", currentNeighborList);
+
 					// search for candidates in current list
 					for (auto elem : nodesByDeficit[currentNeighborList]) {
 						// connect
