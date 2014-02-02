@@ -50,7 +50,7 @@ public:
 	 * Generates degree sequence seq (if it is realizable).
 	 * @return Empty graph if graph is not realizable, otherwise graph with degree sequence seq.
 	 */
-	virtual Graph generate() override;
+	Graph generate() override;
 };
 
 
