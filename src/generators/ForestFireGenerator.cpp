@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-ForestFireGenerator::ForestFireGenerator(double p) :p(p) {
+ForestFireGenerator::ForestFireGenerator(double p) :p(p), firstCall(true) {
 }
 
 std::vector<GraphEvent> ForestFireGenerator::generate(count nSteps) {
@@ -119,12 +119,16 @@ std::vector<GraphEvent> ForestFireGenerator::generate(count nSteps) {
 	};
 
 	// initial graph
-	node s = G.addNode();
-	stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, s));
-	node t = G.addNode();
-	stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, t));
-	G.addEdge(s, t);
-	stream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, s, t));
+	if (firstCall) {
+		node s = G.addNode();
+		stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, s));
+		node t = G.addNode();
+		stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, t));
+		G.addEdge(s, t);
+		stream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, s, t));
+		firstCall = false;
+	}
+
 
 	for (index step = 0; step < nSteps; ++step) {
 		connectNewNode();

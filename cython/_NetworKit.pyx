@@ -430,6 +430,41 @@ cdef class ChungLuGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 
+cdef extern from "../src/generators/HavelHakimiGenerator.h":
+	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
+		_HavelHakimiGenerator(vector[unsigned long long] degreeSequence, bool skipTest) except +
+		_Graph generate() except +
+		bool isRealizable() except +
+		bool getRealizable() except +
+
+cdef class HavelHakimiGenerator:
+	"""
+	 Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
+	 The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually has a high clustering coefficient. Construction runs in linear time O(m). However, the test if a sequence is realizable is quadratic in the sequence length.
+	"""
+
+	cdef _HavelHakimiGenerator* _this
+
+
+	def __cinit__(self, degreeSequence, skipTest=False):
+		"""
+			@param[in] sequence Degree sequence to realize. Must be non-increasing.
+	   		@param[in] skipTest If true, the test if the sequence is realizable is skipped.
+	              Default value is false. Set ONLY to true if you are certain that the
+	              sequence is realizable
+		"""
+		self._this = new _HavelHakimiGenerator(degreeSequence, skipTest)
+
+	def isRealizable(self):
+		return self._this.isRealizable()
+
+	def getRealizable(self):
+		return self._this.getRealizable();
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+
 
 
 # Module: graphio
