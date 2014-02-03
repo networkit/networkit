@@ -71,9 +71,8 @@ Graph HavelHakimiGenerator::generate() {
 	count n = seq.size();
 
 	if (!realizable) {
-		WARN("Degree sequence not realizable or not checked for realizability yet! Will return empty graph!");
-		Graph G;
-		return G;
+		ERROR("Degree sequence not realizable or not checked for realizability yet");
+		throw std::runtime_error("degree sequence not realizable or not checked for realizability");
 	} else {
 		DEBUG("Degree sequence is realizable, continue with generation algorithm.");
 		Graph G(n);
