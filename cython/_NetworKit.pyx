@@ -410,7 +410,7 @@ cdef class ErdosRenyiGenerator:
 
 cdef extern from "../src/generators/ChungLuGenerator.h":
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
-		_ChungLuGenerator(vector[unsigned long long] degreeSequence) except +
+		_ChungLuGenerator(vector[count] degreeSequence) except +
 		_Graph generate() except +
 
 cdef class ChungLuGenerator:
@@ -432,7 +432,7 @@ cdef class ChungLuGenerator:
 
 cdef extern from "../src/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
-		_HavelHakimiGenerator(vector[unsigned long long] degreeSequence, bool skipTest) except +
+		_HavelHakimiGenerator(vector[count] degreeSequence, bool skipTest) except +
 		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
