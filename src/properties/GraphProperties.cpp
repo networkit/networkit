@@ -124,8 +124,8 @@ std::pair<count, count> GraphProperties::minMaxDegree(Graph& G) {
 	return std::pair<count, count>(min, max);
 }
 
-std::vector<count> GraphProperties::degreeSequence(Graph& G) {
-	std::vector<count> sequence(G.numberOfNodes());
+std::vector<unsigned int> GraphProperties::degreeSequence(Graph& G) {
+	std::vector<unsigned int> sequence(G.numberOfNodes()); // TODO: revert to count when cython issue fixed
 
 	G.parallelForNodes([&](node v) {
 		sequence[v] = G.degree(v);

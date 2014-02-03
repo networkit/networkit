@@ -410,7 +410,8 @@ cdef class ErdosRenyiGenerator:
 
 cdef extern from "../src/generators/ChungLuGenerator.h":
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
-		_ChungLuGenerator(vector[count] degreeSequence) except +
+		# TODO: revert to count when cython issue fixed
+		_ChungLuGenerator(vector[unsigned int] degreeSequence) except +
 		_Graph generate() except +
 
 cdef class ChungLuGenerator:
@@ -424,6 +425,7 @@ cdef class ChungLuGenerator:
 	cdef _ChungLuGenerator* _this
 
 	def __cinit__(self, degreeSequence):
+		cdef vector
 		self._this = new _ChungLuGenerator(degreeSequence)
 
 	def generate(self):
@@ -432,7 +434,8 @@ cdef class ChungLuGenerator:
 
 cdef extern from "../src/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
-		_HavelHakimiGenerator(vector[count] degreeSequence, bool skipTest) except +
+		# TODO: revert to count when cython issue fixed
+		_HavelHakimiGenerator(vector[unsigned int] degreeSequence, bool skipTest) except +
 		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +

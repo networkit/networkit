@@ -26,7 +26,7 @@ namespace NetworKit {
  */
 class HavelHakimiGenerator: public NetworKit::StaticGraphGenerator  {
 protected:
-	std::vector<count> seq;
+	std::vector<unsigned int> seq;
 	bool realizable;
 
 public:
@@ -36,7 +36,7 @@ public:
 	 *            Default value is false. Set ONLY to true if you are certain that the
 	 *            sequence is realizable.
 	 */
-	HavelHakimiGenerator(const std::vector<count>& sequence, bool skipTest = false);
+	HavelHakimiGenerator(const std::vector<unsigned int>& sequence, bool skipTest = false);
 	virtual ~HavelHakimiGenerator() = default;
 
 	/**
