@@ -9,7 +9,7 @@
 #define GENERATOR_H_
 
 #include "Graph.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -73,14 +73,14 @@ public:
 	 * @param[in]	pin		intra-cluster edge probability
 	 * @param[in]	pout	inter-cluster edge probability
 	 */
-	virtual std::pair<Graph, Clustering> makeClusteredRandomGraphWithReferenceClustering(count n, count k, double pin, double pout);
+	virtual std::pair<Graph, Partition> makeClusteredRandomGraphWithReferenceClustering(count n, count k, double pin, double pout);
 
 
 	/**
 	 * Create a clustered random graph from a given clustering.
 	 *
 	 */
-	virtual Graph makeClusteredRandomGraph(Clustering& zeta, double pin, double pout);
+	virtual Graph makeClusteredRandomGraph(Partition& zeta, double pin, double pout);
 
 
 };

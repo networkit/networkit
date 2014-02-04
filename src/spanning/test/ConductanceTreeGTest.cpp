@@ -30,7 +30,7 @@ TEST_F(ConductanceTreeGTest, tryConductanceTree) {
 	// check and evaluate mapping
 	ConductanceTree tree;
 	node root = 0;
-	Clustering condBest = tree.bestCutInBfsTree(graph, root);
+	Partition condBest = tree.bestCutInBfsTree(graph, root);
 //	double condVal = ;
 //	INFO("Conductance value of best cut found: " , condVal);
 

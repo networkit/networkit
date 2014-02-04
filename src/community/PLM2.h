@@ -36,11 +36,11 @@ public:
 	/**
 	 * Detect communities in the given graph.
 	 */
-	Clustering run(Graph& G) override;
+	Partition run(Graph& G) override;
 
-	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Clustering& zeta);
+	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta);
 
-	static Clustering prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
+	static Partition prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
 
 private:
 

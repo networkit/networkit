@@ -10,7 +10,8 @@
 
 
 #include "Contracter.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
+#include "../graph/NodeMap.h"
 
 namespace NetworKit {
 
@@ -22,7 +23,7 @@ public:
 
 	virtual ~ClusterContracter();
 
-	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Clustering& zeta);
+	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Partition& zeta);
 
 
 

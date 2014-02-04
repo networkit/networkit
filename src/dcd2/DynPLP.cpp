@@ -16,7 +16,7 @@ DynPLP::DynPLP(std::string prepStrategy, count theta) : prepStrategy(prepStrateg
 void DynPLP::update(std::vector<GraphEvent>& stream) {
 	DEBUG("processing event stream of length " , stream.size());
 	auto isolate = [&](node u) {
-		zeta[u] = zeta.addCluster();
+		zeta.toSingleton(u);//zeta[u] = zeta.addCluster();
 		activeNodes[u] = true;
 	};
 
@@ -26,13 +26,15 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 			// TRACE("event: " , ev.toString());
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
-					zeta.append(ev.u);
+					//zeta.append(ev.u);
+					zeta.extend(); //actually returns an index
+					zeta.toSingleton(ev.u);
 					activeNodes.push_back(true);
-					zeta[ev.u] = zeta.addCluster();
+					zeta.toSingleton(ev.u);//zeta[ev.u] = zeta.addCluster();
 					break;
 				}
 				case GraphEvent::NODE_REMOVAL : {
-					zeta[ev.u] = none;
+					zeta.remove(ev.u);//zeta[ev.u] = none;
 					break;
 				}
 				case GraphEvent::EDGE_ADDITION : {
@@ -63,7 +65,7 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 		auto tryIsolate = [&](node u) {
 			if (zeta.contains(u)) {
 				// because the graph can be in the future, data structures do not necessarily know neighbor node u
-				zeta[u] = zeta.addCluster();
+				zeta.toSingleton(u);//zeta[u] = zeta.addCluster();
 				activeNodes[u] = true;
 			}
 		};
@@ -72,13 +74,15 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 			// TRACE("event: " , ev.toString());
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
-					zeta.append(ev.u);
+					//zeta.append(ev.u);
+					zeta.extend(); //actually returns an index
+					zeta.toSingleton(ev.u);
 					activeNodes.push_back(true);
 					isolate(ev.u);
 					break;
 				}
 				case GraphEvent::NODE_REMOVAL : {
-					zeta[ev.u] = none;
+					zeta.remove(ev.u);//zeta[ev.u] = none;
 					break;
 				}
 				case GraphEvent::EDGE_ADDITION : {
@@ -130,7 +134,7 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 	}
 }
 
-Clustering DynPLP::detect() {
+Partition DynPLP::detect() {
 	DEBUG("retrieving communities");
 
 	nIterations = 0; // number of iterations

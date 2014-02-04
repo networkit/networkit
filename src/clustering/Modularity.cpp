@@ -33,6 +33,7 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
 	DEBUG("l = " , G.numberOfSelfLoops());
 
 	Coverage coverage;
+	DEBUG("just a checkpoint");	
 	double cov = coverage.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / totalEdgeWeight;
 	DEBUG("coverage = " , cov);
 	double expCov; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
@@ -46,7 +47,7 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
 		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
 	}
 
-	IndexMap<cluster, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
+	IndexMap<index, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
 
 	// compute volume of each cluster
 	G.parallelForNodes([&](node v) {

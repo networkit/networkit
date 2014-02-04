@@ -18,12 +18,12 @@ RegionGrowingOverlapper::~RegionGrowingOverlapper() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering RegionGrowingOverlapper::run(Graph& G,
-		std::vector<Clustering>& clusterings) {
+Partition RegionGrowingOverlapper::run(Graph& G,
+		std::vector<Partition>& clusterings) {
 	// TODO: test
 
 	uint64_t n = G.numberOfNodes();
-	Clustering core(n); // "core groups" resulting from overlap of all clustering
+	Partition core(n); // "core groups" resulting from overlap of all clustering
 	core.allToSingletons(); // assign all nodes to singletons
 
 	std::vector<int> visited(n, 0); // node -> has been visited (1) or not (0). not <bool> because of thread-safety
@@ -61,11 +61,11 @@ Clustering RegionGrowingOverlapper::run(Graph& G,
 				// check for all incident edges if u and v belong in the same core cluster
 				G.forEdgesOf(u, [&](node u, node v) {
 							bool together = true;
-							for (std::vector<Clustering>::iterator iter = clusterings.begin(); iter != clusterings.end(); ++iter ) {
-								together = together && (iter->clusterOf(u) == iter->clusterOf(v));
+							for (std::vector<Partition>::iterator iter = clusterings.begin(); iter != clusterings.end(); ++iter ) {
+								together = together && (iter->subsetOf(u) == iter->subsetOf(v));
 							}
 							if (together) {
-								core.moveToCluster(core.clusterOf(u), v);
+								core.moveToSubset(core.subsetOf(u), v);
 							}
 						});
 

@@ -71,7 +71,7 @@ double NMIDistance::getDissimilarity(Graph& G, Partition& zeta, Partition& eta) 
 	Partition overlap = hashing.run(G, clusterings);
 	DEBUG("overlap=" , Aux::vectorToString(overlap.getVector()));
 
-	std::vector<std::vector<cluster> > intersect(zeta.upperBound(), std::vector<cluster>(eta.upperBound(), none)); // intersect[C][D] returns the overlap cluster
+	std::vector<std::vector<index> > intersect(zeta.upperBound(), std::vector<index>(eta.upperBound(), none)); // intersect[C][D] returns the overlap cluster
 
 	std::vector<count> overlapSizes(overlap.upperBound(), 0); // overlapSizes[O] returns the size of the overlap cluster
 
@@ -124,7 +124,7 @@ double NMIDistance::getDissimilarity(Graph& G, Partition& zeta, Partition& eta) 
 				// the two clusters may or may not intersect
 				index O = intersect[C][D];
 				if (O == none) { // clusters do not intersect
-					TRACE("clusters do not intersect: " << C << ", " << D);
+					TRACE("clusters do not intersect: " , C , ", " , D);
 				} else {
 					count sizeO = overlapSizes[O];
 					double factor1 =  sizeO / (double) n;

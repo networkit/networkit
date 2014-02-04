@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "Overlapper.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -26,7 +26,7 @@ public:
 
 	virtual ~RegionGrowingOverlapper();
 
-	virtual Clustering run(Graph& G, std::vector<Clustering>& clusterings);
+	virtual Partition run(Graph& G, std::vector<Partition>& clusterings);
 
 };
 

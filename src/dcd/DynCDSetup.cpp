@@ -88,7 +88,7 @@ void DynCDSetup::run() {
 			// evaluations which need the current graph
 			if (checkNumCom) {
 				INFO("calculating number of clusters");
-				count nCom = dynamicClusteringTimelines.at(detectorIndex).back().numberOfClusters();
+				count nCom = dynamicClusteringTimelines.at(detectorIndex).back().numberOfSubsets();
 				INFO("[RESULT] number of communities \t ", detectors.at(detectorIndex)->toString() , "\t" , nCom);
 				nCommunitiesTimelines.at(detectorIndex).push_back(nCom);
 			}
@@ -132,7 +132,7 @@ void DynCDSetup::run() {
 			if (checkNumCom) {
 
 				INFO("calculating number of communities");
-				count nCom = staticClusteringTimeline.back().numberOfClusters();
+				count nCom = staticClusteringTimeline.back().numberOfSubsets();
 				INFO("[RESULT] number of communities \t " , staticAlgo->toString() , "\t " , nCom);
 				this->staticNCommunitiesTimeline.push_back(nCom);
 			}

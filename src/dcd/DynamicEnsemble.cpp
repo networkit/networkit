@@ -32,7 +32,7 @@ void DynamicEnsemble::setGraph(Graph& G) {
 	}
 }
 
-Clustering DynamicEnsemble::run() {
+Partition DynamicEnsemble::run() {
 	INFO("STARTING DynamicEnsemble on G=" , G->toString());
 	this->runtime.start(); // start timer
 
@@ -41,7 +41,7 @@ Clustering DynamicEnsemble::run() {
 	ClusteringProjector projector;
 
 	// data
-	std::vector<Clustering> baseClusterings(baseAlgos.size(), Clustering(0)); // collection of base clusterings - fill with empty clustering
+	std::vector<Partition> baseClusterings(baseAlgos.size(), Partition(0)); // collection of base clusterings - fill with empty clustering
 
 	// run base clusterers in parallel
 	#pragma omp parallel for
@@ -50,16 +50,16 @@ Clustering DynamicEnsemble::run() {
 	}
 
 	// create core clustering
-	Clustering core = this->overlapAlgo->run(*G, baseClusterings);
+	Partition core = this->overlapAlgo->run(*G, baseClusterings);
 	// contract graph according to core clustering
 	std::pair<Graph, NodeMap<node> > contraction = contracter.run(*G, core);
 	Graph Gcore = contraction.first;
 	NodeMap<node> fineToCoarse = contraction.second;
 	// send contracted graph to final clusterer
-	Clustering finalCoarse = this->finalAlgo->run(Gcore);
+	Partition finalCoarse = this->finalAlgo->run(Gcore);
 
 	// project clustering of contracted graph back to original graph
-	Clustering final = projector.projectBack(Gcore, *G, fineToCoarse, finalCoarse);
+	Partition final = projector.projectBack(Gcore, *G, fineToCoarse, finalCoarse);
 
 	this->runtime.stop(); // stop timer
 	this->timerHistory.push_back(this->runtime.elapsedMilliseconds());

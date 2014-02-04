@@ -24,7 +24,7 @@ public:
 
 	void update(std::vector<GraphEvent>& stream) override;
 
-	Clustering detect() override;
+	Partition detect() override;
 
 private:
 	std::string prepStrategy;

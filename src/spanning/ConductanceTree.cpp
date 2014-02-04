@@ -9,11 +9,11 @@
 
 namespace NetworKit {
 
-Clustering ConductanceTree::bestCutInBfsTree(const Graph& g, node root) {
+Partition ConductanceTree::bestCutInBfsTree(const Graph& g, node root) {
 	count n = g.numberOfNodes();
 	std::queue<node> q;
-	Clustering visited(n);
-	Clustering bestCut(n);
+	Partition visited(n);
+	Partition bestCut(n);
 	std::vector<node> parent(n, none);
 
 	edgeweight volume = 0; // volume of set stored in visited
@@ -25,7 +25,11 @@ Clustering ConductanceTree::bestCutInBfsTree(const Graph& g, node root) {
 	// start with root
 	parent[root] = root;
 	q.push(root);
-	visited.setAll(0);
+	//visited.setAll(0);
+	visited.setUpperBound(1);
+	visited.parallelForEntries([&](index s, index e){
+		visited.addToSubset(0,e);
+	});
 
 	auto boundaryWeight([&](edgeweight bndWeight, node v) {
 		edgeweight w = bndWeight;
@@ -87,7 +91,7 @@ Clustering ConductanceTree::bestCutInBfsTree(const Graph& g, node root) {
 
 //node root = 0;
 //count n = g.numberOfNodes();
-//Clustering clutering = bestCutInBfsTree(g, root);
+//Partition clutering = bestCutInBfsTree(g, root);
 
 
 

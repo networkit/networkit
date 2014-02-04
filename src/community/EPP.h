@@ -10,7 +10,7 @@
 
 #include <vector>
 #include "../community/Clusterer.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include "../overlap/Overlapper.h"
 
 
@@ -57,7 +57,7 @@ public:
 	/**
 	 * Run the ensemble clusterer.
 	 */
-	virtual Clustering run(Graph& G);
+	virtual Partition run(Graph& G);
 
 	/**
 	 * @return string representation.

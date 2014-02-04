@@ -18,16 +18,16 @@ ClusterContracter::~ClusterContracter() {
 	// TODO Auto-generated destructor stub
 }
 
-std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& zeta) {
+std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Partition& zeta) {
 
 	Graph Gcon(0); // empty graph
 	Gcon.markAsWeighted(); // Gcon will be a weighted graph
 
-	IndexMap<cluster, node> clusterToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
+	IndexMap<index, node> clusterToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
 
 	// populate map cluster -> supernode
 	G.forNodes([&](node v){
-		cluster c = zeta.clusterOf(v);
+		index c = zeta[v];//zeta.clusterOf(v);Cluster
 		if (! clusterToSuperNode.hasBeenSet(c)) {
 			clusterToSuperNode[c] = Gcon.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
 		}
@@ -39,7 +39,7 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 
 	// set entries node -> supernode
 	G.parallelForNodes([&](node v){
-		nodeToSuperNode[v] = clusterToSuperNode[zeta.clusterOf(v)];
+		nodeToSuperNode[v] = clusterToSuperNode[zeta.subsetOf(v)];
 	});
 
 
@@ -48,7 +48,7 @@ std::pair<Graph, NodeMap<node> > ClusterContracter::run(Graph& G, Clustering& ze
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
 		TRACE("edge (", su, ", ", sv, ")");
-		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
+		if (zeta.subsetOf(u) == zeta.subsetOf(v)) {
 			// add edge weight to supernode (self-loop) weight
 			Gcon.setWeight(su, su, Gcon.weight(su, su) + ew);
 		} else {
