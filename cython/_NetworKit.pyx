@@ -449,7 +449,7 @@ cdef class HavelHakimiGenerator:
 	cdef _HavelHakimiGenerator* _this
 
 
-	def __cinit__(self, degreeSequence, skipTest=False):
+	def __cinit__(self, degreeSequence, skipTest=True):
 		"""
 			@param[in] sequence Degree sequence to realize. Must be non-increasing.
 	   		@param[in] skipTest If true, the test if the sequence is realizable is skipped.
