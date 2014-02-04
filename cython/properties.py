@@ -112,14 +112,8 @@ def properties(nkG, settings):
 	isolates = degDist[0] if len(degDist) > 0 else None
 	satellites = degDist[1] if len(degDist) > 1 else None
 
-	if nxG:
-		logging.info("[...] detecting cliques")
-	# number of cliques
-	cliques = len(list(nx.find_cliques(nxG))) if nxG else None
-
-
 	# number of self-loops
-	loops = len(nxG.selfloop_edges()) if nxG else None
+	loops = len([(u, v) for (u,v) in nkG.edges() if (u == v)])
 	
 	# density
 	dens = density(nkG)
@@ -133,13 +127,13 @@ def properties(nkG, settings):
 	if settings["communities"]:
 		logging.info("[...] detecting communities")
 		# perform PLP and PLM community detection
-		logging.debug("performing community detection: PLP")
+		logging.debug("[...] performing community detection: PLP")
 		# TODO: avoid printout of status bar
 		plp = community.PLP()
 		zetaPLP = plp.run(nkG)
 		ncomPLP = zetaPLP.numberOfClusters()
 		modPLP = community.Modularity().getQuality(zetaPLP, nkG)
-		logging.info("performing community detection: PLM")
+		logging.info("[...] performing community detection: PLM")
 		plm = community.PLM("balanced")
 		zetaPLM = plm.run(nkG)
 		ncomPLM = zetaPLM.numberOfClusters()
@@ -156,7 +150,6 @@ def properties(nkG, settings):
 	# connected components
 	nComponents, componentSizes = None, None
 	if settings["components"]:
-		logging.info("[...] detecting connected components")
 		nComponents, componentSizes = components(nkG)
 
 	# diameter
@@ -210,7 +203,6 @@ def properties(nkG, settings):
 		 "modPLM": modPLM,
 		 "dens": dens,
 		 "assort": assort,
-		 "cliques": cliques,
 		 "histo": (labels, histo),
 		 }
 
@@ -240,8 +232,7 @@ def overview(nkG, settings=collections.defaultdict(lambda: True)):
 	]
 	
 	miscProperties = [
-		["degree assortativity", "{0:.6f}".format(props["assort"]) if props["assort"] else None],
-		["cliques", props["cliques"]]
+		["degree assortativity", "{0:.6f}".format(props["assort"]) if props["assort"] else None]
 	]
 
 	communityStructure = [
