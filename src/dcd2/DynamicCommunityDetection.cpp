@@ -136,7 +136,7 @@ void DynamicCommunityDetection::run() {
 		if (record("continuity")) {
 
 			if (run >= 2) {
-				SampledGraphStructuralRandMeasure sampledRand(5000);
+				SampledGraphStructuralRandMeasure sampledRand(1000);
 				double cont = sampledRand.getDissimilarity(G, zeta, previous);
 				continuity.push_back(cont);
 			} else {

@@ -319,7 +319,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 }
 
 
-TEST_F(GeneratorsGTest, testForestFireGenerator) {
+TEST_F(GeneratorsGTest, tryForestFireGenerator) {
 	ForestFireGenerator ffg(0.5);
 	ffg.generate(10);
 }
