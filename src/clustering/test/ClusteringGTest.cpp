@@ -28,6 +28,8 @@
 #include "../../generators/DynamicBarabasiAlbertGenerator.h"
 //#include "../../dcd/DynamicPLP.h"
 #include "../../dcd/TDynamicLabelPropagation.h"
+#include "../SampledGraphStructuralRandMeasure.h"
+#include "../SampledNodeStructuralRandMeasure.h"
 
 namespace NetworKit {
 
@@ -403,6 +405,26 @@ TEST_F(ClusteringGTest, testClusterSizes) {
 	EXPECT_EQ(1, sizes.size()) << "only one entry for 1-clustering";
 	EXPECT_EQ(n, sizes.at(0)) << "size of only cluster should be n";
 }
+
+
+TEST_F(ClusteringGTest, testSampledRandMeasures) {
+	GraphGenerator graphGenerator;
+	count n = 42;
+	Graph G = graphGenerator.makeCompleteGraph(n);
+	ClusteringGenerator clusteringGenerator;
+	Clustering one = clusteringGenerator.makeOneClustering(G);
+	Clustering singleton = clusteringGenerator.makeSingletonClustering(G);
+
+	SampledNodeStructuralRandMeasure nRand(20);
+	SampledGraphStructuralRandMeasure gRand(20);
+
+	double nDis = nRand.getDissimilarity(G, one, singleton);
+	double gDis = gRand.getDissimilarity(G, one, singleton);
+
+	DEBUG("node structural dissimilarity: ", nDis);
+	DEBUG("graph structural dissimilarity: ", gDis);
+}
+
 
 
 
