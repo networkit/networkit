@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef SAMPLEDRANDMEASURE_H_
-#define SAMPLEDRANDMEASURE_H_
+#ifndef SAMPLEDNODESTRUCTURALRANDMEASURE_H_
+#define SAMPLEDNODESTRUCTURALRANDMEASURE_H_
 
 #include "DissimilarityMeasure.h"
 
@@ -17,13 +17,13 @@ namespace NetworKit {
  * to two partitions of a graph, by considering pairs of nodes.
  * This implementation approximates the index by sampling.
  */
-class SampledRandMeasure: public NetworKit::DissimilarityMeasure {
+class SampledNodeStructuralRandMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	SampledRandMeasure(count maxSamples);
+	SampledNodeStructuralRandMeasure(count maxSamples);
 
-	virtual ~SampledRandMeasure();
+	virtual ~SampledNodeStructuralRandMeasure();
 
 	virtual double getDissimilarity(Graph& G, Clustering& first, Clustering& second);
 
