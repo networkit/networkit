@@ -143,23 +143,23 @@ void DynamicDGSParser::generate() {
 
 }
 
-void DynamicDGSParser::evaluateClusterings(const std::string path, const Clustering& clustering) {
+void DynamicDGSParser::evaluateClusterings(const std::string path, const Partition& clustering) {
 	// Stores the category breakdown for each of the clusterings
 	std::vector<std::unordered_map<std::string, index>> clusterMappings;
 	clusterMappings.reserve(100000000); //should this be clustering.numberOfClusters()?
 
 	// Stores the mapping between  clustring IDs (seem somewhat random
 	// and not sequential) to "normalized" IDSs (0..numberOfClusterings-1)
-	std::unordered_map<cluster, index> clusterIDMap;
+	std::unordered_map<index, index> clusterIDMap;
 
-	cluster normalizedID = 0;
+	index normalizedID = 0;
 	index clusterIDCounter = 0;
 
 	//Vector of cluster sizes
 	std::vector<index> clusterSizes;
 
 	// Iterating through nodes and clusters to which they belong
-	clustering.forEntries([&](node v, cluster c){
+	clustering.forEntries([&](node v, index c){
 
 		// Checking if the specific cluster has been already assigned with a normalized ID
 		auto gotClusterID = clusterIDMap.find (c);
@@ -202,7 +202,7 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Cluster
 
 	INFO("Clustering file output");
 
-	for (index i=0; i<clustering.numberOfClusters(); i++) {
+	for (index i=0; i<clustering.numberOfSubsets(); i++) {
 		if (clusterSizes[i] >= 20) {
 			fs << "cluster-" << i << '\t';
 			fs << "size " << '\t' << clusterSizes[i] << '\t';

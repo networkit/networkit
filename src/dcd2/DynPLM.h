@@ -31,11 +31,11 @@ public:
 
 	void update(std::vector<GraphEvent>& stream) override;
 
-	Clustering detect() override;
+	Partition detect() override;
 
 private:
 
-	Clustering run(Graph& G);
+	Partition run(Graph& G);
 
 	std::string prepStrategy; // determines which dynamization strategy to use
 	std::string parallelism;

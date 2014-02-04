@@ -43,7 +43,7 @@ double ModularitySequential::getQuality(const Partition& zeta, const Graph& G) {
 		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
 	}
 
-	IndexMap<cluster, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
+	IndexMap<index, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
 
 	// compute volume of each cluster
 	G.forNodes([&](node v){

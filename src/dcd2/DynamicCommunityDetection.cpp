@@ -114,7 +114,7 @@ void DynamicCommunityDetection::run() {
 
 		timer.start();
 		//
-		Clustering zeta = algo->detect();
+		Partition zeta = algo->detect();
 		//
 		timer.stop();
 		detectTime.push_back(timer.elapsedMilliseconds());
@@ -147,12 +147,12 @@ void DynamicCommunityDetection::run() {
 
 		if (record("communityCount")) {
 			DEBUG("recording community count");
-			communityCount.push_back(zeta.numberOfClusters());
+			communityCount.push_back(zeta.numberOfSubsets());
 		}
 
 		if (record("communitySizes")) {
 			DEBUG("recording community sizes");
-			std::vector<count> sizes = zeta.clusterSizes();
+			std::vector<count> sizes = zeta.subsetSizes();
 
 			// double avgSize = std::accumulate(sizes.begin(), sizes.end(), 0) / (double) sizes.size();
 			communitySizes.push_back(sizes);
@@ -197,7 +197,7 @@ std::vector<std::pair<count, count> > DynamicCommunityDetection::getGraphSizeTim
 	return size;
 }
 
-std::vector<std::pair<Graph, Clustering> > DynamicCommunityDetection::getResultTimeline() {
+std::vector<std::pair<Graph, Partition> > DynamicCommunityDetection::getResultTimeline() {
 	return results;
 }
 

@@ -74,7 +74,7 @@ void PostscriptWriter::writeMacros(std::ofstream& file) {
 }
 
 // TODO: node and edge weights and thicker nodes/edges
-void PostscriptWriter::writeClustering(Clustering& clustering,
+void PostscriptWriter::writeClustering(Partition& clustering,
 		std::ofstream& file) {
 	TRACE("start ps writeClustering");
 
@@ -198,7 +198,7 @@ void PostscriptWriter::init(std::string path, std::ofstream& file) {
 	file << std::fixed;
 }
 
-void PostscriptWriter::write(Clustering& clustering, std::string path) {
+void PostscriptWriter::write(Partition& clustering, std::string path) {
 	TRACE("start ps write clustering");
 
 	std::ofstream file;
@@ -225,7 +225,7 @@ void PostscriptWriter::write(std::string path) {
 	writeMacros(file);
 
 	ClusteringGenerator gen;
-	Clustering allNone = gen.makeOneClustering(g);
+	Partition allNone = gen.makeOneClustering(g);
 	writeClustering(allNone, file);
 	if (!wrapAround) {
 		file << "grestore\n";

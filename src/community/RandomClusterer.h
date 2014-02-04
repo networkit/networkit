@@ -20,7 +20,7 @@ public:
 	RandomClusterer();
 	virtual ~RandomClusterer();
 
-	virtual Clustering run(Graph& G);
+	virtual Partition run(Graph& G);
 };
 
 } /* namespace NetworKit */

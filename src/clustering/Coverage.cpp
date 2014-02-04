@@ -6,6 +6,7 @@
  */
 
 #include "Coverage.h"
+#include "../base/IndexMap.h"
 
 namespace NetworKit {
 

@@ -31,13 +31,13 @@ cuttingMap ClusteringCut::getClusterToCutMatrixMap(const Graph& G, const Partiti
 
 	cuttingMap cMap; // map to return
 
-	cluster clst1, clst2; // cluster indexes for std::unordered_map key
+	index clst1, clst2; // cluster indexes for std::unordered_map key
 	cutEdges cuttingEdges; // cutting edges, group of edges
 
 	G.forEdges([&](node u, node v) {
 		clst1 = zeta[u];
 		clst2 = zeta[v];
-		std::pair<cluster, cluster> key (clst1, clst2);
+		std::pair<index, index> key (clst1, clst2);
 		if (zeta[u] != zeta[v]) {
 
 			cuttingMap::const_iterator got = cMap.find(key);

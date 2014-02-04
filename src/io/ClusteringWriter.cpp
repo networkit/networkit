@@ -18,11 +18,11 @@ ClusteringWriter::~ClusteringWriter() {
 	// TODO Auto-generated destructor stub
 }
 
-void ClusteringWriter::write(Clustering& zeta, std::string path) const {
+void ClusteringWriter::write(Partition& zeta, std::string path) const {
 	std::ofstream file;
 	file.open(path.c_str());
 
-	zeta.forEntries([&](node v, cluster c){
+	zeta.forEntries([&](node v, index c){
 		file << c << std::endl;
 	});
 

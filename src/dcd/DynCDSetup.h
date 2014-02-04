@@ -86,14 +86,14 @@ public:
 	std::vector<count> mTimeline;
 
 	// for static
-	std::vector<Clustering> staticClusteringTimeline; //!< if there is a static algorithm, store its results here
+	std::vector<Partition> staticClusteringTimeline; //!< if there is a static algorithm, store its results here
 	std::vector<count> staticTimerTimeline;
 	std::vector<double> staticQualityTimeline;
 	std::vector<count> staticNCommunitiesTimeline;
 	std::vector<double> staticContinuityTimeline;
 
 	// once per dynamic detector
-	std::vector<std::vector<Clustering> > dynamicClusteringTimelines; //!< the resulting communities per algorithm per run
+	std::vector<std::vector<Partition> > dynamicClusteringTimelines; //!< the resulting communities per algorithm per run
 	std::vector<std::vector<double> > qualityTimelines;
 	std::vector<std::vector<count> > nCommunitiesTimelines;
 	std::vector<std::vector<double> > continuityTimelines;

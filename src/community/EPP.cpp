@@ -32,7 +32,7 @@ void EPP::setOverlapper(Overlapper& overlap) {
 	this->overlap = &overlap;
 }
 
-Clustering EPP::run(Graph& G) {
+Partition EPP::run(Graph& G) {
 	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
 
 	// fixed sub-algorithms
@@ -40,7 +40,7 @@ Clustering EPP::run(Graph& G) {
 	ClusteringProjector projector;
 
 	// data
-	std::vector<Clustering> baseClusterings(baseClusterers.size(), Clustering(0)); // collection of base clusterings - fill with empty clustering
+	std::vector<Partition> baseClusterings(baseClusterers.size(), Partition(0)); // collection of base clusterings - fill with empty clustering
 
 	// run base clusterers in parallel
 	#pragma omp parallel for
@@ -64,16 +64,16 @@ Clustering EPP::run(Graph& G) {
 	//
 
 	// create core clustering
-	Clustering core = this->overlap->run(G, baseClusterings);
+	Partition core = this->overlap->run(G, baseClusterings);
 	// contract graph according to core clustering
 	std::pair<Graph, NodeMap<node> > contraction = contracter.run(G, core);
 	Graph Gcore = contraction.first;
 	NodeMap<node> fineToCoarse = contraction.second;
 	// send contracted graph to final clusterer
-	Clustering finalCoarse = this->finalClusterer->run(Gcore);
+	Partition finalCoarse = this->finalClusterer->run(Gcore);
 
 	// project clustering of contracted graph back to original graph
-	Clustering final = projector.projectBack(Gcore, G, fineToCoarse, finalCoarse);
+	Partition final = projector.projectBack(Gcore, G, fineToCoarse, finalCoarse);
 	// return clustering
 	return final;
 }

@@ -5,6 +5,8 @@
  *      Author: Maximilian Vogel (uocvf@student.kit.edu)
  */
 
+#include <iostream>
+
 #include "PartitionGTest.h"
 
 #include "../Partition.h"
@@ -57,7 +59,7 @@ TEST_F(PartitionGTest, testMergeSubsets) {
 	EXPECT_EQ(p[9],p[7]);
 }
 
-TEST_F(PartitionGTest, testIsOnePartitionFalse) {
+/*TEST_F(PartitionGTest, testIsOnePartitionFalse) {
 	Partition p(10);
 	p.allToSingletons();
 	EXPECT_FALSE(p.isOnePartition({}));
@@ -93,7 +95,7 @@ TEST_F(PartitionGTest, testIsSingletonPartitionFalse) {
 	p.allToSingletons();
 	p.mergeSubsets(p[0],p[9]);
 	EXPECT_FALSE(p.isSingletonPartition({}));
-}
+}*/
 
 
 TEST_F(PartitionGTest, testNumberOfSubsets) {
@@ -115,12 +117,13 @@ TEST_F(PartitionGTest, testNumberOfSubsets2) {
 
 TEST_F(PartitionGTest, testNumberOfSubsets3) {
 	count n = 6542;
+	count subsets = n/2;
 	Partition p(n);
 	p.allToSingletons();
-	for (int i = 0; i < 6542; i+=2) {
+	for (uint64_t i = 0; i < n; i+=2) {
 		p.mergeSubsets(p[i],p[i+1]);
 	}
-	EXPECT_EQ(p.numberOfSubsets(),3271);
+	EXPECT_EQ(p.numberOfSubsets(),subsets);
 }
 TEST_F(PartitionGTest, testLowerBound) {
 	count n = 6542;

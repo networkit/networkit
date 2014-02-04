@@ -8,7 +8,7 @@
 #ifndef COMMUNITYGRAPH_H_
 #define COMMUNITYGRAPH_H_
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -23,7 +23,7 @@ public:
 	 * Create a graph coarsened according to communities. Edge weights are the weights of
 	 * inter-community cuts.
 	 */
-	virtual void run(const Graph& G, const Clustering& zeta);
+	virtual void run(const Graph& G, const Partition& zeta);
 
 	virtual Graph getGraph();
 

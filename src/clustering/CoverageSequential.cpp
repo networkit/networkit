@@ -6,6 +6,7 @@
  */
 
 #include "CoverageSequential.h"
+#include "../base/IndexMap.h"
 
 namespace NetworKit {
 

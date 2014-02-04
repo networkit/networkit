@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "../graph/Graph.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -28,7 +28,7 @@ public:
 
 	virtual ~Overlapper();
 
-	virtual Clustering run(Graph& G, std::vector<Clustering>& clusterings) = 0;
+	virtual Partition run(Graph& G, std::vector<Partition>& clusterings) = 0;
 };
 
 } /* namespace NetworKit */

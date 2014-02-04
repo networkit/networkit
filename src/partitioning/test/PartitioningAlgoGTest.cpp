@@ -20,7 +20,7 @@ TEST_F(PartitioningAlgoGTest, tryBalancedLabelPropagationOnClusteredGraph) {
 	double exponent = 1.75;
 	BalancedLabelPropagation lp(exponent);
 	ClusteringGenerator gen;
-	Clustering zeta = gen.makeRandomClustering(G, k);
+	Partition zeta = gen.makeRandomClustering(G, k);
 	zeta = lp.rerun(G, k, zeta);
 
 	Modularity modularity;
@@ -31,9 +31,9 @@ TEST_F(PartitioningAlgoGTest, tryBalancedLabelPropagationOnClusteredGraph) {
 	DEBUG("modularity produced by BalancedLabelPropagation: " , mod , ", cut: " , cut);
 
 	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
-	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters are easy to detect";
+	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect";
 
-	std::vector<count> clusterSizes = zeta.clusterSizes();
+	std::vector<count> clusterSizes = zeta.subsetSizes();
 	for (index p = 0; p < k; ++p) {
 		DEBUG("size of cluster " , p , ": " , clusterSizes[p]);
 	}
@@ -53,12 +53,12 @@ TEST_F(PartitioningAlgoGTest, tryBalancedLabelPropagationOnRealGraph) {
 	// *** airfoil1 graph
 	// BLP
 	ClusteringGenerator gen;
-	Clustering partition = gen.makeRandomClustering(airfoil1, k);
+	Partition partition = gen.makeRandomClustering(airfoil1, k);
 	partition = blp.rerun(airfoil1, k, partition);
 	double cut = edgeCut.getQuality(partition, airfoil1);
-	INFO("BLP number of airfoil1 clusters: " , partition.numberOfClusters());
+	INFO("BLP number of airfoil1 clusters: " , partition.numberOfSubsets());
 	INFO("BLP modularity airfoil1 graph:   " , modularity.getQuality(partition, airfoil1) , ", cut: " , cut);
-	std::vector<count> clusterSizes = partition.clusterSizes();
+	std::vector<count> clusterSizes = partition.subsetSizes();
 	for (index p = 0; p < k; ++p) {
 		DEBUG("size of cluster " , p , ": " , clusterSizes[p]);
 	}
@@ -82,8 +82,8 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 	// *** airfoil1 graph
 	// ML-BLP
 	ClusteringGenerator gen;
-	Clustering partition = gen.makeContinuousBalancedClustering(airfoil1, k);
-	std::vector<count> clusterSizes = partition.clusterSizes();
+	Partition partition = gen.makeContinuousBalancedClustering(airfoil1, k);
+	std::vector<count> clusterSizes = partition.subsetSizes();
 	for (index p = 0; p < k; ++p) {
 		DEBUG("size of cluster " , p , ": " , clusterSizes[p]);
 	}
@@ -92,13 +92,13 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 	partition = blp.multilevelRun(airfoil1, k);
 	for (index vcycle = 1; vcycle < numVcycles; ++vcycle) {
 		partition = blp.multilevelRerun(airfoil1, k, partition);
-		INFO("cut/balance in cycle " , vcycle , ": " , edgeCut.getQuality(partition, airfoil1) , ", " , partition.getImbalance());
+		//INFO("cut/balance in cycle " , vcycle , ": " , edgeCut.getQuality(partition, airfoil1) , ", " , partition.getImbalance()); FIXME imbalance
 	}
 
 	double cut = edgeCut.getQuality(partition, airfoil1);
-	INFO("BLP number of airfoil1 clusters: " , partition.numberOfClusters());
+	INFO("BLP number of airfoil1 clusters: " , partition.numberOfSubsets());
 	INFO("BLP modularity airfoil1 graph:   " , modularity.getQuality(partition, airfoil1) , ", cut: " , cut);
-	clusterSizes = partition.clusterSizes();
+	clusterSizes = partition.subsetSizes();
 	for (index p = 0; p < k; ++p) {
 		DEBUG("size of cluster " , p , ": " , clusterSizes[p]);
 	}
@@ -129,15 +129,15 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 // 	// *** airfoil1 graph
 // 	// ML-KL
 // 	count numVcycles = 5;
-// 	Clustering partition = partitioner.multilevelRun(airfoil1, k);
+// 	Partition partition = partitioner.multilevelRun(airfoil1, k);
 // 	for (index vcycle = 1; vcycle < numVcycles; ++vcycle) {
 // 		partition = partitioner.multilevelRerun(airfoil1, k, partition);
 // 	}
 
 // 	double cut = edgeCut.getQuality(partition, airfoil1);
-// 	INFO("ML-KL number of airfoil1 blocks: " , partition.numberOfClusters());
+// 	INFO("ML-KL number of airfoil1 blocks: " , partition.numberOfSubsets());
 // 	INFO("ML-KL modularity airfoil1 graph:   " , modularity.getQuality(partition, airfoil1) , ", cut: " , cut);
-// 	std::vector<count> clusterSizes = partition.clusterSizes();
+// 	std::vector<count> clusterSizes = partition.subsetSizes();
 // 	for (index p = 0; p < k; ++p) {
 // 		DEBUG("size of cluster " , p , ": " , clusterSizes[p]);
 // 	}
@@ -168,12 +168,12 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 
 // 	// *** airfoil1 graph
 // 	// KL
-// 	Clustering partition = partitioner.run(airfoil1);
+// 	Partition partition = partitioner.run(airfoil1);
 
 // 	double cut = edgeCut.getQuality(partition, airfoil1);
-// 	INFO("ML-KL number of airfoil1 blocks: " , partition.numberOfClusters());
+// 	INFO("ML-KL number of airfoil1 blocks: " , partition.numberOfSubsets());
 // 	INFO("ML-KL modularity airfoil1 graph:   " , modularity.getQuality(partition, airfoil1) , ", cut: " , cut);
-// 	std::vector<count> clusterSizes = partition.clusterSizes();
+// 	std::vector<count> clusterSizes = partition.subsetSizes();
 // 	for (index p = 0; p < k; ++p) {
 // 		DEBUG("size of cluster " , p , ": " , clusterSizes[p]);
 // 	}

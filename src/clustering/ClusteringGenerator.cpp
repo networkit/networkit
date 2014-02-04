@@ -28,9 +28,9 @@ Partition ClusteringGenerator::makeSingletonClustering(Graph& G) {
 Partition ClusteringGenerator::makeOneClustering(Graph& G) {
 	count n = G.upperNodeIdBound();
 	Partition zeta(n);
-	cluster one = zeta.addCluster();
+	zeta.setUpperBound(1);
 	G.forNodes([&](node v){
-		zeta.addToCluster(one, v);
+		zeta.addToSubset(0, v); //TODO not very nice...
 	});
 	return zeta;
 }
@@ -42,11 +42,11 @@ Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 	zeta.setUpperBound(k-1);
 
 	G.parallelForNodes([&](node v){
-		cluster c = Aux::Random::integer(k-1);
-		zeta.addToCluster(c, v);
+		index c = Aux::Random::integer(k-1);
+		zeta.addToSubset(c, v);
 	});
 
-	//assert (zeta.isProper(G)); there is no function isProper() in Partition
+	assert (zeta.isProper(G));
 	return zeta;
 }
 

@@ -27,8 +27,8 @@ PLP::~PLP() {
 }
 
 
-Clustering PLP::run(Graph& G) {
-	typedef cluster label; // a label is the same as a cluster id
+Partition PLP::run(Graph& G) {
+	typedef index label; // a label is the same as a cluster id
 
 	// get global variables
 	const bool randOrder = RAND_ORDER;							// explicitly randomize node order for each iteration
@@ -53,7 +53,7 @@ Clustering PLP::run(Graph& G) {
 	}
 
 	// set unique label for each node
-	Clustering labels(n);
+	Partition labels(n);
 	labels.allToSingletons();
 
 	count nUpdated; // number of nodes which have been updated in last iteration
@@ -127,7 +127,7 @@ Clustering PLP::run(Graph& G) {
 
 		if (scaleClusterStrength) {
 			// TODO: documentation?
-			std::vector<count> clusterSizes = labels.clusterSizes();
+			std::vector<count> clusterSizes = labels.subsetSizes();
 			scale.resize(clusterSizes.size());
 			INFO("Scaling cluster strengths with exponent " , SCALE_STRENGTH);
 			for (index i = 0; i < clusterSizes.size(); ++i) {

@@ -17,7 +17,7 @@ void StaticAdapter::update(std::vector<GraphEvent>& stream) {
 	// do nothing
 }
 
-Clustering StaticAdapter::detect() {
+Partition StaticAdapter::detect() {
 	return algo->run(*G);
 }
 

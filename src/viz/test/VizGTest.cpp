@@ -29,12 +29,14 @@ TEST_F(VizGTest, testPostscriptWriter) {
 	double pout = 0.05;
 
 	GraphGenerator graphGen;
+	DEBUG("just a checkpoint");
 	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
+	DEBUG("just a checkpoint2");
 	G.initCoordinates();
 
 	// create clustering
 	ClusteringGenerator clusteringGen;
-	Clustering zeta = clusteringGen.makeRandomClustering(G, numClusters);
+	Partition zeta = clusteringGen.makeRandomClustering(G, numClusters);
 
 	// create coordinates
 	G.forNodes([&](node u) {

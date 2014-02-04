@@ -18,7 +18,7 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
 	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusterGen;
-	std::vector<Clustering> clusterings;
+	std::vector<Partition> clusterings;
 	int z = 3; // number of clusterings
 	for (int i = 0; i < z; ++i) {
  		clusterings.push_back(clusterGen.makeOneClustering(G));
@@ -26,14 +26,14 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
 	DEBUG("end of loop");
 
 	RegionGrowingOverlapper over;
-	Clustering core = over.run(G, clusterings);
+	Partition core = over.run(G, clusterings);
 
 	// test if core clustering is one-clustering
 	node v = 1;
-	cluster one = core.clusterOf(v);
-	bool isOneClustering = true;
+	index one = core.subsetOf(v);
+	bool isOneClustering = true; //TODO replaces with function call?
 	G.forNodes([&](node v) {
-		cluster c = core.clusterOf(v);
+		index c = core.subsetOf(v);
 		DEBUG("CLUSTER! c = " , c);
 		isOneClustering = isOneClustering && (c == one);
 	});
@@ -49,20 +49,20 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnSingletonClustering) {
 	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusterGen;
-	std::vector<Clustering> clusterings;
+	std::vector<Partition> clusterings;
 	int z = 3; // number of clusterings
 	for (int i = 0; i < z; ++i) {
-		Clustering zeta = clusterGen.makeSingletonClustering(G);
+		Partition zeta = clusterGen.makeSingletonClustering(G);
 		clusterings.push_back(zeta);
 	}
 
 	RegionGrowingOverlapper over;
-	Clustering core = over.run(G, clusterings);
+	Partition core = over.run(G, clusterings);
 
 	// test if core clustering is singleton-clustering
-	bool isSingleton = true;
+	bool isSingleton = true; //TODO function call?
 	G.forEdges([&](node u, node v) {
-		isSingleton = isSingleton && (core.clusterOf(u) != core.clusterOf(v));
+		isSingleton = isSingleton && (core.subsetOf(u) != core.subsetOf(v));
 	});
 
 	EXPECT_TRUE(isSingleton) << "overlap of multiple  singleton clusterings should be a singleton clustering";
@@ -76,19 +76,19 @@ TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
 	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusterGen;
-	std::vector<Clustering> clusterings;
+	std::vector<Partition> clusterings;
 	int z = 3; // number of clusterings
 	for (int i = 0; i < z; ++i) {
 		clusterings.push_back(clusterGen.makeSingletonClustering(G));
 	}
 
 	HashingOverlapper over;
-	Clustering core = over.run(G, clusterings);
+	Partition core = over.run(G, clusterings);
 
 	// test if core clustering is singleton-clustering
 	bool isSingleton = true;
 	G.forEdges([&](node u, node v) {
-		isSingleton = isSingleton && (core.clusterOf(u) != core.clusterOf(v));
+		isSingleton = isSingleton && (core.subsetOf(u) != core.subsetOf(v));
 	});
 
 	EXPECT_TRUE(isSingleton) << "overlap of multiple  singleton clusterings should be a singleton clustering";
@@ -101,7 +101,7 @@ TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusterGen;
-	std::vector<Clustering> clusterings;
+	std::vector<Partition> clusterings;
 	int z = 3; // number of clusterings
 	for (int i = 0; i < z; ++i) {
  		clusterings.push_back(clusterGen.makeOneClustering(G));
@@ -109,14 +109,14 @@ TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 	DEBUG("end of loop");
 
 	HashingOverlapper over;
-	Clustering core = over.run(G, clusterings);
+	Partition core = over.run(G, clusterings);
 
 	// test if core clustering is one-clustering
 	node v = 1;
-	cluster one = core.clusterOf(v);
-	bool isOneClustering = true;
+	index one = core.subsetOf(v);
+	bool isOneClustering = true; //TODO function call?
 	G.forNodes([&](node v) {
-		cluster c = core.clusterOf(v);
+		index c = core.subsetOf(v);
 		DEBUG("CLUSTER! c = " , c);
 		isOneClustering = isOneClustering && (c == one);
 	});
@@ -130,24 +130,26 @@ TEST_F(OverlapGTest, testHashingOverlapperForCorrectness) {
 	count n = 4;
 	Graph G(n);
 
-	Clustering zeta(n);
-	Clustering eta(n);
+	Partition zeta(n);
+	Partition eta(n);
 
+	zeta.setUpperBound(2);
 	zeta[0] = 0;
 	zeta[1] = 0;
 	zeta[2] = 1;
 	zeta[3] = 1;
 
+	eta.setUpperBound(2);
 	eta[0] = 0;
 	eta[1] = 1;
 	eta[2] = 0;
 	eta[3] = 1;
 
-	std::vector<Clustering> clusterings = {zeta, eta};
+	std::vector<Partition> clusterings = {zeta, eta};
 	HashingOverlapper overlapper;
-	Clustering overlap = overlapper.run(G, clusterings);
+	Partition overlap = overlapper.run(G, clusterings);
 
-	INFO("overlap clustering number of clusters: " , overlap.numberOfClusters());
+	INFO("overlap clustering number of clusters: " , overlap.numberOfSubsets());
 	INFO("overlap clustering: " , Aux::vectorToString(overlap.getVector()));
 }
 

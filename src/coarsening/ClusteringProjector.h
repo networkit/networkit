@@ -8,7 +8,8 @@
 #ifndef CLUSTERINGPROJECTOR_H_
 #define CLUSTERINGPROJECTOR_H_
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
+#include "../graph/NodeMap.h"
 
 namespace NetworKit {
 
@@ -32,8 +33,8 @@ public:
 	 * 	, project the clustering back to the fine graph to create a clustering of the fine graph.
 	 * 		@param[out] 			a clustering of the fine graph
 	 **/
-	virtual Clustering projectBack(Graph& Gcoarse, Graph& Gfine, NodeMap<node>& fineToCoarse,
-			Clustering& zetaCoarse);
+	virtual Partition projectBack(Graph& Gcoarse, Graph& Gfine, NodeMap<node>& fineToCoarse,
+			Partition& zetaCoarse);
 
 
 	/**
@@ -46,8 +47,8 @@ public:
 	 * 	, project the clustering back to the fine graph to create a clustering of the fine graph.
 	 * 		@param[out] 			a clustering of the fine graph
 	 **/
-	virtual Clustering projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse,
-			Clustering& zetaCoarse);
+	virtual Partition projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse,
+			Partition& zetaCoarse);
 
 
 
@@ -55,7 +56,7 @@ public:
 	 * Project a clustering \zeta^{i} of the coarse graph G^{i}Êback to
 	 * the finest graph G^{0}, using the hierarchy of fine->coarse maps
 	 */
-	virtual Clustering projectBackToFinest(Clustering& zetaCoarse,
+	virtual Partition projectBackToFinest(Partition& zetaCoarse,
 			std::vector<NodeMap<node> >& maps, Graph& Gfinest);
 
 
@@ -66,7 +67,7 @@ public:
 	 * @param[in]	Gfinest		finest graph
 	 * @param[in]	maps		hierarchy of maps M^{i->i+1} mapping nodes in finer graph to supernodes in coarser graph
 	 */
-	virtual Clustering projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<NodeMap<node> >& maps);
+	virtual Partition projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<NodeMap<node> >& maps);
 
 };
 

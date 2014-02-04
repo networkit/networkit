@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-typedef cluster label;
+typedef index label;
 
 template <class PrepStrategy> class TDynamicLabelPropagation: public DynamicCommunityDetector {
 
@@ -29,7 +29,7 @@ public:
 	 */
 	virtual void setGraph(Graph& G) override;
 
-	virtual Clustering run() override;
+	virtual Partition run() override;
 
 	virtual std::string toString() const override;
 
@@ -51,7 +51,7 @@ protected:
 	PrepStrategy prepStrategy; 					//!< instance of the prep strategy
 
 	count updateThreshold;
-	Clustering labels;					//!< the labelling/clustering
+	Partition labels;					//!< the labelling/clustering
 	std::vector<bool> activeNodes;		//!< which nodes are currently active?
 	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
 	count nUpdated; 					//!< number of nodes updated in last iteration (?)
@@ -60,7 +60,7 @@ protected:
 
 
 
-/**
+/**clustering 
  * Turn nodes affected by a change into singletons. Since this is a label change,
  * nodes in the neighborhood get activated.
  */
@@ -212,7 +212,7 @@ inline void TDynamicLabelPropagation<PrepStrategy>::setGraph(Graph& G) {
 }
 
 template<class PrepStrategy>
-inline Clustering TDynamicLabelPropagation<PrepStrategy>::run() {
+inline Partition TDynamicLabelPropagation<PrepStrategy>::run() {
 	if (this->G == NULL) {
 		throw std::runtime_error("pointer to current graph was not initialized - call setGraph first");
 	}
@@ -276,8 +276,8 @@ inline void TDynamicLabelPropagation<PrepStrategy>::onNodeAddition(node u) {
 	// update data structures
 	activeNodes.push_back(true); // new node is active
 	weightedDegree.push_back(0.0);
-	labels.append(u); // extend label array by 1 entry
-	labels.toSingleton(u); // create singleton
+	index z = labels.extend(); // extend label array by 1 entry
+	labels.toSingleton(z);//u // create singleton
 
 	prepStrategy.onNodeAddition(u);
 }

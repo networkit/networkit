@@ -31,6 +31,8 @@ class Partition {
 
 public:
 
+	Partition();
+
 	/**
 	 * Create a new partition data structure for elements up to a maximum element index.
 	 *
@@ -111,14 +113,14 @@ public:
 	 * Check if partition is a 1-partition,
 	 * i.e. every element is assigned to the same set.
 	 */
-	bool isOnePartition(const std::set<index>& elements);
+	bool isOnePartition(Graph& G);
 
 
 	/**
 	 * Check if partition is a singleton partition,
 	 * i.e. every element is assigned to a different set.
 	 */
-	bool isSingletonPartition(const std::set<index>& elements) const;
+	bool isSingletonPartition(Graph& G) const;
 
 	/**
 	 * Sets an upper bound for the subset ids that CAN be assigned.
@@ -191,8 +193,18 @@ public:
 	 * Get the acutal vector representing the partition datastructure.
 	 * @return vector containing information about partitions
 	 */
-	 std::vector<index> getVector();
-
+	std::vector<index> getVector();
+	 
+	 /**
+	  * Tests if all nodes of a Graph are part of a partition.
+	  * @return True, if all nodes are part of a partition.
+	  */
+	bool isProper(Graph& G);
+	 
+	std::string getName();
+	void setName(std::string name);
+	 
+	bool equals(Partition& other, Graph& G);
 
 	/**
 	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
@@ -221,13 +233,14 @@ private:
 	index z;	//!< maximum element index that can be mapped
 	index omega;	//!< maximum subset index ever assigned
 	std::vector<index> data;  	//!< data container, indexed by element index, containing subset index
+	std::string name;
 
 	/**
 	 * Allocates and returns a new subset id.
 	 */
 	inline index newSubsetId() {
-		omega++;
-		index s = omega;
+		//omega++;
+		index s = omega++;
 		return s;
 	}
 };
@@ -237,7 +250,7 @@ private:
 
 template<typename Callback>
 inline void NetworKit::Partition::forEntries(Callback handle) {
-	for (index e = 0; e <= this->z; e += 1) {
+	for (index e = 0; e < this->z; e += 1) {
 		handle(e, data[e]);
 	}
 
@@ -245,7 +258,7 @@ inline void NetworKit::Partition::forEntries(Callback handle) {
 
 template<typename Callback>
 inline void NetworKit::Partition::forEntries(Callback handle) const {
-	for (index e = 0; e <= this->z; e += 1) {
+	for (index e = 0; e < this->z; e += 1) {
 		handle(e, data[e]);
 	}
 }
@@ -254,7 +267,7 @@ template<typename Callback>
 inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) {
 	#pragma omp parallel for
-	for (index e = 0; e <= this->z; e += 1) {
+	for (index e = 0; e < this->z; e += 1) {
 		handle(e, data[e]);
 	}
 }
@@ -264,7 +277,7 @@ template<typename Callback>
 inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) const {
 	#pragma omp parallel for
-	for (index e = 0; e <= this->z; e += 1) {
+	for (index e = 0; e < this->z; e += 1) {
 		handle(e, data[e]);
 	}
 }

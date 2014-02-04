@@ -16,8 +16,6 @@
 #include "../../graph/Graph.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../io/METISGraphReader.h"
-#include "../../clustering/Clustering.h"
-
 
 namespace NetworKit {
 
