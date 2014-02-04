@@ -103,7 +103,7 @@ def writeStream(stream, path):
 	DGSWriter().write(stream, path)
 
 
-def graphFromStream(path, mapped=True, baseIndex=0):
+def graphFromStreamFile(path, mapped=True, baseIndex=0):
 	stream = readStream(path, mapped, baseIndex)
 	G = Graph()
 	gu = GraphUpdater(G)

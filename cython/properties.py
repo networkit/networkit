@@ -153,7 +153,6 @@ def properties(nkG, settings):
 	# connected components
 	nComponents, componentSizes = None, None
 	if settings["components"]:
-		logging.info("[...] finding connected components")    
 		nComponents, componentSizes = components(nkG)
 
 	# diameter
