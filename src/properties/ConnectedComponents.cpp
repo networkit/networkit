@@ -32,7 +32,7 @@ void ConnectedComponents::run(const Graph& G) {
 	do {
 		DEBUG("next iteration");
 		change = false;
-		G.parallelForNodes([&](node u) {
+		G.balancedParallelForNodes([&](node u) {
 			G.forNeighborsOf(u, [&](node v) {
 				if (component[v] < component[u]) {
 					component[u] = component[v];
