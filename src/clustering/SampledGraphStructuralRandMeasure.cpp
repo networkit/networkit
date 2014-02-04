@@ -21,7 +21,7 @@ SampledGraphStructuralRandMeasure::~SampledGraphStructuralRandMeasure() {
 
 double SampledGraphStructuralRandMeasure::getDissimilarity(Graph& G, Clustering& first, Clustering& second) {
 	assert (G.numberOfNodes() > 0);
-	assert (G.numberOfNodes() > maxSamples);
+	assert (G.numberOfEdges() > maxSamples);
 
 	count e11 = 0; 	// number of edges for which clusterings aggree
 	count e00 = 0;	// number of node pairs for which clusterings disagree
@@ -32,10 +32,11 @@ double SampledGraphStructuralRandMeasure::getDissimilarity(Graph& G, Clustering&
 	index z = G.upperNodeIdBound();
 
 	while (nSamples < maxSamples) {
-		node u = Aux::Random::integer(z);
-		if (G.hasNode(u)) {
+		node u = Aux::Random::integer(z - 1);
+		if (G.hasNode(u) && (G.degree(u) > 0)) {
 			auto neighbors = G.neighbors(u);
-			node v = Aux::Random::integer(neighbors.size() - 1);
+			index i = Aux::Random::integer(neighbors.size() - 1);
+			node v = neighbors.at(i);
 			assert (G.hasEdge(u, v));
 			if ((first[u] == first[v]) && (second[u] == second[v])) {
 				e11 += 1;
