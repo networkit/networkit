@@ -98,11 +98,12 @@ def properties(nkG, settings):
 		logging.info("[...] converting to NetworX.Graph for some properties....")
 		nxG = nxadapter.nk2nx(nkG)
 
-	logging.info("[...] calculating basic properties")
+	logging.info("[...] calculating properties")
 	
 	# size
 	n, m = size(nkG)    # n and m
 
+	logging.info("[...] determining degree distribution")
 	# degrees 
 	degDist = GraphProperties.degreeDistribution(nkG) 
 	minDeg, maxDeg, avgDeg = degrees(nkG)
@@ -111,6 +112,8 @@ def properties(nkG, settings):
 	isolates = degDist[0] if len(degDist) > 0 else None
 	satellites = degDist[1] if len(degDist) > 1 else None
 
+	if nxG:
+		logging.info("[...] detecting cliques")
 	# number of cliques
 	cliques = len(list(nx.find_cliques(nxG))) if nxG else None
 
@@ -145,14 +148,15 @@ def properties(nkG, settings):
 	# degree histogram
 	
 	labels, histo = None, None
-	if settings["degreeDistribution"]:
-		logging.info("[...] calculating degree histogram")    
-		histo = GraphProperties.degreeDistribution(nkG)
+	if settings["degreeHistogram"]:
+		logging.info("[...] preparing degree histogram")    
+		histo = degDist
 		(labels, histo) = compressHistogram(histo, nbins=25)
 
 	# connected components
 	nComponents, componentSizes = None, None
 	if settings["components"]:
+		logging.info("[...] detecting connected components")
 		nComponents, componentSizes = components(nkG)
 
 	# diameter
