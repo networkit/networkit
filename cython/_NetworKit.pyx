@@ -1108,6 +1108,20 @@ cdef class DynamicPathGenerator:
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 
+cdef extern from "../src/generators/DynamicDorogovtsevMendesGenerator.h":
+	cdef cppclass _DynamicDorogovtsevMendesGenerator "NetworKit::DynamicDorogovtsevMendesGenerator":
+		_DynamicDorogovtsevMendesGenerator() except +
+		vector[_GraphEvent] generate(count nSteps) except +
+
+
+cdef class DynamicDorogovtsevMendesGenerator:
+	cdef _DynamicDorogovtsevMendesGenerator* _this
+
+	def __cinit__(self):
+		self._this = new _DynamicDorogovtsevMendesGenerator()
+
+	def generate(self, nSteps):
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 
 
