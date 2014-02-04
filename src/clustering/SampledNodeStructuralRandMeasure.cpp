@@ -5,21 +5,21 @@
  *      Author: cls
  */
 
-#include "SampledRandMeasure.h"
+#include "SampledNodeStructuralRandMeasure.h"
 
 #include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
-SampledRandMeasure::SampledRandMeasure(count maxSamples) : maxSamples(maxSamples) {
+SampledNodeStructuralRandMeasure::SampledNodeStructuralRandMeasure(count maxSamples) : maxSamples(maxSamples) {
 
 }
 
-SampledRandMeasure::~SampledRandMeasure() {
+SampledNodeStructuralRandMeasure::~SampledNodeStructuralRandMeasure() {
 	// TODO Auto-generated destructor stub
 }
 
-double SampledRandMeasure::getDissimilarity(Graph& G, Clustering& first, Clustering& second) {
+double SampledNodeStructuralRandMeasure::getDissimilarity(Graph& G, Clustering& first, Clustering& second) {
 	assert (G.numberOfNodes() > 0);
 	assert (G.numberOfNodes() > maxSamples);
 
