@@ -72,9 +72,23 @@ def clustering(G):
 	return GraphProperties.averageLocalClusteringCoefficient(G)
 
 
-def powerLawExponent(G):
-	fit = powerlaw.Fit(degreeDistribution(G))
+def powerLawExponent(G, dd=None):
+	""" Supposing that the degreee distribution fits a power law,
+		get the exponent (gamma).
+	"""
+	if not dd:
+		dd = degreeDistribution(G)
+	fit = powerlaw.Fit(dd)
 	return fit.alpha
+
+def powerLawFit(G, dd=None):
+	""" Check if a power law is a good fit for the degree distribution.
+	"""
+	if not dd:
+		dd = degreeDistribution(G)
+	fit = powerlaw.Fit(dd)
+	R, p = fit.distribution_compare("power_law", "exponential", normalized_ratio=True)
+	return ((R > 0), R)
 
 
 # def powerLawExponent_(G):
@@ -107,6 +121,9 @@ def properties(nkG, settings):
 	# degrees 
 	degDist = GraphProperties.degreeDistribution(nkG) 
 	minDeg, maxDeg, avgDeg = degrees(nkG)
+
+	plfit = powerLawFit(nkG, degDist)
+	gamma = powerLawExponent(nkG, degDist)
 
 	# number of isolated nodes
 	isolates = degDist[0] if len(degDist) > 0 else None
@@ -190,6 +207,8 @@ def properties(nkG, settings):
 		 "minDeg": minDeg,
 		 "maxDeg": maxDeg,
 		 "avgDeg": avgDeg,
+		 "plfit": plfit,
+		 "gamma": gamma,
 		 "avglcc": avglcc,
 		 "nComponents": nComponents,
 		 "sizeLargestComponent": max(componentSizes.values()),
@@ -219,7 +238,9 @@ def overview(nkG, settings=collections.defaultdict(lambda: True)):
 		["edges (m)", props["m"]],
 		["min. degree", props["minDeg"]],
 		["max. degree", props["maxDeg"]],
-		["avg. degree", props["avgDeg"]],
+		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
+		["degree power law fit?", "{0}, {1}".format(props["plfit"][0], "{0:.6f}".format(props["plfit"][1]))],
+		["degree power law exponent", "{0:.4f}".format(props["gamma"])],
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None]
