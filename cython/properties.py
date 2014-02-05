@@ -240,7 +240,7 @@ def overview(nkG, settings=collections.defaultdict(lambda: True)):
 		["max. degree", props["maxDeg"]],
 		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
 		["degree power law fit?", "{0}, {1}".format(props["plfit"][0], "{0:.6f}".format(props["plfit"][1]))],
-		["degree power law exponent", "{0:.4f}".format(props["gamma"])],
+		["degree power law exponent", "{0:.4f}".format(props["gamma"]) if props["plfit"][0] else None],
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None]
