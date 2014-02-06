@@ -16,7 +16,7 @@
 #include "../auxiliary/Timer.h"
 #include "../community/PLP.h"
 #include "../community/PLM2.h"
-#include "../clustering/SampledGraphStructuralRandMeasure.h"
+#include "../clustering/GraphStructuralRandMeasure.h"
 #include "../community/CommunityGraph.h"
 
 
@@ -136,8 +136,8 @@ void DynamicCommunityDetection::run() {
 		if (record("continuity")) {
 
 			if (run >= 2) {
-				SampledGraphStructuralRandMeasure sampledRand(1000);
-				double cont = sampledRand.getDissimilarity(G, zeta, previous);
+				GraphStructuralRandMeasure dissMeasure;
+				double cont = dissMeasure.getDissimilarity(G, zeta, previous);
 				continuity.push_back(cont);
 			} else {
 				continuity.push_back(0.0); // to make timelines the same length
