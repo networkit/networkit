@@ -25,7 +25,7 @@ public:
 
 	virtual void update(std::vector<GraphEvent>& stream) = 0;
 
-	virtual Clustering detect() = 0;
+	virtual Clustering detect(bool restart=false) = 0;
 
 protected:
 

@@ -131,13 +131,17 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 	}
 }
 
-Clustering DynPLM::detect() {
+Clustering DynPLM::detect(bool restart) {
 	DEBUG("retrieving solution");
-	return this->run(*this->G);
+	return this->run(*this->G, restart);
 }
 
-Clustering DynPLM::run(Graph& G) {
+Clustering DynPLM::run(Graph& G, bool restart) {
 	INFO("calling run method on " , G.toString());
+
+	if (restart) {
+		zeta.allToSingletons();
+	}
 
 	edgeweight total = G.totalEdgeWeight();
 	edgeweight divisor = (2 * total * total); // needed in modularity calculation

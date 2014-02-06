@@ -22,9 +22,9 @@
 
 namespace NetworKit {
 
-DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy, count interval,
+DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy, count interval, count restart,
 	std::vector<std::string> recordSettings, std::string graphOutputPath) :
-	 inputPath(inputPath), graphOutputPath(graphOutputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), recordSettings(recordSettings)
+	 inputPath(inputPath), graphOutputPath(graphOutputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), restart(restart), recordSettings(recordSettings)
 {
 
 }
@@ -112,9 +112,17 @@ void DynamicCommunityDetection::run() {
 		timer.stop();
 		updateTime.push_back(timer.elapsedMilliseconds());
 
+
+		bool doRestart;
+		if ((restart != 0) && ((run % restart) == 0)) {
+			// restart all 'restart' runs
+			doRestart = true;
+		} else {
+			doRestart = false;
+		}
 		timer.start();
 		//
-		Clustering zeta = algo->detect();
+		Clustering zeta = algo->detect(doRestart);
 		//
 		timer.stop();
 		detectTime.push_back(timer.elapsedMilliseconds());
