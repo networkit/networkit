@@ -130,8 +130,12 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 	}
 }
 
-Clustering DynPLP::detect() {
+Clustering DynPLP::detect(bool restart) {
 	DEBUG("retrieving communities");
+
+	if (restart) {
+		zeta.allToSingletons();
+	}
 
 	nIterations = 0; // number of iterations
 

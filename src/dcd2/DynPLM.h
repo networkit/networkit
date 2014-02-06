@@ -31,11 +31,11 @@ public:
 
 	void update(std::vector<GraphEvent>& stream) override;
 
-	Clustering detect() override;
+	Clustering detect(bool restart=false) override;
 
 private:
 
-	Clustering run(Graph& G);
+	Clustering run(Graph& G, bool restart=false);
 
 	std::string prepStrategy; // determines which dynamization strategy to use
 	std::string parallelism;
