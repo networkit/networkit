@@ -11,7 +11,7 @@
 #include <fstream>
 
 #include "GraphWriter.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -30,7 +30,7 @@ protected:
 	 * @param[in]	partition	partition of G (only used if dim == 0)
 	 * @param[in]	dim			dimension of coordinates
 	 */
-	virtual void writeGeneric(Graph& G, bool weighted, std::string path, Clustering& partition, count dim);
+	virtual void writeGeneric(Graph& G, bool weighted, std::string path, Partition& partition, count dim);
 
 
 public:
@@ -64,7 +64,7 @@ public:
 	 * @param[in]	path		path to file
 	 * @param[in]	partition	proper Partition of G
 	 */
-	virtual void write(Graph& G, bool weighted, std::string path, Clustering& partition);
+	virtual void write(Graph& G, bool weighted, std::string path, Partition& partition);
 
 	/**
 	 * write a graph G and its coordinates to a VNA file.

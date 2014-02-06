@@ -18,8 +18,8 @@ HashingOverlapper::~HashingOverlapper() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering HashingOverlapper::run(Graph& G,
-		std::vector<Clustering>& clusterings) {
+Partition HashingOverlapper::run(Graph& G,
+		std::vector<Partition>& clusterings) {
 
 	DEBUG("Starting hashing overlapper");
 
@@ -45,28 +45,34 @@ Clustering HashingOverlapper::run(Graph& G,
 	};
 
 	count n = G.numberOfNodes();
-	Clustering core(n);
+	Partition core(n);
 
 	// select hash function
 	auto hash = djb2;
 
-	core.setAll(0);
+	//core.setAll(0);
+	core.setUpperBound(2);
+	DEBUG(n, " ", core.upperBound(), " " , core.numberOfElements());
+	core.parallelForEntries([&](index e, index s){
+		DEBUG(e);
+		core.addToSubset(0,e);//core[e] = 0;
+	});
 	const count numC = clusterings.size();
 	if (numC > 2) {
 		for (index c = 0; c < numC; ++c) {
-			Clustering& zeta = clusterings[c];
-			zeta.parallelForEntries([&](node v, cluster clv) {
+			Partition& zeta = clusterings[c];
+			zeta.parallelForEntries([&](node v, index clv) {
 				core[v] += (hash((c+2) * clv) & 0xffff);
 			});
 		}
 	}
 	else {
-		Clustering& first = clusterings[0];
-		Clustering& second = clusterings[1];
+		Partition& first = clusterings[0];
+		Partition& second = clusterings[1];
 
 		// Assumption: second has at least as many nodes as first
 		G.parallelForNodes([&](node v) {
-			if (v >= first.numberOfEntries()) {
+			if (v >= first.numberOfElements()) {
 				core[v] = none;
 			}
 			else {

@@ -8,7 +8,7 @@
 #include "PLM2.h"
 #include <omp.h>
 #include "../coarsening/PartitionCoarsening.h"
- #include "../coarsening/ClusterContracter.h"
+#include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
 
 #include <sstream>
@@ -20,14 +20,14 @@ PLM2::PLM2(bool refine, double gamma, std::string par, count maxIter) : parallel
 }
 
 
-Clustering PLM2::run(Graph& G) {
+Partition PLM2::run(Graph& G) {
 	INFO("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();
 
 
 	// init communities to singletons
-	Clustering zeta(z);
+	Partition zeta(z);
 	zeta.allToSingletons();
 	index o = zeta.upperBound();
 
@@ -46,7 +46,7 @@ Clustering PLM2::run(Graph& G) {
 
 	// init community-dependent temporaries
 	std::vector<double> volCommunity(o, 0.0);
-	zeta.parallelForEntries([&](node u, cluster C) { 	// set volume for all communities
+	zeta.parallelForEntries([&](node u, index C) { 	// set volume for all communities
 		volCommunity[C] = volNode[u];
 	});
 
@@ -59,10 +59,10 @@ Clustering PLM2::run(Graph& G) {
 		// TRACE("trying to move node " , u);
 
 		// collect edge weight to neighbor clusters
-		std::map<cluster, edgeweight> affinity;
+		std::map<index, edgeweight> affinity;
 		G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
 			if (u != v) {
-				cluster C = zeta[v];
+				index C = zeta[v];
 				affinity[C] += weight;
 			}
 		});
@@ -71,7 +71,7 @@ Clustering PLM2::run(Graph& G) {
 		// sub-functions
 
 		// $\vol(C \ {x})$ - volume of cluster C excluding node x
-		auto volCommunityMinusNode = [&](cluster C, node x) {
+		auto volCommunityMinusNode = [&](index C, node x) {
 			double volC = 0.0;
 			double volN = 0.0;
 			volC = volCommunity[C];
@@ -84,11 +84,11 @@ Clustering PLM2::run(Graph& G) {
 		};
 
 		// // $\omega(u | C \ u)$
-		// auto omegaCut = [&](node u, cluster C) {
+		// auto omegaCut = [&](node u, index C) {
 		// 	return affinity[C];
 		// };
 
-		auto modGain = [&](node u, cluster C, cluster D) {
+		auto modGain = [&](node u, index C, index D) {
 			double volN = 0.0;
 			volN = volNode[u];
 			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor; 
@@ -96,9 +96,9 @@ Clustering PLM2::run(Graph& G) {
 			return delta;
 		};
 
-		cluster best = none;
-		cluster C = none;
-		cluster D = none;
+		index best = none;
+		index C = none;
+		index D = none;
 		double deltaBest = -1;
 
 		C = zeta[u];
@@ -164,14 +164,14 @@ Clustering PLM2::run(Graph& G) {
 		} while (moved && (iter <= maxIter));
 		INFO("iterations in move phase: ", iter);
 	};
-
+	
 	// first move phase
 	movePhase();
 
 	if (change) {
 		DEBUG("nodes moved, so begin coarsening and recursive call");
 		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
-		Clustering zetaCoarse = run(coarsened.first);
+		Partition zetaCoarse = run(coarsened.first);
 
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
@@ -181,7 +181,7 @@ Clustering PLM2::run(Graph& G) {
 			o = zeta.upperBound();
 			volCommunity.clear();
 			volCommunity.resize(o, 0.0);
-			zeta.parallelForEntries([&](node u, cluster C) { 	// set volume for all communities
+			zeta.parallelForEntries([&](node u, index C) { 	// set volume for all communities
 				edgeweight volN = volNode[u];
 				#pragma omp atomic update
 				volCommunity[C] += volN;
@@ -191,7 +191,6 @@ Clustering PLM2::run(Graph& G) {
 			movePhase();
 		}
 	}
-
 	return zeta;
 }
 
@@ -209,7 +208,7 @@ std::string NetworKit::PLM2::toString() const {
 	return stream.str();
 }
 
-std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Clustering& zeta) {
+std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Partition& zeta) {
 	bool parallelCoarsening = false; // switch between parallel and sequential coarsening
 	if (parallelCoarsening) {
 		PartitionCoarsening parCoarsening;
@@ -219,14 +218,16 @@ std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Cluster
 		return seqCoarsening.run(G, zeta);
 	}
 
+
 }
 
-Clustering PLM2::prolong(const Graph& Gcoarse, const Clustering& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
-	Clustering zetaFine(Gfine.upperNodeIdBound());
+Partition PLM2::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
+	Partition zetaFine(Gfine.upperNodeIdBound());
+	//setUpperBound(zetaCoarse.upperBound());
 
 	Gfine.forNodes([&](node v) {
 		node mv = nodeToMetaNode[v];
-		cluster cv = zetaCoarse[mv];
+		index cv = zetaCoarse[mv];
 		zetaFine[v] = cv;
 	});
 

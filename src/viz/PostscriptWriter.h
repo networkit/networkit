@@ -17,7 +17,7 @@
 #include <climits>
 
 #include "../graph/Graph.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include "../clustering/ClusteringGenerator.h"
 #include "../distmeasures/AlgebraicDistance.h"
 
@@ -58,13 +58,13 @@ protected:
 	void init(std::string filename, std::ofstream& file);
 	void writeHeader(std::ofstream& file);
 	void writeMacros(std::ofstream& file);
-	void writeClustering(Clustering& clustering, std::ofstream& file);
+	void writeClustering(Partition& clustering, std::ofstream& file);
 
 public:
 	PostscriptWriter(const Graph& graph, bool isTorus = false);
 	~PostscriptWriter();
 
-	void write(Clustering& clustering, std::string filename);
+	void write(Partition& clustering, std::string filename);
 	void write(std::string filename);
 };
 

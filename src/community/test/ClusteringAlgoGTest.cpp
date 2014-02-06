@@ -45,9 +45,9 @@ TEST_F(ClusteringAlgoGTest, testEnsemblePreprocessing) {
 	ensemble.setFinalClusterer(*(new PLM()));
 	ensemble.setOverlapper(*(new HashingOverlapper));
 
-	Clustering zeta = ensemble.run(G);
+	Partition zeta = ensemble.run(G);
 
-	INFO("number of clusters:" , zeta.numberOfClusters());
+	INFO("number of clusters:" , zeta.numberOfSubsets());
 
 	Modularity modularity;
 	INFO("modularity: " , modularity.getQuality(zeta, G));
@@ -64,9 +64,9 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
 	Graph G = graphGenerator.makeErdosRenyiGraph(n, 0.2);
 
 	PLP lp;
-	Clustering zeta = lp.run(G);
+	Partition zeta = lp.run(G);
 
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
+	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering"; //FIXME
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
@@ -83,14 +83,14 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClus
 	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.001);
 
 	PLP lp;
-	Clustering zeta = lp.run(G);
+	Partition zeta = lp.run(G);
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
 	DEBUG("modularity produced by LabelPropagation: " , mod);
 
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
-	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters are easy to detect";
+	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering"; //FIXME
+	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect";
 
 }
 
@@ -103,21 +103,21 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 
 	count k = 3; // number of clusters
 	ClusteringGenerator clusteringGen;
-	Clustering reference = clusteringGen.makeRandomClustering(Gtrash, k);
-	assert (reference.numberOfClusters() == k);
+	Partition reference = clusteringGen.makeRandomClustering(Gtrash, k);
+	assert (reference.numberOfSubsets() == k);
 
 	Graph G = graphGen.makeClusteredRandomGraph(reference, 1.0, 0.0);	// LabelPropagation is very bad at discerning clusters and needs this large pin/pout difference
 
 	PLP lp;
-	Clustering zeta = lp.run(G);
+	Partition zeta = lp.run(G);
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
 	DEBUG("modularity produced by LabelPropagation: " , mod);
-	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfClusters());
+	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
 
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
-	EXPECT_TRUE(zeta.equals(reference, G)) << "LP should detect exactly the reference clustering";
+	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering"; //FIXME
+	EXPECT_TRUE(zeta.equals(reference, G)) << "LP should detect exactly the reference clustering"; //FIXME
 
 }
 
@@ -130,14 +130,14 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.0);
 
 	PLP lp;
-	Clustering zeta = lp.run(G);
+	Partition zeta = lp.run(G);
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
 	DEBUG("modularity produced by LabelPropagation: " , mod);
 
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
-	EXPECT_EQ(k, zeta.numberOfClusters()) << " " << k << " clusters are easy to detect";
+	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering"; //FIXME
+	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect"; //FIXME
 
 }
 
@@ -148,11 +148,11 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	G.setWeight(v, v, 42.0);
 
 	PLP lp;
-	Clustering zeta = lp.run(G);
+	Partition zeta = lp.run(G);
 
-	EXPECT_TRUE(zeta.isProper(G));
-	EXPECT_TRUE(zeta.isSingletonClustering(G));
-	EXPECT_TRUE(zeta.isOneClustering(G));
+	EXPECT_TRUE(zeta.isProper(G)); //FIXME
+	EXPECT_TRUE(zeta.isSingletonPartition(G));
+	EXPECT_TRUE(zeta.isOnePartition(G));
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
@@ -169,19 +169,19 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 	double pout = 0.0;
 
 	GraphGenerator graphGen;
-	std::pair<Graph, Clustering> G_ref = graphGen.makeClusteredRandomGraphWithReferenceClustering(n, k, pin, pout);
+	std::pair<Graph, Partition> G_ref = graphGen.makeClusteredRandomGraphWithReferenceClustering(n, k, pin, pout);
 
 
 	PLP lp;
-	Clustering zeta = lp.run(G_ref.first);
+	Partition zeta = lp.run(G_ref.first);
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G_ref.first);
 	DEBUG("modularity produced by LabelPropagation: " , mod);
-	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfClusters());
+	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
 
-	EXPECT_TRUE(zeta.isProper(G_ref.first)) << "the resulting partition should be a proper clustering";
-	EXPECT_TRUE(zeta.equals(G_ref.second, G_ref.first)) << "Can LabelPropagation detect the reference clustering?";
+	EXPECT_TRUE(zeta.isProper(G_ref.first)) << "the resulting partition should be a proper clustering"; //FIXME
+	EXPECT_TRUE(zeta.equals(G_ref.second, G_ref.first)) << "Can LabelPropagation detect the reference clustering?"; //FIXME
 
 }
 
@@ -194,9 +194,9 @@ TEST_F(ClusteringAlgoGTest, testLouvain) {
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
 	PLM louvain;
-	Clustering zeta = louvain.run(G);
+	Partition zeta = louvain.run(G);
 
-	INFO("number of clusters: " , zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfSubsets());
 
 	Modularity modularity;
 	INFO("modularity: " , modularity.getQuality(zeta, G));
@@ -213,9 +213,9 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelSimple) {
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
 	PLM louvain("simple");
-	Clustering zeta = louvain.run(G);
+	Partition zeta = louvain.run(G);
 
-	INFO("number of clusters: " , zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfSubsets());
 
 	Modularity modularity;
 	INFO("modularity: " , modularity.getQuality(zeta, G));
@@ -232,9 +232,9 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallel2Naive) {
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
 	LouvainParallel louvain;
-	Clustering zeta = louvain.run(G);
+	Partition zeta = louvain.run(G);
 
-	INFO("number of clusters: " , zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfSubsets());
 
 	Modularity modularity;
 	INFO("modularity: " , modularity.getQuality(zeta, G));
@@ -252,9 +252,9 @@ TEST_F(ClusteringAlgoGTest, testLouvainParallelBalanced) {
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
 	PLM louvain("balanced");
-	Clustering zeta = louvain.run(G);
+	Partition zeta = louvain.run(G);
 
-	INFO("number of clusters: " , zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfSubsets());
 
 	Modularity modularity;
 	INFO("modularity: " , modularity.getQuality(zeta, G));
@@ -274,11 +274,11 @@ TEST_F(ClusteringAlgoGTest, testCNM) {
 
 	// CNM with PQ
 	CNM cnm;
-	Clustering clustering = cnm.run(G);
-	INFO("CNM number of clusters: " , clustering.numberOfClusters());
+	Partition clustering = cnm.run(G);
+	INFO("CNM number of clusters: " , clustering.numberOfSubsets());
 	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
 	// EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
-	EXPECT_TRUE(clustering.isProper(G));
+	EXPECT_TRUE(clustering.isProper(G)); //FIXME
 
 }
 
@@ -296,25 +296,25 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 
 	// *** jazz graph
 	// CNM
-	Clustering clustering = cnm.run(jazz);
-	INFO("CNM number of jazz clusters: " , clustering.numberOfClusters());
+	Partition clustering = cnm.run(jazz);
+	INFO("CNM number of jazz clusters: " , clustering.numberOfSubsets());
 	INFO("CNM modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 
 	// Louvain
 	clustering = louvain.run(jazz);
-	INFO("Louvain number of jazz clusters: " , clustering.numberOfClusters());
+	INFO("Louvain number of jazz clusters: " , clustering.numberOfSubsets());
 	INFO("Louvain modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 
 
 //	// *** blog graph
 //	// CNM
 //	clustering = cnm.run(blog);
-//	INFO("CNM number of blog clusters: " , clustering.numberOfClusters());
+//	INFO("CNM number of blog clusters: " , clustering.numberOfSubsets());
 //	INFO("CNM modularity blog graph: " , modularity.getQuality(clustering, jazz));
 //
 //	// Louvain
 //	clustering = louvain.run(blog);
-//	INFO("Louvain number of blog clusters: " , clustering.numberOfClusters());
+//	INFO("Louvain number of blog clusters: " , clustering.numberOfSubsets());
 //	INFO("Louvain modularity blog graph: " , modularity.getQuality(clustering, jazz));
 }
 
@@ -330,25 +330,25 @@ TEST_F(ClusteringAlgoGTest, testParallelAgglomerativeAndLouvain) {
 
 	// *** jazz graph
 	// aggl
-	Clustering clustering = aggl.run(jazz);
-	INFO("Match-AGGL number of jazz clusters: " , clustering.numberOfClusters());
+	Partition clustering = aggl.run(jazz);
+	INFO("Match-AGGL number of jazz clusters: " , clustering.numberOfSubsets());
 	INFO("Match-AGGL modularity jazz graph:   " , modularity.getQuality(clustering, jazz));
 
 	// Louvain
 	clustering = louvain.run(jazz);
-	INFO("Louvain number of jazz clusters: " , clustering.numberOfClusters());
+	INFO("Louvain number of jazz clusters: " , clustering.numberOfSubsets());
 	INFO("Louvain modularity jazz graph:   " , modularity.getQuality(clustering, jazz));
 
 
 	// *** blog graph
 	// CNM
 	clustering = aggl.run(blog);
-	INFO("Match-AGGL number of blog clusters: " , clustering.numberOfClusters());
+	INFO("Match-AGGL number of blog clusters: " , clustering.numberOfSubsets());
 	INFO("Match-AGGL modularity blog graph:   " , modularity.getQuality(clustering, blog));
 
 	// Louvain
 	clustering = louvain.run(blog);
-	INFO("Louvain number of blog clusters: " , clustering.numberOfClusters());
+	INFO("Louvain number of blog clusters: " , clustering.numberOfSubsets());
 	INFO("Louvain modularity blog graph:   " , modularity.getQuality(clustering, blog));
 }
 
@@ -362,9 +362,9 @@ TEST_F(ClusteringAlgoGTest, testEPPFactory) {
 
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
-	Clustering zeta = epp.run(jazz);
+	Partition zeta = epp.run(jazz);
 
-	INFO("number of clusters: " , zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfSubsets());
 
 	EXPECT_TRUE(zeta.isProper(jazz));
 }
@@ -377,16 +377,16 @@ TEST_F(ClusteringAlgoGTest, testPLM2) {
 	Graph G = reader.read("input/PGPgiantcompo.graph");
 
 	PLM2 plm(false, 1.0);
-	Clustering zeta = plm.run(G);
+	Partition zeta = plm.run(G);
 
-	INFO("number of clusters: " , zeta.numberOfClusters());
+	INFO("number of clusters: " , zeta.numberOfSubsets());
 	INFO("modularity: " , modularity.getQuality(zeta, G));
 	EXPECT_TRUE(zeta.isProper(G));
 
 	PLM2 plmr(true, 1.0);
-	Clustering zeta2 = plmr.run(G);
+	Partition zeta2 = plmr.run(G);
 
-	INFO("number of clusters: " , zeta2.numberOfClusters());
+	INFO("number of clusters: " , zeta2.numberOfSubsets());
 	INFO("modularity: " , modularity.getQuality(zeta2, G));
 	EXPECT_TRUE(zeta2.isProper(G));
 
@@ -398,17 +398,17 @@ TEST_F(ClusteringAlgoGTest, testCommunityGraph) {
 	Graph G = reader.read("input/jazz.graph");
 	ClusteringGenerator clusteringGen;
 
-	Clustering one = clusteringGen.makeOneClustering(G);
+	Partition one = clusteringGen.makeOneClustering(G);
 	com.run(G, one);
 	EXPECT_EQ(1, com.getGraph().numberOfNodes());
 
-	Clustering singleton = clusteringGen.makeSingletonClustering(G);
+	Partition singleton = clusteringGen.makeSingletonClustering(G);
 	com.run(G, singleton);
 	EXPECT_EQ(G.numberOfNodes(), com.getGraph().numberOfNodes());
 
-	Clustering zeta = (new PLP())->run(G);
+	Partition zeta = (new PLP())->run(G);
 	com.run(G, zeta);
-	EXPECT_EQ(zeta.numberOfClusters(), com.getGraph().numberOfNodes());
+	EXPECT_EQ(zeta.numberOfSubsets(), com.getGraph().numberOfNodes());
 }
 
 

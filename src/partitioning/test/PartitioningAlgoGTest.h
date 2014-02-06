@@ -11,7 +11,7 @@
 #include "../../clustering/EdgeCut.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
-#include "../../clustering/Clustering.h"
+#include "../../structures/Partition.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/DibapGraphReader.h"
 #include "../../viz/PostscriptWriter.h"

@@ -26,13 +26,14 @@ Modularity::~Modularity() {
 }
 
 
-double Modularity::getQuality(const Clustering& zeta, const Graph& G) {
-	assert (G.numberOfNodes() <= zeta.numberOfNodes());
+double Modularity::getQuality(const Partition& zeta, const Graph& G) {
+	assert (G.numberOfNodes() <= zeta.numberOfElements());
 
 	DEBUG("m = " , G.numberOfEdges());
 	DEBUG("l = " , G.numberOfSelfLoops());
 
 	Coverage coverage;
+	DEBUG("just a checkpoint");	
 	double cov = coverage.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / totalEdgeWeight;
 	DEBUG("coverage = " , cov);
 	double expCov; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
@@ -46,12 +47,12 @@ double Modularity::getQuality(const Clustering& zeta, const Graph& G) {
 		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
 	}
 
-	IndexMap<cluster, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
+	IndexMap<index, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
 
 	// compute volume of each cluster
 	G.parallelForNodes([&](node v) {
 		// add to cluster weight
-		cluster c = zeta[v];
+		index c = zeta[v];
 		assert (zeta.lowerBound() <= c);
 		assert (c < zeta.upperBound());
 #pragma omp atomic
@@ -65,7 +66,7 @@ double Modularity::getQuality(const Clustering& zeta, const Graph& G) {
 //	assert (divisor != 0);	// do not divide by 0
 
 	#pragma omp parallel for reduction(+:expCov)
-	for (cluster c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
+	for (index c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		expCov += ((incidentWeightSum[c] / totalEdgeWeight) * (incidentWeightSum[c] / totalEdgeWeight )) / 4;	// squared
 	}
 

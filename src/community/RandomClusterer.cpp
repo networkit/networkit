@@ -19,7 +19,7 @@ RandomClusterer::~RandomClusterer() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering RandomClusterer::run(Graph& G) {
+Partition RandomClusterer::run(Graph& G) {
 	ClusteringGenerator gen;
 	return gen.makeRandomClustering(G, 42); // TODO: does this need a command line parameter?
 }

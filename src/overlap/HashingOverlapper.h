@@ -25,7 +25,7 @@ public:
 
 	virtual ~HashingOverlapper();
 
-	virtual Clustering run(Graph& G, std::vector<Clustering>& clusterings);
+	virtual Partition run(Graph& G, std::vector<Partition>& clusterings);
 };
 
 } /* namespace NetworKit */

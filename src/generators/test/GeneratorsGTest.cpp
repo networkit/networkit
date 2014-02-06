@@ -103,7 +103,6 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 	PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
 	Graph G = gen.generate();
-
 	EXPECT_EQ(n, G.numberOfNodes()) << "number of generated nodes";
 
 	// check degree
@@ -113,7 +112,8 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 	// 1-clustering
 	ClusteringGenerator clusterGen;
-	Clustering oneClustering = clusterGen.makeOneClustering(G);
+	Partition oneClustering = clusterGen.makeOneClustering(G);
+	EXPECT_EQ(G.numberOfNodes(),oneClustering.numberOfElements());
 
 	// output to EPS file
 	PostscriptWriter psWriter(G, true);
@@ -121,10 +121,13 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 	// clustering
 	PLM2 clusterAlgo;
-	Clustering clustering = clusterAlgo.run(G);
+	Partition clustering = clusterAlgo.run(G);
+	EXPECT_EQ(G.numberOfNodes(),clustering.numberOfElements());
 	psWriter.write(clustering, "output/pubweb-clustered-plm2.eps");
 
 	Modularity mod;
+	DEBUG("just a checkpoint: ",clustering.upperBound()," ",clustering.numberOfElements());//," ",clustering.numberOfSubsets());
+	clustering.setUpperBound(n);
 	double modVal = mod.getQuality(clustering, G);
 	EXPECT_GE(modVal, 0.2) << "modularity of clustering";
 	DEBUG("Modularity of clustering: " , modVal);

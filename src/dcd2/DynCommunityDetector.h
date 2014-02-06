@@ -9,7 +9,7 @@
 #define DYNCOMMUNITYDETECTOR_H_
 
 #include "../dynamics/GraphEvent.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include "../graph/Graph.h"
 
 
@@ -25,12 +25,12 @@ public:
 
 	virtual void update(std::vector<GraphEvent>& stream) = 0;
 
-	virtual Clustering detect() = 0;
+	virtual Partition detect() = 0;
 
 protected:
 
 	Graph* G;
-	Clustering zeta;
+	Partition zeta;
 };
 
 } /* namespace NetworKit */

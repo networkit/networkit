@@ -17,7 +17,7 @@
 #include "DynamicGraphSource.h"
 #include "../auxiliary/StringTools.h"
 #include "../auxiliary/Debug.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 
 namespace NetworKit {
@@ -38,7 +38,7 @@ public:
 	 */
 	virtual void generate();
 
-	void evaluateClusterings(const std::string path, const Clustering& clustering);
+	void evaluateClusterings(const std::string path, const Partition& clustering);
 
 
 protected:

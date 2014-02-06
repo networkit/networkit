@@ -10,7 +10,7 @@
 
 #include "EdgeScoring.h"
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 
 namespace NetworKit {
@@ -59,11 +59,11 @@ public:
 //	 * two clusters.
 //	 *
 //	 */
-//	virtual double deltaMod(cluster c, cluster d) =0;
+//	virtual double deltaMod(index c, index d) =0;
 //
-//	virtual double cutweight(cluster c, cluster d) =0;
+//	virtual double cutweight(index c, index d) =0;
 //
-//	virtual double weight(cluster c) =0;
+//	virtual double weight(index c) =0;
 };
 
 

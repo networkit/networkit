@@ -7,7 +7,8 @@
 
 #include <fstream>
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 
@@ -18,9 +19,9 @@ public:
 
     virtual ~DotClusteringWriter();
 
-    virtual void write(Graph& graph, Clustering& zeta, std::string path) const;
+    virtual void write(Graph& graph, Partition& zeta, std::string path) const;
 
-    virtual std::map<cluster, double> createHueMap(Graph &graph, Clustering& zeta) const;
+    virtual std::map<index, double> createHueMap(Graph &graph, Partition& zeta) const;
 };
 
 } /* namespace NetworKit */

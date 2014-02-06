@@ -23,7 +23,7 @@ ParallelAgglomerativeClusterer::~ParallelAgglomerativeClusterer() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
+Partition ParallelAgglomerativeClusterer::run(Graph& graph) {
 	Graph G = graph; // G is the community graph, starts with singletons
 	std::vector<std::vector<node> > mapHierarchy;
 
@@ -65,12 +65,12 @@ Clustering ParallelAgglomerativeClusterer::run(Graph& graph) {
 
 	// vertices of coarsest graph are the clusters
 	count cn = G.numberOfNodes();
-	Clustering zetaCoarse(cn);
+	Partition zetaCoarse(cn);
 	zetaCoarse.allToSingletons();
 
 	// project clustering back to finest graph
 	ClusteringProjector projector;
-	Clustering zeta = projector.projectBackToFinest(zetaCoarse, mapHierarchy,
+	Partition zeta = projector.projectBackToFinest(zetaCoarse, mapHierarchy,
 			graph);
 
 	return zeta;

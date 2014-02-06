@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include "../graph/Graph.h"
 
 namespace NetworKit {
@@ -29,7 +29,7 @@ public:
 	 *
 	 * @param[in]	path	path to file
 	 */
-	virtual Clustering read(std::string path);
+	virtual Partition read(std::string path);
 };
 
 } /* namespace NetworKit */

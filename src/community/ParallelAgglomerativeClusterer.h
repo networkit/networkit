@@ -28,7 +28,7 @@ public:
 	 */
 	virtual std::string toString() const;
 
-	virtual Clustering run(Graph& G);
+	virtual Partition run(Graph& G);
 };
 
 } /* namespace NetworKit */

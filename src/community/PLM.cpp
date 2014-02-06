@@ -23,13 +23,13 @@ PLM::~PLM() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering PLM::pass(Graph& G) {
+Partition PLM::pass(Graph& G) {
 
 	// FIXME: PLM cannot deal with deleted nodes
 
 	// init clustering to singletons
 	count n = G.numberOfNodes();
-	Clustering zeta(n);
+	Partition zeta(n);
 	zeta.allToSingletons();
 
 	// $\omega(E)$
@@ -37,11 +37,11 @@ Clustering PLM::pass(Graph& G) {
 
 	// For each node we store a map that maps from cluster ID
 	// to weight of edges to that cluster, this needs to be updated when a change occurs
-	std::vector<std::map<cluster, edgeweight> > incidenceWeight(
+	std::vector<std::map<index, edgeweight> > incidenceWeight(
 			G.numberOfNodes());
 	G.parallelForNodes([&](node u) {
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-			cluster C = zeta[v];
+			index C = zeta[v];
 			if (u != v) {
 				incidenceWeight[u][C] += w;
 			}
@@ -69,13 +69,13 @@ Clustering PLM::pass(Graph& G) {
 
 	std::vector<double> volCluster(G.upperNodeIdBound(), 0.0);
 	// set volume for all singletons
-	zeta.parallelForEntries([&](node u, cluster C) {
+	zeta.parallelForEntries([&](node u, index C) {
 		volCluster[C] = volNode[u];
 	});
 	// end of initialization, set barrier for safety reasons
 
 	// $\vol(C \ {x})$ - volume of cluster C excluding node x
-	auto volClusterMinusNode = [&](cluster C, node x) {
+	auto volClusterMinusNode = [&](index C, node x) {
 		double volC = 0.0;
 		double volN = 0.0;
 // #pragma omp atomic read
@@ -89,7 +89,7 @@ Clustering PLM::pass(Graph& G) {
 	};
 
 	// $\omega(u | C \ u)$
-	auto omegaCut = [&](node u, cluster C) {
+	auto omegaCut = [&](node u, index C) {
 		edgeweight w = 0.0;
 #ifdef _OPENMP
 		omp_set_lock(&mapLocks[u]);
@@ -104,7 +104,7 @@ Clustering PLM::pass(Graph& G) {
 
 	// difference in modularity when moving node u from cluster C to D
 	auto deltaMod =
-			[&](node u, cluster C, cluster D) {
+			[&](node u, index C, index D) {
 			double volN = 0.0;
 // #pragma omp atomic read
 			volN = volNode[u];
@@ -124,9 +124,9 @@ Clustering PLM::pass(Graph& G) {
 		// try to improve modularity by moving a node to neighboring clusters
 		auto moveNode = [&](node u) {
 
-			cluster best = none;
-			cluster C = none;
-			cluster D = none;
+			index best = none;
+			index C = none;
+			index D = none;
 			double deltaBest = -0.5;
 
 // #pragma omp atomic read
@@ -205,7 +205,7 @@ Clustering PLM::pass(Graph& G) {
 	return zeta;
 }
 
-Clustering PLM::run(Graph& G) {
+Partition PLM::run(Graph& G) {
 	INFO("starting Louvain method");
 
 	// sub-algorithms
@@ -226,7 +226,7 @@ Clustering PLM::run(Graph& G) {
 		DEBUG("Louvain hierarchy level " , h);
 		// one local optimization pass
 		DEBUG("starting Louvain pass");
-		Clustering clustering = this->pass(*graph);
+		Partition clustering = this->pass(*graph);
 		if (this->anyChange) {
 			// contract the graph according to clustering
 			DEBUG("starting contraction");
@@ -243,7 +243,7 @@ Clustering PLM::run(Graph& G) {
 
 	DEBUG("starting projection");
 	// project fine graph to result clustering
-	Clustering result = projector.projectCoarseGraphToFinestClustering(*graph,
+	Partition result = projector.projectCoarseGraphToFinestClustering(*graph,
 			G, maps);
 	return result;
 }

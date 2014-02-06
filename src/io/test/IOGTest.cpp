@@ -170,7 +170,7 @@ TEST_F(IOGTest, testClusteringWriterAndReader) {
 	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusteringGen;
-	Clustering zeta = clusteringGen.makeRandomClustering(G, k);
+	Partition zeta = clusteringGen.makeRandomClustering(G, k);
 
 	ClusteringWriter writer;
 	writer.write(zeta, path);
@@ -185,9 +185,9 @@ TEST_F(IOGTest, testClusteringWriterAndReader) {
 
 
 	ClusteringReader reader;
-	Clustering read = reader.read(path);
+	Partition read = reader.read(path);
 
-	EXPECT_EQ(n, read.numberOfNodes()) << "read clustering should contain n nodes";
+	EXPECT_EQ(n, read.numberOfElements()) << "read clustering should contain n nodes";
 	EXPECT_TRUE(read.isProper(G)) << "read clustering should be proper clustering of G";
 	EXPECT_TRUE(read.equals(zeta, G)) << "read clustering should be identical to created clustering";
 }
@@ -280,12 +280,12 @@ TEST_F(IOGTest, testEdgeListIO) {
 TEST_F(IOGTest, testEdgeListClusteringReader) {
 	EdgeListClusteringReader reader(1);
 
-	Clustering zeta = reader.read("input/LFR-generator-example/community.dat");
+	Partition zeta = reader.read("input/LFR-generator-example/community.dat");
 	//EXPECT_EQ(10, zeta.size());
 	EXPECT_EQ(1, zeta[0]);
 	EXPECT_EQ(3, zeta[1]);
 	EXPECT_EQ(2, zeta[2]);
-	EXPECT_EQ(10, zeta.numberOfEntries());
+	EXPECT_EQ(10, zeta.numberOfElements());
 
 }
 
@@ -327,16 +327,16 @@ TEST_F(IOGTest, tryReadingLFR) {
 	EdgeListClusteringReader clusteringReader;
 
 	Graph G = graphReader.read(graphPath);
-	Clustering truth = clusteringReader.read(clustPath);
+	Partition truth = clusteringReader.read(clustPath);
 
 	PLP PLP;
-	Clustering zeta = PLP.run(G);
+	Partition zeta = PLP.run(G);
 
 	Modularity mod;
 	INFO("static clustering quality: " , mod.getQuality(zeta, G));
-	INFO("static clustering number of clusters: " , zeta.numberOfClusters());
+	INFO("static clustering number of clusters: " , zeta.numberOfSubsets());
 	INFO("ground truth quality: " , mod.getQuality(truth, G));
-	INFO("ground truth number of clusters: " , truth.numberOfClusters());
+	INFO("ground truth number of clusters: " , truth.numberOfSubsets());
 
 }
 

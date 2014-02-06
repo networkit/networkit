@@ -41,7 +41,7 @@ TEST_F(DCD2GTest, testDynPLP) {
 	gu.update(stream);
 
 	dynPLP.update(stream);
-	Clustering zeta = dynPLP.detect();
+	Partition zeta = dynPLP.detect();
 
 	EXPECT_TRUE(zeta.isProper(G));
 
@@ -59,7 +59,7 @@ TEST_F(DCD2GTest, testDynPLPPrepStrategies) {
 	gu.update(stream);
 
 	dynPLP.update(stream);
-	Clustering zeta = dynPLP.detect();
+	Partition zeta = dynPLP.detect();
 
 	EXPECT_TRUE(zeta.isProper(G));
 
@@ -71,7 +71,7 @@ TEST_F(DCD2GTest, testDynPLPPrepStrategies) {
 	gu2.update(stream);
 
 	dynPLP2.update(stream);
-	Clustering zeta2 = dynPLP2.detect();
+	Partition zeta2 = dynPLP2.detect();
 
 	EXPECT_TRUE(zeta2.isProper(G));
 
@@ -89,7 +89,7 @@ TEST_F(DCD2GTest, testDynPLM) {
 	gu.update(stream);
 
 	dynPLM.update(stream);
-	Clustering zeta = dynPLM.detect();
+	Partition zeta = dynPLM.detect();
 
 	EXPECT_TRUE(zeta.isProper(G));
 }
@@ -107,19 +107,19 @@ TEST_F(DCD2GTest, testDynPLMPrepStrategies) {
 	gu.update(stream);
 
 	dynPLM.update(stream);
-	Clustering zeta = dynPLM.detect();
+	Partition zeta = dynPLM.detect();
 
 	EXPECT_TRUE(zeta.isProper(G));
 
 	Graph G2;
-	DynPLM dynPLM2("isolateNeighbors", 0);
+	DynPLM dynPLM2("isolateNeighbors", 0); 
 	dynPLM2.attachGraph(G2);
 
 	GraphUpdater gu2(G2);
 	gu2.update(stream);
 
 	dynPLM2.update(stream);
-	Clustering zeta2 = dynPLM2.detect();
+	Partition zeta2 = dynPLM2.detect();
 
 	EXPECT_TRUE(zeta2.isProper(G));
 

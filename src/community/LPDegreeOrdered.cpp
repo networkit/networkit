@@ -19,17 +19,18 @@ LPDegreeOrdered::~LPDegreeOrdered() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering LPDegreeOrdered::run(Graph& G) {
+Partition LPDegreeOrdered::run(Graph& G) {
 	count n = G.numberOfNodes();
 	count theta = n / 1e5;
 	DEBUG("theta: " , theta);
 
 	index z = G.upperNodeIdBound();
-	Clustering labels(z);
+	Partition labels(z);
 	// initialize all labels to singletons
-	G.parallelForNodes([&](node v){
+	/*G.parallelForNodes([&](node v){
 		labels[v] = v;
-	});
+	});*/
+	labels.allToSingletons();
 
 	// initialize all nodes as active
 	std::vector<int> active(z + 1, 1); // not a boolean vector because there might be problems with parallel access
