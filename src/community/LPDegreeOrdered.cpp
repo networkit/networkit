@@ -27,9 +27,6 @@ Partition LPDegreeOrdered::run(Graph& G) {
 	index z = G.upperNodeIdBound();
 	Partition labels(z);
 	// initialize all labels to singletons
-	/*G.parallelForNodes([&](node v){
-		labels[v] = v;
-	});*/
 	labels.allToSingletons();
 
 	// initialize all nodes as active
@@ -44,7 +41,7 @@ Partition LPDegreeOrdered::run(Graph& G) {
 			std::unordered_map<label, count> labelCounts; // neighborLabelCounts maps label -> frequency in the neighbors
 			// count the labels in the neighborhood of v
 			G.forNeighborsOf(v, [&](node w) {
-				label lw = labels[w];
+				label lw = labels.subsetOf(w);//labels[w];
 				labelCounts[lw] += 1; // add weight of edge {v, w}
 			});
 
@@ -54,7 +51,7 @@ Partition LPDegreeOrdered::run(Graph& G) {
 							[](const std::pair<label, count>& p1, const std::pair<label, count>& p2) {
 								return p1.second < p2.second;})->first;
 			if (labels[v] != dominant) { // UPDATE
-				labels[v] = dominant;
+				labels.moveToSubset(dominant,v);//labels[v] = dominant;
 				nUpdated += 1; // TODO: atomic update?
 				G.forNeighborsOf(v, [&](node u) {
 					active[u] = 1;

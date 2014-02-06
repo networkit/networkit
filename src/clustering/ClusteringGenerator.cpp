@@ -51,7 +51,7 @@ Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 }
 
 Partition ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count k) {
-	count n = G.upperNodeIdBound();
+	count n = G.upperNodeIdBound(); // FIXME: upper Node ID bound is actually not the right way to do this.
 	Partition clustering(n);
 
 	std::vector<count> blockSize(k, 0);
@@ -70,7 +70,7 @@ Partition ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count 
 	node v = 0;
 	for (index block = 0; block < k; ++block) {
 		while (v < blockSize[block]) {
-			clustering[v] = block;
+			clustering.addToSubset(block,v);//clustering[v] = block;
 			++v;
 		}
 	}

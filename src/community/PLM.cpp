@@ -28,7 +28,8 @@ Partition PLM::pass(Graph& G) {
 	// FIXME: PLM cannot deal with deleted nodes
 
 	// init clustering to singletons
-	count n = G.numberOfNodes();
+	count n = G.upperNodeIdBound();//TODO: maybe this is wrong: G.numberOfNodes();
+
 	Partition zeta(n);
 	zeta.allToSingletons();
 
@@ -69,8 +70,9 @@ Partition PLM::pass(Graph& G) {
 
 	std::vector<double> volCluster(G.upperNodeIdBound(), 0.0);
 	// set volume for all singletons
+	//TODO: allToSingletons() assigns IDs in the range [1,n], however, here [0,n-1] is needed, so C-1 is appropriate
 	zeta.parallelForEntries([&](node u, index C) {
-		volCluster[C] = volNode[u];
+		volCluster[C-1] = volNode[u];
 	});
 	// end of initialization, set barrier for safety reasons
 
