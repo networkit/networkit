@@ -44,7 +44,7 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 
 //	count n = newGraph.numberOfNodes();
 
-	DEBUG("oldClustering=" , Aux::vectorToString(oldClustering.getVector())); // getVector() not existing in both Clustering and Partition.
+	DEBUG("oldClustering=" , Aux::vectorToString(oldClustering.getVector()));
 	DEBUG("newClustering=" , Aux::vectorToString(newClustering.getVector()));
 
 

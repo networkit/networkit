@@ -13,6 +13,10 @@ Partition::Partition() : z(0), omega(0), data(0) {
 
 }
 
+Partition::Partition(index z, index defaultValue) : z(z), omega(0), data(z, defaultValue) {  //z(z-1);data(z,none);
+
+}
+
 Partition::Partition(index z) : z(z), omega(0), data(z, none) {  //z(z-1);data(z,none);
 
 }
@@ -71,7 +75,7 @@ index Partition::extend() {
 	data.push_back(none);
 	z++;
 	assert (z == data.size()); //(data.size() - 1)
-	return z;
+	return z-1;
 }
 
 void Partition::remove(index e) {
@@ -81,16 +85,25 @@ void Partition::remove(index e) {
 
 count Partition::numberOfSubsets() const {
 	auto n = upperBound();
-	std::vector<int> exists(upperBound(), 0); // a boolean vector would not be thread-safe
+	std::vector<int> exists(n, 0); // a boolean vector would not be thread-safe
 	this->parallelForEntries([&](index e, index s) {
 		if (s != none) {
+			//FIXME: this is just temporary until other stuff has been worked out
+			/*while (s > exists.size()) {
+				this->omega++;
+				exists.push_back(0);
+			}*/
+			if (s >= exists.size()) {
+				exists.resize(s+1,0);
+				setUpperBound(s);
+			}
+			if (s > exists.size()) ERROR("upperBound is not properly set: ",s," > ",(n-1));
 			exists[s] = 1;
 		}
 	});
 	count k = 0; // number of actually existing clusters
-	//#pragma omp parallel for reduction(+:k)
+	#pragma omp parallel for reduction(+:k)
 	for (index i = 0; i < n; ++i) {
-		//DEBUG(i);
 		if (exists[i]) {
 			k++;
 		}
@@ -122,7 +135,7 @@ void Partition::compact() {
 	this->parallelForEntries([&](index e, index s){ // replace old SubsetIDs with the new IDs
 		data[e] = compactingMap[s];
 	});
-	omega = (i-1); // necessary or not?	
+	this->setUpperBound(i-1); // does i contain the right value?
 }
 
 bool Partition::contains(index e) const {

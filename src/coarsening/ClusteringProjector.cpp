@@ -87,9 +87,11 @@ Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoar
 
 	// assign super node id as cluster id
 	Gfinest.parallelForNodes([&](node v) {
-		DEBUG(super[v]);
+		//zeta.addToSubset(super[v],v);
 		zeta[v] = super[v];
 	});
+	
+	zeta.compact(); //TODO: this is just an experimental fix, since upperBound is not known...
 
 	DEBUG("number of clusters in projected clustering: " , zeta.numberOfSubsets());
 	DEBUG("number of nodes in coarse graph: " , Gcoarse.numberOfNodes());

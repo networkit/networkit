@@ -39,6 +39,8 @@ public:
 	 * @param[in]	z	maximum index
 	 */
 	Partition(index z);
+	
+	Partition(index z, count defaultValue);
 
 	virtual ~Partition() = default;
 
@@ -268,7 +270,7 @@ inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) {
 	#pragma omp parallel for
 	for (index e = 0; e < this->z; e += 1) {
-		handle(e, data[e]);
+		handle(e, this->data[e]);
 	}
 }
 
@@ -278,7 +280,7 @@ inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) const {
 	#pragma omp parallel for
 	for (index e = 0; e < this->z; e += 1) {
-		handle(e, data[e]);
+		handle(e, this->data[e]);
 	}
 }
 

@@ -33,7 +33,6 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
 	DEBUG("l = " , G.numberOfSelfLoops());
 
 	Coverage coverage;
-	DEBUG("just a checkpoint");	
 	double cov = coverage.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / totalEdgeWeight;
 	DEBUG("coverage = " , cov);
 	double expCov; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$

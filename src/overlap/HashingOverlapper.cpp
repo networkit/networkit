@@ -45,18 +45,18 @@ Partition HashingOverlapper::run(Graph& G,
 	};
 
 	count n = G.numberOfNodes();
-	Partition core(n);
+	Partition core(n,0);
 
 	// select hash function
 	auto hash = djb2;
 
 	//core.setAll(0);
-	core.setUpperBound(2);
+/*	core.setUpperBound(2);
 	DEBUG(n, " ", core.upperBound(), " " , core.numberOfElements());
 	core.parallelForEntries([&](index e, index s){
 		DEBUG(e);
 		core.addToSubset(0,e);//core[e] = 0;
-	});
+	});*/
 	const count numC = clusterings.size();
 	if (numC > 2) {
 		for (index c = 0; c < numC; ++c) {
