@@ -12,6 +12,7 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../coarsening/ClusterContracter.h"
+#include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
 
 namespace NetworKit {
@@ -23,7 +24,6 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 
 	ClusteringGenerator clusteringGen;
 	Partition singleton = clusteringGen.makeSingletonClustering(G);
-	DEBUG("singleton(upperBound,numberOfElements,numberOfSubsets): ",singleton.upperBound()," ",singleton.numberOfElements()," ",singleton.numberOfSubsets());
 
 
 	ClusterContracter contracter;
@@ -35,9 +35,8 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 	EXPECT_EQ(G.numberOfEdges(), Gcon.numberOfEdges())
 			<< "graph contracted according to singletons clustering should have the same number of nodes as original";
 
-	int k = 2; // number of clusters in random clustering
+	count k = 2; // number of clusters in random clustering
 	Partition random = clusteringGen.makeRandomClustering(G, k);
-	DEBUG("random(upperBound,numberOfElements,numberOfSubsets): ",random.upperBound()," ",random.numberOfElements()," ",random.numberOfSubsets());
 	auto conRandPair = contracter.run(G, random);
 	Graph GconRand = conRandPair.first;
 
@@ -46,7 +45,33 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 
 }
 
+TEST_F(CoarseningGTest, testPartitionCoarsening) {
+	GraphGenerator graphGen;
+	count n = 100;
+	Graph G = graphGen.makeErdosRenyiGraph(n, 0.5);
 
+	ClusteringGenerator clusteringGen;
+	Partition singleton = clusteringGen.makeSingletonClustering(G);
+
+
+	PartitionCoarsening coarsening;
+	auto conSingletonPair = coarsening.run(G, singleton);
+	Graph Gcon = conSingletonPair.first;
+
+	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
+			<< "graph contracted according to singleton clustering should have the same number of nodes as original";
+	EXPECT_EQ(G.numberOfEdges(), Gcon.numberOfEdges())
+			<< "graph contracted according to singletons clustering should have the same number of nodes as original";
+
+	count k = 2; // number of clusters in random clustering
+	Partition random = clusteringGen.makeRandomClustering(G, k);
+	auto conRandPair = coarsening.run(G, random);
+	Graph GconRand = conRandPair.first;
+
+	EXPECT_EQ(k, GconRand.numberOfNodes())
+			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
+
+}
 TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	GraphGenerator graphGen;
 	int64_t n = 100;
@@ -59,7 +84,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	// contract G0 according to 1-clusterings
 	ClusterContracter contract;
 	auto con = contract.run(G0, zeta0);
-	std::vector<NodeMap<node> > maps;
+	std::vector<std::vector<node> > maps;
 	Graph G1 = con.first;
 	maps.push_back(con.second);
 
@@ -84,7 +109,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 	// contract G0 according to 1-clusterings
 	ClusterContracter contract;
 	auto con = contract.run(G0, zeta0);
-	std::vector<NodeMap<node> > maps;
+	std::vector<std::vector<node> > maps;
 	Graph G1 = con.first;
 	maps.push_back(con.second);
 

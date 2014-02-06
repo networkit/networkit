@@ -408,6 +408,66 @@ cdef class ErdosRenyiGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 
+cdef extern from "../src/generators/ChungLuGenerator.h":
+	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
+		# TODO: revert to count when cython issue fixed
+		_ChungLuGenerator(vector[unsigned int] degreeSequence) except +
+		_Graph generate() except +
+
+cdef class ChungLuGenerator:
+	"""
+		Given an arbitrary degree sequence, the Chung-Lu generative model
+		will produce a random graph with the same expected degree sequence. 
+
+ 		see Aiello, Chung, Lu: A Random Graph Model for Massive Graphs
+	"""
+
+	cdef _ChungLuGenerator* _this
+
+	def __cinit__(self, degreeSequence):
+		cdef vector
+		self._this = new _ChungLuGenerator(degreeSequence)
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+
+cdef extern from "../src/generators/HavelHakimiGenerator.h":
+	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
+		# TODO: revert to count when cython issue fixed
+		_HavelHakimiGenerator(vector[unsigned int] degreeSequence, bool skipTest) except +
+		_Graph generate() except +
+		bool isRealizable() except +
+		bool getRealizable() except +
+
+cdef class HavelHakimiGenerator:
+	"""
+	 Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
+	 The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually has a high clustering coefficient. Construction runs in linear time O(m). However, the test if a sequence is realizable is quadratic in the sequence length.
+	"""
+
+	cdef _HavelHakimiGenerator* _this
+
+
+	def __cinit__(self, degreeSequence, skipTest=False):
+		"""
+			@param[in] sequence Degree sequence to realize. Must be non-increasing.
+	   		@param[in] skipTest If true, the test if the sequence is realizable is skipped.
+	              Default value is false. Set ONLY to true if you are certain that the
+	              sequence is realizable
+		"""
+		self._this = new _HavelHakimiGenerator(degreeSequence, skipTest)
+
+	def isRealizable(self):
+		return self._this.isRealizable()
+
+	def getRealizable(self):
+		return self._this.getRealizable();
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+
 
 
 # Module: graphio
@@ -624,7 +684,7 @@ cdef class Clustering:
 cdef extern from "../src/clustering/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
 		_Coverage() except +
-		double getQuality(_Clustering _zeta, _Graph _G)
+		double getQuality(_Clustering _zeta, _Graph _G) except +
 
 cdef class Coverage:
 	""" Coverage is the fraction of intra-community edges """
@@ -637,7 +697,7 @@ cdef class Coverage:
 cdef extern from "../src/clustering/Modularity.h":
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +
-		double getQuality(_Clustering _zeta, _Graph _G)
+		double getQuality(_Clustering _zeta, _Graph _G) except +
 		
 
 cdef class Modularity:
@@ -729,7 +789,7 @@ cdef class PLM(Clusterer):
 cdef extern from "../src/community/PLM2.h":
 	cdef cppclass _PLM2 "NetworKit::PLM2":
 		_PLM2() except +
-		_PLM2(bool refine, double gamma, string par) except +
+		_PLM2(bool refine, double gamma, string par, count maxIter) except +
 		string toString() except +
 		_Clustering run(_Graph G) except +
 
@@ -740,8 +800,8 @@ cdef class PLM2(Clusterer):
 		
 	cdef _PLM2 _this
 	
-	def __cinit__(self, refine=True, gamma=1.0, par="balanced"):
-		self._this = _PLM2(refine, gamma, stdstring(par))
+	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=32):
+		self._this = _PLM2(refine, gamma, stdstring(par), maxIter)
 		
 	def toString(self):
 		return self._this.toString().decode("utf-8")
@@ -931,6 +991,30 @@ cdef extern from "../src/dynamics/GraphEvent.h":
 		
 cdef class GraphEvent:
 	cdef _GraphEvent _this
+
+	property type:
+		def __get__(self): 
+			return self._this.type
+		def __set__(self, t):
+			self._this.type = t
+
+	property u:
+		def __get__(self): 
+			return self._this.u
+		def __set__(self, u):
+			self._this.u = u
+
+	property v:
+		def __get__(self): 
+			return self._this.v
+		def __set__(self, v):
+			self._this.type = v
+
+	property w:
+		def __get__(self): 
+			return self._this.w
+		def __set__(self, w):
+			self._this.type = w			
 	
 	def __cinit__(self, type, u, v, w):
 		self._this = _GraphEvent(type, u, v, w)
@@ -955,6 +1039,24 @@ cdef class DGSStreamParser:
 
 	def getStream(self):
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.getStream()]
+
+
+cdef extern from "../src/dynamics/DGSWriter.h":
+	cdef cppclass _DGSWriter "NetworKit::DGSWriter":
+		void write(vector[_GraphEvent] stream, string path) except +
+
+
+cdef class DGSWriter:
+	cdef _DGSWriter* _this
+
+	def __cinit__(self):
+		self._this = new _DGSWriter()
+
+	def write(self, stream, path):
+		cdef vector[_GraphEvent] _stream
+		for ev in stream:
+			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.write(_stream, stdstring(path))
 
 
 cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
@@ -993,8 +1095,77 @@ cdef class DynamicCommunityDetection:
 cdef extern from "../src/generators/DynamicPathGenerator.h":
 	cdef cppclass _DynamicPathGenerator "NetworKit::DynamicPathGenerator":
 		_DynamicPathGenerator() except +
-		# TODO: stream
+		vector[_GraphEvent] generate(count nSteps) except +
 
 
+cdef class DynamicPathGenerator:
+	cdef _DynamicPathGenerator* _this
+
+	def __cinit__(self):
+		self._this = new _DynamicPathGenerator()
+
+	def generate(self, nSteps):
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+
+
+
+
+cdef extern from "../src/generators/DynamicPubWebGenerator.h":
+	cdef cppclass _DynamicPubWebGenerator "NetworKit::DynamicPubWebGenerator":
+		_DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
+			float neighborhoodRadius, count maxNumberOfNeighbors) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
+
+
+cdef class DynamicPubWebGenerator:
+	cdef _DynamicPubWebGenerator* _this
+
+	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
+		self._this = new _DynamicPubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+
+	def generate(self, nSteps):
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+	def getGraph(self):
+		return Graph().setThis(self._this.getGraph())
+
+
+cdef extern from "../src/generators/ForestFireGenerator.h":
+	cdef cppclass _ForestFireGenerator "NetworKit::ForestFireGenerator":
+		_ForestFireGenerator(double p) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
+
+
+cdef class ForestFireGenerator:
+	cdef _ForestFireGenerator* _this
+
+	def __cinit__(self, p):
+		self._this = new _ForestFireGenerator(p)
+
+	def generate(self, nSteps):
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+
+
+cdef extern from "../src/dynamics/GraphUpdater.h":
+	cdef cppclass _GraphUpdater "NetworKit::GraphUpdater":
+		_GraphUpdater(_Graph G) except +
+		void update(vector[_GraphEvent] stream) except +
+		vector[pair[count, count]] getSizeTimeline() except +
+
+cdef class GraphUpdater:
+	cdef _GraphUpdater* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _GraphUpdater(G._this)
+
+	def update(self, stream):
+		cdef vector[_GraphEvent] _stream
+		for ev in stream:
+			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.update(_stream)
 
 

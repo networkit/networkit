@@ -1,1 +1,1 @@
-from _NetworKit import GraphEvent, DynamicCommunityDetection, DGSStreamParser
+from _NetworKit import GraphEvent, DynamicCommunityDetection, DGSStreamParser, GraphUpdater

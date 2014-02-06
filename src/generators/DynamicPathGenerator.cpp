@@ -22,7 +22,7 @@ std::vector<GraphEvent> DynamicPathGenerator::generate(count nSteps) {
 	count step = 0;
 	while (step < nSteps) {
 		node v = G.addNode();
-		stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, u));
+		stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, v));
 		G.addEdge(u, v);
 		stream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 1.0));
 		u = v;

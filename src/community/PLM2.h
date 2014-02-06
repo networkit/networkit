@@ -26,9 +26,10 @@ public:
 	 * 							1.0 -> standard modularity
 	 * 							0.0 -> one community
 	 * 							2m 	-> singleton communities
+	 * @param[in]	maxIter		maximum number of iterations for move phase	
 	 *
 	 */
-	PLM2(bool refine=false, double gamma = 1.0, std::string par="balanced");
+	PLM2(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32);
 
 
 	std::string toString() const override;
@@ -47,6 +48,7 @@ private:
 	std::string parallelism;
 	bool refine;
 	double gamma = 1.0;
+	count maxIter;
 };
 
 } /* namespace NetworKit */

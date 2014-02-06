@@ -11,12 +11,11 @@
 namespace NetworKit {
 
 GraphProperties::GraphProperties() {
-	// TODO Auto-generated constructor stub
 
 }
 
 GraphProperties::~GraphProperties() {
-	// TODO Auto-generated destructor stub
+
 }
 
 std::vector<count> GraphProperties::degreeDistribution(Graph& G) {
@@ -125,6 +124,15 @@ std::pair<count, count> GraphProperties::minMaxDegree(Graph& G) {
 	return std::pair<count, count>(min, max);
 }
 
+std::vector<unsigned int> GraphProperties::degreeSequence(Graph& G) {
+	std::vector<unsigned int> sequence(G.numberOfNodes()); // TODO: revert to count when cython issue fixed
+
+	G.parallelForNodes([&](node v) {
+		sequence[v] = G.degree(v);
+	});
+
+	return sequence;
+}
 
 double GraphProperties::averageDegree(const Graph& G) {
 

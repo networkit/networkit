@@ -60,14 +60,14 @@ Partition PLM::pass(Graph& G) {
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
 
 	// parts of formula follow
-	NodeMap<double> volNode(G.numberOfNodes(), 0.0);
+	std::vector<double> volNode(G.upperNodeIdBound(), 0.0);
 	// calculate and store volume of each node
 	G.parallelForNodes([&](node u) {
 		volNode[u] += G.weightedDegree(u);
 		volNode[u] += G.weight(u, u); // consider self-loop twice
 		});
 
-	IndexMap<index, double> volCluster(G.numberOfNodes(), 0.0);
+	std::vector<double> volCluster(G.upperNodeIdBound(), 0.0);
 	// set volume for all singletons
 	zeta.parallelForEntries([&](node u, index C) {
 		volCluster[C] = volNode[u];
@@ -177,7 +177,7 @@ Partition PLM::pass(Graph& G) {
 				volCluster[best] += volN;
 			}
 		};
-		DEBUG(G.numberOfNodes()," ",zeta.numberOfElements());
+
 		// apply node movement according to parallelization strategy
 		if (this->parallelism == "none") {
 			G.forNodes(moveNode);
@@ -213,8 +213,8 @@ Partition PLM::run(Graph& G) {
 	ClusteringProjector projector;
 
 	// hierarchies
-	std::vector<std::pair<Graph, NodeMap<node> > > hierarchy; // hierarchy of graphs G^{i} and maps M^{i->i+1}
-	std::vector<NodeMap<node> > maps; // hierarchy of maps M^{i->i+1}
+	std::vector<std::pair<Graph, std::vector<node> > > hierarchy; // hierarchy of graphs G^{i} and maps M^{i->i+1}
+	std::vector<std::vector<node> > maps; // hierarchy of maps M^{i->i+1}
 
 	int h = -1; // finest hierarchy level
 	bool done = false; //

@@ -5,21 +5,24 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef CONTRACTER_H_
-#define CONTRACTER_H_
+#ifndef GRAPHCOARSENING_H_
+#define GRAPHCOARSENING_H_
+
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 
 /**
  * Abstract base class for graph coarsening/contraction algorithms.
  */
-class Contracter {
+class GraphCoarsening {
 
 public:
 
-	Contracter();
+	GraphCoarsening();
 
-	virtual ~Contracter();
+	virtual ~GraphCoarsening();
+
 
 
 };
@@ -28,4 +31,4 @@ public:
 } // namespace
 
 
-#endif /* CONTRACTER_H_ */
+#endif /* GRAPHCOARSENING_H_ */

@@ -10,6 +10,7 @@ Dy * GeneratorsTest.cpp
 #include "GeneratorsGTest.h"
 
 #include "../DynamicPathGenerator.h"
+#include "../ForestFireGenerator.h"
 
 namespace NetworKit {
 
@@ -135,14 +136,15 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 
 TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
+//	count nSteps = 100;
+//	count n = 1200;
+	count nSteps = 15;
+	count n = 300;
+	count numCluster = 30;
+	count maxNumNeighbors = 40;
+	float rad = 0.08;
 
-	count nSteps = 10;
-	count n = 400;
-	count numCluster = 12;
-	count maxNumNeighbors = 36;
-	float rad = 0.125;
-
-	DynamicPubWebGenerator dynGen(n, numCluster, rad, maxNumNeighbors);
+	DynamicPubWebGenerator dynGen(n, numCluster, rad, maxNumNeighbors, false);
 	Graph G = dynGen.getGraph();
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
@@ -158,6 +160,9 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 		G.initCoordinates();
 
 		DEBUG("updated graph, new (n, m) = (" , G.numberOfNodes() , ", " , G.numberOfEdges() , ")");
+		edgeweight tew = G.totalEdgeWeight();
+		DEBUG("1/2 graph volume: ", tew);
+		EXPECT_GT(tew, 0);
 
 		// update coordinates
 		std::map<node, Point<float> > newCoordinates = dynGen.getNewCoordinates();
@@ -165,8 +170,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 				iter != newCoordinates.end(); ++iter) {
 			node v = iter->first;
 			Point<float> p = iter->second;
-			G.setCoordinate(v, 0, p[0]);
-			G.setCoordinate(v, 1, p[1]);
+			G.setCoordinate(v, p);
 		}
 
 		// output in clustered way for better visual inspection
@@ -238,7 +242,90 @@ TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 	DEBUG("Number of edges with probability " , p , " (actual/expected): " , nEdges , " / " , (nPairs * p));
 }
 
+TEST_F(GeneratorsGTest, testChungLuGenerator) {
+	count n = 400;
+	count maxDegree = n / 8;
+	std::vector<unsigned int> sequence(n); // TODO: revert to count when cython issue fixed
+	count expVolume = 0;
+	count actualVolume = 0;
 
+	// fill sequence with random values (this is not power-law, of course!)
+	for (index i = 0; i < n; ++i) {
+		sequence[i] = rand() % maxDegree;
+		expVolume += sequence[i];
+	}
+
+	ChungLuGenerator gen(sequence);
+	Graph G = gen.generate();
+
+	EXPECT_EQ(n, G.numberOfNodes());
+	G.forNodes([&](node v) {
+		actualVolume += G.degree(v);
+	});
+
+	INFO("expected volume: ", expVolume, ", actual volume: ", actualVolume);
+}
+
+
+TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
+	count n = 400;
+	count maxDegree = n / 10;
+	std::vector<unsigned int> sequence(n); // TODO: revert to count when cython issue fixed
+//	std::vector<count> sequence = {5, 4, 4, 3, 2, 2, 2, 2, 2, 2};
+	bool realizable = false;
+
+	do {
+		// fill sequence with random values (this is not power-law, of course!)
+		for (index i = 0; i < n; ++i) {
+			sequence[i] = rand() % maxDegree;
+		}
+
+		// check if sequence is realizable
+		HavelHakimiGenerator hhgen(sequence);
+		realizable = hhgen.getRealizable();
+
+		if (realizable) {
+			Graph G = hhgen.generate();
+			count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+			EXPECT_EQ(volume, 2 * G.numberOfEdges());
+		}
+	} while (! realizable);
+}
+
+TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
+	METISGraphReader reader;
+	std::vector<std::string> graphs = {"input/jazz.graph",
+			"input/lesmis.graph"}; //, "input/PGPgiantcompo.graph", "input/coAuthorsDBLP.graph"};
+
+	for (auto path : graphs) {
+		Graph G = reader.read(path);
+		count n = G.numberOfNodes();
+		std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G); // TODO: revert to count when cython issue fixed
+
+		bool skipTest = true;
+		HavelHakimiGenerator hhgen(sequence, skipTest);
+		Graph G2 = hhgen.generate();
+
+		count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
+
+		if (volume < 50000) {
+			std::vector<unsigned int> testSequence = GraphProperties::degreeSequence(G2);
+			std::sort(testSequence.begin(), testSequence.end(), std::greater<unsigned int>());
+			std::sort(sequence.begin(), sequence.end(), std::greater<unsigned int>());
+
+			for (index i = 0; i < n; ++i) {
+				EXPECT_EQ(sequence[i], testSequence[i]);
+			}
+		}
+	}
+}
+
+
+TEST_F(GeneratorsGTest, testForestFireGenerator) {
+	ForestFireGenerator ffg(0.5);
+	ffg.generate(10);
+}
 
 } /* namespace NetworKit */
 

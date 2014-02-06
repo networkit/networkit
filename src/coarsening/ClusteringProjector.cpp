@@ -18,25 +18,22 @@ ClusteringProjector::~ClusteringProjector() {
 	// TODO Auto-generated destructor stub
 }
 
-Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, NodeMap<node>& fineToCoarse,
+Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse,
 		Partition& zetaCoarse) { // FIXME Partition used like it is supposed to?
 
 	Partition zetaFine(Gfine.numberOfNodes());
-	// DEBUG
-	std::ostringstream oss;	oss << "zeta(" << Gfine.getName() << ")"; zetaFine.setName(oss.str());	//C++??!!
-	// DEBUG
-
+	zetaFine.setUpperBound(zetaCoarse.upperBound());
 	Gfine.forNodes([&](node v) {
 		node sv = fineToCoarse[v];
 		index cv = zetaCoarse.subsetOf(sv);
-		zetaFine[v] = cv;
+		zetaFine.addToSubset(cv,v);
 	});
 
 	return zetaFine;
 }
 
 Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
-		std::vector<NodeMap<node> >& maps, Graph& Gfinest) {
+		std::vector<std::vector<node> >& maps, Graph& Gfinest) {
 	if (zetaCoarse.numberOfElements() == Gfinest.numberOfNodes()) {
 		return zetaCoarse;
 	}
@@ -45,7 +42,7 @@ Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
 	zetaFine.setUpperBound(zetaCoarse.upperBound()); // upper bound for ids in zetaFine must be set to upper bound in zetaCoarse, or modularity assertions fail
 
 	// store temporarily coarsest supernode here
-	NodeMap<node> tempMap(Gfinest.numberOfNodes());
+	std::vector<node> tempMap(Gfinest.numberOfNodes());
 	// TODO: add NodeMap.setAll, NodeMap.identity...
 	// initialize to identity
 	Gfinest.parallelForNodes([&](node v){
@@ -53,7 +50,7 @@ Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
 	});
 
 	// find coarsest supernode for each node
-	for (std::vector<NodeMap<node> >::iterator iter = maps.begin(); iter != maps.end(); ++iter) {
+	for (auto iter = maps.begin(); iter != maps.end(); ++iter) {
 		Gfinest.parallelForNodes([&](node v){
 			tempMap[v] = (* iter)[tempMap[v]];
 		});
@@ -69,12 +66,12 @@ Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
 	return zetaFine;
 }
 
-Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<NodeMap<node> >& maps) {
+Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<std::vector<node> >& maps) {
 
 	Partition zeta(Gfinest.numberOfNodes());
 
 	// store temporarily coarsest supernode here
-	NodeMap<node> super(Gfinest.numberOfNodes());
+	std::vector<node> super(Gfinest.numberOfNodes());
 	// initialize to identity
 	Gfinest.parallelForNodes([&](node v){
 		super[v] = v;
@@ -82,7 +79,7 @@ Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoar
 
 
 	// find coarsest supernode for each node
-	for (std::vector<NodeMap<node> >::iterator iter = maps.begin(); iter != maps.end(); ++iter) {
+	for (auto iter = maps.begin(); iter != maps.end(); ++iter) {
 		Gfinest.parallelForNodes([&](node v){
 			super[v] = (* iter)[super[v]];
 		});
@@ -90,6 +87,7 @@ Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoar
 
 	// assign super node id as cluster id
 	Gfinest.parallelForNodes([&](node v) {
+		DEBUG(super[v]);
 		zeta[v] = super[v];
 	});
 
@@ -100,7 +98,7 @@ Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoar
 	return zeta;
 
 }
-
+/* FIXME: to be deleted?
 Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse, Partition& zetaCoarse) {
 
 	Partition zetaFine(Gfine.numberOfNodes());
@@ -112,7 +110,7 @@ Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::ve
 	});
 
 	return zetaFine;
-}
+}*/
 
 } /* namespace NetworKit */
 

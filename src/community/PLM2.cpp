@@ -7,6 +7,7 @@
 
 #include "PLM2.h"
 #include <omp.h>
+#include "../coarsening/PartitionCoarsening.h"
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
 
@@ -14,7 +15,7 @@
 
 namespace NetworKit {
 
-PLM2::PLM2(bool refine, double gamma, std::string par) : parallelism(par), refine(refine), gamma(gamma){
+PLM2::PLM2(bool refine, double gamma, std::string par, count maxIter) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter) {
 
 }
 
@@ -138,28 +139,39 @@ Partition PLM2::run(Graph& G) {
 		}
 	};
 
-	do {
-		moved = false;
-		// apply node movement according to parallelization strategy
-		if (this->parallelism == "none") {
-			G.forNodes(tryMove);
-		} else if (this->parallelism == "simple") {
-			G.parallelForNodes(tryMove);
-		} else if (this->parallelism == "balanced") {
-			G.balancedParallelForNodes(tryMove);
-		} else {
-			ERROR("unknown parallelization strategy: " , this->parallelism);
-			throw std::runtime_error("unknown parallelization strategy");
-		}
-		if (moved) change = true;
-	} while (moved);
+	// performs node moves
+	auto movePhase = [&](){
+		count iter = 0;
+		do {
+			moved = false;
+			// apply node movement according to parallelization strategy
+			if (this->parallelism == "none") {
+				G.forNodes(tryMove);
+			} else if (this->parallelism == "simple") {
+				G.parallelForNodes(tryMove);
+			} else if (this->parallelism == "balanced") {
+				G.balancedParallelForNodes(tryMove);
+			} else {
+				ERROR("unknown parallelization strategy: " , this->parallelism);
+				throw std::runtime_error("unknown parallelization strategy");
+			}
+			if (moved) change = true;
 
+			if (iter == maxIter) {
+				WARN("move phase aborted after ", maxIter, " iterations");
+			}
+			iter += 1;
+		} while (moved && (iter <= maxIter));
+		INFO("iterations in move phase: ", iter);
+	};
+	
+	// first move phase
+	movePhase();
 
 	if (change) {
 		DEBUG("nodes moved, so begin coarsening and recursive call");
 		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
 		Partition zetaCoarse = run(coarsened.first);
-		DEBUG("zetaCoarse(upperBound, numberOfElements): ",zetaCoarse.upperBound()," ",zetaCoarse.numberOfElements());
 
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
@@ -176,23 +188,9 @@ Partition PLM2::run(Graph& G) {
 			});
 
 			// second move phase
-			do {
-				moved = false;
-				// apply node movement according to parallelization strategy
-				if (this->parallelism == "none") {
-					G.forNodes(tryMove);
-				} else if (this->parallelism == "simple") {
-					G.parallelForNodes(tryMove);
-				} else if (this->parallelism == "balanced") {
-					G.balancedParallelForNodes(tryMove);
-				} else {
-					ERROR("unknown parallelization strategy: " , this->parallelism);
-					throw std::runtime_error("unknown parallelization strategy");
-				}
-			} while (moved);
+			movePhase();
 		}
 	}
-	DEBUG("zeta(upperBound, numberOfElements): ",zeta.upperBound()," ",zeta.numberOfElements());
 	return zeta;
 }
 
@@ -211,43 +209,15 @@ std::string NetworKit::PLM2::toString() const {
 }
 
 std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Partition& zeta) {
-	Graph Gcoarse(0); // empty graph
-	Gcoarse.markAsWeighted(); // Gcon will be a weighted graph
+	bool parallelCoarsening = false; // switch between parallel and sequential coarsening
+	if (parallelCoarsening) {
+		PartitionCoarsening parCoarsening;
+		return parCoarsening.run(G, zeta);
+	} else {
+		ClusterContracter seqCoarsening;
+		return seqCoarsening.run(G, zeta);
+	}
 
-	std::vector<node> communityToMetaNode(zeta.upperBound(), none); // there is one meta-node for each community
-
-	// populate map cluster -> meta-node
-	G.forNodes([&](node v){
-		index c = zeta[v];
-		if (communityToMetaNode[c] == none) {
-			communityToMetaNode[c] = Gcoarse.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
-		}
-	});
-
-
-	count z = G.upperNodeIdBound();
-	std::vector<node> nodeToMetaNode(z);
-
-	// set entries node -> supernode
-	G.parallelForNodes([&](node v){
-		nodeToMetaNode[v] = communityToMetaNode[zeta[v]];
-	});
-
-
-	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
-	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
-		node su = nodeToMetaNode[u];
-		node sv = nodeToMetaNode[v];
-		if (zeta[u] == zeta[v]) {
-			// add edge weight to supernode (self-loop) weight
-			Gcoarse.setWeight(su, su, Gcoarse.weight(su, su) + ew);
-		} else {
-			// add edge weight to weight between two supernodes (or insert edge)
-			Gcoarse.setWeight(su, sv, Gcoarse.weight(su, sv) + ew);
-		}
-	}); 
-
-	return std::make_pair(Gcoarse, nodeToMetaNode);
 
 }
 

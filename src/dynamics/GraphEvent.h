@@ -36,7 +36,7 @@ public:
 
 	GraphEvent() = default;
 
-	GraphEvent(Type type, node u = none, node v = none, edgeweight w = none);
+	GraphEvent(Type type, node u = none, node v = none, edgeweight w = 1.0);
 
 	/**
 	 * Return string representation.

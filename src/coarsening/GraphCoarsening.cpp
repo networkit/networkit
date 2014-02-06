@@ -1,22 +1,24 @@
 /*
- * Contracter.cpp
+ * GraphCoarsening.cpp
  *
  *  Created on: 30.10.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "Contracter.h"
+#include "GraphCoarsening.h"
 
 namespace NetworKit {
 
-Contracter::Contracter() {
+GraphCoarsening::GraphCoarsening() {
 	// TODO Auto-generated constructor stub
 
 }
 
-Contracter::~Contracter() {
+GraphCoarsening::~GraphCoarsening() {
 	// TODO Auto-generated destructor stub
 }
 
 
 }
+
+

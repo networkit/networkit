@@ -7,7 +7,7 @@
 #ifndef SHELLLIST_H_
 #define SHELLLIST_H_
 
-#include <list> // std::list, double linked list
+#include <list> // std::list, doubly linked list
 #include <vector> // std::vector, dynamic array
 #include <functional> // std::function, typesafe function pointer
 #include "../graph/Graph.h"
@@ -19,7 +19,7 @@ namespace Aux {
 class ShellList {
 
 public:
-	ShellList(const Graph* orig_g);
+	ShellList(const std::vector<count>& seq);
   
   /**
    * Moves the node one shell downwards.
@@ -47,6 +47,7 @@ public:
     return this->nodeShell;
   }
 
+
   /**
    * @return Size of the shell list.
    * Note that we don't clean up empty shells, so this will always be equal
@@ -57,8 +58,20 @@ public:
     return this->shells.size();
   }
 
+	bool isShellEmpty(count shell) const {
+		return shells[shell].empty();
+	}
+
+	node popVertexOfShell(count shell) {
+		assert(! shells[shell].empty());
+		node result = (* shells[shell].begin());
+		shells[shell].pop_front();
+		return result;
+	}
+
+
 private:
-	const Graph *g;
+	std::vector<count> seq;
 
 	std::vector<std::list<node>> shells;
 	std::vector<std::list<node>::iterator> nodeHandle;

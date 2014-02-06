@@ -52,9 +52,9 @@ Partition DynamicEnsemble::run() {
 	// create core clustering
 	Partition core = this->overlapAlgo->run(*G, baseClusterings);
 	// contract graph according to core clustering
-	std::pair<Graph, NodeMap<node> > contraction = contracter.run(*G, core);
+	auto contraction = contracter.run(*G, core);
 	Graph Gcore = contraction.first;
-	NodeMap<node> fineToCoarse = contraction.second;
+	auto fineToCoarse = contraction.second;
 	// send contracted graph to final clusterer
 	Partition finalCoarse = this->finalAlgo->run(Gcore);
 

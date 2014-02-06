@@ -14,6 +14,13 @@ namespace NetworKit {
 void DGSWriter::write(std::vector<GraphEvent>& stream, std::string path) {
 	std::ofstream out(path);
 
+	// begin file with 
+	std::string cookie = "DGS004";
+	out << cookie << std::endl;
+
+	std::string description = "noname 0 0"; // TODO: this line may contain name, number of steps, number of events
+	out << description << std::endl;
+
 	for (GraphEvent ev : stream) {
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {

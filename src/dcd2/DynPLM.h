@@ -27,7 +27,7 @@ public:
 	 * 							2m 	-> singleton communities
 	 *
 	 */
-	DynPLM(std::string prepStrategy="isolate", bool refine=false, double gamma = 1.0, std::string par="balanced");
+	DynPLM(std::string prepStrategy="isolate", bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32);
 
 	void update(std::vector<GraphEvent>& stream) override;
 
@@ -41,6 +41,7 @@ private:
 	std::string parallelism;
 	bool refine;
 	double gamma = 1.0;
+	count maxIter;
 
 	PLM2 plm2; // instance of the static algorithm
 

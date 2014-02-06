@@ -24,6 +24,8 @@ public:
 
 	static std::vector<count> degreeDistribution(Graph& G);
 
+	static std::vector<unsigned int> degreeSequence(Graph& G); // TODO: revert to count when cython issue fixed
+
 
 	/**
 	 * The local clustering coefficient for a node is the number of edges among its

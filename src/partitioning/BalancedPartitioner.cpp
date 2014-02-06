@@ -30,9 +30,9 @@ Partition BalancedPartitioner::multilevelRun(Graph& graph, count numParts) {
 		MatchingContracter matchContract;
 		LocalMaxMatcher matcher(none);
 		Matching matching = matcher.run(graph);
-		std::pair<Graph, NodeMap<node> > coarseInfo = matchContract.run(graph, matching);
+		auto coarseInfo = matchContract.run(graph, matching);
 		Graph& coarseGraph = coarseInfo.first;
-		NodeMap<node>& fineToCoarse = coarseInfo.second;
+		auto fineToCoarse = coarseInfo.second;
 
 		// recurse
 		Partition coarsePartition = this->multilevelRun(coarseGraph, numParts);
@@ -62,9 +62,9 @@ Partition& BalancedPartitioner::multilevelRerun(Graph& graph, count numParts,
 		MatchingContracter matchContract;
 		LocalMaxMatcher matcher(none);
 		Matching matching = matcher.run(graph);
-		std::pair<Graph, NodeMap<node> > coarseInfo = matchContract.run(graph, matching);
+		auto coarseInfo = matchContract.run(graph, matching);
 		Graph& coarseGraph = coarseInfo.first;
-		NodeMap<node>& fineToCoarse = coarseInfo.second;
+		auto fineToCoarse = coarseInfo.second;
 
 		// recurse
 		Partition coarsePartition(coarseGraph.numberOfNodes());

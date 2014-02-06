@@ -23,10 +23,13 @@ class DynamicPubWebGenerator: public NetworKit::DynamicGraphGenerator
 protected:
 	PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
 	std::map<node, Point<float> > coordinates; //<! new and changed coordinates
+	bool writeInitialGraphToStream; // if true, on first call, write initial graph to stream
+
 
 public:
 	DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
-			float neighborhoodRadius, count maxNumberOfNeighbors);
+			float neighborhoodRadius, count maxNumberOfNeighbors,
+			bool writeInitialGraphToStream = true);
 
 	virtual ~DynamicPubWebGenerator();
 
@@ -41,6 +44,8 @@ public:
 
 
 	virtual std::map<node, Point<float> > getNewCoordinates() const;
+
+
 
 };
 

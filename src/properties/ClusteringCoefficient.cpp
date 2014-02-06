@@ -26,7 +26,7 @@ ClusteringCoefficient::local(Graph &G) const
 	count n = G.numberOfNodes();
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
-	G.parallelForNodes([&](node u){
+	G.balancedParallelForNodes([&](node u){
 	    count d = G.degree(u);
 	    
 	    if (d < 2) {

@@ -9,13 +9,12 @@
 #define CLUSTERCONTRACTER_H_
 
 
-#include "Contracter.h"
+#include "GraphCoarsening.h"
 #include "../structures/Partition.h"
-#include "../graph/NodeMap.h"
 
 namespace NetworKit {
 
-class ClusterContracter: public Contracter {
+class ClusterContracter: public GraphCoarsening {
 
 public:
 
@@ -23,7 +22,7 @@ public:
 
 	virtual ~ClusterContracter();
 
-	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Partition& zeta);
+	virtual std::pair<Graph, std::vector<node> > run(const Graph& G, const Partition& zeta);
 
 
 

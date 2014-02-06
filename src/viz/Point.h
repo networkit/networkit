@@ -21,10 +21,10 @@ namespace NetworKit {
 typedef uint64_t index; // more expressive name for an index into an array
 typedef uint64_t count; // more expressive name for an integer quantity
 
-template<class T> class Point;
-
-template<class T>
-std::ostream& operator <<(std::ostream& out, Point<T>& point);
+//template<class T> class Point;
+//
+//template<class T>
+//std::ostream& operator <<(std::ostream& out, Point<T>& point);
 
 
 
@@ -58,9 +58,24 @@ public:
 
 	T& operator[](const index i);
 
+	/**
+	 * Default point to string conversion.
+	 */
 	std::string toString();
 
-	friend std::ostream& operator<< <>(std::ostream &out, Point<T>& point);
+	/**
+	 * Point to comma separated string.
+	 */
+	std::string toCsvString();
+
+	/**
+	 * Point to space separated string.
+	 */
+	std::string toSsvString();
+
+	std::string genericToString(const std::string& start, const std::string& sep, const std::string& end);
+
+//	friend std::ostream& operator<< <>(std::ostream &out, Point<T>& point);
 };
 
 template<class T>
@@ -156,16 +171,33 @@ std::ostream& operator <<(std::ostream& out, Point<T>& point)
 
 template<class T>
 std::string Point<T>::toString() {
-	assert(this->data.size() > 0);
-	std::stringstream out;
-	out << "(" << (*this)[0];
-	for (index i = 1; i < this->data.size(); ++i) {
-		out << ", " << this->data[i];
-	}
-	out << ")";
-	return out.str();
+	return genericToString("", ", ", "");
 }
 
+template<class T>
+inline std::string NetworKit::Point<T>::toCsvString() {
+	return genericToString("(", ", ", ")");
+}
+
+template<class T>
+inline std::string NetworKit::Point<T>::toSsvString() {
+	return genericToString("", " ", "");
+}
+
+template<class T>
+inline std::string NetworKit::Point<T>::genericToString(
+		const std::string& start, const std::string& sep,
+		const std::string& end)
+{
+	assert(this->data.size() > 0);
+	std::stringstream out;
+	out << start << (*this)[0];
+	for (index i = 1; i < this->data.size(); ++i) {
+		out << sep << this->data[i];
+	}
+	out << end;
+	return out.str();
+}
 
 } /* namespace NetworKit */
 

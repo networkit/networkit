@@ -43,6 +43,8 @@ public:
 private:
 
 	 double p;
+	 bool firstCall;
+
 };
 
 } /* namespace NetworKit */

@@ -8,7 +8,7 @@
 #ifndef MATCHINGCONTRACTER_H_
 #define MATCHINGCONTRACTER_H_
 
-#include "Contracter.h"
+#include "GraphCoarsening.h"
 
 #include "../matching/Matching.h"
 
@@ -17,7 +17,7 @@ namespace NetworKit {
 /**
  * Contracts graph according to a matching.
  */
-class MatchingContracter: public Contracter {
+class MatchingContracter: public GraphCoarsening {
 
 public:
 
@@ -34,7 +34,7 @@ public:
 	 *
 	 * @return		coarse graph
 	 */
-	virtual std::pair<Graph, NodeMap<node> > run(Graph& G, Matching& M,
+	virtual std::pair<Graph, std::vector<node> > run(Graph& G, Matching& M,
 			bool noSelfLoops = false);
 };
 

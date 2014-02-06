@@ -239,8 +239,8 @@ private:
 	 * Allocates and returns a new subset id.
 	 */
 	inline index newSubsetId() {
-		//omega++;
-		index s = omega++;
+		omega++;
+		index s = omega;
 		return s;
 	}
 };

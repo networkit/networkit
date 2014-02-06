@@ -66,9 +66,9 @@ Partition EPP::run(Graph& G) {
 	// create core clustering
 	Partition core = this->overlap->run(G, baseClusterings);
 	// contract graph according to core clustering
-	std::pair<Graph, NodeMap<node> > contraction = contracter.run(G, core);
+	std::pair<Graph, std::vector<node> > contraction = contracter.run(G, core);
 	Graph Gcore = contraction.first;
-	NodeMap<node> fineToCoarse = contraction.second;
+	std::vector<node> fineToCoarse = contraction.second;
 	// send contracted graph to final clusterer
 	Partition finalCoarse = this->finalClusterer->run(Gcore);
 

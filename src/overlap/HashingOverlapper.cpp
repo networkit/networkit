@@ -51,9 +51,11 @@ Partition HashingOverlapper::run(Graph& G,
 	auto hash = djb2;
 
 	//core.setAll(0);
-	core.setUpperBound(1);
-	core.parallelForEntries([&](index s, index e){
-		core.addToSubset(0,e);
+	core.setUpperBound(2);
+	DEBUG(n, " ", core.upperBound(), " " , core.numberOfElements());
+	core.parallelForEntries([&](index e, index s){
+		DEBUG(e);
+		core.addToSubset(0,e);//core[e] = 0;
 	});
 	const count numC = clusterings.size();
 	if (numC > 2) {

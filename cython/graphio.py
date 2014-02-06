@@ -1,5 +1,5 @@
-from _NetworKit import (METISGraphReader, FastMETISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
-						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter)
+from _NetworKit import (Graph, METISGraphReader, FastMETISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
+						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter, DGSWriter, DGSStreamParser, GraphUpdater)
 
 import os
 import logging
@@ -85,3 +85,27 @@ def convertGraph(fromFormat, toFormat, fromPath, toPath=None):
 		toPath = "{0}.{1}.graph".format(fromPath.split(".")[0], toFormat)
 	converter.convert(fromPath, toPath)
 	print("converted {0} to {1}".format(fromPath, toPath))
+
+
+
+# dynamic
+
+def readStream(path, mapped=True, baseIndex=0):
+	"""
+		Read a graph event stream from a file.
+	"""
+	return DGSStreamParser(path, mapped, baseIndex).getStream()
+
+def writeStream(stream, path):
+	"""
+		Write a graph event stream to a file.
+	"""
+	DGSWriter().write(stream, path)
+
+
+def graphFromStream(path, mapped=True, baseIndex=0):
+	stream = readStream(path, mapped, baseIndex)
+	G = Graph()
+	gu = GraphUpdater(G)
+	gu.update(stream)
+	return G
