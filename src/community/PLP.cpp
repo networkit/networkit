@@ -39,7 +39,9 @@ Clustering PLP::run(Graph& G) {
 
 	// set unique label for each node
 	Clustering labels(z);
-	labels.allToSingletons();
+	G.parallelForNodes([&](node v) {
+		labels.toSingleton(v);
+	});
 
 	count nUpdated; // number of nodes which have been updated in last iteration
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
