@@ -72,7 +72,8 @@ Partition PLM::pass(Graph& G) {
 	// set volume for all singletons
 	//TODO: allToSingletons() assigns IDs in the range [1,n], however, here [0,n-1] is needed, so C-1 is appropriate
 	zeta.parallelForEntries([&](node u, index C) {
-		volCluster[C-1] = volNode[u];
+		if (C >= volCluster.size()) ERROR("C > volCluster.size(): ",C," ",volCluster.size());
+		volCluster[C] = volNode[u];
 	});
 	// end of initialization, set barrier for safety reasons
 

@@ -223,13 +223,14 @@ std::pair<Graph, std::vector<node> > PLM2::coarsen(const Graph& G, const Partiti
 
 Partition PLM2::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
 	Partition zetaFine(Gfine.upperNodeIdBound());
-	//setUpperBound(zetaCoarse.upperBound());
+	zetaFine.setUpperBound(zetaCoarse.upperBound());
 
 	Gfine.forNodes([&](node v) {
 		node mv = nodeToMetaNode[v];
 		index cv = zetaCoarse[mv];
 		zetaFine[v] = cv;
 	});
+	
 
 	return zetaFine;
 }

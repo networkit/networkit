@@ -120,6 +120,7 @@ void DynamicCommunityDetection::run() {
 		detectTime.push_back(timer.elapsedMilliseconds());
 
 		DEBUG("upper community id bound: " , zeta.upperBound());
+		DEBUG("zeta.numberOfSubsets(): ",zeta.numberOfSubsets()," reveals real upperBound(): ",zeta.upperBound());
 		// DEBUG("zeta at time " , G.time() , ": " , Aux::vectorToString(zeta.getVector()));
 		// 
 		

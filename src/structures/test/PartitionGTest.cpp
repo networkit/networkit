@@ -215,10 +215,10 @@ TEST_F(PartitionGTest, testCompact) {
 	p.mergeSubsets(p[0],p[1]);
 	p.mergeSubsets(p[1],p[2]);
 	p.compact();
-	EXPECT_EQ(p.upperBound(),6); // This is only a weak test
+	EXPECT_EQ(p.upperBound(),5); // This is only a weak test
 
 	// the following is a deeper test that checks if partition ids and structures match
-	std::vector<index> controlSet = {1,1,1,2,3,4,5,1,1,1};
+	std::vector<index> controlSet = {0,0,0,1,2,3,4,0,0,0};
 	p.forEntries([&](index e,index s){
 		EXPECT_EQ(controlSet[e],s);
 	});
