@@ -88,16 +88,6 @@ count Partition::numberOfSubsets() const {
 	std::vector<int> exists(n, 0); // a boolean vector would not be thread-safe
 	this->parallelForEntries([&](index e, index s) {
 		if (s != none) {
-			//FIXME: this is just temporary until other stuff has been worked out
-			/*while (s > exists.size()) {
-				this->omega++;
-				exists.push_back(0);
-			}*/
-			if (s >= exists.size()) {
-				exists.resize(s+1,0);
-				setUpperBound(s);
-			}
-			if (s > exists.size()) ERROR("upperBound is not properly set: ",s," > ",(n-1));
 			exists[s] = 1;
 		}
 	});
@@ -125,7 +115,7 @@ index Partition::lowerBound() const {
 
 void Partition::compact() {
 	std::map<index,index> compactingMap; // first index is the old partition index, "value" is the index of the compacted index
-	index i = 1;
+	index i = 0;
 	this->forEntries([&](index e, index s){ // get assigned SubsetIDs and create a map with new IDs
 		if (s!= none) { 
 			auto result = compactingMap.insert(std::make_pair(s,i));
