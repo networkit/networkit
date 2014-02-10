@@ -16,7 +16,7 @@ DynPLP::DynPLP(std::string prepStrategy, count theta) : prepStrategy(prepStrateg
 void DynPLP::update(std::vector<GraphEvent>& stream) {
 	DEBUG("processing event stream of length " , stream.size());
 	auto isolate = [&](node u) {
-		zeta.toSingleton(u);//zeta[u] = zeta.addCluster();
+		zeta.toSingleton(u);
 		activeNodes[u] = true;
 	};
 
@@ -26,15 +26,13 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 			// TRACE("event: " , ev.toString());
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
-					//zeta.append(ev.u);
-					zeta.extend(); //actually returns an index
-					zeta.toSingleton(ev.u);
+					index u = zeta.extend(); //actually returns an index
+					zeta.toSingleton(u); //ev.u
 					activeNodes.push_back(true);
-					zeta.toSingleton(ev.u);//zeta[ev.u] = zeta.addCluster();
 					break;
 				}
 				case GraphEvent::NODE_REMOVAL : {
-					zeta.remove(ev.u);//zeta[ev.u] = none;
+					zeta.remove(ev.u);
 					break;
 				}
 				case GraphEvent::EDGE_ADDITION : {
@@ -65,7 +63,7 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 		auto tryIsolate = [&](node u) {
 			if (zeta.contains(u)) {
 				// because the graph can be in the future, data structures do not necessarily know neighbor node u
-				zeta.toSingleton(u);//zeta[u] = zeta.addCluster();
+				zeta.toSingleton(u);
 				activeNodes[u] = true;
 			}
 		};
@@ -74,15 +72,13 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 			// TRACE("event: " , ev.toString());
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
-					//zeta.append(ev.u);
-					zeta.extend(); //actually returns an index
-					zeta.toSingleton(ev.u);
+					index u = zeta.extend(); 
 					activeNodes.push_back(true);
-					isolate(ev.u);
+					isolate(ev.u); //u
 					break;
 				}
 				case GraphEvent::NODE_REMOVAL : {
-					zeta.remove(ev.u);//zeta[ev.u] = none;
+					zeta.remove(ev.u);
 					break;
 				}
 				case GraphEvent::EDGE_ADDITION : {
@@ -134,8 +130,12 @@ void DynPLP::update(std::vector<GraphEvent>& stream) {
 	}
 }
 
-Partition DynPLP::detect() {
+Partition DynPLP::detect(bool restart) {
 	DEBUG("retrieving communities");
+
+	if (restart) {
+		zeta.allToSingletons();
+	}
 
 	nIterations = 0; // number of iterations
 

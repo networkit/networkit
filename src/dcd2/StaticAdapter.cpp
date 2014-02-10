@@ -17,7 +17,7 @@ void StaticAdapter::update(std::vector<GraphEvent>& stream) {
 	// do nothing
 }
 
-Partition StaticAdapter::detect() {
+Partition StaticAdapter::detect(bool restart) {
 	return algo->run(*G);
 }
 

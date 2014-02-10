@@ -157,7 +157,7 @@ TEST_F(DCD2GTest, testDynamicCommunityDetectionWithStatic) {
 
 TEST_F(DCD2GTest, tryDynPLMisolateNeighborsOnRealGraph) {
 	std::string path = "input/arxiv-qfin-author.dgs";
-	DynamicCommunityDetection dynCD(path, "DynPLM", "isolateNeighbors", 100, {"quality"});
+	DynamicCommunityDetection dynCD(path, "DynPLM", "isolateNeighbors", 100, 0, {"quality"});
 	dynCD.run();
 
 	INFO("quality timeline: " , Aux::vectorToString(dynCD.getTimeline("quality")));

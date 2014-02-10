@@ -30,8 +30,8 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 			// TRACE("event: " , ev.toString());
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
-					zeta.extend(); //index z = 
-					isolate(ev.u);
+					index z = zeta.extend();
+					isolate(z); //ev.u
 					break;
 				}
 				case GraphEvent::NODE_REMOVAL : {
@@ -76,8 +76,8 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
 					// FIXME: segmentation fault 
-					zeta.extend();
-					isolate(ev.u);
+					index z = zeta.extend();
+					isolate(z); //ev.u
 					break;
 				}
 				case GraphEvent::NODE_REMOVAL : {
@@ -131,13 +131,17 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 	}
 }
 
-Partition DynPLM::detect() {
+Partition DynPLM::detect(bool restart) {
 	DEBUG("retrieving solution");
-	return this->run(*this->G);
+	return this->run(*this->G, restart);
 }
 
-Partition DynPLM::run(Graph& G) {
+Partition DynPLM::run(Graph& G, bool restart) {
 	INFO("calling run method on " , G.toString());
+
+	if (restart) {
+		zeta.allToSingletons();
+	}
 
 	edgeweight total = G.totalEdgeWeight();
 	edgeweight divisor = (2 * total * total); // needed in modularity calculation
@@ -229,8 +233,7 @@ Partition DynPLM::run(Graph& G) {
 			// TRACE("node " , u , " not moved");
 		}
 	};
-
-	// first move phase
+	// first move hase
 
 		// performs node moves
 	auto movePhase = [&](){

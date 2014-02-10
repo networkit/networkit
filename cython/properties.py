@@ -72,9 +72,23 @@ def clustering(G):
 	return GraphProperties.averageLocalClusteringCoefficient(G)
 
 
-def powerLawExponent(G):
-	fit = powerlaw.Fit(degreeDistribution(G))
+def powerLawExponent(G, dd=None):
+	""" Supposing that the degreee distribution fits a power law,
+		get the exponent (gamma).
+	"""
+	if not dd:
+		dd = degreeDistribution(G)
+	fit = powerlaw.Fit(dd)
 	return fit.alpha
+
+def powerLawFit(G, dd=None):
+	""" Check if a power law is a good fit for the degree distribution.
+	"""
+	if not dd:
+		dd = degreeDistribution(G)
+	fit = powerlaw.Fit(dd)
+	R, p = fit.distribution_compare("power_law", "exponential", normalized_ratio=True)
+	return ((R > 0), R)
 
 
 # def powerLawExponent_(G):
@@ -98,25 +112,25 @@ def properties(nkG, settings):
 		logging.info("[...] converting to NetworX.Graph for some properties....")
 		nxG = nxadapter.nk2nx(nkG)
 
-	logging.info("[...] calculating basic properties")
+	logging.info("[...] calculating properties")
 	
 	# size
 	n, m = size(nkG)    # n and m
 
+	logging.info("[...] determining degree distribution")
 	# degrees 
 	degDist = GraphProperties.degreeDistribution(nkG) 
 	minDeg, maxDeg, avgDeg = degrees(nkG)
+
+	plfit = powerLawFit(nkG, degDist)
+	gamma = powerLawExponent(nkG, degDist)
 
 	# number of isolated nodes
 	isolates = degDist[0] if len(degDist) > 0 else None
 	satellites = degDist[1] if len(degDist) > 1 else None
 
-	# number of cliques
-	cliques = len(list(nx.find_cliques(nxG))) if nxG else None
-
-
 	# number of self-loops
-	loops = len(nxG.selfloop_edges()) if nxG else None
+	loops = len([(u, v) for (u,v) in nkG.edges() if (u == v)])
 	
 	# density
 	dens = density(nkG)
@@ -130,13 +144,13 @@ def properties(nkG, settings):
 	if settings["communities"]:
 		logging.info("[...] detecting communities")
 		# perform PLP and PLM community detection
-		logging.debug("performing community detection: PLP")
+		logging.debug("[...] performing community detection: PLP")
 		# TODO: avoid printout of status bar
 		plp = community.PLP()
 		zetaPLP = plp.run(nkG)
 		ncomPLP = zetaPLP.numberOfClusters()
 		modPLP = community.Modularity().getQuality(zetaPLP, nkG)
-		logging.info("performing community detection: PLM")
+		logging.info("[...] performing community detection: PLM")
 		plm = community.PLM("balanced")
 		zetaPLM = plm.run(nkG)
 		ncomPLM = zetaPLM.numberOfClusters()
@@ -145,15 +159,14 @@ def properties(nkG, settings):
 	# degree histogram
 	
 	labels, histo = None, None
-	if settings["degreeDistribution"]:
-		logging.info("[...] calculating degree histogram")    
-		histo = GraphProperties.degreeDistribution(nkG)
+	if settings["degreeHistogram"]:
+		logging.info("[...] preparing degree histogram")    
+		histo = degDist
 		(labels, histo) = compressHistogram(histo, nbins=25)
 
 	# connected components
 	nComponents, componentSizes = None, None
 	if settings["components"]:
-		logging.info("[...] finding connected components")    
 		nComponents, componentSizes = components(nkG)
 
 	# diameter
@@ -194,6 +207,8 @@ def properties(nkG, settings):
 		 "minDeg": minDeg,
 		 "maxDeg": maxDeg,
 		 "avgDeg": avgDeg,
+		 "plfit": plfit,
+		 "gamma": gamma,
 		 "avglcc": avglcc,
 		 "nComponents": nComponents,
 		 "sizeLargestComponent": max(componentSizes.values()),
@@ -207,7 +222,6 @@ def properties(nkG, settings):
 		 "modPLM": modPLM,
 		 "dens": dens,
 		 "assort": assort,
-		 "cliques": cliques,
 		 "histo": (labels, histo),
 		 }
 
@@ -224,7 +238,9 @@ def overview(nkG, settings=collections.defaultdict(lambda: True)):
 		["edges (m)", props["m"]],
 		["min. degree", props["minDeg"]],
 		["max. degree", props["maxDeg"]],
-		["avg. degree", props["avgDeg"]],
+		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
+		["degree power law fit?", "{0}, {1}".format(props["plfit"][0], "{0:.6f}".format(props["plfit"][1]))],
+		["degree power law exponent", "{0:.4f}".format(props["gamma"]) if props["plfit"][0] else None],
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None]
@@ -237,8 +253,7 @@ def overview(nkG, settings=collections.defaultdict(lambda: True)):
 	]
 	
 	miscProperties = [
-		["degree assortativity", "{0:.6f}".format(props["assort"]) if props["assort"] else None],
-		["cliques", props["cliques"]]
+		["degree assortativity", "{0:.6f}".format(props["assort"]) if props["assort"] else None]
 	]
 
 	communityStructure = [
