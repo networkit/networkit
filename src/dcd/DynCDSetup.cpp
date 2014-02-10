@@ -9,7 +9,7 @@
 
 #include "../clustering/Modularity.h"
 #include "../clustering/DynamicNMIDistance.h"
-#include "../clustering/SampledRandMeasure.h"
+#include "../clustering/SampledNodeStructuralRandMeasure.h"
 
 namespace NetworKit {
 
@@ -61,7 +61,7 @@ void DynCDSetup::run() {
 	// helpers
 	Modularity modularity;
 	DynamicNMIDistance NMID;
-	SampledRandMeasure sampledRand(500);
+	SampledNodeStructuralRandMeasure sampledRand(500);
 
 	// initialize graph
 	gen->initializeGraph();

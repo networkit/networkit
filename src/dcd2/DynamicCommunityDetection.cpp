@@ -16,15 +16,15 @@
 #include "../auxiliary/Timer.h"
 #include "../community/PLP.h"
 #include "../community/PLM2.h"
-#include "../clustering/SampledRandMeasure.h"
+#include "../clustering/GraphStructuralRandMeasure.h"
 #include "../community/CommunityGraph.h"
 
 
 namespace NetworKit {
 
-DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy, count interval,
+DynamicCommunityDetection::DynamicCommunityDetection(std::string inputPath, std::string algoName, std::string updateStrategy, count interval, count restart,
 	std::vector<std::string> recordSettings, std::string graphOutputPath) :
-	 inputPath(inputPath), graphOutputPath(graphOutputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), recordSettings(recordSettings)
+	 inputPath(inputPath), graphOutputPath(graphOutputPath), algoName(algoName), updateStrategy(updateStrategy), interval(interval), restart(restart), recordSettings(recordSettings)
 {
 
 }
@@ -112,15 +112,22 @@ void DynamicCommunityDetection::run() {
 		timer.stop();
 		updateTime.push_back(timer.elapsedMilliseconds());
 
+
+		bool doRestart;
+		if ((restart != 0) && ((run % restart) == 0)) {
+			// restart all 'restart' runs
+			doRestart = true;
+		} else {
+			doRestart = false;
+		}
 		timer.start();
 		//
-		Partition zeta = algo->detect();
+		Partition zeta = algo->detect(doRestart);
 		//
 		timer.stop();
 		detectTime.push_back(timer.elapsedMilliseconds());
 
 		DEBUG("upper community id bound: " , zeta.upperBound());
-		DEBUG("zeta.numberOfSubsets(): ",zeta.numberOfSubsets()," reveals real upperBound(): ",zeta.upperBound());
 		// DEBUG("zeta at time " , G.time() , ": " , Aux::vectorToString(zeta.getVector()));
 		// 
 		
@@ -137,8 +144,8 @@ void DynamicCommunityDetection::run() {
 		if (record("continuity")) {
 
 			if (run >= 2) {
-				SampledRandMeasure sampledRand(5000);
-				double cont = sampledRand.getDissimilarity(G, zeta, previous);
+				GraphStructuralRandMeasure dissMeasure;
+				double cont = dissMeasure.getDissimilarity(G, zeta, previous);
 				continuity.push_back(cont);
 			} else {
 				continuity.push_back(0.0); // to make timelines the same length

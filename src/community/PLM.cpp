@@ -27,11 +27,13 @@ Partition PLM::pass(Graph& G) {
 
 	// FIXME: PLM cannot deal with deleted nodes
 
-	// init clustering to singletons
-	count n = G.upperNodeIdBound();//TODO: maybe this is wrong: G.numberOfNodes();
-
-	Partition zeta(n);
-	zeta.allToSingletons();
+	count z = G.upperNodeIdBound();
+	// init communities to singletons
+	Partition zeta(z);
+	G.parallelForNodes([&](node v) {
+		zeta.toSingleton(v);
+	});
+	index o = zeta.upperBound();
 
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();

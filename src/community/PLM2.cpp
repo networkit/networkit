@@ -28,7 +28,9 @@ Partition PLM2::run(Graph& G) {
 
 	// init communities to singletons
 	Partition zeta(z);
-	zeta.allToSingletons();
+	G.parallelForNodes([&](node v) {
+		zeta.toSingleton(v);
+	});
 	index o = zeta.upperBound();
 
 	// init graph-dependent temporaries
@@ -164,7 +166,7 @@ Partition PLM2::run(Graph& G) {
 		} while (moved && (iter <= maxIter));
 		INFO("iterations in move phase: ", iter);
 	};
-	
+
 	// first move phase
 	movePhase();
 

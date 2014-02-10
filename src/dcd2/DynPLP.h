@@ -24,7 +24,7 @@ public:
 
 	void update(std::vector<GraphEvent>& stream) override;
 
-	Partition detect() override;
+	Partition detect(bool restart=false) override;
 
 private:
 	std::string prepStrategy;

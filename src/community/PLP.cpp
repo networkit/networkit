@@ -30,31 +30,18 @@ PLP::~PLP() {
 Partition PLP::run(Graph& G) {
 	typedef index label; // a label is the same as a cluster id
 
-	// get global variables
-	const bool randOrder = RAND_ORDER;							// explicitly randomize node order for each iteration
-	const count inactiveSeeds = INACTIVE_SEEDS;					// number of seed nodes which are set inactive for first iteration
-	const bool normalizeVotes = NORMALIZE_VOTES;
-	const bool scaleClusterStrength = (SCALE_STRENGTH != 0.0);
-	std::vector<double> scale;
-
-	// init random for std::shuffle
-	std::default_random_engine rd;
-	std::mt19937 randgen(rd());
-
-	// option not used
-	if (normalizeVotes) {
-		WARN("normalized votes turned off for undirected graphs");
-	}
-
 	count n = G.numberOfNodes();
+	index z = G.upperNodeIdBound();
 	// update threshold heuristic
 	if (updateThreshold == none) {
 		updateThreshold = (count) (n / 1e5);
 	}
 
 	// set unique label for each node
-	Partition labels(n);
-	labels.allToSingletons();
+	Partition labels(z);
+	G.parallelForNodes([&](node v) {
+		labels.toSingleton(v);
+	});
 
 	count nUpdated; // number of nodes which have been updated in last iteration
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
@@ -74,28 +61,8 @@ Partition PLP::run(Graph& G) {
 	 * In general this does not work. It was changed to: No label was changed in last iteration.
 	 */
 
-	// prepare nodes for randomized iteration order
-	std::vector<node> nodes(n);
-	G.parallelForNodes([&](node v) {
-		nodes[v] = v; // store all nodes in vector
-	});
-
-	std::vector<bool> activeNodes(n); // record if node must be processed
-	activeNodes.assign(n, true);
-
-
-	// randomize outcome by deactivating a very small number of nodes
-	// TODO: make this an object attribute
-	if (inactiveSeeds > 0) {
-		for (count i = 0; i < inactiveSeeds; i++) {
-			node u = Aux::Random::integer(n-1);
-			activeNodes[u] = false;
-		}
-	}
-
-
-
-
+	std::vector<bool> activeNodes(z); // record if node must be processed
+	activeNodes.assign(z, true);
 
 	Aux::Timer runtime;
 
@@ -108,51 +75,7 @@ Partition PLP::run(Graph& G) {
 		// reset updated
 		nUpdated = 0;
 
-		if (randOrder) { // randomize the order of node iteration
-			// new random order
-#ifdef _OPENMP
-			// not really random, but the next best thing in parallel w/o hurting performance
-			count numChunks = omp_get_num_threads();
-			count chunkSize = (count) n / numChunks;// discard remainder
-#pragma omp parallel for
-			for (index i = 0; i < numChunks; ++i) {
-				index begin = i * chunkSize;
-				index end = begin + chunkSize;
-				std::shuffle(&nodes[begin], &nodes[end], randgen);
-			}
-#else
-			std::shuffle(nodes.begin(), nodes.end(), randgen);
-#endif
-		}
-
-		if (scaleClusterStrength) {
-			// TODO: documentation?
-			std::vector<count> clusterSizes = labels.subsetSizes();
-			scale.resize(clusterSizes.size());
-			INFO("Scaling cluster strengths with exponent " , SCALE_STRENGTH);
-			for (index i = 0; i < clusterSizes.size(); ++i) {
-				scale[i] = pow((double) clusterSizes[i], SCALE_STRENGTH);
-			}
-		}
-
-		//Aux::ProgressMeter pm(n, 10000);
-		// Reason: performance decreases for very big graphs
-
-		// removed for performance reasons
-		// count nActive = std::count_if(activeNodes.begin(), activeNodes.end(), countOne);
-		// INFO("number of active nodes: " , nActive);
-
-// TODO: make this forNodes loop
-#pragma omp parallel for schedule(guided) shared(nUpdated)
-		for (index i = 0; i < n; ++i) {
-			node v = nodes[i];
-
-			// PROGRESS
-			// note: bool printProgress = PRINT_PROGRESS is not defined anymore
-			/*if (printProgress) {
-				pm.signal(i);
-			}*/
-
+		G.balancedParallelForNodes([&](node v){
 			if ((activeNodes[v]) && (G.degree(v) > 0)) {
 
 				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
@@ -160,11 +83,7 @@ Partition PLP::run(Graph& G) {
 				// weigh the labels in the neighborhood of v
 				G.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
 					label lw = labels[w];
-					if (scaleClusterStrength) {
-						labelWeights[lw] += weight / scale[labels[v]]; // add weight of edge {v, w}
-					} else {
-						labelWeights[lw] += weight; // add weight of edge {v, w}
-					}
+					labelWeights[lw] += weight; // add weight of edge {v, w}
 				});
 
 				// get heaviest label
@@ -186,18 +105,13 @@ Partition PLP::run(Graph& G) {
 			} else {
 				// node is isolated
 			}
-
-		} // end for shuffled nodes
+		});
 
 		// for each while loop iteration...
 
-		// PROGRESS
-		/*if (printProgress) {
-			pm.end();
-		}*/
-
 		runtime.stop();
 		DEBUG("[DONE] LabelPropagation: iteration #" , nIterations , " - updated " , nUpdated , " labels, time spent: " , runtime.elapsedTag());
+
 
 	} // end while
 
@@ -207,9 +121,10 @@ Partition PLP::run(Graph& G) {
 
 std::string PLP::toString() const {
 	std::stringstream strm;
-	strm << "PLP(" << "version=" << this->VERSION << ", randOrder=" << RAND_ORDER << ",updateThreshold=" << this->updateThreshold << ")";
+	strm << "PLP(updateThreshold=" << this->updateThreshold << ")";
 	return strm.str();
 }
+
 
 void PLP::setUpdateThreshold(count th) {
 	this->updateThreshold = th;
