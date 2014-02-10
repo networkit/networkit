@@ -28,6 +28,7 @@ Partition PLM::pass(Graph& G) {
 	// FIXME: PLM cannot deal with deleted nodes
 
 	count z = G.upperNodeIdBound();
+	count n = G.numberOfNodes();
 	// init communities to singletons
 	Partition zeta(z);
 	G.parallelForNodes([&](node v) {
