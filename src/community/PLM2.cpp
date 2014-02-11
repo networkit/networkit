@@ -28,7 +28,7 @@ Clustering PLM2::run(Graph& G) {
 
 	// init communities to singletons
 	Clustering zeta(z);
-	G.parallelForNodes([&](node v) {
+	G.forNodes([&](node v) {
 		zeta.toSingleton(v);
 	});
 	index o = zeta.upperBound();
