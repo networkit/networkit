@@ -163,6 +163,21 @@ TEST_F(DCD2GTest, tryDynPLMisolateNeighborsOnRealGraph) {
 	INFO("quality timeline: " , Aux::vectorToString(dynCD.getTimeline("quality")));
 }
 
+TEST_F(DCD2GTest, tryDynPLPOnGraph) {
+	std::string path;
+	count steps;
+	std::cout << "enter path> ";
+	std::cin >> path;
+	std::cout << std::endl;
+	std::cout << "enter step interval> ";
+	std::cin >> steps;
+	std::cout << std::endl;
+	DynamicCommunityDetection dynCD(path, "DynPLP", "isolate", 100, 0, {"quality"});
+	DEBUG("starting");
+	dynCD.run();
+
+	INFO("quality timeline: " , Aux::vectorToString(dynCD.getTimeline("quality")));
+}
 
 
 
