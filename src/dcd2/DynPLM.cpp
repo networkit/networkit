@@ -140,7 +140,9 @@ Clustering DynPLM::run(Graph& G, bool restart) {
 	INFO("calling run method on " , G.toString());
 
 	if (restart) {
-		zeta.allToSingletons();
+		G.forNodes([&](node v) {
+				zeta.toSingleton(v);
+		});
 	}
 
 	edgeweight total = G.totalEdgeWeight();
