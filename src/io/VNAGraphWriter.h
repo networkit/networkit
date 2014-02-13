@@ -17,7 +17,8 @@ namespace NetworKit {
 
 /**
  * Writes a graph and its coordinates as VNA file.
- * TODO: unit test
+ * The VNA format is commonly used by Netdraw, and is very similar to Pajek format. It defines nodes and edges (ties),
+ * and supports attributes. Each section of the file is separated by an asterisk. 
  */
 class VNAGraphWriter: public NetworKit::GraphWriter {
 protected:

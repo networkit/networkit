@@ -1,30 +1,21 @@
 from _NetworKit import (Graph, METISGraphReader, FastMETISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
-						 LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter, DGSWriter, DGSStreamParser, GraphUpdater)
+						 VNAGraphWriter, GMLGraphWriter, LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter, DGSWriter, \
+						  DGSStreamParser, GraphUpdater)
 
 import os
 import logging
 
-def readGraph(path, format=None, fast=False, separator='\t', firstNode=1):
-	"""    Read graph and return a NetworKit::Graph"""
-	# TODO: detect file format by looking at the file content
-	if format is None:    # look at file extension
-		if path.endswith(".graph") or path.endswith(".metis") or path.endswith(".dimacs") or path.endswith(".metis.graph"):
-			if fast:
-				print("using experimental fast reader")
-				reader = FastMETISGraphReader()
-			else:
-				reader = METISGraphReader()
-		else:
-			raise Exception("unknown graph file format")
-	else:
-		if (format is "metis"):
-			if fast:
-				print("using experimental fast reader")
-				reader = FastMETISGraphReader()
-			else:
-				reader = METISGraphReader()
-		elif (format is "edgelist"):
-			reader = EdgeListIO(separator, firstNode)
+def readGraph(path, format="metis", **kwargs):
+	"""    Read graph file in various formats and return a NetworKit::Graph"""
+	
+	readers = 	{"metis": METISGraphReader,
+				 "edgelist": EdgeListIO}
+
+	try:
+		reader = readers[format](**kwargs)
+	except KeyError:
+		raise Exception("unrecognized format: {0}".format(format))
+
 
 	if ("~" in path):
 		path = os.path.expanduser(path)
@@ -40,11 +31,19 @@ def readGraph(path, format=None, fast=False, separator='\t', firstNode=1):
 
 
 def writeGraph(G, path, format="metis"):
-	if format is "metis":
-		writer = METISGraphWriter()
+	""" Write graph to various output formats """
+	writers = 	{"metis" : METISGraphWriter,
+				"gexf": None,
+				"vna": VNAGraphWriter,
+				"dot": DotGraphWriter,
+				"graphviz": DotGraphWriter,
+				"gml": GMLGraphWriter
+				}
+	try:
+		writer = writers[format]()
 		writer.write(G, path)
 		logging.info("wrote graph {0} to file {1}".format(G, path))
-	else:
+	except:
 		raise Exception("format {0} currently not supported".format(format))		
 
 class GraphConverter:
