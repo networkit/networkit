@@ -508,6 +508,7 @@ cdef class FastMETISGraphReader:
 		cdef _Graph _G = self._this.read(pathbytes)
 		return Graph(0).setThis(_G)
 
+
 cdef extern from "../src/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
 		_METISGraphWriter() except +
@@ -536,6 +537,37 @@ cdef class DotGraphWriter:
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
 		self._this.write(G._this, stdstring(path))
+
+
+cdef extern from "../src/io/VNAGraphWriter.h":
+	cdef cppclass _VNAGraphWriter "NetworKit::VNAGraphWriter":
+		_VNAGraphWriter() except +
+		void write(_Graph G, string path) except +
+
+
+cdef class VNAGraphWriter:
+	""" Writes graphs in the VNA format. The VNA format is commonly used by Netdraw, and is very similar to Pajek format. 
+	It defines nodes and edges (ties), and supports attributes. Each section of the file is separated by an asterisk. """
+	cdef _VNAGraphWriter _this
+	
+	def write(self, Graph G not None, path):
+		 # string needs to be converted to bytes, which are coerced to std::string
+		self._this.write(G._this, stdstring(path)) 
+
+
+cdef extern from "../src/io/GMLGraphWriter.h":
+	cdef cppclass _GMLGraphWriter "NetworKit::GMLGraphWriter":
+		_GMLGraphWriter() except +
+		void write(_Graph G, string path) except +
+
+
+cdef class GMLGraphWriter:
+	""" Writes a (so far unweighted) graph and its coordinates as a GML file. """
+	cdef _GMLGraphWriter _this
+	
+	def write(self, Graph G not None, path):
+		 # string needs to be converted to bytes, which are coerced to std::string
+		self._this.write(G._this, stdstring(path)) 
 		
 
 cdef extern from "../src/io/EdgeListIO.h":
@@ -1008,13 +1040,13 @@ cdef class GraphEvent:
 		def __get__(self): 
 			return self._this.v
 		def __set__(self, v):
-			self._this.type = v
+			self._this.v = v
 
 	property w:
 		def __get__(self): 
 			return self._this.w
 		def __set__(self, w):
-			self._this.type = w			
+			self._this.w = w			
 	
 	def __cinit__(self, type, u, v, w):
 		self._this = _GraphEvent(type, u, v, w)
