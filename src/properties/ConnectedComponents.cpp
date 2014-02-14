@@ -35,7 +35,7 @@ void ConnectedComponents::run(const Graph& G) {
 	do {
 		DEBUG("next iteration");
 		change = false;
-		G.balancedParallelForNodes([&](node u) {
+		G.forNodes([&](node u) {
 			if ((activeNodes[u]) && (G.degree(u) > 0)) {
 
 				std::vector<index> neighborLabels;
