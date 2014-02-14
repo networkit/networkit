@@ -28,18 +28,33 @@ void ConnectedComponents::run(const Graph& G) {
 		component[v] = v;
 	});
 
+	std::vector<bool> activeNodes(z); // record if node must be processed
+	activeNodes.assign(z, true);
+
 	bool change = false;
 	do {
 		DEBUG("next iteration");
 		change = false;
 		G.balancedParallelForNodes([&](node u) {
-			G.forNeighborsOf(u, [&](node v) {
-				if (component[v] < component[u]) {
-					component[u] = component[v];
+			if ((activeNodes[u]) && (G.degree(u) > 0)) {
+
+				std::vector<index> neighborLabels;
+				G.forNeighborsOf(u, [&](node v) {
+					neighborLabels.push_back(component[v]);
+				});
+				// get smallest
+				index smallest = *std::min_element(neighborLabels.begin(), neighborLabels.end());
+
+				if (component[u] != smallest) {
+					component[u] = smallest;
 					change = true;
+					G.forNeighborsOf(u, [&](node v) {
+						activeNodes[v] = true;
+					});
+				} else {
+					activeNodes[u] = false; // current node becomes inactive
 				}
-			});
-			// minimum neighboring label assigned
+			}
 		});
 	} while (change);
 }
