@@ -65,6 +65,14 @@ def components(G):
 	componentSizes = cc.getComponentSizes()
 	return (nComponents, componentSizes)
 
+def numberOfComponents(G):
+	""" Find and number of components """
+	logging.info("[...] finding connected components....")
+	cc = ConnectedComponents()
+	cc.run(G)
+	nComponents = cc.numberOfComponents()
+	return nComponents
+
 def clustering(G):
 	""" Get clustering properties of the graph:
 		Returns average local clustering coefficient
