@@ -8,6 +8,7 @@
 #ifndef NOGTEST
 
 #include "MapperGTest.h"
+#include "../../clustering/GraphClusteringTools.h"
 
 
 namespace NetworKit {
@@ -22,7 +23,6 @@ MapperGTest::~MapperGTest() {
 }
 
 
-//FIXME communicaitonGraph
 #if 0
 TEST_F(MapperGTest, tryRcmMapping) {
 	// read application graph
@@ -40,7 +40,7 @@ TEST_F(MapperGTest, tryRcmMapping) {
 	Graph host = graphReader.read("input/mapping/grid-5x5-dist-arch.graph");
 
 	// compute communication graph
-	Graph commGraph = partition.communicationGraph(appGraph);
+	Graph commGraph = GraphClusteringTools::communicationGraph(appGraph, partition);
 
 	// evaluate trivial mapping
 	RcmMapper mapper;
@@ -65,7 +65,7 @@ TEST_F(MapperGTest, tryCommunicationGraph) {
 	Partition partition;
 
 	// TODO: compute communication graph
-	//Graph commGraph = partition.communicationGraph(g);
+	Graph commGraph = GraphClusteringTools::communicationGraph(g, partition);
 
 	// TODO: check communication graph
 

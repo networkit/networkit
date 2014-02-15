@@ -20,6 +20,7 @@
 #include "../EPPFactory.h"
 #include "../CommunityGraph.h"
 #include "../PLM2.h"
+#include "../../clustering/GraphClusteringTools.h"
 
 
 
@@ -66,7 +67,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnUniformGraph) {
 	PLP lp;
 	Partition zeta = lp.run(G);
 
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering"; //FIXME
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
@@ -89,7 +90,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClus
 	double mod = modularity.getQuality(zeta, G);
 	DEBUG("modularity produced by LabelPropagation: " , mod);
 
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering"; //FIXME
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect";
 
 }
@@ -116,8 +117,8 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	DEBUG("modularity produced by LabelPropagation: " , mod);
 	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
 
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering"; //FIXME
-	EXPECT_TRUE(zeta.equals(reference, G)) << "LP should detect exactly the reference clustering"; //FIXME
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta, reference, G)) << "LP should detect exactly the reference clustering";
 
 }
 
@@ -136,7 +137,7 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnDisconnectedGraph) {
 	double mod = modularity.getQuality(zeta, G);
 	DEBUG("modularity produced by LabelPropagation: " , mod);
 
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering"; //FIXME
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect"; //FIXME
 
 }
@@ -150,9 +151,9 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	PLP lp;
 	Partition zeta = lp.run(G);
 
-	EXPECT_TRUE(zeta.isProper(G)); //FIXME
-	EXPECT_TRUE(zeta.isSingletonPartition(G));
-	EXPECT_TRUE(zeta.isOnePartition(G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
+	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, zeta));
+	EXPECT_TRUE(GraphClusteringTools::isOneClustering(G, zeta)); //FIXME does this make sense? singleton and one partition at the same time.
 
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
@@ -180,8 +181,8 @@ TEST_F(ClusteringAlgoGTest, testLabelPropagationOnManySmallClusters) {
 	DEBUG("modularity produced by LabelPropagation: " , mod);
 	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
 
-	EXPECT_TRUE(zeta.isProper(G_ref.first)) << "the resulting partition should be a proper clustering"; //FIXME
-	EXPECT_TRUE(zeta.equals(G_ref.second, G_ref.first)) << "Can LabelPropagation detect the reference clustering?"; //FIXME
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G_ref.first, zeta)) << "the resulting partition should be a proper clustering";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta, G_ref.second, G_ref.first)) << "Can LabelPropagation detect the reference clustering?";
 
 }
 
@@ -278,7 +279,7 @@ TEST_F(ClusteringAlgoGTest, testCNM) {
 	INFO("CNM number of clusters: " , clustering.numberOfSubsets());
 	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
 	// EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
-	EXPECT_TRUE(clustering.isProper(G)); //FIXME
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, clustering));
 
 }
 
@@ -366,7 +367,7 @@ TEST_F(ClusteringAlgoGTest, testEPPFactory) {
 
 	INFO("number of clusters: " , zeta.numberOfSubsets());
 
-	EXPECT_TRUE(zeta.isProper(jazz));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(jazz, zeta));
 }
 
 
@@ -381,14 +382,14 @@ TEST_F(ClusteringAlgoGTest, testPLM2) {
 
 	INFO("number of clusters: " , zeta.numberOfSubsets());
 	INFO("modularity: " , modularity.getQuality(zeta, G));
-	EXPECT_TRUE(zeta.isProper(G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 
 	PLM2 plmr(true, 1.0);
 	Partition zeta2 = plmr.run(G);
 
 	INFO("number of clusters: " , zeta2.numberOfSubsets());
 	INFO("modularity: " , modularity.getQuality(zeta2, G));
-	EXPECT_TRUE(zeta2.isProper(G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
 

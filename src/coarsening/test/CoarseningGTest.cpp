@@ -14,6 +14,7 @@
 #include "../../coarsening/ClusterContracter.h"
 #include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
+#include "../../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -93,7 +94,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	ClusteringProjector project;
 	Partition zetaBack = project.projectBackToFinest(zeta1, maps, G0);
 
-	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical"; //FIXME
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta0, zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical";
 }
 
 
@@ -118,7 +119,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 	ClusteringProjector project;
 	Partition zetaBack = project.projectBackToFinest(zeta1, maps, G0);
 
-	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical"; //FIXME
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta0, zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical";
 }
 
 

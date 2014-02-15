@@ -21,6 +21,7 @@
 #include "../DynamicEnsemble.h"
 #include "../../community/PLM.h"
 #include "../../overlap/HashingOverlapper.h"
+#include "../../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -61,14 +62,14 @@ TEST_F(DCDGTest, testDynamicLabelPropagation) {
 
 	EXPECT_EQ(G->numberOfNodes(), zeta1.numberOfElements()) << "clustering must have as many entries as nodes";
 
-	EXPECT_TRUE(zeta1.isProper(*G)) << "first dynamic clustering should be a proper clustering of G"; 
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(*G, zeta1)) << "first dynamic clustering should be a proper clustering of G"; 
 
 	// 9. resume generator
 	gen->generateNodes(n2); // terminate when function returns true
 	EXPECT_EQ(n2, G->numberOfNodes()) << n2 << "nodes should have been generated";
 	// 10. resume clusterer
 	Partition zeta2 = dynCD->run();
-	EXPECT_TRUE(zeta2.isProper(*G)) << "second dynamic clustering should be a proper clustering of G";
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(*G, zeta2)) << "second dynamic clustering should be a proper clustering of G";
 
 
 	INFO("number of clusters 1: " , zeta1.numberOfSubsets());
@@ -78,14 +79,14 @@ TEST_F(DCDGTest, testDynamicLabelPropagation) {
 	PLP plp;
 	Partition zetaPLP = plp.run(*G);
 	INFO("number of clusters for static PLP: " , zetaPLP.numberOfSubsets());
-	EXPECT_TRUE(zetaPLP.isProper(*G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(*G, zetaPLP));
 
 	INFO("first clustering: " , Aux::vectorToString(zeta1.getVector()));
 
 	PLM plm;
 	Partition zetaPLM = plm.run(*G);
 	INFO("number of clusters for static PLM: " , zetaPLM.numberOfSubsets());
-	EXPECT_TRUE(zetaPLM.isProper(*G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(*G, zetaPLM));
 
 	INFO("second clustering: " , Aux::vectorToString(zeta1.getVector()));
 
@@ -360,7 +361,7 @@ TEST_F(DCDGTest, testTDynamicLabelPropagationStrategyIsolate) {
 
 	for (std::vector<Partition> clusteringSequence : setup.dynamicClusteringTimelines) {
 		Partition last = clusteringSequence.back();
-		//FIXME EXPECT_TRUE(last.isProper(G)) << "final clustering in the sequence should be a proper clustering of G";
+		EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, last)) << "final clustering in the sequence should be a proper clustering of G";
 	}
 
 
@@ -382,7 +383,7 @@ TEST_F(DCDGTest, testTDynamicLabelPropagationStrategyIsolateNeighbors) {
 
 	for (std::vector<Partition> clusteringSequence : setup.dynamicClusteringTimelines) {
 		Partition last = clusteringSequence.back();
-		EXPECT_TRUE(last.isProper(G)) << "final clustering in the sequence should be a proper clustering of G";
+		EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, last)) << "final clustering in the sequence should be a proper clustering of G";
 	}
 
 }
@@ -409,7 +410,7 @@ TEST_F(DCDGTest, testDynamicEnsembleWithTDynamicLabelPropagation) {
 	Graph G = setup.getGraphCopy();
 	for (std::vector<Partition> clusteringSequence : setup.dynamicClusteringTimelines) {
 		Partition last = clusteringSequence.back();
-		//FIXME EXPECT_TRUE(last.isProper(G)) << "final clustering in the sequence should be a proper clustering of G";
+		EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, last)) << "final clustering in the sequence should be a proper clustering of G";
 	}
 
 
@@ -432,7 +433,7 @@ TEST_F(DCDGTest, testSetupWithStatic) {
 	Graph G = setup.getGraphCopy();
 	for (std::vector<Partition> clusteringSequence : setup.dynamicClusteringTimelines) {
 		Partition last = clusteringSequence.back();
-		//FIXME EXPECT_TRUE(last.isProper(G)) << "final clustering in the sequence should be a proper clustering of G";
+		EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, last)) << "final clustering in the sequence should be a proper clustering of G";
 	}
 
 
@@ -461,7 +462,7 @@ TEST_F(DCDGTest, tryArxivEval) {
 	dynGen -> evaluateClusterings("clustering-output.txt", last);
 
 //	std::string path = "output-clusts.txg";
-	//FIXME INFO("Is proper: " , last.isProper(G));
+	INFO("Is proper: " , GraphClusteringTools::isProperClustering(G, last));
 	INFO("Number of nodes: " , G.numberOfNodes());
 	INFO("Number of edges: " , G.numberOfEdges());
 	*/

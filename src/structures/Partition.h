@@ -115,14 +115,14 @@ public:
 	 * Check if partition is a 1-partition,
 	 * i.e. every element is assigned to the same set.
 	 */
-	bool isOnePartition(Graph& G);
+	//bool isOnePartition(Graph& G);
 
 
 	/**
 	 * Check if partition is a singleton partition,
 	 * i.e. every element is assigned to a different set.
 	 */
-	bool isSingletonPartition(Graph& G) const;
+	//bool isSingletonPartition(Graph& G) const;
 
 	/**
 	 * Sets an upper bound for the subset ids that CAN be assigned.
@@ -197,17 +197,17 @@ public:
 	 */
 	std::vector<index> getVector();
 	 
-	 /**
-	  * Tests if all nodes of a Graph are part of a partition.
-	  * @return True, if all nodes are part of a partition.
-	  */
-	bool isProper(Graph& G);
-	 
-	std::string getName();
+	/**
+	 * Set a human-readable identifier for the instance.
+	 */
 	void setName(std::string name);
-	 
-	bool equals(Partition& other, Graph& G);
 
+
+	/**
+	 * Get the human-readable identifier
+	 */
+	std::string getName() const;
+	 
 	/**
 	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
 	 */
