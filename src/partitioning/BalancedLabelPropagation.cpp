@@ -8,6 +8,7 @@
 #include "../auxiliary/Random.h"
 
 #include "BalancedLabelPropagation.h"
+#include "../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -48,7 +49,7 @@ Partition& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Partiti
 	if (exponent >= 4.0) {
 		numIters = 3;
 	}
-	//DEBUG("cut/balance before loop: " , edgeCut.getQuality(partition, graph) , ", " , partition.getImbalance()); FIXME imbalance
+	DEBUG("cut/balance before loop: " , edgeCut.getQuality(partition, graph) , ", " , GraphClusteringTools::getImbalance(partition));
 
 	for (index i = 0; i < numIters; ++i) { // FIXME: different termination criterion
 		// read cluster sizes and compute scale values
@@ -74,10 +75,10 @@ Partition& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Partiti
 				index neighBlock = partition[neighbor];
 
 				// what is the weighted degree with neighCluster?
-				edgeweight wdegNeigh = partition.weightedDegreeWithCluster(graph, v, neighBlock);
+				edgeweight wdegNeigh = GraphClusteringTools::weightedDegreeWithCluster(graph, partition, v, neighBlock);
 
 				// what is the weighted degree to the current cluster?
-				edgeweight wdegCurrent = partition.weightedDegreeWithCluster(graph, v, vBlock);
+				edgeweight wdegCurrent = GraphClusteringTools::weightedDegreeWithCluster(graph, partition, v, vBlock);
 
 				edgeweight gain = adjustByFactor[neighBlock] * wdegNeigh - adjustByFactor[vBlock] * wdegCurrent;
 				// ***
@@ -154,7 +155,7 @@ Partition& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Partiti
 //			DEBUG("partition[" , v , "]: " , partition[v]);
 		});
 
-		//DEBUG("cut/balance in iter " , i , ": " , edgeCut.getQuality(partition, graph) , ", " , partition.getImbalance()); FIXME imbalance
+		DEBUG("cut/balance in iter " , i , ": " , edgeCut.getQuality(partition, graph) , ", " , GraphClusteringTools::getImbalance(partition));
 	}
 
 	std::vector<count> clusterSizes = partition.subsetSizes();

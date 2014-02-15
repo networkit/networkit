@@ -6,6 +6,7 @@
  */
 
 #include "PartitioningAlgoGTest.h"
+#include "../../clustering/GraphClusteringTools.h"
 
 #ifndef NOGTEST
 
@@ -30,7 +31,7 @@ TEST_F(PartitioningAlgoGTest, tryBalancedLabelPropagationOnClusteredGraph) {
 
 	DEBUG("modularity produced by BalancedLabelPropagation: " , mod , ", cut: " , cut);
 
-	EXPECT_TRUE(zeta.isProper(G)) << "the resulting partition should be a proper clustering";
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G,zeta)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect";
 
 	std::vector<count> clusterSizes = zeta.subsetSizes();
@@ -92,7 +93,7 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 	partition = blp.multilevelRun(airfoil1, k);
 	for (index vcycle = 1; vcycle < numVcycles; ++vcycle) {
 		partition = blp.multilevelRerun(airfoil1, k, partition);
-		//INFO("cut/balance in cycle " , vcycle , ": " , edgeCut.getQuality(partition, airfoil1) , ", " , partition.getImbalance()); FIXME imbalance
+		INFO("cut/balance in cycle " , vcycle , ": " , edgeCut.getQuality(partition, airfoil1) , ", " , GraphClusteringTools::getImbalance(partition));
 	}
 
 	double cut = edgeCut.getQuality(partition, airfoil1);

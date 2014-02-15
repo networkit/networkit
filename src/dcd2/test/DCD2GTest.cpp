@@ -12,6 +12,7 @@
 #include "../DynamicCommunityDetection.h"
 #include "../../dynamics/DGSStreamParser.h"
 #include "../../dynamics/GraphUpdater.h"
+#include "../../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -43,7 +44,7 @@ TEST_F(DCD2GTest, testDynPLP) {
 	dynPLP.update(stream);
 	Partition zeta = dynPLP.detect();
 
-	EXPECT_TRUE(zeta.isProper(G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 
 }
 
@@ -61,7 +62,7 @@ TEST_F(DCD2GTest, testDynPLPPrepStrategies) {
 	dynPLP.update(stream);
 	Partition zeta = dynPLP.detect();
 
-	EXPECT_TRUE(zeta.isProper(G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 
 	Graph G2;
 	DynPLP dynPLP2("isolateNeighbors", 0);
@@ -73,7 +74,7 @@ TEST_F(DCD2GTest, testDynPLPPrepStrategies) {
 	dynPLP2.update(stream);
 	Partition zeta2 = dynPLP2.detect();
 
-	EXPECT_TRUE(zeta2.isProper(G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
 
@@ -91,7 +92,7 @@ TEST_F(DCD2GTest, testDynPLM) {
 	dynPLM.update(stream);
 	Partition zeta = dynPLM.detect();
 
-	EXPECT_TRUE(zeta.isProper(G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 }
 
 
@@ -109,7 +110,7 @@ TEST_F(DCD2GTest, testDynPLMPrepStrategies) {
 	dynPLM.update(stream);
 	Partition zeta = dynPLM.detect();
 
-	EXPECT_TRUE(zeta.isProper(G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 
 	Graph G2;
 	DynPLM dynPLM2("isolateNeighbors", 0); 
@@ -121,7 +122,7 @@ TEST_F(DCD2GTest, testDynPLMPrepStrategies) {
 	dynPLM2.update(stream);
 	Partition zeta2 = dynPLM2.detect();
 
-	EXPECT_TRUE(zeta2.isProper(G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
 

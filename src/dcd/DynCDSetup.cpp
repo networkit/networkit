@@ -10,6 +10,7 @@
 #include "../clustering/Modularity.h"
 #include "../clustering/DynamicNMIDistance.h"
 #include "../clustering/SampledNodeStructuralRandMeasure.h"
+#include "../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -83,7 +84,7 @@ void DynCDSetup::run() {
 			dynamicClusteringTimelines.at(detectorIndex).push_back(dynCD->run());
 
 			// TRACE("clustering looks like: " , Aux::vectorToString(results.at(detectorIndex).back().getVector()));
-			assert (dynamicClusteringTimelines.at(detectorIndex).back().isProper(*G));
+			assert (GraphClusteringTools::isProperClustering(*G, dynamicClusteringTimelines.at(detectorIndex).back()));
 
 			// evaluations which need the current graph
 			if (checkNumCom) {
@@ -127,7 +128,7 @@ void DynCDSetup::run() {
 			staticRuntime.stop();
 			staticTimerTimeline.push_back(staticRuntime.elapsed().count());
 
-			assert (staticClusteringTimeline.back().isProper(*G));
+			assert (GraphClusteringTools::isProperClustering(*G, staticClusteringTimeline.back()));
 
 			if (checkNumCom) {
 

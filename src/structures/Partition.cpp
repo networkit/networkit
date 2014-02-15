@@ -55,7 +55,7 @@ void Partition::mergeSubsets(index s, index t) {
 		}
 	}
 }
-
+/*
 bool Partition::isOnePartition(Graph& G) { //FIXME what for is elements needed? const std::set<index>& elements
 	index one = data[0];	// first subset id should be equal to all others
 	// TODO: use iterator forEntries and pair-wise comparison?
@@ -65,12 +65,12 @@ bool Partition::isOnePartition(Graph& G) { //FIXME what for is elements needed? 
 		}
 	}
 	return true;
-}
+}*/
 
-bool Partition::isSingletonPartition(Graph& G) const { //FIXME what for is elements needed? const std::set<index>& elements
+/*bool Partition::isSingletonPartition(Graph& G) const { //FIXME what for is elements needed? const std::set<index>& elements
 	return (numberOfElements() == numberOfSubsets());
 }
-
+*/
 index Partition::extend() {
 	data.push_back(none);
 	z++;
@@ -178,44 +178,12 @@ std::vector<index> Partition::getVector() {
 	return this->data; //FIXME is this appropriate?
 }
 
-bool Partition::isProper(Graph& G) {
-	// test whether each node has been assigned to a cluster
-	bool success = true;
-	G.forNodes([&](node v) {
-		bool contained = this->contains(v);
-		if (!contained) {
-			ERROR("Partitions do not contain node " , v);
-			success = false;
-		}
-	});
-	return success;
-}
-
-std::string Partition::getName() {
+std::string Partition::getName() const {
 	return this->name;
 }
 
 void Partition::setName(std::string name) {
 	this->name = name;
 }
-
-bool Partition::equals(Partition& other, Graph& G) {
-	bool eq = true;
-	G.parallelForEdges([&](node u, node v) {
-		if (this->inSameSubset(u, v)) {
-			if (!other.inSameSubset(u, v)) {
-				eq = false;
-			}
-		}
-		else {
-			if (other.inSameSubset(u, v)) {
-				eq = false;
-			}
-		}
-
-	});
-	return eq;
-}
-
 
 } /* namespace NetworKit */

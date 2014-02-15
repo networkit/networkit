@@ -8,7 +8,7 @@
 #ifndef NOGTEST
 
 #include "IOGTest.h"
-
+#include "../../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -188,8 +188,8 @@ TEST_F(IOGTest, testClusteringWriterAndReader) {
 	Partition read = reader.read(path);
 
 	EXPECT_EQ(n, read.numberOfElements()) << "read clustering should contain n nodes";
-	EXPECT_TRUE(read.isProper(G)) << "read clustering should be proper clustering of G";
-	EXPECT_TRUE(read.equals(zeta, G)) << "read clustering should be identical to created clustering";
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, read)) << "read clustering should be proper clustering of G";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(read, zeta, G)) << "read clustering should be identical to created clustering";
 }
 
 

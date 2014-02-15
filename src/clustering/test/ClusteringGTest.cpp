@@ -30,6 +30,7 @@
 #include "../../dcd/TDynamicLabelPropagation.h"
 #include "../SampledGraphStructuralRandMeasure.h"
 #include "../SampledNodeStructuralRandMeasure.h"
+#include "../../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -110,12 +111,12 @@ TEST_F(ClusteringGTest, testClusteringEquality) {
 	Partition one1 = clusteringGen.makeOneClustering(G);
 	Partition one2 = clusteringGen.makeOneClustering(G);
 
-	EXPECT_TRUE(one1.equals(one2, G)) << "two 1-clusterings of G should be equal";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(one1, one2, G)) << "two 1-clusterings of G should be equal";
 
 	Partition singleton1 = clusteringGen.makeSingletonClustering(G);
 	Partition singleton2 = clusteringGen.makeSingletonClustering(G);
 
-	EXPECT_TRUE(singleton1.equals(singleton2, G)) << "two singleton clusterings of G should be equal";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(singleton1, singleton2, G)) << "two singleton clusterings of G should be equal";
 
 }
 
@@ -343,7 +344,7 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 	std::vector<Partition>& myresults = setup.dynamicClusteringTimelines[0];
 	Partition& currentClustering = myresults.back();
 	Partition& oldClustering = myresults[0];
-	EXPECT_TRUE(currentClustering.isProper(G)) << "clustering in the sequence should be a proper clustering of G";
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, currentClustering)) << "clustering in the sequence should be a proper clustering of G";
 
 	double distSeq = dynNMID.getDissimilarity(G, oldClustering, currentClustering);
 	INFO("Dyn NMID for last and first clustering: " , distSeq);

@@ -7,6 +7,7 @@
 
 #include "ClusteringGenerator.h"
 #include "../auxiliary/Random.h"
+#include "GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -46,7 +47,7 @@ Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 		zeta.addToSubset(c, v);
 	});
 
-	assert (zeta.isProper(G));
+	assert (GraphClusteringTools::isProperClustering(G, zeta));
 	return zeta;
 }
 
