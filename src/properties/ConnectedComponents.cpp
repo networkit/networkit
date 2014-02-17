@@ -24,16 +24,19 @@ void ConnectedComponents::run(const Graph& G) {
 	count z = G.numberOfNodes();
 	this->component = std::vector<node>(z, none);
 
+	DEBUG("initializing labels");
 	G.parallelForNodes([&](node v){
 		component[v] = v;
 	});
 
+	DEBUG("initializing active nodes");
 	std::vector<bool> activeNodes(z); // record if node must be processed
 	activeNodes.assign(z, true);
 
+	DEBUG("main loop");
 	bool change = false;
 	do {
-		DEBUG("next iteration");
+		DEBUG("label propagation iteration");
 		change = false;
 		G.forNodes([&](node u) {
 			if ((activeNodes[u]) && (G.degree(u) > 0)) {
