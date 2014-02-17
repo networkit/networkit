@@ -114,34 +114,29 @@ def powerLawFit(G, dd=None):
 	
 
 
-def properties(nkG, settings):
-	nxG = None
-	if settings["networkx"]:
-		logging.info("[...] converting to NetworX.Graph for some properties....")
-		nxG = nxadapter.nk2nx(nkG)
-
+def properties(G, settings):
 	logging.info("[...] calculating properties")
 	
 	# size
-	n, m = size(nkG)    # n and m
+	n, m = size(G)    # n and m
 
 	logging.info("[...] determining degree distribution")
 	# degrees 
-	degDist = GraphProperties.degreeDistribution(nkG) 
-	minDeg, maxDeg, avgDeg = degrees(nkG)
+	degDist = GraphProperties.degreeDistribution(G) 
+	minDeg, maxDeg, avgDeg = degrees(G)
 
-	plfit = powerLawFit(nkG, degDist)
-	gamma = powerLawExponent(nkG, degDist)
+	plfit = powerLawFit(G, degDist)
+	gamma = powerLawExponent(G, degDist)
 
 	# number of isolated nodes
 	isolates = degDist[0] if len(degDist) > 0 else None
 	satellites = degDist[1] if len(degDist) > 1 else None
 
 	# number of self-loops
-	loops = len([(u, v) for (u,v) in nkG.edges() if (u == v)])
+	loops = len([(u, v) for (u,v) in G.edges() if (u == v)])
 	
 	# density
-	dens = density(nkG)
+	dens = density(G)
 
 
 
@@ -155,14 +150,14 @@ def properties(nkG, settings):
 		logging.debug("[...] performing community detection: PLP")
 		# TODO: avoid printout of status bar
 		plp = community.PLP()
-		zetaPLP = plp.run(nkG)
+		zetaPLP = plp.run(G)
 		ncomPLP = zetaPLP.numberOfClusters()
-		modPLP = community.Modularity().getQuality(zetaPLP, nkG)
+		modPLP = community.Modularity().getQuality(zetaPLP, G)
 		logging.info("[...] performing community detection: PLM")
 		plm = community.PLM("balanced")
-		zetaPLM = plm.run(nkG)
+		zetaPLM = plm.run(G)
 		ncomPLM = zetaPLM.numberOfClusters()
-		modPLM = community.Modularity().getQuality(zetaPLM, nkG)
+		modPLM = community.Modularity().getQuality(zetaPLM, G)
 
 	# degree histogram
 	
@@ -175,32 +170,35 @@ def properties(nkG, settings):
 	# connected components
 	nComponents, componentSizes = None, None
 	if settings["components"]:
-		nComponents, componentSizes = components(nkG)
+		nComponents, componentSizes = components(G)
 
 	# diameter
 	dia = None
-	if settings["diameter"] and (n < 1000) and (nComponents is 1):
-		logging.info("calculating diameter...")
-		dia = nx.diameter(nxG)
+	# TODO: estiamte diameter
+	# if settings["diameter"] and (n < 1000) and (nComponents is 1):
+	# 	logging.info("calculating diameter...")
+	# 	dia = nx.diameter(nxG)
 
 
 	# calculate eccentricity
 	ecc = None
-	if settings["eccentricity"] and (n < 1000) and (nComponents is 1):
-		logging.info("calculating eccentricity...")
-		eccentricities = nx.eccentricity(nxG)
-		ecc = sum(val for val in eccentricities.values()) / n
+	# TODO: estimate diameter
+	# if settings["eccentricity"] and (n < 1000) and (nComponents is 1):
+	# 	logging.info("calculating eccentricity...")
+	# 	eccentricities = nx.eccentricity(nxG)
+	# 	ecc = sum(val for val in eccentricities.values()) / n
 
 
 	# clustering
 	avglcc = None
 	if settings["clustering"]:
-		avglcc = GraphProperties.averageLocalClusteringCoefficient(nkG)
+		avglcc = GraphProperties.averageLocalClusteringCoefficient(G)
 
 	# degree assortativity
 	assort = None
-	if settings["assortativity"]:
-		assort = nx.degree_assortativity_coefficient(nxG)
+	# TODO: estimate assortativity
+	# if settings["assortativity"]:
+	# 	assort = nx.degree_assortativity_coefficient(G)
 
 
 
@@ -209,7 +207,7 @@ def properties(nkG, settings):
 	# TODO: average betweenness centrality?
 
 	props = {
-		 "name": nkG.getName(),
+		 "name": G.getName(),
 		 "n": n,
 		 "m": m,
 		 "minDeg": minDeg,
@@ -236,11 +234,11 @@ def properties(nkG, settings):
 	return props
 
 
-def overview(nkG, settings=collections.defaultdict(lambda: True)):
+def overview(G, settings=collections.defaultdict(lambda: True)):
 	"""
 	Print an overview of important network properties to the terminal.
 	"""
-	props = properties(nkG, settings)
+	props = properties(G, settings)
 	basicProperties = [
 		["nodes (n)", props["n"]],
 		["edges (m)", props["m"]],
