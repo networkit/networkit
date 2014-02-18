@@ -147,6 +147,9 @@ Credits
 - Stefan Bertsch
 - Florian Weber
 - Patrick Flick
+- Daniel Hoske
+- Jšrg Weisbarth
+
 
 ### External Code
 
