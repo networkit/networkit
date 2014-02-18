@@ -21,7 +21,7 @@ ClusteringCoefficient::~ClusteringCoefficient()
 }
 
 std::vector<double>
-ClusteringCoefficient::local(Graph &G) const
+ClusteringCoefficient::exactLocal(Graph &G) const
 {
 	count n = G.numberOfNodes();
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
@@ -53,10 +53,10 @@ ClusteringCoefficient::avgLocal(Graph& G) const
 	count n = G.numberOfNodes();
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
-	coefficient = this->local(G);
+	coefficients = this->exactLocal(G);
 
 	double cc = G.parallelSumForNodes([&](node u){
-		return coefficient[u];
+		return coefficients[u];
 	});
 
 	cc /= (double)n;
@@ -101,7 +101,7 @@ ClusteringCoefficient::approxAvgLocal(Graph& G, const count tries) const
 
 
 double
-ClusteringCoefficient::global(Graph& G) const
+ClusteringCoefficient::exactGlobal(Graph& G) const
 {
 	count n = G.numberOfNodes();
 	std::vector<count> triangles(n); // triangles including node u (every triangle is counted six times)

@@ -1,5 +1,5 @@
 # NetworKit native classes and functions
-from _NetworKit import GraphProperties, ConnectedComponents
+from _NetworKit import GraphProperties, ConnectedComponents, ClusteringCoefficient
 
 # other submodules
 import community
@@ -192,6 +192,7 @@ def properties(G, settings):
 	# clustering
 	avglcc = None
 	if settings["clustering"]:
+		logging.info("[...] calculating clustering coefficient") 
 		avglcc = GraphProperties.averageLocalClusteringCoefficient(G)
 
 	# degree assortativity

@@ -21,7 +21,7 @@ public:
 
 	virtual ~ClusteringCoefficient();
 
-	std::vector<double> local(Graph &G) const;
+	std::vector<double> exactLocal(Graph &G) const;
 	
 	/**
 	 * This calculates the average local clustering coefficient
@@ -35,7 +35,7 @@ public:
 	/**
 	 * This calculates the global clustering coefficient
 	 */
-  	virtual double global(Graph& G) const;
+  	virtual double exactGlobal(Graph& G) const;
   	virtual double approxGlobal(Graph& G, const count tries) const;
   
 };
