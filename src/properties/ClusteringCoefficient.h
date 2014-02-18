@@ -12,14 +12,9 @@
 
 namespace NetworKit {
 
-// TODO: is class necessary?
 class ClusteringCoefficient {
 
 public:
-
-	ClusteringCoefficient();
-
-	virtual ~ClusteringCoefficient();
 
 	std::vector<double> exactLocal(Graph &G) const;
 	

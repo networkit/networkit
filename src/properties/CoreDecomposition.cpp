@@ -15,55 +15,55 @@ CoreDecomposition::CoreDecomposition() {
 CoreDecomposition::~CoreDecomposition() {
 }
 
-struct NodeWithDegree {
-	NodeWithDegree(node _v, count _degree) :
-			v(_v), degree(_degree) {
-	}
-	node v;
-	count degree;
-};
-
-// TODO: check if error-free and suitable for default
 std::vector<count> CoreDecomposition::run(const Graph& G) {
-	const count n = G.numberOfNodes();
-	std::vector<count> coreness = std::vector<count>(n, 0);
+	/* Main data structure: buckets of nodes indexed by their remaining degree. */
+	typedef std::list<node> Bucket;
+	count nnodes = G.numberOfNodes();
+	std::vector<Bucket> buckets(nnodes);
+	std::vector<Bucket::iterator> nodePtr(nnodes);
 
-	// determine node degree
-	std::vector<count> degree = std::vector<count>(n, 0);
-	G.forEdges([&](node u, node v) {
-		degree[u]++;
-		degree[v]++;
+	/* Current core and and computed coreness values. */
+	count core = std::numeric_limits<count>::max();
+	std::vector<count> coreness(nnodes);
+
+	/* Insert nodes into their initial buckets. */
+	G.forNodes([&](node v) {
+		count deg = G.degree(v);
+		buckets[deg].push_front(v);
+		core = std::min(core, deg);
+		nodePtr[v] = buckets[deg].begin();
 	});
 
-	// put nodes in appropriate lists
-	auto nodesByDegree = new std::list<NodeWithDegree>[n];
-	std::vector<std::list<NodeWithDegree>::iterator> nodePointer;
-	for (node v = 0; v < n; v++) {
-		nodesByDegree[degree[v]].push_front(NodeWithDegree(v, degree[v]));
-		nodePointer.push_back(nodesByDegree[degree[v]].begin());
-	}
-
-	index i = 1;
+	/* Main loop: Successively remove nodes in copy G2 of G. */
 	Graph G2 = G;
-	while (i - 1 < n) {
-		while (!nodesByDegree[i - 1].empty()) {
-			auto pv = nodesByDegree[i - 1].begin();
-			coreness[pv->v] = i - 1;
-			G2.forEdgesOf(pv->v, [&](node w, node u) {
-				auto pu = nodePointer[u];
-				if(pu->degree > i - 1) {
-					auto &oldList = nodesByDegree[pu->degree];
-					auto &newList = nodesByDegree[pu->degree - 1];
-					newList.splice(newList.begin(), oldList, pu);
-					pu->degree--;
+	while (!G2.isEmpty()) {
+		Bucket& cur_bucket = buckets[core];
+
+		/* Remove nodes with remaining degree <= core. */
+		while (!cur_bucket.empty()) {
+			/* Coreness for node u is current core value. */
+			node u = cur_bucket.front();
+			cur_bucket.pop_front();
+			coreness[u] = core;
+
+			/* Remove u and its incident edges. */
+			G2.forNeighborsOf(u, [&](node v) {
+				count deg = G2.degree(v);
+				G2.removeEdge(u, v);
+
+				/* Shift node v into new bucket.
+				   Optimisation: Need not move to buckets < core. */
+				if (deg > core) {
+					buckets[deg].erase(nodePtr[v]);
+					buckets[deg - 1].push_front(v);
+					nodePtr[v] = buckets[deg - 1].begin();
 				}
 			});
-			nodesByDegree[pv->degree].erase(pv);
+			G2.removeNode(u);
 		}
-		i++;
+		core++;
 	}
 
-	delete[] nodesByDegree;
 	return coreness;
 }
 
