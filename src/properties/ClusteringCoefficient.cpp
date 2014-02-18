@@ -51,7 +51,7 @@ double
 ClusteringCoefficient::avgLocal(Graph& G) const
 {
 	count n = G.numberOfNodes();
-	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+	std::vector<double> coefficients(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	coefficients = this->exactLocal(G);
 
