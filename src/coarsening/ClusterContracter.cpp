@@ -40,13 +40,13 @@ std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, cons
 	index z = G.upperNodeIdBound();
 	std::vector<node> nodeToSuperNode(z, none);
 
-	DEBUG("set entries node -> supernode")
+	DEBUG("set entries node -> supernode");
 	G.parallelForNodes([&](node v){
 		nodeToSuperNode[v] = clusterToSuperNode[zeta.subsetOf(v)];
 	});
 
 
-	DEBUG("iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon")
+	DEBUG("iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon");
 	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
