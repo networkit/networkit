@@ -40,7 +40,7 @@ public:
 	 */
 	Partition(index z);
 	
-	Partition(index z, count defaultValue);
+	Partition(index z, index defaultValue);
 
 	virtual ~Partition() = default;
 
