@@ -73,11 +73,13 @@ def numberOfComponents(G):
 	nComponents = cc.numberOfComponents()
 	return nComponents
 
-def clustering(G):
-	""" Get clustering properties of the graph:
-		Returns average local clustering coefficient
+def clustering(G, nSamples=None):
+	""" 
+		Returns approximate average local clustering coefficient
 	"""
-	return GraphProperties.averageLocalClusteringCoefficient(G)
+	if not nSamples:
+		nSamples = G.numberOfNodes()
+	return ClusteringCoefficient().approxAvgLocal(G, nSamples)
 
 
 def powerLawExponent(G, dd=None):
@@ -192,8 +194,8 @@ def properties(G, settings):
 	# clustering
 	avglcc = None
 	if settings["clustering"]:
-		logging.info("[...] calculating clustering coefficient") 
-		avglcc = GraphProperties.averageLocalClusteringCoefficient(G)
+		logging.info("[...] approximating clustering coefficient") 
+		avglcc = clustering(G)
 
 	# degree assortativity
 	assort = None
@@ -264,7 +266,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	]
 
 	communityStructure = [
-		["avg. local clustering coefficient", "", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
+		["approx. avg. local clustering coefficient", "", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
 		["PLP community detection", "", ""],
 		["", "communities", props["ncomPLP"]],
 		["", "modularity", "{0:.6f}".format(props["modPLP"]) if props["modPLP"] else None],
