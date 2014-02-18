@@ -1000,6 +1000,39 @@ cdef class ConnectedComponents:
 		return self._this.getComponentSizes()
 
 
+cdef extern from "../src/properties/ClusteringCoefficient.h":
+	cdef cppclass _ClusteringCoefficient "NetworKit::ClusteringCoefficient":
+		_ClusteringCoefficient() except +
+		vector[double] exactLocal(_Graph G) except +
+		double avgLocal(_Graph G) except +
+		double approxAvgLocal(_Graph G, count trials) except +
+		double exactGlobal(_Graph G) except +
+		double approxGlobal(_Graph G, count trials) except +
+
+cdef class ClusteringCoefficient:
+	""" Determines the connected components and associated values for
+		an undirected graph.
+	"""
+	cdef _ClusteringCoefficient _this
+
+	def exactLocal(self, Graph G):
+		return self._this.exactLocal(G._this)
+
+	def avgLocal(self, Graph G):
+		return self._this.avgLocal(G._this)
+
+	def approxAvgLocal(self, Graph G, trials):
+		return self._this.approxAvgLocal(G._this, trials)
+
+	def exactGlobal(self, Graph G):
+		return self._this.exactGlobal(G._this)
+
+	def approxGlobal(self, Graph G, trials):
+		return self._this.approxGlobal(G._this, trials)
+
+
+
+	
 
 # Module: dynamic
 
