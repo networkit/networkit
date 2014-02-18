@@ -8,6 +8,7 @@
 #include "../auxiliary/Random.h"
 
 #include "BalancedLabelPropagation.h"
+#include "../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -19,16 +20,16 @@ BalancedLabelPropagation::~BalancedLabelPropagation() {
 
 }
 
-Clustering BalancedLabelPropagation::run(Graph& graph, count numParts) {
+Partition BalancedLabelPropagation::run(Graph& graph, count numParts) {
 	ClusteringGenerator gen;
 	// FIXME: change to region growing from random
-	Clustering partition = gen.makeContinuousBalancedClustering(graph, numParts);
+	Partition partition = gen.makeContinuousBalancedClustering(graph, numParts);
 	partition = rerun(graph, numParts, partition);
 	return partition;
 }
 
 
-Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Clustering& partition) {
+Partition& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Partition& partition) {
 	float avg = ceil((float) graph.numberOfNodes() / (float) numParts);
 	std::vector<float> adjustByFactor(numParts);
 	EdgeCut edgeCut;
@@ -48,12 +49,12 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 	if (exponent >= 4.0) {
 		numIters = 3;
 	}
-	DEBUG("cut/balance before loop: " , edgeCut.getQuality(partition, graph) , ", " , partition.getImbalance());
+	DEBUG("cut/balance before loop: " , edgeCut.getQuality(partition, graph) , ", " , GraphClusteringTools::getImbalance(partition));
 
 	for (index i = 0; i < numIters; ++i) { // FIXME: different termination criterion
 		// read cluster sizes and compute scale values
 		TRACE("compute cluster sizes... ");
-		std::vector<count> clusterSizes = partition.clusterSizes();
+		std::vector<count> clusterSizes = partition.subsetSizes();
 		TRACE("done");
 		for (index p = 0; p < numParts; ++p) {
 			TRACE("size of cluster " , p , ": " , clusterSizes[p]);
@@ -68,16 +69,16 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 			node neighbor = graph.randomNeighbor(v);
 
 			if (neighbor != none) {
-				cluster vBlock = partition[v];
+				index vBlock = partition[v];
 
 				// *** compute gain of relabeling according to neighbor
-				cluster neighBlock = partition[neighbor];
+				index neighBlock = partition[neighbor];
 
 				// what is the weighted degree with neighCluster?
-				edgeweight wdegNeigh = partition.weightedDegreeWithCluster(graph, v, neighBlock);
+				edgeweight wdegNeigh = GraphClusteringTools::weightedDegreeWithCluster(graph, partition, v, neighBlock);
 
 				// what is the weighted degree to the current cluster?
-				edgeweight wdegCurrent = partition.weightedDegreeWithCluster(graph, v, vBlock);
+				edgeweight wdegCurrent = GraphClusteringTools::weightedDegreeWithCluster(graph, partition, v, vBlock);
 
 				edgeweight gain = adjustByFactor[neighBlock] * wdegNeigh - adjustByFactor[vBlock] * wdegCurrent;
 				// ***
@@ -85,49 +86,49 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 
 				// accept label based on simulated annealing acceptance
 				if (isMoveAccepted(gain, i, probGen)) {
-					partition.moveToCluster(neighBlock, v);
+					partition.moveToSubset(neighBlock, v);
 				}
 			}
 #else
 
-			std::map<cluster, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
-			cluster heaviest = none;
+			std::map<index, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
+			index heaviest = none;
 
 			// weigh the labels in the neighborhood of v
 			graph.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
-				cluster lw = partition[w];
+				index lw = partition[w];
 				labelWeights[lw] += weight * adjustByFactor[lw];
 				heaviest = lw; // init heaviest by some neighbor's cluster
 			});
 
 //			heaviest = std::max_element(labelWeights.begin(),
 //							labelWeights.end(),
-//							[](const std::pair<cluster, edgeweight>& p1, const std::pair<cluster, edgeweight>& p2) {
+//							[](const std::pair<index, edgeweight>& p1, const std::pair<index, edgeweight>& p2) {
 //								return p1.second < p2.second;})->first;
 
 			if (labelWeights.size() > 1) {
 
-				std::vector<std::pair<cluster, double> > neighborhood;
-				for (std::map<cluster, double>::iterator iter = labelWeights.begin();
+				std::vector<std::pair<index, double> > neighborhood;
+				for (std::map<index, double>::iterator iter = labelWeights.begin();
 						iter != labelWeights.end(); ++iter) {
 					neighborhood.push_back(std::make_pair(iter->first, iter->second));
 				}
 
 				double sum = 0.0;
-				for (std::vector<std::pair<cluster, double>>::iterator iter = neighborhood.begin();
+				for (std::vector<std::pair<index, double>>::iterator iter = neighborhood.begin();
 						iter != neighborhood.end(); ++iter) {
 					sum += pow(iter->second, exponent); // favor large int-/ext-degrees
 				}
 
 				// normalize to sum 1 and prefix sum
-				for (std::vector<std::pair<cluster, double>>::iterator iter = neighborhood.begin();
+				for (std::vector<std::pair<index, double>>::iterator iter = neighborhood.begin();
 						iter != neighborhood.end(); ++iter) {
 					iter->second = pow(iter->second, exponent) / sum;
 				}
 
 				double prefixSum = 0.0;
 				double temp = 0.0;
-				for (std::vector<std::pair<cluster, double>>::iterator iter = neighborhood.begin();
+				for (std::vector<std::pair<index, double>>::iterator iter = neighborhood.begin();
 						iter != neighborhood.end(); ++iter) {
 					temp = iter->second;
 					iter->second += prefixSum;
@@ -136,7 +137,7 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 
 				double prob = Aux::Random::real();
 
-				for (std::vector<std::pair<cluster, double>>::iterator iter = neighborhood.begin();
+				for (std::vector<std::pair<index, double>>::iterator iter = neighborhood.begin();
 						iter != neighborhood.end(); ++iter) {
 					if (iter->second >= prob) {
 						heaviest = iter->first;
@@ -154,10 +155,10 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 //			DEBUG("partition[" , v , "]: " , partition[v]);
 		});
 
-		DEBUG("cut/balance in iter " , i , ": " , edgeCut.getQuality(partition, graph) , ", " , partition.getImbalance());
+		DEBUG("cut/balance in iter " , i , ": " , edgeCut.getQuality(partition, graph) , ", " , GraphClusteringTools::getImbalance(partition));
 	}
 
-	std::vector<count> clusterSizes = partition.clusterSizes();
+	std::vector<count> clusterSizes = partition.subsetSizes();
 	for (index p = 0; p < clusterSizes.size(); ++p) {
 		DEBUG("after: size of cluster " , p , ": " , clusterSizes[p]);
 	}
@@ -165,8 +166,8 @@ Clustering& BalancedLabelPropagation::rerun(Graph& graph, count numParts, Cluste
 	return partition;
 }
 
-Clustering& BalancedLabelPropagation::postsmooth(Graph& graph, count numBlocks,
-		Clustering& partition) {
+Partition& BalancedLabelPropagation::postsmooth(Graph& graph, count numBlocks,
+		Partition& partition) {
 	double tmpExp = this->exponent;
 	this->setExponent(8.0); // quasi-deterministic
 	partition = this->rerun(graph, numBlocks, partition);

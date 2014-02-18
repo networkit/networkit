@@ -8,7 +8,7 @@
 #ifndef CLUSTERER_H_
 #define CLUSTERER_H_
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -26,7 +26,7 @@ public:
 	 * Apply algorithm to graph
 	 * @return partition of the node set
 	 */
-	virtual Clustering run(Graph& G) = 0;
+	virtual Partition run(Graph& G) = 0;
 
 	/**
 	 * @return string representation of algorithm and parameters.

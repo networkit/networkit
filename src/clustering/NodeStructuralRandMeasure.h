@@ -24,7 +24,7 @@ public:
 
 	virtual ~NodeStructuralRandMeasure();
 
-	virtual double getDissimilarity(Graph& G, Clustering& first, Clustering& second);
+	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second);
 
 };
 

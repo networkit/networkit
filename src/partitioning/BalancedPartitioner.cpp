@@ -18,7 +18,7 @@ BalancedPartitioner::~BalancedPartitioner() {
 }
 
 
-Clustering BalancedPartitioner::multilevelRun(Graph& graph, count numParts) {
+Partition BalancedPartitioner::multilevelRun(Graph& graph, count numParts) {
 	DEBUG("Start level with " , graph.numberOfNodes() , " nodes");
 
 	if (graph.numberOfNodes() <= 48 * numParts) {
@@ -35,11 +35,11 @@ Clustering BalancedPartitioner::multilevelRun(Graph& graph, count numParts) {
 		auto fineToCoarse = coarseInfo.second;
 
 		// recurse
-		Clustering coarsePartition = this->multilevelRun(coarseGraph, numParts);
+		Partition coarsePartition = this->multilevelRun(coarseGraph, numParts);
 
 		// prolongate, refine
 		ClusteringProjector prolongator;
-		Clustering partition = prolongator.projectBack(coarseGraph, graph,	fineToCoarse, coarsePartition);
+		Partition partition = prolongator.projectBack(coarseGraph, graph,	fineToCoarse, coarsePartition);
 		partition = this->rerun(graph, numParts, partition);
 
 		// postsmooth quasi-deterministically and return
@@ -47,8 +47,8 @@ Clustering BalancedPartitioner::multilevelRun(Graph& graph, count numParts) {
 	}
 }
 
-Clustering& BalancedPartitioner::multilevelRerun(Graph& graph, count numParts,
-		Clustering& partition) {
+Partition& BalancedPartitioner::multilevelRerun(Graph& graph, count numParts,
+		Partition& partition) {
 
 	DEBUG("Start level with " , graph.numberOfNodes() , " nodes");
 
@@ -67,7 +67,7 @@ Clustering& BalancedPartitioner::multilevelRerun(Graph& graph, count numParts,
 		auto fineToCoarse = coarseInfo.second;
 
 		// recurse
-		Clustering coarsePartition(coarseGraph.numberOfNodes());
+		Partition coarsePartition(coarseGraph.numberOfNodes());
 		graph.forNodes([&](node v) {
 			coarsePartition[fineToCoarse[v]] = partition[v];
 		});

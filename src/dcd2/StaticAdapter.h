@@ -25,7 +25,7 @@ public:
 
 	void update(std::vector<GraphEvent>& stream) override;
 
-	Clustering detect(bool restart) override;
+	Partition detect(bool restart) override;
 
 
 private:

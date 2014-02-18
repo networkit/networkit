@@ -62,16 +62,17 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 
 	Graph G(n);
 	// assign nodes evenly to clusters
-	Clustering zeta(n);
+	Partition zeta(n);
+	zeta.setUpperBound(k);
 	G.forNodes([&](node v){
-		cluster c = Aux::Random::integer(1, k);
-		zeta.addToCluster(c, v);
+		index c = Aux::Random::integer(k-1);
+		zeta.addToSubset(c, v);
 	});
 
 //	assert (zeta.numberOfClusters() == k);
 
 	G.forNodePairs([&](node u, node v){
-		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
+		if (zeta.subsetOf(u) == zeta.subsetOf(v)) {
 			if (Aux::Random::probability() <= pin) {
 				G.addEdge(u, v);
 			}
@@ -85,20 +86,21 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 	return G;
 }
 
-std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferenceClustering(
+std::pair<Graph, Partition> GraphGenerator::makeClusteredRandomGraphWithReferenceClustering(
 		count n, count k, double pin, double pout) {
 	assert(pin >= pout);
 
 	Graph G(n);
 	// assign nodes evenly to clusters
-	Clustering zeta(n);
+	Partition zeta(n);
+	zeta.setUpperBound(k);
 	G.forNodes([&](node v){
-		cluster c = Aux::Random::integer(1, k);
-		zeta.addToCluster(c, v);
+		index c = Aux::Random::integer(k-1);
+		zeta.addToSubset(c, v);
 	});
 
 	G.forNodePairs([&](node u, node v){
-		if (zeta.clusterOf(u) == zeta.clusterOf(v)) {
+		if (zeta.subsetOf(u) == zeta.subsetOf(v)) {
 			if (Aux::Random::probability() <= pin) {
 				G.addEdge(u, v);
 			}
@@ -112,15 +114,15 @@ std::pair<Graph, Clustering> GraphGenerator::makeClusteredRandomGraphWithReferen
 	return std::make_pair(G, zeta);
 }
 
-Graph GraphGenerator::makeClusteredRandomGraph(Clustering& zeta, double pin,
+Graph GraphGenerator::makeClusteredRandomGraph(Partition& zeta, double pin,
 		double pout) {
 	assert (pin >= pout);
 
-	count n = zeta.numberOfNodes();
+	count n = zeta.numberOfElements();
 	Graph G(n);
 
 	G.forNodePairs([&](node u, node v){
-		if (zeta.inSameCluster(u, v)) {
+		if (zeta.inSameSubset(u, v)) {
 			if (Aux::Random::probability() <= pin) {
 				G.addEdge(u, v);
 			}

@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 
-std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const Graph& G, const Clustering& zeta) {
+std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const Graph& G, const Partition& zeta) {
 
 	Aux::Timer timer;
 	timer.start();
@@ -24,7 +24,7 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const G
 
 	// populate map subset -> supernode
 	G.forNodes([&](node v){
-		cluster c = zeta.clusterOf(v);
+		index c = zeta.subsetOf(v);
 		if (subsetToSuperNode[c] == none) {
 			subsetToSuperNode[c] = Ginit.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
 		}
@@ -35,7 +35,7 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const G
 
 	// set entries node -> supernode
 	G.parallelForNodes([&](node v){
-		nodeToSuperNode[v] = subsetToSuperNode[zeta.clusterOf(v)];
+		nodeToSuperNode[v] = subsetToSuperNode[zeta.subsetOf(v)];
 	});
 
 	// make copies of initial graph

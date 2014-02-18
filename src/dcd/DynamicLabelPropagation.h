@@ -16,7 +16,7 @@
 
 namespace NetworKit {
 
-typedef cluster label;
+typedef index label;
 
 class DynamicLabelPropagation: public NetworKit::DynamicCommunityDetector {
 
@@ -43,7 +43,7 @@ public:
 	 * This reuses the previous clustering and takes collected graph modifications
 	 * into account.
 	 */
-	virtual Clustering run();
+	virtual Partition run();
 
 	virtual std::string toString() const;
 
@@ -65,7 +65,7 @@ public:
 protected:
 
 	count updateThreshold;
-	Clustering labels;					//!< the labelling/clustering
+	Partition labels;					//!< the labelling/clustering
 	std::vector<bool> activeNodes;		//!< which nodes are currently active?
 	std::vector<double> weightedDegree; //!< precompute and update weighted degree for performance reasons
 	count nUpdated; 					//!< number of nodes updated in last iteration (?)

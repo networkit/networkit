@@ -18,8 +18,8 @@ GraphStructuralRandMeasure::~GraphStructuralRandMeasure() {
 	// TODO Auto-generated destructor stub
 }
 
-double GraphStructuralRandMeasure::getDissimilarity(Graph& G, Clustering& first,
-		Clustering& second) {
+double GraphStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first,
+		Partition& second) {
 	count m = G.numberOfEdges();
 	assert (m > 0);
 

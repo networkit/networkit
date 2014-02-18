@@ -18,3 +18,4 @@ QualityMeasure::~QualityMeasure() {
 
 
 } /* namespace NetworKit */
+

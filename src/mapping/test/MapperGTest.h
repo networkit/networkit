@@ -23,7 +23,6 @@
 #include "../../io/DibapGraphReader.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/METISGraphWriter.h"
-#include "../../clustering/Clustering.h"
 #include "../../clustering/ClusteringGenerator.h"
 
 

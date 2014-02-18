@@ -8,6 +8,7 @@
 #ifndef NOGTEST
 
 #include "GraphBenchmark.h"
+#include "../NodeMap.h"
 
 namespace NetworKit {
 

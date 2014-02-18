@@ -28,7 +28,7 @@
 #include "../EdgeListIO.h"
 #include "../EdgeListClusteringReader.h"
 #include "../SNAPEdgeListClusteringReader.h"
-#include "../../clustering/Clustering.h"
+#include "../../structures/Partition.h"
 #include "../../clustering/Modularity.h"
 #include "../../community/PLP.h"
 #include "../SNAPGraphWriter.h"

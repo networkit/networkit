@@ -9,7 +9,7 @@
 #define PLP_H_
 
 #include "Clusterer.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -45,7 +45,7 @@ public:
 	 * @param[in]	G	input graph
 	 * @return			clustering
 	 */
-	virtual Clustering run(Graph& G);
+	virtual Partition run(Graph& G);
 
 	/**
 	 * @return string representation of algorithm and parameters.

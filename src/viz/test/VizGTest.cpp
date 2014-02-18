@@ -34,7 +34,7 @@ TEST_F(VizGTest, testPostscriptWriter) {
 
 	// create clustering
 	ClusteringGenerator clusteringGen;
-	Clustering zeta = clusteringGen.makeRandomClustering(G, numClusters);
+	Partition zeta = clusteringGen.makeRandomClustering(G, numClusters);
 
 	// create coordinates
 	G.forNodes([&](node u) {

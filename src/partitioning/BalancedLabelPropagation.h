@@ -11,7 +11,7 @@
 #include "../clustering/ClusteringGenerator.h"
 #include "../clustering/EdgeCut.h"
 #include "../io/ClusteringWriter.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include "../coarsening/MatchingContracter.h"
 #include "../matching/ParallelMatcher.h"
 #include "../coarsening/ClusteringProjector.h"
@@ -32,12 +32,12 @@ public:
 	BalancedLabelPropagation(double exponent);
 	virtual ~BalancedLabelPropagation();
 
-	virtual Clustering run(Graph& graph, count numBlocks);
-	virtual Clustering& rerun(Graph& graph, count numBlocks, Clustering& partition);
-//	virtual Clustering multilevelRun(Graph& graph, count numParts);
-//	virtual Clustering& multilevelRerun(Graph& graph, count numParts, Clustering& partition);
+	virtual Partition run(Graph& graph, count numBlocks);
+	virtual Partition& rerun(Graph& graph, count numBlocks, Partition& partition);
+//	virtual Partition multilevelRun(Graph& graph, count numParts);
+//	virtual Partition& multilevelRerun(Graph& graph, count numParts, Partition& partition);
 
-	virtual Clustering& postsmooth(Graph& graph, count numBlocks, Clustering& partition);
+	virtual Partition& postsmooth(Graph& graph, count numBlocks, Partition& partition);
 
 	void setExponent(double exponent) {
 		this->exponent = exponent;

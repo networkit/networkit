@@ -19,11 +19,11 @@ SampledGraphStructuralRandMeasure::~SampledGraphStructuralRandMeasure() {
 	// TODO Auto-generated destructor stub
 }
 
-double SampledGraphStructuralRandMeasure::getDissimilarity(Graph& G, Clustering& first, Clustering& second) {
+double SampledGraphStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, Partition& second) {
 	assert (G.numberOfNodes() > 0);
 	assert (G.numberOfEdges() > maxSamples);
 
-	count e11 = 0; 	// number of edges for which clusterings aggree
+	count e11 = 0; 	// number of node pairs for which clusterings aggree
 	count e00 = 0;	// number of node pairs for which clusterings disagree
 
 

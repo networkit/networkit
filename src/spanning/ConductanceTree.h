@@ -9,7 +9,7 @@
 #define CONDUCTANCETREE_H_
 
 #include "../graph/Graph.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include <set>
 
 namespace NetworKit {
@@ -22,7 +22,7 @@ public:
 	ConductanceTree();
 	virtual ~ConductanceTree();
 
-	Clustering bestCutInBfsTree(const Graph& g, node root);
+	Partition bestCutInBfsTree(const Graph& g, node root);
 };
 
 } /* namespace NetworKit */
