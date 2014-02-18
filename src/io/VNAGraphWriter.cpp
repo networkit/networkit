@@ -21,7 +21,7 @@ void VNAGraphWriter::write(Graph& G, std::string path) {
 	this->write(G, G.isMarkedAsWeighted(), path);
 }
 
-void VNAGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, Clustering& partition, count dim) {
+void VNAGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, Partition& partition, count dim) {
 
 	std::ofstream file(path);
 	assert (file.good());
@@ -54,7 +54,7 @@ void VNAGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, Clu
 		G.forNodes([&](node u) {
 			point = G.getCoordinate(u);
 			file << u << " " << point[0] << " " << point[1] << " "
-				 << 70 * partition.clusterOf(u) << std::endl;
+				 << 70 * partition.subsetOf(u) << std::endl;
 		});
 	}
 	else {
@@ -75,16 +75,16 @@ void VNAGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, Clu
 }
 
 void VNAGraphWriter::write(Graph& G, bool weighted, std::string path) {
-	Clustering dummy(0);
+	Partition dummy(0);
 	writeGeneric(G, weighted, path, dummy, 2);
 }
 
-void VNAGraphWriter::write(Graph& G, bool weighted, std::string path, Clustering& partition) {
+void VNAGraphWriter::write(Graph& G, bool weighted, std::string path, Partition& partition) {
 	writeGeneric(G, weighted, path, partition, 2);
 }
 
 void VNAGraphWriter::write3D(Graph& G, bool weighted, std::string path) {
-	Clustering dummy(0);
+	Partition dummy(0);
 	writeGeneric(G, weighted, path, dummy, 3);
 }
 

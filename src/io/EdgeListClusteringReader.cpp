@@ -18,7 +18,7 @@ EdgeListClusteringReader::~EdgeListClusteringReader(){
 	// TODO Auto-generated destructor stub
 }
 
-Clustering EdgeListClusteringReader::read(std::string path) {
+Partition EdgeListClusteringReader::read(std::string path) {
 	std::ifstream file(path);
 
 	// check if file readable
@@ -27,20 +27,20 @@ Clustering EdgeListClusteringReader::read(std::string path) {
 	}
 
 
-	std::vector<cluster> temp;
+	std::vector<index> temp;
 
 	// push all cluster ids into vector in order of appearance
 	std::string line;
 	while(std::getline(file, line)) {
 		std::vector<std::string> split = Aux::StringTools::split(line, '\t');
 		if (split.size() == 2 && split[0] != "#") {
-			cluster c = std::atoi(split[1].c_str());
+			index c = std::atoi(split[1].c_str());
 			temp.push_back(c);
 		}
 	}
 
 	count n = temp.size();
-	Clustering zeta(n);
+	Partition zeta(n);
 
 	#pragma omp parallel for
 	for (node u = 0; u < n; ++u) {

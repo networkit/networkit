@@ -27,8 +27,8 @@ PLP::~PLP() {
 }
 
 
-Clustering PLP::run(Graph& G) {
-	typedef cluster label; // a label is the same as a cluster id
+Partition PLP::run(Graph& G) {
+	typedef index label; // a label is the same as a cluster id
 
 	count n = G.numberOfNodes();
 	index z = G.upperNodeIdBound();
@@ -38,7 +38,7 @@ Clustering PLP::run(Graph& G) {
 	}
 
 	// set unique label for each node
-	Clustering labels(z);
+	Partition labels(z);
 	G.parallelForNodes([&](node v) {
 		labels.toSingleton(v);
 	});
@@ -112,6 +112,7 @@ Clustering PLP::run(Graph& G) {
 		runtime.stop();
 		DEBUG("[DONE] LabelPropagation: iteration #" , nIterations , " - updated " , nUpdated , " labels, time spent: " , runtime.elapsedTag());
 
+
 	} // end while
 
 	return labels;
@@ -123,6 +124,7 @@ std::string PLP::toString() const {
 	strm << "PLP(updateThreshold=" << this->updateThreshold << ")";
 	return strm.str();
 }
+
 
 void PLP::setUpdateThreshold(count th) {
 	this->updateThreshold = th;

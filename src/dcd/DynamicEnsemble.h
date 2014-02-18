@@ -26,7 +26,7 @@ public:
 	 */
 	virtual void setGraph(Graph& G);
 
-	virtual Clustering run();
+	virtual Partition run();
 
 	virtual std::string toString() const;
 

@@ -18,7 +18,7 @@ NodeStructuralRandMeasure::~NodeStructuralRandMeasure() {
 	// TODO Auto-generated destructor stub
 }
 
-double NodeStructuralRandMeasure::getDissimilarity(Graph& G, Clustering& first, Clustering& second) {
+double NodeStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, Partition& second) {
 
 	count n = G.numberOfNodes();
 	assert (n > 0);

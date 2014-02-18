@@ -19,17 +19,15 @@ LPDegreeOrdered::~LPDegreeOrdered() {
 	// TODO Auto-generated destructor stub
 }
 
-Clustering LPDegreeOrdered::run(Graph& G) {
+Partition LPDegreeOrdered::run(Graph& G) {
 	count n = G.numberOfNodes();
 	count theta = n / 1e5;
 	DEBUG("theta: " , theta);
 
 	index z = G.upperNodeIdBound();
-	Clustering labels(z);
+	Partition labels(z);
 	// initialize all labels to singletons
-	G.parallelForNodes([&](node v){
-		labels[v] = v;
-	});
+	labels.allToSingletons();
 
 	// initialize all nodes as active
 	std::vector<int> active(z + 1, 1); // not a boolean vector because there might be problems with parallel access
@@ -43,7 +41,7 @@ Clustering LPDegreeOrdered::run(Graph& G) {
 			std::unordered_map<label, count> labelCounts; // neighborLabelCounts maps label -> frequency in the neighbors
 			// count the labels in the neighborhood of v
 			G.forNeighborsOf(v, [&](node w) {
-				label lw = labels[w];
+				label lw = labels.subsetOf(w);//labels[w];
 				labelCounts[lw] += 1; // add weight of edge {v, w}
 			});
 
@@ -53,7 +51,7 @@ Clustering LPDegreeOrdered::run(Graph& G) {
 							[](const std::pair<label, count>& p1, const std::pair<label, count>& p2) {
 								return p1.second < p2.second;})->first;
 			if (labels[v] != dominant) { // UPDATE
-				labels[v] = dominant;
+				labels.moveToSubset(dominant,v);//labels[v] = dominant;
 				nUpdated += 1; // TODO: atomic update?
 				G.forNeighborsOf(v, [&](node u) {
 					active[u] = 1;

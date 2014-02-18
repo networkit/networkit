@@ -8,7 +8,7 @@
 #ifndef DYNAMICCOMMUNITYDETECTOR_H_
 #define DYNAMICCOMMUNITYDETECTOR_H_
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include "../dynamics/GraphEventHandler.h"
 #include "../auxiliary/Timer.h"
 
@@ -29,7 +29,7 @@ public:
 	 */
 	virtual void setGraph(Graph& G) = 0;
 
-	virtual Clustering run() = 0;
+	virtual Partition run() = 0;
 
 	virtual std::string toString() const = 0;
 

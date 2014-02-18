@@ -19,7 +19,7 @@ SampledNodeStructuralRandMeasure::~SampledNodeStructuralRandMeasure() {
 	// TODO Auto-generated destructor stub
 }
 
-double SampledNodeStructuralRandMeasure::getDissimilarity(Graph& G, Clustering& first, Clustering& second) {
+double SampledNodeStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, Partition& second) {
 	assert (G.numberOfNodes() > 0);
 	assert (G.numberOfNodes() > maxSamples);
 

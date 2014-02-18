@@ -9,7 +9,7 @@
 #define PARTITIONCOARSENING_H_
 
 #include "GraphCoarsening.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -20,7 +20,7 @@ class PartitionCoarsening: public NetworKit::GraphCoarsening {
 
 public:
 
-	virtual std::pair<Graph, std::vector<node> > run(const Graph& G, const Clustering& zeta);
+	virtual std::pair<Graph, std::vector<node> > run(const Graph& G, const Partition& zeta);
 
 
 

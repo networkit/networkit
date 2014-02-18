@@ -20,19 +20,19 @@ CNM::~CNM() {
 
 }
 
-Clustering CNM::run(Graph &graph) {
+Partition CNM::run(Graph &graph) {
 	// copy graph because we make changes due to merges
 	Graph G = graph;
 	count n = G.numberOfNodes();
 
 	// start with singleton clustering
-	Clustering clustering(n);
+	Partition clustering(n);
 	clustering.allToSingletons();
 
 	// record current modularity
 	Modularity modularityInspector;
 	double bestModularity = modularityInspector.getQuality(clustering, G);
-	Clustering bestClustering = clustering;
+	Partition bestClustering = clustering;
 
 	// insert edges into priority queue, key: delta mod score
 	ModularityScoring<double> modScoring(G);
@@ -152,7 +152,7 @@ Clustering CNM::run(Graph &graph) {
 		G.removeNode(best_v);
 
 		// merge clusters best_u and best_v
-		clustering.mergeClusters(clustering.clusterOf(best_u), clustering.clusterOf(best_v));
+		clustering.mergeSubsets(clustering.subsetOf(best_u), clustering.subsetOf(best_v));
 
 		// update delta mod scores for incident edges and insert them into the PQ, needs to
 		// done after all edges have been rewired

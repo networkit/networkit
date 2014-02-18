@@ -21,10 +21,11 @@ DynamicNMIDistance::~DynamicNMIDistance() {
 }
 
 
-bool DynamicNMIDistance::isInBoth(node u, const Clustering& oldClustering, const Clustering& newClustering) {
+bool DynamicNMIDistance::isInBoth(node u, const Partition& oldClustering, const Partition& newClustering) {
 	return ((newClustering[u] != none) &&
-			(u < oldClustering.numberOfEntries()) &&
+			(u < oldClustering.numberOfElements()) &&
 			(oldClustering[u] != none));
+			// number of entries that actually does not exist in Clustering.h
 }
 
 
@@ -32,7 +33,7 @@ bool DynamicNMIDistance::isInBoth(node u, const Clustering& oldClustering, const
  * Formula follows Dhillon, Guan, Kulis: A Unified View of Kernel k-means, ...
  */
 double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
-		Clustering& oldClustering, Clustering& newClustering) {
+		Partition& oldClustering, Partition& newClustering) {
 
 	INFO("compressing clusterings");
 	oldClustering.compact();
@@ -53,8 +54,8 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	// precompute sizes for each cluster
 	newGraph.forNodes([&](node u){
 		if (isInBoth(u, oldClustering, newClustering)) {
-			cluster C = oldClustering[u];
-			cluster D = newClustering[u];
+			index C = oldClustering[u];
+			index D = newClustering[u];
 			size_old[C]++;
 			size_new[D]++;
 		}
@@ -81,8 +82,8 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	double numDouble = (double) totalOverlap;
 
 	double MI = 0.0; // mutual information
-	for (cluster C = 0; C < oldClustering.upperBound(); C++) {
-		for (cluster D = 0; D < newClustering.upperBound(); D++) {
+	for (index C = 0; C < oldClustering.upperBound(); C++) {
+		for (index D = 0; D < newClustering.upperBound(); D++) {
 			count currOverlap = confMatrix[C][D];
 			if (currOverlap > 0) {
 				double factor1 = (double) currOverlap / (double) numDouble;
@@ -104,11 +105,11 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 	std::vector<double> P_old(oldClustering.upperBound(), 0.0);
 	std::vector<double> P_new(newClustering.upperBound(), 0.0);
 	#pragma omp parallel for
-	for (cluster C = oldClustering.lowerBound(); C < oldClustering.upperBound(); ++C) {
+	for (index C = oldClustering.lowerBound(); C < oldClustering.upperBound(); ++C) {
 		P_old[C] = ((double) size_old[C]) / numDouble;
 	}
 	#pragma omp parallel for
-	for (cluster C = newClustering.lowerBound(); C < newClustering.upperBound(); ++C) {
+	for (index C = newClustering.lowerBound(); C < newClustering.upperBound(); ++C) {
 		P_new[C] = ((double) size_new[C]) / numDouble;
 	}
 
@@ -146,13 +147,13 @@ void DynamicNMIDistance::combineValues(double H_sum, double MI, double& NMI, dou
 	}
 }
 
-double DynamicNMIDistance::entropy(const Clustering& clustering, count n, std::vector<double> probs) {
+double DynamicNMIDistance::entropy(const Partition& clustering, count n, std::vector<double> probs) {
 	auto log_b = Aux::MissingMath::log_b; // import convenient logarithm function
 
 	// $H(\zeta):=-\sum_{C\in\zeta}P(C)\cdot\log_{2}(P(C))$
 	double H = 0.0;
 	#pragma omp parallel for reduction(+:H)
-	for (cluster C = clustering.lowerBound(); C < clustering.upperBound(); ++C) {
+	for (index C = clustering.lowerBound(); C < clustering.upperBound(); ++C) {
 		if (probs[C] != 0) {
 			H += probs[C] * log_b(probs[C], 2);
 		} // log(0) is not defined
@@ -193,9 +194,9 @@ void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
 }
 
 std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(Graph& G,
-		Clustering& first, Clustering& second) {
-	cluster firstUpperId = first.upperBound();
-	cluster secondUpperId = second.upperBound();
+		Partition& first, Partition& second) {
+	index firstUpperId = first.upperBound();
+	index secondUpperId = second.upperBound();
 	std::vector<std::vector<count> > confMatrix(firstUpperId);
 
 	for (index i = 0; i < first.upperBound(); ++i) {
@@ -204,10 +205,10 @@ std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(Graph& G,
 
 	TRACE("upperId in first, second: " , first.upperBound() , ", " , secondUpperId);
 
-	second.forEntries([&](node u, cluster secondId) {
+	second.forEntries([&](node u, index secondId) {
 		if (this->isInBoth(u, first, second)) {
 			TRACE("node " , u , ", id in first: " , first[u] , ", in second: " , second[u]);
-			cluster firstId = first[u];
+			index firstId = first[u];
 			assert(firstId < confMatrix.size() && secondId < confMatrix[firstId].size());
 			confMatrix[firstId][secondId]++;
 		}

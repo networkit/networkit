@@ -6,8 +6,7 @@
 #define DOTGRAPHWRITER_H
 
 #include <fstream>
-
-#include "../clustering/Clustering.h"
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 

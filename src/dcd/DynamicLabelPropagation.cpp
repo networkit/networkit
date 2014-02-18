@@ -44,8 +44,8 @@ void DynamicLabelPropagation::onNodeAddition(node u) {
 	// update data structures
 	activeNodes.push_back(true); // new node is active
 	weightedDegree.push_back(0.0);
-	labels.append(u); // extend label array by 1 entry
-	labels.toSingleton(u);
+	labels.extend(); // extend label array by 1 entry
+	labels.toSingleton(u); //FIXME working/semantically correct?
 	TRACE("new node " , u , " gets new label " , labels[u]);
 
 	prepStrategy->onNodeAddition(u);
@@ -123,7 +123,7 @@ std::string DynamicLabelPropagation::toString() const {
 	return strm.str();
 }
 
-Clustering DynamicLabelPropagation::run() {
+Partition DynamicLabelPropagation::run() {
 	if (this->G == NULL) {
 		throw std::runtime_error("pointer to current graph was not initialized - call setGraph first");
 	}

@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-typedef cluster label; // a label is the same as a cluster id
+typedef index label; // a label is the same as a cluster id
 
 /**
  * Label propagation-based community detection algorithm which
@@ -26,7 +26,7 @@ private:
 public:
 	LPDegreeOrdered();
 	virtual ~LPDegreeOrdered();
-	virtual Clustering run(Graph& G);
+	virtual Partition run(Graph& G);
 
 	/**
 	* Get number of iterations in last run.

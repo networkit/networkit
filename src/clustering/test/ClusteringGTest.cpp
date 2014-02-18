@@ -10,7 +10,7 @@
 #include "ClusteringGTest.h"
 
 #include "../../auxiliary/Log.h"
-#include "../Clustering.h"
+#include "../../structures/Partition.h"
 #include "../Modularity.h"
 #include "../ModularitySequential.h"
 #include "../Coverage.h"
@@ -30,6 +30,7 @@
 #include "../../dcd/TDynamicLabelPropagation.h"
 #include "../SampledGraphStructuralRandMeasure.h"
 #include "../SampledNodeStructuralRandMeasure.h"
+#include "../../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -48,8 +49,8 @@ TEST_F(ClusteringGTest, testModularity) {
 
 	ClusteringGenerator clusteringGenerator;
 
-	Clustering singleton = clusteringGenerator.makeSingletonClustering(G);
-	Clustering one = clusteringGenerator.makeOneClustering(G);
+	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
+	Partition one = clusteringGenerator.makeOneClustering(G);
 
 	Modularity modularity;
 
@@ -80,8 +81,8 @@ TEST_F(ClusteringGTest, testCoverage) {
 
 	ClusteringGenerator clusteringGenerator;
 
-	Clustering singleton = clusteringGenerator.makeSingletonClustering(G);
-	Clustering one = clusteringGenerator.makeOneClustering(G);
+	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
+	Partition one = clusteringGenerator.makeOneClustering(G);
 
 	Coverage coverage;
 
@@ -100,22 +101,22 @@ TEST_F(ClusteringGTest, testCoverage) {
 
 }
 
-
+// TODO necessary testcase? move equals to some class ?
 TEST_F(ClusteringGTest, testClusteringEquality) {
 	count n = 100;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusteringGen;
-	Clustering one1 = clusteringGen.makeOneClustering(G);
-	Clustering one2 = clusteringGen.makeOneClustering(G);
+	Partition one1 = clusteringGen.makeOneClustering(G);
+	Partition one2 = clusteringGen.makeOneClustering(G);
 
-	EXPECT_TRUE(one1.equals(one2, G)) << "two 1-clusterings of G should be equal";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(one1, one2, G)) << "two 1-clusterings of G should be equal";
 
-	Clustering singleton1 = clusteringGen.makeSingletonClustering(G);
-	Clustering singleton2 = clusteringGen.makeSingletonClustering(G);
+	Partition singleton1 = clusteringGen.makeSingletonClustering(G);
+	Partition singleton2 = clusteringGen.makeSingletonClustering(G);
 
-	EXPECT_TRUE(singleton1.equals(singleton2, G)) << "two singleton clusterings of G should be equal";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(singleton1, singleton2, G)) << "two singleton clusterings of G should be equal";
 
 }
 
@@ -127,8 +128,8 @@ TEST_F(ClusteringGTest, testJaccardMeasure) {
 	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusteringGen;
-	Clustering singleton = clusteringGen.makeSingletonClustering(G);
-	Clustering random = clusteringGen.makeRandomClustering(G, 10);
+	Partition singleton = clusteringGen.makeSingletonClustering(G);
+	Partition random = clusteringGen.makeRandomClustering(G, 10);
 
 	JaccardMeasure jaccard;
 	double j = jaccard.getDissimilarity(G, singleton, random);
@@ -144,8 +145,8 @@ TEST_F(ClusteringGTest, testNodeStructuralRandMeasure) {
 	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusteringGen;
-	Clustering one1 = clusteringGen.makeOneClustering(G);
-	Clustering one2 = clusteringGen.makeOneClustering(G);
+	Partition one1 = clusteringGen.makeOneClustering(G);
+	Partition one2 = clusteringGen.makeOneClustering(G);
 
 	NodeStructuralRandMeasure rand;
 	double r = rand.getDissimilarity(G, one1, one2);
@@ -160,8 +161,8 @@ TEST_F(ClusteringGTest, testGraphStructuralRandMeasure) {
 	Graph G = graphGen.makeCompleteGraph(n);
 
 	ClusteringGenerator clusteringGen;
-	Clustering one1 = clusteringGen.makeOneClustering(G);
-	Clustering one2 = clusteringGen.makeOneClustering(G);
+	Partition one1 = clusteringGen.makeOneClustering(G);
+	Partition one2 = clusteringGen.makeOneClustering(G);
 
 	GraphStructuralRandMeasure rand;
 	double r = rand.getDissimilarity(G, one1, one2);
@@ -170,18 +171,6 @@ TEST_F(ClusteringGTest, testGraphStructuralRandMeasure) {
 
 }
 
-
-TEST_F(ClusteringGTest, testCompact) {
-	count n = 50;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
-
-	ClusteringGenerator clusteringGen;
-	Clustering clustering = clusteringGen.makeRandomClustering(G, 2*n);
-	clustering.compact();
-
-	EXPECT_LE(clustering.upperBound(), n);
-}
 
 TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 
@@ -195,7 +184,7 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 	INFO("making random graph");
 	Graph G = graphGen.makeRandomGraph(n, 0.2);
 	INFO("making random clustering");
-	Clustering zeta = clusteringGen.makeRandomClustering(G, 42);
+	Partition zeta = clusteringGen.makeRandomClustering(G, 42);
 
 	INFO("calculating modularity in parallel");
 	double modPar = modularityPar.getQuality(zeta, G);
@@ -218,7 +207,7 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 //
 //	METISGraphReader reader;
 //	Graph G = reader.read("graphs/Benchmark/uk-2002.graph"); // FIXME: hardcoded file name
-//	Clustering zeta = clusteringGen.makeRandomClustering(G, 42);
+//	Partition zeta = clusteringGen.makeRandomClustering(G, 42);
 //
 //	double modPar = modularityPar.getQuality(zeta, G);
 //	double modSeq = modularitySeq.getQuality(zeta, G);
@@ -248,7 +237,7 @@ TEST_F(ClusteringGTest, testModularityParallelVsSequential) {
 //
 //	ClusteringReader clusteringReader;
 //	INFO("reading clustering from: " , clusteringPath);
-//	Clustering zeta = clusteringReader.read(clusteringPath);
+//	Partition zeta = clusteringReader.read(clusteringPath);
 //
 //	INFO("reading modularity value from .eval file: " , evalPath);
 //	std::ifstream evalFile(evalPath);
@@ -281,8 +270,8 @@ TEST_F(ClusteringGTest, testNMIDistance) {
 	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
 
 	ClusteringGenerator clustGen;
-	Clustering one1 = clustGen.makeOneClustering(G);
-	Clustering one2 = clustGen.makeOneClustering(G);
+	Partition one1 = clustGen.makeOneClustering(G);
+	Partition one2 = clustGen.makeOneClustering(G);
 
 	NMIDistance NMID;
 	double distOne = NMID.getDissimilarity(G, one1, one2);
@@ -291,8 +280,8 @@ TEST_F(ClusteringGTest, testNMIDistance) {
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distOne)) << "NMID of two 1-clusterings should be 0.0";
 
 
-	Clustering singleton1 = clustGen.makeSingletonClustering(G);
-	Clustering singleton2 = clustGen.makeSingletonClustering(G);
+	Partition singleton1 = clustGen.makeSingletonClustering(G);
+	Partition singleton2 = clustGen.makeSingletonClustering(G);
 
 	double distSingleton = NMID.getDissimilarity(G, singleton1, singleton2);
 	INFO("NMID for two singleton clusterings: " , distSingleton);
@@ -300,8 +289,8 @@ TEST_F(ClusteringGTest, testNMIDistance) {
 
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distSingleton)) << "NMID of two identical singleton clusterings should be 0.0";
 
-	Clustering random1 = clustGen.makeRandomClustering(G, 2);
-	Clustering random2 = clustGen.makeRandomClustering(G, 2);
+	Partition random1 = clustGen.makeRandomClustering(G, 2);
+	Partition random2 = clustGen.makeRandomClustering(G, 2);
 
 	double distRandom = NMID.getDissimilarity(G, random1, random2);
 	INFO("NMID for two random clusterings: " , distRandom);
@@ -315,8 +304,8 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
 
 	ClusteringGenerator clustGen;
-	Clustering one1 = clustGen.makeOneClustering(G);
-	Clustering one2 = clustGen.makeOneClustering(G);
+	Partition one1 = clustGen.makeOneClustering(G);
+	Partition one2 = clustGen.makeOneClustering(G);
 
 	DynamicNMIDistance dynNMID;
 	double distOne = dynNMID.getDissimilarity(G, one1, one2);
@@ -325,16 +314,16 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 	EXPECT_TRUE(Aux::NumericTools::equal(distOne, 0.0)) << "Dyn NMID of two 1-clusterings should be 0.0";
 
 
-	Clustering singleton1 = clustGen.makeSingletonClustering(G);
-	Clustering singleton2 = clustGen.makeSingletonClustering(G);
+	Partition singleton1 = clustGen.makeSingletonClustering(G);
+	Partition singleton2 = clustGen.makeSingletonClustering(G);
 
 	double distSingleton = dynNMID.getDissimilarity(G, singleton1, singleton2);
 	INFO("Dyn NMID for two singleton clusterings: " , distSingleton);
 
 	EXPECT_TRUE(Aux::NumericTools::equal(distSingleton, 0.0)) << "Dyn NMID of two identical singleton clusterings should be 0.0";
 
-	Clustering random1 = clustGen.makeRandomClustering(G, 2);
-	Clustering random2 = clustGen.makeRandomClustering(G, 2);
+	Partition random1 = clustGen.makeRandomClustering(G, 2);
+	Partition random2 = clustGen.makeRandomClustering(G, 2);
 
 	double distRandom = dynNMID.getDissimilarity(G, random1, random2);
 	INFO("Dyn NMID for two random clusterings: " , distRandom);
@@ -352,68 +341,23 @@ TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
 	setup.run();
 
 	G = setup.getGraphCopy();
-	std::vector<Clustering>& myresults = setup.dynamicClusteringTimelines[0];
-	Clustering& currentClustering = myresults.back();
-	Clustering& oldClustering = myresults[0];
-	EXPECT_TRUE(currentClustering.isProper(G)) << "clustering in the sequence should be a proper clustering of G";
+	std::vector<Partition>& myresults = setup.dynamicClusteringTimelines[0];
+	Partition& currentClustering = myresults.back();
+	Partition& oldClustering = myresults[0];
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, currentClustering)) << "clustering in the sequence should be a proper clustering of G";
 
 	double distSeq = dynNMID.getDissimilarity(G, oldClustering, currentClustering);
 	INFO("Dyn NMID for last and first clustering: " , distSeq);
 
 }
 
-
-TEST_F(ClusteringGTest, testNumberOfClusters) {
-	GraphGenerator graphGenerator;
-	count n = 42;
-	count k = 4; // number of clusters
-	Graph G = graphGenerator.makeCompleteGraph(n);
-
-	ClusteringGenerator clusteringGenerator;
-	Clustering singleton = clusteringGenerator.makeSingletonClustering(G);
-	Clustering one = clusteringGenerator.makeOneClustering(G);
-
-	EXPECT_EQ(n, singleton.numberOfClusters());
-	EXPECT_EQ(1, one.numberOfClusters());
-}
-
-
-TEST_F(ClusteringGTest, testGetMembers) {
-	GraphGenerator graphGenerator;
-	count n = 42;
-	Graph G = graphGenerator.makeCompleteGraph(n);
-	ClusteringGenerator clusteringGenerator;
-	Clustering one = clusteringGenerator.makeOneClustering(G);
-	node v = 0; // arbitrary node
-	cluster C = one[v]; // get cluster id
-	std::vector<node> members = one.getMembers(C);
-
-	EXPECT_EQ(n, members.size()) << "all nodes must be in the 1-cluster";
-
-}
-
-
-TEST_F(ClusteringGTest, testClusterSizes) {
-	GraphGenerator graphGenerator;
-	count n = 42;
-	Graph G = graphGenerator.makeCompleteGraph(n);
-	ClusteringGenerator clusteringGenerator;
-	Clustering one = clusteringGenerator.makeOneClustering(G);
-
-	std::vector<count> sizes = one.clusterSizes();
-
-	EXPECT_EQ(1, sizes.size()) << "only one entry for 1-clustering";
-	EXPECT_EQ(n, sizes.at(0)) << "size of only cluster should be n";
-}
-
-
 TEST_F(ClusteringGTest, testSampledRandMeasures) {
 	GraphGenerator graphGenerator;
 	count n = 42;
 	Graph G = graphGenerator.makeCompleteGraph(n);
 	ClusteringGenerator clusteringGenerator;
-	Clustering one = clusteringGenerator.makeOneClustering(G);
-	Clustering singleton = clusteringGenerator.makeSingletonClustering(G);
+	Partition one = clusteringGenerator.makeOneClustering(G);
+	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
 
 	SampledNodeStructuralRandMeasure nRand(20);
 	SampledGraphStructuralRandMeasure gRand(20);

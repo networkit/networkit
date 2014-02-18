@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -25,7 +25,7 @@ public:
 
 	virtual ~ClusteringWriter();
 
-	virtual void write(Clustering& zeta, std::string path) const;
+	virtual void write(Partition& zeta, std::string path) const;
 };
 
 } /* namespace NetworKit */

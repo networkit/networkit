@@ -12,8 +12,9 @@
 #include "../../graph/GraphGenerator.h"
 #include "../../clustering/ClusteringGenerator.h"
 #include "../../coarsening/ClusterContracter.h"
- #include "../../coarsening/PartitionCoarsening.h"
+#include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
+#include "../../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -23,7 +24,7 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 	Graph G = graphGen.makeErdosRenyiGraph(n, 0.5);
 
 	ClusteringGenerator clusteringGen;
-	Clustering singleton = clusteringGen.makeSingletonClustering(G);
+	Partition singleton = clusteringGen.makeSingletonClustering(G);
 
 
 	ClusterContracter contracter;
@@ -36,7 +37,7 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 			<< "graph contracted according to singletons clustering should have the same number of nodes as original";
 
 	count k = 2; // number of clusters in random clustering
-	Clustering random = clusteringGen.makeRandomClustering(G, k);
+	Partition random = clusteringGen.makeRandomClustering(G, k);
 	auto conRandPair = contracter.run(G, random);
 	Graph GconRand = conRandPair.first;
 
@@ -45,14 +46,13 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 
 }
 
-
 TEST_F(CoarseningGTest, testPartitionCoarsening) {
 	GraphGenerator graphGen;
 	count n = 100;
 	Graph G = graphGen.makeErdosRenyiGraph(n, 0.5);
 
 	ClusteringGenerator clusteringGen;
-	Clustering singleton = clusteringGen.makeSingletonClustering(G);
+	Partition singleton = clusteringGen.makeSingletonClustering(G);
 
 
 	PartitionCoarsening coarsening;
@@ -65,7 +65,7 @@ TEST_F(CoarseningGTest, testPartitionCoarsening) {
 			<< "graph contracted according to singletons clustering should have the same number of nodes as original";
 
 	count k = 2; // number of clusters in random clustering
-	Clustering random = clusteringGen.makeRandomClustering(G, k);
+	Partition random = clusteringGen.makeRandomClustering(G, k);
 	auto conRandPair = coarsening.run(G, random);
 	Graph GconRand = conRandPair.first;
 
@@ -73,8 +73,6 @@ TEST_F(CoarseningGTest, testPartitionCoarsening) {
 			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
 
 }
-
-
 TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	GraphGenerator graphGen;
 	int64_t n = 100;
@@ -82,7 +80,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 
 	// get 1-clustering of G0
 	ClusteringGenerator clusteringGen;
-	Clustering zeta0 = clusteringGen.makeOneClustering(G0);
+	Partition zeta0 = clusteringGen.makeOneClustering(G0);
 
 	// contract G0 according to 1-clusterings
 	ClusterContracter contract;
@@ -91,12 +89,12 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	Graph G1 = con.first;
 	maps.push_back(con.second);
 
-	Clustering zeta1 = clusteringGen.makeOneClustering(G1);
+	Partition zeta1 = clusteringGen.makeOneClustering(G1);
 
 	ClusteringProjector project;
-	Clustering zetaBack = project.projectBackToFinest(zeta1, maps, G0);
+	Partition zetaBack = project.projectBackToFinest(zeta1, maps, G0);
 
-	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta0, zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical";
 }
 
 
@@ -107,7 +105,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 
 	// get 1-clustering of G0
 	ClusteringGenerator clusteringGen;
-	Clustering zeta0 = clusteringGen.makeSingletonClustering(G0);
+	Partition zeta0 = clusteringGen.makeSingletonClustering(G0);
 
 	// contract G0 according to 1-clusterings
 	ClusterContracter contract;
@@ -116,12 +114,12 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 	Graph G1 = con.first;
 	maps.push_back(con.second);
 
-	Clustering zeta1 = clusteringGen.makeSingletonClustering(G1);
+	Partition zeta1 = clusteringGen.makeSingletonClustering(G1);
 
 	ClusteringProjector project;
-	Clustering zetaBack = project.projectBackToFinest(zeta1, maps, G0);
+	Partition zetaBack = project.projectBackToFinest(zeta1, maps, G0);
 
-	EXPECT_TRUE(zeta0.equals(zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta0, zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical";
 }
 
 

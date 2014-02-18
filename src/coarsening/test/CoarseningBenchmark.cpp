@@ -19,24 +19,22 @@
 namespace NetworKit {
 
 TEST_F(CoarseningBenchmark, benchmarkClusterContracter) {
-
 	std::cout << "enter number of nodes: ";
-
 	count n;
-	std::cin >> n; 
-
+	std::cin >> n;
 	count redF = 100; // reduction factor
 	DEBUG("generating graph with ", n, " nodes");
 	auto gen = ErdosRenyiGenerator(n, 0.05);
 	Graph G = gen.generate();
 
 	DEBUG("generating partition");
-	Clustering zeta(G.upperNodeIdBound());
+	Partition zeta(G.upperNodeIdBound());
+	zeta.setUpperBound(G.upperNodeIdBound());
 	G.forNodes([&](node u){
-		zeta[u] = u / redF;
+		zeta.addToSubset(u/redF,u);
 	});
-
-	count k = zeta.numberOfClusters();
+	
+	count k = zeta.numberOfSubsets();
 	DEBUG("number of subsets: ", k);
 
 	INFO("sequential coarsening");
@@ -56,14 +54,10 @@ TEST_F(CoarseningBenchmark, benchmarkClusterContracter) {
 	timer.stop();
 	Graph Gc2 = result2.first;
 	INFO("parallel coarsening: ", timer.elapsedTag());
-
 	EXPECT_EQ(k, Gc1.numberOfNodes());
 	EXPECT_EQ(k, Gc2.numberOfNodes());
 
-
 }
-
-
 
 
 

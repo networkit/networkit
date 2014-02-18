@@ -15,7 +15,7 @@ CommunityGraph::CommunityGraph() {
 CommunityGraph::~CommunityGraph() {
 }
 
-void CommunityGraph::run(const Graph& G, const Clustering& zeta) {
+void CommunityGraph::run(const Graph& G, const Partition& zeta) {
 
 	Gcom = Graph(0);
 	Gcom.markAsWeighted(); // Gcon will be a weighted graph
@@ -27,7 +27,7 @@ void CommunityGraph::run(const Graph& G, const Clustering& zeta) {
 	DEBUG("map cluster -> supernode");
 	// populate map cluster -> supernode
 	G.forNodes([&](node v){
-		cluster c = zeta.clusterOf(v);
+		index c = zeta.subsetOf(v);
 		if (communityToSuperNode[c] == none) {
 			communityToSuperNode[c] = Gcom.addNode();
 		}
@@ -42,7 +42,7 @@ void CommunityGraph::run(const Graph& G, const Clustering& zeta) {
 	DEBUG("node -> supernode");
 	// set entries node -> supernode
 	G.parallelForNodes([&](node v){
-		nodeToSuperNode[v] = communityToSuperNode[zeta.clusterOf(v)];
+		nodeToSuperNode[v] = communityToSuperNode[zeta.subsetOf(v)];
 	});
 
 

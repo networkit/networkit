@@ -12,7 +12,7 @@
 #include <string>
 
 #include "../graph/Graph.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include "../io/METISGraphWriter.h"
 
 namespace NetworKit {
@@ -31,7 +31,7 @@ public:
 
 	std::vector<double> getTimeline(std::string key);
 
-	std::vector<std::pair<Graph, Clustering> > getResultTimeline(); 
+	std::vector<std::pair<Graph, Partition> > getResultTimeline(); 
 
 private:
 
@@ -56,9 +56,9 @@ private:
 
 	std::vector<std::pair<count, count> > size; // records graph size
 
-	std::vector<std::pair<Graph, Clustering> > results;
+	std::vector<std::pair<Graph, Partition> > results;
 
-	Clustering previous; // communities from the previous run
+	Partition previous; // communities from the previous run
 
 };
 

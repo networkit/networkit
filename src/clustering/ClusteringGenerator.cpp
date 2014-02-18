@@ -7,6 +7,7 @@
 
 #include "ClusteringGenerator.h"
 #include "../auxiliary/Random.h"
+#include "GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -18,43 +19,41 @@ ClusteringGenerator::~ClusteringGenerator() {
 
 }
 
-Clustering ClusteringGenerator::makeSingletonClustering(Graph& G) {
+Partition ClusteringGenerator::makeSingletonClustering(Graph& G) {
 	count n = G.upperNodeIdBound();
-	Clustering zeta(n);
+	Partition zeta(n);
 	zeta.allToSingletons();
 	return zeta;
 }
 
-Clustering ClusteringGenerator::makeOneClustering(Graph& G) {
+Partition ClusteringGenerator::makeOneClustering(Graph& G) {
 	count n = G.upperNodeIdBound();
-	Clustering zeta(n);
-	cluster one = zeta.addCluster();
+	Partition zeta(n);
+	zeta.setUpperBound(1);
 	G.forNodes([&](node v){
-		zeta.addToCluster(one, v);
+		zeta.addToSubset(0, v); //TODO not very nice...
 	});
 	return zeta;
 }
 
-Clustering ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
+Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 	count n = G.upperNodeIdBound();
-	Clustering zeta(n);
+	Partition zeta(n);
 
-	for (uint64_t i = 0; i < k; ++i) {
-		zeta.addCluster();
-	}
+	zeta.setUpperBound(k-1);
 
 	G.parallelForNodes([&](node v){
-		cluster c = Aux::Random::integer(k-1);
-		zeta.addToCluster(c, v);
+		index c = Aux::Random::integer(k-1);
+		zeta.addToSubset(c, v);
 	});
 
-	assert (zeta.isProper(G));
+	assert (GraphClusteringTools::isProperClustering(G, zeta));
 	return zeta;
 }
 
-Clustering ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count k) {
-	count n = G.upperNodeIdBound();
-	Clustering clustering(n);
+Partition ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count k) {
+	count n = G.upperNodeIdBound(); // FIXME: upper Node ID bound is actually not the right way to do this.
+	Partition clustering(n);
 
 	std::vector<count> blockSize(k, 0);
 
@@ -72,7 +71,7 @@ Clustering ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count
 	node v = 0;
 	for (index block = 0; block < k; ++block) {
 		while (v < blockSize[block]) {
-			clustering[v] = block;
+			clustering.addToSubset(block,v);//clustering[v] = block;
 			++v;
 		}
 	}

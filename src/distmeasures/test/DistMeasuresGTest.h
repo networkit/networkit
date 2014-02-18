@@ -17,7 +17,7 @@
 #include "../../viz/PostscriptWriter.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/DibapGraphReader.h"
-#include "../../clustering/Clustering.h"
+#include "../../structures/Partition.h"
 #include "../../clustering/Modularity.h"
 #include "../../graph/GraphGenerator.h"
 #include "../NodeDistance.h"

@@ -22,7 +22,7 @@ public:
 	virtual ~CNM();
 
 
-	Clustering run(Graph &graph) override;
+	Partition run(Graph &graph) override;
 
 	std::string toString() const override {
 		return "CNM";

@@ -8,7 +8,6 @@
 #include "ClusterContracter.h"
 #include "../auxiliary/Timer.h"
 
-
 namespace NetworKit {
 
 ClusterContracter::ClusterContracter() {
@@ -20,7 +19,7 @@ ClusterContracter::~ClusterContracter() {
 	// TODO Auto-generated destructor stub
 }
 
-std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, const Clustering& zeta) {
+std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, const Partition& zeta) {
 
 	Aux::Timer timer;
 	timer.start();
@@ -30,9 +29,9 @@ std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, cons
 
 	std::vector<node> clusterToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
 
-	// populate map cluster -> supernode
+	DEBUG("populate map cluster -> supernode");
 	G.forNodes([&](node v){
-		cluster c = zeta.clusterOf(v);
+		index c = zeta.subsetOf(v);//zeta.clusterOf(v);Cluster
 		if (clusterToSuperNode[c] == none) {
 			clusterToSuperNode[c] = Gcon.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
 		}
@@ -41,20 +40,20 @@ std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, cons
 	index z = G.upperNodeIdBound();
 	std::vector<node> nodeToSuperNode(z, none);
 
-	// set entries node -> supernode
+	DEBUG("set entries node -> supernode");
 	G.parallelForNodes([&](node v){
-		nodeToSuperNode[v] = clusterToSuperNode[zeta.clusterOf(v)];
+		nodeToSuperNode[v] = clusterToSuperNode[zeta.subsetOf(v)];
 	});
 
 
-	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
+	DEBUG("iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon");
 	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
-		// TRACE("edge (", su, ", ", sv, ")");
+		//TRACE("edge (", su, ", ", sv, ")");
 		// add edge weight to weight between two supernodes (or insert edge)
 		Gcon.increaseWeight(su, sv, ew);
-	}); 
+	});
 
 	timer.stop();
 	INFO("sequential coarsening took ", timer.elapsedTag());

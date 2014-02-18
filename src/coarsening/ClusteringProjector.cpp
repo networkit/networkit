@@ -18,29 +18,27 @@ ClusteringProjector::~ClusteringProjector() {
 	// TODO Auto-generated destructor stub
 }
 
+Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse,
+		Partition& zetaCoarse) { // FIXME Partition used like it is supposed to?
 
-
-Clustering ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse, Clustering& zetaCoarse) {
-
-	Clustering zetaFine(Gfine.numberOfNodes());
-
+	Partition zetaFine(Gfine.numberOfNodes());
+	zetaFine.setUpperBound(zetaCoarse.upperBound());
 	Gfine.forNodes([&](node v) {
 		node sv = fineToCoarse[v];
-		cluster cv = zetaCoarse.clusterOf(sv);
-		zetaFine[v] = cv;
+		index cv = zetaCoarse.subsetOf(sv);
+		zetaFine.addToSubset(cv,v);
 	});
 
 	return zetaFine;
 }
 
-
-Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
+Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
 		std::vector<std::vector<node> >& maps, Graph& Gfinest) {
-	if (zetaCoarse.numberOfNodes() == Gfinest.numberOfNodes()) {
+	if (zetaCoarse.numberOfElements() == Gfinest.numberOfNodes()) {
 		return zetaCoarse;
 	}
 
-	Clustering zetaFine(Gfinest.numberOfNodes());
+	Partition zetaFine(Gfinest.numberOfNodes());
 	zetaFine.setUpperBound(zetaCoarse.upperBound()); // upper bound for ids in zetaFine must be set to upper bound in zetaCoarse, or modularity assertions fail
 
 	// store temporarily coarsest supernode here
@@ -61,16 +59,16 @@ Clustering ClusteringProjector::projectBackToFinest(Clustering& zetaCoarse,
 
 	// set clusters for fine nodes
 	Gfinest.parallelForNodes([&](node v) {
-		cluster sc = zetaCoarse[tempMap[v]];
-		zetaFine[v] = sc;
+		index sc = zetaCoarse[tempMap[v]];
+		zetaFine.addToSubset(sc,v);//zetaFine[v] = sc;
 	});
 
 	return zetaFine;
 }
 
-Clustering ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<std::vector<node> >& maps) {
+Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<std::vector<node> >& maps) {
 
-	Clustering zeta(Gfinest.numberOfNodes());
+	Partition zeta(Gfinest.numberOfNodes());
 
 	// store temporarily coarsest supernode here
 	std::vector<node> super(Gfinest.numberOfNodes());
@@ -89,17 +87,32 @@ Clustering ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoa
 
 	// assign super node id as cluster id
 	Gfinest.parallelForNodes([&](node v) {
+		//zeta.addToSubset(super[v],v);
 		zeta[v] = super[v];
 	});
+	
+	zeta.compact(); //TODO: this is just an experimental fix, since upperBound is not known...
 
-	DEBUG("number of clusters in projected clustering: " , zeta.numberOfClusters());
+	DEBUG("number of clusters in projected clustering: " , zeta.numberOfSubsets());
 	DEBUG("number of nodes in coarse graph: " , Gcoarse.numberOfNodes());
-	assert (zeta.numberOfClusters() == Gcoarse.numberOfNodes());
+	assert (zeta.numberOfSubsets() == Gcoarse.numberOfNodes());
 
 	return zeta;
 
 }
+/* FIXME: to be deleted?
+Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse, Partition& zetaCoarse) {
 
+	Partition zetaFine(Gfine.numberOfNodes());
+
+	Gfine.forNodes([&](node v) {
+		node sv = fineToCoarse[v];
+		index cv = zetaCoarse[sv];//zetaCoarse.clusterOf(sv);
+		zetaFine.addToSubset(cv,v); //zetaFine[v] = cv;
+	});
+
+	return zetaFine;
+}*/
 
 } /* namespace NetworKit */
 

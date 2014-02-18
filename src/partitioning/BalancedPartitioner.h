@@ -8,11 +8,10 @@
 #ifndef BALANCEDPARTITIONER_H_
 #define BALANCEDPARTITIONER_H_
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include "../clustering/ClusteringGenerator.h"
 #include "../clustering/EdgeCut.h"
 #include "../io/ClusteringWriter.h"
-#include "../clustering/Clustering.h"
 #include "../coarsening/MatchingContracter.h"
 #include "../matching/ParallelMatcher.h"
 #include "../coarsening/ClusteringProjector.h"
@@ -27,13 +26,13 @@ public:
 	BalancedPartitioner();
 	virtual ~BalancedPartitioner();
 
-	virtual Clustering run(Graph& G, count numBlocks) = 0;
-	virtual Clustering& rerun(Graph& G, count numBlocks, Clustering& partition) = 0;
+	virtual Partition run(Graph& G, count numBlocks) = 0;
+	virtual Partition& rerun(Graph& G, count numBlocks, Partition& partition) = 0;
 
-	virtual Clustering multilevelRun(Graph& graph, count numParts);
-	virtual Clustering& multilevelRerun(Graph& graph, count numParts, Clustering& partition);
+	virtual Partition multilevelRun(Graph& graph, count numParts);
+	virtual Partition& multilevelRerun(Graph& graph, count numParts, Partition& partition);
 
-	virtual Clustering& postsmooth(Graph& graph, count numBlocks, Clustering& partition) = 0;
+	virtual Partition& postsmooth(Graph& graph, count numBlocks, Partition& partition) = 0;
 
 	void setBalance(float balanceFactor);
 };

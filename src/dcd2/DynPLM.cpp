@@ -21,7 +21,7 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 	// turn a node into a singleton
 	auto isolate = [&](node u) {
 		// TRACE("isolating " , u);
-		zeta[u] = zeta.addCluster();
+		zeta.toSingleton(u);
 		// TRACE("by creating singleton " , zeta[u]);
 	};
 
@@ -30,12 +30,12 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 			// TRACE("event: " , ev.toString());
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
-					zeta.append(ev.u);
-					isolate(ev.u);
+					index z = zeta.extend();
+					isolate(z); //ev.u
 					break;
 				}
 				case GraphEvent::NODE_REMOVAL : {
-					zeta[ev.u] = none;
+					zeta.remove(ev.u);
 					break;
 				}
 				case GraphEvent::EDGE_ADDITION : {
@@ -66,7 +66,7 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 		// turn a node into a singleton
 		auto tryIsolate = [&](node u) {
 			if (zeta.contains(u)) {
-				zeta[u] = zeta.addCluster();
+				zeta.toSingleton(u);
 			}
 		};
 
@@ -76,12 +76,12 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 			switch (ev.type) {
 				case GraphEvent::NODE_ADDITION : {
 					// FIXME: segmentation fault 
-					zeta.append(ev.u);
-					isolate(ev.u);
+					index z = zeta.extend();
+					isolate(z); //ev.u
 					break;
 				}
 				case GraphEvent::NODE_REMOVAL : {
-					zeta[ev.u] = none;
+					zeta.remove(ev.u);
 					break;
 				}
 				case GraphEvent::EDGE_ADDITION : {
@@ -131,12 +131,12 @@ void DynPLM::update(std::vector<GraphEvent>& stream) {
 	}
 }
 
-Clustering DynPLM::detect(bool restart) {
+Partition DynPLM::detect(bool restart) {
 	DEBUG("retrieving solution");
 	return this->run(*this->G, restart);
 }
 
-Clustering DynPLM::run(Graph& G, bool restart) {
+Partition DynPLM::run(Graph& G, bool restart) {
 	INFO("calling run method on " , G.toString());
 
 	if (restart) {
@@ -151,8 +151,8 @@ Clustering DynPLM::run(Graph& G, bool restart) {
 
 	// init community-dependent temporaries
 	DEBUG("initializing community volume map");
-	std::map<cluster, double> volCommunity; // a map to save memory
-	zeta.forEntries([&](node u, cluster C) { 	// set volume for all communities
+	std::map<index, double> volCommunity; // a map to save memory
+	zeta.forEntries([&](node u, index C) { 	// set volume for all communities
 		volCommunity[C] += G.volume(u);
 	});
 
@@ -166,10 +166,10 @@ Clustering DynPLM::run(Graph& G, bool restart) {
 
 		// TRACE("zeta: " , Aux::vectorToString(zeta.getVector()));
 		// collect edge weight to neighbor clusters
-		std::map<cluster, edgeweight> affinity;
+		std::map<index, edgeweight> affinity;
 		G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
 			if (u != v) {
-				cluster C = zeta[v]; // FIXME: zeta[v] does not exist
+				index C = zeta[v]; // FIXME: zeta[v] does not exist
 				affinity[C] += weight;
 			}
 		});
@@ -177,7 +177,7 @@ Clustering DynPLM::run(Graph& G, bool restart) {
 		// sub-functions
 
 		// $\vol(C \ {x})$ - volume of cluster C excluding node x
-		auto volCommunityMinusNode = [&](cluster C, node x) {
+		auto volCommunityMinusNode = [&](index C, node x) {
 			double volC = 0.0;
 			volC = volCommunity[C];
 			if (zeta[x] == C) {
@@ -187,16 +187,16 @@ Clustering DynPLM::run(Graph& G, bool restart) {
 			}
 		};
 
-		auto modGain = [&](node u, cluster C, cluster D) {
+		auto modGain = [&](node u, index C, index D) {
 			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * G.volume(u)) / divisor;
 			//TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
 			return delta;
 		};
 
 
-		cluster best = none;
-		cluster C = none;
-		cluster D = none;
+		index best = none;
+		index C = none;
+		index D = none;
 		double deltaBest = -1;
 
 		C = zeta[u];
@@ -235,7 +235,7 @@ Clustering DynPLM::run(Graph& G, bool restart) {
 			// TRACE("node " , u , " not moved");
 		}
 	};
-
+	// first move hase
 
 		// performs node moves
 	auto movePhase = [&](){
@@ -271,15 +271,16 @@ Clustering DynPLM::run(Graph& G, bool restart) {
 	if (change) {
 		DEBUG("nodes moved, so begin coarsening and recursive call");
 		std::pair<Graph, std::vector<node>> coarsened = plm2.coarsen(G, zeta);	// coarsen graph according to communitites
-		Clustering zetaCoarse = plm2.run(coarsened.first);
+		Partition zetaCoarse = plm2.run(coarsened.first);
 
 		zeta = plm2.prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {
 			INFO("refinement phase");
 			// reinit community-dependent temporaries
+			index o = zeta.upperBound();
 			volCommunity.clear();
-			zeta.forEntries([&](node u, cluster C) { 	// set volume for all communities
+			zeta.forEntries([&](node u, index C) { 	// set volume for all communities
 				volCommunity[C] += G.volume(u);
 			});
 

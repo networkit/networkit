@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include "../graph/Graph.h"
 #include "../auxiliary/StringTools.h"
 
@@ -24,7 +24,7 @@ public:
 	 *
 	 * @param[in]	path	path to file
 	 */
-	virtual Clustering read(std::string path);
+	virtual Partition read(std::string path);
 
 	/**
 	* @param[in]	firstNode	index of the first node in the file

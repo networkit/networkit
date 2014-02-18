@@ -26,7 +26,7 @@ public:
 
 	virtual ~NMIDistance();
 
-	virtual double getDissimilarity(Graph& G, Clustering& zeta, Clustering& eta);
+	virtual double getDissimilarity(Graph& G, Partition& zeta, Partition& eta);
 
 };
 

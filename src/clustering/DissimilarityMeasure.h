@@ -8,7 +8,7 @@
 #ifndef DISSIMILARITYMEASURE_H_
 #define DISSIMILARITYMEASURE_H_
 
-#include "Clustering.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -25,7 +25,7 @@ public:
 	virtual ~DissimilarityMeasure();
 
 
-	virtual double getDissimilarity(Graph& G, Clustering& first, Clustering& second) = 0;
+	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second) = 0;
 };
 
 } /* namespace NetworKit */

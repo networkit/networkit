@@ -10,7 +10,7 @@
 
 #include "../graph/Graph.h"
 #include "../graph/NodeMap.h"
-#include "../clustering/Clustering.h"
+#include "../structures/Partition.h"
 #include <set>
 #include <unordered_map>
 #include <utility> // for including Pair
@@ -43,7 +43,7 @@ namespace NetworKit {
 typedef uint64_t count; // more expressive name for an integer quantity
 typedef std::pair<node, node>  edge; // more expressive name for an edge
 typedef std::set<std::pair<node, node> > cutEdges; // more expressive name for group of cutting edges
-typedef std::unordered_map<std::pair<cluster, cluster>, cutEdges > cuttingMap; // map from cluster pair to their clustering cut edges
+typedef std::unordered_map<std::pair<index, index>, cutEdges > cuttingMap; // map from cluster pair to their clustering cut edges
 class ClusteringCut {
 
 public:
@@ -55,26 +55,26 @@ public:
 	/**
 	 * create matrix map from cluster pair to their cutting edges
 	 */
-	cuttingMap getClusterToCutMatrixMap(const Graph& G, const Clustering& zeta);
+	cuttingMap getClusterToCutMatrixMap(const Graph& G, const Partition& zeta);
 
 	/*
 	 * get all cut edges of the clustering
 	 */
-	cutEdges getAllCutEdges(const Graph& G, const Clustering& zeta);
+	cutEdges getAllCutEdges(const Graph& G, const Partition& zeta);
 	/*
 	 * get cut between two clusters
 	 */
-	cutEdges getInterClusterCutEdges(cluster c1, cluster c2, const Graph& G, const Clustering& zeta);
+	cutEdges getInterClusterCutEdges(index c1, index c2, const Graph& G, const Partition& zeta);
 
 	/**
 	 * return size of the clustering cutting edges between cluster of index1 and of index2
 	 */
-	count getInterClusterCutEdgesSize(cluster c1, cluster c2, const Graph& G, const Clustering& zeta) const;
+	count getInterClusterCutEdgesSize(index c1, index c2, const Graph& G, const Partition& zeta) const;
 
 	/**
 	 * return the total size of the clustering cutting edges
 	 */
-	count getTotalCutEdgesSize(const Graph& G, const Clustering& zeta) const;
+	count getTotalCutEdgesSize(const Graph& G, const Partition& zeta) const;
 
 };
 }/* namespace NetworKit */

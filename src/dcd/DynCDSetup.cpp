@@ -10,6 +10,7 @@
 #include "../clustering/Modularity.h"
 #include "../clustering/DynamicNMIDistance.h"
 #include "../clustering/SampledNodeStructuralRandMeasure.h"
+#include "../clustering/GraphClusteringTools.h"
 
 namespace NetworKit {
 
@@ -83,12 +84,12 @@ void DynCDSetup::run() {
 			dynamicClusteringTimelines.at(detectorIndex).push_back(dynCD->run());
 
 			// TRACE("clustering looks like: " , Aux::vectorToString(results.at(detectorIndex).back().getVector()));
-			assert (dynamicClusteringTimelines.at(detectorIndex).back().isProper(*G));
+			assert (GraphClusteringTools::isProperClustering(*G, dynamicClusteringTimelines.at(detectorIndex).back()));
 
 			// evaluations which need the current graph
 			if (checkNumCom) {
 				INFO("calculating number of clusters");
-				count nCom = dynamicClusteringTimelines.at(detectorIndex).back().numberOfClusters();
+				count nCom = dynamicClusteringTimelines.at(detectorIndex).back().numberOfSubsets();
 				INFO("[RESULT] number of communities \t ", detectors.at(detectorIndex)->toString() , "\t" , nCom);
 				nCommunitiesTimelines.at(detectorIndex).push_back(nCom);
 			}
@@ -127,12 +128,12 @@ void DynCDSetup::run() {
 			staticRuntime.stop();
 			staticTimerTimeline.push_back(staticRuntime.elapsed().count());
 
-			assert (staticClusteringTimeline.back().isProper(*G));
+			assert (GraphClusteringTools::isProperClustering(*G, staticClusteringTimeline.back()));
 
 			if (checkNumCom) {
 
 				INFO("calculating number of communities");
-				count nCom = staticClusteringTimeline.back().numberOfClusters();
+				count nCom = staticClusteringTimeline.back().numberOfSubsets();
 				INFO("[RESULT] number of communities \t " , staticAlgo->toString() , "\t " , nCom);
 				this->staticNCommunitiesTimeline.push_back(nCom);
 			}
