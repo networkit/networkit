@@ -6,19 +6,9 @@
  */
 
 #include "ClusteringCoefficient.h"
+#include "../auxiliary/Random.h"
 
 namespace NetworKit {
-
-ClusteringCoefficient::ClusteringCoefficient()
-{
-	// TODO Auto-generated constructor stub
-
-}
-
-ClusteringCoefficient::~ClusteringCoefficient()
-{
-	// TODO Auto-generated destructor stub
-}
 
 std::vector<double>
 ClusteringCoefficient::exactLocal(Graph &G) const
@@ -156,7 +146,7 @@ ClusteringCoefficient::approxGlobal(Graph& G, const count tries) const
 
 	double triangles = 0;
 	for (count k = 0; k < tries; ++k) {
-		count r = rand() % (psum+1);
+		count r = Aux::Random::integer(psum - 1);
 
 		// plain old binary search:
 		index low = 0; 
@@ -175,9 +165,11 @@ ClusteringCoefficient::approxGlobal(Graph& G, const count tries) const
 
 		node v = low; // ewww.. setting a vertex to an index.. but works.
 
-		if (G.degree(v) < 2) {
+		count vDeg = G.degree(v);
+		if (vDeg < 2) {
 			// this vertex can never be part of a triangle,
 			// nor middle point of a path of length 3
+			--k; // do not count trial
 			continue;
 		}
 

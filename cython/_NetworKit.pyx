@@ -13,6 +13,7 @@ from libcpp cimport bool
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.map cimport map
+from libcpp.set cimport set
 from libcpp.string cimport string
 from unordered_set cimport unordered_set
 # FIXME: from libcpp.unordered_map import unordered_map
@@ -626,7 +627,7 @@ cdef class SNAPGraphWriter:
 cdef extern from "../src/io/ClusteringReader.h":
 	cdef cppclass _ClusteringReader "NetworKit::ClusteringReader":
 		_ClusteringReader() except +
-		_Clustering read(string path)
+		_Partition read(string path)
 
 
 cdef class ClusteringReader:
@@ -636,13 +637,13 @@ cdef class ClusteringReader:
 	cdef _ClusteringReader _this
 
 	def read(self, path):
-		return Clustering().setThis(self._this.read(stdstring(path)))
+		return Partition().setThis(self._this.read(stdstring(path)))
 
 
 cdef extern from "../src/io/ClusteringWriter.h":
 	cdef cppclass _ClusteringWriter "NetworKit::ClusteringWriter":
 		_ClusteringWriter() except +
-		void write(_Clustering, string path)
+		void write(_Partition, string path)
 
 
 cdef class ClusteringWriter:
@@ -651,7 +652,7 @@ cdef class ClusteringWriter:
 	 """
 	cdef _ClusteringWriter _this
 
-	def write(self, Clustering zeta, path):
+	def write(self, Partition zeta, path):
 		self._this.write(zeta._this, stdstring(path))
 
 
@@ -670,66 +671,129 @@ cdef extern from "../src/base/Parameters.h":
 		bool getBool(string key)
 
 
+# Module: structures
+# 
+cdef extern from "../src/structures/Partition.h":
+	cdef cppclass _Partition "NetworKit::Partition":
+		_Partition() except +
+		index subsetOf(index e) except +
+		index extend() except +
+		void remove(index e) except +
+		void addToSubset(index s, index e) except +
+		void moveToSubset(index s, index e) except +
+		void toSingleton(index e) except +
+		void allToSingletons() except +
+		void mergeSubsets(index s, index t) except +
+		void setUpperBound(index upper) except +
+		index upperBound() except +
+		index lowerBound() except +
+		void compact() except +
+		bool contains(index e) except +
+		bool inSameSubset(index e1, index e2) except +
+		vector[count] subsetSizes() except +
+		map[index, count] subsetSizeMap() except +
+		set[index] getMembers(const index s) except +
+		count numberOfElements() except +
+		count numberOfSubsets() except +
+		vector[index] getVector() except +
+		void setName(string name) except +
+		string getName() except +
 
-# Module: community
 
-
-cdef extern from "../src/clustering/Clustering.h":
-	cdef cppclass _Clustering "NetworKit::Clustering":
-		_Clustering() except +
-		count numberOfClusters() except +
-		cluster clusterOf(node) except +
-		float getImbalance() except +
-		vector[count] clusterSizes() except +
-		map[index, count] clusterSizeMap() except +
-		vector[node] getMembers(cluster C) except +
-
-cdef class Clustering:
+cdef class Partition:
 	"""
-		Represents a partition of the node set into disjoint subsets (clusters).
 	"""
-	cdef _Clustering _this
-	
-	cdef setThis(self, _Clustering other):
+	cdef _Partition _this
+
+	cdef setThis(self, _Partition other):
 		self._this = other
 		return self
 
-	def numberOfClusters(self):
-		return self._this.numberOfClusters()
+	def subsetOf(self, e):
+		return self._this.subsetOf(e)
 
-	def getImbalance(self):
-		return self._this.getImbalance()
+	def extend(self):
+		self._this.extend()
 
-	def clusterSizes(self):
-		return self._this.clusterSizes()
+	def addToSubset(self, s, e):
+		self._this.addToSubset(s, e)
 
-	def clusterSizeMap(self):
-		return self._this.clusterSizeMap()
+	def moveToSubset(self, index s, index e):
+		self._this.moveToSubset(s, e)
 
-	def getMembers(self, C):
-		return self._this.getMembers(C)
+	def toSingleton(self, index e):
+		self._this.toSingleton(e)
 
-	def clusterOf(self, v):
-		return self._this.clusterOf(v)
+	def allToSingletons(self):
+		self._this.allToSingletons()
 
+	def mergeSubsets(self, index s, index t):
+		self._this.mergeSubsets(s, t)
+
+
+	def setUpperBound(self, index upper):
+		self._this.setUpperBound(upper)
+
+	def upperBound(self):
+		return self._this.upperBound()
+
+	def lowerBound(self):
+		return self._this.lowerBound()
+
+	def compact(self):
+		self._this.compact()
+
+	def contains(self, index e):
+		return self._this.contains(e)
+
+	def inSameSubset(self, index e1, index e2):
+		return self._this.inSameSubset(e1, e2)
+
+	def subsetSizes(self):
+		return self._this.subsetSizes()
+
+	def subsetSizeMap(self):
+		return self._this.subsetSizeMap()
+
+	def getMembers(self, s):
+		return self._this.getMembers(s)
+
+	def numberOfElements(self):
+		return self._this.numberOfElements()
+
+	def numberOfSubsets(self):
+		return self._this.numberOfSubsets()
+
+	def getVector(self):
+		return self._this.getVector()
+
+	def setName(self, string name):
+		self._this.setName(name)
+
+	def getName(self):
+		return self._this.getName()
+
+
+
+# Module: community
 
 cdef extern from "../src/clustering/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
 		_Coverage() except +
-		double getQuality(_Clustering _zeta, _Graph _G) except +
+		double getQuality(_Partition _zeta, _Graph _G) except +
 
 cdef class Coverage:
 	""" Coverage is the fraction of intra-community edges """
 	cdef _Coverage _this
 	
-	def getQuality(self, Clustering zeta, Graph G):
+	def getQuality(self, Partition zeta, Graph G):
 		return self._this.getQuality(zeta._this, G._this)
 
 
 cdef extern from "../src/clustering/Modularity.h":
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +
-		double getQuality(_Clustering _zeta, _Graph _G) except +
+		double getQuality(_Partition _zeta, _Graph _G) except +
 		
 
 cdef class Modularity:
@@ -739,7 +803,7 @@ cdef class Modularity:
 	"""
 	cdef _Modularity _this
 	
-	def getQuality(self, Clustering zeta, Graph G):
+	def getQuality(self, Partition zeta, Graph G):
 		return self._this.getQuality(zeta._this, G._this)
 
 
@@ -751,7 +815,7 @@ cdef extern from "../src/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP":
 		_PLP() except +
 		_PLP(count updateThreshold) except +
-		_Clustering run(_Graph _G) except +
+		_Partition run(_Graph _G) except +
 		count numberOfIterations() except +
 		string toString() except +
 
@@ -770,7 +834,7 @@ cdef class PLP(Clusterer):
 
 	
 	def run(self, Graph G not None):
-		return Clustering().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(G._this))
 
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
@@ -782,14 +846,14 @@ cdef class PLP(Clusterer):
 cdef extern from "../src/community/LPDegreeOrdered.h":
 	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered":
 		_LPDegreeOrdered() except +
-		_Clustering run(_Graph _G)
+		_Partition run(_Graph _G)
 		count numberOfIterations()
 
 cdef class LPDegreeOrdered(Clusterer):
 	cdef _LPDegreeOrdered _this
 	
 	def run(self, Graph G not None):
-		return Clustering().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(G._this))
 
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
@@ -799,7 +863,7 @@ cdef extern from "../src/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
 		_PLM() except +
 		_PLM(string par, double gamma)
-		_Clustering run(_Graph _G)
+		_Partition run(_Graph _G)
 		string toString()
 		
 cdef class PLM(Clusterer):
@@ -812,7 +876,7 @@ cdef class PLM(Clusterer):
 		self._this = _PLM(stdstring(par), gamma)
 	
 	def run(self, Graph G not None):
-		return Clustering().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(G._this))
 
 	def toString(self):
 		return self._this.toString().decode("utf-8")
@@ -823,7 +887,7 @@ cdef extern from "../src/community/PLM2.h":
 		_PLM2() except +
 		_PLM2(bool refine, double gamma, string par, count maxIter) except +
 		string toString() except +
-		_Clustering run(_Graph G) except +
+		_Partition run(_Graph G) except +
 
 
 cdef class PLM2(Clusterer):
@@ -839,7 +903,7 @@ cdef class PLM2(Clusterer):
 		return self._this.toString().decode("utf-8")
 		
 	def run(self, Graph G not None):
-		return Clustering().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(G._this))
 
 
 cdef class DissimilarityMeasure:
@@ -850,7 +914,7 @@ cdef class DissimilarityMeasure:
 cdef extern from "../src/clustering/NodeStructuralRandMeasure.h":
 	cdef cppclass _NodeStructuralRandMeasure "NetworKit::NodeStructuralRandMeasure":
 		_NodeStructuralRandMeasure() except +
-		double getDissimilarity(_Graph G, _Clustering first, _Clustering second)
+		double getDissimilarity(_Graph G, _Partition first, _Partition second)
 
 cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
 	""" The node-structural Rand measure assigns a similarity value in [0,1]
@@ -858,14 +922,14 @@ cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
 	"""
 	cdef _NodeStructuralRandMeasure _this
 
-	def getDissimilarity(self, Graph G, Clustering first, Clustering second):
+	def getDissimilarity(self, Graph G, Partition first, Partition second):
 		return self._this.getDissimilarity(G._this, first._this, second._this)
 
 
 cdef extern from "../src/clustering/GraphStructuralRandMeasure.h":
 	cdef cppclass _GraphStructuralRandMeasure "NetworKit::GraphStructuralRandMeasure":
 		_GraphStructuralRandMeasure() except +
-		double getDissimilarity(_Graph G, _Clustering first, _Clustering second)
+		double getDissimilarity(_Graph G, _Partition first, _Partition second)
 
 cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 	""" The graph-structural Rand measure assigns a similarity value in [0,1]
@@ -873,13 +937,13 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 	"""
 	cdef _GraphStructuralRandMeasure _this
 
-	def getDissimilarity(self, Graph G, Clustering first, Clustering second):
+	def getDissimilarity(self, Graph G, Partition first, Partition second):
 		return self._this.getDissimilarity(G._this, first._this, second._this)
 
 
 cdef extern from "../src/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
-		_Clustering run(_Graph G)
+		_Partition run(_Graph G)
 		string toString()
 
 cdef class EPP(Clusterer):
@@ -887,7 +951,7 @@ cdef class EPP(Clusterer):
 	cdef _EPP _this
 
 	def run(self, Graph G):
-		return Clustering().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(G._this))
 
 	def toString(self):
 		return self._this.toString()
@@ -910,7 +974,7 @@ cdef class EPPFactory:
 
 cdef extern from "../src/community/CommunityGraph.h":
 	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":
-		void run(_Graph G, _Clustering zeta) except +
+		void run(_Graph G, _Partition zeta) except +
 		_Graph getGraph() except +
 		map[index, node] getCommunityToNodeMap() except +
 		map[node, index] getNodeToCommunityMap() except +
@@ -919,7 +983,7 @@ cdef class CommunityGraph:
 	""" Coarsen a graph according to communities """
 	cdef _CommunityGraph _this
 
-	def run(self, Graph G, Clustering zeta):
+	def run(self, Graph G, Partition zeta):
 		self._this.run(G._this, zeta._this)
 
 	def getGraph(self):
@@ -1001,8 +1065,8 @@ cdef class ConnectedComponents:
 
 
 cdef extern from "../src/properties/ClusteringCoefficient.h":
-	cdef cppclass _ClusteringCoefficient "NetworKit::ClusteringCoefficient":
-		_ClusteringCoefficient() except +
+	cdef cppclass _PartitionCoefficient "NetworKit::ClusteringCoefficient":
+		_PartitionCoefficient() except +
 		vector[double] exactLocal(_Graph G) except +
 		double avgLocal(_Graph G) except +
 		double approxAvgLocal(_Graph G, count trials) except +
@@ -1013,7 +1077,7 @@ cdef class ClusteringCoefficient:
 	""" Determines the connected components and associated values for
 		an undirected graph.
 	"""
-	cdef _ClusteringCoefficient _this
+	cdef _PartitionCoefficient _this
 
 	def exactLocal(self, Graph G):
 		return self._this.exactLocal(G._this)
@@ -1130,7 +1194,7 @@ cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
 		void run() except +
 		vector[double] getTimeline(string key) except +
 		vector[pair[count, count]] getGraphSizeTimeline() except +
-		vector[pair[_Graph, _Clustering]] getResultTimeline() except +
+		vector[pair[_Graph, _Partition]] getResultTimeline() except +
 
 cdef class DynamicCommunityDetection:
 	cdef _DynamicCommunityDetection* _this
@@ -1152,7 +1216,7 @@ cdef class DynamicCommunityDetection:
 		for pair in self._this.getResultTimeline():
 			_G = pair.first
 			_zeta = pair.second
-			timeline.append((Graph().setThis(_G), Clustering().setThis(_zeta)))
+			timeline.append((Graph().setThis(_G), Partition().setThis(_zeta)))
 		return timeline
 			
 
