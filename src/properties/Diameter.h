@@ -17,7 +17,11 @@ class Diameter {
 public:
 
 	/**
-	 * TODO: documentation
+	 * Estimates a range for the diameter of @a G. Based on the algorithm suggested in
+	 * C. Magnien, M. Latapy, M. Habib: Fast Computation of Empirically Tight Bounds for
+	 * the Diameter of Massive Graphs. Journal of Experimental Algorithmics, Volume 13, Feb 2009.
+	 *
+	 * @return Pair of lower and upper bound for diameter.
 	 */
 	static std::pair<count, count> estimatedDiameterRange(const Graph& G, double error);
 
