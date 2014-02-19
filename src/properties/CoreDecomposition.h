@@ -2,7 +2,7 @@
  * CoreDecomposition.h
  *
  *  Created on: Oct 28, 2013
- *      Author: Lukas Barth, David Weiß
+ *      Author: Lukas Barth, David Weiß, Christian Staudt
  */
 
 #ifndef COREDECOMPOSITION_H_
@@ -23,13 +23,33 @@ namespace NetworKit {
 class CoreDecomposition {
 
 public:
-	CoreDecomposition();
-	virtual ~CoreDecomposition();
 
-  /**
-	 * @return k-core decomposition of graph @a G.
-	 */
-  std::vector<count> run(const Graph& G);
+	CoreDecomposition(const Graph& G);
+
+	/**
+	* Perform k-core decomposition of graph passed in constructor.
+	*/
+	void run();
+
+	/**
+	* @return vector or core numbers, indexed by node.
+	*/
+	std::vector<index> coreNumbers() const;
+
+	/** @return core number of node @a v */
+	index coreNumber(node v) const;
+
+	/** @return the k-cores as sets of nodes, indexed by k */
+	std::vector<std::set<node> > cores() const;
+
+	/** @return the k-shells as sets of nodes, indexed by k */
+	std::vector<std::set<node> > shells() const;
+
+
+private:
+
+	const Graph& G;
+	std::vector<index> coreness;
 };
 
 } /* namespace NetworKit */
