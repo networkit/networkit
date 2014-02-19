@@ -7,8 +7,46 @@
 
 #include "Diameter.h"
 #include "Eccentricity.h"
+#include "../graph/BFS.h"
+#include "../graph/Dijkstra.h"
 
 namespace NetworKit {
+
+
+count Diameter::exactDiameter(const Graph& G) {
+	using namespace std;
+
+	count diameter = 0;
+
+	if (! G.isMarkedAsWeighted()) {
+		G.forNodes([&](node v) {
+			BFS bfs;
+			vector<count> distances = bfs.run(G, v);
+			for (auto distance : distances) {
+				if (diameter < distance) {
+					diameter = distance;
+				}
+			}
+		});
+	} else {
+		throw std::runtime_error("TODO: exact diameter for weighted graphs");
+		// G.forNodes([&](node v) {
+		// 	Dijkstra dijkstra;
+		// 	vector<edgeweight> distances = dijkstra.run(G, v);
+		// 	for (auto distance : distances) {
+		// 		if (diameter < distance) {
+		// 			diameter = distance;
+		// 		}
+		// 	}
+		// });
+	}
+
+
+	return diameter;
+}
+
+
+
 
 
 std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double error) {
