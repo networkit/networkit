@@ -26,10 +26,10 @@ public:
 	CoreDecomposition();
 	virtual ~CoreDecomposition();
 
-  /**
-	 * @return k-core decomposition of graph @a G.
-	 */
-  std::vector<count> run(const Graph& G);
+	  /**
+		 * @return k-core decomposition of graph @a G.
+		 */
+	  std::vector<count> run(const Graph& G);
 };
 
 } /* namespace NetworKit */
