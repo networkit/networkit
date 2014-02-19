@@ -149,6 +149,7 @@ Credits
 - Patrick Flick
 - Daniel Hoske
 - Jörg Weisbarth
+- Guido Brückner
 
 
 ### External Code
