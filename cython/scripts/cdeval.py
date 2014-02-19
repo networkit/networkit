@@ -40,7 +40,7 @@ def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
 					time = timer.elapsed
 
 					mod = community.Modularity().getQuality(zeta, G)
-					# nc = zeta.numberOfClusters()
+					# nc = zeta.numberOfSubsets()
 
 					row = [graphName, algoName, time, mod]
 					writer.writerow(row)
