@@ -1,5 +1,5 @@
 # NetworKit native classes and functions
-from _NetworKit import GraphProperties, ConnectedComponents, ClusteringCoefficient
+from _NetworKit import GraphProperties, ConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity
 
 # other submodules
 import community

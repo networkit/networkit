@@ -1096,6 +1096,38 @@ cdef class ClusteringCoefficient:
 
 
 
+cdef extern from "../src/properties/Diameter.h" namespace "NetworKit::Diameter":
+	pair[count, count] estimatedDiameterRange(_Graph G, double error)
+	count exactDiameter(_Graph G)
+
+cdef class Diameter:
+	"""
+	TODO: docstring
+	"""
+
+	@staticmethod
+	def estimatedDiameterRange(Graph G, error=0.1):
+		return estimatedDiameterRange(G._this, error)
+
+	@staticmethod
+	def exactDiameter(Graph G):
+		return exactDiameter(G._this)
+
+cdef extern from "../src/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
+	pair[node, count] getValue(_Graph G, node v)
+
+cdef class Eccentricity:
+	"""
+	TODO: docstring
+	"""
+
+	@staticmethod
+	def getValue(Graph G, v):
+		return getValue(G._this, v)
+
+
+
+
 # Module: centrality
 
 cdef extern from "../src/centrality/Betweenness.h":
