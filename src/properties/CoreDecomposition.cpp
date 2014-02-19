@@ -2,29 +2,28 @@
  * CoreDecomposition.cpp
  *
  *  Created on: Oct 28, 2013
- *      Author: Lukas Barth, David Weiß
+ *      Author: Lukas Barth, David Weiß, Christian Staudt
  */
 
 #include "CoreDecomposition.h"
 
 namespace NetworKit {
 
-CoreDecomposition::CoreDecomposition() {
+CoreDecomposition::CoreDecomposition(const Graph& G) : G(G) {
+
 }
 
-CoreDecomposition::~CoreDecomposition() {
-}
-
-std::vector<count> CoreDecomposition::run(const Graph& G) {
+void CoreDecomposition::run() {
 	/* Main data structure: buckets of nodes indexed by their remaining degree. */
 	typedef std::list<node> Bucket;
-	count nnodes = G.numberOfNodes();
-	std::vector<Bucket> buckets(nnodes);
-	std::vector<Bucket::iterator> nodePtr(nnodes);
+	index z = G.upperNodeIdBound();
+	std::vector<Bucket> buckets(z);
+	std::vector<Bucket::iterator> nodePtr(z);
 
 	/* Current core and and computed coreness values. */
-	count core = std::numeric_limits<count>::max();
-	std::vector<count> coreness(nnodes);
+	index core = std::numeric_limits<index>::max();
+	coreness.clear();
+	coreness.resize(z);
 
 	/* Insert nodes into their initial buckets. */
 	G.forNodes([&](node v) {
@@ -63,8 +62,31 @@ std::vector<count> CoreDecomposition::run(const Graph& G) {
 		}
 		core++;
 	}
+}
 
+std::vector<index> CoreDecomposition::coreNumbers() const {
 	return coreness;
+}
+
+index CoreDecomposition::coreNumber(node v) const {
+	return coreness.at(v);
+}
+
+
+std::vector<std::set<node> > CoreDecomposition::cores() const {
+	std::vector<std::set<node> > cores;
+	G.forNodes([&](node v) {
+		// TODO:
+	});
+	return cores;
+}
+
+std::vector<std::set<node> > CoreDecomposition::shells() const {
+	std::vector<std::set<node> > shells;
+	G.forNodes([&](node v) {
+		// TODO:
+	});
+	return shells;
 }
 
 } /* namespace NetworKit */

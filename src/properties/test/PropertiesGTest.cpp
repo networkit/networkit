@@ -127,8 +127,9 @@ TEST_F(PropertiesGTest, testCoreDecomposition) {
 	EXPECT_EQ(24, G.numberOfEdges()) << "should have 24 edges";
 
 	// compute core decomposition
-	CoreDecomposition coreDec;
-	std::vector<count> coreness = coreDec.run(G);
+	CoreDecomposition coreDec(G);
+	coreDec.run();
+	std::vector<count> coreness = coreDec.coreNumbers();
 
 	EXPECT_EQ(0, coreness[0]) << "expected coreness";
 	EXPECT_EQ(0, coreness[1]) << "expected coreness";
@@ -319,7 +320,6 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 
 }
-
 
 
 
