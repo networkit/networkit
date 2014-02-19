@@ -22,7 +22,7 @@ const float MAX_DENSE_AREA_RADIUS = 0.2f;
 const float MIN_MAX_DENSE_AREA_FACTOR = 5.0f;
 const edgeweight BASE_WEIGHT = 0.01f;
 
-typedef float distance;
+typedef float distance; // TODO: use double, not float
 typedef std::pair<node, node> edge;
 
 
