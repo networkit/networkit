@@ -22,7 +22,7 @@ std::vector<std::pair<node, double> > Centrality::ranking() {
 	G.forNodes([&](node v){
 		ranking.push_back({v, scoreData[v]});
 	});
-	std::sort(ranking.begin(), ranking.end(), [](std::pair<node, double> x, std::pair<node, double> y) { return x.second < y.second; });
+	std::sort(ranking.begin(), ranking.end(), [](std::pair<node, double> x, std::pair<node, double> y) { return x.second > y.second; });
 	return ranking;
 }
 
