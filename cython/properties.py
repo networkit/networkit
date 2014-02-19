@@ -158,12 +158,12 @@ def properties(G, settings):
 		# TODO: avoid printout of status bar
 		plp = community.PLP()
 		zetaPLP = plp.run(G)
-		ncomPLP = zetaPLP.numberOfClusters()
+		ncomPLP = zetaPLP.numberOfSubsets()
 		modPLP = community.Modularity().getQuality(zetaPLP, G)
 		logging.info("[...] performing community detection: PLM2")
 		plm = community.PLM2("balanced")
 		zetaPLM = plm.run(G)
-		ncomPLM = zetaPLM.numberOfClusters()
+		ncomPLM = zetaPLM.numberOfSubsets()
 		modPLM = community.Modularity().getQuality(zetaPLM, G)
 
 	# degree histogram

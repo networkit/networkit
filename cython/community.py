@@ -30,14 +30,14 @@ def inspectCommunities(zeta, G):
 		:param    zeta    communities
 		:param    G        graph
 	"""
-	communitySizes = zeta.clusterSizes()
+	communitySizes = zeta.subsetSizes()
 	mod = Modularity().getQuality(zeta, G)
 	commProps = [
-		["# communities", zeta.numberOfClusters()],
+		["# communities", zeta.numberOfSubsets()],
 		["min community size", min(communitySizes)],
 		["max community size", max(communitySizes)],
 		["avg. community size", sum(communitySizes) / len(communitySizes)],
-		["imbalance", zeta.getImbalance()],
+		#["imbalance", zeta.getImbalance()],
 		["modularity", mod],
 	]
 	print(tabulate.tabulate(commProps))
@@ -51,7 +51,7 @@ def evalCommunityDetection(algo, G):
 	t.stop()
 	results = [
 		["time [s]", t.elapsed],
-		["# communities", zeta.numberOfClusters()],
+		["# communities", zeta.numberOfSubsets()],
 		["modularity", Modularity().getQuality(zeta, G)]
 	]
 	print(tabulate.tabulate(results))
