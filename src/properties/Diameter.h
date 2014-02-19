@@ -20,6 +20,9 @@ public:
 	 * TODO: documentation
 	 */
 	static std::pair<count, count> estimatedDiameterRange(const Graph& G, double error);
+
+	/** @return exact diameter of the graph @a G */
+	static count exactDiameter(const Graph& G);
 };
 
 } /* namespace NetworKit */

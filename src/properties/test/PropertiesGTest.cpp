@@ -8,6 +8,7 @@
 #ifndef NOGTEST
 
 #include "PropertiesGTest.h"
+#include "../Diameter.h"
 
 
 namespace NetworKit {
@@ -319,6 +320,48 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 
 
+}
+
+
+TEST_F(PropertiesGTest, testExactDiameter) {
+
+   using namespace std;
+
+   count infDist = numeric_limits<count>::max();
+
+   vector<pair<string, count>> testInstances= {
+                                               pair<string, count>("jazz", 6),
+                                              };
+
+   for (auto testInstance : testInstances) {
+       METISGraphReader reader;
+       Graph G = reader.read("input/" + testInstance.first + ".graph");
+       count diameter = Diameter::exactDiameter(G);
+       EXPECT_EQ(diameter, testInstance.second);
+   }
+}
+
+
+
+
+TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
+
+   using namespace std;
+
+   count infDist = numeric_limits<count>::max();
+
+   vector<pair<string, count>> testInstances= {
+                                               pair<string, count>("celegans_metabolic", 7),
+                                               pair<string, count>("jazz", 6)
+                                              };
+
+   for (auto testInstance : testInstances) {
+       METISGraphReader reader;
+       Graph G = reader.read("input/" + testInstance.first + ".graph");
+       std::pair<count, count> range = Diameter::estimatedDiameterRange(G, 0.1);
+       EXPECT_GE(testInstance.second, range.first);
+       EXPECT_LE(testInstance.second, range.second);
+   }
 }
 
 
