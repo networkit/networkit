@@ -1065,8 +1065,8 @@ cdef class ConnectedComponents:
 
 
 cdef extern from "../src/properties/ClusteringCoefficient.h":
-	cdef cppclass _PartitionCoefficient "NetworKit::ClusteringCoefficient":
-		_PartitionCoefficient() except +
+	cdef cppclass _ClusteringCoefficient "NetworKit::ClusteringCoefficient":
+		_ClusteringCoefficient() except +
 		vector[double] exactLocal(_Graph G) except +
 		double avgLocal(_Graph G) except +
 		double approxAvgLocal(_Graph G, count trials) except +
@@ -1077,7 +1077,7 @@ cdef class ClusteringCoefficient:
 	""" Determines the connected components and associated values for
 		an undirected graph.
 	"""
-	cdef _PartitionCoefficient _this
+	cdef _ClusteringCoefficient _this
 
 	def exactLocal(self, Graph G):
 		return self._this.exactLocal(G._this)
@@ -1093,6 +1093,39 @@ cdef class ClusteringCoefficient:
 
 	def approxGlobal(self, Graph G, trials):
 		return self._this.approxGlobal(G._this, trials)
+
+
+
+# Module: centrality
+
+cdef extern from "../src/centrality/Betweenness.h":
+	cdef cppclass _Betweenness "NetworKit::Betweenness":
+		_Betweenness(_Graph) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class Betweenness:
+	"""
+		TODO: docstring
+	"""
+	cdef _Betweenness* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _Betweenness(G._this)
+
+	def run(self):
+		self._this.run()
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
 
 
 
