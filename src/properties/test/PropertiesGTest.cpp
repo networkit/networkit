@@ -325,7 +325,6 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 
 
 
-
 } /* namespace NetworKit */
 
 #endif /*NOGTEST*/
