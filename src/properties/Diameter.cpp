@@ -41,7 +41,9 @@ count Diameter::exactDiameter(const Graph& G) {
 		// });
 	}
 
-
+	if (diameter == std::numeric_limits<count>::max()) {
+		throw std::runtime_error("Graph not connected - diameter is infinite");
+	}
 	return diameter;
 }
 
