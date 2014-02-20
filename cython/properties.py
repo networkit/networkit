@@ -179,7 +179,10 @@ def properties(G, settings):
 		nComponents, componentSizes = components(G)
 
 	# diameter
-	dia = Diameter.estimatedDiameterRange(G, error=0.1)
+	if nComponents == 1:
+		dia = Diameter.estimatedDiameterRange(G, error=0.1)
+	else:
+		dia = None
 
 	# clustering
 	avglcc = None
@@ -246,7 +249,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	pathStructure = [
 		["connected components", props["nComponents"]],
 		["size of largest component", props["sizeLargestComponent"]],
-		["estimated diameter range", "{0}-{1}".format(*props["dia"])],
+		["estimated diameter range", str(props["dia"])],
 	]
 	
 	miscProperties = [

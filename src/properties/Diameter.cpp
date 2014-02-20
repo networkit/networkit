@@ -116,6 +116,10 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 		niter++;
 	}
 
+	if ((lowerBound == std::numeric_limits<count>::max()) || (upperBound == std::numeric_limits<count>::max())) {
+		throw std::runtime_error("Graph not connected - diameter is infinite");
+	}
+
 	return {lowerBound, upperBound};
 }
 
