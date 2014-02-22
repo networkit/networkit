@@ -41,7 +41,9 @@ count Diameter::exactDiameter(const Graph& G) {
 		// });
 	}
 
-
+	if (diameter == std::numeric_limits<count>::max()) {
+		throw std::runtime_error("Graph not connected - diameter is infinite");
+	}
 	return diameter;
 }
 
@@ -112,6 +114,10 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 		upperBound = std::min(upperBound, ecc);
 
 		niter++;
+	}
+
+	if ((lowerBound == std::numeric_limits<count>::max()) || (upperBound == std::numeric_limits<count>::max())) {
+		throw std::runtime_error("Graph not connected - diameter is infinite");
 	}
 
 	return {lowerBound, upperBound};

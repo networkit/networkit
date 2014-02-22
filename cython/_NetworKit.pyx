@@ -47,10 +47,6 @@ cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
 	string _getLogLevel "Aux::Log::getLogLevel" () except +
 	void _setLogLevel "Aux::Log::setLogLevel" (string loglevel) except +
 	void _setPrintLocation "Aux::Log::Settings::setPrintLocation" (bool) except +
-	
-#def configureLogging(loglevel="ERROR"):
-	#""" Set the loglevel of the LOG4CXX module"""
-	#_configureLogging(stdstring(loglevel))
 
 def currentLogLevel():
 	""" Get the current log level"""
@@ -87,7 +83,6 @@ def enableNestedParallelism():
 	_enableNestedParallelism()
 
 # Class definitions
-
 
 ## Module: engineering
 
@@ -1097,8 +1092,8 @@ cdef class ClusteringCoefficient:
 
 
 cdef extern from "../src/properties/Diameter.h" namespace "NetworKit::Diameter":
-	pair[count, count] estimatedDiameterRange(_Graph G, double error)
-	count exactDiameter(_Graph G)
+	pair[count, count] estimatedDiameterRange(_Graph G, double error) except +
+	count exactDiameter(_Graph G) except +
 
 cdef class Diameter:
 	"""
@@ -1114,7 +1109,7 @@ cdef class Diameter:
 		return exactDiameter(G._this)
 
 cdef extern from "../src/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
-	pair[node, count] getValue(_Graph G, node v)
+	pair[node, count] getValue(_Graph G, node v) except +
 
 cdef class Eccentricity:
 	"""
@@ -1340,21 +1335,21 @@ cdef class DynamicPubWebGenerator:
 		return Graph().setThis(self._this.getGraph())
 
 
-cdef extern from "../src/generators/ForestFireGenerator.h":
-	cdef cppclass _ForestFireGenerator "NetworKit::ForestFireGenerator":
-		_ForestFireGenerator(double p) except +
-		vector[_GraphEvent] generate(count nSteps) except +
-		_Graph getGraph() except +
+# cdef extern from "../src/generators/ForestFireGenerator.h":
+# 	cdef cppclass _ForestFireGenerator "NetworKit::ForestFireGenerator":
+# 		_ForestFireGenerator(double p) except +
+# 		vector[_GraphEvent] generate(count nSteps) except +
+# 		_Graph getGraph() except +
 
 
-cdef class ForestFireGenerator:
-	cdef _ForestFireGenerator* _this
+# cdef class ForestFireGenerator:
+# 	cdef _ForestFireGenerator* _this
 
-	def __cinit__(self, p):
-		self._this = new _ForestFireGenerator(p)
+# 	def __cinit__(self, p):
+# 		self._this = new _ForestFireGenerator(p)
 
-	def generate(self, nSteps):
-		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+# 	def generate(self, nSteps):
+# 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 
 
