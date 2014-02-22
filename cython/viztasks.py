@@ -19,4 +19,4 @@ def drawCommunityGraph(G, zeta, labelled=False, figsize=(7,7)):
 	cg.run(G, zeta)
 	comGraph = nxadapter.nk2nx(cg.getGraph())
 	drawer = viztools.drawing.GraphDrawer(size=figsize, labelled=labelled)
-	drawer.draw(comGraph, nodeSizes=[size*2 for size in list(zeta.clusterSizeMap().values())])
+	drawer.draw(comGraph, nodeSizes=[size*2 for size in list(zeta.subsetSizeMap().values())])
