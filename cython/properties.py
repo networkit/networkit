@@ -117,7 +117,6 @@ def powerLawFit(G, dd=None):
 #     (slope,_,_,_,_) = stats.linregress(logarithmic(degrange), logarithmic(dd))
 #     gamma = -1 * slope
 #     return gamma
-    
 	
 
 
@@ -180,21 +179,10 @@ def properties(G, settings):
 		nComponents, componentSizes = components(G)
 
 	# diameter
-	dia = None
-	# TODO: estiamte diameter
-	# if settings["diameter"] and (n < 1000) and (nComponents is 1):
-	# 	logging.info("calculating diameter...")
-	# 	dia = nx.diameter(nxG)
-
-
-	# calculate eccentricity
-	ecc = None
-	# TODO: estimate diameter
-	# if settings["eccentricity"] and (n < 1000) and (nComponents is 1):
-	# 	logging.info("calculating eccentricity...")
-	# 	eccentricities = nx.eccentricity(nxG)
-	# 	ecc = sum(val for val in eccentricities.values()) / n
-
+	if nComponents == 1:
+		dia = Diameter.estimatedDiameterRange(G, error=0.1)
+	else:
+		dia = None
 
 	# clustering
 	avglcc = None
@@ -227,7 +215,6 @@ def properties(G, settings):
 		 "nComponents": nComponents,
 		 "sizeLargestComponent": max(componentSizes.values()),
 		 "dia": dia,
-		 "ecc": ecc,
 		 "isolates": isolates,
 		 "loops": loops,
 		 "ncomPLP": ncomPLP,
@@ -262,8 +249,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	pathStructure = [
 		["connected components", props["nComponents"]],
 		["size of largest component", props["sizeLargestComponent"]],
-		["diameter", props["dia"]],
-		["avg. eccentricity", props["ecc"]],
+		["estimated diameter range", str(props["dia"])],
 	]
 	
 	miscProperties = [
