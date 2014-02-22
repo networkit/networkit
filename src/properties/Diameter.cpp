@@ -29,16 +29,16 @@ count Diameter::exactDiameter(const Graph& G) {
 			}
 		});
 	} else {
-		throw std::runtime_error("TODO: exact diameter for weighted graphs");
-		// G.forNodes([&](node v) {
-		// 	Dijkstra dijkstra;
-		// 	vector<edgeweight> distances = dijkstra.run(G, v);
-		// 	for (auto distance : distances) {
-		// 		if (diameter < distance) {
-		// 			diameter = distance;
-		// 		}
-		// 	}
-		// });
+//		throw std::runtime_error("TODO: exact diameter for weighted graphs");
+		 G.forNodes([&](node v) {
+		 	Dijkstra dijkstra;
+		 	vector<edgeweight> distances = dijkstra.run(G, v);
+		 	for (auto distance : distances) {
+		 		if (diameter < distance) {
+		 			diameter = distance;
+		 		}
+		 	}
+		 });
 	}
 
 	if (diameter == std::numeric_limits<count>::max()) {

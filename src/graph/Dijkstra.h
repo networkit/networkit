@@ -9,6 +9,7 @@
 #define DIJKSTRA_H_
 
 #include "Graph.h"
+#include "../auxiliary/PrioQueue.h"
 
 namespace NetworKit {
 

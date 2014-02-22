@@ -10,21 +10,20 @@
 namespace NetworKit {
 
 Dijkstra::Dijkstra() {
-	// TODO Auto-generated constructor stub
 
 }
 
 Dijkstra::~Dijkstra() {
-	// TODO Auto-generated destructor stub
+
 }
 
 std::vector<edgeweight> Dijkstra::run(const Graph& g, node source) {
 	auto relax([&](node u, node v, edgeweight w, std::vector<edgeweight>& distances,
-			Aux::PriorityQueue<edgeweight, node>& pq)
+			Aux::PrioQueue<edgeweight, node>& pq)
 	{
 		if (distances[v] > distances[u] + g.weight(u, v)) {
 			distances[v] = distances[u] + g.weight(u, v);
-			pq.decreaseKey(std::make_pair(distances[v], v));
+			pq.decreaseKey(distances[v], v);
 		}
 	});
 
@@ -36,7 +35,7 @@ std::vector<edgeweight> Dijkstra::run(const Graph& g, node source) {
 	std::set<index> unsettled;
 
 	// priority queue with distance-node pairs
-	Aux::PriorityQueue<edgeweight, node> pq(distances);
+	Aux::PrioQueue<edgeweight, node> pq(distances);
 
 	while (pq.size() > 0) {
 		node current = pq.extractMin().second;
