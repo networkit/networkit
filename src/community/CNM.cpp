@@ -26,6 +26,12 @@ Partition CNM::run(Graph &graph) {
 	Graph G = graph;
 	count n = G.numberOfNodes();
 
+	auto createEdge([&](node u, node v) {
+		std::pair<node, node> edge = (u <= v) ? (std::make_pair(u, v)) : (std::make_pair(v, u));
+		return edge;
+	});
+
+
 	// start with singleton clustering
 	Partition clustering(n);
 	clustering.allToSingletons();
@@ -42,77 +48,74 @@ Partition CNM::run(Graph &graph) {
 	std::map<index, std::pair<node, node> > indexToEdge;
 	index idx = 0;
 	G.forEdges([&](node u, node v) {
-		// get modularity score
-		double modScore = modScoring.edgeScore(u, v);
+		if (u != v) {
+			// get modularity score
+			double modScore = modScoring.edgeScore(u, v);
 
-		// create edge entry (unordered pair!)
-		std::pair<node, node> edge = (u <= v) ? (std::make_pair(u, v)) : (std::make_pair(v, u));
-		scores.push_back(-modScore); // negative due to minPQ (and we are maximizing here)
+			// create edge entry (unordered pair!)
+			std::pair<node, node> edge = createEdge(u, v);
+			scores.push_back(-modScore); // negative due to minPQ (and we are maximizing here)
 
-		// enable mapping between edge and edge index -- and vice versa
-		edgeToIndex.insert(std::make_pair(edge, idx));
-		indexToEdge.insert(std::make_pair(idx, edge));
-		++idx;
+			// enable mapping between edge and edge index -- and vice versa
+			edgeToIndex.insert(std::make_pair(edge, idx));
+			indexToEdge.insert(std::make_pair(idx, edge));
+			++idx;
+		}
 	});
 	Aux::PrioQueue<double, index> pq(scores);
-
 	TRACE("Initial PQ built before CNM loop");
+//	pq.print();
+
+	// free mem
+	scores.clear();
 
 	count iterations = 0;
-	while (iterations < n-1) {
+	while ((iterations < n-1) && (pq.size() > 0)) {
 		// determine best edge
-		node best_u, best_v;
-		do {
-			std::pair<double, index> pqMin = pq.extractMin();
-			std::pair<node, node> currentEdge = indexToEdge[pqMin.second];
-			best_u = currentEdge.first;
-			best_v = currentEdge.second;
-		} while (! G.hasEdge(best_u, best_v));
-
+		std::pair<double, index> pqMin = pq.extractMin();
+		std::pair<node, node> currentEdge = indexToEdge[pqMin.second];
+		node best_u = currentEdge.first;
+		node best_v = currentEdge.second;
 		TRACE("best_u: " , best_u , ", best_v: " , best_v);
-//		TRACE("rewiring of edges incident to best_v and removing them from PQ");
 
 		// merge clusters best_u and best_v
 		index newCluster = clustering.mergeSubsets(clustering.subsetOf(best_u), clustering.subsetOf(best_v));
 
-//		TRACE("merged clustering, about to merge nodes");
+		// adapt PQ accordingly
+		G.forEdgesOf(best_u, [&](node best_u, node neighbor) {
+			pq.remove(edgeToIndex[createEdge(best_u, neighbor)]);
+		});
+		G.forEdgesOf(best_v, [&](node best_v, node neighbor) {
+			pq.remove(edgeToIndex[createEdge(best_v, neighbor)]);
+		});
 
+		// merge incident nodes in G
 		node newNode = G.mergeEdge(best_u, best_v, false);
 		assert(newNode != none);
+
+		// adapt clustering accordingly
 		clustering.extend();
 		clustering[newNode] = newCluster;
 
-//		TRACE("graph changed, about to update PQ");
-
-		G.forEdgesOf(best_u, [&](node best_u, node neighbor) {
-			std::pair<node, node> edge = (best_u <= neighbor) ? (std::make_pair(best_u, neighbor)) : (std::make_pair(neighbor, best_u));
-			pq.remove(edgeToIndex[edge]);
-		});
-		G.forEdgesOf(best_v, [&](node best_v, node neighbor) {
-			std::pair<node, node> edge = (best_v <= neighbor) ? (std::make_pair(best_v, neighbor)) : (std::make_pair(neighbor, best_v));
-			pq.remove(edgeToIndex[edge]);
-		});
-
-
-		// update delta mod scores for incident edges and insert them into the PQ, needs to
-		// done after all edges have been rewired
+		// update delta mod scores for incident edges and insert them into the PQ,
+		// needs to done after all edges have been rewired
 		G.forEdgesOf(newNode, [&](node newNode, node neighbor) {
 			if (newNode != neighbor) {
+				// determine edge score
 				ModularityScoring<double> modScoring(G);
 				double score = modScoring.edgeScore(newNode, neighbor);
-//				TRACE("score of new edge: ", score);
 
-				std::pair<node, node> edge = std::make_pair(newNode, neighbor);
+				// insert edge score and corresponding ID into PQ
+				std::pair<node, node> edge = createEdge(newNode, neighbor);
 				edgeToIndex.insert(std::make_pair(edge, idx));
 				indexToEdge.insert(std::make_pair(idx, edge));
-				++idx;
 
-//				TRACE("insert (-score, idx): ", -score, ", ", idx);
+				TRACE("insert ", -score, ", ", idx, " into PQ for edge ", newNode, "-", neighbor);
 				pq.insert(-score, idx);
+
+				++idx;
 			}
 		});
-
-//		TRACE("updated PQ, about to compute quality");
 
 		// compute new modularity
 		double newModularity = modularityInspector.getQuality(clustering, graph);
@@ -126,6 +129,7 @@ Partition CNM::run(Graph &graph) {
 		}
 
 		++iterations;
+//		pq.print();
 	}
 
 	return bestClustering;
