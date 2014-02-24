@@ -74,7 +74,7 @@ ModularityScoring<T>::ModularityScoring(Graph& G) : EdgeScoring<T>(G) {
 
 template<typename T>
 ModularityScoring<T>::~ModularityScoring() {
-	// TODO Auto-generated destructor stub
+
 }
 
 template<typename T>

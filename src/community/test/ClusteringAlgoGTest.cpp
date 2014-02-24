@@ -296,16 +296,15 @@ TEST_F(ClusteringAlgoGTest, testCNMandLouvain) {
 
 
 	// *** jazz graph
-	// CNM
-	Partition clustering = cnm.run(jazz);
-	INFO("CNM number of jazz clusters: " , clustering.numberOfSubsets());
-	INFO("CNM modularity jazz graph: " , modularity.getQuality(clustering, jazz));
-
 	// Louvain
-	clustering = louvain.run(jazz);
+	Partition clustering = louvain.run(jazz);
 	INFO("Louvain number of jazz clusters: " , clustering.numberOfSubsets());
 	INFO("Louvain modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 
+	// CNM
+	clustering = cnm.run(jazz);
+	INFO("CNM number of jazz clusters: " , clustering.numberOfSubsets());
+	INFO("CNM modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 
 //	// *** blog graph
 //	// CNM
