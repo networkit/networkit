@@ -38,7 +38,10 @@ std::vector<edgeweight> Dijkstra::run(const Graph& g, node source) {
 	Aux::PrioQueue<edgeweight, node> pq(distances);
 
 	while (pq.size() > 0) {
+		DEBUG("pq size: ", pq.size());
+
 		node current = pq.extractMin().second;
+		DEBUG("pq size: ", pq.size());
 		TRACE("current node in Dijkstra: " , current);
 
 		g.forWeightedEdgesOf(current, [&](node current, node v, edgeweight w) {

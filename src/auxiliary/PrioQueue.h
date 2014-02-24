@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 #include <limits>
+#include <iostream>
 
 namespace Aux {
 
@@ -56,11 +57,11 @@ public:
 	virtual ElemType extractMin();
 
 	/**
-	 * Modifies entry with key @a elem.first and sets its value
-	 * to @a elem.second. If the corresponding key is not present,
-	 * the element will be inserted.
+	 * Modifies entry with value @a value.
+	 * The entry is then set to @a newKey with the same value.
+	 * If the corresponding key is not present, the element will be inserted.
 	 */
-	virtual void decreaseKey(Key key, Val newValue);
+	virtual void decreaseKey(Key newKey, Val value);
 
 	/**
 	 * Removes key-value pair given by @a elem.
@@ -85,12 +86,12 @@ public:
 	/**
 	 * DEBUGGING
 	 */
-//	virtual void print() {
-//		DEBUG("num entries: ", mapValToKey.size());
-//		for (uint64_t i = 0; i < mapValToKey.size(); ++i) {
-//			std::cout << "key: " << mapValToKey[i] << ", val: " << i << std::endl;
-//		}
-//	}
+	virtual void print() {
+		DEBUG("num entries: ", mapValToKey.size());
+		for (uint64_t i = 0; i < mapValToKey.size(); ++i) {
+			std::cout << "key: " << mapValToKey[i] << ", val: " << i << std::endl;
+		}
+	}
 };
 
 } /* namespace Aux */
@@ -127,22 +128,15 @@ inline void Aux::PrioQueue<Key, Val>::insert(Key key, Val value) {
 
 template<class Key, class Val>
 inline void Aux::PrioQueue<Key, Val>::remove(const ElemType& elem) {
-	Key key = mapValToKey.at(elem.second);
-//	DEBUG("key: ", key);
-	if (key != undefined) {
-		pqset.erase(std::make_pair(key, elem.second));
-		mapValToKey.at(elem.second) = undefined;
-	}
+	remove(elem.second);
 }
 
 template<class Key, class Val>
 inline void Aux::PrioQueue<Key, Val>::remove(const Val& val) {
 	Key key = mapValToKey.at(val);
 //	DEBUG("key: ", key);
-	if (key != undefined) {
-		pqset.erase(std::make_pair(key, val));
-		mapValToKey.at(val) = undefined;
-	}
+	pqset.erase(std::make_pair(key, val));
+	mapValToKey.at(val) = undefined;
 }
 
 template<class Key, class Val>
@@ -150,17 +144,16 @@ std::pair<Key, Val> Aux::PrioQueue<Key, Val>::extractMin() {
 	assert(pqset.size() > 0);
 	ElemType elem = (* pqset.begin());
 	remove(elem);
-	mapValToKey.at(elem.second) = undefined;
 	return elem;
 }
 
 template<class Key, class Val>
-inline void Aux::PrioQueue<Key, Val>::decreaseKey(Key key, Val newValue) {
+inline void Aux::PrioQueue<Key, Val>::decreaseKey(Key newKey, Val value) {
 	// find and remove element with given key
-	remove(std::make_pair(key, newValue));
+	remove(value);
 
 	// insert element with new value
-	insert(key, newValue);
+	insert(newKey, value);
 }
 
 template<class Key, class Val>
