@@ -8,7 +8,7 @@
 #ifndef CHUNGLU_H_
 #define CHUNGLU_H_
 
-#include "StaticGraphGenerator.h"
+#include "StaticDegreeSequenceGenerator.h"
 #include "../auxiliary/Random.h"
 
 namespace NetworKit {
@@ -19,9 +19,8 @@ namespace NetworKit {
  * 
  * see Aiello, Chung, Lu: A Random Graph Model for Massive Graphs
  */
-class ChungLuGenerator: public StaticGraphGenerator {
+class ChungLuGenerator: public StaticDegreeSequenceGenerator {
 protected:
-	std::vector<unsigned int> seq;
 	unsigned int sum_deg;
 	count n;
 

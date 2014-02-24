@@ -281,7 +281,8 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 		}
 
 		// check if sequence is realizable
-		HavelHakimiGenerator hhgen(sequence);
+		bool skipTest = false;
+		HavelHakimiGenerator hhgen(sequence, skipTest);
 		realizable = hhgen.getRealizable();
 
 		if (realizable) {
@@ -302,7 +303,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 		count n = G.numberOfNodes();
 		std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G); // TODO: revert to count when cython issue fixed
 
-		bool skipTest = true;
+		bool skipTest = false;
 		HavelHakimiGenerator hhgen(sequence, skipTest);
 		Graph G2 = hhgen.generate();
 
