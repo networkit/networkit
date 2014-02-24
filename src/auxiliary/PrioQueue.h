@@ -29,11 +29,6 @@ protected:
 	std::set<ElemType> pqset;
 	std::vector<Key> mapValToKey;
 
-	/**
-	 * Removes key-value pair given by @a elem.
-	 */
-	virtual void remove(const ElemType& elem);
-
 public:
 	/**
 	 * Builds priority queue from the vector @a elems.
@@ -64,6 +59,11 @@ public:
 	 * the element will be inserted.
 	 */
 	virtual void decreaseKey(Key key, Val newValue);
+
+	/**
+	 * Removes key-value pair given by @a elem.
+	 */
+	virtual void remove(const ElemType& elem);
 
 	/**
 	 * @return Number of elements in PQ.
@@ -105,8 +105,12 @@ inline void Aux::PrioQueue<Key, Val>::insert(Key key, Val value) {
 
 template<class Key, class Val>
 inline void Aux::PrioQueue<Key, Val>::remove(const ElemType& elem) {
-	pqset.erase(elem);
-	mapValToKey.at(elem.second) = none;
+	Key key = mapValToKey.at(elem.second);
+	DEBUG("key: ", key);
+	if (key != none) {
+		pqset.erase(std::make_pair(key, elem.second));
+		mapValToKey.at(elem.second) = none;
+	}
 }
 
 template<class Key, class Val>
