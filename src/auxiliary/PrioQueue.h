@@ -15,7 +15,6 @@
 
 namespace Aux {
 
-
 /**
  * Priority queue with extract-min and decrease-key.
  * The type Val takes on integer values between 0 and n-1.
@@ -28,6 +27,9 @@ class PrioQueue {
 protected:
 	std::set<ElemType> pqset;
 	std::vector<Key> mapValToKey;
+
+	const Key undefined = std::numeric_limits<Key>::max(); // TODO: make static
+
 
 public:
 	/**
@@ -127,9 +129,9 @@ template<class Key, class Val>
 inline void Aux::PrioQueue<Key, Val>::remove(const ElemType& elem) {
 	Key key = mapValToKey.at(elem.second);
 //	DEBUG("key: ", key);
-	if (key != none) {
+	if (key != undefined) {
 		pqset.erase(std::make_pair(key, elem.second));
-		mapValToKey.at(elem.second) = none;
+		mapValToKey.at(elem.second) = undefined;
 	}
 }
 
@@ -137,9 +139,9 @@ template<class Key, class Val>
 inline void Aux::PrioQueue<Key, Val>::remove(const Val& val) {
 	Key key = mapValToKey.at(val);
 //	DEBUG("key: ", key);
-	if (key != none) {
+	if (key != undefined) {
 		pqset.erase(std::make_pair(key, val));
-		mapValToKey.at(val) = none;
+		mapValToKey.at(val) = undefined;
 	}
 }
 
@@ -148,7 +150,7 @@ std::pair<Key, Val> Aux::PrioQueue<Key, Val>::extractMin() {
 	assert(pqset.size() > 0);
 	ElemType elem = (* pqset.begin());
 	remove(elem);
-	mapValToKey.at(elem.second) = none;
+	mapValToKey.at(elem.second) = undefined;
 	return elem;
 }
 

@@ -19,7 +19,7 @@
 #include "../Timer.h"
 #include "../MissingMath.h"
 #include "../Debug.h"
-#include "../PriorityQueue.h"
+#include "../PrioQueue.h"
 
 TEST_F(AuxGTest, produceRandomIntegers) {
 	int64_t l = 0; 	// lower bound
@@ -169,7 +169,7 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	vec.push_back(std::make_pair(0.25, 11));
 
 	// construct pq from vector
-	Aux::PriorityQueue<double, uint64_t> pq(vec);
+	Aux::PrioQueue<double, uint64_t> pq(vec);
 	EXPECT_EQ(pq.size(), vec.size());
 
 	ElemType elem = pq.extractMin();
