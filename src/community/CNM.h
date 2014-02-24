@@ -14,7 +14,8 @@ namespace NetworKit {
 
 /**
  * Clustering algorithm due to Clauset, Newman and Moore.
- * TODO: needs testing.
+ * Probably not the fastest possible implementation, but it already uses a priority queue
+ * and local updates.
  */
 class CNM : public NetworKit::Clusterer {
 public:
