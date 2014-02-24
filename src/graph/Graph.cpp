@@ -431,7 +431,7 @@ node Graph::mergeEdge(node u, node v, bool discardSelfLoop) {
 
 		// rewire edges from u to newNode
 		this->forWeightedEdgesOf(u, [&](node u, node neighbor, edgeweight w) {
-			if (neighbor != u) {
+			if (neighbor != u && neighbor != v) {
 				TRACE("neighbor of " , u , ": " , neighbor);
 				this->addEdge(neighbor, newNode, this->weight(u, neighbor)); // TODO: make faster
 				TRACE("end neighbor of u");
@@ -440,7 +440,7 @@ node Graph::mergeEdge(node u, node v, bool discardSelfLoop) {
 
 		// rewire edges from v to newNode
 		this->forWeightedEdgesOf(v, [&](node v, node neighbor, edgeweight w) {
-			if (neighbor != v) {
+			if (neighbor != v && neighbor != u) {
 				TRACE("neighbor of " , v , ": " , neighbor);
 				this->addEdge(neighbor, newNode, this->weight(v, neighbor));  // TODO: make faster
 				TRACE("end neighbor of v");
@@ -455,9 +455,13 @@ node Graph::mergeEdge(node u, node v, bool discardSelfLoop) {
 			this->removeEdge(v, neighbor);
 		});
 
+		TRACE("incident edges deleted");
+
 		// delete nodes
 		this->removeNode(u);
 		this->removeNode(v);
+
+		TRACE("u and v deleted");
 
 		return newNode;
 	}

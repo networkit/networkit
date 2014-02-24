@@ -43,7 +43,7 @@ void Partition::allToSingletons() {
 	}
 }
 
-void Partition::mergeSubsets(index s, index t) {
+index Partition::mergeSubsets(index s, index t) {
 	assert (s <= omega);
 	assert (t <= omega);
 	if (s != t) {
@@ -53,7 +53,9 @@ void Partition::mergeSubsets(index s, index t) {
 				data[e] = m;
 			}
 		}
+		return m;
 	}
+	return none; // no new cluster formed
 }
 /*
 bool Partition::isOnePartition(Graph& G) { //FIXME what for is elements needed? const std::set<index>& elements

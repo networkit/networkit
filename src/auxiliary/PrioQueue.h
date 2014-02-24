@@ -66,6 +66,11 @@ public:
 	virtual void remove(const ElemType& elem);
 
 	/**
+	 * Removes key-value pair given by value @a val.
+	 */
+	virtual void remove(const Val& val);
+
+	/**
 	 * @return Number of elements in PQ.
 	 */
 	virtual uint64_t size() const;
@@ -99,6 +104,11 @@ Aux::PrioQueue<Key, Val>::PrioQueue(std::vector<Key>& keys) {
 
 template<class Key, class Val>
 inline void Aux::PrioQueue<Key, Val>::insert(Key key, Val value) {
+	if (value >= mapValToKey.size()) {
+		uint64_t doubledSize = 2 * mapValToKey.size();
+		assert(value < doubledSize);
+		mapValToKey.resize(doubledSize);
+	}
 	pqset.insert(std::make_pair(key, value));
 	mapValToKey.at(value) = key;
 }
@@ -106,10 +116,20 @@ inline void Aux::PrioQueue<Key, Val>::insert(Key key, Val value) {
 template<class Key, class Val>
 inline void Aux::PrioQueue<Key, Val>::remove(const ElemType& elem) {
 	Key key = mapValToKey.at(elem.second);
-	DEBUG("key: ", key);
+//	DEBUG("key: ", key);
 	if (key != none) {
 		pqset.erase(std::make_pair(key, elem.second));
 		mapValToKey.at(elem.second) = none;
+	}
+}
+
+template<class Key, class Val>
+inline void Aux::PrioQueue<Key, Val>::remove(const Val& val) {
+	Key key = mapValToKey.at(val);
+//	DEBUG("key: ", key);
+	if (key != none) {
+		pqset.erase(std::make_pair(key, val));
+		mapValToKey.at(val) = none;
 	}
 }
 
