@@ -9,6 +9,7 @@
 #include "../scoring/ModularityScoring.h"
 #include "../clustering/Modularity.h"
 #include <limits>
+#include "../auxiliary/PrioQueue.h"
 
 namespace NetworKit{
 
@@ -36,26 +37,43 @@ Partition CNM::run(Graph &graph) {
 
 	// insert edges into priority queue, key: delta mod score
 	ModularityScoring<double> modScoring(G);
-	std::vector<std::pair<double, std::pair<node, node> > > scores;
+	std::vector<double> scores;
+	std::map<std::pair<node, node>, index> edgeToIndex;
+	std::map<index, std::pair<node, node> > indexToEdge;
+	index idx = 0;
 	G.forEdges([&](node u, node v) {
+		// get modularity score
 		double modScore = modScoring.edgeScore(u, v);
-		std::pair<node, node> edge = (u <= v) ? (std::make_pair(u, v)) : (std::make_pair(v, u));
-		scores.push_back(std::make_pair(-modScore, edge)); // negative due to minPQ
-	});
 
-	Aux::PriorityQueue<double, std::pair<node, node> > pq(scores);
+		// create edge entry (unordered pair!)
+		std::pair<node, node> edge = (u <= v) ? (std::make_pair(u, v)) : (std::make_pair(v, u));
+		scores.push_back(-modScore); // negative due to minPQ (and we are maximizing here)
+
+		// enable mapping between edge and edge index -- and vice versa
+		edgeToIndex.insert(std::make_pair(edge, idx));
+		indexToEdge.insert(std::make_pair(idx, edge));
+		++idx;
+	});
+	Aux::PrioQueue<double, index> pq(scores);
 
 	DEBUG("Initial PQ built before CNM loop");
 
 // #define SLOW_PQ
 
-	while (pq.size() > 0) {
-		// determine best edge
-		std::pair<double, std::pair<node, node> > pqMin = pq.extractMin();
-		node best_u = none;
-		node best_v = none;
+	// FIXME: pq is not getting smaller, treat self-loop case!!!
 
-#ifdef RECALC_ALL
+	count iterations = 0;
+	while (iterations < n-1) {
+		// determine best edge
+		node best_u, best_v;
+		do {
+			std::pair<double, index> pqMin = pq.extractMin();
+			std::pair<node, node> currentEdge = indexToEdge[pqMin.second];
+			best_u = currentEdge.first;
+			best_v = currentEdge.second;
+		while (! G.hasEdge(best_u, best_v));
+
+#if 0 // def RECALC_ALL
 		scores.clear();
 		G.forEdges([&](node u, node v) {
 			if (u != v) {
@@ -103,30 +121,35 @@ Partition CNM::run(Graph &graph) {
 		}
 #endif
 
-		best_u = (pqMin.second).first;
-		best_v = (pqMin.second).second;
+//		best_u = (pqMin.second).first;
+//		best_v = (pqMin.second).second;
 
 		DEBUG("best_u: " , best_u , ", best_v: " , best_v);
 		TRACE("rewiring of edges incident to best_v and removing them from PQ");
 
 		// remove best_u edges from PQ (has to be done first)
-		G.forWeightedEdgesOf(best_u, [&](node best_u, node neighbor, edgeweight ew) {
+		G.forEdgesOf(best_u, [&](node best_u, node neighbor) {
 			std::pair<node, node> edge = (best_u <= neighbor) ? (std::make_pair(best_u, neighbor)) : (std::make_pair(neighbor, best_u));
 			if (best_u != neighbor) {
-				DEBUG("remove from PQ: " , -ew , " for " , best_u , " and " , neighbor);
-				pq.remove(std::make_pair(ew, edge));
+				edgeweight score = modScoring.edgeScore(best_u, neighbor);
+				DEBUG("remove from PQ: " , score, " for " , best_u, " and " , neighbor);
+				DEBUG("pq size before: ", pq.size());
+				pq.remove(std::make_pair(-score, edgeToIndex[edge]));
+				DEBUG("pq size after: ", pq.size());
 			}
 		});
 
 		// remove best_v edges from PQ (has to be done before rewiring)
-		G.forWeightedEdgesOf(best_v, [&](node best_v, node neighbor, edgeweight ew) {
+		G.forEdgesOf(best_v, [&](node best_v, node neighbor) {
 			std::pair<node, node> edge = (best_v <= neighbor) ? (std::make_pair(best_v, neighbor)) : (std::make_pair(neighbor, best_v));
 			if (best_v != neighbor) {
-				DEBUG("remove from PQ: " , -ew , " for " , best_v , " and " , neighbor);
-				pq.remove(std::make_pair(ew, edge));
+				edgeweight score = modScoring.edgeScore(best_v, neighbor);
+				DEBUG("remove from PQ: " , score, " for " , best_v, " and " , neighbor);
+				DEBUG("pq size before: ", pq.size());
+				pq.remove(std::make_pair(-score, edgeToIndex[edge]));
+				DEBUG("pq size after: ", pq.size());
 			}
 		});
-
 
 		// rewiring of edges incident to best_v
 		G.forWeightedEdgesOf(best_v, [&](node best_v, node neighbor, edgeweight ew) {
@@ -140,6 +163,7 @@ Partition CNM::run(Graph &graph) {
 				// insert new edge to best_u
 				G.addEdge(best_u, endPoint, ew);
 				DEBUG("insert edge " , best_u , "," , endPoint);
+				// TODO: new score
 			}
 		});
 
@@ -165,21 +189,24 @@ Partition CNM::run(Graph &graph) {
 			if (best_u != neighbor) {
 				std::pair<node, node> edge = (best_u <= neighbor) ? (std::make_pair(best_u, neighbor)) : (std::make_pair(neighbor, best_u));
 				double deltaMod = modScoring.edgeScore(best_u, neighbor);
+				scores[edgeToIndex[edge]] = -deltaMod;
 				DEBUG("insert into PQ: " , -deltaMod , " for " , best_u , " and " , neighbor);
-				std::pair<double, std::pair<node, node> > elem = std::make_pair(-deltaMod, edge);
-				pq.insert(elem);
+				pq.insert(-deltaMod, edgeToIndex[edge]);
 			}
 		});
 
 		// compute new modularity
 		double newModularity = modularityInspector.getQuality(clustering, graph);
+		INFO("pq size: ", pq.size(), ", current mod value: " , newModularity);
 
 		// record best solutions
 		if (newModularity > bestModularity) {
-			TRACE("new mod value: " , newModularity);
+			INFO("ha, improved so far best mod value: " , bestModularity);
 			bestModularity = newModularity;
 			bestClustering = clustering;
 		}
+
+		++iterations;
 	}
 
 	return bestClustering;
