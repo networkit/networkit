@@ -10,12 +10,11 @@
 namespace NetworKit {
 
 StaticGraphGenerator::StaticGraphGenerator() {
-	// TODO Auto-generated constructor stub
 
 }
 
 StaticGraphGenerator::~StaticGraphGenerator() {
-	// TODO Auto-generated destructor stub
+
 }
 
 } /* namespace NetworKit */

@@ -13,7 +13,7 @@
 
 #include "../graph/Graph.h"
 #include "../auxiliary/ShellList.h"
-#include "StaticGraphGenerator.h"
+#include "StaticDegreeSequenceGenerator.h"
 
 namespace NetworKit {
 
@@ -24,10 +24,8 @@ namespace NetworKit {
  *  Construction runs in linear time O(m). However, the test if a sequence is realizable
  *  is quadratic in the sequence length.
  */
-class HavelHakimiGenerator: public NetworKit::StaticGraphGenerator  {
+class HavelHakimiGenerator: public NetworKit::StaticDegreeSequenceGenerator  {
 protected:
-	std::vector<unsigned int> seq;
-	bool realizable;
 
 public:
 	/**
@@ -36,15 +34,8 @@ public:
 	 *            Default value is false. Set ONLY to true if you are certain that the
 	 *            sequence is realizable.
 	 */
-	HavelHakimiGenerator(const std::vector<unsigned int>& sequence, bool skipTest = true);
+	HavelHakimiGenerator(const std::vector<unsigned int>& sequence, bool skipTest = false);
 	virtual ~HavelHakimiGenerator() = default;
-
-	/**
-	 * Erdoes-Gallai test if degree sequence seq is realizable.
-	 */
-	virtual bool isRealizable();
-
-	virtual bool getRealizable() const;
 
 	/**
 	 * Generates degree sequence seq (if it is realizable).
