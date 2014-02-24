@@ -90,8 +90,15 @@ Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoar
 		//zeta.addToSubset(super[v],v);
 		zeta[v] = super[v];
 	});
-	
-	zeta.compact(); //TODO: this is just an experimental fix, since upperBound is not known...
+
+	// Partition not used properly...set upperBound remotely...	
+	index maxID = 0;
+	zeta.forEntries([&](index e, index s) {
+		if (s > maxID) {
+			maxID = s;
+		}
+	});
+	zeta.setUpperBound(maxID);
 
 	DEBUG("number of clusters in projected clustering: " , zeta.numberOfSubsets());
 	DEBUG("number of nodes in coarse graph: " , Gcoarse.numberOfNodes());
