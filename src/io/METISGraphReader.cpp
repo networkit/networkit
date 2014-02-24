@@ -80,6 +80,7 @@ Graph METISGraphReader::read(std::string path) {
 			}
 		}
 		INFO("\n[DONE]\n");
+		G.markAsWeighted();
 		return G;
 	}
 }

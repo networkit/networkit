@@ -72,7 +72,7 @@ public:
 
 
 	/**
-	 * Extend the data structure and creat a slot
+	 * Extend the data structure and create a slot
 	 * for one more element. Initializes the entry to none
 	 * and returns the index of the entry.
 	 */
@@ -107,8 +107,9 @@ public:
 
 	/**
 	 * Assigns the elements from both sets to a new set.
+	 * @return ID of newly created set.
 	 */
-	void mergeSubsets(index s, index t);
+	index mergeSubsets(index s, index t);
 
 
 	/**

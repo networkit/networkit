@@ -10,12 +10,11 @@
 namespace NetworKit {
 
 GraphDistance::GraphDistance() {
-	// TODO Auto-generated constructor stub
 
 }
 
 GraphDistance::~GraphDistance() {
-	// TODO Auto-generated destructor stub
+
 }
 
 edgeweight GraphDistance::weightedDistance(const Graph& g, node u, node v) const {
