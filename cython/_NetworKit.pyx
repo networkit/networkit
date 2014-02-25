@@ -802,7 +802,7 @@ cdef class Modularity:
 		return self._this.getQuality(zeta._this, G._this)
 
 
-cdef class Clusterer:
+cdef class CommunityDetector:
 	""" Abstract base class for static community detection algorithms"""
 	pass
 
@@ -815,7 +815,7 @@ cdef extern from "../src/community/PLP.h":
 		string toString() except +
 
 
-cdef class PLP(Clusterer):
+cdef class PLP(CommunityDetector):
 	""" Parallel label propagation for community detection: 
 		Moderate solution quality, very short time to solution.
 	 """
@@ -844,7 +844,7 @@ cdef extern from "../src/community/LPDegreeOrdered.h":
 		_Partition run(_Graph _G)
 		count numberOfIterations()
 
-cdef class LPDegreeOrdered(Clusterer):
+cdef class LPDegreeOrdered(CommunityDetector):
 	cdef _LPDegreeOrdered _this
 	
 	def run(self, Graph G not None):
@@ -861,7 +861,7 @@ cdef extern from "../src/community/PLM.h":
 		_Partition run(_Graph _G)
 		string toString()
 		
-cdef class PLM(Clusterer):
+cdef class PLM(CommunityDetector):
 	""" Parallel Louvain method for community detection: 
 	High solution quality, moderate time to solution. """
 
@@ -885,7 +885,7 @@ cdef extern from "../src/community/PLM2.h":
 		_Partition run(_Graph G) except +
 
 
-cdef class PLM2(Clusterer):
+cdef class PLM2(CommunityDetector):
 	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement"""
 		
@@ -893,6 +893,31 @@ cdef class PLM2(Clusterer):
 	
 	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=32):
 		self._this = _PLM2(refine, gamma, stdstring(par), maxIter)
+		
+	def toString(self):
+		return self._this.toString().decode("utf-8")
+		
+	def run(self, Graph G not None):
+		return Partition().setThis(self._this.run(G._this))
+
+
+cdef extern from "../src/community/CNM.h":
+	cdef cppclass _CNM "NetworKit::CNM":
+		string toString() except +
+		_Partition run(_Graph G) except +
+
+
+cdef class CNM(CommunityDetector):
+	""" 
+	Community detection algorithm due to Clauset, Newman and Moore.
+ 	Probably not the fastest possible implementation, but it already uses a priority queue
+ 	and local updates.
+ 	"""
+		
+	cdef _CNM* _this
+	
+	def __cinit__(self):
+		self._this = new _CNM()
 		
 	def toString(self):
 		return self._this.toString().decode("utf-8")
@@ -941,7 +966,7 @@ cdef extern from "../src/community/EPP.h":
 		_Partition run(_Graph G)
 		string toString()
 
-cdef class EPP(Clusterer):
+cdef class EPP(CommunityDetector):
 	""" EPP - Ensemble Preprocessing """
 	cdef _EPP _this
 
