@@ -1273,36 +1273,36 @@ cdef class DGSWriter:
 		self._this.write(_stream, stdstring(path))
 
 
-cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
-	cdef cppclass _DynamicCommunityDetection "NetworKit::DynamicCommunityDetection":
-		_DynamicCommunityDetection(string inputPath, string algoName, string updateStrategy, count interval, count restart, vector[string] recordSettings) except +
-		void run() except +
-		vector[double] getTimeline(string key) except +
-		vector[pair[count, count]] getGraphSizeTimeline() except +
-		vector[pair[_Graph, _Partition]] getResultTimeline() except +
+# cdef extern from "../src/dcd2/DynamicCommunityDetection.h":
+# 	cdef cppclass _DynamicCommunityDetection "NetworKit::DynamicCommunityDetection":
+# 		_DynamicCommunityDetection(string inputPath, string algoName, string updateStrategy, count interval, count restart, vector[string] recordSettings) except +
+# 		void run() except +
+# 		vector[double] getTimeline(string key) except +
+# 		vector[pair[count, count]] getGraphSizeTimeline() except +
+# 		vector[pair[_Graph, _Partition]] getResultTimeline() except +
 
-cdef class DynamicCommunityDetection:
-	cdef _DynamicCommunityDetection* _this
+# cdef class DynamicCommunityDetection:
+# 	cdef _DynamicCommunityDetection* _this
 
-	def __cinit__(self, inputPath, algoName, updateStrategy, interval, restart, recordSettings):
-		self._this = new _DynamicCommunityDetection(stdstring(inputPath), stdstring(algoName), stdstring(updateStrategy), interval, restart, [stdstring(key) for key in recordSettings])
+# 	def __cinit__(self, inputPath, algoName, updateStrategy, interval, restart, recordSettings):
+# 		self._this = new _DynamicCommunityDetection(stdstring(inputPath), stdstring(algoName), stdstring(updateStrategy), interval, restart, [stdstring(key) for key in recordSettings])
 
-	def run(self):
-		self._this.run()
+# 	def run(self):
+# 		self._this.run()
 
-	def getTimeline(self, key):
-		return self._this.getTimeline(stdstring(key))
+# 	def getTimeline(self, key):
+# 		return self._this.getTimeline(stdstring(key))
 
-	def getGraphSizeTimeline(self):
-		return self._this.getGraphSizeTimeline()
+# 	def getGraphSizeTimeline(self):
+# 		return self._this.getGraphSizeTimeline()
 
-	def getResultTimeline(self):
-		timeline = []
-		for pair in self._this.getResultTimeline():
-			_G = pair.first
-			_zeta = pair.second
-			timeline.append((Graph().setThis(_G), Partition().setThis(_zeta)))
-		return timeline
+# 	def getResultTimeline(self):
+# 		timeline = []
+# 		for pair in self._this.getResultTimeline():
+# 			_G = pair.first
+# 			_zeta = pair.second
+# 			timeline.append((Graph().setThis(_G), Partition().setThis(_zeta)))
+# 		return timeline
 			
 
 

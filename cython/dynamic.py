@@ -1,4 +1,4 @@
-from _NetworKit import Graph, GraphEvent, DynamicCommunityDetection, DGSStreamParser, GraphUpdater
+from _NetworKit import Graph, GraphEvent, DGSStreamParser, GraphUpdater
 
 
 def graphFromStream(stream):
