@@ -10,10 +10,11 @@
 namespace NetworKit {
 
 QualityMeasure::QualityMeasure() {
+
 }
 
 QualityMeasure::~QualityMeasure() {
-	// TODO Auto-generated destructor stub
+
 }
 
 

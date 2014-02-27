@@ -22,12 +22,18 @@ class PageRankNibble {
 protected:
 	Graph& G;
 
-	std::set<node> bestSweepSet(std::vector<double>& pr);
+	std::set<node> suitableSweepSet(const std::vector<double>& pr, double phi, unsigned int b, unsigned int B);
+
+	/**
+	 * @return Number of elements in @a vec unequal to zero.
+	 */
+	count supportSize(const std::vector<double>& vec) const;
 
 
 public:
 	/**
-	 * @param Graph @a g for which PageRank-Nibble is to be performed.
+	 * @param Graph @a g for which PageRank-Nibble is to be performed. Is treated as
+	 * unweighted in current implementation.
 	 */
 	PageRankNibble(Graph& g);
 	virtual ~PageRankNibble();
