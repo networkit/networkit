@@ -68,10 +68,11 @@ Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
 
 Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<std::vector<node> >& maps) {
 
-	Partition zeta(Gfinest.numberOfNodes());
+	Partition zeta(Gfinest.upperNodeIdBound());
+	zeta.setUpperBound(Gcoarse.upperNodeIdBound()); // TODO: test
 
 	// store temporarily coarsest supernode here
-	std::vector<node> super(Gfinest.numberOfNodes());
+	std::vector<node> super(Gfinest.upperNodeIdBound());
 	// initialize to identity
 	Gfinest.parallelForNodes([&](node v){
 		super[v] = v;
