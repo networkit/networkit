@@ -24,10 +24,8 @@
 #include "../NMIDistance.h"
 #include "../DynamicNMIDistance.h"
 #include "../../auxiliary/NumericTools.h"
-#include "../../dcd/DynCDSetup.h"
 #include "../../generators/DynamicBarabasiAlbertGenerator.h"
 //#include "../../dcd/DynamicPLP.h"
-#include "../../dcd/TDynamicLabelPropagation.h"
 #include "../SampledGraphStructuralRandMeasure.h"
 #include "../SampledNodeStructuralRandMeasure.h"
 #include "../../clustering/GraphClusteringTools.h"
@@ -297,59 +295,6 @@ TEST_F(ClusteringGTest, testNMIDistance) {
 
 }
 
-TEST_F(ClusteringGTest, tryDynamicNMIDistance) {
-	// FIXME: sometimes throws an assertion error
-	// two 1-clusterings should have NMID = 0 because H is 0
-	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
-
-	ClusteringGenerator clustGen;
-	Partition one1 = clustGen.makeOneClustering(G);
-	Partition one2 = clustGen.makeOneClustering(G);
-
-	DynamicNMIDistance dynNMID;
-	double distOne = dynNMID.getDissimilarity(G, one1, one2);
-
-	INFO("Dyn NMID for two 1-clusterings: " , distOne);
-	EXPECT_TRUE(Aux::NumericTools::equal(distOne, 0.0)) << "Dyn NMID of two 1-clusterings should be 0.0";
-
-
-	Partition singleton1 = clustGen.makeSingletonClustering(G);
-	Partition singleton2 = clustGen.makeSingletonClustering(G);
-
-	double distSingleton = dynNMID.getDissimilarity(G, singleton1, singleton2);
-	INFO("Dyn NMID for two singleton clusterings: " , distSingleton);
-
-	EXPECT_TRUE(Aux::NumericTools::equal(distSingleton, 0.0)) << "Dyn NMID of two identical singleton clusterings should be 0.0";
-
-	Partition random1 = clustGen.makeRandomClustering(G, 2);
-	Partition random2 = clustGen.makeRandomClustering(G, 2);
-
-	double distRandom = dynNMID.getDissimilarity(G, random1, random2);
-	INFO("Dyn NMID for two random clusterings: " , distRandom);
-
-
-	// now dynamic graph(s)
-	DynamicGraphSource* dynGen = new DynamicBarabasiAlbertGenerator(1);
-	DynamicCommunityDetector* dynLP1 = new TDynamicLabelPropagation<Isolate>();
-
-	std::vector<DynamicCommunityDetector*> detectors = { dynLP1 };
-	count deltaT = 6;
-	count tMax = 10 * deltaT;
-	DynCDSetup setup(*dynGen, detectors, tMax, deltaT);
-
-	setup.run();
-
-	G = setup.getGraphCopy();
-	std::vector<Partition>& myresults = setup.dynamicClusteringTimelines[0];
-	Partition& currentClustering = myresults.back();
-	Partition& oldClustering = myresults[0];
-	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, currentClustering)) << "clustering in the sequence should be a proper clustering of G";
-
-	double distSeq = dynNMID.getDissimilarity(G, oldClustering, currentClustering);
-	INFO("Dyn NMID for last and first clustering: " , distSeq);
-
-}
 
 TEST_F(ClusteringGTest, testSampledRandMeasures) {
 	GraphGenerator graphGenerator;
