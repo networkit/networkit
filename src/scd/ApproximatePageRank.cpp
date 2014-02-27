@@ -43,9 +43,9 @@ std::vector<double> ApproximatePageRank::run(node seed) {
 	residual[seed] = 1.0;
 
 	std::vector<double> normalizedRes;
-	for (node v = 0; v < n; ++v) {
+	G.forNodes([&](node v) {
 		normalizedRes[v] = residual[v] / (double) G.degree(v);
-	}
+	});
 
 	auto converged([&](node& argmax) {
 		std::vector<double>::iterator max_elem = std::max_element(normalizedRes.begin(), normalizedRes.end());
