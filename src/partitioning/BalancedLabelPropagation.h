@@ -8,8 +8,8 @@
 #ifndef BALANCEDLABELPROPAGATION_H_
 #define BALANCEDLABELPROPAGATION_H_
 
-#include "../clustering/ClusteringGenerator.h"
-#include "../clustering/EdgeCut.h"
+#include "../community/ClusteringGenerator.h"
+#include "../community/EdgeCut.h"
 #include "../io/ClusteringWriter.h"
 #include "../structures/Partition.h"
 #include "../coarsening/MatchingContracter.h"

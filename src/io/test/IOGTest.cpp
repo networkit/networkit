@@ -8,7 +8,7 @@
 #ifndef NOGTEST
 
 #include "IOGTest.h"
-#include "../../clustering/GraphClusteringTools.h"
+#include "../../community/GraphClusteringTools.h"
 
 namespace NetworKit {
 

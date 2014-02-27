@@ -7,7 +7,7 @@
 
 #include "CNM.h"
 #include "../scoring/ModularityScoring.h"
-#include "../clustering/Modularity.h"
+#include "../community/Modularity.h"
 #include <limits>
 #include "../auxiliary/PrioQueue.h"
 

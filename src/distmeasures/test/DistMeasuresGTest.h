@@ -18,7 +18,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../io/DibapGraphReader.h"
 #include "../../structures/Partition.h"
-#include "../../clustering/Modularity.h"
+#include "../../community/Modularity.h"
 #include "../../graph/GraphGenerator.h"
 #include "../NodeDistance.h"
 #include "../AlgebraicDistance.h"
