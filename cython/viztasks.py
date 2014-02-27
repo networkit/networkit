@@ -11,7 +11,7 @@ def drawGraph(G, figsize=(7,7), labelled=False, nodeSizes=None):
 	""" Draw a graph"""
 	nxG = nxadapter.nk2nx(G)
 	drawer = viztools.drawing.GraphDrawer(size=figsize, labelled=labelled)
-	drawer.draw(nxG, nodeSizes)
+	drawer.draw(nxG, nodeSizes=nodeSizes)
 
 
 def drawCommunityGraph(G, zeta, labelled=False, figsize=(7,7)):

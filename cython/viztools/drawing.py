@@ -47,7 +47,7 @@ class GraphDrawer:
 
 		:param G: The graph object
 		:param pos: optional predefined node positions
-		:param nodeSizes: optional node sizes
+		:param nodeSizes: optional array of node sizes
 		"""
 		
 		plt.figure(figsize=self.size)
