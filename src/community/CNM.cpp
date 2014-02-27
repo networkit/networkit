@@ -63,20 +63,20 @@ Partition CNM::run(Graph &graph) {
 		}
 	});
 	Aux::PrioQueue<double, index> pq(scores);
-	TRACE("Initial PQ built before CNM loop");
+//	TRACE("Initial PQ built before CNM loop");
 //	pq.print();
 
 	// free mem
 	scores.clear();
 
 	count iterations = 0;
-	while ((iterations < n-1) && (pq.size() > 0)) {
+	while ((iterations < n-1) && (pq.size() > 0)) { // TODO: terminate earlier?
 		// determine best edge
 		std::pair<double, index> pqMin = pq.extractMin();
 		std::pair<node, node> currentEdge = indexToEdge[pqMin.second];
 		node best_u = currentEdge.first;
 		node best_v = currentEdge.second;
-		TRACE("best_u: " , best_u , ", best_v: " , best_v);
+//		TRACE("best_u: " , best_u , ", best_v: " , best_v);
 
 		// merge clusters best_u and best_v
 		index newCluster = clustering.mergeSubsets(clustering.subsetOf(best_u), clustering.subsetOf(best_v));
@@ -110,7 +110,7 @@ Partition CNM::run(Graph &graph) {
 				edgeToIndex.insert(std::make_pair(edge, idx));
 				indexToEdge.insert(std::make_pair(idx, edge));
 
-				TRACE("insert ", -score, ", ", idx, " into PQ for edge ", newNode, "-", neighbor);
+//				TRACE("insert ", -score, ", ", idx, " into PQ for edge ", newNode, "-", neighbor);
 				pq.insert(-score, idx);
 
 				++idx;
@@ -119,11 +119,11 @@ Partition CNM::run(Graph &graph) {
 
 		// compute new modularity
 		double newModularity = modularityInspector.getQuality(clustering, graph);
-		TRACE("pq size: ", pq.size(), ", current mod value: " , newModularity);
+//		TRACE("pq size: ", pq.size(), ", current mod value: " , newModularity);
 
 		// record best solutions
 		if (newModularity > bestModularity) {
-			DEBUG("ha, improved so far best mod value: " , bestModularity);
+//			DEBUG("ha, improved so far best mod value: " , bestModularity);
 			bestModularity = newModularity;
 			bestClustering = clustering;
 		}
