@@ -706,5 +706,39 @@ TEST_F(CommunityGTest, testSampledRandMeasures) {
 }
 
 
+TEST_F(CommunityGTest, testParallelAgglomerativeAndPLM2) {
+	Modularity modularity;
+	ParallelAgglomerativeClusterer aggl;
+	PLM2 louvain;
+	METISGraphReader reader;
+	Graph jazz = reader.read("input/jazz.graph");
+	Graph blog = reader.read("input/polblogs.graph");
+
+
+	// *** jazz graph
+	// parallel agglomerative
+	Partition clustering = aggl.run(jazz);
+	INFO("Match-AGGL number of jazz clusters: " , clustering.numberOfSubsets());
+	INFO("Match-AGGL modularity jazz graph:   " , modularity.getQuality(clustering, jazz));
+
+	// Louvain
+	clustering = louvain.run(jazz);
+	INFO("Louvain number of jazz clusters: " , clustering.numberOfSubsets());
+	INFO("Louvain modularity jazz graph:   " , modularity.getQuality(clustering, jazz));
+
+
+	// *** blog graph
+	// parallel agglomerative
+	clustering = aggl.run(blog);
+	INFO("Match-AGGL number of blog clusters: " , clustering.numberOfSubsets());
+	INFO("Match-AGGL modularity blog graph:   " , modularity.getQuality(clustering, blog));
+
+	// Louvain
+	clustering = louvain.run(blog);
+	INFO("Louvain number of blog clusters: " , clustering.numberOfSubsets());
+	INFO("Louvain modularity blog graph:   " , modularity.getQuality(clustering, blog));
+}
+
+
 
 } /* namespace NetworKit */
