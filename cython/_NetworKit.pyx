@@ -48,7 +48,7 @@ cdef extern from "../src/auxiliary/Log.h" namespace "Aux":
 	void _setLogLevel "Aux::Log::setLogLevel" (string loglevel) except +
 	void _setPrintLocation "Aux::Log::Settings::setPrintLocation" (bool) except +
 
-def currentLogLevel():
+def getLogLevel():
 	""" Get the current log level"""
 	return pystring(_getLogLevel());
 

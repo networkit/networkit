@@ -47,7 +47,7 @@ except ImportError as importError:
 
 # TODO: introduce settings module
 
-from _NetworKit import currentLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
+from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 from graph import Graph 
 from graphio import readGraph, writeGraph
 from nxadapter import nk2nx, nx2nk
