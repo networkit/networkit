@@ -19,10 +19,15 @@ protected:
 	double alpha;
 	double eps;
 
+	std::vector<double> pageRank;
+	std::vector<double> resid;
+	std::vector<double> normalizedResid;
+
+
 	void push(node u, node seed, std::vector<double>& pr, std::vector<double>& residual);
 
 public:
-	ApproximatePageRank(Graph& g, double alpha, double epsilon);
+	ApproximatePageRank(Graph& g, double alpha, double epsilon = 1e-12);
 	virtual ~ApproximatePageRank();
 
 	std::vector<double> run(node seed);

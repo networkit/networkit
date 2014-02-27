@@ -12,7 +12,7 @@ namespace NetworKit {
 
 TEST_F(SCDGTest2, testPageRankNibble) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/astro-ph.graph");
+	Graph G = reader.read("input/polblogs.graph");
 	PageRankNibble prn(G);
 	count n = G.numberOfNodes();
 	count m = G.numberOfEdges();

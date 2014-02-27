@@ -102,6 +102,7 @@ std::set<node> PageRankNibble::run(node seed, double phi, unsigned int b) {
 	double alpha = phi * phi / (225.0 * log(100.0 * sqrt(m)));
 	double epsilon = pow(2, -b) / (48.0 * B);
 
+	DEBUG("APR(G, ", alpha, ", ", epsilon);
 	ApproximatePageRank apr(G, alpha, epsilon);
 	std::vector<double> pr = apr.run(seed);
 
