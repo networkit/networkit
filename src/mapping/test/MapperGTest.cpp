@@ -8,7 +8,7 @@
 #ifndef NOGTEST
 
 #include "MapperGTest.h"
-#include "../../clustering/GraphClusteringTools.h"
+#include "../../community/GraphClusteringTools.h"
 
 
 namespace NetworKit {
@@ -30,7 +30,7 @@ TEST_F(MapperGTest, tryRcmMapping) {
 	Graph appGraph = graphReader.read("input/wing.graph");
 	count k = 25;
 
-	// generate or read clustering/partition
+	// generate or read community/partition
 	BalancedLabelPropagation partitioner(1.75);
 	Partition partition = partitioner.run(appGraph, k);
 //	ClusteringGenerator clusteringGenerator;
@@ -61,7 +61,7 @@ TEST_F(MapperGTest, tryCommunicationGraph) {
 	// TODO: read graph
 	Graph g;
 
-	// TODO: generate or read clustering/partition
+	// TODO: generate or read community/partition
 	Partition partition;
 
 	// TODO: compute communication graph

@@ -9,8 +9,8 @@
 #define BALANCEDPARTITIONER_H_
 
 #include "../structures/Partition.h"
-#include "../clustering/ClusteringGenerator.h"
-#include "../clustering/EdgeCut.h"
+#include "../community/ClusteringGenerator.h"
+#include "../community/EdgeCut.h"
 #include "../io/ClusteringWriter.h"
 #include "../coarsening/MatchingContracter.h"
 #include "../matching/ParallelMatcher.h"

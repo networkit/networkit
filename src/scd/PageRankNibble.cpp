@@ -7,7 +7,7 @@
 
 #include "PageRankNibble.h"
 #include "ApproximatePageRank.h"
-#include "../clustering/Conductance.h"
+#include "../community/Conductance.h"
 #include <cmath>
 #include <vector>
 
