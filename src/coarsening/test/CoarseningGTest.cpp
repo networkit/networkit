@@ -10,11 +10,11 @@
 #include "CoarseningGTest.h"
 
 #include "../../graph/GraphGenerator.h"
-#include "../../clustering/ClusteringGenerator.h"
+#include "../../community/ClusteringGenerator.h"
 #include "../../coarsening/ClusterContracter.h"
 #include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
-#include "../../clustering/GraphClusteringTools.h"
+#include "../../community/GraphClusteringTools.h"
 
 namespace NetworKit {
 

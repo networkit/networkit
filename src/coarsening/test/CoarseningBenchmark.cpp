@@ -10,7 +10,7 @@
 #include "CoarseningBenchmark.h"
 
 #include "../../generators/ErdosRenyiGenerator.h"
-#include "../../clustering/ClusteringGenerator.h"
+#include "../../community/ClusteringGenerator.h"
 #include "../../coarsening/ClusterContracter.h"
 #include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"

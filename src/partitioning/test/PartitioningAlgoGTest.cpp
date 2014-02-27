@@ -6,7 +6,7 @@
  */
 
 #include "PartitioningAlgoGTest.h"
-#include "../../clustering/GraphClusteringTools.h"
+#include "../../community/GraphClusteringTools.h"
 
 #ifndef NOGTEST
 

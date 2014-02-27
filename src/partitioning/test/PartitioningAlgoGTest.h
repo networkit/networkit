@@ -7,10 +7,10 @@
 
 #include "../BalancedLabelPropagation.h"
 #include "../../auxiliary/Log.h"
-#include "../../clustering/Modularity.h"
-#include "../../clustering/EdgeCut.h"
+#include "../../community/Modularity.h"
+#include "../../community/EdgeCut.h"
 #include "../../graph/GraphGenerator.h"
-#include "../../clustering/ClusteringGenerator.h"
+#include "../../community/ClusteringGenerator.h"
 #include "../../structures/Partition.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/DibapGraphReader.h"

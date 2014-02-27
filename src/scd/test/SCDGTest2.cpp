@@ -1,8 +1,8 @@
 #include "SCDGTest2.h"
 
 #include "../PageRankNibble.h"
-#include "../../clustering/Modularity.h"
-#include "../../clustering/Conductance.h"
+#include "../../community/Modularity.h"
+#include "../../community/Conductance.h"
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
 

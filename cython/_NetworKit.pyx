@@ -772,7 +772,7 @@ cdef class Partition:
 
 # Module: community
 
-cdef extern from "../src/clustering/Coverage.h":
+cdef extern from "../src/community/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
 		_Coverage() except +
 		double getQuality(_Partition _zeta, _Graph _G) except +
@@ -785,7 +785,7 @@ cdef class Coverage:
 		return self._this.getQuality(zeta._this, G._this)
 
 
-cdef extern from "../src/clustering/Modularity.h":
+cdef extern from "../src/community/Modularity.h":
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +
 		double getQuality(_Partition _zeta, _Graph _G) except +
@@ -931,7 +931,7 @@ cdef class DissimilarityMeasure:
 	pass
 
 
-cdef extern from "../src/clustering/NodeStructuralRandMeasure.h":
+cdef extern from "../src/community/NodeStructuralRandMeasure.h":
 	cdef cppclass _NodeStructuralRandMeasure "NetworKit::NodeStructuralRandMeasure":
 		_NodeStructuralRandMeasure() except +
 		double getDissimilarity(_Graph G, _Partition first, _Partition second)
@@ -946,7 +946,7 @@ cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
 		return self._this.getDissimilarity(G._this, first._this, second._this)
 
 
-cdef extern from "../src/clustering/GraphStructuralRandMeasure.h":
+cdef extern from "../src/community/GraphStructuralRandMeasure.h":
 	cdef cppclass _GraphStructuralRandMeasure "NetworKit::GraphStructuralRandMeasure":
 		_GraphStructuralRandMeasure() except +
 		double getDissimilarity(_Graph G, _Partition first, _Partition second)

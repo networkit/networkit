@@ -10,7 +10,7 @@
 
 #include "../coarsening/ClusterContracter.h"
 #include "../coarsening/ClusteringProjector.h"
-#include "../clustering/JaccardMeasure.h"
+#include "../community/JaccardMeasure.h"
 
 namespace NetworKit {
 

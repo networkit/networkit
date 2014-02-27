@@ -23,7 +23,7 @@
 #include "../../io/DibapGraphReader.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/METISGraphWriter.h"
-#include "../../clustering/ClusteringGenerator.h"
+#include "../../community/ClusteringGenerator.h"
 
 
 namespace NetworKit {

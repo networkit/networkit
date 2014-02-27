@@ -8,7 +8,7 @@
 #include "../auxiliary/Random.h"
 
 #include "BalancedLabelPropagation.h"
-#include "../clustering/GraphClusteringTools.h"
+#include "../community/GraphClusteringTools.h"
 
 namespace NetworKit {
 
