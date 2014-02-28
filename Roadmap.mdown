@@ -3,30 +3,35 @@
 This document is about the current and future development of the NetworKit package.
 
 
-# Feature Wish List
+## Release Notes
+
+### 1.0
+
+- static community detection algorithms
+
+
+### 2.0 
+
+- Python interface
+- prototype of network properties overview
+
+### 3.0
 
 ## Algorithms
 
-- betweenness centrality approximation
-- (parallel) Chung-Lu graph generator
-- diameter approximation
-
-## Data Structures
-
-- concurrent graph (to replace `Graph`)
-- directed graph
-
-
-# Features in Development
-
-## Algorithms
-
-- hyperbolic graph generator
-- Havel-Hakimi graph generator (recreates degree sequences)
+- connected components
+- parallel exact clustering coefficient
 - betweenness centrality (Brandes algorithm)
 - core decomposition
-- approximation of clustering coefficient
-- eigenvector centrality
+- exact diameter
+- diameter approximation
+- clustering coefficients approximation
+- Dijkstra's shortest path algorithm
+
+## Generators
+
+- Chung-Lu graph generator
+- Havel-Hakimi graph generator (recreates degree sequences)
 
 ## Data Structures
 
@@ -34,15 +39,43 @@ This document is about the current and future development of the NetworKit packa
 - `Cover`: a data structure for overlapping subsets of a set
 
 
-# Completed Features
 
-## Algorithms
+## Roadmap
 
-- parallel connected components
-- sequential connected components
-- parallel exact clustering coefficient
+This list contains features which are due for a specific future release.
+
+### 3.1
+
+- betweenness approximation
+- degreee assortativity approximation
+- depth-first search
 
 
-# Rejected Features
+
+## Feature Wish List
+
+This list contains features which may be added to NetworKit in the indeterminate future.
+
+### Algorithms
+
+- eigenvector centrality
+
+### Generators
+
+- hyperbolic graph generator
+
+### Data Structures
+
+- concurrent graph (to replace `Graph`)
+- directed graph
+
+### Visualization
+
+- advanced dynamic visualization (possibly using sigma.js)
+
+
+## Rejected Features
+
+This list contains proposed features which will not be included in NetworKit.
 
 - native graphical user interface - use IPython Notebook instead
