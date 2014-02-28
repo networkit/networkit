@@ -277,10 +277,10 @@ TEST_F(CommunityGTest, testLouvainParallelBalanced) {
 
 
 TEST_F(CommunityGTest, testCNMandLouvainRandom) {
-	count n = 300;
+	count n = 400;
 	count k = 20;
 	double pin = 0.95;
-	double pout = 0.005;
+	double pout = 0.01;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
