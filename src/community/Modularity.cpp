@@ -34,18 +34,18 @@ void Modularity::setTotalEdgeWeight(double totalEdgeWeight) {
 double Modularity::getQuality(const Partition& zeta, const Graph& G) {
 	assert (G.numberOfNodes() <= zeta.numberOfElements());
 
-	DEBUG("m = " , G.numberOfEdges());
-	DEBUG("l = " , G.numberOfSelfLoops());
+//	DEBUG("m = " , G.numberOfEdges());
+//	DEBUG("l = " , G.numberOfSelfLoops());
 
 	Coverage coverage;
 	double cov = coverage.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / gTotalEdgeWeight;
-	DEBUG("coverage = " , cov);
+//	DEBUG("coverage = " , cov);
 	double expCov; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
 	double modularity; 	// mod = coverage - expected coverage
 	if (gTotalEdgeWeight == 0.0) {
 		gTotalEdgeWeight = G.totalEdgeWeight(); // compute total edge weight in G
+		DEBUG("computed total edge weight: " , gTotalEdgeWeight);
 	}
-	DEBUG("total edge weight: " , gTotalEdgeWeight);
 
 	if (gTotalEdgeWeight == 0.0) {
 		ERROR("G: m=" , G.numberOfEdges() , "n=" , G.numberOfNodes());
