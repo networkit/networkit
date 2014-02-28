@@ -62,6 +62,8 @@ void CoreDecomposition::run() {
 		}
 		core++;
 	}
+
+	maxCoreNumber = core - 1;
 }
 
 std::vector<index> CoreDecomposition::coreNumbers() const {
@@ -74,18 +76,26 @@ index CoreDecomposition::coreNumber(node v) const {
 
 
 std::vector<std::set<node> > CoreDecomposition::cores() const {
-	std::vector<std::set<node> > cores;
-	G.forNodes([&](node v) {
-		// TODO:
-	});
+	std::vector<std::set<node> > cores(maxCoreNumber);
+	for (index k = 0; k <= maxCoreNumber; k++) {
+		G.forNodes([&](node u){
+			if (coreness[u] >= k) {
+				cores.at(k).insert(u);
+			}
+		});
+	}
 	return cores;
 }
 
 std::vector<std::set<node> > CoreDecomposition::shells() const {
 	std::vector<std::set<node> > shells;
-	G.forNodes([&](node v) {
-		// TODO:
-	});
+	for (index k = 0; k <= maxCoreNumber; k++) {
+		G.forNodes([&](node u){
+			if (coreness[u] == k) {
+				shells.at(k).insert(u);
+			}
+		});
+	}
 	return shells;
 }
 

@@ -49,6 +49,7 @@ This list contains features which are due for a specific future release.
 - betweenness approximation
 - degreee assortativity approximation
 - depth-first search
+- degreee centrality
 
 
 

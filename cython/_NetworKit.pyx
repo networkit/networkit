@@ -1066,7 +1066,10 @@ cdef class ConnectedComponents:
 	""" Determines the connected components and associated values for
 		an undirected graph.
 	"""
-	cdef _ConnectedComponents _this
+	cdef _ConnectedComponents* _this
+
+	def __cinit__(self):
+		self._this = new _ConnectedComponents()
 
 	def run(self, Graph G):
 		self._this.run(G._this)
@@ -1146,6 +1149,45 @@ cdef class Eccentricity:
 		return getValue(G._this, v)
 
 
+cdef extern from "../src/properties/CoreDecomposition.h":
+	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition":
+		_CoreDecomposition(_Graph)
+		void run() except +
+		vector[index] coreNumbers() except +
+		index coreNumber(node) except +
+		vector[set[node]] cores() except +
+		vector[set[node]] shells() except +
+
+cdef class CoreDecomposition:
+	"""
+	Computes k-core decomposition of a graph.
+	"""
+
+	cdef _CoreDecomposition* _this 
+
+	def __cinit__(self, Graph G):
+		""" Initialize with graph """
+		self._this = new _CoreDecomposition(G._this)
+
+	def run(self):
+		""" Perform k-core decomposition of graph passed in constructor. """
+		self._this.run()
+
+	def coreNumbers(self):
+		""" @return vector or core numbers, indexed by node. """
+		return self._this.coreNumbers()
+
+	def coreNumber(self, v):
+		""" @return core number of node @a v """
+		return self._this.coreNumber(v)
+
+	def cores(self):
+		""" @return the k-cores as sets of nodes, indexed by k """
+		return self._this.cores()
+
+	def shells(self):
+		""" @return the k-shells as sets of nodes, indexed by k """
+		return self._this.shells()
 
 
 # Module: centrality
