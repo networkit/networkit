@@ -68,7 +68,9 @@ public:
 
 
 template<typename T>
-ModularityScoring<T>::ModularityScoring(Graph& G, double gTotalEdgeWeight) : EdgeScoring<T>(G) {
+ModularityScoring<T>::ModularityScoring(Graph& G, double gTotalEdgeWeight) : EdgeScoring<T>(G),
+	totalEdgeWeight(gTotalEdgeWeight)
+{
 	if (gTotalEdgeWeight == 0.0) {
 		this->totalEdgeWeight = this->G->totalEdgeWeight();
 	}
@@ -81,10 +83,13 @@ ModularityScoring<T>::~ModularityScoring() {
 
 template<typename T>
 inline T ModularityScoring<T>::edgeScore(node u, node v) const {
+	assert(totalEdgeWeight != 0.0);
 	double volume = 2.0 * totalEdgeWeight;
-	double unsquaredFrac = (this->G->weightedDegree(u) / volume);
+	double nom1 = (this->G->weightedDegree(u) / volume);
+	double nom2 = (this->G->weightedDegree(v) / volume);
 	double deltaMod = (this->G->weight(u, v) / totalEdgeWeight) -
-			(unsquaredFrac * unsquaredFrac); // TODO: check!
+			(nom1 * nom2);
+//	TRACE("volume: ", volume, ", deltaMod: ", deltaMod, ", totalew: ", totalEdgeWeight);
 	return deltaMod;
 }
 

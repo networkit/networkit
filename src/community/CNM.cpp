@@ -72,13 +72,13 @@ Partition CNM::run(Graph &graph) {
 	scores.clear();
 
 	count iterations = 0;
-	while ((iterations < n-1) && (pq.size() > 0)) { // TODO: terminate earlier?
+	while ((iterations < n-1) && (pq.size() > 0)) {
 		// determine best edge
-		std::pair<double, index> pqMin = pq.extractMin();
-		std::pair<node, node> currentEdge = indexToEdge[pqMin.second];
+		std::pair<double, index> pqOpt = pq.extractMin();
+		std::pair<node, node> currentEdge = indexToEdge[pqOpt.second];
 		node best_u = currentEdge.first;
 		node best_v = currentEdge.second;
-//		TRACE("best_u: " , best_u , ", best_v: " , best_v);
+//		TRACE("best_u: " , best_u , ", best_v: " , best_v, ", ew: ", G.weight(best_u, best_v), ", deltaMod: ", -pqOpt.first);
 
 		// merge clusters best_u and best_v
 		index newCluster = clustering.mergeSubsets(clustering.subsetOf(best_u), clustering.subsetOf(best_v));
