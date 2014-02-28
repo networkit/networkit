@@ -32,7 +32,7 @@ void ApproximatePageRank::push(node u, node seed, std::vector<double>& pr, std::
 
 	pr = pageRank;
 	residual = resid;
-	TRACE("residual[", u, "]: ", residual[u]);
+//	TRACE("residual[", u, "]: ", residual[u]);
 }
 
 ApproximatePageRank::~ApproximatePageRank() {

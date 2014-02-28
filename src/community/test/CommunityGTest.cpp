@@ -276,10 +276,10 @@ TEST_F(CommunityGTest, testLouvainParallelBalanced) {
 }
 
 
-TEST_F(CommunityGTest, testCNM) {
-	count n = 200;
-	count k = 25;
-	double pin = 0.9;
+TEST_F(CommunityGTest, testCNMandLouvainRandom) {
+	count n = 300;
+	count k = 20;
+	double pin = 0.95;
 	double pout = 0.005;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
@@ -291,44 +291,33 @@ TEST_F(CommunityGTest, testCNM) {
 	Partition clustering = cnm.run(G);
 	INFO("CNM number of clusters: " , clustering.numberOfSubsets());
 	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
-	// EXPECT_GE(modularity.getQuality(clustering, G), 0.5);
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, clustering));
 
+	// Louvain
+	PLM2 louvain;
+	clustering = louvain.run(G);
+	INFO("Louvain number of clusters: " , clustering.numberOfSubsets());
+	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, clustering));
 }
 
 
-TEST_F(CommunityGTest, testCNMandLouvain) {
+TEST_F(CommunityGTest, testCNMandLouvainReal) {
 	Modularity modularity;
 	CNM cnm;
-	PLM louvain;
+	PLM2 louvain;
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
-	// this takes much longer than a unit test should
-	// Graph blog = reader.read("input/polblogs.graph");
-
-
-
-	// *** jazz graph
-	// Louvain
-	Partition clustering = louvain.run(jazz);
-	INFO("Louvain number of jazz clusters: " , clustering.numberOfSubsets());
-	INFO("Louvain modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 
 	// CNM
-	clustering = cnm.run(jazz);
+	Partition clustering = cnm.run(jazz);
 	INFO("CNM number of jazz clusters: " , clustering.numberOfSubsets());
 	INFO("CNM modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 
-//	// *** blog graph
-//	// CNM
-//	clustering = cnm.run(blog);
-//	INFO("CNM number of blog clusters: " , clustering.numberOfSubsets());
-//	INFO("CNM modularity blog graph: " , modularity.getQuality(clustering, jazz));
-//
-//	// Louvain
-//	clustering = louvain.run(blog);
-//	INFO("Louvain number of blog clusters: " , clustering.numberOfSubsets());
-//	INFO("Louvain modularity blog graph: " , modularity.getQuality(clustering, jazz));
+	// Louvain
+	clustering = louvain.run(jazz);
+	INFO("Louvain number of jazz clusters: " , clustering.numberOfSubsets());
+	INFO("Louvain modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 }
 
 

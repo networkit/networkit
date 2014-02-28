@@ -42,7 +42,7 @@ EdgeScoring<T>::EdgeScoring(Graph& G) {
 
 template<typename T>
 EdgeScoring<T>::~EdgeScoring() {
-	// TODO Auto-generated destructor stub
+
 }
 
 

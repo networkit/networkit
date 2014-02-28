@@ -24,8 +24,8 @@ namespace NetworKit {
  * 	- \frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$$
  */
 class Modularity: public NetworKit::QualityMeasure {
-
-
+protected:
+	double gTotalEdgeWeight;
 
 public:
 
@@ -35,9 +35,15 @@ public:
 
 	/**
 	 * Returns the Modularity of the given clustering with respect to the graph G.
-	 *
 	 */
 	virtual double getQuality(const Partition& zeta, const Graph& G);
+
+	/**
+	 * @param gTotalEdgeWeight Sum of all edge weights in @a G. If specified, it does not
+	 *        have to be computed.
+	 */
+	void setTotalEdgeWeight(double totalEdgeWeight);
+
 };
 
 } /* namespace NetworKit */

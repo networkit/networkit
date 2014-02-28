@@ -31,7 +31,7 @@ public:
 	 *
 	 * Do not modify the graph while using this instance of ModularityScoring.
 	 */
-	ModularityScoring(Graph& G);
+	ModularityScoring(Graph& G, double gTotalEdgeWeight = 0.0);
 
 	virtual ~ModularityScoring();
 
@@ -68,8 +68,10 @@ public:
 
 
 template<typename T>
-ModularityScoring<T>::ModularityScoring(Graph& G) : EdgeScoring<T>(G) {
-	this->totalEdgeWeight = this->G->totalEdgeWeight();
+ModularityScoring<T>::ModularityScoring(Graph& G, double gTotalEdgeWeight) : EdgeScoring<T>(G) {
+	if (gTotalEdgeWeight == 0.0) {
+		this->totalEdgeWeight = this->G->totalEdgeWeight();
+	}
 }
 
 template<typename T>

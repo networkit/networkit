@@ -24,7 +24,8 @@ PageRankNibble::~PageRankNibble() {
 std::set<node> PageRankNibble::suitableSweepSet(const std::vector<double>& pr, double phi, unsigned int b, unsigned int B) {
 	count n = G.numberOfNodes();
 	count suppSize = this->supportSize(pr);
-	std::vector<std::pair<double, node> > sweepVec;
+	std::vector<std::pair<double, node> > sweepVec(n);
+	DEBUG("Support size: ", suppSize);
 
 	G.forNodes([&](node v) {
 		sweepVec[v].first = pr[v] / G.degree(v);
@@ -44,12 +45,25 @@ std::set<node> PageRankNibble::suitableSweepSet(const std::vector<double>& pr, d
 			result = vol > (1 << (b-1));
 			result = result && (vol < 4.0 * G.totalEdgeWeight() / 3.0);
 		}
+		else {
+			DEBUG("Conductance too large: ", cond);
+			return false;
+		}
 
 		if (result) {
 			// probability change condition (similar to spectral gap)
-			index pos1 = 1 << b;
-			index pos2 = 1 << (b-1);
-			result = pr[pos1] - pr[pos2] > 1.0 / (48.0 * B);
+			index pos1 = 1 << b; // 2^b
+			index pos2 = pos1 >> 1; // 2^{b-1}
+			result = (sweepVec[pos1].first - sweepVec[pos2].first) > 1.0 / (48.0 * B);
+//			TRACE("pos1: ", pos1, ", pos2: ", pos2, ", 1/48B: ", (1.0 / (48.0 * B)));
+
+			if (! result) {
+				DEBUG("prob change condition not satisfied: ", (sweepVec[pos1].first - sweepVec[pos2].first), " <= ", 1.0 / (48.0 * B));
+			}
+		}
+		else {
+			DEBUG("Volume condition not satisfied: ", vol);
+			return false;
 		}
 
 		return result;
@@ -74,11 +88,13 @@ std::set<node> PageRankNibble::suitableSweepSet(const std::vector<double>& pr, d
 
 		// check conditions
 		if (isSetSuitable(cond, volume)) {
+			INFO("Cluster of size ", suitableCluster.size(), " returned by PageRank-Nibble");
 			return suitableCluster;
 		}
 	}
 
 	// return empty set if not fulfilled for any set
+	INFO("Empty cluster returned by PageRank-Nibble");
 	suitableCluster.clear();
 	return suitableCluster;
 }
@@ -100,9 +116,12 @@ std::set<node> PageRankNibble::run(node seed, double phi, unsigned int b) {
 	count m = G.numberOfEdges();
 	count B = ceil(log2(m));
 	double alpha = phi * phi / (225.0 * log(100.0 * sqrt(m)));
-	double epsilon = pow(2, -b) / (48.0 * B);
+	double exponent = (double) b;
+	exponent = -exponent;
+	double epsilon = pow(2, exponent) / (48.0 * B);
+	DEBUG("2^{-b}: ", pow(2, exponent), ", 48B: ", (48.0 * B), ", quotient: ", epsilon);
 
-	DEBUG("APR(G, ", alpha, ", ", epsilon);
+	DEBUG("APR(G, ", alpha, ", ", epsilon, ")");
 	ApproximatePageRank apr(G, alpha, epsilon);
 	std::vector<double> pr = apr.run(seed);
 

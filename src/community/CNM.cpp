@@ -37,7 +37,9 @@ Partition CNM::run(Graph &graph) {
 	clustering.allToSingletons();
 
 	// record current modularity
+	double gTotalEdgeWeight = G.totalEdgeWeight();
 	Modularity modularityInspector;
+	modularityInspector.setTotalEdgeWeight(gTotalEdgeWeight);
 	double bestModularity = modularityInspector.getQuality(clustering, G);
 	Partition bestClustering = clustering;
 
@@ -102,7 +104,8 @@ Partition CNM::run(Graph &graph) {
 		G.forEdgesOf(newNode, [&](node newNode, node neighbor) {
 			if (newNode != neighbor) {
 				// determine edge score
-				ModularityScoring<double> modScoring(G);
+//				assert(G.totalEdgeWeight() == gTotalEdgeWeight);
+				ModularityScoring<double> modScoring(G, gTotalEdgeWeight);
 				double score = modScoring.edgeScore(newNode, neighbor);
 
 				// insert edge score and corresponding ID into PQ
@@ -118,6 +121,8 @@ Partition CNM::run(Graph &graph) {
 		});
 
 		// compute new modularity
+//		assert(G.totalEdgeWeight() == gTotalEdgeWeight);
+		modularityInspector.setTotalEdgeWeight(gTotalEdgeWeight);
 		double newModularity = modularityInspector.getQuality(clustering, graph);
 //		TRACE("pq size: ", pq.size(), ", current mod value: " , newModularity);
 

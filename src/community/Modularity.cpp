@@ -18,11 +18,16 @@
 namespace NetworKit {
 
 
-Modularity::Modularity() : QualityMeasure() {
+Modularity::Modularity() : QualityMeasure(), gTotalEdgeWeight(0.0) {
+
 }
 
 Modularity::~Modularity() {
-	// TODO Auto-generated destructor stub
+
+}
+
+void Modularity::setTotalEdgeWeight(double totalEdgeWeight) {
+	gTotalEdgeWeight = totalEdgeWeight;
 }
 
 
@@ -33,15 +38,16 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
 	DEBUG("l = " , G.numberOfSelfLoops());
 
 	Coverage coverage;
-	double cov = coverage.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / totalEdgeWeight;
+	double cov = coverage.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / gTotalEdgeWeight;
 	DEBUG("coverage = " , cov);
 	double expCov; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
 	double modularity; 	// mod = coverage - expected coverage
-	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
-	DEBUG("total edge weight: " , totalEdgeWeight);
+	if (gTotalEdgeWeight == 0.0) {
+		gTotalEdgeWeight = G.totalEdgeWeight(); // compute total edge weight in G
+	}
+	DEBUG("total edge weight: " , gTotalEdgeWeight);
 
-
-	if (totalEdgeWeight == 0.0) {
+	if (gTotalEdgeWeight == 0.0) {
 		ERROR("G: m=" , G.numberOfEdges() , "n=" , G.numberOfNodes());
 		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
 	}
@@ -66,7 +72,7 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
 
 	#pragma omp parallel for reduction(+:expCov)
 	for (index c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
-		expCov += ((incidentWeightSum[c] / totalEdgeWeight) * (incidentWeightSum[c] / totalEdgeWeight )) / 4;	// squared
+		expCov += ((incidentWeightSum[c] / gTotalEdgeWeight) * (incidentWeightSum[c] / gTotalEdgeWeight )) / 4;	// squared
 	}
 
 	DEBUG("expected coverage: " , expCov);
@@ -79,6 +85,9 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
 
 	modularity = cov - expCov;
 	DEBUG("modularity = " , modularity);
+
+	// reset totalEdgeWeight
+	gTotalEdgeWeight = 0.0;
 
 	assert(! std::isnan(modularity));	// do not return NaN
 	// do not return anything not in the range of modularity values
