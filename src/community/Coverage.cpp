@@ -25,7 +25,7 @@ double Coverage::getQuality(const Partition& zeta, const Graph& G) {
 
 	double cov = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
 	double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
-	DEBUG("total edge weight = " , totalEdgeWeight);
+	TRACE("total edge weight = " , totalEdgeWeight);
 
 	if (totalEdgeWeight == 0.0) {
 		throw std::invalid_argument(
@@ -58,7 +58,7 @@ double Coverage::getQuality(const Partition& zeta, const Graph& G) {
 	for (index c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
 		intraEdgeWeightSum += intraEdgeWeight[c];
 	}
-	DEBUG("total intra-cluster edge weight = " , intraEdgeWeightSum);
+	TRACE("total intra-cluster edge weight = " , intraEdgeWeightSum);
 
 
 	cov = intraEdgeWeightSum / totalEdgeWeight;
