@@ -404,6 +404,29 @@ cdef class ErdosRenyiGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 
+cdef extern from "../src/generators/ClusteredRandomGraphGenerator.h":
+	cdef cppclass _ClusteredRandomGraphGenerator "NetworKit::ClusteredRandomGraphGenerator":
+		_ClusteredRandomGraphGenerator(count, count, double, double) except +
+		_Graph generate() except +
+
+cdef class ClusteredRandomGraphGenerator:
+	"""
+	 Creates a clustered random graph
+	 - n	number of nodes
+	 - k	number of clusters
+	 - pin		intra-cluster edge probability
+	 - pout	inter-cluster edge probability
+	"""
+
+	cdef _ClusteredRandomGraphGenerator* _this
+
+	def __cinit__(self, n, k, pin, pout):
+		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+
 cdef extern from "../src/generators/ChungLuGenerator.h":
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
 		# TODO: revert to count when cython issue fixed
