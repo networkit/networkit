@@ -1,5 +1,6 @@
 from setuptools import setup
-from distutils.extension import Extension
+from setuptools import Extension
+#from distutils.extension import Extension
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 
@@ -10,40 +11,68 @@ from subprocess import Popen
 import shlex
 import sys
 
-if "build_ext" in sys.argv:
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
+parser.add_argument("-o", "--optimize", dest="optimize", help="specify build type: O=optimize, D=debug, P=profiling")
+#parser.add_option("-i", "--inplace", dest="dest", help="states whether extensions shall be build inplace or in a subfolder")
+(options,args) = parser.parse_known_args()
+if options.jobs != None:
+	jobs = options.jobs
+else:
+	jobs = "1" # TODO how to get the number of available threads? 
+if options.optimize != None:
+	optimize = options.optimize
+else:
+	optimize = "O"
+
+# make sure sys.argv is correct for setuptools
+args.reverse()
+args.append(__file__)
+args.reverse() # this is not a very nice way to do this for sure
+sys.argv = args
+for e in sys.argv:
+	print(e)
+
+
+def build_NetworKit():
 	os.chdir("../")
-	try:
-		jobs = sys.argv[2]
-	except:
-		print("number of threads for compilation set to 4")
-		jobs = "4"
-	try:
-		optimize = sys.argv[3]
-	except:
-		print("compilation mode set to optimize")
-		optimize = "O"
-	comp_cmd = "scons --optimize="+optimize+" --target=Core -j"+jobs
-	print("initalizing NetworKit compilation with: "+comp_cmd)
+	comp_cmd = "scons --optimize={0} --target=Core -j{1}".format(optimize,jobs)
+	#print("initializing NetworKit compilation with: {0}".format(comp_cmd))
 	comp_proc = Popen(shlex.split(comp_cmd))
 	comp_proc.wait()
 	os.chdir("./cython")
-elif "clean" in sys.argv:
 	try:
-		optimize = sys.argv[2]
+		os.remove("_NetworKit.cpp")
 	except:
-		print("optimized NetworKit compilation will be cleaned")
-		optimize = "O"
+		print("_NetworKit.cpp already deleted")
+
+def additional_clean():
 	os.chdir("../")
-	clean_cmd = "scons --optimize="+optimize+" --target=Core -c"
+	clean_cmd = "scons --optimize={0} --target=Core -c".format(optimize)
 	clean_proc = Popen(shlex.split(clean_cmd))
 	clean_proc.wait()
 	os.chdir("./cython")
 	#os.rmdir("./build")
-	os.remove("_NetworKit.cpp")
-	
-# make sure sys.argv is correct for distutils:
-sys.argv = sys.argv[0:2]
+	try:
+		os.remove("_NetworKit.cpp")
+	except:
+		print("_NetworKit.cpp already deleted")
 
+
+
+if ("build_ext" in sys.argv):
+	build_NetworKit()
+elif (("develop" in sys.argv) and ("--uninstall" not in sys.argv)):
+	try:
+		os.mkdir("NetworKit")
+	except:
+		foo = 0
+	build_NetworKit()
+elif "clean" in sys.argv:
+	additional_clean()
+	
 # try-catch block when shutil.which is not available
 try:
 	if (shutil.which("g++-4.8") is not None):
@@ -71,7 +100,7 @@ modules = [Extension("_NetworKit",
 					language = "c++",
 					extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
 					extra_link_args=["-fopenmp", "-std=c++11"],
-					libraries=["NetworKit-Core-"+optimize],
+					libraries=["NetworKit-Core-{0}".format(optimize)],
 					library_dirs=["../"])]
 
 for e in modules:
