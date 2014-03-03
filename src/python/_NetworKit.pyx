@@ -877,45 +877,45 @@ cdef class LPDegreeOrdered(CommunityDetector):
 		return self._this.numberOfIterations()
 	
 
+# cdef extern from "../cpp/community/PLMOld.h":
+# 	cdef cppclass _PLM "NetworKit::PLMOld":
+# 		_PLMOld() except +
+# 		_PLMOld(string par, double gamma)
+# 		_Partition run(_Graph _G)
+# 		string toString()
+		
+# cdef class PLMOld(CommunityDetector):
+# 	""" Parallel Louvain method for community detection: 
+# 	High solution quality, moderate time to solution. """
+
+# 	cdef _PLMOld _this
+	
+# 	def __cinit__(self, par="balanced", gamma=1.0):
+# 		self._this = _PLM(stdstring(par), gamma)
+	
+# 	def run(self, Graph G not None):
+# 		return Partition().setThis(self._this.run(G._this))
+
+# 	def toString(self):
+# 		return self._this.toString().decode("utf-8")
+		
+		
 cdef extern from "../cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
 		_PLM() except +
-		_PLM(string par, double gamma)
-		_Partition run(_Graph _G)
-		string toString()
-		
-cdef class PLM(CommunityDetector):
-	""" Parallel Louvain method for community detection: 
-	High solution quality, moderate time to solution. """
-
-	cdef _PLM _this
-	
-	def __cinit__(self, par="balanced", gamma=1.0):
-		self._this = _PLM(stdstring(par), gamma)
-	
-	def run(self, Graph G not None):
-		return Partition().setThis(self._this.run(G._this))
-
-	def toString(self):
-		return self._this.toString().decode("utf-8")
-		
-		
-cdef extern from "../cpp/community/PLM2.h":
-	cdef cppclass _PLM2 "NetworKit::PLM2":
-		_PLM2() except +
-		_PLM2(bool refine, double gamma, string par, count maxIter) except +
+		_PLM(bool refine, double gamma, string par, count maxIter) except +
 		string toString() except +
 		_Partition run(_Graph G) except +
 
 
-cdef class PLM2(CommunityDetector):
+cdef class PLM(CommunityDetector):
 	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement"""
 		
-	cdef _PLM2 _this
+	cdef _PLM _this
 	
 	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=32):
-		self._this = _PLM2(refine, gamma, stdstring(par), maxIter)
+		self._this = _PLM(refine, gamma, stdstring(par), maxIter)
 		
 	def toString(self):
 		return self._this.toString().decode("utf-8")
