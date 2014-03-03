@@ -5,7 +5,7 @@ import ConfigParser
 home_path = os.environ['HOME']
 
 # SOURCE files (including executable) will be gathered here
-srcDir = "src"
+srcDir = "src/cpp"
 def getSourceFiles(target, optimize):
 	source = []
 

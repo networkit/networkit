@@ -40,23 +40,23 @@ sys.argv = args
 #print("################")
 
 def build_NetworKit():
-	os.chdir("../")
+	#os.chdir("../")
 	comp_cmd = "scons --optimize={0} --target=Core -j{1}".format(optimize,jobs)
 	print("initializing NetworKit compilation with: {0}".format(comp_cmd))
 	comp_proc = Popen(shlex.split(comp_cmd))
 	comp_proc.wait()
-	os.chdir("./cython")
+	os.chdir("./src/python")
 	try:
 		os.remove("_NetworKit.cpp")
 	except:
 		print("_NetworKit.cpp already deleted")
 
 def additional_clean():
-	os.chdir("../")
+	#os.chdir("../")
 	clean_cmd = "scons --optimize={0} --target=Core -c".format(optimize)
 	clean_proc = Popen(shlex.split(clean_cmd))
 	clean_proc.wait()
-	os.chdir("./cython")
+	os.chdir("./src/python")
 	#os.rmdir("./build")
 	try:
 		os.remove("_NetworKit.cpp")
@@ -69,7 +69,7 @@ if ("build_ext" in sys.argv):
 	build_NetworKit()
 elif (("develop" in sys.argv) and ("--uninstall" not in sys.argv)):
 	try:
-		os.mkdir("NetworKit")
+		os.mkdir("src/python/NetworKit")
 	except:
 		foo = 0
 	build_NetworKit()
@@ -104,7 +104,7 @@ modules = [Extension("_NetworKit",
 					extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
 					extra_link_args=["-fopenmp", "-std=c++11"],
 					libraries=["NetworKit-Core-{0}".format(optimize)],
-					library_dirs=["../"])]
+					library_dirs=["../../"])]
 
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}
