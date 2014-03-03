@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-CoreDecomposition::CoreDecomposition(const Graph& G) : G(G), ran(false) {
+CoreDecomposition::CoreDecomposition(const Graph& G) : G(G), maxCore(0), ran(false) {
 
 }
 
@@ -63,7 +63,7 @@ void CoreDecomposition::run() {
 		core++;
 	}
 
-	maxCoreNumber = core - 1;
+	maxCore = core - 1;
 	ran = true;
 }
 
@@ -81,8 +81,8 @@ index CoreDecomposition::coreNumber(node v) const {
 std::vector<std::set<node> > CoreDecomposition::cores() const {
 	if (! ran) throw std::runtime_error("call run method first");
 
-	std::vector<std::set<node> > cores(maxCoreNumber);
-	for (index k = 0; k <= maxCoreNumber; k++) {
+	std::vector<std::set<node> > cores(maxCore + 1);
+	for (index k = 0; k <= maxCore; k++) {
 		G.forNodes([&](node u){
 			if (coreness[u] >= k) {
 				cores.at(k).insert(u);
@@ -94,9 +94,9 @@ std::vector<std::set<node> > CoreDecomposition::cores() const {
 
 std::vector<std::set<node> > CoreDecomposition::shells() const {
 	if (! ran) throw std::runtime_error("call run method first");
-	
-	std::vector<std::set<node> > shells;
-	for (index k = 0; k <= maxCoreNumber; k++) {
+
+	std::vector<std::set<node> > shells(maxCore + 1);
+	for (index k = 0; k <= maxCore; k++) {
 		G.forNodes([&](node u){
 			if (coreness[u] == k) {
 				shells.at(k).insert(u);
@@ -104,6 +104,11 @@ std::vector<std::set<node> > CoreDecomposition::shells() const {
 		});
 	}
 	return shells;
+}
+
+index CoreDecomposition::maxCoreNumber() const {
+	if (! ran) throw std::runtime_error("call run method first");
+	return maxCore;
 }
 
 } /* namespace NetworKit */
