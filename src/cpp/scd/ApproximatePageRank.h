@@ -17,6 +17,7 @@ class ApproximatePageRank {
 protected:
 	const Graph& G;
 	double alpha;
+	double oneMinusAlphaOver2;
 	double eps;
 
 	std::vector<double> pageRank;

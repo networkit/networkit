@@ -24,16 +24,25 @@ PageRankNibble::~PageRankNibble() {
 std::set<node> PageRankNibble::suitableSweepSet(const std::vector<double>& pr, double phi, unsigned int b, unsigned int B) {
 	count n = G.numberOfNodes();
 	count suppSize = this->supportSize(pr);
-	std::vector<std::pair<double, node> > sweepVec(n);
 	DEBUG("Support size: ", suppSize);
+	double totalEdgeWeight = G.totalEdgeWeight();
+	double volThrsh = 4.0 / 3.0 * totalEdgeWeight;
+	double deg = 0.0;
 
+	std::vector<std::pair<double, node> > sweepVec(n);
 	G.forNodes([&](node v) {
-		sweepVec[v].first = pr[v] / G.degree(v);
+		deg = (double) G.degree(v);
+		sweepVec[v].first = (deg > 0.0) ? (pr[v] / deg) : (0.0);
 		sweepVec[v].second = v;
 	});
 
-	// order vertices, use only supportSize many afterwards
-	std::sort(sweepVec.begin(), sweepVec.end());
+
+	auto print([&]() {
+		for (auto entry: sweepVec) {
+			std::cout << entry.first << " ";
+		}
+		std::cout << std::endl;
+	});
 
 
 	// check conditions
@@ -43,7 +52,7 @@ std::set<node> PageRankNibble::suitableSweepSet(const std::vector<double>& pr, d
 		if (result) {
 			// volume condition
 			result = vol > (1 << (b-1));
-			result = result && (vol < 4.0 * G.totalEdgeWeight() / 3.0);
+			result = result && (vol < volThrsh);
 		}
 		else {
 			DEBUG("Conductance too large: ", cond);
@@ -59,6 +68,7 @@ std::set<node> PageRankNibble::suitableSweepSet(const std::vector<double>& pr, d
 
 			if (! result) {
 				DEBUG("prob change condition not satisfied: ", (sweepVec[pos1].first - sweepVec[pos2].first), " <= ", 1.0 / (48.0 * B));
+//				print();
 			}
 		}
 		else {
@@ -68,6 +78,17 @@ std::set<node> PageRankNibble::suitableSweepSet(const std::vector<double>& pr, d
 
 		return result;
 	});
+
+
+	// >=
+	auto comp([&](const std::pair<double, node>& elem1, const std::pair<double, node>& elem2) {
+		return elem1.first >= elem2.first;
+	});
+
+	// order vertices, use only supportSize many afterwards
+	DEBUG("Before sorting");
+	std::sort(sweepVec.begin(), sweepVec.end(), comp);
+	DEBUG("After sorting");
 
 
 	// for each possible set: check conditions
