@@ -344,7 +344,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 
 	// prepare clusterer run
 
-	Clusterer* algo = NULL; // the clusterer
+	CommunityDetectionAlgorithm* algo = NULL; // the clusterer
 
 //	std::pair<Clustering, Graph> result = std::make_pair(Clustering(0), G); // this will be returned
 	Aux::Timer running; // measures running time of clusterer
@@ -387,7 +387,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			int ensembleSize = std::atoi(ensembleSizeArg.c_str());
 			// 1. add base clusterers
 			for (int i = 0; i < ensembleSize; i += 1) {
-				Clusterer* base = NULL;
+				CommunityDetectionAlgorithm* base = NULL;
 				if (baseClustererArg == "PLP") {
 					base = new PLP(updateThreshold);
 				} else if (baseClustererArg == "Agglomerative") {
@@ -416,7 +416,7 @@ Clustering startClusterer(Graph& G, OptionParser::Option* options) {
 			}
 			ensemblePre->setOverlapper(*overlap);
 			// 3. Final Clusterer
-			Clusterer* final = NULL;
+			CommunityDetectionAlgorithm* final = NULL;
 			if (finalClustererArg == "PLP") {
 				final = new PLP();
 			} else if (finalClustererArg == "Agglomerative") {

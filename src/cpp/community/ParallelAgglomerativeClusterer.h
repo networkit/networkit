@@ -8,14 +8,14 @@
 #ifndef PARALLELAGGLOMERATIVECLUSTERER_H_
 #define PARALLELAGGLOMERATIVECLUSTERER_H_
 
-#include "Clusterer.h"
+#include "CommunityDetectionAlgorithm.h"
 
 namespace NetworKit {
 
 /**
  * A parallel agglomerative community detection algorithm, maximizing modularity.
  */
-class ParallelAgglomerativeClusterer: public NetworKit::Clusterer {
+class ParallelAgglomerativeClusterer: public NetworKit::CommunityDetectionAlgorithm {
 
 public:
 

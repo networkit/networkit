@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef CLUSTERER_H_
-#define CLUSTERER_H_
+#ifndef COMMUNITYDETECTIONALGORITHM_H_
+#define COMMUNITYDETECTIONALGORITHM_H_
 
 #include "../structures/Partition.h"
 
@@ -15,12 +15,12 @@ namespace NetworKit {
 /**
  * Abstract base class for community detection/graph clustering algorithms.
  */
-class Clusterer {
+class CommunityDetectionAlgorithm {
 public:
 
-	Clusterer();
+	CommunityDetectionAlgorithm();
 
-	virtual ~Clusterer();
+	virtual ~CommunityDetectionAlgorithm();
 
 	/**
 	 * Apply algorithm to graph

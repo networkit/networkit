@@ -8,7 +8,7 @@
 #ifndef PLMOLD_H_
 #define PLMOLD_H_
 
-#include "Clusterer.h"
+#include "CommunityDetectionAlgorithm.h"
 
 namespace NetworKit {
 
@@ -17,7 +17,7 @@ namespace NetworKit {
  * The Lovain method is a locally greedy procedure for maximizing modularity. 
  * This is a parallel implementation.
  */
-class PLMOld: public NetworKit::Clusterer {
+class PLMOld: public NetworKit::CommunityDetectionAlgorithm {
 
 
 public:

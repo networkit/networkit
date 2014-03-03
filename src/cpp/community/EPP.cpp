@@ -14,17 +14,17 @@
 
 namespace NetworKit {
 
-EPP::EPP() : Clusterer() {
+EPP::EPP() : CommunityDetectionAlgorithm() {
 	this->finalClusterer = NULL;
 	this->overlap = NULL;
 }
 
 
-void EPP::addBaseClusterer(Clusterer& base) {
+void EPP::addBaseClusterer(CommunityDetectionAlgorithm& base) {
 	this->baseClusterers.push_back(&base);
 }
 
-void EPP::setFinalClusterer(Clusterer& final) {
+void EPP::setFinalClusterer(CommunityDetectionAlgorithm& final) {
 	this->finalClusterer = &final;
 }
 

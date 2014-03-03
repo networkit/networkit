@@ -5,20 +5,20 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "Clusterer.h"
+#include "CommunityDetectionAlgorithm.h"
 
 namespace NetworKit {
 
-Clusterer::Clusterer() {
+CommunityDetectionAlgorithm::CommunityDetectionAlgorithm() {
 	// TODO Auto-generated constructor stub
 
 }
 
-Clusterer::~Clusterer() {
+CommunityDetectionAlgorithm::~CommunityDetectionAlgorithm() {
 	// TODO Auto-generated destructor stub
 }
 
-std::string Clusterer::toString() const {
+std::string CommunityDetectionAlgorithm::toString() const {
 	return "TODO: string representation of clusterer";
 }
 
