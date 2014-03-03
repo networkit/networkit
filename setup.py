@@ -1,6 +1,8 @@
-from ez_setup import use_setuptools
-# in case setuptools is not installed
-use_setuptools()
+import sys
+if "setuptools" not in sys.modules:
+	from ez_setup import use_setuptools
+	# in case setuptools is not installed
+	use_setuptools()
 
 from setuptools import setup
 from setuptools import Extension
@@ -14,10 +16,12 @@ import shutil
 
 from subprocess import Popen
 import shlex
-import sys
-
 
 from argparse import ArgumentParser
+
+if shutil.which("scons") is None:
+	print("Build system SCons is not installed. Please install and rerun setup.py")
+	exit(1)
 
 
 
@@ -52,6 +56,9 @@ def build_NetworKit():
 	print("initializing NetworKit compilation with: {0}".format(comp_cmd))
 	comp_proc = Popen(shlex.split(comp_cmd))
 	comp_proc.wait()
+	if (comp_proc.returncode == 1):
+		print("scons returned an error, exiting setup.py")
+		exit(1)
 	os.chdir("./src/python")
 	try:
 		os.remove("_NetworKit.cpp")
