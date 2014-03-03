@@ -173,7 +173,7 @@ cdef class Graph:
 		return self._this.toString()
 
 	def getName(self):
-		return stdstring(self._this.getName())
+		return pystring(self._this.getName())
 
 	def totalEdgeWeight(self):
 		return self._this.totalEdgeWeight()
