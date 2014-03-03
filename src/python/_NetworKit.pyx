@@ -1180,6 +1180,7 @@ cdef extern from "../cpp/properties/CoreDecomposition.h":
 		index coreNumber(node) except +
 		vector[set[node]] cores() except +
 		vector[set[node]] shells() except +
+		index maxCoreNumber() except +
 
 cdef class CoreDecomposition:
 	"""
@@ -1203,6 +1204,10 @@ cdef class CoreDecomposition:
 	def coreNumber(self, v):
 		""" @return core number of node @a v """
 		return self._this.coreNumber(v)
+
+	def maxCoreNumber(self):
+		""" @return the maximum core number of a node in the graph"""
+		return self._this.maxCoreNumber()
 
 	def cores(self):
 		""" @return the k-cores as sets of nodes, indexed by k """
