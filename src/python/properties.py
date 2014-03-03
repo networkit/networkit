@@ -267,7 +267,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	]
 
 	print()
-	print("Network Properties")
+	print("Network Properties: {0}".format(G.getName()))
 	print("==================")
 	print("Basic Properties")
 	print(tabulate.tabulate(basicProperties))

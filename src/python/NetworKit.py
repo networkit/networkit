@@ -6,7 +6,7 @@ NetworKit - an interactive toolkit for high-performance network analysis
 __author__ = "Christian L. Staudt (christian.staudt @ kit.edu)"
 __copyright__ = "Copyright (c) 2013 Christian Staudt"
 __license__ = "MIT License"
-__version__ = "2.1" 
+__version__ = "3.0" 
 
 
 # standard library modules
