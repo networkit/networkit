@@ -280,7 +280,7 @@ TEST_F(CommunityGTest, testCNMandLouvainRandom) {
 	count n = 400;
 	count k = 20;
 	double pin = 0.95;
-	double pout = 0.01;
+	double pout = 0.001;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 

@@ -10,24 +10,24 @@
 namespace NetworKit {
 
 ApproximatePageRank::ApproximatePageRank(Graph& g, double alpha_, double epsilon):
-		G(g), alpha(alpha_), eps(epsilon)
+		G(g), alpha(alpha_), oneMinusAlphaOver2((1.0 - alpha) * 0.5), eps(epsilon)
 {
-
+	count n = G.numberOfNodes();
+	pageRank.resize(n);
+	resid.resize(n);
 }
 
-// TODO: pr2 and residual2: Don't create them all the time, use permanent temporary storage
 void ApproximatePageRank::push(node u, node seed, std::vector<double>& pr, std::vector<double>& residual)
 {
-	std::vector<double> pageRank = pr;
-	std::vector<double> resid = residual;
-
 	pageRank[u] = pr[u] + alpha * residual[u];
-	resid[u] = (1.0 - alpha) * residual[u] / 2.0; // TODO: accelerate by computing constant
+	resid[u] = oneMinusAlphaOver2 * residual[u];
 	normalizedResid[u] = resid[u] / G.degree(u);
+	TRACE("normalizedResid[", u, "]: ", normalizedResid[u]);
 
 	G.forNeighborsOf(u, [&](node v) {
-		resid[v] = residual[v] + (1.0 - alpha) * residual[u] / (2.0 * G.degree(u));  // TODO: accelerate by computing constant
+		resid[v] = residual[v] + oneMinusAlphaOver2 * residual[u] / G.degree(u);
 		normalizedResid[v] = resid[v] / G.degree(v);
+//		TRACE("normalizedResid[", v, "]: ", normalizedResid[v]);
 	});
 
 	pr = pageRank;
@@ -47,17 +47,16 @@ std::vector<double> ApproximatePageRank::run(node seed) {
 	normalizedResid = pr;
 	std::vector<double> residual = pr;
 	residual[seed] = 1.0;
+	normalizedResid[seed] = 1.0 / (double) G.degree(seed);
 
-	G.forNodes([&](node v) {
-		normalizedResid[v] = residual[v] / (double) G.degree(v);
-	});
 
 	auto converged([&](node& argmax) {
 		std::vector<double>::iterator max_elem = std::max_element(normalizedResid.begin(), normalizedResid.end());
 		argmax = std::distance(normalizedResid.begin(), max_elem);
-		TRACE("argmax: ", argmax, ", max: ", (* max_elem), ", eps: ", eps);
+//		TRACE("argmax: ", argmax, ", max: ", (* max_elem), ", eps: ", eps);
 		return ((* max_elem) < eps);
 	});
+
 
 	node argMax = seed;
 	while (! converged(argMax)) {
