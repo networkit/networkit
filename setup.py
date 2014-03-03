@@ -1,3 +1,7 @@
+from ez_setup import use_setuptools
+# in case setuptools is not installed
+use_setuptools()
+
 from setuptools import setup
 from setuptools import Extension
 #from distutils.extension import Extension
@@ -12,11 +16,10 @@ from subprocess import Popen
 import shlex
 import sys
 
-from ez_setup import use_setuptools
+
 from argparse import ArgumentParser
 
-# in case setuptools is not installed
-use_setuptools()
+
 
 # get the optional arguments for the compilation
 parser = ArgumentParser()
