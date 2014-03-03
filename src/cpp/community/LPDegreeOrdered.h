@@ -8,7 +8,7 @@
 #ifndef LPDEGREEORDERED_H_
 #define LPDEGREEORDERED_H_
 
-#include "Clusterer.h"
+#include "CommunityDetectionAlgorithm.h"
 
 namespace NetworKit {
 
@@ -18,7 +18,7 @@ typedef index label; // a label is the same as a cluster id
  * Label propagation-based community detection algorithm which
  * processes nodes in increasing order of node degree.
  */
-class LPDegreeOrdered: public NetworKit::Clusterer {
+class LPDegreeOrdered: public NetworKit::CommunityDetectionAlgorithm {
 private:
 	count nIterations = 0;	//!< number of iterations in last run
 

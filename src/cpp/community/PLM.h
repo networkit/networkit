@@ -8,14 +8,14 @@
 #ifndef PLM_H_
 #define PLM_H_
 
-#include "Clusterer.h"
+#include "CommunityDetectionAlgorithm.h"
 
 namespace NetworKit {
 
 /**
  * MultiLevel Parallel LocalMover - a multi-level modularity maximizer.
  */
-class PLM: public NetworKit::Clusterer {
+class PLM: public NetworKit::CommunityDetectionAlgorithm {
 
 public:
 

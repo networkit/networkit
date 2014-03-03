@@ -8,7 +8,7 @@
 #ifndef CNM_H_
 #define CNM_H_
 
-#include "Clusterer.h"
+#include "CommunityDetectionAlgorithm.h"
 
 namespace NetworKit {
 
@@ -17,7 +17,7 @@ namespace NetworKit {
  * Probably not the fastest possible implementation, but it already uses a priority queue
  * and local updates.
  */
-class CNM : public NetworKit::Clusterer {
+class CNM : public NetworKit::CommunityDetectionAlgorithm {
 public:
 	CNM();
 	virtual ~CNM();
