@@ -124,8 +124,8 @@ for e in modules:
 	e.cython_directives = {"embedsignature" : True}
 
 setup(name="NetworKit",
-	author="Christian L. Staudt",
-	author_email = "christian.staudt@kit.edu",
+	author="Christian L. Staudt, Henning Meyerhenke",
+	author_email = "christian.staudt@kit.edu, meyerhenke@kit.edu",
 	description = "NetworKit is a toolbox for high-performance network analysis",
 	license = "MIT",
 	keywords = "graph algorithm network analysis social network",
