@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-CoreDecomposition::CoreDecomposition(const Graph& G) : G(G) {
+CoreDecomposition::CoreDecomposition(const Graph& G) : G(G), ran(false) {
 
 }
 
@@ -64,18 +64,23 @@ void CoreDecomposition::run() {
 	}
 
 	maxCoreNumber = core - 1;
+	ran = true;
 }
 
 std::vector<index> CoreDecomposition::coreNumbers() const {
+	if (! ran) throw std::runtime_error("call run method first");
 	return coreness;
 }
 
 index CoreDecomposition::coreNumber(node v) const {
+	if (! ran) throw std::runtime_error("call run method first");
 	return coreness.at(v);
 }
 
 
 std::vector<std::set<node> > CoreDecomposition::cores() const {
+	if (! ran) throw std::runtime_error("call run method first");
+
 	std::vector<std::set<node> > cores(maxCoreNumber);
 	for (index k = 0; k <= maxCoreNumber; k++) {
 		G.forNodes([&](node u){
@@ -88,6 +93,8 @@ std::vector<std::set<node> > CoreDecomposition::cores() const {
 }
 
 std::vector<std::set<node> > CoreDecomposition::shells() const {
+	if (! ran) throw std::runtime_error("call run method first");
+	
 	std::vector<std::set<node> > shells;
 	for (index k = 0; k <= maxCoreNumber; k++) {
 		G.forNodes([&](node u){

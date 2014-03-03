@@ -51,6 +51,7 @@ private:
 	const Graph& G;
 	std::vector<index> coreness;
 	index maxCoreNumber; // maximum core number of any node in the graph
+	bool ran; // whether algorithm has been run
 };
 
 } /* namespace NetworKit */
