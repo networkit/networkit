@@ -62,6 +62,8 @@ env = Environment()
 confPath = "build.conf"
 if not os.path.isfile(confPath):
 	raise IOError("The configuration file `build.conf` does not exist. You need to create it.")
+	print("Use the file build.conf.example to create your build.conf")
+	exit(1)
 
 conf = ConfigParser.ConfigParser()
 conf.read([confPath])     # read the configuration file
