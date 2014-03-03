@@ -29,7 +29,7 @@ def getSourceFiles(target, optimize):
 		for name in fnmatch.filter(source, pattern):
 			excluded.append(name)
 
-	print("excluded source files: {0}".format(excluded))
+	#print("excluded source files: {0}".format(excluded))
 	source = [name for name in source if name not in excluded]
 
 	# add executable
@@ -50,7 +50,7 @@ def getSourceFiles(target, optimize):
 
 	# modify source paths for build directory
 	source = [name.replace(srcDir + "/", buildDir + "/") for name in source]
-	print(source)
+	#print(source)
 	return source
 
 
