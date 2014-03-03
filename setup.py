@@ -4,6 +4,7 @@ from setuptools import Extension
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 
+import multiprocessing
 import os
 import shutil
 
@@ -13,15 +14,17 @@ import sys
 
 from argparse import ArgumentParser
 
+# get the optional arguments for the compilation
 parser = ArgumentParser()
 parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
 parser.add_argument("-o", "--optimize", dest="optimize", help="specify build type: O=optimize, D=debug, P=profiling")
-#parser.add_option("-i", "--inplace", dest="dest", help="states whether extensions shall be build inplace or in a subfolder")
 (options,args) = parser.parse_known_args()
+
+# set optional arguments to parsed ones or the default ones
 if options.jobs != None:
 	jobs = options.jobs
 else:
-	jobs = "1" # TODO how to get the number of available threads? 
+	jobs = multiprocessing.cpu_count()
 if options.optimize != None:
 	optimize = options.optimize
 else:
@@ -32,28 +35,28 @@ args.reverse()
 args.append(__file__)
 args.reverse() # this is not a very nice way to do this for sure
 sys.argv = args
-for e in sys.argv:
-	print(e)
-
+#for e in sys.argv:
+#	print(e)
+#print("################")
 
 def build_NetworKit():
-	os.chdir("../")
+	#os.chdir("../")
 	comp_cmd = "scons --optimize={0} --target=Core -j{1}".format(optimize,jobs)
-	#print("initializing NetworKit compilation with: {0}".format(comp_cmd))
+	print("initializing NetworKit compilation with: {0}".format(comp_cmd))
 	comp_proc = Popen(shlex.split(comp_cmd))
 	comp_proc.wait()
-	os.chdir("./cython")
+	os.chdir("./src/python")
 	try:
 		os.remove("_NetworKit.cpp")
 	except:
 		print("_NetworKit.cpp already deleted")
 
 def additional_clean():
-	os.chdir("../")
+	#os.chdir("../")
 	clean_cmd = "scons --optimize={0} --target=Core -c".format(optimize)
 	clean_proc = Popen(shlex.split(clean_cmd))
 	clean_proc.wait()
-	os.chdir("./cython")
+	os.chdir("./src/python")
 	#os.rmdir("./build")
 	try:
 		os.remove("_NetworKit.cpp")
@@ -66,7 +69,7 @@ if ("build_ext" in sys.argv):
 	build_NetworKit()
 elif (("develop" in sys.argv) and ("--uninstall" not in sys.argv)):
 	try:
-		os.mkdir("NetworKit")
+		os.mkdir("src/python/NetworKit")
 	except:
 		foo = 0
 	build_NetworKit()
@@ -101,7 +104,7 @@ modules = [Extension("_NetworKit",
 					extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
 					extra_link_args=["-fopenmp", "-std=c++11"],
 					libraries=["NetworKit-Core-{0}".format(optimize)],
-					library_dirs=["../"])]
+					library_dirs=["../../"])]
 
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}
