@@ -120,10 +120,10 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	psWriter.write(oneClustering, "output/pubweb.eps");
 
 	// clustering
-	PLM2 clusterAlgo;
+	PLM clusterAlgo;
 	Partition clustering = clusterAlgo.run(G);
 	EXPECT_EQ(G.numberOfNodes(),clustering.numberOfElements());
-	psWriter.write(clustering, "output/pubweb-clustered-plm2.eps");
+	psWriter.write(clustering, "output/pubweb-clustered-PLM.eps");
 
 	Modularity mod;
 	DEBUG("just a checkpoint: ",clustering.upperBound()," ",clustering.numberOfElements());//," ",clustering.numberOfSubsets());
