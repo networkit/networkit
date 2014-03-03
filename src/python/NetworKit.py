@@ -27,11 +27,11 @@ import properties
 import engineering
 import toolbox
 import dynamic
-import algebraic
 
 try:
 	import viztools
 	import viztasks
+	import algebraic
 except ImportError as importError:
 	print("""WARNING: some dependencies are not satisfied which are needed to use the
 		'viztools' submodule""")
