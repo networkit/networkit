@@ -55,7 +55,8 @@ def build_NetworKit():
 	comp_cmd = "scons --optimize={0} --target=Core -j{1}".format(optimize,jobs)
 	print("initializing NetworKit compilation with: {0}".format(comp_cmd))
 	comp_proc = Popen(shlex.split(comp_cmd))
-	if (comp_proc.wait() == 1):
+	comp_proc.wait()
+	if (comp_proc.returncode != 0):
 		print("scons returned an error, exiting setup.py")
 		exit(1)
 	os.chdir("./src/python")
