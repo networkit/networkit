@@ -14,33 +14,33 @@ TEST_F(SCDGTest2, testPageRankNibble) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/hep-th.graph");
 	PageRankNibble prn(G);
-	count n = G.numberOfNodes();
-	count m = G.numberOfEdges();
+	count idBound = G.upperNodeIdBound();
 
 	// parameters
 	node seed = 50;
-	double targetCond = 0.5;
-	count B = (count) ceil(log2(m));
-	count b = (count) (0.4 * B); // TODO: vary values!
+	double targetCond = 0.4;
+	double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi / (225.0 * log(100.0 * sqrt(m)));
+	double epsilon = 1e-5; // changed due to DGleich from: pow(2, exponent) / (48.0 * B);
 
 	// run PageRank-Nibble and partition the graph accordingly
-	DEBUG("Call PageRank-Nibble(", seed, ", ", targetCond, ", ", b, "), B=", B);
-	std::set<node> cluster = prn.run(seed, targetCond, b);
+	DEBUG("Call PageRank-Nibble(", seed, ")");
+	std::set<node> cluster = prn.run(seed, alpha, epsilon);
+
+	// prepare result
 	EXPECT_GT(cluster.size(), 0);
-	Partition partition(n, 0);
+	Partition partition(idBound);
+	partition.allToOnePartition();
+	partition.toSingleton(seed);
+	index id = partition[seed];
 	for (auto entry: cluster) {
-		partition[entry] = 1;
+		partition.moveToSubset(id, entry);
 	}
 
 	// evaluate result
-	Modularity modularity;
 	Conductance conductance;
-	double mod = modularity.getQuality(partition, G);
 	double cond = conductance.getQuality(partition, G);
-
 	EXPECT_LT(cond, targetCond);
-	INFO("Conductance: ", cond);
-	INFO("Modularity: ", mod);
+	INFO("Conductance of PR-Nibble: ", cond, "; cluster size: ", cluster.size());
 }
 
 

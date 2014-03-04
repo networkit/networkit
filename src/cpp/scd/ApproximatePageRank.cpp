@@ -22,10 +22,11 @@ void ApproximatePageRank::push(node u, node seed, std::vector<double>& pr, std::
 	pageRank[u] = pr[u] + alpha * residual[u];
 	resid[u] = oneMinusAlphaOver2 * residual[u];
 	normalizedResid[u] = resid[u] / G.degree(u);
-	TRACE("normalizedResid[", u, "]: ", normalizedResid[u]);
+//	TRACE("normalizedResid[", u, "]: ", normalizedResid[u]);
+	double mass = oneMinusAlphaOver2 * residual[u] / G.degree(u);
 
 	G.forNeighborsOf(u, [&](node v) {
-		resid[v] = residual[v] + oneMinusAlphaOver2 * residual[u] / G.degree(u);
+		resid[v] = residual[v] + mass;
 		normalizedResid[v] = resid[v] / G.degree(v);
 //		TRACE("normalizedResid[", v, "]: ", normalizedResid[v]);
 	});
@@ -51,6 +52,7 @@ std::vector<double> ApproximatePageRank::run(node seed) {
 
 
 	auto converged([&](node& argmax) {
+		// TODO: accelerate
 		std::vector<double>::iterator max_elem = std::max_element(normalizedResid.begin(), normalizedResid.end());
 		argmax = std::distance(normalizedResid.begin(), max_elem);
 //		TRACE("argmax: ", argmax, ", max: ", (* max_elem), ", eps: ", eps);

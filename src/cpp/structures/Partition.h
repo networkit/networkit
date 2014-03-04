@@ -34,7 +34,7 @@ public:
 	Partition();
 
 	/**
-	 * Create a new partition data structure for elements up to a maximum element index.
+	 * Create a new partition data structure for @a z elements.
 	 *
 	 * @param[in]	z	maximum index
 	 */
@@ -102,6 +102,12 @@ public:
 	 * Set id is equal to element id.
 	 */
 	void allToSingletons();
+
+	/**
+	 * Assigns every element to the same subset.
+	 * Set id is equal to zero.
+	 */
+	void allToOnePartition();
 
 	/**
 	 * Assigns the elements from both sets to a new set.
@@ -240,8 +246,7 @@ private:
 	 * Allocates and returns a new subset id.
 	 */
 	inline index newSubsetId() {
-		//omega++;
-		index s = omega++;
+		index s = ++omega;
 		return s;
 	}
 };
@@ -251,7 +256,7 @@ private:
 
 template<typename Callback>
 inline void NetworKit::Partition::forEntries(Callback handle) {
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e < this->z; e++) {
 		handle(e, data[e]);
 	}
 
@@ -259,7 +264,7 @@ inline void NetworKit::Partition::forEntries(Callback handle) {
 
 template<typename Callback>
 inline void NetworKit::Partition::forEntries(Callback handle) const {
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e < this->z; e++) {
 		handle(e, data[e]);
 	}
 }
@@ -268,7 +273,7 @@ template<typename Callback>
 inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) {
 	#pragma omp parallel for
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e < this->z; e++) {
 		handle(e, this->data[e]);
 	}
 }
@@ -278,7 +283,7 @@ template<typename Callback>
 inline void NetworKit::Partition::parallelForEntries(
 		Callback handle) const {
 	#pragma omp parallel for
-	for (index e = 0; e < this->z; e += 1) {
+	for (index e = 0; e < this->z; e++) {
 		handle(e, this->data[e]);
 	}
 }

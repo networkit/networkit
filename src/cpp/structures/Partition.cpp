@@ -177,6 +177,13 @@ std::vector<index> Partition::getVector() {
 	return this->data; //FIXME is this appropriate?
 }
 
+void Partition::allToOnePartition() {
+	omega = 0;
+	for (index e = 0; e < this->z; ++e) {
+		data[e] = 0;
+	}
+}
+
 std::string Partition::getName() const {
 	return this->name;
 }
