@@ -148,8 +148,8 @@ Credits
 - Florian Weber
 - Patrick Flick
 - Daniel Hoske
-- Jšrg Weisbarth
-- Guido BrŸckner
+- Jörg Weisbarth
+- Guido Brückner
 
 
 ### External Code
