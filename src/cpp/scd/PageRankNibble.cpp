@@ -41,10 +41,10 @@ std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
 
 	// order vertices
 	TRACE("Before sorting");
-	std::sort(sweepVec.begin(), sweepVec.end());
-	// reverse
-	std::reverse(sweepVec.begin(), sweepVec.end());
-	// TODO: directly sort in descending order instead
+	auto comp([&](const std::pair<double, node>& a, const std::pair<double, node>& b) {
+		return a.first > b.first;
+	});
+	std::sort(sweepVec.begin(), sweepVec.end(), comp);
 	TRACE("After sorting");
 
 
