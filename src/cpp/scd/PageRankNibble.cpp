@@ -22,31 +22,25 @@ PageRankNibble::~PageRankNibble() {
 }
 
 
-std::set<node> PageRankNibble::suitableSweepSet(const std::vector<double>& pr) {
+std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
 	count upperNodeId = G.upperNodeIdBound();
-	count suppSize = this->supportSize(pr);
-	DEBUG("Support size: ", suppSize);
-//	double totalEdgeWeight = G.totalEdgeWeight();
-//	double volThrsh = 4.0 / 3.0 * totalEdgeWeight;
+	double entry = 0.0;
 	double deg = 0.0;
+	std::vector<std::pair<double, node> > sweepVec;
 
-	std::vector<std::pair<double, node> > sweepVec(upperNodeId);
+	// fill sweep set vector
 	G.forNodes([&](node v) {
-		deg = (double) G.degree(v);
-		sweepVec[v].first = (deg > 0.0) ? (pr[v] / deg) : (0.0);
-		sweepVec[v].second = v;
-	});
-
-
-	auto print([&]() {
-		for (auto entry: sweepVec) {
-			std::cout << entry.first << " ";
+		if (pr[v] > 0.0) {
+			deg = (double) G.degree(v);
+			entry = (deg > 0.0) ? (pr[v] / deg) : (0.0);
+			sweepVec.push_back(std::make_pair(entry, v));
 		}
-		std::cout << std::endl;
 	});
+	count suppSize = sweepVec.size();
+	TRACE("Support size: ", suppSize);
 
 
-	// order vertices, use only supportSize many afterwards
+	// order vertices
 	DEBUG("Before sorting");
 	std::sort(sweepVec.begin(), sweepVec.end());
 	// reverse
@@ -102,7 +96,7 @@ std::set<node> PageRankNibble::run(node seed, double alpha, double epsilon) {
 	ApproximatePageRank apr(G, alpha, epsilon);
 	std::vector<double> pr = apr.run(seed);
 
-	std::set<node> cluster = suitableSweepSet(pr);
+	std::set<node> cluster = bestSweepSet(pr);
 	return cluster;
 }
 

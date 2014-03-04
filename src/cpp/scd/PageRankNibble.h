@@ -23,7 +23,7 @@ class PageRankNibble {
 protected:
 	Graph& G;
 
-	std::set<node> suitableSweepSet(const std::vector<double>& pr);
+	std::set<node> bestSweepSet(const std::vector<double>& pr);
 
 	/**
 	 * @return Number of elements in @a vec unequal to zero.
