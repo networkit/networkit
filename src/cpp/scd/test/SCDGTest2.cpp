@@ -18,7 +18,6 @@ TEST_F(SCDGTest2, testPageRankNibble) {
 
 	// parameters
 	node seed = 50;
-	double targetCond = 0.4;
 	double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi / (225.0 * log(100.0 * sqrt(m)));
 	double epsilon = 1e-5; // changed due to DGleich from: pow(2, exponent) / (48.0 * B);
 
@@ -38,6 +37,7 @@ TEST_F(SCDGTest2, testPageRankNibble) {
 
 	// evaluate result
 	Conductance conductance;
+	double targetCond = 0.4;
 	double cond = conductance.getQuality(partition, G);
 	EXPECT_LT(cond, targetCond);
 	INFO("Conductance of PR-Nibble: ", cond, "; cluster size: ", cluster.size());
