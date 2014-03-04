@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * Computes an approximate PageRank vector from a given seed.
+ */
 class ApproximatePageRank {
 protected:
 	const Graph& G;
@@ -28,9 +31,18 @@ protected:
 	void push(node u, node seed, std::set<node>& activeNodes);
 
 public:
+	/**
+	 * @param g Graph for which an APR is computed.
+	 * @param alpha Loop probability of random walk.
+	 * @param epsilon Error tolerance.
+	 */
 	ApproximatePageRank(Graph& g, double alpha, double epsilon = 1e-12);
 	virtual ~ApproximatePageRank();
 
+	/**
+	 * @return Approximate PageRank vector from @a seed with parameters
+	 *         specified in the constructor.
+	 */
 	std::vector<double> run(node seed);
 };
 
