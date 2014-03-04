@@ -23,7 +23,7 @@ protected:
 	std::vector<double> normalizedResid;
 
 
-	void push(node u, node seed, std::vector<double>& pr, std::vector<double>& residual, std::queue<node>& activeNodes);
+	void push(node u, node seed, std::vector<double>& pr, std::vector<double>& residual, std::set<node>& activeNodes);
 
 public:
 	ApproximatePageRank(Graph& g, double alpha, double epsilon = 1e-12);
