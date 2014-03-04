@@ -26,30 +26,30 @@ void MultilevelLayouter::prolongCoordinates(Graph& Gcon, Graph& G) {
 }
 
 void MultilevelLayouter::draw(Graph& G) {
-	drawWrapper(G, 0);
+	drawInternal(G, 0);
 }
 
-void MultilevelLayouter::drawWrapper(Graph& G, count level) {
+void MultilevelLayouter::drawInternal(Graph& G, count level) {
 	count n = G.numberOfNodes();
 
 	if (n <= N_THRSH) {
 		// unrecursive part: call drawing routine
-		FruchtermanReingold layouter(bottomLeft, topRight, false);
+		MaxentStress layouter(bottomLeft, topRight, false);
 		layouter.draw(G);
 	}
 	else {
-		// compute matching
-		LocalMaxMatcher matcher(none);
-		Matching M = matcher.run(G);
+		// compute clustering
+		PLP clusterer;
+		Partition clustering = clusterer.run(G);
 
-		// coarsen by matching
-		MatchingContracter contracter;
-		auto mypair = contracter.run(G, M, true);
+		// coarsen by clustering
+		ClusterContracter contracter;
+		auto mypair = contracter.run(G, clustering);
 		Graph& Gcon = mypair.first;
 		auto mapping = mypair.second;
 
 		// make recursive call
-		drawWrapper(Gcon, level + 1);
+		drawInternal(Gcon, level + 1);
 
 		// apply recursive solution to current graph
 		G.initCoordinates();
