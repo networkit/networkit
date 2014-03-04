@@ -39,8 +39,6 @@ public:
 	 * @param[in]	z	maximum index
 	 */
 	Partition(index z);
-	
-	Partition(index z, index defaultValue);
 
 	virtual ~Partition() = default;
 

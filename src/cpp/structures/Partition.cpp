@@ -13,9 +13,6 @@ Partition::Partition() : z(0), omega(0), data(0) {
 
 }
 
-Partition::Partition(index z, index defaultValue) : z(z), omega(0), data(z, defaultValue) {  //z(z-1);data(z,none);
-
-}
 
 Partition::Partition(index z) : z(z), omega(0), data(z, none) {  //z(z-1);data(z,none);
 
