@@ -23,12 +23,11 @@ PageRankNibble::~PageRankNibble() {
 
 
 std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
-	count upperNodeId = G.upperNodeIdBound();
 	double entry = 0.0;
 	double deg = 0.0;
 	std::vector<std::pair<double, node> > sweepVec;
 
-	// fill sweep set vector
+	// fill sweep set vector, use only non-zero entries
 	G.forNodes([&](node v) {
 		if (pr[v] > 0.0) {
 			deg = (double) G.degree(v);
@@ -41,34 +40,34 @@ std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
 
 
 	// order vertices
-	DEBUG("Before sorting");
+	TRACE("Before sorting");
 	std::sort(sweepVec.begin(), sweepVec.end());
 	// reverse
 	std::reverse(sweepVec.begin(), sweepVec.end());
 	// TODO: directly sort in descending order instead
-	DEBUG("After sorting");
+	TRACE("After sorting");
 
 
 	// find best sweep set w.r.t. conductance
 	std::set<node> suitableCluster, bestCluster;
-	count volume = 0;
-	Partition partition(upperNodeId);
-	partition.allToOnePartition();
 	Conductance conductance;
 	double bestCond = std::numeric_limits<double>::max();
-	node first = sweepVec[0].second;
-	partition.toSingleton(first);
-	index id = partition[first];
+	double cut = 0.0;
+	double volume = 0.0;
 
 	for (index j = 0; j < suppSize; ++j) {
 		// update sweep set
 		node v = sweepVec[j].second;
-		partition.moveToSubset(id, v);
+		G.forNeighborsOf(v, [&](node neigh) {
+			if (suitableCluster.count(neigh) == 0) {
+				cut += G.weight(v, neigh);
+			}
+		});
 		volume += G.degree(v);
 		suitableCluster.insert(v);
 
 		// compute conductance
-		double cond = conductance.getQuality(partition, G); // TODO: accelerate
+		double cond = cut / volume;
 
 		if (cond < bestCond) {
 			bestCluster = suitableCluster;
@@ -78,18 +77,6 @@ std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
 	return bestCluster;
 }
 
-count PageRankNibble::supportSize(const std::vector<double>& vec) const {
-	count size = 0;
-
-	// count non-zero vector entries, tolerate numerical errors (TODO: check if disadvantageous)
-	for (auto entry: vec) {
-		if (entry > 0.0) {
-			++size;
-		}
-	}
-
-	return size;
-}
 
 std::set<node> PageRankNibble::run(node seed, double alpha, double epsilon) {
 	DEBUG("APR(G, ", alpha, ", ", epsilon, ")");

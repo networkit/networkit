@@ -25,11 +25,6 @@ protected:
 
 	std::set<node> bestSweepSet(const std::vector<double>& pr);
 
-	/**
-	 * @return Number of elements in @a vec unequal to zero.
-	 */
-	count supportSize(const std::vector<double>& vec) const;
-
 
 public:
 	/**
