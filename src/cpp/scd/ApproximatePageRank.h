@@ -20,10 +20,12 @@ protected:
 	double oneMinusAlphaOver2;
 	double eps;
 
+	std::vector<double> pr; // page rank vector
+	std::vector<double> residual;
 	std::vector<double> normalizedResid;
 
 
-	void push(node u, node seed, std::vector<double>& pr, std::vector<double>& residual, std::set<node>& activeNodes);
+	void push(node u, node seed, std::set<node>& activeNodes);
 
 public:
 	ApproximatePageRank(Graph& g, double alpha, double epsilon = 1e-12);

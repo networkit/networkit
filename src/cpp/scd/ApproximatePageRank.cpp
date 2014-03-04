@@ -15,7 +15,7 @@ ApproximatePageRank::ApproximatePageRank(Graph& g, double alpha_, double epsilon
 
 }
 
-void ApproximatePageRank::push(node u, node seed, std::vector<double>& pr, std::vector<double>& residual, std::set<node>& activeNodes)
+void ApproximatePageRank::push(node u, node seed, std::set<node>& activeNodes)
 {
 	double res = residual[u];
 	pr[u] = pr[u] + alpha * res;
@@ -46,8 +46,8 @@ ApproximatePageRank::~ApproximatePageRank() {
 
 std::vector<double> ApproximatePageRank::run(node seed) {
 	count n = G.upperNodeIdBound();
-	std::vector<double> pr(n, 0.0); // page rank vector
-	std::vector<double> residual = pr;
+	pr.assign(n, 0.0);
+	residual = pr;
 	residual[seed] = 1.0;
 	normalizedResid = pr;
 	normalizedResid[seed] = 1.0 / (double) G.degree(seed);
@@ -59,22 +59,8 @@ std::vector<double> ApproximatePageRank::run(node seed) {
 		node v = (* activeNodes.begin());
 		activeNodes.erase(v);
 //		TRACE("queue size: ", activeNodes.size());
-		push(v, seed, pr, residual, activeNodes);
+		push(v, seed, activeNodes);
 	}
-
-//	auto converged([&](node& argmax) {
-//		// TODO: accelerate
-//		std::vector<double>::iterator max_elem = std::max_element(normalizedResid.begin(), normalizedResid.end());
-//		argmax = std::distance(normalizedResid.begin(), max_elem);
-////		TRACE("argmax: ", argmax, ", max: ", (* max_elem), ", eps: ", eps);
-//		return ((* max_elem) < eps);
-//	});
-//
-//
-//	node argMax = seed;
-//	while (! converged(argMax)) {
-//		push(argMax, seed, pr, residual);
-//	}
 
 	return pr;
 }
