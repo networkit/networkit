@@ -34,9 +34,12 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 
 	if (n <= N_THRSH) {
 		// unrecursive part: call drawing routine
+		DEBUG("initial layout by FR, G's size: ", G.numberOfNodes());
 		FruchtermanReingold layouter(bottomLeft, topRight, false);
 		layouter.draw(G);
 		PostscriptWriter writer(G);
+		METISGraphWriter gWriter;
+		gWriter.write(G, true, "output/test-multi-coarsest.graph");
 		writer.write("output/test-multi-coarsest.eps");
 	}
 	else {
@@ -45,7 +48,7 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 		Partition clustering = clusterer.run(G);
 
 		// coarsen by clustering
-		ClusterContracter contracter;
+		ClusterContractor contracter;
 		auto mypair = contracter.run(G, clustering);
 		Graph& Gcon = mypair.first;
 		auto mapping = mypair.second;
@@ -62,7 +65,7 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 		DEBUG("local refinement of graph of size ", n);
 
 		// run drawing code on current graph
-		FruchtermanReingold layouter(bottomLeft, topRight, true, 50 * (level + 1), 0.1); // TODO: externalize
+		MaxentStress layouter(bottomLeft, topRight, true); //, 50 * (level + 1), 0.1); // TODO: externalize
 		layouter.draw(G);
 	}
 }

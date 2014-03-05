@@ -11,14 +11,14 @@
 
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../community/ClusteringGenerator.h"
-#include "../../coarsening/ClusterContracter.h"
+#include "../../coarsening/ClusterContractor.h"
 #include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
 #include "../../auxiliary/Timer.h"
 
 namespace NetworKit {
 
-TEST_F(CoarseningBenchmark, benchmarkClusterContracter) {
+TEST_F(CoarseningBenchmark, benchmarkClusterContractor) {
 	std::cout << "enter number of nodes: ";
 	count n;
 	std::cin >> n;
@@ -39,7 +39,7 @@ TEST_F(CoarseningBenchmark, benchmarkClusterContracter) {
 
 	INFO("sequential coarsening");
 	Aux::Timer timer;
-	ClusterContracter contracter;
+	ClusterContractor contracter;
 	timer.start();
 	auto result1 = contracter.run(G, zeta);
 	timer.stop();
