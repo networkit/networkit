@@ -57,7 +57,11 @@ def density(G):
 	return (2 * m) / (n * (n-1))
 
 def components(G):
-	""" Find and analyze detected components """
+	""" Find and analyze detected components.
+		Returns the number of components and the sizes
+		of each component. For more details use the
+		ConnectedComponents class.
+	"""
 	logging.info("[...] finding connected components....")
 	cc = ConnectedComponents()
 	cc.run(G)
