@@ -11,14 +11,14 @@
 
 #include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
-#include "../../coarsening/ClusterContracter.h"
+#include "../../coarsening/ClusterContractor.h"
 #include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
 #include "../../community/GraphClusteringTools.h"
 
 namespace NetworKit {
 
-TEST_F(CoarseningGTest, testClusterContracter) {
+TEST_F(CoarseningGTest, testClusterContractor) {
 	GraphGenerator graphGen;
 	int64_t n = 100;
 	Graph G = graphGen.makeErdosRenyiGraph(n, 0.5);
@@ -27,7 +27,7 @@ TEST_F(CoarseningGTest, testClusterContracter) {
 	Partition singleton = clusteringGen.makeSingletonClustering(G);
 
 
-	ClusterContracter contracter;
+	ClusterContractor contracter;
 	auto conSingletonPair = contracter.run(G, singleton);
 	Graph Gcon = conSingletonPair.first;
 
@@ -83,7 +83,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	Partition zeta0 = clusteringGen.makeOneClustering(G0);
 
 	// contract G0 according to 1-clusterings
-	ClusterContracter contract;
+	ClusterContractor contract;
 	auto con = contract.run(G0, zeta0);
 	std::vector<std::vector<node> > maps;
 	Graph G1 = con.first;
@@ -108,7 +108,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 	Partition zeta0 = clusteringGen.makeSingletonClustering(G0);
 
 	// contract G0 according to 1-clusterings
-	ClusterContracter contract;
+	ClusterContractor contract;
 	auto con = contract.run(G0, zeta0);
 	std::vector<std::vector<node> > maps;
 	Graph G1 = con.first;

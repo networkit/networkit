@@ -116,15 +116,18 @@ TEST_F(VizGTest, testFRLayouter) {
 
  TEST_F(VizGTest, testMultilevelLayouter) {
   	// create graph
-  	count n = 400;
+  	count n = 300;
   	count numClusters = 4;
-  	double pin = 0.06;
-  	double pout = 1e-4;
+  	double pin = 0.1;
+  	double pout = 0.005;
 
   	GraphGenerator graphGen;
   	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
   	G.initCoordinates();
   	INFO("Number of edges: ", G.numberOfEdges());
+
+  	METISGraphWriter gWriter;
+  	gWriter.write(G, "output/testMultilevelGraph.graph");
 
   	// draw (independent of clustering) and write again
   	Point<float> bl(0.0, 0.0);
