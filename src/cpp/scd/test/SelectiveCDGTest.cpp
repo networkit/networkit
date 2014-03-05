@@ -1,4 +1,4 @@
-#include "SCDGTest2.h"
+#include "SelectiveCDGTest.h"
 
 #include "../PageRankNibble.h"
 #include "../../community/Modularity.h"
