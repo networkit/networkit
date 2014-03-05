@@ -1,24 +1,24 @@
 /*
- * ClusterContracter.cpp
+ * ClusterContractor.cpp
  *
  *  Created on: 30.10.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "ClusterContracter.h"
+#include "ClusterContractor.h"
 #include "../auxiliary/Timer.h"
 
 namespace NetworKit {
 
-ClusterContracter::ClusterContracter() {
+ClusterContractor::ClusterContractor() {
 
 }
 
-ClusterContracter::~ClusterContracter() {
+ClusterContractor::~ClusterContractor() {
 
 }
 
-std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, const Partition& zeta) {
+std::pair<Graph, std::vector<node> > ClusterContractor::run(const Graph& G, const Partition& zeta) {
 
 	Aux::Timer timer;
 	timer.start();

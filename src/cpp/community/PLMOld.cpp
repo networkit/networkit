@@ -7,7 +7,7 @@
 
 #include "PLMOld.h"
 
-#include "../coarsening/ClusterContracter.h"
+#include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "omp.h"
 
@@ -215,7 +215,7 @@ Partition PLMOld::run(Graph& G) {
 	INFO("starting Louvain method");
 
 	// sub-algorithms
-	ClusterContracter contracter;
+	ClusterContractor contractor;
 	ClusteringProjector projector;
 
 	// hierarchies
@@ -236,7 +236,7 @@ Partition PLMOld::run(Graph& G) {
 		if (this->anyChange) {
 			// contract the graph according to clustering
 			DEBUG("starting contraction");
-			hierarchy.push_back(contracter.run(*graph, clustering));
+			hierarchy.push_back(contractor.run(*graph, clustering));
 			maps.push_back(hierarchy[h].second);
 			graph = &hierarchy[h].first;
 

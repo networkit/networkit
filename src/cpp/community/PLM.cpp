@@ -8,7 +8,7 @@
 #include "PLM.h"
 #include <omp.h>
 #include "../coarsening/PartitionCoarsening.h"
-#include "../coarsening/ClusterContracter.h"
+#include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 
 #include <sstream>
@@ -216,7 +216,7 @@ std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partitio
 		PartitionCoarsening parCoarsening;
 		return parCoarsening.run(G, zeta);
 	} else {
-		ClusterContracter seqCoarsening;
+		ClusterContractor seqCoarsening;
 		return seqCoarsening.run(G, zeta);
 	}
 

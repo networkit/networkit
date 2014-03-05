@@ -84,8 +84,8 @@ void MaxentStress::draw(Graph& G) {
 	// Paper: q = 0 for many graphs, q = 0.8 for graphs with many degree-1 nodes
 	// alpha: initially 1, then in each iteration alpha := 0.3 * alpha
 	float q = 0;
-	float alpha = 1.0; // FIXME: make alpha dependent on iteration
-	AlgebraicDistance algdist(G, 6, 16);
+	float alpha = 1.0;
+	AlgebraicDistance algdist(G, 5, 10);
 	algdist.preprocess();
 
 	while (! converged) {
@@ -104,6 +104,8 @@ void MaxentStress::draw(Graph& G) {
 			Point<float> uPoint = layout[u];
 			Point<float> attractiveForce(0.0, 0.0);
 			Point<float> repulsiveForce(0.0, 0.0);
+			float distSum = 0.0;
+			DEBUG("node ", u, "; #neighbors: ", G.degree(u));
 
 			G.forNodes([&](node v) {
 				if (u < v) { // only unordered pairs
@@ -112,16 +114,18 @@ void MaxentStress::draw(Graph& G) {
 					float diffY = uPoint[1] - vPoint[1];
 					Point<float> diffVec(diffX, diffY);
 					float len = diffVec.length();
+					DEBUG("|diff| ", u, " - ", v, ": ", len);
 
 					if (len > 0.0) {
 						if (G.hasEdge(u, v)) {
 							// sum over all node pairs in S
 							// $\frac{1}{\rho_i} \sum_{i,j \in S} w_{ij} * (x_j + d_{ij} \frac{x_i - x_j}{\Vert x_i - x_j \Vert})$
-								float dist = algdist.distance(u, v);
+								float dist = 1.0; // algdist.distance(u, v);
+								distSum += dist;
 								DEBUG("algdist ", u, " - ", v, ": ", dist);
 								diffVec.scale(dist / len);
 								diffVec += vPoint;
-								attractiveForce += diffVec.scale(G.weight(u, v));
+								attractiveForce += diffVec.scale(1.0 / (dist * dist));
 						}
 						else {
 							// traverse remaining vertices not in neighborhood for repulsive forces
@@ -131,19 +135,25 @@ void MaxentStress::draw(Graph& G) {
 
 							float denom = 1.0 / pow(len, q+2);
 							diffVec.scale(denom);
-							repulsiveForce += diffVec.scale(G.weight(u, v));
+							repulsiveForce += diffVec;
 						}
 					}
 				}
 			});
 
 			// apply forces to node u
-			float rhoInv = 1.0 / (float) G.weightedDegree(u);
+			std::cout.flush();
+			assert(distSum != 0.0);
+			float rhoInv = 1.0 / distSum;
 			attractiveForce.scale(rhoInv);
 			repulsiveForce.scale(alpha * rhoInv);
 
 			forces[u] += attractiveForce;
 			forces[u] += repulsiveForce;
+
+			if (alpha > 0.008) {
+				alpha = 0.3 * alpha;
+			}
 		});
 
 
@@ -151,18 +161,19 @@ void MaxentStress::draw(Graph& G) {
 		G.parallelForNodes([&](node u) {
 			move(layout[u], forces[u], 1.0); // FIXME: step length
 
-			TRACE("moved ", u, " by: ", forces[u][0], " and ", forces[u][1]);
-			TRACE("old pos: ", previousLayout[u].toString(), ", new pos: ", layout[u].toString());
+			DEBUG("moved ", u, " by: ", forces[u][0], " and ", forces[u][1]);
+			DEBUG("old pos of ", u, ": ", previousLayout[u].toString(), ", new pos: ", layout[u].toString());
 		});
 
 		++iter;
-		converged = isConverged(previousLayout, layout) || iter >= 500; // FIXME: externalize
+		converged = isConverged(previousLayout, layout) || iter >= 1000; // FIXME: externalize
 		DEBUG("iteration finished: ", iter, "; converged: ", converged);
 	}
 
 	// copy layout into graph
 	G.parallelForNodes([&](node u) {
 		G.setCoordinate(u, layout[u]);
+		DEBUG("coordinate of ", u, ": ", layout[u].toString());
 	});
 }
 
