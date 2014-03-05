@@ -5,7 +5,6 @@ NetworKit is an open-source toolkit for high-performance network analysis. This 
 The following text assumes some basic familiarity with the Mercurial version control software. It is not a Mercurial tutorial, because you will find a good one at [hginit.com](http://hginit.com). Rather, it explains concepts and workflows for the development of this project.
 
 
-
 ## Repositories
 
 The NetworKit main development repository is at [http://algohub.iti.kit.edu/parco/NetworKit/NetworKit](http://algohub.iti.kit.edu/parco/NetworKit/NetworKit). Access to this repository is provided on request.
@@ -165,7 +164,7 @@ The following general conventions apply to all NetworKit developers.
 
 
 
-### Unit Tests
+### Unit Tests and Testing
 
 Every new feature must be covered by a unit test. Omitting unit tests makes it very likely that your feature will break silently as the project develops, leading to unneccessary work in tracing back the source of the error. 
 
@@ -176,6 +175,29 @@ Unit tests for NetworKit are based on the `googletest` library. For more informa
 - Keep the running time of test functions to the minimum needed for testing functionality. Testing should be fast, long-running unit tests look like infinite loops.
 - If the unit test requires a data set, add the file to the `input/` folder. Only small data sets (a few kilobytes maximum) are acceptable in the repository.
 - Any output files produced by unit tests must be written to the `output/` folder.
+
+To build and run the tests you need the [gtest library](https://code.google.com/p/googletest/). Assuming, gtest is successfully installed and you add the paths to your build.conf, the unit tests should be compiled with:
+
+	scons --optimize=D --target=Tests
+	
+To verify that the code was built correctly: Run all unit tests with 
+
+		./NetworKit-Tests-D --tests
+
+Performance tests will be selected with
+
+		./NetworKit-Tests-D --benchmarks
+
+while experimental tests are called with
+
+		./NetworKit-Tests-D --trials
+
+To run only specific unit tests, you can also add a filter expression, e. g.:
+
+		./NetworKit-Tests --gtest_filter=*PartitionGTest*
+
+runs only unit tests for the Partition data structure.
+
 
 ### Code Style
 
