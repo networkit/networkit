@@ -64,8 +64,8 @@ A not necessarily complete list of features:
 	- connected components (`properties.ConnectedComponents`)
 	- local clustering coefficient (e.g. `properties.GraphProperties.averageLocalClusteringCoefficient`)
 - graph generators
-	- Erdös-Renyi (`generators.GraphGenerator.makeRandomGraph`)
-	- Barabasi-Albert (`generators.GraphGenerator.makeRandomGraph`)
+	- Erdös-Renyi (`generators.BarabasiAlbertGenerator`)
+	- Barabasi-Albert (`generators.ErdosRenyiGenerator`)
 - traversal
 	- breadth-first search (`graph.BFS`)
 	- Dijkstra's algorithm (`graph.Dijkstra`)
@@ -148,8 +148,8 @@ Credits
 - Florian Weber
 - Patrick Flick
 - Daniel Hoske
-- Joerg Weisbarth
-- Guido Brueckner
+- Jörg Weisbarth
+- Guido Brückner
 
 
 ### External Code
