@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-Betweenness::Betweenness(const Graph& G) : Centrality(G) {
+Betweenness::Betweenness(const Graph& G, bool normalized) : Centrality(G, normalized) {
 
 }
 
@@ -67,6 +67,15 @@ void Betweenness::run() {
 			}
 		}
 	});
+
+	if (normalized) {
+		// divide by the number of possible pairs
+		count n = G.numberOfNodes();
+		count pairs = n * (n-1);
+		G.parallelForNodes([&](node u){
+			scoreData[u] = scoreData[u] / pairs;
+		});
+	}
 
 }
 

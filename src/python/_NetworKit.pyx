@@ -1222,7 +1222,7 @@ cdef class CoreDecomposition:
 
 cdef extern from "../cpp/centrality/Betweenness.h":
 	cdef cppclass _Betweenness "NetworKit::Betweenness":
-		_Betweenness(_Graph) except +
+		_Betweenness(_Graph, bool) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
@@ -1234,8 +1234,8 @@ cdef class Betweenness:
 	"""
 	cdef _Betweenness* _this
 
-	def __cinit__(self, Graph G):
-		self._this = new _Betweenness(G._this)
+	def __cinit__(self, Graph G, normalized=False):
+		self._this = new _Betweenness(G._this, normalized)
 
 	def run(self):
 		self._this.run()
