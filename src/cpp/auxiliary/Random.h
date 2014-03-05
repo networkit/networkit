@@ -53,7 +53,7 @@ double probability();
  * @param n 	number of trials
  * @param p 	success probability
  */
-uint64_t binomial(double n, double p);
+//uint64_t binomial(double n, double p);
 
 } // namespace Random
 } // namespace Aux

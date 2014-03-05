@@ -173,7 +173,7 @@ cdef class Graph:
 		return self._this.toString()
 
 	def getName(self):
-		return stdstring(self._this.getName())
+		return pystring(self._this.getName())
 
 	def totalEdgeWeight(self):
 		return self._this.totalEdgeWeight()
@@ -877,45 +877,45 @@ cdef class LPDegreeOrdered(CommunityDetector):
 		return self._this.numberOfIterations()
 	
 
+# cdef extern from "../cpp/community/PLMOld.h":
+# 	cdef cppclass _PLM "NetworKit::PLMOld":
+# 		_PLMOld() except +
+# 		_PLMOld(string par, double gamma)
+# 		_Partition run(_Graph _G)
+# 		string toString()
+		
+# cdef class PLMOld(CommunityDetector):
+# 	""" Parallel Louvain method for community detection: 
+# 	High solution quality, moderate time to solution. """
+
+# 	cdef _PLMOld _this
+	
+# 	def __cinit__(self, par="balanced", gamma=1.0):
+# 		self._this = _PLM(stdstring(par), gamma)
+	
+# 	def run(self, Graph G not None):
+# 		return Partition().setThis(self._this.run(G._this))
+
+# 	def toString(self):
+# 		return self._this.toString().decode("utf-8")
+		
+		
 cdef extern from "../cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
 		_PLM() except +
-		_PLM(string par, double gamma)
-		_Partition run(_Graph _G)
-		string toString()
-		
-cdef class PLM(CommunityDetector):
-	""" Parallel Louvain method for community detection: 
-	High solution quality, moderate time to solution. """
-
-	cdef _PLM _this
-	
-	def __cinit__(self, par="balanced", gamma=1.0):
-		self._this = _PLM(stdstring(par), gamma)
-	
-	def run(self, Graph G not None):
-		return Partition().setThis(self._this.run(G._this))
-
-	def toString(self):
-		return self._this.toString().decode("utf-8")
-		
-		
-cdef extern from "../cpp/community/PLM2.h":
-	cdef cppclass _PLM2 "NetworKit::PLM2":
-		_PLM2() except +
-		_PLM2(bool refine, double gamma, string par, count maxIter) except +
+		_PLM(bool refine, double gamma, string par, count maxIter) except +
 		string toString() except +
 		_Partition run(_Graph G) except +
 
 
-cdef class PLM2(CommunityDetector):
+cdef class PLM(CommunityDetector):
 	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement"""
 		
-	cdef _PLM2 _this
+	cdef _PLM _this
 	
 	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=32):
-		self._this = _PLM2(refine, gamma, stdstring(par), maxIter)
+		self._this = _PLM(refine, gamma, stdstring(par), maxIter)
 		
 	def toString(self):
 		return self._this.toString().decode("utf-8")
@@ -1180,6 +1180,7 @@ cdef extern from "../cpp/properties/CoreDecomposition.h":
 		index coreNumber(node) except +
 		vector[set[node]] cores() except +
 		vector[set[node]] shells() except +
+		index maxCoreNumber() except +
 
 cdef class CoreDecomposition:
 	"""
@@ -1204,6 +1205,10 @@ cdef class CoreDecomposition:
 		""" @return core number of node @a v """
 		return self._this.coreNumber(v)
 
+	def maxCoreNumber(self):
+		""" @return the maximum core number of a node in the graph"""
+		return self._this.maxCoreNumber()
+
 	def cores(self):
 		""" @return the k-cores as sets of nodes, indexed by k """
 		return self._this.cores()
@@ -1217,7 +1222,7 @@ cdef class CoreDecomposition:
 
 cdef extern from "../cpp/centrality/Betweenness.h":
 	cdef cppclass _Betweenness "NetworKit::Betweenness":
-		_Betweenness(_Graph) except +
+		_Betweenness(_Graph, bool) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
@@ -1229,8 +1234,8 @@ cdef class Betweenness:
 	"""
 	cdef _Betweenness* _this
 
-	def __cinit__(self, Graph G):
-		self._this = new _Betweenness(G._this)
+	def __cinit__(self, Graph G, normalized=False):
+		self._this = new _Betweenness(G._this, normalized)
 
 	def run(self):
 		self._this.run()

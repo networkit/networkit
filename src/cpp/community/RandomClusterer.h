@@ -8,14 +8,14 @@
 #ifndef RANDOMCLUSTERER_H_
 #define RANDOMCLUSTERER_H_
 
-#include "Clusterer.h"
+#include "CommunityDetectionAlgorithm.h"
 
 namespace NetworKit {
 
 /**
  * Dummy community detection algorithm: Creates a random partition of a network.
  */
-class RandomClusterer: public NetworKit::Clusterer {
+class RandomClusterer: public NetworKit::CommunityDetectionAlgorithm {
 public:
 	RandomClusterer();
 	virtual ~RandomClusterer();

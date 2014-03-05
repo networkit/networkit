@@ -13,9 +13,6 @@ Partition::Partition() : z(0), omega(0), data(0) {
 
 }
 
-Partition::Partition(index z, index defaultValue) : z(z), omega(0), data(z, defaultValue) {  //z(z-1);data(z,none);
-
-}
 
 Partition::Partition(index z) : z(z), omega(0), data(z, none) {  //z(z-1);data(z,none);
 
@@ -178,6 +175,13 @@ count Partition::numberOfElements() const {
 
 std::vector<index> Partition::getVector() {
 	return this->data; //FIXME is this appropriate?
+}
+
+void Partition::allToOnePartition() {
+	omega = 0;
+	for (index e = 0; e < this->z; ++e) {
+		data[e] = 0;
+	}
 }
 
 std::string Partition::getName() const {

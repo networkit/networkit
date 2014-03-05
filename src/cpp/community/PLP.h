@@ -8,7 +8,7 @@
 #ifndef PLP_H_
 #define PLP_H_
 
-#include "Clusterer.h"
+#include "CommunityDetectionAlgorithm.h"
 #include "../structures/Partition.h"
 
 namespace NetworKit {
@@ -23,7 +23,7 @@ namespace NetworKit {
  *
  *
  */
-class PLP: public NetworKit::Clusterer {
+class PLP: public NetworKit::CommunityDetectionAlgorithm {
 
 protected:
 

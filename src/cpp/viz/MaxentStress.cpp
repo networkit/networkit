@@ -159,9 +159,7 @@ void MaxentStress::draw(Graph& G) {
 
 	// copy layout into graph
 	G.parallelForNodes([&](node u) {
-		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop, needs Point<T> as coordinate type in graph.h
-			G.setCoordinate(u, layout[u]);
-		}
+		G.setCoordinate(u, layout[u]);
 	});
 }
 

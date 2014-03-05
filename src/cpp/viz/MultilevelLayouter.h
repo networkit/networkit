@@ -10,8 +10,11 @@
 
 #include "Layouter.h"
 #include "FruchtermanReingold.h"
+#include "MaxentStress.h"
+#include "../community/PLP.h"
 #include "../coarsening/GraphCoarsening.h"
 #include "../coarsening/MatchingContracter.h"
+#include "../coarsening/ClusterContracter.h"
 #include "../matching/ParallelMatcher.h"
 #include "../matching/Matching.h"
 
@@ -27,7 +30,7 @@ public:
 	virtual ~MultilevelLayouter();
 
 	virtual void draw(Graph& G);
-	virtual void drawWrapper(Graph& G, count level);
+	virtual void drawInternal(Graph& G, count level);
 
 	virtual void prolongCoordinates(Graph& Gcon, Graph& G);
 };

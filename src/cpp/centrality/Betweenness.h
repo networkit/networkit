@@ -14,7 +14,7 @@ namespace NetworKit {
 
 class Betweenness: public NetworKit::Centrality {
 public:
-	Betweenness(const Graph& G);
+	Betweenness(const Graph& G, bool normalized=false);
 
 	void run() override;
 

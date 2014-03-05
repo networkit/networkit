@@ -23,7 +23,7 @@
 #include "../../viz/PostscriptWriter.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../community/PLP.h"
-#include "../../community/PLM2.h"
+#include "../../community/PLM.h"
 #include "../../io/METISGraphWriter.h"
 #include "../../io/DotGraphWriter.h"
 #include "../BarabasiAlbertGenerator.h"

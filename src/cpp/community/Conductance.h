@@ -25,6 +25,7 @@ public:
 
 	/**
 	 * @return Conductance of 2-partition @a zeta in graph @a G.
+	 * Requires cluster IDs to be either 0 or 1.
 	 */
 	virtual double getQuality(const Partition& zeta, const Graph& G);
 };
