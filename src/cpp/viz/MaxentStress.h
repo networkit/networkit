@@ -9,6 +9,7 @@
 #define MAXENTSTRESS_H_
 
 #include "Layouter.h"
+#include "../distmeasures/AlgebraicDistance.h"
 
 namespace NetworKit {
 
