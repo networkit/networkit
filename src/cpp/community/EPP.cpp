@@ -8,7 +8,7 @@
 #include "EPP.h"
 
 
-#include "../coarsening/ClusterContracter.h"
+#include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../community/JaccardMeasure.h"
 
@@ -36,7 +36,7 @@ Partition EPP::run(Graph& G) {
 	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
 
 	// fixed sub-algorithms
-	ClusterContracter contracter;
+	ClusterContractor contracter;
 	ClusteringProjector projector;
 
 	// data

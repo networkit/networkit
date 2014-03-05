@@ -85,7 +85,7 @@ void MaxentStress::draw(Graph& G) {
 	// alpha: initially 1, then in each iteration alpha := 0.3 * alpha
 	float q = 0;
 	float alpha = 1.0; // FIXME: make alpha dependent on iteration
-	AlgebraicDistance algdist(G, 6, 16);
+	AlgebraicDistance algdist(G, 5, 10);
 	algdist.preprocess();
 
 	while (! converged) {
@@ -121,7 +121,7 @@ void MaxentStress::draw(Graph& G) {
 								DEBUG("algdist ", u, " - ", v, ": ", dist);
 								diffVec.scale(dist / len);
 								diffVec += vPoint;
-								attractiveForce += diffVec.scale(G.weight(u, v));
+								attractiveForce += diffVec.scale(1.0 / (dist * dist));
 						}
 						else {
 							// traverse remaining vertices not in neighborhood for repulsive forces

@@ -14,9 +14,10 @@
 #include "../community/PLP.h"
 #include "../coarsening/GraphCoarsening.h"
 #include "../coarsening/MatchingContracter.h"
-#include "../coarsening/ClusterContracter.h"
+#include "../coarsening/ClusterContractor.h"
 #include "../matching/ParallelMatcher.h"
 #include "../matching/Matching.h"
+#include "../io/METISGraphWriter.h"
 
 namespace NetworKit {
 

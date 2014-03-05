@@ -158,9 +158,7 @@ void FruchtermanReingold::draw(Graph& g) {
 
 	// copy layout into graph
 	g.parallelForNodes([&](node u) {
-		for (index d = 0; d < layout[u].getDimensions(); ++d) { // TODO: accelerate loop, needs Point<T> as coordinate type in graph.h
-			g.setCoordinate(u, layout[u]);
-		}
+		g.setCoordinate(u, layout[u]);
 	});
 }
 
