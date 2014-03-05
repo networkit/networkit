@@ -57,7 +57,11 @@ def density(G):
 	return (2 * m) / (n * (n-1))
 
 def components(G):
-	""" Find and analyze detected components """
+	""" Find and analyze detected components.
+		Returns the number of components and the sizes
+		of each component. For more details use the
+		ConnectedComponents class.
+	"""
 	logging.info("[...] finding connected components....")
 	cc = ConnectedComponents()
 	cc.run(G)
@@ -159,8 +163,8 @@ def properties(G, settings):
 		zetaPLP = plp.run(G)
 		ncomPLP = zetaPLP.numberOfSubsets()
 		modPLP = community.Modularity().getQuality(zetaPLP, G)
-		logging.info("[...] performing community detection: PLM2")
-		plm = community.PLM2("balanced")
+		logging.info("[...] performing community detection: PLM")
+		plm = community.PLM("balanced")
 		zetaPLM = plm.run(G)
 		ncomPLM = zetaPLM.numberOfSubsets()
 		modPLM = community.Modularity().getQuality(zetaPLM, G)
@@ -267,7 +271,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	]
 
 	print()
-	print("Network Properties")
+	print("Network Properties: {0}".format(G.getName()))
 	print("==================")
 	print("Basic Properties")
 	print(tabulate.tabulate(basicProperties))

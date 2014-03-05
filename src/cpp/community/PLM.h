@@ -1,57 +1,56 @@
 /*
- * Louvain.h
+ * MLPLM.h
  *
- *  Created on: 25.02.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
+ *  Created on: 20.11.2013
+ *      Author: cls
  */
 
-#ifndef LOUVAIN_H_
-#define LOUVAIN_H_
+#ifndef PLM_H_
+#define PLM_H_
 
-#include "Clusterer.h"
+#include "CommunityDetectionAlgorithm.h"
 
 namespace NetworKit {
 
 /**
- * PLM - Parallel Louvain Method community detection algorithm
- * The Lovain method is a locally greedy procedure for maximizing modularity. 
- * This is a parallel implementation.
+ * MultiLevel Parallel LocalMover - a multi-level modularity maximizer.
  */
-class PLM: public NetworKit::Clusterer {
-
+class PLM: public NetworKit::CommunityDetectionAlgorithm {
 
 public:
 
-	std::string VERSION;	// algorithm version number - increment in constructor for significant changes to the implementation
-
 	/**
+	 * @param[in]	refine	add a second move phase to refine the communities
 	 * @param[in]	par		parallelization strategy
 	 * @param[in]	gamma	multi-resolution modularity parameter:
 	 * 							1.0 -> standard modularity
 	 * 							0.0 -> one community
 	 * 							2m 	-> singleton communities
+	 * @param[in]	maxIter		maximum number of iterations for move phase	
 	 *
 	 */
-	PLM(std::string par="balanced", double gamma = 1.0);
+	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32);
 
-	virtual ~PLM();
 
-	virtual Partition pass(Graph& G);
-
-	virtual Partition run(Graph& G);
+	std::string toString() const override;
 
 	/**
-	 * @return string representation of algorithm and parameters.
+	 * Detect communities in the given graph.
 	 */
-	virtual std::string toString() const;
+	Partition run(Graph& G) override;
 
+	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta);
 
-protected:
+	static Partition prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
 
-	bool anyChange;	//!< indicates whether any change was made to the clustering in the last pass over the nodes
-	std::string parallelism; //!< switch for the kind of parallelization strategy to use
-	double gamma;	//!< multi-resolution modularity parameter
+private:
+
+	std::string parallelism;
+	bool refine;
+	double gamma = 1.0;
+	count maxIter;
 };
 
 } /* namespace NetworKit */
-#endif /* LOUVAIN_H_ */
+
+#endif /* MLPLM_H_ */

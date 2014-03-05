@@ -19,7 +19,8 @@
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
 #include "../CommunityGraph.h"
-#include "../PLM2.h"
+#include "../PLM.h"
+#include "../PLMOld.h"
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
 #include "../../structures/Partition.h"
@@ -207,7 +208,7 @@ TEST_F(CommunityGTest, testLouvain) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	PLM louvain;
+	PLMOld louvain;
 	Partition zeta = louvain.run(G);
 
 	INFO("number of clusters: " , zeta.numberOfSubsets());
@@ -226,7 +227,7 @@ TEST_F(CommunityGTest, testLouvainParallelSimple) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	PLM louvain("simple");
+	PLMOld louvain("simple");
 	Partition zeta = louvain.run(G);
 
 	INFO("number of clusters: " , zeta.numberOfSubsets());
@@ -265,7 +266,7 @@ TEST_F(CommunityGTest, testLouvainParallelBalanced) {
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	PLM louvain("balanced");
+	PLMOld louvain("balanced");
 	Partition zeta = louvain.run(G);
 
 	INFO("number of clusters: " , zeta.numberOfSubsets());
@@ -279,8 +280,8 @@ TEST_F(CommunityGTest, testLouvainParallelBalanced) {
 TEST_F(CommunityGTest, testCNMandLouvainRandom) {
 	count n = 400;
 	count k = 20;
-	double pin = 0.95;
-	double pout = 0.01;
+	double pin = 0.9;
+	double pout = 0.0005;
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
@@ -294,7 +295,7 @@ TEST_F(CommunityGTest, testCNMandLouvainRandom) {
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, clustering));
 
 	// Louvain
-	PLM2 louvain;
+	PLM louvain;
 	clustering = louvain.run(G);
 	INFO("Louvain number of clusters: " , clustering.numberOfSubsets());
 	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
@@ -305,7 +306,7 @@ TEST_F(CommunityGTest, testCNMandLouvainRandom) {
 TEST_F(CommunityGTest, testCNMandLouvainReal) {
 	Modularity modularity;
 	CNM cnm;
-	PLM2 louvain;
+	PLM louvain;
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 
@@ -324,7 +325,7 @@ TEST_F(CommunityGTest, testCNMandLouvainReal) {
 TEST_F(CommunityGTest, testParallelAgglomerativeAndLouvain) {
 	Modularity modularity;
 	ParallelAgglomerativeClusterer aggl;
-	PLM louvain;
+	PLMOld louvain;
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 	Graph blog = reader.read("input/polblogs.graph");
@@ -373,19 +374,19 @@ TEST_F(CommunityGTest, testEPPFactory) {
 
 
 
-TEST_F(CommunityGTest, testPLM2) {
+TEST_F(CommunityGTest, testPLM) {
 	METISGraphReader reader;
 	Modularity modularity;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
 
-	PLM2 plm(false, 1.0);
+	PLM plm(false, 1.0);
 	Partition zeta = plm.run(G);
 
 	INFO("number of clusters: " , zeta.numberOfSubsets());
 	INFO("modularity: " , modularity.getQuality(zeta, G));
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 
-	PLM2 plmr(true, 1.0);
+	PLM plmr(true, 1.0);
 	Partition zeta2 = plmr.run(G);
 
 	INFO("number of clusters: " , zeta2.numberOfSubsets());
@@ -695,10 +696,10 @@ TEST_F(CommunityGTest, testSampledRandMeasures) {
 }
 
 
-TEST_F(CommunityGTest, testParallelAgglomerativeAndPLM2) {
+TEST_F(CommunityGTest, testParallelAgglomerativeAndPLM) {
 	Modularity modularity;
 	ParallelAgglomerativeClusterer aggl;
-	PLM2 louvain;
+	PLM louvain;
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 	Graph blog = reader.read("input/polblogs.graph");

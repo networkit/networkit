@@ -11,12 +11,11 @@
 namespace NetworKit {
 
 ClusterContracter::ClusterContracter() {
-	// TODO Auto-generated constructor stub
 
 }
 
 ClusterContracter::~ClusterContracter() {
-	// TODO Auto-generated destructor stub
+
 }
 
 std::pair<Graph, std::vector<node> > ClusterContracter::run(const Graph& G, const Partition& zeta) {

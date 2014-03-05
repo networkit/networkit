@@ -116,10 +116,10 @@ TEST_F(VizGTest, testFRLayouter) {
 
  TEST_F(VizGTest, testMultilevelLayouter) {
   	// create graph
-  	count n = 80;
-  	count numClusters = 3;
-  	double pin = 0.175;
-  	double pout = 0.005;
+  	count n = 400;
+  	count numClusters = 4;
+  	double pin = 0.06;
+  	double pout = 1e-4;
 
   	GraphGenerator graphGen;
   	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);

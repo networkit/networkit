@@ -9,7 +9,7 @@
 #define ENSEMBLEPREPROCESSING_H_
 
 #include <vector>
-#include "../community/Clusterer.h"
+#include "../community/CommunityDetectionAlgorithm.h"
 #include "../structures/Partition.h"
 #include "../overlap/Overlapper.h"
 
@@ -23,12 +23,12 @@ namespace NetworKit {
  * Then the final algorithm operates on the coarse graph and determines a solution
  * for the input graph.
  */
-class EPP: public NetworKit::Clusterer {
+class EPP: public NetworKit::CommunityDetectionAlgorithm {
 
 protected:
 
-	Clusterer* finalClusterer;	//!< final clustering algorithm
-	std::vector<Clusterer*> baseClusterers; //!< ensemble of base clusterers
+	CommunityDetectionAlgorithm* finalClusterer;	//!< final clustering algorithm
+	std::vector<CommunityDetectionAlgorithm*> baseClusterers; //!< ensemble of base clusterers
 
 	Overlapper* overlap; //!< clustering overlap algorithm
 
@@ -41,13 +41,13 @@ public:
 	/**
 	 * Add a base clusterer to the ensemble.
 	 */
-	virtual void addBaseClusterer(Clusterer&  base);
+	virtual void addBaseClusterer(CommunityDetectionAlgorithm&  base);
 
 
 	/**
 	 * Set final clusterer.
 	 */
-	virtual void setFinalClusterer(Clusterer& final);
+	virtual void setFinalClusterer(CommunityDetectionAlgorithm& final);
 
 	/**
 	 * Set overlap algorithm which combines the results of the base clusterers.

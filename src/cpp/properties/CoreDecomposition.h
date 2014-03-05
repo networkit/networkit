@@ -45,12 +45,16 @@ public:
 	/** @return the k-shells as sets of nodes, indexed by k */
 	std::vector<std::set<node> > shells() const;
 
+	/** @return the maximum core number */
+	index maxCoreNumber() const;
+
 
 private:
 
 	const Graph& G;
 	std::vector<index> coreness;
-	index maxCoreNumber; // maximum core number of any node in the graph
+	index maxCore; // maximum core number of any node in the graph
+	bool ran; // whether algorithm has been run
 };
 
 } /* namespace NetworKit */

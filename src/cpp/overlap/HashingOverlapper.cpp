@@ -44,8 +44,7 @@ Partition HashingOverlapper::run(Graph& G,
 		return hash;
 	};
 
-	count n = G.numberOfNodes();
-	Partition core(n,0);
+	Partition core(G.upperNodeIdBound());
 
 	// select hash function
 	auto hash = djb2;
