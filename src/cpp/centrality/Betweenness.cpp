@@ -26,17 +26,18 @@ void Betweenness::run() {
 		/* Nodes in order of increasing distance from s. */
 		stack<node> increasing;
 
-		/* Determine the shortest path dag from s via bfs. */
-		vector<vector<node>> parents(z);          /* Parents in dag. */
+		/* Determine the shortest path tree from s via BFS. */
+		vector<vector<node>> parents(z);          /* Parents in tree. */
 		vector<count> nshort(z), lshort(z, INF);  /* Number and length of shortest paths (= INF means unvisited). */
 		queue<node> bfs_queue;                    /* Working queue. */
 
-       /* BFS that also computes the shortest path dag. */
+       /* BFS that also computes the shortest path tree. */
 		bfs_queue.push(s);
 		lshort[s] = 0;
 		nshort[s] = 1;
 		while (!bfs_queue.empty()) {
-			node v = bfs_queue.front(); bfs_queue.pop();
+			node v = bfs_queue.front();
+			bfs_queue.pop();
 			increasing.push(v);
 
 			G.forNeighborsOf(v, [&] (node w) {
@@ -57,7 +58,9 @@ void Betweenness::run() {
 		/* Now compute the dependencies in order of decreasing distance. */
 		vector<double> dependency(z);
 		while (!increasing.empty()) {
-			node w = increasing.top(); increasing.pop();
+			node w = increasing.top();
+			increasing.pop();
+
 			for (node v: parents[w]) {
 				/* Recursive formula: see lecture. */
 				dependency[v] += double(nshort[v])/nshort[w] * (1 + dependency[w]);

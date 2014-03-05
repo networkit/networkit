@@ -85,6 +85,8 @@ void MaxentStress::draw(Graph& G) {
 	// alpha: initially 1, then in each iteration alpha := 0.3 * alpha
 	float q = 0;
 	float alpha = 1.0; // FIXME: make alpha dependent on iteration
+	AlgebraicDistance algdist(G, 6, 16);
+	algdist.preprocess();
 
 	while (! converged) {
 		std::vector<Point<float> > previousLayout = layout;
@@ -115,7 +117,8 @@ void MaxentStress::draw(Graph& G) {
 						if (G.hasEdge(u, v)) {
 							// sum over all node pairs in S
 							// $\frac{1}{\rho_i} \sum_{i,j \in S} w_{ij} * (x_j + d_{ij} \frac{x_i - x_j}{\Vert x_i - x_j \Vert})$
-								float dist = 0.1; // FIXME: dist = ... (algebraic distance between u and v)
+								float dist = algdist.distance(u, v);
+								DEBUG("algdist ", u, " - ", v, ": ", dist);
 								diffVec.scale(dist / len);
 								diffVec += vPoint;
 								attractiveForce += diffVec.scale(G.weight(u, v));
@@ -145,7 +148,7 @@ void MaxentStress::draw(Graph& G) {
 
 
 		// move nodes
-		G.forNodes([&](node u) { // FIXME: parallel!
+		G.parallelForNodes([&](node u) {
 			move(layout[u], forces[u], 1.0); // FIXME: step length
 
 			TRACE("moved ", u, " by: ", forces[u][0], " and ", forces[u][1]);
@@ -154,7 +157,7 @@ void MaxentStress::draw(Graph& G) {
 
 		++iter;
 		converged = isConverged(previousLayout, layout) || iter >= 500; // FIXME: externalize
-		DEBUG("iteration finished: ", iter, "converged: ", converged);
+		DEBUG("iteration finished: ", iter, "; converged: ", converged);
 	}
 
 	// copy layout into graph
