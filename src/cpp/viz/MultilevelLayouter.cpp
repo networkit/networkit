@@ -34,8 +34,10 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 
 	if (n <= N_THRSH) {
 		// unrecursive part: call drawing routine
-		MaxentStress layouter(bottomLeft, topRight, false);
+		FruchtermanReingold layouter(bottomLeft, topRight, false);
 		layouter.draw(G);
+		PostscriptWriter writer(G);
+		writer.write("output/test-multi-coarsest.eps");
 	}
 	else {
 		// compute clustering
