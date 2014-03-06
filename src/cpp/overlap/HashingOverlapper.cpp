@@ -10,16 +10,14 @@
 namespace NetworKit {
 
 HashingOverlapper::HashingOverlapper() {
-	// TODO Auto-generated constructor stub
 
 }
 
 HashingOverlapper::~HashingOverlapper() {
-	// TODO Auto-generated destructor stub
+
 }
 
-Partition HashingOverlapper::run(Graph& G,
-		std::vector<Partition>& clusterings) {
+Partition HashingOverlapper::run(Graph& G, std::vector<Partition>& clusterings) {
 
 	DEBUG("Starting hashing overlapper");
 
@@ -56,20 +54,24 @@ Partition HashingOverlapper::run(Graph& G,
 		DEBUG(e);
 		core.addToSubset(0,e);//core[e] = 0;
 	});*/
+
 	const count numC = clusterings.size();
-	if (numC > 2) {
-		for (index c = 0; c < numC; ++c) {
-			Partition& zeta = clusterings[c];
-			zeta.parallelForEntries([&](node v, index clv) {
-				core[v] += (hash((c+2) * clv) & 0xffff);
-			});
-		}
+	switch(numC) {
+	case 0: {
+		ERROR("No clustering provided! Will return 1-clustering!");
+		core.allToOnePartition();
+		return core;
 	}
-	else {
+	case 1: {
+		core = clusterings[0];
+		break;
+	}
+	case 2: {
 		Partition& first = clusterings[0];
 		Partition& second = clusterings[1];
 
 		// Assumption: second has at least as many nodes as first
+		// TODO: accelerate if necessary and possible by moving if statements out of loop
 		G.parallelForNodes([&](node v) {
 			if (v >= first.numberOfElements()) {
 				core[v] = none;
@@ -84,6 +86,19 @@ Partition HashingOverlapper::run(Graph& G,
 				}
 			}
 		});
+		break;
+	}
+	default: {
+		// Here we need to ensure that core is initialized to the 1-clustering with ID 0
+		core.allToOnePartition();
+
+		for (index c = 0; c < numC; ++c) {
+			Partition& zeta = clusterings[c];
+			zeta.parallelForEntries([&](node v, index clv) {
+				core[v] += (hash((c+2) * clv) & 0xffff);
+			});
+		}
+	}
 	}
 
 	core.compact();
