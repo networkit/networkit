@@ -123,14 +123,14 @@ cdef class Graph:
 			self._this = _Graph(n)
 		
 	# # any _thisect which appears as a return type needs to implement setThis
-	# cdef setThis(self, _Graph other):
-	# 	#del self._this
-	# 	self._this = other
-	# 	return self
-
 	cdef setThis(self, _Graph other):
-		self._this.stealFrom(other)
+		#del self._this
+		self._this = other
 		return self
+
+	# cdef setThis(self, _Graph other):
+	# 	self._this.stealFrom(other)
+	# 	return self
 
 	
 	def numberOfNodes(self):
