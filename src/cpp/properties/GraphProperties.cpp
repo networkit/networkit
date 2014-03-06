@@ -146,4 +146,52 @@ double GraphProperties::averageDegree(const Graph& G) {
 	return avgDeg;
 }
 
+double GraphProperties::degreeAssortativity(const Graph& G) {
+	double r = 0.0; // result
+	double A = 0.0; // accumulates degree products
+	double B = 0.0; // accumulates degree sums
+	double C = 0.0; // accumulates sum of degree squares
+
+	double degu = 0.0; // temp storage for degree(u)
+	double degv = 0.0; // temp storage for degree(v)
+
+	double halfVolume = 0.0;
+	double volume = 0.0;
+
+	// iterate over edges and accumulate
+	if (G.isMarkedAsWeighted()) {
+		G.forWeightedEdges([&](node u, node v, edgeweight ew) {
+			degu = G.weightedDegree(u);
+			degv = G.weightedDegree(v);
+			A += degu * degv;
+			B += degu + degv;
+			C += degu*degu + degv*degv;
+			halfVolume += ew;
+		});
+	}
+	else {
+		G.forEdges([&](node u, node v) {
+			degu = G.degree(u);
+			degv = G.degree(v);
+			A += degu * degv;
+			B += degu + degv;
+			C += degu*degu + degv*degv;
+		});
+
+		halfVolume = G.numberOfEdges();
+	}
+
+	volume = 2.0 * halfVolume;
+	A = A / halfVolume;
+	B = B / volume;
+	B = B*B;
+	C = C / volume;
+
+	DEBUG("A: ", A, ", B: ", B, ", C: ", C);
+
+	assert(C != B);
+	r = (A - B) / (C - B);
+	return r;
+}
+
 } /* namespace NetworKit */

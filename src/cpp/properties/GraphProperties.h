@@ -53,6 +53,8 @@ public:
 	static std::pair<count, count> minMaxDegree(Graph& G);
 
 	static double averageDegree(const Graph& G);
+
+	static double degreeAssortativity(const Graph& G);
 };
 
 } /* namespace NetworKit */
