@@ -94,6 +94,7 @@ cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count) except +
+		void stealFrom(_Graph) 
 		count numberOfNodes() except +
 		count numberOfEdges() except +
 		count degree(node u) except +
@@ -127,8 +128,8 @@ cdef class Graph:
 	# 	self._this = other
 	# 	return self
 
-	cdef setThis(self, Graph other):
-		self._this.steal_from(other._this)
+	cdef setThis(self, _Graph other):
+		self._this.stealFrom(other)
 		return self
 
 	
