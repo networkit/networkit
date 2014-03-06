@@ -194,4 +194,48 @@ double GraphProperties::degreeAssortativity(const Graph& G) {
 	return r;
 }
 
+double GraphProperties::degreeAssortativity2(const Graph& G) {
+	double r = 0.0; // result
+	double S1 = 0.0; // accumulates degrees
+	double S2 = 0.0; // accumulates squared degrees
+	double S3 = 0.0; // accumulates cubed degress
+	double Se = 0.0; // accumulates degree products
+
+	double deg = 0.0; // temp storage for degree
+	double sqr = 0.0;  // temp storage square of degree
+
+	// iterate over edges and accumulate
+	if (G.isMarkedAsWeighted()) {
+//		G.forEdges([&](node u, node v) {
+//			Se += G.weightedDegree(u) * G.weightedDegree(v);
+//		});
+//		G.forNodes([&](node u) {
+//			deg = G.weightedDegree(u);
+//			S1 += deg;
+//			sqr = deg * deg;
+//			S2 += sqr;
+//			S3 += sqr * deg
+//		});
+		ERROR("Weighted version not implemented yet!");
+		return 0.0;
+	}
+	else {
+		G.forEdges([&](node u, node v) {
+			Se += G.degree(u) * G.degree(v);
+		});
+		G.forNodes([&](node u) {
+			deg = G.degree(u);
+			S1 += deg;
+			sqr = deg * deg;
+			S2 += sqr;
+			S3 += sqr * deg;
+		});
+	}
+	Se = 2.0 * Se;
+
+	assert(S1 * S3 != S2 * S2);
+	r = (S1 * Se - S2 * S2) / (S1 * S3 - S2 * S2);
+	return r;
+}
+
 } /* namespace NetworKit */
