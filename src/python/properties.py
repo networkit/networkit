@@ -256,9 +256,9 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 		["estimated diameter range", str(props["dia"])],
 	]
 	
-	miscProperties = [
-		["degree assortativity", "{0:.6f}".format(props["assort"]) if props["assort"] else None]
-	]
+	# miscProperties = [
+	# 	["degree assortativity", "{0:.6f}".format(props["assort"]) if props["assort"] else None]
+	# ]
 
 	communityStructure = [
 		["approx. avg. local clustering coefficient", "", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
@@ -277,8 +277,8 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	print(tabulate.tabulate(basicProperties))
 	print("Path Structure")
 	print(tabulate.tabulate(pathStructure))
-	print("Miscellaneous")
-	print(tabulate.tabulate(miscProperties))
+	#print("Miscellaneous")
+	#print(tabulate.tabulate(miscProperties))
 	print("Community Structure")
 	print(tabulate.tabulate(communityStructure))
 	print("Degree Distribution")
