@@ -40,6 +40,17 @@ public:
 	 */
 	Partition(index z);
 
+		/**
+	 * Create a new partition data structure for @a z elements.
+	 * Initialize each entry to the default value.
+	 * WARNING: this circumvents the standard interface and may leave the object
+	 * in an inconsistent state. Use only in exceptional cases.
+	 *
+	 * @param[in]	z	maximum index
+	 * @param[in]	defaultValue
+	 */
+	Partition(index z, index defaultValue);
+
 	virtual ~Partition() = default;
 
 	/**
