@@ -18,6 +18,10 @@ Partition::Partition(index z) : z(z), omega(0), data(z, none) {  //z(z-1);data(z
 
 }
 
+Partition::Partition(index z, index defaultValue) : z(z), omega(0), data(z, defaultValue) {  //z(z-1);data(z,none);
+
+}
+
 void Partition::addToSubset(index s, index e) {
 	assert (data[e] == none);	// guarantee that element was unassigned
 	assert (s <= omega);		// do not create new subset ids

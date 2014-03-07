@@ -365,7 +365,20 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
 }
 
 
+TEST_F(PropertiesGTest, tryExactDegreeAssortativity) {
+	// read graph
+	METISGraphReader reader;
+	Graph G = reader.read("input/power.graph");
 
+	// run algorithm
+	double assortativity = GraphProperties::degreeAssortativity(G);
+	double assortativity2 = GraphProperties::degreeAssortativity2(G);
+
+	// check result
+	EXPECT_NEAR(assortativity, assortativity2, 1e-3);
+	EXPECT_NEAR(assortativity, -0.003, 1e-3);
+	EXPECT_NEAR(assortativity2, -0.003, 1e-3);
+}
 
 
 } /* namespace NetworKit */
