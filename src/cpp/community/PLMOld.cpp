@@ -71,9 +71,8 @@ Partition PLMOld::pass(Graph& G) {
 		volNode[u] += G.weight(u, u); // consider self-loop twice
 		});
 
-	std::vector<double> volCluster(G.upperNodeIdBound(), 0.0);
+	std::vector<double> volCluster(zeta.upperBound()+1, 0.0); //G.upperNodeIdBound()
 	// set volume for all singletons
-	//TODO: allToSingletons() assigns IDs in the range [1,n], however, here [0,n-1] is needed, so C-1 is appropriate
 	zeta.parallelForEntries([&](node u, index C) {
 		if (C >= volCluster.size()) ERROR("C > volCluster.size(): ",C," ",volCluster.size());
 		volCluster[C] = volNode[u];
