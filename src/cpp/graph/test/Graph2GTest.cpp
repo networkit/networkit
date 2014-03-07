@@ -449,7 +449,7 @@ TEST_F(Graph2GTest, testRemoveNode) {
 
 TEST_F(Graph2GTest, testWeightedDegree) {
 	count n = 4;
-	Graph G(n);
+	Graph G(n, true);
 
 	node v = 0;
 	G.addEdge(v, 1, 20.0);
@@ -504,7 +504,7 @@ TEST_F(Graph2GTest, testNodeDynamics) {
 
 TEST_F(Graph2GTest, testSetWeight) {
 	count n = 4;
-	Graph G(n);
+	Graph G(n, true);
 
 	node u = 0;
 	node v = 1;

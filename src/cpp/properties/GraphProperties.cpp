@@ -159,7 +159,7 @@ double GraphProperties::degreeAssortativity(const Graph& G) {
 	double volume = 0.0;
 
 	// iterate over edges and accumulate
-	if (G.isMarkedAsWeighted()) {
+	if (G.isWeighted()) {
 		G.forWeightedEdges([&](node u, node v, edgeweight ew) {
 			degu = G.weightedDegree(u);
 			degv = G.weightedDegree(v);
@@ -205,7 +205,7 @@ double GraphProperties::degreeAssortativity2(const Graph& G) {
 	double sqr = 0.0;  // temp storage square of degree
 
 	// iterate over edges and accumulate
-	if (G.isMarkedAsWeighted()) {
+	if (G.isWeighted()) {
 //		G.forEdges([&](node u, node v) {
 //			Se += G.weightedDegree(u) * G.weightedDegree(v);
 //		});

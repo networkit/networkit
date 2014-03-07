@@ -93,7 +93,7 @@ def enableNestedParallelism():
 cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
-		_Graph(count) except +
+		_Graph(count, bool) except +
 		void stealFrom(_Graph) 
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -107,8 +107,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		vector[node] nodes() except +
 		vector[pair[node, node]] edges() except +
 		vector[node] neighbors(node u) except +
-		void markAsWeighted() except +
-		bool isMarkedAsWeighted() except +
+		bool isWeighted() except +
 		string toString() except +
 		string getName() except +
 		edgeweight totalEdgeWeight() except +
@@ -118,9 +117,9 @@ cdef class Graph:
 	"""An undirected, optionally weighted graph"""
 	cdef _Graph _this
 	
-	def __cinit__(self, n=None):
+	def __cinit__(self, n=None, weighted=False):
 		if n is not None:
-			self._this = _Graph(n)
+			self._this = _Graph(n, weighted)
 		
 	# # any _thisect which appears as a return type needs to implement setThis
 	cdef setThis(self, _Graph other):
@@ -169,11 +168,8 @@ cdef class Graph:
 	def neighbors(self, u):
 		return self._this.neighbors(u)
 	
-	def markAsWeighted(self):
-		self._this.markAsWeighted()
-	
-	def isMarkedAsWeighted(self):
-		return self._this.isMarkedAsWeighted()
+	def isWeighted(self):
+		return self._this.isWeighted()
 
 	def toString(self):
 		return self._this.toString()
@@ -189,8 +185,8 @@ cdef class Graph2:
 	"""An undirected, optionally weighted graph"""
 	cdef _Graph* _this
 	
-	def __cinit__(self, n=0):
-		self._this = new _Graph(n)
+	def __cinit__(self, n=0, weighted=False):
+		self._this = new _Graph(n, weighted)
 		
 	# any _thisect which appears as a return type needs to implement setThis
 	cdef setThis(self, _Graph* other):
@@ -231,11 +227,8 @@ cdef class Graph2:
 	def edges(self):
 		return self._this.edges()
 	
-	def markAsWeighted(self):
-		self._this.markAsWeighted()
-	
-	def isMarkedAsWeighted(self):
-		return self._this.isMarkedAsWeighted()
+	def isWeighted(self):
+		return self._this.isWeighted()
 
 	def toString(self):
 		return self._this.toString()

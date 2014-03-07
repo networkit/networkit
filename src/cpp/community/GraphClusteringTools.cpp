@@ -19,7 +19,7 @@ Graph communicationGraph(const Graph& graph, Partition& zeta) {
 	count n = zeta.numberOfSubsets();
 	Graph commGraph(n);
 
-	if (graph.isMarkedAsWeighted()) {
+	if (graph.isWeighted()) {
 		DEBUG("weighted");
 
 		graph.forWeightedEdges([&](node u, node v, edgeweight w) {
@@ -47,7 +47,7 @@ count weightedDegreeWithCluster(const Graph& graph, Partition& zeta, node u, ind
 //	TRACE("start wdeg with cluster...");
 	count wdeg = 0;
 
-	if (graph.isMarkedAsWeighted()) {
+	if (graph.isWeighted()) {
 		graph.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
 			if (zeta[v] == cid) {
 				wdeg += w;

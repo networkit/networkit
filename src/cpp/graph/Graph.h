@@ -57,7 +57,7 @@ protected:
 	count m; //!< current number of edges
 	node z; //!< current upper bound of node ids
 	count t; //!< current time step
-	bool weighted; //!< true if this graph has been marked as weighted.
+	bool weighted; //!< true if this graph supports edge weights other than 1.0
 
 	// per node data
 	Vector<count> deg; //!< degree of each node (size of neighborhood)
@@ -106,12 +106,10 @@ public:
 
 	/** GRAPH INTERFACE **/
 
-	Graph();
-
 	/** 
 	 * Create a graph of n nodes.
 	 */
-	Graph(count n);
+	Graph(count n=0, bool weighted=false);
 
 	Graph(const Graph& other) = default;
 
@@ -140,18 +138,9 @@ public:
 	std::string getName();
 
 	/**
-	 * Mark this graph as a weighted graph, i.e. as a graph containing edges
-	 * with weight other than 1.0.
-	 * The insertion of edges with weights other than 1.0 does not automatically
-	 * mark the graph as weighted.
+	 * Return true if this graphs supports edge weights other than 1.0
 	 */
-	void markAsWeighted();
-
-
-	/**
-	 * Return if this graph has been marked as a weighted graph.
-	 */
-	bool isMarkedAsWeighted() const;
+	bool isWeighted() const;
 
 	/**
 	 * Get string representation
@@ -160,6 +149,8 @@ public:
 
 	/**
 	 * Insert an undirected edge between two nodes.
+	 *
+	 * @param[]
 	 */
 	void addEdge(node u, node v, edgeweight weight = defaultEdgeWeight);
 
@@ -682,24 +673,42 @@ inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
 
 template<typename L>
 inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) {
-	for (index i = 0; i < (index) adja[u].size(); ++i) {
-		node v = adja[u][i];
-		if (v != none) {
-			edgeweight ew = eweights[u][i];
-			handle(v, ew);
-			assert(ew == weight(u, v));
+	if (weighted) {
+		for (index i = 0; i < (index) adja[u].size(); ++i) {
+			node v = adja[u][i];
+			if (v != none) {
+				edgeweight ew = eweights[u][i];
+				handle(v, ew);
+				assert(ew == weight(u, v));
+			}
+		}
+	} else {
+		for (index i = 0; i < (index) adja[u].size(); ++i) {
+			node v = adja[u][i];
+			if (v != none) {
+				handle(v, defaultEdgeWeight);
+			}
 		}
 	}
 }
 
 template<typename L>
 inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) const {
-	for (index i = 0; i < adja[u].size(); ++i) {
-		node v = adja[u][i];
-		if (v != none) {
-			edgeweight ew = eweights[u][i];
-			handle(v, ew);
-			assert(ew == weight(u, v));
+	if (weighted) {
+		for (index i = 0; i < (index) adja[u].size(); ++i) {
+			node v = adja[u][i];
+			if (v != none) {
+				edgeweight ew = eweights[u][i];
+				handle(v, ew);
+				assert(ew == weight(u, v));
+			}
+		}
+	} else {
+		for (index i = 0; i < (index) adja[u].size(); ++i) {
+			node v = adja[u][i];
+			if (v != none) {
+				handle(v, defaultEdgeWeight);
+			}
 		}
 	}
 }
@@ -1001,8 +1010,12 @@ inline void NetworKit::Graph::forWeightedEdges(L handle) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				edgeweight w = this->eweights[u][vi];
-				handle(u, v, w);
+				if (weighted) {
+					edgeweight w = this->eweights[u][vi];
+					handle(u, v, w);
+				} else {
+					handle(u, v, defaultEdgeWeight);
+				}
 			}
 		}
 	}
@@ -1014,8 +1027,12 @@ inline void NetworKit::Graph::forWeightedEdges(L handle) const {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				edgeweight w = this->eweights[u][vi];
-				handle(u, v, w);
+				if (weighted) {
+					edgeweight w = this->eweights[u][vi];
+					handle(u, v, w);
+				} else {
+					handle(u, v, defaultEdgeWeight);
+				}
 			}
 		}
 	}
@@ -1028,8 +1045,12 @@ inline void NetworKit::Graph::parallelForWeightedEdges(L handle) {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				edgeweight w = this->eweights[u][vi];
-				handle(u, v, w);
+				if (weighted) {
+					edgeweight w = this->eweights[u][vi];
+					handle(u, v, w);
+				} else {
+					handle(u, v, defaultEdgeWeight);
+				}
 			}
 		}
 	}
@@ -1042,8 +1063,12 @@ inline void NetworKit::Graph::parallelForWeightedEdges(L handle) const {
 		for (index vi = 0; vi < adja[u].size(); ++vi) {
 			node v = this->adja[u][vi];
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				edgeweight w = this->eweights[u][vi];
-				handle(u, v, w);
+				if (weighted) {
+					edgeweight w = this->eweights[u][vi];
+					handle(u, v, w);
+				} else {
+					handle(u, v, defaultEdgeWeight);
+				}
 			}
 		}
 	}
@@ -1055,9 +1080,12 @@ inline void NetworKit::Graph::forWeightedEdgesOf(node u, L handle) {
 	for (index i = 0; i < asize; ++i) {
 		node v = adja[u][i];
 		if (v != none) {
-			edgeweight ew = eweights[u][i];
-			handle(u, v, ew);
-//			assert(ew == weight(u, v));
+			if (weighted) {
+				edgeweight w = this->eweights[u][i];
+				handle(u, v, w);
+			} else {
+				handle(u, v, defaultEdgeWeight);
+			}
 		}
 	}
 }
@@ -1067,9 +1095,12 @@ inline void NetworKit::Graph::forWeightedEdgesOf(node u, L handle) const {
 	for (index i = 0; i < adja[u].size(); ++i) {
 		node v = adja[u][i];
 		if (v != none) {
-			edgeweight ew = eweights[u][i];
-			handle(u, v, ew);
-			assert(ew == weight(u, v));
+			if (weighted) {
+				edgeweight w = this->eweights[u][i];
+				handle(u, v, w);
+			} else {
+				handle(u, v, defaultEdgeWeight);
+			}
 		}
 	}
 }

@@ -19,7 +19,11 @@ PathGrowingMatcher::~PathGrowingMatcher() {
 
 Matching PathGrowingMatcher::run(Graph& G) {
 	// make copy since graph will be transformed
-	Graph graph = G;
+	// copy graph because we make changes due to merges
+	Graph graph(G.numberOfNodes(), true); // make weighted copy
+	G.forWeightedEdges([&](node u, node v, edgeweight w){
+		graph.addEdge(u, v, w);
+	});
 	const count n = graph.numberOfNodes();
 
 	// init matching to empty

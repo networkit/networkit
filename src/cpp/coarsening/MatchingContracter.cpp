@@ -21,7 +21,7 @@ std::pair<Graph, std::vector<node> > MatchingContracter::run(Graph& G, Matching&
 	count n = G.numberOfNodes();
 	index z = G.upperNodeIdBound();
 	count cn = n - M.size();
-	Graph cG(cn);
+	Graph cG(cn, true);
 
 	// compute map: old ID -> new coarse ID
 	index idx = 0;
