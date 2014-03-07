@@ -56,10 +56,12 @@ public:
 
 	/**
 	 * @return Degree assortativity of the graph @a G.
-	 * Algorithm based on description in Newman: Networks. An Introduction. Chapter 8.7.
+	 * Based on Eq. (4) in Newman: Assortative mixing in networks.
+	 * URL: http://arxiv.org/pdf/cond-mat/0205405.pdf.
+	 * A similar description of this algorithm can be found in
+	 * Newman: Networks. An Introduction. Chapter 8.7.
 	 */
-	static double degreeAssortativity(const Graph& G);
-	static double degreeAssortativity2(const Graph& G);
+	static double degreeAssortativity(const Graph& G, bool useWeights = false);
 };
 
 } /* namespace NetworKit */
