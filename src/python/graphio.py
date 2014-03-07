@@ -4,6 +4,18 @@ from _NetworKit import (Graph, METISGraphReader, FastMETISGraphReader, METISGrap
 
 import os
 import logging
+class formats:
+	class read:
+		METIS = "metis"
+		CLUSTERING = "clustering"
+		DGSSTREAM = "dgsstream"
+	class write:
+		METIS = "metis"
+		CLUSTERING = "clustering"
+		GRAPHVIZ = "graphviz"
+		GML = "gml"
+		SNAP = "snap"
+		VNA = "vna"
 
 def readGraph(path, format="metis", **kwargs):
 	"""    Read graph file in various formats and return a NetworKit::Graph"""
