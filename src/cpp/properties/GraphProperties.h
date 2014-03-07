@@ -15,6 +15,8 @@
 namespace NetworKit {
 
 /**
+ * DEPRECATED: Implement algorithms in their own classes.
+ * 
  * Collection of methods for basic network properties.
  */
 class GraphProperties {
