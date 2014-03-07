@@ -53,6 +53,13 @@ public:
 	static std::pair<count, count> minMaxDegree(Graph& G);
 
 	static double averageDegree(const Graph& G);
+
+	/**
+	 * @return Degree assortativity of the graph @a G.
+	 * Algorithm based on description in Newman: Networks. An Introduction. Chapter 8.7.
+	 */
+	static double degreeAssortativity(const Graph& G);
+	static double degreeAssortativity2(const Graph& G);
 };
 
 } /* namespace NetworKit */

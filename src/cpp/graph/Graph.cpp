@@ -31,6 +31,12 @@ Graph::~Graph() {
 }
 
 
+//only to be used by Cython
+void Graph::stealFrom(Graph& input) {
+	*this = std::move(input);
+}
+
+
 index Graph::find(node u, node v) const {
 	for (index vi = 0; vi < this->adja[u].size(); ++vi) {
 		node x = this->adja[u][vi];

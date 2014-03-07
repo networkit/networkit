@@ -29,9 +29,8 @@ count Diameter::exactDiameter(const Graph& G) {
 			}
 		});
 	} else {
-//		throw std::runtime_error("TODO: exact diameter for weighted graphs");
+	 	Dijkstra dijkstra;
 		 G.forNodes([&](node v) {
-		 	Dijkstra dijkstra;
 		 	vector<edgeweight> distances = dijkstra.run(G, v);
 		 	for (auto distance : distances) {
 		 		if (diameter < distance) {

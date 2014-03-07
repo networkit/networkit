@@ -18,26 +18,68 @@ TEST_F(CentralityGTest, testBetweenness) {
      /  \ /
     1    4
  */
- count n = 6;
+	count n = 6;
 	Graph G(n);
 
- G.addEdge(0, 2);
- G.addEdge(1, 2);
- G.addEdge(2, 3);
- G.addEdge(2, 4);
- G.addEdge(3, 5);
- G.addEdge(4, 5);
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
 
- Betweenness centrality = Betweenness(G);
- centrality.run();
- std::vector<double> bc = centrality.scores();
+	Betweenness centrality = Betweenness(G);
+	centrality.run();
+	std::vector<double> bc = centrality.scores();
 
- EXPECT_NEAR(0.0, bc[0], 0.001);
- EXPECT_NEAR(0.0, bc[1], 0.001);
- EXPECT_NEAR(15.0, bc[2], 0.001);
- EXPECT_NEAR(3.0, bc[3], 0.001);
- EXPECT_NEAR(3.0, bc[4], 0.001);
- EXPECT_NEAR(1.0, bc[5], 0.001);
+	const double tol = 1e-3;
+	EXPECT_NEAR(0.0, bc[0], tol);
+	EXPECT_NEAR(0.0, bc[1], tol);
+	EXPECT_NEAR(15.0, bc[2], tol);
+	EXPECT_NEAR(3.0, bc[3], tol);
+	EXPECT_NEAR(3.0, bc[4], tol);
+	EXPECT_NEAR(1.0, bc[5], tol);
+}
+
+TEST_F(CentralityGTest, testBetweennessWeighted) {
+ /* Graph:
+    0    3   6
+     \  / \ /
+      2 -- 5
+     /  \ / \
+    1    4   7
+
+    Edges in the upper row have weight 3,
+    the edge in the middle row has weight 1.5,
+    edges in the lower row have weight 2.
+ */
+	count n = 8;
+	Graph G(n);
+	G.markAsWeighted();
+
+	G.addEdge(0, 2, 3);
+	G.addEdge(1, 2, 2);
+	G.addEdge(2, 3, 3);
+	G.addEdge(2, 4, 2);
+	G.addEdge(2, 5, 1.5);
+	G.addEdge(3, 5, 3);
+	G.addEdge(4, 5, 2);
+	G.addEdge(5, 6, 3);
+	G.addEdge(5, 7, 2);
+
+	Betweenness centrality = Betweenness(G);
+	centrality.run();
+	std::vector<double> bc = centrality.scores();
+
+	const double tol = 1e-3;
+	EXPECT_NEAR(0.0, bc[0], tol);
+	EXPECT_NEAR(0.0, bc[1], tol);
+	EXPECT_NEAR(23.0, bc[2], tol);
+	EXPECT_NEAR(0.0, bc[3], tol);
+	EXPECT_NEAR(0.0, bc[4], tol);
+	EXPECT_NEAR(23.0, bc[5], tol);
+	EXPECT_NEAR(0.0, bc[6], tol);
+	EXPECT_NEAR(0.0, bc[7], tol);
 }
 
 
