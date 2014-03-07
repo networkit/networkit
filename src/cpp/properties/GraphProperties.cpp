@@ -146,7 +146,7 @@ double GraphProperties::averageDegree(const Graph& G) {
 	return avgDeg;
 }
 
-double GraphProperties::degreeAssortativity(const Graph& G) {
+double GraphProperties::degreeAssortativity(const Graph& G, bool useWeights) {
 	double r = 0.0; // result
 	double A = 0.0; // accumulates degree products
 	double B = 0.0; // accumulates degree sums
@@ -155,11 +155,10 @@ double GraphProperties::degreeAssortativity(const Graph& G) {
 	double degu = 0.0; // temp storage for degree(u)
 	double degv = 0.0; // temp storage for degree(v)
 
-	double halfVolume = 0.0;
-	double volume = 0.0;
+	double halfVolume = 0.0; // if needed, halfVolume accumulates the total edge weight of the graph (such a routine exists, but is not called for performance reasons)
 
 	// iterate over edges and accumulate
-	if (G.isMarkedAsWeighted()) {
+	if (G.isMarkedAsWeighted() && useWeights) {
 		G.forWeightedEdges([&](node u, node v, edgeweight ew) {
 			degu = G.weightedDegree(u);
 			degv = G.weightedDegree(v);
@@ -181,61 +180,18 @@ double GraphProperties::degreeAssortativity(const Graph& G) {
 		halfVolume = G.numberOfEdges();
 	}
 
-	volume = 2.0 * halfVolume;
+	double volume = 2.0 * halfVolume;
 	A = A / halfVolume;
 	B = B / volume;
 	B = B*B;
 	C = C / volume;
 
-	DEBUG("A: ", A, ", B: ", B, ", C: ", C);
+	TRACE("A: ", A, ", B: ", B, ", C: ", C);
 
 	assert(C != B);
 	r = (A - B) / (C - B);
 	return r;
 }
 
-double GraphProperties::degreeAssortativity2(const Graph& G) {
-	double r = 0.0; // result
-	double S1 = 0.0; // accumulates degrees
-	double S2 = 0.0; // accumulates squared degrees
-	double S3 = 0.0; // accumulates cubed degress
-	double Se = 0.0; // accumulates degree products
-
-	double deg = 0.0; // temp storage for degree
-	double sqr = 0.0;  // temp storage square of degree
-
-	// iterate over edges and accumulate
-	if (G.isMarkedAsWeighted()) {
-//		G.forEdges([&](node u, node v) {
-//			Se += G.weightedDegree(u) * G.weightedDegree(v);
-//		});
-//		G.forNodes([&](node u) {
-//			deg = G.weightedDegree(u);
-//			S1 += deg;
-//			sqr = deg * deg;
-//			S2 += sqr;
-//			S3 += sqr * deg
-//		});
-		ERROR("Weighted version not implemented yet!");
-		return 0.0;
-	}
-	else {
-		G.forEdges([&](node u, node v) {
-			Se += G.degree(u) * G.degree(v);
-		});
-		G.forNodes([&](node u) {
-			deg = G.degree(u);
-			S1 += deg;
-			sqr = deg * deg;
-			S2 += sqr;
-			S3 += sqr * deg;
-		});
-	}
-	Se = 2.0 * Se;
-
-	assert(S1 * S3 != S2 * S2);
-	r = (S1 * Se - S2 * S2) / (S1 * S3 - S2 * S2);
-	return r;
-}
 
 } /* namespace NetworKit */
