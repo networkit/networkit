@@ -365,19 +365,42 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
 }
 
 
-TEST_F(PropertiesGTest, tryExactDegreeAssortativity) {
-	// read graph
+TEST_F(PropertiesGTest, testExactDegreeAssortativity) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/power.graph");
+	double tol = 1e-6;
 
-	// run algorithm
-	double assortativity = GraphProperties::degreeAssortativity(G);
-	double assortativity2 = GraphProperties::degreeAssortativity2(G);
+	// power
+	Graph power = reader.read("input/power.graph");
+	double assortativity = GraphProperties::degreeAssortativity(power);
+	EXPECT_NEAR(assortativity, 0.003456, tol);
 
-	// check result
-	EXPECT_NEAR(assortativity, assortativity2, 1e-3);
-	EXPECT_NEAR(assortativity, -0.003, 1e-3);
-	EXPECT_NEAR(assortativity2, -0.003, 1e-3);
+	// celegans
+	Graph celegans = reader.read("input/celegans_metabolic.graph");
+	assortativity = GraphProperties::degreeAssortativity(celegans);
+	EXPECT_NEAR(assortativity, -0.225820, tol);
+
+	// PGP
+	Graph pgp = reader.read("input/PGPgiantcompo.graph");
+	assortativity = GraphProperties::degreeAssortativity(pgp);
+	EXPECT_NEAR(assortativity, 0.238211, tol);
+
+	// Les Miserables
+	Graph lesmis = reader.read("input/lesmis.graph");
+	assortativity = GraphProperties::degreeAssortativity(lesmis);
+	EXPECT_NEAR(assortativity, -0.165225, tol);
+
+//	// CAIDA routers: deactivated for test performance reasons
+//	Graph caida = reader.read("input/caidaRouterLevel.graph");
+//	assortativity = GraphProperties::degreeAssortativity(caida);
+//	EXPECT_NEAR(assortativity, 0.024980, tol);
+
+//	// DBLP coauthors
+//	Graph dblp = reader.read("input/coAuthorsDBLP.graph");
+//	assortativity = GraphProperties::degreeAssortativity(dblp);
+
+//	// CNR web graph
+//	Graph cnr = reader.read("input/dimacs10/clustering/cnr-2000.graph");
+//	assortativity = GraphProperties::degreeAssortativity(cnr);
 }
 
 

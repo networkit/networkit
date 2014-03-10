@@ -25,10 +25,6 @@ TEST_F(GraphDistanceGTest, testGraphWeightedDistance) {
 	METISGraphReader reader;
 	Graph g = reader.read("input/mapping/grid-5x5-dist-arch.graph");
 
-	g.forEdges([&](node u, node v) {
-		g.setWeight(u, v, 1.0);
-	});
-
 	GraphDistance gd;
 
 	edgeweight dist_0_24 = gd.weightedDistance(g, 0, 24);

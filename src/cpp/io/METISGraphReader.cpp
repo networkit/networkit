@@ -25,11 +25,17 @@ Graph METISGraphReader::read(std::string path) {
 	std::tuple<count, count, index> header = parser.getHeader();
 	count n = std::get<0>(header);
 	count m = std::get<1>(header);
-	index weighted = std::get<2>(header);
+	index weightMarker = std::get<2>(header);
 	//std::tie(n,m,weighted) = header;
 	// TODO: std::tie(n, m, weighted) = header
 
-	Graph G(n);
+	bool weighted;
+	if (weightMarker == 0) {
+		weighted = false;
+	} else {
+		weighted = true;
+	}
+	Graph G(n, weighted);
 
 	std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
 
@@ -80,7 +86,6 @@ Graph METISGraphReader::read(std::string path) {
 			}
 		}
 		INFO("\n[DONE]\n");
-		G.markAsWeighted();
 		return G;
 	}
 }

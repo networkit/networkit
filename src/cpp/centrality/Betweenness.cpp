@@ -23,7 +23,7 @@ void Betweenness::run() {
 	scoreData.resize(z);
 
 	// TODO: reduce code duplication; not entirely avoidable due to different data types
-	if (G.isMarkedAsWeighted()) {
+	if (G.isWeighted()) {
 		static const edgeweight INF = numeric_limits<edgeweight>::max();
 		G.forNodes([&] (node s) {
 			/* Nodes in order of increasing distance from s. */

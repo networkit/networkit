@@ -25,7 +25,7 @@ double Conductance::getQuality(const Partition& zeta, const Graph& G) {
 //	DEBUG("Number of clusters (should be two): ", zeta.numberOfSubsets());
 	assert(zeta.numberOfSubsets() == 2);
 
-	if (G.isMarkedAsWeighted()) {
+	if (G.isWeighted()) {
 		// compute denominator
 		double vol[2] = {0.0, 0.0};
 
