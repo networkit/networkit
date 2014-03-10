@@ -147,6 +147,8 @@ double GraphProperties::averageDegree(const Graph& G) {
 }
 
 double GraphProperties::degreeAssortativity(const Graph& G, bool useWeights) {
+	// note: a parallel implementation would rather follow Newman's book, p. 267
+
 	double r = 0.0; // result
 	double A = 0.0; // accumulates degree products
 	double B = 0.0; // accumulates degree sums

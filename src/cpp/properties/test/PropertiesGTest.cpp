@@ -393,6 +393,14 @@ TEST_F(PropertiesGTest, testExactDegreeAssortativity) {
 //	Graph caida = reader.read("input/caidaRouterLevel.graph");
 //	assortativity = GraphProperties::degreeAssortativity(caida);
 //	EXPECT_NEAR(assortativity, 0.024980, tol);
+
+//	// DBLP coauthors
+//	Graph dblp = reader.read("input/coAuthorsDBLP.graph");
+//	assortativity = GraphProperties::degreeAssortativity(dblp);
+
+//	// CNR web graph
+//	Graph cnr = reader.read("input/dimacs10/clustering/cnr-2000.graph");
+//	assortativity = GraphProperties::degreeAssortativity(cnr);
 }
 
 
