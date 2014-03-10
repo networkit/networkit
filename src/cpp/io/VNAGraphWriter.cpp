@@ -18,7 +18,7 @@ VNAGraphWriter::~VNAGraphWriter() {
 }
 
 void VNAGraphWriter::write(Graph& G, std::string path) {
-	this->write(G, G.isMarkedAsWeighted(), path);
+	this->write(G, G.isWeighted(), path);
 }
 
 void VNAGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, Partition& partition, count dim) {

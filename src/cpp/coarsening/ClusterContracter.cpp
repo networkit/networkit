@@ -23,8 +23,7 @@ std::pair<Graph, std::vector<node> > ClusterContractor::run(const Graph& G, cons
 	Aux::Timer timer;
 	timer.start();
 
-	Graph Gcon(0); // empty graph
-	Gcon.markAsWeighted(); // Gcon will be a weighted graph
+	Graph Gcon(0, true); // empty weighted graph
 
 	std::vector<node> clusterToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
 
