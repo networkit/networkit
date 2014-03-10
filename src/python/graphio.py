@@ -5,13 +5,19 @@ from _NetworKit import (Graph, METISGraphReader, FastMETISGraphReader, METISGrap
 import os
 import logging
 class formats:
+	METIS = "metis"
+	CLUSTERING = "clustering"
+	EDGELIST_TABBED_ONE = "edgelist-t1"
+	EDGELIST_TABBED_ZERO = "edgelist-t0"
+	EDGELIST_SPACED_ONE = "edgelist-s1"
+	EDGELIST_SPACED_ZERO = "edgelist-s0"
 	class read:
-		METIS = "metis"
-		CLUSTERING = "clustering"
+		#METIS = "metis"
+		#CLUSTERING = "clustering"
 		DGSSTREAM = "dgsstream"
 	class write:
-		METIS = "metis"
-		CLUSTERING = "clustering"
+		#METIS = "metis"
+		#CLUSTERING = "clustering"
 		GRAPHVIZ = "graphviz"
 		GML = "gml"
 		SNAP = "snap"
@@ -20,11 +26,16 @@ class formats:
 def readGraph(path, format="metis", **kwargs):
 	"""    Read graph file in various formats and return a NetworKit::Graph"""
 	
-	readers = 	{"metis": METISGraphReader,
-				 "edgelist": EdgeListIO}
+	readers =  {"metis": METISGraphReader(),
+				#"edgelist": EdgeListIO(),
+				"edgelist-t1" : EdgeListIO('\t', 1),
+				"edgelist-t0": EdgeListIO('\t', 0),
+				"edgelist-s1": EdgeListIO(' ', 1), 
+				"edgelist-s0": EdgeListIO(' ', 1)
+				}
 
 	try:
-		reader = readers[format](**kwargs)
+		reader = readers[format]#(**kwargs)
 	except KeyError:
 		raise Exception("unrecognized format: {0}".format(format))
 
@@ -44,15 +55,19 @@ def readGraph(path, format="metis", **kwargs):
 
 def writeGraph(G, path, format="metis"):
 	""" Write graph to various output formats """
-	writers = 	{"metis" : METISGraphWriter,
+	writers = 	{"metis" : METISGraphWriter(),
 				"gexf": None,
-				"vna": VNAGraphWriter,
-				"dot": DotGraphWriter,
-				"graphviz": DotGraphWriter,
-				"gml": GMLGraphWriter
+				"vna": VNAGraphWriter(),
+				"dot": DotGraphWriter(),
+				"graphviz": DotGraphWriter(),
+				"gml": GMLGraphWriter(),
+				"edgelist-t1" : EdgeListIO('\t', 1),
+				"edgelist-t0": EdgeListIO('\t', 0),
+				"edgelist-s1": EdgeListIO(' ', 1), 
+				"edgelist-s0": EdgeListIO(' ', 1)
 				}
 	try:
-		writer = writers[format]()
+		writer = writers[format]
 		writer.write(G, path)
 		logging.info("wrote graph {0} to file {1}".format(G, path))
 	except:
