@@ -8,17 +8,10 @@
 
 namespace NetworKit {
 
-Graph::Graph(): n(0), m(0), z(n), t(0), weighted(false), deg(z, 0), exists(z, true), adja(z), eweights(z) {
-	// set name from global id
-	static int64_t graphId = 1;
-	std::stringstream sstm;
-	sstm << "G#" << graphId++;
-	this->name = sstm.str();
-
-}
 
 // TODO: z should probably be n-1, but it breaks some tests
-Graph::Graph(count n) : n(n), m(0), z(n), t(0), weighted(false), deg(z, 0), exists(z, true), adja(z), eweights(z) {
+Graph::Graph(count n, bool weighted) : n(n), m(0), z(n), t(0), weighted(weighted), deg(z, 0), exists(z, true), adja(z) {
+	if (weighted) eweights.resize(z); // edge weight array is only initialized for weighted graphs
 	// set name from global id
 	static int64_t graphId = 1;
 	std::stringstream sstm;
@@ -57,7 +50,7 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 	if (u == v) { // self-loop case
 		this->adja[u].push_back(u);
 		this->deg[u] += 1;
-		this->eweights[u].push_back(weight);
+		if (weighted) this->eweights[u].push_back(weight);
 		for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
 			double defaultAttr = this->edgeAttrDefaults_double[attrId];
 			this->edgeMaps_double[attrId][u].push_back(defaultAttr);
@@ -70,8 +63,10 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 		this->deg[u] += 1;
 		this->deg[v] += 1;
 		// set edge weight
-		this->eweights[u].push_back(weight);
-		this->eweights[v].push_back(weight);
+		if (weighted) {
+			this->eweights[u].push_back(weight);
+			this->eweights[v].push_back(weight);	
+		}
 		// loop over all attributes, setting default attr
 		for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
 			double defaultAttr = this->edgeAttrDefaults_double[attrId];
@@ -101,9 +96,12 @@ void Graph::removeEdge(node u, node v) {
 		if (u != v) { // self-loops are counted only once
 			this->deg[v] -= 1;
 		}
-		// remove edge weight
-		this->eweights[u][vi] = this->nullWeight;
-		this->eweights[v][ui] = this->nullWeight;
+		if (weighted) {
+			// remove edge weight
+			this->eweights[u][vi] = this->nullWeight;
+			this->eweights[v][ui] = this->nullWeight;
+		}
+
 		// TODO: remove attributes
 
 		m--; // decreasing the number of edges
@@ -114,40 +112,47 @@ void Graph::removeEdge(node u, node v) {
 edgeweight Graph::weight(node u, node v) const {
 	index vi = find(u, v);
 	if (vi != none) {
-		return this->eweights[u][vi];
+		if (weighted) {
+			return this->eweights[u][vi];
+		} else {
+			return defaultEdgeWeight;
+		}
 	} else {
 		return 0.0;
 	}
 }
 
 void Graph::setWeight(node u, node v, edgeweight w) {
-	if (u == v) { 		// self-loop case
-		index ui = find(u, u);
-		if (ui != none) {
-			this->eweights[u][ui] = w;
+	if (weighted) {
+		if (u == v) { 		// self-loop case
+			index ui = find(u, u);
+			if (ui != none) {
+				this->eweights[u][ui] = w;
+			} else {
+				addEdge(u, u, w);
+			}
 		} else {
-			addEdge(u, u, w);
+			index vi = find(u, v);
+			index ui = find(v, u);
+			if ((vi != none) && (ui != none)) {
+				this->eweights[u][vi] = w;
+				this->eweights[v][ui] = w;
+			} else {
+				addEdge(u, v, w);
+			}
 		}
-	} else {
-		index vi = find(u, v);
-		index ui = find(v, u);
-		if ((vi != none) && (ui != none)) {
-			this->eweights[u][vi] = w;
-			this->eweights[v][ui] = w;
-		} else {
-			addEdge(u, v, w);
-		}
-	}
-
+	} else throw std::runtime_error("this is an unweighted graph");
 }
 
 void Graph::increaseWeight(node u, node v, edgeweight w) {
-	if (this->hasEdge(u, v)) {
-		this->setWeight(u, v, w + this->weight(u, v));
-	}
-	else {
-		this->addEdge(u, v, w);
-	}
+	if (weighted) {
+		if (this->hasEdge(u, v)) {
+			this->setWeight(u, v, w + this->weight(u, v));
+		} else {
+			this->addEdge(u, v, w);
+		}
+	} else throw std::runtime_error("this is an unweighted graph");
+
 }
 
 bool Graph::hasEdge(node u, node v) const {
@@ -165,9 +170,11 @@ node Graph::addNode() {
 
 	// update per edge data structures
 	Vector<node> adjacencyVector;	// vector of adjacencies for new node
-	Vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 	this->adja.push_back(adjacencyVector);
-	this->eweights.push_back(edgeWeightVector);
+	if (weighted) {
+		Vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
+		this->eweights.push_back(edgeWeightVector);
+	}
 
 	// update edge attribute data structures
 	for (int attrId = 0; attrId < (int) this->edgeMaps_double.size(); ++attrId) {
@@ -202,12 +209,17 @@ count Graph::degree(node v) const {
 }
 
 edgeweight Graph::weightedDegree(node v) const {
-	// weighted degree as sum over incident edge weight - self-loops are counted once
-	edgeweight wDeg = 0.0;
-	for (edgeweight w : this->eweights[v]) {
-		wDeg += w;
+	if (weighted) {
+		// weighted degree as sum over incident edge weight - self-loops are counted once
+		edgeweight wDeg = 0.0;
+		for (edgeweight w : this->eweights[v]) {
+			wDeg += w;
+		}
+		return wDeg;
+	} else {
+		return this->degree(v);
 	}
-	return wDeg;
+
 }
 
 
@@ -339,11 +351,8 @@ std::vector<node> Graph::nodes() {
 	return nodes;
 }
 
-void Graph::markAsWeighted() {
-	this->weighted = true;
-}
 
-bool Graph::isMarkedAsWeighted() const {
+bool Graph::isWeighted() const {
 	return this->weighted;
 }
 

@@ -158,7 +158,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnDisconnectedGraph) {
 
 
 TEST_F(CommunityGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
-	Graph G(1);
+	Graph G(1, true);
 	node v = 0;
 	G.setWeight(v, v, 42.0);
 

@@ -160,7 +160,7 @@ double GraphProperties::degreeAssortativity(const Graph& G, bool useWeights) {
 	double halfVolume = 0.0; // if needed, halfVolume accumulates the total edge weight of the graph (such a routine exists, but is not called for performance reasons)
 
 	// iterate over edges and accumulate
-	if (G.isMarkedAsWeighted() && useWeights) {
+	if (G.isWeighted() && useWeights) {
 		G.forWeightedEdges([&](node u, node v, edgeweight ew) {
 			degu = G.weightedDegree(u);
 			degv = G.weightedDegree(v);

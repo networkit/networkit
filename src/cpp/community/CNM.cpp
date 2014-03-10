@@ -23,7 +23,10 @@ CNM::~CNM() {
 
 Partition CNM::run(Graph &graph) {
 	// copy graph because we make changes due to merges
-	Graph G = graph;
+	Graph G(graph.numberOfNodes(), true); // make weighted copy
+	graph.forWeightedEdges([&](node u, node v, edgeweight w){
+		G.addEdge(u, v, w);
+	});
 	count n = G.numberOfNodes();
 
 	auto createEdge([&](node u, node v) {
