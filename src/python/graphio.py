@@ -44,15 +44,19 @@ def readGraph(path, format="metis", **kwargs):
 
 def writeGraph(G, path, format="metis"):
 	""" Write graph to various output formats """
-	writers = 	{"metis" : METISGraphWriter,
+	writers = 	{"metis" : METISGraphWriter(),
 				"gexf": None,
-				"vna": VNAGraphWriter,
-				"dot": DotGraphWriter,
-				"graphviz": DotGraphWriter,
-				"gml": GMLGraphWriter
+				"vna": VNAGraphWriter(),
+				"dot": DotGraphWriter(),
+				"graphviz": DotGraphWriter(),
+				"gml": GMLGraphWriter()
+				"edgelist-t1" : EdgeListIO('\t', 1),
+				"edgelist-t0": EdgeListIO('\t', 0),
+				"edgelist-s1": EdgeListIO(' ', 1), 
+				"edgelist-s0": EdgeListIO(' ', 1)
 				}
 	try:
-		writer = writers[format]()
+		writer = writers[format]
 		writer.write(G, path)
 		logging.info("wrote graph {0} to file {1}".format(G, path))
 	except:
