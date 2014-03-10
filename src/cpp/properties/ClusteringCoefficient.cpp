@@ -2,7 +2,7 @@
  * ClusteringCoefficient.cpp
  *
  *  Created on: 08.04.2013
- *      Author: Lukas Barth, David Weiß
+ *      Author: Lukas Barth, David Weiss
  */
 
 #include "ClusteringCoefficient.h"
@@ -30,7 +30,7 @@ ClusteringCoefficient::exactLocal(Graph &G) const
 	          }
 	        });
 	      });
-	      coefficient[u] = (double)triangles / (double)(d * (d - 1));
+	      coefficient[u] = (double)triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
 	    }
 	});
 
@@ -45,13 +45,17 @@ ClusteringCoefficient::avgLocal(Graph& G) const
 
 	coefficients = this->exactLocal(G);
 
-	double cc = G.parallelSumForNodes([&](node u){
-		return coefficients[u];
+	double sum = 0.0;
+	count size = 0;
+
+	G.forNodes([&](node u) {
+		if (G.degree(u) >= 2) {
+			sum += coefficients[u];
+			size++;
+		}
 	});
 
-	cc /= (double)n;
-
-	return cc;
+	return sum / (double) size;
 }
 
 double
@@ -70,6 +74,7 @@ ClusteringCoefficient::approxAvgLocal(Graph& G, const count tries) const
 		if (G.degree(v) < 2) {
 			// this vertex can never be part of a triangle,
 			// nor middle point of a path of length 3
+			--k;  // do not count trial
 			continue;
 		}
 
