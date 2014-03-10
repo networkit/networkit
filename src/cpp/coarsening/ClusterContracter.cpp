@@ -25,17 +25,18 @@ std::pair<Graph, std::vector<node> > ClusterContractor::run(const Graph& G, cons
 
 	Graph Gcon(0, true); // empty weighted graph
 
-	std::vector<node> clusterToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
+	std::vector<node> clusterToSuperNode(zeta.upperBound()+1, none); // there is one supernode for each cluster
+	// +1 is an experimental fix
 
 	DEBUG("populate map cluster -> supernode");
 	G.forNodes([&](node v){
-		index c = zeta.subsetOf(v);//zeta.clusterOf(v);Cluster
+		index c = zeta.subsetOf(v);
 		if (clusterToSuperNode[c] == none) {
 			clusterToSuperNode[c] = Gcon.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
 		}
 	});
 
-	index z = G.upperNodeIdBound();
+	index z = G.upperNodeIdBound() + 1; // +1 is an experimental fix
 	std::vector<node> nodeToSuperNode(z, none);
 
 	DEBUG("set entries node -> supernode");
@@ -46,6 +47,7 @@ std::pair<Graph, std::vector<node> > ClusterContractor::run(const Graph& G, cons
 
 	DEBUG("iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon");
 	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
+		DEBUG(Gcon.upperNodeIdBound()," ",nodeToSuperNode[u]," ",nodeToSuperNode[v]);
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
 		//TRACE("edge (", su, ", ", sv, ")");
