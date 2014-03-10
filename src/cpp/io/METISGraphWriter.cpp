@@ -18,7 +18,7 @@ METISGraphWriter::~METISGraphWriter() {
 	// TODO Auto-generated destructor stub
 }
 void METISGraphWriter::write(Graph& G, std::string path) {
-	this->write(G, G.isMarkedAsWeighted(), path);
+	this->write(G, G.isWeighted(), path);
 }
 void METISGraphWriter::write(Graph& G, bool weighted, std::string path) {
 

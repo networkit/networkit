@@ -18,7 +18,7 @@ count Diameter::exactDiameter(const Graph& G) {
 
 	count diameter = 0;
 
-	if (! G.isMarkedAsWeighted()) {
+	if (! G.isWeighted()) {
 		G.forNodes([&](node v) {
 			BFS bfs;
 			vector<count> distances = bfs.run(G, v);

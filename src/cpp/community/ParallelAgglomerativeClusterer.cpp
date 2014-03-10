@@ -24,7 +24,12 @@ ParallelAgglomerativeClusterer::~ParallelAgglomerativeClusterer() {
 }
 
 Partition ParallelAgglomerativeClusterer::run(Graph& graph) {
-	Graph G = graph; // G is the community graph, starts with singletons
+	// copy graph because we make changes due to merges
+	Graph G(graph.numberOfNodes(), true); // make weighted copy
+	graph.forWeightedEdges([&](node u, node v, edgeweight w){
+		G.addEdge(u, v, w);
+	});
+
 	std::vector<std::vector<node> > mapHierarchy;
 
 	bool repeat = true;

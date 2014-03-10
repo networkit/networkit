@@ -18,8 +18,7 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const G
 	Aux::Timer timer;
 	timer.start();
 
-	Graph Ginit(0); // initial graph containing supernodes
-	Ginit.markAsWeighted(); // Gcon will be a weighted graph
+	Graph Ginit(0, true); // initial graph containing supernodes
 	std::vector<node> subsetToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
 
 	// populate map subset -> supernode
