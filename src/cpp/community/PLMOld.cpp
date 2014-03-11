@@ -31,7 +31,7 @@ Partition PLMOld::pass(Graph& G) {
 	count n = G.numberOfNodes();
 	// init communities to singletons
 	Partition zeta(z);
-	G.parallelForNodes([&](node v) {
+	G.forNodes([&](node v) { //parallel
 		zeta.toSingleton(v);
 	});
 	index o = zeta.upperBound();
@@ -41,11 +41,10 @@ Partition PLMOld::pass(Graph& G) {
 
 	// For each node we store a map that maps from cluster ID
 	// to weight of edges to that cluster, this needs to be updated when a change occurs
-	std::vector<std::map<index, edgeweight> > incidenceWeight(
-			G.numberOfNodes());
+	std::vector<std::map<index, edgeweight> > incidenceWeight(z); //n
 	G.parallelForNodes([&](node u) {
 		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-			index C = zeta[v];
+			index C = zeta.subsetOf(v);
 			if (u != v) {
 				incidenceWeight[u][C] += w;
 			}
@@ -64,17 +63,23 @@ Partition PLMOld::pass(Graph& G) {
 	// $$\Delta mod(u:\ C\to D)=\frac{\omega(u|D)-\omega(u|C\setminus v)}{\omega(E)}+\frac{2\cdot\vol(C\setminus u)\cdot\vol(u)-2\cdot\vol(D)\cdot\vol(u)}{4\cdot\omega(E)^{2}}$$
 
 	// parts of formula follow
-	std::vector<double> volNode(G.upperNodeIdBound(), 0.0);
+	std::vector<double> volNode(z, 0.0);
 	// calculate and store volume of each node
 	G.parallelForNodes([&](node u) {
 		volNode[u] += G.weightedDegree(u);
 		volNode[u] += G.weight(u, u); // consider self-loop twice
 		});
 
-	std::vector<double> volCluster(zeta.upperBound()+1, 0.0); //G.upperNodeIdBound()
+	//zeta.forEntries([&](index e, index s) { //parallel
+	//	if (s >= o) {
+	//		DEBUG("value of element ",e," greaterequals upper bound: ",s," vs. ",o);
+	//	}
+	//});
+
+	std::vector<double> volCluster(o, 0.0);
 	// set volume for all singletons
-	zeta.parallelForEntries([&](node u, index C) {
-		if (C >= volCluster.size()) ERROR("C > volCluster.size(): ",C," ",volCluster.size());
+	zeta.parallelForEntries([&](node u, index C) { //parallel
+		//if (C >= volCluster.size()) ERROR("cluster ID C greater equals volCluster.size():: ",C," vs. ",volCluster.size()," at ",u);
 		volCluster[C] = volNode[u];
 	});
 	// end of initialization, set barrier for safety reasons
