@@ -47,14 +47,6 @@ Partition HashingOverlapper::run(Graph& G, std::vector<Partition>& clusterings) 
 	// select hash function
 	auto hash = djb2;
 
-	//core.setAll(0);
-/*	core.setUpperBound(2);
-	DEBUG(n, " ", core.upperBound(), " " , core.numberOfElements());
-	core.parallelForEntries([&](index e, index s){
-		DEBUG(e);
-		core.addToSubset(0,e);//core[e] = 0;
-	});*/
-
 	const count numC = clusterings.size();
 	switch(numC) {
 	case 0: {

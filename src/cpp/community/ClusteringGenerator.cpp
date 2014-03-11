@@ -29,10 +29,7 @@ Partition ClusteringGenerator::makeSingletonClustering(Graph& G) {
 Partition ClusteringGenerator::makeOneClustering(Graph& G) {
 	count n = G.upperNodeIdBound();
 	Partition zeta(n);
-	zeta.setUpperBound(1);
-	G.forNodes([&](node v){
-		zeta.addToSubset(0, v); //TODO not very nice...
-	});
+	zeta.allToOnePartition();
 	return zeta;
 }
 
@@ -40,7 +37,7 @@ Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 	count n = G.upperNodeIdBound();
 	Partition zeta(n);
 
-	zeta.setUpperBound(k-1);
+	zeta.setUpperBound(k);
 
 	G.parallelForNodes([&](node v){
 		index c = Aux::Random::integer(k-1);
@@ -52,8 +49,9 @@ Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 }
 
 Partition ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count k) {
-	count n = G.upperNodeIdBound(); // FIXME: upper Node ID bound is actually not the right way to do this.
+	count n = G.upperNodeIdBound(); 
 	Partition clustering(n);
+	clustering.setUpperBound(k);
 
 	std::vector<count> blockSize(k, 0);
 
@@ -71,7 +69,7 @@ Partition ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count 
 	node v = 0;
 	for (index block = 0; block < k; ++block) {
 		while (v < blockSize[block]) {
-			clustering.addToSubset(block,v);//clustering[v] = block;
+			clustering.addToSubset(block,v);
 			++v;
 		}
 	}

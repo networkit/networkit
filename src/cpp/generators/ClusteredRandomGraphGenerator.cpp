@@ -26,7 +26,7 @@ Graph ClusteredRandomGraphGenerator::generate() {
 		zeta.addToSubset(c, v);
 	});
 
-//	assert (zeta.numberOfClusters() == k);
+	assert (zeta.numberOfSubsets() == k);
 
 	G.forNodePairs([&](node u, node v){
 		if (zeta.subsetOf(u) == zeta.subsetOf(v)) {
