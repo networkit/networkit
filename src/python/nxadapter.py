@@ -36,7 +36,7 @@ def nx2nk(nxG, weightAttr=None):
 def nk2nx(nkG):
 	""" Convert a NetworKit.Graph to a networkx.Graph """
 	nxG = nx.Graph()
-	if nkG.isMarkedAsWeighted():
+	if nkG.isWeighted():
 		for (u, v) in nkG.edges():
 			nxG.add_edge(u, v, weight=nkG.weight(u, v))
 	else:
