@@ -126,8 +126,6 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	psWriter.write(clustering, "output/pubweb-clustered-PLM.eps");
 
 	Modularity mod;
-	DEBUG("just a checkpoint: ",clustering.upperBound()," ",clustering.numberOfElements());//," ",clustering.numberOfSubsets());
-	clustering.setUpperBound(n);
 	double modVal = mod.getQuality(clustering, G);
 	EXPECT_GE(modVal, 0.2) << "modularity of clustering";
 	DEBUG("Modularity of clustering: " , modVal);
