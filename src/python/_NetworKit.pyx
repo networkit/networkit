@@ -1042,12 +1042,13 @@ cdef class CommunityGraph:
 # this is an example for using static methods
 cdef extern from "../cpp/properties/GraphProperties.h" namespace "NetworKit::GraphProperties":
 	# static methods live in the class namespace, so declare them here
-	pair[count, count] minMaxDegree(_Graph _G)
-	double averageDegree(_Graph _G)
-	vector[count] degreeDistribution(_Graph _G)
-	vector[double] localClusteringCoefficients(_Graph _G)
-	double averageLocalClusteringCoefficient(_Graph _G)
-	vector[double] localClusteringCoefficientPerDegree(_Graph _G)
+	pair[count, count] minMaxDegree(_Graph _G) except +
+	double averageDegree(_Graph _G) except +
+	vector[count] degreeDistribution(_Graph _G) except +
+	vector[double] localClusteringCoefficients(_Graph _G) except +
+	double averageLocalClusteringCoefficient(_Graph _G) except +
+	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
+	double degreeAssortativity(_Graph G, bool) except +
 	
 	cdef cppclass _GraphProperties "NetworKit::GraphProperties":
 		pass
@@ -1070,6 +1071,10 @@ cdef class GraphProperties:
 	@staticmethod
 	def averageLocalClusteringCoefficient(Graph G not None):
 		return averageLocalClusteringCoefficient(G._this)
+
+	@staticmethod
+	def degreeAssortativity(Graph G, bool useWeights):
+		return degreeAssortativity(G._this, useWeights)
 
 
 

@@ -123,6 +123,10 @@ def powerLawFit(G, dd=None):
 #     return gamma
 	
 
+def degreeAssortativity(G):
+	""" Returns the degree assortativity coefficient """
+	return GraphProperties.degreeAssortativity(G, G.isWeighted())
+
 
 def properties(G, settings):
 	logging.info("[...] calculating properties")
@@ -195,16 +199,9 @@ def properties(G, settings):
 		avglcc = clustering(G)
 
 	# degree assortativity
-	assort = None
-	# TODO: estimate assortativity
-	# if settings["assortativity"]:
-	# 	assort = nx.degree_assortativity_coefficient(G)
+	logging.info("[...] calculating degree assortativity coefficient") 
+	assort = degreeAssortativity(G)
 
-
-
-
-	# betweenness centrality
-	# TODO: average betweenness centrality?
 
 	props = {
 		 "name": G.getName(),
@@ -241,14 +238,15 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	basicProperties = [
 		["nodes (n)", props["n"]],
 		["edges (m)", props["m"]],
+		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
+		["isolated nodes", props["isolates"]],
+		["self-loops", props["loops"]],
 		["min. degree", props["minDeg"]],
 		["max. degree", props["maxDeg"]],
 		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
 		["degree power law fit?", "{0}, {1}".format(props["plfit"][0], "{0:.6f}".format(props["plfit"][1]))],
 		["degree power law exponent", "{0:.4f}".format(props["gamma"]) if props["plfit"][0] else None],
-		["isolated nodes", props["isolates"]],
-		["self-loops", props["loops"]],
-		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None]
+		["degree assortativity", "{0:.4f}".format(props["assort"])]
 	]
 	pathStructure = [
 		["connected components", props["nComponents"]],
