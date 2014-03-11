@@ -237,11 +237,16 @@ count Graph::numberOfEdges() const {
 }
 
 edgeweight Graph::totalEdgeWeight() const {
-	edgeweight sum = 0.0;
-	this->forWeightedEdges([&](node u, node v, edgeweight ew) {
-		sum += ew;
-	});
-	return sum;
+	if (weighted) {
+		edgeweight sum = 0.0;
+		this->forWeightedEdges([&](node u, node v, edgeweight ew) {
+			sum += ew;
+		});
+		return sum;
+	} else {
+		return this->numberOfEdges() * 1.0;
+	}
+
 }
 
 void Graph::setName(std::string name) {
