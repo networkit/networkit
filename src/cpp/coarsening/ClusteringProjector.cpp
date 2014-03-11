@@ -19,9 +19,9 @@ ClusteringProjector::~ClusteringProjector() {
 }
 
 Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse,
-		Partition& zetaCoarse) { // FIXME Partition used like it is supposed to?
+		Partition& zetaCoarse) {
 
-	Partition zetaFine(Gfine.numberOfNodes());
+	Partition zetaFine(Gfine.upperNodeIdBound()); //Gfine.numberOfNodes()
 	zetaFine.setUpperBound(zetaCoarse.upperBound());
 	Gfine.forNodes([&](node v) {
 		node sv = fineToCoarse[v];
@@ -38,12 +38,12 @@ Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
 		return zetaCoarse;
 	}
 
-	Partition zetaFine(Gfinest.numberOfNodes());
-	zetaFine.setUpperBound(zetaCoarse.upperBound()); // upper bound for ids in zetaFine must be set to upper bound in zetaCoarse, or modularity assertions fail
+	Partition zetaFine(Gfinest.upperNodeIdBound()); //Gfinest.numberOfNodes()
+	zetaFine.setUpperBound(zetaCoarse.upperBound()); // upper bound for ids in zetaFine must be set to upper bound of zetaCoarse, or modularity assertions fail
 
 	// store temporarily coarsest supernode here
-	std::vector<node> tempMap(Gfinest.numberOfNodes());
-	// TODO: add NodeMap.setAll, NodeMap.identity...
+	std::vector<node> tempMap(Gfinest.upperNodeIdBound()); //Gfinest.numberOfNodes()
+
 	// initialize to identity
 	Gfinest.parallelForNodes([&](node v){
 		tempMap[v] = v;
@@ -69,7 +69,7 @@ Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
 Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<std::vector<node> >& maps) {
 
 	Partition zeta(Gfinest.upperNodeIdBound());
-	zeta.setUpperBound(Gcoarse.upperNodeIdBound()); // TODO: test
+	zeta.setUpperBound(Gcoarse.upperNodeIdBound());
 
 	// store temporarily coarsest supernode here
 	std::vector<node> super(Gfinest.upperNodeIdBound());

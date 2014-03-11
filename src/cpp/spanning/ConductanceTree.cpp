@@ -25,11 +25,7 @@ Partition ConductanceTree::bestCutInBfsTree(const Graph& g, node root) {
 	// start with root
 	parent[root] = root;
 	q.push(root);
-	//visited.setAll(0);
-	visited.setUpperBound(1);
-	visited.parallelForEntries([&](index s, index e){
-		visited.addToSubset(0,e);
-	});
+	visited.allToOnePartition();
 
 	auto boundaryWeight([&](edgeweight bndWeight, node v) {
 		edgeweight w = bndWeight;
