@@ -143,7 +143,7 @@ public:
 	/**
 	 * Sets an upper bound for the subset ids that CAN be assigned.
 	 *
-	 * (This is the maximum id + 1.)
+	 * @param[in]	upper	highest assigned subset ID + 1
 	 */
 	void setUpperBound(index upper);
 

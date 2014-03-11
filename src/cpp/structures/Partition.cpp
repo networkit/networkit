@@ -105,7 +105,7 @@ count Partition::numberOfSubsets() const {
 }
 
 void Partition::setUpperBound(index upper) {
-	this->omega = upper;
+	this->omega = upper-1;
 }
 
 index Partition::upperBound() const {
@@ -128,7 +128,7 @@ void Partition::compact() {
 	this->parallelForEntries([&](index e, index s){ // replace old SubsetIDs with the new IDs
 		data[e] = compactingMap[s];
 	});
-	this->setUpperBound(i-1); // does i contain the right value?
+	this->setUpperBound(i); // does i contain the right value?
 }
 
 bool Partition::contains(index e) const {
@@ -183,7 +183,7 @@ std::vector<index> Partition::getVector() {
 
 void Partition::allToOnePartition() {
 	omega = 0;
-	for (index e = 0; e < this->z; ++e) {
+	for (index e = 0; e < this->z; ++e) { //TODO: maybe use this->parallelForEntries?
 		data[e] = 0;
 	}
 }
