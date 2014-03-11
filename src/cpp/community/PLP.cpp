@@ -82,7 +82,7 @@ Partition PLP::run(Graph& G) {
 
 				// weigh the labels in the neighborhood of v
 				G.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
-					label lw = labels[w];
+					label lw = labels.subsetOf(w);
 					labelWeights[lw] += weight; // add weight of edge {v, w}
 				});
 
@@ -92,8 +92,8 @@ Partition PLP::run(Graph& G) {
 								[](const std::pair<label, edgeweight>& p1, const std::pair<label, edgeweight>& p2) {
 									return p1.second < p2.second;})->first;
 
-				if (labels[v] != heaviest) { // UPDATE
-					labels[v] = heaviest;
+				if (labels.subsetOf(v) != heaviest) { // UPDATE
+					labels.moveToSubset(heaviest,v); //labels[v] = heaviest;
 					nUpdated += 1; // TODO: atomic update?
 					G.forNeighborsOf(v, [&](node u) {
 						activeNodes[u] = true;
