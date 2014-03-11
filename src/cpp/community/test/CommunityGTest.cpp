@@ -95,7 +95,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters)
 	GraphGenerator graphGenerator;
 	int64_t n = 100;
 	count k = 3; // number of clusters
-	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.001);
+	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.00);
 
 	PLP lp;
 	Partition zeta = lp.run(G);
