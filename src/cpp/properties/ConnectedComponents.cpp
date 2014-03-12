@@ -25,13 +25,9 @@ void ConnectedComponents::run(const Graph& G) {
 	count z = G.numberOfNodes();
 	this->component = std::vector<node>(z, none);
 
+	DEBUG("initializing labels");
 	Partition partition(G.upperNodeIdBound());
 	partition.allToSingletons();
-
-	DEBUG("initializing labels");
-	G.parallelForNodes([&](node v) {
-		component[v] = v;
-	});
 
 	DEBUG("initializing active nodes");
 	std::vector<bool> activeNodes(z); // record if node must be processed
@@ -43,16 +39,16 @@ void ConnectedComponents::run(const Graph& G) {
 	});
 
 	DEBUG("main loop");
-	count numActive = 0; // for debugging purposes only
+//	count numActive = 0; // for debugging purposes only
 	count numIterations = 0;
 	bool change = false;
 	do {
 //		TRACE("label propagation iteration");
 		change = false;
-		numActive = 0;
+//		numActive = 0;
 		G.forNodes([&](node u) {
 			if (activeNodes[u]) {
-				++numActive;
+//				++numActive;
 				std::vector<index> neighborLabels;
 				G.forNeighborsOf(u, [&](node v) {
 					// neighborLabels.push_back(component[v]);
@@ -61,8 +57,7 @@ void ConnectedComponents::run(const Graph& G) {
 				// get smallest
 				index smallest = *std::min_element(neighborLabels.begin(), neighborLabels.end());
 
-				if (component[u] != smallest) {
-					component[u] = smallest;
+				if (partition[u] != smallest) {
 					partition.moveToSubset(smallest, u);
 					change = true;
 					G.forNeighborsOf(u, [&](node v) {
@@ -73,7 +68,7 @@ void ConnectedComponents::run(const Graph& G) {
 				}
 			}
 		});
-		TRACE("num active: ", numActive);
+//		TRACE("num active: ", numActive);
 		++numIterations;
 		if ((numIterations % 10) == 0) {
 			// coarsen and make recursive call
@@ -84,11 +79,14 @@ void ConnectedComponents::run(const Graph& G) {
 
 			// apply to current graph
 			G.forNodes([&](node u) {
-				component[u] = cc.componentOfNode(coarse.second[u]);
-				partition[u] = component[u];
+				partition[u] = cc.componentOfNode(coarse.second[u]);
 			});
 		}
 	} while (change);
+
+	G.parallelForNodes([&](node u) {
+		component[u] = partition[u];
+	});
 }
 
 
