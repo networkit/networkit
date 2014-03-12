@@ -132,16 +132,14 @@ TEST_F(ConnectedComponentsGTest, tryHHConnectedComponents) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/coAuthorsDBLP.graph");
 	ConnectedComponents cc;
-	Diameter diam;
-	double tol = 0.3;
-	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
-	HavelHakimiGenerator hhgen(sequence, true);
 
-	// run algos
+	// run CC algo on original
 	cc.run(G);
 	DEBUG("Number of components in original: ", cc.numberOfComponents());
-	DEBUG("Diameter of original: ", diam.estimatedDiameterRange(G, tol));
 
+	// compute HH graph and apply CC algo
+	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
+	HavelHakimiGenerator hhgen(sequence, true);
 	Graph G2 = hhgen.generate();
 	cc.run(G2);
 	DEBUG("Number of components in HH generated: ", cc.numberOfComponents());
