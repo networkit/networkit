@@ -596,7 +596,8 @@ cdef extern from "../cpp/io/EdgeListIO.h":
 		void write(_Graph G, string path) except +
 
 cdef class EdgeListIO:
-	""" Reads and writes graphs in various edge list formats"""
+	""" Reads and writes graphs in various edge list formats. The constructor takes a
+		seperator char and the ID of the first node as paraneters."""
 
 	cdef _EdgeListIO _this
 

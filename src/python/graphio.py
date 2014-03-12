@@ -5,23 +5,23 @@ from _NetworKit import (Graph, METISGraphReader, FastMETISGraphReader, METISGrap
 import os
 import logging
 class formats:
-	METIS = "metis"
-	CLUSTERING = "clustering"
-	EDGELIST_TABBED_ONE = "edgelist-t1"
-	EDGELIST_TABBED_ZERO = "edgelist-t0"
-	EDGELIST_SPACED_ONE = "edgelist-s1"
-	EDGELIST_SPACED_ZERO = "edgelist-s0"
-	class read:
+	metis = "metis"
+	#CLUSTERING = "clustering"
+	edgelist_tab_one = "edgelist-t1"
+	edgelist_tab_zero = "edgelist-t0"
+	edgelist_space_one = "edgelist-s1"
+	edgelist_space_zero = "edgelist-s0"
+	#class input:
 		#METIS = "metis"
 		#CLUSTERING = "clustering"
-		DGSSTREAM = "dgsstream"
-	class write:
+		#DGSSTREAM = "dgsstream"
+	class output:
 		#METIS = "metis"
 		#CLUSTERING = "clustering"
-		GRAPHVIZ = "graphviz"
-		GML = "gml"
-		SNAP = "snap"
-		VNA = "vna"
+		graphviz = "graphviz"
+		gml = "gml"
+		snap = "snap"
+		vna = "vna"
 
 def readGraph(path, format="metis", **kwargs):
 	"""    Read graph file in various formats and return a NetworKit::Graph"""
@@ -88,16 +88,22 @@ class GraphConverter:
 
 def getConverter(fromFormat, toFormat):
 	
-	readers = {"metis": METISGraphReader(),
+	readers =  {"metis": METISGraphReader(),
 				"edgelist-t1" : EdgeListIO('\t', 1),
-				 "edgelist-t0": EdgeListIO('\t', 0),
-				 "edgelist-s1": EdgeListIO(' ', 1), 
-				 "edgelist-s0": EdgeListIO(' ', 1)}    
-	writers = {"metis": METISGraphWriter(),
-				"edgelist-t1" : EdgeListIO('\t', 1),
-				 "edgelist-t0": EdgeListIO('\t', 0),
-				 "edgelist-s1": EdgeListIO(' ', 1), 
-				 "edgelist-s0": EdgeListIO(' ', 1)}   
+				"edgelist-t0": EdgeListIO('\t', 0),
+				"edgelist-s1": EdgeListIO(' ', 1), 
+				"edgelist-s0": EdgeListIO(' ', 1)}    
+	writers =  {"metis" : METISGraphWriter(),
+				"gexf": None,
+				"vna": VNAGraphWriter(),
+				"dot": DotGraphWriter(),
+				"graphviz": DotGraphWriter(),
+				"gml": GMLGraphWriter(),
+				"edgelist-t1": EdgeListIO('\t', 1),
+				"edgelist-t0": EdgeListIO('\t', 0),
+				"edgelist-s1": EdgeListIO(' ', 1), 
+				"edgelist-s0": EdgeListIO(' ', 1)
+				} 
 	
 	reader = readers[fromFormat]
 	writer = writers[toFormat]
