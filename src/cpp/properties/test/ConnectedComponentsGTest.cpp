@@ -13,47 +13,47 @@
 namespace NetworKit {
 
 ConnectedComponentsGTest::ConnectedComponentsGTest() {
-	// TODO Auto-generated constructor stub
+
 }
 
 ConnectedComponentsGTest::~ConnectedComponentsGTest() {
-	// TODO Auto-generated destructor stub
+
 }
 
-// TEST_F(ConnectedComponentsGTest, testRunByCall) {
-// 	// construct graph
-// 	Graph g;
-// 	for (count i = 0; i < 20; i++) {
-// 		g.addNode();
-// 	}
-// 	g.addEdge(0,1,0);
-// 	g.addEdge(1,2,0);
-// 	g.addEdge(2,4,0);
-// 	g.addEdge(4,8,0);
-// 	g.addEdge(8,16,0);
-// 	g.addEdge(16,19,0);
+ TEST_F(ConnectedComponentsGTest, testConnectedComponentsTiny) {
+ 	// construct graph
+ 	Graph g;
+ 	for (count i = 0; i < 20; i++) {
+ 		g.addNode();
+ 	}
+ 	g.addEdge(0,1,0);
+ 	g.addEdge(1,2,0);
+ 	g.addEdge(2,4,0);
+ 	g.addEdge(4,8,0);
+ 	g.addEdge(8,16,0);
+ 	g.addEdge(16,19,0);
 
-// 	g.addEdge(3,5,0);
-// 	g.addEdge(5,6,0);
-// 	g.addEdge(6,7,0);
-// 	g.addEdge(7,9,0);
+ 	g.addEdge(3,5,0);
+ 	g.addEdge(5,6,0);
+ 	g.addEdge(6,7,0);
+ 	g.addEdge(7,9,0);
 
-// 	g.addEdge(10,11,0);
-// 	g.addEdge(10,18,0);
-// 	g.addEdge(10,12,0);
-// 	g.addEdge(18,17,0);
+ 	g.addEdge(10,11,0);
+ 	g.addEdge(10,18,0);
+ 	g.addEdge(10,12,0);
+ 	g.addEdge(18,17,0);
 
-// 	g.addEdge(13,14,0);
+ 	g.addEdge(13,14,0);
 
-// 	// initialize ConnectedComponents
-// 	ConnectedComponents ccs;
-// 	ccs.run(g);
+ 	// initialize ConnectedComponents
+ 	ConnectedComponents ccs;
+ 	ccs.run(g);
 
-// 	// check result
-// 	EXPECT_TRUE(ccs.numberOfComponents() == 5);
-// 	EXPECT_TRUE(ccs.componentOfNode(0) == ccs.componentOfNode(19));
-// 	EXPECT_TRUE(ccs.componentOfNode(3) == ccs.componentOfNode(7));
-// }
+ 	// check result
+ 	EXPECT_TRUE(ccs.numberOfComponents() == 5);
+ 	EXPECT_TRUE(ccs.componentOfNode(0) == ccs.componentOfNode(19));
+ 	EXPECT_TRUE(ccs.componentOfNode(3) == ccs.componentOfNode(7));
+ }
 
 
 // TEST_F(ConnectedComponentsGTest, testGraphWithoutEdges) {
@@ -119,6 +119,7 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 	Graph G = (new METISGraphReader())->read("input/PGPgiantcompo.graph");
 	ConnectedComponents cc;
 	cc.run(G);
+	DEBUG("Number of components: ", cc.numberOfComponents());
 	EXPECT_EQ(1, cc.numberOfComponents());
 }
 

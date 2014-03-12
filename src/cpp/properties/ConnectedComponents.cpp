@@ -25,13 +25,18 @@ void ConnectedComponents::run(const Graph& G) {
 	this->component = std::vector<node>(z, none);
 
 	DEBUG("initializing labels");
-	G.parallelForNodes([&](node v){
+	G.parallelForNodes([&](node v) {
 		component[v] = v;
 	});
 
 	DEBUG("initializing active nodes");
 	std::vector<bool> activeNodes(z); // record if node must be processed
 	activeNodes.assign(z, true);
+	G.forNodes([&](node u) { // NOTE: not in parallel due to implementation of bit vector
+		if (G.degree(u) == 0) {
+			activeNodes[u] = false;
+		}
+	});
 
 	DEBUG("main loop");
 	bool change = false;
@@ -39,7 +44,7 @@ void ConnectedComponents::run(const Graph& G) {
 		DEBUG("label propagation iteration");
 		change = false;
 		G.forNodes([&](node u) {
-			if ((activeNodes[u]) && (G.degree(u) > 0)) {
+			if (activeNodes[u]) {
 
 				std::vector<index> neighborLabels;
 				G.forNeighborsOf(u, [&](node v) {
