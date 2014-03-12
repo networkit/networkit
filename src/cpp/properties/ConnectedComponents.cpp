@@ -6,7 +6,8 @@
  */
 
 #include "ConnectedComponents.h"
-
+#include "../structures/Partition.h"
+#include "../coarsening/PartitionCoarsening.h"
 #include <set>
 
 namespace NetworKit {
@@ -24,6 +25,9 @@ void ConnectedComponents::run(const Graph& G) {
 	count z = G.numberOfNodes();
 	this->component = std::vector<node>(z, none);
 
+	Partition partition(G.upperNodeIdBound());
+	partition.allToSingletons();
+
 	DEBUG("initializing labels");
 	G.parallelForNodes([&](node v) {
 		component[v] = v;
@@ -39,22 +43,27 @@ void ConnectedComponents::run(const Graph& G) {
 	});
 
 	DEBUG("main loop");
+	count numActive = 0; // for debugging purposes only
+	count numIterations = 0;
 	bool change = false;
 	do {
-		DEBUG("label propagation iteration");
+//		TRACE("label propagation iteration");
 		change = false;
+		numActive = 0;
 		G.forNodes([&](node u) {
 			if (activeNodes[u]) {
-
+				++numActive;
 				std::vector<index> neighborLabels;
 				G.forNeighborsOf(u, [&](node v) {
-					neighborLabels.push_back(component[v]);
+					// neighborLabels.push_back(component[v]);
+					neighborLabels.push_back(partition[v]);
 				});
 				// get smallest
 				index smallest = *std::min_element(neighborLabels.begin(), neighborLabels.end());
 
 				if (component[u] != smallest) {
 					component[u] = smallest;
+					partition.moveToSubset(smallest, u);
 					change = true;
 					G.forNeighborsOf(u, [&](node v) {
 						activeNodes[v] = true;
@@ -64,6 +73,21 @@ void ConnectedComponents::run(const Graph& G) {
 				}
 			}
 		});
+		TRACE("num active: ", numActive);
+		++numIterations;
+		if ((numIterations % 10) == 0) {
+			// coarsen and make recursive call
+			PartitionCoarsening con;
+			std::pair<Graph, std::vector<node> > coarse = con.run(G, partition);
+			ConnectedComponents cc;
+			cc.run(coarse.first);
+
+			// apply to current graph
+			G.forNodes([&](node u) {
+				component[u] = cc.componentOfNode(coarse.second[u]);
+				partition[u] = component[u];
+			});
+		}
 	} while (change);
 }
 

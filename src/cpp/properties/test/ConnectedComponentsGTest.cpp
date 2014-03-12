@@ -8,7 +8,10 @@
 
 #include "ConnectedComponentsGTest.h"
 #include "../ConnectedComponents.h"
+#include "../GraphProperties.h"
+#include "../Diameter.h"
 #include "../../io/METISGraphReader.h"
+#include "../../generators/HavelHakimiGenerator.h"
 
 namespace NetworKit {
 
@@ -116,12 +119,52 @@ ConnectedComponentsGTest::~ConnectedComponentsGTest() {
 
 TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 	// construct graph
-	Graph G = (new METISGraphReader())->read("input/PGPgiantcompo.graph");
+	METISGraphReader reader;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
 	ConnectedComponents cc;
 	cc.run(G);
 	DEBUG("Number of components: ", cc.numberOfComponents());
 	EXPECT_EQ(1, cc.numberOfComponents());
 }
+
+TEST_F(ConnectedComponentsGTest, tryHHConnectedComponents) {
+	// construct graph
+	METISGraphReader reader;
+	Graph G = reader.read("input/coAuthorsDBLP.graph");
+	ConnectedComponents cc;
+	Diameter diam;
+	double tol = 0.3;
+	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
+	HavelHakimiGenerator hhgen(sequence, true);
+
+	// run algos
+	cc.run(G);
+	DEBUG("Number of components in original: ", cc.numberOfComponents());
+	DEBUG("Diameter of original: ", diam.estimatedDiameterRange(G, tol));
+
+	Graph G2 = hhgen.generate();
+	cc.run(G2);
+	DEBUG("Number of components in HH generated: ", cc.numberOfComponents());
+}
+
+TEST_F(ConnectedComponentsGTest, tryLiveJConnectedComponents) {
+	// construct graph
+	METISGraphReader reader;
+	Graph G = reader.read("../graphs/ascii/soc-LiveJournal1_symm_or.graph");
+	ConnectedComponents cc;
+
+	// run CC algo on original
+	cc.run(G);
+	DEBUG("Number of components in original: ", cc.numberOfComponents());
+
+	// compute HH graph and apply CC algo
+	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
+	HavelHakimiGenerator hhgen(sequence, true);
+	Graph G2 = hhgen.generate();
+	cc.run(G2);
+	DEBUG("Number of components in HH generated: ", cc.numberOfComponents());
+}
+
 
 } /* namespace NetworKit */
 
