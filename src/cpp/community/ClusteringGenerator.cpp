@@ -39,11 +39,12 @@ Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
 
 	zeta.setUpperBound(k);
 
-	G.parallelForNodes([&](node v){
+	G.forNodes([&](node v) { //parallel
 		index c = Aux::Random::integer(k-1);
 		zeta.addToSubset(c, v);
 	});
 
+	assert (zeta.numberOfSubsets() == k);
 	assert (GraphClusteringTools::isProperClustering(G, zeta));
 	return zeta;
 }
