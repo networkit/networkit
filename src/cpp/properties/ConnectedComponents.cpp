@@ -70,7 +70,7 @@ void ConnectedComponents::run(const Graph& G) {
 		});
 //		TRACE("num active: ", numActive);
 		++numIterations;
-		if ((numIterations % 10) == 0) {
+		if ((numIterations % 8) == 0) { // TODO: externalize constant
 			// coarsen and make recursive call
 			PartitionCoarsening con;
 			std::pair<Graph, std::vector<node> > coarse = con.run(G, partition);
