@@ -39,7 +39,7 @@ Partition PLP::run(Graph& G) {
 
 	// set unique label for each node
 	Partition labels(z);
-	G.parallelForNodes([&](node v) {
+	G.forNodes([&](node v) { //parallel
 		labels.toSingleton(v);
 	});
 
