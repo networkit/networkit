@@ -317,9 +317,28 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
 	double avgCoefficientNetworkX = 0.6174507021536301;
 
 	EXPECT_EQ(avgCoefficientNetworkX, avgCoefficient);
+}
 
 
+TEST_F(PropertiesGTest, testClusteringCoefficientsOnPgp) {
+	ClusteringCoefficient cc;
 
+	// Read the graph
+	std::string path = "input/PGPgiantcompo.graph";
+	METISGraphReader reader;
+	Graph G = reader.read(path);
+
+	// compute values
+	double ccLocalEx = cc.avgLocal(G);
+	double ccLocalApprox = cc.approxAvgLocal(G, 20000); // TODO: externalize
+	double ccGlobalEx = cc.exactGlobal(G);
+	double ccGlobalApprox = cc.approxGlobal(G, 20000); // TODO: externalize
+
+	// test / output
+	DEBUG("average local exact: ", ccLocalEx);
+	DEBUG("average local approximated: ", ccLocalApprox);
+	DEBUG("global exact: ", ccGlobalEx);
+	DEBUG("global approximated: ", ccGlobalApprox);
 }
 
 
@@ -340,8 +359,6 @@ TEST_F(PropertiesGTest, testExactDiameter) {
        EXPECT_EQ(diameter, testInstance.second);
    }
 }
-
-
 
 
 TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
