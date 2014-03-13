@@ -28,11 +28,10 @@ Partition PLM::run(Graph& G) {
 
 	// init communities to singletons
 	Partition zeta(z);
-	G.parallelForNodes([&](node v) {
-		zeta[v] = v;
+	G.forNodes([&](node v) {
+		zeta.toSingleton(v);
 	});
-	zeta.setUpperBound(z);
-	index o = z;
+	index o = zeta.upperBound();
 
 	// init graph-dependent temporaries
 	std::vector<double> volNode(z, 0.0);

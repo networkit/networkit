@@ -31,11 +31,10 @@ Partition PLMOld::pass(Graph& G) {
 	count n = G.numberOfNodes();
 	// init communities to singletons
 	Partition zeta(z);
-	G.parallelForNodes([&](node v) {
-		zeta[v] = v;
+	G.forNodes([&](node v) {
+		zeta.toSingleton(v);
 	});
-	zeta.setUpperBound(z);
-	index o = z;
+	index o = zeta.upperBound();
 
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();
