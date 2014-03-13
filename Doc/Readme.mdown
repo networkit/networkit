@@ -124,6 +124,75 @@ Then, switch to the top folder and run the script `setup.py` with the following 
 
 	python3 setup.py build_ext --inplace [--optimize=V] [-jX]
 
+The script will call scons to compile NetworKit as a library and then build the extensions in the folder `src/python`. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the options `--optimize=V` and `-jN` the same way it can be done to a manual scons call, to specify the optimization level (where `V` is `O`, `D` or `P`) and the number of threads used for compilation.
+The setup script provides more functionality:
+	
+	python3 setup.py develop [--uninstall] [--optimize=V] [-jX]
+	
+will compile NetworKit, build the extensions and on top of that temporarily install NetworKit so that it is available on the whole system. This can be undone by adding `--uninstall`. 
+
+	python3 setup.py clean [--optimize=V]
+	
+will remove the extensions and its build folder as well as call scons to remove the NetworKit library and its build folder specified by `--optimize=V`.
+
+Assuming the extension module `NetworKit` exists, it can be imported in python:
+
+	python3
+	>>> import NetworKit
+
+
+Interactive Work with NetworKit
+-------------------------------
+
+With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend IPython as a great environment for scientific computing. IPython can also be installed via `pip` or `easy_install`.  For tab completion in ipython you may also need to install `readline`. The following should work: `pip3 install readline ipython`. 
+
+After the requirements are satisfied, start IPython and import NetworKit.
+
+	ipython3
+	>>> from NetworKit import *
+
+Now you should be able to use NetworKit interactively. For usage examples, refer to the `UserGuide`.
+
+
+IPython Notebook
+----------------
+
+We recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb` located in the folder `Doc/Notebooks`. To display and work with these notebooks, you have to start a local notebook server from the terminal with:
+
+	ipython3 notebook --pylab inline
+
+Your default browser should open a web interface named "IPython Dashboard". You can either add `NetworKit_UserGuide.ipynb` from the above mentioned location, or you can point IPython to the location by starting it with
+
+	ipython3 notebook --pylab inline --notebook-dir=Doc/Notebooks
+
+The notebook appears in the list and you can start it by clicking on it. 
+
+
+Building NetworKit as a Python Module
+--------------------------------------
+
+As of version 2.0 NetworKit is meant to be used as a Python extension module. To build the module, the following is required:
+
+- Python 3 (>= 3.3 recommended)
+- Cython
+
+Additionally, the module uses the following external Python packages:
+
+- `networkx`
+- `tabulate`
+- `scipy`
+- `matplotlib`
+
+The functionality of NetworKit available to Python is greatly reduced without these packages. 
+These are best installed via `easy_install` or `pip`. (If you have multiple Python installations, be sure you use the commands matching your Python 3 version. In the following examples, `python3` and `pip3` will be used.) 
+
+	pip3 install package_name
+
+
+Then, switch to the top folder and run the script `setup.py` with the following options:
+
+	python3 setup.py build_ext --inplace [--optimize=V] [-jX]
+
 The script will call scons to compile NetworKit as a library and then build the extensions in the folder `src/python`. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the options `--optimize=V` and `-jN` the same way it can be done to a manual scons call.
 The setup script provides more functionality:
 	
