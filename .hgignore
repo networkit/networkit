@@ -8,6 +8,11 @@ syntax: regexp
 \.pyc
 \.a
 \.so
+\checkpoint.ipynb
+build.conf
+.sconsign.dblite
+/_NetworKit.cpp$
+src/python/NetworKit.egg-info/
 
 syntax: regexp
 ^output$

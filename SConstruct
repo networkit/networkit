@@ -5,7 +5,7 @@ import ConfigParser
 home_path = os.environ['HOME']
 
 # SOURCE files (including executable) will be gathered here
-srcDir = "src"
+srcDir = "src/cpp"
 def getSourceFiles(target, optimize):
 	source = []
 
@@ -29,20 +29,17 @@ def getSourceFiles(target, optimize):
 		for name in fnmatch.filter(source, pattern):
 			excluded.append(name)
 
-	print("excluded source files: {0}".format(excluded))
+	#print("excluded source files: {0}".format(excluded))
 	source = [name for name in source if name not in excluded]
 
 	# add executable
-	if target == "CommunityDetection":
-		source.append(os.path.join(srcDir, "CommunityDetection-X.cpp"))
-	elif target == "DynCD":
-		source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
-	elif target == "SelCD":
-		raise Error("target SelCD currently disabled")  # cls
-		# source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
-	elif target == "Tests":
-		source.append(os.path.join(srcDir, "Unittests.cpp"))
-	#else case: error?	
+	if target == "Tests":
+		source.append(os.path.join(srcDir, "Unittests-X.cpp"))
+	elif target == "Core":
+		pass # no executable
+	else:
+		print("Unknown target: {0}".format(target))
+		Exit(1)
 
 	# create build directory for build configuration
 	buildDir = ".build{0}".format(optimize)
@@ -50,7 +47,7 @@ def getSourceFiles(target, optimize):
 
 	# modify source paths for build directory
 	source = [name.replace(srcDir + "/", buildDir + "/") for name in source]
-	print(source)
+	#print(source)
 	return source
 
 
@@ -61,7 +58,9 @@ def getSourceFiles(target, optimize):
 env = Environment()
 confPath = "build.conf"
 if not os.path.isfile(confPath):
-	raise IOError("The configuration file `build.conf` does not exist. You need to create it.")
+	print("The configuration file `build.conf` does not exist. You need to create it.")
+	print("Use the file build.conf.example to create your build.conf")
+	Exit(1)
 
 conf = ConfigParser.ConfigParser()
 conf.read([confPath])     # read the configuration file
@@ -75,7 +74,6 @@ if defines is not []:
 ## includes
 stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
 gtestInclude = conf.get("includes", "gtest")
-log4cxxInclude = conf.get("includes", "log4cxx")
 if conf.has_option("includes", "tbb"):
 	tbbInclude = conf.get("includes", "tbb", "")
 else:
@@ -83,7 +81,6 @@ else:
 
 ## libraries
 gtestLib = conf.get("libraries", "gtest")
-log4cxxLib = conf.get("libraries", "log4cxx")
 if conf.has_option("libraries", "tbb"):
 	tbbLib = conf.get("libraries", "tbb", "")
 else:
@@ -93,9 +90,9 @@ env["CC"] = cppComp
 env["CXX"] = cppComp
 
 env.Append(CPPDEFINES=defines)
-env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude]) #, log4cxxInclude
-env.Append(LIBS = ["gtest"]) #, "log4cxx"
-env.Append(LIBPATH = [gtestLib, tbbLib]) #, log4cxxLib
+env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude])
+env.Append(LIBS = ["gtest"])
+env.Append(LIBPATH = [gtestLib, tbbLib])
 env.Append(LINKFLAGS = ["-std=c++11"])
 
 ## CONFIGURATIONS
@@ -120,7 +117,14 @@ AddOption("--optimize",
           type="string",
           nargs=1,
           action="store",
-          help="specify the optimization level to build (Debug, Release, Profile)")
+          help="specify the optimization level to build: D(ebug), O(ptimize), P(rofile)")
+
+AddOption("--sanitize",
+          dest="sanitize",
+          type="string",
+          nargs=1,
+          action="store",
+          help="switch on address sanitizer")
 
 
 try:
@@ -128,6 +132,13 @@ try:
 except:
     print("ERROR: Missing option --optimize=<LEVEL>")
     exit()
+
+sanitize = None
+try:
+	sanitize = GetOption("sanitize")
+except:
+	pass
+	
 
 
 # create build directory for build configuration
@@ -140,25 +151,22 @@ except:
 env.Append(CFLAGS = commonCFlags)
 env.Append(CPPFLAGS = commonCppFlags)
 
-#option to specify Logging type
+# logging yes or no
 AddOption("--logging",
           dest="logging",
           type="string",
           nargs=1,
           action="store",
-          help="choose logging type: NOLOGGING or NOLOG4CXX")
-try:
-	logging = GetOption("logging")
-	print("specified logging type is "+logging)
-	if logging in ["NOLOGGING","NOLOG4CXX","SIMPLE"]:
-		env.Append(CPPDEFINES=[logging])
-except:
-	print("No logging type specified, using LOG4CXX")
-	env.Append(CPPPATH = [log4cxxInclude])
-	env.Append(LIBS = ["log4cxx"])
-	env.Append(LIBPATH = [log4cxxLib])
+          help="enable logging: yes or no")
 
+logging = GetOption("logging")
 
+if logging == "no":
+	env.Append(CPPDEFINES=["NOLOGGING"]) # logging is enabled by default
+	print("INFO: Logging is now disabled")
+elif (logging != "yes") and (logging != None):
+	print("INFO: unrecognized option --logging=%s" % logging)
+	print("Logging is enabled by default")
 
 # openmp yes or no
 AddOption("--openmp",
@@ -193,6 +201,15 @@ else:
     print("ERROR: invalid optimize: %s" % optimize)
     exit()
 
+# sanitize
+if sanitize:
+	if sanitize == "address":
+		env.Append(CPPFLAGS = ["-fsanitize=address"])
+		env.Append(LINKFLAGS = ["-fsanitize=address"])
+	else:
+		print("ERROR: invalid sanitize option")
+		exit()
+
 
 # TARGET
 AddOption("--target",
@@ -204,7 +221,7 @@ AddOption("--target",
 
 
 target = GetOption("target")
-availableTargets = ["CommunityDetection","DynCD","SelCD","Core","Tests"]
+availableTargets = ["Core","Tests"]
 if target in availableTargets:
 	source = getSourceFiles(target,optimize)
 	targetName = "NetworKit-{0}-{1}".format(target, optimize)
