@@ -28,14 +28,12 @@ public:
 		return values.size();
 	}
 
-	// TODO: inner and outer product
-
 	/**
 	 * @return Reference to the element at index @a idx
 	 */
 	inline double& operator()(const unsigned int &idx) {
 		if (idx >= values.size()) {
-			throw std::runtime_error("index out of range");
+			throw std::out_of_range("index out of range");
 		} else {
 			return values[idx];
 		}
@@ -63,6 +61,14 @@ public:
 	 * @return true, if this vector is element-wise unequal to @a other, otherwise false.
 	 */
 	bool operator!=(const Vector &other) const;
+
+	/**
+	 * Computes the inner product (dot product) of the vectors @a v1 and @a v2.
+	 * @return The result of the inner product.
+	 */
+	static double innerProduct(const Vector &v1, const Vector &v2);
+
+	// TODO: outer product
 
 	/**
 	 * Multiplies this vector with a scalar specified in @a scalar and returns the result.
