@@ -32,7 +32,7 @@ public:
 	 * @param[in]	n				number of entries
 	 * @param[in]	defaultValue	all entries are initialized to this value
 	 */
-	NodeMap(count n, T defaultValue);
+	NodeMap(count n, T defaultValue = 0);
 
 	virtual ~NodeMap();
 
@@ -64,7 +64,7 @@ public:
 
 
 
-template<typename T> inline NetworKit::NodeMap<T>::NodeMap(count n, T defaultValue = 0) :
+template<typename T> inline NetworKit::NodeMap<T>::NodeMap(count n, T defaultValue) :
 		IndexMap<node, T>(n, defaultValue) {
 	TRACE("NodeMap initialized with n = " , this->n);
 }

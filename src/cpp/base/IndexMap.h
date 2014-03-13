@@ -42,7 +42,7 @@ public:
 	 * @param[in]	n				number of entries
 	 * @param[in]	defaultValue	all entries are initialized to this value
 	 */
-	IndexMap(count n, T defaultValue);
+	IndexMap(count n, T defaultValue = 0);
 
 	virtual ~IndexMap();
 
@@ -114,7 +114,7 @@ public:
 
 
 template<typename I, typename T>
-inline IndexMap<I, T>::IndexMap(count n, T defaultValue = 0) :
+inline IndexMap<I, T>::IndexMap(count n, T defaultValue) :
 		data(n, defaultValue), defaultValue(defaultValue) {
 	TRACE("IndexMap initialized with n = ",n);
 	this->n = n;
