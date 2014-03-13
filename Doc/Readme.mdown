@@ -97,7 +97,6 @@ Test
 You actually don't need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the `Unit Tests and Testing` section in our DevGuide.pdf
 
 
-<<<<<<< local
 Building NetworKit as a Python Module
 --------------------------------------
 
@@ -233,6 +232,13 @@ Publications
 
 The following is a list of publications on the basis of NetworKit. We ask you to cite the appropriate ones if you found NetworKit useful for your own research.
 
+	@article{staudt2014networkit,
+		Author = {Staudt, Christian L and Sazonovs, Aleksejs and Meyerhenke, Henning},
+		Date-Added = {2014-03-13 12:41:29 +0000},
+		Date-Modified = {2014-03-13 12:42:47 +0000},
+		Journal = {arXiv preprint arXiv:1403.3005},
+		Title = {NetworKit: An Interactive Tool Suite for High-Performance Network Analysis},
+		Year = {2014}}
 
 		@inproceedings{sm2013ehpcdh,
 			Author = {Christian L. Staudt and Henning Meyerhenke},
