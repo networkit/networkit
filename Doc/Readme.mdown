@@ -183,25 +183,29 @@ For history and possible future features, refer to the `Roadmap`.
 Credits
 -------
 
-### Main Developers
+### Responsible Developers
 
 - Christian L. Staudt - `christian.staudt @ kit.edu` - [Homepage](http://parco.iti.kit.edu/staudt/)
 - Henning Meyerhenke - `meyerhenke @ kit.edu` - [Homepage](http://parco.iti.kit.edu/henningm/)
+
+
+### Co-Maintainer
+
 - Maximilian Vogel - `maximilian.vogel @ student.kit.edu`
 
 
 ### Contributors
 
-- Andreas Bilke
-- Yassine Marrakchi
-- Aleksejs Sazonovs
 - Miriam Beddig
 - Stefan Bertsch
-- Florian Weber
+- Andreas Bilke
+- Guido Brückner
 - Patrick Flick
 - Daniel Hoske
+- Yassine Marrakchi
+- Aleksejs Sazonovs
+- Florian Weber
 - Jörg Weisbarth
-- Guido Brückner
 
 
 ### External Code
