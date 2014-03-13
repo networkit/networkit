@@ -122,7 +122,7 @@ Then, switch to the top folder and run the script `setup.py` with the following 
 
 	python3 setup.py build_ext --inplace [--optimize=V] [-jX]
 
-The script will call scons to compile NetworKit as a library and then build the extensions in the folder `src/python`. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the options `--optimize=V` and `-jN` the same way it can be done to a manual scons call, to specify the optimization level (where `V` is `O`, `D` or `P) and the number of threads used for compilation.
+The script will call scons to compile NetworKit as a library and then build the extensions in the folder `src/python`. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the options `--optimize=V` and `-jN` the same way it can be done to a manual scons call, to specify the optimization level (where `V` is `O`, `D` or `P`) and the number of threads used for compilation.
 The setup script provides more functionality:
 	
 	python3 setup.py develop [--uninstall] [--optimize=V] [-jX]
