@@ -119,7 +119,10 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	count k = 3; // number of clusters
 	ClusteringGenerator clusteringGen;
 	Partition reference = clusteringGen.makeRandomClustering(Gtrash, k);
-	assert (reference.numberOfSubsets() == k);
+	if (reference.numberOfSubsets() != k) {
+		WARN("random clustering does not contain k=",k," cluster: ",reference.numberOfSubsets());
+		k = reference.numberOfSubsets();
+	}
 
 	Graph G = graphGen.makeClusteredRandomGraph(reference, 1.0, 0.0);	// LabelPropagation is very bad at discerning clusters and needs this large pin/pout difference
 
