@@ -32,9 +32,10 @@ Partition PLMOld::pass(Graph& G) {
 	// init communities to singletons
 	Partition zeta(z);
 	G.parallelForNodes([&](node v) {
-		zeta.toSingleton(v);
+		zeta[v] = v;
 	});
-	index o = zeta.upperBound();
+	zeta.setUpperBound(z);
+	index o = z;
 
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();

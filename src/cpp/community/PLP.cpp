@@ -40,8 +40,9 @@ Partition PLP::run(Graph& G) {
 	// set unique label for each node
 	Partition labels(z);
 	G.parallelForNodes([&](node v) {
-		labels.toSingleton(v);
+		labels[v] = v;
 	});
+	labels.setUpperBound(z);
 
 	count nUpdated; // number of nodes which have been updated in last iteration
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
