@@ -51,6 +51,17 @@ TEST(VectorGTest, tryAccessVectorElement) {
 	ASSERT_EQ(4.0, third);
 }
 
+TEST(VectorGTest, tryInnerProduct) {
+	std::vector<double> values1 = {1.0, 0.0, -1.0, -5.0, 2.0};
+	Vector v1(values1);
+
+	std::vector<double> values2 = {1.0, 2.0,  3.0,  0.0, 5.0};
+	Vector v2(values2);
+
+	double dotProduct = Vector::innerProduct(v1, v2);
+	ASSERT_EQ(8.0, dotProduct);
+}
+
 TEST(VectorGTest, tryVectorComparisonOperators) {
 	std::vector<double> values1 = {1.0, 2.0, 3.0, 4.0, 5.0};
 	Vector v1(values1);

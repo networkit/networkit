@@ -18,6 +18,21 @@ Vector::Vector(const std::vector<double> &values) : values(values) {
 Vector::~Vector() {
 }
 
+
+double Vector::innerProduct(const Vector &v1, const Vector &v2) {
+	if (v1.getDimension() != v2.getDimension()) {
+		throw std::runtime_error("dimensions of vectors do not match");
+	}
+
+	double result = 0.0;
+#pragma omp parallel for reduction(+:result)
+	for (int i = 0; i < v1.getDimension(); i++) {
+		result += v1(i) * v2(i);
+	}
+
+	return result;
+}
+
 Vector Vector::operator*(const double &scalar) const {
 	return Vector(*this) *= scalar;
 }
@@ -47,7 +62,7 @@ bool Vector::operator!=(const Vector &other) const {
 
 Vector Vector::operator+(const Vector &other) const {
 	if (this->getDimension() != other.getDimension()) {
-		throw std::out_of_range("dimensions of vectors do not match");
+		throw std::runtime_error("dimensions of vectors do not match");
 	}
 
 	return Vector(*this) += other;
@@ -55,7 +70,7 @@ Vector Vector::operator+(const Vector &other) const {
 
 Vector& Vector::operator+=(const Vector &other) {
 	if (getDimension() != other.getDimension()) {
-		throw std::out_of_range("dimensions of vectors do not match");
+		throw std::runtime_error("dimensions of vectors do not match");
 	}
 
 #pragma omp parallel for
@@ -86,5 +101,6 @@ Vector& Vector::operator-=(const Vector &other) {
 
 	return *this;
 }
+
 
 
