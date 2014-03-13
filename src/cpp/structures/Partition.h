@@ -257,7 +257,9 @@ private:
 	 * Allocates and returns a new subset id.
 	 */
 	inline index newSubsetId() {
-		index s = ++omega;
+		#pragma omp atomic
+		++omega;
+		index s = omega;
 		return s;
 	}
 };
