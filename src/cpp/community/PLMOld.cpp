@@ -31,7 +31,7 @@ Partition PLMOld::pass(Graph& G) {
 	count n = G.numberOfNodes();
 	// init communities to singletons
 	Partition zeta(z);
-	G.forNodes([&](node v) { //parallel
+	G.parallelForNodes([&](node v) {
 		zeta.toSingleton(v);
 	});
 	index o = zeta.upperBound();

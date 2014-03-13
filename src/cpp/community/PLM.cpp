@@ -28,7 +28,7 @@ Partition PLM::run(Graph& G) {
 
 	// init communities to singletons
 	Partition zeta(z);
-	G.forNodes([&](node v) {
+	G.parallelForNodes([&](node v) {
 		zeta.toSingleton(v);
 	});
 	index o = zeta.upperBound();
