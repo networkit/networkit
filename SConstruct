@@ -33,16 +33,13 @@ def getSourceFiles(target, optimize):
 	source = [name for name in source if name not in excluded]
 
 	# add executable
-	if target == "CommunityDetection":
-		source.append(os.path.join(srcDir, "CommunityDetection-X.cpp"))
-	elif target == "DynCD":
-		source.append(os.path.join(srcDir, "DynamicCommunityDetection-X.cpp"))
-	elif target == "SelCD":
-		raise Error("target SelCD currently disabled")  # cls
-		# source.append(os.path.join(srcDir, "SelectiveCommunityDetection-X.cpp"))
-	elif target == "Tests":
+	if target == "Tests":
 		source.append(os.path.join(srcDir, "Unittests-X.cpp"))
-	#else case: error?	
+	elif target == "Core":
+		pass # no executable
+	else:
+		print("Unknown target: {0}".format(target))
+		Exit(1)
 
 	# create build directory for build configuration
 	buildDir = ".build{0}".format(optimize)
@@ -224,7 +221,7 @@ AddOption("--target",
 
 
 target = GetOption("target")
-availableTargets = ["CommunityDetection","DynCD","SelCD","Core","Tests"]
+availableTargets = ["Core","Tests"]
 if target in availableTargets:
 	source = getSourceFiles(target,optimize)
 	targetName = "NetworKit-{0}-{1}".format(target, optimize)
