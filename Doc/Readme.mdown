@@ -59,6 +59,46 @@ To avoid possible binary incompatibilities, try to build these libraries with th
 
 
 
+Building the C++ Core only
+--------------------------
+
+We recommend [SCons](http://scons.org) for building the C++ part of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
+
+The call to SCons has the following options:
+
+	scons --optimize=<level> --target=<target>
+
+where `<level>` can be
+
+- `D` 	debug
+- `O`	optimized
+- `P`	profiling
+
+and `<target>` can be
+
+- `Core`				build NetworKit as a library, required by the Python shell		
+- `Tests`				build executable for the unit tests	
+- `CommunityDetection` 	build executable for static, global community detection algorithms (deprecated)
+
+For example, to build NetworKit as an optimized library, run
+	scons --optimize=O --target=Core
+
+To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
+
+Logging is enabled by default. If you want to disable logging functionality, add the following to your scons call:
+
+	--logging=no
+
+Alternatively, the project can be built with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
+
+
+Test
+----
+
+You actually don't need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the `Unit Tests and Testing` section in our DevGuide.pdf
+
+
+
 Building NetworKit as a Python Module
 --------------------------------------
 
@@ -126,46 +166,6 @@ Your default browser should open a web interface named "IPython Dashboard". You 
 	ipython3 notebook --pylab inline --notebook-dir=Doc/Notebooks
 
 The notebook appears in the list and you can start it by clicking on it. 
-
-
-Building the C++ Core only
---------------------------
-
-We recommend [SCons](http://scons.org) for building the C++ part of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
-
-The call to SCons has the following options:
-
-	scons --optimize=<level> --target=<target>
-
-where `<level>` can be
-
-- `D` 	debug
-- `O`	optimized
-- `P`	profiling
-
-and `<target>` can be
-
-- `Core`				build NetworKit as a library, required by the Python shell		
-- `Tests`				build executable for the unit tests	
-- `CommunityDetection` 	build executable for static, global community detection algorithms (deprecated)
-
-For example, to build NetworKit as an optimized library, run
-	scons --optimize=O --target=Core
-
-To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
-
-Logging is enabled by default. If you want to disable logging functionality, add the following to your scons call:
-
-	--logging=no
-
-Alternatively, the project can be built with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
-
-
-
-Test
-----
-
-You actually don't need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the `Unit Tests and Testing` section in our DevGuide.pdf
 
 
 Contribute
