@@ -69,6 +69,11 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 		zeta.addToSubset(c, v);
 	});
 
+	if (zeta.numberOfSubsets() != k) {
+		WARN("random clustering does not contain k=",k," cluster: ",zeta.numberOfSubsets());
+	}
+
+
 //	assert (zeta.numberOfClusters() == k);
 
 	G.forNodePairs([&](node u, node v){
