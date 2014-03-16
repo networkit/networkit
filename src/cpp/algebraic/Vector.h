@@ -11,14 +11,18 @@
 #include <vector>
 #include <stdexcept>
 
+// forward declaration
+class Matrix;
+
 class Vector {
 private:
 	std::vector<double> values;
+	bool transposed = false;
 
 public:
 	Vector();
-	Vector(const int dimension, const double initialValue);
-	Vector(const std::vector<double> &values);
+	Vector(const int dimension, const double initialValue, const bool transposed = false);
+	Vector(const std::vector<double> &values, const bool transposed = false);
 	virtual ~Vector();
 
 	/**
@@ -29,7 +33,7 @@ public:
 	}
 
 	/**
-	 * @return Reference to the element at index @a idx
+	 * @return Reference to the element at index @a idx.
 	 */
 	inline double& operator()(const unsigned int &idx) {
 		if (idx >= values.size()) {
@@ -40,7 +44,7 @@ public:
 	}
 
 	/**
-	 * @return Reference to the element at index @a idx
+	 * @return Constant reference to the element at index @a idx.
 	 */
 	inline const double& operator()(const unsigned int &idx) const {
 		if (idx >= values.size()) {

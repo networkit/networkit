@@ -8,11 +8,11 @@
 #include "Vector.h"
 
 
-Vector::Vector() : values(0) {}
+Vector::Vector() : values(0), transposed(false) {}
 
-Vector::Vector(const int dimension, double initialValue) : values(dimension, initialValue) {}
+Vector::Vector(const int dimension, const double initialValue, const bool transposed) : values(dimension, initialValue), transposed(transposed) {}
 
-Vector::Vector(const std::vector<double> &values) : values(values) {
+Vector::Vector(const std::vector<double> &values, const bool transposed) : values(values), transposed(transposed) {
 }
 
 Vector::~Vector() {

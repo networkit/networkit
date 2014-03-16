@@ -1,0 +1,26 @@
+/*
+ * MatrixGTest.h
+ *
+ *  Created on: 16.03.2014
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
+ */
+
+#ifndef NOGTEST
+
+#ifndef MATRIXGTEST_H_
+#define MATRIXGTEST_H_
+
+#include "gtest/gtest.h"
+#include "../Matrix.h"
+#include <vector>
+#include <utility>
+
+class MatrixGTest : public testing::Test {
+public:
+	MatrixGTest();
+	virtual ~MatrixGTest();
+};
+
+#endif /* MATRIXGTEST_H_ */
+
+#endif
