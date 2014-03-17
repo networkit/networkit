@@ -16,7 +16,9 @@ class Betweenness: public NetworKit::Centrality {
 public:
 	Betweenness(const Graph& G, bool normalized=false);
 
-	void run() override;
+	void run(bool runUnweightedInParallel);
+
+	void run() override { run(false); }
 
 };
 

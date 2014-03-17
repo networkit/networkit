@@ -16,7 +16,7 @@ Betweenness::Betweenness(const Graph& G, bool normalized) : Centrality(G, normal
 
 }
 
-void Betweenness::run() {
+void Betweenness::run(bool runUnweightedInParallel) {
 	using namespace std;
 	count z = G.upperNodeIdBound();
 	scoreData.clear();
@@ -99,125 +99,125 @@ void Betweenness::run() {
 	else {
 		static const count INF = numeric_limits<count>::max();
 
-#if 1
-		// declare data structures for parallel access
-		std::vector<std::stack<node> > increasing(z);
-		std::vector<std::vector<std::vector<node> > > parents(z);
-		std::vector<std::vector<count> > nshort(z), lshort(z);
-		std::vector<std::queue<node> > bfs_queue(z);
-		std::vector<std::vector<double> > intermediateScore(z);
-		std::vector<std::vector<double> > dependency(z);
+		if (runUnweightedInParallel) {
+			// declare data structures for parallel access
+			std::vector<std::stack<node> > increasing(z);
+			std::vector<std::vector<std::vector<node> > > parents(z);
+			std::vector<std::vector<count> > nshort(z), lshort(z);
+			std::vector<std::queue<node> > bfs_queue(z);
+			std::vector<std::vector<double> > intermediateScore(z);
+			std::vector<std::vector<double> > dependency(z);
 
-		G.balancedParallelForNodes([&](node s) {
-//			TRACE("DAG for node ", s);
+			G.balancedParallelForNodes([&](node s) {
+				//			TRACE("DAG for node ", s);
 
-			parents[s].resize(z);
-			nshort[s].resize(z);
-			lshort[s].resize(z, INF);
-			intermediateScore[s].resize(z, 0.0);
+				parents[s].resize(z);
+				nshort[s].resize(z);
+				lshort[s].resize(z, INF);
+				intermediateScore[s].resize(z, 0.0);
 
-			/* BFS that also computes the shortest path DAG. */
-			bfs_queue[s].push(s);
-			lshort[s][s] = 0;
-			nshort[s][s] = 1;
-			while (! bfs_queue[s].empty()) {
-				node v = bfs_queue[s].front();
-				bfs_queue[s].pop();
-				increasing[s].push(v);
+				/* BFS that also computes the shortest path DAG. */
+				bfs_queue[s].push(s);
+				lshort[s][s] = 0;
+				nshort[s][s] = 1;
+				while (! bfs_queue[s].empty()) {
+					node v = bfs_queue[s].front();
+					bfs_queue[s].pop();
+					increasing[s].push(v);
 
-				G.forNeighborsOf(v, [&] (node w) {
-					/* w found for first time -> enqueue */
-					if (lshort[s][w] == INF) {
-						bfs_queue[s].push(w);
-						lshort[s][w] = lshort[s][v] + 1;
-					}
+					G.forNeighborsOf(v, [&] (node w) {
+						/* w found for first time -> enqueue */
+						if (lshort[s][w] == INF) {
+							bfs_queue[s].push(w);
+							lshort[s][w] = lshort[s][v] + 1;
+						}
 
-					/* Another shortest path to w via v. */
-					if (lshort[s][w] == lshort[s][v] + 1) {
-						nshort[s][w] = nshort[s][w] + nshort[s][v];
-						parents[s][w].push_back(v);
-					}
-				});
-			}
-
-			/* Now compute the dependencies in order of decreasing distance. */
-			dependency[s].resize(z, 0);
-			while (! increasing[s].empty()) {
-				node w = increasing[s].top();
-				increasing[s].pop();
-
-				for (node v: parents[s][w]) {
-					/* Recursive formula: see lecture. */
-					dependency[s][v] += double(nshort[s][v])/nshort[s][w] * (1.0 + dependency[s][w]);
+						/* Another shortest path to w via v. */
+						if (lshort[s][w] == lshort[s][v] + 1) {
+							nshort[s][w] = nshort[s][w] + nshort[s][v];
+							parents[s][w].push_back(v);
+						}
+					});
 				}
-				if (w != s) {
-					intermediateScore[s][w] += dependency[s][w];
+
+				/* Now compute the dependencies in order of decreasing distance. */
+				dependency[s].resize(z, 0);
+				while (! increasing[s].empty()) {
+					node w = increasing[s].top();
+					increasing[s].pop();
+
+					for (node v: parents[s][w]) {
+						/* Recursive formula: see lecture. */
+						dependency[s][v] += double(nshort[s][v])/nshort[s][w] * (1.0 + dependency[s][w]);
+					}
+					if (w != s) {
+						intermediateScore[s][w] += dependency[s][w];
+					}
 				}
-			}
 
-			parents[s].clear();
-			nshort[s].clear();
-			lshort[s].clear();
-		});
-
-		DEBUG("All DAG computations finished.");
-
-		G.balancedParallelForNodes([&](node u) {
-			G.forNodes([&](node s) {
-				scoreData[u] += intermediateScore[s][u];
+				parents[s].clear();
+				nshort[s].clear();
+				lshort[s].clear();
 			});
-		});
 
-#else
-		G.forNodes([&] (node s) {
-			/* Nodes in order of increasing distance from s. */
-			stack<node> increasing;
+			DEBUG("All DAG computations finished.");
 
-			/* Determine the shortest path tree from s via BFS. */
-			vector<vector<node>> parents(z);          /* Parents in DAG. */
-			vector<count> nshort(z), lshort(z, INF);  /* Number and length of shortest paths (= INF means unvisited). */
-			queue<node> bfs_queue;                    /* Working queue. */
-
-			/* BFS that also computes the shortest path DAG. */
-			bfs_queue.push(s);
-			lshort[s] = 0;
-			nshort[s] = 1;
-			while (!bfs_queue.empty()) {
-				node v = bfs_queue.front();
-				bfs_queue.pop();
-				increasing.push(v);
-
-				G.forNeighborsOf(v, [&] (node w) {
-					/* w found for first time -> enqueue */
-					if (lshort[w] == INF) {
-						bfs_queue.push(w);
-						lshort[w] = lshort[v] + 1;
-					}
-
-					/* Another shortest path to w via v. */
-					if (lshort[w] == lshort[v] + 1) {
-						nshort[w] = nshort[w] + nshort[v];
-						parents[w].push_back(v);
-					}
+			G.balancedParallelForNodes([&](node u) {
+				G.forNodes([&](node s) {
+					scoreData[u] += intermediateScore[s][u];
 				});
-			}
+			});
+		}
+		else {
+			G.forNodes([&] (node s) {
+				/* Nodes in order of increasing distance from s. */
+				stack<node> increasing;
 
-			/* Now compute the dependencies in order of decreasing distance. */
-			vector<double> dependency(z, 0);
-			while (!increasing.empty()) {
-				node w = increasing.top();
-				increasing.pop();
+				/* Determine the shortest path tree from s via BFS. */
+				vector<vector<node>> parents(z);          /* Parents in DAG. */
+				vector<count> nshort(z), lshort(z, INF);  /* Number and length of shortest paths (= INF means unvisited). */
+				queue<node> bfs_queue;                    /* Working queue. */
 
-				for (node v: parents[w]) {
-					/* Recursive formula: see lecture. */
-					dependency[v] += double(nshort[v])/nshort[w] * (1 + dependency[w]);
+				/* BFS that also computes the shortest path DAG. */
+				bfs_queue.push(s);
+				lshort[s] = 0;
+				nshort[s] = 1;
+				while (!bfs_queue.empty()) {
+					node v = bfs_queue.front();
+					bfs_queue.pop();
+					increasing.push(v);
+
+					G.forNeighborsOf(v, [&] (node w) {
+						/* w found for first time -> enqueue */
+						if (lshort[w] == INF) {
+							bfs_queue.push(w);
+							lshort[w] = lshort[v] + 1;
+						}
+
+						/* Another shortest path to w via v. */
+						if (lshort[w] == lshort[v] + 1) {
+							nshort[w] = nshort[w] + nshort[v];
+							parents[w].push_back(v);
+						}
+					});
 				}
-				if (w != s) {
-					scoreData[w] += dependency[w];
+
+				/* Now compute the dependencies in order of decreasing distance. */
+				vector<double> dependency(z, 0);
+				while (!increasing.empty()) {
+					node w = increasing.top();
+					increasing.pop();
+
+					for (node v: parents[w]) {
+						/* Recursive formula: see lecture. */
+						dependency[v] += double(nshort[v])/nshort[w] * (1 + dependency[w]);
+					}
+					if (w != s) {
+						scoreData[w] += dependency[w];
+					}
 				}
-			}
-		});
-#endif
+			});
+		}
 	}
 
 	if (normalized) {
