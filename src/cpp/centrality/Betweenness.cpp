@@ -99,6 +99,8 @@ void Betweenness::run(bool runUnweightedInParallel) {
 	else {
 		static const count INF = numeric_limits<count>::max();
 
+		// TODO: reduce code duplication: sequential case can be integrated
+
 		if (runUnweightedInParallel) {
 			// declare data structures for parallel access
 			std::vector<std::stack<node> > increasing(z);
