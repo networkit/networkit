@@ -82,18 +82,18 @@ TEST_F(CentralityGTest, testBetweennessWeighted) {
 	EXPECT_NEAR(0.0, bc[7], tol);
 }
 
-TEST_F(CentralityGTest, trySequentialBetweennessOnRealGraph) {
+TEST_F(CentralityGTest, benchSequentialBetweennessOnRealGraph) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/hep-th.graph");
+	Graph G = reader.read("input/celegans_metabolic.graph");
 	Betweenness bc(G);
 	bc.run(false);
 	std::vector<std::pair<node, double> > ranking = bc.ranking();
 	INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
 }
 
-TEST_F(CentralityGTest, tryParallelBetweennessOnRealGraph) {
+TEST_F(CentralityGTest, benchParallelBetweennessOnRealGraph) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/hep-th.graph");
+	Graph G = reader.read("input/celegans_metabolic.graph");
 	Betweenness bc(G);
 	bc.run(true);
 	std::vector<std::pair<node, double> > ranking = bc.ranking();
