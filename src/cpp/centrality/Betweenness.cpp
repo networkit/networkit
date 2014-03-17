@@ -98,6 +98,77 @@ void Betweenness::run() {
 	}
 	else {
 		static const count INF = numeric_limits<count>::max();
+
+#if 1
+		// declare data structures for parallel access
+		std::vector<std::stack<node> > increasing(z);
+		std::vector<std::vector<std::vector<node> > > parents(z);
+		std::vector<std::vector<count> > nshort(z), lshort(z);
+		std::vector<std::queue<node> > bfs_queue(z);
+		std::vector<std::vector<double> > intermediateScore(z);
+		std::vector<std::vector<double> > dependency(z);
+
+		G.balancedParallelForNodes([&](node s) {
+//			TRACE("DAG for node ", s);
+
+			parents[s].resize(z);
+			nshort[s].resize(z);
+			lshort[s].resize(z, INF);
+			intermediateScore[s].resize(z, 0.0);
+
+			/* BFS that also computes the shortest path DAG. */
+			bfs_queue[s].push(s);
+			lshort[s][s] = 0;
+			nshort[s][s] = 1;
+			while (! bfs_queue[s].empty()) {
+				node v = bfs_queue[s].front();
+				bfs_queue[s].pop();
+				increasing[s].push(v);
+
+				G.forNeighborsOf(v, [&] (node w) {
+					/* w found for first time -> enqueue */
+					if (lshort[s][w] == INF) {
+						bfs_queue[s].push(w);
+						lshort[s][w] = lshort[s][v] + 1;
+					}
+
+					/* Another shortest path to w via v. */
+					if (lshort[s][w] == lshort[s][v] + 1) {
+						nshort[s][w] = nshort[s][w] + nshort[s][v];
+						parents[s][w].push_back(v);
+					}
+				});
+			}
+
+			/* Now compute the dependencies in order of decreasing distance. */
+			dependency[s].resize(z, 0);
+			while (! increasing[s].empty()) {
+				node w = increasing[s].top();
+				increasing[s].pop();
+
+				for (node v: parents[s][w]) {
+					/* Recursive formula: see lecture. */
+					dependency[s][v] += double(nshort[s][v])/nshort[s][w] * (1.0 + dependency[s][w]);
+				}
+				if (w != s) {
+					intermediateScore[s][w] += dependency[s][w];
+				}
+			}
+
+			parents[s].clear();
+			nshort[s].clear();
+			lshort[s].clear();
+		});
+
+		DEBUG("All DAG computations finished.");
+
+		G.balancedParallelForNodes([&](node u) {
+			G.forNodes([&](node s) {
+				scoreData[u] += intermediateScore[s][u];
+			});
+		});
+
+#else
 		G.forNodes([&] (node s) {
 			/* Nodes in order of increasing distance from s. */
 			stack<node> increasing;
@@ -146,6 +217,7 @@ void Betweenness::run() {
 				}
 			}
 		});
+#endif
 	}
 
 	if (normalized) {
