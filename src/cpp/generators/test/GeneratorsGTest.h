@@ -20,6 +20,7 @@
 #include "../ErdosRenyiGenerator.h"
 #include "../ChungLuGenerator.h"
 #include "../HavelHakimiGenerator.h"
+#include "../RmatGenerator.h"
 #include "../../viz/PostscriptWriter.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../community/PLP.h"
