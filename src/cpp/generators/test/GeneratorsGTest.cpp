@@ -258,7 +258,7 @@ TEST_F(GeneratorsGTest, tryRmatGenerator) {
 
 	ClusteringCoefficient cc;
 	double ccex = cc.exactGlobal(G);
-	EXPECT_LE(ccex, 0.3);
+	EXPECT_LE(ccex, 0.4);
 }
 
 
