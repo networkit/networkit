@@ -28,6 +28,8 @@ Graph RmatGenerator::generate() {
 
 	auto quadrant([&]() {
 		double r = Aux::Random::probability();
+		TRACE("r: ", r);
+
 		if (r <= a) {
 			return 0;
 		}
@@ -45,10 +47,11 @@ Graph RmatGenerator::generate() {
 		node v = 0;
 		for (index i = 0; i < scale; ++i) {
 			count q = quadrant();
+			TRACE("q: ", q);
 			u = u << 1;
 			v = v << 1;
-			u = u | (q & 1);
-			v = v | (q >> 1);
+			u = u | (q >> 1);
+			v = v | (q & 1);
 		}
 
 		return std::make_pair(u, v);
