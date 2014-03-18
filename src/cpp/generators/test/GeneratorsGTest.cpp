@@ -11,6 +11,7 @@ Dy * GeneratorsTest.cpp
 
 #include "../DynamicPathGenerator.h"
 #include "../ForestFireGenerator.h"
+#include "../../properties/ClusteringCoefficient.h"
 
 namespace NetworKit {
 
@@ -239,6 +240,27 @@ TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 
 	DEBUG("Number of edges with probability " , p , " (actual/expected): " , nEdges , " / " , (nPairs * p));
 }
+
+TEST_F(GeneratorsGTest, tryRmatGenerator) {
+	count scale = 8;
+	count n = (1 << scale);
+	double edgeFactor = 8.0;
+	double a = 0.57;
+	double b = 0.19;
+	double c = 0.19;
+	double d = 0.05;
+
+	RmatGenerator rmat(scale, edgeFactor, a, b, c, d);
+	Graph G = rmat.generate();
+
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_LE(G.numberOfEdges(), n * edgeFactor);
+
+	ClusteringCoefficient cc;
+	double ccex = cc.exactGlobal(G);
+	EXPECT_LE(ccex, 0.3);
+}
+
 
 TEST_F(GeneratorsGTest, testChungLuGenerator) {
 	count n = 400;
