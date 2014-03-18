@@ -48,7 +48,7 @@ Graph RmatGenerator::generate() {
 			u = u << 1;
 			v = v << 1;
 			u = u | (q & 1);
-			v = v | (q & 2);
+			v = v | (q >> 1);
 		}
 
 		return std::make_pair(u, v);
