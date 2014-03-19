@@ -13,6 +13,13 @@
 
 namespace NetworKit {
 
+/**
+ * Generates static R-MAT graphs. R-MAT (recursive matrix) graphs are
+ * random graphs with n=2^scale nodes and m=n*edgeFactor edges.
+ * More details at http://www.graph500.org or in the original paper:
+ * Deepayan Chakrabarti, Yiping Zhan, Christos Faloutsos:
+ * R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
+ */
 class RmatGenerator: public NetworKit::StaticGraphGenerator {
 protected:
 	count scale; ///< n = 2^scale
@@ -35,8 +42,10 @@ public:
 	 * @param[in] d Probability for quadrant lower right
 	 */
 	RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d);
-	virtual ~RmatGenerator();
 
+	/**
+	 * @return Graph to be generated according to parameters specified in constructor.
+	 */
 	Graph generate() override;
 };
 
