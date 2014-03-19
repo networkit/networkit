@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <cstdint>
 
 // forward declaration
 class Matrix;
@@ -21,14 +22,14 @@ private:
 
 public:
 	Vector();
-	Vector(const int dimension, const double initialValue, const bool transposed = false);
+	Vector(const uint64_t dimension, const double initialValue, const bool transposed = false);
 	Vector(const std::vector<double> &values, const bool transposed = false);
 	virtual ~Vector();
 
 	/**
 	 * @return dimension of vector
 	 */
-	inline int getDimension() const {
+	inline uint64_t getDimension() const {
 		return values.size();
 	}
 
@@ -95,6 +96,7 @@ public:
 
 	/**
 	 * Adds @a other to this vector.
+	 * Note that the dimensions of the vectors have to be the same.
 	 * @return Reference to this vector.
 	 */
 	Vector& operator+=(const Vector &other);
@@ -109,6 +111,7 @@ public:
 
 	/**
 	 * Subtracts @a other from this vector.
+	 * Note that the dimensions of the vectors have to be the same.
 	 * @return Reference to this vector.
 	 */
 	Vector& operator-=(const Vector &other);
