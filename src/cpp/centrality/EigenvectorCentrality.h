@@ -25,7 +25,7 @@ public:
 	 * @param[in] G
 	 * @param[in] normalized True if scores should be normalized in the interval [0,1].
 	 */
-	EigenvectorCentrality(const Graph& G, bool normalized=true, double tol = 1e-7);
+	EigenvectorCentrality(const Graph& G, double tol = 1e-9);
 
 	virtual void run();
 };
