@@ -21,7 +21,7 @@ PLM::PLM(bool refine, double gamma, std::string par, count maxIter) : parallelis
 
 
 Partition PLM::run(Graph& G) {
-	INFO("calling run method on " , G.toString());
+	DEBUG("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();
 
@@ -164,7 +164,7 @@ Partition PLM::run(Graph& G) {
 			}
 			iter += 1;
 		} while (moved && (iter <= maxIter));
-		INFO("iterations in move phase: ", iter);
+		DEBUG("iterations in move phase: ", iter);
 	};
 
 	// first move phase
@@ -178,7 +178,7 @@ Partition PLM::run(Graph& G) {
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {
-			INFO("refinement phase");
+			DEBUG("refinement phase");
 			// reinit community-dependent temporaries
 			o = zeta.upperBound();
 			volCommunity.clear();
