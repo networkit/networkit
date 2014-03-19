@@ -10,8 +10,8 @@
 
 namespace NetworKit {
 
-EigenvectorCentrality::EigenvectorCentrality(const Graph& G, bool normalized, double tol):
-		Centrality(G, normalized), tol(tol)
+EigenvectorCentrality::EigenvectorCentrality(const Graph& G, double tol):
+		Centrality(G, true), tol(tol)
 {
 
 }
