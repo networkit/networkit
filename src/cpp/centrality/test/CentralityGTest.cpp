@@ -7,6 +7,7 @@
 
 #include "CentralityGTest.h"
 #include "../Betweenness.h"
+#include "../EigenvectorCentrality.h"
 #include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
@@ -82,7 +83,7 @@ TEST_F(CentralityGTest, testBetweennessWeighted) {
 	EXPECT_NEAR(0.0, bc[7], tol);
 }
 
-TEST_F(CentralityGTest, benchSequentialBetweennessOnRealGraph) {
+TEST_F(CentralityGTest, benchSequentialBetweennessCentralityOnRealGraph) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
 	Betweenness bc(G);
@@ -91,13 +92,63 @@ TEST_F(CentralityGTest, benchSequentialBetweennessOnRealGraph) {
 	INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
 }
 
-TEST_F(CentralityGTest, benchParallelBetweennessOnRealGraph) {
+TEST_F(CentralityGTest, benchParallelBetweennessCentralityOnRealGraph) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
 	Betweenness bc(G);
 	bc.run(true);
 	std::vector<std::pair<node, double> > ranking = bc.ranking();
 	INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
+}
+
+TEST_F(CentralityGTest, benchEigenvectorCentralityOnRealGraph) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/celegans_metabolic.graph");
+	EigenvectorCentrality cen(G);
+	cen.run();
+	std::vector<std::pair<node, double> > ranking = cen.ranking();
+	INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
+}
+
+TEST_F(CentralityGTest, testEigenvectorCentrality) {
+ /* Graph:
+    0    3   6
+     \  / \ /
+      2 -- 5
+     /  \ / \
+    1    4   7
+
+    Edges in the upper row have weight 3,
+    the edge in the middle row has weight 1.5,
+    edges in the lower row have weight 2.
+ */
+	count n = 8;
+	Graph G(n, true);
+
+	G.addEdge(0, 2, 3);
+	G.addEdge(1, 2, 2);
+	G.addEdge(2, 3, 3);
+	G.addEdge(2, 4, 2);
+	G.addEdge(2, 5, 1.5);
+	G.addEdge(3, 5, 3);
+	G.addEdge(4, 5, 2);
+	G.addEdge(5, 6, 3);
+	G.addEdge(5, 7, 2);
+
+	EigenvectorCentrality centrality = EigenvectorCentrality(G);
+	centrality.run();
+	std::vector<double> cen = centrality.scores();
+
+	// computed with Matlab
+	const double tol = 1e-4;
+	EXPECT_NEAR(0.2254, fabs(cen[0]), tol);
+	EXPECT_NEAR(0.1503, fabs(cen[1]), tol);
+	EXPECT_NEAR(0.5290, fabs(cen[2]), tol);
+	EXPECT_NEAR(0.4508, fabs(cen[3]), tol);
+	EXPECT_NEAR(0.3006, fabs(cen[4]), tol);
+	EXPECT_NEAR(0.5290, fabs(cen[5]), tol);
+	EXPECT_NEAR(0.2254, fabs(cen[6]), tol);
+	EXPECT_NEAR(0.1503, fabs(cen[7]), tol);
 }
 
 
