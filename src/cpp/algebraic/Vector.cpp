@@ -10,7 +10,7 @@
 
 Vector::Vector() : values(0), transposed(false) {}
 
-Vector::Vector(const int dimension, const double initialValue, const bool transposed) : values(dimension, initialValue), transposed(transposed) {}
+Vector::Vector(const uint64_t dimension, const double initialValue, const bool transposed) : values(dimension, initialValue), transposed(transposed) {}
 
 Vector::Vector(const std::vector<double> &values, const bool transposed) : values(values), transposed(transposed) {
 }
@@ -26,7 +26,7 @@ double Vector::innerProduct(const Vector &v1, const Vector &v2) {
 
 	double result = 0.0;
 #pragma omp parallel for reduction(+:result)
-	for (int i = 0; i < v1.getDimension(); i++) {
+	for (uint64_t i = 0; i < v1.getDimension(); i++) {
 		result += v1(i) * v2(i);
 	}
 
@@ -39,7 +39,7 @@ Vector Vector::operator*(const double &scalar) const {
 
 Vector& Vector::operator*=(const double &scalar) {
 #pragma omp parallel for
-	for (int i = 0; i < getDimension(); i++) {
+	for (uint64_t i = 0; i < getDimension(); i++) {
 		values[i] *= scalar;
 	}
 
@@ -49,7 +49,7 @@ Vector& Vector::operator*=(const double &scalar) {
 bool Vector::operator==(const Vector &other) const {
 	if (getDimension() != other.getDimension()) return false;
 
-	for (int i = 0; i < getDimension(); i++) {
+	for (uint64_t i = 0; i < getDimension(); i++) {
 		if (values[i] != other(i)) return false;
 	}
 
@@ -74,7 +74,7 @@ Vector& Vector::operator+=(const Vector &other) {
 	}
 
 #pragma omp parallel for
-	for (int i = 0; i < getDimension(); i++) {
+	for (uint64_t i = 0; i < getDimension(); i++) {
 		values[i] += other(i);
 	}
 
@@ -95,7 +95,7 @@ Vector& Vector::operator-=(const Vector &other) {
 	}
 
 #pragma omp parallel for
-	for (int i = 0; i < getDimension(); i++) {
+	for (uint64_t i = 0; i < getDimension(); i++) {
 		values[i] -= other(i);
 	}
 
