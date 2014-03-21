@@ -82,6 +82,10 @@ double Matrix::operator()(const uint64_t &i, const uint64_t &j) const {
 	return graph.weight(i,j);
 }
 
+void Matrix::setValue(const uint64_t &i, const uint64_t &j, const double &value) {
+	graph.setWeight(i, j, value);
+}
+
 Vector Matrix::row(const uint64_t &i) const {
 	std::vector<double> values(numberOfColumns(), 0.0);
 	auto setElements = [&](NetworKit::node i, NetworKit::node j, double value) {

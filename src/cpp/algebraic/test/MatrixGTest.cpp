@@ -254,5 +254,83 @@ TEST(MatrixGTest, tryMatrixMultiplication) {
 	ASSERT_EQ(17, result(3,3));
 }
 
+
+
+// special matrices tests
+TEST(MatrixGTest, tryLaplacianMatrixConstruction) {
+	NetworKit::Graph graph(6);
+	graph.addEdge(0, 1);
+	graph.addEdge(0, 4);
+	graph.addEdge(1, 4);
+	graph.addEdge(1, 2);
+	graph.addEdge(2, 3);
+	graph.addEdge(3, 4);
+	graph.addEdge(3, 5);
+
+	LaplacianMatrix laplaceMatrix(graph);
+	ASSERT_EQ(2, laplaceMatrix(0,0));
+	ASSERT_EQ(-1, laplaceMatrix(0,1));
+	ASSERT_EQ(0, laplaceMatrix(0,2));
+	ASSERT_EQ(0, laplaceMatrix(0,3));
+	ASSERT_EQ(-1, laplaceMatrix(0,4));
+	ASSERT_EQ(0, laplaceMatrix(0,5));
+	ASSERT_EQ(3, laplaceMatrix(1,1));
+	ASSERT_EQ(-1, laplaceMatrix(1,2));
+	ASSERT_EQ(0, laplaceMatrix(1,3));
+	ASSERT_EQ(-1, laplaceMatrix(1,4));
+	ASSERT_EQ(0, laplaceMatrix(1,5));
+	ASSERT_EQ(2, laplaceMatrix(2,2));
+	ASSERT_EQ(-1, laplaceMatrix(2,3));
+	ASSERT_EQ(0, laplaceMatrix(2,4));
+	ASSERT_EQ(0, laplaceMatrix(2,5));
+	ASSERT_EQ(3, laplaceMatrix(3,3));
+	ASSERT_EQ(-1, laplaceMatrix(3,4));
+	ASSERT_EQ(-1, laplaceMatrix(3,5));
+	ASSERT_EQ(3, laplaceMatrix(4,4));
+	ASSERT_EQ(0, laplaceMatrix(4,5));
+	ASSERT_EQ(1, laplaceMatrix(5,5));
+}
+
+TEST(MatrixGTest, tryNormalizedLaplacianMatrixConstruction) {
+	NetworKit::Graph graph(7);
+	graph.addEdge(0, 1);
+	graph.addEdge(0, 4);
+	graph.addEdge(1, 4);
+	graph.addEdge(1, 2);
+	graph.addEdge(2, 3);
+	graph.addEdge(3, 4);
+	graph.addEdge(3, 5);
+
+	NormalizedLaplacianMatrix normalizedLaplacianMatrix(graph);
+	ASSERT_EQ(1, normalizedLaplacianMatrix(0,0));
+	ASSERT_EQ(-1.0 / sqrt(2.0 * 3.0), normalizedLaplacianMatrix(0,1));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(0,2));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(0,3));
+	ASSERT_EQ(-1.0 / sqrt(2.0 * 3.0), normalizedLaplacianMatrix(0,4));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(0,5));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(0,6));
+	ASSERT_EQ(1, normalizedLaplacianMatrix(1,1));
+	ASSERT_EQ(-1.0 / sqrt(2.0 * 3.0), normalizedLaplacianMatrix(1,2));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(1,3));
+	ASSERT_EQ(-1.0 / 3.0, normalizedLaplacianMatrix(1,4));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(1,5));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(1,6));
+	ASSERT_EQ(1, normalizedLaplacianMatrix(2,2));
+	ASSERT_EQ(-1.0 / sqrt(2.0 * 3.0), normalizedLaplacianMatrix(2,3));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(2,4));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(2,5));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(2,6));
+	ASSERT_EQ(1, normalizedLaplacianMatrix(3,3));
+	ASSERT_EQ(-1.0 / 3.0, normalizedLaplacianMatrix(3,4));
+	ASSERT_EQ(-1.0 / sqrt(3.0), normalizedLaplacianMatrix(3,5));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(3,6));
+	ASSERT_EQ(1, normalizedLaplacianMatrix(4,4));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(4,5));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(4,6));
+	ASSERT_EQ(1, normalizedLaplacianMatrix(5,5));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(5,6));
+	ASSERT_EQ(0, normalizedLaplacianMatrix(6,6));
+}
+
 #endif
 
