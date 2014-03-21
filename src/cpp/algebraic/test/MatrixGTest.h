@@ -12,6 +12,10 @@
 
 #include "gtest/gtest.h"
 #include "../Matrix.h"
+#include "../LaplacianMatrix.h"
+#include "../NormalizedLaplacianMatrix.h"
+#include "../../graph/Graph.h"
+#include <math.h>
 #include <vector>
 #include <utility>
 

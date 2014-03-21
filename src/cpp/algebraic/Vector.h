@@ -18,12 +18,11 @@ class Matrix;
 class Vector {
 private:
 	std::vector<double> values;
-	bool transposed = false;
 
 public:
 	Vector();
-	Vector(const uint64_t dimension, const double initialValue, const bool transposed = false);
-	Vector(const std::vector<double> &values, const bool transposed = false);
+	Vector(const uint64_t dimension, const double initialValue);
+	Vector(const std::vector<double> &values);
 	virtual ~Vector();
 
 	/**
@@ -149,14 +148,14 @@ inline Vector operator*(const double &scalar, const Vector &v) {
 
 template<typename L>
 inline void Vector::forElements(L handle) {
-	for (int i = 0; i < getDimension(); i++) {
+	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(values[i]);
 	}
 }
 
 template<typename L>
 inline void Vector::forElements(L handle) const {
-	for (int i = 0; i < getDimension(); i++) {
+	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(values[i]);
 	}
 }
@@ -164,7 +163,7 @@ inline void Vector::forElements(L handle) const {
 template<typename L>
 inline void Vector::parallelForElements(L handle) {
 #pragma omp parallel for
-	for (int i = 0; i < getDimension(); i++) {
+	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(i, values[i]);
 	}
 }
@@ -172,7 +171,7 @@ inline void Vector::parallelForElements(L handle) {
 template<typename L>
 inline void Vector::parallelForElements(L handle) const {
 #pragma omp parallel for
-	for (int i = 0; i < getDimension(); i++) {
+	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(i, values[i]);
 	}
 }

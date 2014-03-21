@@ -16,18 +16,18 @@ VectorGTest::~VectorGTest() {
 
 TEST(VectorGTest, tryVectorConstruction) {
 	Vector v1;
-	ASSERT_EQ(0, v1.getDimension());
+	ASSERT_EQ(0u, v1.getDimension());
 
 	Vector v2(10, 1.0);
-	ASSERT_EQ(10, v2.getDimension());
-	for (int i = 0; i < v2.getDimension(); i++) {
+	ASSERT_EQ(10u, v2.getDimension());
+	for (uint64_t i = 0; i < v2.getDimension(); i++) {
 		ASSERT_EQ(1.0, v2(i));
 	}
 
 	std::vector<double> values = {1.0, 2.0, 3.0, 4.0, 5.0};
 	Vector v3(values);
-	ASSERT_EQ(5, v3.getDimension());
-	for (int i = 0; i < v3.getDimension(); i++) {
+	ASSERT_EQ(5u, v3.getDimension());
+	for (uint64_t i = 0; i < v3.getDimension(); i++) {
 		ASSERT_EQ(static_cast<double>((i + 1)), v3(i));
 	}
 }
@@ -36,7 +36,7 @@ TEST(VectorGTest, tryDimension) {
 	std::vector<double> values = {1.0, 2.0, 3.0, 4.0, 5.0};
 	Vector testVector(values);
 
-	ASSERT_EQ(5, testVector.getDimension());
+	ASSERT_EQ(5u, testVector.getDimension());
 }
 
 TEST(VectorGTest, tryAccessVectorElement) {
@@ -85,7 +85,7 @@ TEST(VectorGTest, tryVectorScalarMultiplication) {
 	Vector vectorScalar = testVector * 2.0;
 	Vector scalarVector = 2.0 * testVector;
 
-	for (int i = 0; i < testVector.getDimension(); i++) {
+	for (uint64_t i = 0; i < testVector.getDimension(); i++) {
 		ASSERT_EQ((i + 1) * 2.0, vectorScalar(i));
 		ASSERT_EQ((i + 1) * 2.0, scalarVector(i));
 	}
@@ -99,13 +99,13 @@ TEST(VectorGTest, tryVectorAddition) {
 	Vector v2(values2);
 
 	Vector v3 = v1 + v2;
-	ASSERT_EQ(5, v3.getDimension());
-	for (int i = 0; i < v3.getDimension(); i++) {
+	ASSERT_EQ(5u, v3.getDimension());
+	for (uint64_t i = 0; i < v3.getDimension(); i++) {
 		ASSERT_EQ(v1(i) + v2(i), v3(i));
 	}
 
 	v1 += v2;
-	for (int i = 0; i < v1.getDimension(); i++) {
+	for (uint64_t i = 0; i < v1.getDimension(); i++) {
 		ASSERT_EQ(v3(i), v1(i));
 	}
 }
@@ -118,13 +118,13 @@ TEST(VectorGTest, tryVectorSubtraction) {
 	Vector v2(values2);
 
 	Vector v3 = v1 - v2;
-	ASSERT_EQ(5, v3.getDimension());
-	for (int i = 0; i < v3.getDimension(); i++) {
+	ASSERT_EQ(5u, v3.getDimension());
+	for (uint64_t i = 0; i < v3.getDimension(); i++) {
 		ASSERT_EQ(v1(i) - v2(i), v3(i));
 	}
 
 	v1 -= v2;
-	for (int i = 0; i < v1.getDimension(); i++) {
+	for (uint64_t i = 0; i < v1.getDimension(); i++) {
 		ASSERT_EQ(v3(i), v1(i));
 	}
 }
@@ -153,7 +153,7 @@ TEST(VectorGTest, tryVectorIterators) {
 	};
 
 	v.forElements(nonConstantTester);
-	for (int i = 0; i < v.getDimension(); i++) {
+	for (uint64_t i = 0; i < v.getDimension(); i++) {
 		ASSERT_EQ((i + 2.0), v(i));
 	}
 
@@ -162,7 +162,7 @@ TEST(VectorGTest, tryVectorIterators) {
 	};
 
 	v.parallelForElements(nonConstantParallelTester);
-	for (int i = 0; i < v.getDimension(); i++) {
+	for (uint64_t i = 0; i < v.getDimension(); i++) {
 		ASSERT_EQ((i + 3.0), v(i));
 	}
 }

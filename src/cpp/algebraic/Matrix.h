@@ -41,6 +41,8 @@ public:
 	 */
 	double operator()(const uint64_t &i, const uint64_t &j) const;
 
+	void setValue(const uint64_t &i, const uint64_t &j, const double &value);
+
 	/**
 	 * @return Row @a i of this matrix as vector.
 	 */
