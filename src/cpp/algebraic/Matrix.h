@@ -109,16 +109,35 @@ public:
 	 */
 	Matrix operator*(const Matrix &other) const;
 
+
 	/**
-	 * Iterate in parallel over all non-zero elements of the matrix in row order and call handler (lambda closure).
+	 * Iterate over all elements of the matrix in row order and call handler (lambda closure).
+	 */
+	template<typename L> void forElementsInRowOrder(L handle) const;
+
+	/**
+	 * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
 	 */
 	template<typename L> void parallelForNonZeroElementsInRowOrder(L handle) const;
 
 	/**
-	 * Iterate in parallel over all non-zero elements of the matrix in row order and call handler (lambda closure).
+	 * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
 	 */
 	template<typename L> void parallelForNonZeroElementsInRowOrder(L handle);
 };
+
+template<typename L>
+inline void Matrix::forElementsInRowOrder(L handle) const {
+	auto rowIterator = [&](const uint64_t &row) {
+		auto columnIterator = [&](const uint64_t &column) {
+			handle(row, column, (*this)(row, column));
+		};
+
+		graph.forNodes(columnIterator);
+	};
+
+	graph.forNodes(rowIterator);
+}
 
 template<typename L>
 inline void Matrix::parallelForNonZeroElementsInRowOrder(L handle) const {
