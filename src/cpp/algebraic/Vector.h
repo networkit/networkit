@@ -12,17 +12,19 @@
 #include <stdexcept>
 #include <cstdint>
 
-// forward declaration
+// forward declaration of Matrix class
 class Matrix;
 
 class Vector {
 private:
 	std::vector<double> values;
+	bool transposed;
 
 public:
 	Vector();
-	Vector(const uint64_t dimension, const double initialValue);
-	Vector(const std::vector<double> &values);
+	Vector(const uint64_t dimension, const double initialValue, const bool transpose = false);
+	Vector(const std::vector<double> &values, const bool transpose = false);
+	Vector(const std::initializer_list<double> &list);
 	virtual ~Vector();
 
 	/**
@@ -31,6 +33,17 @@ public:
 	inline uint64_t getDimension() const {
 		return values.size();
 	}
+
+	/**
+	 * A transposed vector is a row vector.
+	 * @return True, if this vector is transposed, otherwise false.
+	 */
+	bool isTransposed() const;
+
+	/**
+	 * Transposes this vector. A transposed vector is a row vector.
+	 */
+	void transpose();
 
 	/**
 	 * @return Reference to the element at index @a idx.
@@ -67,12 +80,31 @@ public:
 	bool operator!=(const Vector &other) const;
 
 	/**
+	 * Computes the outer product of this vector and @a other.
+	 * Note that the dimensions must match and that @a other must be transposed.
+	 * @return The result of the outer product.
+	 */
+//	Matrix outerProduct(const Vector &other) const;
+
+	/**
+	 * Computes the outer product of vectors @a v1 and @a v2.
+	 * Note that the dimensions must match and that @a v2 must be transposed.
+	 * @return The result of the outer product.
+	 */
+	static Matrix outerProduct(const Vector &v1, const Vector &v2);
+
+	/**
 	 * Computes the inner product (dot product) of the vectors @a v1 and @a v2.
 	 * @return The result of the inner product.
 	 */
 	static double innerProduct(const Vector &v1, const Vector &v2);
 
-	// TODO: outer product
+	/**
+	 * Computes the inner product (dot product) of this vector and @a other.
+	 * Note that the dimensions must match and that this vector must be transposed.
+	 * @return The result of the inner product.
+	 */
+	double operator*(const Vector &other) const;
 
 	/**
 	 * Multiplies this vector with a scalar specified in @a scalar and returns the result.
