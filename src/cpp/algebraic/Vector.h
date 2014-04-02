@@ -11,6 +11,7 @@
 #include <vector>
 #include <stdexcept>
 #include <cstdint>
+#include <cmath>
 
 // forward declaration of Matrix class
 class Matrix;
@@ -25,6 +26,7 @@ public:
 	Vector(const uint64_t dimension, const double initialValue, const bool transpose = false);
 	Vector(const std::vector<double> &values, const bool transpose = false);
 	Vector(const std::initializer_list<double> &list);
+	Vector(const Vector &other, const bool transpose = false);
 	virtual ~Vector();
 
 	/**
@@ -41,9 +43,16 @@ public:
 	bool isTransposed() const;
 
 	/**
-	 * Transposes this vector. A transposed vector is a row vector.
+	 * @return Transposed copy of this vector.
 	 */
-	void transpose();
+	Vector transpose() const;
+
+
+	/**
+	 * Calculates and returns the Euclidean length of this vector
+	 * @return The Euclidean length of this vector.
+	 */
+	double length() const;
 
 	/**
 	 * @return Reference to the element at index @a idx.

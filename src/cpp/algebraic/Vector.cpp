@@ -18,6 +18,9 @@ Vector::Vector(const std::vector<double> &values, const bool transpose) : values
 Vector::Vector(const std::initializer_list<double> &list) : values(list), transposed(false) {
 }
 
+Vector::Vector(const Vector &other, const bool transpose) : values(other.values), transposed(transpose) {
+}
+
 Vector::~Vector() {
 }
 
@@ -25,8 +28,12 @@ bool Vector::isTransposed() const {
 	return transposed;
 }
 
-void Vector::transpose() {
-	transposed = !transposed;
+Vector Vector::transpose() const {
+	return Vector(*this, !transposed);
+}
+
+double Vector::length() const {
+	return std::sqrt((*this) * this->transpose());
 }
 
 bool Vector::operator==(const Vector &other) const {
@@ -52,7 +59,7 @@ bool Vector::operator!=(const Vector &other) const {
 //}
 
 double Vector::operator*(const Vector &other) const {
-	if (!transposed || other.isTransposed()) {
+	if (transposed || !other.isTransposed()) {
 		throw std::runtime_error("vectors are not transposed correctly for inner product");
 	} else if (getDimension() != other.getDimension()) {
 		throw std::runtime_error("dimensions of vectors do not match");
