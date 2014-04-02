@@ -13,6 +13,7 @@
 #include <gtest/gtest.h>
 #include "../Vector.h"
 #include "../../auxiliary/Log.h"
+#include <cmath>
 
 class VectorGTest : public testing::Test {
 public:
