@@ -246,7 +246,43 @@ TEST_F(GraphGTest, testSubgraphPartitioning) {
 	EXPECT_EQ(3, subG.numberOfEdges());
 	EXPECT_EQ(3, subG.numberOfNodes());
 
+}
 
+
+TEST_F(GraphGTest, testBFSIterator) {
+	Graph G(6);
+	G.addEdge(0,1);
+	G.addEdge(1,4);
+	G.addEdge(4,5);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+
+	std::vector<node> visited;
+	G.BFSfrom(0, [&](node v){
+		visited.push_back(v);
+	});
+
+	std::vector<node> expected = {0,1,2,3,4,5};
+	EXPECT_EQ(expected, visited);
+}
+
+
+TEST_F(GraphGTest, testDFSIterator) {
+	Graph G(7);
+	G.addEdge(0,1);
+	G.addEdge(1,4);
+	G.addEdge(4,5);
+	G.addEdge(0,2);
+	G.addEdge(0,3);
+	G.addEdge(3,6);
+
+	std::vector<node> visited;
+	G.DFSfrom(0, [&](node v){
+		visited.push_back(v);
+	});
+
+	std::vector<node> expected = {0,3,6,2,1,4,5};
+	EXPECT_EQ(expected, visited);
 }
 
 
