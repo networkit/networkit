@@ -1296,11 +1296,46 @@ cdef extern from "../cpp/centrality/PageRank.h":
 cdef class PageRank:
 	"""
 		Compute PageRank as node centrality measure.
+		Parameters:
+			- G 	Graph to be processed.
+	 		- damp 	Damping factor of the PageRank algorithm.
+	 		- tol 	Error tolerance for PageRank iteration.
 	"""
 	cdef _PageRank* _this
 
 	def __cinit__(self, Graph G, double damp, double tol=1e-9):
 		self._this = new _PageRank(G._this, damp, tol)
+
+	def run(self):
+		self._this.run()
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
+
+
+cdef extern from "../cpp/centrality/EigenvectorCentrality.h":
+	cdef cppclass _EigenvectorCentrality "NetworKit::EigenvectorCentrality":
+		_EigenvectorCentrality(_Graph, double tol) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class EigenvectorCentrality:
+	"""
+ 	Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm).
+ 	Interpreted as eigenvector centrality score.
+	"""
+	cdef _EigenvectorCentrality* _this
+
+	def __cinit__(self, Graph G, double tol=1e-9):
+		self._this = new _EigenvectorCentrality(G._this, tol)
 
 	def run(self):
 		self._this.run()
