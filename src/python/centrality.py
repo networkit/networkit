@@ -1,8 +1,9 @@
-from _NetworKit import Betweenness
+from _NetworKit import Betweenness, PageRank
 
 
 def ranking(G, algorithm=Betweenness, normalized=False):
 	""" Return a ranking of nodes by the specified centrality type"""
+	# FIXME: some centrality algorithms take more parameters
 	centrality = algorithm(G, normalized)
 	centrality.run()
 	return centrality.ranking()
