@@ -1225,6 +1225,37 @@ cdef class CoreDecomposition:
 
 # Module: centrality
 
+
+# TODO: how to properly wrap class hierarchies and reuse code?
+
+# cdef extern from "../cpp/centrality/Centrality.h":
+# 	cdef cppclass _Centrality "NetworKit::Centrality":
+# 		_centrality(_Graph, bool) except +
+# 		void run() except +
+# 		vector[double] scores() except +
+# 		vector[pair[node, double]] ranking() except +
+# 		double score(node) except +
+
+
+# cdef class Centrality:
+# 	""" Abstract base class for centrality measures"""
+
+# 	def __cinit__(self, _Centrality* _this):
+# 		self._this = _this
+	
+# 	def run(self):
+# 		self._this.run()
+
+# 	def scores(self):
+# 		return self._this.scores()
+
+# 	def score(self, v):
+# 		return self._this.score(v)
+
+# 	def ranking(self):
+# 		return self._this.ranking()
+
+
 cdef extern from "../cpp/centrality/Betweenness.h":
 	cdef cppclass _Betweenness "NetworKit::Betweenness":
 		_Betweenness(_Graph, bool) except +
@@ -1254,9 +1285,34 @@ cdef class Betweenness:
 	def ranking(self):
 		return self._this.ranking()
 
+cdef extern from "../cpp/centrality/PageRank.h":
+	cdef cppclass _PageRank "NetworKit::PageRank":
+		_PageRank(_Graph, double damp, double tol) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
 
+cdef class PageRank:
+	"""
+		Compute PageRank as node centrality measure.
+	"""
+	cdef _PageRank* _this
 
-	
+	def __cinit__(self, Graph G, double damp, double tol=1e-9):
+		self._this = new _PageRank(G._this, damp, tol)
+
+	def run(self):
+		self._this.run()
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
 
 # Module: dynamic
 
