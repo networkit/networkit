@@ -205,4 +205,5 @@ TEST_F(CentralityGTest, benchPageRankCentralityOnRealGraph) {
 }
 
 
+
 } /* namespace NetworKit */
