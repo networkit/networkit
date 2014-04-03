@@ -486,6 +486,35 @@ cdef class HavelHakimiGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 
+cdef extern from "../cpp/generators/RmatGenerator.h":
+	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
+		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d) except +
+		_Graph generate() except +
+
+cdef class RmatGenerator:
+	"""
+	  Generates static R-MAT graphs. R-MAT (recursive matrix) graphs are
+	  random graphs with n=2^scale nodes and m=nedgeFactor edges.
+	  More details at http://www.graph500.org or in the original paper:
+	  Deepayan Chakrabarti, Yiping Zhan, Christos Faloutsos:
+	  R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
+
+	Parameters:
+		-  scale Number of nodes = 2^scale
+		-  edgeFactor Number of edges = number of nodes * edgeFactor
+		-  a Probability for quadrant upper left
+		-  b Probability for quadrant upper right
+		-  c Probability for quadrant lower left
+		-  d Probability for quadrant lower right
+	"""
+
+	cdef _RmatGenerator* _this
+
+	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):
+		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
 
 
 # Module: graphio

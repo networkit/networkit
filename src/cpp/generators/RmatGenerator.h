@@ -28,10 +28,6 @@ protected:
 	double defaultEdgeWeight;
 
 public:
-	/**
-	 * DO NOT use to create instances. For Python interface only.
-	 */
-	RmatGenerator();
 
 	/**
 	 * @param[in] scale Number of nodes = 2^scale
