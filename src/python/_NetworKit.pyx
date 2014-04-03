@@ -133,6 +133,9 @@ cdef class Graph:
 		self._this = other
 		return self
 
+	# this is necessary so that the C++ object gets properly garbage collected
+    def __dealloc__(self):
+        del self._this
 	
 	def numberOfNodes(self):
 		return self._this.numberOfNodes()
