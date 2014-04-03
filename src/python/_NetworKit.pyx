@@ -2,6 +2,8 @@
 
 #includes
 
+# C++ operators
+from cython.operator import dereference
 
 # type imports
 from libc.stdint cimport uint64_t
@@ -115,11 +117,11 @@ cdef extern from "../cpp/graph/Graph.h":
 
 cdef class Graph:
 	"""An undirected, optionally weighted graph"""
-	cdef _Graph _this
+	cdef _Graph* _this
 	
 	def __cinit__(self, n=None, weighted=False):
 		if n is not None:
-			self._this = _Graph(n, weighted)
+			self._this = new _Graph(n, weighted)
 		
 	# # any _thisect which appears as a return type needs to implement setThis
 	# cdef setThis(self, _Graph other):
@@ -127,10 +129,8 @@ cdef class Graph:
 	# 	self._this = other
 	# 	return self
 
-	cdef setThis(self, _Graph other):
-		print("before steal")
-		self._this.stealFrom(other)
-		print("after steal")
+	cdef setThis(self, _Graph* other):
+		self._this = other
 		return self
 
 	
@@ -254,7 +254,7 @@ cdef class BFS:
 		return Vector of unweighted distances from node @a source, i.e. the
 	 		length (number of edges) of the shortest path from source to any other vertex.
 		"""
-		return self._this.run(G._this, source)
+		return self._this.run(dereference(G._this), source)
 	
 
 cdef extern from "../cpp/graph/Dijkstra.h":
@@ -269,14 +269,14 @@ cdef class Dijkstra:
 	cdef _Dijkstra _this
 
 	def run(self, Graph G not None, source):
-		return self._this.run(G._this, source)
+		return self._this.run(dereference(G._this), source)
 
 
 
 cdef extern from "../cpp/graph/Subgraph.h":
 	cdef cppclass _Subgraph "NetworKit::Subgraph":
 		_Subgraph() except +
-		_Graph fromNodes(_Graph G, unordered_set[node] nodes)
+		_Graph* _fromNodes(_Graph G, unordered_set[node] nodes)
 
 cdef class Subgraph:
 	""" Methods for creating subgraphs"""
@@ -286,7 +286,7 @@ cdef class Subgraph:
 		cdef unordered_set[node] nnodes
 		for node in nodes:
 			nnodes.insert(node);
-		return Graph().setThis(self._this.fromNodes(G._this, nnodes))
+		return Graph().setThis(self._this._fromNodes(dereference(G._this), nnodes))
 
 cdef extern from "../cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
@@ -301,7 +301,7 @@ cdef class Luby:
 	cdef _Luby _this
 
 	def run(self, Graph G not None):
-		return self._this.run(G._this)
+		return self._this.run(dereference(G._this))
 
 	def toString(self):
 		return self._this.toString().decode("utf-8")
@@ -309,29 +309,30 @@ cdef class Luby:
 
 # Module: generators
 	
-cdef extern from "../cpp/graph/GraphGenerator.h":
-	cdef cppclass _GraphGenerator "NetworKit::GraphGenerator":
-		_GraphGenerator() except +
-		_Graph makeRandomGraph(count n, double p)
+# cdef extern from "../cpp/graph/GraphGenerator.h":
+# 	cdef cppclass _GraphGenerator "NetworKit::GraphGenerator":
+# 		_GraphGenerator() except +
+# 		_Graph makeRandomGraph(count n, double p)
 
 
-cdef class GraphGenerator:
-	""" Provides several functions for graph generation"""
-	cdef _GraphGenerator _this
+# cdef class GraphGenerator:
+# 	""" Provides several functions for graph generation"""
+# 	cdef _GraphGenerator _this
 	
-	def __cinit__(self):
-		self._this = _GraphGenerator()
+# 	def __cinit__(self):
+# 		self._this = _GraphGenerator()
 		
 	
-	def makeRandomGraph(self, n, p):
-		cdef _Graph _G = self._this.makeRandomGraph(n, p)
-		return Graph(0).setThis(_G)
+# 	def makeRandomGraph(self, n, p):
+# 		cdef _Graph _G = self._this.makeRandomGraph(n, p)
+# 		return Graph(0).setThis(_G)
 
 cdef extern from "../cpp/generators/BarabasiAlbertGenerator.h":
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator":
 		_BarabasiAlbertGenerator() except +
 		_BarabasiAlbertGenerator(count k, count nMax, count n0) except +
-		_Graph generate()
+		#_Graph* _generate()
+		_Graph* _generate() except +
 
 cdef class BarabasiAlbertGenerator:
 	""" Generates a scale-free graph according to the Barabasi-Albert model """
@@ -341,13 +342,13 @@ cdef class BarabasiAlbertGenerator:
 		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
 
 	def generate(self):
-		return Graph().setThis(self._this.generate());
+		return Graph().setThis(self._this._generate());
 
 
 cdef extern from "../cpp/generators/PubWebGenerator.h":
 	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator":
 		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
-		_Graph generate() except +
+		_Graph* _generate() except +
 
 cdef class PubWebGenerator:
 	"""
@@ -377,13 +378,13 @@ cdef class PubWebGenerator:
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
 
 	def generate(self):
-		return Graph(0).setThis(self._this.generate())
+		return Graph(0).setThis(self._this._generate())
 
 
 cdef extern from "../cpp/generators/ErdosRenyiGenerator.h":
 	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator":
 		_ErdosRenyiGenerator(count nNodes, double prob) except +
-		_Graph generate() except +
+		_Graph* _generate() except +
 
 cdef class ErdosRenyiGenerator:
 	"""
@@ -402,13 +403,13 @@ cdef class ErdosRenyiGenerator:
 		self._this = new _ErdosRenyiGenerator(nNodes, prob)
 
 	def generate(self):
-		return Graph(0).setThis(self._this.generate())
+		return Graph(0).setThis(self._this._generate())
 
 
 cdef extern from "../cpp/generators/ClusteredRandomGraphGenerator.h":
 	cdef cppclass _ClusteredRandomGraphGenerator "NetworKit::ClusteredRandomGraphGenerator":
 		_ClusteredRandomGraphGenerator(count, count, double, double) except +
-		_Graph generate() except +
+		_Graph* _generate() except +
 
 cdef class ClusteredRandomGraphGenerator:
 	"""
@@ -425,14 +426,14 @@ cdef class ClusteredRandomGraphGenerator:
 		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
 
 	def generate(self):
-		return Graph(0).setThis(self._this.generate())
+		return Graph(0).setThis(self._this._generate())
 
 
 cdef extern from "../cpp/generators/ChungLuGenerator.h":
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
 		# TODO: revert to count when cython issue fixed
 		_ChungLuGenerator(vector[unsigned int] degreeSequence) except +
-		_Graph generate() except +
+		_Graph* _generate() except +
 
 cdef class ChungLuGenerator:
 	"""
@@ -449,14 +450,14 @@ cdef class ChungLuGenerator:
 		self._this = new _ChungLuGenerator(degreeSequence)
 
 	def generate(self):
-		return Graph(0).setThis(self._this.generate())
+		return Graph(0).setThis(self._this._generate())
 
 
 cdef extern from "../cpp/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
 		# TODO: revert to count when cython issue fixed
 		_HavelHakimiGenerator(vector[unsigned int] degreeSequence, bool skipTest) except +
-		_Graph generate() except +
+		_Graph* _generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
 
@@ -485,13 +486,13 @@ cdef class HavelHakimiGenerator:
 		return self._this.getRealizable();
 
 	def generate(self):
-		return Graph(0).setThis(self._this.generate())
+		return Graph(0).setThis(self._this._generate())
 
 
 cdef extern from "../cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
 		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d) except +
-		_Graph generate() except +
+		_Graph* _generate() except +
 
 cdef class RmatGenerator:
 	"""
@@ -516,7 +517,7 @@ cdef class RmatGenerator:
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
 
 	def generate(self):
-		return Graph(0).setThis(self._this.generate())
+		return Graph(0).setThis(self._this._generate())
 
 
 # Module: graphio
@@ -524,7 +525,8 @@ cdef class RmatGenerator:
 cdef extern from "../cpp/io/METISGraphReader.h":
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader":
 		_METISGraphReader() except +
-		_Graph read(string path) except +
+		# _Graph read(string path) except +
+		_Graph* _read(string path) except +
 		_Graph* readToHeap(string path) except +
 
 cdef class METISGraphReader:
@@ -535,16 +537,13 @@ cdef class METISGraphReader:
 	
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
-		return Graph(0).setThis(self._this.read(pathbytes))
-
-	def readToHeap(self, path):
-		return Graph2(0).setThis(self._this.readToHeap(path.encode("utf-8")))
+		return Graph(0).setThis(self._this._read(pathbytes))
 
 
 cdef extern from "../cpp/io/FastMETISGraphReader.h":
 	cdef cppclass _FastMETISGraphReader "NetworKit::FastMETISGraphReader":
 		_FastMETISGraphReader() except +
-		_Graph read(string path) except +
+		_Graph* _read(string path) except +
 
 cdef class FastMETISGraphReader:
 	""" A faster but currently experimental implementation of a reader for
@@ -554,8 +553,7 @@ cdef class FastMETISGraphReader:
 	
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
-		cdef _Graph _G = self._this.read(pathbytes)
-		return Graph(0).setThis(_G)
+		return Graph(0).setThis(self._this._read(pathbytes))
 
 
 cdef extern from "../cpp/io/METISGraphWriter.h":
@@ -570,7 +568,7 @@ cdef class METISGraphWriter:
 	
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(G._this, stdstring(path)) 
+		self._this.write(dereference(G._this), stdstring(path)) 
 	
 
 cdef extern from "../cpp/io/DotGraphWriter.h":
@@ -585,7 +583,7 @@ cdef class DotGraphWriter:
 	
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(G._this, stdstring(path))
+		self._this.write(dereference(G._this), stdstring(path))
 
 
 cdef extern from "../cpp/io/VNAGraphWriter.h":
@@ -601,7 +599,7 @@ cdef class VNAGraphWriter:
 	
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(G._this, stdstring(path)) 
+		self._this.write(dereference(G._this), stdstring(path)) 
 
 
 cdef extern from "../cpp/io/GMLGraphWriter.h":
@@ -616,14 +614,14 @@ cdef class GMLGraphWriter:
 	
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(G._this, stdstring(path)) 
+		self._this.write(dereference(G._this), stdstring(path)) 
 		
 
 cdef extern from "../cpp/io/EdgeListIO.h":
 	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
 		_EdgeListIO() except +
 		_EdgeListIO(char separator, node firstNode) except +
-		_Graph read(string path) except +
+		_Graph* _read(string path) except +
 		void write(_Graph G, string path) except +
 
 cdef class EdgeListIO:
@@ -637,10 +635,10 @@ cdef class EdgeListIO:
 		self._this = _EdgeListIO(sep, firstNode)
 
 	def read(self, path):
-		return Graph().setThis(self._this.read(stdstring(path)))
+		return Graph().setThis(self._this._read(stdstring(path)))
 
 	def write(self, Graph G not None, path):
-		self._this.write(G._this, stdstring(path))
+		self._this.write(dereference(G._this), stdstring(path))
 
 
 
@@ -670,7 +668,7 @@ cdef class SNAPGraphWriter:
 	cdef _SNAPGraphWriter _this
 
 	def write(self, Graph G, path):
-		self._this.write(G._this, stdstring(path))
+		self._this.write(dereference(G._this), stdstring(path))
 
 
 cdef extern from "../cpp/io/ClusteringReader.h":
@@ -836,7 +834,7 @@ cdef class Coverage:
 	cdef _Coverage _this
 	
 	def getQuality(self, Partition zeta, Graph G):
-		return self._this.getQuality(zeta._this, G._this)
+		return self._this.getQuality(zeta._this, dereference(G._this))
 
 
 cdef extern from "../cpp/community/Modularity.h":
@@ -853,7 +851,7 @@ cdef class Modularity:
 	cdef _Modularity _this
 	
 	def getQuality(self, Partition zeta, Graph G):
-		return self._this.getQuality(zeta._this, G._this)
+		return self._this.getQuality(zeta._this, dereference(G._this))
 
 
 cdef class CommunityDetector:
@@ -883,7 +881,7 @@ cdef class PLP(CommunityDetector):
 
 	
 	def run(self, Graph G not None):
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(dereference(G._this)))
 
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
@@ -902,7 +900,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 	cdef _LPDegreeOrdered _this
 	
 	def run(self, Graph G not None):
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(dereference(G._this)))
 
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
@@ -925,7 +923,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 # 		self._this = _PLM(stdstring(par), gamma)
 	
 # 	def run(self, Graph G not None):
-# 		return Partition().setThis(self._this.run(G._this))
+# 		return Partition().setThis(self._this.run(dereference(G._this)))
 
 # 	def toString(self):
 # 		return self._this.toString().decode("utf-8")
@@ -952,7 +950,7 @@ cdef class PLM(CommunityDetector):
 		return self._this.toString().decode("utf-8")
 		
 	def run(self, Graph G not None):
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(dereference(G._this)))
 
 
 cdef extern from "../cpp/community/CNM.h":
@@ -977,7 +975,7 @@ cdef class CNM(CommunityDetector):
 		return self._this.toString().decode("utf-8")
 		
 	def run(self, Graph G not None):
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(dereference(G._this)))
 
 
 cdef class DissimilarityMeasure:
@@ -997,7 +995,7 @@ cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
 	cdef _NodeStructuralRandMeasure _this
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
-		return self._this.getDissimilarity(G._this, first._this, second._this)
+		return self._this.getDissimilarity(dereference(G._this), first._this, second._this)
 
 
 cdef extern from "../cpp/community/GraphStructuralRandMeasure.h":
@@ -1012,7 +1010,7 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 	cdef _GraphStructuralRandMeasure _this
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
-		return self._this.getDissimilarity(G._this, first._this, second._this)
+		return self._this.getDissimilarity(dereference(G._this), first._this, second._this)
 
 
 cdef extern from "../cpp/community/EPP.h":
@@ -1025,7 +1023,7 @@ cdef class EPP(CommunityDetector):
 	cdef _EPP _this
 
 	def run(self, Graph G):
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run(dereference(G._this)))
 
 	def toString(self):
 		return self._this.toString()
@@ -1049,7 +1047,7 @@ cdef class EPPFactory:
 cdef extern from "../cpp/community/CommunityGraph.h":
 	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":
 		void run(_Graph G, _Partition zeta) except +
-		_Graph getGraph() except +
+		_Graph* _getGraph() except +
 		map[index, node] getCommunityToNodeMap() except +
 		map[node, index] getNodeToCommunityMap() except +
 
@@ -1058,10 +1056,10 @@ cdef class CommunityGraph:
 	cdef _CommunityGraph _this
 
 	def run(self, Graph G, Partition zeta):
-		self._this.run(G._this, zeta._this)
+		self._this.run(dereference(G._this), zeta._this)
 
 	def getGraph(self):
-		return Graph().setThis(self._this.getGraph())
+		return Graph().setThis(self._this._getGraph())
 
 	def getCommunityToNodeMap(self):
 		return self._this.getCommunityToNodeMap()
@@ -1090,23 +1088,23 @@ cdef class GraphProperties:
 
 	@staticmethod
 	def minMaxDegree(Graph G not None):
-		return minMaxDegree(G._this)
+		return minMaxDegree(dereference(G._this))
 
 	@staticmethod
 	def averageDegree(Graph G not None):
-		return averageDegree(G._this)
+		return averageDegree(dereference(G._this))
 
 	@staticmethod
 	def degreeDistribution(Graph G not None):
-		return degreeDistribution(G._this)
+		return degreeDistribution(dereference(G._this))
 
 	@staticmethod
 	def averageLocalClusteringCoefficient(Graph G not None):
-		return averageLocalClusteringCoefficient(G._this)
+		return averageLocalClusteringCoefficient(dereference(G._this))
 
 	@staticmethod
 	def degreeAssortativity(Graph G, bool useWeights):
-		return degreeAssortativity(G._this, useWeights)
+		return degreeAssortativity(dereference(G._this), useWeights)
 
 
 
@@ -1131,7 +1129,7 @@ cdef class ConnectedComponents:
 		self._this = new _ConnectedComponents()
 
 	def run(self, Graph G):
-		self._this.run(G._this)
+		self._this.run(dereference(G._this))
 
 	def numberOfComponents(self):
 		return self._this.numberOfComponents()
@@ -1162,19 +1160,19 @@ cdef class ClusteringCoefficient:
 	cdef _ClusteringCoefficient _this
 
 	def exactLocal(self, Graph G):
-		return self._this.exactLocal(G._this)
+		return self._this.exactLocal(dereference(G._this))
 
 	def avgLocal(self, Graph G):
-		return self._this.avgLocal(G._this)
+		return self._this.avgLocal(dereference(G._this))
 
 	def approxAvgLocal(self, Graph G, trials):
-		return self._this.approxAvgLocal(G._this, trials)
+		return self._this.approxAvgLocal(dereference(G._this), trials)
 
 	def exactGlobal(self, Graph G):
-		return self._this.exactGlobal(G._this)
+		return self._this.exactGlobal(dereference(G._this))
 
 	def approxGlobal(self, Graph G, trials):
-		return self._this.approxGlobal(G._this, trials)
+		return self._this.approxGlobal(dereference(G._this), trials)
 
 
 
@@ -1189,11 +1187,11 @@ cdef class Diameter:
 
 	@staticmethod
 	def estimatedDiameterRange(Graph G, error=0.1):
-		return estimatedDiameterRange(G._this, error)
+		return estimatedDiameterRange(dereference(G._this), error)
 
 	@staticmethod
 	def exactDiameter(Graph G):
-		return exactDiameter(G._this)
+		return exactDiameter(dereference(G._this))
 
 cdef extern from "../cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
@@ -1205,7 +1203,7 @@ cdef class Eccentricity:
 
 	@staticmethod
 	def getValue(Graph G, v):
-		return getValue(G._this, v)
+		return getValue(dereference(G._this), v)
 
 
 cdef extern from "../cpp/properties/CoreDecomposition.h":
@@ -1227,7 +1225,7 @@ cdef class CoreDecomposition:
 
 	def __cinit__(self, Graph G):
 		""" Initialize with graph """
-		self._this = new _CoreDecomposition(G._this)
+		self._this = new _CoreDecomposition(dereference(G._this))
 
 	def run(self):
 		""" Perform k-core decomposition of graph passed in constructor. """
@@ -1303,7 +1301,7 @@ cdef class Betweenness:
 	cdef _Betweenness* _this
 
 	def __cinit__(self, Graph G, normalized=False):
-		self._this = new _Betweenness(G._this, normalized)
+		self._this = new _Betweenness(dereference(G._this), normalized)
 
 	def run(self, parallel=False):
 		"""
@@ -1340,7 +1338,7 @@ cdef class PageRank:
 	cdef _PageRank* _this
 
 	def __cinit__(self, Graph G, double damp, double tol=1e-9):
-		self._this = new _PageRank(G._this, damp, tol)
+		self._this = new _PageRank(dereference(G._this), damp, tol)
 
 	def run(self):
 		self._this.run()
@@ -1371,7 +1369,7 @@ cdef class EigenvectorCentrality:
 	cdef _EigenvectorCentrality* _this
 
 	def __cinit__(self, Graph G, double tol=1e-9):
-		self._this = new _EigenvectorCentrality(G._this, tol)
+		self._this = new _EigenvectorCentrality(dereference(G._this), tol)
 
 	def run(self):
 		self._this.run()
@@ -1402,7 +1400,7 @@ cdef class DegreeCentrality:
 	cdef _DegreeCentrality* _this
 
 	def __cinit__(self, Graph G, bool normalized=False):
-		self._this = new _DegreeCentrality(G._this, normalized)
+		self._this = new _DegreeCentrality(dereference(G._this), normalized)
 
 	def run(self):
 		self._this.run()
@@ -1578,7 +1576,7 @@ cdef extern from "../cpp/generators/DynamicPubWebGenerator.h":
 		_DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors) except +
 		vector[_GraphEvent] generate(count nSteps) except +
-		_Graph getGraph() except +
+		_Graph* _getGraph() except +
 
 
 cdef class DynamicPubWebGenerator:
@@ -1591,7 +1589,7 @@ cdef class DynamicPubWebGenerator:
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 	def getGraph(self):
-		return Graph().setThis(self._this.getGraph())
+		return Graph().setThis(self._this._getGraph())
 
 
 # cdef extern from "../cpp/generators/ForestFireGenerator.h":
@@ -1622,7 +1620,7 @@ cdef class GraphUpdater:
 	cdef _GraphUpdater* _this
 
 	def __cinit__(self, Graph G):
-		self._this = new _GraphUpdater(G._this)
+		self._this = new _GraphUpdater(dereference(G._this))
 
 	def update(self, stream):
 		cdef vector[_GraphEvent] _stream

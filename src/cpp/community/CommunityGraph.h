@@ -27,6 +27,11 @@ public:
 
 	virtual Graph getGraph();
 
+	/** only to be used by cython - this eliminates an unnecessary copy */
+	Graph* _getGraph() {
+		return new Graph{std::move(getGraph())};
+	};
+
 	/** 
 	 * Maps community id to id of node in the community graph.
 	 */
