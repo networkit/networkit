@@ -1383,6 +1383,38 @@ cdef class EigenvectorCentrality:
 	def ranking(self):
 		return self._this.ranking()
 
+
+cdef extern from "../cpp/centrality/DegreeCentrality.h":
+	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality":
+		_DegreeCentrality(_Graph, bool normalized) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class DegreeCentrality:
+	"""
+ 	Node centrality index which ranks nodes by their degree.
+ 	Optional normalization by maximum degree.
+	"""
+	cdef _DegreeCentrality* _this
+
+	def __cinit__(self, Graph G, bool normalized=False):
+		self._this = new _DegreeCentrality(G._this, normalized)
+
+	def run(self):
+		self._this.run()
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
+
+
 # Module: dynamic
 
 cdef extern from "../cpp/dynamics/GraphEvent.h":
