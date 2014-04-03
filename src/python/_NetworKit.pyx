@@ -1289,6 +1289,7 @@ cdef extern from "../cpp/centrality/Betweenness.h":
 	cdef cppclass _Betweenness "NetworKit::Betweenness":
 		_Betweenness(_Graph, bool) except +
 		void run() except +
+		void run(bool runUnweightedInParallel) except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
@@ -1302,8 +1303,12 @@ cdef class Betweenness:
 	def __cinit__(self, Graph G, normalized=False):
 		self._this = new _Betweenness(G._this, normalized)
 
-	def run(self):
-		self._this.run()
+	def run(self, parallel=False):
+		"""
+		Parameters:
+			- parallel 	for unweighted networks computation can be run in parallel
+		"""
+		self._this.run(parallel)
 
 	def scores(self):
 		return self._this.scores()
