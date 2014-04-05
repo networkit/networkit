@@ -9,6 +9,7 @@
 
 #include "IOGTest.h"
 #include "../../community/GraphClusteringTools.h"
+#include "../FastMETISGraphReaderDouble.h"
 
 namespace NetworKit {
 
@@ -119,6 +120,26 @@ TEST_F(IOGTest, testMETISGraphReaderWithWeights) {
 	for (index v = 0; v < n; ++v) {
 		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
 	}
+}
+
+TEST_F(IOGTest, testMETISGraphReaderWithDoubleWeights) {
+	std::string path = "input/jazz2double.graph";
+
+	FastMETISGraphReaderDouble reader;
+	Graph G = reader.read(path);
+
+	EXPECT_FALSE(G.isEmpty());
+	count n = 5;
+	count m = 6;
+	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
+	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
+
+	for (index v = 0; v < n; ++v) {
+		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
+	}
+	double edgeweight = 7.7101972436782;
+	double abs = 1e-9;
+	EXPECT_LE(G.totalEdgeWeight()-edgeweight,abs) << "Total edgeweight should be " << edgeweight;
 }
 
 TEST_F(IOGTest, testMETISGraphWriter) {
