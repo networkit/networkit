@@ -65,8 +65,9 @@ def components(G):
 	logging.info("[...] finding connected components....")
 	cc = ConnectedComponents(G)
 	cc.run()
-	nComponents = cc.numberOfComponents()
-	componentSizes = cc.getComponentSizes()
+	components = cc.getPartition()
+	nComponents = components.numberOfSubsets()
+	componentSizes = components.subsetSizeMap()
 	return (nComponents, componentSizes)
 
 def numberOfComponents(G):
