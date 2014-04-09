@@ -19,9 +19,11 @@ ClusteringCoefficient::exactLocal(Graph &G) const
 
 	G.balancedParallelForNodes([&](node u) {
 		count d = G.degree(u);
-		std::unordered_set<node> uNeighbors;
+		std::unordered_set<node> uNeighbors; // set for O(1) time access to u's neighbors
 		G.forNeighborsOf(u, [&](node v){
-			uNeighbors.insert(u);
+			if (v != u) {
+				uNeighbors.insert(v);
+			}
 		});
 	    
 	    if (d < 2) {
@@ -30,12 +32,12 @@ ClusteringCoefficient::exactLocal(Graph &G) const
 	      count triangles = 0;
 	      G.forEdgesOf(u, [&](node u, node v) {
 	        G.forEdgesOf(v, [&](node v, node w){
-	          if (uNeighbors.find(w) != uNeighbors.end()) {
+	          if (uNeighbors.find(w) != uNeighbors.end()) { // w is also a neighbor of u
 	            triangles += 1;
 	          }
 	        });
 	      });
-	      coefficient[u] = (double)triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
+	      coefficient[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
 	    }
 	});
 
