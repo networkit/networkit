@@ -63,6 +63,13 @@ public:
 	 * A similar description of this algorithm can be found in
 	 * Newman: Networks. An Introduction. Chapter 8.7.
 	 */
+	static double degreeAssortativitySlower(const Graph& G, bool useWeights = false);
+
+	/**
+	 * @return Degree assortativity of the graph @a G.
+	 * Based on description in
+	 * Newman: Networks. An Introduction. Chapter 8.7.
+	 */
 	static double degreeAssortativity(const Graph& G, bool useWeights = false);
 };
 

@@ -908,29 +908,6 @@ cdef class LPDegreeOrdered(CommunityDetector):
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
 	
-
-# cdef extern from "../cpp/community/PLMOld.h":
-# 	cdef cppclass _PLM "NetworKit::PLMOld":
-# 		_PLMOld() except +
-# 		_PLMOld(string par, double gamma)
-# 		_Partition run(_Graph _G)
-# 		string toString()
-		
-# cdef class PLMOld(CommunityDetector):
-# 	""" Parallel Louvain method for community detection: 
-# 	High solution quality, moderate time to solution. """
-
-# 	cdef _PLMOld _this
-	
-# 	def __cinit__(self, par="balanced", gamma=1.0):
-# 		self._this = _PLM(stdstring(par), gamma)
-	
-# 	def run(self, Graph G not None):
-# 		return Partition().setThis(self._this.run(dereference(G._this)))
-
-# 	def toString(self):
-# 		return self._this.toString().decode("utf-8")
-		
 		
 cdef extern from "../cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
@@ -1114,12 +1091,11 @@ cdef class GraphProperties:
 
 cdef extern from "../cpp/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
-		_ConnectedComponents() except +
-		void run(_Graph G) except +
+		_ConnectedComponents(_Graph G) except +
+		void run() except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
-		vector[node] getComponent(index component) except +
-		map[index, count] getComponentSizes() except +
+		_Partition getPartition() except +
 
 
 cdef class ConnectedComponents:
@@ -1128,23 +1104,20 @@ cdef class ConnectedComponents:
 	"""
 	cdef _ConnectedComponents* _this
 
-	def __cinit__(self):
-		self._this = new _ConnectedComponents()
+	def __cinit__(self,  Graph G):
+		self._this = new _ConnectedComponents(dereference(G._this))
 
-	def run(self, Graph G):
-		self._this.run(dereference(G._this))
+	def run(self):
+		self._this.run()
+
+	def getPartition(self):
+		return Partition().setThis(self._this.getPartition())
 
 	def numberOfComponents(self):
 		return self._this.numberOfComponents()
 
 	def componentOfNode(self, v):
 		return self._this.componentOfNode(v)
-
-	def getComponent(self, componentIndex):
-		return self._this.getComponent(componentIndex)
-	
-	def getComponentSizes(self):
-		return self._this.getComponentSizes()
 
 
 cdef extern from "../cpp/properties/ClusteringCoefficient.h":
