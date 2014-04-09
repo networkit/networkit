@@ -23,13 +23,13 @@ protected:
 
 public:
 
-	ProgressMeter(int64_t n, int64_t i);
+	ProgressMeter(int64_t n, int64_t i): n{n}, i{i} {}
 
-	virtual ~ProgressMeter();
+	virtual ~ProgressMeter() = default;
 
 	/**
- 	* Send a signal to the progress meter - constructor parameters decide when output is produced.
- 	*/
+	 * Send a signal to the progress meter - constructor parameters decide when output is produced.
+	 */
 	inline void signal(int64_t v) {
 		if ((v % this->i) == 0) {
 			std::cout << "." << std::flush;
@@ -44,8 +44,8 @@ public:
 	}
 
 	/**
- 	* Call this when process finished.
- 	*/
+	 * Call this when process finished.
+	 */
 	inline void end() {
 		std::cout << std::endl;
 	}
