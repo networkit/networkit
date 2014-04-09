@@ -26,7 +26,6 @@
 
 #include "Coordinates.h"
 #include "../auxiliary/Log.h"
-#include "../auxiliary/Debug.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
