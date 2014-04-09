@@ -18,14 +18,14 @@ namespace NetworKit {
  */
 class ConnectedComponents {
 public:
-	ConnectedComponents();
+	ConnectedComponents(const Graph& G);
 	virtual ~ConnectedComponents();
 	/**
 	 * This method determines the connected components for the graph g.
 	 *
 	 * @param[in]	G	graph 
 	 */
-	void run(const Graph& G);
+	void run();
 
 	/**
 	 * This method returns the number of connected components.
@@ -62,6 +62,7 @@ public:
 	std::map<index, count> getComponentSizes();
 
 private:
+	const Graph& G;
 	std::vector<node> component;
 };
 
