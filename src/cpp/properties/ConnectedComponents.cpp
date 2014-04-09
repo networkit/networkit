@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-ConnectedComponents::ConnectedComponents() {
+ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
 
 }
 
@@ -20,7 +20,7 @@ ConnectedComponents::~ConnectedComponents() {
 
 }
 
-void ConnectedComponents::run(const Graph& G) {
+void ConnectedComponents::run() {
 	// calculate connected components by label propagation
 	count z = G.numberOfNodes();
 	this->component = std::vector<node>(z, none);
@@ -74,8 +74,8 @@ void ConnectedComponents::run(const Graph& G) {
 			// coarsen and make recursive call
 			PartitionCoarsening con;
 			std::pair<Graph, std::vector<node> > coarse = con.run(G, partition);
-			ConnectedComponents cc;
-			cc.run(coarse.first);
+			ConnectedComponents cc(coarse.first);
+			cc.run();
 
 			// apply to current graph
 			G.forNodes([&](node u) {

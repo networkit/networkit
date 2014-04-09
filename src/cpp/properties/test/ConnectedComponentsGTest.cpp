@@ -49,8 +49,8 @@ ConnectedComponentsGTest::~ConnectedComponentsGTest() {
  	g.addEdge(13,14,0);
 
  	// initialize ConnectedComponents
- 	ConnectedComponents ccs;
- 	ccs.run(g);
+ 	ConnectedComponents ccs(g);
+ 	ccs.run();
 
  	// check result
  	EXPECT_TRUE(ccs.numberOfComponents() == 5);
@@ -121,8 +121,8 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
-	ConnectedComponents cc;
-	cc.run(G);
+	ConnectedComponents cc(G);
+	cc.run();
 	DEBUG("Number of components: ", cc.numberOfComponents());
 	EXPECT_EQ(1, cc.numberOfComponents());
 }
@@ -131,36 +131,38 @@ TEST_F(ConnectedComponentsGTest, tryHHConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
 	Graph G = reader.read("input/coAuthorsDBLP.graph");
-	ConnectedComponents cc;
+	ConnectedComponents cc(G);
 
 	// run CC algo on original
-	cc.run(G);
+	cc.run();
 	DEBUG("Number of components in original: ", cc.numberOfComponents());
 
 	// compute HH graph and apply CC algo
 	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
 	HavelHakimiGenerator hhgen(sequence, true);
 	Graph G2 = hhgen.generate();
-	cc.run(G2);
-	DEBUG("Number of components in HH generated: ", cc.numberOfComponents());
+	ConnectedComponents cc2(G2);
+	cc2.run();
+	DEBUG("Number of components in HH generated: ", cc2.numberOfComponents());
 }
 
 TEST_F(ConnectedComponentsGTest, tryLiveJConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
 	Graph G = reader.read("../graphs/ascii/soc-LiveJournal1_symm_or.graph");
-	ConnectedComponents cc;
+	ConnectedComponents cc(G);
 
 	// run CC algo on original
-	cc.run(G);
+	cc.run();
 	DEBUG("Number of components in original: ", cc.numberOfComponents());
 
 	// compute HH graph and apply CC algo
 	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
 	HavelHakimiGenerator hhgen(sequence, true);
 	Graph G2 = hhgen.generate();
-	cc.run(G2);
-	DEBUG("Number of components in HH generated: ", cc.numberOfComponents());
+	ConnectedComponents cc2(G2);
+	cc2.run();
+	DEBUG("Number of components in HH generated: ", cc2.numberOfComponents());
 }
 
 
