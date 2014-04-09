@@ -213,6 +213,10 @@ public:
 	 */
 	edgeweight volume(node v) const;
 
+
+	/** @return random node from G */
+	node randomNode() const;
+
 	/**
 	 * @return Random (uuid) neighbor of @a v. None if degree is zero.
 	 */
