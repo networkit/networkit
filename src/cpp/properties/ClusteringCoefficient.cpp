@@ -13,8 +13,8 @@ namespace NetworKit {
 std::vector<double>
 ClusteringCoefficient::exactLocal(Graph &G) const
 {
-	count n = G.numberOfNodes();
-	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+	count z = G.upperNodeIdBound();
+	std::vector<double> coefficient(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	G.balancedParallelForNodes([&](node u) {
 		count d = G.degree(u);
@@ -40,8 +40,8 @@ ClusteringCoefficient::exactLocal(Graph &G) const
 double
 ClusteringCoefficient::avgLocal(Graph& G) const
 {
-	count n = G.numberOfNodes();
-	std::vector<double> coefficients(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+	count z = G.upperNodeIdBound();
+	std::vector<double> coefficients(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	coefficients = this->exactLocal(G);
 
@@ -59,17 +59,15 @@ ClusteringCoefficient::avgLocal(Graph& G) const
 }
 
 double
-ClusteringCoefficient::approxAvgLocal(Graph& G, const count tries) const
+ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) const
 {
-	count n = G.numberOfNodes();
-
 	// WARNING: I assume RAND_MAX to be larger than n. If this should not hold for an application
 	// or implementation of the standard library, a more sophisticated version of determining a 
 	// vertex uniformly at random must be used.
 
 	double triangles = 0;
-	for (count k = 0; k < tries; ++k) {
-		node v = rand() % n;
+	for (count k = 0; k < trials; ++k) {
+		node v = G.randomNode();
 
 		if (G.degree(v) < 2) {
 			// this vertex can never be part of a triangle,
@@ -91,16 +89,16 @@ ClusteringCoefficient::approxAvgLocal(Graph& G, const count tries) const
 		}
 	}
 
-	return triangles / (double)tries;
+	return triangles / (double) trials;
 }
 
 
 double
 ClusteringCoefficient::exactGlobal(Graph& G) const
 {
-	count n = G.numberOfNodes();
-	std::vector<count> triangles(n); // triangles including node u (every triangle is counted six times)
-	std::vector<count> triples(n); // triples around node u
+	count z = G.upperNodeIdBound();
+	std::vector<count> triangles(z); // triangles including node u (every triangle is counted six times)
+	std::vector<count> triples(z); // triples around node u
 
 
 	G.parallelForNodes([&](node u){
@@ -133,29 +131,29 @@ ClusteringCoefficient::exactGlobal(Graph& G) const
 
 
 double
-ClusteringCoefficient::approxGlobal(Graph& G, const count tries) const
+ClusteringCoefficient::approxGlobal(Graph& G, const count trials) const
 {
-	count n = G.numberOfNodes();
+	count z = G.upperNodeIdBound();
 
   // Calculate prefix sum over the nodes where each node v counts deg(v)*(deg(v)-1) times
-	std::vector<count> weight(n);
+	std::vector<count> weight(z);
 	count psum = 0;
-	for (index i = 0; i < n; i++) {
-		psum += G.degree(i) * (G.degree(i) - 1);
-		weight[i] = psum;
-	}
+	G.forNodes([&](node v) {
+		psum += G.degree(v) * (G.degree(v) - 1);
+		weight[v] = psum;
+	});
 
 	// WARNING: I assume RAND_MAX to be larger than PSUM. If this should not hold for an application
 	// or implementation of the standard library, a more sophisticated version of determining a 
 	// vertex uniformly at random must be used.
 
 	double triangles = 0;
-	for (count k = 0; k < tries; ++k) {
+	for (count k = 0; k < trials; ++k) {
 		count r = Aux::Random::integer(psum - 1);
 
 		// plain old binary search:
 		index low = 0; 
-		index high = G.numberOfNodes();
+		index high = G.upperNodeIdBound();
 		while (low < high) {
 			index middle = (low + high) / 2;
 
@@ -191,7 +189,7 @@ ClusteringCoefficient::approxGlobal(Graph& G, const count tries) const
 		}
 	}
 
-	return triangles / tries;
+	return triangles / trials;
 }
 
 } /* namespace NetworKit */
