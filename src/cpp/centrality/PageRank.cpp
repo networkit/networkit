@@ -25,7 +25,7 @@ void NetworKit::PageRank::run() {
 	bool isConverged = false;
 
 	while (! isConverged) {
-		G.parallelForNodes([&](node u) {
+		G.balancedParallelForNodes([&](node u) {
 			pr[u] = 0.0;
 			G.forNeighborsOf(u, [&](node v) {
 				pr[u] += scoreData[v] * G.weight(u, v) / (double) G.weightedDegree(v);

@@ -72,18 +72,18 @@ std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& 
 	if (G.numberOfNodes() > 1 ) {
 		coefficient = localClusteringCoefficients(G);
 
-			G.forNodes([&](node u){
-				perDegree[G.degree(u)] += coefficient[u];
-			});
+		G.forNodes([&](node u){
+			perDegree[G.degree(u)] += coefficient[u];
+		});
 
-			// get the average local clustering coefficient for nodes of each degreee
-			for (index i = 2; i < degDist.size(); ++i) {
-				if (degDist[i] == 0) {
-					perDegree[i] = 0.0; // TODO: should this be -1
-				} else {
-					perDegree[i] = perDegree[i] / (double) degDist[i];
-				}
+		// get the average local clustering coefficient for nodes of each degreee
+		for (index i = 2; i < degDist.size(); ++i) {
+			if (degDist[i] == 0) {
+				perDegree[i] = 0.0; // TODO: should this be -1
+			} else {
+				perDegree[i] = perDegree[i] / (double) degDist[i];
 			}
+		}
 	}
 
 
@@ -146,8 +146,9 @@ double GraphProperties::averageDegree(const Graph& G) {
 	return avgDeg;
 }
 
-double GraphProperties::degreeAssortativity(const Graph& G, bool useWeights) {
+double GraphProperties::degreeAssortativitySlower(const Graph& G, bool useWeights) {
 	// note: a parallel implementation would rather follow Newman's book, p. 267
+	// however, parallelism introduces inaccuracies due to numerical issues in reduction
 
 	double r = 0.0; // result
 	double A = 0.0; // accumulates degree products
@@ -194,6 +195,46 @@ double GraphProperties::degreeAssortativity(const Graph& G, bool useWeights) {
 	r = (A - B) / (C - B);
 	return r;
 }
+
+
+
+double GraphProperties::degreeAssortativity(const Graph& G, bool useWeighted) {
+	double r = 0.0; // result
+
+	double S1 = 0.0; // accumulates degrees
+	double S2 = 0.0; // accumulates squared degrees
+	double S3 = 0.0; // accumulates cubed degress
+	double Se = 0.0; // accumulates degree products
+
+	double deg = 0.0; // temp storage for degree
+	double sqr = 0.0;  // temp storage square of degree
+
+	// iterate over edges and accumulate
+	if (G.isWeighted() && useWeighted) {
+		return degreeAssortativitySlower(G, useWeighted);
+	}
+	else {
+		TRACE("start sum");
+		G.forEdges([&](node u, node v) { // parallel iteration leads to crash
+			Se += G.degree(u) * G.degree(v);
+		});
+		TRACE("end sum");
+
+		G.forNodes([&](node u) {
+			deg = G.degree(u);
+			S1 += deg;
+			sqr = deg * deg;
+			S2 += sqr;
+			S3 += sqr * deg;
+		});
+	}
+	Se = 2.0 * Se;
+
+	assert(S1 * S3 != S2 * S2);
+	r = (S1 * Se - S2 * S2) / (S1 * S3 - S2 * S2);
+	return r;
+}
+
 
 
 } /* namespace NetworKit */

@@ -382,7 +382,7 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
 }
 
 
-TEST_F(PropertiesGTest, testExactDegreeAssortativity) {
+TEST_F(PropertiesGTest, testDegreeAssortativity) {
 	METISGraphReader reader;
 	double tol = 1e-6;
 
