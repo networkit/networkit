@@ -18,7 +18,6 @@
 #include "../Random.h"
 #include "../Timer.h"
 #include "../MissingMath.h"
-#include "../Debug.h"
 #include "../PrioQueue.h"
 
 TEST_F(AuxGTest, produceRandomIntegers) {
@@ -146,7 +145,7 @@ TEST_F(AuxGTest, benchmarkBinomial) {
 
 TEST_F(AuxGTest, testVectorDebug) {
 	std::vector<int> vec(10, 42);
-	INFO(Aux::vectorToString(vec), "\n");
+	INFO(vec);
 }
 
 

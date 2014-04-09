@@ -149,8 +149,8 @@ TEST_F(OverlapGTest, testHashingOverlapperForCorrectness) {
 	HashingOverlapper overlapper;
 	Partition overlap = overlapper.run(G, clusterings);
 
-	INFO("overlap clustering number of clusters: " , overlap.numberOfSubsets());
-	INFO("overlap clustering: " , Aux::vectorToString(overlap.getVector()));
+	INFO("overlap clustering number of clusters: ", overlap.numberOfSubsets());
+	INFO("overlap clustering: ", overlap.getVector());
 }
 
 
