@@ -1114,8 +1114,8 @@ cdef class GraphProperties:
 
 cdef extern from "../cpp/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
-		_ConnectedComponents() except +
-		void run(_Graph G) except +
+		_ConnectedComponents(_Graph G) except +
+		void run() except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		vector[node] getComponent(index component) except +
@@ -1128,11 +1128,11 @@ cdef class ConnectedComponents:
 	"""
 	cdef _ConnectedComponents* _this
 
-	def __cinit__(self):
-		self._this = new _ConnectedComponents()
+	def __cinit__(self,  Graph G):
+		self._this = new _ConnectedComponents(dereference(G._this))
 
-	def run(self, Graph G):
-		self._this.run(dereference(G._this))
+	def run(self):
+		self._this.run()
 
 	def numberOfComponents(self):
 		return self._this.numberOfComponents()

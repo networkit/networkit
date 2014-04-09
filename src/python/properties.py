@@ -63,8 +63,8 @@ def components(G):
 		ConnectedComponents class.
 	"""
 	logging.info("[...] finding connected components....")
-	cc = ConnectedComponents()
-	cc.run(G)
+	cc = ConnectedComponents(G)
+	cc.run()
 	nComponents = cc.numberOfComponents()
 	componentSizes = cc.getComponentSizes()
 	return (nComponents, componentSizes)
