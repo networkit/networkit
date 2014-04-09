@@ -10,6 +10,7 @@
 
 #include "../graph/Graph.h"
 #include "../graph/BFS.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -18,14 +19,14 @@ namespace NetworKit {
  */
 class ConnectedComponents {
 public:
-	ConnectedComponents();
+	ConnectedComponents(const Graph& G);
 	virtual ~ConnectedComponents();
 	/**
 	 * This method determines the connected components for the graph g.
 	 *
 	 * @param[in]	G	graph 
 	 */
-	void run(const Graph& G);
+	void run();
 
 	/**
 	 * This method returns the number of connected components.
@@ -41,28 +42,14 @@ public:
 
 
 	/** 
-	 * Return a vector which contains the
-	 * component label indexed by each node
+	 * Return a Partition that represents the components
 	 */
-	std::vector<index> getComponentData();
+	Partition getPartition();
 
-	/**
-	 * This method returns a component consisting of a vector of nodes
-	 *
-	 * @param[in]	component	the index of the component that is asked for
-	 */
-	std::vector<node> getComponent(index component);
-
-
-	/**
-	 * This method returns a map of component index
-	 * to size of the component.
-	 *
-	 */
-	std::map<index, count> getComponentSizes();
 
 private:
-	std::vector<node> component;
+	const Graph& G;
+	Partition component;
 };
 
 }
