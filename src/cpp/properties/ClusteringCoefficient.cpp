@@ -7,6 +7,7 @@
 
 #include "ClusteringCoefficient.h"
 #include "../auxiliary/Random.h"
+#include <unordered_set>
 
 namespace NetworKit {
 
@@ -18,6 +19,10 @@ ClusteringCoefficient::exactLocal(Graph &G) const
 
 	G.balancedParallelForNodes([&](node u) {
 		count d = G.degree(u);
+		std::unordered_set<node> uNeighbors;
+		G.forNeighborsOf(u, [&](node v){
+			uNeighbors.insert(u);
+		});
 	    
 	    if (d < 2) {
 	      coefficient[u] = 0.0;
@@ -25,7 +30,7 @@ ClusteringCoefficient::exactLocal(Graph &G) const
 	      count triangles = 0;
 	      G.forEdgesOf(u, [&](node u, node v) {
 	        G.forEdgesOf(v, [&](node v, node w){
-	          if (G.hasEdge(u, w)) {
+	          if (uNeighbors.find(w) != uNeighbors.end()) {
 	            triangles += 1;
 	          }
 	        });
