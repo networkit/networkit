@@ -14,7 +14,7 @@ node Sampling::randomNode(const Graph& G) {
 	assert (G.numberOfNodes() > 0);
 	node v = none;
 	do {
-		node v = Aux::Random::integer(G.upperNodeIdBound());
+		v = Aux::Random::integer(G.upperNodeIdBound());
 	} while (!G.hasNode(v));
 	return v;
 }
