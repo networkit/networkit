@@ -25,7 +25,7 @@ PropertiesGTest::~PropertiesGTest() {
 TEST_F(PropertiesGTest, testClusteringCoefficient) {
 
 	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
+	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
 
 	ClusteringCoefficient clusteringCoefficient;
 	double cc = clusteringCoefficient.avgLocal(G);
