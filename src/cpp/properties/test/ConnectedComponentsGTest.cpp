@@ -135,9 +135,9 @@ TEST_F(ConnectedComponentsGTest, tryParallelConnectedComponents) {
 	for (auto graphName: graphs) {
 		Graph G = reader.read("input/" + graphName + ".graph");
 		ConnectedComponents cc(G);
-		cc.run();
+		cc.runSequential();
 		count seqNum = cc.numberOfComponents();
-		cc.runParallel();
+		cc.run();
 		count parNum = cc.numberOfComponents();
 		DEBUG("Number of components: ", seqNum);
 		EXPECT_EQ(seqNum, parNum);
