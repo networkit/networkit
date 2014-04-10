@@ -12,6 +12,8 @@
 
 namespace NetworKit {
 
+
+// TODO: adapt BFS to standard interface: pass G and source via constructor, have a void run method, return results in appropriate getter methods.
 class BFS {
 public:
 	BFS() = default;

@@ -18,8 +18,9 @@ GraphDistance::~GraphDistance() {
 }
 
 edgeweight GraphDistance::weightedDistance(const Graph& g, node u, node v) const {
-	Dijkstra dijkstra;
-	std::vector<edgeweight> distances = dijkstra.run(g, u);
+	Dijkstra dijkstra(g, u); 
+	dijkstra.run();
+	std::vector<edgeweight> distances = dijkstra.getDistances();
 	DEBUG("Called Dijkstra, distance between " , u , " and " , v , ": " , distances[v]);
 	return distances[v];
 }
