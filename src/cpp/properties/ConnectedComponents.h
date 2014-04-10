@@ -27,6 +27,7 @@ public:
 	 * @param[in]	G	graph 
 	 */
 	void run();
+	void runParallel();
 
 	/**
 	 * This method returns the number of connected components.

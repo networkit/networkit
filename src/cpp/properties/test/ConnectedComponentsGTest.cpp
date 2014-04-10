@@ -127,6 +127,23 @@ TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 	EXPECT_EQ(1029, cc.numberOfComponents());
 }
 
+TEST_F(ConnectedComponentsGTest, tryParallelConnectedComponents) {
+	METISGraphReader reader;
+	std::vector<std::string> graphs = {"astro-ph", "PGPgiantcompo",
+			"caidaRouterLevel", "celegans_metabolic", "coAuthorsDBLP", "jazz"};
+
+	for (auto graphName: graphs) {
+		Graph G = reader.read("input/" + graphName + ".graph");
+		ConnectedComponents cc(G);
+		cc.run();
+		count seqNum = cc.numberOfComponents();
+		cc.runParallel();
+		count parNum = cc.numberOfComponents();
+		DEBUG("Number of components: ", seqNum);
+		EXPECT_EQ(seqNum, parNum);
+	}
+}
+
 TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
