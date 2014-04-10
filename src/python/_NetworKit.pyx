@@ -262,18 +262,28 @@ cdef class BFS:
 
 cdef extern from "../cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-		_Dijkstra() except +
-		vector[edgeweight] run(_Graph G, node source)
+		_Dijkstra(_Graph G, node source) except +
+		void run() except +
+		vector[edgeweight] getDistances() except +
+		vector[node] getPath(node t) except +
 
 cdef class Dijkstra:
 	""" Dijkstra's SSSP algorithm.
 	 	Returns list of weighted distances from node source, i.e. the
 	    length of the shortest path from @a source to any other node."""
-	cdef _Dijkstra _this
+	cdef _Dijkstra* _this
 
-	def run(self, Graph G not None, source):
-		return self._this.run(dereference(G._this), source)
+	def __cinit__(self, Graph G, source):
+		self._this = new _Dijkstra(dereference(G._this), source)
 
+	def run(self):
+		self._this.run()
+
+	def getDistances(self):
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		return self._this.getPath(t)
 
 
 cdef extern from "../cpp/graph/Subgraph.h":
@@ -1093,6 +1103,7 @@ cdef extern from "../cpp/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
 		_ConnectedComponents(_Graph G) except +
 		void run() except +
+		void runSequential() except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
@@ -1109,6 +1120,9 @@ cdef class ConnectedComponents:
 
 	def run(self):
 		self._this.run()
+
+	def runSequential(self):
+		self._this.runSequential()
 
 	def getPartition(self):
 		return Partition().setThis(self._this.getPartition())
