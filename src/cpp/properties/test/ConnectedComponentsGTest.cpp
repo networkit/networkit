@@ -117,17 +117,27 @@ ConnectedComponentsGTest::~ConnectedComponentsGTest() {
 // 	EXPECT_TRUE(comp.at(6) == 19);
 // }
 
-TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
+TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
-	Graph G = reader.read("input/PGPgiantcompo.graph");
+	Graph G = reader.read("input/astro-ph.graph");
+	ConnectedComponents cc(G);
+	cc.run();
+	DEBUG("Number of components: ", cc.numberOfComponents());
+	EXPECT_EQ(1029, cc.numberOfComponents());
+}
+
+TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
+	// construct graph
+	METISGraphReader reader;
+	Graph G = reader.read("input/coAuthorsDBLP.graph");
 	ConnectedComponents cc(G);
 	cc.run();
 	DEBUG("Number of components: ", cc.numberOfComponents());
 	EXPECT_EQ(1, cc.numberOfComponents());
 }
 
-TEST_F(ConnectedComponentsGTest, tryHHConnectedComponents) {
+TEST_F(ConnectedComponentsGTest, benchHHConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
 	Graph G = reader.read("input/coAuthorsDBLP.graph");
@@ -146,7 +156,7 @@ TEST_F(ConnectedComponentsGTest, tryHHConnectedComponents) {
 	DEBUG("Number of components in HH generated: ", cc2.numberOfComponents());
 }
 
-TEST_F(ConnectedComponentsGTest, tryLiveJConnectedComponents) {
+TEST_F(ConnectedComponentsGTest, benchLiveJConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
 	Graph G = reader.read("../graphs/ascii/soc-LiveJournal1_symm_or.graph");
