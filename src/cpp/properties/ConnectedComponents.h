@@ -23,11 +23,13 @@ public:
 	virtual ~ConnectedComponents();
 	/**
 	 * This method determines the connected components for the graph g.
-	 *
-	 * @param[in]	G	graph 
+	 */
+	void runSequential();
+
+	/**
+	 * This method determines the connected components for the graph g.
 	 */
 	void run();
-	void runParallel();
 
 	/**
 	 * This method returns the number of connected components.

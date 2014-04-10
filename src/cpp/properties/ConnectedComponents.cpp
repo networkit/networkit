@@ -20,7 +20,7 @@ ConnectedComponents::~ConnectedComponents() {
 
 }
 
-void ConnectedComponents::runParallel() {
+void ConnectedComponents::run() {
 	// calculate connected components by label propagation
 	count z = G.numberOfNodes();
 
@@ -91,7 +91,7 @@ void ConnectedComponents::runParallel() {
 }
 
 
-void ConnectedComponents::run() {
+void ConnectedComponents::runSequential() {
 	// calculate connected components by label propagation
 	count z = G.numberOfNodes();
 	DEBUG("initializing labels");
