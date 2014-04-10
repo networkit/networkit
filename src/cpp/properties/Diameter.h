@@ -27,6 +27,12 @@ public:
 
 	/** @return exact diameter of the graph @a G */
 	static count exactDiameter(const Graph& G);
+
+
+	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G,
+				the maximum over all components in case the graph is disconnected
+	 */
+	static count estimatedVertexDiameter(const Graph& G);
 };
 
 } /* namespace NetworKit */

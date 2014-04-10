@@ -2,13 +2,15 @@
  * Diameter.cpp
  *
  *  Created on: 19.02.2014
- *      Author: cls
+ *      Author: Daniel Hoske, Christian Staudt
  */
 
 #include "Diameter.h"
 #include "Eccentricity.h"
 #include "../graph/BFS.h"
 #include "../graph/Dijkstra.h"
+#include "../properties/ConnectedComponents.h"
+#include "../graph/BFS.h"
 
 namespace NetworKit {
 
@@ -29,9 +31,11 @@ count Diameter::exactDiameter(const Graph& G) {
 			}
 		});
 	} else {
-	 	Dijkstra dijkstra;
+
 		 G.forNodes([&](node v) {
-		 	vector<edgeweight> distances = dijkstra.run(G, v);
+		 	Dijkstra dijkstra(G, v);
+		 	dijkstra.run();
+		 	auto distances = dijkstra.getDistances();
 		 	for (auto distance : distances) {
 		 		if (diameter < distance) {
 		 			diameter = distance;
@@ -55,7 +59,9 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 
 	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
 	/* Note: the function Graph::breadthFirstEdgesFrom that should
-	 do the same has not been implemented! */
+	 do the same has not been implemented! 
+		-- TODO: Then why not implement it directly there?
+	 */
 	auto bfs_edges = [&] (const Graph& G, node u, std::function<void(node, node)> f) -> node {
 		std::queue<node> q;
 		std::vector<bool> visited(G.numberOfNodes(), false);
@@ -120,6 +126,31 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 	}
 
 	return {lowerBound, upperBound};
+}
+
+
+count Diameter::estimatedVertexDiameter(const Graph& G) {
+	ConnectedComponents cc(G);
+	cc.run();
+	if (cc.numberOfComponents() > 1) {
+		throw std::runtime_error("TODO: estimate upper bound of vertex diameter for disconnected graphs");
+	}
+
+	BFS bfs;
+	std::vector<count> distances = bfs.run(G, G.randomNode());
+
+	// get two largest path lengths
+	count maxD = 0;
+	count maxD2 = 0; // second largest distance
+	for (count d : distances) {
+		if (d >= maxD) {
+			maxD2 = maxD;
+			maxD = d;
+		}
+	}
+
+	count vd = maxD + maxD2;
+	return vd;
 }
 
 } /* namespace NetworKit */
