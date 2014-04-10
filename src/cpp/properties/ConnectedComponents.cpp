@@ -20,7 +20,7 @@ ConnectedComponents::~ConnectedComponents() {
 
 }
 
-void ConnectedComponents::run() {
+void ConnectedComponents::runParallel() {
 	// calculate connected components by label propagation
 	count z = G.numberOfNodes();
 
@@ -88,7 +88,66 @@ void ConnectedComponents::run() {
 			});
 		}
 	} while (change);
+}
 
+
+void ConnectedComponents::run() {
+	// calculate connected components by label propagation
+	count z = G.numberOfNodes();
+	DEBUG("initializing labels");
+	component = Partition(G.upperNodeIdBound());
+	component.allToSingletons();
+	DEBUG("initializing active nodes");
+	std::vector<bool> activeNodes(z); // record if node must be processed
+	activeNodes.assign(z, true);
+	G.forNodes([&](node u) { // NOTE: not in parallel due to implementation of bit vector
+		if (G.degree(u) == 0) {
+			activeNodes[u] = false;
+		}
+	});
+	DEBUG("main loop");
+	// count numActive = 0; // for debugging purposes only
+	count numIterations = 0;
+	bool change = false;
+	do {
+		// TRACE("label propagation iteration");
+		change = false;
+		// numActive = 0;
+		G.forNodes([&](node u) {
+			if (activeNodes[u]) {
+				// ++numActive;
+				std::vector<index> neighborLabels;
+				G.forNeighborsOf(u, [&](node v) {
+					// neighborLabels.push_back(component[v]);
+					neighborLabels.push_back(component[v]);
+				});
+				// get smallest
+				index smallest = *std::min_element(neighborLabels.begin(), neighborLabels.end());
+				if (component[u] != smallest) {
+					component.moveToSubset(smallest, u);
+					change = true;
+					G.forNeighborsOf(u, [&](node v) {
+						activeNodes[v] = true;
+					});
+				} else {
+					activeNodes[u] = false; // current node becomes inactive
+				}
+			}
+		});
+		// TRACE("num active: ", numActive);
+		++numIterations;
+		if ((numIterations % 8) == 0) { // TODO: externalize constant
+			// coarsen and make recursive call
+			PartitionCoarsening con;
+			std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
+			ConnectedComponents cc(coarse.first);
+			cc.run();
+			// apply to current graph
+			G.forNodes([&](node u) {
+				component[u] = cc.componentOfNode(coarse.second[u]);
+			});
+		}
+	} while (change);
 }
 
 
