@@ -2,14 +2,14 @@
  * Dijkstra.cpp
  *
  *  Created on: Jul 23, 2013
- *      Author: Henning
+ *      Author: Henning, Christian Staudt
  */
 
 #include "Dijkstra.h"
 
 namespace NetworKit {
 
-Dijkstra::Dijkstra() {
+Dijkstra::Dijkstra(const Graph& G, node source) : G(G), source(source) {
 
 }
 
@@ -17,25 +17,27 @@ Dijkstra::~Dijkstra() {
 
 }
 
-std::vector<edgeweight> Dijkstra::run(const Graph& g, node source) {
-	auto relax([&](node u, node v, edgeweight w, std::vector<edgeweight>& distances,
-			Aux::PrioQueue<edgeweight, node>& pq)
-	{
-		if (distances[v] > distances[u] + w) {
-			distances[v] = distances[u] + w;
-			pq.decreaseKey(distances[v], v);
-		}
-	});
+void Dijkstra::run() {
 
 	// init distances
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
-	count n = g.numberOfNodes();
-	std::vector<edgeweight> distances(n, infDist);
+	distances.clear();
+	distances.resize(G.upperNodeIdBound(), infDist);
+	previous.clear();
+	previous.resize(G.upperNodeIdBound(), none); 
 	distances[source] = 0;
-	std::set<index> unsettled;
 
 	// priority queue with distance-node pairs
 	Aux::PrioQueue<edgeweight, node> pq(distances);
+
+
+	auto relax([&](node u, node v, edgeweight w) {
+		if (distances[v] > distances[u] + w) {
+			distances[v] = distances[u] + w;
+			previous[v] = u; // new predecessor on shortest path
+			pq.decreaseKey(distances[v], v);
+		}
+	});
 
 	while (pq.size() > 0) {
 //		DEBUG("pq size: ", pq.size());
@@ -44,12 +46,29 @@ std::vector<edgeweight> Dijkstra::run(const Graph& g, node source) {
 //		DEBUG("pq size: ", pq.size());
 //		TRACE("current node in Dijkstra: " , current);
 
-		g.forWeightedEdgesOf(current, [&](node current, node v, edgeweight w) {
-			relax(current, v, w, distances, pq);
-		});
+		G.forWeightedEdgesOf(current, relax);
 	}
 
+}
+
+
+std::vector<edgeweight> Dijkstra::getDistances() const {
 	return distances;
+}
+
+
+std::vector<node> Dijkstra::getPath(node t, bool forward) const {
+	std::vector<node> path;
+	node v = t;
+	while (v != source) {
+		path.push_back(v);
+		v = previous[t];
+	}
+
+	if (forward) {
+		std::reverse(path.begin(), path.end());
+	}
+	return path;
 }
 
 } /* namespace NetworKit */
