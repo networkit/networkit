@@ -1120,9 +1120,7 @@ cdef class ConnectedComponents:
 		return self._this.componentOfNode(v)
 
 
-cdef extern from "../cpp/properties/ClusteringCoefficient.h":
-	cdef cppclass _ClusteringCoefficient "NetworKit::ClusteringCoefficient":
-		_ClusteringCoefficient() except +
+cdef extern from "../cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
 		vector[double] exactLocal(_Graph G) except +
 		double avgLocal(_Graph G) except +
 		double approxAvgLocal(_Graph G, count trials) except +
@@ -1133,22 +1131,26 @@ cdef class ClusteringCoefficient:
 	""" Determines the connected components and associated values for
 		an undirected graph.
 	"""
-	cdef _ClusteringCoefficient _this
 
-	def exactLocal(self, Graph G):
-		return self._this.exactLocal(dereference(G._this))
+	@staticmethod
+	def exactLocal(Graph G):
+		return exactLocal(dereference(G._this))
 
-	def avgLocal(self, Graph G):
-		return self._this.avgLocal(dereference(G._this))
+	@staticmethod
+	def avgLocal(Graph G):
+		return avgLocal(dereference(G._this))
 
-	def approxAvgLocal(self, Graph G, trials):
-		return self._this.approxAvgLocal(dereference(G._this), trials)
+	@staticmethod
+	def approxAvgLocal(Graph G, trials):
+		return approxAvgLocal(dereference(G._this), trials)
 
-	def exactGlobal(self, Graph G):
-		return self._this.exactGlobal(dereference(G._this))
+	@staticmethod
+	def exactGlobal(Graph G):
+		return exactGlobal(dereference(G._this))
 
-	def approxGlobal(self, Graph G, trials):
-		return self._this.approxGlobal(dereference(G._this), trials)
+	@staticmethod
+	def approxGlobal(Graph G, trials):
+		return approxGlobal(dereference(G._this), trials)
 
 
 

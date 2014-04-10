@@ -178,7 +178,12 @@ count Partition::numberOfElements() const {
 }
 
 std::vector<index> Partition::getVector() {
-	return this->data; //FIXME is this appropriate?
+	return this->data; //FIXME is this appropriate? - why not?
+}
+
+
+std::set<std::set<index> > getSubsets() {
+	// TODO: implement
 }
 
 void Partition::allToOnePartition() {

@@ -16,7 +16,7 @@ class ClusteringCoefficient {
 
 public:
 
-	std::vector<double> exactLocal(Graph &G) const;
+	static std::vector<double> exactLocal(Graph &G);
 	
 	/**
 	 * This calculates the average local clustering coefficient
@@ -24,14 +24,14 @@ public:
 	 *
 	 * where $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 	 */
-	virtual double avgLocal(Graph& G) const;
-  	virtual double approxAvgLocal(Graph& G, const count trials) const;
+	static double avgLocal(Graph& G);
+  	static double approxAvgLocal(Graph& G, const count trials);
 
 	/**
 	 * This calculates the global clustering coefficient
 	 */
-  	virtual double exactGlobal(Graph& G) const;
-  	virtual double approxGlobal(Graph& G, const count trials) const;
+  	static double exactGlobal(Graph& G);
+  	static double approxGlobal(Graph& G, const count trials);
   
 };
 

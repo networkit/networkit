@@ -212,6 +212,12 @@ public:
 	 * @return vector containing information about partitions
 	 */
 	std::vector<index> getVector();
+
+
+	/** 
+	 * @return the subsets of the partition as a set of sets.
+	 */
+	std::set<std::set<index> > getSubsets();
 	 
 	/**
 	 * Set a human-readable identifier for the instance.
