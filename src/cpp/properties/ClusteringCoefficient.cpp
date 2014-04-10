@@ -43,10 +43,8 @@ std::vector<double> ClusteringCoefficient::exactLocal(Graph &G) {
 }
 
 double ClusteringCoefficient::avgLocal(Graph& G) {
-	count z = G.upperNodeIdBound();
-	std::vector<double> coefficients(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
-	coefficients = exactLocal(G);
+	auto coefficients = exactLocal(G); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	double sum = 0.0;
 	count size = 0;
