@@ -130,7 +130,7 @@ TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 TEST_F(ConnectedComponentsGTest, tryParallelConnectedComponents) {
 	METISGraphReader reader;
 	std::vector<std::string> graphs = {"astro-ph", "PGPgiantcompo",
-			"caidaRouterLevel", "celegans_metabolic", "coAuthorsDBLP", "jazz"};
+			"caidaRouterLevel", "celegans_metabolic", "hep-th", "jazz"};
 
 	for (auto graphName: graphs) {
 		Graph G = reader.read("input/" + graphName + ".graph");
