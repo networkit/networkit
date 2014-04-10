@@ -59,6 +59,10 @@ std::vector<edgeweight> Dijkstra::getDistances() const {
 
 std::vector<node> Dijkstra::getPath(node t, bool forward) const {
 	std::vector<node> path;
+	if (previous[t] == none) { // t is not reachable from source
+		WARN("there is no path from ", source, " to ", t);
+		return path;
+	}
 	node v = t;
 	while (v != source) {
 		path.push_back(v);
