@@ -11,9 +11,7 @@
 
 namespace NetworKit {
 
-std::vector<double>
-ClusteringCoefficient::exactLocal(Graph &G) const
-{
+std::vector<double> ClusteringCoefficient::exactLocal(Graph &G) {
 	count z = G.upperNodeIdBound();
 	std::vector<double> coefficient(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
@@ -44,13 +42,9 @@ ClusteringCoefficient::exactLocal(Graph &G) const
 	return coefficient;
 }
 
-double
-ClusteringCoefficient::avgLocal(Graph& G) const
-{
-	count z = G.upperNodeIdBound();
-	std::vector<double> coefficients(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+double ClusteringCoefficient::avgLocal(Graph& G) {
 
-	coefficients = this->exactLocal(G);
+	auto coefficients = exactLocal(G); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	double sum = 0.0;
 	count size = 0;
@@ -65,9 +59,7 @@ ClusteringCoefficient::avgLocal(Graph& G) const
 	return sum / (double) size;
 }
 
-double
-ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) const
-{
+double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 	// WARNING: I assume RAND_MAX to be larger than n. If this should not hold for an application
 	// or implementation of the standard library, a more sophisticated version of determining a 
 	// vertex uniformly at random must be used.
@@ -100,9 +92,7 @@ ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) const
 }
 
 
-double
-ClusteringCoefficient::exactGlobal(Graph& G) const
-{
+double ClusteringCoefficient::exactGlobal(Graph& G) {
 	count z = G.upperNodeIdBound();
 	std::vector<count> triangles(z); // triangles including node u (every triangle is counted six times)
 	std::vector<count> triples(z); // triples around node u
@@ -137,9 +127,7 @@ ClusteringCoefficient::exactGlobal(Graph& G) const
 }
 
 
-double
-ClusteringCoefficient::approxGlobal(Graph& G, const count trials) const
-{
+double ClusteringCoefficient::approxGlobal(Graph& G, const count trials) {
 	count z = G.upperNodeIdBound();
 
   // Calculate prefix sum over the nodes where each node v counts deg(v)*(deg(v)-1) times
