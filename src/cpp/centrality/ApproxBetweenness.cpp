@@ -6,6 +6,7 @@
  */
 
 #include "ApproxBetweenness.h"
+#include "../auxiliary/Random.h"
 #include "../properties/Diameter.h"
 #include "../graph/Sampling.h"
 #include "../graph/Dijkstra.h"
@@ -26,12 +27,13 @@ void ApproxBetweenness::run() {
 
 	double c = 1; // TODO: what is c?
 
-	// TODO: get vertex diameter
-	count vd = Diameter::estimatedVertexDiameter(G);
+	// this is only needed if shortest paths are not unique (?)
+	// count vd = Diameter::estimatedVertexDiameter(G);
+	// double r = (c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta);
 
-	double r = (c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta);
+	double r = (c / (epsilon * epsilon)) * (3 + log(1 / delta));
 
-	for (count i = 0; i <= r; ++i) {
+	for (count i = 1; i <= r; ++i) {
 		// sample random node pair
 		node u, v;
 		u = Sampling::randomNode(G);
@@ -44,11 +46,18 @@ void ApproxBetweenness::run() {
 		std::vector<node> path = dijkstra.getPath(v); 	// this selects one shortest path - there may be several
 		if (path.size() > 0) { // path exists
 			// random path sampling and estimation update
-			node j, s, t = v;
+			node s, t = v;
 			while (t != u) {
-				// TODO: sample z in P_s(t) with probability sigma_uz / sigma_us
+				// sample z in P_s(t) with probability sigma_uz / sigma_us
+				std::vector<node, double> choices;
+				for (node z : path) {
+					choices.push_back(z, sigma[z] / sigma[s]); 	// sigma_uz / sigma_us
+				}
+				node z = Aux::Random::weightedChoice(choices);
 				if (z != u) {
-					// TODO:
+					scoreData[z] = scoreData[z] + 1 / (double) r;
+					s = t;
+					t = z;
 				}
 			}
 		}

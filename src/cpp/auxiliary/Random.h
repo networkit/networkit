@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <cassert>
 #include <random>
+#include <stdexcept>
 
 namespace Aux {
 
@@ -76,15 +77,15 @@ template<typename Container> typename Container::value_type choice(const Contain
 /** @returns a weighted random choice from a vector of elements with given weights */
 template <typename Element> Element weightedChoice(const std::vector<std::pair<Element, double> >& weightedElements) {
 	double total = 0.0;
-	for (uint64_t i = 0; i < weightedElements.size(); i++) {
-		total += weightedElements[i].second;
+	for (auto entry : weightedElements) {
+		total += entry.second;
 	}
 	double r = Aux::Random::real(total);
-	for (uint64_t i = 0; i < weightedElements.size(); i++) {
-		if (r < weightedElements[i].second) return weightedElements[i].first;
-		r -= weightedElements[i].second;
+	for (auto entry : weightedElements) {
+		if (r < entry.second) return entry.first;
+		r -= entry.second;
 	}
-	assert(false); // should never get here
+	throw std::runtime_error("should never get here"); // should never get here
 }
 
 } // namespace Random
