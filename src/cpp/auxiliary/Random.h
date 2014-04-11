@@ -9,6 +9,7 @@
  */
 
 #include <cstdint>
+#include <cassert>
 
 namespace Aux {
 
@@ -54,6 +55,31 @@ double probability();
  * @param p 	success probability
  */
 //uint64_t binomial(double n, double p);
+
+std::mt19937_64& getURNG();
+
+/** @returns a uniform random choice from an indexable container of elements 
+*/
+template<typename Container> typename Container::value_type& choice(const Container& container) {
+    std::uniform_int_distribution<std::size_t> dist{0, container.size() - 1};
+    return container[dist(getURNG())];
+}
+
+
+/** @returns a weighted random choice from a vector of elements with given weights */
+template <typename Element> Element weightedChoice(const std::vector<std::pair<Element, double> >& weightedElements) {
+	double total = 0.0;
+	for (uint64_t i = 0; i < weightedElements.size(); i++) {
+   		total += weightedElements[i].second;
+	}
+	double r = Aux::Random::real(total);
+	for (uint64_t i = 0; i < weightedElements.size(); i++) {
+		if (r < weightedElements[i].second)
+	    	return weightedElements[i];
+	  		r -= weightedElements[i].second;
+	}
+	assert(false); // should never get here
+}
 
 } // namespace Random
 } // namespace Aux

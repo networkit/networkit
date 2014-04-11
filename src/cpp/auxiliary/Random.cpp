@@ -69,6 +69,7 @@ double probability() {
 	return dist(getURNG());
 }
 
+
 // uint64_t binomial(double n, double p) {
 // 	std::binomial_distribution<uint64_t> dist(n, p);
 // 	return dist(getURNG());
