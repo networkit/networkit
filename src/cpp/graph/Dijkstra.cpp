@@ -87,7 +87,12 @@ std::set<std::vector<node> > Dijkstra::getPaths(node t, bool forward) const {
 		return paths;
 	}
 
+
+
+
 	std::function<std::set<std::vector<node> > (std::vector<node>& prefix, node v) > trace = [&](std::vector<node>& prefix, node v) {
+		// base case
+
 		prefix.push_back(v);
 		std::set<std::vector<node> > paths;
 		paths.insert(prefix);
