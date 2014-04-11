@@ -35,7 +35,8 @@ public:
 	virtual std::vector<edgeweight> getDistances() const;
 
 	/**
-	 * Get the shortest path from source node to target node @a t.
+	 * @return the shortest path from source node to target node @a t.
+	 * Returns empty path if source and target are not connected.
 	 */
 	virtual std::vector<node> getPath(node t, bool forward=true) const;
 

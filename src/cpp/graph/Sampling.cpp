@@ -28,5 +28,6 @@ node Sampling::randomNeighbor(const Graph& G, node u) {
 }
 
 
+
 } /* namespace NetworKit */
 
