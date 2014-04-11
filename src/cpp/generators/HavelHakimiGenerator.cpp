@@ -8,6 +8,9 @@
 
 #include "HavelHakimiGenerator.h"
 
+#include <list>
+#include <stack>
+
 namespace NetworKit {
 
 HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<unsigned int>& sequence, bool skipTest) :

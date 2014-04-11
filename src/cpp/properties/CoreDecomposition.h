@@ -13,7 +13,6 @@
 #include <string>
 #include <list>
 #include "../graph/Graph.h"
-#include "../auxiliary/ShellList.h"
 
 namespace NetworKit {
 

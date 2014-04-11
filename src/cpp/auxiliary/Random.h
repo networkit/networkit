@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <cassert>
+#include <random>
 
 namespace Aux {
 
@@ -24,6 +25,12 @@ namespace Random {
  * @returns a high-quality random seed for an URNG.
  */
 uint64_t getSeed();
+
+/**
+ * @returns a reference to a seeded URNG that is thread_local iff GCC 4.8 or later is used.
+ */
+std::mt19937_64& getURNG();
+
 
 /**
  * @returns an integer distributed uniformly in an inclusive range;

@@ -24,7 +24,7 @@ void ApproxBetweenness::run() {
 	scoreData.clear();
 	scoreData.resize(z);
 
-	double c; // TODO: what is c?
+	double c = 1; // TODO: what is c?
 
 	// TODO: get vertex diameter
 	count vd = Diameter::estimatedVertexDiameter(G);

@@ -24,18 +24,16 @@
 namespace Aux {
 namespace Random {
 
-namespace {
-
-/**
- * private helper that provides access to a thread-local URNG (uniform random number generator)
- */
-std::mt19937_64& getURNG();
-}
-
 uint64_t getSeed() {
 	AUX_THREAD_LOCAL static std::random_device urng{};
 	std::uniform_int_distribution<uint64_t> dist{};
 	return dist(urng);
+}
+
+
+std::mt19937_64& getURNG() {
+	AUX_THREAD_LOCAL static std::mt19937_64 generator{getSeed()};
+	return generator;
 }
 
 uint64_t integer() {
@@ -74,13 +72,6 @@ double probability() {
 // 	std::binomial_distribution<uint64_t> dist(n, p);
 // 	return dist(getURNG());
 // }
-
-namespace {
-std::mt19937_64& getURNG() {
-	AUX_THREAD_LOCAL static std::mt19937_64 generator{getSeed()};
-	return generator;
-}
-} // anonymous namespace
 
 } // namespace Random
 } // namespace Aux

@@ -9,25 +9,20 @@
 
 namespace Aux {
 
-NumericTools::NumericTools() {
-	// TODO Auto-generated constructor stub
+namespace NumericTools{
 
-}
-
-NumericTools::~NumericTools() {
-	// TODO Auto-generated destructor stub
-}
-
-bool NumericTools::equal(const double x, const double y, const double error) {
+bool equal(const double x, const double y, const double error) {
 	return (x <= (y + error)) && (x >= (y - error));
 }
 
-bool NumericTools::le(const double x, const double y, const double error) {
+bool le(const double x, const double y, const double error) {
 	return (x <= (y + error));
 }
 
-bool NumericTools::ge(const double x, const double y, const double error) {
+bool ge(const double x, const double y, const double error) {
 	return (x >= (y - error));
 }
+
+} /* namespace NumericTools */
 
 } /* namespace NetworKit */
