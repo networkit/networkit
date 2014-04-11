@@ -6,7 +6,6 @@
  */
 
 #include <cmath>
-#include <random>
 
 #include "Random.h"
 
@@ -67,6 +66,11 @@ double probability() {
 	return dist(getURNG());
 }
 
+std::size_t index(std::size_t max) {
+	assert(max > 0 && "There have to be valid indexes");
+	std::uniform_int_distribution<std::size_t> dist{0, max - 1};
+	return dist(getURNG());
+}
 
 // uint64_t binomial(double n, double p) {
 // 	std::binomial_distribution<uint64_t> dist(n, p);
