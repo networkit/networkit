@@ -49,9 +49,9 @@ void ApproxBetweenness::run() {
 			node s, t = v;
 			while (t != u) {
 				// sample z in P_s(t) with probability sigma_uz / sigma_us
-				std::vector<node, double> choices;
+				std::vector<std::pair<node, double> > choices;
 				for (node z : path) {
-					choices.push_back(z, sigma[z] / sigma[s]); 	// sigma_uz / sigma_us
+					choices.push_back({z, sigma[z] / sigma[s]}); 	// sigma_uz / sigma_us
 				}
 				node z = Aux::Random::weightedChoice(choices);
 				if (z != u) {

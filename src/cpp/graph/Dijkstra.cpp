@@ -7,6 +7,8 @@
 
 #include "Dijkstra.h"
 
+#include <algorithm>
+
 namespace NetworKit {
 
 Dijkstra::Dijkstra(const Graph& G, node source) : G(G), source(source) {
@@ -24,7 +26,7 @@ void Dijkstra::run() {
 	distances.clear();
 	distances.resize(G.upperNodeIdBound(), infDist);
 	previous.clear();
-	previous.resize(G.upperNodeIdBound(), none); 
+	previous.resize(G.upperNodeIdBound()); 
 	distances[source] = 0;
 
 	// priority queue with distance-node pairs
@@ -34,8 +36,10 @@ void Dijkstra::run() {
 	auto relax([&](node u, node v, edgeweight w) {
 		if (distances[v] > distances[u] + w) {
 			distances[v] = distances[u] + w;
-			previous[v] = u; // new predecessor on shortest path
+			previous[v].push_back(u); // new predecessor on shortest path
 			pq.decreaseKey(distances[v], v);
+		} else if (distances[v] == distances[u] + w) {
+			previous[v].push_back(u); // another predecessor
 		}
 	});
 
@@ -59,20 +63,50 @@ std::vector<edgeweight> Dijkstra::getDistances() const {
 
 std::vector<node> Dijkstra::getPath(node t, bool forward) const {
 	std::vector<node> path;
-	if (previous[t] == none) { // t is not reachable from source
+	if (previous[t].empty()) { // t is not reachable from source
 		WARN("there is no path from ", source, " to ", t);
 		return path;
 	}
 	node v = t;
 	while (v != source) {
 		path.push_back(v);
-		v = previous[t];
+		v = previous[t].front();
 	}
 
 	if (forward) {
 		std::reverse(path.begin(), path.end());
 	}
 	return path;
+}
+
+
+std::set<std::vector<node> > Dijkstra::getPaths(node t, bool forward) const {
+	std::set<std::vector<node> > paths;
+	if (previous[t].empty()) { // t is not reachable from source
+		WARN("there is no path from ", source, " to ", t);
+		return paths;
+	}
+
+	std::function<std::set<std::vector<node> > (std::vector<node>& prefix, node v) > trace = [&](std::vector<node>& prefix, node v) {
+		prefix.push_back(v);
+		std::set<std::vector<node> > paths;
+		paths.insert(prefix);
+		for (node u : previous[v]) {
+			auto returned = trace(prefix, u);
+			paths.insert(returned.begin(), returned.end());
+		}
+		return paths;
+	};
+
+	std::vector<node> emptyPath;
+	auto thePaths = trace(emptyPath, t);
+
+	if (forward) {
+		for (auto path : thePaths) {
+			std::reverse(path.begin(), path.end());
+		}
+	}
+	return thePaths;
 }
 
 } /* namespace NetworKit */
