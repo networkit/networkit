@@ -68,7 +68,7 @@ std::mt19937_64& getURNG();
 
 /** @returns a uniform random choice from an indexable container of elements 
 */
-template<typename Container> typename Container::value_type choice(const Container& container) {
+template<typename Container> typename Container::const_reference choice(const Container& container) {
     std::uniform_int_distribution<std::size_t> dist{0, container.size() - 1};
     return container[dist(getURNG())];
 }
@@ -77,11 +77,11 @@ template<typename Container> typename Container::value_type choice(const Contain
 /** @returns a weighted random choice from a vector of elements with given weights */
 template <typename Element> Element weightedChoice(const std::vector<std::pair<Element, double> >& weightedElements) {
 	double total = 0.0;
-	for (auto entry : weightedElements) {
+	for (const auto& entry : weightedElements) {
 		total += entry.second;
 	}
 	double r = Aux::Random::real(total);
-	for (auto entry : weightedElements) {
+	for (const auto& entry : weightedElements) {
 		if (r < entry.second) return entry.first;
 		r -= entry.second;
 	}
