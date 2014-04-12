@@ -212,7 +212,36 @@ runs only unit tests for the Partition data structure.
 
 ### Exposing C++ Code to Python
 
-TODO - documentation coming soon
+Assuming the unit tests for the new feature you implemented are correct and successful, you need to make your features available to Python in order to use it. Therefore, NetworKit uses Cython and two steps are necessary. Cython syntax is very similar to Python. Care for the following example, which is an excerpt from `src/python/_Networkit.pyx`:
+
+		cdef extern from "../cpp/graph/Dijkstra.h":
+			cdef cppclass _Dijkstra "NetworKit::Dijkstra":
+				_Dijkstra(_Graph G, node source) except +
+				void run() except +
+				vector[edgeweight] getDistances() except +
+				vector[node] getPath(node t) except +
+
+First of all, Cython needs to know, which C++ declarations to use so the the first line directs Cython to place an `#include` statement. The second line is a new class definition. Our convention is that the name of the new class is the name of the referenced C++ class with a prepended underscore to avoid namespace conflicts. After that, the declarations of the functions you want to make available for Python are needed. The `except +` statement is necessary, if you want exceptions thrown by the C++ code handled by Cython with appropriate Python exceptions. Also, take care that the Cython declarations match the declarations from the referenced header file.
+
+		cdef class Dijkstra:
+			""" Dijkstra's SSSP algorithm.
+	 		    Returns list of weighted distances from node source, 
+			    i.e. the length of the shortest path from @a source 
+			    to any other node."""
+			cdef _Dijkstra* _this
+			def __cinit__(self, Graph G, source):
+				self._this = new _Dijkstra(dereference(G._this), source)
+			def run(self):
+				self._this.run()
+			def getDistances(self):
+				return self._this.getDistances()
+			def getPath(self, t):
+				return self._this.getPath(t)
+
+For convencience under Python, you need to wrap the C++ class. The docstring between the triple quotation marks can be accessed through Python's `help(...)` function. Always provide at least a short and precise docstring so the user can get in idea of the functionality of the class. The Python class variable `_this` holds the instance of the Cython C++ class. Please note that the parameters are now Python objects. Function wrappers are straight forward Python functions that take the parameters and pass them to the actuall C++ function call. For constructors `__cinit__` should be used. For C++ types available to Python and further examples, see through the `_NetworKit.pyx`-file.
+
+
+
 
 ## Contact
 
@@ -228,3 +257,4 @@ To suggest improvements to workflows and conventions, write to `christian.staudt
 - [hginit.com](http://hginit.com)
 - [Working with named branches](http://humblecoder.co.uk/blog/2010/02/24/working-with-named-branches-in-mercurial/)
 - [Managing releases and branchy development](http://hgbook.red-bean.com/read/managing-releases-and-branchy-development.html)
+- [Cython Documentation](http://docs.cython.org/index.html)
