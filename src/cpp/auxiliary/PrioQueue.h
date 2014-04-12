@@ -22,7 +22,7 @@ namespace Aux {
  * O(n log n) for construction, O(log n) for typical operations.
  */
 template<class Key, class Val>
-class PrioQueue {
+class PrioQueue final {
 	typedef std::pair<Key, Val> ElemType;
 
 protected:
@@ -44,49 +44,48 @@ public:
 	 */
 	PrioQueue(std::vector<Key>& keys);
 
-	virtual ~PrioQueue() {}
 
 	/**
 	 * Inserts key-value pair stored in @a elem.
 	 */
-	virtual void insert(Key key, Val value);
+	void insert(Key key, Val value);
 
 	/**
 	 * Removes the element with minimum key and returns it.
 	 */
-	virtual ElemType extractMin();
+	ElemType extractMin();
 
 	/**
 	 * Modifies entry with value @a value.
 	 * The entry is then set to @a newKey with the same value.
 	 * If the corresponding key is not present, the element will be inserted.
 	 */
-	virtual void decreaseKey(Key newKey, Val value);
+	void decreaseKey(Key newKey, Val value);
 
 	/**
 	 * Removes key-value pair given by @a elem.
 	 */
-	virtual void remove(const ElemType& elem);
+	void remove(const ElemType& elem);
 
 	/**
 	 * Removes key-value pair given by value @a val.
 	 */
-	virtual void remove(const Val& val);
+	void remove(const Val& val);
 
 	/**
 	 * @return Number of elements in PQ.
 	 */
-	virtual uint64_t size() const;
+	uint64_t size() const;
 
 	/**
 	 * Removes all elements from the PQ.
 	 */
-	virtual void clear();
+	void clear();
 
 	/**
 	 * DEBUGGING
 	 */
-	virtual void print() {
+	void print() {
 		DEBUG("num entries: ", mapValToKey.size());
 		for (uint64_t i = 0; i < mapValToKey.size(); ++i) {
 			std::cout << "key: " << mapValToKey[i] << ", val: " << i << std::endl;

@@ -17,7 +17,7 @@ namespace Aux {
 /**
  * A timer for running time measurements.
  */
-class Timer {
+class Timer final {
 
 protected:
 
@@ -29,26 +29,26 @@ public:
 
 	Timer();
 
-	virtual ~Timer();
+	~Timer();
 
 	/**
 	 * Start the clock.
         Returns the time at which the instance was started.
 	 */
-	virtual std::chrono::steady_clock::time_point start();
+	std::chrono::steady_clock::time_point start();
 
 	/**
 	 * Stops the clock permanently for the instance of the Timer.
         Returns the time at which the instance was stopped.
 	 */
-	virtual std::chrono::steady_clock::time_point stop();
+	std::chrono::steady_clock::time_point stop();
 
 	/**
 	 * The number of milliseconds since the current time that the Timer
         object was created.  If stop() was called, it is the number
         of seconds from the instance creation until stop() was called.
 	 */
-	virtual std::chrono::duration<uint64_t, std::milli> elapsed();
+	std::chrono::duration<uint64_t, std::milli> elapsed();
 
 
 	/**
@@ -56,24 +56,24 @@ public:
         object was created.  If stop() was called, it is the number
         of seconds from the instance creation until stop() was called.
 	 */
-	virtual uint64_t elapsedMilliseconds();
+	uint64_t elapsedMilliseconds();
 
 	/**
 	 * Returns the time at which the instance was started.
 	 */
-	virtual std::chrono::steady_clock::time_point startTime();
+	std::chrono::steady_clock::time_point startTime();
 
 	/**
 	 * Returns the time at which the instance was stopped.
 	 *
 	 */
-	virtual std::chrono::steady_clock::time_point stopTime();
+	std::chrono::steady_clock::time_point stopTime();
 
 
 	/**
 	 *
 	 */
-	virtual std::string elapsedTag();
+	std::string elapsedTag();
 };
 
 } /* namespace Aux */

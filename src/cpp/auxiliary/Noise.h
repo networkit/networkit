@@ -16,7 +16,7 @@ namespace Aux {
  * Noise is random addition to a signal. This class provides methods
  * which add random numbers to their inputs in order to enable randomization.
  */
-class Noise {
+class Noise final {
 protected:
 	std::uniform_real_distribution<double> uniform;
 	
@@ -26,8 +26,6 @@ public:
 	 * @param[in]	u	upper bound for added random number
 	 */
 	Noise(double l, double u);
-	
-	virtual ~Noise() = default;
 	
 	/**
 	 * Add noise to double.

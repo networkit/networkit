@@ -15,7 +15,7 @@ namespace Aux {
 /**
  * A rudimentary console progress bar.
  */
-class ProgressMeter {
+class ProgressMeter final  {
 
 protected:
 	int64_t n;	//!< number of elements
@@ -25,7 +25,7 @@ public:
 
 	ProgressMeter(int64_t n, int64_t i): n{n}, i{i} {}
 
-	virtual ~ProgressMeter() = default;
+	~ProgressMeter() = default;
 
 	/**
 	 * Send a signal to the progress meter - constructor parameters decide when output is produced.
@@ -36,11 +36,11 @@ public:
 		}
 	}
 
-	 template<typename Output> inline void signal(int64_t v, Output out) {
-			if ((v % this->i) == 0) {
-				std::string o = out();
-				std::cout << o << std::flush;
-			}
+	template<typename Output> inline void signal(int64_t v, Output out) {
+		if ((v % this->i) == 0) {
+			std::string o = out();
+			std::cout << o << std::flush;
+		}
 	}
 
 	/**
