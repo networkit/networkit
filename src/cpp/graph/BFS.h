@@ -17,6 +17,7 @@ namespace NetworKit {
 class BFS {
 public:
 	BFS() = default;
+	BFS(const Graph& G, node source); 
 	virtual ~BFS() = default;
 
 	/**
@@ -24,7 +25,18 @@ public:
 	 * @return Vector of unweighted distances from node @a source, i.e. the
 	 * length (number of edges) of the shortest path from @a source to any other vertex.
 	 */
-	virtual std::vector<count> run(const Graph& g, node source) const;
+	virtual void run();
+
+	virtual std::vector<count> getDistances() const;
+
+	virtual std::vector<node> getPath(node t, bool forward=true) const;
+
+private: 
+	const Graph& G;
+	const node source;
+	std::vector<count> distances;
+	std::vector<node> previous;
+
 };
 
 } /* namespace NetworKit */
