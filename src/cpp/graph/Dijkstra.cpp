@@ -19,6 +19,8 @@ Dijkstra::~Dijkstra() {
 
 }
 
+
+
 void Dijkstra::run() {
 
 	// init distances
@@ -28,6 +30,9 @@ void Dijkstra::run() {
 	previous.clear();
 	previous.resize(G.upperNodeIdBound()); 
 	distances[source] = 0;
+	npaths.clear();
+	npaths.resize(G.upperNodeIdBound(), 0);
+	npaths[source] = 1;
 
 	// priority queue with distance-node pairs
 	Aux::PrioQueue<edgeweight, node> pq(distances);
@@ -36,10 +41,12 @@ void Dijkstra::run() {
 	auto relax([&](node u, node v, edgeweight w) {
 		if (distances[v] > distances[u] + w) {
 			distances[v] = distances[u] + w;
-			previous[v].push_back(u); // new predecessor on shortest path
+			previous[v] = {u}; // new predecessor on shortest path
+			npaths[v] = npaths[u];
 			pq.decreaseKey(distances[v], v);
 		} else if (distances[v] == distances[u] + w) {
-			previous[v].push_back(u); // another predecessor
+			previous[v].push_back(u); 	// additional predecessor
+			npaths[v] += npaths[u]; 	// all the shortest paths to u are also shortest paths to v now
 		}
 	});
 
@@ -58,6 +65,14 @@ void Dijkstra::run() {
 
 std::vector<edgeweight> Dijkstra::getDistances() const {
 	return distances;
+}
+
+edgeweight Dijkstra::distance(node t) const {
+	return distances[t];	
+}
+
+count Dijkstra::numberOfPaths(node t) const {
+	return npaths[t];	
 }
 
 
@@ -81,13 +96,13 @@ std::vector<node> Dijkstra::getPath(node t, bool forward) const {
 
 
 std::set<std::vector<node> > Dijkstra::getPaths(node t, bool forward) const {
+	throw std::runtime_error("FIXME: correct implementation needed");
+
 	std::set<std::vector<node> > paths;
 	if (previous[t].empty()) { // t is not reachable from source
 		WARN("there is no path from ", source, " to ", t);
 		return paths;
 	}
-
-
 
 
 	std::function<std::set<std::vector<node> > (std::vector<node>& prefix, node v) > trace = [&](std::vector<node>& prefix, node v) {

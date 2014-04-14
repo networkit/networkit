@@ -35,6 +35,18 @@ public:
 	virtual std::vector<edgeweight> getDistances() const;
 
 	/**
+	 * @param  t target node
+	 * @return   distance from s to target node t
+	 * 	 */
+	edgeweight distance(node t) const;
+
+	/**
+	 * @param  t target node
+	 * @return   number of shortest paths between s and t
+	 * 	 */
+	count numberOfPaths(node t) const;
+
+	/**
 	 * @return a shortest path from source node to target node @a t.
 	 * Returns empty path if source and target are not connected.
 	 */
@@ -52,6 +64,7 @@ private:
 	const node source;
 	std::vector<edgeweight> distances;
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
+	std::vector<count> npaths;
 };
 
 } /* namespace NetworKit */

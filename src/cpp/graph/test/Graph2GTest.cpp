@@ -685,7 +685,27 @@ TEST_F(Graph2GTest, testHasNode) {
 }
 
 
-TEST_F(Graph2GTest, testDijkstra) {
+TEST_F(Graph2GTest, testDijkstraPathNumber) {
+	Graph G(7);
+	G.addEdge(0,1);
+	G.addEdge(0,6);
+	G.addEdge(6,3);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(2,4);
+	G.addEdge(3,4);
+	G.addEdge(4,5);
+
+	Dijkstra dijkstra(G, 0);
+	dijkstra.run();
+
+	count npaths = dijkstra.numberOfPaths(5);
+
+	EXPECT_EQ(3, npaths);
+}
+
+
+TEST_F(Graph2GTest, tryDijkstraPathReconstruction) {
 	Graph G(6);
 	G.addEdge(0,1);
 	G.addEdge(1,2);
