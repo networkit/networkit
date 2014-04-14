@@ -22,8 +22,9 @@ count Diameter::exactDiameter(const Graph& G) {
 
 	if (! G.isWeighted()) {
 		G.forNodes([&](node v) {
-			BFS bfs;
-			vector<count> distances = bfs.run(G, v);
+			BFS bfs(G, v);
+			bfs.run();
+			std::vector<count> distances = bfs.getDistances();
 			for (auto distance : distances) {
 				if (diameter < distance) {
 					diameter = distance;
@@ -136,8 +137,9 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 		throw std::runtime_error("TODO: estimate upper bound of vertex diameter for disconnected graphs");
 	}
 
-	BFS bfs;
-	std::vector<count> distances = bfs.run(G, G.randomNode());
+	BFS bfs(G, G.randomNode());
+	bfs.run();
+	std::vector<count> distances = bfs.getDistances();
 
 	// get two largest path lengths
 	count maxD = 0;

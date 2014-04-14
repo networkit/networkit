@@ -244,20 +244,31 @@ cdef class Graph2:
 
 cdef extern from "../cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS() except +
-		vector[count] run(_Graph G, node source)
+		_BFS(_Graph G, node source) except +
+		void run() except +
+		vector[count] getDistances() except +
+		vector[node] getPath(node t) except +
 
 cdef class BFS:
 	""" Simple breadth-first search"""
-	cdef _BFS _this
+	cdef _BFS* _this
 
-	def run(self, Graph G not None, source):
+	def __cinit_(self, Graph G, source):
+		self._this = new _BFS(dereference(G._this), source)
+
+	def run(self):
 		"""
 		Breadth-first search from source.
 		return Vector of unweighted distances from node @a source, i.e. the
 	 		length (number of edges) of the shortest path from source to any other vertex.
 		"""
-		return self._this.run(dereference(G._this), source)
+		self._this.run()
+
+	def getDistances(self):
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		return self._this.getPath(t)
 	
 
 cdef extern from "../cpp/graph/Dijkstra.h":
