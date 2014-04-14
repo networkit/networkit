@@ -141,7 +141,7 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 		count maxD = 0;
 		count maxD2 = 0; // second largest distance
 		for (count d : distances) {
-			if (d >= maxD) {
+			if ((d != none) && (d >= maxD)) {
 				maxD2 = maxD;
 				maxD = d;
 			}
@@ -152,8 +152,10 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 	};
 
 	ConnectedComponents cc(G);
+	DEBUG("finding connected components");
 	cc.run();
 	if (cc.numberOfComponents() > 1) {
+		DEBUG("estimating for each component");
 		Partition components = cc.getPartition();
 		auto subsets = components.getSubsets();
 		count vdMax = 0;
