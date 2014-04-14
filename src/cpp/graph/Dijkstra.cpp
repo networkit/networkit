@@ -85,7 +85,7 @@ std::vector<node> Dijkstra::getPath(node t, bool forward) const {
 	node v = t;
 	while (v != source) {
 		path.push_back(v);
-		v = previous[t].front();
+		v = previous[v].front();
 	}
 
 	if (forward) {
