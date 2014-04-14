@@ -27,11 +27,10 @@ void ApproxBetweenness::run() {
 
 	double c = 1; // TODO: what is c?
 
-	// this is only needed if shortest paths are not unique (?)
-	// count vd = Diameter::estimatedVertexDiameter(G);
-	// double r = (c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta);
+	count vd = Diameter::estimatedVertexDiameter(G);
+	double r = (c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta);
 
-	double r = (c / (epsilon * epsilon)) * (3 + log(1 / delta));
+	// double r = (c / (epsilon * epsilon)) * (3 + log(1 / delta));
 
 	for (count i = 1; i <= r; ++i) {
 		// sample random node pair

@@ -130,27 +130,44 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 
 
 count Diameter::estimatedVertexDiameter(const Graph& G) {
+
+	auto estimateFrom = [&](node v) -> count {
+		BFS bfs;
+		std::vector<count> distances = bfs.run(G, v);
+
+		// get two largest path lengths
+		count maxD = 0;
+		count maxD2 = 0; // second largest distance
+		for (count d : distances) {
+			if (d >= maxD) {
+				maxD2 = maxD;
+				maxD = d;
+			}
+		}
+
+		count vd = maxD + maxD2;
+		return vd;
+	};
+
 	ConnectedComponents cc(G);
 	cc.run();
 	if (cc.numberOfComponents() > 1) {
-		throw std::runtime_error("TODO: estimate upper bound of vertex diameter for disconnected graphs");
-	}
-
-	BFS bfs;
-	std::vector<count> distances = bfs.run(G, G.randomNode());
-
-	// get two largest path lengths
-	count maxD = 0;
-	count maxD2 = 0; // second largest distance
-	for (count d : distances) {
-		if (d >= maxD) {
-			maxD2 = maxD;
-			maxD = d;
+		Partition components = cc.getPartition();
+		auto subsets = components.getSubsets();
+		count vdMax;
+		for (auto component : subsets) {
+			count vd = estimateFrom(*component.begin()); // take any node from the component and perform bfs from there
+			if (vd > vdMax) {
+				vdMax = vd;
+			}
 		}
+		return vdMax;
+
+	} else {
+		return estimateFrom(G.randomNode());
 	}
 
-	count vd = maxD + maxD2;
-	return vd;
+
 }
 
 } /* namespace NetworKit */
