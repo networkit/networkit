@@ -32,9 +32,10 @@ void ApproxBetweenness::run() {
 
 	// double r = (c / (epsilon * epsilon)) * (3 + log(1 / delta));
 
-	DEBUG("trying ", r, " samples");
+	INFO("trying ", r, " samples");
 	for (count i = 1; i <= r; ++i) {
-		if (i >= 1000) throw std::runtime_error("too many iterations");
+		DEBUG("sample ", i);
+		// if (i >= 1000) throw std::runtime_error("too many iterations");
 		// DEBUG
 		// sample random node pair
 		node u, v;
