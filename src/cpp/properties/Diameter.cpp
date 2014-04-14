@@ -22,8 +22,9 @@ count Diameter::exactDiameter(const Graph& G) {
 
 	if (! G.isWeighted()) {
 		G.forNodes([&](node v) {
-			BFS bfs;
-			vector<count> distances = bfs.run(G, v);
+			BFS bfs(G, v);
+			bfs.run();
+			std::vector<count> distances = bfs.getDistances();
 			for (auto distance : distances) {
 				if (diameter < distance) {
 					diameter = distance;
@@ -132,8 +133,9 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 count Diameter::estimatedVertexDiameter(const Graph& G) {
 
 	auto estimateFrom = [&](node v) -> count {
-		BFS bfs;
-		std::vector<count> distances = bfs.run(G, v);
+		BFS bfs(G, v);
+		bfs.run();
+		std::vector<count> distances = bfs.getDistances();
 
 		// get two largest path lengths
 		count maxD = 0;
@@ -154,7 +156,7 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 	if (cc.numberOfComponents() > 1) {
 		Partition components = cc.getPartition();
 		auto subsets = components.getSubsets();
-		count vdMax;
+		count vdMax = 0;
 		for (auto component : subsets) {
 			count vd = estimateFrom(*component.begin()); // take any node from the component and perform bfs from there
 			if (vd > vdMax) {
@@ -166,7 +168,6 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 	} else {
 		return estimateFrom(G.randomNode());
 	}
-
 
 }
 
