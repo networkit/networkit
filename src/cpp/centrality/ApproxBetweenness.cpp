@@ -32,7 +32,10 @@ void ApproxBetweenness::run() {
 
 	// double r = (c / (epsilon * epsilon)) * (3 + log(1 / delta));
 
+	DEBUG("trying ", r, " samples");
 	for (count i = 1; i <= r; ++i) {
+		if (i >= 1000) throw std::runtime_error("too many iterations");
+		// DEBUG
 		// sample random node pair
 		node u, v;
 		u = Sampling::randomNode(G);
@@ -45,26 +48,22 @@ void ApproxBetweenness::run() {
 			// random path sampling and estimation update
 			node s = v;
 			node t = v;
-			count i = 0;
 			while (t != u)  {
-				// DEBUG
-				++i;
-				if (i >= 50) throw std::runtime_error("too many iterations");
-				// DEBUG
+
 				TRACE("u, v, s, t: ", u, " ", v, "  ", s, " ", t);
-				// sample z in P_s(t) with probability sigma_uz / sigma_us
+				// sample z in P_u(t) with probability sigma_uz / sigma_us
 				std::vector<std::pair<node, double> > choices;
 
 				for (node z : dijkstra.getPredecessors(t)) {
 					choices.emplace_back(z, dijkstra.numberOfPaths(z) / (double) dijkstra.numberOfPaths(s)); 	// sigma_uz / sigma_us
 				}
-				DEBUG("choices and weightes: ", choices);
+				DEBUG("choices and weights: ", choices);
 				node z = Aux::Random::weightedChoice(choices);
 				if (z != u) {
 					scoreData[z] = scoreData[z] + 1 / (double) r;
-					s = t;
-					t = z;
 				}
+				s = t;
+				t = z;
 			}
 		}
 	}
