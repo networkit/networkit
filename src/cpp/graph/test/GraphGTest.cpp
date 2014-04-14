@@ -8,6 +8,8 @@
 #ifndef NOGTEST
 
 #include "GraphGTest.h"
+#include "../BFS.h"
+#include "../Dijkstra.h"
 
 namespace NetworKit {
 
@@ -285,6 +287,59 @@ TEST_F(GraphGTest, testDFSIterator) {
 	EXPECT_EQ(expected, visited);
 }
 
+TEST_F(GraphGTest, testBFSClass) {
+	Graph G(5);
+	G.addEdge(0,1);
+	G.addEdge(1,2);
+	G.addEdge(2,3);
+	G.addEdge(3,4);
+	BFS bfs(G,1);
+	bfs.run();
+	auto dist = bfs.getDistances();
+	std::vector<count> correct_dist = {1,0,1,2,3};
+	for( index i = 0, end = dist.size(); i < end; ++i ) {
+		EXPECT_EQ(correct_dist[i],dist[i]) << "distance for node "<<i<<" is not correct";
+	}
+	auto path = bfs.getPath(4);
+	std::vector<node> correct_path = {1,2,3,4};
+	for( index i = 0, end = path.size(); i < end; ++i ) {
+		EXPECT_EQ(correct_path[i],path[i]) << "node "<<i<<" in path from 1 to 4 is not correct";
+	}
+}
+
+TEST_F(GraphGTest, testDijkstraClass) {
+	Graph G(5,true);
+	G.addEdge(0,1,2);
+	G.addEdge(1,2,3);
+	G.addEdge(2,3,4);
+	G.addEdge(3,4,5);
+	Dijkstra dij(G,1);
+	dij.run();
+	auto dist = dij.getDistances();
+	std::vector<count> correct_dist = {2,0,3,7,12};
+	for( index i = 0, end = dist.size(); i < end; ++i ) {
+		EXPECT_EQ(correct_dist[i],dist[i]) << "distance for node "<<i<<" is not correct";
+	}
+	auto path = dij.getPath(4);
+	std::vector<node> correct_path = {1,2,3,4};
+	for( index i = 0, end = path.size(); i < end; ++i ) {
+		EXPECT_EQ(correct_path[i],path[i]) << "node "<<i<<" in path from 1 to 4 is not correct";
+	}
+	G.addEdge(0,4,7);
+	Dijkstra dij2(G,1);
+	dij2.run();
+	dist = dij2.getDistances();
+	correct_dist = {2,0,3,7,9};
+	for( index i = 0, end = dist.size(); i < end; ++i ) {
+		EXPECT_EQ(correct_dist[i],dist[i]) << "distance for node "<<i<<" is not correct";
+	}
+	path = dij2.getPath(4);
+	correct_path = {1,0,4};
+	for( index i = 0, end = path.size(); i < end; ++i ) {
+		EXPECT_EQ(correct_path[i],path[i]) << "node "<<i<<" in path from 1 to 4 is not correct";
+	}
+
+}
 
 //TEST_F(GraphGTest, testParallelEdgeInsertion) {
 //	count n = 100;
