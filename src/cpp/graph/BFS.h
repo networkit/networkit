@@ -16,9 +16,8 @@ namespace NetworKit {
 // TODO: adapt BFS to standard interface: pass G and source via constructor, have a void run method, return results in appropriate getter methods.
 class BFS {
 public:
-	BFS() = default;
 	BFS(const Graph& G, node source); 
-	virtual ~BFS() = default;
+	virtual ~BFS();
 
 	/**
 	 * Breadth-first search from @a source.

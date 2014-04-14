@@ -9,15 +9,19 @@
 
 namespace NetworKit {
 
-BFS::BFS(const Graph& G, node source) : G(G), source(source), distances(G.upperNodeIdBound(), none), previous(G.upperNodeIdBound(), none) {
+BFS::BFS(const Graph& G, node source) : G(G), source(source) {
+}
+
+BFS::~BFS() {
 
 }
 
-
 void BFS::run() {
-	//count infDist = std::numeric_limits<count>::max();
-	//count n = G.numberOfNodes();
-	//std::vector<count> distances(n, infDist);
+	count z = G.upperNodeIdBound();
+	distances.clear();
+	distances.resize(z, none);
+	previous.clear();
+	previous.resize(z);
 	std::queue<node> q;
 
 	distances[source] = 0;
@@ -53,8 +57,9 @@ std::vector<node> BFS::getPath(node t, bool forward) const {
 	node v = t;
 	while (v != source) {
 		path.push_back(v);
-		v = previous[t];
+		v = previous[v];
 	}
+	path.push_back(v); // appends source node, probably not necessary.
 
 	if (forward) {
 		std::reverse(path.begin(), path.end());
