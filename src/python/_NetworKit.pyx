@@ -1327,6 +1327,38 @@ cdef class Betweenness:
 	def ranking(self):
 		return self._this.ranking()
 
+
+cdef extern from "../cpp/centrality/ApproxBetweenness.h":
+	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness":
+		_ApproxBetweenness(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class ApproxBetweenness:
+	"""
+		TODO: docstring
+	"""
+	cdef _ApproxBetweenness* _this
+
+	def __cinit__(self, Graph G, normalized=False):
+		self._this = new _ApproxBetweenness(dereference(G._this), normalized)
+
+	def run(self):
+		self._this.run()
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
+
+
+
 cdef extern from "../cpp/centrality/PageRank.h":
 	cdef cppclass _PageRank "NetworKit::PageRank":
 		_PageRank(_Graph, double damp, double tol) except +
