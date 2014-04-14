@@ -76,6 +76,10 @@ count Dijkstra::numberOfPaths(node t) const {
 }
 
 
+std::vector<node> Dijkstra::getPredecessors(node t) const {
+	return previous[t];
+}
+
 std::vector<node> Dijkstra::getPath(node t, bool forward) const {
 	std::vector<node> path;
 	if (previous[t].empty()) { // t is not reachable from source

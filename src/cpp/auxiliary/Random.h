@@ -98,7 +98,7 @@ const Element& weightedChoice(const std::vector<std::pair<Element, double>>& wei
 		}
 		r -= entry.second;
 	}
-	throw std::runtime_error("should never get here"); // should never get here
+	throw std::runtime_error("Random::weightedChoice: should never get here"); // should never get here
 }
 
 } // namespace Random

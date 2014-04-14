@@ -47,6 +47,12 @@ public:
 	count numberOfPaths(node t) const;
 
 	/**
+	 * @param t target node
+	 * @return predecessors of t on all shortest paths from source to t
+	 */
+	std::vector<node> getPredecessors(node t) const;
+
+	/**
 	 * @return a shortest path from source node to target node @a t.
 	 * Returns empty path if source and target are not connected.
 	 */

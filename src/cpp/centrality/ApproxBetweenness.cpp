@@ -41,18 +41,24 @@ void ApproxBetweenness::run() {
 		} while (v == u);
 		Dijkstra dijkstra(G, u);
 		dijkstra.run();
-		std::vector<edgeweight> sigma = dijkstra.getDistances();
-		std::vector<node> path = dijkstra.getPath(v); 	// this selects one shortest path - there may be several
-		if (path.size() > 0) { // path exists
+		if (dijkstra.numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			// random path sampling and estimation update
-			node s, t = v;
-			while (t != u) {
+			node s = v;
+			node t = v;
+			count i = 0;
+			while (t != u)  {
+				// DEBUG
+				++i;
+				if (i >= 50) throw std::runtime_error("too many iterations");
+				// DEBUG
+				TRACE("u, v, s, t: ", u, " ", v, "  ", s, " ", t);
 				// sample z in P_s(t) with probability sigma_uz / sigma_us
 				std::vector<std::pair<node, double> > choices;
 
-				for (node z : path) {
-					choices.emplace_back(z, sigma[z] / sigma[s]); 	// sigma_uz / sigma_us
+				for (node z : dijkstra.getPredecessors(t)) {
+					choices.emplace_back(z, dijkstra.numberOfPaths(z) / (double) dijkstra.numberOfPaths(s)); 	// sigma_uz / sigma_us
 				}
+				DEBUG("choices and weightes: ", choices);
 				node z = Aux::Random::weightedChoice(choices);
 				if (z != u) {
 					scoreData[z] = scoreData[z] + 1 / (double) r;
