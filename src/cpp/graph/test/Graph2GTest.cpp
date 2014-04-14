@@ -699,9 +699,8 @@ TEST_F(Graph2GTest, testDijkstraPathNumber) {
 	Dijkstra dijkstra(G, 0);
 	dijkstra.run();
 
-	count npaths = dijkstra.numberOfPaths(5);
-
-	EXPECT_EQ(3, npaths);
+	EXPECT_EQ(3, dijkstra.numberOfPaths(5));
+	EXPECT_EQ(1, dijkstra.numberOfPaths(1));
 }
 
 

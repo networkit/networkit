@@ -1182,6 +1182,7 @@ cdef class ClusteringCoefficient:
 cdef extern from "../cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
 	pair[count, count] estimatedDiameterRange(_Graph G, double error) except +
 	count exactDiameter(_Graph G) except +
+	count estimatedVertexDiameter(_Graph G) except +
 
 cdef class Diameter:
 	"""
@@ -1195,6 +1196,10 @@ cdef class Diameter:
 	@staticmethod
 	def exactDiameter(Graph G):
 		return exactDiameter(dereference(G._this))
+
+	@staticmethod
+	def estimatedVertexDiameter(Graph G):
+		return estimatedVertexDiameter(dereference(G._this))
 
 cdef extern from "../cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
