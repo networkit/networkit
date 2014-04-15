@@ -12,9 +12,6 @@ namespace NetworKit {
 BFS::BFS(const Graph& G, node source) : SSSP(G, source) {
 }
 
-BFS::~BFS() {
-
-}
 
 void BFS::run() {
 	TRACE("initializing containers");
