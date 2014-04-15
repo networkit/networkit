@@ -244,20 +244,31 @@ cdef class Graph2:
 
 cdef extern from "../cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS() except +
-		vector[count] run(_Graph G, node source)
+		_BFS(_Graph G, node source) except +
+		void run() except +
+		vector[count] getDistances() except +
+		vector[node] getPath(node t) except +
 
 cdef class BFS:
 	""" Simple breadth-first search"""
-	cdef _BFS _this
+	cdef _BFS* _this
 
-	def run(self, Graph G not None, source):
+	def __cinit_(self, Graph G, source):
+		self._this = new _BFS(dereference(G._this), source)
+
+	def run(self):
 		"""
 		Breadth-first search from source.
 		return Vector of unweighted distances from node @a source, i.e. the
 	 		length (number of edges) of the shortest path from source to any other vertex.
 		"""
-		return self._this.run(dereference(G._this), source)
+		self._this.run()
+
+	def getDistances(self):
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		return self._this.getPath(t)
 	
 
 cdef extern from "../cpp/graph/Dijkstra.h":
@@ -1171,6 +1182,7 @@ cdef class ClusteringCoefficient:
 cdef extern from "../cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
 	pair[count, count] estimatedDiameterRange(_Graph G, double error) except +
 	count exactDiameter(_Graph G) except +
+	count estimatedVertexDiameter(_Graph G) except +
 
 cdef class Diameter:
 	"""
@@ -1184,6 +1196,10 @@ cdef class Diameter:
 	@staticmethod
 	def exactDiameter(Graph G):
 		return exactDiameter(dereference(G._this))
+
+	@staticmethod
+	def estimatedVertexDiameter(Graph G):
+		return estimatedVertexDiameter(dereference(G._this))
 
 cdef extern from "../cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
@@ -1310,6 +1326,38 @@ cdef class Betweenness:
 
 	def ranking(self):
 		return self._this.ranking()
+
+
+cdef extern from "../cpp/centrality/ApproxBetweenness.h":
+	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness":
+		_ApproxBetweenness(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class ApproxBetweenness:
+	"""
+		TODO: docstring
+	"""
+	cdef _ApproxBetweenness* _this
+
+	def __cinit__(self, Graph G, normalized=False):
+		self._this = new _ApproxBetweenness(dereference(G._this), normalized)
+
+	def run(self):
+		self._this.run()
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
+
+
 
 cdef extern from "../cpp/centrality/PageRank.h":
 	cdef cppclass _PageRank "NetworKit::PageRank":

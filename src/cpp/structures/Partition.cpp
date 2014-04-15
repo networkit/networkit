@@ -182,8 +182,19 @@ std::vector<index> Partition::getVector() {
 }
 
 
-std::set<std::set<index> > getSubsets() {
-	// TODO: implement
+std::set<std::set<index> > Partition::getSubsets() {
+	std::vector<std::set<index> > table(omega);
+	this->forEntries([&](index e, index s){
+		table[s].insert(e);
+	});
+
+	std::set<std::set<index> > subsets;
+	for (auto set : table) {
+		if (set.size() > 0) {
+			subsets.insert(set);
+		}
+	}
+	return subsets;
 }
 
 void Partition::allToOnePartition() {

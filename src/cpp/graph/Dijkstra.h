@@ -35,17 +35,42 @@ public:
 	virtual std::vector<edgeweight> getDistances() const;
 
 	/**
-	 * @return the shortest path from source node to target node @a t.
+	 * @param  t target node
+	 * @return   distance from s to target node t
+	 * 	 */
+	edgeweight distance(node t) const;
+
+	/**
+	 * @param  t target node
+	 * @return   number of shortest paths between s and t
+	 * 	 */
+	count numberOfPaths(node t) const;
+
+	/**
+	 * @param t target node
+	 * @return predecessors of t on all shortest paths from source to t
+	 */
+	std::vector<node> getPredecessors(node t) const;
+
+	/**
+	 * @return a shortest path from source node to target node @a t.
 	 * Returns empty path if source and target are not connected.
 	 */
 	virtual std::vector<node> getPath(node t, bool forward=true) const;
+
+	/**
+	 * @return all shortest paths from source node to target node @a t.
+	 * Returns empty set if source and target are not connected.
+	 */
+	virtual std::set<std::vector<node> > getPaths(node t, bool forward=true) const;
 
 private:
 
 	const Graph& G;
 	const node source;
 	std::vector<edgeweight> distances;
-	std::vector<node> previous; // predecessor on shortest path
+	std::vector<std::vector<node> > previous; // predecessors on shortest path
+	std::vector<count> npaths;
 };
 
 } /* namespace NetworKit */

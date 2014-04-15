@@ -9,10 +9,8 @@
 #define HAVELHAKIMIGENERATOR_H_
 
 #include <vector>
-#include <stack>
 
 #include "../graph/Graph.h"
-#include "../auxiliary/ShellList.h"
 #include "StaticDegreeSequenceGenerator.h"
 
 namespace NetworKit {

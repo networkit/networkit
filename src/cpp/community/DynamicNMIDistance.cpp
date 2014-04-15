@@ -44,8 +44,8 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 
 //	count n = newGraph.numberOfNodes();
 
-	DEBUG("oldClustering=" , Aux::vectorToString(oldClustering.getVector()));
-	DEBUG("newClustering=" , Aux::vectorToString(newClustering.getVector()));
+	DEBUG("oldClustering=" , oldClustering.getVector());
+	DEBUG("newClustering=" , newClustering.getVector());
 
 
 	std::vector<count> size_old(oldClustering.upperBound());
@@ -61,8 +61,8 @@ double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
 		}
 	});
 
-	DEBUG("size_old=" , Aux::vectorToString(size_old));
-	DEBUG("size_new=" , Aux::vectorToString(size_new));
+	DEBUG("size_old=", size_old);
+	DEBUG("size_new=", size_new);
 
 
 	// confusion matrix

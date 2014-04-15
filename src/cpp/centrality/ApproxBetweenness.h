@@ -20,7 +20,7 @@ class ApproxBetweenness: public NetworKit::Centrality {
 
 public:
 
-	ApproxBetweenness(const Graph& G, bool normalized=false, double epsilon=0, double delta=0);
+	ApproxBetweenness(const Graph& G, bool normalized=false, double epsilon=0.1, double delta=0.1);
 
 	void run() override;
 
