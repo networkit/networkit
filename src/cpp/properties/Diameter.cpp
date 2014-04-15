@@ -24,7 +24,7 @@ count Diameter::exactDiameter(const Graph& G) {
 		G.forNodes([&](node v) {
 			BFS bfs(G, v);
 			bfs.run();
-			std::vector<count> distances = bfs.getDistances();
+			auto distances = bfs.getDistances();
 			for (auto distance : distances) {
 				if (diameter < distance) {
 					diameter = distance;
@@ -56,7 +56,7 @@ count Diameter::exactDiameter(const Graph& G) {
 
 
 std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double error) {
-
+	// FIXME: node ids go from 0 to z, not to n
 
 	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
 	/* Note: the function Graph::breadthFirstEdgesFrom that should
@@ -132,16 +132,18 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 
 count Diameter::estimatedVertexDiameter(const Graph& G) {
 
+	edgeweight infDist = std::numeric_limits<edgeweight>::max();
+
 	auto estimateFrom = [&](node v) -> count {
 		BFS bfs(G, v);
 		bfs.run();
-		std::vector<count> distances = bfs.getDistances();
+		auto distances = bfs.getDistances();
 
 		// get two largest path lengths
 		count maxD = 0;
 		count maxD2 = 0; // second largest distance
-		for (count d : distances) {
-			if ((d != none) && (d >= maxD)) {
+		for (auto d : distances) {
+			if ((d != infDist) && (d >= maxD)) {
 				maxD2 = maxD;
 				maxD = d;
 			}
