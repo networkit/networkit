@@ -15,10 +15,10 @@
 namespace NetworKit {
 
 
-count Diameter::exactDiameter(const Graph& G) {
+edgeweight Diameter::exactDiameter(const Graph& G) {
 	using namespace std;
 
-	count diameter = 0;
+	edgeweight diameter = 0.0;
 
 	if (! G.isWeighted()) {
 		G.forNodes([&](node v) {
@@ -45,7 +45,7 @@ count Diameter::exactDiameter(const Graph& G) {
 		 });
 	}
 
-	if (diameter == std::numeric_limits<count>::max()) {
+	if (diameter == std::numeric_limits<edgeweight>::max()) {
 		throw std::runtime_error("Graph not connected - diameter is infinite");
 	}
 	return diameter;
@@ -55,7 +55,7 @@ count Diameter::exactDiameter(const Graph& G) {
 
 
 
-std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double error) {
+std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& G, double error) {
 	// FIXME: node ids go from 0 to z, not to n
 
 	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
@@ -84,8 +84,8 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 	};
 
 	/* Diameter estimate: lowerBounds <= diam(G) <= upperBound. */
-	count lowerBound = 0;
-	count upperBound = std::numeric_limits <count>::max();
+	edgeweight lowerBound = 0.0;
+	edgeweight upperBound = std::numeric_limits <edgeweight>::max();
 	const count n = G.numberOfNodes();
 
 	/* Nodes sorted decreasingly by degree. */
@@ -102,7 +102,7 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 	/* While not converged: update estimate. */
 	count niter = 0;
 	while ((upperBound - lowerBound) >= error * lowerBound && niter < n) {
-		count ecc;
+		edgeweight ecc;
 
 		/* ecc(u) <= diam(G) */
 		node u = random_node();
@@ -122,7 +122,7 @@ std::pair<count, count> Diameter::estimatedDiameterRange(const Graph& G, double 
 		niter++;
 	}
 
-	if ((lowerBound == std::numeric_limits<count>::max()) || (upperBound == std::numeric_limits<count>::max())) {
+	if ((lowerBound == std::numeric_limits<edgeweight>::max()) || (upperBound == std::numeric_limits<edgeweight>::max())) {
 		throw std::runtime_error("Graph not connected - diameter is infinite");
 	}
 

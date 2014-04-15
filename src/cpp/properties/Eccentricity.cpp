@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-std::pair<node, count> Eccentricity::getValue(const Graph& G, node u) {
+std::pair<edgeweight, edgeweight> Eccentricity::getValue(const Graph& G, node u) {
 	static BFS bfs(G, u);
 	bfs.run();
 	auto dists = bfs.getDistances();
