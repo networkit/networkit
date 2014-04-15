@@ -27,10 +27,11 @@ edgeweight GraphDistance::weightedDistance(const Graph& g, node u, node v) const
 
 count GraphDistance::unweightedDistance(const Graph& g, node u, node v) const {
 	BFS bfs(g, u);
+	DEBUG("running BFS");
 	bfs.run();
-	std::vector<count> distances = bfs.getDistances();
+	auto distances = bfs.getDistances();
 	DEBUG("Called BFS, distance between " , u , " and " , v , ": " , distances[v]);
-	return distances[v];
+	return (count) distances[v];
 }
 
 } /* namespace NetworKit */

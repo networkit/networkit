@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-Dijkstra::Dijkstra(const Graph& G, node source) : G(G), source(source) {
+Dijkstra::Dijkstra(const Graph& G, node source) : SSSP(G, source) {
 
 }
 
@@ -60,77 +60,6 @@ void Dijkstra::run() {
 		G.forWeightedEdgesOf(current, relax);
 	}
 
-}
-
-
-std::vector<edgeweight> Dijkstra::getDistances() const {
-	return distances;
-}
-
-edgeweight Dijkstra::distance(node t) const {
-	return distances[t];	
-}
-
-count Dijkstra::numberOfPaths(node t) const {
-	return npaths[t];	
-}
-
-
-std::vector<node> Dijkstra::getPredecessors(node t) const {
-	return previous[t];
-}
-
-std::vector<node> Dijkstra::getPath(node t, bool forward) const {
-	std::vector<node> path;
-	if (previous[t].empty()) { // t is not reachable from source
-		WARN("there is no path from ", source, " to ", t);
-		return path;
-	}
-	node v = t;
-	while (v != source) {
-		path.push_back(v);
-		v = previous[v].front();
-	}
-
-	if (forward) {
-		std::reverse(path.begin(), path.end());
-	}
-	return path;
-}
-
-
-std::set<std::vector<node> > Dijkstra::getPaths(node t, bool forward) const {
-	throw std::runtime_error("FIXME: correct implementation needed");
-
-	std::set<std::vector<node> > paths;
-	if (previous[t].empty()) { // t is not reachable from source
-		WARN("there is no path from ", source, " to ", t);
-		return paths;
-	}
-
-
-	std::function<std::set<std::vector<node> > (std::vector<node>& prefix, node v) > trace = [&](std::vector<node>& prefix, node v) {
-		// base case
-
-		prefix.push_back(v);
-		std::set<std::vector<node> > paths;
-		paths.insert(prefix);
-		for (node u : previous[v]) {
-			auto returned = trace(prefix, u);
-			paths.insert(returned.begin(), returned.end());
-		}
-		return paths;
-	};
-
-	std::vector<node> emptyPath;
-	auto thePaths = trace(emptyPath, t);
-
-	if (forward) {
-		for (auto path : thePaths) {
-			std::reverse(path.begin(), path.end());
-		}
-	}
-	return thePaths;
 }
 
 } /* namespace NetworKit */

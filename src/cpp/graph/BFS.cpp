@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-BFS::BFS(const Graph& G, node source) : G(G), source(source) {
+BFS::BFS(const Graph& G, node source) : SSSP(G, source) {
 }
 
 BFS::~BFS() {
@@ -17,54 +17,44 @@ BFS::~BFS() {
 }
 
 void BFS::run() {
+	TRACE("initializing containers");
+	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	count z = G.upperNodeIdBound();
 	distances.clear();
-	distances.resize(z, none);
+	distances.resize(z, infDist);
 	previous.clear();
 	previous.resize(z);
+	npaths.clear();
+	npaths.resize(z, 0);
+
 	std::queue<node> q;
 
+	TRACE("initializing start");
 	distances[source] = 0;
+	npaths[source] = 1;
 	q.push(source);
-	previous[source] = source;
+	// previous[source] = source;
 
 	while (! q.empty()) {
-		node current = q.front();
+		node u = q.front();
 		q.pop();
-		TRACE("current node in BFS: " , current);
+		TRACE("current node in BFS: " , u);
 
 		// insert untouched neighbors into queue
-		G.forNeighborsOf(current, [&](node neighbor) {
-			if (distances[neighbor] == none) {
-				q.push(neighbor);
-				previous[neighbor] = current;
-				distances[neighbor] = distances[current] + 1;
+		G.forNeighborsOf(u, [&](node v) {
+			TRACE("scanning neighbor ", v);
+
+			if (distances[v] > distances[u] + 1) {
+				q.push(v);
+				previous[v] = {u};
+				distances[v] = distances[u] + 1;
+				npaths[v] = npaths[u];
+			} else if (distances[v] == distances[u] + 1) {
+				previous[v].push_back(u); 	// additional predecessor
+				npaths[v] += npaths[u]; 	// all the shortest paths to u are also shortest paths to v now
 			}
 		});
 	}
-}
-
-std::vector<count> BFS::getDistances() const {
-	return distances;
-}
-
-std::vector<node> BFS::getPath(node t, bool forward) const {
-	std::vector<node> path;
-	if (previous[t] == none) { // t is not reachable from source
-		WARN("there is no path from ", source, " to ", t);
-		return path;
-	}
-	node v = t;
-	while (v != source) {
-		path.push_back(v);
-		v = previous[v];
-	}
-	path.push_back(v); // appends source node, probably not necessary.
-
-	if (forward) {
-		std::reverse(path.begin(), path.end());
-	}
-	return path;
 }
 
 } /* namespace NetworKit */
