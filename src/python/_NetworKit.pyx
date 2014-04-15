@@ -1342,7 +1342,7 @@ cdef class ApproxBetweenness:
 	"""
 	cdef _ApproxBetweenness* _this
 
-	def __cinit__(self, Graph G, double epsilon=0.01, double delta=0.1):
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1):
 		self._this = new _ApproxBetweenness(dereference(G._this), epsilon, delta)
 
 	def run(self):
