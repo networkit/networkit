@@ -21,6 +21,8 @@ public:
 
 	SSSP(const Graph& G, node s);
 
+	virtual ~SSSP() = default;
+
 	virtual void run() = 0;
 
 	/**
