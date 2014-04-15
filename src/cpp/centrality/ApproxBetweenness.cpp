@@ -14,6 +14,8 @@
 #include "../graph/SSSP.h"
 
 #include <math.h>
+#include <algorithm>
+#include <omp.h>
 
 namespace NetworKit {
 
@@ -31,12 +33,23 @@ void ApproxBetweenness::run() {
 
 	INFO("estimating vertex diameter");
 	count vd = Diameter::estimatedVertexDiameter(G);
-	double r = (c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta);
+	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta));
+
 
 	// double r = (c / (epsilon * epsilon)) * (3 + log(1 / delta));
 
 	INFO("taking ", r, " path samples");
-	for (count i = 1; i <= r; ++i) {
+
+	// parallelization: 
+	std::vector<std::vector<double> > scorePerThread;
+	scorePerThread.resize(omp_get_max_threads());
+	for (auto score : scorePerThread) {
+		score.resize(z, 0);
+	}
+
+	#pragma omp parallel for
+	for (count i = 1; i <= r; i++) {
+		count thread = omp_get_thread_num();
 		DEBUG("sample ", i);
 		// if (i >= 1000) throw std::runtime_error("too many iterations");
 		// DEBUG
@@ -70,7 +83,7 @@ void ApproxBetweenness::run() {
 				}
 				node z = Aux::Random::weightedChoice(choices);
 				if (z != u) {
-					scoreData[z] = scoreData[z] + 1 / (double) r;
+					scorePerThread[thread][z] = scorePerThread[thread][z] + 1 / (double) r;
 				}
 				s = t;
 				t = z;
@@ -78,6 +91,11 @@ void ApproxBetweenness::run() {
 		}
 
 		delete sssp; // free heap memory
+	}
+
+	// add up all thread-local values
+	for (auto scores : scorePerThread) {
+		std::transform(scoreData.begin(), scoreData.end(), scores.begin(), scores.end(), std::plus<double>());
 	}
 
 }
