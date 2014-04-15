@@ -8,7 +8,11 @@
  *      Author: FJW
  */
 
+#include <cassert>
+#include <cstddef>
 #include <cstdint>
+#include <random>
+#include <stdexcept>
 
 namespace Aux {
 
@@ -23,6 +27,12 @@ namespace Random {
  * @returns a high-quality random seed for an URNG.
  */
 uint64_t getSeed();
+
+/**
+ * @returns a reference to a seeded URNG that is thread_local iff GCC 4.8 or later is used.
+ */
+std::mt19937_64& getURNG();
+
 
 /**
  * @returns an integer distributed uniformly in an inclusive range;
@@ -48,12 +58,48 @@ double real(double lowerBound, double upperBound);
  */
 double probability();
 
-/** 
+/**
+ * @returns a size_t in the range [0, max - 1] that can for example be used to
+ * access a random element of a container.
+ */
+std::size_t index(std::size_t max);
+
+/**
  * @returns an integer distributed binomially
  * @param n 	number of trials
  * @param p 	success probability
  */
 //uint64_t binomial(double n, double p);
+
+
+/**
+ * @returns a uniform random choice from an indexable container of elements.
+ */
+template<typename Container>
+typename Container::const_reference choice(const Container& container) {
+	return container[index(container.size())];
+}
+
+
+/**
+ * @returns a weighted random choice from a vector of elements with given weights.
+ */
+template <typename Element>
+const Element& weightedChoice(const std::vector<std::pair<Element, double>>& weightedElements) {
+	double total = 0.0;
+	for (const auto& entry : weightedElements) {
+		assert(entry.second >= 0.0 && "This algorithm only works with non-negative weights");
+		total += entry.second;
+	}
+	double r = Aux::Random::real(total);
+	for (const auto& entry : weightedElements) {
+		if (r < entry.second) {
+			return entry.first;
+		}
+		r -= entry.second;
+	}
+	throw std::runtime_error("Random::weightedChoice: should never get here"); // should never get here
+}
 
 } // namespace Random
 } // namespace Aux

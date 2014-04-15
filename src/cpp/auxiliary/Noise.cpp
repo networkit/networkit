@@ -7,14 +7,15 @@
 
 #include "Noise.h"
 
+#include "Random.h"
+
 namespace Aux {
 
 
-Noise::Noise(double l, double u) :
-	uniform{l, u}, randomEngine{std::random_device{}()} {}
+Noise::Noise(double l, double u) : uniform{l, u} {}
 
 double Noise::add(double x) {
-	double r = this->uniform(this->randomEngine);
+	double r = this->uniform(Random::getURNG());
 	return x + r;
 }
 
