@@ -48,6 +48,7 @@ void ApproxBetweenness::run() {
 		DEBUG("running Dijkstra for node ", u);
 		dijkstra.run();
 		if (dijkstra.numberOfPaths(v) > 0) { // at least one path between {u, v} exists
+			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update
 			node s = v;
 			node t = v;
