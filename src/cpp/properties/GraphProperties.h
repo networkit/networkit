@@ -20,6 +20,17 @@ namespace NetworKit {
  * Collection of methods for basic network properties.
  */
 class GraphProperties {
+protected:
+	/**
+	 * @return Degree assortativity of the graph @a G.
+	 * Based on Eq. (4) in Newman: Assortative mixing in networks.
+	 * URL: http://arxiv.org/pdf/cond-mat/0205405.pdf.
+	 * A similar description of this algorithm can be found in
+	 * Newman: Networks. An Introduction. Chapter 8.7.
+	 */
+	static double degreeAssortativitySlower(const Graph& G, bool useWeights = false);
+
+
 public:
 	GraphProperties();
 	virtual ~GraphProperties();
@@ -55,15 +66,6 @@ public:
 	static std::pair<count, count> minMaxDegree(Graph& G);
 
 	static double averageDegree(const Graph& G);
-
-	/**
-	 * @return Degree assortativity of the graph @a G.
-	 * Based on Eq. (4) in Newman: Assortative mixing in networks.
-	 * URL: http://arxiv.org/pdf/cond-mat/0205405.pdf.
-	 * A similar description of this algorithm can be found in
-	 * Newman: Networks. An Introduction. Chapter 8.7.
-	 */
-	static double degreeAssortativitySlower(const Graph& G, bool useWeights = false);
 
 	/**
 	 * @return Degree assortativity of the graph @a G.
