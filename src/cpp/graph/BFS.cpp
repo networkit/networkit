@@ -33,7 +33,6 @@ void BFS::run() {
 	distances[source] = 0;
 	npaths[source] = 1;
 	q.push(source);
-	// previous[source] = source;
 
 	while (! q.empty()) {
 		node u = q.front();
@@ -44,7 +43,7 @@ void BFS::run() {
 		G.forNeighborsOf(u, [&](node v) {
 			TRACE("scanning neighbor ", v);
 
-			if (distances[v] > distances[u] + 1) {
+			if (distances[v] == infDist) {
 				q.push(v);
 				previous[v] = {u};
 				distances[v] = distances[u] + 1;

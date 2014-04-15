@@ -303,6 +303,7 @@ TEST_F(GraphGTest, testBFSClass) {
 	auto path = bfs.getPath(4);
 	std::vector<node> correct_path = {1,2,3,4};
 	for( index i = 0, end = path.size(); i < end; ++i ) {
+		TRACE(path);
 		EXPECT_EQ(correct_path[i],path[i]) << "node "<<i<<" in path from 1 to 4 is not correct";
 	}
 }

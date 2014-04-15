@@ -32,7 +32,6 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 			}
 		});
 	} else {
-
 		 G.forNodes([&](node v) {
 		 	Dijkstra dijkstra(G, v);
 		 	dijkstra.run();
@@ -56,8 +55,6 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& G, double error) {
-	// FIXME: node ids go from 0 to z, not to n
-
 	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
 	/* Note: the function Graph::breadthFirstEdgesFrom that should
 	 do the same has not been implemented! 
@@ -65,7 +62,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 	 */
 	auto bfs_edges = [&] (const Graph& G, node u, std::function<void(node, node)> f) -> node {
 		std::queue<node> q;
-		std::vector<bool> visited(G.numberOfNodes(), false);
+		std::vector<bool> visited(G.upperNodeIdBound(), false);
 		q.push(u);
 		visited[u] = true;
 
@@ -86,22 +83,23 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 	/* Diameter estimate: lowerBounds <= diam(G) <= upperBound. */
 	edgeweight lowerBound = 0.0;
 	edgeweight upperBound = std::numeric_limits <edgeweight>::max();
-	const count n = G.numberOfNodes();
+	const count z = G.upperNodeIdBound();
 
 	/* Nodes sorted decreasingly by degree. */
-	std::vector<node> high_deg(n);
+	std::vector<node> high_deg(z);
 	std::iota(begin(high_deg), end(high_deg), 0);
 	std::sort(begin(high_deg), end(high_deg), [&] (node u, node v) {
-		return G.degree(u) > G.degree(v);
+		if (G.hasNode(u) && G.hasNode(v)) { // TODO: accelerate by replacing if
+			return G.degree(u) > G.degree(v);
+		}
 	});
 
 	/* Random node. */
-	static const std::default_random_engine random;
-	auto random_node = std::bind(std::uniform_int_distribution<node>(0, n - 1), random);
+	node random_node = G.randomNode();
 
 	/* While not converged: update estimate. */
 	count niter = 0;
-	while ((upperBound - lowerBound) >= error * lowerBound && niter < n) {
+	while ((upperBound - lowerBound) >= error * lowerBound && niter < G.numberOfNodes()) {
 		edgeweight ecc;
 
 		/* ecc(u) <= diam(G) */
@@ -111,7 +109,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 
 		/* diam(G) <= diam(BFS_Tree(v)) */
 		node v = high_deg[niter];
-		Graph bfs_tree(n);
+		Graph bfs_tree(z);
 		node w = bfs_edges(G, v, [&] (node a, node b) {
 			bfs_tree.addEdge(a, b);
 		});

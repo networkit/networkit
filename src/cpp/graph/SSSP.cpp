@@ -41,6 +41,7 @@ std::vector<node> SSSP::getPath(node t, bool forward) const {
 		path.push_back(v);
 		v = previous[v].front();
 	}
+	path.push_back(source);
 
 	if (forward) {
 		std::reverse(path.begin(), path.end());
