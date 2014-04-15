@@ -20,7 +20,15 @@ class ApproxBetweenness: public NetworKit::Centrality {
 
 public:
 
-	ApproxBetweenness(const Graph& G, bool normalized=false, double epsilon=0.1, double delta=0.1);
+	/** 
+	 * The algorithm approximates the betweenness of all vertices so that the scores are
+	 * within an additive error epsilon with probability at least (1- delta).
+	 * The values are normalized by default.
+	 * 
+	 * @param	epsilon		maximum additive error
+	 * @param	delta		probability that the values are within the error guarantee
+	 */
+	ApproxBetweenness(const Graph& G, double epsilon=0.01, double delta=0.1);
 
 	void run() override;
 

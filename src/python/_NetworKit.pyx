@@ -1330,7 +1330,7 @@ cdef class Betweenness:
 
 cdef extern from "../cpp/centrality/ApproxBetweenness.h":
 	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness":
-		_ApproxBetweenness(_Graph, bool) except +
+		_ApproxBetweenness(_Graph, double, double) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
@@ -1342,8 +1342,8 @@ cdef class ApproxBetweenness:
 	"""
 	cdef _ApproxBetweenness* _this
 
-	def __cinit__(self, Graph G, normalized=False):
-		self._this = new _ApproxBetweenness(dereference(G._this), normalized)
+	def __cinit__(self, Graph G, double epsilon=0.01, double delta=0.1):
+		self._this = new _ApproxBetweenness(dereference(G._this), epsilon, delta)
 
 	def run(self):
 		self._this.run()

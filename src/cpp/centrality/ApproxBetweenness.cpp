@@ -15,7 +15,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness::ApproxBetweenness(const Graph& G, bool normalized, double epsilon, double delta) : Centrality(G, normalized), epsilon(epsilon), delta(delta) {
+ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta) : Centrality(G, true), epsilon(epsilon), delta(delta) {
 
 }
 
