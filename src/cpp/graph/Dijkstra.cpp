@@ -20,6 +20,7 @@ Dijkstra::Dijkstra(const Graph& G, node source) : SSSP(G, source) {
 
 void Dijkstra::run() {
 
+	DEBUG("initializing Dijkstra data structures");
 	// init distances
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	distances.clear();
@@ -47,6 +48,8 @@ void Dijkstra::run() {
 		}
 	});
 
+
+	DEBUG("traversing graph");
 	while (pq.size() > 0) {
 //		DEBUG("pq size: ", pq.size());
 
