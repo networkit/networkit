@@ -11,10 +11,10 @@
 namespace NetworKit {
 
 std::pair<edgeweight, edgeweight> Eccentricity::getValue(const Graph& G, node u) {
-	static BFS bfs(G, u);
+	BFS bfs(G, u);
 	bfs.run();
 	auto dists = bfs.getDistances();
-	DEBUG("distances to ", u, ": ", dists);
+//	DEBUG("distances to ", u, ": ", dists);
 	auto max_iter = std::max_element(std::begin(dists), std::end(dists));
 	return {std::distance(std::begin(dists), max_iter), *max_iter}; // pair.first is argmax node
 }

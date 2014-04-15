@@ -35,6 +35,7 @@ void BFS::run() {
 		node u = q.front();
 		q.pop();
 		TRACE("current node in BFS: " , u);
+//		TRACE(distances);
 
 		// insert untouched neighbors into queue
 		G.forNeighborsOf(u, [&](node v) {
