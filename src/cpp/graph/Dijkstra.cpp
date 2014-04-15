@@ -15,9 +15,6 @@ Dijkstra::Dijkstra(const Graph& G, node source) : SSSP(G, source) {
 
 }
 
-Dijkstra::~Dijkstra() {
-
-}
 
 
 

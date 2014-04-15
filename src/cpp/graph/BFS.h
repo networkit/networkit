@@ -17,7 +17,6 @@ namespace NetworKit {
 class BFS : public SSSP {
 public:
 	BFS(const Graph& G, node source); 
-	virtual ~BFS();
 
 	/**
 	 * Breadth-first search from @a source.
