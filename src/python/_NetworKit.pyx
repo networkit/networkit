@@ -242,11 +242,13 @@ cdef class Graph2:
 		return self._this.getName()
 
 
+# TODO: expose all methods
+
 cdef extern from "../cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
 		_BFS(_Graph G, node source) except +
 		void run() except +
-		vector[count] getDistances() except +
+		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
 cdef class BFS:
