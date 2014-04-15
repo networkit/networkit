@@ -30,6 +30,8 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 					diameter = distance;
 				}
 			}
+
+//			DEBUG("ecc(", v, "): ", *std::max_element(distances.begin(), distances.end()), " of ", distances);
 		});
 	} else {
 		 G.forNodes([&](node v) {
@@ -41,6 +43,7 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 		 			diameter = distance;
 		 		}
 		 	}
+//			DEBUG("ecc(", v, "): ", *std::max_element(distances.begin(), distances.end()), " of ", distances);
 		 });
 	}
 
@@ -89,13 +92,14 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 	std::vector<node> high_deg(z);
 	std::iota(begin(high_deg), end(high_deg), 0);
 	std::sort(begin(high_deg), end(high_deg), [&] (node u, node v) {
-		if (G.hasNode(u) && G.hasNode(v)) { // TODO: accelerate by replacing if
-			return G.degree(u) > G.degree(v);
-		}
+		// if (G.hasNode(u) && G.hasNode(v)) { // TODO: what if nodes are not present
+		return G.degree(u) > G.degree(v);
 	});
 
 	/* Random node. */
-	node random_node = G.randomNode();
+	// TODO: use random node routine in Graph
+	static const std::default_random_engine random;
+	auto random_node = std::bind(std::uniform_int_distribution<node>(0, z - 1), random);
 
 	/* While not converged: update estimate. */
 	count niter = 0;
@@ -104,6 +108,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 
 		/* ecc(u) <= diam(G) */
 		node u = random_node();
+//		DEBUG("u: ", u);
 		std::tie(std::ignore, ecc) = Eccentricity::getValue(G, u);
 		lowerBound = std::max(lowerBound, ecc);
 
@@ -113,6 +118,13 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 		node w = bfs_edges(G, v, [&] (node a, node b) {
 			bfs_tree.addEdge(a, b);
 		});
+//		DEBUG("v: ", v, ", w: ", w);
+
+		bfs_tree.forEdges([&](node u, node v) {
+			assert(G.hasEdge(u, v));
+		});
+
+
 		/* diam(T) = ecc_T(w) by problem 4. */
 		std::tie(std::ignore, ecc) = Eccentricity::getValue(bfs_tree, w);
 		upperBound = std::min(upperBound, ecc);
