@@ -22,8 +22,7 @@ class Dijkstra : public SSSP {
 public:
 
 	Dijkstra(const Graph& G, node source);
-	virtual ~Dijkstra();
-
+	
 	virtual void run();
 
 

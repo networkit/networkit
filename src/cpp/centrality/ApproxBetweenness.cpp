@@ -10,6 +10,8 @@
 #include "../properties/Diameter.h"
 #include "../graph/Sampling.h"
 #include "../graph/Dijkstra.h"
+#include "../graph/BFS.h"
+#include "../graph/SSSP.h"
 
 #include <math.h>
 
@@ -44,10 +46,17 @@ void ApproxBetweenness::run() {
 		do {
 			v = Sampling::randomNode(G);
 		} while (v == u);
-		Dijkstra dijkstra(G, u);
+
+		// runs faster for unweighted graphs
+		SSSP* sssp;
+		if (G.isWeighted()) {
+			sssp = new Dijkstra(G, u);
+		} else {
+			sssp = new BFS(G, u);
+		}
 		DEBUG("running Dijkstra for node ", u);
-		dijkstra.run();
-		if (dijkstra.numberOfPaths(v) > 0) { // at least one path between {u, v} exists
+		sssp->run();
+		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update
 			node s = v;
@@ -56,8 +65,8 @@ void ApproxBetweenness::run() {
 				// sample z in P_u(t) with probability sigma_uz / sigma_us
 				std::vector<std::pair<node, double> > choices;
 
-				for (node z : dijkstra.getPredecessors(t)) {
-					choices.emplace_back(z, dijkstra.numberOfPaths(z) / (double) dijkstra.numberOfPaths(s)); 	// sigma_uz / sigma_us
+				for (node z : sssp->getPredecessors(t)) {
+					choices.emplace_back(z, sssp->numberOfPaths(z) / (double) sssp->numberOfPaths(s)); 	// sigma_uz / sigma_us
 				}
 				node z = Aux::Random::weightedChoice(choices);
 				if (z != u) {
@@ -67,6 +76,8 @@ void ApproxBetweenness::run() {
 				t = z;
 			}
 		}
+
+		delete sssp; // free heap memory
 	}
 
 }
