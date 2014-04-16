@@ -14,7 +14,7 @@ BFS::BFS(const Graph& G, node source) : SSSP(G, source) {
 
 
 void BFS::run() {
-	TRACE("initializing containers");
+	DEBUG("initializing containers");
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	count z = G.upperNodeIdBound();
 	distances.clear();
@@ -26,7 +26,7 @@ void BFS::run() {
 
 	std::queue<node> q;
 
-	TRACE("initializing start");
+	DEBUG("initializing start");
 	distances[source] = 0;
 	npaths[source] = 1;
 	q.push(source);
@@ -34,12 +34,12 @@ void BFS::run() {
 	while (! q.empty()) {
 		node u = q.front();
 		q.pop();
-		TRACE("current node in BFS: " , u);
+		// TRACE("current node in BFS: " , u);
 //		TRACE(distances);
 
 		// insert untouched neighbors into queue
 		G.forNeighborsOf(u, [&](node v) {
-			TRACE("scanning neighbor ", v);
+			// TRACE("scanning neighbor ", v);
 
 			if (distances[v] == infDist) {
 				q.push(v);

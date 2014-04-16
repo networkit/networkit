@@ -168,21 +168,17 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 	cc.run();
 	if (cc.numberOfComponents() > 1) {
 		DEBUG("estimating for each component in parallel");
-		Partition components = cc.getPartition();
-		auto subsets = components.getSubsets();
+		std::vector<std::set<node> > components;
+		for (auto component : cc.getPartition().getSubsets()) {
+			components.push_back(component);
+		}
 
 		std::vector<count> vds;
-		#pragma omp parallel
-		{
-			for (auto component : subsets) {
-				#pragma omp task
-				{
-					count vd = estimateFrom(*component.begin()); // take any node from the component and perform bfs from there
-					#pragma omp critical 
-					vds.push_back(vd);
-				}
-
-			}
+		#pragma omp parallel for
+		for (index i = 0; i < components.size(); ++i) {
+			count vd = estimateFrom(*components[i].begin()); // take any node from the component and perform bfs from there
+			#pragma omp critical 
+			vds.push_back(vd);
 		}
 
 		count vdMax = *std::max_element(vds.begin(), vds.end());
