@@ -582,6 +582,22 @@ cdef class FastMETISGraphReader:
 		return Graph(0).setThis(self._this._read(pathbytes))
 
 
+cdef extern from "../cpp/io/FastMETISGraphReaderDouble.h":
+	cdef cppclass _FastMETISGraphReaderDouble "NetworKit::FastMETISGraphReaderDouble":
+		_FastMETISGraphReaderDouble() except +
+		_Graph* _read(string path) except +
+
+cdef class FastMETISGraphReaderDouble:
+	""" A faster but currently experimental implementation of a reader for
+		the METIS format.
+	"""
+	cdef _FastMETISGraphReaderDouble _this
+	
+	def read(self, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this._read(pathbytes))
+
+
 cdef extern from "../cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
 		_METISGraphWriter() except +
@@ -1443,6 +1459,41 @@ cdef class DegreeCentrality:
 
 	def __cinit__(self, Graph G, bool normalized=False):
 		self._this = new _DegreeCentrality(dereference(G._this), normalized)
+
+	def run(self):
+		self._this.run()
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
+
+
+cdef extern from "../cpp/centrality/AreaWeightedCentrality.h":
+	cdef cppclass _AreaWeightedCentrality "NetworKit::AreaWeightedCentrality":
+		_AreaWeightedCentrality(_Graph, bool normalized) except +
+		void initCoordinates(string lat_file, string lon_file) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class AreaWeightedCentrality:
+	"""
+ 	Node centrality index which ranks nodes by the cosine of their neighbors.
+ 	Optional normalization by sum of cosine of all nodes.
+	"""
+	cdef _AreaWeightedCentrality* _this
+
+	def __cinit__(self, Graph G, bool normalized=False):
+		self._this = new _AreaWeightedCentrality(dereference(G._this), normalized)
+
+	def initCoordinates(self, lat_file, lon_file):
+		self._this.initCoordinates(stdstring(lat_file), stdstring(lon_file))
 
 	def run(self):
 		self._this.run()
