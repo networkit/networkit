@@ -255,7 +255,7 @@ cdef class BFS:
 	""" Simple breadth-first search"""
 	cdef _BFS* _this
 
-	def __cinit_(self, Graph G, source):
+	def __cinit__(self, Graph G, source):
 		self._this = new _BFS(dereference(G._this), source)
 
 	def run(self):
