@@ -140,7 +140,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 }
 
 
-count Diameter::estimatedVertexDiameter(const Graph& G) {
+edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
@@ -150,8 +150,8 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 		auto distances = bfs.getDistances();
 
 		// get two largest path lengths
-		count maxD = 0;
-		count maxD2 = 0; // second largest distance
+		edgeweight maxD = 0;
+		edgeweight maxD2 = 0; // second largest distance
 		for (auto d : distances) {
 			if ((d != infDist) && (d >= maxD)) {
 				maxD2 = maxD;
@@ -159,34 +159,21 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 			}
 		}
 
-		count vd = maxD + maxD2;
+		edgeweight vd = maxD + maxD2;
 		return vd;
 	};
 
-	ConnectedComponents cc(G);
-	DEBUG("finding connected components");
-	cc.run();
-	if (cc.numberOfComponents() > 1) {
-		DEBUG("estimating for each component in parallel");
-		std::vector<std::set<node> > components;
-		for (auto component : cc.getPartition().getSubsets()) {
-			components.push_back(component);
+	edgeweight vdMax = 0;
+	for (count i = 0; i < samples; ++i) {
+		node u = G.randomNode();
+		edgeweight vd = estimateFrom(u);
+		DEBUG("sampled vertex diameter from node ", u, ": ", vd);
+		if (vd > vdMax) {
+			vdMax = vd;
 		}
-
-		std::vector<count> vds;
-		#pragma omp parallel for
-		for (index i = 0; i < components.size(); ++i) {
-			count vd = estimateFrom(*components[i].begin()); // take any node from the component and perform bfs from there
-			#pragma omp critical 
-			vds.push_back(vd);
-		}
-
-		count vdMax = *std::max_element(vds.begin(), vds.end());
-		return vdMax;
-
-	} else {
-		return estimateFrom(G.randomNode());
 	}
+
+	return vdMax;
 
 }
 
