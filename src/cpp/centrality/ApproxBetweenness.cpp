@@ -30,6 +30,11 @@ void ApproxBetweenness::run() {
 
 	double c = 1; // TODO: what is the effect of the choice of c?
 
+	/** 
+	 * This is an optimization which deviates from the original algorithm. 
+	 * Instead of getting an estimate for each of possibly thousands of connected component and taking the maximum,
+	 * we sample the graph and take the maximum diameter found.
+	 */
 	INFO("estimating vertex diameter");
 	count samples = 42;
 	edgeweight vd = Diameter::estimatedVertexDiameter(G, samples);
