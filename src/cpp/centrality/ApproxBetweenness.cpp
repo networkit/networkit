@@ -28,10 +28,11 @@ void ApproxBetweenness::run() {
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
 
-	double c = 1; // TODO: what is c?
+	double c = 1; // TODO: what is the effect of the choice of c?
 
 	INFO("estimating vertex diameter");
-	count vd = Diameter::estimatedVertexDiameter(G);
+	count samples = 42;
+	edgeweight vd = Diameter::estimatedVertexDiameter(G, samples);
 	INFO("estimated diameter: ", vd);
 	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta));
 
@@ -66,7 +67,7 @@ void ApproxBetweenness::run() {
 		} else {
 			sssp = new BFS(G, u);
 		}
-		DEBUG("running Dijkstra for node ", u);
+		DEBUG("running shortest path algorithm for node ", u);
 		sssp->run();
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
