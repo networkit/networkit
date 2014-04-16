@@ -66,7 +66,7 @@ void ApproxBetweenness::run() {
 		} else {
 			sssp = new BFS(G, u);
 		}
-		DEBUG("running Dijkstra for node ", u);
+		DEBUG("running shortest path algorithm for node ", u);
 		sssp->run();
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
