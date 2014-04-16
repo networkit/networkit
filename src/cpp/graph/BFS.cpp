@@ -14,7 +14,6 @@ BFS::BFS(const Graph& G, node source) : SSSP(G, source) {
 
 
 void BFS::run() {
-	DEBUG("initializing containers");
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	count z = G.upperNodeIdBound();
 	distances.clear();
@@ -26,7 +25,6 @@ void BFS::run() {
 
 	std::queue<node> q;
 
-	DEBUG("initializing start");
 	distances[source] = 0;
 	npaths[source] = 1;
 	q.push(source);
