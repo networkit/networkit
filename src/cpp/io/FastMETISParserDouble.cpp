@@ -86,7 +86,8 @@ NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
 	count m;
 	int flag; // weight flag
 	std::tie(n, m, flag) = parseHeader(line);
-	Graph G(n);
+	bool weighted = flag % 10;
+	Graph G(n, weighted);
 	node u = 0;
 
 	// TODO: handle comment lines
