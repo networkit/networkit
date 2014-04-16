@@ -137,7 +137,7 @@ TEST_F(IOGTest, testMETISGraphReaderWithDoubleWeights) {
 	for (index v = 0; v < n; ++v) {
 		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
 	}
-	double edgeweight = 7.7101972436782;
+	double edgeweight = 7.71099;
 	double abs = 1e-9;
 	EXPECT_LE(G.totalEdgeWeight()-edgeweight,abs) << "Total edgeweight should be " << edgeweight;
 }
