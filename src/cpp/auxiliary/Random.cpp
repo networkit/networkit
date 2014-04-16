@@ -6,7 +6,6 @@
  */
 
 #include <cmath>
-#include <random>
 
 #include "Random.h"
 
@@ -24,18 +23,16 @@
 namespace Aux {
 namespace Random {
 
-namespace {
-
-/**
- * private helper that provides access to a thread-local URNG (uniform random number generator)
- */
-std::mt19937_64& getURNG();
-}
-
 uint64_t getSeed() {
 	AUX_THREAD_LOCAL static std::random_device urng{};
 	std::uniform_int_distribution<uint64_t> dist{};
 	return dist(urng);
+}
+
+
+std::mt19937_64& getURNG() {
+	AUX_THREAD_LOCAL static std::mt19937_64 generator{getSeed()};
+	return generator;
 }
 
 uint64_t integer() {
@@ -69,17 +66,16 @@ double probability() {
 	return dist(getURNG());
 }
 
+std::size_t index(std::size_t max) {
+	assert(max > 0 && "There have to be valid indexes");
+	std::uniform_int_distribution<std::size_t> dist{0, max - 1};
+	return dist(getURNG());
+}
+
 // uint64_t binomial(double n, double p) {
 // 	std::binomial_distribution<uint64_t> dist(n, p);
 // 	return dist(getURNG());
 // }
-
-namespace {
-std::mt19937_64& getURNG() {
-	AUX_THREAD_LOCAL static std::mt19937_64 generator{getSeed()};
-	return generator;
-}
-} // anonymous namespace
 
 } // namespace Random
 } // namespace Aux

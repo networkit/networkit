@@ -8,6 +8,7 @@
 #ifndef NOGTEST
 
 #include "Graph2GTest.h"
+#include "../Dijkstra.h"
 
 namespace NetworKit {
 
@@ -683,6 +684,46 @@ TEST_F(Graph2GTest, testHasNode) {
 	EXPECT_TRUE(G.hasNode(0));
 }
 
+
+TEST_F(Graph2GTest, testDijkstraPathNumber) {
+	Graph G(7);
+	G.addEdge(0,1);
+	G.addEdge(0,6);
+	G.addEdge(6,3);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(2,4);
+	G.addEdge(3,4);
+	G.addEdge(4,5);
+
+	Dijkstra dijkstra(G, 0);
+	dijkstra.run();
+
+	EXPECT_EQ(3, dijkstra.numberOfPaths(5));
+	EXPECT_EQ(1, dijkstra.numberOfPaths(1));
+}
+
+
+TEST_F(Graph2GTest, tryDijkstraPathReconstruction) {
+	Graph G(6);
+	G.addEdge(0,1);
+	G.addEdge(1,2);
+	G.addEdge(1,3);
+	G.addEdge(2,4);
+	G.addEdge(3,4);
+	G.addEdge(4,5);
+
+	Dijkstra dijkstra(G, 0);
+	dijkstra.run();
+
+	auto paths = dijkstra.getPaths(5);
+
+	EXPECT_EQ(2, paths.size());
+
+	for (auto path : paths) {
+		INFO("path: ", path);
+	}
+}
 
 } /* namespace NetworKit */
 

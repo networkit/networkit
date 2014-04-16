@@ -2,41 +2,54 @@
  * Dijkstra.cpp
  *
  *  Created on: Jul 23, 2013
- *      Author: Henning
+ *      Author: Henning, Christian Staudt
  */
 
 #include "Dijkstra.h"
 
+#include <algorithm>
+
 namespace NetworKit {
 
-Dijkstra::Dijkstra() {
+Dijkstra::Dijkstra(const Graph& G, node source) : SSSP(G, source) {
 
 }
 
-Dijkstra::~Dijkstra() {
 
-}
 
-std::vector<edgeweight> Dijkstra::run(const Graph& g, node source) {
-	auto relax([&](node u, node v, edgeweight w, std::vector<edgeweight>& distances,
-			Aux::PrioQueue<edgeweight, node>& pq)
-	{
-		if (distances[v] > distances[u] + w) {
-			distances[v] = distances[u] + w;
-			pq.decreaseKey(distances[v], v);
-		}
-	});
 
+void Dijkstra::run() {
+
+	DEBUG("initializing Dijkstra data structures");
 	// init distances
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
-	count n = g.numberOfNodes();
-	std::vector<edgeweight> distances(n, infDist);
+	distances.clear();
+	distances.resize(G.upperNodeIdBound(), infDist);
+	previous.clear();
+	previous.resize(G.upperNodeIdBound()); 
 	distances[source] = 0;
-	std::set<index> unsettled;
+	npaths.clear();
+	npaths.resize(G.upperNodeIdBound(), 0);
+	npaths[source] = 1;
 
 	// priority queue with distance-node pairs
 	Aux::PrioQueue<edgeweight, node> pq(distances);
 
+
+	auto relax([&](node u, node v, edgeweight w) {
+		if (distances[v] > distances[u] + w) {
+			distances[v] = distances[u] + w;
+			previous[v] = {u}; // new predecessor on shortest path
+			npaths[v] = npaths[u];
+			pq.decreaseKey(distances[v], v);
+		} else if (distances[v] == distances[u] + w) {
+			previous[v].push_back(u); 	// additional predecessor
+			npaths[v] += npaths[u]; 	// all the shortest paths to u are also shortest paths to v now
+		}
+	});
+
+
+	DEBUG("traversing graph");
 	while (pq.size() > 0) {
 //		DEBUG("pq size: ", pq.size());
 
@@ -44,12 +57,9 @@ std::vector<edgeweight> Dijkstra::run(const Graph& g, node source) {
 //		DEBUG("pq size: ", pq.size());
 //		TRACE("current node in Dijkstra: " , current);
 
-		g.forWeightedEdgesOf(current, [&](node current, node v, edgeweight w) {
-			relax(current, v, w, distances, pq);
-		});
+		G.forWeightedEdgesOf(current, relax);
 	}
 
-	return distances;
 }
 
 } /* namespace NetworKit */

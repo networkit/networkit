@@ -7,6 +7,7 @@
 
 #include "CentralityGTest.h"
 #include "../Betweenness.h"
+#include "../ApproxBetweenness.h"
 #include "../EigenvectorCentrality.h"
 #include "../PageRank.h"
 #include "../../io/METISGraphReader.h"
@@ -45,6 +46,35 @@ TEST_F(CentralityGTest, testBetweennessCentrality) {
 	EXPECT_NEAR(3.0, bc[4], tol);
 	EXPECT_NEAR(1.0, bc[5], tol);
 }
+
+
+TEST_F(CentralityGTest, testApproxBetweenness) {
+ /* Graph:
+    0    3
+     \  / \
+      2    5
+     /  \ /
+    1    4
+ */
+	count n = 6;
+	Graph G(n);
+
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+
+	double epsilon = 0.01; // error
+	double delta = 0.1; // confidence
+	ApproxBetweenness centrality = ApproxBetweenness(G, epsilon, delta);
+	centrality.run();
+	std::vector<double> bc = centrality.scores();
+
+	DEBUG("scores: ", bc);
+}
+
 
 TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
  /* Graph:

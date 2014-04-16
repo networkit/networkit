@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-ConnectedComponents::ConnectedComponents() {
+ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
 
 }
 
@@ -20,21 +20,23 @@ ConnectedComponents::~ConnectedComponents() {
 
 }
 
-void ConnectedComponents::run(const Graph& G) {
+void ConnectedComponents::run() {
 	// calculate connected components by label propagation
 	count z = G.numberOfNodes();
-	this->component = std::vector<node>(z, none);
 
 	DEBUG("initializing labels");
-	Partition partition(G.upperNodeIdBound());
-	partition.allToSingletons();
+	component = Partition(G.upperNodeIdBound());
+	component.allToSingletons();
 
 	DEBUG("initializing active nodes");
-	std::vector<bool> activeNodes(z); // record if node must be processed
-	activeNodes.assign(z, true);
+	const char INACTIVE = 0;
+	const char ACTIVE = 1;
+	std::vector<char> activeNodes(z); // record if node must be processed
+	std::vector<char> nextActiveNodes(z, ACTIVE); // for next iteration
+	nextActiveNodes.assign(z, ACTIVE);
 	G.forNodes([&](node u) { // NOTE: not in parallel due to implementation of bit vector
 		if (G.degree(u) == 0) {
-			activeNodes[u] = false;
+			nextActiveNodes[u] = INACTIVE;
 		}
 	});
 
@@ -44,21 +46,85 @@ void ConnectedComponents::run(const Graph& G) {
 	bool change = false;
 	do {
 //		TRACE("label propagation iteration");
+		activeNodes = nextActiveNodes;
+		nextActiveNodes.assign(z, INACTIVE);
 		change = false;
 //		numActive = 0;
-		G.forNodes([&](node u) {
-			if (activeNodes[u]) {
+		G.parallelForNodes([&](node u) {
+			if (activeNodes[u] == ACTIVE) {
 //				++numActive;
 				std::vector<index> neighborLabels;
 				G.forNeighborsOf(u, [&](node v) {
 					// neighborLabels.push_back(component[v]);
-					neighborLabels.push_back(partition[v]);
+					neighborLabels.push_back(component[v]);
 				});
 				// get smallest
 				index smallest = *std::min_element(neighborLabels.begin(), neighborLabels.end());
 
-				if (partition[u] != smallest) {
-					partition.moveToSubset(smallest, u);
+				if (component[u] != smallest) {
+					component.moveToSubset(smallest, u);
+					change = true;
+					G.forNeighborsOf(u, [&](node v) {
+						nextActiveNodes[v] = ACTIVE;
+					});
+				}
+//				else {
+//					nextActiveNodes[u] = INACTIVE; // current node becomes inactive
+//				}
+			}
+		});
+//		TRACE("num active: ", numActive);
+		++numIterations;
+		if ((numIterations % 8) == 0) { // TODO: externalize constant
+			// coarsen and make recursive call
+			PartitionCoarsening con;
+			std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
+			ConnectedComponents cc(coarse.first);
+			cc.run();
+
+			// apply to current graph
+			G.forNodes([&](node u) {
+				component[u] = cc.componentOfNode(coarse.second[u]);
+			});
+		}
+	} while (change);
+}
+
+
+void ConnectedComponents::runSequential() {
+	// calculate connected components by label propagation
+	count z = G.numberOfNodes();
+	DEBUG("initializing labels");
+	component = Partition(G.upperNodeIdBound());
+	component.allToSingletons();
+	DEBUG("initializing active nodes");
+	std::vector<bool> activeNodes(z); // record if node must be processed
+	activeNodes.assign(z, true);
+	G.forNodes([&](node u) { // NOTE: not in parallel due to implementation of bit vector
+		if (G.degree(u) == 0) {
+			activeNodes[u] = false;
+		}
+	});
+	DEBUG("main loop");
+	// count numActive = 0; // for debugging purposes only
+	count numIterations = 0;
+	bool change = false;
+	do {
+		// TRACE("label propagation iteration");
+		change = false;
+		// numActive = 0;
+		G.forNodes([&](node u) {
+			if (activeNodes[u]) {
+				// ++numActive;
+				std::vector<index> neighborLabels;
+				G.forNeighborsOf(u, [&](node v) {
+					// neighborLabels.push_back(component[v]);
+					neighborLabels.push_back(component[v]);
+				});
+				// get smallest
+				index smallest = *std::min_element(neighborLabels.begin(), neighborLabels.end());
+				if (component[u] != smallest) {
+					component.moveToSubset(smallest, u);
 					change = true;
 					G.forNeighborsOf(u, [&](node v) {
 						activeNodes[v] = true;
@@ -68,64 +134,29 @@ void ConnectedComponents::run(const Graph& G) {
 				}
 			}
 		});
-//		TRACE("num active: ", numActive);
+		// TRACE("num active: ", numActive);
 		++numIterations;
 		if ((numIterations % 8) == 0) { // TODO: externalize constant
 			// coarsen and make recursive call
 			PartitionCoarsening con;
-			std::pair<Graph, std::vector<node> > coarse = con.run(G, partition);
-			ConnectedComponents cc;
-			cc.run(coarse.first);
-
+			std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
+			ConnectedComponents cc(coarse.first);
+			cc.run();
 			// apply to current graph
 			G.forNodes([&](node u) {
-				partition[u] = cc.componentOfNode(coarse.second[u]);
+				component[u] = cc.componentOfNode(coarse.second[u]);
 			});
 		}
 	} while (change);
-
-	G.parallelForNodes([&](node u) {
-		component[u] = partition[u];
-	});
 }
 
 
-std::vector<index> ConnectedComponents::getComponentData() {
+Partition ConnectedComponents::getPartition() {
 	return this->component;
 }
 
-std::map<index, count> ConnectedComponents::getComponentSizes() {
-	std::map<index, count> componentSize;
-	for (node u = 0; u < component.size(); ++u) {
-		if (component[u] != none) {
-			componentSize[component[u]] += 1;
-		}
-	}
-	return componentSize;
-}
-
-
-std::vector<node> ConnectedComponents::getComponent(index label) {
-	std::vector<node> nodesOfComponent;
-	for (node u = 0; u < component.size(); ++u) {
-		if (this->component[u] == label) {
-			nodesOfComponent.push_back(u);
-		}
-	}
-	return nodesOfComponent;
-}
-
 count ConnectedComponents::numberOfComponents() {
-	count nc = 0;
-	std::set<index> componentLabels;
-	for (index i = 0; i < component.size(); ++i) {
-		index c = component[i];
-		if ((componentLabels.find(c) == componentLabels.end()) && (c != none)) { // label not encountered yet
-			componentLabels.insert(c);
-			nc++;
-		}
-	}
-	return nc;
+	return this->component.numberOfSubsets();
 }
 
 count ConnectedComponents::componentOfNode(node u) {

@@ -26,7 +26,6 @@
 
 #include "Coordinates.h"
 #include "../auxiliary/Log.h"
-#include "../auxiliary/Debug.h"
 #include "../Globals.h"
 #include "../viz/Point.h"
 
@@ -212,6 +211,10 @@ public:
 	 * weighted degree with self-loops counted twice.
 	 */
 	edgeweight volume(node v) const;
+
+
+	/** @return random node from G */
+	node randomNode() const;
 
 	/**
 	 * @return Random (uuid) neighbor of @a v. None if degree is zero.

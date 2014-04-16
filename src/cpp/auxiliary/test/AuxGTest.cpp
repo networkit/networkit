@@ -18,7 +18,6 @@
 #include "../Random.h"
 #include "../Timer.h"
 #include "../MissingMath.h"
-#include "../Debug.h"
 #include "../PrioQueue.h"
 
 TEST_F(AuxGTest, produceRandomIntegers) {
@@ -146,7 +145,7 @@ TEST_F(AuxGTest, benchmarkBinomial) {
 
 TEST_F(AuxGTest, testVectorDebug) {
 	std::vector<int> vec(10, 42);
-	INFO(Aux::vectorToString(vec), "\n");
+	INFO(vec);
 }
 
 
@@ -229,5 +228,21 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	Aux::setLoglevel(cl);	
 }*/
 
+
+TEST_F(AuxGTest, testRandomChoice) {
+	std::vector<uint64_t> data = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	for (uint64_t i = 0; i < 1000; ++i) {
+		std::ignore = Aux::Random::choice(data);
+	}
+}
+
+
+TEST_F(AuxGTest, testRandomWeightedChoice) {
+	std::vector<std::pair<uint64_t, double> > data = {{0, 1.0}, {1, 0.0}};
+	for (uint64_t i = 0; i < 100; ++i) {
+		auto element = Aux::Random::weightedChoice(data);
+		EXPECT_EQ(0, element);
+	}
+}
 
 #endif /*NOGTEST */

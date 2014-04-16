@@ -6,6 +6,8 @@
 
 #include "Graph.h"
 
+#include "../auxiliary/Random.h"
+
 namespace NetworKit {
 
 
@@ -409,6 +411,15 @@ index Graph::argmaxDegree() const {
 	});
 
 	return argmax;
+}
+
+node Graph::randomNode() const {
+	assert (this->numberOfNodes() > 0);
+	node u;
+	do {
+		u = Aux::Random::integer(z);
+	} while (! this->hasNode(u));
+	return u;
 }
 
 

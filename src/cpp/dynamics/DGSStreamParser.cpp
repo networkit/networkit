@@ -58,7 +58,7 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 			// TRACE(line);
 			lc++;
 			std::vector<std::string> split = Aux::StringTools::split(line);
-			// TRACE("split line: " , Aux::vectorToString(split));
+			// TRACE("split line: ", split);
 			std::string tag = split[0];
 
 			// TODO: remove TRACE

@@ -18,9 +18,7 @@ namespace Aux {
  */
 class Noise {
 protected:
-	
 	std::uniform_real_distribution<double> uniform;
-	std::default_random_engine randomEngine;
 	
 public:
 	/**

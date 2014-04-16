@@ -25,7 +25,7 @@ PropertiesGTest::~PropertiesGTest() {
 TEST_F(PropertiesGTest, testClusteringCoefficient) {
 
 	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(100, 1.0);
+	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
 
 	ClusteringCoefficient clusteringCoefficient;
 	double cc = clusteringCoefficient.avgLocal(G);
@@ -349,7 +349,8 @@ TEST_F(PropertiesGTest, testExactDiameter) {
    count infDist = numeric_limits<count>::max();
 
    vector<pair<string, count>> testInstances= {pair<string, count>("lesmis", 14),
-                                               pair<string, count>("jazz", 6)
+                                               pair<string, count>("jazz", 6),
+                                               pair<string, count>("celegans_metabolic", 7)
                                               };
 
    for (auto testInstance : testInstances) {
@@ -382,7 +383,7 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
 }
 
 
-TEST_F(PropertiesGTest, testExactDegreeAssortativity) {
+TEST_F(PropertiesGTest, testDegreeAssortativity) {
 	METISGraphReader reader;
 	double tol = 1e-6;
 

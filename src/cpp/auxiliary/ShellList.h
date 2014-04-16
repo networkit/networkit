@@ -1,6 +1,8 @@
 /*
  * ShellList.h
  *
+ * FIXME: this does not belong in the Aux namespace
+ *
  *  Created on: Nov 4, 2013
  *      Author: Lukas Barth, David Weiß
  */

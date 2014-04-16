@@ -23,10 +23,16 @@ public:
 	 *
 	 * @return Pair of lower and upper bound for diameter.
 	 */
-	static std::pair<count, count> estimatedDiameterRange(const Graph& G, double error);
+	static std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph& G, double error);
 
 	/** @return exact diameter of the graph @a G */
-	static count exactDiameter(const Graph& G);
+	static edgeweight exactDiameter(const Graph& G);
+
+
+	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G,
+				the maximum over all components in case the graph is disconnected
+	 */
+	static count estimatedVertexDiameter(const Graph& G);
 };
 
 } /* namespace NetworKit */

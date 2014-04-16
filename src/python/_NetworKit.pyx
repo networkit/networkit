@@ -242,38 +242,61 @@ cdef class Graph2:
 		return self._this.getName()
 
 
+# TODO: expose all methods
+
 cdef extern from "../cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS() except +
-		vector[count] run(_Graph G, node source)
+		_BFS(_Graph G, node source) except +
+		void run() except +
+		vector[edgeweight] getDistances() except +
+		vector[node] getPath(node t) except +
 
 cdef class BFS:
 	""" Simple breadth-first search"""
-	cdef _BFS _this
+	cdef _BFS* _this
 
-	def run(self, Graph G not None, source):
+	def __cinit_(self, Graph G, source):
+		self._this = new _BFS(dereference(G._this), source)
+
+	def run(self):
 		"""
 		Breadth-first search from source.
 		return Vector of unweighted distances from node @a source, i.e. the
 	 		length (number of edges) of the shortest path from source to any other vertex.
 		"""
-		return self._this.run(dereference(G._this), source)
+		self._this.run()
+
+	def getDistances(self):
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		return self._this.getPath(t)
 	
 
 cdef extern from "../cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-		_Dijkstra() except +
-		vector[edgeweight] run(_Graph G, node source)
+		_Dijkstra(_Graph G, node source) except +
+		void run() except +
+		vector[edgeweight] getDistances() except +
+		vector[node] getPath(node t) except +
 
 cdef class Dijkstra:
 	""" Dijkstra's SSSP algorithm.
 	 	Returns list of weighted distances from node source, i.e. the
 	    length of the shortest path from @a source to any other node."""
-	cdef _Dijkstra _this
+	cdef _Dijkstra* _this
 
-	def run(self, Graph G not None, source):
-		return self._this.run(dereference(G._this), source)
+	def __cinit__(self, Graph G, source):
+		self._this = new _Dijkstra(dereference(G._this), source)
 
+	def run(self):
+		self._this.run()
+
+	def getDistances(self):
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		return self._this.getPath(t)
 
 
 cdef extern from "../cpp/graph/Subgraph.h":
@@ -924,29 +947,6 @@ cdef class LPDegreeOrdered(CommunityDetector):
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
 	
-
-# cdef extern from "../cpp/community/PLMOld.h":
-# 	cdef cppclass _PLM "NetworKit::PLMOld":
-# 		_PLMOld() except +
-# 		_PLMOld(string par, double gamma)
-# 		_Partition run(_Graph _G)
-# 		string toString()
-		
-# cdef class PLMOld(CommunityDetector):
-# 	""" Parallel Louvain method for community detection: 
-# 	High solution quality, moderate time to solution. """
-
-# 	cdef _PLMOld _this
-	
-# 	def __cinit__(self, par="balanced", gamma=1.0):
-# 		self._this = _PLM(stdstring(par), gamma)
-	
-# 	def run(self, Graph G not None):
-# 		return Partition().setThis(self._this.run(dereference(G._this)))
-
-# 	def toString(self):
-# 		return self._this.toString().decode("utf-8")
-		
 		
 cdef extern from "../cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
@@ -1130,12 +1130,12 @@ cdef class GraphProperties:
 
 cdef extern from "../cpp/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
-		_ConnectedComponents() except +
-		void run(_Graph G) except +
+		_ConnectedComponents(_Graph G) except +
+		void run() except +
+		void runSequential() except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
-		vector[node] getComponent(index component) except +
-		map[index, count] getComponentSizes() except +
+		_Partition getPartition() except +
 
 
 cdef class ConnectedComponents:
@@ -1144,11 +1144,17 @@ cdef class ConnectedComponents:
 	"""
 	cdef _ConnectedComponents* _this
 
-	def __cinit__(self):
-		self._this = new _ConnectedComponents()
+	def __cinit__(self,  Graph G):
+		self._this = new _ConnectedComponents(dereference(G._this))
 
-	def run(self, Graph G):
-		self._this.run(dereference(G._this))
+	def run(self):
+		self._this.run()
+
+	def runSequential(self):
+		self._this.runSequential()
+
+	def getPartition(self):
+		return Partition().setThis(self._this.getPartition())
 
 	def numberOfComponents(self):
 		return self._this.numberOfComponents()
@@ -1156,16 +1162,8 @@ cdef class ConnectedComponents:
 	def componentOfNode(self, v):
 		return self._this.componentOfNode(v)
 
-	def getComponent(self, componentIndex):
-		return self._this.getComponent(componentIndex)
-	
-	def getComponentSizes(self):
-		return self._this.getComponentSizes()
 
-
-cdef extern from "../cpp/properties/ClusteringCoefficient.h":
-	cdef cppclass _ClusteringCoefficient "NetworKit::ClusteringCoefficient":
-		_ClusteringCoefficient() except +
+cdef extern from "../cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
 		vector[double] exactLocal(_Graph G) except +
 		double avgLocal(_Graph G) except +
 		double approxAvgLocal(_Graph G, count trials) except +
@@ -1176,28 +1174,33 @@ cdef class ClusteringCoefficient:
 	""" Determines the connected components and associated values for
 		an undirected graph.
 	"""
-	cdef _ClusteringCoefficient _this
 
-	def exactLocal(self, Graph G):
-		return self._this.exactLocal(dereference(G._this))
+	@staticmethod
+	def exactLocal(Graph G):
+		return exactLocal(dereference(G._this))
 
-	def avgLocal(self, Graph G):
-		return self._this.avgLocal(dereference(G._this))
+	@staticmethod
+	def avgLocal(Graph G):
+		return avgLocal(dereference(G._this))
 
-	def approxAvgLocal(self, Graph G, trials):
-		return self._this.approxAvgLocal(dereference(G._this), trials)
+	@staticmethod
+	def approxAvgLocal(Graph G, trials):
+		return approxAvgLocal(dereference(G._this), trials)
 
-	def exactGlobal(self, Graph G):
-		return self._this.exactGlobal(dereference(G._this))
+	@staticmethod
+	def exactGlobal(Graph G):
+		return exactGlobal(dereference(G._this))
 
-	def approxGlobal(self, Graph G, trials):
-		return self._this.approxGlobal(dereference(G._this), trials)
+	@staticmethod
+	def approxGlobal(Graph G, trials):
+		return approxGlobal(dereference(G._this), trials)
 
 
 
 cdef extern from "../cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
 	pair[count, count] estimatedDiameterRange(_Graph G, double error) except +
 	count exactDiameter(_Graph G) except +
+	count estimatedVertexDiameter(_Graph G) except +
 
 cdef class Diameter:
 	"""
@@ -1211,6 +1214,10 @@ cdef class Diameter:
 	@staticmethod
 	def exactDiameter(Graph G):
 		return exactDiameter(dereference(G._this))
+
+	@staticmethod
+	def estimatedVertexDiameter(Graph G):
+		return estimatedVertexDiameter(dereference(G._this))
 
 cdef extern from "../cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
@@ -1337,6 +1344,38 @@ cdef class Betweenness:
 
 	def ranking(self):
 		return self._this.ranking()
+
+
+cdef extern from "../cpp/centrality/ApproxBetweenness.h":
+	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness":
+		_ApproxBetweenness(_Graph, double, double) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class ApproxBetweenness:
+	"""
+		TODO: docstring
+	"""
+	cdef _ApproxBetweenness* _this
+
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1):
+		self._this = new _ApproxBetweenness(dereference(G._this), epsilon, delta)
+
+	def run(self):
+		self._this.run()
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
+
+
 
 cdef extern from "../cpp/centrality/PageRank.h":
 	cdef cppclass _PageRank "NetworKit::PageRank":

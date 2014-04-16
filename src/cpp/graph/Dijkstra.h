@@ -2,13 +2,14 @@
  * Dijkstra.h
  *
  *  Created on: Jul 23, 2013
- *      Author: Henning
+ *      Author: Henning, Christian Staudt
  */
 
 #ifndef DIJKSTRA_H_
 #define DIJKSTRA_H_
 
 #include "Graph.h"
+#include "SSSP.h"
 #include "../auxiliary/PrioQueue.h"
 
 namespace NetworKit {
@@ -16,20 +17,16 @@ namespace NetworKit {
 /**
  * Dijkstra's SSSP algorithm.
  */
-class Dijkstra {
-protected:
-
+class Dijkstra : public SSSP {
 
 public:
-	Dijkstra();
-	virtual ~Dijkstra();
 
-	/**
-	 * Dijkstra's SSSP algorithm.
-	 * @return Vector of weighted distances from node @a source, i.e. the
-	 * length of the shortest path from @a source to any other vertex.
-	 */
-	virtual std::vector<edgeweight> run(const Graph& g, node source);
+	Dijkstra(const Graph& G, node source);
+	
+	virtual void run();
+
+
+
 };
 
 } /* namespace NetworKit */

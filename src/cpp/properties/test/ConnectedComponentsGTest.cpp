@@ -49,8 +49,8 @@ ConnectedComponentsGTest::~ConnectedComponentsGTest() {
  	g.addEdge(13,14,0);
 
  	// initialize ConnectedComponents
- 	ConnectedComponents ccs;
- 	ccs.run(g);
+ 	ConnectedComponents ccs(g);
+ 	ccs.run();
 
  	// check result
  	EXPECT_TRUE(ccs.numberOfComponents() == 5);
@@ -117,50 +117,79 @@ ConnectedComponentsGTest::~ConnectedComponentsGTest() {
 // 	EXPECT_TRUE(comp.at(6) == 19);
 // }
 
-TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
+TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
-	Graph G = reader.read("input/PGPgiantcompo.graph");
-	ConnectedComponents cc;
-	cc.run(G);
+	Graph G = reader.read("input/astro-ph.graph");
+	ConnectedComponents cc(G);
+	cc.run();
+	DEBUG("Number of components: ", cc.numberOfComponents());
+	EXPECT_EQ(1029, cc.numberOfComponents());
+}
+
+TEST_F(ConnectedComponentsGTest, tryParallelConnectedComponents) {
+	METISGraphReader reader;
+	std::vector<std::string> graphs = {"astro-ph", "PGPgiantcompo",
+			"caidaRouterLevel", "celegans_metabolic", "hep-th", "jazz"};
+
+	for (auto graphName: graphs) {
+		Graph G = reader.read("input/" + graphName + ".graph");
+		ConnectedComponents cc(G);
+		cc.runSequential();
+		count seqNum = cc.numberOfComponents();
+		cc.run();
+		count parNum = cc.numberOfComponents();
+		DEBUG("Number of components: ", seqNum);
+		EXPECT_EQ(seqNum, parNum);
+	}
+}
+
+TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
+	// construct graph
+	METISGraphReader reader;
+	Graph G = reader.read("input/coAuthorsDBLP.graph");
+	ConnectedComponents cc(G);
+	cc.run();
 	DEBUG("Number of components: ", cc.numberOfComponents());
 	EXPECT_EQ(1, cc.numberOfComponents());
 }
 
-TEST_F(ConnectedComponentsGTest, tryHHConnectedComponents) {
+TEST_F(ConnectedComponentsGTest, benchHHConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
 	Graph G = reader.read("input/coAuthorsDBLP.graph");
-	ConnectedComponents cc;
+	ConnectedComponents cc(G);
 
 	// run CC algo on original
-	cc.run(G);
+	cc.run();
 	DEBUG("Number of components in original: ", cc.numberOfComponents());
 
 	// compute HH graph and apply CC algo
 	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
 	HavelHakimiGenerator hhgen(sequence, true);
 	Graph G2 = hhgen.generate();
-	cc.run(G2);
-	DEBUG("Number of components in HH generated: ", cc.numberOfComponents());
+	ConnectedComponents cc2(G2);
+	cc2.run();
+	DEBUG("Number of components in HH generated: ", cc2.numberOfComponents());
 }
 
-TEST_F(ConnectedComponentsGTest, tryLiveJConnectedComponents) {
+TEST_F(ConnectedComponentsGTest, benchLiveJConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
 	Graph G = reader.read("../graphs/ascii/soc-LiveJournal1_symm_or.graph");
-	ConnectedComponents cc;
+	ConnectedComponents cc(G);
 
 	// run CC algo on original
-	cc.run(G);
+	cc.run();
 	DEBUG("Number of components in original: ", cc.numberOfComponents());
 
 	// compute HH graph and apply CC algo
 	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
 	HavelHakimiGenerator hhgen(sequence, true);
 	Graph G2 = hhgen.generate();
-	cc.run(G2);
-	DEBUG("Number of components in HH generated: ", cc.numberOfComponents());
+	ConnectedComponents cc2(G2);
+	cc2.run();
+	DEBUG("Number of components in HH generated: ", cc2.numberOfComponents());
 }
 
 

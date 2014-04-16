@@ -212,7 +212,40 @@ runs only unit tests for the Partition data structure.
 
 ### Exposing C++ Code to Python
 
-TODO - documentation coming soon
+Assuming the unit tests for the new feature you implemented are correct and successful, you need to make your features available to Python in order to use it. NetworKit uses Cython to bridge C++ and Python. All of this bridge code is contained in the Cython code file `src/python/_Networkit.pyx`. The content is automatically translated into C++ and then compiled to a Python extension module.
+
+Cython syntax is a superset of Python that knows about static type declarations and other things from the C/C++ world. The best way to getting used to it is working on examples. Take the most common case of exposing a C++ class as a Python class. Care for the following example that exposes the class `NetworKit::Dijkstra`:
+
+		cdef extern from "../cpp/graph/Dijkstra.h":
+			cdef cppclass _Dijkstra "NetworKit::Dijkstra":
+				_Dijkstra(_Graph G, node source) except +
+				void run() except +
+				vector[edgeweight] getDistances() except +
+				vector[node] getPath(node t) except +
+
+The code above exposes the C++ class definition to Cython - but not yet to Python. First of all, Cython needs to know which C++ declarations to use so the the first line directs Cython to place an `#include` statement. The second line defines a class that is only accessible in the Cython world. Our convention is that the name of the new class is the name of the referenced C++ class with a prepended underscore to avoid namespace conflicts. What follows is the "real" C++ name of the class. After that, the declarations of the methods you want to make available for Python are needed. The `except +` statement is necessary for exceptions thrown by the C++ code to be rethrown as Python exceptions rather than causing a crash. Also, take care that the Cython declarations match the declarations from the referenced header file.
+
+		cdef class Dijkstra:
+			""" Dijkstra's SSSP algorithm.
+	 		    Returns list of weighted distances from node source, 
+			    i.e. the length of the shortest path from @a source 
+			    to any other node."""
+			cdef _Dijkstra* _this
+			def __cinit__(self, Graph G, source):
+				self._this = new _Dijkstra(dereference(G._this), source)
+			def run(self):
+				self._this.run()
+			def getDistances(self):
+				return self._this.getDistances()
+			def getPath(self, t):
+				return self._this.getPath(t)
+
+For the class to be accessible from the Python world, you need to define a Python wrapper class which delegates method calls to the native class. The Python class variable `_this` holds a pointer to an instance of the native class. Please note that the parameters are now Python objects. Method wrappers take these Python objects as parameters and pass the internal native objects to the actuall C++ method call. The constructor of such a wrapper class is called `__cinit__`, and it creates an instance of the native object.
+
+The docstring between the triple quotation marks can be accessed through Python's `help(...)` function and are the main documentation of NetworKit. Always provide at least a short and precise docstring so the user can get in idea of the functionality of the class. For C++ types available to Python and further examples, see through the `_NetworKit.pyx`-file. The whole process has certainly some intricacies, e.g. some tricks are needed to avoid memory waste when passing around large objects such as graphs. When in doubt, look at examples of similar classes already exposed. Listen to the Cython compiler - coming from C++, its error messages are in general pleasantly human-readable.
+
+
+
 
 ## Contact
 
@@ -228,3 +261,4 @@ To suggest improvements to workflows and conventions, write to `christian.staudt
 - [hginit.com](http://hginit.com)
 - [Working with named branches](http://humblecoder.co.uk/blog/2010/02/24/working-with-named-branches-in-mercurial/)
 - [Managing releases and branchy development](http://hgbook.red-bean.com/read/managing-releases-and-branchy-development.html)
+- [Cython Documentation](http://docs.cython.org/index.html)
