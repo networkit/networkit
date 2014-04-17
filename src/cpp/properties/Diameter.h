@@ -37,6 +37,12 @@ public:
 								with the largest diameter ist high. 
 	 */
 	static edgeweight estimatedVertexDiameter(const Graph& G, count samples);
+
+
+	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
+			Considers each connected component and returns the maximum diameter.
+	 */
+	static edgeweight estimatedVertexDiameterPedantic(const Graph& G);
 };
 
 } /* namespace NetworKit */
