@@ -582,6 +582,22 @@ cdef class FastMETISGraphReader:
 		return Graph(0).setThis(self._this._read(pathbytes))
 
 
+cdef extern from "../cpp/io/FastMETISGraphReaderDouble.h":
+	cdef cppclass _FastMETISGraphReaderDouble "NetworKit::FastMETISGraphReaderDouble":
+		_FastMETISGraphReaderDouble() except +
+		_Graph* _read(string path) except +
+
+cdef class FastMETISGraphReaderDouble:
+	""" A faster but currently experimental implementation of a reader for
+		the METIS format.
+	"""
+	cdef _FastMETISGraphReaderDouble _this
+	
+	def read(self, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this._read(pathbytes))
+
+
 cdef extern from "../cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
 		_METISGraphWriter() except +
