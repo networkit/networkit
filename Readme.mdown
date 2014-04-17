@@ -201,10 +201,12 @@ Credits
 - Andreas Bilke
 - Guido Brückner
 - Patrick Flick
+- Lukas Hartmann
 - Daniel Hoske
 - Yassine Marrakchi
 - Aleksejs Sazonovs
 - Florian Weber
+- Michael Wegner
 - Jörg Weisbarth
 
 
