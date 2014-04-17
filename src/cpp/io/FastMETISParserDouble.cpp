@@ -130,7 +130,9 @@ NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
 			node v;
 			double weight;
 			while (linestream >> v >> weight) {
-				G.addEdge(u,v-1, (edgeweight) weight);
+				if (u < v) {
+					G.addEdge(u,v-1, (edgeweight) weight);
+				}
 			}
 /*			auto it1 = line.begin();
 			auto end = line.end();
