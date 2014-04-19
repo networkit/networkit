@@ -4,6 +4,9 @@ from _NetworKit import (Graph, METISGraphReader, FastMETISGraphReader, METISGrap
 
 import os
 import logging
+import numpy
+import scipy.io
+
 class formats:
 	metis = "metis"
 	#CLUSTERING = "clustering"
@@ -22,6 +25,8 @@ class formats:
 		gml = "gml"
 		snap = "snap"
 		vna = "vna"
+
+# reading
 
 def readGraph(path, format="metis", **kwargs):
 	"""    Read graph file in various formats and return a NetworKit::Graph"""
@@ -52,6 +57,29 @@ def readGraph(path, format="metis", **kwargs):
 
 	return None
 
+
+def readMat(path):
+	""" Reads a Graph from a matlab object file containing an adjacency matrix"""
+	matlabObject = scipy.io.loadmat(path)	
+	# result is a dictionary of variable names and objects, representing the matlab object
+	for (key, value) in matlabObject.items():
+		if type(matlabObject[key]) is numpy.ndarray:
+			A = matlabObject[key]
+			break # found the matrix
+			
+	(n, n2) = A.shape
+	if (n != n2):
+		raise Exception("this (%sx%s) matrix is not square".format(n, n2))
+	if not ((A.transpose() == A).all()):
+		logging.warning("the adjacency matrix is not symmetric")
+	G = Graph(n)
+	nz = A.nonzero()
+	edges = [(u,v) for (u,v) in zip(nz[0], nz[1])]
+	for (u,v) in edges:
+		G.addEdge(u, v)
+	return G
+
+# writing
 
 def writeGraph(G, path, format="metis"):
 	""" Write graph to various output formats """
