@@ -19,6 +19,275 @@ FastMETISParserDouble::FastMETISParserDouble() {
 FastMETISParserDouble::~FastMETISParserDouble() {
 	// TODO Auto-generated destructor stub
 }
+
+static inline int
+isupper(char c)
+{
+    return (c >= 'A' && c <= 'Z');
+}
+
+static inline int
+isalpha(char c)
+{
+    return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
+}
+
+
+static inline int
+isspace(char c)
+{
+    return (c == ' ' || c == '\t' || c == '\n' || c == '\12');
+}
+
+static inline int
+isdigit(char c)
+{
+    return (c >= '0' && c <= '9');
+}
+
+static std::pair<count,index> myStrtoul(std::string &str, index i) {	
+	//register const char *s = nptr;
+	register uint64_t acc;
+	register int c;
+	register uint64_t cutoff;
+	register int neg = 0, any, cutlim;
+
+	/*
+	 * See strtol for comments as to the logic used.
+	 */
+	// ignore white spaces
+	do {
+		c = str[i++];
+	} while (isspace(c));
+	// parse sign bit
+	if (c == '-') {
+		neg = 1;
+		c = str[i++];
+	} else if (c == '+')
+		c = str[i++];
+
+	// depending on base, determine allowed characters
+	// assume base is decimal, therefore ignore the code
+	register int base = 10;
+/*	if ((base == 0 || base == 16) &&
+		c == '0' && (str[i] == 'x' || str[i] == 'X')) {
+		c = s[1];
+		s += 2;
+		base = 16;
+	} else if ((base == 0 || base == 2) &&
+		c == '0' && (*s == 'b' || *s == 'B')) {
+		c = s[1];
+		s += 2;
+		base = 2;
+	}
+	if (base == 0)
+		base = c == '0' ? 8 : 10;*/
+	cutoff = (uint64_t)std::numeric_limits<uint64_t>::max() / (uint64_t)base;
+	cutlim = (uint64_t)std::numeric_limits<uint64_t>::max() % (uint64_t)base;
+	for (acc = 0, any = 0; ; c = str[i++]) { // i < end necessary?
+		if (isdigit(c))
+			c -= '0';
+		else if (isalpha(c))
+			c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+		else
+			break;
+		if (c >= base)
+			break;
+		if (any < 0 || acc > cutoff || acc == cutoff && c > cutlim)
+			any = -1;
+		else {
+			any = 1;
+			acc *= base;
+			acc += c;
+		}
+	}
+	if (any < 0) {
+		acc = std::numeric_limits<uint64_t>::max();
+//		errno = ERANGE;
+	} else if (neg)
+		acc = -acc;
+	return std::make_pair(acc,i);
+}
+
+static std::pair<double, index> myStrtod(std::string &str, index i) {
+	double maxExponent = 511;
+	static double powersOf10[] = {
+		10.,
+		100.,
+		1.0e4,
+		1.0e8,
+		1.0e16,
+		1.0e32,
+		1.0e64,
+		1.0e128,
+		1.0e256
+	};
+	int sign, expSign = 0;
+	double fraction, dblExp, *d;
+	//register CONST char *p;
+//	char p;
+	register int c;
+	int exp = 0;		/* Exponent read from "EX" field. */
+	int fracExp = 0;		/* Exponent that derives from the fractional
+						* part.  Under normal circumstatnces, it is
+						* the negative of the number of digits in F.
+						* However, if I is very long, the last digits
+						* of I get dropped (otherwise a long I with a
+						* large negative exponent could cause an
+						* unnecessary overflow on I alone).  In this
+						* case, fracExp is incremented one for each
+						* dropped digit. */
+	int mantSize;		/* Number of digits in mantissa. */
+	int decPt;			/* Number of mantissa digits BEFORE decimal
+						 * point. */
+	uint64_t pExp;		/* Temporarily holds location of exponent
+						* in string. */
+	/*
+	* Strip off leading blanks and check for a sign.
+	*/
+	//p = string;
+	while (isspace(str[i])) {
+	++i;
+	}
+	if (str[i] == '-') {
+		sign = 1;
+		++i;;
+	} else {
+	if (str[i] == '+') {
+	++i;
+	}
+	sign = 0;
+	}
+	/*
+	 * Count the number of digits in the mantissa (including the decimal
+	 * point), and also locate the decimal point.
+	 */
+	decPt = -1;
+	for (mantSize = 0; ; mantSize += 1)
+	{
+	c = str[i];
+	if (!isdigit(c)) {
+		if ((c != '.') || (decPt >= 0)) {
+			break;
+		}
+		decPt = mantSize;
+	}
+		++i;
+	}
+	/*
+	 * Now suck up the digits in the mantissa.  Use two integers to
+	 * collect 9 digits each (this is faster than using floating-point).
+	 * If the mantissa has more than 18 digits, ignore the extras, since
+	 * they can't affect the value anyway.
+	 */
+	pExp  = i;
+	i -= mantSize;
+	if (decPt < 0) {
+		decPt = mantSize;
+	} else {
+		mantSize -= 1;			/* One of the digits was the point. */
+	}
+	if (mantSize > 18) {
+		fracExp = decPt - 18;
+		mantSize = 18;
+	} else {
+		fracExp = decPt - mantSize;
+	}
+	if (mantSize == 0) {
+		fraction = 0.0;
+		i = 0;
+	goto done;
+	} else {
+	int frac1, frac2;
+	frac1 = 0;
+	for ( ; mantSize > 9; mantSize -= 1)
+	{
+		c = str[i];
+		++i;
+		if (c == '.') {
+			c = str[i];
+			++i;
+		}
+		frac1 = 10*frac1 + (c - '0');
+	}
+	frac2 = 0;
+	for (; mantSize > 0; mantSize -= 1)
+	{
+		c = str[i];
+		++i;
+		if (c == '.') {
+			c = str[i];
+			++i;
+		}
+		frac2 = 10*frac2 + (c - '0');
+	}
+	fraction = (1.0e9 * frac1) + frac2;
+	}
+	/*
+	 * Skim off the exponent.
+	*/
+	i = pExp;
+	if ((str[i] == 'E') || (str[i] == 'e')) {
+		++i;
+	if (str[i] == '-') {
+		expSign = 1;
+		++i;
+	} else {
+		if (str[i] == '+') {
+			++i;
+		}
+		expSign = 0;
+	}
+	if (!isdigit(str[i])) {
+		i = pExp;
+		goto done;
+	}
+	while (isdigit(str[i])) {
+		exp = exp * 10 + (str[i] - '0');
+		++i;
+	}
+	}
+	if (expSign) {
+		exp = fracExp - exp;
+	} else {
+		exp = fracExp + exp;
+	}
+	/*
+	 * Generate a floating-point number that represents the exponent.
+	 * Do this by processing the exponent one bit at a time to combine
+	 * many powers of 2 of 10. Then combine the exponent with the
+	 * fraction.
+	 */
+	if (exp < 0) {
+		expSign = 1;
+		exp = -exp;
+	} else {
+	expSign = 0;
+	}
+	if (exp > maxExponent) {
+		exp = maxExponent;
+//	errno = ERANGE;
+	}
+    dblExp = 1.0;
+	for (d = powersOf10; exp != 0; exp >>= 1, d += 1) {
+		if (exp & 01) {
+			dblExp *= *d;
+		}
+	}
+	if (expSign) {
+		fraction /= dblExp;
+	} else {
+		fraction *= dblExp;
+	}
+	done:
+//    if (endPtr != NULL) {
+//	*endPtr = (char *) p;
+//    }
+	if (sign) {
+		return std::make_pair(-fraction,i);
+	}
+	return std::make_pair(fraction,i);
+}
 #if 1
 static inline std::tuple<count, count, int> parseHeader(const std::string& header) {
 	count n;
@@ -68,59 +337,40 @@ NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
 			if (line.empty() || (!line.empty() && line[0] == '%') ) {
 				continue;
 			}
-			// determine index of last character of last edge weight
+			// determine index of last character of last node
 			count end = line.length()-1;
 			while (line[end] == ' ' && end > 0) {
 				--end;
 			}
 
-			for(count i = 0; i <= end; ++i) {
-				if (line[i] != ' ') {
-					current += line[i];
-				}
-				if (!current.empty() && (line[i] == ' ' || i == end)) {
-					v = std::stoi(current);
-					current = "";
-					if (u < v) G.addEdge(u,v-1);
-				}
+			index i = 0;
+			while(i < end) {
+				std::tie(v,i) = myStrtoul(line,i);
+				if ( u < v ) G.addEdge(u,v-1);
 			}
 			++u;
 		}
 	} else {
 		DEBUG("reading weighted graph");
 		double weight = 0.0;
-		bool decider = false;
 		// weighted edges - WARNING: supports only non-negative integer weights
 		while (std::getline(stream, line)) {
 			if (line.empty() || (!line.empty() && line[0] == '%') ) {
 				continue;
 			}
-			// determine index of last character of last edge weight
+			// determine index of last character of last node
 			count end = line.length()-1;
-			//DEBUG("line length: ", end+1, " with char: ", line[end]);
 			while (line[end] == ' ' && end > 0) {
 				--end;
 			}
-			//DEBUG("set end to: ", end, " with char: ", line[end]);
-			for(count i = 0;  i <= end; ++i) {
-				if (line[i] != ' ') {
-					//DEBUG("adding ",line[i], " to current");
-					current += line[i];
-				}
-				if (!current.empty() && (line[i] == ' ' || i == end)) {
-				//} else if (!current.empty()) {
-					if (!decider) {
-						//DEBUG("std::stoi(", current, ")");
-						v = std::stoi(current);
-					} else {
-						//DEBUG("std::stod(", current, ")");
-						weight = std::stod(current);
-						if (u < v) G.addEdge(u,v-1, weight);
-						//DEBUG("edge to graph: ", u, ", ", v-1, ", ", weight);
-					}
-					decider = !decider;
-					current = "";
-				}
+
+			index i = 0;
+			while(i < end) {
+				std::tie(v,i) = myStrtoul(line,i);
+				DEBUG("checkpoint: parsing oul was successfull");
+				std::tie(weight,i) = myStrtod(line,i);
+				DEBUG("checkpoint: parsing double was successfull with i=", i, " while end=", end);
+				if ( u < v ) G.addEdge(u,v-1,weight);
 			}
 			++u;
 		}
