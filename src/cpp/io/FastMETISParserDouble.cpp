@@ -288,10 +288,13 @@ static inline std::tuple<count, count, int> parseHeader(const std::string& heade
 	count n;
 	count m;
 	int flag;
-
+	// NOTE: it's possible to use the custom strtoul function here aswell
+	// however, it's not used, since parsing to unsigned longs is not performance relevant
 	std::vector<std::string> parts = Aux::StringTools::split(header);
-	n = std::stoi(parts[0]);
-	m = std::stoi(parts[1]);
+	n = std::stoul(parts[0],nullptr,0);
+	m = std::stoul(parts[1],nullptr,0);
+	index i = 0;
+
 	if (parts.size() > 2) {
 		flag = std::stoi(parts[2]);
 	} else {
@@ -344,6 +347,7 @@ NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
 				v = myStrtoul(line,i);
 				if ( u < v ) G.addEdge(u,v-1);
 			}
+			DEBUG("line ", u, " parsed");
 			++u;
 		}
 	} else {
@@ -370,6 +374,7 @@ NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
 				weight = myStrtod(line,i);
 				if ( u < v ) G.addEdge(u,v-1,weight);
 			}
+			DEBUG("line ", u, " parsed");
 			++u;
 		}
 	}
