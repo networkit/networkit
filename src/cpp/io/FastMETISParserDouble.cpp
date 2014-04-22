@@ -20,33 +20,24 @@ FastMETISParserDouble::~FastMETISParserDouble() {
 	// TODO Auto-generated destructor stub
 }
 
-static inline int
-isupper(char c)
-{
+static inline int isupper(char c) {
     return (c >= 'A' && c <= 'Z');
 }
 
-static inline int
-isalpha(char c)
-{
+static inline int isalpha(char c) {
     return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
 }
 
-
-static inline int
-isspace(char c)
-{
+static inline int isspace(char c) {
     return (c == ' ' || c == '\t' || c == '\n' || c == '\12');
 }
 
-static inline int
-isdigit(char c)
-{
+static inline int isdigit(char c) {
     return (c >= '0' && c <= '9');
 }
 
-static std::pair<count,index> myStrtoul(std::string &str, index i) {	
-	//register const char *s = nptr;
+//static std::pair<count,index> myStrtoul(std::string &str, index i) {	
+static count myStrtoul(std::string &str, index &i) {
 	register uint64_t acc;
 	register int c;
 	register uint64_t cutoff;
@@ -87,12 +78,14 @@ static std::pair<count,index> myStrtoul(std::string &str, index i) {
 	for (acc = 0, any = 0; ; c = str[i++]) { // i < end necessary?
 		if (isdigit(c))
 			c -= '0';
-		else if (isalpha(c))
-			c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+// base is 10, so only accept digits
+//		else if (isalpha(c))
+//			c -= isupper(c) ? 'A' - 10 : 'a' - 10;
 		else
 			break;
 		if (c >= base)
 			break;
+		//explanation: if any of the "break" cases happens, set any=-1 so max_val will be returned
 		if (any < 0 || acc > cutoff || acc == cutoff && c > cutlim)
 			any = -1;
 		else {
@@ -106,10 +99,12 @@ static std::pair<count,index> myStrtoul(std::string &str, index i) {
 //		errno = ERANGE;
 	} else if (neg)
 		acc = -acc;
-	return std::make_pair(acc,i);
+//	return std::make_pair(acc,i);
+	return acc;
 }
 
-static std::pair<double, index> myStrtod(std::string &str, index i) {
+//static std::pair<double, index> myStrtod(std::string &str, index i) {
+static double myStrtod(std::string &str, index &i) {
 	double maxExponent = 511;
 	static double powersOf10[] = {
 		10.,
@@ -122,6 +117,7 @@ static std::pair<double, index> myStrtod(std::string &str, index i) {
 		1.0e128,
 		1.0e256
 	};
+	index oldi = i;
 	int sign, expSign = 0;
 	double fraction, dblExp, *d;
 	//register CONST char *p;
@@ -147,31 +143,30 @@ static std::pair<double, index> myStrtod(std::string &str, index i) {
 	*/
 	//p = string;
 	while (isspace(str[i])) {
-	++i;
+		++i;
 	}
 	if (str[i] == '-') {
 		sign = 1;
 		++i;;
 	} else {
-	if (str[i] == '+') {
-	++i;
-	}
-	sign = 0;
+		if (str[i] == '+') {
+			++i;
+		}
+		sign = 0;
 	}
 	/*
 	 * Count the number of digits in the mantissa (including the decimal
 	 * point), and also locate the decimal point.
 	 */
 	decPt = -1;
-	for (mantSize = 0; ; mantSize += 1)
-	{
-	c = str[i];
-	if (!isdigit(c)) {
-		if ((c != '.') || (decPt >= 0)) {
-			break;
-		}
+	for (mantSize = 0; ; mantSize += 1) {
+		c = str[i];
+		if (!isdigit(c)) {
+			if ((c != '.') || (decPt >= 0)) {
+				break;
+			}
 		decPt = mantSize;
-	}
+		}
 		++i;
 	}
 	/*
@@ -195,33 +190,31 @@ static std::pair<double, index> myStrtod(std::string &str, index i) {
 	}
 	if (mantSize == 0) {
 		fraction = 0.0;
-		i = 0;
-	goto done;
+		i = 0; // this is not necessarily correct
+		goto done;
 	} else {
-	int frac1, frac2;
-	frac1 = 0;
-	for ( ; mantSize > 9; mantSize -= 1)
-	{
-		c = str[i];
-		++i;
-		if (c == '.') {
+		int frac1, frac2;
+		frac1 = 0;
+		for ( ; mantSize > 9; mantSize -= 1) {
 			c = str[i];
 			++i;
+			if (c == '.') {
+				c = str[i];
+				++i;
+			}
+			frac1 = 10*frac1 + (c - '0');
 		}
-		frac1 = 10*frac1 + (c - '0');
-	}
-	frac2 = 0;
-	for (; mantSize > 0; mantSize -= 1)
-	{
-		c = str[i];
-		++i;
-		if (c == '.') {
+		frac2 = 0;
+		for (; mantSize > 0; mantSize -= 1) {
 			c = str[i];
 			++i;
+			if (c == '.') {
+				c = str[i];
+				++i;
+			}
+			frac2 = 10*frac2 + (c - '0');
 		}
-		frac2 = 10*frac2 + (c - '0');
-	}
-	fraction = (1.0e9 * frac1) + frac2;
+		fraction = (1.0e9 * frac1) + frac2;
 	}
 	/*
 	 * Skim off the exponent.
@@ -229,23 +222,23 @@ static std::pair<double, index> myStrtod(std::string &str, index i) {
 	i = pExp;
 	if ((str[i] == 'E') || (str[i] == 'e')) {
 		++i;
-	if (str[i] == '-') {
-		expSign = 1;
-		++i;
-	} else {
-		if (str[i] == '+') {
+		if (str[i] == '-') {
+			expSign = 1;
+			++i;
+		} else {
+			if (str[i] == '+') {
+				++i;
+		}
+			expSign = 0;
+		}
+		if (!isdigit(str[i])) {
+			i = pExp;
+			goto done;
+		}
+		while (isdigit(str[i])) {
+			exp = exp * 10 + (str[i] - '0');
 			++i;
 		}
-		expSign = 0;
-	}
-	if (!isdigit(str[i])) {
-		i = pExp;
-		goto done;
-	}
-	while (isdigit(str[i])) {
-		exp = exp * 10 + (str[i] - '0');
-		++i;
-	}
 	}
 	if (expSign) {
 		exp = fracExp - exp;
@@ -262,13 +255,13 @@ static std::pair<double, index> myStrtod(std::string &str, index i) {
 		expSign = 1;
 		exp = -exp;
 	} else {
-	expSign = 0;
+		expSign = 0;
 	}
 	if (exp > maxExponent) {
 		exp = maxExponent;
 //	errno = ERANGE;
 	}
-    dblExp = 1.0;
+	dblExp = 1.0;
 	for (d = powersOf10; exp != 0; exp >>= 1, d += 1) {
 		if (exp & 01) {
 			dblExp *= *d;
@@ -284,9 +277,11 @@ static std::pair<double, index> myStrtod(std::string &str, index i) {
 //	*endPtr = (char *) p;
 //    }
 	if (sign) {
-		return std::make_pair(-fraction,i);
+		//return std::make_pair(-fraction,i);
+		return -fraction;
 	}
-	return std::make_pair(fraction,i);
+	//return std::make_pair(fraction,i);
+	return fraction;
 }
 #if 1
 static inline std::tuple<count, count, int> parseHeader(const std::string& header) {
@@ -345,7 +340,8 @@ NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
 
 			index i = 0;
 			while(i < end) {
-				std::tie(v,i) = myStrtoul(line,i);
+				//std::tie(v,i) = myStrtoul(line,i);
+				v = myStrtoul(line,i);
 				if ( u < v ) G.addEdge(u,v-1);
 			}
 			++u;
@@ -366,10 +362,12 @@ NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
 
 			index i = 0;
 			while(i < end) {
-				std::tie(v,i) = myStrtoul(line,i);
-				DEBUG("checkpoint: parsing oul was successfull");
-				std::tie(weight,i) = myStrtod(line,i);
-				DEBUG("checkpoint: parsing double was successfull with i=", i, " while end=", end);
+				//std::tie(v,i) = myStrtoul(line,i);
+				//DEBUG("checkpoint: parsing oul was successfull");
+				//std::tie(weight,i) = myStrtod(line,i);
+				//DEBUG("checkpoint: parsing double was successfull with i=", i, " while end=", end);
+				v = myStrtoul(line,i);
+				weight = myStrtod(line,i);
 				if ( u < v ) G.addEdge(u,v-1,weight);
 			}
 			++u;
