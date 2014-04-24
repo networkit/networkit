@@ -18,8 +18,6 @@
 
 namespace NetworKit {
 
-#define none std::numeric_limits<index>::max()	//!< absence of an entry
-
 typedef uint64_t index;
 typedef uint64_t count;
 
