@@ -21,7 +21,7 @@ VizGTest::~VizGTest() {
 }
 
 
-TEST_F(VizGTest, testPostscriptWriter) {
+TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
 	// create graph
 	count n = 60;
 	count numClusters = 3;
@@ -32,10 +32,6 @@ TEST_F(VizGTest, testPostscriptWriter) {
 	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
 	G.initCoordinates();
 
-	// create clustering
-	ClusteringGenerator clusteringGen;
-	Partition zeta = clusteringGen.makeRandomClustering(G, numClusters);
-
 	// create coordinates
 	G.forNodes([&](node u) {
 		Point<float> p(drand48(), drand48());
@@ -44,8 +40,20 @@ TEST_F(VizGTest, testPostscriptWriter) {
 
 	// write graph to file
 	PostscriptWriter psWriter(G);
-	psWriter.write(zeta, "testGraph.eps");
+	psWriter.write("output/testGraph.eps");
 }
+
+TEST_F(VizGTest, testPostscriptWriterOnRealGraph) {
+	// read graph and coordinates
+
+	DibapGraphReader reader;
+	Graph G = reader.read("input/airfoil1.gi");
+
+	// write graph to file
+	PostscriptWriter psWriter(G);
+	psWriter.write("output/airfoil1.eps");
+}
+
 
 static float edgeDistanceSum(Graph& G) {
 	float dist = 0.0f;

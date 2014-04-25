@@ -30,6 +30,13 @@ PostscriptWriter::PostscriptWriter(const Graph& graph, bool isTorus) :
 
 	ps_scale = (ps_sizex - 2 * ps_borderx) / (ps_maxx - ps_minx);
 	ps_sizey = (ps_maxy - ps_miny) * ps_scale + 2 * ps_bordery;
+
+	TRACE("ps_minx: ", ps_minx);
+	TRACE("ps_maxx: ", ps_maxx);
+	TRACE("ps_miny: ", ps_miny);
+	TRACE("ps_maxy: ", ps_maxy);
+	TRACE("ps_scale: ", ps_scale);
+	TRACE("ps_sizey: ", ps_sizey);
 }
 
 PostscriptWriter::~PostscriptWriter() {
@@ -43,7 +50,7 @@ void PostscriptWriter::writeHeader(std::ofstream& file) {
 	} else {
 		file << "%!PS-Adobe-1.0\n";
 	}
-	file << "%%Title: clusteredGraph.eps\n";
+	file << "%%Title: NetworKit visualization\n";
 //	if (wrapAround) {
 	file << "%%BoundingBox: 0.000 0.000 1020.0 1020.0\n";
 //	}
@@ -51,7 +58,7 @@ void PostscriptWriter::writeHeader(std::ofstream& file) {
 //		file << "%%BoundingBox: 0 0 " << (int)ceil(ps_sizex) << " " << (int)ceil(ps_sizey+ 40.0) << "\n";
 //	}
 	file << "%%EndComments\n";
-	if (!wrapAround) {
+	if (! wrapAround) {
 		file << "%%EndProlog\n";
 		file << "gsave\n";
 	}
@@ -79,24 +86,27 @@ void PostscriptWriter::writeClustering(Partition& clustering,
 	TRACE("start ps writeClustering");
 
 	auto adjust([&](float& val) {
-		val += 10.0;
+// FIXME: remove		val += 10.0;
 	});
 
-	TRACE("start edge loop in writeClustering");
+	TRACE("start edge loop in writeClustering, wrapAround? ", wrapAround);
+	TRACE("num edges: ", g.numberOfEdges());
 
 	/* Kanten zeichnen */
 	g.forEdges([&](node u, node v) {
-		if (wrapAround) {
-			if (clustering[u] == clustering[v] && clustering[u] != none) {
-				// same cluster
+
+		if (clustering[u] == clustering[v] && clustering[u] != none) {
+			// same cluster
 			float r = psColor[clustering[u] % numColors].r;
 			float g = psColor[clustering[u] % numColors].g;
 			float b = psColor[clustering[u] % numColors].b;
 			file << r << " " << g << " " << b << " c ";
+//			TRACE("set color to ", r, " ", g, " ", b);
 		}
 		else {
 			// different clusters -> grey
 			file << "0.80 0.80 0.80 c 1.0 w ";
+//			TRACE("set color to grey");
 		}
 
 		Point<float> start = g.getCoordinate(u);
@@ -106,47 +116,44 @@ void PostscriptWriter::writeClustering(Partition& clustering,
 		float& endx = end[0];
 		float& endy = end[1];
 
+		auto adjust1([&](float& val) { // TODO: externalize constants
+			if (val > 500.0f) {
+				val -= 1000.0f;
+			}
+			else if (val < -500.0f) {
+				val += 1000.0f;
+			}
+		});
+
+		auto adjustWrapAround([&](float& distx, float& disty) {
+			adjust1(distx);
+			adjust1(disty);
+		});
+
+		float distx = endx - startx;
+		float disty = endy - starty;
+
 		if (wrapAround) {
-			auto adjust1([&](float& val) {
-						if (val > 500.0f) {
-							val -= 1000.0f;
-						}
-						else if (val < -500.0f) {
-							val += 1000.0f;
-						}
-					});
-
-			auto adjustWrapAround([&](float& distx, float& disty) {
-						adjust1(distx);
-						adjust1(disty);
-					});
-
-			float distx = endx - startx;
-			float disty = endy - starty;
-
 			adjustWrapAround(distx, disty);
-
-			endx = startx + distx;
-			endy = starty + disty;
 		}
+
+		endx = startx + distx;
+		endy = starty + disty;
 
 		adjust(startx);
 		adjust(endx);
 		adjust(starty);
 		adjust(endy);
 
-		file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
-//			}
-//			else {
-//				startx = (startx - ps_minx) * ps_scale + ps_borderx;
-//				starty = (starty - ps_miny) * ps_scale + ps_bordery;
-//				endx = (endx - ps_minx) * ps_scale + ps_borderx;
-//				endy = (endy - ps_miny) * ps_scale + ps_bordery;
-//				file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
-//			}
+//		else {
+//			startx = (startx - ps_minx) * ps_scale + ps_borderx;
+//			starty = (starty - ps_miny) * ps_scale + ps_bordery;
+//			endx = (endx - ps_minx) * ps_scale + ps_borderx;
+//			endy = (endy - ps_miny) * ps_scale + ps_bordery;
+//		}
 
-	}
-});
+		file << "p " << startx << " " << starty << " m " << endx << " " << endy << " l s\n";
+	});
 
 	/* Knoten zeichnen */
 	float dotsize = 2.0;
@@ -170,6 +177,8 @@ void PostscriptWriter::writeClustering(Partition& clustering,
 		adjust(x);
 		adjust(y);
 		file << "p " << x << " " << y << " " << dotsize << " 0.00 360.00 a s\n";
+//		TRACE("write coordinate to file: ", x, ", ", y);
+
 //		}
 //		else {
 //			x = (x - ps_minx) * ps_scale + ps_borderx;
@@ -186,18 +195,41 @@ void PostscriptWriter::writeClustering(Partition& clustering,
 void PostscriptWriter::init(std::string path, std::ofstream& file) {
 	TRACE("start ps init");
 
+	float ps_stretchx = (ps_sizex - 2 * ps_borderx);
+	float ps_stretchy = (ps_sizey - 2 * ps_bordery);
+
+	auto adjustCoordinate([&](Point<float>& p) {
+		p[0] -= ps_minx;
+		p[1] -= ps_miny;
+
+		p[0] *=  ps_stretchx / (ps_maxx - ps_minx);
+		p[1] *=  ps_stretchy / (ps_maxy - ps_miny);
+
+		p[0] += ps_borderx;
+		p[1] += ps_bordery;
+
+		TRACE("New coordinate: ", p.toCsvString());
+
+		return p;
+	});
+
 	file.open(path.c_str());
-	if (true || wrapAround) { // FIXME
-		file.precision(3);
-		// adjust coordinates for postscript output
-		g.forNodes([&](node u) {
-			TRACE("change coordinate for node " , u);
-			g.getCoordinate(u).scale(1000.0);
-		});
-	} else {
-		file.precision(2);
-	}
+	file.precision(3);
+	// adjust coordinates for postscript output
+	TRACE("change coordinates for nodes to fit into bounding box");
+	g.forNodes([&](node u) {
+		g.setCoordinate(u, adjustCoordinate(g.getCoordinate(u)));
+	});
+
+	ps_minx = g.minCoordinate(0);
+	ps_maxx = g.maxCoordinate(0);
+	ps_miny = g.minCoordinate(1);
+	ps_maxy = g.maxCoordinate(1);
+
 	file << std::fixed;
+
+	writeHeader(file);
+	writeMacros(file);
 }
 
 void PostscriptWriter::write(Partition& clustering, std::string path) {
@@ -205,35 +237,22 @@ void PostscriptWriter::write(Partition& clustering, std::string path) {
 
 	std::ofstream file;
 	init(path, file);
-	writeHeader(file);
-	writeMacros(file);
 
 	file << "0.00 0.00 0.00 c\n";   // 0.25 0.25 0.25 c 1.0 w
 
 	writeClustering(clustering, file);
-	if (!wrapAround) {
+
+	if (! wrapAround) {
 		file << "grestore\n";
 	}
-
 	file.close();
 }
 
 void PostscriptWriter::write(std::string path) {
 	TRACE("start ps write");
-
-	std::ofstream file;
-	init(path, file);
-	writeHeader(file);
-	writeMacros(file);
-
 	ClusteringGenerator gen;
 	Partition allNone = gen.makeOneClustering(g);
-	writeClustering(allNone, file);
-	if (!wrapAround) {
-		file << "grestore\n";
-	}
-
-	file.close();
+	write(allNone, path);
 }
 
 
