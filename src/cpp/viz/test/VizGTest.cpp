@@ -44,8 +44,7 @@ TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
 }
 
 TEST_F(VizGTest, testPostscriptWriterOnRealGraph) {
-	// read graph and coordinates
-
+	// read graph and coordinates from binary file
 	DibapGraphReader reader;
 	Graph G = reader.read("input/airfoil1.gi");
 
