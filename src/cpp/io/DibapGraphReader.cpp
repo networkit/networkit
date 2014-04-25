@@ -153,13 +153,17 @@ Graph DibapGraphReader::read(std::string path) {
 	if (dew > 0) {
 		for (index v = 0; v < (count) V; ++v) {
 			for (index e = of[v]; e < (index) of[v + 1]; ++e) {
-				graph.addEdge(v, to[e], ew[e]);
+				if (v <= (index) to[e]) {
+					graph.addEdge(v, to[e], ew[e]);
+				}
 			}
 		}
 	} else {
 		for (index v = 0; v < (count) V; ++v) {
 			for (index e = of[v]; e < (index) of[v + 1]; ++e) {
-				graph.addEdge(v, to[e]);
+				if (v <= (index) to[e]) {
+					graph.addEdge(v, to[e]);
+				}
 			}
 		}
 	}
