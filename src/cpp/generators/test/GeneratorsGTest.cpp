@@ -174,7 +174,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 			G.setCoordinate(v, p);
 		}
 
-		// output in clustered way for better visual inspection
+		// output for visual inspection
 		char path[23];
 		sprintf(path, "output/pubweb-%04llu.eps", static_cast<unsigned long long>(i));
 		TRACE("path: " , path);

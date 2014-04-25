@@ -22,6 +22,7 @@
 #include "../../community/ClusteringGenerator.h"
 #include "../../io/ClusteringWriter.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/DibapGraphReader.h"
 #include "../../generators/PubWebGenerator.h"
 
 
