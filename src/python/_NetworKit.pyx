@@ -255,7 +255,7 @@ cdef class BFS:
 	""" Simple breadth-first search"""
 	cdef _BFS* _this
 
-	def __cinit_(self, Graph G, source):
+	def __cinit__(self, Graph G, source):
 		self._this = new _BFS(dereference(G._this), source)
 
 	def run(self):
@@ -556,7 +556,8 @@ cdef extern from "../cpp/io/METISGraphReader.h":
 		_Graph* readToHeap(string path) except +
 
 cdef class METISGraphReader:
-	""" Reads the METIS adjacency file format [1]
+	""" Reads the METIS adjacency file format [1]. If the Fast reader fails, 
+		use readGraph(path, graphio.formats.metis) as an alternative.
 		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
 	"""
 	cdef _METISGraphReader _this
@@ -572,8 +573,8 @@ cdef extern from "../cpp/io/FastMETISGraphReader.h":
 		_Graph* _read(string path) except +
 
 cdef class FastMETISGraphReader:
-	""" A faster but currently experimental implementation of a reader for
-		the METIS format.
+	""" A faster but still experimental implementation of a reader for
+		the METIS format. It is the default of the readGraph-function.
 	"""
 	cdef _FastMETISGraphReader _this
 	
@@ -1184,7 +1185,7 @@ cdef class ClusteringCoefficient:
 cdef extern from "../cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
 	pair[count, count] estimatedDiameterRange(_Graph G, double error) except +
 	count exactDiameter(_Graph G) except +
-	count estimatedVertexDiameter(_Graph G) except +
+	edgeweight estimatedVertexDiameter(_Graph G, count) except +
 
 cdef class Diameter:
 	"""
@@ -1200,8 +1201,8 @@ cdef class Diameter:
 		return exactDiameter(dereference(G._this))
 
 	@staticmethod
-	def estimatedVertexDiameter(Graph G):
-		return estimatedVertexDiameter(dereference(G._this))
+	def estimatedVertexDiameter(Graph G, samples):
+		return estimatedVertexDiameter(dereference(G._this), samples)
 
 cdef extern from "../cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
@@ -1443,41 +1444,6 @@ cdef class DegreeCentrality:
 
 	def __cinit__(self, Graph G, bool normalized=False):
 		self._this = new _DegreeCentrality(dereference(G._this), normalized)
-
-	def run(self):
-		self._this.run()
-
-	def scores(self):
-		return self._this.scores()
-
-	def score(self, v):
-		return self._this.score(v)
-
-	def ranking(self):
-		return self._this.ranking()
-
-
-cdef extern from "../cpp/centrality/AreaWeightedCentrality.h":
-	cdef cppclass _AreaWeightedCentrality "NetworKit::AreaWeightedCentrality":
-		_AreaWeightedCentrality(_Graph, bool normalized) except +
-		void initCoordinates(string lat_file, string lon_file) except +
-		void run() except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
-
-cdef class AreaWeightedCentrality:
-	"""
- 	Node centrality index which ranks nodes by the cosine of their neighbors.
- 	Optional normalization by sum of cosine of all nodes.
-	"""
-	cdef _AreaWeightedCentrality* _this
-
-	def __cinit__(self, Graph G, bool normalized=False):
-		self._this = new _AreaWeightedCentrality(dereference(G._this), normalized)
-
-	def initCoordinates(self, lat_file, lon_file):
-		self._this.initCoordinates(stdstring(lat_file), stdstring(lon_file))
 
 	def run(self):
 		self._this.run()

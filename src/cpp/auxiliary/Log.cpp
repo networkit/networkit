@@ -41,6 +41,10 @@ std::string getLogLevel() {
 		return "ERROR";
 	} else if (current == LogLevel::fatal) {
 		return "FATAL";
+	} else {
+		// this only exists to silence a warning:
+		// TODO: consider replacing it with __builtin_unreachable();
+		throw std::logic_error{"invalid loglevel. This should NEVER happen"};
 	}
 }
 
@@ -117,6 +121,10 @@ std::tuple<std::string, std::string> getTerminalFormat(LogLevel p) {
 		case LogLevel::debug:
 		case LogLevel::trace:
 			return std::make_tuple("", "");
+		default:
+			// this only exists to silence a warning:
+			// TODO: consider replacing it with __builtin_unreachable();
+			throw std::logic_error{"invalid loglevel. This should NEVER happen"};
 	}
 }
 

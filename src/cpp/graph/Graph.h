@@ -47,7 +47,7 @@ template <typename T> using Vector = std::vector<T>;
 /**
  * An undirected graph (with optional weights) and parallel iterator methods.
  */
-class Graph {
+class Graph final {
 
 protected:
 
@@ -114,7 +114,7 @@ public:
 
 	Graph(Graph&& other) = default;
 
-	virtual ~Graph();
+	~Graph() = default;
 
 	Graph& operator=(Graph&& other) = default;
 
