@@ -20,6 +20,9 @@ FastMETISParserDouble::~FastMETISParserDouble() {
 	// TODO Auto-generated destructor stub
 }
 
+
+
+// a couple of checks on a character
 static inline int isupper(char c) {
     return (c >= 'A' && c <= 'Z');
 }
@@ -36,7 +39,12 @@ static inline int isdigit(char c) {
     return (c >= '0' && c <= '9');
 }
 
-//static std::pair<count,index> myStrtoul(std::string &str, index i) {	
+/**
+ * this is a custom version of an implementation of C's function 
+ * 'strtoul' (string to unsigned long).
+ * However, it has been adapted to work on the reference and also 
+ * writes the first index after the number back to i 
+ */
 static count myStrtoul(std::string &str, index &i) {
 	register uint64_t acc;
 	register int c;
@@ -86,7 +94,7 @@ static count myStrtoul(std::string &str, index &i) {
 		if (c >= base)
 			break;
 		//explanation: if any of the "break" cases happens, set any=-1 so max_val will be returned
-		if (any < 0 || acc > cutoff || acc == cutoff && c > cutlim)
+		if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
 			any = -1;
 		else {
 			any = 1;
@@ -96,14 +104,17 @@ static count myStrtoul(std::string &str, index &i) {
 	}
 	if (any < 0) {
 		acc = std::numeric_limits<uint64_t>::max();
-//		errno = ERANGE;
 	} else if (neg)
 		acc = -acc;
-//	return std::make_pair(acc,i);
 	return acc;
 }
 
-//static std::pair<double, index> myStrtod(std::string &str, index i) {
+/**
+ * this is a custom version of an implementation of C's function 
+ * 'strtoul' (string to unsigned long).
+ * However, it has been adapted to work on the reference and also 
+ * writes the first index after the number back to i 
+ */
 static double myStrtod(std::string &str, index &i) {
 	double maxExponent = 511;
 	static double powersOf10[] = {
@@ -117,11 +128,8 @@ static double myStrtod(std::string &str, index &i) {
 		1.0e128,
 		1.0e256
 	};
-	index oldi = i;
 	int sign, expSign = 0;
 	double fraction, dblExp, *d;
-	//register CONST char *p;
-//	char p;
 	register int c;
 	int exp = 0;		/* Exponent read from "EX" field. */
 	int fracExp = 0;		/* Exponent that derives from the fractional
@@ -139,9 +147,8 @@ static double myStrtod(std::string &str, index &i) {
 	uint64_t pExp;		/* Temporarily holds location of exponent
 						* in string. */
 	/*
-	* Strip off leading blanks and check for a sign.
-	*/
-	//p = string;
+	 * Strip off leading blanks and check for a sign.
+	 */
 	while (isspace(str[i])) {
 		++i;
 	}
@@ -190,7 +197,8 @@ static double myStrtod(std::string &str, index &i) {
 	}
 	if (mantSize == 0) {
 		fraction = 0.0;
-		i = 0; // this is not necessarily correct
+		c = str[i++];
+		while(!isspace(c)) c = str[i++]; // this is not necessarily correct
 		goto done;
 	} else {
 		int frac1, frac2;
@@ -233,6 +241,8 @@ static double myStrtod(std::string &str, index &i) {
 		}
 		if (!isdigit(str[i])) {
 			i = pExp;
+			c = str[i++];
+			while(!isspace(c)) c = str[i++]; // this is not necessarily correct
 			goto done;
 		}
 		while (isdigit(str[i])) {
@@ -259,7 +269,6 @@ static double myStrtod(std::string &str, index &i) {
 	}
 	if (exp > maxExponent) {
 		exp = maxExponent;
-//	errno = ERANGE;
 	}
 	dblExp = 1.0;
 	for (d = powersOf10; exp != 0; exp >>= 1, d += 1) {
@@ -273,27 +282,21 @@ static double myStrtod(std::string &str, index &i) {
 		fraction *= dblExp;
 	}
 	done:
-//    if (endPtr != NULL) {
-//	*endPtr = (char *) p;
-//    }
 	if (sign) {
-		//return std::make_pair(-fraction,i);
 		return -fraction;
 	}
-	//return std::make_pair(fraction,i);
 	return fraction;
 }
-#if 1
+
 static inline std::tuple<count, count, int> parseHeader(const std::string& header) {
 	count n;
 	count m;
 	int flag;
 	// NOTE: it's possible to use the custom strtoul function here aswell
-	// however, it's not used, since parsing to unsigned longs is not performance relevant
+	// however, it's not used, since parsing two unsigned longs is not performance relevant
 	std::vector<std::string> parts = Aux::StringTools::split(header);
-	n = std::stoul(parts[0],nullptr,0);
-	m = std::stoul(parts[1],nullptr,0);
-	index i = 0;
+	n = std::stoul(parts[0]);
+	m = std::stoul(parts[1]);
 
 	if (parts.size() > 2) {
 		flag = std::stoi(parts[2]);
@@ -308,244 +311,76 @@ static inline std::tuple<count, count, int> parseHeader(const std::string& heade
 
 NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
 	std::ifstream stream(path);
+	if (!stream.is_open()) {
+		ERROR("invalid graph file: " , path);
+		throw std::runtime_error("invalid graph file");
+	}
 	std::string line;
-	std::getline(stream, line); // get header
 	count n;
 	count m;
 	int flag; // weight flag
+	do {
+		std::getline(stream, line); // get header
+	} while (line[0] == '%');
 	std::tie(n, m, flag) = parseHeader(line);
 	if (flag > 1) return Graph(0); // return empty graph in case of weighted nodes
 	bool weighted = flag % 10;
 	Graph G(n, weighted);
 
+	// set the name of the graph
 	std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
-
 	G.setName(graphName);
 
+	// XXX: if the first character of a line is the '%' char, ignore the line as it is a comment
 	node u = 0;
-
-	// XXX: if the first character of a line is the % char, comment lines will be ignored
-
-	std::string current;
 	node v = 0;
 	if (!weighted) {
 		DEBUG("reading unweighted graph");
 		// unweighted edges
 		while (std::getline(stream, line)) {
-			if (line.empty() || (!line.empty() && line[0] == '%') ) {
-				continue;
+			if (!line.empty() && line[0] != '%') {
+				count end = line.length();
+				if (end > 1) --end; // only decrement if we have more than one edge
+				// determine index of last character of last node
+				while (line[end] == ' ' && end > 0) {
+					--end;
+				}
+				index i = 0;
+				while(i < end) {
+					v = myStrtoul(line,i);
+					if ( u < v && v > 0) G.addEdge(u,v-1);
+				}
+				DEBUG("node ", u, " completely parsed");
+				++u;
 			}
-			// determine index of last character of last node
-			count end = line.length()-1;
-			while (line[end] == ' ' && end > 0) {
-				--end;
-			}
-
-			index i = 0;
-			while(i < end) {
-				//std::tie(v,i) = myStrtoul(line,i);
-				v = myStrtoul(line,i);
-				if ( u < v ) G.addEdge(u,v-1);
-			}
-			DEBUG("line ", u, " parsed");
-			++u;
 		}
 	} else {
 		DEBUG("reading weighted graph");
 		double weight = 0.0;
-		// weighted edges - WARNING: supports only non-negative integer weights
+		// weighted edges - reads edge weights as double
 		while (std::getline(stream, line)) {
-			if (line.empty() || (!line.empty() && line[0] == '%') ) {
-				continue;
+			// if line is note empty and not a comment line
+			if (!line.empty() && line[0] != '%') {
+				count end = line.length();
+				if (end > 1) --end; // should never play a role.
+				// determine index of last character of last node
+				while (line[end] == ' ' && end > 0) {
+					--end;
+				}
+				index i = 0;
+				while(i < end) {
+					v = myStrtoul(line,i);
+					weight = myStrtod(line,i);
+					if ( u < v && v > 0) G.addEdge(u,v-1,weight);
+				}
+				DEBUG("node ", u, " completely parsed");
+				++u;
 			}
-			// determine index of last character of last node
-			count end = line.length()-1;
-			while (line[end] == ' ' && end > 0) {
-				--end;
-			}
-
-			index i = 0;
-			while(i < end) {
-				//std::tie(v,i) = myStrtoul(line,i);
-				//DEBUG("checkpoint: parsing oul was successfull");
-				//std::tie(weight,i) = myStrtod(line,i);
-				//DEBUG("checkpoint: parsing double was successfull with i=", i, " while end=", end);
-				v = myStrtoul(line,i);
-				weight = myStrtod(line,i);
-				if ( u < v ) G.addEdge(u,v-1,weight);
-			}
-			DEBUG("line ", u, " parsed");
-			++u;
 		}
 	}
 
 
 	return G;
 }
-
-#else 
-static inline uint64_t fast_string_to_integer(std::string::iterator it, const std::string::iterator& end) {
-	uint64_t val = *it - '0';	// works on ASCII code points
-	++it;
-	while (it != end) {
-		val *= 10;
-		val += *it  - '0';
-		++it;
-	}
-	return val;
-}
-
-static inline double fast_string_to_double(std::string::iterator it, const std::string::iterator& end) {
-	double val = 0.0;
-	bool negative = false;
-	if (*it == '-') {
-		negative = true;
-		++it;
-	}
-	while (*it >= '0' && *it <= '9' && it != end) { //it != end
-		val = (val*10.0) + (*it - '0');
-		++it;
-	}
-	if (*it == '.' && it != end) {
-		double afterComma = 0.0;
-		int exp = 0;
-		++it;
-		while (*it >= '0' && *it <= '9' && it != end) { //it != end
-			afterComma = (afterComma*10.0) + (*it - '0');
-			++exp;
-			++it;
-		}
-		val += afterComma / std::pow(10.0, exp);
-	}
-	if (negative) {
-		val = -val;
-	}
-	return val;
-}
-
-static inline std::tuple<count, count, int> parseHeader(const std::string& header) {
-	count n;
-	count m;
-	int flag;
-
-	std::vector<std::string> parts = Aux::StringTools::split(header);
-	n = std::stoi(parts[0]);
-	m = std::stoi(parts[1]);
-	if (parts.size() > 2) {
-		flag = std::stoi(parts[2]);
-	} else {
-		flag = 0;
-	}
-
-
-	return std::make_tuple(n, m, flag);
-}
-
-
-NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
-	std::ifstream stream(path);
-	std::string line;
-	std::getline(stream, line); // get header
-	count n;
-	count m;
-	int flag; // weight flag
-	std::tie(n, m, flag) = parseHeader(line);
-	bool weighted = flag % 10;
-	Graph G(n, weighted);
-	node u = 0;
-
-	// TODO: handle comment lines
-
-	if (flag == 0) {
-		DEBUG("reading unweighted graph");
-		// unweighted edges
-		while (std::getline(stream, line)) {
-			if (line.empty()) {
-				continue;
-			}
-			auto it1 = line.begin();
-			auto end = line.end();
-			auto it2 = std::find(it1, end, ' ');
-			if (line.back() == ' ') { // if line ends with one white space, do this trick...
-				--end;
-			}
-			while (true) {
-				node v = (fast_string_to_integer(it1, it2) - 1);
-				if (u < v) {
-					G.addEdge(u, v);
-				}
-				if (it2 == end) {
-					break;
-				}
-				++it2;
-				it1 = it2;
-				it2 = std::find(it1, end, ' ');
-			}
-			++u; // next node
-		}
-	} else if (flag == 1) {
-		DEBUG("reading weighted graph");
-		// weighted edges - WARNING: supports only non-negative integer weights
-		while (std::getline(stream, line)) {
-			if (line.empty()) {
-				continue;
-			}
-			std::stringstream linestream(line);
-			node v;
-			double weight;
-			while (linestream >> v >> weight) {
-				if (u < v) {
-					G.addEdge(u,v-1, (edgeweight) weight);
-				}
-			}
-/*			auto it1 = line.begin();
-			auto end = line.end();
-			auto it2 = std::find(it1, end, ' ');
-			if (line.back() == ' ') { // if line ends with one white space, do this trick...
-				--end;
-			}
-			while (true) {
-				TRACE("try to read new node");
-				node v = (fast_string_to_integer(it1, it2) - 1);
-				TRACE("read node " , v);
-				// advance
-				++it2;
-				it1 = it2;
-				it2 = std::find(it1, end, ' ');
-				TRACE("char at it1: ",*it1," and at it2: ",*it2," and their difference: ",&*it2-&*it1);
-				// get weight
-				double weight = (fast_string_to_double(it1, it2));
-				//double weight = std::stod(line.sub);
-				TRACE("read weight " , weight);
-				++it2;
-				it1 = it2;
-				TRACE("find new it2");
-				it2 = std::find(it1, end, ' ');
-				TRACE("found new it2");
-				TRACE("char at it1: ",*it1," and at it2: ",*it2," and their difference: ",&*it2-&*it1);
-			
-				if (u < v) {
-					G.addEdge(u, v, (edgeweight) weight);
-				}
-				TRACE("new node added");
-				if (it2 == end) {
-					break;
-				}
-			}*/
-			++u; // next node
-		}
-		
-	} else if (flag == 11) {
-		ERROR("weighted nodes are not supported");
-		throw std::runtime_error("weighted nodes are not supported");
-	} else {
-		ERROR("invalid weight flag in header of METIS file: " , flag);
-		throw std::runtime_error("invalid weight flag in header of METIS file");
-	}
-
-
-	return G;
-}
-#endif
 
 } /* namespace NetworKit */
