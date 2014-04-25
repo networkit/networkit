@@ -21,10 +21,6 @@ Graph::Graph(count n, bool weighted) : n(n), m(0), z(n), t(0), weighted(weighted
 	this->name = sstm.str();
 }
 
-Graph::~Graph() {
-
-}
-
 
 //only to be used by Cython
 void Graph::stealFrom(Graph& input) {

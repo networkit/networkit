@@ -29,10 +29,20 @@ public:
 	static edgeweight exactDiameter(const Graph& G);
 
 
-	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G,
-				the maximum over all components in case the graph is disconnected
+	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
+
+		@param[in]	samples		One sample is enough if the graph is connected. If there 
+								are multiple connected components, then the number of samples
+								must be chosen so that the probability of sampling the component
+								with the largest diameter ist high. 
 	 */
-	static count estimatedVertexDiameter(const Graph& G);
+	static edgeweight estimatedVertexDiameter(const Graph& G, count samples);
+
+
+	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
+			Considers each connected component and returns the maximum diameter.
+	 */
+	static edgeweight estimatedVertexDiameterPedantic(const Graph& G);
 };
 
 } /* namespace NetworKit */

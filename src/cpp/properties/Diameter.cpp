@@ -140,7 +140,49 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 }
 
 
-count Diameter::estimatedVertexDiameter(const Graph& G) {
+edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
+
+	edgeweight infDist = std::numeric_limits<edgeweight>::max();
+
+	auto estimateFrom = [&](node v) -> count {
+		BFS bfs(G, v);
+		bfs.run();
+		auto distances = bfs.getDistances();
+
+		// get two largest path lengths
+		edgeweight maxD = 0;
+		edgeweight maxD2 = 0; // second largest distance
+		for (auto d : distances) {
+			if ((d != infDist) && (d >= maxD)) {
+				maxD2 = maxD;
+				maxD = d;
+			}
+		}
+
+		edgeweight vd = maxD + maxD2;
+		return vd;
+	};
+
+	edgeweight vdMax = 0;
+	#pragma omp parallel for
+	for (count i = 0; i < samples; ++i) {
+		node u = G.randomNode();
+		edgeweight vd = estimateFrom(u);
+		DEBUG("sampled vertex diameter from node ", u, ": ", vd);
+		#pragma omp critical 
+		{
+			if (vd > vdMax) {
+				vdMax = vd;
+			}
+		}
+	}
+
+	return vdMax;
+
+}
+
+
+edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
@@ -167,16 +209,21 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 	DEBUG("finding connected components");
 	cc.run();
 	if (cc.numberOfComponents() > 1) {
-		DEBUG("estimating for each component");
-		Partition components = cc.getPartition();
-		auto subsets = components.getSubsets();
-		count vdMax = 0;
-		for (auto component : subsets) {
-			count vd = estimateFrom(*component.begin()); // take any node from the component and perform bfs from there
-			if (vd > vdMax) {
-				vdMax = vd;
-			}
+		DEBUG("estimating for each component in parallel");
+		std::vector<std::set<node> > components;
+		for (auto component : cc.getPartition().getSubsets()) {
+			components.push_back(component);
 		}
+
+		std::vector<count> vds;
+		#pragma omp parallel for
+		for (index i = 0; i < components.size(); ++i) {
+			count vd = estimateFrom(*components[i].begin()); // take any node from the component and perform bfs from there
+			#pragma omp critical 
+			vds.push_back(vd);
+		}
+
+		count vdMax = *std::max_element(vds.begin(), vds.end());
 		return vdMax;
 
 	} else {
@@ -184,6 +231,7 @@ count Diameter::estimatedVertexDiameter(const Graph& G) {
 	}
 
 }
+
 
 } /* namespace NetworKit */
 
