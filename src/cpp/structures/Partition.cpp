@@ -212,4 +212,14 @@ void Partition::setName(std::string name) {
 	this->name = name;
 }
 
+std::set<index> Partition::getSubsetIds() {
+	std::set<index> ids;
+	for (index id : data) {
+		if (id != none) {
+			ids.insert(id);
+		}
+	}
+	return ids;
+}
+
 } /* namespace NetworKit */

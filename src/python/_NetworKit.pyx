@@ -772,6 +772,7 @@ cdef extern from "../cpp/structures/Partition.h":
 		vector[index] getVector() except +
 		void setName(string name) except +
 		string getName() except +
+		set[index] getSubsetIds() except +
 
 
 cdef class Partition:
@@ -846,6 +847,9 @@ cdef class Partition:
 
 	def getName(self):
 		return self._this.getName()
+
+	def getSubsetIds(self):
+		return self._this.getSubsetIds()
 
 
 
@@ -1340,8 +1344,17 @@ cdef extern from "../cpp/centrality/ApproxBetweenness.h":
 		double score(node) except +
 
 cdef class ApproxBetweenness:
-	"""
-		TODO: docstring
+	""" 
+ 	Approximation of betweenness centrality according to algorithm described in
+ 		Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
+
+ 	The algorithm approximates the betweenness of all vertices so that the scores are
+	within an additive error epsilon with probability at least (1- delta).
+	The values are normalized by default.
+
+	Parameters:
+	-	epsilon		maximum additive error
+	-	delta		probability that the values are within the error guarantee
 	"""
 	cdef _ApproxBetweenness* _this
 
