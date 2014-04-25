@@ -1,22 +1,22 @@
 /*
- * FastMETISParser.cpp
+ * FastMETISGraphReader.cpp
  *
- *  Created on: 04.10.2013
- *      Author: cls
+ *  Created on: 24.04.2014
+ *      Author: Maximilian Vogel
  */
 
-#include "FastMETISParserDouble.h"
+#include "FastMETISGraphReader.h"
 
 #include <fstream>
 
 namespace NetworKit {
 
-FastMETISParserDouble::FastMETISParserDouble() {
+FastMETISGraphReader::FastMETISGraphReader() {
 	// TODO Auto-generated constructor stub
 
 }
 
-FastMETISParserDouble::~FastMETISParserDouble() {
+FastMETISGraphReader::~FastMETISGraphReader() {
 	// TODO Auto-generated destructor stub
 }
 
@@ -309,7 +309,7 @@ static inline std::tuple<count, count, int> parseHeader(const std::string& heade
 }
 
 
-NetworKit::Graph FastMETISParserDouble::parse(const std::string& path) {
+Graph FastMETISGraphReader::read(const std::string path) {
 	std::ifstream stream(path);
 	if (!stream.is_open()) {
 		ERROR("invalid graph file: " , path);

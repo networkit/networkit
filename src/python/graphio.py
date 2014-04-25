@@ -1,6 +1,6 @@
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
 						 VNAGraphWriter, GMLGraphWriter, LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter, DGSWriter, \
-						  DGSStreamParser, GraphUpdater, FastMETISGraphReaderDouble)
+						  DGSStreamParser, GraphUpdater, FastMETISGraphReader)
 
 import os
 import logging
@@ -9,6 +9,7 @@ import scipy.io
 
 class formats:
 	metis = "metis"
+	fastmetis = "fastmetis"
 	#CLUSTERING = "clustering"
 	edgelist_tab_one = "edgelist-t1"
 	edgelist_tab_zero = "edgelist-t0"
@@ -28,10 +29,11 @@ class formats:
 
 # reading
 
-def readGraph(path, format="metis", **kwargs):
+def readGraph(path, format="fastmetis", **kwargs):
 	"""    Read graph file in various formats and return a NetworKit::Graph"""
 	
 	readers =  {"metis": METISGraphReader(),
+			"fastmetis" : FastMETISGraphReader(),
 				#"edgelist": EdgeListIO(),
 				"edgelist-t1" : EdgeListIO('\t', 1),
 				"edgelist-t0": EdgeListIO('\t', 0),
