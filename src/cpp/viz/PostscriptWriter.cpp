@@ -9,9 +9,11 @@
 
 namespace NetworKit {
 
-PostscriptWriter::PostscriptWriter(const Graph& graph, bool isTorus) :
-		g(graph), wrapAround(isTorus) {
+PostscriptWriter::PostscriptWriter(bool isTorus) : wrapAround(isTorus) {
 	numColors = 24;
+
+	// set colors in RGB format, where 0.0 is no color and 1.0 is full color
+	// (1.0 would mean 255 in a 3x8 bit color scheme)
 	psColor = { {1.0, 0.0, 0.0},
 		{	1.0, 0.5, 0.0}, {1.0, 1.0, 0.0}, {0.5, 1.0, 0.0}, {0.0, 1.0,
 			0.0}, {0.0, 1.0, 0.5}, {0.0, 1.0, 1.0}, {0.0, 0.5, 1.0},
@@ -23,6 +25,7 @@ PostscriptWriter::PostscriptWriter(const Graph& graph, bool isTorus) :
 		{	0.0, 0.3, 0.6}, {0.0, 0.0, 0.6}, {0.3, 0.0, 0.6}, {0.6, 0.0,
 			0.6}, {0.6, 0.0, 0.3}};
 
+	// bounding box size
 	ps_size = {1020.0, 1020.0};
 }
 
@@ -63,10 +66,8 @@ void PostscriptWriter::writeMacros(std::ofstream& file) {
 }
 
 // TODO: node and edge weights and thicker nodes/edges
-void PostscriptWriter::writeClustering(Partition& clustering, std::ofstream& file)
+void PostscriptWriter::writeClustering(Graph& g, Partition& clustering, std::ofstream& file)
 {
-	TRACE("start ps writeClustering");
-
 	/////////////////////////////////
 	// bounding box adjustment
 	/////////////////////////////////
@@ -84,7 +85,6 @@ void PostscriptWriter::writeClustering(Partition& clustering, std::ofstream& fil
 			p[c] *= ps_stretch[c] / (ps_max[c] - ps_min[c]);
 			p[c] += ps_border[c];
 		}
-
 //		TRACE("New coordinate: ", p.toCsvString());
 		return p;
 	});
@@ -175,14 +175,14 @@ void PostscriptWriter::init(std::string path, std::ofstream& file) {
 	file << "0.000 0.000 0.000 c\n";
 }
 
-void PostscriptWriter::write(Partition& clustering, std::string path) {
+void PostscriptWriter::write(Graph& g, Partition& clustering, std::string path) {
 	TRACE("start ps write clustering");
 	assert(g.getCoordinate(0).getDimensions() == 2);
 
 	std::ofstream file;
 	init(path, file);
 
-	writeClustering(clustering, file);
+	writeClustering(g, clustering, file);
 
 	if (! wrapAround) {
 		file << "grestore\n";
@@ -190,11 +190,11 @@ void PostscriptWriter::write(Partition& clustering, std::string path) {
 	file.close();
 }
 
-void PostscriptWriter::write(std::string path) {
+void PostscriptWriter::write(Graph& g, std::string path) {
 	TRACE("start ps write");
 	ClusteringGenerator gen;
 	Partition allNone = gen.makeOneClustering(g);
-	write(allNone, path);
+	write(g, allNone, path);
 }
 
 

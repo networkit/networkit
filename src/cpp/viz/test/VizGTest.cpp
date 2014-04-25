@@ -39,8 +39,8 @@ TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
 	});
 
 	// write graph to file
-	PostscriptWriter psWriter(G);
-	psWriter.write("output/testGraph.eps");
+	PostscriptWriter psWriter;
+	psWriter.write(G, "output/testGraph.eps");
 }
 
 TEST_F(VizGTest, testPostscriptWriterOnRealGraph) {
@@ -49,8 +49,8 @@ TEST_F(VizGTest, testPostscriptWriterOnRealGraph) {
 	Graph G = reader.read("input/airfoil1.gi");
 
 	// write graph to file
-	PostscriptWriter psWriter(G);
-	psWriter.write("output/airfoil1.eps");
+	PostscriptWriter psWriter;
+	psWriter.write(G, "output/airfoil1.eps");
 }
 
 
@@ -83,8 +83,8 @@ TEST_F(VizGTest, testFRLayouter) {
 
  	FruchtermanReingold fdLayouter(bl, tr);
  	fdLayouter.draw(G);
- 	PostscriptWriter psWriter2(G, true);
- 	psWriter2.write("output/testForceGraph.eps");
+ 	PostscriptWriter psWriter(true);
+ 	psWriter.write(G, "output/testForceGraph.eps");
 
  	// test edge distances
  	float dist = edgeDistanceSum(G);
@@ -111,8 +111,8 @@ TEST_F(VizGTest, testFRLayouter) {
 
   	MaxentStress msLayouter(bl, tr);
  	msLayouter.draw(G);
-  	PostscriptWriter psWriter3(G, true);
-  	psWriter3.write("output/testMaxentGraph.eps");
+  	PostscriptWriter psWriter(true);
+  	psWriter.write(G, "output/testMaxentGraph.eps");
 
  	// test edge distances
  	float dist = edgeDistanceSum(G);
@@ -142,8 +142,8 @@ TEST_F(VizGTest, testFRLayouter) {
 
   	MultilevelLayouter mlLayouter(bl, tr);
   	mlLayouter.draw(G);
-  	PostscriptWriter psWriter4(G, true);
-  	psWriter4.write("output/testMultilevelGraph.eps");
+  	PostscriptWriter psWriter4(true);
+  	psWriter4.write(G, "output/testMultilevelGraph.eps");
 
   	// test edge distances
  	float dist = edgeDistanceSum(G);
@@ -163,8 +163,8 @@ TEST_F(VizGTest, testFRLayouter) {
 
  	FruchtermanReingold fdLayouter(bl, tr);
  	fdLayouter.draw(G);
- 	PostscriptWriter psWriter2(G, true);
- 	psWriter2.write("output/testLesmisFR.eps");
+ 	PostscriptWriter psWriter2(true);
+ 	psWriter2.write(G, "output/testLesmisFR.eps");
 
  	// test edge distances
  	float dist = edgeDistanceSum(G);
@@ -174,8 +174,8 @@ TEST_F(VizGTest, testFRLayouter) {
 
  	MultilevelLayouter mlLayouter(bl, tr);
   	mlLayouter.draw(G);
-  	PostscriptWriter psWriter4(G, true);
-  	psWriter4.write("output/testLesmisMl.eps");
+  	PostscriptWriter psWriter4(true);
+  	psWriter4.write(G, "output/testLesmisMl.eps");
 
  	// test edge distances
  	dist = edgeDistanceSum(G);

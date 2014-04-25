@@ -119,14 +119,14 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	EXPECT_EQ(G.numberOfNodes(),oneClustering.numberOfElements());
 
 	// output to EPS file
-	PostscriptWriter psWriter(G, true);
-	psWriter.write(oneClustering, "output/pubweb.eps");
+	PostscriptWriter psWriter(true);
+	psWriter.write(G, oneClustering, "output/pubweb.eps");
 
 	// clustering
 	PLM clusterAlgo;
 	Partition clustering = clusterAlgo.run(G);
 	EXPECT_EQ(G.numberOfNodes(),clustering.numberOfElements());
-	psWriter.write(clustering, "output/pubweb-clustered-PLM.eps");
+	psWriter.write(G, clustering, "output/pubweb-clustered-PLM.eps");
 
 	Modularity mod;
 	double modVal = mod.getQuality(clustering, G);
@@ -151,8 +151,8 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 	std::vector<GraphEvent> stream;
 
 	// static clustering algorithm for better visual output
-	PostscriptWriter psWriter(G, true);
-	psWriter.write("output/pubweb-0000.eps");
+	PostscriptWriter psWriter(true);
+	psWriter.write(G, "output/pubweb-0000.eps");
 
 	for (index i = 1; i <= nSteps; ++i) {
 		stream = dynGen.generate(1);
@@ -178,8 +178,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 		char path[23];
 		sprintf(path, "output/pubweb-%04llu.eps", static_cast<unsigned long long>(i));
 		TRACE("path: " , path);
-		PostscriptWriter psWriter(G, true);
-		psWriter.write(path);
+		psWriter.write(G, path);
 	}
 }
 

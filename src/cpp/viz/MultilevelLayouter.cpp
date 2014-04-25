@@ -40,12 +40,11 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 		DEBUG("initial layout by FR, G's size: ", G.numberOfNodes());
 		FruchtermanReingold initLayouter(bottomLeft, topRight, false);
 		initLayouter.draw(G);
-		PostscriptWriter writer(G, true);
-		writer.write("output/test-multi-coarsest-FR.eps");
+		PostscriptWriter writer;
+		writer.write(G, "output/test-multi-coarsest-FR.eps");
 		MaxentStress layouter(bottomLeft, topRight, true);
 		layouter.draw(G);
-		PostscriptWriter writer2(G, true);
-		writer2.write("output/test-multi-coarsest-ME.eps");
+		writer.write(G, "output/test-multi-coarsest-ME.eps");
 	}
 	else {
 		// compute clustering

@@ -106,8 +106,8 @@ TEST_F(PartitioningAlgoGTest, tryMultilevelBalancedLabelPropagationOnRealGraph) 
 
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 	// output to EPS file
-	PostscriptWriter psWriter(airfoil1, false);
-	psWriter.write(partition, "output/airfoil1-mlblp-4p.eps");
+	PostscriptWriter psWriter(false);
+	psWriter.write(airfoil1, partition, "output/airfoil1-mlblp-4p.eps");
 	ClusteringWriter partWriter;
 	partWriter.write(partition, "output/airfoil1-mlblp.4p");
 #endif
