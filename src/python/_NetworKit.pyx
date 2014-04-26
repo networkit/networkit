@@ -119,9 +119,8 @@ cdef class Graph:
 	"""An undirected, optionally weighted graph"""
 	cdef _Graph* _this
 	
-	def __cinit__(self, n=None, weighted=False):
-		if n is not None:
-			self._this = new _Graph(n, weighted)
+	def __cinit__(self, n=0, weighted=False):
+		self._this = new _Graph(n, weighted)
 		
 	# # any _thisect which appears as a return type needs to implement setThis
 	# cdef setThis(self, _Graph other):
