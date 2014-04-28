@@ -11,7 +11,7 @@
 #include "../EigenvectorCentrality.h"
 #include "../PageRank.h"
 #include "../../io/METISGraphReader.h"
-#include "../../io/FastMETISGraphReaderDouble.h"
+#include "../../io/FastMETISGraphReader.h"
 #include "../AreaWeightedCentrality.h"
 
 namespace NetworKit {
@@ -237,13 +237,15 @@ TEST_F(CentralityGTest, benchPageRankCentralityOnRealGraph) {
 }
 
 TEST_F(CentralityGTest, testAWC) {
-	FastMETISGraphReaderDouble reader;
+	FastMETISGraphReader reader;
 	Graph G = reader.read("input/jazz2double.graph");
+	DEBUG("graph read successful");
 	AreaWeightedCentrality awc(G,true);
 	awc.initCoordinates("input/jazz2double.lat","input/jazz2double.lon");
+	DEBUG("coordinates read and precomputed cosine values");
 	awc.run();
 	std::vector<std::pair<node, double> > ranking = awc.ranking();
-	for (index i = 0, end = ranking.size(); i < end; ++i) {
+	for (index i = 0, end = 10; i < end; ++i) {
 		INFO("Node: ", ranking[i].first, " with score ", ranking[i].second);
 	}
 

@@ -9,6 +9,7 @@
 #define AREAWEIGHTEDCENTRALITY_H_
 
 #include "Centrality.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -19,12 +20,18 @@ namespace NetworKit {
 class AreaWeightedCentrality: public NetworKit::Centrality {
 protected:
 	std::vector<double> cosine;
+	std::vector<double> lat;
+	std::vector<double> lon;
 public:
 	AreaWeightedCentrality(const Graph& G, bool normalized=false);
 
 	void run() override;
 
 	void initCoordinates(std::string lat_file, std::string lon_file);
+
+	void writeValuesToCSV( std::string file, double scale=0.0);
+	void writeClusteringToCSV(Partition values, std::string file);
+
 };
 
 } /* namespace NetworKit */

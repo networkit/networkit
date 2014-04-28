@@ -1465,6 +1465,10 @@ cdef extern from "../cpp/centrality/AreaWeightedCentrality.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+	#	void writeCSVD "writeCSV<double>"(vector[double] values, string out_file) except +
+	#	void writeCSVI "writeCSV<int>"(vector[int] values, string out_file) except +
+		void writeClusteringToCSV(_Partition values, string out_file) except +
+		void writeValuesToCSV(string out_file, double scale) except +
 
 cdef class AreaWeightedCentrality:
 	"""
@@ -1490,6 +1494,12 @@ cdef class AreaWeightedCentrality:
 
 	def ranking(self):
 		return self._this.ranking()
+
+	def writeValuesToCSV(self, out_file, scale=0.0):
+		self._this.writeValuesToCSV(stdstring(out_file), scale)
+
+	def writeClusteringToCSV(self, Partition zeta, out_file):
+		self._this.writeClusteringToCSV(zeta._this,stdstring(out_file))
 
 
 # Module: dynamic

@@ -9,7 +9,7 @@
 
 #include "IOGTest.h"
 #include "../../community/GraphClusteringTools.h"
-#include "../FastMETISGraphReaderDouble.h"
+#include "../FastMETISGraphReader.h"
 
 namespace NetworKit {
 
@@ -161,10 +161,10 @@ TEST_F(IOGTest, testMETISGraphWriterWithWeights) {
 
 }
 
-TEST_F(IOGTest, testMETISGraphReaderWithDoubleWeights) {
+TEST_F(IOGTest, testFastMETISGraphReaderWithDoubleWeights) {
 	std::string path = "input/jazz2double.graph";
 
-	FastMETISGraphReaderDouble reader;
+	FastMETISGraphReader reader;
 	Graph G = reader.read(path);
 
 	EXPECT_FALSE(G.isEmpty());
