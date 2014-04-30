@@ -1711,3 +1711,27 @@ cdef class DummySCD:
 	def getTimings(self):
 		return self._this.getTimings()
 
+
+
+cdef extern from "../cpp/scd/PageRankNibble.h":
+	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
+		_PageRankNibble(_Graph G, double, double) except +
+		void run(set[unsigned int]) except +
+		map[node, set[node]] getResult() except +
+		map[node, double] getTimings() except +
+
+cdef class PageRankNibble:
+	cdef _PageRankNibble* _this
+
+	def __cinit__(self, Graph G, alpha, epsilon):
+		self._this = new _PageRankNibble(dereference(G._this), alpha, epsilon)
+
+	def run(self, seeds):
+		self._this.run(seeds)
+
+	def getResult(self):
+		return self._this.getResult()
+
+	def getTimings(self):
+		return self._this.getTimings()
+

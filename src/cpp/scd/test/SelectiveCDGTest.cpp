@@ -13,17 +13,19 @@ namespace NetworKit {
 TEST_F(SCDGTest2, testPageRankNibble) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/hep-th.graph");
-	PageRankNibble prn(G);
+
+	double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi / (225.0 * log(100.0 * sqrt(m)));
+	double epsilon = 1e-5; // changed due to DGleich from: pow(2, exponent) / (48.0 * B);
+	PageRankNibble prn(G, alpha, epsilon);
 	count idBound = G.upperNodeIdBound();
 
 	// parameters
 	node seed = 50;
-	double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi / (225.0 * log(100.0 * sqrt(m)));
-	double epsilon = 1e-5; // changed due to DGleich from: pow(2, exponent) / (48.0 * B);
+
 
 	// run PageRank-Nibble and partition the graph accordingly
 	DEBUG("Call PageRank-Nibble(", seed, ")");
-	std::set<node> cluster = prn.run(seed, alpha, epsilon);
+	std::set<node> cluster = prn.expandSeed({seed});
 
 	// prepare result
 	EXPECT_GT(cluster.size(), 0);

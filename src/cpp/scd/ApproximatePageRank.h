@@ -36,7 +36,7 @@ public:
 	 * @param alpha Loop probability of random walk.
 	 * @param epsilon Error tolerance.
 	 */
-	ApproximatePageRank(Graph& g, double alpha, double epsilon = 1e-12);
+	ApproximatePageRank(const Graph& g, double alpha, double epsilon = 1e-12);
 	virtual ~ApproximatePageRank();
 
 	/**
