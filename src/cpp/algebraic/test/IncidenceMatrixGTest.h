@@ -13,6 +13,8 @@
 #include "../Vector.h"
 #include "../../graph/graph.h"
 
+namespace NetworKit {
+
 class IncidenceMatrixGTest : public testing::Test {
 protected:
 	virtual void SetUp() {
@@ -31,5 +33,8 @@ public:
 	IncidenceMatrixGTest();
 	virtual ~IncidenceMatrixGTest();
 };
+
+
+} /* namespace NetworKit */
 
 #endif /* INCIDENCEMATRIXGTEST_H_ */

@@ -7,6 +7,9 @@
 
 #include "NormalizedLaplacianMatrixGTest.h"
 
+
+namespace NetworKit {
+
 NormalizedLaplacianMatrixGTest::NormalizedLaplacianMatrixGTest() {
 }
 
@@ -56,4 +59,6 @@ TEST(NormalizedLaplacianMatrixGTest, trySmallNormalizedLaplacianMatrix) {
 	EXPECT_EQ(0, normalizedLaplacianMatrix(5,6));
 	EXPECT_EQ(0, normalizedLaplacianMatrix(6,6));
 }
+
+} /* namespace NetworKit */
 

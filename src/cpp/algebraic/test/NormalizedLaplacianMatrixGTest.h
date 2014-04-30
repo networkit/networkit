@@ -12,10 +12,16 @@
 #include "../NormalizedLaplacianMatrix.h"
 #include "../../graph/Graph.h"
 
+
+namespace NetworKit {
+
 class NormalizedLaplacianMatrixGTest : public testing::Test {
 public:
 	NormalizedLaplacianMatrixGTest();
 	virtual ~NormalizedLaplacianMatrixGTest();
 };
+
+
+} /* namespace NetworKit */
 
 #endif /* NORMALIZEDLAPLACIANMATRIXGTEST_H_ */

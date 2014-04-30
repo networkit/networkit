@@ -7,15 +7,17 @@
 
 #include "LaplacianMatrix.h"
 
+namespace NetworKit {
+
 LaplacianMatrix::LaplacianMatrix() : Matrix() {
 }
 
-LaplacianMatrix::LaplacianMatrix(const NetworKit::Graph &graph) : Matrix(graph.numberOfNodes()) {
-	auto rowIterator = [&](const uint64_t &i) {
+LaplacianMatrix::LaplacianMatrix(const Graph &graph) : Matrix(graph.numberOfNodes()) {
+	auto rowIterator = [&](const index &i) {
 		setValue(i, i, graph.degree(i));
-		auto neighborIterator = [&](const uint64_t &j) {
+		auto neighborIterator = [&](const index &j) {
 			if (i != j) {
-				setValue(i, j, -1);
+				setValue(i, j, -1.0);
 			} else {
 				setValue(i, i, (*this)(i, i) - 1.0);
 			}
@@ -29,3 +31,6 @@ LaplacianMatrix::LaplacianMatrix(const NetworKit::Graph &graph) : Matrix(graph.n
 LaplacianMatrix::~LaplacianMatrix() {
 }
 
+
+
+} /* namespace NetworKit */

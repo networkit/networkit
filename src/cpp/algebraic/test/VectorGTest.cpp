@@ -8,6 +8,8 @@
 
 #include "VectorGTest.h"
 
+namespace NetworKit {
+
 VectorGTest::VectorGTest() {
 }
 
@@ -21,14 +23,14 @@ TEST(VectorGTest, tryVectorConstruction) {
 	Vector v2(10, 1.0);
 	ASSERT_EQ(10u, v2.getDimension());
 	for (uint64_t i = 0; i < v2.getDimension(); i++) {
-		ASSERT_EQ(1.0, v2(i));
+		ASSERT_EQ(1.0, v2[i]);
 	}
 
 	Vector v3 = {1.0, 2.0, 3.0, 4.0, 5.0};
 	ASSERT_EQ(5u, v3.getDimension());
 
 	for (uint64_t i = 0; i < v3.getDimension(); i++) {
-		EXPECT_EQ(static_cast<double>((i + 1)), v3(i));
+		EXPECT_EQ(static_cast<double>((i + 1)), v3[i]);
 	}
 }
 
@@ -64,11 +66,11 @@ TEST(VectorGTest, tryLength) {
 TEST(VectorGTest, tryAccessVectorElement) {
 	Vector testVector = {1.0, 2.0, 3.0, 4.0, 5.0};
 
-	double third = testVector(2);
+	double third = testVector[2];
 	EXPECT_EQ(3.0, third);
 
-	testVector(2)++;
-	third = testVector(2);
+	testVector[2]++;
+	third = testVector[2];
 	EXPECT_EQ(4.0, third);
 }
 
@@ -76,7 +78,7 @@ TEST(VectorGTest, tryInnerProduct) {
 	Vector v1 = {1.0, 0.0, -1.0, -5.0, 2.0};
 	Vector v2 = {1.0, 2.0,  3.0,  0.0, 5.0};
 
-	double dotProduct = v1 * v2.transpose();
+	double dotProduct = v1.transpose() * v2;
 	EXPECT_EQ(8.0, dotProduct);
 }
 
@@ -103,10 +105,14 @@ TEST(VectorGTest, tryVectorScalarMultiplication) {
 	ASSERT_EQ(testVector.getDimension(), scalarVector.getDimension());
 
 	for (uint64_t i = 0; i < testVector.getDimension(); i++) {
-		EXPECT_EQ((i + 1) * 2.0, vectorScalar(i));
-		EXPECT_EQ((i + 1) * 2.0, scalarVector(i));
+		EXPECT_EQ((i + 1) * 2.0, vectorScalar[i]);
+		EXPECT_EQ((i + 1) * 2.0, scalarVector[i]);
 	}
 }
+
+// TODO test Vector * Matrix
+
+// TODO test Vector / divisor and Vector /= divisor
 
 TEST(VectorGTest, tryVectorAddition) {
 	Vector v1 = {1.0, 2.0, 3.0, 4.0, 5.0};
@@ -115,12 +121,12 @@ TEST(VectorGTest, tryVectorAddition) {
 	Vector v3 = v1 + v2;
 	ASSERT_EQ(v1.getDimension(), v3.getDimension());
 	for (uint64_t i = 0; i < v3.getDimension(); i++) {
-		EXPECT_EQ(v1(i) + v2(i), v3(i));
+		EXPECT_EQ(v1[i] + v2[i], v3[i]);
 	}
 
 	v1 += v2;
 	for (uint64_t i = 0; i < v1.getDimension(); i++) {
-		EXPECT_EQ(v3(i), v1(i));
+		EXPECT_EQ(v3[i], v1[i]);
 	}
 }
 
@@ -131,12 +137,12 @@ TEST(VectorGTest, tryVectorSubtraction) {
 	Vector v3 = v1 - v2;
 	ASSERT_EQ(v1.getDimension(), v3.getDimension());
 	for (uint64_t i = 0; i < v3.getDimension(); i++) {
-		EXPECT_EQ(v1(i) - v2(i), v3(i));
+		EXPECT_EQ(v1[i] - v2[i], v3[i]);
 	}
 
 	v1 -= v2;
 	for (uint64_t i = 0; i < v1.getDimension(); i++) {
-		EXPECT_EQ(v3(i), v1(i));
+		EXPECT_EQ(v3[i], v1[i]);
 	}
 }
 
@@ -146,14 +152,14 @@ TEST(VectorGTest, tryVectorIterators) {
 	// constant iterators
 	int idx = 0;
 	auto constantTester = [&](const double &element) {
-		EXPECT_EQ(v(idx), element);
+		EXPECT_EQ(v[idx], element);
 		idx++;
 	};
 
 	v.forElements(constantTester);
 
 	auto constantParallelTester = [&](const int &idx, const double &element) {
-		EXPECT_EQ(v(idx), element);
+		EXPECT_EQ(v[idx], element);
 	};
 	v.parallelForElements(constantParallelTester);
 
@@ -164,7 +170,7 @@ TEST(VectorGTest, tryVectorIterators) {
 
 	v.forElements(nonConstantTester);
 	for (uint64_t i = 0; i < v.getDimension(); i++) {
-		EXPECT_EQ((i + 2.0), v(i));
+		EXPECT_EQ((i + 2.0), v[i]);
 	}
 
 	auto nonConstantParallelTester = [](const int &idx, double &element) {
@@ -173,9 +179,12 @@ TEST(VectorGTest, tryVectorIterators) {
 
 	v.parallelForElements(nonConstantParallelTester);
 	for (uint64_t i = 0; i < v.getDimension(); i++) {
-		EXPECT_EQ((i + 3.0), v(i));
+		EXPECT_EQ((i + 3.0), v[i]);
 	}
 }
+
+
+} /* namespace NetworKit */
 
 
 #endif

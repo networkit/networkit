@@ -8,6 +8,8 @@
 
 #include "MatrixGTest.h"
 
+namespace NetworKit {
+
 MatrixGTest::MatrixGTest() {
 }
 
@@ -39,18 +41,18 @@ TEST(MatrixGTest, tryRowAndColumnAccess) {
 	ASSERT_EQ(mat.numberOfColumns(), v.getDimension());
 
 	for (int i = 0; i < 1000; ++i) {
-		EXPECT_EQ(i, v(i));
+		EXPECT_EQ(i, v[i]);
 	}
 
 	v = mat.row(10);
 	ASSERT_EQ(v.getDimension(), mat.numberOfColumns());
-	EXPECT_EQ(42.123, v(10));
+	EXPECT_EQ(42.123, v[10]);
 
 	v = mat.column(10);
 	ASSERT_EQ(mat.numberOfRows(), v.getDimension());
 
-	EXPECT_EQ(10.0, v(3));
-	EXPECT_EQ(42.123, v(10));
+	EXPECT_EQ(10.0, v[3]);
+	EXPECT_EQ(42.123, v[10]);
 
 }
 
@@ -164,6 +166,8 @@ TEST(MatrixGTest, tryScalarMultiplication) {
 	EXPECT_EQ(0.0, mat(55, 199));
 }
 
+// TODO test Matrix / divisor and Matrix /= divisors
+
 TEST(MatrixGTest, tryMatrixVectorProduct) {
 	std::vector<std::pair<int, int> > mPositions;
 	std::vector<double> mValues;
@@ -177,7 +181,7 @@ TEST(MatrixGTest, tryMatrixVectorProduct) {
 	mValues.push_back(42.0);
 
 	Vector vector(10000, 1.0);
-	vector(500) = 3.5;
+	vector[500] = 3.5;
 
 	Matrix mat(10000, mPositions, mValues);
 
@@ -186,13 +190,13 @@ TEST(MatrixGTest, tryMatrixVectorProduct) {
 
 	for (int i = 0; i < 10000; ++i) {
 		if (i != 500 && i != 42 && i != 43) {
-			EXPECT_EQ(i, result(i));
+			EXPECT_EQ(i, result[i]);
 		}
 	}
 
 	EXPECT_EQ(42.0, mat(42, 43));
-	EXPECT_EQ(84.0, result(42));
-	EXPECT_EQ(1750.0, result(500));
+	EXPECT_EQ(84.0, result[42]);
+	EXPECT_EQ(1750.0, result[500]);
 
 
 	std::vector<std::pair<int, int> > positions;
@@ -214,10 +218,10 @@ TEST(MatrixGTest, tryMatrixVectorProduct) {
 	Vector res = mat2 * v;
 	ASSERT_EQ(mat2.numberOfRows(), res.getDimension());
 
-	EXPECT_EQ(14, res(0));
-	EXPECT_EQ(6, res(1));
-	EXPECT_EQ(12, res(2));
-	EXPECT_EQ(-3, res(3));
+	EXPECT_EQ(14, res[0]);
+	EXPECT_EQ(6, res[1]);
+	EXPECT_EQ(12, res[2]);
+	EXPECT_EQ(-3, res[3]);
 }
 
 TEST(MatrixGTest, tryMatrixMultiplication) {
@@ -276,6 +280,9 @@ TEST(MatrixGTest, tryMatrixMultiplication) {
 	EXPECT_EQ(-7, result(3,2));
 	EXPECT_EQ(17, result(3,3));
 }
+
+
+} /* namespace NetworKit */
 
 #endif
 

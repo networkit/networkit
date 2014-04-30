@@ -12,10 +12,16 @@
 #include "../LaplacianMatrix.h"
 #include "../../graph/Graph.h"
 
+
+namespace NetworKit {
+
 class LaplacianMatrixGTest : public testing::Test {
 public:
 	LaplacianMatrixGTest();
 	virtual ~LaplacianMatrixGTest();
 };
+
+
+} /* namespace NetworKit */
 
 #endif /* LAPLACIANMATRIXGTEST_H_ */

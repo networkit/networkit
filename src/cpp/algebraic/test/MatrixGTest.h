@@ -20,11 +20,17 @@
 #include <vector>
 #include <utility>
 
+
+namespace NetworKit {
+
 class MatrixGTest : public testing::Test {
 public:
 	MatrixGTest();
 	virtual ~MatrixGTest();
 };
+
+
+} /* namespace NetworKit */
 
 #endif /* MATRIXGTEST_H_ */
 

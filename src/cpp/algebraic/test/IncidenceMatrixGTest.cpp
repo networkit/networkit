@@ -7,6 +7,9 @@
 
 #include "IncidenceMatrixGTest.h"
 
+
+namespace NetworKit {
+
 IncidenceMatrixGTest::IncidenceMatrixGTest() {
 }
 
@@ -38,11 +41,11 @@ TEST_F(IncidenceMatrixGTest, tryRowAndColumnAccess) {
 	Vector row0 = mat.row(0);
 	ASSERT_EQ(row0.getDimension(), mat.numberOfColumns());
 
-	EXPECT_EQ(1.0, row0(0));
-	EXPECT_EQ(1.0, row0(1));
-	EXPECT_EQ(1.0, row0(2));
+	EXPECT_EQ(1.0, row0[0]);
+	EXPECT_EQ(1.0, row0[1]);
+	EXPECT_EQ(1.0, row0[2]);
 	for (uint64_t j = 3; j < row0.getDimension(); ++j) {
-		EXPECT_EQ(0.0, row0(j));
+		EXPECT_EQ(0.0, row0[j]);
 	}
 
 	for (uint64_t j = 0; j < 5; ++j) {
@@ -51,7 +54,7 @@ TEST_F(IncidenceMatrixGTest, tryRowAndColumnAccess) {
 
 		double sum = 0.0;
 		for (uint64_t i = 0; i < column.getDimension(); ++i) {
-			sum += column(i);
+			sum += column[i];
 		}
 
 		EXPECT_EQ(0.0, sum);
@@ -61,7 +64,7 @@ TEST_F(IncidenceMatrixGTest, tryRowAndColumnAccess) {
 	ASSERT_EQ(column5.getDimension(), mat.numberOfRows());
 
 	for (uint64_t i = 0; i < column5.getDimension(); ++i) {
-		EXPECT_EQ(0.0, column5(i));
+		EXPECT_EQ(0.0, column5[i]);
 	}
 }
 
@@ -72,10 +75,13 @@ TEST_F(IncidenceMatrixGTest, tryMatrixVectorProduct) {
 	Vector result = mat * v;
 	ASSERT_EQ(result.getDimension(), mat.numberOfRows());
 
-	EXPECT_EQ(24, result(0));
-	EXPECT_EQ(-12, result(1));
-	EXPECT_EQ(25, result(2));
-	EXPECT_EQ(-37, result(3));
-	EXPECT_EQ(0, result(4));
+	EXPECT_EQ(24, result[0]);
+	EXPECT_EQ(-12, result[1]);
+	EXPECT_EQ(25, result[2]);
+	EXPECT_EQ(-37, result[3]);
+	EXPECT_EQ(0, result[4]);
 }
+
+
+} /* namespace NetworKit */
 

@@ -15,11 +15,16 @@
 #include "../../auxiliary/Log.h"
 #include <cmath>
 
+namespace NetworKit {
+
 class VectorGTest : public testing::Test {
 public:
 	VectorGTest();
 	virtual ~VectorGTest();
 };
+
+
+} /* namespace NetworKit */
 
 #endif /* VECTORGTEST_H_ */
 

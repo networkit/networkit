@@ -11,11 +11,19 @@
 #include "Matrix.h"
 #include "../graph/Graph.h"
 
+namespace NetworKit {
+
 class AdjacencyMatrix : public Matrix {
 public:
-	AdjacencyMatrix();
-	AdjacencyMatrix(const NetworKit::Graph &graph);
+	/**
+	 * Constructs the AdjacencyMatrix of @a graph.
+	 */
+	AdjacencyMatrix(const Graph &graph);
+
+	/** Default constructor */
 	virtual ~AdjacencyMatrix();
 };
+
+} /* namespace NetworKit */
 
 #endif /* ADJACENCYMATRIX_H_ */
