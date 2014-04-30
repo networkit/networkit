@@ -27,6 +27,7 @@ import properties
 import engineering
 import toolbox
 import dynamic
+import selectivecommunity
 
 try:
 	import viztools

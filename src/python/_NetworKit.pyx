@@ -18,7 +18,7 @@ from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.string cimport string
 from unordered_set cimport unordered_set
-# FIXME: from libcpp.unordered_map import unordered_map
+from unordered_map cimport unordered_map
 
 # NetworKit typedefs
 ctypedef uint64_t count
@@ -1683,4 +1683,31 @@ cdef class GraphUpdater:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_stream)
 
+
+
+
+# module selectivecommunity
+
+
+cdef extern from "../cpp/scd/DummySCD.h":
+	cdef cppclass _DummySCD "NetworKit::DummySCD":
+		_DummySCD(_Graph G) except +
+		void run(set[unsigned int]) except +
+		map[node, set[node]] getResult() except +
+		map[node, double] getTimings() except +
+
+cdef class DummySCD:
+	cdef _DummySCD* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _DummySCD(dereference(G._this))
+
+	def run(self, seeds):
+		self._this.run(seeds)
+
+	def getResult(self):
+		return self._this.getResult()
+
+	def getTimings(self):
+		return self._this.getTimings()
 

@@ -24,21 +24,28 @@ public:
 
 	virtual ~SelectiveCommunityDetector();
 
-	virtual void run(std::unordered_set<node> seeds) = 0;
+	virtual void run(std::set<unsigned int> seeds) = 0;
+
+	// FIXME: resolve Cython issue that does not allow a uint64_t as content type of a container as input
 
 	/** 
 	 * @return a mapping from seed node to community (as a set of nodes)
 	 */
-	virtual std::unordered_map<node, std::unordered_set<node> > getResult() = 0;
+	virtual std::map<node, std::set<node> > getResult();
 
 	/** 
 	 * @return time in milliseconds spent on processing each seed node
 	 */
-	virtual std::unordered_map<node, double> getTimings() = 0;
+	virtual std::map<node, double> getTimings();
 
 public:
 
 	const Graph& G;	//!< the input graph
+
+protected:
+
+	std::map<node, std::set<node> > result;
+	std::map<node, double> timings;
 };
 
 } /* namespace NetworKit */
