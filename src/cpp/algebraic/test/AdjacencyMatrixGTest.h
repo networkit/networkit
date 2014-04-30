@@ -13,10 +13,16 @@
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
 
+
+namespace NetworKit {
+
 class AdjacencyMatrixGTest : public testing::Test {
 public:
 	AdjacencyMatrixGTest();
 	virtual ~AdjacencyMatrixGTest();
 };
+
+
+} /* namespace NetworKit */
 
 #endif /* ADJACENCYMATRIXGTEST_H_ */

@@ -7,6 +7,8 @@
 
 #include "AdjacencyMatrixGTest.h"
 
+namespace NetworKit {
+
 AdjacencyMatrixGTest::AdjacencyMatrixGTest() {
 }
 
@@ -69,4 +71,7 @@ TEST(AdjacencyMatrixGTest, tryAdjacencyMatrixOfLesmisGraph) {
 
 	mat.forElementsInRowOrder(testMatrix);
 }
+
+
+} /* namespace NetworKit */
 

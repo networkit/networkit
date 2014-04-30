@@ -7,17 +7,18 @@
 
 #include "AdjacencyMatrix.h"
 
-AdjacencyMatrix::AdjacencyMatrix() {
-}
+namespace NetworKit {
 
-AdjacencyMatrix::AdjacencyMatrix(const NetworKit::Graph &graph) : Matrix(graph.numberOfNodes()) {
-	auto edgeIterator = [&](const uint64_t &i, const uint64_t &j) {
+AdjacencyMatrix::AdjacencyMatrix(const Graph &graph) : Matrix(graph.numberOfNodes()) {
+	graph.forEdges([&](const node &i, const node &j) {
 		setValue(i, j, 1.0);
-	};
-
-	graph.forEdges(edgeIterator);
+	});
 }
 
 AdjacencyMatrix::~AdjacencyMatrix() {
 }
+
+
+
+} /* namespace NetworKit */
 

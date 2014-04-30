@@ -13,20 +13,48 @@
 #include <cstdint>
 #include <cmath>
 
+namespace NetworKit {
+
 // forward declaration of Matrix class
 class Matrix;
 
+/**
+ * The Vector class represents a basic vector with double coefficients.
+ */
 class Vector {
 private:
 	std::vector<double> values;
 	bool transposed;
 
 public:
+	/** Default constructor */
 	Vector();
-	Vector(const uint64_t dimension, const double initialValue, const bool transpose = false);
+
+	/**
+	 * Constructs the Vector with @a dimension elements with value @a initialValue.
+	 * @param dimension The dimension of this vector.
+	 * @param initialValue All coefficients will be initialized to @a initialValue.
+	 * @param transpose Indicates whether this vector is transposed (row vector) or not (column vector).
+	 */
+	Vector(const uint64_t dimension, const double initialValue = 0, const bool transpose = false);
+
+	/**
+	 * Constructs the Vector with the contents of @a values.
+	 * @param values The values of this Vector.
+	 * @param transpose Indicates whether this vector is transposed (row vector) or not (column vector).
+	 */
 	Vector(const std::vector<double> &values, const bool transpose = false);
+
+	/**
+	 * Constructs the Vector from the contents of the initializer list @a list.
+	 * @param list The initializer list.
+	 */
 	Vector(const std::initializer_list<double> &list);
-	Vector(const Vector &other, const bool transpose = false);
+
+	/** Copy constructor */
+	Vector(const Vector &other);
+
+	/** Destructor */
 	virtual ~Vector();
 
 	/**
@@ -57,7 +85,7 @@ public:
 	/**
 	 * @return Reference to the element at index @a idx.
 	 */
-	inline double& operator()(const unsigned int &idx) {
+	inline double& operator[](const uint64_t &idx) {
 		if (idx >= values.size()) {
 			throw std::out_of_range("index out of range");
 		} else {
@@ -68,7 +96,7 @@ public:
 	/**
 	 * @return Constant reference to the element at index @a idx.
 	 */
-	inline const double& operator()(const unsigned int &idx) const {
+	inline const double& operator[](const uint64_t &idx) const {
 		if (idx >= values.size()) {
 			throw std::runtime_error("index out of range");
 		} else {
@@ -78,29 +106,18 @@ public:
 
 	/**
 	 * Compares this vector and @a other element-wise.
-	 * @return true, if this vector is element-wise equal to @a other, otherwise false.
+	 * @return True, if this vector is element-wise equal to @a other, otherwise false.
 	 */
 	bool operator==(const Vector &other) const;
 
 	/**
 	 * Compares this vector and @a other element-wise.
-	 * @return true, if this vector is element-wise unequal to @a other, otherwise false.
+	 * @return True, if this vector is element-wise unequal to @a other, otherwise false.
 	 */
 	bool operator!=(const Vector &other) const;
 
-	/**
-	 * Computes the outer product of this vector and @a other.
-	 * Note that the dimensions must match and that @a other must be transposed.
-	 * @return The result of the outer product.
-	 */
-//	Matrix outerProduct(const Vector &other) const;
 
-	/**
-	 * Computes the outer product of vectors @a v1 and @a v2.
-	 * Note that the dimensions must match and that @a v2 must be transposed.
-	 * @return The result of the outer product.
-	 */
-	static Matrix outerProduct(const Vector &v1, const Vector &v2);
+	// TODO: outer product, but this only makes sense with non-symmetric matrix support.
 
 	/**
 	 * Computes the inner product (dot product) of the vectors @a v1 and @a v2.
@@ -110,13 +127,18 @@ public:
 
 	/**
 	 * Computes the inner product (dot product) of this vector and @a other.
-	 * Note that the dimensions must match and that this vector must be transposed.
 	 * @return The result of the inner product.
 	 */
 	double operator*(const Vector &other) const;
 
 	/**
-	 * Multiplies this vector with a scalar specified in @a scalar and returns the result.
+	 * Multiplies this vector with @a matrix and returns the result.
+	 * @return The result of multiplying this vector with @a matrix.
+	 */
+	Vector operator*(const Matrix &matrix) const;
+
+	/**
+	 * Multiplies this vector with a scalar specified in @a scalar and returns the result in a new vector.
 	 * @return The result of multiplying this vector with @a scalar.
 	 */
 	Vector operator*(const double &scalar) const;
@@ -126,6 +148,19 @@ public:
 	 * @return Reference to this vector.
 	 */
 	Vector& operator*=(const double &scalar);
+
+
+	/**
+	 * Divides this vector by a divisor specified in @a divisor and returns the result in a new vector.
+	 * @return The result of dividing this vector by @a divisor.
+	 */
+	Vector operator/(const double &divisor) const;
+
+	/**
+	 * Divides this vector by a divisor specified in @a divisor.
+	 * @return Reference to this vector.
+	 */
+	Vector& operator/=(const double &divisor);
 
 	/**
 	 * Adds this vector to @a other and returns the result.
@@ -170,39 +205,41 @@ public:
 	 * Iterate in parallel over all elements of the vector and call handler (lambda closure).
 	 *
 	 */
-	template<typename L> void parallelForElements(L handle); //TODO: Is this iterator useful for anything?
+	template<typename L> void parallelForElements(L handle);
 
 	/**
 	 * Iterate in parallel over all elements of the vector and call handler (lambda closure).
 	 */
-	template<typename L> void parallelForElements(L handle) const; //TODO: Is this iterator useful for anything?
+	template<typename L> void parallelForElements(L handle) const;
 
 };
+
+} /* namespace NetworKit */
 
 /**
  * Multiplies the vector @a v with a scalar specified in @a scalar and returns the result.
  * @return The result of multiplying this vector with @a scalar.
  */
-inline Vector operator*(const double &scalar, const Vector &v) {
+inline NetworKit::Vector operator*(const double &scalar, const NetworKit::Vector &v) {
 	return v.operator*(scalar);
 }
 
 template<typename L>
-inline void Vector::forElements(L handle) {
+inline void NetworKit::Vector::forElements(L handle) {
 	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(values[i]);
 	}
 }
 
 template<typename L>
-inline void Vector::forElements(L handle) const {
+inline void NetworKit::Vector::forElements(L handle) const {
 	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(values[i]);
 	}
 }
 
 template<typename L>
-inline void Vector::parallelForElements(L handle) {
+inline void NetworKit::Vector::parallelForElements(L handle) {
 #pragma omp parallel for
 	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(i, values[i]);
@@ -210,7 +247,7 @@ inline void Vector::parallelForElements(L handle) {
 }
 
 template<typename L>
-inline void Vector::parallelForElements(L handle) const {
+inline void NetworKit::Vector::parallelForElements(L handle) const {
 #pragma omp parallel for
 	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(i, values[i]);

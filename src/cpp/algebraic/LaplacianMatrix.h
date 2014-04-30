@@ -10,16 +10,25 @@
 
 #include "Matrix.h"
 #include "../graph/Graph.h"
+#include <cmath>
+
+namespace NetworKit {
 
 class LaplacianMatrix : public Matrix {
 public:
 	LaplacianMatrix();
 
 	/**
-	 * Constructs a Laplacian matrix for the given @a graph.
+	 * Constructs the LaplacianMatrix for the given @a graph.
 	 */
-	LaplacianMatrix(const NetworKit::Graph &graph);
+	LaplacianMatrix(const Graph &graph);
+
+	/** Default constructor */
 	virtual ~LaplacianMatrix();
+
 };
+
+
+} /* namespace NetworKit */
 
 #endif /* LAPLACIANMATRIX_H_ */

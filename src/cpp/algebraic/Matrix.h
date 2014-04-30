@@ -13,17 +13,51 @@
 #include "../auxiliary/Log.h"
 #include "Vector.h"
 
+namespace NetworKit {
+
+/**
+ * The matrix class represents a symmetric Matrix which is optimized for sparse matrices.
+ */
 class Matrix {
 private:
-	NetworKit::Graph graph;
+	Graph graph;
 
 public:
+	/** Default constructor */
 	Matrix();
+
+	/**
+	 * Constructs the Matrix with size @a dimension x @a dimension.
+	 * @param dimension Defines how many rows and columns this matrix has.
+	 */
 	Matrix(const uint64_t &dimension);
-	Matrix(const uint64_t &dimension, const std::vector<std::pair<int, int> > &positions, const std::vector<double> &values);
-	Matrix(const uint64_t &dimension, const std::vector<std::pair<NetworKit::node, NetworKit::node> > &positions, const std::vector<double> &values);
+
+	/**
+	 * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
+	 * @param dimension Defines how many rows and columns this matrix has.
+	 * @param positions Defines the position (i,j) of each element specified in @a values.
+	 * @param values The values of the matrix elements.
+	 */
+	Matrix(const uint64_t &dimension, const std::vector<std::pair<int, int>> &positions, const std::vector<double> &values);
+
+	/**
+	 * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
+	 * @param dimension Defines how many rows and columns this matrix has.
+	 * @param positions Defines the position (i,j) of each element specified in @a values.
+	 * @param values The values of the matrix elements.
+	 */
+	Matrix(const uint64_t &dimension, const std::vector<std::pair<node, node>> &positions, const std::vector<double> &values);
+
+	/**
+	 * Constructs the Matrix with the columns in @a columns.
+	 * @param columns The columns of the matrix. All columns must have the same dimension.
+	 */
 	Matrix(const std::vector<Vector> &columns);
+
+	/** Copy constructor */
 	Matrix(const Matrix &other);
+
+	/** Destructor */
 	virtual ~Matrix();
 
 	/**
@@ -39,37 +73,34 @@ public:
 	/**
 	 * @return Value at matrix position (i,j).
 	 */
-	double operator()(const uint64_t &i, const uint64_t &j) const;
+	double operator()(const index &i, const index &j) const;
 
-	void setValue(const uint64_t &i, const uint64_t &j, const double &value);
+	void setValue(const index &i, const index &j, const double &value);
 
 	/**
 	 * @return Row @a i of this matrix as vector.
 	 */
-	Vector row(const uint64_t &i) const;
+	Vector row(const index &i) const;
 
 	/**
 	 * @return Column @a j of this matrix as vector.
 	 */
-	Vector column(const uint64_t &j) const;
+	Vector column(const index &j) const;
 
 	/**
 	 * Adds this matrix to @a other and returns the result.
-	 * Note that the dimensions of the matrices have to be the same.
 	 * @return The sum of this matrix and @a other.
 	 */
 	Matrix operator+(const Matrix &other) const;
 
 	/**
 	 * Adds @a other to this matrix.
-	 * Note that the dimensions of the matrices have to be the same.
 	 * @return Reference to this matrix.
 	 */
 	Matrix& operator+=(const Matrix &other);
 
 	/**
 	 * Subtracts @a other from this matrix and returns the result.
-	 * Note that the dimensions of the matrices have to be the same.
 	 * @return The difference of this matrix and @a other.
 	 *
 	 */
@@ -77,7 +108,6 @@ public:
 
 	/**
 	 * Subtracts @a other from this matrix.
-	 * Note that the dimensions of the matrices have to be the same.
 	 * @return Reference to this matrix.
 	 */
 	Matrix& operator-=(const Matrix &other);
@@ -96,18 +126,27 @@ public:
 
 	/**
 	 * Multiplies this matrix with @a vector and returns the result.
-	 * Note that the dimensions must match, i.e. numberOfColumns must be equal
-	 * to @a vector dimension.
 	 * @return The result of multiplying this matrix with @a vector.
 	 */
 	Vector operator*(const Vector &vector) const;
 
 	/**
-	 * Multiplies this matrix with @a other and returns the result.
-	 * Note that the dimensions must match, i.e. numberOfColumns must be equal
-	 * to numberOfRows of @a other
+	 * Multiplies this matrix with @a other and returns the result in a new matrix.
+	 * @return The result of multiplying this matrix with @a other.
 	 */
 	Matrix operator*(const Matrix &other) const;
+
+	/**
+	 * Divides this matrix by a divisor specified in @a divisor and returns the result in a new matrix.
+	 * @return The result of dividing this matrix by @a divisor.
+	 */
+	Matrix operator/(const double &divisor) const;
+
+	/**
+	 * Divides this matrix by a divisor specified in @a divisor.
+	 * @return Reference to this matrix.
+	 */
+	Matrix& operator/=(const double &divisor);
 
 
 	/**
@@ -126,8 +165,11 @@ public:
 	template<typename L> void parallelForNonZeroElementsInRowOrder(L handle);
 };
 
+
+} /* namespace NetworKit */
+
 template<typename L>
-inline void Matrix::forElementsInRowOrder(L handle) const {
+inline void NetworKit::Matrix::forElementsInRowOrder(L handle) const {
 	auto rowIterator = [&](const uint64_t &row) {
 		auto columnIterator = [&](const uint64_t &column) {
 			handle(row, column, (*this)(row, column));
@@ -140,7 +182,7 @@ inline void Matrix::forElementsInRowOrder(L handle) const {
 }
 
 template<typename L>
-inline void Matrix::parallelForNonZeroElementsInRowOrder(L handle) const {
+inline void NetworKit::Matrix::parallelForNonZeroElementsInRowOrder(L handle) const {
 	auto rowHandle = [&](const NetworKit::node &i) {
 		auto elementHandle = [&](const NetworKit::node &j, double value) {
 			handle(i, j, value);
@@ -153,7 +195,7 @@ inline void Matrix::parallelForNonZeroElementsInRowOrder(L handle) const {
 }
 
 template<typename L>
-inline void Matrix::parallelForNonZeroElementsInRowOrder(L handle) {
+inline void NetworKit::Matrix::parallelForNonZeroElementsInRowOrder(L handle) {
 	auto rowHandle = [&](const NetworKit::node &i) {
 		auto elementHandle = [&](const NetworKit::node &j, double value) {
 			handle(i, j, value);
@@ -164,5 +206,6 @@ inline void Matrix::parallelForNonZeroElementsInRowOrder(L handle) {
 
 	graph.parallelForNodes(rowHandle);
 }
+
 
 #endif /* MATRIX_H_ */

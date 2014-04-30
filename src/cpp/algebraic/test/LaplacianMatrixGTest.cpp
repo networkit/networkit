@@ -7,6 +7,8 @@
 
 #include "LaplacianMatrixGTest.h"
 
+namespace NetworKit {
+
 LaplacianMatrixGTest::LaplacianMatrixGTest() {
 }
 
@@ -50,4 +52,8 @@ TEST(LaplacianMatrixGTest, trySmallLaplacianMatrix) {
 	EXPECT_EQ(0, laplacianMatrix(4,5));
 	EXPECT_EQ(1, laplacianMatrix(5,5));
 }
+
+
+
+} /* namespace NetworKit */
 

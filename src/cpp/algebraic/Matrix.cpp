@@ -7,13 +7,15 @@
 
 #include "Matrix.h"
 
+namespace NetworKit {
+
 Matrix::Matrix() : graph(0, true) {
 }
 
 Matrix::Matrix(const uint64_t &dimension) : graph(dimension, true) {
 }
 
-Matrix::Matrix(const uint64_t &dimension, const std::vector<std::pair<int, int> > &positions,
+Matrix::Matrix(const uint64_t &dimension, const std::vector<std::pair<int, int>> &positions,
 				const std::vector<double> &values) : graph(dimension, true) {
 	assert(positions.size() == values.size());
 
@@ -28,12 +30,12 @@ Matrix::Matrix(const uint64_t &dimension, const std::vector<std::pair<int, int> 
 	}
 }
 
-Matrix::Matrix(const uint64_t &dimension, const std::vector<std::pair<NetworKit::node, NetworKit::node> > &positions, const std::vector<double> &values) : graph(dimension, true) {
+Matrix::Matrix(const uint64_t &dimension, const std::vector<std::pair<node, node>> &positions, const std::vector<double> &values) : graph(dimension, true) {
 	assert(positions.size() == values.size());
 
 	for (size_t k = 0; k < positions.size(); ++k) {
-		std::pair<NetworKit::node, NetworKit::node> pos = positions.at(k);
-		assert(pos.first < static_cast<NetworKit::node>(dimension));
+		std::pair<node, node> pos = positions.at(k);
+		assert(pos.first < dimension);
 		if (!graph.hasEdge(pos.first,pos.second)) { // symmetric matrix
 			graph.addEdge(pos.first, pos.second, values.at(k));
 		}
@@ -52,7 +54,7 @@ Matrix::Matrix(const std::vector<Vector> &columns) : graph(columns.size(), true)
 
 	for (uint64_t j = 0; j < dimension; ++j) {
 		for (uint64_t i = 0; i < dimension; ++i) {
-			double value = columns.at(j)(i);
+			double value = columns.at(j)[i];
 			if (value != 0.0 && !graph.hasEdge(i, j)) { // do not store 0 values, symmetric matrix
 				graph.addEdge(i, j, value);
 			}
@@ -74,7 +76,7 @@ uint64_t Matrix::numberOfColumns() const {
 	return numberOfRows();
 }
 
-double Matrix::operator()(const uint64_t &i, const uint64_t &j) const {
+double Matrix::operator()(const index &i, const index &j) const {
 	if (i >= numberOfRows() || j >= numberOfColumns()) {
 		throw std::out_of_range("at least one index out of range");
 	}
@@ -82,28 +84,24 @@ double Matrix::operator()(const uint64_t &i, const uint64_t &j) const {
 	return graph.weight(i,j);
 }
 
-void Matrix::setValue(const uint64_t &i, const uint64_t &j, const double &value) {
+void Matrix::setValue(const index &i, const index &j, const double &value) {
 	graph.setWeight(i, j, value);
 }
 
-Vector Matrix::row(const uint64_t &i) const {
+Vector Matrix::row(const index &i) const {
 	std::vector<double> values(numberOfColumns(), 0.0);
-	auto setElements = [&](NetworKit::node i, NetworKit::node j, double value) {
+	graph.forWeightedEdgesOf(i, [&](node i, node j, double value) {
 		values[j] = value;
-	};
-
-	graph.forWeightedEdgesOf(i, setElements);
+	});
 
 	return Vector(values);
 }
 
-Vector Matrix::column(const uint64_t &j) const {
+Vector Matrix::column(const index &j) const {
 	std::vector<double> values(numberOfRows(), 0.0);
-	auto setElements = [&](NetworKit::node i) {
+	graph.parallelForNodes([&](node i) {
 		values[i] = graph.weight(i, j);
-	};
-
-	graph.parallelForNodes(setElements);
+	});
 
 	return Vector(values);
 }
@@ -117,13 +115,11 @@ Matrix& Matrix::operator+=(const Matrix &other) {
 		throw std::runtime_error("dimensions of matrices do not match");
 	}
 
-	auto add = [&](NetworKit::node i, NetworKit::node j, double value) {
+	other.parallelForNonZeroElementsInRowOrder([&](node i, node j, double value) {
 		if (i >= j) { // symmetric matrix
 			graph.increaseWeight(i, j, value);
 		}
-	};
-
-	other.parallelForNonZeroElementsInRowOrder(add);
+	});
 
 	return *this;
 }
@@ -137,12 +133,11 @@ Matrix& Matrix::operator-=(const Matrix &other) {
 		throw std::runtime_error("dimensions of matrices do not match");
 	}
 
-	auto subtract = [&](NetworKit::node i, NetworKit::node j, double value) {
+	other.parallelForNonZeroElementsInRowOrder([&](node i, node j, double value) {
 		if (i >= j) { // symmetric matrix
 			graph.increaseWeight(i, j, -value);
 		}
-	};
-	other.parallelForNonZeroElementsInRowOrder(subtract);
+	});
 
 	return *this;
 }
@@ -152,25 +147,25 @@ Matrix Matrix::operator*(const double &scalar) const {
 }
 
 Matrix& Matrix::operator*=(const double &scalar) {
-	auto multiplyElement = [&](NetworKit::node i, NetworKit::node j, double value) {
+	graph.parallelForWeightedEdges([&](node i, node j, double value) {
 		graph.setWeight(i, j, value * scalar);
-	};
-	graph.parallelForWeightedEdges(multiplyElement);
+	});
 
 	return *this;
 }
 
 Vector Matrix::operator*(const Vector &vector) const {
-	if (numberOfColumns() != vector.getDimension()) {
+	if (vector.isTransposed() && numberOfColumns() != 1) {
+		throw std::runtime_error("vector is not transposed correctly");
+	} else if (numberOfColumns() != vector.getDimension()) {
 		throw std::runtime_error("dimensions of matrix and vector do not match");
 	}
 
 	Vector result(numberOfRows(), 0.0);
 
-	auto multiplyElement = [&](NetworKit::node i, NetworKit::node j, double value) {
-		result(i) += value * vector(j);
-	};
-	parallelForNonZeroElementsInRowOrder(multiplyElement);
+	parallelForNonZeroElementsInRowOrder([&](node i, node j, double value) {
+		result[i] += value * vector[j];
+	});
 
 	return result;
 }
@@ -182,10 +177,21 @@ Matrix Matrix::operator*(const Matrix &other) const {
 
 	std::vector<Vector> columns(other.numberOfColumns());
 #pragma omp parallel for
-	for (uint64_t j = 0; j < other.numberOfColumns(); ++j) {
+	for (count j = 0; j < other.numberOfColumns(); ++j) {
 		columns[j] = (*this * other.column(j));
 	}
 
 	return Matrix(columns);
 }
 
+Matrix Matrix::operator/(const double &divisor) const {
+	return Matrix(*this) /= divisor;
+}
+
+Matrix& Matrix::operator/=(const double &divisor) {
+	return *this *= 1 / divisor;
+}
+
+
+
+} /* namespace NetworKit */

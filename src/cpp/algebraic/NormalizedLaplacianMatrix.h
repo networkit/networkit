@@ -10,17 +10,23 @@
 
 #include "Matrix.h"
 #include "../graph/Graph.h"
-#include <math.h>
+#include <cmath>
+
+namespace NetworKit {
 
 class NormalizedLaplacianMatrix : public Matrix {
 public:
 	NormalizedLaplacianMatrix();
 
 	/**
-	 * Constructs a normalized Laplacian matrix for the given @a graph.
+	 * Constructs the NormalizedLaplacianMatrix for the given @a graph.
 	 */
-	NormalizedLaplacianMatrix(const NetworKit::Graph &graph);
+	NormalizedLaplacianMatrix(const Graph &graph);
+
+	/** Default constructor */
 	virtual ~NormalizedLaplacianMatrix();
 };
+
+} /* namespace NetworKit */
 
 #endif /* NORMALIZEDLAPLACIANMATRIX_H_ */

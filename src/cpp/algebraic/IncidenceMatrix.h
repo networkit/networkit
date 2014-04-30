@@ -11,40 +11,48 @@
 #include "../graph/Graph.h"
 #include "Vector.h"
 
-class IncidenceMatrix {
-private:
-	NetworKit::Graph &graph;
+namespace NetworKit {
 
-	typedef std::pair<uint64_t, uint64_t> Edge;
-	double value(const uint64_t &node, const Edge &edge) const;
+class IncidenceMatrix {
+	typedef std::pair<node, node> Edge;
+
+private:
+	Graph &graph;
+	double value(const node &node, const Edge &edge) const;
+
 public:
-	IncidenceMatrix(NetworKit::Graph &graph);
+	/**
+	 * Constructs the IncidenceMatrix of @a graph.
+	 */
+	IncidenceMatrix(Graph &graph);
+
+	/** Default constructor */
 	virtual ~IncidenceMatrix();
 
 	/**
 	 * @return Number of rows.
 	 */
-	uint64_t numberOfRows() const;
+	count numberOfRows() const;
 
 	/**
 	 * @return Number of columns.
 	 */
-	uint64_t numberOfColumns() const;
+	count numberOfColumns() const;
 
 	/**
 	 * @return Value at matrix position (i,j).
 	 */
-	double operator()(const uint64_t &i, const uint64_t &j) const;
+	double operator()(const index &i, const index &j) const;
 
 	/**
 	 * @return Row @a i of this matrix as vector.
 	 */
-	Vector row(const uint64_t &i) const;
+	Vector row(const index &i) const;
 
 	/**
 	 * @return Column @a j of this matrix as vector.
 	 */
-	Vector column(const uint64_t &j) const;
+	Vector column(const index &j) const;
 
 	/**
 	 * Multiplies this matrix with @a vector and returns the result.
@@ -52,5 +60,7 @@ public:
 	 */
 	Vector operator*(const Vector &vector) const;
 };
+
+} /* namespace NetworKit */
 
 #endif /* INCIDENCEMATRIX_H_ */

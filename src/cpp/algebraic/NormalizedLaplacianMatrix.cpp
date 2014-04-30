@@ -7,29 +7,33 @@
 
 #include "NormalizedLaplacianMatrix.h"
 
+namespace NetworKit {
+
 NormalizedLaplacianMatrix::NormalizedLaplacianMatrix() : Matrix() {
 }
 
-NormalizedLaplacianMatrix::NormalizedLaplacianMatrix(const NetworKit::Graph &graph) : Matrix(graph.numberOfNodes()) {
-	auto rowIterator = [&](const uint64_t &i) {
-			auto neighborIterator = [&](const uint64_t &j) {
-				if (i != j) {
-					uint64_t iDegree = graph.degree(i);
-					uint64_t jDegree = graph.degree(j);
-					double value = -1.0 / (sqrt(iDegree * jDegree));
+NormalizedLaplacianMatrix::NormalizedLaplacianMatrix(const Graph &graph) : Matrix(graph.numberOfNodes()) {
+	auto rowIterator = [&](const index &i) {
+		auto neighborIterator = [&](const index &j) {
+			if (i != j) {
+				count iDegree = graph.degree(i);
+				count jDegree = graph.degree(j);
+				double value = -1.0 / (sqrt(iDegree * jDegree));
 
-					setValue(i, j, value);
-				}
-			};
-			graph.forNeighborsOf(i, neighborIterator);
-
-			if (graph.degree(i) != 0) {
-				setValue(i, i, 1.0);
+				setValue(i, j, value);
 			}
 		};
+		graph.forNeighborsOf(i, neighborIterator);
 
-		graph.forNodes(rowIterator);
+		if (graph.degree(i) != 0) {
+			setValue(i, i, 1.0);
+		}
+	};
+
+	graph.forNodes(rowIterator);
 }
 
 NormalizedLaplacianMatrix::~NormalizedLaplacianMatrix() {
 }
+
+} /* namespace NetworKit */
