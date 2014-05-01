@@ -84,7 +84,7 @@ std::set<node> PageRankNibble::expandSeed(node seed) {
 	return cluster;
 }
 
-void PageRankNibble::run(std::set<unsigned int> seeds) {
+void PageRankNibble::run(std::set<unsigned int>& seeds) {
 	result.clear();
 	for (auto seed : seeds) {
 		auto community = expandSeed(seed);

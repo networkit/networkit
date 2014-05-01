@@ -24,7 +24,7 @@ public:
 
 	virtual ~SelectiveCommunityDetector();
 
-	virtual void run(std::set<unsigned int> seeds) = 0;
+	virtual void run(std::set<unsigned int>& seeds) = 0;
 
 	// FIXME: resolve Cython issue that does not allow a uint64_t as content type of a container as input
 

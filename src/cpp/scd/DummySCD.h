@@ -19,7 +19,7 @@ public:
 
 	DummySCD(const Graph& G);
 
-	void run(std::set<unsigned int> seeds) override;
+	void run(std::set<unsigned int>& seeds) override;
 
 };
 
