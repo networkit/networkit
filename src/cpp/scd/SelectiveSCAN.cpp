@@ -18,7 +18,7 @@ SelectiveSCAN::~SelectiveSCAN() {
 	// TODO Auto-generated destructor stub
 }
 
-std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> SelectiveSCAN::run(std::unordered_set<node> set){
+void SelectiveSCAN::run(std::set<node>& set){
 
 	std::unordered_map<node, node> nodesState;
 	std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> communities;
@@ -58,7 +58,7 @@ std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> Selective
 		communities.insert({u, tmp});
 		community.clear();
 	}
-	return communities;
+	// FIXME: store result
 }
 
 
