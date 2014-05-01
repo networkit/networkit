@@ -22,14 +22,12 @@ public:
 
 	SelectiveSCAN(const Graph& G, NodeDistance& distMeasure, double epsilon = 0.25, double mu = 3);
 
-	virtual ~SelectiveSCAN();
-
 	/**
 	 * @param[in] seeds 	seed set
 	 *
 	 * Return the community and needed running time for each seed node
 	 */
-	void run(std::set<node>& seeds) override;
+	void run(std::set<unsigned int>& seeds) override;
 
 
 protected:
@@ -54,9 +52,9 @@ protected:
 	std::pair<bool,std::unordered_set<node>> isCore(node u);
 
 
+	NodeDistance* distMeasure; 	//!< pointer to the considered distance measure
 	double epsilon;				//!< maximal distance for two close nodes
 	double mu;					//!< minimal number of close neighbors to define a core
-	NodeDistance* distMeasure; 	//!< pointer to the considered distance measure
 
 };
 

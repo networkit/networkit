@@ -14,11 +14,10 @@ SelectiveSCAN::SelectiveSCAN(const Graph& G, NodeDistance& distMeasure, double e
 
 }
 
-SelectiveSCAN::~SelectiveSCAN() {
-	// TODO Auto-generated destructor stub
-}
 
-void SelectiveSCAN::run(std::set<node>& set){
+void SelectiveSCAN::run(std::set<unsigned int>& set){
+
+	// FIMXE: review implementation
 
 	std::unordered_map<node, node> nodesState;
 	std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> communities;
