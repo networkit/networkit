@@ -73,12 +73,16 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 			continue;
 		}
 
+		TRACE("deg(v) = ", G.degree(v));
 		node u = G.randomNeighbor(v);
 		node w = G.randomNeighbor(v);
+		TRACE("u=", u);
+		TRACE("w=", w);
 
 		// TODO This could be sped up for degree(v) == 2...
 		while (u == w) {
 			w = G.randomNeighbor(v);
+			TRACE("w=", w);
 		}
 
 		if (G.hasEdge(u,w)) {
