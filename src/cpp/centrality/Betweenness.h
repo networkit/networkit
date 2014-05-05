@@ -2,7 +2,7 @@
  * Betweenness.h
  *
  *  Created on: 19.02.2014
- *      Author: cls
+ *      Author: hm
  */
 
 #ifndef BETWEENNESS_H_
