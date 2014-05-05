@@ -64,6 +64,7 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 	double triangles = 0;
 	for (count k = 0; k < trials; ++k) {
 		node v = G.randomNode();
+		TRACE("trial ", k, " sampled node ", v);
 
 		if (G.degree(v) < 2) {
 			// this vertex can never be part of a triangle,
