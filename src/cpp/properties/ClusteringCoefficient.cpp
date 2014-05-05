@@ -60,9 +60,6 @@ double ClusteringCoefficient::avgLocal(Graph& G) {
 }
 
 double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
-	// WARNING: I assume RAND_MAX to be larger than n. If this should not hold for an application
-	// or implementation of the standard library, a more sophisticated version of determining a 
-	// vertex uniformly at random must be used.
 
 	double triangles = 0;
 	for (count k = 0; k < trials; ++k) {
