@@ -113,6 +113,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		string toString() except +
 		string getName() except +
 		edgeweight totalEdgeWeight() except +
+		node randomNode() except +
 		
 
 cdef class Graph:
@@ -183,6 +184,9 @@ cdef class Graph:
 
 	def totalEdgeWeight(self):
 		return self._this.totalEdgeWeight()
+
+	def randomNode(self):
+		return self._this.randomNode()
 
 
 cdef class Graph2:
