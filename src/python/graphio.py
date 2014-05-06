@@ -1,6 +1,7 @@
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
 						 VNAGraphWriter, GMLGraphWriter, LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter, DGSWriter, \
 						  DGSStreamParser, GraphUpdater, FastMETISGraphReader)
+from GraphMLParser import GraphMLParser
 
 import os
 import logging

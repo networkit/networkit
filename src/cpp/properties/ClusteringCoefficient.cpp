@@ -60,13 +60,11 @@ double ClusteringCoefficient::avgLocal(Graph& G) {
 }
 
 double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
-	// WARNING: I assume RAND_MAX to be larger than n. If this should not hold for an application
-	// or implementation of the standard library, a more sophisticated version of determining a 
-	// vertex uniformly at random must be used.
 
 	double triangles = 0;
 	for (count k = 0; k < trials; ++k) {
 		node v = G.randomNode();
+		TRACE("trial ", k, " sampled node ", v);
 
 		if (G.degree(v) < 2) {
 			// this vertex can never be part of a triangle,
@@ -75,12 +73,16 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 			continue;
 		}
 
+		TRACE("deg(v) = ", G.degree(v));
 		node u = G.randomNeighbor(v);
 		node w = G.randomNeighbor(v);
+		TRACE("u=", u);
+		TRACE("w=", w);
 
 		// TODO This could be sped up for degree(v) == 2...
 		while (u == w) {
 			w = G.randomNeighbor(v);
+			TRACE("w=", w);
 		}
 
 		if (G.hasEdge(u,w)) {
