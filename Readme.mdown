@@ -77,7 +77,6 @@ and `<target>` can be
 
 - `Core`				build NetworKit as a library, required by the Python shell		
 - `Tests`				build executable for the unit tests	
-- `CommunityDetection` 	build executable for static, global community detection algorithms (deprecated)
 
 For example, to build NetworKit as an optimized library, run
 	scons --optimize=O --target=Core
