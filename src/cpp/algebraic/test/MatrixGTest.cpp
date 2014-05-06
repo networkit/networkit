@@ -46,10 +46,12 @@ TEST(MatrixGTest, tryRowAndColumnAccess) {
 
 	v = mat.row(10);
 	ASSERT_EQ(v.getDimension(), mat.numberOfColumns());
+	ASSERT_TRUE(v.isTransposed());
 	EXPECT_EQ(42.123, v[10]);
 
 	v = mat.column(10);
 	ASSERT_EQ(mat.numberOfRows(), v.getDimension());
+	ASSERT_FALSE(v.isTransposed());
 
 	EXPECT_EQ(10.0, v[3]);
 	EXPECT_EQ(42.123, v[10]);
@@ -167,6 +169,38 @@ TEST(MatrixGTest, tryScalarMultiplication) {
 }
 
 // TODO test Matrix / divisor and Matrix /= divisors
+
+TEST(MatrixGTest, tryMatrixDivisionOperator) {
+	std::vector<std::pair<int, int> > positions;
+	std::vector<double> values;
+
+	for (int i = 0; i < 10000; ++i) {
+		positions.push_back(std::make_pair(i, i));
+		values.push_back(i);
+	}
+
+	positions.push_back(std::make_pair(42, 43));
+	values.push_back(42.0);
+
+	Matrix mat(10000, positions, values);
+	mat /= (1.0 / 2.0);
+	ASSERT_EQ(10000u, mat.numberOfRows());
+	ASSERT_EQ(10000u, mat.numberOfColumns());
+
+	for (int i = 0; i < 10000; ++i) {
+		EXPECT_EQ(i*2, mat(i, i));
+	}
+	EXPECT_EQ(84.0, mat(42, 43));
+	EXPECT_EQ(0.0, mat(55, 199));
+
+	mat /= 2;
+
+	for (int i = 0; i < 10000; ++i) {
+		EXPECT_EQ(i, mat(i, i));
+	}
+	EXPECT_EQ(42.0, mat(42, 43));
+	EXPECT_EQ(0.0, mat(55, 199));
+}
 
 TEST(MatrixGTest, tryMatrixVectorProduct) {
 	std::vector<std::pair<int, int> > mPositions;

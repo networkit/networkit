@@ -89,21 +89,21 @@ void Matrix::setValue(const index &i, const index &j, const double &value) {
 }
 
 Vector Matrix::row(const index &i) const {
-	std::vector<double> values(numberOfColumns(), 0.0);
+	Vector row(numberOfColumns(), 0.0, true);
 	graph.forWeightedEdgesOf(i, [&](node i, node j, double value) {
-		values[j] = value;
+		row[j] = value;
 	});
 
-	return Vector(values);
+	return row;
 }
 
 Vector Matrix::column(const index &j) const {
-	std::vector<double> values(numberOfRows(), 0.0);
+	Vector column(numberOfRows());
 	graph.parallelForNodes([&](node i) {
-		values[i] = graph.weight(i, j);
+		column[i] = graph.weight(i, j);
 	});
 
-	return Vector(values);
+	return column;
 }
 
 Matrix Matrix::operator+(const Matrix &other) const {

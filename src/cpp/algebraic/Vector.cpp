@@ -77,7 +77,7 @@ Vector Vector::operator*(const Matrix &matrix) const {
 		throw std::runtime_error("dimensions of vector and matrix do not match");
 	}
 
-	Vector result(matrix.numberOfColumns());
+	Vector result(matrix.numberOfColumns(), 0.0, true);
 #pragma omp parallel for
 	for (count k = 0; k < matrix.numberOfColumns(); ++k) {
 		Vector column = matrix.column(k);

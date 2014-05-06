@@ -12,6 +12,7 @@
 
 #include <gtest/gtest.h>
 #include "../Vector.h"
+#include "../Matrix.h"
 #include "../../auxiliary/Log.h"
 #include <cmath>
 
