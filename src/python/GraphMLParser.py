@@ -19,6 +19,14 @@ class GraphMLParser:
         root = doc.createElement('graphml')
         doc.appendChild(root)
 
+        # if the graph is weighted, add the attribute
+        if graph.isWeighted():
+             attr_node = doc.createElement('key')
+             attr_node.setAttribute('id', 'd1')
+             attr_node.setAttribute('attr.name','weight')
+             attr_node.setAttribute('attr.type','double')
+             root.appendChild(attr_node)
+
         # Add attributs
         #for a in graph.get_attributs():
         #    attr_node = doc.createElement('key')
@@ -38,7 +46,6 @@ class GraphMLParser:
 
         # Add nodes
         for n in graph.nodes():
-
             node = doc.createElement('node')
             node.setAttribute('id', str(n))
             #for a in n.attributes():
@@ -50,21 +57,25 @@ class GraphMLParser:
             graph_node.appendChild(node)
 
         # Add edges
-        for e in graph.edges():
+        if graph.isWeighted():
+            for e in graph.edges():
+                edge = doc.createElement('edge')
+                edge.setAttribute('source', str(e[0]))
+                edge.setAttribute('target', str(e[1]))
+                edge.setAttribute('directed', 'false')
+                # add edge weight
+                data = doc.createElement('data')
+                data.setAttribute('key','d1')
+                data.appendChild(doc.createTextNode(str(graph.weight(e[0],e[1]))))
+                edge.appendChild(data)
+                graph_node.appendChild(edge)
 
-            edge = doc.createElement('edge')
-            edge.setAttribute('source', str(e[0]))
-            edge.setAttribute('target', str(e[1]))
-            edge.setAttribute('directed', 'false')
-            #if e.directed() != graph.directed:
-            #    edge.setAttribute('directed', 'true' if e.directed() else 'false')
-            #for a in e.attributes():
-            #    if e != 'label':
-            #        data = doc.createElement('data')
-            #        data.setAttribute('key', a)
-            #        data.appendChild(doc.createTextNode(e[a]))
-            #        edge.appendChild(data)
-            graph_node.appendChild(edge)
+            for e in graph.edges():
+                edge = doc.createElement('edge')
+                edge.setAttribute('source', str(e[0]))
+                edge.setAttribute('target', str(e[1]))
+                edge.setAttribute('directed', 'false')
+                graph_node.appendChild(edge)
 
         f = open(fname, 'w')
         f.write(doc.toprettyxml(indent = ' '))
