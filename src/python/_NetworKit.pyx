@@ -112,6 +112,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		bool isWeighted() except +
 		string toString() except +
 		string getName() except +
+		void setName(string name) except +
 		edgeweight totalEdgeWeight() except +
 		node randomNode() except +
 		
@@ -181,6 +182,9 @@ cdef class Graph:
 
 	def getName(self):
 		return pystring(self._this.getName())
+
+	def setName(self, name):
+		self._this.setName(stdstring(name))
 
 	def totalEdgeWeight(self):
 		return self._this.totalEdgeWeight()
