@@ -42,8 +42,8 @@ typedef double edgeweight; // edge weight type
 
 constexpr index none = std::numeric_limits<index>::max();
 
-//#define Vector std::vector // TODO: test tbb::concurrent_vector
-template <typename T> using Vector = std::vector<T>;
+//#define _Vector std::vector // TODO: test tbb::concurrent_vector
+template <typename T> using _Vector = std::vector<T>;
 
 /**
  * An undirected graph (with optional weights) and parallel iterator methods.
@@ -60,13 +60,13 @@ protected:
 	bool weighted; //!< true if this graph supports edge weights other than 1.0
 
 	// per node data
-	Vector<count> deg; //!< degree of each node (size of neighborhood)
-	Vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
+	_Vector<count> deg; //!< degree of each node (size of neighborhood)
+	_Vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
 	// per edge data
-	Vector<Vector<node> > adja; //!< neighbors/adjacencies
-	Vector<Vector<edgeweight> > eweights; //!< edge weights
+	_Vector<_Vector<node> > adja; //!< neighbors/adjacencies
+	_Vector<_Vector<edgeweight> > eweights; //!< edge weights
 
 	// graph attributes
 	std::string name;
@@ -939,7 +939,7 @@ void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) const
 		return degree(v1) < degree(v2); // FIXME
 	};
 
-	Vector<node> neighbors = adja[u];
+	_Vector<node> neighbors = adja[u];
 	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
 
 	for (node v : neighbors) {
@@ -955,7 +955,7 @@ void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) {
 		return degree(v1) < degree(v2); // FIXME
 	};
 
-	Vector<node> neighbors = adja[u];
+	_Vector<node> neighbors = adja[u];
 	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
 
 	for (node v : neighbors) {

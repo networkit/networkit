@@ -169,10 +169,10 @@ node Graph::addNode() {
 	this->exists.push_back(true);
 
 	// update per edge data structures
-	Vector<node> adjacencyVector;	// vector of adjacencies for new node
+	_Vector<node> adjacencyVector;	// vector of adjacencies for new node
 	this->adja.push_back(adjacencyVector);
 	if (weighted) {
-		Vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
+		_Vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 		this->eweights.push_back(edgeWeightVector);
 	}
 
