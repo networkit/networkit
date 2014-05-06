@@ -22,6 +22,7 @@ class GraphMLParser:
         # if the graph is weighted, add the attribute
         if graph.isWeighted():
              attr_node = doc.createElement('key')
+             attr_node.setAttribute('for','edge')
              attr_node.setAttribute('id', 'd1')
              attr_node.setAttribute('attr.name','weight')
              attr_node.setAttribute('attr.type','double')
@@ -69,7 +70,7 @@ class GraphMLParser:
                 data.appendChild(doc.createTextNode(str(graph.weight(e[0],e[1]))))
                 edge.appendChild(data)
                 graph_node.appendChild(edge)
-
+        else:
             for e in graph.edges():
                 edge = doc.createElement('edge')
                 edge.setAttribute('source', str(e[0]))
