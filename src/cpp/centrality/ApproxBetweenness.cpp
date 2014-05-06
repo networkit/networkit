@@ -39,7 +39,7 @@ void ApproxBetweenness::run() {
 	count samples = 42;
 	edgeweight vd = Diameter::estimatedVertexDiameter(G, samples);
 	INFO("estimated diameter: ", vd);
-	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta));
+	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
 
 
 	// double r = (c / (epsilon * epsilon)) * (3 + log(1 / delta));

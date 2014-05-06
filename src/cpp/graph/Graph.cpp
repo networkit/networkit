@@ -426,6 +426,7 @@ node Graph::randomNeighbor(node v) const {
 		return none;
 	}
 
+
 	/* TODO: move to Aux (actually already there),
 	 * BUT beware of performance implications!!!
 	 */
@@ -436,6 +437,7 @@ node Graph::randomNeighbor(node v) const {
 		return r;
 	});
 
+	// FIXME: this is not correct if edges have been deleted
 	index randIdx = generateFast(0, deg-1);
 	assert(randIdx < deg);
 	node randNeigh = adja[v][randIdx];
