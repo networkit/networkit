@@ -87,9 +87,6 @@ Logging is enabled by default. If you want to disable logging functionality, add
 
 	--logging=no
 
-Alternatively, the project can be built with Eclipse. Our Eclipse and CDT project files are included as examples in the `[eclipse/` directory. Copy them to the project file location, import the project into Eclipse and modify depending on your needs.
-
-
 Test
 ----
 
