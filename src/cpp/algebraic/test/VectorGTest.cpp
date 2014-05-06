@@ -110,9 +110,33 @@ TEST(VectorGTest, tryVectorScalarMultiplication) {
 	}
 }
 
-// TODO test Vector * Matrix
+TEST(VectorGTest, tryVectorMatrixMultiplication) {
+	Vector v = {1.0, 2.0, 3.0};
+	Vector c1 = {8, 3, 4};
+	Vector c2 = {3, 5, 9};
+	Vector c3 = {4, 9, 2};
 
-// TODO test Vector / divisor and Vector /= divisor
+	std::vector<Vector> columns = {c1, c2, c3};
+	Matrix mat(columns);
+
+	Vector result = v.transpose() * mat;
+	ASSERT_TRUE(result.isTransposed());
+
+	EXPECT_EQ(26, result[0]);
+	EXPECT_EQ(40, result[1]);
+	EXPECT_EQ(28, result[2]);
+}
+
+TEST(VectorGTest, tryVectorDivisionOperator) {
+	Vector testVector = {1.0, 2.0, 3.0, 4.0, 5.0};
+
+	Vector vectorScalar = testVector / (1.0 / 2.0);
+	ASSERT_EQ(testVector.getDimension(), vectorScalar.getDimension());
+
+	for (uint64_t i = 0; i < testVector.getDimension(); i++) {
+		EXPECT_EQ((i + 1) * 2.0, vectorScalar[i]);
+	}
+}
 
 TEST(VectorGTest, tryVectorAddition) {
 	Vector v1 = {1.0, 2.0, 3.0, 4.0, 5.0};
