@@ -1,0 +1,124 @@
+from xml.dom import minidom
+
+from _NetworKit import Graph
+
+class GraphMLParser:
+    """
+"""
+
+    def __init__(self):
+        """
+"""
+
+    def write(self, graph, fname):
+        """
+"""
+
+        doc = minidom.Document()
+
+        root = doc.createElement('graphml')
+        doc.appendChild(root)
+
+        # Add attributs
+        #for a in graph.get_attributs():
+        #    attr_node = doc.createElement('key')
+        #    attr_node.setAttribute('id', a.name)
+        #    attr_node.setAttribute('attr.name', a.name)
+        #    attr_node.setAttribute('attr.type', a.type)
+        #    root.appendChild(attr_node)
+        
+        graph_node = doc.createElement('graph')
+        graph_node.setAttribute('id', graph.getName())
+        #if graph.directed:
+        #    graph_node.setAttribute('edgedefault', 'directed')
+        #else:
+        #    graph_node.setAttribute('edgedefault', 'undirected')
+        #root.appendChild(graph_node)
+
+        # Add nodes
+        for n in graph.nodes():
+
+            node = doc.createElement('node')
+            node.setAttribute('id', n)
+            #for a in n.attributes():
+            #    if a != 'label':
+            #        data = doc.createElement('data')
+            #        data.setAttribute('key', a)
+            #        data.appendChild(doc.createTextNode(str(n[a])))
+            #        node.appendChild(data)
+            graph_node.appendChild(node)
+
+        # Add edges
+        for e in graph.edges():
+
+            edge = doc.createElement('edge')
+            edge.setAttribute('source', e[0])
+            edge.setAttribute('target', e[1])
+            edge.setAttribute('directed', 'false')
+            #if e.directed() != graph.directed:
+            #    edge.setAttribute('directed', 'true' if e.directed() else 'false')
+            #for a in e.attributes():
+            #    if e != 'label':
+            #        data = doc.createElement('data')
+            #        data.setAttribute('key', a)
+            #        data.appendChild(doc.createTextNode(e[a]))
+            #        edge.appendChild(data)
+            graph_node.appendChild(edge)
+
+        f = open(fname, 'w')
+        f.write(doc.toprettyxml(indent = ' '))
+    
+    def read(self, fname):
+        """
+"""
+
+        dom = minidom.parse(open(fname, 'r'))
+        root = dom.getElementsByTagName("graphml")[0]
+        graph = root.getElementsByTagName("graph")[0]
+        name = graph.getAttribute('id')
+
+        g = Graph(0)
+        g.setName(name)
+
+        # # Get attributes
+        # attributes = []
+        # for attr in root.getElementsByTagName("key"):
+        # attributes.append(attr)
+        #print("start to gather node information")
+        mapping = dict()
+        # Get nodes
+        for node in graph.getElementsByTagName("node"):
+            val = node.getAttribute('id')
+            n = g.addNode()
+            mapping[val] = n
+
+	    #ignore node attributes
+            #for attr in node.getElementsByTagName("data"):
+            #    if attr.firstChild:
+            #        n[attr.getAttribute("key")] = attr.firstChild.data
+            #    else:
+            #        n[attr.getAttribute("key")] = ""
+        #print("gathered node information, adding edges")
+        # Get edges
+        for edge in graph.getElementsByTagName("edge"):
+            source = mapping[edge.getAttribute('source')]
+            dest = mapping[edge.getAttribute('target')]
+            #print("added edge: ({0} - {1})".format(source,dest))
+            g.addEdge(source,dest) #FIXME: no edge weights yet
+
+	    #ignore edge attributes
+            #for attr in edge.getElementsByTagName("data"):
+            #    if attr.firstChild:
+            #        e[attr.getAttribute("key")] = attr.firstChild.data
+            #    else:
+            #        e[attr.getAttribute("key")] = ""
+
+        return g
+
+
+if __name__ == '__main__':
+
+    parser = GraphMLParser()
+    g = parser.parse('test.graphml')
+
+    g.show(True)
