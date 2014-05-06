@@ -78,13 +78,18 @@ class GraphMLParser:
         graph = root.getElementsByTagName("graph")[0]
         name = graph.getAttribute('id')
 
-        g = Graph(0)
+        # Get information if the graph is weighted and the attribute identifier
+        attributes = []
+        weighted = False
+        for attr in root.getElementsByTagName("key"):
+            if (attr.getAttribute('for') == 'edge' and attr.getAttribute('attr.name') == 'weight'):
+                weighted = True
+                weightedID = attr.getAttribute('id')
+                #print("graph identified as weighted, weighted={0}, weightedID={1}".format(weighted,weightedID))
+
+        g = Graph(0,weighted)
         g.setName(name)
 
-        # # Get attributes
-        # attributes = []
-        # for attr in root.getElementsByTagName("key"):
-        # attributes.append(attr)
         #print("start to gather node information")
         mapping = dict()
         # Get nodes
@@ -105,14 +110,17 @@ class GraphMLParser:
             source = mapping[edge.getAttribute('source')]
             dest = mapping[edge.getAttribute('target')]
             #print("added edge: ({0} - {1})".format(source,dest))
-            g.addEdge(source,dest) #FIXME: no edge weights yet
+            #g.addEdge(source,dest) #FIXME: no edge weights yet
 
 	    #ignore edge attributes
-            #for attr in edge.getElementsByTagName("data"):
-            #    if attr.firstChild:
-            #        e[attr.getAttribute("key")] = attr.firstChild.data
-            #    else:
-            #        e[attr.getAttribute("key")] = ""
+            edgeweight = 0.0
+            for attr in edge.getElementsByTagName("data"):
+                #print("found attribute with id={0} and data={1}".format(attr.getAttribute('key'),attr.firstChild.data))
+                if attr.getAttribute('key') == weightedID:
+                    edgeweight = float(attr.firstChild.data)
+                    #print("parsed edgeweight for ({0} - {1}) with {2}".format(source,dest,edgeweight))
+
+            g.addEdge(source,dest,edgeweight)
 
         return g
 
