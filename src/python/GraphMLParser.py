@@ -33,13 +33,14 @@ class GraphMLParser:
         #    graph_node.setAttribute('edgedefault', 'directed')
         #else:
         #    graph_node.setAttribute('edgedefault', 'undirected')
-        #root.appendChild(graph_node)
+        graph_node.setAttribute('edgedefault', 'undirected')
+        root.appendChild(graph_node)
 
         # Add nodes
         for n in graph.nodes():
 
             node = doc.createElement('node')
-            node.setAttribute('id', n)
+            node.setAttribute('id', str(n))
             #for a in n.attributes():
             #    if a != 'label':
             #        data = doc.createElement('data')
@@ -52,8 +53,8 @@ class GraphMLParser:
         for e in graph.edges():
 
             edge = doc.createElement('edge')
-            edge.setAttribute('source', e[0])
-            edge.setAttribute('target', e[1])
+            edge.setAttribute('source', str(e[0]))
+            edge.setAttribute('target', str(e[1]))
             edge.setAttribute('directed', 'false')
             #if e.directed() != graph.directed:
             #    edge.setAttribute('directed', 'true' if e.directed() else 'false')
