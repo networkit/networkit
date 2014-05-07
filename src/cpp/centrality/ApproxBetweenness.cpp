@@ -40,10 +40,7 @@ void ApproxBetweenness::run() {
 	edgeweight vd = Diameter::estimatedVertexDiameter(G, samples);
 	INFO("estimated diameter: ", vd);
 	// FIXME: if the vertex diameter is estimated to be 2, then there is log(0) in the formula which will practically lead to an infinite amount of samples
-	// FIXME: merge conflict	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
-	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta));
-
-	// double r = (c / (epsilon * epsilon)) * (3 + log(1 / delta));
+	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
 
 	INFO("taking ", r, " path samples");
 
