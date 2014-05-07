@@ -18,9 +18,41 @@ GreedyCommunityExpansion::GreedyCommunityExpansion(const Graph& G,
 	this->trimming = &trimming;
 }
 
-GreedyCommunityExpansion::~GreedyCommunityExpansion() {
-	// TODO Auto-generated destructor stub
+
+GreedyCommunityExpansion::GreedyCommunityExpansion(const Graph& G, std::string acceptability, std::string objective, std::string trimming) : SelectiveCommunityDetector(G) {
+	std::unordered_map<node,count> map;
+	std::unordered_set<node> set;
+
+	// acceptability
+	if (acceptability == "NodeClusterSimilarity") {
+		this->similarity = new NodeClusterSimilarity(G, set, set);
+	} else if (acceptability == "") {
+		this->similarity = new DummySimilarity(G, set, set);
+	} else {
+		throw std::runtime_error("unknown acceptability");
+	}
+
+	// objective
+	if (objective == "LocalModularityM") {
+		this->objective  = new LocalModularityM(G, set, map);
+	} else if (objective == "LocalModularityL") {
+		this->objective  = new LocalModularityL(G, set, map);
+	} else if (objective == "ConductanceDistance") {
+		this->objective  = new ConductanceDistance(G, set, map);
+	} else {
+		throw std::runtime_error("unknown objective");
+	}
+
+	// trimming
+	if (trimming == "BoundarySharpness") {
+		this->trimming  = new BoundarySharpness();
+	} else if (trimming == "") {
+		this->trimming = new DummyTrimming();
+	} else {
+		throw std::runtime_error("unknown trimming");
+	} 
 }
+
 
 std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 
@@ -140,13 +172,12 @@ std::unordered_set<node> GreedyCommunityExpansion::expandSeed(node s) {
 	return community;
 }
 
-std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> GreedyCommunityExpansion::run(
-		std::unordered_set<node> set) {
+void GreedyCommunityExpansion::run(std::set<unsigned int>& seeds) {
 
 	std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> communities;
 	Aux::Timer running;
 	std::pair<std::unordered_set<node>, int64_t> tmp;
-	for (node u : set) {
+	for (node u : seeds) {
 		running.start();
 		std::unordered_set<node> community = this->expandSeed(u);
 		running.stop();
@@ -154,7 +185,8 @@ std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> GreedyCom
 		communities.insert({u, tmp});
 	}
 
-	return communities;
+	// return communities;
+	// FIXME: store result
 }
 
 double GreedyCommunityExpansion::clusterClusterSimilarity(

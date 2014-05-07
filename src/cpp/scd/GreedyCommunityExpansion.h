@@ -28,20 +28,19 @@ class GreedyCommunityExpansion: public NetworKit::SelectiveCommunityDetector {
 
 public:
 
-	GreedyCommunityExpansion(const Graph& G, Acceptability& similarity, QualityObjective& objective,
-			CommunityTrimming& trimming);
+	GreedyCommunityExpansion(const Graph& G, Acceptability& similarity, QualityObjective& objective, CommunityTrimming& trimming);
+
+	GreedyCommunityExpansion(const Graph& G, std::string acceptability, std::string objective, std::string trimming);
 
 
-	virtual ~GreedyCommunityExpansion();
-
-	virtual std::unordered_map<node, std::pair<std::unordered_set<node>, int64_t>> run(std::unordered_set<node> set);
+	void run(std::set<unsigned int>& seeds) override;
 
 	/**
 	 * @param[in]	s	seed node
 	 *
 	 * @param[out]		community as a set of nodes
 	 */
-	virtual std::unordered_set<node> expandSeed(node s);
+	std::unordered_set<node> expandSeed(node s);
 
 protected:
 

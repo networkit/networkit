@@ -1750,6 +1750,56 @@ cdef class PageRankNibble:
 		return self._this.getTimings()
 
 
+cdef extern from "../cpp/scd/GreedyCommunityExpansion.h":
+	cdef cppclass _GreedyCommunityExpansion "NetworKit::GreedyCommunityExpansion":
+		_GreedyCommunityExpansion(_Graph G, string similarity, string objective, string trimming) except +
+		void run(set[unsigned int]) except +
+		map[node, set[node]] getResult() except +
+		map[node, double] getTimings() except +
+
+cdef class GreedyCommunityExpansion:
+	cdef _GreedyCommunityExpansion* _this
+
+	def __cinit__(self, Graph G, similarity, objective, trimming):
+		self._this = new _GreedyCommunityExpansion(dereference(G._this), stdstring(similarity), stdstring(objective), stdstring(trimming))
+
+	def run(self, seeds):
+		self._this.run(seeds)
+
+	def getResult(self):
+		return self._this.getResult()
+
+	def getTimings(self):
+		return self._this.getTimings()
+
+
+cdef extern from "../cpp/scd/GCE.h":
+	cdef cppclass _GCE "NetworKit::GCE":
+		_GCE(_Graph G) except +
+		void run(set[unsigned int]) except +
+		set[node] expandSeed(node) except +
+		map[node, set[node]] getResult() except +
+		map[node, double] getTimings() except +
+
+cdef class GCE:
+	cdef _GCE* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _GCE(dereference(G._this))
+
+	def run(self, seeds):
+		self._this.run(seeds)
+
+	def expandSeed(self, s):
+		return self._this.expandSeed(s)
+
+	def getResult(self):
+		return self._this.getResult()
+
+	def getTimings(self):
+		return self._this.getTimings()
+
+
 # cdef extern from "../cpp/scd/SelectiveSCAN.h":
 # 	cdef cppclass _SelectiveSCAN "NetworKit::SelectiveSCAN":
 # 		_SelectiveSCAN(_Graph G, _NodeDistance) except +

@@ -38,11 +38,10 @@ public:
 	 */
 	virtual std::map<node, double> getTimings();
 
-public:
-
-	const Graph& G;	//!< the input graph
 
 protected:
+
+	const Graph& G;	//!< the input graph
 
 	std::map<node, std::set<node> > result;
 	std::map<node, double> timings;
