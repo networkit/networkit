@@ -653,7 +653,7 @@ public:
 	/**
 	 * Return list of neighbors for given node.
 	 */
-	std::vector<node> neighbors(node u);
+	std::vector<node> neighbors(node u) const;
 
 
 };

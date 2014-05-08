@@ -1687,18 +1687,18 @@ cdef class GraphUpdater:
 # module distmeasures
 
 
-# cdef extern from "../cpp/distmeasures/NodeDistance.h":
-# 	cdef cppclass _NodeDistance "NetworKit::NodeDistance":
-# 		_NodeDistance(_Graph G) except +
-# 		void preprocess() except +
-# 		double distance(node, node) except +
+cdef extern from "../cpp/distmeasures/NodeDistance.h":
+	cdef cppclass NodeDistance:
+		NodeDistance(_Graph G) except +
+		void preprocess() except +
+		double distance(node, node) except +
 
 
-# cdef extern from "../cpp/distmeasures/NeighborhoodDistance.h":
-# 	cdef cppclass _NeighborhoodDistance(_NodeDistance) "NetworKit::NeighborhoodDistance":
-# 		_NeighborhoodDistance(_Graph G) except +
-# 		void preprocess() except +
-# 		double distance(node, node) except +
+cdef extern from "../cpp/distmeasures/NeighborhoodDistance.h":
+	cdef cppclass NeighborhoodDistance(NodeDistance):
+		NeighborhoodDistance(_Graph G) except +
+		void preprocess() except +
+		double distance(node, node) except +
 
 # module selectivecommunity
 
@@ -1800,25 +1800,26 @@ cdef class GCE:
 		return self._this.getTimings()
 
 
-# cdef extern from "../cpp/scd/SelectiveSCAN.h":
-# 	cdef cppclass _SelectiveSCAN "NetworKit::SelectiveSCAN":
-# 		_SelectiveSCAN(_Graph G, _NodeDistance) except +
-# 		void run(set[unsigned int]) except +
-# 		map[node, set[node]] getResult() except +
-# 		map[node, double] getTimings() except +
+cdef extern from "../cpp/scd/SelSCAN.h":
+	cdef cppclass _SelSCAN "NetworKit::SelSCAN":
+		_SelSCAN(_Graph G, count, double, NodeDistance) except +
+		void run(set[unsigned int]) except +
+		map[node, set[node]] getResult() except +
+		map[node, double] getTimings() except +
 
-# cdef class SelectiveSCAN:
-# 	cdef _SelectiveSCAN* _this
+cdef class SelSCAN:
+	cdef _SelSCAN* _this
 
-# 	def __cinit__(self, Graph G):
-# 		self._this = new _DummySCD(dereference(G._this))
+	def __cinit__(self, Graph G, kappa, epsilon, nodeDist):
+		cdef NodeDistance* _nodeDist = <NodeDistance*>&(nodeDist._this) 
+		self._this = new _SelSCAN(dereference(G._this), kappa, epsilon, _nodeDist)
 
-# 	def run(self, seeds):
-# 		self._this.run(seeds)
+	def run(self, seeds):
+		self._this.run(seeds)
 
-# 	def getResult(self):
-# 		return self._this.getResult()
+	def getResult(self):
+		return self._this.getResult()
 
-# 	def getTimings(self):
-# 		return self._this.getTimings()
+	def getTimings(self):
+		return self._this.getTimings()
 
