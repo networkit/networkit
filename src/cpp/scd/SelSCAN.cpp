@@ -5,7 +5,7 @@
 namespace NetworKit {
 
 SelSCAN::SelSCAN(const Graph& G, count kappa, double epsilon) : SelectiveCommunityDetector(G), kappa(kappa), epsilon(epsilon), algebraicDistance(NULL) {
-	/** 
+	/**
 	 * expresses neighborhood overlap
 	 */
 	auto neighborhoodOverlap = [&](node u, node v) -> double {
@@ -33,7 +33,7 @@ SelSCAN::SelSCAN(const Graph& G, count kappa, double epsilon, AlgebraicDistance&
 
 void SelSCAN::run(std::set<unsigned int>& seeds) {
 
-	/** 
+	/**
 	 * @return the epsilon-neighborhood of a node
 	 */
 	auto epsilonNeighborhood = [&](node u) {
@@ -46,7 +46,7 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 		return N;
 	};
 
-	/** 
+	/**
 	 * determines if a node is a core
 	 */
 	auto core = [&](node u) {
@@ -54,18 +54,6 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 	};
 
 
-	auto coreSearch = [&](std::queue<node>& Q, index label) {
-		while (!Q.empty()) {
-			node x = Q.front(); Q.pop();
-			// TODO: assign x to current community
-			if (core(x)) {
-				for (node y : epsilonNeighborhood(x)) {
-					// TODO: loop body
-				}
-			}
-		}
-
-	};
 
 
 
@@ -76,6 +64,24 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 	auto newLabel = [&]() {
 		label += 1;
 		return label;
+	};
+
+
+	/**
+	* breadth-first search which appends neighbors to the community
+	* and cores to the queue.
+	*/
+	auto coreSearch = [&](std::queue<node>& Q, index label) {
+		while (!Q.empty()) {
+			node x = Q.front(); Q.pop();
+			eta[x] = label;	// add to community
+			if (core(x)) {
+				for (node y : epsilonNeighborhood(x)) {
+					Q.push(y);
+				}
+			}
+		}
+
 	};
 
 
@@ -106,7 +112,7 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 					Q.push(s);
 					coreSearch(Q, eta[s]);
 				}
-			} // 
+			} //
 		}
 
 	}
