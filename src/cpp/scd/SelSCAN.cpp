@@ -77,6 +77,7 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 			eta[x] = label;	// add to community
 			if (core(x)) {
 				for (node y : epsilonNeighborhood(x)) {
+					assert ((eta.find(y) == eta.end()) || (eta[y] == none));	// not assigned or outlier
 					Q.push(y);
 				}
 			}
