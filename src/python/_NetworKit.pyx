@@ -705,36 +705,71 @@ cdef class SNAPGraphWriter:
 		self._this.write(dereference(G._this), stdstring(path))
 
 
-cdef extern from "../cpp/io/ClusteringReader.h":
-	cdef cppclass _ClusteringReader "NetworKit::ClusteringReader":
-		_ClusteringReader() except +
+cdef extern from "../cpp/io/PartitionReader.h":
+	cdef cppclass _PartitionReader "NetworKit::PartitionReader":
+		_PartitionReader() except +
 		_Partition read(string path)
 
 
-cdef class ClusteringReader:
+cdef class PartitionReader:
 	""" Reads a partition from a file.
 		File format: line i contains subset id of element i.
 	 """
-	cdef _ClusteringReader _this
+	cdef _PartitionReader _this
 
 	def read(self, path):
 		return Partition().setThis(self._this.read(stdstring(path)))
 
 
-cdef extern from "../cpp/io/ClusteringWriter.h":
-	cdef cppclass _ClusteringWriter "NetworKit::ClusteringWriter":
-		_ClusteringWriter() except +
+cdef extern from "../cpp/io/PartitionWriter.h":
+	cdef cppclass _PartitionWriter "NetworKit::PartitionWriter":
+		_PartitionWriter() except +
 		void write(_Partition, string path)
 
 
-cdef class ClusteringWriter:
+cdef class PartitionWriter:
 	""" Writes a partition to a file.
 		File format: line i contains subset id of element i.
 	 """
-	cdef _ClusteringWriter _this
+	cdef _PartitionWriter _this
 
 	def write(self, Partition zeta, path):
 		self._this.write(zeta._this, stdstring(path))
+
+
+cdef extern from "../cpp/io/EdgeListPartitionReader.h":
+	cdef cppclass _EdgeListPartitionReader "NetworKit::EdgeListPartitionReader":
+		_EdgeListPartitionReader() except +
+		_EdgeListPartitionReader(node firstNode) except +
+		_Partition read(string path)
+
+
+cdef class EdgeListPartitionReader:
+	""" Reads a partition from an edge list type of file
+	 """
+	cdef _EdgeListPartitionReader _this
+
+	def __cinit__(self, firstNode=1):
+		self._this = _EdgeListPartitionReader(firstNode)
+
+	def read(self, path):
+		return Partition().setThis(self._this.read(stdstring(path)))
+
+#not existing yet, maybe in the future?
+#cdef extern from "../cpp/io/EdgeListPartitionWriter.h":
+#	cdef cppclass _EdgeListPartitionWriter "NetworKit::EdgeListPartitionWriter":
+#		_EdgeListPartitionWriter() except +
+#		void write(_Partition, string path)
+
+
+#cdef class EdgeListPartitionWriter:
+#	""" Writes a partition to a edge list type of file.
+#		File format: a line contains the element id and the subsed id of the element.
+#	 """
+#	cdef _EdgeListPartitionWriter _this
+
+#	def Write(self, Partition zeta, path):
+#		self._this.write(zeta._this, stdstring(path))
 
 
 # Parameters

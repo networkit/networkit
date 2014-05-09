@@ -41,12 +41,13 @@ Partition EdgeListPartitionReader::read(std::string path) {
 
 	count n = temp.size();
 	Partition zeta(n);
-
+	index newOmega = 0;
 	#pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
+		newOmega = std::max(newOmega, temp[u - firstNode + 1]);
 		zeta[u] = temp[u - firstNode + 1];
 	}
-
+	zeta.setUpperBound(newOmega+1);
 	return zeta;
 }
 

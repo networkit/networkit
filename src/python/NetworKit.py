@@ -49,7 +49,7 @@ except ImportError as importError:
 
 from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 from graph import Graph 
-from graphio import readGraph, writeGraph
+from graphio import readGraph, writeGraph, formats
 from nxadapter import nk2nx, nx2nk
 from toolbox import batch
 from community import detectCommunities

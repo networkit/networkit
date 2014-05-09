@@ -1,5 +1,5 @@
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
-						 VNAGraphWriter, GMLGraphWriter, LineFileReader, SNAPGraphWriter, ClusteringReader, ClusteringWriter, DGSWriter, \
+						 VNAGraphWriter, GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
 						  DGSStreamParser, GraphUpdater, FastMETISGraphReader)
 import os
 import logging
@@ -39,7 +39,7 @@ def readGraph(path, format="fastmetis", **kwargs):
 				"edgelist-t1" : EdgeListIO('\t', 1),
 				"edgelist-t0": EdgeListIO('\t', 0),
 				"edgelist-s1": EdgeListIO(' ', 1), 
-				"edgelist-s0": EdgeListIO(' ', 1),
+				"edgelist-s0": EdgeListIO(' ', 0),
 				"graphml": GraphMLReader()
 				}
 
