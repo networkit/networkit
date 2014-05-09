@@ -75,10 +75,13 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 		while (!Q.empty()) {
 			node x = Q.front(); Q.pop();
 			eta[x] = label;	// add to community
+			TRACE(x, " added to community ", eta[x]);
 			if (core(x)) {
 				for (node y : epsilonNeighborhood(x)) {
 					assert ((eta.find(y) == eta.end()) || (eta[y] == none));	// not assigned or outlier
-					Q.push(y);
+					if (eta.find(y) == eta.end()) {
+						Q.push(y);
+					}
 				}
 			}
 		}
@@ -87,10 +90,13 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 
 
 	for (auto s: seeds) {
+		DEBUG("seed ", s);
 		if (eta.find(s) == eta.end()) {	// s not yet assigned to community
 			std::queue<node> Q;
 			if (core(s)) {
+				TRACE(s, " is a core");
 				eta[s] = newLabel();
+				TRACE(s, " added to community ", eta[s]);
 				Q.push(s);
 				coreSearch(Q, eta[s]);
 			} else {
@@ -107,9 +113,12 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 				}
 
 				if (minC == none) { 	// no core in neighborhood
+					TRACE(s, " is an outlier");
 					eta[s] = none; 	// mark s as outlier
 				} else {
+					TRACE(s, " has closest core neighbor ", minC);
 					eta[s] = newLabel();
+					TRACE(s, " added to community ", eta[s]);
 					Q.push(s);
 					coreSearch(Q, eta[s]);
 				}

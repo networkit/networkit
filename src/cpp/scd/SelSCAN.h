@@ -19,7 +19,7 @@ namespace NetworKit {
  * TODO:
  */
 class SelSCAN: public NetworKit::SelectiveCommunityDetector {
- 
+
 public:
 
 	SelSCAN(const Graph& G, count kappa, double epsilon);

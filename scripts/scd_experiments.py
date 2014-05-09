@@ -9,7 +9,7 @@ def jaccard(A, B):
 
 def loadLFR(n, mu, minc, maxc, k, maxk, t1, t2):
 	fname = "{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}"
-	truth = community.readCommunities(fname.format("community", mu, minc, maxc, k, maxk, t1, t2))
+	truth = community.readCommunities(fname.format("community", mu, minc, maxc, k, maxk, t1, t2), formats.edgelist_tab_zero)
 	G = readGraph(fname.format("network", mu, minc, maxc, k, maxk, t1, t2))
 	return (G, truth)
 
