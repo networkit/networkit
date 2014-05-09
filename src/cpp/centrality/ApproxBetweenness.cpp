@@ -15,6 +15,7 @@
 
 #include <math.h>
 #include <algorithm>
+#include <memory>
 #include <omp.h>
 
 namespace NetworKit {
@@ -64,11 +65,11 @@ void ApproxBetweenness::run() {
 		} while (v == u);
 
 		// runs faster for unweighted graphs
-		SSSP* sssp;
+		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
-			sssp = new Dijkstra(G, u);
+			sssp.reset(new Dijkstra(G, u));
 		} else {
-			sssp = new BFS(G, u);
+			sssp.reset(new BFS(G, u));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
 		sssp->run();
@@ -93,8 +94,6 @@ void ApproxBetweenness::run() {
 				t = z;
 			}
 		}
-
-		delete sssp; // free heap memory
 	}
 
 	INFO("adding thread-local scores");
