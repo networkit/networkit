@@ -1799,29 +1799,6 @@ cdef class PageRankNibble:
 		return self._this.getTimings()
 
 
-cdef extern from "../cpp/scd/GreedyCommunityExpansion.h":
-	cdef cppclass _GreedyCommunityExpansion "NetworKit::GreedyCommunityExpansion":
-		_GreedyCommunityExpansion(_Graph G, string similarity, string objective, string trimming) except +
-		void run(set[unsigned int]) except +
-		map[node, set[node]] getResult() except +
-		map[node, double] getTimings() except +
-
-cdef class GreedyCommunityExpansion:
-	cdef _GreedyCommunityExpansion* _this
-
-	def __cinit__(self, Graph G, similarity, objective, trimming):
-		self._this = new _GreedyCommunityExpansion(dereference(G._this), stdstring(similarity), stdstring(objective), stdstring(trimming))
-
-	def run(self, seeds):
-		self._this.run(seeds)
-
-	def getResult(self):
-		return self._this.getResult()
-
-	def getTimings(self):
-		return self._this.getTimings()
-
-
 cdef extern from "../cpp/scd/GCE.h":
 	cdef cppclass _GCE "NetworKit::GCE":
 		_GCE(_Graph G) except +

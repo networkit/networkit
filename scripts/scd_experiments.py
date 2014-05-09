@@ -15,16 +15,16 @@ def loadLFR(n, mu, minc, maxc, k, maxk, t1, t2):
 
 
 
-def LFRBenchmark(SCDAlgo, G, truth):
+def LFRBenchmark(SCDAlgo, G, seeds, truth):
 
-	G = readGraph(graphPath)
-	communities = SCDAlgo.run(seeds)
+	SCDAlgo.run(seeds)
+	communities = SCDAlgo.getResult()
 
-
-	for s in seed:
+	for s in seeds:
 		community = communities[s]
-		trueCommunity = truth.getMembers(truth.getSubset(s))
+		trueCommunity = truth.getMembers(truth.subsetOf(s))
 
 		j = jaccard(community, trueCommunity)
 
-	return j
+		print("seed {0}: jaccard {1}".format(s, j))
+	return communities
