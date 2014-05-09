@@ -1,12 +1,12 @@
 /*
- * ClusteringWriter.h
+ * PartitionWriter.h
  *
  *  Created on: 22.01.2013
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef CLUSTERINGWRITER_H_
-#define CLUSTERINGWRITER_H_
+#ifndef PARTITIONWRITER_H_
+#define PARTITIONWRITER_H_
 
 #include <fstream>
 
@@ -17,13 +17,13 @@ namespace NetworKit {
 /**
  * Write a clustering to a file.
  */
-class ClusteringWriter {
+class PartitionWriter {
 
 public:
 
-	ClusteringWriter();
+	PartitionWriter();
 
-	virtual ~ClusteringWriter();
+	virtual ~PartitionWriter();
 
 	virtual void write(Partition& zeta, std::string path) const;
 };

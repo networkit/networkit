@@ -1,25 +1,24 @@
 /*
- * ClusteringReader.cpp
+ * EdgeListPartitionReader.cpp
  *
- *  Created on: 15.02.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *  Created on: Jun 19, 2013
+ *      Author: forigem
  */
 
-#include "ClusteringReader.h"
+#include "EdgeListPartitionReader.h"
 
 namespace NetworKit {
 
-ClusteringReader::ClusteringReader() {
+EdgeListPartitionReader::EdgeListPartitionReader(node firstNode) : firstNode(firstNode) {
 	// TODO Auto-generated constructor stub
 
 }
 
-ClusteringReader::~ClusteringReader() {
+EdgeListPartitionReader::~EdgeListPartitionReader(){
 	// TODO Auto-generated destructor stub
 }
 
-Partition ClusteringReader::read(std::string path) {
-
+Partition EdgeListPartitionReader::read(std::string path) {
 	std::ifstream file(path);
 
 	// check if file readable
@@ -33,8 +32,11 @@ Partition ClusteringReader::read(std::string path) {
 	// push all cluster ids into vector in order of appearance
 	std::string line;
 	while(std::getline(file, line)) {
-		index c = std::atoi(line.c_str());
-		temp.push_back(c);
+		std::vector<std::string> split = Aux::StringTools::split(line, '\t');
+		if (split.size() == 2 && split[0] != "#") {
+			index c = std::atoi(split[1].c_str());
+			temp.push_back(c);
+		}
 	}
 
 	count n = temp.size();
@@ -42,7 +44,7 @@ Partition ClusteringReader::read(std::string path) {
 
 	#pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
-		zeta[u] = temp[u];
+		zeta[u] = temp[u - firstNode + 1];
 	}
 
 	return zeta;

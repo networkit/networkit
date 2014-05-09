@@ -1,12 +1,12 @@
 /*
- * ClusteringReader.h
+ * PartitionReader.h
  *
  *  Created on: 15.02.2013
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef CLUSTERINGREADER_H_
-#define CLUSTERINGREADER_H_
+#ifndef PARTITIONREADER_H_
+#define PARTITIONREADER_H_
 
 #include <fstream>
 
@@ -15,13 +15,13 @@
 
 namespace NetworKit {
 
-class ClusteringReader {
+class PartitionReader {
 
 public:
 
-	ClusteringReader();
+	PartitionReader();
 
-	virtual ~ClusteringReader();
+	virtual ~PartitionReader();
 
 	/**
 	 * Read a clustering from a file. File format:
@@ -33,4 +33,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CLUSTERINGREADER_H_ */
+#endif /* PARTITIONREADER_H_ */

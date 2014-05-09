@@ -10,7 +10,7 @@
 
 #include "../community/ClusteringGenerator.h"
 #include "../community/EdgeCut.h"
-#include "../io/ClusteringWriter.h"
+#include "../io/PartitionWriter.h"
 #include "../structures/Partition.h"
 #include "../coarsening/MatchingContracter.h"
 #include "../matching/ParallelMatcher.h"

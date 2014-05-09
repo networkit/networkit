@@ -1,12 +1,12 @@
 /*
- * SNAPEdgeListClusteringReader.h
+ * SNAPEdgeListPartitionReader.h
  *
  *  Created on: Jun 20, 2013
  *      Author: forigem
  */
 
-#ifndef SNAPEDGELISTCLUSTERINGREADER_H_
-#define SNAPEDGELISTCLUSTERINGREADER_H_
+#ifndef SNAPEDGELISTPARTITIONREADER_H_
+#define SNAPEDGELISTPARTITIONREADER_H_
 
 #include <unordered_set>
 #include <vector>
@@ -20,14 +20,14 @@ namespace NetworKit {
 /**
  * Reads the clustering files from the SNAP collection.
  */
-class SNAPEdgeListClusteringReader {
+class SNAPEdgeListPartitionReader {
 public:
-	SNAPEdgeListClusteringReader();
-	virtual ~SNAPEdgeListClusteringReader();
+	SNAPEdgeListPartitionReader();
+	virtual ~SNAPEdgeListPartitionReader();
 
 	virtual std::vector<std::set<node>>  read(std::string path);
 
 };
 
 } /* namespace NetworKit */
-#endif /* SNAPEDGELISTCLUSTERINGREADER_H_ */
+#endif /* SNAPEDGELISTPARTITIONREADER_H_ */
