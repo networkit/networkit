@@ -1,5 +1,5 @@
-#ifndef EDGELISTCLUSTERING_H_
-#define EDGELISTCLUSTERING_H_
+#ifndef EDGELISTPARTITION_H_
+#define EDGELISTPARTITION_H_
 
 #include <fstream>
 
@@ -10,13 +10,13 @@
 
 namespace NetworKit {
 
-class EdgeListClusteringReader {
+class EdgeListPartitionReader {
 
 public:
 
-	EdgeListClusteringReader(node firstNode=1);
+	EdgeListPartitionReader(node firstNode=1);
 
-	virtual ~EdgeListClusteringReader();
+	virtual ~EdgeListPartitionReader();
 
 	/**
 	 * Read a clustering from a file. File format:
@@ -33,4 +33,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CLUSTERINGREADER_H_ */
+#endif /* PARTITIONREADER_H_ */

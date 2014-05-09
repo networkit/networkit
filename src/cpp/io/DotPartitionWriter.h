@@ -1,9 +1,9 @@
 /*
- * DotClusteringWriter.h
+ * DotPartitionWriter.h
  */
 
-#ifndef DOTCLUSTERINGWRITER_H_
-#define DOTCLUSTERINGWRITER_H_
+#ifndef DOTPARTITIONWRITER_H_
+#define DOTPARTITIONWRITER_H_
 
 #include <fstream>
 
@@ -12,12 +12,12 @@
 
 namespace NetworKit {
 
-class DotClusteringWriter {
+class DotPartitionWriter {
 
 public:
-    DotClusteringWriter();
+    DotPartitionWriter();
 
-    virtual ~DotClusteringWriter();
+    virtual ~DotPartitionWriter();
 
     virtual void write(Graph& graph, Partition& zeta, std::string path) const;
 
@@ -25,4 +25,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CLUSTERINGWRITER_H_ */
+#endif /* DOTPARTITIONGWRITER_H_ */

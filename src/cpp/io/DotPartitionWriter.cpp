@@ -1,24 +1,24 @@
 /*
- * ClusteringWriter.cpp
+ * DotPartitionWriter.cpp
  */
 
-#include "DotClusteringWriter.h"
+#include "DotPartitionWriter.h"
 
 #include <map>
 #include <set>
 
 namespace NetworKit {
 
-DotClusteringWriter::DotClusteringWriter() {
+DotPartitionWriter::DotPartitionWriter() {
 	// TODO Auto-generated constructor stub
 
 }
 
-DotClusteringWriter::~DotClusteringWriter() {
+DotPartitionWriter::~DotPartitionWriter() {
 	// TODO Auto-generated destructor stub
 }
 
-std::map<index, double> DotClusteringWriter::createHueMap(Graph &graph, Partition& zeta) const {
+std::map<index, double> DotPartitionWriter::createHueMap(Graph &graph, Partition& zeta) const {
     std::set<index> uniqueIds;
 
     graph.forNodes([&](node u){
@@ -41,7 +41,7 @@ std::map<index, double> DotClusteringWriter::createHueMap(Graph &graph, Partitio
     return clusterHueMap;
 }
 
-void DotClusteringWriter::write(Graph& graph, Partition& zeta, std::string path) const {
+void DotPartitionWriter::write(Graph& graph, Partition& zeta, std::string path) const {
 	std::ofstream file;
 	file.open(path.c_str());
 

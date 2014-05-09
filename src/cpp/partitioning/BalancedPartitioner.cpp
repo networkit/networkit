@@ -7,6 +7,13 @@
 
 #include "BalancedPartitioner.h"
 
+#include "../community/ClusteringGenerator.h"
+#include "../community/EdgeCut.h"
+#include "../io/PartitionWriter.h"
+#include "../coarsening/MatchingContracter.h"
+#include "../matching/ParallelMatcher.h"
+#include "../coarsening/ClusteringProjector.h"
+
 namespace NetworKit {
 
 BalancedPartitioner::BalancedPartitioner(): balance(1.0) {

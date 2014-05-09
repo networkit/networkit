@@ -1,24 +1,24 @@
 /*
- * SNAPEdgeListClusteringReader.cpp
+ * SNAPEdgeListPartitionReader.cpp
  *
  *  Created on: Jun 20, 2013
  *      Author: forigem
  */
 
-#include "SNAPEdgeListClusteringReader.h"
+#include "SNAPEdgeListPartitionReader.h"
 
 namespace NetworKit {
 
-SNAPEdgeListClusteringReader::SNAPEdgeListClusteringReader() {
+SNAPEdgeListPartitionReader::SNAPEdgeListPartitionReader() {
 	// TODO Auto-generated constructor stub
 
 }
 
-SNAPEdgeListClusteringReader::~SNAPEdgeListClusteringReader() {
+SNAPEdgeListPartitionReader::~SNAPEdgeListPartitionReader() {
 	// TODO Auto-generated destructor stub
 }
 
-std::vector<std::set<node>> SNAPEdgeListClusteringReader::read(std::string path) {
+std::vector<std::set<node>> SNAPEdgeListPartitionReader::read(std::string path) {
 	std::ifstream file(path);
 
 	// check if file readable
