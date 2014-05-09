@@ -13,13 +13,10 @@
 
 namespace NetworKit {
 
-PageRankNibble::PageRankNibble(Graph& g): G(g) {
+PageRankNibble::PageRankNibble(Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {
 
 }
 
-PageRankNibble::~PageRankNibble() {
-
-}
 
 
 std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
@@ -78,13 +75,21 @@ std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
 }
 
 
-std::set<node> PageRankNibble::run(node seed, double alpha, double epsilon) {
+std::set<node> PageRankNibble::expandSeed(node seed) {
 	DEBUG("APR(G, ", alpha, ", ", epsilon, ")");
 	ApproximatePageRank apr(G, alpha, epsilon);
 	std::vector<double> pr = apr.run(seed);
 
 	std::set<node> cluster = bestSweepSet(pr);
 	return cluster;
+}
+
+void PageRankNibble::run(std::set<unsigned int>& seeds) {
+	result.clear();
+	for (auto seed : seeds) {
+		auto community = expandSeed(seed);
+		result[seed] = community;
+	}
 }
 
 } /* namespace NetworKit */

@@ -24,7 +24,7 @@ namespace NetworKit {
 
 
 /**
- * Implements a partition of a set, i.e. a subdivision of the 
+ * Implements a partition of a set, i.e. a subdivision of the
  * set into disjoint subsets.
  */
 class Partition {
@@ -206,7 +206,7 @@ public:
 	 * Get the current number of sets in this partition.
 	 */
 	count numberOfSubsets() const;
-	
+
 	/**
 	 * Get the acutal vector representing the partition datastructure.
 	 * @return vector containing information about partitions
@@ -214,16 +214,16 @@ public:
 	std::vector<index> getVector();
 
 
-	/** 
+	/**
 	 * @return the subsets of the partition as a set of sets.
 	 */
 	std::set<std::set<index> > getSubsets();
 
-	/** 
-	 * @return ids of nonempty subsets 
+	/**
+	 * @return ids of nonempty subsets
 	 */
 	std::set<index> getSubsetIds();
-	 
+
 	/**
 	 * Set a human-readable identifier for the instance.
 	 */
@@ -234,7 +234,7 @@ public:
 	 * Get the human-readable identifier
 	 */
 	std::string getName() const;
-	 
+
 	/**
 	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
 	 */

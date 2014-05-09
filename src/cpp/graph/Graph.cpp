@@ -508,7 +508,7 @@ std::vector<std::pair<node, node> > Graph::edges() {
 }
 
 
-std::vector<node> Graph::neighbors(node u) {
+std::vector<node> Graph::neighbors(node u) const {
 	std::vector<node> neighbors;
 	this->forNeighborsOf(u, [&](node v) {
 		neighbors.push_back(v);
