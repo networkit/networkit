@@ -66,12 +66,11 @@ node DirectedGraph::addNode() {
 		this->eweights.push_back(_Vector<edgeweight>{});
 	}
 
-	// TODO: support attributes in directed graph
 	// update edge attribute data structures
-	// for (int attrId = 0; attrId < (int) this->edgeMaps_double.size(); ++attrId) {
-	// 	std::vector<double> attrVector;
-	// 	this->edgeMaps_double[attrId].push_back(attrVector);
-	// }
+	for (int attrId = 0; attrId < (int) this->edgeMaps_double.size(); ++attrId) {
+		std::vector<double> attrVector;
+		this->edgeMaps_double[attrId].push_back(attrVector);
+	}
 
 	return v;
 }
@@ -134,13 +133,12 @@ void DirectedGraph::addEdge(node u, node v, edgeweight weight) {
 	}
 	this->inOut[v]++;
 
-	// TODO: support attributes in directed graph
-	// // loop over all attributes, setting default attr
-	// for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
-	// 	double defaultAttr = this->edgeAttrDefaults_double[attrId];
-	// 	this->edgeMaps_double[attrId][u].push_back(defaultAttr);
-	// 	this->edgeMaps_double[attrId][v].push_back(defaultAttr);
-	// }
+	// loop over all attributes, setting default attr
+	for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
+		double defaultAttr = this->edgeAttrDefaults_double[attrId];
+		this->edgeMaps_double[attrId][u].push_back(defaultAttr);
+		this->edgeMaps_double[attrId][v].push_back(defaultAttr);
+	}
 }
 
 void DirectedGraph::removeEdge(node u, node v) {
