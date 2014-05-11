@@ -21,7 +21,7 @@ namespace NetworKit {
 /**
  * Interface for all directed graph classes. Every graph class has to implement all interface methods.
  */
-class IDGraph {
+class IDGraph : public virtual IGraph {
 
 public:
 
