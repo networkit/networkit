@@ -5,16 +5,17 @@
  */
 
 #include "Graph.h"
+#include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
-
-// TODO: z should probably be n-1, but it breaks some tests
 Graph::Graph(count n, bool weighted):
 	AbstractGraph(n, weighted),
 	deg(z, 0),
 	adja(z) {
-	if (weighted) eweights.resize(z); // edge weight array is only initialized for weighted graphs
+	if (weighted) {
+		eweights.resize(z); // edge weight array is only initialized for weighted graphs
+	}
 }
 
 Graph::~Graph() {
@@ -73,10 +74,65 @@ node Graph::addNode(float x, float y) {
 
 /** NODE PROPERTIES **/
 
+bool Graph::isIsolated(node v) const {
+	return this->deg[v] == 0;
+}
+
 count Graph::degree(node v) const {
 	assert (v >= 0);
-	assert (v <= this->z); // node ids must be in range
+	assert (v < this->z);
+	assert (exists[v]);
 	return this->deg[v];
+}
+
+count Graph::minDegree() const {
+	return *std::min_element(deg.begin(), deg.end());
+}
+
+node Graph::argminDegree() const {
+	return std::distance(deg.begin(), std::min_element(deg.begin(), deg.end()));
+}
+
+count Graph::maxDegree() const {
+	return *std::max_element(deg.begin(), deg.end());
+}
+
+node Graph::argmaxDegree() const {
+	return std::distance(deg.begin(), std::max_element(deg.begin(), deg.end()));
+}
+
+edgeweight Graph::weightedDegree(node v) const {
+	if (weighted) {
+		// weighted degree as sum over incident edge weight - self-loops are counted once
+		edgeweight wDeg = 0.0;
+		for (edgeweight w : this->eweights[v]) {
+			wDeg += w;
+		}
+		return wDeg;
+	} else {
+		return this->degree(v);
+	}
+
+}
+
+edgeweight Graph::volume(node v) const {
+	edgeweight vol = this->weightedDegree(v);
+	vol += this->weight(v, v);
+	return vol;
+}
+
+node Graph::randomNeighbor(node v) const {
+	if (degree(v) == 0) {
+		TRACE("random neighbor: none");
+		return none;
+	}
+
+	node randNeigh;
+	do {
+		randNeigh = adja[v][Aux::Random::integer(adja[v].size())];
+	} while (randNeigh == none);
+
+	return randNeigh;
 }
 
 
@@ -213,17 +269,7 @@ node Graph::mergeEdge(node u, node v, bool discardSelfLoop) {
 }
 
 
-/** GLOBAL PROPERTIES **/
-
-bool Graph::isDirected() const {
-	return false;
-}
-
-
-
-
-
-/** OLD STUFF **/
+/** EDGE ATTRIBUTES **/
 
 edgeweight Graph::weight(node u, node v) const {
 	index vi = find(u, v);
@@ -239,79 +285,71 @@ edgeweight Graph::weight(node u, node v) const {
 }
 
 void Graph::setWeight(node u, node v, edgeweight w) {
-	if (weighted) {
-		if (u == v) { 		// self-loop case
-			index ui = find(u, u);
-			if (ui != none) {
-				this->eweights[u][ui] = w;
-			} else {
-				addEdge(u, u, w);
-			}
+	if (!weighted) {
+		throw std::runtime_error("this is an unweighted graph");	
+	}
+	if (u == v) {
+		// self-loop case
+		index ui = find(u, u);
+		if (ui != none) {
+			this->eweights[u][ui] = w;
 		} else {
-			index vi = find(u, v);
-			index ui = find(v, u);
-			if ((vi != none) && (ui != none)) {
-				this->eweights[u][vi] = w;
-				this->eweights[v][ui] = w;
-			} else {
-				addEdge(u, v, w);
-			}
+			addEdge(u, u, w);
 		}
-	} else throw std::runtime_error("this is an unweighted graph");
+	} else {
+		index vi = find(u, v);
+		index ui = find(v, u);
+		if ((vi != none) && (ui != none)) {
+			this->eweights[u][vi] = w;
+			this->eweights[v][ui] = w;
+		} else {
+			addEdge(u, v, w);
+		}
+	}
 }
 
 void Graph::increaseWeight(node u, node v, edgeweight w) {
-	if (weighted) {
-		if (this->hasEdge(u, v)) {
-			this->setWeight(u, v, w + this->weight(u, v));
-		} else {
-			this->addEdge(u, v, w);
-		}
-	} else throw std::runtime_error("this is an unweighted graph");
-
-}
-
-edgeweight Graph::weightedDegree(node v) const {
-	if (weighted) {
-		// weighted degree as sum over incident edge weight - self-loops are counted once
-		edgeweight wDeg = 0.0;
-		for (edgeweight w : this->eweights[v]) {
-			wDeg += w;
-		}
-		return wDeg;
-	} else {
-		return this->degree(v);
+	if (!weighted) {
+		throw std::runtime_error("this is an unweighted graph");
 	}
-
+	if (this->hasEdge(u, v)) {
+		this->setWeight(u, v, w + this->weight(u, v));
+	} else {
+		this->addEdge(u, v, w);
+	}
 }
 
+int Graph::addEdgeAttribute_double(double defaultValue) {
+	int attrId = this->edgeMaps_double.size();
 
-edgeweight Graph::volume(node v) const {
-	edgeweight vol = this->weightedDegree(v);
-	vol += this->weight(v, v);
-	return vol;
-}
-
-
-
-edgeweight Graph::totalEdgeWeight() const {
-	if (weighted) {
-		edgeweight sum = 0.0;
-		this->forWeightedEdges([&](node u, node v, edgeweight ew) {
-			sum += ew;
+	std::vector<std::vector<double> > edgeMap(z);
+	if (this->numberOfEdges() > 0) {
+		forNodes([&] (node v) {
+			// create edgeMaps and fill them with default value
+			edgeMap[v].resize(adja[v].size());
+			fill(edgeMap[v].begin(), edgeMap[v].end(), defaultValue);
 		});
-		return sum;
-	} else {
-		return this->numberOfEdges() * 1.0;
 	}
+	
+	this->edgeMaps_double.push_back(edgeMap);
+	this->edgeAttrDefaults_double.push_back(defaultValue);
 
+	return attrId;
 }
 
+double Graph::attribute_double(node u, node v, int attrId) const {
+	assert (attrId < (int) this->edgeMaps_double.size());
+	index vi = find(u, v);
+	if (vi != none) {
+		return this->edgeMaps_double[attrId][u][vi];
+	} else {
+		throw std::runtime_error("What if edge does not exist?");
+	}
+}
 
 void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
-
-
-	if (u == v) { 		// self-loop case
+	if (u == v) {
+		// self-loop case
 		index ui = find(u, u);
 		if (ui != none) {
 			this->edgeMaps_double.at(attrId)[u][ui] = attr;
@@ -322,13 +360,6 @@ void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 		index vi = find(u, v);
 		index ui = find(v, u);
 		if ((vi != none) && (ui != none)) {
-//			// DEBUG
-//			int s = this->edgeMaps_double.size();
-//			int sm = this->edgeMaps_double[attrId].size();
-//			int smu = this->edgeMaps_double[attrId][u].size();
-//			int smv = this->edgeMaps_double[attrId][v].size();
-//			// DEBUG
-
 			this->edgeMaps_double[attrId][u][vi] = attr;
 			this->edgeMaps_double[attrId][v][ui] = attr;
 		} else {
@@ -337,138 +368,11 @@ void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 	}
 }
 
-double Graph::attribute_double(node u, node v, int attrId) const {
-	assert (attrId < (int) this->edgeMaps_double.size());
-	index vi = find(u, v);
-	if (vi != none) {
-		return this->edgeMaps_double[attrId][u][vi];
-	} else {
-		throw std::runtime_error("TODO: what if edge does not exist?");
-	}
 
+/** GLOBAL PROPERTIES **/
+
+bool Graph::isDirected() const {
+	return false;
 }
-
-
-
-int Graph::addEdgeAttribute_double(double defaultValue) {
-	int attrId = this->edgeMaps_double.size();
-	std::vector<std::vector<double> > edgeMap;
-	edgeMap.resize(this->n);	// create empty vector<attr> for each node
-	this->edgeAttrDefaults_double.push_back(defaultValue);
-
-	if (this->numberOfEdges() > 0) {
-		forNodes([&] (node v) {
-			// create edgeMaps and fill them with default value
-			edgeMap[v].resize(adja[v].size());
-			fill(edgeMap[v].begin(), edgeMap[v].end(), defaultValue);
-		});
-//		throw std::runtime_error("TODO: set attributes for already existing edges");
-	}
-	this->edgeMaps_double.push_back(edgeMap);
-
-	return attrId;
-}
-
-std::vector<node> Graph::nodes() {
-	std::vector<node> nodes;
-	this->forNodes([&](node u){
-		nodes.push_back(u);
-	});
-	return nodes;
-}
-
-
-count Graph::minDegree() const {
-	count mindeg = this->degree(0);
-
-	this->forNodes([&](node v) {
-		if (this->degree(v) < mindeg)
-      mindeg = this->degree(v);
-	});
-
-	return mindeg;
-}
-
-index Graph::argminDegree() const {
-	index argmin = 0;
-	count mindeg = this->degree(argmin);
-
-	this->forNodes([&](node v) {
-		if (this->degree(v) < mindeg) {
-			argmin = v;
-			mindeg = this->degree(v);
-		}
-	});
-
-	return argmin;
-}
-
-count Graph::maxDegree() const {
-	count maxdeg = this->degree(0);
-
-	this->forNodes([&](node v) {
-		if (this->degree(v) > maxdeg)
-      maxdeg = this->degree(v);
-	});
-
-	return maxdeg;
-}
-
-index Graph::argmaxDegree() const {
-	index argmax = 0;
-	count maxdeg = this->degree(argmax);
-
-	this->forNodes([&](node v) {
-		if (this->degree(v) > maxdeg) {
-			argmax = v;
-			maxdeg = this->degree(v);
-		}
-	});
-
-	return argmax;
-}
-
-
-node Graph::randomNeighbor(node v) const {
-	count deg = degree(v);
-	if (deg == 0) {
-		TRACE("random neighbor: none");
-		return none;
-	}
-
-	/* TODO: move to Aux (actually already there),
-	 * BUT beware of performance implications!!!
-	 */
-	auto generateFast([&](index lower, index upper) {
-		index diff = upper - lower + 1;
-		index r = rand() % diff;
-		r += lower;
-		return r;
-	});
-
-	index randIdx = generateFast(0, deg-1);
-	assert(randIdx < deg);
-	node randNeigh = adja[v][randIdx];
-	return randNeigh;
-}
-
-std::vector<std::pair<node, node> > Graph::edges() {
-	std::vector<std::pair<node, node> > edges;
-	this->forEdges([&](node u, node v){
-		edges.push_back(std::pair<node, node>(u, v));
-	});
-	return edges;
-}
-
-
-std::vector<node> Graph::neighbors(node u) {
-	std::vector<node> neighbors;
-	this->forNeighborsOf(u, [&](node v) {
-		neighbors.push_back(v);
-	});
-	return neighbors;
-}
-
-
 
 } /* namespace NetworKit */

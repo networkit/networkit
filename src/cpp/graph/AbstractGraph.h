@@ -151,12 +151,6 @@ public:
 	/** NODE PROPERTIES **/
 
 	/**
-	 * Return the number of neighbors for node v. For directed graphs this is the sum of
-	 * in- and outgoing edges.
-	 */
-	virtual count degree(node v) const = 0;
-
-	/**
 	 * @return random node of the graph
 	 */
 	virtual node randomNode() const;
@@ -228,6 +222,27 @@ public:
 	virtual float maxCoordinate(count dim);
 
 	virtual void initCoordinates();
+
+	/** SUMS **/
+	edgeweight totalEdgeWeight() const;
+
+	/** Collections **/
+
+	/**
+	 * Return list of nodes
+	 */
+	std::vector<node> nodes() const;
+
+	/**
+	 * Return list of edges as node pairs.
+	 */
+	std::vector<std::pair<node, node> > edges() const;
+
+
+	/**
+	 * Return list of neighbors for given node.
+	 */
+	std::vector<node> neighbors(node u) const;
 
 
 	/** NODE ITERATORS **/

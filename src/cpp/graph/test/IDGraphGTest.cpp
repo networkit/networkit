@@ -38,30 +38,30 @@ TYPED_TEST(IDGraphGTest, degreeInOut) {
 	G.addEdge(3, 1);
 	G.addEdge(4, 3);
 
-	ASSERT_EQ(G.degreeIn(0), 0);
-	ASSERT_EQ(G.degreeIn(1), 2);
-	ASSERT_EQ(G.degreeIn(2), 0);
-	ASSERT_EQ(G.degreeIn(3), 2);
-	ASSERT_EQ(G.degreeIn(4), 0);
-	ASSERT_EQ(G.degreeOut(0), 1);
-	ASSERT_EQ(G.degreeOut(1), 1);
-	ASSERT_EQ(G.degreeOut(2), 0);
-	ASSERT_EQ(G.degreeOut(3), 1);
-	ASSERT_EQ(G.degreeOut(4), 1);
+	ASSERT_EQ(0, G.degreeIn(0));
+	ASSERT_EQ(2, G.degreeIn(1));
+	ASSERT_EQ(0, G.degreeIn(2));
+	ASSERT_EQ(2, G.degreeIn(3));
+	ASSERT_EQ(0, G.degreeIn(4));
+	ASSERT_EQ(1, G.degreeOut(0));
+	ASSERT_EQ(1, G.degreeOut(1));
+	ASSERT_EQ(0, G.degreeOut(2));
+	ASSERT_EQ(1, G.degreeOut(3));
+	ASSERT_EQ(1, G.degreeOut(4));
 
 	G.addEdge(3, 3);
 	G.removeEdge(0, 1);
 
-	ASSERT_EQ(G.degreeIn(0), 0);
-	ASSERT_EQ(G.degreeIn(1), 1);
-	ASSERT_EQ(G.degreeIn(2), 0);
-	ASSERT_EQ(G.degreeIn(3), 3);
-	ASSERT_EQ(G.degreeIn(4), 0);
-	ASSERT_EQ(G.degreeOut(0), 0);
-	ASSERT_EQ(G.degreeOut(1), 1);
-	ASSERT_EQ(G.degreeOut(2), 0);
-	ASSERT_EQ(G.degreeOut(3), 2);
-	ASSERT_EQ(G.degreeOut(4), 1);
+	ASSERT_EQ(0, G.degreeIn(0));
+	ASSERT_EQ(1, G.degreeIn(1));
+	ASSERT_EQ(0, G.degreeIn(2));
+	ASSERT_EQ(3, G.degreeIn(3));
+	ASSERT_EQ(0, G.degreeIn(4));
+	ASSERT_EQ(0, G.degreeOut(0));
+	ASSERT_EQ(1, G.degreeOut(1));
+	ASSERT_EQ(0, G.degreeOut(2));
+	ASSERT_EQ(2, G.degreeOut(3));
+	ASSERT_EQ(1, G.degreeOut(4));
 }
 
 } /* namespace NetworKit */

@@ -6,6 +6,7 @@
  */
 
 #include <stdexcept>
+#include <algorithm>
 
 #include "AbstractGraph.h"
 #include "../auxiliary/Random.h"
@@ -66,7 +67,7 @@ void AbstractGraph::removeNode(node v) {
 	assert (v < z);
 	assert (this->exists[v]);
 
-	if (degree(v) > 0) {
+	if (!this->isIsolated(v)) {
 		throw std::runtime_error("nodes must have degree 0 before they can be removed");
 	}
 
@@ -152,5 +153,48 @@ float AbstractGraph::maxCoordinate(count dim) {
 void AbstractGraph::initCoordinates() {
 	coordinates.init(z);
 }
+
+/** SUMS **/
+edgeweight AbstractGraph::totalEdgeWeight() const {
+	if (weighted) {
+		edgeweight sum = 0.0;
+		this->forWeightedEdges([&](node u, node v, edgeweight ew) {
+			sum += ew;
+		});
+		return sum;
+	} else {
+		return this->numberOfEdges() * this->defaultEdgeWeight;
+	}
+}
+
+/** Collections **/
+
+std::vector<node> AbstractGraph::nodes() const {
+	std::vector<node> nodes;
+	this->forNodes([&](node u){
+		nodes.push_back(u);
+	});
+	return nodes;
+}
+
+std::vector<std::pair<node, node> > AbstractGraph::edges() const {
+	std::vector<std::pair<node, node> > edges;
+	this->forEdges([&](node u, node v){
+		edges.push_back(std::pair<node, node>(u, v));
+	});
+	return edges;
+}
+
+std::vector<node> AbstractGraph::neighbors(node u) const {
+	std::vector<node> neighbors;
+	// TODO
+	// this->forNeighborsOf(u, [&](node v) {
+	// 	neighbors.push_back(v);
+	// });
+	return neighbors;
+}
+
+
+
 
 } /* namespace NetworKit */

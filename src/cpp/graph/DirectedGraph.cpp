@@ -86,24 +86,16 @@ node DirectedGraph::addNode(float x, float y) {
 
 /** NODE PROPERTIES **/
 
-count DirectedGraph::degree(node v) const {
-	assert (v >= 0);
-	assert (v < this->z); // node ids must be in range
-	return this->deg[v].total();
+bool DirectedGraph::isIsolated(node v) const {
+	return (this->deg[v].in == 0) && (this->deg[v].out == 0);
 }
 
-count DirectedGraph::degreeIn(node v) const {
+DirectedGraph::NodeDegree DirectedGraph::degree(node v) const {
 	assert (v >= 0);
-	assert (v < this->z); // node ids must be in range
-	return this->deg[v].in;
+	assert (v < this->z);
+	assert (this->exists[v]);
+	return this->deg[v];
 }
-
-count DirectedGraph::degreeOut(node v) const {
-	assert (v >= 0);
-	assert (v < this->z); // node ids must be in range
-	return this->deg[v].out;
-}
-
 
 /** EDGE MODIFIERS **/
 
@@ -181,6 +173,88 @@ void DirectedGraph::removeEdge(node u, node v) {
 
 bool DirectedGraph::hasEdge(node u, node v) const {
 	return (findOut(u, v) != none);
+}
+
+
+
+/** EDGE ATTRIBUTES **/
+
+edgeweight DirectedGraph::weight(node u, node v) const {
+	index vi = findOut(u, v);
+	if (vi != none) {
+		if (weighted) {
+			return this->eweights[u][vi];
+		} else {
+			return defaultEdgeWeight;
+		}
+	} else {
+		return 0.0;
+	}
+}
+
+void DirectedGraph::setWeight(node u, node v, edgeweight w) {
+	if (!weighted) {
+		throw std::runtime_error("this is an unweighted graph");	
+	}
+
+	index vi = findOut(u, v);
+	index ui = findIn(v, u);
+	if ((vi != none) && (ui != none)) {
+		this->eweights[u][vi] = w;
+		this->eweights[v][ui] = w;
+	} else {
+		addEdge(u, v, w);
+	}
+}
+
+void DirectedGraph::increaseWeight(node u, node v, edgeweight w) {
+	if (!weighted) {
+		throw std::runtime_error("this is an unweighted graph");
+	}
+	if (this->hasEdge(u, v)) {
+		this->setWeight(u, v, w + this->weight(u, v));
+	} else {
+		this->addEdge(u, v, w);
+	}
+}
+
+int DirectedGraph::addEdgeAttribute_double(double defaultValue) {
+	int attrId = this->edgeMaps_double.size();
+
+	std::vector<std::vector<double> > edgeMap(z);
+	if (this->numberOfEdges() > 0) {
+		forNodes([&] (node v) {
+			// create edgeMaps and fill them with default value
+			edgeMap[v].resize(adja[v].size());
+			fill(edgeMap[v].begin(), edgeMap[v].end(), defaultValue);
+		});
+	}
+	
+	this->edgeMaps_double.push_back(edgeMap);
+	this->edgeAttrDefaults_double.push_back(defaultValue);
+
+	return attrId;
+}
+
+double DirectedGraph::attribute_double(node u, node v, int attrId) const {
+	assert (attrId < (int) this->edgeMaps_double.size());
+	index vi = findOut(u, v);
+	if (vi != none) {
+		return this->edgeMaps_double[attrId][u][vi];
+	} else {
+		throw std::runtime_error("What if edge does not exist?");
+	}
+}
+
+void DirectedGraph::setAttribute_double(node u, node v, int attrId, double attr) {
+	index vi = findOut(u, v);
+	index ui = findIn(v, u);
+	if ((vi != none) && (ui != none)) {
+		this->edgeMaps_double[attrId][u][vi] = attr;
+		this->edgeMaps_double[attrId][v][ui] = attr;
+	} else {
+		throw std::runtime_error("What if edge does not exist?");
+	}
 }
 
 

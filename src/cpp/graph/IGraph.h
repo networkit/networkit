@@ -93,10 +93,9 @@ public:
 	/** NODE PROPERTIES **/
 
 	/**
-	 * Return the number of neighbors for node v. For directed graphs this is the sum of
-	 * in- and outgoing edges.
+	 * @return true if the node is isolated (= degree is 0)
 	 */
-	virtual count degree(node v) const = 0;
+	virtual bool isIsolated(node v) const = 0;
 
 	/**
 	 * @return random node of the graph
@@ -198,6 +197,87 @@ public:
 	virtual float maxCoordinate(count dim) = 0;
 
 	virtual void initCoordinates() = 0;
+
+
+	/** EDGE ATTRIBUTES **/
+
+	/**
+	 * Return edge weight.
+	 *
+	 * Return 0 if edge does not exist.
+	 */
+	virtual edgeweight weight(node u, node v) const = 0;
+
+	/**
+	 * Set the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	virtual void setWeight(node u, node v, edgeweight w) = 0;
+
+	/**
+	 * Increase the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	virtual void increaseWeight(node u, node v, edgeweight w) = 0;
+
+	/**
+	 * Add new edge map for an attribute of type double.
+	 */
+	virtual int addEdgeAttribute_double(double defaultValue) = 0;
+
+	/**
+	 * @return attribute of type double for an edge.
+	 *
+	 * @param[in]	u	node
+	 * @param[in]	v	node
+	 * @param[in]	attrId	attribute id
+	 */
+	virtual double attribute_double(node u, node v, int attrId) const = 0;
+
+	/**
+	 * Set edge attribute of type double If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	attr	double edge attribute
+	 */
+	virtual void setAttribute_double(node u, node v, int attrId, double attr) = 0;
+
+
+	/** SUMS **/
+
+	/**
+	 * @return sum of all edge weights
+	 */
+	virtual edgeweight totalEdgeWeight() const = 0;
+
+
+	/** Collections **/
+
+	/**
+	 * Return list of nodes
+	 */
+	virtual std::vector<node> nodes() const = 0;
+
+	/**
+	 * Return list of edges as node pairs.
+	 */
+	virtual std::vector<std::pair<node, node> > edges() const = 0;
+
+
+	/**
+	 * Return list of neighbors for given node.
+	 */
+	virtual std::vector<node> neighbors(node u) const = 0;
 
 
 	/** NODE ITERATORS **/
@@ -341,6 +421,24 @@ public:
 	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
 	 */
 	template<typename L> void parallelForWeightedEdges(L handle) const {};
+
+	/**
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 *
+	 *	@param[in]	attrId		attribute id
+	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *
+	 */
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) {};
+
+	/**
+	 * Iterate over all edges of the const graph and call handler (lambda closure).
+	 *
+	 *	@param[in]	attrId		attribute id
+	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *
+	 */
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const {};
 };
 
 
