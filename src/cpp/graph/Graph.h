@@ -119,6 +119,35 @@ public:
 	virtual count degree(node v) const;
 
 
+	/** EDGE MODIFIERS **/
+
+	/**
+	 * Insert an undirected edge between two nodes.
+	 */
+	void addEdge(node u, node v, edgeweight weight = defaultEdgeWeight);
+
+	/**
+	 * Remove undirected edge between two nodes.
+	 */
+	void removeEdge(node u, node v);
+
+	/**
+	 * Check if undirected edge {u,v} exists in G
+	 *
+	 */
+	bool hasEdge(node u, node v) const;
+
+	/**
+	 * Merges edge {u,v} to become a supernode. Edges to u and v are
+	 * rewired, multiple edges merged and their weights added.
+	 * The vertex weights of @a u and @a v are added.
+	 * A self-loop is only created if @a discardSelfLoop is set to false.
+	 *
+	 * @return New node that has been created if u != v. Otherwise none.
+	 */
+	node mergeEdge(node u, node v, bool discardSelfLoop = true);
+
+
 	/** GLOBAL PROPERTIES **/
 
 	/** 
@@ -185,34 +214,6 @@ public:
 
 	/** OLD STUFF **/
 
-
-	/**
-	 * Insert an undirected edge between two nodes.
-	 *
-	 * @param[]
-	 */
-	void addEdge(node u, node v, edgeweight weight = defaultEdgeWeight);
-
-	/**
-	 * Check if undirected edge {u,v} exists in G
-	 *
-	 */
-	bool hasEdge(node u, node v) const;
-
-	/**
-	 * Remove undirected edge between two nodes.
-	 */
-	void removeEdge(node u, node v);
-
-	/**
-	 * Merges edge {u,v} to become a supernode. Edges to u and v are
-	 * rewired, multiple edges merged and their weights added.
-	 * The vertex weights of @a u and @a v are added.
-	 * A self-loop is only created if @a discardSelfLoop is set to false.
-	 *
-	 * @return New node that has been created if u != v. Otherwise none.
-	 */
-	node mergeEdge(node u, node v, bool discardSelfLoop = true);
 
 
 	/**

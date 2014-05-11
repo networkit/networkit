@@ -135,15 +135,15 @@ public:
 	void addEdge(node u, node v, edgeweight weight = defaultEdgeWeight);
 
 	/**
+	 * Remove directed edge between from @a u to @a v.
+	 */
+	void removeEdge(node u, node v);
+
+	/**
 	 * Check if directed edge {u,v} exists.
 	 *
 	 */
 	bool hasEdge(node u, node v) const;
-
-	/**
-	 * Remove directed edge between from @a u to @a v.
-	 */
-	// void removeEdge(node u, node v);
 
 	/**
 	 * Merges edge {u,v} to become a supernode. Edges to u and v are

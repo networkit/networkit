@@ -104,6 +104,35 @@ public:
 	virtual node randomNode() const = 0;
 
 
+	/** EDGE MODIFIERS **/
+
+	/**
+	 * Insert an directed edge between from @a u to @a v.
+	 */
+	void addEdge(node u, node v, edgeweight weight);
+
+	/**
+	 * Remove directed edge between from @a u to @a v.
+	 */
+	void removeEdge(node u, node v);
+
+	/**
+	 * Check if directed edge {u,v} exists.
+	 *
+	 */
+	bool hasEdge(node u, node v) const;
+
+	/**
+	 * Merges edge {u,v} to become a supernode. Edges to u and v are
+	 * rewired, multiple edges merged and their weights added.
+	 * The vertex weights of @a u and @a v are added.
+	 * A self-loop is only created if @a discardSelfLoop is set to false.
+	 *
+	 * @return New node that has been created if u != v. Otherwise none.
+	 */
+	// node mergeEdge(node u, node v, bool discardSelfLoop = true);
+
+
 	/** GLOBAL PROPERTIES **/
 
 	/**

@@ -25,9 +25,31 @@ IGraphGTest<T>::~IGraphGTest() {
 	// TODO Auto-generated destructor stub
 }
 
-TYPED_TEST_CASE_P(IGraphGTest);
+using testing::Types;
+typedef Types<Graph, DirectedGraph> graphImplementations;
 
-TYPED_TEST_P(IGraphGTest, addNode) {
+TYPED_TEST_CASE(IGraphGTest, graphImplementations);
+
+
+TYPED_TEST(IGraphGTest, isEmpty) {
+	TypeParam G1(0);
+	TypeParam G2(2);
+
+	ASSERT_TRUE(G1.isEmpty());
+	ASSERT_FALSE(G2.isEmpty());
+
+	node v = G1.addNode();
+	G2.removeNode(G2.randomNode());
+	ASSERT_FALSE(G1.isEmpty());
+	ASSERT_FALSE(G2.isEmpty());
+
+	G1.removeNode(v);
+	G2.removeNode(G2.randomNode());
+	ASSERT_TRUE(G1.isEmpty());
+	ASSERT_TRUE(G2.isEmpty());
+}
+
+TYPED_TEST(IGraphGTest, addNode) {
 	TypeParam G(0);
 
 	ASSERT_FALSE(G.hasNode(0));
@@ -53,7 +75,7 @@ TYPED_TEST_P(IGraphGTest, addNode) {
 	ASSERT_EQ(G2.numberOfNodes(), 4);
 }
 
-TYPED_TEST_P(IGraphGTest, removeNode) {
+TYPED_TEST(IGraphGTest, removeNode) {
 	TypeParam G(4);
 	G.addEdge(0, 1);
 
@@ -83,14 +105,46 @@ TYPED_TEST_P(IGraphGTest, removeNode) {
 	ASSERT_FALSE(G.hasNode(3));
 }
 
-REGISTER_TYPED_TEST_CASE_P(IGraphGTest,
-	addNode,
-	removeNode
-);
+TYPED_TEST(IGraphGTest, addEdge) {
+	TypeParam G(3);
 
-INSTANTIATE_TYPED_TEST_CASE_P(IGraph_Graph, IGraphGTest, Graph);
+	ASSERT_EQ(G.numberOfEdges(), 0);
+	ASSERT_FALSE(G.hasEdge(0, 0));
+	ASSERT_FALSE(G.hasEdge(0, 1));
+	ASSERT_FALSE(G.hasEdge(2, 1));
 
-INSTANTIATE_TYPED_TEST_CASE_P(IGraph_DirectedGraph, IGraphGTest, DirectedGraph);
+	G.addEdge(0, 1);
+
+	ASSERT_EQ(G.numberOfEdges(), 1);
+	ASSERT_FALSE(G.hasEdge(0, 0));
+	ASSERT_TRUE(G.hasEdge(0, 1));
+	ASSERT_FALSE(G.hasEdge(2, 1));
+
+	G.addEdge(0, 0);
+
+	ASSERT_EQ(G.numberOfEdges(), 2);
+	ASSERT_TRUE(G.hasEdge(0, 0));
+	ASSERT_TRUE(G.hasEdge(0, 1));
+	ASSERT_FALSE(G.hasEdge(2, 1));
+}
+
+TYPED_TEST(IGraphGTest, removeEdge) {
+	TypeParam G(3);
+
+	G.addEdge(0, 1);
+	G.addEdge(0, 0);
+
+	ASSERT_EQ(G.numberOfEdges(), 2);
+	ASSERT_TRUE(G.hasEdge(0, 0));
+	ASSERT_TRUE(G.hasEdge(0, 1));
+	ASSERT_FALSE(G.hasEdge(2, 1));
+
+	G.removeEdge(0, 1);
+	ASSERT_EQ(G.numberOfEdges(), 1);
+	ASSERT_TRUE(G.hasEdge(0, 0));
+	ASSERT_FALSE(G.hasEdge(0, 1));
+	ASSERT_FALSE(G.hasEdge(2, 1));
+}
 
 } /* namespace NetworKit */
 

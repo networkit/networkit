@@ -151,36 +151,37 @@ void DirectedGraph::addEdge(node u, node v, edgeweight weight) {
 	// }
 }
 
-// void DirectedGraph::removeEdge(node u, node v) {
-// 	// remove adjacency
-// 	index ui = find(v, u);
-// 	index vi = find(u, v);
+void DirectedGraph::removeEdge(node u, node v) {
+	// remove adjacency
+	index ui = findIn(v, u);
+	index vi = findOut(u, v);
 
-// 	if (vi == none) {
-// 		std::stringstream strm;
-// 		strm << "edge (" << u << "," << v << ") does not exist";
-// 		throw std::runtime_error(strm.str());
-// 		// TODO: what if edge does not exist?
-// 	} else {
-// 		this->adja[u][vi] = none;
-// 		this->adja[v][ui] = none;
-// 		// decrement degree counters
-// 		this->deg[u] -= 1;
-// 		if (u != v) { // self-loops are counted only once
-// 			this->deg[v] -= 1;
-// 		}
-// 		if (weighted) {
-// 			// remove edge weight
-// 			this->eweights[u][vi] = this->nullWeight;
-// 			this->eweights[v][ui] = this->nullWeight;
-// 		}
+	if (vi == none) {
+		std::stringstream strm;
+		strm << "edge (" << u << "," << v << ") does not exist";
+		throw std::runtime_error(strm.str());
+	} else {
+		this->adja[u][vi] = none;
+		this->adja[v][ui] = none;
+		// decrement degree counters
+		this->deg[u].out--;
+		this->deg[v].in--;
+		if (weighted) {
+			// remove edge weight
+			this->eweights[u][vi] = this->nullWeight;
+			this->eweights[v][ui] = this->nullWeight;
+		}
 
-// 		// TODO: remove attributes
+		// TODO: remove attributes
 
-// 		m--; // decreasing the number of edges
+		m--; // decreasing the number of edges
 
-// 	}
-// }
+	}
+}
+
+bool DirectedGraph::hasEdge(node u, node v) const {
+	return (findOut(u, v) != none);
+}
 
 
 /** GLOBAL PROPERTIES **/
