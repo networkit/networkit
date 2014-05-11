@@ -36,7 +36,7 @@ template <typename T> using _Vector = std::vector<T>;
 /**
  * An abstract graph class providing general implementations of directed and undirected graphs (with optional weights).
  */
-class AbstractGraph : public IGraph {
+class AbstractGraph : public virtual IGraph {
 
 protected:
 
