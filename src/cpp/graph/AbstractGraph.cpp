@@ -22,7 +22,7 @@ AbstractGraph::AbstractGraph(count n, bool weighted):
 
 	// set name from global id
 	std::stringstream sstm;
-	// sstm << "G#" << graphId;
+	sstm << "G#" << graphId;
 	this->name = sstm.str();
 }
 
@@ -63,6 +63,9 @@ node AbstractGraph::addNode(float x, float y) {
 }
 
 void AbstractGraph::removeNode(node v) {
+	assert (v < z);
+	assert (this->exists[v]);
+
 	if (degree(v) > 0) {
 		throw std::runtime_error("nodes must have degree 0 before they can be removed");
 	}

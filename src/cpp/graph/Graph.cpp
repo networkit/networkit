@@ -80,24 +80,15 @@ count Graph::degree(node v) const {
 }
 
 
-/** GLOBAL PROPERTIES **/
-
-bool Graph::isDirected() const {
-	return false;
-}
-
-
-
-
-
-/** OLD STUFF **/
-
+/** EDGE MODIFIERS **/
 
 void Graph::addEdge(node u, node v, edgeweight weight) {
 	assert (u >= 0);
-	assert (u <= this->z); // TODO: (Marvin) shouldn't it be '<'?
+	assert (u < this->z);
+	assert (this->exists[u]);
 	assert (v >= 0);
-	assert (v <= this->z); // node ids must be in range
+	assert (v < this->z);
+	assert (this->exists[v]);
 
 	if (u == v) { // self-loop case
 		this->adja[u].push_back(u);
@@ -112,8 +103,8 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 		this->adja[u].push_back(v);
 		this->adja[v].push_back(u);
 		// increment degree counters
-		this->deg[u] += 1;
-		this->deg[v] += 1;
+		this->deg[u]++;
+		this->deg[v]++;
 		// set edge weight
 		if (weighted) {
 			this->eweights[u].push_back(weight);
@@ -144,9 +135,9 @@ void Graph::removeEdge(node u, node v) {
 		this->adja[u][vi] = none;
 		this->adja[v][ui] = none;
 		// decrement degree counters
-		this->deg[u] -= 1;
+		this->deg[u]--;
 		if (u != v) { // self-loops are counted only once
-			this->deg[v] -= 1;
+			this->deg[v]--;
 		}
 		if (weighted) {
 			// remove edge weight
@@ -160,6 +151,79 @@ void Graph::removeEdge(node u, node v) {
 
 	}
 }
+
+bool Graph::hasEdge(node u, node v) const {
+	return (find(u, v) != none);
+}
+
+
+node Graph::mergeEdge(node u, node v, bool discardSelfLoop) {
+	DEBUG("merge edge with nodes " , u , " and " , v);
+
+	if (u != v) {
+		node newNode = this->addNode();
+
+		// self-loop if necessary
+		if (! discardSelfLoop) {
+			TRACE("selfLoopWeight");
+			edgeweight selfLoopWeight = this->weight(u, u) + this->weight(v, v) + this->weight(u, v);
+			this->addEdge(newNode, newNode, selfLoopWeight);
+			TRACE("end selfLoopWeight");
+		}
+
+		// rewire edges from u to newNode
+		this->forWeightedEdgesOf(u, [&](node u, node neighbor, edgeweight w) {
+			if (neighbor != u && neighbor != v) {
+				TRACE("neighbor of " , u , ": " , neighbor);
+				this->increaseWeight(neighbor, newNode, this->weight(u, neighbor)); // TODO: make faster
+				TRACE("end neighbor of u");
+			}
+		});
+
+		// rewire edges from v to newNode
+		this->forWeightedEdgesOf(v, [&](node v, node neighbor, edgeweight w) {
+			if (neighbor != v && neighbor != u) {
+				TRACE("neighbor of " , v , ": " , neighbor);
+				this->increaseWeight(neighbor, newNode, this->weight(v, neighbor));  // TODO: make faster
+				TRACE("end neighbor of v");
+			}
+		});
+
+		// delete edges of nodes to delete
+		this->forEdgesOf(u, [&](node u, node neighbor) {
+			this->removeEdge(u, neighbor);
+		});
+		this->forEdgesOf(v, [&](node v, node neighbor) {
+			this->removeEdge(v, neighbor);
+		});
+
+		TRACE("incident edges deleted");
+
+		// delete nodes
+		this->removeNode(u);
+		this->removeNode(v);
+
+		TRACE("u and v deleted");
+
+		return newNode;
+	}
+
+	// no new node created
+	return none;
+}
+
+
+/** GLOBAL PROPERTIES **/
+
+bool Graph::isDirected() const {
+	return false;
+}
+
+
+
+
+
+/** OLD STUFF **/
 
 edgeweight Graph::weight(node u, node v) const {
 	index vi = find(u, v);
@@ -205,10 +269,6 @@ void Graph::increaseWeight(node u, node v, edgeweight w) {
 		}
 	} else throw std::runtime_error("this is an unweighted graph");
 
-}
-
-bool Graph::hasEdge(node u, node v) const {
-	return (find(u, v) != none);
 }
 
 edgeweight Graph::weightedDegree(node v) const {
@@ -390,61 +450,6 @@ node Graph::randomNeighbor(node v) const {
 	assert(randIdx < deg);
 	node randNeigh = adja[v][randIdx];
 	return randNeigh;
-}
-
-node Graph::mergeEdge(node u, node v, bool discardSelfLoop) {
-	DEBUG("merge edge with nodes " , u , " and " , v);
-
-	if (u != v) {
-		node newNode = this->addNode();
-
-		// self-loop if necessary
-		if (! discardSelfLoop) {
-			TRACE("selfLoopWeight");
-			edgeweight selfLoopWeight = this->weight(u, u) + this->weight(v, v) + this->weight(u, v);
-			this->addEdge(newNode, newNode, selfLoopWeight);
-			TRACE("end selfLoopWeight");
-		}
-
-		// rewire edges from u to newNode
-		this->forWeightedEdgesOf(u, [&](node u, node neighbor, edgeweight w) {
-			if (neighbor != u && neighbor != v) {
-				TRACE("neighbor of " , u , ": " , neighbor);
-				this->increaseWeight(neighbor, newNode, this->weight(u, neighbor)); // TODO: make faster
-				TRACE("end neighbor of u");
-			}
-		});
-
-		// rewire edges from v to newNode
-		this->forWeightedEdgesOf(v, [&](node v, node neighbor, edgeweight w) {
-			if (neighbor != v && neighbor != u) {
-				TRACE("neighbor of " , v , ": " , neighbor);
-				this->increaseWeight(neighbor, newNode, this->weight(v, neighbor));  // TODO: make faster
-				TRACE("end neighbor of v");
-			}
-		});
-
-		// delete edges of nodes to delete
-		this->forEdgesOf(u, [&](node u, node neighbor) {
-			this->removeEdge(u, neighbor);
-		});
-		this->forEdgesOf(v, [&](node v, node neighbor) {
-			this->removeEdge(v, neighbor);
-		});
-
-		TRACE("incident edges deleted");
-
-		// delete nodes
-		this->removeNode(u);
-		this->removeNode(v);
-
-		TRACE("u and v deleted");
-
-		return newNode;
-	}
-
-	// no new node created
-	return none;
 }
 
 std::vector<std::pair<node, node> > Graph::edges() {

@@ -179,6 +179,22 @@ TEST_F(GraphGTest, testNodeBFS) {
 //	EXPECT_EQ(4, edgeCount) << "4 edges should have been visited by BFS";
 //}
 
+TEST_F(GraphGTest, testDegree) {
+	Graph G(5);
+
+	G.addEdge(1, 4);
+	G.addEdge(3, 4);
+	G.removeNode(2);
+
+	EXPECT_EQ(G.degree(0), 0) << "degree of node 0 should be 0";
+	EXPECT_EQ(G.degree(1), 1) << "degree of node 1 should be 1";
+	// EXPECT_ANY_THROW(G.degree(2)) << "node 2 should not exist";
+	EXPECT_EQ(G.degree(3), 1) << "degree of node 3 should be 1";
+	EXPECT_EQ(G.degree(4), 2) << "degree of node 4 should be 2";
+	// EXPECT_ANY_THROW(G.degree(5)) << "node 2 should not exist";
+	// EXPECT_ANY_THROW(G.degree(6)) << "node 2 should not exist";
+}
+
 
 TEST_F(GraphGTest, testNodeIteration) {
 	int64_t n = 42;
