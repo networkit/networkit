@@ -195,6 +195,4 @@ std::vector<node> AbstractGraph::neighbors(node u) const {
 }
 
 
-
-
 } /* namespace NetworKit */

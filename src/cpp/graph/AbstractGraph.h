@@ -76,6 +76,18 @@ public:
 	static constexpr double defaultEdgeWeight = 1.0;
 	static constexpr edgeweight nullWeight = 0.0;
 
+	virtual count getMemoryUsage() {
+		count mem = IGraph::getMemoryUsage();
+		mem += sizeof(n);
+		mem += sizeof(m);
+		mem += sizeof(z);
+		mem += sizeof(t);
+		mem += sizeof(weighted);
+		mem += sizeof(exists) + exists.capacity() / 8;
+		mem += name.length();
+		return mem;
+	}
+
 	/** ATTRIBUTE ABSTRACT BASE CLASSES **/
 
 	// class NodeAttribute {

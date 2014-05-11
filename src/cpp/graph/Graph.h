@@ -59,13 +59,13 @@ public:
 
 	/** ATTRIBUTE ABSTRACT BASE CLASSES **/
 
-	class NodeAttribute {
-		// abstract
-	};
+	// class NodeAttribute {
+	// 	// abstract
+	// };
 
-	class EdgeAttribute {
-		// abstract
-	};
+	// class EdgeAttribute {
+	// 	// abstract
+	// };
 
 
 	/** GRAPH INTERFACE **/
@@ -85,6 +85,24 @@ public:
 
 	Graph& operator=(const Graph& other) = default;
 
+	virtual count getMemoryUsage() {
+		count mem = AbstractGraph::getMemoryUsage();
+		mem += sizeof(deg) + sizeof(count) * deg.capacity();
+		
+		mem += sizeof(adja) + sizeof(_Vector<node>) * adja.capacity();
+		for (auto& a : adja) {
+			mem += sizeof(node) * a.capacity();
+		}
+
+		mem += sizeof(eweights) + sizeof(_Vector<edgeweight>) * eweights.capacity();
+		for (auto& w : eweights) {
+			mem += sizeof(edgeweight) * w.capacity();
+		}
+
+		// TODO attribute stuff
+
+		return mem;
+	}
 
 	/** Only to be used from Cython */
 	void stealFrom(Graph& input);
@@ -328,8 +346,7 @@ public:
 	 * Iterate over nodes in breadth-first search order starting from r until connected component
 	 * of r has been visited.
 	 */
-	template<typename L> void breadthFirstNodesFrom(node r,
-			std::vector<int>& marked, L handle);
+	template<typename L> void breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle);
 
 	template<typename L> void BFSfrom(node r, L handle);
 

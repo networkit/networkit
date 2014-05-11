@@ -36,7 +36,7 @@ protected:
 
 public:
 	IGraph() {
-		static uint64_t nextGraphId = 1;
+		static count nextGraphId = 1;
 		graphId = nextGraphId++;
 	}
 
@@ -44,7 +44,9 @@ public:
 	 * Get the ID of this graph. The ID is a unique unsigned integer given to
 	 * every graph on construction.
 	 */
-	uint64_t getId() const { return graphId; }
+	count getId() const { return graphId; }
+
+	virtual count getMemoryUsage() const { return sizeof(graphId); }
 
 	/**
 	 * Set name of graph.
@@ -108,18 +110,18 @@ public:
 	/**
 	 * Insert an directed edge between from @a u to @a v.
 	 */
-	void addEdge(node u, node v, edgeweight weight);
+	virtual void addEdge(node u, node v, edgeweight weight) = 0;
 
 	/**
 	 * Remove directed edge between from @a u to @a v.
 	 */
-	void removeEdge(node u, node v);
+	virtual void removeEdge(node u, node v) = 0;
 
 	/**
 	 * Check if directed edge {u,v} exists.
 	 *
 	 */
-	bool hasEdge(node u, node v) const;
+	virtual bool hasEdge(node u, node v) const = 0;
 
 	/**
 	 * Merges edge {u,v} to become a supernode. Edges to u and v are
