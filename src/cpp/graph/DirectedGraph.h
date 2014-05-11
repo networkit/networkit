@@ -24,6 +24,7 @@
 #include <algorithm>
 // #include <tbb/concurrent_vector.h>
 
+#include "IDGraph.h"
 #include "AbstractGraph.h"
 #include "Coordinates.h"
 #include "../auxiliary/Log.h"
@@ -35,21 +36,9 @@ namespace NetworKit {
 /**
  * An directed graph (with optional weights) and parallel iterator methods.
  */
-class DirectedGraph final : public AbstractGraph {
+class DirectedGraph final : public IDGraph, public AbstractGraph {
 
 protected:
-
-	struct NodeDegree {
-		count in;
-		count out;
-		NodeDegree():
-			in(0),
-			out(0)
-		{}
-		count total() const { return in + out; }
-	};
-
-	// TODO: structure for Edge (start, end, weight)?
 
 	// per node data
 	_Vector< NodeDegree > deg; //!< degree of each node (size of neighborhood)
