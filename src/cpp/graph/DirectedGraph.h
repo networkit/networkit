@@ -49,6 +49,8 @@ protected:
 	_Vector<_Vector<edgeweight> > eweights; //!< edge weights
 
 	// user-defined edge attributes
+	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
+	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
 
 	/**
 	 * Return the index of v in the incoming edges adjacency array of u.
@@ -98,23 +100,14 @@ public:
 	/** NODE PROPERTIES **/
 
 	/**
-	 * Return the number of neighbors for node v. For directed graphs this is the sum of
-	 * in- and outgoing edges.
+	 * @return true if the node is isolated (= degree is 0)
 	 */
-	virtual count degree(node v) const;
+	bool isIsolated(node v) const;
 
 	/**
-	 * Return the number of incoming edges to node v. For an undirected graph this is the
-	 * same as degree(v).
+	 * Return the number of neighbors for node v.
 	 */
-	count degreeIn(node v) const;
-
-	/**
-	 * Return the number of outgoing edges from node v. For an undirected graph this is the
-	 * same as degree(v).
-	 */
-	count degreeOut(node v) const;
-
+	NodeDegree degree(node v) const;
 
 	/** EDGE MODIFIERS **/
 
@@ -144,12 +137,67 @@ public:
 	 */
 	// node mergeEdge(node u, node v, bool discardSelfLoop = true);
 
+
+	/** EDGE ATTRIBUTES **/
+
+	/**
+	 * Return edge weight.
+	 *
+	 * Return 0 if edge does not exist.
+	 */
+	edgeweight weight(node u, node v) const;
+
+	/**
+	 * Set the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	void setWeight(node u, node v, edgeweight w);
+
+	/**
+	 * Increase the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	void increaseWeight(node u, node v, edgeweight w);
+
+	/**
+	 * Add new edge map for an attribute of type double.
+	 */
+	int addEdgeAttribute_double(double defaultValue);
+
+	/**
+	 * @return attribute of type double for an edge.
+	 *
+	 * @param[in]	u	node
+	 * @param[in]	v	node
+	 * @param[in]	attrId	attribute id
+	 */
+	double attribute_double(node u, node v, int attrId) const;
+
+	/**
+	 * Set edge attribute of type double If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	attr	double edge attribute
+	 */
+	void setAttribute_double(node u, node v, int attrId, double attr);
+
+
 	/** GLOBAL PROPERTIES **/
 
 	/** 
 	 * Return true if this graph supports directed edges.
 	 */
-	virtual bool isDirected() const;
+	bool isDirected() const;
 
 
 	/** EDGE ITERATORS **/
@@ -203,6 +251,24 @@ public:
 	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
 	 */
 	template<typename L> void parallelForWeightedEdges(L handle) const;
+
+	/**
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 *
+	 *	@param[in]	attrId		attribute id
+	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *
+	 */
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle);
+
+	/**
+	 * Iterate over all edges of the const graph and call handler (lambda closure).
+	 *
+	 *	@param[in]	attrId		attribute id
+	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *
+	 */
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
 
 };
 
@@ -327,6 +393,34 @@ inline void NetworKit::DirectedGraph::parallelForWeightedEdges(L handle) const {
 				} else {
 					handle(u, v, defaultEdgeWeight);
 				}
+			}
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::DirectedGraph::forEdgesWithAttribute_double(int attrId, L handle) {
+	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
+	for (node u = 0; u < z; ++u) {
+		for (index i = 0; i < this->inOut[u]; i++) {
+			node v = this->adja[u][i];
+			double attr = edgeMap[u][i];
+			if (v != none) {
+				handle(u, v, attr);
+			}
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::DirectedGraph::forEdgesWithAttribute_double(int attrId, L handle) const {
+	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
+	for (node u = 0; u < z; ++u) {
+		for (index i = 0; i < this->inOut[u]; i++) {
+			node v = this->adja[u][i];
+			double attr = edgeMap[u][i];
+			if (v != none) {
+				handle(u, v, attr);
 			}
 		}
 	}

@@ -13,14 +13,13 @@
 #include <gtest/gtest.h>
 
 #include "../IGraph.h"
+#include "../../auxiliary/Random.h"
 
 namespace NetworKit {
 
 template <typename T>
 class IGraphGTest : public testing::Test {
-public:
-	IGraphGTest();
-	virtual ~IGraphGTest();
+
 };
 
 } /* namespace NetworKit */

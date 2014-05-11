@@ -41,16 +41,21 @@ public:
 	/** NODE PROPERTIES **/
 
 	/**
+	 * Return the number of neighbors for node v.
+	 */
+	virtual NodeDegree degree(node v) const = 0;
+
+	/**
 	 * Return the number of incoming edges to node v. For an undirected graph this is the
 	 * same as degree(v).
 	 */
-	count degreeIn(node v) const;
+	count degreeIn(node v) const { return this->degree(v).in; }
 
 	/**
 	 * Return the number of outgoing edges from node v. For an undirected graph this is the
 	 * same as degree(v).
 	 */
-	count degreeOut(node v) const;
+	count degreeOut(node v) const { return this->degree(v).out; }
 
 };
 

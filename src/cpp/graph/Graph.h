@@ -47,15 +47,8 @@ protected:
 	_Vector<_Vector<edgeweight> > eweights; //!< edge weights
 
 	// user-defined edge attributes
-
-	//	attribute maps storage
-
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
-
-	// defaults
-
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
-
 
 	/**
 	 * Return the index of v in the adjacency array of u.
@@ -111,12 +104,54 @@ public:
 
 
 	/** NODE PROPERTIES **/
+ 
+	/**
+	 * @return true if the node is isolated (= degree is 0)
+	 */
+	bool isIsolated(node v) const;
 
 	/**
-	 * Return the number of neighbors for node v. For directed graphs this is the sum of
-	 * in- and outgoing edges.
+	 * Return the number of neighbors for node v.
 	 */
-	virtual count degree(node v) const;
+	count degree(node v) const;
+
+	/**
+	 * @return Smallest neighborhood size (does not have to be unique).
+	 */
+	count minDegree() const;
+
+	/**
+	 * @return Index of vertex with smallest neighborhood size (does not have to be
+	 * unique).
+	 */
+	index argminDegree() const;
+
+	/**
+	 * @return Largest neighborhood size (does not have to be unique).
+	 */
+	count maxDegree() const;
+
+	/**
+	 * @return Index of vertex with largest neighborhood size (does not have to be
+	 * unique).
+	 */
+	index argmaxDegree() const;
+
+	/**
+	 * @return Weighted degree of @a v.
+	 */
+	edgeweight weightedDegree(node v) const;
+
+	/**
+	 * @return Volume of the node, which is the
+	 * weighted degree with self-loops counted twice.
+	 */
+	edgeweight volume(node v) const;
+
+	/**
+	 * @return Random neighbor of @a v. None if degree is zero.
+	 */
+	node randomNeighbor(node v) const;
 
 
 	/** EDGE MODIFIERS **/
@@ -153,7 +188,61 @@ public:
 	/** 
 	 * Return true if this graph supports directed edges.
 	 */
-	virtual bool isDirected() const;
+	bool isDirected() const;
+
+
+	/** EDGE ATTRIBUTES **/
+
+	/**
+	 * Return edge weight.
+	 *
+	 * Return 0 if edge does not exist.
+	 */
+	edgeweight weight(node u, node v) const;
+
+	/**
+	 * Set the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	void setWeight(node u, node v, edgeweight w);
+
+	/**
+	 * Increase the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	void increaseWeight(node u, node v, edgeweight w);
+
+	/**
+	 * Add new edge map for an attribute of type double.
+	 */
+	int addEdgeAttribute_double(double defaultValue);
+
+	/**
+	 * @return attribute of type double for an edge.
+	 *
+	 * @param[in]	u	node
+	 * @param[in]	v	node
+	 * @param[in]	attrId	attribute id
+	 */
+	double attribute_double(node u, node v, int attrId) const;
+
+	/**
+	 * Set edge attribute of type double If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	attr	double edge attribute
+	 */
+	void setAttribute_double(node u, node v, int attrId, double attr);
 
 
 	/** EDGE ITERATORS **/
@@ -208,119 +297,30 @@ public:
 	 */
 	template<typename L> void parallelForWeightedEdges(L handle) const;
 
+	/**
+	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 *
+	 *	@param[in]	attrId		attribute id
+	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *
+	 */
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle);
+
+	/**
+	 * Iterate over all edges of the const graph and call handler (lambda closure).
+	 *
+	 *	@param[in]	attrId		attribute id
+	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *
+	 */
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
+
+
 
 
 
 
 	/** OLD STUFF **/
-
-
-
-	/**
-	 * @return Smallest neighborhood size (does not have to be unique).
-	 */
-	count minDegree() const;
-
-	/**
-	 * @return Index of vertex with smallest neighborhood size (does not have to be
-	 * unique).
-	 */
-	index argminDegree() const;
-
-	/**
-	 * @return Largest neighborhood size (does not have to be unique).
-	 */
-	count maxDegree() const;
-
-	/**
-	 * @return Index of vertex with largest neighborhood size (does not have to be
-	 * unique).
-	 */
-	index argmaxDegree() const;
-
-	/**
-	 * @return Weighted degree of @a v.
-	 */
-	edgeweight weightedDegree(node v) const;
-
-	/**
-	 * @return Volume of the node, which is the
-	 * weighted degree with self-loops counted twice.
-	 */
-	edgeweight volume(node v) const;
-
-	/**
-	 * @return Random (uuid) neighbor of @a v. None if degree is zero.
-	 */
-	node randomNeighbor(node v) const;
-
-
-
-	/** EDGE ATTRIBUTE GETTERS **/
-
-	/**
-	 * Return edge weight.
-	 *
-	 * Return 0 if edge does not exist.
-	 */
-	edgeweight weight(node u, node v) const;
-
-	/**
-	 * @return attribute of type double for an edge.
-	 *
-	 * @param[in]	u	node
-	 * @param[in]	v	node
-	 * @param[in]	attrId	attribute id
-	 */
-	double attribute_double(node u, node v, int attrId) const;
-
-	/**  EDGE ATTRIBUTE SETTERS */
-
-	/**
-	 * Set the weight of an edge. If the edge does not exist,
-	 * it will be inserted.
-	 *
-	 * @param[in]	u	endpoint of edge
-	 * @param[in]	v	endpoint of edge
-	 * @param[in]	weight	edge weight
-	 */
-	void setWeight(node u, node v, edgeweight w);
-
-
-	/**
-	 * Increase the weight of an edge. If the edge does not exist,
-	 * it will be inserted.
-	 *
-	 * @param[in]	u	endpoint of edge
-	 * @param[in]	v	endpoint of edge
-	 * @param[in]	weight	edge weight
-	 */
-	void increaseWeight(node u, node v, edgeweight w);
-
-	/**
-	 * Set edge attribute of type double If the edge does not exist,
-	 * it will be inserted.
-	 *
-	 * @param[in]	u	endpoint of edge
-	 * @param[in]	v	endpoint of edge
-	 * @param[in]	attr	double edge attribute
-	 */
-	void setAttribute_double(node u, node v, int attrId, double attr);
-
-	/** SUMS **/
-
-	/**
-	 * @return sum of all edge weights
-	 */
-	edgeweight totalEdgeWeight() const;
-
-	/** ATTRIBUTES **/
-
-	/**
-	 * Add new edge map for an attribute of type double.
-	 */
-	int addEdgeAttribute_double(double defaultValue);
-
 
 	/** NODE ITERATORS **/
 
@@ -341,34 +341,6 @@ public:
 	 */
 	template<typename L> void breadthFirstEdgesFrom(node r, L handle);
 
-	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure).
-	 *
-	 * @param[in]	attrKey		attribute key
-	 * @param[in]	handle		takes parameters (v, a) where a is a node attribute
-	 */
-	template<typename L> void forNodesWithAttribute(std::string attrKey,
-			L handle);
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 *
-	 *	@param[in]	attrId		attribute id
-	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
-	 *
-	 */
-	template<typename L> void forEdgesWithAttribute_double(int attrId,
-			L handle);
-
-	/**
-	 * Iterate over all edges of the const graph and call handler (lambda closure).
-	 *
-	 *	@param[in]	attrId		attribute id
-	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
-	 *
-	 */
-	template<typename L> void forEdgesWithAttribute_double(int attrId,
-			L handle) const;
 
 	/** NEIGHBORHOOD ITERATORS **/
 
@@ -438,23 +410,7 @@ public:
 	template<typename L> double parallelSumForWeightedEdges(L handle) const;
 
 
-	/** Collections **/
 
-	/**
-	 * Return list of nodes
-	 */
-	std::vector<node> nodes();
-
-	/**
-	 * Return list of edges as node pairs.
-	 */
-	std::vector<std::pair<node, node> > edges();
-
-
-	/**
-	 * Return list of neighbors for given node.
-	 */
-	std::vector<node> neighbors(node u);
 
 
 };
@@ -580,6 +536,37 @@ inline void NetworKit::Graph::parallelForWeightedEdges(L handle) const {
 		}
 	}
 }
+
+template<typename L>
+inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId, L handle) {
+	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
+			node v = this->adja[u][vi];
+			double attr = edgeMap[u][vi];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				handle(u, v, attr);
+			}
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId, L handle) const {
+	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
+			node v = this->adja[u][vi];
+			double attr = edgeMap[u][vi];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				handle(u, v, attr);
+			}
+		}
+	}
+}
+
+
+
 
 
 
@@ -775,74 +762,6 @@ inline void NetworKit::Graph::forWeightedEdgesOf(node u, L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::Graph::forNodesWithAttribute(std::string attrKey,
-		L handle) {
-	// get nodemap for attrKey
-
-//	auto nodeMap; // ?
-//
-//	auto findIdPair = this->attrKey2IdPair.find(attrKey);
-//	if (findIdPair != this->attrKey2IdPair.end()) {
-//		std::pair<index, index> idPair = findIdPair->second;
-//		index typeId = idPair.first;
-//		index mapId = idPair.second;
-//
-//		// nodemaps are in a vector, one for each node attribute type int, double, NodeAttribute
-//		switch (typeId) {
-//		case 0:
-//			nodeMap = this->nodeMapsInt[mapId];
-//			break;
-//		case 1:
-//			nodeMap = this->nodeMapsdouble[mapId];
-//			break;
-//		}
-//
-//		// iterate over nodes and call handler with attribute
-//		this->forNodes([&](node u) {
-//			auto attr = nodeMap[u];
-//			handle(u, attr);
-//		});
-//	} else {
-//		throw std::runtime_error("node attribute not found");
-//	}
-
-	// TODO: iterate over nodes with atributes
-	throw std::runtime_error("TODO");
-}
-
-template<typename L>
-inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
-		L handle) {
-	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
-			node v = this->adja[u][vi];
-			double attr = edgeMap[u][vi];
-			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				handle(u, v, attr);
-			}
-		}
-	}
-}
-
-template<typename L>
-inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId,
-		L handle) const {
-	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < (index) adja[u].size(); ++vi) {
-			node v = this->adja[u][vi];
-			double attr = edgeMap[u][vi];
-			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				handle(u, v, attr);
-			}
-		}
-	}
-}
-
-
-
-template<typename L>
 void NetworKit::Graph::BFSfrom(node r, L handle) {
 	std::vector<bool> marked(z);
 	std::queue<node> q;
@@ -861,7 +780,6 @@ void NetworKit::Graph::BFSfrom(node r, L handle) {
 		});
 	} while (!q.empty());
 };
-
 
 template<typename L>
 void NetworKit::Graph::DFSfrom(node r, L handle) {
