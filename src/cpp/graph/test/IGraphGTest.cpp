@@ -30,23 +30,21 @@ typedef Types<Graph, DirectedGraph> graphImplementations;
 
 TYPED_TEST_CASE(IGraphGTest, graphImplementations);
 
-
-TYPED_TEST(IGraphGTest, isEmpty) {
+TYPED_TEST(IGraphGTest, idNameAndToString) {
 	TypeParam G1(0);
-	TypeParam G2(2);
+	TypeParam G2(0);
+	
+	ASSERT_TRUE(G1.getId() < G2.getId());
+	
+	std::string s1 = "Graph 1";
+	std::string s2 = "Graph 2";
+	G1.setName(s1);
+	G2.setName(s2);
+	ASSERT_EQ(G1.getName(), s1);
+	ASSERT_EQ(G2.getName(), s2);
 
-	ASSERT_TRUE(G1.isEmpty());
-	ASSERT_FALSE(G2.isEmpty());
-
-	node v = G1.addNode();
-	G2.removeNode(G2.randomNode());
-	ASSERT_FALSE(G1.isEmpty());
-	ASSERT_FALSE(G2.isEmpty());
-
-	G1.removeNode(v);
-	G2.removeNode(G2.randomNode());
-	ASSERT_TRUE(G1.isEmpty());
-	ASSERT_TRUE(G2.isEmpty());
+	ASSERT_TRUE(G1.toString() != "");
+	ASSERT_TRUE(G2.toString() != "");
 }
 
 TYPED_TEST(IGraphGTest, addNode) {
@@ -144,6 +142,24 @@ TYPED_TEST(IGraphGTest, removeEdge) {
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_FALSE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
+}
+
+TYPED_TEST(IGraphGTest, isEmpty) {
+	TypeParam G1(0);
+	TypeParam G2(2);
+
+	ASSERT_TRUE(G1.isEmpty());
+	ASSERT_FALSE(G2.isEmpty());
+
+	node v = G1.addNode();
+	G2.removeNode(G2.randomNode());
+	ASSERT_FALSE(G1.isEmpty());
+	ASSERT_FALSE(G2.isEmpty());
+
+	G1.removeNode(v);
+	G2.removeNode(G2.randomNode());
+	ASSERT_TRUE(G1.isEmpty());
+	ASSERT_TRUE(G2.isEmpty());
 }
 
 } /* namespace NetworKit */
