@@ -13,6 +13,31 @@
 
 namespace NetworKit {
 
+TEST_F(GraphGTest, minMaxDegree) {
+	Graph G = this->gen.makeRandomGraph(100, 0.1);
+
+	node argmin = 0;
+	node argmax = 0;
+	count min = G.degree(argmin);
+	count max = G.degree(argmax);
+
+	G.forNodes([&](node v) {
+		if (G.degree(v) < min) {
+			argmin = v;
+			min = G.degree(v);
+		} else if (G.degree(v) > max) {
+			argmax = v;
+			max = G.degree(v);
+		}
+	});
+
+	ASSERT_EQ(min, G.minDegree());
+	ASSERT_EQ(argmin, G.argminDegree());
+	ASSERT_EQ(max, G.maxDegree());
+	ASSERT_EQ(argmax, G.argmaxDegree());
+}
+
+
 //TEST_F(GraphGTest, testEdgeIteration) {
 //
 //	int64_t n = 100;

@@ -17,9 +17,6 @@
 #include "../Graph.h"
 #include "../Subgraph.h"
 #include "../GraphGenerator.h"
-#include "../../graph/GraphGenerator.h"
-
-
 
 namespace NetworKit {
 
@@ -36,10 +33,6 @@ public:
 	virtual void TearDown();
 
 };
-
-
-
-
 
 } /* namespace NetworKit */
 #endif /* GRAPHGTEST_H_ */
