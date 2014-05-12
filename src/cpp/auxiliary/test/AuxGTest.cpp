@@ -19,6 +19,7 @@
 #include "../Timer.h"
 #include "../MissingMath.h"
 #include "../PrioQueue.h"
+#include "../StringTools.h"
 
 TEST_F(AuxGTest, produceRandomIntegers) {
 	int64_t l = 0; 	// lower bound
@@ -242,6 +243,61 @@ TEST_F(AuxGTest, testRandomWeightedChoice) {
 	for (uint64_t i = 0; i < 100; ++i) {
 		auto element = Aux::Random::weightedChoice(data);
 		EXPECT_EQ(0, element);
+	}
+}
+
+TEST_F(AuxGTest, testRandomIndex) {
+	using namespace Aux::Random;
+	
+	for(unsigned i = 0; i <10; ++i) {
+		EXPECT_EQ(0, index(1));
+	}
+	
+	for(unsigned i = 0; i <100; ++i) {
+		auto tmp = index(10);
+		EXPECT_LE(tmp, 9);
+		EXPECT_GE(tmp, 0);
+	}
+}
+
+TEST_F(AuxGTest, testSplit) {
+	using Vec = std::vector<std::string>;
+	using namespace Aux::StringTools;
+	
+	EXPECT_EQ(Vec{}, split(""));
+	EXPECT_EQ(Vec{""}, split(" "));
+	
+	{
+		auto expected = Vec{"", ""};
+		EXPECT_EQ(expected, split("  "));
+	}
+	{
+		auto expected = Vec{"", "a"};
+		EXPECT_EQ(expected, split(" a"));
+	}
+	{
+		auto expected = Vec{"a"};
+		EXPECT_EQ(expected, split("a "));
+	}
+	{
+		auto expected = Vec{"a"};
+		EXPECT_EQ(expected, split("a"));
+	}
+	{
+		auto expected = Vec{"a", "b"};
+		EXPECT_EQ(expected, split("a b"));
+	}
+	{
+		auto expected = Vec{"", "a", "b"};
+		EXPECT_EQ(expected, split(" a b "));
+	}
+	{
+		auto expected = Vec{"abc", "def", "ghi"};
+		EXPECT_EQ(expected, split("abc def ghi"));
+	}
+	{
+		auto expected = Vec{"abc", "def", "ghi"};
+		EXPECT_EQ(expected, split("abc def ghi "));
 	}
 }
 
