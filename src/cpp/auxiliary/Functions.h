@@ -22,7 +22,7 @@ template<typename Container, typename F>
 auto argmax(Container const & container, F && func) -> decltype(*std::begin(container))
 {
     typedef decltype(*std::begin(container)) V;
-    auto cmp = [&](V a, V b){ return func(a) < func(b); };
+    auto cmp = [&](const V& a, const V& b){ return func(a) < func(b); };
     return *std::max_element(std::begin(container), std::end(container), cmp);
 }
 
