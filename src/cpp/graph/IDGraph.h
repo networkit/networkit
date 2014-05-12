@@ -56,7 +56,11 @@ public:
 	 * same as degree(v).
 	 */
 	count degreeOut(node v) const { return this->degree(v).out; }
-
+	
+	/**
+	 * @return In-Volume of the node, which is the sum of all incoming edges.
+	 */
+	virtual edgeweight volume(node v) const;
 };
 
 

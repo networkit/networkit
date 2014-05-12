@@ -23,6 +23,44 @@ DirectedGraph::~DirectedGraph() {
 
 }
 
+count DirectedGraph::getMemoryUsage() const {
+	count mem = AbstractGraph::getMemoryUsage();
+	mem += sizeof(NodeDegree) * deg.capacity();
+		
+	mem += sizeof(_Vector<node>) * adja.capacity();
+	for (auto& a : adja) {
+		mem += sizeof(node) * a.capacity();
+	}
+
+	mem += sizeof(index) * inOut.capacity();
+
+	mem += sizeof(_Vector<edgeweight>) * eweights.capacity();
+	for (auto& w : eweights) {
+		mem += sizeof(edgeweight) * w.capacity();
+	}
+
+	// TODO attribute stuff
+
+	return mem;
+}
+
+void DirectedGraph::shrinkToFit() {
+	AbstractGraph::shrinkToFit();
+
+	deg.shrink_to_fit();
+	adja.shrink_to_fit();
+	for (auto& a : adja) {
+		a.shrink_to_fit();
+	}
+	inOut.shrink_to_fit();
+	eweights.shrink_to_fit();
+	for (auto& w : eweights) {
+		w.shrink_to_fit();
+	}
+
+	// TODO attribute stuff
+}
+
 //only to be used by Cython
 void DirectedGraph::stealFrom(DirectedGraph& input) {
 	*this = std::move(input);

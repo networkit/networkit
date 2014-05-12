@@ -27,6 +27,15 @@ AbstractGraph::AbstractGraph(count n, bool weighted):
 	this->name = sstm.str();
 }
 
+
+count AbstractGraph::getMemoryUsage() const {
+	return exists.capacity() / 8;
+}
+
+void AbstractGraph::shrinkToFit() {
+	exists.shrink_to_fit();
+}
+
 void AbstractGraph::setName(std::string name) {
 	this->name = name;
 }
