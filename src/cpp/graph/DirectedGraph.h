@@ -235,6 +235,21 @@ public:
 	 */
 	template<typename L> void parallelForEdges(L handle) const;
 
+	/* Iterate over all Outgoing edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forOutEdgesOf(node u, L handle) const;
+	
+	/* Iterate over all Incoming edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forInEdgesOf(node u, L handle) const;
+	
+	/* Iterate over all adjacent nodes, which are adjacent to an inedge of u*/
+
+	template<typename L> void forOutNeighborsOf(node u, L handle) const;
+
+	/* Iterate over all adjacent nodes, which are adjacent to an outedge of u*/
+
+	template<typename L> void forInNeighborsOf(node u, L handle) const;
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 *
@@ -438,6 +453,50 @@ inline void NetworKit::DirectedGraph::forEdgesWithAttribute_double(int attrId, L
 		}
 	}
 }
+
+template<typename L>
+inline void NetworKit::DirectedGraph::forInEdgesOf(node u, L handle) const {
+	for(index i=0; i< this->inOut[u]; i++)
+	{
+		node v = this->adja[u][i];
+		if (v != none ) {
+			handle(u, v);
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::DirectedGraph::forOutEdgesOf(node u, L handle) const {
+	for(index i=inOut[u]; i< adja[u].size(); i++)
+		{
+			node v = this->adja[u][i];
+			if (v != none ) {
+				handle(u, v);
+			}
+		}
+	}
+
+template<typename L>
+inline void NetworKit::DirectedGraph::forInNeighborsOf(node u, L handle) const {
+	for(index i=0; i< this->inOut[u]; i++)
+	{
+		node v = this->adja[u][i];
+		if (v != none ) {
+			handle(v);
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::DirectedGraph::forOutNeighborsOf( node u, L handle) const {
+	for(index i=inOut[u]; i< adja[u].size(); i++)
+		{
+			node v = this->adja[u][i];
+			if (v != none ) {
+				handle(v);
+			}
+		}
+	}
 
 
 #endif /* DIRECETD_GRAPH_H_ */
