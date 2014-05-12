@@ -27,6 +27,7 @@ import properties
 import engineering
 import toolbox
 import dynamic
+import segmentation
 
 try:
 	import viztools

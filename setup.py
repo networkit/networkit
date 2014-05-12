@@ -99,7 +99,10 @@ try:
 	elif (shutil.which("g++-4.7") is not None):
 		os.environ["CC"] = "g++-4.7"
 		os.environ["CXX"] = "g++-4.7"
-
+		
+	elif (shutil.which("g++-4.9") is not None):
+		os.environ["CC"] = "g++-4.9"
+		os.environ["CXX"] = "g++-4.9"
 	else:
 		pass
 except:
@@ -117,7 +120,7 @@ modules = [Extension("_NetworKit",
 					language = "c++",
 					extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
 					extra_link_args=["-fopenmp", "-std=c++11"],
-					libraries=["NetworKit-Core-{0}".format(optimize)],
+					libraries=["NetworKit-Core-{0}".format(optimize), "png16"],
 					library_dirs=["../../"])]
 
 for e in modules:

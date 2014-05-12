@@ -1471,3 +1471,59 @@ cdef class GraphUpdater:
 		self._this.update(_stream)
 
 
+
+# Module: algebraic
+
+cdef extern from "../cpp/algebraic/LaplacianMatrix.h":
+	cdef cppclass _LaplacianMatrix "NetworKit::LaplacianMatrix":
+		_LaplacianMatrix(_Graph G) except +
+		double get "operator()"(uint64_t i, uint64_t j) except +
+
+cdef class LaplacianMatrix:
+	cdef _LaplacianMatrix* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _LaplacianMatrix(G._this)
+
+	def value(self, i, j):
+		return self._this.get(i,j)
+
+# Module: segmentation
+
+cdef extern from "../cpp/segmentation/ImageGraphReader.h":
+	cdef cppclass _ImageGraphReader "NetworKit::ImageGraphReader":
+		_ImageGraphReader() except +
+		_Graph read(string path, double sigmaI, double sigmaX, int r) except +
+
+cdef class ImageGraphReader:
+	cdef _ImageGraphReader* _this
+
+	def __cinit__(self):
+		self._this = new _ImageGraphReader()
+
+	def read(self, path, sigmaI=15, sigmaX=75, r=4):
+		return Graph().setThis(self._this.read(stdstring(path), sigmaI, sigmaX, r))
+
+
+
+cdef extern from "../cpp/segmentation/ImageGraphWriter.h":
+	cdef cppclass _ImageGraphWriter "NetworKit::ImageGraphWriter":
+		_ImageGraphWriter() except +
+		void writePartitionsToSingleImage(_Graph graph, _Partition partition, string pathToSource) except +
+		void writePartitions(_Graph graph, _Partition, string pathToSource)
+
+cdef class ImageGraphWriter:
+	cdef _ImageGraphWriter* _this
+
+	def __cinit__(self):
+		self._this = new _ImageGraphWriter()
+
+	def writePartitionsToSingleImage(self, Graph graph, Partition partition, pathToSource):
+		self._this.writePartitionsToSingleImage(graph._this, partition._this, stdstring(pathToSource))
+
+	def writePartitions(self, Graph graph, Partition partition, pathToSource):
+		self._this.writePartitions(graph._this, partition._this, stdstring(pathToSource))
+
+
+
+
