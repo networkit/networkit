@@ -127,13 +127,17 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 
 	} // end community discovery
 
+	DEBUG("eta: ", eta);
+
 	// extract sets from labels
 	for (auto s : seeds) {
 		index ls = eta[s];
 		std::set<node> community;
-		for (auto kv : eta) {
-			if (kv.second == ls) {
-				community.insert(kv.first);
+		if (ls != none) {
+			for (auto kv : eta) {
+				if (kv.second == ls) {
+					community.insert(kv.first);
+				}
 			}
 		}
 		result[s] = community;
