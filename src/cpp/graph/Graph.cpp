@@ -22,6 +22,52 @@ Graph::~Graph() {
 
 }
 
+count Graph::getMemoryUsage() const {
+	count mem = AbstractGraph::getMemoryUsage();
+	mem += sizeof(deg) + sizeof(count) * deg.capacity();
+	
+	mem += sizeof(adja) + sizeof(_Vector<node>) * adja.capacity();
+	for (auto& a : adja) {
+		mem += sizeof(node) * a.capacity();
+	}
+
+	mem += sizeof(eweights) + sizeof(_Vector<edgeweight>) * eweights.capacity();
+	for (auto& w : eweights) {
+		mem += sizeof(edgeweight) * w.capacity();
+	}
+
+	for (auto& edgeMap : edgeMaps_double) {
+		for (auto& em : edgeMap) {
+			mem += sizeof(double) * em.capacity();
+		}
+	}
+
+	return mem;
+}
+
+void Graph::shrinkToFit() {
+	AbstractGraph::shrinkToFit();
+	
+	deg.shrink_to_fit();
+
+	adja.shrink_to_fit();
+	for (auto& a : adja) {
+		a.shrink_to_fit();
+	}
+
+	eweights.shrink_to_fit();
+	for (auto& w : eweights) {
+		w.shrink_to_fit();
+	}
+
+	for (auto& edgeMap : edgeMaps_double) {
+		edgeMap.shrink_to_fit();
+		for (auto& em : edgeMap) {
+			em.shrink_to_fit();
+		}
+	}
+}
+
 //only to be used by Cython
 void Graph::stealFrom(Graph& input) {
 	*this = std::move(input);
