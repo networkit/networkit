@@ -64,6 +64,47 @@ TYPED_TEST(IDGraphGTest, degreeInOut) {
 	ASSERT_EQ(1, G.degreeOut(4));
 }
 
+
+TYPED_TEST(IDGraphGTest, IterateNeighborMethodsDirected) {
+
+	TypeParam G(5);
+	std::vector<std::vector<node>> visited;
+	
+	
+	G.addEdge(0, 2);
+	G.addEdge(1, 0);
+	G.addEdge(1, 4);	
+	G.addEdge(2, 1);
+	G.addEdge(2, 4);
+	G.addEdge(3, 1);
+	G.addEdge(3, 2);
+	G.addEdge(4, 3);
+
+	
+	forallOutEdges(0,[&](node u, node v){
+		
+		visited[u][v]=1;
+	});
+
+
+	ASSERT_EQ(1,visited[0][2]);
+
+	forallOutEdges(0,[&](node u, node v){
+		
+		visited[u][v]=0;
+	});
+
+
+	forallInEdges(4, [&](node u, node v){
+
+		visited[u][v] = 1;
+	});
+
+	ASSERT_EQ(1,visited[2][4]);
+	ASSERT_EQ(1,visited[1][4]);
+
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
