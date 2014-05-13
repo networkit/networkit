@@ -79,26 +79,19 @@ public:
 
 	DirectedGraph& operator=(const DirectedGraph& other) = default;
 
-	virtual count getMemoryUsage() {
-		count mem = AbstractGraph::getMemoryUsage();
-		mem += sizeof(deg) + sizeof(NodeDegree) * deg.capacity();
-		
-		mem += sizeof(adja) + sizeof(_Vector<node>) * adja.capacity();
-		for (auto& a : adja) {
-			mem += sizeof(node) * a.capacity();
-		}
+	/**
+	 * Calculate an approximation of the memory used by this graph. Only memory increasing with the
+	 * number of edges or nodes of this graph is taken into account. 
+	 */
+	count getMemoryUsage() const ;
 
-		mem += sizeof(inOut) + sizeof(index) * inOut.capacity();
+	/**
+	 * Try to save some memory by shrinking internal data structures of the graph. Only run this
+	 * once you finished editing the graph. Otherwise it will cause unnecessary reallocation of
+	 * memory. 
+	 */
+	void shrinkToFit();
 
-		mem += sizeof(eweights) + sizeof(_Vector<edgeweight>) * eweights.capacity();
-		for (auto& w : eweights) {
-			mem += sizeof(edgeweight) * w.capacity();
-		}
-
-		// TODO attribute stuff
-
-		return mem;
-	}
 
 	/** Only to be used from Cython */
 	void stealFrom(DirectedGraph& input);

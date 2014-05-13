@@ -76,18 +76,6 @@ public:
 	static constexpr double defaultEdgeWeight = 1.0;
 	static constexpr edgeweight nullWeight = 0.0;
 
-	virtual count getMemoryUsage() {
-		count mem = IGraph::getMemoryUsage();
-		mem += sizeof(n);
-		mem += sizeof(m);
-		mem += sizeof(z);
-		mem += sizeof(t);
-		mem += sizeof(weighted);
-		mem += sizeof(exists) + exists.capacity() / 8;
-		mem += name.length();
-		return mem;
-	}
-
 	/** ATTRIBUTE ABSTRACT BASE CLASSES **/
 
 	// class NodeAttribute {
@@ -115,6 +103,19 @@ public:
 	AbstractGraph& operator=(AbstractGraph&& other) = default;
 
 	AbstractGraph& operator=(const AbstractGraph& other) = default;
+
+	/**
+	 * Calculate an approximation of the memory used by this graph. Only memory increasing with the
+	 * number of edges or nodes of this graph is taken into account. 
+	 */
+	virtual count getMemoryUsage() const ;
+
+	/**
+	 * Try to save some memory by shrinking internal data structures of the graph. Only run this
+	 * once you finished editing the graph. Otherwise it will cause unnecessary reallocation of
+	 * memory. 
+	 */
+	virtual void shrinkToFit();
 
 	/**
 	 * Set name of graph.

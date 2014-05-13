@@ -46,7 +46,18 @@ public:
 	 */
 	count getId() const { return graphId; }
 
-	virtual count getMemoryUsage() const { return sizeof(graphId); }
+	/**
+	 * Calculate an approximation of the memory used by this graph. Only memory increasing with the
+	 * number of edges or nodes of this graph is taken into account. 
+	 */
+	virtual count getMemoryUsage() const = 0;
+
+	/**
+	 * Try to save some memory by shrinking internal data structures of the graph. Only run this
+	 * once you finished editing the graph. Otherwise it will cause unnecessary reallocation of
+	 * memory. 
+	 */
+	virtual void shrinkToFit() = 0;
 
 	/**
 	 * Set name of graph.
