@@ -60,7 +60,7 @@ public:
 	/**
 	 * @return In-Volume of the node, which is the sum of all incoming edges.
 	 */
-	virtual edgeweight volume(node v) const;
+	// virtual edgeweight volume(node v) const;
 };
 
 

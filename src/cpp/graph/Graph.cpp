@@ -36,7 +36,11 @@ count Graph::getMemoryUsage() const {
 		mem += sizeof(edgeweight) * w.capacity();
 	}
 
-	// TODO attribute stuff
+	for (auto& edgeMap : edgeMaps_double) {
+		for (auto& em : edgeMap) {
+			mem += sizeof(double) * em.capacity();
+		}
+	}
 
 	return mem;
 }
@@ -45,16 +49,23 @@ void Graph::shrinkToFit() {
 	AbstractGraph::shrinkToFit();
 	
 	deg.shrink_to_fit();
+
 	adja.shrink_to_fit();
 	for (auto& a : adja) {
 		a.shrink_to_fit();
 	}
+
 	eweights.shrink_to_fit();
 	for (auto& w : eweights) {
 		w.shrink_to_fit();
 	}
 
-	// TODO attribute stuff
+	for (auto& edgeMap : edgeMaps_double) {
+		edgeMap.shrink_to_fit();
+		for (auto& em : edgeMap) {
+			em.shrink_to_fit();
+		}
+	}
 }
 
 //only to be used by Cython

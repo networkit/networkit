@@ -10,31 +10,63 @@
 #include "GraphMemoryBenchmark.h"
 
 #include "../Graph.h"
-#include "../DirectedGraph.h"
-#include "../../auxiliary/Random.h"
+#include "../../auxiliary/Timer.h"
+#include "../GraphGenerator.h"
+#include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
 
-TEST_F(GraphMemoryBenchmark, comparision) {
-	count n = 100000;
-	count m = 20 * n;
-	Graph G(n);
-	DirectedGraph D(n);
-	for (int i = 0; i < m; i++) {
-		node u = D.randomNode();
-		node v = D.randomNode();
-		G.addEdge(u, v);
-		D.addEdge(u, v);
+TEST_F(GraphMemoryBenchmark, shrinkToFitForErdosRenyi) {
+	GraphGenerator gen;
+	Aux::Timer timerGen, timerShrink;
+	
+	std::vector<count> graphSizes = {1000, 5000, 10000};
+	for (auto& n : graphSizes) {
+		timerGen.start();
+		Graph G = gen.makeErdosRenyiGraph(n, 0.01);
+		timerGen.stop();
+
+		count before = G.getMemoryUsage();
+		timerShrink.start();
+		G.shrinkToFit();
+		timerShrink.stop();
+		count after = G.getMemoryUsage();
+
+		printf("G(n = %lu, m = %lu), generation took %lu ms, memory used before shrink: %lu, memory used after shrink: %lu, relative saving: %f, shrinking took %lu us\n",
+			G.numberOfNodes(),
+			G.numberOfEdges(),
+			timerGen.elapsedMilliseconds(),
+			before,
+			after,
+			1.0 - (double) after / before,
+			timerShrink.elapsedMicroseconds());
 	}
-
-	INFO("memory used by Graph instance (in KB): ", G.getMemoryUsage() / 1024);
-	G.shrinkToFit();
-	INFO("after shrinking: ", G.getMemoryUsage() / 1024);
-
-	INFO("memory used by DirectedGraph instance (in KB): ", D.getMemoryUsage() / 1024);
-	D.shrinkToFit();
-	INFO("after shrinking:: ", D.getMemoryUsage() / 1024);
 }
+
+TEST_F(GraphMemoryBenchmark, shrinkToFitForGraphReader) {
+	Aux::Timer timerRead, timerShrink;
+	METISGraphReader reader;
+
+	timerRead.start();
+	Graph G = reader.read("input/caidaRouterLevel.graph");
+	timerRead.stop();
+
+	count before = G.getMemoryUsage();
+	timerShrink.start();
+	G.shrinkToFit();
+	timerShrink.stop();
+	count after = G.getMemoryUsage();
+
+	printf("G(n = %lu, m = %lu), reading took %lu ms, memory used before shrink: %lu, memory used after shrink: %lu, relative saving: %f, shrinking took %lu us\n",
+		G.numberOfNodes(),
+		G.numberOfEdges(),
+		timerRead.elapsedMilliseconds(),
+		before,
+		after,
+		1.0 - (double) after / before,
+		timerShrink.elapsedMicroseconds());
+}
+
 
 } /* namespace NetworKit */
 
