@@ -22,6 +22,8 @@ public:
 
 	virtual Mapping run(Graph& guest, Graph& host);
 
+	template <typename L> void forEdgesOfInDegreeIncreasingOrder(const Graph& graph, node u, L handle) const;
+
 	Permutation permute(const Graph& graph) const;
 	Permutation invert(const Permutation& piIn) const;
 };

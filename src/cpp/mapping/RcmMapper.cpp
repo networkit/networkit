@@ -48,6 +48,20 @@ Mapping RcmMapper::run(Graph& guest, Graph& host) {
 	return mapping;
 }
 
+template <typename L>
+void RcmMapper::forEdgesOfInDegreeIncreasingOrder(const Graph& graph, node u, L handle) const {
+	auto hasSmallerDegree = [&](node v1, node v2) {
+		return graph.degree(v1) < graph.degree(v2); // FIXME
+	};
+
+	std::vector<node> neighbors = graph.neighbors(u);
+	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
+
+	for (node v : neighbors) {
+		handle(u, v);
+	}
+}
+
 Permutation RcmMapper::permute(const Graph& graph) const {
 	count n = graph.numberOfNodes();
 	Permutation permutation;
@@ -86,7 +100,7 @@ Permutation RcmMapper::permute(const Graph& graph) const {
 			permutation.push_back(v);
 
 			// enqueue unvisited neighbors in degree-increasing order
-			graph.forEdgesOfInDegreeIncreasingOrder(v, [&](node v, node u) {
+			forEdgesOfInDegreeIncreasingOrder(graph, v, [&](node v, node u) {
 				if (unvisited.at(u)) {
 					q.push(u);
 					unvisited.at(u) = false;
