@@ -44,6 +44,8 @@ public:
 	 * Get the ID of this graph. The ID is a unique unsigned integer given to
 	 * every graph on construction.
 	 */
+
+	//virtual count degree() = 0;
 	count getId() const { return graphId; }
 
 	/**
