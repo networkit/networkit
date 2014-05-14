@@ -31,7 +31,7 @@ SelSCAN::SelSCAN(const Graph& G, count kappa, double epsilon, AlgebraicDistance&
 	dist = algDist;
 }
 
-void SelSCAN::run(std::set<unsigned int>& seeds) {
+std::map<node, std::set<node> >  SelSCAN::run(std::set<unsigned int>& seeds) {
 
 	/**
 	 * @return the epsilon-neighborhood of a node
@@ -133,6 +133,7 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 	DEBUG("eta: ", eta);
 
 	// extract sets from labels
+	std::map<node, std::set<node> > result;
 	for (auto s : seeds) {
 		index ls = eta[s];
 		std::set<node> community;
@@ -145,6 +146,7 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 		}
 		result[s] = community;
 	}
+	return result;
 
 }
 

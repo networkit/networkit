@@ -84,13 +84,13 @@ std::set<node> PageRankNibble::expandSeed(node seed) {
 	return cluster;
 }
 
-void PageRankNibble::run(std::set<unsigned int>& seeds) {
-	result.clear();
-    timings.clear();
+std::map<node, std::set<node> >  PageRankNibble::run(std::set<unsigned int>& seeds) {
+    std::map<node, std::set<node> > result;
 	for (auto seed : seeds) {
 		auto community = expandSeed(seed);
 		result[seed] = community;
 	}
+    return result;
 }
 
 } /* namespace NetworKit */

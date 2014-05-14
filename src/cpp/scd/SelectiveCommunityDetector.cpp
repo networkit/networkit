@@ -15,17 +15,5 @@ namespace NetworKit {
 SelectiveCommunityDetector::SelectiveCommunityDetector(const Graph& G) : G(G) {
 }
 
-SelectiveCommunityDetector::~SelectiveCommunityDetector() {
-	// TODO Auto-generated destructor stub
-}
-
-std::map<node, std::set<node> > SelectiveCommunityDetector::getResult() {
-	return result;
-
-}
-
-std::map<node, double> SelectiveCommunityDetector::getTimings() {
-	return timings;
-}
 
 } /* namespace NetworKit */
