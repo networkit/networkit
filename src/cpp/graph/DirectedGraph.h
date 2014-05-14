@@ -128,12 +128,13 @@ public:
 	bool isIsolated(node v) const;
 
 	/**
-	 * Return the number of neighbors for node v.
+	 * Return the number of incoming edges to node v.
 	 */
-	count degree(node v) const;
-
 	count degreeIn(node v) const;
 
+	/**
+	 * Return the number of outgoing edges from node v.
+	 */
 	count degreeOut(node v) const;
 
 	/** EDGE MODIFIERS **/
@@ -310,8 +311,9 @@ public:
 	template<typename L> void forOutEdgesOf(node u, L handle) const;
 	
 	/**
-	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
+	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
+
 	template<typename L> void forInEdgesOf(node u, L handle);
 	
 	/**
@@ -370,6 +372,7 @@ inline void NetworKit::DirectedGraph::forEdges(L handle) const {
 		}
 	}
 }
+
 
 template<typename L>
 inline void NetworKit::DirectedGraph::parallelForEdges(L handle) {
