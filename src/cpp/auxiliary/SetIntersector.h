@@ -13,9 +13,18 @@
 
 namespace Aux {
 
+/**
+ * Provides set intersection for sets with entries from 0 to an upper bound (exclusive).
+ * Preprocessing time: Linear time for object creation (creates a bit vector of size upperBound.
+ * Query time: O(|A|+|B|) for two sets A and B.
+ * Space complexity: upperBound + 64 bits.
+ */
 template<class T>
 class SetIntersector {
 public:
+	/**
+	 * @param upperBound Exclusive upper bound for IDs of set members.
+	 */
 	SetIntersector(T upperBound);
 
 	/**
