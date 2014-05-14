@@ -11,22 +11,9 @@
 
 namespace NetworKit {
 
+EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(separator), firstNode(firstNode) {}
 
-EdgeListIO::EdgeListIO() {
-
-}
-
-EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(separator), firstNode(firstNode) {
-
-}
-
-EdgeListIO::~EdgeListIO() {
-
-}
-
-
-
-Graph EdgeListIO::read(std::string path) {
+Graph EdgeListIO::read(const std::string& path) {
 
     std::ifstream file;
     std::string line; // the current line

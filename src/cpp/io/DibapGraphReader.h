@@ -36,10 +36,9 @@ namespace NetworKit {
  */
 class DibapGraphReader: public NetworKit::GraphReader {
 public:
-	DibapGraphReader();
-	virtual ~DibapGraphReader();
+	DibapGraphReader() = default;
 
-	virtual Graph read(std::string path);
+	virtual Graph read(const std::string& path) override;
 };
 
 } /* namespace NetworKit */
