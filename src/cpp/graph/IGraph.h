@@ -44,8 +44,6 @@ public:
 	 * Get the ID of this graph. The ID is a unique unsigned integer given to
 	 * every graph on construction.
 	 */
-
-	//virtual count degree() = 0;
 	count getId() const { return graphId; }
 
 	/**
@@ -106,6 +104,11 @@ public:
 
 
 	/** NODE PROPERTIES **/
+
+	/**
+	 * Return the number of neighbors for node v.
+	 */
+	virtual count degree(node v) const = 0;
 
 	/**
 	 * @return true if the node is isolated (= degree is 0)
@@ -355,6 +358,11 @@ public:
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forEdges(L handle) const {};
+
+	/**
+	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forEdgesOf(node u, L handle) const {};
 
 	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).

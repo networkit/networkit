@@ -40,18 +40,17 @@ public:
 	/**
 	 * Return the number of neighbors for node v. For a Directed Graph return the number of outgoing neighbors for node v.
 	 */
-	count degree(node v) const {return degreeOut(v);}
-	/**
-	 * Return the number of incoming edges to node v. For an undirected graph this is the
-	 * same as degree(v).
-	 */
-	virtual count degreeIn(node v) const =0;
+	virtual count degree(node v) const { return degreeOut(v); }
 
 	/**
-	 * Return the number of outgoing edges from node v. For an undirected graph this is the
-	 * same as degree(v).
+	 * Return the number of incoming edges to node v.
 	 */
-	virtual count degreeOut(node v) const =0;
+	virtual count degreeIn(node v) const = 0;
+
+	/**
+	 * Return the number of outgoing edges from node v.
+	 */
+	virtual count degreeOut(node v) const = 0;
 
 	/**
 	 * @return In-Volume of the node, which is the sum of all incoming edges.
@@ -60,6 +59,11 @@ public:
 
 
 	/** ITERATE OVER NEIGHBORS */
+
+	/**
+	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forEdgesOf(node u, L handle) const;
 
 	/**
 	 * Iterate over all Outgoing edges of the graph and call handler (lambda closure).
@@ -81,7 +85,14 @@ public:
 	 */
 	template<typename L> void forInNeighborsOf(node u, L handle) const {}
 };
-
 } /* namespace NetworKit */
+
+
+/** EDGE ITERATORS */
+
+template <typename L>
+inline void NetworKit::IDGraph::forEdgesOf(node u, L handle) const {
+	forEdgesOf(u, handle);
+}
 
 #endif /* IDGRAPH_H */
