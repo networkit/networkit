@@ -14,21 +14,29 @@
 
 namespace NetworKit {
 
-template <typename T>
-IDGraphGTest<T>::IDGraphGTest() {
-	// TODO Auto-generated constructor stub
-
-}
-
-template <typename T>
-IDGraphGTest<T>::~IDGraphGTest() {
-	// TODO Auto-generated destructor stub
-}
-
 using testing::Types;
 typedef Types<DirectedGraph> dgraphImplementations;
-
 TYPED_TEST_CASE(IDGraphGTest, dgraphImplementations);
+
+template <typename T>
+void IDGraphGTest<T>::SetUp() {
+	Ghouse = T(5);
+	houseEdgesOut = {
+		{0, 2},
+		{1, 0},
+		{1, 4},
+		{2, 1},
+		{2, 4},
+		{3, 1},
+		{3, 2},
+		{4, 3}
+	};
+	for (auto& e : houseEdgesOut) {
+		Ghouse.addEdge(e.first, e.second);
+	}
+	m_house = Ghouse.numberOfEdges();
+}
+
 
 TYPED_TEST(IDGraphGTest, degreeInOut) {
 	TypeParam G(5);
@@ -64,45 +72,122 @@ TYPED_TEST(IDGraphGTest, degreeInOut) {
 	ASSERT_EQ(1, G.degreeOut(4));
 }
 
-
-TYPED_TEST(IDGraphGTest, IterateNeighborMethodsDirected) {
-
-	TypeParam G(5);
-	std::vector<std::vector<node>> visited;
-	
-	
-	G.addEdge(0, 2);
-	G.addEdge(1, 0);
-	G.addEdge(1, 4);	
-	G.addEdge(2, 1);
-	G.addEdge(2, 4);
-	G.addEdge(3, 1);
-	G.addEdge(3, 2);
-	G.addEdge(4, 3);
-
-	
-	forallOutEdges(0,[&](node u, node v){
+TYPED_TEST(IDGraphGTest, forOutEdgesOf) {
+	TypeParam G = this->Ghouse;
+	count m = 0;
+	std::vector<bool> visited(this->m_house, false);
+	G.forNodes([&](node u) {
+		G.forOutEdgesOf(u, [&](node v, node w) {
+			// edges should be v to w, so if we iterate over edges from u, u should be equal v
+			ASSERT_EQ(u, v);
+			
+			auto e = std::make_pair(v, w);
+			// find edge
+			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
+			ASSERT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
 		
-		visited[u][v]=1;
+			// find index in edge array
+			int i = std::distance(this->houseEdgesOut.begin(), it);
+			ASSERT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
+			
+			// mark edge as visited
+			visited[i] = true;
+			m++;
+		});
 	});
+	ASSERT_EQ(this->m_house, m);
+	for (auto b : visited) {
+		ASSERT_TRUE(b);
+	}
+}
 
-
-	ASSERT_EQ(1,visited[0][2]);
-
-	forallOutEdges(0,[&](node u, node v){
+TYPED_TEST(IDGraphGTest, forOutEdgesOfConst) {
+	const TypeParam G = this->Ghouse;
+	count m = 0;
+	std::vector<bool> visited(this->m_house, false);
+	G.forNodes([&](node u) {
+		G.forOutEdgesOf(u, [&](node v, node w) {
+			// edges should be v to w, so if we iterate over edges from u, u should be equal v
+			ASSERT_EQ(u, v);
+			
+			auto e = std::make_pair(v, w);
+			// find edge
+			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
+			ASSERT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
 		
-		visited[u][v]=0;
+			// find index in edge array
+			int i = std::distance(this->houseEdgesOut.begin(), it);
+			ASSERT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
+			
+			// mark edge as visited
+			visited[i] = true;
+			m++;
+		});
 	});
+	ASSERT_EQ(this->m_house, m);
+	for (auto b : visited) {
+		ASSERT_TRUE(b);
+	}
+}
 
-
-	forallInEdges(4, [&](node u, node v){
-
-		visited[u][v] = 1;
+TYPED_TEST(IDGraphGTest, forInEdgesOf) {
+	TypeParam G = this->Ghouse;
+	count m = 0;
+	std::vector<bool> visited(this->m_house, false);
+	// NEXT 3 LINES ARE DIFFERENT
+	G.forNodes([&](node u) {
+		G.forInEdgesOf(u, [&](node v, node w) {
+			// edges should be v to w, so if we iterate over edges from u, u should be equal w
+			ASSERT_EQ(u, w);
+			
+			auto e = std::make_pair(v, w);
+			// find edge
+			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
+			ASSERT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
+		
+			// find index in edge array
+			int i = std::distance(this->houseEdgesOut.begin(), it);
+			ASSERT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
+			
+			// mark edge as visited
+			visited[i] = true;
+			m++;
+		});
 	});
+	ASSERT_EQ(this->m_house, m);
+	for (auto b : visited) {
+		ASSERT_TRUE(b);
+	}
+}
 
-	ASSERT_EQ(1,visited[2][4]);
-	ASSERT_EQ(1,visited[1][4]);
-
+TYPED_TEST(IDGraphGTest, forInEdgesOfConst) {
+	const TypeParam G = this->Ghouse;
+	count m = 0;
+	std::vector<bool> visited(this->m_house, false);
+	G.forNodes([&](node u) {
+		// NEXT 3 LINES ARE DIFFERENT
+		G.forInEdgesOf(u, [&](node v, node w) {
+			// edges should be v to w, so if we iterate over edges to u, u should be equal w
+			ASSERT_EQ(u, w);
+			
+			auto e = std::make_pair(v, w);
+			// find edge
+			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
+			ASSERT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
+		
+			// find index in edge array
+			int i = std::distance(this->houseEdgesOut.begin(), it);
+			ASSERT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
+			
+			// mark edge as visited
+			visited[i] = true;
+			m++;
+		});
+	});
+	ASSERT_EQ(this->m_house, m);
+	for (auto b : visited) {
+		ASSERT_TRUE(b);
+	}
 }
 
 } /* namespace NetworKit */

@@ -510,7 +510,7 @@ inline void NetworKit::DirectedGraph::forInEdgesOf(node u, L handle) {
 	for(index i = 0; i < this->inOut[u]; i++) {
 		node v = this->adja[u][i];
 		if (v != none) {
-			handle(u, v);
+			handle(v, u);
 		}
 	}
 }
@@ -520,7 +520,7 @@ inline void NetworKit::DirectedGraph::forInEdgesOf(node u, L handle) const {
 	for(index i = 0; i < this->inOut[u]; i++) {
 		node v = this->adja[u][i];
 		if (v != none) {
-			handle(u, v);
+			handle(v, u);
 		}
 	}
 }
