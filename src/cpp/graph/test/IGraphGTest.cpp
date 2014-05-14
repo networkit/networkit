@@ -151,6 +151,32 @@ TYPED_TEST(IGraphGTest, isEmpty) {
 	ASSERT_TRUE(G2.isEmpty());
 }
 
+TYPED_TEST(IGraphGTest, forNodes) {
+	TypeParam G(3);
+	std::vector<bool> visited(4, false);
+	G.forNodes([&](node v) {
+		ASSERT_FALSE(visited[v]);
+		if (v == 2) {
+			G.addNode();
+		}
+		visited[v] = true;
+	});
+	for (bool b : visited) {
+		ASSERT_TRUE(b);
+	}
+}
+
+TYPED_TEST(IGraphGTest, forNodesConst) {
+	const TypeParam G(3);
+	std::vector<bool> visited(3, false);
+	G.forNodes([&](node v) {
+		ASSERT_FALSE(visited[v]);
+		visited[v] = true;
+	});
+	for (bool b : visited) {
+		ASSERT_TRUE(b);
+	}
+}
 
 } /* namespace NetworKit */
 
