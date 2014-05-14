@@ -180,7 +180,8 @@ edgeweight AbstractGraph::totalEdgeWeight() const {
 
 std::vector<node> AbstractGraph::nodes() const {
 	std::vector<node> nodes;
-	this->forNodes([&](node u){
+	nodes.reserve(numberOfNodes());
+	this->forNodes([&](node u) {
 		nodes.push_back(u);
 	});
 	return nodes;
@@ -188,6 +189,7 @@ std::vector<node> AbstractGraph::nodes() const {
 
 std::vector<std::pair<node, node> > AbstractGraph::edges() const {
 	std::vector<std::pair<node, node> > edges;
+	edges.reserve(numberOfEdges());
 	this->forEdges([&](node u, node v){
 		edges.push_back(std::pair<node, node>(u, v));
 	});
@@ -197,6 +199,7 @@ std::vector<std::pair<node, node> > AbstractGraph::edges() const {
 std::vector<node> AbstractGraph::neighbors(node u) const {
 	std::vector<node> neighbors;
 	// TODO
+	// neighbors.reserve(degree(u));
 	// this->forNeighborsOf(u, [&](node v) {
 	// 	neighbors.push_back(v);
 	// });

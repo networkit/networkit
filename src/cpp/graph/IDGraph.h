@@ -59,17 +59,7 @@ public:
 	/**
 	 * Iterate over all Outgoing edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forOutEdgesOf(node u, L handle) {}
-
-	/**
-	 * Iterate over all Outgoing edges of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void forOutEdgesOf(node u, L handle) const {}
-	
-	/**
-	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void forInEdgesOf(node u, L handle) {}
 	
 	/**
 	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
@@ -79,22 +69,12 @@ public:
 	/**
 	 * Iterate over all adjacent nodes, which are adjacent to an inedge of u
 	 */
-	template<typename L> void forOutNeighborsOf(node u, L handle) {}
-
-	/**
-	 * Iterate over all adjacent nodes, which are adjacent to an inedge of u
-	 */
 	template<typename L> void forOutNeighborsOf(node u, L handle) const {}
 
 	/**
 	 * Iterate over all adjacent nodes, which are adjacent to an outedge of u
 	 */
-	template<typename L> void forInNeighborsOf(node u, L handle) {}
-	
-	/**
-	 * Iterate over all adjacent nodes, which are adjacent to an outedge of u
-	 */
-	template<typename L> void forInNeighborsOf(node u, L handle) const;
+	template<typename L> void forInNeighborsOf(node u, L handle) const {}
 };
 
 } /* namespace NetworKit */

@@ -305,18 +305,13 @@ public:
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void parallelForNodes(L handle) {};
-
-	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void parallelForNodes(L handle) const {};
 
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
-	template<typename C, typename L> void forNodesWhile(C condition, L handle) {};
+	template<typename C, typename L> void forNodesWhile(C condition, L handle) const {};
 
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
@@ -327,18 +322,7 @@ public:
 	/**
 	 * Iterate randomly over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forNodesInRandomOrder(L handle) {};
-
-	/**
-	 * Iterate randomly over all nodes of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void forNodesInRandomOrder(L handle) const {};
-
-	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
-	 * Using schedule(guided) to remedy load-imbalances due to e.g. unequal degree distribution.
-	 */
-	template<typename L> void balancedParallelForNodes(L handle) {};
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
@@ -349,17 +333,7 @@ public:
 	/**
 	 * Iterate over all undirected pairs of nodesand call handler (lambda closure).
 	 */
-	template<typename L> void forNodePairs(L handle) {};
-
-	/**
-	 * Iterate over all undirected pairs of nodesand call handler (lambda closure).
-	 */
 	template<typename L> void forNodePairs(L handle) const {};
-
-	/**
-	 * Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure).
-	 */
-	template<typename L> void parallelForNodePairs(L handle) {};
 
 	/**
 	 * Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure).
@@ -372,20 +346,10 @@ public:
 	/**
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
 	 */
-	template<typename L> double parallelSumForNodes(L handle) { return 0.0; };
-
-	/**
-	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
-	 */
 	template<typename L> double parallelSumForNodes(L handle) const { return 0.0; };
 
 
 	/** EDGE ITERATORS **/
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void forEdges(L handle) {};
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
@@ -395,20 +359,7 @@ public:
 	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void parallelForEdges(L handle) {};
-
-	/**
-	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void parallelForEdges(L handle) const {};
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 *
-	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
-	 *
-	 */
-	template<typename L> void forWeightedEdges(L handle) {};
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
@@ -421,25 +372,8 @@ public:
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 *
 	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
-	 *
-	 */
-	template<typename L> void parallelForWeightedEdges(L handle) {};
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 *
-	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
 	 */
 	template<typename L> void parallelForWeightedEdges(L handle) const {};
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 *
-	 *	@param[in]	attrId		attribute id
-	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
-	 *
-	 */
-	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) {};
 
 	/**
 	 * Iterate over all edges of the const graph and call handler (lambda closure).

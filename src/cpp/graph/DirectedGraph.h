@@ -232,29 +232,12 @@ public:
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forEdges(L handle);
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void forEdges(L handle) const;
 
 	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void parallelForEdges(L handle);
-
-	/**
-	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void parallelForEdges(L handle) const;
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 *
-	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
-	 */
-	template<typename L> void forWeightedEdges(L handle);
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
@@ -267,25 +250,8 @@ public:
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 *
 	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
-	 *
-	 */
-	template<typename L> void parallelForWeightedEdges(L handle);
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 *
-	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
 	 */
 	template<typename L> void parallelForWeightedEdges(L handle) const;
-
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 *
-	 *	@param[in]	attrId		attribute id
-	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
-	 *
-	 */
-	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle);
 
 	/**
 	 * Iterate over all edges of the const graph and call handler (lambda closure).
@@ -302,17 +268,7 @@ public:
 	/**
 	 * Iterate over all Outgoing edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forOutEdgesOf(node u, L handle);
-
-	/**
-	 * Iterate over all Outgoing edges of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void forOutEdgesOf(node u, L handle) const;
-	
-	/**
-	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void forInEdgesOf(node u, L handle);
 	
 	/**
 	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
@@ -322,18 +278,8 @@ public:
 	/**
 	 * Iterate over all adjacent nodes, which are adjacent to an inedge of u
 	 */
-	template<typename L> void forOutNeighborsOf(node u, L handle);
-
-	/**
-	 * Iterate over all adjacent nodes, which are adjacent to an inedge of u
-	 */
 	template<typename L> void forOutNeighborsOf(node u, L handle) const;
 
-	/**
-	 * Iterate over all adjacent nodes, which are adjacent to an outedge of u
-	 */
-	template<typename L> void forInNeighborsOf(node u, L handle);
-	
 	/**
 	 * Iterate over all adjacent nodes, which are adjacent to an outedge of u
 	 */
@@ -348,32 +294,7 @@ public:
 /** EDGE ITERATORS **/
 
 template<typename L>
-inline void NetworKit::DirectedGraph::forEdges(L handle) {
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < this->inOut[u]; i++) {
-			node v = this->adja[u][i];
-			if (v != none) {
-				handle(u, v);
-			}
-		}
-	}
-}
-
-template<typename L>
 inline void NetworKit::DirectedGraph::forEdges(L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < this->inOut[u]; i++) {
-			node v = this->adja[u][i];
-			if (v != none) {
-				handle(u, v);
-			}
-		}
-	}
-}
-
-template<typename L>
-inline void NetworKit::DirectedGraph::parallelForEdges(L handle) {
-	#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (index i = 0; i < this->inOut[u]; i++) {
 			node v = this->adja[u][i];
@@ -397,44 +318,8 @@ inline void NetworKit::DirectedGraph::parallelForEdges(L handle) const {
 	}
 }
 
-
-template<typename L>
-inline void NetworKit::DirectedGraph::forWeightedEdges(L handle) {
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < this->inOut[u]; i++) {
-			node v = this->adja[u][i];
-			if (v != none) {
-				if (weighted) {
-					edgeweight w = this->eweights[u][i];
-					handle(u, v, w);
-				} else {
-					handle(u, v, defaultEdgeWeight);
-				}
-			}
-		}
-	}
-}
-
 template<typename L>
 inline void NetworKit::DirectedGraph::forWeightedEdges(L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < this->inOut[u]; i++) {
-			node v = this->adja[u][i];
-			if (v != none) {
-				if (weighted) {
-					edgeweight w = this->eweights[u][i];
-					handle(u, v, w);
-				} else {
-					handle(u, v, defaultEdgeWeight);
-				}
-			}
-		}
-	}
-}
-
-template<typename L>
-inline void NetworKit::DirectedGraph::parallelForWeightedEdges(L handle) {
-	#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		for (index i = 0; i < this->inOut[u]; i++) {
 			node v = this->adja[u][i];
@@ -469,20 +354,6 @@ inline void NetworKit::DirectedGraph::parallelForWeightedEdges(L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::DirectedGraph::forEdgesWithAttribute_double(int attrId, L handle) {
-	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < this->inOut[u]; i++) {
-			node v = this->adja[u][i];
-			double attr = edgeMap[u][i];
-			if (v != none) {
-				handle(u, v, attr);
-			}
-		}
-	}
-}
-
-template<typename L>
 inline void NetworKit::DirectedGraph::forEdgesWithAttribute_double(int attrId, L handle) const {
 	std::vector<std::vector<double> > edgeMap = this->edgeMaps_double[attrId];
 	for (node u = 0; u < z; ++u) {
@@ -500,16 +371,6 @@ inline void NetworKit::DirectedGraph::forEdgesWithAttribute_double(int attrId, L
 /** ITERATE OVER NEIGHBORS */
 
 template<typename L>
-inline void NetworKit::DirectedGraph::forOutEdgesOf(node u, L handle) {
-	for(index i = this->inOut[u]; i < this->adja[u].size(); i++) {
-		node v = this->adja[u][i];
-		if (v != none) {
-			handle(u, v);
-		}
-	}
-}
-
-template<typename L>
 inline void NetworKit::DirectedGraph::forOutEdgesOf(node u, L handle) const {
 	for(index i = this->inOut[u]; i < this->adja[u].size(); i++) {
 		node v = this->adja[u][i];
@@ -519,16 +380,6 @@ inline void NetworKit::DirectedGraph::forOutEdgesOf(node u, L handle) const {
 	}
 }
 	
-template<typename L>
-inline void NetworKit::DirectedGraph::forInEdgesOf(node u, L handle) {
-	for(index i = 0; i < this->inOut[u]; i++) {
-		node v = this->adja[u][i];
-		if (v != none) {
-			handle(v, u);
-		}
-	}
-}
-
 template<typename L>
 inline void NetworKit::DirectedGraph::forInEdgesOf(node u, L handle) const {
 	for(index i = 0; i < this->inOut[u]; i++) {
@@ -540,28 +391,8 @@ inline void NetworKit::DirectedGraph::forInEdgesOf(node u, L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::DirectedGraph::forOutNeighborsOf(node u, L handle) {
-	for (index i = this->inOut[u]; i < this->adja[u].size(); i++) {
-		node v = this->adja[u][i];
-		if (v != none) {
-			handle(v);
-		}
-	}
-}
-
-template<typename L>
 inline void NetworKit::DirectedGraph::forOutNeighborsOf(node u, L handle) const {
 	for (index i = this->inOut[u]; i < this->adja[u].size(); i++) {
-		node v = this->adja[u][i];
-		if (v != none) {
-			handle(v);
-		}
-	}
-}
-
-template<typename L>
-inline void NetworKit::DirectedGraph::forInNeighborsOf(node u, L handle) {
-	for (index i = 0; i < this->inOut[u]; i++) {
 		node v = this->adja[u][i];
 		if (v != none) {
 			handle(v);
@@ -579,8 +410,5 @@ inline void NetworKit::DirectedGraph::forInNeighborsOf(node u, L handle) const {
 	}
 }
 	
-
-
-
 
 #endif /* DIRECETD_GRAPH_H_ */
