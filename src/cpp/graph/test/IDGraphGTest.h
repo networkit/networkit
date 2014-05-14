@@ -19,8 +19,12 @@ namespace NetworKit {
 template <typename T>
 class IDGraphGTest : public testing::Test {
 public:
-	IDGraphGTest();
-	virtual ~IDGraphGTest();
+	virtual void SetUp();
+
+protected:
+	T Ghouse;
+	std::vector< std::pair<node, node> > houseEdgesOut;
+	count m_house;
 };
 
 } /* namespace NetworKit */
