@@ -40,6 +40,16 @@ class DirectedGraph final : public IDGraph, public AbstractGraph {
 
 protected:
 
+	struct NodeDegree {
+		count in;
+		count out;
+		NodeDegree():
+			in(0),
+			out(0)
+		{}
+		count total() const { return in + out; }
+	};
+
 	// per node data
 	_Vector< NodeDegree > deg; //!< degree of each node (size of neighborhood)
 
@@ -120,7 +130,11 @@ public:
 	/**
 	 * Return the number of neighbors for node v.
 	 */
-	NodeDegree degree(node v) const;
+	count degree(node v) const;
+
+	count degreeIn(node v) const;
+
+	count degreeOut(node v) const;
 
 	/** EDGE MODIFIERS **/
 
