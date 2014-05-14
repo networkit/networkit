@@ -68,7 +68,8 @@ TYPED_TEST(IDGraphGTest, degreeInOut) {
 TYPED_TEST(IDGraphGTest, IterateNeighborMethodsDirected) {
 
 	TypeParam G(5);
-	std::vector<std::vector<node>> visited;
+	std::vector<std::vector<node>> visited(5, std::vector<node>(5));
+	std::vector<node> visitedNode(5);
 	
 	
 	G.addEdge(0, 2);
@@ -81,7 +82,7 @@ TYPED_TEST(IDGraphGTest, IterateNeighborMethodsDirected) {
 	G.addEdge(4, 3);
 
 	
-	forallOutEdges(0,[&](node u, node v){
+	G.forOutEdgesOf(0,[&](node u, node v){
 		
 		visited[u][v]=1;
 	});
@@ -89,13 +90,13 @@ TYPED_TEST(IDGraphGTest, IterateNeighborMethodsDirected) {
 
 	ASSERT_EQ(1,visited[0][2]);
 
-	forallOutEdges(0,[&](node u, node v){
+	G.forOutEdgesOf(0,[&](node u, node v){
 		
 		visited[u][v]=0;
 	});
 
 
-	forallInEdges(4, [&](node u, node v){
+	G.forInEdgesOf(4, [&](node v, node u){
 
 		visited[u][v] = 1;
 	});
@@ -103,6 +104,22 @@ TYPED_TEST(IDGraphGTest, IterateNeighborMethodsDirected) {
 	ASSERT_EQ(1,visited[2][4]);
 	ASSERT_EQ(1,visited[1][4]);
 
+	G.forOutNeighborsOf(3, [&](node v){
+		
+		visitedNode[v]= 1;
+		
+	});
+	
+	G.forInNeighborsOf(2, [&](node v){
+		
+		visitedNode[v]= 1;
+		
+	});
+
+	ASSERT_EQ(1, visitedNode[1]);
+	ASSERT_EQ(1, visitedNode[2]);
+	ASSERT_EQ(1, visitedNode[3]);
+	ASSERT_EQ(1, visitedNode[0]);
 }
 
 } /* namespace NetworKit */

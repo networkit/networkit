@@ -56,7 +56,11 @@ public:
 	 * same as degree(v).
 	 */
 	count degreeOut(node v) const { return this->degree(v).out; }
-<<<<<<< local
+
+	/**
+	 * @return In-Volume of the node, which is the sum of all incoming edges.
+	 */
+	// virtual edgeweight volume(node v) const;
 
 
 	/** ITERATE OVER NEIGHBORS */
@@ -70,17 +74,10 @@ public:
 	 * Iterate over all Outgoing edges of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forOutEdgesOf(node u, L handle) const {}
-=======
->>>>>>> other
-	
+
 	/**
-<<<<<<< local
 	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
-=======
-	 * @return In-Volume of the node, which is the sum of all incoming edges.
->>>>>>> other
 	 */
-<<<<<<< local
 	template<typename L> void forInEdgesOf(node u, L handle) {}
 	
 	/**
@@ -107,14 +104,7 @@ public:
 	 * Iterate over all adjacent nodes, which are adjacent to an outedge of u
 	 */
 	template<typename L> void forInNeighborsOf(node u, L handle) const;
-=======
-	// virtual edgeweight volume(node v) const;
->>>>>>> other
 };
-
-
-
-
 
 } /* namespace NetworKit */
 
