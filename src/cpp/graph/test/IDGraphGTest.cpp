@@ -49,7 +49,7 @@ TYPED_TEST(IDGraphGTest, degreeInOut) {
 	this->Ghouse.forNodes([&](node v) {
 		ASSERT_EQ(inDegrees[v], this->Ghouse.degreeIn(v));
 		ASSERT_EQ(outDegrees[v], this->Ghouse.degreeOut(v));
-		// ASSERT_EQ(outDegrees[v], this->Ghouse.degree(v));
+		ASSERT_EQ(outDegrees[v], this->Ghouse.degree(v));
 	});
 }
 

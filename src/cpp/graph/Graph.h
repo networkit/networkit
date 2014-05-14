@@ -337,17 +337,13 @@ public:
 	template<typename L> void forEdgesOf(node u, L handle) const;
 
 	/**
-	 * Iterate over all incident edges of a node in neighborhood-size-increasing order and call handler (lamdba closure).
-	 */
-	template<typename L> void forEdgesOfInDegreeIncreasingOrder(node u, L handle) const;
-
-	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 *
 	 * Handle takes parameters (u, v, w) where w is the edge weight.
 	 *
 	 */
 	template<typename L> void forWeightedEdgesOf(node u, L handle) const;
+
 
 	/** REDUCTION ITERATORS **/
 
@@ -437,11 +433,7 @@ inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId, L handle)
 }
 
 
-
-
-
-
-/** OLD STUFF **/
+/** NEIGHBORHOOD ITERATORS **/
 
 template<typename L>
 inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
@@ -455,7 +447,7 @@ inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
 template<typename L>
 inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) const {
 	if (weighted) {
-		for (index i = 0; i < (index) adja[u].size(); ++i) {
+		for (index i = 0; i < (index) adja[u].size(); i++) {
 			node v = adja[u][i];
 			if (v != none) {
 				edgeweight ew = eweights[u][i];
@@ -464,7 +456,7 @@ inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) const {
 			}
 		}
 	} else {
-		for (index i = 0; i < (index) adja[u].size(); ++i) {
+		for (index i = 0; i < (index) adja[u].size(); i++) {
 			node v = adja[u][i];
 			if (v != none) {
 				handle(v, defaultEdgeWeight);
@@ -474,42 +466,8 @@ inline void NetworKit::Graph::forWeightedNeighborsOf(node u, L handle) const {
 }
 
 template<typename L>
-double NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
-	double sum = 0.0;
-	#pragma omp parallel for reduction(+:sum)
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < this->adja[u].size(); ++i) {
-			node v = this->adja[u][i];
-			edgeweight ew = this->eweights[u][i];
-			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				sum += handle(u, v, ew);
-			}
-		}
-	}
-	return sum;
-}
-
-template<typename L>
 inline void NetworKit::Graph::forEdgesOf(node u, L handle) const {
 	for (node v : this->adja[u]) {
-		if (v != none) {
-			handle(u, v);
-		}
-	}
-}
-
-template<typename L>
-void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) const {
-	// TODO: iterating over neighbors ordered by degree does not need privileged access to graphs data structure and should
-	// therefore be implemented inside the algorithm. - cls
-	auto hasSmallerDegree = [&](node v1, node v2) {
-		return degree(v1) < degree(v2); // FIXME
-	};
-
-	_Vector<node> neighbors = adja[u];
-	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
-
-	for (node v : neighbors) {
 		if (v != none) {
 			handle(u, v);
 		}
@@ -531,7 +489,23 @@ inline void NetworKit::Graph::forWeightedEdgesOf(node u, L handle) const {
 	}
 }
 
+/** REDUCTION ITERATORS **/
 
+template<typename L>
+double NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
+	double sum = 0.0;
+	#pragma omp parallel for reduction(+:sum)
+	for (node u = 0; u < z; ++u) {
+		for (index i = 0; i < this->adja[u].size(); i++) {
+			node v = this->adja[u][i];
+			edgeweight ew = this->eweights[u][i];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				sum += handle(u, v, ew);
+			}
+		}
+	}
+	return sum;
+}
 
 
 
