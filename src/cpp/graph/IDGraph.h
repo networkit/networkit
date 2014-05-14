@@ -65,7 +65,7 @@ public:
 	 * Iterate over all Outgoing edges of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forOutEdgesOf(node u, L handle) const {}
-
+	
 	/**
 	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
 	 */

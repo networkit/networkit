@@ -300,11 +300,6 @@ public:
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forNodes(L handle) {};
-
-	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void forNodes(L handle) const {};
 
 	/**

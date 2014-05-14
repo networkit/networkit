@@ -263,11 +263,6 @@ public:
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forNodes(L handle);
-
-	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void forNodes(L handle) const;
 
 	/**
@@ -352,15 +347,6 @@ public:
 } /* namespace NetworKit */
 
 /** NODE ITERATORS **/
-
-template<typename L>
-inline void NetworKit::AbstractGraph::forNodes(L handle) {
-	for (node v = 0; v < z; ++v) {
-		if (exists[v]) {
-			handle(v);
-		}
-	}
-}
 
 template<typename L>
 inline void NetworKit::AbstractGraph::forNodes(L handle) const {
