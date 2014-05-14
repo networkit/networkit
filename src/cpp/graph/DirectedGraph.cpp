@@ -10,6 +10,7 @@
 namespace NetworKit {
 
 
+
 // TODO: z should probably be n-1, but it breaks some tests
 DirectedGraph::DirectedGraph(count n, bool weighted):
 	AbstractGraph(n, weighted),
@@ -138,12 +139,27 @@ bool DirectedGraph::isIsolated(node v) const {
 	return (this->deg[v].in == 0) && (this->deg[v].out == 0);
 }
 
-DirectedGraph::NodeDegree DirectedGraph::degree(node v) const {
+count DirectedGraph::degreeIn(node v) const {
+	assert (v >= 0);
+	assert (v < this->z);
+	assert (this->exists[v]);
+	return this->deg[v].in;
+}
+
+count DirectedGraph::degreeOut(node v) const {
+	assert (v >= 0);
+	assert (v < this->z);
+	assert (this->exists[v]);
+	return this->deg[v].out;
+}
+
+
+/*DirectedGraph::NodeDegree DirectedGraph::degree(node v) const {
 	assert (v >= 0);
 	assert (v < this->z);
 	assert (this->exists[v]);
 	return this->deg[v];
-}
+}*/
 
 /** EDGE MODIFIERS **/
 
