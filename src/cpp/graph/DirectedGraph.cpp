@@ -135,10 +135,6 @@ node DirectedGraph::addNode(float x, float y) {
 
 /** NODE PROPERTIES **/
 
-bool DirectedGraph::isIsolated(node v) const {
-	return (this->deg[v].in == 0) && (this->deg[v].out == 0);
-}
-
 count DirectedGraph::degreeIn(node v) const {
 	assert (v >= 0);
 	assert (v < this->z);

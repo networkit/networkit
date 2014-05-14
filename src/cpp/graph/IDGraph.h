@@ -33,6 +33,11 @@ public:
 	/** NODE PROPERTIES **/
 
 	/**
+	 * @return true if the node is isolated (= degree is 0)
+	 */
+	bool isIsolated(node v) const { return degreeIn(v) == 0 && degreeOut(v) == 0; }
+
+	/**
 	 * Return the number of neighbors for node v. For a Directed Graph return the number of outgoing neighbors for node v.
 	 */
 	count degree(node v) const {return degreeOut(v);}
