@@ -77,15 +77,15 @@ std::map<node, std::set<node> >  SelSCAN::run(std::set<unsigned int>& seeds) {
 		TRACE("starting core search");
 		while (!Q.empty()) {
 			node x = Q.front(); Q.pop();
-			eta[x] = label;	// add to community
-			TRACE(x, " added to community ", eta[x]);
-			if (core(x)) {
-				for (node y : epsilonNeighborhood(x)) {
-					// assert ((eta.find(y) == eta.end()) || (eta[y] == none));	// not assigned or outlier - FAILS
-					if (eta.find(y) == eta.end()) {
-						Q.push(y);
-					}
+			assert (core(x));
+			for (node y : epsilonNeighborhood(x)) {
+				// assert ((eta.find(y) == eta.end()) || (eta[y] == none));	// not assigned or outlier - FAILS
+				if (core(y)) {
+					Q.push(y);
 				}
+				eta[y] = label; // add to community
+				TRACE(y, " added to community ", eta[y]);
+
 			}
 		}
 

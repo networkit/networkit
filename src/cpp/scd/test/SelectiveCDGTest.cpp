@@ -1,10 +1,12 @@
 #include "SelectiveCDGTest.h"
 
 #include "../PageRankNibble.h"
+#include "../SelSCAN.h"
 #include "../../community/Modularity.h"
 #include "../../community/Conductance.h"
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
+
 
 #ifndef NOGTEST
 
@@ -43,6 +45,24 @@ TEST_F(SCDGTest2, testPageRankNibble) {
 	double cond = conductance.getQuality(partition, G);
 	EXPECT_LT(cond, targetCond);
 	INFO("Conductance of PR-Nibble: ", cond, "; cluster size: ", cluster.size());
+}
+
+
+
+
+TEST_F(SCDGTest2, testSelSCAN) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/hep-th.graph");
+	count kappa = 2;
+	double epsilon = 0.8;
+
+	SelSCAN selSCAN(G, kappa, epsilon);
+
+	auto nodes = G.nodes();
+	std::set<unsigned int> seeds(nodes.begin(), nodes.end());
+
+	auto result = selSCAN.run(seeds);
+
 }
 
 
