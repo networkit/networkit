@@ -123,11 +123,6 @@ public:
 	/** NODE PROPERTIES **/
 
 	/**
-	 * @return true if the node is isolated (= degree is 0)
-	 */
-	bool isIsolated(node v) const;
-
-	/**
 	 * Return the number of neighbors for node v.
 	 */
 	count degree(node v) const;
