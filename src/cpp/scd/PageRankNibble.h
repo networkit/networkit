@@ -40,7 +40,7 @@ public:
 	PageRankNibble(Graph& g, double alpha, double epsilon);
 
 
-	void run(std::set<unsigned int>& seeds);
+	std::map<node, std::set<node> >  run(std::set<unsigned int>& seeds);
 
 
 		/**

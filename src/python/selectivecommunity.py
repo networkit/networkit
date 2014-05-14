@@ -1,1 +1,1 @@
-from _NetworKit import DummySCD, PageRankNibble, GCE, SelSCAN
+from _NetworKit import PageRankNibble, GCE, SelSCAN

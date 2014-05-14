@@ -15,7 +15,7 @@ GCE::GCE(const Graph& G) : SelectiveCommunityDetector(G) {
 
 }
 
-void GCE::run(std::set<unsigned int>& seeds) {
+std::map<node, std::set<node> >  GCE::run(std::set<unsigned int>& seeds) {
 
 }
 
@@ -44,7 +44,7 @@ std::set<node> GCE::expandSeed(node s) {
 		return sh;
 	};
 
-	/** 
+	/**
 	 * internal and external degree of a node with respect to the community
 	 */
 	auto intExtDeg = [&](node v, std::set<node> C) {
@@ -98,4 +98,3 @@ std::set<node> GCE::expandSeed(node s) {
 }
 
 } /* namespace NetworKit */
-

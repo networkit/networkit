@@ -1752,36 +1752,13 @@ cdef class AlgebraicDistance:
 # module selectivecommunity
 
 
-cdef extern from "../cpp/scd/DummySCD.h":
-	cdef cppclass _DummySCD "NetworKit::DummySCD":
-		_DummySCD(_Graph G) except +
-		void run(set[unsigned int]) except +
-		map[node, set[node]] getResult() except +
-		map[node, double] getTimings() except +
-
-cdef class DummySCD:
-	cdef _DummySCD* _this
-
-	def __cinit__(self, Graph G):
-		self._this = new _DummySCD(dereference(G._this))
-
-	def run(self, seeds):
-		self._this.run(seeds)
-
-	def getResult(self):
-		return self._this.getResult()
-
-	def getTimings(self):
-		return self._this.getTimings()
-
 
 
 cdef extern from "../cpp/scd/PageRankNibble.h":
 	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
 		_PageRankNibble(_Graph G, double, double) except +
-		void run(set[unsigned int]) except +
-		map[node, set[node]] getResult() except +
-		map[node, double] getTimings() except +
+		map[node, set[node]]  run(set[unsigned int]) except +
+
 
 cdef class PageRankNibble:
 	cdef _PageRankNibble* _this
@@ -1790,22 +1767,16 @@ cdef class PageRankNibble:
 		self._this = new _PageRankNibble(dereference(G._this), alpha, epsilon)
 
 	def run(self, seeds):
-		self._this.run(seeds)
+		return self._this.run(seeds)
 
-	def getResult(self):
-		return self._this.getResult()
-
-	def getTimings(self):
-		return self._this.getTimings()
 
 
 cdef extern from "../cpp/scd/GCE.h":
 	cdef cppclass _GCE "NetworKit::GCE":
 		_GCE(_Graph G) except +
-		void run(set[unsigned int]) except +
+		map[node, set[node]]  run(set[unsigned int]) except +
 		set[node] expandSeed(node) except +
-		map[node, set[node]] getResult() except +
-		map[node, double] getTimings() except +
+
 
 cdef class GCE:
 	cdef _GCE* _this
@@ -1814,25 +1785,19 @@ cdef class GCE:
 		self._this = new _GCE(dereference(G._this))
 
 	def run(self, seeds):
-		self._this.run(seeds)
+		return self._this.run(seeds)
 
 	def expandSeed(self, s):
 		return self._this.expandSeed(s)
 
-	def getResult(self):
-		return self._this.getResult()
-
-	def getTimings(self):
-		return self._this.getTimings()
 
 
 cdef extern from "../cpp/scd/SelSCAN.h":
 	cdef cppclass _SelSCAN "NetworKit::SelSCAN":
 		_SelSCAN(_Graph G, count, double) except +
 		_SelSCAN(_Graph G, count, double, _AlgebraicDistance) except +
-		void run(set[unsigned int]) except +
-		map[node, set[node]] getResult() except +
-		map[node, double] getTimings() except +
+		map[node, set[node]]  run(set[unsigned int]) except +
+
 
 cdef class SelSCAN:
 	cdef _SelSCAN* _this
@@ -1844,10 +1809,4 @@ cdef class SelSCAN:
 			self._this = new _SelSCAN(dereference(G._this), kappa, epsilon)
 
 	def run(self, seeds):
-		self._this.run(seeds)
-
-	def getResult(self):
-		return self._this.getResult()
-
-	def getTimings(self):
-		return self._this.getTimings()
+		return self._this.run(seeds)
