@@ -20,6 +20,8 @@
 #include "../MissingMath.h"
 #include "../PrioQueue.h"
 #include "../StringTools.h"
+#include "../SetIntersector.h"
+
 
 TEST_F(AuxGTest, produceRandomIntegers) {
 	int64_t l = 0; 	// lower bound
@@ -300,5 +302,19 @@ TEST_F(AuxGTest, testSplit) {
 		EXPECT_EQ(expected, split("abc def ghi "));
 	}
 }
+
+
+TEST_F(AuxGTest, testSetIntersector) {
+	uint64_t n = 50;
+	std::vector<uint64_t> A = {0, 5, 7, 3, 11, 22, 45, 17, 23, 11, 45};
+	std::vector<uint64_t> B = {27, 11, 13, 17, 44, 1, 2, 3, 9, 44, 11, 20};
+
+	Aux::SetIntersector<uint64_t> si(n);
+	std::set<uint64_t> intersection = si.intersect(A, B);
+
+	std::set<uint64_t> expectedResult = {3, 11, 17};
+	EXPECT_EQ(expectedResult, intersection);
+}
+
 
 #endif /*NOGTEST */
