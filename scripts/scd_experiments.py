@@ -79,25 +79,26 @@ def testAccuracyOnLFR(AlgoClass, algoParams, LFRDir, nSeeds=100):
 			(communities, accuracy, time) = LFRAccuracy(algo, G, seeds, truth)
 			timings.append(time)
 
-			print("accuracy values: ", [a for a in accuracy.values()])
+			#print("accuracy values: ", [a for a in accuracy.values()])
 			# aggregate accuracy over seeds
 			# store per LFR params
 			meanAccuracy[(n, mu)] = numpy.mean([a for a in accuracy.values()])
+	print("done")
 	return (meanAccuracy, timings)
 
 
-alphaRange = numpy.around(numpy.arange(0.01, 0.26, 0.01), 2)
-epsilonRange = numpy.around(numpy.arange(1e-5, 100 * 1e-5, 1e-5), 5)
+
 
 # available range of LFR parameters
 muRange = numpy.around(numpy.arange(0.0, 1.0, 0.05), 2)
 
 #nRange = [1000, 10000, 100000, 1000000]
-nRange = [1000000]
+nRange = [10000]
 
+# parameter ranges for PageRankNibble
 
-print("import done")
-
+alphaRange = numpy.around(numpy.arange(0.01, 0.26, 0.01), 2)
+epsilonRange = numpy.around(numpy.arange(1e-5, 10 * 1e-5, 1e-5), 5)
 
 def parameterStudyPageRankNibble(LFRDir, nSeeds=100):
 
@@ -122,7 +123,7 @@ def parameterStudyPageRankNibble(LFRDir, nSeeds=100):
 					pageRankNibble = PageRankNibble(G, alpha, epsilon)
 					(communities, accuracy, time) = LFRAccuracy(pageRankNibble, G, seeds, truth)
 					runs += 1
-					print("accuracy values: ", [a for a in accuracy.values()])
+					#print("accuracy values: ", [a for a in accuracy.values()])
 					# aggregate accuracy over seeds
 					a, e = numpy.where(alphaRange == alpha), numpy.where(epsilonRange == epsilon)
 					meanAccuracy[a,e] = numpy.mean([a for a in accuracy.values()])
@@ -133,4 +134,44 @@ def parameterStudyPageRankNibble(LFRDir, nSeeds=100):
 					# print(meanAccuracyDf)
 			meanAccuracies[(n, mu)] = meanAccuracy
 
+	print("done")
+	return meanAccuracies
+
+
+# parameter ranges for SelSCAN
+
+kappaRange = range(1, 4)
+epsilonRange = numpy.arange(0.0, 1.0, 0.1)
+
+def parameterStudySelSCAN(LFRDir, nSeeds=100):
+
+	print("starting parameter study")
+	# range for alpha
+
+	meanAccuracies = {}
+	for n in nRange:
+		for mu in muRange:
+			print(mu)
+			# load graph and ground truth
+			(G, truth) = loadLFR(LFRDir, n, mu)
+			seeds = [G.randomNode() for i in range(nSeeds)]	# reuse the same seeds
+
+			# make data tables
+			meanAccuracy = numpy.zeros((len(epsilonRange), len(kappaRange)))
+
+			runs = 0
+			print("running experiments")
+			for epsilon in epsilonRange:
+				for kappa in kappaRange:
+					selSCAN = SelSCAN(G, kappa, epsilon)
+					(communities, accuracy, time) = LFRAccuracy(selSCAN, G, seeds, truth)
+					runs += 1
+					#print("accuracy values: ", [a for a in accuracy.values()])
+					# aggregate accuracy over seeds
+					a, e = numpy.where(epsilonRange == epsilon), numpy.where(kappaRange == kappa)
+					meanAccuracy[a,e] = numpy.mean([a for a in accuracy.values()])
+
+			meanAccuracies[(n, mu)] = meanAccuracy
+
+	print("done")
 	return meanAccuracies
