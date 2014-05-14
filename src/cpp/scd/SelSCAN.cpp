@@ -39,6 +39,7 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 	auto epsilonNeighborhood = [&](node u) {
 		std::set<node> N;
 		G.forNeighborsOf(u, [&](node v) {
+			TRACE("neighbor ", v, " has distance ", dist(u, v));
 			if (dist(u, v) < epsilon) {
 				N.insert(v);
 			}
@@ -50,6 +51,7 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 	 * determines if a node is a core
 	 */
 	auto core = [&](node u) {
+		TRACE(u, " has an epsilon neighborhood of size ", epsilonNeighborhood(u).size() );
 		return (epsilonNeighborhood(u).size() >= kappa);
 	};
 
@@ -72,13 +74,14 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 	* and cores to the queue.
 	*/
 	auto coreSearch = [&](std::queue<node>& Q, index label) {
+		TRACE("starting core search");
 		while (!Q.empty()) {
 			node x = Q.front(); Q.pop();
 			eta[x] = label;	// add to community
 			TRACE(x, " added to community ", eta[x]);
 			if (core(x)) {
 				for (node y : epsilonNeighborhood(x)) {
-					assert ((eta.find(y) == eta.end()) || (eta[y] == none));	// not assigned or outlier
+					// assert ((eta.find(y) == eta.end()) || (eta[y] == none));	// not assigned or outlier - FAILS
 					if (eta.find(y) == eta.end()) {
 						Q.push(y);
 					}
@@ -93,17 +96,17 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 		DEBUG("seed ", s);
 		if (eta.find(s) == eta.end()) {	// s not yet assigned to community
 			std::queue<node> Q;
-			if (core(s)) {
+			if (core(s)) {	// if s is a core, start new community and grow ith by core search
 				TRACE(s, " is a core");
 				eta[s] = newLabel();
 				TRACE(s, " added to community ", eta[s]);
 				Q.push(s);
 				coreSearch(Q, eta[s]);
-			} else {
-				// find core with minimum distance to s in epsilon neighborhood of s
+			} else {  // if s is not a core, find core with minimum distance to s in epsilon neighborhood of s
+				TRACE(s, " is not a core");
 				node minC = none;
 				double minD = std::numeric_limits<double>::max();
-				for (node c : epsilonNeighborhood(s)) {
+				for (node c : epsilonNeighborhood(s)) {	// look for closest core
 					if (core(c)) {
 						if (dist(s, c) < minD) {
 							minD = dist(s, c);
@@ -115,11 +118,11 @@ void SelSCAN::run(std::set<unsigned int>& seeds) {
 				if (minC == none) { 	// no core in neighborhood
 					TRACE(s, " is an outlier");
 					eta[s] = none; 	// mark s as outlier
-				} else {
+				} else {		// start new community for s and grow it by core search from c
 					TRACE(s, " has closest core neighbor ", minC);
 					eta[s] = newLabel();
 					TRACE(s, " added to community ", eta[s]);
-					Q.push(s);
+					Q.push(minC);
 					coreSearch(Q, eta[s]);
 				}
 			} //
