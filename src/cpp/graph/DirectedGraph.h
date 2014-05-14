@@ -259,28 +259,61 @@ public:
 	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
 
 	
-	/** ITERATE OVER NEIGHBORS */
+	/** NEIGHBORHOOD ITERATORS **/
 
 	/**
-	 * Iterate over all Outgoing edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void forOutEdgesOf(node u, L handle) const;
-	
-	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void forInEdgesOf(node u, L handle) const;
-
-	/**
-	 * Iterate over all adjacent nodes, which are adjacent to an inedge of u
+	 * Iterate over all adjacent nodes, which have an edge from u.
 	 */
 	template<typename L> void forOutNeighborsOf(node u, L handle) const;
 
 	/**
-	 * Iterate over all adjacent nodes, which are adjacent to an outedge of u
+	 * Iterate over all adjacent nodes, which have an edge to u.
 	 */
 	template<typename L> void forInNeighborsOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all outgoing edge weights of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forWeightedOutNeighborsOf(node u, L handle) const;
 	
+	/**
+	 * Iterate over all incoming edge weights of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forWeightedInNeighborsOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all outgoing edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forOutEdgesOf(node u, L handle) const;
+	
+	/**
+	 * Iterate over all incoming edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forInEdgesOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all incident edges from u and call handler (lamdba closure).
+	 *
+	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 *
+	 */
+	template<typename L> void forWeightedOutEdgesOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all incident edges from u and call handler (lamdba closure).
+	 *
+	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 *
+	 */
+	template<typename L> void forWeightedInEdgesOf(node u, L handle) const;
+
+
+	/** REDUCTION ITERATORS **/
+
+	/**
+	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> double parallelSumForWeightedEdges(L handle) const;
 
 };
 
@@ -365,7 +398,69 @@ inline void NetworKit::DirectedGraph::forEdgesWithAttribute_double(int attrId, L
 }
 
 
-/** ITERATE OVER NEIGHBORS */
+/** NEIGHBORHOOD ITERATORS **/
+
+template<typename L>
+inline void NetworKit::DirectedGraph::forOutNeighborsOf(node u, L handle) const {
+	for (index i = this->inOut[u]; i < this->adja[u].size(); i++) {
+		node v = this->adja[u][i];
+		if (v != none) {
+			handle(v);
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::DirectedGraph::forInNeighborsOf(node u, L handle) const {
+	for (index i = 0; i < this->inOut[u]; i++) {
+		node v = this->adja[u][i];
+		if (v != none) {
+			handle(v);
+		}
+	}
+}
+
+template<typename L>
+inline void NetworKit::DirectedGraph::forWeightedOutNeighborsOf(node u, L handle) const {
+	if (weighted) {
+		for (index i = this->inOut[u]; i < adja[u].size(); i++) {
+			node v = adja[u][i];
+			if (v != none) {
+				edgeweight ew = eweights[u][i];
+				handle(v, ew);
+				assert(ew == weight(u, v));
+			}
+		}
+	} else {
+		for (index i = this->inOut[u]; i < adja[u].size(); i++) {
+			node v = adja[u][i];
+			if (v != none) {
+				handle(v, defaultEdgeWeight);
+			}
+		}
+	}
+}
+	
+template<typename L>
+inline void NetworKit::DirectedGraph::forWeightedInNeighborsOf(node u, L handle) const {
+	if (weighted) {
+		for (index i = 0; i < this->inOut[u]; i++) {
+			node v = adja[u][i];
+			if (v != none) {
+				edgeweight ew = eweights[u][i];
+				handle(v, ew);
+				assert(ew == weight(u, v));
+			}
+		}
+	} else {
+		for (index i = 0; i < this->inOut[u]; i++) {
+			node v = adja[u][i];
+			if (v != none) {
+				handle(v, defaultEdgeWeight);
+			}
+		}
+	}
+}
 
 template<typename L>
 inline void NetworKit::DirectedGraph::forOutEdgesOf(node u, L handle) const {
@@ -388,24 +483,52 @@ inline void NetworKit::DirectedGraph::forInEdgesOf(node u, L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::DirectedGraph::forOutNeighborsOf(node u, L handle) const {
-	for (index i = this->inOut[u]; i < this->adja[u].size(); i++) {
-		node v = this->adja[u][i];
+inline void NetworKit::DirectedGraph::forWeightedOutEdgesOf(node u, L handle) const {
+	for (index i = this->inOut[u]; i < adja[u].size(); i++) {
+		node v = adja[u][i];
 		if (v != none) {
-			handle(v);
+			if (weighted) {
+				edgeweight w = this->eweights[u][i];
+				handle(u, v, w);
+			} else {
+				handle(u, v, defaultEdgeWeight);
+			}
 		}
 	}
 }
 
 template<typename L>
-inline void NetworKit::DirectedGraph::forInNeighborsOf(node u, L handle) const {
-	for (index i = 0; i < this->inOut[u]; i++) {
-		node v = this->adja[u][i];
+inline void NetworKit::DirectedGraph::forWeightedInEdgesOf(node u, L handle) const {
+		for (index i = 0; i < this->inOut[u]; i++) {
+		node v = adja[u][i];
 		if (v != none) {
-			handle(v);
+			if (weighted) {
+				edgeweight w = this->eweights[u][i];
+				handle(u, v, w);
+			} else {
+				handle(u, v, defaultEdgeWeight);
+			}
 		}
 	}
 }
-	
+
+
+/** REDUCTION ITERATORS **/
+
+template<typename L>
+double NetworKit::DirectedGraph::parallelSumForWeightedEdges(L handle) const {
+	double sum = 0.0;
+	#pragma omp parallel for reduction(+:sum)
+	for (node u = 0; u < z; u++) {
+		for (index i = 0; i < this->adja[u].size(); i++) {
+			node v = this->adja[u][i];
+			edgeweight ew = this->eweights[u][i];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				sum += handle(u, v, ew);
+			}
+		}
+	}
+	return sum;
+}
 
 #endif /* DIRECETD_GRAPH_H_ */

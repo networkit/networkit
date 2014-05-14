@@ -58,41 +58,79 @@ public:
 	// virtual edgeweight volume(node v) const;
 
 
-	/** ITERATE OVER NEIGHBORS */
+	/** NEIGHBORHOOD ITERATORS **/
 
 	/**
-	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
+	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forEdgesOf(node u, L handle) const;
+	template<typename L> void forNeighborsOf(node u, L handle) const { forOutNeighborsOf(u, handle); }
 
 	/**
-	 * Iterate over all Outgoing edges of the graph and call handler (lambda closure).
+	 * Iterate over all adjacent nodes, which have an edge from u.
 	 */
-	template<typename L> void forOutEdgesOf(node u, L handle) const {}
+	template<typename L> void forOutNeighborsOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all adjacent nodes, which have an edge to u.
+	 */
+	template<typename L> void forInNeighborsOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all edge weights of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forWeightedNeighborsOf(node u, L handle) const { forWeightedOutNeighborsOf(u, handle); }
+
+	/**
+	 * Iterate over all outgoing edge weights of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forWeightedOutNeighborsOf(node u, L handle) const;
 	
 	/**
-	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
+	 * Iterate over all incoming edge weights of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forInEdgesOf(node u, L handle) const {}
+	template<typename L> void forWeightedInNeighborsOf(node u, L handle) const;
 
 	/**
-	 * Iterate over all adjacent nodes, which are adjacent to an inedge of u
+	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forOutNeighborsOf(node u, L handle) const {}
+	template<typename L> void forEdgesOf(node u, L handle) const { forOutEdgesOf(u, handle); }
 
 	/**
-	 * Iterate over all adjacent nodes, which are adjacent to an outedge of u
+	 * Iterate over all outgoing edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forInNeighborsOf(node u, L handle) const {}
+	template<typename L> void forOutEdgesOf(node u, L handle) const;
+	
+	/**
+	 * Iterate over all incoming edges of the graph and call handler (lambda closure).
+	 */
+	template<typename L> void forInEdgesOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 *
+	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 *
+	 */
+	template<typename L> void forWeightedEdgesOf(node u, L handle) const { forWeightedOutEdgesOf(u, handle); }
+	
+	/**
+	 * Iterate over all incident edges from u and call handler (lamdba closure).
+	 *
+	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 *
+	 */
+	template<typename L> void forWeightedOutEdgesOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all incident edges from u and call handler (lamdba closure).
+	 *
+	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 *
+	 */
+	template<typename L> void forWeightedInEdgesOf(node u, L handle) const;
+
 };
+
 } /* namespace NetworKit */
-
-
-/** EDGE ITERATORS */
-
-template <typename L>
-inline void NetworKit::IDGraph::forEdgesOf(node u, L handle) const {
-	forEdgesOf(u, handle);
-}
 
 #endif /* IDGRAPH_H */

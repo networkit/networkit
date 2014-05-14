@@ -360,11 +360,6 @@ public:
 	template<typename L> void forEdges(L handle) const {};
 
 	/**
-	 * Iterate over all Incoming edges of the graph and call handler (lambda closure).
-	 */
-	template<typename L> void forEdgesOf(node u, L handle) const {};
-
-	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void parallelForEdges(L handle) const {};
@@ -391,6 +386,40 @@ public:
 	 *
 	 */
 	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const {};
+
+
+	/** NEIGHBORHOOD ITERATORS **/
+
+	/**
+	 * Iterate over all neighbors of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forNeighborsOf(node u, L handle) const {}
+
+	/**
+	 * Iterate over all edge weights of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forWeightedNeighborsOf(node u, L handle) const {}
+
+	/**
+	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forEdgesOf(node u, L handle) const {}
+
+	/**
+	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 *
+	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 *
+	 */
+	template<typename L> void forWeightedEdgesOf(node u, L handle) const {}
+
+
+	/** REDUCTION ITERATORS **/
+
+	/**
+	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> double parallelSumForWeightedEdges(L handle) const;
 };
 
 
