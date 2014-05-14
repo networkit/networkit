@@ -268,18 +268,13 @@ public:
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void parallelForNodes(L handle);
-
-	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void parallelForNodes(L handle) const;
 
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
-	template<typename C, typename L> void forNodesWhile(C condition, L handle);
+	template<typename C, typename L> void forNodesWhile(C condition, L handle) const;
 
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
@@ -290,18 +285,7 @@ public:
 	/**
 	 * Iterate randomly over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forNodesInRandomOrder(L handle);
-
-	/**
-	 * Iterate randomly over all nodes of the graph and call handler (lambda closure).
-	 */
 	template<typename L> void forNodesInRandomOrder(L handle) const;
-
-	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
-	 * Using schedule(guided) to remedy load-imbalances due to e.g. unequal degree distribution.
-	 */
-	template<typename L> void balancedParallelForNodes(L handle);
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
@@ -312,17 +296,7 @@ public:
 	/**
 	 * Iterate over all undirected pairs of nodesand call handler (lambda closure).
 	 */
-	template<typename L> void forNodePairs(L handle);
-
-	/**
-	 * Iterate over all undirected pairs of nodesand call handler (lambda closure).
-	 */
 	template<typename L> void forNodePairs(L handle) const;
-
-	/**
-	 * Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure).
-	 */
-	template<typename L> void parallelForNodePairs(L handle);
 
 	/**
 	 * Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure).
@@ -331,11 +305,6 @@ public:
 
 
  	/** REDUCTION ITERATORS **/
-
-	/**
-	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
-	 */
-	template<typename L> double parallelSumForNodes(L handle);
 
 	/**
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
@@ -358,16 +327,6 @@ inline void NetworKit::AbstractGraph::forNodes(L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::AbstractGraph::parallelForNodes(L handle) {
-	#pragma omp parallel for
-	for (node v = 0; v < z; ++v) {
-		if (exists[v]) {
-			handle(v);
-		}
-	}
-}
-
-template<typename L>
 inline void NetworKit::AbstractGraph::parallelForNodes(L handle) const {
 	#pragma omp parallel for
 	for (node v = 0; v < z; ++v) {
@@ -378,7 +337,7 @@ inline void NetworKit::AbstractGraph::parallelForNodes(L handle) const {
 }
 
 template<typename C, typename L>
-inline void NetworKit::AbstractGraph::forNodesWhile(C condition, L handle) {
+inline void NetworKit::AbstractGraph::forNodesWhile(C condition, L handle) const {
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
 			if (!condition()) {
@@ -403,37 +362,11 @@ inline void NetworKit::AbstractGraph::forNodes(C condition, L handle) const {
 }
 
 template<typename L>
-void NetworKit::AbstractGraph::forNodesInRandomOrder(L handle) {
-	std::vector<node> randVec(z);
-	for (node v = 0; v < z; ++v) {
-		randVec[v] = v;
-	}
-	random_shuffle(randVec.begin(), randVec.end());
-
-	for (node v = 0; v < z; ++v) {
-		node randv = randVec[v];
-		if (exists[randv]) {
-			handle(randv);
-		}
-	}
-}
-
-template<typename L>
 void NetworKit::AbstractGraph::forNodesInRandomOrder(L handle) const {
-	for (node v = 0; v < z; ++v) {
-		if (exists[v]) {
-			handle(v);
-		}
-	}
-}
-
-template<typename L>
-inline void NetworKit::AbstractGraph::balancedParallelForNodes(L handle) {
-	#pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
-	for (node v = 0; v < z; ++v) {
-		if (exists[v]) {
-			handle(v);
-		}
+	std::vector<node> randVec = nodes();
+	random_shuffle(randVec.begin(), randVec.end());
+	for (node v : randVec) {
+		handle(v);
 	}
 }
 
@@ -448,36 +381,7 @@ inline void NetworKit::AbstractGraph::balancedParallelForNodes(L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::AbstractGraph::forNodePairs(L handle) {
-	for (node u = 0; u < z; ++u) {
-		if (exists[u]) {
-			for (node v = u + 1; v < z; ++v) {
-				if (exists[v]) {
-					handle(u, v);
-				}
-			}
-		}
-
-	}
-}
-
-template<typename L>
 inline void NetworKit::AbstractGraph::forNodePairs(L handle) const {
-	for (node u = 0; u < z; ++u) {
-		if (exists[u]) {
-			for (node v = u + 1; v < z; ++v) {
-				if (exists[v]) {
-					handle(u, v);
-				}
-			}
-		}
-
-	}
-}
-
-template<typename L>
-inline void NetworKit::AbstractGraph::parallelForNodePairs(L handle) {
-	#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		if (exists[u]) {
 			for (node v = u + 1; v < z; ++v) {
@@ -507,18 +411,6 @@ inline void NetworKit::AbstractGraph::parallelForNodePairs(L handle) const {
 
 
 /** REDUCTION ITERATORS **/
-
-template<typename L>
-inline double NetworKit::AbstractGraph::parallelSumForNodes(L handle) {
-	double sum = 0.0;
-	#pragma omp parallel for reduction(+:sum)
-	for (node v = 0; v < z; ++v) {
-		if (exists[v]) {
-			sum += handle(v);
-		}
-	}
-	return sum;
-}
 
 template<typename L>
 inline double NetworKit::AbstractGraph::parallelSumForNodes(L handle) const {
