@@ -5,12 +5,12 @@
 #include "DotPartitionWriter.h"
 
 #include <fstream>
-#include <unordered_set>
+#include <set>
 
 namespace NetworKit {
 
 std::map<index, double> DotPartitionWriter::createHueMap(Graph &graph, Partition& zeta) const {
-	std::unordered_set<index> uniqueIds;
+	std::set<index> uniqueIds;
 
 	graph.forNodes([&](node u){
 		if (graph.degree(u) == 0) {
