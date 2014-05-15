@@ -198,13 +198,94 @@ std::vector<std::pair<node, node> > AbstractGraph::edges() const {
 
 std::vector<node> AbstractGraph::neighbors(node u) const {
 	std::vector<node> neighbors;
-	// TODO
-	// neighbors.reserve(degree(u));
-	// this->forNeighborsOf(u, [&](node v) {
-	// 	neighbors.push_back(v);
-	// });
+	neighbors.reserve(degree(u));
+	this->forNeighborsOf(u, [&](node v) {
+		neighbors.push_back(v);
+	});
 	return neighbors;
 }
 
+
+/** GRAPH SEARCHES **/
+
+void AbstractGraph::BFSfrom(node r, FNode f) const {
+	std::vector<bool> marked(z, false);
+	std::queue<node> q;
+
+	q.push(r);
+	marked[r] = true;
+
+	while (!q.empty()) {
+		node u = q.front();
+		q.pop();
+		f(u);
+		forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				q.push(v);
+				marked[v] = true;
+			}
+		});
+	}
+};
+
+void AbstractGraph::BFSEdgesfrom(node r, FEdge f) const {
+	std::vector<bool> marked(z, false);
+	std::queue<node> q;
+
+	q.push(r);
+	marked[r] = true;
+
+	while (!q.empty()) {
+		node u = q.front();
+		q.pop();
+		forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				f(u, v);
+				q.push(v);
+				marked[v] = true;
+			}
+		});
+	}
+};
+
+void AbstractGraph::DFSfrom(node r, FNode f) const {
+	std::vector<bool> marked(z, false);
+	std::stack<node> s;
+
+	s.push(r);
+	marked[r] = true;
+
+	while (!s.empty()) {
+		node u = s.top();
+		s.pop();
+		f(u);
+		forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				s.push(v);
+				marked[v] = true;
+			}
+		});
+	}
+};
+
+void AbstractGraph::DFSEdgesfrom(node r, FEdge f) const {
+	std::vector<bool> marked(z, false);
+	std::stack<node> s;
+
+	s.push(r);
+	marked[r] = true;
+
+	while (!s.empty()) {
+		node u = s.top();
+		s.pop();
+		forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				f(u, v);
+				s.push(v);
+				marked[v] = true;
+			}
+		});
+	}
+};
 
 } /* namespace NetworKit */

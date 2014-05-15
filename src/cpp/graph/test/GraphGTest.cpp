@@ -180,7 +180,7 @@ TEST_F(GraphGTest, testNodeBFS) {
 	std::vector<int> visited(4, 0);
 
 	int nodeCount = 0;
-	G.breadthFirstNodesFrom(v, visited, [&](node w) {
+	G.BFSfrom(v, [&](node w) {
 		nodeCount += 1;
 	});
 

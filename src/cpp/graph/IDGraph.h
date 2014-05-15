@@ -25,11 +25,6 @@ class IDGraph : public virtual IGraph {
 
 public:
 
-	
-
-	// TODO: structure for Edge (start, end, weight)?
-
-
 	/** NODE PROPERTIES **/
 
 	/**
@@ -63,17 +58,20 @@ public:
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forNeighborsOf(node u, L handle) const { forOutNeighborsOf(u, handle); }
+	// template<typename L> void forNeighborsOf(node u, L handle) const { forOutNeighborsOf(u, handle); }
+	void forNeighborsOf(node u, FNode f) const { forOutNeighborsOf(u, f); }
 
 	/**
 	 * Iterate over all adjacent nodes, which have an edge from u.
 	 */
-	template<typename L> void forOutNeighborsOf(node u, L handle) const;
+	// template<typename L> void forOutNeighborsOf(node u, L handle) const;
+	virtual void forOutNeighborsOf(node u, FNode f) const = 0;
 
 	/**
 	 * Iterate over all adjacent nodes, which have an edge to u.
 	 */
-	template<typename L> void forInNeighborsOf(node u, L handle) const;
+	// template<typename L> void forInNeighborsOf(node u, L handle) const;
+	virtual void forInNeighborsOf(node u, FNode f) const = 0;
 
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
