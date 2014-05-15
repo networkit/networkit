@@ -35,7 +35,8 @@ std::set<node> GCE::expandSeed(node s) {
 	std::set<node> community;
 
 	// values per community
-	count intEdges, extEdges;
+	count intEdges = 0;
+    count extEdges = 0;
 
     count bSize = 0; // boundary size
     count dBSize = 0; // TODO:
@@ -78,7 +79,8 @@ std::set<node> GCE::expandSeed(node s) {
 
 
     auto intExtEdges = [&](const std::set<node>& community) {
-        count internal, external;
+        count internal = 0;
+        count external = 0;
         for (node u : community) {
             G.forEdgesOf(u, [&](node u, node v) {
                 if (in(community, v)) {
