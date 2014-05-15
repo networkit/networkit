@@ -16,20 +16,30 @@ GCE::GCE(const Graph& G) : SelectiveCommunityDetector(G) {
 }
 
 std::map<node, std::set<node> >  GCE::run(std::set<unsigned int>& seeds) {
-
+    std::map<node, std::set<node> > result;
+    for (auto seed : seeds) {
+        auto community = expandSeed(seed);
+        result[seed] = community;
+    }
+    return result;
 }
 
 std::set<node> GCE::expandSeed(node s) {
+    /**
+    * Check if set contains node.
+    */
 	auto in = [](std::set<node> A, node x) {
 		return (A.find(x) != A.end());
 	};
 
 	std::set<node> community;
-	community.insert(s);
 
 	// values per community
 	count intEdges = 0;
 	count extEdges = 0;
+
+    double currentQ = 0.0; // current community quality
+
 
 	/** @return the shell of the given community */
 	auto shell = [&](std::set<node> C) {
@@ -65,12 +75,17 @@ std::set<node> GCE::expandSeed(node s) {
 		count degInt, degExt;
 		std::tie(degInt, degExt) =  intExtDeg(v, C);
 		double delta = (intEdges + degInt) / (double) (extEdges + degInt + degExt);
-		return delta;
+		return delta - currentQ;
 	};
 
 
 	auto deltaQ = deltaM; // select quality objective
 
+
+    // insert seed
+    community.insert(s);
+
+    // for M, quality of {s} is 0.0
 
 	double dQMax;
 	node vMax;
@@ -90,6 +105,7 @@ std::set<node> GCE::expandSeed(node s) {
 		TRACE("dQMax: ", dQMax);
 		if (vMax != none) {
 			community.insert(vMax); 	// add best node to community
+            currentQ += dQMax;     // update current community quality
 			TRACE("community: ", community);
 		}
 	} while (vMax != none);
