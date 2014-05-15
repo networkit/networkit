@@ -27,7 +27,7 @@ class EdgeListIO: public NetworKit::GraphReader {
 
 public:
 
-	EdgeListIO(); //nullary constructor for Python shell
+	EdgeListIO() = default; //nullary constructor for Python shell
 
 	/**
 	 * @param[in]	separator	character used to separate nodes in an edge line
@@ -35,14 +35,12 @@ public:
 	 */
 	EdgeListIO(char separator, node firstNode);
 
-	virtual ~EdgeListIO();
-
 	/**
 	 * Given the path of an input file, read the graph contained.
 	 *
 	 * @param[in]	path	input file path
 	 */
-	virtual Graph read(std::string path);
+	Graph read(const std::string& path) override;
 
 		/** only to be used by cython - this eliminates an unnecessary copy */
 	Graph* _read(std::string& path) {

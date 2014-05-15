@@ -16,17 +16,11 @@
 namespace NetworKit {
 
 class METISGraphReader: public NetworKit::GraphReader {
-
 public:
 
-	METISGraphReader();
+	METISGraphReader() = default;
 
-	virtual ~METISGraphReader();
-
-	virtual Graph read(std::string path);
-
-	virtual Graph* readToHeap(std::string path);
-
+	virtual Graph read(const std::string& path) override;
 };
 
 } /* namespace NetworKit */
