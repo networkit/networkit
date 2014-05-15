@@ -14,11 +14,13 @@ namespace NetworKit {
 
 class DotPartitionWriter {
 public:
-    virtual ~DotPartitionWriter() = default;
+	virtual ~DotPartitionWriter() = default;
+	
+	virtual void write(Graph& graph, Partition& zeta, const std::string& path) const;
+	
+private:
+	std::size_t countConnectedNodes(const Graph& graph) const;
 
-    virtual void write(Graph& graph, Partition& zeta, std::string path) const;
-
-    virtual std::map<index, double> createHueMap(Graph &graph, Partition& zeta) const;
 };
 
 } /* namespace NetworKit */
