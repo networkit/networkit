@@ -8,24 +8,14 @@
 #ifndef ABSTRACT_GRAPH_H
 #define ABSTRACT_GRAPH_H
 
-// #include <functional>
-// #include <cassert>
 #include <vector>
-// #include <cinttypes>
-// #include <queue>
-// #include <stack>
-// #include <map>
-// #include <set>
-// #include <sstream>
-// #include <cstdint>
-// #include <algorithm>
+#include <queue>
+#include <stack>
 // #include <tbb/concurrent_vector.h>
 
 #include "IGraph.h"
 #include "Coordinates.h"
-// #include "../auxiliary/Log.h"
 #include "../Globals.h"
-
 
 namespace NetworKit {
 
@@ -263,7 +253,8 @@ public:
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forNodes(L handle) const;
+	// template<typename L> void forNodes(L handle) const;
+	void forNodes(FNode f) const;
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
@@ -311,17 +302,37 @@ public:
 	 */
 	template<typename L> double parallelSumForNodes(L handle) const;
 
+
+	/** GRAPH SEARCHES **/
+
+	void BFSfrom(node r, FNode f) const;
+
+	void BFSEdgesfrom(node r, FEdge f) const;
+
+	void DFSfrom(node r, FNode f) const;
+	
+	void DFSEdgesfrom(node r, FEdge f) const;
+
+	// template<typename L> void BFSfrom(node r, L handle) const;
+
+	// template<typename L> void BFSEdgesfrom(node r, L handle) const;
+
+	// template<typename L> void DFSfrom(node r, L handle) const;
+
+	// template<typename L> void DFSEdgesfrom(node r, L handle) const;
 };
 
 } /* namespace NetworKit */
 
+
 /** NODE ITERATORS **/
 
-template<typename L>
-inline void NetworKit::AbstractGraph::forNodes(L handle) const {
+// template<typename L>
+// inline void NetworKit::AbstractGraph::forNodes(L handle) const {
+inline void NetworKit::AbstractGraph::forNodes(NetworKit::FNode f) const {
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
-			handle(v);
+			f(v);
 		}
 	}
 }
@@ -423,6 +434,5 @@ inline double NetworKit::AbstractGraph::parallelSumForNodes(L handle) const {
 	}
 	return sum;
 }
-
 
 #endif /* ABSTRACT_GRAPH_H */

@@ -13,8 +13,6 @@
 #include <vector>
 #include <cinttypes>
 #include <string>
-#include <queue>
-#include <stack>
 #include <stdexcept>
 #include <map>
 #include <set>
@@ -263,7 +261,8 @@ public:
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forEdges(L handle) const;
+	// template<typename L> void forEdges(L handle) const;
+	void forEdges(FEdge f) const;
 
 	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
@@ -294,37 +293,13 @@ public:
 	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
 
 
-
-
-
-
-	/** OLD STUFF **/
-
-	/** NODE ITERATORS **/
-
-	/**
-	 * Iterate over nodes in breadth-first search order starting from r until connected component
-	 * of r has been visited.
-	 */
-	template<typename L> void breadthFirstNodesFrom(node r, std::vector<int>& marked, L handle);
-
-	template<typename L> void BFSfrom(node r, L handle);
-
-	template<typename L> void DFSfrom(node r, L handle);
-
-	/**
-	 * Iterate over edges in breadth-first search order starting from node r until connected component
-	 * of r has been visited.
-	 */
-	template<typename L> void breadthFirstEdgesFrom(node r, L handle);
-
-
 	/** NEIGHBORHOOD ITERATORS **/
 
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forNeighborsOf(node u, L handle) const;
+	// template<typename L> void forNeighborsOf(node u, L handle) const;
+	void forNeighborsOf(node u, FNode f) const;
 
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
@@ -359,12 +334,13 @@ public:
 
 /** EDGE ITERATORS **/
 
-template<typename L>
-inline void NetworKit::Graph::forEdges(L handle) const {
+// template<typename L>
+// inline void NetworKit::Graph::forEdges(L handle) const {
+inline void NetworKit::Graph::forEdges(FEdge f) const {
 	for (node u = 0; u < z; ++u) {
 		for (node v : this->adja[u]) {
 			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				handle(u, v);
+				f(u, v);
 			}
 		}
 	}
@@ -435,11 +411,12 @@ inline void NetworKit::Graph::forEdgesWithAttribute_double(int attrId, L handle)
 
 /** NEIGHBORHOOD ITERATORS **/
 
-template<typename L>
-inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
+// template<typename L>
+// inline void NetworKit::Graph::forNeighborsOf(node u, L handle) const {
+inline void NetworKit::Graph::forNeighborsOf(node u, FNode f) const {
 	for (node v : this->adja[u]) {
 		if (v != none) {
-			handle(v);
+			f(v);
 		}
 	}
 }
@@ -505,76 +482,6 @@ double NetworKit::Graph::parallelSumForWeightedEdges(L handle) const {
 		}
 	}
 	return sum;
-}
-
-
-
-/** OLD STUFF **/
-
-template<typename L>
-inline void NetworKit::Graph::breadthFirstNodesFrom(node r,
-		std::vector<int>& marked, L handle) {
-	std::queue<node> q;
-	q.push(r); // enqueue root
-	marked[r] = 1;
-	do {
-		node u = q.front();
-		q.pop();
-		// apply function
-		handle(u);
-		this->forNeighborsOf(u, [&](node v) {
-			if (marked[v] == 0) {
-				q.push(v);
-				marked[v] = 1;
-			}
-		});
-	} while (!q.empty());
-}
-
-template<typename L>
-void NetworKit::Graph::BFSfrom(node r, L handle) {
-	std::vector<bool> marked(z);
-	std::queue<node> q;
-	q.push(r); // enqueue root
-	marked[r] = true;
-	do {
-		node u = q.front();
-		q.pop();
-		// apply function
-		handle(u);
-		this->forNeighborsOf(u, [&](node v) {
-			if (!marked[v]) {
-				q.push(v);
-				marked[v] = true;
-			}
-		});
-	} while (!q.empty());
-};
-
-template<typename L>
-void NetworKit::Graph::DFSfrom(node r, L handle) {
-	std::vector<bool> marked(z);
-	std::stack<node> stack;
-	stack.push(r); // enqueue root
-	marked[r] = true;
-	do {
-		node u = stack.top();
-		stack.pop();
-		// apply function
-		handle(u);
-		this->forNeighborsOf(u, [&](node v) {
-			if (!marked[v]) {
-				stack.push(v);
-				marked[v] = true;
-			}
-		});
-	} while (!stack.empty());
-};
-
-template<typename L>
-inline void NetworKit::Graph::breadthFirstEdgesFrom(node r, L handle) {
-	// TODO: implement BFS iterator for edges
-	throw std::runtime_error("TODO");
 }
 
 #endif /* GRAPH_H_ */

@@ -20,6 +20,21 @@ TYPED_TEST_CASE(IDGraphGTest, dgraphImplementations);
 
 template <typename T>
 void IDGraphGTest<T>::SetUp() {
+	/*
+	 *    0
+	 *   . \
+	 *  /   \
+	 * /     .
+	 * 1 <-- 2
+	 * ^ \  .|
+	 * |  \/ |
+	 * | / \ |
+	 * |/   ..
+	 * 3 <-- 4
+	 *
+	 * move you pen from node to node:
+	 * 3 -> 1 -> 0 -> 2 -> 1 -> 4 -> 3 -> 2 -> 4
+	 */
 	Ghouse = T(5);
 	houseEdgesOut = {
 		{0, 2},
@@ -37,7 +52,6 @@ void IDGraphGTest<T>::SetUp() {
 	m_house = Ghouse.numberOfEdges();
 }
 
-
 TYPED_TEST(IDGraphGTest, degreeInOut) {
 	std::vector<count> inDegrees(this->Ghouse.upperNodeIdBound(), 0);
 	std::vector<count> outDegrees(this->Ghouse.upperNodeIdBound(), 0);
@@ -47,9 +61,9 @@ TYPED_TEST(IDGraphGTest, degreeInOut) {
 	}
 
 	this->Ghouse.forNodes([&](node v) {
-		ASSERT_EQ(inDegrees[v], this->Ghouse.degreeIn(v));
-		ASSERT_EQ(outDegrees[v], this->Ghouse.degreeOut(v));
-		ASSERT_EQ(outDegrees[v], this->Ghouse.degree(v));
+		EXPECT_EQ(inDegrees[v], this->Ghouse.degreeIn(v));
+		EXPECT_EQ(outDegrees[v], this->Ghouse.degreeOut(v));
+		EXPECT_EQ(outDegrees[v], this->Ghouse.degree(v));
 	});
 }
 
@@ -60,16 +74,16 @@ TYPED_TEST(IDGraphGTest, forOutEdgesOf) {
 	this->Ghouse.forNodes([&](node u) {
 		this->Ghouse.forOutEdgesOf(u, [&](node v, node w) {
 			// edges should be v to w, so if we iterate over edges from u, u should be equal v
-			ASSERT_EQ(u, v);
+			EXPECT_EQ(u, v);
 			
 			auto e = std::make_pair(v, w);
 			// find edge
 			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
-			ASSERT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
+			EXPECT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
 		
 			// find index in edge array
 			int i = std::distance(this->houseEdgesOut.begin(), it);
-			ASSERT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
+			EXPECT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
 			
 			// mark edge as visited
 			visited[i] = true;
@@ -77,9 +91,9 @@ TYPED_TEST(IDGraphGTest, forOutEdgesOf) {
 		});
 	});
 
-	ASSERT_EQ(this->m_house, m);
+	EXPECT_EQ(this->m_house, m);
 	for (auto b : visited) {
-		ASSERT_TRUE(b);
+		EXPECT_TRUE(b);
 	}
 }
 
@@ -93,16 +107,16 @@ TYPED_TEST(IDGraphGTest, forInEdgesOf) {
 	this->Ghouse.forNodes([&](node u) {
 		this->Ghouse.forInEdgesOf(u, [&](node v, node w) {
 			// edges should be v to w, so if we iterate over edges from u, u should be equal w
-			ASSERT_EQ(u, w);
+			EXPECT_EQ(u, w);
 			
 			auto e = std::make_pair(v, w);
 			// find edge
 			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
-			ASSERT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
+			EXPECT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
 		
 			// find index in edge array
 			int i = std::distance(this->houseEdgesOut.begin(), it);
-			ASSERT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
+			EXPECT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
 			
 			// mark edge as visited
 			visited[i] = true;
@@ -110,10 +124,64 @@ TYPED_TEST(IDGraphGTest, forInEdgesOf) {
 		});
 	});
 
-	ASSERT_EQ(this->m_house, m);
+	EXPECT_EQ(this->m_house, m);
 	for (auto b : visited) {
-		ASSERT_TRUE(b);
+		EXPECT_TRUE(b);
 	}
+}
+
+TYPED_TEST(IDGraphGTest, BFSfrom) {
+	std::vector<count> visitedOrder(5, none);
+	index i = 0;
+	this->Ghouse.BFSfrom(3, [&](node v) {
+		EXPECT_EQ(none, visitedOrder[v]); // visit every node once
+		visitedOrder[v] = i++;
+	});
+
+	// have we visited all nodes
+	for (count l : visitedOrder) {
+		EXPECT_TRUE(l != none);
+	}
+
+	// root on level 0
+	EXPECT_EQ(0, visitedOrder[3]);
+
+	// level 1
+	EXPECT_TRUE( (visitedOrder[1] == 1) ^ (visitedOrder[1] == 2) );
+	EXPECT_TRUE( (visitedOrder[2] == 1) ^ (visitedOrder[2] == 2) );
+
+	// level 2
+	EXPECT_TRUE( (visitedOrder[0] == 3) ^ (visitedOrder[0] == 4) );
+	EXPECT_TRUE( (visitedOrder[4] == 3) ^ (visitedOrder[4] == 4) );
+}
+
+TYPED_TEST(IDGraphGTest, DFSfrom) {
+	std::vector<count> visitedOrder(5, none);
+	index i = 0;
+	this->Ghouse.DFSfrom(3, [&](node v) {
+		EXPECT_EQ(none, visitedOrder[v]); // visit every node once
+		visitedOrder[v] = i++;
+	});
+
+	// have we visited all nodes
+	for (count l : visitedOrder) {
+		EXPECT_TRUE(l != none);
+	}
+
+	// root on level 0
+	EXPECT_EQ(0, visitedOrder[3]);
+
+	// level 1
+	EXPECT_TRUE( (visitedOrder[1] == 1) ^ (visitedOrder[2] == 1) );
+
+	// level 2
+	EXPECT_TRUE( (visitedOrder[0] == 2) ^ (visitedOrder[1] == 2) ^ (visitedOrder[4] == 2) );
+
+	// level 3
+	EXPECT_TRUE( (visitedOrder[2] == 3) ^ (visitedOrder[0] == 3) ^ (visitedOrder[4] == 3) ^ (visitedOrder[1] == 3) );
+
+	// level 4
+	EXPECT_TRUE( (visitedOrder[2] == 4) ^ (visitedOrder[4] == 4) ^ (visitedOrder[0] == 4) );
 }
 
 } /* namespace NetworKit */

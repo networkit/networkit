@@ -24,6 +24,12 @@ typedef uint64_t count; // more expressive name for an integer quantity
 typedef index node; // node indices are 0-based
 typedef double edgeweight; // edge weight type
 
+typedef std::function<void(node)> FNode;
+typedef std::function<void(node, node)> FNodePair;
+typedef std::function<void(node, node)> FEdge;
+typedef std::function<void(node, node, double)> FEdgeWithWeight;
+typedef std::function<bool()> FCondition;
+
 constexpr index none = std::numeric_limits<index>::max();
 
 /**
@@ -303,7 +309,8 @@ public:
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forNodes(L handle) const {};
+	// template<typename L> void forNodes(L handle) const {};
+	virtual void forNodes(FNode f) const = 0;
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
@@ -357,7 +364,8 @@ public:
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forEdges(L handle) const {};
+	// template<typename L> void forEdges(L handle) const {};
+	virtual void forEdges(FEdge f) const = 0;
 
 	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
@@ -393,7 +401,8 @@ public:
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forNeighborsOf(node u, L handle) const {}
+	// template<typename L> void forNeighborsOf(node u, L handle) const {}
+	virtual void forNeighborsOf(node u, FNode handle) const = 0;
 
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
@@ -420,11 +429,27 @@ public:
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
 	 */
 	template<typename L> double parallelSumForWeightedEdges(L handle) const;
+
+
+	/** GRAPH SEARCHES **/
+
+	virtual void BFSfrom(node r, FNode f) const = 0;
+
+	virtual void BFSEdgesfrom(node r, FEdge f) const = 0;
+
+	virtual void DFSfrom(node r, FNode f) const = 0;
+	
+	virtual void DFSEdgesfrom(node r, FEdge f) const = 0;
+
+	// template<typename L> void BFSfrom(node r, L handle) const;
+
+	// template<typename L> void BFSEdgesfrom(node r, L handle) const;
+
+	// template<typename L> void DFSfrom(node r, L handle) const;
+
+	// template<typename L> void DFSEdgesfrom(node r, L handle) const;
+
 };
-
-
-
-
 
 } /* namespace NetworKit */
 
