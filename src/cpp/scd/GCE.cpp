@@ -98,7 +98,7 @@ std::set<node> GCE::expandSeed(node s) {
      * @return quality difference for the move of v to C
      */
 	auto deltaM = [&](node v, const std::set<node>& C){
-		double delta = (intEdges + degInt) / (double) (extEdges + degInt + degExt);
+		double delta = (intEdges + degInt) / (double) (extEdges - degInt + degExt);
 		return delta - currentQ;
 	};
 
