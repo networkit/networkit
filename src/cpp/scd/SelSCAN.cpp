@@ -4,7 +4,7 @@
 
 namespace NetworKit {
 
-SelSCAN::SelSCAN(const Graph& G, count kappa, double epsilon) : SelectiveCommunityDetector(G), kappa(kappa), epsilon(epsilon), algebraicDistance(NULL) {
+SelSCAN::SelSCAN(const Graph& G, count kappa, double epsilon) : SelectiveCommunityDetector(G), kappa(kappa), epsilon(epsilon), algebraicDistance(NULL), intersector(G.upperNodeIdBound()) {
 	/**
 	 * expresses neighborhood overlap
 	 */
@@ -13,8 +13,9 @@ SelSCAN::SelSCAN(const Graph& G, count kappa, double epsilon) : SelectiveCommuni
 		auto Nv = G.neighbors(v);
 		Nu.push_back(u);
 		Nv.push_back(v);
-		std::set<node> intersect;
-		set_intersection(Nu.begin(), Nu.end(), Nv.begin(), Nv.end(), std::inserter(intersect, intersect.begin()));
+		// std::set<node> intersect;
+		// set_intersection(Nu.begin(), Nu.end(), Nv.begin(), Nv.end(), std::inserter(intersect, intersect.begin()));
+		auto intersect = intersector.intersect(Nu, Nv);
 
 		return 1 - (intersect.size() / sqrt(Nu.size() * Nv.size()));
 	};
@@ -23,7 +24,7 @@ SelSCAN::SelSCAN(const Graph& G, count kappa, double epsilon) : SelectiveCommuni
 
 }
 
-SelSCAN::SelSCAN(const Graph& G, count kappa, double epsilon, AlgebraicDistance& ad) : SelectiveCommunityDetector(G), kappa(kappa), epsilon(epsilon), algebraicDistance(&ad) {
+SelSCAN::SelSCAN(const Graph& G, count kappa, double epsilon, AlgebraicDistance& ad) : SelectiveCommunityDetector(G), kappa(kappa), epsilon(epsilon), algebraicDistance(&ad), intersector(G.upperNodeIdBound()) {
 	auto algDist = [&](node u, node v) -> double {
 		return algebraicDistance->distance(u, v);
 	};
@@ -80,12 +81,14 @@ std::map<node, std::set<node> >  SelSCAN::run(std::set<unsigned int>& seeds) {
 			assert (core(x));
 			for (node y : epsilonNeighborhood(x)) {
 				// assert ((eta.find(y) == eta.end()) || (eta[y] == none));	// not assigned or outlier - FAILS
-				if (core(y)) {
-					Q.push(y);
+				if (eta.find(y) == eta.end()) {
+					if (core(y)) {
+						Q.push(y);
+					}
+					eta[y] = label; // add to community
+					TRACE(y, " added to community ", eta[y]);
 				}
-				eta[y] = label; // add to community
-				TRACE(y, " added to community ", eta[y]);
-
+				// labelled neighbors are ignored
 			}
 		}
 

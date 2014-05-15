@@ -10,6 +10,7 @@
 
 #include "SelectiveCommunityDetector.h"
 #include "../distmeasures/AlgebraicDistance.h"
+#include "../auxiliary/SetIntersector.h"
 
 
 namespace NetworKit {
@@ -35,7 +36,7 @@ protected:
 	double epsilon;
 	AlgebraicDistance* algebraicDistance;
 	std::function<double(node, node)> dist; 	// node distance measure
-
+    Aux::SetIntersector<node> intersector;    // efficient set intersections
 
 };
 
