@@ -5,7 +5,7 @@
 #ifndef DOTPARTITIONWRITER_H_
 #define DOTPARTITIONWRITER_H_
 
-#include <fstream>
+#include <map>
 
 #include "../structures/Partition.h"
 #include "../graph/Graph.h"
@@ -13,11 +13,8 @@
 namespace NetworKit {
 
 class DotPartitionWriter {
-
 public:
-    DotPartitionWriter();
-
-    virtual ~DotPartitionWriter();
+    virtual ~DotPartitionWriter() = default;
 
     virtual void write(Graph& graph, Partition& zeta, std::string path) const;
 

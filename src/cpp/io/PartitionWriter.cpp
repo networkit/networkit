@@ -9,24 +9,12 @@
 
 namespace NetworKit {
 
-PartitionWriter::PartitionWriter() {
-	// TODO Auto-generated constructor stub
+void PartitionWriter::write(Partition& zeta, const std::string& path) const {
+	std::ofstream file{path};
 
-}
-
-PartitionWriter::~PartitionWriter() {
-	// TODO Auto-generated destructor stub
-}
-
-void PartitionWriter::write(Partition& zeta, std::string path) const {
-	std::ofstream file;
-	file.open(path.c_str());
-
-	zeta.forEntries([&](node v, index c){
-		file << c << std::endl;
+	zeta.forEntries([&](node, index c){
+		file << c << '\n';
 	});
-
-	file.close();
 }
 
 } /* namespace NetworKit */
