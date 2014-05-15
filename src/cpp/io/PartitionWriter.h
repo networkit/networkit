@@ -21,11 +21,11 @@ class PartitionWriter {
 
 public:
 
-	PartitionWriter();
+	PartitionWriter() = default;
 
-	virtual ~PartitionWriter();
+	virtual ~PartitionWriter() = default;
 
-	virtual void write(Partition& zeta, std::string path) const;
+	virtual void write(Partition& zeta, const std::string& path) const;
 };
 
 } /* namespace NetworKit */

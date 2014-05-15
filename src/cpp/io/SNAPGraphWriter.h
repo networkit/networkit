@@ -45,9 +45,8 @@ Good job
  */
 class SNAPGraphWriter: public NetworKit::GraphWriter {
 public:
-	SNAPGraphWriter();
-	virtual ~SNAPGraphWriter();
-	virtual void write(Graph& G, std::string path);
+	SNAPGraphWriter() = default;
+	virtual void write(Graph& G, const std::string& path) override;
 
 private:
 
