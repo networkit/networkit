@@ -6,6 +6,7 @@
  */
 
 #include "RegionGrowingOverlapper.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

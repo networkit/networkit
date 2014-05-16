@@ -8,6 +8,7 @@
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 
 #include "DibapGraphReader.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

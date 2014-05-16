@@ -7,8 +7,8 @@
 
 #ifndef NOGTEST
 
-
 #include "IndependentSetGTest.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 
