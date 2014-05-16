@@ -346,8 +346,6 @@ TEST_F(PropertiesGTest, testExactDiameter) {
 
    using namespace std;
 
-   count infDist = numeric_limits<count>::max();
-
    vector<pair<string, count>> testInstances= {pair<string, count>("lesmis", 14),
                                                pair<string, count>("jazz", 6),
                                                pair<string, count>("celegans_metabolic", 7)
@@ -365,8 +363,6 @@ TEST_F(PropertiesGTest, testExactDiameter) {
 TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
 
    using namespace std;
-
-   count infDist = numeric_limits<count>::max();
 
    vector<pair<string, count>> testInstances= {
                                                pair<string, count>("celegans_metabolic", 7),
