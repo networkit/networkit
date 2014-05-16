@@ -4,8 +4,11 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
+#include <stdexcept>
+
 #include "Graph.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

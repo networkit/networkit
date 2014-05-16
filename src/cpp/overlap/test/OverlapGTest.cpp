@@ -8,7 +8,7 @@
 #ifndef NOGTEST
 
 #include "OverlapGTest.h"
-
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 

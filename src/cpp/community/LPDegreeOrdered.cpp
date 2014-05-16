@@ -5,8 +5,10 @@
  *      Author: cls
  */
 
-#include "LPDegreeOrdered.h"
 #include <unordered_map>
+
+#include "LPDegreeOrdered.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

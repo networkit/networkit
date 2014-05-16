@@ -178,6 +178,11 @@ TYPED_TEST(IGraphGTest, forNodesConst) {
 	}
 }
 
+TYPED_TEST(IGraphGTest, stdpair) {
+	printf("sizeof(pair<int, int>)=%d\n", sizeof(std::pair<int, int>));
+	printf("sizeof(pair<node, node>)=%d\n", sizeof(std::pair<node, node>));
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */

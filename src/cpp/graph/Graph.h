@@ -8,24 +8,12 @@
 #ifndef GRAPH_H_
 #define GRAPH_H_
 
-#include <functional>
-#include <cassert>
 #include <vector>
-#include <cinttypes>
-#include <string>
-#include <stdexcept>
-#include <map>
-#include <set>
-#include <sstream>
-#include <limits>
-#include <cstdint>
 #include <algorithm>
 // #include <tbb/concurrent_vector.h>
 
 #include "AbstractGraph.h"
 #include "Coordinates.h"
-#include "../auxiliary/Log.h"
-#include "../Globals.h"
 #include "../viz/Point.h"
 
 namespace NetworKit {

@@ -8,7 +8,7 @@
 #ifndef SNAPEDGELISTCLUSTERINGREADER_H_
 #define SNAPEDGELISTCLUSTERINGREADER_H_
 
-#include <unordered_set>
+#include <set>
 #include <vector>
 #include <fstream>
 

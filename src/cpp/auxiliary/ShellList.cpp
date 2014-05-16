@@ -7,6 +7,7 @@
 
 #include <algorithm> // std::for_each, loop iterating over containers and executing a given function for each element
 #include "ShellList.h"
+#include "../auxiliary/Log.h"
 
 namespace Aux {
 
