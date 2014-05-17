@@ -29,12 +29,12 @@ count Graph::getMemoryUsage() const {
 	count mem = AbstractGraph::getMemoryUsage();
 	mem += sizeof(deg) + sizeof(count) * deg.capacity();
 	
-	mem += sizeof(adja) + sizeof(_Vector<node>) * adja.capacity();
+	mem += sizeof(adja) + sizeof(std::vector<node>) * adja.capacity();
 	for (auto& a : adja) {
 		mem += sizeof(node) * a.capacity();
 	}
 
-	mem += sizeof(eweights) + sizeof(_Vector<edgeweight>) * eweights.capacity();
+	mem += sizeof(eweights) + sizeof(std::vector<edgeweight>) * eweights.capacity();
 	for (auto& w : eweights) {
 		mem += sizeof(edgeweight) * w.capacity();
 	}
@@ -97,10 +97,10 @@ node Graph::addNode() {
 	this->deg.push_back(0);
 
 	// update per edge data structures
-	_Vector<node> adjacencyVector;	// vector of adjacencies for new node
+	std::vector<node> adjacencyVector;	// vector of adjacencies for new node
 	this->adja.push_back(adjacencyVector);
 	if (weighted) {
-		_Vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
+		std::vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 		this->eweights.push_back(edgeWeightVector);
 	}
 
