@@ -48,9 +48,19 @@ public:
 	virtual count degreeOut(node v) const = 0;
 
 	/**
-	 * @return In-Volume of the node, which is the sum of all incoming edges.
+	 * @return Weighted degree of @a v. For directed graphs this is the sum of weights off all outgoing edges fo @a v.
 	 */
-	// virtual edgeweight volume(node v) const;
+	edgeweight weightedDegree(node v) const { return weightedDegreeOut(v); }
+
+	/**
+	 * @return Weighted degree of @a v.
+	 */
+	virtual edgeweight weightedDegreeIn(node v) const = 0;
+
+	/**
+	 * @return Weighted degree of @a v.
+	 */
+	virtual edgeweight weightedDegreeOut(node v) const = 0;
 
 
 	/** NEIGHBORHOOD ITERATORS **/

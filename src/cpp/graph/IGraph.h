@@ -122,6 +122,11 @@ public:
 	virtual bool isIsolated(node v) const = 0;
 
 	/**
+	 * @return Weighted degree of @a v. For directed graphs this is the sum of weights off all outgoing edges fo @a v.
+	 */
+	virtual edgeweight weightedDegree(node v) const = 0;
+
+	/**
 	 * @return random node of the graph
 	 */
 	virtual node randomNode() const = 0;

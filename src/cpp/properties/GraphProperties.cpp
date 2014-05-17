@@ -18,7 +18,7 @@ GraphProperties::~GraphProperties() {
 
 }
 
-std::vector<count> GraphProperties::degreeDistribution(Graph& G) {
+std::vector<count> GraphProperties::degreeDistribution(const IGraph& G) {
 	count maxDegree = minMaxDegree(G).second;
 	std::vector<count> distribution(maxDegree+1, 0);
 	G.forNodes([&](node v){
@@ -29,7 +29,7 @@ std::vector<count> GraphProperties::degreeDistribution(Graph& G) {
 }
 
 
-std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
+std::vector<double> GraphProperties::localClusteringCoefficients(const IGraph& G) {
 	count n = G.numberOfNodes();
 	std::vector<double> numerator(n); //
 	std::vector<double> denominator(n); // $\deg(u) \cdot ( \deg(u) - 1 )$
@@ -63,7 +63,7 @@ std::vector<double> GraphProperties::localClusteringCoefficients(Graph& G) {
 	return coefficient;
 }
 
-std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& G) {
+std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(const IGraph& G) {
 
 	std::vector<count> degDist = degreeDistribution(G);
 	std::vector<double> coefficient;
@@ -96,7 +96,7 @@ std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(Graph& 
 	return perDegree;
 }
 
-double GraphProperties::averageLocalClusteringCoefficient(Graph& G) {
+double GraphProperties::averageLocalClusteringCoefficient(const IGraph& G) {
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
 	double sum = 0.0;
 	for (double c : coefficients) {
@@ -106,7 +106,7 @@ double GraphProperties::averageLocalClusteringCoefficient(Graph& G) {
 	return avg;
 }
 
-std::pair<count, count> GraphProperties::minMaxDegree(Graph& G) {
+std::pair<count, count> GraphProperties::minMaxDegree(const IGraph& G) {
 
 	count min = G.numberOfNodes();
 	count max = 0;
@@ -124,7 +124,7 @@ std::pair<count, count> GraphProperties::minMaxDegree(Graph& G) {
 	return std::pair<count, count>(min, max);
 }
 
-std::vector<unsigned int> GraphProperties::degreeSequence(Graph& G) {
+std::vector<unsigned int> GraphProperties::degreeSequence(const IGraph& G) {
 	std::vector<unsigned int> sequence(G.numberOfNodes()); // TODO: revert to count when cython issue fixed
 
 	G.parallelForNodes([&](node v) {
@@ -134,7 +134,7 @@ std::vector<unsigned int> GraphProperties::degreeSequence(Graph& G) {
 	return sequence;
 }
 
-double GraphProperties::averageDegree(const Graph& G) {
+double GraphProperties::averageDegree(const IGraph& G) {
 
 	count n = G.numberOfNodes();
 
@@ -146,7 +146,7 @@ double GraphProperties::averageDegree(const Graph& G) {
 	return avgDeg;
 }
 
-double GraphProperties::degreeAssortativitySlower(const Graph& G, bool useWeights) {
+double GraphProperties::degreeAssortativitySlower(const IGraph& G, bool useWeights) {
 	// note: a parallel implementation would rather follow Newman's book, p. 267
 	// however, parallelism introduces inaccuracies due to numerical issues in reduction
 
@@ -198,7 +198,7 @@ double GraphProperties::degreeAssortativitySlower(const Graph& G, bool useWeight
 
 
 
-double GraphProperties::degreeAssortativity(const Graph& G, bool useWeighted) {
+double GraphProperties::degreeAssortativity(const IGraph& G, bool useWeighted) {
 	double r = 0.0; // result
 
 	double S1 = 0.0; // accumulates degrees
