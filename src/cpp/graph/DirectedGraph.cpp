@@ -28,14 +28,14 @@ count DirectedGraph::getMemoryUsage() const {
 	count mem = AbstractGraph::getMemoryUsage();
 	mem += sizeof(NodeDegree) * deg.capacity();
 		
-	mem += sizeof(_Vector<node>) * adja.capacity();
+	mem += sizeof(std::vector<node>) * adja.capacity();
 	for (auto& a : adja) {
 		mem += sizeof(node) * a.capacity();
 	}
 
 	mem += sizeof(index) * inOut.capacity();
 
-	mem += sizeof(_Vector<edgeweight>) * eweights.capacity();
+	mem += sizeof(std::vector<edgeweight>) * eweights.capacity();
 	for (auto& w : eweights) {
 		mem += sizeof(edgeweight) * w.capacity();
 	}
@@ -110,10 +110,10 @@ node DirectedGraph::addNode() {
 	this->deg.push_back(NodeDegree{});
 
 	// update per edge data structures
-	this->adja.push_back(_Vector<node>{});
+	this->adja.push_back(std::vector<node>{});
 	if (weighted) {
 		// vector of edge weights for new node
-		this->eweights.push_back(_Vector<edgeweight>{});
+		this->eweights.push_back(std::vector<edgeweight>{});
 	}
 
 	// update edge attribute data structures

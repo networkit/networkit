@@ -20,8 +20,7 @@
 namespace NetworKit {
 
 // TODO: test tbb::concurrent_vector
-template <typename T> using _Vector = std::vector<T>;
-
+// template <typename T> using _Vector = std::vector<T>;
 
 /**
  * An abstract graph class providing general implementations of directed and undirected graphs (with optional weights).
@@ -39,7 +38,7 @@ protected:
 
 	// per node data
 	// Vector<count> deg; //!< degree of each node (size of neighborhood)
-	_Vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
+	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
 	// per edge data

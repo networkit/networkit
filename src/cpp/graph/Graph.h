@@ -10,7 +10,6 @@
 
 #include <vector>
 #include <algorithm>
-// #include <tbb/concurrent_vector.h>
 
 #include "AbstractGraph.h"
 #include "Coordinates.h"
@@ -21,16 +20,17 @@ namespace NetworKit {
 /**
  * An undirected graph (with optional weights) and parallel iterator methods.
  */
-class Graph final : public AbstractGraph {
+// TODO: add final to class
+class Graph : public AbstractGraph {
 
 protected:
 
 	// per node data
-	_Vector<count> deg; //!< degree of each node (size of neighborhood)
+	std::vector<count> deg; //!< degree of each node (size of neighborhood)
 
 	// per edge data
-	_Vector<_Vector<node> > adja; //!< neighbors/adjacencies
-	_Vector<_Vector<edgeweight> > eweights; //!< edge weights
+	std::vector<std::vector<node> > adja; //!< neighbors/adjacencies
+	std::vector<std::vector<edgeweight> > eweights; //!< edge weights
 
 	// user-defined edge attributes
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double

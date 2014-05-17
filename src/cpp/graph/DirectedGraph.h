@@ -8,27 +8,12 @@
 #ifndef DIRECETD_GRAPH_H_
 #define DIRECETD_GRAPH_H_
 
-#include <functional>
-#include <cassert>
 #include <vector>
-#include <cinttypes>
-#include <string>
-#include <queue>
-#include <stack>
-#include <stdexcept>
-#include <map>
-#include <set>
-#include <sstream>
-#include <limits>
-#include <cstdint>
 #include <algorithm>
-// #include <tbb/concurrent_vector.h>
 
 #include "IDGraph.h"
 #include "AbstractGraph.h"
 #include "Coordinates.h"
-#include "../auxiliary/Log.h"
-#include "../Globals.h"
 #include "../viz/Point.h"
 
 namespace NetworKit {
@@ -36,7 +21,8 @@ namespace NetworKit {
 /**
  * An directed graph (with optional weights) and parallel iterator methods.
  */
-class DirectedGraph final : public IDGraph, public AbstractGraph {
+// TODO: add final to class
+class DirectedGraph : public IDGraph, public AbstractGraph {
 
 protected:
 
@@ -51,12 +37,12 @@ protected:
 	};
 
 	// per node data
-	_Vector< NodeDegree > deg; //!< degree of each node (size of neighborhood)
+	std::vector< NodeDegree > deg; //!< degree of each node (size of neighborhood)
 
 	// per edge data
-	_Vector<_Vector<node> > adja; //!< neighbors/adjacencies, starting with all incoming edges, inOut marks the first outgoing edge
-	_Vector<index> inOut; //!< index of first outgoing edge in adja
-	_Vector<_Vector<edgeweight> > eweights; //!< edge weights
+	std::vector<std::vector<node> > adja; //!< neighbors/adjacencies, starting with all incoming edges, inOut marks the first outgoing edge
+	std::vector<index> inOut; //!< index of first outgoing edge in adja
+	std::vector<std::vector<edgeweight> > eweights; //!< edge weights
 
 	// user-defined edge attributes
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
