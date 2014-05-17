@@ -132,6 +132,17 @@ public:
 	 */
 	count degreeOut(node v) const;
 
+	/**
+	 * @return Weighted degree of @a v.
+	 */
+	edgeweight weightedDegreeIn(node v) const;
+
+	/**
+	 * @return Weighted degree of @a v.
+	 */
+	edgeweight weightedDegreeOut(node v) const;
+
+
 	/** EDGE MODIFIERS **/
 
 	/**

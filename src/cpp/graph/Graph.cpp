@@ -134,40 +134,16 @@ count Graph::degree(node v) const {
 	return this->deg[v];
 }
 
-count Graph::minDegree() const {
-	return *std::min_element(deg.begin(), deg.end());
-}
-
-node Graph::argminDegree() const {
-	return std::distance(deg.begin(), std::min_element(deg.begin(), deg.end()));
-}
-
-count Graph::maxDegree() const {
-	return *std::max_element(deg.begin(), deg.end());
-}
-
-node Graph::argmaxDegree() const {
-	return std::distance(deg.begin(), std::max_element(deg.begin(), deg.end()));
-}
-
 edgeweight Graph::weightedDegree(node v) const {
-	if (weighted) {
-		// weighted degree as sum over incident edge weight - self-loops are counted once
-		edgeweight wDeg = 0.0;
-		for (edgeweight w : this->eweights[v]) {
-			wDeg += w;
-		}
-		return wDeg;
-	} else {
+	if (!weighted) {
 		return this->degree(v);
 	}
-
-}
-
-edgeweight Graph::volume(node v) const {
-	edgeweight vol = this->weightedDegree(v);
-	vol += this->weight(v, v);
-	return vol;
+	// weighted degree as sum over incident edge weight - self-loops are counted once
+	edgeweight wDeg = 0.0;
+	for (edgeweight w : this->eweights[v]) {
+		wDeg += w;
+	}
+	return wDeg;
 }
 
 node Graph::randomNeighbor(node v) const {

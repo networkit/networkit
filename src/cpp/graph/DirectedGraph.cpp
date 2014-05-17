@@ -149,13 +149,28 @@ count DirectedGraph::degreeOut(node v) const {
 	return this->deg[v].out;
 }
 
+edgeweight DirectedGraph::weightedDegreeIn(node v) const {
+	if (!isWeighted()) {
+		return degreeOut(v);
+	}
+	edgeweight sum = 0.0;
+	forWeightedOutNeighborsOf(v, [&](node u, edgeweight ew) {
+		sum += ew;
+	});
+	return sum;
+}
 
-/*DirectedGraph::NodeDegree DirectedGraph::degree(node v) const {
-	assert (v >= 0);
-	assert (v < this->z);
-	assert (this->exists[v]);
-	return this->deg[v];
-}*/
+edgeweight DirectedGraph::weightedDegreeOut(node v) const {
+	if (!isWeighted()) {
+		return degreeIn(v);
+	}
+	edgeweight sum = 0.0;
+	forWeightedInNeighborsOf(v, [&](node u, edgeweight ew) {
+		sum += ew;
+	});
+	return sum;
+}
+
 
 /** EDGE MODIFIERS **/
 
