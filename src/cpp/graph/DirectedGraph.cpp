@@ -15,8 +15,7 @@ namespace NetworKit {
 DirectedGraph::DirectedGraph(count n, bool weighted):
 	AbstractGraph(n, weighted),
 	deg(z),
-	adja(z),
-	inOut(z, 0) {
+	adja(z) {
 	if (weighted) eweights.resize(z); // edge weight array is only initialized for weighted graphs
 }
 
@@ -30,10 +29,13 @@ count DirectedGraph::getMemoryUsage() const {
 		
 	mem += sizeof(std::vector<node>) * adja.capacity();
 	for (auto& a : adja) {
-		mem += sizeof(node) * a.capacity();
+		mem += sizeof(node) * a.first.capacity();
 	}
 
-	mem += sizeof(index) * inOut.capacity();
+	for(auto& a: adja) {
+		mem+= sizeof(node) * a.second.capacity();
+	}
+	//mem += sizeof(index) * inOut.capacity();
 
 	mem += sizeof(std::vector<edgeweight>) * eweights.capacity();
 	for (auto& w : eweights) {
@@ -53,12 +55,14 @@ void DirectedGraph::shrinkToFit() {
 	AbstractGraph::shrinkToFit();
 
 	deg.shrink_to_fit();
-	inOut.shrink_to_fit();
+	//inOut.shrink_to_fit();
 
 	adja.shrink_to_fit();
 	for (auto& a : adja) {
-		a.shrink_to_fit();
+		a.first.shrink_to_fit();
+		a.second.shrink_to_fit();
 	}
+	
 
 	eweights.shrink_to_fit();
 	for (auto& w : eweights) {
@@ -80,8 +84,8 @@ void DirectedGraph::stealFrom(DirectedGraph& input) {
 
 
 index DirectedGraph::findIn(node u, node v) const {
-	for (index i = 0; i < this->inOut[u]; i++) {
-		node x = this->adja[u][i];
+	for (index i = 0; i < (adja[u].second).size(); i++) {
+		node x = this->adja[u].second[i];
 		if (x == v) {
 			return i;
 		}
@@ -90,8 +94,8 @@ index DirectedGraph::findIn(node u, node v) const {
 }
 
 index DirectedGraph::findOut(node u, node v) const {
-	for (index i = this->inOut[u]; i < this->adja[u].size(); i++) {
-		node x = this->adja[u][i];
+	for (index i = 0; i < (adja[u].first).size(); i++) {
+		node x = this->adja[u].first[i];
 		if (x == v) {
 			return i;
 		}
@@ -110,7 +114,7 @@ node DirectedGraph::addNode() {
 	this->deg.push_back(NodeDegree{});
 
 	// update per edge data structures
-	this->adja.push_back(std::vector<node>{});
+	this->adja.push_back(std::pair<std::vector<node>,std::vector<node> >{});
 	if (weighted) {
 		// vector of edge weights for new node
 		this->eweights.push_back(std::vector<edgeweight>{});
@@ -184,30 +188,13 @@ void DirectedGraph::addEdge(node u, node v, edgeweight weight) {
 	this->deg[u].out++;
 	this->deg[v].in++;
 
-	this->adja[u].push_back(v);
+	this->adja[u].first.push_back(v);
 	if (weighted) {
 		this->eweights[u].push_back(weight);
 	}
+	this->adja[v].second.push_back(u);
 
 
-	if (this->deg[v].out > 0) {
-		// move first outgoing edges to the end of the vector and insert incoming edge
-		index i = this->inOut[v];
-		node w = this->adja[v][i];
-		this->adja[v].push_back(w);
-		this->adja[v][i] = u;
-		if (weighted) {
-			edgeweight we = this->eweights[v][i];
-			this->eweights[v].push_back(we);
-			this->eweights[v][i] = weight;
-		}
-	} else {
-		this->adja[v].push_back(u);
-		if (weighted) {
-			this->eweights[v].push_back(weight);
-		}
-	}
-	this->inOut[v]++;
 
 	// loop over all attributes, setting default attr
 	for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
@@ -227,8 +214,8 @@ void DirectedGraph::removeEdge(node u, node v) {
 		strm << "edge (" << u << "," << v << ") does not exist";
 		throw std::runtime_error(strm.str());
 	} else {
-		this->adja[u][vi] = none;
-		this->adja[v][ui] = none;
+		this->adja[u].first[vi] = none;
+		this->adja[v].second[ui] = none;
 		// decrement degree counters
 		this->deg[u].out--;
 		this->deg[v].in--;
@@ -299,7 +286,7 @@ int DirectedGraph::addEdgeAttribute_double(double defaultValue) {
 	if (this->numberOfEdges() > 0) {
 		forNodes([&] (node v) {
 			// create edgeMaps and fill them with default value
-			edgeMap[v].resize(adja[v].size());
+			edgeMap[v].resize(adja[v].first.size());
 			fill(edgeMap[v].begin(), edgeMap[v].end(), defaultValue);
 		});
 	}
