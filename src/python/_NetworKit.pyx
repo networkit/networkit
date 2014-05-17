@@ -185,6 +185,96 @@ cdef class Graph:
 		return self._this.totalEdgeWeight()
 
 
+cdef extern from "../cpp/graph/DirectedGraph.h":
+	cdef cppclass _DirectedGraph "NetworKit::Graph":
+		_DirectedGraph() except +
+		_DirectedGraph(count, bool) except +
+		void stealFrom(_Graph) 
+		count numberOfNodes() except +
+		count numberOfEdges() except +
+		count degree(node u) except +
+		node addNode() except +
+		void removeNode(node u) except +
+		void addEdge(node u, node v, edgeweight w) except +
+		void removeEdge(node u, node v) except +
+		bool hasEdge(node u, node v) except +
+		edgeweight weight(node u, node v) except +
+		vector[node] nodes() except +
+		vector[pair[node, node]] edges() except +
+		vector[node] neighbors(node u) except +
+		bool isWeighted() except +
+		string toString() except +
+		string getName() except +
+		edgeweight totalEdgeWeight() except +
+cdef class DirectedGraph:
+
+def __cinit__(self, n=0, weighted=False):
+		self._this = new _DirectedGraph(n, weighted)
+		
+	# # any _thisect which appears as a return type needs to implement setThis
+	# cdef setThis(self, _Graph other):
+	# 	#del self._this
+	# 	self._this = other
+	# 	return self
+
+	cdef setThis(self, _Graph* other):
+		self._this = other
+		return self
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+	
+	def numberOfNodes(self):
+		return self._this.numberOfNodes()
+	
+	def numberOfEdges(self):
+		return self._this.numberOfEdges()
+
+	def degree(self, u):
+		return self._this.degree(u)
+	
+	def addNode(self):
+		return self._this.addNode()
+	
+	def removeNode(self, u):
+		self._this.removeNode(u)
+		
+	def addEdge(self, u, v, w=1.0):
+		self._this.addEdge(u, v, w)
+		
+	def removeEdge(self, u, v):
+		self._this.removeEdge(u, v)
+		
+	def hasEdge(self, u, v):
+		return self._this.hasEdge(u, v)
+		
+	def weight(self, u, v):
+		return self._this.weight(u, v)
+		
+	def nodes(self):
+		return self._this.nodes()
+	
+	def edges(self):
+		return self._this.edges()
+		
+	def neighbors(self, u):
+		return self._this.neighbors(u)
+	
+	def isWeighted(self):
+		return self._this.isWeighted()
+
+	def toString(self):
+		return self._this.toString()
+
+	def getName(self):
+		return pystring(self._this.getName())
+
+	def totalEdgeWeight(self):
+		return self._this.totalEdgeWeight()
+
+	
+
 cdef class Graph2:
 	"""An undirected, optionally weighted graph"""
 	cdef _Graph* _this
@@ -1021,7 +1111,7 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 
 
 cdef extern from "../cpp/community/EPP.h":
-	cdef cppclass _EPP "NetworKit::EPP":
+	cdef cppclass _EPP "NetworKit::EPP":Graph
 		_Partition run(_Graph G)
 		string toString()
 

@@ -79,6 +79,7 @@ TYPED_TEST(IDGraphGTest, forOutEdgesOf) {
 			auto e = std::make_pair(v, w);
 			// find edge
 			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
+
 			EXPECT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
 		
 			// find index in edge array
@@ -137,7 +138,6 @@ TYPED_TEST(IDGraphGTest, BFSfrom) {
 		EXPECT_EQ(none, visitedOrder[v]); // visit every node once
 		visitedOrder[v] = i++;
 	});
-
 	// have we visited all nodes
 	for (count l : visitedOrder) {
 		EXPECT_TRUE(l != none);
