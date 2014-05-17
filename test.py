@@ -17,11 +17,11 @@ workingDirectory = None
 
 def buildAntTest():
     # compile
-    result = subprocess.call(['scons', '--optimize=D', '--target=Tests'], cwd = workingDirectory)
+    result = subprocess.call(['scons', '--optimize=O', '--target=Tests'], cwd = workingDirectory)
 
     # run test to if compilation was successful and a test name was specified
     if result == 0 and len(testName) > 0:
-        subprocess.call(['./NetworKit-Tests-D', '--tests', '--loglevel=' + logLevel, '--gtest_filter=*' + testName + '*'], cwd = workingDirectory)
+        subprocess.call(['./NetworKit-Tests-O', '--tests', '--loglevel=' + logLevel, '--gtest_filter=*' + testName + '*'], cwd = workingDirectory)
     print("\nWaiting for code changes...")
 
 if __name__ == "__main__":
