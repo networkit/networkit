@@ -315,6 +315,14 @@ TEST(MatrixGTest, tryMatrixMultiplication) {
 	EXPECT_EQ(17, result(3,3));
 }
 
+TEST(MatrixGTest, tryBigMatrixFastMultiplication) {
+	METISGraphReader graphReader;
+	AdjacencyMatrix mat(graphReader.read("input/PGPgiantcompo.graph"));
+
+	Matrix result = mat * mat;
+	ASSERT_EQ(mat.numberOfRows(), result.numberOfRows());
+	ASSERT_EQ(mat.numberOfColumns(), result.numberOfColumns());
+}
 
 } /* namespace NetworKit */
 

@@ -175,13 +175,24 @@ Matrix Matrix::operator*(const Matrix &other) const {
 		throw std::runtime_error("dimensions of matrices do not match");
 	}
 
-	std::vector<Vector> columns(other.numberOfColumns());
-#pragma omp parallel for
-	for (count j = 0; j < other.numberOfColumns(); ++j) {
-		columns[j] = (*this * other.column(j));
+	Matrix result(numberOfRows());
+	SparseAccumulator spa(numberOfRows());
+	for (index r = 0; r < numberOfRows(); ++r) {
+		graph.forWeightedNeighborsOf(r, [&](node v, double w1){
+			other.graph.forWeightedNeighborsOf(v, [&](node u, double w2){
+				double value = w1 * w2;
+				spa.scatter(value, u);
+			});
+		});
+
+		spa.gather([&](node row, node column, double value){
+			result.graph.addEdge(row, column, value);
+		});
+
+		spa.increaseRow();
 	}
 
-	return Matrix(columns);
+	return result;
 }
 
 Matrix Matrix::operator/(const double &divisor) const {

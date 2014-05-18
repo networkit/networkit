@@ -12,6 +12,8 @@
 #include <cstdint>
 #include "../auxiliary/Log.h"
 #include "Vector.h"
+#include "SparseAccumulator.h"
+#include <tuple>
 
 namespace NetworKit {
 
@@ -21,6 +23,8 @@ namespace NetworKit {
 class Matrix {
 private:
 	Graph graph;
+
+	typedef std::tuple<std::vector<index>, std::vector<index>, std::vector<double>> CSR;
 
 public:
 	/** Default constructor */
@@ -132,6 +136,8 @@ public:
 
 	/**
 	 * Multiplies this matrix with @a other and returns the result in a new matrix.
+	 * @note: Currently only works with symmetric matrices which commute, because multiplying symmetric matrices will not result
+	 * in a symmetric matrix in general!
 	 * @return The result of multiplying this matrix with @a other.
 	 */
 	Matrix operator*(const Matrix &other) const;
@@ -147,7 +153,6 @@ public:
 	 * @return Reference to this matrix.
 	 */
 	Matrix& operator/=(const double &divisor);
-
 
 	/**
 	 * Iterate over all elements of the matrix in row order and call handler (lambda closure).
