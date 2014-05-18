@@ -755,6 +755,23 @@ cdef class EdgeListPartitionReader:
 	def read(self, path):
 		return Partition().setThis(self._this.read(stdstring(path)))
 
+cdef extern from "../cpp/io/SNAPEdgeListPartitionReader.h":
+	cdef cppclass _SNAPEdgeListPartitionReader "NetworKit::SNAPEdgeListPartitionReader":
+		_SNAPEdgeListPartitionReader() except +
+		_Partition read(string path) except +
+		_Partition readWithInfo(string path, count nNodes) except +
+
+cdef class SNAPEdgeListPartitionReader:
+	""" Reads a partition from a SNAP 'community with ground truth' file
+	 """
+	cdef _SNAPEdgeListPartitionReader _this
+
+	def read(self,path):
+		return Partition().setThis(self._this.read(stdstring(path)))
+
+	def readWithInfo(self,path,nNodes):
+		return Partition().setThis(self._this.readWithInfo(stdstring(path),nNodes))
+
 #not existing yet, maybe in the future?
 #cdef extern from "../cpp/io/EdgeListPartitionWriter.h":
 #	cdef cppclass _EdgeListPartitionWriter "NetworKit::EdgeListPartitionWriter":

@@ -8,12 +8,13 @@
 #ifndef SNAPEDGELISTPARTITIONREADER_H_
 #define SNAPEDGELISTPARTITIONREADER_H_
 
-#include <unordered_set>
-#include <vector>
-#include <fstream>
+//#include <unordered_set>
+//#include <vector>
+//#include <fstream>
 
 #include "../graph/Graph.h"
 #include "../auxiliary/StringTools.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -25,7 +26,9 @@ public:
 	SNAPEdgeListPartitionReader();
 	virtual ~SNAPEdgeListPartitionReader();
 
-	virtual std::vector<std::set<node>>  read(std::string path);
+	virtual Partition read(std::string path);
+
+	virtual Partition readWithInfo(std::string path, count nNodes);
 
 };
 
