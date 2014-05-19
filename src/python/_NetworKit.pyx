@@ -693,6 +693,7 @@ cdef extern from "../cpp/base/Parameters.h":
 cdef extern from "../cpp/structures/Partition.h":
 	cdef cppclass _Partition "NetworKit::Partition":
 		_Partition() except +
+		_Partition(index) except +
 		index subsetOf(index e) except +
 		index extend() except +
 		void remove(index e) except +
@@ -721,6 +722,9 @@ cdef class Partition:
 	"""
 	"""
 	cdef _Partition _this
+
+	def __cinit__(self, z):
+		self._this = _Partition(z)
 
 	cdef setThis(self, _Partition other):
 		self._this = other
