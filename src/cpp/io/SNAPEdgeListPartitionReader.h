@@ -14,7 +14,8 @@
 
 #include "../graph/Graph.h"
 #include "../auxiliary/StringTools.h"
-#include "../structures/Partition.h"
+//#include "../structures/Partition.h"
+#include "../structures/Cover.h"
 
 namespace NetworKit {
 
@@ -26,9 +27,9 @@ public:
 	SNAPEdgeListPartitionReader();
 	virtual ~SNAPEdgeListPartitionReader();
 
-	virtual Partition read(std::string path);
+	virtual Cover read(std::string path, std::unordered_map<node,node>& mapNodeIds, Graph& G);
 
-	virtual Partition readWithInfo(std::string path, count nNodes);
+//	virtual Partition readWithInfo(std::string path, count nNodes);
 
 };
 
