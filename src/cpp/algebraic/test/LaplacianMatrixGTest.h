@@ -11,6 +11,7 @@
 #include "gtest/gtest.h"
 #include "../LaplacianMatrix.h"
 #include "../../graph/Graph.h"
+#include "../../io/METISGraphReader.h"
 
 
 namespace NetworKit {
