@@ -61,15 +61,9 @@ TEST(AdjacencyMatrixGTest, tryAdjacencyMatrixOfLesmisGraph) {
 	// create AdjacencyMatrix
 	AdjacencyMatrix mat(graph);
 
-	auto testMatrix = [&](const uint64_t &row, const uint64_t &column, const double &value) {
-		if (graph.hasEdge(row, column)) {
-			EXPECT_EQ(1, value);
-		} else {
-			EXPECT_EQ(0, value);
-		}
-	};
-
-	mat.forElementsInRowOrder(testMatrix);
+	mat.forElementsInRowOrder([&](const index row, const index column, const double value) {
+		EXPECT_EQ(graph.weight(row, column), value);
+	});
 }
 
 

@@ -60,5 +60,28 @@ TEST(NormalizedLaplacianMatrixGTest, trySmallNormalizedLaplacianMatrix) {
 	EXPECT_EQ(0, normalizedLaplacianMatrix(6,6));
 }
 
+TEST(NormalizedLaplacianMatrixGTest, tryNormalizedLaplacianMatrixOfLesmisGraph) {
+	// read lesmis graph
+	NetworKit::METISGraphReader graphReader;
+	NetworKit::Graph graph = graphReader.read("input/lesmis.graph");
+
+	// create NormalizedLaplacianMatrix
+	NormalizedLaplacianMatrix mat(graph);
+
+	mat.forElementsInRowOrder([&](const index row, const index column, const double value){
+		if (row == column) {
+			if (graph.weightedDegree(row) != 0) {
+				if (graph.isWeighted()) {
+					EXPECT_EQ(1-graph.weight(row, row)/graph.weightedDegree(row), value);
+				} else {
+					EXPECT_EQ(1, value);
+				}
+			}
+		} else {
+			EXPECT_EQ(-graph.weight(row, column)/sqrt(graph.weightedDegree(row)*graph.weightedDegree(column)), value);
+		}
+	});
+}
+
 } /* namespace NetworKit */
 
