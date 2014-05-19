@@ -18,7 +18,7 @@ from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.string cimport string
 from unordered_set cimport unordered_set
-# FIXME: from libcpp.unordered_map import unordered_map
+from unordered_map cimport unordered_map
 
 # NetworKit typedefs
 ctypedef uint64_t count
@@ -705,6 +705,30 @@ cdef class SNAPGraphWriter:
 		self._this.write(dereference(G._this), stdstring(path))
 
 
+cdef extern from "../cpp/io/SNAPGraphReader.h":
+	cdef cppclass _SNAPGraphReader "NetworKit::SNAPGraphReader":
+		_SNAPGraphReader() except +
+		_Graph read(string path) except +
+		_Graph* _read(string path) except +
+		unordered_map[node,node] getNodeIdMap() except +
+
+cdef class SNAPGraphReader:
+	""" Reads a graph from the SNAP graph data collection [1] (currently experimental)
+		[1]: http://snap.stanford.edu/data/index.html 
+	"""
+	cdef _SNAPGraphReader _this
+
+	def read(self, path):
+		return Graph().setThis(self._this._read(stdstring(path)))
+
+	def getNodeIdMap(self):
+		cdef unordered_map[node,node] cResult = self._this.getNodeIdMap()
+		result = []
+		for elem in cResult:
+			result.append((elem.first,elem.second))
+		return result
+
+
 cdef extern from "../cpp/io/PartitionReader.h":
 	cdef cppclass _PartitionReader "NetworKit::PartitionReader":
 		_PartitionReader() except +
@@ -758,19 +782,22 @@ cdef class EdgeListPartitionReader:
 cdef extern from "../cpp/io/SNAPEdgeListPartitionReader.h":
 	cdef cppclass _SNAPEdgeListPartitionReader "NetworKit::SNAPEdgeListPartitionReader":
 		_SNAPEdgeListPartitionReader() except +
-		_Partition read(string path) except +
-		_Partition readWithInfo(string path, count nNodes) except +
+		_Cover read(string path, unordered_map[node,node] nodeMap,_Graph G) except +
+#		_Partition readWithInfo(string path, count nNodes) except +
 
 cdef class SNAPEdgeListPartitionReader:
 	""" Reads a partition from a SNAP 'community with ground truth' file
 	 """
 	cdef _SNAPEdgeListPartitionReader _this
 
-	def read(self,path):
-		return Partition().setThis(self._this.read(stdstring(path)))
+	def read(self,path, nodeMap, Graph G):
+		cdef unordered_map[node,node] cNodeMap
+		for (key,val) in nodeMap:
+			cNodeMap[key] = val
+		return Cover().setThis(self._this.read(stdstring(path), cNodeMap, dereference(G._this)))
 
-	def readWithInfo(self,path,nNodes):
-		return Partition().setThis(self._this.readWithInfo(stdstring(path),nNodes))
+#	def readWithInfo(self,path,nNodes):
+#		return Partition().setThis(self._this.readWithInfo(stdstring(path),nNodes))
 
 #not existing yet, maybe in the future?
 #cdef extern from "../cpp/io/EdgeListPartitionWriter.h":
@@ -910,6 +937,109 @@ cdef class Partition:
 	def getSubsetIds(self):
 		return self._this.getSubsetIds()
 
+
+cdef extern from "../cpp/structures/Cover.h":
+	cdef cppclass _Cover "NetworKit::Cover":
+		_Cover() except +
+		set[index] subsetsOf(index e) except +
+#		index extend() except +
+		void remove(index e) except +
+		void addToSubset(index s, index e) except +
+		void moveToSubset(index s, index e) except +
+		void toSingleton(index e) except +
+		void allToSingletons() except +
+		void mergeSubsets(index s, index t) except +
+#		void setUpperBound(index upper) except +
+		index upperBound() except +
+		index lowerBound() except +
+#		void compact() except +
+		bool contains(index e) except +
+		bool inSameSubset(index e1, index e2) except +
+		vector[count] subsetSizes() except +
+		map[index, count] subsetSizeMap() except +
+		set[index] getMembers(const index s) except +
+		count numberOfElements() except +
+		count numberOfSubsets() except +
+#		vector[index] getVector() except +
+#		void setName(string name) except +
+#		string getName() except +
+#		set[index] getSubsetIds() except +
+
+
+cdef class Cover:
+	"""
+	"""
+	cdef _Cover _this
+
+	cdef setThis(self, _Cover other):
+		self._this = other
+		return self
+
+	def subsetsOf(self, e):
+		return self._this.subsetsOf(e)
+
+#	def extend(self):
+#		self._this.extend()
+
+	def addToSubset(self, s, e):
+		self._this.addToSubset(s, e)
+
+	def moveToSubset(self, index s, index e):
+		self._this.moveToSubset(s, e)
+
+	def toSingleton(self, index e):
+		self._this.toSingleton(e)
+
+	def allToSingletons(self):
+		self._this.allToSingletons()
+
+	def mergeSubsets(self, index s, index t):
+		self._this.mergeSubsets(s, t)
+
+#	def setUpperBound(self, index upper):
+#		self._this.setUpperBound(upper)
+
+	def upperBound(self):
+		return self._this.upperBound()
+
+	def lowerBound(self):
+		return self._this.lowerBound()
+
+#	def compact(self):
+#		self._this.compact()
+
+	def contains(self, index e):
+		return self._this.contains(e)
+
+	def inSameSubset(self, index e1, index e2):
+		return self._this.inSameSubset(e1, e2)
+
+	def subsetSizes(self):
+		return self._this.subsetSizes()
+
+	def subsetSizeMap(self):
+		return self._this.subsetSizeMap()
+
+	def getMembers(self, s):
+		return self._this.getMembers(s)
+
+	def numberOfElements(self):
+		return self._this.numberOfElements()
+
+	def numberOfSubsets(self):
+		return self._this.numberOfSubsets()
+
+#	def getVector(self):
+#		return self._this.getVector()
+
+#	def setName(self, string name):
+#		self._this.setName(name)
+
+#	def getName(self):
+#		return self._this.getName()
+
+#	def getSubsetIds(self):
+#		return self._this.getSubsetIds()
 
 
 # Module: community
