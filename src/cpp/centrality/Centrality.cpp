@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 
-Centrality::Centrality(const Graph& G, bool normalized) : G(G), normalized(normalized) {
+Centrality::Centrality(const IGraph& G, bool normalized) : G(G), normalized(normalized) {
 }
 
 double Centrality::score(node v) {

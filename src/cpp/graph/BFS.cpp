@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-BFS::BFS(const Graph& G, node source) : SSSP(G, source) {
+BFS::BFS(const IGraph &G, node source) : SSSP(G, source) {
 }
 
 

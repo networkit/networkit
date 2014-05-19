@@ -10,7 +10,7 @@
 
 #include <set>
  
-#include "Graph.h"
+#include "IGraph.h"
 
 namespace NetworKit {
 
@@ -21,7 +21,7 @@ class SSSP {
 
 public:
 
-	SSSP(const Graph& G, node s);
+	SSSP(const IGraph &G, node s);
 
 	virtual ~SSSP() = default;	
 
@@ -65,7 +65,7 @@ public:
 
 protected:
 
-	const Graph& G;
+	const IGraph &G;
 	const node source;
 	std::vector<edgeweight> distances;
 	std::vector<std::vector<node> > previous; // predecessors on shortest path

@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-SSSP::SSSP(const Graph& G, node s) : G(G), source(s) {
+SSSP::SSSP(const IGraph& G, node s) : G(G), source(s) {
 	
 }
 

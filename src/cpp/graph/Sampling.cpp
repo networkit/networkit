@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-node Sampling::randomNode(const Graph& G) {
+node Sampling::randomNode(const IGraph& G) {
 	assert (G.numberOfNodes() > 0);
 	node v = none;
 	do {

@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-Dijkstra::Dijkstra(const Graph& G, node source) : SSSP(G, source) {
+Dijkstra::Dijkstra(const IGraph& G, node source) : SSSP(G, source) {
 
 }
 

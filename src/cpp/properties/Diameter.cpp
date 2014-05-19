@@ -15,7 +15,7 @@
 namespace NetworKit {
 
 
-edgeweight Diameter::exactDiameter(const Graph& G) {
+edgeweight Diameter::exactDiameter(const IGraph& G) {
 	using namespace std;
 
 	edgeweight diameter = 0.0;
@@ -57,13 +57,13 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 
 
-std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& G, double error) {
+std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const IGraph& G, double error) {
 	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
 	/* Note: the function Graph::breadthFirstEdgesFrom that should
 	 do the same has not been implemented! 
 		-- TODO: Then why not implement it directly there?
 	 */
-	auto bfs_edges = [&] (const Graph& G, node u, std::function<void(node, node)> f) -> node {
+	auto bfs_edges = [&] (const IGraph& G, node u, std::function<void(node, node)> f) -> node {
 		std::queue<node> q;
 		std::vector<bool> visited(G.upperNodeIdBound(), false);
 		q.push(u);
@@ -140,7 +140,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 }
 
 
-edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
+edgeweight Diameter::estimatedVertexDiameter(const IGraph& G, count samples) {
 
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
@@ -182,7 +182,7 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 }
 
 
-edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
+edgeweight Diameter::estimatedVertexDiameterPedantic(const IGraph& G) {
 
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 

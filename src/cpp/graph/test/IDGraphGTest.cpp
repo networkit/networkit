@@ -8,9 +8,10 @@
 #ifndef NOGTEST
 
 #include "IDGraphGTest.h"
-
+#include "../BFS.h"
 #include "../Graph.h"
 #include "../DirectedGraph.h"
+#include "../SSSP.h"
 
 namespace NetworKit {
 
@@ -184,6 +185,25 @@ TYPED_TEST(IDGraphGTest, DFSfrom) {
 	EXPECT_TRUE( (visitedOrder[2] == 4) ^ (visitedOrder[4] == 4) ^ (visitedOrder[0] == 4) );
 }
 
+TYPED_TEST(IDGraphGTest, BFS) {
+	
+	
+	std::vector<double> BFSOrder;
+	SSSP* sssp = new BFS(this->Ghouse, 3);
+	sssp->run();
+	BFSOrder = sssp->getDistances();
+	ASSERT_EQ(BFSOrder[4],2);
+	ASSERT_EQ(BFSOrder[0],2);
+	ASSERT_EQ(BFSOrder[1],1);
+	ASSERT_EQ(BFSOrder[2],1);
+
+
+
+
+
+
+
+}
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
