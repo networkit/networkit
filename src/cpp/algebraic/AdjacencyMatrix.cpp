@@ -10,8 +10,8 @@
 namespace NetworKit {
 
 AdjacencyMatrix::AdjacencyMatrix(const Graph &graph) : Matrix(graph.numberOfNodes()) {
-	graph.forEdges([&](const node &i, const node &j) {
-		setValue(i, j, 1.0);
+	graph.forWeightedEdges([&](const node &i, const node &j, double edgeWeight) {
+		setValue(i, j, edgeWeight);
 	});
 }
 
