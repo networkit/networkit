@@ -20,7 +20,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta) : Centrality(G, true), epsilon(epsilon), delta(delta) {
+ApproxBetweenness::ApproxBetweenness(const IGraph& G, double epsilon, double delta) : Centrality(G, true), epsilon(epsilon), delta(delta) {
 
 }
 

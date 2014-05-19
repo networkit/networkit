@@ -19,7 +19,7 @@ namespace NetworKit {
  */
 class ConnectedComponents {
 public:
-	ConnectedComponents(const Graph& G);
+	ConnectedComponents(const IGraph& G);
 	virtual ~ConnectedComponents();
 	/**
 	 * This method determines the connected components for the graph g.
@@ -51,7 +51,7 @@ public:
 
 
 private:
-	const Graph& G;
+	const IGraph& G;
 	Partition component;
 };
 

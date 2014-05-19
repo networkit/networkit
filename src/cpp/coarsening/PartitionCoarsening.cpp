@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 
-std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const Graph& G, const Partition& zeta) {
+std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const IGraph& G, const Partition& zeta) {
 
 	Aux::Timer timer;
 	timer.start();

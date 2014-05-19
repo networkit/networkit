@@ -17,7 +17,7 @@ namespace NetworKit {
  */
 class Centrality {
 public:
-	Centrality(const Graph& G, bool normalized=false);
+	Centrality(const IGraph& G, bool normalized=false);
 
 	virtual ~Centrality() = default;
 
@@ -31,7 +31,7 @@ public:
 
 protected:
 
-	const Graph& G;
+	const IGraph& G;
 	std::vector<double> scoreData;
 	bool normalized; // true if scores should be normalized in the interval [0,1]
 

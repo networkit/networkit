@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-Betweenness::Betweenness(const Graph& G, bool normalized) : Centrality(G, normalized) {
+Betweenness::Betweenness(const IGraph& G, bool normalized) : Centrality(G, normalized) {
 
 }
 

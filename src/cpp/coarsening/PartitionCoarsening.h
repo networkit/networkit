@@ -20,7 +20,7 @@ class PartitionCoarsening: public NetworKit::GraphCoarsening {
 
 public:
 
-	virtual std::pair<Graph, std::vector<node> > run(const Graph& G, const Partition& zeta);
+	virtual std::pair<Graph, std::vector<node> > run(const IGraph& G, const Partition& zeta);
 
 
 

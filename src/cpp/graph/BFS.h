@@ -8,6 +8,7 @@
 #ifndef BFS_H_
 #define BFS_H_
 
+#include "DirectedGraph.h"
 #include "Graph.h"
 #include "SSSP.h"
 
@@ -15,8 +16,9 @@ namespace NetworKit {
 
 
 class BFS : public SSSP {
+
 public:
-	BFS(const Graph& G, node source); 
+	BFS(const IGraph &G, node source); 
 
 	/**
 	 * Breadth-first search from @a source.

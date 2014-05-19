@@ -9,14 +9,15 @@
 #define APPROXBETWEENNESS_H_
 
 #include "Centrality.h"
-
+#include "../graph/BFS.h"
+#include "../graph/SSSP.h"
 namespace NetworKit {
 
 /** 
  * Approximation of betweenness centrality according to algorithm described in
  * 	Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
  */
-class ApproxBetweenness: public NetworKit::Centrality {
+class ApproxBetweenness: public Centrality {
 
 public:
 
@@ -28,7 +29,7 @@ public:
 	 * @param	epsilon		maximum additive error
 	 * @param	delta		probability that the values are within the error guarantee
 	 */
-	ApproxBetweenness(const Graph& G, double epsilon=0.01, double delta=0.1);
+	ApproxBetweenness(const IGraph& G, double epsilon=0.01, double delta=0.1);
 
 	void run() override;
 

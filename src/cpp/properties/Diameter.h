@@ -23,10 +23,10 @@ public:
 	 *
 	 * @return Pair of lower and upper bound for diameter.
 	 */
-	static std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph& G, double error);
+	static std::pair<edgeweight, edgeweight> estimatedDiameterRange(const IGraph& G, double error);
 
 	/** @return exact diameter of the graph @a G */
-	static edgeweight exactDiameter(const Graph& G);
+	static edgeweight exactDiameter(const IGraph& G);
 
 
 	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
@@ -36,13 +36,13 @@ public:
 								must be chosen so that the probability of sampling the component
 								with the largest diameter ist high. 
 	 */
-	static edgeweight estimatedVertexDiameter(const Graph& G, count samples);
+	static edgeweight estimatedVertexDiameter(const IGraph& G, count samples);
 
 
 	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
 			Considers each connected component and returns the maximum diameter.
 	 */
-	static edgeweight estimatedVertexDiameterPedantic(const Graph& G);
+	static edgeweight estimatedVertexDiameterPedantic(const IGraph& G);
 };
 
 } /* namespace NetworKit */

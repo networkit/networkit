@@ -8,6 +8,7 @@
 #ifndef GENERATOR_H_
 #define GENERATOR_H_
 
+#include "DirectedGraph.h"
 #include "Graph.h"
 #include "../structures/Partition.h"
 

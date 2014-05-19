@@ -19,7 +19,7 @@ public:
 	/**
 	 * TODO: documentation
 	 */
-	static std::pair<edgeweight, edgeweight> getValue(const Graph& G, node u);
+	static std::pair<edgeweight, edgeweight> getValue(const IGraph& G, node u);
 };
 
 } /* namespace NetworKit */
