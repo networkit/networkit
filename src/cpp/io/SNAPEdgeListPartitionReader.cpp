@@ -21,44 +21,60 @@ SNAPEdgeListPartitionReader::~SNAPEdgeListPartitionReader() {
 	// TODO Auto-generated destructor stub
 }
 
-Partition SNAPEdgeListPartitionReader::read(std::string path) {
-	std::ifstream file(path);
+Cover SNAPEdgeListPartitionReader::read(std::string path, std::unordered_map<node,node>& mapNodeIds, Graph& G) {
+	std::ifstream file;
+	std::string line; // the current line
 
-	// check if file readable
-	if (!file) {
-		throw std::runtime_error("invalid clustering file");
+	// read file once to get to the last line and figure out the number of nodes
+	// unfortunately there is an empty line at the ending of the file, so we need to get the line before that
+	
+	file.open(path);
+	if (! file.good()) {
+		throw std::runtime_error("unable to read from file");
 	}
-
-	Partition communities;
-	std::string line;
-	//	std::stringstream linestream;
-	count lines = 1;
+	
+//	std::string previousLine;
 	node current;
-/*
-	while (std::getline(file,line)) {
-		std::stringstream linestream(line);
-		while (linestream >> current) {
-			DEBUG("read nodeID: ", current);
-			count currentNElem = communities.numberOfElements();
-			DEBUG("currentNElem: ", currentNElem);
-			if ( current-1 > currentNElem ) {
-				count diff = current - currentNElem-1;
-				DEBUG("partition is not big enough; nodeID: ",current, "; currentNElem: ",currentNElem, " and diff: ",diff);
-				while (diff >= 0) {
-					communities.extend();
-					--diff;
+	
+	std::string commentPrefix = "#";
+	
+//	count firstNode = 0;
+//	char separator = '\t';
+
+	Cover communities(G.numberOfNodes());
+
+	//DEBUG("separator: " , separator);
+	//DEBUG("first node: " , firstNode);
+
+	// first find out the maximum node id
+	//DEBUG("first pass");
+	count i = 0;
+	while (file.good()) {
+		++i;
+		std::getline(file, line);
+		// TRACE("read line: " , line);
+		if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
+			// TRACE("ignoring comment: " , line);
+	        } else if (line.length() == 0) {
+        		// TRACE("ignoring empty line");
+		} else {
+			std::stringstream linestream(line);
+			while (linestream >> current) {
+				if (mapNodeIds.find(current) != mapNodeIds.end()) {
+					communities.addToSubset(i,mapNodeIds[current]);
+				} else {
+					WARN("unknown node ID found (",current,") and ignored");
 				}
-				DEBUG("partition size is now: ",communities.numberOfElements());
 			}
-			communities[current] = lines;
 		}
-		lines++;
 	}
-	communities.setUpperBound(lines);*/
+
+	file.close();
+	communities.setUpperBound(i);
 	return communities;
 }
 
-
+#if 0
 Partition SNAPEdgeListPartitionReader::readWithInfo(std::string path, count nNodes) {
 	std::ifstream file(path);
 
@@ -102,6 +118,6 @@ Partition SNAPEdgeListPartitionReader::readWithInfo(std::string path, count nNod
 	communities.setUpperBound(lines);
 	return communities;
 }
-
+#endif
 
 } /* namespace NetworKit */
