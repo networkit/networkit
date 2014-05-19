@@ -13,19 +13,15 @@ LaplacianMatrix::LaplacianMatrix() : Matrix() {
 }
 
 LaplacianMatrix::LaplacianMatrix(const Graph &graph) : Matrix(graph.numberOfNodes()) {
-	auto rowIterator = [&](const index &i) {
-		setValue(i, i, graph.degree(i));
-		auto neighborIterator = [&](const index &j) {
-			if (i != j) {
-				setValue(i, j, -1.0);
-			} else {
-				setValue(i, i, (*this)(i, i) - 1.0);
-			}
-		};
-		graph.forNeighborsOf(i, neighborIterator);
-	};
+	graph.forNodes([&](const index i){
+		double weightedDegree = graph.weightedDegree(i);
 
-	graph.forNodes(rowIterator);
+		graph.forWeightedNeighborsOf(i, [&](const index j, double weight) { // - adjacency matrix
+			setValue(i, j, -weight);
+		});
+
+		setValue(i, i, weightedDegree - graph.weight(i, i)); // degree matrix
+	});
 }
 
 LaplacianMatrix::~LaplacianMatrix() {
