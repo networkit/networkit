@@ -1,6 +1,7 @@
 import os
 import fnmatch
 import ConfigParser
+import distutils.sysconfig
 
 home_path = os.environ['HOME']
 
@@ -12,6 +13,10 @@ def getSourceFiles(target, optimize):
 	# walk source directory and find ONLY .cpp files
 	for (dirpath, dirnames, filenames) in os.walk(srcDir):
 	    for name in fnmatch.filter(filenames, "*.cpp"):
+			source.append(os.path.join(dirpath, name))
+
+	for (dirpath, dirnames, filenames) in os.walk("src/swig"):
+	    for name in fnmatch.filter(filenames, "*.i"):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
@@ -89,11 +94,13 @@ else:
 env["CC"] = cppComp
 env["CXX"] = cppComp
 
-env.Append(CPPDEFINES=defines)
-env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude])
+env.Append(CPPDEFINES = defines)
+env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude, '-I/usr/include/python3.3' ])
 env.Append(LIBS = ["gtest"])
 env.Append(LIBPATH = [gtestLib, tbbLib])
 env.Append(LINKFLAGS = ["-std=c++11"])
+env.Append(SWIGFLAGS = ["-c++", "-python"])
+env.Append(tools = ['default', 'swig'])
 
 ## CONFIGURATIONS
 
@@ -226,9 +233,7 @@ if target in availableTargets:
 	source = getSourceFiles(target,optimize)
 	targetName = "NetworKit-{0}-{1}".format(target, optimize)
 	if target == "Core":
-		# do not append executable
-		# env.Append(CPPDEFINES=["NOLOGGING"])
-		env.Library("NetworKit-Core-{0}".format(optimize), source)
+		env.Library(targetName, source)
 	else:
 		env.Program(targetName, source)
 else:
