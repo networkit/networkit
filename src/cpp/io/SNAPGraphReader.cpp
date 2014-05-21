@@ -37,11 +37,11 @@ Graph SNAPGraphReader::read(const std::string& path) {
 	count firstNode = 0;
 	char separator = '\t';
 
-	DEBUG("separator: " , separator);
-	DEBUG("first node: " , firstNode);
+	//DEBUG("separator: " , separator);
+	//DEBUG("first node: " , firstNode);
 
 	// first find out the maximum node id
-	DEBUG("first pass");
+	DEBUG("first pass: create node ID mapping");
 	count i = 0;
 	while (file.good()) {
 		++i;
@@ -79,13 +79,14 @@ Graph SNAPGraphReader::read(const std::string& path) {
 
 	file.close();
 
-	maxNode = maxNode - firstNode + 1;
-	DEBUG("max. node id found: " , maxNode);
+	//maxNode = maxNode - firstNode + 1;
+	//DEBUG("max. node id found: " , maxNode);
 
 	//Graph G(maxNode);
+	DEBUG("found ",mapNodeIds.size()," unique node ids");
 	Graph G(mapNodeIds.size());
 
-	DEBUG("second pass");
+	DEBUG("second pass: add edges");
 	file.open(path);
 
     // split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
@@ -113,7 +114,7 @@ Graph SNAPGraphReader::read(const std::string& path) {
 			}
 		}
 	}
-
+	DEBUG("read ",i," lines and added ",G.numberOfEdges()," edges");
 	file.close();
 
 	return G;

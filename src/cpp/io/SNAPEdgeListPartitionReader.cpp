@@ -40,6 +40,8 @@ Cover SNAPEdgeListPartitionReader::read(std::string path, std::unordered_map<nod
 	
 //	count firstNode = 0;
 //	char separator = '\t';
+	std::set<node> uniqueIDs;
+	count totalCounter;
 
 	Cover communities(G.numberOfNodes());
 
@@ -60,6 +62,8 @@ Cover SNAPEdgeListPartitionReader::read(std::string path, std::unordered_map<nod
 		} else {
 			std::stringstream linestream(line);
 			while (linestream >> current) {
+				uniqueIDs.insert(current);
+				totalCounter++;
 				if (mapNodeIds.find(current) != mapNodeIds.end()) {
 					communities.addToSubset(i,mapNodeIds[current]);
 				} else {
@@ -68,6 +72,37 @@ Cover SNAPEdgeListPartitionReader::read(std::string path, std::unordered_map<nod
 			}
 		}
 	}
+	DEBUG("read ", uniqueIDs.size(), " unique node IDs with the total amount of occurrences: ",totalCounter);
+	count emptyElements = 0;
+	count output = 0;
+	std::stringstream outputString;
+	std::vector<node> outputIDs;
+	outputString << "first 10 unassigned IDs: ";
+	for (index i = 0, end = communities.numberOfElements(); i < end; ++i) {
+		if (communities[i].empty()) {
+			emptyElements++;
+			if (output < 10) {
+				outputIDs.push_back(i);
+				output++;
+			}
+		}
+	}
+	DEBUG(emptyElements, " nodes have not been assigned to any community");
+	auto endIt = mapNodeIds.end();
+	for (index i = 0, end = outputIDs.size(); i < end; ++i) {
+		bool found = false;
+		auto it = mapNodeIds.begin();
+		//DEBUG("find key to nodeID: ",outputIDs[i]);
+		while (!found && it != endIt) {
+			if (it->second == outputIDs[i]) {
+				found = true;
+				//DEBUG("key is: ",it->first);
+				outputString << "("<<it->first<<","<<it->second<<"),\t";
+			}
+			++it;
+		}
+	}
+	DEBUG(outputString.str());
 
 	file.close();
 	communities.setUpperBound(i);
