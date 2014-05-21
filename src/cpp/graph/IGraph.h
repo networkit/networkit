@@ -15,22 +15,24 @@
 #include "../Globals.h"
 #include "../viz/Point.h"
 
+#include "BasicGraph.h"
+
 namespace NetworKit {
 
 /** Typedefs **/
 
-typedef uint64_t index; // more expressive name for an index into an array
-typedef uint64_t count; // more expressive name for an integer quantity
-typedef index node; // node indices are 0-based
-typedef double edgeweight; // edge weight type
+// typedef uint64_t index; // more expressive name for an index into an array
+// typedef uint64_t count; // more expressive name for an integer quantity
+// typedef index node; // node indices are 0-based
+// typedef double edgeweight; // edge weight type
 
-typedef std::function<void(node)> FNode;
-typedef std::function<void(node, node)> FNodePair;
-typedef std::function<void(node, node)> FEdge;
-typedef std::function<void(node, node, double)> FEdgeWithWeight;
-typedef std::function<bool()> FCondition;
+// typedef std::function<void(node)> FNode;
+// typedef std::function<void(node, node)> FNodePair;
+// typedef std::function<void(node, node)> FEdge;
+// typedef std::function<void(node, node, double)> FEdgeWithWeight;
+// typedef std::function<bool()> FCondition;
 
-constexpr index none = std::numeric_limits<index>::max();
+// constexpr index none = std::numeric_limits<index>::max();
 
 /**
  * Interface for all graph classes. Every graph class has to implement all interface methods.
