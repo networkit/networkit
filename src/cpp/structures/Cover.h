@@ -15,11 +15,9 @@
 #include <cassert>
 #include <limits>
 
+#include "../Globals.h"
 
 namespace NetworKit {
-
-typedef uint64_t index;
-typedef uint64_t count;
 
 /**
  * Implements a cover of a set, i.e. an assignment of 

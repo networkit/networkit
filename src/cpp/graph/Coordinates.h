@@ -8,14 +8,12 @@
 #ifndef COORDINATES_H_
 #define COORDINATES_H_
 
-#include "../viz/Point.h"
-
 #include <vector>
 
+#include "../Globals.h"
+#include "../viz/Point.h"
 
 namespace NetworKit {
-
-typedef uint64_t index; // more expressive name for an index into an array
 
 
 template<class T>

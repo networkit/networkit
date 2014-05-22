@@ -23,7 +23,7 @@ static std::vector<node> parseLine(const std::string& line) {
 	std::stringstream stream(line);
 	std::string token;
 	char delim = ' ';
-	std::vector<uint64_t> adjacencies;
+	std::vector<node> adjacencies;
 
 	// split string and push adjacent nodes
 	while (std::getline(stream, token, delim)) {
@@ -87,7 +87,7 @@ std::tuple<count, count, index> METISParser::getHeader() {
 			std::getline(this->graphFile, line);
 		}
 
-		std::vector<uint64_t> tokens = parseLine(line);
+		std::vector<node> tokens = parseLine(line);
 		n = tokens[0];
 		m = tokens[1];
 		if (tokens.size() == 2) {
