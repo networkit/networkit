@@ -12,11 +12,7 @@ def getSourceFiles(target, optimize):
 
 	# walk source directory and find ONLY .cpp files
 	for (dirpath, dirnames, filenames) in os.walk(srcDir):
-	    for name in fnmatch.filter(filenames, "*.cpp"):
-			source.append(os.path.join(dirpath, name))
-
-	for (dirpath, dirnames, filenames) in os.walk("src/swig"):
-	    for name in fnmatch.filter(filenames, "*.i"):
+		for name in fnmatch.filter(filenames, "*.cpp"):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
@@ -42,6 +38,11 @@ def getSourceFiles(target, optimize):
 		source.append(os.path.join(srcDir, "Unittests-X.cpp"))
 	elif target == "Core":
 		pass # no executable
+	elif target == "Python":
+		# add SWIG interface files
+		for (dirpath, dirnames, filenames) in os.walk("src/swig"):
+			for name in fnmatch.filter(filenames, "*.i"):
+				source.append(os.path.join(dirpath, name))
 	else:
 		print("Unknown target: {0}".format(target))
 		Exit(1)
@@ -99,8 +100,6 @@ env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude, '-I/usr/include/pyth
 env.Append(LIBS = ["gtest"])
 env.Append(LIBPATH = [gtestLib, tbbLib])
 env.Append(LINKFLAGS = ["-std=c++11"])
-env.Append(SWIGFLAGS = ["-c++", "-python"])
-env.Append(tools = ['default', 'swig'])
 
 ## CONFIGURATIONS
 
@@ -228,14 +227,21 @@ AddOption("--target",
 
 
 target = GetOption("target")
-availableTargets = ["Core","Tests"]
+availableTargets = ["Core", "Tests", "Python"]
 if target in availableTargets:
 	source = getSourceFiles(target,optimize)
 	targetName = "NetworKit-{0}-{1}".format(target, optimize)
 	if target == "Core":
 		env.Library(targetName, source)
-	else:
+	elif target == "Tests":
 		env.Program(targetName, source)
+	elif target == "Python":
+		env.Append(SWIGFLAGS = ["-c++", "-python"])
+		env.Append(tools = ['default', 'swig'])
+		env.SharedLibrary("src/swig/_NetworKit", source)
+		Command(target = "src/swig/_NetworKit.so",
+	        source = "src/swig/lib_NetworKit.so",
+	        action = [Delete("$TARGET"), Move("$TARGET", "$SOURCE")])
 else:
 	print("ERROR: unknown target: {0}".format(target))
 	exit()
