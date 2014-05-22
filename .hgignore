@@ -43,3 +43,6 @@ syntax: regexp
 
 syntax: glob
 NetworKit-Tests-*
+
+src/swig/NetworKit.py
+*_wrap.cc
