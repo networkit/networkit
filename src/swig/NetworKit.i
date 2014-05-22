@@ -33,9 +33,9 @@
 
 /* convert C++ std::pair to Python tuple */
 %typemap(out) std::pair<uint64_t, uint64_t> {
-	$result = PyTuple_New(5);
-	PyTuple_SetItem($result, 1, PyInt_FromLong($1.first));
-	PyTuple_SetItem($result, 3, PyInt_FromLong($1.second));
+	$result = PyTuple_New(2);
+	PyTuple_SetItem($result, 0, PyInt_FromLong($1.first));
+	PyTuple_SetItem($result, 1, PyInt_FromLong($1.second));
 }
 
 
