@@ -8,6 +8,7 @@
 #include "GraphGenerator.h"
 
 #include "../auxiliary/Random.h"
+#include "../generators/HyperbolicGenerator.h"
 
 namespace NetworKit {
 
@@ -139,6 +140,11 @@ Graph GraphGenerator::makeClusteredRandomGraph(Partition& zeta, double pin,
 	});
 
 	return G;
+}
+
+Graph GraphGenerator::makeHyperbolicGraph(count n) {
+	HyperbolicGenerator gen;
+	return gen.generate(n);
 }
 
 
