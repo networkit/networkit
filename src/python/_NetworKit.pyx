@@ -1710,7 +1710,7 @@ cdef class SimmelianBackbone:
 cdef extern from "../cpp/backbones/ChibaNishizekiTriangleCounter.h":
 	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
 		_ChibaNishizekiTriangleCounter() except +
-		vector[pair[pair[node, node], count]] triangleCounts(_Graph G) except +
+		vector[pair[pair[node, node], count]] triangleCountsDebug(_Graph G) except +
 
 cdef class ChibaNishizekiTriangleCounter:
 	"""
@@ -1722,8 +1722,8 @@ cdef class ChibaNishizekiTriangleCounter:
 	def __cinit__(self):
 		self._this = new _ChibaNishizekiTriangleCounter()
 
-	def triangleCounts(self, Graph G):
-		return self._this.triangleCounts(dereference(G._this))
+	def triangleCountsDebug(self, Graph G):
+		return self._this.triangleCountsDebug(dereference(G._this))
 		
 
 
