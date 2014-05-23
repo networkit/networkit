@@ -403,20 +403,6 @@ TEST_F(IOGTest, tryReadingSNAP) {
 
 }
 
-TEST_F(IOGTest, trySNAPEdgeListPartitionReader) {
-	std::string graphPath;
-
-	std::cout << "[INPUT] SNAP clustering graph file path >" << std::endl;
-	std::getline(std::cin, graphPath);
-
-
-	SNAPEdgeListPartitionReader reader;
-
-	std::vector<std::set<node>> clusterings = reader.read(graphPath);
-	INFO("Number of clusters: " , clusterings.size());
-
-}
-
 
 TEST_F(IOGTest, testSNAPGraphWriter) {
 	METISGraphReader reader;
