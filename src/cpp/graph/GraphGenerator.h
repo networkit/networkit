@@ -82,8 +82,6 @@ public:
 	 */
 	virtual Graph makeClusteredRandomGraph(Partition& zeta, double pin, double pout);
 
-	virtual Graph makeHyperbolicGraph(count n);
-
 
 };
 
