@@ -96,7 +96,7 @@ cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count, bool) except +
-		void stealFrom(_Graph) 
+		void stealFrom(_Graph)
 		count numberOfNodes() except +
 		count numberOfEdges() except +
 		count degree(node u) except +
@@ -115,15 +115,15 @@ cdef extern from "../cpp/graph/Graph.h":
 		void setName(string name) except +
 		edgeweight totalEdgeWeight() except +
 		node randomNode() except +
-		
+
 
 cdef class Graph:
 	"""An undirected, optionally weighted graph"""
 	cdef _Graph* _this
-	
+
 	def __cinit__(self, n=0, weighted=False):
 		self._this = new _Graph(n, weighted)
-		
+
 	# # any _thisect which appears as a return type needs to implement setThis
 	# cdef setThis(self, _Graph other):
 	# 	#del self._this
@@ -137,43 +137,43 @@ cdef class Graph:
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
 		del self._this
-	
+
 	def numberOfNodes(self):
 		return self._this.numberOfNodes()
-	
+
 	def numberOfEdges(self):
 		return self._this.numberOfEdges()
 
 	def degree(self, u):
 		return self._this.degree(u)
-	
+
 	def addNode(self):
 		return self._this.addNode()
-	
+
 	def removeNode(self, u):
 		self._this.removeNode(u)
-		
+
 	def addEdge(self, u, v, w=1.0):
 		self._this.addEdge(u, v, w)
-		
+
 	def removeEdge(self, u, v):
 		self._this.removeEdge(u, v)
-		
+
 	def hasEdge(self, u, v):
 		return self._this.hasEdge(u, v)
-		
+
 	def weight(self, u, v):
 		return self._this.weight(u, v)
-		
+
 	def nodes(self):
 		return self._this.nodes()
-	
+
 	def edges(self):
 		return self._this.edges()
-		
+
 	def neighbors(self, u):
 		return self._this.neighbors(u)
-	
+
 	def isWeighted(self):
 		return self._this.isWeighted()
 
@@ -196,10 +196,10 @@ cdef class Graph:
 cdef class Graph2:
 	"""An undirected, optionally weighted graph"""
 	cdef _Graph* _this
-	
+
 	def __cinit__(self, n=0, weighted=False):
 		self._this = new _Graph(n, weighted)
-		
+
 	# any _thisect which appears as a return type needs to implement setThis
 	cdef setThis(self, _Graph* other):
 		del self._this
@@ -208,37 +208,37 @@ cdef class Graph2:
 
 	def __dealloc__(self):
 		del self._this
-	
+
 	def numberOfNodes(self):
 		return self._this.numberOfNodes()
-	
+
 	def numberOfEdges(self):
 		return self._this.numberOfEdges()
-	
+
 	def addNode(self):
 		return self._this.addNode()
-	
+
 	def removeNode(self, u):
 		self._this.removeNode(u)
-		
+
 	def addEdge(self, u, v, w=1.0):
 		self._this.addEdge(u, v, w)
-		
+
 	def removeEdge(self, u, v):
 		self._this.removeEdge(u, v)
-		
+
 	def hasEdge(self, u, v):
 		return self._this.hasEdge(u, v)
-		
+
 	def weight(self, u, v):
 		return self._this.weight(u, v)
-		
+
 	def nodes(self):
 		return self._this.nodes()
-	
+
 	def edges(self):
 		return self._this.edges()
-	
+
 	def isWeighted(self):
 		return self._this.isWeighted()
 
@@ -278,7 +278,7 @@ cdef class BFS:
 
 	def getPath(self, t):
 		return self._this.getPath(t)
-	
+
 
 cdef extern from "../cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
@@ -341,7 +341,7 @@ cdef class Luby:
 
 
 # Module: generators
-	
+
 # cdef extern from "../cpp/graph/GraphGenerator.h":
 # 	cdef cppclass _GraphGenerator "NetworKit::GraphGenerator":
 # 		_GraphGenerator() except +
@@ -351,11 +351,11 @@ cdef class Luby:
 # cdef class GraphGenerator:
 # 	""" Provides several functions for graph generation"""
 # 	cdef _GraphGenerator _this
-	
+
 # 	def __cinit__(self):
 # 		self._this = _GraphGenerator()
-		
-	
+
+
 # 	def makeRandomGraph(self, n, p):
 # 		cdef _Graph _G = self._this.makeRandomGraph(n, p)
 # 		return Graph(0).setThis(_G)
@@ -424,7 +424,7 @@ cdef class ErdosRenyiGenerator:
 	  Creates random graphs in the G(n,p) model.
 	  The generation follows Vladimir Batagelj and Ulrik Brandes: "Efficient
 	  generation of large random networks", Phys Rev E 71, 036113 (2005).
-	 
+
 	 Parameters:
 	  - nNodes Number of nodes n in the graph.
 	  - prob Probability of existence for each edge p.
@@ -471,7 +471,7 @@ cdef extern from "../cpp/generators/ChungLuGenerator.h":
 cdef class ChungLuGenerator:
 	"""
 		Given an arbitrary degree sequence, the Chung-Lu generative model
-		will produce a random graph with the same expected degree sequence. 
+		will produce a random graph with the same expected degree sequence.
 
  		see Aiello, Chung, Lu: A Random Graph Model for Massive Graphs
 	"""
@@ -563,12 +563,12 @@ cdef extern from "../cpp/io/METISGraphReader.h":
 		_Graph* readToHeap(string path) except +
 
 cdef class METISGraphReader:
-	""" Reads the METIS adjacency file format [1]. If the Fast reader fails, 
+	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
 		use readGraph(path, graphio.formats.metis) as an alternative.
 		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
 	"""
 	cdef _METISGraphReader _this
-	
+
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this._read(pathbytes))
@@ -584,7 +584,7 @@ cdef class FastMETISGraphReader:
 		the METIS format. It is the default of the readGraph-function.
 	"""
 	cdef _FastMETISGraphReader _this
-	
+
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this._read(pathbytes))
@@ -599,11 +599,11 @@ cdef extern from "../cpp/io/METISGraphWriter.h":
 cdef class METISGraphWriter:
 	""" Writes graphs in the METIS format"""
 	cdef _METISGraphWriter _this
-	
+
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(dereference(G._this), stdstring(path)) 
-	
+		self._this.write(dereference(G._this), stdstring(path))
+
 
 cdef extern from "../cpp/io/DotGraphWriter.h":
 	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter":
@@ -614,7 +614,7 @@ cdef extern from "../cpp/io/DotGraphWriter.h":
 cdef class DotGraphWriter:
 	""" Writes graphs in the .dot/GraphViz format"""
 	cdef _DotGraphWriter _this
-	
+
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
 		self._this.write(dereference(G._this), stdstring(path))
@@ -627,13 +627,13 @@ cdef extern from "../cpp/io/VNAGraphWriter.h":
 
 
 cdef class VNAGraphWriter:
-	""" Writes graphs in the VNA format. The VNA format is commonly used by Netdraw, and is very similar to Pajek format. 
+	""" Writes graphs in the VNA format. The VNA format is commonly used by Netdraw, and is very similar to Pajek format.
 	It defines nodes and edges (ties), and supports attributes. Each section of the file is separated by an asterisk. """
 	cdef _VNAGraphWriter _this
-	
+
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(dereference(G._this), stdstring(path)) 
+		self._this.write(dereference(G._this), stdstring(path))
 
 
 cdef extern from "../cpp/io/GMLGraphWriter.h":
@@ -645,11 +645,11 @@ cdef extern from "../cpp/io/GMLGraphWriter.h":
 cdef class GMLGraphWriter:
 	""" Writes a (so far unweighted) graph and its coordinates as a GML file. """
 	cdef _GMLGraphWriter _this
-	
+
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(dereference(G._this), stdstring(path)) 
-		
+		self._this.write(dereference(G._this), stdstring(path))
+
 
 cdef extern from "../cpp/io/EdgeListIO.h":
 	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
@@ -693,7 +693,7 @@ cdef class LineFileReader:
 cdef extern from "../cpp/io/SNAPGraphWriter.h":
 	cdef cppclass _SNAPGraphWriter "NetworKit::SNAPGraphWriter":
 		_SNAPGraphWriter() except +
-		void write(_Graph G, string path) 
+		void write(_Graph G, string path)
 
 cdef class SNAPGraphWriter:
 	""" Writes graphs in a format suitable for the Georgia Tech SNAP software [1]
@@ -714,7 +714,7 @@ cdef extern from "../cpp/io/SNAPGraphReader.h":
 
 cdef class SNAPGraphReader:
 	""" Reads a graph from the SNAP graph data collection [1] (currently experimental)
-		[1]: http://snap.stanford.edu/data/index.html 
+		[1]: http://snap.stanford.edu/data/index.html
 	"""
 	cdef _SNAPGraphReader _this
 
@@ -832,7 +832,7 @@ cdef extern from "../cpp/base/Parameters.h":
 
 
 # Module: structures
-# 
+#
 cdef extern from "../cpp/structures/Partition.h":
 	cdef cppclass _Partition "NetworKit::Partition":
 		_Partition() except +
@@ -867,7 +867,7 @@ cdef class Partition:
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, z):
+	def __cinit__(self, z=0):
 		self._this = _Partition(z)
 
 	cdef setThis(self, _Partition other):
@@ -1056,7 +1056,7 @@ cdef extern from "../cpp/community/Coverage.h":
 cdef class Coverage:
 	""" Coverage is the fraction of intra-community edges """
 	cdef _Coverage _this
-	
+
 	def getQuality(self, Partition zeta, Graph G):
 		return self._this.getQuality(zeta._this, dereference(G._this))
 
@@ -1065,7 +1065,7 @@ cdef extern from "../cpp/community/Modularity.h":
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +
 		double getQuality(_Partition _zeta, _Graph _G) except +
-		
+
 
 cdef class Modularity:
 	"""
@@ -1073,7 +1073,7 @@ cdef class Modularity:
 		[1]: http://en.wikipedia.org/wiki/Modularity_%28networks%29
 	"""
 	cdef _Modularity _this
-	
+
 	def getQuality(self, Partition zeta, Graph G):
 		return self._this.getQuality(zeta._this, dereference(G._this))
 
@@ -1092,7 +1092,7 @@ cdef extern from "../cpp/community/PLP.h":
 
 
 cdef class PLP(CommunityDetector):
-	""" Parallel label propagation for community detection: 
+	""" Parallel label propagation for community detection:
 		Moderate solution quality, very short time to solution.
 	 """
 	cdef _PLP _this
@@ -1103,7 +1103,7 @@ cdef class PLP(CommunityDetector):
 		else:
 			self._this = _PLP(updateThreshold)
 
-	
+
 	def run(self, Graph G not None):
 		return Partition().setThis(self._this.run(dereference(G._this)))
 
@@ -1122,14 +1122,14 @@ cdef extern from "../cpp/community/LPDegreeOrdered.h":
 
 cdef class LPDegreeOrdered(CommunityDetector):
 	cdef _LPDegreeOrdered _this
-	
+
 	def run(self, Graph G not None):
 		return Partition().setThis(self._this.run(dereference(G._this)))
 
 	def numberOfIterations(self):
 		return self._this.numberOfIterations()
-	
-		
+
+
 cdef extern from "../cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
 		_PLM() except +
@@ -1141,15 +1141,15 @@ cdef extern from "../cpp/community/PLM.h":
 cdef class PLM(CommunityDetector):
 	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement"""
-		
+
 	cdef _PLM _this
-	
+
 	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=32):
 		self._this = _PLM(refine, gamma, stdstring(par), maxIter)
-		
+
 	def toString(self):
 		return self._this.toString().decode("utf-8")
-		
+
 	def run(self, Graph G not None):
 		return Partition().setThis(self._this.run(dereference(G._this)))
 
@@ -1161,20 +1161,20 @@ cdef extern from "../cpp/community/CNM.h":
 
 
 cdef class CNM(CommunityDetector):
-	""" 
+	"""
 	Community detection algorithm due to Clauset, Newman and Moore.
  	Probably not the fastest possible implementation, but it already uses a priority queue
  	and local updates.
  	"""
-		
+
 	cdef _CNM* _this
-	
+
 	def __cinit__(self):
 		self._this = new _CNM()
-		
+
 	def toString(self):
 		return self._this.toString().decode("utf-8")
-		
+
 	def run(self, Graph G not None):
 		return Partition().setThis(self._this.run(dereference(G._this)))
 
@@ -1241,7 +1241,7 @@ cdef extern from "../cpp/community/EPPFactory.h":
 cdef class EPPFactory:
 	""" This class makes instaces of the EPP community detection algorithm"""
 	cdef _EPPFactory _this
-	
+
 	def make(self, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
 		return EPP().setThis(self._this.make(ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
 
@@ -1280,7 +1280,7 @@ cdef extern from "../cpp/properties/GraphProperties.h" namespace "NetworKit::Gra
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
 	double degreeAssortativity(_Graph G, bool) except +
-	
+
 	cdef cppclass _GraphProperties "NetworKit::GraphProperties":
 		pass
 
@@ -1429,7 +1429,7 @@ cdef class CoreDecomposition:
 	Computes k-core decomposition of a graph.
 	"""
 
-	cdef _CoreDecomposition* _this 
+	cdef _CoreDecomposition* _this
 
 	def __cinit__(self, Graph G):
 		""" Initialize with graph """
@@ -1479,7 +1479,7 @@ cdef class CoreDecomposition:
 
 # 	def __cinit__(self, _Centrality* _this):
 # 		self._this = _this
-	
+
 # 	def run(self):
 # 		self._this.run()
 
@@ -1537,7 +1537,7 @@ cdef extern from "../cpp/centrality/ApproxBetweenness.h":
 		double score(node) except +
 
 cdef class ApproxBetweenness:
-	""" 
+	"""
  	Approximation of betweenness centrality according to algorithm described in
  		Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
 
@@ -1667,7 +1667,7 @@ cdef class DegreeCentrality:
 # Module: dynamic
 
 cdef extern from "../cpp/dynamics/GraphEvent.h":
-	enum _Type "NetworKit::GraphEvent::Type": 		
+	enum _Type "NetworKit::GraphEvent::Type":
 		NODE_ADDITION,
 		NODE_REMOVAL,
 		EDGE_ADDITION,
@@ -1683,34 +1683,34 @@ cdef extern from "../cpp/dynamics/GraphEvent.h":
 		_GraphEvent() except +
 		_GraphEvent(_Type type, node u, node v, edgeweight w) except +
 		string toString() except +
-		
+
 cdef class GraphEvent:
 	cdef _GraphEvent _this
 
 	property type:
-		def __get__(self): 
+		def __get__(self):
 			return self._this.type
 		def __set__(self, t):
 			self._this.type = t
 
 	property u:
-		def __get__(self): 
+		def __get__(self):
 			return self._this.u
 		def __set__(self, u):
 			self._this.u = u
 
 	property v:
-		def __get__(self): 
+		def __get__(self):
 			return self._this.v
 		def __set__(self, v):
 			self._this.v = v
 
 	property w:
-		def __get__(self): 
+		def __get__(self):
 			return self._this.w
 		def __set__(self, w):
-			self._this.w = w			
-	
+			self._this.w = w
+
 	def __cinit__(self, type, u, v, w):
 		self._this = _GraphEvent(type, u, v, w)
 
@@ -1784,7 +1784,7 @@ cdef class DGSWriter:
 # 			_zeta = pair.second
 # 			timeline.append((Graph().setThis(_G), Partition().setThis(_zeta)))
 # 		return timeline
-			
+
 
 
 cdef extern from "../cpp/generators/DynamicPathGenerator.h":
@@ -1876,5 +1876,3 @@ cdef class GraphUpdater:
 		for ev in stream:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_stream)
-
-
