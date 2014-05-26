@@ -439,32 +439,6 @@ cdef class ErdosRenyiGenerator:
 		return Graph(0).setThis(self._this._generate())
 
 
-cdef extern from "../cpp/generators/HyperbolicGenerator.h":
-	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
-		_HyperbolicGenerator(count nNodes, double stretchradius) except +
-		_Graph* _generate() except +
-
-cdef class HyperbolicGenerator:
-	"""
-	  Creates scale-free random graphs from hyperbolic space.
-	  Generation is as outlined in "Greedy Forwarding in Dynamic Scale-Free
-	  Networks Embedded in Hyperbolic Metric Spaces"
-	 
-	 Parameters:
-	  - nNodes Number of nodes n in the graph.
-	  - stretch factor by which the space is stretched, higher factors result in fewer connections.
-	"""
-
-	cdef _HyperbolicGenerator* _this
-
-	def __cinit__(self, nNodes, stretch):
-		self._this = new _HyperbolicGenerator(nNodes, stretch)
-
-	def generate(self):
-		return Graph(0).setThis(self._this._generate())
-
-
-
 cdef extern from "../cpp/generators/ClusteredRandomGraphGenerator.h":
 	cdef cppclass _ClusteredRandomGraphGenerator "NetworKit::ClusteredRandomGraphGenerator":
 		_ClusteredRandomGraphGenerator(count, count, double, double) except +
