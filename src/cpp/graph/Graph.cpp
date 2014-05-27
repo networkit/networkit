@@ -63,7 +63,7 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 		// set edge weight
 		if (weighted) {
 			this->eweights[u].push_back(weight);
-			this->eweights[v].push_back(weight);	
+			this->eweights[v].push_back(weight);
 		}
 		// loop over all attributes, setting default attr
 		for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
@@ -442,6 +442,18 @@ node Graph::randomNeighbor(node v) const {
 	assert(randIdx < deg);
 	node randNeigh = adja[v][randIdx];
 	return randNeigh;
+}
+
+
+std::pair<node, node> Graph::randomEdge() const {
+    assert (this->numberOfEdges() > 0);
+    node u;
+    node v;
+    do {
+        u = this->randomNode();
+        v = this->randomNeighbor(u);
+    } while (degree(u) == 0);
+    return std::make_pair(u, v);
 }
 
 node Graph::mergeEdge(node u, node v, bool discardSelfLoop) {

@@ -105,7 +105,7 @@ public:
 
 	/** GRAPH INTERFACE **/
 
-	/** 
+	/**
 	 * Create a graph of n nodes.
 	 */
 	Graph(count n=0, bool weighted=false);
@@ -220,6 +220,15 @@ public:
 	 * @return Random (uuid) neighbor of @a v. None if degree is zero.
 	 */
 	node randomNeighbor(node v) const;
+
+
+    /**
+     * @return Random random edge.
+     */
+    std::pair<node, node> randomEdge() const;
+
+
+
 
 
 

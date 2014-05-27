@@ -115,6 +115,8 @@ cdef extern from "../cpp/graph/Graph.h":
 		void setName(string name) except +
 		edgeweight totalEdgeWeight() except +
 		node randomNode() except +
+		node randomNeighbor(node) except +
+		pair[node, node] randomEdge() except +
 
 
 cdef class Graph:
@@ -192,61 +194,11 @@ cdef class Graph:
 	def randomNode(self):
 		return self._this.randomNode()
 
+	def randomNeighbor(self, u):
+		return self._this.randomNeighbor(u)
 
-cdef class Graph2:
-	"""An undirected, optionally weighted graph"""
-	cdef _Graph* _this
-
-	def __cinit__(self, n=0, weighted=False):
-		self._this = new _Graph(n, weighted)
-
-	# any _thisect which appears as a return type needs to implement setThis
-	cdef setThis(self, _Graph* other):
-		del self._this
-		self._this = other
-		return self
-
-	def __dealloc__(self):
-		del self._this
-
-	def numberOfNodes(self):
-		return self._this.numberOfNodes()
-
-	def numberOfEdges(self):
-		return self._this.numberOfEdges()
-
-	def addNode(self):
-		return self._this.addNode()
-
-	def removeNode(self, u):
-		self._this.removeNode(u)
-
-	def addEdge(self, u, v, w=1.0):
-		self._this.addEdge(u, v, w)
-
-	def removeEdge(self, u, v):
-		self._this.removeEdge(u, v)
-
-	def hasEdge(self, u, v):
-		return self._this.hasEdge(u, v)
-
-	def weight(self, u, v):
-		return self._this.weight(u, v)
-
-	def nodes(self):
-		return self._this.nodes()
-
-	def edges(self):
-		return self._this.edges()
-
-	def isWeighted(self):
-		return self._this.isWeighted()
-
-	def toString(self):
-		return self._this.toString()
-
-	def getName(self):
-		return self._this.getName()
+	def randomEdge(self):
+		return self._this.randomEdge()
 
 
 # TODO: expose all methods
