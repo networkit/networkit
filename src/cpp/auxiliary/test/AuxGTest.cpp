@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 #include "../Log.h"
 #include "../Random.h"
@@ -21,6 +22,7 @@
 #include "../PrioQueue.h"
 #include "../StringTools.h"
 #include "../SetIntersector.h"
+#include "../Enforce.h"
 
 
 TEST_F(AuxGTest, produceRandomIntegers) {
@@ -316,5 +318,30 @@ TEST_F(AuxGTest, testSetIntersector) {
 	EXPECT_EQ(expectedResult, intersection);
 }
 
+TEST_F(AuxGTest, testEnforce) {
+	using Aux::enforce;
+	EXPECT_THROW(enforce(false), std::runtime_error);
+	EXPECT_NO_THROW(enforce(true));
+	
+	EXPECT_THROW(enforce(false, "foo"), std::runtime_error);
+	EXPECT_NO_THROW(enforce(true, "bar"));
+	
+	EXPECT_THROW(enforce<std::logic_error>(false, "foo"), std::logic_error);
+	EXPECT_NO_THROW(enforce<std::logic_error>(true, "foo"));
+	
+	std::string msg = "some message in a std::string";
+	
+	EXPECT_THROW(enforce(false, msg), std::runtime_error);
+	EXPECT_NO_THROW(enforce(true, msg));
+	
+	EXPECT_THROW(enforce<std::logic_error>(false, msg), std::logic_error);
+	EXPECT_NO_THROW(enforce<std::logic_error>(true, msg));
+}
+
+TEST_F(AuxGTest, testEnforceOpened) {
+	using Aux::enforceOpened;
+	std::ifstream stream;
+	EXPECT_THROW(enforceOpened(stream), std::runtime_error);
+}
 
 #endif /*NOGTEST */
