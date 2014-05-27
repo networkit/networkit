@@ -23,6 +23,7 @@
 #include "../StringTools.h"
 #include "../SetIntersector.h"
 #include "../Enforce.h"
+#include "../NumberParsing.h"
 
 
 TEST_F(AuxGTest, produceRandomIntegers) {
@@ -344,4 +345,92 @@ TEST_F(AuxGTest, testEnforceOpened) {
 	EXPECT_THROW(enforceOpened(stream), std::runtime_error);
 }
 
+TEST_F(AuxGTest, testNumberParsingInteger) {
+	using namespace Aux::Parsing;
+	const std::string str = "0 00 1 123 001 1200 12345678    ";
+	std::vector<unsigned> expectedValues = {0, 0, 1, 123, 1, 1200, 12345678};
+	auto it = str.begin();
+	auto end = str.end();
+	std::size_t i = 0;
+	while(it != end) {
+		unsigned result;
+		std::tie(result, it) = strTo<unsigned>(it, end);
+		EXPECT_EQ(expectedValues[i], result);
+		++i;
+	}
+	
+	EXPECT_EQ(it, end);
+}
+
+TEST_F(AuxGTest, testNumberParsingSignedInteger) {
+	using namespace Aux::Parsing;
+	const std::string str = "-0 -00 -1 -123 -001 -1200 -12345678    ";
+	std::vector<int> expectedValues = {0, 0, -1, -123, -1, -1200, -12345678};
+	auto it = str.begin();
+	auto end = str.end();
+	std::size_t i = 0;
+	while(it != end) {
+		int result;
+		std::tie(result, it) = strTo<int>(it, end);
+		EXPECT_EQ(expectedValues[i], result);
+		++i;
+	}
+	
+	EXPECT_EQ(it, end);
+}
+
+TEST_F(AuxGTest, testNumberParsingBasicReal) {
+	using namespace Aux::Parsing;
+	const std::string str = 
+		"0 00 1 123 001 1200 12345678    "
+		"0.00000 -0000.000 -0000.000e-100"
+		;
+	std::vector<double> expectedValues = {
+		0, 0, 1, 123, 1, 1200, 12345678,
+		0, 0, 0
+	};
+	auto it = str.begin();
+	auto end = str.end();
+	std::size_t i = 0;
+	while(it != end) {
+		double result;
+		std::tie(result, it) = strTo<double>(it, end);
+		EXPECT_EQ(expectedValues[i], result);
+		++i;
+	}
+	
+	EXPECT_EQ(it, end);
+}
+
+
+TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
+	using Aux::Parsing::strTo;
+	auto helper = [](const std::string& str, double expected) {
+		auto result = std::get<0>(strTo<double>(str.begin(), str.end()));
+		if (result == expected) {
+			return true;
+		}
+		if (std::nexttoward(result, expected) == expected) {
+			// of by one is ok here
+			return true;
+		}
+		return false;
+	};
+#define TEST_CASE_REAL(number) EXPECT_EQ(true, helper(#number, number))
+	TEST_CASE_REAL(0);
+	TEST_CASE_REAL(1);
+	TEST_CASE_REAL(8.76464e+23);
+	TEST_CASE_REAL(5.56628e+12);
+	TEST_CASE_REAL(9.563574701896000000e+23);
+	TEST_CASE_REAL(9.563574701896270940e+23);
+	TEST_CASE_REAL(-669585235219883571019776.);
+	TEST_CASE_REAL(9.563574701896270946e+23);
+	TEST_CASE_REAL(141265720771594800000000.);
+	TEST_CASE_REAL(141265720771594850000000.);
+	TEST_CASE_REAL(1.4126572077159485e+23);
+	TEST_CASE_REAL(1.4126572077159480e+23);
+	TEST_CASE_REAL(-784008854951861199831040.);
+	TEST_CASE_REAL(-78400885495186119983104.0);
+#undef TEST_CASE_REAL
+}
 #endif /*NOGTEST */
