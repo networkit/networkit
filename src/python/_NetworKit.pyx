@@ -391,6 +391,28 @@ cdef class ErdosRenyiGenerator:
 		return Graph(0).setThis(self._this._generate())
 
 
+cdef extern from "../cpp/generators/DorogovtsevMendesGenerator.h":
+	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator":
+		_DorogovtsevMendesGenerator(count nNodes) except +
+		_Graph* _generate() except +
+
+cdef class DorogovtsevMendesGenerator:
+	"""
+	TODO:
+
+	Parameters:
+	- nNodes Number of nodes in the target graph.
+	"""
+
+	cdef _DorogovtsevMendesGenerator* _this
+
+	def __cinit__(self, nNodes):
+		self._this = new _DorogovtsevMendesGenerator(nNodes)
+
+	def generate(self):
+		return Graph(0).setThis(self._this._generate())
+
+
 cdef extern from "../cpp/generators/ClusteredRandomGraphGenerator.h":
 	cdef cppclass _ClusteredRandomGraphGenerator "NetworKit::ClusteredRandomGraphGenerator":
 		_ClusteredRandomGraphGenerator(count, count, double, double) except +
