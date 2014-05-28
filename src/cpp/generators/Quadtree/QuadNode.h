@@ -54,7 +54,13 @@ public:
 			} else {
 				//heavy lifting: split up!
 				double middleAngle = (rightAngle - leftAngle) / 2 + leftAngle;
-				double middleR = (maxR - minR) / 2 + minR;
+				/**
+				 * we want to make sure the space is evenly divided to obtain a balanced tree
+				 * Simply halving the radius will cause a larger space for the outer Quadnode, resulting in an unbalanced tree
+				 * The hyperbolic space grows with approximately e^R, so we try this.
+				 */
+				double rSpace = exp(maxR - minR);
+				double middleR = log(rSpace/2) + minR;
 				QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion);
 				QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion);
 				QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion);
