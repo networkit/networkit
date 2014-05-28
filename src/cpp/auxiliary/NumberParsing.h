@@ -240,7 +240,7 @@ std::tuple<Real, CharIterator> strToReal(CharIterator it, const CharIterator end
 
 template<typename CharIterator>
 std::tuple<CharIterator, char> dropSpaces(CharIterator it, CharIterator end) {
-	char c;
+	char c = 0;
 	while(it != end && std::isspace((c = *it))) {
 		++it;
 	}
