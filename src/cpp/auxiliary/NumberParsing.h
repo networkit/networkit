@@ -20,40 +20,40 @@ namespace Impl {
 	template<typename Integer>
 	double powerOf10(Integer exp);
 	
+	class IntegerTag{};
+	
 	template<typename Integer, typename CharIterator>
-	std::tuple<Integer, CharIterator> strToInteger(CharIterator it, const CharIterator end);
+	std::tuple<Integer, CharIterator> strTo(CharIterator it, CharIterator end,
+			IntegerTag);
+	
+	class RealTag{};
 	
 	template<typename Real, typename CharIterator>
-	std::tuple<Real, CharIterator> strToReal(CharIterator it, const CharIterator end);
+	std::tuple<Real, CharIterator> strTo(CharIterator it, CharIterator end, RealTag);
+	
+	template<typename T>
+	using ArithmeticTag = typename std::conditional<
+		std::is_integral<T>::value,
+			IntegerTag,
+			typename std::conditional<std::is_floating_point<T>::value,
+				RealTag, void>::type
+		>::type;
+	
 } // namespace Impl
 
 
 
-template<
-	typename Number,
-	typename CharIterator,
-	typename = typename std::enable_if<std::is_integral<Number>::value>::type>
+template<typename Number, typename CharIterator>
 std::tuple<Number, CharIterator> strTo(CharIterator it, CharIterator end) {
-	return Impl::strToInteger<Number>(it, end);
+	return Impl::strTo<Number>(it, end, Impl::ArithmeticTag<Number>{});
 }
-
-template<
-	typename Number,
-	typename CharIterator,
-	typename = typename std::enable_if<std::is_floating_point<Number>::value>::type,
-	typename = void // dummy
-	>
-std::tuple<Number, CharIterator> strTo(CharIterator it, CharIterator end) {
-	return Impl::strToReal<Number>(it, end);
-}
-
 
 
 
 namespace Impl {
 
 template<typename Integer, typename CharIterator>
-std::tuple<Integer, CharIterator> strToInteger(CharIterator it, const CharIterator end) {
+std::tuple<Integer, CharIterator> strTo(CharIterator it, const CharIterator end, IntegerTag) {
 	using Impl::dropSpaces;
 	assert(it != end);
 	
@@ -114,7 +114,7 @@ std::tuple<Integer, CharIterator> strToInteger(CharIterator it, const CharIterat
 }
 
 template<typename Real, typename CharIterator>
-std::tuple<Real, CharIterator> strToReal(CharIterator it, const CharIterator end) {
+std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, RealTag) {
 	
 	static_assert(std::numeric_limits<Real>::max_digits10
 			<= std::numeric_limits<std::uintmax_t>::digits10,
@@ -228,7 +228,9 @@ std::tuple<Real, CharIterator> strToReal(CharIterator it, const CharIterator end
 	if (c == 'e' || c == 'E') {
 		++it;
 		int tmp;
-		std::tie(tmp, it) = strToInteger<int>(it, end);
+		// we need to pass IntegerTag explicitly here because we are in a
+		// nested namespace. This shouldn't be required anywhere else
+		std::tie(tmp, it) = strTo<int>(it, end, IntegerTag{});
 		exp += tmp;
 	}
 	
