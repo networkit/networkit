@@ -12,7 +12,7 @@
 #include "../PLM.h"
 #include "../Modularity.h"
 #include "../../centrality/Betweenness.h"
-#include "../../centrality/ApproxBetweenness.h"
+#include "../../centrality/PageRank.h"
 #include "../../auxiliary/Timer.h"
 #include "../../structures/Partition.h"
 
@@ -24,57 +24,94 @@ void CommunityDetectionBenchmark::SetUp() {
 
 TEST_F(CommunityDetectionBenchmark, timePLP) {
 	Aux::Timer timer;
-	Modularity mod;
-	PLP plp;
 
-	// Graph G = this->metisReader.read("/mnt/windows/Users/Marvin/Desktop/uk-2002.graph");
-	Graph G = this->metisReader.read("../in-2004.graph");
-	
+	std::string graph = "~/graphs/in-2004.graph";
+	Graph G = this->metisReader.read(graph);
+
+	std::string name = "PLP";
+	CommunityDetectionAlgorithm* algo = new PLP;
+
 	timer.start();
-	Partition zeta = plp.run(G);
+	Partition zeta = algo->run(G);
 	timer.stop();
 
-	// communitySizes = zeta.subsetSizes();
-	printf("PLP: %.2f s\n\t# communities: %lu\n\tmodularity: %f\n",
+	Modularity mod;
+	auto communitySizes = zeta.subsetSizes();
+	delete algo;
+
+	printf("%s on %s: %.1f s\n\t# communities: %lu\n\tmodularity: %f\n",
+		name.c_str(), graph.c_str(),
 		timer.elapsedMilliseconds() / 1000.0,
 		zeta.numberOfSubsets(),
 		mod.getQuality(zeta, G));
 }
 
 TEST_F(CommunityDetectionBenchmark, timePLM) {
-	Aux::Timer timer;
-	Modularity mod;
-	PLM plm;
 
-	// Graph G = this->metisReader.read("/mnt/windows/Users/Marvin/Desktop/uk-2002.graph");
-	Graph G = this->metisReader.read("../in-2004.graph");
+	std::string graph = "~/graphs/in-2004.graph";
+	Graph G = this->metisReader.read(graph);
+
+	std::string name = "PLM";
+	CommunityDetectionAlgorithm* algo = new PLM;
 
 	timer.start();
-	Partition zeta = plm.run(G);
+	Partition zeta = algo->run(G);
 	timer.stop();
 
-	// communitySizes = zeta.subsetSizes();
-	printf("PLM: %.2f s\n\t# communities: %lu\n\tmodularity: %f\n",
+	Modularity mod;
+	auto communitySizes = zeta.subsetSizes();
+	delete algo;
+
+	printf("%s on %s: %.1f s\n\t# communities: %lu\n\tmodularity: %f\n",
+		name.c_str(), graph.c_str(),
 		timer.elapsedMilliseconds() / 1000.0,
 		zeta.numberOfSubsets(),
 		mod.getQuality(zeta, G));
 }
 
-TEST_F(CommunityDetectionBenchmark, timeApproxBetweennessCentrality) {
+TEST_F(CommunityDetectionBenchmark, timeBetweennessCentrality) {
 	Aux::Timer timer;
 
-	Graph G = this->metisReader.read("../cnr-2000.graph");
+
+	std::string graph = "~/graphs/in-2004.graph";
+	Graph G = this->metisReader.read(graph);
+
+	Centrality* cen = new Betweenness(G, 1e-6);
+	std::string name = "Betweenness Centrality";
 
 	timer.start();
-	ApproxBetweenness bc(G, 0.1);
-	bc.run();
+	cen->run();
 	timer.stop();
+	auto ranking = cen->ranking();
+	delete cen;
 
-	printf("Approximated Betweenness Centrality: %.2f s\n\tscore: [%f, %f, %f, ...]\n",
+	printf("%s on %s: %.1f s\n\tranking: [(%lu: %f), (%lu: %f), ...]\n",
+		name.c_str(), graph.c_str(),
 		timer.elapsedMilliseconds() / 1000.0,
-		bc.score(0),
-		bc.score(1),
-		bc.score(2));
+		ranking[0].first, ranking[0].second,
+		ranking[1].first, ranking[1].second); 
+}
+
+TEST_F(CommunityDetectionBenchmark, timePageRankCentrality) {
+	Aux::Timer timer;
+
+	std::string graph = "~/graphs/in-2004.graph";
+	Graph G = this->metisReader.read(graph);
+
+	Centrality* cen = new PageRank(G, 1e-6);
+	std::string name = "Page Rank Centrality";
+
+	timer.start();
+	cen->run();
+	timer.stop();
+	auto ranking = cen->ranking();
+	delete cen;
+
+	printf("%s on %s: %.1f s\n\tranking: [(%lu: %f), (%lu: %f), ...]\n",
+		name.c_str(), graph.c_str(),
+		timer.elapsedMilliseconds() / 1000.0,
+		ranking[0].first, ranking[0].second,
+		ranking[1].first, ranking[1].second); 
 }
 
 } /* namespace NetworKit */
