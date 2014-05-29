@@ -8,6 +8,9 @@
 #include <stdexcept>
 #include <type_traits>
 
+
+#include "Enforce.h"
+
 namespace Aux {
 namespace Parsing {
 
@@ -39,12 +42,6 @@ namespace Impl {
 				RealTag, void>::type
 		>::type;
 	
-	struct DefaultChecking {
-		static void enforce(bool b) {
-			assert(b);
-			std::ignore = b; // shut up warnings in release-mode
-		}
-	};
 } // namespace Impl
 
 
@@ -54,20 +51,18 @@ namespace Impl {
  * @param Number must be either a floating-point-type or an integer-type
  * @param CharIterator must be a valid input-iterator over a type that is
  *                     implicitly convertable to char
- * @param ValidationPolicy Must be a type that provides a static member-function 'enforce' that
- *                         recieves an argument of type bool. The default will call assert on it's
- *                         argument.
- *
+ * @param ValidationPolicy must be a type that is compatible to the checkers from Enforce.h,
+ *                         the default is Asserter, which will check conditions via assert()
  * @param it the start of the character-range
  * @param end the end of the character-range
  *
- * Requirements: The range [it, end) must contain a valid number. 
+ * Requirements: The range [it, end) must contain a valid number.
  *
  * @returns: A tuple of the parsed value and the iterator after parsing the number and dropping
  *           any surrounding whitespace.
  *
  */
-template<typename Number, typename CharIterator, typename ValidationPolicy = Impl::DefaultChecking>
+template<typename Number, typename CharIterator, typename ValidationPolicy = Checkers::Asserter>
 std::tuple<Number, CharIterator> strTo(CharIterator it, CharIterator end) {
 	return Impl::strTo<Number, CharIterator, ValidationPolicy>(it, end, Impl::ArithmeticTag<Number>{});
 }
