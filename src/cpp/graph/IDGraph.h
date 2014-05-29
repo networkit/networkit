@@ -25,6 +25,18 @@ class IDGraph : public virtual IGraph {
 
 public:
 
+	IDGraph() = default;
+
+	IDGraph(const IDGraph& other) = default;
+
+	IDGraph(IDGraph&& other) = default;
+
+	~IDGraph() = default;
+
+	IDGraph& operator=(IDGraph&& other) = default;
+
+	IDGraph& operator=(const IDGraph& other) = default;
+
 	/** NODE PROPERTIES **/
 
 	/**
