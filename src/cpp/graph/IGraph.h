@@ -43,10 +43,21 @@ protected:
 	count graphId;
 
 public:
+
 	IGraph() {
 		static count nextGraphId = 1;
 		graphId = nextGraphId++;
 	}
+
+	IGraph(const IGraph& other) = default;
+
+	IGraph(IGraph&& other) = default;
+
+	~IGraph() = default;
+
+	IGraph& operator=(IGraph&& other) = default;
+
+	IGraph& operator=(const IGraph& other) = default;
 
 	/**
 	 * Get the ID of this graph. The ID is a unique unsigned integer given to
