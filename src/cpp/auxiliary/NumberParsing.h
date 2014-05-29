@@ -1,5 +1,5 @@
-#ifndef FAST_HPP
-#define FAST_HPP
+#ifndef NUMBER_PARSING_H
+#define NUMBER_PARSING_H
 
 #include <algorithm>
 #include <cassert>
@@ -22,13 +22,13 @@ namespace Impl {
 	
 	class IntegerTag{};
 	
-	template<typename Integer, typename CharIterator>
+	template<typename Integer, typename CharIterator, typename ValidationPolicy>
 	std::tuple<Integer, CharIterator> strTo(CharIterator it, CharIterator end,
 			IntegerTag);
 	
 	class RealTag{};
 	
-	template<typename Real, typename CharIterator>
+	template<typename Real, typename CharIterator, typename ValidationPolicy>
 	std::tuple<Real, CharIterator> strTo(CharIterator it, CharIterator end, RealTag);
 	
 	template<typename T>
@@ -39,23 +39,47 @@ namespace Impl {
 				RealTag, void>::type
 		>::type;
 	
+	struct DefaultChecking {
+		static void enforce(bool b) {
+			assert(b);
+			std::ignore = b; // shut up warnings in release-mode
+		}
+	};
 } // namespace Impl
 
 
-
-template<typename Number, typename CharIterator>
+/**
+ * Parses a range of characters as number.
+ *
+ * @param Number must be either a floating-point-type or an integer-type
+ * @param CharIterator must be a valid input-iterator over a type that is
+ *                     implicitly convertable to char
+ * @param ValidationPolicy Must be a type that provides a static member-function 'enforce' that
+ *                         recieves an argument of type bool. The default will call assert on it's
+ *                         argument.
+ *
+ * @param it the start of the character-range
+ * @param end the end of the character-range
+ *
+ * Requirements: The range [it, end) must contain a valid number. 
+ *
+ * @returns: A tuple of the parsed value and the iterator after parsing the number and dropping
+ *           any surrounding whitespace.
+ *
+ */
+template<typename Number, typename CharIterator, typename ValidationPolicy = Impl::DefaultChecking>
 std::tuple<Number, CharIterator> strTo(CharIterator it, CharIterator end) {
-	return Impl::strTo<Number>(it, end, Impl::ArithmeticTag<Number>{});
+	return Impl::strTo<Number, CharIterator, ValidationPolicy>(it, end, Impl::ArithmeticTag<Number>{});
 }
 
 
 
 namespace Impl {
 
-template<typename Integer, typename CharIterator>
+template<typename Integer, typename CharIterator, typename ValidationPolicy>
 std::tuple<Integer, CharIterator> strTo(CharIterator it, const CharIterator end, IntegerTag) {
 	using Impl::dropSpaces;
-	assert(it != end);
+	ValidationPolicy::enforce(it != end);
 	
 	char c = *it;
 	std::tie(it, c) = dropSpaces(it, end);
@@ -85,12 +109,12 @@ std::tuple<Integer, CharIterator> strTo(CharIterator it, const CharIterator end,
 	
 	Integer val = 0;
 	while (true) {
-		assert(std::numeric_limits<Integer>::max() / 10 >= val);
+		ValidationPolicy::enforce(std::numeric_limits<Integer>::max() / 10 >= val);
 		
 		val *= 10;
 		
 		c -= '0';
-		assert(std::numeric_limits<Integer>::max() - c >= val);
+		ValidationPolicy::enforce(std::numeric_limits<Integer>::max() - c >= val);
 		
 		val += c;
 		
@@ -113,7 +137,7 @@ std::tuple<Integer, CharIterator> strTo(CharIterator it, const CharIterator end,
 	return std::make_tuple(val, it);
 }
 
-template<typename Real, typename CharIterator>
+template<typename Real, typename CharIterator, typename ValidationPolicy>
 std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, RealTag) {
 	
 	static_assert(std::numeric_limits<Real>::max_digits10
@@ -139,6 +163,8 @@ std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, Re
 	
 	// drop whitespace:
 	std::tie(it, c) = dropSpaces(it, end);
+	
+	ValidationPolicy::enforce(it != end);
 	
 	// set sign:
 	switch (c) {
@@ -230,7 +256,7 @@ std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, Re
 		int tmp;
 		// we need to pass IntegerTag explicitly here because we are in a
 		// nested namespace. This shouldn't be required anywhere else
-		std::tie(tmp, it) = strTo<int>(it, end, IntegerTag{});
+		std::tie(tmp, it) = strTo<int, CharIterator, ValidationPolicy>(it, end, IntegerTag{});
 		exp += tmp;
 	}
 	
