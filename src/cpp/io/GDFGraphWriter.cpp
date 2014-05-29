@@ -6,6 +6,7 @@
  */
 
 #include "GDFGraphWriter.h"
+#include "../auxiliary/Enforce.h"
 
 namespace NetworKit {
 
@@ -15,7 +16,7 @@ void GDFGraphWriter::write(Graph& G, const std::string& path) {
 
 void GDFGraphWriter::writeGeneric(Graph& G, bool weighted, const std::string& path, count dim) {
 	std::ofstream file(path);
-	assert(file.good());
+	Aux::enforceOpened(file);
 
 //	int64_t n = G.numberOfNodes();
 //	int64_t m = G.numberOfEdges();
