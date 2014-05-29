@@ -38,6 +38,50 @@ inline void enforceOpened(const Stream& stream) {
 	enforce(stream.is_open());
 }
 
+/**
+ * This namespace provides some Types with a static member-function `void enforce(bool)`
+ * that may check wether the argument is true and create some kind of failure otherwise.
+ */
+namespace Checkers {
+	
+	/**
+	 * Checks the bool via assert
+	 */
+	struct Asserter {
+		static void enforce(bool b) {
+			assert(b);
+			(void) b; // prevent warnings in release-builds
+		}
+	};
+	
+	/**
+	 * Checks to bool via enforce
+	 */
+	struct Enforcer {
+		static void enforce(bool b) {
+			enforce(b);
+		}
+	};
+	
+	/**
+	 * Calls std::terminate if the bool is false
+	 */
+	struct Terminator {
+		static void enforce(bool b) {
+			if (!b) {
+				std::terminate();
+			}
+		}
+	};
+
+	/**
+	 * Won't look at the bool (not even in debug-mode, which is how this differs from Asserter)
+	 */
+	struct Ignorer{
+		static void enforce(bool) {}
+	};
+}
+
 } // namespace Aux
 
 
