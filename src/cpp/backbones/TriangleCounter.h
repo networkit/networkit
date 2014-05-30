@@ -31,9 +31,18 @@ struct uEdge
 		}
 	}
 
-	bool operator==(const uEdge& rhs) const
-	{
-		return this->lowNode == rhs.lowNode && this->highNode == rhs.highNode;
+	bool operator==(const uEdge& rhs) const {
+		return lowNode == rhs.lowNode && highNode == rhs.highNode;
+	}
+
+	/**
+	 * We define an ordering on uEdge: Sort by lowNode, then by highNode.
+	 */
+	bool operator<(const uEdge& other) const {
+		return lowNode < other.lowNode || (lowNode == other.lowNode && highNode < other.highNode);
+	}
+	bool operator>(const uEdge& other) const {
+		return lowNode > other.lowNode || (lowNode == other.lowNode && highNode > other.highNode);
 	}
 };
 
