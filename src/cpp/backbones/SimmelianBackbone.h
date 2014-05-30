@@ -15,10 +15,13 @@ namespace NetworKit {
 
 /**
  * An undirected edge with a simmelianness int value.
+ * An ordering is defined on these ties by considering
+ * first the simmelianness and then the edge.
  */
 struct SimmelianTie {
 	uEdge edge;
-	int simmelianness; //The number of triangles the edge is embedded in.
+	int simmelianness; 	//The number of triangles the edge is embedded in.
+	int rank; 			//The rank within the ranked neighborhood.
 
 	SimmelianTie (uEdge e, int s) : edge(e), simmelianness(s) {
 	}
@@ -53,6 +56,7 @@ public:
 
 private:
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, edgeCountMap& triangles);
+	int getOverlap(const RankedNeighbors& first, const RankedNeighbors& second);
 };
 
 } /* namespace NetworKit */
