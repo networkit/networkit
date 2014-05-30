@@ -43,23 +43,6 @@ edgeCountMap ChibaNishizekiTriangleCounter::triangleCounts(const Graph& graph) {
 	return triangleCount;
 }
 
-/**
- * FOR TESTING PURPOSES ONLY
- */
-edgeCountSet ChibaNishizekiTriangleCounter::triangleCountsDebug(const Graph& graph) {
-	edgeCountMap resultMap = triangleCounts(graph);
-
-	edgeCountSet resultSet;
-	resultSet.resize(graph.numberOfEdges());
-
-	for (auto& kv : resultMap) {
-		resultSet.push_back(
-				std::pair<std::pair<node, node>, count>(kv.first, kv.second));
-	}
-
-	return resultSet;
-}
-
 void ChibaNishizekiTriangleCounter::removeNode(Graph& graph, const node& u) {
 	//isolate the node before removing it.
 	graph.forNeighborsOf(u, [&](node v) {
@@ -72,21 +55,26 @@ void ChibaNishizekiTriangleCounter::removeNode(Graph& graph, const node& u) {
 void ChibaNishizekiTriangleCounter::triangleFound(
 		edgeCountMap& triangleCount, const node& u, const node& v,
 		const node& w) {
-	//TODO: remove this ugliness. maybe custom "edge" key class?
-	if (u < v)
-		triangleCount[std::pair<node,node>(u,v)]++;
-	else
-		triangleCount[std::pair<node,node>(v,u)]++;
+	triangleCount[uEdge(u,v)]++;
+	triangleCount[uEdge(u,w)]++;
+	triangleCount[uEdge(v,w)]++;
+}
 
-	if (u < w)
-		triangleCount[std::pair<node,node>(u,w)]++;
-	else
-		triangleCount[std::pair<node,node>(w,u)]++;
+/**
+ * FOR TESTING/DEBUG OUTPUT PURPOSES ONLY
+ */
+edgeCountSet ChibaNishizekiTriangleCounter::triangleCountsDebug(const Graph& graph) {
+	edgeCountMap resultMap = triangleCounts(graph);
 
-	if (v < w)
-		triangleCount[std::pair<node,node>(v,w)]++;
-	else
-		triangleCount[std::pair<node,node>(w,v)]++;
+	edgeCountSet resultSet;
+	resultSet.resize(graph.numberOfEdges());
+
+	for (auto& kv : resultMap) {
+		resultSet.push_back(
+				std::pair<std::pair<node, node>, count>(std::pair<node,node>(kv.first.lowNode, kv.first.highNode), kv.second));
+	}
+
+	return resultSet;
 }
 
 } /* namespace NetworKit */
