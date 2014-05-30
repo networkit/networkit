@@ -102,8 +102,8 @@ BasicGraph<w, d>::BasicGraph(count n) :
 
 template<Weighted w>
 index find_impl(const BasicGraph<w, Directed::undirected>& G, node u, node v) {
-	for (index i = 0; i < this->adja[u].size(); i++) {
-		node x = this->adja[u][i];
+	for (index i = 0; i < G.adja[u].size(); i++) {
+		node x = G.adja[u][i];
 		if (x == v) {
 			return i;
 		}
@@ -139,14 +139,34 @@ std::string BasicGraph<Weighted::weighted, Directed::directed>::typ() const { re
 
 template<Weighted w, Directed d>
 count BasicGraph<w, d>::getMemoryUsage() const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	count mem = WData::getMemoryUsage() + DData::getMemoryUsage();
+
+	mem += exists.capacity() / 8;
+
+	for (auto& map : edgeMaps_double) {
+		for (auto& a : map) {
+			mem += sizeof(double) * a.capacity();
+		}
+	}
+
+	return mem;
 }
 
 template<Weighted w, Directed d>
 void BasicGraph<w, d>::shrinkToFit() {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	WData::shrinkToFit();
+	DData::shrinkToFit();
+
+	exists.shrink_to_fit();
+
+	edgeMaps_double.shrink_to_fit();
+	for (auto& map : edgeMaps_double) {
+		map.shrink_to_fit();
+		for (auto& a : map) {
+			a.shrink_to_fit();
+		}
+	}
+
 }
 
 template<Weighted w, Directed d>
@@ -202,13 +222,13 @@ node BasicGraph<w, d>::randomNode() const {
 /** EDGE MODIFIERS **/
 
 template<Weighted w>
-void addEdge_impl(const BasicGraph<w, Directed::undirected>& G, node u, node v, edgeweight ew) {
+void addEdge_impl(BasicGraph<w, Directed::undirected>& G, node u, node v, edgeweight ew) {
 	assert (u >= 0);
-	assert (u < this->z);
-	assert (this->exists[u]);
+	assert (u < G.z);
+	assert (G.exists[u]);
 	assert (v >= 0);
-	assert (v < this->z);
-	assert (this->exists[v]);
+	assert (v < G.z);
+	assert (G.exists[v]);
 
 	if (u == v) { // self-loop case
 		G.adja[u].push_back(u);
@@ -229,8 +249,8 @@ void addEdge_impl(const BasicGraph<w, Directed::undirected>& G, node u, node v, 
 		G.deg[v]++;
 		// set edge weight
 		if (w == Weighted::weighted) {
-			G.edgeWeights[u].push_back(edgeWeights);
-			G.edgeWeights[v].push_back(edgeWeights);	
+			G.edgeWeights[u].push_back(ew);
+			G.edgeWeights[v].push_back(ew);	
 		}
 		// loop over all attributes, setting default attr
 		for (index attrId = 0; attrId < G.edgeMaps_double.size(); ++attrId) {
@@ -244,11 +264,13 @@ void addEdge_impl(const BasicGraph<w, Directed::undirected>& G, node u, node v, 
 }
 
 template<Weighted w>
-void addEdge_impl(const BasicGraph<w, Directed::directed>& G, node u, node v, edgeweight ew) {
+void addEdge_impl(BasicGraph<w, Directed::directed>& G, node u, node v, edgeweight ew) {
 	assert (u >= 0);
 	assert (u < G.z);
+	assert (G.exists[u]);
 	assert (v >= 0);
 	assert (v < G.z);
+	assert (G.exists[v]);
 
 	G.m++; // increasing the number of edges
 	G.inDeg[u]++;
@@ -327,12 +349,6 @@ void removeEdge_impl(const BasicGraph<w, Directed::directed>& G, node u, node v)
 		G.m--; // decreasing the number of edges
 
 	}
-}
-
-template<Weighted w, Directed d>
-void BasicGraph<w, d>::removeEdge(node u, node v) {
-	// ToDo implement
-	throw std::runtime_error("TODO");
 }
 
 template<Weighted w, Directed d>
