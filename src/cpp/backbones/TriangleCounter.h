@@ -18,9 +18,6 @@ namespace NetworKit {
 class TriangleCounter {
 
 public:
-	TriangleCounter();
-	virtual ~TriangleCounter();
-
 	/**
 	 * Calculates triangle counts for the edges of the given graph.
 	 */

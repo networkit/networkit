@@ -9,10 +9,4 @@
 
 namespace NetworKit {
 
-BackboneCalculator::BackboneCalculator() {
-}
-
-BackboneCalculator::~BackboneCalculator() {
-}
-
 } /* namespace NetworKit */

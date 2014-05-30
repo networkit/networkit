@@ -18,9 +18,6 @@ namespace NetworKit {
 class BackboneCalculator {
 
 public:
-	BackboneCalculator();
-	virtual ~BackboneCalculator();
-
 	/**
 	 * Calculates the backbone graph for the given input graph.
 	 */

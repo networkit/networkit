@@ -37,9 +37,6 @@ typedef std::vector<std::pair<std::pair<node,node>, count>> edgeCountSet; //TEMP
 class ChibaNishizekiTriangleCounter {
 
 public:
-	ChibaNishizekiTriangleCounter();
-
-	~ChibaNishizekiTriangleCounter();
 
 	edgeCountMap triangleCounts(const Graph& graph);
 	edgeCountSet triangleCountsDebug(const Graph& graph); //TEMPORARY

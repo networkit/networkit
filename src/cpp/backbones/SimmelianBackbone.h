@@ -18,9 +18,6 @@ namespace NetworKit {
 class SimmelianBackbone : public BackboneCalculator {
 
 public:
-	SimmelianBackbone();
-	~SimmelianBackbone();
-
 	/**
 	 * Calculates the simmelian backbone for the given graph.
 	 */
