@@ -252,12 +252,18 @@ public:
 	/**
 	 * Insert an directed edge between from @a u to @a v.
 	 */
-	void addEdge(node u, node v, edgeweight ew);
+	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight) { addEdge_impl(*this, u, v, ew); }
+
+	template<Weighted w>
+	friend void addEdge_impl(BasicGraph<w, directed>& G, node u, node v, edgeweight ew);
 
 	/**
 	 * Remove directed edge between from @a u to @a v.
 	 */
-	void removeEdge(node u, node v);
+	void removeEdge(node u, node v) { removeEdge_impl(*this, u, v); }
+
+	template<Weighted w>
+	friend void removeEdge_impl(BasicGraph<w, directed>& G, node u, node v);
 
 	/**
 	 * Check if directed edge {u,v} exists.
@@ -415,7 +421,6 @@ public:
 	 * Return list of edges as node pairs.
 	 */
 	std::vector<std::pair<node, node> > edges() const;
-
 
 	/**
 	 * Return list of neighbors for given node.
