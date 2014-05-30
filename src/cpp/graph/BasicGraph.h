@@ -485,12 +485,18 @@ public:
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forEdges(L handle) const;
+	template<typename L> void forEdges(L handle) const { forEdges_impl(*this, handle); }
+
+	template<Weighted w, typename L>
+	void forEdges_impl(const BasicGraph<w, directed>& G, L handle);
 
 	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void parallelForEdges(L handle) const;
+	template<typename L> void parallelForEdges(L handle) const { parallelForEdges_impl(*this, handle); }
+
+	template<Weighted w, typename L>
+	void parallelForEdges_impl(const BasicGraph<w, directed>& G, L handle);
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
