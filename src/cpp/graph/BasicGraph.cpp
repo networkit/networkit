@@ -48,7 +48,7 @@ template<Weighted w>
 index find_impl(const BasicGraph<w, Directed::directed>& G, node v) {
 
 	for (index i = 0; i < G.OutEdges[v].size(); i++) {
-		node x = G.OutEdges[v];
+		node x = G.OutEdges[v][i];
 		if (x == v) {
 			return i;
 		}
@@ -145,7 +145,7 @@ template<Weighted w>
 void remove_Edge_impl(const BasicGraph<w, Directed::undirected>& G, node u, node v, edgeweight weight) {
 
 index ui = G.find(v, u);
-	index vi = G.find(u, v);
+index vi = G.find(u, v);
 
 	if (vi == none) {
 		std::stringstream strm;
@@ -176,7 +176,40 @@ index ui = G.find(v, u);
 template<Weighted w>
 void remove_Edge_impl(const BasicGraph<w, Directed::directed>& G, node u, node v, edgeweight weight) {
 
+// remove adjacency
+	index ui = G.find(v, u);
+	index vi = G.find(u, v);
+
+	if (vi == none) {
+		std::stringstream strm;
+		strm << "edge (" << u << "," << v << ") does not exist";
+		throw std::runtime_error(strm.str());
+	} else {
+		G.OutEdges[u][vi] = none;
+		G.InEdges[v][ui] = none;
+		// decrement degree counters
+		G.deg[u].out--;
+		G.deg[v].in--;
+		if (w == Weighted::weighted) {
+			// remove edge weight
+			G.weights[u][vi] = G.nullWeight;
+			G.weights[v][ui] = G.nullWeight;
+		}
+
+		// TODO: remove attributes
+
+		G.m--; // decreasing the number of edges
+
+	}
+
 }
+
+template<Weighted w, Directed d>
+bool hasEdge(const BasicGraph<w, d>& G, node u, node v) {
+	
+	return (G.find(u, v) != none);
+}
+
 template<> int BasicGraph<Weighted::unweighted, Directed::undirected>::typ() const { return 1; }
 template<> int BasicGraph<Weighted::weighted,   Directed::undirected>::typ() const { return 2; }
 template<> int BasicGraph<Weighted::unweighted, Directed::directed>::typ()   const { return 3; }

@@ -130,6 +130,9 @@ public:
 	template<Weighted w>
 	friend void remove_Edge_impl(const BasicGraph<w, directed> &G, node u, node v, edgeweight weight);
 
+	template<Weighted w, Directed d>
+	friend bool hasEdge(const BasicGraph<w,d>, node u, node v);
+
 	
 
 private:
