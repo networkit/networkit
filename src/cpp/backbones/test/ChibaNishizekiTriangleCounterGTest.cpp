@@ -9,7 +9,6 @@
 
 #include "ChibaNishizekiTriangleCounterGTest.h"
 
-
 #include "../../backbones/ChibaNishizekiTriangleCounter.h"
 
 namespace NetworKit {
@@ -35,18 +34,31 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsSimple) {
 	edgeCountMap counts = counter.triangleCounts(G);
 
 	EXPECT_EQ(8, counts.size()) << "wrong triangle count map size";
-	EXPECT_EQ(1, (counts[std::pair<node,node>(0,1)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[std::pair<node,node>(0,2)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[std::pair<node,node>(1,2)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(0,1)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(0,2)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(1,2)])) << "wrong triangle count";
 
-	EXPECT_EQ(1, (counts[std::pair<node,node>(0,3)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[std::pair<node,node>(3,4)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(0,3)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(3,4)])) << "wrong triangle count";
 
-	EXPECT_EQ(2, (counts[std::pair<node,node>(0,4)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[std::pair<node,node>(0,5)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[std::pair<node,node>(4,5)])) << "wrong triangle count";
+	EXPECT_EQ(2, (counts[uEdge(0,4)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(0,5)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(4,5)])) << "wrong triangle count";
+
+	//TODO: Remove the following. This is actually a test of uEdge...
+	EXPECT_EQ(1, (counts[uEdge(1,0)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(2,0)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(2,1)])) << "wrong triangle count";
+
+	EXPECT_EQ(1, (counts[uEdge(3,0)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(4,3)])) << "wrong triangle count";
+
+	EXPECT_EQ(2, (counts[uEdge(4,0)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(5,0)])) << "wrong triangle count";
+	EXPECT_EQ(1, (counts[uEdge(5,4)])) << "wrong triangle count";
 }
 
-} /* namespace NetworKit */
+}
+/* namespace NetworKit */
 
 #endif /*NOGTEST */
