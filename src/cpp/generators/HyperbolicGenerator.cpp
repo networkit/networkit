@@ -44,7 +44,7 @@ Graph HyperbolicGenerator::generate(count n, double stretchradius) {
 	Quadtree<index> quad(R);
 
 	for (index i = 0; i < n; i++) {
-		angles[i] = ((double)  rand() / (double) RAND_MAX)*2*M_PI;
+		angles[i] = Aux::Random::real(0, 2*M_PI);
 		/**
 		 * for the radial coordinate distribution, I took the probability density from Greedy Forwarding in Dynamic Scale-Free Networks Embedded in Hyperbolic Metric Spaces
 		 * f (r) = sinh r/(cosh R − 1)
