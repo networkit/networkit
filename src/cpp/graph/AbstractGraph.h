@@ -400,7 +400,6 @@ inline void NetworKit::AbstractGraph::forNodePairs(L handle) const {
 				}
 			}
 		}
-
 	}
 }
 
@@ -415,7 +414,6 @@ inline void NetworKit::AbstractGraph::parallelForNodePairs(L handle) const {
 				}
 			}
 		}
-
 	}
 }
 

@@ -5,6 +5,9 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
+// #include "BasicGraph.h"
+// #define GRAPH_H_
+
 #ifndef GRAPH_H_
 #define GRAPH_H_
 
