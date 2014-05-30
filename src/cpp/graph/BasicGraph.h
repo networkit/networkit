@@ -113,6 +113,25 @@ public:
 		}
 	}
 
+	/*EDGE-ITERATORS*/
+
+	void add_Edge(node u, node v, edgeweight weight) { return add_Edge_impl(*this, u, v, weight);}
+	
+	template<Weighted w>
+	friend void add_Edge_impl(const BasicGraph<w, directed> &G, node u, node v, edgeweight weight);
+
+	index find(node u, node v) { return find_impl(*this, u, v);}
+
+	template<Weighted w>
+	friend index find_impl(const BasicGraph<w, directed> &G, node u, node v);
+
+	void remove_Edge(node u, node v, edgeweight weight) { return add_Edge_impl(*this, u, v, weight);}
+	
+	template<Weighted w>
+	friend void remove_Edge_impl(const BasicGraph<w, directed> &G, node u, node v, edgeweight weight);
+
+	
+
 private:
 
 	using DData = either<directed == Directed::directed, DirectedData, UndirectedData>;
@@ -124,10 +143,15 @@ private:
 	node z; //!< current upper bound of node ids
 	count t; //!< current time step
 
+	
+
 	// per node data
 	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 
 	std::string name;
+
+	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
+	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
 };
 
 } // namespace graph_impl
