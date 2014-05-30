@@ -234,7 +234,10 @@ public:
 	/**
 	 * @return true if the node is isolated (= degree is 0)
 	 */
-	bool isIsolated(node v) const;
+	bool isIsolated(node v) const { return isIsolated(*this, v); }
+
+	template<Weighted w>
+	friend bool isIsolated_impl(const BasicGraph<w, directed>& G, node v);
 
 	/**
 	 * @return Weighted degree of @a v. For directed graphs this is the sum of weights off all outgoing edges fo @a v.
@@ -355,7 +358,10 @@ public:
 	 *
 	 * Return 0 if edge does not exist.
 	 */
-	edgeweight weight(node u, node v) const;
+	edgeweight weight(node u, node v) const { return weight_impl(*this, u, v); }
+
+	template<Directed d>
+	friend edgeweight weight_impl(const BasicGraph<weighted, d>& G, node u, node v);
 
 	/**
 	 * Set the weight of an edge. If the edge does not exist,

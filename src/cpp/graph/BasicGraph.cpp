@@ -200,10 +200,14 @@ void BasicGraph<w, d>::removeNode(node v) {
 
 /** NODE PROPERTIES **/
 
-template<Weighted w, Directed d>
-bool BasicGraph<w, d>::isIsolated(node v) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+template<Weighted w>
+bool isIsolated_impl(const BasicGraph<w, Directed::undirected>& G, node v) {
+	return G.deg[v] == 0;
+}
+
+template<Weighted w>
+bool isIsolated_impl(const BasicGraph<w, Directed::directed>& G, node v) {
+	return G.inDeg[v] == 0 && G.outDeg[v];
 }
 
 template<Weighted w, Directed d>
@@ -214,8 +218,14 @@ edgeweight BasicGraph<w, d>::weightedDegree(node v) const {
 
 template<Weighted w, Directed d>
 node BasicGraph<w, d>::randomNode() const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	assert (numberOfNodes() > 0);
+
+	node v;
+	do {
+		v = Aux::Random::integer(z);
+	} while (!exists[v]);
+
+	return v;
 }
 
 
@@ -276,11 +286,11 @@ void addEdge_impl(BasicGraph<w, Directed::directed>& G, node u, node v, edgeweig
 	G.inDeg[u]++;
 	G.outDeg[v]++;
 
-	G.adja[u].first.push_back(v);
+	G.outEdges[u].push_back(v);
 	if (w == Weighted::weighted) {
-		G.weights[u].push_back(ew);
+		G.edgeWeights[u].push_back(ew);
 	}
-	G.adja[v].second.push_back(u);
+	G.inEdges[v].push_back(u);
 
 	// loop over all attributes, setting default attr
 	for (index attrId = 0; attrId < G.edgeMaps_double.size(); ++attrId) {
@@ -333,21 +343,20 @@ void removeEdge_impl(const BasicGraph<w, Directed::directed>& G, node u, node v)
 		strm << "edge (" << u << "," << v << ") does not exist";
 		throw std::runtime_error(strm.str());
 	} else {
-		G.OutEdges[u][vi] = none;
-		G.InEdges[v][ui] = none;
+		G.outEdges[u][vi] = none;
+		G.inEdges[v][ui] = none;
 		// decrement degree counters
 		G.deg[u].out--;
 		G.deg[v].in--;
 		if (w == Weighted::weighted) {
 			// remove edge weight
-			G.weights[u][vi] = G.nullWeight;
-			G.weights[v][ui] = G.nullWeight;
+			G.edgeWeights[u][vi] = G.nullWeight;
+			G.edgeWeights[v][ui] = G.nullWeight;
 		}
 
 		// TODO: remove attributes
 
 		G.m--; // decreasing the number of edges
-
 	}
 }
 
@@ -367,8 +376,13 @@ node BasicGraph<w, d>::mergeEdge(node u, node v, bool discardSelfLoop) {
 
 template<Weighted w, Directed d>
 count BasicGraph<w, d>::numberOfSelfLoops() const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	count c = 0;
+	forEdges([&](node u, node v) {
+		if (u == v) {
+			c += 1;
+		}
+	});
+	return c;
 }
 
 
@@ -407,22 +421,64 @@ void BasicGraph<w, d>::initCoordinates() {
 
 /** EDGE ATTRIBUTES **/
 
-template<Weighted w, Directed d>
-edgeweight BasicGraph<w, d>::weight(node u, node v) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+template<Directed d>
+edgeweight weight_impl(const BasicGraph<Weighted::unweighted, d>& G, node u, node v) {
+	return G.hasEdge(u, v) ? defaultEdgeWeight : nullWeight;
 }
 
-template<Weighted w, Directed d>
-void BasicGraph<w, d>::setWeight(node u, node v, edgeweight ew) {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+template<Directed d>
+edgeweight weight_impl(const BasicGraph<Weighted::weighted, d>& G, node u, node v) {
+	index vi = G.find(u, v);
+	if (vi != none) {
+		return G.edgeWeights[u][vi];
+	} else {
+		return nullWeight;
+	}
+}
+
+template<>
+void BasicGraph<Weighted::unweighted, Directed::undirected>::setWeight(node u, node v, edgeweight ew) = delete;
+
+template<>
+void BasicGraph<Weighted::weighted, Directed::undirected>::setWeight(node u, node v, edgeweight ew) {
+	if (u == v) {
+		// self-loop case
+		index ui = find(u, u);
+		if (ui != none) {
+			edgeWeights[u][ui] = ew;
+		} else {
+			addEdge(u, u, ew);
+		}
+	} else {
+		index vi = find(u, v);
+		index ui = find(v, u);
+		if ((vi != none) && (ui != none)) {
+			edgeWeights[u][vi] = ew;
+			edgeWeights[v][ui] = ew;
+		} else {
+			addEdge(u, v, ew);
+		}
+	}
+}
+
+template<>
+void BasicGraph<Weighted::unweighted, Directed::directed>::setWeight(node u, node v, edgeweight ew) = delete;
+
+template<>
+void BasicGraph<Weighted::weighted, Directed::directed>::setWeight(node u, node v, edgeweight ew) {
+	index vi = find(u, v);
+	index ui = find(v, u); // ToDo use findIn
+	if ((vi != none) && (ui != none)) {
+		edgeWeights[u][vi] = ew;
+		edgeWeights[v][ui] = ew;
+	} else {
+		addEdge(u, v, ew);
+	}
 }
 
 template<Weighted w, Directed d>
 void BasicGraph<w, d>::increaseWeight(node u, node v, edgeweight ew) {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	setWeight(u, v, weight(u, v) + ew);
 }
 
 template<Weighted w, Directed d>
