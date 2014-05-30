@@ -595,17 +595,7 @@ void BasicGraph<w, d>::parallelForNodePairs(L handle) const {
 	throw std::runtime_error("TODO");
 }
 
-
-/** REDUCTION ITERATORS **/
-
-template<Weighted w, Directed d>
-template<typename L>
-double BasicGraph<w, d>::parallelSumForNodes(L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
-}
-
-
+	
 /** EDGE ITERATORS **/
 
 template<Weighted w, Directed d>
@@ -679,11 +669,48 @@ void BasicGraph<w, d>::forWeightedEdgesOf(node u, L handle) const {
 
 template<Weighted w, Directed d>
 template<typename L>
-double BasicGraph<w, d>::parallelSumForWeightedEdges(L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+double BasicGraph<w, d>::parallelSumForNodes(L handle) const {
+	double sum = 0.0;
+	#pragma omp parallel for reduction(+:sum)
+	for (node v = 0; v < z; ++v) {
+		if (exists[v]) {
+			sum += handle(v);
+		}
+	}
+	return sum;
 }
 
+template<Weighted w, typename L>
+double parallelSumForNodes_impl(const BasicGraph<w, Directed::undirected>& G, L handle) {
+	double sum = 0.0;
+	#pragma omp parallel for reduction(+:sum)
+	for (node u = 0; u < G.z; u++) {
+		for (index i = 0; i < (G.adja[u]).size(); i++) {
+			node v = G.adja[u][i];
+			edgeweight ew = (w == Weighted::weighted) ? G.edgeWeights[u][i] : defaultEdgeWeight;
+			if (v != none) {
+				sum += handle(u, v, ew);
+			}
+		}
+	}
+	return sum;
+}
+
+template<Weighted w, typename L>
+double parallelSumForNodes_impl(const BasicGraph<w, Directed::directed>& G, L handle) {
+	double sum = 0.0;
+	#pragma omp parallel for reduction(+:sum)
+	for (node u = 0; u < G.z; u++) {
+		for (index i = 0; i < (G.outEdges[u]).size(); i++) {
+			node v = G.outEdges[u][i];
+			edgeweight ew = (w == Weighted::weighted) ? G.edgeWeights[u][i] : defaultEdgeWeight;
+			if (v != none) {
+				sum += handle(u, v, ew);
+			}
+		}
+	}
+	return sum;
+}
 
 /** GRAPH SEARCHES **/
 
