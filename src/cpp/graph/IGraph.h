@@ -26,11 +26,11 @@ namespace NetworKit {
 // typedef index node; // node indices are 0-based
 // typedef double edgeweight; // edge weight type
 
-// typedef std::function<void(node)> FNode;
-// typedef std::function<void(node, node)> FNodePair;
-// typedef std::function<void(node, node)> FEdge;
-// typedef std::function<void(node, node, double)> FEdgeWithWeight;
-// typedef std::function<bool()> FCondition;
+typedef std::function<void(node)> FNode;
+typedef std::function<void(node, node)> FNodePair;
+typedef std::function<void(node, node)> FEdge;
+typedef std::function<void(node, node, double)> FEdgeWithWeight;
+typedef std::function<bool()> FCondition;
 
 // constexpr index none = std::numeric_limits<index>::max();
 
