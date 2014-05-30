@@ -17,7 +17,7 @@ workingDirectory = None
 
 def buildAntTest():
     # compile
-    result = subprocess.call(['scons', '--optimize=O', '--target=Tests'], cwd = workingDirectory)
+    result = subprocess.call(['scons', '--optimize=O', '--target=Tests', '-j 4'], cwd = workingDirectory)
 
     # run test to if compilation was successful and a test name was specified
     if result == 0 and len(testName) > 0:
