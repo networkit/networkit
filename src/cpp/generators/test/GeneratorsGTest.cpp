@@ -11,10 +11,10 @@ Dy * GeneratorsTest.cpp
 
 #include "../DynamicPathGenerator.h"
 #include "../ForestFireGenerator.h"
+#include "../HyperbolicGenerator.h"
 #include "../../properties/ClusteringCoefficient.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
-
 
 namespace NetworKit {
 
@@ -350,10 +350,17 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 	}
 }
 
-
 TEST_F(GeneratorsGTest, tryForestFireGenerator) {
 	ForestFireGenerator ffg(0.5);
 	ffg.generate(10);
+}
+
+TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
+	count n = 1000;
+	HyperbolicGenerator gen(n,1);
+	Graph G = gen.generate();
+	EXPECT_EQ(G.numberOfNodes(), n);
+
 }
 
 } /* namespace NetworKit */
