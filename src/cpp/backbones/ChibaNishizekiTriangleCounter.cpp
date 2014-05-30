@@ -10,12 +10,6 @@
 
 namespace NetworKit {
 
-ChibaNishizekiTriangleCounter::ChibaNishizekiTriangleCounter() {
-}
-
-ChibaNishizekiTriangleCounter::~ChibaNishizekiTriangleCounter() {
-}
-
 edgeCountMap ChibaNishizekiTriangleCounter::triangleCounts(const Graph& graph) {
 	Graph g = graph;
 
@@ -78,7 +72,7 @@ void ChibaNishizekiTriangleCounter::removeNode(Graph& graph, const node& u) {
 void ChibaNishizekiTriangleCounter::triangleFound(
 		edgeCountMap& triangleCount, const node& u, const node& v,
 		const node& w) {
-	//TODO: remove this ugliness
+	//TODO: remove this ugliness. maybe custom "edge" key class?
 	if (u < v)
 		triangleCount[std::pair<node,node>(u,v)]++;
 	else

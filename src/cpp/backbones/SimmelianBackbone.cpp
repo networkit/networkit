@@ -9,13 +9,6 @@
 
 namespace NetworKit {
 
-SimmelianBackbone::SimmelianBackbone() {
-}
-
-SimmelianBackbone::~SimmelianBackbone() {
-
-}
-
 Graph SimmelianBackbone::calculate(const Graph& g) {
 	return g;
 }

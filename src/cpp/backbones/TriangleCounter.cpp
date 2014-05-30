@@ -9,10 +9,4 @@
 
 namespace NetworKit {
 
-TriangleCounter::TriangleCounter() {
-}
-
-TriangleCounter::~TriangleCounter() {
-}
-
 } /* namespace NetworKit */
