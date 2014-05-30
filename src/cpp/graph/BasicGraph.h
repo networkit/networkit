@@ -480,14 +480,6 @@ public:
 	template<typename L> void parallelForNodePairs(L handle) const;
 
 
- 	/** REDUCTION ITERATORS **/
-
-	/**
-	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
-	 */
-	template<typename L> double parallelSumForNodes(L handle) const;
-
-
 	/** EDGE ITERATORS **/
 
 	/**
@@ -551,11 +543,19 @@ public:
 
 
 	/** REDUCTION ITERATORS **/
+	
+	/**
+	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> double parallelSumForNodes(L handle) const;
 
 	/**
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
 	 */
-	template<typename L> double parallelSumForWeightedEdges(L handle) const;
+	template<typename L> double parallelSumForWeightedEdges(L handle) const { return parallelSumForWeightedEdges(*this, handle); }
+
+	template<Weighted w, typename L>
+	friend double parallelSumForWeightedEdges_impl(const BasicGraph<w, directed>& G, L handle);
 
 
 	/** GRAPH SEARCHES **/
