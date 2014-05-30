@@ -155,10 +155,10 @@ count DirectedGraph::degreeOut(node v) const {
 
 edgeweight DirectedGraph::weightedDegreeIn(node v) const {
 	if (!isWeighted()) {
-		return degreeOut(v);
+		return degreeIn(v);
 	}
 	edgeweight sum = 0.0;
-	forWeightedOutNeighborsOf(v, [&](node u, edgeweight ew) {
+	forWeightedInNeighborsOf(v, [&](node u, edgeweight ew) {
 		sum += ew;
 	});
 	return sum;
@@ -166,10 +166,10 @@ edgeweight DirectedGraph::weightedDegreeIn(node v) const {
 
 edgeweight DirectedGraph::weightedDegreeOut(node v) const {
 	if (!isWeighted()) {
-		return degreeIn(v);
+		return degreeOut(v);
 	}
 	edgeweight sum = 0.0;
-	forWeightedInNeighborsOf(v, [&](node u, edgeweight ew) {
+	forWeightedOutNeighborsOf(v, [&](node u, edgeweight ew) {
 		sum += ew;
 	});
 	return sum;

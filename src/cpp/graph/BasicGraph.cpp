@@ -212,8 +212,14 @@ bool isIsolated_impl(const BasicGraph<w, Directed::directed>& G, node v) {
 
 template<Weighted w, Directed d>
 edgeweight BasicGraph<w, d>::weightedDegree(node v) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	if (w) {
+		edgeweight sum = 0.0;
+		forWeightedNeighborsOf(v, [&](node u, edgeweight ew) {
+			sum += ew;
+		});
+		return sum;
+	}
+	return defaultEdgeWeight * degree(v);
 }
 
 template<Weighted w, Directed d>
