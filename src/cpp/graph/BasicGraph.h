@@ -56,12 +56,14 @@ namespace graph_impl {
 struct UnweightedData {
 	count getMemoryUsage() const { return 0; }
 	void shrinkToFit() {}
+	void addNode() {}
 };
 struct WeightedData {
-	std::vector< std::vector<edgeweight> > edgeWeights;
+	std::vector< std::vector<edgeweight> > edgeWeights; // TODO: why do we have inEdges and outEdges but just one weight matrix?
 
 	count getMemoryUsage() const;
 	void shrinkToFit();
+	void addNode();
 };
 
 struct UndirectedData {
@@ -74,6 +76,7 @@ struct UndirectedData {
 
 	count getMemoryUsage() const;
 	void shrinkToFit();
+	void addNode();
 };
 struct DirectedData {
 	DirectedData(count n = 0) :
@@ -89,6 +92,7 @@ struct DirectedData {
 
 	count getMemoryUsage() const;
 	void shrinkToFit();
+	void addNode();
 };
 
 // choose between types
