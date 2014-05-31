@@ -1,5 +1,5 @@
 /*
- * CoarseningGTest.cpp
+ * ChibaNishizekiCounterGTest.cpp
  *
  *  Created on: 23.05.2014
  *      Author: Gerd Lindner

@@ -10,6 +10,7 @@
 
 #include "BackboneCalculator.h"
 #include "TriangleCounter.h"
+#include "gtest/gtest_prod.h"
 
 namespace NetworKit {
 
@@ -25,6 +26,9 @@ struct RankedEdge {
 	int rank; 			//The rank within the ranked neighborhood.
 
 	RankedEdge (node ego, node alter, int s) : ego(ego), alter(alter), simmelianness(s), rank(0) {
+	}
+
+	RankedEdge (node ego, node alter, int s, int r) : ego(ego), alter(alter), simmelianness(s), rank(r) {
 	}
 
 	bool operator<(const RankedEdge& other) const {
@@ -56,8 +60,9 @@ public:
 	virtual count test();
 
 private:
+	FRIEND_TEST(SimmelianBackboneGTest, testOverlapCounting);
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, edgeCountMap& triangles);
-	int getOverlap(const RankedNeighbors& first, const RankedNeighbors& second);
+	int getOverlap(const RankedNeighbors& first, const RankedNeighbors& second, const int& maxRank);
 	void matchNeighbors(std::vector<RankedEdge>::const_iterator& egoIt,
 						const RankedNeighbors& egoNeighbors,
 						std::set<node>& egoNeighborsUnmatched,
