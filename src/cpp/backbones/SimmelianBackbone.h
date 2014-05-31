@@ -14,32 +14,33 @@
 namespace NetworKit {
 
 /**
- * An undirected edge with a simmelianness int value.
+ * A directed edge with a simmelianness int value.
  * An ordering is defined on these ties by considering
- * first the simmelianness and then the edge.
+ * first the simmelianness and then the index of alter.
  */
-struct SimmelianTie {
-	uEdge edge;
+struct RankedEdge {
+	node ego;
+	node alter;
 	int simmelianness; 	//The number of triangles the edge is embedded in.
 	int rank; 			//The rank within the ranked neighborhood.
 
-	SimmelianTie (uEdge e, int s) : edge(e), simmelianness(s) {
+	RankedEdge (node ego, node alter, int s) : ego(ego), alter(alter), simmelianness(s), rank(0) {
 	}
 
-	bool operator<(const SimmelianTie& other) const {
-		return (simmelianness < other.simmelianness) || (simmelianness == other.simmelianness && edge < other.edge);
+	bool operator<(const RankedEdge& other) const {
+		return (simmelianness < other.simmelianness) || (simmelianness == other.simmelianness && alter < other.alter);
 	}
 
-	bool operator>(const SimmelianTie& other) const {
-		return (simmelianness > other.simmelianness) || (simmelianness == other.simmelianness && edge > other.edge);
+	bool operator>(const RankedEdge& other) const {
+		return (simmelianness > other.simmelianness) || (simmelianness == other.simmelianness && alter > other.alter);
 	}
 
-	bool operator==(const SimmelianTie& other) const {
-		return simmelianness == other.simmelianness && edge == other.edge;
+	bool operator==(const RankedEdge& other) const {
+		return simmelianness == other.simmelianness && alter == other.alter; //TODO: compare ego as well?
 	}
 };
 
-typedef std::vector<SimmelianTie> RankedNeighbors;
+typedef std::vector<RankedEdge> RankedNeighbors;
 
 /** 
  * Calculates the simmelian backbone for a given input graph.
@@ -57,6 +58,12 @@ public:
 private:
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, edgeCountMap& triangles);
 	int getOverlap(const RankedNeighbors& first, const RankedNeighbors& second);
+	void matchNeighbors(std::vector<RankedEdge>::const_iterator& egoIt,
+						const RankedNeighbors& egoNeighbors,
+						std::set<node>& egoNeighborsUnmatched,
+						std::set<node>& alterNeighborsUnmatched,
+						const int& rank,
+						int& overlap);
 };
 
 } /* namespace NetworKit */
