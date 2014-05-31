@@ -21,11 +21,11 @@ Graph SimmelianBackbone::calculate(const Graph& g) {
 	//Create the backbone graph. Edges will be inserted on the fly.
 	Graph backboneGraph (g.upperNodeIdBound());
 
-	g.forEdges([&](node u, node v) {
+	/*g.forEdges([&](node u, node v) {
 		uEdge edge = uEdge(u, v);
 
-		int overlap = getOverlap(neighbors[u], neighbors[v]);
-	});
+		int overlap = getOverlap(neighbors[u], neighbors[v], 10);
+	});*/
 
 	return g;
 }
@@ -60,7 +60,7 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 
 }
 
-int SimmelianBackbone::getOverlap(const RankedNeighbors& egoNeighbors, const RankedNeighbors& alterNeighbors) {
+int SimmelianBackbone::getOverlap(const RankedNeighbors& egoNeighbors, const RankedNeighbors& alterNeighbors, const int& maxRank) {
 	int overlap = 0;
 
 	std::vector<RankedEdge>::const_iterator egoIt = egoNeighbors.begin();
@@ -70,8 +70,8 @@ int SimmelianBackbone::getOverlap(const RankedNeighbors& egoNeighbors, const Ran
 	std::set<node> alterNeighborsUnmatched;
 
 	//TODO: parameters...
-	bool allRanks = false;
-	int maxRank = allRanks ? std::max(egoNeighbors.size(), alterNeighbors.size()) : 10;
+	/*bool allRanks = false;
+	int maxRank = allRanks ? std::max(egoNeighbors.size(), alterNeighbors.size()) : 10;*/
 
 	//TODO: identified (nodes that are incident to an edge)
 	for (int rank = 1; rank <= maxRank; rank++) {
