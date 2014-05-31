@@ -36,24 +36,25 @@ count SimmelianBackbone::test() {
 
 std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Graph& g, edgeCountMap& triangles) {
 	std::vector<RankedNeighbors> neighbors;
+	neighbors.resize(g.upperNodeIdBound());
 
 	g.forNodes([&](node u) {
 		//Rank ego's alters from strongly to weakly tied.
 		g.forNeighborsOf(u, [&](node v) {
 			neighbors[u].push_back(RankedEdge(u, v, triangles[uEdge(u, v)]));
 		});
-		std::sort(neighbors[u].begin(), neighbors[u].end(), std::greater<RankedEdge>());
+		std::sort(neighbors[u].begin(), neighbors[u].end());
 
 		//Calculate the ranks. TODO: These first two steps could be combined for performance gain.
 		int currentRank = 0;	//Rank 1 is considered the best.
 		int currentSimmelianness = std::numeric_limits<int>::max();
-		g.forNeighborsOf(u, [&](node v) {
-			if (neighbors[u][v].simmelianness < currentSimmelianness) {
+		for (auto& edge : neighbors[u]) {
+			if (edge.simmelianness < currentSimmelianness) {
 				currentRank++;
-				currentSimmelianness = neighbors[u][v].simmelianness;
+				currentSimmelianness = edge.simmelianness;
 			}
-			neighbors[u][v].rank = currentRank;
-		});
+			edge.rank = currentRank;
+		}
 	});
 
 	return neighbors;
@@ -85,12 +86,14 @@ int SimmelianBackbone::getOverlap(const RankedNeighbors& egoNeighbors, const Ran
 /**
  * Helper function used in getOverlap.
  */
-void SimmelianBackbone::matchNeighbors(	std::vector<RankedEdge>::const_iterator& egoIt,
-										const RankedNeighbors& egoNeighbors,
-										std::set<node>& egoNeighborsUnmatched,
-										std::set<node>& alterNeighborsUnmatched,
-										const int& rank,
-										int& overlap) {
+void SimmelianBackbone::matchNeighbors(
+	std::vector<RankedEdge>::const_iterator& egoIt,
+	const RankedNeighbors& egoNeighbors,
+	std::set<node>& egoNeighborsUnmatched,
+	std::set<node>& alterNeighborsUnmatched,
+	const int& rank,
+	int& overlap) {
+
 	for (; egoIt != egoNeighbors.end() && egoIt->rank == rank; egoIt++) {
 		node other = egoIt->alter;
 		if (alterNeighborsUnmatched.erase(other))

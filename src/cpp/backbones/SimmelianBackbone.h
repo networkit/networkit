@@ -32,11 +32,11 @@ struct RankedEdge {
 	}
 
 	bool operator<(const RankedEdge& other) const {
-		return (simmelianness < other.simmelianness) || (simmelianness == other.simmelianness && alter < other.alter);
+		return (simmelianness > other.simmelianness) || (simmelianness == other.simmelianness && alter < other.alter);
 	}
 
 	bool operator>(const RankedEdge& other) const {
-		return (simmelianness > other.simmelianness) || (simmelianness == other.simmelianness && alter > other.alter);
+		return (simmelianness < other.simmelianness) || (simmelianness == other.simmelianness && alter > other.alter);
 	}
 
 	bool operator==(const RankedEdge& other) const {
@@ -61,6 +61,7 @@ public:
 
 private:
 	FRIEND_TEST(SimmelianBackboneGTest, testOverlapCounting);
+	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhood);
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, edgeCountMap& triangles);
 	int getOverlap(const RankedNeighbors& first, const RankedNeighbors& second, const int& maxRank);
 	void matchNeighbors(std::vector<RankedEdge>::const_iterator& egoIt,
