@@ -32,6 +32,10 @@ void WeightedData::shrinkToFit() {
 	}
 }
 
+void WeightedData::addNode() {
+	edgeWeights.push_back(std::vector<edgeweight>{});
+}
+
 count UndirectedData::getMemoryUsage() const {
 	count mem = 0;
 	mem += sizeof(count) * deg.capacity();
@@ -48,6 +52,11 @@ void UndirectedData::shrinkToFit() {
 	for (auto& a : adja) {
 		a.shrink_to_fit();
 	}
+}
+
+void UndirectedData::addNode() {
+	deg.push_back(0);
+	adja.push_back(std::vector<node>{});
 }
 
 count DirectedData::getMemoryUsage() const {
@@ -79,6 +88,13 @@ void DirectedData::shrinkToFit() {
 	for (auto& a : outEdges) {
 		a.shrink_to_fit();
 	}
+}
+
+void DirectedData::addNode() {
+	inDeg.push_back(0);
+	outDeg.push_back(0);
+	inEdges.push_back(std::vector<node>{});
+	outEdges.push_back(std::vector<node>{});
 }
 
 template<Weighted w, Directed d>
@@ -182,20 +198,45 @@ std::string BasicGraph<w, d>::toString() const {
 
 template<Weighted w, Directed d>
 node BasicGraph<w, d>::addNode() {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	node v = z;	// node gets maximum id
+	z++;	// increment node range
+	n++;	// increment node count
+
+	// update per node data structures
+	exists.push_back(true);
+
+	// update per node data structures
+	WData::addNode();
+	DData::addNode();
+
+	// update edge attribute data structures
+	for (int attrId = 0; attrId < this->edgeMaps_double.size(); attrId++) {
+		std::vector<double> attrVector;
+		this->edgeMaps_double[attrId].push_back(attrVector);
+	}
+
+	return v;
 }
 
 template<Weighted w, Directed d>
 node BasicGraph<w, d>::addNode(float x, float y) {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	node v = addNode();
+	std::vector<float> coords = {x, y};
+	coordinates.addCoordinates(coords);
+	return v;
 }
 
 template<Weighted w, Directed d>
 void BasicGraph<w, d>::removeNode(node v) {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	assert (v < z);
+	assert (exists[v]);
+
+	if (!isIsolated(v)) {
+		throw std::runtime_error("nodes must have degree 0 before they can be removed");
+	}
+
+	exists[v] = false;
+	n--;
 }
 
 /** NODE PROPERTIES **/
