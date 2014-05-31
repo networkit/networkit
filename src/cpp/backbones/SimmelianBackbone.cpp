@@ -40,12 +40,12 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 	g.forNodes([&](node u) {
 		//Rank ego's alters from strongly to weakly tied.
 		g.forNeighborsOf(u, [&](node v) {
-			neighbors[u].push_back(SimmelianTie(uEdge(u, v), triangles[uEdge(u, v)]));
+			neighbors[u].push_back(RankedEdge(u, v, triangles[uEdge(u, v)]));
 		});
-		std::sort(neighbors[u].begin(), neighbors[u].end(), std::greater<SimmelianTie>());
+		std::sort(neighbors[u].begin(), neighbors[u].end(), std::greater<RankedEdge>());
 
 		//Calculate the ranks. TODO: These first two steps could be combined for performance gain.
-		int currentRank = 0;
+		int currentRank = 0;	//Rank 1 is considered the best.
 		int currentSimmelianness = std::numeric_limits<int>::max();
 		g.forNeighborsOf(u, [&](node v) {
 			if (neighbors[u][v].simmelianness < currentSimmelianness) {
@@ -60,14 +60,44 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 
 }
 
-int SimmelianBackbone::getOverlap(const RankedNeighbors& first, const RankedNeighbors& second) {
+int SimmelianBackbone::getOverlap(const RankedNeighbors& egoNeighbors, const RankedNeighbors& alterNeighbors) {
 	int overlap = 0;
 
-	for (std::vector<SimmelianTie>::const_iterator firstIt = first.begin(); firstIt != first.end(); firstIt++) {
+	std::vector<RankedEdge>::const_iterator egoIt = egoNeighbors.begin();
+	std::vector<RankedEdge>::const_iterator alterIt = alterNeighbors.begin();
 
+	std::set<node> egoNeighborsUnmatched;
+	std::set<node> alterNeighborsUnmatched;
+
+	//TODO: parameters...
+	bool allRanks = false;
+	int maxRank = allRanks ? std::max(egoNeighbors.size(), alterNeighbors.size()) : 10;
+
+	//TODO: identified (nodes that are incident to an edge)
+	for (int rank = 1; rank <= maxRank; rank++) {
+		matchNeighbors(egoIt, egoNeighbors, egoNeighborsUnmatched, alterNeighborsUnmatched, rank, overlap);
+		matchNeighbors(alterIt, alterNeighbors, alterNeighborsUnmatched, egoNeighborsUnmatched, rank, overlap);
 	}
 
 	return overlap;
+}
+
+/**
+ * Helper function used in getOverlap.
+ */
+void SimmelianBackbone::matchNeighbors(	std::vector<RankedEdge>::const_iterator& egoIt,
+										const RankedNeighbors& egoNeighbors,
+										std::set<node>& egoNeighborsUnmatched,
+										std::set<node>& alterNeighborsUnmatched,
+										const int& rank,
+										int& overlap) {
+	for (; egoIt != egoNeighbors.end() && egoIt->rank == rank; egoIt++) {
+		node other = egoIt->alter;
+		if (alterNeighborsUnmatched.erase(other))
+			overlap++;
+		else
+			egoNeighborsUnmatched.insert(other);
+	}
 }
 
 } /* namespace NetworKit */
