@@ -66,15 +66,11 @@ public:
 	 */
 	DirectedGraph(count n = 0, bool weighted = false);
 
-	DirectedGraph(const DirectedGraph& other) = default;
-
-	DirectedGraph(DirectedGraph&& other) = default;
-
-	virtual ~DirectedGraph();
-
-	DirectedGraph& operator=(DirectedGraph&& other) = default;
-
-	DirectedGraph& operator=(const DirectedGraph& other) = default;
+	/* move assignments and more currently removed because a problems with gcc 4.7.1 on phipute1 */
+	// DirectedGraph(const DirectedGraph& other) = default;
+	// DirectedGraph(DirectedGraph&& other) = default;
+	// DirectedGraph& operator=(DirectedGraph&& other) = default;
+	// DirectedGraph& operator=(const DirectedGraph& other) = default;
 
 	/**
 	 * Calculate an approximation of the memory used by this graph. Only memory increasing with the

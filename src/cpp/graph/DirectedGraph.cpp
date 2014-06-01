@@ -19,10 +19,6 @@ DirectedGraph::DirectedGraph(count n, bool weighted):
 	if (weighted) eweights.resize(z); // edge weight array is only initialized for weighted graphs
 }
 
-DirectedGraph::~DirectedGraph() {
-
-}
-
 count DirectedGraph::getMemoryUsage() const {
 	count mem = AbstractGraph::getMemoryUsage();
 	mem += sizeof(NodeDegree) * deg.capacity();

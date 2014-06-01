@@ -83,14 +83,10 @@ public:
 	 */
 	AbstractGraph(count n = 0, bool weighted = false);
 
+	/* move assignments and more currently removed because a problems with gcc 4.7.1 on phipute1 */
 	AbstractGraph(const AbstractGraph& other) = default;
-
 	AbstractGraph(AbstractGraph&& other) = default;
-
-	~AbstractGraph() = default;
-
 	AbstractGraph& operator=(AbstractGraph&& other) = default;
-
 	AbstractGraph& operator=(const AbstractGraph& other) = default;
 
 	/**

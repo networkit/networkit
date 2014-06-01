@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 
 #include "AbstractGraph.h"
 #include "Coordinates.h"
@@ -43,17 +44,6 @@ protected:
 
 public:
 
-	/** ATTRIBUTE ABSTRACT BASE CLASSES **/
-
-	// class NodeAttribute {
-	// 	// abstract
-	// };
-
-	// class EdgeAttribute {
-	// 	// abstract
-	// };
-
-
 	/** GRAPH INTERFACE **/
 
 	/** 
@@ -61,16 +51,11 @@ public:
 	 */
 	Graph(count n = 0, bool weighted = false);
 
-	Graph(const Graph& other) = default;
-
-	Graph(Graph&& other) = default;
-
-	virtual ~Graph();
-
-	Graph& operator=(Graph&& other) = default;
-
-	Graph& operator=(const Graph& other) = default;
-
+	/* move assignments and more currently removed because a problems with gcc 4.7.1 on phipute1 */
+	// Graph(const Graph& other) = default;
+	// Graph(Graph&& other) = default;
+	// Graph& operator=(Graph&& other) = default;
+	// Graph& operator=(const Graph& other) = default;
 
 	/**
 	 * Calculate an approximation of the memory used by this graph. Only memory increasing with the

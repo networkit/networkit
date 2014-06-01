@@ -11,6 +11,7 @@
 #include <limits>
 #include <string>
 #include <algorithm>
+#include <stdexcept>
 
 #include "../Globals.h"
 #include "../viz/Point.h"
@@ -20,17 +21,12 @@
 namespace NetworKit {
 
 /** Typedefs **/
+// moved to Globals.h
 
 // typedef uint64_t index; // more expressive name for an index into an array
 // typedef uint64_t count; // more expressive name for an integer quantity
 // typedef index node; // node indices are 0-based
 // typedef double edgeweight; // edge weight type
-
-// typedef std::function<void(node)> FNode;
-// typedef std::function<void(node, node)> FNodePair;
-// typedef std::function<void(node, node)> FEdge;
-// typedef std::function<void(node, node, double)> FEdgeWithWeight;
-// typedef std::function<bool()> FCondition;
 
 // constexpr index none = std::numeric_limits<index>::max();
 
@@ -49,15 +45,11 @@ public:
 		graphId = nextGraphId++;
 	}
 
-	IGraph(const IGraph& other) = default;
-
-	IGraph(IGraph&& other) = default;
-
-	~IGraph() = default;
-
-	IGraph& operator=(IGraph&& other) = default;
-
-	IGraph& operator=(const IGraph& other) = default;
+	/* move assignments and more currently removed because a problems with gcc 4.7.1 on phipute1 */
+	// IGraph(const IGraph& other) = default;
+	// IGraph(IGraph&& other) = default;
+	// IGraph& operator=(IGraph&& other) = default;
+	// IGraph& operator=(const IGraph& other) = default;
 
 	/**
 	 * Get the ID of this graph. The ID is a unique unsigned integer given to

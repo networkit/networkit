@@ -8,13 +8,7 @@
 #ifndef IDGRAPH_H
 #define IDGRAPH_H
 
-#include <limits>
-#include <string>
-#include <algorithm>
-
 #include "IGraph.h"
-#include "../Globals.h"
-#include "../viz/Point.h"
 
 namespace NetworKit {
 
@@ -27,15 +21,11 @@ public:
 
 	IDGraph() = default;
 
-	IDGraph(const IDGraph& other) = default;
-
-	IDGraph(IDGraph&& other) = default;
-
-	~IDGraph() = default;
-
-	IDGraph& operator=(IDGraph&& other) = default;
-
-	IDGraph& operator=(const IDGraph& other) = default;
+	/* move assignments and more currently removed because a problems with gcc 4.7.1 on phipute1 */
+	// IDGraph(const IDGraph& other) = default;
+	// IDGraph(IDGraph&& other) = default;
+	// IDGraph& operator=(IDGraph&& other) = default;
+	// IDGraph& operator=(const IDGraph& other) = default;
 
 	/** NODE PROPERTIES **/
 

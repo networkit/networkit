@@ -21,10 +21,6 @@ Graph::Graph(count n, bool weighted):
 	}
 }
 
-Graph::~Graph() {
-
-}
-
 count Graph::getMemoryUsage() const {
 	count mem = AbstractGraph::getMemoryUsage();
 	mem += sizeof(deg) + sizeof(count) * deg.capacity();
