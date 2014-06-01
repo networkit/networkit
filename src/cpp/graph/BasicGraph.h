@@ -68,7 +68,6 @@ private:
 	// per node data
 	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
-	std::vector<std::vector<edgeweight> > edgeWeights;
 	// user-defined edge attributes
 	// attribute maps storage
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
