@@ -17,10 +17,10 @@ namespace graph_impl {
 
 /** Explicit template instantiations **/
 
-template class BasicGraph<Weighted::unweighted, Directed::undirected>;
-template class BasicGraph<Weighted::weighted, Directed::undirected>;
-template class BasicGraph<Weighted::unweighted, Directed::directed>;
-template class BasicGraph<Weighted::weighted, Directed::directed>;
+// template class BasicGraph<Weighted::unweighted, Directed::undirected>;
+// template class BasicGraph<Weighted::weighted, Directed::undirected>;
+// template class BasicGraph<Weighted::unweighted, Directed::directed>;
+// template class BasicGraph<Weighted::weighted, Directed::directed>;
 
 
 /** CONSTRUCTORS **/
@@ -729,36 +729,146 @@ void parallelForEdges_impl(const BasicGraph<w, Directed::directed>& G, L handle)
 	}
 }
 
-template<Weighted w, Directed d>
+template<>
 template<typename L>
-void BasicGraph<w, d>::forWeightedEdges(L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+void BasicGraph<Weighted::unweighted, Directed::undirected>::forWeightedEdges(L handle) const {
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < adja[u].size(); ++vi) {
+			node v = adja[u][vi];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				handle(u, v, defaultEdgeWeight);
+			}
+		}
+	}
 }
 
-template<Weighted w, Directed d>
+template<>
 template<typename L>
-void BasicGraph<w, d>::parallelForWeightedEdges(L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+void BasicGraph<Weighted::weighted, Directed::undirected>::forWeightedEdges(L handle) const {
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < adja[u].size(); ++vi) {
+			node v = adja[u][vi];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				edgeweight w = edgeWeights[u][vi];
+				handle(u, v, w);
+			}
+		}
+	}
 }
 
-template<Weighted w, Directed d>
+template<>
 template<typename L>
-void BasicGraph<w, d>::forEdgesWithAttribute_double(int attrId, L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+void BasicGraph<Weighted::unweighted, Directed::directed>::forWeightedEdges(L handle) const {
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
+			node v = outEdges[u][vi];
+			if (v != none) {
+				handle(u, v, defaultEdgeWeight);
+			}
+		}
+	}
+}
+
+template<>
+template<typename L>
+void BasicGraph<Weighted::weighted, Directed::directed>::forWeightedEdges(L handle) const {
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
+			node v = outEdges[u][vi];
+			if (v != none) {
+				edgeweight ew = edgeWeights[u][vi];
+				handle(u, v, ew);
+			}
+		}
+	}
+}
+
+template<>
+template<typename L>
+void BasicGraph<Weighted::unweighted, Directed::undirected>::parallelForWeightedEdges(L handle) const {
+	#pragma omp parallel for
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < adja[u].size(); ++vi) {
+			node v = this->adja[u][vi];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				handle(u, v, defaultEdgeWeight);
+			}
+		}
+	}
+}
+
+template<>
+template<typename L>
+void BasicGraph<Weighted::weighted, Directed::undirected>::parallelForWeightedEdges(L handle) const {
+	#pragma omp parallel for
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < adja[u].size(); ++vi) {
+			node v = adja[u][vi];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				edgeweight w = edgeWeights[u][vi];
+				handle(u, v, w);
+			}
+		}
+	}
+}
+
+template<>
+template<typename L>
+void BasicGraph<Weighted::unweighted, Directed::directed>::parallelForWeightedEdges(L handle) const {
+	#pragma omp parallel for
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
+			node v = outEdges[u][vi];
+			if (v != none) {
+				handle(u, v, defaultEdgeWeight);
+			}
+		}
+	}
+}
+
+template<>
+template<typename L>
+void BasicGraph<Weighted::weighted, Directed::directed>::parallelForWeightedEdges(L handle) const {
+	#pragma omp parallel for
+	for (node u = 0; u < z; ++u) {
+		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
+			node v = outEdges[u][vi];
+			if (v != none) {
+				edgeweight ew = edgeWeights[u][vi];
+				handle(u, v, ew);
+			}
+		}
+	}
+}
+
+template<Weighted w, typename L>
+void forEdgesWithAttribute_double_impl(const BasicGraph<w, Directed::undirected>& G, int attrId, L handle) {
+	for (node u = 0; u < G.z; ++u) {
+		for (index vi = 0; vi < G.adja[u].size(); ++vi) {
+			node v = G.adja[u][vi];
+			double attr = G.edgeMaps[attrId].edgeMap[u][vi];
+			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				handle(u, v, attr);
+			}
+		}
+	}
+}
+
+template<Weighted w, typename L>
+void forEdgesWithAttribute_double_impl(const BasicGraph<w, Directed::directed>& G, int attrId, L handle) {
+	for (node u = 0; u < G.z; ++u) {
+		for (index vi = 0; vi < G.outEdges[u].size(); ++vi) {
+			node v = G.outEdges[u][vi];
+			double attr = G.edgeMaps[attrId].edgeMap[u][vi];
+			if (v != none) {
+				handle(u, v, attr);
+			}
+		}
+	}
 }
 
 
 /** NEIGHBORHOOD ITERATORS **/
-
-/*template<Weighted w, Directed d>
-template<typename L>
-void BasicGraph<w, d>::forNeighborsOf(node u, L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
-}*/
 
 template<Weighted w, typename L>
 void forNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
@@ -788,14 +898,6 @@ void forNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L h
 	
 
 }
-
-
-/*template<Weighted w, Directed d>
-template<typename L>
-void BasicGraph<w, d>::forWeightedNeighborsOf(node u, L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
-}*/
 
 template<Weighted w, typename L>
 void forWeightedNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
@@ -967,6 +1069,7 @@ double parallelSumForNodes_impl(const BasicGraph<w, Directed::directed>& G, L ha
 	}
 	return sum;
 }
+
 
 /** GRAPH SEARCHES **/
 

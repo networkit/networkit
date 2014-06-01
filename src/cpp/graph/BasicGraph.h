@@ -468,8 +468,10 @@ public:
 	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
 	 *
 	 */
-	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const { forEdgesWithAttribute_double_impl(*this, handle); }
 
+	template<Weighted w, typename L>
+	friend void forEdgesWithAttribute_double_impl(const BasicGraph<w, directed>& G, L handle);
 
 	/** NEIGHBORHOOD ITERATORS **/
 
@@ -508,7 +510,6 @@ public:
 	friend void forWeightedEdgesOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
 
 	template<typename L> void forWeightedEdgesOf(node u, L handle) const {forWeightedEdgesOf_impl(*this, u, handle);};
-
 
 
 	/** REDUCTION ITERATORS **/
