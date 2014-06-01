@@ -9,7 +9,7 @@
 #define BASICGRAPH_H_
 
 #include <algorithm>
-#include <functional>
+// #include <functional>
 #include <vector>
 #include <type_traits>
 #include <utility>
@@ -28,13 +28,13 @@ namespace NetworKit {
 // typedef std::function<bool()> FCondition;
 
 enum class Weighted {
-	weighted,
-	unweighted
+	unweighted,
+	weighted
 };
 
 enum class Directed {
-	directed,
-	undirected
+	undirected,
+	directed
 };
 
 // hide implementation details in extra namespace
@@ -56,7 +56,7 @@ private:
 	using WData = either<weighted == Weighted::weighted, WeightedData, UnweightedData>;
 
 	// graph attributes
-	count graphId;
+	count id;
 	std::string name;
 
 	// scalars
@@ -79,6 +79,7 @@ private:
 	}
 
 public:
+
 	BasicGraph(count n = 0);
 
 	BasicGraph(const BasicGraph<weighted, directed>& other) = default;
@@ -98,7 +99,7 @@ public:
 	 * Get the ID of this graph. The ID is a unique unsigned integer given to
 	 * every graph on construction.
 	 */
-	count getId() const { return graphId; }
+	count getId() const { return id; }
 
 	/**
 	 * Return the type of the graph.
@@ -178,7 +179,7 @@ public:
 	/**
 	 * @return true if the node is isolated (= degree is 0)
 	 */
-	bool isIsolated(node v) const { return isIsolated(*this, v); }
+	bool isIsolated(node v) const { return isIsolated_impl(*this, v); }
 
 	template<Weighted w>
 	friend bool isIsolated_impl(const BasicGraph<w, directed>& G, node v);
@@ -540,10 +541,10 @@ public:
 } /* namespace graph_impl */
 
 using graph_impl::BasicGraph;
-// using Graph = BasicGraph<Weighted::unweighted, Directed::undirected>;
-// using WeightedGraph = BasicGraph<Weighted::weighted, Directed::undirected>;
-// using DirectedGraph = BasicGraph<Weighted::unweighted, Directed::directed>;
-// using WeightedDirectedGraph = BasicGraph<Weighted::weighted, Directed::directed>;
+using Graph_T = BasicGraph<Weighted::unweighted, Directed::undirected>;
+using WeightedGraph_T = BasicGraph<Weighted::weighted, Directed::undirected>;
+using DirectedGraph_T = BasicGraph<Weighted::unweighted, Directed::directed>;
+using WeightedDirectedGraph_T = BasicGraph<Weighted::weighted, Directed::directed>;
 
 template<Weighted w>
 using IUndirectedGraph = BasicGraph<w, Directed::undirected>;

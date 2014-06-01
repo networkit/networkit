@@ -15,6 +15,16 @@ namespace NetworKit {
 
 namespace graph_impl {
 
+/** Explicit template instantiations **/
+
+template class BasicGraph<Weighted::unweighted, Directed::undirected>;
+template class BasicGraph<Weighted::weighted, Directed::undirected>;
+template class BasicGraph<Weighted::unweighted, Directed::directed>;
+template class BasicGraph<Weighted::weighted, Directed::directed>;
+
+
+/** CONSTRUCTORS **/
+
 template<Weighted w, Directed d>
 BasicGraph<w, d>::BasicGraph(count n) :
 	DData(n),
@@ -26,11 +36,11 @@ BasicGraph<w, d>::BasicGraph(count n) :
 	
 	// set name from global id
 	static count nextGraphId = 1;
+	id = nextGraphId++;
 	std::stringstream sstm;
-	sstm << "G#" << nextGraphId++;
+	sstm << "G#" << id;
 	this->name = sstm.str();
 }
-
 
 /** GRAPH INFORMATION **/
 
@@ -103,7 +113,7 @@ node BasicGraph<w, d>::addNode() {
 	DData::addNode();
 
 	// update edge attribute data structures
-	for (int attrId = 0; attrId < this->edgeMaps_double.size(); attrId++) {
+	for (size_t attrId = 0; attrId < this->edgeMaps_double.size(); attrId++) {
 		std::vector<double> attrVector;
 		this->edgeMaps_double[attrId].push_back(attrVector);
 	}
@@ -146,7 +156,7 @@ bool isIsolated_impl(const BasicGraph<w, Directed::directed>& G, node v) {
 
 template<Weighted w, Directed d>
 edgeweight BasicGraph<w, d>::weightedDegree(node v) const {
-	if (w) {
+	if (w == Weighted::weighted) {
 		edgeweight sum = 0.0;
 		forWeightedNeighborsOf(v, [&](node u, edgeweight ew) {
 			sum += ew;
@@ -455,8 +465,19 @@ void BasicGraph<Weighted::weighted, Directed::directed>::setWeight(node u, node 
 	}
 }
 
-template<Weighted w, Directed d>
-void BasicGraph<w, d>::increaseWeight(node u, node v, edgeweight ew) {
+template<>
+void BasicGraph<Weighted::unweighted, Directed::undirected>::increaseWeight(node u, node v, edgeweight ew) = delete;
+
+template<>
+void BasicGraph<Weighted::weighted, Directed::undirected>::increaseWeight(node u, node v, edgeweight ew) {
+	setWeight(u, v, weight(u, v) + ew);
+}
+
+template<>
+void BasicGraph<Weighted::unweighted, Directed::directed>::increaseWeight(node u, node v, edgeweight ew) = delete;
+
+template<>
+void BasicGraph<Weighted::weighted, Directed::directed>::increaseWeight(node u, node v, edgeweight ew) {
 	setWeight(u, v, weight(u, v) + ew);
 }
 
@@ -753,13 +774,13 @@ void forNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L
 template<Weighted w, typename L>
 void forNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
 
-	for (node v : G.InEdges[u]) {
+	for (node v : G.inEdges[u]) {
 		if (v != none) {
 			handle(v);
 		}
 	}
 
-	for (node v : G.OutEdges[u]) {
+	for (node v : G.outEdges[u]) {
 		if (v != none) {
 			handle(v);
 		}
@@ -801,10 +822,9 @@ if (w ==Weighted::weighted) {
 
 template<Weighted w, typename L>
 void forWeightedNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
-
-if (w == Weighted::weighted) {
-		for (index i = 0; i < (index) G.InEdges[u].size(); i++) {
-			node v = G.InEdges[u][i];
+	if (w == Weighted::weighted) {
+		for (index i = 0; i < (index) G.inEdges[u].size(); i++) {
+			node v = G.inEdges[u][i];
 			if (v != none) {
 				edgeweight ew = G.edgeWeights[u][i];
 				handle(v, ew);
@@ -812,8 +832,8 @@ if (w == Weighted::weighted) {
 			}
 		}
 		
-		for (index i = 0; i < (index) G.OutEdges[u].size(); i++) {
-			node v = G.OutEdges[u][i];
+		for (index i = 0; i < (index) G.outEdges[u].size(); i++) {
+			node v = G.outEdges[u][i];
 			if (v != none) {
 				edgeweight ew = G.edgeWeights[u][i];
 				handle(v, ew);
@@ -822,8 +842,8 @@ if (w == Weighted::weighted) {
 		}
 		
 	} else {
-		for (index i = 0; i < (index) G.InEdges[u].size(); i++) {
-			node v = G.InEdges[u][i];
+		for (index i = 0; i < (index) G.inEdges[u].size(); i++) {
+			node v = G.inEdges[u][i];
 			if (v != none) {
 				handle(v, defaultEdgeWeight);
 			}
@@ -831,16 +851,8 @@ if (w == Weighted::weighted) {
 	}
 }
 
-/*template<Weighted w, Directed d>
-template<typename L>
-void BasicGraph<w, d>::forEdgesOf(node u, L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
-}*/
-
 template<Weighted w, typename L>
 void forEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
-
 	for (node v : G.adja[u]) {
 		if (v != none) {
 			handle(u, v);
@@ -852,13 +864,13 @@ void forEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L han
 template<Weighted w, typename L>
 void forEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
 
-	for (node v : G.InEdges[u]) {
+	for (node v : G.inEdges[u]) {
 		if (v != none) {
 			handle(u, v);
 		}
 	}
 
-		for (node v : G.OutEdges[u]) {
+		for (node v : G.outEdges[u]) {
 		if (v != none) {
 			handle(u, v);
 		}
@@ -883,38 +895,32 @@ void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node 
 
 template<Weighted w, typename L>
 void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
-
-	for(index i = 0; i < G.InEdges[u].size(); ++i) {
-		node v = G.InEdges[u][i]; 
+	for(index i = 0; i < G.inEdges[u].size(); ++i) {
+		node v = G.inEdges[u][i]; 
 		if(v != none) {
 			if(Weighted::weighted == w) {
 				edgeweight weight = G.edgeWeights[v][u];
 				handle(v, u, weight);
-			}else{
+			} else {
 				handle(v, u, defaultEdgeWeight);
 			}
-
 		}
-
 	}
 
-	for(index i = 0; i < G.OutEdges[u].size(); ++i) {
-		node v = G.OutEdges[u][i]; 
+	for(index i = 0; i < G.outEdges[u].size(); ++i) {
+		node v = G.outEdges[u][i]; 
 		if(v != none) {
 			if(Weighted::weighted == w) {
 				edgeweight weight = G.edgeWeights[u][v];
 				handle(u, v, weight);
-			}else{
+			} else {
 				handle(u, v, defaultEdgeWeight);
 			}
-
 		}
-
 	}
-	
-
-
 }
+
+
 /** REDUCTION ITERATORS **/
 
 template<Weighted w, Directed d>
