@@ -1,7 +1,7 @@
 /*
  * BasicGraph.cpp
  *
- *  Created on: 20.05.2014
+ *  Created on: 01.06.2014
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
@@ -14,88 +14,6 @@
 namespace NetworKit {
 
 namespace graph_impl {
-
-count WeightedData::getMemoryUsage() const {
-	count mem = 0;
-
-	for (auto& w : edgeWeights) {
-		mem += sizeof(edgeweight) * w.capacity();
-	}
-
-	return mem;
-}
-
-void WeightedData::shrinkToFit() {
-	edgeWeights.shrink_to_fit();
-	for (auto& w : edgeWeights) {
-		w.shrink_to_fit();
-	}
-}
-
-void WeightedData::addNode() {
-	edgeWeights.push_back(std::vector<edgeweight>{});
-}
-
-count UndirectedData::getMemoryUsage() const {
-	count mem = 0;
-	mem += sizeof(count) * deg.capacity();
-	for (auto& a : adja) {
-		mem += sizeof(node) * a.capacity();
-	}
-	return mem;
-}
-
-void UndirectedData::shrinkToFit() {
-	deg.shrink_to_fit();
-
-	adja.shrink_to_fit();
-	for (auto& a : adja) {
-		a.shrink_to_fit();
-	}
-}
-
-void UndirectedData::addNode() {
-	deg.push_back(0);
-	adja.push_back(std::vector<node>{});
-}
-
-count DirectedData::getMemoryUsage() const {
-	count mem = 0;
-	
-	mem += sizeof(count) * inDeg.capacity();
-	mem += sizeof(count) * outDeg.capacity();
-	
-	for (auto& a : inEdges) {
-		mem += sizeof(node) * a.capacity();
-	}
-	for (auto& a : outEdges) {
-		mem += sizeof(node) * a.capacity();
-	}
-	
-	return mem;
-}
-
-void DirectedData::shrinkToFit() {
-	inDeg.shrink_to_fit();
-	outDeg.shrink_to_fit();
-	
-	inEdges.shrink_to_fit();
-	for (auto& a : inEdges) {
-		a.shrink_to_fit();
-	}
-
-	outEdges.shrink_to_fit();
-	for (auto& a : outEdges) {
-		a.shrink_to_fit();
-	}
-}
-
-void DirectedData::addNode() {
-	inDeg.push_back(0);
-	outDeg.push_back(0);
-	inEdges.push_back(std::vector<node>{});
-	outEdges.push_back(std::vector<node>{});
-}
 
 template<Weighted w, Directed d>
 BasicGraph<w, d>::BasicGraph(count n) :
@@ -111,31 +29,6 @@ BasicGraph<w, d>::BasicGraph(count n) :
 	std::stringstream sstm;
 	sstm << "G#" << nextGraphId++;
 	this->name = sstm.str();
-}
-
-
-/** PRIVATE HELPERS **/
-
-template<Weighted w>
-index find_impl(const BasicGraph<w, Directed::undirected>& G, node u, node v) {
-	for (index i = 0; i < G.adja[u].size(); i++) {
-		node x = G.adja[u][i];
-		if (x == v) {
-			return i;
-		}
-	}
-	return none;
-}
-
-template<Weighted w>
-index find_impl(const BasicGraph<w, Directed::directed>& G, node u, node v) {
-	for (index i = 0; i < G.outEdges[u].size(); i++) {
-		node x = G.outEdges[u][i];
-		if (x == v) {
-			return i;
-		}
-	}
-	return none;
 }
 
 
@@ -350,15 +243,15 @@ void addEdge_impl(BasicGraph<w, Directed::directed>& G, node u, node v, edgeweig
 
 template<Weighted w>
 void removeEdge_impl(const BasicGraph<w, Directed::undirected>& G, node u, node v) {
-	index ui = G.find(v, u);
-	index vi = G.find(u, v);
+	index ui = G.indexInEdgeArray(v, u);
+	index vi = G.indexInEdgeArray(u, v);
 
 	if (vi == none) {
 		std::stringstream strm;
 		strm << "edge (" << u << "," << v << ") does not exist";
 		throw std::runtime_error(strm.str());
-		// TODO: what if edge does not exist?
 	} else {
+		G.m--; // decreasing the number of edges
 		G.adja[u][vi] = none;
 		G.adja[v][ui] = none;
 		// decrement degree counters
@@ -372,24 +265,22 @@ void removeEdge_impl(const BasicGraph<w, Directed::undirected>& G, node u, node 
 			G.weights[v][ui] = G.nullWeight;
 		}
 
-		// TODO: remove attributes
-
-		G.m--; // decreasing the number of edges
-
+		// dose not make a lot of sense do remove attributes
 	}
 }
 
 template<Weighted w>
 void removeEdge_impl(const BasicGraph<w, Directed::directed>& G, node u, node v) {
-	// remove adjacency
-	index ui = G.find(v, u);
-	index vi = G.find(u, v);
+	// remove adjacency, for u it is on outgoing edge, at v an incoming
+	index ui = G.indexInInEdgeArray(v, u);
+	index vi = G.indexInOutEdgeArray(u, v);
 
 	if (vi == none) {
 		std::stringstream strm;
 		strm << "edge (" << u << "," << v << ") does not exist";
 		throw std::runtime_error(strm.str());
 	} else {
+		G.m--; // decreasing the number of edges
 		G.outEdges[u][vi] = none;
 		G.inEdges[v][ui] = none;
 		// decrement degree counters
@@ -401,9 +292,7 @@ void removeEdge_impl(const BasicGraph<w, Directed::directed>& G, node u, node v)
 			G.edgeWeights[v][ui] = G.nullWeight;
 		}
 
-		// TODO: remove attributes
-
-		G.m--; // decreasing the number of edges
+		// dose not make a lot of sense do remove attributes
 	}
 }
 
