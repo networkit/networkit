@@ -364,7 +364,7 @@ edgeweight weight_impl(const BasicGraph<Weighted::unweighted, d>& G, node u, nod
 
 template<Directed d>
 edgeweight weight_impl(const BasicGraph<Weighted::weighted, d>& G, node u, node v) {
-	index vi = G.find(u, v);
+	index vi = G.indexInEdgeArray(u, v);
 	if (vi != none) {
 		return G.edgeWeights[u][vi];
 	} else {
@@ -379,15 +379,15 @@ template<>
 void BasicGraph<Weighted::weighted, Directed::undirected>::setWeight(node u, node v, edgeweight ew) {
 	if (u == v) {
 		// self-loop case
-		index ui = find(u, u);
+		index ui = indexInEdgeArray(u, u);
 		if (ui != none) {
 			edgeWeights[u][ui] = ew;
 		} else {
 			addEdge(u, u, ew);
 		}
 	} else {
-		index vi = find(u, v);
-		index ui = find(v, u);
+		index vi = indexInEdgeArray(u, v);
+		index ui = indexInEdgeArray(v, u);
 		if ((vi != none) && (ui != none)) {
 			edgeWeights[u][vi] = ew;
 			edgeWeights[v][ui] = ew;
@@ -402,8 +402,8 @@ void BasicGraph<Weighted::unweighted, Directed::directed>::setWeight(node u, nod
 
 template<>
 void BasicGraph<Weighted::weighted, Directed::directed>::setWeight(node u, node v, edgeweight ew) {
-	index vi = find(u, v);
-	index ui = find(v, u); // ToDo use findIn
+	index vi = indexInOutEdgeArray(u, v);
+	index ui = indexInInEdgeArray(v, u);
 	if ((vi != none) && (ui != none)) {
 		edgeWeights[u][vi] = ew;
 		edgeWeights[v][ui] = ew;
@@ -419,20 +419,66 @@ void BasicGraph<w, d>::increaseWeight(node u, node v, edgeweight ew) {
 
 template<Weighted w, Directed d>
 int BasicGraph<w, d>::addEdgeAttribute_double(double defaultValue) {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	int attrId = edgeMaps_double.size();
+
+	std::vector<std::vector<double> > edgeMap(z);
+	if (numberOfEdges() > 0) {
+		forNodes([&] (node v) {
+			// create edgeMaps and fill them with default value
+			edgeMap[v].resize(degree(v));
+			fill(edgeMap[v].begin(), edgeMap[v].end(), defaultValue);
+		});
+	}
+	
+	edgeMaps_double.push_back(edgeMap);
+	edgeAttrDefaults_double.push_back(defaultValue);
+
+	return attrId;
 }
 
 template<Weighted w, Directed d>
 double BasicGraph<w, d>::attribute_double(node u, node v, int attrId) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	assert (attrId < edgeMaps_double.size());
+	index vi = BasicGraph<w, d>::indexInEdgeArray(u, v);
+	if (vi != none) {
+		return edgeMaps_double[attrId][u][vi];
+	} else {
+		throw std::runtime_error("Edge does not exist. Can't access double attribute.");
+	}
 }
 
-template<Weighted w, Directed d>
-void BasicGraph<w, d>::setAttribute_double(node u, node v, int attrId, double attr) {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+template<Weighted w>
+void setAttribute_double_impl(BasicGraph<w, Directed::undirected>& G, node u, node v, int attrId, double attr) {
+	if (u == v) {
+		// self-loop case
+		index ui = G.indexInEdgeArray(u, u);
+		if (ui != none) {
+			G.edgeMaps_double.at(attrId)[u][ui] = attr;
+		} else {
+			throw std::runtime_error("Edge does not exist. Can't set double attribute.");
+		}
+	} else {
+		index vi = G.indexInEdgeArray(u, v);
+		index ui = G.indexInEdgeArray(v, u);
+		if ((vi != none) && (ui != none)) {
+			G.edgeMaps_double[attrId][u][vi] = attr;
+			G.edgeMaps_double[attrId][v][ui] = attr;
+		} else {
+			throw std::runtime_error("Edge does not exist. Can't set double attribute.");
+		}
+	}
+}
+
+template<Weighted w>
+void setAttribute_double_impl(BasicGraph<w, Directed::directed>& G, node u, node v, int attrId, double attr) {
+	index vi = G.indexInOutEdgeArray(u, v);
+	index ui = G.indexInInEdgeArray(v, u);
+	if ((vi != none) && (ui != none)) {
+		G.edgeMaps_double[attrId][u][vi] = attr;
+		G.edgeMaps_double[attrId][v][ui] = attr;
+	} else {
+		throw std::runtime_error("Edge does not exist. Can't set double attribute.");
+	}
 }
 
 
