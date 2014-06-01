@@ -350,7 +350,10 @@ public:
 	 * @param[in]	v	endpoint of edge
 	 * @param[in]	attr	double edge attribute
 	 */
-	void setAttribute_double(node u, node v, int attrId, double attr);
+	void setAttribute_double(node u, node v, int attrId, double attr) { setAttribute_double(u, v, attrId, attr); }
+
+	template<Weighted w>
+	void setAttribute_double_impl(BasicGraph<w, directed>& G, node u, node v, int attrId, double attr);
 
 
 	/** SUMS **/
