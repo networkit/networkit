@@ -1,37 +1,25 @@
 /*
  * BasicGraph.h
  *
- *  Created on: 20.05.2014
+ *  Created on: 01.06.2014
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef BASICGRAPH_H
-#define BASICGRAPH_H
+#ifndef BASICGRAPH_H_
+#define BASICGRAPH_H_
 
 #include <algorithm>
 #include <functional>
-#include <limits>
 #include <vector>
 #include <type_traits>
 #include <utility>
 
-// #include "../Globals.h"
+#include "../Globals.h"
 #include "Coordinates.h"
 #include "../viz/Point.h"
+#include "GraphData.h"
 
 namespace NetworKit {
-
-/** Typedefs **/
-
-typedef uint64_t index; // more expressive name for an index into an array
-typedef uint64_t count; // more expressive name for an integer quantity
-typedef index node; // node indices are 0-based
-
-constexpr index none = std::numeric_limits<index>::max(); // value for not existing nodes/edges
-
-typedef double edgeweight; // edge weight type
-constexpr edgeweight defaultEdgeWeight = 1.0;
-constexpr edgeweight nullWeight = 0.0;
 
 // typedef std::function<void(node)> FNode;
 // typedef std::function<void(node, node)> FNodePair;
@@ -51,49 +39,6 @@ enum class Directed {
 
 // hide implementation details in extra namespace
 namespace graph_impl {
-
-// data structures for special graph classes, the BasicGraph class will inherit this private as needed
-struct UnweightedData {
-	count getMemoryUsage() const { return 0; }
-	void shrinkToFit() {}
-	void addNode() {}
-};
-struct WeightedData {
-	std::vector< std::vector<edgeweight> > edgeWeights; // TODO: why do we have inEdges and outEdges but just one weight matrix?
-
-	count getMemoryUsage() const;
-	void shrinkToFit();
-	void addNode();
-};
-
-struct UndirectedData {
-	UndirectedData(count n = 0) :
-		deg(n, 0),
-		adja(n)
-	{}
-	std::vector<count> deg;
-	std::vector< std::vector<node> > adja;
-
-	count getMemoryUsage() const;
-	void shrinkToFit();
-	void addNode();
-};
-struct DirectedData {
-	DirectedData(count n = 0) :
-		inDeg(n, 0),
-		outDeg(n, 0),
-		inEdges(n),
-		outEdges(n)
-	{}
-	std::vector<count> inDeg;
-	std::vector<count> outDeg;
-	std::vector< std::vector<node> > inEdges;
-	std::vector< std::vector<node> > outEdges;
-
-	count getMemoryUsage() const;
-	void shrinkToFit();
-	void addNode();
-};
 
 // choose between types
 template<bool b, class T1, class T2>
@@ -130,13 +75,9 @@ private:
 	// default values
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
 
-	index find(node u, node v) const { return find_impl(*this, u, v); }
-
-	template<Weighted w>
-	friend index find_impl(const BasicGraph<w, Directed::undirected>& G, node u, node v);
-
-	template<Weighted w>
-	friend index find_impl(const BasicGraph<w, Directed::directed>& G, node u, node v);
+	index find(node u, node v) const { 
+		throw std::runtime_error("find is deprecated, use indexInEdgeArray instead");
+	}
 
 public:
 	BasicGraph(count n = 0);
@@ -601,4 +542,4 @@ using IWeigehtedGraph = BasicGraph<Weighted::weighted, d>;
 
 } /* namespace NetworKit */
 
-#endif /* BASICGRAPH_H */
+#endif /* BASICGRAPH_H_ */
