@@ -101,7 +101,7 @@ TEST_F(GraphGTest, testLambdaEdgeModification) {
 		G.removeEdge(u, v);
 	});
 
-	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been deleted";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "all edges should have been deleted";
 }
 
 
@@ -211,11 +211,11 @@ TEST_F(GraphGTest, testDegree) {
 	G.addEdge(3, 4);
 	G.removeNode(2);
 
-	EXPECT_EQ(G.degree(0), 0) << "degree of node 0 should be 0";
-	EXPECT_EQ(G.degree(1), 1) << "degree of node 1 should be 1";
+	EXPECT_EQ(0u, G.degree(0)) << "degree of node 0 should be 0";
+	EXPECT_EQ(1u, G.degree(1)) << "degree of node 1 should be 1";
 	// EXPECT_ANY_THROW(G.degree(2)) << "node 2 should not exist";
-	EXPECT_EQ(G.degree(3), 1) << "degree of node 3 should be 1";
-	EXPECT_EQ(G.degree(4), 2) << "degree of node 4 should be 2";
+	EXPECT_EQ(1u, G.degree(3)) << "degree of node 3 should be 1";
+	EXPECT_EQ(2u, G.degree(4)) << "degree of node 4 should be 2";
 	// EXPECT_ANY_THROW(G.degree(5)) << "node 2 should not exist";
 	// EXPECT_ANY_THROW(G.degree(6)) << "node 2 should not exist";
 }
@@ -240,10 +240,10 @@ TEST_F(GraphGTest, testNumberOfEdges) {
 	Graph G(n);
 
 	G.addEdge(0, 1);
-	EXPECT_EQ(1, G.numberOfEdges()) << "G should have 1 edge now";
+	EXPECT_EQ(1u, G.numberOfEdges()) << "G should have 1 edge now";
 
 	G.addEdge(0, 2);
-	EXPECT_EQ(2, G.numberOfEdges()) << "G should have 2 edges now";
+	EXPECT_EQ(2u, G.numberOfEdges()) << "G should have 2 edges now";
 
 }
 
@@ -286,8 +286,8 @@ TEST_F(GraphGTest, testSubgraphPartitioning) {
 	std::unordered_set<node> subgraphSet = {u,v,w};
 
 	Graph subG = Subgraph::fromNodes(G,subgraphSet);
-	EXPECT_EQ(3, subG.numberOfEdges());
-	EXPECT_EQ(3, subG.numberOfNodes());
+	EXPECT_EQ(3u, subG.numberOfEdges());
+	EXPECT_EQ(3u, subG.numberOfNodes());
 
 }
 
