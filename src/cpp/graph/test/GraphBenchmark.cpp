@@ -63,7 +63,7 @@ TEST_F(GraphBenchmark, edgeInsertions_noop_par) {
 }
 
 TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
-	int64_t n = this->n;
+	count n = this->n;
 	Aux::Timer runtime;
 
 	Graph G(n);

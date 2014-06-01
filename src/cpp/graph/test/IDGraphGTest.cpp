@@ -144,7 +144,7 @@ TYPED_TEST(IDGraphGTest, BFSfrom) {
 	}
 
 	// root on level 0
-	EXPECT_EQ(0, visitedOrder[3]);
+	EXPECT_EQ(0u, visitedOrder[3]);
 
 	// level 1
 	EXPECT_TRUE( (visitedOrder[1] == 1) ^ (visitedOrder[1] == 2) );
@@ -169,7 +169,7 @@ TYPED_TEST(IDGraphGTest, DFSfrom) {
 	}
 
 	// root on level 0
-	EXPECT_EQ(0, visitedOrder[3]);
+	EXPECT_EQ(0u, visitedOrder[3]);
 
 	// level 1
 	EXPECT_TRUE( (visitedOrder[1] == 1) ^ (visitedOrder[2] == 1) );

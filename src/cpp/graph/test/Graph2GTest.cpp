@@ -23,7 +23,7 @@ Graph2GTest::~Graph2GTest() {
 
 
 TEST_F(Graph2GTest, testNumberOfNodes) {
-	int64_t n = 10;
+	count n = 10;
 	Graph G(n);
 
 	EXPECT_EQ(n, G.numberOfNodes()) << "number of nodes should be " << n << " in the graph";
@@ -33,10 +33,10 @@ TEST_F(Graph2GTest, testNumberOfNodes) {
 }
 
 TEST_F(Graph2GTest, testNumberOfEdges) {
-	int64_t n = 10;
+	count n = 10;
 	Graph G(n);
 
-	EXPECT_EQ(0, G.numberOfEdges()) << "no edges should be in the graph";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "no edges should be in the graph";
 
 	G.addEdge(1, 2);
 	G.addEdge(2, 3);
@@ -45,7 +45,7 @@ TEST_F(Graph2GTest, testNumberOfEdges) {
 	EXPECT_TRUE(G.hasEdge(1, 2));
 	EXPECT_TRUE(G.hasEdge(2, 3));
 	EXPECT_TRUE(G.hasEdge(1, 3));
-	EXPECT_EQ(3, G.numberOfEdges()) << "3 edges should have been inserted";
+	EXPECT_EQ(3u, G.numberOfEdges()) << "3 edges should have been inserted";
 
 	G.removeEdge(3, 1);
 	G.removeEdge(2, 1);
@@ -54,12 +54,12 @@ TEST_F(Graph2GTest, testNumberOfEdges) {
 	EXPECT_FALSE(G.hasEdge(1, 2));
 	EXPECT_FALSE(G.hasEdge(2, 3));
 	EXPECT_FALSE(G.hasEdge(1, 3));
-	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "all edges should have been removed";
 }
 
 TEST_F(Graph2GTest, testIsEmpty) {
 	Graph G(0);
-	EXPECT_EQ(0, G.numberOfNodes()) << "no nodes should be in the graph";
+	EXPECT_EQ(0u, G.numberOfNodes()) << "no nodes should be in the graph";
 	EXPECT_TRUE(G.isEmpty());
 
 	// TODO: insert node, check if isEmpty is false, delete nodes again, check if true again
@@ -67,10 +67,10 @@ TEST_F(Graph2GTest, testIsEmpty) {
 
 TEST_F(Graph2GTest, testEdgeInsertionAndRemoval) {
 
-	int64_t n = 10;
+	count n = 10;
 	Graph G(n);
 
-	EXPECT_EQ(0, G.numberOfEdges()) << "no edges should be in the graph";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "no edges should be in the graph";
 
 	G.addEdge(1, 2);
 	G.addEdge(2, 3);
@@ -79,7 +79,7 @@ TEST_F(Graph2GTest, testEdgeInsertionAndRemoval) {
 	EXPECT_TRUE(G.hasEdge(1, 2));
 	EXPECT_TRUE(G.hasEdge(2, 3));
 	EXPECT_TRUE(G.hasEdge(1, 3));
-	EXPECT_EQ(3, G.numberOfEdges()) << "3 edges should have been inserted";
+	EXPECT_EQ(3u, G.numberOfEdges()) << "3 edges should have been inserted";
 
 	G.removeEdge(3, 1);
 	G.removeEdge(2, 1);
@@ -88,11 +88,11 @@ TEST_F(Graph2GTest, testEdgeInsertionAndRemoval) {
 	EXPECT_FALSE(G.hasEdge(1, 2));
 	EXPECT_FALSE(G.hasEdge(2, 3));
 	EXPECT_FALSE(G.hasEdge(1, 3));
-	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "all edges should have been removed";
 }
 
 TEST_F(Graph2GTest, testNodeIteration) {
-	int64_t n = 20;
+	count n = 20;
 	Graph G(n);
 
 	G.forNodes([&](node v) {
@@ -105,7 +105,7 @@ TEST_F(Graph2GTest, testNodeIteration) {
 		G.removeEdge(v, (v+1) % n);
 	});
 
-	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "all edges should have been removed";
 }
 
 
@@ -114,8 +114,8 @@ TEST_F(Graph2GTest, testNodeIteration) {
 //	return;
 //
 //
-//	int64_t n = 500;
-//	int64_t offset = 100;
+//	count n = 500;
+//	count offset = 100;
 //	Graph G(n);
 //
 //	try {
@@ -140,8 +140,8 @@ TEST_F(Graph2GTest, testNodeIteration) {
 //	EXPECT_TRUE(false) << "TODO: implement";
 //	return;
 //
-//	int64_t n = 500;
-//	int64_t offset = 100;
+//	count n = 500;
+//	count offset = 100;
 //	Graph G(n);
 //
 //	G.forNodes([&](node v) {
@@ -163,8 +163,8 @@ TEST_F(Graph2GTest, testNodeIteration) {
 //}
 
 TEST_F(Graph2GTest, testEdgeIteration) {
-	int64_t n = 100;
-	int64_t offset = 20;
+	count n = 100;
+	count offset = 20;
 	Graph G(n);
 
 	G.forNodes([&](node v) {
@@ -179,7 +179,7 @@ TEST_F(Graph2GTest, testEdgeIteration) {
 		DEBUG("have removed edge " , u , ", " , v);
 	});
 
-	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "all edges should have been removed";
 }
 
 //TEST_F(Graph2GTest, testParallelEdgeModification) {
@@ -187,8 +187,8 @@ TEST_F(Graph2GTest, testEdgeIteration) {
 //	return;
 //
 //
-//	int64_t n = 500;
-//	int64_t offset = 100;
+//	count n = 500;
+//	count offset = 100;
 //	Graph G(n);
 //
 //	G.parallelForNodes([&](node v) {
@@ -205,8 +205,8 @@ TEST_F(Graph2GTest, testEdgeIteration) {
 //}
 
 TEST_F(Graph2GTest, testNeighborIteration) {
-	int64_t n = 50;
-	int64_t offset = 10;
+	count n = 50;
+	count offset = 10;
 	Graph G(n);
 
 	G.forNodes([&](node v) {
@@ -222,8 +222,8 @@ TEST_F(Graph2GTest, testNeighborIteration) {
 }
 /*
 TEST_F(Graph2GTest, testParallelSumForNodes) {
-	int64_t n = 500;
-	int64_t offset = 100;
+	count n = 500;
+	count offset = 100;
 	Graph G(n);
 
 	G.parallelForNodes([&](node v) {
@@ -242,7 +242,7 @@ TEST_F(Graph2GTest, testParallelSumForNodes) {
 }
 */
 TEST_F(Graph2GTest, testNodePairIteration) {
-	int64_t n = 50;
+	count n = 50;
 	Graph G(n);
 
 	G.forNodePairs([&](node u, node v) {
@@ -255,12 +255,12 @@ TEST_F(Graph2GTest, testNodePairIteration) {
 		G.removeEdge(u, v);
 	});
 
-	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "all edges should have been removed";
 }
 
 TEST_F(Graph2GTest, testConstNodeIteration) {
-	int64_t n = 500;
-	int64_t offset = 100;
+	count n = 500;
+	count offset = 100;
 	Graph G2(n);
 
 	G2.forNodes([&](node v) {
@@ -270,14 +270,14 @@ TEST_F(Graph2GTest, testConstNodeIteration) {
 	const Graph G(G2);
 	EXPECT_EQ(n, G.numberOfEdges()) << n << " edges should have been inserted";
 	G.forNodes([&](node v) {
-		EXPECT_EQ(2, G.degree(v)) << "degree should be two";
+		EXPECT_EQ(2u, G.degree(v)) << "degree should be two";
 	});
 }
 
 /*
 TEST_F(Graph2GTest, testConstParallelNodeIteration) {
-	int64_t n = 500;
-	int64_t offset = 100;
+	count n = 500;
+	count offset = 100;
 	Graph G2(n);
 
 	G2.parallelForNodes([&](node v) {
@@ -294,8 +294,8 @@ TEST_F(Graph2GTest, testConstParallelNodeIteration) {
 
 
 TEST_F(Graph2GTest, testConstEdgeIteration) {
-	int64_t n = 500;
-	int64_t offset = 100;
+	count n = 500;
+	count offset = 100;
 	Graph G(n);
 
 	G.forNodes([&](node v) {
@@ -313,8 +313,8 @@ TEST_F(Graph2GTest, testConstEdgeIteration) {
 // Will fail, since the data structure is not thread-safe
 /*
 TEST_F(Graph2GTest, testConstParallelEdgeIteration) {
-	int64_t n = 500;
-	int64_t offset = 100;
+	count n = 500;
+	count offset = 100;
 	Graph G(n);
 
 	G.parallelForNodes([&](node v) {
@@ -331,8 +331,8 @@ TEST_F(Graph2GTest, testConstParallelEdgeIteration) {
 */
 
 TEST_F(Graph2GTest, testConstNeighborIteration) {
-	int64_t n = 50;
-	int64_t offset = 10;
+	count n = 50;
+	count offset = 10;
 	Graph G(n);
 
 	G.forNodes([&](node v) {
@@ -349,8 +349,8 @@ TEST_F(Graph2GTest, testConstNeighborIteration) {
 }
 /*
 TEST_F(Graph2GTest, testConstParallelSumForNodes) {
-	int64_t n = 500;
-	int64_t offset = 100;
+	count n = 500;
+	count offset = 100;
 	Graph G(n);
 
 	G.parallelForNodes([&](node v) {
@@ -372,7 +372,7 @@ TEST_F(Graph2GTest, testConstParallelSumForNodes) {
 }*/
 
 TEST_F(Graph2GTest, testConstNodePairIteration) {
-	int64_t n = 50;
+	count n = 50;
 	Graph G(n);
 
 	G.forNodePairs([&](node u, node v) {
@@ -396,7 +396,7 @@ TEST_F(Graph2GTest, testAddNode) {
 	node v = G.addNode();
 	EXPECT_EQ(v, n) << "new node should have id equal to previous n";
 	EXPECT_EQ(newN, G.numberOfNodes()) << "new number of nodes should be " << newN;
-	EXPECT_EQ(0, G.degree(v)) << "new node should have degree 0";
+	EXPECT_EQ(0u, G.degree(v)) << "new node should have degree 0";
 
 }
 
@@ -419,13 +419,13 @@ TEST_F(Graph2GTest, testRemoveNode) {
 		G.removeNode(u);
 	});
 
-	EXPECT_EQ(0, G.numberOfNodes()) << "number of nodes should be zero";
+	EXPECT_EQ(0u, G.numberOfNodes()) << "number of nodes should be zero";
 
 	nc = 0;
 	G.forNodes([&](node u){
 		nc += 1;
 	});
-	EXPECT_EQ(0, nc) << "counter should not be incremented";
+	EXPECT_EQ(0u, nc) << "counter should not be incremented";
 
 
 	// test removing a single node
@@ -442,7 +442,7 @@ TEST_F(Graph2GTest, testRemoveNode) {
 		EXPECT_NE(x, u) << "node x should not be handled";
 	});
 
-	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been removed with x";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "all edges should have been removed with x";
 
 
 }
@@ -489,7 +489,7 @@ TEST_F(Graph2GTest, testNodeDynamics) {
 	}
 
 	EXPECT_EQ(n, G.numberOfNodes());
-	EXPECT_EQ(0, G.numberOfEdges());
+	EXPECT_EQ(0u, G.numberOfEdges());
 
 	for (node u = n; u < 2 * n; ++u) {
 		G.forEdgesOf(u, [&](node u, node v){
@@ -498,7 +498,7 @@ TEST_F(Graph2GTest, testNodeDynamics) {
 		G.removeNode(u);
 	}
 
-	EXPECT_EQ(0, G.numberOfNodes());
+	EXPECT_EQ(0u, G.numberOfNodes());
 
 }
 
@@ -653,9 +653,9 @@ TEST_F(Graph2GTest, testMultiEdgeInsertion) {
 		G.addEdge(u, v);
 	}
 
-	EXPECT_EQ(42, G.numberOfEdges());
-	EXPECT_EQ(42, G.degree(u));
-	EXPECT_EQ(42, G.degree(v));
+	EXPECT_EQ(42u, G.numberOfEdges());
+	EXPECT_EQ(42u, G.degree(u));
+	EXPECT_EQ(42u, G.degree(v));
 }
 
 
@@ -699,8 +699,8 @@ TEST_F(Graph2GTest, testDijkstraPathNumber) {
 	Dijkstra dijkstra(G, 0);
 	dijkstra.run();
 
-	EXPECT_EQ(3, dijkstra.numberOfPaths(5));
-	EXPECT_EQ(1, dijkstra.numberOfPaths(1));
+	EXPECT_EQ(3u, dijkstra.numberOfPaths(5));
+	EXPECT_EQ(1u, dijkstra.numberOfPaths(1));
 }
 
 
@@ -718,7 +718,7 @@ TEST_F(Graph2GTest, tryDijkstraPathReconstruction) {
 
 	auto paths = dijkstra.getPaths(5);
 
-	EXPECT_EQ(2, paths.size());
+	EXPECT_EQ(2u, paths.size());
 
 	for (auto path : paths) {
 		INFO("path: ", path);
