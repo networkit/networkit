@@ -41,32 +41,32 @@ TYPED_TEST(IGraphGTest, addNode) {
 
 	ASSERT_FALSE(G.hasNode(0));
 	ASSERT_FALSE(G.hasNode(1));
-	ASSERT_EQ(0, G.numberOfNodes());
+	ASSERT_EQ(0u, G.numberOfNodes());
 
 	G.addNode();
 	ASSERT_TRUE(G.hasNode(0));
 	ASSERT_FALSE(G.hasNode(1));
-	ASSERT_EQ(1, G.numberOfNodes());
+	ASSERT_EQ(1u, G.numberOfNodes());
 
 	TypeParam G2(2);
 	ASSERT_TRUE(G2.hasNode(0));
 	ASSERT_TRUE(G2.hasNode(1));
 	ASSERT_FALSE(G2.hasNode(2));
-	ASSERT_EQ(2, G2.numberOfNodes());
+	ASSERT_EQ(2u, G2.numberOfNodes());
 
 	G2.addNode();
 	G2.addNode();
 	ASSERT_TRUE(G2.hasNode(2));
 	ASSERT_TRUE(G2.hasNode(3));
 	ASSERT_FALSE(G2.hasNode(4));
-	ASSERT_EQ(4, G2.numberOfNodes());
+	ASSERT_EQ(4u, G2.numberOfNodes());
 }
 
 TYPED_TEST(IGraphGTest, removeNode) {
 	TypeParam G(4);
 	G.addEdge(0, 1);
 
-	ASSERT_EQ(4, G.numberOfNodes());
+	ASSERT_EQ(4u, G.numberOfNodes());
 	ASSERT_TRUE(G.hasNode(0));
 	ASSERT_TRUE(G.hasNode(1));
 	ASSERT_TRUE(G.hasNode(2));
@@ -77,7 +77,7 @@ TYPED_TEST(IGraphGTest, removeNode) {
 
 	G.removeNode(2);
 
-	ASSERT_EQ(3, G.numberOfNodes());
+	ASSERT_EQ(3u, G.numberOfNodes());
 	ASSERT_TRUE(G.hasNode(0));
 	ASSERT_TRUE(G.hasNode(1));
 	ASSERT_FALSE(G.hasNode(2));
@@ -85,7 +85,7 @@ TYPED_TEST(IGraphGTest, removeNode) {
 
 	G.removeNode(3);
 
-	ASSERT_EQ(2, G.numberOfNodes());
+	ASSERT_EQ(2u, G.numberOfNodes());
 	ASSERT_TRUE(G.hasNode(0));
 	ASSERT_TRUE(G.hasNode(1));
 	ASSERT_FALSE(G.hasNode(2));
@@ -95,21 +95,21 @@ TYPED_TEST(IGraphGTest, removeNode) {
 TYPED_TEST(IGraphGTest, addEdge) {
 	TypeParam G(3);
 
-	ASSERT_EQ(G.numberOfEdges(), 0);
+	ASSERT_EQ(0u, G.numberOfEdges());
 	ASSERT_FALSE(G.hasEdge(0, 0));
 	ASSERT_FALSE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
 
 	G.addEdge(0, 1);
 
-	ASSERT_EQ(G.numberOfEdges(), 1);
+	ASSERT_EQ(1u, G.numberOfEdges());
 	ASSERT_FALSE(G.hasEdge(0, 0));
 	ASSERT_TRUE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
 
 	G.addEdge(0, 0);
 
-	ASSERT_EQ(G.numberOfEdges(), 2);
+	ASSERT_EQ(2u, G.numberOfEdges());
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_TRUE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
@@ -121,13 +121,13 @@ TYPED_TEST(IGraphGTest, removeEdge) {
 	G.addEdge(0, 1);
 	G.addEdge(0, 0);
 
-	ASSERT_EQ(2, G.numberOfEdges());
+	ASSERT_EQ(2u, G.numberOfEdges());
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_TRUE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
 
 	G.removeEdge(0, 1);
-	ASSERT_EQ(1, G.numberOfEdges());
+	ASSERT_EQ(1u, G.numberOfEdges());
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_FALSE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
