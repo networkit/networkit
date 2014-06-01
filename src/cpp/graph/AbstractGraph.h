@@ -246,75 +246,67 @@ public:
 	/** NODE ITERATORS **/
 
 	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure).
+	 * Iterate over all nodes of the graph and call fr (lambda closure).
 	 */
-	// template<typename L> void forNodes(L handle) const;
-	void forNodes(FNode f) const;
+	virtual void forNodes(FNode f) const;
 
 	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
+	 * Iterate in parallel over all nodes of the graph and call fr (lambda closure).
 	 */
-	template<typename L> void parallelForNodes(L handle) const;
+	virtual void parallelForNodes(FNode f) const;
 
 	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
+	 * Iterate over all nodes of the graph and call fr (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
-	template<typename C, typename L> void forNodesWhile(C condition, L handle) const;
+	virtual void forNodesWhile(FCondition condition, FNode f) const;
 
 	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
+	 * Iterate over all nodes of the graph and call fr (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
-	template<typename C, typename L> void forNodes(C condition, L handle) const;
+	virtual void forNodes(FNodeCondition condition, FNode f) const;
 
 	/**
-	 * Iterate randomly over all nodes of the graph and call handler (lambda closure).
+	 * Iterate randomly over all nodes of the graph and call fr (lambda closure).
 	 */
-	template<typename L> void forNodesInRandomOrder(L handle) const;
+	virtual void forNodesInRandomOrder(FNode f) const;
 
 	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
+	 * Iterate in parallel over all nodes of the graph and call fr (lambda closure).
 	 * Using schedule(guided) to remedy load-imbalances due to e.g. unequal degree distribution.
 	 */
-	template<typename L> void balancedParallelForNodes(L handle) const;
+	virtual void balancedParallelForNodes(FNode f) const;
 
 	/**
-	 * Iterate over all undirected pairs of nodesand call handler (lambda closure).
+	 * Iterate over all undirected pairs of nodesand call fr (lambda closure).
 	 */
-	template<typename L> void forNodePairs(L handle) const;
+	virtual void forNodePairs(FNodePair f) const;
 
 	/**
-	 * Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure).
+	 * Iterate over all undirected pairs of nodes in parallel and call fr (lambda closure).
 	 */
-	template<typename L> void parallelForNodePairs(L handle) const;
+	virtual void parallelForNodePairs(FNodePair f) const;
 
 
  	/** REDUCTION ITERATORS **/
 
 	/**
-	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
+	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the fr
 	 */
-	template<typename L> double parallelSumForNodes(L handle) const;
+	virtual double parallelSumForNodes(FNodeSum f) const;
 
 
 	/** GRAPH SEARCHES **/
 
-	void BFSfrom(node r, FNode f) const;
+	virtual void BFSfrom(node r, FNode f) const;
 
-	void BFSEdgesfrom(node r, FEdge f) const;
+	virtual void BFSEdgesfrom(node r, FEdge f) const;
 
-	void DFSfrom(node r, FNode f) const;
+	virtual void DFSfrom(node r, FNode f) const;
 	
-	void DFSEdgesfrom(node r, FEdge f) const;
+	virtual void DFSEdgesfrom(node r, FEdge f) const;
 
-	// template<typename L> void BFSfrom(node r, L handle) const;
-
-	// template<typename L> void BFSEdgesfrom(node r, L handle) const;
-
-	// template<typename L> void DFSfrom(node r, L handle) const;
-
-	// template<typename L> void DFSEdgesfrom(node r, L handle) const;
 };
 
 } /* namespace NetworKit */
@@ -322,8 +314,6 @@ public:
 
 /** NODE ITERATORS **/
 
-// template<typename L>
-// inline void NetworKit::AbstractGraph::forNodes(L handle) const {
 inline void NetworKit::AbstractGraph::forNodes(NetworKit::FNode f) const {
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
@@ -332,67 +322,60 @@ inline void NetworKit::AbstractGraph::forNodes(NetworKit::FNode f) const {
 	}
 }
 
-template<typename L>
-inline void NetworKit::AbstractGraph::parallelForNodes(L handle) const {
+inline void NetworKit::AbstractGraph::parallelForNodes(NetworKit::FNode f) const {
 	#pragma omp parallel for
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
-			handle(v);
+			f(v);
 		}
 	}
 }
 
-template<typename C, typename L>
-inline void NetworKit::AbstractGraph::forNodesWhile(C condition, L handle) const {
+inline void NetworKit::AbstractGraph::forNodesWhile(NetworKit::FCondition condition, NetworKit::FNode f) const {
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
 			if (!condition()) {
-				break; // if condition does not hold, break from loop and do not call handle
+				break; // if condition does not hold, break from loop and do not call f
 			}
-			handle(v);
+			f(v);
 
 		}
 	}
 }
 
-template<typename C, typename L>
-inline void NetworKit::AbstractGraph::forNodes(C condition, L handle) const {
+inline void NetworKit::AbstractGraph::forNodes(NetworKit::FNodeCondition condition, NetworKit::FNode f) const {
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
-			if (!condition()) {
-				break; // if condition does not hold, break from loop and do not call handle
+			if (!condition(v)) {
+				f(v);
 			}
-			handle(v);
 		}
 	}
 }
 
-template<typename L>
-void NetworKit::AbstractGraph::forNodesInRandomOrder(L handle) const {
+inline void NetworKit::AbstractGraph::forNodesInRandomOrder(NetworKit::FNode f) const {
 	std::vector<node> randVec = nodes();
 	random_shuffle(randVec.begin(), randVec.end());
 	for (node v : randVec) {
-		handle(v);
+		f(v);
 	}
 }
 
-template<typename L>
-inline void NetworKit::AbstractGraph::balancedParallelForNodes(L handle) const {
+inline void NetworKit::AbstractGraph::balancedParallelForNodes(NetworKit::FNode f) const {
 	#pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
-			handle(v);
+			f(v);
 		}
 	}
 }
 
-template<typename L>
-inline void NetworKit::AbstractGraph::forNodePairs(L handle) const {
+inline void NetworKit::AbstractGraph::forNodePairs(NetworKit::FNodePair f) const {
 	for (node u = 0; u < z; ++u) {
 		if (exists[u]) {
 			for (node v = u + 1; v < z; ++v) {
 				if (exists[v]) {
-					handle(u, v);
+					f(u, v);
 				}
 			}
 		}
@@ -400,31 +383,28 @@ inline void NetworKit::AbstractGraph::forNodePairs(L handle) const {
 	}
 }
 
-template<typename L>
-inline void NetworKit::AbstractGraph::parallelForNodePairs(L handle) const {
+inline void NetworKit::AbstractGraph::parallelForNodePairs(NetworKit::FNodePair f) const {
 	#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		if (exists[u]) {
 			for (node v = u + 1; v < z; ++v) {
 				if (exists[v]) {
-					handle(u, v);
+					f(u, v);
 				}
 			}
 		}
-
 	}
 }
 
 
 /** REDUCTION ITERATORS **/
 
-template<typename L>
-inline double NetworKit::AbstractGraph::parallelSumForNodes(L handle) const {
+inline double NetworKit::AbstractGraph::parallelSumForNodes(NetworKit::FNodeSum f) const {
 	double sum = 0.0;
 	#pragma omp parallel for reduction(+:sum)
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
-			sum += handle(v);
+			sum += f(v);
 		}
 	}
 	return sum;

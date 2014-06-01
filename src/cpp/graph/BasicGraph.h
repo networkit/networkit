@@ -31,11 +31,17 @@ typedef double edgeweight; // edge weight type
 constexpr edgeweight defaultEdgeWeight = 1.0;
 constexpr edgeweight nullWeight = 0.0;
 
+typedef std::function<bool()> FCondition;
+typedef std::function<bool(node)> FNodeCondition;
+
 typedef std::function<void(node)> FNode;
 typedef std::function<void(node, node)> FNodePair;
+typedef std::function<void(node, edgeweight)> FNodeWeighted;
+typedef std::function<double(node)> FNodeSum;
+
 typedef std::function<void(node, node)> FEdge;
-typedef std::function<void(node, node, double)> FEdgeWithWeight;
-typedef std::function<bool()> FCondition;
+typedef std::function<void(node, node, edgeweight)> FEdgeWeighted;
+typedef std::function<double(node, node, edgeweight)> FEdgeWeightedSum;
 
 enum class Weighted {
 	weighted,

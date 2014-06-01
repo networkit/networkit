@@ -319,46 +319,45 @@ public:
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
 	 */
-	// template<typename L> void forNodes(L handle) const {};
 	virtual void forNodes(FNode f) const = 0;
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void parallelForNodes(L handle) const {};
+	virtual void parallelForNodes(FNode N) const = 0;
 
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
-	template<typename C, typename L> void forNodesWhile(C condition, L handle) const {};
+	virtual void forNodesWhile(FCondition condition, FNode f) const = 0;
 
 	/**
 	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
-	template<typename C, typename L> void forNodes(C condition, L handle) const {};
+	virtual void forNodes(FNodeCondition condition, FNode f) const = 0;
 
 	/**
 	 * Iterate randomly over all nodes of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void forNodesInRandomOrder(L handle) const {};
+	virtual void forNodesInRandomOrder(FNode f) const = 0;
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
 	 * Using schedule(guided) to remedy load-imbalances due to e.g. unequal degree distribution.
 	 */
-	template<typename L> void balancedParallelForNodes(L handle) const {};
+	virtual void balancedParallelForNodes(FNode f) const = 0;
 
 	/**
 	 * Iterate over all undirected pairs of nodesand call handler (lambda closure).
 	 */
-	template<typename L> void forNodePairs(L handle) const {};
+	virtual void forNodePairs(FNodePair f) const = 0;
 
 	/**
 	 * Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure).
 	 */
-	template<typename L> void parallelForNodePairs(L handle) const {};
+	virtual void parallelForNodePairs(FNodePair f) const = 0;
 
 
  	/** REDUCTION ITERATORS **/
@@ -366,7 +365,7 @@ public:
 	/**
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
 	 */
-	template<typename L> double parallelSumForNodes(L handle) const { return 0.0; };
+	virtual double parallelSumForNodes(FNodeSum f) const = 0;
 
 
 	/** EDGE ITERATORS **/
@@ -374,27 +373,26 @@ public:
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
-	// template<typename L> void forEdges(L handle) const {};
 	virtual void forEdges(FEdge f) const = 0;
 
 	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
 	 */
-	template<typename L> void parallelForEdges(L handle) const {};
+	virtual void parallelForEdges(FEdge f) const = 0;
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 *
 	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
 	 */
-	template<typename L> void forWeightedEdges(L handle) const {};
+	virtual void forWeightedEdges(FEdgeWeighted f) const = 0;
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 *
 	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
 	 */
-	template<typename L> void parallelForWeightedEdges(L handle) const {};
+	virtual void parallelForWeightedEdges(FEdgeWeighted f) const = 0;
 
 	/**
 	 * Iterate over all edges of the const graph and call handler (lambda closure).
@@ -403,7 +401,7 @@ public:
 	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
 	 *
 	 */
-	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const {};
+	virtual void forEdgesWithAttribute_double(int attrId, FEdgeWeighted f) const = 0;
 
 
 	/** NEIGHBORHOOD ITERATORS **/
@@ -411,18 +409,17 @@ public:
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 */
-	// template<typename L> void forNeighborsOf(node u, L handle) const {}
 	virtual void forNeighborsOf(node u, FNode handle) const = 0;
 
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forWeightedNeighborsOf(node u, L handle) const {}
+	virtual void forWeightedNeighborsOf(node u, FNodeWeighted f) const = 0;
 
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forEdgesOf(node u, L handle) const {}
+	virtual void forEdgesOf(node u, FEdge f) const = 0;
 
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
@@ -430,7 +427,7 @@ public:
 	 * Handle takes parameters (u, v, w) where w is the edge weight.
 	 *
 	 */
-	template<typename L> void forWeightedEdgesOf(node u, L handle) const {}
+	virtual void forWeightedEdgesOf(node u, FEdgeWeighted f) const = 0;
 
 
 	/** REDUCTION ITERATORS **/
@@ -438,7 +435,7 @@ public:
 	/**
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
 	 */
-	template<typename L> double parallelSumForWeightedEdges(L handle) const;
+	virtual double parallelSumForWeightedEdges(FEdgeWeightedSum f) const = 0;
 
 
 	/** GRAPH SEARCHES **/
@@ -450,14 +447,6 @@ public:
 	virtual void DFSfrom(node r, FNode f) const = 0;
 	
 	virtual void DFSEdgesfrom(node r, FEdge f) const = 0;
-
-	// template<typename L> void BFSfrom(node r, L handle) const;
-
-	// template<typename L> void BFSEdgesfrom(node r, L handle) const;
-
-	// template<typename L> void DFSfrom(node r, L handle) const;
-
-	// template<typename L> void DFSEdgesfrom(node r, L handle) const;
 
 };
 
