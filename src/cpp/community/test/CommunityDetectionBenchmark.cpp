@@ -51,7 +51,7 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 
 		auto communitySizes = zeta.subsetSizes();
 
-		printf("%s on %s: %.1f s\n\t# communities: %lu\n\tmodularity: %f\n",
+		printf("%s on %s: %.1f s\n\t# communities: %llu\n\tmodularity: %f\n",
 			it->first.c_str(), graph.c_str(),
 			timer.elapsedMilliseconds() / 1000.0,
 			zeta.numberOfSubsets(),
@@ -80,7 +80,7 @@ TEST_F(CommunityDetectionBenchmark, timeCentralities) {
 		timer.stop();
 		auto ranking = it->second->ranking();
 
-		printf("%s: %.1f s\n\tranking: [(%lu: %f), (%lu: %f), ...]\n",
+		printf("%s: %.1f s\n\tranking: [(%llu: %f), (%llu: %f), ...]\n",
 			it->first.c_str(),
 			timer.elapsedMilliseconds() / 1000.0,
 			ranking[0].first, ranking[0].second,
