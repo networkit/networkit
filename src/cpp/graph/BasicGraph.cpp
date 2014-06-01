@@ -303,8 +303,51 @@ bool BasicGraph<w, d>::hasEdge(node u, node v) const {
 
 template<Weighted w, Directed d>
 node BasicGraph<w, d>::mergeEdge(node u, node v, bool discardSelfLoop) {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+
+
+	if (u != v) {
+		node newNode = addNode();
+
+		// self-loop if necessary
+		if (! discardSelfLoop) {
+			edgeweight selfLoopWeight = this->weight(u, u) + this->weight(v, v) + this->weight(u, v);
+			this->addEdge(newNode, newNode, selfLoopWeight);
+		}
+
+		// rewire edges from u to newNode
+		this->forWeightedEdgesOf(u, [&](node u, node neighbor, edgeweight weight) {
+			if (neighbor != u && neighbor != v) {
+				this->increaseWeight(neighbor, newNode, this->weight(u, neighbor)); // TODO: make faster
+			}
+		});
+
+		// rewire edges from v to newNode
+		this->forWeightedEdgesOf(v, [&](node v, node neighbor, edgeweight weight) {
+			if (neighbor != v && neighbor != u) {
+				this->increaseWeight(neighbor, newNode, this->weight(v, neighbor));  // TODO: make faster
+			}
+		});
+
+		// delete edges of nodes to delete
+		this->forEdgesOf(u, [&](node u, node neighbor) {
+			this->removeEdge(u, neighbor);
+		});
+		this->forEdgesOf(v, [&](node v, node neighbor) {
+			this->removeEdge(v, neighbor);
+		});
+
+
+		// delete nodes
+		this->removeNode(u);
+		this->removeNode(v);
+
+
+		return newNode;
+	}
+
+	// no new node created
+	return none;
+	//throw std::runtime_error("TODO");
 }
 
 
@@ -643,35 +686,189 @@ void BasicGraph<w, d>::forEdgesWithAttribute_double(int attrId, L handle) const 
 
 /** NEIGHBORHOOD ITERATORS **/
 
-template<Weighted w, Directed d>
+/*template<Weighted w, Directed d>
 template<typename L>
 void BasicGraph<w, d>::forNeighborsOf(node u, L handle) const {
 	// ToDo implement
 	throw std::runtime_error("TODO");
+}*/
+
+template<Weighted w, typename L>
+void forNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
+
+	for (node v : G.adja[u]) {
+		if (v != none) {
+			handle(v);
+		}
+	}
+
 }
 
-template<Weighted w, Directed d>
+template<Weighted w, typename L>
+void forNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+
+	for (node v : G.InEdges[u]) {
+		if (v != none) {
+			handle(v);
+		}
+	}
+
+	for (node v : G.OutEdges[u]) {
+		if (v != none) {
+			handle(v);
+		}
+	}
+	
+
+}
+
+
+/*template<Weighted w, Directed d>
 template<typename L>
 void BasicGraph<w, d>::forWeightedNeighborsOf(node u, L handle) const {
 	// ToDo implement
 	throw std::runtime_error("TODO");
+}*/
+
+template<Weighted w, typename L>
+void forWeightedNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
+
+if (w ==Weighted::weighted) {
+		for (index i = 0; i < (index) G.adja[u].size(); i++) {
+			node v = G.adja[u][i];
+			if (v != none) {
+				edgeweight ew = G.edgeWeights[u][i];
+				handle(v, ew);
+				assert(ew == weight(u, v));
+			}
+		}
+	} else {
+		for (index i = 0; i < (index) G.adja[u].size(); i++) {
+			node v = G.adja[u][i];
+			if (v != none) {
+				handle(v, defaultEdgeWeight);
+			}
+		}
+	}
+
 }
 
-template<Weighted w, Directed d>
+template<Weighted w, typename L>
+void forWeightedNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+
+if (w == Weighted::weighted) {
+		for (index i = 0; i < (index) G.InEdges[u].size(); i++) {
+			node v = G.InEdges[u][i];
+			if (v != none) {
+				edgeweight ew = G.edgeWeights[u][i];
+				handle(v, ew);
+				assert(ew == weight(u, v));
+			}
+		}
+		
+		for (index i = 0; i < (index) G.OutEdges[u].size(); i++) {
+			node v = G.OutEdges[u][i];
+			if (v != none) {
+				edgeweight ew = G.edgeWeights[u][i];
+				handle(v, ew);
+				assert(ew == weight(u, v));
+			}
+		}
+		
+	} else {
+		for (index i = 0; i < (index) G.InEdges[u].size(); i++) {
+			node v = G.InEdges[u][i];
+			if (v != none) {
+				handle(v, defaultEdgeWeight);
+			}
+		}
+	}
+}
+
+/*template<Weighted w, Directed d>
 template<typename L>
 void BasicGraph<w, d>::forEdgesOf(node u, L handle) const {
 	// ToDo implement
 	throw std::runtime_error("TODO");
+}*/
+
+template<Weighted w, typename L>
+void forEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
+
+	for (node v : G.adja[u]) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
+
 }
 
-template<Weighted w, Directed d>
-template<typename L>
-void BasicGraph<w, d>::forWeightedEdgesOf(node u, L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+template<Weighted w, typename L>
+void forEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+
+	for (node v : G.InEdges[u]) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
+
+		for (node v : G.OutEdges[u]) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
 }
 
+template<Weighted w, typename L>
+void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
 
+	for (index i = 0; i < G.adja[u].size(); ++i) {
+		node v = G.adja[u][i];
+		if (v != none) {
+			if (Weighted::weighted == w) {
+				edgeweight weight = G.edgeWeights[u][i];
+				handle(u, v, weight);
+			} else {
+				handle(u, v, defaultEdgeWeight);
+			}
+		}
+	}
+}
+
+template<Weighted w, typename L>
+void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+
+	for(index i = 0; i < G.InEdges[u].size(); ++i) {
+		node v = G.InEdges[u][i]; 
+		if(v != none) {
+			if(Weighted::weighted == w) {
+				edgeweight weight = G.edgeWeights[v][u];
+				handle(v, u, weight);
+			}else{
+				handle(v, u, defaultEdgeWeight);
+			}
+
+		}
+
+	}
+
+	for(index i = 0; i < G.OutEdges[u].size(); ++i) {
+		node v = G.OutEdges[u][i]; 
+		if(v != none) {
+			if(Weighted::weighted == w) {
+				edgeweight weight = G.edgeWeights[u][v];
+				handle(u, v, weight);
+			}else{
+				handle(u, v, defaultEdgeWeight);
+			}
+
+		}
+
+	}
+	
+
+
+}
 /** REDUCTION ITERATORS **/
 
 template<Weighted w, Directed d>

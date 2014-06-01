@@ -68,7 +68,7 @@ private:
 	// per node data
 	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
-
+	std::vector<std::vector<edgeweight> > edgeWeights;
 	// user-defined edge attributes
 	// attribute maps storage
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
@@ -227,6 +227,7 @@ public:
 	 *
 	 * @return New node that has been created if u != v. Otherwise none.
 	 */
+
 	node mergeEdge(node u, node v, bool discardSelfLoop = true);
 
 
@@ -474,15 +475,24 @@ public:
 	 */
 	template<typename L> void forNeighborsOf(node u, L handle) const;
 
+	template<Weighted w, typename L> 
+	friend void forNeighborsOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
+
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
 
+	template<Weighted w, typename L> 
+	friend void forWeightedNeighborsOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
+
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forEdgesOf(node u, L handle) const;
+
+	template<Weighted w, typename L> 
+	friend void forEdgesOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
@@ -490,7 +500,12 @@ public:
 	 * Handle takes parameters (u, v, w) where w is the edge weight.
 	 *
 	 */
-	template<typename L> void forWeightedEdgesOf(node u, L handle) const;
+
+	template<Weighted w, typename L> 
+	friend void forWeightedEdgesOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
+
+	template<typename L> void forWeightedEdgesOf(node u, L handle) const {forWeightedEdgesOf_impl(*this, u, handle);};
+
 
 
 	/** REDUCTION ITERATORS **/
