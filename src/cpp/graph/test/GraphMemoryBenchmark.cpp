@@ -33,15 +33,16 @@ TEST_F(GraphMemoryBenchmark, shrinkToFitForErdosRenyi) {
 		count after = G.getMemoryUsage();
 
 		bool useMS = timerShrink.elapsedMicroseconds() > 5000;
-		printf("G(n = %lu, m = %lu), generation took %.1f s, memory used before shrink: %.1f KB, memory used after shrink: %.1f KB, relative saving: %.4f, shrinking took %lu %s\n",
+		printf("G(n = %lu, m = %lu), generation took %.1f s, memory used before shrink: %.1f MB, memory used after shrink: %.1f MB, relative saving: %.3f, shrinking took %lu %s, relative time increase: %.3f\n",
 			G.numberOfNodes(),
 			G.numberOfEdges(),
 			timerGen.elapsedMilliseconds() / 1000.0,
-			before  / 1024.0,
-			after / 1024.0,
+			before  / 1024.0 / 1024.0,
+			after / 1024.0 / 1024.0,
 			1.0 - (double) after / before,
 			useMS ? timerShrink.elapsedMilliseconds() : timerShrink.elapsedMicroseconds(),
-			useMS ? "ms" : "us");
+			useMS ? "ms" : "us",
+			(timerGen.elapsedMicroseconds() + timerShrink.elapsedMicroseconds()) / (double) timerGen.elapsedMicroseconds());
 	}
 }
 
@@ -62,16 +63,17 @@ TEST_F(GraphMemoryBenchmark, shrinkToFitForGraphReader) {
 		count after = G.getMemoryUsage();
 
 		bool useMS = timerShrink.elapsedMicroseconds() > 5000;
-		printf("G(n = %lu, m = %lu), reading %s took %.1f ms, memory used before shrink: %.1f KB, memory used after shrink: %.1f KB, relative saving: %.4f, shrinking took %lu %s\n",
+		printf("G(n = %lu, m = %lu), reading %s took %.1f s, memory used before shrink: %.1f MB, memory used after shrink: %.1f MB, relative saving: %.3f, shrinking took %lu %s, relative time increase: %.3f\n",
 			G.numberOfNodes(),
 			G.numberOfEdges(),
 			graphFile.c_str(),
 			timerRead.elapsedMilliseconds() / 1000.0,
-			before / 1024.0,
-			after / 1024.0,
+			before / 1024.0 / 1024.0,
+			after / 1024.0 / 1024.0,
 			1.0 - (double) after / before,
 			useMS ? timerShrink.elapsedMilliseconds() : timerShrink.elapsedMicroseconds(),
-			useMS ? "ms" : "us");
+			useMS ? "ms" : "us",
+			(timerRead.elapsedMicroseconds() + timerShrink.elapsedMicroseconds()) / (double) timerRead.elapsedMicroseconds());
 	}
 }
 
