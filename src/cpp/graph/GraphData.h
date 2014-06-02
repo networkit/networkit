@@ -21,6 +21,7 @@ struct UnweightedData {
 	count getMemoryUsage() const { return 0; }
 	void shrinkToFit() {}
 	void addNode() {}
+	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight) {}
 };
 
 struct WeightedData {
@@ -29,6 +30,9 @@ struct WeightedData {
 	count getMemoryUsage() const;
 	void shrinkToFit();
 	void addNode();
+	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight) {
+		edgeWeights[u].push_back(ew);
+	}
 };
 
 struct UndirectedData {

@@ -12,7 +12,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../BasicGraph.h"
+#include "../../Globals.h"
 
 namespace NetworKit {
 
