@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-Graph SimmelianBackbone::calculate(const Graph& g, const int& maxRank, const int& minOverlap) {
+Graph SimmelianBackbone::calculate(const Graph& g, const count& maxRank, const count& minOverlap) {
 	ChibaNishizekiTriangleCounter counter;
 
 	edgeCountMap triangles = counter.triangleCounts(g);
@@ -28,7 +28,7 @@ Graph SimmelianBackbone::calculate(const Graph& g, const int& maxRank, const int
 	}
 
 	g.forEdges([&](node u, node v) {
-		int overlap = getOverlap(neighbors[u], neighbors[v], maxRank);
+		count overlap = getOverlap(neighbors[u], neighbors[v], maxRank);
 		if (overlap >= minOverlap)
 			backboneGraph.addEdge(u, v);
 	});
@@ -52,8 +52,8 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 		std::sort(neighbors[u].begin(), neighbors[u].end());
 
 		//Calculate the ranks. TODO: These first two steps could be combined for performance gain.
-		int currentRank = 0;	//Rank 1 is considered the best.
-		int currentSimmelianness = std::numeric_limits<int>::max();
+		count currentRank = 0;	//Rank 1 is considered the best.
+		count currentSimmelianness = std::numeric_limits<count>::max();
 		for (auto& edge : neighbors[u]) {
 			if (edge.simmelianness < currentSimmelianness) {
 				currentRank++;
@@ -67,8 +67,8 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 
 }
 
-int SimmelianBackbone::getOverlap(const RankedNeighbors& egoNeighbors, const RankedNeighbors& alterNeighbors, const int& maxRank) {
-	int overlap = 0;
+count SimmelianBackbone::getOverlap(const RankedNeighbors& egoNeighbors, const RankedNeighbors& alterNeighbors, const count& maxRank) {
+	count overlap = 0;
 
 	std::vector<RankedEdge>::const_iterator egoIt = egoNeighbors.begin();
 	std::vector<RankedEdge>::const_iterator alterIt = alterNeighbors.begin();
@@ -82,7 +82,7 @@ int SimmelianBackbone::getOverlap(const RankedNeighbors& egoNeighbors, const Ran
 
 	//TODO: identified (nodes that are incident to an edge)
 	//TODO: jaccard index
-	for (int rank = 1; rank <= maxRank; rank++) {
+	for (count rank = 1; rank <= maxRank; rank++) {
 		matchNeighbors(egoIt, egoNeighbors, egoNeighborsUnmatched, alterNeighborsUnmatched, rank, overlap);
 		matchNeighbors(alterIt, alterNeighbors, alterNeighborsUnmatched, egoNeighborsUnmatched, rank, overlap);
 	}
@@ -98,8 +98,8 @@ void SimmelianBackbone::matchNeighbors(
 	const RankedNeighbors& egoNeighbors,
 	std::set<node>& egoNeighborsUnmatched,
 	std::set<node>& alterNeighborsUnmatched,
-	const int& rank,
-	int& overlap) {
+	const count& rank,
+	count& overlap) {
 
 	for (; egoIt != egoNeighbors.end() && egoIt->rank == rank; egoIt++) {
 		node other = egoIt->alter;

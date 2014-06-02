@@ -22,13 +22,13 @@ namespace NetworKit {
 struct RankedEdge {
 	node ego;
 	node alter;
-	int simmelianness; 	//The number of triangles the edge is embedded in.
-	int rank; 			//The rank within the ranked neighborhood.
+	count simmelianness; 	//The number of triangles the edge is embedded in.
+	count rank; 			//The rank within the ranked neighborhood.
 
-	RankedEdge (node ego, node alter, int s) : ego(ego), alter(alter), simmelianness(s), rank(0) {
+	RankedEdge (node ego, node alter, count s) : ego(ego), alter(alter), simmelianness(s), rank(0) {
 	}
 
-	RankedEdge (node ego, node alter, int s, int r) : ego(ego), alter(alter), simmelianness(s), rank(r) {
+	RankedEdge (node ego, node alter, count s, count r) : ego(ego), alter(alter), simmelianness(s), rank(r) {
 	}
 
 	bool operator<(const RankedEdge& other) const {
@@ -40,7 +40,7 @@ struct RankedEdge {
 	}
 
 	bool operator==(const RankedEdge& other) const {
-		return simmelianness == other.simmelianness && alter == other.alter; //TODO: compare ego as well?
+		return simmelianness == other.simmelianness && alter == other.alter;
 	}
 };
 
@@ -58,7 +58,7 @@ public:
 	 * @param maxRank 		the maximum rank that is considered for overlap calculation
 	 * @param minOverlap	a minimum number of common top-maxRank neighbors
 	 */
-	Graph calculate(const Graph& g, const int& maxRank, const int& minOverlap);
+	Graph calculate(const Graph& g, const count& maxRank, const count& minOverlap);
 
 	count test();
 
@@ -67,13 +67,13 @@ private:
 	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhood);
 	FRIEND_TEST(SimmelianBackboneGTest, testOverlapFiltering);
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, edgeCountMap& triangles);
-	int getOverlap(const RankedNeighbors& first, const RankedNeighbors& second, const int& maxRank);
+	count getOverlap(const RankedNeighbors& first, const RankedNeighbors& second, const count& maxRank);
 	void matchNeighbors(std::vector<RankedEdge>::const_iterator& egoIt,
 						const RankedNeighbors& egoNeighbors,
 						std::set<node>& egoNeighborsUnmatched,
 						std::set<node>& alterNeighborsUnmatched,
-						const int& rank,
-						int& overlap);
+						const count& rank,
+						count& overlap);
 };
 
 } /* namespace NetworKit */

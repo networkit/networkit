@@ -21,9 +21,14 @@ public:
 	/**
 	 * Calculates the backbone graph for the given input graph.
 	 */
-	virtual Graph calculate(const Graph& g, const int& maxRank, const int& minOverlap) = 0;
+	virtual Graph calculate(const Graph& g, const count& maxRank, const count& minOverlap) = 0;
 
 	virtual count test() = 0;
+
+	/** only to be used by cython - this eliminates an unnecessary copy */
+	Graph* _calculate(const Graph& g, const count& maxRank, const count& minOverlap) {
+		return new Graph{std::move(calculate(g, maxRank, minOverlap))};
+	};
 };
 
 } /* namespace NetworKit */
