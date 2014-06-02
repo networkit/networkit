@@ -512,18 +512,9 @@ public:
 	friend void forEdgesOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
-	 * Iterate over all incident outgoing edges of a node and call handler (lambda closure).
-	 */
-	template<typename L> void forOutEdgesOf(node u, L handle) const;
-
-	template<Weighted w, typename L> 
-	friend void forOutEdgesOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
-	
-	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 *
 	 * Handle takes parameters (u, v, w) where w is the edge weight.
-	 *
 	 */
 	template<typename L> void forWeightedEdgesOf(node u, L handle) const { forWeightedEdgesOf_impl(*this, u, handle); };
 
@@ -558,7 +549,6 @@ public:
 
 	template<Weighted w, typename L>
 	friend void BFSEdgesfrom_impl(const BasicGraph<w, directed>& G, L handle);
-	
 
 	template<typename L> void DFSfrom(node r, L handle) const;
 
