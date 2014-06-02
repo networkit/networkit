@@ -1076,8 +1076,8 @@ double parallelSumForNodes_impl(const BasicGraph<w, Directed::directed>& G, L ha
 /** GRAPH SEARCHES **/
 
 template<Weighted w, Directed d>
-template <typename L>
-void BasicGraph<w, d>::BFSfrom(node r, L handle) {
+template<typename L>
+void BasicGraph<w, d>::BFSfrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::queue<node> q;
 	q.push(r); // enqueue root
@@ -1098,7 +1098,7 @@ void BasicGraph<w, d>::BFSfrom(node r, L handle) {
 
 template<Weighted w, Directed d>
 template<typename L>
-void BasicGraph<w, d>::BFSEdgesfrom(node r, L handle) {
+void BasicGraph<w, d>::BFSEdgesfrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::queue<node> q;
 	q.push(r); // enqueue root
@@ -1119,7 +1119,7 @@ void BasicGraph<w, d>::BFSEdgesfrom(node r, L handle) {
 
 template<Weighted w, Directed d>
 template<typename L>
-void BasicGraph<w, d>::DFSfrom(node r, L handle) {
+void BasicGraph<w, d>::DFSfrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::stack<node> s;
 	s.push(r); // enqueue root
@@ -1140,7 +1140,7 @@ void BasicGraph<w, d>::DFSfrom(node r, L handle) {
 
 template<Weighted w, Directed d>
 template<typename L>
-void BasicGraph<w, d>::DFSEdgesfrom(node r, L handle) {
+void BasicGraph<w, d>::DFSEdgesfrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::stack<node> s;
 	s.push(r); // enqueue root
