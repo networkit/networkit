@@ -51,7 +51,24 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	HyperbolicSpace space(R);
 
 	for (index i = 0; i < closeToOne.size(); i++) {
+		ASSERT_LE(closeToOne[i], n);
 		EXPECT_LE(space.getDistance(angles[comparison], radii[comparison], angles[closeToOne[i]], radii[closeToOne[i]]), R);
+		for (index j = 0; j < i; j++) {
+			EXPECT_NE(closeToOne[i], closeToOne[j]);
+		}
+	}
+
+	for (index i = 0; i < n; i++) {
+		if (space.getDistance(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
+			bool found = false;
+			for (index j = 0; j < closeToOne.size(); j++) {
+				if (closeToOne[j] == i) {
+					found = true;
+					break;
+				}
+			}
+			EXPECT_TRUE(found);
+		}
 	}
 }
 
