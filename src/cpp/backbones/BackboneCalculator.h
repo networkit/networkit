@@ -21,7 +21,7 @@ public:
 	/**
 	 * Calculates the backbone graph for the given input graph.
 	 */
-	virtual Graph calculate(const Graph& g) = 0;
+	virtual Graph calculate(const Graph& g, const int& maxRank, const int& minOverlap) = 0;
 
 	virtual count test() = 0;
 };
