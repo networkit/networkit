@@ -2,7 +2,7 @@
  * HyperbolicSpace.h
  *
  *  Created on: 20.05.2014
- *      Author: moritz
+ *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
 #ifndef HYPERBOLICSPACE_H_

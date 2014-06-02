@@ -2,7 +2,7 @@
  * QuadTreeTest.cpp
  *
  *  Created on: 28.05.2014
- *      Author: moritz
+ *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
 #include "QuadTreeTest.h"
