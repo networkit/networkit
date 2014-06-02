@@ -593,4 +593,6 @@ using IWeigehtedGraph = BasicGraph<Weighted::weighted, d>;
 
 } /* namespace NetworKit */
 
+#include "BasicGraph.tpp"
+
 #endif /* BASICGRAPH_H_ */
