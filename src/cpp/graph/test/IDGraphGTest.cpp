@@ -11,13 +11,12 @@
 
 #include "../Graph.h"
 #include "../DirectedGraph.h"
-// #include "../BasicGraph.h"
+#include "../BasicGraph.h"
 
 namespace NetworKit {
 
 using testing::Types;
-typedef Types<DirectedGraph> dgraphImplementations;
-// typedef Types<DirectedGraph, DirectedGraph_T> dgraphImplementations;
+typedef Types<DirectedGraph, DirectedGraph_T> dgraphImplementations;
 TYPED_TEST_CASE(IDGraphGTest, dgraphImplementations);
 
 template <typename T>

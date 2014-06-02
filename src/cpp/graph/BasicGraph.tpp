@@ -241,8 +241,8 @@ void addEdge_impl(BasicGraph<w, Directed::directed>& G, node u, node v, edgeweig
 	assert (G.exists[v]);
 
 	G.m++; // increasing the number of edges
-	G.inDeg[u]++;
-	G.outDeg[v]++;
+	G.outDeg[u]++;
+	G.inDeg[v]++;
 
 	G.outEdges[u].push_back(v);
 	G.inEdges[v].push_back(u);
