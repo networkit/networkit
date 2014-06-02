@@ -17,13 +17,6 @@ namespace NetworKit {
 
 namespace graph_impl {
 
-/** Explicit template instantiations **/
-
-// template class BasicGraph<Weighted::unweighted, Directed::undirected>;
-// template class BasicGraph<Weighted::weighted, Directed::undirected>;
-// template class BasicGraph<Weighted::unweighted, Directed::directed>;
-// template class BasicGraph<Weighted::weighted, Directed::directed>;
-
 
 /** CONSTRUCTORS **/
 
@@ -137,12 +130,13 @@ void BasicGraph<w, d>::removeNode(node v) {
 	assert (exists[v]);
 
 	if (!isIsolated(v)) {
-		throw std::runtime_error("nodes must have degree 0 before they can be removed");
+		throw std::runtime_error("nodes must be isolated (degree 0) before they can be removed");
 	}
 
 	exists[v] = false;
 	n--;
 }
+
 
 /** NODE PROPERTIES **/
 
@@ -156,7 +150,6 @@ count degree_impl(const BasicGraph<w, Directed::directed>& G, node v) {
 	return G.outDeg[v];
 }
 
-
 template<Weighted w>
 bool isIsolated_impl(const BasicGraph<w, Directed::undirected>& G, node v) {
 	return G.deg[v] == 0;
@@ -164,16 +157,16 @@ bool isIsolated_impl(const BasicGraph<w, Directed::undirected>& G, node v) {
 
 template<Weighted w>
 bool isIsolated_impl(const BasicGraph<w, Directed::directed>& G, node v) {
-	return G.inDeg[v] == 0 && G.outDeg[v];
+	return G.inDeg[v] == 0 && G.outDeg[v] == 0;
 }
 
 template<Weighted w, Directed d>
 edgeweight BasicGraph<w, d>::weightedDegree(node v) const {
 	if (w == Weighted::weighted) {
 		edgeweight sum = 0.0;
-		// forWeightedNeighborsOf_impl(*this, v, [&](node u, edgeweight ew) {
-		// 	sum += ew;
-		// });
+		forWeightedNeighborsOf(v, [&](node u, edgeweight ew) {
+			sum += ew;
+		});
 		return sum;
 	}
 	return defaultEdgeWeight * degree(v);
@@ -185,7 +178,7 @@ node BasicGraph<w, d>::randomNode() const {
 
 	node v;
 	do {
-		v = Aux::Random::integer(z);
+		v = Aux::Random::integer(z - 1);
 	} while (!exists[v]);
 
 	return v;
@@ -310,6 +303,7 @@ void removeEdge_impl(BasicGraph<w, Directed::directed>& G, node u, node v) {
 		// decrement degree counters
 		G.inDeg[u]--;
 		G.outDeg[v]--;
+
 		// if (w == Weighted::weighted) {
 		// 	// remove edge weight
 		// 	G.edgeWeights[u][vi] = G.nullWeight;
@@ -322,7 +316,7 @@ void removeEdge_impl(BasicGraph<w, Directed::directed>& G, node u, node v) {
 
 template<Weighted w, Directed d>
 bool BasicGraph<w, d>::hasEdge(node u, node v) const {
-	return find(u, v) != none;
+	return DData::indexInEdgeArray(u, v) != none;
 }
 
 template<Weighted w, Directed d>
@@ -379,11 +373,11 @@ node BasicGraph<w, d>::mergeEdge(node u, node v, bool discardSelfLoop) {
 template<Weighted w, Directed d>
 count BasicGraph<w, d>::numberOfSelfLoops() const {
 	count c = 0;
-	// forEdges_impl(*this, [&](node u, node v) {
-	// 	if (u == v) {
-	// 		c += 1;
-	// 	}
-	// });
+	forEdges([&](node u, node v) {
+		if (u == v) {
+			c += 1;
+		}
+	});
 	return c;
 }
 
@@ -594,15 +588,6 @@ void BasicGraph<w, d>::forNodes(L handle) const {
 		}
 	}
 }
-
-// template<Weighted w, Directed d, typename L>
-// void forNodes_impl(const BasicGraph<w, d>& G, L handle) {
-// 	for (node v = 0; v < G.z; ++v) {
-// 		if (G.exists[v]) {
-// 			handle(v);
-// 		}
-// 	}
-// }
 
 template<Weighted w, Directed d>
 template<typename L>
@@ -980,34 +965,12 @@ void forEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L han
 
 template<Weighted w, typename L>
 void forEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
-
-	for (node v : G.inEdges[u]) {
-		if (v != none) {
-			handle(u, v);
-		}
-	}
-
-		for (node v : G.outEdges[u]) {
+	for (node v : G.outEdges[u]) {
 		if (v != none) {
 			handle(u, v);
 		}
 	}
 }
-
-template<Weighted w, typename L>
-void forOutEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
-
-	for (node v : G.OutEdges[u]) {
-		if (v != none) {
-			handle(u, v);
-		}
-	}
-
-}
-
-template<Weighted w, typename L>
-void forOutEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) = delete;
-
 
 template<Weighted w, typename L>
 void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {

@@ -122,6 +122,8 @@ TYPED_TEST(BasicGraphGTest, addEdge) {
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_TRUE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
+
+	// TODO weights?
 }
 
 TYPED_TEST(BasicGraphGTest, removeEdge) {
@@ -140,6 +142,8 @@ TYPED_TEST(BasicGraphGTest, removeEdge) {
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_FALSE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
+
+	// TODO weights?
 }
 
 TYPED_TEST(BasicGraphGTest, isEmpty) {
