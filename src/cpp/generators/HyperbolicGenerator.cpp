@@ -2,7 +2,7 @@
  * HyperbolicGenerator.cpp
  *
  *  Created on: 20.05.2014
- *      Author: moritz
+ *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
 #include <cstdlib>
@@ -59,14 +59,17 @@ Graph HyperbolicGenerator::generate(count n, double stretchradius) {
 		quad.addContent(i, angles[i], radii[i]);
 	}
 
+	#pragma omp parallel for
 	for (index i = 0; i < n; i++) {
 			vector<index> near = quad.getCloseElements(angles[i], radii[i], R);
 			for (index j : near) {
 				if (i < j) {//we only want to add the edges once for each pair
+					#pragma omp critical
 					result.addEdge(i,j);
 				}
 			}
 		}
+
 	return result;
 }
 }
