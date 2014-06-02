@@ -9,7 +9,7 @@
 #define GRAPHPROPERTIES_H_
 
 
-#include "../graph/IGraph.h"
+#include "../graph/Graph.h"
 #include "../io/METISGraphReader.h"
 
 namespace NetworKit {
@@ -28,16 +28,16 @@ protected:
 	 * A similar description of this algorithm can be found in
 	 * Newman: Networks. An Introduction. Chapter 8.7.
 	 */
-	static double degreeAssortativitySlower(const IGraph& G, bool useWeights = false);
+	static double degreeAssortativitySlower(const Graph& G, bool useWeights = false);
 
 
 public:
 	GraphProperties();
 	virtual ~GraphProperties();
 
-	static std::vector<count> degreeDistribution(const IGraph& G);
+	static std::vector<count> degreeDistribution(const Graph& G);
 
-	static std::vector<unsigned int> degreeSequence(const IGraph& G); // TODO: revert to count when cython issue fixed
+	static std::vector<unsigned int> degreeSequence(const Graph& G); // TODO: revert to count when cython issue fixed
 
 
 	/**
@@ -50,7 +50,7 @@ public:
 	 * @param[in]	G	the graph
 	 * @param[out]		node -> local clustering coefficient
 	 */
-	static std::vector<double> localClusteringCoefficients(const IGraph& G);
+	static std::vector<double> localClusteringCoefficients(const Graph& G);
 
 
 	/**
@@ -59,20 +59,20 @@ public:
 	 *
 	 * @param[in]	G	the graph
 	 */
-	static double averageLocalClusteringCoefficient(const IGraph& G);
+	static double averageLocalClusteringCoefficient(const Graph& G);
 
-	static std::vector<double> localClusteringCoefficientPerDegree(const IGraph& G);
+	static std::vector<double> localClusteringCoefficientPerDegree(const Graph& G);
 
-	static std::pair<count, count> minMaxDegree(const IGraph& G);
+	static std::pair<count, count> minMaxDegree(const Graph& G);
 
-	static double averageDegree(const IGraph& G);
+	static double averageDegree(const Graph& G);
 
 	/**
 	 * @return Degree assortativity of the graph @a G.
 	 * Based on description in
 	 * Newman: Networks. An Introduction. Chapter 8.7.
 	 */
-	static double degreeAssortativity(const IGraph& G, bool useWeights = false);
+	static double degreeAssortativity(const Graph& G, bool useWeights = false);
 };
 
 } /* namespace NetworKit */

@@ -19,8 +19,10 @@ namespace NetworKit {
 TEST_F(GraphMemoryBenchmark, shrinkToFitForErdosRenyi) {
 	GraphGenerator gen;
 	Aux::Timer timerGen, timerShrink;
+	
 
-	std::vector<count> graphSizes = {10000, 25000, 50000, 100000};
+
+	std::vector<count> graphSizes = {1000, 5000, 10000};
 	for (auto& n : graphSizes) {
 		timerGen.start();
 		Graph G = gen.makeErdosRenyiGraph(n, 0.01);
@@ -33,16 +35,15 @@ TEST_F(GraphMemoryBenchmark, shrinkToFitForErdosRenyi) {
 		count after = G.getMemoryUsage();
 
 		bool useMS = timerShrink.elapsedMicroseconds() > 5000;
-		printf("G(n = %lu, m = %lu), generation took %.1f s, memory used before shrink: %.1f MB, memory used after shrink: %.1f MB, relative saving: %.3f, shrinking took %lu %s, relative time increase: %.3f\n",
+		printf("G(n = %llu, m = %llu), generation took %llu ms, memory used before shrink: %llu KB, memory used after shrink: %llu KB, relative saving: %f, shrinking took %llu %s\n",
 			G.numberOfNodes(),
 			G.numberOfEdges(),
-			timerGen.elapsedMilliseconds() / 1000.0,
-			before  / 1024.0 / 1024.0,
-			after / 1024.0 / 1024.0,
+			timerGen.elapsedMilliseconds(),
+			before  / 1024,
+			after / 1024,
 			1.0 - (double) after / before,
 			useMS ? timerShrink.elapsedMilliseconds() : timerShrink.elapsedMicroseconds(),
-			useMS ? "ms" : "us",
-			(timerGen.elapsedMicroseconds() + timerShrink.elapsedMicroseconds()) / (double) timerGen.elapsedMicroseconds());
+			useMS ? "ms" : "us");
 	}
 }
 
@@ -50,7 +51,7 @@ TEST_F(GraphMemoryBenchmark, shrinkToFitForGraphReader) {
 	Aux::Timer timerRead, timerShrink;
 	METISGraphReader reader;
 
-	std::vector<std::string> graphFiles = {"../graphs/in-2004.graph", "../graphs/uk-2002.graph", "../graphs/uk-2007-05.graph"};
+	std::vector<std::string> graphFiles = {"input/astro-ph.graph", "input/caidaRouterLevel.graph", "../in-2004.graph"};
 	for (auto& graphFile : graphFiles) {
 		timerRead.start();
 		Graph G = reader.read(graphFile);
@@ -63,19 +64,19 @@ TEST_F(GraphMemoryBenchmark, shrinkToFitForGraphReader) {
 		count after = G.getMemoryUsage();
 
 		bool useMS = timerShrink.elapsedMicroseconds() > 5000;
-		printf("G(n = %lu, m = %lu), reading %s took %.1f s, memory used before shrink: %.1f MB, memory used after shrink: %.1f MB, relative saving: %.3f, shrinking took %lu %s, relative time increase: %.3f\n",
+		printf("G(n = %llu, m = %llu), reading %s took %llu ms, memory used before shrink: %llu KB, memory used after shrink: %llu KB, relative saving: %f, shrinking took %llu %s\n",
 			G.numberOfNodes(),
 			G.numberOfEdges(),
 			graphFile.c_str(),
-			timerRead.elapsedMilliseconds() / 1000.0,
-			before / 1024.0 / 1024.0,
-			after / 1024.0 / 1024.0,
+			timerRead.elapsedMilliseconds(),
+			before / 1024,
+			after / 1024,
 			1.0 - (double) after / before,
 			useMS ? timerShrink.elapsedMilliseconds() : timerShrink.elapsedMicroseconds(),
-			useMS ? "ms" : "us",
-			(timerRead.elapsedMicroseconds() + timerShrink.elapsedMicroseconds()) / (double) timerRead.elapsedMicroseconds());
+			useMS ? "ms" : "us");
 	}
 }
+
 
 } /* namespace NetworKit */
 

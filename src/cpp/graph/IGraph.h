@@ -11,24 +11,28 @@
 #include <limits>
 #include <string>
 #include <algorithm>
+#include <functional>
 #include <stdexcept>
 
 #include "../Globals.h"
 #include "../viz/Point.h"
 
-#include "BasicGraph.h"
-
 namespace NetworKit {
 
 /** Typedefs **/
-// moved to Globals.h
 
-// typedef uint64_t index; // more expressive name for an index into an array
-// typedef uint64_t count; // more expressive name for an integer quantity
-// typedef index node; // node indices are 0-based
-// typedef double edgeweight; // edge weight type
+typedef std::function<void(node)> FNode;
+typedef std::function<void(node, node)> FNodePair;
+typedef std::function<void(node, edgeweight)> FNodeWeighted;
 
-// constexpr index none = std::numeric_limits<index>::max();
+typedef std::function<void(node, node)> FEdge;
+typedef std::function<void(node, node, double)> FEdgeWeighted;
+
+typedef std::function<double(node)> FNodeSum;
+typedef std::function<double(node, node, double)> FEdgeWeightedSum;
+
+typedef std::function<bool()> FCondition;
+typedef std::function<bool(node)> FNodeCondition;
 
 /**
  * Interface for all graph classes. Every graph class has to implement all interface methods.
@@ -45,11 +49,15 @@ public:
 		graphId = nextGraphId++;
 	}
 
-	/* move assignments and more currently removed because a problems with gcc 4.7.1 on phipute1 */
-	// IGraph(const IGraph& other) = default;
-	// IGraph(IGraph&& other) = default;
-	// IGraph& operator=(IGraph&& other) = default;
-	// IGraph& operator=(const IGraph& other) = default;
+	IGraph(const IGraph& other) = default;
+
+	IGraph(IGraph&& other) = default;
+
+	~IGraph() = default;
+
+	IGraph& operator=(IGraph&& other) = default;
+
+	IGraph& operator=(const IGraph& other) = default;
 
 	/**
 	 * Get the ID of this graph. The ID is a unique unsigned integer given to
@@ -317,45 +325,45 @@ public:
 	/** NODE ITERATORS **/
 
 	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure).
+	 * Iterate over all nodes of the graph and call f (lambda closure).
 	 */
 	virtual void forNodes(FNode f) const = 0;
 
 	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
+	 * Iterate in parallel over all nodes of the graph and call f (lambda closure).
 	 */
-	virtual void parallelForNodes(FNode N) const = 0;
+	virtual void parallelForNodes(FNode f) const = 0;
 
 	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
+	 * Iterate over all nodes of the graph and call f (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
 	virtual void forNodesWhile(FCondition condition, FNode f) const = 0;
 
 	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
+	 * Iterate over all nodes of the graph and call f (lambda closure) as long as the condition remains true.
 	 * This allows for breaking from a node loop.
 	 */
 	virtual void forNodes(FNodeCondition condition, FNode f) const = 0;
 
 	/**
-	 * Iterate randomly over all nodes of the graph and call handler (lambda closure).
+	 * Iterate randomly over all nodes of the graph and call f (lambda closure).
 	 */
 	virtual void forNodesInRandomOrder(FNode f) const = 0;
 
 	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
+	 * Iterate in parallel over all nodes of the graph and call f (lambda closure).
 	 * Using schedule(guided) to remedy load-imbalances due to e.g. unequal degree distribution.
 	 */
 	virtual void balancedParallelForNodes(FNode f) const = 0;
 
 	/**
-	 * Iterate over all undirected pairs of nodesand call handler (lambda closure).
+	 * Iterate over all undirected pairs of nodesand call f (lambda closure).
 	 */
 	virtual void forNodePairs(FNodePair f) const = 0;
 
 	/**
-	 * Iterate over all undirected pairs of nodes in parallel and call handler (lambda closure).
+	 * Iterate over all undirected pairs of nodes in parallel and call f (lambda closure).
 	 */
 	virtual void parallelForNodePairs(FNodePair f) const = 0;
 
@@ -363,42 +371,43 @@ public:
  	/** REDUCTION ITERATORS **/
 
 	/**
-	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
+	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the f
 	 */
-	virtual double parallelSumForNodes(FNodeSum f) const = 0;
+	virtual double parallelSumForNodes(FNodeSum f) const { return 0.0; };
 
 
 	/** EDGE ITERATORS **/
 
 	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 * Iterate over all edges of the graph and call f (lambda closure).
 	 */
+	// virtual void forEdges(L f) const = 0;
 	virtual void forEdges(FEdge f) const = 0;
 
 	/**
-	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
+	 * Iterate in parallel over all edges of the graph and call f (lambda closure).
 	 */
 	virtual void parallelForEdges(FEdge f) const = 0;
 
 	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 * Iterate over all edges of the graph and call f (lambda closure).
 	 *
-	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
+	 * f takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
 	 */
 	virtual void forWeightedEdges(FEdgeWeighted f) const = 0;
 
 	/**
-	 * Iterate over all edges of the graph and call handler (lambda closure).
+	 * Iterate over all edges of the graph and call f (lambda closure).
 	 *
-	 * Handler takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
+	 * f takes arguments (u, v, w) where u and v are the nodes of the edge and w is its weight.
 	 */
 	virtual void parallelForWeightedEdges(FEdgeWeighted f) const = 0;
 
 	/**
-	 * Iterate over all edges of the const graph and call handler (lambda closure).
+	 * Iterate over all edges of the const graph and call f (lambda closure).
 	 *
 	 *	@param[in]	attrId		attribute id
-	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
+	 *	@param[in]	f 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
 	 *
 	 */
 	virtual void forEdgesWithAttribute_double(int attrId, FEdgeWeighted f) const = 0;
@@ -407,24 +416,24 @@ public:
 	/** NEIGHBORHOOD ITERATORS **/
 
 	/**
-	 * Iterate over all neighbors of a node and call handler (lamdba closure).
+	 * Iterate over all neighbors of a node and call f (lamdba closure).
 	 */
-	virtual void forNeighborsOf(node u, FNode handle) const = 0;
+	virtual void forNeighborsOf(node u, FNode f) const = 0;
 
 	/**
-	 * Iterate over all edge weights of a node and call handler (lamdba closure).
+	 * Iterate over all edge weights of a node and call f (lamdba closure).
 	 */
 	virtual void forWeightedNeighborsOf(node u, FNodeWeighted f) const = 0;
 
 	/**
-	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 * Iterate over all incident edges of a node and call f (lamdba closure).
 	 */
 	virtual void forEdgesOf(node u, FEdge f) const = 0;
 
 	/**
-	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 * Iterate over all incident edges of a node and call f (lamdba closure).
 	 *
-	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 * f takes parameters (u, v, w) where w is the edge weight.
 	 *
 	 */
 	virtual void forWeightedEdgesOf(node u, FEdgeWeighted f) const = 0;
@@ -433,7 +442,7 @@ public:
 	/** REDUCTION ITERATORS **/
 
 	/**
-	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
+	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the f
 	 */
 	virtual double parallelSumForWeightedEdges(FEdgeWeightedSum f) const = 0;
 

@@ -379,7 +379,6 @@ inline void NetworKit::AbstractGraph::forNodePairs(NetworKit::FNodePair f) const
 				}
 			}
 		}
-
 	}
 }
 
