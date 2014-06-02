@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-Graph SimmelianBackbone::calculate(const Graph& g) {
+Graph SimmelianBackbone::calculate(const Graph& g, const int& maxRank, const int& minOverlap) {
 	ChibaNishizekiTriangleCounter counter;
 
 	edgeCountMap triangles = counter.triangleCounts(g);
@@ -21,13 +21,19 @@ Graph SimmelianBackbone::calculate(const Graph& g) {
 	//Create the backbone graph. Edges will be inserted on the fly.
 	Graph backboneGraph (g.upperNodeIdBound());
 
-	/*g.forEdges([&](node u, node v) {
-		uEdge edge = uEdge(u, v);
+	//TODO: This seems stupid .. Implement a clone method in Graph instead?
+	for (node i = 0; i <= g.upperNodeIdBound(); i++) {
+		if (!g.hasNode(i))
+			backboneGraph.removeNode(i);
+	}
 
-		int overlap = getOverlap(neighbors[u], neighbors[v], 10);
-	});*/
+	g.forEdges([&](node u, node v) {
+		int overlap = getOverlap(neighbors[u], neighbors[v], maxRank);
+		if (overlap >= minOverlap)
+			backboneGraph.addEdge(u, v);
+	});
 
-	return g;
+	return backboneGraph;
 }
 
 count SimmelianBackbone::test() {
@@ -75,6 +81,7 @@ int SimmelianBackbone::getOverlap(const RankedNeighbors& egoNeighbors, const Ran
 	int maxRank = allRanks ? std::max(egoNeighbors.size(), alterNeighbors.size()) : 10;*/
 
 	//TODO: identified (nodes that are incident to an edge)
+	//TODO: jaccard index
 	for (int rank = 1; rank <= maxRank; rank++) {
 		matchNeighbors(egoIt, egoNeighbors, egoNeighborsUnmatched, alterNeighborsUnmatched, rank, overlap);
 		matchNeighbors(alterIt, alterNeighbors, alterNeighborsUnmatched, egoNeighborsUnmatched, rank, overlap);

@@ -54,14 +54,18 @@ class SimmelianBackbone : public BackboneCalculator {
 public:
 	/**
 	 * Calculates the simmelian backbone for the given graph.
+	 * @param g 			the graph to calculate the backbone for
+	 * @param maxRank 		the maximum rank that is considered for overlap calculation
+	 * @param minOverlap	a minimum number of common top-maxRank neighbors
 	 */
-	virtual Graph calculate(const Graph& g);
+	Graph calculate(const Graph& g, const int& maxRank, const int& minOverlap);
 
-	virtual count test();
+	count test();
 
 private:
 	FRIEND_TEST(SimmelianBackboneGTest, testOverlapCounting);
 	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhood);
+	FRIEND_TEST(SimmelianBackboneGTest, testOverlapFiltering);
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, edgeCountMap& triangles);
 	int getOverlap(const RankedNeighbors& first, const RankedNeighbors& second, const int& maxRank);
 	void matchNeighbors(std::vector<RankedEdge>::const_iterator& egoIt,
