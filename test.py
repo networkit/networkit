@@ -17,7 +17,7 @@ workingDirectory = None
 
 def buildAntTest():
     # compile
-    result = subprocess.call(['scons', '--optimize=O', '--target=Tests'], cwd = workingDirectory)
+    result = subprocess.call(['scons', '--optimize=O', '--target=Tests', '-j 8'], cwd = workingDirectory)
 
     # run test to if compilation was successful and a test name was specified
     if result == 0 and len(testName) > 0:
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     class ContinousTesting(PatternMatchingEventHandler):
         def __init__(self):
-            super(ContinousTesting, self).__init__(patterns = ['*.h', '*.cpp'])
+            super(ContinousTesting, self).__init__(patterns = ['*.h', '*.cpp', '*.tpp'])
         
         def on_any_event(self, event):
             buildAntTest()

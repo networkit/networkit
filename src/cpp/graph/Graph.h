@@ -5,6 +5,12 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
+#include "BasicGraph.h"
+namespace NetworKit {
+	using Graph = Graph_T;
+}
+#define GRAPH_H_
+
 #ifndef GRAPH_H_
 #define GRAPH_H_
 

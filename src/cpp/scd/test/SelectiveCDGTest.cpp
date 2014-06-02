@@ -26,7 +26,7 @@ TEST_F(SCDGTest2, testPageRankNibble) {
 	std::set<node> cluster = prn.run(seed, alpha, epsilon);
 
 	// prepare result
-	EXPECT_GT(cluster.size(), 0);
+	EXPECT_GT(0u, cluster.size());
 	Partition partition(idBound);
 	partition.allToOnePartition();
 	partition.toSingleton(seed);
