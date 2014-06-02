@@ -482,14 +482,6 @@ public:
 	friend void forNeighborsOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
-	 * Iterate over all outgoing neighbors of a node and call handler (lamdba closure).
-	 */
-	template<typename L> void forOutNeighborsOf(node u, L handle) const;
-
-	template<Weighted w, typename L> 
-	friend void forOutNeighborsOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
-	
-	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
