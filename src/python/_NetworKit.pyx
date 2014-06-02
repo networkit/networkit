@@ -1707,7 +1707,6 @@ cdef extern from "../cpp/backbones/SimmelianBackbone.h":
 	cdef cppclass _SimmelianBackbone "NetworKit::SimmelianBackbone":
 		_SimmelianBackbone() except +
 		_Graph* _calculate(_Graph G, count maxRank, count minOverlap) except +
-		count test() except +
 
 cdef class SimmelianBackbone:
 	"""
@@ -1721,7 +1720,4 @@ cdef class SimmelianBackbone:
 
 	def calculate(self, Graph G, count maxRank, count minOverlap):
 		return Graph().setThis(self._this._calculate(dereference(G._this), maxRank, minOverlap))
-	
-	def test(self):
-		return self._this.test()	
 		

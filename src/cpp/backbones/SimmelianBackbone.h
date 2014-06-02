@@ -60,8 +60,6 @@ public:
 	 */
 	Graph calculate(const Graph& g, const count& maxRank, const count& minOverlap);
 
-	count test();
-
 private:
 	FRIEND_TEST(SimmelianBackboneGTest, testOverlapCounting);
 	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhood);

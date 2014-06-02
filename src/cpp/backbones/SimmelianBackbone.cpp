@@ -22,7 +22,7 @@ Graph SimmelianBackbone::calculate(const Graph& g, const count& maxRank, const c
 	Graph backboneGraph (g.upperNodeIdBound());
 
 	//TODO: This seems stupid .. Implement a clone method in Graph instead?
-	for (node i = 0; i <= g.upperNodeIdBound(); i++) {
+	for (node i = 0; i < g.upperNodeIdBound(); i++) {
 		if (!g.hasNode(i))
 			backboneGraph.removeNode(i);
 	}
@@ -34,10 +34,6 @@ Graph SimmelianBackbone::calculate(const Graph& g, const count& maxRank, const c
 	});
 
 	return backboneGraph;
-}
-
-count SimmelianBackbone::test() {
-	return 42;
 }
 
 std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Graph& g, edgeCountMap& triangles) {
