@@ -35,8 +35,13 @@ TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
 	EXPECT_EQ(nMax, G.numberOfNodes());
 	EXPECT_EQ( ((n0-1) + ((nMax - n0) * k)), G.numberOfEdges());
 
+}
 
-
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGenerator) {
+	count n = 100000;
+	HyperbolicGenerator gen(n,1);
+	Graph G = gen.generate();
+	EXPECT_EQ(G.numberOfNodes(), n);
 }
 
 } /* namespace NetworKit */
