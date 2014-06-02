@@ -40,16 +40,16 @@ BasicGraph<w, d>::BasicGraph(count n) :
 /** GRAPH INFORMATION **/
 
 template<>
-std::string BasicGraph<Weighted::unweighted, Directed::undirected>::typ() const { return "Graph"; }
+inline std::string BasicGraph<Weighted::unweighted, Directed::undirected>::typ() const { return "Graph"; }
 
 template<>
-std::string BasicGraph<Weighted::weighted, Directed::undirected>::typ() const { return "WeightedGraph"; }
+inline std::string BasicGraph<Weighted::weighted, Directed::undirected>::typ() const { return "WeightedGraph"; }
 
 template<>
-std::string BasicGraph<Weighted::unweighted, Directed::directed>::typ() const { return "DirectedGraph"; }
+inline std::string BasicGraph<Weighted::unweighted, Directed::directed>::typ() const { return "DirectedGraph"; }
 
 template<>
-std::string BasicGraph<Weighted::weighted, Directed::directed>::typ() const { return "WeightedDirectedGraph"; }
+inline std::string BasicGraph<Weighted::weighted, Directed::directed>::typ() const { return "WeightedDirectedGraph"; }
 
 template<Weighted w, Directed d>
 count BasicGraph<w, d>::getMemoryUsage() const {
@@ -414,10 +414,10 @@ edgeweight weightFromIndex_impl(const BasicGraph<Weighted::weighted, d>& G, node
 }
 
 template<>
-void BasicGraph<Weighted::unweighted, Directed::undirected>::setWeight(node u, node v, edgeweight ew) = delete;
+inline void BasicGraph<Weighted::unweighted, Directed::undirected>::setWeight(node u, node v, edgeweight ew) = delete;
 
 template<>
-void BasicGraph<Weighted::weighted, Directed::undirected>::setWeight(node u, node v, edgeweight ew) {
+inline void BasicGraph<Weighted::weighted, Directed::undirected>::setWeight(node u, node v, edgeweight ew) {
 	if (u == v) {
 		// self-loop case
 		index ui = indexInEdgeArray(u, u);
@@ -439,10 +439,10 @@ void BasicGraph<Weighted::weighted, Directed::undirected>::setWeight(node u, nod
 }
 
 template<>
-void BasicGraph<Weighted::unweighted, Directed::directed>::setWeight(node u, node v, edgeweight ew) = delete;
+inline void BasicGraph<Weighted::unweighted, Directed::directed>::setWeight(node u, node v, edgeweight ew) = delete;
 
 template<>
-void BasicGraph<Weighted::weighted, Directed::directed>::setWeight(node u, node v, edgeweight ew) {
+inline void BasicGraph<Weighted::weighted, Directed::directed>::setWeight(node u, node v, edgeweight ew) {
 	index vi = indexInOutEdgeArray(u, v);
 	index ui = indexInInEdgeArray(v, u);
 	if ((vi != none) && (ui != none)) {
@@ -454,18 +454,18 @@ void BasicGraph<Weighted::weighted, Directed::directed>::setWeight(node u, node 
 }
 
 template<>
-void BasicGraph<Weighted::unweighted, Directed::undirected>::increaseWeight(node u, node v, edgeweight ew) = delete;
+inline void BasicGraph<Weighted::unweighted, Directed::undirected>::increaseWeight(node u, node v, edgeweight ew) = delete;
 
 template<>
-void BasicGraph<Weighted::weighted, Directed::undirected>::increaseWeight(node u, node v, edgeweight ew) {
+inline void BasicGraph<Weighted::weighted, Directed::undirected>::increaseWeight(node u, node v, edgeweight ew) {
 	setWeight(u, v, weight(u, v) + ew);
 }
 
 template<>
-void BasicGraph<Weighted::unweighted, Directed::directed>::increaseWeight(node u, node v, edgeweight ew) = delete;
+inline void BasicGraph<Weighted::unweighted, Directed::directed>::increaseWeight(node u, node v, edgeweight ew) = delete;
 
 template<>
-void BasicGraph<Weighted::weighted, Directed::directed>::increaseWeight(node u, node v, edgeweight ew) {
+inline void BasicGraph<Weighted::weighted, Directed::directed>::increaseWeight(node u, node v, edgeweight ew) {
 	setWeight(u, v, weight(u, v) + ew);
 }
 
