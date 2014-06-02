@@ -23,8 +23,6 @@ public:
 	 */
 	virtual Graph calculate(const Graph& g, const count& maxRank, const count& minOverlap) = 0;
 
-	virtual count test() = 0;
-
 	/** only to be used by cython - this eliminates an unnecessary copy */
 	Graph* _calculate(const Graph& g, const count& maxRank, const count& minOverlap) {
 		return new Graph{std::move(calculate(g, maxRank, minOverlap))};
