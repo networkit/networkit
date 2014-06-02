@@ -7,7 +7,7 @@
 
 #include "BasicGraph.h"
 namespace NetworKit {
-	using Graph = Graph_T;
+	using Graph = WeightedGraph_T;
 }
 #define GRAPH_H_
 
