@@ -37,6 +37,17 @@ BasicGraph<w, d>::BasicGraph(count n, bool dummy) :
 	this->name = sstm.str();
 }
 
+
+template<>
+inline const std::vector<node>& BasicGraph<Weighted::unweighted, Directed::undirected>::adjaOut(node u) const { return adja[u]; }
+template<>
+inline const std::vector<node>& BasicGraph<Weighted::weighted, Directed::undirected>::adjaOut(node u) const { return adja[u]; }
+template<>
+inline const std::vector<node>& BasicGraph<Weighted::unweighted, Directed::directed>::adjaOut(node u) const { return outEdges[u]; }
+template<>
+inline const std::vector<node>& BasicGraph<Weighted::weighted, Directed::directed>::adjaOut(node u) const { return outEdges[u]; }
+
+
 /** GRAPH INFORMATION **/
 
 template<>
@@ -184,6 +195,18 @@ node BasicGraph<w, d>::randomNode() const {
 	return v;
 }
 
+template<Weighted w, Directed d>
+node BasicGraph<w, d>::randomNeighbor(node u) const {
+	assert (degree(u) > 0);
+
+	auto neighbors = adjaOut(u);
+	node v;
+	do {
+		v = Aux::Random::integer(neighbors.size() - 1);
+	} while (v == none);
+
+	return v;
+}
 
 /** EDGE MODIFIERS **/
 
@@ -690,11 +713,12 @@ void BasicGraph<w, d>::parallelForNodePairs(L handle) const {
 	
 /** EDGE ITERATORS **/
 
-template<Weighted w, typename L>
-void forEdges_impl(const BasicGraph<w, Directed::undirected>& G, L handle) {
-	for (node u = 0; u < G.z; ++u) {
-		for (index i = 0; i < G.adja[u].size(); i++) {
-			node v = G.adja[u][i];
+template<Weighted w, Directed d>
+template<typename L>
+void BasicGraph<w, d>::forEdges(L handle) const {
+	for (node u = 0; u < z; ++u) {
+		auto neighbors = adjaOut(u);
+		for (auto v : neighbors) {
 			if (v != none) {
 				handle(u, v);
 			}
@@ -702,24 +726,37 @@ void forEdges_impl(const BasicGraph<w, Directed::undirected>& G, L handle) {
 	}
 }
 
-template<Weighted w, typename L>
-void forEdges_impl(const BasicGraph<w, Directed::directed>& G, L handle) {
-	for (node u = 0; u < G.z; ++u) {
-		for (index i = 0; i < G.outEdges.size(); i++) {
-			node v = G.outEdges[i];
-			if (v != none) {
-				handle(u, v);
-			}
-		}
-	}
-}
+// template<Weighted w, typename L>
+// void forEdges_impl(const BasicGraph<w, Directed::undirected>& G, L handle) {
+// 	for (node u = 0; u < G.z; ++u) {
+// 		for (index i = 0; i < G.adja[u].size(); i++) {
+// 			node v = G.adja[u][i];
+// 			if (v != none) {
+// 				handle(u, v);
+// 			}
+// 		}
+// 	}
+// }
 
-template<Weighted w, typename L>
-void parallelForEdges_impl(const BasicGraph<w, Directed::undirected>& G, L handle) {
+// template<Weighted w, typename L>
+// void forEdges_impl(const BasicGraph<w, Directed::directed>& G, L handle) {
+// 	for (node u = 0; u < G.z; ++u) {
+// 		for (index i = 0; i < G.outEdges.size(); i++) {
+// 			node v = G.outEdges[i];
+// 			if (v != none) {
+// 				handle(u, v);
+// 			}
+// 		}
+// 	}
+// }
+
+template<Weighted w, Directed d>
+template<typename L>
+void BasicGraph<w, d>::parallelForEdges(L handle) const {
 	#pragma omp parallel for
-	for (node u = 0; u < G.z; ++u) {
-		for (index i = 0; i < G.adja[u].size(); i++) {
-			node v = G.adja[u][i];
+	for (node u = 0; u < z; ++u) {
+		auto neighbors = adjaOut(u);
+		for (auto v : neighbors) {
 			if (v != none) {
 				handle(u, v);
 			}
@@ -727,18 +764,31 @@ void parallelForEdges_impl(const BasicGraph<w, Directed::undirected>& G, L handl
 	}
 }
 
-template<Weighted w, typename L>
-void parallelForEdges_impl(const BasicGraph<w, Directed::directed>& G, L handle) {
-	#pragma omp parallel for
-	for (node u = 0; u < G.z; ++u) {
-		for (index i = 0; i < G.outEdges.size(); i++) {
-			node v = G.outEdges[i];
-			if (v != none) {
-				handle(u, v);
-			}
-		}
-	}
-}
+// template<Weighted w, typename L>
+// void parallelForEdges_impl(const BasicGraph<w, Directed::undirected>& G, L handle) {
+// 	#pragma omp parallel for
+// 	for (node u = 0; u < G.z; ++u) {
+// 		for (index i = 0; i < G.adja[u].size(); i++) {
+// 			node v = G.adja[u][i];
+// 			if (v != none) {
+// 				handle(u, v);
+// 			}
+// 		}
+// 	}
+// }
+
+// template<Weighted w, typename L>
+// void parallelForEdges_impl(const BasicGraph<w, Directed::directed>& G, L handle) {
+// 	#pragma omp parallel for
+// 	for (node u = 0; u < G.z; ++u) {
+// 		for (index i = 0; i < G.outEdges.size(); i++) {
+// 			node v = G.outEdges[i];
+// 			if (v != none) {
+// 				handle(u, v);
+// 			}
+// 		}
+// 	}
+// }
 
 template<>
 template<typename L>
@@ -881,87 +931,135 @@ void forEdgesWithAttribute_double_impl(const BasicGraph<w, Directed::directed>& 
 
 /** NEIGHBORHOOD ITERATORS **/
 
-template<Weighted w, typename L>
-void forNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
-	for (node v : G.adja[u]) {
+template<Weighted w, Directed d>
+template<typename L>
+void BasicGraph<w, d>::forNeighborsOf(node u, L handle) const {
+	auto neighbors = adjaOut(u);
+	for (auto v : neighbors) {
 		if (v != none) {
 			handle(v);
 		}
-	}
+	}	
 }
 
-template<Weighted w, typename L>
-void forNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
-	for (node v : G.outEdges[u]) {
+// template<Weighted w, typename L>
+// void forNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
+// 	for (node v : G.adja[u]) {
+// 		if (v != none) {
+// 			handle(v);
+// 		}
+// 	}
+// }
+
+// template<Weighted w, typename L>
+// void forNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+// 	for (node v : G.outEdges[u]) {
+// 		if (v != none) {
+// 			handle(v);
+// 		}
+// 	}
+// }
+
+template<Weighted w, Directed d>
+template<typename L>
+void BasicGraph<w, d>::forWeightedNeighborsOf(node u, L handle) const {
+	auto neighbors = adjaOut(u);
+	for (index i = 0; i < neighbors.size(); i++) {
+		node v = neighbors[i];
 		if (v != none) {
-			handle(v);
-		}
-	}
-}
-
-template<Weighted w, typename L>
-void forWeightedNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
-	for (index i = 0; i < G.adja[u].size(); i++) {
-			node v = G.adja[u][i];
-			if (v != none) {
-				edgeweight ew = G.weightFromIndex(u, i);
-				handle(v, ew);
-			}
-		}
-	}
-}
-
-template<Weighted w, typename L>
-void forWeightedNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
-	for (index i = 0; i < G.outEdges[u].size(); i++) {
-		node v = G.outEdges[u][i];
-		if (v != none) {
-			edgeweight ew = G.weightFromIndex(u, i);
+			edgeweight ew = weightFromIndex(u, i);
 			handle(v, ew);
 		}
 	}
 }
 
-template<Weighted w, typename L>
-void forEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
-	for (node v : G.adja[u]) {
+// template<Weighted w, typename L>
+// void forWeightedNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
+// 	for (index i = 0; i < G.adja[u].size(); i++) {
+// 			node v = G.adja[u][i];
+// 			if (v != none) {
+// 				edgeweight ew = G.weightFromIndex(u, i);
+// 				handle(v, ew);
+// 			}
+// 		}
+// 	}
+// }
+
+// template<Weighted w, typename L>
+// void forWeightedNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+// 	for (index i = 0; i < G.outEdges[u].size(); i++) {
+// 		node v = G.outEdges[u][i];
+// 		if (v != none) {
+// 			edgeweight ew = G.weightFromIndex(u, i);
+// 			handle(v, ew);
+// 		}
+// 	}
+// }
+
+template<Weighted w, Directed d>
+template<typename L>
+void BasicGraph<w, d>::forEdgesOf(node u, L handle) const {
+	auto neighbors = adjaOut(u);
+	for (auto v : neighbors) {
 		if (v != none) {
 			handle(u, v);
 		}
 	}
-
 }
 
-template<Weighted w, typename L>
-void forEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
-	for (node v : G.outEdges[u]) {
-		if (v != none) {
-			handle(u, v);
-		}
-	}
-}
+// template<Weighted w, typename L>
+// void forEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
+// 	for (node v : G.adja[u]) {
+// 		if (v != none) {
+// 			handle(u, v);
+// 		}
+// 	}
 
-template<Weighted w, typename L>
-void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
-	for (index i = 0; i < G.adja[u].size(); ++i) {
-		node v = G.adja[u][i];
+// }
+
+// template<Weighted w, typename L>
+// void forEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+// 	for (node v : G.outEdges[u]) {
+// 		if (v != none) {
+// 			handle(u, v);
+// 		}
+// 	}
+// }
+
+template<Weighted w, Directed d>
+template<typename L>
+void BasicGraph<w, d>::forWeightedEdgesOf(node u, L handle) const {
+	auto neighbors = adjaOut(u);
+	for (index i = 0; i < neighbors.size(); i++) {
+		node v = neighbors[i];
 		if (v != none) {
-			edgeweight ew = G.weightFromIndex(u, i);
+			edgeweight ew = weightFromIndex(u, i);
 			handle(u, v, ew);
 		}
 	}
 }
 
-template<Weighted w, typename L>
-void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
-	for(index i = 0; i < G.outEdges[u].size(); ++i) {
-		node v = G.outEdges[u][i]; 
-		if(v != none) {
-			edgeweight ew = G.weightFromIndex(u, i);
-			handle(u, v, ew);
-		}
-	}
-}
+// template<Weighted w, typename L>
+// void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
+// 	for (index i = 0; i < G.adja[u].size(); ++i) {
+// 		node v = G.adja[u][i];
+// 		if (v != none) {
+// 			edgeweight ew = G.weightFromIndex(u, i);
+// 			handle(u, v, ew);
+// 		}
+// 	}
+// }
+
+// template<Weighted w, typename L>
+// void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+// 	for(index i = 0; i < G.outEdges[u].size(); ++i) {
+// 		node v = G.outEdges[u][i]; 
+// 		if(v != none) {
+// 			edgeweight ew = G.weightFromIndex(u, i);
+// 			handle(u, v, ew);
+// 		}
+// 	}
+// }
 
 
 /** REDUCTION ITERATORS **/
@@ -1100,5 +1198,5 @@ void BasicGraph<w, d>::DFSEdgesfrom(node r, L handle) const {
 
 } /* namespace graph_impl */
 
-//} /* namespace NetworKit */
+} /* namespace NetworKit */
 
