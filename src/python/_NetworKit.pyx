@@ -1685,28 +1685,6 @@ cdef class GraphUpdater:
 
 # Module: backbones
 
-cdef extern from "../cpp/backbones/SimmelianBackbone.h":
-	cdef cppclass _SimmelianBackbone "NetworKit::SimmelianBackbone":
-		_SimmelianBackbone() except +
-		#_Graph* _calculate(_Graph G) except +
-		count test() except +
-
-cdef class SimmelianBackbone:
-	"""
-	  Calculates the simmelian backbone for a given input graph.
-	"""
-
-	cdef _SimmelianBackbone* _this
-
-	def __cinit__(self):
-		self._this = new _SimmelianBackbone()
-
-	#def calculate(self, G):
-		#return Graph(0).setThis(self._this._calculate(dereference(G._this)))
-	
-	def test(self):
-		return self._this.test()
-		
 cdef extern from "../cpp/backbones/ChibaNishizekiTriangleCounter.h":
 	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
 		_ChibaNishizekiTriangleCounter() except +
@@ -1724,6 +1702,26 @@ cdef class ChibaNishizekiTriangleCounter:
 
 	def triangleCountsDebug(self, Graph G):
 		return self._this.triangleCountsDebug(dereference(G._this))
+
+cdef extern from "../cpp/backbones/SimmelianBackbone.h":
+	cdef cppclass _SimmelianBackbone "NetworKit::SimmelianBackbone":
+		_SimmelianBackbone() except +
+		_Graph* _calculate(_Graph G, count maxRank, count minOverlap) except +
+		count test() except +
+
+cdef class SimmelianBackbone:
+	"""
+	  Calculates the simmelian backbone for a given input graph.
+	"""
+
+	cdef _SimmelianBackbone* _this
+
+	def __cinit__(self):
+		self._this = new _SimmelianBackbone()
+
+	def calculate(self, Graph G, count maxRank, count minOverlap):
+		return Graph().setThis(self._this._calculate(dereference(G._this), maxRank, minOverlap))
+	
+	def test(self):
+		return self._this.test()	
 		
-
-
