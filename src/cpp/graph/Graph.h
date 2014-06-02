@@ -5,6 +5,16 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
+#include <vector>
+#include <algorithm>
+#include <stdexcept>
+
+#include "AbstractGraph.h"
+#include "Coordinates.h"
+#include "../viz/Point.h"
+
+
+
 #include "BasicGraph.h"
 namespace NetworKit {
 	using Graph = WeightedGraph_T;
