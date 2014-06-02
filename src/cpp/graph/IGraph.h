@@ -11,20 +11,14 @@
 #include <limits>
 #include <string>
 #include <algorithm>
+#include <functional>
 
 #include "../Globals.h"
 #include "../viz/Point.h"
 
-#include "BasicGraph.h"
-
 namespace NetworKit {
 
 /** Typedefs **/
-
-// typedef uint64_t index; // more expressive name for an index into an array
-// typedef uint64_t count; // more expressive name for an integer quantity
-// typedef index node; // node indices are 0-based
-// typedef double edgeweight; // edge weight type
 
 typedef std::function<void(node)> FNode;
 typedef std::function<void(node, node)> FNodePair;

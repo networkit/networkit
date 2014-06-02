@@ -9,7 +9,7 @@
 #define BASICGRAPH_H_
 
 #include <algorithm>
-#include <functional>
+// #include <functional>
 #include <vector>
 #include <type_traits>
 #include <utility>
@@ -28,13 +28,13 @@ namespace NetworKit {
 // typedef std::function<bool()> FCondition;
 
 enum class Weighted {
-	weighted,
-	unweighted
+	unweighted,
+	weighted
 };
 
 enum class Directed {
-	directed,
-	undirected
+	undirected,
+	directed
 };
 
 // hide implementation details in extra namespace
@@ -56,7 +56,7 @@ private:
 	using WData = either<weighted == Weighted::weighted, WeightedData, UnweightedData>;
 
 	// graph attributes
-	count graphId;
+	count id;
 	std::string name;
 
 	// scalars
@@ -79,6 +79,7 @@ private:
 	}
 
 public:
+
 	BasicGraph(count n = 0);
 
 	BasicGraph(const BasicGraph<weighted, directed>& other) = default;
@@ -98,7 +99,7 @@ public:
 	 * Get the ID of this graph. The ID is a unique unsigned integer given to
 	 * every graph on construction.
 	 */
-	count getId() const { return graphId; }
+	count getId() const { return id; }
 
 	/**
 	 * Return the type of the graph.
@@ -178,7 +179,7 @@ public:
 	/**
 	 * @return true if the node is isolated (= degree is 0)
 	 */
-	bool isIsolated(node v) const { return isIsolated(*this, v); }
+	bool isIsolated(node v) const { return isIsolated_impl(*this, v); }
 
 	template<Weighted w>
 	friend bool isIsolated_impl(const BasicGraph<w, directed>& G, node v);
@@ -287,13 +288,13 @@ public:
 
 	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); } 
 
-	Point<float>& getCoordinate(node v){ return coordinates.getCoordinate(v); } 
+	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); } 
 
-	float minCoordinate(count dim){ return coordinates.minCoordinate(dim); }
+	float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
 
-	float maxCoordinate(count dim){ return coordinates.maxCoordinate(dim); }
+	float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
 
-	void initCoordinates(){  coordinates.init(z); }
+	void initCoordinates() { coordinates.init(z); }
 
 
 	/** EDGE ATTRIBUTES **/
@@ -388,6 +389,10 @@ public:
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forNodes(L handle) const;
+	// template<typename L> void forNodes(L handle) const { return forNodes_impl(*this, handle); }
+
+	// template<Weighted w, Directed d, typename L>
+	// friend void forNodes_impl(const BasicGraph<w, d>& G, L handle);
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
@@ -467,8 +472,10 @@ public:
 	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
 	 *
 	 */
-	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const { forEdgesWithAttribute_double_impl(*this, handle); }
 
+	template<Weighted w, typename L>
+	friend void forEdgesWithAttribute_double_impl(const BasicGraph<w, directed>& G, L handle);
 
 	/** NEIGHBORHOOD ITERATORS **/
 
@@ -478,7 +485,7 @@ public:
 	template<typename L> void forNeighborsOf(node u, L handle) const;
 
 	template<Weighted w, typename L> 
-	friend void forNeighborsOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
+	friend void forNeighborsOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
 	 * Iterate over all outgoing neighbors of a node and call handler (lamdba closure).
@@ -494,7 +501,7 @@ public:
 	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
 
 	template<Weighted w, typename L> 
-	friend void forWeightedNeighborsOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
+	friend void forWeightedNeighborsOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
@@ -502,7 +509,7 @@ public:
 	template<typename L> void forEdgesOf(node u, L handle) const;
 
 	template<Weighted w, typename L> 
-	friend void forEdgesOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
+	friend void forEdgesOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
 	 * Iterate over all incident outgoing edges of a node and call handler (lambda closure).
@@ -518,12 +525,10 @@ public:
 	 * Handle takes parameters (u, v, w) where w is the edge weight.
 	 *
 	 */
+	template<typename L> void forWeightedEdgesOf(node u, L handle) const { forWeightedEdgesOf_impl(*this, u, handle); };
 
 	template<Weighted w, typename L> 
-	friend void forWeightedEdgesOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
-
-	template<typename L> void forWeightedEdgesOf(node u, L handle) const {forWeightedEdgesOf_impl(*this, u, handle);};
-
+	friend void forWeightedEdgesOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 
 	/** REDUCTION ITERATORS **/
@@ -569,10 +574,10 @@ public:
 } /* namespace graph_impl */
 
 using graph_impl::BasicGraph;
-// using Graph = BasicGraph<Weighted::unweighted, Directed::undirected>;
-// using WeightedGraph = BasicGraph<Weighted::weighted, Directed::undirected>;
-// using DirectedGraph = BasicGraph<Weighted::unweighted, Directed::directed>;
-// using WeightedDirectedGraph = BasicGraph<Weighted::weighted, Directed::directed>;
+using Graph_T = BasicGraph<Weighted::unweighted, Directed::undirected>;
+using WeightedGraph_T = BasicGraph<Weighted::weighted, Directed::undirected>;
+using DirectedGraph_T = BasicGraph<Weighted::unweighted, Directed::directed>;
+using WeightedDirectedGraph_T = BasicGraph<Weighted::weighted, Directed::directed>;
 
 template<Weighted w>
 using IUndirectedGraph = BasicGraph<w, Directed::undirected>;
