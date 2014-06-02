@@ -18,8 +18,14 @@ namespace NetworKit {
 
 template <typename T>
 class BasicGraphGTest: public testing::Test {
+	
+	virtual void SetUp();
 
-	using UIAE = T;
+protected:
+	T Ghouse;
+	std::vector< std::pair<node, node> > houseEdgesOut;
+	count n_house;
+	count m_house;
 };
 
 } /* namespace NetworKit */

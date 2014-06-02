@@ -9,7 +9,6 @@
 #define BASICGRAPH_H_
 
 #include <algorithm>
-// #include <functional>
 #include <vector>
 #include <type_traits>
 #include <utility>
@@ -20,12 +19,6 @@
 #include "GraphData.h"
 
 namespace NetworKit {
-
-// typedef std::function<void(node)> FNode;
-// typedef std::function<void(node, node)> FNodePair;
-// typedef std::function<void(node, node)> FEdge;
-// typedef std::function<void(node, node, double)> FEdgeWithWeight;
-// typedef std::function<bool()> FCondition;
 
 enum class Weighted {
 	unweighted,
@@ -171,10 +164,15 @@ public:
 	/**
 	 * Return the number of neighbors for node v.
 	 */
-	count degree(node v) const { return degree_impl(*this, v); }
+	count degree(node v) const { return degreeOut(v); }
+	count degreeIn(node v) const { return degreeIn_impl(*this, v); }
+	count degreeOut(node v) const { return degreeOut_impl(*this, v); }
 
 	template<Weighted w>
-	friend count degree_impl(const BasicGraph<w, directed>& G, node v);
+	friend count degreeIn_impl(const BasicGraph<w, directed>& G, node v);
+
+	template<Weighted w>
+	friend count degreeOut_impl(const BasicGraph<w, directed>& G, node v);
 
 	/**
 	 * @return true if the node is isolated (= degree is 0)
@@ -389,10 +387,6 @@ public:
 	 * Iterate over all nodes of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forNodes(L handle) const;
-	// template<typename L> void forNodes(L handle) const { return forNodes_impl(*this, handle); }
-
-	// template<Weighted w, Directed d, typename L>
-	// friend void forNodes_impl(const BasicGraph<w, d>& G, L handle);
 
 	/**
 	 * Iterate in parallel over all nodes of the graph and call handler (lambda closure).
@@ -542,23 +536,11 @@ public:
 
 	template<typename L> void BFSfrom(node r, L handle) const;
 
-	template<Weighted w, typename L>
-	friend void BFSfrom_impl(const BasicGraph<w, directed>& G, L handle);
-
 	template<typename L> void BFSEdgesfrom(node r, L handle) const;
-
-	template<Weighted w, typename L>
-	friend void BFSEdgesfrom_impl(const BasicGraph<w, directed>& G, L handle);
 
 	template<typename L> void DFSfrom(node r, L handle) const;
 
-	template<Weighted w, typename L>
-	friend void DFSfrom_impl(const BasicGraph<w, directed>& G, L handle);
-
 	template<typename L> void DFSEdgesfrom(node r, L handle) const;
-
-	template<Weighted w, typename L>
-	friend void DFSEdgesfrom_impl(const BasicGraph<w, directed>& G, L handle);
 };
 
 } /* namespace graph_impl */

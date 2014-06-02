@@ -141,12 +141,22 @@ void BasicGraph<w, d>::removeNode(node v) {
 /** NODE PROPERTIES **/
 
 template<Weighted w>
-count degree_impl(const BasicGraph<w, Directed::undirected>& G, node v) {
+count degreeIn_impl(const BasicGraph<w, Directed::undirected>& G, node v) {
 	return G.deg[v];
 }
 
 template<Weighted w>
-count degree_impl(const BasicGraph<w, Directed::directed>& G, node v) {
+count degreeIn_impl(const BasicGraph<w, Directed::directed>& G, node v) {
+	return G.inDeg[v];
+}
+
+template<Weighted w>
+count degreeOut_impl(const BasicGraph<w, Directed::undirected>& G, node v) {
+	return G.deg[v];
+}
+
+template<Weighted w>
+count degreeOut_impl(const BasicGraph<w, Directed::directed>& G, node v) {
 	return G.outDeg[v];
 }
 
@@ -1065,16 +1075,31 @@ double parallelSumForNodes_impl(const BasicGraph<w, Directed::directed>& G, L ha
 
 /** GRAPH SEARCHES **/
 
-/*template<Weighted w, Directed d>
+template<Weighted w, Directed d>
+template <typename L>
+void BasicGraph<w, d>::BFSfrom(node r, L handle) {
+	std::vector<bool> marked(z);
+	std::queue<node> q;
+	q.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = q.front();
+		q.pop();
+		// apply function
+		handle(u);
+		forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				q.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!q.empty());
+}
+
+template<Weighted w, Directed d>
 template<typename L>
-void BasicGraph<w, d>::BFSfrom(node r, L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
-}*/
-
-template<Weighted w, typename L>
-void BFSfrom_impl(BasicGraph<w, Directed::directed>& G, node r, L handle) {
-	std::vector<bool> marked(G.z);
+void BasicGraph<w, d>::BFSEdgesfrom(node r, L handle) {
+	std::vector<bool> marked(z);
 	std::queue<node> q;
 	q.push(r); // enqueue root
 	marked[r] = true;
@@ -1082,9 +1107,9 @@ void BFSfrom_impl(BasicGraph<w, Directed::directed>& G, node r, L handle) {
 		node u = q.front();
 		q.pop();
 		// apply function
-		handle(u);
-		G.forOutNeighborsOf(u, [&](node v) {
+		forNeighborsOf(u, [&](node v) {
 			if (!marked[v]) {
+				handle(u, v);
 				q.push(v);
 				marked[v] = true;
 			}
@@ -1092,170 +1117,49 @@ void BFSfrom_impl(BasicGraph<w, Directed::directed>& G, node r, L handle) {
 	} while (!q.empty());
 }
 
-template<Weighted w, typename L>
-void BFSfrom_impl(BasicGraph<w, Directed::undirected>& G, node r, L handle) {
-	std::vector<bool> marked(G.z);
-	std::queue<node> q;
-	q.push(r); // enqueue root
-	marked[r] = true;
-	do {
-		node u = q.front();
-		q.pop();
-		// apply function
-		handle(u);
-		G.forNeighborsOf(u, [&](node v) {
-			if (!marked[v]) {
-				q.push(v);
-				marked[v] = true;
-			}
-		});
-	} while (!q.empty());
-}
-
-
-/*template<Weighted w, Directed d>
+template<Weighted w, Directed d>
 template<typename L>
-void BasicGraph<w, d>::BFSEdgesfrom(node r, L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
-}*/
-
-template<Weighted w, typename L>
-void BFSEdgesfrom_impl(BasicGraph<w, Directed::directed>& G, node r, L handle) {
-
-	std::vector<bool> marked(G.z);
-	std::queue<node> q;
-	q.push(r); // enqueue root
+void BasicGraph<w, d>::DFSfrom(node r, L handle) {
+	std::vector<bool> marked(z);
+	std::stack<node> s;
+	s.push(r); // enqueue root
 	marked[r] = true;
 	do {
-		node u = q.front();
-		q.pop();
+		node u = s.top();
+		s.pop();
 		// apply function
-		G.forOutNeighborsOf(u, [&](node v) {
+		handle(u);
+		forNeighborsOf(u, [&](node v) {
 			if (!marked[v]) {
-				handle(u, v);
-				q.push(v);
+				s.push(v);
 				marked[v] = true;
 			}
 		});
-	} while (!q.empty());
+	} while (!s.empty()); 
 }
 
-template<Weighted w, typename L>
-void BFSEdgesfrom_impl(BasicGraph<w, Directed::undirected>& G, node r, L handle) {
-
-	std::vector<bool> marked(G.z);
-	std::queue<node> q;
-	q.push(r); // enqueue root
-	marked[r] = true;
-	do {
-		node u = q.front();
-		q.pop();
-		// apply function
-		G.forNeighborsOf(u, [&](node v) {
-			if (!marked[v]) {
-				handle(u, v);
-				q.push(v);
-				marked[v] = true;
-			}
-		});
-	} while (!q.empty());
-}
-
-
-/*template<Weighted w, Directed d>
+template<Weighted w, Directed d>
 template<typename L>
-void BasicGraph<w, d>::DFSfrom(node r, L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
-}*/
-
-template<Weighted w, typename L>
-void DFSfrom_impl(BasicGraph<w, Directed::directed>& G, node r, L handle) {
-
-	std::vector<bool> marked(G.z);
-	std::stack<node> stack;
-	stack.push(r); // enqueue root
+void BasicGraph<w, d>::DFSEdgesfrom(node r, L handle) {
+	std::vector<bool> marked(z);
+	std::stack<node> s;
+	s.push(r); // enqueue root
 	marked[r] = true;
 	do {
-		node u = stack.top();
-		stack.pop();
+		node u = s.top();
+		s.pop();
 		// apply function
-		handle(u);
-		G.forOutNeighborsOf(u, [&](node v) {
-			if (!marked[v]) {
-				stack.push(v);
-				marked[v] = true;
-			}
-		});
-	} while (!stack.empty()); 
-}
-
-template<Weighted w, typename L>
-void DFSfrom_impl(BasicGraph<w, Directed::undirected>& G, node r, L handle) {
-
-	std::vector<bool> marked(G.z);
-	std::stack<node> stack;
-	stack.push(r); // enqueue root
-	marked[r] = true;
-	do {
-		node u = stack.top();
-		stack.pop();
-		// apply function
-		handle(u);
-		G.forNeighborsOf(u, [&](node v) {
-			if (!marked[v]) {
-				stack.push(v);
-				marked[v] = true;
-			}
-		});
-	} while (!stack.empty()); 
-}
-
-template<Weighted w, typename L>
-void DFSEdgesfrom_impl(BasicGraph<w, Directed::undirected>& G,node r, L handle) {
-
-	std::vector<bool> marked(G.z);
-	std::stack<node> stack;
-	stack.push(r); // enqueue root
-	marked[r] = true;
-	do {
-		node u = stack.top();
-		stack.pop();
-		// apply function
-		G.forNeighborsOf(u, [&](node v) {
+		forNeighborsOf(u, [&](node v) {
 			if (!marked[v]) {
 				handle(u, v);
-				stack.push(v);
+				s.push(v);
 				marked[v] = true;
 			}
 		});
-	} while (!stack.empty()); 
-	
-}
-
-template<Weighted w, typename L>
-void DFSEdgesfrom_impl(BasicGraph<w, Directed::directed>& G,node r, L handle) {
-
-	std::vector<bool> marked(G.z);
-	std::stack<node> stack;
-	stack.push(r); // enqueue root
-	marked[r] = true;
-	do {
-		node u = stack.top();
-		stack.pop();
-		// apply function
-		G.forOutNeighborsOf(u, [&](node v) {
-			if (!marked[v]) {
-				handle(u, v);
-				stack.push(v);
-				marked[v] = true;
-			}
-		});
-	} while (!stack.empty()); 
-
+	} while (!s.empty()); 
 }
 
 } /* namespace graph_impl */
 
-// } /* namespace NetworKit */
+//} /* namespace NetworKit */
+
