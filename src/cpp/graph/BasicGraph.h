@@ -71,6 +71,11 @@ private:
 		throw std::runtime_error("find is deprecated, use indexInEdgeArray instead");
 	}
 
+	edgeweight weightFromIndex(node u, index vi) const { return weightFromIndex_impl(*this, u, vi); }
+
+	template<Directed d>
+	friend edgeweight weightFromIndex_impl(const BasicGraph<weighted, d>& G, node u, index vi);
+
 public:
 
 	BasicGraph(count n = 0);
@@ -164,7 +169,7 @@ public:
 	/**
 	 * Return the number of neighbors for node v.
 	 */
-	count degree(node v) const { return degreeOut(v); }
+	count degree(node v) const { return degreeOut_impl(*this, v); }
 	count degreeIn(node v) const { return degreeIn_impl(*this, v); }
 	count degreeOut(node v) const { return degreeOut_impl(*this, v); }
 
@@ -177,10 +182,7 @@ public:
 	/**
 	 * @return true if the node is isolated (= degree is 0)
 	 */
-	bool isIsolated(node v) const { return isIsolated_impl(*this, v); }
-
-	template<Weighted w>
-	friend bool isIsolated_impl(const BasicGraph<w, directed>& G, node v);
+	bool isIsolated(node v) const { return degreeIn(v) == 0 && degreeOut(v) == 0; }
 
 	/**
 	 * @return Weighted degree of @a v. For directed graphs this is the sum of weights off all outgoing edges fo @a v.
@@ -476,7 +478,7 @@ public:
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forNeighborsOf(node u, L handle) const;
+	template<typename L> void forNeighborsOf(node u, L handle) const { forNeighborsOf_impl(*this, u, handle); }
 
 	template<Weighted w, typename L> 
 	friend void forNeighborsOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
@@ -484,7 +486,7 @@ public:
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
+	template<typename L> void forWeightedNeighborsOf(node u, L handle) const { forWeightedNeighborsOf_impl(*this, u, handle); }
 
 	template<Weighted w, typename L> 
 	friend void forWeightedNeighborsOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
@@ -492,7 +494,7 @@ public:
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 */
-	template<typename L> void forEdgesOf(node u, L handle) const;
+	template<typename L> void forEdgesOf(node u, L handle) const { forEdgesOf_impl(*this, u, handle); }
 
 	template<Weighted w, typename L> 
 	friend void forEdgesOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
@@ -539,6 +541,7 @@ public:
 
 using graph_impl::BasicGraph;
 using Graph_T = BasicGraph<Weighted::unweighted, Directed::undirected>;
+// using Graph = Graph_T;
 using WeightedGraph_T = BasicGraph<Weighted::weighted, Directed::undirected>;
 using DirectedGraph_T = BasicGraph<Weighted::unweighted, Directed::directed>;
 using WeightedDirectedGraph_T = BasicGraph<Weighted::weighted, Directed::directed>;

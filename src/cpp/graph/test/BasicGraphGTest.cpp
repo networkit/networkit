@@ -8,6 +8,7 @@
 #ifndef NOGTEST
 
 #include "BasicGraphGTest.h"
+#include "../BasicGraph.h"
 
 namespace NetworKit {
 
