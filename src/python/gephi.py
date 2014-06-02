@@ -1,7 +1,9 @@
-import os
-from structures import Partition
+""" TODO: module docstring """
 
-def writeCSV(values, fpath, column_name):
+import os
+
+def exportNodeValues(values, fpath, column_name):
+	""" TODO: docstring """
 	f = open(fpath, "w+")
 	f.write("id,{0}\n".format(column_name))
 	for i in range(0,len(values)):
