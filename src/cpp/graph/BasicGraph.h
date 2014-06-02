@@ -285,15 +285,15 @@ public:
 
 	/** COORDINATES **/
 
-	void setCoordinate(node v, Point<float> value);
+	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); } 
 
-	Point<float>& getCoordinate(node v);
+	Point<float>& getCoordinate(node v){ return coordinates.getCoordinate(v); } 
 
-	float minCoordinate(count dim);
+	float minCoordinate(count dim){ return coordinates.minCoordinate(dim); }
 
-	float maxCoordinate(count dim);
+	float maxCoordinate(count dim){ return coordinates.maxCoordinate(dim); }
 
-	void initCoordinates();
+	void initCoordinates(){  coordinates.init(z); }
 
 
 	/** EDGE ATTRIBUTES **/
@@ -481,6 +481,14 @@ public:
 	friend void forNeighborsOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
+	 * Iterate over all outgoing neighbors of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forOutNeighborsOf(node u, L handle) const;
+
+	template<Weighted w, typename L> 
+	friend void forOutNeighborsOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
+	
+	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
@@ -496,6 +504,14 @@ public:
 	template<Weighted w, typename L> 
 	friend void forEdgesOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
 
+	/**
+	 * Iterate over all incident outgoing edges of a node and call handler (lambda closure).
+	 */
+	template<typename L> void forOutEdgesOf(node u, L handle) const;
+
+	template<Weighted w, typename L> 
+	friend void forOutEdgesOf_impl (const BasicGraph<w, directed>& G, node u, L handle);
+	
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 *
@@ -530,11 +546,24 @@ public:
 
 	template<typename L> void BFSfrom(node r, L handle) const;
 
+	template<Weighted w, typename L>
+	friend void BFSfrom_impl(const BasicGraph<w, directed>& G, L handle);
+
 	template<typename L> void BFSEdgesfrom(node r, L handle) const;
+
+	template<Weighted w, typename L>
+	friend void BFSEdgesfrom_impl(const BasicGraph<w, directed>& G, L handle);
+	
 
 	template<typename L> void DFSfrom(node r, L handle) const;
 
+	template<Weighted w, typename L>
+	friend void DFSfrom_impl(const BasicGraph<w, directed>& G, L handle);
+
 	template<typename L> void DFSEdgesfrom(node r, L handle) const;
+
+	template<Weighted w, typename L>
+	friend void DFSEdgesfrom_impl(const BasicGraph<w, directed>& G, L handle);
 };
 
 } /* namespace graph_impl */

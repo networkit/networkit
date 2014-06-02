@@ -10,6 +10,8 @@
 
 #include "BasicGraph.h"
 #include "../auxiliary/Random.h"
+#include <stack>
+#include <queue>
 
 namespace NetworKit {
 
@@ -367,7 +369,7 @@ count BasicGraph<w, d>::numberOfSelfLoops() const {
 
 /** COORDINATES **/
 
-template<Weighted w, Directed d>
+/*template<Weighted w, Directed d>
 void BasicGraph<w, d>::setCoordinate(node v, Point<float> value) {
 	// ToDo implement
 	throw std::runtime_error("TODO");
@@ -395,7 +397,7 @@ template<Weighted w, Directed d>
 void BasicGraph<w, d>::initCoordinates() {
 	// ToDo implement
 	throw std::runtime_error("TODO");
-}
+}*/
 
 
 /** EDGE ATTRIBUTES **/
@@ -529,8 +531,16 @@ void setAttribute_double_impl(BasicGraph<w, Directed::directed>& G, node u, node
 
 template<Weighted w, Directed d>
 edgeweight BasicGraph<w, d>::totalEdgeWeight() const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	
+	if (Weighted::weighted == w) {
+		edgeweight sum = 0.0;
+		this->forWeightedEdges([&](node u, node v, edgeweight ew) {
+			sum += ew;
+		});
+		return sum;
+	} else {
+		return this->numberOfEdges() * this->defaultEdgeWeight;
+	}
 }
 
 
@@ -538,22 +548,40 @@ edgeweight BasicGraph<w, d>::totalEdgeWeight() const {
 
 template<Weighted w, Directed d>
 std::vector<node> BasicGraph<w, d>::nodes() const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	
+	std::vector<node> nodes;
+	nodes.reserve(numberOfNodes());
+	this->forNodes([&](node u) {
+		nodes.push_back(u);
+	});
+	return nodes;
 }
+
 
 template<Weighted w, Directed d>
 std::vector<std::pair<node, node> > BasicGraph<w, d>::edges() const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	
+	std::vector<std::pair<node, node> > edges;
+	edges.reserve(numberOfEdges());
+	this->forEdges([&](node u, node v){
+		edges.push_back(std::pair<node, node>(u, v));
+	});
+	return edges;
+	
 }
 
 
 template<Weighted w, Directed d>
 std::vector<node> BasicGraph<w, d>::neighbors(node u) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+	
+	std::vector<node> neighbors;
+	neighbors.reserve(degree(u));
+	this->forNeighborsOf(u, [&](node v) {
+		neighbors.push_back(v);
+	});
+	return neighbors;
 }
+
 
 
 /** NODE ITERATORS **/
@@ -768,6 +796,20 @@ void forNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L h
 
 }
 
+template<Weighted w, typename L>
+void forOutNeighborsOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+
+	for (node v : G.OutEdges[u]) {
+		if (v != none) {
+			handle(v);
+		}
+	}
+
+}
+
+template<Weighted w, typename L>
+void forOutNeighborsOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) = delete;
+
 
 /*template<Weighted w, Directed d>
 template<typename L>
@@ -864,6 +906,21 @@ void forEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handl
 		}
 	}
 }
+
+template<Weighted w, typename L>
+void forOutEdgesOf_impl(const BasicGraph<w, Directed::directed>& G, node u, L handle) {
+
+	for (node v : G.OutEdges[u]) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
+
+}
+
+template<Weighted w, typename L>
+void forOutEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) = delete;
+
 
 template<Weighted w, typename L>
 void forWeightedEdgesOf_impl(const BasicGraph<w, Directed::undirected>& G, node u, L handle) {
@@ -964,32 +1021,195 @@ double parallelSumForNodes_impl(const BasicGraph<w, Directed::directed>& G, L ha
 
 /** GRAPH SEARCHES **/
 
-template<Weighted w, Directed d>
+/*template<Weighted w, Directed d>
 template<typename L>
 void BasicGraph<w, d>::BFSfrom(node r, L handle) const {
 	// ToDo implement
 	throw std::runtime_error("TODO");
+}*/
+
+template<Weighted w, typename L>
+void BFSfrom_impl(BasicGraph<w, Directed::directed>& G, node r, L handle) {
+	std::vector<bool> marked(G.z);
+	std::queue<node> q;
+	q.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = q.front();
+		q.pop();
+		// apply function
+		handle(u);
+		G.forOutNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				q.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!q.empty());
 }
 
-template<Weighted w, Directed d>
+template<Weighted w, typename L>
+void BFSfrom_impl(BasicGraph<w, Directed::undirected>& G, node r, L handle) {
+	std::vector<bool> marked(G.z);
+	std::queue<node> q;
+	q.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = q.front();
+		q.pop();
+		// apply function
+		handle(u);
+		G.forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				q.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!q.empty());
+}
+
+
+/*template<Weighted w, Directed d>
 template<typename L>
 void BasicGraph<w, d>::BFSEdgesfrom(node r, L handle) const {
 	// ToDo implement
 	throw std::runtime_error("TODO");
+}*/
+
+template<Weighted w, typename L>
+void BFSEdgesfrom_impl(BasicGraph<w, Directed::directed>& G, node r, L handle) {
+
+	std::vector<bool> marked(G.z);
+	std::queue<node> q;
+	q.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = q.front();
+		q.pop();
+		// apply function
+		G.forOutNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				handle(u, v);
+				q.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!q.empty());
 }
 
-template<Weighted w, Directed d>
+template<Weighted w, typename L>
+void BFSEdgesfrom_impl(BasicGraph<w, Directed::undirected>& G, node r, L handle) {
+
+	std::vector<bool> marked(G.z);
+	std::queue<node> q;
+	q.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = q.front();
+		q.pop();
+		// apply function
+		G.forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				handle(u, v);
+				q.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!q.empty());
+}
+
+
+/*template<Weighted w, Directed d>
 template<typename L>
 void BasicGraph<w, d>::DFSfrom(node r, L handle) const {
 	// ToDo implement
 	throw std::runtime_error("TODO");
+}*/
+
+template<Weighted w, typename L>
+void DFSfrom_impl(BasicGraph<w, Directed::directed>& G, node r, L handle) {
+
+	std::vector<bool> marked(G.z);
+	std::stack<node> stack;
+	stack.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = stack.top();
+		stack.pop();
+		// apply function
+		handle(u);
+		G.forOutNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				stack.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!stack.empty()); 
 }
 
-template<Weighted w, Directed d>
-template<typename L>
-void BasicGraph<w, d>::DFSEdgesfrom(node r, L handle) const {
-	// ToDo implement
-	throw std::runtime_error("TODO");
+template<Weighted w, typename L>
+void DFSfrom_impl(BasicGraph<w, Directed::undirected>& G, node r, L handle) {
+
+	std::vector<bool> marked(G.z);
+	std::stack<node> stack;
+	stack.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = stack.top();
+		stack.pop();
+		// apply function
+		handle(u);
+		G.forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				stack.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!stack.empty()); 
+}
+
+template<Weighted w, typename L>
+void DFSEdgesfrom_impl(BasicGraph<w, Directed::undirected>& G,node r, L handle) {
+
+	std::vector<bool> marked(G.z);
+	std::stack<node> stack;
+	stack.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = stack.top();
+		stack.pop();
+		// apply function
+		G.forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				handle(u, v);
+				stack.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!stack.empty()); 
+	
+}
+
+template<Weighted w, typename L>
+void DFSEdgesfrom_impl(BasicGraph<w, Directed::directed>& G,node r, L handle) {
+
+	std::vector<bool> marked(G.z);
+	std::stack<node> stack;
+	stack.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = stack.top();
+		stack.pop();
+		// apply function
+		G.forOutNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				handle(u, v);
+				stack.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!stack.empty()); 
+
 }
 
 } /* namespace graph_impl */
