@@ -336,11 +336,15 @@ public:
 	 */
 	count numberOfSelfLoops() const;
 
-
 	/**
 	 * Get an upper bound for the node ids in the graph.
 	 */
 	index upperNodeIdBound() const;
+
+	/**
+	 * Perform Sanity Check, look for multiple edges
+	 */
+	bool sanityCheck() const;
 
 	/** DYNAMICS **/
 
