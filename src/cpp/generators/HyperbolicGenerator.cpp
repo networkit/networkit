@@ -13,6 +13,7 @@
 #include "HyperbolicGenerator.h"
 #include "Quadtree/Quadtree.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/ProgressMeter.h"
 
 namespace NetworKit {
 
@@ -37,39 +38,42 @@ Graph HyperbolicGenerator::generate() {
 
 Graph HyperbolicGenerator::generate(count n, double stretchradius) {
 	double R = stretchradius*acosh((double)n/(2*M_PI)+1);
-	HyperbolicSpace space(R);
-	Graph result(n, false);
 	vector<double> angles(n);
 	vector<double> radii(n);
+
+	HyperbolicSpace::fillPoints(&angles, &radii, stretchradius, 1);
+	INFO("Generated Points");
+	return generate(&angles, &radii, R, R);
+}
+
+Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance) {
+	index n = angles->size();
+	assert(radii->size() == n);
 	Quadtree<index> quad(R);
-
+	Graph result(n, false);
 	for (index i = 0; i < n; i++) {
-		angles[i] = Aux::Random::real(0, 2*M_PI);
-		/**
-		 * for the radial coordinate distribution, I took the probability density from Greedy Forwarding in Dynamic Scale-Free Networks Embedded in Hyperbolic Metric Spaces
-		 * f (r) = sinh r/(cosh R − 1)
-		 * \int sinh = cosh+const
-		 */
-
-		//double denominator = cosh(R)-1;//not needed because it is a common factor
-		double maxcdf = cosh(R);
-		double random = Aux::Random::real(1, maxcdf);
-		radii[i] = acosh(random);
-		assert(radii[i] <= R);
-		quad.addContent(i, angles[i], radii[i]);
+		assert(radii->at(i) < R);
+		quad.addContent(i, angles->at(i), radii->at(i));
 	}
-
+	Aux::ProgressMeter progress(n, 500);
+	INFO("Filled Quadtree");
 	#pragma omp parallel for
 	for (index i = 0; i < n; i++) {
-			vector<index> near = quad.getCloseElements(angles[i], radii[i], R);
+			vector<index> near = quad.getCloseElements(angles->at(i), radii->at(i), R);
 			for (index j : near) {
 				if (i < j) {//we only want to add the edges once for each pair
 					#pragma omp critical
+					{
 					result.addEdge(i,j);
+					}
 				}
 			}
+			#pragma omp critical
+			progress.signal(i);
 		}
 
 	return result;
 }
+
+
 }

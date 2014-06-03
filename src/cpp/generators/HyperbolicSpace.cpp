@@ -6,8 +6,10 @@
  */
 
 #include <cmath>
+#include <assert.h>
 
 #include "HyperbolicSpace.h"
+#include "../auxiliary/Random.h"
 
 using std::abs;
 
@@ -46,6 +48,26 @@ double HyperbolicSpace::getDistance(double firstangle, double firstR, double sec
 	}
 	double result = acosh(coshlastR*cosh(secondR) - sinhlastR*sinh(secondR)*cos(deltaAngle));
 	return result;
+}
+
+//TODO: add const keywords where appropriate
+void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii, double stretch, double alpha) {
+	uint64_t n = radii->size();
+	double R = stretch*acosh((double)n/(2*M_PI)+1);
+	assert(angles->size() == n);
+	for (uint64_t i = 0; i < n; i++) {
+		(*angles)[i] = Aux::Random::real(0, 2*M_PI);
+		/**
+		 * for the radial coordinate distribution, I took the probability density from Greedy Forwarding in Dynamic Scale-Free Networks Embedded in Hyperbolic Metric Spaces
+		 * f (r) = sinh r/(cosh R − 1)
+		 * \int sinh = cosh+const
+		 */
+		//TODO: implement alpha
+		double maxcdf = cosh(R);
+		double random = Aux::Random::real(1, maxcdf);
+		(*radii)[i] = acosh(random);
+		assert((*radii)[i] <= R);
+	}
 }
 
 double HyperbolicSpace::getDistancePrecached(double firstangle, double firstRcosh, double firstRsinh, double secondangle, double secondRcosh, double secondRsinh) {
