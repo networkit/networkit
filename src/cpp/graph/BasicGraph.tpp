@@ -22,6 +22,7 @@ namespace graph_impl {
 
 template<Weighted w, Directed d>
 BasicGraph<w, d>::BasicGraph(count n, bool dummy) :
+	WData(n),
 	DData(n),
 	n(n),
 	m(0),
@@ -252,8 +253,8 @@ void addEdge_impl(BasicGraph<w, Directed::undirected>& G, node u, node v, edgewe
 		// increment degree counters
 		G.deg[u]++;
 		G.deg[v]++;
-		// set edge weight
 
+		// set edge weight
 		G.addEdgeWeight(u, ew);
 		G.addEdgeWeight(v, ew);
 

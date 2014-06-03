@@ -7,7 +7,7 @@
 
 #ifndef GRAPHDATA_H_
 #define GRAPHDATA_H_
-
+#include <iostream>
 #include <vector>
 
 #include "../Globals.h"
@@ -18,6 +18,7 @@ namespace graph_impl {
 
 // data structures for special graph classes, the BasicGraph class will inherit this private as needed
 struct UnweightedData {
+	UnweightedData(count n = 0) {}
 	count getMemoryUsage() const { return 0; }
 	void shrinkToFit() {}
 	
@@ -29,6 +30,9 @@ struct UnweightedData {
 };
 
 struct WeightedData {
+	WeightedData(count n = 0) :
+		edgeWeights(n)
+	{}
 	std::vector< std::vector<edgeweight> > edgeWeights;
 
 	count getMemoryUsage() const;
