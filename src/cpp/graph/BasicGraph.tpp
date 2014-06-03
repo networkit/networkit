@@ -29,13 +29,17 @@ BasicGraph<w, d>::BasicGraph(count n, bool dummy) :
 	z(n),
 	t(0),
 	exists(n, true) {
+
+	if (dummy && w == Weighted::unweighted) {
+		throw std::runtime_error("weighted parameter for constructor is deprecated. Graph_T and DirectedGraph_T are always unweighted. Use WeightedGraph_T or WeightedDirectedGraph_T instead.");
+	}
 	
 	// set name from global id
 	static count nextGraphId = 1;
 	id = nextGraphId++;
 	std::stringstream sstm;
 	sstm << "G#" << id;
-	this->name = sstm.str();
+	name = sstm.str();
 }
 
 
