@@ -11,6 +11,15 @@ namespace NetworKit {
 
 namespace graph_impl {
 
+/** UnweightedData **/
+
+edgeweight UnweightedData::edgeWeightFromIndex(node u, index vi) const {
+	return vi != none ? defaultEdgeWeight : nullWeight;
+}
+
+
+/** Weighted Data **/
+
 count WeightedData::getMemoryUsage() const {
 	count mem = 0;
 
@@ -31,6 +40,21 @@ void WeightedData::shrinkToFit() {
 void WeightedData::addNode() {
 	edgeWeights.push_back(std::vector<edgeweight>{});
 }
+
+void WeightedData::addEdgeWeight(node u, edgeweight ew) {
+	edgeWeights[u].push_back(ew);
+}
+
+void WeightedData::setEdgeWeight(node u, index vi, edgeweight ew) {
+	edgeWeights[u][vi] = ew;
+}
+
+edgeweight WeightedData::edgeWeightFromIndex(node u, index vi) const {
+	return vi != none ? edgeWeights[u][vi] : nullWeight;
+}
+
+
+/** Undirected Data **/
 
 count UndirectedData::getMemoryUsage() const {
 	count mem = 0;
@@ -64,6 +88,9 @@ index UndirectedData::indexInEdgeArray(node u, node v) const {
 	}
 	return none;
 }
+
+
+/** DirectedData **/
 
 count DirectedData::getMemoryUsage() const {
 	count mem = 0;

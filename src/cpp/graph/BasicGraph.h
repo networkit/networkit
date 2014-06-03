@@ -68,15 +68,8 @@ private:
 	// default values
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
 
-	index find(node u, node v) const { 
-		throw std::runtime_error("find is deprecated, use indexInEdgeArray instead");
-	}
-
-	edgeweight weightFromIndex(node u, index vi) const { return weightFromIndex_impl(*this, u, vi); }
-
-	template<Directed d>
-	friend edgeweight weightFromIndex_impl(const BasicGraph<weighted, d>& G, node u, index vi);
-
+	const std::vector<node>& adjaIn(node u) const;
+	
 	const std::vector<node>& adjaOut(node u) const;
 
 public:
@@ -310,10 +303,7 @@ public:
 	 *
 	 * Return 0 if edge does not exist.
 	 */
-	edgeweight weight(node u, node v) const { return weight_impl(*this, u, v); }
-
-	template<Directed d>
-	friend edgeweight weight_impl(const BasicGraph<weighted, d>& G, node u, node v);
+	edgeweight weight(node u, node v) const;
 
 	/**
 	 * Set the weight of an edge. If the edge does not exist,
@@ -476,11 +466,7 @@ public:
 	 *	@param[in]	handle 		takes arguments (u, v, a) where a is an edge attribute of edge {u, v}
 	 *
 	 */
-	// template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const { forEdgesWithAttribute_double_impl(*this, handle); }
-	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const {}
-
-	template<Weighted w, typename L>
-	friend void forEdgesWithAttribute_double_impl(const BasicGraph<w, directed>& G, L handle);
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
 
 	/** NEIGHBORHOOD ITERATORS **/
 
@@ -488,28 +474,16 @@ public:
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forNeighborsOf(node u, L handle) const;
-	// template<typename L> void forNeighborsOf(node u, L handle) const { forNeighborsOf_impl(*this, u, handle); }
-
-	// template<Weighted w, typename L> 
-	// friend void forNeighborsOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
-	// template<typename L> void forWeightedNeighborsOf(node u, L handle) const { forWeightedNeighborsOf_impl(*this, u, handle); }
-
-	// template<Weighted w, typename L> 
-	// friend void forWeightedNeighborsOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
 	 */
 	template<typename L> void forEdgesOf(node u, L handle) const;
-	// template<typename L> void forEdgesOf(node u, L handle) const { forEdgesOf_impl(*this, u, handle); }
-
-	// template<Weighted w, typename L> 
-	// friend void forEdgesOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 	/**
 	 * Iterate over all incident edges of a node and call handler (lamdba closure).
@@ -517,10 +491,6 @@ public:
 	 * Handle takes parameters (u, v, w) where w is the edge weight.
 	 */
 	template<typename L> void forWeightedEdgesOf(node u, L handle) const;
-	// template<typename L> void forWeightedEdgesOf(node u, L handle) const { forWeightedEdgesOf_impl(*this, u, handle); };
-
-	// template<Weighted w, typename L> 
-	// friend void forWeightedEdgesOf_impl(const BasicGraph<w, directed>& G, node u, L handle);
 
 
 	/** REDUCTION ITERATORS **/
