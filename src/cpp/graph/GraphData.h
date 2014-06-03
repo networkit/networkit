@@ -20,8 +20,12 @@ namespace graph_impl {
 struct UnweightedData {
 	count getMemoryUsage() const { return 0; }
 	void shrinkToFit() {}
+	
 	void addNode() {}
-	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight) {}
+
+	void addEdgeWeight(node u, edgeweight ew) {}
+	void setEdgeWeight(node u, index vi, edgeweight ew) {}
+	edgeweight edgeWeightFromIndex(node u, index vi) const;
 };
 
 struct WeightedData {
@@ -29,10 +33,12 @@ struct WeightedData {
 
 	count getMemoryUsage() const;
 	void shrinkToFit();
+
 	void addNode();
-	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight) {
-		edgeWeights[u].push_back(ew);
-	}
+
+	void addEdgeWeight(node u, edgeweight ew);
+	void setEdgeWeight(node u, index vi, edgeweight ew);
+	edgeweight edgeWeightFromIndex(node u, index vi) const;
 };
 
 struct UndirectedData {
@@ -45,6 +51,7 @@ struct UndirectedData {
 
 	count getMemoryUsage() const;
 	void shrinkToFit();
+
 	void addNode();
 	index indexInEdgeArray(node u, node v) const;
 };
@@ -63,6 +70,7 @@ struct DirectedData {
 
 	count getMemoryUsage() const;
 	void shrinkToFit();
+
 	void addNode();
 	index indexInEdgeArray(node u, node v) const { return indexInOutEdgeArray(u, v); }
 	index indexInInEdgeArray(node u, node v) const;
