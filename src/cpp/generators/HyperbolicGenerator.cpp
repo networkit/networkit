@@ -55,21 +55,25 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 		assert(radii->at(i) < R);
 		quad.addContent(i, angles->at(i), radii->at(i));
 	}
-	Aux::ProgressMeter progress(n, 500);
 	INFO("Filled Quadtree");
+
+	Aux::ProgressMeter progress(n, 200);
 	#pragma omp parallel for
 	for (index i = 0; i < n; i++) {
 			vector<index> near = quad.getCloseElements(angles->at(i), radii->at(i), R);
 			for (index j : near) {
 				if (i < j) {//we only want to add the edges once for each pair
-					#pragma omp critical
+					#pragma omp critical (graph)
 					{
 					result.addEdge(i,j);
 					}
 				}
 			}
-			#pragma omp critical
-			progress.signal(i);
+
+			#pragma omp critical (progress)
+			{
+				progress.signal(i);
+			}
 		}
 
 	return result;

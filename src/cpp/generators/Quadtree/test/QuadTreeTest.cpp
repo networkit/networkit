@@ -22,7 +22,7 @@ QuadTreeTest::~QuadTreeTest() {
 }
 
 TEST_F(QuadTreeTest, testQuadTreeInsertion) {
-	count n = 200;
+	count n = 1000;
 	double R = acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
 	vector<double> radii(n);
