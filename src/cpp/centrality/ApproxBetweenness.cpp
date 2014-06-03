@@ -31,8 +31,8 @@ void ApproxBetweenness::run() {
 
 	double c = 1; // TODO: what is the effect of the choice of c?
 
-	/** 
-	 * This is an optimization which deviates from the original algorithm. 
+	/**
+	 * This is an optimization which deviates from the original algorithm.
 	 * Instead of getting an estimate for each of possibly thousands of connected component and taking the maximum,
 	 * we sample the graph and take the maximum diameter found.
 	 */
@@ -40,12 +40,11 @@ void ApproxBetweenness::run() {
 	count samples = 42;
 	edgeweight vd = Diameter::estimatedVertexDiameter(G, samples);
 	INFO("estimated diameter: ", vd);
-	// FIXME: if the vertex diameter is estimated to be 2, then there is log(0) in the formula which will practically lead to an infinite amount of samples
 	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
 
 	INFO("taking ", r, " path samples");
 
-	// parallelization: 
+	// parallelization:
 	count maxThreads = omp_get_max_threads();
 	DEBUG("max threads: ", maxThreads);
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
