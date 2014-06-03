@@ -531,8 +531,6 @@ using WeightedGraph = BasicGraph<Weighted::weighted, Directed::undirected>;
 using DirectedGraph = BasicGraph<Weighted::unweighted, Directed::directed>;
 using WeightedDirectedGraph = BasicGraph<Weighted::weighted, Directed::directed>;
 
-using Graph = Graph_T;
-
 template<Weighted w>
 using IUndirectedGraph = BasicGraph<w, Directed::undirected>;
 

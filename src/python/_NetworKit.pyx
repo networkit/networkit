@@ -92,7 +92,7 @@ def enableNestedParallelism():
 
 ## Module: graph
 
-cdef extern from "../cpp/graph/Graph.h":
+cdef extern from "../cpp/graph/BasicGraph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count, bool) except +
@@ -185,7 +185,7 @@ cdef class Graph:
 		return self._this.totalEdgeWeight()
 
 
-cdef extern from "../cpp/graph/DirectedGraph.h":
+cdef extern from "../cpp/graph/BasicGraph.h":
 	cdef cppclass _DirectedGraph "NetworKit::Graph":
 		_DirectedGraph() except +
 		_DirectedGraph(count, bool) except +
@@ -206,9 +206,12 @@ cdef extern from "../cpp/graph/DirectedGraph.h":
 		string toString() except +
 		string getName() except +
 		edgeweight totalEdgeWeight() except +
-cdef class DirectedGraph:
 
-def __cinit__(self, n=0, weighted=False):
+cdef class DirectedGraph:
+	"""An directed, optionally weighted graph"""
+	cdef _DirectedGraph* _this
+	
+	def __cinit__(self, n=0, weighted=False):
 		self._this = new _DirectedGraph(n, weighted)
 		
 	# # any _thisect which appears as a return type needs to implement setThis
@@ -217,9 +220,10 @@ def __cinit__(self, n=0, weighted=False):
 	# 	self._this = other
 	# 	return self
 
-	cdef setThis(self, _Graph* other):
+	cdef setThis(self, _DirectedGraph* other):
 		self._this = other
 		return self
+
 
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
@@ -1111,7 +1115,7 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 
 
 cdef extern from "../cpp/community/EPP.h":
-	cdef cppclass _EPP "NetworKit::EPP":Graph
+	cdef cppclass _EPP "NetworKit::EPP":
 		_Partition run(_Graph G)
 		string toString()
 
