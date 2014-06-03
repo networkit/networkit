@@ -529,8 +529,19 @@ index Graph::upperNodeIdBound() const {
 	return this->z;
 }
 
-
-
+bool Graph::sanityCheck() const {
+	/**
+	 * checking for multiple edges
+	 */
+	bool multFound = false;
+	this->forNodes([&](node v) {
+		std::vector<node> copy = adja[v];
+		std::sort(copy.begin(), copy.end());
+		auto it = std::unique(copy.begin(), copy.end());
+		multFound = (multFound || (it == copy.end()));
+	});
+	return multFound;
+}
 
 
 } /* namespace NetworKit */
