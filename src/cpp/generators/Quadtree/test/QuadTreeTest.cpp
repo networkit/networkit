@@ -26,20 +26,10 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	double R = acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
 	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
 	Quadtree<index> quad(R);
 
 	for (index i = 0; i < n; i++) {
-		angles[i] = Aux::Random::real(0, 2*M_PI);
-		/**
-		 * for the radial coordinate distribution, I took the probability density from Greedy Forwarding in Dynamic Scale-Free Networks Embedded in Hyperbolic Metric Spaces
-		 * f (r) = sinh r/(cosh R − 1)
-		 * \int sinh = cosh+const
-		 */
-
-		double maxcdf = cosh(R);
-		double random = Aux::Random::real(1, maxcdf);
-		radii[i] = acosh(random);
-		assert(radii[i] <= R);
 		quad.addContent(i, angles[i], radii[i]);
 	}
 	vector<index> all = quad.getElements();
@@ -48,18 +38,16 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	vector<index> closeToOne = quad.getCloseElements(angles[comparison], radii[comparison], R);
 	EXPECT_LE(closeToOne.size(), n);
 
-	HyperbolicSpace space(R);
-
 	for (index i = 0; i < closeToOne.size(); i++) {
 		ASSERT_LE(closeToOne[i], n);
-		EXPECT_LE(space.getDistance(angles[comparison], radii[comparison], angles[closeToOne[i]], radii[closeToOne[i]]), R);
+		EXPECT_LE(HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[closeToOne[i]], radii[closeToOne[i]]), R);
 		for (index j = 0; j < i; j++) {
 			EXPECT_NE(closeToOne[i], closeToOne[j]);
 		}
 	}
 
 	for (index i = 0; i < n; i++) {
-		if (space.getDistance(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
+		if (HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
 			bool found = false;
 			for (index j = 0; j < closeToOne.size(); j++) {
 				if (closeToOne[j] == i) {
@@ -67,7 +55,10 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 					break;
 				}
 			}
-			EXPECT_TRUE(found);
+			EXPECT_TRUE(found) << "dist(" << i << "," << comparison << ") = "
+					<< HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[i], radii[i]) << " < " << R;
+			//<< "Node " << i << " at (" << angles[i] << "," << radii[i] << ") is close to node "
+			//		<< comparison << " at (" << angles[comparison] << "," << radii[comparison] << "), but doesn't show up in list of size " << closeToOne.size();
 		}
 	}
 }

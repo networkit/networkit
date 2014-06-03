@@ -24,6 +24,7 @@ public:
 	HyperbolicGenerator();
 	HyperbolicGenerator(count n, double stretchradius);
 	virtual ~HyperbolicGenerator();
+	Graph generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance);
 	Graph generate(count n, double stretchradius = 1);//TODO: add converter to NetworKit graph
 	Graph generate();
 

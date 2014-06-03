@@ -8,6 +8,10 @@
 #ifndef HYPERBOLICSPACE_H_
 #define HYPERBOLICSPACE_H_
 
+#include <vector>
+
+using std::vector;
+
 namespace NetworKit {
 
 class HyperbolicSpace {
@@ -15,6 +19,7 @@ public:
 	HyperbolicSpace();
 	virtual ~HyperbolicSpace();
 	HyperbolicSpace(double R);
+	static void fillPoints(vector<double> * angles, vector<double> * radii, double stretch, double alpha);
 	static double getDistance(double firstangle, double firstR, double secondangle, double secondR);//TODO: replace with coordinates
 	static double getDistancePrecached(double firstangle, double firstRcosh, double firstRsinh, double secondangle, double secondRcosh, double secondRsinh);
 	double getRadius();

@@ -31,7 +31,6 @@ public:
 
 	~QuadNode() {
 		// TODO Auto-generated constructor stub
-
 	}
 
 	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter) {
@@ -50,6 +49,8 @@ public:
 			if (content.size() + 1 < capacity ||  HyperbolicSpace::getDistance(leftAngle, minR, rightAngle, maxR) < minRegion) {
 				content.push_back(input);
 				angles.push_back(angle);
+				coshradii.push_back(cosh(R));
+				sinhradii.push_back(sinh(R));
 				radii.push_back(R);
 			} else {
 				//heavy lifting: split up!
@@ -92,9 +93,10 @@ public:
 	}
 
 	double distanceLowerBound(double angle, double R) {
+		//return 0;
 		double nearestR = R;
 		if (nearestR < minR) nearestR = minR;
-		if (nearestR >= maxR) nearestR = maxR;
+		if (nearestR > maxR) nearestR = maxR;
 		if (angle >= this->leftAngle && angle < this->rightAngle) {
 			return std::abs(R-nearestR);
 		}
@@ -129,11 +131,13 @@ public:
 	}
 
 	std::vector<T> getCloseElements(double angle, double R, double maxDistance) {
+		double coshinput = cosh(R);
+		double sinhinput = sinh(R);
 		std::vector<T> result;
 		if (isLeaf) {
 			if (this->distanceLowerBound(angle, R) < maxDistance) {
 				for (uint i = 0; i < content.size(); i++) {
-					if (HyperbolicSpace::getDistance(angle, R, angles[i], radii[i]) < maxDistance) {
+					if (HyperbolicSpace::getDistancePrecached(angle, coshinput, sinhinput, angles[i], coshradii[i], sinhradii[i]) < maxDistance) {
 						result.push_back(content[i]);
 					}
 				}
@@ -160,6 +164,8 @@ private:
 	std::vector<QuadNode> children;
 	std::vector<T> content;
 	std::vector<double> angles;
+	std::vector<double> coshradii;
+	std::vector<double> sinhradii;
 	std::vector<double> radii;
 	bool isLeaf;
 };
