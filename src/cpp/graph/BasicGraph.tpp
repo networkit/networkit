@@ -29,15 +29,25 @@ BasicGraph<w, d>::BasicGraph(count n, bool dummy) :
 	z(n),
 	t(0),
 	exists(n, true) {
+
+	if (dummy && w == Weighted::unweighted) {
+		throw std::runtime_error("weighted parameter for constructor is deprecated. Graph_T and DirectedGraph_T are always unweighted. Use WeightedGraph_T or WeightedDirectedGraph_T instead.");
+	}
 	
 	// set name from global id
 	static count nextGraphId = 1;
 	id = nextGraphId++;
 	std::stringstream sstm;
 	sstm << "G#" << id;
-	this->name = sstm.str();
+	name = sstm.str();
 }
 
+ 
+//only to be used by Cython
+template<Weighted w, Directed d>
+void BasicGraph<w, d>::stealFrom(BasicGraph<w, d>& input) {
+	*this = std::move(input);
+}
 
 /** PRIVATE HELPERS **/
 
@@ -698,9 +708,17 @@ template<typename L>
 void BasicGraph<w, d>::forEdges(L handle) const {
 	for (node u = 0; u < z; ++u) {
 		auto& neighbors = adjaOut(u);
-		for (auto v : neighbors) {
-			if (v != none) {
-				handle(u, v);
+		for (node v : neighbors) {
+			if (d == Directed::directed) {
+				if (v != none) {
+					handle(u, v);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					handle(u, v);
+				}
 			}
 		}
 	}
@@ -712,174 +730,90 @@ void BasicGraph<w, d>::parallelForEdges(L handle) const {
 	#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
 		auto& neighbors = adjaOut(u);
-		for (auto v : neighbors) {
-			if (v != none) {
-				handle(u, v);
+		for (node v : neighbors) {
+			if (d == Directed::directed) {
+				if (v != none) {
+					handle(u, v);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					handle(u, v);
+				}
 			}
 		}
 	}
 }
 
-template<>
+template<Weighted w, Directed d>
 template<typename L>
-void BasicGraph<Weighted::unweighted, Directed::undirected>::forWeightedEdges(L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < adja[u].size(); ++vi) {
-			node v = adja[u][vi];
-			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				handle(u, v, defaultEdgeWeight);
+void BasicGraph<w, d>::forWeightedEdges(L handle) const {
+	for (node u = 0; u <z; ++u) {
+		auto& neighbors = adjaOut(u);
+		for (index i = 0; i < neighbors.size(); ++i) {
+			node v = neighbors[i];
+			if (d == Directed::directed) {
+				if (v != none) {
+					edgeweight ew = WData::edgeWeightFromIndex(u, i);
+					handle(u, v, ew);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					edgeweight ew = WData::edgeWeightFromIndex(u, i);
+					handle(u, v, ew);
+				}
 			}
 		}
 	}
 }
 
-template<>
+template<Weighted w, Directed d>
 template<typename L>
-void BasicGraph<Weighted::weighted, Directed::undirected>::forWeightedEdges(L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < adja[u].size(); ++vi) {
-			node v = adja[u][vi];
-			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				edgeweight w = edgeWeights[u][vi];
-				handle(u, v, w);
-			}
-		}
-	}
-}
-
-template<>
-template<typename L>
-void BasicGraph<Weighted::unweighted, Directed::directed>::forWeightedEdges(L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
-			node v = outEdges[u][vi];
-			if (v != none) {
-				handle(u, v, defaultEdgeWeight);
-			}
-		}
-	}
-}
-
-template<>
-template<typename L>
-void BasicGraph<Weighted::weighted, Directed::directed>::forWeightedEdges(L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
-			node v = outEdges[u][vi];
-			if (v != none) {
-				edgeweight ew = edgeWeights[u][vi];
-				handle(u, v, ew);
-			}
-		}
-	}
-}
-
-template<>
-template<typename L>
-void BasicGraph<Weighted::unweighted, Directed::undirected>::parallelForWeightedEdges(L handle) const {
+void BasicGraph<w, d>::parallelForWeightedEdges(L handle) const {
 	#pragma omp parallel for
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < adja[u].size(); ++vi) {
-			node v = this->adja[u][vi];
-			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				handle(u, v, defaultEdgeWeight);
+	for (node u = 0; u <z; ++u) {
+		auto& neighbors = adjaOut(u);
+		for (index i = 0; i < neighbors.size(); ++i) {
+			node v = neighbors[i];
+			if (d == Directed::directed) {
+				if (v != none) {
+					edgeweight ew = WData::edgeWeightFromIndex(u, i);
+					handle(u, v, ew);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					edgeweight ew = WData::edgeWeightFromIndex(u, i);
+					handle(u, v, ew);
+				}
 			}
 		}
 	}
 }
 
-template<>
+template<Weighted w, Directed d>
 template<typename L>
-void BasicGraph<Weighted::weighted, Directed::undirected>::parallelForWeightedEdges(L handle) const {
-	#pragma omp parallel for
+void BasicGraph<w, d>::forEdgesWithAttribute_double(int attrId, L handle) const {
 	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < adja[u].size(); ++vi) {
-			node v = adja[u][vi];
-			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				edgeweight ew = edgeWeights[u][vi];
-				handle(u, v, ew);
-			}
-		}
-	}
-}
-
-template<>
-template<typename L>
-void BasicGraph<Weighted::unweighted, Directed::directed>::parallelForWeightedEdges(L handle) const {
-	#pragma omp parallel for
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
-			node v = outEdges[u][vi];
-			if (v != none) {
-				handle(u, v, defaultEdgeWeight);
-			}
-		}
-	}
-}
-
-template<>
-template<typename L>
-void BasicGraph<Weighted::weighted, Directed::directed>::parallelForWeightedEdges(L handle) const {
-	#pragma omp parallel for
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
-			node v = outEdges[u][vi];
-			if (v != none) {
-				edgeweight ew = edgeWeights[u][vi];
-				handle(u, v, ew);
-			}
-		}
-	}
-}
-
-template<>
-template<typename L>
-inline void BasicGraph<Weighted::unweighted, Directed::undirected>::forEdgesWithAttribute_double(int attrId, L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < adja[u].size(); ++vi) {
-			node v = adja[u][vi];
-			double attr = edgeMaps_double[attrId][u][vi];
-			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				handle(u, v, attr);
-			}
-		}
-	}
-}
-template<>
-template<typename L>
-inline void BasicGraph<Weighted::weighted, Directed::undirected>::forEdgesWithAttribute_double(int attrId, L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < adja[u].size(); ++vi) {
-			node v = adja[u][vi];
-			double attr = edgeMaps_double[attrId][u][vi];
-			if (u >= v) { // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				handle(u, v, attr);
-			}
-		}
-	}
-}
-template<>
-template<typename L>
-inline void BasicGraph<Weighted::unweighted, Directed::directed>::forEdgesWithAttribute_double(int attrId, L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
-			node v = outEdges[u][vi];
-			double attr = edgeMaps_double[attrId][u][vi];
-			if (v != none) {
-				handle(u, v, attr);
-			}
-		}
-	}
-}
-template<>
-template<typename L>
-inline void BasicGraph<Weighted::weighted, Directed::directed>::forEdgesWithAttribute_double(int attrId, L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index vi = 0; vi < outEdges[u].size(); ++vi) {
-			node v = outEdges[u][vi];
-			double attr = edgeMaps_double[attrId][u][vi];
-			if (v != none) {
-				handle(u, v, attr);
+		auto& neighbors = adjaOut(u);
+		for (index i = 0; i < neighbors.size(); ++i) {
+			node v = neighbors[i];
+			if (d == Directed::directed) {
+				if (v != none) {
+					double attr = edgeMaps_double[attrId][u][i];
+					handle(u, v, attr);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					double attr = edgeMaps_double[attrId][u][i];
+					handle(u, v, attr);
+				}
 			}
 		}
 	}
