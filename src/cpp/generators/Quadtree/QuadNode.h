@@ -27,6 +27,7 @@ public:
 		maxR = 10;//TODO: magic Number, careful.
 		capacity = 20;
 		isLeaf = true;
+		minRegion = 0;
 	}
 
 	~QuadNode() {
@@ -93,7 +94,7 @@ public:
 	}
 
 	double distanceLowerBound(double angle, double R) {
-		//return 0;
+		//return 0;//TODO: find proper lower Bound
 		double nearestR = R;
 		if (nearestR < minR) nearestR = minR;
 		if (nearestR > maxR) nearestR = maxR;
@@ -135,7 +136,11 @@ public:
 		double sinhinput = sinh(R);
 		std::vector<T> result;
 		if (isLeaf) {
-			if (this->distanceLowerBound(angle, R) < maxDistance) {
+			if (this->distanceUpperBound(angle, R) < maxDistance) {
+				assert(this->distanceLowerBound(angle, R) < maxDistance);
+				return content;
+			}
+			else if (this->distanceLowerBound(angle, R) < maxDistance) {
 				for (uint i = 0; i < content.size(); i++) {
 					if (HyperbolicSpace::getDistancePrecached(angle, coshinput, sinhinput, angles[i], coshradii[i], sinhradii[i]) < maxDistance) {
 						result.push_back(content[i]);
