@@ -35,7 +35,7 @@ TEST_F(GraphMemoryBenchmark, shrinkToFitForErdosRenyi) {
 		count after = G.getMemoryUsage();
 
 		bool useMS = timerShrink.elapsedMicroseconds() > 5000;
-		printf("G(n = %llu, m = %llu), generation took %llu ms, memory used before shrink: %llu KB, memory used after shrink: %llu KB, relative saving: %f, shrinking took %llu %s\n",
+		printf("G(n = %lu, m = %lu), generation took %lu ms, memory used before shrink: %lu KB, memory used after shrink: %lu KB, relative saving: %f, shrinking took %lu %s\n",
 			G.numberOfNodes(),
 			G.numberOfEdges(),
 			timerGen.elapsedMilliseconds(),
@@ -64,7 +64,7 @@ TEST_F(GraphMemoryBenchmark, shrinkToFitForGraphReader) {
 		count after = G.getMemoryUsage();
 
 		bool useMS = timerShrink.elapsedMicroseconds() > 5000;
-		printf("G(n = %llu, m = %llu), reading %s took %llu ms, memory used before shrink: %llu KB, memory used after shrink: %llu KB, relative saving: %f, shrinking took %llu %s\n",
+		printf("G(n = %lu, m = %lu), reading %s took %lu ms, memory used before shrink: %lu KB, memory used after shrink: %lu KB, relative saving: %f, shrinking took %lu %s\n",
 			G.numberOfNodes(),
 			G.numberOfEdges(),
 			graphFile.c_str(),

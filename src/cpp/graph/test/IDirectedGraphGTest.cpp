@@ -1,5 +1,5 @@
 /*
- * IDGraphGTest.cpp
+ * IDirectedGraphGTest.cpp
  *
  *  Created on: 10.05.2014
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
@@ -7,20 +7,16 @@
 
 #ifndef NOGTEST
 
-#include "IDGraphGTest.h"
-
-#include "../Graph.h"
-#include "../DirectedGraph.h"
-#include "../BasicGraph.h"
+#include "IDirectedGraphGTest.h"
 
 namespace NetworKit {
 
 using testing::Types;
-typedef Types<DirectedGraph, DirectedGraph_T> dgraphImplementations;
-TYPED_TEST_CASE(IDGraphGTest, dgraphImplementations);
+typedef Types<DirectedGraph, WeightedDirectedGraph> dgraphImplementations;
+TYPED_TEST_CASE(IDirectedGraphGTest, dgraphImplementations);
 
 template <typename T>
-void IDGraphGTest<T>::SetUp() {
+void IDirectedGraphGTest<T>::SetUp() {
 	/*
 	 *    0
 	 *   . \
@@ -53,7 +49,7 @@ void IDGraphGTest<T>::SetUp() {
 	m_house = Ghouse.numberOfEdges();
 }
 
-TYPED_TEST(IDGraphGTest, degreeInOut) {
+TYPED_TEST(IDirectedGraphGTest, degreeInOut) {
 	std::vector<count> inDegrees(this->Ghouse.upperNodeIdBound(), 0);
 	std::vector<count> outDegrees(this->Ghouse.upperNodeIdBound(), 0);
 	for (auto& e : this->houseEdgesOut) {
@@ -68,38 +64,38 @@ TYPED_TEST(IDGraphGTest, degreeInOut) {
 	});
 }
 
-// TYPED_TEST(IDGraphGTest, forOutEdgesOf) {
-// 	count m = 0;
-// 	std::vector<bool> visited(this->m_house, false);
+TYPED_TEST(IDirectedGraphGTest, forEdgesOf) {
+	count m = 0;
+	std::vector<bool> visited(this->m_house, false);
 
-// 	this->Ghouse.forNodes([&](node u) {
-// 		this->Ghouse.forOutEdgesOf(u, [&](node v, node w) {
-// 			// edges should be v to w, so if we iterate over edges from u, u should be equal v
-// 			EXPECT_EQ(u, v);
+	this->Ghouse.forNodes([&](node u) {
+		this->Ghouse.forEdgesOf(u, [&](node v, node w) {
+			// edges should be v to w, so if we iterate over edges from u, u should be equal v
+			EXPECT_EQ(u, v);
 			
-// 			auto e = std::make_pair(v, w);
-// 			// find edge
-// 			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
+			auto e = std::make_pair(v, w);
+			// find edge
+			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
 
-// 			EXPECT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
+			EXPECT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
 		
-// 			// find index in edge array
-// 			int i = std::distance(this->houseEdgesOut.begin(), it);
-// 			EXPECT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
+			// find index in edge array
+			int i = std::distance(this->houseEdgesOut.begin(), it);
+			EXPECT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
 			
-// 			// mark edge as visited
-// 			visited[i] = true;
-// 			m++;
-// 		});
-// 	});
+			// mark edge as visited
+			visited[i] = true;
+			m++;
+		});
+	});
 
-// 	EXPECT_EQ(this->m_house, m);
-// 	for (auto b : visited) {
-// 		EXPECT_TRUE(b);
-// 	}
-// }
+	EXPECT_EQ(this->m_house, m);
+	for (auto b : visited) {
+		EXPECT_TRUE(b);
+	}
+}
 
-// TYPED_TEST(IDGraphGTest, forInEdgesOf) {
+// TYPED_TEST(IDirectedGraphGTest, forInEdgesOf) {
 // 	// very similar to forOutEdgesOf ...
 
 // 	count m = 0;
@@ -132,7 +128,7 @@ TYPED_TEST(IDGraphGTest, degreeInOut) {
 // 	}
 // }
 
-TYPED_TEST(IDGraphGTest, BFSfrom) {
+TYPED_TEST(IDirectedGraphGTest, BFSfrom) {
 	std::vector<count> visitedOrder(5, none);
 	index i = 0;
 	this->Ghouse.BFSfrom(3, [&](node v) {
@@ -156,7 +152,7 @@ TYPED_TEST(IDGraphGTest, BFSfrom) {
 	EXPECT_TRUE( (visitedOrder[4] == 3) ^ (visitedOrder[4] == 4) );
 }
 
-TYPED_TEST(IDGraphGTest, DFSfrom) {
+TYPED_TEST(IDirectedGraphGTest, DFSfrom) {
 	std::vector<count> visitedOrder(5, none);
 	index i = 0;
 	this->Ghouse.DFSfrom(3, [&](node v) {

@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 using testing::Types;
-typedef Types< Graph_T, WeightedGraph_T, DirectedGraph_T, WeightedDirectedGraph_T > graphImplementations;
+typedef Types< Graph, WeightedGraph, DirectedGraph, WeightedDirectedGraph > graphImplementations;
 
 TYPED_TEST_CASE(BasicGraphGTest, graphImplementations);
 

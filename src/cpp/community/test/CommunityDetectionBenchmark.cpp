@@ -94,8 +94,7 @@ TEST_F(CommunityDetectionBenchmark, timePageRankCentrality) {
 			"Page Rank Centrality", graph.c_str(),
 			timer.elapsedMilliseconds() / 1000.0,
 			ranking[0].first, ranking[0].second,
-			ranking[1].first, ranking[1].second, 
-			ranking[2].first, ranking[2].second); 
+			ranking[1].first, ranking[1].second);
 	}
 }	
 
@@ -117,8 +116,7 @@ TEST_F(CommunityDetectionBenchmark, timeBetweennessCentrality) {
 			"Betweenness Centrality", graph.c_str(),
 			timer.elapsedMilliseconds() / 1000.0,
 			ranking[0].first, ranking[0].second,
-			ranking[1].first, ranking[1].second, 
-			ranking[2].first, ranking[2].second); 
+			ranking[1].first, ranking[1].second);
 	}
 }	
 

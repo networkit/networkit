@@ -1,5 +1,5 @@
 /*
- * IDGraphGTest.h
+ * IDirectedGraphGTest.h
  *
  *  Created on: 10.05.2014
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
@@ -7,17 +7,18 @@
 
 #ifndef NOGTEST
 
-#ifndef IDGRAPHGTEST_H_
-#define IDGRAPHGTEST_H_
+#ifndef IDIRECTEDGRAPHGTEST_H_
+#define IDIRECTEDGRAPHGTEST_H_
 
+#include <vector>
 #include <gtest/gtest.h>
 
-#include "../IDGraph.h"
+#include "../BasicGraph.h"
 
 namespace NetworKit {
 
 template <typename T>
-class IDGraphGTest : public testing::Test {
+class IDirectedGraphGTest : public testing::Test {
 public:
 	virtual void SetUp();
 
@@ -29,6 +30,6 @@ protected:
 
 } /* namespace NetworKit */
 
-#endif /* IDGRAPHGTEST_H_ */
+#endif /* IDIRECTEDGRAPHGTEST_H_ */
 
 #endif /*NOGTEST */
