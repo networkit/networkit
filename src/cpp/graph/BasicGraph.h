@@ -86,6 +86,9 @@ public:
 
 	BasicGraph<weighted, directed>& operator=(const BasicGraph<weighted, directed>& other) = default;
 
+	/** Only to be used from Cython */
+	void stealFrom(BasicGraph<weighted, directed>& input);
+
 
 	/** GRAPH INFORMATION **/
 
@@ -527,6 +530,8 @@ using Graph_T = BasicGraph<Weighted::unweighted, Directed::undirected>;
 using WeightedGraph_T = BasicGraph<Weighted::weighted, Directed::undirected>;
 using DirectedGraph_T = BasicGraph<Weighted::unweighted, Directed::directed>;
 using WeightedDirectedGraph_T = BasicGraph<Weighted::weighted, Directed::directed>;
+
+using Graph = Graph_T;
 
 template<Weighted w>
 using IUndirectedGraph = BasicGraph<w, Directed::undirected>;
