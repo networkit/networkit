@@ -523,10 +523,10 @@ public:
 } /* namespace graph_impl */
 
 using graph_impl::BasicGraph;
-using Graph_T = BasicGraph<Weighted::unweighted, Directed::undirected>;
-using WeightedGraph_T = BasicGraph<Weighted::weighted, Directed::undirected>;
-using DirectedGraph_T = BasicGraph<Weighted::unweighted, Directed::directed>;
-using WeightedDirectedGraph_T = BasicGraph<Weighted::weighted, Directed::directed>;
+using Graph = BasicGraph<Weighted::unweighted, Directed::undirected>;
+using WeightedGraph = BasicGraph<Weighted::weighted, Directed::undirected>;
+using DirectedGraph = BasicGraph<Weighted::unweighted, Directed::directed>;
+using WeightedDirectedGraph = BasicGraph<Weighted::weighted, Directed::directed>;
 
 template<Weighted w>
 using IUndirectedGraph = BasicGraph<w, Directed::undirected>;

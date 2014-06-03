@@ -3,6 +3,7 @@
 import time
 import subprocess
 import sys
+import multiprocessing
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
@@ -12,12 +13,14 @@ testName = sys.argv[1] if len(sys.argv) > 1 else ''
 # ERROR | WARN | INFO | DEBUG | TRACE
 logLevel = 'ERROR'
 
+jobs = multiprocessing.cpu_count() / 2
+
 sourceDirectory = 'src/'
 workingDirectory = None
 
 def buildAntTest():
     # compile
-    result = subprocess.call(['scons', '--optimize=O', '--target=Tests', '-j 2'], cwd = workingDirectory)
+    result = subprocess.call(['scons', '--optimize=O', '--target=Tests', '-j', jobs], cwd = workingDirectory)
 
     # run test to if compilation was successful and a test name was specified
     if result == 0 and len(testName) > 0:
