@@ -19,7 +19,7 @@ template <class T>
 class Quadtree {
 public:
 	Quadtree() {
-
+		root = QuadNode<T>();
 	}
 
 	Quadtree(double maxR) {
