@@ -723,7 +723,7 @@ cdef class Partition:
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, z):
+	def __cinit__(self, z=0):
 		self._this = _Partition(z)
 
 	cdef setThis(self, _Partition other):
