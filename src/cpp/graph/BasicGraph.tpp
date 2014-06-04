@@ -365,6 +365,7 @@ bool BasicGraph<w, d>::hasEdge(node u, node v) const {
 
 template<Weighted w, Directed d>
 node BasicGraph<w, d>::mergeEdge(node u, node v, bool discardSelfLoop) {
+	throw std::runtime_error("TODO: implement mergeEdge");
 	// if (u != v) {
 	// 	node newNode = addNode();
 

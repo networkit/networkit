@@ -16,10 +16,9 @@
 #include <iostream>
 #include <sstream>
 
-namespace NetworKit {
+#include "../Globals.h"
 
-typedef uint64_t index; // more expressive name for an index into an array
-typedef uint64_t count; // more expressive name for an integer quantity
+namespace NetworKit {
 
 //template<class T> class Point;
 //

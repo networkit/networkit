@@ -9,13 +9,10 @@
 #define INDEXMAP_H_
 
 #include <vector>
+#include "../Globals.h"
 #include "../auxiliary/Log.h"
 
 namespace NetworKit {
-
-typedef uint64_t index; // more expressive name for an index into an array
-typedef uint64_t count; // more expressive name for an integer quantity
-
 
 /**
  * @DEPRECATED: This class is deprecated. Do not use it in new code.

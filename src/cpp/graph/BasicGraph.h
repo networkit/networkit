@@ -35,19 +35,19 @@ enum class Directed {
 namespace graph_impl {
 
 // choose between types
-template<bool b, class T1, class T2>
-using either = typename std::conditional<b, T1, T2>::type;
+// template<bool b, class T1, class T2>
+// using either = typename std::conditional<b, T1, T2>::type;
 
 // class for all graphs in NetworKit, some methods have special implementation depending on the template parameters
 template<Weighted weighted, Directed directed>
 class BasicGraph :
-	private either<weighted == Weighted::weighted, WeightedData, UnweightedData>,
-	private either<directed == Directed::directed, DirectedData, UndirectedData>
+	private std::conditional<weighted == Weighted::weighted, WeightedData, UnweightedData>::type,
+	private std::conditional<directed == Directed::directed, DirectedData, UndirectedData>::type
 {
 private:
 
-	using DData = either<directed == Directed::directed, DirectedData, UndirectedData>;
-	using WData = either<weighted == Weighted::weighted, WeightedData, UnweightedData>;
+	using DData = typename std::conditional<directed == Directed::directed, DirectedData, UndirectedData>::type;
+	using WData = typename std::conditional<weighted == Weighted::weighted, WeightedData, UnweightedData>::type;
 
 	// graph attributes
 	count id;
@@ -530,6 +530,7 @@ using Graph = BasicGraph<Weighted::unweighted, Directed::undirected>;
 using WeightedGraph = BasicGraph<Weighted::weighted, Directed::undirected>;
 using DirectedGraph = BasicGraph<Weighted::unweighted, Directed::directed>;
 using WeightedDirectedGraph = BasicGraph<Weighted::weighted, Directed::directed>;
+
 
 template<Weighted w>
 using IUndirectedGraph = BasicGraph<w, Directed::undirected>;
