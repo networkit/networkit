@@ -30,7 +30,7 @@ BasicGraph<w, d>::BasicGraph(count n, bool dummy) :
 	t(0),
 	exists(n, true) {
 
-	if (dummy && w == Weighted::unweighted) {
+	if (dummy && !isWeighted()) {
 		throw std::runtime_error("weighted parameter for constructor is deprecated. Graph_T and DirectedGraph_T are always unweighted. Use WeightedGraph_T or WeightedDirectedGraph_T instead.");
 	}
 	
@@ -553,7 +553,7 @@ void setAttribute_double_impl(BasicGraph<w, Directed::directed>& G, node u, node
 
 template<Weighted w, Directed d>
 edgeweight BasicGraph<w, d>::totalEdgeWeight() const {
-	if (Weighted::weighted == w) {
+	if (isWeighted()) {
 		edgeweight sum = 0.0;
 		forWeightedEdges([&](node u, node v, edgeweight ew) {
 			sum += ew;
@@ -709,7 +709,7 @@ void BasicGraph<w, d>::forEdges(L handle) const {
 	for (node u = 0; u < z; ++u) {
 		auto& neighbors = adjaOut(u);
 		for (node v : neighbors) {
-			if (d == Directed::directed) {
+			if (isDirected()) {
 				if (v != none) {
 					handle(u, v);
 				}
@@ -731,7 +731,7 @@ void BasicGraph<w, d>::parallelForEdges(L handle) const {
 	for (node u = 0; u < z; ++u) {
 		auto& neighbors = adjaOut(u);
 		for (node v : neighbors) {
-			if (d == Directed::directed) {
+			if (isDirected()) {
 				if (v != none) {
 					handle(u, v);
 				}
@@ -753,7 +753,7 @@ void BasicGraph<w, d>::forWeightedEdges(L handle) const {
 		auto& neighbors = adjaOut(u);
 		for (index i = 0; i < neighbors.size(); ++i) {
 			node v = neighbors[i];
-			if (d == Directed::directed) {
+			if (isDirected()) {
 				if (v != none) {
 					edgeweight ew = WData::edgeWeightFromIndex(u, i);
 					handle(u, v, ew);
@@ -778,7 +778,7 @@ void BasicGraph<w, d>::parallelForWeightedEdges(L handle) const {
 		auto& neighbors = adjaOut(u);
 		for (index i = 0; i < neighbors.size(); ++i) {
 			node v = neighbors[i];
-			if (d == Directed::directed) {
+			if (isDirected()) {
 				if (v != none) {
 					edgeweight ew = WData::edgeWeightFromIndex(u, i);
 					handle(u, v, ew);
@@ -802,7 +802,7 @@ void BasicGraph<w, d>::forEdgesWithAttribute_double(int attrId, L handle) const 
 		auto& neighbors = adjaOut(u);
 		for (index i = 0; i < neighbors.size(); ++i) {
 			node v = neighbors[i];
-			if (d == Directed::directed) {
+			if (isDirected()) {
 				if (v != none) {
 					double attr = edgeMaps_double[attrId][u][i];
 					handle(u, v, attr);
