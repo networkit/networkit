@@ -360,7 +360,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	HyperbolicGenerator gen(n,1);
 	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_TRUE(G.sanityCheck());
+	EXPECT_FALSE(G.hasMultiEdges());
 
 }
 

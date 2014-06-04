@@ -342,9 +342,9 @@ public:
 	index upperNodeIdBound() const;
 
 	/**
-	 * Perform Sanity Check, look for multiple edges
+	 * Has Multiple edges right now?
 	 */
-	bool sanityCheck() const;
+	bool hasMultiEdges() const;
 
 	/** DYNAMICS **/
 
