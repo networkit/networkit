@@ -1,6 +1,7 @@
 import os
 import fnmatch
 import ConfigParser
+import distutils.sysconfig
 
 home_path = os.environ['HOME']
 
@@ -11,7 +12,7 @@ def getSourceFiles(target, optimize):
 
 	# walk source directory and find ONLY .cpp files
 	for (dirpath, dirnames, filenames) in os.walk(srcDir):
-	    for name in fnmatch.filter(filenames, "*.cpp"):
+		for name in fnmatch.filter(filenames, "*.cpp"):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
@@ -37,9 +38,14 @@ def getSourceFiles(target, optimize):
 		source.append(os.path.join(srcDir, "Unittests-X.cpp"))
 	elif target == "Core":
 		pass # no executable
-	else:
-		print("Unknown target: {0}".format(target))
-		Exit(1)
+	# elif target == "Python":
+	# 	# add SWIG interface files
+	# 	for (dirpath, dirnames, filenames) in os.walk("src/swig"):
+	# 		for name in fnmatch.filter(filenames, "*.i"):
+	# 			source.append(os.path.join(dirpath, name))
+	# else:
+	# 	print("Unknown target: {0}".format(target))
+	# 	Exit(1)
 
 	# create build directory for build configuration
 	buildDir = ".build{0}".format(optimize)
@@ -89,8 +95,8 @@ else:
 env["CC"] = cppComp
 env["CXX"] = cppComp
 
-env.Append(CPPDEFINES=defines)
-env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude])
+env.Append(CPPDEFINES = defines)
+env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude, '-I/usr/include/python3.3' ])
 env.Append(LIBS = ["gtest"])
 env.Append(LIBPATH = [gtestLib, tbbLib])
 env.Append(LINKFLAGS = ["-std=c++11"])
@@ -221,16 +227,28 @@ AddOption("--target",
 
 
 target = GetOption("target")
-availableTargets = ["Core","Tests"]
+availableTargets = ["Core", "Tests", "Python"]
 if target in availableTargets:
 	source = getSourceFiles(target,optimize)
 	targetName = "NetworKit-{0}-{1}".format(target, optimize)
 	if target == "Core":
-		# do not append executable
-		# env.Append(CPPDEFINES=["NOLOGGING"])
-		env.Library("NetworKit-Core-{0}".format(optimize), source)
-	else:
+		env.Library(targetName, source)
+	elif target == "Tests":
 		env.Program(targetName, source)
+	elif target == "Python":
+		env.Append(SWIGFLAGS = ["-c++", "-python"])
+		env.Append(tools = ['default', 'swig'])
+		env.SharedLibrary("src/swig/_NetworKit", source)
+
+		for (dirpath, dirnames, filenames) in os.walk("src/swig"):
+			for name in fnmatch.filter(filenames, "*.i"):
+				source.append(os.path.join(dirpath, name))
+		# Command(target = "src/swig/_NetworKit.so",
+	        # source = "src/swig/lib_NetworKit.so",
+	        # action = [Delete("$TARGET"), Move("$TARGET", "$SOURCE")])
+		Command(target = "src/swig/_NetworKit.dylib",
+	        source = "src/swig/lib_NetworKit.dylib",
+	        action = [Delete("$TARGET"), Move("$TARGET", "$SOURCE")])
 else:
 	print("ERROR: unknown target: {0}".format(target))
 	exit()

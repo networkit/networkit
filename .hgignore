@@ -8,7 +8,8 @@ syntax: regexp
 \.pyc
 \.a
 \.so
-\checkpoint.ipynb
+\.o
+s\checkpoint.ipynb
 build.conf
 .sconsign.dblite
 /_NetworKit.cpp$
@@ -42,3 +43,6 @@ syntax: regexp
 
 syntax: glob
 NetworKit-Tests-*
+
+src/swig/NetworKit.py
+*_wrap.cc
