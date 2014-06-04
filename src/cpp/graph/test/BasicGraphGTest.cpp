@@ -183,8 +183,9 @@ TYPED_TEST(BasicGraphGTest, removeEdge) {
 }
 
 TYPED_TEST(BasicGraphGTest, numberOfNodes) {
-	TypeParam G1(0);
+	ASSERT_EQ(this->n_house, this->Ghouse.numberOfNodes());
 
+	TypeParam G1(0);
 	ASSERT_EQ(0u, G1.numberOfNodes());
 	G1.addNode();
 	ASSERT_EQ(1u, G1.numberOfNodes());
@@ -197,8 +198,9 @@ TYPED_TEST(BasicGraphGTest, numberOfNodes) {
 }
 
 TYPED_TEST(BasicGraphGTest, numberOfEdges) {
-	TypeParam G1(5);
+	ASSERT_EQ(this->m_house, this->Ghouse.numberOfEdges());
 
+	TypeParam G1(5);
 	ASSERT_EQ(0u, G1.numberOfEdges());
 	G1.addEdge(0, 1);
 	ASSERT_EQ(1u, G1.numberOfEdges());
@@ -210,8 +212,35 @@ TYPED_TEST(BasicGraphGTest, numberOfEdges) {
 	ASSERT_EQ(0u, G1.numberOfEdges());
 }
 
-TYPED_TEST(BasicGraphGTest, degree) {
+TYPED_TEST(BasicGraphGTest, upperNodeIdBound) {
+	ASSERT_EQ(5u, this->Ghouse.upperNodeIdBound());
 
+	TypeParam G1(0);
+	ASSERT_EQ(0u, G1.upperNodeIdBound());
+	G1.addNode();
+	ASSERT_EQ(1u, G1.upperNodeIdBound());
+	G1.addNode();
+	ASSERT_EQ(2u, G1.upperNodeIdBound());
+	G1.removeNode(1);
+	ASSERT_EQ(2u, G1.upperNodeIdBound());
+	G1.addNode();
+	ASSERT_EQ(3u, G1.upperNodeIdBound());
+}
+
+TYPED_TEST(BasicGraphGTest, degree) {
+	if (this->Ghouse.isDirected()) {
+		ASSERT_EQ(1u, this->Ghouse.degree(0));
+		ASSERT_EQ(2u, this->Ghouse.degree(1));
+		ASSERT_EQ(2u, this->Ghouse.degree(2));
+		ASSERT_EQ(2u, this->Ghouse.degree(3));
+		ASSERT_EQ(1u, this->Ghouse.degree(4));
+	} else {
+		ASSERT_EQ(2u, this->Ghouse.degree(0));
+		ASSERT_EQ(4u, this->Ghouse.degree(1));
+		ASSERT_EQ(4u, this->Ghouse.degree(2));
+		ASSERT_EQ(3u, this->Ghouse.degree(3));
+		ASSERT_EQ(3u, this->Ghouse.degree(4));
+	}
 }
 
 TYPED_TEST(BasicGraphGTest, isEmpty) {
@@ -230,6 +259,80 @@ TYPED_TEST(BasicGraphGTest, isEmpty) {
 	G2.removeNode(G2.randomNode());
 	ASSERT_TRUE(G1.isEmpty());
 	ASSERT_TRUE(G2.isEmpty());
+}
+
+TYPED_TEST(BasicGraphGTest, weight) {
+	if (this->Ghouse.isWeighted()) {
+		// TODO
+	} else {
+		count c = 0;
+		for (node u = 0; u < this->Ghouse.upperNodeIdBound(); u++) {
+			for (node v = 0; v < this->Ghouse.upperNodeIdBound(); v++) {
+				if (this->Ghouse.hasEdge(u, v)) {
+					c++;
+					ASSERT_EQ(defaultEdgeWeight, this->Ghouse.weight(u, v));
+				} else {
+					ASSERT_EQ(nullWeight, this->Ghouse.weight(u, v));
+				}
+			}
+		}
+
+		if (this->Ghouse.isDirected()) {
+			ASSERT_EQ(this->m_house, c);
+		} else {
+			ASSERT_EQ(2 * this->m_house, c);
+		}
+
+		auto& e1 = this->houseEdgesOut[3];
+		auto& e2 = this->houseEdgesOut[0];
+		this->Ghouse.setWeight(e1.first, e1.second, 3.1415);
+		this->Ghouse.setWeight(e2.first, e2.second, 2.71828);
+
+		for (node u = 0; u < this->Ghouse.upperNodeIdBound(); u++) {
+			for (node v = 0; v < this->Ghouse.upperNodeIdBound(); v++) {
+				if (this->Ghouse.hasEdge(u, v)) {
+					c++;
+					ASSERT_EQ(defaultEdgeWeight, this->Ghouse.weight(u, v));
+				} else {
+					ASSERT_EQ(nullWeight, this->Ghouse.weight(u, v));
+				}
+			}
+		}
+
+		if (this->Ghouse.isDirected()) {
+			ASSERT_EQ(2 * this->m_house, c);
+		} else {
+			ASSERT_EQ(4 * this->m_house, c);
+		}
+	}
+}
+
+TYPED_TEST(BasicGraphGTest, weightedDegree) {
+	if (this->Ghouse.isWeighted()) {
+		// TODO
+	} else {
+		if (this->Ghouse.isDirected()) {
+			ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegree(0));
+			ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(1));
+			ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(2));
+			ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(3));
+			ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegree(4));
+		} else {
+			ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(0));
+			ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegree(1));
+			ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegree(2));
+			ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(3));
+			ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(4));
+		}
+	}
+}
+
+TYPED_TEST(BasicGraphGTest, totalEdgeWeight) {
+	if (this->Ghouse.isWeighted()) {
+		// TODO
+	} else {
+		ASSERT_EQ(this->m_house * defaultEdgeWeight, this->Ghouse.totalEdgeWeight());
+	}
 }
 
 TYPED_TEST(BasicGraphGTest, forNodes) {
