@@ -40,6 +40,7 @@ double HyperbolicSpace::getRadius() {
  * This distance measure is taken from the Poincaré disc model.
  */
 double HyperbolicSpace::getDistance(double firstangle, double firstR, double secondangle, double secondR) {
+	if (firstangle == secondangle && firstR == secondR) return 0;
 	double deltaAngle = abs(firstangle - secondangle); //I don't have to check the direction because of the symmetry of cos
 	if (firstR != lastR) {
 		lastR = firstR;
@@ -47,6 +48,7 @@ double HyperbolicSpace::getDistance(double firstangle, double firstR, double sec
 		sinhlastR = sinh(firstR);
 	}
 	double result = acosh(coshlastR*cosh(secondR) - sinhlastR*sinh(secondR)*cos(deltaAngle));
+	assert(result >= 0);
 	return result;
 }
 
@@ -72,7 +74,9 @@ void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii
 
 double HyperbolicSpace::getDistancePrecached(double firstangle, double firstRcosh, double firstRsinh, double secondangle, double secondRcosh, double secondRsinh) {
 	double deltaAngle = abs(firstangle - secondangle); //I don't have to check the direction because of the symmetry of cos
+	if (deltaAngle == 0 && firstRcosh == secondRcosh && firstRsinh == secondRsinh) return 0;//points are identical, sometimes resulted in -nan
 	double result = acosh(firstRcosh*secondRcosh - firstRsinh*secondRsinh*cos(deltaAngle));
+	assert(result >= 0);
 	return result;
 }
 }
