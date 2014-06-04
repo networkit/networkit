@@ -17,6 +17,7 @@ namespace NetworKit {
 
 template <class T>
 class Quadtree {
+	friend class QuadTreeTest;
 public:
 	Quadtree() {
 		root = QuadNode<T>();

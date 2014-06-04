@@ -11,6 +11,8 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
+#include "../Quadtree.h"
+
 namespace NetworKit {
 
 typedef uint64_t index; // more expressive name for an index into an array
@@ -20,6 +22,12 @@ class QuadTreeTest: public testing::Test {
 public:
 	QuadTreeTest();
 	virtual ~QuadTreeTest();
+
+protected:
+	template <class T>
+	QuadNode<T> getRoot(Quadtree<T> tree) {
+		return tree.root;
+	}
 };
 
 } /* namespace NetworKit */

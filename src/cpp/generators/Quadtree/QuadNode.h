@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <assert.h>
+#include "../../auxiliary/Log.h"
 #include "../HyperbolicSpace.h"
 
 using std::vector;
@@ -25,6 +26,10 @@ public:
 		rightAngle = 2*M_PI;
 		minR = 0;
 		maxR = 10;//TODO: magic Number, careful.
+		coshMinR = cosh(minR);
+		sinhMinR = sinh(minR);
+		coshMaxR = cosh(maxR);
+		sinhMaxR = sinh(maxR);
 		capacity = 20;
 		isLeaf = true;
 		minRegion = 0;
@@ -37,8 +42,12 @@ public:
 	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter) {
 		this->leftAngle = leftAngle;
 		this->minR = minR;
-		this->rightAngle = rightAngle;
+		coshMinR = cosh(minR);
+		sinhMinR = sinh(minR);
 		this->maxR = maxR;
+		coshMaxR = cosh(maxR);
+		sinhMaxR = sinh(maxR);
+		this->rightAngle = rightAngle;
 		this->capacity = 20;
 		this->minRegion = minDiameter;
 		isLeaf = true;
@@ -93,24 +102,50 @@ public:
 		}
 	}
 
-	double distanceLowerBound(double angle, double R) {
+	double distanceLowerBoundPrecached(double angle, double R, double coshR, double sinhR) {
 		//return 0;//TODO: find proper lower Bound
 		double nearestR = R;
+		double coshNR, sinhNR;
 		if (nearestR < minR) nearestR = minR;
 		if (nearestR > maxR) nearestR = maxR;
 		if (angle >= this->leftAngle && angle < this->rightAngle) {
+			TRACE(this->leftAngle, " < ",  angle, " < " , this->rightAngle);
 			return std::abs(R-nearestR);
 		}
-		double leftDistance = HyperbolicSpace::getDistance(angle, R, this->leftAngle, nearestR);
-		double rightDistance = HyperbolicSpace::getDistance(angle, R, this->rightAngle, nearestR);
+
+		if (nearestR == maxR) {
+			coshNR = coshMinR;
+			sinhNR = sinhMinR;
+			TRACE(R, ">=", maxR);
+		} else if (nearestR == minR) {
+			coshNR = coshMaxR;
+			sinhNR = sinhMaxR;
+			TRACE(R, "<=", minR);
+		} else {
+			coshNR = cosh(nearestR);
+			sinhNR = sinh(nearestR);
+		}
+		double leftDistance = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->leftAngle,  coshNR, sinhNR);
+		double rightDistance = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->rightAngle, coshNR, sinhNR);
+		TRACE("leftDistance:", leftDistance);
+		TRACE("rightDistance:", rightDistance);
 		return std::min(leftDistance, rightDistance);
 	}
 
+	double distanceLowerBound(double angle, double R) {
+		double coshR = cosh(R);
+		double sinhR = sinh(R);
+		return distanceLowerBoundPrecached(angle, R, coshR, sinhR);
+	}
+
 	double distanceUpperBound(double angle, double R) {
-		double leftLower = HyperbolicSpace::getDistance(angle, R, this->leftAngle, this->minR);
-		double rightLower = HyperbolicSpace::getDistance(angle, R, this->rightAngle, this->minR);
-		double leftUpper = HyperbolicSpace::getDistance(angle, R, this->leftAngle, this->maxR);
-		double rightUpper = HyperbolicSpace::getDistance(angle, R, this->rightAngle, this->maxR);
+		double coshR = cosh(R);
+		double sinhR = sinh(R);
+
+		double leftLower = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->leftAngle, this->coshMinR, this->sinhMinR);
+		double rightLower = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->rightAngle, this->coshMinR, this->sinhMinR);
+		double leftUpper = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->leftAngle, this->coshMaxR, this->sinhMaxR);
+		double rightUpper = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->rightAngle, this->coshMaxR, this->sinhMaxR);
 		return std::max(std::max(leftLower, rightLower), std::max(leftUpper, rightUpper));
 	}
 
@@ -131,27 +166,26 @@ public:
 		}
 	}
 
-	std::vector<T> getCloseElements(double angle, double R, double maxDistance) {
-		double coshinput = cosh(R);
-		double sinhinput = sinh(R);
+	std::vector<T> getCloseElementsPrecached(double angle, double R, double coshR, double sinhR, double maxDistance) {
 		std::vector<T> result;
 		if (isLeaf) {
-			if (this->distanceUpperBound(angle, R) < maxDistance) {
-				assert(this->distanceLowerBound(angle, R) < maxDistance);
-				return content;
-			}
-			else if (this->distanceLowerBound(angle, R) < maxDistance) {
-				for (uint i = 0; i < content.size(); i++) {
-					if (HyperbolicSpace::getDistancePrecached(angle, coshinput, sinhinput, angles[i], coshradii[i], sinhradii[i]) < maxDistance) {
-						result.push_back(content[i]);
+			if (this->distanceLowerBoundPrecached(angle, R, coshR, sinhR) < maxDistance) {
+				if (this->distanceUpperBound(angle, R) < maxDistance) {
+					return content;
+				}
+				else {
+					for (uint i = 0; i < content.size(); i++) {
+						if (HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, angles[i], coshradii[i], sinhradii[i]) < maxDistance) {
+								result.push_back(content[i]);
+							}
 					}
 				}
-				}
+			}
 		} else {
 			for (uint i = 0; i < children.size(); i++) {
 				QuadNode * child = &children[i];
-				if (child->distanceLowerBound(angle, R) < maxDistance) {
-					vector<T> subresult = child->getCloseElements(angle, R, maxDistance);
+				if (child->distanceLowerBoundPrecached(angle, R, coshR, sinhR) < maxDistance) {
+					vector<T> subresult = child->getCloseElementsPrecached(angle, R, coshR, sinhR, maxDistance);
 					result.insert(result.end(), subresult.begin(), subresult.end());
 				}
 			}
@@ -159,11 +193,53 @@ public:
 		return result;
 	}
 
+	std::vector<T> getCloseElements(double angle, double R, double maxDistance) {
+		double coshinput = cosh(R);
+		double sinhinput = sinh(R);
+		return getCloseElementsPrecached(angle, R, coshinput, sinhinput, maxDistance);
+	}
+
+	QuadNode<T> * getAppropriateLeaf(double angle, double R) {
+		assert(this->responsible(angle, R));
+		if (isLeaf) return this;
+		else {
+			for (uint i = 0; i < children.size(); i++) {
+				bool foundResponsibleChild = false;
+				if (children[i].responsible(angle, R)) {
+					assert(foundResponsibleChild == false);
+					foundResponsibleChild = true;
+					return children[i].getAppropriateLeaf(angle, R);
+				}
+			}
+			DEBUG("No responsible child for (", angle, ", ", R, ") found. Segfault imminent.");
+		}
+	}
+
+	double getLeftAngle() {
+		return leftAngle;
+	}
+
+	double getRightAngle() {
+		return rightAngle;
+	}
+
+	double getMinR() {
+		return minR;
+	}
+
+	double getMaxR() {
+		return maxR;
+	}
+
 private:
 	double leftAngle;
 	double rightAngle;
 	double minR;
+	double coshMinR;
+	double sinhMinR;
 	double maxR;
+	double coshMaxR;
+	double sinhMaxR;
 	unsigned capacity;
 	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
 	std::vector<QuadNode> children;
