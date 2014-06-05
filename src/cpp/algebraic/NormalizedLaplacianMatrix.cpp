@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-NormalizedLaplacianMatrix::NormalizedLaplacianMatrix() : Matrix() {
-}
-
 NormalizedLaplacianMatrix::NormalizedLaplacianMatrix(const Graph &graph) : Matrix(graph.numberOfNodes()) {
 	graph.forNodes([&](const index i){
 		double weightedDegree = graph.weightedDegree(i);
@@ -31,9 +28,6 @@ NormalizedLaplacianMatrix::NormalizedLaplacianMatrix(const Graph &graph) : Matri
 			}
 		}
 	});
-}
-
-NormalizedLaplacianMatrix::~NormalizedLaplacianMatrix() {
 }
 
 } /* namespace NetworKit */

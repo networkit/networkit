@@ -19,9 +19,6 @@ public:
 	 * Constructs the AdjacencyMatrix of @a graph.
 	 */
 	AdjacencyMatrix(const Graph &graph);
-
-	/** Default constructor */
-	virtual ~AdjacencyMatrix();
 };
 
 } /* namespace NetworKit */
