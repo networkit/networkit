@@ -6,12 +6,13 @@
  */
 
 #include "GMLGraphWriter.h"
+#include "../auxiliary/Enforce.h"
 
 namespace NetworKit {
 
 void GMLGraphWriter::write(Graph& G, const std::string& path) {
 	std::ofstream file(path);
-	assert (file.good());
+	Aux::enforceOpened(file);
 	
 	file << "graph\n[\n";
 	

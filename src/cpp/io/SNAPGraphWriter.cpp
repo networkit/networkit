@@ -6,13 +6,13 @@
  */
 
 #include "SNAPGraphWriter.h"
+#include "../auxiliary/Enforce.h"
 
 namespace NetworKit {
 
 void SNAPGraphWriter::write(Graph& G, const std::string& path) {
-    std::ofstream file;
-    file.open(path);
-    assert (file.good());
+    std::ofstream file(path);
+    Aux::enforceOpened(file);
 
     // write "problem line" - n, m, directed/undirected, weighted/weight type
     file << "p " << G.numberOfNodes() << " " << G.numberOfEdges() << " u u 0\n"; // FIXME: makeshift

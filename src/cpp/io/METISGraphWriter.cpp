@@ -7,6 +7,8 @@
 
 #include "METISGraphWriter.h"
 
+#include "../auxiliary/Enforce.h"
+
 namespace NetworKit {
 
 void METISGraphWriter::write(Graph& G, const std::string& path) {
@@ -14,7 +16,7 @@ void METISGraphWriter::write(Graph& G, const std::string& path) {
 }
 void METISGraphWriter::write(Graph& G, bool weighted, std::string path) {
 	std::ofstream file(path);
-	assert (file.good());
+	Aux::enforceOpened(file);
 
 	int64_t n = G.numberOfNodes();
 	int64_t m = G.numberOfEdges();

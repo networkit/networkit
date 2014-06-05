@@ -13,6 +13,7 @@ build.conf
 .sconsign.dblite
 /_NetworKit.cpp$
 src/python/NetworKit.egg-info/
+NetworKit-Tests-D
 
 syntax: regexp
 ^output$

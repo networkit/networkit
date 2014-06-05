@@ -6,6 +6,7 @@
  */
 
 #include "VNAGraphWriter.h"
+#include "../auxiliary/Enforce.h"
 
 namespace NetworKit {
 
@@ -17,7 +18,7 @@ void VNAGraphWriter::writeGeneric(Graph& G, bool weighted, const std::string& pa
                                   Partition& partition, count dim) {
 
 	std::ofstream file(path);
-	assert (file.good());
+	Aux::enforceOpened(file);
 
 //	int64_t n = G.numberOfNodes();
 //	int64_t m = G.numberOfEdges();
