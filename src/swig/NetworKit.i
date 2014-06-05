@@ -5,10 +5,10 @@
 #include "../cpp/viz/Point.h"
 #include "../cpp/graph/BasicGraph.h"
 
-/*#include "../cpp/graph/GraphGenerator.h"
+#include "../cpp/graph/GraphGenerator.h"
 #include "../cpp/generators/ChungLuGenerator.h"
 
-#include "../cpp/properties/GraphProperties.h"*/
+// #include "../cpp/properties/GraphProperties.h"
 %}
 
 %include exception.i
@@ -37,14 +37,13 @@
 	PyTuple_SetItem($result, 1, PyInt_FromLong($1.second));
 }
 
-
 %include "../cpp/Globals.h"
 %include "../cpp/viz/Point.h"
+%include "../cpp/graph/GraphData.h"
 %include "../cpp/graph/BasicGraph.h"
 
-/*%include "../cpp/structures/Partition.h"
+%include "../cpp/structures/Partition.h"
 %include "../cpp/graph/GraphGenerator.h"
 %include "../cpp/generators/ChungLuGenerator.h"
 
-%include "../cpp/properties/GraphProperties.h"
-*/
+// %include "../cpp/properties/GraphProperties.h"

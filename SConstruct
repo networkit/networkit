@@ -92,11 +92,14 @@ if conf.has_option("libraries", "tbb"):
 else:
 	tbbLib = ""
 
+pythonInclude = "-I/usr/local/Cellar/python3/3.4.1/Frameworks/Python.framework/Versions/3.4/include/python3.4m"
+pythonInclude = "-I/usr/include/python2.7"
+
 env["CC"] = cppComp
 env["CXX"] = cppComp
 
 env.Append(CPPDEFINES = defines)
-env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude, '-I/usr/include/python3.3' ])
+env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude, pythonInclude])
 env.Append(LIBS = ["gtest"])
 env.Append(LIBPATH = [gtestLib, tbbLib])
 env.Append(LINKFLAGS = ["-std=c++11"])
@@ -236,6 +239,19 @@ if target in availableTargets:
 	elif target == "Tests":
 		env.Program(targetName, source)
 	elif target == "Python":
+		import distutils.sysconfig
+		for (dirpath, dirnames, filenames) in os.walk("src/swig"):
+			for name in fnmatch.filter(filenames, "*.i"):
+				source.append(os.path.join(dirpath, name))
+		env.Append(SWIGFLAGS=['-c++', '-python'])
+		env.Append(SHLIBPREFIX="")
+		env.Append(LINKFLAGS = ["-lpython"])
+		env.SharedLibrary('_NetworKit.so', source)
+		Command(target = "src/swig/_NetworKit.so",
+	        source = "lib_NetworKit.so",
+	        action = [Delete("$TARGET"), Move("$TARGET", "$SOURCE")])
+
+   	elif target == "Python2":
 		env.Append(SWIGFLAGS = ["-c++", "-python"])
 		env.Append(tools = ['default', 'swig'])
 		env.SharedLibrary("src/swig/_NetworKit", source)
@@ -243,12 +259,19 @@ if target in availableTargets:
 		for (dirpath, dirnames, filenames) in os.walk("src/swig"):
 			for name in fnmatch.filter(filenames, "*.i"):
 				source.append(os.path.join(dirpath, name))
+		print(source)
+
+		import distutils.sysconfig
+		# env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
+		# env.Append(SHLIBPREFIX="")
+		env.SharedLibrary('_example.so', source)
+
 		# Command(target = "src/swig/_NetworKit.so",
 	        # source = "src/swig/lib_NetworKit.so",
-	        # action = [Delete("$TARGET"), Move("$TARGET", "$SOURCE")])
-		Command(target = "src/swig/_NetworKit.dylib",
-	        source = "src/swig/lib_NetworKit.dylib",
-	        action = [Delete("$TARGET"), Move("$TARGET", "$SOURCE")])
+	        # action = [Delete("$TARGET"), Move("$TARGET", "$SOURCE")])	
+		# Command(target = "src/swig/_NetworKit.dylib",
+	 #        source = "src/swig/lib_NetworKit.dylib",
+	 #        action = [Delete("$TARGET"), Move("$TARGET", "$SOURCE")])
 else:
 	print("ERROR: unknown target: {0}".format(target))
 	exit()

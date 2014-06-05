@@ -21,6 +21,7 @@
 
 namespace NetworKit {
 
+
 enum class Weighted {
 	unweighted,
 	weighted
@@ -526,23 +527,27 @@ public:
 } /* namespace graph_impl */
 
 using graph_impl::BasicGraph;
-using Graph = BasicGraph<Weighted::unweighted, Directed::undirected>;
-using WeightedGraph = BasicGraph<Weighted::weighted, Directed::undirected>;
-using DirectedGraph = BasicGraph<Weighted::unweighted, Directed::directed>;
-using WeightedDirectedGraph = BasicGraph<Weighted::weighted, Directed::directed>;
+// using Graph = BasicGraph<Weighted::unweighted, Directed::undirected>;
+// using WeightedGraph = BasicGraph<Weighted::weighted, Directed::undirected>;
+// using DirectedGraph = BasicGraph<Weighted::unweighted, Directed::directed>;
+// using WeightedDirectedGraph = BasicGraph<Weighted::weighted, Directed::directed>;
 
+typedef graph_impl::BasicGraph<Weighted::unweighted, Directed::undirected> Graph;
+typedef graph_impl::BasicGraph<Weighted::weighted, Directed::undirected> WeightedGraph;
+typedef graph_impl::BasicGraph<Weighted::unweighted, Directed::directed> DirectedGraph;
+typedef graph_impl::BasicGraph<Weighted::weighted, Directed::directed> WeightedDirectedGraph;
 
-template<Weighted w>
-using IUndirectedGraph = BasicGraph<w, Directed::undirected>;
+// template<Weighted w>
+// using IUndirectedGraph = BasicGraph<w, Directed::undirected>;
 
-template<Weighted w>
-using IDirectedGraph = BasicGraph<w, Directed::directed>;
+// template<Weighted w>
+// using IDirectedGraph = BasicGraph<w, Directed::directed>;
 
-template<Directed d>
-using IUnweightedGraph = BasicGraph<Weighted::unweighted, d>;
+// template<Directed d>
+// using IUnweightedGraph = BasicGraph<Weighted::unweighted, d>;
 
-template<Directed d>
-using IWeigehtedGraph = BasicGraph<Weighted::weighted, d>;
+// template<Directed d>
+// using IWeigehtedGraph = BasicGraph<Weighted::weighted, d>;
 
 } /* namespace NetworKit */
 
