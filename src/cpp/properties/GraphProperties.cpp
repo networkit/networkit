@@ -130,7 +130,8 @@ std::vector<unsigned int> GraphProperties::degreeSequence(const Graph& G) {
 	return sequence;
 }
 
-double GraphProperties::averageDegree(const Graph& G) {
+template<Weighted w, Directed d>
+double GraphProperties::averageDegree(const BasicGraph<w, d>& G) {
 
 	count n = G.numberOfNodes();
 

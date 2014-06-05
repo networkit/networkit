@@ -54,3 +54,17 @@
 %include "../cpp/generators/ChungLuGenerator.h"
 
 %include "../cpp/properties/GraphProperties.h"
+
+%template(averageDegree) GraphProperties::averageDegree<UNWEIGHTED, UNDIRECTED>;
+
+// use SWIG macro
+// %define TEMPLATE_WRAP(prefix, T...) 
+// %template(prefix ## Foo) Foo<T >;
+// %template(prefix ## Bar) Bar<T >;
+// ...
+// %enddef
+
+// TEMPLATE_WRAP(int, int)
+// TEMPLATE_WRAP(double, double)
+// TEMPLATE_WRAP(String, char *)
+// TEMPLATE_WRAP(PairStringInt, std::pair<string, int>)

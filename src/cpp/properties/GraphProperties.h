@@ -65,7 +65,8 @@ public:
 
 	static std::pair<count, count> minMaxDegree(const Graph& G);
 
-	static double averageDegree(const Graph& G);
+	template<Weighted w, Directed d>
+	static double averageDegree(const BasicGraph<w, d>& G);
 
 	/**
 	 * @return Degree assortativity of the graph @a G.
