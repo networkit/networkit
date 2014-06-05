@@ -844,6 +844,12 @@ cdef class Partition:
 	def __cinit__(self, z=0):
 		self._this = _Partition(z)
 
+	def __len__(self):
+		return self._this.numberOfElements()
+
+	def __getitem__(self, e):
+		return self._this.subsetOf(e)
+
 	cdef setThis(self, _Partition other):
 		self._this = other
 		return self
