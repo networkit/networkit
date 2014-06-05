@@ -223,9 +223,9 @@ public:
 
 
     /**
-     * @return Random random edge.
+     * @return Random random edge (note: fast, but not uniformly random)
      */
-    std::pair<node, node> randomEdge() const;
+    std::pair<node, node> randomEdge() const;	// TODO: implement uniformly random edge choice
 
 
 
