@@ -65,9 +65,6 @@ Matrix::Matrix(const std::vector<Vector> &columns) : graph(columns.size(), true)
 Matrix::Matrix(const Matrix &other) : graph(other.graph) {
 }
 
-Matrix::~Matrix() {
-}
-
 uint64_t Matrix::numberOfRows() const {
 	return graph.numberOfNodes();
 }

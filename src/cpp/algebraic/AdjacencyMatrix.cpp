@@ -15,10 +15,6 @@ AdjacencyMatrix::AdjacencyMatrix(const Graph &graph) : Matrix(graph.numberOfNode
 	});
 }
 
-AdjacencyMatrix::~AdjacencyMatrix() {
-}
-
-
 
 } /* namespace NetworKit */
 

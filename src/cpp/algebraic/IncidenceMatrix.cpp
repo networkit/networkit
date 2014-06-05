@@ -12,9 +12,6 @@ namespace NetworKit {
 IncidenceMatrix::IncidenceMatrix(Graph &graph) : graph(graph) {
 }
 
-IncidenceMatrix::~IncidenceMatrix() {
-}
-
 double IncidenceMatrix::value(const node &node, const Edge &edge) const {
 	if (edge.first != edge.second) {
 		if (node == edge.first) {

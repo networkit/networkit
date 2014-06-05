@@ -23,9 +23,6 @@ Vector::Vector(const std::initializer_list<double> &list) : values(list), transp
 Vector::Vector(const Vector &other) : values(other.values), transposed(other.transposed) {
 }
 
-Vector::~Vector() {
-}
-
 bool Vector::isTransposed() const {
 	return transposed;
 }

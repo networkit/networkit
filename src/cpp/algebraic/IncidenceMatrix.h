@@ -26,9 +26,6 @@ public:
 	 */
 	IncidenceMatrix(Graph &graph);
 
-	/** Default constructor */
-	virtual ~IncidenceMatrix();
-
 	/**
 	 * @return Number of rows.
 	 */

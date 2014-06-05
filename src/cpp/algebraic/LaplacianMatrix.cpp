@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-LaplacianMatrix::LaplacianMatrix() : Matrix() {
-}
-
 LaplacianMatrix::LaplacianMatrix(const Graph &graph) : Matrix(graph.numberOfNodes()) {
 	graph.forNodes([&](const index i){
 		double weightedDegree = graph.weightedDegree(i);
@@ -23,10 +20,6 @@ LaplacianMatrix::LaplacianMatrix(const Graph &graph) : Matrix(graph.numberOfNode
 		setValue(i, i, weightedDegree - graph.weight(i, i)); // degree matrix
 	});
 }
-
-LaplacianMatrix::~LaplacianMatrix() {
-}
-
 
 
 } /* namespace NetworKit */

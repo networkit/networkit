@@ -54,9 +54,6 @@ public:
 	/** Copy constructor */
 	Vector(const Vector &other);
 
-	/** Destructor */
-	virtual ~Vector();
-
 	/**
 	 * @return dimension of vector
 	 */

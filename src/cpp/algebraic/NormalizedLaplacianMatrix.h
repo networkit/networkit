@@ -16,15 +16,10 @@ namespace NetworKit {
 
 class NormalizedLaplacianMatrix : public Matrix {
 public:
-	NormalizedLaplacianMatrix();
-
 	/**
 	 * Constructs the NormalizedLaplacianMatrix for the given @a graph.
 	 */
 	NormalizedLaplacianMatrix(const Graph &graph);
-
-	/** Default constructor */
-	virtual ~NormalizedLaplacianMatrix();
 };
 
 } /* namespace NetworKit */

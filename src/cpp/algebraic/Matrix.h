@@ -57,9 +57,6 @@ public:
 	/** Copy constructor */
 	Matrix(const Matrix &other);
 
-	/** Destructor */
-	virtual ~Matrix();
-
 	/**
 	 * @return Number of rows.
 	 */
