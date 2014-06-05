@@ -10,7 +10,6 @@
 
 #include <algorithm>
 #include <vector>
-#include <type_traits>
 #include <utility>
 #include <stdexcept>
 
@@ -21,34 +20,8 @@
 
 namespace NetworKit {
 
-enum class Weighted {
-	unweighted,
-	weighted
-};
-
-enum class Directed {
-	undirected,
-	directed
-};
-
-// hide implementation details in extra namespace
-namespace graph_impl {
-
-// choose between types
-template<bool b, class T1, class T2>
-using either = typename std::conditional<b, T1, T2>::type;
-
-// class for all graphs in NetworKit, some methods have special implementation depending on the template parameters
-template<Weighted weighted, Directed directed>
-class BasicGraph :
-	private either<weighted == Weighted::weighted, WeightedData, UnweightedData>,
-	private either<directed == Directed::directed, DirectedData, UndirectedData>
-{
+class Graph {
 private:
-
-	using DData = either<directed == Directed::directed, DirectedData, UndirectedData>;
-	using WData = either<weighted == Weighted::weighted, WeightedData, UnweightedData>;
-
 	// graph attributes
 	count id;
 	std::string name;
@@ -59,35 +32,46 @@ private:
 	node z; //!< current upper bound of node ids
 	count t; //!< current time step
 
+	bool weighted;
+	bool directed;
+
 	// per node data
 	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
+
+	std::vector<count> inDeg;
+	std::vector<count> outDeg;
+	
+	std::vector< std::vector<node> > inEdges;
+	std::vector< std::vector<node> > outEdges;
+	
+	std::vector< std::vector<edgeweight> > edgeWeights;
+
 	// user-defined edge attributes
 	// attribute maps storage
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
 	// default values
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
 
-	const std::vector<node>& adjaIn(node u) const;
-	
-	const std::vector<node>& adjaOut(node u) const;
+	std::vector<node>& adjaIn(node u) const { return directed ? inEdges[u] : outEdges[u]; }
+	std::vector<node>& adjaOut(node u) const { return outEdges[u]; }
 
 public:
 
-	BasicGraph(count n = 0, bool dummy = false);
+	Graph(count n = 0, bool weighted = false, bool directed = false);
 
-	BasicGraph(const BasicGraph<weighted, directed>& other) = default;
+	Graph(const Graph& other) = default;
 
-	BasicGraph(BasicGraph<weighted, directed>&& other) = default;
+	Graph(Graph&& other) = default;
 
-	~BasicGraph() = default;
+	~Graph() = default;
 
-	BasicGraph<weighted, directed>& operator=(BasicGraph<weighted, directed>&& other) = default;
+	Graph& operator=(Graph&& other) = default;
 
-	BasicGraph<weighted, directed>& operator=(const BasicGraph<weighted, directed>& other) = default;
+	Graph& operator=(const Graph& other) = default;
 
 	/** Only to be used from Cython */
-	void stealFrom(BasicGraph<weighted, directed>& input);
+	void stealFrom(Graph& input);
 
 
 	/** GRAPH INFORMATION **/
@@ -168,20 +152,14 @@ public:
 	/**
 	 * Return the number of neighbors for node v.
 	 */
-	count degree(node v) const { return degreeOut_impl(*this, v); }
-	count degreeIn(node v) const { return degreeIn_impl(*this, v); }
-	count degreeOut(node v) const { return degreeOut_impl(*this, v); }
-
-	template<Weighted w>
-	friend count degreeIn_impl(const BasicGraph<w, directed>& G, node v);
-
-	template<Weighted w>
-	friend count degreeOut_impl(const BasicGraph<w, directed>& G, node v);
+	count degree(node v) const { return degreeOut[v]; }
+	count degreeIn(node v) const { return directed ? degreeIn[v] : degreeOut[v]; }
+	count degreeOut(node v) const { return degreeOut[v]; }
 
 	/**
 	 * @return true if the node is isolated (= degree is 0)
 	 */
-	bool isIsolated(node v) const { return degreeIn(v) == 0 && degreeOut(v) == 0; }
+	bool isIsolated(node v) const { return degreeOut[v] == 0 && (!directed || degreeIn[v] == 0); }
 
 	/**
 	 * @return Weighted degree of @a v. For directed graphs this is the sum of weights off all outgoing edges fo @a v.
@@ -202,22 +180,15 @@ public:
 	/**
 	 * Insert an directed edge between from @a u to @a v.
 	 */
-	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight) { addEdge_impl(*this, u, v, ew); }
-
-	template<Weighted w>
-	friend void addEdge_impl(BasicGraph<w, directed>& G, node u, node v, edgeweight ew);
+	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
 	/**
 	 * Remove directed edge between from @a u to @a v.
 	 */
-	void removeEdge(node u, node v) { removeEdge_impl(*this, u, v); }
-
-	template<Weighted w>
-	friend void removeEdge_impl(BasicGraph<w, directed>& G, node u, node v);
+	void removeEdge(node u, node v);
 
 	/**
 	 * Check if directed edge {u,v} exists.
-	 *
 	 */
 	bool hasEdge(node u, node v) const;
 
@@ -229,21 +200,24 @@ public:
 	 *
 	 * @return New node that has been created if u != v. Otherwise none.
 	 */
-
 	node mergeEdge(node u, node v, bool discardSelfLoop = true);
 
+	/**
+	 * @return Random edge
+	 */
+	std::pair<node, node> randomEdge() const;
 
 	/** GLOBAL PROPERTIES **/
 
 	/**
 	 * Return true if this graph supports edge weights other than 1.0
 	 */
-	bool isWeighted() const { return weighted == Weighted::weighted; }
+	bool isWeighted() const { return weighted; }
 
 	/** 
 	 * Return true if this graph supports directed edges.
 	 */
-	bool isDirected() const { return directed == Directed::directed; }
+	bool isDirected() const { return directed; }
 
 	/**
 	 * Return true if graph contains no nodes.
@@ -350,10 +324,7 @@ public:
 	 * @param[in]	v	endpoint of edge
 	 * @param[in]	attr	double edge attribute
 	 */
-	void setAttribute_double(node u, node v, int attrId, double attr) { setAttribute_double(u, v, attrId, attr); }
-
-	template<Weighted w>
-	void setAttribute_double_impl(BasicGraph<w, directed>& G, node u, node v, int attrId, double attr);
+	void setAttribute_double(node u, node v, int attrId, double attr);
 
 
 	/** SUMS **/
@@ -434,19 +405,11 @@ public:
 	 * Iterate over all edges of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forEdges(L handle) const;
-	// template<typename L> void forEdges(L handle) const { forEdges_impl(*this, handle); }
-
-	// template<Weighted w, typename L>
-	// void forEdges_impl(const BasicGraph<w, directed>& G, L handle);
 
 	/**
 	 * Iterate in parallel over all edges of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void parallelForEdges(L handle) const;
-	// template<typename L> void parallelForEdges(L handle) const { parallelForEdges_impl(*this, handle); }
-
-	// template<Weighted w, typename L>
-	// void parallelForEdges_impl(const BasicGraph<w, directed>& G, L handle);
 
 	/**
 	 * Iterate over all edges of the graph and call handler (lambda closure).
@@ -506,10 +469,7 @@ public:
 	/**
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
 	 */
-	template<typename L> double parallelSumForWeightedEdges(L handle) const { return parallelSumForWeightedEdges(*this, handle); }
-
-	template<Weighted w, typename L>
-	friend double parallelSumForWeightedEdges_impl(const BasicGraph<w, directed>& G, L handle);
+	template<typename L> double parallelSumForWeightedEdges(L handle) const;
 
 
 	/** GRAPH SEARCHES **/
@@ -523,28 +483,6 @@ public:
 	template<typename L> void DFSEdgesfrom(node r, L handle) const;
 };
 
-} /* namespace graph_impl */
-
-using graph_impl::BasicGraph;
-using Graph = BasicGraph<Weighted::unweighted, Directed::undirected>;
-using WeightedGraph = BasicGraph<Weighted::weighted, Directed::undirected>;
-using DirectedGraph = BasicGraph<Weighted::unweighted, Directed::directed>;
-using WeightedDirectedGraph = BasicGraph<Weighted::weighted, Directed::directed>;
-
-template<Weighted w>
-using IUndirectedGraph = BasicGraph<w, Directed::undirected>;
-
-template<Weighted w>
-using IDirectedGraph = BasicGraph<w, Directed::directed>;
-
-template<Directed d>
-using IUnweightedGraph = BasicGraph<Weighted::unweighted, d>;
-
-template<Directed d>
-using IWeigehtedGraph = BasicGraph<Weighted::weighted, d>;
-
 } /* namespace NetworKit */
-
-#include "BasicGraph.tpp"
 
 #endif /* BASICGRAPH_H_ */
