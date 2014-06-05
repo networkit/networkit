@@ -8,7 +8,7 @@
 #include "../cpp/graph/GraphGenerator.h"
 #include "../cpp/generators/ChungLuGenerator.h"
 
-// #include "../cpp/properties/GraphProperties.h"
+#include "../cpp/properties/GraphProperties.h"
 %}
 
 %include exception.i
@@ -37,13 +37,20 @@
 	PyTuple_SetItem($result, 1, PyInt_FromLong($1.second));
 }
 
+/* TODO convert C++ std::vector to Python array */
+
 %include "../cpp/Globals.h"
 %include "../cpp/viz/Point.h"
 %include "../cpp/graph/GraphData.h"
 %include "../cpp/graph/BasicGraph.h"
 
+%template(Graph) NetworKit::graph_impl::BasicGraph<NetworKit::UNWEIGHTED, NetworKit::UNDIRECTED>;
+%template(WeightedGraph) NetworKit::graph_impl::BasicGraph<NetworKit::WEIGHTED, NetworKit::UNDIRECTED>;
+%template(DirectedGraph) NetworKit::graph_impl::BasicGraph<NetworKit::UNWEIGHTED, NetworKit::DIRECTED>;
+%template(WeightedDirectedGraph) NetworKit::graph_impl::BasicGraph<NetworKit::WEIGHTED, NetworKit::DIRECTED>;
+
 %include "../cpp/structures/Partition.h"
 %include "../cpp/graph/GraphGenerator.h"
 %include "../cpp/generators/ChungLuGenerator.h"
 
-// %include "../cpp/properties/GraphProperties.h"
+%include "../cpp/properties/GraphProperties.h"

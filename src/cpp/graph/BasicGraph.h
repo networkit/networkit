@@ -21,16 +21,12 @@
 
 namespace NetworKit {
 
-
-enum class Weighted {
-	unweighted,
-	weighted
-};
-
-enum class Directed {
-	undirected,
-	directed
-};
+typedef bool Weighted;
+typedef bool Directed;
+constexpr Weighted UNWEIGHTED = false;
+constexpr Weighted WEIGHTED = true;
+constexpr Directed UNDIRECTED = false;
+constexpr Directed DIRECTED = true;
 
 // hide implementation details in extra namespace
 namespace graph_impl {
@@ -42,13 +38,13 @@ namespace graph_impl {
 // class for all graphs in NetworKit, some methods have special implementation depending on the template parameters
 template<Weighted weighted, Directed directed>
 class BasicGraph :
-	private std::conditional<weighted == Weighted::weighted, WeightedData, UnweightedData>::type,
-	private std::conditional<directed == Directed::directed, DirectedData, UndirectedData>::type
+	private std::conditional<weighted == WEIGHTED, WeightedData, UnweightedData>::type,
+	private std::conditional<directed == DIRECTED, DirectedData, UndirectedData>::type
 {
 private:
 
-	using DData = typename std::conditional<directed == Directed::directed, DirectedData, UndirectedData>::type;
-	using WData = typename std::conditional<weighted == Weighted::weighted, WeightedData, UnweightedData>::type;
+	using DData = typename std::conditional<directed == DIRECTED, DirectedData, UndirectedData>::type;
+	using WData = typename std::conditional<weighted == WEIGHTED, WeightedData, UnweightedData>::type;
 
 	// graph attributes
 	count id;
@@ -239,12 +235,12 @@ public:
 	/**
 	 * Return true if this graph supports edge weights other than 1.0
 	 */
-	bool isWeighted() const { return weighted == Weighted::weighted; }
+	bool isWeighted() const { return weighted == WEIGHTED; }
 
 	/** 
 	 * Return true if this graph supports directed edges.
 	 */
-	bool isDirected() const { return directed == Directed::directed; }
+	bool isDirected() const { return directed == DIRECTED; }
 
 	/**
 	 * Return true if graph contains no nodes.
@@ -527,27 +523,27 @@ public:
 } /* namespace graph_impl */
 
 using graph_impl::BasicGraph;
-// using Graph = BasicGraph<Weighted::unweighted, Directed::undirected>;
-// using WeightedGraph = BasicGraph<Weighted::weighted, Directed::undirected>;
-// using DirectedGraph = BasicGraph<Weighted::unweighted, Directed::directed>;
-// using WeightedDirectedGraph = BasicGraph<Weighted::weighted, Directed::directed>;
+// using Graph = BasicGraph<UNWEIGHTED, UNDIRECTED>;
+// using WeightedGraph = BasicGraph<WEIGHTED, UNDIRECTED>;
+// using DirectedGraph = BasicGraph<UNWEIGHTED, DIRECTED>;
+// using WeightedDirectedGraph = BasicGraph<WEIGHTED, DIRECTED>;
 
-typedef graph_impl::BasicGraph<Weighted::unweighted, Directed::undirected> Graph;
-typedef graph_impl::BasicGraph<Weighted::weighted, Directed::undirected> WeightedGraph;
-typedef graph_impl::BasicGraph<Weighted::unweighted, Directed::directed> DirectedGraph;
-typedef graph_impl::BasicGraph<Weighted::weighted, Directed::directed> WeightedDirectedGraph;
-
-// template<Weighted w>
-// using IUndirectedGraph = BasicGraph<w, Directed::undirected>;
+typedef graph_impl::BasicGraph<UNWEIGHTED, UNDIRECTED> Graph;
+typedef graph_impl::BasicGraph<WEIGHTED, UNDIRECTED> WeightedGraph;
+typedef graph_impl::BasicGraph<UNWEIGHTED, DIRECTED> DirectedGraph;
+typedef graph_impl::BasicGraph<WEIGHTED, DIRECTED> WeightedDirectedGraph;
 
 // template<Weighted w>
-// using IDirectedGraph = BasicGraph<w, Directed::directed>;
+// using IUndirectedGraph = BasicGraph<w, UNDIRECTED>;
+
+// template<Weighted w>
+// using IDirectedGraph = BasicGraph<w, DIRECTED>;
 
 // template<Directed d>
-// using IUnweightedGraph = BasicGraph<Weighted::unweighted, d>;
+// using IUnweightedGraph = BasicGraph<UNWEIGHTED, d>;
 
 // template<Directed d>
-// using IWeigehtedGraph = BasicGraph<Weighted::weighted, d>;
+// using IWeigehtedGraph = BasicGraph<WEIGHTED, d>;
 
 } /* namespace NetworKit */
 
