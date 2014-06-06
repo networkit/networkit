@@ -1856,3 +1856,42 @@ cdef class GraphUpdater:
 		for ev in stream:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_stream)
+
+# Module: backbones
+
+cdef extern from "../cpp/backbones/ChibaNishizekiTriangleCounter.h":
+	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
+		_ChibaNishizekiTriangleCounter() except +
+		vector[pair[pair[node, node], count]] triangleCountsDebug(_Graph G) except +
+
+cdef class ChibaNishizekiTriangleCounter:
+	"""
+	  Simple implementation of the Chiba/Nishizeki triangle counting algorithm.
+	"""
+
+	cdef _ChibaNishizekiTriangleCounter* _this
+
+	def __cinit__(self):
+		self._this = new _ChibaNishizekiTriangleCounter()
+
+	def triangleCountsDebug(self, Graph G):
+		return self._this.triangleCountsDebug(dereference(G._this))
+
+cdef extern from "../cpp/backbones/SimmelianBackbone.h":
+	cdef cppclass _SimmelianBackbone "NetworKit::SimmelianBackbone":
+		_SimmelianBackbone() except +
+		_Graph* _calculate(_Graph G, count maxRank, count minOverlap) except +
+
+cdef class SimmelianBackbone:
+	"""
+	  Calculates the simmelian backbone for a given input graph.
+	"""
+
+	cdef _SimmelianBackbone* _this
+
+	def __cinit__(self):
+		self._this = new _SimmelianBackbone()
+
+	def calculate(self, Graph G, count maxRank, count minOverlap):
+		return Graph().setThis(self._this._calculate(dereference(G._this), maxRank, minOverlap))
+		
