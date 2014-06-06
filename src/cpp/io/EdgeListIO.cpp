@@ -10,36 +10,20 @@
 
 #include <sstream>
 
+#include "../auxiliary/Enforce.h"
+
 namespace NetworKit {
 
+EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(separator), firstNode(firstNode) {}
 
-EdgeListIO::EdgeListIO() {
+Graph EdgeListIO::read(const std::string& path) {
 
-}
-
-EdgeListIO::EdgeListIO(char separator, node firstNode) : separator(separator), firstNode(firstNode) {
-
-}
-
-EdgeListIO::~EdgeListIO() {
-
-}
-
-
-
-Graph EdgeListIO::read(std::string path) {
-
-    std::ifstream file;
+    std::ifstream file(path);
+    Aux::enforceOpened(file);
     std::string line; // the current line
 
     // read file once to get to the last line and figure out the number of nodes
     // unfortunately there is an empty line at the ending of the file, so we need to get the line before that
-
-   file.open(path);
-
-   if (! file.good()) {
-        throw std::runtime_error("unable to read from file");
-   }
 
    std::string previousLine;
    node maxNode = 0;
@@ -130,10 +114,8 @@ Graph EdgeListIO::read(std::string path) {
 
 
 void EdgeListIO::write(const Graph& G, std::string path) {
-    std::ofstream file;
-    file.open(path);
-
-    assert (file.good());
+    std::ofstream file(path);
+    Aux::enforceOpened(file);
 
     G.forEdges([&](node u, node v){
     	file << (u + firstNode) << separator << (v + firstNode) << std::endl;

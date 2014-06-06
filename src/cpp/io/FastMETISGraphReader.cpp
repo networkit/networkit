@@ -12,17 +12,6 @@
 
 namespace NetworKit {
 
-FastMETISGraphReader::FastMETISGraphReader() {
-	// TODO Auto-generated constructor stub
-
-}
-
-FastMETISGraphReader::~FastMETISGraphReader() {
-	// TODO Auto-generated destructor stub
-}
-
-
-
 // a couple of checks on a character
 static inline int isupper(char c) {
     return (c >= 'A' && c <= 'Z');
@@ -310,7 +299,7 @@ static inline std::tuple<count, count, int> parseHeader(const std::string& heade
 }
 
 
-Graph FastMETISGraphReader::read(const std::string path) {
+Graph FastMETISGraphReader::read(const std::string& path) {
 	std::ifstream stream(path);
 	if (!stream.is_open()) {
 		ERROR("invalid graph file: " , path);

@@ -6,24 +6,17 @@
  */
 
 #include "GDFGraphWriter.h"
+#include "../auxiliary/Enforce.h"
 
 namespace NetworKit {
 
-GDFGraphWriter::GDFGraphWriter() {
-
-}
-
-GDFGraphWriter::~GDFGraphWriter() {
-
-}
-
-void GDFGraphWriter::write(Graph& G, std::string path) {
+void GDFGraphWriter::write(Graph& G, const std::string& path) {
 	this->write(G, G.isWeighted(), path);
 }
 
-void GDFGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, count dim) {
+void GDFGraphWriter::writeGeneric(Graph& G, bool weighted, const std::string& path, count dim) {
 	std::ofstream file(path);
-	assert(file.good());
+	Aux::enforceOpened(file);
 
 //	int64_t n = G.numberOfNodes();
 //	int64_t m = G.numberOfEdges();
@@ -31,11 +24,11 @@ void GDFGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, cou
 
 	switch (dim) {
 	case 2: {
-		file << "*nodedef>name VARCHAR,x DOUBLE,y DOUBLE" << std::endl;
+		file << "*nodedef>name VARCHAR,x DOUBLE,y DOUBLE\n";
 		break;
 	}
 	case 3: {
-		file << "nodedef>name VARCHAR,x DOUBLE,y DOUBLE,z DOUBLE" << std::endl;
+		file << "nodedef>name VARCHAR,x DOUBLE,y DOUBLE,z DOUBLE\n";
 		break;
 	}
 	default: {
@@ -46,23 +39,21 @@ void GDFGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, cou
 	Point<float> point; // HM: needs to be float since Graph uses float
 	G.forNodes([&](node u) {
 		point = G.getCoordinate(u);
-		file << u << "," << point.toCsvString() << std::endl;
+		file << u << "," << point.toCsvString() << '\n';
 	});
 
-	file << "edgedef>node1 VARCHAR,node2 VARCHAR" << std::endl;
+	file << "edgedef>node1 VARCHAR,node2 VARCHAR" << '\n';
 
 	G.forEdges([&](node u, node v) {
-		file << u << "," << v << std::endl;
+		file << u << ',' << v << '\n';
 	});
-
-	file.close();
 }
 
-void GDFGraphWriter::write(Graph& G, bool weighted, std::string path) {
+void GDFGraphWriter::write(Graph& G, bool weighted, const std::string& path) {
 	writeGeneric(G, weighted, path, 2);
 }
 
-void GDFGraphWriter::write3D(Graph& G, bool weighted, std::string path) {
+void GDFGraphWriter::write3D(Graph& G, bool weighted, const std::string& path) {
 	writeGeneric(G, weighted, path, 3);
 }
 

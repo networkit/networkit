@@ -201,14 +201,16 @@ TEST_F(CommunityGTest, testLabelPropagationOnManySmallClusters) {
 
 }
 
-TEST_F(CommunityGTest, testLouvain) {
+TEST_F(CommunityGTest, tryOldPLM) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
 	double pout = 0.005;
 	GraphGenerator graphGen;
+    DEBUG("generating graph");
 	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
+    DEBUG("running old PLM algorithm");
 	PLMOld louvain;
 	Partition zeta = louvain.run(G);
 
@@ -220,7 +222,7 @@ TEST_F(CommunityGTest, testLouvain) {
 }
 
 
-TEST_F(CommunityGTest, testLouvainParallelSimple) {
+TEST_F(CommunityGTest, tryOldPLMParallel) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -259,7 +261,7 @@ TEST_F(CommunityGTest, testLouvainParallel2Naive) {
 */
 
 
-TEST_F(CommunityGTest, testLouvainParallelBalanced) {
+TEST_F(CommunityGTest, tryOldPLMParallelBalanced) {
 	count n = 500;
 	count k = 25;
 	double pin = 0.9;
@@ -323,7 +325,7 @@ TEST_F(CommunityGTest, testCNMandLouvainReal) {
 }
 
 
-TEST_F(CommunityGTest, testParallelAgglomerativeAndLouvain) {
+TEST_F(CommunityGTest, tryParallelAgglomerativeAndLouvain) {
 	Modularity modularity;
 	ParallelAgglomerativeClusterer aggl;
 	PLMOld louvain;
