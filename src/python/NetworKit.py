@@ -1,4 +1,4 @@
-""" 
+"""
 NetworKit - an interactive toolkit for high-performance network analysis
 """
 
@@ -6,7 +6,7 @@ NetworKit - an interactive toolkit for high-performance network analysis
 __author__ = "Christian L. Staudt (christian.staudt @ kit.edu)"
 __copyright__ = "Copyright (c) 2013 Christian Staudt"
 __license__ = "MIT License"
-__version__ = "3.0" 
+__version__ = "3.2"
 
 
 # standard library modules
@@ -28,6 +28,7 @@ import engineering
 import toolbox
 import dynamic
 import backbones
+import gephi
 
 try:
 	import viztools
@@ -49,8 +50,8 @@ except ImportError as importError:
 # TODO: introduce settings module
 
 from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
-from graph import Graph 
-from graphio import readGraph, writeGraph
+from graph import Graph
+from graphio import readGraph, writeGraph, formats
 from nxadapter import nk2nx, nx2nk
 from toolbox import batch
 from community import detectCommunities
@@ -65,7 +66,7 @@ def setup():
 	enableNestedParallelism()	# enable nested parallelism
 	logging.basicConfig(level=logging.INFO)	# set default loglevel for Python code
 
-	
+
 
 setup() # here the setup function is called once on import
 

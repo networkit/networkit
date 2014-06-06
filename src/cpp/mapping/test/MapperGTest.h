@@ -12,19 +12,6 @@
 
 #include <gtest/gtest.h>
 
-#include "../StaticMapper.h"
-#include "../RecBisMapper.h"
-#include "../RcmMapper.h"
-#include "../RcmMapperWW.h"
-#include "../GreedyMapper.h"
-#include "../../partitioning/BalancedLabelPropagation.h"
-#include "../../graph/Graph.h"
-#include "../../graph/GraphGenerator.h"
-#include "../../io/DibapGraphReader.h"
-#include "../../io/METISGraphReader.h"
-#include "../../io/METISGraphWriter.h"
-#include "../../community/ClusteringGenerator.h"
-
 
 namespace NetworKit {
 

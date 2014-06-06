@@ -15,6 +15,7 @@
 
 #include <math.h>
 #include <algorithm>
+#include <memory>
 #include <omp.h>
 
 namespace NetworKit {
@@ -30,8 +31,8 @@ void ApproxBetweenness::run() {
 
 	double c = 1; // TODO: what is the effect of the choice of c?
 
-	/** 
-	 * This is an optimization which deviates from the original algorithm. 
+	/**
+	 * This is an optimization which deviates from the original algorithm.
 	 * Instead of getting an estimate for each of possibly thousands of connected component and taking the maximum,
 	 * we sample the graph and take the maximum diameter found.
 	 */
@@ -39,14 +40,11 @@ void ApproxBetweenness::run() {
 	count samples = 42;
 	edgeweight vd = Diameter::estimatedVertexDiameter(G, samples);
 	INFO("estimated diameter: ", vd);
-	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2))) + log(1 / delta));
-
-
-	// double r = (c / (epsilon * epsilon)) * (3 + log(1 / delta));
+	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
 
 	INFO("taking ", r, " path samples");
 
-	// parallelization: 
+	// parallelization:
 	count maxThreads = omp_get_max_threads();
 	DEBUG("max threads: ", maxThreads);
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
@@ -66,11 +64,11 @@ void ApproxBetweenness::run() {
 		} while (v == u);
 
 		// runs faster for unweighted graphs
-		SSSP* sssp;
+		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
-			sssp = new Dijkstra(G, u);
+			sssp.reset(new Dijkstra(G, u));
 		} else {
-			sssp = new BFS(G, u);
+			sssp.reset(new BFS(G, u));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
 		sssp->run();
@@ -95,8 +93,6 @@ void ApproxBetweenness::run() {
 				t = z;
 			}
 		}
-
-		delete sssp; // free heap memory
 	}
 
 	INFO("adding thread-local scores");

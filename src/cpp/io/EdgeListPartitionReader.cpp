@@ -1,24 +1,24 @@
 /*
- * EdgeListClusteringReader.cpp
+ * EdgeListPartitionReader.cpp
  *
  *  Created on: Jun 19, 2013
  *      Author: forigem
  */
 
-#include "EdgeListClusteringReader.h"
+#include "EdgeListPartitionReader.h"
 
 namespace NetworKit {
 
-EdgeListClusteringReader::EdgeListClusteringReader(node firstNode) : firstNode(firstNode) {
+EdgeListPartitionReader::EdgeListPartitionReader(node firstNode) : firstNode(firstNode) {
 	// TODO Auto-generated constructor stub
 
 }
 
-EdgeListClusteringReader::~EdgeListClusteringReader(){
+EdgeListPartitionReader::~EdgeListPartitionReader(){
 	// TODO Auto-generated destructor stub
 }
 
-Partition EdgeListClusteringReader::read(std::string path) {
+Partition EdgeListPartitionReader::read(std::string path) {
 	std::ifstream file(path);
 
 	// check if file readable
@@ -41,12 +41,13 @@ Partition EdgeListClusteringReader::read(std::string path) {
 
 	count n = temp.size();
 	Partition zeta(n);
-
+	index newOmega = 0;
 	#pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
+		newOmega = std::max(newOmega, temp[u - firstNode + 1]);
 		zeta[u] = temp[u - firstNode + 1];
 	}
-
+	zeta.setUpperBound(newOmega+1);
 	return zeta;
 }
 

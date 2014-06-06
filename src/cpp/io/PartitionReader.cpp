@@ -1,24 +1,24 @@
 /*
- * ClusteringReader.cpp
+ * PartitionReader.cpp
  *
  *  Created on: 15.02.2013
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "ClusteringReader.h"
+#include "PartitionReader.h"
 
 namespace NetworKit {
 
-ClusteringReader::ClusteringReader() {
+PartitionReader::PartitionReader() {
 	// TODO Auto-generated constructor stub
 
 }
 
-ClusteringReader::~ClusteringReader() {
+PartitionReader::~PartitionReader() {
 	// TODO Auto-generated destructor stub
 }
 
-Partition ClusteringReader::read(std::string path) {
+Partition PartitionReader::read(std::string path) {
 
 	std::ifstream file(path);
 

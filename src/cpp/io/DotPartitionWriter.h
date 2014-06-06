@@ -1,23 +1,20 @@
 /*
- * DotClusteringWriter.h
+ * DotPartitionWriter.h
  */
 
-#ifndef DOTCLUSTERINGWRITER_H_
-#define DOTCLUSTERINGWRITER_H_
+#ifndef DOTPARTITIONWRITER_H_
+#define DOTPARTITIONWRITER_H_
 
-#include <fstream>
+#include <map>
 
 #include "../structures/Partition.h"
 #include "../graph/Graph.h"
 
 namespace NetworKit {
 
-class DotClusteringWriter {
-
+class DotPartitionWriter {
 public:
-    DotClusteringWriter();
-
-    virtual ~DotClusteringWriter();
+    virtual ~DotPartitionWriter() = default;
 
     virtual void write(Graph& graph, Partition& zeta, std::string path) const;
 
@@ -25,4 +22,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CLUSTERINGWRITER_H_ */
+#endif /* DOTPARTITIONGWRITER_H_ */

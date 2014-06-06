@@ -8,6 +8,20 @@
 #ifndef NOGTEST
 
 #include "VizGTest.h"
+#include <vector>
+
+#include "../PostscriptWriter.h"
+#include "../FruchtermanReingold.h"
+#include "../MaxentStress.h"
+#include "../MultilevelLayouter.h"
+#include "../../graph/Graph.h"
+#include "../../graph/GraphGenerator.h"
+#include "../../community/ClusteringGenerator.h"
+#include "../../io/PartitionWriter.h"
+#include "../../io/METISGraphReader.h"
+#include "../../io/DibapGraphReader.h"
+#include "../../generators/PubWebGenerator.h"
+
 
 
 namespace NetworKit {
