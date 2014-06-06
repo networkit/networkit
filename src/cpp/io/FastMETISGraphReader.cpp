@@ -6,6 +6,7 @@
  */
 
 #include "FastMETISGraphReader.h"
+#include "../auxiliary/Log.h"
 
 #include <fstream>
 

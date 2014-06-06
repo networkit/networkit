@@ -35,9 +35,9 @@ public:
 	GraphProperties();
 	virtual ~GraphProperties();
 
-	static std::vector<count> degreeDistribution(Graph& G);
+	static std::vector<count> degreeDistribution(const Graph& G);
 
-	static std::vector<unsigned int> degreeSequence(Graph& G); // TODO: revert to count when cython issue fixed
+	static std::vector<unsigned int> degreeSequence(const Graph& G); // TODO: revert to count when cython issue fixed
 
 
 	/**
@@ -50,7 +50,7 @@ public:
 	 * @param[in]	G	the graph
 	 * @param[out]		node -> local clustering coefficient
 	 */
-	static std::vector<double> localClusteringCoefficients(Graph& G);
+	static std::vector<double> localClusteringCoefficients(const Graph& G);
 
 
 	/**
@@ -59,11 +59,11 @@ public:
 	 *
 	 * @param[in]	G	the graph
 	 */
-	static double averageLocalClusteringCoefficient(Graph& G);
+	static double averageLocalClusteringCoefficient(const Graph& G);
 
-	static std::vector<double> localClusteringCoefficientPerDegree(Graph& G);
+	static std::vector<double> localClusteringCoefficientPerDegree(const Graph& G);
 
-	static std::pair<count, count> minMaxDegree(Graph& G);
+	static std::pair<count, count> minMaxDegree(const Graph& G);
 
 	static double averageDegree(const Graph& G);
 

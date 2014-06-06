@@ -13,6 +13,31 @@
 
 namespace NetworKit {
 
+// TEST_F(GraphGTest, minMaxDegree) {
+// 	Graph G = this->gen.makeRandomGraph(100, 0.1);
+
+// 	node argmin = 0;
+// 	node argmax = 0;
+// 	count min = G.degree(argmin);
+// 	count max = G.degree(argmax);
+
+// 	G.forNodes([&](node v) {
+// 		if (G.degree(v) < min) {
+// 			argmin = v;
+// 			min = G.degree(v);
+// 		} else if (G.degree(v) > max) {
+// 			argmax = v;
+// 			max = G.degree(v);
+// 		}
+// 	});
+
+// 	ASSERT_EQ(min, G.minDegree());
+// 	ASSERT_EQ(argmin, G.argminDegree());
+// 	ASSERT_EQ(max, G.maxDegree());
+// 	ASSERT_EQ(argmax, G.argmaxDegree());
+// }
+
+
 //TEST_F(GraphGTest, testEdgeIteration) {
 //
 //	int64_t n = 100;
@@ -76,7 +101,7 @@ TEST_F(GraphGTest, testLambdaEdgeModification) {
 		G.removeEdge(u, v);
 	});
 
-	EXPECT_EQ(0, G.numberOfEdges()) << "all edges should have been deleted";
+	EXPECT_EQ(0u, G.numberOfEdges()) << "all edges should have been deleted";
 }
 
 
@@ -155,7 +180,7 @@ TEST_F(GraphGTest, testNodeBFS) {
 	std::vector<int> visited(4, 0);
 
 	int nodeCount = 0;
-	G.breadthFirstNodesFrom(v, visited, [&](node w) {
+	G.BFSfrom(v, [&](node w) {
 		nodeCount += 1;
 	});
 
@@ -179,6 +204,22 @@ TEST_F(GraphGTest, testNodeBFS) {
 //	EXPECT_EQ(4, edgeCount) << "4 edges should have been visited by BFS";
 //}
 
+TEST_F(GraphGTest, testDegree) {
+	Graph G(5);
+
+	G.addEdge(1, 4);
+	G.addEdge(3, 4);
+	G.removeNode(2);
+
+	EXPECT_EQ(0u, G.degree(0)) << "degree of node 0 should be 0";
+	EXPECT_EQ(1u, G.degree(1)) << "degree of node 1 should be 1";
+	// EXPECT_ANY_THROW(G.degree(2)) << "node 2 should not exist";
+	EXPECT_EQ(1u, G.degree(3)) << "degree of node 3 should be 1";
+	EXPECT_EQ(2u, G.degree(4)) << "degree of node 4 should be 2";
+	// EXPECT_ANY_THROW(G.degree(5)) << "node 2 should not exist";
+	// EXPECT_ANY_THROW(G.degree(6)) << "node 2 should not exist";
+}
+
 
 TEST_F(GraphGTest, testNodeIteration) {
 	int64_t n = 42;
@@ -199,10 +240,10 @@ TEST_F(GraphGTest, testNumberOfEdges) {
 	Graph G(n);
 
 	G.addEdge(0, 1);
-	EXPECT_EQ(1, G.numberOfEdges()) << "G should have 1 edge now";
+	EXPECT_EQ(1u, G.numberOfEdges()) << "G should have 1 edge now";
 
 	G.addEdge(0, 2);
-	EXPECT_EQ(2, G.numberOfEdges()) << "G should have 2 edges now";
+	EXPECT_EQ(2u, G.numberOfEdges()) << "G should have 2 edges now";
 
 }
 
@@ -245,8 +286,8 @@ TEST_F(GraphGTest, testSubgraphPartitioning) {
 	std::unordered_set<node> subgraphSet = {u,v,w};
 
 	Graph subG = Subgraph::fromNodes(G,subgraphSet);
-	EXPECT_EQ(3, subG.numberOfEdges());
-	EXPECT_EQ(3, subG.numberOfNodes());
+	EXPECT_EQ(3u, subG.numberOfEdges());
+	EXPECT_EQ(3u, subG.numberOfNodes());
 
 }
 

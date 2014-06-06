@@ -124,7 +124,7 @@ TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 	ConnectedComponents cc(G);
 	cc.run();
 	DEBUG("Number of components: ", cc.numberOfComponents());
-	EXPECT_EQ(1029, cc.numberOfComponents());
+	EXPECT_EQ(1029u, cc.numberOfComponents());
 }
 
 TEST_F(ConnectedComponentsGTest, tryParallelConnectedComponents) {
@@ -151,7 +151,7 @@ TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
 	ConnectedComponents cc(G);
 	cc.run();
 	DEBUG("Number of components: ", cc.numberOfComponents());
-	EXPECT_EQ(1, cc.numberOfComponents());
+	EXPECT_EQ(1u, cc.numberOfComponents());
 }
 
 TEST_F(ConnectedComponentsGTest, benchHHConnectedComponents) {

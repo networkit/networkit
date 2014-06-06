@@ -6,6 +6,7 @@
  */
 
 #include "EdgeListIO.h"
+#include "../auxiliary/Log.h"
 
 #include <sstream>
 

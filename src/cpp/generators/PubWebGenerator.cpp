@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include <set>
+
 #include "../auxiliary/Random.h"
 
 #include "PubWebGenerator.h"

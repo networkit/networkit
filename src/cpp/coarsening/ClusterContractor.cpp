@@ -7,6 +7,7 @@
 
 #include "ClusterContractor.h"
 #include "../auxiliary/Timer.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
