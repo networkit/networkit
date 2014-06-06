@@ -355,6 +355,22 @@ TEST_F(GeneratorsGTest, tryForestFireGenerator) {
 	ffg.generate(10);
 }
 
+TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
+	count n = 1000;
+	double stretch = Aux::Random::real(0.5,1.5);
+	double alpha = Aux::Random::real(0.5,1.5);
+	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	vector<double> angles(n, -1);
+	vector<double> radii(n, -1);
+	HyperbolicSpace::fillPoints(&angles, &radii, alpha, stretch);
+	for (index i = 0; i < n; i++) {
+		EXPECT_GE(angles[i], 0);
+		EXPECT_LT(angles[i], 2*M_PI);
+		EXPECT_GE(radii[i], 0);
+		EXPECT_LT(radii[i], R);
+	}
+}
+
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	count n = 1000;
 	HyperbolicGenerator gen(n,1);
