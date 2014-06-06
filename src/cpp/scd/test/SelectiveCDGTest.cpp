@@ -1,8 +1,6 @@
 #include "SelectiveCDGTest.h"
 
 #include "../PageRankNibble.h"
-#include "../SelSCAN.h"
-#include "../GCE.h"
 #include "../../community/Modularity.h"
 #include "../../community/Conductance.h"
 #include "../../graph/Graph.h"
@@ -48,36 +46,6 @@ TEST_F(SCDGTest2, testPageRankNibble) {
 	INFO("Conductance of PR-Nibble: ", cond, "; cluster size: ", cluster.size());
 }
 
-
-
-
-TEST_F(SCDGTest2, testSelSCAN) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/karate.graph");
-	count kappa = 2;
-	double epsilon = 0.8;
-
-	SelSCAN selSCAN(G, kappa, epsilon);
-
-	auto nodes = G.nodes();
-	std::set<unsigned int> seeds(nodes.begin(), nodes.end());
-
-	auto result = selSCAN.run(seeds);
-
-}
-
-
-TEST_F(SCDGTest2, testGCE) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/karate.graph");
-
-	auto gce = GCE(G);
-	auto nodes = G.nodes();
-	std::set<unsigned int> seeds(nodes.begin(), nodes.end());
-
-	auto result = gce.run(seeds);
-	DEBUG("communities: ", result);
-}
 
 
 } /* namespace NetworKit */
