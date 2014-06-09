@@ -7,31 +7,30 @@
 
 #ifndef NOGTEST
 
-#include "BasicGraphGTest.h"
-#include "../BasicGraph.h"
+#include "Graph4GTest.h"
 
 namespace NetworKit {
 
-INSTANTIATE_TEST_CASE_P(InstantiationName, BasicGraphGTest, testing::Values(
+INSTANTIATE_TEST_CASE_P(InstantiationName, Graph4GTest, testing::Values(
 						std::make_tuple(false, false),
 						std::make_tuple(true, false),
 						std::make_tuple(false, true),
 						std::make_tuple(true, true)));
 
-bool BasicGraphGTest::isWeightedParameterized() const {
+bool Graph4GTest::isWeightedParameterized() const {
 	return std::get<0>(GetParam());
 }
-bool BasicGraphGTest::isDirectedParameterized() const {
+bool Graph4GTest::isDirectedParameterized() const {
 	return std::get<1>(GetParam());
 }
 
-Graph BasicGraphGTest::createParameterizedGraph(count n) const {
+Graph Graph4GTest::createParameterizedGraph(count n) const {
 	bool weighted, directed;
 	std::tie(weighted, directed) = GetParam();
 	return Graph(n_house, weighted, directed);	
 }
 
-void BasicGraphGTest::SetUp() {
+void Graph4GTest::SetUp() {
 	/*
 	 *    0
 	 *   . \
@@ -67,7 +66,7 @@ void BasicGraphGTest::SetUp() {
 	m_house = 8;
 }
 
-TEST_P(BasicGraphGTest, getId) {
+TEST_P(Graph4GTest, getId) {
 	Graph G1 = createParameterizedGraph();
 	Graph G2 = createParameterizedGraph(5);
 
@@ -76,7 +75,7 @@ TEST_P(BasicGraphGTest, getId) {
 	ASSERT_TRUE(G1.getId() < G2.getId());
 }
 
-TEST_P(BasicGraphGTest, setName) {
+TEST_P(Graph4GTest, setName) {
 	Graph G1 = createParameterizedGraph(0);
 	Graph G2 = createParameterizedGraph(0);
 	
@@ -88,7 +87,7 @@ TEST_P(BasicGraphGTest, setName) {
 	ASSERT_EQ(s2, G2.getName());
 }
 
-TEST_P(BasicGraphGTest, toString) {
+TEST_P(Graph4GTest, toString) {
 	Graph G1 = createParameterizedGraph(0);
 	Graph G2 = createParameterizedGraph(0);
 
@@ -96,7 +95,7 @@ TEST_P(BasicGraphGTest, toString) {
 	ASSERT_TRUE(G2.toString() != "");
 }
 
-TEST_P(BasicGraphGTest, addNode) {
+TEST_P(Graph4GTest, addNode) {
 	Graph G = createParameterizedGraph();
 
 	ASSERT_FALSE(G.hasNode(0));
@@ -122,7 +121,7 @@ TEST_P(BasicGraphGTest, addNode) {
 	ASSERT_EQ(4u, G2.numberOfNodes());
 }
 
-TEST_P(BasicGraphGTest, removeNode) {
+TEST_P(Graph4GTest, removeNode) {
 	Graph G = createParameterizedGraph();
 	G.addEdge(0, 1);
 
@@ -152,7 +151,7 @@ TEST_P(BasicGraphGTest, removeNode) {
 	ASSERT_FALSE(G.hasNode(3));
 }
 
-TEST_P(BasicGraphGTest, addEdge) {
+TEST_P(Graph4GTest, addEdge) {
 	Graph G = createParameterizedGraph();
 
 	ASSERT_EQ(0u, G.numberOfEdges());
@@ -177,7 +176,7 @@ TEST_P(BasicGraphGTest, addEdge) {
 	// TODO weights?
 }
 
-TEST_P(BasicGraphGTest, removeEdge) {
+TEST_P(Graph4GTest, removeEdge) {
 	Graph G = createParameterizedGraph(3);
 
 	G.addEdge(0, 1);
@@ -197,7 +196,7 @@ TEST_P(BasicGraphGTest, removeEdge) {
 	// TODO weights?
 }
 
-TEST_P(BasicGraphGTest, numberOfNodes) {
+TEST_P(Graph4GTest, numberOfNodes) {
 	ASSERT_EQ(this->n_house, this->Ghouse.numberOfNodes());
 
 	Graph G1 = createParameterizedGraph(0);
@@ -212,7 +211,7 @@ TEST_P(BasicGraphGTest, numberOfNodes) {
 	ASSERT_EQ(0u, G1.numberOfNodes());
 }
 
-TEST_P(BasicGraphGTest, numberOfEdges) {
+TEST_P(Graph4GTest, numberOfEdges) {
 	ASSERT_EQ(this->m_house, this->Ghouse.numberOfEdges());
 
 	Graph G1 = createParameterizedGraph(5);
@@ -227,7 +226,7 @@ TEST_P(BasicGraphGTest, numberOfEdges) {
 	ASSERT_EQ(0u, G1.numberOfEdges());
 }
 
-TEST_P(BasicGraphGTest, upperNodeIdBound) {
+TEST_P(Graph4GTest, upperNodeIdBound) {
 	ASSERT_EQ(5u, this->Ghouse.upperNodeIdBound());
 
 	Graph G1 = createParameterizedGraph(0);
@@ -242,7 +241,7 @@ TEST_P(BasicGraphGTest, upperNodeIdBound) {
 	ASSERT_EQ(3u, G1.upperNodeIdBound());
 }
 
-TEST_P(BasicGraphGTest, degree) {
+TEST_P(Graph4GTest, degree) {
 	if (this->Ghouse.isDirected()) {
 		ASSERT_EQ(1u, this->Ghouse.degree(0));
 		ASSERT_EQ(2u, this->Ghouse.degree(1));
@@ -258,7 +257,7 @@ TEST_P(BasicGraphGTest, degree) {
 	}
 }
 
-TEST_P(BasicGraphGTest, isEmpty) {
+TEST_P(Graph4GTest, isEmpty) {
 	Graph G1 = createParameterizedGraph(0);
 	Graph G2 = createParameterizedGraph(2);
 
@@ -276,7 +275,7 @@ TEST_P(BasicGraphGTest, isEmpty) {
 	ASSERT_TRUE(G2.isEmpty());
 }
 
-TEST_P(BasicGraphGTest, weight) {
+TEST_P(Graph4GTest, weight) {
 	if (this->Ghouse.isWeighted()) {
 		// TODO
 	} else {
@@ -322,7 +321,7 @@ TEST_P(BasicGraphGTest, weight) {
 	}
 }
 
-TEST_P(BasicGraphGTest, weightedDegree) {
+TEST_P(Graph4GTest, weightedDegree) {
 	if (this->Ghouse.isWeighted()) {
 		// TODO
 	} else {
@@ -342,7 +341,7 @@ TEST_P(BasicGraphGTest, weightedDegree) {
 	}
 }
 
-TEST_P(BasicGraphGTest, totalEdgeWeight) {
+TEST_P(Graph4GTest, totalEdgeWeight) {
 	if (this->Ghouse.isWeighted()) {
 		// TODO
 	} else {
@@ -350,7 +349,7 @@ TEST_P(BasicGraphGTest, totalEdgeWeight) {
 	}
 }
 
-TEST_P(BasicGraphGTest, forNodes) {
+TEST_P(Graph4GTest, forNodes) {
 	Graph G = createParameterizedGraph(3);
 	std::vector<bool> visited(4, false);
 	G.forNodes([&](node v) {
@@ -365,7 +364,7 @@ TEST_P(BasicGraphGTest, forNodes) {
 	}
 }
 
-TEST_P(BasicGraphGTest, degreeInOut) {
+TEST_P(Graph4GTest, degreeInOut) {
 	if (isDirectedParameterized()) {
 		std::vector<count> inDegrees(this->Ghouse.upperNodeIdBound(), 0);
 		std::vector<count> outDegrees(this->Ghouse.upperNodeIdBound(), 0);
@@ -384,7 +383,7 @@ TEST_P(BasicGraphGTest, degreeInOut) {
 	}
 }
 
-TEST_P(BasicGraphGTest, forEdgesOf) {
+TEST_P(Graph4GTest, forEdgesOf) {
 	if (isDirectedParameterized()) {
 		count m = 0;
 		std::vector<bool> visited(this->m_house, false);
@@ -419,7 +418,7 @@ TEST_P(BasicGraphGTest, forEdgesOf) {
 	}
 }
 
-// TEST_P(BasicGraphGTest, forInEdgesOf) {
+// TEST_P(Graph4GTest, forInEdgesOf) {
 // 	// very similar to forOutEdgesOf ...
 
 // 	count m = 0;
@@ -452,7 +451,7 @@ TEST_P(BasicGraphGTest, forEdgesOf) {
 // 	}
 // }
 
-TEST_P(BasicGraphGTest, BFSfrom) {
+TEST_P(Graph4GTest, BFSfrom) {
 	if (isDirectedParameterized()) {
 		std::vector<count> visitedOrder(5, none);
 		index i = 0;
@@ -480,7 +479,7 @@ TEST_P(BasicGraphGTest, BFSfrom) {
 	}
 }
 
-TEST_P(BasicGraphGTest, DFSfrom) {
+TEST_P(Graph4GTest, DFSfrom) {
 	if (isDirectedParameterized()) {
 		std::vector<count> visitedOrder(5, none);
 		index i = 0;
