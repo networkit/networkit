@@ -10,13 +10,15 @@
 
 #include <algorithm>
 #include <vector>
+#include <stack>
+#include <queue>
 #include <utility>
 #include <stdexcept>
 
 #include "../Globals.h"
 #include "Coordinates.h"
 #include "../viz/Point.h"
-#include "GraphData.h"
+#include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
@@ -45,16 +47,23 @@ private:
 	std::vector< std::vector<node> > inEdges;
 	std::vector< std::vector<node> > outEdges;
 	
-	std::vector< std::vector<edgeweight> > edgeWeights;
+	std::vector< std::vector<edgeweight> > inEdgeWeights;
+	std::vector< std::vector<edgeweight> > outEdgeWeights;
 
 	// user-defined edge attributes
 	// attribute maps storage
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
 	// default values
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
+	// TODO directed case?
 
-	std::vector<node>& adjaIn(node u) const { return directed ? inEdges[u] : outEdges[u]; }
-	std::vector<node>& adjaOut(node u) const { return outEdges[u]; }
+	const std::vector<node>& adjaIn(node u) const { return directed ? inEdges[u] : outEdges[u]; }
+	const std::vector<node>& adjaOut(node u) const { return outEdges[u]; }
+
+	index indexInInEdgeArray(node u, node v) const;
+	index indexInOutEdgeArray(node u, node v) const;
+
+	edgeweight outEdgeWeightFromIndex(node u, index vi) const;
 
 public:
 
@@ -152,14 +161,14 @@ public:
 	/**
 	 * Return the number of neighbors for node v.
 	 */
-	count degree(node v) const { return degreeOut[v]; }
-	count degreeIn(node v) const { return directed ? degreeIn[v] : degreeOut[v]; }
-	count degreeOut(node v) const { return degreeOut[v]; }
+	count degree(node v) const { return outDeg[v]; }
+	count degreeIn(node v) const { return directed ? inDeg[v] : outDeg[v]; }
+	count degreeOut(node v) const { return outDeg[v]; }
 
 	/**
 	 * @return true if the node is isolated (= degree is 0)
 	 */
-	bool isIsolated(node v) const { return degreeOut[v] == 0 && (!directed || degreeIn[v] == 0); }
+	bool isIsolated(node v) const { return outDeg[v] == 0 && (!directed || inDeg[v] == 0); }
 
 	/**
 	 * @return Weighted degree of @a v. For directed graphs this is the sum of weights off all outgoing edges fo @a v.
@@ -200,7 +209,9 @@ public:
 	 *
 	 * @return New node that has been created if u != v. Otherwise none.
 	 */
-	node mergeEdge(node u, node v, bool discardSelfLoop = true);
+	node mergeEdge(node u, node v, bool discardSelfLoop = true) {
+		throw std::runtime_error("mergeEdge is deprecated in will be removed in NetworKit >3.2.");
+	}
 
 	/**
 	 * @return Random edge
@@ -482,6 +493,356 @@ public:
 
 	template<typename L> void DFSEdgesfrom(node r, L handle) const;
 };
+
+/** NODE ITERATORS **/
+
+template<typename L>
+void Graph::forNodes(L handle) const {
+	for (node v = 0; v < z; ++v) {
+		if (exists[v]) {
+			handle(v);
+		}
+	}
+}
+
+template<typename L>
+void Graph::parallelForNodes(L handle) const {
+	#pragma omp parallel for
+	for (node v = 0; v < z; ++v) {
+		if (exists[v]) {
+			handle(v);
+		}
+	}
+}
+
+template<typename C, typename L>
+void Graph::forNodesWhile(C condition, L handle) const {
+	for (node v = 0; v < z; ++v) {
+		if (exists[v]) {
+			if (!condition()) {
+				break;
+			}
+			handle(v);
+		}
+	}
+}
+
+template<typename C, typename L>
+void Graph::forNodes(C condition, L handle) const {
+	for (node v = 0; v < z; ++v) {
+		if (exists[v]) {
+			if (condition()) {
+				break;
+			}
+			handle(v);
+		}
+	}
+}
+
+template<typename L>
+void Graph::forNodesInRandomOrder(L handle) const {
+	std::vector<node> randVec = nodes();
+	random_shuffle(randVec.begin(), randVec.end());
+	for (node v : randVec) {
+		handle(v);
+	}
+}
+
+template<typename L>
+void Graph::balancedParallelForNodes(L handle) const {
+	#pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
+	for (node v = 0; v < z; ++v) {
+		if (exists[v]) {
+			handle(v);
+		}
+	}
+}
+
+template<typename L>
+void Graph::forNodePairs(L handle) const {
+	for (node u = 0; u < z; ++u) {
+		if (exists[u]) {
+			for (node v = u + 1; v < z; ++v) {
+				if (exists[v]) {
+					handle(u, v);
+				}
+			}
+		}
+	}
+}
+
+template<typename L>
+void Graph::parallelForNodePairs(L handle) const {
+	#pragma omp parallel for
+	for (node u = 0; u < z; ++u) {
+		if (exists[u]) {
+			for (node v = u + 1; v < z; ++v) {
+				if (exists[v]) {
+					handle(u, v);
+				}
+			}
+		}
+	}
+}
+
+	
+/** EDGE ITERATORS **/
+
+template<typename L>
+void Graph::forEdges(L handle) const {
+	for (node u = 0; u < z; ++u) {
+		auto& neighbors = adjaOut(u);
+		for (node v : neighbors) {
+			if (directed) {
+				if (v != none) {
+					handle(u, v);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					handle(u, v);
+				}
+			}
+		}
+	}
+}
+
+template<typename L>
+void Graph::parallelForEdges(L handle) const {
+	#pragma omp parallel for
+	for (node u = 0; u < z; ++u) {
+		auto& neighbors = adjaOut(u);
+		for (node v : neighbors) {
+			if (directed) {
+				if (v != none) {
+					handle(u, v);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					handle(u, v);
+				}
+			}
+		}
+	}
+}
+
+template<typename L>
+void Graph::forWeightedEdges(L handle) const {
+	for (node u = 0; u <z; ++u) {
+		auto& neighbors = adjaOut(u);
+		for (index i = 0; i < neighbors.size(); ++i) {
+			node v = neighbors[i];
+			if (directed) {
+				if (v != none) {
+					edgeweight ew = outEdgeWeightFromIndex(u, i);
+					handle(u, v, ew);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					edgeweight ew = outEdgeWeightFromIndex(u, i);
+					handle(u, v, ew);
+				}
+			}
+		}
+	}
+}
+
+template<typename L>
+void Graph::parallelForWeightedEdges(L handle) const {
+	#pragma omp parallel for
+	for (node u = 0; u <z; ++u) {
+		auto& neighbors = adjaOut(u);
+		for (index i = 0; i < neighbors.size(); ++i) {
+			node v = neighbors[i];
+			if (directed) {
+				if (v != none) {
+					edgeweight ew = outEdgeWeightFromIndex(u, i);
+					handle(u, v, ew);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					edgeweight ew = outEdgeWeightFromIndex(u, i);
+					handle(u, v, ew);
+				}
+			}
+		}
+	}
+}
+
+template<typename L>
+void Graph::forEdgesWithAttribute_double(int attrId, L handle) const {
+	for (node u = 0; u < z; ++u) {
+		auto& neighbors = adjaOut(u);
+		for (index i = 0; i < neighbors.size(); ++i) {
+			node v = neighbors[i];
+			if (directed) {
+				if (v != none) {
+					double attr = edgeMaps_double[attrId][u][i];
+					handle(u, v, attr);
+				}
+			} else {
+				// undirected, do not iterate over edges twice
+				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+				if (u >= v) {
+					double attr = edgeMaps_double[attrId][u][i];
+					handle(u, v, attr);
+				}
+			}
+		}
+	}
+}
+
+
+/** NEIGHBORHOOD ITERATORS **/
+
+template<typename L>
+void Graph::forNeighborsOf(node u, L handle) const {
+	auto& neighbors = adjaOut(u);
+	for (auto v : neighbors) {
+		if (v != none) {
+			handle(v);
+		}
+	}	
+}
+
+template<typename L>
+void Graph::forWeightedNeighborsOf(node u, L handle) const {
+	auto& neighbors = adjaOut(u);
+	for (index i = 0; i < neighbors.size(); i++) {
+		node v = neighbors[i];
+		if (v != none) {
+			edgeweight ew = outEdgeWeightFromIndex(u, i);
+			handle(v, ew);
+		}
+	}
+}
+
+template<typename L>
+void Graph::forEdgesOf(node u, L handle) const {
+	auto& neighbors = adjaOut(u);
+	for (auto v : neighbors) {
+		if (v != none) {
+			handle(u, v);
+		}
+	}
+}
+
+template<typename L>
+void Graph::forWeightedEdgesOf(node u, L handle) const {
+	auto& neighbors = adjaOut(u);
+	for (index i = 0; i < neighbors.size(); i++) {
+		node v = neighbors[i];
+		if (v != none) {
+			edgeweight ew = outEdgeWeightFromIndex(u, i);
+			handle(u, v, ew);
+		}
+	}
+}
+
+
+/** REDUCTION ITERATORS **/
+
+template<typename L>
+double Graph::parallelSumForNodes(L handle) const {
+	double sum = 0.0;
+	#pragma omp parallel for reduction(+:sum)
+	for (node v = 0; v < z; ++v) {
+		if (exists[v]) {
+			sum += handle(v);
+		}
+	}
+	return sum;
+}
+
+
+/** GRAPH SEARCHES **/
+
+template<typename L>
+void Graph::BFSfrom(node r, L handle) const {
+	std::vector<bool> marked(z);
+	std::queue<node> q;
+	q.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = q.front();
+		q.pop();
+		// apply function
+		handle(u);
+		forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				q.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!q.empty());
+}
+
+template<typename L>
+void Graph::BFSEdgesfrom(node r, L handle) const {
+	std::vector<bool> marked(z);
+	std::queue<node> q;
+	q.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = q.front();
+		q.pop();
+		// apply function
+		forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				handle(u, v);
+				q.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!q.empty());
+}
+
+template<typename L>
+void Graph::DFSfrom(node r, L handle) const {
+	std::vector<bool> marked(z);
+	std::stack<node> s;
+	s.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = s.top();
+		s.pop();
+		// apply function
+		handle(u);
+		forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				s.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!s.empty()); 
+}
+
+template<typename L>
+void Graph::DFSEdgesfrom(node r, L handle) const {
+	std::vector<bool> marked(z);
+	std::stack<node> s;
+	s.push(r); // enqueue root
+	marked[r] = true;
+	do {
+		node u = s.top();
+		s.pop();
+		// apply function
+		forNeighborsOf(u, [&](node v) {
+			if (!marked[v]) {
+				handle(u, v);
+				s.push(v);
+				marked[v] = true;
+			}
+		});
+	} while (!s.empty()); 
+}
 
 } /* namespace NetworKit */
 

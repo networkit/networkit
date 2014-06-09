@@ -10,22 +10,26 @@
 #ifndef BASICGRAPHGTEST_H_
 #define BASICGRAPHGTEST_H_
 
+#include <tuple>
 #include <gtest/gtest.h>
 
-#include "../../Globals.h"
+#include "../Graph.h"
 
 namespace NetworKit {
 
-template <typename T>
-class BasicGraphGTest: public testing::Test {
+class BasicGraphGTest: public testing::TestWithParam< std::tuple<bool, bool> > {
 	
 	virtual void SetUp();
 
 protected:
-	T Ghouse;
+	Graph Ghouse;
 	std::vector< std::pair<node, node> > houseEdgesOut;
 	count n_house;
 	count m_house;
+
+	bool isWeightedParameterized() const;
+	bool isDirectedParameterized() const;
+	Graph createParameterizedGraph(count n = 0) const;
 };
 
 } /* namespace NetworKit */
