@@ -17,7 +17,7 @@
 
 namespace NetworKit {
 
-class BasicGraphGTest: public testing::TestWithParam< std::tuple<bool, bool> > {
+class Graph4GTest: public testing::TestWithParam< std::tuple<bool, bool> > {
 	
 	virtual void SetUp();
 

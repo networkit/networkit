@@ -7,7 +7,7 @@
 
 #include <sstream>
 
-#include "BasicGraph.h"
+#include "Graph.h"
 #include "../auxiliary/Log.h"
  
 namespace NetworKit {
