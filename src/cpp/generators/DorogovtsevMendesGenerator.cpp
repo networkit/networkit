@@ -5,6 +5,8 @@
 *      Author: Christian Staudt
 */
 
+#include <tuple>
+
 #include "DorogovtsevMendesGenerator.h"
 
 namespace NetworKit {

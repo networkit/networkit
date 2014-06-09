@@ -6,6 +6,7 @@
  */
 
 #include <set>
+#include <queue>
 
 #include "../auxiliary/Random.h"
 
