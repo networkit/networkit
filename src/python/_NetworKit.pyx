@@ -110,6 +110,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		vector[pair[node, node]] edges() except +
 		vector[node] neighbors(node u) except +
 		bool isWeighted() except +
+		bool isDirected() except +
 		string toString() except +
 		string getName() except +
 		void setName(string name) except +
@@ -178,6 +179,9 @@ cdef class Graph:
 
 	def isWeighted(self):
 		return self._this.isWeighted()
+
+	def isDirected(self):
+		return self._this.isDirected()
 
 	def toString(self):
 		return self._this.toString()
