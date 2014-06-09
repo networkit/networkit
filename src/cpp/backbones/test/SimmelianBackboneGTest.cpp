@@ -40,14 +40,25 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 
 	SimmelianBackbone simmel;
 
-	EXPECT_EQ(1, simmel.getOverlap(neighborsA, neighborsB, 1)) << "wrong overlap";
-	EXPECT_EQ(1, simmel.getOverlap(neighborsB, neighborsA, 1)) << "wrong overlap";
 
-	EXPECT_EQ(5, simmel.getOverlap(neighborsA, neighborsB, 10)) << "wrong overlap";
-	EXPECT_EQ(5, simmel.getOverlap(neighborsB, neighborsA, 10)) << "wrong overlap";
+	EXPECT_EQ(1, simmel.getOverlap(neighborsA, neighborsB, 1).overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((1.0/3.0), simmel.getOverlap(neighborsA, neighborsB, 1).jaccard) << "wrong jaccard index";
 
-	EXPECT_EQ(2, simmel.getOverlap(neighborsA, neighborsB, 2)) << "wrong overlap";
-	EXPECT_EQ(2, simmel.getOverlap(neighborsB, neighborsA, 2)) << "wrong overlap";
+	EXPECT_EQ(1, simmel.getOverlap(neighborsB, neighborsA, 1).overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((1.0/3.0), simmel.getOverlap(neighborsB, neighborsA, 1).jaccard) << "wrong jaccard index";
+
+	//Maximum prefix jaccard index for k=4 (5/8).
+	EXPECT_EQ(5, simmel.getOverlap(neighborsA, neighborsB, 10).overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((5.0/8.0), simmel.getOverlap(neighborsA, neighborsB, 10).jaccard) << "wrong jaccard index";
+
+	EXPECT_EQ(5, simmel.getOverlap(neighborsB, neighborsA, 10).overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((5.0/8.0), simmel.getOverlap(neighborsB, neighborsA, 10).jaccard) << "wrong jaccard index";
+
+	EXPECT_EQ(2, simmel.getOverlap(neighborsA, neighborsB, 2).overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((2.0/6.0), simmel.getOverlap(neighborsA, neighborsB, 2).jaccard) << "wrong jaccard index";
+
+	EXPECT_EQ(2, simmel.getOverlap(neighborsB, neighborsA, 2).overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((2.0/6.0), simmel.getOverlap(neighborsB, neighborsA, 2).jaccard) << "wrong jaccard index";
 }
 
 TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
