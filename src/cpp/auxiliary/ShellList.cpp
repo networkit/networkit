@@ -22,7 +22,7 @@ ShellList::ShellList(const std::vector<count>& sequence): seq(sequence)
 
 	DEBUG("allocation in shell list finished");
 
-	for (index i = 0; i < seq.size(); ++i) {
+	for (uint64_t i = 0; i < seq.size(); ++i) {
  		count shell = seq[i];
  		this->shells[shell].push_front(i);
  		this->nodeHandle[i] = this->shells[shell].begin();
