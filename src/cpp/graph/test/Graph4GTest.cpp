@@ -27,7 +27,8 @@ bool Graph4GTest::isDirectedParameterized() const {
 Graph Graph4GTest::createParameterizedGraph(count n) const {
 	bool weighted, directed;
 	std::tie(weighted, directed) = GetParam();
-	return Graph(n_house, weighted, directed);	
+	Graph G(n, weighted, directed);
+	return G;
 }
 
 void Graph4GTest::SetUp() {
@@ -47,7 +48,6 @@ void Graph4GTest::SetUp() {
 	 * 3 -> 1 -> 0 -> 2 -> 1 -> 4 -> 3 -> 2 -> 4
 	 */
 	Ghouse = createParameterizedGraph(5);
-
 	houseEdgesOut = {
 		{0, 2},
 		{1, 0},
@@ -255,6 +255,14 @@ TEST_P(Graph4GTest, degree) {
 		ASSERT_EQ(3u, this->Ghouse.degree(3));
 		ASSERT_EQ(3u, this->Ghouse.degree(4));
 	}
+}
+
+TEST_P(Graph4GTest, isWeighted) {
+	ASSERT_EQ(isWeightedParameterized(), this->Ghouse.isWeighted());
+}
+
+TEST_P(Graph4GTest, isDirected) {
+	ASSERT_EQ(isDirectedParameterized(), this->Ghouse.isDirected());
 }
 
 TEST_P(Graph4GTest, isEmpty) {

@@ -461,6 +461,8 @@ double Graph::attribute_double(node u, node v, int attrId) const {
 }
 
 void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
+	// TODO
+
 	// if (u == v) {
 	// 	// self-loop case
 	// 	index ui = indexInOutEdgeArray(u, u);
