@@ -74,35 +74,58 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 
 	//Neighborhood of 4
 	EXPECT_EQ(5, neighborhood[4].size());
-
-	EXPECT_EQ(8, neighborhood[4][0].alter);
-	EXPECT_EQ(2, neighborhood[4][0].simmelianness);
-	EXPECT_EQ(1, neighborhood[4][0].rank);
-
-	EXPECT_EQ(5, neighborhood[4][1].alter);
-	EXPECT_EQ(1, neighborhood[4][1].simmelianness);
-	EXPECT_EQ(2, neighborhood[4][1].rank);
-
-	EXPECT_EQ(6, neighborhood[4][2].alter);
-	EXPECT_EQ(1, neighborhood[4][2].simmelianness);
-	EXPECT_EQ(2, neighborhood[4][2].rank);
+	EXPECT_EQ(RankedEdge(4, 8, 2, 1), neighborhood[4][0]);
+	EXPECT_EQ(RankedEdge(4, 5, 1, 2), neighborhood[4][1]);
+	EXPECT_EQ(RankedEdge(4, 6, 1, 2), neighborhood[4][2]);
+	EXPECT_EQ(RankedEdge(4, 7, 1, 2), neighborhood[4][3]);
+	EXPECT_EQ(RankedEdge(4, 9, 1, 2), neighborhood[4][4]);
 
 	//Neighborhood of 8
 	EXPECT_EQ(3, neighborhood[8].size());
+	EXPECT_EQ(RankedEdge(8, 4, 2, 1), neighborhood[8][0]);
+	EXPECT_EQ(RankedEdge(8, 7, 1, 2), neighborhood[8][1]);
+	EXPECT_EQ(RankedEdge(8, 9, 1, 2), neighborhood[8][2]);
+}
 
-	EXPECT_EQ(4, neighborhood[8][0].alter);
-	EXPECT_EQ(2, neighborhood[8][0].simmelianness);
-	EXPECT_EQ(1, neighborhood[8][0].rank);
+TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
+	Graph g(7);
 
-	EXPECT_EQ(7, neighborhood[8][1].alter);
-	EXPECT_EQ(1, neighborhood[8][1].simmelianness);
-	EXPECT_EQ(2, neighborhood[8][1].rank);
+	g.addEdge(0,1);
+	g.addEdge(0,2);
+	g.addEdge(0,3);
+	g.addEdge(0,4);
+	g.addEdge(0,5);
+	g.addEdge(0,6);
 
-	EXPECT_EQ(9, neighborhood[8][2].alter);
-	EXPECT_EQ(1, neighborhood[8][2].simmelianness);
-	EXPECT_EQ(2, neighborhood[8][2].rank);
+	g.addEdge(1,2);
+	g.addEdge(2,3);
+	g.addEdge(3,4);
+	g.addEdge(4,5);
+	g.addEdge(4,6);
 
-	//TODO: Test the complete neighborhood?
+	//Apply triangle counting algorithm
+	ChibaNishizekiTriangleCounter counter;
+	edgeCountMap triangles = counter.triangleCounts(g);
+
+	//Actual test: ranked neighborhood
+	SimmelianBackbone simmel;
+	std::vector<RankedNeighbors> neighborhood = simmel.getRankedNeighborhood(g, triangles);
+
+	//Neighborhood of 0
+	EXPECT_EQ(6, neighborhood[0].size());
+	EXPECT_EQ(RankedEdge(0, 4, 3, 1), neighborhood[0][0]);
+	EXPECT_EQ(RankedEdge(0, 2, 2, 2), neighborhood[0][1]);
+	EXPECT_EQ(RankedEdge(0, 3, 2, 2), neighborhood[0][2]);
+	EXPECT_EQ(RankedEdge(0, 1, 1, 4), neighborhood[0][3]);
+	EXPECT_EQ(RankedEdge(0, 5, 1, 4), neighborhood[0][4]);
+	EXPECT_EQ(RankedEdge(0, 6, 1, 4), neighborhood[0][5]);
+
+	//Neighborhood of 4
+	EXPECT_EQ(4, neighborhood[4].size());
+	EXPECT_EQ(RankedEdge(4, 0, 3, 1), neighborhood[4][0]);
+	EXPECT_EQ(RankedEdge(4, 3, 1, 2), neighborhood[4][1]);
+	EXPECT_EQ(RankedEdge(4, 5, 1, 2), neighborhood[4][2]);
+	EXPECT_EQ(RankedEdge(4, 6, 1, 2), neighborhood[4][3]);
 }
 
 TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {

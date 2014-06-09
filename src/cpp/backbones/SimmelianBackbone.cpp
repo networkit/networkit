@@ -50,10 +50,14 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 		//Calculate the ranks. TODO: These first two steps could be combined for performance gain.
 		count currentRank = 0;	//Rank 1 is considered the best.
 		count currentSimmelianness = std::numeric_limits<count>::max();
+		count equals = 1;
 		for (auto& edge : neighbors[u]) {
 			if (edge.simmelianness < currentSimmelianness) {
-				currentRank++;
+				currentRank += equals;
 				currentSimmelianness = edge.simmelianness;
+				equals = 1;
+			} else {
+				equals++;
 			}
 			edge.rank = currentRank;
 		}
