@@ -84,12 +84,19 @@ TEST_P(Graph4GTest, increaseWeight){
 	Graph G = createParameterizedGraph(3);
 	if(G.isWeighted()){
 
-		G.addEdge(0,1);
-		G.addEdge(1,2);
-		G.increaseWeight(0,1,0.5);
-		ASSERT_EQ(G.weight(0,1), G.weight(1,2)+0.5);
+		G.addEdge(0, 1);
+		G.addEdge(1, 2);
+		G.increaseWeight(1, 2, 0.5);
+		ASSERT_EQ(defaultEdgeWeight, G.weight(0, 1));
+		ASSERT_EQ(defaultEdgeWeight + 0.5, G.weight(1, 2));
+		if (G.isDirected()) {	
+			ASSERT_EQ(nullWeight, G.weight(1, 0));
+			ASSERT_EQ(nullWeight, G.weight(2, 1));
+		} else {
+			ASSERT_EQ(defaultEdgeWeight, G.weight(1, 0));
+			ASSERT_EQ(defaultEdgeWeight + 0.5, G.weight(2, 1));
+		}
 	}
-	
 	
 
 
