@@ -90,7 +90,7 @@ def readCommunities(path, format="partition"):
 
 def writeCommunities(communities, path):
 	""" Write a partition into communities to a file"""
-	ClusteringWriter().write(communities, path)
+	PartitionWriter().write(communities, path)
 	print("wrote communities to: {0}".format(path))
 
 
