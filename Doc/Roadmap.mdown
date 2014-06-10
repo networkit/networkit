@@ -1,0 +1,94 @@
+# NetworKit Roadmap
+
+This document is about the current and future development of the NetworKit package.
+
+
+## Release Notes
+
+### 1.0
+
+- parallel community detection algorithms: PLP, PLM, EPP
+- community detection metrics
+- basic data structures
+
+
+### 2.0 
+
+- NetworKit becomes a Python extension module
+- prototype of network properties overview
+- network analysis tools: degree distribution, clustering coefficient, connected components...
+- added graph generators
+- added I/O formats
+- basic traversal algorithms
+
+### 3.0
+
+## Algorithms
+
+- connected components
+- parallel exact clustering coefficient
+- betweenness centrality (Brandes algorithm)
+- core decomposition
+- exact diameter
+- diameter approximation
+- clustering coefficients approximation
+- Dijkstra's shortest path algorithm
+
+## Generators
+
+- Chung-Lu graph generator
+- Havel-Hakimi graph generator (recreates degree sequences)
+
+## Data Structures
+
+- `Partition`: a data structure for disjoint partitions of a set, to replace `Clustering`
+- `Cover`: a data structure for overlapping subsets of a set
+
+
+
+## Roadmap
+
+This list contains features which are due for a specific future release.
+
+### 3.1
+
+- betweenness approximation
+- degreee assortativity approximation
+- depth-first search
+- degreee centrality
+
+
+
+## Feature Wish List
+
+This list contains features which may be added to NetworKit in the indeterminate future.
+
+### Algorithms
+
+- eigenvector centrality
+
+### Generators
+
+- hyperbolic graph generator
+
+### Data Structures
+
+- directed graph
+- graphs safe for concurrent modification
+- improved support for attributed graphs
+
+### Visualization
+
+- advanced dynamic visualization (possibly using sigma.js)
+
+### Other
+
+- file formats: gexf (Gephi), ...
+
+
+
+## Rejected Features
+
+This list contains proposed features which will not be included in NetworKit.
+
+- native graphical user interface - use IPython Notebook instead
