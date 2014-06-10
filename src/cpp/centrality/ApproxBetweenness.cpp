@@ -75,21 +75,21 @@ void ApproxBetweenness::run() {
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update
-			node s = v;
+			// node s = v;
 			node t = v;
 			while (t != u)  {
 				// sample z in P_u(t) with probability sigma_uz / sigma_us
 				std::vector<std::pair<node, double> > choices;
 
 				for (node z : sssp->getPredecessors(t)) {
-					choices.emplace_back(z, sssp->numberOfPaths(z) / (double) sssp->numberOfPaths(s)); 	// sigma_uz / sigma_us
+					choices.emplace_back(z, sssp->numberOfPaths(z) / (double) sssp->numberOfPaths(t)); 	// sigma_uz / sigma_us
 				}
 				node z = Aux::Random::weightedChoice(choices);
 				assert (z <= G.upperNodeIdBound());
 				if (z != u) {
 					scorePerThread[thread][z] += 1 / (double) r;
 				}
-				s = t;
+				// s = t;
 				t = z;
 			}
 		}
