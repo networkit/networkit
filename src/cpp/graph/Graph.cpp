@@ -438,11 +438,7 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 	if (directed) {
 		index ui = indexInInEdgeArray(v, u);
 		inEdgeWeights[v][ui] += ew;
-	} else if (u != v) {
-		// undirected and no self-loop
-		index ui = indexInOutEdgeArray(u, v);
-		outEdgeWeights[v][ui] += ew;
-	}	
+	}
 }
 
 int Graph::addEdgeAttribute_double(double defaultValue) {
