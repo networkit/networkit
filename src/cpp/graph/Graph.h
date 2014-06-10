@@ -704,34 +704,37 @@ void Graph::forEdgesWithAttribute_double(int attrId, L handle) const {
 
 template<typename L>
 void Graph::forNeighborsOf(node u, L handle) const {
-	auto& neighbors = adjaOut(u);
-	for (auto v : neighbors) {
-		if (v != none) {
-			handle(v);
-		}
-	}	
+	forWeightedEdgesOf(u, [](u, v, ew) { handle(v); });
+	// auto& neighbors = adjaOut(u);
+	// for (auto v : neighbors) {
+	// 	if (v != none) {
+	// 		handle(v);
+	// 	}
+	// }	
 }
 
 template<typename L>
 void Graph::forWeightedNeighborsOf(node u, L handle) const {
-	auto& neighbors = adjaOut(u);
-	for (index i = 0; i < neighbors.size(); i++) {
-		node v = neighbors[i];
-		if (v != none) {
-			edgeweight ew = outEdgeWeightFromIndex(u, i);
-			handle(v, ew);
-		}
-	}
+	forWeightedEdgesOf(u, [](u, v, ew) { handle(v, ew); });
+	// auto& neighbors = adjaOut(u);
+	// for (index i = 0; i < neighbors.size(); i++) {
+	// 	node v = neighbors[i];
+	// 	if (v != none) {
+	// 		edgeweight ew = outEdgeWeightFromIndex(u, i);
+	// 		handle(v, ew);
+	// 	}
+	// }
 }
 
 template<typename L>
 void Graph::forEdgesOf(node u, L handle) const {
-	auto& neighbors = adjaOut(u);
-	for (auto v : neighbors) {
-		if (v != none) {
-			handle(u, v);
-		}
-	}
+	forWeightedEdgesOf(u, [](u, v, ew) { handle(u, v); });
+	// auto& neighbors = adjaOut(u);
+	// for (auto v : neighbors) {
+	// 	if (v != none) {
+	// 		handle(u, v);
+	// 	}
+	// }
 }
 
 template<typename L>

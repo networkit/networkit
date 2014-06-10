@@ -461,26 +461,26 @@ double Graph::attribute_double(node u, node v, int attrId) const {
 }
 
 void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
-	// TODO
+	// TODO directed?
 
-	// if (u == v) {
-	// 	// self-loop case
-	// 	index ui = indexInOutEdgeArray(u, u);
-	// 	if (ui != none) {
-	// 		edgeMaps_double.at(attrId)[u][ui] = attr;
-	// 	} else {
-	// 		throw std::runtime_error("Edge does not exist. Can't set double attribute.");
-	// 	}
-	// } else {
-	// 	index vi = indexInOutEdgeArray(u, v);
-	// 	index ui = indexInInEdgeArray(v, u);
-	// 	if ((vi != none) && (ui != none)) {
-	// 		edgeMaps_double[attrId][u][vi] = attr;
-	// 		edgeMaps_double[attrId][v][ui] = attr;
-	// 	} else {
-	// 		throw std::runtime_error("Edge does not exist. Can't set double attribute.");
-	// 	}
-	// }
+	if (u == v) {
+		// self-loop case
+		index ui = indexInOutEdgeArray(u, u);
+		if (ui != none) {
+			edgeMaps_double.at(attrId)[u][ui] = attr;
+		} else {
+			throw std::runtime_error("Edge does not exist. Can't set double attribute.");
+		}
+	} else {
+		index vi = indexInOutEdgeArray(u, v);
+		index ui = indexInInEdgeArray(v, u);
+		if ((vi != none) && (ui != none)) {
+			edgeMaps_double[attrId][u][vi] = attr;
+			edgeMaps_double[attrId][v][ui] = attr;
+		} else {
+			throw std::runtime_error("Edge does not exist. Can't set double attribute.");
+		}
+	}
 }
 
 
