@@ -135,7 +135,7 @@ TEST_P(Graph4GTest, addNode) {
 }
 
 TEST_P(Graph4GTest, removeNode) {
-	Graph G = createParameterizedGraph();
+	Graph G = createParameterizedGraph(4);
 	G.addEdge(0, 1);
 
 	ASSERT_EQ(4u, G.numberOfNodes());
@@ -165,7 +165,7 @@ TEST_P(Graph4GTest, removeNode) {
 }
 
 TEST_P(Graph4GTest, addEdge) {
-	Graph G = createParameterizedGraph();
+	Graph G = createParameterizedGraph(3);
 
 	ASSERT_EQ(0u, G.numberOfEdges());
 	ASSERT_FALSE(G.hasEdge(0, 0));
