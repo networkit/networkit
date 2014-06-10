@@ -12,25 +12,35 @@
 
 namespace NetworKit {
 
-Graph SimmelianBackbone::calculate(const Graph& g, const count& maxRank, const count& minOverlap) {
+SimmelianBackbone::SimmelianBackbone(const Graph& g, count maxRank, const count minOverlap) :
+		graph(g), parameterized(true), maxRank(maxRank), minOverlap(minOverlap) {}
+
+SimmelianBackbone::SimmelianBackbone(const Graph& g, double treshold) :
+		graph(g), parameterized(false), jaccardTreshold(treshold) {}
+
+Graph SimmelianBackbone::calculate() {
 	ChibaNishizekiTriangleCounter counter;
 
-	edgeCountMap triangles = counter.triangleCounts(g);
-	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(g, triangles);
+	edgeCountMap triangles = counter.triangleCounts(graph);
+	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, triangles);
 
 	//Create the backbone graph. Edges will be inserted on the fly.
-	Graph backboneGraph (g.upperNodeIdBound());
+	Graph backboneGraph (graph.upperNodeIdBound());
 
 	//TODO: This seems stupid .. Implement a clone method in Graph instead?
-	for (node i = 0; i < g.upperNodeIdBound(); i++) {
-		if (!g.hasNode(i))
+	for (node i = 0; i < graph.upperNodeIdBound(); i++) {
+		if (!graph.hasNode(i))
 			backboneGraph.removeNode(i);
 	}
 
-	g.forEdges([&](node u, node v) {
-		Redundancy redundancy = getOverlap(neighbors[u], neighbors[v], maxRank);
+	graph.forEdges([&](node u, node v) {
+		//TODO: This should be refactored.
+		count actualMaxRank = parameterized ? maxRank : std::max(neighbors[u].size(), neighbors[v].size());
+		Redundancy redundancy = getOverlap(neighbors[u], neighbors[v], actualMaxRank);
 
-		if (redundancy.overlap >= minOverlap)
+		//TODO: extract to a lambda function maybe?
+		if ((parameterized && redundancy.overlap >= minOverlap)
+				|| (!parameterized && redundancy.jaccard >= jaccardTreshold))
 			backboneGraph.addEdge(u, v);
 	});
 
