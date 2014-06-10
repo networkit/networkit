@@ -22,7 +22,7 @@
 
 namespace NetworKit {
 
-class Graph {
+class Graph final {
 private:
 	// graph attributes
 	count id;
@@ -64,6 +64,7 @@ private:
 	index indexInOutEdgeArray(node u, node v) const;
 
 	edgeweight outEdgeWeightFromIndex(node u, index vi) const;
+	void setEdgeWeightAtIndex(node u, node v, index vi, index ui, edgeweight ew);
 
 public:
 
@@ -590,51 +591,52 @@ void Graph::parallelForNodePairs(L handle) const {
 
 template<typename L>
 void Graph::forEdges(L handle) const {
-	for (node u = 0; u < z; ++u) {
-		auto& neighbors = adjaOut(u);
-		for (node v : neighbors) {
-			if (directed) {
-				if (v != none) {
-					handle(u, v);
-				}
-			} else {
-				// undirected, do not iterate over edges twice
-				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				if (u >= v) {
-					handle(u, v);
-				}
-			}
-		}
-	}
+	forWeightedEdges([&handle](node u, node v, edgeweight ew) { handle(u, v); });
+	// for (node u = 0; u < z; ++u) {
+	// 	auto& neighbors = adjaOut(u);
+	// 	for (node v : neighbors) {
+	// 		if (directed) {
+	// 			if (v != none) {
+	// 				handle(u, v);
+	// 			}
+	// 		} else {
+	// 			// undirected, do not iterate over edges twice
+	// 			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+	// 			if (u >= v) {
+	// 				handle(u, v);
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 
 template<typename L>
 void Graph::parallelForEdges(L handle) const {
-	#pragma omp parallel for
-	for (node u = 0; u < z; ++u) {
-		auto& neighbors = adjaOut(u);
-		for (node v : neighbors) {
-			if (directed) {
-				if (v != none) {
-					handle(u, v);
-				}
-			} else {
-				// undirected, do not iterate over edges twice
-				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				if (u >= v) {
-					handle(u, v);
-				}
-			}
-		}
-	}
+	parallelForWeightedEdges([&handle](node u, node v, edgeweight ew) { handle(u, v); });
+	// #pragma omp parallel for
+	// for (node u = 0; u < z; ++u) {
+	// 	for (index i = 0; i < outEdges[u].size(); ++i) {
+	// 		node v = outEdges[u][i];
+	// 		if (directed) {
+	// 			if (v != none) {
+	// 				handle(u, v);
+	// 			}
+	// 		} else {
+	// 			// undirected, do not iterate over edges twice
+	// 			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+	// 			if (u >= v) {
+	// 				handle(u, v);
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 
 template<typename L>
 void Graph::forWeightedEdges(L handle) const {
-	for (node u = 0; u <z; ++u) {
-		auto& neighbors = adjaOut(u);
-		for (index i = 0; i < neighbors.size(); ++i) {
-			node v = neighbors[i];
+	for (node u = 0; u < z; ++u) {
+		for (index i = 0; i < outEdges[u].size(); ++i) {
+			node v = outEdges[u][i];
 			if (directed) {
 				if (v != none) {
 					edgeweight ew = outEdgeWeightFromIndex(u, i);
@@ -655,10 +657,9 @@ void Graph::forWeightedEdges(L handle) const {
 template<typename L>
 void Graph::parallelForWeightedEdges(L handle) const {
 	#pragma omp parallel for
-	for (node u = 0; u <z; ++u) {
-		auto& neighbors = adjaOut(u);
-		for (index i = 0; i < neighbors.size(); ++i) {
-			node v = neighbors[i];
+	for (node u = 0; u < z; ++u) {
+		for (index i = 0; i < outEdges[u].size(); ++i) {
+			node v = outEdges[u][i];
 			if (directed) {
 				if (v != none) {
 					edgeweight ew = outEdgeWeightFromIndex(u, i);
@@ -679,9 +680,8 @@ void Graph::parallelForWeightedEdges(L handle) const {
 template<typename L>
 void Graph::forEdgesWithAttribute_double(int attrId, L handle) const {
 	for (node u = 0; u < z; ++u) {
-		auto& neighbors = adjaOut(u);
-		for (index i = 0; i < neighbors.size(); ++i) {
-			node v = neighbors[i];
+		for (index i = 0; i < outEdges[u].size(); ++i) {
+			node v = outEdges[u][i];
 			if (directed) {
 				if (v != none) {
 					double attr = edgeMaps_double[attrId][u][i];
@@ -739,9 +739,8 @@ void Graph::forEdgesOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forWeightedEdgesOf(node u, L handle) const {
-	auto& neighbors = adjaOut(u);
-	for (index i = 0; i < neighbors.size(); i++) {
-		node v = neighbors[i];
+	for (index i = 0; i < outEdges[u].size(); i++) {
+		node v = outEdges[u][i];
 		if (v != none) {
 			edgeweight ew = outEdgeWeightFromIndex(u, i);
 			handle(u, v, ew);
