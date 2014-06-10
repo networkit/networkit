@@ -47,6 +47,9 @@ void Graph4GTest::SetUp() {
 	 * move you pen from node to node:
 	 * 3 -> 1 -> 0 -> 2 -> 1 -> 4 -> 3 -> 2 -> 4
 	 */
+	n_house = 5;
+	m_house = 8;
+
 	Ghouse = createParameterizedGraph(5);
 	houseEdgesOut = {
 		{0, 2},
@@ -58,12 +61,22 @@ void Graph4GTest::SetUp() {
 		{3, 2},
 		{4, 3}
 	};
+	Ahouse = {n_house, std::vector<edgeweight>(n_house, 0.0)};
+	edgeweight ew = 1.0;
 	for (auto& e : houseEdgesOut) {
-		Ghouse.addEdge(e.first, e.second);
+		node u = e.first;
+		node v = e.second;
+		Ghouse.addEdge(u, v, ew);
+		
+		Ahouse[u][v] = ew;
+		if (!Ghouse.isDirected()) {
+			Ahouse[v][u] = ew;
+		}
+		
+		if (Ghouse.isWeighted()) {
+			ew += 1.0;
+		}
 	}
-
-	n_house = 5;
-	m_house = 8;
 }
 
 TEST_P(Graph4GTest, getId) {
@@ -284,49 +297,11 @@ TEST_P(Graph4GTest, isEmpty) {
 }
 
 TEST_P(Graph4GTest, weight) {
-	if (this->Ghouse.isWeighted()) {
-		// TODO
-	} else {
-		count c = 0;
-		for (node u = 0; u < this->Ghouse.upperNodeIdBound(); u++) {
-			for (node v = 0; v < this->Ghouse.upperNodeIdBound(); v++) {
-				if (this->Ghouse.hasEdge(u, v)) {
-					c++;
-					ASSERT_EQ(defaultEdgeWeight, this->Ghouse.weight(u, v));
-				} else {
-					ASSERT_EQ(nullWeight, this->Ghouse.weight(u, v));
-				}
-			}
-		}
-
-		if (this->Ghouse.isDirected()) {
-			ASSERT_EQ(this->m_house, c);
-		} else {
-			ASSERT_EQ(2 * this->m_house, c);
-		}
-
-		auto& e1 = this->houseEdgesOut[3];
-		auto& e2 = this->houseEdgesOut[0];
-		this->Ghouse.setWeight(e1.first, e1.second, 3.1415);
-		this->Ghouse.setWeight(e2.first, e2.second, 2.71828);
-
-		for (node u = 0; u < this->Ghouse.upperNodeIdBound(); u++) {
-			for (node v = 0; v < this->Ghouse.upperNodeIdBound(); v++) {
-				if (this->Ghouse.hasEdge(u, v)) {
-					c++;
-					ASSERT_EQ(defaultEdgeWeight, this->Ghouse.weight(u, v));
-				} else {
-					ASSERT_EQ(nullWeight, this->Ghouse.weight(u, v));
-				}
-			}
-		}
-
-		if (this->Ghouse.isDirected()) {
-			ASSERT_EQ(2 * this->m_house, c);
-		} else {
-			ASSERT_EQ(4 * this->m_house, c);
-		}
-	}
+	this->Ghouse.forNodes([&](node u) {
+		this->Ghouse.forNodes([&](node v) {
+			ASSERT_EQ(this->Ahouse[u][v], this->Ghouse.weight(u, v));
+		});
+	});
 }
 
 TEST_P(Graph4GTest, weightedDegree) {
