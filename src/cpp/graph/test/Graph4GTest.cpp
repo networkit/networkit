@@ -270,40 +270,6 @@ TEST_P(Graph4GTest, degree) {
 	}
 }
 
-TEST_P(Graph4GTest, isWeighted) {
-	ASSERT_EQ(isWeightedParameterized(), this->Ghouse.isWeighted());
-}
-
-TEST_P(Graph4GTest, isDirected) {
-	ASSERT_EQ(isDirectedParameterized(), this->Ghouse.isDirected());
-}
-
-TEST_P(Graph4GTest, isEmpty) {
-	Graph G1 = createParameterizedGraph(0);
-	Graph G2 = createParameterizedGraph(2);
-
-	ASSERT_TRUE(G1.isEmpty());
-	ASSERT_FALSE(G2.isEmpty());
-
-	node v = G1.addNode();
-	G2.removeNode(G2.randomNode());
-	ASSERT_FALSE(G1.isEmpty());
-	ASSERT_FALSE(G2.isEmpty());
-
-	G1.removeNode(v);
-	G2.removeNode(G2.randomNode());
-	ASSERT_TRUE(G1.isEmpty());
-	ASSERT_TRUE(G2.isEmpty());
-}
-
-TEST_P(Graph4GTest, weight) {
-	this->Ghouse.forNodes([&](node u) {
-		this->Ghouse.forNodes([&](node v) {
-			ASSERT_EQ(this->Ahouse[u][v], this->Ghouse.weight(u, v));
-		});
-	});
-}
-
 TEST_P(Graph4GTest, weightedDegree) {
 	if (this->Ghouse.isWeighted()) {
 		if (this->Ghouse.isDirected()) {
@@ -338,11 +304,53 @@ TEST_P(Graph4GTest, weightedDegree) {
 	}
 }
 
+TEST_P(Graph4GTest, isWeighted) {
+	ASSERT_EQ(isWeightedParameterized(), this->Ghouse.isWeighted());
+}
+
+TEST_P(Graph4GTest, isDirected) {
+	ASSERT_EQ(isDirectedParameterized(), this->Ghouse.isDirected());
+}
+
+TEST_P(Graph4GTest, isEmpty) {
+	Graph G1 = createParameterizedGraph(0);
+	Graph G2 = createParameterizedGraph(2);
+
+	ASSERT_TRUE(G1.isEmpty());
+	ASSERT_FALSE(G2.isEmpty());
+
+	node v = G1.addNode();
+	G2.removeNode(G2.randomNode());
+	ASSERT_FALSE(G1.isEmpty());
+	ASSERT_FALSE(G2.isEmpty());
+
+	G1.removeNode(v);
+	G2.removeNode(G2.randomNode());
+	ASSERT_TRUE(G1.isEmpty());
+	ASSERT_TRUE(G2.isEmpty());
+}
+
+TEST_P(Graph4GTest, weight) {
+	this->Ghouse.forNodes([&](node u) {
+		this->Ghouse.forNodes([&](node v) {
+			ASSERT_EQ(this->Ahouse[u][v], this->Ghouse.weight(u, v));
+		});
+	});
+}
+
 TEST_P(Graph4GTest, totalEdgeWeight) {
+	Graph G1 = createParameterizedGraph(5);
+	Graph G2 = createParameterizedGraph(5);
+	G2.addEdge(0, 1, 3.14);
+
 	if (this->Ghouse.isWeighted()) {
-		// TODO
+		ASSERT_EQ(0.0, G1.totalEdgeWeight());
+		ASSERT_EQ(3.14, G2.totalEdgeWeight());
+		ASSERT_EQ(36.0, this->Ghouse.totalEdgeWeight());
 	} else {
-		ASSERT_EQ(this->m_house * defaultEdgeWeight, this->Ghouse.totalEdgeWeight());
+		ASSERT_EQ(0 * defaultEdgeWeight, G1.totalEdgeWeight());
+		ASSERT_EQ(1 * defaultEdgeWeight, G2.totalEdgeWeight());
+		ASSERT_EQ(8 * defaultEdgeWeight, this->Ghouse.totalEdgeWeight());
 	}
 }
 
