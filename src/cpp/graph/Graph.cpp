@@ -19,16 +19,27 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	m(0),
 	z(n),
 	t(0),
-	weighted(weighted),
+
+	/*shows wether graph is weighted*/
+	weighted(weighted), 
+
+	/*shows wether graph is directed*/
 	directed(directed),
 	exists(n, true),
 
+	/* for directed graphs inDeg stores the incoming degree of a node, for undirected graphs inDeg is not used*/
 	inDeg(directed ? n : 0, 0),
-	outDeg(n, 0),
-	inEdges(directed ? n : 0),
-	outEdges(n),
 
-	inEdgeWeights(weighted && directed ? n : 0),
+	/* for directed graphs outDeg stores the outgoing degree of a node, for undirected graphs outEdges stores the incoming degree of a node*/
+	outDeg(n, 0),
+
+	/* for directed graphs inEdges stores an adjacencylist only considering incoming edges, for undirected graphs inEdges is not used*/
+	inEdges(directed ? n : 0),
+
+	/* for directed graphs outEdges stores an adjacencylist only considering outgoing edges, for undirected graphs outEdges stores the adjacencylist of 
+	undirected edges*/
+	outEdges(n), 
+	inEdgeWeights(weighted && directed ? n : 0), 
 	outEdgeWeights(weighted ? n : 0) {
 
 	// set name from global id
@@ -176,8 +187,10 @@ node Graph::addNode() {
 
 	// update per node data structures
 	if (weighted) {
-		inEdgeWeights.push_back(std::vector<edgeweight>{});
-		outEdgeWeights.push_back(std::vector<edgeweight>{});
+
+		std::vector<edgeweight> edgeWeight;
+		inEdgeWeights.push_back(edgeWeight);
+		outEdgeWeights.push_back(edgeWeight);
 	}
 
 	outDeg.push_back(0);
