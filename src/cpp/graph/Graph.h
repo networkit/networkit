@@ -704,7 +704,7 @@ void Graph::forEdgesWithAttribute_double(int attrId, L handle) const {
 
 template<typename L>
 void Graph::forNeighborsOf(node u, L handle) const {
-	forWeightedEdgesOf(u, [](u, v, ew) { handle(v); });
+	forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v); });
 	// auto& neighbors = adjaOut(u);
 	// for (auto v : neighbors) {
 	// 	if (v != none) {
@@ -715,7 +715,7 @@ void Graph::forNeighborsOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forWeightedNeighborsOf(node u, L handle) const {
-	forWeightedEdgesOf(u, [](u, v, ew) { handle(v, ew); });
+	forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v, ew); });
 	// auto& neighbors = adjaOut(u);
 	// for (index i = 0; i < neighbors.size(); i++) {
 	// 	node v = neighbors[i];
@@ -728,7 +728,7 @@ void Graph::forWeightedNeighborsOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forEdgesOf(node u, L handle) const {
-	forWeightedEdgesOf(u, [](u, v, ew) { handle(u, v); });
+	forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u, v); });
 	// auto& neighbors = adjaOut(u);
 	// for (auto v : neighbors) {
 	// 	if (v != none) {
