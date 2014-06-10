@@ -79,6 +79,22 @@ void Graph4GTest::SetUp() {
 	}
 }
 
+TEST_P(Graph4GTest, increaseWeight){
+	
+	Graph G = createParameterizedGraph(3);
+	if(G.isWeighted()){
+
+		G.addEdge(0,1);
+		G.addEdge(1,2);
+		G.increaseWeight(0,1,0.5);
+		ASSERT_EQ(G.weight(0,1), G.weight(1,2)+0.5);
+	}
+	
+	
+
+
+}
+
 TEST_P(Graph4GTest, getId) {
 	Graph G1 = createParameterizedGraph();
 	Graph G2 = createParameterizedGraph(5);
