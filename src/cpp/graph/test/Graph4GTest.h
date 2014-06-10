@@ -24,6 +24,7 @@ class Graph4GTest: public testing::TestWithParam< std::tuple<bool, bool> > {
 protected:
 	Graph Ghouse;
 	std::vector< std::pair<node, node> > houseEdgesOut;
+	std::vector< std::vector<edgeweight> > Ahouse;
 	count n_house;
 	count m_house;
 
