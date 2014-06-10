@@ -1,0 +1,10 @@
+[compiler]
+cpp=g++
+defines=
+
+[includes]
+std=
+gtest=
+
+[libraries]
+gtest=
