@@ -306,9 +306,23 @@ TEST_P(Graph4GTest, weight) {
 
 TEST_P(Graph4GTest, weightedDegree) {
 	if (this->Ghouse.isWeighted()) {
-		// TODO
+		if (this->Ghouse.isDirected()) {
+			// only sum weight of outgoing edges
+			ASSERT_EQ(1.0, this->Ghouse.weightedDegree(0));
+			ASSERT_EQ(5.0, this->Ghouse.weightedDegree(1));
+			ASSERT_EQ(9.0, this->Ghouse.weightedDegree(2));
+			ASSERT_EQ(13.0, this->Ghouse.weightedDegree(3));
+			ASSERT_EQ(8.0, this->Ghouse.weightedDegree(4));
+		} else {
+			ASSERT_EQ(3.0, this->Ghouse.weightedDegree(0));
+			ASSERT_EQ(15.0, this->Ghouse.weightedDegree(1));
+			ASSERT_EQ(17.0, this->Ghouse.weightedDegree(2));
+			ASSERT_EQ(21.0, this->Ghouse.weightedDegree(3));
+			ASSERT_EQ(16.0, this->Ghouse.weightedDegree(4));
+		}
 	} else {
 		if (this->Ghouse.isDirected()) {
+			// only count outgoing edges
 			ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegree(0));
 			ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(1));
 			ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(2));
@@ -400,39 +414,6 @@ TEST_P(Graph4GTest, forEdgesOf) {
 		// TODO
 	}
 }
-
-// TEST_P(Graph4GTest, forInEdgesOf) {
-// 	// very similar to forOutEdgesOf ...
-
-// 	count m = 0;
-// 	std::vector<bool> visited(this->m_house, false);
-
-// 	// NEXT 3 LINES ARE DIFFERENT
-// 	this->Ghouse.forNodes([&](node u) {
-// 		this->Ghouse.forInEdgesOf(u, [&](node v, node w) {
-// 			// edges should be v to w, so if we iterate over edges from u, u should be equal w
-// 			EXPECT_EQ(u, w);
-			
-// 			auto e = std::make_pair(v, w);
-// 			// find edge
-// 			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
-// 			EXPECT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
-		
-// 			// find index in edge array
-// 			int i = std::distance(this->houseEdgesOut.begin(), it);
-// 			EXPECT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
-			
-// 			// mark edge as visited
-// 			visited[i] = true;
-// 			m++;
-// 		});
-// 	});
-
-// 	EXPECT_EQ(this->m_house, m);
-// 	for (auto b : visited) {
-// 		EXPECT_TRUE(b);
-// 	}
-// }
 
 TEST_P(Graph4GTest, BFSfrom) {
 	if (isDirectedParameterized()) {
