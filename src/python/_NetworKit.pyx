@@ -1879,19 +1879,27 @@ cdef class ChibaNishizekiTriangleCounter:
 
 cdef extern from "../cpp/backbones/SimmelianBackbone.h":
 	cdef cppclass _SimmelianBackbone "NetworKit::SimmelianBackbone":
-		_SimmelianBackbone() except +
-		_Graph* _calculate(_Graph G, count maxRank, count minOverlap) except +
+		_SimmelianBackbone(_Graph G, count maxRank, count minOverlap) except +
+		_SimmelianBackbone(_Graph G, double jaccardTreshold) except + 
+		_Graph* _calculate() except +
 
 cdef class SimmelianBackbone:
 	"""
-	  Calculates the simmelian backbone for a given input graph.
+	Calculates the simmelian backbone for a given input graph.
+	Parameters (parametric variant):
+		-	maxRank		the maximum rank of a tie so it is still considered strongly embedded.
+		-	minOverlap	the minimum required overlap of two ranked neighborhoods for a tie to be kept in the backbone.
+	Parameters (non-parameteric variant):
+		-	jaccardTreshold	the minimum best prefix jaccard coefficient of a tie to be kept in the backbone.
 	"""
 
 	cdef _SimmelianBackbone* _this
 
-	def __cinit__(self):
-		self._this = new _SimmelianBackbone()
-
-	def calculate(self, Graph G, count maxRank, count minOverlap):
-		return Graph().setThis(self._this._calculate(dereference(G._this), maxRank, minOverlap))
+	def calculateParametric(self, Graph G, count maxRank, count minOverlap):
+		self._this = new _SimmelianBackbone(dereference(G._this), maxRank, minOverlap)
+		return Graph().setThis(self._this._calculate())
+		
+	def calculateNonParametric(self, Graph G, double jaccardTreshold):
+		self._this = new _SimmelianBackbone(dereference(G._this), jaccardTreshold)
+		return Graph().setThis(self._this._calculate())
 		

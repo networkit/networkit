@@ -38,7 +38,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 	neighborsB.push_back(RankedEdge(200,10,0,5));
 	neighborsB.push_back(RankedEdge(200,11,0,6));
 
-	SimmelianBackbone simmel;
+	SimmelianBackbone simmel(Graph(0), 0.5);
 
 
 	EXPECT_EQ(1, simmel.getOverlap(neighborsA, neighborsB, 1).overlap) << "wrong overlap";
@@ -80,7 +80,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 	edgeCountMap triangles = counter.triangleCounts(g);
 
 	//Actual test: ranked neighborhood
-	SimmelianBackbone simmel;
+	SimmelianBackbone simmel(Graph(0), 0.5);
 	std::vector<RankedNeighbors> neighborhood = simmel.getRankedNeighborhood(g, triangles);
 
 	//Neighborhood of 4
@@ -119,7 +119,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 	edgeCountMap triangles = counter.triangleCounts(g);
 
 	//Actual test: ranked neighborhood
-	SimmelianBackbone simmel;
+	SimmelianBackbone simmel(Graph(0), 0.5);
 	std::vector<RankedNeighbors> neighborhood = simmel.getRankedNeighborhood(g, triangles);
 
 	//Neighborhood of 0
@@ -170,9 +170,9 @@ TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {
 	g.addEdge(0,5);
 	g.addEdge(5,1);
 
-	SimmelianBackbone simmel;
+	SimmelianBackbone simmel(g, 2, 1);
 	//TODO: ranks are "skipped" in reference implementation. Why?
-	Graph b = simmel.calculate(g, 2, 1);
+	Graph b = simmel.calculate();
 
 	EXPECT_EQ(20, b.numberOfEdges());
 
@@ -194,9 +194,9 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 	g.addEdge(0,2);
 	g.addEdge(1,2);
 
-	SimmelianBackbone simmel;
+	SimmelianBackbone simmel(g, 1, 0);
 
-	Graph b = simmel.calculate(g, 1, 0);
+	Graph b = simmel.calculate();
 
 	EXPECT_EQ(3, b.numberOfEdges()) << "wrong edge count in backbone";
 	EXPECT_EQ(5, b.numberOfNodes()) << "wrong node count in backbone";

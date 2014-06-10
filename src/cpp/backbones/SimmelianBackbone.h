@@ -68,27 +68,47 @@ struct Redundancy {
 class SimmelianBackbone : public BackboneCalculator {
 
 public:
+
 	/**
-	 * Calculates the simmelian backbone for the given graph.
+	 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
 	 * @param g 			the graph to calculate the backbone for
 	 * @param maxRank 		the maximum rank that is considered for overlap calculation
 	 * @param minOverlap	a minimum number of common top-maxRank neighbors
 	 */
-	Graph calculate(const Graph& g, const count& maxRank, const count& minOverlap);
+	SimmelianBackbone(const Graph& g, count maxRank, count minOverlap);
+
+	/**
+	 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
+	 * @param g 			the graph to calculate the backbone for
+	 * @param jaccardTresh	the minimum best prefix jaccard coefficient for an edge to be contained in the backbone
+	 */
+	SimmelianBackbone(const Graph& g, double jaccardThreshold);
+
+	Graph calculate();
 
 private:
-	FRIEND_TEST(SimmelianBackboneGTest, testOverlapCounting);
-	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhood);
-	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks);
-	FRIEND_TEST(SimmelianBackboneGTest, testOverlapFiltering);
+	//Calculation parameters
+	const Graph& graph;
+	bool parameterized;
+	double jaccardTreshold;
+	count maxRank;
+	count minOverlap;
+
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, edgeCountMap& triangles);
+
 	Redundancy getOverlap(const RankedNeighbors& first, const RankedNeighbors& second, const count& maxRank);
+
 	void matchNeighbors(std::vector<RankedEdge>::const_iterator& egoIt,
 			const RankedNeighbors& egoNeighbors,
 			std::set<node>& egoNeighborsUnmatched,
 			std::set<node>& alterNeighborsUnmatched,
 			const count& rank,
 			count& overlap);
+
+	FRIEND_TEST(SimmelianBackboneGTest, testOverlapCounting);
+	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhood);
+	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks);
+	FRIEND_TEST(SimmelianBackboneGTest, testOverlapFiltering);
 };
 
 }
