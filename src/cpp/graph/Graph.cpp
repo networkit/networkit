@@ -437,7 +437,11 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 	outEdgeWeights[u][vi] += ew;
 	if (directed) {
 		index ui = indexInInEdgeArray(v, u);
-		inEdgeWeights[v][ui] += ew;
+		inEdgeWeights[v][ui] += ew;	
+	}else if(u!=v){
+
+		index ui = indexInOutEdgeArray(v, u);
+		outEdgeWeights[v][ui] += ew;
 	}
 }
 
