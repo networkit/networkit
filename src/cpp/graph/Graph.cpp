@@ -64,7 +64,7 @@ index Graph::indexInInEdgeArray(node v, node u) const {
 	}
 	for (index i = 0; i < inEdges[v].size(); i++) {
 		node x = inEdges[v][i];
-		if (x == v) {
+		if (x == u) {
 			return i;
 		}
 	}
@@ -287,10 +287,8 @@ node Graph::randomNeighbor(node u) const {
 /** EDGE MODIFIERS **/
 
 void Graph::addEdge(node u, node v, edgeweight ew) {
-	assert (u >= 0);
 	assert (u < z);
 	assert (exists[u]);
-	assert (v >= 0);
 	assert (v < z);
 	assert (exists[v]);
 
@@ -341,6 +339,11 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 }
 
 void Graph::removeEdge(node u, node v) {
+	assert (u < z);
+	assert (exists[u]);
+	assert (v < z);
+	assert (exists[v]);
+
 	index vi = indexInOutEdgeArray(u, v);
 	index ui = indexInInEdgeArray(v, u);
 
@@ -358,6 +361,8 @@ void Graph::removeEdge(node u, node v) {
 	}
 
 	if (directed) {
+		assert (ui != none);
+
 		inDeg[v]--;
 		inEdges[v][ui] = none;
 		if (weighted) {
