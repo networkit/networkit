@@ -57,14 +57,8 @@ private:
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
 	// TODO directed case?
 
-	const std::vector<node>& adjaIn(node u) const { return directed ? inEdges[u] : outEdges[u]; }
-	const std::vector<node>& adjaOut(node u) const { return outEdges[u]; }
-
 	index indexInInEdgeArray(node u, node v) const;
 	index indexInOutEdgeArray(node u, node v) const;
-
-	edgeweight outEdgeWeightFromIndex(node u, index vi) const;
-	void setEdgeWeightAtIndex(node u, node v, index vi, index ui, edgeweight ew);
 
 public:
 
@@ -592,40 +586,82 @@ void Graph::parallelForNodePairs(L handle) const {
 template<typename L>
 void Graph::forEdges(L handle) const {
 	forWeightedEdges([&handle](node u, node v, edgeweight ew) { handle(u, v); });
-	// for (node u = 0; u < z; ++u) {
-	// 	auto& neighbors = adjaOut(u);
-	// 	for (node v : neighbors) {
-	// 		if (directed) {
-	// 			if (v != none) {
-	// 				handle(u, v);
-	// 			}
-	// 		} else {
-	// 			// undirected, do not iterate over edges twice
-	// 			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-	// 			if (u >= v) {
-	// 				handle(u, v);
-	// 			}
-	// 		}
-	// 	}
-	// }
 }
 
 template<typename L>
 void Graph::parallelForEdges(L handle) const {
 	parallelForWeightedEdges([&handle](node u, node v, edgeweight ew) { handle(u, v); });
-	// #pragma omp parallel for
+}
+
+template<typename L>
+void Graph::forWeightedEdges(L handle) const {
+	switch (weighted + 2 * directed) {
+		case 0: // unweighted, undirected
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					// undirected, do not iterate over edges twice
+					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+					if (u >= v) {
+						edgeweight ew = defaultEdgeWeight;
+						handle(u, v, ew);
+					}
+				}
+			}
+			break;
+		
+		case 1: // weighted,   undirected
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					// undirected, do not iterate over edges twice
+					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+					if (u >= v) {
+						edgeweight ew = outEdgeWeights[u][i];
+						handle(u, v, ew);
+					}
+				}
+			}
+			break;
+
+		case 2: // unweighted, directed
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					if (v != none) {
+						edgeweight ew = defaultEdgeWeight;
+						handle(u, v, ew);
+					}
+				}
+			}
+			break;
+
+		case 3: // weighted,   directed
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					if (v != none) {
+						edgeweight ew = outEdgeWeights[u][i];
+						handle(u, v, ew);
+					}
+				}
+			}
+			break;
+	}
 	// for (node u = 0; u < z; ++u) {
 	// 	for (index i = 0; i < outEdges[u].size(); ++i) {
 	// 		node v = outEdges[u][i];
 	// 		if (directed) {
 	// 			if (v != none) {
-	// 				handle(u, v);
+	// 				edgeweight ew = outEdgeWeightFromIndex(u, i);
+	// 				handle(u, v, ew);
 	// 			}
 	// 		} else {
 	// 			// undirected, do not iterate over edges twice
 	// 			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 	// 			if (u >= v) {
-	// 				handle(u, v);
+	// 				edgeweight ew = outEdgeWeightFromIndex(u, i);
+	// 				handle(u, v, ew);
 	// 			}
 	// 		}
 	// 	}
@@ -633,47 +669,63 @@ void Graph::parallelForEdges(L handle) const {
 }
 
 template<typename L>
-void Graph::forWeightedEdges(L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < outEdges[u].size(); ++i) {
-			node v = outEdges[u][i];
-			if (directed) {
-				if (v != none) {
-					edgeweight ew = outEdgeWeightFromIndex(u, i);
-					handle(u, v, ew);
-				}
-			} else {
-				// undirected, do not iterate over edges twice
-				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				if (u >= v) {
-					edgeweight ew = outEdgeWeightFromIndex(u, i);
-					handle(u, v, ew);
-				}
-			}
-		}
-	}
-}
-
-template<typename L>
 void Graph::parallelForWeightedEdges(L handle) const {
-	#pragma omp parallel for
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < outEdges[u].size(); ++i) {
-			node v = outEdges[u][i];
-			if (directed) {
-				if (v != none) {
-					edgeweight ew = outEdgeWeightFromIndex(u, i);
-					handle(u, v, ew);
-				}
-			} else {
-				// undirected, do not iterate over edges twice
-				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				if (u >= v) {
-					edgeweight ew = outEdgeWeightFromIndex(u, i);
-					handle(u, v, ew);
+	switch (weighted + 2 * directed) {
+		case 0: // unweighted, undirected
+			#pragma omp parallel for
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					// undirected, do not iterate over edges twice
+					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+					if (u >= v) {
+						edgeweight ew = defaultEdgeWeight;
+						handle(u, v, ew);
+					}
 				}
 			}
-		}
+			break;
+		
+		case 1: // weighted,   undirected
+			#pragma omp parallel for
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					// undirected, do not iterate over edges twice
+					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+					if (u >= v) {
+						edgeweight ew = outEdgeWeights[u][i];
+						handle(u, v, ew);
+					}
+				}
+			}
+			break;
+
+		case 2: // unweighted, directed
+			#pragma omp parallel for
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					if (v != none) {
+						edgeweight ew = defaultEdgeWeight;
+						handle(u, v, ew);
+					}
+				}
+			}
+			break;
+
+		case 3: // weighted,   directed
+			#pragma omp parallel for
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					if (v != none) {
+						edgeweight ew = outEdgeWeights[u][i];
+						handle(u, v, ew);
+					}
+				}
+			}
+			break;
 	}
 }
 
@@ -705,49 +757,38 @@ void Graph::forEdgesWithAttribute_double(int attrId, L handle) const {
 template<typename L>
 void Graph::forNeighborsOf(node u, L handle) const {
 	forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v); });
-	// auto& neighbors = adjaOut(u);
-	// for (auto v : neighbors) {
-	// 	if (v != none) {
-	// 		handle(v);
-	// 	}
-	// }	
 }
 
 template<typename L>
 void Graph::forWeightedNeighborsOf(node u, L handle) const {
 	forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v, ew); });
-	// auto& neighbors = adjaOut(u);
-	// for (index i = 0; i < neighbors.size(); i++) {
-	// 	node v = neighbors[i];
-	// 	if (v != none) {
-	// 		edgeweight ew = outEdgeWeightFromIndex(u, i);
-	// 		handle(v, ew);
-	// 	}
-	// }
 }
 
 template<typename L>
 void Graph::forEdgesOf(node u, L handle) const {
 	forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u, v); });
-	// auto& neighbors = adjaOut(u);
-	// for (auto v : neighbors) {
-	// 	if (v != none) {
-	// 		handle(u, v);
-	// 	}
-	// }
 }
 
 template<typename L>
 void Graph::forWeightedEdgesOf(node u, L handle) const {
-	for (index i = 0; i < outEdges[u].size(); i++) {
-		node v = outEdges[u][i];
-		if (v != none) {
-			edgeweight ew = outEdgeWeightFromIndex(u, i);
-			handle(u, v, ew);
+	if (weighted) {
+		for (index i = 0; i < outEdges[u].size(); i++) {
+			node v = outEdges[u][i];
+			if (v != none) {
+				edgeweight ew = outEdgeWeights[u][i];
+				handle(u, v, ew);
+			}
+		}	
+	} else {
+		for (index i = 0; i < outEdges[u].size(); i++) {
+			node v = outEdges[u][i];
+			if (v != none) {
+				edgeweight ew = defaultEdgeWeight;
+				handle(u, v, ew);
+			}
 		}
 	}
 }
-
 
 /** REDUCTION ITERATORS **/
 
