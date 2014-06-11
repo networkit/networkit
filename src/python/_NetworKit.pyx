@@ -95,7 +95,7 @@ def enableNestedParallelism():
 cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
-		_Graph(count, bool) except +
+		_Graph(count, bool, bool) except +
 		void stealFrom(_Graph)
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -124,8 +124,8 @@ cdef class Graph:
 	"""An undirected, optionally weighted graph"""
 	cdef _Graph* _this
 
-	def __cinit__(self, n=0, weighted=False):
-		self._this = new _Graph(n, weighted)
+	def __cinit__(self, n=0, weighted=False, directed=False):
+		self._this = new _Graph(n, weighted, directed)
 
 	# # any _thisect which appears as a return type needs to implement setThis
 	# cdef setThis(self, _Graph other):
