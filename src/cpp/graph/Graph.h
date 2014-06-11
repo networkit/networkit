@@ -438,25 +438,55 @@ public:
 
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
+	 * For directed graphs only outgoing edges from u are considered.
 	 */
 	template<typename L> void forNeighborsOf(node u, L handle) const;
 
 	/**
 	 * Iterate over all edge weights of a node and call handler (lamdba closure).
+	 * For directed graphs only outgoing edges from u are considered.
 	 */
 	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
 
 	/**
-	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 * Iterate over all outgoing edges of a node and call handler (lamdba closure).
+	 * For undirected graphs all edges incident to u are also outgoing edges.
 	 */
 	template<typename L> void forEdgesOf(node u, L handle) const;
 
 	/**
-	 * Iterate over all incident edges of a node and call handler (lamdba closure).
+	 * Iterate over all outgoing edges of a node and call handler (lamdba closure).
+	 * For undirected graphs all edges incident to u are also outgoing edges.
 	 *
 	 * Handle takes parameters (u, v, w) where w is the edge weight.
 	 */
 	template<typename L> void forWeightedEdgesOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all neighbors of a node and call handler (lamdba closure).
+	 * For directed graphs only incoming edges from u are considered.
+	 */
+	template<typename L> void forInNeighborsOf(node u, L handle) const;
+
+	/**
+	 * For directed graphs only incoming edges from u are considered.
+	 * Iterate over all edge weights of a node and call handler (lamdba closure).
+	 */
+	template<typename L> void forWeightedInNeighborsOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all incoming edges of a node and call handler (lamdba closure).
+	 * For undirected graphs all edges incident to u are also incoming edges.
+	 */
+	template<typename L> void forInEdgesOf(node u, L handle) const;
+
+	/**
+	 * Iterate over all incoming edges of a node and call handler (lamdba closure).
+	 * For undirected graphs all edges incident to u are also incoming edges.
+	 *
+	 * Handle takes parameters (u, v, w) where w is the edge weight.
+	 */
+	template<typename L> void forWeightedInEdgesOf(node u, L handle) const;
 
 
 	/** REDUCTION ITERATORS **/
@@ -754,45 +784,45 @@ void Graph::forWeightedEdgesOf(node u, L handle) const {
 	}
 }
 
-// template<typename L>
-// void Graph::forInNeighborsOf(node u, L handle) const {
-// 	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v); });
-// }
+template<typename L>
+void Graph::forInNeighborsOf(node u, L handle) const {
+	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v); });
+}
 
-// template<typename L>
-// void Graph::forWeightedInNeighborsOf(node u, L handle) const {
-// 	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v, ew); });
-// }
+template<typename L>
+void Graph::forWeightedInNeighborsOf(node u, L handle) const {
+	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v, ew); });
+}
 
-// template<typename L>
-// void Graph::forInEdgesOf(node u, L handle) const {
-// 	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u, v); });
-// }
+template<typename L>
+void Graph::forInEdgesOf(node u, L handle) const {
+	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u, v); });
+}
 
-// template<typename L>
-// void Graph::forWeightedInEdgesOf(node u, L handle) const {
-// 	if (!directed) {
-// 		forWeightedEdgesOf(u, handle);
-// 		return;
-// 	}
-// 	if (weighted) {
-// 		for (index i = 0; i < inEdges[u].size(); i++) {
-// 			node v = inEdges[u][i];
-// 			if (v != none) {
-// 				edgeweight ew = inEdgeWeights[u][i];
-// 				handle(u, v, ew);
-// 			}
-// 		}	
-// 	} else {
-// 		for (index i = 0; i < inEdges[u].size(); i++) {
-// 			node v = inEdges[u][i];
-// 			if (v != none) {
-// 				edgeweight ew = defaultEdgeWeight;
-// 				handle(u, v, ew);
-// 			}
-// 		}
-// 	}
-// }
+template<typename L>
+void Graph::forWeightedInEdgesOf(node u, L handle) const {
+	if (!directed) {
+		forWeightedEdgesOf(u, handle);
+		return;
+	}
+	if (weighted) {
+		for (index i = 0; i < inEdges[u].size(); i++) {
+			node v = inEdges[u][i];
+			if (v != none) {
+				edgeweight ew = inEdgeWeights[u][i];
+				handle(u, v, ew);
+			}
+		}	
+	} else {
+		for (index i = 0; i < inEdges[u].size(); i++) {
+			node v = inEdges[u][i];
+			if (v != none) {
+				edgeweight ew = defaultEdgeWeight;
+				handle(u, v, ew);
+			}
+		}
+	}
+}
 
 /** REDUCTION ITERATORS **/
 
