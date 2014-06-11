@@ -790,6 +790,46 @@ void Graph::forWeightedEdgesOf(node u, L handle) const {
 	}
 }
 
+// template<typename L>
+// void Graph::forInNeighborsOf(node u, L handle) const {
+// 	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v); });
+// }
+
+// template<typename L>
+// void Graph::forWeightedInNeighborsOf(node u, L handle) const {
+// 	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v, ew); });
+// }
+
+// template<typename L>
+// void Graph::forInEdgesOf(node u, L handle) const {
+// 	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u, v); });
+// }
+
+// template<typename L>
+// void Graph::forWeightedInEdgesOf(node u, L handle) const {
+// 	if (!directed) {
+// 		forWeightedEdgesOf(u, handle);
+// 		return;
+// 	}
+// 	if (weighted) {
+// 		for (index i = 0; i < inEdges[u].size(); i++) {
+// 			node v = inEdges[u][i];
+// 			if (v != none) {
+// 				edgeweight ew = inEdgeWeights[u][i];
+// 				handle(u, v, ew);
+// 			}
+// 		}	
+// 	} else {
+// 		for (index i = 0; i < inEdges[u].size(); i++) {
+// 			node v = inEdges[u][i];
+// 			if (v != none) {
+// 				edgeweight ew = defaultEdgeWeight;
+// 				handle(u, v, ew);
+// 			}
+// 		}
+// 	}
+// }
+
 /** REDUCTION ITERATORS **/
 
 template<typename L>
