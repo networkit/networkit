@@ -175,25 +175,27 @@ TEST_P(Graph4GTest, testRemoveNode) {
 }
 
 TEST_P(Graph4GTest, testHasNode) {
-	ASSERT_TRUE(this->Ghouse.hasNode(0));
-	ASSERT_TRUE(this->Ghouse.hasNode(1));
-	ASSERT_TRUE(this->Ghouse.hasNode(2));
-	ASSERT_TRUE(this->Ghouse.hasNode(3));
-	ASSERT_TRUE(this->Ghouse.hasNode(4));
-	ASSERT_FALSE(this->Ghouse.hasNode(5));
-	ASSERT_FALSE(this->Ghouse.hasNode(6));
+	Graph G = createParameterizedGraph(5);
 
-	this->Ghouse.removeNode(0);
-	this->Ghouse.removeNode(2);
-	this->Ghouse.addNode();
+	ASSERT_TRUE(G.hasNode(0));
+	ASSERT_TRUE(G.hasNode(1));
+	ASSERT_TRUE(G.hasNode(2));
+	ASSERT_TRUE(G.hasNode(3));
+	ASSERT_TRUE(G.hasNode(4));
+	ASSERT_FALSE(G.hasNode(5));
+	ASSERT_FALSE(G.hasNode(6));
+
+	G.removeNode(0);
+	G.removeNode(2);
+	G.addNode();
 	
-	ASSERT_FALSE(this->Ghouse.hasNode(0));
-	ASSERT_TRUE(this->Ghouse.hasNode(1));
-	ASSERT_FALSE(this->Ghouse.hasNode(2));
-	ASSERT_TRUE(this->Ghouse.hasNode(3));
-	ASSERT_TRUE(this->Ghouse.hasNode(4));
-	ASSERT_TRUE(this->Ghouse.hasNode(5));
-	ASSERT_FALSE(this->Ghouse.hasNode(6));
+	ASSERT_FALSE(G.hasNode(0));
+	ASSERT_TRUE(G.hasNode(1));
+	ASSERT_FALSE(G.hasNode(2));
+	ASSERT_TRUE(G.hasNode(3));
+	ASSERT_TRUE(G.hasNode(4));
+	ASSERT_TRUE(G.hasNode(5));
+	ASSERT_FALSE(G.hasNode(6));
 }
 
 
@@ -219,7 +221,7 @@ TEST_P(Graph4GTest, testDegreeIn) {
 	if (this->Ghouse.isDirected()) {
 		ASSERT_EQ(1u, this->Ghouse.degreeIn(0));
 		ASSERT_EQ(2u, this->Ghouse.degreeIn(1));
-		ASSERT_EQ(1u, this->Ghouse.degreeIn(2));
+		ASSERT_EQ(2u, this->Ghouse.degreeIn(2));
 		ASSERT_EQ(1u, this->Ghouse.degreeIn(3));
 		ASSERT_EQ(2u, this->Ghouse.degreeIn(4));
 	} else {
