@@ -92,7 +92,7 @@ std::string Graph::typ() const {
 	}
 }
 
-count Graph::getMemoryUsage() const {
+count Graph::getApproximatedMemoryUsage() const {
 	count mem = 0;
 
 	mem += exists.capacity() / 8;

@@ -99,7 +99,7 @@ public:
 	 * Calculate an approximation of the memory used by this graph. Only memory increasing with the
 	 * number of edges or nodes of this graph is taken into account. 
 	 */
-	count getMemoryUsage() const;
+	count getApproximatedMemoryUsage() const;
 
 	/**
 	 * Try to save some memory by shrinking internal data structures of the graph. Only run this
