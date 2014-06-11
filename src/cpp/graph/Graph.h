@@ -378,12 +378,6 @@ public:
 	template<typename C, typename L> void forNodesWhile(C condition, L handle) const;
 
 	/**
-	 * Iterate over all nodes of the graph and call handler (lambda closure) as long as the condition remains true.
-	 * This allows for breaking from a node loop.
-	 */
-	template<typename C, typename L> void forNodes(C condition, L handle) const;
-
-	/**
 	 * Iterate randomly over all nodes of the graph and call handler (lambda closure).
 	 */
 	template<typename L> void forNodesInRandomOrder(L handle) const;
@@ -522,18 +516,6 @@ void Graph::forNodesWhile(C condition, L handle) const {
 	}
 }
 
-template<typename C, typename L>
-void Graph::forNodes(C condition, L handle) const {
-	for (node v = 0; v < z; ++v) {
-		if (exists[v]) {
-			if (condition()) {
-				break;
-			}
-			handle(v);
-		}
-	}
-}
-
 template<typename L>
 void Graph::forNodesInRandomOrder(L handle) const {
 	std::vector<node> randVec = nodes();
@@ -648,24 +630,6 @@ void Graph::forWeightedEdges(L handle) const {
 			}
 			break;
 	}
-	// for (node u = 0; u < z; ++u) {
-	// 	for (index i = 0; i < outEdges[u].size(); ++i) {
-	// 		node v = outEdges[u][i];
-	// 		if (directed) {
-	// 			if (v != none) {
-	// 				edgeweight ew = outEdgeWeightFromIndex(u, i);
-	// 				handle(u, v, ew);
-	// 			}
-	// 		} else {
-	// 			// undirected, do not iterate over edges twice
-	// 			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-	// 			if (u >= v) {
-	// 				edgeweight ew = outEdgeWeightFromIndex(u, i);
-	// 				handle(u, v, ew);
-	// 			}
-	// 		}
-	// 	}
-	// }
 }
 
 template<typename L>
