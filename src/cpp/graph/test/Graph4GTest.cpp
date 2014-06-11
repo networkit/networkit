@@ -92,7 +92,20 @@ TEST_P(Graph4GTest, testGetId) {
 }
 
 TEST_P(Graph4GTest, testTyp) {
-	// TODO
+	Graph G = createParameterizedGraph();
+	if (isDirectedParameterized()) {
+		if (isWeightedParameterized()) {
+			ASSERT_EQ("WeightedDirectedGraph", G.typ());
+		} else {
+			ASSERT_EQ("DirectedGraph", G.typ());
+		}
+	} else {
+		if (isWeightedParameterized()) {
+			ASSERT_EQ("WeightedGraph", G.typ());
+		} else {
+			ASSERT_EQ("Graph", G.typ());
+		}
+	}
 }
 
 TEST_P(Graph4GTest, tesSetName) {
@@ -385,8 +398,8 @@ TEST_P(Graph4GTest, testRemoveEdge) {
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_TRUE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
-
 	G.removeEdge(0, 1);
+
 	ASSERT_EQ(1u, G.numberOfEdges());
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_FALSE(G.hasEdge(0, 1));
@@ -517,7 +530,49 @@ TEST_P(Graph4GTest, testWeight) {
 }
 
 TEST_P(Graph4GTest, testSetWeight) {
-	// TODO
+	Graph G = createParameterizedGraph(10);
+	G.addEdge(0, 1);
+	G.addEdge(1, 2);
+
+	if (isWeightedParameterized()) {
+		// edges should get weight defaultWeight on creation and setWeight should overwrite this
+		G.setWeight(1, 2, 2.718);
+		EXPECT_EQ(defaultEdgeWeight, G.weight(0, 1));
+		EXPECT_EQ(2.718, G.weight(1, 2));
+		if (isDirectedParameterized()) {
+			EXPECT_EQ(nullWeight, G.weight(1, 0));
+			EXPECT_EQ(nullWeight, G.weight(2, 1));
+		} else {
+			// undirected graph is symmetric
+			EXPECT_EQ(defaultEdgeWeight, G.weight(1, 0));
+			EXPECT_EQ(2.718, G.weight(2, 1));
+		}
+
+		// setting an edge weight should create the edge if it doesn't exists
+		ASSERT_FALSE(G.hasEdge(5, 6));
+		G.setWeight(5, 6, 56.0);
+		ASSERT_EQ(56.0, G.weight(5, 6));
+		ASSERT_EQ(isDirectedParameterized() ? nullWeight : 56.0, G.weight(6, 5));
+		ASSERT_TRUE(G.hasEdge(5, 6));
+
+		// directed graphs are not symmetric, undirected are
+		G.setWeight(2, 1, 5.243);
+		if (isDirectedParameterized()) {
+			EXPECT_EQ(2.718, G.weight(1, 2));
+			EXPECT_EQ(5.243, G.weight(2, 1));
+		} else {
+			EXPECT_EQ(5.243, G.weight(1, 2));
+			EXPECT_EQ(5.243, G.weight(2, 1));
+		}
+		
+		// self-loop
+		G.addEdge(4, 4, 2.5);
+		ASSERT_EQ(2.5, G.weight(4, 4));
+		G.setWeight(4, 4, 3.14);
+		ASSERT_EQ(3.14, G.weight(4, 4));
+	} else {
+		EXPECT_ANY_THROW(G.setWeight(0, 1, 1.5));
+	}
 }
 
 TEST_P(Graph4GTest, increaseWeight) {
@@ -611,7 +666,29 @@ TEST_P(Graph4GTest, testForNodes) {
 
 // template<typename L> void balancedParallelForNodes(L handle) const;
 
-// template<typename L> void forNodePairs(L handle) const;
+TEST_P(Graph4GTest, testForNodePairs) {
+	count n = 10;
+	count m = n * (n - 1) / 2;
+	Graph G = createParameterizedGraph(n);
+
+	// add all edges
+	G.forNodePairs([&](node u, node v) {
+		ASSERT_FALSE(G.hasEdge(u, v));
+		G.addEdge(u, v);
+		ASSERT_TRUE(G.hasEdge(u, v));
+	});
+
+	EXPECT_EQ(m, G.numberOfEdges());
+
+	// remove all edges
+	G.forNodePairs([&](node u, node v) {
+		ASSERT_TRUE(G.hasEdge(u, v));
+		G.removeEdge(u, v);
+		ASSERT_FALSE(G.hasEdge(u, v));
+	});
+
+	EXPECT_EQ(0u, G.numberOfEdges());
+}
 
 // template<typename L> void parallelForNodePairs(L handle) const;
 
@@ -635,37 +712,48 @@ TEST_P(Graph4GTest, testForNodes) {
 // template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
 
 TEST_P(Graph4GTest, testForEdgesOf) {
-	if (isDirectedParameterized()) {
-		count m = 0;
-		std::vector<bool> visited(this->m_house, false);
+	count m = 0;
+	std::vector<int> visited(this->m_house, 0);
 
-		this->Ghouse.forNodes([&](node u) {
-			this->Ghouse.forEdgesOf(u, [&](node v, node w) {
-				// edges should be v to w, so if we iterate over edges from u, u should be equal v
-				EXPECT_EQ(u, v);
-				
-				auto e = std::make_pair(v, w);
-				// find edge
-				auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
-
-				EXPECT_FALSE(it == this->houseEdgesOut.end()); // check if edge is allowed to exists
+	this->Ghouse.forNodes([&](node u) {
+		this->Ghouse.forEdgesOf(u, [&](node v, node w) {
+			// edges should be v to w, so if we iterate over edges from u, u should be equal v
+			EXPECT_EQ(u, v);
 			
-				// find index in edge array
-				int i = std::distance(this->houseEdgesOut.begin(), it);
-				EXPECT_FALSE(visited[i]); // make sure edge was not visited before (would be visited twice)
-				
-				// mark edge as visited
-				visited[i] = true;
-				m++;
-			});
-		});
+			auto e = std::make_pair(v, w);
+			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
+			if (!isDirectedParameterized() && it == this->houseEdgesOut.end()) {
+				auto e2 = std::make_pair(w, v);
+				it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e2);
+			}
 
+			EXPECT_TRUE(it != this->houseEdgesOut.end());
+		
+			// find index in edge array
+			int i = std::distance(this->houseEdgesOut.begin(), it);
+			if (isDirectedParameterized()) {
+				// make sure edge was not visited before (would be visited twice)
+				EXPECT_EQ(0, visited[i]);
+			}
+			
+			// mark edge as visited
+			visited[i]++;
+			m++;
+		});
+	});
+
+	if (isDirectedParameterized()) {
+		// we iterated over all outgoing edges once
 		EXPECT_EQ(this->m_house, m);
-		for (auto b : visited) {
-			EXPECT_TRUE(b);
+		for (auto c : visited) {
+			EXPECT_EQ(1, c);
 		}
 	} else {
-		// TODO
+		// we iterated over all edges in both directions
+		EXPECT_EQ(2 * this->m_house, m);
+		for (auto c : visited) {
+			EXPECT_EQ(2, c);
+		}
 	}
 }
 
