@@ -81,28 +81,6 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
 	return none;
 }
 
-edgeweight Graph::outEdgeWeightFromIndex(node u, index vi) const {
-	if (vi == none) {
-		return nullWeight;
-	} else {
-		return weighted ? outEdgeWeights[u][vi] : defaultEdgeWeight;
-	}
-}
-
-void Graph::setEdgeWeightAtIndex(node u, node v, index vi, index ui, edgeweight ew) {
-	// TODO document
-	// edge u->v
-	// with vi being the index of the edge in adjacent array of u and
-	// ui the index of the edge in the adjacent array of v
-	// only call on weighted graphs!!!
-	outEdgeWeights[u][vi] = ew;
-	if (directed) {
-		inEdgeWeights[v][ui] = ew;
-	} else if (u != v) {
-		outEdgeWeights[v][ui] = ew;
-	}
-}
-
 
 /** GRAPH INFORMATION **/
 
@@ -274,10 +252,9 @@ node Graph::randomNeighbor(node u) const {
 		return none;
 	}
 
-	auto neighbors = adjaOut(u);
 	node v;
 	do {
-		v = Aux::Random::integer(neighbors.size() - 1);
+		v = Aux::Random::integer(outEdges[u].size() - 1);
 	} while (v == none);
 
 	return v;
@@ -408,7 +385,11 @@ count Graph::numberOfSelfLoops() const {
 
 edgeweight Graph::weight(node u, node v) const {
 	index vi = indexInOutEdgeArray(u, v);
-	return outEdgeWeightFromIndex(u, vi);
+	if (vi == none) {
+		return nullWeight;
+	} else {
+		return weighted ? outEdgeWeights[u][vi] : defaultEdgeWeight;
+	}
 }
 
 void Graph::setWeight(node u, node v, edgeweight ew) {
@@ -424,8 +405,14 @@ void Graph::setWeight(node u, node v, edgeweight ew) {
 		return;
 	}
 
-	index ui = indexInInEdgeArray(v, u);
-	setEdgeWeightAtIndex(u, v, vi, ui, ew);
+	outEdgeWeights[u][vi] = ew;
+	if (directed) {
+		index ui = indexInInEdgeArray(v, u);
+		inEdgeWeights[v][ui] = ew;
+	} else if (u != v) {
+		index ui = indexInInEdgeArray(v, u);
+		outEdgeWeights[v][ui] = ew;
+	}
 }
 
 void Graph::increaseWeight(node u, node v, edgeweight ew) {
@@ -441,10 +428,14 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 		return;
 	}
 
-	index ui = indexInInEdgeArray(v, u);
-	edgeweight old_ew = outEdgeWeightFromIndex(u, vi);
-	edgeweight new_ew = old_ew + ew;
-	setEdgeWeightAtIndex(u, v, vi, ui, new_ew);
+	outEdgeWeights[u][vi] += ew;
+	if (directed) {
+		index ui = indexInInEdgeArray(v, u);
+		inEdgeWeights[v][ui] += ew;
+	} else if (u != v) {
+		index ui = indexInInEdgeArray(v, u);
+		outEdgeWeights[v][ui] += ew;
+	}
 }
 
 int Graph::addEdgeAttribute_double(double defaultValue) {
