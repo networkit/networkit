@@ -171,6 +171,12 @@ public:
 	edgeweight weightedDegree(node v) const;
 
 	/**
+	 * @return Volume of the node, which is the
+	 * weighted degree with self-loops counted twice.
+	 */
+	edgeweight volume(node v) const;
+
+	/**
 	 * @return random node of the graph
 	 */
 	node randomNode() const;

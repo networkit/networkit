@@ -334,6 +334,42 @@ TEST_P(Graph4GTest, weightedDegree) {
 	}
 }
 
+TEST_P(Graph4GTest, volume) {
+	this->Ghouse.addEdge(2, 2, 0.75);
+
+	if (this->Ghouse.isWeighted()) {
+		if (this->Ghouse.isDirected()) {
+			// only sum weight of outgoing edges
+			ASSERT_EQ(1.0, this->Ghouse.volume(0));
+			ASSERT_EQ(5.0, this->Ghouse.volume(1));
+			ASSERT_EQ(10.5, this->Ghouse.volume(2));
+			ASSERT_EQ(13.0, this->Ghouse.volume(3));
+			ASSERT_EQ(8.0, this->Ghouse.volume(4));
+		} else {
+			ASSERT_EQ(3.0, this->Ghouse.volume(0));
+			ASSERT_EQ(15.0, this->Ghouse.volume(1));
+			ASSERT_EQ(18.5, this->Ghouse.volume(2));
+			ASSERT_EQ(21.0, this->Ghouse.volume(3));
+			ASSERT_EQ(16.0, this->Ghouse.volume(4));
+		}
+	} else {
+		if (this->Ghouse.isDirected()) {
+			// only count outgoing edges
+			ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.volume(0));
+			ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(1));
+			ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.volume(2));
+			ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(3));
+			ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.volume(4));
+		} else {
+			ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(0));
+			ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.volume(1));
+			ASSERT_EQ(6 * defaultEdgeWeight, this->Ghouse.volume(2));
+			ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(3));
+			ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(4));
+		}
+	}
+}
+
 TEST_P(Graph4GTest, isWeighted) {
 	ASSERT_EQ(isWeightedParameterized(), this->Ghouse.isWeighted());
 }

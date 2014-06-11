@@ -234,6 +234,29 @@ edgeweight Graph::weightedDegree(node v) const {
 	return defaultEdgeWeight * degree(v);
 }
 
+edgeweight Graph::volume(node v) const {
+	if (weighted) {
+		edgeweight sum = 0.0;
+		for (index i = 0; i < outEdges[v].size(); i++) {
+			node u = outEdges[v][i];
+			if (u == v) {
+				sum += 2 * outEdgeWeights[v][i];
+			} else if (u != none) {
+				sum += outEdgeWeights[v][i];
+			}
+		}
+		return sum;
+	} else {
+		count c = outDeg[v];
+		for (node u : outEdges[v]) {
+			if (u == v) {
+				c++;
+			}
+		}
+		return c * defaultEdgeWeight;
+	}
+}
+
 node Graph::randomNode() const {
 	if (numberOfNodes() == 0) {
 		return none;
