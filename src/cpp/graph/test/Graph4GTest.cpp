@@ -79,29 +79,6 @@ void Graph4GTest::SetUp() {
 	}
 }
 
-TEST_P(Graph4GTest, increaseWeight){
-	
-	Graph G = createParameterizedGraph(3);
-	if(G.isWeighted()){
-
-		G.addEdge(0, 1);
-		G.addEdge(1, 2);
-		G.increaseWeight(1, 2, 0.5);
-		ASSERT_EQ(defaultEdgeWeight, G.weight(0, 1));
-		ASSERT_EQ(defaultEdgeWeight + 0.5, G.weight(1, 2));
-		if (G.isDirected()) {	
-			ASSERT_EQ(nullWeight, G.weight(1, 0));
-			ASSERT_EQ(nullWeight, G.weight(2, 1));
-		} else {
-			ASSERT_EQ(defaultEdgeWeight, G.weight(1, 0));
-			ASSERT_EQ(defaultEdgeWeight + 0.5, G.weight(2, 1));
-		}
-	}
-	
-
-
-}
-
 TEST_P(Graph4GTest, getId) {
 	Graph G1 = createParameterizedGraph();
 	Graph G2 = createParameterizedGraph(5);
@@ -275,6 +252,36 @@ TEST_P(Graph4GTest, upperNodeIdBound) {
 	ASSERT_EQ(2u, G1.upperNodeIdBound());
 	G1.addNode();
 	ASSERT_EQ(3u, G1.upperNodeIdBound());
+}
+
+TEST_P(Graph4GTest, increaseWeight) {
+	Graph G = createParameterizedGraph(5);
+	G.addEdge(0, 1);
+	G.addEdge(1, 2);
+	G.addEdge(3, 4, 3.14);
+
+	if (G.isWeighted()) {
+		G.increaseWeight(1, 2, 0.5);
+		G.increaseWeight(3, 4, - 0.5);
+
+		ASSERT_EQ(defaultEdgeWeight, G.weight(0, 1));
+		ASSERT_EQ(defaultEdgeWeight + 0.5, G.weight(1, 2));
+		ASSERT_EQ(3.14 - 0.5, G.weight(3, 4));
+
+		if (G.isDirected()) {	
+			// reverse edges do net exist => weight should be nullWeight
+			ASSERT_EQ(nullWeight, G.weight(1, 0));
+			ASSERT_EQ(nullWeight, G.weight(2, 1));
+			ASSERT_EQ(nullWeight, G.weight(4, 3));
+		} else {
+			ASSERT_EQ(defaultEdgeWeight, G.weight(1, 0));
+			ASSERT_EQ(defaultEdgeWeight + 0.5, G.weight(2, 1));
+			ASSERT_EQ(3.14 - 0.5, G.weight(3, 4));
+		}
+	} else {
+		EXPECT_ANY_THROW(G.increaseWeight(1, 2, 0.3));
+		EXPECT_ANY_THROW(G.increaseWeight(2, 3, 0.3)); // edge does not exists
+	}	
 }
 
 TEST_P(Graph4GTest, degree) {
