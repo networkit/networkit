@@ -210,9 +210,6 @@ public:
 	 *
 	 * @return New node that has been created if u != v. Otherwise none.
 	 */
-	node mergeEdge(node u, node v, bool discardSelfLoop = true) {
-		throw std::runtime_error("mergeEdge is deprecated in will be removed in NetworKit >3.2.");
-	}
 
 	/**
 	 * @return Random edge

@@ -523,7 +523,7 @@ void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 edgeweight Graph::totalEdgeWeight() const {
 	if (weighted) {
 		edgeweight sum = 0.0;
-		forWeightedEdges([&sum](node u, node v, edgeweight ew) {
+		forWeightedEdges([&](node u, node v, edgeweight ew) {
 			sum += ew;
 		});
 		return sum;
