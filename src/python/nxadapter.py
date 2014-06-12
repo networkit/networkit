@@ -13,23 +13,33 @@ except ImportError:
 ########  CONVERSION ########
 
 def nx2nk(nxG, weightAttr=None):
-	""" 
+	"""
 	Convert a networkx.Graph to a NetworKit.Graph
 		:param weightAttr: the edge attribute which should be treated as the edge weight
-	 """
-	# TODO: consider weights
-	n = nxG.number_of_nodes()
-	nkG = graph.Graph(n)
-	
+	"""
+
+	# map networkx node ids to consecutive numerical node ids
+	idmap = dict((id, u) for (id, u) in zip(nxG.nodes(), range(nxG.number_of_nodes())))
+	z = max(idmap.values()) + 1
+	# print("z = {0}".format(z))
+
 	if weightAttr is not None:
-		nkG.markAsWeighted()
-		for (u, v) in nxG.edges():
-			w = nxG.edge[u][v][weightAttr]
+		nkG = graph.Graph(z, weighted=True)
+		for (u_, v_) in nxG.edges():
+			u, v = idmap[u_], idmap[v_]
+			w = nxG.edge[u_][v_][weightAttr]
 			nkG.addEdge(u, v, w)
 	else:
-		for (u, v) in nxG.edges():
+		nkG = graph.Graph(z)
+		for (u_, v_) in nxG.edges():
+			u, v = idmap[u_], idmap[v_]
+			# print(u_, v_, u, v)
+			assert (u < z)
+			assert (v < z)
 			nkG.addEdge(u, v)
-	
+
+	assert (nkG.numberOfNodes() == nxG.number_of_nodes())
+	assert (nkG.numberOfEdges() == nxG.number_of_edges())
 	return nkG
 
 
