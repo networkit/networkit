@@ -80,6 +80,122 @@ void Graph4GTest::SetUp() {
 }
 
 
+/** CONSTRUCTORS **/
+
+TEST_P(Graph4GTest, testCopyConstructor) {
+	Graph G = Graph(this->Ghouse, false, false);
+	Graph GW = Graph(this->Ghouse, true, false);
+	Graph D = Graph(this->Ghouse, false, true);
+	Graph DW = Graph(this->Ghouse, true, true);
+
+	ASSERT_FALSE(G.isWeighted());
+	ASSERT_FALSE(G.isDirected());
+	ASSERT_EQ(this->Ghouse.numberOfNodes(), G.numberOfNodes());
+	ASSERT_EQ(this->Ghouse.numberOfEdges(), G.numberOfEdges());
+
+	ASSERT_TRUE(GW.isWeighted());
+	ASSERT_FALSE(GW.isDirected());
+	ASSERT_EQ(this->Ghouse.numberOfNodes(), GW.numberOfNodes());
+	ASSERT_EQ(this->Ghouse.numberOfEdges(), GW.numberOfEdges());
+
+	ASSERT_FALSE(D.isWeighted());
+	ASSERT_TRUE(D.isDirected());
+	ASSERT_EQ(this->Ghouse.numberOfNodes(), D.numberOfNodes());
+	ASSERT_EQ(this->Ghouse.numberOfEdges(), D.numberOfEdges());
+
+	ASSERT_TRUE(DW.isWeighted());
+	ASSERT_TRUE(DW.isDirected());
+	ASSERT_EQ(this->Ghouse.numberOfNodes(), DW.numberOfNodes());
+	ASSERT_EQ(this->Ghouse.numberOfEdges(), DW.numberOfEdges());
+
+	this->Ghouse.forNodes([&](node v) {
+		count d = this->Ghouse.degree(v);
+		count dUndirected = isDirectedParameterized() ? d + this->Ghouse.degreeIn(v) : d;
+		ASSERT_EQ(dUndirected, G.degree(v));
+		ASSERT_EQ(dUndirected, GW.degree(v));
+		ASSERT_EQ(d, D.degree(v));
+		ASSERT_EQ(d, DW.degree(v));
+	});
+
+	// if Ghouse was directed we should have an exact copy of it, but if it was undirected
+	// we should have edges in both directions
+	count m = 0;
+	G.forEdges([&](node u, node v) {
+		ASSERT_TRUE(G.hasEdge(v, u));
+		ASSERT_EQ(defaultEdgeWeight, G.weight(v, u));
+		ASSERT_EQ(defaultEdgeWeight, G.weight(u, v));
+
+		auto e = std::make_pair(u, v);
+		bool found = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e) != this->houseEdgesOut.end();
+		if (!found) {
+			e = std::make_pair(v, u);
+			found = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e) != this->houseEdgesOut.end();
+		}
+		ASSERT_TRUE(found);
+		m++;
+	});
+	ASSERT_EQ(8u, m);	
+	
+	m = 0;
+	GW.forEdges([&](node u, node v) {
+		ASSERT_TRUE(GW.hasEdge(v, u));
+		ASSERT_EQ(GW.weight(u, v), GW.weight(v, u));
+
+		auto e = std::make_pair(u, v);
+		bool found = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e) != this->houseEdgesOut.end();
+		if (!found) {
+			e = std::make_pair(v, u);
+			found = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e) != this->houseEdgesOut.end();
+			ASSERT_EQ(this->Ghouse.weight(v, u), GW.weight(v, u));
+		} else {
+			ASSERT_EQ(this->Ghouse.weight(u, v), GW.weight(u, v));
+		}
+		ASSERT_TRUE(found);
+		m++;
+	});
+	ASSERT_EQ(8u, m);
+
+	m = 0;
+	D.forEdges([&](node u, node v) {
+		ASSERT_EQ(defaultEdgeWeight, D.weight(u, v));
+
+		auto e = std::make_pair(u, v);
+		bool found = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e) != this->houseEdgesOut.end();
+		if (!this->Ghouse.isDirected()) {
+			ASSERT_TRUE(D.hasEdge(v, u));
+
+			e = std::make_pair(v, u);
+			found = found || (std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e) != this->houseEdgesOut.end());
+		} else {
+			ASSERT_FALSE(D.hasEdge(v, u));
+		}
+		ASSERT_TRUE(found);
+		m++;
+	});
+	count m_expected = isDirectedParameterized() ? 8 : 16;
+	ASSERT_EQ(m_expected, m);
+
+	m = 0;
+	DW.forEdges([&](node u, node v) {
+		ASSERT_EQ(this->Ghouse.weight(u, v), DW.weight(u, v));
+
+		auto e = std::make_pair(u, v);
+		bool found = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e) != this->houseEdgesOut.end();
+		if (!this->Ghouse.isDirected()) {
+			ASSERT_TRUE(DW.hasEdge(v, u));
+			e = std::make_pair(v, u);
+			found = found || (std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e) != this->houseEdgesOut.end());
+		} else {
+			ASSERT_FALSE(DW.hasEdge(v, u));
+		}
+		ASSERT_TRUE(found);
+		m++;
+	});
+	m_expected = isDirectedParameterized() ? 8 : 16;
+	ASSERT_EQ(m_expected, m);
+}
+
+
 /** GRAPH INFORMATION **/
 
 TEST_P(Graph4GTest, testGetId) {
