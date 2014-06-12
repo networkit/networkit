@@ -9,6 +9,7 @@
 
 #include "PropertiesGTest.h"
 #include "../Diameter.h"
+#include "../../auxiliary/Timer.h"
 
 
 namespace NetworKit {
@@ -89,7 +90,22 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 }
 
 
-// FIXME: test core decomposition
+TEST_F(PropertiesGTest, benchLocalClusteringCoefficients) {
+	// Read the graph
+	std::string path = "../graphs/ascii/kron_g500-simple-logn16.graph";
+	METISGraphReader reader;
+	Graph G = reader.read(path);
+
+	// run local CC
+	Aux::Timer timer;
+	timer.start();
+	std::vector<double> coefficients_G1 = GraphProperties::localClusteringCoefficients(G);
+	timer.stop();
+	INFO("Time [ms] for local CC: ", timer.elapsedMilliseconds());
+}
+
+
+
 TEST_F(PropertiesGTest, testCoreDecomposition) {
 	count n = 16;
 	Graph G(n);

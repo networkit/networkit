@@ -15,7 +15,6 @@
 #include <sstream>
 #include <utility>
 #include <stdexcept>
-#include <cassert>
 #include <tuple>
 
 #include "../auxiliary/Log.h"

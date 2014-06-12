@@ -31,14 +31,13 @@ protected:
 	 * @param[in]	partition	partition of G (only used if dim == 0)
 	 * @param[in]	dim			dimension of coordinates
 	 */
-	virtual void writeGeneric(Graph& G, bool weighted, std::string path, Partition& partition, count dim);
+	virtual void writeGeneric(Graph& G, bool weighted, const std::string& path,
+	                          Partition& partition, count dim);
 
 
 public:
 
-	VNAGraphWriter();
-
-	virtual ~VNAGraphWriter();
+	VNAGraphWriter() = default;
 
 	/**
 	 * write a graph G and its coordinates to a VNA file.
@@ -46,7 +45,7 @@ public:
 	 * @param[in]	G			Graph of type Networkit with 3D coordinates
 	 * @param[in]	path		path to file
 	 */
-	virtual void write(Graph& G, std::string path);
+	virtual void write(Graph& G, const std::string& path) override;
 
 	/**
 	 * write a graph G and its coordinates to a VNA file.
@@ -55,7 +54,7 @@ public:
 	 * @param[in]	weighted	true if the G is weighted (makes no difference whether is true or not)
 	 * @param[in]	path		path to file
 	 */
-	virtual void write(Graph& G, bool weighted, std::string path);
+	virtual void write(Graph& G, bool weighted, const std::string& path);
 
 	/**
 	 * write a graph G and its coordinates including node color to a VNA file.
@@ -65,7 +64,8 @@ public:
 	 * @param[in]	path		path to file
 	 * @param[in]	partition	proper Partition of G
 	 */
-	virtual void write(Graph& G, bool weighted, std::string path, Partition& partition);
+	virtual void write(Graph& G, bool weighted, const std::string& path,
+	                   Partition& partition);
 
 	/**
 	 * write a graph G and its coordinates to a VNA file.
@@ -74,7 +74,7 @@ public:
 	 * @param[in]	weighted	true if the G is weighted (makes no difference whether is true or not)
 	 * @param[in]	path		path to file
 	 */
-	virtual void write3D(Graph& G, bool weighted, std::string path);
+	virtual void write3D(Graph& G, bool weighted, const std::string& path);
 };
 
 } /* namespace NetworKit */

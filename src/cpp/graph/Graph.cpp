@@ -63,7 +63,7 @@ void Graph::addEdge(node u, node v, edgeweight weight) {
 		// set edge weight
 		if (weighted) {
 			this->eweights[u].push_back(weight);
-			this->eweights[v].push_back(weight);	
+			this->eweights[v].push_back(weight);
 		}
 		// loop over all attributes, setting default attr
 		for (index attrId = 0; attrId < this->edgeMaps_double.size(); ++attrId) {
@@ -167,10 +167,10 @@ node Graph::addNode() {
 	this->exists.push_back(true);
 
 	// update per edge data structures
-	Vector<node> adjacencyVector;	// vector of adjacencies for new node
+	StdVector<node> adjacencyVector;	// vector of adjacencies for new node
 	this->adja.push_back(adjacencyVector);
 	if (weighted) {
-		Vector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
+		StdVector<edgeweight> edgeWeightVector;	// vector of edge weights for new node
 		this->eweights.push_back(edgeWeightVector);
 	}
 
@@ -426,6 +426,7 @@ node Graph::randomNeighbor(node v) const {
 		return none;
 	}
 
+
 	/* TODO: move to Aux (actually already there),
 	 * BUT beware of performance implications!!!
 	 */
@@ -436,10 +437,23 @@ node Graph::randomNeighbor(node v) const {
 		return r;
 	});
 
+	// FIXME: this is not correct if edges have been deleted
 	index randIdx = generateFast(0, deg-1);
 	assert(randIdx < deg);
 	node randNeigh = adja[v][randIdx];
 	return randNeigh;
+}
+
+
+std::pair<node, node> Graph::randomEdge() const {
+    assert (this->numberOfEdges() > 0);
+    node u;
+    node v;
+    do {
+        u = this->randomNode();
+        v = this->randomNeighbor(u);
+    } while (degree(u) == 0);
+    return std::make_pair(u, v);
 }
 
 node Graph::mergeEdge(node u, node v, bool discardSelfLoop) {
