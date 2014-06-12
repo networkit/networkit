@@ -112,12 +112,12 @@ TEST(VectorGTest, tryVectorScalarMultiplication) {
 
 TEST(VectorGTest, tryVectorMatrixMultiplication) {
 	Vector v = {1.0, 2.0, 3.0};
-	Vector c1 = {8, 3, 4};
-	Vector c2 = {3, 5, 9};
-	Vector c3 = {4, 9, 2};
+	Vector r1 = {8, 3, 4};
+	Vector r2 = {3, 5, 9};
+	Vector r3 = {4, 9, 2};
 
-	std::vector<Vector> columns = {c1, c2, c3};
-	Matrix mat(columns);
+	std::vector<Vector> rows = {r1, r2, r3};
+	Matrix mat(rows);
 
 	Vector result = v.transpose() * mat;
 	ASSERT_TRUE(result.isTransposed());

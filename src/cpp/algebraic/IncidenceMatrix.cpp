@@ -12,19 +12,24 @@ namespace NetworKit {
 IncidenceMatrix::IncidenceMatrix(Graph &graph) : graph(graph) {
 }
 
-double IncidenceMatrix::value(const node &node, const Edge &edge) const {
-	if (edge.first != edge.second) {
-		if (node == edge.first) {
-			if (node > edge.second) {
-				return -1.0;
+double IncidenceMatrix::value(const node &nd, const Edge &edge) const {
+	node u = edge.first;
+	node v = edge.second;
+
+	if (u != v) {
+		double weight = sqrt(graph.weight(u,v));
+
+		if (nd == u) {
+			if (nd > v) {
+				return -weight;
 			} else {
-				return 1.0;
+				return weight;
 			}
-		} else if (node == edge.second) {
-			if (node < edge.first) {
-				return 1.0;
+		} else if (nd == v) {
+			if (nd < u) {
+				return weight;
 			} else {
-				return -1.0;
+				return -weight;
 			}
 		}
 	}
@@ -60,13 +65,17 @@ Vector IncidenceMatrix::column(const index &j) const {
 	Vector vector(numberOfRows(), 0.0);
 	Edge edge = graph.edges().at(j);
 
-	if (edge.first != edge.second) {
-		if (edge.first > edge.second) {
-			vector[edge.first] = -1.0;
-			vector[edge.second] = 1.0;
+	node u = edge.first;
+	node v = edge.second;
+
+	if (u != v) {
+		double weight = sqrt(graph.weight(u, v));
+		if (u > v) {
+			vector[u] = -weight;
+			vector[v] = weight;
 		} else {
-			vector[edge.first] = 1.0;
-			vector[edge.second] = -1.0;
+			vector[u] = weight;
+			vector[v] = -weight;
 		}
 	}
 
