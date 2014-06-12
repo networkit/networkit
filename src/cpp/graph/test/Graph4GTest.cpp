@@ -469,7 +469,20 @@ TEST_P(Graph4GTest, testVolume) {
 }
 
 TEST_P(Graph4GTest, testRandomNode) {
-	// TODO
+	count n = 4;
+	count samples = 100000;
+	double maxAbsoluteError = 0.005;
+
+	Graph G = createParameterizedGraph(n);
+	std::vector<count> drawCounts(n, 0);
+	for (count i = 0; i < samples; i++) {
+		node x = G.randomNode();
+		drawCounts[x]++;
+	}
+	for (node v = 0; v < n; v++) {
+		double p = drawCounts[v] / (double) samples;
+		ASSERT_NEAR(1.0 / n, p, maxAbsoluteError);
+	}
 }
 
 TEST_P(Graph4GTest, testRandomNeighbor) {
@@ -584,7 +597,7 @@ TEST_P(Graph4GTest, testHasEdge) {
 }
 
 TEST_P(Graph4GTest, testRandomEdge) {
-	// TODO
+
 }
 
 
