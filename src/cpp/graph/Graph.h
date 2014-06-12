@@ -25,40 +25,50 @@ namespace NetworKit {
 class Graph final {
 private:
 	// graph attributes
-	count id;
-	std::string name;
+	count id; //!< unique graph id, starts at 0
+	std::string name; //!< name of the graph, initially G#ID
 
 	// scalars
 	count n; //!< current number of nodes
 	count m; //!< current number of edges
-	node z; //!< current upper bound of node ids
+	node z; //!< current upper bound of node ids, z will be the id of the next node
 	count t; //!< current time step
 
-	bool weighted;
-	bool directed;
+	bool weighted; //!< true if the graph is weighted, false otherwise
+	bool directed; //!< true if the graph is directed, false otherwise
 
 	// per node data
 	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
-	std::vector<count> inDeg;
-	std::vector<count> outDeg;
+	std::vector<count> inDeg; //!< only used for directed graphs, number of edges incoming per node
+	std::vector<count> outDeg; //!< degree of every node, zero if node was removed. For directed graphs only outgoing edges count
 	
-	std::vector< std::vector<node> > inEdges;
-	std::vector< std::vector<node> > outEdges;
+	std::vector< std::vector<node> > inEdges; //!< only used for directed graphs, inEdges[v] contains all nodes u that have an edge (u, v)
+	std::vector< std::vector<node> > outEdges; //!< (outgoing) edges, for each edge (u, v) v is saved in outEdges[u] and for undirected also u in outEdges[v]
 	
-	std::vector< std::vector<edgeweight> > inEdgeWeights;
-	std::vector< std::vector<edgeweight> > outEdgeWeights;
+	std::vector< std::vector<edgeweight> > inEdgeWeights; //!< only used for directed graphs, same schema as inEdges
+	std::vector< std::vector<edgeweight> > outEdgeWeights; //!< same schema (and same order!) as outEdges
 
 	// user-defined edge attributes
 	// attribute maps storage
-	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
+	std::vector<std::vector<std::vector<double> > > edgeMaps_double; //!< contains edge maps (u, v) -> double
 	// default values
-	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
+	std::vector<double> edgeAttrDefaults_double; //!< stores default value for edgeMaps_double[i] at index i
 
+	/**
+	 * Returns the next unique graph id.
+	 */
 	count getNextGraphId();
 
-	index indexInInEdgeArray(node u, node v) const;
+	/**
+	 * Returns the index of node u in the array of incoming edges of node v. (for directed graphs inEdges is searched, while for indirected outEdges is searched, which gives the same result as indexInOutEdgeArray).
+	 */
+	index indexInInEdgeArray(node v, node u) const;
+
+	/**
+	 * Returns the index of node v in the array of outgoing edges of node u.
+	 */
 	index indexInOutEdgeArray(node u, node v) const;
 
 public:
