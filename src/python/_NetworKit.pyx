@@ -1198,6 +1198,21 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 		return self._this.getDissimilarity(dereference(G._this), first._this, second._this)
 
 
+cdef extern from "../cpp/community/JaccardMeasure.h":
+	cdef cppclass _JaccardMeasure "NetworKit::JaccardMeasure":
+		J_accardMeasure() except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second)
+
+cdef class JaccardMeasure(DissimilarityMeasure):
+	""" TODO:
+	"""
+	cdef _JaccardMeasure _this
+
+	def getDissimilarity(self, Graph G, Partition first, Partition second):
+		return self._this.getDissimilarity(dereference(G._this), first._this, second._this)
+
+
+
 cdef extern from "../cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
 		_Partition run(_Graph G)

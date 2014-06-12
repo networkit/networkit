@@ -1,6 +1,6 @@
 """ This module handles community detection, i.e. the discovery of densely connected groups in networks."""
 
-from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader
+from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader
 import os
 
 try:
@@ -42,11 +42,11 @@ def inspectCommunities(zeta, G):
 		["modularity", mod],
 	]
 	print(tabulate.tabulate(commProps))
-	
+
 
 def evalCommunityDetection(algo, G):
 	""" Evaluate a community detection algorithm """
-	
+
 	t = stopwatch.Timer()
 	zeta = algo.run(G)
 	t.stop()
@@ -63,7 +63,7 @@ def readCommunities(path, format="partition"):
 	readers =  {"default": PartitionReader(),
 		"edgelist-t1": EdgeListPartitionReader(1),
 		"edgelist-t0": EdgeListPartitionReader(0),
-		"edgelist-s1": EdgeListPartitionReader(1), 
+		"edgelist-s1": EdgeListPartitionReader(1),
 		"edgelist-s0": EdgeListPartitionReader(0),
 		}
 	# get reader
@@ -71,7 +71,7 @@ def readCommunities(path, format="partition"):
 		reader = readers[format]#(**kwargs)
 	except KeyError:
 		raise Exception("unrecognized format: {0}".format(format))
-	
+
 	# get proper file path
 	if ("~" in path):
 		path = os.path.expanduser(path)
@@ -90,7 +90,7 @@ def readCommunities(path, format="partition"):
 
 def writeCommunities(communities, path):
 	""" Write a partition into communities to a file"""
-	ClusteringWriter().write(communities, path)
+	PartitionWriter().write(communities, path)
 	print("wrote communities to: {0}".format(path))
 
 

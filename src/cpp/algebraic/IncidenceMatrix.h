@@ -18,7 +18,7 @@ class IncidenceMatrix {
 
 private:
 	Graph &graph;
-	double value(const node &node, const Edge &edge) const;
+	double value(const node &nd, const Edge &edge) const;
 
 public:
 	/**
