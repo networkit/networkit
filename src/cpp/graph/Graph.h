@@ -55,7 +55,8 @@ private:
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
 	// default values
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
-	// TODO directed case?
+
+	count getNextGraphId();
 
 	index indexInInEdgeArray(node u, node v) const;
 	index indexInOutEdgeArray(node u, node v) const;
@@ -63,6 +64,8 @@ private:
 public:
 
 	Graph(count n = 0, bool weighted = false, bool directed = false);
+
+	Graph(const Graph& G, bool weighted, bool directed);
 
 	Graph(const Graph& other) = default;
 

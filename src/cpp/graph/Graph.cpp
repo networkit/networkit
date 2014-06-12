@@ -20,11 +20,8 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	z(n),
 	t(0),
 
-	/*shows wether graph is weighted*/
-	weighted(weighted), 
-
-	/*shows wether graph is directed*/
-	directed(directed),
+	weighted(weighted), // indicates whether the graph is weighted or not
+	directed(directed), // indicates whether the graph is directed or not
 	exists(n, true),
 
 	/* for directed graphs inDeg stores the incoming degree of a node, for undirected graphs inDeg is not used*/
@@ -43,11 +40,133 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	outEdgeWeights(weighted ? n : 0) {
 
 	// set name from global id
-	static count nextGraphId = 1;
-	id = nextGraphId++;
+	id = getNextGraphId();
 	std::stringstream sstm;
 	sstm << "G#" << id;
 	name = sstm.str();
+}
+
+Graph::Graph(const Graph& G, bool weighted, bool directed) :
+	n(G.n),
+	m(G.m),
+	z(G.z),
+	t(G.t),
+	weighted(weighted),
+	directed(directed),
+	exists(G.exists),
+
+	// let the following be empty for the start, we fill them later
+	inDeg(0),
+	outDeg(0),
+	inEdges(0),
+	outEdges(0),
+	inEdgeWeights(0),
+	outEdgeWeights(0) {
+
+	// set name from global id
+	id = getNextGraphId();
+	std::stringstream sstm;
+	sstm << "G#" << id;
+	name = sstm.str();
+
+	if (G.isDirected() == directed) {
+		inDeg = G.inDeg; // G.inDeg might be empty (if G is undirected), but that's fine
+		outDeg = G.outDeg;
+		inEdges = G.inEdges; // G.inEdges might be empty (if G is undirected), but that's fine
+		outEdges = G.outEdges;
+
+		// copy weights if needed
+		if (weighted) {
+			if (G.isWeighted()) {
+				// just copy from G, again either both graphs are directed or both are undirected
+				inEdgeWeights = G.inEdgeWeights;
+				outEdgeWeights = G.outEdgeWeights;
+			} else {
+				// G has no weights, set defaultEdgeWeight for all edges
+				if (directed) {
+					inEdgeWeights.resize(z);
+					for (node u = 0; u < z; u++) {
+						inEdgeWeights[u] = std::vector<edgeweight>(G.inEdges[u].size(), defaultEdgeWeight);
+					}
+				}
+
+				outEdgeWeights.resize(z);
+				for (node u = 0; u < z; u++) {
+					outEdgeWeights[u] = std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
+				}
+			}
+		}
+	} else if (G.isDirected()) {
+		// G is directed, but we want an undirected graph
+		// so we need to combine the out and in stuff for every node
+		outDeg.resize(z);
+		outEdges.resize(z);
+		for (node u = 0; u < z; u++) {
+			outDeg[u] = G.inDeg[u] + G.outDeg[u];
+
+			// copy both out and in edges into our new outEdges
+			outEdges[u].reserve(G.outEdges[u].size() + G.inEdges[u].size());
+			outEdges[u].insert(outEdges[u].end(), G.outEdges[u].begin(), G.outEdges[u].end());
+			outEdges[u].insert(outEdges[u].end(), G.inEdges[u].begin(), G.inEdges[u].end());
+		}
+		if (weighted) {
+			if (G.isWeighted()) {
+				// same for weights
+				outEdgeWeights.resize(z);
+				for (node u = 0; u < z; u++) {
+					outEdgeWeights[u].reserve(G.outEdgeWeights[u].size() + G.inEdgeWeights[u].size());
+					outEdgeWeights[u].insert(outEdgeWeights[u].end(), G.outEdgeWeights[u].begin(), G.outEdgeWeights[u].end());
+					outEdgeWeights[u].insert(outEdgeWeights[u].end(), G.inEdgeWeights[u].begin(), G.inEdgeWeights[u].end());
+				}
+			} else {
+				// we are undirected, so no need to write anything into inEdgeWeights
+				outEdgeWeights.resize(z);
+				for (node u = 0; u < z; u++) {
+					outEdgeWeights[u] = std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
+				}
+			}
+		}
+	} else {
+		// G is not directed, but this copy should be
+		// generally we can can copy G.out stuff into our in stuff
+		inDeg = G.outDeg;
+		outDeg = G.outDeg;
+		inEdges = G.outEdges;
+		outEdges = G.outEdges;
+		if (weighted) {
+			if (G.isWeighted()) {
+				inEdgeWeights = G.outEdgeWeights;
+				outEdgeWeights = G.outEdgeWeights;
+			} else {
+				// initialize both inEdgeWeights and outEdgeWeights with the defaultEdgeWeight
+				inEdgeWeights.resize(z);
+				for (node u = 0; u < z; u++) {
+					inEdgeWeights[u] = std::vector<edgeweight>(inEdges[u].size(), defaultEdgeWeight);
+				}
+				outEdgeWeights.resize(z);
+				for (node u = 0; u < z; u++) {
+					outEdgeWeights[u] = std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
+				}	
+			}
+		}
+	}
+
+	// done we everything except attributes ...
+	if (G.edgeAttrDefaults_double.size() > 0) {
+		if (!directed && G.isDirected()) {
+			// problem, we did not save both direction for attributes, so combining out and in attributes for every edge
+			// would be kind of complicated :/
+			throw std::runtime_error("Copying edge attributes from directed to an undirected graph is not supported.");
+		} else {
+			// we have 3 cases here:
+			// 1) both G and this copy are undirected => copying is fine
+			// 2) both G and this copy are directed => copying is fine
+			// 3) G is undirected and this is directed => as we only save attributes for out edges, we are
+			// 	fine with copying as well
+			edgeMaps_double = G.edgeMaps_double;
+			edgeAttrDefaults_double = G.edgeAttrDefaults_double;
+		}
+	}
 }
 
 //only to be used by Cython
@@ -57,6 +176,11 @@ void Graph::stealFrom(Graph& input) {
 
 
 /** PRIVATE HELPERS **/
+
+count Graph::getNextGraphId() {
+	static count nextGraphId = 1;
+	return nextGraphId++;
+}
 
 index Graph::indexInInEdgeArray(node v, node u) const {
 	if (!directed) {
