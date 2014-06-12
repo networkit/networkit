@@ -26,14 +26,15 @@ public:
 	CNM();
 	virtual ~CNM();
 
-
 	Partition run(Graph &graph) override;
-
-	node mergeEdge(Graph &G, node u, node v ,bool discardSelfLoop);
 
 	std::string toString() const override {
 		return "CNM";
 	}
+
+protected:
+	static node mergeEdge(Graph &G, node u, node v ,bool discardSelfLoop);
+
 };
 
 }
