@@ -395,13 +395,14 @@ node Graph::randomNode() const {
 }
 
 node Graph::randomNeighbor(node u) const {
-	if (degree(u) == 0) {
+	if (outDeg[u] == 0) {
 		return none;
 	}
 
 	node v;
 	do {
-		v = Aux::Random::integer(outEdges[u].size() - 1);
+		index i = Aux::Random::integer(outEdges[u].size() - 1);
+		v = outEdges[u][i];
 	} while (v == none);
 
 	return v;

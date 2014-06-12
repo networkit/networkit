@@ -471,12 +471,50 @@ TEST_P(Graph4GTest, testVolume) {
 }
 
 TEST_P(Graph4GTest, testRandomNode) {
-	
-	
+	count n = 4;
+	count samples = 100000;
+	double maxAbsoluteError = 0.005;
+
+	Graph G = createParameterizedGraph(n);
+	std::vector<count> drawCounts(n, 0);
+	for (count i = 0; i < samples; i++) {
+		node x = G.randomNode();
+		drawCounts[x]++;
+	}
+	for (node v = 0; v < n; v++) {
+		double p = drawCounts[v] / (double) samples;
+		ASSERT_NEAR(1.0 / n, p, maxAbsoluteError);
+	}
 }
 
 TEST_P(Graph4GTest, testRandomNeighbor) {
-	// TODO
+	Graph G = createParameterizedGraph(10);
+	G.addEdge(2, 0);
+	G.addEdge(2, 1);
+	G.addEdge(2, 2);
+	G.addEdge(5, 6);
+
+	ASSERT_EQ(none, G.randomNeighbor(3));
+	ASSERT_EQ(6u, G.randomNeighbor(5));
+
+	if (G.isDirected()) {
+		ASSERT_EQ(none, G.randomNeighbor(1));
+	} else {
+		ASSERT_EQ(2u, G.randomNeighbor(1));
+	}
+
+	count nn = 3;
+	count samples = 100000;
+	double maxAbsoluteError = 0.005;
+	std::vector<count> drawCounts(nn, 0);
+	for (count i = 0; i < samples; i++) {
+		node x = G.randomNeighbor(2);
+		drawCounts[x]++;
+	}
+	for (node v = 0; v < nn; v++) {
+		double p = drawCounts[v] / (double) samples;
+		ASSERT_NEAR(1.0 / nn, p, maxAbsoluteError);
+	}
 }
 
 
@@ -485,26 +523,69 @@ TEST_P(Graph4GTest, testRandomNeighbor) {
 TEST_P(Graph4GTest, testAddEdge) {
 	Graph G = createParameterizedGraph(3);
 
+	// Graph without edges
 	ASSERT_EQ(0u, G.numberOfEdges());
-	ASSERT_FALSE(G.hasEdge(0, 0));
+	ASSERT_FALSE(G.hasEdge(0, 2));
 	ASSERT_FALSE(G.hasEdge(0, 1));
-	ASSERT_FALSE(G.hasEdge(2, 1));
+	ASSERT_FALSE(G.hasEdge(1, 2));
+	ASSERT_FALSE(G.hasEdge(2, 2));
+	ASSERT_EQ(nullWeight, G.weight(0, 2));
+	ASSERT_EQ(nullWeight, G.weight(0, 1));
+	ASSERT_EQ(nullWeight, G.weight(1, 2));
+	ASSERT_EQ(nullWeight, G.weight(2, 2));
 
-	G.addEdge(0, 1);
-
-	ASSERT_EQ(1u, G.numberOfEdges());
-	ASSERT_FALSE(G.hasEdge(0, 0));
-	ASSERT_TRUE(G.hasEdge(0, 1));
-	ASSERT_FALSE(G.hasEdge(2, 1));
-
-	G.addEdge(0, 0);
-
+	// Graph with 2 normal edges
+	G.addEdge(0, 1, 4.51);
+	G.addEdge(1, 2, 2.39);
 	ASSERT_EQ(2u, G.numberOfEdges());
-	ASSERT_TRUE(G.hasEdge(0, 0));
+	ASSERT_FALSE(G.hasEdge(0, 2)); // was never added
 	ASSERT_TRUE(G.hasEdge(0, 1));
-	ASSERT_FALSE(G.hasEdge(2, 1));
+	ASSERT_TRUE(G.hasEdge(1, 2));
+	ASSERT_FALSE(G.hasEdge(2, 2)); // will be added later
 
-	// TODO weights?
+	// check weights
+	if (G.isWeighted()) {
+		ASSERT_EQ(4.51, G.weight(0, 1));
+		ASSERT_EQ(2.39, G.weight(1, 2));
+	} else {
+		ASSERT_EQ(defaultEdgeWeight, G.weight(0, 1));
+		ASSERT_EQ(defaultEdgeWeight, G.weight(1, 2));
+	}
+
+	if (G.isDirected()) {
+		ASSERT_FALSE(G.hasEdge(1, 0));
+		ASSERT_FALSE(G.hasEdge(2, 1));
+
+		// add edge in the other direction
+		// note: bidirectional edges are not supported, so both edges have different weights
+		G.addEdge(2, 1, 6.23);
+		ASSERT_TRUE(G.hasEdge(2, 1));
+		if (G.isWeighted()) {
+			ASSERT_EQ(2.39, G.weight(1, 2));
+			ASSERT_EQ(6.23, G.weight(2, 1));
+		} else {
+			ASSERT_EQ(defaultEdgeWeight, G.weight(2, 1));
+		}
+	} else {
+		ASSERT_TRUE(G.hasEdge(1, 0));
+		ASSERT_TRUE(G.hasEdge(2, 1));
+		if (G.isWeighted()) {
+			ASSERT_EQ(4.51, G.weight(1, 0));
+			ASSERT_EQ(2.39, G.weight(2, 1));
+		} else {
+			ASSERT_EQ(defaultEdgeWeight, G.weight(1, 0));
+			ASSERT_EQ(defaultEdgeWeight, G.weight(2, 1));
+		}	
+	}
+
+	// add self loop
+	G.addEdge(2, 2, 0.72);
+	ASSERT_TRUE(G.hasEdge(2, 2));
+	if (G.isWeighted()) {
+		ASSERT_EQ(0.72, G.weight(2, 2));
+	} else {
+		ASSERT_EQ(defaultEdgeWeight, G.weight(2, 2));
+	}
 }
 
 TEST_P(Graph4GTest, testRemoveEdge) {
@@ -531,7 +612,7 @@ TEST_P(Graph4GTest, testHasEdge) {
 	for (node u = 0; u < this->Ghouse.upperNodeIdBound(); u++) {
 		for (node v = 0; v < this->Ghouse.upperNodeIdBound(); v++) {
 			auto edge = std::make_pair(u, v);
-			auto edgeReverse = std::make_pair(v, u);
+				auto edgeReverse = std::make_pair(v, u);
 			bool hasEdge = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), edge) != this->houseEdgesOut.end();
 			bool hasEdgeReverse = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), edgeReverse) != this->houseEdgesOut.end();
 			if (this->Ghouse.isDirected()) {
@@ -544,7 +625,7 @@ TEST_P(Graph4GTest, testHasEdge) {
 }
 
 TEST_P(Graph4GTest, testRandomEdge) {
-	// TODO
+
 }
 
 
