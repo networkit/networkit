@@ -55,7 +55,8 @@ private:
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; // contains edge maps (u, v) -> double
 	// default values
 	std::vector<double> edgeAttrDefaults_double; // stores default value for edgeMaps_double[i] at index i
-	// TODO directed case?
+
+	count getNextGraphId();
 
 	index indexInInEdgeArray(node u, node v) const;
 	index indexInOutEdgeArray(node u, node v) const;
@@ -63,6 +64,8 @@ private:
 public:
 
 	Graph(count n = 0, bool weighted = false, bool directed = false);
+
+	Graph(const Graph& G, bool weighted, bool directed);
 
 	Graph(const Graph& other) = default;
 
@@ -201,15 +204,6 @@ public:
 	 * Check if directed edge {u,v} exists.
 	 */
 	bool hasEdge(node u, node v) const;
-
-	/**
-	 * Merges edge {u,v} to become a supernode. Edges to u and v are
-	 * rewired, multiple edges merged and their weights added.
-	 * The vertex weights of @a u and @a v are added.
-	 * A self-loop is only created if @a discardSelfLoop is set to false.
-	 *
-	 * @return New node that has been created if u != v. Otherwise none.
-	 */
 
 	/**
 	 * @return Random edge
