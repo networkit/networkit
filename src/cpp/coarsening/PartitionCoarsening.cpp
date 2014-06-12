@@ -18,16 +18,17 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const G
 	Aux::Timer timer;
 	timer.start();
 
-	Graph Ginit(0, true); // initial graph containing supernodes
 	std::vector<node> subsetToSuperNode(zeta.upperBound(), none); // there is one supernode for each cluster
 
 	// populate map subset -> supernode
+	node nextNodeId = 0;
 	G.forNodes([&](node v){
 		index c = zeta.subsetOf(v);
 		if (subsetToSuperNode[c] == none) {
-			subsetToSuperNode[c] = Ginit.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
+			subsetToSuperNode[c] = nextNodeId++;
 		}
 	});
+	Graph Ginit(nextNodeId, true); // initial graph containing supernodes
 
 	index z = G.upperNodeIdBound();
 	std::vector<node> nodeToSuperNode(z);
