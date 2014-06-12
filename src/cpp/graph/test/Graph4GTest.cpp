@@ -69,6 +69,7 @@ void Graph4GTest::SetUp() {
 		Ghouse.addEdge(u, v, ew);
 		
 		Ahouse[u][v] = ew;
+	
 		if (!Ghouse.isDirected()) {
 			Ahouse[v][u] = ew;
 		}
@@ -76,6 +77,7 @@ void Graph4GTest::SetUp() {
 		if (Ghouse.isWeighted()) {
 			ew += 1.0;
 		}
+
 	}
 }
 
@@ -469,7 +471,8 @@ TEST_P(Graph4GTest, testVolume) {
 }
 
 TEST_P(Graph4GTest, testRandomNode) {
-	// TODO
+	
+	
 }
 
 TEST_P(Graph4GTest, testRandomNeighbor) {
@@ -604,7 +607,15 @@ TEST_P(Graph4GTest, testNumberOfEdges) {
 }
 
 TEST_P(Graph4GTest, testNumberOfSelfLoops) {
-	// TODO
+	
+	Graph G = createParameterizedGraph(3);
+	G.addEdge(0,0);
+	G.addEdge(0,1);
+	G.addEdge(1,1);
+	G.addEdge(1,2);
+
+	
+	ASSERT_EQ(G.numberOfSelfLoops(), 2);
 }
 
 TEST_P(Graph4GTest, testUpperNodeIdBound) {
@@ -873,9 +884,128 @@ TEST_P(Graph4GTest, testForEdgesOf) {
 	}
 }
 
-// template<typename L> void forWeightedEdgesOf(node u, L handle) const;
+TEST_P(Graph4GTest, testForWeightedEdgesOf) {
 
-// template<typename L> void forInNeighborsOf(node u, L handle) const;
+	count m = 0;
+	std::vector<int> visited(this->m_house, 0);
+	double sumOfWeights = 0;
+
+	this->Ghouse.forNodes([&](node u) {
+		this->Ghouse.forWeightedEdgesOf(u, [&](node v, node w, edgeweight ew) {
+			// edges should be v to w, so if we iterate over edges from u, u should be equal v
+			EXPECT_EQ(u, v);
+			sumOfWeights+= ew;
+			auto e = std::make_pair(v, w);
+			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
+			if (!isDirectedParameterized() && it == this->houseEdgesOut.end()) {
+				auto e2 = std::make_pair(w, v);
+				it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e2);
+			}
+
+			EXPECT_TRUE(it != this->houseEdgesOut.end());
+		
+			// find index in edge array
+			int i = std::distance(this->houseEdgesOut.begin(), it);
+			if (isDirectedParameterized()) {
+				// make sure edge was not visited before (would be visited twice)
+				EXPECT_EQ(0, visited[i]);
+			}
+			
+			// mark edge as visited
+			visited[i]++;
+			m++;
+		});
+	});
+
+	if (isDirectedParameterized()&& !isWeightedParameterized()) {
+		// we iterated over all outgoing edges once
+		EXPECT_EQ(this->m_house, m);
+		EXPECT_EQ(sumOfWeights, m);
+		for (auto c : visited) {
+			EXPECT_EQ(1, c);
+		}
+	}if( isWeightedParameterized() && !isDirectedParameterized() ) {
+		// we iterated over all edges in both directions
+		EXPECT_EQ(2 * this->m_house, m);
+		EXPECT_EQ(sumOfWeights, 72);
+		for (auto c : visited) {
+			EXPECT_EQ(2, c);
+		}
+	} if( isWeightedParameterized() && isDirectedParameterized()) {
+
+		EXPECT_EQ(sumOfWeights, 36);
+		EXPECT_EQ(this->m_house, m);
+		for (auto c : visited) {
+			EXPECT_EQ(1, c);
+		}
+	}if ( !isWeightedParameterized() && !isDirectedParameterized()) {
+
+		EXPECT_EQ(sumOfWeights, m);
+		EXPECT_EQ(2 * this->m_house, m);
+		for (auto c : visited) {
+			EXPECT_EQ(2, c);
+		}
+	}
+}
+
+TEST_P(Graph4GTest, testForInNeighborsOf) {
+
+	std::vector<int> visited(this->n_house, 0);
+	this->Ghouse.forInNeighborsOf(3, [&](node v){
+		
+		visited[v] = 1;
+	});
+	if( isDirectedParameterized()){
+
+		EXPECT_EQ(visited[2], 0);
+		EXPECT_EQ(visited[4], 1);
+		EXPECT_EQ(visited[1], 0);
+	}else{
+
+		EXPECT_EQ(visited[2], 1);
+		EXPECT_EQ(visited[4], 1);
+		EXPECT_EQ(visited[1], 1);
+	}
+
+}
+
+/*
+TEST_P(Graph4GTest, forWeightedInNeighborsOf){
+
+	std::vector<int> visited(this->n_house, 0);
+	this->Ghouse.forWeightedInNeighborsOf(3,[&](node v){
+		
+		visited[v] = 1;
+	});
+	if( isDirectedParameterized()&& !isWeightedParameterized()){
+
+		EXPECT_EQ(visited[2], 0);
+		EXPECT_EQ(visited[4], 1);
+		EXPECT_EQ(visited[1], 0);
+
+	}if(!isDirectedParameterized()&& !isWeightedParameterized()){
+
+		EXPECT_EQ(visited[2], 1);
+		EXPECT_EQ(visited[4], 1);
+		EXPECT_EQ(visited[1], 1);
+
+	}if(!isDirectedParameterized()&& isWeightedParameterized()){
+	
+		EXPECT_EQ(visited[2], 7);
+		EXPECT_EQ(visited[4], 8);
+		EXPECT_EQ(visited[1], 6);
+	
+	}if( isDirectedParameterized()&& isWeightedParameterized()){
+	
+		EXPECT_EQ(visited[2], 0);
+		EXPECT_EQ(visited[4], 8);
+		EXPECT_EQ(visited[1], 0);
+	
+	}
+
+}*/
+
+
 
 // template<typename L> void forWeightedInNeighborsOf(node u, L handle) const;
 
