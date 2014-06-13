@@ -6,6 +6,7 @@
  */
 
 #include <sstream>
+#include <random>
 
 #include "Graph.h"
 #include "../auxiliary/Log.h"
@@ -510,13 +511,33 @@ bool Graph::hasEdge(node u, node v) const {
 	return indexInOutEdgeArray(u, v) != none;
 }
 
-std::pair<node, node> Graph::randomEdge() const {
-	// TODO this is relativly fast, but not a uniform random edge!
-	node u;
-	do {
-		u = randomNode();
-	} while (outDeg[u] == 0);
-	node v = randomNeighbor(u);
+std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
+	node u, v; // we will return edge (u, v)
+
+	if (uniformDistribution) {
+		std::default_random_engine gen{std::random_device{}()};
+		std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
+		if (directed) {
+			u = distribution(gen);
+			assert(outEdges[u].size() > 0); // should always be the case as  without edges should have probability 0
+			v = randomNeighbor(u);
+		} else {
+			// self-loops which appear only once in the outEdge arrays
+			// easiest way it to ignore edges (u, v) with u > v
+			do {
+				u = distribution(gen);
+				assert(outEdges[u].size() > 0); // should always be the case as  without edges should have probability 0
+				v = randomNeighbor(u);
+			} while (u > v);
+		}
+	} else {
+		// fast way, but not a uniform random edge!
+		do {
+			u = randomNode();
+		} while (outDeg[u] == 0);
+		v = randomNeighbor(u);
+	}
+
 	return std::make_pair(u, v);
 }
 
@@ -620,25 +641,19 @@ double Graph::attribute_double(node u, node v, int attrId) const {
 }
 
 void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
-	// TODO directed?
+	assert (attrId < edgeMaps_double.size());
+	index vi = indexInOutEdgeArray(u, v);
+	if (vi == none) {
+		throw std::runtime_error("Edge does not exist. Can't set double attribute.");
+	}	
 
-	if (u == v) {
-		// self-loop case
-		index ui = indexInOutEdgeArray(u, u);
-		if (ui != none) {
-			edgeMaps_double.at(attrId)[u][ui] = attr;
-		} else {
-			throw std::runtime_error("Edge does not exist. Can't set double attribute.");
-		}
-	} else {
-		index vi = indexInOutEdgeArray(u, v);
-		index ui = indexInInEdgeArray(v, u);
-		if ((vi != none) && (ui != none)) {
-			edgeMaps_double[attrId][u][vi] = attr;
-			edgeMaps_double[attrId][v][ui] = attr;
-		} else {
-			throw std::runtime_error("Edge does not exist. Can't set double attribute.");
-		}
+	edgeMaps_double[attrId][u][vi] = attr;
+	if (directed) {
+		// we don't have to do anything as we do not save attributes for incoming edges
+	} else if (u != v) { // we can ignore self-loops
+		index ui = indexInOutEdgeArray(v, u);
+		assert (ui != none);
+		edgeMaps_double[attrId][v][ui] = attr;
 	}
 }
 

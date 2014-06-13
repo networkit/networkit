@@ -216,9 +216,12 @@ public:
 	bool hasEdge(node u, node v) const;
 
 	/**
-	 * @return Random edge
+	 * Returns a random edge. By default a random node u is chosen and then some random neighbor v. So the probability of choosing (u, v) highly
+	 * depends on the degree of u.
+	 * Setting uniformDistribution to true, will give you a real uniform distributed edge, but will be very slow. So only use uniformDistribution
+	 * for single calls outside of any loops.
 	 */
-	std::pair<node, node> randomEdge() const;
+	std::pair<node, node> randomEdge(bool uniformDistribution = false) const;
 
 	/** GLOBAL PROPERTIES **/
 
