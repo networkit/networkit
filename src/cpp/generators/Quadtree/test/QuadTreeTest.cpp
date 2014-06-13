@@ -45,9 +45,15 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	EXPECT_LE(closeToOne.size(), n);
 
 	for (index i = 0; i < closeToOne.size(); i++) {
+		//no corrupt indices
 		ASSERT_LE(closeToOne[i], n);
+
+		//close results should actually be close
 		EXPECT_LE(HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[closeToOne[i]], radii[closeToOne[i]]), R);
 		for (index j = 0; j < i; j++) {
+			/**
+			 * results are unique
+			 */
 			EXPECT_NE(closeToOne[i], closeToOne[j]);
 		}
 	}
@@ -56,7 +62,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 		if (HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
 			bool found = false;
 			QuadNode<index> responsibleNode = * getRoot(quad).getAppropriateLeaf(angles[i], radii[i]);
-			//ASSERT_TRUE(responsibleNode);
+
 			TRACE("Getting lower bound for responsible node");
 			double bound = responsibleNode.distanceLowerBound(angles[comparison], radii[comparison]);
 			double actualDistance = HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[i], radii[i]);
@@ -71,13 +77,14 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 			}
 			EXPECT_TRUE(found) << "dist(" << i << "," << comparison << ") = "
 					<< HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[i], radii[i]) << " < " << R;
-			if (!found) {
+			if (!found || actualDistance < bound) {
 				DEBUG("angle: ", angles[i], ", radius: ", radii[i], ", leftAngle: ", responsibleNode.getLeftAngle(),
 						", rightAngle: ", responsibleNode.getRightAngle(), ", minR: ", responsibleNode.getMinR(), ", maxR:", responsibleNode.getMaxR());
-
+				DEBUG("dist(", comparison, ", leftMin)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMinR()));
+				DEBUG("dist(", comparison, ", leftMax)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMaxR()));
+				DEBUG("dist(", comparison, ", rightMin)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMinR()));
+				DEBUG("dist(", comparison, ", rightMax)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMaxR()));
 			}
-			//<< "Node " << i << " at (" << angles[i] << "," << radii[i] << ") is close to node "
-			//		<< comparison << " at (" << angles[comparison] << "," << radii[comparison] << "), but doesn't show up in list of size " << closeToOne.size();
 		}
 	}
 }
