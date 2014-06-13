@@ -61,6 +61,7 @@ Graph RmatGenerator::generate() {
 		G.increaseWeight(drawnEdge.first, drawnEdge.second, defaultEdgeWeight);
 	}
 
+	G.shrinkToFit();
 	return G;
 }
 

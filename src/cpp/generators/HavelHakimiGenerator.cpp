@@ -112,6 +112,7 @@ Graph HavelHakimiGenerator::generate() {
 			maxDeficit--;
 		}
 
+		G.shrinkToFit();
 		return G;
 	}
 
