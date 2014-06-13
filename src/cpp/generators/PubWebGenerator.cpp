@@ -197,16 +197,17 @@ void PubWebGenerator::chooseClusterSizes() {
 
 Graph PubWebGenerator::generate() {
 	// init
-	Graph g(0, true);
+	Graph G(0, true);
 
 	// add vertices according to PubWeb distribution
 	chooseDenseAreaSizes();
 	chooseClusterSizes();
-	fillDenseAreas(g);
-	spreadRemainingNodes(g);
-	determineNeighbors(g);
+	fillDenseAreas(G);
+	spreadRemainingNodes(G);
+	determineNeighbors(G);
 
-	return g;
+	G.shrinkToFit();
+	return G;
 }
 
 
