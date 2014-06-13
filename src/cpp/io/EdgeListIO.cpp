@@ -108,6 +108,7 @@ Graph EdgeListIO::read(const std::string& path) {
 
     file.close();
 
+    G.shrinkToFit();
     return G;
 }
 

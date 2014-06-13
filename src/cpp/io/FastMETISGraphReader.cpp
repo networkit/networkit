@@ -369,7 +369,7 @@ Graph FastMETISGraphReader::read(const std::string& path) {
 		}
 	}
 
-
+	G.shrinkToFit();
 	return G;
 }
 
