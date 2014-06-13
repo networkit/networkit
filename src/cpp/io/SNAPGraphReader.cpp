@@ -118,6 +118,7 @@ Graph SNAPGraphReader::read(const std::string& path) {
 	DEBUG("read ",i," lines and added ",G.numberOfEdges()," edges");
 	file.close();
 
+	G.shrinkToFit();
 	return G;
 }
 

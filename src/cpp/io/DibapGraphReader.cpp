@@ -161,6 +161,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 		}
 	}
 
+	graph.shrinkToFit();
 	return graph;
 }
 
