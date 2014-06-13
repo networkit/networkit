@@ -49,7 +49,7 @@ void ApproxBetweenness2::run() {
 			for (node p : sssp->getPredecessors(t)) {
 				// TODO: make weighting factor configurable
 				// (sssp->distance(p) / sssp->distance(t))
-				dependency[p] += (sssp->numberOfPaths(p) / sssp->numberOfPaths(t)) * (1 + dependency[t]);
+				dependency[p] += (double(sssp->numberOfPaths(p)) / sssp->numberOfPaths(t)) * (1 + dependency[t]);
 			}
 
 			scoreData[t] += dependency[t];
@@ -58,9 +58,9 @@ void ApproxBetweenness2::run() {
 	} // end for sampled nodes
 
 	// extrapolate
-	G.forNodes([&](node v) {
-		scoreData[v] = scoreData[v] * (G.numberOfNodes() / nSamples);
-	});
+	//G.forNodes([&](node v) {
+	//	scoreData[v] = scoreData[v] * (G.numberOfNodes() / double(nSamples));
+	//});
 
 }
 
