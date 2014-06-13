@@ -629,8 +629,8 @@ TEST_P(Graph4GTest, testRandomEdge) {
 
 	count n = 4;
 	count m = 5;
-	count samples = 50000;
-	double maxAbsoluteError = 0.005;
+	count samples = 10000;
+	double maxAbsoluteError = 0.01;
 
 	Graph G = createParameterizedGraph(n);
 	G.addEdge(0, 1); // 0 * 1 = 0
