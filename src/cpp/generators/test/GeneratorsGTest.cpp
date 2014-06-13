@@ -362,7 +362,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 	double R = acosh((double)n/(2*M_PI)+1)*stretch;
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
-	HyperbolicSpace::fillPoints(&angles, &radii, alpha, stretch);
+	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
 	for (index i = 0; i < n; i++) {
 		EXPECT_GE(angles[i], 0);
 		EXPECT_LT(angles[i], 2*M_PI);

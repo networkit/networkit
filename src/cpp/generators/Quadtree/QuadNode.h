@@ -114,12 +114,12 @@ public:
 		}
 
 		if (nearestR == maxR) {
-			coshNR = coshMinR;
-			sinhNR = sinhMinR;
-			TRACE(R, ">=", maxR);
-		} else if (nearestR == minR) {
 			coshNR = coshMaxR;
 			sinhNR = sinhMaxR;
+			TRACE(R, ">=", maxR);
+		} else if (nearestR == minR) {
+			coshNR = coshMinR;
+			sinhNR = sinhMinR;
 			TRACE(R, "<=", minR);
 		} else {
 			coshNR = cosh(nearestR);
