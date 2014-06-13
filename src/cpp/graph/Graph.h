@@ -651,7 +651,7 @@ public:
 	/**
 	 * Return list of nodes
 	 */
-	std::vector<node> nodes();
+	std::vector<node> nodes() const;
 
 	/**
 	 * Return list of edges as node pairs.
