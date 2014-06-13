@@ -62,6 +62,15 @@ void ApproxBetweenness2::run() {
 	//	scoreData[v] = scoreData[v] * (G.numberOfNodes() / double(nSamples));
 	//});
 
+	if (normalized) {
+		// divide by the number of possible pairs
+		count n = G.numberOfNodes();
+		count pairs = (n-2) * (n-1);
+		G.parallelForNodes([&](node u){
+			scoreData[u] = scoreData[u] / pairs;
+		});
+	}
+
 }
 
 
