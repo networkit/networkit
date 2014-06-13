@@ -688,15 +688,16 @@ TEST_P(Graph4GTest, testNumberOfEdges) {
 }
 
 TEST_P(Graph4GTest, testNumberOfSelfLoops) {
-	
 	Graph G = createParameterizedGraph(3);
-	G.addEdge(0,0);
-	G.addEdge(0,1);
-	G.addEdge(1,1);
-	G.addEdge(1,2);
-
-	
-	ASSERT_EQ(G.numberOfSelfLoops(), 2);
+	G.addEdge(0, 1);
+	ASSERT_EQ(0u, G.numberOfSelfLoops());
+	G.addEdge(0, 0);
+	ASSERT_EQ(1u, G.numberOfSelfLoops());
+	G.addEdge(1, 1);
+	G.addEdge(1, 2);
+	ASSERT_EQ(2u, G.numberOfSelfLoops());
+	G.removeEdge(0, 0);
+	ASSERT_EQ(1u, G.numberOfSelfLoops());
 }
 
 TEST_P(Graph4GTest, testUpperNodeIdBound) {
@@ -842,7 +843,19 @@ TEST_P(Graph4GTest, testTotalEdgeWeight) {
 
 /** Collections **/
 
-// std::vector<node> nodes() const;
+TEST_P(Graph4GTest, testNodes) {
+	Graph G = createParameterizedGraph(3);
+	G.addNode();
+	G.removeNode(2);
+	G.addNode();
+	auto nodes = G.nodes();
+
+	ASSERT_EQ(4u, nodes.size());
+	ASSERT_EQ(0u, nodes[0]);
+	ASSERT_EQ(1u, nodes[1]);
+	ASSERT_EQ(3u, nodes[2]);
+	ASSERT_EQ(4u, nodes[3]);
+}
 
 // std::vector<std::pair<node, node> > edges() const;
 
@@ -998,28 +1011,28 @@ TEST_P(Graph4GTest, testForWeightedEdgesOf) {
 		});
 	});
 
-	if (isDirectedParameterized()&& !isWeightedParameterized()) {
+	if (isDirectedParameterized() && !isWeightedParameterized()) {
 		// we iterated over all outgoing edges once
 		EXPECT_EQ(this->m_house, m);
 		EXPECT_EQ(sumOfWeights, m);
 		for (auto c : visited) {
 			EXPECT_EQ(1, c);
 		}
-	}if( isWeightedParameterized() && !isDirectedParameterized() ) {
+	} else if (isWeightedParameterized() && !isDirectedParameterized()) {
 		// we iterated over all edges in both directions
 		EXPECT_EQ(2 * this->m_house, m);
 		EXPECT_EQ(sumOfWeights, 72);
 		for (auto c : visited) {
 			EXPECT_EQ(2, c);
 		}
-	} if( isWeightedParameterized() && isDirectedParameterized()) {
+	} else if (isWeightedParameterized() && isDirectedParameterized()) {
 
 		EXPECT_EQ(sumOfWeights, 36);
 		EXPECT_EQ(this->m_house, m);
 		for (auto c : visited) {
 			EXPECT_EQ(1, c);
 		}
-	}if ( !isWeightedParameterized() && !isDirectedParameterized()) {
+	} else if(!isWeightedParameterized() && !isDirectedParameterized()) {
 
 		EXPECT_EQ(sumOfWeights, m);
 		EXPECT_EQ(2 * this->m_house, m);
@@ -1030,7 +1043,6 @@ TEST_P(Graph4GTest, testForWeightedEdgesOf) {
 }
 
 TEST_P(Graph4GTest, testForInNeighborsOf) {
-
 	std::vector<int> visited(this->n_house, 0);
 	this->Ghouse.forInNeighborsOf(3, [&](node v){
 		
