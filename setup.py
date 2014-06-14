@@ -28,7 +28,7 @@ if shutil.which("scons") is None:
 # get the optional arguments for the compilation
 parser = ArgumentParser()
 parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
-parser.add_argument("-o", "--optimize", dest="optimize", help="specify build type: O=optimize, D=debug, P=profiling")
+parser.add_argument("-o", "--optimize", dest="optimize", help="specify build type: Opt=optimize, Dbg=debug, Pro=profiling")
 (options,args) = parser.parse_known_args()
 
 # set optional arguments to parsed ones or the default ones
@@ -39,7 +39,7 @@ else:
 if options.optimize != None:
 	optimize = options.optimize
 else:
-	optimize = "O"
+	optimize = "Opt"
 
 # make sure sys.argv is correct for setuptools
 args.reverse()
