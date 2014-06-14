@@ -69,17 +69,18 @@ The call to SCons has the following options:
 
 where `<level>` can be
 
-- `D` 	debug
-- `O`	optimized
-- `P`	profiling
+- `Dbg` 	debug
+- `Opt`		optimized
+- `Pro`		profiling
 
 and `<target>` can be
 
 - `Core`				build NetworKit as a library, required by the Python shell
 - `Tests`				build executable for the unit tests
+- `Lib`					build NetworKit as a library and create symbolic links
 
 For example, to build NetworKit as an optimized library, run
-	scons --optimize=O --target=Core
+	scons --optimize=Opt --target=Core
 
 To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
 
@@ -162,6 +163,19 @@ Your default browser should open a web interface named "IPython Dashboard". You 
 	ipython3 notebook --pylab inline --notebook-dir=Doc/Notebooks
 
 The notebook appears in the list and you can start it by clicking on it.
+
+
+NetworKit as a library
+----------------------
+
+It is also possible to use NetworKit as a library. Therefore, choose the target `Lib` when compiling NetworKit. The include directives in your C++-application look like the following
+
+	#include <NetworKit/graph/Graph.h>
+
+NetworKit is a symlink to the directory `src/cpp`, so the directory structure from the repository is valid. To compile your application, you need to add the paths for the header files and the location of the library. There is a simple source file to demonstrate this. Feel free to compile `LibDemo.cpp` as follows:
+
+	g++ -o LibDemo -std=c++11 -I/path/to/repository 
+		-L/path/to/repository LibDemo.cpp -lNetworKit -fopenmp
 
 
 Contribute
