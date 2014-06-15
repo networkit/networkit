@@ -8,7 +8,35 @@
 #ifndef NOGTEST
 
 #include "Graph4GTest.h"
+#include <tbb/tbb.h>
+#include <tbb/concurrent_vector.h>
 
+//TODO
+	/*void timeStep() { t++; }
+	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); } 
+	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); } 
+	float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
+	float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
+	void initCoordinates() { coordinates.init(z); }
+	template<typename L> void parallelForNodes(L handle) const;
+	template<typename L> void forNodesInRandomOrder(L handle) const;
+	template<typename L> void balancedParallelForNodes(L handle) const;
+	template<typename L> void parallelForNodePairs(L handle) const;
+	template<typename L> void parallelForEdges(L handle) const;
+	template<typename L> void forWeightedEdges(L handle) const;
+	template<typename L> void parallelForWeightedEdges(L handle) const;
+	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
+	template<typename L> void forNeighborsOf(node u, L handle) const;
+	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
+	template<typename L> void forWeightedInNeighborsOf(node u, L handle) const;
+	template<typename L> void forInEdgesOf(node u, L handle) const;
+	template<typename L> void forWeightedInEdgesOf(node u, L handle) const;
+	template<typename L> double parallelSumForNodes(L handle) const;
+	template<typename L> double parallelSumForWeightedEdges(L handle) const;
+	template<typename L> void BFSEdgesfrom(node r, L handle) const;
+	template<typename L> void DFSfrom(node r, L handle) const;
+	template<typename L> void DFSEdgesfrom(node r, L handle) const;
+	*/
 namespace NetworKit {
 
 INSTANTIATE_TEST_CASE_P(InstantiationName, Graph4GTest, testing::Values(
@@ -838,7 +866,35 @@ TEST_P(Graph4GTest, increaseWeight) {
 	}	
 }
 
-// TODO
+TEST_P(Graph4GTest, testEdgeAttributes) {
+	count n = 5;
+	Graph G(n);
+
+	int attrId = G.addEdgeAttribute_double(0.0);
+
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u, v);
+	});
+
+	G.forEdges([&](node u, node v){
+		EXPECT_EQ(0.0, G.attribute_double(u, v, attrId));
+	});
+
+	G.forEdges([&](node u, node v){
+		G.setAttribute_double(u, v, attrId, 42.0);
+	});
+
+	G.forEdges([&](node u, node v){
+		EXPECT_EQ(42.0, G.attribute_double(u, v, attrId));
+	});
+
+	node v = G.addNode();
+	G.addEdge(v, 0);
+
+	EXPECT_EQ(0.0, G.attribute_double(v, 0, attrId));
+
+}
+// done!
 // int addEdgeAttribute_double(double defaultValue);
 
 // double attribute_double(node u, node v, int attrId) const;
@@ -881,10 +937,48 @@ TEST_P(Graph4GTest, testNodes) {
 	ASSERT_EQ(4u, nodes[3]);
 }
 
-// std::vector<std::pair<node, node> > edges() const;
+TEST_P(Graph4GTest, testNeighbors) {
+	Graph G = this->Ghouse;
+	auto neighbors = G.neighbors(1);	
+	ASSERT_EQ(0, neighbors[0]);
+	ASSERT_EQ(4, neighbors[1]);
 
-// std::vector<node> neighbors(node u) const;
 
+
+}
+
+TEST_P(Graph4GTest, testEdges){
+
+	Graph G = this->Ghouse;
+	auto edges = G.edges();
+	
+	if(G.isDirected()){
+	
+		ASSERT_EQ(std::make_pair(0ul,2ul), edges[0]);
+		ASSERT_EQ(std::make_pair(1ul,0ul), edges[1]);
+		ASSERT_EQ(std::make_pair(1ul,4ul), edges[2]);
+		ASSERT_EQ(std::make_pair(2ul,1ul), edges[3]);
+		ASSERT_EQ(std::make_pair(2ul,4ul), edges[4]);
+		ASSERT_EQ(std::make_pair(3ul,1ul), edges[5]);
+		ASSERT_EQ(std::make_pair(3ul,2ul), edges[6]);
+		ASSERT_EQ(std::make_pair(4ul,3ul), edges[7]);
+	}else{
+		ASSERT_EQ(std::make_pair(1ul,0ul), edges[0]);
+		ASSERT_EQ(std::make_pair(2ul,0ul), edges[1]);
+		ASSERT_EQ(std::make_pair(2ul,1ul), edges[2]);
+		ASSERT_EQ(std::make_pair(3ul,1ul), edges[3]);
+		ASSERT_EQ(std::make_pair(3ul,2ul), edges[4]);
+		ASSERT_EQ(std::make_pair(4ul,1ul), edges[5]);
+		ASSERT_EQ(std::make_pair(4ul,2ul), edges[6]);
+		ASSERT_EQ(std::make_pair(4ul,3ul), edges[7]);
+
+	}
+
+
+
+
+
+}
 
 /** NODE ITERATORS **/
 
@@ -903,9 +997,45 @@ TEST_P(Graph4GTest, testForNodes) {
 	}
 }
 
-// template<typename L> void parallelForNodes(L handle) const;
+//TODO
+/*TEST_P(Graph4GTest, testParallelForNodes) {
 
-// template<typename C, typename L> void forNodesWhile(C condition, L handle) const;
+	Graph G = this->Ghouse;
+	tbb::concurrent_vector<node> visited;
+	std::vector<bool> visit(G.numberOfNodes(), false);
+	G.parallelForNodes([&](node u){
+
+		visited.push_back(u);
+	});
+	
+	for(int i = 0; i < G.numberOfNodes(); i++)
+	{
+		if(!visit[visited[i]]){
+			visit[visited[i]] = true;	
+		}else{
+			visit[visited[i]] = false;
+		}
+	}
+	for( bool b: visit){
+		ASSERT_TRUE(b);
+	}
+
+}*/
+
+TEST_P(Graph4GTest, forNodesWhile) {
+
+	count n = 100;
+	Graph G(n);
+
+	count nc = 0;
+	G.forNodesWhile([&](){ return (nc < n); }, [&](node u){
+		nc += 1;
+	});
+
+	ASSERT_EQ(n, nc);
+}
+
+
 
 // template<typename L> void forNodesInRandomOrder(L handle) const;
 
@@ -940,19 +1070,137 @@ TEST_P(Graph4GTest, testForNodePairs) {
 
 /** EDGE ITERATORS **/
 
-// template<typename L> void forEdges(L handle) const;
+TEST_P(Graph4GTest, testForEdges){
 
-// template<typename L> void parallelForEdges(L handle) const;
+	Graph G = this->Ghouse;
+	auto edges = G.edges();
+	std::vector<std::pair<node, node> > edgescopy;
+	G.forEdges([&](node u, node v){
+		edgescopy.push_back(std::make_pair(u,v));
+	});
 
-// template<typename L> void forWeightedEdges(L handle) const;
+	for(int i=0; i< G.numberOfEdges(); i++)
+	{
+		ASSERT_EQ(edges[i], edgescopy[i]);
+	}
+}
 
-// template<typename L> void parallelForWeightedEdges(L handle) const;
+TEST_P(Graph4GTest, testForWeightedEdges){
+	
+	count n = 4;
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u, v, 1.0);
+	});
+
+	edgeweight weightSum = 0.0;
+	G.forWeightedEdges([&](node u, node v, node w){
+		weightSum += w;
+	});
+	
+	if(!G.isDirected()){
+		ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in undirected case";
+	}else{
+		ASSERT_EQ(12.0, weightSum) << "sum of edge weights should be 12 in directed case";
+	}
+}
+
+TEST_P(Graph4GTest, testParallelForWeightedEdges){
+	
+	count n = 4;
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u, v, 1.0);
+	});
+
+	edgeweight weightSum = 0.0;
+	G.parallelForWeightedEdges([&](node u, node v, node w){
+		#pragma omp atomic
+		weightSum += w;
+	});
+	
+	if(!G.isDirected()){
+		ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in undirected case";
+	}else{
+		ASSERT_EQ(12.0, weightSum) << "sum of edge weights should be 12 in directed case";
+	}
+}
+
+TEST_P(Graph4GTest, testParallelForEdges){
+
+	count n = 4;
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u, v);
+	});
+
+	edgeweight weightSum = 0.0;
+	G.parallelForEdges([&](node u, node v){
+		#pragma omp atomic
+		weightSum += 1;
+	});
+	
+	if(!G.isDirected()){
+		ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in undirected case";
+	}else{
+		ASSERT_EQ(12.0, weightSum) << "sum of edge weights should be 12 in directed case";
+	}
+
+}
 
 // template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
 
 /** NEIGHBORHOOD ITERATORS **/
 
 // template<typename L> void forNeighborsOf(node u, L handle) const;
+
+TEST_P(Graph4GTest, testForNeighborsOf){
+
+	Graph G = this->Ghouse;
+	std::vector<node> visited;
+	G.forNeighborsOf(3, [&](node u){
+		
+		visited.push_back(u);
+	});
+	ASSERT_EQ(visited[0], 1);
+	ASSERT_EQ(visited[1], 2);
+	
+}
+
+TEST_P(Graph4GTest, testForWeightedNeighborsOf){
+
+	Graph G = this->Ghouse;
+	std::vector<std::pair<node, edgeweight> > visited;
+	G.forWeightedNeighborsOf(3, [&](node u, edgeweight ew){
+		
+		visited.push_back(std::make_pair(u, ew));
+	});
+	if(G.isWeighted()&&G.isDirected()){
+		ASSERT_EQ(visited[0].first, 1);
+		ASSERT_EQ(visited[1].first, 2);
+		ASSERT_EQ(visited[0].second, 6);
+		ASSERT_EQ(visited[1].second, 7);
+	} if(G.isWeighted()&& !G.isDirected()){
+		ASSERT_EQ(visited[0].first, 1);
+		ASSERT_EQ(visited[1].first, 2);
+		ASSERT_EQ(visited[2].first, 4);
+		ASSERT_EQ(visited[0].second, 6);
+		ASSERT_EQ(visited[1].second, 7);
+	}if(!G.isWeighted()&&G.isDirected()){
+		ASSERT_EQ(visited[0].first, 1);
+		ASSERT_EQ(visited[1].first, 2);
+		ASSERT_EQ(visited[0].second, defaultEdgeWeight);
+		ASSERT_EQ(visited[1].second, defaultEdgeWeight);
+	}if(!G.isWeighted() && !G.isDirected()){
+		ASSERT_EQ(visited[0].first, 1);
+		ASSERT_EQ(visited[1].first, 2);
+		ASSERT_EQ(visited[2].first, 4);
+		ASSERT_EQ(visited[0].second, defaultEdgeWeight);
+		ASSERT_EQ(visited[1].second, defaultEdgeWeight);
+		
+	}
+	
+}
 
 // template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
 
@@ -1086,8 +1334,8 @@ TEST_P(Graph4GTest, testForInNeighborsOf) {
 
 }
 
-/*
-TEST_P(Graph4GTest, forWeightedInNeighborsOf){
+
+/*TEST_P(Graph4GTest, testForWeightedInNeighborsOf){
 
 	std::vector<int> visited(this->n_house, 0);
 	this->Ghouse.forWeightedInNeighborsOf(3,[&](node v){
