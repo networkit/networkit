@@ -7,6 +7,8 @@
 
 #ifndef NOGTEST
 
+#include <algorithm>
+
 #include "GraphGTest.h"
 
 namespace NetworKit {
@@ -601,23 +603,38 @@ TEST_P(GraphGTest, testAddEdge) {
 }
 
 TEST_P(GraphGTest, testRemoveEdge) {
+	double epsilon = 1e-6;
 	Graph G = createParameterizedGraph(3);
 
-	G.addEdge(0, 1);
+	edgeweight ewBefore = G.totalEdgeWeight();
+
+	G.addEdge(0, 1, 3.14);
+
+	if (G.isWeighted()) {
+		ASSERT_NEAR(ewBefore + 3.14, G.totalEdgeWeight(), epsilon);
+	} else {
+		ASSERT_NEAR(ewBefore + defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+	}
+
 	G.addEdge(0, 0);
 
 	ASSERT_EQ(2u, G.numberOfEdges());
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_TRUE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
+
+	ewBefore = G.totalEdgeWeight();
 	G.removeEdge(0, 1);
+	if (G.isWeighted()) {
+		ASSERT_NEAR(ewBefore - 3.14, G.totalEdgeWeight(), epsilon);
+	} else {
+		ASSERT_NEAR(ewBefore - defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+	}
 
 	ASSERT_EQ(1u, G.numberOfEdges());
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_FALSE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
-
-	// TODO weights?
 }
 
 TEST_P(GraphGTest, testHasEdge) {
@@ -923,48 +940,52 @@ TEST_P(GraphGTest, testNodes) {
 	}
 }
 
-// TODO_Klara use nice way (see testNodes, not defining the order in neighbors) and consider testing directed graphs that only outgoing edges are tested and for incoming graphs also the 'incoming' edges
 TEST_P(GraphGTest, testNeighbors) {
-	Graph G = this->Ghouse;
-	auto neighbors = G.neighbors(1);	
-	ASSERT_EQ(0u, neighbors[0]);
-	ASSERT_EQ(4u, neighbors[1]);
+	Graph G = createParameterizedGraph(5);
+	G.forNodes([&](node v) {
+		auto neighbors = G.neighbors(v);
+		ASSERT_EQ(0u, neighbors.size());
+	});
 
+	auto neighbors = this->Ghouse.neighbors(1);
+	std::sort(neighbors.begin(), neighbors.end());
 
-
+	if (this->Ghouse.isDirected()) {
+		ASSERT_EQ(2u, neighbors.size());
+		ASSERT_EQ(0u, neighbors[0]);
+		ASSERT_EQ(4u, neighbors[1]);
+	} else {
+		ASSERT_EQ(4u, neighbors.size());
+		ASSERT_EQ(0u, neighbors[0]);
+		ASSERT_EQ(2u, neighbors[1]);
+		ASSERT_EQ(3u, neighbors[2]);
+		ASSERT_EQ(4u, neighbors[3]);
+	}
 }
 
-// TODO_Klara use nicer way (not defining the order of edges), for undirected cases the edge (u, v) could also be (v, u) in the the edges array
 TEST_P(GraphGTest, testEdges) {
-	Graph G = this->Ghouse;
-	auto edges = G.edges();
+	// add self-loop
+	this->Ghouse.addEdge(3, 3);
+
+	auto isCorrectEdge = [&](node u, node v) {
+		if (u == 3 && v == 3) {
+			return true;
+		}
+		auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), std::make_pair(u, v));
+		if (it != this->houseEdgesOut.end()) {
+			return true;
+		} else if (!this->Ghouse.isDirected()) {
+			it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), std::make_pair(v, u));
+			return it != this->houseEdgesOut.end();
+		}
+		return false;
+	};
 	
-	// if (G.isDirected()){
-	
-	// 	ASSERT_EQ(std::make_pair(0ul,2ul), edges[0]);
-	// 	ASSERT_EQ(std::make_pair(1ul,0ul), edges[1]);
-	// 	ASSERT_EQ(std::make_pair(1ul,4ul), edges[2]);
-	// 	ASSERT_EQ(std::make_pair(2ul,1ul), edges[3]);
-	// 	ASSERT_EQ(std::make_pair(2ul,4ul), edges[4]);
-	// 	ASSERT_EQ(std::make_pair(3ul,1ul), edges[5]);
-	// 	ASSERT_EQ(std::make_pair(3ul,2ul), edges[6]);
-	// 	ASSERT_EQ(std::make_pair(4ul,3ul), edges[7]);
-	// }else{
-	// 	ASSERT_EQ(std::make_pair(1ul,0ul), edges[0]);
-	// 	ASSERT_EQ(std::make_pair(2ul,0ul), edges[1]);
-	// 	ASSERT_EQ(std::make_pair(2ul,1ul), edges[2]);
-	// 	ASSERT_EQ(std::make_pair(3ul,1ul), edges[3]);
-	// 	ASSERT_EQ(std::make_pair(3ul,2ul), edges[4]);
-	// 	ASSERT_EQ(std::make_pair(4ul,1ul), edges[5]);
-	// 	ASSERT_EQ(std::make_pair(4ul,2ul), edges[6]);
-	// 	ASSERT_EQ(std::make_pair(4ul,3ul), edges[7]);
-
-	// }
-
-
-
-
-
+	auto edges = this->Ghouse.edges();
+	ASSERT_EQ(this->m_house + 1, edges.size()); // plus self-loop
+	for (auto e : edges) {
+		ASSERT_TRUE(isCorrectEdge(e.first, e.second)) << "(" << e.first << ", " << e.second << ") is in edge array, but is not an edge of Ghouse";
+	}
 }
 
 /** NODE ITERATORS **/
