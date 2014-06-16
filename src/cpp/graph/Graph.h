@@ -501,6 +501,11 @@ public:
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
 	 */
 	template<typename L> double parallelSumForNodes(L handle) const;
+	
+	/**
+	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
+	 */
+	template<typename L> double parallelSumForEdges(L handle) const;
 
 	/**
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
@@ -840,6 +845,74 @@ double Graph::parallelSumForNodes(L handle) const {
 		if (exists[v]) {
 			sum += handle(v);
 		}
+	}
+	return sum;
+}
+
+template<typename L>
+double Graph::parallelSumForEdges(L handle) const {
+	return parallelSumForWeightedEdges([&handle](node u, node v, edgeweight ew) { return handle(u, v); });
+}
+
+template<typename L>
+double Graph::parallelSumForWeightedEdges(L handle) const {
+	double sum = 0.0;
+	switch (weighted + 2 * directed) {
+		case 0: // unweighted, undirected
+			#pragma omp parallel for reduction(+:sum)
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					// undirected, do not iterate over edges twice
+					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+					if (u >= v) {
+						edgeweight ew = defaultEdgeWeight;
+						sum += handle(u, v, ew);
+					}
+				}
+			}
+			break;
+		
+		case 1: // weighted,   undirected
+			#pragma omp parallel for reduction(+:sum)
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					// undirected, do not iterate over edges twice
+					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+					if (u >= v) {
+						edgeweight ew = outEdgeWeights[u][i];
+						sum +=handle(u, v, ew);
+					}
+				}
+			}
+			break;
+
+		case 2: // unweighted, directed
+			#pragma omp parallel for reduction(+:sum)
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					if (v != none) {
+						edgeweight ew = defaultEdgeWeight;
+						sum +=handle(u, v, ew);
+					}
+				}
+			}
+			break;
+
+		case 3: // weighted,   directed
+			#pragma omp parallel for reduction(+:sum)
+			for (node u = 0; u < z; ++u) {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					node v = outEdges[u][i];
+					if (v != none) {
+						edgeweight ew = outEdgeWeights[u][i];
+						sum +=handle(u, v, ew);
+					}
+				}
+			}
+			break;
 	}
 	return sum;
 }
