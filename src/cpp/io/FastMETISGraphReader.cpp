@@ -6,6 +6,7 @@
  */
 
 #include "FastMETISGraphReader.h"
+#include "../auxiliary/Log.h"
 
 #include <fstream>
 
@@ -368,7 +369,7 @@ Graph FastMETISGraphReader::read(const std::string& path) {
 		}
 	}
 
-
+	G.shrinkToFit();
 	return G;
 }
 

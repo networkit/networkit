@@ -9,6 +9,10 @@
 #define CNM_H_
 
 #include "CommunityDetectionAlgorithm.h"
+#include <utility>
+#include <stdexcept>
+#include <utility>
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -22,12 +26,15 @@ public:
 	CNM();
 	virtual ~CNM();
 
-
 	Partition run(Graph &graph) override;
 
 	std::string toString() const override {
 		return "CNM";
 	}
+
+protected:
+	static node mergeEdge(Graph &G, node u, node v ,bool discardSelfLoop);
+
 };
 
 }

@@ -54,8 +54,6 @@ Graph METISGraphReader::read(const std::string& path) {
 				DEBUG(p, "% ");
 			}
 		}
-		INFO("\n[DONE]\n");
-		return G;
 	} else {
 		while (parser.hasNext()) {
 
@@ -76,9 +74,11 @@ Graph METISGraphReader::read(const std::string& path) {
 				DEBUG(p, "% ");
 			}
 		}
-		INFO("\n[DONE]\n");
-		return G;
 	}
+
+	INFO("\n[DONE]\n");
+	G.shrinkToFit();
+	return G;
 }
 
 } /* namespace NetworKit */
