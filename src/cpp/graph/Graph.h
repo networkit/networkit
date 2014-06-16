@@ -832,6 +832,8 @@ void Graph::forWeightedInEdgesOf(node u, L handle) const {
 		}
 	} else {
 		// use outEdges
+		// the following dose the same as calling forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v, u, ew); });
+		// but I think it is better to write it out here
 		if (weighted) {
 			for (index i = 0; i < outEdges[u].size(); i++) {
 				node v = outEdges[u][i];
