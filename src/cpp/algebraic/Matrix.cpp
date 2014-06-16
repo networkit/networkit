@@ -186,7 +186,13 @@ Matrix Matrix::operator*(const Matrix &other) const {
 		});
 
 		spa.gather([&](node row, node column, double value){
-			result.graph.addEdge(row, column, value);
+			if (!result.graph.hasEdge(row, column)) {
+				result.graph.addEdge(row, column, value);
+			} else {
+				if (result.graph.weight(row, column) != value) {
+					throw std::runtime_error("Result of matrix multiplication is non-symmetric. This is currently unsupported.");
+				}
+			}
 		});
 
 		spa.increaseRow();
