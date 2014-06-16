@@ -8,27 +8,13 @@
 #ifndef NOGTEST
 
 #include "Graph4GTest.h"
-#include <tbb/tbb.h>
-#include <tbb/concurrent_vector.h>
 
 //TODO
-	/*void timeStep() { t++; }
-	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); } 
-	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); } 
-	float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
-	float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
-	void initCoordinates() { coordinates.init(z); }
-	template<typename L> void parallelForNodes(L handle) const;
+
+	/*
 	template<typename L> void forNodesInRandomOrder(L handle) const;
 	template<typename L> void balancedParallelForNodes(L handle) const;
 	template<typename L> void parallelForNodePairs(L handle) const;
-	template<typename L> void parallelForEdges(L handle) const;
-	template<typename L> void forWeightedEdges(L handle) const;
-	template<typename L> void parallelForWeightedEdges(L handle) const;
-	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
-	template<typename L> void forNeighborsOf(node u, L handle) const;
-	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
-	template<typename L> void forWeightedInNeighborsOf(node u, L handle) const;
 	template<typename L> void forInEdgesOf(node u, L handle) const;
 	template<typename L> void forWeightedInEdgesOf(node u, L handle) const;
 	template<typename L> double parallelSumForNodes(L handle) const;
@@ -998,13 +984,14 @@ TEST_P(Graph4GTest, testForNodes) {
 }
 
 //TODO
-/*TEST_P(Graph4GTest, testParallelForNodes) {
+TEST_P(Graph4GTest, testParallelForNodes) {
 
 	Graph G = this->Ghouse;
-	tbb::concurrent_vector<node> visited;
+	std::vector<node> visited;
 	std::vector<bool> visit(G.numberOfNodes(), false);
 	G.parallelForNodes([&](node u){
-
+		
+		#pragma omp critical
 		visited.push_back(u);
 	});
 	
@@ -1020,7 +1007,7 @@ TEST_P(Graph4GTest, testForNodes) {
 		ASSERT_TRUE(b);
 	}
 
-}*/
+}
 
 TEST_P(Graph4GTest, forNodesWhile) {
 
@@ -1152,7 +1139,6 @@ TEST_P(Graph4GTest, testParallelForEdges){
 
 /** NEIGHBORHOOD ITERATORS **/
 
-// template<typename L> void forNeighborsOf(node u, L handle) const;
 
 TEST_P(Graph4GTest, testForNeighborsOf){
 
@@ -1202,7 +1188,6 @@ TEST_P(Graph4GTest, testForWeightedNeighborsOf){
 	
 }
 
-// template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
 
 TEST_P(Graph4GTest, testForEdgesOf) {
 	count m = 0;
@@ -1335,24 +1320,24 @@ TEST_P(Graph4GTest, testForInNeighborsOf) {
 }
 
 
-/*TEST_P(Graph4GTest, testForWeightedInNeighborsOf){
+TEST_P(Graph4GTest, testForWeightedInNeighborsOf){
 
 	std::vector<int> visited(this->n_house, 0);
-	this->Ghouse.forWeightedInNeighborsOf(3,[&](node v){
+	this->Ghouse.forWeightedInNeighborsOf(3,[&](node v, edgeweight ew){
 		
-		visited[v] = 1;
+		visited[v] = ew;
 	});
 	if( isDirectedParameterized()&& !isWeightedParameterized()){
 
 		EXPECT_EQ(visited[2], 0);
-		EXPECT_EQ(visited[4], 1);
+		EXPECT_EQ(visited[4], defaultEdgeWeight);
 		EXPECT_EQ(visited[1], 0);
 
 	}if(!isDirectedParameterized()&& !isWeightedParameterized()){
 
-		EXPECT_EQ(visited[2], 1);
-		EXPECT_EQ(visited[4], 1);
-		EXPECT_EQ(visited[1], 1);
+		EXPECT_EQ(visited[2], defaultEdgeWeight);
+		EXPECT_EQ(visited[4], defaultEdgeWeight);
+		EXPECT_EQ(visited[1], defaultEdgeWeight);
 
 	}if(!isDirectedParameterized()&& isWeightedParameterized()){
 	
@@ -1368,15 +1353,65 @@ TEST_P(Graph4GTest, testForInNeighborsOf) {
 	
 	}
 
-}*/
+}
+
+TEST_P(Graph4GTest, forInEdgesOf) {
+
+	std::vector<int> visited(this->n_house, 0);
+	this->Ghouse.forInEdgesOf(3, [&](node u, node v){
+		
+		visited[v] = 1;
+	});
+	if( isDirectedParameterized()){
+
+		EXPECT_EQ(visited[2], 0);
+		EXPECT_EQ(visited[4], 1);
+		EXPECT_EQ(visited[1], 0);
+	}else{
+
+		EXPECT_EQ(visited[2], 1);
+		EXPECT_EQ(visited[4], 1);
+		EXPECT_EQ(visited[1], 1);
+	}
 
 
 
-// template<typename L> void forWeightedInNeighborsOf(node u, L handle) const;
+}
 
-// template<typename L> void forInEdgesOf(node u, L handle) const;
+TEST_P(Graph4GTest, testForWeightedInEdgesOf){
 
-// template<typename L> void forWeightedInEdgesOf(node u, L handle) const;
+	std::vector<int> visited(this->n_house, 0);
+	this->Ghouse.forWeightedInEdgesOf(3,[&](node u, node v, edgeweight ew){
+		
+		visited[v] = ew;
+	});
+	if( isDirectedParameterized()&& !isWeightedParameterized()){
+
+		EXPECT_EQ(visited[2], 0);
+		EXPECT_EQ(visited[4], defaultEdgeWeight);
+		EXPECT_EQ(visited[1], 0);
+
+	}if(!isDirectedParameterized()&& !isWeightedParameterized()){
+
+		EXPECT_EQ(visited[2], defaultEdgeWeight);
+		EXPECT_EQ(visited[4], defaultEdgeWeight);
+		EXPECT_EQ(visited[1], defaultEdgeWeight);
+
+	}if(!isDirectedParameterized()&& isWeightedParameterized()){
+	
+		EXPECT_EQ(visited[2], 7);
+		EXPECT_EQ(visited[4], 8);
+		EXPECT_EQ(visited[1], 6);
+	
+	}if( isDirectedParameterized()&& isWeightedParameterized()){
+	
+		EXPECT_EQ(visited[2], 0);
+		EXPECT_EQ(visited[4], 8);
+		EXPECT_EQ(visited[1], 0);
+	
+	}
+
+}
 
 
 /** REDUCTION ITERATORS **/
@@ -1389,7 +1424,6 @@ TEST_P(Graph4GTest, testForInNeighborsOf) {
 /** GRAPH SEARCHES **/
 
 TEST_P(Graph4GTest, testBFSfrom) {
-	if (isDirectedParameterized()) {
 		std::vector<count> visitedOrder(5, none);
 		index i = 0;
 		this->Ghouse.BFSfrom(3, [&](node v) {
@@ -1401,19 +1435,26 @@ TEST_P(Graph4GTest, testBFSfrom) {
 			EXPECT_TRUE(l != none);
 		}
 
-		// root on level 0
-		EXPECT_EQ(0u, visitedOrder[3]);
+		if(isDirectedParameterized()){
+			// root on level 0
+			EXPECT_EQ(0u, visitedOrder[3]);
 
-		// level 1
-		EXPECT_TRUE( (visitedOrder[1] == 1) ^ (visitedOrder[1] == 2) );
-		EXPECT_TRUE( (visitedOrder[2] == 1) ^ (visitedOrder[2] == 2) );
+			// level 1
+			EXPECT_TRUE( (visitedOrder[1] == 1) ^ (visitedOrder[1] == 2) );
+			EXPECT_TRUE( (visitedOrder[2] == 1) ^ (visitedOrder[2] == 2) );
 
-		// level 2
-		EXPECT_TRUE( (visitedOrder[0] == 3) ^ (visitedOrder[0] == 4) );
-		EXPECT_TRUE( (visitedOrder[4] == 3) ^ (visitedOrder[4] == 4) );
-	} else {
-		// TODO
-	}
+			// level 2
+			EXPECT_TRUE( (visitedOrder[0] == 3) ^ (visitedOrder[0] == 4) );
+			EXPECT_TRUE( (visitedOrder[4] == 3) ^ (visitedOrder[4] == 4) );
+		} else {
+			EXPECT_EQ(0u, visitedOrder[3]); 
+			EXPECT_TRUE( (visitedOrder[1] == 1) ^ (visitedOrder[1] == 2) ^ (visitedOrder[1] == 3 ));
+			EXPECT_TRUE( (visitedOrder[2] == 1) ^ (visitedOrder[2] == 2) ^ (visitedOrder[2] == 3));
+			EXPECT_TRUE( (visitedOrder[4] == 1) ^ (visitedOrder[4] == 2) ^ (visitedOrder[4] == 3 ));
+			EXPECT_TRUE( (visitedOrder[0] == 4) );
+
+		
+		}
 }
 
 TEST_P(Graph4GTest, testDFSfrom) {
@@ -1445,7 +1486,31 @@ TEST_P(Graph4GTest, testDFSfrom) {
 		// level 4
 		EXPECT_TRUE( (visitedOrder[2] == 4) ^ (visitedOrder[4] == 4) ^ (visitedOrder[0] == 4) );
 	} else {
-		// TODO
+
+		std::vector<count> visitedOrder(5, none);
+		Graph G(5);
+		G.addEdge(0,1);
+		G.addEdge(0,2);
+		G.addEdge(2,3);
+		G.addEdge(3,4);
+		index i = 0;
+		G.DFSfrom(0, [&](node v) {
+			visitedOrder[v] = i++;
+		});
+		for (count l : visitedOrder) {
+			EXPECT_TRUE(l != none);
+		}
+		EXPECT_EQ(0u, visitedOrder[0]);
+
+		EXPECT_TRUE((visitedOrder[1] == 1) ^ (visitedOrder[2] == 1) );
+
+		EXPECT_TRUE((visitedOrder[2] == 2) ^ (visitedOrder[3] == 2) );
+
+		EXPECT_TRUE((visitedOrder[3] == 3) ^ (visitedOrder[4] == 3) );
+
+		EXPECT_TRUE((visitedOrder[4] == 4) ^ (visitedOrder[1] == 4) );
+		
+		
 	}
 }
 
