@@ -9,19 +9,6 @@
 
 #include "Graph4GTest.h"
 
-// TODO_Klara: remove
-	/*
-	template<typename L> void forNodesInRandomOrder(L handle) const;
-	template<typename L> void balancedParallelForNodes(L handle) const;
-	template<typename L> void parallelForNodePairs(L handle) const;
-	template<typename L> void forInEdgesOf(node u, L handle) const;
-	template<typename L> void forWeightedInEdgesOf(node u, L handle) const;
-	template<typename L> double parallelSumForNodes(L handle) const;
-	template<typename L> double parallelSumForWeightedEdges(L handle) const;
-	template<typename L> void BFSEdgesfrom(node r, L handle) const;
-	template<typename L> void DFSfrom(node r, L handle) const;
-	template<typename L> void DFSEdgesfrom(node r, L handle) const;
-	*/
 namespace NetworKit {
 
 INSTANTIATE_TEST_CASE_P(InstantiationName, Graph4GTest, testing::Values(
@@ -936,48 +923,46 @@ TEST_P(Graph4GTest, testNodes) {
 	}
 }
 
-// TODO_Klara use nice way (see testNodes, not defining the order in neighbors) and consider testing directed graphs that only outgoing edges are tested and for incoming graphs also the 'incoming' edges
 TEST_P(Graph4GTest, testNeighbors) {
-	Graph G = this->Ghouse;
-	auto neighbors = G.neighbors(1);	
-	ASSERT_EQ(0u, neighbors[0]);
-	ASSERT_EQ(4u, neighbors[1]);
-
+	auto nodes = this->Ghouse.neighbors(1);
+	auto containsNode = [&nodes](node v) {
+		return std::find(nodes.begin(), nodes.end(), v) != nodes.end();
+	};
+	
+	ASSERT_TRUE(containsNode(0));
+	ASSERT_TRUE(containsNode(4));
 
 
 }
 
-// TODO_Klara use nicer way (not defining the order of edges), for undirected cases the edge (u, v) could also be (v, u) in the the edges array
 TEST_P(Graph4GTest, testEdges){
-	Graph G = this->Ghouse;
-	auto edges = G.edges();
+	auto edges = this->Ghouse.edges();
+
+	auto contains = [&edges](std::pair<node , node > e) {
+		return std::find(edges.begin(), edges.end(), e) != edges.end();
+	};
+
+	if(this->Ghouse.isDirected()){
+		ASSERT_TRUE(contains(std::make_pair(0ul,2ul)));
+	 	ASSERT_TRUE(contains(std::make_pair(1ul,0ul)));
+		ASSERT_TRUE(contains(std::make_pair(1ul,4ul)));
+	 	ASSERT_TRUE(contains(std::make_pair(2ul,1ul)));
+	 	ASSERT_TRUE(contains(std::make_pair(2ul,4ul)));
+	 	ASSERT_TRUE(contains(std::make_pair(3ul,1ul)));
+	 	ASSERT_TRUE(contains(std::make_pair(3ul,2ul)));
+	 	ASSERT_TRUE(contains(std::make_pair(4ul,3ul)));
 	
-	// if (G.isDirected()){
+	}else{
 	
-	// 	ASSERT_EQ(std::make_pair(0ul,2ul), edges[0]);
-	// 	ASSERT_EQ(std::make_pair(1ul,0ul), edges[1]);
-	// 	ASSERT_EQ(std::make_pair(1ul,4ul), edges[2]);
-	// 	ASSERT_EQ(std::make_pair(2ul,1ul), edges[3]);
-	// 	ASSERT_EQ(std::make_pair(2ul,4ul), edges[4]);
-	// 	ASSERT_EQ(std::make_pair(3ul,1ul), edges[5]);
-	// 	ASSERT_EQ(std::make_pair(3ul,2ul), edges[6]);
-	// 	ASSERT_EQ(std::make_pair(4ul,3ul), edges[7]);
-	// }else{
-	// 	ASSERT_EQ(std::make_pair(1ul,0ul), edges[0]);
-	// 	ASSERT_EQ(std::make_pair(2ul,0ul), edges[1]);
-	// 	ASSERT_EQ(std::make_pair(2ul,1ul), edges[2]);
-	// 	ASSERT_EQ(std::make_pair(3ul,1ul), edges[3]);
-	// 	ASSERT_EQ(std::make_pair(3ul,2ul), edges[4]);
-	// 	ASSERT_EQ(std::make_pair(4ul,1ul), edges[5]);
-	// 	ASSERT_EQ(std::make_pair(4ul,2ul), edges[6]);
-	// 	ASSERT_EQ(std::make_pair(4ul,3ul), edges[7]);
-
-	// }
-
-
-
-
-
+	 	ASSERT_TRUE(contains( std::make_pair(1ul,0ul) )^ ( contains(std::make_pair(0ul,1ul)) ) );
+		ASSERT_TRUE(contains( std::make_pair(2ul,0ul) )^ (contains(std::make_pair(0ul,2ul)) ) );
+		ASSERT_TRUE(contains( std::make_pair(2ul,1ul) )^ (contains(std::make_pair(1ul,2ul)) ) );
+		ASSERT_TRUE(contains( std::make_pair(3ul,1ul) )^ (contains(std::make_pair(1ul,3ul)) ) );
+		ASSERT_TRUE(contains( std::make_pair(3ul,2ul) )^ (contains(std::make_pair(2ul,3ul)) ) );
+		ASSERT_TRUE(contains( std::make_pair(4ul,1ul) )^ (contains(std::make_pair(1ul,4ul)) ) );
+		ASSERT_TRUE(contains( std::make_pair(4ul,2ul) )^ (contains(std::make_pair(2ul,4ul)) ) );
+		ASSERT_TRUE(contains( std::make_pair(4ul,3ul) )^ (contains(std::make_pair(3ul,4ul)) ) );
+	}
 }
 
 /** NODE ITERATORS **/
@@ -997,19 +982,16 @@ TEST_P(Graph4GTest, testForNodes) {
 	}
 }
 
-//TODO
 TEST_P(Graph4GTest, testParallelForNodes) {
-
-	Graph G = this->Ghouse;
 	std::vector<node> visited;
-	std::vector<bool> visit(G.numberOfNodes(), false);
-	G.parallelForNodes([&](node u){
+	std::vector<bool> visit(this->Ghouse.numberOfNodes(), false);
+	this->Ghouse.parallelForNodes([&](node u){
 		
 		#pragma omp critical
 		visited.push_back(u);
 	});
 	
-	for(node i = 0; i < G.numberOfNodes(); i++)
+	for(node i = 0; i < this->Ghouse.numberOfNodes(); i++)
 	{
 		if(!visit[visited[i]]){
 			visit[visited[i]] = true;	
@@ -1099,15 +1081,13 @@ TEST_P(Graph4GTest, testForNodePairs) {
 /** EDGE ITERATORS **/
 
 TEST_P(Graph4GTest, testForEdges){
-
-	Graph G = this->Ghouse;
-	auto edges = G.edges();
+	auto edges = this->Ghouse.edges();
 	std::vector<std::pair<node, node> > edgescopy;
-	G.forEdges([&](node u, node v){
+	this->Ghouse.forEdges([&](node u, node v){
 		edgescopy.push_back(std::make_pair(u,v));
 	});
 
-	for(index i=0; i< G.numberOfEdges(); i++)
+	for(index i=0; i< this->Ghouse.numberOfEdges(); i++)
 	{
 		ASSERT_EQ(edges[i], edgescopy[i]);
 	}
@@ -1182,46 +1162,49 @@ TEST_P(Graph4GTest, testParallelForEdges){
 
 
 TEST_P(Graph4GTest, testForNeighborsOf){
-	// TODO_Klara again distinguish directed/undirected
-	Graph G = this->Ghouse;
-	std::vector<node> visited;
-	G.forNeighborsOf(3, [&](node u){
-		visited.push_back(u);
+	std::vector<bool> visited(this->Ghouse.numberOfNodes());
+	this->Ghouse.forNeighborsOf(3, [&](node u){
+		visited[u]=true;
 	});
-	ASSERT_EQ(visited[0], 1);// TODO_Klara order: expected value, actual value
-	ASSERT_EQ(visited[1], 2);
-	
+	if(this->Ghouse.isDirected()){
+		ASSERT_TRUE(visited[1]);
+		ASSERT_TRUE(visited[2]);
+	}else{
+		ASSERT_TRUE(visited[1]);
+		ASSERT_TRUE(visited[2]);
+		ASSERT_TRUE(visited[4]);
+	}
 }
 
 TEST_P(Graph4GTest, testForWeightedNeighborsOf){
-	Graph G = this->Ghouse; // TODO_Klara why copy?
-	std::vector<std::pair<node, edgeweight> > visited;
-	G.forWeightedNeighborsOf(3, [&](node u, edgeweight ew){
-		visited.push_back(std::make_pair(u, ew));
+	std::vector<edgeweight > visited(this->Ghouse.numberOfNodes(), 0);
+	this->Ghouse.forWeightedNeighborsOf(3, [&](node u, edgeweight ew){
+		visited[u]= ew;
 	});
-	// TODO_Klara see weightedDegree for more readable way to check the four versions
-	if(G.isWeighted()&&G.isDirected()){
-		ASSERT_EQ(visited[0].first, 1);
-		ASSERT_EQ(visited[1].first, 2);
-		ASSERT_EQ(visited[0].second, 6);
-		ASSERT_EQ(visited[1].second, 7);
-	} if(G.isWeighted()&& !G.isDirected()){
-		ASSERT_EQ(visited[0].first, 1);
-		ASSERT_EQ(visited[1].first, 2);
-		ASSERT_EQ(visited[2].first, 4);
-		ASSERT_EQ(visited[0].second, 6);
-		ASSERT_EQ(visited[1].second, 7);
-	}if(!G.isWeighted()&&G.isDirected()){
-		ASSERT_EQ(visited[0].first, 1);
-		ASSERT_EQ(visited[1].first, 2);
-		ASSERT_EQ(visited[0].second, defaultEdgeWeight);
-		ASSERT_EQ(visited[1].second, defaultEdgeWeight);
-	}if(!G.isWeighted() && !G.isDirected()){
-		ASSERT_EQ(visited[0].first, 1);
-		ASSERT_EQ(visited[1].first, 2);
-		ASSERT_EQ(visited[2].first, 4);
-		ASSERT_EQ(visited[0].second, defaultEdgeWeight);
-		ASSERT_EQ(visited[1].second, defaultEdgeWeight);
+
+	//WeightedDirected Graph
+	if(this->Ghouse.isWeighted() && this->Ghouse.isDirected()) {
+		ASSERT_EQ(6, visited[1]);
+		ASSERT_EQ(7, visited[2]);
+	} 
+
+	//WeightedUndirected Graph
+	if(this->Ghouse.isWeighted() && !this->Ghouse.isDirected()) {
+		ASSERT_EQ(6, visited[1]);
+		ASSERT_EQ(7, visited[2]);
+		ASSERT_EQ(8, visited[4]);
+	}
+
+	//UnweightedDirected Graph
+	if(!this->Ghouse.isWeighted() && this->Ghouse.isDirected() ){
+		ASSERT_EQ(defaultEdgeWeight, visited[1]);
+		ASSERT_EQ(defaultEdgeWeight, visited[2]);
+	}
+	//UnweightedUndirected Graph 
+	if(!this->Ghouse.isWeighted() && !this->Ghouse.isDirected() ){
+		ASSERT_EQ(defaultEdgeWeight, visited[1]);
+		ASSERT_EQ(defaultEdgeWeight, visited[2]);
+		ASSERT_EQ(defaultEdgeWeight, visited[4]);
 		
 	}
 	
@@ -1352,13 +1335,13 @@ TEST_P(Graph4GTest, testForInNeighborsOf) {
 		visited[v] = 1;
 	});
 	if (isDirectedParameterized()) {
-		EXPECT_EQ(visited[2], 0); // TODO_Klara wrong order expected/actual
-		EXPECT_EQ(visited[4], 1);
-		EXPECT_EQ(visited[1], 0);
+		EXPECT_EQ(0, visited[2]); 
+		EXPECT_EQ(1, visited[4]);
+		EXPECT_EQ(0, visited[1]);
 	} else {
-		EXPECT_EQ(visited[2], 1);
-		EXPECT_EQ(visited[4], 1);
-		EXPECT_EQ(visited[1], 1);
+		EXPECT_EQ(1, visited[2]);
+		EXPECT_EQ(1, visited[4]);
+		EXPECT_EQ(1, visited[1]);
 	}
 }
 
@@ -1368,26 +1351,32 @@ TEST_P(Graph4GTest, testForWeightedInNeighborsOf) {
 	this->Ghouse.forWeightedInNeighborsOf(3,[&](node v, edgeweight ew) {
 		visited[v] = ew;
 	});
-	// TODO_Klara again, better formating
-	if (isDirectedParameterized()&& !isWeightedParameterized()){
+
+	//Directed Unweighted Graph
+	if(isDirectedParameterized() && !isWeightedParameterized() ){
 		EXPECT_EQ(visited[2], 0);
 		EXPECT_EQ(visited[4], defaultEdgeWeight);
 		EXPECT_EQ(visited[1], 0);
+	}
 
-	}if(!isDirectedParameterized()&& !isWeightedParameterized()){
-
+	//Undirected Unweighted Graph
+	if(!isDirectedParameterized() && !isWeightedParameterized() ){
 		EXPECT_EQ(visited[2], defaultEdgeWeight);
 		EXPECT_EQ(visited[4], defaultEdgeWeight);
 		EXPECT_EQ(visited[1], defaultEdgeWeight);
 
-	}if(!isDirectedParameterized()&& isWeightedParameterized()){
-	
+	}
+
+	//Undirected Weighted Graph
+	if(!isDirectedParameterized() && isWeightedParameterized() ){
 		EXPECT_EQ(visited[2], 7);
 		EXPECT_EQ(visited[4], 8);
 		EXPECT_EQ(visited[1], 6);
 	
-	}if( isDirectedParameterized()&& isWeightedParameterized()){
-	
+	}
+
+	//Directed Weighted Graph
+	if( isDirectedParameterized() && isWeightedParameterized()) {
 		EXPECT_EQ(visited[2], 0);
 		EXPECT_EQ(visited[4], 8);
 		EXPECT_EQ(visited[1], 0);
