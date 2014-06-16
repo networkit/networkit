@@ -10,10 +10,10 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <fstream>
 
 #include "GraphEvent.h"
-
 
 namespace NetworKit {
 

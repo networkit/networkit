@@ -6,7 +6,7 @@
  */
 
 #ifndef SAMPLEDGRAPHSTRUCTURALRANDMEASURE_H_
-#define SAMPLEDGRAPHTRUCTURALRANDMEASURE_H_
+#define SAMPLEDGRAPHSTRUCTURALRANDMEASURE_H_
 
 #include "DissimilarityMeasure.h"
 
@@ -34,4 +34,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* SAMPLEDRANDMEASURE_H_ */
+#endif /* SAMPLEDGRAPHSTRUCTURALRANDMEASURE_H_ */

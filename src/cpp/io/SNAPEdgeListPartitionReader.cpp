@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "SNAPEdgeListPartitionReader.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

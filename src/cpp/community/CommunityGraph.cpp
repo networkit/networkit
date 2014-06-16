@@ -6,6 +6,7 @@
  */
 
 #include "CommunityGraph.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

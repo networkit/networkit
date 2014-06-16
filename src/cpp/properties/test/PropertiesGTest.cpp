@@ -42,9 +42,9 @@ TEST_F(PropertiesGTest, testDegreeDistribution) {
 	G.addEdge(1,2);
 	G.addEdge(2,0);
 	degreeDist = GraphProperties::degreeDistribution(G);
-	EXPECT_EQ(0, degreeDist[0]);
-	EXPECT_EQ(0, degreeDist[1]);
-	EXPECT_EQ(3, degreeDist[2]);
+	EXPECT_EQ(0u, degreeDist[0]);
+	EXPECT_EQ(0u, degreeDist[1]);
+	EXPECT_EQ(3u, degreeDist[2]);
 
 }
 
@@ -70,9 +70,9 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 
 	std::vector<double> coefficients_G1 = GraphProperties::localClusteringCoefficients(G1);
 
-	EXPECT_EQ(0, coefficients_G1[0]);
-	EXPECT_EQ(0, coefficients_G1[1]);
-	EXPECT_EQ(0, coefficients_G1[2]);
+	EXPECT_EQ(0.0, coefficients_G1[0]);
+	EXPECT_EQ(0.0, coefficients_G1[1]);
+	EXPECT_EQ(0.0, coefficients_G1[2]);
 
 	// Test case for graph with degree-1 nodes and an isolated node
 	Graph G2(5);
@@ -83,9 +83,9 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 	G2.addNode();
 	std::vector<double> coefficients_G2 = GraphProperties::localClusteringCoefficients(G2);
 
-	EXPECT_EQ(0, coefficients_G2[0]);
-	EXPECT_EQ(0, coefficients_G2[1]);
-	EXPECT_EQ(0, coefficients_G2[2]);
+	EXPECT_EQ(0.0, coefficients_G2[0]);
+	EXPECT_EQ(0.0, coefficients_G2[1]);
+	EXPECT_EQ(0.0, coefficients_G2[2]);
 
 }
 
@@ -141,29 +141,29 @@ TEST_F(PropertiesGTest, testCoreDecomposition) {
 	G.addEdge(14, 15);
 
 	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
-	EXPECT_EQ(24, G.numberOfEdges()) << "should have 24 edges";
+	EXPECT_EQ(24u, G.numberOfEdges()) << "should have 24 edges";
 
 	// compute core decomposition
 	CoreDecomposition coreDec(G);
 	coreDec.run();
 	std::vector<count> coreness = coreDec.coreNumbers();
 
-	EXPECT_EQ(0, coreness[0]) << "expected coreness";
-	EXPECT_EQ(0, coreness[1]) << "expected coreness";
-	EXPECT_EQ(1, coreness[2]) << "expected coreness";
-	EXPECT_EQ(1, coreness[3]) << "expected coreness";
-	EXPECT_EQ(1, coreness[4]) << "expected coreness";
-	EXPECT_EQ(1, coreness[5]) << "expected coreness";
-	EXPECT_EQ(3, coreness[6]) << "expected coreness";
-	EXPECT_EQ(2, coreness[7]) << "expected coreness";
-	EXPECT_EQ(4, coreness[8]) << "expected coreness";
-	EXPECT_EQ(4, coreness[9]) << "expected coreness";
-	EXPECT_EQ(4, coreness[10]) << "expected coreness";
-	EXPECT_EQ(4, coreness[11]) << "expected coreness";
-	EXPECT_EQ(2, coreness[12]) << "expected coreness";
-	EXPECT_EQ(4, coreness[13]) << "expected coreness";
-	EXPECT_EQ(3, coreness[14]) << "expected coreness";
-	EXPECT_EQ(2, coreness[15]) << "expected coreness";
+	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
+	EXPECT_EQ(0u, coreness[1]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[2]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[3]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[4]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[5]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[6]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[7]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[8]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[9]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[10]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[11]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[12]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[13]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[14]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[15]) << "expected coreness";
 }
 
 /*
@@ -362,8 +362,6 @@ TEST_F(PropertiesGTest, testExactDiameter) {
 
    using namespace std;
 
-   count infDist = numeric_limits<count>::max();
-
    vector<pair<string, count>> testInstances= {pair<string, count>("lesmis", 14),
                                                pair<string, count>("jazz", 6),
                                                pair<string, count>("celegans_metabolic", 7)
@@ -381,8 +379,6 @@ TEST_F(PropertiesGTest, testExactDiameter) {
 TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
 
    using namespace std;
-
-   count infDist = numeric_limits<count>::max();
 
    vector<pair<string, count>> testInstances= {
                                                pair<string, count>("celegans_metabolic", 7),
