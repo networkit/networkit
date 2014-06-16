@@ -9,19 +9,6 @@
 
 #include "Graph4GTest.h"
 
-// TODO_Klara: remove
-	/*
-	template<typename L> void forNodesInRandomOrder(L handle) const;
-	template<typename L> void balancedParallelForNodes(L handle) const;
-	template<typename L> void parallelForNodePairs(L handle) const;
-	template<typename L> void forInEdgesOf(node u, L handle) const;
-	template<typename L> void forWeightedInEdgesOf(node u, L handle) const;
-	template<typename L> double parallelSumForNodes(L handle) const;
-	template<typename L> double parallelSumForWeightedEdges(L handle) const;
-	template<typename L> void BFSEdgesfrom(node r, L handle) const;
-	template<typename L> void DFSfrom(node r, L handle) const;
-	template<typename L> void DFSEdgesfrom(node r, L handle) const;
-	*/
 namespace NetworKit {
 
 INSTANTIATE_TEST_CASE_P(InstantiationName, Graph4GTest, testing::Values(
@@ -1098,53 +1085,75 @@ TEST_P(Graph4GTest, testForNodePairs) {
 
 /** EDGE ITERATORS **/
 
-TEST_P(Graph4GTest, testForEdges){
+TEST_P(Graph4GTest, testForEdges) {
+	Graph G = createParameterizedGraph(4);
+	G.addEdge(0, 1); // 0 * 1 = 0
+	G.addEdge(1, 2); // 1 * 2 = 2
+	G.addEdge(3, 2); // 3 * 2 = 1 (mod 5)
+	G.addEdge(2, 2); // 2 * 2 = 4
+	G.addEdge(3, 1); // 3 * 1 = 3
 
-	Graph G = this->Ghouse;
-	auto edges = G.edges();
-	std::vector<std::pair<node, node> > edgescopy;
-	G.forEdges([&](node u, node v){
-		edgescopy.push_back(std::make_pair(u,v));
+	std::vector<bool> edgesSeen(5, false);
+
+	G.forEdges([&](node u, node v) {
+		ASSERT_TRUE(G.hasEdge(u, v));
+		index id = (u * v) % 5;
+		edgesSeen[id] = true;
 	});
 
-	for(index i=0; i< G.numberOfEdges(); i++)
-	{
-		ASSERT_EQ(edges[i], edgescopy[i]);
+	for (auto b : edgesSeen) {
+		ASSERT_TRUE(b);
 	}
 }
 
-TEST_P(Graph4GTest, testForWeightedEdges){
-	
+TEST_P(Graph4GTest, testForWeightedEdges) {
+	double epsilon = 1e-6;
+
+	Graph G = createParameterizedGraph(4);
+	G.addEdge(0, 1, 0.1); // 0 * 1 = 0
+	G.addEdge(3, 2, 0.2); // 3 * 2 = 1 (mod 5)
+	G.addEdge(1, 2, 0.3); // 1 * 2 = 2
+	G.addEdge(3, 1, 0.4); // 3 * 1 = 3
+	G.addEdge(2, 2, 0.5); // 2 * 2 = 4
+
+	std::vector<bool> edgesSeen(5, false);
+
+	edgeweight weightSum = 0;
+	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
+		ASSERT_TRUE(G.hasEdge(u, v));
+		ASSERT_EQ(G.weight(u, v), ew);
+
+		index id = (u * v) % 5;
+		edgesSeen[id] = true;
+		if (G.isWeighted()) {
+			ASSERT_NEAR( (id + 1) * 0.1, ew, epsilon);
+		} else {
+			ASSERT_EQ(defaultEdgeWeight, ew);
+		}
+		weightSum += ew;
+	});
+
+	for (auto b : edgesSeen) {
+		ASSERT_TRUE(b);
+	}
+	if (G.isWeighted()) {
+		ASSERT_NEAR(1.5, weightSum, epsilon);
+	} else {
+		ASSERT_NEAR(5 * defaultEdgeWeight, weightSum, epsilon);
+	}
+}
+
+TEST_P(Graph4GTest, testParallelForWeightedEdges) {
 	count n = 4;
-	Graph G(n);
+	Graph G(n); // TODO_Klara just wrong, always use createParameterizedGraph otherwise you will always test for an unweighted, undirected graph
 	G.forNodePairs([&](node u, node v){
 		G.addEdge(u, v, 1.0);
 	});
 
 	edgeweight weightSum = 0.0;
-	G.forWeightedEdges([&](node u, node v, node w){
-		weightSum += w;
-	});
-	
-	if(!G.isDirected()){
-		ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in undirected case";
-	}else{
-		ASSERT_EQ(12.0, weightSum) << "sum of edge weights should be 12 in directed case";
-	}
-}
-
-TEST_P(Graph4GTest, testParallelForWeightedEdges){
-	
-	count n = 4;
-	Graph G(n);
-	G.forNodePairs([&](node u, node v){
-		G.addEdge(u, v, 1.0);
-	});
-
-	edgeweight weightSum = 0.0;
-	G.parallelForWeightedEdges([&](node u, node v, node w){
+	G.parallelForWeightedEdges([&](node u, node v, edgeweight ew) {
 		#pragma omp atomic
-		weightSum += w;
+		weightSum += ew;
 	});
 	
 	if(!G.isDirected()){
