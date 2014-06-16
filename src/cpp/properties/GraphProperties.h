@@ -55,7 +55,7 @@ public:
 
 	/**
 	 * The average local clustering coefficient for the graph.
-	 * 		$\frac{1}{n} \cdot \sum_{v \in V} c_v$
+	 * 		$\frac{1}{n} \cdot \sum_{v \in V} c_v$
 	 *
 	 * @param[in]	G	the graph
 	 */
