@@ -92,7 +92,10 @@ elif "clean" in sys.argv:
 	
 # try-catch block when shutil.which is not available
 try:
-	if (shutil.which("g++-4.8") is not None):
+	if (shutil.which("g++-4.9") is not None):
+		os.environ["CC"] = "g++-4.9"
+		os.environ["CXX"] = "g++-4.9"
+	elif (shutil.which("g++-4.8") is not None):
 		os.environ["CC"] = "g++-4.8"
 		os.environ["CXX"] = "g++-4.8"
 
