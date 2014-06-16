@@ -797,12 +797,12 @@ void Graph::forWeightedEdgesOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forInNeighborsOf(node u, L handle) const {
-	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v); });
+	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u); });
 }
 
 template<typename L>
 void Graph::forWeightedInNeighborsOf(node u, L handle) const {
-	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v, ew); });
+	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u, ew); });
 }
 
 template<typename L>
