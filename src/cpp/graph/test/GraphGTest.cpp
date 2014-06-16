@@ -19,14 +19,14 @@ INSTANTIATE_TEST_CASE_P(InstantiationName, GraphGTest, testing::Values(
 						std::make_tuple(false, true),
 						std::make_tuple(true, true)));
 
-bool GraphGTest::isWeightedParameterized() const {
+bool GraphGTest::isWeighted() const {
 	return std::get<0>(GetParam());
 }
-bool GraphGTest::isDirectedParameterized() const {
+bool GraphGTest::isDirected() const {
 	return std::get<1>(GetParam());
 }
 
-Graph GraphGTest::createParameterizedGraph(count n) const {
+Graph GraphGTest::createGraph(count n) const {
 	bool weighted, directed;
 	std::tie(weighted, directed) = GetParam();
 	Graph G(n, weighted, directed);
@@ -52,16 +52,16 @@ void GraphGTest::SetUp() {
 	n_house = 5;
 	m_house = 8;
 
-	Ghouse = createParameterizedGraph(5);
+	Ghouse = createGraph(5);
 	houseEdgesOut = {
-		{0, 2},
-		{1, 0},
-		{1, 4},
-		{2, 1},
-		{2, 4},
 		{3, 1},
+		{1, 0},
+		{0, 2},
+		{2, 1},
+		{1, 4},
+		{4, 3},
 		{3, 2},
-		{4, 3}
+		{2, 4}
 	};
 	Ahouse = {n_house, std::vector<edgeweight>(n_house, 0.0)};
 	edgeweight ew = 1.0;
@@ -114,7 +114,7 @@ TEST_P(GraphGTest, testCopyConstructor) {
 
 	this->Ghouse.forNodes([&](node v) {
 		count d = this->Ghouse.degree(v);
-		count dUndirected = isDirectedParameterized() ? d + this->Ghouse.degreeIn(v) : d;
+		count dUndirected = isDirected() ? d + this->Ghouse.degreeIn(v) : d;
 		ASSERT_EQ(dUndirected, G.degree(v));
 		ASSERT_EQ(dUndirected, GW.degree(v));
 		ASSERT_EQ(d, D.degree(v));
@@ -176,7 +176,7 @@ TEST_P(GraphGTest, testCopyConstructor) {
 		ASSERT_TRUE(found);
 		m++;
 	});
-	count m_expected = isDirectedParameterized() ? 8 : 16;
+	count m_expected = isDirected() ? 8 : 16;
 	ASSERT_EQ(m_expected, m);
 
 	m = 0;
@@ -195,7 +195,7 @@ TEST_P(GraphGTest, testCopyConstructor) {
 		ASSERT_TRUE(found);
 		m++;
 	});
-	m_expected = isDirectedParameterized() ? 8 : 16;
+	m_expected = isDirected() ? 8 : 16;
 	ASSERT_EQ(m_expected, m);
 }
 
@@ -203,8 +203,8 @@ TEST_P(GraphGTest, testCopyConstructor) {
 /** GRAPH INFORMATION **/
 
 TEST_P(GraphGTest, testGetId) {
-	Graph G1 = createParameterizedGraph();
-	Graph G2 = createParameterizedGraph(5);
+	Graph G1 = createGraph();
+	Graph G2 = createGraph(5);
 
 	ASSERT_TRUE(G1.getId() > 0);
 	ASSERT_TRUE(G2.getId() > 0);	
@@ -212,25 +212,23 @@ TEST_P(GraphGTest, testGetId) {
 }
 
 TEST_P(GraphGTest, testTyp) {
-	Graph G = createParameterizedGraph();
-	if (isDirectedParameterized()) {
-		if (isWeightedParameterized()) {
-			ASSERT_EQ("WeightedDirectedGraph", G.typ());
-		} else {
-			ASSERT_EQ("DirectedGraph", G.typ());
-		}
+	Graph G = createGraph();
+	if (isGraph()) {
+		ASSERT_EQ("Graph", G.typ());
+	} else if (isWeightedGraph()) {
+		ASSERT_EQ("WeightedGraph", G.typ());
+	} else if (isDirectedGraph()) {
+		ASSERT_EQ("DirectedGraph", G.typ());
+	} else if (isWeightedDirectedGraph()) {
+		ASSERT_EQ("WeightedDirectedGraph", G.typ());
 	} else {
-		if (isWeightedParameterized()) {
-			ASSERT_EQ("WeightedGraph", G.typ());
-		} else {
-			ASSERT_EQ("Graph", G.typ());
-		}
+		FAIL();
 	}
 }
 
 TEST_P(GraphGTest, tesSetName) {
-	Graph G1 = createParameterizedGraph(0);
-	Graph G2 = createParameterizedGraph(0);
+	Graph G1 = createGraph(0);
+	Graph G2 = createGraph(0);
 	
 	std::string s1 = "Graph 1";
 	std::string s2 = "Graph 2";
@@ -241,8 +239,8 @@ TEST_P(GraphGTest, tesSetName) {
 }
 
 TEST_P(GraphGTest, testToString) {
-	Graph G1 = createParameterizedGraph(0);
-	Graph G2 = createParameterizedGraph(0);
+	Graph G1 = createGraph(0);
+	Graph G2 = createGraph(0);
 
 	ASSERT_TRUE(G1.toString() != "");
 	ASSERT_TRUE(G2.toString() != "");
@@ -252,7 +250,7 @@ TEST_P(GraphGTest, testToString) {
 /** NODE MODIFIERS **/
 
 TEST_P(GraphGTest, testAddNode) {
-	Graph G = createParameterizedGraph();
+	Graph G = createGraph();
 
 	ASSERT_FALSE(G.hasNode(0));
 	ASSERT_FALSE(G.hasNode(1));
@@ -263,7 +261,7 @@ TEST_P(GraphGTest, testAddNode) {
 	ASSERT_FALSE(G.hasNode(1));
 	ASSERT_EQ(1u, G.numberOfNodes());
 
-	Graph G2 = createParameterizedGraph(2);
+	Graph G2 = createGraph(2);
 	ASSERT_TRUE(G2.hasNode(0));
 	ASSERT_TRUE(G2.hasNode(1));
 	ASSERT_FALSE(G2.hasNode(2));
@@ -278,7 +276,7 @@ TEST_P(GraphGTest, testAddNode) {
 }
 
 TEST_P(GraphGTest, testRemoveNode) {
-	Graph G = createParameterizedGraph(4);
+	Graph G = createGraph(4);
 	G.addEdge(0, 1);
 
 	ASSERT_EQ(4u, G.numberOfNodes());
@@ -308,7 +306,7 @@ TEST_P(GraphGTest, testRemoveNode) {
 }
 
 TEST_P(GraphGTest, testHasNode) {
-	Graph G = createParameterizedGraph(5);
+	Graph G = createGraph(5);
 
 	ASSERT_TRUE(G.hasNode(0));
 	ASSERT_TRUE(G.hasNode(1));
@@ -335,7 +333,7 @@ TEST_P(GraphGTest, testHasNode) {
 /** NODE PROPERTIES **/
 
 TEST_P(GraphGTest, testDegree) {
-	if (this->Ghouse.isDirected()) {
+	if (isDirected()) {
 		ASSERT_EQ(1u, this->Ghouse.degree(0));
 		ASSERT_EQ(2u, this->Ghouse.degree(1));
 		ASSERT_EQ(2u, this->Ghouse.degree(2));
@@ -351,7 +349,7 @@ TEST_P(GraphGTest, testDegree) {
 }
 
 TEST_P(GraphGTest, testDegreeIn) {
-	if (this->Ghouse.isDirected()) {
+	if (isDirected()) {
 		ASSERT_EQ(1u, this->Ghouse.degreeIn(0));
 		ASSERT_EQ(2u, this->Ghouse.degreeIn(1));
 		ASSERT_EQ(2u, this->Ghouse.degreeIn(2));
@@ -367,7 +365,7 @@ TEST_P(GraphGTest, testDegreeIn) {
 }
 
 TEST_P(GraphGTest, testDegreeOut) {
-	if (this->Ghouse.isDirected()) {
+	if (isDirected()) {
 		ASSERT_EQ(1u, this->Ghouse.degreeOut(0));
 		ASSERT_EQ(2u, this->Ghouse.degreeOut(1));
 		ASSERT_EQ(2u, this->Ghouse.degreeOut(2));
@@ -403,69 +401,65 @@ TEST_P(GraphGTest, testIsIsolated) {
 }
 
 TEST_P(GraphGTest, testWeightedDegree) {
-	// WeightedDirectedGraph
-	if (this->Ghouse.isWeighted() && this->Ghouse.isDirected()) {
-		// only sum weight of outgoing edges
-		ASSERT_EQ(1.0, this->Ghouse.weightedDegree(0));
-		ASSERT_EQ(5.0, this->Ghouse.weightedDegree(1));
-		ASSERT_EQ(9.0, this->Ghouse.weightedDegree(2));
-		ASSERT_EQ(13.0, this->Ghouse.weightedDegree(3));
-		ASSERT_EQ(8.0, this->Ghouse.weightedDegree(4));
+	// add self-loop
+	this->Ghouse.addEdge(2, 2, 0.75);
+
+	if (isGraph()) {
+		ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(0));
+		ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegree(1));
+		ASSERT_EQ(5 * defaultEdgeWeight, this->Ghouse.weightedDegree(2));
+		ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(3));
+		ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(4));
 	}
 
-	// WeightedGraph
-	if (this->Ghouse.isWeighted() && !this->Ghouse.isDirected()) {
-		ASSERT_EQ(3.0, this->Ghouse.weightedDegree(0));
-		ASSERT_EQ(15.0, this->Ghouse.weightedDegree(1));
-		ASSERT_EQ(17.0, this->Ghouse.weightedDegree(2));
-		ASSERT_EQ(21.0, this->Ghouse.weightedDegree(3));
-		ASSERT_EQ(16.0, this->Ghouse.weightedDegree(4));
+	if (isWeightedGraph()) {
+		ASSERT_EQ(5.0, this->Ghouse.weightedDegree(0));
+		ASSERT_EQ(12.0, this->Ghouse.weightedDegree(1));
+		ASSERT_EQ(22.75, this->Ghouse.weightedDegree(2));
+		ASSERT_EQ(14.0, this->Ghouse.weightedDegree(3));
+		ASSERT_EQ(19.0, this->Ghouse.weightedDegree(4));
 	}
 
-	// DirectetGraph
-	if (!this->Ghouse.isWeighted() && this->Ghouse.isDirected()) {
+	if (isDirectedGraph()) {
 		// only count outgoing edges
 		ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegree(0));
 		ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(1));
-		ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(2));
+		ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(2));
 		ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(3));
 		ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegree(4));
 	}
 
-	// Graph
-	if (!this->Ghouse.isWeighted() && !this->Ghouse.isDirected()) {
-		ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(0));
-		ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegree(1));
-		ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegree(2));
-		ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(3));
-		ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(4));
+	if (isWeightedDirectedGraph()) {
+		// only sum weight of outgoing edges
+		ASSERT_EQ(3.0, this->Ghouse.weightedDegree(0));
+		ASSERT_EQ(7.0, this->Ghouse.weightedDegree(1));
+		ASSERT_EQ(12.75, this->Ghouse.weightedDegree(2));
+		ASSERT_EQ(8.0, this->Ghouse.weightedDegree(3));
+		ASSERT_EQ(6.0, this->Ghouse.weightedDegree(4));
 	}
 }
 
 TEST_P(GraphGTest, testVolume) {
+	// add self-loop
 	this->Ghouse.addEdge(2, 2, 0.75);
 
-	// WeightedDirectedGraph
-	if (this->Ghouse.isWeighted() && this->Ghouse.isDirected()) {
-		// only sum weight of outgoing edges
-		ASSERT_EQ(1.0, this->Ghouse.volume(0));
-		ASSERT_EQ(5.0, this->Ghouse.volume(1));
-		ASSERT_EQ(10.5, this->Ghouse.volume(2));
-		ASSERT_EQ(13.0, this->Ghouse.volume(3));
-		ASSERT_EQ(8.0, this->Ghouse.volume(4));
+	if (isGraph()) {
+		ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(0));
+		ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.volume(1));
+		ASSERT_EQ(6 * defaultEdgeWeight, this->Ghouse.volume(2));
+		ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(3));
+		ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(4));
 	}
 
-	// WeightedGraph
-	if (this->Ghouse.isWeighted() && !this->Ghouse.isDirected()) {
-		ASSERT_EQ(3.0, this->Ghouse.volume(0));
-		ASSERT_EQ(15.0, this->Ghouse.volume(1));
-		ASSERT_EQ(18.5, this->Ghouse.volume(2));
-		ASSERT_EQ(21.0, this->Ghouse.volume(3));
-		ASSERT_EQ(16.0, this->Ghouse.volume(4));
+	if (isWeightedGraph()) {
+		ASSERT_EQ(5.0, this->Ghouse.volume(0));
+		ASSERT_EQ(12.0, this->Ghouse.volume(1));
+		ASSERT_EQ(23.5, this->Ghouse.volume(2));
+		ASSERT_EQ(14.0, this->Ghouse.volume(3));
+		ASSERT_EQ(19.0, this->Ghouse.volume(4));
 	}
 
-	// DirectetGraph
-	if (!this->Ghouse.isWeighted() && this->Ghouse.isDirected()) {
+	if (isDirectedGraph()) {
 		// only count outgoing edges
 		ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.volume(0));
 		ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(1));
@@ -474,13 +468,13 @@ TEST_P(GraphGTest, testVolume) {
 		ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.volume(4));
 	}
 
-	// Graph
-	if (!this->Ghouse.isWeighted() && !this->Ghouse.isDirected()) {
-		ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(0));
-		ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.volume(1));
-		ASSERT_EQ(6 * defaultEdgeWeight, this->Ghouse.volume(2));
-		ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(3));
-		ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(4));
+	if (isWeightedDirectedGraph()) {
+		// only sum weight of outgoing edges
+		ASSERT_EQ(3.0, this->Ghouse.volume(0));
+		ASSERT_EQ(7.0, this->Ghouse.volume(1));
+		ASSERT_EQ(13.5, this->Ghouse.volume(2));
+		ASSERT_EQ(8.0, this->Ghouse.volume(3));
+		ASSERT_EQ(6.0, this->Ghouse.volume(4));
 	}
 }
 
@@ -489,7 +483,7 @@ TEST_P(GraphGTest, testRandomNode) {
 	count samples = 100000;
 	double maxAbsoluteError = 0.005;
 
-	Graph G = createParameterizedGraph(n);
+	Graph G = createGraph(n);
 	std::vector<count> drawCounts(n, 0);
 	for (count i = 0; i < samples; i++) {
 		node x = G.randomNode();
@@ -502,7 +496,7 @@ TEST_P(GraphGTest, testRandomNode) {
 }
 
 TEST_P(GraphGTest, testRandomNeighbor) {
-	Graph G = createParameterizedGraph(10);
+	Graph G = createGraph(10);
 	G.addEdge(2, 0);
 	G.addEdge(2, 1);
 	G.addEdge(2, 2);
@@ -535,7 +529,7 @@ TEST_P(GraphGTest, testRandomNeighbor) {
 /** EDGE MODIFIERS **/
 
 TEST_P(GraphGTest, testAddEdge) {
-	Graph G = createParameterizedGraph(3);
+	Graph G = createGraph(3);
 
 	// Graph without edges
 	ASSERT_EQ(0u, G.numberOfEdges());
@@ -604,7 +598,7 @@ TEST_P(GraphGTest, testAddEdge) {
 
 TEST_P(GraphGTest, testRemoveEdge) {
 	double epsilon = 1e-6;
-	Graph G = createParameterizedGraph(3);
+	Graph G = createGraph(3);
 
 	edgeweight ewBefore = G.totalEdgeWeight();
 
@@ -666,7 +660,7 @@ TEST_P(GraphGTest, testRandomEdge) {
 	count samples = 20000;
 	double maxAbsoluteError = 0.01;
 
-	Graph G = createParameterizedGraph(n);
+	Graph G = createGraph(n);
 	G.addEdge(0, 1); // 0 * 1 = 0
 	G.addEdge(1, 2); // 1 * 2 = 2
 	G.addEdge(3, 2); // 3 * 2 = 1 (mod 5)
@@ -690,16 +684,16 @@ TEST_P(GraphGTest, testRandomEdge) {
 /** GLOBAL PROPERTIES **/
 
 TEST_P(GraphGTest, testIsWeighted) {
-	ASSERT_EQ(isWeightedParameterized(), this->Ghouse.isWeighted());
+	ASSERT_EQ(isWeighted(), this->Ghouse.isWeighted());
 }
 
 TEST_P(GraphGTest, testIsDirected) {
-	ASSERT_EQ(isDirectedParameterized(), this->Ghouse.isDirected());
+	ASSERT_EQ(isDirected(), this->Ghouse.isDirected());
 }
 
 TEST_P(GraphGTest, testIsEmpty) {
-	Graph G1 = createParameterizedGraph(0);
-	Graph G2 = createParameterizedGraph(2);
+	Graph G1 = createGraph(0);
+	Graph G2 = createGraph(2);
 
 	ASSERT_TRUE(G1.isEmpty());
 	ASSERT_FALSE(G2.isEmpty());
@@ -718,7 +712,7 @@ TEST_P(GraphGTest, testIsEmpty) {
 TEST_P(GraphGTest, testNumberOfNodes) {
 	ASSERT_EQ(this->n_house, this->Ghouse.numberOfNodes());
 
-	Graph G1 = createParameterizedGraph(0);
+	Graph G1 = createGraph(0);
 	ASSERT_EQ(0u, G1.numberOfNodes());
 	G1.addNode();
 	ASSERT_EQ(1u, G1.numberOfNodes());
@@ -733,7 +727,7 @@ TEST_P(GraphGTest, testNumberOfNodes) {
 TEST_P(GraphGTest, testNumberOfEdges) {
 	ASSERT_EQ(this->m_house, this->Ghouse.numberOfEdges());
 
-	Graph G1 = createParameterizedGraph(5);
+	Graph G1 = createGraph(5);
 	ASSERT_EQ(0u, G1.numberOfEdges());
 	G1.addEdge(0, 1);
 	ASSERT_EQ(1u, G1.numberOfEdges());
@@ -746,7 +740,7 @@ TEST_P(GraphGTest, testNumberOfEdges) {
 }
 
 TEST_P(GraphGTest, testNumberOfSelfLoops) {
-	Graph G = createParameterizedGraph(3);
+	Graph G = createGraph(3);
 	G.addEdge(0, 1);
 	ASSERT_EQ(0u, G.numberOfSelfLoops());
 	G.addEdge(0, 0);
@@ -761,7 +755,7 @@ TEST_P(GraphGTest, testNumberOfSelfLoops) {
 TEST_P(GraphGTest, testUpperNodeIdBound) {
 	ASSERT_EQ(5u, this->Ghouse.upperNodeIdBound());
 
-	Graph G1 = createParameterizedGraph(0);
+	Graph G1 = createGraph(0);
 	ASSERT_EQ(0u, G1.upperNodeIdBound());
 	G1.addNode();
 	ASSERT_EQ(1u, G1.upperNodeIdBound());
@@ -797,16 +791,16 @@ TEST_P(GraphGTest, testWeight) {
 }
 
 TEST_P(GraphGTest, testSetWeight) {
-	Graph G = createParameterizedGraph(10);
+	Graph G = createGraph(10);
 	G.addEdge(0, 1);
 	G.addEdge(1, 2);
 
-	if (isWeightedParameterized()) {
+	if (isWeighted()) {
 		// edges should get weight defaultWeight on creation and setWeight should overwrite this
 		G.setWeight(1, 2, 2.718);
 		EXPECT_EQ(defaultEdgeWeight, G.weight(0, 1));
 		EXPECT_EQ(2.718, G.weight(1, 2));
-		if (isDirectedParameterized()) {
+		if (isDirected()) {
 			EXPECT_EQ(nullWeight, G.weight(1, 0));
 			EXPECT_EQ(nullWeight, G.weight(2, 1));
 		} else {
@@ -819,12 +813,12 @@ TEST_P(GraphGTest, testSetWeight) {
 		ASSERT_FALSE(G.hasEdge(5, 6));
 		G.setWeight(5, 6, 56.0);
 		ASSERT_EQ(56.0, G.weight(5, 6));
-		ASSERT_EQ(isDirectedParameterized() ? nullWeight : 56.0, G.weight(6, 5));
+		ASSERT_EQ(isDirected() ? nullWeight : 56.0, G.weight(6, 5));
 		ASSERT_TRUE(G.hasEdge(5, 6));
 
 		// directed graphs are not symmetric, undirected are
 		G.setWeight(2, 1, 5.243);
-		if (isDirectedParameterized()) {
+		if (isDirected()) {
 			EXPECT_EQ(2.718, G.weight(1, 2));
 			EXPECT_EQ(5.243, G.weight(2, 1));
 		} else {
@@ -843,7 +837,7 @@ TEST_P(GraphGTest, testSetWeight) {
 }
 
 TEST_P(GraphGTest, increaseWeight) {
-	Graph G = createParameterizedGraph(5);
+	Graph G = createGraph(5);
 	G.addEdge(0, 1);
 	G.addEdge(1, 2);
 	G.addEdge(3, 4, 3.14);
@@ -905,8 +899,8 @@ TEST_P(GraphGTest, testEdgeAttributes) {
 /** SUMS **/
 
 TEST_P(GraphGTest, testTotalEdgeWeight) {
-	Graph G1 = createParameterizedGraph(5);
-	Graph G2 = createParameterizedGraph(5);
+	Graph G1 = createGraph(5);
+	Graph G2 = createGraph(5);
 	G2.addEdge(0, 1, 3.14);
 
 	if (this->Ghouse.isWeighted()) {
@@ -924,7 +918,7 @@ TEST_P(GraphGTest, testTotalEdgeWeight) {
 /** Collections **/
 
 TEST_P(GraphGTest, testNodes) {
-	Graph G = createParameterizedGraph(3);
+	Graph G = createGraph(3);
 	G.addNode();
 	G.removeNode(2);
 	G.addNode();
@@ -941,7 +935,7 @@ TEST_P(GraphGTest, testNodes) {
 }
 
 TEST_P(GraphGTest, testNeighbors) {
-	Graph G = createParameterizedGraph(5);
+	Graph G = createGraph(5);
 	G.forNodes([&](node v) {
 		auto neighbors = G.neighbors(v);
 		ASSERT_EQ(0u, neighbors.size());
@@ -991,7 +985,7 @@ TEST_P(GraphGTest, testEdges) {
 /** NODE ITERATORS **/
 
 TEST_P(GraphGTest, testForNodes) {
-	Graph G = createParameterizedGraph(3);
+	Graph G = createGraph(3);
 	std::vector<bool> visited(4, false);
 	G.forNodes([&](node v) {
 		ASSERT_FALSE(visited[v]);
@@ -1006,33 +1000,23 @@ TEST_P(GraphGTest, testForNodes) {
 }
 
 TEST_P(GraphGTest, testParallelForNodes) {
-	// TODO
-	Graph G = this->Ghouse;
 	std::vector<node> visited;
-	std::vector<bool> visit(G.numberOfNodes(), false);
-	G.parallelForNodes([&](node u){
-		
+	this->Ghouse.parallelForNodes([&](node u){
 		#pragma omp critical
 		visited.push_back(u);
 	});
 	
-	for(node i = 0; i < G.numberOfNodes(); i++)
-	{
-		if(!visit[visited[i]]){
-			visit[visited[i]] = true;	
-		}else{
-			visit[visited[i]] = false;
-		}
-	}
-	for( bool b: visit){
-		ASSERT_TRUE(b);
-	}
+	std::sort(visited.begin(), visited.end());
 
+	ASSERT_EQ(5u, visited.size());
+	for (index i = 0; i < this->Ghouse.upperNodeIdBound(); i++) {
+		ASSERT_EQ(i, visited[i]);
+	}
 }
 
 TEST_P(GraphGTest, forNodesWhile) {
 	count n = 100;
-	Graph G = createParameterizedGraph(n);
+	Graph G = createGraph(n);
 	count stopAfter = 10;
 	count nodesSeen = 0;
 
@@ -1047,7 +1031,7 @@ TEST_P(GraphGTest, testForNodesInRandomOrder) {
 	count n = 1000;
 	count samples = 100;
 	double maxAbsoluteError = 0.005;
-	Graph G = createParameterizedGraph(n);
+	Graph G = createGraph(n);
 
 	node lastNode = n / 2;
 	count greaterLastNode = 0;
@@ -1077,7 +1061,7 @@ TEST_P(GraphGTest, testForNodesInRandomOrder) {
 TEST_P(GraphGTest, testForNodePairs) {
 	count n = 10;
 	count m = n * (n - 1) / 2;
-	Graph G = createParameterizedGraph(n);
+	Graph G = createGraph(n);
 
 	// add all edges
 	G.forNodePairs([&](node u, node v) {
@@ -1102,7 +1086,7 @@ TEST_P(GraphGTest, testForNodePairs) {
 /** EDGE ITERATORS **/
 
 TEST_P(GraphGTest, testForEdges) {
-	Graph G = createParameterizedGraph(4);
+	Graph G = createGraph(4);
 	G.addEdge(0, 1); // 0 * 1 = 0
 	G.addEdge(1, 2); // 1 * 2 = 2
 	G.addEdge(3, 2); // 3 * 2 = 1 (mod 5)
@@ -1125,7 +1109,7 @@ TEST_P(GraphGTest, testForEdges) {
 TEST_P(GraphGTest, testForWeightedEdges) {
 	double epsilon = 1e-6;
 
-	Graph G = createParameterizedGraph(4);
+	Graph G = createGraph(4);
 	G.addEdge(0, 1, 0.1); // 0 * 1 = 0
 	G.addEdge(3, 2, 0.2); // 3 * 2 = 1 (mod 5)
 	G.addEdge(1, 2, 0.3); // 1 * 2 = 2
@@ -1161,7 +1145,7 @@ TEST_P(GraphGTest, testForWeightedEdges) {
 
 TEST_P(GraphGTest, testParallelForWeightedEdges) {
 	count n = 4;
-	Graph G(n); // TODO_Klara just wrong, always use createParameterizedGraph otherwise you will always test for an unweighted, undirected graph
+	Graph G(n); // TODO_Klara just wrong, always use createGraph otherwise you will always test for an unweighted, undirected graph
 	G.forNodePairs([&](node u, node v){
 		G.addEdge(u, v, 1.0);
 	});
@@ -1181,7 +1165,7 @@ TEST_P(GraphGTest, testParallelForWeightedEdges) {
 
 TEST_P(GraphGTest, testParallelForEdges) {
 	count n = 4;
-	Graph G(n);
+	Graph G(n); // TODO_Klara see above
 	G.forNodePairs([&](node u, node v){
 		G.addEdge(u, v);
 	});
@@ -1206,49 +1190,69 @@ TEST_P(GraphGTest, testParallelForEdges) {
 /** NEIGHBORHOOD ITERATORS **/
 
 TEST_P(GraphGTest, testForNeighborsOf){
-	// TODO_Klara again distinguish directed/undirected
-	Graph G = this->Ghouse;
 	std::vector<node> visited;
-	G.forNeighborsOf(3, [&](node u){
+	this->Ghouse.forNeighborsOf(3, [&](node u){
 		visited.push_back(u);
 	});
-	ASSERT_EQ(visited[0], 1);// TODO_Klara order: expected value, actual value
-	ASSERT_EQ(visited[1], 2);
-	
+
+	std::sort(visited.begin(), visited.end());
+
+	if (isDirected()) {
+		ASSERT_EQ(2u, visited.size());
+		ASSERT_EQ(1u, visited[0]);
+		ASSERT_EQ(2u, visited[1]);
+	} else {
+		ASSERT_EQ(3u, visited.size());
+		ASSERT_EQ(1u, visited[0]);
+		ASSERT_EQ(2u, visited[1]);
+		ASSERT_EQ(4u, visited[2]);
+	}
 }
 
 TEST_P(GraphGTest, testForWeightedNeighborsOf){
-	Graph G = this->Ghouse; // TODO_Klara why copy?
 	std::vector<std::pair<node, edgeweight> > visited;
-	G.forWeightedNeighborsOf(3, [&](node u, edgeweight ew){
+	this->Ghouse.forWeightedNeighborsOf(3, [&](node u, edgeweight ew) {
 		visited.push_back(std::make_pair(u, ew));
 	});
-	// TODO_Klara see weightedDegree for more readable way to check the four versions
-	if(G.isWeighted()&&G.isDirected()){
-		ASSERT_EQ(visited[0].first, 1);
-		ASSERT_EQ(visited[1].first, 2);
-		ASSERT_EQ(visited[0].second, 6);
-		ASSERT_EQ(visited[1].second, 7);
-	} if(G.isWeighted()&& !G.isDirected()){
-		ASSERT_EQ(visited[0].first, 1);
-		ASSERT_EQ(visited[1].first, 2);
-		ASSERT_EQ(visited[2].first, 4);
-		ASSERT_EQ(visited[0].second, 6);
-		ASSERT_EQ(visited[1].second, 7);
-	}if(!G.isWeighted()&&G.isDirected()){
-		ASSERT_EQ(visited[0].first, 1);
-		ASSERT_EQ(visited[1].first, 2);
-		ASSERT_EQ(visited[0].second, defaultEdgeWeight);
-		ASSERT_EQ(visited[1].second, defaultEdgeWeight);
-	}if(!G.isWeighted() && !G.isDirected()){
-		ASSERT_EQ(visited[0].first, 1);
-		ASSERT_EQ(visited[1].first, 2);
-		ASSERT_EQ(visited[2].first, 4);
-		ASSERT_EQ(visited[0].second, defaultEdgeWeight);
-		ASSERT_EQ(visited[1].second, defaultEdgeWeight);
-		
+
+	// should sort after the first element
+	std::sort(visited.begin(), visited.end());
+
+	if (isGraph()) {
+		ASSERT_EQ(3u, visited.size());
+		ASSERT_EQ(1u, visited[0].first);
+		ASSERT_EQ(2u, visited[1].first);
+		ASSERT_EQ(4u, visited[2].first);
+		ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+		ASSERT_EQ(defaultEdgeWeight, visited[1].second);
+		ASSERT_EQ(defaultEdgeWeight, visited[2].second);
 	}
-	
+
+	if (isWeightedGraph()) {
+		ASSERT_EQ(3u, visited.size());
+		ASSERT_EQ(1u, visited[0].first);
+		ASSERT_EQ(2u, visited[1].first);
+		ASSERT_EQ(4u, visited[2].first);
+		ASSERT_EQ(1.0, visited[0].second);
+		ASSERT_EQ(7.0, visited[1].second);
+		ASSERT_EQ(6.0, visited[2].second);
+	}
+
+	if (isDirectedGraph()) {
+		ASSERT_EQ(2u, visited.size());
+		ASSERT_EQ(1u, visited[0].first);
+		ASSERT_EQ(2u, visited[1].first);
+		ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+		ASSERT_EQ(defaultEdgeWeight, visited[1].second);
+	}
+
+	if (isWeightedDirectedGraph()) {
+		ASSERT_EQ(2u, visited.size());
+		ASSERT_EQ(1u, visited[0].first);
+		ASSERT_EQ(2u, visited[1].first);
+		ASSERT_EQ(1.0, visited[0].second);
+		ASSERT_EQ(7.0, visited[1].second);
+	}
 }
 
 TEST_P(GraphGTest, testForEdgesOf) {
@@ -1262,7 +1266,7 @@ TEST_P(GraphGTest, testForEdgesOf) {
 			
 			auto e = std::make_pair(v, w);
 			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
-			if (!isDirectedParameterized() && it == this->houseEdgesOut.end()) {
+			if (!isDirected() && it == this->houseEdgesOut.end()) {
 				auto e2 = std::make_pair(w, v);
 				it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e2);
 			}
@@ -1271,7 +1275,7 @@ TEST_P(GraphGTest, testForEdgesOf) {
 		
 			// find index in edge array
 			int i = std::distance(this->houseEdgesOut.begin(), it);
-			if (isDirectedParameterized()) {
+			if (isDirected()) {
 				// make sure edge was not visited before (would be visited twice)
 				EXPECT_EQ(0, visited[i]);
 			}
@@ -1282,7 +1286,7 @@ TEST_P(GraphGTest, testForEdgesOf) {
 		});
 	});
 
-	if (isDirectedParameterized()) {
+	if (isDirected()) {
 		// we iterated over all outgoing edges once
 		EXPECT_EQ(this->m_house, m);
 		for (auto c : visited) {
@@ -1309,7 +1313,7 @@ TEST_P(GraphGTest, testForWeightedEdgesOf) {
 			sumOfWeights+= ew;
 			auto e = std::make_pair(v, w);
 			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
-			if (!isDirectedParameterized() && it == this->houseEdgesOut.end()) {
+			if (!isDirected() && it == this->houseEdgesOut.end()) {
 				auto e2 = std::make_pair(w, v);
 				it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e2);
 			}
@@ -1318,7 +1322,7 @@ TEST_P(GraphGTest, testForWeightedEdgesOf) {
 		
 			// find index in edge array
 			int i = std::distance(this->houseEdgesOut.begin(), it);
-			if (isDirectedParameterized()) {
+			if (isDirected()) {
 				// make sure edge was not visited before (would be visited twice)
 				EXPECT_EQ(0, visited[i]);
 			}
@@ -1329,18 +1333,15 @@ TEST_P(GraphGTest, testForWeightedEdgesOf) {
 		});
 	});
 
-	// DirectedGraph
-	if (!isWeightedParameterized() && isDirectedParameterized()) {
-		// we iterated over all outgoing edges once
-		EXPECT_EQ(this->m_house, m);
+	if (isGraph()) {
 		EXPECT_EQ(sumOfWeights, m);
+		EXPECT_EQ(2 * this->m_house, m);
 		for (auto c : visited) {
-			EXPECT_EQ(1, c);
+			EXPECT_EQ(2, c);
 		}
 	}
 
-	// WeightedGraph
-	if (isWeightedParameterized() && !isDirectedParameterized()) {
+	if (isWeightedGraph()) {
 		// we iterated over all edges in both directions
 		EXPECT_EQ(2 * this->m_house, m);
 		EXPECT_EQ(sumOfWeights, 72);
@@ -1349,73 +1350,82 @@ TEST_P(GraphGTest, testForWeightedEdgesOf) {
 		}
 	}
 
-	// WeightedDirectedGraph
-	if (isWeightedParameterized() && isDirectedParameterized()) {
+	if (isDirectedGraph()) {
+		// we iterated over all outgoing edges once
+		EXPECT_EQ(this->m_house, m);
+		EXPECT_EQ(sumOfWeights, m);
+		for (auto c : visited) {
+			EXPECT_EQ(1, c);
+		}
+	}
+
+	if (isWeightedDirectedGraph()) {
 		EXPECT_EQ(sumOfWeights, 36);
 		EXPECT_EQ(this->m_house, m);
 		for (auto c : visited) {
 			EXPECT_EQ(1, c);
 		}
 	}
-
-	// Graph
-	if (!isWeightedParameterized() && !isDirectedParameterized()) {
-		EXPECT_EQ(sumOfWeights, m);
-		EXPECT_EQ(2 * this->m_house, m);
-		for (auto c : visited) {
-			EXPECT_EQ(2, c);
-		}
-	}
 }
 
 TEST_P(GraphGTest, testForInNeighborsOf) {
-	std::vector<int> visited(this->n_house, 0);
-	this->Ghouse.forInNeighborsOf(3, [&](node v){
-		visited[v] = 1;
+	std::vector<node> visited;
+	this->Ghouse.forInNeighborsOf(2, [&](node v){
+		visited.push_back(v);
 	});
-	if (isDirectedParameterized()) {
-		EXPECT_EQ(visited[2], 0); // TODO_Klara wrong order expected/actual
-		EXPECT_EQ(visited[4], 1);
-		EXPECT_EQ(visited[1], 0);
+	std::sort(visited.begin(), visited.end());
+
+	if (isDirected()) {
+		EXPECT_EQ(2u, visited.size());
+		EXPECT_EQ(0u, visited[0]);
+		EXPECT_EQ(3u, visited[1]);
 	} else {
-		EXPECT_EQ(visited[2], 1);
-		EXPECT_EQ(visited[4], 1);
-		EXPECT_EQ(visited[1], 1);
+		EXPECT_EQ(4u, visited.size());
+		EXPECT_EQ(0u, visited[0]);
+		EXPECT_EQ(1u, visited[1]);
+		EXPECT_EQ(3u, visited[2]);
+		EXPECT_EQ(4u, visited[3]);
 	}
 }
 
-
 TEST_P(GraphGTest, testForWeightedInNeighborsOf) {
-	std::vector<int> visited(this->n_house, 0);
-	this->Ghouse.forWeightedInNeighborsOf(3,[&](node v, edgeweight ew) {
-		visited[v] = ew;
+	std::vector< std::pair<node, edgeweight> > visited;
+	this->Ghouse.forWeightedInNeighborsOf(3, [&](node v, edgeweight ew) {
+		visited.push_back({v, ew});
 	});
-	// TODO_Klara again, better formating
-	if (isDirectedParameterized()&& !isWeightedParameterized()){
-		EXPECT_EQ(visited[2], 0);
-		EXPECT_EQ(visited[4], defaultEdgeWeight);
-		EXPECT_EQ(visited[1], 0);
+	std::sort(visited.begin(), visited.end());
 
-	}if(!isDirectedParameterized()&& !isWeightedParameterized()){
-
-		EXPECT_EQ(visited[2], defaultEdgeWeight);
-		EXPECT_EQ(visited[4], defaultEdgeWeight);
-		EXPECT_EQ(visited[1], defaultEdgeWeight);
-
-	}if(!isDirectedParameterized()&& isWeightedParameterized()){
-	
-		EXPECT_EQ(visited[2], 7);
-		EXPECT_EQ(visited[4], 8);
-		EXPECT_EQ(visited[1], 6);
-	
-	}if( isDirectedParameterized()&& isWeightedParameterized()){
-	
-		EXPECT_EQ(visited[2], 0);
-		EXPECT_EQ(visited[4], 8);
-		EXPECT_EQ(visited[1], 0);
-	
+	if (isGraph()) {
+		ASSERT_EQ(3u, visited.size());
+		ASSERT_EQ(1u, visited[0].first);
+		ASSERT_EQ(2u, visited[1].first);
+		ASSERT_EQ(4u, visited[2].first);
+		ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+		ASSERT_EQ(defaultEdgeWeight, visited[1].second);
+		ASSERT_EQ(defaultEdgeWeight, visited[2].second);
 	}
 
+	if (isWeightedGraph()) {
+		ASSERT_EQ(3u, visited.size());
+		ASSERT_EQ(1u, visited[0].first);
+		ASSERT_EQ(2u, visited[1].first);
+		ASSERT_EQ(4u, visited[2].first);
+		ASSERT_EQ(1.0, visited[0].second);
+		ASSERT_EQ(7.0, visited[1].second);
+		ASSERT_EQ(6.0, visited[2].second);
+	}
+
+	if (isDirectedGraph()) {
+		ASSERT_EQ(1u, visited.size());
+		ASSERT_EQ(4u, visited[0].first);
+		ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+	}
+
+	if (isWeightedDirectedGraph()) {
+		ASSERT_EQ(1u, visited.size());
+		ASSERT_EQ(4u, visited[0].first);
+		ASSERT_EQ(6.0, visited[0].second);
+	}
 }
 
 TEST_P(GraphGTest, forInEdgesOf) {
@@ -1428,7 +1438,7 @@ TEST_P(GraphGTest, forInEdgesOf) {
 		visited[u] = true;
 	});
 
-	if (this->Ghouse.isDirected()) {
+	if (isDirected()) {
 		EXPECT_FALSE(visited[0]);
 		EXPECT_FALSE(visited[1]);
 		EXPECT_FALSE(visited[2]);
@@ -1443,7 +1453,7 @@ TEST_P(GraphGTest, forInEdgesOf) {
 	}
 }
 
-TEST_P(GraphGTest, testForWeightedInEdgesOf){
+TEST_P(GraphGTest, testForWeightedInEdgesOf) {
 	// add self-loop
 	this->Ghouse.addEdge(3, 3, 2.5);
 	this->Ahouse[3][3] = 2.5;
@@ -1454,8 +1464,7 @@ TEST_P(GraphGTest, testForWeightedInEdgesOf){
 		visited[u] = ew;
 	});
 
-	// Graph
-	if (!isWeightedParameterized() && !isDirectedParameterized()) {
+	if (isGraph()) {
 		ASSERT_EQ(-1.0, visited[0]);
 		ASSERT_EQ(defaultEdgeWeight, visited[1]);
 		ASSERT_EQ(defaultEdgeWeight, visited[2]);
@@ -1463,8 +1472,7 @@ TEST_P(GraphGTest, testForWeightedInEdgesOf){
 		ASSERT_EQ(defaultEdgeWeight, visited[4]);
 	}
 
-	// WeightedGraph
-	if (isWeightedParameterized() && !isDirectedParameterized()) {
+	if (isWeightedGraph()) {
 		ASSERT_EQ(-1.0, visited[0]);
 		ASSERT_EQ(this->Ahouse[3][1], visited[1]);
 		ASSERT_EQ(this->Ahouse[3][2], visited[2]);
@@ -1472,8 +1480,7 @@ TEST_P(GraphGTest, testForWeightedInEdgesOf){
 		ASSERT_EQ(this->Ahouse[3][4], visited[4]);
 	}
 
-	// DirectedGraph
-	if (!isWeightedParameterized() && isDirectedParameterized()) {
+	if (isDirectedGraph()) {
 		ASSERT_EQ(-1.0, visited[0]);
 		ASSERT_EQ(-1.0, visited[1]);
 		ASSERT_EQ(-1.0, visited[2]);
@@ -1481,8 +1488,7 @@ TEST_P(GraphGTest, testForWeightedInEdgesOf){
 		ASSERT_EQ(defaultEdgeWeight, visited[4]);
 	}
 
-	// DirectedWeightedGraph
-	if (isWeightedParameterized() && isDirectedParameterized()) {
+	if (isWeightedDirectedGraph()) {
 		ASSERT_EQ(-1.0, visited[0]);
 		ASSERT_EQ(-1.0, visited[1]);
 		ASSERT_EQ(-1.0, visited[2]);
@@ -1494,10 +1500,9 @@ TEST_P(GraphGTest, testForWeightedInEdgesOf){
 
 /** REDUCTION ITERATORS **/
 
-// template<typename L> double parallelSumForNodes(L handle) const;
 TEST_P(GraphGTest, testParallelSumForNodes) {
 	count n = 10;
-	Graph G = createParameterizedGraph(n);
+	Graph G = createGraph(n);
 	double sum = G.parallelSumForNodes([](node v) {
 		return 2 * v + 0.5;
 	});
@@ -1530,7 +1535,7 @@ TEST_P(GraphGTest, testBFSfrom) {
 		EXPECT_TRUE(l != none);
 	}
 
-	if (isDirectedParameterized()) {
+	if (isDirected()) {
 		// root on level 0
 		EXPECT_EQ(0u, visitedOrder[3]);
 
@@ -1551,7 +1556,7 @@ TEST_P(GraphGTest, testBFSfrom) {
 }
 
 TEST_P(GraphGTest, testDFSfrom) {
-	if (isDirectedParameterized()) {
+	if (isDirected()) {
 		std::vector<count> visitedOrder(5, none);
 		index i = 0;
 		this->Ghouse.DFSfrom(3, [&](node v) {
@@ -1581,7 +1586,7 @@ TEST_P(GraphGTest, testDFSfrom) {
 	} else {
 		count n = 5;
 		std::vector<count> visitedOrder(n, none);
-		Graph G = createParameterizedGraph(n);
+		Graph G = createGraph(n);
 		G.addEdge(0, 1);
 		G.addEdge(0, 2);
 		G.addEdge(2, 3);

@@ -28,9 +28,15 @@ protected:
 	count n_house;
 	count m_house;
 
-	bool isWeightedParameterized() const;
-	bool isDirectedParameterized() const;
-	Graph createParameterizedGraph(count n = 0) const;
+	bool isGraph() const { return !isWeighted() && !isDirected(); }
+	bool isWeightedGraph() const { return isWeighted() && !isDirected(); }
+	bool isDirectedGraph() const { return !isWeighted() && isDirected(); }
+	bool isWeightedDirectedGraph() const { return isWeighted() && isDirected(); }
+
+
+	bool isWeighted() const;
+	bool isDirected() const;
+	Graph createGraph(count n = 0) const;
 };
 
 } /* namespace NetworKit */
