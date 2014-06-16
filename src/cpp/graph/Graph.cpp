@@ -217,37 +217,6 @@ std::string Graph::typ() const {
 	}
 }
 
-count Graph::getApproximatedMemoryUsage() const {
-	count mem = 0;
-
-	mem += exists.capacity() / 8;
-
-	for (auto& w : inEdgeWeights) {
-		mem += sizeof(edgeweight) * w.capacity();
-	}
-	for (auto& w : outEdgeWeights) {
-		mem += sizeof(edgeweight) * w.capacity();
-	}
-
-	mem += sizeof(count) * inDeg.capacity();
-	mem += sizeof(count) * outDeg.capacity();
-	
-	for (auto& a : inEdges) {
-		mem += sizeof(node) * a.capacity();
-	}
-	for (auto& a : outEdges) {
-		mem += sizeof(node) * a.capacity();
-	}
-
-	for (auto& map : edgeMaps_double) {
-		for (auto& a : map) {
-			mem += sizeof(double) * a.capacity();
-		}
-	}
-
-	return mem;
-}
-
 void Graph::shrinkToFit() {
 	exists.shrink_to_fit();
 

@@ -109,12 +109,6 @@ public:
 	std::string typ() const;
 
 	/**
-	 * Calculate an approximation of the memory used by this graph. Only memory increasing with the
-	 * number of edges or nodes of this graph is taken into account. 
-	 */
-	count getApproximatedMemoryUsage() const;
-
-	/**
 	 * Try to save some memory by shrinking internal data structures of the graph. Only run this
 	 * once you finished editing the graph. Otherwise it will cause unnecessary reallocation of
 	 * memory. 
@@ -126,7 +120,7 @@ public:
 	 */
 	void setName(std::string name) { this->name = name; }
 
-	/*
+	/**
 	 * @return name of graph
 	 */
 	std::string getName() const { return name; }
@@ -194,7 +188,9 @@ public:
 	 */
 	node randomNode() const;
 
-	// TODO comment
+	/**
+	 * Return a random neighbor of node u. For directed graphs only outgoing edges are considered.
+	 */
 	node randomNeighbor(node u) const;
 
 
