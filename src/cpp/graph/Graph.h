@@ -812,24 +812,41 @@ void Graph::forInEdgesOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forWeightedInEdgesOf(node u, L handle) const {
-	if (!directed) {
-		forWeightedEdgesOf(u, handle);
-		return;
-	}
-	if (weighted) {
-		for (index i = 0; i < inEdges[u].size(); i++) {
-			node v = inEdges[u][i];
-			if (v != none) {
-				edgeweight ew = inEdgeWeights[u][i];
-				handle(v, u, ew);
+	if (directed) {
+		if (weighted) {
+			for (index i = 0; i < inEdges[u].size(); i++) {
+				node v = inEdges[u][i];
+				if (v != none) {
+					edgeweight ew = inEdgeWeights[u][i];
+					handle(v, u, ew);
+				}
+			}	
+		} else {
+			for (index i = 0; i < inEdges[u].size(); i++) {
+				node v = inEdges[u][i];
+				if (v != none) {
+					edgeweight ew = defaultEdgeWeight;
+					handle(v, u, ew);
+				}
 			}
-		}	
+		}
 	} else {
-		for (index i = 0; i < inEdges[u].size(); i++) {
-			node v = inEdges[u][i];
-			if (v != none) {
-				edgeweight ew = defaultEdgeWeight;
-				handle(v, u, ew);
+		// use outEdges
+		if (weighted) {
+			for (index i = 0; i < outEdges[u].size(); i++) {
+				node v = outEdges[u][i];
+				if (v != none) {
+					edgeweight ew = outEdgeWeights[u][i];
+					handle(v, u, ew);
+				}
+			}	
+		} else {
+			for (index i = 0; i < outEdges[u].size(); i++) {
+				node v = outEdges[u][i];
+				if (v != none) {
+					edgeweight ew = defaultEdgeWeight;
+					handle(v, u, ew);
+				}
 			}
 		}
 	}
