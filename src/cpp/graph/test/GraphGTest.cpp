@@ -1430,7 +1430,7 @@ TEST_P(GraphGTest, testForWeightedInEdgesOf){
 	std::vector<edgeweight> visited(this->n_house, -1.0);
 	this->Ghouse.forWeightedInEdgesOf(3, [&](node u, node v, edgeweight ew) {
 		ASSERT_EQ(-1.0, visited[v]);
-		visited[v] = ew;
+		visited[u] = ew;
 	});
 
 	// Graph
