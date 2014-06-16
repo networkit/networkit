@@ -8,6 +8,7 @@
 #include "CentralityGTest.h"
 #include "../Betweenness.h"
 #include "../ApproxBetweenness.h"
+#include "../ApproxBetweenness2.h"
 #include "../EigenvectorCentrality.h"
 #include "../PageRank.h"
 #include "../../io/METISGraphReader.h"
@@ -64,6 +65,19 @@ TEST_F(CentralityGTest, testApproxBetweenness) {
 	G.addEdge(2, 4);
 	G.addEdge(3, 5);
 	G.addEdge(4, 5);
+
+	double epsilon = 0.01; // error
+	double delta = 0.1; // confidence
+	ApproxBetweenness centrality = ApproxBetweenness(G, epsilon, delta);
+	centrality.run();
+	std::vector<double> bc = centrality.scores();
+
+	DEBUG("scores: ", bc);
+}
+
+TEST_F(CentralityGTest, tryApproxBetweennessOnRealGraph) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/ns894786.mps.gz.variable.graph");
 
 	double epsilon = 0.01; // error
 	double delta = 0.1; // confidence
@@ -234,5 +248,19 @@ TEST_F(CentralityGTest, benchPageRankCentralityOnRealGraph) {
 	std::vector<std::pair<node, double> > ranking = cen.ranking();
 	INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
 }
+
+
+
+TEST_F(CentralityGTest, testApproxBetweenness2) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/celegans_metabolic.graph");
+
+	ApproxBetweenness2 abc2(G, 100);
+	abc2.run();
+
+	DEBUG("approximated betweenness scores: ", abc2.scores());
+
+}
+
 
 } /* namespace NetworKit */

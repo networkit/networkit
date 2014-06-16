@@ -19,12 +19,8 @@ namespace NetworKit {
  * TODO: write unit test
  */
 class GMLGraphWriter: public NetworKit::GraphWriter {
-
 public:
-
-	GMLGraphWriter();
-
-	virtual ~GMLGraphWriter();
+	GMLGraphWriter() = default;
 
 	/**
 	 * write a graph G and its coordinates to a GML file.
@@ -32,7 +28,7 @@ public:
 	 * @param[in]	G		Graph of type NetworKit with 2D coordinates
 	 * @param[in]	path	path to file
 	 */
-	virtual void write(Graph& G, std::string path);
+	virtual void write(Graph& G, const std::string& path) override;
 };
 
 } /* namespace NetworKit */

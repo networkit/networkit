@@ -28,22 +28,19 @@ protected:
 	 * @param[in]	path		path to file
 	 * @param[in]	dim			dimension of coordinates
 	 */
-	virtual void writeGeneric(Graph& G, bool weighted, std::string path, count dim);
+	virtual void writeGeneric(Graph& G, bool weighted, const std::string& path, count dim);
 
 
 public:
-
-	GDFGraphWriter();
-
-	virtual ~GDFGraphWriter();
-
+	GDFGraphWriter() = default;
+	
 	/**
 	 * write a graph G and its coordinates to a file of GDF format.
 	 *
 	 * @param[in]	G		Graph of type Networkit with 2D coordinates
 	 * @param[in]	path	path to file
 	 */
-	virtual void write(Graph& G, std::string path);
+	virtual void write(Graph& G, const std::string& path) override;
 	
 	/**
 	 * write a graph G and its coordinates to a file of GDF format.
@@ -52,7 +49,7 @@ public:
 	 * @param[in]	weighted	true if the G is weighted (makes no difference wether is true or not)
 	 * @param[in]	path		path to file
 	 */
-	virtual void write(Graph& G, bool weighted, std::string path);
+	virtual void write(Graph& G, bool weighted, const std::string& path);
 
 	/**
 	 * write a graph G and its coordinates to a file of GDF format.
@@ -61,7 +58,7 @@ public:
 	 * @param[in]	weighted	true if the G is weighted (makes no difference wether is true or not)
 	 * @param[in]	path		path to file
 	 */
-	virtual void write3D(Graph& G, bool weighted, std::string path);
+	virtual void write3D(Graph& G, bool weighted, const std::string& path);
 };
 
 } /* namespace NetworKit */
