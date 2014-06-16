@@ -821,7 +821,7 @@ void Graph::forWeightedInEdgesOf(node u, L handle) const {
 			node v = inEdges[u][i];
 			if (v != none) {
 				edgeweight ew = inEdgeWeights[u][i];
-				handle(u, v, ew);
+				handle(v, u, ew);
 			}
 		}	
 	} else {
@@ -829,7 +829,7 @@ void Graph::forWeightedInEdgesOf(node u, L handle) const {
 			node v = inEdges[u][i];
 			if (v != none) {
 				edgeweight ew = defaultEdgeWeight;
-				handle(u, v, ew);
+				handle(v, u, ew);
 			}
 		}
 	}
