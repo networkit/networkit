@@ -481,11 +481,31 @@ bool Graph::hasEdge(node u, node v) const {
 }
 
 std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
-	node u, v; // we will return edge (u, v)
+	if (m == 0) {
+		return std::make_pair(none, none);
+	}
 
 	if (uniformDistribution) {
-		std::default_random_engine gen{std::random_device{}()};
-		std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
+		return randomEdges(1)[0];
+	}
+
+	node u, v; // we will return edge (u, v)
+	// fast way, but not a uniform random edge!
+	do {
+		u = randomNode();
+	} while (outDeg[u] == 0);
+	v = randomNeighbor(u);
+	return std::make_pair(u, v);
+}
+
+std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
+	std::vector< std::pair<node, node> > edges;
+
+	std::default_random_engine gen{std::random_device{}()};
+	std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
+	
+	for (index i = 0; i < nr; i++) {
+		node u, v; // we will pick edge (u, v)
 		if (directed) {
 			u = distribution(gen);
 			assert(outEdges[u].size() > 0); // should always be the case as  without edges should have probability 0
@@ -499,15 +519,10 @@ std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
 				v = randomNeighbor(u);
 			} while (u > v);
 		}
-	} else {
-		// fast way, but not a uniform random edge!
-		do {
-			u = randomNode();
-		} while (outDeg[u] == 0);
-		v = randomNeighbor(u);
+		edges.push_back({u, v});
 	}
 
-	return std::make_pair(u, v);
+	return edges;
 }
 
 

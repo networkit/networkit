@@ -654,11 +654,10 @@ TEST_P(GraphGTest, testHasEdge) {
 
 TEST_P(GraphGTest, testRandomEdge) {
 	// we only test the uniform version
-
 	count n = 4;
 	count m = 5;
-	count samples = 20000;
-	double maxAbsoluteError = 0.01;
+	count samples = 100000;
+	double maxAbsoluteError = 0.005;
 
 	Graph G = createGraph(n);
 	G.addEdge(0, 1); // 0 * 1 = 0
@@ -669,8 +668,7 @@ TEST_P(GraphGTest, testRandomEdge) {
 	ASSERT_EQ(m, G.numberOfEdges());
 
 	std::vector<count> drawCounts(m, 0);
-	for (count i = 0; i < samples; i++) {
-		auto e = G.randomEdge(true);
+	for (auto e : G.randomEdges(samples)) {
 		count id = (e.first * e.second) % 5;
 		drawCounts[id]++;
 	}
