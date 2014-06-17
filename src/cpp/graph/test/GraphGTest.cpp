@@ -935,32 +935,25 @@ TEST_P(GraphGTest, testNodes) {
 }
 
 TEST_P(GraphGTest, testNeighbors) {
-	Graph G = createGraph(5);
-	G.forNodes([&](node v) {
-		auto neighbors = G.neighbors(v);
-		ASSERT_EQ(0u, neighbors.size());
-	});
-
 	auto neighbors = this->Ghouse.neighbors(1);
-	std::sort(neighbors.begin(), neighbors.end());
-
-	if (this->Ghouse.isDirected()) {
-		ASSERT_EQ(2u, neighbors.size());
-		ASSERT_EQ(0u, neighbors[0]);
-		ASSERT_EQ(4u, neighbors[1]);
-	} else {
-		ASSERT_EQ(4u, neighbors.size());
-		ASSERT_EQ(0u, neighbors[0]);
-		ASSERT_EQ(2u, neighbors[1]);
-		ASSERT_EQ(3u, neighbors[2]);
-		ASSERT_EQ(4u, neighbors[3]);
+	auto containsNode = [&neighbors](node v) {
+		return std::find(neighbors.begin(), neighbors.end(), v) != neighbors.end();
+	};
+	if(this->Ghouse.isDirected()){	
+		ASSERT_TRUE(containsNode(0));
+		ASSERT_TRUE(containsNode(4));
+	}else{
+		ASSERT_TRUE(containsNode(0));
+		ASSERT_TRUE(containsNode(2));
+		ASSERT_TRUE(containsNode(3));
+		ASSERT_TRUE(containsNode(4));
 	}
+
 }
 
 TEST_P(GraphGTest, testEdges) {
 	// add self-loop
 	this->Ghouse.addEdge(3, 3);
-
 	auto isCorrectEdge = [&](node u, node v) {
 		if (u == 3 && v == 3) {
 			return true;
@@ -1145,7 +1138,7 @@ TEST_P(GraphGTest, testForWeightedEdges) {
 
 TEST_P(GraphGTest, testParallelForWeightedEdges) {
 	count n = 4;
-	Graph G(n); // TODO_Klara just wrong, always use createGraph otherwise you will always test for an unweighted, undirected graph
+	Graph G = createGraph(n); 
 	G.forNodePairs([&](node u, node v){
 		G.addEdge(u, v, 1.0);
 	});
@@ -1156,16 +1149,13 @@ TEST_P(GraphGTest, testParallelForWeightedEdges) {
 		weightSum += ew;
 	});
 	
-	if(!G.isDirected()){
-		ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in undirected case";
-	}else{
-		ASSERT_EQ(12.0, weightSum) << "sum of edge weights should be 12 in directed case";
-	}
+	ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
+	
 }
 
 TEST_P(GraphGTest, testParallelForEdges) {
 	count n = 4;
-	Graph G(n); // TODO_Klara see above
+	Graph G = createGraph(n);
 	G.forNodePairs([&](node u, node v){
 		G.addEdge(u, v);
 	});
@@ -1176,11 +1166,7 @@ TEST_P(GraphGTest, testParallelForEdges) {
 		weightSum += 1;
 	});
 	
-	if (!G.isDirected()) {
-		ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in undirected case";
-	} else {
-		ASSERT_EQ(12.0, weightSum) << "sum of edge weights should be 12 in directed case";
-	}
+	ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
 
 }
 
