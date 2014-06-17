@@ -100,6 +100,8 @@ cdef extern from "../cpp/graph/Graph.h":
 		count numberOfNodes() except +
 		count numberOfEdges() except +
 		count degree(node u) except +
+		count degreeIn(node u) except +
+		count degreeOut(node u) except +
 		node addNode() except +
 		void removeNode(node u) except +
 		void addEdge(node u, node v, edgeweight w) except +
@@ -149,6 +151,12 @@ cdef class Graph:
 
 	def degree(self, u):
 		return self._this.degree(u)
+
+	def degreeIn(self, u):
+		return self._this.degreeIn(u)
+	
+	def degreeOut(self, u):
+		return self._this.degreeOut(u)
 
 	def addNode(self):
 		return self._this.addNode()
