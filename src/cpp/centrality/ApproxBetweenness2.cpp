@@ -11,6 +11,8 @@
 #include "../graph/Dijkstra.h"
 #include "../graph/SSSP.h"
 
+#include <memory>
+
 namespace NetworKit {
 
 ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized), nSamples(nSamples) {
@@ -19,20 +21,21 @@ ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool norm
 void ApproxBetweenness2::run() {
 	scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
 
-	std::vector<node> sampledNodes = G.nodes();
+	//std::vector<node> sampledNodes = G.nodes();
+	std::vector<node> sampledNodes;
 
-	// // sample nodes
-	// for (count i = 0; i <= nSamples; ++i) {
-	// 	sampledNodes.push_back(G.randomNode());
-	// }
+	// sample nodes
+	for (count i = 0; i <= nSamples; ++i) {
+	 	sampledNodes.push_back(G.randomNode());
+	}
 
 	for (node s : sampledNodes) {
 		// run single-source shortest path algorithm
-		SSSP* sssp;
+		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
-			sssp = new Dijkstra(G, s);
+			sssp.reset(new Dijkstra(G, s));
 		} else {
-			sssp = new BFS(G, s);
+			sssp.reset(new BFS(G, s));
 		}
 
 		sssp->run();
@@ -46,21 +49,22 @@ void ApproxBetweenness2::run() {
 		// compute dependencies and add the contributions to the centrality score
 		std::vector<double> dependency(G.upperNodeIdBound(), 0.0);
 		for (node t : stack) {
+			if (t == s){
+				continue;
+			}			
 			for (node p : sssp->getPredecessors(t)) {
 				// TODO: make weighting factor configurable
-				// (sssp->distance(p) / sssp->distance(t))
-				dependency[p] += (double(sssp->numberOfPaths(p)) / sssp->numberOfPaths(t)) * (1 + dependency[t]);
+				dependency[p] += (double(sssp->distance(p)) / sssp->distance(t))*(double(sssp->numberOfPaths(p)) / sssp->numberOfPaths(t)) * (1 + dependency[t]);
 			}
-
 			scoreData[t] += dependency[t];
 		}
 
 	} // end for sampled nodes
 
 	// extrapolate
-	//G.forNodes([&](node v) {
-	//	scoreData[v] = scoreData[v] * (G.numberOfNodes() / double(nSamples));
-	//});
+	G.forNodes([&](node v) {
+		scoreData[v] = scoreData[v] * (2 * G.numberOfNodes() / double(nSamples));
+	});
 
 	if (normalized) {
 		// divide by the number of possible pairs
