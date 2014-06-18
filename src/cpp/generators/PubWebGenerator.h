@@ -81,7 +81,6 @@ public:
 
 	PubWebGenerator(count numNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors);
-	virtual ~PubWebGenerator();
 
 	virtual Graph generate();
 

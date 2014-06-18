@@ -20,9 +20,7 @@ namespace NetworKit {
 class DynamicGraphGenerator {
 
 public:
-
-	DynamicGraphGenerator() = default;
-
+	/** Default destructor */
 	virtual ~DynamicGraphGenerator() = default;
 
 	/**

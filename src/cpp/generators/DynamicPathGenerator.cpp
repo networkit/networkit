@@ -9,10 +9,6 @@
 
 namespace NetworKit {
 
-DynamicPathGenerator::DynamicPathGenerator() {
-
-}
-
 std::vector<GraphEvent> DynamicPathGenerator::generate(count nSteps) {
 
 	std::vector<GraphEvent> stream;

@@ -33,8 +33,6 @@ public:
 
 	BarabasiAlbertGenerator(count k, count nMax, count n0 = 0);
 
-	virtual ~BarabasiAlbertGenerator();
-
 	Graph generate() override;
 };
 

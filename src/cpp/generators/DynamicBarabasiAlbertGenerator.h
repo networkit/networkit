@@ -29,8 +29,6 @@ public:
 
 	DynamicBarabasiAlbertGenerator(count k = 2);
 
-	virtual ~DynamicBarabasiAlbertGenerator();
-
 	virtual void initializeGraph();
 
 	virtual void generate();

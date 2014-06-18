@@ -24,7 +24,6 @@ protected:
 
 public:
 	StaticDegreeSequenceGenerator(const std::vector<unsigned int>& sequence);
-	virtual ~StaticDegreeSequenceGenerator();
 
 	/**
 	 * Erdoes-Gallai test if degree sequence seq is realizable.

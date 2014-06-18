@@ -17,7 +17,7 @@ namespace NetworKit {
  * - heavy tailed degree distribution
  * - communities
  * - densification power law
- * - shringking diameter
+ * - shrinking diameter
  *
  * This class implements a variant of the original model which produces undirected graphs.
  *

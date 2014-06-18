@@ -26,7 +26,6 @@ protected:
 
 public:
 	ChungLuGenerator(const std::vector<unsigned int>& degreeSequence);
-	virtual ~ChungLuGenerator();
 
 	/**
 	 * Generates graph with expected degree sequence seq.
