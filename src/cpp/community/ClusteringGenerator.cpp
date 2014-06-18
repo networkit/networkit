@@ -11,12 +11,7 @@
 
 namespace NetworKit {
 
-ClusteringGenerator::ClusteringGenerator() {
-
-}
-
 ClusteringGenerator::~ClusteringGenerator() {
-
 }
 
 Partition ClusteringGenerator::makeSingletonClustering(Graph& G) {

@@ -20,8 +20,7 @@ class NodeStructuralRandMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	NodeStructuralRandMeasure();
-
+	/** Default destructor */
 	virtual ~NodeStructuralRandMeasure();
 
 	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second);

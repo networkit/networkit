@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-CommunityGraph::CommunityGraph() {
-}
-
 CommunityGraph::~CommunityGraph() {
 }
 

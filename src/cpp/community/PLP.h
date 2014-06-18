@@ -14,13 +14,12 @@
 namespace NetworKit {
 
 /**
- *     As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering
-        Raghavan et al. proposed a label propagation algorithm for graph clustering.
-        This algorithm initializes every vertex of a graph with a unique label. Then, in iterative
-        sweeps over the set of vertices the vertex labels are updated. A vertex gets the label
-        that the maximum number of its neighbors have. The procedure is stopped when every vertex
-        has the label that at least half of its neighbors have.
- *
+ * As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering
+ * Raghavan et al. proposed a label propagation algorithm for graph clustering.
+ * This algorithm initializes every vertex of a graph with a unique label. Then, in iterative
+ * sweeps over the set of vertices the vertex labels are updated. A vertex gets the label
+ * that the maximum number of its neighbors have. The procedure is stopped when every vertex
+ * has the label that at least half of its neighbors have.
  *
  */
 class PLP: public NetworKit::CommunityDetectionAlgorithm {
@@ -36,8 +35,6 @@ public:
 	std::string VERSION;	// algorithm version number - increment in constructor for significant changes to the implementation
 
 	PLP(count theta = none);
-
-	virtual ~PLP();
 
 	/**
 	 * Run the label propagation clustering algorithm.
@@ -57,7 +54,8 @@ public:
 	 * The algorithm runs until a number of nodes less than
 	 * the threshold is updated.
 	 *
-	 */
+	 * @param th The threshold.
+	*/
 	virtual void setUpdateThreshold(count th);
 
 	/**

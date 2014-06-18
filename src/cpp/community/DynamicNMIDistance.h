@@ -17,8 +17,6 @@ typedef std::vector<std::vector<count> > Matrix;
 
 class DynamicNMIDistance: public NetworKit::DissimilarityMeasure {
 public:
-	DynamicNMIDistance();
-	virtual ~DynamicNMIDistance();
 
 	/**
 	 * Computes NMI between two clusterings that belong to two different graphs.

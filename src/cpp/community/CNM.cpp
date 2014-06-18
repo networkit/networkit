@@ -13,14 +13,6 @@
 
 namespace NetworKit{
 
-CNM::CNM() {
-
-}
-
-CNM::~CNM() {
-
-}
-
 Partition CNM::run(Graph &graph) {
 	// copy graph because we make changes due to merges
 	Graph G(graph.numberOfNodes(), true); // make weighted copy

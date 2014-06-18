@@ -18,8 +18,7 @@ namespace NetworKit {
 class CommunityDetectionAlgorithm {
 public:
 
-	CommunityDetectionAlgorithm();
-
+	/** Default destructor */
 	virtual ~CommunityDetectionAlgorithm();
 
 	/**
