@@ -340,8 +340,8 @@ Graph FastMETISGraphReader::read(const std::string& path) {
 					if ( u < v && v > 0) G.addEdge(u,v-1);
 				}
 				DEBUG("node ", u, " completely parsed");
-				++u;
 			}
+			++u;
 		}
 	} else {
 		DEBUG("reading weighted graph");
@@ -363,8 +363,8 @@ Graph FastMETISGraphReader::read(const std::string& path) {
 					if ( u < v && v > 0) G.addEdge(u,v-1,weight);
 				}
 				DEBUG("node ", u, " completely parsed");
-				++u;
 			}
+			++u;
 		}
 	}
 
