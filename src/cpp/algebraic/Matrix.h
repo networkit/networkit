@@ -49,10 +49,10 @@ public:
 	Matrix(const uint64_t &dimension, const std::vector<std::pair<node, node>> &positions, const std::vector<double> &values);
 
 	/**
-	 * Constructs the Matrix with the columns in @a columns.
-	 * @param columns The columns of the matrix. All columns must have the same dimension.
+	 * Constructs the Matrix with the rows in @a rows.
+	 * @param rows The rows of the matrix. All rows must have the same dimension.
 	 */
-	Matrix(const std::vector<Vector> &columns);
+	Matrix(const std::vector<Vector> &rows);
 
 	/** Copy constructor */
 	Matrix(const Matrix &other);

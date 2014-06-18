@@ -20,12 +20,12 @@ Matrix::Matrix(const uint64_t &dimension, const std::vector<std::pair<int, int>>
 	assert(positions.size() == values.size());
 
 	for (size_t k = 0; k < positions.size(); ++k) {
-		assert(positions.at(k).first >= 0 && positions.at(k).second >= 0);
+		assert(positions[k].first >= 0 && positions[k].second >= 0);
 
-		std::pair<uint64_t, uint64_t> pos = positions.at(k);
+		std::pair<uint64_t, uint64_t> pos = positions[k];
 		assert(pos.first < dimension);
 		if (!graph.hasEdge(pos.first, pos.second)) { // symmetric matrix
-			graph.addEdge(pos.first, pos.second, values.at(k));
+			graph.addEdge(pos.first, pos.second, values[k]);
 		}
 	}
 }
@@ -34,27 +34,27 @@ Matrix::Matrix(const uint64_t &dimension, const std::vector<std::pair<node, node
 	assert(positions.size() == values.size());
 
 	for (size_t k = 0; k < positions.size(); ++k) {
-		std::pair<node, node> pos = positions.at(k);
+		std::pair<node, node> pos = positions[k];
 		assert(pos.first < dimension);
 		if (!graph.hasEdge(pos.first,pos.second)) { // symmetric matrix
-			graph.addEdge(pos.first, pos.second, values.at(k));
+			graph.addEdge(pos.first, pos.second, values[k]);
 		}
 	}
 }
 
-Matrix::Matrix(const std::vector<Vector> &columns) : graph(columns.size(), true) {
+Matrix::Matrix(const std::vector<Vector> &rows) : graph(rows.size(), true) {
 	// check dimension
-	uint64_t dimension = columns.size();
+	uint64_t dimension = rows.size();
 #pragma omp parallel for
-	for (size_t j = 0; j < dimension; ++j) {
-		if (columns.at(j).getDimension() != dimension) {
+	for (size_t i = 0; i < dimension; ++i) {
+		if (rows[i].getDimension() != dimension) {
 			throw std::runtime_error("row dimensions of one or more columns do not match");
 		}
 	}
 
-	for (uint64_t j = 0; j < dimension; ++j) {
-		for (uint64_t i = 0; i < dimension; ++i) {
-			double value = columns.at(j)[i];
+	for (uint64_t i = 0; i < dimension; ++i) {
+		for (uint64_t j = 0; j < dimension; ++j) {
+			double value = rows[i][j];
 			if (value != 0.0 && !graph.hasEdge(i, j)) { // do not store 0 values, symmetric matrix
 				graph.addEdge(i, j, value);
 			}
