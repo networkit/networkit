@@ -1,18 +1,31 @@
 #include "EffectiveDiameter.h"
 
 namespace NetworKit {
+	/*
+	void EffectiveDiameter::foobar() {
+		using namespace std;
+
+		std::cout << "test";
+	}
+	*/
+
 	int EffectiveDiameter::effectiveDiameter(const Graph& G) {
+		//TODO: check whether graph is connected
+
 		// list of nodes that are connected to all other nodes
 		std::set<int> finished;
 		// diameter[node][distance][connected_nodes]
-		std::vector<std::vector<std::set<int> > > diameter (G.numberOfNodes()); //
+		std::vector<std::vector<std::set<int> > > diameter;
 		// initialize all nodes
 		G.forNodes([&](node v){
 			std::set<int> list;
+			std::vector<std::set<int> > inner;
 			// at the beginning, nodes are only connected to themselves
 			list.insert(v);
 			// connect all nodes with themselves at the distance 0
-			diameter[v][0] = list;
+			inner.push_back(list);
+			diameter.push_back(inner);
+
 		});
 
 		// current diameter
@@ -27,7 +40,8 @@ namespace NetworKit {
 				// only consider nodes that are not already connected to every other node
 				if (finished.find(v) == finished.end()) {
 					// the node is connected to all nodes from the previous iteration
-					diameter[v][d] = diameter[v][d-1];
+					std::set<int> list = diameter[v][d-1];
+					diameter[v].push_back(list);
 					// and to all previous connected nodes of all neighbors
 					G.forNeighborsOf(v, [&](node u) {
 						//diameter[v][d] = diameter[u][d-1];
@@ -44,8 +58,9 @@ namespace NetworKit {
 					}
 				}
 			});
+			d++;
 		}
 		// return the found effective diameter
-		return d;
+		return d-1;
 	}
 }

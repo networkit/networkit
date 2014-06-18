@@ -1,8 +1,8 @@
 /*
- * EffectiveDiameter.h
+ * Eccentricity.h
  *
- *  Created on: Jun 14, 2014
- *      Author: Marc Nemes
+ *  Created on: 19.02.2014
+ *      Author: cls
  */
 
 #ifndef EFFECTIVEDIAMETER_H_
@@ -15,40 +15,18 @@
 #include <math.h>
 #include <iterator>
 
-
 namespace NetworKit {
 
 class EffectiveDiameter {
 
 public:
-
-	EffectiveDiameter();
-
-	virtual ~EffectiveDiameter();
-
 	/**
 	 * determines the effective diameter of a given graph
 	 */
-	int effectiveDiameter(const Graph& G);
+	static int effectiveDiameter(const Graph& G);
 
 };
-}/* namespace NetworKit */
 
+} /* namespace NetworKit */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif /* EFFECTIVEDIAMETER_H_ */
+#endif /* ECCENTRICITY_H_ */
