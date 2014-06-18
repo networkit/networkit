@@ -18,7 +18,6 @@ GraphEventProxy::GraphEventProxy(Graph& G) {
 }
 
 GraphEventProxy::~GraphEventProxy() {
-	// TODO Auto-generated destructor stub
 }
 
 node GraphEventProxy::addNode() {

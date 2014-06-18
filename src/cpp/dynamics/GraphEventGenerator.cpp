@@ -11,12 +11,9 @@ namespace NetworKit {
 
 
 GraphEventGenerator::GraphEventGenerator(Graph& G) {
-	// TODO Auto-generated constructor stub
-
 }
 
 GraphEventGenerator::~GraphEventGenerator() {
-	// TODO Auto-generated destructor stub
 }
 
 void GraphEventGenerator::generateStream(std::function<bool(void)> done) {
