@@ -94,8 +94,8 @@ TEST_F(IOGTest, testMETISGraphReader) {
 	count n = 198;
 	count m = 2742;
 	EXPECT_FALSE(G.isEmpty());
-	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
-	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
+	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the graph";
+	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the graph";
 
 	for (index v = 0; v < n; ++v) {
 		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
@@ -108,8 +108,8 @@ TEST_F(IOGTest, testMETISGraphReader) {
 	n = 1490;
 	m = 16715;
 	EXPECT_FALSE(G.isEmpty());
-	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
-	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
+	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the graph";
+	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the graph";
 
 	for (index v = 0; v < n; ++v) {
 		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
@@ -122,8 +122,8 @@ TEST_F(IOGTest, testMETISGraphReader) {
 	n = 10680;
 	m = 24316;
 	EXPECT_FALSE(G.isEmpty());
-	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
-	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
+	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the graph";
+	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the graph";
 
 	for (index v = 0; v < n; ++v) {
 		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
@@ -139,8 +139,8 @@ TEST_F(IOGTest, testMETISGraphReaderWithWeights) {
 	EXPECT_FALSE(G.isEmpty());
 	count n = 77;
 	count m = 254;
-	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
-	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
+	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the graph";
+	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the graph";
 
 	for (index v = 0; v < n; ++v) {
 		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
@@ -195,8 +195,8 @@ TEST_F(IOGTest, testMETISGraphReaderWithDoubleWeights) {
 	EXPECT_FALSE(G.isEmpty());
 	count n = 5;
 	count m = 6;
-	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the  graph";
-	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the  graph";
+	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the graph";
+	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the graph";
 
 	for (index v = 0; v < n; ++v) {
 		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
@@ -278,10 +278,10 @@ TEST_F(IOGTest, tryDGSReader) {
 	// get input parameters
 	count nodeCount = G.numberOfNodes();
 	DEBUG("Number of nodes " , nodeCount);
-	EXPECT_EQ(3, nodeCount);
+	EXPECT_EQ(3u, nodeCount);
 	count edgeCount = G.numberOfEdges();
 	DEBUG("Number of edges " , edgeCount);
-	EXPECT_EQ(2, edgeCount);
+	EXPECT_EQ(2u, edgeCount);
 
 	G.forNodes([&](node n) {
 		DEBUG("DEGREE OF NODE: " , G.degree(n) , "\n");
@@ -295,8 +295,8 @@ TEST_F(IOGTest, testEdgeListIO) {
 	std::string path = "input/LFR-generator-example/network.dat";
 	DEBUG("reading file: " , path);
 	Graph G = reader.read(path);
-	EXPECT_EQ(10, G.numberOfNodes());
-	EXPECT_EQ(10, G.numberOfEdges());
+	EXPECT_EQ(10u, G.numberOfNodes());
+	EXPECT_EQ(10u, G.numberOfEdges());
 	EXPECT_TRUE(G.hasEdge(0, 5));
 	EXPECT_TRUE(G.hasEdge(2, 9));
 	EXPECT_TRUE(G.hasEdge(1, 7));
@@ -305,21 +305,21 @@ TEST_F(IOGTest, testEdgeListIO) {
 	DEBUG("reading file: " , path);
 	EdgeListIO reader2('\t', 1);
 	Graph G2 = reader2.read(path);
-	EXPECT_EQ(10, G2.numberOfEdges());
+	EXPECT_EQ(10u, G2.numberOfEdges());
 	EXPECT_TRUE(G2.hasEdge(0, 4));
 
 	path = "input/spaceseparated.edgelist";
 	DEBUG("reading file: " , path);
 	EdgeListIO reader3(' ', 1);
 	Graph G3 = reader3.read(path);
-	EXPECT_EQ(10, G3.numberOfEdges());
+	EXPECT_EQ(10u, G3.numberOfEdges());
 	EXPECT_TRUE(G3.hasEdge(0, 4));
 
 	path = "input/comments.edgelist";
 	DEBUG("reading file: " , path);
 	EdgeListIO reader4('\t', 1);
 	Graph G4 = reader4.read(path);
-	EXPECT_EQ(10, G4.numberOfEdges());
+	EXPECT_EQ(10u, G4.numberOfEdges());
 	EXPECT_TRUE(G4.hasEdge(0, 4));
 
 }
@@ -329,10 +329,10 @@ TEST_F(IOGTest, testEdgeListPartitionReader) {
 
 	Partition zeta = reader.read("input/LFR-generator-example/community.dat");
 	//EXPECT_EQ(10, zeta.size());
-	EXPECT_EQ(1, zeta[0]);
-	EXPECT_EQ(3, zeta[1]);
-	EXPECT_EQ(2, zeta[2]);
-	EXPECT_EQ(10, zeta.numberOfElements());
+	EXPECT_EQ(1u, zeta[0]);
+	EXPECT_EQ(3u, zeta[1]);
+	EXPECT_EQ(2u, zeta[2]);
+	EXPECT_EQ(10u, zeta.numberOfElements());
 
 }
 
@@ -343,16 +343,16 @@ TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/jazz.graph");
 	EXPECT_TRUE(G.hasNode(0));
-	EXPECT_EQ(198, G.numberOfNodes());
-	EXPECT_EQ(2742, G.numberOfEdges());
+	EXPECT_EQ(198u, G.numberOfNodes());
+	EXPECT_EQ(2742u, G.numberOfEdges());
 }
 
 
 TEST_F(IOGTest, tryMETISGraphReaderWithIsolatedNodes) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/example.graph");
-	EXPECT_EQ(4, G.numberOfNodes());
-	EXPECT_EQ(2, G.numberOfEdges());
+	EXPECT_EQ(4u, G.numberOfNodes());
+	EXPECT_EQ(2u, G.numberOfEdges());
 	EXPECT_TRUE(G.hasNode(0));
 	EXPECT_TRUE(G.hasNode(1));
 	EXPECT_TRUE(G.hasNode(2));
@@ -418,13 +418,13 @@ TEST_F(IOGTest, testFastMETISGraphReader) {
 	FastMETISGraphReader reader;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
 
-	EXPECT_EQ(10680, G.numberOfNodes());
-	EXPECT_EQ(24316, G.numberOfEdges());
+	EXPECT_EQ(10680u, G.numberOfNodes());
+	EXPECT_EQ(24316u, G.numberOfEdges());
 
 	Graph W = reader.read("input/lesmis.graph");
 
-	EXPECT_EQ(77, W.numberOfNodes());
-	EXPECT_EQ(254, W.numberOfEdges());
+	EXPECT_EQ(77u, W.numberOfNodes());
+	EXPECT_EQ(254u, W.numberOfEdges());
 }
 
 

@@ -6,6 +6,7 @@
  */
 
 #include "EdgeListIO.h"
+#include "../auxiliary/Log.h"
 
 #include <sstream>
 
@@ -107,6 +108,7 @@ Graph EdgeListIO::read(const std::string& path) {
 
     file.close();
 
+    G.shrinkToFit();
     return G;
 }
 

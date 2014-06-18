@@ -95,11 +95,13 @@ def enableNestedParallelism():
 cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
-		_Graph(count, bool) except +
+		_Graph(count, bool, bool) except +
 		void stealFrom(_Graph)
 		count numberOfNodes() except +
 		count numberOfEdges() except +
 		count degree(node u) except +
+		count degreeIn(node u) except +
+		count degreeOut(node u) except +
 		node addNode() except +
 		void removeNode(node u) except +
 		void addEdge(node u, node v, edgeweight w) except +
@@ -110,6 +112,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		vector[pair[node, node]] edges() except +
 		vector[node] neighbors(node u) except +
 		bool isWeighted() except +
+		bool isDirected() except +
 		string toString() except +
 		string getName() except +
 		void setName(string name) except +
@@ -123,8 +126,8 @@ cdef class Graph:
 	"""An undirected, optionally weighted graph"""
 	cdef _Graph* _this
 
-	def __cinit__(self, n=0, weighted=False):
-		self._this = new _Graph(n, weighted)
+	def __cinit__(self, n=0, weighted=False, directed=False):
+		self._this = new _Graph(n, weighted, directed)
 
 	# # any _thisect which appears as a return type needs to implement setThis
 	# cdef setThis(self, _Graph other):
@@ -148,6 +151,12 @@ cdef class Graph:
 
 	def degree(self, u):
 		return self._this.degree(u)
+
+	def degreeIn(self, u):
+		return self._this.degreeIn(u)
+	
+	def degreeOut(self, u):
+		return self._this.degreeOut(u)
 
 	def addNode(self):
 		return self._this.addNode()
@@ -178,6 +187,9 @@ cdef class Graph:
 
 	def isWeighted(self):
 		return self._this.isWeighted()
+
+	def isDirected(self):
+		return self._this.isDirected()
 
 	def toString(self):
 		return self._this.toString()
