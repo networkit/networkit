@@ -8,6 +8,8 @@
 #ifndef DYNAMICPUBWEBGENERATOR_H_
 #define DYNAMICPUBWEBGENERATOR_H_
 
+#include <map>
+
 #include "DynamicGraphGenerator.h"
 #include "PubWebGenerator.h"
 #include "../dynamics/GraphEvent.h"

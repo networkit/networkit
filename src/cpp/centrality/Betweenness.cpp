@@ -5,10 +5,12 @@
  *      Author: hm
  */
 
-#include "Betweenness.h"
-#include "../auxiliary/PrioQueue.h"
 #include <stack>
 #include <queue>
+
+#include "Betweenness.h"
+#include "../auxiliary/PrioQueue.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

@@ -8,6 +8,7 @@
 #include "DynamicsGTest.h"
 
 #include "../DGSStreamParser.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 

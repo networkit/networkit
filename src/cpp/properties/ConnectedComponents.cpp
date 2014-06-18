@@ -5,10 +5,12 @@
  *      Author: cls
  */
 
+#include <set>
+
 #include "ConnectedComponents.h"
 #include "../structures/Partition.h"
 #include "../coarsening/PartitionCoarsening.h"
-#include <set>
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
