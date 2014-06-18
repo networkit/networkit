@@ -17,8 +17,7 @@
 
 namespace NetworKit {
 
-class DynamicPubWebGenerator: public NetworKit::DynamicGraphGenerator
-{
+class DynamicPubWebGenerator: public NetworKit::DynamicGraphGenerator {
 
 protected:
 	PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
@@ -31,7 +30,6 @@ public:
 			float neighborhoodRadius, count maxNumberOfNeighbors,
 			bool writeInitialGraphToStream = true);
 
-	virtual ~DynamicPubWebGenerator();
 
 	Graph getGraph() const { return G; }
 
