@@ -24,6 +24,7 @@ public:
 
 	NeighborhoodDistance(const Graph& G);
 
+	/** Default destructor */
 	virtual ~NeighborhoodDistance();
 
 	virtual void preprocess();

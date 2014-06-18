@@ -19,6 +19,7 @@ public:
 
 	TNodeDistance(const Graph& G);
 
+	/** Default destructor */
 	virtual ~TNodeDistance();
 
 	void initialize(const Parameters& param);

@@ -23,9 +23,11 @@ class AlgebraicDistance: public NetworKit::NodeDistance {
 public:
 
 	/**
-	 * @param numberSystems Number of vectors/systems used for algebraic iteration
-	 * @param numberIterations Number of iterations in each system
-	 * @param omega Overrelaxation parameter
+	 * @param G The graph.
+	 * @param numberSystems Number of vectors/systems used for algebraic iteration.
+	 * @param numberIterations Number of iterations in each system.
+	 * @param omega Overrelaxation parameter.
+	 * @param norm The norm factor of the extended algebraic distance. Maximum norm is realized by setting @a norm to 0.
 	 */
 	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
 
@@ -41,10 +43,9 @@ public:
 	 virtual void preprocess();
 
 	/**
-	 * @return Extended algebraic distance between node @a u and node @a v in norm @a norm with
-	 * default norm 2.
-	 *
-	 * Maximum norm is realized by setting @a norm to 0.
+	 * Returns the extended algebraic distance between node @a u and node @a v in the norm specified in
+	 * the constructor.
+	 * @return Extended algebraic distance between the two nodes.
 	 */
 	 virtual double distance(node u, node v);
 

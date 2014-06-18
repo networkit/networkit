@@ -17,6 +17,7 @@ public:
 
 	TNeighborhoodDistance(const Graph& G);
 
+	/** Default destructor */
 	virtual ~TNeighborhoodDistance();
 
 	void initialize(const Parameters& param);

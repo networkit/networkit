@@ -23,6 +23,7 @@ public:
 
 	TAlgebraicDistance(const Graph& G);
 
+	/** Default destructor */
 	virtual ~TAlgebraicDistance();
 
 	void initialize(const Parameters& param);
