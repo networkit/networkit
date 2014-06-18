@@ -22,6 +22,8 @@ protected:
 
 public:
 	/**
+	 * Constructs the PageRank class for the Graph @a G
+	 *
 	 * @param[in] G Graph to be processed.
 	 * @param[in] damp Damping factor of the PageRank algorithm.
 	 * @param[in] tol Error tolerance for PageRank iteration.
