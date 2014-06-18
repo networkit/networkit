@@ -10,15 +10,6 @@
 
 namespace NetworKit {
 
-RandomClusterer::RandomClusterer() {
-	// TODO Auto-generated constructor stub
-
-}
-
-RandomClusterer::~RandomClusterer() {
-	// TODO Auto-generated destructor stub
-}
-
 Partition RandomClusterer::run(Graph& G) {
 	ClusteringGenerator gen;
 	return gen.makeRandomClustering(G, 42); // TODO: does this need a command line parameter?

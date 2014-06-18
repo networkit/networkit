@@ -17,7 +17,7 @@ namespace NetworKit {
  */
 class Coverage: public NetworKit::QualityMeasure {
 public:
-	Coverage();
+	/** Default destructor */
 	virtual ~Coverage();
 
 	virtual double getQuality(const Partition& zeta, const Graph& G);

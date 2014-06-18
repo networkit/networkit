@@ -21,8 +21,14 @@ class SampledGraphStructuralRandMeasure: public NetworKit::DissimilarityMeasure 
 
 public:
 
+	/**
+	 * Constructs the SampledGraphStructuralRandMeasure. A maximum of @a maxSamples samples are drawn.
+	 *
+	 * @param maxSamples The amount of samples to draw.
+	 */
 	SampledGraphStructuralRandMeasure(count maxSamples);
 
+	/** Default destructor */
 	virtual ~SampledGraphStructuralRandMeasure();
 
 	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second);

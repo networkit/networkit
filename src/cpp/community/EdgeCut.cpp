@@ -9,12 +9,7 @@
 
 namespace NetworKit {
 
-EdgeCut::EdgeCut() {
-
-}
-
 EdgeCut::~EdgeCut() {
-
 }
 
 // TODO: unit test
