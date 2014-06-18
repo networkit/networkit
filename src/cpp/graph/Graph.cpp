@@ -346,7 +346,7 @@ int Graph::addEdgeAttribute_double(double defaultValue) {
 	return attrId;
 }
 
-std::vector<node> Graph::nodes() {
+std::vector<node> Graph::nodes() const {
 	std::vector<node> nodes;
 	this->forNodes([&](node u){
 		nodes.push_back(u);

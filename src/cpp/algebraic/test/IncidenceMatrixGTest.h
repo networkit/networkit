@@ -18,13 +18,13 @@ namespace NetworKit {
 class IncidenceMatrixGTest : public testing::Test {
 protected:
 	virtual void SetUp() {
-		graph = NetworKit::Graph(5);
-		graph.addEdge(0,1);
-		graph.addEdge(0,2);
-		graph.addEdge(0,3);
-		graph.addEdge(2,3);
-		graph.addEdge(4,1);
-		graph.addEdge(4,4);
+		graph = NetworKit::Graph(5, true);
+		graph.addEdge(0,1, 4.0);
+		graph.addEdge(0,2, 9.0);
+		graph.addEdge(0,3, 16.0);
+		graph.addEdge(2,3, 1.0);
+		graph.addEdge(4,1, 25.0);
+		graph.addEdge(4,4, 1.0);
 	}
 
 	NetworKit::Graph graph;

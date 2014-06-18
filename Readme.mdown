@@ -9,7 +9,7 @@ utilize multicore architectures. These are meant to compute standard measures
 of network analysis, such as degree sequences, clustering coefficients and
 centrality (see next sections of this document for a list of existing features
 and a roadmap of planned features). In this respect, NetworKit is comparable
-to packages such as [NetworkX][networkx], albeit with a focus on parallelism 
+to packages such as [NetworkX][networkx], albeit with a focus on parallelism
 and scalability. NetworKit is also a testbed for algorithm engineering and
 contains a few novel algorithms from recently published research, especially
 in the area of community detection (see list of publications below).
@@ -23,7 +23,7 @@ program for community detection can still be built (see build instructions
 below), but we focus our efforts on the interactive Python environment.
 
 
-[networkit]: http://parco.iti.kit.edu/software/networkit.shtml 
+[networkit]: http://parco.iti.kit.edu/software/networkit.shtml
 [networkx]: http://networkx.github.com/
 
 
@@ -46,7 +46,7 @@ For questions regarding NetworKit, subscribe to our [e-mail list][list] (`networ
 Requirements
 ------------
 
-### Compiler: 
+### Compiler:
 
 A C++ compiler supporting C++11 (we use GCC 4.8). The compiler and linker flags `-fopenmp -std=c++11` are required.
 
@@ -55,7 +55,7 @@ A C++ compiler supporting C++11 (we use GCC 4.8). The compiler and linker flags 
 
 - `OpenMP`		for parallelism
 
-To avoid possible binary incompatibilities, try to build these libraries with the same compiler that will be used to build NetworKit. 
+To avoid possible binary incompatibilities, try to build these libraries with the same compiler that will be used to build NetworKit.
 
 
 Building the C++ Core only
@@ -69,17 +69,18 @@ The call to SCons has the following options:
 
 where `<level>` can be
 
-- `D` 	debug
-- `O`	optimized
-- `P`	profiling
+- `Dbg` 	debug
+- `Opt`		optimized
+- `Pro`		profiling
 
 and `<target>` can be
 
-- `Core`				build NetworKit as a library, required by the Python shell		
-- `Tests`				build executable for the unit tests	
+- `Core`				build NetworKit as a library, required by the Python shell
+- `Tests`				build executable for the unit tests
+- `Lib`					build NetworKit as a library and create symbolic links
 
 For example, to build NetworKit as an optimized library, run
-	scons --optimize=O --target=Core
+	scons --optimize=Opt --target=Core
 
 To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
 
@@ -108,8 +109,8 @@ Additionally, the module uses the following external Python packages:
 - `scipy`
 - `matplotlib`
 
-The functionality of NetworKit available to Python is greatly reduced without these packages. 
-These are best installed via `easy_install` or `pip`. (If you have multiple Python installations, be sure you use the commands matching your Python 3 version. In the following examples, `python3` and `pip3` will be used.) 
+The functionality of NetworKit available to Python is greatly reduced without these packages.
+These are best installed via `easy_install` or `pip`. (If you have multiple Python installations, be sure you use the commands matching your Python 3 version. In the following examples, `python3` and `pip3` will be used.)
 
 	pip3 install package_name
 
@@ -120,13 +121,13 @@ Then, switch to the top folder and run the script `setup.py` with the following 
 
 The script will call scons to compile NetworKit as a library and then build the extensions in the folder `src/python`. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the options `--optimize=V` and `-jN` the same way it can be done to a manual scons call, to specify the optimization level (where `V` is `O`, `D` or `P`) and the number of threads used for compilation.
 The setup script provides more functionality:
-	
+
 	python3 setup.py develop [--uninstall] [--optimize=V] [-jX]
-	
-will compile NetworKit, build the extensions and on top of that temporarily install NetworKit so that it is available on the whole system. This can be undone by adding `--uninstall`. 
+
+will compile NetworKit, build the extensions and on top of that temporarily install NetworKit so that it is available on the whole system. This can be undone by adding `--uninstall`.
 
 	python3 setup.py clean [--optimize=V]
-	
+
 will remove the extensions and its build folder as well as call scons to remove the NetworKit library and its build folder specified by `--optimize=V`.
 
 Note: All of the above installation command may require `sudo` privileges depending on your system, so try this accordingly.
@@ -140,7 +141,7 @@ Assuming the extension module `NetworKit` exists, it can be imported in python:
 Interactive Work with NetworKit
 -------------------------------
 
-With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend IPython as a great environment for scientific computing. IPython can also be installed via `pip` or `easy_install`.  For tab completion in ipython you may also need to install `readline`. The following should work: `pip3 install readline ipython`. 
+With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend IPython as a great environment for scientific computing. IPython can also be installed via `pip` or `easy_install`.  For tab completion in ipython you may also need to install `readline`. The following should work: `pip3 install readline ipython`.
 
 After the requirements are satisfied, start IPython and import NetworKit.
 
@@ -161,13 +162,26 @@ Your default browser should open a web interface named "IPython Dashboard". You 
 
 	ipython3 notebook --pylab inline --notebook-dir=Doc/Notebooks
 
-The notebook appears in the list and you can start it by clicking on it. 
+The notebook appears in the list and you can start it by clicking on it.
+
+
+NetworKit as a library
+----------------------
+
+It is also possible to use NetworKit as a library. Therefore, choose the target `Lib` when compiling NetworKit. The include directives in your C++-application look like the following
+
+	#include <NetworKit/graph/Graph.h>
+
+NetworKit is a symlink to the directory `src/cpp`, so the directory structure from the repository is valid. To compile your application, you need to add the paths for the header files and the location of the library. There is a simple source file to demonstrate this. Feel free to compile `LibDemo.cpp` as follows:
+
+	g++ -o LibDemo -std=c++11 -I/path/to/repository 
+		-L/path/to/repository LibDemo.cpp -lNetworKit -fopenmp
 
 
 Contribute
 ----------
 
-We would like to encourage contributions to the NetworKit source code. See the development guide (`DevGuide.mdown`) for instructions. For support please contact `christian.staudt @ kit.edu`. 
+We would like to encourage contributions to the NetworKit source code. See the development guide (`DevGuide.mdown`) for instructions. For support please contact `christian.staudt @ kit.edu`.
 
 
 Development History
@@ -194,6 +208,7 @@ Credits
 
 - Miriam Beddig
 - Stefan Bertsch
+- Pratistha Bhattarai
 - Andreas Bilke
 - Guido Brückner
 - Patrick Flick
@@ -209,7 +224,7 @@ Credits
 ### External Code
 
 The program source includes:
-- the *[The Lean Mean C++ Option Parser][optparse]* by Matthias S. Benkmann. 
+- the *[The Lean Mean C++ Option Parser][optparse]* by Matthias S. Benkmann.
 - a Python 3 version of the *[powerlaw][powerlaw]* Python module by Jeff Alstott, Ed Bullmore, Dietmar Plenz
 
 [powerlaw]: https://pypi.python.org/pypi/powerlaw#downloads
@@ -246,5 +261,3 @@ The following is a list of publications on the basis of NetworKit. We ask you to
 			Publisher = {Conference Publishing Services (CPS)},
 			Title = {Engineering High-Performance Community Detection Heuristics for Massive Graphs},
 			Year = {2013}}
-
-

@@ -1194,6 +1194,21 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 		return self._this.getDissimilarity(dereference(G._this), first._this, second._this)
 
 
+cdef extern from "../cpp/community/JaccardMeasure.h":
+	cdef cppclass _JaccardMeasure "NetworKit::JaccardMeasure":
+		J_accardMeasure() except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second)
+
+cdef class JaccardMeasure(DissimilarityMeasure):
+	""" TODO:
+	"""
+	cdef _JaccardMeasure _this
+
+	def getDissimilarity(self, Graph G, Partition first, Partition second):
+		return self._this.getDissimilarity(dereference(G._this), first._this, second._this)
+
+
+
 cdef extern from "../cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
 		_Partition run(_Graph G)
@@ -1546,6 +1561,36 @@ cdef class ApproxBetweenness:
 	def ranking(self):
 		return self._this.ranking()
 
+
+cdef extern from "../cpp/centrality/ApproxBetweenness2.h":
+	cdef cppclass _ApproxBetweenness2 "NetworKit::ApproxBetweenness2":
+		_ApproxBetweenness2(_Graph, count, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class ApproxBetweenness2:
+	"""
+ 	Approximation of betweenness centrality according to algorithm described in
+	 	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
+	"""
+	cdef _ApproxBetweenness2* _this
+
+	def __cinit__(self, Graph G, nSamples, normalized=False):
+		self._this = new _ApproxBetweenness2(dereference(G._this), nSamples, normalized)
+
+	def run(self):
+		self._this.run()
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
 
 
 cdef extern from "../cpp/centrality/PageRank.h":
