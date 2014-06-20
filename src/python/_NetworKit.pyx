@@ -154,7 +154,7 @@ cdef class Graph:
 
 	def degreeIn(self, u):
 		return self._this.degreeIn(u)
-	
+
 	def degreeOut(self, u):
 		return self._this.degreeOut(u)
 
@@ -1350,6 +1350,39 @@ cdef class ConnectedComponents:
 
 	def componentOfNode(self, v):
 		return self._this.componentOfNode(v)
+
+
+
+cdef extern from "../cpp/properties/StronglyConnectedComponents.h":
+	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
+		_StronglyConnectedComponents(_Graph G) except +
+		void run() except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		_Partition getPartition() except +
+
+
+cdef class StronglyConnectedComponents:
+	""" Determines the connected components and associated values for
+		a directed graph.
+	"""
+	cdef _StronglyConnectedComponents* _this
+
+	def __cinit__(self,  Graph G):
+		self._this = new _StronglyConnectedComponents(dereference(G._this))
+
+	def run(self):
+		self._this.run()
+
+	def getPartition(self):
+		return Partition().setThis(self._this.getPartition())
+
+	def numberOfComponents(self):
+		return self._this.numberOfComponents()
+
+	def componentOfNode(self, v):
+		return self._this.componentOfNode(v)
+
 
 
 cdef extern from "../cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
