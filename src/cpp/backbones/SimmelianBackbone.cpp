@@ -24,14 +24,8 @@ Graph SimmelianBackbone::calculate() {
 	edgeCountMap triangles = counter.triangleCounts(graph);
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, triangles);
 
-	//Create the backbone graph. Edges will be inserted on the fly.
-	Graph backboneGraph (graph.upperNodeIdBound());
-
-	//TODO: This seems stupid .. Implement a clone method in Graph instead?
-	for (node i = 0; i < graph.upperNodeIdBound(); i++) {
-		if (!graph.hasNode(i))
-			backboneGraph.removeNode(i);
-	}
+	//Create the backbone graph.
+	Graph backboneGraph = cloneGraphWithoutEdges(graph);
 
 	graph.forEdges([&](node u, node v) {
 		//TODO: This should be refactored.
