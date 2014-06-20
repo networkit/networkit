@@ -12,16 +12,6 @@
 
 namespace NetworKit {
 
-DynamicNMIDistance::DynamicNMIDistance() {
-	// TODO Auto-generated constructor stub
-
-}
-
-DynamicNMIDistance::~DynamicNMIDistance() {
-	// TODO Auto-generated destructor stub
-}
-
-
 bool DynamicNMIDistance::isInBoth(node u, const Partition& oldClustering, const Partition& newClustering) {
 	return ((newClustering[u] != none) &&
 			(u < oldClustering.numberOfElements()) &&

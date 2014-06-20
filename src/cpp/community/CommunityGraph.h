@@ -12,19 +12,25 @@
 
 namespace NetworKit {
 
+/**
+ * The CommunityGraph class represents a Graph coarsened according to communities. Each node in the CommunityGraph
+ * represents a community. Edge weights are the weights of inter-community cuts.
+ */
 class CommunityGraph {
 public:
-
-	CommunityGraph();
-
+	/** Default destructor */
 	virtual ~CommunityGraph();
 
 	/**
-	 * Create a graph coarsened according to communities. Edge weights are the weights of
+	 * Creates a coarsened graph of @a G according to communities in @a zeta. Edge weights are the weights of
 	 * inter-community cuts.
 	 */
 	virtual void run(const Graph& G, const Partition& zeta);
 
+	/**
+	 * Returns the coarsened Graph.
+	 * @return The coarsened graph.
+	 */
 	virtual Graph getGraph();
 
 	/** only to be used by cython - this eliminates an unnecessary copy */

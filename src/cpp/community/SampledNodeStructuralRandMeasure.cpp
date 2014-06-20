@@ -17,14 +17,13 @@ SampledNodeStructuralRandMeasure::SampledNodeStructuralRandMeasure(count maxSamp
 }
 
 SampledNodeStructuralRandMeasure::~SampledNodeStructuralRandMeasure() {
-	// TODO Auto-generated destructor stub
 }
 
 double SampledNodeStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, Partition& second) {
 	assert (G.numberOfNodes() > 0);
 	assert (G.numberOfNodes() > maxSamples);
 
-	count n11 = 0; 	// number of node pairs for which clusterings aggree
+	count n11 = 0; 	// number of node pairs for which clusterings agree
 	count n00 = 0;	// number of node pairs for which clusterings disagree
 
 

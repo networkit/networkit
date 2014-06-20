@@ -10,13 +10,7 @@
 
 namespace NetworKit {
 
-CoverageSequential::CoverageSequential() {
-	// TODO Auto-generated constructor stub
-
-}
-
 CoverageSequential::~CoverageSequential() {
-	// TODO Auto-generated destructor stub
 }
 
 double CoverageSequential::getQuality(const Partition& zeta, const Graph& G) {

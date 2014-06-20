@@ -21,8 +21,14 @@ class SampledNodeStructuralRandMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
+	/**
+	 * Constructs the SampledNodeStructuralRandMeasure. A maximum of @a maxSamples samples are drawn.
+	 *
+	 * @param maxSamples The amount of samples to draw.
+	 */
 	SampledNodeStructuralRandMeasure(count maxSamples);
 
+	/** Default destructor */
 	virtual ~SampledNodeStructuralRandMeasure();
 
 	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second);

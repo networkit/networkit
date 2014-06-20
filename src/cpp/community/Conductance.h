@@ -20,7 +20,7 @@ namespace NetworKit {
  */
 class Conductance: public NetworKit::QualityMeasure {
 public:
-	Conductance();
+	/** Default destructor */
 	virtual ~Conductance();
 
 	/**

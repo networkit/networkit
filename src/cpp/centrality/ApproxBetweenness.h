@@ -12,19 +12,19 @@
 
 namespace NetworKit {
 
-/** 
+/**
  * Approximation of betweenness centrality according to algorithm described in
- * 	Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
+ * Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
  */
 class ApproxBetweenness: public NetworKit::Centrality {
 
 public:
 
-	/** 
+	/**
 	 * The algorithm approximates the betweenness of all vertices so that the scores are
 	 * within an additive error epsilon with probability at least (1- delta).
 	 * The values are normalized by default.
-	 * 
+	 *
 	 * @param	epsilon		maximum additive error
 	 * @param	delta		probability that the values are within the error guarantee
 	 */
@@ -32,11 +32,17 @@ public:
 
 	void run() override;
 
+	/**
+	 * @return number of samples taken in last run
+	 */
+	count numberOfSamples();
+
 
 private:
 
 	double epsilon;
 	double delta;
+	count r; // number of samples taken in last run
 };
 
 } /* namespace NetworKit */

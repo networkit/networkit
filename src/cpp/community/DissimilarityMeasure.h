@@ -20,8 +20,7 @@ class DissimilarityMeasure {
 
 public:
 
-	DissimilarityMeasure();
-
+	/** Default destructor */
 	virtual ~DissimilarityMeasure();
 
 
