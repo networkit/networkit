@@ -11,6 +11,7 @@
 #include "BackboneCalculator.h"
 #include "TriangleCounter.h"
 #include "gtest/gtest_prod.h"
+#include <set>
 
 namespace NetworKit {
 
