@@ -1,12 +1,12 @@
 /*
- * StrongConnectedComponents.h
+ * StronglyConnectedComponents.h
  *
  *  Created on: 01.06.2014
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef STRONGCONNECTEDCOMPONENTS_H_
-#define STRONGCONNECTEDCOMPONENTS_H_
+#ifndef STRONGLYCONNECTEDCOMPONENTS_H_
+#define STRONGLYCONNECTEDCOMPONENTS_H_
 
 #include "../graph/Graph.h"
 #include "../structures/Partition.h"
@@ -16,10 +16,10 @@ namespace NetworKit {
 /**
  * Determines the strongly connected components of an directed graph.
  */
-class StrongConnectedComponents {
+class StronglyConnectedComponents {
 public:
-	StrongConnectedComponents(const Graph& G);
-	virtual ~StrongConnectedComponents();
+	StronglyConnectedComponents(const Graph& G);
+	virtual ~StronglyConnectedComponents();
 
 	/**
 	 * This method determines the connected components for the graph g.
@@ -39,7 +39,7 @@ public:
 	count componentOfNode(node u);
 
 
-	/** 
+	/**
 	 * Return a Partition that represents the components
 	 */
 	Partition getPartition();
@@ -53,4 +53,4 @@ private:
 }
 
 
-#endif /* STRONGSrongCONNECTEDCOMPONENTS_H_ */
+#endif /* STRONGLYCONNECTEDCOMPONENTS_H_ */
