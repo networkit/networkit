@@ -5,9 +5,10 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../auxiliary/Random.h"
-
 #include "Luby.h"
+
+#include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 	

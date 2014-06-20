@@ -6,6 +6,7 @@
  */
 
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
 
 #include "TAlgebraicDistance.h"
 

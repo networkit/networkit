@@ -34,6 +34,8 @@ Graph ChungLuGenerator::generate() {
 			}
 		}
 	}
+
+	G.shrinkToFit();
 	return G;
 }
 

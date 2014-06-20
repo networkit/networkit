@@ -40,3 +40,6 @@ syntax: regexp
 /*.eps
 syntax: regexp
 ^doxygen$
+
+syntax: glob
+NetworKit-Tests-*

@@ -5,7 +5,7 @@
  *      Author: Weijian Ji (weijian.ji@student.kit.edu)
  */
 
-#ifndef CLUSTERINGCUTS_H_
+#ifndef CLUSTERINGCUT_H_
 #define CLUSTERINGCUT_H_
 
 #include "../graph/Graph.h"
