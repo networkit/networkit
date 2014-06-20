@@ -170,13 +170,13 @@ TEST_F(PropertiesGTest, testCoreDecomposition) {
 TEST_F(PropertiesGTest, testCoreDecompositionOnGraphFiles) {
 	CoreDecomposition coreDec;
   METISGraphReader input;
-  
+
   Graph G;
   std::vector<count> corenesses;
   std::ofstream output;
-  
+
   std::list<std::string> graphList = {"celegans_metabolic", "polblogs", "hep-th"};
-  
+
   std::for_each(graphList.begin(), graphList.end(), [&](std::string filename){
     G = input.read(std::string("input/") + filename.str() + ".graph");
     corenesses = coreDec.run(G);
@@ -432,6 +432,11 @@ TEST_F(PropertiesGTest, testDegreeAssortativity) {
 //	Graph cnr = reader.read("input/dimacs10/clustering/cnr-2000.graph");
 //	assortativity = GraphProperties::degreeAssortativity(cnr);
 }
+
+
+
+
+
 
 
 } /* namespace NetworKit */

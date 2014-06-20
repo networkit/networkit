@@ -8,21 +8,21 @@
 #include <stack>
 #include <functional>
 
-#include "StrongConnectedComponents.h"
+#include "StronglyConnectedComponents.h"
 #include "../structures/Partition.h"
 #include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
-StrongConnectedComponents::StrongConnectedComponents(const Graph& G) : G(G) {
+StronglyConnectedComponents::StronglyConnectedComponents(const Graph& G) : G(G) {
 
 }
 
-StrongConnectedComponents::~StrongConnectedComponents() {
+StronglyConnectedComponents::~StronglyConnectedComponents() {
 
 }
 
-void StrongConnectedComponents::run() {
+void StronglyConnectedComponents::run() {
 	count z = G.upperNodeIdBound();
 	component = Partition(z);
 
@@ -68,18 +68,17 @@ void StrongConnectedComponents::run() {
 	});
 }
 
-Partition StrongConnectedComponents::getPartition() {
+Partition StronglyConnectedComponents::getPartition() {
 	return this->component;
 }
 
-count StrongConnectedComponents::numberOfComponents() {
+count StronglyConnectedComponents::numberOfComponents() {
 	return this->component.numberOfSubsets();
 }
 
-count StrongConnectedComponents::componentOfNode(node u) {
+count StronglyConnectedComponents::componentOfNode(node u) {
 	assert (component[u] != none);
 	return component[u];
 }
 
 }
-
