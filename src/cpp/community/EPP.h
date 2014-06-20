@@ -34,32 +34,44 @@ protected:
 
 public:
 
+	/** Default constructor */
 	EPP();
 
+	/** Default destructor */
 	virtual ~EPP() = default;
 
 	/**
 	 * Add a base clusterer to the ensemble.
+	 *
+	 * @param base A base clusterer.
 	 */
 	virtual void addBaseClusterer(CommunityDetectionAlgorithm&  base);
 
 
 	/**
 	 * Set final clusterer.
+	 *
+	 * @param final The final clusterer.
 	 */
 	virtual void setFinalClusterer(CommunityDetectionAlgorithm& final);
 
 	/**
 	 * Set overlap algorithm which combines the results of the base clusterers.
+	 *
+	 * @param overlap The overlap algorithm.
 	 */
 	virtual void setOverlapper(Overlapper& overlap);
 
 	/**
-	 * Run the ensemble clusterer.
+	 * Run the ensemble clusterer on @a G and return the result in a Partition.
+	 *
+	 * @param G The graph.
+	 * @return A Partition of the clustering.
 	 */
 	virtual Partition run(Graph& G);
 
 	/**
+	 * String representation of EPP class.
 	 * @return string representation.
 	 */
 	virtual std::string toString() const;

@@ -22,8 +22,10 @@ protected:
 
 public:
 	/**
-	 * @param[in] G
-	 * @param[in] normalized True if scores should be normalized in the interval [0,1].
+	 * Constructs the EigenvectorCentrality class for the given Graph @a G. @a tol defines the tolerance for convergence.
+	 *
+	 * @param[in] G The graph.
+	 * @param[in] tol The tolerance for convergence.
 	 */
 	EigenvectorCentrality(const Graph& G, double tol = 1e-9);
 

@@ -20,10 +20,6 @@ PLMOld::PLMOld(std::string par, double gamma) : anyChange(false), parallelism(pa
 	this->VERSION = "1.0";
 }
 
-PLMOld::~PLMOld() {
-	// TODO Auto-generated destructor stub
-}
-
 Partition PLMOld::pass(Graph& G) {
 
 	// FIXME: PLM cannot deal with deleted nodes

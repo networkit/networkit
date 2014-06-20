@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-LaplacianMatrix::LaplacianMatrix(const Graph &graph) : Matrix(graph.numberOfNodes()) {
+LaplacianMatrix::LaplacianMatrix(const Graph &graph) : Matrix(graph.upperNodeIdBound()) {
 	graph.forNodes([&](const index i){
 		double weightedDegree = graph.weightedDegree(i);
 

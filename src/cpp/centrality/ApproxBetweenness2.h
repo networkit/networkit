@@ -14,7 +14,7 @@ namespace NetworKit {
 
 /**
  * Approximation of betweenness centrality according to algorithm described in
- * 	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
+ * Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
  */
 class ApproxBetweenness2: public NetworKit::Centrality {
 

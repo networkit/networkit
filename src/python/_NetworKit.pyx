@@ -1575,6 +1575,7 @@ cdef extern from "../cpp/centrality/ApproxBetweenness.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		count numberOfSamples() except +
 
 cdef class ApproxBetweenness:
 	"""
@@ -1605,6 +1606,9 @@ cdef class ApproxBetweenness:
 
 	def ranking(self):
 		return self._this.ranking()
+
+	def numberOfSamples(self):
+		return self._this.numberOfSamples()
 
 
 cdef extern from "../cpp/centrality/ApproxBetweenness2.h":

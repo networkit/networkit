@@ -24,8 +24,7 @@ private:
 
 
 public:
-	LPDegreeOrdered();
-	virtual ~LPDegreeOrdered();
+
 	virtual Partition run(Graph& G);
 
 	/**
