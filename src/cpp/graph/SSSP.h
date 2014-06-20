@@ -8,6 +8,8 @@
 #ifndef SSSP_H_
 #define SSSP_H_
 
+#include <set>
+ 
 #include "Graph.h"
 
 namespace NetworKit {

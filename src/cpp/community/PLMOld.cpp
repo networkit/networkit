@@ -9,6 +9,7 @@
 
 #include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
+#include "../auxiliary/Log.h"
 #include "omp.h"
 
 namespace NetworKit {

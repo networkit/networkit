@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include <queue>
+
 #include "DynamicPubWebGenerator.h"
 
 namespace NetworKit {

@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include <set>
+
 #include "ApproximatePageRank.h"
 
 namespace NetworKit {

@@ -143,8 +143,8 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 
 TEST_F(CommunityGTest, testLabelPropagationOnDisconnectedGraph) {
 	GraphGenerator graphGenerator;
-	int n = 100;
-	int k = 2; // number of clusters
+	count n = 100;
+	count k = 2; // number of clusters
 	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.0);
 
 	PLP lp;
@@ -175,9 +175,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	Modularity modularity;
 	double mod = modularity.getQuality(zeta, G);
 	DEBUG("modularity produced by LabelPropagation: " , mod);
-
 }
-
 
 
 TEST_F(CommunityGTest, testLabelPropagationOnManySmallClusters) {
@@ -408,7 +406,7 @@ TEST_F(CommunityGTest, testCommunityGraph) {
 
 	Partition one = clusteringGen.makeOneClustering(G);
 	com.run(G, one);
-	EXPECT_EQ(1, com.getGraph().numberOfNodes());
+	EXPECT_EQ(1u, com.getGraph().numberOfNodes());
 
 	Partition singleton = clusteringGen.makeSingletonClustering(G);
 	com.run(G, singleton);
