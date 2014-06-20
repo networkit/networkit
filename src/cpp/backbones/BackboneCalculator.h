@@ -27,6 +27,12 @@ public:
 	Graph* _calculate() {
 		return new Graph{std::move(calculate())};
 	};
+
+	/**
+	 * Creates a copy of the given graph that contains no edges.
+	 * TODO: Implement a clone method in Graph instead?
+	 */
+	Graph cloneGraphWithoutEdges(const Graph& graph);
 };
 
 } /* namespace NetworKit */
