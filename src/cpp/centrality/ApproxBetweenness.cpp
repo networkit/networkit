@@ -30,7 +30,7 @@ void ApproxBetweenness::run() {
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
 
-	double c = 1; // TODO: what is the effect of the choice of c?
+	double c = 0.5; // universal positive constant - see reference in paper
 
 	/**
 	 * This is an optimization which deviates from the original algorithm.
@@ -41,7 +41,7 @@ void ApproxBetweenness::run() {
 	count samples = 42;
 	edgeweight vd = Diameter::estimatedVertexDiameter(G, samples);
 	INFO("estimated diameter: ", vd);
-	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
+	r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
 
 	INFO("taking ", r, " path samples");
 
@@ -104,6 +104,11 @@ void ApproxBetweenness::run() {
 		});
 	}
 
+}
+
+
+count ApproxBetweenness::numberOfSamples() {
+	return r;
 }
 
 

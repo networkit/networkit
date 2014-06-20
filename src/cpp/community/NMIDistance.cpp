@@ -15,13 +15,7 @@
 
 namespace NetworKit {
 
-NMIDistance::NMIDistance() {
-	// TODO Auto-generated constructor stub
-
-}
-
 NMIDistance::~NMIDistance() {
-	// TODO Auto-generated destructor stub
 }
 
 double NMIDistance::getDissimilarity(Graph& G, Partition& zeta, Partition& eta) {

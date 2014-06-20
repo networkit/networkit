@@ -12,15 +12,6 @@
 
 namespace NetworKit {
 
-LPDegreeOrdered::LPDegreeOrdered() {
-	// TODO Auto-generated constructor stub
-
-}
-
-LPDegreeOrdered::~LPDegreeOrdered() {
-	// TODO Auto-generated destructor stub
-}
-
 Partition LPDegreeOrdered::run(Graph& G) {
 	count n = G.numberOfNodes();
 	count theta = n / 1e5;

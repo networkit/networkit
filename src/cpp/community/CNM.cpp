@@ -15,14 +15,6 @@
 
 namespace NetworKit{
 
-CNM::CNM() {
-
-}
-
-CNM::~CNM() {
-
-}
-
 
 node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
 
@@ -200,4 +192,3 @@ Partition CNM::run(Graph &graph) {
 }
 
 } // namespace
-
