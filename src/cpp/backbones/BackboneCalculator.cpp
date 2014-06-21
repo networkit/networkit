@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 Graph BackboneCalculator::cloneGraphWithoutEdges(const Graph& graph) {
-	Graph backboneGraph (graph.upperNodeIdBound());
+	Graph backboneGraph (graph.upperNodeIdBound(), graph.isWeighted(), graph.isDirected());
 
 	for (node i = 0; i < graph.upperNodeIdBound(); i++) {
 		if (!graph.hasNode(i))
