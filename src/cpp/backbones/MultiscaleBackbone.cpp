@@ -20,27 +20,35 @@ Graph MultiscaleBackbone::calculate() {
 	std::vector<edgeweight> normalizedWeights(graph.upperNodeIdBound());
 
 	graph.forNodes([&](node u) {
-		int k = graph.degree(u);
+		count k = graph.degree(u);
 
 		//Normalize edgeweights
-		edgeweight maxEdgeweight = 0.0;
+		edgeweight sum = 0.0;
 		graph.forNeighborsOf(u, [&](node v) {
-			maxEdgeweight = std::max(maxEdgeweight, graph.weight(u, v));
+			sum += graph.weight(u, v);
 		});
 		graph.forNeighborsOf(u, [&](node v) {
-			normalizedWeights[v] = graph.weight(u, v) / maxEdgeweight;
+			normalizedWeights[v] = graph.weight(u, v) / sum;
 		});
 
 		//Filter edges by probability calculation
 		graph.forNeighborsOf(u, [&](node v) {
-			edgeweight p = normalizedWeights[v];
-			double a = 1 - (1 - pow(p - 1, k - 1));
-			if (a < alpha)
-				backboneGraph.setWeight(u, v, graph.weight(u, v));
+			//In case d(u) == 1 and d(v) > 1: consider v only.
+			if (k > 1 || graph.degree(v) == 1) {
+				edgeweight p = normalizedWeights[v];
+				double probability = getProbability(k, p);
+				if (probability < alpha) {
+					backboneGraph.setWeight(u, v, graph.weight(u, v));
+				}
+			}
 		});
 	});
 
 	return backboneGraph;
+}
+
+double MultiscaleBackbone::getProbability(count degree, edgeweight normalizedWeight) {
+	return 1 - (1 - pow(1 - normalizedWeight, degree - 1));
 }
 
 } /* namespace NetworKit */

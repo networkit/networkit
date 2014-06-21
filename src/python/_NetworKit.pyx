@@ -1997,3 +1997,23 @@ cdef class SimmelianBackbone:
 		self._this = new _SimmelianBackbone(dereference(G._this), jaccardTreshold)
 		return Graph().setThis(self._this._calculate())
 		
+cdef extern from "../cpp/backbones/MultiscaleBackbone.h":
+	cdef cppclass _MultiscaleBackbone "NetworKit::MultiscaleBackbone":
+		_MultiscaleBackbone(_Graph G, double alpha) except +
+		_Graph* _calculate() except +
+
+cdef class MultiscaleBackbone:
+	"""
+	Calculates the multiscale backbone for a given input graph.
+	Parameters:
+		-	alpha	[0-1] the filtering parameter
+	"""
+
+	cdef _MultiscaleBackbone* _this
+
+	def __cinit__(self, Graph G, double alpha):
+		self._this = new _MultiscaleBackbone(dereference(G._this), alpha)
+
+	def calculate(self):
+		return Graph().setThis(self._this._calculate())
+		

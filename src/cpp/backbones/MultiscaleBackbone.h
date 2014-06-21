@@ -9,6 +9,7 @@
 #define MULTISCALEBACKBONE_H_
 
 #include "BackboneCalculator.h"
+#include "gtest/gtest_prod.h"
 
 namespace NetworKit {
 
@@ -31,6 +32,10 @@ private:
 	//Calculation parameters
 	const Graph& graph;
 	double alpha;
+
+	//Private helper functions
+	double getProbability(count degree, edgeweight normalizedWeight);
+	FRIEND_TEST(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone);
 };
 
 }

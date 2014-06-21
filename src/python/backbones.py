@@ -1,4 +1,4 @@
-from _NetworKit import SimmelianBackbone, ChibaNishizekiTriangleCounter
+from _NetworKit import SimmelianBackbone, ChibaNishizekiTriangleCounter, MultiscaleBackbone
 
 import pygephi
 
