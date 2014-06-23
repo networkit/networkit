@@ -36,17 +36,19 @@ struct uEdge
 	}
 
 	/**
-	 * We define an ordering on uEdge: Sort by lowNode, then by highNode.
+	 * We define a lexicographic ordering on the edges.
 	 */
 	bool operator<(const uEdge& other) const {
-		return lowNode < other.lowNode || (lowNode == other.lowNode && highNode < other.highNode);
+		return std::tie(lowNode, highNode) < std::tie(other.lowNode, other.highNode);
 	}
+
 	bool operator>(const uEdge& other) const {
-		return lowNode > other.lowNode || (lowNode == other.lowNode && highNode > other.highNode);
+		return std::tie(lowNode, highNode) > std::tie(other.lowNode, other.highNode);
 	}
 };
 
-typedef std::unordered_map<uEdge, count> edgeCountMap; //map: edge --> triangle count
+//map: edge --> triangle count
+typedef std::unordered_map<uEdge, count> edgeCountMap;
 
 /** 
  * Abstract base class for per-edge triangle counting algorithms.

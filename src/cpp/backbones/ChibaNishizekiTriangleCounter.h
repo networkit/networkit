@@ -16,8 +16,6 @@
 
 namespace NetworKit {
 
-typedef std::vector<std::pair<std::pair<node,node>, count>> edgeCountSet; //TEMPORARY return type, for debug/output purposes only.
-
 /** 
  * An implementation of the triangle counting algorithm by Chiba/Nishizeki.
  */
@@ -26,7 +24,6 @@ class ChibaNishizekiTriangleCounter : public TriangleCounter {
 public:
 
 	edgeCountMap triangleCounts(const Graph& graph);
-	edgeCountSet triangleCountsDebug(const Graph& graph); //TEMPORARY
 
 private:
 	void triangleFound(edgeCountMap& map, const node& u, const node& v, const node& w);
@@ -34,4 +31,5 @@ private:
 };
 
 } /* namespace NetworKit */
+
 #endif /* CHIBANISHIZEKI_H_ */
