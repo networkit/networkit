@@ -63,7 +63,6 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsSimple) {
 	EXPECT_EQ(1, (counts[uEdge(0,5)])) << "wrong triangle count";
 	EXPECT_EQ(1, (counts[uEdge(4,5)])) << "wrong triangle count";
 
-	//TODO: Remove the following. This is actually a test of uEdge...
 	EXPECT_EQ(1, (counts[uEdge(1,0)])) << "wrong triangle count";
 	EXPECT_EQ(1, (counts[uEdge(2,0)])) << "wrong triangle count";
 	EXPECT_EQ(1, (counts[uEdge(2,1)])) << "wrong triangle count";
