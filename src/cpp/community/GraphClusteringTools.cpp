@@ -1,4 +1,5 @@
 #include "GraphClusteringTools.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

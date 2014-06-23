@@ -45,6 +45,7 @@ Graph ErdosRenyiGenerator::generate() {
 		}
 	}
 
+	G.shrinkToFit();
 	return G;
 }
 

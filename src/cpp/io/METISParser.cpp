@@ -81,7 +81,7 @@ std::tuple<count, count, index> METISParser::getHeader() {
 	index weighted; // weighted or unweighted graph
 
 	std::string line = "";
-	Aux::enforce (this->graphFile);
+	Aux::enforceOpened(this->graphFile);
 
 	if (std::getline(this->graphFile, line)) {
 		while (line[0] == '%') {

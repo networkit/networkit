@@ -1,31 +1,25 @@
 /*
- * ConnectedComponents.cpp
+ * StronglyConnectedComponents.h
  *
- *  Created on: Dec 16, 2013
- *      Author: cls
+ *  Created on: 01.06.2014
+ *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef CONNECTEDCOMPONENTS_H_
-#define CONNECTEDCOMPONENTS_H_
+#ifndef STRONGLYCONNECTEDCOMPONENTS_H_
+#define STRONGLYCONNECTEDCOMPONENTS_H_
 
 #include "../graph/Graph.h"
-#include "../graph/BFS.h"
 #include "../structures/Partition.h"
 
 namespace NetworKit {
 
 /**
- * Determines the connected components of an undirected graph.
+ * Determines the strongly connected components of an directed graph.
  */
-class ConnectedComponents {
+class StronglyConnectedComponents {
 public:
-
-	ConnectedComponents(const Graph& G);
-
-	/**
-	 * This method determines the connected components for the graph g.
-	 */
-	void runSequential();
+	StronglyConnectedComponents(const Graph& G);
+	virtual ~StronglyConnectedComponents();
 
 	/**
 	 * This method determines the connected components for the graph g.
@@ -59,4 +53,4 @@ private:
 }
 
 
-#endif /* CONNECTEDCOMPONENTS_H_ */
+#endif /* STRONGLYCONNECTEDCOMPONENTS_H_ */

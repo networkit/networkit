@@ -12,6 +12,7 @@
 #include "../graph/Dijkstra.h"
 #include "../graph/BFS.h"
 #include "../graph/SSSP.h"
+#include "../auxiliary/Log.h"
 
 #include <math.h>
 #include <algorithm>
