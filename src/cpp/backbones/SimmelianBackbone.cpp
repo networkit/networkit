@@ -6,7 +6,6 @@
  */
 
 #include "SimmelianBackbone.h"
-#include "TriangleCounter.h"
 #include "ChibaNishizekiTriangleCounter.h"
 #include <limits>
 

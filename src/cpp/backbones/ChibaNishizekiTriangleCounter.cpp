@@ -6,7 +6,6 @@
  */
 
 #include "ChibaNishizekiTriangleCounter.h"
-#include <iostream>
 
 namespace NetworKit {
 
