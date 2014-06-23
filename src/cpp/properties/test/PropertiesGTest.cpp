@@ -423,18 +423,19 @@ TEST_F(PropertiesGTest, testDegreeAssortativity) {
 
 TEST_F(PropertiesGTest, testEffectiveDiameter) {
 	using namespace std;
-	vector<pair<string, int>> testInstances= {
-		pair<string, int>("celegans_metabolic", 6),
-		pair<string, int>("jazz", 5),
-		pair<string, int>("karate", 5),
-		pair<string, int>("lesmis", 5)
+	vector<string> testInstances= {
+		"celegans_metabolic",	// 6
+		"jazz",					// 5
+		"karate",				// 5
+		"lesmis"				// 5
 	};
 
 	for (auto testInstance : testInstances) {
 		METISGraphReader reader;
-		Graph G = reader.read("input/" + testInstance.first + ".graph");
-		int diameter = EffectiveDiameter::effectiveDiameter(G);
-		EXPECT_EQ(diameter, testInstance.second);
+		Graph G = reader.read("input/" + testInstance + ".graph");
+		count effectiveDiameter = EffectiveDiameter::effectiveDiameter(G);
+		count exactDiameter = Diameter::exactDiameter(G);
+		EXPECT_LE(effectiveDiameter, exactDiameter);
 	}
 }
 
