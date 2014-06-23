@@ -1953,24 +1953,6 @@ cdef class GraphUpdater:
 
 # Module: backbones
 
-cdef extern from "../cpp/backbones/ChibaNishizekiTriangleCounter.h":
-	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
-		_ChibaNishizekiTriangleCounter() except +
-		vector[pair[pair[node, node], count]] triangleCountsDebug(_Graph G) except +
-
-cdef class ChibaNishizekiTriangleCounter:
-	"""
-	  Simple implementation of the Chiba/Nishizeki triangle counting algorithm.
-	"""
-
-	cdef _ChibaNishizekiTriangleCounter* _this
-
-	def __cinit__(self):
-		self._this = new _ChibaNishizekiTriangleCounter()
-
-	def triangleCountsDebug(self, Graph G):
-		return self._this.triangleCountsDebug(dereference(G._this))
-
 cdef extern from "../cpp/backbones/SimmelianBackbone.h":
 	cdef cppclass _SimmelianBackbone "NetworKit::SimmelianBackbone":
 		_SimmelianBackbone(_Graph G, count maxRank, count minOverlap) except +
