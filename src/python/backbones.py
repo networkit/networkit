@@ -10,6 +10,11 @@ def writeCsv(file, G, B):
 		f.write("{0},{1},{2},{3}\n".format(edge[0],edge[1],"Undirected",value))
 	f.close()
 
+# ----------------------------------------------------------------------------------------
+# THE FOLLOWING IS AN EXPERIMENTAL INTERFACE TO GEPHI USING THE GRAPH STREAMING PLUGIN.
+# THIS FUNCTIONALITY IS TO BE EXTRACTED INTO A NICE AND GENERAL INTERFACE.
+# ----------------------------------------------------------------------------------------
+ 
 class NetworKitGephiClient:
     """ A python singleton """
 
@@ -32,28 +37,46 @@ class NetworKitGephiClient:
         return setattr(self.__instance, attr, value)
 
 # FOR TESTING PURPOSES ONLY.
+def gephi_getEdgeId(upperNodeIdBound, source, target):
+	return (2*upperNodeIdBound*source) + target
+
+# FOR TESTING PURPOSES ONLY.
 def gephi_exportBackbone(G, B):
-    g = NetworKitGephiClient()
-    g.clean()
+	g = NetworKitGephiClient()
+	g.clean()
         
-    nAttrs = {"size":10}
+	nAttrs = {"size":10}
         
-    for node in G.nodes():
-        g.add_node(str(node), **nAttrs)
+	for node in G.nodes():
+		g.add_node(str(node), **nAttrs)
         
-    g.flush()
+	g.flush()
     
-    edgeId = 1
-    eAttrs = {"backbone":0}
-    for edge in set(G.edges()) - set(B.edges()):
-        g.add_edge(edgeId, edge[0], edge[1], False, **eAttrs)
-        edgeId = edgeId + 1
+	eAttrs = {"backbone":0, "Type":"Undirected"}
+	for edge in set(G.edges()) - set(B.edges()):
+		edgeId = gephi_getEdgeId(G.numberOfNodes(), edge[0], edge[1])
+		g.add_edge(edgeId, edge[0], edge[1], False, **eAttrs)
         
-    eAttrs = {"backbone":1}
-    for edge in B.edges():
-        g.add_edge(edgeId, edge[0], edge[1], False, **eAttrs)
-        edgeId = edgeId + 1
+	eAttrs = {"backbone":1, "Type":"Undirected"}
+	for edge in B.edges():
+		edgeId = gephi_getEdgeId(G.numberOfNodes(), edge[0], edge[1])
+		g.add_edge(edgeId, edge[0], edge[1], False, **eAttrs)
             
+	g.flush()
+   
+# FOR TESTING PURPOSES ONLY
+def gephi_exportBackboneAttribute(G, B, aName):
+    g = NetworKitGephiClient()
+
+    eAttrs = {aName:0, "Type":"Undirected"}
+    for edge in set(G.edges()) - set(B.edges()):
+        edgeId = gephi_getEdgeId(G.numberOfNodes(), edge[0], edge[1])
+        g.change_edge(edgeId, edge[0], edge[1], False, **eAttrs)
+        
+    eAttrs = {aName:1, "Type":"Undirected"}
+    for edge in B.edges():
+        edgeId = gephi_getEdgeId(G.numberOfNodes(), edge[0], edge[1])
+        g.change_edge(edgeId, edge[0], edge[1], False, **eAttrs)
     g.flush()
     
 # FOR TESTING PURPOSES ONLY.

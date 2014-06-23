@@ -60,21 +60,4 @@ void ChibaNishizekiTriangleCounter::triangleFound(
 	triangleCount[uEdge(v,w)]++;
 }
 
-/**
- * FOR TESTING/DEBUG OUTPUT PURPOSES ONLY
- */
-edgeCountSet ChibaNishizekiTriangleCounter::triangleCountsDebug(const Graph& graph) {
-	edgeCountMap resultMap = triangleCounts(graph);
-
-	edgeCountSet resultSet;
-	resultSet.resize(graph.numberOfEdges());
-
-	for (auto& kv : resultMap) {
-		resultSet.push_back(
-				std::pair<std::pair<node, node>, count>(std::pair<node,node>(kv.first.lowNode, kv.first.highNode), kv.second));
-	}
-
-	return resultSet;
-}
-
 } /* namespace NetworKit */
