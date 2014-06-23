@@ -17,8 +17,8 @@ namespace NetworKit {
 
 /**
  * A directed edge with a simmelianness int value.
- * An ordering is defined on these ties by considering
- * first the simmelianness and then the index of alter.
+ * An ordering is defined on these ties: We order first by
+ * simmelianness (descending) and then by the id of alter (ascending).
  */
 struct RankedEdge {
 	node ego;
@@ -74,7 +74,7 @@ public:
 	 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
 	 * @param g 			the graph to calculate the backbone for
 	 * @param maxRank 		the maximum rank that is considered for overlap calculation
-	 * @param minOverlap	a minimum number of common top-maxRank neighbors
+	 * @param minOverlap	a minimum number of common top-maxRank neighbors in the ranked neighborhood
 	 */
 	SimmelianBackbone(const Graph& g, count maxRank, count minOverlap);
 
