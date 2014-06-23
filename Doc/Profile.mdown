@@ -1,7 +1,6 @@
 # Profiling NetworKit with callgrind
 
-You can profile NetworKit using the [callgrind](http://valgrind.org/docs/manual/cl-manual.html) tool of valgrind. It generates a call graph for the program
-annotated with call counts and optionally cache misses and branch-prediction
+You can profile NetworKit using the [callgrind](http://valgrind.org/docs/manual/cl-manual.html) tool of valgrind. It generates a call graph for the program annotated with call counts and optionally cache misses as well as branch-prediction
 misses.
 
 ## Step-by-step guide 
@@ -23,11 +22,11 @@ misses.
         kcachegrind
 
 ## Compile options
-- It is necessary to compile with debugging information `-g` to get a
+- You should compile with debugging information `-g` to get a
   readable profile.
 - We recommend compiling with optimizations `-O2` enabled, so inlining 
   is performed and you get realistic call traces. You should also 
-  compile with `-DNDEBUG` so debug code such as asserts are disabled.
+  compile with `-DNDEBUG` so debug statements such as asserts are disabled.
 - Do not compile with `-pg`. Otherwise you will get misleading calls
   to `mcount()`.
 
@@ -59,7 +58,7 @@ dumping the current stats and resetting them to zero:
     CALLGRIND_DUMP_STATS_AT("<name>");
 
 This will create profiles ```callgrind.out.<pid>.<id>``` with numerical
-ids ```ids```. Although the ```name``` you give will be contained in the
+ids. Although the ```name``` you give will be contained in the
 profiles, I have not found a way to add it to the generated file names.
 
 ## Cache simulation and branch prediction

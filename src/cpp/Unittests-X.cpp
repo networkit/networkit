@@ -93,8 +93,8 @@ int main(int argc, char **argv) {
 	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
 
 	OptionParser::Stats  stats(usage, argc, argv);
-	OptionParser::Option options[stats.options_max], buffer[stats.buffer_max];
-	OptionParser::Parser parse(usage, argc, argv, options, buffer);
+	std::vector<OptionParser::Option> options(stats.options_max), buffer(stats.buffer_max);
+	OptionParser::Parser parse(usage, argc, argv, options.data(), buffer.data());
 
 	if (parse.error())
 	 return 1;

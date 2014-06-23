@@ -8,6 +8,7 @@
 #include "SampledNodeStructuralRandMeasure.h"
 
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

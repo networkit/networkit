@@ -1,5 +1,5 @@
-
 #include "Parallelism.h"
+#include "Log.h"
 
  // OpenMP
 #include <omp.h>

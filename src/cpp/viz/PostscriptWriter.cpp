@@ -6,6 +6,7 @@
  */
 
 #include "PostscriptWriter.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

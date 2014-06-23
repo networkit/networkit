@@ -178,28 +178,28 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	EXPECT_EQ(pq.size(), vec.size());
 
 	ElemType elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 0.25);
-	EXPECT_EQ(elem.second, 11);
+	EXPECT_EQ(0.25, elem.first);
+	EXPECT_EQ(11u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 1);
 
 	elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 0.5);
-	EXPECT_EQ(elem.second, 0);
+	EXPECT_EQ(0.5, elem.first);
+	EXPECT_EQ(0u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 2);
 
 	elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 0.75);
-	EXPECT_EQ(elem.second, 4);
+	EXPECT_EQ(0.75, elem.first);
+	EXPECT_EQ(4u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 3);
 
 	elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 1.5);
-	EXPECT_EQ(elem.second, 5);
+	EXPECT_EQ(1.5, elem.first);
+	EXPECT_EQ(5u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 4);
 
 	elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 2.5);
-	EXPECT_EQ(elem.second, 3);
+	EXPECT_EQ(2.5, elem.first);
+	EXPECT_EQ(3u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 5);
 }
 
@@ -247,7 +247,7 @@ TEST_F(AuxGTest, testRandomWeightedChoice) {
 	std::vector<std::pair<uint64_t, double> > data = {{0, 1.0}, {1, 0.0}};
 	for (uint64_t i = 0; i < 100; ++i) {
 		auto element = Aux::Random::weightedChoice(data);
-		EXPECT_EQ(0, element);
+		EXPECT_EQ(0u, element);
 	}
 }
 

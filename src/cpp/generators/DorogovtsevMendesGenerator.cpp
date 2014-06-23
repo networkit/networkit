@@ -5,6 +5,8 @@
 *      Author: Christian Staudt
 */
 
+#include <tuple>
+
 #include "DorogovtsevMendesGenerator.h"
 
 namespace NetworKit {
@@ -34,6 +36,7 @@ Graph DorogovtsevMendesGenerator::generate() {
 		G.addEdge(w, v);
 	}
 
+	G.shrinkToFit();
 	return G;
 }
 
