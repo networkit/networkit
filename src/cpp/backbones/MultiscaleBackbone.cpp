@@ -22,7 +22,7 @@ Graph MultiscaleBackbone::calculate() {
 	graph.forNodes([&](node u) {
 		count k = graph.degree(u);
 
-		//Normalize edgeweights
+		//Normalize edgeweights of N(u)
 		edgeweight sum = 0.0;
 		graph.forNeighborsOf(u, [&](node v) {
 			sum += graph.weight(u, v);
@@ -31,12 +31,13 @@ Graph MultiscaleBackbone::calculate() {
 			normalizedWeights[v] = graph.weight(u, v) / sum;
 		});
 
-		//Filter edges by probability calculation
+		//Filter edges by probability
 		graph.forNeighborsOf(u, [&](node v) {
-			//In case d(u) == 1 and d(v) > 1: consider v only.
+			//In case d(u) == 1 and d(v) > 1: ignore u
 			if (k > 1 || graph.degree(v) == 1) {
 				edgeweight p = normalizedWeights[v];
 				double probability = getProbability(k, p);
+
 				if (probability < alpha) {
 					backboneGraph.setWeight(u, v, graph.weight(u, v));
 				}
@@ -47,6 +48,13 @@ Graph MultiscaleBackbone::calculate() {
 	return backboneGraph;
 }
 
+/**
+ * Returns the probability that a node of the given
+ * degree has an edge of the given weight.
+ *
+ * The null hypothesis is the following: the normalized weights of the
+ * edges connected to a node of degree k are uniformly distributed.
+ */
 double MultiscaleBackbone::getProbability(count degree, edgeweight normalizedWeight) {
 	return 1 - (1 - pow(1 - normalizedWeight, degree - 1));
 }

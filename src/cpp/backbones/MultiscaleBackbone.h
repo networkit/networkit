@@ -15,6 +15,8 @@ namespace NetworKit {
 
 /** 
  * Calculates the multiscale backbone for a given input graph.
+ *
+ * See "Extracting the multiscale backbone of complex weighted networks" by Serrano et al.
  */
 class MultiscaleBackbone : public BackboneCalculator {
 
@@ -35,6 +37,7 @@ private:
 
 	//Private helper functions
 	double getProbability(count degree, edgeweight normalizedWeight);
+
 	FRIEND_TEST(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone);
 };
 

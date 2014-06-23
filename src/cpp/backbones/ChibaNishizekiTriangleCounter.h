@@ -10,9 +10,6 @@
 
 #include "../graph/Graph.h"
 #include "TriangleCounter.h"
-#include <unordered_map>
-#include <utility> //for pair
-#include <set>
 
 namespace NetworKit {
 
