@@ -1321,7 +1321,6 @@ cdef extern from "../cpp/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
 		_ConnectedComponents(_Graph G) except +
 		void run() except +
-		void runSequential() except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
@@ -1338,9 +1337,6 @@ cdef class ConnectedComponents:
 
 	def run(self):
 		self._this.run()
-
-	def runSequential(self):
-		self._this.runSequential()
 
 	def getPartition(self):
 		return Partition().setThis(self._this.getPartition())
