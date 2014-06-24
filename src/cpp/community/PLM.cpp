@@ -47,7 +47,7 @@ Partition PLM::run(Graph& G) {
 	G.parallelForNodes([&](node u) { // calculate and store volume of each node
 		volNode[u] += G.weightedDegree(u);
 		volNode[u] += G.weight(u, u); // consider self-loop twice
-		TRACE("init volNode[" , u , "] to " , volNode[u]);
+		// TRACE("init volNode[" , u , "] to " , volNode[u]);
 	});
 
 	// init community-dependent temporaries
@@ -64,7 +64,7 @@ Partition PLM::run(Graph& G) {
 	 * try to improve modularity by moving a node to neighboring clusters
 	 */
 	auto tryMove = [&](node u) {
-		TRACE("trying to move node " , u);
+		// TRACE("trying to move node " , u);
 
 		// collect edge weight to neighbor clusters
 		std::map<index, edgeweight> affinity;
@@ -96,7 +96,7 @@ Partition PLM::run(Graph& G) {
 			double volN = 0.0;
 			volN = volNode[u];
 			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
-			 TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
+			 // TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
 			return delta;
 		};
 
@@ -107,7 +107,7 @@ Partition PLM::run(Graph& G) {
 
 		C = zeta[u];
 
-		TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
+		// TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
 		G.forNeighborsOf(u, [&](node v) {
 			D = zeta[v];
 			if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
@@ -120,12 +120,12 @@ Partition PLM::run(Graph& G) {
 			}
 		});
 
-		TRACE("deltaBest=" , deltaBest);
+		// TRACE("deltaBest=" , deltaBest);
 		if (deltaBest > 0) { // if modularity improvement possible
 			assert (best != C && best != none);// do not "move" to original cluster
 
 			zeta[u] = best; // move to best cluster
-			TRACE("node " , u , " moved");
+			// TRACE("node " , u , " moved");
 
 			// mod update
 			double volN = 0.0;
@@ -139,7 +139,7 @@ Partition PLM::run(Graph& G) {
 			moved = true; // change to clustering has been made
 
 		} else {
-			TRACE("node " , u , " not moved");
+			// TRACE("node " , u , " not moved");
 		}
 	};
 
