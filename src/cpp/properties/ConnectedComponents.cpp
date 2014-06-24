@@ -18,11 +18,12 @@ ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
 
 }
 
-ConnectedComponents::~ConnectedComponents() {
-
-}
 
 void ConnectedComponents::run() {
+	if (G.isDirected()) {
+		throw std::runtime_error("algorithm does not accept directed graphs");
+	}
+
 	// calculate connected components by label propagation
 	count z = G.numberOfNodes();
 
@@ -94,6 +95,9 @@ void ConnectedComponents::run() {
 
 
 void ConnectedComponents::runSequential() {
+	if (G.isDirected()) {
+		throw std::runtime_error("algorithm does not accept directed graphs");
+	}
 	// calculate connected components by label propagation
 	count z = G.numberOfNodes();
 	DEBUG("initializing labels");
@@ -167,4 +171,3 @@ count ConnectedComponents::componentOfNode(node u) {
 }
 
 }
-
