@@ -1,5 +1,5 @@
 /*
- * MLPLM.h
+ * PLM.h
  *
  *  Created on: 20.11.2013
  *      Author: cls
@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 /**
- * MultiLevel Parallel LocalMover - a multi-level modularity maximizer.
+ * Parallel Louvain Method - a multi-level modularity maximizer.
  */
 class PLM: public NetworKit::CommunityDetectionAlgorithm {
 
@@ -26,7 +26,7 @@ public:
 	 * 							1.0 -> standard modularity
 	 * 							0.0 -> one community
 	 * 							2m 	-> singleton communities
-	 * @param[in]	maxIter		maximum number of iterations for move phase	
+	 * @param[in]	maxIter		maximum number of iterations for move phase
 	 *
 	 */
 	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32);
@@ -53,4 +53,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* MLPLM_H_ */
+#endif /* PLM_H_ */

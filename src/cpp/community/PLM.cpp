@@ -64,7 +64,7 @@ Partition PLM::run(Graph& G) {
 	 * try to improve modularity by moving a node to neighboring clusters
 	 */
 	auto tryMove = [&](node u) {
-		// TRACE("trying to move node " , u);
+		TRACE("trying to move node " , u);
 
 		// collect edge weight to neighbor clusters
 		std::map<index, edgeweight> affinity;
