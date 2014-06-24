@@ -10,7 +10,7 @@
 
 #include "Graph.h"
 #include "../auxiliary/Log.h"
- 
+
 namespace NetworKit {
 
 /** CONSTRUCTORS **/
@@ -34,10 +34,10 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	/* for directed graphs inEdges stores an adjacencylist only considering incoming edges, for undirected graphs inEdges is not used*/
 	inEdges(directed ? n : 0),
 
-	/* for directed graphs outEdges stores an adjacencylist only considering outgoing edges, for undirected graphs outEdges stores the adjacencylist of 
+	/* for directed graphs outEdges stores an adjacencylist only considering outgoing edges, for undirected graphs outEdges stores the adjacencylist of
 	undirected edges*/
-	outEdges(n), 
-	inEdgeWeights(weighted && directed ? n : 0), 
+	outEdges(n),
+	inEdgeWeights(weighted && directed ? n : 0),
 	outEdgeWeights(weighted ? n : 0) {
 
 	// set name from global id
@@ -147,7 +147,7 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 				outEdgeWeights.resize(z);
 				for (node u = 0; u < z; u++) {
 					outEdgeWeights[u] = std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
-				}	
+				}
 			}
 		}
 	}
@@ -209,7 +209,7 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
 
 /** GRAPH INFORMATION **/
 
-std::string Graph::typ() const { 
+std::string Graph::typ() const {
 	if (weighted) {
 		return directed ? "WeightedDirectedGraph" : "WeightedGraph";
 	} else {
@@ -232,7 +232,7 @@ void Graph::shrinkToFit() {
 
 	inDeg.shrink_to_fit();
 	outDeg.shrink_to_fit();
-	
+
 	inEdges.shrink_to_fit();
 	for (auto& a : inEdges) {
 		a.shrink_to_fit();
@@ -503,7 +503,7 @@ std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
 
 	std::default_random_engine gen{std::random_device{}()};
 	std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
-	
+
 	for (index i = 0; i < nr; i++) {
 		node u, v; // we will pick edge (u, v)
 		if (directed) {
@@ -558,7 +558,7 @@ void Graph::setWeight(node u, node v, edgeweight ew) {
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi == none) {
 		// edge does not exits, create it, but warn user
-		WARN("Setting edge weight of an not existing edge will create the edge.");
+		TRACE("Setting edge weight of a nonexisting edge will create the edge.");
 		addEdge(u, v, ew);
 		return;
 	}
@@ -581,7 +581,7 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi == none) {
 		// edge does not exits, create it, but warn user
-		WARN("Increasing edge weight of an not existing edge will create the edge.");
+		TRACE("Increasing edge weight of a nonexisting edge will create the edge.");
 		addEdge(u, v, ew);
 		return;
 	}
@@ -607,7 +607,7 @@ int Graph::addEdgeAttribute_double(double defaultValue) {
 			fill(edgeMap[v].begin(), edgeMap[v].end(), defaultValue);
 		});
 	}
-	
+
 	edgeMaps_double.push_back(edgeMap);
 	edgeAttrDefaults_double.push_back(defaultValue);
 
@@ -629,7 +629,7 @@ void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi == none) {
 		throw std::runtime_error("Edge does not exist. Can't set double attribute.");
-	}	
+	}
 
 	edgeMaps_double[attrId][u][vi] = attr;
 	if (directed) {
@@ -676,7 +676,7 @@ std::vector<std::pair<node, node> > Graph::edges() const {
 		edges.push_back(std::pair<node, node>(u, v));
 	});
 	return edges;
-	
+
 }
 
 std::vector<node> Graph::neighbors(node u) const {
@@ -689,4 +689,3 @@ std::vector<node> Graph::neighbors(node u) const {
 }
 
 } /* namespace NetworKit */
-
