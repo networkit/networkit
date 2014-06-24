@@ -8,6 +8,7 @@
 
 #include "ConnectedComponentsGTest.h"
 #include "../ConnectedComponents.h"
+#include "../ParallelConnectedComponents.h"
 #include "../StronglyConnectedComponents.h"
 #include "../GraphProperties.h"
 #include "../Diameter.h"
@@ -47,7 +48,7 @@ namespace NetworKit {
  	ccs.run();
 
  	// check result
- 	EXPECT_TRUE(ccs.numberOfComponents() == 5);
+ 	EXPECT_EQ(5, ccs.numberOfComponents());
  	EXPECT_TRUE(ccs.componentOfNode(0) == ccs.componentOfNode(19));
  	EXPECT_TRUE(ccs.componentOfNode(3) == ccs.componentOfNode(7));
  }
@@ -128,7 +129,7 @@ TEST_F(ConnectedComponentsGTest, tryParallelConnectedComponents) {
 
 	for (auto graphName: graphs) {
 		Graph G = reader.read("input/" + graphName + ".graph");
-		ConnectedComponents cc(G);
+		ParallelConnectedComponents cc(G);
 		cc.runSequential();
 		count seqNum = cc.numberOfComponents();
 		cc.run();

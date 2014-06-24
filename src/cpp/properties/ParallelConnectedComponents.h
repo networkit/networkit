@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef CONNECTEDCOMPONENTS_H_
-#define CONNECTEDCOMPONENTS_H_
+#ifndef PARALLELCONNECTEDCOMPONENTS_H_
+#define PARALLELCONNECTEDCOMPONENTS_H_
 
 #include "../graph/Graph.h"
 #include "../graph/BFS.h"
@@ -17,11 +17,15 @@ namespace NetworKit {
 /**
  * Determines the connected components of an undirected graph.
  */
-class ConnectedComponents {
+class ParallelConnectedComponents {
 public:
 
-	ConnectedComponents(const Graph& G);
+	ParallelConnectedComponents(const Graph& G);
 
+	/**
+	 * This method determines the connected components for the graph g.
+	 */
+	void runSequential();
 
 	/**
 	 * This method determines the connected components for the graph g.
@@ -55,4 +59,4 @@ private:
 }
 
 
-#endif /* CONNECTEDCOMPONENTS_H_ */
+#endif /* PARALLELCONNECTEDCOMPONENTS_H_ */

@@ -144,6 +144,8 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
+	// TODO: consider weights
+
 	auto estimateFrom = [&](node v) -> count {
 		BFS bfs(G, v);
 		bfs.run();

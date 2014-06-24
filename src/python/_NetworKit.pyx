@@ -1321,7 +1321,6 @@ cdef extern from "../cpp/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
 		_ConnectedComponents(_Graph G) except +
 		void run() except +
-		void runSequential() except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
@@ -1338,9 +1337,6 @@ cdef class ConnectedComponents:
 
 	def run(self):
 		self._this.run()
-
-	def runSequential(self):
-		self._this.runSequential()
 
 	def getPartition(self):
 		return Partition().setThis(self._this.getPartition())
@@ -1570,7 +1566,7 @@ cdef class Betweenness:
 
 cdef extern from "../cpp/centrality/ApproxBetweenness.h":
 	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness":
-		_ApproxBetweenness(_Graph, double, double) except +
+		_ApproxBetweenness(_Graph, double, double, count) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
@@ -1589,11 +1585,13 @@ cdef class ApproxBetweenness:
 	Parameters:
 	-	epsilon		maximum additive error
 	-	delta		probability that the values are within the error guarantee
+	-	diameterSamples 	if 0, use the possibly slow estimation of the vertex diameter which definitely guarantees approximation quality. Otherwise, use a fast heuristic that
+has a higher chance of getting the estimate right the higher the number of samples
 	"""
 	cdef _ApproxBetweenness* _this
 
-	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1):
-		self._this = new _ApproxBetweenness(dereference(G._this), epsilon, delta)
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
+		self._this = new _ApproxBetweenness(dereference(G._this), epsilon, delta, diameterSamples)
 
 	def run(self):
 		self._this.run()
