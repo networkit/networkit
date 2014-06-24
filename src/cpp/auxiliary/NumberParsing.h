@@ -190,7 +190,7 @@ std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, Re
 		mantissa += c - '0';
 		++it;
 		if (it == end) {
-			makeReturnValue();
+			return makeReturnValue();
 		}
 		c = *it;
 	}
