@@ -55,7 +55,7 @@ Partition PLM::run(Graph& G) {
 
 	// first move phase
 	bool moved = false; // indicates whether any node has been moved in the last pass
-	bool change = false; // indicates whether the communities have changed at all 
+	bool change = false; // indicates whether the communities have changed at all
 
 	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
@@ -86,16 +86,12 @@ Partition PLM::run(Graph& G) {
 			}
 		};
 
-		// // $\omega(u | C \ u)$
-		// auto omegaCut = [&](node u, index C) {
-		// 	return affinity[C];
-		// };
 
 		auto modGain = [&](node u, index C, index D) {
 			double volN = 0.0;
 			volN = volNode[u];
-			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor; 
-			//TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
+			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
+			TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
 			return delta;
 		};
 
@@ -233,10 +229,9 @@ Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const 
 		index cv = zetaCoarse[mv];
 		zetaFine[v] = cv;
 	});
-	
+
 
 	return zetaFine;
 }
 
 } /* namespace NetworKit */
-
