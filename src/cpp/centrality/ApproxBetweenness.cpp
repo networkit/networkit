@@ -44,7 +44,7 @@ void ApproxBetweenness::run() {
 		* we sample the graph and take the maximum diameter found. This has a high chance of  hitting the component with the maximum vertex diameter.
 		*/
 		INFO("estimating vertex diameter roughly");
-		edgeweight vd = Diameter::estimatedVertexDiameter(G, diameterSamples);
+		vd = Diameter::estimatedVertexDiameter(G, diameterSamples);
 	}
 
 	INFO("estimated diameter: ", vd);
