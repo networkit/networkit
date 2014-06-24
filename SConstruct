@@ -99,13 +99,13 @@ env.Append(LINKFLAGS = ["-std=c++11"])
 commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC"]
 commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
 
-debugCppFlags = ["-O0", "-g3"]
+debugCppFlags = ["-O0", "-g3", "-DLOG_LEVEL=LOG_LEVEL_TRACE"]
 debugCFlags = ["-O0", "-g3"]
 
-optimizedCppFlags = ["-O3", "-DNDEBUG"]
+optimizedCppFlags = ["-O3", "-DNDEBUG", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
 optimizedCFlags = ["-O3"]
 
-profileCppFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
+profileCppFlags = ["-O2", "-DNDEBUG", "-g", "-pg", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
 profileCFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
 
 
@@ -137,7 +137,7 @@ try:
 	sanitize = GetOption("sanitize")
 except:
 	pass
-	
+
 
 
 # create build directory for build configuration
@@ -240,7 +240,7 @@ if target in availableTargets:
 				#print("sym link for include stuff exists already")
 				os.remove("NetworKit")
 			subprocess.call(["ln","-s","src/cpp","NetworKit"])
-			
+
 	else:
 		env.Program(targetName, source)
 else:
