@@ -26,16 +26,12 @@ void ConnectedComponents::run() {
 
 	// perform breadth-first searches
 	G.forNodes([&](node u) {
-		TRACE("scanning node ", u);
 		if (component[u] == none) {
-			TRACE(u, "is not assigned to component");
 			component.toSingleton(u);
 			index c = component[u];
-			TRACE("new component of ", u, ": ", c);
 			assert (component[u] != none);
 			G.BFSfrom(u, [&](node v) {
 				component[v] = c;
-				TRACE("assigned ", v, " to ", c);
 			});
 		}
 	});
