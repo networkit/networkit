@@ -502,7 +502,10 @@ std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
 	std::vector< std::pair<node, node> > edges;
 
 	std::default_random_engine gen{std::random_device{}()};
-	std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
+	//std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
+	std::discrete_distribution<count> distribution(0, outDeg.size(), outDeg.size(), [&] (size_t i) {
+		return outDeg[i];
+	});
 
 	for (index i = 0; i < nr; i++) {
 		node u, v; // we will pick edge (u, v)

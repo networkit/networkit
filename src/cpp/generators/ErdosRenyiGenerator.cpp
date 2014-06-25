@@ -6,6 +6,7 @@
  */
 
 #include "ErdosRenyiGenerator.h"
+#include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
@@ -18,7 +19,7 @@ ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob): n(nNodes), 
  * Returns number of steps you need to wait until the next success (edge) occurs.
  */
 static inline count get_next_edge_distance(const double log_cp) {
-	return (count) 1 + floor(log(1.0 - drand48()) / log_cp);
+	return (count) 1 + floor(log(1.0 - Aux::Random::probability()) / log_cp);
 }
 
 Graph ErdosRenyiGenerator::generate() {
