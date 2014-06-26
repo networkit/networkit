@@ -159,7 +159,7 @@ void PubWebGenerator::fillDenseAreas(Graph& g) {
 }
 
 void PubWebGenerator::chooseDenseAreaSizes() {
-	denseAreaXYR.reserve(numDenseAreas);
+	denseAreaXYR.resize(numDenseAreas);
 
 	for (index area = 0; area < numDenseAreas; ++area) {
 		// anti-quadratic probability distribution
