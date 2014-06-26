@@ -12,7 +12,7 @@ namespace NetworKit {
 
 
 
-Partition HashingOverlapper::run(const Graph& G, std::vector<Partition>& clusterings) {
+Partition HashingOverlapper::run(const Graph& G, const std::vector<Partition>& clusterings) {
 
 	DEBUG("Starting hashing overlapper");
 
@@ -54,8 +54,8 @@ Partition HashingOverlapper::run(const Graph& G, std::vector<Partition>& cluster
 		break;
 	}
 	case 2: {
-		Partition& first = clusterings[0];
-		Partition& second = clusterings[1];
+		const Partition& first = clusterings[0];
+		const Partition& second = clusterings[1];
 
 		// Assumption: second has at least as many nodes as first
 		// TODO: accelerate if necessary and possible by moving if statements out of loop
@@ -80,7 +80,7 @@ Partition HashingOverlapper::run(const Graph& G, std::vector<Partition>& cluster
 		core.allToOnePartition();
 
 		for (index c = 0; c < numC; ++c) {
-			Partition& zeta = clusterings[c];
+			const Partition& zeta = clusterings[c];
 			zeta.parallelForEntries([&](node v, index clv) {
 				core[v] += (hash((c+2) * clv) & 0xffff);
 			});

@@ -20,7 +20,7 @@ PLMOld::PLMOld(std::string par, double gamma) : anyChange(false), parallelism(pa
 	this->VERSION = "1.0";
 }
 
-Partition PLMOld::pass(Graph& G) {
+Partition PLMOld::pass(const Graph& G) {
 
 	// FIXME: PLM cannot deal with deleted nodes
 
@@ -212,7 +212,7 @@ Partition PLMOld::pass(Graph& G) {
 	return zeta;
 }
 
-Partition PLMOld::run(Graph& G) {
+Partition PLMOld::run(const Graph& G) {
 	INFO("starting Louvain method");
 
 	// sub-algorithms
@@ -226,7 +226,7 @@ Partition PLMOld::run(Graph& G) {
 	int h = -1; // finest hierarchy level
 	bool done = false; //
 
-	Graph* graph = &G;
+	const Graph* graph = &G;
 
 	do {
 		h += 1; // begin new hierarchy level

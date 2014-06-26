@@ -22,11 +22,8 @@ class RegionGrowingOverlapper: public NetworKit::Overlapper {
 
 public:
 
-	RegionGrowingOverlapper();
 
-	virtual ~RegionGrowingOverlapper();
-
-	virtual Partition run(Graph& G, std::vector<Partition>& clusterings);
+	virtual Partition run(const Graph& G, const std::vector<Partition>& clusterings) override;
 
 };
 

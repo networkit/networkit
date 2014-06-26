@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-Partition::Partition() : z(0), omega(0), data(0) { 
+Partition::Partition() : z(0), omega(0), data(0) {
 
 }
 
@@ -62,7 +62,7 @@ index Partition::mergeSubsets(index s, index t) {
 bool Partition::isOnePartition(Graph& G) { //FIXME what for is elements needed? const std::set<index>& elements
 	index one = data[0];	// first subset id should be equal to all others
 	// TODO: use iterator forEntries and pair-wise comparison?
-	for (index e = 0; e < this->z; ++e) { // FIXME constructor initializes data with z+1, so <= is necessary. 
+	for (index e = 0; e < this->z; ++e) { // FIXME constructor initializes data with z+1, so <= is necessary.
 		if (data[e] != one) {
 			return false;
 		}
@@ -120,7 +120,7 @@ void Partition::compact() {
 	std::map<index,index> compactingMap; // first index is the old partition index, "value" is the index of the compacted index
 	index i = 0;
 	this->forEntries([&](index e, index s){ // get assigned SubsetIDs and create a map with new IDs
-		if (s!= none) { 
+		if (s!= none) {
 			auto result = compactingMap.insert(std::make_pair(s,i));
 			if (result.second) ++i;
 		}
@@ -177,7 +177,7 @@ count Partition::numberOfElements() const {
 	return z;	// z is the maximum element id
 }
 
-std::vector<index> Partition::getVector() {
+std::vector<index> Partition::getVector() const {
 	return this->data; //FIXME is this appropriate? - why not?
 }
 
