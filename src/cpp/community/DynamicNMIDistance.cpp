@@ -23,12 +23,12 @@ bool DynamicNMIDistance::isInBoth(node u, const Partition& oldClustering, const 
 /**
  * Formula follows Dhillon, Guan, Kulis: A Unified View of Kernel k-means, ...
  */
-double DynamicNMIDistance::getDissimilarity(Graph& newGraph,
-		Partition& oldClustering, Partition& newClustering) {
+double DynamicNMIDistance::getDissimilarity(const Graph& newGraph,
+		const Partition& oldClustering, const Partition& newClustering) {
 
 	INFO("compressing clusterings");
-	oldClustering.compact();
-	newClustering.compact();
+//	oldClustering.compact();
+//	newClustering.compact();
 	INFO("calculating dissimilarity");
 
 	auto log_b = Aux::MissingMath::log_b; // import convenient logarithm function
@@ -184,8 +184,8 @@ void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
 	assert (Aux::NumericTools::le(NMID, 1.0));
 }
 
-std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(Graph& G,
-		Partition& first, Partition& second) {
+std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(const Graph& G,
+		const Partition& first, const Partition& second) {
 	index firstUpperId = first.upperBound();
 	index secondUpperId = second.upperBound();
 	std::vector<std::vector<count> > confMatrix(firstUpperId);

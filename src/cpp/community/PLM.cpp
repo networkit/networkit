@@ -21,7 +21,7 @@ PLM::PLM(bool refine, double gamma, std::string par, count maxIter) : parallelis
 }
 
 
-Partition PLM::run(Graph& G) {
+Partition PLM::run(const Graph& G) {
 	DEBUG("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();

@@ -25,7 +25,7 @@ public:
 	 * of oldGraph and @a newGraph. Nodes of oldGraph not existing in @newGraph are
 	 * marked by the entry none in @a newClustering.
 	 */
-	double getDissimilarity(Graph& newGraph, Partition& oldClustering, Partition& newClustering);
+	double getDissimilarity(const Graph& newGraph, const Partition& oldClustering, const Partition& newClustering);
 
 	void combineValues(double H_sum, double MI, double& NMI, double& NMID) const;
 	void sanityCheck(double& NMI, double& NMID) const;
@@ -34,7 +34,7 @@ public:
 
 	bool isInBoth(node u, const Partition& oldClustering, const Partition& newClustering);
 
-	Matrix confusionMatrix(Graph& G, Partition& zeta, Partition& eta);
+	Matrix confusionMatrix(const Graph& G, const Partition& zeta, const Partition& eta);
 };
 
 } /* namespace NetworKit */

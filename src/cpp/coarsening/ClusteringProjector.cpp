@@ -10,17 +10,9 @@
 
 namespace NetworKit {
 
-ClusteringProjector::ClusteringProjector() {
-	// TODO Auto-generated constructor stub
 
-}
-
-ClusteringProjector::~ClusteringProjector() {
-	// TODO Auto-generated destructor stub
-}
-
-Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse,
-		Partition& zetaCoarse) {
+Partition ClusteringProjector::projectBack(const Graph& Gcoarse, const Graph& Gfine, const std::vector<node>& fineToCoarse,
+		const Partition& zetaCoarse) {
 
 	Partition zetaFine(Gfine.upperNodeIdBound()); //Gfine.numberOfNodes()
 	zetaFine.setUpperBound(zetaCoarse.upperBound());
@@ -33,8 +25,8 @@ Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::ve
 	return zetaFine;
 }
 
-Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
-		std::vector<std::vector<node> >& maps, Graph& Gfinest) {
+Partition ClusteringProjector::projectBackToFinest(const Partition& zetaCoarse,
+		const std::vector<std::vector<node> >& maps, const Graph& Gfinest) {
 	if (zetaCoarse.numberOfElements() == Gfinest.numberOfNodes()) {
 		return zetaCoarse;
 	}
@@ -67,7 +59,7 @@ Partition ClusteringProjector::projectBackToFinest(Partition& zetaCoarse,
 	return zetaFine;
 }
 
-Partition ClusteringProjector::projectCoarseGraphToFinestClustering(Graph& Gcoarse, Graph& Gfinest, std::vector<std::vector<node> >& maps) {
+Partition ClusteringProjector::projectCoarseGraphToFinestClustering(const Graph& Gcoarse, const Graph& Gfinest, const std::vector<std::vector<node> >& maps) {
 
 	Partition zeta(Gfinest.upperNodeIdBound());
 	zeta.setUpperBound(Gcoarse.upperNodeIdBound());
@@ -115,5 +107,3 @@ Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::ve
 }*/
 
 } /* namespace NetworKit */
-
-

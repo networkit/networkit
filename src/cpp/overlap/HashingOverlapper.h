@@ -21,11 +21,7 @@ class HashingOverlapper: public NetworKit::Overlapper {
 
 public:
 
-	HashingOverlapper();
-
-	virtual ~HashingOverlapper();
-
-	virtual Partition run(Graph& G, std::vector<Partition>& clusterings);
+	virtual Partition run(const Graph& G, std::vector<Partition>& clusterings);
 };
 
 } /* namespace NetworKit */

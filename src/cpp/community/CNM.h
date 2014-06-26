@@ -23,8 +23,8 @@ namespace NetworKit {
  */
 class CNM : public NetworKit::CommunityDetectionAlgorithm {
 public:
-	
-	Partition run(Graph &graph) override;
+
+	Partition run(const Graph &graph) override;
 
 	std::string toString() const override {
 		return "CNM";

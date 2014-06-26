@@ -37,7 +37,7 @@ public:
 	/**
 	 * Detect communities in the given graph.
 	 */
-	Partition run(Graph& G) override;
+	Partition run(const Graph& G) override;
 
 	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta);
 

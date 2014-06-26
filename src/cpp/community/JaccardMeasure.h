@@ -16,10 +16,7 @@ class JaccardMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	/** Default destructor */
-	virtual ~JaccardMeasure();
-
-	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second);
+	double getDissimilarity(const Graph& G, const Partition& first, const Partition& second) override;
 };
 
 } /* namespace NetworKit */

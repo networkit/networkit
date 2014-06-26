@@ -32,7 +32,7 @@ void EPP::setOverlapper(Overlapper& overlap) {
 	this->overlap = &overlap;
 }
 
-Partition EPP::run(Graph& G) {
+Partition EPP::run(const Graph& G) {
 	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
 
 	// fixed sub-algorithms
