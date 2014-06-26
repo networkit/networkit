@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-Partition LPDegreeOrdered::run(Graph& G) {
+Partition LPDegreeOrdered::run(const Graph& G) {
 	count n = G.numberOfNodes();
 	count theta = n / 1e5;
 	DEBUG("theta: " , theta);

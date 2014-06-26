@@ -10,15 +10,9 @@
 
 namespace NetworKit {
 
-HashingOverlapper::HashingOverlapper() {
 
-}
 
-HashingOverlapper::~HashingOverlapper() {
-
-}
-
-Partition HashingOverlapper::run(Graph& G, std::vector<Partition>& clusterings) {
+Partition HashingOverlapper::run(const Graph& G, std::vector<Partition>& clusterings) {
 
 	DEBUG("Starting hashing overlapper");
 

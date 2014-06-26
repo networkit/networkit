@@ -42,7 +42,7 @@ public:
 	 * @param[in]	G	input graph
 	 * @return			clustering
 	 */
-	virtual Partition run(Graph& G);
+	virtual Partition run(const Graph& G);
 
 	/**
 	 * @return string representation of algorithm and parameters.

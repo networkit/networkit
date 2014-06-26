@@ -23,7 +23,7 @@ PLP::PLP(count theta) : updateThreshold(theta) {
 }
 
 
-Partition PLP::run(Graph& G) {
+Partition PLP::run(const Graph& G) {
 	typedef index label; // a label is the same as a cluster id
 
 	count n = G.numberOfNodes();

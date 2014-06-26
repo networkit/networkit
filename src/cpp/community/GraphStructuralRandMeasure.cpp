@@ -9,11 +9,9 @@
 
 namespace NetworKit {
 
-GraphStructuralRandMeasure::~GraphStructuralRandMeasure() {
-}
 
-double GraphStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first,
-		Partition& second) {
+double GraphStructuralRandMeasure::getDissimilarity(const Graph& G, const Partition& first,
+		const Partition& second) {
 	count m = G.numberOfEdges();
 	assert (m > 0);
 

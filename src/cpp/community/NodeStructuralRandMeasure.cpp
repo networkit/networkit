@@ -9,10 +9,8 @@
 
 namespace NetworKit {
 
-NodeStructuralRandMeasure::~NodeStructuralRandMeasure() {
-}
 
-double NodeStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, Partition& second) {
+double NodeStructuralRandMeasure::getDissimilarity(const Graph& G, const Partition& first, const Partition& second) {
 
 	count n = G.numberOfNodes();
 	assert (n > 0);
