@@ -30,6 +30,12 @@ Partition PLM::run(const Graph& G) {
 	active.assign(z, true);
 
 
+	// SATELLITE FOLLOWING: initially deactivate satellies
+	// G.forNodes([&](node v){
+	// 	if
+	// });	// TODO: parallel
+
+
 	// init communities to singletons
 	Partition zeta(z);
 	G.forNodes([&](node v) {
@@ -189,6 +195,16 @@ Partition PLM::run(const Graph& G) {
 	};
 
 	// first move phase
+
+	// DEBUG
+	count nInactive = 0;
+	G.forNodes([&](node v) {
+		if (!active[v]) {
+			nInactive += 1;
+		}
+	});
+	INFO("number of active nodes: ", nInactive);
+	// DEBUG
 	movePhase();
 
 	if (change) {
