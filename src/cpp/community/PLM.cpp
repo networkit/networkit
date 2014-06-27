@@ -190,21 +190,22 @@ Partition PLM::run(const Graph& G) {
 				WARN("move phase aborted after ", maxIter, " iterations");
 			}
 			iter += 1;
+
+			// DEBUG
+			count nInactive = 0;
+			G.forNodes([&](node v) {
+				if (!active[v]) {
+					nInactive += 1;
+				}
+			});
+			INFO("number of inactive nodes: ", nInactive);
+			// DEBUG
+
 		} while (moved && (iter <= maxIter));
 		DEBUG("iterations in move phase: ", iter);
 	};
 
 	// first move phase
-
-	// DEBUG
-	count nInactive = 0;
-	G.forNodes([&](node v) {
-		if (!active[v]) {
-			nInactive += 1;
-		}
-	});
-	INFO("number of active nodes: ", nInactive);
-	// DEBUG
 	movePhase();
 
 	if (change) {
