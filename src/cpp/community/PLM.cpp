@@ -26,8 +26,8 @@ Partition PLM::run(const Graph& G) {
 
 	count z = G.upperNodeIdBound();
 
-	std::vector<bool> activeNodes(z); // record if node must be processed
-	activeNodes.assign(z, true);
+	std::vector<bool> active(z); // record if node must be processed
+	active.assign(z, true);
 
 
 	// init communities to singletons
@@ -64,83 +64,102 @@ Partition PLM::run(const Graph& G) {
 	 * try to improve modularity by moving a node to neighboring clusters
 	 */
 	auto tryMove = [&](node u) {
-		TRACE("trying to move node " , u);
+		if (active[u]) { // only consider active nodes
+			TRACE("trying to move node " , u);
 
-		// collect edge weight to neighbor clusters
-		std::map<index, edgeweight> affinity;
-		G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
-			if (u != v) {
-				index C = zeta[v];
-				affinity[C] += weight;
-			}
-		});
-
-
-		// sub-functions
-
-		// $\vol(C \ {x})$ - volume of cluster C excluding node x
-		auto volCommunityMinusNode = [&](index C, node x) {
-			double volC = 0.0;
-			double volN = 0.0;
-			volC = volCommunity[C];
-			if (zeta[x] == C) {
-				volN = volNode[x];
-				return volC - volN;
-			} else {
-				return volC;
-			}
-		};
-
-
-		auto modGain = [&](node u, index C, index D) {
-			double volN = 0.0;
-			volN = volNode[u];
-			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
-			 TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
-			return delta;
-		};
-
-		index best = none;
-		index C = none;
-		index D = none;
-		double deltaBest = -1;
-
-		C = zeta[u];
-
-		TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
-		G.forNeighborsOf(u, [&](node v) {
-			D = zeta[v];
-			if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
-				double delta = modGain(u, C, D);
-				TRACE("mod gain: " , delta);
-				if (delta > deltaBest) {
-					deltaBest = delta;
-					best = D;
+			// collect edge weight to neighbor clusters
+			std::map<index, edgeweight> affinity;
+			G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
+				if (u != v) {
+					index C = zeta[v];
+					affinity[C] += weight;
 				}
+			});
+
+
+			// sub-functions
+
+			// $\vol(C \ {x})$ - volume of cluster C excluding node x
+			auto volCommunityMinusNode = [&](index C, node x) {
+				double volC = 0.0;
+				double volN = 0.0;
+				volC = volCommunity[C];
+				if (zeta[x] == C) {
+					volN = volNode[x];
+					return volC - volN;
+				} else {
+					return volC;
+				}
+			};
+
+
+			auto modGain = [&](node u, index C, index D) {
+				double volN = 0.0;
+				volN = volNode[u];
+				double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
+				TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
+				return delta;
+			};
+
+			index best = none;
+			index C = none;
+			index D = none;
+			double deltaBest = -1;
+
+			C = zeta[u];
+
+			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
+			bool core = true;
+			G.forNeighborsOf(u, [&](node v) {
+				D = zeta[v];
+				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
+					double delta = modGain(u, C, D);
+					TRACE("mod gain: " , delta);
+					if (delta > deltaBest) {
+						deltaBest = delta;
+						best = D;
+					}
+					core = false;
+				}
+			});
+
+			// CORE NODE DEACTIVATION: deactivate core node
+			if (core) {
+				active[u] = false;
 			}
-		});
 
-		TRACE("deltaBest=" , deltaBest);
-		if (deltaBest > 0) { // if modularity improvement possible
-			assert (best != C && best != none);// do not "move" to original cluster
+			TRACE("deltaBest=" , deltaBest);
+			if (deltaBest > 0) { // if modularity improvement possible
+				assert (best != C && best != none);// do not "move" to original cluster
 
-			zeta[u] = best; // move to best cluster
-			TRACE("node " , u , " moved");
+				zeta[u] = best; // move to best cluster
+				TRACE("node " , u , " moved");
 
-			// mod update
-			double volN = 0.0;
-			volN = volNode[u];
-			// update the volume of the two clusters
-			#pragma omp atomic update
-			volCommunity[C] -= volN;
-			#pragma omp atomic update
-			volCommunity[best] += volN;
+				// mod update
+				double volN = 0.0;
+				volN = volNode[u];
+				// update the volume of the two clusters
+				#pragma omp atomic update
+				volCommunity[C] -= volN;
+				#pragma omp atomic update
+				volCommunity[best] += volN;
 
-			moved = true; // change to clustering has been made
+				moved = true; // change to clustering has been made
 
+			} else {
+				TRACE("node " , u , " not moved");
+			}
+
+			// CORE NODE DEACTIVATION: when u changes community, activate all neighbors
+			if (moved) {
+				G.forNeighborsOf(u, [&](node v){
+					active[v] = true;
+				});
+			}
 		} else {
-			TRACE("node " , u , " not moved");
+			TRACE("node ", u, "inactive");
 		}
+
 	};
 
 	// performs node moves
