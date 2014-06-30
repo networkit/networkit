@@ -21,8 +21,6 @@ class PathGrowingMatcher: public NetworKit::Matcher {
 protected:
 
 public:
-	/** Default destructor */
-	virtual ~PathGrowingMatcher() = default;
 
 	virtual Matching run(Graph& G);
 };
