@@ -17,11 +17,6 @@ PageRankNibble::PageRankNibble(Graph& g): G(g) {
 
 }
 
-PageRankNibble::~PageRankNibble() {
-
-}
-
-
 std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
 	double entry = 0.0;
 	double deg = 0.0;
