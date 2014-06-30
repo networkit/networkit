@@ -32,16 +32,12 @@ class Format(AutoNumber):
 	EdgeList = ()
 	LFR = ()
 
-# reading
-def readGraph(path, fileformat = Format.METIS, **kwargs):
-	""" Read graph file in various formats and return a NetworKit::Graph
-	    Paramaters: 
-		- fileformat: An element of the Format enumeration, default is Format.METIS
-		- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
-			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
-			commentPrefix and continuous are optional
-	"""
 
+
+
+# reading
+
+def getReader(fileformat, **kwargs):
 	#define your [edgelist] reader here:
 	readers =	{
 			Format.METIS:			METISGraphReader(),
@@ -61,6 +57,18 @@ def readGraph(path, fileformat = Format.METIS, **kwargs):
 			reader = readers[fileformat]#(**kwargs)
 	except Exception or KeyError:
 		raise Exception("unrecognized format/format not supported as input: {0}".format(fileformat))
+	return reader
+
+
+def readGraph(path, fileformat = Format.METIS, **kwargs):
+	""" Read graph file in various formats and return a NetworKit::Graph
+	    Paramaters: 
+		- fileformat: An element of the Format enumeration, default is Format.METIS
+		- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
+			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
+			commentPrefix and continuous are optional
+	"""
+	reader = getReader(fileformat,**kwargs)
 
 
 	if ("~" in path):
@@ -101,9 +109,7 @@ def readMat(path):
 
 
 # writing
-def writeGraph(G, path, fileformat = Format.METIS):
-	""" Write graph to various output formats. 
-		Default format is METIS."""
+def getWriter(fileformat):
 	writers =	{
 			Format.METIS:			METISGraphWriter(),
 			Format.GraphML:			GraphMLWriter(),
@@ -112,7 +118,8 @@ def writeGraph(G, path, fileformat = Format.METIS):
 			Format.ELSpaceOne:		EdgeListWriter(' ',1),
 			Format.ELSpaceZero:		EdgeListWriter(' ',0),
 			Format.GraphViz:		DotGraphWriter(),
-			Format.GML:			GMLGraphWriter()
+			Format.GML:			GMLGraphWriter(),
+			Format.LFR:			EdgeListWriter('\t',1)
 #			Format.GDF:			GDFGraphWriter(),
 #			Format.VNA:			VNAGraphWriter(),
 			}
@@ -122,10 +129,16 @@ def writeGraph(G, path, fileformat = Format.METIS):
 			writer = EdgeListIO(kwargs['separator'],kwargs['firstNode'])
 		else:
 			writer = writers[fileformat]#(**kwargs)
-		writer.write(G, path)
-		logging.info("wrote graph {0} to file {1}".format(G, path))
 	except KeyError:
-		raise Exception("format {0} currently not supported".format(fileformat))		
+		raise Exception("format {0} currently not supported".format(fileformat))
+	return writer
+def writeGraph(G, path, fileformat = Format.METIS):
+	""" Write graph to various output formats. 
+		Default format is METIS."""
+	writer = getWriter(fileformat)
+	writer.write(G, path)
+	logging.info("wrote graph {0} to file {1}".format(G, path))
+
 
 class GraphConverter:
 	
@@ -217,6 +230,4 @@ def graphFromStreamFile(path, mapped=True, baseIndex=0):
 	gu = GraphUpdater(G)
 	gu.update(stream)
 	return G
-
-
 
