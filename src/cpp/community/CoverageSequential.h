@@ -13,14 +13,15 @@
 namespace NetworKit {
 
 /**
- * DEPRECATED: Sequential implementation for testing - use parallel implementation NetworKit::Coverage
+ * @ingroup community
+ * @deprecated DEPRECATED Sequential implementation for testing - use parallel implementation NetworKit::Coverage
  * 
  * Coverage is the fraction of intra-cluster edges.
  * 
  */
 class CoverageSequential: public NetworKit::QualityMeasure {
 public:
-	CoverageSequential();
+	/** Default destructor */
 	virtual ~CoverageSequential();
 
 	virtual double getQuality(const Partition& zeta, const Graph& G);

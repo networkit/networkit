@@ -8,18 +8,11 @@
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 
 #include "DibapGraphReader.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
-DibapGraphReader::DibapGraphReader() {
-
-}
-
-DibapGraphReader::~DibapGraphReader() {
-
-}
-
-Graph DibapGraphReader::read(std::string path) {
+Graph DibapGraphReader::read(const std::string& path) {
 	int n, i;
 	short type;
 	FILE * file = NULL;
@@ -168,6 +161,7 @@ Graph DibapGraphReader::read(std::string path) {
 		}
 	}
 
+	graph.shrinkToFit();
 	return graph;
 }
 

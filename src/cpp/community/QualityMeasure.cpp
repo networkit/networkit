@@ -9,12 +9,7 @@
 
 namespace NetworKit {
 
-QualityMeasure::QualityMeasure() {
-
-}
-
 QualityMeasure::~QualityMeasure() {
-
 }
 
 

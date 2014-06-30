@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include <queue>
+
 #include "DynamicPubWebGenerator.h"
 
 namespace NetworKit {
@@ -16,10 +18,6 @@ DynamicPubWebGenerator::DynamicPubWebGenerator(count numNodes,
 				maxNumberOfNeighbors), writeInitialGraphToStream(writeInitialGraphToStream)
 {
 	G = initGen.generate();
-}
-
-DynamicPubWebGenerator::~DynamicPubWebGenerator() {
-
 }
 
 std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
@@ -88,7 +86,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			if (clusterToIns < initGen.numDenseAreas) {
 				// real cluster, FIXME: DRY!
 				// compute random angle between [0, 2pi) and distance between [0, width/2]
-				float angle = Aux::Random::real() * 2.0 * M_PI;
+				float angle = Aux::Random::real() * 2.0 * PI;
 				float dist = Aux::Random::real()
 						* initGen.denseAreaXYR[clusterToIns].rad;
 

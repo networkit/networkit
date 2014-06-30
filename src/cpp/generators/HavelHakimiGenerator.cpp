@@ -10,6 +10,7 @@
 
 #include <list>
 #include <stack>
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -111,6 +112,7 @@ Graph HavelHakimiGenerator::generate() {
 			maxDeficit--;
 		}
 
+		G.shrinkToFit();
 		return G;
 	}
 

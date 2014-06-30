@@ -15,6 +15,7 @@
 #include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
 #include "../../auxiliary/Timer.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 

@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup properties
+ */
 class Diameter {
 
 public:
@@ -25,16 +28,24 @@ public:
 	 */
 	static std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph& G, double error);
 
-	/** @return exact diameter of the graph @a G */
+	/**
+	 * Get the exact diameter of the graph @a G.
+	 *
+	 * @param G The graph.
+	 * @return exact diameter of the graph @a G
+	 */
 	static edgeweight exactDiameter(const Graph& G);
 
 
-	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
-
-		@param[in]	samples		One sample is enough if the graph is connected. If there 
-								are multiple connected components, then the number of samples
-								must be chosen so that the probability of sampling the component
-								with the largest diameter ist high. 
+	/**
+	 * Get a 2-approximation of the node diameter (unweighted diameter) of @a G.
+	 *
+	 * @param[in]	G			The graph.
+	 * @param[in]	samples		One sample is enough if the graph is connected. If there
+	 *							are multiple connected components, then the number of samples
+	 *							must be chosen so that the probability of sampling the component
+	 *							with the largest diameter ist high.
+	 * @return A 2-approximation of the vertex diameter (unweighted diameter) of @a G.
 	 */
 	static edgeweight estimatedVertexDiameter(const Graph& G, count samples);
 

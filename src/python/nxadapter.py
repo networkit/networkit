@@ -15,7 +15,7 @@ except ImportError:
 def nx2nk(nxG, weightAttr=None):
 	"""
 	Convert a networkx.Graph to a NetworKit.Graph
-		:param weightAttr: the edge attribute which should be treated as the edge weight
+		:param weightAttr: the edge attribute which should be treated as the edge weight.
 	"""
 
 	# map networkx node ids to consecutive numerical node ids

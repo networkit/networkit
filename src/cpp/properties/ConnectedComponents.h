@@ -15,39 +15,56 @@
 namespace NetworKit {
 
 /**
+ * @ingroup properties
  * Determines the connected components of an undirected graph.
  */
 class ConnectedComponents {
 public:
-	ConnectedComponents(const Graph& G);
-	virtual ~ConnectedComponents();
 	/**
-	 * This method determines the connected components for the graph g.
+	 * Create ConnectedComponents class for Graph @a G.
+	 *
+	 * @param G The graph.
+	 */
+	ConnectedComponents(const Graph& G);
+
+	/** Default destructor */
+	virtual ~ConnectedComponents() = default;
+	/**
+	 * This method determines the connected components for the graph given in the constructor.
 	 */
 	void runSequential();
 
 	/**
-	 * This method determines the connected components for the graph g.
+	 * This method determines the connected components for the graph given in the constructor.
 	 */
 	void run();
 
 	/**
-	 * This method returns the number of connected components.
+	 * Get the number of connected components.
+	 *
+	 * @return The number of connected components.
 	 */
 	count numberOfComponents();
 
 	/**
-	 * This method returns the the component in which node query is situated.
+	 * Get the the component in which node @a u is situated.
 	 *
-	 * @param[in]	query	the node whose component is asked for
+	 * @param[in]	u	The node whose component is asked for.
 	 */
 	count componentOfNode(node u);
 
 
 	/** 
-	 * Return a Partition that represents the components
+	 * Get a Partition that represents the components.
+	 *
+	 * @return A partition representing the found components.
 	 */
 	Partition getPartition();
+    
+    /**
+     *Return the map from component to size
+     */
+    std::map<index, count> getComponentSizes();
 
 
 private:

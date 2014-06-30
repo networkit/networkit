@@ -22,10 +22,6 @@ PLP::PLP(count theta) : updateThreshold(theta) {
 	this->VERSION = "1.0";
 }
 
-PLP::~PLP() {
-	// TODO Auto-generated destructor stub
-}
-
 
 Partition PLP::run(Graph& G) {
 	typedef index label; // a label is the same as a cluster id

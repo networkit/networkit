@@ -6,6 +6,7 @@
  */
 
 #include "PostscriptWriter.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -27,10 +28,6 @@ PostscriptWriter::PostscriptWriter(bool isTorus) : wrapAround(isTorus) {
 
 	// bounding box size
 	ps_size = {1020.0, 1020.0};
-}
-
-PostscriptWriter::~PostscriptWriter() {
-
 }
 
 void PostscriptWriter::writeHeader(std::ofstream& file) {

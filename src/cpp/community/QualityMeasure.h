@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * Abstract base class for all clustering quality measures.
  */
 class QualityMeasure {
@@ -21,8 +22,7 @@ class QualityMeasure {
 
 public:
 
-	QualityMeasure();
-
+	/** Default destructor */
 	virtual ~QualityMeasure();
 
 	virtual double getQuality(const Partition& zeta, const Graph& G) = 0;

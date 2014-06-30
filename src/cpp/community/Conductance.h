@@ -15,12 +15,13 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * Compute conductance of a 2-partition, i.e. cut size over volume of smaller set (smaller in
  * terms of volume).
  */
 class Conductance: public NetworKit::QualityMeasure {
 public:
-	Conductance();
+	/** Default destructor */
 	virtual ~Conductance();
 
 	/**

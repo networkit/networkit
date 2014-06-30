@@ -13,12 +13,12 @@
 
 #include "Matcher.h"
 #include "../graph/NodeMap.h"
-#include "../auxiliary/Functions.h"
 
 namespace NetworKit {
 
 
 /**
+ * @ingroup matching
  * LocalMax matching as described in the EuroPar13 paper by the Sanders group
  */
 class LocalMaxMatcher: public NetworKit::Matcher {
@@ -29,7 +29,6 @@ public:
 
 	LocalMaxMatcher(uint64_t attrId);
 
-	virtual ~LocalMaxMatcher();
 
 	virtual Matching run(Graph& G);
 };

@@ -13,12 +13,16 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup distmeasures
+ */
 class TNodeDistance {
 
 public:
 
 	TNodeDistance(const Graph& G);
 
+	/** Default destructor */
 	virtual ~TNodeDistance();
 
 	void initialize(const Parameters& param);

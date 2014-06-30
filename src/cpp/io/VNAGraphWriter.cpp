@@ -6,42 +6,36 @@
  */
 
 #include "VNAGraphWriter.h"
+#include "../auxiliary/Enforce.h"
 
 namespace NetworKit {
 
-VNAGraphWriter::VNAGraphWriter() {
-
-}
-
-VNAGraphWriter::~VNAGraphWriter() {
-
-}
-
-void VNAGraphWriter::write(Graph& G, std::string path) {
+void VNAGraphWriter::write(Graph& G, const std::string& path) {
 	this->write(G, G.isWeighted(), path);
 }
 
-void VNAGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, Partition& partition, count dim) {
+void VNAGraphWriter::writeGeneric(Graph& G, bool weighted, const std::string& path,
+                                  Partition& partition, count dim) {
 
 	std::ofstream file(path);
-	assert (file.good());
+	Aux::enforceOpened(file);
 
 //	int64_t n = G.numberOfNodes();
 //	int64_t m = G.numberOfEdges();
-//	file << n << " " << m << " " << (int)weighted << std::endl;
+//	file << n << " " << m << " " << (int)weighted << '\n';
 
-	file << "*Node properties" << std::endl;
+	file << "*Node properties\n";
 	switch (dim) {
 	case 0: { // clustering is defined
-		file << "ID x y color" << std::endl;
+		file << "ID x y color\n";
 		break;
 	}
 	case 2: {
-		file << "ID x y" << std::endl;
+		file << "ID x y\n";
 		break;
 	}
 	case 3: {
-		file << "ID x y z" << std::endl;
+		file << "ID x y z\n";
 		break;
 	}
 	default: {
@@ -54,36 +48,36 @@ void VNAGraphWriter::writeGeneric(Graph& G, bool weighted, std::string path, Par
 		G.forNodes([&](node u) {
 			point = G.getCoordinate(u);
 			file << u << " " << point[0] << " " << point[1] << " "
-				 << 70 * partition.subsetOf(u) << std::endl;
+				 << 70 * partition.subsetOf(u) << '\n';
 		});
 	}
 	else {
 		G.forNodes([&](node u) {
 			point = G.getCoordinate(u);
-		    file << u << " " << point.toSsvString();
+			file << u << " " << point.toSsvString();
 		});
 	}
 
-	file << "*tie data" << std::endl;
-	file << "*from to" << std::endl;
+	file << "*tie data\n";
+	file << "*from to\n";
 	
 	G.forEdges([&](node u, node v) {
-       	    file << u << " " << v << std::endl;
-       	});
+		file << u << " " << v << '\n';
+	});
 
-	file.close();
 }
 
-void VNAGraphWriter::write(Graph& G, bool weighted, std::string path) {
+void VNAGraphWriter::write(Graph& G, bool weighted, const std::string& path) {
 	Partition dummy(0);
 	writeGeneric(G, weighted, path, dummy, 2);
 }
 
-void VNAGraphWriter::write(Graph& G, bool weighted, std::string path, Partition& partition) {
+void VNAGraphWriter::write(Graph& G, bool weighted, const std::string& path,
+                           Partition& partition) {
 	writeGeneric(G, weighted, path, partition, 2);
 }
 
-void VNAGraphWriter::write3D(Graph& G, bool weighted, std::string path) {
+void VNAGraphWriter::write3D(Graph& G, bool weighted, const std::string& path) {
 	Partition dummy(0);
 	writeGeneric(G, weighted, path, dummy, 3);
 }

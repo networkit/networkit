@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup dynamics
  * This class enables the observer pattern for dynamic graphs: It has the same modifiers as a Graph object.
  * When these modifiers are called, they are also called on the underlying graphs. Also, all registered
  * observers (type GraphEventHandler) are notified.
@@ -41,7 +42,7 @@ public:
 
 	void removeNode(node u);
 
-	void addEdge(node u, node v, edgeweight weight = Graph::defaultEdgeWeight);
+	void addEdge(node u, node v, edgeweight weight = defaultEdgeWeight);
 
 	void removeEdge(node u, node v);
 

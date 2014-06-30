@@ -1,5 +1,5 @@
 # NetworKit native classes and functions
-from _NetworKit import GraphProperties, ConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, CoreDecomposition
+from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, CoreDecomposition
 
 # other submodules
 import community
@@ -63,7 +63,10 @@ def components(G):
 		ConnectedComponents class.
 	"""
 	logging.info("[...] finding connected components....")
-	cc = ConnectedComponents(G)
+	if G.isDirected():
+		cc = StronglyConnectedComponents(G)
+	else:
+		cc = ParallelConnectedComponents(G, True)	# performs best in parallel on large graphs
 	cc.run()
 	components = cc.getPartition()
 	nComponents = components.numberOfSubsets()
@@ -79,7 +82,7 @@ def numberOfComponents(G):
 	return nComponents
 
 def clustering(G, error=0.01):
-	""" 
+	"""
 		Returns approximate average local clustering coefficient
 		The maximum error can be given as a parameter and determines
 		the number of samples taken.
@@ -122,22 +125,32 @@ def powerLawFit(G, dd=None):
 #     (slope,_,_,_,_) = stats.linregress(logarithmic(degrange), logarithmic(dd))
 #     gamma = -1 * slope
 #     return gamma
-	
+
 
 def degreeAssortativity(G):
 	""" Returns the degree assortativity coefficient """
 	return GraphProperties.degreeAssortativity(G, G.isWeighted())
 
 
+def degeneracy(G):
+	""" degeneracy of an undirected graph is defined as the largest k for which
+	the graph has a non-empty k-core"""
+	coreDec = CoreDecomposition(G)
+	coreDec.run()
+	return coreDec.maxCoreNumber()
+
+
 def properties(G, settings):
 	logging.info("[...] calculating properties")
-	
+
 	# size
 	n, m = size(G)    # n and m
 
+	directed = G.isDirected()
+
 	logging.info("[...] determining degree distribution")
-	# degrees 
-	degDist = GraphProperties.degreeDistribution(G) 
+	# degrees
+	degDist = GraphProperties.degreeDistribution(G)
 	minDeg, maxDeg, avgDeg = degrees(G)
 
 	plfit = powerLawFit(G, degDist)
@@ -149,7 +162,7 @@ def properties(G, settings):
 
 	# number of self-loops
 	loops = len([(u, v) for (u,v) in G.edges() if (u == v)])
-	
+
 	# density
 	dens = density(G)
 
@@ -161,24 +174,19 @@ def properties(G, settings):
 	ncomPLM, modPLM = None, None
 	if settings["communities"]:
 		logging.info("[...] detecting communities")
-		# perform PLP and PLM community detection
-		logging.debug("[...] performing community detection: PLP")
-		# TODO: avoid printout of status bar
-		plp = community.PLP()
-		zetaPLP = plp.run(G)
-		ncomPLP = zetaPLP.numberOfSubsets()
-		modPLP = community.Modularity().getQuality(zetaPLP, G)
+		# perform PLM community detection
 		logging.info("[...] performing community detection: PLM")
-		plm = community.PLM("balanced")
+		plm = community.PLM()
+		print(plm)
 		zetaPLM = plm.run(G)
 		ncomPLM = zetaPLM.numberOfSubsets()
 		modPLM = community.Modularity().getQuality(zetaPLM, G)
 
 	# degree histogram
-	
+
 	labels, histo = None, None
 	if settings["degreeHistogram"]:
-		logging.info("[...] preparing degree histogram")    
+		logging.info("[...] preparing degree histogram")
 		histo = degDist
 		(labels, histo) = compressHistogram(histo, nbins=25)
 
@@ -196,24 +204,30 @@ def properties(G, settings):
 	# clustering
 	avglcc = None
 	if settings["clustering"]:
-		logging.info("[...] approximating clustering coefficient") 
+		logging.info("[...] approximating clustering coefficient")
 		avglcc = clustering(G)
 
 	# degree assortativity
-	logging.info("[...] calculating degree assortativity coefficient") 
+	logging.info("[...] calculating degree assortativity coefficient")
 	assort = degreeAssortativity(G)
+
+	# degeneracy
+	logging.info("[...] calculating degeneracy by k-core decomposition")
+	degen = degeneracy(G)
 
 
 	props = {
 		 "name": G.getName(),
 		 "n": n,
 		 "m": m,
+		 "directed": directed,
 		 "minDeg": minDeg,
 		 "maxDeg": maxDeg,
 		 "avgDeg": avgDeg,
 		 "plfit": plfit,
 		 "gamma": gamma,
 		 "avglcc": avglcc,
+		 "degeneracy": degen,
 		 "nComponents": nComponents,
 		 "sizeLargestComponent": max(componentSizes.values()),
 		 "dia": dia,
@@ -239,32 +253,29 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	basicProperties = [
 		["nodes (n)", props["n"]],
 		["edges (m)", props["m"]],
-		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
+		["directed?", props["directed"]],
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
+		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
+		["clustering coefficient", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
+		["degeneracy (max. core number)", props["degeneracy"]],
+	]
+	degreeProperties = [
 		["min. degree", props["minDeg"]],
 		["max. degree", props["maxDeg"]],
 		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
 		["degree power law fit?", "{0}, {1}".format(props["plfit"][0], "{0:.6f}".format(props["plfit"][1]))],
 		["degree power law exponent", "{0:.4f}".format(props["gamma"]) if props["plfit"][0] else None],
-		["degree assortativity", "{0:.4f}".format(props["assort"])]
+		["degree assortativity", "{0:.4f}".format(props["assort"])],
 	]
 	pathStructure = [
 		["connected components", props["nComponents"]],
 		["size of largest component", props["sizeLargestComponent"]],
 		["estimated diameter range", str(props["dia"])],
 	]
-	
-	# miscProperties = [
-	# 	["degree assortativity", "{0:.6f}".format(props["assort"]) if props["assort"] else None]
-	# ]
 
 	communityStructure = [
-		["approx. avg. local clustering coefficient", "", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
-		["PLP community detection", "", ""],
-		["", "communities", props["ncomPLP"]],
-		["", "modularity", "{0:.6f}".format(props["modPLP"]) if props["modPLP"] else None],
-		["PLM community detection", "", ""],
+		["modularity-driven community detection (PLM)", "", ""],
 		["", "communities", props["ncomPLM"]],
 		["", "modularity", "{0:.6f}".format(props["modPLM"]) if props["modPLM"] else None],
 	]
@@ -274,6 +285,8 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	print("==================")
 	print("Basic Properties")
 	print(tabulate.tabulate(basicProperties))
+	print("Node Degree Properties")
+	print(tabulate.tabulate(degreeProperties))
 	print("Path Structure")
 	print(tabulate.tabulate(pathStructure))
 	#print("Miscellaneous")
@@ -299,13 +312,12 @@ def compressHistogram(hist, nbins=20):
 		compressed[i] = sum(hist[l : u])
 		labels[i] = "{0}-".format(l)
 	return (labels, compressed)
-		
 
-	
+
+
 def printDegreeHistogram(G, nbins=25):
 	""" Prints a degree histogram as a bar chart to the terminal"""
 	hist = GraphProperties.degreeDistribution(G)
-	
+
 	(labels, hist) = compressHistogram(hist, nbins)
 	termgraph.graph(labels, hist)
-	

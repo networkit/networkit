@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup graph
+ */
 class Sampling {
 
 public:

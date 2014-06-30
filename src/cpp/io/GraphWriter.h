@@ -14,14 +14,14 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class GraphWriter {
 public:
+	virtual ~GraphWriter() = default;
 
-	GraphWriter();
-
-	virtual ~GraphWriter();
-
-	virtual void write(Graph& G, std::string path) = 0;
+	virtual void write(Graph& G, const std::string& path) = 0;
 };
 
 } /* namespace NetworKit */

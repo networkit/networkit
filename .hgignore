@@ -13,6 +13,7 @@ build.conf
 .sconsign.dblite
 /_NetworKit.cpp$
 src/python/NetworKit.egg-info/
+NetworKit-Tests-D
 
 syntax: regexp
 ^output$
@@ -20,8 +21,6 @@ syntax: regexp
 ^sandbox$
 syntax: regexp
 ^profiling$
-syntax: regexp
-^input$
 syntax: regexp
 ^EnsembleClustering-D$
 syntax: regexp
@@ -39,3 +38,6 @@ syntax: regexp
 /*.eps
 syntax: regexp
 ^doxygen$
+
+syntax: glob
+NetworKit-Tests-*

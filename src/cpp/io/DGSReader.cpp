@@ -5,17 +5,12 @@
  *      Author: cls
  */
 
+#include <map>
+
 #include "DGSReader.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
-
-DGSReader::DGSReader() {
-
-}
-
-DGSReader::~DGSReader() {
-
-}
 
 void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 	std::ifstream dgsFile;

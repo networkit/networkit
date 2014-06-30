@@ -5,6 +5,9 @@
  *      Author: Henning
  */
 
+#include <set>
+#include <queue>
+
 #include "../auxiliary/Random.h"
 
 #include "PubWebGenerator.h"
@@ -49,10 +52,6 @@ PubWebGenerator::PubWebGenerator(count numNodes, count numberOfDenseAreas,
 		float neighborhoodRadius, count maxNumberOfNeighbors) :
 		n(numNodes), numDenseAreas(numberOfDenseAreas), neighRad(
 				neighborhoodRadius), maxNeigh(maxNumberOfNeighbors) {
-
-}
-
-PubWebGenerator::~PubWebGenerator() {
 
 }
 
@@ -132,7 +131,7 @@ void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
 
 	for (index j = 0; j < num; ++j) {
 		// compute random angle between [0, 2pi) and distance between [0, width/2]
-		float angle = Aux::Random::real() * 2.0 * M_PI;
+		float angle = Aux::Random::real() * 2.0 * PI;
 		float dist = Aux::Random::real() * denseAreaXYR[area].rad;
 
 		// compute coordinates and adjust them
@@ -156,7 +155,7 @@ void PubWebGenerator::fillDenseAreas(Graph& g) {
 }
 
 void PubWebGenerator::chooseDenseAreaSizes() {
-	denseAreaXYR.reserve(numDenseAreas);
+	denseAreaXYR.resize(numDenseAreas);
 
 	for (index area = 0; area < numDenseAreas; ++area) {
 		// anti-quadratic probability distribution
@@ -194,16 +193,17 @@ void PubWebGenerator::chooseClusterSizes() {
 
 Graph PubWebGenerator::generate() {
 	// init
-	Graph g(0, true);
+	Graph G(0, true);
 
 	// add vertices according to PubWeb distribution
 	chooseDenseAreaSizes();
 	chooseClusterSizes();
-	fillDenseAreas(g);
-	spreadRemainingNodes(g);
-	determineNeighbors(g);
+	fillDenseAreas(G);
+	spreadRemainingNodes(G);
+	determineNeighbors(G);
 
-	return g;
+	G.shrinkToFit();
+	return G;
 }
 
 

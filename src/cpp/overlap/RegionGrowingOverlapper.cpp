@@ -6,17 +6,9 @@
  */
 
 #include "RegionGrowingOverlapper.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
-
-RegionGrowingOverlapper::RegionGrowingOverlapper() {
-	// TODO Auto-generated constructor stub
-
-}
-
-RegionGrowingOverlapper::~RegionGrowingOverlapper() {
-	// TODO Auto-generated destructor stub
-}
 
 Partition RegionGrowingOverlapper::run(Graph& G,
 		std::vector<Partition>& clusterings) {
@@ -53,23 +45,40 @@ Partition RegionGrowingOverlapper::run(Graph& G,
 
 		DEBUG("starting BFS from node: " , r);
 
-		// start BFS
-		G.breadthFirstNodesFrom(r, visited, [&](node u) {
-			visited[u] = 1; // has been visited
-				unvisited.erase(u);
+		// TODO: Graph.breadthFirstNodesFrom() was removed, use BFSfrom instead - marvin
+		// <<<<< old code
+		// // start BFS
+		// G.breadthFirstNodesFrom(r, visited, [&](node u) {
+		// 	visited[u] = 1; // has been visited
+		// 		unvisited.erase(u);
+		// 		// check for all incident edges if u and v belong in the same core cluster
+		// 		G.forEdgesOf(u, [&](node u, node v) {
+		// 					bool together = true;
+		// 					for (std::vector<Partition>::iterator iter = clusterings.begin(); iter != clusterings.end(); ++iter ) {
+		// 						together = together && (iter->subsetOf(u) == iter->subsetOf(v));
+		// 					}
+		// 					if (together) {
+		// 						core.moveToSubset(core.subsetOf(u), v);
+		// 					}
+		// 				});
+		// 	});
+		// >>>>>
 
-				// check for all incident edges if u and v belong in the same core cluster
-				G.forEdgesOf(u, [&](node u, node v) {
-							bool together = true;
-							for (std::vector<Partition>::iterator iter = clusterings.begin(); iter != clusterings.end(); ++iter ) {
-								together = together && (iter->subsetOf(u) == iter->subsetOf(v));
-							}
-							if (together) {
-								core.moveToSubset(core.subsetOf(u), v);
-							}
-						});
-
+		// <<<<< new code
+		G.BFSfrom(r, [&](node u) {
+			unvisited.erase(u);
+			// check for all incident edges if u and v belong in the same core cluster
+			G.forEdgesOf(u, [&](node u, node v) {
+				bool together = true;
+				for (std::vector<Partition>::iterator iter = clusterings.begin(); iter != clusterings.end(); ++iter ) {
+					together = together && (iter->subsetOf(u) == iter->subsetOf(v));
+				}
+				if (together) {
+					core.moveToSubset(core.subsetOf(u), v);
+				}
 			});
+		});
+		// >>>>>
 	}
 
 	return core;

@@ -21,6 +21,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup io
  * DGS is a file format allowing to store graphs and dynamic graphs in a textual human readable way,
  * yet with a small size allowing to store large graphs. Graph dynamics is defined using events like
  * adding, deleting or changing a node or edge. With DGS, graphs will therefore be seen as stream of
@@ -32,14 +33,10 @@ namespace NetworKit {
 class DGSReader: public NetworKit::DynamicGraphReader {
 
 public:
-
-	DGSReader();
-
-	virtual ~DGSReader();
-
+	
 	/**
-	 * @param[in]	path	path to file in DGS format
-	 * @param[in]	Gproxy	graph event proxy receives the events from the file
+	 * @param[in]	path	Path to file in DGS format.
+	 * @param[in]	Gproxy	Graph event proxy receives the events from the file.
 	 */
 	virtual void read(std::string path, GraphEventProxy& Gproxy);
 };

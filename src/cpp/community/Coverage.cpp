@@ -10,13 +10,7 @@
 
 namespace NetworKit {
 
-Coverage::Coverage() {
-	// TODO Auto-generated constructor stub
-
-}
-
 Coverage::~Coverage() {
-	// TODO Auto-generated destructor stub
 }
 
 double Coverage::getQuality(const Partition& zeta, const Graph& G) {

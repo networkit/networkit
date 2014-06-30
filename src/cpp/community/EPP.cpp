@@ -7,10 +7,10 @@
 
 #include "EPP.h"
 
-
 #include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../community/JaccardMeasure.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
