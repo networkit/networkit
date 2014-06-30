@@ -25,10 +25,10 @@ void ParallelConnectedComponents::run() {
 	}
 
 	// calculate connected components by label propagation
-	count z = G.numberOfNodes();
+	count z = G.upperNodeIdBound();
 
 	DEBUG("initializing labels");
-	component = Partition(G.upperNodeIdBound());
+	component = Partition(z);
 	component.allToSingletons();
 
 	DEBUG("initializing active nodes");
