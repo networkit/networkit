@@ -33,6 +33,7 @@ struct circle {
 };
 
 /**
+ * @ingroup generators
  * Generates a static graph that resembles an assumed geometric distribution of nodes in
  * a P2P network. The basic structure is to distribute points randomly in the unit torus
  * and to connect vertices close to each other (at most @a neighRad distance and none of

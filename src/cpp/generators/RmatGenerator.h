@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup generators
  * Generates static R-MAT graphs. R-MAT (recursive matrix) graphs are
  * random graphs with n=2^scale nodes and m=n*edgeFactor edges.
  * More details at http://www.graph500.org or in the original paper:

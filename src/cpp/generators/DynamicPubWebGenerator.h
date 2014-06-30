@@ -17,6 +17,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup generators
+ */
 class DynamicPubWebGenerator: public NetworKit::DynamicGraphGenerator {
 
 protected:

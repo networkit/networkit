@@ -16,6 +16,9 @@ const short NO = 0;
 const short YES = 1;
 const short UNKNOWN = 2;
 
+/**
+ * @ingroup generators
+ */
 class StaticDegreeSequenceGenerator: public NetworKit::StaticGraphGenerator {
 protected:
 	std::vector<unsigned int> seq;
