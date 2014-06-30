@@ -33,7 +33,7 @@ public:
 	 * Add noise to double.
 	 *
 	 * @param[in]	 x	input
-	 * @param[out]		input plus noise
+	 * @return	input plus noise
 	 */
 	double add(double x);
 	
