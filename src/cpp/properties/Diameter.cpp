@@ -5,6 +5,8 @@
  *      Author: Daniel Hoske, Christian Staudt
  */
 
+#include <numeric>
+
 #include "Diameter.h"
 #include "Eccentricity.h"
 #include "../graph/BFS.h"
