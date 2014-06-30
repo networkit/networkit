@@ -6,6 +6,8 @@
  *      Contributors: Hoske/Weisbarth
  */
 
+#include <numeric>
+
 #include "ChungLuGenerator.h"
 
 namespace NetworKit {
