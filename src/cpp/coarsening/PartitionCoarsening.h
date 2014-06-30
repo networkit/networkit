@@ -13,8 +13,8 @@
 
 namespace NetworKit {
 
-/*
- *
+/**
+ * @ingroup coarsening
  */
 class PartitionCoarsening: public NetworKit::GraphCoarsening {
 
