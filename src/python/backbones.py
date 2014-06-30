@@ -10,7 +10,7 @@ def writeCsv(file, G, B):
 		f.write("{0},{1},{2},{3}\n".format(edge[0],edge[1],"Undirected",value))
 	f.close()
 
-# ----------------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------------------
 # THE FOLLOWING IS AN EXPERIMENTAL INTERFACE TO GEPHI USING THE GRAPH STREAMING PLUGIN.
 # THIS FUNCTIONALITY IS TO BE EXTRACTED INTO A NICE AND GENERAL INTERFACE.
 # ----------------------------------------------------------------------------------------

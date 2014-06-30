@@ -6,10 +6,17 @@
  */
 
 #include "ChibaNishizekiTriangleCounter.h"
+#include "../auxiliary/Log.h"
+#include "../auxiliary/Timer.h"
 
 namespace NetworKit {
 
 edgeCountMap ChibaNishizekiTriangleCounter::triangleCounts(const Graph& graph) {
+	INFO("Started triangle counting...", "\n");
+
+	Aux::Timer timer;
+	timer.start();
+
 	Graph g = graph;
 
 	//Node attribute: marker
@@ -38,6 +45,9 @@ edgeCountMap ChibaNishizekiTriangleCounter::triangleCounts(const Graph& graph) {
 
 		removeNode(g, u);
 	});
+
+	timer.stop();
+	INFO("elapsed millisecs for CN triangle counting: ", timer.elapsedMilliseconds(), "\n");
 
 	return triangleCount;
 }
