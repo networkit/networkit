@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup distmeasures
+ */
 class TNeighborhoodDistance: public NetworKit::TNodeDistance {
 public:
 

@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup distmeasures
+ */
 class TNodeDistance {
 
 public:
