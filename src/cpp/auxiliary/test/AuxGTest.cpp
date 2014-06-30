@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <numeric>
 #include <chrono>
 #include <thread>
 #include <fstream>
