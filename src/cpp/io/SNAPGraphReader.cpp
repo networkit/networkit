@@ -7,6 +7,7 @@
 
 #include "SNAPGraphReader.h"
 #include "../auxiliary/StringTools.h"
+#include "../auxiliary/Log.h"
 
 #include <sstream>
 #include <fstream>
@@ -32,7 +33,7 @@ Graph SNAPGraphReader::read(const std::string& path) {
 	
 	std::string commentPrefix = "#";
 	
-	count firstNode = 0;
+	// count firstNode = 0;
 	char separator = '\t';
 
 	//DEBUG("separator: " , separator);
@@ -115,6 +116,7 @@ Graph SNAPGraphReader::read(const std::string& path) {
 	DEBUG("read ",i," lines and added ",G.numberOfEdges()," edges");
 	file.close();
 
+	G.shrinkToFit();
 	return G;
 }
 

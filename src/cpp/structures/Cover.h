@@ -198,21 +198,6 @@ public:
 	 *
 	 * @param func Takes parameters <code>(node, index)</code>
 	 */
-	template<typename Callback> void forEntries(Callback func);
-
-
-	/**
-	 * Iterate over all entries (node, subset ID of node) in parallel and execute callback function @a func (lambda closure).
-	 *
-	 * @param func Takes parameters <code>(node, index)</code>
-	 */
-	template<typename Callback> void parallelForEntries(Callback handle);
-
-	/**
-	 * Iterate over all entries (node, subset ID of node) and execute callback function @a func (lambda closure).
-	 *
-	 * @param func Takes parameters <code>(node, index)</code>
-	 */
 	template<typename Callback> void forEntries(Callback func) const;
 
 
@@ -244,42 +229,21 @@ private:
 
 };
 
+template<typename Callback>
+inline void Cover::forEntries(Callback handle) const {
+	for (index e = 0; e <= this->z; e += 1) {
+		handle(e, data[e]);
+	}
+}
+
+template<typename Callback>
+inline void Cover::parallelForEntries(Callback handle) const {
+	#pragma omp parallel for
+	for (index e = 0; e <= this->z; e += 1) {
+		handle(e, data[e]);
+	}
+}
+
 } /* namespace NetworKit */
-
-
-template<typename Callback>
-inline void NetworKit::Cover::forEntries(Callback handle) {
-	for (index e = 0; e <= this->z; e += 1) {
-		handle(e, data[e]);
-	}
-
-}
-
-template<typename Callback>
-inline void NetworKit::Cover::forEntries(Callback handle) const {
-	for (index e = 0; e <= this->z; e += 1) {
-		handle(e, data[e]);
-	}
-}
-
-template<typename Callback>
-inline void NetworKit::Cover::parallelForEntries(
-		Callback handle) {
-	#pragma omp parallel for
-	for (index e = 0; e <= this->z; e += 1) {
-		handle(e, data[e]);
-	}
-}
-
-
-template<typename Callback>
-inline void NetworKit::Cover::parallelForEntries(
-		Callback handle) const {
-	#pragma omp parallel for
-	for (index e = 0; e <= this->z; e += 1) {
-		handle(e, data[e]);
-	}
-}
-
 
 #endif /* COVER_H_ */

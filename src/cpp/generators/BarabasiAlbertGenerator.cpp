@@ -63,6 +63,7 @@ Graph BarabasiAlbertGenerator::generate() {
 
 	}
 
+	G.shrinkToFit();
 	return G;
 }
 

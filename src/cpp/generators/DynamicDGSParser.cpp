@@ -6,6 +6,7 @@
  */
 
 #include "DynamicDGSParser.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

@@ -45,6 +45,14 @@ uint64_t Timer::elapsedMilliseconds() {
 	return this->elapsed().count();
 }
 
+uint64_t Timer::elapsedMicroseconds() {
+	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(this->stopped - this->started).count();
+}
+
+uint64_t Timer::elapsedNanoseconds() {
+	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::nano>>(this->stopped - this->started).count();
+}
+
 std::string Timer::elapsedTag() {
 	std::stringstream s;
 	s << "(" << this->elapsed().count() << " ms) ";

@@ -10,19 +10,26 @@
 
 #include "GraphReader.h"
 
-#include "METISParser.h"
-#include "../auxiliary/StringTools.h"
-
 namespace NetworKit {
 
 /**
  * @ingroup io
+ * Reader for the METIS file format documented in [1]
+ *
+ * [1] http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
  */
 class METISGraphReader: public NetworKit::GraphReader {
 public:
 
 	METISGraphReader() = default;
-
+	
+	/**
+	 * Takes a file path as parameter and returns a graph file.
+	 *
+	 * @param[in]	path	file path
+	 *
+	 * @param[out]	the graph read from file
+	 */
 	virtual Graph read(const std::string& path) override;
 };
 

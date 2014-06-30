@@ -8,6 +8,7 @@
 #ifndef NOGTEST
 
 #include "DistMeasuresGTest.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 

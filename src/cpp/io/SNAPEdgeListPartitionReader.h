@@ -8,9 +8,15 @@
 #ifndef SNAPEDGELISTPARTITIONREADER_H_
 #define SNAPEDGELISTPARTITIONREADER_H_
 
+#include <set>
+#include <vector>
+#include <fstream>
+#include <unordered_map>
+// TODO: clean up includes
+
 //#include <unordered_set>
 //#include <vector>
-//#include <fstream>
+// #include <fstream>
 
 #include "../graph/Graph.h"
 #include "../auxiliary/StringTools.h"

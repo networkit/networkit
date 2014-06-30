@@ -6,6 +6,7 @@
  */
 
 #include "IndependentSetFinder.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

@@ -5,9 +5,11 @@
  *      Author: Lukas Barth, David Weiss
  */
 
+#include <unordered_set>
+ 
 #include "ClusteringCoefficient.h"
 #include "../auxiliary/Random.h"
-#include <unordered_set>
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

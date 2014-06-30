@@ -8,6 +8,7 @@
 #include "DynamicNMIDistance.h"
 #include "../auxiliary/MissingMath.h"
 #include "../auxiliary/NumericTools.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

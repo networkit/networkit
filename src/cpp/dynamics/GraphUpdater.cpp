@@ -6,6 +6,7 @@
  */
 
 #include "GraphUpdater.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
