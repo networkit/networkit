@@ -23,8 +23,6 @@ class RegionGrowingOverlapper: public NetworKit::Overlapper {
 
 public:
 
-	/** Default destructor */
-	virtual ~RegionGrowingOverlapper() = default;
 
 	virtual Partition run(Graph& G, std::vector<Partition>& clusterings);
 
