@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G) : G(G) {
+ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : G(G), coarsening(coarsening) {
 
 }
 
@@ -56,13 +56,11 @@ void ParallelConnectedComponents::run() {
 		G.parallelForNodes([&](node u) {
 			if (activeNodes[u] == ACTIVE) {
 //				++numActive;
-				std::vector<index> neighborLabels;
-				G.forNeighborsOf(u, [&](node v) {
-					// neighborLabels.push_back(component[v]);
-					neighborLabels.push_back(component[v]);
-				});
 				// get smallest
-				index smallest = *std::min_element(neighborLabels.begin(), neighborLabels.end());
+				index smallest = component[u];
+				G.forNeighborsOf(u, [&](node v) {
+					smallest = std::min(smallest, component[v]);
+				});
 
 				if (component[u] != smallest) {
 					component.moveToSubset(smallest, u);
@@ -78,7 +76,7 @@ void ParallelConnectedComponents::run() {
 		});
 //		TRACE("num active: ", numActive);
 		++numIterations;
-		if ((numIterations % 8) == 0) { // TODO: externalize constant
+		if (coarsening && (numIterations % 8) == 0) { // TODO: externalize constant
 			// coarsen and make recursive call
 			PartitionCoarsening con;
 			std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
