@@ -1335,6 +1335,7 @@ cdef extern from "../cpp/properties/ConnectedComponents.h":
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
+		map[index, count] getComponentSizes() except +
 
 
 cdef class ConnectedComponents:
@@ -1357,6 +1358,9 @@ cdef class ConnectedComponents:
 
 	def componentOfNode(self, v):
 		return self._this.componentOfNode(v)
+
+	def getComponentSizes(self):
+		return self._this.getComponentSizes()
 
 
 cdef extern from "../cpp/properties/ParallelConnectedComponents.h":

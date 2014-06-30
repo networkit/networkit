@@ -45,6 +45,11 @@ public:
 	 * Return a Partition that represents the components
 	 */
 	Partition getPartition();
+    
+    /**
+     *Return the map from component to size
+     */
+    std::map<index, count> getComponentSizes();
 
 
 private:
