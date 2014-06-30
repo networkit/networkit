@@ -560,21 +560,35 @@ cdef class METISGraphReader:
 		return Graph(0).setThis(self._this._read(pathbytes))
 
 
-cdef extern from "../cpp/io/FastMETISGraphReader.h":
-	cdef cppclass _FastMETISGraphReader "NetworKit::FastMETISGraphReader":
-		_FastMETISGraphReader() except +
+cdef extern from "../cpp/io/EdgeListReader.h":
+	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader":
+		_EdgeListReader() except +
+		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous)
+		_Graph read(string path) except +
 		_Graph* _read(string path) except +
+		unordered_map[node,node] getNodeMap() except +
+		
 
-cdef class FastMETISGraphReader:
-	""" A faster but still experimental implementation of a reader for
-		the METIS format. It is the default of the readGraph-function.
+cdef class EdgeListReader:
+	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
+		use readGraph(path, graphio.formats.metis) as an alternative.
+		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
 	"""
-	cdef _FastMETISGraphReader _this
+	cdef _EdgeListReader _this
+
+	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True):
+		self._this = _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous)
 
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this._read(pathbytes))
-
+	
+	def getNodeMap(self):
+		cdef unordered_map[node,node] cResult = self._this.getNodeMap()
+		result = []
+		for elem in cResult:
+			result.append((elem.first,elem.second))
+		return result
 
 cdef extern from "../cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
@@ -606,20 +620,20 @@ cdef class DotGraphWriter:
 		self._this.write(dereference(G._this), stdstring(path))
 
 
-cdef extern from "../cpp/io/VNAGraphWriter.h":
-	cdef cppclass _VNAGraphWriter "NetworKit::VNAGraphWriter":
-		_VNAGraphWriter() except +
-		void write(_Graph G, string path) except +
+#cdef extern from "../cpp/io/VNAGraphWriter.h":
+#	cdef cppclass _VNAGraphWriter "NetworKit::VNAGraphWriter":
+#		_VNAGraphWriter() except +
+#		void write(_Graph G, string path) except +
 
 
-cdef class VNAGraphWriter:
-	""" Writes graphs in the VNA format. The VNA format is commonly used by Netdraw, and is very similar to Pajek format.
-	It defines nodes and edges (ties), and supports attributes. Each section of the file is separated by an asterisk. """
-	cdef _VNAGraphWriter _this
+#cdef class VNAGraphWriter:
+#	""" Writes graphs in the VNA format. The VNA format is commonly used by Netdraw, and is very similar to Pajek format.
+#	It defines nodes and edges (ties), and supports attributes. Each section of the file is separated by an asterisk. """
+#	cdef _VNAGraphWriter _this
 
-	def write(self, Graph G not None, path):
+#	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(dereference(G._this), stdstring(path))
+#		self._this.write(dereference(G._this), stdstring(path))
 
 
 cdef extern from "../cpp/io/GMLGraphWriter.h":
@@ -629,7 +643,8 @@ cdef extern from "../cpp/io/GMLGraphWriter.h":
 
 
 cdef class GMLGraphWriter:
-	""" Writes a (so far unweighted) graph and its coordinates as a GML file. """
+	""" Writes a graph and its coordinates as a GML file.[1]
+		[1] http://svn.bigcat.unimaas.nl/pvplugins/GML/trunk/docs/gml-technical-report.pdf """
 	cdef _GMLGraphWriter _this
 
 	def write(self, Graph G not None, path):
@@ -637,25 +652,21 @@ cdef class GMLGraphWriter:
 		self._this.write(dereference(G._this), stdstring(path))
 
 
-cdef extern from "../cpp/io/EdgeListIO.h":
-	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
-		_EdgeListIO() except +
-		_EdgeListIO(char separator, node firstNode) except +
-		_Graph* _read(string path) except +
+cdef extern from "../cpp/io/EdgeListWriter.h":
+	cdef cppclass _EdgeListWriter "NetworKit::EdgeListWriter":
+		_EdgeListWriter() except +
+		_EdgeListWriter(char separator, node firstNode) except +
 		void write(_Graph G, string path) except +
 
-cdef class EdgeListIO:
+cdef class EdgeListWriter:
 	""" Reads and writes graphs in various edge list formats. The constructor takes a
 		seperator char and the ID of the first node as paraneters."""
 
-	cdef _EdgeListIO _this
+	cdef _EdgeListWriter _this
 
 	def __cinit__(self, separator, firstNode):
 		cdef char sep = stdstring(separator)[0]
-		self._this = _EdgeListIO(sep, firstNode)
-
-	def read(self, path):
-		return Graph().setThis(self._this._read(stdstring(path)))
+		self._this = _EdgeListWriter(sep, firstNode)
 
 	def write(self, Graph G not None, path):
 		self._this.write(dereference(G._this), stdstring(path))
