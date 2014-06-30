@@ -9,14 +9,6 @@
 
 namespace NetworKit {
 
-GraphDistance::GraphDistance() {
-
-}
-
-GraphDistance::~GraphDistance() {
-
-}
-
 edgeweight GraphDistance::weightedDistance(const Graph& g, node u, node v) const {
 	Dijkstra dijkstra(g, u); 
 	dijkstra.run();

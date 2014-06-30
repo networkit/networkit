@@ -15,18 +15,25 @@
 namespace NetworKit {
 
 /**
+ * @ingroup graph
  * Dijkstra's SSSP algorithm.
  */
 class Dijkstra : public SSSP {
 
 public:
 
+	/**
+	 * Creates the Dijkstra class for @a G and the source node @a source.
+	 *
+	 * @param G The graph.
+	 * @param source The source node.
+	 */
 	Dijkstra(const Graph& G, node source);
 	
+	/**
+	 * Performs the Dijkstra SSSP algorithm on the graph given in the constructor.
+	 */
 	virtual void run();
-
-
-
 };
 
 } /* namespace NetworKit */
