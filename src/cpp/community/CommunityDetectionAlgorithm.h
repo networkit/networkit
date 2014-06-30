@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * Abstract base class for community detection/graph clustering algorithms.
  */
 class CommunityDetectionAlgorithm {

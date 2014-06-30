@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * The ModularitySequential class is the sequential version of Modularity.
  */
 class ModularitySequential: public NetworKit::QualityMeasure {

@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * Abstract base class for all clustering quality measures.
  */
 class QualityMeasure {

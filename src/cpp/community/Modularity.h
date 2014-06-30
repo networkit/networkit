@@ -14,6 +14,7 @@ namespace NetworKit {
 
 
 /**
+ * @ingroup community
  * Modularity is a quality index for community detection. It assigns a quality value in [-0.5, 1.0] to  
  * a partition of a graph which is higher for more modular networks and partitions which better capture 
  * the modular structure.
@@ -45,7 +46,7 @@ public:
 	virtual double getQuality(const Partition& zeta, const Graph& G);
 
 	/**
-	 * @param gTotalEdgeWeight Sum of all edge weights in @a G. If specified, it does not
+	 * @param totalEdgeWeight Sum of all edge weights in @a G. If specified, it does not
 	 *        have to be computed.
 	 */
 	void setTotalEdgeWeight(double totalEdgeWeight);

@@ -3,6 +3,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup community
+ */
 namespace GraphClusteringTools {
 
 float getImbalance(Partition& zeta);

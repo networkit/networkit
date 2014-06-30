@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * NMIDistance quantifies the dissimilarity between two clusterings using
  * Normalized Mutual Information.
  *
