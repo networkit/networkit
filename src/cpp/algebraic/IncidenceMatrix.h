@@ -13,6 +13,10 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup algebraic
+ * Incidence matrix of a Graph.
+ */
 class IncidenceMatrix {
 	typedef std::pair<node, node> Edge;
 
