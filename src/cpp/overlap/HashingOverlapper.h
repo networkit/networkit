@@ -15,15 +15,15 @@
 namespace NetworKit {
 
 /**
+ * @ingroup overlap
  * Determines the overlap of multiple partitions by hashing partition identifiers.
  */
 class HashingOverlapper: public NetworKit::Overlapper {
 
 public:
 
-	HashingOverlapper();
-
-	virtual ~HashingOverlapper();
+	/** Default destructor */
+	virtual ~HashingOverlapper() = default;
 
 	virtual Partition run(Graph& G, std::vector<Partition>& clusterings);
 };

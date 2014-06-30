@@ -9,15 +9,6 @@
 
 namespace NetworKit {
 
-RegionGrowingOverlapper::RegionGrowingOverlapper() {
-	// TODO Auto-generated constructor stub
-
-}
-
-RegionGrowingOverlapper::~RegionGrowingOverlapper() {
-	// TODO Auto-generated destructor stub
-}
-
 Partition RegionGrowingOverlapper::run(Graph& G,
 		std::vector<Partition>& clusterings) {
 	// TODO: test
