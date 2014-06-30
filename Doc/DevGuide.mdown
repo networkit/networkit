@@ -178,25 +178,25 @@ Unit tests for NetworKit are based on the `googletest` library. For more informa
 
 To build and run the tests you need the [gtest library](https://code.google.com/p/googletest/). Assuming, gtest is successfully installed and you add the paths to your build.conf, the unit tests should be compiled with:
 
-	scons --optimize=D --target=Tests
+	scons --optimize=Dbg --target=Tests
 	
 To verify that the code was built correctly: Run all unit tests with 
 
-		./NetworKit-Tests-D --tests
+		./NetworKit-Tests-Dbg --tests
 
 Performance tests will be selected with
 
-		./NetworKit-Tests-D --benchmarks
+		./NetworKit-Tests-Dbg --benchmarks
 
 while experimental tests are called with
 
-		./NetworKit-Tests-D --trials
+		./NetworKit-Tests-Dbg --trials
 
 To run only specific unit tests, you can also add a filter expression, e. g.:
 
-		./NetworKit-Tests --gtest_filter=*PartitionGTest*
+		./NetworKit-Tests-Dbg --gtest_filter=*PartitionGTest*
 
-runs only unit tests for the Partition data structure.
+initiates unit tests only for the Partition data structure.
 
 
 ### Code Style

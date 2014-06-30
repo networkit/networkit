@@ -20,7 +20,7 @@ GraphDistanceGTest::~GraphDistanceGTest() {
 
 }
 
-
+// TODO: fix graph
 TEST_F(GraphDistanceGTest, testGraphWeightedDistance) {
 	METISGraphReader reader;
 	Graph g = reader.read("input/mapping/grid-5x5-dist-arch.graph");

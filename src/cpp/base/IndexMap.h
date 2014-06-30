@@ -9,7 +9,7 @@
 #define INDEXMAP_H_
 
 #include <vector>
-
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

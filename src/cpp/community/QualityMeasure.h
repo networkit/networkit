@@ -21,8 +21,7 @@ class QualityMeasure {
 
 public:
 
-	QualityMeasure();
-
+	/** Default destructor */
 	virtual ~QualityMeasure();
 
 	virtual double getQuality(const Partition& zeta, const Graph& G) = 0;

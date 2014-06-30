@@ -7,6 +7,7 @@
 
 #include "RmatGenerator.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -60,6 +61,7 @@ Graph RmatGenerator::generate() {
 		G.increaseWeight(drawnEdge.first, drawnEdge.second, defaultEdgeWeight);
 	}
 
+	G.shrinkToFit();
 	return G;
 }
 

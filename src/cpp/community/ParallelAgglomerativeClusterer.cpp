@@ -14,15 +14,6 @@
 
 namespace NetworKit {
 
-ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer() {
-	// TODO Auto-generated constructor stub
-
-}
-
-ParallelAgglomerativeClusterer::~ParallelAgglomerativeClusterer() {
-	// TODO Auto-generated destructor stub
-}
-
 Partition ParallelAgglomerativeClusterer::run(Graph& graph) {
 	// copy graph because we make changes due to merges
 	Graph G(graph.numberOfNodes(), true); // make weighted copy

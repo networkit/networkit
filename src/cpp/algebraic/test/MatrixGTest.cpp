@@ -168,8 +168,6 @@ TEST(MatrixGTest, tryScalarMultiplication) {
 	EXPECT_EQ(0.0, mat(55, 199));
 }
 
-// TODO test Matrix / divisor and Matrix /= divisors
-
 TEST(MatrixGTest, tryMatrixDivisionOperator) {
 	std::vector<std::pair<int, int> > positions;
 	std::vector<double> values;

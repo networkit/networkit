@@ -9,13 +9,7 @@
 
 namespace NetworKit {
 
-CommunityDetectionAlgorithm::CommunityDetectionAlgorithm() {
-	// TODO Auto-generated constructor stub
-
-}
-
 CommunityDetectionAlgorithm::~CommunityDetectionAlgorithm() {
-	// TODO Auto-generated destructor stub
 }
 
 std::string CommunityDetectionAlgorithm::toString() const {

@@ -5,19 +5,12 @@
  *      Author: cls
  */
 
-#include "LPDegreeOrdered.h"
 #include <unordered_map>
 
+#include "LPDegreeOrdered.h"
+#include "../auxiliary/Log.h"
+
 namespace NetworKit {
-
-LPDegreeOrdered::LPDegreeOrdered() {
-	// TODO Auto-generated constructor stub
-
-}
-
-LPDegreeOrdered::~LPDegreeOrdered() {
-	// TODO Auto-generated destructor stub
-}
 
 Partition LPDegreeOrdered::run(Graph& G) {
 	count n = G.numberOfNodes();
