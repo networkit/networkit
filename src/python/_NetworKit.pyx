@@ -1348,6 +1348,36 @@ cdef class ConnectedComponents:
 		return self._this.componentOfNode(v)
 
 
+cdef extern from "../cpp/properties/ParallelConnectedComponents.h":
+	cdef cppclass _ParallelConnectedComponents "NetworKit::ParallelConnectedComponents":
+		_ParallelConnectedComponents(_Graph G, bool coarsening) except +
+		void run() except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		_Partition getPartition() except +
+
+
+cdef class ParallelConnectedComponents:
+	""" Determines the connected components and associated values for
+		an undirected graph.
+	"""
+	cdef _ParallelConnectedComponents* _this
+
+	def __cinit__(self,  Graph G, coarsening=True	):
+		self._this = new _ParallelConnectedComponents(dereference(G._this), coarsening)
+
+	def run(self):
+		self._this.run()
+
+	def getPartition(self):
+		return Partition().setThis(self._this.getPartition())
+
+	def numberOfComponents(self):
+		return self._this.numberOfComponents()
+
+	def componentOfNode(self, v):
+		return self._this.componentOfNode(v)
+
 
 cdef extern from "../cpp/properties/StronglyConnectedComponents.h":
 	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
