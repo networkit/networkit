@@ -21,7 +21,9 @@
 
 namespace NetworKit {
 
-
+/**
+ * @ingroup viz
+ */
 class MultilevelLayouter: public NetworKit::Layouter {
 protected:
 	static const count N_THRSH;

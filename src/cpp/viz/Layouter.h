@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup viz
+ */
 class Layouter {
 protected:
 	Point<float> bottomLeft;
