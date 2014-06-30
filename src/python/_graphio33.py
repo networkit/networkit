@@ -19,6 +19,7 @@ class Format:
 	GraphViz = "dot"
 	DOT = "dot"
 	EdgeList = "edgelist"
+	LFR = "edgelist-t1"
 	
 
 # reading
@@ -127,22 +128,49 @@ class GraphConverter:
 
 def getConverter(fromFormat, toFormat):
 	
-	readers =  {"metis": METISGraphReader(),
-				"edgelist-t1" : EdgeListIO('\t', 1),
-				"edgelist-t0": EdgeListIO('\t', 0),
-				"edgelist-s1": EdgeListIO(' ', 1), 
-				"edgelist-s0": EdgeListIO(' ', 1)}    
-	writers =  {"metis" : METISGraphWriter(),
-				"gexf": None,
-				"vna": VNAGraphWriter(),
-				"dot": DotGraphWriter(),
-				"graphviz": DotGraphWriter(),
-				"gml": GMLGraphWriter(),
-				"edgelist-t1": EdgeListIO('\t', 1),
-				"edgelist-t0": EdgeListIO('\t', 0),
-				"edgelist-s1": EdgeListIO(' ', 1), 
-				"edgelist-s0": EdgeListIO(' ', 1)
-				} 
+	readers =  {
+			"metis": METISGraphReader(),
+			"edgelist-t0": EdgeListReader('\t', 0),
+			"edgelist-s1": EdgeListReader(' ', 1), 
+			"edgelist-s0": EdgeListReader(' ', 0),
+			"edgelist-cs1": EdgeListReader(',',1),
+			"graphml": GraphMLReader(),
+			"snap": EdgeListReader('\t',0,'#',False),
+		}
+	writers = {
+			"metis" : METISGraphWriter(),
+			"gexf": None,
+			"vna": VNAGraphWriter(),
+			"dot": DotGraphWriter(),
+			"graphviz": DotGraphWriter(),
+			"gml": GMLGraphWriter(),
+			"edgelist-t1" : EdgeListWriter('\t', 1),
+			"edgelist-t0": EdgeListWriter('\t', 0),
+			"edgelist-s1": EdgeListWriter(' ', 1), 
+			"edgelist-s0": EdgeListWriter(' ', 1),
+			"edgelist-cs1": EdgeListWriter(',',1),
+			"graphml": GraphMLWriter()
+		}
+
+	try:
+		# special case for custom Edge Lists
+		if fromFormat == "edgelist":
+			reader = EdgeListReader(kwargs['separator'],kwargs['firstNode'])
+		else:
+			reader = readers[fromFormat]#(**kwargs)
+	except Exception or KeyError:
+		raise Exception("input format {0} currently not supported".format(format))		
+
+
+	try:
+		# special case for custom Edge Lists
+		if toFormat == "edgelist":
+			writer = EdgeListWriter(kwargs['separator'],kwargs['firstNode'])
+		else:
+			writer = writers[toFormat]#(**kwargs)
+	except Exception or KeyError:
+		raise Exception("output format {0} currently not supported".format(format))		
+		
 	
 	reader = readers[fromFormat]
 	writer = writers[toFormat]

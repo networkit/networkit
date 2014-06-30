@@ -10,6 +10,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <cstdint>
 
 namespace NetworKit {
 
@@ -22,7 +23,7 @@ public:
 
 	virtual ~Parameters();
 
-	void setInt(std::string key, int64_t value);
+	void setInt(std::string key, std::int64_t value);
 
 	void setDouble(std::string key, double value);
 
@@ -31,7 +32,7 @@ public:
 	void setBool(std::string key, bool value);
 
 
-	int64_t getInt(std::string key) const;
+	std::int64_t getInt(std::string key) const;
 
 	double getDouble(std::string key) const;
 
@@ -43,7 +44,7 @@ public:
 
 protected:
 
-	std::unordered_map<std::string, int64_t> intMap;
+	std::unordered_map<std::string, std::int64_t> intMap;
 	std::unordered_map<std::string, double> doubleMap;
 	std::unordered_map<std::string, std::string> stringMap;
 	std::unordered_map<std::string, bool> boolMap;

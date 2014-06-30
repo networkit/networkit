@@ -6,7 +6,6 @@ import os
 import logging
 import numpy
 import scipy.io
-import xml.sax
 from enum import Enum
 
 
@@ -34,10 +33,10 @@ class Format(AutoNumber):
 	LFR = ()
 
 # reading
-def readGraph(path, fileformat, **kwargs):
+def readGraph(path, fileformat = Format.METIS, **kwargs):
 	""" Read graph file in various formats and return a NetworKit::Graph
 	    Paramaters: 
-		- fileformat: An element of the Format enumeration
+		- fileformat: An element of the Format enumeration, default is Format.METIS
 		- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
 			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
 			commentPrefix and continuous are optional
@@ -102,7 +101,7 @@ def readMat(path):
 
 
 # writing
-def writeGraph(G, path, format=Format.METIS):
+def writeGraph(G, path, fileformat = Format.METIS):
 	""" Write graph to various output formats. 
 		Default format is METIS."""
 	writers =	{
@@ -126,7 +125,7 @@ def writeGraph(G, path, format=Format.METIS):
 		writer.write(G, path)
 		logging.info("wrote graph {0} to file {1}".format(G, path))
 	except KeyError:
-		raise Exception("format {0} currently not supported".format(format))		
+		raise Exception("format {0} currently not supported".format(fileformat))		
 
 class GraphConverter:
 	
@@ -143,25 +142,47 @@ class GraphConverter:
 
 def getConverter(fromFormat, toFormat):
 	
-	readers =  {"metis": METISGraphReader(),
-				"edgelist-t1" : EdgeListIO('\t', 1),
-				"edgelist-t0": EdgeListIO('\t', 0),
-				"edgelist-s1": EdgeListIO(' ', 1), 
-				"edgelist-s0": EdgeListIO(' ', 1)}    
-	writers =  {"metis" : METISGraphWriter(),
-				"gexf": None,
-				"vna": VNAGraphWriter(),
-				"dot": DotGraphWriter(),
-				"graphviz": DotGraphWriter(),
-				"gml": GMLGraphWriter(),
-				"edgelist-t1": EdgeListIO('\t', 1),
-				"edgelist-t0": EdgeListIO('\t', 0),
-				"edgelist-s1": EdgeListIO(' ', 1), 
-				"edgelist-s0": EdgeListIO(' ', 1)
-				} 
+	readers =	{
+			Format.METIS:			METISGraphReader(),
+			Format.GraphML:			GraphMLReader(),
+			Format.SNAP:			EdgeListReader('\t',0,'#',False),
+			Format.CommaSeparatedEdgeList:	EdgeListReader(',',1,),
+			Format.ELSpaceOne:		EdgeListReader(' ',1),
+			Format.ELSpaceZero:		EdgeListReader(' ',0),
+			Format.LFR:			EdgeListReader('\t',1)
+			}
+
+	writers =	{
+			Format.METIS:			METISGraphWriter(),
+			Format.GraphML:			GraphMLWriter(),
+#			Format.SNAP:			EdgeListWriter('\t',0,'#',False),
+			Format.CommaSeparatedEdgeList:	EdgeListWriter(',',1,),
+			Format.ELSpaceOne:		EdgeListWriter(' ',1),
+			Format.ELSpaceZero:		EdgeListWriter(' ',0),
+			Format.GraphViz:		DotGraphWriter(),
+			Format.GML:			GMLGraphWriter()
+#			Format.GDF:			GDFGraphWriter(),
+#			Format.VNA:			VNAGraphWriter(),
+			}
 	
-	reader = readers[fromFormat]
-	writer = writers[toFormat]
+	try:
+		# special case for custom Edge Lists
+		if fromFormat == "edgelist":
+			reader = EdgeListReader(kwargs['separator'],kwargs['firstNode'])
+		else:
+			reader = readers[fromFormat]#(**kwargs)
+	except Exception or KeyError:
+		raise Exception("input format {0} currently not supported".format(format))		
+
+
+	try:
+		# special case for custom Edge Lists
+		if toFormat == "edgelist":
+			writer = EdgeListWriter(kwargs['separator'],kwargs['firstNode'])
+		else:
+			writer = writers[toFormat]#(**kwargs)
+	except Exception or KeyError:
+		raise Exception("output format {0} currently not supported".format(format))		
 	
 	return GraphConverter(reader, writer)
 
