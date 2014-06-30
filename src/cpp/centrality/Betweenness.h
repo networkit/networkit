@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup centrality
+ */
 class Betweenness: public NetworKit::Centrality {
 public:
 	/**
