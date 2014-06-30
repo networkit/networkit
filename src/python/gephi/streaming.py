@@ -1,4 +1,4 @@
-import pyclient as _gephipyclient   # we want to hide these from the user
+import gephi.pyclient as _gephipyclient   # we want to hide these from the user
 import urllib as _urllib
 
 """ 
