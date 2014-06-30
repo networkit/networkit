@@ -21,7 +21,7 @@ class Format:
 	EdgeList = "edgelist"
 	LFR = "edgelist-t1"
 	GML = "gml"
-	
+
 
 # reading
 def getReader(format, **kwargs):
@@ -29,7 +29,7 @@ def getReader(format, **kwargs):
 			"metis": METISGraphReader(),
 			"edgelist-t1": EdgeListReader('\t', 1),
 			"edgelist-t0": EdgeListReader('\t', 0),
-			"edgelist-s1": EdgeListReader(' ', 1), 
+			"edgelist-s1": EdgeListReader(' ', 1),
 			"edgelist-s0": EdgeListReader(' ', 0),
 			"edgelist-cs1": EdgeListReader(',',1),
 			"graphml": GraphMLReader(),
@@ -49,7 +49,7 @@ def getReader(format, **kwargs):
 def readGraph(path, format="metis", **kwargs):
 	"""    Read graph file in various formats and return a NetworKit::Graph
 		Default format is METIS"""
-	reader = getReader(format, **kwargs)	
+	reader = getReader(format, **kwargs)
 
 	if ("~" in path):
 		path = os.path.expanduser(path)
@@ -68,13 +68,13 @@ def readGraph(path, format="metis", **kwargs):
 
 def readMat(path):
 	""" Reads a Graph from a matlab object file containing an adjacency matrix"""
-	matlabObject = scipy.io.loadmat(path)	
+	matlabObject = scipy.io.loadmat(path)
 	# result is a dictionary of variable names and objects, representing the matlab object
 	for (key, value) in matlabObject.items():
 		if type(matlabObject[key]) is numpy.ndarray:
 			A = matlabObject[key]
 			break # found the matrix
-			
+
 	(n, n2) = A.shape
 	if (n != n2):
 		raise Exception("this (%sx%s) matrix is not square".format(n, n2))
@@ -98,7 +98,7 @@ def getWriter(format, **kwargs):
 			"gml": GMLGraphWriter(),
 			"edgelist-t1" : EdgeListWriter('\t', 1),
 			"edgelist-t0": EdgeListWriter('\t', 0),
-			"edgelist-s1": EdgeListWriter(' ', 1), 
+			"edgelist-s1": EdgeListWriter(' ', 1),
 			"edgelist-s0": EdgeListWriter(' ', 1),
 			"edgelist-cs1": EdgeListWriter(',',1),
 			"graphml": GraphMLWriter()
@@ -121,68 +121,23 @@ def writeGraph(G, path, format="metis", **kwargs):
 
 
 class GraphConverter:
-	
+
 	def __init__(self, reader, writer):
 		self.reader = reader
 		self.writer = writer
-		
+
 	def convert(self, inPath, outPath):
 		G = self.reader.read(inPath)
 		self.writer.write(G, outPath)
-		
+
 	def __str__(self):
 		return "GraphConverter: {0} => {0}".format(self.reader, self.writer)
 
 def getConverter(fromFormat, toFormat):
-#	reader = getReader(fromFormat)
-#	writer = getWriter
-	readers =  {
-			"metis": METISGraphReader(),
-			"edgelist-t0": EdgeListReader('\t', 0),
-			"edgelist-s1": EdgeListReader(' ', 1), 
-			"edgelist-s0": EdgeListReader(' ', 0),
-			"edgelist-cs1": EdgeListReader(',',1),
-			"graphml": GraphMLReader(),
-			"snap": EdgeListReader('\t',0,'#',False),
-		}
-	writers = {
-			"metis" : METISGraphWriter(),
-			"gexf": None,
-			"vna": VNAGraphWriter(),
-			"dot": DotGraphWriter(),
-			"graphviz": DotGraphWriter(),
-			"gml": GMLGraphWriter(),
-			"edgelist-t1" : EdgeListWriter('\t', 1),
-			"edgelist-t0": EdgeListWriter('\t', 0),
-			"edgelist-s1": EdgeListWriter(' ', 1), 
-			"edgelist-s0": EdgeListWriter(' ', 1),
-			"edgelist-cs1": EdgeListWriter(',',1),
-			"graphml": GraphMLWriter()
-		}
 
-	try:
-		# special case for custom Edge Lists
-		if fromFormat == "edgelist":
-			reader = EdgeListReader(kwargs['separator'],kwargs['firstNode'])
-		else:
-			reader = readers[fromFormat]#(**kwargs)
-	except Exception or KeyError:
-		raise Exception("input format {0} currently not supported".format(format))		
+	reader = getReader(fromFormat)
+	writer = getWriter(toFormat)
 
-
-	try:
-		# special case for custom Edge Lists
-		if toFormat == "edgelist":
-			writer = EdgeListWriter(kwargs['separator'],kwargs['firstNode'])
-		else:
-			writer = writers[toFormat]#(**kwargs)
-	except Exception or KeyError:
-		raise Exception("output format {0} currently not supported".format(format))		
-		
-	
-	reader = readers[fromFormat]
-	writer = writers[toFormat]
-	
 	return GraphConverter(reader, writer)
 
 
@@ -216,4 +171,3 @@ def graphFromStreamFile(path, mapped=True, baseIndex=0):
 	gu = GraphUpdater(G)
 	gu.update(stream)
 	return G
-
