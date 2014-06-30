@@ -22,6 +22,7 @@ const count MAX_ITER = 300;
 const double EPS = 0.1;
 
 /**
+ * @ingroup viz
  * Fruchterman-Reingold graph drawing algorithm. We mostly follow
  * the description in Stephen G. Kobourov: Spring Embedders and Force
  * Directed Graph Drawing Algorithms.

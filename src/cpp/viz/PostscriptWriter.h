@@ -24,6 +24,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup viz
  * EPS output of graphs with 2D coordinates
  */
 class PostscriptWriter {
@@ -57,7 +58,6 @@ public:
 	 * side. By default, it is set to false.
 	 */
 	PostscriptWriter(bool isTorus = false);
-	~PostscriptWriter();
 
 	/**
 	 * Outputs an EPS file with name @a filename of the graph @a g with 2D coordinates.
