@@ -7,7 +7,7 @@
 
 #include "METISGraphReader.h"
 #include "METISParser.h"
-
+#include "../auxiliary/Enforce.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/StringTools.h"
 
@@ -56,8 +56,7 @@ Graph METISGraphReader::read(const std::string& path) {
 					continue;
 				}
 				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
-				assert (v >= 0);
-				assert (v < n);
+				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
 				if (u <= v) { // self-loops are allowed
 					G.addEdge(u, v);
 				}
@@ -77,7 +76,7 @@ Graph METISGraphReader::read(const std::string& path) {
 			for (index i=0; i < adjacencies.size(); i++) {
 				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
 				double weight = adjacencies[i].second;
-				assert (v >= 0);
+				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
 				if (u <= v && weight > 0) { // self-loops are allowed
 					G.addEdge(u, v);
 					G.setWeight(u, v, adjacencies[i].second);
@@ -93,7 +92,7 @@ Graph METISGraphReader::read(const std::string& path) {
 		}
 	}
 	if (G.numberOfEdges() != m) {
-		ERROR("METIS file is corrupted: actual number of edges don't match the given number of edges");
+		ERROR("METIS file is corrupted: actual number of added edges doesn't match the specifed number of edges");
 	}
 	if (edgeCounter / m != 2) {
 		WARN("METIS file is corrupted: not every edge is listed twice");
