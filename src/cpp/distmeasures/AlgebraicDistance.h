@@ -16,6 +16,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup distmeasures
  * Algebraic distance assigns a distance value to pairs of nodes
  * according to their structural closeness in the graph. 
  */
