@@ -20,13 +20,15 @@ class AutoNumber(Enum):
 class Format(AutoNumber):
 	""" Simple enumeration class to list supported file types """
 	SNAP = ()
-	ELSpaceZero = ()
-	ELSpaceOne = ()
+	EdgeListSpaceZero = ()
+	EdgeListSpaceOne = ()
+	EdgeListTabZero = ()
+	EdgeListTabOne = ()
 	METIS = ()
 	GraphML = ()
 	GML = ()
 #	VNA = ()
-	CommaSeparatedEdgeList = ()
+	EdgeListCommaOne = ()
 	GraphViz = ()
 #	GDF = ()
 	EdgeList = ()
@@ -43,9 +45,11 @@ def getReader(fileformat, **kwargs):
 			Format.METIS:			METISGraphReader(),
 			Format.GraphML:			GraphMLReader(),
 			Format.SNAP:			EdgeListReader('\t',0,'#',False),
-			Format.CommaSeparatedEdgeList:	EdgeListReader(',',1,),
-			Format.ELSpaceOne:		EdgeListReader(' ',1),
-			Format.ELSpaceZero:		EdgeListReader(' ',0),
+			Format.EdgeListCommaOne:	EdgeListReader(',',1,),
+			Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
+			Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
+			Format.EdgeListTabOne:		EdgeListReader('\t',1),
+			Format.EdgeListTabZero:		EdgeListReader('\t',0),
 			Format.LFR:			EdgeListReader('\t',1)
 			}
 
@@ -114,9 +118,11 @@ def getWriter(fileformat):
 			Format.METIS:			METISGraphWriter(),
 			Format.GraphML:			GraphMLWriter(),
 #			Format.SNAP:			EdgeListWriter('\t',0,'#',False),
-			Format.CommaSeparatedEdgeList:	EdgeListWriter(',',1,),
-			Format.ELSpaceOne:		EdgeListWriter(' ',1),
-			Format.ELSpaceZero:		EdgeListWriter(' ',0),
+			Format.EdgeListCommaOne:	EdgeListWriter(',',1,),
+			Format.EdgeListSpaceOne:	EdgeListWriter(' ',1),
+			Format.EdgeListSpaceZero:	EdgeListWriter(' ',0),
+			Format.EdgeListTabOne:		EdgeListWriter('\t',1),
+			Format.EdgeListTabZero:		EdgeListWriter('\t',0),
 			Format.GraphViz:		DotGraphWriter(),
 			Format.GML:			GMLGraphWriter(),
 			Format.LFR:			EdgeListWriter('\t',1)
