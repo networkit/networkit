@@ -93,41 +93,41 @@ void ParallelConnectedComponents::runSequential() {
 		throw std::runtime_error("algorithm does not accept directed graphs");
 	}
 	// calculate connected components by label propagation
-	count z = G.numberOfNodes();
+	count z = G.upperNodeIdBound();
 	DEBUG("initializing labels");
-	component = Partition(G.upperNodeIdBound());
+	component = Partition(z);
 	component.allToSingletons();
 	DEBUG("initializing active nodes");
-	std::vector<bool> activeNodes(z); // record if node must be processed
-	activeNodes.assign(z, true);
-	G.forNodes([&](node u) { // NOTE: not in parallel due to implementation of bit vector
-		if (G.degree(u) == 0) {
-			activeNodes[u] = false;
-		}
-	});
+	std::vector<bool> activeNodes(z, true); // record if node must be processed
+
 	DEBUG("main loop");
 	// count numActive = 0; // for debugging purposes only
 	count numIterations = 0;
-	bool change = false;
-	do {
+	bool change = true;
+	// only 8 iterations when coarsening is on, otherwise till no more changes happened
+	while (change && (!coarsening || numIterations < 8)) {
 		// TRACE("label propagation iteration");
 		change = false;
 		// numActive = 0;
 		G.forNodes([&](node u) {
 			if (activeNodes[u]) {
 				// ++numActive;
-				std::vector<index> neighborLabels;
-				G.forNeighborsOf(u, [&](node v) {
-					// neighborLabels.push_back(component[v]);
-					neighborLabels.push_back(component[v]);
-				});
 				// get smallest
-				index smallest = *std::min_element(neighborLabels.begin(), neighborLabels.end());
+				index smallest = component[u];
+				G.forNeighborsOf(u, [&](node v) {
+					smallest = std::min(smallest, component[v]);
+				});
+
 				if (component[u] != smallest) {
 					component.moveToSubset(smallest, u);
 					change = true;
 					G.forNeighborsOf(u, [&](node v) {
-						activeNodes[v] = true;
+						// only nodes that do not have the smallest component label
+						// will see a new component label because of the change of u,
+						// only they need to be activated
+						if (component[v] != smallest) {
+							activeNodes[v] = true;
+						}
 					});
 				} else {
 					activeNodes[u] = false; // current node becomes inactive
@@ -136,18 +136,18 @@ void ParallelConnectedComponents::runSequential() {
 		});
 		// TRACE("num active: ", numActive);
 		++numIterations;
-		if ((numIterations % 8) == 0) { // TODO: externalize constant
-			// coarsen and make recursive call
-			PartitionCoarsening con;
-			std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
-			ParallelConnectedComponents cc(coarse.first);
-			cc.run();
-			// apply to current graph
-			G.forNodes([&](node u) {
-				component[u] = cc.componentOfNode(coarse.second[u]);
-			});
-		}
-	} while (change);
+	}
+	if (coarsening && numIterations == 8) { // TODO: externalize constant
+		// coarsen and make recursive call
+		PartitionCoarsening con;
+		std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
+		ParallelConnectedComponents cc(coarse.first);
+		cc.run();
+		// apply to current graph
+		G.forNodes([&](node u) {
+			component[u] = cc.componentOfNode(coarse.second[u]);
+		});
+	}
 }
 
 
