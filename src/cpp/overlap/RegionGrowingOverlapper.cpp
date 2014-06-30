@@ -64,7 +64,7 @@ Partition RegionGrowingOverlapper::run(Graph& G,
 		// 	});
 		// >>>>>
 
-		// <<<<< new code 
+		// <<<<< new code
 		G.BFSfrom(r, [&](node u) {
 			unvisited.erase(u);
 			// check for all incident edges if u and v belong in the same core cluster
