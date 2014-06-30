@@ -13,7 +13,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "../FastMETISGraphReader.h"
 #include "../METISGraphReader.h"
 #include "../METISGraphWriter.h"
 #include "../PartitionWriter.h"
@@ -25,7 +24,6 @@
 #include "../EdgeListPartitionReader.h"
 #include "../SNAPEdgeListPartitionReader.h"
 #include "../SNAPGraphWriter.h"
-#include "../FastMETISGraphReader.h"
 #include "../EdgeListReader.h"
 #include "../GMLGraphWriter.h"
 
@@ -180,7 +178,7 @@ TEST_F(IOGTest, testMETISGraphReaderWithTinyGraphs) {
 	}
 
 }
-
+/*
 TEST_F(IOGTest, testMETISGraphReaderWithDoubleWeights) {
 	std::string path = "input/jazz2double.graph";
 
@@ -200,7 +198,7 @@ TEST_F(IOGTest, testMETISGraphReaderWithDoubleWeights) {
 	double abs = 1e-9;
 	EXPECT_LE(G.totalEdgeWeight()-edgeweight,abs) << "Total edgeweight should be " << edgeweight;
 }
-
+*/
 /* Old and therefore not actually needed */
 /*TEST_F(IOGTest, testMETISGraphReaderWithWeights) {
 	std::string path = "input/lesmis.graph";
@@ -467,6 +465,7 @@ TEST_F(IOGTest, testSNAPGraphWriter) {
 
 
 /* obsolete as FastMETISGraphReader has been removed */
+/*
 TEST_F(IOGTest, testFastMETISGraphReader) {
 	FastMETISGraphReader reader;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
@@ -478,7 +477,7 @@ TEST_F(IOGTest, testFastMETISGraphReader) {
 
 	EXPECT_EQ(77u, W.numberOfNodes());
 	EXPECT_EQ(254u, W.numberOfEdges());
-}
+}*/
 
 
 TEST_F(IOGTest, tryReadingMETISFile) {
