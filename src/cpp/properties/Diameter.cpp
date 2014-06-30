@@ -5,6 +5,8 @@
  *      Author: Daniel Hoske, Christian Staudt
  */
 
+#include <numeric>
+
 #include "Diameter.h"
 #include "Eccentricity.h"
 #include "../graph/BFS.h"
@@ -144,6 +146,8 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
+	// TODO: consider weights
+
 	auto estimateFrom = [&](node v) -> count {
 		BFS bfs(G, v);
 		bfs.run();
@@ -216,11 +220,12 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 		for (auto component : cc.getPartition().getSubsets()) {
 			components.push_back(component);
 		}
-
+		DEBUG("gathered components");
 		std::vector<count> vds;
 		#pragma omp parallel for
 		for (index i = 0; i < components.size(); ++i) {
 			count vd = estimateFrom(*components[i].begin()); // take any node from the component and perform bfs from there
+			DEBUG("checking component ", i);
 			#pragma omp critical
 			vds.push_back(vd);
 		}

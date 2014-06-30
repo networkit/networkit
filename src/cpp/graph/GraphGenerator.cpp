@@ -8,6 +8,7 @@
 #include "GraphGenerator.h"
 
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -31,7 +32,7 @@ Graph GraphGenerator::makeErdosRenyiGraph(count n, double p) {
 			G.addEdge(u, v);
 		}
 	});
-
+	G.shrinkToFit();
 	return G;
 }
 
@@ -44,6 +45,7 @@ Graph GraphGenerator::makeCircularGraph(count n) {
 	G.forNodes([&](node u){
 		G.addEdge(u, (u + 1) % n);
 	});
+	G.shrinkToFit();
 	return G;
 }
 
@@ -52,6 +54,7 @@ Graph GraphGenerator::makeCompleteGraph(count n) {
 	G.forNodePairs([&](node u, node v){
 		G.addEdge(u, v);
 	});
+	G.shrinkToFit();
 	return G;
 }
 
@@ -88,6 +91,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(count n, count k, double pin, dou
 		}
 	});
 
+	G.shrinkToFit();
 	return G;
 }
 
@@ -116,6 +120,7 @@ std::pair<Graph, Partition> GraphGenerator::makeClusteredRandomGraphWithReferenc
 		}
 	});
 
+	G.shrinkToFit();
 	return std::make_pair(G, zeta);
 }
 
@@ -138,6 +143,7 @@ Graph GraphGenerator::makeClusteredRandomGraph(Partition& zeta, double pin,
 		}
 	});
 
+	G.shrinkToFit();
 	return G;
 }
 

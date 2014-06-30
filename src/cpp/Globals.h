@@ -9,6 +9,24 @@
 #define GLOBALS_H_
 
 #include <cstdint>
+#include <cmath>
+#include <limits>
+
+namespace NetworKit {
+	/** Typedefs **/
+	
+	typedef uint64_t index; // more expressive name for an index into an array
+	typedef uint64_t count; // more expressive name for an integer quantity
+	typedef index node; // node indices are 0-based
+	typedef double edgeweight; // edge weight type
+
+	/** Constants **/
+	constexpr index none = std::numeric_limits<index>::max(); // value for not existing nodes/edges
+	constexpr edgeweight defaultEdgeWeight = 1.0;
+	constexpr edgeweight nullWeight = 0.0;
+}
+
+constexpr double PI = 2.0*std::acos(0);
 
 extern bool PRINT_PROGRESS;
 extern bool RAND_ORDER;

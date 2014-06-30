@@ -34,8 +34,6 @@ public:
 	 */
 	PLMOld(std::string par="balanced", double gamma = 1.0);
 
-	virtual ~PLMOld();
-
 	virtual Partition pass(Graph& G);
 
 	virtual Partition run(Graph& G);

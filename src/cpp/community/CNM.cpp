@@ -10,16 +10,64 @@
 #include "../community/Modularity.h"
 #include <limits>
 #include "../auxiliary/PrioQueue.h"
+#include <sstream>
+#include "../auxiliary/Log.h"
 
 namespace NetworKit{
 
-CNM::CNM() {
 
+node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
+
+	DEBUG("merge edge with nodes ", u," and ", v);
+
+	if (u != v) {
+		node newNode = G.addNode();
+
+		// self-loop if necessary
+		if (! discardSelfLoop) {
+			TRACE("selfLoopWeight");
+			edgeweight selfLoopWeight = G.weight(u, u) + G.weight(v, v) + G.weight(u, v);
+			G.addEdge(newNode, newNode, selfLoopWeight);
+			TRACE("end selfLoopWeight");
+		}
+
+		// rewire edges from u to newNode
+		G.forWeightedEdgesOf(u, [&](node u, node neighbor, edgeweight w) {
+			if (neighbor != u) {
+				TRACE("neighbor of ",u,": ",neighbor);
+				G.addEdge(neighbor, newNode, G.weight(u, neighbor)); // TODO: make faster
+				TRACE("end neighbor of u");
+			}
+		});
+
+		// rewire edges from v to newNode
+		G.forWeightedEdgesOf(v, [&](node v, node neighbor, edgeweight w) {
+			if (neighbor != v) {
+				TRACE("neighbor of ",v,": ",neighbor);
+				G.addEdge(neighbor, newNode, G.weight(v, neighbor));  // TODO: make faster
+				TRACE("end neighbor of v");
+			}
+		});
+
+		// delete edges of nodes to delete
+		G.forEdgesOf(u, [&](node u, node neighbor) {
+			G.removeEdge(u, neighbor);
+		});
+		G.forEdgesOf(v, [&](node v, node neighbor) {
+			G.removeEdge(v, neighbor);
+		});
+
+		// delete nodes
+		G.removeNode(u);
+		G.removeNode(v);
+
+		return newNode;
+	}
+
+	// no new node created
+	return none;
 }
 
-CNM::~CNM() {
-
-}
 
 Partition CNM::run(Graph &graph) {
 	// copy graph because we make changes due to merges
@@ -95,7 +143,7 @@ Partition CNM::run(Graph &graph) {
 		});
 
 		// merge incident nodes in G
-		node newNode = G.mergeEdge(best_u, best_v, false);
+		node newNode = CNM::mergeEdge(G, best_u, best_v, false);
 		assert(newNode != none);
 
 		// adapt clustering accordingly
@@ -144,4 +192,3 @@ Partition CNM::run(Graph &graph) {
 }
 
 } // namespace
-

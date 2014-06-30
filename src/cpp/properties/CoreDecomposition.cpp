@@ -5,6 +5,8 @@
  *      Author: Lukas Barth, David Weiß, Christian Staudt
  */
 
+#include <set>
+
 #include "CoreDecomposition.h"
 
 namespace NetworKit {

@@ -7,7 +7,12 @@
 
 #include "METISParser.h"
 
+#include "../auxiliary/NumberParsing.h"
 #include "../auxiliary/Enforce.h"
+#include "../auxiliary/Log.h"
+
+#include <stdexcept>
+
 
 namespace NetworKit {
 
@@ -16,45 +21,67 @@ namespace NetworKit {
  * Extract a vector of indices from a line in the file.
  *
  * @param[in]	line		line from input file containing node indices
+ * @param[in]	ignoreFirst	number of values to ignore [in case the METIS file contains node weightes]
  *
- * @param[out]	indices		node indices extracted from line
+ * @param[out]	adjacencies	node indices extracted from line
  */
-static std::vector<node> parseLine(const std::string& line) {
-
-	std::stringstream stream(line);
-	std::string token;
-	char delim = ' ';
-	std::vector<uint64_t> adjacencies;
-
-	// split string and push adjacent nodes
-	while (std::getline(stream, token, delim)) {
-		if (token.size() != 0) {
-			node v = stoull(token);
-			adjacencies.push_back(v);
-		}
+static std::vector<node> parseLine(const std::string& line, count ignoreFirst = 0) {
+	auto it = line.begin();
+	auto end = line.end();
+	std::vector<node> adjacencies;
+	node v;
+	index i = 0;
+	DEBUG(ignoreFirst);
+	while (i < ignoreFirst) {
+		// parse first values but ignore them.
+		double dummy;
+		std::tie(dummy, it) = Aux::Parsing::strTo<double>(it,end);
+		DEBUG("ignored: ",dummy);
+		++i;
 	}
-
+	while(it != end) {
+		std::tie(v, it) = Aux::Parsing::strTo<node>(it,end);
+		adjacencies.push_back(v);
+	}
 	return adjacencies;
 }
 
-static std::vector<std::pair<node,double>> parseWeightedLine(std::string line) {
-
-	std::stringstream stream(line);
-	std::string token;
-	char delim = ' ';
+/**
+ * Extract a vector of indices and edge weights from a line in the file.
+ *
+ * @param[in]	line		line from input file containing node indices
+ * @param[in]	ignoreFirst	number of values to ignore [in case the METIS file contains node weightes]
+ *
+ * @param[out]	adjacencies	node indices including edge weights extracted from line
+ */
+static std::vector<std::pair<node,double>> parseWeightedLine(std::string line, count ignoreFirst = 0) {
+	auto it = line.begin();
+	auto end = line.end();
 	std::vector<std::pair<node,double>> adjacencies;
-
-	// split string and push adjacent nodes
-	while (std::getline(stream, token, delim)) {
-		if (token.size() != 0) {
-			node v = stoull(token);
-			std::getline(stream, token, delim);
-			double weight = stod(token);
-			adjacencies.push_back(std::make_pair(v,weight));
-		}
-
+	node v;
+	double weight;
+	index i = 0;
+	DEBUG(ignoreFirst);
+	std::stringstream content;
+	while (i < ignoreFirst) {
+		// parse first values but ignore them.
+		double dummy;
+		std::tie(dummy, it) = Aux::Parsing::strTo<double>(it,end);
+		DEBUG("ignored: ",dummy);
+		++i;
 	}
-
+	while(it != end) {
+		try {
+			std::tie(v, it) = Aux::Parsing::strTo<node>(it,end);
+			std::tie(weight, it) = Aux::Parsing::strTo<double,decltype(it),Aux::Checkers::Enforcer>(it,end);
+			adjacencies.push_back(std::make_pair(v,weight));
+			content << v << " " << weight << "\t";
+		} catch (std::exception e) {
+			ERROR("malformed line; not all edges have been read correctly");
+			break;
+		}
+	}
+	DEBUG(content.str());
 	return adjacencies;
 }
 
@@ -73,17 +100,18 @@ METISParser::~METISParser() {
 }
 
 
-std::tuple<count, count, index> METISParser::getHeader() {
-
+std::tuple<count, count, index, count> METISParser::getHeader() {
 	// handle header line
-	count n;  // number of nodes
-	count m;	// number of edges
-	index weighted; // weighted or unweighted graph
+	count n;		// number of nodes
+	count m;		// number of edges
+	index fmt = 0;		// weighted or unweighted graph
+	count ncon = 0;		// number of node weights
 
 	std::string line = "";
-	Aux::enforce (this->graphFile);
+	Aux::enforceOpened(this->graphFile);
 
 	if (std::getline(this->graphFile, line)) {
+		// ignore comment lines
 		while (line[0] == '%') {
 			std::getline(this->graphFile, line);
 		}
@@ -92,21 +120,24 @@ std::tuple<count, count, index> METISParser::getHeader() {
 		n = tokens[0];
 		m = tokens[1];
 		if (tokens.size() == 2) {
-			return std::tuple<count, count, index>(n,m,0);
+			return std::tuple<count, count, index, count>(n,m,fmt,ncon);
 		}
-		if (tokens.size() == 3) {
-			if (tokens[2] < 2) {
-				weighted = tokens[2];
+		if (tokens.size() >= 3) {
+			fmt = tokens[2];
+			if (fmt >= 2) {
+				WARN("nodes are weighted; node weights will be ignored");
+			}
+			if (tokens.size() == 4) {
+				ncon = tokens[3];
 			} else {
-				throw std::runtime_error("nodes are weighted");
-				return std::tuple<count, count, index>(0,0,0);
+				ncon = 1;
 			}
 		}
-		return std::tuple<count, count, index>(n,m,weighted);
+		return std::tuple<count, count, index, count>(n,m,fmt,ncon);
 	} else {
 		ERROR("getline not successful");
 		throw std::runtime_error("getting METIS file header failed");
-		return std::tuple<count, count, index>(0,0,0);
+		return std::tuple<count, count, index, count>(0,0,0,0);
 	}
 }
 
@@ -119,7 +150,7 @@ bool METISParser::hasNext() {
 }
 
 
-std::vector<node> METISParser::getNext() {
+std::vector<node> METISParser::getNext(count ignoreFirst) {
 
 	std::string line;
 	bool comment = false;
@@ -130,7 +161,7 @@ std::vector<node> METISParser::getNext() {
 		if (line[0] == '%') {
 			comment = true;
 		} else {
-			return parseLine(line);
+			return parseLine(line,ignoreFirst);
 		}
 
 	} while (comment);
@@ -140,7 +171,7 @@ std::vector<node> METISParser::getNext() {
 	return fail;
 }
 
-std::vector<std::pair<node,double>> METISParser::getNextWithWeights() {
+std::vector<std::pair<node,double>> METISParser::getNextWithWeights(count ignoreFirst) {
 
 	std::string line;
 	bool comment = false;
@@ -151,7 +182,7 @@ std::vector<std::pair<node,double>> METISParser::getNextWithWeights() {
 		if (line[0] == '%') {
 			comment = true;
 		} else {
-			return parseWeightedLine(line);
+			return parseWeightedLine(line,ignoreFirst);
 		}
 
 	} while (comment);

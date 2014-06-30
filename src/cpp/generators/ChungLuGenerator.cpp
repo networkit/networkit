@@ -6,6 +6,8 @@
  *      Contributors: Hoske/Weisbarth
  */
 
+#include <numeric>
+
 #include "ChungLuGenerator.h"
 
 namespace NetworKit {
@@ -34,6 +36,8 @@ Graph ChungLuGenerator::generate() {
 			}
 		}
 	}
+
+	G.shrinkToFit();
 	return G;
 }
 

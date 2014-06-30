@@ -19,12 +19,9 @@ namespace NetworKit {
  */
 class ConnectedComponents {
 public:
+
 	ConnectedComponents(const Graph& G);
-	virtual ~ConnectedComponents();
-	/**
-	 * This method determines the connected components for the graph g.
-	 */
-	void runSequential();
+
 
 	/**
 	 * This method determines the connected components for the graph g.
@@ -44,10 +41,15 @@ public:
 	count componentOfNode(node u);
 
 
-	/** 
+	/**
 	 * Return a Partition that represents the components
 	 */
 	Partition getPartition();
+    
+    /**
+     *Return the map from component to size
+     */
+    std::map<index, count> getComponentSizes();
 
 
 private:

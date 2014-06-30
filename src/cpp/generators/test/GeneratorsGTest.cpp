@@ -7,6 +7,8 @@ Dy * GeneratorsTest.cpp
 
 #ifndef NOGTEST
 
+#include <numeric>
+
 #include "GeneratorsGTest.h"
 
 #include "../DynamicPathGenerator.h"
@@ -61,8 +63,8 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 
 	gen->initializeGraph();
 
-	EXPECT_EQ(2, G->numberOfNodes()) << "initially the generator creates two connected nodes";
-	EXPECT_EQ(1, G->numberOfEdges()) << "initially the generator creates two connected nodes";
+	EXPECT_EQ(2u, G->numberOfNodes()) << "initially the generator creates two connected nodes";
+	EXPECT_EQ(1u, G->numberOfEdges()) << "initially the generator creates two connected nodes";
 
 	count n = 100;
 
@@ -233,6 +235,7 @@ TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 	Graph G = generator.generate();
 	EXPECT_EQ(n, G.numberOfNodes());
 	EXPECT_FALSE(G.isEmpty());
+	EXPECT_TRUE(G.consistencyCheck());
 
 	count nPairs = (n * (n-1)) / 2;
 	count nEdges = G.numberOfEdges();

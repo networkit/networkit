@@ -238,19 +238,7 @@ public:
 	/**
 	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
 	 */
-	template<typename Callback> void forEntries(Callback func);
-
-
-	/**
-	 * Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure).
-	 */
-	template<typename Callback> void parallelForEntries(Callback handle);
-
-	/**
-	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
-	 */
 	template<typename Callback> void forEntries(Callback func) const;
-
 
 	/**
 	 * Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure).
@@ -273,41 +261,21 @@ private:
 	}
 };
 
+template<typename Callback>
+inline void Partition::forEntries(Callback handle) const {
+	for (index e = 0; e < this->z; e++) {
+		handle(e, data[e]);
+	}
+}
+
+template<typename Callback>
+inline void Partition::parallelForEntries(Callback handle) const {
+	#pragma omp parallel for
+	for (index e = 0; e < this->z; e++) {
+		handle(e, this->data[e]);
+	}
+}
+
 } /* namespace NetworKit */
-
-
-template<typename Callback>
-inline void NetworKit::Partition::forEntries(Callback handle) {
-	for (index e = 0; e < this->z; e++) {
-		handle(e, data[e]);
-	}
-
-}
-
-template<typename Callback>
-inline void NetworKit::Partition::forEntries(Callback handle) const {
-	for (index e = 0; e < this->z; e++) {
-		handle(e, data[e]);
-	}
-}
-
-template<typename Callback>
-inline void NetworKit::Partition::parallelForEntries(
-		Callback handle) {
-	#pragma omp parallel for
-	for (index e = 0; e < this->z; e++) {
-		handle(e, this->data[e]);
-	}
-}
-
-
-template<typename Callback>
-inline void NetworKit::Partition::parallelForEntries(
-		Callback handle) const {
-	#pragma omp parallel for
-	for (index e = 0; e < this->z; e++) {
-		handle(e, this->data[e]);
-	}
-}
 
 #endif /* PARTITION_H_ */

@@ -24,11 +24,11 @@ void GDFGraphWriter::writeGeneric(Graph& G, bool weighted, const std::string& pa
 
 	switch (dim) {
 	case 2: {
-		file << "*nodedef>name VARCHAR,x DOUBLE,y DOUBLE\n";
+		file << "nodedef>name,x,y\n";
 		break;
 	}
 	case 3: {
-		file << "nodedef>name VARCHAR,x DOUBLE,y DOUBLE,z DOUBLE\n";
+		file << "nodedef>name,x,y,z\n";
 		break;
 	}
 	default: {
@@ -42,7 +42,7 @@ void GDFGraphWriter::writeGeneric(Graph& G, bool weighted, const std::string& pa
 		file << u << "," << point.toCsvString() << '\n';
 	});
 
-	file << "edgedef>node1 VARCHAR,node2 VARCHAR" << '\n';
+	file << "edgedef>node1,node2" << '\n';
 
 	G.forEdges([&](node u, node v) {
 		file << u << ',' << v << '\n';

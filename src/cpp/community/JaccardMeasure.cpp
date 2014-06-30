@@ -9,13 +9,7 @@
 
 namespace NetworKit {
 
-JaccardMeasure::JaccardMeasure() {
-	// TODO Auto-generated constructor stub
-
-}
-
 JaccardMeasure::~JaccardMeasure() {
-	// TODO Auto-generated destructor stub
 }
 
 double JaccardMeasure::getDissimilarity(Graph& G, Partition& first,

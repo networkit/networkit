@@ -15,7 +15,8 @@
 namespace NetworKit {
 
 /**
- * Writes a graph and its coordinates to a file in GDF format.
+ * Writes a graph and its coordinates to a file in GDF format.[1]
+ * [1] http://guess.wikispot.org/The_GUESS_.gdf_format
  * TODO: write unit test
  */
 class GDFGraphWriter: public NetworKit::GraphWriter {
@@ -23,10 +24,10 @@ protected:
 	/**
 	 * write a graph G and its coordinates to a file of GDF format.
 	 *
-	 * @param[in]	G			Graph of type Networkit with 2D or 3D coordinates
+	 * @param[in]	G		Graph of type Networkit with 2D or 3D coordinates
 	 * @param[in]	weighted	true if G is weighted (makes no difference whether is true or not)
 	 * @param[in]	path		path to file
-	 * @param[in]	dim			dimension of coordinates
+	 * @param[in]	dim		dimension of coordinates
 	 */
 	virtual void writeGeneric(Graph& G, bool weighted, const std::string& path, count dim);
 
@@ -38,14 +39,14 @@ public:
 	 * write a graph G and its coordinates to a file of GDF format.
 	 *
 	 * @param[in]	G		Graph of type Networkit with 2D coordinates
-	 * @param[in]	path	path to file
+	 * @param[in]	path		path to file
 	 */
 	virtual void write(Graph& G, const std::string& path) override;
 	
 	/**
 	 * write a graph G and its coordinates to a file of GDF format.
 	 *
-	 * @param[in]	G			Graph of type Networkit with 2D coordinates
+	 * @param[in]	G		Graph of type Networkit with 2D coordinates
 	 * @param[in]	weighted	true if the G is weighted (makes no difference wether is true or not)
 	 * @param[in]	path		path to file
 	 */

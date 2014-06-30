@@ -11,16 +11,11 @@
 #include "../overlap/HashingOverlapper.h"
 #include "../auxiliary/MissingMath.h"
 #include "../auxiliary/NumericTools.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
-NMIDistance::NMIDistance() {
-	// TODO Auto-generated constructor stub
-
-}
-
 NMIDistance::~NMIDistance() {
-	// TODO Auto-generated destructor stub
 }
 
 double NMIDistance::getDissimilarity(Graph& G, Partition& zeta, Partition& eta) {

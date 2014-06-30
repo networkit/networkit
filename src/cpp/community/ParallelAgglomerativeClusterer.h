@@ -19,16 +19,9 @@ class ParallelAgglomerativeClusterer: public NetworKit::CommunityDetectionAlgori
 
 public:
 
-	ParallelAgglomerativeClusterer();
-
-	virtual ~ParallelAgglomerativeClusterer();
-
-	/**
-	 * @return string representation of algorithm and parameters.
-	 */
-	virtual std::string toString() const;
-
 	virtual Partition run(Graph& G);
+
+	virtual std::string toString() const;
 };
 
 } /* namespace NetworKit */

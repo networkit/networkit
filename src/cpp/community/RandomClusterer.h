@@ -17,8 +17,6 @@ namespace NetworKit {
  */
 class RandomClusterer: public NetworKit::CommunityDetectionAlgorithm {
 public:
-	RandomClusterer();
-	virtual ~RandomClusterer();
 
 	virtual Partition run(Graph& G);
 };
