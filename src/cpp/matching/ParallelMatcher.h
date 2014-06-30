@@ -18,6 +18,7 @@ namespace NetworKit {
 
 
 /**
+ * @ingroup matching
  * LocalMax matching as described in the EuroPar13 paper by the Sanders group
  */
 class LocalMaxMatcher: public NetworKit::Matcher {
@@ -28,7 +29,8 @@ public:
 
 	LocalMaxMatcher(uint64_t attrId);
 
-	virtual ~LocalMaxMatcher();
+	/** Default destructor */
+	virtual ~LocalMaxMatcher() = default;
 
 	virtual Matching run(Graph& G);
 };

@@ -15,6 +15,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup matching
  * FIXME: Could be better to store a reference to the according graph;
  * FIXME: do not inherit from NodeMap
  */
@@ -24,71 +25,79 @@ class Matching : public NodeMap<node> {
 public:
 
 	/**
-	 * Construct new matching.
+	 * Construct new Matching.
 	 *
-	 * @param[in]	n 	maximum number of nodes
+	 * @param[in]	n 	Maximum number of nodes.
 	 */
 	Matching(uint64_t n);
 
-	/**
-	 * Destructor.
-	 */
+	/** Default destructor */
 	virtual ~Matching();
 
 
 	/**
-	 * Set two nodes as eachothers matching
-	 * partners.
+	 * Set two nodes @a u and @a v as each others matching partners.
 	 *
-	 *
+	 * @param[in] u node.
+	 * @param[in] v node.
 	 */
 	void match(const node& u, const node& v);
 
 
 	/**
-	 * Reset the two nodes to unmatched.
+	 * Reset the two nodes @a u and @a v to unmatched.
+	 *
+	 * @param[in] u node.
+	 * @param[in] v node.
 	 */
 	void unmatch(const node& u, const node& v);
 
 
 	/**
-	 * Check if node is matched
+	 * Check if node is matched.
 	 *
-	 * @param[in]	u 	a node
-	 * @param[out]		true if u is matched
+	 * @param[in]	u 	node.
+	 * @return @c true if u is matched.
 	 */
 	bool isMatched(const node& u) const;
 
 
 	/**
-	 * Check if the two nodes are matched.
+	 * Check if the two nodes @a u and @a v are matched.
 	 *
+	 * @param[in] u node.
+	 * @param[in] v node.
 	 */
 	bool areMatched(const node& u, const node& v) const;
 
 	/**
 	 * Check whether this is a proper matching
-	 * in the graph, i.e. no two edges are adjacent.
+	 * in the graph, i.e. no two matched edges are adjacent.
 	 *
-	 *
-	 * @paramt[in]	G	a graph
-	 * @param[out]		true if this is a proper matching
+	 * @paramt[in]	G	A graph.
+	 * @param[out]		@c true if this is a proper matching.
 	 */
 	bool isProper(Graph& G) const;
 
 
 	/**
+	 * Get the number of edges in this matching.
 	 * @return Number of edges in matching.
 	 */
 	count size() const;
 
 	/**
+	 * Get the matched neighbor of @a v if it exists, otherwise @c none.
+	 *
+	 * @param[in] v node.
 	 * @return Mate of @a v if it exists, otherwise none.
 	 */
 	index mate(node v) const;
 
 	/**
-	 * @return Total weight of edges in the matching.
+	 * Get total weight of edges in this matching.
+	 * @param[in] g The corresponding graph.
+	 * @return Total weight of edges in this matching.
 	 */
 	edgeweight weight(const Graph& g) const;
 };

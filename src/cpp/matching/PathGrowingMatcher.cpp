@@ -9,14 +9,6 @@
 
 namespace NetworKit {
 
-PathGrowingMatcher::PathGrowingMatcher() {
-
-}
-
-PathGrowingMatcher::~PathGrowingMatcher() {
-
-}
-
 Matching PathGrowingMatcher::run(Graph& G) {
 	// make copy since graph will be transformed
 	// copy graph because we make changes due to merges

@@ -14,14 +14,15 @@
 namespace NetworKit {
 
 /**
+ * @ingroup matching
  * TODO: class documentation
  */
 class PathGrowingMatcher: public NetworKit::Matcher {
 protected:
 
 public:
-	PathGrowingMatcher();
-	virtual ~PathGrowingMatcher();
+	/** Default destructor */
+	virtual ~PathGrowingMatcher() = default;
 
 	virtual Matching run(Graph& G);
 };
