@@ -5,6 +5,7 @@
 #include "../../community/Conductance.h"
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
+#include "../../auxiliary/Log.h"
 
 #ifndef NOGTEST
 
