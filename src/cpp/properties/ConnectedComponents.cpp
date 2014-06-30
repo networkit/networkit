@@ -52,4 +52,8 @@ count ConnectedComponents::componentOfNode(node u) {
 	return component[u];
 }
 
+std::map<index, count> ConnectedComponents::getComponentSizes() {
+	return this->component.subsetSizeMap();
+}
+
 }

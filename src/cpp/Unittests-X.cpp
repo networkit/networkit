@@ -26,23 +26,11 @@
 #include "ext/optionparser.h"
 #include "auxiliary/Log.h"
 #include "graph/Graph.h"
+#include "auxiliary/Parallelism.h"
 
 
 using namespace NetworKit;
 
-
-
-
-/**
- *  Set the number of threads available to the program.
- */
-void setNumberOfThreads(int nThreads) {
-#ifdef _OPENMP
-		omp_set_num_threads(nThreads);
-#else
-		WARN("Thread option ignored since OpenMP is deactivated.");
-#endif
-}
 
 // *** Option Parser Configuration ***//
 
@@ -136,7 +124,7 @@ int main(int argc, char **argv) {
 	if (options[THREADS]) {
 		// set number of threads
 		int nThreads = std::atoi(options[THREADS].arg);
-		setNumberOfThreads(nThreads);
+		Aux::setNumberOfThreads(nThreads);
 	}
 	
 	// get program name (currently only for unix)
