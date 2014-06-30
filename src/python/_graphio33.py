@@ -1,6 +1,6 @@
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
 						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
-						  DGSStreamParser, GraphUpdater, FastMETISGraphReader, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader)
+						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader)
 import os
 import logging
 import numpy
