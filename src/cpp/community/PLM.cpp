@@ -30,16 +30,20 @@ Partition PLM::run(const Graph& G) {
 	active.assign(z, true);
 
 
-	// SATELLITE FOLLOWING: initially deactivate satellies
-	// G.forNodes([&](node v){
-	// 	if
-	// });	// TODO: parallel
-
+	// DEBUG
+	count modGainCalled = 0;
+	// DEBUG
 
 	// init communities to singletons
 	Partition zeta(z);
 	G.forNodes([&](node v) {
 		zeta.toSingleton(v);
+
+		// SATELLITE FOLLOWING: initially deactivate satellies
+		if (G.degree(v) == 1) {
+			active[v] = false;
+		} // TODO: parallel
+
 	});
 	index o = zeta.upperBound();
 
@@ -120,6 +124,10 @@ Partition PLM::run(const Graph& G) {
 				D = zeta[v];
 				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 					double delta = modGain(u, C, D);
+					// DEBUG
+					#pragma omp atomic update
+					modGainCalled += 1;
+					// DEBUG
 					TRACE("mod gain: " , delta);
 					if (delta > deltaBest) {
 						deltaBest = delta;
@@ -130,9 +138,9 @@ Partition PLM::run(const Graph& G) {
 			});
 
 			// CORE NODE DEACTIVATION: deactivate core node
-			if (core) {
-				active[u] = false;
-			}
+			// if (core) {
+			// 	active[u] = false;
+			// }
 
 			TRACE("deltaBest=" , deltaBest);
 			if (deltaBest > 0) { // if modularity improvement possible
@@ -157,11 +165,11 @@ Partition PLM::run(const Graph& G) {
 			}
 
 			// CORE NODE DEACTIVATION: when u changes community, activate all neighbors
-			if (moved) {
-				G.forNeighborsOf(u, [&](node v){
-					active[v] = true;
-				});
-			}
+			// if (moved) {
+			// 	G.forNeighborsOf(u, [&](node v){
+			// 		active[v] = true;
+			// 	});
+			// }
 		} else {
 			TRACE("node ", u, "inactive");
 		}
@@ -199,6 +207,7 @@ Partition PLM::run(const Graph& G) {
 				}
 			});
 			INFO("number of inactive nodes: ", nInactive);
+			INFO("modGain called: ", modGainCalled);
 			// DEBUG
 
 		} while (moved && (iter <= maxIter));
