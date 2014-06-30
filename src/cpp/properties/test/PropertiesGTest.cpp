@@ -10,6 +10,7 @@
 #include "PropertiesGTest.h"
 #include "../Diameter.h"
 #include "../../auxiliary/Timer.h"
+#include "../../auxiliary/Log.h"
 
 
 namespace NetworKit {

@@ -14,6 +14,7 @@
 #include "../Diameter.h"
 #include "../../io/METISGraphReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 
