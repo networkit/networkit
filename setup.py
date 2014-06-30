@@ -109,7 +109,7 @@ except:
 	os.environ["CC"] = "g++"
 	os.environ["CXX"] = "g++"
 
-print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
+#print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
 
 src = ["_NetworKit.pyx"]	# list of source files
 

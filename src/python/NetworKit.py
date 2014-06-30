@@ -28,6 +28,7 @@ import engineering
 import toolbox
 import dynamic
 import gephi
+import gephistreaming
 
 try:
 	import viztools
