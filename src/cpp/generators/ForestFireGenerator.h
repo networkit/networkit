@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup generators
  * The Forest Fire generative model produces dynamic graphs with the following properties:
  * - heavy tailed degree distribution
  * - communities

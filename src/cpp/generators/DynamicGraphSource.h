@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup generators
+ */
 class DynamicGraphSource {
 
 protected:

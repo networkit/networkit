@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup generators
  * The ClusteredRandomGraphGenerator class is used to create a clustered random graph.
  * The number of nodes and the number of edges are adjustable as well as the probabilities
  * for intra-cluster and inter-cluster edges.

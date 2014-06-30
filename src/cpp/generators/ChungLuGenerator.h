@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /** 
+ * @ingroup generators
  * Given an arbitrary degree sequence, the Chung-Lu generative model
  * will produce a random graph with the same expected degree sequence. 
  * 
