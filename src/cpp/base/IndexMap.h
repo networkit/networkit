@@ -18,7 +18,7 @@ typedef uint64_t count; // more expressive name for an integer quantity
 
 
 /**
- * @DEPRECATED: This class is deprecated. Do not use it in new code.
+ * @deprecated DEPRECATED: This class is deprecated. Do not use it in new code.
  *
  * An IndexMap implements a 0-based mapping from an integer index type to an arbitray value type.
  *
