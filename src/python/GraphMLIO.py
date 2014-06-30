@@ -2,7 +2,6 @@ import xml.etree.cElementTree as ET
 import xml.sax
 
 from _NetworKit import Graph
-import xml.sax
 
 # GraphML Reader
 class GraphMLSAX(xml.sax.ContentHandler):
