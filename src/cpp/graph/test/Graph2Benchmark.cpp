@@ -221,7 +221,7 @@ TEST_F(Graph2Benchmark, nodeRemoval) {
 		G.removeNode(u);
 	}
 
-	EXPECT_EQ(0, G.numberOfNodes()) << "no nodes should be left";
+	EXPECT_EQ(0u, G.numberOfNodes()) << "no nodes should be left";
 }
 
 } /* namespace NetworKit */

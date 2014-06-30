@@ -6,6 +6,7 @@
  */
 
 #include "SSSP.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

@@ -16,7 +16,8 @@ namespace NetworKit {
 
 /**
  * @ingroup io
- * Writes a graph and its coordinates to a file in GDF format.
+ * Writes a graph and its coordinates to a file in GDF format.[1]
+ * [1] http://guess.wikispot.org/The_GUESS_.gdf_format
  * TODO: write unit test
  */
 class GDFGraphWriter: public NetworKit::GraphWriter {

@@ -40,6 +40,7 @@ Graph ClusteredRandomGraphGenerator::generate() {
 		}
 	});
 
+	G.shrinkToFit();
 	return G;
 
 }

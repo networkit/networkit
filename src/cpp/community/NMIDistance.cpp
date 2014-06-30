@@ -11,6 +11,7 @@
 #include "../overlap/HashingOverlapper.h"
 #include "../auxiliary/MissingMath.h"
 #include "../auxiliary/NumericTools.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

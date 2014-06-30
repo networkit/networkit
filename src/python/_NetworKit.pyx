@@ -95,11 +95,13 @@ def enableNestedParallelism():
 cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
-		_Graph(count, bool) except +
+		_Graph(count, bool, bool) except +
 		void stealFrom(_Graph)
 		count numberOfNodes() except +
 		count numberOfEdges() except +
 		count degree(node u) except +
+		count degreeIn(node u) except +
+		count degreeOut(node u) except +
 		node addNode() except +
 		void removeNode(node u) except +
 		void addEdge(node u, node v, edgeweight w) except +
@@ -110,6 +112,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		vector[pair[node, node]] edges() except +
 		vector[node] neighbors(node u) except +
 		bool isWeighted() except +
+		bool isDirected() except +
 		string toString() except +
 		string getName() except +
 		void setName(string name) except +
@@ -122,7 +125,7 @@ cdef extern from "../cpp/graph/Graph.h":
 cdef class Graph:
 	""" An undirected graph (with optional weights) and parallel iterator methods. 
 		
-		Graph(n=0, weighted=False)
+		Graph(n=0, weighted=False, directed=False)
 
 		Create a graph of `n` nodes. The graph has assignable edge weights if `weighted` is set to True.
 	 	If `weighted` is set to False each edge has edge weight 1.0 and any other weight assignment will 
@@ -134,13 +137,13 @@ cdef class Graph:
 	    	Number of nodes.
 	    weighted : bool, optional
 	    	If set to True, the graph can have edge weights other than 1.0.
-	 	
-
+	    directed : bool, optional
+	    	If set to True, the graph will be directed.
 	"""
 	cdef _Graph* _this
 
-	def __cinit__(self, n=0, weighted=False):		
-		self._this = new _Graph(n, weighted)
+	def __cinit__(self, n=0, weighted=False, directed=False):
+		self._this = new _Graph(n, weighted, directed)
 
 	# # any _thisect which appears as a return type needs to implement setThis
 	# cdef setThis(self, _Graph other):
@@ -193,6 +196,12 @@ cdef class Graph:
 			The number of neighbors.
 		"""
 		return self._this.degree(u)
+
+	def degreeIn(self, u):
+		return self._this.degreeIn(u)
+
+	def degreeOut(self, u):
+		return self._this.degreeOut(u)
 
 	def addNode(self):
 		""" Add a new node to the graph and return it.
@@ -324,6 +333,9 @@ cdef class Graph:
 			True if this graph supports edge weights other than 1.0.	 
 		"""
 		return self._this.isWeighted()
+
+	def isDirected(self):
+		return self._this.isDirected()
 
 	def toString(self):
 		""" Get a string representation of the graph.
@@ -943,21 +955,35 @@ cdef class METISGraphReader:
 		return Graph(0).setThis(self._this._read(pathbytes))
 
 
-cdef extern from "../cpp/io/FastMETISGraphReader.h":
-	cdef cppclass _FastMETISGraphReader "NetworKit::FastMETISGraphReader":
-		_FastMETISGraphReader() except +
+cdef extern from "../cpp/io/EdgeListReader.h":
+	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader":
+		_EdgeListReader() except +
+		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous)
+		_Graph read(string path) except +
 		_Graph* _read(string path) except +
+		unordered_map[node,node] getNodeMap() except +
+		
 
-cdef class FastMETISGraphReader:
-	""" A faster but still experimental implementation of a reader for
-		the METIS format. It is the default of the readGraph-function.
+cdef class EdgeListReader:
+	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
+		use readGraph(path, graphio.formats.metis) as an alternative.
+		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
 	"""
-	cdef _FastMETISGraphReader _this
+	cdef _EdgeListReader _this
+
+	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True):
+		self._this = _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous)
 
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this._read(pathbytes))
-
+	
+	def getNodeMap(self):
+		cdef unordered_map[node,node] cResult = self._this.getNodeMap()
+		result = []
+		for elem in cResult:
+			result.append((elem.first,elem.second))
+		return result
 
 cdef extern from "../cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
@@ -989,20 +1015,20 @@ cdef class DotGraphWriter:
 		self._this.write(dereference(G._this), stdstring(path))
 
 
-cdef extern from "../cpp/io/VNAGraphWriter.h":
-	cdef cppclass _VNAGraphWriter "NetworKit::VNAGraphWriter":
-		_VNAGraphWriter() except +
-		void write(_Graph G, string path) except +
+#cdef extern from "../cpp/io/VNAGraphWriter.h":
+#	cdef cppclass _VNAGraphWriter "NetworKit::VNAGraphWriter":
+#		_VNAGraphWriter() except +
+#		void write(_Graph G, string path) except +
 
 
-cdef class VNAGraphWriter:
-	""" Writes graphs in the VNA format. The VNA format is commonly used by Netdraw, and is very similar to Pajek format.
-	It defines nodes and edges (ties), and supports attributes. Each section of the file is separated by an asterisk. """
-	cdef _VNAGraphWriter _this
+#cdef class VNAGraphWriter:
+#	""" Writes graphs in the VNA format. The VNA format is commonly used by Netdraw, and is very similar to Pajek format.
+#	It defines nodes and edges (ties), and supports attributes. Each section of the file is separated by an asterisk. """
+#	cdef _VNAGraphWriter _this
 
-	def write(self, Graph G not None, path):
+#	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(dereference(G._this), stdstring(path))
+#		self._this.write(dereference(G._this), stdstring(path))
 
 
 cdef extern from "../cpp/io/GMLGraphWriter.h":
@@ -1012,7 +1038,8 @@ cdef extern from "../cpp/io/GMLGraphWriter.h":
 
 
 cdef class GMLGraphWriter:
-	""" Writes a (so far unweighted) graph and its coordinates as a GML file. """
+	""" Writes a graph and its coordinates as a GML file.[1]
+		[1] http://svn.bigcat.unimaas.nl/pvplugins/GML/trunk/docs/gml-technical-report.pdf """
 	cdef _GMLGraphWriter _this
 
 	def write(self, Graph G not None, path):
@@ -1020,40 +1047,21 @@ cdef class GMLGraphWriter:
 		self._this.write(dereference(G._this), stdstring(path))
 
 
-cdef extern from "../cpp/io/EdgeListIO.h":
-	cdef cppclass _EdgeListIO "NetworKit::EdgeListIO":
-		_EdgeListIO() except +
-		_EdgeListIO(char separator, node firstNode) except +
-		_Graph* _read(string path) except +
+cdef extern from "../cpp/io/EdgeListWriter.h":
+	cdef cppclass _EdgeListWriter "NetworKit::EdgeListWriter":
+		_EdgeListWriter() except +
+		_EdgeListWriter(char separator, node firstNode) except +
 		void write(_Graph G, string path) except +
 
-cdef class EdgeListIO:
-	""" A reader for the edge list format used by the LFR benchmark generators.
+cdef class EdgeListWriter:
+	""" Reads and writes graphs in various edge list formats. The constructor takes a
+		seperator char and the ID of the first node as paraneters."""
 
-		It is defined as:
-   		list of edges (nodes are labeled from 1 to the number of nodes;
- 		the edges are ordered and repeated twice, i.e. source-target and target-source).
- 		
- 		The starting index is a parameter to enable other edge list formats.
-
- 		EdgeListIO(separator, firstNode)
-
- 		Parameters
- 		----------
- 		separator : char
- 			Character used to separate nodes in an edge line.
- 		firstNode : node
- 			Index of the first node in the file.
-	"""
-
-	cdef _EdgeListIO _this
+	cdef _EdgeListWriter _this
 
 	def __cinit__(self, separator, firstNode):
 		cdef char sep = stdstring(separator)[0]
-		self._this = _EdgeListIO(sep, firstNode)
-
-	def read(self, path):
-		return Graph().setThis(self._this._read(stdstring(path)))
+		self._this = _EdgeListWriter(sep, firstNode)
 
 	def write(self, Graph G not None, path):
 		self._this.write(dereference(G._this), stdstring(path))
@@ -2249,10 +2257,10 @@ cdef extern from "../cpp/properties/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
 		_ConnectedComponents(_Graph G) except +
 		void run() except +
-		void runSequential() except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
+		map[index, count] getComponentSizes() except +
 
 
 cdef class ConnectedComponents:
@@ -2275,10 +2283,6 @@ cdef class ConnectedComponents:
 	def run(self):
 		""" This method determines the connected components for the graph given in the constructor. """
 		self._this.run()
-
-	def runSequential(self):
-		""" This method determines the connected components for the graph given in the constructor. """
-		self._this.runSequential()
 
 	def getPartition(self):
 		""" Get a Partition that represents the components.
@@ -2307,6 +2311,72 @@ cdef class ConnectedComponents:
 			The node whose component is asked for.
 		"""
 		return self._this.componentOfNode(v)
+
+	def getComponentSizes(self):
+		return self._this.getComponentSizes()
+
+
+cdef extern from "../cpp/properties/ParallelConnectedComponents.h":
+	cdef cppclass _ParallelConnectedComponents "NetworKit::ParallelConnectedComponents":
+		_ParallelConnectedComponents(_Graph G, bool coarsening) except +
+		void run() except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		_Partition getPartition() except +
+
+
+cdef class ParallelConnectedComponents:
+	""" Determines the connected components and associated values for
+		an undirected graph.
+	"""
+	cdef _ParallelConnectedComponents* _this
+
+	def __cinit__(self,  Graph G, coarsening=True	):
+		self._this = new _ParallelConnectedComponents(dereference(G._this), coarsening)
+
+	def run(self):
+		self._this.run()
+
+	def getPartition(self):
+		return Partition().setThis(self._this.getPartition())
+
+	def numberOfComponents(self):
+		return self._this.numberOfComponents()
+
+	def componentOfNode(self, v):
+		return self._this.componentOfNode(v)
+
+
+cdef extern from "../cpp/properties/StronglyConnectedComponents.h":
+	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
+		_StronglyConnectedComponents(_Graph G) except +
+		void run() except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		_Partition getPartition() except +
+
+
+cdef class StronglyConnectedComponents:
+	""" Determines the connected components and associated values for
+		a directed graph.
+	"""
+	cdef _StronglyConnectedComponents* _this
+
+	def __cinit__(self,  Graph G):
+		self._this = new _StronglyConnectedComponents(dereference(G._this))
+
+	def run(self):
+		self._this.run()
+
+	def getPartition(self):
+		return Partition().setThis(self._this.getPartition())
+
+	def numberOfComponents(self):
+		return self._this.numberOfComponents()
+
+	def componentOfNode(self, v):
+		return self._this.componentOfNode(v)
+
 
 
 cdef extern from "../cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
@@ -2628,11 +2698,12 @@ cdef class Betweenness:
 
 cdef extern from "../cpp/centrality/ApproxBetweenness.h":
 	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness":
-		_ApproxBetweenness(_Graph, double, double) except +
+		_ApproxBetweenness(_Graph, double, double, count) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		count numberOfSamples() except +
 
 cdef class ApproxBetweenness:
 	""" Approximation of betweenness centrality according to algorithm described in 
@@ -2655,8 +2726,8 @@ cdef class ApproxBetweenness:
 	"""
 	cdef _ApproxBetweenness* _this
 
-	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1):
-		self._this = new _ApproxBetweenness(dereference(G._this), epsilon, delta)
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
+		self._this = new _ApproxBetweenness(dereference(G._this), epsilon, delta, diameterSamples)
 
 	def run(self):
 		self._this.run()
@@ -2696,6 +2767,9 @@ cdef class ApproxBetweenness:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+	def numberOfSamples(self):
+		return self._this.numberOfSamples()
 
 
 cdef extern from "../cpp/centrality/ApproxBetweenness2.h":

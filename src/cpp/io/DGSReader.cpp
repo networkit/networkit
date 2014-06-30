@@ -5,7 +5,10 @@
  *      Author: cls
  */
 
+#include <map>
+
 #include "DGSReader.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

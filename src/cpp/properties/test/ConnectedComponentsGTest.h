@@ -18,18 +18,9 @@ namespace NetworKit {
 
 class ConnectedComponentsGTest: public testing::Test {
 public:
-	ConnectedComponentsGTest();
-	virtual ~ConnectedComponentsGTest();
 };
 
 } /* namespace NetworKit */
 #endif /* CONNECTEDCOMPONENTSGTEST_H_ */
 
 #endif /*NOGTEST */
-
-
-
-
-
-
-

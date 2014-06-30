@@ -20,8 +20,8 @@ namespace NetworKit {
 
 TEST_F(PartitionGTest, testConstructor) {
 	Partition p(10);
-	EXPECT_EQ(0,p.lowerBound());
-	EXPECT_EQ(1,p.upperBound());
+	EXPECT_EQ(0u ,p.lowerBound());
+	EXPECT_EQ(1u ,p.upperBound());
 }
 
 
@@ -112,7 +112,7 @@ TEST_F(PartitionGTest, testNumberOfSubsets2) {
 	p.parallelForEntries([&](index e, index s) {
 		p.moveToSubset(p[0],e);
 	});
-	EXPECT_EQ(p.numberOfSubsets(),1);
+	EXPECT_EQ(1u, p.numberOfSubsets());
 }
 
 TEST_F(PartitionGTest, testNumberOfSubsets3) {
@@ -129,7 +129,7 @@ TEST_F(PartitionGTest, testLowerBound) {
 	count n = 6542;
 	Partition p(n);
 	p.allToSingletons();
-	EXPECT_EQ(p.lowerBound(),0);
+	EXPECT_EQ(0u, p.lowerBound());
 }
 
 TEST_F(PartitionGTest, testUpperBound) {
@@ -151,7 +151,7 @@ TEST_F(PartitionGTest, testUpperBound2) {
 	// 6542 because of singletons
 	// +(6542/2) = 3271 merge operations
 	// +1 for "hard" upper bound = 9814
-	EXPECT_EQ(p.upperBound(),9814);
+	EXPECT_EQ(9814u, p.upperBound());
 }
 
 TEST_F(PartitionGTest, testContainsSuccessSingletons) {
@@ -215,7 +215,7 @@ TEST_F(PartitionGTest, testCompact) {
 	p.mergeSubsets(p[0],p[1]);
 	p.mergeSubsets(p[1],p[2]);
 	p.compact();
-	EXPECT_EQ(p.upperBound(),5); // This is only a weak test
+	EXPECT_EQ(5u, p.upperBound()); // This is only a weak test
 
 	// the following is a deeper test that checks if partition ids and structures match
 	std::vector<index> controlSet = {0,0,0,1,2,3,4,0,0,0};
@@ -249,11 +249,11 @@ TEST_F(PartitionGTest, testSubsetSizeMap) {
 	p.mergeSubsets(p[0],p[1]);
 	p.mergeSubsets(p[1],p[2]);
 	auto subsizemap = p.subsetSizeMap();
-	EXPECT_EQ(subsizemap[p[0]],6);
-	EXPECT_EQ(subsizemap[p[3]],1);
-	EXPECT_EQ(subsizemap[p[4]],1);
-	EXPECT_EQ(subsizemap[p[5]],1);
-	EXPECT_EQ(subsizemap[p[6]],1);
+	EXPECT_EQ(6u, subsizemap[p[0]]);
+	EXPECT_EQ(1u, subsizemap[p[3]]);
+	EXPECT_EQ(1u, subsizemap[p[4]]);
+	EXPECT_EQ(1u, subsizemap[p[5]]);
+	EXPECT_EQ(1u, subsizemap[p[6]]);
 }
 
 TEST_F(PartitionGTest, testGetMembers) {
@@ -282,7 +282,7 @@ TEST_F(PartitionGTest, testNumberOfElements) {
 	p.mergeSubsets(p[2],p[7]);
 	p.mergeSubsets(p[0],p[1]);
 	p.mergeSubsets(p[1],p[2]);
-	EXPECT_EQ(p.numberOfElements(),n);
+	EXPECT_EQ(n, p.numberOfElements());
 }
 
 

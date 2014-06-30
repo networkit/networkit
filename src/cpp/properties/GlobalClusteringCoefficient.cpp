@@ -5,6 +5,7 @@
  */
 
 #include "GlobalClusteringCoefficient.h"
+#include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
@@ -14,7 +15,7 @@ int uniformRandom(int max) {
   int currentMax = 1;
   int currentValue = 0;
   while(currentMax < max) {
-    currentValue = currentValue * RAND_MAX + rand();
+    currentValue = currentValue * RAND_MAX + Aux::Random::integer();
     currentMax *= RAND_MAX;
   }
   int value = currentValue % max;
@@ -35,7 +36,6 @@ unsigned int findIndex(const std::vector<int>& w, int v,
 }
 
 double GlobalClusteringCoefficient::approximate(const Graph& G, int k) {
-  srand(time(NULL));
   const count n = G.numberOfNodes();
   
   std::vector<int> w(n + 1);

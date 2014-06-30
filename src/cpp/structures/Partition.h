@@ -279,23 +279,7 @@ public:
 	 *
 	 * @param func Takes parameters <code>(node, index)</code>
 	 */
-	template<typename Callback> void forEntries(Callback func);
-
-
-	/**
-	 * Iterate over all entries (node, cluster id) in parallel and execute callback function @a handle (lambda closure).
-	 *
-	 * @param handle Takes parameters <code>(node, index)</code>
-	 */
-	template<typename Callback> void parallelForEntries(Callback handle);
-
-	/**
-	 * Iterate over all entries (node, cluster id) and execute callback function @a func (lambda closure).
-	 *
-	 * @param func Takes parameters <code>(node, index)</code>
-	 */
 	template<typename Callback> void forEntries(Callback func) const;
-
 
 	/**
 	 * Iterate over all entries (node, cluster id) in parallel and execute callback function @a handle (lambda closure).
@@ -320,41 +304,21 @@ private:
 	}
 };
 
+template<typename Callback>
+inline void Partition::forEntries(Callback handle) const {
+	for (index e = 0; e < this->z; e++) {
+		handle(e, data[e]);
+	}
+}
+
+template<typename Callback>
+inline void Partition::parallelForEntries(Callback handle) const {
+	#pragma omp parallel for
+	for (index e = 0; e < this->z; e++) {
+		handle(e, this->data[e]);
+	}
+}
+
 } /* namespace NetworKit */
-
-
-template<typename Callback>
-inline void NetworKit::Partition::forEntries(Callback handle) {
-	for (index e = 0; e < this->z; e++) {
-		handle(e, data[e]);
-	}
-
-}
-
-template<typename Callback>
-inline void NetworKit::Partition::forEntries(Callback handle) const {
-	for (index e = 0; e < this->z; e++) {
-		handle(e, data[e]);
-	}
-}
-
-template<typename Callback>
-inline void NetworKit::Partition::parallelForEntries(
-		Callback handle) {
-	#pragma omp parallel for
-	for (index e = 0; e < this->z; e++) {
-		handle(e, this->data[e]);
-	}
-}
-
-
-template<typename Callback>
-inline void NetworKit::Partition::parallelForEntries(
-		Callback handle) const {
-	#pragma omp parallel for
-	for (index e = 0; e < this->z; e++) {
-		handle(e, this->data[e]);
-	}
-}
 
 #endif /* PARTITION_H_ */

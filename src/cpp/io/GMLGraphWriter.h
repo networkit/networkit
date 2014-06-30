@@ -16,8 +16,9 @@ namespace NetworKit {
 
 /**
  * @ingroup io
- * Writes a (so far unweighted) graph and its coordinates as a GML file.
- * TODO: write unit test
+ * Writes a graph and its coordinates as a GML file.[1]
+ *
+ * [1] http://svn.bigcat.unimaas.nl/pvplugins/GML/trunk/docs/gml-technical-report.pdf
  */
 class GMLGraphWriter: public NetworKit::GraphWriter {
 public:
