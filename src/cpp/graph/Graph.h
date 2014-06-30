@@ -264,6 +264,11 @@ public:
 	 */
 	index upperNodeIdBound() const { return z; }
 
+	/**
+	 * Check for invalid graph states, such as multiedges
+	 */
+	bool consistencyCheck() const;
+
 	/** DYNAMICS **/
 
 	/**
