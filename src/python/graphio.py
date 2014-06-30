@@ -160,49 +160,8 @@ class GraphConverter:
 		return "GraphConverter: {0} => {0}".format(self.reader, self.writer)
 
 def getConverter(fromFormat, toFormat):
-	
-	readers =	{
-			Format.METIS:			METISGraphReader(),
-			Format.GraphML:			GraphMLReader(),
-			Format.SNAP:			EdgeListReader('\t',0,'#',False),
-			Format.CommaSeparatedEdgeList:	EdgeListReader(',',1,),
-			Format.ELSpaceOne:		EdgeListReader(' ',1),
-			Format.ELSpaceZero:		EdgeListReader(' ',0),
-			Format.LFR:			EdgeListReader('\t',1)
-			}
-
-	writers =	{
-			Format.METIS:			METISGraphWriter(),
-			Format.GraphML:			GraphMLWriter(),
-#			Format.SNAP:			EdgeListWriter('\t',0,'#',False),
-			Format.CommaSeparatedEdgeList:	EdgeListWriter(',',1,),
-			Format.ELSpaceOne:		EdgeListWriter(' ',1),
-			Format.ELSpaceZero:		EdgeListWriter(' ',0),
-			Format.GraphViz:		DotGraphWriter(),
-			Format.GML:			GMLGraphWriter()
-#			Format.GDF:			GDFGraphWriter(),
-#			Format.VNA:			VNAGraphWriter(),
-			}
-	
-	try:
-		# special case for custom Edge Lists
-		if fromFormat == "edgelist":
-			reader = EdgeListReader(kwargs['separator'],kwargs['firstNode'])
-		else:
-			reader = readers[fromFormat]#(**kwargs)
-	except Exception or KeyError:
-		raise Exception("input format {0} currently not supported".format(format))		
-
-
-	try:
-		# special case for custom Edge Lists
-		if toFormat == "edgelist":
-			writer = EdgeListWriter(kwargs['separator'],kwargs['firstNode'])
-		else:
-			writer = writers[toFormat]#(**kwargs)
-	except Exception or KeyError:
-		raise Exception("output format {0} currently not supported".format(format))		
-	
+	reader = getReader(fromFormat)
+	writer = getWriter(toFormat)
 	return GraphConverter(reader, writer)
 
 
