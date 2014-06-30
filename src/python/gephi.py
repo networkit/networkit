@@ -1,18 +1,21 @@
-""" 
-This module provides methods to export data from NetworKit in order to be read and 
+""" This module provides methods to export data from NetworKit in order to be read and 
 imported to Gephi projects.
 """
 
 import os
 
 def exportNodeValues(values, fpath, column_name):
-	""" 
-	 This method exports node values (e.g. community information, betwenness centrality values) 
-	 to a CSV file. The values can then be imported to Gephi.
-	 Parameters:
-	  - values: python list or Partition object that contains the values to be exported.
-	  - fpath: the file including its path to be written to
-	  - column_name: name of the column as description for the data
+	""" This method exports node values (e.g. community information, betwenness centrality values) 
+	to a CSV file. The values can then be imported to Gephi.
+
+	Parameters
+	----------
+	values : list
+		python list or Partition object that contains the values to be exported.
+	fpath : string
+		the file including its path to be written to
+	column_name : string
+	 	name of the column as description for the data
 	"""
 	f = open(fpath, "w+")
 	f.write("id,{0}\n".format(column_name))
