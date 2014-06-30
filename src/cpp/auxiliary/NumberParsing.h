@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <tuple>
 #include <limits>
 #include <stdexcept>

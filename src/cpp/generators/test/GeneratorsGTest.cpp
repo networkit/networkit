@@ -7,6 +7,8 @@ Dy * GeneratorsTest.cpp
 
 #ifndef NOGTEST
 
+#include <numeric>
+
 #include "GeneratorsGTest.h"
 
 #include "../DynamicPathGenerator.h"
