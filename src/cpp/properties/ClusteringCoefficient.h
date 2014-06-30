@@ -2,7 +2,7 @@
  * ClusteringCoefficient.h
  *
  *  Created on: 08.04.2013
- *      Author: Lukas Barth, David Weiß
+ *      Author: Lukas Barth, David Weiss
  */
 
 #ifndef CLUSTERINGCOEFFICIENT_H_
@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup properties
+ */
 class ClusteringCoefficient {
 
 public:
@@ -19,9 +22,10 @@ public:
 	static std::vector<double> exactLocal(Graph &G);
 	
 	/**
-	 * This calculates the average local clustering coefficient
-	 * $$c(G) := \frac{1}{n} \sum_{u \in V} c(u)$$
+	 * This calculates the average local clustering coefficient of graph @a G.
 	 *
+	 * @param G The graph.
+	 * @note $$c(G) := \frac{1}{n} \sum_{u \in V} c(u)$$
 	 * where $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 	 */
 	static double avgLocal(Graph& G);

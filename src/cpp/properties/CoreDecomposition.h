@@ -2,7 +2,7 @@
  * CoreDecomposition.h
  *
  *  Created on: Oct 28, 2013
- *      Author: Lukas Barth, David Weiß, Christian Staudt
+ *      Author: Lukas Barth, David Weiss, Christian Staudt
  */
 
 #ifndef COREDECOMPOSITION_H_
@@ -17,12 +17,18 @@
 namespace NetworKit {
 
 /**
+ * @ingroup properties
  * Computes k-core decomposition of a graph.
  */
 class CoreDecomposition {
 
 public:
 
+	/**
+	 * Create CoreDecomposition class for graph @a G.
+	 *
+	 * @param G The graph.
+	 */
 	CoreDecomposition(const Graph& G);
 
 	/**
@@ -31,20 +37,39 @@ public:
 	void run();
 
 	/**
-	* @return vector or core numbers, indexed by node.
-	*/
+	 * Get vector of core numbers, indexed by node.
+	 *
+	 * @return Vector of core numbers, indexed by node.
+	 */
 	std::vector<index> coreNumbers() const;
 
-	/** @return core number of node @a v */
+	/**
+	 * Get core number of node @a v.
+	 *
+	 * @param v A node.
+	 * @return Core number of node @a v.
+	 */
 	index coreNumber(node v) const;
 
-	/** @return the k-cores as sets of nodes, indexed by k */
+	/**
+	 * Get the k-cores as sets of nodes, indexed by k.
+	 *
+	 * @return the k-cores as sets of nodes, indexed by k.
+	 */
 	std::vector<std::set<node> > cores() const;
 
-	/** @return the k-shells as sets of nodes, indexed by k */
+	/**
+	 * Get the k-shells as sets of nodes, indexed by k.
+	 *
+	 * @return the k-shells as sets of nodes, indexed by k
+	 */
 	std::vector<std::set<node> > shells() const;
 
-	/** @return the maximum core number */
+	/**
+	 * Get maximum core number.
+	 *
+	 * @return The maximum core number
+	 */
 	index maxCoreNumber() const;
 
 
