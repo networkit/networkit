@@ -23,7 +23,7 @@ import sys
 try:
 	import graphio
 except ImportError:
-	print("Please update to a Python version >=3.4, however, NetworKit should still work")
+	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
 	import _graphio33 as graphio
 
 #if sys.version_info < (3,4):
