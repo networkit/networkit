@@ -9,13 +9,5 @@
 
 namespace NetworKit {
 
-Matcher::Matcher() {
-	// TODO Auto-generated constructor stub
-
-}
-
-Matcher::~Matcher() {
-	// TODO Auto-generated destructor stub
-}
 
 } /* namespace NetworKit */

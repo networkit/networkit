@@ -14,10 +14,6 @@ LocalMaxMatcher::LocalMaxMatcher(uint64_t attrId_) :
 
 }
 
-LocalMaxMatcher::~LocalMaxMatcher() {
-
-}
-
 Matching LocalMaxMatcher::run(Graph& graph) {
 	Graph G = graph;
 
