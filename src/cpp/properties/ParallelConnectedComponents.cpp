@@ -36,24 +36,19 @@ void ParallelConnectedComponents::run() {
 	const char ACTIVE = 1;
 	std::vector<char> activeNodes(z); // record if node must be processed
 	std::vector<char> nextActiveNodes(z, ACTIVE); // for next iteration
-	nextActiveNodes.assign(z, ACTIVE);
-	G.forNodes([&](node u) { // NOTE: not in parallel due to implementation of bit vector
-		if (G.degree(u) == 0) {
-			nextActiveNodes[u] = INACTIVE;
-		}
-	});
 
 	DEBUG("main loop");
 //	count numActive = 0; // for debugging purposes only
 	count numIterations = 0;
-	bool change = false;
-	do {
+	bool change = true;
+	// only 8 iterations when coarsening is on, otherwise till no more changes happened
+	while (change && (!coarsening || numIterations < 8)) {
 //		TRACE("label propagation iteration");
-		activeNodes = nextActiveNodes;
+		activeNodes.swap(nextActiveNodes);
 		nextActiveNodes.assign(z, INACTIVE);
 		change = false;
 //		numActive = 0;
-		G.parallelForNodes([&](node u) {
+		G.balancedParallelForNodes([&](node u) {
 			if (activeNodes[u] == ACTIVE) {
 //				++numActive;
 				// get smallest
@@ -66,31 +61,32 @@ void ParallelConnectedComponents::run() {
 					component.moveToSubset(smallest, u);
 					change = true;
 					G.forNeighborsOf(u, [&](node v) {
-						nextActiveNodes[v] = ACTIVE;
+						// only nodes that do not have the smallest component label
+						// will see a new component label because of the change of u,
+						// only they need to be activated
+						if (component[v] != smallest) {
+							nextActiveNodes[v] = ACTIVE;
+						}
 					});
 				}
-//				else {
-//					nextActiveNodes[u] = INACTIVE; // current node becomes inactive
-//				}
 			}
 		});
 //		TRACE("num active: ", numActive);
 		++numIterations;
-		if (coarsening && (numIterations % 8) == 0) { // TODO: externalize constant
-			// coarsen and make recursive call
-			PartitionCoarsening con;
-			std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
-			ParallelConnectedComponents cc(coarse.first);
-			cc.run();
+	}
+	if (coarsening && numIterations == 8) { // TODO: externalize constant
+		// coarsen and make recursive call
+		PartitionCoarsening con;
+		std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
+		ParallelConnectedComponents cc(coarse.first);
+		cc.run();
 
-			// apply to current graph
-			G.forNodes([&](node u) {
-				component[u] = cc.componentOfNode(coarse.second[u]);
-			});
-		}
-	} while (change);
+		// apply to current graph
+		G.parallelForNodes([&](node u) {
+			component[u] = cc.componentOfNode(coarse.second[u]);
+		});
+	}
 }
-
 
 void ParallelConnectedComponents::runSequential() {
 	if (G.isDirected()) {
