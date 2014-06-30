@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /** 
+ * @ingroup centrality
  * Approximation of betweenness centrality according to algorithm described in
  * Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
  */
@@ -22,9 +23,10 @@ public:
 
 	/** 
 	 * The algorithm approximates the betweenness of all vertices so that the scores are
-	 * within an additive error epsilon with probability at least (1- delta).
+	 * within an additive error @a epsilon with probability at least (1- @a delta).
 	 * The values are normalized by default.
 	 * 
+	 * @param	G			the graph
 	 * @param	epsilon		maximum additive error
 	 * @param	delta		probability that the values are within the error guarantee
 	 */

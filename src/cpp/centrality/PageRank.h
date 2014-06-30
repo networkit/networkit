@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup centrality
  * Compute PageRank as node centrality measure.
  */
 class PageRank: public NetworKit::Centrality {

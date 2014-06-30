@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /** 
+ * @ingroup centrality
  * Node centrality index which ranks nodes by their degree.
  * Optional normalization by maximum degree.
  */
