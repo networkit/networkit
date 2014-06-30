@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * @deprecated DEPRECATED Sequential implementation for testing - use parallel implementation NetworKit::Coverage
  * 
  * Coverage is the fraction of intra-cluster edges.

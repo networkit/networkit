@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * The CommunityGraph class represents a Graph coarsened according to communities. Each node in the CommunityGraph
  * represents a community. Edge weights are the weights of inter-community cuts.
  */
@@ -24,6 +25,9 @@ public:
 	/**
 	 * Creates a coarsened graph of @a G according to communities in @a zeta. Edge weights are the weights of
 	 * inter-community cuts.
+	 *
+	 * @param G The graph.
+	 * @param zeta A community clustering of @a G.
 	 */
 	virtual void run(const Graph& G, const Partition& zeta);
 
@@ -39,12 +43,16 @@ public:
 	};
 
 	/** 
-	 * Maps community id to id of node in the community graph.
+	 * Maps community id to node id in the community graph.
+	 *
+	 * @return Map containing community id to node id mappings.
 	 */
 	virtual std::map<index, node> getCommunityToNodeMap();
 
 	/** 
 	 * Maps node id in the community graph to community id.
+	 *
+	 * @return Map containing node id to community id mappins.
 	 */
 	virtual std::map<node, index> getNodeToCommunityMap(); 
 

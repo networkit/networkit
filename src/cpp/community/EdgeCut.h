@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup community
+ */
 class EdgeCut: public NetworKit::QualityMeasure {
 public:
 	/** Default destructor */
