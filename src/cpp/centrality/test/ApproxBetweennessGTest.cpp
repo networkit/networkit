@@ -20,13 +20,6 @@ ApproxBetweennessGTest::~ApproxBetweennessGTest() {
 	// TODO Auto-generated destructor stub
 }
 
-TEST_F(ApproxBetweennessGTest, testPedanticDiameterErdos) {
-	ErdosRenyiGenerator gen(5000,0.001);
-	Graph G1 = gen.generate();
-	ApproxBetweenness approx(G1);
-	approx.run();
-}
-
 TEST_F(ApproxBetweennessGTest, testApproxDiameterErdos) {
 	ErdosRenyiGenerator gen(10000,0.001);
 	Graph G1 = gen.generate();
