@@ -12,7 +12,9 @@
 
 namespace NetworKit {
 
-
+/**
+ * @ingroup dynamics
+ */
 class GraphEventHandler {
 
 public:

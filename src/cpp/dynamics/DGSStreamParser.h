@@ -17,6 +17,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup dynamics
+ */
 class DGSStreamParser {
 
 public:

@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup dynamics
+ */
 class GraphEventTarget {
 
 public:

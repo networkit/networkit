@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 /**
- *
+ * @ingroup dynamics
  */
 class DGSWriter {
 public:
