@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup independentset
  * Abstract base class for independent set algorithms.
  */
 class IndependentSetFinder {
@@ -20,21 +21,27 @@ class IndependentSetFinder {
 
 public:
 
-	IndependentSetFinder();
-
-	virtual ~IndependentSetFinder();
+	/** Default destructor */
+	virtual ~IndependentSetFinder() = default;
 
 	/**
-	 * @return a boolean vector of length n where vec[v] is true iff v is in the independent sets
-	 *
-	 * @param[in]	G	graph
+	 * Returns a boolean vector of length n where vec[v] is @c true iff v is in the independent sets.
+	 * @param[in]	G	The graph.
+	 * @return A boolean vector of length n.
 	 */
 	virtual std::vector<bool> run(const Graph& G) = 0;
 
+	/**
+	 * Get string representation of the algorithm.
+	 * @return The string representation of the algorithm.
+	 */
 	virtual std::string toString() const;
 
 	/**
-	 * Check whether a set is independent.
+	 * Checks whether a set is independent.
+	 * @param set The set which is supposed to be independent.
+	 * @param The graph.
+	 * @return @c true iff @a set is independent.
 	 */
 	bool isIndependentSet(const std::vector<bool>& set, const Graph& G) const;
 
