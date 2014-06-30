@@ -280,7 +280,7 @@ TEST_F(CommunityGTest, tryOldPLMParallelBalanced) {
 }
 
 
-TEST_F(CommunityGTest, testCNMandLouvainRandom) {
+TEST_F(CommunityGTest, tryCNMandLouvainRandom) {
 	count n = 400;
 	count k = 20;
 	double pin = 0.9;
@@ -306,7 +306,7 @@ TEST_F(CommunityGTest, testCNMandLouvainRandom) {
 }
 
 
-TEST_F(CommunityGTest, testCNMandLouvainReal) {
+TEST_F(CommunityGTest, tryCNMandLouvainReal) {
 	Modularity modularity;
 	CNM cnm;
 	PLM louvain;

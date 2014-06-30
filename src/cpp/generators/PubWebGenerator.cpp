@@ -135,7 +135,7 @@ void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
 
 	for (index j = 0; j < num; ++j) {
 		// compute random angle between [0, 2pi) and distance between [0, width/2]
-		float angle = Aux::Random::real() * 2.0 * M_PI;
+		float angle = Aux::Random::real() * 2.0 * PI;
 		float dist = Aux::Random::real() * denseAreaXYR[area].rad;
 
 		// compute coordinates and adjust them
@@ -159,7 +159,7 @@ void PubWebGenerator::fillDenseAreas(Graph& g) {
 }
 
 void PubWebGenerator::chooseDenseAreaSizes() {
-	denseAreaXYR.reserve(numDenseAreas);
+	denseAreaXYR.resize(numDenseAreas);
 
 	for (index area = 0; area < numDenseAreas; ++area) {
 		// anti-quadratic probability distribution
