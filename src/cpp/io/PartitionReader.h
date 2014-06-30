@@ -15,19 +15,21 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class PartitionReader {
 
 public:
 
-	PartitionReader();
-
-	virtual ~PartitionReader();
+	/** Default destructor */
+	virtual ~PartitionReader() = default;
 
 	/**
 	 * Read a clustering from a file. File format:
 	 * 		line n contains cluster id of node (n - 1)
 	 *
-	 * @param[in]	path	path to file
+	 * @param[in]	path	Path to file.
 	 */
 	virtual Partition read(std::string path);
 };

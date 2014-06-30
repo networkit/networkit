@@ -10,25 +10,32 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class EdgeListPartitionReader {
 
 public:
 
+	/**
+	 * Constructs the EdgeListPartitionReader class with @a firstNode as the index of the first node in the file.
+	 * @param[in]	firstNode	Index of the first node in the file.
+	 */
 	EdgeListPartitionReader(node firstNode=1);
 
-	virtual ~EdgeListPartitionReader();
+	/** Default destructor */
+	virtual ~EdgeListPartitionReader() = default;
 
 	/**
 	 * Read a clustering from a file. File format:
 	 * 		A list of the nodes and their membership (memberships are labelled by integer numbers >=1).
 	 *
-	 * @param[in]	path	path to file
+	 * @param[in]	path	Path to file.
+	 * @return The clustering contained in the file at @a path.
 	 */
 	virtual Partition read(std::string path);
 
-	/**
-	* @param[in]	firstNode	index of the first node in the file
-	*/
+
 	node firstNode;
 };
 

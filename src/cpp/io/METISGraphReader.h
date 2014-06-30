@@ -15,6 +15,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class METISGraphReader: public NetworKit::GraphReader {
 public:
 

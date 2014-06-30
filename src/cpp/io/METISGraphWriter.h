@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class METISGraphWriter: public NetworKit::GraphWriter {
 
 public:

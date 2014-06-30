@@ -17,8 +17,9 @@
 namespace NetworKit {
 
 /**
+ * @ingroup io
  * A reader for the edge list format used by the LFR benchmark generators, defined as:
- * 		list of edges (nodes are labelled from 1 to the number of nodes;
+ * 		list of edges (nodes are labeled from 1 to the number of nodes;
  * 		the edges are ordered and repeated twice, i.e. source-target and target-source).
  *
  * 	The starting index is a parameter to enable other edge list formats.
@@ -27,18 +28,20 @@ class EdgeListIO: public NetworKit::GraphReader {
 
 public:
 
+	/** Default constructor */
 	EdgeListIO() = default; //nullary constructor for Python shell
 
 	/**
-	 * @param[in]	separator	character used to separate nodes in an edge line
-	 * @param[in]	firstNode	index of the first node in the file
+	 * @param[in]	separator	Character used to separate nodes in an edge line.
+	 * @param[in]	firstNode	Index of the first node in the file.
 	 */
 	EdgeListIO(char separator, node firstNode);
 
 	/**
-	 * Given the path of an input file, read the graph contained.
+	 * Given the @a path of an input file, read the graph contained.
 	 *
-	 * @param[in]	path	input file path
+	 * @param[in]	path	Input file path.
+	 * @return The graph contained in the file at @a path.
 	 */
 	Graph read(const std::string& path) override;
 
@@ -49,8 +52,8 @@ public:
 
 	/**
 	 * Write the graph to a file.
-	 * @param[in]	G		the graph
-	 * @param[in]	path	the output file path
+	 * @param[in]	G		The graph.
+	 * @param[in]	path	The output file path.
 	 */
 	virtual void write(const Graph& G, std::string path);
 

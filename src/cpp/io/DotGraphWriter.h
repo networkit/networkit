@@ -10,6 +10,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class DotGraphWriter {
 public:
 

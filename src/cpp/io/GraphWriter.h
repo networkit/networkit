@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class GraphWriter {
 public:
 	virtual ~GraphWriter() = default;

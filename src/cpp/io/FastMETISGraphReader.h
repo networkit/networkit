@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class FastMETISGraphReader : public NetworKit::GraphReader {
 public:
 	FastMETISGraphReader() = default;

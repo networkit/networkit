@@ -20,12 +20,16 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class SNAPGraphReader : public NetworKit::GraphReader {
 protected:
 	std::unordered_map<node,node> mapNodeIds;
 
 public:
 
+	/** Default constructor */
 	SNAPGraphReader() = default;
 
 	virtual Graph read(const std::string& path) override;

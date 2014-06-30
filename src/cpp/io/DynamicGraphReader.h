@@ -12,13 +12,15 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class DynamicGraphReader {
 
 public:
 
-	DynamicGraphReader();
-
-	virtual ~DynamicGraphReader();
+	/** Default destructor */
+	virtual ~DynamicGraphReader() = default;
 
 	/**
 	 * @param[in]	path	path to dynamic graph file
