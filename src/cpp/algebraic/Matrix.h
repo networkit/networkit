@@ -16,7 +16,8 @@
 namespace NetworKit {
 
 /**
- * The matrix class represents a symmetric Matrix which is optimized for sparse matrices.
+ * @ingroup algebraic
+ * The matrix class represents a symmetric Matrix which is optimized for sparse matrices. *
  */
 class Matrix {
 private:
@@ -56,6 +57,9 @@ public:
 
 	/** Copy constructor */
 	Matrix(const Matrix &other);
+
+	/** Default destructor */
+	virtual ~Matrix() = default;
 
 	/**
 	 * @return Number of rows.
