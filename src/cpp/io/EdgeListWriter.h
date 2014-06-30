@@ -1,12 +1,12 @@
 /*
- * EdgeListIO.h
+ * EdgeListWriter.h
  *
  *  Created on: 18.06.2013
  *      Author: cls
  */
 
-#ifndef EDGELISTIO_H_
-#define EDGELISTIO_H_
+#ifndef EDGELISTWRITER_H_
+#define EDGELISTWRITER_H_
 
 #include <fstream>
 #include <iostream>
@@ -23,36 +23,24 @@ namespace NetworKit {
  *
  * 	The starting index is a parameter to enable other edge list formats.
  */
-class EdgeListIO: public NetworKit::GraphReader {
+class EdgeListWriter {
 
 public:
 
-	EdgeListIO() = default; //nullary constructor for Python shell
+	EdgeListWriter() = default; //nullary constructor for Python shell
 
 	/**
 	 * @param[in]	separator	character used to separate nodes in an edge line
 	 * @param[in]	firstNode	index of the first node in the file
 	 */
-	EdgeListIO(char separator, node firstNode);
-
-	/**
-	 * Given the path of an input file, read the graph contained.
-	 *
-	 * @param[in]	path	input file path
-	 */
-	Graph read(const std::string& path) override;
-
-		/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _read(std::string& path) {
-		return new Graph{std::move(read(path))};
-	};
+	EdgeListWriter(char separator, node firstNode);
 
 	/**
 	 * Write the graph to a file.
 	 * @param[in]	G		the graph
 	 * @param[in]	path	the output file path
 	 */
-	virtual void write(const Graph& G, std::string path);
+	void write(const Graph& G, std::string path);
 
 protected:
 
