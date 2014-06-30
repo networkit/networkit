@@ -20,6 +20,7 @@ class Format:
 	DOT = "dot"
 	EdgeList = "edgelist"
 	LFR = "edgelist-t1"
+	GML = "gml"
 	
 
 # reading
