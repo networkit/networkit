@@ -21,7 +21,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../io/DibapGraphReader.h"
 #include "../../generators/PubWebGenerator.h"
-
+#include "../../auxiliary/Random.h"
 
 
 namespace NetworKit {
@@ -48,7 +48,7 @@ TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
 
 	// create coordinates
 	G.forNodes([&](node u) {
-		Point<float> p(drand48(), drand48());
+		Point<float> p(Aux::Random::probability(), Aux::Random::probability());
 		G.setCoordinate(u, p);
 	});
 
@@ -57,6 +57,7 @@ TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
 	psWriter.write(G, "output/testGraph.eps");
 }
 
+#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 TEST_F(VizGTest, testPostscriptWriterOnRealGraph) {
 	// read graph and coordinates from binary file
 	DibapGraphReader reader;
@@ -66,6 +67,7 @@ TEST_F(VizGTest, testPostscriptWriterOnRealGraph) {
 	PostscriptWriter psWriter;
 	psWriter.write(G, "output/airfoil1.eps");
 }
+#endif
 
 
 static float edgeDistanceSum(Graph& G) {
