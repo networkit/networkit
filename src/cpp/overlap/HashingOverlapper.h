@@ -22,9 +22,6 @@ class HashingOverlapper: public NetworKit::Overlapper {
 
 public:
 
-	/** Default destructor */
-	virtual ~HashingOverlapper() = default;
-
 	virtual Partition run(Graph& G, std::vector<Partition>& clusterings);
 };
 
