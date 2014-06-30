@@ -74,6 +74,10 @@ Graph METISGraphReader::read(const std::string& path) {
 			edgeCounter += adjacencies.size();
 			DEBUG("node ",u," has ",adjacencies.size()," edges");
 			for (index i=0; i < adjacencies.size(); i++) {
+				if (adjacencies[i] == 0) {
+					ERROR("METIS Node ID should not be 0, edge ignored.");
+					continue;
+				}
 				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
 				double weight = adjacencies[i].second;
 				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
