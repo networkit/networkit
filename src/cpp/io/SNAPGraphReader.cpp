@@ -13,8 +13,6 @@
 
 namespace NetworKit {
 
-//SNAPGraphReader::SNAPGraphReader() : {}
-
 Graph SNAPGraphReader::read(const std::string& path) {
 	std::ifstream file;
 	std::string line; // the current line

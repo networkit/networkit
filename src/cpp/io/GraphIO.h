@@ -17,6 +17,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class GraphIO {
 public:
 
