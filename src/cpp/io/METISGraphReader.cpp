@@ -51,9 +51,13 @@ Graph METISGraphReader::read(const std::string& path) {
 			std::vector<node> adjacencies = parser.getNext(ignoreFirst);
 			edgeCounter += adjacencies.size();
 			for (index i=0; i < adjacencies.size(); i++) {
-
+				if (adjacencies[i] == 0) {
+					ERROR("METIS Node ID should not be 0, edge ignored.");
+					continue;
+				}
 				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
 				assert (v >= 0);
+				assert (v < n);
 				if (u <= v) { // self-loops are allowed
 					G.addEdge(u, v);
 				}
