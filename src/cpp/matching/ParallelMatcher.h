@@ -29,8 +29,6 @@ public:
 
 	LocalMaxMatcher(uint64_t attrId);
 
-	/** Default destructor */
-	virtual ~LocalMaxMatcher() = default;
 
 	virtual Matching run(Graph& G);
 };
