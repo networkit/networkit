@@ -11,17 +11,6 @@
 
 namespace NetworKit {
 
-BasicsBenchmark::BasicsBenchmark() {
-	// TODO Auto-generated constructor stub
-
-}
-
-BasicsBenchmark::~BasicsBenchmark() {
-	// TODO Auto-generated destructor stub
-}
-
-
-
 TEST_F(BasicsBenchmark, sequentialSum) {
 	Aux::Timer runtime;
 

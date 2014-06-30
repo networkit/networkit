@@ -10,16 +10,6 @@
 #include "ParametrizedGTest.h"
 
 
-ParametrizedGTest::ParametrizedGTest() {
-	// TODO Auto-generated constructor stub
-
-}
-
-ParametrizedGTest::~ParametrizedGTest() {
-	// TODO Auto-generated destructor stub
-}
-
-
 TEST_P(ParametrizedGTest, testParameter) {
 	int n = GetParam();
 	EXPECT_EQ(n, GetParam());
