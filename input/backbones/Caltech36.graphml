@@ -2,10 +2,10 @@
   <key attr.name="year" attr.type="long" for="node" id="d6" />
   <key attr.name="student_fac" attr.type="long" for="node" id="d5" />
   <key attr.name="major_index" attr.type="long" for="node" id="d4" />
-  <key attr.name="dorm" attr.type="long" for="node" id="d3" />
   <key attr.name="gender" attr.type="long" for="node" id="d2" />
   <key attr.name="second_major" attr.type="long" for="node" id="d1" />
   <key attr.name="high_school" attr.type="long" for="node" id="d0" />
+  <key attr.name="dorm" attr.type="long" for="node" id="d0" />
   <graph edgedefault="undirected" id="Caltech36">
     <node id="0">
       <data key="d0">3387</data>
