@@ -15,9 +15,6 @@
 
 
 class ParametrizedGTest: public testing::TestWithParam<int> {
-public:
-	ParametrizedGTest();
-	virtual ~ParametrizedGTest();
 };
 
 #endif /* PARAMETRIZEDGTEST_H_ */
