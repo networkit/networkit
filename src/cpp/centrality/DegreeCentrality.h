@@ -13,11 +13,19 @@
 namespace NetworKit {
 
 /** 
+ * @ingroup centrality
  * Node centrality index which ranks nodes by their degree.
  * Optional normalization by maximum degree.
  */
 class DegreeCentrality: public NetworKit::Centrality {
 public:
+	/**
+	 * Constructs the DegreeCentrality class for the given Graph @a G. If the betweenness scores should be normalized,
+	 * then set @a normalized to <code>true</code>.
+	 *
+	 * @param G The graph.
+	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
+	 */
 	DegreeCentrality(const Graph& G, bool normalized=false);
 
 	void run() override;

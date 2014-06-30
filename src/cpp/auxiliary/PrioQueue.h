@@ -14,6 +14,8 @@
 #include <limits>
 #include <iostream>
 
+#include "../auxiliary/Log.h"
+
 namespace Aux {
 
 /**

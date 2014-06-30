@@ -8,19 +8,15 @@
 #include "PageRankNibble.h"
 #include "ApproximatePageRank.h"
 #include "../community/Conductance.h"
+#include "../auxiliary/Log.h"
 #include <cmath>
 #include <vector>
-
+ 
 namespace NetworKit {
 
 PageRankNibble::PageRankNibble(Graph& g): G(g) {
 
 }
-
-PageRankNibble::~PageRankNibble() {
-
-}
-
 
 std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
 	double entry = 0.0;

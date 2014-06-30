@@ -19,9 +19,6 @@
 namespace NetworKit {
 
 class BasicsBenchmark: public testing::Test {
-public:
-	BasicsBenchmark();
-	virtual ~BasicsBenchmark();
 };
 
 } /* namespace NetworKit */

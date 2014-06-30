@@ -7,6 +7,7 @@
 
 #include "ClusterContractor.h"
 #include "../auxiliary/Timer.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -23,18 +24,19 @@ std::pair<Graph, std::vector<node> > ClusterContractor::run(const Graph& G, cons
 	Aux::Timer timer;
 	timer.start();
 
-	Graph Gcon(0, true); // empty weighted graph
 
 	std::vector<node> clusterToSuperNode(zeta.upperBound()+1, none); // there is one supernode for each cluster
 	// +1 is an experimental fix
 
+	node nextNodeId = 0;
 	DEBUG("populate map cluster -> supernode");
 	G.forNodes([&](node v){
 		index c = zeta.subsetOf(v);
 		if (clusterToSuperNode[c] == none) {
-			clusterToSuperNode[c] = Gcon.addNode(); // TODO: probably does not scale well, think about allocating ranges of nodes
+			clusterToSuperNode[c] = nextNodeId++;
 		}
 	});
+	Graph Gcon(nextNodeId, true); // empty weighted graph
 
 	index z = G.upperNodeIdBound() + 1; // +1 is an experimental fix
 	std::vector<node> nodeToSuperNode(z, none);

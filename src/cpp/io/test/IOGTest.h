@@ -11,29 +11,6 @@
 #define IOGTEST_H_
 
 #include <gtest/gtest.h>
-#include <fstream>
-#include <unordered_set>
-#include <vector>
-
-#include "../../auxiliary/Log.h"
-#include "../METISGraphReader.h"
-#include "../METISGraphWriter.h"
-#include "../ClusteringWriter.h"
-#include "../ClusteringReader.h"
-#include "../GraphIO.h"
-#include "../../graph/GraphGenerator.h"
-#include "../../community/ClusteringGenerator.h"
-#include "../DotGraphWriter.h"
-#include "../DGSReader.h"
-#include "../EdgeListIO.h"
-#include "../EdgeListClusteringReader.h"
-#include "../SNAPEdgeListClusteringReader.h"
-#include "../../structures/Partition.h"
-#include "../../community/Modularity.h"
-#include "../../community/PLP.h"
-#include "../SNAPGraphWriter.h"
-#include "../FastMETISGraphReader.h"
-
 
 namespace NetworKit {
 

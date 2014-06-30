@@ -18,15 +18,15 @@ namespace NetworKit {
 
 
 /**
+ * @ingroup overlap
  * Abstract base class for algorithms which determine the overlap of multiple partitions.
  */
 class Overlapper {
 
 public:
 
-	Overlapper();
-
-	virtual ~Overlapper();
+	/** Default destructor */
+	virtual ~Overlapper() = default;
 
 	virtual Partition run(Graph& G, std::vector<Partition>& clusterings) = 0;
 };

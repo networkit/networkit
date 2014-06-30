@@ -33,30 +33,43 @@ public:
 
 	/**
 	 * Start the clock.
-        Returns the time at which the instance was started.
+	 * Returns the time at which the instance was started.
 	 */
 	virtual std::chrono::steady_clock::time_point start();
 
 	/**
 	 * Stops the clock permanently for the instance of the Timer.
-        Returns the time at which the instance was stopped.
+	 * Returns the time at which the instance was stopped.
 	 */
 	virtual std::chrono::steady_clock::time_point stop();
 
 	/**
 	 * The number of milliseconds since the current time that the Timer
-        object was created.  If stop() was called, it is the number
-        of seconds from the instance creation until stop() was called.
+	 * object was created.  If stop() was called, it is the number
+	 * of seconds from the instance creation until stop() was called.
 	 */
 	virtual std::chrono::duration<uint64_t, std::milli> elapsed();
 
-
 	/**
 	 * The number of milliseconds since the current time that the Timer
-        object was created.  If stop() was called, it is the number
-        of seconds from the instance creation until stop() was called.
+	 * object was created. If stop() was called, it is the number
+	 * of seconds from the instance creation until stop() was called.
 	 */
 	virtual uint64_t elapsedMilliseconds();
+	
+	/**
+	 * The number of microseconds since the current time that the Timer
+	 * object was created. If stop() was called, it is the number
+	 * of seconds from the instance creation until stop() was called.
+	 */
+	virtual uint64_t elapsedMicroseconds();
+	
+	/**
+	 * The number of nanoseconds since the current time that the Timer
+	 * object was created. If stop() was called, it is the number
+	 * of seconds from the instance creation until stop() was called.
+	 */
+	virtual uint64_t elapsedNanoseconds();
 
 	/**
 	 * Returns the time at which the instance was started.

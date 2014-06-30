@@ -12,11 +12,23 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup community
+ * The ModularitySequential class is the sequential version of Modularity.
+ */
 class ModularitySequential: public NetworKit::QualityMeasure {
 public:
-	ModularitySequential();
+
+	/** Default destructor */
 	virtual ~ModularitySequential();
 
+	/**
+	 * Returns the Modularity of the given clustering with respect to the graph @a G.
+	 *
+	 * @param zeta The clustering.
+	 * @param G The graph.
+	 * @return The modularity.
+	 */
 	virtual double getQuality(const Partition& zeta, const Graph& G);
 
 };

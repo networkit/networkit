@@ -12,6 +12,10 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup community
+ * This class makes instaces of the EPP community detection algorithm.
+ */
 class EPPFactory {
 public:
 	EPP make(count ensembleSize, std::string baseAlgorithm, std::string finalAlgorithm);

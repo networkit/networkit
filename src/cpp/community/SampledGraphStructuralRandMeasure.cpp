@@ -8,6 +8,7 @@
 #include "SampledGraphStructuralRandMeasure.h"
 
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -16,14 +17,13 @@ SampledGraphStructuralRandMeasure::SampledGraphStructuralRandMeasure(count maxSa
 }
 
 SampledGraphStructuralRandMeasure::~SampledGraphStructuralRandMeasure() {
-	// TODO Auto-generated destructor stub
 }
 
 double SampledGraphStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, Partition& second) {
 	assert (G.numberOfNodes() > 0);
 	assert (G.numberOfEdges() > maxSamples);
 
-	count e11 = 0; 	// number of node pairs for which clusterings aggree
+	count e11 = 0; 	// number of node pairs for which clusterings agree
 	count e00 = 0;	// number of node pairs for which clusterings disagree
 
 

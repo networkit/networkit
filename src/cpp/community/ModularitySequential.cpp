@@ -15,13 +15,7 @@
 
 namespace NetworKit {
 
-ModularitySequential::ModularitySequential() {
-	// TODO Auto-generated constructor stub
-
-}
-
 ModularitySequential::~ModularitySequential() {
-	// TODO Auto-generated destructor stub
 }
 
 double ModularitySequential::getQuality(const Partition& zeta, const Graph& G) {

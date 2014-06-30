@@ -13,7 +13,6 @@
 namespace NetworKit {
 
 BarabasiAlbertGenerator::BarabasiAlbertGenerator() {
-
 }
 
 
@@ -22,10 +21,6 @@ BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k,
 	if (n0 == 0) {
 		n0 = k;
 	}
-}
-
-BarabasiAlbertGenerator::~BarabasiAlbertGenerator() {
-	// TODO Auto-generated destructor stub
 }
 
 Graph BarabasiAlbertGenerator::generate() {
@@ -68,6 +63,7 @@ Graph BarabasiAlbertGenerator::generate() {
 
 	}
 
+	G.shrinkToFit();
 	return G;
 }
 

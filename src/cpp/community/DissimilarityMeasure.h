@@ -14,14 +14,14 @@ namespace NetworKit {
 
 
 /**
+ * @ingroup community
  * Base class for all clustering dissimilarity measures.
  */
 class DissimilarityMeasure {
 
 public:
 
-	DissimilarityMeasure();
-
+	/** Default destructor */
 	virtual ~DissimilarityMeasure();
 
 

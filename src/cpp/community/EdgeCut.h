@@ -12,9 +12,12 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup community
+ */
 class EdgeCut: public NetworKit::QualityMeasure {
 public:
-	EdgeCut();
+	/** Default destructor */
 	virtual ~EdgeCut();
 
 	virtual double getQuality(const Partition& zeta, const Graph& G);

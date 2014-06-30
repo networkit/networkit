@@ -13,22 +13,16 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * A parallel agglomerative community detection algorithm, maximizing modularity.
  */
 class ParallelAgglomerativeClusterer: public NetworKit::CommunityDetectionAlgorithm {
 
 public:
 
-	ParallelAgglomerativeClusterer();
-
-	virtual ~ParallelAgglomerativeClusterer();
-
-	/**
-	 * @return string representation of algorithm and parameters.
-	 */
-	virtual std::string toString() const;
-
 	virtual Partition run(Graph& G);
+
+	virtual std::string toString() const;
 };
 
 } /* namespace NetworKit */

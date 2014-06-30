@@ -12,12 +12,14 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup community
+ */
 class JaccardMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	JaccardMeasure();
-
+	/** Default destructor */
 	virtual ~JaccardMeasure();
 
 	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second);
