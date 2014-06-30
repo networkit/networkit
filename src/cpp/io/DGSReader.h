@@ -33,10 +33,7 @@ namespace NetworKit {
 class DGSReader: public NetworKit::DynamicGraphReader {
 
 public:
-
-	/** Default destructor */
-	virtual ~DGSReader() = default;
-
+	
 	/**
 	 * @param[in]	path	Path to file in DGS format.
 	 * @param[in]	Gproxy	Graph event proxy receives the events from the file.
