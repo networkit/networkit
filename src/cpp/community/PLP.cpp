@@ -23,7 +23,7 @@ PLP::PLP(count theta) : updateThreshold(theta) {
 }
 
 
-Partition& PLP::run(Graph& G, Partition& labels) {
+Partition& PLP::runFromGiven(Graph& G, Partition& labels) {
 	typedef index label; // a label is the same as a cluster id
 
 	count n = G.numberOfNodes();
@@ -120,7 +120,7 @@ Partition PLP::run(Graph& G) {
 //	});
 //	labels.setUpperBound(z);
 
-	return run(G, labels);
+	return runFromGiven(G, labels);
 }
 
 std::string PLP::toString() const {

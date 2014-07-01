@@ -53,7 +53,7 @@ public:
 	 * @param[in]	part input partition
 	 * @return			clustering
 	 */
-	virtual Partition& run(Graph& G, Partition& part);
+	virtual Partition& runFromGiven(Graph& G, Partition& part);
 
 	/**
 	 * @return String representation of algorithm and parameters.
