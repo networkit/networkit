@@ -9,15 +9,6 @@
 
 namespace NetworKit {
 
-Subgraph::Subgraph() {
-	// TODO Auto-generated constructor stub
-
-}
-
-Subgraph::~Subgraph() {
-	// TODO Auto-generated destructor stub
-}
-
 Graph Subgraph::fromNodes(const Graph& G, const std::unordered_set<node>& nodes) {
 
 	Graph returnGraph;

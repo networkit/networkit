@@ -6,7 +6,10 @@ import csv
 import fnmatch
 
 import stopwatch
-import graphio
+try:
+	import graphio
+except ImportError:
+	import _graphio33 as graphio
 
 # batch processing
 

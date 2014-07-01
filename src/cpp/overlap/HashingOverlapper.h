@@ -15,6 +15,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup overlap
  * Determines the overlap of multiple partitions by hashing partition identifiers.
  */
 class HashingOverlapper: public NetworKit::Overlapper {
@@ -22,6 +23,7 @@ class HashingOverlapper: public NetworKit::Overlapper {
 public:
 
 	virtual Partition run(const Graph& G, const std::vector<Partition>& clusterings);
+
 };
 
 } /* namespace NetworKit */

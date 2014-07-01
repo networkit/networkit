@@ -40,10 +40,6 @@ void DynamicBarabasiAlbertGenerator::initializeGraph() {
 	assert (G->numberOfEdges() == (k - 1));
 }
 
-DynamicBarabasiAlbertGenerator::~DynamicBarabasiAlbertGenerator() {
-	// TODO Auto-generated destructor stub
-}
-
 
 void DynamicBarabasiAlbertGenerator::generate() {
 	if (! this->graphInitialized) {

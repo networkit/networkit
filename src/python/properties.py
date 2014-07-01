@@ -1,5 +1,5 @@
 # NetworKit native classes and functions
-from _NetworKit import GraphProperties, ConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, CoreDecomposition
+from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, CoreDecomposition
 
 # other submodules
 import community
@@ -66,7 +66,7 @@ def components(G):
 	if G.isDirected():
 		cc = StronglyConnectedComponents(G)
 	else:
-		cc = ConnectedComponents(G)
+		cc = ParallelConnectedComponents(G, True)	# performs best in parallel on large graphs
 	cc.run()
 	components = cc.getPartition()
 	nComponents = components.numberOfSubsets()

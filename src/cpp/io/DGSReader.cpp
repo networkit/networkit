@@ -12,14 +12,6 @@
 
 namespace NetworKit {
 
-DGSReader::DGSReader() {
-
-}
-
-DGSReader::~DGSReader() {
-
-}
-
 void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
 	std::ifstream dgsFile;
 	dgsFile.open(path.c_str(), std::ifstream::in);

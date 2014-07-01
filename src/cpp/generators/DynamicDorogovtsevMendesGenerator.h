@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup generators
+ */
 class DynamicDorogovtsevMendesGenerator: public NetworKit::DynamicGraphGenerator {
 
 public:

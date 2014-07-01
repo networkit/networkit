@@ -12,13 +12,14 @@
 
 namespace NetworKit {
 
-
+/**
+ * @ingroup dynamics
+ */
 class GraphEventSource {
 
 public:
 
-	GraphEventSource();
-
+	/** Default destructor */
 	virtual ~GraphEventSource();
 
 	virtual GraphEvent emit() = 0;

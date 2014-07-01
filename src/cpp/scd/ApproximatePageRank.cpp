@@ -42,10 +42,6 @@ void ApproximatePageRank::push(node u, node seed, std::set<node>& activeNodes)
 //	TRACE("normalizedResidual[", u, "]: ", normalizedResid[u]);
 }
 
-ApproximatePageRank::~ApproximatePageRank() {
-
-}
-
 std::vector<double> ApproximatePageRank::run(node seed) {
 	count n = G.upperNodeIdBound();
 	pr.assign(n, 0.0);

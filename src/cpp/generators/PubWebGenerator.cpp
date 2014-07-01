@@ -55,10 +55,6 @@ PubWebGenerator::PubWebGenerator(count numNodes, count numberOfDenseAreas,
 
 }
 
-PubWebGenerator::~PubWebGenerator() {
-
-}
-
 bool PubWebGenerator::isValidEdge(Graph& g, node u, node v, edgeweight& weight) {
 
 	auto isValid([&](node u, node v, float squaredDistance) {

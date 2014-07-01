@@ -20,7 +20,7 @@ namespace NetworKit {
 class ParallelConnectedComponents {
 public:
 
-	ParallelConnectedComponents(const Graph& G);
+	ParallelConnectedComponents(const Graph& G, bool coarsening = true);
 
 	/**
 	 * This method determines the connected components for the graph g.
@@ -54,6 +54,7 @@ public:
 private:
 	const Graph& G;
 	Partition component;
+	bool coarsening;
 };
 
 }

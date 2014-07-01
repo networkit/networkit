@@ -11,13 +11,17 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup properties
+ */
 class GlobalClusteringCoefficient {
 
 public:
-  GlobalClusteringCoefficient() {}
-  virtual ~GlobalClusteringCoefficient() {}
+
+	/** Default destructor */
+	virtual ~GlobalClusteringCoefficient() = default;
   
-  virtual double approximate(const Graph& G, int k);
+	virtual double approximate(const Graph& G, int k);
 };
 
 } /* namespace NetworKit */

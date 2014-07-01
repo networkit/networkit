@@ -16,11 +16,6 @@ StaticDegreeSequenceGenerator::StaticDegreeSequenceGenerator(const std::vector<u
 
 }
 
-StaticDegreeSequenceGenerator::~StaticDegreeSequenceGenerator() {
-
-}
-
-
 bool StaticDegreeSequenceGenerator::getRealizable() const {
 	return realizable;
 }

@@ -184,8 +184,9 @@ std::vector<index> Partition::getVector() const {
 
 
 std::set<std::set<index> > Partition::getSubsets() {
-	std::vector<std::set<index> > table(omega);
+	std::vector<std::set<index> > table(omega+1);
 	this->forEntries([&](index e, index s){
+		assert(s <= omega);
 		table[s].insert(e);
 	});
 

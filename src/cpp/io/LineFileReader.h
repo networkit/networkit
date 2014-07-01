@@ -16,6 +16,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup io
  * Reads a file and puts each line as a string into a vector
  */
 class LineFileReader {

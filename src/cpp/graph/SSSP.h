@@ -15,51 +15,71 @@
 namespace NetworKit {
 
 /** 
+ * @ingroup graph
  * Abstract base class for single-source shortest path algorithms.
  */
 class SSSP {
 
 public:
 
+	/**
+	 * Creates the SSSP class for @a G and source @a s.
+	 *
+	 * @param G The graph.
+	 * @param s The source node.
+	 */
 	SSSP(const Graph& G, node s);
 
+	/** Default destructor */
 	virtual ~SSSP() = default;	
 
+	/** Computes the shortest paths from the source to all other nodes. */
 	virtual void run() = 0;
 
 	/**
-	 * return Vector of weighted distances from node @a source, i.e. the
- 	 * length of the shortest path from @a source to any other vertex.
+	 * Returns a vector of weighted distances from the source node, i.e. the
+ 	 * length of the shortest path from the source node to any other node.
+ 	 *
+ 	 * @return The weighted distances from the source node to any other node in the graph.
 	 */
 	virtual std::vector<edgeweight> getDistances() const;
 
 	/**
-	 * @param  t target node
-	 * @return   distance from s to target node t
-	 * 	 */
+	 * Returns the distance from the source node to @a t.
+	 * @param  t Target node.
+	 * @return The distance from source to target node @a t.
+	 */
 	virtual edgeweight distance(node t) const;
 
 	/**
-	 * @param  t target node
-	 * @return   number of shortest paths between s and t
-	 * 	 */
+	 * Returns the number of shortest paths between the source node and @a t.
+	 * @param  t Target node.
+	 * @return The number of shortest paths between source and @a t.
+	 */
 	virtual count numberOfPaths(node t) const;
 
 	/**
-	 * @param t target node
-	 * @return predecessors of t on all shortest paths from source to t
+	 * Returns the predecessor nodes of @a t on all shortest paths from source to @a t.
+	 * @param t Target node.
+	 * @return The predecessors of @a t on all shortest paths from source to @a t.
 	 */
 	virtual std::vector<node> getPredecessors(node t) const;
 
 	/**
-	 * @return a shortest path from source node to target node @a t.
-	 * Returns empty path if source and target are not connected.
+	 * Returns a shortest path from source to @a t and an empty path if source and @a t are not connected.
+	 *
+	 * @param t Target node.
+	 * @param forward If @c true (default) the path is directed from source to @a t, otherwise the path is reversed.
+	 * @return A shortest path from source to @a t or an empty path.
 	 */
 	virtual std::vector<node> getPath(node t, bool forward=true) const;
 
 	/**
-	 * @return all shortest paths from source node to target node @a t.
-	 * Returns empty set if source and target are not connected.
+	 * Returns all shortest paths from source to @a t and an empty set if source and @a t are not connected.
+	 *
+	 * @param t Target node.
+	 * @param forward If @c true (default) the path is directed from source to @a t, otherwise the path is reversed.
+	 * @return All shortest paths from source node to target node @a t.
 	 */
 	virtual std::set<std::vector<node> > getPaths(node t, bool forward=true) const;
 

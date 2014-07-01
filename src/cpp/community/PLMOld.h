@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * PLM - Parallel Louvain Method community detection algorithm
  * The Lovain method is a locally greedy procedure for maximizing modularity.
  * This is a parallel implementation.

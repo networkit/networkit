@@ -16,11 +16,12 @@
 namespace NetworKit {
 
 /**
- * 	Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
- * 	The sequence, if it is realizable, is reconstructed exactly.
- *  The resulting graph usually has a high clustering coefficient.
- *  Construction runs in linear time O(m). However, the test if a sequence is realizable
- *  is quadratic in the sequence length.
+ * @ingroup generators
+ * Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
+ * The sequence, if it is realizable, is reconstructed exactly.
+ * The resulting graph usually has a high clustering coefficient.
+ * Construction runs in linear time O(m). However, the test if a sequence is realizable
+ * is quadratic in the sequence length.
  */
 class HavelHakimiGenerator: public NetworKit::StaticDegreeSequenceGenerator  {
 protected:

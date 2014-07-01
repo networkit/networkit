@@ -20,10 +20,6 @@ DynamicPubWebGenerator::DynamicPubWebGenerator(count numNodes,
 	G = initGen.generate();
 }
 
-DynamicPubWebGenerator::~DynamicPubWebGenerator() {
-
-}
-
 std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 	count numToDel = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
 	count numToIns = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
