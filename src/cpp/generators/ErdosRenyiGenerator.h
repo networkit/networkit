@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup generators
  * Creates G(n, p) graphs.
  */
 class ErdosRenyiGenerator: public StaticGraphGenerator {

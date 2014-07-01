@@ -14,9 +14,7 @@
 namespace NetworKit {
 
 ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
-
 }
-
 
 void ConnectedComponents::run() {
 
@@ -50,6 +48,10 @@ count ConnectedComponents::numberOfComponents() {
 count ConnectedComponents::componentOfNode(node u) {
 	assert (component[u] != none);
 	return component[u];
+}
+
+std::map<index, count> ConnectedComponents::getComponentSizes() {
+	return this->component.subsetSizeMap();
 }
 
 }

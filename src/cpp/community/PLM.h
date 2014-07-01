@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * Parallel Louvain Method - a multi-level modularity maximizer.
  */
 class PLM: public NetworKit::CommunityDetectionAlgorithm {
@@ -32,10 +33,18 @@ public:
 	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32);
 
 
+	/**
+	 * Get string representation.
+	 *
+	 * @return String representation of this algorithm.
+	 */
 	std::string toString() const override;
 
 	/**
-	 * Detect communities in the given graph.
+	 * Detect communities in the given graph @a G
+	 *
+	 * @param G The graph.
+	 * @return A partition containing the found communities.
 	 */
 	Partition run(const Graph& G) override;
 

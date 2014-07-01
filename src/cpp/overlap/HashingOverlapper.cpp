@@ -11,7 +11,6 @@
 namespace NetworKit {
 
 
-
 Partition HashingOverlapper::run(const Graph& G, const std::vector<Partition>& clusterings) {
 
 	DEBUG("Starting hashing overlapper");

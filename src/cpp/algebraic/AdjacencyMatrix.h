@@ -13,6 +13,10 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup algebraic
+ * Adjacency matrix of a Graph.
+ */
 class AdjacencyMatrix : public Matrix {
 public:
 	/**

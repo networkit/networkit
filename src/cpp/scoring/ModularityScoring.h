@@ -17,6 +17,9 @@ namespace NetworKit {
 
 // TODO: implement modularity as in Python prototype
 
+/**
+ * @ingroup scoring
+ */
 template<typename T>
 class ModularityScoring: public NetworKit::EdgeScoring<T> {
 
@@ -33,7 +36,8 @@ public:
 	 */
 	ModularityScoring(Graph& G, double gTotalEdgeWeight = 0.0);
 
-	virtual ~ModularityScoring();
+	/** Default destructor */
+	virtual ~ModularityScoring() = default;
 
 
 	virtual void scoreEdges(int attrId);
@@ -74,11 +78,6 @@ ModularityScoring<T>::ModularityScoring(Graph& G, double gTotalEdgeWeight) : Edg
 	if (gTotalEdgeWeight == 0.0) {
 		this->totalEdgeWeight = this->G->totalEdgeWeight();
 	}
-}
-
-template<typename T>
-ModularityScoring<T>::~ModularityScoring() {
-
 }
 
 template<typename T>

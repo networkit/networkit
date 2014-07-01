@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup distmeasures
  * Abstract base class for node distance measures.
  */
 class NodeDistance {
@@ -22,9 +23,14 @@ protected:
 	const Graph& G;
 
 public:
-
+	/**
+	 * Constructs the NodeDistance class for the given Graph @a G.
+	 *
+	 * @param G The graph.
+	 */
 	NodeDistance(const Graph& G);
 
+	/** Default destructor */
 	virtual ~NodeDistance();
 
 	/**

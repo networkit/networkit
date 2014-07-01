@@ -16,6 +16,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup overlap
  * Determines the overlap of multiple partitions by region growing (BFS).
  */
 class RegionGrowingOverlapper: public NetworKit::Overlapper {
@@ -24,6 +25,7 @@ public:
 
 
 	virtual Partition run(const Graph& G, const std::vector<Partition>& clusterings) override;
+
 
 };
 

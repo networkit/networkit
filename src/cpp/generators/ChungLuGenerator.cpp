@@ -18,10 +18,6 @@ ChungLuGenerator::ChungLuGenerator(const std::vector<unsigned int>& degreeSequen
 	n = (count) seq.size();
 }
 
-ChungLuGenerator::~ChungLuGenerator() {
-
-}
-
 Graph ChungLuGenerator::generate() {
 	/* Random number in [0, 1] */
 	double randVal = 0.0;

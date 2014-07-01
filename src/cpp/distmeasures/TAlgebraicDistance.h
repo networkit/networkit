@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup distmeasures
  * Algebraic distance assigns a distance value to pairs of nodes
  * according to their structural closeness in the graph. 
  */
@@ -23,6 +24,7 @@ public:
 
 	TAlgebraicDistance(const Graph& G);
 
+	/** Default destructor */
 	virtual ~TAlgebraicDistance();
 
 	void initialize(const Parameters& param);

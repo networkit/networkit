@@ -18,7 +18,8 @@ template<typename T> class NodeMap;
 template<typename T> std::ostream& operator<<(std::ostream& os, const NodeMap<T>& m);
 
 /**
- * @DEPRECATED: This class is deprecated. Do not use it in new code.
+ * @ingroup graph
+ * @deprecated DEPRECATED: This class is deprecated. Do not use it in new code.
  *
  */
 template <typename T> class NodeMap : public IndexMap<node, T> {

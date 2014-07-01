@@ -14,6 +14,7 @@
 #include "../Diameter.h"
 #include "../../io/METISGraphReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -122,7 +123,7 @@ TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 	EXPECT_EQ(1029u, cc.numberOfComponents());
 }
 
-TEST_F(ConnectedComponentsGTest, tryParallelConnectedComponents) {
+TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 	METISGraphReader reader;
 	std::vector<std::string> graphs = {"astro-ph", "PGPgiantcompo",
 			"caidaRouterLevel", "celegans_metabolic", "hep-th", "jazz"};
