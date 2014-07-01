@@ -46,8 +46,21 @@ public:
 	virtual Partition run(Graph& G);
 
 	/**
-	 * Get string representation.
+	 * Run the label propagation clustering algorithm, cluster
+	 * initialization with @a part.
 	 *
+	 * @param[in]	G	input graph
+	 * @param[in]	part input partition
+	 * @return			clustering
+	 */
+	virtual Partition& run(Graph& G, Partition& part);
+
+	/**
+	 * Initialize partition with random labels in [0,k-1].
+	 */
+	virtual Partition initRandomKwayPart(Graph& G, count k);
+
+	/**
 	 * @return String representation of algorithm and parameters.
 	 */
 	virtual std::string toString() const;

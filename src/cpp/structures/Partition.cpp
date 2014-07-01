@@ -39,6 +39,9 @@ void Partition::toSingleton(index e) {
 	data[e] = newSubsetId();
 }
 
+// TODO: Discuss why this needs to be this modular,
+// why not simply assign 0 to z-1 in parallel
+// and set upper bound accordingly?
 void Partition::allToSingletons() {
 	for (index e = 0; e < this->z; ++e) {
 		toSingleton(e);
