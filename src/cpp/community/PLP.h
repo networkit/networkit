@@ -56,11 +56,6 @@ public:
 	virtual Partition& run(Graph& G, Partition& part);
 
 	/**
-	 * Initialize partition with random labels in [0,k-1].
-	 */
-	virtual Partition initRandomKwayPart(Graph& G, count k);
-
-	/**
 	 * @return String representation of algorithm and parameters.
 	 */
 	virtual std::string toString() const;
