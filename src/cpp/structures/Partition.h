@@ -102,7 +102,7 @@ public:
 	 * @param s The index of the subset.
 	 * @param e The element to add.
 	 */
-	void addToSubset(index s, index e);
+	void addToSubset(index subset, index elem);
 
 	/**
 	 * Move the (previously assigned) element @a e to the set @a s.

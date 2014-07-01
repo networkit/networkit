@@ -139,15 +139,5 @@ count PLP::numberOfIterations() {
 	return this->nIterations;
 }
 
-Partition PLP::initRandomKwayPart(Graph& G, count k) {
-	Partition part;
-
-	G.forNodes([&](node u) {
-		// TODO: proceed here!
-	});
-
-	return part;
-}
-
 } /* namespace NetworKit */
 
