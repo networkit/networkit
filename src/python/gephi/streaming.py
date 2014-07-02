@@ -14,7 +14,7 @@ class GephiStreamingClient:
 
     def __init__(self, url='http://localhost:8080/workspace0'):
         #Disabling Flushing means quite a good performance boost.
-        self._pygephi = _gephipyclient.GephiClient(url, autoflush=False)
+        self._pygephi = _gephipyclient.GephiClient(url, autoflush=10000)
     
     def _urlError(self, e):
         print("Could not connect to the gephi streaming plugin. Did you start the streaming master server in gephi?")
@@ -31,10 +31,9 @@ class GephiStreamingClient:
                 self._pygephi.add_node(str(node), **nAttrs)
         
             # TODO: how to determine edge ids in a reasonable way?
-            edgeId = 1
             for edge in graph.edges():
+                edgeId = self._getEdgeId(graph.numberOfNodes(), edge[0], edge[1])
                 self._pygephi.add_edge(edgeId, edge[0], edge[1], False)
-                edgeId = edgeId + 1
     
             self._pygephi.flush()
         except _urllib.error.URLError as e:
@@ -72,3 +71,26 @@ class GephiStreamingClient:
         
         except _urllib.error.URLError as e:
             self._urlError(e)
+    
+    # EXPERIMENTAL
+    def _getEdgeId(self, upperNodeIdBound, source, target):
+        lower = min(source, target)
+        upper = max(source, target)
+        return (2 * upperNodeIdBound * lower) + upper
+    
+    # EXPERIMENTAL 
+    def exportBackboneAttribute(self, graph, backbone, aName):
+        """ Exports the backbone B of graph G as attribute aName (values 0 and 1).
+            Use exportGraph(G) first. """
+        
+        eAttrs = {aName:0, "Type":"Undirected"}
+        for edge in set(graph.edges()) - set(backbone.edges()):
+            edgeId = self._getEdgeId(graph.numberOfNodes(), edge[0], edge[1])
+            self._pygephi.change_edge(edgeId, edge[0], edge[1], False, **eAttrs)
+        
+        eAttrs = {aName:1, "Type":"Undirected"}
+        for edge in backbone.edges():
+            edgeId = self._getEdgeId(graph.numberOfNodes(), edge[0], edge[1])
+            self._pygephi.change_edge(edgeId, edge[0], edge[1], False, **eAttrs)
+        
+        self._pygephi.flush()
