@@ -13,11 +13,12 @@
 namespace NetworKit {
 
 /**
+ * @ingroup generators
  * The Forest Fire generative model produces dynamic graphs with the following properties:
  * - heavy tailed degree distribution
  * - communities
  * - densification power law
- * - shringking diameter
+ * - shrinking diameter
  *
  * This class implements a variant of the original model which produces undirected graphs.
  *

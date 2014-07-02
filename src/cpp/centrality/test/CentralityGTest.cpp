@@ -12,7 +12,7 @@
 #include "../EigenvectorCentrality.h"
 #include "../PageRank.h"
 #include "../../io/METISGraphReader.h"
-#include "../../io/FastMETISGraphReader.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 

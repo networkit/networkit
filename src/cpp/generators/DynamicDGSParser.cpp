@@ -16,10 +16,6 @@ DynamicDGSParser::DynamicDGSParser(std::string path) : graphInitialized(false) {
 	dgsFile.open(path.c_str(), std::ifstream::in);
 }
 
-DynamicDGSParser::~DynamicDGSParser() {
-
-}
-
 void DynamicDGSParser::initializeGraph() {
 	if (! dgsFile.is_open()) {
 		throw std::runtime_error("DGS input file could not be opened.");

@@ -26,12 +26,13 @@
 namespace NetworKit {
 
 /**
+ * @ingroup io
  * Reads the clustering files from the SNAP collection.
  */
 class SNAPEdgeListPartitionReader {
 public:
-	SNAPEdgeListPartitionReader();
-	virtual ~SNAPEdgeListPartitionReader();
+	/** Default destructor */
+	virtual ~SNAPEdgeListPartitionReader() = default;
 
 	virtual Cover read(std::string path, std::unordered_map<node,node>& mapNodeIds, Graph& G);
 

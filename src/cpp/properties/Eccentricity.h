@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup properties
+ */
 class Eccentricity {
 
 public:

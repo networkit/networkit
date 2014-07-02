@@ -22,8 +22,6 @@ syntax: regexp
 syntax: regexp
 ^profiling$
 syntax: regexp
-^input$
-syntax: regexp
 ^EnsembleClustering-D$
 syntax: regexp
 ^EnsembleClustering-D$

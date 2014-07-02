@@ -9,15 +9,6 @@
 
 namespace NetworKit {
 
-PartitionReader::PartitionReader() {
-	// TODO Auto-generated constructor stub
-
-}
-
-PartitionReader::~PartitionReader() {
-	// TODO Auto-generated destructor stub
-}
-
 Partition PartitionReader::read(std::string path) {
 
 	std::ifstream file(path);

@@ -12,16 +12,6 @@
 
 namespace NetworKit {
 
-GraphGenerator::GraphGenerator() {
-	// TODO Auto-generated constructor stub
-
-}
-
-GraphGenerator::~GraphGenerator() {
-	// TODO Auto-generated destructor stub
-}
-
-
 // TODO: parallel? is insertEdge thread safe?
 
 

@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <numeric>
 #include <chrono>
 #include <thread>
 #include <fstream>
@@ -24,6 +25,7 @@
 #include "../SetIntersector.h"
 #include "../Enforce.h"
 #include "../NumberParsing.h"
+#include "../Enforce.h"
 
 
 TEST_F(AuxGTest, produceRandomIntegers) {
@@ -377,6 +379,21 @@ TEST_F(AuxGTest, testNumberParsingSignedInteger) {
 	}
 	
 	EXPECT_EQ(it, end);
+}
+
+TEST_F(AuxGTest, testOverflowCatching) {
+	using namespace Aux::Parsing;
+	const std::string str = "1000";
+	EXPECT_THROW(
+			(strTo<uint8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
+				str.begin(), str.end())),
+			std::runtime_error
+			);
+	EXPECT_THROW(
+			(strTo<int8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
+				str.begin(), str.end())),
+			std::runtime_error
+			);
 }
 
 TEST_F(AuxGTest, testNumberParsingBasicReal) {

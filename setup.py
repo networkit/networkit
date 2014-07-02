@@ -89,7 +89,7 @@ elif (("develop" in sys.argv) and ("--uninstall" not in sys.argv)):
 	build_NetworKit()
 elif "clean" in sys.argv:
 	additional_clean()
-	
+
 # try-catch block when shutil.which is not available
 try:
 	if (shutil.which("g++-4.9") is not None):
@@ -110,10 +110,9 @@ except:
 	os.environ["CC"] = "g++"
 	os.environ["CXX"] = "g++"
 
-print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
-
+#print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
 src = ["_NetworKit.pyx"]	# list of source files
-			
+
 print("source files: {0}".format(src))
 
 modules = [Extension("_NetworKit",

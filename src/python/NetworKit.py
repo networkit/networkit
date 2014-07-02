@@ -19,7 +19,18 @@ import stopwatch
 
 # NetworKit submodules
 import graph
-import graphio
+import sys
+try:
+	import graphio
+except ImportError:
+	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
+	import _graphio33 as graphio
+
+#if sys.version_info < (3,4):
+#	print("Please update to a Python version >=3.4, however, NetworKit should still work")
+#	import _graphio33 as graphio
+#else:
+#	import graphio
 import community
 import centrality
 import generators
@@ -51,7 +62,10 @@ except ImportError as importError:
 
 from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 from graph import Graph
-from graphio import readGraph, writeGraph, formats
+try:
+	from graphio import readGraph, writeGraph, Format
+except ImportError:
+	from _graphio33 import readGraph, writeGraph, Format
 from nxadapter import nk2nx, nx2nk
 from toolbox import batch
 from community import detectCommunities

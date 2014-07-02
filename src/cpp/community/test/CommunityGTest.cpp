@@ -106,9 +106,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters)
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect";
-
 }
-
 
 TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	int64_t n = 100;
@@ -280,7 +278,7 @@ TEST_F(CommunityGTest, tryOldPLMParallelBalanced) {
 }
 
 
-TEST_F(CommunityGTest, testCNMandLouvainRandom) {
+TEST_F(CommunityGTest, tryCNMandLouvainRandom) {
 	count n = 400;
 	count k = 20;
 	double pin = 0.9;
@@ -306,7 +304,7 @@ TEST_F(CommunityGTest, testCNMandLouvainRandom) {
 }
 
 
-TEST_F(CommunityGTest, testCNMandLouvainReal) {
+TEST_F(CommunityGTest, tryCNMandLouvainReal) {
 	Modularity modularity;
 	CNM cnm;
 	PLM louvain;

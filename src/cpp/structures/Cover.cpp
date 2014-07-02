@@ -8,6 +8,7 @@
 #include "Cover.h"
 
 #include <algorithm>
+#include <iterator>
 
 namespace NetworKit {
 

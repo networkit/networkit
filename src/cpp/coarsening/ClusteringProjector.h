@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup coarsening
+ */
 class ClusteringProjector {
 
 public:

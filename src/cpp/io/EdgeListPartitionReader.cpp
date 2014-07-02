@@ -10,12 +10,6 @@
 namespace NetworKit {
 
 EdgeListPartitionReader::EdgeListPartitionReader(node firstNode) : firstNode(firstNode) {
-	// TODO Auto-generated constructor stub
-
-}
-
-EdgeListPartitionReader::~EdgeListPartitionReader(){
-	// TODO Auto-generated destructor stub
 }
 
 Partition EdgeListPartitionReader::read(std::string path) {

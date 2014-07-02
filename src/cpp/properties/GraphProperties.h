@@ -10,12 +10,12 @@
 
 
 #include "../graph/Graph.h"
-#include "../io/METISGraphReader.h"
 
 namespace NetworKit {
 
 /**
- * DEPRECATED: Implement algorithms in their own classes.
+ * @ingroup properties
+ * @deprecated DEPRECATED: Implement algorithms in their own classes.
  * 
  * Collection of methods for basic network properties.
  */
@@ -54,10 +54,11 @@ public:
 
 
 	/**
-	 * The average local clustering coefficient for the graph.
+	 * The average local clustering coefficient for the graph @a G.
 	 * 		$\frac{1}{n} \cdot \sum_{v \in V} c_v$
 	 *
 	 * @param[in]	G	the graph
+	 * @return Average local clustering coefficient.
 	 */
 	static double averageLocalClusteringCoefficient(const Graph& G);
 
@@ -68,9 +69,12 @@ public:
 	static double averageDegree(const Graph& G);
 
 	/**
+	 * Get degree assortativity of the graph @a G.
+	 *
+	 * @param G The graph
+	 * @param useWeights If @c true, the weights are considered for calculation. Default: @c false.
 	 * @return Degree assortativity of the graph @a G.
-	 * Based on description in
-	 * Newman: Networks. An Introduction. Chapter 8.7.
+	 * @note Degree assortativity based on description in Newman: Networks. An Introduction. Chapter 8.7.
 	 */
 	static double degreeAssortativity(const Graph& G, bool useWeights = false);
 };

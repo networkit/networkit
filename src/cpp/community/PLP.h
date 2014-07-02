@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering
  * Raghavan et al. proposed a label propagation algorithm for graph clustering.
  * This algorithm initializes every vertex of a graph with a unique label. Then, in iterative
@@ -45,7 +46,17 @@ public:
 	virtual Partition run(Graph& G);
 
 	/**
-	 * @return string representation of algorithm and parameters.
+	 * Run the label propagation clustering algorithm, cluster
+	 * initialization with @a part.
+	 *
+	 * @param[in]	G	input graph
+	 * @param[in]	part input partition
+	 * @return			clustering
+	 */
+	virtual Partition& runFromGiven(Graph& G, Partition& part);
+
+	/**
+	 * @return String representation of algorithm and parameters.
 	 */
 	virtual std::string toString() const;
 
@@ -60,6 +71,8 @@ public:
 
 	/**
 	* Get number of iterations in last run.
+	*
+	* @return The number of iterations.
 	*/
 	virtual count numberOfIterations();
 

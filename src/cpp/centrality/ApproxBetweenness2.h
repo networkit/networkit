@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup centrality
  * Approximation of betweenness centrality according to algorithm described in
  * Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
  */

@@ -1,5 +1,5 @@
 # NetworKit native classes and functions
-from _NetworKit import GraphProperties, ConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, CoreDecomposition
+from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, CoreDecomposition
 
 # other submodules
 import community
@@ -66,7 +66,7 @@ def components(G):
 	if G.isDirected():
 		cc = StronglyConnectedComponents(G)
 	else:
-		cc = ConnectedComponents(G)
+		cc = ParallelConnectedComponents(G, True)	# performs best in parallel on large graphs
 	cc.run()
 	components = cc.getPartition()
 	nComponents = components.numberOfSubsets()
@@ -130,6 +130,14 @@ def powerLawFit(G, dd=None):
 def degreeAssortativity(G):
 	""" Returns the degree assortativity coefficient """
 	return GraphProperties.degreeAssortativity(G, G.isWeighted())
+
+
+def degeneracy(G):
+	""" degeneracy of an undirected graph is defined as the largest k for which
+	the graph has a non-empty k-core"""
+	coreDec = CoreDecomposition(G)
+	coreDec.run()
+	return coreDec.maxCoreNumber()
 
 
 def properties(G, settings):
@@ -203,6 +211,10 @@ def properties(G, settings):
 	logging.info("[...] calculating degree assortativity coefficient")
 	assort = degreeAssortativity(G)
 
+	# degeneracy
+	logging.info("[...] calculating degeneracy by k-core decomposition")
+	degen = degeneracy(G)
+
 
 	props = {
 		 "name": G.getName(),
@@ -215,6 +227,7 @@ def properties(G, settings):
 		 "plfit": plfit,
 		 "gamma": gamma,
 		 "avglcc": avglcc,
+		 "degeneracy": degen,
 		 "nComponents": nComponents,
 		 "sizeLargestComponent": max(componentSizes.values()),
 		 "dia": dia,
@@ -244,7 +257,8 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
-		["clustering coefficient", "", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
+		["clustering coefficient", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
+		["degeneracy (max. core number)", props["degeneracy"]],
 	]
 	degreeProperties = [
 		["min. degree", props["minDeg"]],
