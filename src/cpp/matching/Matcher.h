@@ -13,16 +13,20 @@
 namespace NetworKit {
 
 /**
+ * @ingroup matching
  * Abstract base class for matching algorithms.
  */
 class Matcher {
 
 public:
 
-	Matcher();
+	/** Default destructor */
+	virtual ~Matcher() = default;
 
-	virtual ~Matcher();
-
+	/**
+	 * Run the matching algorithm on Graph @a G and return a matching.
+	 * @return A matching of @a G
+	 */
 	virtual Matching run(Graph& G) = 0;
 };
 

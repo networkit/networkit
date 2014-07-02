@@ -13,16 +13,17 @@
 namespace NetworKit {
 
 /**
+ * @ingroup centrality
  * Abstract base class for centrality measures.
  */
 class Centrality {
 public:
 	/**
 	 * Constructs the Centrality class for the given Graph @a G. If the betweenness scores should be normalized,
-	 * then set @a normalized to <code>true</code>.
+	 * then set @a normalized to @c true.
 	 *
 	 * @param G The graph.
-	 * @param normalized If set to <code>true</code> the scores are normalized in the interval [0,1].
+	 * @param normalized If set to @c true the scores are normalized in the interval [0,1].
 	 */
 	Centrality(const Graph& G, bool normalized=false);
 
@@ -35,20 +36,22 @@ public:
 	virtual void run() = 0;
 
 	/**
-	 * Returns a vector containing the betweenness score for each node in the graph.
+	 * Get a vector containing the betweenness score for each node in the graph.
 	 * @return The betweenness scores calculated by @link run().
 	 */
 	virtual std::vector<double> scores();
 
 	/**
-	 * Returns a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+	 * Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 	 * calculated by @link run().
 	 * @return A vector of pairs.
 	 */
 	virtual std::vector<std::pair<node, double> > ranking();
 
 	/**
-	 * Returns the betweenness score of node @a v calculated by @link run().
+	 * Get the betweenness score of node @a v calculated by @link run().
+	 *
+	 * @param v A node.
 	 * @return The betweenness score of node @a v.
 	 */
 	virtual double score(node v);

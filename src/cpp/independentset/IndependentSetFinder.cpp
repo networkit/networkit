@@ -10,15 +10,6 @@
 
 namespace NetworKit {
 
-IndependentSetFinder::IndependentSetFinder() {
-	// TODO Auto-generated constructor stub
-
-}
-
-IndependentSetFinder::~IndependentSetFinder() {
-	// TODO Auto-generated destructor stub
-}
-
 std::string IndependentSetFinder::toString() const {
 	return "TODO: implement IndependentSetFinder.toString";
 }

@@ -1,52 +1,78 @@
-from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListIO, \
-						 VNAGraphWriter, GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
-						  DGSStreamParser, GraphUpdater, FastMETISGraphReader, SNAPEdgeListPartitionReader, SNAPGraphReader)
+from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
+						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
+						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader)
+from GraphMLIO import GraphMLReader, GraphMLWriter
 import os
 import logging
 import numpy
 import scipy.io
-import xml.sax
+from enum import Enum
 
-class formats:
-	metis = "metis"
-	fastmetis = "fastmetis"
-	graphml = "graphml"
-	#CLUSTERING = "clustering"
-	edgelist_tab_one = "edgelist-t1"
-	edgelist_tab_zero = "edgelist-t0"
-	edgelist_space_one = "edgelist-s1"
-	edgelist_space_zero = "edgelist-s0"
-	#class input:
-		#METIS = "metis"
-		#CLUSTERING = "clustering"
-		#DGSSTREAM = "dgsstream"
-	class output:
-		#METIS = "metis"
-		#CLUSTERING = "clustering"
-		graphviz = "graphviz"
-		gml = "gml"
-		snap = "snap"
-		vna = "vna"
+
+class AutoNumber(Enum):
+	def __new__(cls):
+		value = len(cls.__members__) + 1
+		obj = object.__new__(cls)
+		obj._value_ = value
+		return obj
+
+
+class Format(AutoNumber):
+	""" Simple enumeration class to list supported file types """
+	SNAP = ()
+	EdgeListSpaceZero = ()
+	EdgeListSpaceOne = ()
+	EdgeListTabZero = ()
+	EdgeListTabOne = ()
+	METIS = ()
+	GraphML = ()
+	GML = ()
+#	VNA = ()
+	EdgeListCommaOne = ()
+	GraphViz = ()
+#	GDF = ()
+	EdgeList = ()
+	LFR = ()
+
+
+
 
 # reading
 
-def readGraph(path, format="fastmetis", **kwargs):
-	"""    Read graph file in various formats and return a NetworKit::Graph"""
-	
-	readers =  {"metis": METISGraphReader(),
-			"fastmetis" : FastMETISGraphReader(),
-				#"edgelist": EdgeListIO(),
-				"edgelist-t1" : EdgeListIO('\t', 1),
-				"edgelist-t0": EdgeListIO('\t', 0),
-				"edgelist-s1": EdgeListIO(' ', 1), 
-				"edgelist-s0": EdgeListIO(' ', 0),
-				"graphml": GraphMLReader()
-				}
+def getReader(fileformat, **kwargs):
+	#define your [edgelist] reader here:
+	readers =	{
+			Format.METIS:			METISGraphReader(),
+			Format.GraphML:			GraphMLReader(),
+			Format.SNAP:			EdgeListReader('\t',0,'#',False),
+			Format.EdgeListCommaOne:	EdgeListReader(',',1,),
+			Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
+			Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
+			Format.EdgeListTabOne:		EdgeListReader('\t',1),
+			Format.EdgeListTabZero:		EdgeListReader('\t',0),
+			Format.LFR:			EdgeListReader('\t',1)
+			}
 
 	try:
-		reader = readers[format]#(**kwargs)
-	except KeyError:
-		raise Exception("unrecognized format: {0}".format(format))
+		# special case for custom Edge Lists
+		if fileformat == Format.EdgeList:
+			reader = EdgeListReader(kwargs['separator'],kwargs['firstNode'])
+		else:
+			reader = readers[fileformat]#(**kwargs)
+	except Exception or KeyError:
+		raise Exception("unrecognized format/format not supported as input: {0}".format(fileformat))
+	return reader
+
+
+def readGraph(path, fileformat = Format.METIS, **kwargs):
+	""" Read graph file in various formats and return a NetworKit::Graph
+	    Paramaters: 
+		- fileformat: An element of the Format enumeration, default is Format.METIS
+		- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
+			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
+			commentPrefix and continuous are optional
+	"""
+	reader = getReader(fileformat,**kwargs)
 
 
 	if ("~" in path):
@@ -56,9 +82,11 @@ def readGraph(path, format="fastmetis", **kwargs):
 		raise IOError("{0} is not a file".format(path))
 	else:
 		with open(path, "r") as file:    # catch a wrong path before it crashes the interpreter
-			G = reader.read(path)
-			return G
-
+			try:
+				G = reader.read(path)
+				return G
+			except Exception as e:
+				raise IOError("{0} is not a valid {1} file: {2}".format(path,fileformat,e))
 	return None
 
 
@@ -83,27 +111,40 @@ def readMat(path):
 		G.addEdge(u, v)
 	return G
 
-# writing
 
-def writeGraph(G, path, format="metis"):
-	""" Write graph to various output formats """
-	writers = 	{"metis" : METISGraphWriter(),
-				"gexf": None,
-				"vna": VNAGraphWriter(),
-				"dot": DotGraphWriter(),
-				"graphviz": DotGraphWriter(),
-				"gml": GMLGraphWriter(),
-				"edgelist-t1" : EdgeListIO('\t', 1),
-				"edgelist-t0": EdgeListIO('\t', 0),
-				"edgelist-s1": EdgeListIO(' ', 1), 
-				"edgelist-s0": EdgeListIO(' ', 1)
-				}
+# writing
+def getWriter(fileformat):
+	writers =	{
+			Format.METIS:			METISGraphWriter(),
+			Format.GraphML:			GraphMLWriter(),
+#			Format.SNAP:			EdgeListWriter('\t',0,'#',False),
+			Format.EdgeListCommaOne:	EdgeListWriter(',',1,),
+			Format.EdgeListSpaceOne:	EdgeListWriter(' ',1),
+			Format.EdgeListSpaceZero:	EdgeListWriter(' ',0),
+			Format.EdgeListTabOne:		EdgeListWriter('\t',1),
+			Format.EdgeListTabZero:		EdgeListWriter('\t',0),
+			Format.GraphViz:		DotGraphWriter(),
+			Format.GML:			GMLGraphWriter(),
+			Format.LFR:			EdgeListWriter('\t',1)
+#			Format.GDF:			GDFGraphWriter(),
+#			Format.VNA:			VNAGraphWriter(),
+			}
 	try:
-		writer = writers[format]
-		writer.write(G, path)
-		logging.info("wrote graph {0} to file {1}".format(G, path))
-	except:
-		raise Exception("format {0} currently not supported".format(format))		
+		# special case for custom Edge Lists
+		if fileformat == Format.EdgeList:
+			writer = EdgeListIO(kwargs['separator'],kwargs['firstNode'])
+		else:
+			writer = writers[fileformat]#(**kwargs)
+	except KeyError:
+		raise Exception("format {0} currently not supported".format(fileformat))
+	return writer
+def writeGraph(G, path, fileformat = Format.METIS):
+	""" Write graph to various output formats. 
+		Default format is METIS."""
+	writer = getWriter(fileformat)
+	writer.write(G, path)
+	logging.info("wrote graph {0} to file {1}".format(G, path))
+
 
 class GraphConverter:
 	
@@ -119,27 +160,8 @@ class GraphConverter:
 		return "GraphConverter: {0} => {0}".format(self.reader, self.writer)
 
 def getConverter(fromFormat, toFormat):
-	
-	readers =  {"metis": METISGraphReader(),
-				"edgelist-t1" : EdgeListIO('\t', 1),
-				"edgelist-t0": EdgeListIO('\t', 0),
-				"edgelist-s1": EdgeListIO(' ', 1), 
-				"edgelist-s0": EdgeListIO(' ', 1)}    
-	writers =  {"metis" : METISGraphWriter(),
-				"gexf": None,
-				"vna": VNAGraphWriter(),
-				"dot": DotGraphWriter(),
-				"graphviz": DotGraphWriter(),
-				"gml": GMLGraphWriter(),
-				"edgelist-t1": EdgeListIO('\t', 1),
-				"edgelist-t0": EdgeListIO('\t', 0),
-				"edgelist-s1": EdgeListIO(' ', 1), 
-				"edgelist-s0": EdgeListIO(' ', 1)
-				} 
-	
-	reader = readers[fromFormat]
-	writer = writers[toFormat]
-	
+	reader = getReader(fromFormat)
+	writer = getWriter(toFormat)
 	return GraphConverter(reader, writer)
 
 
@@ -174,93 +196,3 @@ def graphFromStreamFile(path, mapped=True, baseIndex=0):
 	gu.update(stream)
 	return G
 
-
-# GraphML Reader
-class GraphMLSAX(xml.sax.ContentHandler):
-	def __init__(self):
-		xml.sax.ContentHandler.__init__(self)
-		self.charBuffer = []
-		self.mapping = dict()
-		self.g = Graph(0)
-		self.graphName = ''
-		self.weightedID = ''
-		self.weighted = False
-		self.edgestack = []
-		self.edgeweight = 0.0
-		self.keepData = False
-
-	def startElement(self, name, attrs):
-		if name == "graph":
-			self.charBuffer = []
-			self.mapping = dict()
-			self.g = Graph(0)
-			self.graphName = ''
-			self.weightedID = ''
-			self.weighted = False
-			self.edgestack = []
-			self.edgeweight = 0.0
-			self.keepData = False
-			if not attrs.getValue("id") == '':
-				self.graphName = attrs.getValue("id")
-		if name == "node":
-			u = self.g.addNode()
-			val = attrs.getValue("id")
-			self.mapping[val] = u
-		elif name == "edge":
-			u = attrs.getValue("source")
-			v = attrs.getValue("target")
-			self.edgestack.append((u,v))
-		elif name == "key":
-			#print("found element with tag KEY")
-			if (attrs.getValue("for") == 'edge' and attrs.getValue("attr.name") == 'weight' and attrs.getValue("attr.type") == 'double'):
-				self.weighted = True
-				self.weightedID = attrs.getValue("id")
-				print("identified graph as weighted")
-				self.g = Graph(0,self.weighted)
-				self.g.setName(self.graphName)
-		elif name == "data" and attrs.getValue("key") == self.weightedID:
-			self.keepData = True
-
-	def endElement(self, name):
-		data = self.getCharacterData()
-		if name == "edge":
-			u = self.edgestack[len(self.edgestack)-1][0]
-			v = self.edgestack[len(self.edgestack)-1][1]
-			self.edgestack.pop()
-			if self.weighted:
-				#print ("identified edge as weighted with weight: {0}".format(edgeweight))
-				self.g.addEdge(self.mapping[u], self.mapping[v], self.edgeweight)
-				self.edgeweight = 0.0
-			else:
-				self.g.addEdge(self.mapping[u], self.mapping[v])
-		elif name == "data" and self.keepData:
-			self.keepData = False
-			self.edgeweight = float(data)
-		#if self.childlist[len(self.childlist)-1
-		#if name == self.tagstack[len(self.tagstack)-1]:
-			#self.tagstack.pop()
-		#else:
-			#raise SAXParseException("tag closed without being open")
-
-	def characters(self, content):
-		self.charBuffer.append(content)
-
-	def getCharacterData(self):
-		data = ''.join(self.charBuffer).strip()
-		self.charBuffer = []
-		return data
-
-	def getGraph(self):
-		#result = Graph()
-		#result.setThis(self.g)
-		#self.g.__dealloc__()
-		#return result
-		return self.g
-
-class GraphMLReader:
-	def __init__(self):
-		self.graphmlsax = GraphMLSAX()
-
-	def read(self, fpath):
-		xml.sax.parse(fpath, self.graphmlsax)
-		return self.graphmlsax.getGraph()

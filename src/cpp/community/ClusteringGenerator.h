@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * Provides several methods for generating special clusterings.
  */
 class ClusteringGenerator {

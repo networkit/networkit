@@ -16,6 +16,9 @@ namespace NetworKit {
 
 
 // FIXME: for k=2, degree 2 nodes should be most frequent but degree 4 nodes are
+/**
+ * @ingroup generators
+ */
 class DynamicBarabasiAlbertGenerator: public NetworKit::DynamicGraphSource {
 
 protected:
@@ -28,8 +31,6 @@ public:
 
 
 	DynamicBarabasiAlbertGenerator(count k = 2);
-
-	virtual ~DynamicBarabasiAlbertGenerator();
 
 	virtual void initializeGraph();
 

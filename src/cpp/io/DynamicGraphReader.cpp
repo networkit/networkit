@@ -9,13 +9,5 @@
 
 namespace NetworKit {
 
-DynamicGraphReader::DynamicGraphReader() {
-	// TODO Auto-generated constructor stub
-
-}
-
-DynamicGraphReader::~DynamicGraphReader() {
-	// TODO Auto-generated destructor stub
-}
 
 } /* namespace NetworKit */

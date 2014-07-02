@@ -24,6 +24,7 @@ namespace NetworKit {
 
 
 /**
+ * @ingroup structures
  * Implements a partition of a set, i.e. a subdivision of the 
  * set into disjoint subsets.
  */
@@ -71,8 +72,10 @@ public:
 	}
 
 	/**
-	 * Return the set (id) in which a element
-	 * is contained.
+	 * Get the set (id) in which the element @a e is contained.
+	 *
+	 * @param e Index of element.
+	 * @return The index of the set in which @a e is contained.
 	 */
 	inline index subsetOf(index e) const {
 		assert (e < this->numberOfElements());
@@ -94,17 +97,25 @@ public:
 	void remove(index e);
 
 	/**
-	 * Add a (previously unassigned) element to a set
+	 * Add a (previously unassigned) element @a e to the set @a s.
+	 *
+	 * @param s The index of the subset.
+	 * @param e The element to add.
 	 */
-	void addToSubset(index s, index e);
+	void addToSubset(index subset, index elem);
 
 	/**
-	 * Move a (previously assigned) element to a set.
+	 * Move the (previously assigned) element @a e to the set @a s.
+	 *
+	 * @param s The index of the subset.
+	 * @param e The element to move.
 	 */
 	void moveToSubset(index s, index e);
 
 	/**
-	 * Creates a singleton set containing the element.
+	 * Creates a singleton set containing the element @a e.
+	 *
+	 * @param e The index of the element.
 	 */
 	void toSingleton(index e);
 
@@ -121,8 +132,11 @@ public:
 	void allToOnePartition();
 
 	/**
-	 * Assigns the elements from both sets to a new set.
-	 * @return ID of newly created set.
+	 * Assigns the elements from both sets to a new set and returns the id of it.
+	 *
+	 * @param s Set to merge.
+	 * @param t Set to merge.
+	 * @return Id of newly created set.
 	 */
 	index mergeSubsets(index s, index t);
 
@@ -149,13 +163,16 @@ public:
 
 	/**
 	 * Return an upper bound for the subset ids that have been assigned.
-	 *
 	 * (This is the maximum id + 1.)
+	 *
+	 * @return The upper bound.
 	 */
 	index upperBound() const;
 
 	/**
-	 * Return a lower bound for the subset ids that have been assigned.
+	 * Get a lower bound for the subset ids that have been assigned.
+	 *
+	 * @return The lower bound.
 	 */
 	index lowerBound() const;
 
@@ -167,31 +184,45 @@ public:
 
 
 	/**
-	 * Check if partition assigns a valid subset to the element.
+	 * Check if partition assigns a valid subset to the element @a e.
+	 *
+	 * @param e The element.
+	 * @return @c true if the assigned subset is valid, @c false otherwise.
 	 */
 	bool contains(index e) const;
 
 
 	/**
-	 * Check if two elements belong to the same subset
+	 * Check if two elements @a e1 and @a e2 belong to the same subset.
+	 *
+	 * @param e1 Element.
+	 * @param e2 Element.
+	 * @return @c true if @a e1 and @a e2 belong to same subset, @c false otherwise.
 	 */
 	bool inSameSubset(index e1, index e2) const;
 
 
 	/**
 	 * Get a list of subset sizes. Indices do not necessarily correspond to subset ids.
+	 *
+	 * @return A vector of subset sizes.
 	 */
 	std::vector<count> subsetSizes() const;
 
 
 	/**
 	 * Get a map from subset id to size of the subset.
+	 *
+	 * @return A map from subset id to size of the subset.
 	 */
 	std::map<index, count> subsetSizeMap() const;
 
 
 	/**
-	 * Get the members of a specific subset.
+	 * Get the members of the subset @a s.
+	 *
+	 * @param s The subset.
+	 * @return A set containing the members of @a s.
 	 */
 	std::set<index> getMembers(const index s) const;
 
@@ -204,12 +235,14 @@ public:
 
 	/**
 	 * Get the current number of sets in this partition.
+	 *
+	 * @return The current number of sets.
 	 */
 	count numberOfSubsets() const;
 	
 	/**
-	 * Get the acutal vector representing the partition datastructure.
-	 * @return vector containing information about partitions
+	 * Get the actual vector representing the partition data structure.
+	 * @return vector containing information about partitions.
 	 */
 	std::vector<index> getVector();
 
@@ -220,28 +253,38 @@ public:
 	std::set<std::set<index> > getSubsets();
 
 	/** 
-	 * @return ids of nonempty subsets 
+	 * Get the ids of nonempty subsets.
+	 *
+	 * @return A set of ids of nonempty subsets.
 	 */
 	std::set<index> getSubsetIds();
 	 
 	/**
-	 * Set a human-readable identifier for the instance.
+	 * Set a human-readable identifier @a name for the instance.
+	 *
+	 * @param name The name.
 	 */
 	void setName(std::string name);
 
 
 	/**
-	 * Get the human-readable identifier
+	 * Get the human-readable identifier.
+	 *
+	 * @return The name of this partition.
 	 */
 	std::string getName() const;
 	 
 	/**
-	 * Iterate over all entries (node, cluster) and execute callback function (lambda closure).
+	 * Iterate over all entries (node, cluster id) and execute callback function @a func (lambda closure).
+	 *
+	 * @param func Takes parameters <code>(node, index)</code>
 	 */
 	template<typename Callback> void forEntries(Callback func) const;
 
 	/**
-	 * Iterate over all entries (node, cluster) in parallel and execute callback function (lambda closure).
+	 * Iterate over all entries (node, cluster id) in parallel and execute callback function @a handle (lambda closure).
+	 *
+	 * @param handle Takes parameters <code>(node, index)</code>
 	 */
 	template<typename Callback> void parallelForEntries(Callback handle) const;
 

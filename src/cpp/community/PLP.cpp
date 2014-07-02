@@ -23,7 +23,7 @@ PLP::PLP(count theta) : updateThreshold(theta) {
 }
 
 
-Partition PLP::run(Graph& G) {
+Partition& PLP::runFromGiven(Graph& G, Partition& labels) {
 	typedef index label; // a label is the same as a cluster id
 
 	count n = G.numberOfNodes();
@@ -32,13 +32,6 @@ Partition PLP::run(Graph& G) {
 	if (updateThreshold == none) {
 		updateThreshold = (count) (n / 1e5);
 	}
-
-	// set unique label for each node
-	Partition labels(z);
-	G.parallelForNodes([&](node v) {
-		labels[v] = v;
-	});
-	labels.setUpperBound(z);
 
 	count nUpdated; // number of nodes which have been updated in last iteration
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
@@ -113,7 +106,21 @@ Partition PLP::run(Graph& G) {
 	} // end while
 
 	return labels;
+}
 
+
+Partition PLP::run(Graph& G) {
+	// set unique label for each node
+	index z = G.upperNodeIdBound();
+	Partition labels(z);
+	labels.allToSingletons();
+	// TODO: make (call to) allToSingletons faster
+//	G.parallelForNodes([&](node v) {
+//		labels[v] = v;
+//	});
+//	labels.setUpperBound(z);
+
+	return runFromGiven(G, labels);
 }
 
 std::string PLP::toString() const {
@@ -133,3 +140,4 @@ count PLP::numberOfIterations() {
 }
 
 } /* namespace NetworKit */
+

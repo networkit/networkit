@@ -246,7 +246,6 @@ TEST_P(GraphGTest, testToString) {
 	ASSERT_TRUE(G2.toString() != "");
 }
 
-
 /** NODE MODIFIERS **/
 
 TEST_P(GraphGTest, testAddNode) {
@@ -705,6 +704,14 @@ TEST_P(GraphGTest, testIsEmpty) {
 	G2.removeNode(G2.randomNode());
 	ASSERT_TRUE(G1.isEmpty());
 	ASSERT_TRUE(G2.isEmpty());
+}
+
+TEST_P(GraphGTest, testMultiEdgeDetection) {
+	Graph G1 = createGraph(2);
+	G1.addEdge(0,1);
+	ASSERT_TRUE(G1.consistencyCheck());
+	G1.addEdge(0,1);
+	ASSERT_FALSE(G1.consistencyCheck());
 }
 
 TEST_P(GraphGTest, testNumberOfNodes) {

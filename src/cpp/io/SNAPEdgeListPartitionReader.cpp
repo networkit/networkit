@@ -13,15 +13,6 @@
 
 namespace NetworKit {
 
-SNAPEdgeListPartitionReader::SNAPEdgeListPartitionReader() {
-	// TODO Auto-generated constructor stub
-
-}
-
-SNAPEdgeListPartitionReader::~SNAPEdgeListPartitionReader() {
-	// TODO Auto-generated destructor stub
-}
-
 Cover SNAPEdgeListPartitionReader::read(std::string path, std::unordered_map<node,node>& mapNodeIds, Graph& G) {
 	std::ifstream file;
 	std::string line; // the current line

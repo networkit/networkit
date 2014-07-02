@@ -8,17 +8,10 @@
 #ifndef METISPARSER_H_
 #define METISPARSER_H_
 
-#include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
-#include <sstream>
-#include <utility>
-#include <stdexcept>
 #include <tuple>
-
-#include "../auxiliary/Log.h"
-
 
 namespace NetworKit {
 
@@ -27,6 +20,7 @@ typedef index node;
 typedef uint64_t count;
 
 /**
+ * @ingroup io
  * Parser for the METIS file format.
  */
 class METISParser {
@@ -37,7 +31,11 @@ protected:
 
 
 public:
-
+	/**
+	 * Constructor for the METIS Parser.
+	 *
+	 * @param[in]	path	file path 
+	 */
 	METISParser(std::string path);
 
 	virtual ~METISParser();
@@ -46,7 +44,7 @@ public:
 	/**
 	 * Get the METIS graph file header
 	 */
-	std::tuple<count, count, index> getHeader();
+	std::tuple<count, count, index, count> getHeader();
 
 	/**
 	 * Test if graph file has a next line.
@@ -55,10 +53,17 @@ public:
 
 	/**
 	 * Get adjacencies from the next line in the METIS graph file.
+	 *
+	 * @param[in]	ignoreFirst	number of values to ignore [in case the METIS file contains node weightes]
 	 */
-	std::vector<node> getNext();
+	std::vector<node> getNext(count ignoreFirst = 0);
 
-	std::vector<std::pair<node,double>> getNextWithWeights();
+	/**
+	 * Get adjacencies with edge weights from the next line in the METIS graph file.
+	 *
+	 * @param[in]	ignoreFirst	number of values to ignore [in case the METIS file contains node weightes]
+	 */
+	std::vector<std::pair<node,double>> getNextWithWeights(count ignoreFirst = 0);
 
 };
 } /* namespace NetworKit */

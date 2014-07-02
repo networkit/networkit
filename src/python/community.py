@@ -44,6 +44,13 @@ def inspectCommunities(zeta, G):
 	print(tabulate.tabulate(commProps))
 
 
+def communityGraph(G, zeta):
+	""" Create a community graph, i.e. a graph in which one node represents a community and an edge represents the edges between communities, from a given graph and a community detection solution"""
+	cg = CommunityGraph()
+	cg.run(G, zeta)
+	return cg.getGraph()
+
+
 def evalCommunityDetection(algo, G):
 	""" Evaluate a community detection algorithm """
 

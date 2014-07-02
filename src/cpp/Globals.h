@@ -9,6 +9,7 @@
 #define GLOBALS_H_
 
 #include <cstdint>
+#include <cmath>
 #include <limits>
 
 namespace NetworKit {
@@ -24,6 +25,8 @@ namespace NetworKit {
 	constexpr edgeweight defaultEdgeWeight = 1.0;
 	constexpr edgeweight nullWeight = 0.0;
 }
+
+constexpr double PI = 2.0*std::acos(0);
 
 extern bool PRINT_PROGRESS;
 extern bool RAND_ORDER;

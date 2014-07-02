@@ -18,6 +18,11 @@ namespace NetworKit {
 typedef uint64_t index; // more expressive name for an index into an array
 
 
+/**
+ * @ingroup graph
+ * The Coordinates class represents a vector of Points of elements of type @a T. The class has convenience
+ * functions to get the minimum and maximum coordinate.
+ */
 template<class T>
 class Coordinates {
 protected:
@@ -25,8 +30,6 @@ protected:
 
 
 public:
-	Coordinates() {}
-
 	/**
 	 * Allocates space for @a numNodes entries.
 	 */
