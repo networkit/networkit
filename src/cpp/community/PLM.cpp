@@ -29,6 +29,7 @@ Partition PLM::run(const Graph& G) {
 	std::vector<bool> active(z); // record if node must be processed
 	active.assign(z, true);
 
+    std::vector<bool> satellitesV(z, false); //$$$$
 
 	// DEBUG
 	count modGainCalled = 0;
@@ -36,19 +37,33 @@ Partition PLM::run(const Graph& G) {
 
 	// init communities to singletons
 	Partition zeta(z);
+    // init graph-dependent temporaries
+	std::vector<double> volNode(z, 0.0);
+    
 	G.forNodes([&](node v) {
 		zeta.toSingleton(v);
 
 		// SATELLITE FOLLOWING: initially deactivate satellies
-		if (G.degree(v) == 1) {
+		if (G.degree(v) == 1) {     //$$$$updating satellite vector, deactivate satellites
 			active[v] = false;
-		} // TODO: parallel
+            satellitesV[v] = true;
+            
+            //$$$$ loop through neighbors, adding weights of satellites,
+            G.forWeightedNeighborsOf(v, [&](node p, edgeweight weight) {
+                volNode[p] += (2 * weight);
+                
+            });
+		}
+        // TODO: parallel
+        
+        if (G.degree(v) == 0) {     //$$$$ deactivate isolated nodes
+			active[v] = false;
+		}
 
 	});
 	index o = zeta.upperBound();
 
-	// init graph-dependent temporaries
-	std::vector<double> volNode(z, 0.0);
+	
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();
 	DEBUG("total edge weight: " , total);
@@ -57,8 +72,8 @@ Partition PLM::run(const Graph& G) {
 	G.parallelForNodes([&](node u) { // calculate and store volume of each node
 		volNode[u] += G.weightedDegree(u);
 		volNode[u] += G.weight(u, u); // consider self-loop twice
-		TRACE("init volNode[" , u , "] to " , volNode[u]);
-	});
+       
+    });
 
 	// init community-dependent temporaries
 	std::vector<double> volCommunity(o, 0.0);
@@ -80,12 +95,22 @@ Partition PLM::run(const Graph& G) {
 			// collect edge weight to neighbor clusters
 			std::map<index, edgeweight> affinity;
 			G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
-				if (u != v) {
+				if (u != v && !satellitesV[v]) {
 					index C = zeta[v];
 					affinity[C] += weight;
 				}
 			});
-
+            
+            //$$$$$ core nodes
+            if (affinity.size() < 2) {
+                active[u] = false;
+                //$$$$ optional: return only if it is in the same community as all of its neighbors; in that case, the work that follows is unnecessary for such nodes
+                //if (zeta[u] == C) {
+                //    return;
+                //}
+                
+            }
+            
 
 			// sub-functions
 
@@ -119,28 +144,26 @@ Partition PLM::run(const Graph& G) {
 			C = zeta[u];
 
 			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
-			bool core = true;
+			//bool core = true;
 			G.forNeighborsOf(u, [&](node v) {
 				D = zeta[v];
-				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
+                //$$$$ check if neighbor is non-satellite
+				if (D != C && !satellitesV[v]) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 					double delta = modGain(u, C, D);
 					// DEBUG
-					#pragma omp atomic update
-					modGainCalled += 1;
+					//#pragma omp atomic update
+					//∉ += 1;
 					// DEBUG
 					TRACE("mod gain: " , delta);
 					if (delta > deltaBest) {
 						deltaBest = delta;
 						best = D;
 					}
-					core = false;
+                    //$$$ delete code with core, not needed?
+					//core = false;
 				}
 			});
 
-			// CORE NODE DEACTIVATION: deactivate core node
-			// if (core) {
-			// 	active[u] = false;
-			// }
 
 			TRACE("deltaBest=" , deltaBest);
 			if (deltaBest > 0) { // if modularity improvement possible
@@ -164,12 +187,15 @@ Partition PLM::run(const Graph& G) {
 				TRACE("node " , u , " not moved");
 			}
 
-			// CORE NODE DEACTIVATION: when u changes community, activate all neighbors
-			// if (moved) {
-			// 	G.forNeighborsOf(u, [&](node v){
-			// 		active[v] = true;
-			// 	});
-			// }
+			//$$$$ CORE NODE ACTIVATION: when u changes community, activate all neighbors
+			if (moved) {
+                G.forNeighborsOf(u, [&](node v){
+                    if (!satellitesV[v]){
+                        active[v] = true;
+                    }
+			 	});
+            }
+            
 		} else {
 			TRACE("node ", u, "inactive");
 		}
@@ -212,6 +238,16 @@ Partition PLM::run(const Graph& G) {
 
 		} while (moved && (iter <= maxIter));
 		DEBUG("iterations in move phase: ", iter);
+        
+        //$$$$ change community of satellite nodes
+        G.parallelForNodes([&](node v) {
+            if (satellitesV[v]) {
+                G.forNeighborsOf(v, [&](node n) { //this is run only once since v is a satellite node
+                    zeta[v] = zeta[n];
+                });
+        
+            }
+        });
 	};
 
 	// first move phase
