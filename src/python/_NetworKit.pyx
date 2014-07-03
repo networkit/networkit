@@ -1829,6 +1829,7 @@ cdef extern from "../cpp/community/PLP.h":
 		_PLP() except +
 		_PLP(count updateThreshold) except +
 		_Partition run(_Graph _G) except +
+		_Partition runFromGiven(_Graph _G, _Partition _part) except +
 		count numberOfIterations() except +
 		string toString() except +
 
@@ -1862,6 +1863,25 @@ cdef class PLP(CommunityDetector):
 		----------
 		G : Graph
 			input graph
+
+	 	Returns
+	 	-------
+	 	Partition
+	 		The created clustering.
+		"""
+		return Partition().setThis(self._this.run(dereference(G._this)))
+
+	def runFromGiven(self, Graph G not None, Partition part not None):
+		""" Run the label propagation clustering algorithm starting
+		from the Partition part.
+		
+		Parameters
+		----------
+		G : Graph
+			input graph
+			
+		part : Partition
+			input partition
 
 	 	Returns
 	 	-------

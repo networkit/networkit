@@ -106,9 +106,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters)
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect";
-
 }
-
 
 TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	int64_t n = 100;
