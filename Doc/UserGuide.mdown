@@ -61,17 +61,17 @@ To work with the raw list of nodes or edges, call `G.nodes()` and `G.edges()` re
 
 As a first example of a network analysis kernel, we determine the connected components of the graph by issuing the following commands:
 
-	In [22]: cc = properties.ConnectedComponents()
+	In [22]: cc = properties.ConnectedComponents(G)
 
-	In [23]: cc.run(G)
+	In [23]: cc.run()
 
 The `cc` object has now performed the calculation and results can be requested through different method calls.
 
 	In [24]: cc.numberOfComponents()
 	Out[24]: 1
 
-	In [25]: cc.sizeOfComponent(0)
-	Out[25]: 10680
+	In [25]: cc.getComponentSizes()
+	Out[25]: {1: 10680}
 
 Not surprisingly, `PGPgiantcompo` has a single connected component containing all nodes.
 
@@ -84,12 +84,12 @@ NetworKit contains several algorithms for parallel community detection, containe
 
 Computation will not take long for a relatively small network like `PGPgiantcompo`. The resulting partition is stored in the variable `zeta`, which internally stores a mapping from node index to community index. It also provides useful methods:
 
-	In [27]: zeta.numberOfClusters()
+	In [27]: zeta.numberOfSubsets()
 	Out[27]: 90
 
 We see that 90 communities have been found. Let's examine their sizes:
 
-	In [30]: zeta.clusterSizes()
+	In [30]: zeta.subsetSizes()
 	Out[30]: [215, 355, 171, 563, 385, 235, 275, 137, 17, 691,
 	 	360, 20, 482, 295, 99, 353, 121, 140, 262, 185, 212, 40, 368,
 		82, 85, 78, 356, 16, 364, 772, 271, 31, 64, 77, 313, 333,
@@ -100,7 +100,7 @@ We see that 90 communities have been found. Let's examine their sizes:
 
 It becomes clear that the communities are quite unevenly sized. We can also ask for the community of a specific node:
 
-	In [14]: zeta.clusterOf(42)
+	In [14]: zeta.subsetOf(42)
 	Out[14]: 10
 
 	In [15]: zeta.getMembers(10)
@@ -166,14 +166,14 @@ This opens up a wide range of possibilities which are not yet or will never be i
 
 Let us now inspect more basic properties of the graph. The functions for this are mostly located in the `properties` module (though module structure is subject to change). For example, this function gives us a tuple containing the number of nodes and the number of edges:
 
-	In [7]: properties.nm(G)
+	In [7]: properties.size(G)
 	Out[7]: (10680, 24316)
 
 
-To see the most important features of a network at a glance, try the function `properties.showProperties`. It prints a tabular overview (and can also display histograms on the terminal). For example, this is what it tells us about `PGPgiantcompo`:
+To see the most important features of a network at a glance, try the function `properties.overview`. It prints a tabular overview (and can also display histograms on the terminal). For example, this is what it tells us about `PGPgiantcompo`:
 
 
-	In [11]: properties.showProperties(G)
+	In [11]: properties.overview(G)
 
 		Network Properties
 		==================
@@ -211,7 +211,7 @@ To see the most important features of a network at a glance, try the function `p
 		                                   modularity   0.872310
 		---------------------------------  -----------  --------
 
-Some properties have not been calculated because they would take too much time. For some features, it is currently still necessary to convert the graph to NetworkX. The `showProperties` function is work in progress and will be continually improved.
+Some properties have not been calculated because they would take too much time. For some features, it is currently still necessary to convert the graph to NetworkX. The `overview` function is work in progress and will be continually improved.
 
 ## Settings
 
@@ -219,7 +219,7 @@ Some properties have not been calculated because they would take too much time. 
 
 The C++ kernel of NetworKit provides basic logging functionality and can output text to the terminal. The amount of detail is controlled by the current log level, which is one of `TRACE`, `DEBUG`, `INFO`, `WARN`, and `ERROR`. By default, the log level is `ERROR`. You can set the log level at runtime and do this from the Python shell:
 
-	>>> NetworKit.setLoglevel("DEBUG")
-	>>> NetworKit.currentLogLevel()
+	>>> [NetworKit.]setLoglevel("DEBUG")
+	>>> [NetworKit.]getLogLevel()
 		'DEBUG'
 
