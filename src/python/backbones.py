@@ -1,7 +1,5 @@
 from _NetworKit import SimmelianBackbone, MultiscaleBackbone
 
-import pygephi
-
 def writeCsv(file, G, B):	
 	f = open(file, "w+")
 	f.write("Source,Target,Type,{0}\n".format("Backbone"))
