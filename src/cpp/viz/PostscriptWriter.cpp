@@ -30,10 +30,6 @@ PostscriptWriter::PostscriptWriter(bool isTorus) : wrapAround(isTorus) {
 	ps_size = {1020.0, 1020.0};
 }
 
-PostscriptWriter::~PostscriptWriter() {
-
-}
-
 void PostscriptWriter::writeHeader(std::ofstream& file) {
 	/* Header */
 	if (wrapAround) {

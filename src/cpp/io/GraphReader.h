@@ -15,6 +15,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup io
  * Abstract base class for graph readers.
  */
 class GraphReader {

@@ -6,6 +6,7 @@
  */
 
 #include "Partition.h"
+#include <atomic>
 
 namespace NetworKit {
 
@@ -38,6 +39,9 @@ void Partition::toSingleton(index e) {
 	data[e] = newSubsetId();
 }
 
+// TODO: Discuss why this needs to be this modular,
+// why not simply assign 0 to z-1 in parallel
+// and set upper bound accordingly?
 void Partition::allToSingletons() {
 	for (index e = 0; e < this->z; ++e) {
 		toSingleton(e);
@@ -88,10 +92,10 @@ void Partition::remove(index e) {
 
 count Partition::numberOfSubsets() const {
 	auto n = upperBound();
-	std::vector<int> exists(n, 0); // a boolean vector would not be thread-safe
+	std::vector<std::atomic<bool>> exists(n); // a boolean vector would not be thread-safe
 	this->parallelForEntries([&](index e, index s) {
 		if (s != none) {
-			exists[s] = 1;
+			exists[s] = true;
 		}
 	});
 	count k = 0; // number of actually existing clusters
@@ -183,8 +187,9 @@ std::vector<index> Partition::getVector() {
 
 
 std::set<std::set<index> > Partition::getSubsets() {
-	std::vector<std::set<index> > table(omega);
+	std::vector<std::set<index> > table(omega+1);
 	this->forEntries([&](index e, index s){
+		assert(s <= omega);
 		table[s].insert(e);
 	});
 

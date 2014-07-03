@@ -21,10 +21,12 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup generators
+ */
 class DynamicDGSParser: public NetworKit::DynamicGraphSource {
 public:
 	DynamicDGSParser(std::string path);
-	virtual ~DynamicDGSParser();
 
 	/**
 	 * The generator may expect the graph to be in a certain initial state. Call this method first.

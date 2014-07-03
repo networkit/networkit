@@ -18,7 +18,7 @@ Parameters::~Parameters() {
 	// TODO Auto-generated destructor stub
 }
 
-void Parameters::setInt(std::string key, int64_t value) {
+void Parameters::setInt(std::string key, std::int64_t value) {
 	intMap.insert(std::make_pair(key, value));
 }
 
@@ -34,7 +34,7 @@ void Parameters::setBool(std::string key, bool value) {
 	boolMap.insert(std::make_pair(key, value));
 }
 
-int64_t Parameters::getInt(std::string key) const {
+std::int64_t Parameters::getInt(std::string key) const {
 	return intMap.find(key)->second;
 }
 

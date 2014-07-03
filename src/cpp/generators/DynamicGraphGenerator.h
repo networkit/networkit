@@ -14,15 +14,14 @@
 namespace NetworKit {
 
 /**
+ * @ingroup generators
  * Abstract base class for a dynamic graph generator (in the new dynamic architecture).
  * The generator produces a stream of events.
  */
 class DynamicGraphGenerator {
 
 public:
-
-	DynamicGraphGenerator() = default;
-
+	/** Default destructor */
 	virtual ~DynamicGraphGenerator() = default;
 
 	/**

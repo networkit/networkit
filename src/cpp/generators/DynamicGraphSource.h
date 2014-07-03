@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup generators
+ */
 class DynamicGraphSource {
 
 protected:
@@ -25,6 +28,7 @@ protected:
 
 public:
 
+	/** Default constructor */
 	 DynamicGraphSource();
 
 	// DynamicGraphGenerator(GraphEventProxy& proxy);
@@ -69,7 +73,7 @@ public:
 	virtual void generateEdges(count m);
 
 	/**
-	 * Continute generating until the number of time steps reaches this upper limit.
+	 * Continue generating until the number of time steps reaches this upper limit.
 	 */
 	virtual void generateTimeSteps(count t);
 };

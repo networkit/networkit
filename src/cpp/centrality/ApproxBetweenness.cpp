@@ -21,7 +21,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta) : Centrality(G, true), epsilon(epsilon), delta(delta) {
+ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta, count diameterSamples) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples) {
 
 }
 
@@ -32,14 +32,21 @@ void ApproxBetweenness::run() {
 
 	double c = 0.5; // universal positive constant - see reference in paper
 
-	/**
-	 * This is an optimization which deviates from the original algorithm.
-	 * Instead of getting an estimate for each of possibly thousands of connected component and taking the maximum,
-	 * we sample the graph and take the maximum diameter found.
-	 */
-	INFO("estimating vertex diameter");
-	count samples = 42;
-	edgeweight vd = Diameter::estimatedVertexDiameter(G, samples);
+
+	edgeweight vd = 0;
+	if (diameterSamples == 0) {
+		INFO("estimating vertex diameter pedantically");
+		vd = Diameter::estimatedVertexDiameterPedantic(G);
+	} else {
+		/**
+		* This is an optimization which deviates from the original algorithm.
+		* Instead of getting an estimate for each of possibly thousands of connected component and taking the maximum,
+		* we sample the graph and take the maximum diameter found. This has a high chance of  hitting the component with the maximum vertex diameter.
+		*/
+		INFO("estimating vertex diameter roughly");
+		vd = Diameter::estimatedVertexDiameter(G, diameterSamples);
+	}
+
 	INFO("estimated diameter: ", vd);
 	r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
 
@@ -72,7 +79,7 @@ void ApproxBetweenness::run() {
 			sssp.reset(new BFS(G, u));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
-		sssp->run();
+		sssp->run(); // TODO: this can be optimized by stopping the search once the target node has been reached
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update

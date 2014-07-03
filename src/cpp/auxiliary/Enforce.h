@@ -59,7 +59,7 @@ namespace Checkers {
 	 */
 	struct Enforcer {
 		static void enforce(bool b) {
-			enforce(b);
+			::Aux::enforce(b);
 		}
 	};
 	

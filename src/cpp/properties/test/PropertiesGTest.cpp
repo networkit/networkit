@@ -10,6 +10,8 @@
 #include "PropertiesGTest.h"
 #include "../Diameter.h"
 #include "../../auxiliary/Timer.h"
+#include "../../generators/ErdosRenyiGenerator.h"
+#include "../../auxiliary/Log.h"
 
 
 namespace NetworKit {
@@ -393,6 +395,14 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
        EXPECT_LE(testInstance.second, range.second);
    }
 }
+TEST_F(PropertiesGTest, testPedanticDiameterErdos) {
+	count n = 5000;
+	ErdosRenyiGenerator gen(n,0.001);
+	Graph G1 = gen.generate();
+	count diameter = Diameter::estimatedVertexDiameterPedantic(G1);
+	ASSERT_LE(diameter, n);
+}
+
 
 
 TEST_F(PropertiesGTest, testDegreeAssortativity) {

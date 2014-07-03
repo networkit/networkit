@@ -20,10 +20,6 @@ DynamicPubWebGenerator::DynamicPubWebGenerator(count numNodes,
 	G = initGen.generate();
 }
 
-DynamicPubWebGenerator::~DynamicPubWebGenerator() {
-
-}
-
 std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 	count numToDel = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
 	count numToIns = (count) (G.numberOfNodes() * 0.05); // TODO: externalize, possibly randomize
@@ -90,7 +86,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			if (clusterToIns < initGen.numDenseAreas) {
 				// real cluster, FIXME: DRY!
 				// compute random angle between [0, 2pi) and distance between [0, width/2]
-				float angle = Aux::Random::real() * 2.0 * M_PI;
+				float angle = Aux::Random::real() * 2.0 * PI;
 				float dist = Aux::Random::real()
 						* initGen.denseAreaXYR[clusterToIns].rad;
 

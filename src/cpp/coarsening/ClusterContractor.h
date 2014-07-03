@@ -14,6 +14,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup coarsening
+ */
 class ClusterContractor: public GraphCoarsening {
 
 public:

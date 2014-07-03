@@ -13,14 +13,14 @@
 namespace NetworKit {
 
 /**
+ * @ingroup generators
  * Abstract base class for static graph generators.
  */
 class StaticGraphGenerator {
 
 public:
 
-	StaticGraphGenerator();
-
+	/** Default destructor */
 	virtual ~StaticGraphGenerator();
 
 	virtual Graph generate() = 0;

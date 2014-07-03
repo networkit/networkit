@@ -15,6 +15,7 @@ namespace NetworKit {
 typedef index label; // a label is the same as a cluster id
 
 /**
+ * @ingroup community
  * Label propagation-based community detection algorithm which
  * processes nodes in increasing order of node degree.
  */
@@ -29,6 +30,8 @@ public:
 
 	/**
 	* Get number of iterations in last run.
+	*
+	* @return Number of iterations.
 	*/
 	virtual count numberOfIterations();
 

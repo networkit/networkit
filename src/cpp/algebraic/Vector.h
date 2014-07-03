@@ -19,6 +19,7 @@ namespace NetworKit {
 class Matrix;
 
 /**
+ * @ingroup algebraic
  * The Vector class represents a basic vector with double coefficients.
  */
 class Vector {

@@ -15,14 +15,13 @@ except ImportError:
 def nx2nk(nxG, weightAttr=None):
 	"""
 	Convert a networkx.Graph to a NetworKit.Graph
-		:param weightAttr: the edge attribute which should be treated as the edge weight
-	 """
+		:param weightAttr: the edge attribute which should be treated as the edge weight.
+	"""
 
 	# map networkx node ids to consecutive numerical node ids
 	idmap = dict((id, u) for (id, u) in zip(nxG.nodes(), range(nxG.number_of_nodes())))
 	z = max(idmap.values()) + 1
 	# print("z = {0}".format(z))
-
 
 	if weightAttr is not None:
 		nkG = graph.Graph(z, weighted=True)

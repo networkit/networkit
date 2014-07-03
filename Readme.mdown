@@ -207,6 +207,7 @@ Credits
 ### Contributors
 
 - Miriam Beddig
+- Elisabetta Bergamini
 - Stefan Bertsch
 - Pratistha Bhattarai
 - Andreas Bilke
@@ -214,6 +215,8 @@ Credits
 - Patrick Flick
 - Lukas Hartmann
 - Daniel Hoske
+- Gerd Lindner
+- Moritz v. Looz
 - Yassine Marrakchi
 - Klara Reichard
 - Marvin Ritter

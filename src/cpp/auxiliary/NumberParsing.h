@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <tuple>
 #include <limits>
 #include <stdexcept>
@@ -58,7 +59,7 @@ namespace Impl {
  *
  * Requirements: The range [it, end) must contain a valid number.
  *
- * @returns: A tuple of the parsed value and the iterator after parsing the number and dropping
+ * @return: A tuple of the parsed value and the iterator after parsing the number and dropping
  *           any surrounding whitespace.
  *
  */
@@ -190,7 +191,7 @@ std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, Re
 		mantissa += c - '0';
 		++it;
 		if (it == end) {
-			makeReturnValue();
+			return makeReturnValue();
 		}
 		c = *it;
 	}

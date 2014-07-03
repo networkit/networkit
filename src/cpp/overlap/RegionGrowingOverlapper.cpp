@@ -10,15 +10,6 @@
 
 namespace NetworKit {
 
-RegionGrowingOverlapper::RegionGrowingOverlapper() {
-	// TODO Auto-generated constructor stub
-
-}
-
-RegionGrowingOverlapper::~RegionGrowingOverlapper() {
-	// TODO Auto-generated destructor stub
-}
-
 Partition RegionGrowingOverlapper::run(Graph& G,
 		std::vector<Partition>& clusterings) {
 	// TODO: test
@@ -73,7 +64,7 @@ Partition RegionGrowingOverlapper::run(Graph& G,
 		// 	});
 		// >>>>>
 
-		// <<<<< new code 
+		// <<<<< new code
 		G.BFSfrom(r, [&](node u) {
 			unvisited.erase(u);
 			// check for all incident edges if u and v belong in the same core cluster

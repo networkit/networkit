@@ -14,6 +14,10 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup algebraic
+ * Normalized laplacian matrix of a Graph.
+ */
 class NormalizedLaplacianMatrix : public Matrix {
 public:
 	/**
