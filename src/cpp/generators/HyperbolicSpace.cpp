@@ -5,7 +5,6 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
-#include <cmath>
 #include <assert.h>
 
 #include "HyperbolicSpace.h"
@@ -77,5 +76,66 @@ double HyperbolicSpace::getDistancePrecached(double firstangle, double firstRcos
 	double result = acosh(firstRcosh*secondRcosh - firstRsinh*secondRsinh*cos(deltaAngle));
 	assert(result >= 0);
 	return result;
+}
+
+double HyperbolicSpace::cross(Point<double> a, Point<double> b) {
+	return a[0]*b[1] - a[1]*b[0];
+}
+
+Point<double> HyperbolicSpace::intersect(Point<double> q, Point<double> s, Point<double> p, Point<double> r) {
+	double nominator = cross(q-p, r);
+	double denominator = cross (r, s);
+	assert(denominator != 0); //otherwise would be parallel or colinear. Expect better.
+	double u = nominator / denominator;
+	return q + s.scale(u);
+}
+
+Point<double> HyperbolicSpace::circleCenter(Point<double> a, Point<double> b, Point<double> c) {
+	Point<double> mid1 = a+b;
+	Point<double> mid2 = b+c;
+	mid1.scale(0.5);
+	mid2.scale(0.5);
+	Point<double> r = orth(a-b);
+	return intersect(mid1, orth(a-b), mid2, orth(b-c));
+}
+
+Point<double> HyperbolicSpace::orth(Point<double> a) {
+	Point<double> result(a[1], a[0]);
+	return result;
+}
+
+Point<double> HyperbolicSpace::mirrorOnCircle(Point<double> a, Point<double> circleCenter,	double radius) {
+	double r0 = (a - circleCenter).length() ;
+	double r1 = radius * radius / r0;
+
+	return circleCenter + (a - circleCenter).scale(r1/r0);
+}
+
+double HyperbolicSpace::getHyperbolicDistance(Point<double> a, Point<double> b) {
+	double phi_1, r_1, phi_2, r_2;
+	cartesianToPolar(a, &phi_1, &r_1);
+	cartesianToPolar(b, &phi_2, &r_2);
+	return getDistance(phi_1, r_1, phi_2, r_2);
+}
+
+bool HyperbolicSpace::isBelowArc(Point<double> query, Point<double> a, Point<double> b, double radius) {
+	Point<double> origin(0,0);
+	Point<double> center = circleCenter(a, b, mirrorOnCircle(a, origin, radius));
+	assert(abs((center-a).length() - (center - b).length()) < 0.01);
+	return (center-query).length() > (center - a).length();
+}
+
+Point<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
+	return Point<double>(r*cos(phi), r*sin(phi));
+}
+
+void HyperbolicSpace::cartesianToPolar(Point<double> a, double * phi, double *r) {
+	*r = a.length();
+	if (*r == 0) *phi = 0;
+	else if (a[1] >= 0){
+		*phi = acos(a[0]/ *r);
+	} else {
+		*phi = -acos(a[0] / *r);
+	}
 }
 }

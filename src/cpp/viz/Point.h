@@ -29,6 +29,7 @@ typedef uint64_t count; // more expressive name for an integer quantity
 
 
 /**
+ * @ingroup viz
  * Points in any dimension of templated type.
  */
 template<class T>
@@ -52,6 +53,7 @@ public:
 	Point& scale(const T factor);
 
 	Point operator-(const Point<T>& other);
+	Point operator+(const Point<T>& other);
 
 	T length() const;
 	T squaredLength() const;
@@ -138,6 +140,16 @@ Point<T> Point<T>::operator-(const Point<T>& other) {
 	assert(result.data.size() == other.data.size());
 	for (index i = 0; i < result.data.size(); ++i) {
 		result.data[i] -= other.data[i];
+	}
+	return result;
+}
+
+template<class T>
+Point<T> Point<T>::operator+(const Point<T>& other) {
+	Point<T> result(*this);
+	assert(result.data.size() == other.data.size());
+	for (index i = 0; i < result.data.size(); ++i) {
+		result.data[i] += other.data[i];
 	}
 	return result;
 }

@@ -9,8 +9,11 @@
 #define HYPERBOLICSPACE_H_
 
 #include <vector>
+#include <cmath>
+#include "../viz/Point.h"
 
 using std::vector;
+using std::abs;
 
 namespace NetworKit {
 
@@ -23,6 +26,15 @@ public:
 	static double getDistance(double firstangle, double firstR, double secondangle, double secondR);//TODO: replace with coordinates
 	static double getDistancePrecached(double firstangle, double firstRcosh, double firstRsinh, double secondangle, double secondRcosh, double secondRsinh);
 	double getRadius();
+	static double cross(Point<double> a, Point<double> b);
+	static Point<double> intersect(Point<double> q, Point<double> s, Point<double> p, Point<double> r);
+	static Point<double> circleCenter(Point<double> a, Point<double> b, Point<double> c);
+	static Point<double> mirrorOnCircle(Point<double> a, Point<double> circleCenter, double radius);
+	static double getHyperbolicDistance(Point<double> a, Point<double> b);
+	static bool isBelowArc(Point<double> query, Point<double> a, Point<double> b, double radius);
+	static Point<double> polarToCartesian(double phi, double r);
+	static void cartesianToPolar(Point<double> a, double * phi, double *r);
+	static Point<double> orth(Point<double> a);
 
 
 private:
