@@ -377,7 +377,81 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_FALSE(G.hasMultiEdges());
+}
 
+/**
+ * 	static double cross(Point<double> a, Point<double> b);
+	static Point<double> intersect(Point<double> q, Point<double> s, Point<double> p, Point<double> r);
+	static Point<double> circleCenter(Point<double> a, Point<double> b, Point<double> c);
+	static Point<double> mirrorOnCircle(Point<double> a, Point<double> circleCenter, double radius);
+	static double getHyperbolicDistance(Point<double> a, Point<double> b);
+	static bool isBelowArc(Point<double> query, Point<double> a, Point<double> b, double radius);
+	static Point<double> polarToCartesian(double phi, double r);
+	static void cartesianToPolar(Point<double> a, double * phi, double *r);
+	static Point<double> orth(Point<double> a);
+ */
+
+TEST_F(GeneratorsGTest, testIntersect) {
+	Point<double> a(1,0);
+	Point<double> b(1,1);
+	Point<double> c(5,0);
+	Point<double> d(0,2);
+	Point<double> intersect = HyperbolicSpace::intersect(a, b, c, d);
+	EXPECT_EQ(5, intersect[0]);
+	EXPECT_EQ(4, intersect[1]);
+
+}
+
+TEST_F(GeneratorsGTest, testIntersectCircle) {
+	Point<double> a(-5,0);
+	Point<double> b(5,0);
+	Point<double> c(0,5);
+	Point<double> mid1 = (a+b).scale(0.5);
+	Point<double> mid2 = (b+c).scale(0.5);
+	EXPECT_EQ(0, mid1[0]);
+	EXPECT_EQ(0, mid1[1]);
+	EXPECT_EQ(2.5, mid2[0]);
+	EXPECT_EQ(2.5, mid2[1]);
+
+	Point<double> om1 = HyperbolicSpace::orth(a-b);
+	Point<double> om2 = HyperbolicSpace::orth(b-c);
+	EXPECT_EQ(0, om1[0]);
+	EXPECT_EQ(-10, om1[1]);
+	EXPECT_EQ(5, om2[0]);
+	EXPECT_EQ(5, om2[1]);
+	Point<double> intersect = HyperbolicSpace::intersect(mid1, om1, mid2, om2);
+
+	EXPECT_EQ(0, intersect[0]);
+	EXPECT_EQ(0, intersect[1]);
+
+	//TODO: test other cases
+}
+
+TEST_F(GeneratorsGTest, testMirrorOnCircle) {
+	Point<double> a(5,0);
+	Point<double> origin(0,0);
+	double radius = 6;
+	Point<double> image = HyperbolicSpace::mirrorOnCircle(a, origin, radius);
+	EXPECT_EQ(6*6/5, image[0]);
+	EXPECT_EQ(0, image[1]);
+}
+
+TEST_F(GeneratorsGTest, testCircleCenter) {
+	Point<double> a(-5,0);
+	Point<double> b(5,0);
+	Point<double> c(0,5);
+	Point<double> center = HyperbolicSpace::circleCenter(a, b, c);
+	EXPECT_EQ(0, center[0]);
+	EXPECT_EQ(0, center[1]);
+}
+
+TEST_F(GeneratorsGTest, testConversion) {
+	Point<double> a(6,7);
+	double angle, radius;
+	HyperbolicSpace::cartesianToPolar(a, &angle, &radius);
+	Point<double> back = HyperbolicSpace::polarToCartesian(angle, radius);
+	EXPECT_EQ(a[0], back[0]);
+	EXPECT_EQ(a[1], back[1]);
 }
 
 } /* namespace NetworKit */

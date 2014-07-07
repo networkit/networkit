@@ -7,8 +7,10 @@
 
 #include <assert.h>
 
+
 #include "HyperbolicSpace.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
 
 using std::abs;
 
@@ -85,6 +87,9 @@ double HyperbolicSpace::cross(Point<double> a, Point<double> b) {
 Point<double> HyperbolicSpace::intersect(Point<double> q, Point<double> s, Point<double> p, Point<double> r) {
 	double nominator = cross(q-p, r);
 	double denominator = cross (r, s);
+	if (denominator == 0) {
+		DEBUG("(", r[0], ",", r[1], ") and (", s[0], ",", s[1], ") are colinear or parallel.");
+	}
 	assert(denominator != 0); //otherwise would be parallel or colinear. Expect better.
 	double u = nominator / denominator;
 	return q + s.scale(u);
@@ -95,17 +100,25 @@ Point<double> HyperbolicSpace::circleCenter(Point<double> a, Point<double> b, Po
 	Point<double> mid2 = b+c;
 	mid1.scale(0.5);
 	mid2.scale(0.5);
-	Point<double> r = orth(a-b);
+	assert(mid1[0] * 2 == a[0] + b[0]);
+	assert(mid1[1] * 2 == a[1] + b[1]);
+	/**
+	 * well, actually this shouldn't happen. If the three points I'm given are in fact only two points,
+	 * infinitely many possible circle centers exist.
+	 */
+	if (a.distance(b) == 0) return mid2;
+	if (b.distance(c) == 0) return mid1;
+	if (a.distance(c) == 0) return mid1;
 	return intersect(mid1, orth(a-b), mid2, orth(b-c));
 }
 
 Point<double> HyperbolicSpace::orth(Point<double> a) {
-	Point<double> result(a[1], a[0]);
+	Point<double> result(-a[1], a[0]);
 	return result;
 }
 
 Point<double> HyperbolicSpace::mirrorOnCircle(Point<double> a, Point<double> circleCenter,	double radius) {
-	double r0 = (a - circleCenter).length() ;
+	double r0 = a.distance(circleCenter);
 	double r1 = radius * radius / r0;
 
 	return circleCenter + (a - circleCenter).scale(r1/r0);
