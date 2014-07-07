@@ -84,6 +84,25 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 				DEBUG("dist(", comparison, ", leftMax)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMaxR()));
 				DEBUG("dist(", comparison, ", rightMin)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMinR()));
 				DEBUG("dist(", comparison, ", rightMax)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMaxR()));
+				DEBUG("\drawsetup{", responsibleNode.getLeftAngle(), "}{", responsibleNode.getMaxR(), "}{", responsibleNode.getRightAngle(), "}{", responsibleNode.getMaxR(), "}{", R, "}");
+				Point<double> origin;
+				Point<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
+				Point<double> witness = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+				Point<double> shadowImage = HyperbolicSpace::mirrorOnCircle(witness, origin, R);
+				Point<double> circleCenter = HyperbolicSpace::circleCenter(query, witness, shadowImage);
+				Point<double> upperLeft = HyperbolicSpace::polarToCartesian(responsibleNode.getLeftAngle(), responsibleNode.getMaxR());
+				Point<double> upperRight = HyperbolicSpace::polarToCartesian(responsibleNode.getRightAngle(), responsibleNode.getMaxR());
+				if (HyperbolicSpace::isBelowArc(query, upperLeft, upperRight, R)) {
+					DEBUG("Witness point is below connecting arc.");
+				} else {
+					DEBUG("Witness point is above connecting arc.");
+				}
+				double centerangle, centerradius;
+				double shadowangle, shadowradius;
+				HyperbolicSpace::cartesianToPolar(circleCenter, &centerangle, &centerradius);
+				HyperbolicSpace::cartesianToPolar(shadowImage, &shadowangle, &shadowradius);
+				DEBUG("\drawwitness{", angles[comparison], "}{", radii[comparison], "}{", angles[i], "}{", radii[i], "}{", shadowangle, "}{", shadowradius, "}{", centerangle, "}{", centerradius, "}{",
+						circleCenter.distance(query), "}");
 			}
 		}
 	}

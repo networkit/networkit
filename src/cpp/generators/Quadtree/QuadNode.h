@@ -72,6 +72,7 @@ public:
 				 */
 				double rSpace = exp(maxR - minR);
 				double middleR = log(rSpace/2) + minR;
+
 				QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion);
 				QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion);
 				QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion);
@@ -150,6 +151,7 @@ public:
 	}
 
 	bool responsible(double angle, double R) {
+
 		return (angle >= leftAngle && angle < rightAngle && R >= minR && R < maxR);
 	}
 
@@ -235,9 +237,13 @@ private:
 	double leftAngle;
 	double rightAngle;
 	double minR;
+	double posMinCircleCenter;
+	double minCircleRadius;
 	double coshMinR;
 	double sinhMinR;
 	double maxR;
+	double posMaxCircleCenter;
+	double maxCircleRadius;
 	double coshMaxR;
 	double sinhMaxR;
 	unsigned capacity;
