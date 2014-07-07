@@ -9,13 +9,7 @@
 
 namespace NetworKit {
 
-NodeStructuralRandMeasure::NodeStructuralRandMeasure() {
-	// TODO Auto-generated constructor stub
-
-}
-
 NodeStructuralRandMeasure::~NodeStructuralRandMeasure() {
-	// TODO Auto-generated destructor stub
 }
 
 double NodeStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, Partition& second) {

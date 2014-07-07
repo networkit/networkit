@@ -13,7 +13,9 @@
 namespace NetworKit {
 
 
-
+/**
+ * @ingroup dynamics
+ */
 class GraphEvent {
 
 

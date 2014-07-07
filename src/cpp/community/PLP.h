@@ -14,13 +14,13 @@
 namespace NetworKit {
 
 /**
- *     As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering
-        Raghavan et al. proposed a label propagation algorithm for graph clustering.
-        This algorithm initializes every vertex of a graph with a unique label. Then, in iterative
-        sweeps over the set of vertices the vertex labels are updated. A vertex gets the label
-        that the maximum number of its neighbors have. The procedure is stopped when every vertex
-        has the label that at least half of its neighbors have.
- *
+ * @ingroup community
+ * As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering
+ * Raghavan et al. proposed a label propagation algorithm for graph clustering.
+ * This algorithm initializes every vertex of a graph with a unique label. Then, in iterative
+ * sweeps over the set of vertices the vertex labels are updated. A vertex gets the label
+ * that the maximum number of its neighbors have. The procedure is stopped when every vertex
+ * has the label that at least half of its neighbors have.
  *
  */
 class PLP: public NetworKit::CommunityDetectionAlgorithm {
@@ -37,8 +37,6 @@ public:
 
 	PLP(count theta = none);
 
-	virtual ~PLP();
-
 	/**
 	 * Run the label propagation clustering algorithm.
 	 *
@@ -48,7 +46,17 @@ public:
 	virtual Partition run(Graph& G);
 
 	/**
-	 * @return string representation of algorithm and parameters.
+	 * Run the label propagation clustering algorithm, cluster
+	 * initialization with @a part.
+	 *
+	 * @param[in]	G	input graph
+	 * @param[in]	part input partition
+	 * @return			clustering
+	 */
+	virtual Partition& runFromGiven(Graph& G, Partition& part);
+
+	/**
+	 * @return String representation of algorithm and parameters.
 	 */
 	virtual std::string toString() const;
 
@@ -57,11 +65,14 @@ public:
 	 * The algorithm runs until a number of nodes less than
 	 * the threshold is updated.
 	 *
-	 */
+	 * @param th The threshold.
+	*/
 	virtual void setUpdateThreshold(count th);
 
 	/**
 	* Get number of iterations in last run.
+	*
+	* @return The number of iterations.
 	*/
 	virtual count numberOfIterations();
 

@@ -9,13 +9,7 @@
 
 namespace NetworKit {
 
-GraphEventSource::GraphEventSource() {
-	// TODO Auto-generated constructor stub
-
-}
-
 GraphEventSource::~GraphEventSource() {
-	// TODO Auto-generated destructor stub
 }
 
 } /* namespace NetworKit */

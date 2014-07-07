@@ -5,10 +5,12 @@
  *      Author: hm
  */
 
-#include "Betweenness.h"
-#include "../auxiliary/PrioQueue.h"
 #include <stack>
 #include <queue>
+
+#include "Betweenness.h"
+#include "../auxiliary/PrioQueue.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -23,6 +25,7 @@ void Betweenness::run(bool runUnweightedInParallel) {
 	scoreData.resize(z);
 
 	// TODO: reduce code duplication; not entirely avoidable due to different data types
+
 	if (G.isWeighted()) {
 		// TODO: optimization - degree-1 nodes
 		static const edgeweight INF = numeric_limits<edgeweight>::max();

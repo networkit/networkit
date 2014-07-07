@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup centrality
  * Compute PageRank as node centrality measure.
  */
 class PageRank: public NetworKit::Centrality {
@@ -22,11 +23,13 @@ protected:
 
 public:
 	/**
+	 * Constructs the PageRank class for the Graph @a G
+	 *
 	 * @param[in] G Graph to be processed.
 	 * @param[in] damp Damping factor of the PageRank algorithm.
 	 * @param[in] tol Error tolerance for PageRank iteration.
 	 */
-	PageRank(Graph& G, double damp, double tol = 1e-9);
+	PageRank(const Graph& G, double damp, double tol = 1e-9);
 
 	virtual void run();
 };

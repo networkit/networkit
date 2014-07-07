@@ -7,7 +7,7 @@
 
 #include "DGSStreamParser.h"
 #include "../auxiliary/StringTools.h"
-
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

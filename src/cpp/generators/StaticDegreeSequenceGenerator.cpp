@@ -6,6 +6,7 @@
  */
 
 #include "StaticDegreeSequenceGenerator.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -14,11 +15,6 @@ StaticDegreeSequenceGenerator::StaticDegreeSequenceGenerator(const std::vector<u
 {
 
 }
-
-StaticDegreeSequenceGenerator::~StaticDegreeSequenceGenerator() {
-
-}
-
 
 bool StaticDegreeSequenceGenerator::getRealizable() const {
 	return realizable;

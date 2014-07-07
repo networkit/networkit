@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include <set>
+
 #include "ApproximatePageRank.h"
 
 namespace NetworKit {
@@ -38,10 +40,6 @@ void ApproximatePageRank::push(node u, node seed, std::set<node>& activeNodes)
 	}
 
 //	TRACE("normalizedResidual[", u, "]: ", normalizedResid[u]);
-}
-
-ApproximatePageRank::~ApproximatePageRank() {
-
 }
 
 std::vector<double> ApproximatePageRank::run(node seed) {

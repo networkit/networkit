@@ -8,20 +8,16 @@
 
 #include "ConnectedComponentsGTest.h"
 #include "../ConnectedComponents.h"
+#include "../ParallelConnectedComponents.h"
+#include "../StronglyConnectedComponents.h"
 #include "../GraphProperties.h"
 #include "../Diameter.h"
 #include "../../io/METISGraphReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 
-ConnectedComponentsGTest::ConnectedComponentsGTest() {
-
-}
-
-ConnectedComponentsGTest::~ConnectedComponentsGTest() {
-
-}
 
  TEST_F(ConnectedComponentsGTest, testConnectedComponentsTiny) {
  	// construct graph
@@ -53,7 +49,7 @@ ConnectedComponentsGTest::~ConnectedComponentsGTest() {
  	ccs.run();
 
  	// check result
- 	EXPECT_TRUE(ccs.numberOfComponents() == 5);
+ 	EXPECT_EQ(5, ccs.numberOfComponents());
  	EXPECT_TRUE(ccs.componentOfNode(0) == ccs.componentOfNode(19));
  	EXPECT_TRUE(ccs.componentOfNode(3) == ccs.componentOfNode(7));
  }
@@ -124,17 +120,17 @@ TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 	ConnectedComponents cc(G);
 	cc.run();
 	DEBUG("Number of components: ", cc.numberOfComponents());
-	EXPECT_EQ(1029, cc.numberOfComponents());
+	EXPECT_EQ(1029u, cc.numberOfComponents());
 }
 
-TEST_F(ConnectedComponentsGTest, tryParallelConnectedComponents) {
+TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 	METISGraphReader reader;
 	std::vector<std::string> graphs = {"astro-ph", "PGPgiantcompo",
 			"caidaRouterLevel", "celegans_metabolic", "hep-th", "jazz"};
 
 	for (auto graphName: graphs) {
 		Graph G = reader.read("input/" + graphName + ".graph");
-		ConnectedComponents cc(G);
+		ParallelConnectedComponents cc(G);
 		cc.runSequential();
 		count seqNum = cc.numberOfComponents();
 		cc.run();
@@ -151,7 +147,7 @@ TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
 	ConnectedComponents cc(G);
 	cc.run();
 	DEBUG("Number of components: ", cc.numberOfComponents());
-	EXPECT_EQ(1, cc.numberOfComponents());
+	EXPECT_EQ(1u, cc.numberOfComponents());
 }
 
 TEST_F(ConnectedComponentsGTest, benchHHConnectedComponents) {
@@ -193,7 +189,67 @@ TEST_F(ConnectedComponentsGTest, benchLiveJConnectedComponents) {
 }
 
 
+TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponents) {
+
+    auto comparePartitions = [](const Partition& p1, const Partition& p2) {
+    std::vector<index> partitionIdMap(p1.upperBound(), none);
+    ASSERT_EQ(p1.numberOfElements(), p2.numberOfElements());
+    ASSERT_EQ(p1.numberOfSubsets(), p2.numberOfSubsets());
+
+    p1.forEntries([&](node v, index p) {
+        if (partitionIdMap[p] == none) {
+            partitionIdMap[p] = p2.subsetOf(v);
+        }
+        index p_mapped = partitionIdMap[p];
+        ASSERT_EQ(p_mapped, p);
+    });
+    };
+
+
+    count n = 8;
+    count m = 14;
+    Graph G(n, false, true);
+
+    G.addEdge(0, 4);
+    G.addEdge(1, 0);
+    G.addEdge(2, 1);
+    G.addEdge(2, 3);
+    G.addEdge(3, 2);
+    G.addEdge(4, 1);
+    G.addEdge(5, 1);
+    G.addEdge(5, 4);
+    G.addEdge(5, 6);
+    G.addEdge(6, 2);
+    G.addEdge(6, 5);
+    G.addEdge(7, 3);
+    G.addEdge(7, 6);
+    G.addEdge(7, 7);
+
+    ASSERT_EQ(n, G.numberOfNodes());
+    ASSERT_EQ(m, G.numberOfEdges());
+
+    count z = G.upperNodeIdBound();
+    Partition p_expected(z);
+    p_expected.allToSingletons();
+    p_expected[0] = 0;
+    p_expected[1] = 0;
+    p_expected[2] = 1;
+    p_expected[3] = 1;
+    p_expected[4] = 0;
+    p_expected[5] = 2;
+    p_expected[6] = 2;
+    p_expected[7] = 3;
+    p_expected.compact();
+
+    StronglyConnectedComponents scc(G);
+    scc.run();
+    Partition p_actual = scc.getPartition();
+    p_actual.compact();
+
+    comparePartitions(p_expected, p_actual);
+}
+
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
-

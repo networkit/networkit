@@ -5,6 +5,8 @@
  *      Author: Daniel Hoske, Christian Staudt
  */
 
+#include <numeric>
+
 #include "Diameter.h"
 #include "Eccentricity.h"
 #include "../graph/BFS.h"
@@ -60,7 +62,7 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& G, double error) {
 	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
 	/* Note: the function Graph::breadthFirstEdgesFrom that should
-	 do the same has not been implemented! 
+	 do the same has not been implemented!
 		-- TODO: Then why not implement it directly there?
 	 */
 	auto bfs_edges = [&] (const Graph& G, node u, std::function<void(node, node)> f) -> node {
@@ -144,6 +146,8 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
+	// TODO: consider weights
+
 	auto estimateFrom = [&](node v) -> count {
 		BFS bfs(G, v);
 		bfs.run();
@@ -159,7 +163,8 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 			}
 		}
 
-		edgeweight vd = maxD + maxD2;
+		edgeweight dMax = maxD + maxD2;
+		count vd = (count) dMax + 1; 	// count the nodes, not the edges
 		return vd;
 	};
 
@@ -169,7 +174,7 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 		node u = G.randomNode();
 		edgeweight vd = estimateFrom(u);
 		DEBUG("sampled vertex diameter from node ", u, ": ", vd);
-		#pragma omp critical 
+		#pragma omp critical
 		{
 			if (vd > vdMax) {
 				vdMax = vd;
@@ -201,7 +206,8 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 			}
 		}
 
-		count vd = maxD + maxD2;
+		edgeweight dMax = maxD + maxD2;
+		count vd = (count) dMax + 1; 	// count the nodes, not the edges
 		return vd;
 	};
 
@@ -214,12 +220,13 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 		for (auto component : cc.getPartition().getSubsets()) {
 			components.push_back(component);
 		}
-
+		DEBUG("gathered components");
 		std::vector<count> vds;
 		#pragma omp parallel for
 		for (index i = 0; i < components.size(); ++i) {
 			count vd = estimateFrom(*components[i].begin()); // take any node from the component and perform bfs from there
-			#pragma omp critical 
+			DEBUG("checking component ", i);
+			#pragma omp critical
 			vds.push_back(vd);
 		}
 
@@ -234,4 +241,3 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 
 
 } /* namespace NetworKit */
-

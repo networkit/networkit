@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include <queue>
+
 #include "BFS.h"
 
 namespace NetworKit {

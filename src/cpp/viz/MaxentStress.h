@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup viz
+ */
 class MaxentStress: public NetworKit::Layouter {
 protected:
 

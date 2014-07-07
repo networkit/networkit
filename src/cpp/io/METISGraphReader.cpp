@@ -6,6 +6,10 @@
  */
 
 #include "METISGraphReader.h"
+#include "METISParser.h"
+#include "../auxiliary/Enforce.h"
+#include "../auxiliary/Log.h"
+#include "../auxiliary/StringTools.h"
 
 namespace NetworKit {
 
@@ -13,21 +17,26 @@ Graph METISGraphReader::read(const std::string& path) {
 
 	METISParser parser(path);
 
-	std::tuple<count, count, index> header = parser.getHeader();
+	std::tuple<count, count, index, count> header = parser.getHeader();
 	count n = std::get<0>(header);
 	count m = std::get<1>(header);
-	index weightMarker = std::get<2>(header);
-	//std::tie(n,m,weighted) = header;
-	// TODO: std::tie(n, m, weighted) = header
+	index fmt = std::get<2>(header);
+	count ncon = std::get<3>(header);
 
 	bool weighted;
-	if (weightMarker == 0) {
-		weighted = false;
-	} else {
+	if (fmt % 10 == 1) {
 		weighted = true;
+		DEBUG("graph has been identified as weighted");
+	} else {
+		weighted = false;
 	}
-	Graph G(n, weighted);
+	count ignoreFirst = 0;
+	if (fmt / 10 == 1) {
+		DEBUG("first ",ncon," value(s) will be ignored");
+		ignoreFirst = ncon;
+	}
 
+	Graph G(n, weighted);
 	std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
 
 	G.setName(graphName);
@@ -36,14 +45,18 @@ Graph METISGraphReader::read(const std::string& path) {
 
 	double p = 0.0; // percentage for progress bar
 	node u = 0; // begin with 0
-
+	count edgeCounter = 0;
 	if (weighted == 0) {
-		while (parser.hasNext()) {
-			std::vector<node> adjacencies = parser.getNext();
+		while (parser.hasNext() && u < n) {
+			std::vector<node> adjacencies = parser.getNext(ignoreFirst);
+			edgeCounter += adjacencies.size();
 			for (index i=0; i < adjacencies.size(); i++) {
-
+				if (adjacencies[i] == 0) {
+					ERROR("METIS Node ID should not be 0, edge ignored.");
+					continue;
+				}
 				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
-				assert (v >= 0);
+				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
 				if (u <= v) { // self-loops are allowed
 					G.addEdge(u, v);
 				}
@@ -54,19 +67,24 @@ Graph METISGraphReader::read(const std::string& path) {
 				DEBUG(p, "% ");
 			}
 		}
-		INFO("\n[DONE]\n");
-		return G;
 	} else {
-		while (parser.hasNext()) {
+		while (parser.hasNext() && u < n) {
 
-			std::vector<std::pair<node,double>> adjacencies = parser.getNextWithWeights();
-
+			std::vector<std::pair<node,double>> adjacencies = parser.getNextWithWeights(ignoreFirst);
+			edgeCounter += adjacencies.size();
+			DEBUG("node ",u," has ",adjacencies.size()," edges");
 			for (index i=0; i < adjacencies.size(); i++) {
+				if (adjacencies[i].first == 0) {
+					ERROR("METIS Node ID should not be 0, edge ignored.");
+					continue;
+				}
 				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
-				assert (v >= 0);
-				if (u <= v) { // self-loops are allowed
+				double weight = adjacencies[i].second;
+				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
+				if (u <= v && weight > 0) { // self-loops are allowed
 					G.addEdge(u, v);
 					G.setWeight(u, v, adjacencies[i].second);
+					TRACE("(",u,",",v,",",adjacencies[i].second,")");
 					assert(adjacencies[i].second > 0);
 				}
 			}
@@ -76,9 +94,17 @@ Graph METISGraphReader::read(const std::string& path) {
 				DEBUG(p, "% ");
 			}
 		}
-		INFO("\n[DONE]\n");
-		return G;
 	}
+	if (G.numberOfEdges() != m) {
+		ERROR("METIS file is corrupted: actual number of added edges doesn't match the specifed number of edges");
+	}
+	if (edgeCounter / m != 2) {
+		WARN("METIS file is corrupted: not every edge is listed twice");
+	}
+
+	INFO("\n[DONE]\n");
+	G.shrinkToFit();
+	return G;
 }
 
 } /* namespace NetworKit */

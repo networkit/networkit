@@ -10,18 +10,24 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <fstream>
 
 #include "GraphEvent.h"
 
-
 namespace NetworKit {
 
+/**
+ * @ingroup dynamics
+ */
 class DGSStreamParser {
 
 public:
 
 	DGSStreamParser(std::string path, bool mapped=true, node baseIndex=0);
+
+	/** Default destructor */
+	virtual ~DGSStreamParser() {}
 
 	virtual std::vector<GraphEvent> getStream();
 

@@ -11,8 +11,10 @@
 
 #include <iostream>
 #include <algorithm>
+#include <numeric>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 #include "../Log.h"
 #include "../Random.h"
@@ -21,6 +23,9 @@
 #include "../PrioQueue.h"
 #include "../StringTools.h"
 #include "../SetIntersector.h"
+#include "../Enforce.h"
+#include "../NumberParsing.h"
+#include "../Enforce.h"
 
 
 TEST_F(AuxGTest, produceRandomIntegers) {
@@ -175,28 +180,28 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	EXPECT_EQ(pq.size(), vec.size());
 
 	ElemType elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 0.25);
-	EXPECT_EQ(elem.second, 11);
+	EXPECT_EQ(0.25, elem.first);
+	EXPECT_EQ(11u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 1);
 
 	elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 0.5);
-	EXPECT_EQ(elem.second, 0);
+	EXPECT_EQ(0.5, elem.first);
+	EXPECT_EQ(0u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 2);
 
 	elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 0.75);
-	EXPECT_EQ(elem.second, 4);
+	EXPECT_EQ(0.75, elem.first);
+	EXPECT_EQ(4u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 3);
 
 	elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 1.5);
-	EXPECT_EQ(elem.second, 5);
+	EXPECT_EQ(1.5, elem.first);
+	EXPECT_EQ(5u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 4);
 
 	elem = pq.extractMin();
-	EXPECT_EQ(elem.first, 2.5);
-	EXPECT_EQ(elem.second, 3);
+	EXPECT_EQ(2.5, elem.first);
+	EXPECT_EQ(3u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 5);
 }
 
@@ -244,7 +249,7 @@ TEST_F(AuxGTest, testRandomWeightedChoice) {
 	std::vector<std::pair<uint64_t, double> > data = {{0, 1.0}, {1, 0.0}};
 	for (uint64_t i = 0; i < 100; ++i) {
 		auto element = Aux::Random::weightedChoice(data);
-		EXPECT_EQ(0, element);
+		EXPECT_EQ(0u, element);
 	}
 }
 
@@ -316,5 +321,133 @@ TEST_F(AuxGTest, testSetIntersector) {
 	EXPECT_EQ(expectedResult, intersection);
 }
 
+TEST_F(AuxGTest, testEnforce) {
+	using Aux::enforce;
+	EXPECT_THROW(enforce(false), std::runtime_error);
+	EXPECT_NO_THROW(enforce(true));
+	
+	EXPECT_THROW(enforce(false, "foo"), std::runtime_error);
+	EXPECT_NO_THROW(enforce(true, "bar"));
+	
+	EXPECT_THROW(enforce<std::logic_error>(false, "foo"), std::logic_error);
+	EXPECT_NO_THROW(enforce<std::logic_error>(true, "foo"));
+	
+	std::string msg = "some message in a std::string";
+	
+	EXPECT_THROW(enforce(false, msg), std::runtime_error);
+	EXPECT_NO_THROW(enforce(true, msg));
+	
+	EXPECT_THROW(enforce<std::logic_error>(false, msg), std::logic_error);
+	EXPECT_NO_THROW(enforce<std::logic_error>(true, msg));
+}
 
+TEST_F(AuxGTest, testEnforceOpened) {
+	using Aux::enforceOpened;
+	std::ifstream stream;
+	EXPECT_THROW(enforceOpened(stream), std::runtime_error);
+}
+
+TEST_F(AuxGTest, testNumberParsingInteger) {
+	using namespace Aux::Parsing;
+	const std::string str = "0 00 1 123 001 1200 12345678    ";
+	std::vector<unsigned> expectedValues = {0, 0, 1, 123, 1, 1200, 12345678};
+	auto it = str.begin();
+	auto end = str.end();
+	std::size_t i = 0;
+	while(it != end) {
+		unsigned result;
+		std::tie(result, it) = strTo<unsigned>(it, end);
+		EXPECT_EQ(expectedValues[i], result);
+		++i;
+	}
+	
+	EXPECT_EQ(it, end);
+}
+
+TEST_F(AuxGTest, testNumberParsingSignedInteger) {
+	using namespace Aux::Parsing;
+	const std::string str = "-0 -00 -1 -123 -001 -1200 -12345678    ";
+	std::vector<int> expectedValues = {0, 0, -1, -123, -1, -1200, -12345678};
+	auto it = str.begin();
+	auto end = str.end();
+	std::size_t i = 0;
+	while(it != end) {
+		int result;
+		std::tie(result, it) = strTo<int>(it, end);
+		EXPECT_EQ(expectedValues[i], result);
+		++i;
+	}
+	
+	EXPECT_EQ(it, end);
+}
+
+TEST_F(AuxGTest, testOverflowCatching) {
+	using namespace Aux::Parsing;
+	const std::string str = "1000";
+	EXPECT_THROW(
+			(strTo<uint8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
+				str.begin(), str.end())),
+			std::runtime_error
+			);
+	EXPECT_THROW(
+			(strTo<int8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
+				str.begin(), str.end())),
+			std::runtime_error
+			);
+}
+
+TEST_F(AuxGTest, testNumberParsingBasicReal) {
+	using namespace Aux::Parsing;
+	const std::string str = 
+		"0 00 1 123 001 1200 12345678    "
+		"0.00000 -0000.000 -0000.000e-100"
+		;
+	std::vector<double> expectedValues = {
+		0, 0, 1, 123, 1, 1200, 12345678,
+		0, 0, 0
+	};
+	auto it = str.begin();
+	auto end = str.end();
+	std::size_t i = 0;
+	while(it != end) {
+		double result;
+		std::tie(result, it) = strTo<double>(it, end);
+		EXPECT_EQ(expectedValues[i], result);
+		++i;
+	}
+	
+	EXPECT_EQ(it, end);
+}
+
+
+TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
+	using Aux::Parsing::strTo;
+	auto helper = [](const std::string& str, double expected) {
+		auto result = std::get<0>(strTo<double>(str.begin(), str.end()));
+		if (result == expected) {
+			return true;
+		}
+		if (std::nexttoward(result, expected) == expected) {
+			// of by one is ok here
+			return true;
+		}
+		return false;
+	};
+#define TEST_CASE_REAL(number) EXPECT_EQ(true, helper(#number, number))
+	TEST_CASE_REAL(0);
+	TEST_CASE_REAL(1);
+	TEST_CASE_REAL(8.76464e+23);
+	TEST_CASE_REAL(5.56628e+12);
+	TEST_CASE_REAL(9.563574701896000000e+23);
+	TEST_CASE_REAL(9.563574701896270940e+23);
+	TEST_CASE_REAL(-669585235219883571019776.);
+	TEST_CASE_REAL(9.563574701896270946e+23);
+	TEST_CASE_REAL(141265720771594800000000.);
+	TEST_CASE_REAL(141265720771594850000000.);
+	TEST_CASE_REAL(1.4126572077159485e+23);
+	TEST_CASE_REAL(1.4126572077159480e+23);
+	TEST_CASE_REAL(-784008854951861199831040.);
+	TEST_CASE_REAL(-78400885495186119983104.0);
+#undef TEST_CASE_REAL
+}
 #endif /*NOGTEST */

@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup coarsening
+ */
 class ClusteringProjector {
 
 public:
@@ -51,7 +54,7 @@ public:
 
 
 	/**
-	 * Project a clustering \zeta^{i} of the coarse graph G^{i}Êback to
+	 * Project a clustering \zeta^{i} of the coarse graph G^{i} back to
 	 * the finest graph G^{0}, using the hierarchy of fine->coarse maps
 	 */
 	virtual Partition projectBackToFinest(Partition& zetaCoarse,

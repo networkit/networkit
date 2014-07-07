@@ -5,9 +5,11 @@
  *      Author: Lukas Barth, David Weiss
  */
 
+#include <unordered_set>
+ 
 #include "ClusteringCoefficient.h"
 #include "../auxiliary/Random.h"
-#include <unordered_set>
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -16,6 +18,32 @@ std::vector<double> ClusteringCoefficient::exactLocal(Graph &G) {
 	std::vector<double> coefficient(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	G.balancedParallelForNodes([&](node u) {
+
+#if 0
+		// TODO:
+		// for each vertex u
+		// retrieve neighborhood of u
+		// examine each pair (v, w) of neighbors of u
+		// if (v, w) \in E then increase triangles
+
+		count d = G.degree(u);
+	    if (d < 2) {
+	      coefficient[u] = 0.0;
+	    } else {
+		      count triangles = 0;
+		      std::vector<node> neigh = G.neighbors(u);
+		      for (index i = 0; i < d; ++i) {
+		    	  for (index j = i+1; j < d; ++j) {
+		    		  if (G.hasEdge(neigh[i], neigh[j])) {
+		    			  triangles++;
+		    		  }
+		    	  }
+		      }
+		      coefficient[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
+	    }
+#endif
+
+
 		count d = G.degree(u);
 		std::unordered_set<node> uNeighbors; // set for O(1) time access to u's neighbors
 		G.forNeighborsOf(u, [&](node v){

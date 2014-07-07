@@ -1,4 +1,5 @@
 import os
+import subprocess
 import fnmatch
 import ConfigParser
 
@@ -15,15 +16,13 @@ def getSourceFiles(target, optimize):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
+	xpatterns = ["*-X.cpp"]
+	excluded = []
+
+	# only the target "Test" requires Benchmark and GTest files
 	if (target not in ["Tests"]):
 		# exclude files matching following patterns
-		xpatterns = ["*-X.cpp","*Unittests.cpp","*GTest.cpp","*Benchmark.cpp"]
-		excluded = []
-	else:
-		# exclude files matching following patterns
-		# only the target "Test" requires Benchmark and GTest files
-		xpatterns = ["*-X.cpp","*Unittests.cpp"]
-		excluded = []
+		xpatterns += ["*GTest.cpp","*Benchmark.cpp"]
 
 	for pattern in xpatterns:
 		for name in fnmatch.filter(source, pattern):
@@ -35,7 +34,7 @@ def getSourceFiles(target, optimize):
 	# add executable
 	if target == "Tests":
 		source.append(os.path.join(srcDir, "Unittests-X.cpp"))
-	elif target == "Core":
+	elif target in ["Core","Lib"]:
 		pass # no executable
 	else:
 		print("Unknown target: {0}".format(target))
@@ -100,13 +99,13 @@ env.Append(LINKFLAGS = ["-std=c++11"])
 commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC"]
 commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
 
-debugCppFlags = ["-O0", "-g3"]
+debugCppFlags = ["-O0", "-g3", "-DLOG_LEVEL=LOG_LEVEL_TRACE"]
 debugCFlags = ["-O0", "-g3"]
 
-optimizedCppFlags = ["-O3", "-DNDEBUG"]
+optimizedCppFlags = ["-O3", "-DNDEBUG", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
 optimizedCFlags = ["-O3"]
 
-profileCppFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
+profileCppFlags = ["-O2", "-DNDEBUG", "-g", "-pg", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
 profileCFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
 
 
@@ -138,7 +137,7 @@ try:
 	sanitize = GetOption("sanitize")
 except:
 	pass
-	
+
 
 
 # create build directory for build configuration
@@ -188,13 +187,13 @@ else:
     exit()
 
 # optimize flags
-if optimize == "D":
+if optimize == "Dbg":
     env.Append(CFLAGS = debugCFlags)
     env.Append(CPPFLAGS = debugCppFlags)
-elif optimize == "O":
+elif optimize == "Opt":
     env.Append(CFLAGS = optimizedCFlags)
     env.Append(CPPFLAGS = optimizedCppFlags)
-elif optimize == "P":
+elif optimize == "Pro":
 	 env.Append(CFLAGS = profileCFlags)
 	 env.Append(CPPFLAGS = profileCppFlags)
 else:
@@ -221,14 +220,27 @@ AddOption("--target",
 
 
 target = GetOption("target")
-availableTargets = ["Core","Tests"]
+availableTargets = ["Lib","Core","Tests"]
 if target in availableTargets:
 	source = getSourceFiles(target,optimize)
 	targetName = "NetworKit-{0}-{1}".format(target, optimize)
-	if target == "Core":
+	if target in ["Core","Lib"]:
 		# do not append executable
 		# env.Append(CPPDEFINES=["NOLOGGING"])
 		env.Library("NetworKit-Core-{0}".format(optimize), source)
+		if target == "Lib":
+			libFileToLink = "libNetworKit-Core-{0}.a".format(optimize)
+			libFileTarget = "libNetworKit.a"
+			if os.path.lexists(libFileTarget):
+				os.remove(libFileTarget)
+			os.symlink(libFileToLink,libFileTarget)
+			# SCons does not support python 3 yet...
+			#os.symlink("src/cpp","NetworKit",True)
+			if os.path.isdir("NetworKit"):
+				#print("sym link for include stuff exists already")
+				os.remove("NetworKit")
+			subprocess.call(["ln","-s","src/cpp","NetworKit"])
+
 	else:
 		env.Program(targetName, source)
 else:

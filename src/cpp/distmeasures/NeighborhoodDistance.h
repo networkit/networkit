@@ -12,18 +12,20 @@
 #include <math.h>
 #include <algorithm>
 
+namespace NetworKit {
+
 /**
+ * @ingroup distmeasures
  * Assigns a distance value to pairs of nodes according to the
  * overlap of their neighborhoods.
  */
-namespace NetworKit {
-
 class NeighborhoodDistance: public NetworKit::NodeDistance {
 
 public:
 
 	NeighborhoodDistance(const Graph& G);
 
+	/** Default destructor */
 	virtual ~NeighborhoodDistance();
 
 	virtual void preprocess();

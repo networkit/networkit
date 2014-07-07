@@ -7,8 +7,9 @@
 
 #include "ForestFireGenerator.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
+#include <set>
 #include <unordered_map>
-
 
 namespace NetworKit {
 

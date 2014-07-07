@@ -28,7 +28,7 @@ if shutil.which("scons") is None:
 # get the optional arguments for the compilation
 parser = ArgumentParser()
 parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
-parser.add_argument("-o", "--optimize", dest="optimize", help="specify build type: O=optimize, D=debug, P=profiling")
+parser.add_argument("-o", "--optimize", dest="optimize", help="specify build type: Opt=optimize, Dbg=debug, Pro=profiling")
 (options,args) = parser.parse_known_args()
 
 # set optional arguments to parsed ones or the default ones
@@ -39,7 +39,7 @@ else:
 if options.optimize != None:
 	optimize = options.optimize
 else:
-	optimize = "O"
+	optimize = "Opt"
 
 # make sure sys.argv is correct for setuptools
 args.reverse()
@@ -89,10 +89,13 @@ elif (("develop" in sys.argv) and ("--uninstall" not in sys.argv)):
 	build_NetworKit()
 elif "clean" in sys.argv:
 	additional_clean()
-	
+
 # try-catch block when shutil.which is not available
 try:
-	if (shutil.which("g++-4.8") is not None):
+	if (shutil.which("g++-4.9") is not None):
+		os.environ["CC"] = "g++-4.9"
+		os.environ["CXX"] = "g++-4.9"
+	elif (shutil.which("g++-4.8") is not None):
 		os.environ["CC"] = "g++-4.8"
 		os.environ["CXX"] = "g++-4.8"
 
@@ -106,10 +109,9 @@ except:
 	os.environ["CC"] = "g++"
 	os.environ["CXX"] = "g++"
 
-print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
-
+#print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
 src = ["_NetworKit.pyx"]	# list of source files
-			
+
 print("source files: {0}".format(src))
 
 modules = [Extension("_NetworKit",
@@ -129,7 +131,7 @@ setup(name="NetworKit",
 	description = "NetworKit is a toolbox for high-performance network analysis",
 	license = "MIT",
 	keywords = "graph algorithm network analysis social network",
-	version="3.1",
+	version="3.2",
 	cmdclass={"build_ext": build_ext},
 	ext_modules=modules,
 	py_modules = ["NetworKit.py"])

@@ -14,27 +14,28 @@
 namespace NetworKit {
 
 /**
+ * @ingroup graph
  * Simple methods for graph generation.
  */
 class GraphGenerator {
 
 public:
 
-	GraphGenerator();
-
-	virtual ~GraphGenerator();
+	/** Default destructor */
+	virtual ~GraphGenerator() = default;
 
 	/**
 	 * Generate a random graph according to the Erdos-Renyi model.
 	 *
-	 * @param[in]	n	number of nodes
-	 * @param[in]	p	edge probability
+	 * @param[in]	n	Number of nodes.
+	 * @param[in]	p	Edge probability.
+	 * @return The generated graph.
 	 */
 	virtual Graph makeErdosRenyiGraph(count n, double p);
 
 
 	/**
-	 * Alias for makeErdosRenyiGraph
+	 * Alias for @link makeErdosRenyiGraph(count n, double p)
 	 */
 	virtual Graph makeRandomGraph(count n, double p);
 
@@ -42,7 +43,8 @@ public:
 	/**
 	 * Generate a graph whose nodes and edges form a circle.
 	 *
-	 * @param[in]	n	number of nodes
+	 * @param[in]	n	Number of nodes.
+	 * @return The generated graph.
 	 */
 	virtual Graph makeCircularGraph(count n);
 
@@ -50,39 +52,44 @@ public:
 	/**
 	 * Generate a complete graph.
 	 *
-	 * @param[in]	n	number of nodes
+	 * @param[in]	n	Number of nodes.
+	 * @return The generated graph.
 	 */
 	virtual Graph makeCompleteGraph(count n);
 
 
 	/**
-	 * Creates a clustered random graph:
+	 * Creates a clustered random graph.
 	 *
-	 * @param[in]	n	number of nodes
-	 * @param[in]	k	number of clusters
-	 * @param[in]	pin		intra-cluster edge probability
-	 * @param[in]	pout	inter-cluster edge probability
+	 * @param[in]	n	Number of nodes.
+	 * @param[in]	k	Number of clusters.
+	 * @param[in]	pin		Intra-cluster edge probability.
+	 * @param[in]	pout	Inter-cluster edge probability.
+	 * @return The generated graph.
 	 */
 	virtual Graph makeClusteredRandomGraph(count n, count k, double pin, double pout);
 
 	/**
-	 * Creates a clustered random graph:
+	 * Creates a clustered random graph and a reference clustering for this graph.
 	 *
-	 * @param[in]	n	number of nodes
-	 * @param[in]	k	number of clusters
-	 * @param[in]	pin		intra-cluster edge probability
-	 * @param[in]	pout	inter-cluster edge probability
+	 * @param[in]	n	Number of nodes.
+	 * @param[in]	k	Number of clusters.
+	 * @param[in]	pin		Intra-cluster edge probability.
+	 * @param[in]	pout	Inter-cluster edge probability.
+	 * @return The generated graph and a reference clustering of it.
 	 */
 	virtual std::pair<Graph, Partition> makeClusteredRandomGraphWithReferenceClustering(count n, count k, double pin, double pout);
 
 
 	/**
-	 * Create a clustered random graph from a given clustering.
+	 * Create a clustered random graph from a given clustering @a zeta.
 	 *
+	 * @param[in] 	zeta	The clustering.
+	 * @param[in] 	pin		Intra-cluster edge probability.
+	 * @param[in]	pout	Inter-cluster edge probability.
+	 * @return The generated graph.
 	 */
 	virtual Graph makeClusteredRandomGraph(Partition& zeta, double pin, double pout);
-
-	virtual Graph makeHyperbolicGraph(count n);
 
 
 };

@@ -6,6 +6,7 @@
  */
 
 #include "DynamicDGSParser.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -13,10 +14,6 @@ std::vector<std::vector<std::string>> localNodeCategories;
 
 DynamicDGSParser::DynamicDGSParser(std::string path) : graphInitialized(false) {
 	dgsFile.open(path.c_str(), std::ifstream::in);
-}
-
-DynamicDGSParser::~DynamicDGSParser() {
-
 }
 
 void DynamicDGSParser::initializeGraph() {

@@ -8,6 +8,8 @@
 #ifndef DYNAMICPUBWEBGENERATOR_H_
 #define DYNAMICPUBWEBGENERATOR_H_
 
+#include <map>
+
 #include "DynamicGraphGenerator.h"
 #include "PubWebGenerator.h"
 #include "../dynamics/GraphEvent.h"
@@ -17,8 +19,10 @@
 
 namespace NetworKit {
 
-class DynamicPubWebGenerator: public NetworKit::DynamicGraphGenerator
-{
+/**
+ * @ingroup generators
+ */
+class DynamicPubWebGenerator: public NetworKit::DynamicGraphGenerator {
 
 protected:
 	PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
@@ -31,7 +35,6 @@ public:
 			float neighborhoodRadius, count maxNumberOfNeighbors,
 			bool writeInitialGraphToStream = true);
 
-	virtual ~DynamicPubWebGenerator();
 
 	Graph getGraph() const { return G; }
 

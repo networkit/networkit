@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup coarsening
  * Abstract base class for graph coarsening/contraction algorithms.
  */
 class GraphCoarsening {

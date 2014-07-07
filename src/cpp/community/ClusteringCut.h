@@ -5,7 +5,7 @@
  *      Author: Weijian Ji (weijian.ji@student.kit.edu)
  */
 
-#ifndef CLUSTERINGCUTS_H_
+#ifndef CLUSTERINGCUT_H_
 #define CLUSTERINGCUT_H_
 
 #include "../graph/Graph.h"
@@ -44,6 +44,10 @@ typedef uint64_t count; // more expressive name for an integer quantity
 typedef std::pair<node, node>  edge; // more expressive name for an edge
 typedef std::set<std::pair<node, node> > cutEdges; // more expressive name for group of cutting edges
 typedef std::unordered_map<std::pair<index, index>, cutEdges > cuttingMap; // map from cluster pair to their clustering cut edges
+
+/**
+ * @ingroup community
+ */
 class ClusteringCut {
 
 public:

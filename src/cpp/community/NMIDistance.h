@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * NMIDistance quantifies the dissimilarity between two clusterings using
  * Normalized Mutual Information.
  *
@@ -22,8 +23,7 @@ class NMIDistance: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	NMIDistance();
-
+	/** Default destructor */
 	virtual ~NMIDistance();
 
 	virtual double getDissimilarity(Graph& G, Partition& zeta, Partition& eta);

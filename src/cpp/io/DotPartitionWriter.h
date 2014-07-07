@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup io
+ */
 class DotPartitionWriter {
 public:
     virtual ~DotPartitionWriter() = default;

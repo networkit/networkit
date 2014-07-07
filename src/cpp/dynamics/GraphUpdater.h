@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup dynamics
+ */
 class GraphUpdater {
 
 public:

@@ -6,6 +6,8 @@
  *      Contributors: Hoske/Weisbarth
  */
 
+#include <numeric>
+
 #include "ChungLuGenerator.h"
 
 namespace NetworKit {
@@ -14,10 +16,6 @@ ChungLuGenerator::ChungLuGenerator(const std::vector<unsigned int>& degreeSequen
 		StaticDegreeSequenceGenerator(degreeSequence) {
 	sum_deg = std::accumulate(seq.begin(), seq.end(), 0);
 	n = (count) seq.size();
-}
-
-ChungLuGenerator::~ChungLuGenerator() {
-
 }
 
 Graph ChungLuGenerator::generate() {
@@ -34,6 +32,8 @@ Graph ChungLuGenerator::generate() {
 			}
 		}
 	}
+
+	G.shrinkToFit();
 	return G;
 }
 

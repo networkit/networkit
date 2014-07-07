@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup scd
  * Variant of PageRank-Nibble algorithm due to Andersen, Chung and Lang.
  * Paper: Local Graph Partitioning using PageRank Vectors.
  * URL: http://www.math.ucsd.edu/~fan/wp/localpartition.pdf
@@ -32,7 +33,6 @@ public:
 	 * unweighted in current implementation.
 	 */
 	PageRankNibble(Graph& g);
-	virtual ~PageRankNibble();
 
 	/**
 	 * @param seed Seed node for which a community is to be found.

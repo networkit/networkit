@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup community
  * PLM - Parallel Louvain Method community detection algorithm
  * The Lovain method is a locally greedy procedure for maximizing modularity. 
  * This is a parallel implementation.
@@ -33,8 +34,6 @@ public:
 	 *
 	 */
 	PLMOld(std::string par="balanced", double gamma = 1.0);
-
-	virtual ~PLMOld();
 
 	virtual Partition pass(Graph& G);
 

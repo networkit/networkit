@@ -8,9 +8,15 @@
 #ifndef SNAPEDGELISTPARTITIONREADER_H_
 #define SNAPEDGELISTPARTITIONREADER_H_
 
+#include <set>
+#include <vector>
+#include <fstream>
+#include <unordered_map>
+// TODO: clean up includes
+
 //#include <unordered_set>
 //#include <vector>
-//#include <fstream>
+// #include <fstream>
 
 #include "../graph/Graph.h"
 #include "../auxiliary/StringTools.h"
@@ -20,12 +26,13 @@
 namespace NetworKit {
 
 /**
+ * @ingroup io
  * Reads the clustering files from the SNAP collection.
  */
 class SNAPEdgeListPartitionReader {
 public:
-	SNAPEdgeListPartitionReader();
-	virtual ~SNAPEdgeListPartitionReader();
+	/** Default destructor */
+	virtual ~SNAPEdgeListPartitionReader() = default;
 
 	virtual Cover read(std::string path, std::unordered_map<node,node>& mapNodeIds, Graph& G);
 

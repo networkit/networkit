@@ -9,6 +9,7 @@
 
 #include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
+#include "../auxiliary/Log.h"
 #include "omp.h"
 
 namespace NetworKit {
@@ -17,10 +18,6 @@ namespace NetworKit {
 PLMOld::PLMOld(std::string par, double gamma) : anyChange(false), parallelism(par), gamma(gamma) {
 
 	this->VERSION = "1.0";
-}
-
-PLMOld::~PLMOld() {
-	// TODO Auto-generated destructor stub
 }
 
 Partition PLMOld::pass(Graph& G) {

@@ -23,7 +23,7 @@ void DynamicBarabasiAlbertGenerator::initializeGraph() {
 		throw std::runtime_error("Graph instance has not been set - call newGraph first");
 	}
 
-	// The network begins with an initial network of m0 nodes. m0 ³ 2 and the degree of each node in the initial network should be at least 1,
+	// The network begins with an initial network of m0 nodes. m0 2 and the degree of each node in the initial network should be at least 1,
 	// otherwise it will always remain disconnected from the rest of the network.
 	for (count i = 0; i < k; ++i) {
 		node u = Gproxy->addNode(); // assume node ids are assigned consecutively
@@ -38,10 +38,6 @@ void DynamicBarabasiAlbertGenerator::initializeGraph() {
 
 	assert (G->numberOfNodes() == k);
 	assert (G->numberOfEdges() == (k - 1));
-}
-
-DynamicBarabasiAlbertGenerator::~DynamicBarabasiAlbertGenerator() {
-	// TODO Auto-generated destructor stub
 }
 
 

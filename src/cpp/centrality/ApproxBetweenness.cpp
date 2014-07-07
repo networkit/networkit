@@ -12,6 +12,7 @@
 #include "../graph/Dijkstra.h"
 #include "../graph/BFS.h"
 #include "../graph/SSSP.h"
+#include "../auxiliary/Log.h"
 
 #include <math.h>
 #include <algorithm>
@@ -20,7 +21,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta) : Centrality(G, true), epsilon(epsilon), delta(delta) {
+ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta, count diameterSamples) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples) {
 
 }
 
@@ -29,23 +30,29 @@ void ApproxBetweenness::run() {
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
 
-	double c = 1; // TODO: what is the effect of the choice of c?
+	double c = 0.5; // universal positive constant - see reference in paper
 
-	/** 
-	 * This is an optimization which deviates from the original algorithm. 
-	 * Instead of getting an estimate for each of possibly thousands of connected component and taking the maximum,
-	 * we sample the graph and take the maximum diameter found.
-	 */
-	INFO("estimating vertex diameter");
-	count samples = 42;
-	edgeweight vd = Diameter::estimatedVertexDiameter(G, samples);
+
+	edgeweight vd = 0;
+	if (diameterSamples == 0) {
+		INFO("estimating vertex diameter pedantically");
+		vd = Diameter::estimatedVertexDiameterPedantic(G);
+	} else {
+		/**
+		* This is an optimization which deviates from the original algorithm.
+		* Instead of getting an estimate for each of possibly thousands of connected component and taking the maximum,
+		* we sample the graph and take the maximum diameter found. This has a high chance of  hitting the component with the maximum vertex diameter.
+		*/
+		INFO("estimating vertex diameter roughly");
+		vd = Diameter::estimatedVertexDiameter(G, diameterSamples);
+	}
+
 	INFO("estimated diameter: ", vd);
-	// FIXME: if the vertex diameter is estimated to be 2, then there is log(0) in the formula which will practically lead to an infinite amount of samples
-	count r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
+	r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
 
 	INFO("taking ", r, " path samples");
 
-	// parallelization: 
+	// parallelization:
 	count maxThreads = omp_get_max_threads();
 	DEBUG("max threads: ", maxThreads);
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
@@ -72,25 +79,25 @@ void ApproxBetweenness::run() {
 			sssp.reset(new BFS(G, u));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
-		sssp->run();
+		sssp->run(); // TODO: this can be optimized by stopping the search once the target node has been reached
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update
-			node s = v;
+			// node s = v;
 			node t = v;
 			while (t != u)  {
 				// sample z in P_u(t) with probability sigma_uz / sigma_us
 				std::vector<std::pair<node, double> > choices;
 
 				for (node z : sssp->getPredecessors(t)) {
-					choices.emplace_back(z, sssp->numberOfPaths(z) / (double) sssp->numberOfPaths(s)); 	// sigma_uz / sigma_us
+					choices.emplace_back(z, sssp->numberOfPaths(z) / (double) sssp->numberOfPaths(t)); 	// sigma_uz / sigma_us
 				}
 				node z = Aux::Random::weightedChoice(choices);
 				assert (z <= G.upperNodeIdBound());
 				if (z != u) {
 					scorePerThread[thread][z] += 1 / (double) r;
 				}
-				s = t;
+				// s = t;
 				t = z;
 			}
 		}
@@ -104,6 +111,11 @@ void ApproxBetweenness::run() {
 		});
 	}
 
+}
+
+
+count ApproxBetweenness::numberOfSamples() {
+	return r;
 }
 
 

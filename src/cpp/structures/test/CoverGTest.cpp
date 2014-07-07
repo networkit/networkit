@@ -33,16 +33,16 @@ namespace NetworKit {
 
 TEST_F(CoverGTest, testConstructor) {
 	Cover c(10);
-	EXPECT_EQ(0,c.lowerBound());
-	EXPECT_EQ(1,c.upperBound());
+	EXPECT_EQ(0u, c.lowerBound());
+	EXPECT_EQ(1u, c.upperBound());
 }
 
 TEST_F(CoverGTest, testAllToSingletonsAndUpperBound) {
 	Cover c(10);
-	EXPECT_EQ(1,c.upperBound());
+	EXPECT_EQ(1u, c.upperBound());
 	c.allToSingletons();
-	EXPECT_EQ(0,c.lowerBound());
-	EXPECT_EQ(11,c.upperBound());
+	EXPECT_EQ(0u, c.lowerBound());
+	EXPECT_EQ(11u, c.upperBound());
 }
 
 TEST_F(CoverGTest, testContains) {
@@ -65,7 +65,7 @@ TEST_F(CoverGTest, testUpperBoundAfterMerges) {
 	}
 	c.mergeSubsets(1,3);
 	c.mergeSubsets(5,11);
-	EXPECT_EQ(13,c.upperBound());
+	EXPECT_EQ(13u, c.upperBound());
 }
 
 
@@ -239,7 +239,7 @@ TEST_F(CoverGTest, testNumberOfSubsets) {
 	EXPECT_EQ(n,c.numberOfSubsets());
 	c.mergeSubsets(1,2);
 	c.mergeSubsets(3,11);
-	EXPECT_EQ(8,c.numberOfSubsets());
+	EXPECT_EQ(8u, c.numberOfSubsets());
 }
 
 

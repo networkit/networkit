@@ -8,18 +8,9 @@
 #include "DynamicNMIDistance.h"
 #include "../auxiliary/MissingMath.h"
 #include "../auxiliary/NumericTools.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
-
-DynamicNMIDistance::DynamicNMIDistance() {
-	// TODO Auto-generated constructor stub
-
-}
-
-DynamicNMIDistance::~DynamicNMIDistance() {
-	// TODO Auto-generated destructor stub
-}
-
 
 bool DynamicNMIDistance::isInBoth(node u, const Partition& oldClustering, const Partition& newClustering) {
 	return ((newClustering[u] != none) &&
