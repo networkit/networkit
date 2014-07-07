@@ -435,7 +435,8 @@ TEST_F(GeneratorsGTest, testMirrorOnCircle) {
 	Point<double> origin(0,0);
 	double radius = 6;
 	Point<double> image = HyperbolicSpace::mirrorOnCircle(a, origin, radius);
-	EXPECT_EQ(6*6/5, image[0]);
+
+	EXPECT_LE(radius*radius/5-image[0], 0.000001);
 	EXPECT_EQ(0, image[1]);
 }
 
@@ -453,8 +454,8 @@ TEST_F(GeneratorsGTest, testConversion) {
 	double angle, radius;
 	HyperbolicSpace::cartesianToPolar(a, &angle, &radius);
 	Point<double> back = HyperbolicSpace::polarToCartesian(angle, radius);
-	EXPECT_EQ(a[0], back[0]);
-	EXPECT_EQ(a[1], back[1]);
+	EXPECT_LE(a[0] - back[0], 0.000001);
+	EXPECT_LE(a[1] - back[1], 0.000001);
 }
 
 } /* namespace NetworKit */
