@@ -10,6 +10,7 @@ import itertools
 import math
 import networkx as nx
 
+from algebraic import laplacianEigenvectors
 
 class Layout:
 	"""Superclass for all layout algorithms"""
@@ -17,6 +18,50 @@ class Layout:
 	def layout(self, G):
 		raise NotImplementedError("abstract method")
 	
+class SpectralLayout(Layout):
+
+	def prepareSpectrum(self):
+		spectrum = laplacianEigenvectors(self.graph, cutoff = 2, reverse=True)
+		self.eigenvectors = spectrum[1]
+		self.eigenvalues = spectrum[0]
+
+	def prepareNormalization(self):
+		x = self.eigenvectors[0]
+		y = self.eigenvectors[1]
+
+		minX = x[0]
+		maxX = x[0]
+
+		for val in x:
+			minX = min(minX, val)
+			maxX = max(maxX, val)
+
+		self.minX = minX
+		self.rangeX = maxX - minX
+
+		minY = y[0]
+		maxY = y[0]
+
+		for val in y:
+			minY = min(minY, val)
+			maxY = max(maxY, val)
+
+		self.minY = minY
+		self.rangeY = maxY - minY
+
+	def getPos(self, v):
+		x = (self.eigenvectors[0][v] - self.minX) / self.rangeX
+		y = (self.eigenvectors[1][v] - self.minY) / self.rangeY
+
+		return np.array((x, y))
+
+	def layout(self, G):
+		self.graph = G
+		self.prepareSpectrum()
+		self.prepareNormalization()
+
+		return {v : self.getPos(v) for v in self.graph.nodes()}
+
 
 class ForceDirected(Layout):
 

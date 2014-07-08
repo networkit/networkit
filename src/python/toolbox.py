@@ -13,7 +13,9 @@ except ImportError:
 
 # batch processing
 
-
+def column(matrix, i):
+    return [row[i] for row in matrix]
+    
 def batch(graphDir, match, format, function, outPath, header=None):
 	"""
 	Read graphs from a directory, apply a function and store result in CSV format.

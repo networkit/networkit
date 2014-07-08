@@ -30,6 +30,8 @@ import engineering
 import toolbox
 import dynamic
 import gephi
+import partitioning
+import coloring
 
 try:
 	import viztools
