@@ -1583,6 +1583,7 @@ cdef extern from "../cpp/structures/Partition.h":
 		void setName(string name) except +
 		string getName() except +
 		set[index] getSubsetIds() except +
+		index operator[](index) except +
 
 
 cdef class Partition:
@@ -1630,6 +1631,12 @@ cdef class Partition:
 	cdef setThis(self, _Partition other):
 		self._this = other
 		return self
+
+	def __cinit__(self, size=None):
+		if size is None:
+			self._this = _Partition()
+		else:
+			self._this = _Partition(size)
 
 	def subsetOf(self, e):
 		""" Get the set (id) in which the element `e` is contained.
@@ -1712,6 +1719,9 @@ cdef class Partition:
 			Id of newly created set.
 		"""
 		self._this.mergeSubsets(s, t)
+
+	def __getitem__(self, index):
+		return self._this[index]
 
 
 	def setUpperBound(self, index upper):
