@@ -35,6 +35,7 @@ public:
 	static Point<double> polarToCartesian(double phi, double r);
 	static void cartesianToPolar(Point<double> a, double * phi, double *r);
 	static Point<double> orth(Point<double> a);
+	static void getTransmutationCircle(Point<double> source, Point<double> target, double minRadius, Point<double> &circleCenter, double &circleRadius);
 
 
 private:

@@ -440,6 +440,27 @@ TEST_F(GeneratorsGTest, testMirrorOnCircle) {
 	EXPECT_EQ(0, image[1]);
 }
 
+TEST_F(GeneratorsGTest, testCoordinateTransformation) {
+	Point<double> a(5,2);
+	Point<double> b(4,1);
+	Point<double> m;
+	double radius;
+	double bound = 10;
+	HyperbolicSpace::getTransmutationCircle(a, b, bound, m, radius);
+	DEBUG("Circle center at (",m[0], ",", m[1], ") with radius ", radius);
+	DEBUG("d(a,m)=", a.distance(m));
+	DEBUG("d(b,m)=", b.distance(m));
+	EXPECT_GE(m.length(), bound);
+	EXPECT_NE(m.distance(a), radius); //for mirroring, none of the points can be on the circle
+	EXPECT_NE(m.distance(b), radius);
+	if (m.distance(a) < radius) EXPECT_GE(m.distance(b), radius); //the circle has to be between the points
+	else if (m.distance(a) > radius) EXPECT_LE(m.distance(b), radius);
+	Point<double> mirrored = HyperbolicSpace::mirrorOnCircle(a, m, radius);
+	DEBUG("Mirrored a(", a[0], ",", a[1], ") to (", mirrored[0], ",", mirrored[1], ")");
+	DEBUG("d(mirror,m)=", mirrored.distance(m));
+	EXPECT_LE(mirrored.distance(b), 0.00001);
+}
+
 TEST_F(GeneratorsGTest, testCircleCenter) {
 	Point<double> a(-5,0);
 	Point<double> b(5,0);
