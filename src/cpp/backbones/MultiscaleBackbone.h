@@ -26,13 +26,12 @@ public:
 	 * Creates a new instance of the Multiscale Backbone calculator.
 	 * @param alpha 		filter parameter
 	 */
-	MultiscaleBackbone(const Graph& g, double alpha);
+	MultiscaleBackbone(double alpha);
 
-	Graph calculate();
+	Graph calculate(const Graph& graph);
 
 private:
 	//Calculation parameters
-	const Graph& graph;
 	double alpha;
 
 	//Private helper functions
