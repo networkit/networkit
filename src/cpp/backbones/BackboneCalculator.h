@@ -21,11 +21,11 @@ public:
 	/**
 	 * Calculates the backbone graph for the given input graph.
 	 */
-	virtual Graph calculate() = 0;
+	virtual Graph calculate(const Graph& g) = 0;
 
 	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _calculate() {
-		return new Graph{std::move(calculate())};
+	Graph* _calculate(const Graph& g) {
+		return new Graph{std::move(calculate(g))};
 	};
 
 	/**

@@ -11,13 +11,13 @@
 
 namespace NetworKit {
 
-SimmelianBackbone::SimmelianBackbone(const Graph& g, count maxRank, const count minOverlap) :
-		graph(g), parameterized(true), maxRank(maxRank), minOverlap(minOverlap) {}
+SimmelianBackbone::SimmelianBackbone(count maxRank, const count minOverlap) :
+		parameterized(true), maxRank(maxRank), minOverlap(minOverlap) {}
 
-SimmelianBackbone::SimmelianBackbone(const Graph& g, double treshold) :
-		graph(g), parameterized(false), jaccardTreshold(treshold) {}
+SimmelianBackbone::SimmelianBackbone(double treshold) :
+		parameterized(false), jaccardTreshold(treshold) {}
 
-Graph SimmelianBackbone::calculate() {
+Graph SimmelianBackbone::calculate(const Graph& graph) {
 	ChibaNishizekiTriangleCounter counter;
 
 	edgeCountMap triangles = counter.triangleCounts(graph);

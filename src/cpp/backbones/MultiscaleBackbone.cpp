@@ -9,10 +9,9 @@
 
 namespace NetworKit {
 
-MultiscaleBackbone::MultiscaleBackbone(const Graph& g, double a) :
-		graph(g), alpha(a) {}
+MultiscaleBackbone::MultiscaleBackbone(double a) : alpha(a) {}
 
-Graph MultiscaleBackbone::calculate() {
+Graph MultiscaleBackbone::calculate(const Graph& graph) {
 	Graph backboneGraph = cloneGraphWithoutEdges(graph);
 
 	//The following vector is used for the _local_ normalization of edgeweights.
