@@ -3272,9 +3272,9 @@ cdef class GraphUpdater:
 
 cdef extern from "../cpp/backbones/SimmelianBackbone.h":
 	cdef cppclass _SimmelianBackbone "NetworKit::SimmelianBackbone":
-		_SimmelianBackbone(_Graph G, count maxRank, count minOverlap) except +
-		_SimmelianBackbone(_Graph G, double jaccardTreshold) except + 
-		_Graph* _calculate() except +
+		_SimmelianBackbone(count maxRank, count minOverlap) except +
+		_SimmelianBackbone(double jaccardTreshold) except + 
+		_Graph* _calculate(_Graph G) except +
 
 cdef class SimmelianBackbone:
 	"""
@@ -3287,19 +3287,22 @@ cdef class SimmelianBackbone:
 	"""
 
 	cdef _SimmelianBackbone* _this
-
-	def calculateParametric(self, Graph G, count maxRank, count minOverlap):
-		self._this = new _SimmelianBackbone(dereference(G._this), maxRank, minOverlap)
-		return Graph().setThis(self._this._calculate())
 		
-	def calculateNonParametric(self, Graph G, double jaccardTreshold):
-		self._this = new _SimmelianBackbone(dereference(G._this), jaccardTreshold)
-		return Graph().setThis(self._this._calculate())
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
+	def __cinit__(self, val1=None, val2=None):
+		if val1 is not None and val2 is not None:
+			self._this = new _SimmelianBackbone(val1, val2)
+		elif val1 is not None:
+			self._this = new _SimmelianBackbone(val1)
+		else:
+			raise TypeError("Missing parameters: use either parametric variant (maxRank, minOverlap) or non-parametric variant (jaccardTreshold).")
 		
 cdef extern from "../cpp/backbones/MultiscaleBackbone.h":
 	cdef cppclass _MultiscaleBackbone "NetworKit::MultiscaleBackbone":
-		_MultiscaleBackbone(_Graph G, double alpha) except +
-		_Graph* _calculate() except +
+		_MultiscaleBackbone(double alpha) except +
+		_Graph* _calculate(_Graph G) except +
 
 cdef class MultiscaleBackbone:
 	"""
@@ -3310,9 +3313,9 @@ cdef class MultiscaleBackbone:
 
 	cdef _MultiscaleBackbone* _this
 
-	def __cinit__(self, Graph G, double alpha):
-		self._this = new _MultiscaleBackbone(dereference(G._this), alpha)
+	def __cinit__(self, double alpha):
+		self._this = new _MultiscaleBackbone(alpha)
 
-	def calculate(self):
-		return Graph().setThis(self._this._calculate())
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
 		
