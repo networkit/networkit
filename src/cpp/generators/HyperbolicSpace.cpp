@@ -13,6 +13,7 @@
 #include "../auxiliary/Log.h"
 
 using std::abs;
+using std::max;
 
 namespace NetworKit {
 
@@ -150,5 +151,26 @@ void HyperbolicSpace::cartesianToPolar(Point<double> a, double * phi, double *r)
 	} else {
 		*phi = -acos(a[0] / *r);
 	}
+}
+
+void HyperbolicSpace::getTransmutationCircle(Point<double> source,
+		Point<double> target, double minRadius, Point<double> &circleCenter, double &circleRadius) {
+	/**
+	 * make sure target is outwards
+	 */
+	if (source.length() > target.length()) {
+		Point<double> temp = target;
+		target = source;
+		source = temp;
+	}
+
+	circleCenter = (target - source) + target;
+
+	//horrible hack to make sure the center is outside the bounds;
+	while (circleCenter.length() < minRadius) {
+		circleCenter += (target - source);
+	}
+
+	circleRadius = pow(target.distance(circleCenter) * source.distance(circleCenter), 0.5);
 }
 }
