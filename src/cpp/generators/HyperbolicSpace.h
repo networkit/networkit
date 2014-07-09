@@ -33,9 +33,10 @@ public:
 	static double getHyperbolicDistance(Point<double> a, Point<double> b);
 	static bool isBelowArc(Point<double> query, Point<double> a, Point<double> b, double radius);
 	static Point<double> polarToCartesian(double phi, double r);
-	static void cartesianToPolar(Point<double> a, double * phi, double *r);
+	static void cartesianToPolar(Point<double> a, double &phi, double &r);
 	static Point<double> orth(Point<double> a);
 	static void getTransmutationCircle(Point<double> source, Point<double> target, double minRadius, Point<double> &circleCenter, double &circleRadius);
+	static double hyperbolicDistanceToArc(Point<double> query, Point<double> a, Point<double> b, double R);
 
 
 private:

@@ -473,10 +473,32 @@ TEST_F(GeneratorsGTest, testCircleCenter) {
 TEST_F(GeneratorsGTest, testConversion) {
 	Point<double> a(6,7);
 	double angle, radius;
-	HyperbolicSpace::cartesianToPolar(a, &angle, &radius);
+	HyperbolicSpace::cartesianToPolar(a, angle, radius);
 	Point<double> back = HyperbolicSpace::polarToCartesian(angle, radius);
 	EXPECT_LE(a[0] - back[0], 0.000001);
 	EXPECT_LE(a[1] - back[1], 0.000001);
+}
+
+TEST_F(GeneratorsGTest, testIsometries) {
+	Point<double> a(5,0);
+	Point<double> b(7,0);
+	EXPECT_EQ(2, HyperbolicSpace::getHyperbolicDistance(a,b));
+
+	Point<double> c(3,3);
+	Point<double> origin(0,0);
+	double R = 8;
+	Point<double> m;
+	double radius;
+
+	HyperbolicSpace::getTransmutationCircle(c, origin, R, m, radius);
+	DEBUG("Circle center at (",m[0], ",", m[1], ") with radius ", radius);
+	EXPECT_LE(radius, m.length());
+	EXPECT_GE(radius, m.distance(c));
+	Point<double> adash = HyperbolicSpace::mirrorOnCircle(a, m, radius);
+	Point<double> bdash = HyperbolicSpace::mirrorOnCircle(b, m, radius);
+	DEBUG("Mirrored a(", a[0], ",", a[1], ") to (", adash[0], ",", adash[1], ")");
+	DEBUG("Mirrored b(", b[0], ",", b[1], ") to (", bdash[0], ",", bdash[1], ")");
+	EXPECT_EQ(HyperbolicSpace::getHyperbolicDistance(a,b), HyperbolicSpace::getHyperbolicDistance(adash,bdash));
 }
 
 } /* namespace NetworKit */
