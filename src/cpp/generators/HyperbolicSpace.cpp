@@ -127,8 +127,8 @@ Point<double> HyperbolicSpace::mirrorOnCircle(Point<double> a, Point<double> cir
 
 double HyperbolicSpace::getHyperbolicDistance(Point<double> a, Point<double> b) {
 	double phi_1, r_1, phi_2, r_2;
-	cartesianToPolar(a, &phi_1, &r_1);
-	cartesianToPolar(b, &phi_2, &r_2);
+	cartesianToPolar(a, phi_1, r_1);
+	cartesianToPolar(b, phi_2, r_2);
 	return getDistance(phi_1, r_1, phi_2, r_2);
 }
 
@@ -143,13 +143,13 @@ Point<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
 	return Point<double>(r*cos(phi), r*sin(phi));
 }
 
-void HyperbolicSpace::cartesianToPolar(Point<double> a, double * phi, double *r) {
-	*r = a.length();
-	if (*r == 0) *phi = 0;
+void HyperbolicSpace::cartesianToPolar(Point<double> a, double &phi, double &r) {
+	r = a.length();
+	if (r == 0) phi = 0;
 	else if (a[1] >= 0){
-		*phi = acos(a[0]/ *r);
+		phi = acos(a[0]/ r);
 	} else {
-		*phi = -acos(a[0] / *r);
+		phi = -acos(a[0] / r);
 	}
 }
 
@@ -172,5 +172,59 @@ void HyperbolicSpace::getTransmutationCircle(Point<double> source,
 	}
 
 	circleRadius = pow(target.distance(circleCenter) * source.distance(circleCenter), 0.5);
+}
+
+double HyperbolicSpace::hyperbolicDistanceToArc(Point<double> query,
+		Point<double> a, Point<double> b, double R) {
+	/**
+	 * get isometry to origin
+	 */
+
+	Point<double> origin(0,0);
+	Point<double> m;
+	double radius;
+	getTransmutationCircle(query, origin, R, m, radius);
+
+	/**
+	 * transform all points
+	 */
+
+	Point<double> adash = mirrorOnCircle(a, m, radius);
+	Point<double> bdash = mirrorOnCircle(b, m, radius);
+	Point<double> querydash = mirrorOnCircle(query, m, radius);
+
+	/**
+	 * get arc
+	 */
+
+	Point<double> centerdash = circleCenter(adash, bdash, mirrorOnCircle(adash, origin, R));
+	double rdash = adash.distance(centerdash);
+
+	/**
+	 * get distances
+	 */
+
+	double directdistance = getHyperbolicDistance(querydash, centerdash);
+	assert(directdistance > rdash);
+	double distanceToA = getHyperbolicDistance(querydash, adash);
+	double distanceToB = getHyperbolicDistance(querydash, bdash);
+	assert(directdistance - rdash >= distanceToA);
+	assert(directdistance - rdash >= distanceToB);
+
+	/**
+	 * now check if the closest point of the circle is on the arc between a and b
+	 * This first solution is horribly expensive, may the gods of optimization have mercy on our souls.
+	 */
+
+	double m_phi, m_r;
+	cartesianToPolar(centerdash, m_phi, m_r);
+	Point<double> closestOnCircle = polarToCartesian(m_phi, directdistance);
+
+	double aTob = getHyperbolicDistance(adash, bdash);
+	double aToCoC = getHyperbolicDistance(adash, closestOnCircle);
+	double bToCoC = getHyperbolicDistance(bdash, closestOnCircle);
+
+	if (aToCoC < aTob && bToCoC < aTob) return directdistance - rdash;
+	else return std::min(distanceToA, distanceToB);
 }
 }

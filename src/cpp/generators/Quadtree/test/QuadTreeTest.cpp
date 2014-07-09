@@ -99,8 +99,8 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 				}
 				double centerangle, centerradius;
 				double shadowangle, shadowradius;
-				HyperbolicSpace::cartesianToPolar(circleCenter, &centerangle, &centerradius);
-				HyperbolicSpace::cartesianToPolar(shadowImage, &shadowangle, &shadowradius);
+				HyperbolicSpace::cartesianToPolar(circleCenter, centerangle, centerradius);
+				HyperbolicSpace::cartesianToPolar(shadowImage, shadowangle, shadowradius);
 				DEBUG("\drawwitness{", angles[comparison], "}{", radii[comparison], "}{", angles[i], "}{", radii[i], "}{", shadowangle, "}{", shadowradius, "}{", centerangle, "}{", centerradius, "}{",
 						circleCenter.distance(query), "}");
 			}
