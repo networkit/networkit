@@ -126,8 +126,8 @@ public:
 			coshNR = cosh(nearestR);
 			sinhNR = sinh(nearestR);
 		}
-		double leftDistance = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->leftAngle,  coshNR, sinhNR);
-		double rightDistance = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->rightAngle, coshNR, sinhNR);
+		double leftDistance = HyperbolicSpace::getDistance(angle, R, this->leftAngle,  nearestR);
+		double rightDistance = HyperbolicSpace::getDistance(angle, R, this->rightAngle, nearestR);
 		TRACE("leftDistance:", leftDistance);
 		TRACE("rightDistance:", rightDistance);
 		return std::min(leftDistance, rightDistance);
@@ -143,10 +143,10 @@ public:
 		double coshR = cosh(R);
 		double sinhR = sinh(R);
 
-		double leftLower = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->leftAngle, this->coshMinR, this->sinhMinR);
-		double rightLower = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->rightAngle, this->coshMinR, this->sinhMinR);
-		double leftUpper = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->leftAngle, this->coshMaxR, this->sinhMaxR);
-		double rightUpper = HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, this->rightAngle, this->coshMaxR, this->sinhMaxR);
+		double leftLower = HyperbolicSpace::getDistance(angle, R, this->leftAngle, minR);
+		double rightLower = HyperbolicSpace::getDistance(angle, R, this->rightAngle, minR);
+		double leftUpper = HyperbolicSpace::getDistance(angle, R, this->leftAngle, maxR);
+		double rightUpper = HyperbolicSpace::getDistance(angle, R, this->rightAngle, maxR);
 		return std::max(std::max(leftLower, rightLower), std::max(leftUpper, rightUpper));
 	}
 
@@ -177,7 +177,7 @@ public:
 				}
 				else {
 					for (uint i = 0; i < content.size(); i++) {
-						if (HyperbolicSpace::getDistancePrecached(angle, coshR, sinhR, angles[i], coshradii[i], sinhradii[i]) < maxDistance) {
+						if (HyperbolicSpace::getDistance(angle, R, angles[i], radii[i]) < maxDistance) {
 								result.push_back(content[i]);
 							}
 					}
