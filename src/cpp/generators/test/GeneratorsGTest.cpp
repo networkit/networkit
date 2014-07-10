@@ -455,6 +455,7 @@ TEST_F(GeneratorsGTest, testCoordinateTransformation) {
 	EXPECT_NE(m.distance(b), radius);
 	if (m.distance(a) < radius) EXPECT_GE(m.distance(b), radius); //the circle has to be between the points
 	else if (m.distance(a) > radius) EXPECT_LE(m.distance(b), radius);
+
 	Point<double> mirrored = HyperbolicSpace::mirrorOnCircle(a, m, radius);
 	DEBUG("Mirrored a(", a[0], ",", a[1], ") to (", mirrored[0], ",", mirrored[1], ")");
 	DEBUG("d(mirror,m)=", mirrored.distance(m));
@@ -480,13 +481,13 @@ TEST_F(GeneratorsGTest, testConversion) {
 }
 
 TEST_F(GeneratorsGTest, testIsometries) {
-	Point<double> a(5,0);
-	Point<double> b(7,0);
-	EXPECT_EQ(2, HyperbolicSpace::getHyperbolicDistance(a,b));
+	Point<double> a(0.5,0);
+	Point<double> b(0.7,0);
+	EXPECT_EQ(0.2, HyperbolicSpace::getHyperbolicDistance(a,b));
 
-	Point<double> c(3,3);
+	Point<double> c(0.4,0);
 	Point<double> origin(0,0);
-	double R = 8;
+	double R = 0.8;
 	Point<double> m;
 	double radius;
 
@@ -494,8 +495,11 @@ TEST_F(GeneratorsGTest, testIsometries) {
 	DEBUG("Circle center at (",m[0], ",", m[1], ") with radius ", radius);
 	EXPECT_LE(radius, m.length());
 	EXPECT_GE(radius, m.distance(c));
+	EXPECT_EQ(radius*radius+R*R, m.length()*m.length());
 	Point<double> adash = HyperbolicSpace::mirrorOnCircle(a, m, radius);
 	Point<double> bdash = HyperbolicSpace::mirrorOnCircle(b, m, radius);
+	EXPECT_LE(adash.length() , R);
+	EXPECT_LE(bdash.length() , R);
 	DEBUG("Mirrored a(", a[0], ",", a[1], ") to (", adash[0], ",", adash[1], ")");
 	DEBUG("Mirrored b(", b[0], ",", b[1], ") to (", bdash[0], ",", bdash[1], ")");
 	EXPECT_EQ(HyperbolicSpace::getHyperbolicDistance(a,b), HyperbolicSpace::getHyperbolicDistance(adash,bdash));
