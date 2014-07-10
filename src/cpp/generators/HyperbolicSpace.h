@@ -23,7 +23,7 @@ public:
 	virtual ~HyperbolicSpace();
 	HyperbolicSpace(double R);
 	static void fillPoints(vector<double> * angles, vector<double> * radii, double stretch, double alpha);
-	static double getDistance(double firstangle, double firstR, double secondangle, double secondR);//TODO: replace with coordinates
+	static double getHyperbolicDistance(double firstangle, double firstR, double secondangle, double secondR);
 	static double getDistancePrecached(double firstangle, double firstRcosh, double firstRsinh, double secondangle, double secondRcosh, double secondRsinh);
 	double getRadius();
 	static double cross(Point<double> a, Point<double> b);

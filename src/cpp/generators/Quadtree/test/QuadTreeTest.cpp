@@ -49,7 +49,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 		ASSERT_LE(closeToOne[i], n);
 
 		//close results should actually be close
-		EXPECT_LE(HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[closeToOne[i]], radii[closeToOne[i]]), R);
+		EXPECT_LE(HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[closeToOne[i]], radii[closeToOne[i]]), R);
 		for (index j = 0; j < i; j++) {
 			/**
 			 * results are unique
@@ -59,13 +59,13 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	}
 
 	for (index i = 0; i < n; i++) {
-		if (HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
+		if (HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
 			bool found = false;
 			QuadNode<index> responsibleNode = * getRoot(quad).getAppropriateLeaf(angles[i], radii[i]);
 
 			TRACE("Getting lower bound for responsible node");
 			double bound = responsibleNode.distanceLowerBound(angles[comparison], radii[comparison]);
-			double actualDistance = HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[i], radii[i]);
+			double actualDistance = HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[i], radii[i]);
 			EXPECT_GE(actualDistance, bound);
 			EXPECT_TRUE(responsibleNode.responsible(angles[i], radii[i]));
 
@@ -76,14 +76,14 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 				}
 			}
 			EXPECT_TRUE(found) << "dist(" << i << "," << comparison << ") = "
-					<< HyperbolicSpace::getDistance(angles[comparison], radii[comparison], angles[i], radii[i]) << " < " << R;
+					<< HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[i], radii[i]) << " < " << R;
 			if (!found || actualDistance < bound) {
 				DEBUG("angle: ", angles[i], ", radius: ", radii[i], ", leftAngle: ", responsibleNode.getLeftAngle(),
 						", rightAngle: ", responsibleNode.getRightAngle(), ", minR: ", responsibleNode.getMinR(), ", maxR:", responsibleNode.getMaxR());
-				DEBUG("dist(", comparison, ", leftMin)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMinR()));
-				DEBUG("dist(", comparison, ", leftMax)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMaxR()));
-				DEBUG("dist(", comparison, ", rightMin)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMinR()));
-				DEBUG("dist(", comparison, ", rightMax)=", HyperbolicSpace::getDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMaxR()));
+				DEBUG("dist(", comparison, ", leftMin)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMinR()));
+				DEBUG("dist(", comparison, ", leftMax)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMaxR()));
+				DEBUG("dist(", comparison, ", rightMin)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMinR()));
+				DEBUG("dist(", comparison, ", rightMax)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMaxR()));
 				DEBUG("\drawsetup{", responsibleNode.getLeftAngle(), "}{", responsibleNode.getMaxR(), "}{", responsibleNode.getRightAngle(), "}{", responsibleNode.getMaxR(), "}{", R, "}");
 				Point<double> origin;
 				Point<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
