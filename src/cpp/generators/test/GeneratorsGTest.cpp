@@ -370,7 +370,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 		EXPECT_GE(angles[i], 0);
 		EXPECT_LT(angles[i], 2*M_PI);
 		EXPECT_GE(radii[i], 0);
-		EXPECT_LT(radii[i], R);
+		EXPECT_LT(radii[i], 1);
 	}
 }
 
@@ -483,11 +483,12 @@ TEST_F(GeneratorsGTest, testConversion) {
 TEST_F(GeneratorsGTest, testIsometries) {
 	Point<double> a(0.5,0);
 	Point<double> b(0.7,0);
-	EXPECT_EQ(0.2, HyperbolicSpace::getHyperbolicDistance(a,b));
+	double dist =  acosh(  1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength()))  );
+	//EXPECT_EQ(0.2, HyperbolicSpace::getHyperbolicDistance(a,b));
 
 	Point<double> c(0.4,0);
 	Point<double> origin(0,0);
-	double R = 0.8;
+	double R = 1;
 	Point<double> m;
 	double radius;
 
@@ -502,7 +503,10 @@ TEST_F(GeneratorsGTest, testIsometries) {
 	EXPECT_LE(bdash.length() , R);
 	DEBUG("Mirrored a(", a[0], ",", a[1], ") to (", adash[0], ",", adash[1], ")");
 	DEBUG("Mirrored b(", b[0], ",", b[1], ") to (", bdash[0], ",", bdash[1], ")");
-	EXPECT_EQ(HyperbolicSpace::getHyperbolicDistance(a,b), HyperbolicSpace::getHyperbolicDistance(adash,bdash));
+	double distdashnom = 2*adash.squaredDistance(bdash);
+	double distdashdenom = (1 - adash.squaredLength())*(1 - bdash.squaredLength());
+	double distdash = acosh(  1 +  distdashnom/  distdashdenom );
+	EXPECT_LE(dist - distdash, 0.0001);
 }
 
 } /* namespace NetworKit */

@@ -23,11 +23,11 @@ QuadTreeTest::~QuadTreeTest() {
 
 TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	count n = 10000;
-	double R = acosh((double)n/(2*M_PI)+1);
+	double R = 1;
 	vector<double> angles(n);
 	vector<double> radii(n);
 	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
-	Quadtree<index> quad(R);
+	Quadtree<index> quad(0.9999999);
 
 	for (index i = 0; i < n; i++) {
 		EXPECT_GE(angles[i], 0);

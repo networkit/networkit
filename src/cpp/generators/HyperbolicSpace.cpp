@@ -42,14 +42,14 @@ double HyperbolicSpace::getRadius() {
  * This distance measure is taken from the Poincaré disc model.
  */
 double HyperbolicSpace::getDistance(double firstangle, double firstR, double secondangle, double secondR) {
-	if (firstangle == secondangle && firstR == secondR) return 0;
-	double deltaAngle = abs(firstangle - secondangle); //I don't have to check the direction because of the symmetry of cos
-	if (firstR != lastR) {
-		lastR = firstR;
-		coshlastR = cosh(firstR);
-		sinhlastR = sinh(firstR);
-	}
-	double result = acosh(coshlastR*cosh(secondR) - sinhlastR*sinh(secondR)*cos(deltaAngle));
+	/**
+	 * quick and dirty to see if it works. TODO: clean up later.
+	 */
+	assert(firstR < 1);
+	assert(secondR < 1);
+	Point<double> a = polarToCartesian(firstangle, firstR);
+	Point<double> b = polarToCartesian(secondangle, secondR);
+	double result = acosh( 1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength())));
 	assert(result >= 0);
 	return result;
 }
@@ -68,11 +68,11 @@ void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii
 		 */
 		double maxcdf = cosh(alpha*R);
 		double random = Aux::Random::real(1, maxcdf);
-		(*radii)[i] = acosh(random)/alpha;
-		assert((*radii)[i] <= R);
+		(*radii)[i] = (acosh(random)/alpha)/R;
+		assert((*radii)[i] < 1);
 	}
 }
-
+/**
 double HyperbolicSpace::getDistancePrecached(double firstangle, double firstRcosh, double firstRsinh, double secondangle, double secondRcosh, double secondRsinh) {
 	double deltaAngle = abs(firstangle - secondangle); //I don't have to check the direction because of the symmetry of cos
 	if (deltaAngle == 0 && firstRcosh == secondRcosh && firstRsinh == secondRsinh) return 0;//points are identical, sometimes resulted in -nan
@@ -80,6 +80,7 @@ double HyperbolicSpace::getDistancePrecached(double firstangle, double firstRcos
 	assert(result >= 0);
 	return result;
 }
+*/
 
 double HyperbolicSpace::cross(Point<double> a, Point<double> b) {
 	return a[0]*b[1] - a[1]*b[0];
