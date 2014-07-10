@@ -68,7 +68,7 @@ void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii
 		 */
 		double maxcdf = cosh(alpha*R);
 		double random = Aux::Random::real(1, maxcdf);
-		(*radii)[i] = (acosh(random)/alpha)/R;
+		(*radii)[i] = (acosh(random)/alpha)/(R+1);
 		assert((*radii)[i] < 1);
 	}
 }

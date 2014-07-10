@@ -130,7 +130,7 @@ public:
 		double rightDistance = HyperbolicSpace::getDistance(angle, R, this->rightAngle, nearestR);
 		TRACE("leftDistance:", leftDistance);
 		TRACE("rightDistance:", rightDistance);
-		return std::min(leftDistance, rightDistance);
+		return 0.89*std::min(leftDistance, rightDistance);
 	}
 
 	double distanceLowerBound(double angle, double R) {
