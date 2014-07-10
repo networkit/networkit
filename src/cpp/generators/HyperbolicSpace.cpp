@@ -41,14 +41,16 @@ double HyperbolicSpace::getRadius() {
 /**
  * This distance measure is taken from the Poincaré disc model.
  */
-double HyperbolicSpace::getDistance(double firstangle, double firstR, double secondangle, double secondR) {
+double HyperbolicSpace::getHyperbolicDistance(double phi_a, double  r_a, double phi_b, double r_b) {
 	/**
 	 * quick and dirty to see if it works. TODO: clean up later.
 	 */
-	assert(firstR < 1);
-	assert(secondR < 1);
-	Point<double> a = polarToCartesian(firstangle, firstR);
-	Point<double> b = polarToCartesian(secondangle, secondR);
+	assert(r_a < 1);
+	assert(r_b < 1);
+	return getHyperbolicDistance(polarToCartesian(phi_a, r_a), polarToCartesian(phi_b, r_b));
+}
+
+double HyperbolicSpace::getHyperbolicDistance(Point<double> a, Point<double> b) {
 	double result = acosh( 1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength())));
 	assert(result >= 0);
 	return result;
@@ -126,13 +128,6 @@ Point<double> HyperbolicSpace::mirrorOnCircle(Point<double> a, Point<double> cir
 	return circleCenter + (a - circleCenter).scale(r1/r0);
 }
 
-double HyperbolicSpace::getHyperbolicDistance(Point<double> a, Point<double> b) {
-	double phi_1, r_1, phi_2, r_2;
-	cartesianToPolar(a, phi_1, r_1);
-	cartesianToPolar(b, phi_2, r_2);
-	return getDistance(phi_1, r_1, phi_2, r_2);
-}
-
 bool HyperbolicSpace::isBelowArc(Point<double> query, Point<double> a, Point<double> b, double radius) {
 	Point<double> origin(0,0);
 	Point<double> center = circleCenter(a, b, mirrorOnCircle(a, origin, radius));
@@ -168,7 +163,7 @@ void HyperbolicSpace::getTransmutationCircle(Point<double> source,
 	double dist = target.distance(source);
 	double lambdanom = (-(source[0]*source[0]) - (source[1]*source[1]) + R*R);
 	double lambdadenom = dist * dist+ 2*(source[0]*(target[0] - source[0])+source[1]*(target[1]-source[1]));
-	//horrible hack to make sure the center is outside the bounds;
+
 	circleCenter = (target - source).scale(lambdanom/lambdadenom) + source;
 
 	circleRadius = pow(target.distance(circleCenter) * source.distance(circleCenter), 0.5);
