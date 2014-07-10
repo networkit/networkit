@@ -176,12 +176,9 @@ void HyperbolicSpace::getTransmutationCircle(Point<double> source,
 
 double HyperbolicSpace::hyperbolicDistanceToArc(Point<double> query,
 		Point<double> a, Point<double> b, double R) {
-	/**
-	 * get connecting arc
-	 */
-	Point<double> origin(0,0);
-	Point<double> m = circleCenter(a, b, mirrorOnCircle(a, origin, R));
-	double radius = a.distance(m);
+
+	assert(R == 1);
+
 	/**
 	 * get direct distances
 	 */
@@ -189,7 +186,37 @@ double HyperbolicSpace::hyperbolicDistanceToArc(Point<double> query,
 	double qToA = getHyperbolicDistance(query,a);
 	double qToB = getHyperbolicDistance(query,b);
 
-	Point<double> segment = (query - m);
-	Point<double> closestOnCircle; //well, is this actually the closest one? It sure is in euclidean space. That's why I need the transformation.
+	/**
+	 * transform
+	 */
+
+	Point<double> origin(0,0);
+	Point<double> m;
+	double radius;
+	getTransmutationCircle(origin, query, R, m, radius);
+
+	Point<double> adash = mirrorOnCircle(a, m, radius);
+	Point<double> bdash = mirrorOnCircle(b,m,radius);
+	Point<double> querydash = mirrorOnCircle(query,m,radius);
+	assert(querydash.length() < 0.0001);//should be origin
+
+	/**
+	* get connecting arc
+	 */
+
+	Point<double> c = circleCenter(adash, bdash, mirrorOnCircle(adash, origin, R));
+	double arcRadius = c.distance(adash);
+	double phi_c, r_c;
+	cartesianToPolar(c, phi_c, r_c);
+	double directDistance = r_c - arcRadius;
+
+	Point<double> closestOnCircle = polarToCartesian(phi_c, r_c - arcRadius);
+	assert(closestOnCircle.distance(c) - arcRadius < 0.0001);
+	double aToCoC = getHyperbolicDistance(adash, closestOnCircle);
+	double bToCoC = getHyperbolicDistance(bdash, closestOnCircle);
+	double aToB = getHyperbolicDistance(adash, bdash);
+
+	if (aToCoC < aToB && bToCoC < aToB) return directDistance;
+	else return std::min(qToA, qToB);
 }
 }
