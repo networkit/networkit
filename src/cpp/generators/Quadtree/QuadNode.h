@@ -104,20 +104,15 @@ public:
 	double distanceLowerBound(Point<double> query) {
 		//speeding this up with magic numbers. Careful!
 		double lowerDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, a, b, 1);
-		if (lowerDistance < 1) return lowerDistance;
 		double rightDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, b, c, 1);
-		if (rightDistance < 1) return rightDistance;
 		double upperDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, c, d, 1);
-		if (upperDistance < 1) return upperDistance;
 		double leftDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, d, a, 1);
-		if (leftDistance < 1) return leftDistance;
 
 		TRACE("leftDistance:", leftDistance);
 		TRACE("rightDistance:", rightDistance);
 		TRACE("lowerDistance:", lowerDistance);
 		TRACE("upperDistance:", upperDistance);
-		return std::min(std::min(leftDistance, rightDistance), std::min(leftDistance, rightDistance));
-
+		return std::min(std::min(leftDistance, rightDistance), std::min(lowerDistance, upperDistance));
 	}
 
 	double distanceLowerBound(double angle, double R) {
