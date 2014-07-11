@@ -29,6 +29,7 @@ public:
 		capacity = 20;
 		isLeaf = true;
 		minRegion = 0;
+		elements = 0;
 	}
 
 	~QuadNode() {
@@ -47,6 +48,7 @@ public:
 		this->capacity = 20;
 		this->minRegion = minDiameter;
 		isLeaf = true;
+		elements = 0;
 	}
 
 	void addContent(T input, double angle, double R) {
@@ -62,10 +64,11 @@ public:
 				/**
 				 * we want to make sure the space is evenly divided to obtain a balanced tree
 				 * Simply halving the radius will cause a larger space for the outer Quadnode, resulting in an unbalanced tree
-				 * The hyperbolic space grows with approximately e^R, so we try this.
 				 */
-				double rSpace = exp(maxR - minR);
-				double middleR = log(rSpace/2) + minR;
+
+				double nom = maxR - minR;
+				double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
+				double middleR = nom/denom + minR;
 
 				QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion);
 				QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion);
@@ -95,11 +98,11 @@ public:
 			}
 			//assert(foundResponsibleChild);
 		}
+		elements++;
 	}
 
 	double distanceLowerBound(Point<double> query) {
 		//speeding this up with magic numbers. Careful!
-
 		double lowerDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, a, b, 1);
 		if (lowerDistance < 1) return lowerDistance;
 		double rightDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, b, c, 1);
@@ -114,15 +117,12 @@ public:
 		TRACE("lowerDistance:", lowerDistance);
 		TRACE("upperDistance:", upperDistance);
 		return std::min(std::min(leftDistance, rightDistance), std::min(leftDistance, rightDistance));
+
 	}
 
 	double distanceLowerBound(double angle, double R) {
-		//return 0;//TODO: find proper lower Bound
 		if (responsible(angle, R)) return 0;
 		Point<double> query = HyperbolicSpace::polarToCartesian(angle, R);
-		/**
-		 * these I could save in the class definition
-		 */
 		return distanceLowerBound(query);
 	}
 
@@ -170,7 +170,7 @@ public:
 		} else {
 			for (uint i = 0; i < children.size(); i++) {
 				QuadNode * child = &children[i];
-				if (child->distanceLowerBound(angle, R) < maxDistance) {
+				if (child->elements > 0 && child->distanceLowerBound(angle, R) < maxDistance) {
 					vector<T> subresult = child->getCloseElements(angle, R, maxDistance);
 					result.insert(result.end(), subresult.begin(), subresult.end());
 				}
@@ -219,6 +219,7 @@ private:
 	Point<double> a,b,c,d;
 	unsigned capacity;
 	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
+	count elements;
 	std::vector<QuadNode> children;
 	std::vector<T> content;
 	std::vector<double> angles;
