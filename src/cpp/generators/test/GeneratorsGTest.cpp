@@ -375,24 +375,12 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 }
 
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
-	count n = 5000;
+	count n = 2000;
 	HyperbolicGenerator gen(n,1);
 	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_TRUE(G.consistencyCheck());
 }
-
-/**
- * 	static double cross(Point<double> a, Point<double> b);
-	static Point<double> intersect(Point<double> q, Point<double> s, Point<double> p, Point<double> r);
-	static Point<double> circleCenter(Point<double> a, Point<double> b, Point<double> c);
-	static Point<double> mirrorOnCircle(Point<double> a, Point<double> circleCenter, double radius);
-	static double getHyperbolicDistance(Point<double> a, Point<double> b);
-	static bool isBelowArc(Point<double> query, Point<double> a, Point<double> b, double radius);
-	static Point<double> polarToCartesian(double phi, double r);
-	static void cartesianToPolar(Point<double> a, double * phi, double *r);
-	static Point<double> orth(Point<double> a);
- */
 
 TEST_F(GeneratorsGTest, testIntersect) {
 	Point<double> a(1,0);
