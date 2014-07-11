@@ -43,13 +43,13 @@ Graph HyperbolicGenerator::generate(count n, double stretchradius) {
 
 	HyperbolicSpace::fillPoints(&angles, &radii, stretchradius, 1);
 	INFO("Generated Points");
-	return generate(&angles, &radii, R, R);
+	return generate(&angles, &radii, R/(R+1), R/(R+1));
 }
 
 Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance) {
 	index n = angles->size();
 	assert(radii->size() == n);
-	Quadtree<index> quad(0.99999999);
+	Quadtree<index> quad(R);
 	Graph result(n, false);
 	for (index i = 0; i < n; i++) {
 		assert(radii->at(i) < R);
