@@ -27,7 +27,13 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	vector<double> angles(n);
 	vector<double> radii(n);
 	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
-	Quadtree<index> quad(0.9999999);
+	double max = 0;
+	for (index i = 0; i < n; i++) {
+		if (radii[i] > max) {
+			max = radii[i];
+		}
+	}
+	Quadtree<index> quad(max+(1-max)/4);
 
 	for (index i = 0; i < n; i++) {
 		EXPECT_GE(angles[i], 0);

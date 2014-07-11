@@ -375,7 +375,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 }
 
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
-	count n = 1000;
+	count n = 5000;
 	HyperbolicGenerator gen(n,1);
 	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
