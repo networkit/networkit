@@ -58,6 +58,8 @@ public:
 				content.push_back(input);
 				angles.push_back(angle);
 				radii.push_back(R);
+				Point<double> pos = HyperbolicSpace::polarToCartesian(angle, R);
+				positions.push_back(pos);
 			} else {
 				//heavy lifting: split up!
 				double middleAngle = (rightAngle - leftAngle) / 2 + leftAngle;
@@ -102,9 +104,14 @@ public:
 	}
 
 	double distanceLowerBound(Point<double> query) {
+		double phi, r;
+		HyperbolicSpace::cartesianToPolar(query, phi, r);
+		if (responsible(phi,r)) return 0;
 		//speeding this up with magic numbers. Careful!
 		double lowerDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, a, b, 1);
+		//if (lowerDistance < 1) return 0;
 		double rightDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, b, c, 1);
+		//if (rightDistance < 1) return 0;
 		double upperDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, c, d, 1);
 		double leftDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, d, a, 1);
 
@@ -147,26 +154,22 @@ public:
 		}
 	}
 
-	std::vector<T> getCloseElements(double angle, double R, double maxDistance) {
+	std::vector<T> getCloseElements(Point<double> query, double maxDistance) {
+		assert(query.length() < 1);
 		std::vector<T> result;
 		if (isLeaf) {
-			if (this->distanceLowerBound(angle, R) < maxDistance) {
-				if (this->distanceUpperBound(angle, R) < maxDistance) {
-					return content;
-				}
-				else {
+			if (this->distanceLowerBound(query) < maxDistance) {
 					for (uint i = 0; i < content.size(); i++) {
-						if (HyperbolicSpace::getHyperbolicDistance(angle, R, angles[i], radii[i]) < maxDistance) {
+						if (HyperbolicSpace::getHyperbolicDistance(query, positions[i]) < maxDistance) {
 								result.push_back(content[i]);
 							}
 					}
-				}
 			}
 		} else {
 			for (uint i = 0; i < children.size(); i++) {
 				QuadNode * child = &children[i];
-				if (child->elements > 0 && child->distanceLowerBound(angle, R) < maxDistance) {
-					vector<T> subresult = child->getCloseElements(angle, R, maxDistance);
+				if (child->elements > 0 && child->distanceLowerBound(query) < maxDistance) {
+					vector<T> subresult = child->getCloseElements(query, maxDistance);
 					result.insert(result.end(), subresult.begin(), subresult.end());
 				}
 			}
@@ -217,9 +220,8 @@ private:
 	count elements;
 	std::vector<QuadNode> children;
 	std::vector<T> content;
+	std::vector<Point<double> > positions;
 	std::vector<double> angles;
-	std::vector<double> coshradii;
-	std::vector<double> sinhradii;
 	std::vector<double> radii;
 	bool isLeaf;
 };

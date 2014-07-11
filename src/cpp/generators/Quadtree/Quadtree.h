@@ -37,8 +37,8 @@ public:
 	vector<T> getElements() {
 		return root.getElements();
 	}
-	vector<T> getCloseElements(double angle, double R, double maxDistance) {
-		return root.getCloseElements(angle, R, maxDistance);
+	vector<T> getCloseElements(Point<double> query, double maxDistance) {
+		return root.getCloseElements(query, maxDistance);
 	}
 
 private:
