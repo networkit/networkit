@@ -26,6 +26,9 @@
 #include "../SNAPGraphWriter.h"
 #include "../EdgeListReader.h"
 #include "../GMLGraphWriter.h"
+#include "../EdgeListCoverReader.h"
+#include "../CoverReader.h"
+#include "../CoverWriter.h"
 
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
@@ -385,6 +388,50 @@ TEST_F(IOGTest, testEdgeListPartitionReader) {
 
 }
 
+TEST_F(IOGTest, testEdgeListCoverReader) {
+	EdgeListCoverReader reader(1);
+	EdgeListReader gReader('\t', 1);
+
+	Graph G = gReader.read("input/LFR-generator-example/network_overlapping.dat");
+	Cover zeta = reader.read("input/LFR-generator-example/community_overlapping.dat", G);
+	EXPECT_EQ(9u, zeta.upperBound());
+	EXPECT_EQ(10u, zeta.numberOfElements());
+	EXPECT_EQ(1u, zeta[0].count(1));
+	EXPECT_EQ(3u, zeta[0].size());
+	EXPECT_EQ(1u, zeta[3].size());
+}
+
+TEST_F(IOGTest, testCoverReader) {
+	CoverReader reader;
+	EdgeListReader gReader('\t', 1);
+
+	Graph G = gReader.read("input/LFR-generator-example/network_overlapping.dat");
+	Cover zeta = reader.read("input/LFR-generator-example/community_overlapping.cover", G);
+	EXPECT_EQ(9u, zeta.upperBound());
+	EXPECT_EQ(10u, zeta.numberOfElements());
+	EXPECT_EQ(1u, zeta[0].count(1));
+	EXPECT_EQ(3u, zeta[0].size());
+	EXPECT_EQ(1u, zeta[3].size());
+}
+
+TEST_F(IOGTest, testCoverWriter) {
+	std::string outpath = "output/coverWriter_test.cover";
+	CoverWriter writer;
+	CoverReader reader;
+	EdgeListReader gReader('\t', 1);
+
+	Graph G = gReader.read("input/LFR-generator-example/network_overlapping.dat");
+	Cover zeta = reader.read("input/LFR-generator-example/community_overlapping.cover", G);
+
+	writer.write(zeta, outpath);
+
+	Cover read = reader.read(outpath, G);
+	EXPECT_EQ(9u, read.upperBound());
+	EXPECT_EQ(10u, read.numberOfElements());
+	EXPECT_EQ(1u, read[0].count(1));
+	EXPECT_EQ(3u, read[0].size());
+	EXPECT_EQ(1u, read[3].size());
+}
 
 
 

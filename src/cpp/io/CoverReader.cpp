@@ -14,9 +14,8 @@ NetworKit::Cover NetworKit::CoverReader::read(std::string path, NetworKit::Graph
 	count i = 0;
 	node current;
 
-	while (file.good()) {
+	while (std::getline(file, line)) {
 		communities.setUpperBound(i+1);
-		std::getline(file, line);
 		std::stringstream linestream(line);
 		while (linestream >> current) {
 			communities.addToSubset(i, current);
