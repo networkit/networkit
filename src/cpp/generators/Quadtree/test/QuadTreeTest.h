@@ -25,7 +25,7 @@ public:
 
 protected:
 	template <class T>
-	QuadNode<T> getRoot(Quadtree<T> tree) {
+	QuadNode<T> getRoot(Quadtree<T> &tree) {
 		return tree.root;
 	}
 };

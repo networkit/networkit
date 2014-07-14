@@ -147,6 +147,7 @@ void HyperbolicSpace::cartesianToPolar(Point<double> a, double &phi, double &r) 
 	} else {
 		phi = -acos(a[0] / r);
 	}
+	if (phi < 0) phi += 2*M_PI;
 }
 
 void HyperbolicSpace::getTransmutationCircle(Point<double> source,
@@ -225,8 +226,8 @@ Point<double> HyperbolicSpace::getPointOnHyperbolicCircle(Point<double> hyperbol
 	if (gamma + phi < 2*M_PI) {
 		newphi = gamma + phi;
 	} else {
-		assert(gamma - phi >= 0);
-		newphi = gamma - phi;
+		assert(phi - gamma >= 0);
+		newphi = phi - gamma;
 	}
 	return HyperbolicSpace::polarToCartesian(newphi, r);
 }

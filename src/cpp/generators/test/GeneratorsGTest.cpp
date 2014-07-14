@@ -466,7 +466,22 @@ TEST_F(GeneratorsGTest, testConversion) {
 	Point<double> back = HyperbolicSpace::polarToCartesian(angle, radius);
 	EXPECT_LE(a[0] - back[0], 0.000001);
 	EXPECT_LE(a[1] - back[1], 0.000001);
+	count n = 1000;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	for (index i = 0; i < n; i++) {
+		Point<double> point = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+		double phi, r;
+		HyperbolicSpace::cartesianToPolar(point, phi,r);
+		EXPECT_GE(phi, 0) << "Point (" << point[0] << "," << point[1] << ") was not converted correctly";
+		EXPECT_GE(r, 0);
+		EXPECT_LE(abs(phi - angles[i]), 0.000001);
+		EXPECT_LE(abs(r - radii[i]), 0.000001);
+	}
 }
+
+
 
 TEST_F(GeneratorsGTest, testIsometries) {
 	Point<double> a(0.5,0);
@@ -514,6 +529,10 @@ TEST_F(GeneratorsGTest, testEuclideanCircleProjection) {
 	Point<double> highest = center;
 	highest.scale((center.length()+euRadius)/center.length());
 	EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, highest)), 0.0001);
+	double phi_a, r_a, phi_c, r_c;
+	HyperbolicSpace::cartesianToPolar(a, phi_a, r_a);
+	HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
+	EXPECT_LE(abs(phi_c - phi_a), 0.000001);
 }
 
 } /* namespace NetworKit */
