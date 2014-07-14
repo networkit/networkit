@@ -37,10 +37,6 @@ private:
 			}
 		};
 
-		void add(index thread, node u, node v, edgeweight ew = defaultEdgeWeight) {
-			adja[u                    ]
-		}
-
 	private:
 		count nThreads;
 		count z;
