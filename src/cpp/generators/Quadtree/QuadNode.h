@@ -193,6 +193,24 @@ public:
 		}
 	}
 
+	vector<T> getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point<double> center, double radius) {
+		vector<T> result;
+		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return result;
+		if (isLeaf) {
+			for (uint i = 0; i < content.size(); i++) {
+				if (center.distance(positions[i]) < radius) {
+					result.push_back(content[i]);
+				}
+			}
+		}	else {
+			for (uint i = 0; i < children.size(); i++) {
+				vector<T> subresult = children[i].getElementsInEuclideanCircle(minAngle, maxAngle, lowR, highR, center, radius);
+				result.insert(result.end(), subresult.begin(), subresult.end());
+			}
+		}
+		return content;
+	}
+
 	double getLeftAngle() {
 		return leftAngle;
 	}
