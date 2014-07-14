@@ -37,6 +37,7 @@ public:
 	static Point<double> orth(Point<double> a);
 	static void getTransmutationCircle(Point<double> source, Point<double> target, double minRadius, Point<double> &circleCenter, double &circleRadius);
 	static double hyperbolicDistanceToArc(Point<double> query, Point<double> a, Point<double> b, double R);
+	static void getEuclideanCircle(Point<double> hyperbolicCenter, Point<double> hyperbolicRadius, Point<double> &euclideanCenter, double &euclideanRadius);
 
 
 private:
