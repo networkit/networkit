@@ -20,27 +20,25 @@ Partition EdgeListPartitionReader::read(std::string path) {
 		throw std::runtime_error("invalid clustering file");
 	}
 
-
-	std::vector<index> temp;
-
-	// push all cluster ids into vector in order of appearance
 	std::string line;
+	index newOmega = 0;
+	Partition zeta(0); // start without nodes
 	while(std::getline(file, line)) {
 		std::vector<std::string> split = Aux::StringTools::split(line, '\t');
 		if (split.size() == 2 && split[0] != "#") {
 			index c = std::atoi(split[1].c_str());
-			temp.push_back(c);
+			// NetworKit uses zero-based node ids, adapt input accordingly
+			index v = std::atoi(split[0].c_str()) - firstNode;
+			// add nodes until we reach the current node
+			while (v >= zeta.numberOfElements()) {
+				zeta.extend();
+			}
+			// calculate the upper bound of the cluster ids
+			newOmega = std::max(newOmega, c);
+			zeta[v] = c;
 		}
 	}
 
-	count n = temp.size();
-	Partition zeta(n);
-	index newOmega = 0;
-	#pragma omp parallel for
-	for (node u = 0; u < n; ++u) {
-		newOmega = std::max(newOmega, temp[u - firstNode + 1]);
-		zeta[u] = temp[u - firstNode + 1];
-	}
 	zeta.setUpperBound(newOmega+1);
 	return zeta;
 }
