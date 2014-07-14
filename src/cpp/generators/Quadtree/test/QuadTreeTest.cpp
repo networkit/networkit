@@ -50,9 +50,39 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 		Point<double> origin;
 		Point<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
 		DEBUG("Using ", comparison, " at (", angles[comparison], ",", radii[comparison], ") as query point");
+
 		vector<index> closeToOne = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]), R);
 		EXPECT_LE(closeToOne.size(), n);
 
+		/**
+		* probable query circle
+
+		Point<double> pointOnEdge = HyperbolicSpace::getPointOnHyperbolicCircle(query, R);
+		double distance = HyperbolicSpace::getHyperbolicDistance(query, pointOnEdge);
+		EXPECT_LE(abs(distance - R), 0.00001);
+		Point<double> center;
+		double radius, minPhi, maxPhi;
+		HyperbolicSpace::getEuclideanCircle(query, pointOnEdge, center, radius);
+		DEBUG("Assuming circle at (", center[0], ",",center[1], ") with radius ", radius);
+		double minR = center.length() - radius;
+		double maxR = center.length() + radius;
+		assert(maxR < 1);
+		if (minR < 0) {
+			maxR = std::max(abs(minR), maxR);
+			minR = 0;
+			minPhi = 0;
+			maxPhi = 2*M_PI;
+		} else {
+			double spread = asin(radius / center.length());
+			double phi_c, r_c;
+			HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
+			minPhi = phi_c - spread;
+			maxPhi = phi_c + spread;
+
+			 //what to do if they overlap the 2\pi line? Well, have to make two separate calls and collect
+			/
+		}
+		*/
 		for (index i = 0; i < closeToOne.size(); i++) {
 			//no corrupt indices
 			ASSERT_LE(closeToOne[i], n);
@@ -65,8 +95,9 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 				 */
 				EXPECT_NE(closeToOne[i], closeToOne[j]);
 			}
-	}
-
+		}
+		count notfound = 0;
+		count didfind = 0;
 		for (index i = 0; i < n; i++) {
 			if (HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
 				bool found = false;
@@ -88,31 +119,22 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 				EXPECT_TRUE(found) << "dist(" << i << "," << comparison << ") = "
 						<< HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[i], radii[i]) << " < " << R;
 				if (!found) {
+					notfound++;
 					DEBUG("angle: ", angles[i], ", radius: ", radii[i], ", leftAngle: ", responsibleNode.getLeftAngle(),
 							", rightAngle: ", responsibleNode.getRightAngle(), ", minR: ", responsibleNode.getMinR(), ", maxR:", responsibleNode.getMaxR());
+					//DEBUG("euclidean Distance from circle center: ", center.distance(HyperbolicSpace::polarToCartesian(angles[i], radii[i])));
 					DEBUG("dist(", comparison, ", leftMin)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMinR()));
 					DEBUG("dist(", comparison, ", leftMax)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMaxR()));
 					DEBUG("dist(", comparison, ", rightMin)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMinR()));
 					DEBUG("dist(", comparison, ", rightMax)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMaxR()));
-					DEBUG("drawsetup{", responsibleNode.getLeftAngle(), "}{", responsibleNode.getMaxR(), "}{", responsibleNode.getRightAngle(), "}{", responsibleNode.getMaxR(), "}{", R, "}");
-					Point<double> witness = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
-					Point<double> shadowImage = HyperbolicSpace::mirrorOnCircle(witness, origin, R);
-					Point<double> circleCenter = HyperbolicSpace::circleCenter(query, witness, shadowImage);
-					Point<double> upperLeft = HyperbolicSpace::polarToCartesian(responsibleNode.getLeftAngle(), responsibleNode.getMaxR());
-					Point<double> upperRight = HyperbolicSpace::polarToCartesian(responsibleNode.getRightAngle(), responsibleNode.getMaxR());
-					if (HyperbolicSpace::isBelowArc(query, upperLeft, upperRight, R)) {
-						DEBUG("Witness point is below connecting arc.");
-					} else {
-						DEBUG("Witness point is above connecting arc.");
-					}
-					double centerangle, centerradius;
-					double shadowangle, shadowradius;
-					HyperbolicSpace::cartesianToPolar(circleCenter, centerangle, centerradius);
-					HyperbolicSpace::cartesianToPolar(shadowImage, shadowangle, shadowradius);
-					DEBUG("drawwitness{", angles[comparison], "}{", radii[comparison], "}{", angles[i], "}{", radii[i], "}{", shadowangle, "}{", shadowradius, "}{", centerangle, "}{", centerradius, "}{",
-						circleCenter.distance(query), "}");
+				}
+				else {
+					didfind++;
 				}
 			}
+		}
+		if (notfound > 0) {
+			DEBUG("Found only ", didfind, " of ", didfind + notfound, " neighbours");
 		}
 	}
 }
