@@ -69,7 +69,7 @@ def evalCommunityDetection(algo, G):
 	print(tabulate.tabulate(results))
 
 
-def readCommunities(path, format="partition"):
+def readCommunities(path, format="default"):
 	""" Read a partition into communities from a file"""
 	readers =  {"default": PartitionReader(),
 		"edgelist-t1": EdgeListPartitionReader(1),
