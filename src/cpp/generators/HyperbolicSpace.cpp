@@ -214,4 +214,13 @@ double HyperbolicSpace::hyperbolicDistanceToArc(Point<double> query,
 	if (aToCoC < aToB && bToCoC < aToB) return directDistance;
 	else return std::min(qToA, qToB);
 }
+
+void HyperbolicSpace::getEuclideanCircle(Point<double> hyperbolicCenter, Point<double> pointOnEdge, Point<double> &euclideanCenter, double &euclideanRadius) {
+	Point<double> origin;
+	Point<double> center = circleCenter(hyperbolicCenter, pointOnEdge, mirrorOnCircle(hyperbolicCenter, origin, 1));
+	Point<double> edgeCenterVector = center - pointOnEdge;
+	Point<double> arc = hyperbolicCenter - origin;
+	euclideanCenter = intersect(pointOnEdge, orth(edgeCenterVector), origin, arc);
+	euclideanRadius = euclideanCenter.distance(pointOnEdge);
+}
 }
