@@ -2076,7 +2076,7 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 
 cdef extern from "../cpp/community/JaccardMeasure.h":
 	cdef cppclass _JaccardMeasure "NetworKit::JaccardMeasure":
-		J_accardMeasure() except +
+		_JaccardMeasure() except +
 		double getDissimilarity(_Graph G, _Partition first, _Partition second)
 
 cdef class JaccardMeasure(DissimilarityMeasure):
