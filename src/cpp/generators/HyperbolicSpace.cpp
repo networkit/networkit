@@ -215,6 +215,22 @@ double HyperbolicSpace::hyperbolicDistanceToArc(Point<double> query,
 	else return std::min(qToA, qToB);
 }
 
+Point<double> HyperbolicSpace::getPointOnHyperbolicCircle(Point<double> hyperbolicCenter, double radius) {
+	double sqL = hyperbolicCenter.squaredLength();
+	double nom = (cosh(radius)-1)*(1-sqL)*(1-sqL);
+	double denom = 4*sqL;
+	double gamma = acos(1-nom/denom);
+	double phi, r, newphi;
+	HyperbolicSpace::cartesianToPolar(hyperbolicCenter, phi, r);
+	if (gamma + phi < 2*M_PI) {
+		newphi = gamma + phi;
+	} else {
+		assert(gamma - phi >= 0);
+		newphi = gamma - phi;
+	}
+	return HyperbolicSpace::polarToCartesian(newphi, r);
+}
+
 void HyperbolicSpace::getEuclideanCircle(Point<double> hyperbolicCenter, Point<double> pointOnEdge, Point<double> &euclideanCenter, double &euclideanRadius) {
 	Point<double> origin;
 	Point<double> center = circleCenter(hyperbolicCenter, pointOnEdge, mirrorOnCircle(hyperbolicCenter, origin, 1));

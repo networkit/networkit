@@ -497,6 +497,25 @@ TEST_F(GeneratorsGTest, testIsometries) {
 	EXPECT_LE(dist - distdash, 0.0001);
 }
 
+TEST_F(GeneratorsGTest, testPointOnCircle) {
+	Point<double> a(0.5,0.5);
+	double radius = 0.3;
+	Point<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
+	EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, second)), 0.0001);
+}
+
+TEST_F(GeneratorsGTest, testEuclideanCircleProjection) {
+	Point<double> a(0.5,0.5);
+	double radius = 0.3;
+	Point<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
+	Point<double> center;
+	double euRadius;
+	HyperbolicSpace::getEuclideanCircle(a, second, center, euRadius);
+	Point<double> highest = center;
+	highest.scale((center.length()+euRadius)/center.length());
+	EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, highest)), 0.0001);
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
