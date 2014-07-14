@@ -23,7 +23,7 @@ PLP::PLP(count theta) : updateThreshold(theta) {
 }
 
 
-Partition& PLP::runFromGiven(Graph& G, Partition& labels) {
+Partition& PLP::runFromGiven(const Graph& G, Partition& labels) {
 	typedef index label; // a label is the same as a cluster id
 
 	count n = G.numberOfNodes();
@@ -109,7 +109,7 @@ Partition& PLP::runFromGiven(Graph& G, Partition& labels) {
 }
 
 
-Partition PLP::run(Graph& G) {
+Partition PLP::run(const Graph& G) {
 	// set unique label for each node
 	index z = G.upperNodeIdBound();
 	Partition labels(z);
@@ -140,4 +140,3 @@ count PLP::numberOfIterations() {
 }
 
 } /* namespace NetworKit */
-
