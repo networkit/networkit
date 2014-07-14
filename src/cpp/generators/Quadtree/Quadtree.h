@@ -40,12 +40,31 @@ public:
 	}
 
 	vector<T> getCloseElements(Point<double> query, double maxDistance) {
+		Point<double> origin;
+		vector<T> circleDenizens;
+		vector<Point<double> > positions;
+		if (HyperbolicSpace::getHyperbolicDistance(origin, query) < maxDistance) {
+			/*
+			 * circle will overlap origin, approach not feasible!
+			 */
+			double maxR = pow((cosh(maxDistance)-1)/(2+cosh(maxDistance)-1), 0.5);
+			vector<T> subresult;
+			vector<Point<double> > subpos;
+			root.getElementsInEuclideanCircle(0, 0, 0, maxR, origin, maxR, subresult, subpos);
+			//filter manually. Sigh.
+
+			for (index i = 0; i < subresult.size(); i++) {
+				if (HyperbolicSpace::getHyperbolicDistance(subpos[i], query) < maxDistance) {
+					circleDenizens.push_back(subresult[i]);
+				}
+			}
+		} else {
 		/**
 		 * compute circle and polar rectangle
 		 */
 		Point<double> pointOnEdge = HyperbolicSpace::getPointOnHyperbolicCircle(query, maxDistance);
 		double distance = HyperbolicSpace::getHyperbolicDistance(query, pointOnEdge);
-		assert(distance == maxDistance);
+		assert(abs(distance - maxDistance) < 0.00001);
 		Point<double> center;
 		double radius, minPhi, maxPhi;
 		HyperbolicSpace::getEuclideanCircle(query, pointOnEdge, center, radius);
@@ -58,7 +77,7 @@ public:
 			minPhi = 0;
 			maxPhi = 2*M_PI;
 		} else {
-			double spread = atan(radius / center.length());
+			double spread = asin(radius / center.length());
 			double phi_c, r_c;
 			HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
 			minPhi = phi_c - spread;
@@ -72,14 +91,15 @@ public:
 		 * get Elements in Circle
 		 */
 
-		vector<T> circleDenizens = root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, center, radius);
+
+		root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, center, radius, circleDenizens, positions);
 		if (minPhi < 0) {
-			vector<T> additional = root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, center, radius);
-			circleDenizens.insert(circleDenizens.end(), additional.begin(), additional.end());
+			root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, center, radius, circleDenizens, positions);
 		}
 		if (maxPhi > 2*M_PI) {
-			vector<T> additional = root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, center, radius);
-			circleDenizens.insert(circleDenizens.end(), additional.begin(), additional.end());
+			root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, center, radius, circleDenizens, positions);
+		}
+
 		}
 
 		/**
