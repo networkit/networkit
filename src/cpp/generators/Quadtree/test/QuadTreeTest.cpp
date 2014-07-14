@@ -46,7 +46,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	vector<index> all = quad.getElements();
 	EXPECT_EQ(all.size(), n);
 	for (index testindex = 0; testindex < 100; testindex++) {
-		index comparison = Aux::Random::integer(n);
+		index comparison = Aux::Random::integer(n-1);
 		Point<double> origin;
 		Point<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
 		DEBUG("Using ", comparison, " at (", angles[comparison], ",", radii[comparison], ") as query point");
