@@ -40,19 +40,21 @@ public:
 	}
 
 	vector<T> getCloseElements(Point<double> query, double maxDistance) {
-		Point<double> origin;
+		Point<double> origin(0,0);
 		vector<T> circleDenizens;
 		vector<Point<double> > positions;
-		if (HyperbolicSpace::getHyperbolicDistance(origin, query) < maxDistance) {
+		double hyperbolicFromOrigin = HyperbolicSpace::getHyperbolicDistance(origin, query);
+		if (hyperbolicFromOrigin < maxDistance) {
 			/*
 			 * circle will overlap origin, approach not feasible!
 			 */
-			double maxR = pow((cosh(maxDistance)-1)/(2+cosh(maxDistance)-1), 0.5);
+			double maxR = pow((cosh(maxDistance+hyperbolicFromOrigin)-1)/(cosh(maxDistance+hyperbolicFromOrigin)+1), 0.5);
 			vector<T> subresult;
 			vector<Point<double> > subpos;
-			root.getElementsInEuclideanCircle(0, 0, 0, maxR, origin, maxR, subresult, subpos);
+			root.getElementsInEuclideanCircle(0, 2*M_PI, 0, maxR, origin, maxR, subresult, subpos);
+			assert(subresult.size() == subpos.size());
 			//filter manually. Sigh.
-
+			DEBUG("Filter manually with radius ", maxR);
 			for (index i = 0; i < subresult.size(); i++) {
 				if (HyperbolicSpace::getHyperbolicDistance(subpos[i], query) < maxDistance) {
 					circleDenizens.push_back(subresult[i]);
@@ -68,6 +70,7 @@ public:
 		Point<double> center;
 		double radius, minPhi, maxPhi;
 		HyperbolicSpace::getEuclideanCircle(query, pointOnEdge, center, radius);
+		DEBUG("Using circle at (", center[0], ",",center[1], ") with radius ", radius);
 		double minR = center.length() - radius;
 		double maxR = center.length() + radius;
 		assert(maxR < 1);

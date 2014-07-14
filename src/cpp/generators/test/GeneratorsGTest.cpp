@@ -527,19 +527,33 @@ TEST_F(GeneratorsGTest, testPointOnCircle) {
 }
 
 TEST_F(GeneratorsGTest, testEuclideanCircleProjection) {
-	Point<double> a(0.5,0.5);
-	double radius = 0.3;
-	Point<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
-	Point<double> center;
-	double euRadius;
-	HyperbolicSpace::getEuclideanCircle(a, second, center, euRadius);
-	Point<double> highest = center;
-	highest.scale((center.length()+euRadius)/center.length());
-	EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, highest)), 0.0001);
-	double phi_a, r_a, phi_c, r_c;
-	HyperbolicSpace::cartesianToPolar(a, phi_a, r_a);
-	HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
-	EXPECT_LE(abs(phi_c - phi_a), 0.000001);
+	count n = 1000;
+		Point<double> origin;
+		vector<double> angles(n);
+		vector<double> radii(n);
+		HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+		for (index i = 0; i < n; i++) {
+			Point<double> a = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+			double radius = Aux::Random::real(HyperbolicSpace::getHyperbolicDistance(origin, a));
+			Point<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
+			Point<double> center;
+			double euRadius;
+			HyperbolicSpace::getEuclideanCircle(a, second, center, euRadius);
+			EXPECT_LE(euRadius + center.length(), 1);
+			Point<double> highest = center;
+			highest.scale((center.length()+euRadius)/center.length());
+			EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, highest)), 0.0001);
+
+			Point<double> lowest = center;
+			lowest.scale((center.length()-euRadius)/center.length());
+			EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, lowest)), 0.0001);
+
+			EXPECT_LE(HyperbolicSpace::getHyperbolicDistance((highest+lowest).scale(0.5),a), radius);
+			double phi_a, r_a, phi_c, r_c;
+			HyperbolicSpace::cartesianToPolar(a, phi_a, r_a);
+			HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
+			EXPECT_LE(abs(phi_c - phi_a), 0.000001);
+		}
 }
 
 } /* namespace NetworKit */
