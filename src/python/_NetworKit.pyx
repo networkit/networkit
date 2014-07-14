@@ -1207,6 +1207,19 @@ cdef class SNAPEdgeListPartitionReader:
 #	def Write(self, Partition zeta, path):
 #		self._this.write(zeta._this, stdstring(path))
 
+cdef extern from "../cpp/io/CoverReader.h":
+	cdef cppclass _CoverReader "NetworKit::CoverReader":
+		_CoverReader() except +
+		_Cover read(string path,_Graph G) except +
+
+cdef class CoverReader:
+	""" Reads a cover from a file
+		File format: each line contains the space-separated node ids of a community
+	 """
+	cdef _CoverReader _this
+
+	def read(self, path, Graph G):
+		return Cover().setThis(self._this.read(stdstring(path), dereference(G._this)))
 
 # Parameters
 

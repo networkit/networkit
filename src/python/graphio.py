@@ -1,6 +1,6 @@
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
 						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
-						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader)
+						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader)
 from GraphMLIO import GraphMLReader, GraphMLWriter
 import os
 import logging
