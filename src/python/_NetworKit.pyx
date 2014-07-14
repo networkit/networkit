@@ -2087,7 +2087,19 @@ cdef class JaccardMeasure(DissimilarityMeasure):
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
 		return self._this.getDissimilarity(dereference(G._this), first._this, second._this)
 
+cdef extern from "../cpp/community/NMIDistance.h":
+	cdef cppclass _NMIDistance "NetworKit::NMIDistance":
+		_NMIDistance() except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second)
 
+cdef class NMIDistance(DissimilarityMeasure):
+	""" The NMI distance assigns a similarity value in [0,1] to two partitions
+		of a graph.
+	"""
+	cdef _NMIDistance _this
+
+	def getDissimilarity(self, Graph G, Partition first, Partition second):
+		return self._this.getDissimilarity(dereference(G._this), first._this, second._this)
 
 cdef extern from "../cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
