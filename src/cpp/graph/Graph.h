@@ -2,11 +2,11 @@
  * BasicGraph.h
  *
  *  Created on: 01.06.2014
- *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
+ *      Author: Christian Staudt (christian.staudt@kit.edu), Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef BASICGRAPH_H_
-#define BASICGRAPH_H_
+#ifndef GRAPH_H_
+#define GRAPH_H_
 
 #include <algorithm>
 #include <vector>
@@ -47,10 +47,10 @@ private:
 
 	std::vector<count> inDeg; //!< only used for directed graphs, number of edges incoming per node
 	std::vector<count> outDeg; //!< degree of every node, zero if node was removed. For directed graphs only outgoing edges count
-	
+
 	std::vector< std::vector<node> > inEdges; //!< only used for directed graphs, inEdges[v] contains all nodes u that have an edge (u, v)
 	std::vector< std::vector<node> > outEdges; //!< (outgoing) edges, for each edge (u, v) v is saved in outEdges[u] and for undirected also u in outEdges[v]
-	
+
 	std::vector< std::vector<edgeweight> > inEdgeWeights; //!< only used for directed graphs, same schema as inEdges
 	std::vector< std::vector<edgeweight> > outEdgeWeights; //!< same schema (and same order!) as outEdges
 
@@ -132,7 +132,7 @@ public:
 	/**
 	 * Try to save some memory by shrinking internal data structures of the graph. Only run this
 	 * once you finished editing the graph. Otherwise it will cause unnecessary reallocation of
-	 * memory. 
+	 * memory.
 	 */
 	void shrinkToFit();
 
@@ -303,7 +303,7 @@ public:
 	 */
 	bool isWeighted() const { return weighted; }
 
-	/** 
+	/**
 	 * Return @c true if this graph supports directed edges.
 	 * @return @c true if this graph supports directed edges.
 	 */
@@ -367,7 +367,7 @@ public:
 	 * @param v Node.
 	 * @param value The coordinate of @a v.
 	 */
-	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); } 
+	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); }
 
 
 	/**
@@ -375,7 +375,7 @@ public:
 	 * @param v Node.
 	 * @return The coordinate of @a v.
 	 */
-	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); } 
+	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); }
 
 	/**
 	 * Get minimum coordinate of all coordinates with respect to dimension @a dim.
@@ -661,12 +661,12 @@ public:
 
 
 	/* REDUCTION ITERATORS */
-	
+
 	/**
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
 	 */
 	template<typename L> double parallelSumForNodes(L handle) const;
-	
+
 	/**
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
 	 */
@@ -786,7 +786,7 @@ void Graph::parallelForNodePairs(L handle) const {
 	}
 }
 
-	
+
 /* EDGE ITERATORS */
 
 template<typename L>
@@ -815,7 +815,7 @@ void Graph::forWeightedEdges(L handle) const {
 				}
 			}
 			break;
-		
+
 		case 1: // weighted,   undirected
 			for (node u = 0; u < z; ++u) {
 				for (index i = 0; i < outEdges[u].size(); ++i) {
@@ -873,7 +873,7 @@ void Graph::parallelForWeightedEdges(L handle) const {
 				}
 			}
 			break;
-		
+
 		case 1: // weighted,   undirected
 			#pragma omp parallel for
 			for (node u = 0; u < z; ++u) {
@@ -966,7 +966,7 @@ void Graph::forWeightedEdgesOf(node u, L handle) const {
 				edgeweight ew = outEdgeWeights[u][i];
 				handle(u, v, ew);
 			}
-		}	
+		}
 	} else {
 		for (index i = 0; i < outEdges[u].size(); i++) {
 			node v = outEdges[u][i];
@@ -1003,7 +1003,7 @@ void Graph::forWeightedInEdgesOf(node u, L handle) const {
 					edgeweight ew = inEdgeWeights[u][i];
 					handle(v, u, ew);
 				}
-			}	
+			}
 		} else {
 			for (index i = 0; i < inEdges[u].size(); i++) {
 				node v = inEdges[u][i];
@@ -1024,7 +1024,7 @@ void Graph::forWeightedInEdgesOf(node u, L handle) const {
 					edgeweight ew = outEdgeWeights[u][i];
 					handle(v, u, ew);
 				}
-			}	
+			}
 		} else {
 			for (index i = 0; i < outEdges[u].size(); i++) {
 				node v = outEdges[u][i];
@@ -1074,7 +1074,7 @@ double Graph::parallelSumForWeightedEdges(L handle) const {
 				}
 			}
 			break;
-		
+
 		case 1: // weighted,   undirected
 			#pragma omp parallel for reduction(+:sum)
 			for (node u = 0; u < z; ++u) {
@@ -1179,7 +1179,7 @@ void Graph::DFSfrom(node r, L handle) const {
 				marked[v] = true;
 			}
 		});
-	} while (!s.empty()); 
+	} while (!s.empty());
 }
 
 template<typename L>
@@ -1199,9 +1199,9 @@ void Graph::DFSEdgesfrom(node r, L handle) const {
 				marked[v] = true;
 			}
 		});
-	} while (!s.empty()); 
+	} while (!s.empty());
 }
 
 } /* namespace NetworKit */
 
-#endif /* BASICGRAPH_H_ */
+#endif /* GRAPH_H_ */
