@@ -513,10 +513,17 @@ TEST_F(GeneratorsGTest, testIsometries) {
 }
 
 TEST_F(GeneratorsGTest, testPointOnCircle) {
-	Point<double> a(0.5,0.5);
-	double radius = 0.3;
-	Point<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
-	EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, second)), 0.0001);
+	count n = 1000;
+	Point<double> origin;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	for (index i = 0; i < n; i++) {
+		Point<double> a = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+		double radius = Aux::Random::real(HyperbolicSpace::getHyperbolicDistance(origin, a));
+		Point<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
+		EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, second)), 0.0001);
+	}
 }
 
 TEST_F(GeneratorsGTest, testEuclideanCircleProjection) {
