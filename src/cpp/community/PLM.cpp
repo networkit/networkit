@@ -26,44 +26,16 @@ Partition PLM::run(const Graph& G) {
 
 	count z = G.upperNodeIdBound();
 
-	std::vector<bool> active(z); // record if node must be processed
-	active.assign(z, true);
-
-    std::vector<bool> satellitesV(z, false); //$$$$
-
-	// DEBUG
-	count modGainCalled = 0;
-	// DEBUG
 
 	// init communities to singletons
 	Partition zeta(z);
-    // init graph-dependent temporaries
-	std::vector<double> volNode(z, 0.0);
-    
 	G.forNodes([&](node v) {
 		zeta.toSingleton(v);
-
-		// SATELLITE FOLLOWING: initially deactivate satellies
-		if (G.degree(v) == 1) {     //$$$$updating satellite vector, deactivate satellites
-			active[v] = false;
-            satellitesV[v] = true;
-            
-            //$$$$ loop through neighbors, adding weights of satellites,
-            G.forWeightedNeighborsOf(v, [&](node p, edgeweight weight) {
-                volNode[p] += (2 * weight);
-                
-            });
-		}
-        // TODO: parallel
-        
-        if (G.degree(v) == 0) {     //$$$$ deactivate isolated nodes
-			active[v] = false;
-		}
-
 	});
 	index o = zeta.upperBound();
 
-	
+	// init graph-dependent temporaries
+	std::vector<double> volNode(z, 0.0);
 	// $\omega(E)$
 	edgeweight total = G.totalEdgeWeight();
 	DEBUG("total edge weight: " , total);
@@ -72,8 +44,8 @@ Partition PLM::run(const Graph& G) {
 	G.parallelForNodes([&](node u) { // calculate and store volume of each node
 		volNode[u] += G.weightedDegree(u);
 		volNode[u] += G.weight(u, u); // consider self-loop twice
-       
-    });
+		// TRACE("init volNode[" , u , "] to " , volNode[u]);
+	});
 
 	// init community-dependent temporaries
 	std::vector<double> volCommunity(o, 0.0);
@@ -85,121 +57,89 @@ Partition PLM::run(const Graph& G) {
 	bool moved = false; // indicates whether any node has been moved in the last pass
 	bool change = false; // indicates whether the communities have changed at all
 
-	/*
-	 * try to improve modularity by moving a node to neighboring clusters
-	 */
+	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
-		if (active[u]) { // only consider active nodes
-			TRACE("trying to move node " , u);
+		// TRACE("trying to move node " , u);
 
-			// collect edge weight to neighbor clusters
-			std::map<index, edgeweight> affinity;
-			G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
-				if (u != v && !satellitesV[v]) {
-					index C = zeta[v];
-					affinity[C] += weight;
-				}
-			});
-            
-            //$$$$$ core nodes
-            if (affinity.size() < 2) {
-                active[u] = false;
-                //$$$$ optional: return only if it is in the same community as all of its neighbors; in that case, the work that follows is unnecessary for such nodes
-                //if (zeta[u] == C) {
-                //    return;
-                //}
-                
-            }
-            
-
-			// sub-functions
-
-			// $\vol(C \ {x})$ - volume of cluster C excluding node x
-			auto volCommunityMinusNode = [&](index C, node x) {
-				double volC = 0.0;
-				double volN = 0.0;
-				volC = volCommunity[C];
-				if (zeta[x] == C) {
-					volN = volNode[x];
-					return volC - volN;
-				} else {
-					return volC;
-				}
-			};
-
-
-			auto modGain = [&](node u, index C, index D) {
-				double volN = 0.0;
-				volN = volNode[u];
-				double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
-				TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
-				return delta;
-			};
-
-			index best = none;
-			index C = none;
-			index D = none;
-			double deltaBest = -1;
-
-			C = zeta[u];
-
-			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
-			//bool core = true;
-			G.forNeighborsOf(u, [&](node v) {
-				D = zeta[v];
-                //$$$$ check if neighbor is non-satellite
-				if (D != C && !satellitesV[v]) { // consider only nodes in other clusters (and implicitly only nodes other than u)
-					double delta = modGain(u, C, D);
-					// DEBUG
-					//#pragma omp atomic update
-					//∉ += 1;
-					// DEBUG
-					TRACE("mod gain: " , delta);
-					if (delta > deltaBest) {
-						deltaBest = delta;
-						best = D;
-					}
-                    //$$$ delete code with core, not needed?
-					//core = false;
-				}
-			});
-
-
-			TRACE("deltaBest=" , deltaBest);
-			if (deltaBest > 0) { // if modularity improvement possible
-				assert (best != C && best != none);// do not "move" to original cluster
-
-				zeta[u] = best; // move to best cluster
-				TRACE("node " , u , " moved");
-
-				// mod update
-				double volN = 0.0;
-				volN = volNode[u];
-				// update the volume of the two clusters
-				#pragma omp atomic update
-				volCommunity[C] -= volN;
-				#pragma omp atomic update
-				volCommunity[best] += volN;
-
-				moved = true; // change to clustering has been made
-
-			} else {
-				TRACE("node " , u , " not moved");
+		// collect edge weight to neighbor clusters
+		std::map<index, edgeweight> affinity;
+		G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
+			if (u != v) {
+				index C = zeta[v];
+				affinity[C] += weight;
 			}
+		});
 
-			//$$$$ CORE NODE ACTIVATION: when u changes community, activate all neighbors
-			if (moved) {
-                G.forNeighborsOf(u, [&](node v){
-                    if (!satellitesV[v]){
-                        active[v] = true;
-                    }
-			 	});
-            }
-            
+
+		// sub-functions
+
+		// $\vol(C \ {x})$ - volume of cluster C excluding node x
+		auto volCommunityMinusNode = [&](index C, node x) {
+			double volC = 0.0;
+			double volN = 0.0;
+			volC = volCommunity[C];
+			if (zeta[x] == C) {
+				volN = volNode[x];
+				return volC - volN;
+			} else {
+				return volC;
+			}
+		};
+
+		// // $\omega(u | C \ u)$
+		// auto omegaCut = [&](node u, index C) {
+		// 	return affinity[C];
+		// };
+
+		auto modGain = [&](node u, index C, index D) {
+			double volN = 0.0;
+			volN = volNode[u];
+			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
+			//TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
+			return delta;
+		};
+
+		index best = none;
+		index C = none;
+		index D = none;
+		double deltaBest = -1;
+
+		C = zeta[u];
+
+//			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
+		G.forNeighborsOf(u, [&](node v) {
+			D = zeta[v];
+			if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
+				double delta = modGain(u, C, D);
+				// TRACE("mod gain: " , delta); // FIXME: all mod gains are negative
+				if (delta > deltaBest) {
+					deltaBest = delta;
+					best = D;
+				}
+			}
+		});
+
+		// TRACE("deltaBest=" , deltaBest); // FIXME: best mod gain is negative
+		if (deltaBest > 0) { // if modularity improvement possible
+			assert (best != C && best != none);// do not "move" to original cluster
+
+			zeta[u] = best; // move to best cluster
+			// TRACE("node " , u , " moved");
+
+			// mod update
+			double volN = 0.0;
+			volN = volNode[u];
+			// update the volume of the two clusters
+			#pragma omp atomic update
+			volCommunity[C] -= volN;
+			#pragma omp atomic update
+			volCommunity[best] += volN;
+
+			moved = true; // change to clustering has been made
+
 		} else {
-			TRACE("node ", u, "inactive");
+			// TRACE("node " , u , " not moved");
 		}
-
 	};
 
 	// performs node moves
@@ -224,30 +164,8 @@ Partition PLM::run(const Graph& G) {
 				WARN("move phase aborted after ", maxIter, " iterations");
 			}
 			iter += 1;
-
-			// DEBUG
-			count nInactive = 0;
-			G.forNodes([&](node v) {
-				if (!active[v]) {
-					nInactive += 1;
-				}
-			});
-			INFO("number of inactive nodes: ", nInactive);
-			INFO("modGain called: ", modGainCalled);
-			// DEBUG
-
 		} while (moved && (iter <= maxIter));
 		DEBUG("iterations in move phase: ", iter);
-        
-        //$$$$ change community of satellite nodes
-        G.parallelForNodes([&](node v) {
-            if (satellitesV[v]) {
-                G.forNeighborsOf(v, [&](node n) { //this is run only once since v is a satellite node
-                    zeta[v] = zeta[n];
-                });
-        
-            }
-        });
 	};
 
 	// first move phase
