@@ -113,7 +113,7 @@ def readMat(path, key="A"):
 
 
 # writing
-def getWriter(fileformat):
+def getWriter(fileformat, **kwargs):
 	writers =	{
 			Format.METIS:			METISGraphWriter(),
 			Format.GraphML:			GraphMLWriter(),
@@ -132,16 +132,16 @@ def getWriter(fileformat):
 	try:
 		# special case for custom Edge Lists
 		if fileformat == Format.EdgeList:
-			writer = EdgeListIO(kwargs['separator'],kwargs['firstNode'])
+			writer = EdgeListWriter(kwargs['separator'],kwargs['firstNode'])
 		else:
 			writer = writers[fileformat]#(**kwargs)
 	except KeyError:
 		raise Exception("format {0} currently not supported".format(fileformat))
 	return writer
-def writeGraph(G, path, fileformat = Format.METIS):
+def writeGraph(G, path, fileformat = Format.METIS, **kwargs):
 	""" Write graph to various output formats. 
 		Default format is METIS."""
-	writer = getWriter(fileformat)
+	writer = getWriter(fileformat, **kwargs)
 	writer.write(G, path)
 	logging.info("wrote graph {0} to file {1}".format(G, path))
 
