@@ -20,7 +20,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 	std::vector<node> subsetToSuperNode(zeta.upperBound(), none); // there is one supernode for each subset
 
-	// populate map subset -> supernode
+	DEBUG("populate map subset -> supernode");
 	node nextNodeId = 0;
 	G.forNodes([&](node v){
 		index c = zeta.subsetOf(v);
@@ -34,6 +34,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	std::vector<node> nodeToSuperNode(z);
 
 	// set entries node -> supernode
+	DEBUG("set entries node -> supernode");
 	G.parallelForNodes([&](node v){
 		nodeToSuperNode[v] = subsetToSuperNode[zeta.subsetOf(v)];
 	});
@@ -43,6 +44,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	std::vector<Graph> localGraphs(nThreads, Ginit); // thread-local graphs
 
 	// iterate over edges of G and create edges in coarse graph or update edge and node weights in Gcon
+	DEBUG("create edges in coarse graphs");
 	G.parallelForWeightedEdges([&](node u, node v, edgeweight ew) {
 		index t = omp_get_thread_num();
 
@@ -56,14 +58,19 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	timer2.start();
 	// combine local graphs in parallel
 	Graph Gcombined(Ginit.numberOfNodes(), true, true); //
-	Gcombined.parallelForNodes([&](node u) {
+	DEBUG("combining graphs");
+	Gcombined.forNodes([&](node u) {
 		for (index t = 0; t < nThreads; ++t) {
 			localGraphs.at(t).forEdgesOf(u, [&](node u, node v) {
-				Gcombined.addEdge(u, v, G.weight(u, v));
+				TRACE("increasing weight of (", u, v, ") to", G.weight(u, v));
+				Gcombined.increaseWeight(u, v, G.weight(u, v));
 			});
 		}
 	});
 
+
+	// treat Gcombined as undirected graph
+	Gcombined.treatAsUndirected();
 
 	timer2.stop();
 	INFO("combining coarse graphs took ", timer2.elapsedTag());
@@ -71,7 +78,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	timer.stop();
 	INFO("parallel coarsening took ", timer.elapsedTag());
 
-	return std::make_pair(localGraphs.back(), nodeToSuperNode);
+	return std::make_pair(Gcombined, nodeToSuperNode);
 
 }
 

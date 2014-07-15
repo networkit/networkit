@@ -26,23 +26,23 @@ public:
 
 private:
 
-	class ThreadSafeAdjacency {
-
-	public:
-
-		ThreadSafeAdjacency(count z, count nThreads) : nThreads(nThreads), z(z), adja(z), weight(z) {
-			for (count i = 0; i < z; ++i) {
-				adja[i].resize(nThreads);
-				weight[i].resize(nThreads);
-			}
-		};
-
-	private:
-		count nThreads;
-		count z;
-		std::vector< std::vector<std::vector<node> > > adja;
-		std::vector< std::vector<std::vector<edgeweight> > > weight;
-	};
+	// class ThreadSafeAdjacency {
+	//
+	// public:
+	//
+	// 	ThreadSafeAdjacency(count z, count nThreads) : nThreads(nThreads), z(z), adja(z), weight(z) {
+	// 		for (count i = 0; i < z; ++i) {
+	// 			adja[i].resize(nThreads);
+	// 			weight[i].resize(nThreads);
+	// 		}
+	// 	};
+	//
+	// private:
+	// 	count nThreads;
+	// 	count z;
+	// 	std::vector< std::vector<std::vector<node> > > adja;
+	// 	std::vector< std::vector<std::vector<edgeweight> > > weight;
+	// };
 
 };
 
