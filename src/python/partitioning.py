@@ -11,7 +11,7 @@ class SpectralPartitioner(object):
 	from 0 to n.
 
 	"""
-	def __init__(self, graph, depth, balanced=False):
+	def __init__(self, graph, depth, balanced=True):
 		self.graph = graph
 		self.depth = depth
 
@@ -24,6 +24,7 @@ class SpectralPartitioner(object):
 
 	def getMedian(self, eigv, vertices):
 		values = [eigv[i] for i in vertices]
+		values.sort()
 		median = values[math.floor(len(values) / 2)]
 
 		return median
@@ -41,7 +42,7 @@ class SpectralPartitioner(object):
 			vertices = self.partitions[partition]
 
 
-		eigv = self.eigenvectors[iteration + 1]
+		eigv = self.eigenvectors[iteration]
 
 		if (self.balanced):
 			split = self.getMedian(eigv, vertices)
@@ -61,7 +62,6 @@ class SpectralPartitioner(object):
 				self.partitions[partA].append(vertex)
 			else:
 				self.partitions[partB].append(vertex)
-
 
 		if (not (partition is None)):
 			del self.partitions[partition]
