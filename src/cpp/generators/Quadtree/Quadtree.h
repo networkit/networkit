@@ -43,22 +43,39 @@ public:
 		Point<double> origin(0,0);
 		vector<T> circleDenizens;
 		vector<Point<double> > positions;
+		Point<double> center;
+		double phi_q, r_q, radius;
+		HyperbolicSpace::cartesianToPolar(query, phi_q, r_q);
 		double hyperbolicFromOrigin = HyperbolicSpace::getHyperbolicDistance(origin, query);
 		if (hyperbolicFromOrigin < maxDistance) {
 			/*
 			 * circle will overlap origin, approach not feasible!
 			 */
-			double maxR = pow((cosh(maxDistance+hyperbolicFromOrigin)-1)/(cosh(maxDistance+hyperbolicFromOrigin)+1), 0.5);
+			//use right triangle at origin to construct new point at phi_p, r_p
+			double phi_p, r_p;
+			phi_p = phi_q + M_PI/2;
+			if (phi_p > 2*M_PI) phi_p -= 2*M_PI;
+			double r_p_nom = (cosh(maxDistance)-1)*(1-r_q*r_q)-2*r_q*r_q;
+			double r_p_denom = (2+(cosh(maxDistance)-1)*(1-r_q*r_q));
+			r_p = pow(r_p_nom/r_p_denom, 0.5);
+			Point<double> p = HyperbolicSpace::polarToCartesian(phi_p, r_p);
+			assert(abs(HyperbolicSpace::getHyperbolicDistance(query, p) - maxDistance) < 0.00001);
+			HyperbolicSpace::getEuclideanCircle(query, p, center, radius);
+			double maxR = center.length() + radius;
+			//double maxR = pow((cosh(maxDistance+hyperbolicFromOrigin)-1)/(cosh(maxDistance+hyperbolicFromOrigin)+1), 0.5);
 			vector<T> subresult;
 			vector<Point<double> > subpos;
-			root.getElementsInEuclideanCircle(0, 2*M_PI, 0, maxR, origin, maxR, subresult, subpos);
+			root.getElementsInEuclideanCircle(0, 2*M_PI, 0, maxR, center, radius, subresult, subpos);
 			assert(subresult.size() == subpos.size());
 			//filter manually. Sigh.
-			DEBUG("Filter manually with radius ", maxR);
 			for (index i = 0; i < subresult.size(); i++) {
-				if (HyperbolicSpace::getHyperbolicDistance(subpos[i], query) < maxDistance) {
+				//double manualDistance = HyperbolicSpace::getHyperbolicDistance(subpos[i], query);
+				//assert(subpos[i].distance(center) <= radius);
+				//if (manualDistance < maxDistance) {
 					circleDenizens.push_back(subresult[i]);
-				}
+				//} else {
+				//	DEBUG("Rejected: ", manualDistance, " > ", maxDistance);
+				//}
 			}
 		} else {
 		/**
@@ -67,8 +84,8 @@ public:
 		Point<double> pointOnEdge = HyperbolicSpace::getPointOnHyperbolicCircle(query, maxDistance);
 		double distance = HyperbolicSpace::getHyperbolicDistance(query, pointOnEdge);
 		assert(abs(distance - maxDistance) < 0.00001);
-		Point<double> center;
-		double radius, minPhi, maxPhi;
+
+		double minPhi, maxPhi;
 		HyperbolicSpace::getEuclideanCircle(query, pointOnEdge, center, radius);
 		DEBUG("Using circle at (", center[0], ",",center[1], ") with radius ", radius);
 		double minR = center.length() - radius;
