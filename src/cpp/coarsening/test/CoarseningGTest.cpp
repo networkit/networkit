@@ -9,12 +9,15 @@
 
 #include "CoarseningGTest.h"
 
+#include "../../auxiliary/Log.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../coarsening/ClusterContractor.h"
 #include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
 #include "../../community/GraphClusteringTools.h"
+#include "../../generators/ErdosRenyiGenerator.h"
+#include "../../coarsening/ParallelPartitionCoarsening.h"
 
 namespace NetworKit {
 
@@ -73,6 +76,7 @@ TEST_F(CoarseningGTest, testPartitionCoarsening) {
 			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
 
 }
+
 TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	GraphGenerator graphGen;
 	int64_t n = 100;
@@ -122,6 +126,38 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta0, zetaBack, G0)) << "zeta^{1->0} and zeta^{0} should be identical";
 }
 
+
+TEST_F(CoarseningGTest, testParallelPartitionCoarsening) {
+	count n = 1000;
+
+	ErdosRenyiGenerator ERGen(n, 0.2);
+	Graph G = ERGen.generate();
+
+	ClusteringGenerator clusteringGen;
+	Partition singleton = clusteringGen.makeSingletonClustering(G);
+
+
+	DEBUG("coarsening on singleton partition");
+	ParallelPartitionCoarsening coarsening;
+	auto conSingletonPair = coarsening.run(G, singleton);
+	Graph Gcon = conSingletonPair.first;
+
+	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
+			<< "graph contracted according to singleton clustering should have the same number of nodes as original";
+	EXPECT_EQ(G.numberOfEdges(), Gcon.numberOfEdges())
+			<< "graph contracted according to singletons clustering should have the same number of nodes as original";
+
+
+	DEBUG("coarsening on random partition");
+	count k = 2; // number of clusters in random clustering
+	Partition random = clusteringGen.makeRandomClustering(G, k);
+	auto conRandPair = coarsening.run(G, random);
+	Graph GconRand = conRandPair.first;
+
+	EXPECT_EQ(k, GconRand.numberOfNodes())
+			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
+
+}
 
 
 } /* namespace NetworKit */
