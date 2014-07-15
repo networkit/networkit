@@ -2,7 +2,45 @@ import math
 import numpy as np
 
 from algebraic import laplacianEigenvectors
-from _NetworKit import Partition
+from _NetworKit import Partition, Modularity
+
+try:
+	import tabulate
+except ImportError:
+	print(""" WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit """)
+
+def computeEdgeCut(partition, graph):
+	cut = 0
+
+	for (n1, n2) in graph.edges():
+		if partition[n1] != partition[n2]:
+			if (graph.isWeighted()):
+				cut += graph.weight(n1,n2)
+			else:
+				cut += 1
+
+	return cut
+
+def computeImbalance(partition, graph):
+	desired = graph.numberOfNodes() / float(partition.numberOfSubsets())
+
+	maximum = max(partition.subsetSizes())
+
+	return maximum / desired
+
+def inspectPartitions(partition, graph):
+	partitionSizes = partition.subsetSizes()
+	mod = Modularity().getQuality(partition, graph)
+	props = [
+		["# partitions", partition.numberOfSubsets()],
+		["min partition size", min(partitionSizes)],
+		["max partition size", max(partitionSizes)],
+		["avg. partition size", sum(partitionSizes) / len(partitionSizes)],
+		["imbalance", computeImbalance(partition, graph)],
+		["edge cut", computeEdgeCut(partition, graph)],
+		["modularity", mod],
+	]
+	print(tabulate.tabulate(props))
 
 class SpectralPartitioner(object):
 	"""
@@ -11,23 +49,29 @@ class SpectralPartitioner(object):
 	from 0 to n.
 
 	"""
-	def __init__(self, graph, depth, balanced=True):
+	def __init__(self, graph, count, balanced=True):
 		self.graph = graph
-		self.depth = depth
+		self.count = count
 
 		self.balanced = balanced
 
 	def prepareSpectrum(self):
-		spectrum = laplacianEigenvectors(self.graph, cutoff = (self.depth + 1))
+		spectrum = laplacianEigenvectors(self.graph, cutoff = (math.ceil(math.log(self.count, 2)) + 1))
 		self.eigenvectors = spectrum[1]
 		self.eigenvalues = spectrum[0]
 
-	def getMedian(self, eigv, vertices):
+	def getQuantiles(self, eigv, vertices, count = 1):
 		values = [eigv[i] for i in vertices]
 		values.sort()
-		median = values[math.floor(len(values) / 2)]
 
-		return median
+		sections = count + 1
+		quantiles = []
+
+		for i in range(1, sections):
+			quantile = values[math.floor(len(values) * i / sections)]
+			quantiles.append(quantile)
+
+		return quantiles
 
 	def getMean(self, eigv, vertices):
 		values = [eigv[i] for i in vertices]
@@ -35,7 +79,47 @@ class SpectralPartitioner(object):
 
 		return mean
 
-	def bisect(self, depth, partition=None, iteration=1):
+	def trisect(self, partition=None, iteration=1):
+		if partition is None:
+			vertices = self.graph.nodes()
+		else:
+			vertices = self.partitions[partition]
+
+
+		eigv = self.eigenvectors[iteration]
+
+		quantiles = self.getQuantiles(eigv, vertices, count = 2)
+
+
+		partA = self.nextPartition
+		partB = self.nextPartition + 1
+		partC = self.nextPartition + 2
+		self.nextPartition += 3		# TODO this is not thread-safe
+
+
+		self.partitions[partA] = []
+		self.partitions[partB] = []
+		self.partitions[partC] = []
+
+		for vertex in vertices:
+			if (eigv[vertex] < quantiles[0]):
+				self.partitions[partA].append(vertex)
+			elif (eigv[vertex] < quantiles[1]):
+				self.partitions[partB].append(vertex)
+			else: 
+				self.partitions[partC].append(vertex)
+
+		if (not (partition is None)):
+			del self.partitions[partition]
+
+	def bisect(self, count, partition=None, iteration=1):
+		if count == 1:
+			return
+
+		if count == 3:
+			self.trisect()
+			return
+
 		if partition is None:
 			vertices = self.graph.nodes()
 		else:
@@ -45,7 +129,7 @@ class SpectralPartitioner(object):
 		eigv = self.eigenvectors[iteration]
 
 		if (self.balanced):
-			split = self.getMedian(eigv, vertices)
+			split = self.getQuantiles(eigv, vertices)[0]
 		else:
 			split = self.getMean(eigv, vertices)
 
@@ -66,9 +150,19 @@ class SpectralPartitioner(object):
 		if (not (partition is None)):
 			del self.partitions[partition]
 
-		if depth > 1:
-			self.bisect(depth - 1, partition = partA, iteration = iteration + 1)
-			self.bisect(depth - 1, partition = partB, iteration = iteration + 1)
+		if count > 2:
+			if (count % 2 == 0):
+				self.bisect(count / 2, partition = partA, iteration = iteration + 1)
+				self.bisect(count / 2, partition = partB, iteration = iteration + 1)
+			else:
+				nextCount = (count - 1) / 2
+				if nextCount > 2:
+					self.bisect(nextCount, partition = partA, iteration = iteration + 1)
+					self.bisect(nextCount + 1, partition = partB, iteration = iteration + 1)
+				else:
+					self.bisect(nextCount, partition = partA, iteration = iteration + 1)
+					self.trisect(partition = partB, iteration = iteration + 1)
+
 
 	def generatePartition(self):
 		partition = Partition(size=self.graph.numberOfNodes())
@@ -94,7 +188,7 @@ class SpectralPartitioner(object):
 		self.partitions = {}
 		self.prepareSpectrum()
 
-		self.bisect(self.depth)
+		self.bisect(self.count)
 
 		self.generatePartition()
 
