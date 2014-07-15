@@ -17,6 +17,7 @@ Dy * GeneratorsTest.cpp
 #include "../../properties/ClusteringCoefficient.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
+#include "../../properties/ConnectedComponents.h"
 
 namespace NetworKit {
 
@@ -375,11 +376,14 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 }
 
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
-	count n = 2000;
+	count n = 10000;
 	HyperbolicGenerator gen(n,1);
 	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_TRUE(G.consistencyCheck());
+	ConnectedComponents cc(G);
+	cc.run();
+	EXPECT_EQ(cc.numberOfComponents(),1);
 }
 
 TEST_F(GeneratorsGTest, testIntersect) {

@@ -433,6 +433,37 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 	}
 }
 
+/*
+ * this is used for parallelization of graph generators
+ * when calling addHalfEdge(u,v), you must also call addHalfEdge(v,u)
+ */
+void Graph::addHalfEdge(node u, node v, edgeweight ew) {
+	assert (u < z);
+	assert (exists[u]);
+	assert (v < z);
+	assert (exists[v]);
+
+	if (u < v)	{
+		#pragma omp atomic
+			m++; // increase number of edges
+	}
+
+	outDeg[u]++;
+	outEdges[u].push_back(v);
+	assert(!directed);
+	assert(u != v);
+
+	if (weighted) {
+		outEdgeWeights[u].push_back(ew);
+	}
+
+	// loop over all attributes, setting default attr
+	for (index attrId = 0; attrId < edgeMaps_double.size(); ++attrId) {
+		double defaultAttr = edgeAttrDefaults_double[attrId];
+		edgeMaps_double[attrId][u].push_back(defaultAttr);
+	}
+}
+
 void Graph::removeEdge(node u, node v) {
 	assert (u < z);
 	assert (exists[u]);
@@ -699,6 +730,8 @@ bool Graph::consistencyCheck() const {
 		auto it = std::unique(copy.begin(), copy.end());
 		multFound = (multFound || (it != copy.end()));
 	});
+
+	//TODO: check consistency with half-edges
 	return !multFound;
 }
 

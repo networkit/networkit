@@ -62,11 +62,8 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	for (index i = 0; i < n; i++) {
 			vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles->at(i), radii->at(i)), 1);
 			for (index j : near) {
-				if (i < j) {//we only want to add the edges once for each pair
-					#pragma omp critical (graph)
-					{
-					result.addEdge(i,j);
-					}
+				if (i != j) {//we only want to add the edges once for each pair
+						result.addHalfEdge(i,j);
 				}
 			}
 
