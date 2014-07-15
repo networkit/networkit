@@ -30,7 +30,7 @@ public:
 	 * @param[in]	maxIter		maximum number of iterations for move phase
 	 *
 	 */
-	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32);
+	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=false);
 
 
 	/**
@@ -58,6 +58,7 @@ private:
 	bool refine;
 	double gamma = 1.0;
 	count maxIter;
+	bool parallelCoarsening;
 };
 
 } /* namespace NetworKit */

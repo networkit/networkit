@@ -16,7 +16,7 @@
 
 namespace NetworKit {
 
-PLM::PLM(bool refine, double gamma, std::string par, count maxIter) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter) {
+PLM::PLM(bool refine, double gamma, std::string par, count maxIter, bool parallelCoarsening) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), parallelCoarsening(parallelCoarsening) {
 
 }
 
@@ -212,9 +212,8 @@ std::string NetworKit::PLM::toString() const {
 }
 
 std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
-	bool parallelCoarsening = false; // switch between parallel and sequential coarsening
 	if (parallelCoarsening) {
-		PartitionCoarsening parCoarsening;
+		ParallelPartitionCoarsening parCoarsening;
 		return parCoarsening.run(G, zeta);
 	} else {
 		ClusterContractor seqCoarsening;
