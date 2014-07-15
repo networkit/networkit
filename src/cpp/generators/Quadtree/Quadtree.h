@@ -70,7 +70,7 @@ public:
 
 		double minPhi, maxPhi, radius;
 		HyperbolicSpace::getEuclideanCircle(query, pointOnEdge, center, radius);
-		DEBUG("Using circle at (", center[0], ",",center[1], ") with radius ", radius);
+		TRACE("Using circle at (", center[0], ",",center[1], ") with radius ", radius);
 		double minR = center.length() - radius;
 		double maxR = center.length() + radius;
 		assert(maxR < 1);
