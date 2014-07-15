@@ -58,13 +58,30 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	timer2.start();
 	// combine local graphs in parallel
 	Graph Gcombined(Ginit.numberOfNodes(), true); //
+
+
+	// access internals of Graph to write adjacencies
+	auto threadSafeIncreaseWeight = [&](node u, node v, edgeweight ew) {
+		index vi = Gcombined.indexInOutEdgeArray(u, v);
+		if (vi == none) {
+			Gcombined.outDeg[u]++;
+			Gcombined.outEdges[u].push_back(v);
+			Gcombined.outEdgeWeights[u].push_back(ew);
+		} else {
+			Gcombined.outEdgeWeights[u][vi] += ew;
+		}
+
+	};
+
+
+
+
 	DEBUG("combining graphs");
 	Gcombined.parallelForNodes([&](node u) {
 		for (index t = 0; t < nThreads; ++t) {
 			localGraphs.at(t).forEdgesOf(u, [&](node u, node v) {
 				TRACE("increasing weight of (", u, v, ") to", G.weight(u, v));
-				// access internals of Graph to write adjacencies
-
+				threadSafeIncreaseWeight(u, v, G.weight(u, v));
 			});
 		}
 	});
