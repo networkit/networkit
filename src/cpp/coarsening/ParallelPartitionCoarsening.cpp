@@ -57,20 +57,21 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	Aux::Timer timer2;
 	timer2.start();
 	// combine local graphs in parallel
-	Graph Gcombined(Ginit.numberOfNodes(), true, true); //
+	Graph Gcombined(Ginit.numberOfNodes(), true); //
 	DEBUG("combining graphs");
-	Gcombined.forNodes([&](node u) {
+	Gcombined.parallelForNodes([&](node u) {
 		for (index t = 0; t < nThreads; ++t) {
 			localGraphs.at(t).forEdgesOf(u, [&](node u, node v) {
 				TRACE("increasing weight of (", u, v, ") to", G.weight(u, v));
-				Gcombined.increaseWeight(u, v, G.weight(u, v));
+				// access internals of Graph to write adjacencies
+
 			});
 		}
 	});
 
 
 	// treat Gcombined as undirected graph
-	Gcombined.treatAsUndirected();
+	// Gcombined.treatAsUndirected();
 
 	timer2.stop();
 	INFO("combining coarse graphs took ", timer2.elapsedTag());

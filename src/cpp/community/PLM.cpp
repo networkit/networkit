@@ -7,7 +7,7 @@
 
 #include "PLM.h"
 #include <omp.h>
-#include "../coarsening/PartitionCoarsening.h"
+#include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
@@ -173,7 +173,7 @@ Partition PLM::run(const Graph& G) {
 
 	if (change) {
 		DEBUG("nodes moved, so begin coarsening and recursive call");
-		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
+		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta, parallelCoarsening);	// coarsen graph according to communitites
 		Partition zetaCoarse = run(coarsened.first);
 
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
@@ -206,13 +206,13 @@ std::string NetworKit::PLM::toString() const {
 	}
 
 	std::stringstream stream;
-	stream << "PLM(" << parallelism << "," << refined << ")";
+	stream << "PLM(" << parallelism << "," << refined << "," << parallelCoarsening << ")";
 
 	return stream.str();
 }
 
-std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
-	if (parallelCoarsening) {
+std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta, bool parallel) {
+	if (parallel) {
 		ParallelPartitionCoarsening parCoarsening;
 		return parCoarsening.run(G, zeta);
 	} else {

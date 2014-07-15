@@ -20,13 +20,19 @@
 #include "../viz/Point.h"
 #include "../auxiliary/Random.h"
 
+
 namespace NetworKit {
+
+class ParallelPartitionCoarsening; // forward declaration for friend class
 
 /**
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
 class Graph final {
+
+	friend class ParallelPartitionCoarsening;
+
 private:
 	// graph attributes
 	count id; //!< unique graph id, starts at 0
@@ -74,6 +80,7 @@ private:
 	 * Returns the index of node v in the array of outgoing edges of node u.
 	 */
 	index indexInOutEdgeArray(node u, node v) const;
+
 
 public:
 
