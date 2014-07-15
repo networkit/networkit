@@ -193,22 +193,20 @@ public:
 		}
 	}
 
-	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point<double> center, double radius, vector<T> &result, vector<Point<double> > &resultpos) {
+	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point<double> center, double radius, vector<T> &result) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
 		if (isLeaf) {
 			for (uint i = 0; i < content.size(); i++) {
 				if (center.distance(positions[i]) < radius) {//maybe improve this with functors
 					result.push_back(content[i]);
-					resultpos.push_back(positions[i]);
 				}
 			}
 		}	else {
 			for (uint i = 0; i < children.size(); i++) {
 				vector<T> subresult;
 				vector<Point<double> > subpos;
-				children[i].getElementsInEuclideanCircle(minAngle, maxAngle, lowR, highR, center, radius, subresult, subpos);
+				children[i].getElementsInEuclideanCircle(minAngle, maxAngle, lowR, highR, center, radius, subresult);
 				result.insert(result.end(), subresult.begin(), subresult.end());
-				resultpos.insert(resultpos.end(), subpos.begin(), subpos.end());
 			}
 		}
 	}
