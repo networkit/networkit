@@ -34,6 +34,8 @@ public:
 	 * Performs the Dijkstra SSSP algorithm on the graph given in the constructor.
 	 */
 	virtual void run();
+
+	virtual void runUntil(node t);
 };
 
 } /* namespace NetworKit */

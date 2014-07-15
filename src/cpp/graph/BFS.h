@@ -34,6 +34,8 @@ public:
 	 */
 	virtual void run();
 
+	virtual void runUntil(node t);
+
 };
 
 } /* namespace NetworKit */
