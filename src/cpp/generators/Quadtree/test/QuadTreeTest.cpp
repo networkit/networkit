@@ -192,14 +192,13 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 			 */
 
 			vector<index> circleDenizens;
-			vector<Point<double> > positions;
 
-			root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, query, radius, circleDenizens, positions);
+			root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, query, radius, circleDenizens);
 			if (minPhi < 0) {
-				root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, query, radius, circleDenizens, positions);
+				root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, query, radius, circleDenizens);
 			}
 			if (maxPhi > 2*M_PI) {
-				root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, query, radius, circleDenizens, positions);
+				root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, query, radius, circleDenizens);
 			}
 
 			for (index j = 0; j < n; j++) {
