@@ -29,6 +29,8 @@ public:
 	static count effectiveDiameter(const Graph& G, const double ratio);
 	static count effectiveDiameter(const Graph& G);
 
+	static count effectiveDiameterExact(const Graph& G);
+
 };
 
 } /* namespace NetworKit */
