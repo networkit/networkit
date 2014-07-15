@@ -204,7 +204,6 @@ public:
 		}	else {
 			for (uint i = 0; i < children.size(); i++) {
 				vector<T> subresult;
-				vector<Point<double> > subpos;
 				children[i].getElementsInEuclideanCircle(minAngle, maxAngle, lowR, highR, center, radius, subresult);
 				result.insert(result.end(), subresult.begin(), subresult.end());
 			}
