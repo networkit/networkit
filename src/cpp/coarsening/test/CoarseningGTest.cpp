@@ -149,7 +149,7 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarsening) {
 
 
 	DEBUG("coarsening on random partition");
-	count k = 2; // number of clusters in random clustering
+	count k = 6; // number of clusters in random clustering
 	Partition random = clusteringGen.makeRandomClustering(G, k);
 	auto conRandPair = coarsening.run(G, random);
 	Graph GconRand = conRandPair.first;
