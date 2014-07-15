@@ -268,6 +268,18 @@ public:
 	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
 	/**
+	 * Insert one half of an edge between the nodes @a u and @a v.
+	 * This only works for undirected graphs.
+	 * The graph will be inconsistent until calling addHalfEdge for the other half.
+	 * If the graph is weighted you can optionally
+	 * set a weight for this edge. The default weight is 1.0.
+	 * @param u Endpoint of edge.
+	 * @param v Endpoint of edge.
+	 * @param weight Optional edge weight.
+	 */
+	void addHalfEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+
+	/**
 	 * Removes the undirected edge {@a u,@a v}.
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
