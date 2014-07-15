@@ -1,6 +1,6 @@
 from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2
 
-from algebraic import adjacencyEigenvector
+from algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
 
 import math
 
@@ -17,9 +17,9 @@ def scores(G, algorithm=Betweenness, normalized=False):
 	centrality.run()
 	return centrality.scores()
 
-class PythonNativeEVZ(object):
+class SpectralCentrality(object):		
 	def __init__(self, G, normalized=False):
-		super(PythonNativeEVZ, self).__init__()
+		super(SpectralCentrality, self).__init__()
 
 		self.graph = G
 		self.normalized = normalized
@@ -28,6 +28,7 @@ class PythonNativeEVZ(object):
 		self.rankList = None
 
 	def prepareSpectrum(self):
+		raise NotImplemented
 		spectrum = adjacencyEigenvector(self.graph, order=0)
 		self.eigenvector = spectrum[1]
 		self.eigenvalue = spectrum[0]
@@ -63,3 +64,26 @@ class PythonNativeEVZ(object):
 			self.rankList.sort(key=lambda x: abs(float(x[1])), reverse=True)
 
 		return self.rankList
+
+
+class PythonNativeEVZ(SpectralCentrality):
+	def __init__(self, G, normalized=False):
+		super(PythonNativeEVZ, self).__init__(G, normalized=normalized)
+
+	def prepareSpectrum(self):
+		spectrum = adjacencyEigenvector(self.graph, order=0)
+		self.eigenvector = spectrum[1]
+		self.eigenvalue = spectrum[0]
+
+class PythonNativePageRank(SpectralCentrality):
+	def __init__(self, G, damp=0.95, normalized=False):
+		super(PythonNativePageRank, self).__init__(G, normalized=normalized)
+
+		self.damp = damp
+
+	def prepareSpectrum(self):
+		prMatrix = PageRankMatrix(self.graph, self.damp)
+		spectrum = symmetricEigenvectors(prMatrix, cutoff=0, reverse=False)
+
+		self.eigenvector = spectrum[1][0]
+		self.eigenvalue = spectrum[0][0]

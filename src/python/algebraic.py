@@ -1,4 +1,5 @@
 import scipy.sparse
+import numpy as np
 
 from toolbox import column
 
@@ -41,6 +42,24 @@ def laplacianMatrix(G):
 	"""
 	A = adjacencyMatrix(G)
 	return scipy.sparse.csgraph.laplacian(A)
+
+def PageRankMatrix(G, damp):
+	A = adjacencyMatrix(G)
+
+	n = G.numberOfNodes()
+	stochastify = scipy.sparse.lil_matrix((n,n))
+	for v in G.nodes():
+		neighbors = G.degree(v)
+		stochastify[v,v] = 1.0 / neighbors
+	stochastify = stochastify.tocsr()
+
+	stochastic = A * stochastify
+
+	dampened = stochastic * damp
+
+	teleport = scipy.sparse.identity(G.numberOfNodes(), format="csr") * ((1 - damp) / G.numberOfNodes())
+
+	return dampened + teleport
 
 def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 	if cutoff == -1:
