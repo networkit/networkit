@@ -24,7 +24,7 @@ Graph SimmelianBackbone::calculate(const Graph& graph) {
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, triangles);
 
 	//Create an edge-less backbone graph.
-	Graph backboneGraph = cloneGraphWithoutEdges(graph);
+	Graph backboneGraph = cloneNodes(graph, false);
 
 	//Re-add the backbone edges.
 	if (parameterized) {

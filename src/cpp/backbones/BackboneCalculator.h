@@ -29,10 +29,12 @@ public:
 	};
 
 	/**
-	 * Creates a copy of the given graph that contains no edges.
+	 * Creates a new undirected graph that contains only the nodes of the given graph.
 	 * TODO: Implement a clone method in Graph instead?
+	 * @param graph 	the original graph to copy
+	 * @param weighted	whether the new graph should be weighted
 	 */
-	Graph cloneGraphWithoutEdges(const Graph& graph);
+	Graph cloneNodes(const Graph& graph, bool weighted);
 };
 
 } /* namespace NetworKit */
