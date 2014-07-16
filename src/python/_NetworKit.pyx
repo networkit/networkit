@@ -3319,3 +3319,24 @@ cdef class MultiscaleBackbone:
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
 		
+cdef extern from "../cpp/backbones/SimmelianMultiscaleBackbone.h":
+	cdef cppclass _SimmelianMultiscaleBackbone "NetworKit::SimmelianMultiscaleBackbone":
+		_SimmelianMultiscaleBackbone(double threshold) except +
+		_Graph* _calculate(_Graph G) except +
+
+cdef class SimmelianMultiscaleBackbone:
+	"""
+	Uses triangle count as edgeweight and filters using the Multiscale backbone algorithm.
+	Parameters:
+		-	threshold	[0-1] the filtering parameter of the multiscale algorithm.
+	"""
+
+	cdef _SimmelianMultiscaleBackbone* _this
+
+	def __cinit__(self, double threshold):
+		self._this = new _SimmelianMultiscaleBackbone(threshold)
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
+		
