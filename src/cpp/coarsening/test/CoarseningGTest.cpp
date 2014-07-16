@@ -18,6 +18,7 @@
 #include "../../community/GraphClusteringTools.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../coarsening/ParallelPartitionCoarsening.h"
+#include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
 
@@ -142,6 +143,8 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarsening) {
 	auto conSingletonPair = coarsening.run(G, singleton);
 	Graph Gcon = conSingletonPair.first;
 
+	assert (Gcon.consistencyCheck());
+
 	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
 			<< "graph contracted according to singleton clustering should have the same number of nodes as original";
 	EXPECT_EQ(G.numberOfEdges(), Gcon.numberOfEdges())
@@ -156,7 +159,32 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarsening) {
 
 	EXPECT_EQ(k, GconRand.numberOfNodes())
 			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
-	EXPECT_EQ(k + 1, GconRand.numberOfEdges()) << "graph contracted according to random clustering should have k+1 clusters";		
+	EXPECT_EQ(k + 1, GconRand.numberOfEdges()) << "graph contracted according to random clustering should have k+1 clusters";
+
+}
+
+TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraph) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+
+
+	ClusteringGenerator clusteringGen;
+	count k = 10; // number of clusters in random clustering
+	Partition random = clusteringGen.makeRandomClustering(G, k);
+
+	ParallelPartitionCoarsening parCoarsening;
+	auto parResult = parCoarsening.run(G, random);
+
+	ClusterContractor seqCoarsening;
+	auto seqResult = seqCoarsening.run(G, random);
+
+	Graph Gpar = parResult.first;
+	EXPECT_EQ(k, Gpar.numberOfNodes());
+
+	Graph Gseq = seqResult.first;
+	EXPECT_EQ(k, Gseq.numberOfNodes());
+
+	EXPECT_EQ(Gseq.numberOfEdges(), Gpar.numberOfEdges()) << "sequential and parallel coarsening should produce the same number of edges";
 
 
 }
