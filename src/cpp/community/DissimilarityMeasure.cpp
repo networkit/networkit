@@ -9,7 +9,5 @@
 
 namespace NetworKit {
 
-DissimilarityMeasure::~DissimilarityMeasure() {
-}
 
 } /* namespace NetworKit */

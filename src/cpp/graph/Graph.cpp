@@ -702,4 +702,11 @@ bool Graph::consistencyCheck() const {
 	return !multFound;
 }
 
+
+void Graph::treatAsUndirected() {
+	assert (isDirected());
+	directed = false;
+	m /= 2;
+}
+
 } /* namespace NetworKit */
