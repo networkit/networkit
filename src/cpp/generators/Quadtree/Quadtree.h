@@ -47,7 +47,7 @@ public:
 		Point<double> pointOnEdge;
 		if (hyperbolicFromOrigin < maxDistance) {
 			/*
-			 * circle will overlap origin, approach not feasible!
+			 * TODO: move code to method
 			 */
 			//use right triangle at origin to construct new point at phi_p, r_p
 			double phi_q, r_q;

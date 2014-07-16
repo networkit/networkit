@@ -15,6 +15,8 @@
 #include "../HyperbolicSpace.h"
 
 using std::vector;
+using std::min;
+using std::cos;
 
 namespace NetworKit {
 
@@ -103,37 +105,48 @@ public:
 		elements++;
 	}
 
-	double distanceLowerBound(Point<double> query) {
+	double euclideanLowerBound(Point<double> query) {
 		double phi, r;
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
-		if (responsible(phi,r)) return 0;
-		//speeding this up with magic numbers. Careful!
-		double lowerDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, a, b, 1);
-		//if (lowerDistance < 1) return 0;
-		double rightDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, b, c, 1);
-		//if (rightDistance < 1) return 0;
-		double upperDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, c, d, 1);
-		double leftDistance = HyperbolicSpace::hyperbolicDistanceToArc(query, d, a, 1);
+		if (responsible(phi, r)) return 0;
+		//get four edge points
+		double topDistance, bottomDistance, leftDistance, rightDistance;
+		if (phi < leftAngle || phi > rightAngle) {
+			topDistance = min(c.distance(query), d.distance(query));
+		} else {
+			topDistance = abs(r - maxR);
+		}
+		if (phi < leftAngle || phi > rightAngle) {
+			bottomDistance = min(a.distance(query), b.distance(query));
+		} else {
+			bottomDistance = abs(r - minR);
+		}
+
+		double minDistanceR = r*cos(abs(phi-leftAngle));
+		if (minDistanceR > minR && minDistanceR < maxR) {
+			leftDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
+		} else {
+			leftDistance = min(a.distance(query), d.distance(query));
+		}
+
+		minDistanceR = r*cos(abs(phi-rightAngle));
+		if (minDistanceR > minR && minDistanceR < maxR) {
+			rightDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
+		} else {
+			rightDistance = min(b.distance(query), c.distance(query));
+		}
 
 		TRACE("leftDistance:", leftDistance);
 		TRACE("rightDistance:", rightDistance);
-		TRACE("lowerDistance:", lowerDistance);
-		TRACE("upperDistance:", upperDistance);
-		return std::min(std::min(leftDistance, rightDistance), std::min(lowerDistance, upperDistance));
+		TRACE("topDistance:", topDistance);
+		TRACE("bottomDistance:", bottomDistance);
+		return std::min(std::min(leftDistance, rightDistance), std::min(bottomDistance, topDistance));
 	}
 
-	double distanceLowerBound(double angle, double R) {
+	double euclideanLowerBound(double angle, double R) {
 		if (responsible(angle, R)) return 0;
 		Point<double> query = HyperbolicSpace::polarToCartesian(angle, R);
-		return distanceLowerBound(query);
-	}
-
-	double distanceUpperBound(double angle, double R) {
-		double leftLower = HyperbolicSpace::getHyperbolicDistance(angle, R, this->leftAngle, minR);
-		double rightLower = HyperbolicSpace::getHyperbolicDistance(angle, R, this->rightAngle, minR);
-		double leftUpper = HyperbolicSpace::getHyperbolicDistance(angle, R, this->leftAngle, maxR);
-		double rightUpper = HyperbolicSpace::getHyperbolicDistance(angle, R, this->rightAngle, maxR);
-		return std::max(std::max(leftLower, rightLower), std::max(leftUpper, rightUpper));
+		return euclideanLowerBound(query);
 	}
 
 	bool responsible(double angle, double R) {
@@ -158,7 +171,7 @@ public:
 		assert(query.length() < 1);
 		std::vector<T> result;
 		if (isLeaf) {
-			if (this->distanceLowerBound(query) < maxDistance) {
+			if (this->euclideanLowerBound(query) < maxDistance) {
 					for (uint i = 0; i < content.size(); i++) {
 						if (HyperbolicSpace::getHyperbolicDistance(query, positions[i]) < maxDistance) {
 								result.push_back(content[i]);
@@ -168,7 +181,7 @@ public:
 		} else {
 			for (uint i = 0; i < children.size(); i++) {
 				QuadNode * child = &children[i];
-				if (child->elements > 0 && child->distanceLowerBound(query) < maxDistance) {
+				if (child->elements > 0 && child->euclideanLowerBound(query) < maxDistance) {
 					vector<T> subresult = child->getCloseElements(query, maxDistance);
 					result.insert(result.end(), subresult.begin(), subresult.end());
 				}
@@ -196,6 +209,10 @@ public:
 	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point<double> center, double radius, vector<T> &result) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
 		double rsq = radius*radius;
+		if (euclideanLowerBound(center) > radius) {
+			return;
+		}
+
 		if (isLeaf) {
 			for (uint i = 0; i < content.size(); i++) {
 				if (center.squaredDistance(positions[i]) < rsq) {//maybe improve this with functors
