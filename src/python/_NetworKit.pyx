@@ -1221,6 +1221,40 @@ cdef class CoverReader:
 	def read(self, path, Graph G):
 		return Cover().setThis(self._this.read(stdstring(path), dereference(G._this)))
 
+cdef extern from "../cpp/io/CoverWriter.h":
+	cdef cppclass _CoverWriter "NetworKit::CoverWriter":
+		_CoverWriter() except +
+		void write(_Cover, string path)
+
+
+cdef class CoverWriter:
+	""" Writes a partition to a file.
+		File format: each line contains the space-separated node ids of a community
+	 """
+	cdef _CoverWriter _this
+
+	def write(self, Cover zeta, path):
+		self._this.write(zeta._this, stdstring(path))
+
+cdef extern from "../cpp/io/EdgeListCoverReader.h":
+	cdef cppclass _EdgeListCoverReader "NetworKit::EdgeListCoverReader":
+		_EdgeListCoverReader() except +
+		_EdgeListCoverReader(node firstNode) except +
+		_Cover read(string path, _Graph G) except +
+
+
+cdef class EdgeListCoverReader:
+	""" Reads a cover from an edge list type of file
+		File format: each line starts with a node id and continues with a list of the communities the node belongs to
+	 """
+	cdef _EdgeListCoverReader _this
+
+	def __cinit__(self, firstNode=1):
+		self._this = _EdgeListCoverReader(firstNode)
+
+	def read(self, path, Graph G):
+		return Cover().setThis(self._this.read(stdstring(path), dereference(G._this)))
+
 # Parameters
 
 cdef extern from "../cpp/base/Parameters.h":

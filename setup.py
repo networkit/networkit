@@ -19,9 +19,12 @@ import shlex
 
 from argparse import ArgumentParser
 
-if shutil.which("scons") is None:
-	print("Build system SCons is not installed. Please install and rerun setup.py")
-	exit(1)
+try:
+	if shutil.which("scons") is None:
+		print("ERROR: Build system SCons is not installed. Please install and rerun setup.py")
+		exit(1)
+except:
+	print("WARNING: unable to check whether build system SCons is installed")
 
 
 
