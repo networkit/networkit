@@ -186,6 +186,9 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraph) {
 
 	EXPECT_EQ(Gseq.numberOfEdges(), Gpar.numberOfEdges()) << "sequential and parallel coarsening should produce the same number of edges";
 
+	Gseq.forNodes([&](node u){
+		EXPECT_EQ(Gseq.degree(u), Gpar.degree(u)) << "node degrees should be equal";
+	});
 
 }
 
