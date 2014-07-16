@@ -23,7 +23,8 @@
 
 namespace NetworKit {
 
-class ParallelPartitionCoarsening; // forward declaration for friend class
+	class ParallelPartitionCoarsening; // forward declaration for friend class
+	class GraphBuilder; // forward declaration
 
 /**
  * @ingroup graph
@@ -32,6 +33,7 @@ class ParallelPartitionCoarsening; // forward declaration for friend class
 class Graph final {
 
 	friend class ParallelPartitionCoarsening;
+	friend class GraphBuilder;
 
 private:
 	// graph attributes

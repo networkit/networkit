@@ -15,7 +15,6 @@ class EdgeListCoverReader : public CoverReader {
 		 * @param[in]	firstNode	Index of the first node in the file.
 		 */
 		EdgeListCoverReader(node firstNode = 1);
-		virtual ~EdgeListCoverReader() = default;
 
 		/**
 		 * Read a cover from a file. File format: each line contains the node ids of one subset.
