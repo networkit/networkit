@@ -8,6 +8,7 @@
 #include "SimmelianBackbone.h"
 #include "ChibaNishizekiTriangleCounter.h"
 #include <limits>
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -90,7 +91,6 @@ Redundancy SimmelianBackbone::getOverlap(	const node& ego,
 	std::set<node> egoNeighborsUnmatched;
 	std::set<node> alterNeighborsUnmatched;
 
-	//TODO: identified parameter? (nodes that are incident to an edge)
 	for (count rank = 1; rank <= maxRank; rank++) {
 		matchNeighbors(ego, alter, true, egoIt, neighbors[ego], egoNeighborsUnmatched, alterNeighborsUnmatched, rank, result.overlap);
 		matchNeighbors(alter, ego, false, alterIt, neighbors[alter], alterNeighborsUnmatched, egoNeighborsUnmatched, rank, result.overlap);

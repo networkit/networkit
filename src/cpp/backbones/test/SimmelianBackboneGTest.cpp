@@ -15,28 +15,64 @@
 namespace NetworKit {
 
 TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
+	//Build up a ranked neighborhood graph. Notation: Ego/Alter/Simmeliannes/Rank
+	std::vector<RankedNeighbors> neighbors(2);
+	neighbors[0].push_back(RankedEdge(0,1,3,1));
+	neighbors[0].push_back(RankedEdge(0,2,2,2));
+	neighbors[0].push_back(RankedEdge(0,5,2,2));
+	neighbors[0].push_back(RankedEdge(0,3,1,4));
+	neighbors[0].push_back(RankedEdge(0,6,1,4));
+
+	neighbors[1].push_back(RankedEdge(1,0,3,1));
+	neighbors[1].push_back(RankedEdge(1,2,2,2));
+	neighbors[1].push_back(RankedEdge(1,4,2,2));
+	neighbors[1].push_back(RankedEdge(1,3,1,4));
+
+	SimmelianBackbone simmel (0.0);
+	Redundancy r (0, 0.0);
+
+	r = simmel.getOverlap(0, 1, neighbors, 1);
+	EXPECT_EQ(1, r.overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
+
+	r = simmel.getOverlap(1, 0, neighbors, 1);
+	EXPECT_EQ(1, r.overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
+
+	r = simmel.getOverlap(0, 1, neighbors, 2);
+	EXPECT_EQ(2, r.overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
+
+	r = simmel.getOverlap(0, 1, neighbors, 3);
+	EXPECT_EQ(2, r.overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
+
+	r = simmel.getOverlap(0, 1, neighbors, 4);
+	EXPECT_EQ(3, r.overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
+
 	//Build up a ranked neighborhood graph. Notation: Alter(Rank)
 	//Node 1: 1(1),2(1),3(1),5(2),6(2),7(3),9(4)
 	//Node 2: 1(1),2(2),4(2),6(3),7(3),9(4),10(5),11(6)
-
+/*
 	RankedNeighbors neighbors1;
 	RankedNeighbors neighbors2;
-	neighbors1.push_back(RankedEdge(2,1,0,1));
-	neighbors1.push_back(RankedEdge(2,2,0,1));
-	neighbors1.push_back(RankedEdge(2,3,0,1));
-	neighbors1.push_back(RankedEdge(2,5,0,2));
-	neighbors1.push_back(RankedEdge(2,6,0,2));
-	neighbors1.push_back(RankedEdge(2,7,0,3));
-	neighbors1.push_back(RankedEdge(2,9,0,4));
+	neighbors1.push_back(RankedEdge(1,1,0,1));
+	neighbors1.push_back(RankedEdge(1,2,0,1));
+	neighbors1.push_back(RankedEdge(1,3,0,1));
+	neighbors1.push_back(RankedEdge(1,5,0,2));
+	neighbors1.push_back(RankedEdge(1,6,0,2));
+	neighbors1.push_back(RankedEdge(1,7,0,3));
+	neighbors1.push_back(RankedEdge(1,9,0,4));
 
-	neighbors2.push_back(RankedEdge(1,1,0,1));
-	neighbors2.push_back(RankedEdge(1,2,0,2));
-	neighbors2.push_back(RankedEdge(1,4,0,2));
-	neighbors2.push_back(RankedEdge(1,6,0,3));
-	neighbors2.push_back(RankedEdge(1,7,0,3));
-	neighbors2.push_back(RankedEdge(1,9,0,4));
-	neighbors2.push_back(RankedEdge(1,10,0,5));
-	neighbors2.push_back(RankedEdge(1,11,0,6));
+	neighbors2.push_back(RankedEdge(2,1,0,1));
+	neighbors2.push_back(RankedEdge(2,2,0,2));
+	neighbors2.push_back(RankedEdge(2,4,0,2));
+	neighbors2.push_back(RankedEdge(2,6,0,3));
+	neighbors2.push_back(RankedEdge(2,7,0,3));
+	neighbors2.push_back(RankedEdge(2,9,0,4));
+	neighbors2.push_back(RankedEdge(2,10,0,5));
+	neighbors2.push_back(RankedEdge(2,11,0,6));
 
 	std::vector<RankedNeighbors> neighbors(3);
 	neighbors[1] = neighbors1;
@@ -68,7 +104,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 
 	r = simmel.getOverlap(2, 1, neighbors, 2);
 	EXPECT_EQ(2, r.overlap) << "wrong overlap";
-	EXPECT_DOUBLE_EQ((2.0/6.0), r.jaccard) << "wrong jaccard index";
+	EXPECT_DOUBLE_EQ((2.0/6.0), r.jaccard) << "wrong jaccard index";*/
 }
 
 TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
