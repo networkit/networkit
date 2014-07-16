@@ -29,14 +29,14 @@ Graph SimmelianBackbone::calculate(const Graph& graph) {
 	//Re-add the backbone edges.
 	if (parameterized) {
 		graph.forEdges([&](node u, node v) {
-			Redundancy redundancy = getOverlap(neighbors[u], neighbors[v], maxRank);
+			Redundancy redundancy = getOverlap(u, v, neighbors, maxRank);
 			if (redundancy.overlap >= minOverlap)
 				backboneGraph.addEdge(u, v);
 		});
 	} else {
 		graph.forEdges([&](node u, node v) {
 			count maxNeighborhoodSize = std::max(neighbors[u].size(), neighbors[v].size());
-			Redundancy redundancy = getOverlap(neighbors[u], neighbors[v], maxNeighborhoodSize);
+			Redundancy redundancy = getOverlap(u, v, neighbors, maxNeighborhoodSize);
 
 			if (redundancy.jaccard >= jaccardTreshold)
 				backboneGraph.addEdge(u, v);
@@ -77,22 +77,23 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 
 }
 
-Redundancy SimmelianBackbone::getOverlap(	const RankedNeighbors& egoNeighbors,
-											const RankedNeighbors& alterNeighbors,
+Redundancy SimmelianBackbone::getOverlap(	const node& ego,
+											const node& alter,
+											const std::vector<RankedNeighbors> neighbors,
 											const count& maxRank) {
 	//Initialization of output values
 	Redundancy result = Redundancy(0, 0.0);
 
-	std::vector<RankedEdge>::const_iterator egoIt = egoNeighbors.begin();
-	std::vector<RankedEdge>::const_iterator alterIt = alterNeighbors.begin();
+	std::vector<RankedEdge>::const_iterator egoIt = neighbors[ego].begin();
+	std::vector<RankedEdge>::const_iterator alterIt = neighbors[alter].begin();
 
 	std::set<node> egoNeighborsUnmatched;
 	std::set<node> alterNeighborsUnmatched;
 
 	//TODO: identified parameter? (nodes that are incident to an edge)
 	for (count rank = 1; rank <= maxRank; rank++) {
-		matchNeighbors(egoIt, egoNeighbors, egoNeighborsUnmatched, alterNeighborsUnmatched, rank, result.overlap);
-		matchNeighbors(alterIt, alterNeighbors, alterNeighborsUnmatched, egoNeighborsUnmatched, rank, result.overlap);
+		matchNeighbors(ego, alter, true, egoIt, neighbors[ego], egoNeighborsUnmatched, alterNeighborsUnmatched, rank, result.overlap);
+		matchNeighbors(alter, ego, false, alterIt, neighbors[alter], alterNeighborsUnmatched, egoNeighborsUnmatched, rank, result.overlap);
 
 		double currentJaccard = double(result.overlap) /
 				double(result.overlap + egoNeighborsUnmatched.size() + alterNeighborsUnmatched.size());
@@ -108,6 +109,9 @@ Redundancy SimmelianBackbone::getOverlap(	const RankedNeighbors& egoNeighbors,
  * egoNeighbors and alterNeighborsUnmatched to overlap.
  */
 void SimmelianBackbone::matchNeighbors(
+	const node& ego,
+	const node& alter,
+	const bool& reciprocityCheck,
 	std::vector<RankedEdge>::const_iterator& egoIt,
 	const RankedNeighbors& egoNeighbors,
 	std::set<node>& egoNeighborsUnmatched,
@@ -117,6 +121,11 @@ void SimmelianBackbone::matchNeighbors(
 
 	for (; egoIt != egoNeighbors.end() && egoIt->rank == rank; egoIt++) {
 		node other = egoIt->alter;
+
+		//We count nodes that are incident to the currently considered edge, as well.
+		if (reciprocityCheck && other == alter)
+			other = ego;
+
 		if (alterNeighborsUnmatched.erase(other))
 			overlap++;
 		else

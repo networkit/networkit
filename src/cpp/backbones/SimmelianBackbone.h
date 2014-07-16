@@ -94,9 +94,17 @@ private:
 
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, edgeCountMap& triangles);
 
-	Redundancy getOverlap(const RankedNeighbors& first, const RankedNeighbors& second, const count& maxRank);
+	Redundancy getOverlap(
+			const node& ego,
+			const node& alter,
+			const std::vector<RankedNeighbors> neighbors,
+			const count& maxRank);
 
-	void matchNeighbors(std::vector<RankedEdge>::const_iterator& egoIt,
+	void matchNeighbors(
+			const node& ego,
+			const node& alter,
+			const bool& reciprocityCheck,
+			std::vector<RankedEdge>::const_iterator& egoIt,
 			const RankedNeighbors& egoNeighbors,
 			std::set<node>& egoNeighborsUnmatched,
 			std::set<node>& alterNeighborsUnmatched,
