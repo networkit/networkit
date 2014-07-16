@@ -1,8 +1,9 @@
 #include "CoverWriter.h"
 #include <fstream>
 
-void NetworKit::CoverWriter::write(NetworKit::Cover &zeta, const std::string &path) const
-{
+namespace NetworKit {
+
+void NetworKit::CoverWriter::write(Cover& zeta, const std::string& path) const {
 	std::ofstream file{path};
 
 	std::vector<std::vector<index> > sets(zeta.upperBound());
@@ -18,4 +19,5 @@ void NetworKit::CoverWriter::write(NetworKit::Cover &zeta, const std::string &pa
 		}
 		file << std::endl;
 	}
+}
 }

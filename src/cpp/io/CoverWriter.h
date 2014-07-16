@@ -2,6 +2,7 @@
 #define COVERWRITER_H
 
 #include "../structures/Cover.h"
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 
