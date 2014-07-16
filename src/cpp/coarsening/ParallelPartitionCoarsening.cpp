@@ -43,6 +43,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	count nThreads = omp_get_max_threads();
 	std::vector<Graph> localGraphs(nThreads, Ginit); // thread-local graphs
 
+
 	// iterate over edges of G and create edges in coarse graph or update edge and node weights in Gcon
 	DEBUG("create edges in coarse graphs");
 	G.parallelForWeightedEdges([&](node u, node v, edgeweight ew) {
@@ -65,11 +66,20 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	// combine local graphs in parallel
 	Graph Gcombined(Ginit.numberOfNodes(), true); //
 
+	std::vector<count> numEdges(nThreads);
+
 
 	// access internals of Graph to write adjacencies
 	auto threadSafeIncreaseWeight = [&](node u, node v, edgeweight ew) {
+
 		index vi = Gcombined.indexInOutEdgeArray(u, v);
 		if (vi == none) {
+			index t = omp_get_thread_num();
+			if (u == v) {
+				numEdges[t] += 2;
+			} else {
+				numEdges[t] += 1; // normal edges count half
+			}
 			Gcombined.outDeg[u]++;
 			Gcombined.outEdges[u].push_back(v);
 			Gcombined.outEdgeWeights[u].push_back(ew);
@@ -81,8 +91,8 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 	DEBUG("combining graphs");
 	Gcombined.parallelForNodes([&](node u) {
-		for (index t = 0; t < nThreads; ++t) {
-			localGraphs.at(t).forEdgesOf(u, [&](node u, node v) {
+		for (index l = 0; l < nThreads; ++l) {
+			localGraphs.at(l).forEdgesOf(u, [&](node u, node v) {
 				TRACE("increasing weight of (", u, v, ") to", G.weight(u, v));
 				threadSafeIncreaseWeight(u, v, G.weight(u, v));
 			});
@@ -90,8 +100,13 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	});
 
 
-	// TODO: ensure consistency of data structure
-	Gcombined.m = Gcombined.parallelSumForEdges([](node u, node v) { return 1; });
+	// ensure consistency of data structure
+	DEBUG("numEdges: ", numEdges);
+	count twiceM = std::accumulate(numEdges.begin(), numEdges.end(), 0);
+	assert (twiceM % 2 == 0);
+	Gcombined.m = (twiceM / 2);
+
+	assert (G.consistencyCheck());
 
 	timer2.stop();
 	INFO("combining coarse graphs took ", timer2.elapsedTag());
