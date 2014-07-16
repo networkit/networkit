@@ -87,8 +87,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	});
 
 
-	// treat Gcombined as undirected graph
-	// Gcombined.treatAsUndirected();
+	// TODO: ensure consistency of data structure
 
 	timer2.stop();
 	INFO("combining coarse graphs took ", timer2.elapsedTag());
