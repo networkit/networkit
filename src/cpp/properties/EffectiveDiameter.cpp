@@ -42,10 +42,8 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, c
 	std::vector<std::vector<unsigned int> > mLast;
 	// the list of nodes that are already connected to all other nodes
 	std::vector<node> finishedNodes;
-	// the amount of estimated connected nodes from the previous iteration
-	std::vector<double> previousEstimatedConnectedNodes;
-	// the amount of iterations that a node passed without connecting to more nodes
-	std::vector<count> consecutiveCounter;
+	// the maximum possible bitmask based on the random initialization of all k bitmasks
+	std::vector<count> highestCount;
 	// the amount of nodes that need to be connected to all others nodes
 	count threshold = (count) (ceil(ratio * G.numberOfNodes()));
 	// the current distance of the neighborhoods
@@ -56,13 +54,13 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, c
 	srand (time(NULL));
 
 	// initialize all vectors
+	for (count j = 0; j < k; j++) {
+		highestCount.push_back(j);
+		highestCount[j] = 0;
+	}
 	G.forNodes([&](node v) {
 		finishedNodes.push_back(v);
 		finishedNodes[v] = 0;
-		previousEstimatedConnectedNodes.push_back(v);
-		previousEstimatedConnectedNodes[v] = -1;
-		consecutiveCounter.push_back(v);
-		consecutiveCounter[v] = 0;
 		std::vector<unsigned int> tmp;
 		for (count j = 0; j < k; j++) {
 			tmp.push_back(0);
@@ -79,6 +77,8 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, c
 					break;
 				}
 			}
+			// add the current bit to the maximum-bitmask
+			highestCount[j] = highestCount[j] | mLast[v][j];
 		}
 	});
 
@@ -114,25 +114,25 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, c
 				b = b / k;
 				// calculate the estimated number of neighbors
 				estimatedConnectedNodes = (pow(2,b) / 0.77351);
-				// when the amount of neighbors is still the same increase the counter so we now when this node must no longer be considered
-				if (previousEstimatedConnectedNodes[v] == estimatedConnectedNodes) {
-					consecutiveCounter[v]++;
-				} else {
-					consecutiveCounter[v] = 0;
+
+				bool nodeFinished = true;
+				for (count j = 0; j < k; j++) {
+					if (mCurr[v][j] != highestCount[j]) {
+						nodeFinished = false;
+						break;
+					}
 				}
-				// this node is probably connected to all other nodes and must no longer be considered
-				if (consecutiveCounter[v] >= l) {
+				if (nodeFinished) {
 					finishedNodes[v] = 1;
 					numberOfFinishedNodes++;
 				}
-				previousEstimatedConnectedNodes[v] = estimatedConnectedNodes;
 			}
 		});
 		mLast = mCurr;
 		h++;
 	}
-	// we always mark a node l iterations too late
-	h = h-l-1;
+	// decrement h since we increment it even in the very last iteration
+	h = h-1;
 	return h;
 }
 
