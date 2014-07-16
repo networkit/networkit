@@ -70,7 +70,11 @@ void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii
 		 */
 		double maxcdf = cosh(alpha*R);
 		double random = Aux::Random::real(1, maxcdf);
-		(*radii)[i] = (acosh(random)/alpha)/(R+1);
+		double radius = (acosh(random)/alpha);
+		//now translate into coordinates of Poincaré disc
+		double rad_nom = (cosh(radius)-1);
+		double rad_denom = (cosh(radius)+1);
+		(*radii)[i] = sqrt(rad_nom/rad_denom);
 		assert((*radii)[i] < 1);
 	}
 }

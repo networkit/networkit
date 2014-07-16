@@ -40,10 +40,12 @@ Graph HyperbolicGenerator::generate(count n, double stretchradius) {
 	double R = stretchradius*acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
 	vector<double> radii(n);
-
+	double rad_nom = (cosh(R)-1);
+	double rad_denom = (cosh(R)+1);
+	double r = sqrt(rad_nom/rad_denom);
 	HyperbolicSpace::fillPoints(&angles, &radii, stretchradius, 1);
 	INFO("Generated Points");
-	return generate(&angles, &radii, R/(R+1), R/(R+1));
+	return generate(&angles, &radii, r, R);
 }
 
 Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance) {
@@ -60,7 +62,7 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	Aux::ProgressMeter progress(n, 200);
 	#pragma omp parallel for
 	for (index i = 0; i < n; i++) {
-			vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles->at(i), radii->at(i)), 1);
+			vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles->at(i), radii->at(i)), thresholdDistance);
 			for (index j : near) {
 				if (i != j) {//we only want to add the edges once for each pair
 						result.addHalfEdge(i,j);
