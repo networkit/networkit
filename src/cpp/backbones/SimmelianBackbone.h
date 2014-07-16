@@ -97,7 +97,7 @@ private:
 	Redundancy getOverlap(
 			const node& ego,
 			const node& alter,
-			const std::vector<RankedNeighbors> neighbors,
+			const std::vector<RankedNeighbors>& neighbors,
 			const count& maxRank);
 
 	void matchNeighbors(

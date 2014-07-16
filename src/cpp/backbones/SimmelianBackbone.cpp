@@ -8,7 +8,6 @@
 #include "SimmelianBackbone.h"
 #include "ChibaNishizekiTriangleCounter.h"
 #include <limits>
-#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -80,7 +79,7 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 
 Redundancy SimmelianBackbone::getOverlap(	const node& ego,
 											const node& alter,
-											const std::vector<RankedNeighbors> neighbors,
+											const std::vector<RankedNeighbors>& neighbors,
 											const count& maxRank) {
 	//Initialization of output values
 	Redundancy result = Redundancy(0, 0.0);
