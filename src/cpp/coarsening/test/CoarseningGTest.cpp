@@ -128,9 +128,9 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 
 
 TEST_F(CoarseningGTest, testParallelPartitionCoarsening) {
-	count n = 1000;
+	count n = 100;
 
-	ErdosRenyiGenerator ERGen(n, 0.2);
+	ErdosRenyiGenerator ERGen(n, 0.5);
 	Graph G = ERGen.generate();
 
 	ClusteringGenerator clusteringGen;
@@ -149,13 +149,15 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarsening) {
 
 
 	DEBUG("coarsening on random partition");
-	count k = 6; // number of clusters in random clustering
+	count k = 2; // number of clusters in random clustering
 	Partition random = clusteringGen.makeRandomClustering(G, k);
 	auto conRandPair = coarsening.run(G, random);
 	Graph GconRand = conRandPair.first;
 
 	EXPECT_EQ(k, GconRand.numberOfNodes())
 			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
+	EXPECT_EQ(k + 1, GconRand.numberOfEdges()) << "graph contracted according to random clustering should have k+1 clusters";		
+
 
 }
 
