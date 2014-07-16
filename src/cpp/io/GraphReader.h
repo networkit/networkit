@@ -30,7 +30,7 @@ public:
 	virtual Graph read(const std::string& path) = 0;
 
 	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _read(std::string& path) {
+	Graph* _read(const std::string& path) {
 		return new Graph{std::move(read(path))};
 	};
 };
