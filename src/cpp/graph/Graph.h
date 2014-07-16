@@ -22,11 +22,16 @@
 
 namespace NetworKit {
 
+	class GraphBuilder; // forward declaration
+
 /**
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
 class Graph final {
+
+	friend class GraphBuilder;
+
 private:
 	// graph attributes
 	count id; //!< unique graph id, starts at 0
