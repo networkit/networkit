@@ -54,6 +54,12 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 	});
 
+	// DEBUG
+	for (Graph G : localGraphs) {
+		INFO("local graph: ", G.toString());
+	}
+	// DEBUG
+
 	Aux::Timer timer2;
 	timer2.start();
 	// combine local graphs in parallel
@@ -73,9 +79,6 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 	};
 
-
-
-
 	DEBUG("combining graphs");
 	Gcombined.parallelForNodes([&](node u) {
 		for (index t = 0; t < nThreads; ++t) {
@@ -88,6 +91,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 
 	// TODO: ensure consistency of data structure
+	Gcombined.m = Gcombined.parallelSumForEdges([](node u, node v) { return 1; });
 
 	timer2.stop();
 	INFO("combining coarse graphs took ", timer2.elapsedTag());

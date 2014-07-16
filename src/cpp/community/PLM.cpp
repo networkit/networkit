@@ -172,10 +172,11 @@ Partition PLM::run(const Graph& G) {
 	movePhase();
 
 	if (change) {
-		DEBUG("nodes moved, so begin coarsening and recursive call");
+		INFO("nodes moved, so begin coarsening and recursive call");
 		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta, parallelCoarsening);	// coarsen graph according to communitites
 		Partition zetaCoarse = run(coarsened.first);
 
+		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {
