@@ -25,10 +25,8 @@ class Overlapper {
 
 public:
 
-	/** Default destructor */
-	virtual ~Overlapper() = default;
+	virtual Partition run(const Graph& G, const  std::vector<Partition>& clusterings) = 0;
 
-	virtual Partition run(Graph& G, std::vector<Partition>& clusterings) = 0;
 };
 
 } /* namespace NetworKit */
