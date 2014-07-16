@@ -165,7 +165,7 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarsening) {
 
 TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraph) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/PGPgiantcompo.graph");
+	Graph G = reader.read("input/celegans_metabolic.graph");
 
 
 	ClusteringGenerator clusteringGen;
@@ -188,6 +188,7 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraph) {
 
 	Gseq.forNodes([&](node u){
 		EXPECT_EQ(Gseq.degree(u), Gpar.degree(u)) << "node degrees should be equal";
+		EXPECT_EQ(parResult.second[u], seqResult.second[u]) << "mapping is equal";
 	});
 
 }
