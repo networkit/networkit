@@ -11,7 +11,6 @@ namespace NetworKit {
  */
 class CoverReader {
 	public:
-		virtual ~CoverReader() = default;
 		/**
 		 * Read a cover from a file. File format: each line contains the node ids of one subset.
 		 *
