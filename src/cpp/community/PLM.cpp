@@ -174,6 +174,7 @@ Partition PLM::run(const Graph& G) {
 	if (change) {
 		INFO("nodes moved, so begin coarsening and recursive call");
 		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta, parallelCoarsening);	// coarsen graph according to communitites
+
 		Partition zetaCoarse = run(coarsened.first);
 
 		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");

@@ -31,7 +31,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	Graph Ginit(nextNodeId, true); // initial graph containing supernodes
 
 	index z = G.upperNodeIdBound();
-	std::vector<node> nodeToSuperNode(z);
+	std::vector<node> nodeToSuperNode(z, none);
 
 	// set entries node -> supernode
 	DEBUG("set entries node -> supernode");
@@ -93,8 +93,8 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	Gcombined.parallelForNodes([&](node u) {
 		for (index l = 0; l < nThreads; ++l) {
 			localGraphs.at(l).forEdgesOf(u, [&](node u, node v) {
-				TRACE("increasing weight of (", u, v, ") to", G.weight(u, v));
-				threadSafeIncreaseWeight(u, v, G.weight(u, v));
+				TRACE("increasing weight of (", u, v, ") to", localsGraphs.at(l).weight(u, v));
+				threadSafeIncreaseWeight(u, v, localGraphs.at(l).weight(u, v));
 			});
 		}
 	});
