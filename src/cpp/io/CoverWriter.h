@@ -13,8 +13,7 @@ namespace NetworKit {
 class CoverWriter
 {
 	public:
-		CoverWriter() = default;
-		virtual ~CoverWriter() = default;
+
 		virtual void write(Cover& zeta, const std::string& path) const;
 };
 }
