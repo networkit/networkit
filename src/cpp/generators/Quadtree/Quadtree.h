@@ -73,7 +73,8 @@ public:
 		TRACE("Using circle at (", center[0], ",",center[1], ") with radius ", radius);
 		double minR = center.length() - radius;
 		double maxR = center.length() + radius;
-		assert(maxR < 1);
+		//assert(maxR < 1);//this looks fishy
+		if (maxR > 1) maxR = 1;
 		if (minR < 0) {
 			maxR = std::max(abs(minR), maxR);
 			minR = 0;

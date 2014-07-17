@@ -136,10 +136,10 @@ public:
 			rightDistance = min(b.distance(query), c.distance(query));
 		}
 
-		TRACE("leftDistance:", leftDistance);
-		TRACE("rightDistance:", rightDistance);
-		TRACE("topDistance:", topDistance);
-		TRACE("bottomDistance:", bottomDistance);
+		//TRACE("leftDistance:", leftDistance);
+		//TRACE("rightDistance:", rightDistance);
+		//TRACE("topDistance:", topDistance);
+		//TRACE("bottomDistance:", bottomDistance);
 		return std::min(std::min(leftDistance, rightDistance), std::min(bottomDistance, topDistance));
 	}
 
@@ -208,14 +208,17 @@ public:
 
 	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point<double> center, double radius, vector<T> &result) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
-		double rsq = radius*radius;
 		if (euclideanLowerBound(center) > radius) {
 			return;
 		}
 
+		double rsq = radius*radius;
+
 		if (isLeaf) {
 			for (uint i = 0; i < content.size(); i++) {
-				if (center.squaredDistance(positions[i]) < rsq) {//maybe improve this with functors
+				double asq = positions[i][0] - center[0];
+				double bsq = positions[i][1] - center[1];
+				if (asq*asq + bsq*bsq < rsq) {//maybe improve this with functors
 					result.push_back(content[i]);
 				}
 			}

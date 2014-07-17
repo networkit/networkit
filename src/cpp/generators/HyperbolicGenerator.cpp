@@ -23,9 +23,10 @@ HyperbolicGenerator::HyperbolicGenerator() {
 	nodeCount = 10000;
 }
 
-HyperbolicGenerator::HyperbolicGenerator(count n, double stretchradius) {
+HyperbolicGenerator::HyperbolicGenerator(count n, double stretchradius, double distanceFactor) {
 	nodeCount = n;
 	stretch = stretchradius;
+	factor = distanceFactor;
 }
 
 HyperbolicGenerator::~HyperbolicGenerator() {
@@ -33,10 +34,10 @@ HyperbolicGenerator::~HyperbolicGenerator() {
 }
 
 Graph HyperbolicGenerator::generate() {
-	return generate(nodeCount, stretch);
+	return generate(nodeCount, stretch, factor);
 }
 
-Graph HyperbolicGenerator::generate(count n, double stretchradius) {
+Graph HyperbolicGenerator::generate(count n, double stretchradius, double distanceFactor) {
 	double R = stretchradius*acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
 	vector<double> radii(n);
@@ -45,7 +46,7 @@ Graph HyperbolicGenerator::generate(count n, double stretchradius) {
 	double r = sqrt(rad_nom/rad_denom);
 	HyperbolicSpace::fillPoints(&angles, &radii, stretchradius, 1);
 	INFO("Generated Points");
-	return generate(&angles, &radii, r, R);
+	return generate(&angles, &radii, r, R*distanceFactor);
 }
 
 Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance) {
@@ -63,16 +64,20 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	#pragma omp parallel for
 	for (index i = 0; i < n; i++) {
 			vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles->at(i), radii->at(i)), thresholdDistance);
+			TRACE("gathered points for ", i, " adding edges");
 			for (index j : near) {
 				if (i != j) {//we only want to add the edges once for each pair
 						result.addHalfEdge(i,j);
 				}
 			}
+			TRACE("added edges");
 
 			if (i % 200 == 0) {
+				TRACE("giving progress signal");
 				#pragma omp critical (progress)//that doesn't make any sense, creating the block every time and only printing every 200th iterations
 				{
 					progress.signal(i);
+					TRACE("total edges:", result.totalEdgeWeight());
 				}
 			}
 		}

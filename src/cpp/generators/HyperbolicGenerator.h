@@ -22,14 +22,17 @@ typedef index node; // node indices are 0-based
 class HyperbolicGenerator: public NetworKit::StaticGraphGenerator {
 public:
 	HyperbolicGenerator();
-	HyperbolicGenerator(count n, double stretchradius);
+	HyperbolicGenerator(count n, double stretchradius, double factor = 1);
 	virtual ~HyperbolicGenerator();
 	Graph generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance);
-	Graph generate(count n, double stretchradius = 1);//TODO: add converter to NetworKit graph
+	Graph generate(count n, double stretchradius = 1, double distanceFactor=1);
 	Graph generate();
 
+private:
 	count nodeCount;
 	double stretch;
+	double factor;
+
 };
 }
 #endif /* HYPERBOLICGENERATOR_H_ */
