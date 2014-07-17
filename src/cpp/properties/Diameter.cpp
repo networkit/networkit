@@ -23,18 +23,84 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 	edgeweight diameter = 0.0;
 
 	if (! G.isWeighted()) {
-		G.forNodes([&](node v) {
-			BFS bfs(G, v);
-			bfs.run();
-			auto distances = bfs.getDistances();
-			for (auto distance : distances) {
-				if (diameter < distance) {
-					diameter = distance;
+		/*
+		 * This is an implementation of the iFub-algorithm by
+		 * Pilu Crescenzi, Roberto Grossi, Michel Habib, Leonardo Lanzi, Andrea Marino:
+		 * On computing the diameter of real-world undirected graphs,
+		 * Theoretical Computer Science, Volume 514, 25 November 2013, Pages 84-95, ISSN 0304-3975,
+		 * http://dx.doi.org/10.1016/j.tcs.2012.09.018.
+		 * (http://www.sciencedirect.com/science/article/pii/S0304397512008687)
+		 */
+		// start node selection. Here the very simple variant with the node of max. degree
+		// for each component
+		std::vector<node> startNodes;
+		{
+			ConnectedComponents comp(G);
+			comp.run();
+			count numberOfComponents = comp.numberOfComponents();
+			startNodes.resize(numberOfComponents, 0);
+			std::vector<count> maxDeg(numberOfComponents, 0);
+
+			// for each component, find the node with the maximum degreee and add it as start node
+			G.forNodes([&](node v) {
+				count d = G.degree(v);
+				count c = comp.componentOfNode(v);
+				if (d > maxDeg[c]) {
+					startNodes[c] = v;
+					maxDeg[c] = d;
+				}
+			});
+		}
+
+		// simple BFS from all start nodes, store all levels (needed later)
+		std::vector<std::vector<node> > level(1);
+		count eccStart = 0;
+		{
+			std::vector<bool> reached(G.upperNodeIdBound(), false);
+			level[0].swap(startNodes);
+
+			while (level[eccStart].size() > 0) {
+				level.push_back(std::vector<node>());
+				for (node u : level[eccStart]) {
+					G.forNeighborsOf(u, [&](node v) {
+						if (!reached[v]) {
+							reached[v] = true;
+							level[eccStart+1].push_back(v);
+						}
+					});
+				}
+				++eccStart;
+			}
+			--eccStart; level.pop_back();
+		}
+
+		// set initial lower and upper bound
+		count lb = eccStart, ub = 2*eccStart;
+
+		// calculate the ecc for the nodes in each level starting with the highest level
+		// until either the bound is tight or all nodes have been considered
+		for (count i = eccStart; ub > lb && i > 0; --i) {
+			for (node v : level[i]) {
+				// calculate the eccentricity of v. Cannot use Eccentricity as Eccentricity only works for connected networks
+				BFS bfs(G, v);
+				bfs.run();
+				count ecc = 0;
+				for (auto d : bfs.getDistances()) {
+					if (d > ecc && d < std::numeric_limits<double>::max())
+						ecc = d;
+				}
+				// check if the lower bound has been improved and if yes, if the upper bound has been met
+				if (ecc > lb) {
+					lb = ecc;
+					if (lb == ub) break;
 				}
 			}
+			// set the new upper bound
+			ub = 2*(i-1);
+		}
 
-//			DEBUG("ecc(", v, "): ", *std::max_element(distances.begin(), distances.end()), " of ", distances);
-		});
+		diameter = lb;
+
 	} else {
 		 G.forNodes([&](node v) {
 		 	Dijkstra dijkstra(G, v);
