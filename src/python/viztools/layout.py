@@ -26,8 +26,8 @@ class SpectralLayout(Layout):
 		self.eigenvalues = spectrum[0]
 
 	def prepareNormalization(self):
-		x = self.eigenvectors[0]
-		y = self.eigenvectors[1]
+		x = self.eigenvectors[1] / self.eigenvalues[1]
+		y = self.eigenvectors[2] / self.eigenvalues[2]
 
 		minX = x[0]
 		maxX = x[0]
@@ -49,16 +49,23 @@ class SpectralLayout(Layout):
 		self.minY = minY
 		self.rangeY = maxY - minY
 
-	def getPos(self, v):
-		x = (self.eigenvectors[0][v] - self.minX) / self.rangeX
-		y = (self.eigenvectors[1][v] - self.minY) / self.rangeY
+	def computePositions(self):
+		self.pos = {}
 
-		return np.array((x, y))
+		for v in self.graph.nodes():
+			x = ((self.eigenvectors[1][v] / self.eigenvalues[1]) - self.minX) / self.rangeX
+			y = ((self.eigenvectors[2][v] / self.eigenvalues[2]) - self.minY) / self.rangeY
+
+			self.pos[v] = (x,y)
+
+	def getPos(self, v):
+		return np.array(self.pos[v])
 
 	def layout(self, G):
 		self.graph = G
 		self.prepareSpectrum()
 		self.prepareNormalization()
+		self.computePositions()
 
 		return {v : self.getPos(v) for v in self.graph.nodes()}
 

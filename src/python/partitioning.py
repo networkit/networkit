@@ -38,6 +38,7 @@ def inspectPartitions(partition, graph):
 		["avg. partition size", sum(partitionSizes) / len(partitionSizes)],
 		["imbalance", computeImbalance(partition, graph)],
 		["edge cut", computeEdgeCut(partition, graph)],
+		["edge cut (portion)", computeEdgeCut(partition, graph) / graph.numberOfEdges() ],
 		["modularity", mod],
 	]
 	print(tabulate.tabulate(props))
@@ -56,7 +57,7 @@ class SpectralPartitioner(object):
 		self.balanced = balanced
 
 	def prepareSpectrum(self):
-		spectrum = laplacianEigenvectors(self.graph, cutoff = (math.ceil(math.log(self.count, 2)) + 1))
+		spectrum = laplacianEigenvectors(self.graph, cutoff = (math.ceil(math.log(self.count, 2)) + 1), reverse=True)
 		self.eigenvectors = spectrum[1]
 		self.eigenvalues = spectrum[0]
 
@@ -117,7 +118,7 @@ class SpectralPartitioner(object):
 			return
 
 		if count == 3:
-			self.trisect()
+			self.trisect(partition=partition)
 			return
 
 		if partition is None:
