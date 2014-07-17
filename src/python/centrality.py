@@ -54,14 +54,14 @@ class SpectralCentrality(object):
 
 	def scores(self):
 		if self.scoreList is None:
-			self.scoreList = [self.evz[v] for v in self.graph.nodes()] # TODO bad! This depends on iteration order...
+			self.scoreList = [abs(self.evz[v]) for v in self.graph.nodes()] # TODO bad! This depends on iteration order...
 
 		return self.scoreList
 
 	def ranking(self):
 		if self.rankList is None:
-			self.rankList = [(v, self.evz[v]) for v in self.graph.nodes()]
-			self.rankList.sort(key=lambda x: abs(float(x[1])), reverse=True)
+			self.rankList = [(v, abs(self.evz[v])) for v in self.graph.nodes()]
+			self.rankList.sort(key=lambda x: float(x[1]), reverse=True)
 
 		return self.rankList
 
