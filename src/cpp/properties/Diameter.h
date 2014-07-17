@@ -29,7 +29,11 @@ public:
 	static std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph& G, double error);
 
 	/**
-	 * Get the exact diameter of the graph @a G.
+	 * Get the exact diameter of the graph @a G. The algorithm for unweighted graphs is based on
+	 * the iFub algorithm suggested in Pilu Crescenzi, Roberto Grossi, Michel Habib, Leonardo Lanzi, Andrea Marino:
+	 * On computing the diameter of real-world undirected graphs,
+	 * Theoretical Computer Science, Volume 514, 25 November 2013, Pages 84-95, ISSN 0304-3975,
+	 * http://dx.doi.org/10.1016/j.tcs.2012.09.018
 	 *
 	 * @param G The graph.
 	 * @return exact diameter of the graph @a G
