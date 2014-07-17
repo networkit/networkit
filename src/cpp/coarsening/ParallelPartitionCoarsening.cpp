@@ -55,32 +55,17 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 	});
 
-	// TODO: this will destroy any reasonable timing-results, consider replacing INFO() with DEBUG()
-	// DEBUG
-	for (Graph G : localGraphs) {
-		INFO("local graph: ", G.toString());
-	}
-	// DEBUG
 
 	Aux::Timer timer2;
 	timer2.start();
 	// combine local graphs in parallel
 	Graph Gcombined(Ginit.numberOfNodes(), true); //
 
-	std::vector<count> numEdges(nThreads);
-
-
 	// access internals of Graph to write adjacencies
 	auto threadSafeIncreaseWeight = [&](node u, node v, edgeweight ew) {
 
 		index vi = Gcombined.indexInOutEdgeArray(u, v);
 		if (vi == none) {
-			index t = omp_get_thread_num();
-			if (u == v) {
-				numEdges[t] += 2;
-			} else {
-				numEdges[t] += 1; // normal edges count half
-			}
 			Gcombined.outDeg[u]++;
 			Gcombined.outEdges[u].push_back(v);
 			Gcombined.outEdgeWeights[u].push_back(ew);
@@ -93,19 +78,16 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	DEBUG("combining graphs");
 	Gcombined.balancedParallelForNodes([&](node u) {
 		for (index l = 0; l < nThreads; ++l) {
-			localGraphs.at(l).forEdgesOf(u, [&](node u, node v) {
-				TRACE("increasing weight of (", u, v, ") to", localGraphs.at(l).weight(u, v));
-				threadSafeIncreaseWeight(u, v, localGraphs.at(l).weight(u, v));
+			localGraphs.at(l).forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+				TRACE("increasing weight of (", u, v, ") to", w);
+				threadSafeIncreaseWeight(u, v, w);
 			});
 		}
 	});
 
 
 	// ensure consistency of data structure
-	DEBUG("numEdges: ", numEdges);
-	count twiceM = std::accumulate(numEdges.begin(), numEdges.end(), 0);
-	assert (twiceM % 2 == 0);
-	Gcombined.m = (twiceM / 2);
+	Gcombined.m = G.parallelSumForEdges([&](node u){ return 1 });
 
 	assert (G.consistencyCheck());
 
