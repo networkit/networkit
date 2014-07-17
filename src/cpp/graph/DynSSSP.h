@@ -11,7 +11,8 @@
 #include <set>
 
 #include "Graph.h"
-#include "../dynamic/GraphEvent.h"
+#include "../dynamics/GraphEvent.h"
+#include "SSSP.h"
 
 namespace NetworKit {
 

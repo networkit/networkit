@@ -9,6 +9,7 @@
 #define DYNBFS_H_
 
 #include "DynSSSP.h"
+#include "BFS.h"
 
 namespace NetworKit {
 
