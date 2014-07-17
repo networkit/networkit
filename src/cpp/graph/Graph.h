@@ -22,8 +22,6 @@
 
 namespace NetworKit {
 
-	class GraphBuilder; // forward declaration
-
 /**
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
