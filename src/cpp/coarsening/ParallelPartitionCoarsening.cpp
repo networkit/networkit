@@ -90,7 +90,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	};
 
 	DEBUG("combining graphs");
-	Gcombined.parallelForNodes([&](node u) {
+	Gcombined.balancedParallelForNodes([&](node u) {
 		for (index l = 0; l < nThreads; ++l) {
 			localGraphs.at(l).forEdgesOf(u, [&](node u, node v) {
 				TRACE("increasing weight of (", u, v, ") to", localsGraphs.at(l).weight(u, v));
