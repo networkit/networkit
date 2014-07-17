@@ -55,6 +55,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 	});
 
+	// TODO: this will destroy any reasonable timing-results, consider replacing INFO() with DEBUG()
 	// DEBUG
 	for (Graph G : localGraphs) {
 		INFO("local graph: ", G.toString());
@@ -93,7 +94,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	Gcombined.balancedParallelForNodes([&](node u) {
 		for (index l = 0; l < nThreads; ++l) {
 			localGraphs.at(l).forEdgesOf(u, [&](node u, node v) {
-				TRACE("increasing weight of (", u, v, ") to", localsGraphs.at(l).weight(u, v));
+				TRACE("increasing weight of (", u, v, ") to", localGraphs.at(l).weight(u, v));
 				threadSafeIncreaseWeight(u, v, localGraphs.at(l).weight(u, v));
 			});
 		}
@@ -108,13 +109,13 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 	assert (G.consistencyCheck());
 
+	// stop both timers before printing
 	timer2.stop();
-	INFO("combining coarse graphs took ", timer2.elapsedTag());
-
 	timer.stop();
+	INFO("combining coarse graphs took ", timer2.elapsedTag());
 	INFO("parallel coarsening took ", timer.elapsedTag());
 
-	return std::make_pair(Gcombined, nodeToSuperNode);
+	return {std::move(Gcombined), std::move(nodeToSuperNode)};
 
 }
 
