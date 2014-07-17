@@ -2567,7 +2567,7 @@ cdef class Diameter:
 		return estimatedVertexDiameter(dereference(G._this), samples)
 
 cdef extern from "../cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
-	pair[node, count] getValue(_Graph G, node v) except +
+	pair[node, edgeweight] getValue(_Graph G, node v) except +
 
 cdef class Eccentricity:
 	"""
