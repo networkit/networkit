@@ -61,11 +61,20 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	// combine local graphs in parallel
 	Graph Gcombined(Ginit.numberOfNodes(), true); //
 
+	std::vector<count> numEdges(nThreads);
+
+
 	// access internals of Graph to write adjacencies
 	auto threadSafeIncreaseWeight = [&](node u, node v, edgeweight ew) {
 
 		index vi = Gcombined.indexInOutEdgeArray(u, v);
 		if (vi == none) {
+			index t = omp_get_thread_num();
+			if (u == v) {
+				numEdges[t] += 2;
+			} else {
+				numEdges[t] += 1; // normal edges count half
+			}
 			Gcombined.outDeg[u]++;
 			Gcombined.outEdges[u].push_back(v);
 			Gcombined.outEdgeWeights[u].push_back(ew);
@@ -87,7 +96,10 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 
 	// ensure consistency of data structure
-	Gcombined.m = G.parallelSumForEdges([&](node u){ return 1 });
+	DEBUG("numEdges: ", numEdges);
+	count twiceM = std::accumulate(numEdges.begin(), numEdges.end(), 0);
+	assert (twiceM % 2 == 0);
+	Gcombined.m = (twiceM / 2);
 
 	assert (G.consistencyCheck());
 
