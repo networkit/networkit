@@ -9,12 +9,12 @@
 #define SSSP_H_
 
 #include <set>
- 
+
 #include "Graph.h"
 
 namespace NetworKit {
 
-/** 
+/**
  * @ingroup graph
  * Abstract base class for single-source shortest path algorithms.
  */
@@ -31,7 +31,7 @@ public:
 	SSSP(const Graph& G, node s);
 
 	/** Default destructor */
-	virtual ~SSSP() = default;	
+	virtual ~SSSP() = default;
 
 	/** Computes the shortest paths from the source to all other nodes. */
 	virtual void run() = 0;

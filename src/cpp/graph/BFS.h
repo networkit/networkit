@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup graph
  * The BFS class is used to do a breadth-first search on a Graph from a given source node.
  */
-class BFS : public SSSP {
+class BFS : public virtual SSSP {
 public:
 	/**
 	 * Constructs the BFS class for @a G and source node @a source.
@@ -25,7 +25,7 @@ public:
 	 * @param G The graph.
 	 * @param source The source node of the breadth-first search.
 	 */
-	BFS(const Graph& G, node source); 
+	BFS(const Graph& G, node source);
 
 	/**
 	 * Breadth-first search from @a source.

@@ -11,7 +11,7 @@
 namespace NetworKit {
 
 SSSP::SSSP(const Graph& G, node s) : G(G), source(s) {
-	
+
 }
 
 std::vector<edgeweight> SSSP::getDistances() const {
@@ -19,11 +19,11 @@ std::vector<edgeweight> SSSP::getDistances() const {
 }
 
 edgeweight SSSP::distance(node t) const {
-	return distances[t];	
+	return distances[t];
 }
 
 count SSSP::numberOfPaths(node t) const {
-	return npaths[t];	
+	return npaths[t];
 }
 
 
