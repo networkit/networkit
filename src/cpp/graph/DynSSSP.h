@@ -18,23 +18,11 @@ namespace NetworKit {
 
 /**
  * @ingroup graph
- * Abstract base class for dynamic single-source shortest path algorithms.
+ * Interface for dynamic single-source shortest path algorithms.
  */
-class DynSSSP : public virtual SSSP {
+class DynSSSP {
 
 public:
-
-	/**
-	 * Creates the DynSSSP class for @a G and source @a s.
-	 *
-	 * @param G The graph.
-	 * @param s The source node.
-	 */
-	DynSSSP(const Graph& G, node s);
-
-	/** Default destructor */
-	virtual ~DynSSSP() = default;
-
 
     virtual void update(const std::vector<GraphEvent>& batch) = 0;
 

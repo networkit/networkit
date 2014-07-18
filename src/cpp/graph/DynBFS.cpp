@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-DynBFS::DynBFS(const Graph& G, node s) : DynSSSP(G, s), BFS(G, s), color(G.upperNodeIdBound(), WHITE) {
+DynBFS::DynBFS(const Graph& G, node s) : BFS(G, s), color(G.upperNodeIdBound(), WHITE) {
 
 }
 
