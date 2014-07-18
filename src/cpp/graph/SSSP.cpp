@@ -18,18 +18,6 @@ std::vector<edgeweight> SSSP::getDistances() const {
 	return distances;
 }
 
-edgeweight SSSP::distance(node t) const {
-	return distances[t];	
-}
-
-count SSSP::numberOfPaths(node t) const {
-	return npaths[t];	
-}
-
-
-std::vector<node> SSSP::getPredecessors(node t) const {
-	return previous[t];
-}
 
 std::vector<node> SSSP::getPath(node t, bool forward) const {
 	std::vector<node> path;
