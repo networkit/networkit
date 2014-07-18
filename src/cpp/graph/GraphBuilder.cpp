@@ -155,7 +155,6 @@ Graph GraphBuilder::toGraphParallel() {
 	});
 
 	// calculate correct m
-	G.m = 0;
 	G.forNodes([&](node v) {
 		G.m += G.degree(v);
 	});
@@ -174,63 +173,86 @@ Graph GraphBuilder::toGraphParallel() {
 Graph GraphBuilder::toGraphSequential() {
 	Graph G(n, weighted, directed);
 
-	if (directed) {
-		throw std::runtime_error("toGraphSequential does not yet support directed graphs");
-	}
-
-	if (weighted) {
-		throw std::runtime_error("toGraphSequential does not yet support weighted graphs");
-	}
-
 	std::vector<count> missingEdgesCounts(n, 0);
 
+	// first half edge
+	// copy halfEdges to G.outEdges and set G.outDeg
 	G.forNodes([&](node v) {
 		G.outDeg[v] = halfEdges[v].size();
 		G.outEdges[v] = halfEdges[v];
 		halfEdges[v].clear();
 	});
 
+	// same for weights
+	if (weighted) {
+		G.forNodes([&](node v) {
+			G.outEdgeWeights[v] = halfEdgeWeights[v];
+			halfEdgeWeights[v].clear();
+		});		
+	}
+
+	// count missing edges for each node
 	G.forNodes([&](node v) {
-		// increase count of incoming edges for neighbors
+		// increase count of incoming edges for all neighbors
 		for (node u : G.outEdges[v]) {
 			missingEdgesCounts[u]++;
 		}
 	});
 
-	// add second half of the edge
+	// second half edge
 	if (directed) {
-		// directed: outEdges is complete, fill inEdges
+		// directed: outEdges is complete, missing half edges are the inEdges
 		// missingEdgesCounts are our inDegrees
 		G.inDeg = missingEdgesCounts;
 
+		// reserve the exact amount of space needed first
 		G.forNodes([&](node v) {
 			G.inEdges[v].reserve(G.inDeg[v]);
+			if (weighted) {
+				G.inEdgeWeights[v].reserve(G.inDeg[v]);
+			}
 		});
 		G.forNodes([&](node v) {
-			for (node u : G.outEdges[v]) {
-				// edge v -> u
+			for (index i = 0; i < G.outDeg[v]; i++) {
+				node u = G.outEdges[v][i];
 				G.inEdges[u].push_back(v);
+				if (weighted) {
+					edgeweight ew = G.outEdgeWeights[v][i];
+					G.inEdgeWeights[u].push_back(ew);
+				}
 			}
 		});
 	} else {
 		// undirected: so far each edge is just saved at one node
 		// add it to the other node as well
+
+		// reserve the exact amount of space needed first
 		G.forNodes([&](node v) {
 			G.outEdges[v].reserve(G.outDeg[v] + missingEdgesCounts[v]);
+			if (weighted) {
+				G.outEdgeWeights[v].reserve(G.outDeg[v] + missingEdgesCounts[v]);
+			}
 		});
 		G.forNodes([&](node v) {
+			// the first G.outDeg[v] edges in G.outEdges[v] are the first half edges
+			// we are adding after G.outDeg[v]
 			for (index i = 0; i < G.outDeg[v]; i++) {
 				node u = G.outEdges[v][i];
 				G.outEdges[u].push_back(v);
+				if (weighted) {
+					edgeweight ew = G.outEdgeWeights[v][i];
+					G.outEdgeWeights[u].push_back(ew);
+				}
 			}
 		});
+
+		// correct degree
 		G.forNodes([&](node v) {
 			G.outDeg[v] += missingEdgesCounts[v];
 		});
 	}
 
 	// calculate correct m	
-	G.m = 0;
 	G.forNodes([&](node v) {
 		G.m += G.degree(v);
 	});
