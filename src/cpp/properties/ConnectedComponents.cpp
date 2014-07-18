@@ -29,7 +29,7 @@ void ConnectedComponents::run() {
 			component.toSingleton(u);
 			index c = component[u];
 			assert (component[u] != none);
-			G.BFSfrom(u, [&](node v) {
+			G.BFSfrom(u, [&](node v, count dist) {
 				component[v] = c;
 			});
 			++numComponents;
