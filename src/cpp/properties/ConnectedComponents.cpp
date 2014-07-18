@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 
-ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
+ConnectedComponents::ConnectedComponents(const Graph& G) : G(G), numComponents(0) {
 }
 
 void ConnectedComponents::run() {
@@ -21,6 +21,7 @@ void ConnectedComponents::run() {
 
 	DEBUG("initializing labels");
 	component = Partition(G.upperNodeIdBound(), none);
+	numComponents = 0;
 
 	// perform breadth-first searches
 	G.forNodes([&](node u) {
@@ -31,6 +32,7 @@ void ConnectedComponents::run() {
 			G.BFSfrom(u, [&](node v) {
 				component[v] = c;
 			});
+			++numComponents;
 		}
 	});
 
@@ -41,14 +43,6 @@ Partition ConnectedComponents::getPartition() {
 	return this->component;
 }
 
-count ConnectedComponents::numberOfComponents() {
-	return this->component.numberOfSubsets();
-}
-
-count ConnectedComponents::componentOfNode(node u) {
-	assert (component[u] != none);
-	return component[u];
-}
 
 std::map<index, count> ConnectedComponents::getComponentSizes() {
 	return this->component.subsetSizeMap();
