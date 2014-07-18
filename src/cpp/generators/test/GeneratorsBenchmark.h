@@ -12,15 +12,21 @@
 
 #include <gtest/gtest.h>
 
-
-#include "../BarabasiAlbertGenerator.h"
+#include "../../auxiliary/Timer.h"
 
 namespace NetworKit {
 
 class GeneratorsBenchmark: public testing::Test {
-public:
-	GeneratorsBenchmark();
-	virtual ~GeneratorsBenchmark();
+protected:
+	template <typename L>
+	uint64_t timeOnce(L f) {
+		// TODO should be moved somewhere else (Benchmark parent class or the Timer class itself)
+		Aux::Timer timer;
+		timer.start();
+		f();
+		timer.stop();
+		return timer.elapsedMilliseconds();
+	}
 };
 
 } /* namespace NetworKit */
