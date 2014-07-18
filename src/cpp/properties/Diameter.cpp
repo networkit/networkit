@@ -67,14 +67,8 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 		// until either the bound is tight or all nodes have been considered
 		for (count i = eccStart; ub > lb && i > 0; --i) {
 			for (node v : level[i]) {
-				// calculate the eccentricity of v. Cannot use Eccentricity as Eccentricity only works for connected networks
-				BFS bfs(G, v);
-				bfs.run();
 				count ecc = 0;
-				for (auto d : bfs.getDistances()) {
-					if (d > ecc && d < std::numeric_limits<double>::max())
-						ecc = d;
-				}
+				std::tie(std::ignore, ecc) = Eccentricity::getValue(G, v);
 				// check if the lower bound has been improved and if yes, if the upper bound has been met
 				if (ecc > lb) {
 					lb = ecc;
@@ -112,30 +106,13 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& G, double error) {
-	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
-	/* Note: the function Graph::breadthFirstEdgesFrom that should
-	 do the same has not been implemented!
-		-- TODO: Then why not implement it directly there?
-	 */
-	auto bfs_edges = [&] (const Graph& G, node u, std::function<void(node, node)> f) -> node {
-		std::queue<node> q;
-		std::vector<bool> visited(G.upperNodeIdBound(), false);
-		q.push(u);
-		visited[u] = true;
+	// check if graph is connected
+	ConnectedComponents comp(G);
+	comp.run();
+	if (comp.numberOfComponents() > 1) {
+		throw std::runtime_error("Graph not connected - diameter is infinite");
+	}
 
-		node x = u;
-		while (!q.empty()) {
-			x = q.front(); q.pop();
-			G.forNeighborsOf(x, [&] (node y) {
-						if (!visited[y]) {
-							f(x, y);
-							visited[y] = true;
-							q.push(y);
-						}
-					});
-		}
-		return x;
-	};
 
 	/* Diameter estimate: lowerBounds <= diam(G) <= upperBound. */
 	edgeweight lowerBound = 0.0;
@@ -169,8 +146,10 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 		/* diam(G) <= diam(BFS_Tree(v)) */
 		node v = high_deg[niter];
 		Graph bfs_tree(z);
-		node w = bfs_edges(G, v, [&] (node a, node b) {
+		node w;
+		G.BFSEdgesfrom(v, [&] (node a, node b) {
 			bfs_tree.addEdge(a, b);
+			w = b;
 		});
 //		DEBUG("v: ", v, ", w: ", w);
 
@@ -184,10 +163,6 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 		upperBound = std::min(upperBound, ecc);
 
 		niter++;
-	}
-
-	if ((lowerBound == std::numeric_limits<edgeweight>::max()) || (upperBound == std::numeric_limits<edgeweight>::max())) {
-		throw std::runtime_error("Graph not connected - diameter is infinite");
 	}
 
 	return {lowerBound, upperBound};
