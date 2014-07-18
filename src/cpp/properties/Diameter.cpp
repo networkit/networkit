@@ -54,25 +54,11 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 		// simple BFS from all start nodes, store all levels (needed later)
 		std::vector<std::vector<node> > level(1);
-		count eccStart = 0;
-		{
-			std::vector<bool> reached(G.upperNodeIdBound(), false);
-			level[0].swap(startNodes);
-
-			while (level[eccStart].size() > 0) {
-				level.push_back(std::vector<node>());
-				for (node u : level[eccStart]) {
-					G.forNeighborsOf(u, [&](node v) {
-						if (!reached[v]) {
-							reached[v] = true;
-							level[eccStart+1].push_back(v);
-						}
-					});
-				}
-				++eccStart;
-			}
-			--eccStart; level.pop_back();
-		}
+		G.BFSfrom(startNodes, [&](node v, count dist) {
+			if (level.size() < dist+1) level.emplace_back();
+			level[dist].push_back(v);
+		});
+		count eccStart = level.size()-1;
 
 		// set initial lower and upper bound
 		count lb = eccStart, ub = 2*eccStart;
