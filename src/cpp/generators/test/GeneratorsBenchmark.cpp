@@ -9,6 +9,7 @@
 
 #include <omp.h>
 #include <random>
+#include <functional>
 
 #include "GeneratorsBenchmark.h"
 #include "../../graph/GraphGenerator.h"
