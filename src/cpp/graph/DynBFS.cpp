@@ -21,20 +21,21 @@ void DynBFS::update(const std::vector<GraphEvent>& batch) {
 	// insert nodes from the batch whose distance has changed (affected nodes) into the queues
 	for (GraphEvent edge : batch) {
 		if (edge.type!=GraphEvent::EDGE_ADDITION || edge.w!=1.0)
-			throw std::runtime_error("wrong update");
+			throw std::runtime_error("Graph update not allowed");
 		if (distances[edge.u] >= distances[edge.v]+1) {
-			queues[distances[edge.v]+1].push(u);
+			queues[distances[edge.v]+1].push(edge.u);
 		} else if (distances[edge.v] >= distances[edge.u]+1) {
-			queues[distances[edge.u]+1].push(v);
+			queues[distances[edge.u]+1].push(edge.v);
 		}
 	}
 
 	// extract nodes from the queues and scan incident edges
-	std::queue<node> visited(G.upperNodeIdBound());
-	int m = 1;
+	std::queue<node> visited;
+	count m = 1;
 	while (m < maxLevels) {
 		while (!queues[m].empty()) {
-			node w = queues[m].pop();
+			node w = queues[m].front();
+			queues[m].pop();
 			if (color[w] == BLACK) {
 				continue;
 			}
@@ -54,14 +55,15 @@ void DynBFS::update(const std::vector<GraphEvent>& batch) {
 					color[z] = GRAY;
 					queues[m].push(z);
 				}
-			}
+			});
 		}
 		m = m+1;
 	}
 
 	// reset colors
 	while(!visited.empty()) {
-		node w = visited.pop();
+		node w = visited.front();
+		visited.pop();
 		color[w] = WHITE;
 	}
 }
