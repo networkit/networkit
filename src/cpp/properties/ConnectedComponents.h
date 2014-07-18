@@ -70,7 +70,17 @@ public:
 private:
 	const Graph& G;
 	Partition component;
+	count numComponents;
 };
+
+inline count ConnectedComponents::componentOfNode(node u) {
+	assert (component[u] != none);
+	return component[u];
+}
+
+inline count ConnectedComponents::numberOfComponents() {
+	return this->numComponents;
+}
 
 }
 
