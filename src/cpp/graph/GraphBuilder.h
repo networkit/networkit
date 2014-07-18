@@ -23,136 +23,90 @@ protected:
 	bool directed; //!< true if the graph will be directed, false otherwise
 
 	std::vector< std::vector<node> > halfEdges;
-	std::vector< std::vector<edgeweight> > halfWeights;
+	std::vector< std::vector<edgeweight> > halfEdgeWeights;
+
+	index indexHalfEdgeArray(node u, node v) const;
 
 public:
-	GraphBuilder(count n = 0, bool weighted = false, bool directed = false) :
-		n(n),
-		weighted(weighted),
-		directed(directed),
-		halfEdges(n),
-		halfWeights(weighted ? n : 0)
-	{}
+	GraphBuilder(count n = 0, bool weighted = false, bool directed = false);
 
 	bool isWeighted() const { return weighted; }
 	bool isDirected() const { return directed; }
 	count numberOfNodes() const { return n; }
 
-	node addNode() {
-		halfEdges.push_back(std::vector<node>{});
-		if (weighted) {
-			halfWeights.push_back(std::vector<edgeweight>{});
-		}
-		return n++;
-	}
+	node addNode();
+	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+	void increaseWeight(node u, node v, edgeweight ew);
 
-	// add edge from u to v
-	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight) {
-		halfEdges[u].push_back(v);
-		if (weighted) {
-			halfWeights[u].push_back(ew);
-		}
-	}
+	Graph toGraph(bool parallel = true) { return parallel ? toGraphParallel() : toGraphSequential(); }
+
+	/**
+	 * Iterate over all nodes of the graph and call @a handle (lambda closure).
+	 *
+	 * @param handle Takes parameter <code>(node)</code>.
+	 */
+	template<typename L> void forNodes(L handle) const;
+
+	/**
+	 * Iterate randomly over all nodes of the graph and call @a handle (lambda closure).
+	 *
+	 * @param handle Takes parameter <code>(node)</code>.
+	 */
+	template<typename L> void parallelForNodes(L handle) const;
+
+	/**
+	 * Iterate over all undirected pairs of nodes and call @a handle (lambda closure).
+	 *
+	 * @param handle Takes parameters <code>(node, node)</code>.
+	 */
+	template<typename L> void forNodePairs(L handle) const;
+
 
 	/**
 	 * Iterate over all undirected pairs of nodes in parallel and call @a handle (lambda closure).
 	 *
 	 * @param handle Takes parameters <code>(node, node)</code>.
 	 */
-	template<typename L> void parallelForNodePairs(L handle) const {
-	 	#pragma omp parallel for
-		for (node u = 0; u < n; u++) {
-			for (node v = u + 1; v < n; v++) {
-				handle(u, v);
-			}
-		}
-	}
+	template<typename L> void parallelForNodePairs(L handle) const;
 
-	Graph toGraph() const {
-		Graph G(n, weighted, directed);
-
-		std::vector<count> missingEdgesCounts(n, 0);
-
-		// copy out edges (first half)
-		G.forNodes([&](node v) {
-			G.outDeg[v] = halfEdges[v].size();
-			G.outEdges[v] = halfEdges[v];
-			if (weighted) {
-				G.outEdgeWeights[v] = halfWeights[v];
-			}
-
-			// increase total edge count
-			G.m += G.outDeg[v];
-
-			// increase count of incoming edges for neighbors
-			for (node u : G.outEdges[v]) {
-				missingEdgesCounts[u]++;
-			}
-		});
-
-		// add second half of the edge
-		if (directed) {
-			// directed: outEdges is complete, fill inEdges
-			// missingEdgesCounts are our inDegrees
-			G.inDeg = missingEdgesCounts;
-
-			G.forNodes([&](node v) {
-				G.inEdges.reserve(G.inDeg[v]);
-			});
-			G.forNodes([&](node v) {
-				for (node u : halfEdges[v]) {
-					// edge v -> u
-					G.inEdges[u].push_back(v);
-				}
-			});
-
-			// same stuff for weights
-			if (weighted) {
-				G.forNodes([&](node v) {
-					G.inEdgeWeights.reserve(G.inDeg[v]);
-				});
-				G.forNodes([&](node v) {
-					for (index i = 0; i < halfWeights[v].size(); i++) {
-						node u = halfEdges[v][i];
-						edgeweight ew = halfWeights[v][i];
-						G.inEdgeWeights[u].push_back(ew);
-					}
-				});
-			}
-		} else {
-			// undirected: so far each edge is just saved at one node
-			// add it to the other node as well
-			G.forNodes([&](node v) {
-				G.outDeg[v] += missingEdgesCounts[v];
-				G.outEdges[v].reserve(G.outDeg[v]);
-			});
-			G.forNodes([&](node v) {
-				for (node u : halfEdges[v]) {
-					// edge v -> u
-					G.outEdges[u].push_back(v);
-				}
-			});
-
-			// same stuff for weights
-			if (weighted) {
-				G.forNodes([&](node v) {
-					G.outEdgeWeights[v].reserve(G.outDeg[v]);
-				});
-				G.forNodes([&](node v) {
-					for (index i = 0; i < halfWeights[v].size(); i++) {
-						node u = halfEdges[v][i];
-						edgeweight ew = halfWeights[v][i];
-						G.outEdgeWeights[u].push_back(ew);
-					}
-				});				
-			}
-		}
-
-		G.shrinkToFit();
-		return G;
-	}
+private:
+	Graph toGraphParallel();
+	Graph toGraphSequential();
 };
 
+template<typename L>
+void GraphBuilder::forNodes(L handle) const {
+	for (node v = 0; v < n; v++) {
+		handle(v);
+	}
+}
+
+template<typename L>
+void GraphBuilder::parallelForNodes(L handle) const {
+	#pragma omp parallel for
+	for (node v = 0; v < n; v++) {
+		handle(v);
+	}
+}
+
+template<typename L>
+void GraphBuilder::forNodePairs(L handle) const {
+	for (node u = 0; u < n; u++) {
+		for (node v = u + 1; v < n; v++) {
+			handle(u, v);
+		}
+	}
+}
+
+template<typename L>
+void GraphBuilder::parallelForNodePairs(L handle) const {
+ 	#pragma omp parallel for
+	for (node u = 0; u < n; u++) {
+		for (node v = u + 1; v < n; v++) {
+			handle(u, v);
+		}
+	}
+}
 
 } /* namespace NetworKit */
 
