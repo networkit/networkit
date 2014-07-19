@@ -22,13 +22,19 @@ namespace NetworKit {
 TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	// parameters for Erdös-Renyi
 	count n = 100000;
-	double p = 0.0001;
+	double p = 0.001;
 	count m_expected = p * n * (n + 1) / 2;
 
 	Graph G;
 	GraphBuilder builder;
 
+	// for (int powThread = 5; powThread < 10; powThread++) {
+	// 	int threads = std::pow(2, powThread);
+	// 	omp_set_num_threads(threads);
+	// 	printf("\nthreads: %d\n", threads);
+
 	// prepare a random generator for each possible thread
+	// omp_set_num_threads(256);
 	int maxThreads = omp_get_max_threads();
 	std::vector< std::function<double()> > randomPerThread;
 	std::random_device device;
@@ -79,6 +85,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	// printf("parallelForNodePairs + toGraphSequential:\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
 
 	// fully parallel way
+	m_actual = 0;
 	t1 = timeOnce([&]() {
 		builder = GraphBuilder(n);
 		builder.parallelForNodePairs([&](node u, node v) {
@@ -97,17 +104,19 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	printf("parallelForNodePairs + toGraphParallel:\t\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
 
 	// old way
-	t1 = timeOnce([&]() {
-		G = Graph(n);
-		G.forNodePairs([&](node u, node v) {
-			if (randomPerThread[0]() <= p) {
-				G.addEdge(u, v);
-			}
-		});
-	});
-	m_actual = G.numberOfEdges();
-	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	printf("forNodePairs + Graph.addEdge:\t\t\t\t%lu ms\n", t1);
+	// t1 = timeOnce([&]() {
+	// 	G = Graph(n);
+	// 	G.forNodePairs([&](node u, node v) {
+	// 		if (randomPerThread[0]() <= p) {
+	// 			G.addEdge(u, v);
+	// 		}
+	// 	});
+	// });
+	// m_actual = G.numberOfEdges();
+	// EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
+	// printf("forNodePairs + Graph.addEdge:\t\t\t\t%lu ms\n", t1);
+
+	// }
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
