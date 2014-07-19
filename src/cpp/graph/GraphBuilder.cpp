@@ -84,7 +84,7 @@ Graph GraphBuilder::toGraphParallel() {
 	std::vector<adjacencylists> inEdgesPerThread(maxThreads, adjacencylists(n));
 	std::vector<weightlists> inWeightsPerThread(weighted ? maxThreads : 0, weightlists(n));
 
-	G.parallelForNodes([&](node v) {
+	parallelForNodes([&](node v) {
 		int tid = omp_get_thread_num();
 		for (node u : halfEdges[v]) {
 			inEdgesPerThread[tid][u].push_back(v);
@@ -98,7 +98,7 @@ Graph GraphBuilder::toGraphParallel() {
 		}
 	});
 
-	G.parallelForNodes([&](node v) {
+	parallelForNodes([&](node v) {
 		count inDeg = 0;
 		count outDeg = halfEdges[v].size();
 		for (int tid = 0; tid < maxThreads; tid++) {
@@ -155,7 +155,7 @@ Graph GraphBuilder::toGraphParallel() {
 	});
 
 	// calculate correct m
-	G.forNodes([&](node v) {
+	forNodes([&](node v) {
 		G.m += G.degree(v);
 	});
 	if (!directed) {
