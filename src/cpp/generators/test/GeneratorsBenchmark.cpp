@@ -21,7 +21,7 @@ namespace NetworKit {
 
 TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	// parameters for Erdös-Renyi
-	count n = 200000;
+	count n = 100000;
 	double p = 0.0001;
 	count m_expected = p * n * (n + 1) / 2;
 
@@ -44,39 +44,39 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	count m_actual;
 	uint64_t t1, t2;
 	
-	// builder completely sequential
-	t1 = timeOnce([&]() {
-		builder = GraphBuilder(n);
-		builder.forNodePairs([&](node u, node v) {
-			if (randomPerThread[0]() <= p) {
-				builder.addEdge(u, v);
-			}
-		});
-	});
-	t2 = timeOnce([&]() {
-		G = builder.toGraph(false);
-	});
-	m_actual = G.numberOfEdges();
-	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	printf("forNodePairs + toGraphSequential:\t\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
+	// // builder completely sequential
+	// t1 = timeOnce([&]() {
+	// 	builder = GraphBuilder(n);
+	// 	builder.forNodePairs([&](node u, node v) {
+	// 		if (randomPerThread[0]() <= p) {
+	// 			builder.addEdge(u, v);
+	// 		}
+	// 	});
+	// });
+	// t2 = timeOnce([&]() {
+	// 	G = builder.toGraph(false);
+	// });
+	// m_actual = G.numberOfEdges();
+	// EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
+	// printf("forNodePairs + toGraphSequential:\t\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
 
-	// parallel construction, but sequential toGraph
-	t1 = timeOnce([&]() {
-		builder = GraphBuilder(n);
-		builder.parallelForNodePairs([&](node u, node v) {
-			int tid = omp_get_thread_num();
-			double rdn = randomPerThread[tid]();
-			if (rdn <= p) {
-				builder.addEdge(u, v);
-			}
-		});
-	});
-	t2 = timeOnce([&]() {
-		G = builder.toGraph(false);
-	});
-	m_actual = G.numberOfEdges();
-	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	printf("parallelForNodePairs + toGraphSequential:\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
+	// // parallel construction, but sequential toGraph
+	// t1 = timeOnce([&]() {
+	// 	builder = GraphBuilder(n);
+	// 	builder.parallelForNodePairs([&](node u, node v) {
+	// 		int tid = omp_get_thread_num();
+	// 		double rdn = randomPerThread[tid]();
+	// 		if (rdn <= p) {
+	// 			builder.addEdge(u, v);
+	// 		}
+	// 	});
+	// });
+	// t2 = timeOnce([&]() {
+	// 	G = builder.toGraph(false);
+	// });
+	// m_actual = G.numberOfEdges();
+	// EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
+	// printf("parallelForNodePairs + toGraphSequential:\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
 
 	// fully parallel way
 	t1 = timeOnce([&]() {
