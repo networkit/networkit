@@ -25,7 +25,7 @@ public:
 	 * @param l the number of iterations that a node has to iterate without connecting to new neighbors before it is no longer considered
 	 * @return the approximated effective diameter of the graph
 	 */
-	static count effectiveDiameter(const Graph& G, const double ratio, const count k, const count r, const count l);
+	static count effectiveDiameter(const Graph& G, const double ratio, const count k, const count r);
 	static count effectiveDiameter(const Graph& G, const double ratio);
 	static count effectiveDiameter(const Graph& G);
 

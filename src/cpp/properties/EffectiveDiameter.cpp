@@ -15,18 +15,18 @@
 namespace NetworKit {
 
 count EffectiveDiameter::effectiveDiameter(const Graph& G) {
-	return EffectiveDiameter::effectiveDiameter(G, 0.9, 64, 7, 4);
+	return EffectiveDiameter::effectiveDiameter(G, 0.9, 64, 7);
 }
 
 count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio) {
-	return EffectiveDiameter::effectiveDiameter(G, ratio, 64, 7, 4);
+	return EffectiveDiameter::effectiveDiameter(G, ratio, 64, 7);
 }
 
 /*
 this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
 in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 */
-count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, const count k, const count r, const count l) {
+count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, const count k, const count r) {
 	// check whether the graph is connected
 	ConnectedComponents cc(G);
 	cc.run();
