@@ -10,6 +10,7 @@
 #include "GraphBenchmark.h"
 #include "../NodeMap.h"
 #include "../BFS.h"
+#include "../BidirectionalBFS.h"
 #include "../Dijkstra.h"
 #include "../../auxiliary/Random.h"
 #include "../../io/METISGraphReader.h"
@@ -287,10 +288,10 @@ TEST_F(GraphBenchmark, benchBFS) {
 	std::vector<std::string> graphs = {"input/PGPgiantcompo.graph",
 		"input/astro-ph.graph",
 		"input/caidaRouterLevel.graph",
-		"/algoDaten/staudt/Graphs/Static/DIMACS/Large/europe-osm.metis.graph",
-		"/algoDaten/staudt/Graphs/Static/DIMACS/Street/germany.osm.metis.graph",
-		"/algoDaten/staudt/Graphs/Static/DIMACS/Street/asia.osm.metis.graph",
-		"/algoDaten/staudt/Graphs/Static/DIMACS/XLarge/uk-2007-05.metis.graph"
+//		"/algoDaten/staudt/Graphs/Static/DIMACS/Large/europe-osm.metis.graph",
+//		"/algoDaten/staudt/Graphs/Static/DIMACS/Street/germany.osm.metis.graph",
+//		"/algoDaten/staudt/Graphs/Static/DIMACS/Street/asia.osm.metis.graph",
+//		"/algoDaten/staudt/Graphs/Static/DIMACS/XLarge/uk-2007-05.metis.graph"
 	};
 
 	for(auto file : graphs) {
@@ -321,6 +322,61 @@ TEST_F(GraphBenchmark, benchBFS) {
 			timer.start();
 			for (index i = 0; i < runs; ++i) {
 				bfs.runUntil(targets[i]);
+				pathsUntil.push_back(bfs.getPath(targets[i]));
+			}
+			timer.stop();
+//			INFO(runs, " with BFS.runUntil() on ", G.getName(), " took:\t", timer.elapsedMilliseconds()/100, " ms");
+			std::cout <<  "BFS.runUntil("<< ") on "<< G.getName()<< " took:\t"<< timer.elapsedMilliseconds()/100 << " ms" <<std::endl;
+
+			for (index i = 0; i < runs; ++i) {
+				EXPECT_EQ(paths[i].size(),pathsUntil[i].size());
+			}
+
+		} catch (std::exception e) {
+			ERROR("couldnt bench on graph ",file," because of:\t",e.what());
+		}
+//		}
+	}
+}
+
+TEST_F(GraphBenchmark, benchBidirBFS) {
+	std::vector<std::string> graphs = {"input/PGPgiantcompo.graph",
+		"input/astro-ph.graph",
+		"input/caidaRouterLevel.graph",
+//		"/algoDaten/staudt/Graphs/Static/DIMACS/Large/europe-osm.metis.graph",
+//		"/algoDaten/staudt/Graphs/Static/DIMACS/Street/germany.osm.metis.graph",
+//		"/algoDaten/staudt/Graphs/Static/DIMACS/Street/asia.osm.metis.graph",
+//		"/algoDaten/staudt/Graphs/Static/DIMACS/XLarge/uk-2007-05.metis.graph"
+	};
+
+	for(auto file : graphs) {
+//		std::ifstream f(file);
+		// bench the graph, if the file exists.
+//		if (f.good()) {i
+		try {
+			METISGraphReader reader;
+			Graph G = reader.read(file);
+			BFS bfs(G,0);
+			Aux::Timer timer;
+			count runs = 100;
+			std::vector<node> targets;
+			for (index i = 0; i < runs; ++i) {
+				targets.push_back(Aux::Random::integer(0, G.upperNodeIdBound()));
+			}
+			std::vector<std::vector<node>> paths;
+			timer.start();
+			for (index i = 0; i < runs; ++i) {
+				bfs.run();
+				paths.push_back(bfs.getPath(targets[i]));
+			}
+			timer.stop();
+			//INFO(runs, " with BFS.run() on ", G.getName(), " took:\t", timer.elapsedMilliseconds()/100, " ms");
+			std::cout << "BFS.run() on " <<  G.getName() << " took:\t" << timer.elapsedMilliseconds()/100 << " ms" << std::endl;
+			BidirectionalBFS bbfs(G);
+			std::vector<std::vector<node>> pathsUntil;
+			timer.start();
+			for (index i = 0; i < runs; ++i) {
+				bbfs.run(0,targets[i]);
 				pathsUntil.push_back(bfs.getPath(targets[i]));
 			}
 			timer.stop();
