@@ -17,7 +17,7 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 	g.forNodes([&](node u) {
 		//Sort ego's alters from strongly to weakly tied.
 		g.forNeighborsOf(u, [&](node v) {
-			double triangleCount = 1.0;//triangles[uEdge(u, v)];
+			count triangleCount = round(triangles.at(uEdge(u, v)));
 			neighbors[u].push_back(RankedEdge(u, v, triangleCount));
 		});
 		std::sort(neighbors[u].begin(), neighbors[u].end());
