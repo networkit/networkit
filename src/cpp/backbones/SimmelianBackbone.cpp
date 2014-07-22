@@ -6,54 +6,19 @@
  */
 
 #include "SimmelianBackbone.h"
-#include "ChibaNishizekiTriangleCounter.h"
 #include <limits>
 
 namespace NetworKit {
 
-SimmelianBackbone::SimmelianBackbone(count maxRank, const count minOverlap) :
-		parameterized(true), maxRank(maxRank), minOverlap(minOverlap) {}
-
-SimmelianBackbone::SimmelianBackbone(double treshold) :
-		parameterized(false), jaccardTreshold(treshold) {}
-
-Graph SimmelianBackbone::calculate(const Graph& graph) {
-	ChibaNishizekiTriangleCounter counter;
-
-	edgeCountMap triangles = counter.triangleCounts(graph);
-	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, triangles);
-
-	//Create an edge-less backbone graph.
-	Graph backboneGraph = cloneNodes(graph, false);
-
-	//Re-add the backbone edges.
-	if (parameterized) {
-		graph.forEdges([&](node u, node v) {
-			Redundancy redundancy = getOverlap(u, v, neighbors, maxRank);
-			if (redundancy.overlap >= minOverlap)
-				backboneGraph.addEdge(u, v);
-		});
-	} else {
-		graph.forEdges([&](node u, node v) {
-			count maxNeighborhoodSize = std::max(neighbors[u].size(), neighbors[v].size());
-			Redundancy redundancy = getOverlap(u, v, neighbors, maxNeighborhoodSize);
-
-			if (redundancy.jaccard >= jaccardTreshold)
-				backboneGraph.addEdge(u, v);
-		});
-	}
-
-	return backboneGraph;
-}
-
-std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Graph& g, edgeCountMap& triangles) {
+std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Graph& g, const edgeAttribute& triangles) {
 	std::vector<RankedNeighbors> neighbors;
 	neighbors.resize(g.upperNodeIdBound());
 
 	g.forNodes([&](node u) {
 		//Sort ego's alters from strongly to weakly tied.
 		g.forNeighborsOf(u, [&](node v) {
-			neighbors[u].push_back(RankedEdge(u, v, triangles[uEdge(u, v)]));
+			double triangleCount = 1.0;//triangles[uEdge(u, v)];
+			neighbors[u].push_back(RankedEdge(u, v, triangleCount));
 		});
 		std::sort(neighbors[u].begin(), neighbors[u].end());
 

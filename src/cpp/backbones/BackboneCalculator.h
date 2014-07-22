@@ -9,6 +9,7 @@
 #define BACKBONECALCULATOR_H_
 
 #include "../graph/Graph.h"
+#include "AttributeGenerator.h"
 
 namespace NetworKit {
 
@@ -21,11 +22,11 @@ public:
 	/**
 	 * Calculates the backbone graph for the given input graph.
 	 */
-	virtual Graph calculate(const Graph& g) = 0;
+	virtual Graph calculate(const Graph& g, const edgeAttribute& attribute) = 0;
 
 	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _calculate(const Graph& g) {
-		return new Graph{std::move(calculate(g))};
+	Graph* _calculate(const Graph& g, const edgeAttribute& attribute) {
+		return new Graph{std::move(calculate(g, attribute))};
 	};
 
 	/**

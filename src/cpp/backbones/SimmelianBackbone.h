@@ -9,7 +9,7 @@
 #define SIMMELIANBACKBONE_H_
 
 #include "BackboneCalculator.h"
-#include "TriangleCounter.h"
+#include "AttributeGenerator.h"
 #include "gtest/gtest_prod.h"
 #include <set>
 
@@ -64,35 +64,16 @@ struct Redundancy {
 };
 
 /** 
- * Calculates the simmelian backbone for a given input graph.
+ * Abstract base class for the two variants of Simmelian backbones (OverlapFilter, JaccardFilter).
  */
 class SimmelianBackbone : public BackboneCalculator {
 
 public:
 
-	/**
-	 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
-	 * @param maxRank 		the maximum rank that is considered for overlap calculation
-	 * @param minOverlap	a minimum number of common top-maxRank neighbors in the ranked neighborhood
-	 */
-	SimmelianBackbone(count maxRank, count minOverlap);
+	virtual Graph calculate(const Graph& graph, const edgeAttribute& attribute) = 0;
 
-	/**
-	 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
-	 * @param jaccardTresh	the minimum best prefix jaccard coefficient for an edge to be contained in the backbone
-	 */
-	SimmelianBackbone(double jaccardThreshold);
-
-	Graph calculate(const Graph& graph);
-
-private:
-	//Calculation parameters
-	bool parameterized;
-	double jaccardTreshold;
-	count maxRank;
-	count minOverlap;
-
-	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, edgeCountMap& triangles);
+protected:
+	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const edgeAttribute& triangles);
 
 	Redundancy getOverlap(
 			const node& ego,
