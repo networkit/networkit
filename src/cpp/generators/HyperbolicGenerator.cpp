@@ -61,7 +61,7 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	INFO("Filled Quadtree");
 
 	Aux::ProgressMeter progress(n, 200);
-	#pragma omp parallel for
+	#pragma omp parallel for schedule(dynamic, 1000)
 	for (index i = 0; i < n; i++) {
 			vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles->at(i), radii->at(i)), thresholdDistance);
 			TRACE("gathered points for ", i, " adding edges");
