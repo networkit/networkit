@@ -1,17 +1,23 @@
 /*
- * TriangleCounter.h
+ * AttributeGenerator.h
  *
- *  Created on: 22.05.2014
+ *  Created on: 22.07.2014
  *      Author: Gerd Lindner
  */
 
-#ifndef TRIANGLECOUNTER_H_
-#define TRIANGLECOUNTER_H_
+#ifndef ATTRIBUTEGENERATOR_H_
+#define ATTRIBUTEGENERATOR_H_
 
 #include "../graph/Graph.h"
 #include <unordered_map>
 
 namespace NetworKit {
+
+//TODO: he following will later be realized using graph edge attributes.
+/**
+ * map: edge --> double.
+ */
+typedef std::unordered_map<uEdge, count> edgeMap;
 
 /**
  * Represents an undirected edge.
@@ -47,19 +53,17 @@ struct uEdge
 	}
 };
 
-//map: edge --> triangle count
-typedef std::unordered_map<uEdge, count> edgeCountMap;
-
 /** 
- * Abstract base class for per-edge triangle counting algorithms.
+ * Abstract base class for graph attribute generator. It takes a graph (weighted or unweighted)
+ * and calculates a graph attribute from the input graph.
  */
-class TriangleCounter {
+class AttributeGenerator {
 
 public:
 	/**
-	 * Calculates triangle counts for the edges of the given graph.
+	 * Calculates an edge attribute for the edges of the given graph.
 	 */
-	virtual edgeCountMap triangleCounts(const Graph& g) = 0;
+	virtual edgeMap getAttribute(const Graph& g) = 0;
 };
 
 } /* namespace NetworKit */
@@ -97,4 +101,4 @@ struct hash<NetworKit::uEdge>
 };
 } /* namespace std */
 
-#endif /* TRIANGLECOUNTER_H_ */
+#endif /* ATTRIBUTEGENERATOR_H_ */

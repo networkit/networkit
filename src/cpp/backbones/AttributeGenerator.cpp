@@ -1,11 +1,11 @@
 /*
- * TriangleCounter.cpp
+ * AttributeGenerator.cpp
  *
- *  Created on: 21.05.2014
+ *  Created on: 22.07.2014
  *      Author: Gerd Lindner
  */
 
-#include "TriangleCounter.h"
+#include "AttributeGenerator.h"
 
 namespace NetworKit {
 
