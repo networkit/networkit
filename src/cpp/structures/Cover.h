@@ -14,6 +14,7 @@
 #include <map>
 #include <cassert>
 #include <limits>
+#include "Partition.h"
 
 
 namespace NetworKit {
@@ -38,6 +39,13 @@ public:
 	 * @param[in]	z	maximum index
 	 */
 	Cover(index z);
+
+	/**
+	 * Creates a new cover data structure which contains the given partition.
+	 *
+	 * @param[in]	p	The partition to construct the cover from
+	 */
+	Cover(Partition &p);
 
 	/** Default destructor */
 	virtual ~Cover() = default;

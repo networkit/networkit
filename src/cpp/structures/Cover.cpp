@@ -17,6 +17,13 @@ Cover::Cover() : z(0), omega(0), data(0) {}
 Cover::Cover(index z) : z(z-1), omega(0), data(z) {
 }
 
+Cover::Cover(Partition &p) : z(p.numberOfElements()-1), omega(p.upperBound()-1), data(p.numberOfElements()) {
+	p.forEntries([&](index e, index s) {
+		if (s != none)
+			data[e].insert(s);
+	});
+}
+
 bool Cover::contains(index e) const {
 	return (e <= z) && (! data[e].empty());	// e is in the element index range and the entry is not empty
 }
