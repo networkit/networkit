@@ -396,6 +396,34 @@ TEST_F(CommunityGTest, testPLM) {
 
 }
 
+TEST_F(CommunityGTest, testDeletedNodesPLM) {
+	METISGraphReader reader;
+	Modularity modularity;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+
+	G.forNeighborsOf(10, [&](node v) {
+		G.removeEdge(10, v);
+	});
+
+	G.removeNode(10);
+
+	PLM plm(false, 1.0);
+	Partition zeta = plm.run(G);
+
+	INFO("number of clusters: " , zeta.numberOfSubsets());
+	INFO("modularity: " , modularity.getQuality(zeta, G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
+
+	PLM plmr(true, 1.0);
+	Partition zeta2 = plmr.run(G);
+
+	INFO("number of clusters: " , zeta2.numberOfSubsets());
+	INFO("modularity: " , modularity.getQuality(zeta2, G));
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
+
+}
+
+
 TEST_F(CommunityGTest, testCommunityGraph) {
 	CommunityGraph com;
 	METISGraphReader reader;
