@@ -14,10 +14,6 @@
 namespace NetworKit {
 
 //TODO: he following will later be realized using graph edge attributes.
-/**
- * map: edge --> double.
- */
-typedef std::unordered_map<uEdge, count> edgeMap;
 
 /**
  * Represents an undirected edge.
@@ -53,6 +49,11 @@ struct uEdge
 	}
 };
 
+/**
+ * map: edge --> double.
+ */
+typedef std::unordered_map<uEdge, count> edgeAttribute;
+
 /** 
  * Abstract base class for graph attribute generator. It takes a graph (weighted or unweighted)
  * and calculates a graph attribute from the input graph.
@@ -63,7 +64,7 @@ public:
 	/**
 	 * Calculates an edge attribute for the edges of the given graph.
 	 */
-	virtual edgeMap getAttribute(const Graph& g) = 0;
+	virtual edgeAttribute getAttribute(const Graph& g) = 0;
 };
 
 } /* namespace NetworKit */

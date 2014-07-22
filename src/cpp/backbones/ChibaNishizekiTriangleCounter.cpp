@@ -11,12 +11,7 @@
 
 namespace NetworKit {
 
-edgeCountMap ChibaNishizekiTriangleCounter::triangleCounts(const Graph& graph) {
-	INFO("Started triangle counting...", "\n");
-
-	Aux::Timer timer;
-	timer.start();
-
+edgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph) {
 	Graph g = graph;
 
 	//Node attribute: marker
@@ -24,7 +19,7 @@ edgeCountMap ChibaNishizekiTriangleCounter::triangleCounts(const Graph& graph) {
 	nodeMarker.resize(graph.numberOfNodes());
 
 	//Edge attribute: triangle count
-	edgeCountMap triangleCount;
+	edgeAttribute triangleCount;
 
 	g.forNodes([&](node u) {
 		//Mark all neighbors
@@ -46,9 +41,6 @@ edgeCountMap ChibaNishizekiTriangleCounter::triangleCounts(const Graph& graph) {
 		removeNode(g, u);
 	});
 
-	timer.stop();
-	INFO("elapsed millisecs for CN triangle counting: ", timer.elapsedMilliseconds(), "\n");
-
 	return triangleCount;
 }
 
@@ -62,7 +54,7 @@ void ChibaNishizekiTriangleCounter::removeNode(Graph& graph, const node& u) {
 }
 
 void ChibaNishizekiTriangleCounter::triangleFound(
-		edgeCountMap& triangleCount, const node& u, const node& v,
+		edgeAttribute& triangleCount, const node& u, const node& v,
 		const node& w) {
 	triangleCount[uEdge(u,v)]++;
 	triangleCount[uEdge(u,w)]++;

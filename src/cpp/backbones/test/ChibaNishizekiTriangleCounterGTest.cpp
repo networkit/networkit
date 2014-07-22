@@ -21,11 +21,11 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsTrivial) {
 	g.addEdge(1,2);
 
 	ChibaNishizekiTriangleCounter counter;
-	edgeCountMap counts = counter.triangleCounts(g);
+	edgeAttribute counts = counter.getAttribute(g);
 
-	EXPECT_EQ(1, (counts[uEdge(0,1)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(0,2)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(1,2)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(0,1)])) << "wrong triangle count";
+	EXPECT_EQ(1.0, (counts[uEdge(0,2)])) << "wrong triangle count";
+	EXPECT_EQ(1.0, (counts[uEdge(1,2)])) << "wrong triangle count";
 }
 
 TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsSimple) {
@@ -46,33 +46,33 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsSimple) {
 	EXPECT_EQ(8, g.numberOfEdges()) << "wrong edge count";
 
 	ChibaNishizekiTriangleCounter counter;
-	edgeCountMap counts = counter.triangleCounts(g);
+	edgeAttribute counts = counter.getAttribute(g);
 
 	EXPECT_EQ(6, g.numberOfNodes()) << "undesired side effect";
 	EXPECT_EQ(8, g.numberOfEdges()) << "undesired side effect";
 
 	EXPECT_EQ(8, counts.size()) << "wrong triangle count map size";
-	EXPECT_EQ(1, (counts[uEdge(0,1)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(0,2)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(1,2)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(0,1)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(0,2)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(1,2)])) << "wrong triangle count";
 
-	EXPECT_EQ(1, (counts[uEdge(0,3)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(3,4)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(0,3)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(3,4)])) << "wrong triangle count";
 
-	EXPECT_EQ(2, (counts[uEdge(0,4)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(0,5)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(4,5)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(2.0, (counts[uEdge(0,4)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(0,5)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(4,5)])) << "wrong triangle count";
 
-	EXPECT_EQ(1, (counts[uEdge(1,0)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(2,0)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(2,1)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(1,0)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(2,0)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(2,1)])) << "wrong triangle count";
 
-	EXPECT_EQ(1, (counts[uEdge(3,0)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(4,3)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(3,0)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(4,3)])) << "wrong triangle count";
 
-	EXPECT_EQ(2, (counts[uEdge(4,0)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(5,0)])) << "wrong triangle count";
-	EXPECT_EQ(1, (counts[uEdge(5,4)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(2.0, (counts[uEdge(4,0)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(5,0)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(5,4)])) << "wrong triangle count";
 }
 
 }

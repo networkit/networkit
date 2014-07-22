@@ -9,21 +9,21 @@
 #define CHIBANISHIZEKI_H_
 
 #include "../graph/Graph.h"
-#include "TriangleCounter.h"
+#include "AttributeGenerator.h"
 
 namespace NetworKit {
 
 /** 
  * An implementation of the triangle counting algorithm by Chiba/Nishizeki.
  */
-class ChibaNishizekiTriangleCounter : public TriangleCounter {
+class ChibaNishizekiTriangleCounter : public AttributeGenerator {
 
 public:
 
-	edgeCountMap triangleCounts(const Graph& graph);
+	edgeAttribute getAttribute(const Graph& graph);
 
 private:
-	void triangleFound(edgeCountMap& map, const node& u, const node& v, const node& w);
+	void triangleFound(edgeAttribute& map, const node& u, const node& v, const node& w);
 	void removeNode(Graph& graph, const node& u);
 };
 
