@@ -8,6 +8,7 @@
 #ifndef NOGTEST
 
 #include "GeneratorsBenchmark.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -39,7 +40,7 @@ TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
 
 TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGenerator) {
 	count n = 100000;
-	HyperbolicGenerator gen(n,1);
+	HyperbolicGenerator gen(n,1,1);
 	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
 }
