@@ -244,4 +244,15 @@ void HyperbolicSpace::getEuclideanCircle(Point<double> hyperbolicCenter, Point<d
 	euclideanCenter = intersect(pointOnEdge, orth(edgeCenterVector), origin, arc);
 	euclideanRadius = euclideanCenter.distance(pointOnEdge);
 }
+
+double HyperbolicSpace::hyperbolicRadiusToEuclidean(double hyperbolicRadius) {
+	double ch = cosh(hyperbolicRadius);
+	return sqrt((ch-1)/(ch+1));
+}
+
+double HyperbolicSpace::EuclideanRadiusToHyperbolic(double euclideanRadius) {
+	double eusq = euclideanRadius*euclideanRadius;
+	double result = acosh( 1 + 2*eusq / ((1 - eusq)));
+	return result;
+}
 }
