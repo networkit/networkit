@@ -10,8 +10,11 @@
 
 #include <gtest/gtest.h>
 #include <cmath>
+#include <vector>
 
 #include "../Quadtree.h"
+
+using std::vector;
 
 namespace NetworKit {
 
@@ -27,6 +30,11 @@ protected:
 	template <class T>
 	QuadNode<T> getRoot(Quadtree<T> &tree) {
 		return tree.root;
+	}
+
+	template <class T>
+	vector<QuadNode<T> > getChildren(QuadNode<T> &node) {
+		return node.children;
 	}
 };
 
