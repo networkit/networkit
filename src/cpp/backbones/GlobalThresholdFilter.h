@@ -28,7 +28,7 @@ public:
 	 */
 	GlobalThresholdFilter(double threshold, bool above); //TODO: better name for parameter?
 
-	Graph calculate(const Graph& graph, const edgeAttribute& attribute);
+	Graph calculate(const Graph& graph, const EdgeAttribute& attribute);
 
 private:
 	double threshold;

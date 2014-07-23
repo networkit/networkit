@@ -6,26 +6,25 @@
  */
 
 #include "SimmelianJaccardAttributizer.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
 SimmelianJaccardAttributizer::SimmelianJaccardAttributizer() {}
 
-edgeAttribute SimmelianJaccardAttributizer::getAttribute(const Graph& graph, const edgeAttribute& attribute) {
+EdgeAttribute SimmelianJaccardAttributizer::getAttribute(const Graph& graph, const EdgeAttribute& attribute) {
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, attribute);
-	edgeAttribute jaccardAttribute;
+	EdgeAttribute jaccardAttribute;
 
 	graph.forEdges([&](node u, node v) {
 		count maxNeighborhoodSize = std::max(neighbors[u].size(), neighbors[v].size());
 		Redundancy redundancy = getOverlap(u, v, neighbors, maxNeighborhoodSize);
 
 		uEdge key = uEdge(u,v);
-		if (jaccardAttribute.find(key) != jaccardAttribute.end()) {
-			double currentJaccard = jaccardAttribute.at(key);
-			jaccardAttribute[key] = std::min(redundancy.jaccard, currentJaccard);
-		}
+		if (jaccardAttribute.contains(key))
+			jaccardAttribute.set(key, std::min(redundancy.jaccard, jaccardAttribute[key]));
 		else
-			jaccardAttribute[key] = redundancy.jaccard;
+			jaccardAttribute.set(key, redundancy.jaccard);
 	});
 
 	return jaccardAttribute;

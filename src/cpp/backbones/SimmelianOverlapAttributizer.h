@@ -27,7 +27,7 @@ public:
 	 */
 	SimmelianOverlapAttributizer(count maxRank);
 
-	edgeAttribute getAttribute(const Graph& graph, const edgeAttribute& attribute);
+	EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute);
 
 private:
 	count maxRank;

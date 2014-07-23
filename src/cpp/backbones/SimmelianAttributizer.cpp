@@ -10,14 +10,14 @@
 
 namespace NetworKit {
 
-std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const Graph& g, const edgeAttribute& triangles) {
+std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const Graph& g, const EdgeAttribute& triangles) {
 	std::vector<RankedNeighbors> neighbors;
 	neighbors.resize(g.upperNodeIdBound());
 
 	g.forNodes([&](node u) {
 		//Sort ego's alters from strongly to weakly tied.
 		g.forNeighborsOf(u, [&](node v) {
-			count triangleCount = round(triangles.at(uEdge(u, v)));
+			count triangleCount = round(triangles[uEdge(u, v)]);
 			neighbors[u].push_back(RankedEdge(u, v, triangleCount));
 		});
 		std::sort(neighbors[u].begin(), neighbors[u].end());

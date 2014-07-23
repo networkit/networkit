@@ -69,10 +69,10 @@ class SimmelianAttributizer : public AttributeGenerator {
 
 public:
 
-	virtual edgeAttribute getAttribute(const Graph& graph, const edgeAttribute& attribute) = 0;
+	virtual EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute) = 0;
 
 protected:
-	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const edgeAttribute& triangles);
+	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const EdgeAttribute& triangles);
 
 	Redundancy getOverlap(
 			const node& ego,
