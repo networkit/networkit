@@ -23,18 +23,64 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 	edgeweight diameter = 0.0;
 
 	if (! G.isWeighted()) {
-		G.forNodes([&](node v) {
-			BFS bfs(G, v);
-			bfs.run();
-			auto distances = bfs.getDistances();
-			for (auto distance : distances) {
-				if (diameter < distance) {
-					diameter = distance;
+		/*
+		 * This is an implementation of the iFub-algorithm by
+		 * Pilu Crescenzi, Roberto Grossi, Michel Habib, Leonardo Lanzi, Andrea Marino:
+		 * On computing the diameter of real-world undirected graphs,
+		 * Theoretical Computer Science, Volume 514, 25 November 2013, Pages 84-95, ISSN 0304-3975,
+		 * http://dx.doi.org/10.1016/j.tcs.2012.09.018.
+		 * (http://www.sciencedirect.com/science/article/pii/S0304397512008687)
+		 */
+		// start node selection. Here the very simple variant with the node of max. degree
+		// for each component
+		std::vector<node> startNodes;
+		{
+			ConnectedComponents comp(G);
+			comp.run();
+			count numberOfComponents = comp.numberOfComponents();
+			startNodes.resize(numberOfComponents, 0);
+			std::vector<count> maxDeg(numberOfComponents, 0);
+
+			// for each component, find the node with the maximum degreee and add it as start node
+			G.forNodes([&](node v) {
+				count d = G.degree(v);
+				count c = comp.componentOfNode(v);
+				if (d > maxDeg[c]) {
+					startNodes[c] = v;
+					maxDeg[c] = d;
+				}
+			});
+		}
+
+		// simple BFS from all start nodes, store all levels (needed later)
+		std::vector<std::vector<node> > level(1);
+		G.BFSfrom(startNodes, [&](node v, count dist) {
+			if (level.size() < dist+1) level.emplace_back();
+			level[dist].push_back(v);
+		});
+		count eccStart = level.size()-1;
+
+		// set initial lower and upper bound
+		count lb = eccStart, ub = 2*eccStart;
+
+		// calculate the ecc for the nodes in each level starting with the highest level
+		// until either the bound is tight or all nodes have been considered
+		for (count i = eccStart; ub > lb && i > 0; --i) {
+			for (node v : level[i]) {
+				count ecc = 0;
+				std::tie(std::ignore, ecc) = Eccentricity::getValue(G, v);
+				// check if the lower bound has been improved and if yes, if the upper bound has been met
+				if (ecc > lb) {
+					lb = ecc;
+					if (lb == ub) break;
 				}
 			}
+			// set the new upper bound
+			ub = 2*(i-1);
+		}
 
-//			DEBUG("ecc(", v, "): ", *std::max_element(distances.begin(), distances.end()), " of ", distances);
-		});
+		diameter = lb;
+
 	} else {
 		 G.forNodes([&](node v) {
 		 	Dijkstra dijkstra(G, v);
@@ -60,30 +106,13 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& G, double error) {
-	/* BFS that calls f with the visited edges and returns the node with largest distance from u. */
-	/* Note: the function Graph::breadthFirstEdgesFrom that should
-	 do the same has not been implemented!
-		-- TODO: Then why not implement it directly there?
-	 */
-	auto bfs_edges = [&] (const Graph& G, node u, std::function<void(node, node)> f) -> node {
-		std::queue<node> q;
-		std::vector<bool> visited(G.upperNodeIdBound(), false);
-		q.push(u);
-		visited[u] = true;
+	// check if graph is connected
+	ConnectedComponents comp(G);
+	comp.run();
+	if (comp.numberOfComponents() > 1) {
+		throw std::runtime_error("Graph not connected - diameter is infinite");
+	}
 
-		node x = u;
-		while (!q.empty()) {
-			x = q.front(); q.pop();
-			G.forNeighborsOf(x, [&] (node y) {
-						if (!visited[y]) {
-							f(x, y);
-							visited[y] = true;
-							q.push(y);
-						}
-					});
-		}
-		return x;
-	};
 
 	/* Diameter estimate: lowerBounds <= diam(G) <= upperBound. */
 	edgeweight lowerBound = 0.0;
@@ -117,8 +146,10 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 		/* diam(G) <= diam(BFS_Tree(v)) */
 		node v = high_deg[niter];
 		Graph bfs_tree(z);
-		node w = bfs_edges(G, v, [&] (node a, node b) {
+		node w;
+		G.BFSEdgesfrom(v, [&] (node a, node b) {
 			bfs_tree.addEdge(a, b);
+			w = b;
 		});
 //		DEBUG("v: ", v, ", w: ", w);
 
@@ -132,10 +163,6 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph& 
 		upperBound = std::min(upperBound, ecc);
 
 		niter++;
-	}
-
-	if ((lowerBound == std::numeric_limits<edgeweight>::max()) || (upperBound == std::numeric_limits<edgeweight>::max())) {
-		throw std::runtime_error("Graph not connected - diameter is infinite");
 	}
 
 	return {lowerBound, upperBound};
