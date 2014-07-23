@@ -22,6 +22,7 @@ namespace NetworKit {
 
 template <class T>
 class QuadNode {
+	friend class QuadTreeTest;
 public:
 	QuadNode() {
 		leftAngle = 0;
@@ -70,9 +71,16 @@ public:
 				 * Simply halving the radius will cause a larger space for the outer Quadnode, resulting in an unbalanced tree
 				 */
 
-				double nom = maxR - minR;
-				double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
-				double middleR = nom/denom + minR;
+				double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
+				double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
+				double hyperbolicMiddle = acosh((cosh(hyperbolicOuter -1) + cosh(hyperbolicInner -1))/2) +1;
+				double middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
+
+				//double nom = maxR - minR;
+				//double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
+				//double middleR = nom/denom + minR;
+				assert(middleR < maxR);
+				assert(middleR > minR);
 
 				QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion);
 				QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion);
@@ -227,6 +235,15 @@ public:
 				children[i].getElementsInEuclideanCircle(minAngle, maxAngle, lowR, highR, center, radius, result);
 			}
 		}
+	}
+
+	count size() {
+		count result = 0;
+		if (isLeaf) result = content.size();
+		else {
+			for (auto child : children) result += child.size();
+		}
+		return result;
 	}
 
 	double getLeftAngle() {
