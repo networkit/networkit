@@ -24,7 +24,7 @@ public:
 	 */
 	SimmelianJaccardAttributizer();
 
-	edgeAttribute getAttribute(const Graph& graph, const edgeAttribute& attribute);
+	EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute);
 
 };
 

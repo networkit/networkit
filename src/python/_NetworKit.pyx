@@ -3270,35 +3270,48 @@ cdef class GraphUpdater:
 
 # Module: backbones
 
-cdef extern from "../cpp/backbones/SimmelianBackbone.h":
-	cdef cppclass _SimmelianBackbone "NetworKit::SimmelianBackbone":
-		_SimmelianBackbone(count maxRank, count minOverlap) except +
-		_SimmelianBackbone(double jaccardTreshold) except + 
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _SimmelianBackboneParametric "NetworKit::SimmelianBackboneParametric":
+		_SimmelianBackboneParametric(count maxRank, count minOverlap) except + 
 		_Graph* _calculate(_Graph G) except +
 
-cdef class SimmelianBackbone:
+cdef class SimmelianBackboneParametric:
 	"""
 	Calculates the simmelian backbone for a given input graph.
 	Parameters (parametric variant):
 		-	maxRank		the maximum rank of a tie so it is still considered strongly embedded.
 		-	minOverlap	the minimum required overlap of two ranked neighborhoods for a tie to be kept in the backbone.
-	Parameters (non-parameteric variant):
-		-	jaccardTreshold	the minimum best prefix jaccard coefficient of a tie to be kept in the backbone.
 	"""
 
-	cdef _SimmelianBackbone* _this
+	cdef _SimmelianBackboneParametric* _this
 		
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
 		
-	def __cinit__(self, val1=None, val2=None):
-		if val1 is not None and val2 is not None:
-			self._this = new _SimmelianBackbone(val1, val2)
-		elif val1 is not None:
-			self._this = new _SimmelianBackbone(val1)
-		else:
-			raise TypeError("Missing parameters: use either parametric variant (maxRank, minOverlap) or non-parametric variant (jaccardTreshold).")
+	def __cinit__(self, maxRank, minOverlap):
+		self._this = new _SimmelianBackboneParametric(maxRank, minOverlap)
+
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _SimmelianBackboneNonParametric "NetworKit::SimmelianBackboneNonParametric":
+		_SimmelianBackboneNonParametric(double jaccardTreshold) except + 
+		_Graph* _calculate(_Graph G) except +
+
+cdef class SimmelianBackboneNonParametric:
+	"""
+	Calculates the simmelian backbone for a given input graph.
+	Parameters (non-parameteric variant):
+		-	jaccardTreshold	the minimum best prefix jaccard coefficient of a tie to be kept in the backbone.be kept in the backbone.
+	"""
+
+	cdef _SimmelianBackboneNonParametric* _this
 		
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
+	def __cinit__(self, jaccardThreshold):
+		self._this = new _SimmelianBackboneNonParametric(jaccardThreshold)
+
+
 cdef extern from "../cpp/backbones/MultiscaleBackbone.h":
 	cdef cppclass _MultiscaleBackbone "NetworKit::MultiscaleBackbone":
 		_MultiscaleBackbone(double alpha) except +
@@ -3315,26 +3328,6 @@ cdef class MultiscaleBackbone:
 
 	def __cinit__(self, double alpha):
 		self._this = new _MultiscaleBackbone(alpha)
-
-	def calculate(self, Graph G):
-		return Graph().setThis(self._this._calculate(dereference(G._this)))
-		
-cdef extern from "../cpp/backbones/SimmelianMultiscaleBackbone.h":
-	cdef cppclass _SimmelianMultiscaleBackbone "NetworKit::SimmelianMultiscaleBackbone":
-		_SimmelianMultiscaleBackbone(double threshold) except +
-		_Graph* _calculate(_Graph G) except +
-
-cdef class SimmelianMultiscaleBackbone:
-	"""
-	Uses triangle count as edgeweight and filters using the Multiscale backbone algorithm.
-	Parameters:
-		-	threshold	[0-1] the filtering parameter of the multiscale algorithm.
-	"""
-
-	cdef _SimmelianMultiscaleBackbone* _this
-
-	def __cinit__(self, double threshold):
-		self._this = new _SimmelianMultiscaleBackbone(threshold)
 
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))

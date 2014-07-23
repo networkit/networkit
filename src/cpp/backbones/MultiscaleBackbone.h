@@ -28,7 +28,7 @@ public:
 	 */
 	MultiscaleBackbone(double alpha);
 
-	Graph calculate(const Graph& graph, const edgeAttribute& attribute);
+	Graph calculate(const Graph& graph, const EdgeAttribute& attribute);
 
 private:
 	//Calculation parameters

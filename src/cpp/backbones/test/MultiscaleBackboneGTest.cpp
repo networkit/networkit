@@ -24,10 +24,9 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 	g.setWeight(3, 5, 0.5);
 
 	//TODO: weight --> attribute
-	edgeAttribute fakeAttribute;
 
 	MultiscaleBackbone backbone(0.5);
-	Graph b = backbone.calculate(g, fakeAttribute);
+	Graph b = backbone.calculate(g, EdgeAttribute());
 
 	EXPECT_NEAR(0.0878244, backbone.getProbability(4, 0.5555), 1e-5) << "faulty probability calculation";
 	/**
@@ -50,7 +49,7 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 	EXPECT_TRUE(b.hasEdge(4, 5));
 
 	MultiscaleBackbone backbone2(0.3333);
-	b = backbone2.calculate(g, fakeAttribute);
+	b = backbone2.calculate(g, EdgeAttribute());
 	EXPECT_EQ(2, b.numberOfEdges());
 	EXPECT_TRUE(b.hasEdge(0, 4));
 	EXPECT_TRUE(b.hasEdge(0, 3));

@@ -69,7 +69,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 
 	//Apply triangle counting algorithm
 	ChibaNishizekiTriangleCounter counter;
-	edgeAttribute triangles = counter.getAttribute(g, edgeAttribute(0));
+	EdgeAttribute triangles = counter.getAttribute(g, EdgeAttribute());
 
 	//Actual test: ranked neighborhood
 	SimmelianJaccardAttributizer simmel;
@@ -108,7 +108,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 
 	//Apply triangle counting algorithm
 	ChibaNishizekiTriangleCounter counter;
-	edgeAttribute triangles = counter.getAttribute(g, edgeAttribute(0));
+	EdgeAttribute triangles = counter.getAttribute(g, EdgeAttribute());
 
 	//Actual test: ranked neighborhood
 	SimmelianJaccardAttributizer simmel;
@@ -163,7 +163,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {
 	g.addEdge(5,1);
 
 	ChibaNishizekiTriangleCounter counter;
-	edgeAttribute triangleCounts = counter.getAttribute(g, edgeAttribute(0));
+	EdgeAttribute triangleCounts = counter.getAttribute(g, EdgeAttribute());
 
 	SimmelianBackboneParametric simmel(2, 1);
 	Graph b = simmel.calculate(g, triangleCounts);
@@ -189,12 +189,11 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 	g.addEdge(1,2);
 
 	ChibaNishizekiTriangleCounter counter;
-	edgeAttribute triangleCounts = counter.getAttribute(g, edgeAttribute(0));
+	EdgeAttribute triangleCounts = counter.getAttribute(g, EdgeAttribute());
 
+	//Parametric
 	SimmelianBackboneParametric simmel(1, 0);
-
 	Graph b = simmel.calculate(g, triangleCounts);
-
 	EXPECT_EQ(3, b.numberOfEdges()) << "wrong edge count in backbone";
 	EXPECT_EQ(5, b.numberOfNodes()) << "wrong node count in backbone";
 }

@@ -10,11 +10,12 @@
 
 #include "../graph/Graph.h"
 #include "AttributeGenerator.h"
+#include "BackboneCalculator.h"
 #include "ChibaNishizekiTriangleCounter.h"
 #include "SimmelianJaccardAttributizer.h"
 #include "SimmelianOverlapAttributizer.h"
-#include "BackboneCalculator.h"
 #include "GlobalThresholdFilter.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -30,30 +31,30 @@ namespace NetworKit {
  * --------------------------------------------------------------------------------------
  */
 
-class SimmelianBackboneNonparametric : public BackboneCalculator {
+class SimmelianBackboneNonParametric : public BackboneCalculator {
 
 public:
 	/**
 	 * Creates a new instance of the non-parametric (jaccard) variant of the Simmelian Backbone calculator.
 	 * @param threshold		the jaccard index threshold.
 	 */
-	SimmelianBackboneNonparametric(double threshold);
+	SimmelianBackboneNonParametric(double threshold);
 
-	Graph calculate(const Graph& graph, const edgeAttribute& attribute);
+	Graph calculate(const Graph& graph, const EdgeAttribute& attribute);
 
 private:
 	double threshold;
 
 };
 
-SimmelianBackboneNonparametric::SimmelianBackboneNonparametric(double threshold) : threshold(threshold) {}
+SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(double threshold) : threshold(threshold) {}
 
-Graph SimmelianBackboneNonparametric::calculate(const Graph& g, const edgeAttribute& attribute) {
+Graph SimmelianBackboneNonParametric::calculate(const Graph& g, const EdgeAttribute& attribute) {
 	ChibaNishizekiTriangleCounter triangleAttributizer;
-	edgeAttribute triangles = triangleAttributizer.getAttribute(g, edgeAttribute(0));
+	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute());
 
 	SimmelianJaccardAttributizer jaccardAttributizer;
-	edgeAttribute jaccard = jaccardAttributizer.getAttribute(g, triangles);
+	EdgeAttribute jaccard = jaccardAttributizer.getAttribute(g, triangles);
 
 	GlobalThresholdFilter filter(threshold, true);
 	return filter.calculate(g, jaccard);
@@ -76,7 +77,7 @@ public:
 		 */
 	SimmelianBackboneParametric(int maxRank, int minOverlap);
 
-	Graph calculate(const Graph& graph, const edgeAttribute& attribute);
+	Graph calculate(const Graph& graph, const EdgeAttribute& attribute);
 
 private:
 	int maxRank;
@@ -87,12 +88,12 @@ private:
 SimmelianBackboneParametric::SimmelianBackboneParametric(int maxRank, int minOverlap) :
 		maxRank(maxRank), minOverlap(minOverlap) {}
 
-Graph SimmelianBackboneParametric::calculate(const Graph& g, const edgeAttribute& attribute) {
+Graph SimmelianBackboneParametric::calculate(const Graph& g, const EdgeAttribute& attribute) {
 	ChibaNishizekiTriangleCounter triangleAttributizer;
-	edgeAttribute triangles = triangleAttributizer.getAttribute(g, edgeAttribute(0));
+	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute());
 
 	SimmelianOverlapAttributizer overlapAttributizer(maxRank);
-	edgeAttribute overlap = overlapAttributizer.getAttribute(g, triangles);
+	EdgeAttribute overlap = overlapAttributizer.getAttribute(g, triangles);
 
 	GlobalThresholdFilter filter(minOverlap, true);
 	return filter.calculate(g, overlap);
