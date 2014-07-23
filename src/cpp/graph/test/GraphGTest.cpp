@@ -1517,7 +1517,7 @@ TEST_P(GraphGTest, testParallelSumForWeightedEdges) {
 TEST_P(GraphGTest, testBFSfrom) {
 	std::vector<count> visitedOrder(5, none);
 	index i = 0;
-	this->Ghouse.BFSfrom(3, [&](node v) {
+	this->Ghouse.BFSfrom(3, [&](node v, count dist) {
 		EXPECT_EQ(none, visitedOrder[v]); // visit every node once
 		visitedOrder[v] = i++;
 	});

@@ -2013,7 +2013,7 @@ cdef class PLM(CommunityDetector):
 
 	cdef _PLM _this
 
-	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=32, parCoarsening=False):
+	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True):
 		self._this = _PLM(refine, gamma, stdstring(par), maxIter, parCoarsening)
 
 	def toString(self):

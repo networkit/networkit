@@ -699,6 +699,7 @@ public:
 	 * @param handle Takes parameter <code>(node)</code>.
 	 */
 	template<typename L> void BFSfrom(node r, L handle) const;
+	template<typename L> void BFSfrom(std::vector<node> &startNodes, L handle) const;
 
 
 	template<typename L> void BFSEdgesfrom(node r, L handle) const;
@@ -1142,21 +1143,35 @@ double Graph::parallelSumForWeightedEdges(L handle) const {
 
 template<typename L>
 void Graph::BFSfrom(node r, L handle) const {
+	std::vector<node> startNodes(1, r);
+	BFSfrom(startNodes, handle);
+}
+
+template<typename L>
+void Graph::BFSfrom(std::vector<node> &startNodes, L handle) const {
 	std::vector<bool> marked(z);
-	std::queue<node> q;
-	q.push(r); // enqueue root
-	marked[r] = true;
+	std::queue<node> q, qNext;
+	count dist = 0;
+	// enqueue start nodes
+	for (node u : startNodes) {
+		q.push(u);
+		marked[u] = true;
+	}
 	do {
 		node u = q.front();
 		q.pop();
 		// apply function
-		handle(u);
+		handle(u, dist);
 		forNeighborsOf(u, [&](node v) {
 			if (!marked[v]) {
-				q.push(v);
+				qNext.push(v);
 				marked[v] = true;
 			}
 		});
+		if (q.empty() && !qNext.empty()) {
+			q.swap(qNext);
+			++dist;
+		}
 	} while (!q.empty());
 }
 
