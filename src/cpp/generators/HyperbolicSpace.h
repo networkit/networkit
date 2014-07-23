@@ -24,13 +24,12 @@ public:
 	HyperbolicSpace(double R);
 	static void fillPoints(vector<double> * angles, vector<double> * radii, double stretch, double alpha);
 	static double getHyperbolicDistance(double firstangle, double firstR, double secondangle, double secondR);
-	static double getDistancePrecached(double firstangle, double firstRcosh, double firstRsinh, double secondangle, double secondRcosh, double secondRsinh);
+	static double getHyperbolicDistance(Point<double> a, Point<double> b);
 	double getRadius();
 	static double cross(Point<double> a, Point<double> b);
 	static Point<double> intersect(Point<double> q, Point<double> s, Point<double> p, Point<double> r);
 	static Point<double> circleCenter(Point<double> a, Point<double> b, Point<double> c);
 	static Point<double> mirrorOnCircle(Point<double> a, Point<double> circleCenter, double radius);
-	static double getHyperbolicDistance(Point<double> a, Point<double> b);
 	static bool isBelowArc(Point<double> query, Point<double> a, Point<double> b, double radius);
 	static Point<double> polarToCartesian(double phi, double r);
 	static void cartesianToPolar(Point<double> a, double &phi, double &r);
@@ -39,6 +38,8 @@ public:
 	static double hyperbolicDistanceToArc(Point<double> query, Point<double> a, Point<double> b, double R);
 	static Point<double> getPointOnHyperbolicCircle(Point<double> hyperbolicCenter, double radius);
 	static void getEuclideanCircle(Point<double> hyperbolicCenter, Point<double> hyperbolicRadius, Point<double> &euclideanCenter, double &euclideanRadius);
+	static double hyperbolicRadiusToEuclidean(double hyperbolicRadius);
+	static double EuclideanRadiusToHyperbolic(double EuclideanRadius);
 
 
 private:
