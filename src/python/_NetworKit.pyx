@@ -888,28 +888,31 @@ cdef class HavelHakimiGenerator:
 cdef extern from "../cpp/generators/HyperbolicGenerator.h":
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
 		# TODO: revert to count when cython issue fixed
-		_HyperbolicGenerator(unsigned int nodes,  double stretch, double distanceFactor) except +
+		_HyperbolicGenerator(unsigned int nodes,  double distanceFactor, double alpha, double stretch) except +
 		_Graph* _generate() except +
 
 cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator uses the poincaré disc of hyperbolic space.
 
- 		HyperbolicGenerator(n, stretchradius=1, distanceFactor=1)
+ 		HyperbolicGenerator(n, distanceFactor=1, alpha=1, stretchradius=1)
 
  		Parameters
 		----------
 		n : integer
 			number of nodes
-		stretchradius : double
-			parameter governing stretch of nodes		
 		distanceFactor : double
+			scale distance threshold
+		alpha : double
+			move points to boundary or to center?
+		stretchradius : double
+			parameter governing stretch of nodes
 			
 	"""
 
 	cdef _HyperbolicGenerator* _this
 
-	def __cinit__(self,  n, stretchradius=1, distanceFactor=1):		
-		self._this = new _HyperbolicGenerator(n, stretchradius, distanceFactor)
+	def __cinit__(self,  n, distanceFactor=1, alpha=1, stretchradius=1):		
+		self._this = new _HyperbolicGenerator(n, distanceFactor, alpha, stretchradius)
 
 	def generate(self):
 		""" Generates graph from hyperbolic geometry
