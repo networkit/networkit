@@ -1,16 +1,16 @@
 /*
- * SimmelianBackbone.cpp
+ * SimmelianAttributizer.cpp
  *
  *  Created on: 21.05.2014
  *      Author: Gerd Lindner
  */
 
-#include "SimmelianBackbone.h"
+#include "SimmelianAttributizer.h"
 #include <limits>
 
 namespace NetworKit {
 
-std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Graph& g, const edgeAttribute& triangles) {
+std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const Graph& g, const edgeAttribute& triangles) {
 	std::vector<RankedNeighbors> neighbors;
 	neighbors.resize(g.upperNodeIdBound());
 
@@ -42,7 +42,7 @@ std::vector<RankedNeighbors> SimmelianBackbone::getRankedNeighborhood(const Grap
 
 }
 
-Redundancy SimmelianBackbone::getOverlap(	const node& ego,
+Redundancy SimmelianAttributizer::getOverlap(	const node& ego,
 											const node& alter,
 											const std::vector<RankedNeighbors>& neighbors,
 											const count& maxRank) {
@@ -72,7 +72,7 @@ Redundancy SimmelianBackbone::getOverlap(	const node& ego,
  * Helper function used in getOverlap. Adds the intersection of
  * egoNeighbors and alterNeighborsUnmatched to overlap.
  */
-void SimmelianBackbone::matchNeighbors(
+void SimmelianAttributizer::matchNeighbors(
 	const node& ego,
 	const node& alter,
 	const bool& reciprocityCheck,

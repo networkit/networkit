@@ -9,8 +9,8 @@
 
 #include "SimmelianBackboneGTest.h"
 
-#include "../../backbones/SimmelianJaccardFilter.h"
-#include "../../backbones/SimmelianOverlapFilter.h"
+#include "../../backbones/Backbones.h"
+#include "../../backbones/SimmelianJaccardAttributizer.h"
 #include "../../backbones/ChibaNishizekiTriangleCounter.h"
 
 namespace NetworKit {
@@ -29,7 +29,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 	neighbors[1].push_back(RankedEdge(1,4,2,2));
 	neighbors[1].push_back(RankedEdge(1,3,1,4));
 
-	SimmelianJaccardFilter simmel (0.0);
+	SimmelianJaccardAttributizer simmel;
 	Redundancy r (0, 0.0);
 
 	r = simmel.getOverlap(0, 1, neighbors, 1);
@@ -69,10 +69,10 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 
 	//Apply triangle counting algorithm
 	ChibaNishizekiTriangleCounter counter;
-	edgeAttribute triangles = counter.getAttribute(g);
+	edgeAttribute triangles = counter.getAttribute(g, edgeAttribute(0));
 
 	//Actual test: ranked neighborhood
-	SimmelianJaccardFilter simmel(0.5);
+	SimmelianJaccardAttributizer simmel;
 	std::vector<RankedNeighbors> neighborhood = simmel.getRankedNeighborhood(g, triangles);
 
 	//Neighborhood of 4
@@ -108,10 +108,10 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 
 	//Apply triangle counting algorithm
 	ChibaNishizekiTriangleCounter counter;
-	edgeAttribute triangles = counter.getAttribute(g);
+	edgeAttribute triangles = counter.getAttribute(g, edgeAttribute(0));
 
 	//Actual test: ranked neighborhood
-	SimmelianJaccardFilter simmel(0.5);
+	SimmelianJaccardAttributizer simmel;
 	std::vector<RankedNeighbors> neighborhood = simmel.getRankedNeighborhood(g, triangles);
 
 	//Neighborhood of 0
@@ -163,8 +163,9 @@ TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {
 	g.addEdge(5,1);
 
 	ChibaNishizekiTriangleCounter counter;
-	edgeAttribute triangleCounts = counter.getAttribute(g);
-	SimmelianOverlapFilter simmel(2, 1);
+	edgeAttribute triangleCounts = counter.getAttribute(g, edgeAttribute(0));
+
+	SimmelianBackboneParametric simmel(2, 1);
 	Graph b = simmel.calculate(g, triangleCounts);
 
 	EXPECT_EQ(20, b.numberOfEdges());
@@ -188,8 +189,9 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 	g.addEdge(1,2);
 
 	ChibaNishizekiTriangleCounter counter;
-	edgeAttribute triangleCounts = counter.getAttribute(g);
-	SimmelianOverlapFilter simmel(1, 0);
+	edgeAttribute triangleCounts = counter.getAttribute(g, edgeAttribute(0));
+
+	SimmelianBackboneParametric simmel(1, 0);
 
 	Graph b = simmel.calculate(g, triangleCounts);
 

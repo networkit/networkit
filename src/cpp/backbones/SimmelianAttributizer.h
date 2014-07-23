@@ -1,14 +1,13 @@
 /*
- * SimmelianBackbone.h
+ * SimmelianAttributizer.h
  *
  *  Created on: 21.05.2014
  *      Author: Gerd Lindner
  */
 
-#ifndef SIMMELIANBACKBONE_H_
-#define SIMMELIANBACKBONE_H_
+#ifndef SIMMELIANATTRIBUTIZER_H_
+#define SIMMELIANATTRIBUTIZER_H_
 
-#include "BackboneCalculator.h"
 #include "AttributeGenerator.h"
 #include "gtest/gtest_prod.h"
 #include <set>
@@ -66,11 +65,11 @@ struct Redundancy {
 /** 
  * Abstract base class for the two variants of Simmelian backbones (OverlapFilter, JaccardFilter).
  */
-class SimmelianBackbone : public BackboneCalculator {
+class SimmelianAttributizer : public AttributeGenerator {
 
 public:
 
-	virtual Graph calculate(const Graph& graph, const edgeAttribute& attribute) = 0;
+	virtual edgeAttribute getAttribute(const Graph& graph, const edgeAttribute& attribute) = 0;
 
 protected:
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const edgeAttribute& triangles);
@@ -100,4 +99,4 @@ protected:
 
 }
 /* namespace NetworKit */
-#endif /* SIMMELIANBACKBONE_H_ */
+#endif /* SIMMELIANATTRIBUTIZER_H_ */

@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-edgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph) {
+edgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, const edgeAttribute& attribute) {
 	Graph g = graph;
 
 	//Node attribute: marker
