@@ -20,7 +20,7 @@ class ChibaNishizekiTriangleCounter : public AttributeGenerator {
 
 public:
 
-	edgeAttribute getAttribute(const Graph& graph);
+	edgeAttribute getAttribute(const Graph& graph, const edgeAttribute& attribute);
 
 private:
 	void triangleFound(edgeAttribute& map, const node& u, const node& v, const node& w);

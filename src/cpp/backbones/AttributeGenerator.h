@@ -63,8 +63,9 @@ class AttributeGenerator {
 public:
 	/**
 	 * Calculates an edge attribute for the edges of the given graph.
+	 * (Possibly under consideration of the given attribute).
 	 */
-	virtual edgeAttribute getAttribute(const Graph& g) = 0;
+	virtual edgeAttribute getAttribute(const Graph& g, const edgeAttribute& attribute) = 0;
 };
 
 } /* namespace NetworKit */

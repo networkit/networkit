@@ -9,6 +9,7 @@
 #define GLOBALTHRESHOLDFILTER_H_
 
 #include "AttributeGenerator.h"
+#include "BackboneCalculator.h"
 
 namespace NetworKit {
 
@@ -27,7 +28,7 @@ public:
 	 */
 	GlobalThresholdFilter(double threshold, bool above); //TODO: better name for parameter?
 
-	virtual Graph calculate(const Graph& graph, const edgeAttribute& attribute);
+	Graph calculate(const Graph& graph, const edgeAttribute& attribute);
 
 private:
 	double threshold;
