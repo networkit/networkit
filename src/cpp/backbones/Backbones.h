@@ -99,6 +99,46 @@ Graph SimmelianBackboneParametric::calculate(const Graph& g, const EdgeAttribute
 	return filter.calculate(g, overlap);
 }
 
+/**
+ * --------------------------------------------------------------------------------------
+ * Multiscale Backbone
+ * --------------------------------------------------------------------------------------
+ */
+
+class MultiscaleBackbone : public BackboneCalculator {
+
+public:
+	/**
+		 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
+		 * @param alpha 		the probability threshold
+		 */
+	MultiscaleBackbone(double alpha);
+
+	Graph calculate(const Graph& graph, const EdgeAttribute& attribute);
+
+private:
+	double alpha;
+
+};
+
+MultiscaleBackbone::MultiscaleBackbone(double alpha) :
+		alpha(alpha) {}
+
+Graph MultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
+	//TODO: the following will be obsolete once graph edge attributes are used.
+	EdgeAttribute weight;
+	graph.forEdges([&](node u, node v) {
+		weight.set(uEdge(u, v), g.weight(u, v));
+	});
+
+	MultiscaleAttributizer multiscaleAttributizer;
+	EdgeAttribute multiscale = multiscaleAttributizer.getAttribute(weight);
+
+	GlobalThresholdFilter filter(alpha, false);
+	return filter.calculate(g, multiscale);
+}
+
+
 
 } /* namespace NetworKit */
 #endif /* BACKBONECALCULATOR_H_ */
