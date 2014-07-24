@@ -3312,7 +3312,7 @@ cdef class SimmelianBackboneNonParametric:
 		self._this = new _SimmelianBackboneNonParametric(jaccardThreshold)
 
 
-cdef extern from "../cpp/backbones/MultiscaleBackbone.h":
+cdef extern from "../cpp/backbones/Backbones.h":
 	cdef cppclass _MultiscaleBackbone "NetworKit::MultiscaleBackbone":
 		_MultiscaleBackbone(double alpha) except +
 		_Graph* _calculate(_Graph G) except +
