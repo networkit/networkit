@@ -113,10 +113,11 @@ public:
 		elements++;
 	}
 
-	double euclideanLowerBound(Point<double> query) {
+	bool outOfReach(Point<double> query, double radius) {
 		double phi, r;
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
-		if (responsible(phi, r)) return 0;
+		if (responsible(phi, r)) return false;
+
 		//get four edge points
 		double topDistance, bottomDistance, leftDistance, rightDistance;
 
@@ -125,11 +126,13 @@ public:
 		} else {
 			topDistance = abs(r - maxR);
 		}
+		if (topDistance <= radius) return false;
 		if (phi < leftAngle || phi > rightAngle) {
 			bottomDistance = min(a.distance(query), b.distance(query));
 		} else {
 			bottomDistance = abs(r - minR);
 		}
+		if (bottomDistance <= radius) return false;
 
 		double minDistanceR = r*cos(abs(phi-leftAngle));
 		if (minDistanceR > minR && minDistanceR < maxR) {
@@ -137,6 +140,7 @@ public:
 		} else {
 			leftDistance = min(a.distance(query), d.distance(query));
 		}
+		if (leftDistance <= radius) return false;
 
 		minDistanceR = r*cos(abs(phi-rightAngle));
 		if (minDistanceR > minR && minDistanceR < maxR) {
@@ -144,18 +148,19 @@ public:
 		} else {
 			rightDistance = min(b.distance(query), c.distance(query));
 		}
-
+		if (rightDistance <= radius) return false;
+		return true;
 		//TRACE("leftDistance:", leftDistance);
 		//TRACE("rightDistance:", rightDistance);
 		//TRACE("topDistance:", topDistance);
 		//TRACE("bottomDistance:", bottomDistance);
-		return std::min(std::min(leftDistance, rightDistance), std::min(bottomDistance, topDistance));
+		//return std::min(std::min(leftDistance, rightDistance), std::min(bottomDistance, topDistance));
 	}
 
-	double euclideanLowerBound(double angle, double R) {
+	bool outOfReach(double angle, double R, double radius) {
 		if (responsible(angle, R)) return 0;
 		Point<double> query = HyperbolicSpace::polarToCartesian(angle, R);
-		return euclideanLowerBound(query);
+		return outOfReach(query, radius);
 	}
 
 	bool responsible(double angle, double R) {
@@ -194,7 +199,7 @@ public:
 
 	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point<double> center, double radius, vector<T> &result) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
-		if (euclideanLowerBound(center) > radius) {
+		if (outOfReach(center, radius)) {
 			return;
 		}
 
