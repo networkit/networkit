@@ -25,7 +25,7 @@ public:
 	}
 
 	Quadtree(double maxR) {
-		root = QuadNode<T>(0, 0, 2*M_PI, maxR, 20, 0);
+		root = QuadNode<T>(0, 0, 2*M_PI, maxR, 1000, 0);
 	}
 
 	virtual ~Quadtree() {
