@@ -14,6 +14,7 @@
 #include "ChibaNishizekiTriangleCounter.h"
 #include "SimmelianJaccardAttributizer.h"
 #include "SimmelianOverlapAttributizer.h"
+#include "MultiscaleAttributizer.h"
 #include "GlobalThresholdFilter.h"
 #include "../auxiliary/Log.h"
 
@@ -47,19 +48,6 @@ private:
 
 };
 
-SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(double threshold) : threshold(threshold) {}
-
-Graph SimmelianBackboneNonParametric::calculate(const Graph& g, const EdgeAttribute& attribute) {
-	ChibaNishizekiTriangleCounter triangleAttributizer;
-	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute());
-
-	SimmelianJaccardAttributizer jaccardAttributizer;
-	EdgeAttribute jaccard = jaccardAttributizer.getAttribute(g, triangles);
-
-	GlobalThresholdFilter filter(threshold, true);
-	return filter.calculate(g, jaccard);
-}
-
 /**
  * --------------------------------------------------------------------------------------
  * Simmelian Backbone: Parametric variant (Top-k neighborhood overlap)
@@ -85,20 +73,6 @@ private:
 
 };
 
-SimmelianBackboneParametric::SimmelianBackboneParametric(int maxRank, int minOverlap) :
-		maxRank(maxRank), minOverlap(minOverlap) {}
-
-Graph SimmelianBackboneParametric::calculate(const Graph& g, const EdgeAttribute& attribute) {
-	ChibaNishizekiTriangleCounter triangleAttributizer;
-	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute());
-
-	SimmelianOverlapAttributizer overlapAttributizer(maxRank);
-	EdgeAttribute overlap = overlapAttributizer.getAttribute(g, triangles);
-
-	GlobalThresholdFilter filter(minOverlap, true);
-	return filter.calculate(g, overlap);
-}
-
 /**
  * --------------------------------------------------------------------------------------
  * Multiscale Backbone
@@ -120,23 +94,6 @@ private:
 	double alpha;
 
 };
-
-MultiscaleBackbone::MultiscaleBackbone(double alpha) :
-		alpha(alpha) {}
-
-Graph MultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
-	//TODO: the following will be obsolete once graph edge attributes are used.
-	EdgeAttribute weight;
-	graph.forEdges([&](node u, node v) {
-		weight.set(uEdge(u, v), g.weight(u, v));
-	});
-
-	MultiscaleAttributizer multiscaleAttributizer;
-	EdgeAttribute multiscale = multiscaleAttributizer.getAttribute(weight);
-
-	GlobalThresholdFilter filter(alpha, false);
-	return filter.calculate(g, multiscale);
-}
 
 
 
