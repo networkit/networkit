@@ -46,7 +46,7 @@ EdgeAttribute MultiscaleAttributizer::getAttribute(const Graph& graph, const Edg
 		});
 	});
 
-	return backboneGraph;
+	return multiscaleAttribute;
 }
 
 /**

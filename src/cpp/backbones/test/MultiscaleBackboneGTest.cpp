@@ -9,7 +9,9 @@
 
 #include "MultiscaleBackboneGTest.h"
 
-#include "../../backbones/MultiscaleBackbone.h"
+#include "../Backbones.h"
+#include "../MultiscaleAttributizer.h"
+
 
 namespace NetworKit {
 
@@ -25,10 +27,8 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 
 	//TODO: weight --> attribute
 
-	MultiscaleBackbone backbone(0.5);
-	Graph b = backbone.calculate(g, EdgeAttribute());
-
-	EXPECT_NEAR(0.0878244, backbone.getProbability(4, 0.5555), 1e-5) << "faulty probability calculation";
+	MultiscaleAttributizer attributizer;
+	EXPECT_NEAR(0.0878244, attributizer.getProbability(4, 0.5555), 1e-5) << "faulty probability calculation";
 	/**
 	 * a01 = 0.91896
 	 * a02 = 0.639212
@@ -43,6 +43,10 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 	 */
 
 	//Compare the backbone graph to the expected backbone.
+
+	MultiscaleBackbone backbone(0.5);
+	Graph b = backbone.calculate(g, EdgeAttribute());
+
 	EXPECT_EQ(3, b.numberOfEdges());
 	EXPECT_TRUE(b.hasEdge(0, 4));
 	EXPECT_TRUE(b.hasEdge(0, 3));
