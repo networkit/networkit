@@ -108,7 +108,8 @@ def readMat(path, key="A"):
 	G = Graph(n)
 	nz = A.nonzero()
 	for (u,v) in zip(nz[0], nz[1]):
-		G.addEdge(u, v)
+		if not G.hasEdge(u, v):
+			G.addEdge(u, v)
 	return G
 
 
