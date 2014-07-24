@@ -21,6 +21,9 @@ NetworKit-Tests-D
 \.project$
 \.cproject$
 ^tracelog
+\.json$
+\.csv
+\.dat
 
 syntax: regexp
 ^output$

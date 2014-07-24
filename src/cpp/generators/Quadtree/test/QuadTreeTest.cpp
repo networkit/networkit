@@ -8,7 +8,7 @@
 #include "QuadTreeTest.h"
 #include "../../../auxiliary/Random.h"
 #include "../../../auxiliary/Log.h"
-#include "../../HyperbolicSpace.h"
+#include "../../../geometric/HyperbolicSpace.h"
 
 namespace NetworKit {
 

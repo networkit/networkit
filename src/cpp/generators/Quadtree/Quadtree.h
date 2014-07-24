@@ -12,7 +12,7 @@
 #include <memory>
 #include <cmath>
 #include "QuadNode.h"
-#include "../HyperbolicSpace.h"
+#include "../../geometric/HyperbolicSpace.h"
 
 namespace NetworKit {
 

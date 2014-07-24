@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <random>
-#include "HyperbolicSpace.h"
+#include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"
 
 namespace NetworKit {

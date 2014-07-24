@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <assert.h>
 #include "../../auxiliary/Log.h"
-#include "../HyperbolicSpace.h"
+#include "../../geometric/HyperbolicSpace.h"
 
 using std::vector;
 using std::min;
@@ -119,6 +119,7 @@ public:
 		if (responsible(phi, r)) return 0;
 		//get four edge points
 		double topDistance, bottomDistance, leftDistance, rightDistance;
+
 		if (phi < leftAngle || phi > rightAngle) {
 			topDistance = min(c.distance(query), d.distance(query));
 		} else {
