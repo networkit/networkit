@@ -42,8 +42,8 @@ public:
 		y = 0;
 	}
 	Point2D(T x, T y) {
-		this.x = x;
-		this.y = y;
+		this->x = x;
+		this->y = y;
 	}
 
 	virtual ~Point2D() {}

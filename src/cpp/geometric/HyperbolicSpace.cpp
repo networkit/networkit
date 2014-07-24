@@ -50,7 +50,7 @@ double HyperbolicSpace::getHyperbolicDistance(double phi_a, double  r_a, double 
 	return getHyperbolicDistance(polarToCartesian(phi_a, r_a), polarToCartesian(phi_b, r_b));
 }
 
-double HyperbolicSpace::getHyperbolicDistance(Point<double> a, Point<double> b) {
+double HyperbolicSpace::getHyperbolicDistance(Point2D<double> a, Point2D<double> b) {
 	double result = acosh( 1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength())));
 	assert(result >= 0);
 	return result;
@@ -88,11 +88,11 @@ double HyperbolicSpace::getDistancePrecached(double firstangle, double firstRcos
 }
 */
 
-double HyperbolicSpace::cross(Point<double> a, Point<double> b) {
+double HyperbolicSpace::cross(Point2D<double> a, Point2D<double> b) {
 	return a[0]*b[1] - a[1]*b[0];
 }
 
-Point<double> HyperbolicSpace::intersect(Point<double> q, Point<double> s, Point<double> p, Point<double> r) {
+Point2D<double> HyperbolicSpace::intersect(Point2D<double> q, Point2D<double> s, Point2D<double> p, Point2D<double> r) {
 	double nominator = cross(q-p, r);
 	double denominator = cross (r, s);
 	if (denominator == 0) {
@@ -103,9 +103,9 @@ Point<double> HyperbolicSpace::intersect(Point<double> q, Point<double> s, Point
 	return q + s.scale(u);
 }
 
-Point<double> HyperbolicSpace::circleCenter(Point<double> a, Point<double> b, Point<double> c) {
-	Point<double> mid1 = a+b;
-	Point<double> mid2 = b+c;
+Point2D<double> HyperbolicSpace::circleCenter(Point2D<double> a, Point2D<double> b, Point2D<double> c) {
+	Point2D<double> mid1 = a+b;
+	Point2D<double> mid2 = b+c;
 	mid1.scale(0.5);
 	mid2.scale(0.5);
 	assert(mid1[0] * 2 == a[0] + b[0]);
@@ -120,30 +120,30 @@ Point<double> HyperbolicSpace::circleCenter(Point<double> a, Point<double> b, Po
 	return intersect(mid1, orth(a-b), mid2, orth(b-c));
 }
 
-Point<double> HyperbolicSpace::orth(Point<double> a) {
-	Point<double> result(-a[1], a[0]);
+Point2D<double> HyperbolicSpace::orth(Point2D<double> a) {
+	Point2D<double> result(-a[1], a[0]);
 	return result;
 }
 
-Point<double> HyperbolicSpace::mirrorOnCircle(Point<double> a, Point<double> circleCenter,	double radius) {
+Point2D<double> HyperbolicSpace::mirrorOnCircle(Point2D<double> a, Point2D<double> circleCenter,	double radius) {
 	double r0 = a.distance(circleCenter);
 	double r1 = radius * radius / r0;
 
 	return circleCenter + (a - circleCenter).scale(r1/r0);
 }
 
-bool HyperbolicSpace::isBelowArc(Point<double> query, Point<double> a, Point<double> b, double radius) {
-	Point<double> origin(0,0);
-	Point<double> center = circleCenter(a, b, mirrorOnCircle(a, origin, radius));
+bool HyperbolicSpace::isBelowArc(Point2D<double> query, Point2D<double> a, Point2D<double> b, double radius) {
+	Point2D<double> origin(0,0);
+	Point2D<double> center = circleCenter(a, b, mirrorOnCircle(a, origin, radius));
 	assert(abs((center-a).length() - (center - b).length()) < 0.01);
 	return (center-query).length() > (center - a).length();
 }
 
-Point<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
-	return Point<double>(r*cos(phi), r*sin(phi));
+Point2D<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
+	return Point2D<double>(r*cos(phi), r*sin(phi));
 }
 
-void HyperbolicSpace::cartesianToPolar(Point<double> a, double &phi, double &r) {
+void HyperbolicSpace::cartesianToPolar(Point2D<double> a, double &phi, double &r) {
 	r = a.length();
 	if (r == 0) phi = 0;
 	else if (a[1] >= 0){
@@ -154,13 +154,13 @@ void HyperbolicSpace::cartesianToPolar(Point<double> a, double &phi, double &r) 
 	if (phi < 0) phi += 2*M_PI;
 }
 
-void HyperbolicSpace::getTransmutationCircle(Point<double> source,
-		Point<double> target, double R, Point<double> &circleCenter, double &circleRadius) {
+void HyperbolicSpace::getTransmutationCircle(Point2D<double> source,
+		Point2D<double> target, double R, Point2D<double> &circleCenter, double &circleRadius) {
 	/**
 	 * make sure target is outwards
 	 */
 	if (source.length() > target.length()) {
-		Point<double> temp = target;
+		Point2D<double> temp = target;
 		target = source;
 		source = temp;
 	}
@@ -174,8 +174,8 @@ void HyperbolicSpace::getTransmutationCircle(Point<double> source,
 	circleRadius = pow(target.distance(circleCenter) * source.distance(circleCenter), 0.5);
 }
 
-double HyperbolicSpace::hyperbolicDistanceToArc(Point<double> query,
-		Point<double> a, Point<double> b, double R) {
+double HyperbolicSpace::hyperbolicDistanceToArc(Point2D<double> query,
+		Point2D<double> a, Point2D<double> b, double R) {
 
 	assert(R == 1);
 
@@ -190,27 +190,27 @@ double HyperbolicSpace::hyperbolicDistanceToArc(Point<double> query,
 	 * transform
 	 */
 
-	Point<double> origin(0,0);
-	Point<double> m;
+	Point2D<double> origin(0,0);
+	Point2D<double> m;
 	double radius;
 	getTransmutationCircle(origin, query, R, m, radius);
 
-	Point<double> adash = mirrorOnCircle(a, m, radius);
-	Point<double> bdash = mirrorOnCircle(b,m,radius);
-	Point<double> querydash = mirrorOnCircle(query,m,radius);
+	Point2D<double> adash = mirrorOnCircle(a, m, radius);
+	Point2D<double> bdash = mirrorOnCircle(b,m,radius);
+	Point2D<double> querydash = mirrorOnCircle(query,m,radius);
 	assert(querydash.length() < 0.0001);//should be origin
 
 	/**
 	* get connecting arc
 	 */
 
-	Point<double> c = circleCenter(adash, bdash, mirrorOnCircle(adash, origin, R));
+	Point2D<double> c = circleCenter(adash, bdash, mirrorOnCircle(adash, origin, R));
 	double arcRadius = c.distance(adash);
 	double phi_c, r_c;
 	cartesianToPolar(c, phi_c, r_c);
 	double directDistance = r_c - arcRadius;
 
-	Point<double> closestOnCircle = polarToCartesian(phi_c, r_c - arcRadius);
+	Point2D<double> closestOnCircle = polarToCartesian(phi_c, r_c - arcRadius);
 	assert(closestOnCircle.distance(c) - arcRadius < 0.0001);
 	double aToCoC = getHyperbolicDistance(adash, closestOnCircle);
 	double bToCoC = getHyperbolicDistance(bdash, closestOnCircle);
@@ -220,7 +220,7 @@ double HyperbolicSpace::hyperbolicDistanceToArc(Point<double> query,
 	else return std::min(qToA, qToB);
 }
 
-Point<double> HyperbolicSpace::getPointOnHyperbolicCircle(Point<double> hyperbolicCenter, double radius) {
+Point2D<double> HyperbolicSpace::getPointOnHyperbolicCircle(Point2D<double> hyperbolicCenter, double radius) {
 	double sqL = hyperbolicCenter.squaredLength();
 	double nom = (cosh(radius)-1)*(1-sqL)*(1-sqL);
 	double denom = 4*sqL;
@@ -236,11 +236,11 @@ Point<double> HyperbolicSpace::getPointOnHyperbolicCircle(Point<double> hyperbol
 	return HyperbolicSpace::polarToCartesian(newphi, r);
 }
 
-void HyperbolicSpace::getEuclideanCircle(Point<double> hyperbolicCenter, Point<double> pointOnEdge, Point<double> &euclideanCenter, double &euclideanRadius) {
-	Point<double> origin;
-	Point<double> center = circleCenter(hyperbolicCenter, pointOnEdge, mirrorOnCircle(hyperbolicCenter, origin, 1));
-	Point<double> edgeCenterVector = center - pointOnEdge;
-	Point<double> arc = hyperbolicCenter - origin;
+void HyperbolicSpace::getEuclideanCircle(Point2D<double> hyperbolicCenter, Point2D<double> pointOnEdge, Point2D<double> &euclideanCenter, double &euclideanRadius) {
+	Point2D<double> origin;
+	Point2D<double> center = circleCenter(hyperbolicCenter, pointOnEdge, mirrorOnCircle(hyperbolicCenter, origin, 1));
+	Point2D<double> edgeCenterVector = center - pointOnEdge;
+	Point2D<double> arc = hyperbolicCenter - origin;
 	euclideanCenter = intersect(pointOnEdge, orth(edgeCenterVector), origin, arc);
 	euclideanRadius = euclideanCenter.distance(pointOnEdge);
 }

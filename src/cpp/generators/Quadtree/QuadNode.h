@@ -61,7 +61,7 @@ public:
 				content.push_back(input);
 				angles.push_back(angle);
 				radii.push_back(R);
-				Point<double> pos = HyperbolicSpace::polarToCartesian(angle, R);
+				Point2D<double> pos = HyperbolicSpace::polarToCartesian(angle, R);
 				positions.push_back(pos);
 			} else {
 				//heavy lifting: split up!
@@ -113,7 +113,7 @@ public:
 		elements++;
 	}
 
-	bool outOfReach(Point<double> query, double radius) {
+	bool outOfReach(Point2D<double> query, double radius) {
 		double phi, r;
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
 		if (responsible(phi, r)) return false;
@@ -159,7 +159,7 @@ public:
 
 	bool outOfReach(double angle, double R, double radius) {
 		if (responsible(angle, R)) return 0;
-		Point<double> query = HyperbolicSpace::polarToCartesian(angle, R);
+		Point2D<double> query = HyperbolicSpace::polarToCartesian(angle, R);
 		return outOfReach(query, radius);
 	}
 
@@ -197,7 +197,7 @@ public:
 		}
 	}
 
-	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point<double> center, double radius, vector<T> &result) {
+	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point2D<double> center, double radius, vector<T> &result) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -250,13 +250,13 @@ private:
 	double rightAngle;
 	double minR;
 	double maxR;
-	Point<double> a,b,c,d;
+	Point2D<double> a,b,c,d;
 	unsigned capacity;
 	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
 	count elements;
 	std::vector<QuadNode> children;
 	std::vector<T> content;
-	std::vector<Point<double> > positions;
+	std::vector<Point2D<double> > positions;
 	std::vector<double> angles;
 	std::vector<double> radii;
 	bool isLeaf;

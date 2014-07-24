@@ -387,34 +387,34 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 }
 
 TEST_F(GeneratorsGTest, testIntersect) {
-	Point<double> a(1,0);
-	Point<double> b(1,1);
-	Point<double> c(5,0);
-	Point<double> d(0,2);
-	Point<double> intersect = HyperbolicSpace::intersect(a, b, c, d);
+	Point2D<double> a(1,0);
+	Point2D<double> b(1,1);
+	Point2D<double> c(5,0);
+	Point2D<double> d(0,2);
+	Point2D<double> intersect = HyperbolicSpace::intersect(a, b, c, d);
 	EXPECT_EQ(5, intersect[0]);
 	EXPECT_EQ(4, intersect[1]);
 
 }
 
 TEST_F(GeneratorsGTest, testIntersectCircle) {
-	Point<double> a(-5,0);
-	Point<double> b(5,0);
-	Point<double> c(0,5);
-	Point<double> mid1 = (a+b).scale(0.5);
-	Point<double> mid2 = (b+c).scale(0.5);
+	Point2D<double> a(-5,0);
+	Point2D<double> b(5,0);
+	Point2D<double> c(0,5);
+	Point2D<double> mid1 = (a+b).scale(0.5);
+	Point2D<double> mid2 = (b+c).scale(0.5);
 	EXPECT_EQ(0, mid1[0]);
 	EXPECT_EQ(0, mid1[1]);
 	EXPECT_EQ(2.5, mid2[0]);
 	EXPECT_EQ(2.5, mid2[1]);
 
-	Point<double> om1 = HyperbolicSpace::orth(a-b);
-	Point<double> om2 = HyperbolicSpace::orth(b-c);
+	Point2D<double> om1 = HyperbolicSpace::orth(a-b);
+	Point2D<double> om2 = HyperbolicSpace::orth(b-c);
 	EXPECT_EQ(0, om1[0]);
 	EXPECT_EQ(-10, om1[1]);
 	EXPECT_EQ(5, om2[0]);
 	EXPECT_EQ(5, om2[1]);
-	Point<double> intersect = HyperbolicSpace::intersect(mid1, om1, mid2, om2);
+	Point2D<double> intersect = HyperbolicSpace::intersect(mid1, om1, mid2, om2);
 
 	EXPECT_EQ(0, intersect[0]);
 	EXPECT_EQ(0, intersect[1]);
@@ -423,19 +423,19 @@ TEST_F(GeneratorsGTest, testIntersectCircle) {
 }
 
 TEST_F(GeneratorsGTest, testMirrorOnCircle) {
-	Point<double> a(5,0);
-	Point<double> origin(0,0);
+	Point2D<double> a(5,0);
+	Point2D<double> origin(0,0);
 	double radius = 6;
-	Point<double> image = HyperbolicSpace::mirrorOnCircle(a, origin, radius);
+	Point2D<double> image = HyperbolicSpace::mirrorOnCircle(a, origin, radius);
 
 	EXPECT_LE(radius*radius/5-image[0], 0.000001);
 	EXPECT_EQ(0, image[1]);
 }
 
 TEST_F(GeneratorsGTest, testCoordinateTransformation) {
-	Point<double> a(5,2);
-	Point<double> b(4,1);
-	Point<double> m;
+	Point2D<double> a(5,2);
+	Point2D<double> b(4,1);
+	Point2D<double> m;
 	double radius;
 	double bound = 10;
 	HyperbolicSpace::getTransmutationCircle(a, b, bound, m, radius);
@@ -448,26 +448,26 @@ TEST_F(GeneratorsGTest, testCoordinateTransformation) {
 	if (m.distance(a) < radius) EXPECT_GE(m.distance(b), radius); //the circle has to be between the points
 	else if (m.distance(a) > radius) EXPECT_LE(m.distance(b), radius);
 
-	Point<double> mirrored = HyperbolicSpace::mirrorOnCircle(a, m, radius);
+	Point2D<double> mirrored = HyperbolicSpace::mirrorOnCircle(a, m, radius);
 	DEBUG("Mirrored a(", a[0], ",", a[1], ") to (", mirrored[0], ",", mirrored[1], ")");
 	DEBUG("d(mirror,m)=", mirrored.distance(m));
 	EXPECT_LE(mirrored.distance(b), 0.00001);
 }
 
 TEST_F(GeneratorsGTest, testCircleCenter) {
-	Point<double> a(-5,0);
-	Point<double> b(5,0);
-	Point<double> c(0,5);
-	Point<double> center = HyperbolicSpace::circleCenter(a, b, c);
+	Point2D<double> a(-5,0);
+	Point2D<double> b(5,0);
+	Point2D<double> c(0,5);
+	Point2D<double> center = HyperbolicSpace::circleCenter(a, b, c);
 	EXPECT_EQ(0, center[0]);
 	EXPECT_EQ(0, center[1]);
 }
 
 TEST_F(GeneratorsGTest, testConversion) {
-	Point<double> a(6,7);
+	Point2D<double> a(6,7);
 	double angle, radius;
 	HyperbolicSpace::cartesianToPolar(a, angle, radius);
-	Point<double> back = HyperbolicSpace::polarToCartesian(angle, radius);
+	Point2D<double> back = HyperbolicSpace::polarToCartesian(angle, radius);
 	EXPECT_LE(a[0] - back[0], 0.000001);
 	EXPECT_LE(a[1] - back[1], 0.000001);
 	count n = 1000;
@@ -475,7 +475,7 @@ TEST_F(GeneratorsGTest, testConversion) {
 	vector<double> radii(n);
 	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
 	for (index i = 0; i < n; i++) {
-		Point<double> point = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+		Point2D<double> point = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
 		double phi, r;
 		HyperbolicSpace::cartesianToPolar(point, phi,r);
 		EXPECT_GE(phi, 0) << "Point (" << point[0] << "," << point[1] << ") was not converted correctly";
@@ -488,15 +488,15 @@ TEST_F(GeneratorsGTest, testConversion) {
 
 
 TEST_F(GeneratorsGTest, testIsometries) {
-	Point<double> a(0.5,0);
-	Point<double> b(0.7,0);
+	Point2D<double> a(0.5,0);
+	Point2D<double> b(0.7,0);
 	double dist =  acosh(  1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength()))  );
 	//EXPECT_EQ(0.2, HyperbolicSpace::getHyperbolicDistance(a,b));
 
-	Point<double> c(0.4,0);
-	Point<double> origin(0,0);
+	Point2D<double> c(0.4,0);
+	Point2D<double> origin(0,0);
 	double R = 1;
-	Point<double> m;
+	Point2D<double> m;
 	double radius;
 
 	HyperbolicSpace::getTransmutationCircle(c, origin, R, m, radius);
@@ -504,8 +504,8 @@ TEST_F(GeneratorsGTest, testIsometries) {
 	EXPECT_LE(radius, m.length());
 	EXPECT_GE(radius, m.distance(c));
 	EXPECT_EQ(radius*radius+R*R, m.length()*m.length());
-	Point<double> adash = HyperbolicSpace::mirrorOnCircle(a, m, radius);
-	Point<double> bdash = HyperbolicSpace::mirrorOnCircle(b, m, radius);
+	Point2D<double> adash = HyperbolicSpace::mirrorOnCircle(a, m, radius);
+	Point2D<double> bdash = HyperbolicSpace::mirrorOnCircle(b, m, radius);
 	EXPECT_LE(adash.length() , R);
 	EXPECT_LE(bdash.length() , R);
 	DEBUG("Mirrored a(", a[0], ",", a[1], ") to (", adash[0], ",", adash[1], ")");
@@ -518,37 +518,37 @@ TEST_F(GeneratorsGTest, testIsometries) {
 
 TEST_F(GeneratorsGTest, testPointOnCircle) {
 	count n = 1000;
-	Point<double> origin;
+	Point2D<double> origin;
 	vector<double> angles(n);
 	vector<double> radii(n);
 	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
 	for (index i = 0; i < n; i++) {
-		Point<double> a = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+		Point2D<double> a = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
 		double radius = Aux::Random::real(HyperbolicSpace::getHyperbolicDistance(origin, a));
-		Point<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
+		Point2D<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
 		EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, second)), 0.0001);
 	}
 }
 
 TEST_F(GeneratorsGTest, testEuclideanCircleProjection) {
 	count n = 1000;
-		Point<double> origin;
+	Point2D<double> origin;
 		vector<double> angles(n);
 		vector<double> radii(n);
 		HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
 		for (index i = 0; i < n; i++) {
-			Point<double> a = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+			Point2D<double> a = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
 			double radius = Aux::Random::real(HyperbolicSpace::getHyperbolicDistance(origin, a));
-			Point<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
-			Point<double> center;
+			Point2D<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
+			Point2D<double> center;
 			double euRadius;
 			HyperbolicSpace::getEuclideanCircle(a, second, center, euRadius);
 			EXPECT_LE(euRadius + center.length(), 1);
-			Point<double> highest = center;
+			Point2D<double> highest = center;
 			highest.scale((center.length()+euRadius)/center.length());
 			EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, highest)), 0.0001);
 
-			Point<double> lowest = center;
+			Point2D<double> lowest = center;
 			lowest.scale((center.length()-euRadius)/center.length());
 			EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, lowest)), 0.0001);
 
