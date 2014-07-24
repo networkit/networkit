@@ -47,8 +47,8 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	EXPECT_EQ(all.size(), n);
 	for (index testindex = 0; testindex < 100; testindex++) {
 		index comparison = Aux::Random::integer(n-1);
-		Point<double> origin;
-		Point<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
+		Point2D<double> origin;
+		Point2D<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
 		DEBUG("Using ", comparison, " at (", angles[comparison], ",", radii[comparison], ") as query point");
 
 		vector<index> closeToOne = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]), R);
@@ -166,8 +166,8 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 		QuadNode<index> root = getRoot(quad);
 		for (index i = 0; i < 100; i++) {
 			index comparison = Aux::Random::integer(n);
-			Point<double> origin;
-			Point<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
+			Point2D<double> origin;
+			Point2D<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
 			double radius = Aux::Random::real(1);//this may overshoot the poincaré disc, this is intentional. I want to know what happens
 			double minR = query.length() - radius;
 			double maxR = query.length() + radius;
@@ -202,7 +202,7 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 			}
 
 			for (index j = 0; j < n; j++) {
-				Point<double> comp = HyperbolicSpace::polarToCartesian(angles[j], radii[j]);
+				Point2D<double> comp = HyperbolicSpace::polarToCartesian(angles[j], radii[j]);
 				double dist = comp.distance(query);
 				if (dist < radius) {
 					bool found = false;

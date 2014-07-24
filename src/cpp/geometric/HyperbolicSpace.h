@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <cmath>
-#include "../viz/Point.h"
+#include "Point2D.h"
 
 using std::vector;
 using std::abs;
@@ -24,20 +24,20 @@ public:
 	HyperbolicSpace(double R);
 	static void fillPoints(vector<double> * angles, vector<double> * radii, double stretch, double alpha);
 	static double getHyperbolicDistance(double firstangle, double firstR, double secondangle, double secondR);
-	static double getHyperbolicDistance(Point<double> a, Point<double> b);
+	static double getHyperbolicDistance(Point2D<double> a, Point2D<double> b);
 	double getRadius();
-	static double cross(Point<double> a, Point<double> b);
-	static Point<double> intersect(Point<double> q, Point<double> s, Point<double> p, Point<double> r);
-	static Point<double> circleCenter(Point<double> a, Point<double> b, Point<double> c);
-	static Point<double> mirrorOnCircle(Point<double> a, Point<double> circleCenter, double radius);
-	static bool isBelowArc(Point<double> query, Point<double> a, Point<double> b, double radius);
-	static Point<double> polarToCartesian(double phi, double r);
-	static void cartesianToPolar(Point<double> a, double &phi, double &r);
-	static Point<double> orth(Point<double> a);
-	static void getTransmutationCircle(Point<double> source, Point<double> target, double minRadius, Point<double> &circleCenter, double &circleRadius);
-	static double hyperbolicDistanceToArc(Point<double> query, Point<double> a, Point<double> b, double R);
-	static Point<double> getPointOnHyperbolicCircle(Point<double> hyperbolicCenter, double radius);
-	static void getEuclideanCircle(Point<double> hyperbolicCenter, Point<double> hyperbolicRadius, Point<double> &euclideanCenter, double &euclideanRadius);
+	static double cross(Point2D<double> a, Point2D<double> b);
+	static Point2D<double> intersect(Point2D<double> q, Point2D<double> s, Point2D<double> p, Point2D<double> r);
+	static Point2D<double> circleCenter(Point2D<double> a, Point2D<double> b, Point2D<double> c);
+	static Point2D<double> mirrorOnCircle(Point2D<double> a, Point2D<double> circleCenter, double radius);
+	static bool isBelowArc(Point2D<double> query, Point2D<double> a, Point2D<double> b, double radius);
+	static Point2D<double> polarToCartesian(double phi, double r);
+	static void cartesianToPolar(Point2D<double> a, double &phi, double &r);
+	static Point2D<double> orth(Point2D<double> a);
+	static void getTransmutationCircle(Point2D<double> source, Point2D<double> target, double minRadius, Point2D<double> &circleCenter, double &circleRadius);
+	static double hyperbolicDistanceToArc(Point2D<double> query, Point2D<double> a, Point2D<double> b, double R);
+	static Point2D<double> getPointOnHyperbolicCircle(Point2D<double> hyperbolicCenter, double radius);
+	static void getEuclideanCircle(Point2D<double> hyperbolicCenter, Point2D<double> hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius);
 	static double hyperbolicRadiusToEuclidean(double hyperbolicRadius);
 	static double EuclideanRadiusToHyperbolic(double EuclideanRadius);
 

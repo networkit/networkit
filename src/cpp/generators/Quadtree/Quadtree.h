@@ -39,12 +39,12 @@ public:
 		return root.getElements();
 	}
 
-	vector<T> getCloseElements(Point<double> query, double maxDistance) {
-		Point<double> origin(0,0);
+	vector<T> getCloseElements(Point2D<double> query, double maxDistance) {
+		Point2D<double> origin(0,0);
 		vector<T> circleDenizens;
-		Point<double> center;
+		Point2D<double> center;
 		double hyperbolicFromOrigin = HyperbolicSpace::getHyperbolicDistance(origin, query);
-		Point<double> pointOnEdge;
+		Point2D<double> pointOnEdge;
 		if (hyperbolicFromOrigin < maxDistance) {
 			/*
 			 * TODO: move code to method
