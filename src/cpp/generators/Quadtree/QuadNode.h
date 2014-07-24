@@ -48,7 +48,7 @@ public:
 		this->b = HyperbolicSpace::polarToCartesian(rightAngle, minR);
 		this->c = HyperbolicSpace::polarToCartesian(rightAngle, maxR);
 		this->d = HyperbolicSpace::polarToCartesian(leftAngle, maxR);
-		this->capacity = 20;
+		this->capacity = capacity;
 		this->minRegion = minDiameter;
 		isLeaf = true;
 		elements = 0;
@@ -71,14 +71,14 @@ public:
 				 * Simply halving the radius will cause a larger space for the outer Quadnode, resulting in an unbalanced tree
 				 */
 
-				double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
-				double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
-				double hyperbolicMiddle = acosh((cosh(hyperbolicOuter -1) + cosh(hyperbolicInner -1))/2) +1;
-				double middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
+				//double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
+				//double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
+				//double hyperbolicMiddle = acosh((cosh(hyperbolicOuter -1) + cosh(hyperbolicInner -1))/2) +1;
+				//double middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
 
-				//double nom = maxR - minR;
-				//double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
-				//double middleR = nom/denom + minR;
+				double nom = maxR - minR;
+				double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
+				double middleR = nom/denom + minR;
 				assert(middleR < maxR);
 				assert(middleR > minR);
 
@@ -173,29 +173,6 @@ public:
 			}
 			return result;
 		}
-	}
-
-	std::vector<T> getCloseElements(Point<double> query, double maxDistance) {
-		assert(query.length() < 1);
-		std::vector<T> result;
-		if (isLeaf) {
-			if (this->euclideanLowerBound(query) < maxDistance) {
-					for (uint i = 0; i < content.size(); i++) {
-						if (HyperbolicSpace::getHyperbolicDistance(query, positions[i]) < maxDistance) {
-								result.push_back(content[i]);
-							}
-					}
-			}
-		} else {
-			for (uint i = 0; i < children.size(); i++) {
-				QuadNode * child = &children[i];
-				if (child->elements > 0 && child->euclideanLowerBound(query) < maxDistance) {
-					vector<T> subresult = child->getCloseElements(query, maxDistance);
-					result.insert(result.end(), subresult.begin(), subresult.end());
-				}
-			}
-		}
-		return result;
 	}
 
 	QuadNode<T> * getAppropriateLeaf(double angle, double R) {
