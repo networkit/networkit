@@ -3190,7 +3190,7 @@ cdef class DegreeCentrality:
 # Module: dynamic
 
 cdef extern from "../cpp/dynamics/GraphEvent.h":
-	enum _Type "NetworKit::GraphEvent::Type":
+	enum _GraphEventType "NetworKit::GraphEvent::Type":
 		NODE_ADDITION,
 		NODE_REMOVAL,
 		EDGE_ADDITION,
@@ -3202,13 +3202,20 @@ cdef extern from "../cpp/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
 		node u, v
 		edgeweight w
-		_Type type
+		_GraphEventType type
 		_GraphEvent() except +
-		_GraphEvent(_Type type, node u, node v, edgeweight w) except +
+		_GraphEvent(_GraphEventType type, node u, node v, edgeweight w) except +
 		string toString() except +
 
 cdef class GraphEvent:
 	cdef _GraphEvent _this
+
+	NODE_ADDITION = 0
+	NODE_REMOVAL = 1
+	EDGE_ADDITION = 2
+	EDGE_REMOVAL = 3
+	EDGE_WEIGHT_UPDATE = 4
+	TIME_STEP = 5
 
 	property type:
 		def __get__(self):
