@@ -6,7 +6,9 @@
  */
 
 #include "DynBFS.h"
+#include "../auxiliary/Log.h"
 #include <queue>
+
 
 namespace NetworKit {
 
@@ -15,7 +17,7 @@ DynBFS::DynBFS(const Graph& G, node s) : BFS(G, s), color(G.upperNodeIdBound(), 
 }
 
 void DynBFS::update(const std::vector<GraphEvent>& batch) {
-	count maxLevels; // TODO: find out
+	count maxLevels=G.upperNodeIdBound(); // TODO: find out
 	std::vector<std::queue<node> > queues(maxLevels);
 
 	// insert nodes from the batch whose distance has changed (affected nodes) into the queues
@@ -33,8 +35,10 @@ void DynBFS::update(const std::vector<GraphEvent>& batch) {
 	std::queue<node> visited;
 	count m = 1;
 	while (m < maxLevels) {
+		DEBUG("m = ", m);
 		while (!queues[m].empty()) {
 			node w = queues[m].front();
+			DEBUG("node ", w);
 			queues[m].pop();
 			if (color[w] == BLACK) {
 				continue;
@@ -53,7 +57,7 @@ void DynBFS::update(const std::vector<GraphEvent>& batch) {
 				//w is a predecessor for z
 				else if (color[z] == WHITE && distances[z] >= distances[w]+1 ) {
 					color[z] = GRAY;
-					queues[m].push(z);
+					queues[m+1].push(z);
 				}
 			});
 		}
