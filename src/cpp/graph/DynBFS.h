@@ -13,8 +13,6 @@
 
 namespace NetworKit {
 
-enum Color {WHITE, BLACK, GRAY};
-
 /**
  * @ingroup graph
  * Dynamic breadth-first search.
@@ -34,11 +32,10 @@ public:
 	/** Default destructor */
 	virtual ~DynBFS() = default;
 
-
-    void update(const std::vector<GraphEvent>& batch) override;
+		/** Updates the distances after an event.*/
+		void update(const std::vector<GraphEvent>& batch) override;
 
 protected:
-
 	std::vector<Color> color;
 
 };
