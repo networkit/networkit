@@ -9,6 +9,7 @@
 #define LOCALSIMATTRIBUTIZER_H_
 
 #include "BackboneCalculator.h"
+#include "gtest/gtest_prod.h"
 
 namespace NetworKit {
 
@@ -29,6 +30,8 @@ public:
 private:
 	//Private helper functions
 	double getSimilarity(const Graph& graph, node i, node j);
+
+	FRIEND_TEST(LocalSimilarityGTest, testSimilarityCalculation);
 };
 
 }
