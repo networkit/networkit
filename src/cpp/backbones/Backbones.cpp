@@ -76,4 +76,22 @@ Graph LocalSimilarityBackbone::calculate(const Graph& g, const EdgeAttribute& at
 	return filter.calculate(g, minExponent);
 }
 
+/**
+ * ---------------------------------------------------------------------------
+ */
+
+SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(double alpha) :
+		alpha(alpha) {}
+
+Graph SimmelianMultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
+	ChibaNishizekiTriangleCounter triangleAttributizer;
+	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute());
+
+	MultiscaleAttributizer multiscaleAttributizer;
+	EdgeAttribute multiscale = multiscaleAttributizer.getAttribute(g, triangles);
+
+	GlobalThresholdFilter filter(alpha, false);
+	return filter.calculate(g, multiscale);
+}
+
 } /* namespace NetworKit */
