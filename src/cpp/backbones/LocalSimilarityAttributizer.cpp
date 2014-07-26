@@ -6,18 +6,47 @@
  */
 
 #include "LocalSimilarityAttributizer.h"
-#include "../structures/Partition.h"
-#include "../community/JaccardMeasure.h"
-#include "../auxiliary/Log.h"
+#include <math.h> //log
+#include <set>
 
 namespace NetworKit {
 
 LocalSimilarityAttributizer::LocalSimilarityAttributizer() {}
 
 EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, const EdgeAttribute& attribute) {
-	//EdgeAttribute temp;
+	/*
+	 * For each edge, we calculate the minimum required sparsification exponent e
+	 * such that the edge is contained in the backbone.
+	 */
 
-	return attribute;
+	EdgeAttribute sparsificationExp(1.0);
+
+	graph.forNodes([&](node i) {
+		count d = graph.degree(i);
+
+		/*
+		 * The top d^e edges (sorted by similarity in descending order)
+		 * are to be kept in the backbone.
+		 */
+
+		std::vector<AttributizedEdge> neighbors;
+		graph.forNeighborsOf(i, [&](node j) {
+			double sim = getSimilarity(graph, i, j);
+			neighbors.push_back(AttributizedEdge(i, j, sim));
+		});
+		std::sort(neighbors.begin(), neighbors.end(), greater());
+
+		count rank = 1;
+		for(std::vector<AttributizedEdge>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
+			uEdge edgeKey = uEdge(it->ego, it->alter);
+			double e = log(rank) / log(d);
+			sparsificationExp.set(edgeKey, std::min(e, sparsificationExp[edgeKey]));
+			rank++;
+		}
+
+	});
+
+	return sparsificationExp;
 }
 
 /**

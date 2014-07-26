@@ -87,8 +87,14 @@ class EdgeAttribute {
 private:
 	typedef std::unordered_map<uEdge, double> EdgeMap;
 	EdgeMap attributeMap;
+	double defaultValue;
 
 public:
+
+	EdgeAttribute(double defaultValue) : defaultValue(defaultValue) {}
+
+	EdgeAttribute() : defaultValue(0.0) {}
+
 	void set(uEdge key, double value) {
 		attributeMap[key] = value;
 	}
@@ -98,7 +104,7 @@ public:
 		if (it != attributeMap.end())
 			return it->second;
 		else
-			return 0.0;
+			return defaultValue;
 	}
 
 	const bool contains(uEdge key) const {
