@@ -8,6 +8,7 @@
 #include "LocalSimilarityAttributizer.h"
 #include "../structures/Partition.h"
 #include "../community/JaccardMeasure.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -24,20 +25,25 @@ EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, cons
  */
 double LocalSimilarityAttributizer::getSimilarity(const Graph& graph, node u, node v) {
 	//Use the jaccard measure as similarity measure.
-	//TODO: The following implementation is quite inefficient....
-	Graph _graph = graph;
-
-	Partition uNeighbors(1);
+	/* TODO: The following implementation might be quite inefficient....
+	 * can the implementation in community/JaccardMeasure be used?
+	 */
+	std::set<node> uNeighbors;
 	graph.forNeighborsOf(u, [&](node n) {
-		uNeighbors.addToSubset(1, n);
-	});
-	Partition vNeighbors(1);
-	graph.forNeighborsOf(v, [&](node n) {
-		vNeighbors.addToSubset(1, n);
+		uNeighbors.insert(n);
 	});
 
-	JaccardMeasure jaccard;
-	return jaccard.getDissimilarity(_graph, uNeighbors, vNeighbors);
+	count inUnion = graph.degree(u);
+	count inIntersection = 0;
+
+	graph.forNeighborsOf(v, [&](node n) {
+		if (uNeighbors.erase(n))
+			inIntersection++;
+		else
+			inUnion++;
+	});
+
+	return (double) inIntersection / (double) inUnion;
 }
 
 } /* namespace NetworKit */
