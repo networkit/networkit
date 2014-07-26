@@ -13,6 +13,36 @@
 
 namespace NetworKit {
 
+struct AttributizedEdge {
+	node ego;
+	node alter;
+	double value;
+
+	AttributizedEdge(node ego, node alter, double v) :
+			ego(ego), alter(alter), value(v) {
+	}
+
+	bool operator<(const AttributizedEdge& other) const {
+		return (value > other.value)
+				|| (value == other.value && alter < other.alter);
+	}
+
+	bool operator>(const AttributizedEdge& other) const {
+		return (value < other.value)
+				|| (value == other.value && alter > other.alter);
+	}
+
+	bool operator==(const AttributizedEdge& other) const {
+		return ego == other.ego && alter == other.alter
+				&& value == other.value;
+	}
+};
+
+struct greater {
+    template<class T>
+    bool operator()(T const &a, T const &b) const { return a > b; }
+};
+
 /** 
  * Implementation of the Local Sparsification Algorithm by Sataluri et al.
  */
