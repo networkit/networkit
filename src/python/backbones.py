@@ -1,4 +1,4 @@
-from _NetworKit import SimmelianBackboneParametric, SimmelianBackboneNonParametric, MultiscaleBackbone
+from _NetworKit import SimmelianBackboneParametric, SimmelianBackboneNonParametric, MultiscaleBackbone, LocalSimilarityBackbone
 
 def writeCsv(file, G, B):	
 	f = open(file, "w+")

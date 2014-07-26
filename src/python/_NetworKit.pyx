@@ -3332,4 +3332,24 @@ cdef class MultiscaleBackbone:
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
 		
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _LocalSimilarityBackbone "NetworKit::LocalSimilarityBackbone":
+		_LocalSimilarityBackbone(double e) except +
+		_Graph* _calculate(_Graph G) except +
+
+cdef class LocalSimilarityBackbone:
+	"""
+	Calculates the local similarity backbone for a given input graph.
+	Parameters:
+		-	e	(0-1) the filtering parameter
+	"""
+
+	cdef _LocalSimilarityBackbone* _this
+
+	def __cinit__(self, double e):
+		self._this = new _LocalSimilarityBackbone(e)
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
 		

@@ -61,4 +61,19 @@ Graph MultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribu
 	return filter.calculate(g, multiscale);
 }
 
+/**
+ * ---------------------------------------------------------------------------
+ */
+
+LocalSimilarityBackbone::LocalSimilarityBackbone(double e) :
+		e(e) {}
+
+Graph LocalSimilarityBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
+	LocalSimilarityAttributizer localSimAttributizer;
+	EdgeAttribute minExponent = localSimAttributizer.getAttribute(g, EdgeAttribute());
+
+	GlobalThresholdFilter filter(e, true);
+	return filter.calculate(g, minExponent);
+}
+
 } /* namespace NetworKit */

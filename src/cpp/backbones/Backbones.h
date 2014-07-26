@@ -15,6 +15,7 @@
 #include "SimmelianJaccardAttributizer.h"
 #include "SimmelianOverlapAttributizer.h"
 #include "MultiscaleAttributizer.h"
+#include "LocalSimilarityAttributizer.h"
 #include "GlobalThresholdFilter.h"
 #include "../auxiliary/Log.h"
 
@@ -92,6 +93,28 @@ public:
 
 private:
 	double alpha;
+
+};
+
+/**
+ * --------------------------------------------------------------------------------------
+ * Local Similarity Backbone
+ * --------------------------------------------------------------------------------------
+ */
+
+class LocalSimilarityBackbone : public BackboneCalculator {
+
+public:
+	/**
+		 * Creates a new instance of the Local Similarity Backbone calculator
+		 * @param e			the threshold value
+		 */
+	LocalSimilarityBackbone(double e);
+
+	Graph calculate(const Graph& graph, const EdgeAttribute& attribute);
+
+private:
+	double e;
 
 };
 
