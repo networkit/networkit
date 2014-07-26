@@ -8,6 +8,7 @@
 #include "LocalSimilarityAttributizer.h"
 #include <math.h> //log
 #include <set>
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -32,6 +33,7 @@ EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, cons
 		std::vector<AttributizedEdge> neighbors;
 		graph.forNeighborsOf(i, [&](node j) {
 			double sim = getSimilarity(graph, i, j);
+			//ERROR("sim: ", sim, "\n");
 			neighbors.push_back(AttributizedEdge(i, j, sim));
 		});
 		std::sort(neighbors.begin(), neighbors.end(), greater());
@@ -39,7 +41,12 @@ EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, cons
 		count rank = 1;
 		for(std::vector<AttributizedEdge>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
 			uEdge edgeKey = uEdge(it->ego, it->alter);
-			double e = log(rank) / log(d);
+
+			double e = 0.0;
+			if (d > 1)
+				e = log(rank) / log(d);
+
+			//ERROR("e: ", e, ",",rank,",",d, "\n");
 			sparsificationExp.set(edgeKey, std::min(e, sparsificationExp[edgeKey]));
 			rank++;
 		}
