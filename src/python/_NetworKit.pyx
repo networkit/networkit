@@ -3352,4 +3352,25 @@ cdef class LocalSimilarityBackbone:
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
 		
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _SimmelianMultiscaleBackbone "NetworKit::SimmelianMultiscaleBackbone":
+		_SimmelianMultiscaleBackbone(double alpha) except +
+		_Graph* _calculate(_Graph G) except +
+
+cdef class SimmelianMultiscaleBackbone:
+	"""
+	Calculates the multiscale backbone for a given input graph using simmelianness 
+	(i.e. triangle counts) as edge weights.
+	Parameters:
+		-	alpha	 [0-1] the multiscale filtering parameter 
+	"""
+
+	cdef _SimmelianMultiscaleBackbone* _this
+
+	def __cinit__(self, double e):
+		self._this = new _SimmelianMultiscaleBackbone(e)
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
 		

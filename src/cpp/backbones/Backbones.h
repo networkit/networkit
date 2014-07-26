@@ -118,6 +118,28 @@ private:
 
 };
 
+/**
+ * --------------------------------------------------------------------------------------
+ * Multiscale backbone using simmelianness as weight
+ * --------------------------------------------------------------------------------------
+ */
+
+class SimmelianMultiscaleBackbone : public BackboneCalculator {
+
+public:
+	/**
+		 * Creates a new instance of the Simmelian Multiscale Backbone calculator
+		 * @param alpha			the threshold value for multiscale filtering
+		 */
+	SimmelianMultiscaleBackbone(double alpha);
+
+	Graph calculate(const Graph& graph, const EdgeAttribute& attribute);
+
+private:
+	double alpha;
+
+};
+
 
 
 } /* namespace NetworKit */
