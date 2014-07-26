@@ -37,6 +37,23 @@ TEST_F(LocalSimilarityGTest, testSimilarityCalculation) {
 	EXPECT_DOUBLE_EQ(0.375, localSim.getSimilarity(g, 1, 0));
 }
 
+TEST_F(LocalSimilarityGTest, testAttributeSimple) {
+	Graph g(4);
+
+	g.addEdge(0, 1);
+	g.addEdge(0, 3);
+	g.addEdge(0, 2);
+	g.addEdge(1, 2);
+
+	LocalSimilarityAttributizer localSim;
+	EdgeAttribute exp = localSim.getAttribute(g, EdgeAttribute());
+
+	EXPECT_DOUBLE_EQ(0.0, exp[uEdge(0, 1)]);
+	EXPECT_DOUBLE_EQ(0.0, exp[uEdge(0, 2)]);
+	EXPECT_DOUBLE_EQ(0.0, exp[uEdge(0, 3)]);
+	EXPECT_DOUBLE_EQ(1.0, exp[uEdge(1, 2)]);
+}
+
 }
 /* namespace NetworKit */
 
