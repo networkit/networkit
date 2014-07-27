@@ -49,21 +49,21 @@ public:
 	 * @param  t Target node.
 	 * @return The distance from source to target node @a t.
 	 */
-	virtual edgeweight distance(node t) const;
+	edgeweight distance(node t) const;
 
 	/**
 	 * Returns the number of shortest paths between the source node and @a t.
 	 * @param  t Target node.
 	 * @return The number of shortest paths between source and @a t.
 	 */
-	virtual count numberOfPaths(node t) const;
+	count numberOfPaths(node t) const;
 
 	/**
 	 * Returns the predecessor nodes of @a t on all shortest paths from source to @a t.
 	 * @param t Target node.
 	 * @return The predecessors of @a t on all shortest paths from source to @a t.
 	 */
-	virtual std::vector<node> getPredecessors(node t) const;
+	std::vector<node> getPredecessors(node t) const;
 
 	/**
 	 * Returns a shortest path from source to @a t and an empty path if source and @a t are not connected.
@@ -91,6 +91,18 @@ protected:
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<count> npaths;
 };
+
+inline edgeweight SSSP::distance(node t) const {
+	return distances[t];
+}
+
+inline count SSSP::numberOfPaths(node t) const {
+	return npaths[t];
+}
+
+inline std::vector<node> SSSP::getPredecessors(node t) const {
+	return previous[t];
+}
 
 } /* namespace NetworKit */
 

@@ -19,22 +19,20 @@ Partition PartitionReader::read(std::string path) {
 	}
 
 
-	std::vector<index> temp;
+	Partition zeta(0);
 
-	// push all cluster ids into vector in order of appearance
 	std::string line;
+	index omega = 0;
 	while(std::getline(file, line)) {
+		if (line.substr(0, 1) == "*" || line.substr(0, 1) == "#") continue;
+
 		index c = std::atoi(line.c_str());
-		temp.push_back(c);
+		// extend the partition by one entry and store the cluster id
+		zeta[zeta.extend()] = c;
+		omega = std::max(c, omega);
 	}
 
-	count n = temp.size();
-	Partition zeta(n);
-
-	#pragma omp parallel for
-	for (node u = 0; u < n; ++u) {
-		zeta[u] = temp[u];
-	}
+	zeta.setUpperBound(omega+1);
 
 	return zeta;
 }

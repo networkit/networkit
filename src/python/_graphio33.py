@@ -1,6 +1,6 @@
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
 						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
-						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader)
+						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader)
 from GraphMLIO import GraphMLReader, GraphMLWriter
 import os
 import logging
@@ -66,24 +66,24 @@ def readGraph(path, format="metis", **kwargs):
 	return None
 
 
-def readMat(path):
-	""" Reads a Graph from a matlab object file containing an adjacency matrix"""
+def readMat(path, key="A"):
+	""" Reads a Graph from a matlab object file containing an adjacency matrix and returns a NetworKit::Graph
+		Parameters:
+		- key: The key of the adjacency matrix in the matlab object file (default: A)"""
 	matlabObject = scipy.io.loadmat(path)
 	# result is a dictionary of variable names and objects, representing the matlab object
-	for (key, value) in matlabObject.items():
-		if type(matlabObject[key]) is numpy.ndarray:
-			A = matlabObject[key]
-			break # found the matrix
-
+	if key in matlabObject:
+		A = matlabObject[key]
+	else:
+		raise Exception("Key {0} not found in the matlab object file".format(key))
 	(n, n2) = A.shape
-	if (n != n2):
-		raise Exception("this (%sx%s) matrix is not square".format(n, n2))
-	if not ((A.transpose() == A).all()):
+	if n != n2:
+		raise Exception("this ({0}x{1}) matrix is not square".format(n, n2))
+	if not numpy.array_equal(A, A.transpose):
 		logging.warning("the adjacency matrix is not symmetric")
 	G = Graph(n)
 	nz = A.nonzero()
-	edges = [(u,v) for (u,v) in zip(nz[0], nz[1])]
-	for (u,v) in edges:
+	for (u,v) in zip(nz[0], nz[1]):
 		G.addEdge(u, v)
 	return G
 

@@ -20,16 +20,19 @@ class Diameter {
 public:
 
 	/**
-	 * Estimates a range for the diameter of @a G. Based on the algorithm suggested in
-	 * C. Magnien, M. Latapy, M. Habib: Fast Computation of Empirically Tight Bounds for
-	 * the Diameter of Massive Graphs. Journal of Experimental Algorithmics, Volume 13, Feb 2009.
+	 * Get the exact diameter of the graph @a G. The algorithm is based on the iFub algorithm suggested in
+	 * Pilu Crescenzi, Roberto Grossi, Michel Habib, Leonardo Lanzi, Andrea Marino:
+	 * On computing the diameter of real-world undirected graphs,
+	 * Theoretical Computer Science, Volume 514, 25 November 2013, Pages 84-95, ISSN 0304-3975,
+	 * http://dx.doi.org/10.1016/j.tcs.2012.09.018
 	 *
 	 * @return Pair of lower and upper bound for diameter.
 	 */
 	static std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph& G, double error);
 
 	/**
-	 * Get the exact diameter of the graph @a G.
+	 * Get the exact diameter of the graph @a G. The algorithm for unweighted graphs is the same as
+	 * the algorithm for the estimated diameter range with error 0.
 	 *
 	 * @param G The graph.
 	 * @return exact diameter of the graph @a G

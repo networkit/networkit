@@ -9,6 +9,7 @@
 #define DISSIMILARITYMEASURE_H_
 
 #include "../structures/Partition.h"
+#include "../structures/Cover.h"
 
 namespace NetworKit {
 
@@ -26,6 +27,7 @@ public:
 
 
 	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second) = 0;
+	virtual double getDissimilarity(Graph& G, Cover& first, Cover& second);
 };
 
 } /* namespace NetworKit */

@@ -46,11 +46,6 @@ public:
 	 */
 	Graph read(const std::string& path);
 
-	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _read(std::string& path) {
-		return new Graph{std::move(read(path))};
-	};
-
 	/**
 	 * Write the graph to a file.
 	 * @param[in]	G		the graph
