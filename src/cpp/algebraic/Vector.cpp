@@ -33,8 +33,12 @@ Vector Vector::transpose() const {
 	return v;
 }
 
+double Vector::lengthSqr() const {
+  return this->transpose() * (*this);
+}
+
 double Vector::length() const {
-	return std::sqrt(this->transpose() * (*this));
+  return std::sqrt(lengthSqr());
 }
 
 bool Vector::operator==(const Vector &other) const {
