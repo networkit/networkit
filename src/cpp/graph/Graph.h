@@ -2,11 +2,11 @@
  * BasicGraph.h
  *
  *  Created on: 01.06.2014
- *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
+ *      Author: Christian Staudt (christian.staudt@kit.edu), Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef BASICGRAPH_H_
-#define BASICGRAPH_H_
+#ifndef GRAPH_H_
+#define GRAPH_H_
 
 #include <algorithm>
 #include <vector>
@@ -22,11 +22,16 @@
 
 namespace NetworKit {
 
+	class GraphBuilder; // forward declaration
+
 /**
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
 class Graph final {
+
+	friend class GraphBuilder;
+
 private:
 	// graph attributes
 	count id; //!< unique graph id, starts at 0
@@ -47,10 +52,10 @@ private:
 
 	std::vector<count> inDeg; //!< only used for directed graphs, number of edges incoming per node
 	std::vector<count> outDeg; //!< degree of every node, zero if node was removed. For directed graphs only outgoing edges count
-	
+
 	std::vector< std::vector<node> > inEdges; //!< only used for directed graphs, inEdges[v] contains all nodes u that have an edge (u, v)
 	std::vector< std::vector<node> > outEdges; //!< (outgoing) edges, for each edge (u, v) v is saved in outEdges[u] and for undirected also u in outEdges[v]
-	
+
 	std::vector< std::vector<edgeweight> > inEdgeWeights; //!< only used for directed graphs, same schema as inEdges
 	std::vector< std::vector<edgeweight> > outEdgeWeights; //!< same schema (and same order!) as outEdges
 
@@ -132,7 +137,7 @@ public:
 	/**
 	 * Try to save some memory by shrinking internal data structures of the graph. Only run this
 	 * once you finished editing the graph. Otherwise it will cause unnecessary reallocation of
-	 * memory. 
+	 * memory.
 	 */
 	void shrinkToFit();
 
@@ -303,7 +308,7 @@ public:
 	 */
 	bool isWeighted() const { return weighted; }
 
-	/** 
+	/**
 	 * Return @c true if this graph supports directed edges.
 	 * @return @c true if this graph supports directed edges.
 	 */
@@ -367,7 +372,7 @@ public:
 	 * @param v Node.
 	 * @param value The coordinate of @a v.
 	 */
-	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); } 
+	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); }
 
 
 	/**
@@ -375,7 +380,7 @@ public:
 	 * @param v Node.
 	 * @return The coordinate of @a v.
 	 */
-	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); } 
+	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); }
 
 	/**
 	 * Get minimum coordinate of all coordinates with respect to dimension @a dim.
@@ -661,12 +666,12 @@ public:
 
 
 	/* REDUCTION ITERATORS */
-	
+
 	/**
 	 * Iterate in parallel over all nodes and sum (reduce +) the values returned by the handler
 	 */
 	template<typename L> double parallelSumForNodes(L handle) const;
-	
+
 	/**
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
 	 */
@@ -690,6 +695,7 @@ public:
 	 * @param handle Takes parameter <code>(node)</code>.
 	 */
 	template<typename L> void BFSfrom(node r, L handle) const;
+	template<typename L> void BFSfrom(std::vector<node> &startNodes, L handle) const;
 
 
 	template<typename L> void BFSEdgesfrom(node r, L handle) const;
@@ -786,7 +792,7 @@ void Graph::parallelForNodePairs(L handle) const {
 	}
 }
 
-	
+
 /* EDGE ITERATORS */
 
 template<typename L>
@@ -815,7 +821,7 @@ void Graph::forWeightedEdges(L handle) const {
 				}
 			}
 			break;
-		
+
 		case 1: // weighted,   undirected
 			for (node u = 0; u < z; ++u) {
 				for (index i = 0; i < outEdges[u].size(); ++i) {
@@ -873,7 +879,7 @@ void Graph::parallelForWeightedEdges(L handle) const {
 				}
 			}
 			break;
-		
+
 		case 1: // weighted,   undirected
 			#pragma omp parallel for
 			for (node u = 0; u < z; ++u) {
@@ -966,7 +972,7 @@ void Graph::forWeightedEdgesOf(node u, L handle) const {
 				edgeweight ew = outEdgeWeights[u][i];
 				handle(u, v, ew);
 			}
-		}	
+		}
 	} else {
 		for (index i = 0; i < outEdges[u].size(); i++) {
 			node v = outEdges[u][i];
@@ -1003,7 +1009,7 @@ void Graph::forWeightedInEdgesOf(node u, L handle) const {
 					edgeweight ew = inEdgeWeights[u][i];
 					handle(v, u, ew);
 				}
-			}	
+			}
 		} else {
 			for (index i = 0; i < inEdges[u].size(); i++) {
 				node v = inEdges[u][i];
@@ -1024,7 +1030,7 @@ void Graph::forWeightedInEdgesOf(node u, L handle) const {
 					edgeweight ew = outEdgeWeights[u][i];
 					handle(v, u, ew);
 				}
-			}	
+			}
 		} else {
 			for (index i = 0; i < outEdges[u].size(); i++) {
 				node v = outEdges[u][i];
@@ -1074,7 +1080,7 @@ double Graph::parallelSumForWeightedEdges(L handle) const {
 				}
 			}
 			break;
-		
+
 		case 1: // weighted,   undirected
 			#pragma omp parallel for reduction(+:sum)
 			for (node u = 0; u < z; ++u) {
@@ -1124,21 +1130,35 @@ double Graph::parallelSumForWeightedEdges(L handle) const {
 
 template<typename L>
 void Graph::BFSfrom(node r, L handle) const {
+	std::vector<node> startNodes(1, r);
+	BFSfrom(startNodes, handle);
+}
+
+template<typename L>
+void Graph::BFSfrom(std::vector<node> &startNodes, L handle) const {
 	std::vector<bool> marked(z);
-	std::queue<node> q;
-	q.push(r); // enqueue root
-	marked[r] = true;
+	std::queue<node> q, qNext;
+	count dist = 0;
+	// enqueue start nodes
+	for (node u : startNodes) {
+		q.push(u);
+		marked[u] = true;
+	}
 	do {
 		node u = q.front();
 		q.pop();
 		// apply function
-		handle(u);
+		handle(u, dist);
 		forNeighborsOf(u, [&](node v) {
 			if (!marked[v]) {
-				q.push(v);
+				qNext.push(v);
 				marked[v] = true;
 			}
 		});
+		if (q.empty() && !qNext.empty()) {
+			q.swap(qNext);
+			++dist;
+		}
 	} while (!q.empty());
 }
 
@@ -1179,7 +1199,7 @@ void Graph::DFSfrom(node r, L handle) const {
 				marked[v] = true;
 			}
 		});
-	} while (!s.empty()); 
+	} while (!s.empty());
 }
 
 template<typename L>
@@ -1199,9 +1219,9 @@ void Graph::DFSEdgesfrom(node r, L handle) const {
 				marked[v] = true;
 			}
 		});
-	} while (!s.empty()); 
+	} while (!s.empty());
 }
 
 } /* namespace NetworKit */
 
-#endif /* BASICGRAPH_H_ */
+#endif /* GRAPH_H_ */

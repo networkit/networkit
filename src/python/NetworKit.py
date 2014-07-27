@@ -35,6 +35,7 @@ import community
 import centrality
 import generators
 import properties
+import structures
 import engineering
 import toolbox
 import dynamic

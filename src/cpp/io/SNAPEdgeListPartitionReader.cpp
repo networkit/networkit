@@ -35,7 +35,7 @@ Cover SNAPEdgeListPartitionReader::read(std::string path, std::unordered_map<nod
 	std::set<node> uniqueIDs;
 	count totalCounter;
 
-	Cover communities(G.numberOfNodes());
+	Cover communities(G.upperNodeIdBound());
 
 	//DEBUG("separator: " , separator);
 	//DEBUG("first node: " , firstNode);
