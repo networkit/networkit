@@ -3376,3 +3376,110 @@ cdef class GraphUpdater:
 		for ev in stream:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_stream)
+
+# Module: backbones
+
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _SimmelianBackboneParametric "NetworKit::SimmelianBackboneParametric":
+		_SimmelianBackboneParametric(count maxRank, count minOverlap) except + 
+		_Graph* _calculate(_Graph G) except +
+
+cdef class SimmelianBackboneParametric:
+	"""
+	Calculates the simmelian backbone for a given input graph.
+	Parameters (parametric variant):
+		-	maxRank		the maximum rank of a tie so it is still considered strongly embedded.
+		-	minOverlap	the minimum required overlap of two ranked neighborhoods for a tie to be kept in the backbone.
+	"""
+
+	cdef _SimmelianBackboneParametric* _this
+		
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
+	def __cinit__(self, maxRank, minOverlap):
+		self._this = new _SimmelianBackboneParametric(maxRank, minOverlap)
+
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _SimmelianBackboneNonParametric "NetworKit::SimmelianBackboneNonParametric":
+		_SimmelianBackboneNonParametric(double jaccardTreshold) except + 
+		_Graph* _calculate(_Graph G) except +
+
+cdef class SimmelianBackboneNonParametric:
+	"""
+	Calculates the simmelian backbone for a given input graph.
+	Parameters (non-parameteric variant):
+		-	jaccardTreshold	the minimum best prefix jaccard coefficient of a tie to be kept in the backbone.be kept in the backbone.
+	"""
+
+	cdef _SimmelianBackboneNonParametric* _this
+		
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
+	def __cinit__(self, jaccardThreshold):
+		self._this = new _SimmelianBackboneNonParametric(jaccardThreshold)
+
+
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _MultiscaleBackbone "NetworKit::MultiscaleBackbone":
+		_MultiscaleBackbone(double alpha) except +
+		_Graph* _calculate(_Graph G) except +
+
+cdef class MultiscaleBackbone:
+	"""
+	Calculates the multiscale backbone for a given input graph.
+	Parameters:
+		-	alpha	[0-1] the filtering parameter
+	"""
+
+	cdef _MultiscaleBackbone* _this
+
+	def __cinit__(self, double alpha):
+		self._this = new _MultiscaleBackbone(alpha)
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _LocalSimilarityBackbone "NetworKit::LocalSimilarityBackbone":
+		_LocalSimilarityBackbone(double e) except +
+		_Graph* _calculate(_Graph G) except +
+
+cdef class LocalSimilarityBackbone:
+	"""
+	Calculates the local similarity backbone for a given input graph.
+	Parameters:
+		-	e	(0-1) the filtering parameter
+	"""
+
+	cdef _LocalSimilarityBackbone* _this
+
+	def __cinit__(self, double e):
+		self._this = new _LocalSimilarityBackbone(e)
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _SimmelianMultiscaleBackbone "NetworKit::SimmelianMultiscaleBackbone":
+		_SimmelianMultiscaleBackbone(double alpha) except +
+		_Graph* _calculate(_Graph G) except +
+
+cdef class SimmelianMultiscaleBackbone:
+	"""
+	Calculates the multiscale backbone for a given input graph using simmelianness 
+	(i.e. triangle counts) as edge weights.
+	Parameters:
+		-	alpha	 [0-1] the multiscale filtering parameter 
+	"""
+
+	cdef _SimmelianMultiscaleBackbone* _this
+
+	def __cinit__(self, double e):
+		self._this = new _SimmelianMultiscaleBackbone(e)
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+		
+		

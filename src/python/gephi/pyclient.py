@@ -14,8 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# -------------------------------------------------------------------
 #
 # This file has been modified by porting it to Python3.
+#
+# -------------------------------------------------------------------
+# Modification by Gerd Lindner (gerd.lindner@student.kit.edu): 
+# Changed type of autoflush attribute to integer, so autoflush every x
+# send requests is possible.
 #
 """
 Allow a Python script to communicate with Gephi using the Gephi Graph Streaming protocol and plugin.
@@ -29,9 +35,10 @@ import time
 
 class JSONClient(object):
     
-    def __init__(self, autoflush=False, enable_timestamps=False, process_event_hook=None):
+    def __init__(self, autoflush=0, enable_timestamps=False, process_event_hook=None):
         self.data = ""
         self.autoflush = autoflush
+        self.unflushedDumps = 0
         self.enable_timestamps = enable_timestamps
         
         if enable_timestamps:
@@ -49,6 +56,12 @@ class JSONClient(object):
         if len(self.data) > 0:
             self._send(self.data)
             self.data = ""
+            
+    def incrementUnflushedDumps(self):
+        self.unflushedDumps = self.unflushedDumps + 1
+        if self.unflushedDumps > self.autoflush:
+            self.flush()
+            self.unflushedDumps = 0
         
     def _send(self, data):
         print('passing')
@@ -56,11 +69,11 @@ class JSONClient(object):
         
     def add_node(self, id, flush=True, **attributes):
         self.data += json.dumps(self.peh({"an":{id:attributes}})) + '\r\n'
-        if(self.autoflush): self.flush()
+        self.incrementUnflushedDumps()
         
     def change_node(self, id, flush=True, **attributes):
         self.data += json.dumps(self.peh({"cn":{id:attributes}})) + '\r\n'
-        if(self.autoflush): self.flush()
+        self.incrementUnflushedDumps()
     
     def delete_node(self, id):
         self._send(json.dumps(self.peh({"dn":{id:{}}})) + '\r\n')
@@ -70,14 +83,14 @@ class JSONClient(object):
         attributes['target'] = target
         attributes['directed'] = directed
         self.data += json.dumps(self.peh({"ae":{id:attributes}})) + '\r\n'
-        if(self.autoflush): self.flush()
+        self.incrementUnflushedDumps()
         
     def change_edge(self, id, source, target, directed=True, **attributes):
         attributes['source'] = source
         attributes['target'] = target
         attributes['directed'] = directed
         self.data += json.dumps(self.peh({"ce":{id:attributes}})) + '\r\n'
-        if(self.autoflush): self.flush()
+        self.incrementUnflushedDumps()
     
     def delete_edge(self, id):
         self._send(json.dumps(self.peh({"de":{id:{}}})) + '\r\n')
