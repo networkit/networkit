@@ -26,7 +26,9 @@ Partition ParallelAgglomerativeClusterer::run(Graph& graph) {
 	bool repeat = true;
 	do {
 		// prepare attributes for scoring
-		int attrId = G.addEdgeAttribute_double(0.0);
+		// FIXME: update to new edge attribute system
+		//int attrId = G.addEdgeAttribute_double(0.0);
+		int attrId = 0;
 
 		// perform scoring
 		TRACE("before scoring graph of size " , G.numberOfNodes());
