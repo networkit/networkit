@@ -40,7 +40,7 @@ Partition PLMOld::pass(Graph& G) {
 	// to weight of edges to that cluster, this needs to be updated when a change occurs
 	std::vector<std::map<index, edgeweight> > incidenceWeight(z); //n
 	G.parallelForNodes([&](node u) {
-		G.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+		G.forEdgesOf(u, [&](node u, node v, edgeweight w) {
 			index C = zeta.subsetOf(v);
 			if (u != v) {
 				incidenceWeight[u][C] += w;
@@ -158,7 +158,7 @@ Partition PLMOld::pass(Graph& G) {
 				double volN = 0.0;
 
 				// update weight of edges to incident clusters
-				G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
+				G.forNeighborsOf(u, [&](node v, edgeweight w) {
 #ifdef _OPENMP
 					omp_set_lock(&mapLocks[v]);
 #endif

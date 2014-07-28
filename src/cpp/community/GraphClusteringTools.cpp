@@ -23,7 +23,7 @@ Graph communicationGraph(const Graph& graph, Partition& zeta) {
 	if (graph.isWeighted()) {
 		DEBUG("weighted");
 
-		graph.forWeightedEdges([&](node u, node v, edgeweight w) {
+		graph.forEdges([&](node u, node v, edgeweight w) {
 			if (zeta[u] != zeta[v]) {
 				commGraph.increaseWeight(zeta[u], zeta[v], w);
 				TRACE("increase weight of " , zeta[u] , " and " , zeta[v] , " by " , w);
@@ -49,7 +49,7 @@ count weightedDegreeWithCluster(const Graph& graph, Partition& zeta, node u, ind
 	count wdeg = 0;
 
 	if (graph.isWeighted()) {
-		graph.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+		graph.forEdgesOf(u, [&](node u, node v, edgeweight w) {
 			if (zeta[v] == cid) {
 				wdeg += w;
 			}

@@ -30,7 +30,7 @@ double CoverageSequential::getQuality(const Partition& zeta, const Graph& G) {
 	// TODO: sum only over intra-cluster edges, not over clusters
 
 	// compute intra-cluster edge weights per cluster
-	G.forWeightedEdges(
+	G.forEdges(
 			[&](node u, node v, edgeweight ew) {
 				assert (u < zeta.numberOfElements());
 				assert (v < zeta.numberOfElements());
