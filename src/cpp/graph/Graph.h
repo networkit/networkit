@@ -64,14 +64,6 @@ private:
 	std::vector< std::vector<edgeid> > inEdgeIds; //!< only used for directed graphs, same schema as inEdges
 	std::vector< std::vector<edgeid> > outEdgeIds; //!< same schema (and same order!) as outEdges
 
-
-	// TODO: remove
-	// user-defined edge attributes
-	// attribute maps storage
-	std::vector<std::vector<std::vector<double> > > edgeMaps_double; //!< contains edge maps (u, v) -> double
-	// default values
-	std::vector<double> edgeAttrDefaults_double; //!< stores default value for edgeMaps_double[i] at index i
-
 	/**
 	 * Returns the next unique graph id.
 	 */
@@ -462,36 +454,6 @@ public:
 	 */
 	void increaseWeight(node u, node v, edgeweight ew);
 
-	/**
-	 * Add new edge map for an attribute of type <code>double</code> with @a defaultValue.
-	 *
-	 * @param defaultValue The default value if no other value for this attribute is specified.
-	 * @return The attribute id of this map.
-	 */
-	int addEdgeAttribute_double(double defaultValue);
-
-
-	/**
-	 * Returns the attribute of type <code>double</code> with @a attrId for edge {@a u,@a v}.
-	 *
-	 * @param[in]	u	Endpoint of edge.
-	 * @param[in]	v	Endpoint of edge.
-	 * @param[in]	attrId	Attribute id.
-	 * @return Attribute with @a attrId for edge {@a u,@a v}.
-	 */
-	double attribute_double(node u, node v, int attrId) const;
-
-
-	/**
-	 * Set edge attribute @a attr of type <code>double</code> with @a attrId of edge {@a u,@a v}. If the edge
-	 * does not exist, it will be inserted.
-	 *
-	 * @param[in]	u	Endpoint of edge.
-	 * @param[in]	v	Endpoint of edge.
-	 * @param[in]	attrId Attribute id.
-	 * @param[in]	attr	Edge attribute.
-	 */
-	void setAttribute_double(node u, node v, int attrId, double attr);
 
 
 	/* SUMS */
@@ -950,27 +912,6 @@ void Graph::parallelForWeightedEdges(L handle) const {
 	}
 }
 
-template<typename L>
-void Graph::forEdgesWithAttribute_double(int attrId, L handle) const {
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < outEdges[u].size(); ++i) {
-			node v = outEdges[u][i];
-			if (directed) {
-				if (v != none) {
-					double attr = edgeMaps_double[attrId][u][i];
-					handle(u, v, attr);
-				}
-			} else {
-				// undirected, do not iterate over edges twice
-				// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-				if (u >= v) {
-					double attr = edgeMaps_double[attrId][u][i];
-					handle(u, v, attr);
-				}
-			}
-		}
-	}
-}
 
 
 /* NEIGHBORHOOD ITERATORS */

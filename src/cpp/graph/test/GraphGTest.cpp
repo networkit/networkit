@@ -69,13 +69,13 @@ void GraphGTest::SetUp() {
 		node u = e.first;
 		node v = e.second;
 		Ghouse.addEdge(u, v, ew);
-		
+
 		Ahouse[u][v] = ew;
-	
+
 		if (!Ghouse.isDirected()) {
 			Ahouse[v][u] = ew;
 		}
-		
+
 		if (Ghouse.isWeighted()) {
 			ew += 1.0;
 		}
@@ -138,8 +138,8 @@ TEST_P(GraphGTest, testCopyConstructor) {
 		ASSERT_TRUE(found);
 		m++;
 	});
-	ASSERT_EQ(8u, m);	
-	
+	ASSERT_EQ(8u, m);
+
 	m = 0;
 	GW.forEdges([&](node u, node v) {
 		ASSERT_TRUE(GW.hasEdge(v, u));
@@ -207,7 +207,7 @@ TEST_P(GraphGTest, testGetId) {
 	Graph G2 = createGraph(5);
 
 	ASSERT_TRUE(G1.getId() > 0);
-	ASSERT_TRUE(G2.getId() > 0);	
+	ASSERT_TRUE(G2.getId() > 0);
 	ASSERT_TRUE(G1.getId() < G2.getId());
 }
 
@@ -229,7 +229,7 @@ TEST_P(GraphGTest, testTyp) {
 TEST_P(GraphGTest, tesSetName) {
 	Graph G1 = createGraph(0);
 	Graph G2 = createGraph(0);
-	
+
 	std::string s1 = "Graph 1";
 	std::string s2 = "Graph 2";
 	G1.setName(s1);
@@ -318,7 +318,7 @@ TEST_P(GraphGTest, testHasNode) {
 	G.removeNode(0);
 	G.removeNode(2);
 	G.addNode();
-	
+
 	ASSERT_FALSE(G.hasNode(0));
 	ASSERT_TRUE(G.hasNode(1));
 	ASSERT_FALSE(G.hasNode(2));
@@ -582,7 +582,7 @@ TEST_P(GraphGTest, testAddEdge) {
 		} else {
 			ASSERT_EQ(defaultEdgeWeight, G.weight(1, 0));
 			ASSERT_EQ(defaultEdgeWeight, G.weight(2, 1));
-		}	
+		}
 	}
 
 	// add self loop
@@ -830,7 +830,7 @@ TEST_P(GraphGTest, testSetWeight) {
 			EXPECT_EQ(5.243, G.weight(1, 2));
 			EXPECT_EQ(5.243, G.weight(2, 1));
 		}
-		
+
 		// self-loop
 		G.addEdge(4, 4, 2.5);
 		ASSERT_EQ(2.5, G.weight(4, 4));
@@ -855,7 +855,7 @@ TEST_P(GraphGTest, increaseWeight) {
 		ASSERT_EQ(defaultEdgeWeight + 0.5, G.weight(1, 2));
 		ASSERT_EQ(3.14 - 0.5, G.weight(3, 4));
 
-		if (G.isDirected()) {	
+		if (G.isDirected()) {
 			// reverse edges do net exist => weight should be nullWeight
 			ASSERT_EQ(nullWeight, G.weight(1, 0));
 			ASSERT_EQ(nullWeight, G.weight(2, 1));
@@ -868,37 +868,9 @@ TEST_P(GraphGTest, increaseWeight) {
 	} else {
 		EXPECT_ANY_THROW(G.increaseWeight(1, 2, 0.3));
 		EXPECT_ANY_THROW(G.increaseWeight(2, 3, 0.3)); // edge does not exists
-	}	
+	}
 }
 
-TEST_P(GraphGTest, testEdgeAttributes) {
-	count n = 5;
-	Graph G(n);
-
-	int attrId = G.addEdgeAttribute_double(0.0);
-
-	G.forNodePairs([&](node u, node v){
-		G.addEdge(u, v);
-	});
-
-	G.forEdges([&](node u, node v){
-		EXPECT_EQ(0.0, G.attribute_double(u, v, attrId));
-	});
-
-	G.forEdges([&](node u, node v){
-		G.setAttribute_double(u, v, attrId, 42.0);
-	});
-
-	G.forEdges([&](node u, node v){
-		EXPECT_EQ(42.0, G.attribute_double(u, v, attrId));
-	});
-
-	node v = G.addNode();
-	G.addEdge(v, 0);
-
-	EXPECT_EQ(0.0, G.attribute_double(v, 0, attrId));
-
-}
 
 
 /** SUMS **/
@@ -944,7 +916,7 @@ TEST_P(GraphGTest, testNeighbors) {
 	auto containsNode = [&neighbors](node v) {
 		return std::find(neighbors.begin(), neighbors.end(), v) != neighbors.end();
 	};
-	if(this->Ghouse.isDirected()){	
+	if(this->Ghouse.isDirected()){
 		ASSERT_TRUE(containsNode(0));
 		ASSERT_TRUE(containsNode(4));
 	}else{
@@ -972,7 +944,7 @@ TEST_P(GraphGTest, testEdges) {
 		}
 		return false;
 	};
-	
+
 	auto edges = this->Ghouse.edges();
 	ASSERT_EQ(this->m_house + 1, edges.size()); // plus self-loop
 	for (auto e : edges) {
@@ -1003,7 +975,7 @@ TEST_P(GraphGTest, testParallelForNodes) {
 		#pragma omp critical
 		visited.push_back(u);
 	});
-	
+
 	std::sort(visited.begin(), visited.end());
 
 	ASSERT_EQ(5u, visited.size());
@@ -1143,7 +1115,7 @@ TEST_P(GraphGTest, testForWeightedEdges) {
 
 TEST_P(GraphGTest, testParallelForWeightedEdges) {
 	count n = 4;
-	Graph G = createGraph(n); 
+	Graph G = createGraph(n);
 	G.forNodePairs([&](node u, node v){
 		G.addEdge(u, v, 1.0);
 	});
@@ -1153,9 +1125,9 @@ TEST_P(GraphGTest, testParallelForWeightedEdges) {
 		#pragma omp atomic
 		weightSum += ew;
 	});
-	
+
 	ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
-	
+
 }
 
 TEST_P(GraphGTest, testParallelForEdges) {
@@ -1170,7 +1142,7 @@ TEST_P(GraphGTest, testParallelForEdges) {
 		#pragma omp atomic
 		weightSum += 1;
 	});
-	
+
 	ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
 
 }
@@ -1254,7 +1226,7 @@ TEST_P(GraphGTest, testForEdgesOf) {
 		this->Ghouse.forEdgesOf(u, [&](node v, node w) {
 			// edges should be v to w, so if we iterate over edges from u, u should be equal v
 			EXPECT_EQ(u, v);
-			
+
 			auto e = std::make_pair(v, w);
 			auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
 			if (!isDirected() && it == this->houseEdgesOut.end()) {
@@ -1263,14 +1235,14 @@ TEST_P(GraphGTest, testForEdgesOf) {
 			}
 
 			EXPECT_TRUE(it != this->houseEdgesOut.end());
-		
+
 			// find index in edge array
 			int i = std::distance(this->houseEdgesOut.begin(), it);
 			if (isDirected()) {
 				// make sure edge was not visited before (would be visited twice)
 				EXPECT_EQ(0, visited[i]);
 			}
-			
+
 			// mark edge as visited
 			visited[i]++;
 			m++;
@@ -1310,14 +1282,14 @@ TEST_P(GraphGTest, testForWeightedEdgesOf) {
 			}
 
 			EXPECT_TRUE(it != this->houseEdgesOut.end());
-		
+
 			// find index in edge array
 			int i = std::distance(this->houseEdgesOut.begin(), it);
 			if (isDirected()) {
 				// make sure edge was not visited before (would be visited twice)
 				EXPECT_EQ(0, visited[i]);
 			}
-			
+
 			// mark edge as visited
 			visited[i]++;
 			m++;
@@ -1538,7 +1510,7 @@ TEST_P(GraphGTest, testBFSfrom) {
 		EXPECT_TRUE( (visitedOrder[0] == 3) ^ (visitedOrder[0] == 4) );
 		EXPECT_TRUE( (visitedOrder[4] == 3) ^ (visitedOrder[4] == 4) );
 	} else {
-		EXPECT_EQ(0u, visitedOrder[3]); 
+		EXPECT_EQ(0u, visitedOrder[3]);
 		EXPECT_TRUE( (visitedOrder[1] == 1) ^ (visitedOrder[1] == 2) ^ (visitedOrder[1] == 3 ));
 		EXPECT_TRUE( (visitedOrder[2] == 1) ^ (visitedOrder[2] == 2) ^ (visitedOrder[2] == 3));
 		EXPECT_TRUE( (visitedOrder[4] == 1) ^ (visitedOrder[4] == 2) ^ (visitedOrder[4] == 3 ));
@@ -1587,7 +1559,7 @@ TEST_P(GraphGTest, testDFSfrom) {
 		G.DFSfrom(0, [&](node v) {
 			visitedOrder[v] = i++;
 		});
-		
+
 		for (count l : visitedOrder) {
 			EXPECT_TRUE(l != none);
 		}
