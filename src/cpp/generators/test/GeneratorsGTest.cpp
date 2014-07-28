@@ -537,26 +537,43 @@ TEST_F(GeneratorsGTest, testEuclideanCircleProjection) {
 		vector<double> radii(n);
 		HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
 		for (index i = 0; i < n; i++) {
+			/**
+			 * get two hyperbolic points
+			 */
 			Point2D<double> a = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
 			double radius = Aux::Random::real(HyperbolicSpace::getHyperbolicDistance(origin, a));
 			Point2D<double> second = HyperbolicSpace::getPointOnHyperbolicCircle(a, radius);
+
+			//get center and radius of euclidean circle
 			Point2D<double> center;
 			double euRadius;
 			HyperbolicSpace::getEuclideanCircle(a, second, center, euRadius);
 			EXPECT_LE(euRadius + center.length(), 1);
+
+			//get highest point and check
 			Point2D<double> highest = center;
 			highest.scale((center.length()+euRadius)/center.length());
 			EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, highest)), 0.0001);
 
+			//get lowest point and check
 			Point2D<double> lowest = center;
 			lowest.scale((center.length()-euRadius)/center.length());
 			EXPECT_LE(abs(radius-HyperbolicSpace::getHyperbolicDistance(a, lowest)), 0.0001);
 
+			//check whether center lies on arc between a and origin
 			EXPECT_LE(HyperbolicSpace::getHyperbolicDistance((highest+lowest).scale(0.5),a), radius);
 			double phi_a, r_a, phi_c, r_c;
 			HyperbolicSpace::cartesianToPolar(a, phi_a, r_a);
 			HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
+
 			EXPECT_LE(abs(phi_c - phi_a), 0.000001);
+
+			//numeric solution:
+			double r_c2 = (2*r_a)/((1-r_a*r_a)*(cosh(radius)-1+2/(1-r_a*r_a)));
+			EXPECT_LE(abs(r_c-r_c2), 0.000001);
+
+			double euRadius2 = sqrt(r_c2*r_c2 - (2*r_a*r_a - (1-r_a*r_a)*(cosh(radius)-1))/((1-r_a*r_a)*(cosh(radius)-1+2/(1-r_a*r_a))));
+			EXPECT_LE(abs(euRadius-euRadius2), 0.000001);
 		}
 }
 
