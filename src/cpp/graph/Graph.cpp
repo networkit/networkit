@@ -418,9 +418,19 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 	outDeg[u]++;
 	outEdges[u].push_back(v);
 
+	// if edges indexed, give new id
+	if (edgesIndexed) {
+		edgeid id = omega++;
+		outEdgeIds[u].push_back(id);
+	}
+
 	if (directed) {
 		inDeg[v]++;
 		inEdges[v].push_back(u);
+
+		if (edgesIndexed) {
+			inEdgeIds[v].push_back(id);
+		}
 
 		if (weighted) {
 			inEdgeWeights[v].push_back(ew);
@@ -439,6 +449,10 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 		if (weighted) {
 			outEdgeWeights[u].push_back(ew);
 			outEdgeWeights[v].push_back(ew);
+		}
+
+		if (edgesIndexed) {
+			outEdgeIds[v].push_back(id);
 		}
 	}
 }
