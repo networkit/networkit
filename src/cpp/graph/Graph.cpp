@@ -347,7 +347,7 @@ void Graph::removeNode(node v) {
 edgeweight Graph::weightedDegree(node v) const {
 	if (weighted) {
 		edgeweight sum = 0.0;
-		forWeightedNeighborsOf(v, [&](node u, edgeweight ew) {
+		forNeighborsOf(v, [&](node u, edgeweight ew) {
 			sum += ew;
 		});
 		return sum;
@@ -627,7 +627,7 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 edgeweight Graph::totalEdgeWeight() const {
 	if (weighted) {
 		edgeweight sum = 0.0;
-		forWeightedEdges([&](node u, node v, edgeweight ew) {
+		forEdges([&](node u, node v, edgeweight ew) {
 			sum += ew;
 		});
 		return sum;

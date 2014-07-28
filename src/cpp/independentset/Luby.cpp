@@ -28,7 +28,7 @@ std::vector<bool> Luby::run(const Graph& G) {
 	// weighted degree filtered for active nodes
 	auto weightedDegree = [&](node u){
 		double wDeg = 0.0;
-		G.forWeightedNeighborsOf(u, [&](node v, edgeweight w) {
+		G.forNeighborsOf(u, [&](node v, edgeweight w) {
 			if (V[v]) {
 				wDeg += w;
 			}

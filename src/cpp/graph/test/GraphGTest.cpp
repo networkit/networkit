@@ -1089,7 +1089,7 @@ TEST_P(GraphGTest, testForWeightedEdges) {
 	std::vector<bool> edgesSeen(5, false);
 
 	edgeweight weightSum = 0;
-	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
+	G.forEdges([&](node u, node v, edgeweight ew) {
 		ASSERT_TRUE(G.hasEdge(u, v));
 		ASSERT_EQ(G.weight(u, v), ew);
 
@@ -1121,7 +1121,7 @@ TEST_P(GraphGTest, testParallelForWeightedEdges) {
 	});
 
 	edgeweight weightSum = 0.0;
-	G.parallelForWeightedEdges([&](node u, node v, edgeweight ew) {
+	G.parallelForEdges([&](node u, node v, edgeweight ew) {
 		#pragma omp atomic
 		weightSum += ew;
 	});
@@ -1174,7 +1174,7 @@ TEST_P(GraphGTest, testForNeighborsOf){
 
 TEST_P(GraphGTest, testForWeightedNeighborsOf){
 	std::vector<std::pair<node, edgeweight> > visited;
-	this->Ghouse.forWeightedNeighborsOf(3, [&](node u, edgeweight ew) {
+	this->Ghouse.forNeighborsOf(3, [&](node u, edgeweight ew) {
 		visited.push_back(std::make_pair(u, ew));
 	});
 
@@ -1270,7 +1270,7 @@ TEST_P(GraphGTest, testForWeightedEdgesOf) {
 	double sumOfWeights = 0;
 
 	this->Ghouse.forNodes([&](node u) {
-		this->Ghouse.forWeightedEdgesOf(u, [&](node v, node w, edgeweight ew) {
+		this->Ghouse.forEdgesOf(u, [&](node v, node w, edgeweight ew) {
 			// edges should be v to w, so if we iterate over edges from u, u should be equal v
 			EXPECT_EQ(u, v);
 			sumOfWeights+= ew;
@@ -1353,7 +1353,7 @@ TEST_P(GraphGTest, testForInNeighborsOf) {
 
 TEST_P(GraphGTest, testForWeightedInNeighborsOf) {
 	std::vector< std::pair<node, edgeweight> > visited;
-	this->Ghouse.forWeightedInNeighborsOf(3, [&](node v, edgeweight ew) {
+	this->Ghouse.forInNeighborsOf(3, [&](node v, edgeweight ew) {
 		visited.push_back({v, ew});
 	});
 	std::sort(visited.begin(), visited.end());
@@ -1422,7 +1422,7 @@ TEST_P(GraphGTest, testForWeightedInEdgesOf) {
 	this->Ahouse[3][3] = 2.5;
 
 	std::vector<edgeweight> visited(this->n_house, -1.0);
-	this->Ghouse.forWeightedInEdgesOf(3, [&](node u, node v, edgeweight ew) {
+	this->Ghouse.forInEdgesOf(3, [&](node u, node v, edgeweight ew) {
 		ASSERT_EQ(-1.0, visited[v]);
 		visited[u] = ew;
 	});
@@ -1475,7 +1475,7 @@ TEST_P(GraphGTest, testParallelSumForNodes) {
 }
 
 TEST_P(GraphGTest, testParallelSumForWeightedEdges) {
-	double sum = this->Ghouse.parallelSumForWeightedEdges([](node u, node v, edgeweight ew) {
+	double sum = this->Ghouse.parallelSumForEdges([](node u, node v, edgeweight ew) {
 		return 1.5 * ew;
 	});
 

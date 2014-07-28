@@ -83,25 +83,44 @@ private:
 	/**
 	 * Calls the given function f if its third argument is of the type edgeid, discards the edge weight
 	 */
-	template<class F, typename std::enable_if<std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value >::type* = nullptr>
-	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const {
-		f(u, v, id);
-	}
-
-	/**
-	 * Calls the given function f if its third argument is of the type edgeweight, discards the edge id
-	 */
-	template<class F, typename std::enable_if<std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value >::type* = nullptr>
-	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const {
-		f(u, v, ew);
+	template<class F, bool InEdges = false>
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, id)) {
+		if (std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value) {
+			return f(u, v, id);
+		} else {
+			assert((std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type >::value));
+			return f(u, v, ew);
+		}
 	}
 
 	/**
 	 * Calls the given function f if it has only two arguments, discards edge weight and id
 	 */
-	template<class F, typename std::enable_if<Aux::FunctionTraits<F>::arity == 2 >::type* = nullptr>
-	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const {
-		f(u, v);
+	template<class F, bool InEdges = false>
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v)) {
+		if (std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value) {
+			return f(u, v);
+		} else {
+			assert((std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<1>::type>::value));
+			if (InEdges) {
+				return f(u, ew);
+			} else {
+				return f(v, ew);
+			}
+
+		}
+	}
+
+	/**
+	 * Calls the given function f if it has only one argument, discards the first node id, edge weight and id
+	 */
+	template<class F, bool InEdges = false>
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u)) {
+		if (InEdges) {
+			return f(u);
+		} else {
+			return f(v);
+		}
 	}
 
 
@@ -575,30 +594,16 @@ public:
 	/**
 	 * Iterate over all edges of the const graph and call @a handle (lambda closure).
 	 *
-	 * @param handle Takes parameters <code>(node, node)</code>.
+	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgweight)</code>.
 	 */
 	template<typename L> void forEdges(L handle) const;
 
 	/**
 	 * Iterate in parallel over all edges of the const graph and call @a handle (lambda closure).
 	 *
-	 * @param handle Takes parameters <code>(node, node)</code>.
+	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgweight)</code>.
 	 */
 	template<typename L> void parallelForEdges(L handle) const;
-
-	/**
-	 * Iterate over all edges of the const graph and call @a handle (lambda closure).
-	 *
-	 * @param handle Takes parameters <code>(node, node, edgeweight)</code>.
-	 */
-	template<typename L> void forWeightedEdges(L handle) const;
-
-	/**
-	 * Iterate over all edges of the const graph and call @a handle (lambda closure).
-	 *
-	 * @param handle Takes parameters <code>(node, node, edgeweight)</code>.
-	 */
-	template<typename L> void parallelForWeightedEdges(L handle) const;
 
 
 	/* NEIGHBORHOOD ITERATORS */
@@ -607,7 +612,7 @@ public:
 	 * Iterate over all neighbors of a node and call @a handle (lamdba closure).
 	 *
 	 * @param u Node.
-	 * @param handle Takes parameter <code>(node)</code> which is a neighbor of @a u.
+	 * @param handle Takes parameter <code>(node)</code> or <code>(node, edgeweight)</code> which is a neighbor of @a u.
 	 * @note For directed graphs only outgoing edges from @a u are considered.
 	 * A node is its own neighbor if there is a self-loop.
 	 *
@@ -615,34 +620,13 @@ public:
 	template<typename L> void forNeighborsOf(node u, L handle) const;
 
 	/**
-	 * Iterate over all edge weights of a node and call @a handle (lamdba closure).
-	 *
-	 * @param u Node.
-	 * @param handle Takes parameters <code>(node, const edgeweight)</code> where node is a neighbor of @a u.
-	 * @note For directed graphs only outgoing edges from u are considered.
-	 * A node is its own neighbor if there is a self-loop.
-	 */
-	template<typename L> void forWeightedNeighborsOf(node u, L handle) const;
-
-
-	/**
 	 * Iterate over all incident edges of a node and call @a handle (lamdba closure).
 	 *
 	 * @param u Node.
-	 * @param handle Takes parameters <code>(node, node)</code> where the first node is @a u and the second is a neighbor of @a u.
+	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgeweight)</code> where the first node is @a u and the second is a neighbor of @a u.
 	 * @note For undirected graphs all edges incident to @a u are also outgoing edges.
 	 */
 	template<typename L> void forEdgesOf(node u, L handle) const;
-
-	/**
-	 * Iterate over all outgoing edges of a node and call @a handle (lamdba closure).
-	 *
-	 * @param u Node.
-	 * @param handle Takes parameters <code>(node, node, edgeweight)</code> where the first node is @a u and the second is
-	 * a neighbor of @a u.
-	 * @note For undirected graphs all edges incident to @a u are also outgoing edges.
-	 */
-	template<typename L> void forWeightedEdgesOf(node u, L handle) const;
 
 	/**
 	 * Iterate over all neighbors of a node and call handler (lamdba closure).
@@ -651,26 +635,12 @@ public:
 	template<typename L> void forInNeighborsOf(node u, L handle) const;
 
 	/**
-	 * Iterate over all edge weights of a node and call handler (lamdba closure).
-	 *
-	 * @note For directed graphs only incoming edges from u are considered.
-	 */
-	template<typename L> void forWeightedInNeighborsOf(node u, L handle) const;
-
-	/**
 	 * Iterate over all incoming edges of a node and call handler (lamdba closure).
 	 * @note For undirected graphs all edges incident to u are also incoming edges.
+	 *
+	 * Handle takes parameters (u, v) or (u, v, w) where w is the edge weight.
 	 */
 	template<typename L> void forInEdgesOf(node u, L handle) const;
-
-	/**
-	 * Iterate over all incoming edges of a node and call handler (lamdba closure).
-	 * @note For undirected graphs all edges incident to u are also incoming edges.
-	 *
-	 * Handle takes parameters (u, v, w) where w is the edge weight.
-	 */
-	template<typename L> void forWeightedInEdgesOf(node u, L handle) const;
-
 
 	/* REDUCTION ITERATORS */
 
@@ -683,13 +653,6 @@ public:
 	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
 	 */
 	template<typename L> double parallelSumForEdges(L handle) const;
-
-	/**
-	 * Iterate in parallel over all edges and sum (reduce +) the values returned by the handler
-	 *
-	 * @param handle Takes parameter <code>(node)</code> and returns <code>double</code>.
-	 */
-	template<typename L> double parallelSumForWeightedEdges(L handle) const;
 
 
 	/* GRAPH SEARCHES */
@@ -804,16 +767,6 @@ void Graph::parallelForNodePairs(L handle) const {
 
 template<typename L>
 void Graph::forEdges(L handle) const {
-	forWeightedEdges([&handle](node u, node v, edgeweight ew) { handle(u, v); });
-}
-
-template<typename L>
-void Graph::parallelForEdges(L handle) const {
-	parallelForWeightedEdges([&handle](node u, node v, edgeweight ew) { handle(u, v); });
-}
-
-template<typename L>
-void Graph::forWeightedEdges(L handle) const {
 	switch (weighted + 2 * directed) {
 		case 0: // unweighted, undirected
 			for (node u = 0; u < z; ++u) {
@@ -870,7 +823,7 @@ void Graph::forWeightedEdges(L handle) const {
 }
 
 template<typename L>
-void Graph::parallelForWeightedEdges(L handle) const {
+void Graph::parallelForEdges(L handle) const {
 	switch (weighted + 2 * directed) {
 		case 0: // unweighted, undirected
 			#pragma omp parallel for
@@ -881,7 +834,7 @@ void Graph::parallelForWeightedEdges(L handle) const {
 					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 					if (u >= v) {
 						edgeweight ew = defaultEdgeWeight;
-						handle(u, v, ew);
+						edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -896,7 +849,7 @@ void Graph::parallelForWeightedEdges(L handle) const {
 					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 					if (u >= v) {
 						edgeweight ew = outEdgeWeights[u][i];
-						handle(u, v, ew);
+						edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -909,7 +862,7 @@ void Graph::parallelForWeightedEdges(L handle) const {
 					node v = outEdges[u][i];
 					if (v != none) {
 						edgeweight ew = defaultEdgeWeight;
-						handle(u, v, ew);
+						edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -922,7 +875,7 @@ void Graph::parallelForWeightedEdges(L handle) const {
 					node v = outEdges[u][i];
 					if (v != none) {
 						edgeweight ew = outEdgeWeights[u][i];
-						handle(u, v, ew);
+						edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -936,27 +889,17 @@ void Graph::parallelForWeightedEdges(L handle) const {
 
 template<typename L>
 void Graph::forNeighborsOf(node u, L handle) const {
-	forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v); });
-}
-
-template<typename L>
-void Graph::forWeightedNeighborsOf(node u, L handle) const {
-	forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v, ew); });
+	forEdgesOf(u, handle);
 }
 
 template<typename L>
 void Graph::forEdgesOf(node u, L handle) const {
-	forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u, v); });
-}
-
-template<typename L>
-void Graph::forWeightedEdgesOf(node u, L handle) const {
 	if (weighted) {
 		for (index i = 0; i < outEdges[u].size(); i++) {
 			node v = outEdges[u][i];
 			if (v != none) {
 				edgeweight ew = outEdgeWeights[u][i];
-				handle(u, v, ew);
+				edgeLambda(handle, u, v, ew, 0);
 			}
 		}
 	} else {
@@ -964,7 +907,7 @@ void Graph::forWeightedEdgesOf(node u, L handle) const {
 			node v = outEdges[u][i];
 			if (v != none) {
 				edgeweight ew = defaultEdgeWeight;
-				handle(u, v, ew);
+				edgeLambda(handle, u, v, ew, 0);
 			}
 		}
 	}
@@ -972,28 +915,18 @@ void Graph::forWeightedEdgesOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forInNeighborsOf(node u, L handle) const {
-	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u); });
-}
-
-template<typename L>
-void Graph::forWeightedInNeighborsOf(node u, L handle) const {
-	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u, ew); });
+	forInEdgesOf(u, handle);
 }
 
 template<typename L>
 void Graph::forInEdgesOf(node u, L handle) const {
-	forWeightedInEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(u, v); });
-}
-
-template<typename L>
-void Graph::forWeightedInEdgesOf(node u, L handle) const {
 	if (directed) {
 		if (weighted) {
 			for (index i = 0; i < inEdges[u].size(); i++) {
 				node v = inEdges[u][i];
 				if (v != none) {
 					edgeweight ew = inEdgeWeights[u][i];
-					handle(v, u, ew);
+					edgeLambda<L, true>(handle, v, u, ew, 0);
 				}
 			}
 		} else {
@@ -1001,20 +934,22 @@ void Graph::forWeightedInEdgesOf(node u, L handle) const {
 				node v = inEdges[u][i];
 				if (v != none) {
 					edgeweight ew = defaultEdgeWeight;
-					handle(v, u, ew);
+					edgeLambda<L, true>(handle, v, u, ew, 0);
+
 				}
 			}
 		}
 	} else {
 		// use outEdges
-		// the following dose the same as calling forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v, u, ew); });
+		// the following dose the same as calling forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v,
 		// but I think it is better to write it out here
 		if (weighted) {
 			for (index i = 0; i < outEdges[u].size(); i++) {
 				node v = outEdges[u][i];
 				if (v != none) {
 					edgeweight ew = outEdgeWeights[u][i];
-					handle(v, u, ew);
+					edgeLambda<L, true>(handle, v, u, ew, 0);
+
 				}
 			}
 		} else {
@@ -1022,7 +957,7 @@ void Graph::forWeightedInEdgesOf(node u, L handle) const {
 				node v = outEdges[u][i];
 				if (v != none) {
 					edgeweight ew = defaultEdgeWeight;
-					handle(v, u, ew);
+					edgeLambda<L, true>(handle, v, u, ew, 0);
 				}
 			}
 		}
@@ -1045,11 +980,6 @@ double Graph::parallelSumForNodes(L handle) const {
 
 template<typename L>
 double Graph::parallelSumForEdges(L handle) const {
-	return parallelSumForWeightedEdges([&handle](node u, node v, edgeweight ew) { return handle(u, v); });
-}
-
-template<typename L>
-double Graph::parallelSumForWeightedEdges(L handle) const {
 	double sum = 0.0;
 	switch (weighted + 2 * directed) {
 		case 0: // unweighted, undirected
@@ -1061,7 +991,7 @@ double Graph::parallelSumForWeightedEdges(L handle) const {
 					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 					if (u >= v) {
 						edgeweight ew = defaultEdgeWeight;
-						sum += handle(u, v, ew);
+						sum += edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -1076,7 +1006,7 @@ double Graph::parallelSumForWeightedEdges(L handle) const {
 					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 					if (u >= v) {
 						edgeweight ew = outEdgeWeights[u][i];
-						sum +=handle(u, v, ew);
+						sum += edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -1089,7 +1019,7 @@ double Graph::parallelSumForWeightedEdges(L handle) const {
 					node v = outEdges[u][i];
 					if (v != none) {
 						edgeweight ew = defaultEdgeWeight;
-						sum +=handle(u, v, ew);
+						sum += edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -1102,7 +1032,7 @@ double Graph::parallelSumForWeightedEdges(L handle) const {
 					node v = outEdges[u][i];
 					if (v != none) {
 						edgeweight ew = outEdgeWeights[u][i];
-						sum +=handle(u, v, ew);
+						sum += edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
