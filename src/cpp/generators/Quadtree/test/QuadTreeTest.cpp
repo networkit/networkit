@@ -139,6 +139,53 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	}
 }
 
+TEST_F(QuadTreeTest, testQuadTreeDeletion) {
+	count n = 1000;
+	double R = acosh((double)n/(2*M_PI)+1);
+	vector<double> angles(n);
+	vector<double> radii(n);
+	vector<double> indices(n);
+	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	double max = 0;
+	for (index i = 0; i < n; i++) {
+		indices[i] = i;
+		if (radii[i] > max) {
+			max = radii[i];
+		}
+	}
+
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R));
+
+	for (index i = 0; i < n; i++) {
+		EXPECT_GE(angles[i], 0);
+		EXPECT_LT(angles[i], 2*M_PI);
+		EXPECT_GE(radii[i], 0);
+		EXPECT_LT(radii[i], R);
+		TRACE("Added (", angles[i], ",", radii[i], ")");
+		quad.addContent(i, angles[i], radii[i]);
+	}
+
+	while(indices.size() > 0) {
+		index toRemove = Aux::Random::integer(indices.size());
+		if (toRemove == indices.size()) toRemove--;
+		assert(toRemove < indices.size());
+		assert(toRemove >= 0);
+		EXPECT_EQ(quad.size(), indices.size());
+		bool removed = quad.removeContent(indices[toRemove], angles[toRemove], radii[toRemove]);
+		EXPECT_TRUE(removed);
+		EXPECT_EQ(quad.size(), indices.size()-1);
+		bool removedTwice = quad.removeContent(indices[toRemove], angles[toRemove], radii[toRemove]);
+		EXPECT_FALSE(removedTwice);
+		EXPECT_EQ(quad.size(), indices.size()-1);
+		indices.erase(indices.begin()+toRemove);
+		angles.erase(angles.begin()+toRemove);
+		radii.erase(radii.begin()+toRemove);
+	}
+
+	QuadNode<index> root = getRoot(quad);
+	EXPECT_EQ(getChildren(root).size(), 0);//root is leaf node, coarsening worked.
+}
+
 TEST_F(QuadTreeTest, testEuclideanCircle) {
 		count n = 1000;
 		double R = 1;
