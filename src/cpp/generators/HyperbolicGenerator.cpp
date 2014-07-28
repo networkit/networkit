@@ -67,19 +67,17 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	#pragma omp parallel for schedule(dynamic, 1000)
 	for (index i = 0; i < n; i++) {
 			vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles->at(i), radii->at(i)), thresholdDistance);
-			TRACE("gathered points for ", i, " adding edges");
 			for (index j : near) {
 				if (i != j) {//we only want to add the edges once for each pair
 						result.addHalfEdge(i,j);
 				}
 			}
-			TRACE("added edges");
 
 			if (i % 1000 == 0) {
 				#pragma omp critical (progress)//that doesn't make any sense, creating the block every time and only printing every 200th iterations
 				{
 					progress.signal(i);
-					TRACE("total edges:", result.totalEdgeWeight());
+					TRACE("total edges: ", result.totalEdgeWeight());
 				}
 			}
 		}
