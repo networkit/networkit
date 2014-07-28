@@ -1576,24 +1576,69 @@ TEST_P(GraphGTest, testDFSfrom) {
 	}
 }
 
-TEST_P(GraphGTest, testEdgeIndexGeneration) {
-	Graph G = createGraph(10);
+TEST_P(GraphGTest, testEdgeIndexGenerationDirected) {
+	Graph G = Graph(10, false, true);
+	G.addEdge(2, 0);
+	G.addEdge(2, 1);
+	G.addEdge(2, 2);
+	G.addEdge(5, 6);
+	G.addEdge(6, 5);
+	G.addEdge(1, 2);
+
+	G.indexEdges();
+
+	//Check consecutiveness of edgeids according to edge iterators
+	edgeid expectedId = 0;
+	G.forEdges([&](node u, node v) {
+		EXPECT_EQ(expectedId++, G.edgeId(u, v));
+	});
+
+	//Add some more edges
+	EXPECT_EQ(6, G.upperEdgeIdBound());
+	G.addEdge(8, 9);
+	EXPECT_EQ(7, G.upperEdgeIdBound());
+	G.addEdge(9, 8);
+
+	//Check that asymmetric edges do not have the same id
+	EXPECT_NE(G.edgeId(6, 5), G.edgeId(5, 6));
+	EXPECT_NE(G.edgeId(2, 1), G.edgeId(1, 2));
+	EXPECT_NE(G.edgeId(9, 8), G.edgeId(8, 9));
+	EXPECT_EQ(7, G.edgeId(9, 8));
+	EXPECT_EQ(8, G.upperEdgeIdBound());
+}
+
+TEST_P(GraphGTest, testEdgeIndexGenerationUndirected) {
+	Graph G = Graph(10, false, false);
+
+	G.addEdge(0, 0);
 	G.addEdge(2, 0);
 	G.addEdge(2, 1);
 	G.addEdge(2, 2);
 	G.addEdge(5, 6);
 
-	//Generate edge ids initially
 	G.indexEdges();
 
-	//Add some more edges
-	//G.addEdge(3, 4);
-	//G.addEdge(7, 8);
+	//Check consecutiveness of edgeids according to edge iterators
+	edgeid expectedId = 0;
+	G.forEdges([&](node u, node v) {
+		EXPECT_EQ(expectedId++, G.edgeId(u, v));
+	});
 
-	//Make sure no edge ids have been assigned twice.
+	//Add some more edges. This will likely destroy consecutiveness...
+	G.addEdge(3, 4);
+	G.addEdge(7, 8);
+	EXPECT_EQ(6, G.edgeId(7, 8));
+	EXPECT_EQ(7, G.upperEdgeIdBound());
+
+	//Anyway, heck uniqueness and validity of the edgeids
 	std::set<edgeid> ids;
+	edgeid upperEdgeIdBound = G.upperEdgeIdBound();
+
 	G.forEdges([&](node u, node v) {
 		edgeid id = G.edgeId(u, v);
+		EXPECT_EQ(id, G.edgeId(v, u));
+		EXPECT_LT(id, upperEdgeIdBound);
+
 		EXPECT_NE(none, id);
 		EXPECT_FALSE(ids.erase(id));
 		ids.insert(id);
