@@ -19,6 +19,7 @@
 #include "Coordinates.h"
 #include "../viz/Point.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/FunctionTraits.h"
 
 namespace NetworKit {
 
@@ -78,6 +79,31 @@ private:
 	 * Returns the index of node v in the array of outgoing edges of node u.
 	 */
 	index indexInOutEdgeArray(node u, node v) const;
+
+	/**
+	 * Calls the given function f if its third argument is of the type edgeid, discards the edge weight
+	 */
+	template<class F, typename std::enable_if<std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value >::type* = nullptr>
+	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const {
+		f(u, v, id);
+	}
+
+	/**
+	 * Calls the given function f if its third argument is of the type edgeweight, discards the edge id
+	 */
+	template<class F, typename std::enable_if<std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value >::type* = nullptr>
+	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const {
+		f(u, v, ew);
+	}
+
+	/**
+	 * Calls the given function f if it has only two arguments, discards edge weight and id
+	 */
+	template<class F, typename std::enable_if<Aux::FunctionTraits<F>::arity == 2 >::type* = nullptr>
+	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const {
+		f(u, v);
+	}
+
 
 public:
 
@@ -797,7 +823,7 @@ void Graph::forWeightedEdges(L handle) const {
 					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 					if (u >= v) {
 						edgeweight ew = defaultEdgeWeight;
-						handle(u, v, ew);
+						edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -811,7 +837,7 @@ void Graph::forWeightedEdges(L handle) const {
 					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 					if (u >= v) {
 						edgeweight ew = outEdgeWeights[u][i];
-						handle(u, v, ew);
+						edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -823,7 +849,7 @@ void Graph::forWeightedEdges(L handle) const {
 					node v = outEdges[u][i];
 					if (v != none) {
 						edgeweight ew = defaultEdgeWeight;
-						handle(u, v, ew);
+						edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
@@ -835,7 +861,7 @@ void Graph::forWeightedEdges(L handle) const {
 					node v = outEdges[u][i];
 					if (v != none) {
 						edgeweight ew = outEdgeWeights[u][i];
-						handle(u, v, ew);
+						edgeLambda(handle, u, v, ew, 0);
 					}
 				}
 			}
