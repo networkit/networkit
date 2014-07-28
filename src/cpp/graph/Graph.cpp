@@ -231,7 +231,7 @@ void Graph::indexEdges() {
 	for (node u = 0; u < z; ++u) {
 		for (index i = 0; i < outEdges[u].size(); ++i) {
 			node v = outEdges[u][i];
-			if (outEdgeIds[u][i] == none) {
+			if (directed || (u >= v)) {
 				// new id
 				edgeid id = omega++;
 				outEdgeIds[u][i] = id;
