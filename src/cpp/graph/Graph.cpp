@@ -23,6 +23,8 @@ Graph::Graph(count n, bool weighted, bool directed) :
 
 	weighted(weighted), // indicates whether the graph is weighted or not
 	directed(directed), // indicates whether the graph is directed or not
+	edgesIndexed(false), // edges are not indexed by default
+
 	exists(n, true),
 
 	/* for directed graphs inDeg stores the incoming degree of a node, for undirected graphs inDeg is not used*/
@@ -38,7 +40,9 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	undirected edges*/
 	outEdges(n),
 	inEdgeWeights(weighted && directed ? n : 0),
-	outEdgeWeights(weighted ? n : 0) {
+	outEdgeWeights(weighted ? n : 0),
+	inEdgeIds(),
+	outEdgeIds() {
 
 	// set name from global id
 	id = getNextGraphId();
@@ -204,6 +208,48 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
 		}
 	}
 	return none;
+}
+
+
+/** EDGE IDS **/
+
+void Graph::indexEdges() {
+	edgeid nextId = 0;
+
+	for (node u = 0; u < z; ++u) {
+		outEdgeIds[u].resize(outEdges[u].size(), none);
+	}
+
+	for (node u = 0; u < z; ++u) {
+		for (index i = 0; i < outEdges[u].size(); ++i) {
+			node v = outEdges[u][i];
+			if (outEdgeIds[u][i] == none) {
+				// new id
+				edgeid id = nextId++;
+				outEdgeIds[u][i] = id;
+				// for undirected graphs, set symmetric edge id
+				if (! directed) {
+					index j = indexInOutEdgeArray(v, u);
+					outEdgeIds[v][j] = id;
+				} else {
+					// TODO: set inEdgeIds
+				}
+
+			}
+		}
+	}
+
+	edgesIndexed = true; // remember that edges have been indexed so that addEdge needs to create edge ids
+}
+
+
+edgeid Graph::edgeId(node u, node v) {
+	if (! edgesIndexed) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+	index i = indexInOutEdgeArray(u, v);
+	edgeid id = outEdgeIds[u][i];
+	return id;
 }
 
 

@@ -45,6 +45,7 @@ private:
 
 	bool weighted; //!< true if the graph is weighted, false otherwise
 	bool directed; //!< true if the graph is directed, false otherwise
+	bool edgesIndexed; //!< true if edge ids have been assigned
 
 	// per node data
 	std::vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
@@ -59,6 +60,11 @@ private:
 	std::vector< std::vector<edgeweight> > inEdgeWeights; //!< only used for directed graphs, same schema as inEdges
 	std::vector< std::vector<edgeweight> > outEdgeWeights; //!< same schema (and same order!) as outEdges
 
+	std::vector< std::vector<edgeid> > inEdgeIds; //!< only used for directed graphs, same schema as inEdges
+	std::vector< std::vector<edgeid> > outEdgeIds; //!< same schema (and same order!) as outEdges
+
+
+	// TODO: remove
 	// user-defined edge attributes
 	// attribute maps storage
 	std::vector<std::vector<std::vector<double> > > edgeMaps_double; //!< contains edge maps (u, v) -> double
@@ -115,6 +121,20 @@ public:
 
 	/** Only to be used from Cython */
 	void stealFrom(Graph& input);
+
+
+	/** EDGE IDS **/
+
+	/**
+	* Initially assign integer edge identifiers.
+	*/
+	void indexEdges();
+
+
+	/**
+	* Get the id of the given edge.
+	*/
+	edgeid edgeId(node u, node v);
 
 
 	/** GRAPH INFORMATION **/

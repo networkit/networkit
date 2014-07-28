@@ -23,6 +23,7 @@ from unordered_map cimport unordered_map
 # NetworKit typedefs
 ctypedef uint64_t count
 ctypedef uint64_t index
+ctypedef uint64_t edgeid
 ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
@@ -97,6 +98,8 @@ cdef extern from "../cpp/graph/Graph.h":
 		_Graph() except +
 		_Graph(count, bool, bool) except +
 		void stealFrom(_Graph)
+		void indexEdges() except +
+		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
 		count upperNodeIdBound() except +
@@ -161,6 +164,23 @@ cdef class Graph:
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
 		del self._this
+
+
+	def indexEdges(self):
+		"""
+		Assign integer ids to edges.
+
+		"""
+		self._this.indexEdges()
+
+	def edgeId(self, node u, node v):
+		"""
+		Returns
+		-------
+		edgeid
+			id of the edge
+		"""
+		return self._this.edgeId(u, v)
 
 	def numberOfNodes(self):
 		"""
