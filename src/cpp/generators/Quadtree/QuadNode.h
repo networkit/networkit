@@ -113,6 +113,66 @@ public:
 		elements++;
 	}
 
+	bool removeContent(T input, double angle, double R) {
+		if (!responsible(angle, R)) return false;
+		if (isLeaf) {
+			index i = 0;
+			for (; i < content.size(); i++) {
+				if (content[i] == input) break;
+			}
+			if (i < content.size()) {
+				assert(angles[i] == angle);
+				assert(radii[i] == R);
+				//remove element
+				content.erase(content.begin()+i);
+				positions.erase(positions.begin()+i);
+				angles.erase(angles.begin()+i);
+				radii.erase(radii.begin()+i);
+				return true;
+			} else {
+				return false;
+			}
+		}
+		else {
+			bool removed = false;
+			bool allLeaves = true;
+			assert(children.size() > 0);
+			for (index i = 0; i < children.size(); i++) {
+				if (!children[i].isLeaf) allLeaves = false;
+				if (children[i].removeContent(input, angle, R)) {
+					assert(!removed);
+					removed = true;
+				}
+			}
+			//coarsen?
+			if (removed && allLeaves && size() < coarsenLimit) {
+				//coarsen!!
+				vector<T> allContent;
+				vector<Point2D<double> > allPositions;
+				vector<double> allAngles;
+				vector<double> allRadii;
+				for (index i = 0; i < children.size(); i++) {
+					allContent.insert(allContent.end(), children[i].content.begin(), children[i].content.end());
+					allPositions.insert(allPositions.end(), children[i].positions.begin(), children[i].positions.end());
+					allAngles.insert(allAngles.end(), children[i].angles.begin(), children[i].angles.end());
+					allRadii.insert(allRadii.end(), children[i].radii.begin(), children[i].radii.end());
+				}
+				assert(allContent.size() == allPositions.size());
+				assert(allContent.size() == allAngles.size());
+				assert(allContent.size() == allRadii.size());
+				children.clear();
+				content = allContent;
+				positions = allPositions;
+				angles = allAngles;
+				radii = allRadii;
+				isLeaf = true;
+			}
+
+			return removed;
+		}
+	}
+
+
 	bool outOfReach(Point2D<double> query, double radius) {
 		double phi, r;
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
@@ -252,6 +312,7 @@ private:
 	double maxR;
 	Point2D<double> a,b,c,d;
 	unsigned capacity;
+	unsigned coarsenLimit = 4;
 	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
 	count elements;
 	std::vector<QuadNode> children;

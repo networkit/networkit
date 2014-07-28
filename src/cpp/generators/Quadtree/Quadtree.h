@@ -35,6 +35,11 @@ public:
 	void addContent(T newcomer, double angle, double R) {
 		root.addContent(newcomer, angle, R);
 	}
+
+	bool removeContent(T toRemove, double angle, double R) {
+		return root.removeContent(toRemove, angle, R);
+	}
+
 	vector<T> getElements() {
 		return root.getElements();
 	}
@@ -70,7 +75,6 @@ public:
 
 		double minPhi, maxPhi, radius;
 		HyperbolicSpace::getEuclideanCircle(query, pointOnEdge, center, radius);
-		TRACE("Using circle at (", center[0], ",",center[1], ") with radius ", radius);
 		double minR = center.length() - radius;
 		double maxR = center.length() + radius;
 		//assert(maxR < 1);//this looks fishy
@@ -109,6 +113,10 @@ public:
 		 */
 		return circleDenizens;
 		//return root.getCloseElements(query, maxDistance);
+	}
+
+	count size() {
+		return root.size();
 	}
 
 
