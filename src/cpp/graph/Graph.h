@@ -575,14 +575,6 @@ public:
 	template<typename L> void parallelForWeightedEdges(L handle) const;
 
 
-	/**
-	 * Iterate over all edges of the const graph and call @a handle (lambda closure).
-	 *
-	 *	@param[in] 	attrId		Attribute id.
-	 *  @param[in] 	handle 		Takes parameters <code>(node, node, double)</code>.
-	 */
-	template<typename L> void forEdgesWithAttribute_double(int attrId, L handle) const;
-
 	/* NEIGHBORHOOD ITERATORS */
 
 	/**
