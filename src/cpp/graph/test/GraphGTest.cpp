@@ -1610,19 +1610,22 @@ TEST_P(GraphGTest, testEdgeIndexGenerationUndirected) {
 	});
 
 	//Add some more edges. This will likely destroy consecutiveness...
-	//G.addEdge(3, 4);
-	//G.addEdge(7, 8);
+	G.addEdge(3, 4);
+	G.addEdge(7, 8);
+	EXPECT_EQ(6, G.edgeId(7, 8));
+	EXPECT_EQ(7, G.upperEdgeIdBound());
 
 	//Anyway, heck uniqueness and validity of the edgeids
 	std::set<edgeid> ids;
 	edgeid upperEdgeIdBound = G.upperEdgeIdBound();
-	G.forEdges([&](node u, node v) {
-		edgeid id = G.edgeId(u, v);
-		EXPECT_LT(id, upperEdgeIdBound);
 
-		EXPECT_NE(none, id);
-		EXPECT_FALSE(ids.erase(id));
-		ids.insert(id);
+	G.forEdges([&](node u, node v) {
+		edgeid myId = G.edgeId(u, v);
+		EXPECT_LT(myId, upperEdgeIdBound);
+
+		EXPECT_NE(none, myId);
+		EXPECT_FALSE(ids.erase(myId));
+		ids.insert(myId);
 	});
 }
 
