@@ -225,7 +225,7 @@ void Graph::indexEdges() {
 					outEdgeIds[v][j] = id;
 				} else {
 					// assign in-edge id
-					index k = indexInInEdgeArray(u, v);
+					index k = indexInInEdgeArray(v, u);
 					inEdgeIds[v][k] = id;
 				}
 
@@ -452,7 +452,7 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 		}
 
 		if (edgesIndexed) {
-			outEdgeIds[v].push_back(id);
+			outEdgeIds[v].push_back(omega - 1);
 		}
 	}
 }
