@@ -29,6 +29,7 @@ TEST_F(EdmondsKarpGTest, tryEdmondsKarpP1) {
 	edgeweight maxFlow = edKa.run(G, 0, 6, sourceSet, id);
 	EXPECT_EQ(2, maxFlow) << "max flow is not correct";
 	// FIXME: update to new edge attribute system
+	EXPECT_TRUE(false) << "update to new edge attribute system";
 	// EXPECT_EQ(1, G.attribute_double(4,6,id));
 	// EXPECT_EQ(1, G.attribute_double(5,6,id));
 
