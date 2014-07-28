@@ -225,7 +225,7 @@ void Graph::indexEdges() {
 					outEdgeIds[v][j] = id;
 				} else {
 					// assign in-edge id
-					index k = indexInInEdgeArray(u, v);
+					index k = indexInInEdgeArray(v, u);
 					inEdgeIds[v][k] = id;
 				}
 
