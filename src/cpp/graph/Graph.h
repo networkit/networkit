@@ -41,6 +41,7 @@ private:
 	count n; //!< current number of nodes
 	count m; //!< current number of edges
 	node z; //!< current upper bound of node ids, z will be the id of the next node
+	edgeid omega; 	//!< current upper bound of edge ids, will be the id of the next edge
 	count t; //!< current time step
 
 	bool weighted; //!< true if the graph is weighted, false otherwise
@@ -135,6 +136,12 @@ public:
 	* Get the id of the given edge.
 	*/
 	edgeid edgeId(node u, node v);
+
+	/**
+	* Get an upper bound for the edge ids in the graph.
+	* @return An upper bound for the edge ids.
+	*/
+	index upperEdgeIdBound() const { return omega; }
 
 
 	/** GRAPH INFORMATION **/

@@ -19,6 +19,7 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	n(n),
 	m(0),
 	z(n),
+	omega(0),
 	t(0),
 
 	weighted(weighted), // indicates whether the graph is weighted or not
@@ -214,11 +215,17 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
 /** EDGE IDS **/
 
 void Graph::indexEdges() {
-	edgeid nextId = 0;
 
 	outEdgeIds.resize(outEdges.size());
 	for (node u = 0; u < z; ++u) {
 		outEdgeIds[u].resize(outEdges[u].size(), none);
+	}
+
+	if (directed) {
+		inEdgeIds.resize(inEdges.size());
+		for (node u = 0; u < z; ++u) {
+			inEdgeIds[u].resize(inEdges[u].size(), none);
+		}
 	}
 
 	for (node u = 0; u < z; ++u) {
@@ -226,14 +233,16 @@ void Graph::indexEdges() {
 			node v = outEdges[u][i];
 			if (outEdgeIds[u][i] == none) {
 				// new id
-				edgeid id = nextId++;
+				edgeid id = omega++;
 				outEdgeIds[u][i] = id;
-				// for undirected graphs, set symmetric edge id
 				if (! directed) {
+					// for undirected graphs, set symmetric edge id
 					index j = indexInOutEdgeArray(v, u);
 					outEdgeIds[v][j] = id;
 				} else {
-					// TODO: set inEdgeIds
+					// assign in-edge id
+					index k = indexInInEdgeArray(u, v);
+					inEdgeIds[v][k] = id;
 				}
 
 			}
