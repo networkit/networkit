@@ -452,7 +452,7 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 		}
 
 		if (edgesIndexed) {
-			outEdgeIds[v].push_back(id);
+			outEdgeIds[v].push_back(omega - 1);
 		}
 	}
 }
