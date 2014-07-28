@@ -1604,6 +1604,30 @@ TEST_P(GraphGTest, testDFSfrom) {
 	}
 }
 
+TEST_P(GraphGTest, testEdgeIndexGeneration) {
+	Graph G = createGraph(10);
+	G.addEdge(2, 0);
+	G.addEdge(2, 1);
+	G.addEdge(2, 2);
+	G.addEdge(5, 6);
+
+	//Generate edge ids initially
+	G.indexEdges();
+
+	//Add some more edges
+	//G.addEdge(3, 4);
+	//G.addEdge(7, 8);
+
+	//Make sure no edge ids have been assigned twice.
+	std::set<edgeid> ids;
+	G.forEdges([&](node u, node v) {
+		edgeid id = G.edgeId(u, v);
+		EXPECT_NE(none, id);
+		EXPECT_FALSE(ids.erase(id));
+		ids.insert(id);
+	});
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */

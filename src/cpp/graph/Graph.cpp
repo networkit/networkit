@@ -216,6 +216,7 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
 void Graph::indexEdges() {
 	edgeid nextId = 0;
 
+	outEdgeIds.resize(outEdges.size());
 	for (node u = 0; u < z; ++u) {
 		outEdgeIds[u].resize(outEdges[u].size(), none);
 	}
