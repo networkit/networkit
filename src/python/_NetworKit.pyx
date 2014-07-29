@@ -421,7 +421,7 @@ cdef class Graph:
 
 cdef extern from "../cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS(_Graph G, node source) except +
+		_BFS(_Graph G, node source, bool storePaths) except +
 		void run() except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
@@ -429,7 +429,7 @@ cdef extern from "../cpp/graph/BFS.h":
 cdef class BFS:
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source)
+	BFS(G, source, [storePaths])
 
 	Create BFS for `G` and source node `source`.
 
@@ -439,12 +439,14 @@ cdef class BFS:
 		The graph.
 	source : node
 		The source node of the breadth-first search.
+	storePaths : bool
+		store paths and number of paths?
 
 	"""
 	cdef _BFS* _this
 
-	def __cinit__(self, Graph G, source):
-		self._this = new _BFS(dereference(G._this), source)
+	def __cinit__(self, Graph G, source, storePaths=True):
+		self._this = new _BFS(dereference(G._this), source, storePaths)
 
 	def run(self):
 		"""

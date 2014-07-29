@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-BFS::BFS(const Graph& G, node source) : SSSP(G, source) {
+BFS::BFS(const Graph& G, node source, bool storePaths) : SSSP(G, source, storePaths) {
 }
 
 
@@ -19,16 +19,18 @@ void BFS::run() {
 	count z = G.upperNodeIdBound();
 	distances.clear();
 	distances.resize(z, infDist);
-	previous.clear();
-	previous.resize(z);
-	npaths.clear();
-	npaths.resize(z, 0);
+
+	if (storePaths) {
+		previous.clear();
+		previous.resize(z);
+		npaths.clear();
+		npaths.resize(z, 0);
+		npaths[source] = 1;
+	}
 
 	std::queue<node> q;
-
-	distances[source] = 0;
-	npaths[source] = 1;
 	q.push(source);
+	distances[source] = 0;
 
 	while (! q.empty()) {
 		node u = q.front();
@@ -42,10 +44,12 @@ void BFS::run() {
 
 			if (distances[v] == infDist) {
 				q.push(v);
-				previous[v] = {u};
 				distances[v] = distances[u] + 1;
-				npaths[v] = npaths[u];
-			} else if (distances[v] == distances[u] + 1) {
+				if (storePaths) {
+					previous[v] = {u};
+					npaths[v] = npaths[u];
+				}
+			} else if (storePaths && (distances[v] == distances[u] + 1)) {
 				previous[v].push_back(u); 	// additional predecessor
 				npaths[v] += npaths[u]; 	// all the shortest paths to u are also shortest paths to v now
 			}

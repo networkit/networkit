@@ -24,8 +24,9 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param source The source node of the breadth-first search.
+	 * @param storePaths	store paths and number of paths?
 	 */
-	BFS(const Graph& G, node source);
+	BFS(const Graph& G, node source, bool storePaths=true);
 
 	/**
 	 * Breadth-first search from @a source.

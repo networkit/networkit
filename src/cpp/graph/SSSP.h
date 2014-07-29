@@ -28,7 +28,7 @@ public:
 	 * @param G The graph.
 	 * @param s The source node.
 	 */
-	SSSP(const Graph& G, node s);
+	SSSP(const Graph& G, node s, bool storePaths=true);
 
 	/** Default destructor */
 	virtual ~SSSP() = default;
@@ -90,6 +90,8 @@ protected:
 	std::vector<edgeweight> distances;
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<count> npaths;
+
+	bool storePaths;		//!< if true, paths are reconstructable and the number of paths is stored
 };
 
 } /* namespace NetworKit */
