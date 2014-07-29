@@ -29,9 +29,6 @@ public:
 	 */
 	DynDijkstra2(const Graph& G, node s);
 
-	/** Default destructor */
-	virtual ~DynDijkstra2() = default;
-
 	/** Updates the distances after an event.*/
 	void update(const std::vector<GraphEvent>& batch) override;
 
