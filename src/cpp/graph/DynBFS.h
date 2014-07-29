@@ -29,9 +29,6 @@ public:
 	 */
 	DynBFS(const Graph& G, node s);
 
-	/** Default destructor */
-	virtual ~DynBFS() = default;
-
 	void init();
 
 	/** Updates the distances after an event.*/
