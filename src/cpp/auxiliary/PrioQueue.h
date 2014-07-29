@@ -46,7 +46,13 @@ public:
 	 */
 	PrioQueue(std::vector<Key>& keys);
 
-	virtual ~PrioQueue() {}
+	/**
+	* Builds priority queue of the specified size @a len.
+	*/
+	PrioQueue(uint64_t len);
+
+
+	virtual ~PrioQueue() = default;
 
 	/**
 	 * Inserts key-value pair stored in @a elem.
@@ -98,7 +104,6 @@ public:
 
 } /* namespace Aux */
 
-
 template<class Key, class Val>
 Aux::PrioQueue<Key, Val>::PrioQueue(const std::vector<ElemType>& elems) {
 	mapValToKey.resize(elems.size());
@@ -115,6 +120,11 @@ Aux::PrioQueue<Key, Val>::PrioQueue(std::vector<Key>& keys) {
 		insert(key, index);
 		++index;
 	}
+}
+
+template<class Key, class Val>
+Aux::PrioQueue<Key, Val>::PrioQueue(uint64_t len) {
+	mapValToKey.resize(len);
 }
 
 template<class Key, class Val>

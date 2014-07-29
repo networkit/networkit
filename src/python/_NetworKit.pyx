@@ -466,7 +466,7 @@ cdef class Graph:
 
 cdef extern from "../cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS(_Graph G, node source) except +
+		_BFS(_Graph G, node source, bool storePaths) except +
 		void run() except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
@@ -474,7 +474,7 @@ cdef extern from "../cpp/graph/BFS.h":
 cdef class BFS:
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source)
+	BFS(G, source, [storePaths])
 
 	Create BFS for `G` and source node `source`.
 
@@ -484,12 +484,22 @@ cdef class BFS:
 		The graph.
 	source : node
 		The source node of the breadth-first search.
+<<<<<<< local
+	storePaths : bool
+		store paths and number of paths?
+=======
+>>>>>>> other
 
 	"""
 	cdef _BFS* _this
 
+<<<<<<< local
+	def __cinit__(self, Graph G, source, storePaths=True):
+		self._this = new _BFS(dereference(G._this), source, storePaths)
+=======
 	def __cinit__(self, Graph G, source):
 		self._this = new _BFS(dereference(G._this), source)
+>>>>>>> other
 
 	def run(self):
 		"""
@@ -531,9 +541,90 @@ cdef class BFS:
 		return self._this.getPath(t)
 
 
+cdef extern from "../cpp/graph/DynBFS.h":
+	cdef cppclass _DynBFS "NetworKit::DynBFS":
+		_DynBFS(_Graph G, node source) except +
+		void init() except +
+		vector[edgeweight] getDistances() except +
+		vector[node] getPath(node t) except +
+		void update(vector[_GraphEvent]) except +
+
+cdef class DynBFS:
+	""" Dynamic version of BFS.
+
+	DynBFS(G, source)
+
+	Create DynBFS for `G` and source node `source`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	source : node
+		The source node of the breadth-first search.
+
+	"""
+	cdef _DynBFS* _this
+
+	def __cinit__(self, Graph G, source):
+		self._this = new _DynBFS(dereference(G._this), source)
+
+	def init(self):
+		"""
+		Breadth-first search from source.
+
+		Returns
+		-------
+		vector
+			Vector of unweighted distances from source node, i.e. the
+			length (number of edges) of the shortest path from source to any other node.
+		"""
+		self._this.init()
+
+	def getDistances(self):
+		"""
+		Returns a vector of weighted distances from the source node, i.e. the
+			length of the shortest path from the source node to any other node.
+
+			Returns
+			-------
+			vector
+				The weighted distances from the source node to any other node in the graph.
+		"""
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+
+		Returns
+		-------
+		vector
+			A shortest path from source to `t or an empty path.
+		"""
+		return self._this.getPath(t)
+
+	def update(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.update(_batch)
+
+
+
 cdef extern from "../cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-		_Dijkstra(_Graph G, node source) except +
+		_Dijkstra(_Graph G, node source, bool storePaths) except +
 		void run() except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
@@ -543,7 +634,7 @@ cdef class Dijkstra:
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source)
+    Dijkstra(G, source, [storePaths])
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -553,11 +644,18 @@ cdef class Dijkstra:
 		The graph.
 	source : node
 		The source node.
+	storePaths : bool
+		store paths and number of paths?
     """
 	cdef _Dijkstra* _this
 
+<<<<<<< local
+	def __cinit__(self, Graph G, source, storePaths=True):
+		self._this = new _Dijkstra(dereference(G._this), source, storePaths)
+=======
 	def __cinit__(self, Graph G, source):
 		self._this = new _Dijkstra(dereference(G._this), source)
+>>>>>>> other
 
 	def run(self):
 		""" Performs the Dijkstra SSSP algorithm on the graph given in the constructor. """
@@ -588,6 +686,86 @@ cdef class Dijkstra:
 			A shortest path from source to `t or an empty path.
 		"""
 		return self._this.getPath(t)
+
+
+cdef extern from "../cpp/graph/DynDijkstra.h":
+	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra":
+		_DynDijkstra(_Graph G, node source) except +
+		void run() except +
+		vector[edgeweight] getDistances() except +
+		vector[node] getPath(node t) except +
+		void update(vector[_GraphEvent]) except +
+
+cdef class DynDijkstra:
+	""" Dynamic version of Dijkstra.
+
+	DynDijkstra(G, source)
+
+	Create DynDijkstra for `G` and source node `source`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	source : node
+		The source node of the breadth-first search.
+
+	"""
+	cdef _DynDijkstra* _this
+
+	def __cinit__(self, Graph G, source):
+		self._this = new _DynDijkstra(dereference(G._this), source)
+
+	def init(self):
+		"""
+		SSSP search from source.
+
+		Returns
+		-------
+		vector
+			Vector of distances from source node, i.e. the length of the
+			shortest path from source to any other node.
+		"""
+		self._this.run()
+
+	def getDistances(self):
+		"""
+		Returns a vector of weighted distances from the source node, i.e. the
+			length of the shortest path from the source node to any other node.
+
+		Returns
+		-------
+		vector
+			The weighted distances from the source node to any other node in the graph.
+		"""
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+
+		Returns
+		-------
+		vector
+			A shortest path from source to `t or an empty path.
+		"""
+		return self._this.getPath(t)
+
+	def update(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.update(_batch)
 
 
 cdef extern from "../cpp/graph/Subgraph.h":
@@ -3159,7 +3337,7 @@ cdef class DegreeCentrality:
 # Module: dynamic
 
 cdef extern from "../cpp/dynamics/GraphEvent.h":
-	enum _Type "NetworKit::GraphEvent::Type":
+	enum _GraphEventType "NetworKit::GraphEvent::Type":
 		NODE_ADDITION,
 		NODE_REMOVAL,
 		EDGE_ADDITION,
@@ -3171,13 +3349,20 @@ cdef extern from "../cpp/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
 		node u, v
 		edgeweight w
-		_Type type
+		_GraphEventType type
 		_GraphEvent() except +
-		_GraphEvent(_Type type, node u, node v, edgeweight w) except +
+		_GraphEvent(_GraphEventType type, node u, node v, edgeweight w) except +
 		string toString() except +
 
 cdef class GraphEvent:
 	cdef _GraphEvent _this
+
+	NODE_ADDITION = 0
+	NODE_REMOVAL = 1
+	EDGE_ADDITION = 2
+	EDGE_REMOVAL = 3
+	EDGE_WEIGHT_UPDATE = 4
+	TIME_STEP = 5
 
 	property type:
 		def __get__(self):
