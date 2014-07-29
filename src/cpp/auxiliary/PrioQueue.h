@@ -97,7 +97,7 @@ public:
 	virtual void print() {
 		DEBUG("num entries: ", mapValToKey.size());
 		for (uint64_t i = 0; i < mapValToKey.size(); ++i) {
-			std::cout << "key: " << mapValToKey[i] << ", val: " << i << std::endl;
+			DEBUG("key: ", mapValToKey[i], ", val: ", i, "\n");
 		}
 	}
 };
