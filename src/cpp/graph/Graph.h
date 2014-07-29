@@ -80,48 +80,97 @@ private:
 	 */
 	index indexInOutEdgeArray(node u, node v) const;
 
+	/*
+	 * In the following definition, Aux::FunctionTraits is used in order to only execute lambda functions
+	 * with the appropriate parameters. The decltype-return type is used for determining the return type of
+	 * the lambda (needed for summation) but also determines if the lambda accepts the correct number of parameters.
+	 * Otherwise the return type declaration fails and the function is excluded from overload resoluation.
+	 * Then there are multiple possible lambdas with three (third parameter id or weight) and two (second parameter
+	 * can be second node id or edge weight for neighbor iterators). This is checked using Aux::FunctionTraits and
+	 * std::enable_if. std::enable_if only defines the type member when the given bool is true, this bool comes from
+	 * std::is_same which compares two types. The function traits give either the parameter type or if it is out of bounds
+	 * they define type as void.
+	 */
+
+	template<bool s>
+	struct lambda_error {
+			static_assert(s, "Your lambda does not support the required parameters or accepts more than 3 parameters.");
+	};
+
+	/**
+	 * Triggers a static assert error when no other method is chosen. Because of the use of "..." as arguments, the priority
+	 * of this method is lower than the priority of the other methods. This method avoids ugly and unreadable template substitution
+	 * error messages from the other declarations.
+	 */
+	template<class F, bool InEdges = false, void* = nullptr>
+	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, ...) const {
+		lambda_error<false> e; // trigger a static assert. Cannot use static assert directly as this will trigger too often.
+		(void)e; // avoid unused variable warning
+		return std::declval<typename Aux::FunctionTraits<F>::result_type>(); // use the correct return type (this won't compile)
+	}
+
 	/**
 	 * Calls the given function f if its third argument is of the type edgeid, discards the edge weight
+	 * Note that the decltype check is not enough as edgeweight can be casted to node.
 	 */
-	template<class F, bool InEdges = false>
+	template<class F, bool InEdges = false,
+			 typename std::enable_if<std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value>::type* = nullptr>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, id)) {
-		if (std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value) {
-			return f(u, v, id);
-		} else {
-			assert((std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type >::value));
-			return f(u, v, ew);
-		}
+		return f(u, v, id);
 	}
 
 	/**
-	 * Calls the given function f if it has only two arguments, discards edge weight and id
+	 * Calls the given function f if its third argument is of type edgeweight, discards the edge id
+	 * Note that the decltype check is not enough as node can be casted to edgeweight.
 	 */
-	template<class F, bool InEdges = false>
+	template<class F, bool InEdges = false,
+			 typename std::enable_if<std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value>::type* = nullptr>
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, ew)) {
+		return f(u, v, ew);
+	}
+
+
+	/**
+	 * Calls the given function f if it has only two arguments and the second argument is of type node,
+	 * discards edge weight and id
+	 * Note that the decltype check is not enough as edgeweight can be casted to node.
+	 */
+	template<class F, bool InEdges = false,
+			 typename std::enable_if<std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value>::type* = nullptr>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v)) {
-		if (std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value) {
 			return f(u, v);
-		} else {
-			assert((std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<1>::type>::value));
-			if (InEdges) {
-				return f(u, ew);
-			} else {
-				return f(v, ew);
-			}
-
-		}
 	}
 
 	/**
-	 * Calls the given function f if it has only one argument, discards the first node id, edge weight and id
+	 * Calls the given function f if it has only two arguments and the second argument is of type edgeweight,
+	 * discards the first (or second if InEdges is true) node and the edge id
+	 * Note that the decltype check is not enough as edgeweight can be casted to node.
 	 */
-	template<class F, bool InEdges = false>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u)) {
+	template<class F, bool InEdges = false,
+			 typename std::enable_if<std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<1>::type>::value>::type* = nullptr>
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, ew)) {
+		if (InEdges) {
+			return f(u, ew);
+		} else {
+			return f(v, ew);
+		}
+	}
+
+
+	/**
+	 * Calls the given function f if it has only one argument, discards the first (or second if InEdges is true)
+	 * node id, the edge weight and the edge id
+	 */
+	template<class F, bool InEdges = false,
+			 void* = nullptr>
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(v)) {
 		if (InEdges) {
 			return f(u);
 		} else {
 			return f(v);
 		}
 	}
+
 
 
 public:
@@ -926,7 +975,7 @@ void Graph::forInEdgesOf(node u, L handle) const {
 				node v = inEdges[u][i];
 				if (v != none) {
 					edgeweight ew = inEdgeWeights[u][i];
-					edgeLambda<L, true>(handle, v, u, ew, 0);
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
 				}
 			}
 		} else {
@@ -934,7 +983,7 @@ void Graph::forInEdgesOf(node u, L handle) const {
 				node v = inEdges[u][i];
 				if (v != none) {
 					edgeweight ew = defaultEdgeWeight;
-					edgeLambda<L, true>(handle, v, u, ew, 0);
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
 
 				}
 			}
@@ -948,7 +997,7 @@ void Graph::forInEdgesOf(node u, L handle) const {
 				node v = outEdges[u][i];
 				if (v != none) {
 					edgeweight ew = outEdgeWeights[u][i];
-					edgeLambda<L, true>(handle, v, u, ew, 0);
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
 
 				}
 			}
@@ -957,7 +1006,7 @@ void Graph::forInEdgesOf(node u, L handle) const {
 				node v = outEdges[u][i];
 				if (v != none) {
 					edgeweight ew = defaultEdgeWeight;
-					edgeLambda<L, true>(handle, v, u, ew, 0);
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
 				}
 			}
 		}
