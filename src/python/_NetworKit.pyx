@@ -466,7 +466,7 @@ cdef class Graph:
 
 cdef extern from "../cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS(_Graph G, node source, bool storePaths) except +
+		_BFS(_Graph G, node source, bool storePaths, bool storeStack) except +
 		void run() except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
@@ -474,7 +474,7 @@ cdef extern from "../cpp/graph/BFS.h":
 cdef class BFS:
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source, [storePaths])
+	BFS(G, source, [storePaths], [storeStack])
 
 	Create BFS for `G` and source node `source`.
 
@@ -484,22 +484,15 @@ cdef class BFS:
 		The graph.
 	source : node
 		The source node of the breadth-first search.
-<<<<<<< local
 	storePaths : bool
 		store paths and number of paths?
-=======
->>>>>>> other
 
 	"""
 	cdef _BFS* _this
 
-<<<<<<< local
-	def __cinit__(self, Graph G, source, storePaths=True):
-		self._this = new _BFS(dereference(G._this), source, storePaths)
-=======
-	def __cinit__(self, Graph G, source):
-		self._this = new _BFS(dereference(G._this), source)
->>>>>>> other
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._this = new _BFS(dereference(G._this), source, storePaths, storeStack)
+
 
 	def run(self):
 		"""
@@ -562,7 +555,8 @@ cdef class DynBFS:
 		The graph.
 	source : node
 		The source node of the breadth-first search.
-
+	storeStack : bool
+		maintain a stack of nodes in order of decreasing distance?
 	"""
 	cdef _DynBFS* _this
 
@@ -624,7 +618,7 @@ cdef class DynBFS:
 
 cdef extern from "../cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-		_Dijkstra(_Graph G, node source, bool storePaths) except +
+		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack) except +
 		void run() except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
@@ -634,7 +628,7 @@ cdef class Dijkstra:
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source, [storePaths])
+    Dijkstra(G, source, [storePaths], [storeStack])
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -646,16 +640,14 @@ cdef class Dijkstra:
 		The source node.
 	storePaths : bool
 		store paths and number of paths?
+	storeStack : bool
+		maintain a stack of nodes in order of decreasing distance?
     """
 	cdef _Dijkstra* _this
 
-<<<<<<< local
-	def __cinit__(self, Graph G, source, storePaths=True):
-		self._this = new _Dijkstra(dereference(G._this), source, storePaths)
-=======
-	def __cinit__(self, Graph G, source):
-		self._this = new _Dijkstra(dereference(G._this), source)
->>>>>>> other
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._this = new _Dijkstra(dereference(G._this), source, storePaths, storeStack)
+
 
 	def run(self):
 		""" Performs the Dijkstra SSSP algorithm on the graph given in the constructor. """

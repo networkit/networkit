@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-BFS::BFS(const Graph& G, node source, bool storePaths) : SSSP(G, source, storePaths) {
+BFS::BFS(const Graph& G, node source, bool storePaths, bool storeStack) : SSSP(G, source, storePaths, storeStack) {
 }
 
 
@@ -28,6 +28,11 @@ void BFS::run() {
 		npaths[source] = 1;
 	}
 
+	if (storeStack) {
+		std::stack<node> empty;
+		std::swap(stack, empty);
+	}
+
 	std::queue<node> q;
 	q.push(source);
 	distances[source] = 0;
@@ -35,6 +40,10 @@ void BFS::run() {
 	while (! q.empty()) {
 		node u = q.front();
 		q.pop();
+
+		if (storeStack) {
+			stack.push(u);
+		}
 		// TRACE("current node in BFS: " , u);
 //		TRACE(distances);
 

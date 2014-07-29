@@ -9,6 +9,7 @@
 #define SSSP_H_
 
 #include <set>
+#include <stack>
 
 #include "Graph.h"
 
@@ -28,10 +29,7 @@ public:
 	 * @param G The graph.
 	 * @param s The source node.
 	 */
-	SSSP(const Graph& G, node s, bool storePaths=true);
-
-	/** Default destructor */
-	virtual ~SSSP() = default;
+	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false);
 
 	/** Computes the shortest paths from the source to all other nodes. */
 	virtual void run() = 0;
@@ -83,6 +81,14 @@ public:
 	 */
 	virtual std::set<std::vector<node> > getPaths(node t, bool forward=true) const;
 
+
+	/**
+	* Returns a stack of nodes ordered in decreasing distance from the source
+	*
+	* @return stack of nodes
+	*/
+	virtual std::stack<node> getStack() const;
+
 protected:
 
 	const Graph& G;
@@ -91,7 +97,10 @@ protected:
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<count> npaths;
 
+	std::stack<node> stack;
+
 	bool storePaths;		//!< if true, paths are reconstructable and the number of paths is stored
+	bool storeStack;		//!< if true, store a stack of nodes ordered in decreasing distance from the source
 };
 
 inline edgeweight SSSP::distance(node t) const {

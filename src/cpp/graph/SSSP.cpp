@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-SSSP::SSSP(const Graph& G, node s, bool storePaths) : G(G), source(s), storePaths(storePaths) {
+SSSP::SSSP(const Graph& G, node s, bool storePaths, bool storeStack) : G(G), source(s), storePaths(storePaths), storeStack(storeStack) {
 
 }
 
@@ -74,6 +74,11 @@ std::set<std::vector<node> > SSSP::getPaths(node t, bool forward) const {
 		}
 	}
 	return thePaths;
+}
+
+
+std::stack<node> SSSP::getStack() const {
+	return stack;
 }
 
 } /* namespace NetworKit */

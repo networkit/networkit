@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-Dijkstra::Dijkstra(const Graph& G, node source, bool storePaths) : SSSP(G, source, storePaths) {
+Dijkstra::Dijkstra(const Graph& G, node source, bool storePaths, bool storeStack) : SSSP(G, source, storePaths, storeStack) {
 
 }
 
@@ -31,6 +31,11 @@ void Dijkstra::run() {
 		npaths.clear();
 		npaths.resize(G.upperNodeIdBound(), 0);
 		npaths[source] = 1;
+	}
+
+	if (storeStack) {
+		std::stack<node> empty;
+		std::swap(stack, empty);
 	}
 
 	// priority queue with distance-node pairs
@@ -61,6 +66,10 @@ void Dijkstra::run() {
 		node current = pq.extractMin().second;
 //		DEBUG("pq size: ", pq.size());
 //		TRACE("current node in Dijkstra: " , current);
+
+		if (storeStack) {
+			stack.push(current);
+		}
 
 		G.forWeightedEdgesOf(current, relax);
 	}
