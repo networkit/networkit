@@ -189,27 +189,32 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 	ConnectedComponents cc(G);
 	DEBUG("finding connected components");
 	cc.run();
-	if (cc.numberOfComponents() > 1) {
-		DEBUG("estimating for each component in parallel");
-		std::vector<std::set<node> > components;
-		for (auto component : cc.getPartition().getSubsets()) {
-			components.push_back(component);
-		}
-		DEBUG("gathered components");
-		std::vector<count> vds;
-		#pragma omp parallel for
-		for (index i = 0; i < components.size(); ++i) {
-			count vd = estimateFrom(*components[i].begin()); // take any node from the component and perform bfs from there
-			DEBUG("checking component ", i);
-			#pragma omp critical
-			vds.push_back(vd);
-		}
+	if (!G.isWeighted()) {
+		if (cc.numberOfComponents() > 1) {
+			DEBUG("estimating for each component in parallel");
+			std::vector<std::set<node> > components;
+			for (auto component : cc.getPartition().getSubsets()) {
+				components.push_back(component);
+			}
+			DEBUG("gathered components");
+			std::vector<count> vds;
+			#pragma omp parallel for
+			for (index i = 0; i < components.size(); ++i) {
+				count vd = estimateFrom(*components[i].begin()); // take any node from the component and perform bfs from there
+				DEBUG("checking component ", i);
+				#pragma omp critical
+				vds.push_back(vd);
+			}
 
-		count vdMax = *std::max_element(vds.begin(), vds.end());
-		return vdMax;
+			count vdMax = *std::max_element(vds.begin(), vds.end());
+			return vdMax;
 
+		} else {
+			return estimateFrom(G.randomNode());
+		}
 	} else {
-		return estimateFrom(G.randomNode());
+		count largest_comp_size = cc.getComponentSizes()[1];
+		return largest_comp_size;
 	}
 
 }

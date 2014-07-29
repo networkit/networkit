@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-Dijkstra::Dijkstra(const Graph& G, node source) : SSSP(G, source) {
+Dijkstra::Dijkstra(const Graph& G, node source, bool storePaths) : SSSP(G, source, storePaths) {
 
 }
 
@@ -25,24 +25,29 @@ void Dijkstra::run() {
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	distances.clear();
 	distances.resize(G.upperNodeIdBound(), infDist);
-	previous.clear();
-	previous.resize(G.upperNodeIdBound()); 
-	distances[source] = 0;
-	npaths.clear();
-	npaths.resize(G.upperNodeIdBound(), 0);
-	npaths[source] = 1;
+	if (storePaths) {
+		previous.clear();
+		previous.resize(G.upperNodeIdBound());
+		npaths.clear();
+		npaths.resize(G.upperNodeIdBound(), 0);
+		npaths[source] = 1;
+	}
 
 	// priority queue with distance-node pairs
 	Aux::PrioQueue<edgeweight, node> pq(distances);
+
+	distances[source] = 0;
 
 
 	auto relax([&](node u, node v, edgeweight w) {
 		if (distances[v] > distances[u] + w) {
 			distances[v] = distances[u] + w;
-			previous[v] = {u}; // new predecessor on shortest path
-			npaths[v] = npaths[u];
+			if (storePaths) {
+				previous[v] = {u}; // new predecessor on shortest path
+				npaths[v] = npaths[u];
+			}
 			pq.decreaseKey(distances[v], v);
-		} else if (distances[v] == distances[u] + w) {
+		} else if (storePaths && (distances[v] == distances[u] + w)) {
 			previous[v].push_back(u); 	// additional predecessor
 			npaths[v] += npaths[u]; 	// all the shortest paths to u are also shortest paths to v now
 		}
