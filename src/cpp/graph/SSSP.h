@@ -9,12 +9,12 @@
 #define SSSP_H_
 
 #include <set>
- 
+
 #include "Graph.h"
 
 namespace NetworKit {
 
-/** 
+/**
  * @ingroup graph
  * Abstract base class for single-source shortest path algorithms.
  */
@@ -28,10 +28,10 @@ public:
 	 * @param G The graph.
 	 * @param s The source node.
 	 */
-	SSSP(const Graph& G, node s);
+	SSSP(const Graph& G, node s, bool storePaths=true);
 
 	/** Default destructor */
-	virtual ~SSSP() = default;	
+	virtual ~SSSP() = default;
 
 	/** Computes the shortest paths from the source to all other nodes. */
 	virtual void run() = 0;
@@ -90,6 +90,8 @@ protected:
 	std::vector<edgeweight> distances;
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<count> npaths;
+
+	bool storePaths;		//!< if true, paths are reconstructable and the number of paths is stored
 };
 
 inline edgeweight SSSP::distance(node t) const {
