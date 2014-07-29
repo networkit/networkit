@@ -6,7 +6,6 @@
  */
 
 #include <queue>
-
 #include "BFS.h"
 
 namespace NetworKit {

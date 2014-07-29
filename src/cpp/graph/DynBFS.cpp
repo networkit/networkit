@@ -13,12 +13,20 @@
 namespace NetworKit {
 
 DynBFS::DynBFS(const Graph& G, node s) : BFS(G, s), color(G.upperNodeIdBound(), WHITE) {
+}
 
+void DynBFS::init() {
+	run();
+	maxDistance = 0;
+	G.forNodes([&] (node n){
+		if (distances[n] > maxDistance)
+			maxDistance = distances[n];
+	});
+	maxDistance++;
 }
 
 void DynBFS::update(const std::vector<GraphEvent>& batch) {
-	count maxLevels=G.upperNodeIdBound(); // TODO: find out
-	std::vector<std::queue<node> > queues(maxLevels);
+	std::vector<std::queue<node> > queues(maxDistance);
 
 	// insert nodes from the batch whose distance has changed (affected nodes) into the queues
 	for (GraphEvent edge : batch) {
@@ -34,7 +42,7 @@ void DynBFS::update(const std::vector<GraphEvent>& batch) {
 	// extract nodes from the queues and scan incident edges
 	std::queue<node> visited;
 	count m = 1;
-	while (m < maxLevels) {
+	while (m < maxDistance) {
 		DEBUG("m = ", m);
 		while (!queues[m].empty()) {
 			node w = queues[m].front();

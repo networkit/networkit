@@ -32,11 +32,14 @@ public:
 	/** Default destructor */
 	virtual ~DynBFS() = default;
 
-		/** Updates the distances after an event.*/
-		void update(const std::vector<GraphEvent>& batch) override;
+	void init();
+
+	/** Updates the distances after an event.*/
+	void update(const std::vector<GraphEvent>& batch) override;
 
 protected:
 	std::vector<Color> color;
+	count maxDistance;
 
 };
 
