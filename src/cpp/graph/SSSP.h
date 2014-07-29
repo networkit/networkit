@@ -99,10 +99,16 @@ inline edgeweight SSSP::distance(node t) const {
 }
 
 inline count SSSP::numberOfPaths(node t) const {
+	if (! storePaths) {
+		throw std::runtime_error("number of paths have not been stored");
+	}
 	return npaths[t];
 }
 
 inline std::vector<node> SSSP::getPredecessors(node t) const {
+	if (! storePaths) {
+		throw std::runtime_error("predecessors have not been stored");
+	}
 	return previous[t];
 }
 
