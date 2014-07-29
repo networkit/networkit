@@ -571,7 +571,7 @@ cdef class DynBFS:
 
 cdef extern from "../cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-		_Dijkstra(_Graph G, node source) except +
+		_Dijkstra(_Graph G, node source, bool storePaths) except +
 		void run() except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
@@ -581,7 +581,7 @@ cdef class Dijkstra:
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source)
+    Dijkstra(G, source, [storePaths])
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -591,11 +591,13 @@ cdef class Dijkstra:
 		The graph.
 	source : node
 		The source node.
+	storePaths : bool
+		store paths and number of paths?
     """
 	cdef _Dijkstra* _this
 
-	def __cinit__(self, Graph G, source):
-		self._this = new _Dijkstra(dereference(G._this), source)
+	def __cinit__(self, Graph G, source, storePaths=True):
+		self._this = new _Dijkstra(dereference(G._this), source, storePaths)
 
 	def run(self):
 		""" Performs the Dijkstra SSSP algorithm on the graph given in the constructor. """
