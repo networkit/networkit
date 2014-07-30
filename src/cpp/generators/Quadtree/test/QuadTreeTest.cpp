@@ -139,6 +139,44 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	}
 }
 
+TEST_F(QuadTreeTest, testQuadTreeQuery) {
+	count n = 10000;
+	double R = acosh((double)n/(2*M_PI)+1);
+	vector<double> angles(n);
+	vector<double> radii(n);
+	vector<double> indices(n);
+	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	double max = 0;
+	for (index i = 0; i < n; i++) {
+		indices[i] = i;
+		if (radii[i] > max) {
+			max = radii[i];
+		}
+	}
+
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R));
+
+	for (index i = 0; i < n; i++) {
+		EXPECT_GE(angles[i], 0);
+		EXPECT_LT(angles[i], 2*M_PI);
+		EXPECT_GE(radii[i], 0);
+		EXPECT_LT(radii[i], R);
+		TRACE("Added (", angles[i], ",", radii[i], ")");
+		quad.addContent(i, angles[i], radii[i]);
+	}
+
+	for (index testindex = 0; testindex < 1000; testindex++) {
+		index query = Aux::Random::integer(n);
+		if (query == n) query--;
+		count lastNeighbours = 0;
+		for (double threshold = 0; threshold < R; threshold += 0.1) {
+			vector<index> neighbours = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), threshold);
+			EXPECT_GE(neighbours.size(), lastNeighbours);
+			lastNeighbours = neighbours.size();
+		}
+	}
+}
+
 TEST_F(QuadTreeTest, testQuadTreeDeletion) {
 	count n = 1000;
 	double R = acosh((double)n/(2*M_PI)+1);
