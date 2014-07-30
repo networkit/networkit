@@ -34,7 +34,7 @@ public:
 	/**
 	 * Performs the Dijkstra SSSP algorithm on the graph given in the constructor.
 	 */
-	virtual void run();
+	virtual void run(node t = none);
 
 	/**
 	 * Performs the Dijkstra SSSP algorithm search from @a source until @t target.

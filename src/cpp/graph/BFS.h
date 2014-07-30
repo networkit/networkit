@@ -34,7 +34,7 @@ public:
 	 * @return Vector of unweighted distances from node @a source, i.e. the
 	 * length (number of edges) of the shortest path from @a source to any other node.
 	 */
-	virtual void run();
+	virtual void run(node t = none);
 
 	/**
 	 * Breadth-first search from @a source.

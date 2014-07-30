@@ -18,7 +18,7 @@ Dijkstra::Dijkstra(const Graph& G, node source, bool storePaths, bool storeStack
 
 
 
-void Dijkstra::run() {
+void Dijkstra::run(node t) {
 
 	DEBUG("initializing Dijkstra data structures");
 	// init distances
@@ -58,7 +58,7 @@ void Dijkstra::run() {
 		}
 	});
 
-
+	bool breakWhenFound = (t != none);
 	DEBUG("traversing graph");
 	while (pq.size() > 0) {
 //		DEBUG("pq size: ", pq.size());
@@ -66,6 +66,9 @@ void Dijkstra::run() {
 		node current = pq.extractMin().second;
 //		DEBUG("pq size: ", pq.size());
 //		TRACE("current node in Dijkstra: " , current);
+		if (breakWhenFound && t == current) {
+			break;
+		}
 
 		if (storeStack) {
 			stack.push(current);
