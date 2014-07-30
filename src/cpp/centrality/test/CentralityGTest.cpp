@@ -12,6 +12,7 @@
 #include "../ApproxBetweenness2.h"
 #include "../EigenvectorCentrality.h"
 #include "../PageRank.h"
+#include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 
@@ -78,6 +79,53 @@ TEST_F(CentralityGTest, testBetweenness2Centrality) {
 	EXPECT_NEAR(3.0, bc[3], tol);
 	EXPECT_NEAR(3.0, bc[4], tol);
 	EXPECT_NEAR(1.0, bc[5], tol);
+}
+
+TEST_F(CentralityGTest, testDynBetweenness) {
+/* Graph:
+   0    3   6
+	\  / \ /
+	 2    5
+	/  \ / \
+   1    4   7
+*/
+	int n = 8;
+	Graph G(n);
+
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+	G.addEdge(5, 6);
+	G.addEdge(5, 7);
+
+	DynBetweenness dynbc = DynBetweenness(G);
+	Betweenness bc = Betweenness(G);
+	dynbc.run();
+	bc.run();
+	std::vector<double> dynbc_scores = dynbc.scores();
+	std::vector<double> bc_scores = bc.scores();
+
+	int i;
+	const double tol = 1e-6;
+	for(i=0; i<n; i++) {
+		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
+	}
+
+	// edge insertions
+	GraphEvent e(GraphEvent::EDGE_ADDITION, 0, 7, 1.0);
+	G.addEdge(e.u, e.v);
+	bc.run();
+	dynbc.update(e);
+
+	dynbc_scores = dynbc.scores();
+	bc_scores = bc.scores();
+	for(i=0; i<n; i++) {
+		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
+	}
+
 }
 
 
