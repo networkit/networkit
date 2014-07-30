@@ -14,6 +14,7 @@ Dy * GeneratorsTest.cpp
 #include "../DynamicPathGenerator.h"
 #include "../ForestFireGenerator.h"
 #include "../HyperbolicGenerator.h"
+#include "../DynamicHyperbolicGenerator.h"
 #include "../../properties/ClusteringCoefficient.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
@@ -183,6 +184,47 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 		TRACE("path: " , path);
 		psWriter.write(G, path);
 	}
+}
+
+TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
+	int nSteps = 1;
+	count n = 5;
+	double initialFactor = 0;
+	double factorGrowth = (double) (1 - initialFactor) / nSteps;
+
+	double stretch = 1;
+	double alpha = 1;
+	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	vector<double> angles(n, -1);
+	vector<double> radii(n, -1);
+	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	double rad_nom = (cosh(R)-1);
+	double rad_denom = (cosh(R)+1);
+	double r = sqrt(rad_nom/rad_denom);
+
+	DynamicHyperbolicGenerator dynGen(angles, radii, R, initialFactor, 0, factorGrowth, 0);
+
+	Graph G(n);
+	GraphUpdater gu(G);
+	std::vector<GraphEvent> stream;
+
+	for (int i = 0; i < nSteps; i++) {
+		stream = dynGen.generate(1);
+		for (auto event : stream) {
+			EXPECT_NE(event.type, GraphEvent::EDGE_REMOVAL);
+			EXPECT_TRUE(event.type == GraphEvent::EDGE_ADDITION || event.type == GraphEvent::TIME_STEP);
+			if (event.type == GraphEvent::EDGE_ADDITION) {
+				double distance = HyperbolicSpace::getHyperbolicDistance(angles[event.u], radii[event.u], angles[event.v], radii[event.v]);
+				EXPECT_GE(distance, (initialFactor+factorGrowth*i)*R);
+				EXPECT_LE(distance, (initialFactor+factorGrowth*(i+1))*R);
+			}
+		}
+		gu.update(stream);
+	}
+
+	Graph comparison = HyperbolicGenerator::generate(&angles, &radii, r, R);
+	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
+
 }
 
 
