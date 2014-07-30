@@ -289,6 +289,12 @@ public:
 		return result;
 	}
 
+	count height() {
+		count result = 1;//if leaf node, the children loop will not execute
+		for (auto child : children) result = std::max(result, child.height()+1);
+		return result;
+	}
+
 	double getLeftAngle() {
 		return leftAngle;
 	}

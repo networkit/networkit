@@ -51,6 +51,10 @@ public:
 	vector<double> getRadii(DynamicHyperbolicGenerator dynGen) {
 		return dynGen.radii;
 	}
+
+	count getQuadTreeHeight(DynamicHyperbolicGenerator dynGen) {
+		return dynGen.quadTreeHeight();
+	}
 };
 
 } /* namespace NetworKit */

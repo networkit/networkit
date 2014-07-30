@@ -119,6 +119,10 @@ public:
 		return root.size();
 	}
 
+	count height() {
+		return root.height();
+	}
+
 
 private:
 	QuadNode<T> root;
