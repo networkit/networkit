@@ -816,33 +816,6 @@ void Graph::parallelForNodePairs(L handle) const {
 
 /* EDGE ITERATORS */
 
-//Using lambda functions like in the following example would reduce the amount of code duplication here significantly.
-//Unfortunately, this brings some performance loss.. any better ideas?
-/*template<typename L>
-void Graph::forEdges(L handle) const {
-	std::function<bool(node, node)> lCond = [] (node u, node v) {return v != none; };
-	if (directed)
-		lCond = [] (node u, node v) {return u >= v;};
-
-	std::function<double(node, index)> lEdgeweight = [this] (node u, index i) { return defaultEdgeWeight; };
-	if (weighted)
-		lEdgeweight = [this] (node u, index i) { return outEdgeWeights[u][i]; };
-
-	std::function<edgeid(node, index)> lEdgeid = [this] (node u, index i) { return 0; };
-	if (edgesIndexed)
-		lEdgeid = [this] (node u, index i) { return outEdgeIds[u][i]; };
-
-	for (node u = 0; u < z; ++u) {
-		for (index i = 0; i < outEdges[u].size(); ++i) {
-			node v = outEdges[u][i];
-
-			if (lCond(u, v)) {
-				edgeLambda(handle, u, v, lEdgeweight(u, i) , lEdgeid(u, i));
-			}
-		}
-	}
-}*/
-
 template<typename L>
 void Graph::forEdges(L handle) const {
 	switch (weighted + 2 * directed + 4 * edgesIndexed) {
@@ -1087,22 +1060,45 @@ void Graph::forNeighborsOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forEdgesOf(node u, L handle) const {
-	if (weighted) {
-		for (index i = 0; i < outEdges[u].size(); i++) {
-			node v = outEdges[u][i];
-			if (v != none) {
-				edgeweight ew = outEdgeWeights[u][i];
-				edgeLambda(handle, u, v, ew, 0);
+	switch(weighted + 2 * edgesIndexed) {
+		case 0: //not weighted, no edge ids
+			for (index i = 0; i < outEdges[u].size(); i++) {
+				node v = outEdges[u][i];
+				if (v != none) {
+					edgeweight ew = defaultEdgeWeight;
+					edgeLambda(handle, u, v, ew, 0);
+				}
 			}
-		}
-	} else {
-		for (index i = 0; i < outEdges[u].size(); i++) {
-			node v = outEdges[u][i];
-			if (v != none) {
-				edgeweight ew = defaultEdgeWeight;
-				edgeLambda(handle, u, v, ew, 0);
+			break;
+		case 1:	//weighted, no edge ids
+			for (index i = 0; i < outEdges[u].size(); i++) {
+				node v = outEdges[u][i];
+				if (v != none) {
+					edgeweight ew = outEdgeWeights[u][i];
+					edgeLambda(handle, u, v, ew, 0);
+				}
 			}
-		}
+			break;
+		case 2: //not weighted, with edge ids
+			for (index i = 0; i < outEdges[u].size(); i++) {
+				node v = outEdges[u][i];
+				if (v != none) {
+					edgeweight ew = defaultEdgeWeight;
+					edgeid eid = outEdgeIds[u][i];
+					edgeLambda(handle, u, v, ew, eid);
+				}
+			}
+			break;
+		case 3:	//weighted, with edge ids
+			for (index i = 0; i < outEdges[u].size(); i++) {
+				node v = outEdges[u][i];
+				if (v != none) {
+					edgeweight ew = outEdgeWeights[u][i];
+					edgeid eid = outEdgeIds[u][i];
+					edgeLambda(handle, u, v, ew, eid);
+				}
+			}
+			break;
 	}
 }
 
