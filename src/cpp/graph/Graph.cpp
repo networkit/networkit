@@ -60,6 +60,7 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 	weighted(weighted),
 	directed(directed),
 	exists(G.exists),
+	edgesIndexed(false), //edges are not indexed by default
 
 	// let the following be empty for the start, we fill them later
 	inDeg(0),
