@@ -1109,30 +1109,17 @@ void Graph::forInNeighborsOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forInEdgesOf(node u, L handle) const {
-	if (directed) {
-		if (weighted) {
-			for (index i = 0; i < inEdges[u].size(); i++) {
-				node v = inEdges[u][i];
-				if (v != none) {
-					edgeweight ew = inEdgeWeights[u][i];
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
-				}
-			}
-		} else {
-			for (index i = 0; i < inEdges[u].size(); i++) {
-				node v = inEdges[u][i];
+	switch(weighted + 2 * directed + 4 * edgesIndexed) {
+		case 0: //unweighted, undirected, no edge ids
+			for (index i = 0; i < outEdges[u].size(); i++) {
+				node v = outEdges[u][i];
 				if (v != none) {
 					edgeweight ew = defaultEdgeWeight;
 					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
-
 				}
 			}
-		}
-	} else {
-		// use outEdges
-		// the following dose the same as calling forWeightedEdgesOf(u, [&handle](node u, node v, edgeweight ew) { handle(v,
-		// but I think it is better to write it out here
-		if (weighted) {
+			break;
+		case 1: //weighted, undirected, no edge ids
 			for (index i = 0; i < outEdges[u].size(); i++) {
 				node v = outEdges[u][i];
 				if (v != none) {
@@ -1141,15 +1128,68 @@ void Graph::forInEdgesOf(node u, L handle) const {
 
 				}
 			}
-		} else {
+			break;
+		case 2: //unweighted, directed, no edge ids
+			for (index i = 0; i < inEdges[u].size(); i++) {
+				node v = inEdges[u][i];
+				if (v != none) {
+					edgeweight ew = defaultEdgeWeight;
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
+
+				}
+			}
+			break;
+		case 3: //weighted, directed, no edge ids
+			for (index i = 0; i < inEdges[u].size(); i++) {
+				node v = inEdges[u][i];
+				if (v != none) {
+					edgeweight ew = inEdgeWeights[u][i];
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
+				}
+			}
+			break;
+		case 4: //unweighted, undirected, with edge ids
 			for (index i = 0; i < outEdges[u].size(); i++) {
 				node v = outEdges[u][i];
 				if (v != none) {
 					edgeweight ew = defaultEdgeWeight;
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
+					edgeid eid = outEdgeIds[u][i];
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, eid);
 				}
 			}
-		}
+			break;
+		case 5: //weighted, undirected, with edge ids
+			for (index i = 0; i < outEdges[u].size(); i++) {
+				node v = outEdges[u][i];
+				if (v != none) {
+					edgeweight ew = outEdgeWeights[u][i];
+					edgeid eid = outEdgeIds[u][i];
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, eid);
+
+				}
+			}
+			break;
+		case 6: //unweighted, directed, with edge ids
+			for (index i = 0; i < inEdges[u].size(); i++) {
+				node v = inEdges[u][i];
+				if (v != none) {
+					edgeweight ew = defaultEdgeWeight;
+					edgeid eid = outEdgeIds[u][i];
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, eid);
+
+				}
+			}
+			break;
+		case 7: //weighted, directed, with edge ids
+			for (index i = 0; i < inEdges[u].size(); i++) {
+				node v = inEdges[u][i];
+				if (v != none) {
+					edgeweight ew = inEdgeWeights[u][i];
+					edgeid eid = outEdgeIds[u][i];
+					edgeLambda<L, true, nullptr>(handle, v, u, ew, eid);
+				}
+			}
+			break;
 	}
 }
 
