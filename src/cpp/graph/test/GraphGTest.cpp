@@ -1669,6 +1669,7 @@ TEST_P(GraphGTest, testForEdgesWithIds) {
 		m = 0;
 		graph->parallelForEdges([&](node u, node v, edgeid eid) {
 	    	EXPECT_EQ(0, eid);
+			#pragma omp atomic
 	    	m++;
 		});
 		ASSERT_EQ(3u, m);
@@ -1689,6 +1690,7 @@ TEST_P(GraphGTest, testForEdgesWithIds) {
 	    graph->parallelForEdges([&](node u, node v, edgeid eid) {
 	    	EXPECT_NE(none, eid);
 	    	EXPECT_LT(eid, graph->upperEdgeIdBound());
+			#pragma omp atomic
 	    	m++;
 	    });
 	    ASSERT_EQ(3u, m);

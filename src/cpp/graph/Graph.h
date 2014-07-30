@@ -845,7 +845,6 @@ void Graph::forEdges(L handle) const {
 
 template<typename L>
 void Graph::forEdges(L handle) const {
-	ERROR("BLA: ", edgesIndexed, "\n");
 	switch (weighted + 2 * directed + 4 * edgesIndexed) {
 		case 0: // unweighted, undirected, no edgeIds
 			for (node u = 0; u < z; ++u) {
