@@ -55,7 +55,7 @@ DynamicHyperbolicGenerator::~DynamicHyperbolicGenerator() {
 	// TODO Auto-generated destructor stub
 }
 
-void DynamicHyperbolicGenerator::initializeGraph() {
+void DynamicHyperbolicGenerator::initializeQuadTree() {
 	if (initialized) return;
 	else initialized = true;
 	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
@@ -75,12 +75,13 @@ void DynamicHyperbolicGenerator::initializeGraph() {
 }
 
 std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
-	if (!initialized) initializeGraph();
+	if (!initialized) initializeQuadTree();
 	assert(quad.size() == nodes);
 	vector<GraphEvent> result;
 	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
 
 	for (index step = 0; step < nSteps; step++) {
+		count oldStreamMarker = result.size();
 		assert(factorgrowth == 0 || moveEachStep == 0 || moveDistance == 0);
 		if (factorgrowth != 0) {
 			//nodes are stationary, growing factors
@@ -104,7 +105,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 					if (oldindex < oldset.size() && newset[newindex] == oldset[oldindex]) {
 						//skip element
 						assert(distance <= R*currentfactor);
-						TRACE("Skipping old edge (", i, ", ", newset[newindex], ")");
+						//TRACE("Skipping old edge (", i, ", ", newset[newindex], ")");
 						oldindex++;
 					} else if (i < newset[newindex]){
 						assert(distance <= R*newfactor);
@@ -132,6 +133,10 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				Point2D<double> offset = HyperbolicSpace::polarToCartesian(Aux::Random::real(2*M_PI), moveEachStep);
 				double newphi, newradius;
 				HyperbolicSpace::cartesianToPolar(point + offset, newphi, newradius);
+
+				//bounce off the boundary
+				if (newradius > R) newradius -= 2*(newradius - R);
+				newradius = HyperbolicSpace::hyperbolicRadiusToEuclidean(newradius);
 
 				bool removed = quad.removeContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
 				assert(removed);
@@ -175,7 +180,12 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 					bindex++;
 				}
 			}
-
+			for (auto it = result.begin()+oldStreamMarker; it < result.end(); it++) {
+				if (it->u > it->v) std::swap(it->u, it->v);
+			}
+			std::sort(result.begin()+oldStreamMarker, result.end(), GraphEvent::compare);
+			auto end = std::unique(result.begin()+oldStreamMarker, result.end(), GraphEvent::equal);
+			result.erase(end, result.end());
 		}
 		result.push_back(GraphEvent(GraphEvent::TIME_STEP));
 	}

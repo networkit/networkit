@@ -165,11 +165,11 @@ TEST_F(QuadTreeTest, testQuadTreeQuery) {
 		quad.addContent(i, angles[i], radii[i]);
 	}
 
-	for (index testindex = 0; testindex < 1000; testindex++) {
+	for (index testindex = 0; testindex < 100; testindex++) {
 		index query = Aux::Random::integer(n);
 		if (query == n) query--;
 		count lastNeighbours = 0;
-		for (double threshold = 0; threshold < R; threshold += 0.1) {
+		for (double threshold = 0; threshold < R; threshold += 0.01) {
 			vector<index> neighbours = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), threshold);
 			EXPECT_GE(neighbours.size(), lastNeighbours);
 			lastNeighbours = neighbours.size();
