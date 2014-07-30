@@ -89,15 +89,23 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 /**
  * most efficient way: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array
  */
+			//#pragma omp parallel for
 			for (index i = 0; i < nodes; i++) {
+				assert(R*newfactor > R*currentfactor);
 				vector<index> oldset = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor);
 				//we only add new edges, don't remove any. The order of the points should be the same
 				vector<index> newset = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*newfactor);
+				count oldsize = oldset.size();
+				count newsize = newset.size();
 				assert(newset.size() >= oldset.size());
 
-				//these should not be necessary, the sets should already be in the same order. This is suspicious.
 				std::sort(oldset.begin(), oldset.end());
 				std::sort(newset.begin(), newset.end());
+				vector<index> difference(newset.size());
+				auto it = std::set_difference(newset.begin(), newset.end(), oldset.begin(), oldset.end(), difference.begin());
+				difference.resize(it - difference.begin());
+
+				/**
 				index oldindex = 0;
 				index newindex = 0;
 				for (newindex = 0; newindex < newset.size(); newindex++) {
@@ -110,10 +118,24 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 					} else if (i < newset[newindex]){
 						assert(distance <= R*newfactor);
 						assert(distance >= R*currentfactor);
-						result.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, i, newset[newindex]));
+						#pragma omp critical
+						{
+							result.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, i, newset[newindex]));
+						}
+
 					}
 				}
 				assert(oldindex == oldset.size());
+				*/
+				//#pragma omp critical
+				{
+					for (auto edge : difference) {
+						if (i < edge) {
+							result.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, i, edge));
+						}
+					}
+				}
+
 			}
 			currentfactor = newfactor;
 		}

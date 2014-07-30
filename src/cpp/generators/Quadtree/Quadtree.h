@@ -99,15 +99,22 @@ public:
 		 * get Elements in Circle
 		 */
 
-
+		bool wraparound = false;
 		root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, center, radius, circleDenizens);
 		if (minPhi < 0) {
 			root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, center, radius, circleDenizens);
+			wraparound = true;
 		}
 		if (maxPhi > 2*M_PI) {
 			root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, center, radius, circleDenizens);
+			wraparound = true;
 		}
 
+		if (wraparound) {
+			std::sort(circleDenizens.begin(), circleDenizens.end());
+			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
+			circleDenizens.resize(newend - circleDenizens.begin());
+		}
 		/**
 		 * return them
 		 */

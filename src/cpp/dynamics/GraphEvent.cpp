@@ -38,6 +38,7 @@ bool GraphEvent::compare(GraphEvent a, GraphEvent b) {
 }
 
 bool GraphEvent::equal(GraphEvent a, GraphEvent b) {
+	if (a.type == GraphEvent::TIME_STEP && b.type == GraphEvent::TIME_STEP) return true;
 	return (a.type == b.type && a.u == b.u && a.v == b.v && a.w == b.w);
 }
 

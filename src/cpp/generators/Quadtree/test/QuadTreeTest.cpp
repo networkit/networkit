@@ -140,7 +140,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 }
 
 TEST_F(QuadTreeTest, testQuadTreeQuery) {
-	count n = 10000;
+	count n = 10;
 	double R = acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
 	vector<double> radii(n);
@@ -168,11 +168,21 @@ TEST_F(QuadTreeTest, testQuadTreeQuery) {
 	for (index testindex = 0; testindex < 100; testindex++) {
 		index query = Aux::Random::integer(n);
 		if (query == n) query--;
-		count lastNeighbours = 0;
+		vector<index> lastNeighbours;
 		for (double threshold = 0; threshold < R; threshold += 0.01) {
 			vector<index> neighbours = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), threshold);
-			EXPECT_GE(neighbours.size(), lastNeighbours);
-			lastNeighbours = neighbours.size();
+			EXPECT_GE(neighbours.size(), lastNeighbours.size());
+			if (neighbours.size() < lastNeighbours.size()) {
+				DEBUG("Previous Neighbours: ");
+				for (index neighbour : lastNeighbours) {
+					DEBUG(neighbour);
+				}
+				DEBUG("Current Neighbours: ");
+				for (index neighbour : neighbours) {
+					DEBUG(neighbour);
+				}
+			}
+			lastNeighbours = neighbours;
 		}
 	}
 }
