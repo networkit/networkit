@@ -9,7 +9,6 @@
 #define HYPERBOLICGENERATOR_H_
 
 #include <vector>
-#include <random>
 #include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"
 
@@ -24,7 +23,7 @@ public:
 	HyperbolicGenerator();
 	HyperbolicGenerator(count n, double factor = 1, double alpha = 1, double stretchradius = 1);
 	virtual ~HyperbolicGenerator();
-	Graph generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance);
+	static Graph generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance);
 	Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1);
 	Graph generate();
 
