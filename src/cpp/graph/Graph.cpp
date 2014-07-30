@@ -59,8 +59,8 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 	t(G.t),
 	weighted(weighted),
 	directed(directed),
-	exists(G.exists),
 	edgesIndexed(false), //edges are not indexed by default
+	exists(G.exists),
 
 	// let the following be empty for the start, we fill them later
 	inDeg(0),
