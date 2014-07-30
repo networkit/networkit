@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 class DynamicHyperbolicGenerator: public NetworKit::DynamicGraphGenerator  {
+	friend class GeneratorsGTest;
 public:
 	DynamicHyperbolicGenerator(count n, double initialFactor = 1, double alpha = 1, double stretch = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
 	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double R, double initialFactor = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
