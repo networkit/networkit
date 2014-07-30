@@ -186,7 +186,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 	int nSteps = 100;
-	count n = 10000;
+	count n = 1000;
 	double initialFactor = 0;
 	double factorGrowth = (double) (1 - initialFactor) / nSteps;
 
@@ -226,7 +226,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	int nSteps = 100;
-	count n = 10000;
+	count n = 1000;
 
 	double factor = 0.5;
 	double stretch = 1;
@@ -256,11 +256,59 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 		}
 		gu.update(stream);
 	}
+
 	//update moved nodes
 	angles = getAngles(dynGen);
 	radii = getRadii(dynGen);
 	Graph comparison = HyperbolicGenerator::generate(&angles, &radii, r, R*factor);
 	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
+}
+
+TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorCollectedSteps) {
+	count n = 10;
+	count nSteps = 100;
+
+	double stretch = 1;
+	double alpha = 1;
+	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	double initialFactor = 0;
+	double factorGrowth = (double) (1 - initialFactor) / nSteps;
+
+	vector<double> angles(n, -1);
+	vector<double> radii(n, -1);
+	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+
+	DynamicHyperbolicGenerator dyngen(angles, radii, R, initialFactor, 0, factorGrowth, 0);
+
+	DynamicHyperbolicGenerator copy(angles, radii, R, initialFactor, 0, factorGrowth, 0);
+	std::vector<GraphEvent> stream;
+
+	for (index i = 0; i < nSteps; i++) {
+		std::vector<GraphEvent> stepStream = dyngen.generate(1);
+		stream.insert(stream.end(), stepStream.begin(), stepStream.end());
+	}
+
+	std::vector<GraphEvent> comparison = copy.generate(nSteps);
+	EXPECT_EQ(stream.size(), comparison.size());
+	std::sort(stream.begin(), stream.end(), GraphEvent::compare);
+	std::sort(comparison.begin(), comparison.end(), GraphEvent::compare);
+	vector<GraphEvent> diff(stream.size()+comparison.size());
+	auto newend = std::set_difference(stream.begin(), stream.end(), comparison.begin(), comparison.end(), diff.begin(), GraphEvent::equal);
+	diff.resize(newend - diff.begin());
+	for (auto event : diff) {
+		DEBUG("Found ", event.toString(), " in one but not other.");
+	}
+	if (diff.size() > 0) {
+		DEBUG("G:");
+		for (auto orig : stream) {
+			DEBUG(orig.toString());
+		}
+		DEBUG("Comparison:");
+		for (auto orig : comparison) {
+			DEBUG(orig.toString());
+		}
+	}
+	EXPECT_TRUE(std::equal(stream.begin(), stream.end(), comparison.begin(), GraphEvent::equal));
 }
 
 TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {

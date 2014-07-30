@@ -14,7 +14,6 @@
 
 
 #include "../BarabasiAlbertGenerator.h"
-#include "../HyperbolicGenerator.h"
 
 namespace NetworKit {
 
