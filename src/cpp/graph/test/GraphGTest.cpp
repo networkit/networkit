@@ -1630,7 +1630,7 @@ TEST_P(GraphGTest, testEdgeIndexGenerationUndirected) {
 	EXPECT_EQ(6, G.edgeId(7, 8));
 	EXPECT_EQ(7, G.upperEdgeIdBound());
 
-	//Anyway, heck uniqueness and validity of the edgeids
+	//Anyway, check uniqueness and validity of the edgeids
 	std::set<edgeid> ids;
 	edgeid upperEdgeIdBound = G.upperEdgeIdBound();
 
@@ -1644,6 +1644,57 @@ TEST_P(GraphGTest, testEdgeIndexGenerationUndirected) {
 		ids.insert(id);
 	});
 }
+
+TEST_P(GraphGTest, testForEdgesWithIds) {
+	std::vector<Graph> graphs;
+	graphs.push_back(Graph(10, false, false));
+	graphs.push_back(Graph(10, false, true));
+	graphs.push_back(Graph(10, true, false));
+	graphs.push_back(Graph(10, true, true));
+
+	for(auto graph = graphs.begin(); graph != graphs.end(); ++graph) {
+		graph->addEdge(0, 0);
+		graph->addEdge(1, 2);
+		graph->addEdge(4, 5);
+
+	    //No edge indices
+
+		count m = 0;
+		graph->forEdges([&](node u, node v, edgeid eid) {
+	    	EXPECT_EQ(0, eid);
+	    	m++;
+	    });
+		ASSERT_EQ(3u, m);
+
+		m = 0;
+		graph->parallelForEdges([&](node u, node v, edgeid eid) {
+	    	EXPECT_EQ(0, eid);
+	    	m++;
+		});
+		ASSERT_EQ(3u, m);
+
+	    //With edge indices
+		graph->indexEdges();
+
+	    edgeid expectedId = 0;
+	    m = 0;
+	    graph->forEdges([&](node u, node v, edgeid eid) {
+	    	EXPECT_EQ(expectedId++, eid);
+	    	EXPECT_LT(eid, graph->upperEdgeIdBound());
+	    	m++;
+	    });
+	    ASSERT_EQ(3u, m);
+
+	    m = 0;
+	    graph->parallelForEdges([&](node u, node v, edgeid eid) {
+	    	EXPECT_NE(none, eid);
+	    	EXPECT_LT(eid, graph->upperEdgeIdBound());
+	    	m++;
+	    });
+	    ASSERT_EQ(3u, m);
+	}
+}
+
 
 } /* namespace NetworKit */
 
