@@ -36,9 +36,9 @@ TEST_F(DynSSSPGTest, testDynamicBFS_1edge) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-  BFS bfs(G, 0);
-  bfs.run();
-  DynBFS dbfs(G, 0);
+  	BFS bfs(G, 0);
+  	bfs.run();
+  	DynBFS dbfs(G, 0);
 	dbfs.init();
 	std::vector<GraphEvent> batch(1);
 	batch[0].type = GraphEvent::EDGE_ADDITION;
