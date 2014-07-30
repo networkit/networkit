@@ -226,13 +226,13 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	int nSteps = 100;
-	count n = 1000;
+	count n = 10000;
 
 	double factor = 0.5;
 	double stretch = 1;
 	double alpha = 1;
 	double R = acosh((double)n/(2*M_PI)+1)*stretch;
-	double movedShare = 0.02;
+	double movedShare = 0.2;
 	double moveDistance = 1;
 
 	vector<double> angles(n, -1);
@@ -250,6 +250,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 
 	for (int i = 0; i < nSteps; i++) {
 		stream = dynGen.generate(1);
+		DEBUG("Edges: ", G.numberOfEdges());
 		for (auto event : stream) {
 			EXPECT_TRUE(event.type == GraphEvent::EDGE_REMOVAL || event.type == GraphEvent::EDGE_ADDITION || event.type == GraphEvent::TIME_STEP);
 		}

@@ -24,6 +24,9 @@ public:
 	virtual void initializeQuadTree();
 
 private:
+	count quadTreeHeight() {
+		return quad.height();
+	}
 	double factorgrowth;
 	double moveDistance;
 	count nodes;

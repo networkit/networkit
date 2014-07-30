@@ -180,6 +180,8 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 					bindex++;
 				}
 			}
+
+			//make sure no duplicates happen
 			for (auto it = result.begin()+oldStreamMarker; it < result.end(); it++) {
 				if (it->u > it->v) std::swap(it->u, it->v);
 			}
