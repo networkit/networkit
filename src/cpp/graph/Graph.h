@@ -21,7 +21,6 @@
 #include "../viz/Point.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/FunctionTraits.h"
-#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
