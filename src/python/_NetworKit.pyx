@@ -468,6 +468,7 @@ cdef extern from "../cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
 		_BFS(_Graph G, node source, bool storePaths, bool storeStack) except +
 		void run() except +
+		void runUntil(node t) except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
@@ -505,6 +506,18 @@ cdef class BFS:
 	 		length (number of edges) of the shortest path from source to any other node.
 		"""
 		self._this.run()
+
+
+	def runUntil(self, t):
+		"""
+		Breadth-first search from source until target node `t` has been found.
+
+		Parameters
+		----------
+		t : node
+			The target node. The search will stop as soon as its found.
+		"""
+		self._this.runUntil(t)
 
 	def getDistances(self):
 		"""
@@ -620,6 +633,7 @@ cdef extern from "../cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
 		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack) except +
 		void run() except +
+		void runUntil(node t) except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
@@ -652,6 +666,17 @@ cdef class Dijkstra:
 	def run(self):
 		""" Performs the Dijkstra SSSP algorithm on the graph given in the constructor. """
 		self._this.run()
+
+	def runUntil(self, t):
+		"""
+		Performs the Dijkstra SSSP algorithm on the graph given in the constructor from node `source` until target node `t` has been found.
+
+		Parameters
+		----------
+		t : node
+			The target node. The search will stop as soon as its found.
+		"""
+		self._this.runUntil(t)
 
 	def getDistances(self):
 		""" Returns a vector of weighted distances from the source node, i.e. the

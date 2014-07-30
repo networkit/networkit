@@ -36,6 +36,15 @@ public:
 	 */
 	virtual void run();
 
+	/**
+	 * Breadth-first search from @a source.
+	 *
+	 * @param t The target node. The search will stop as soon as its found.
+	 * @return Vector of unweighted distances from node @a source, i.e. the
+	 * length (number of edges) of the shortest path from @a source to any other node.
+	 */
+	void runUntil(node t);
+
 };
 
 } /* namespace NetworKit */

@@ -35,6 +35,14 @@ public:
 	 * Performs the Dijkstra SSSP algorithm on the graph given in the constructor.
 	 */
 	virtual void run();
+
+	/**
+	 * Performs the Dijkstra SSSP algorithm search from @a source until @t target.
+	 *
+	 * @param t The target node. The search will stop as soon as its found.
+	 */
+	void runUntil(node t);
+
 };
 
 } /* namespace NetworKit */
