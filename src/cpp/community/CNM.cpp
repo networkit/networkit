@@ -32,7 +32,7 @@ node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
 		}
 
 		// rewire edges from u to newNode
-		G.forWeightedEdgesOf(u, [&](node u, node neighbor, edgeweight w) {
+		G.forEdgesOf(u, [&](node u, node neighbor, edgeweight w) {
 			if (neighbor != u) {
 				TRACE("neighbor of ",u,": ",neighbor);
 				G.addEdge(neighbor, newNode, G.weight(u, neighbor)); // TODO: make faster
@@ -41,7 +41,7 @@ node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
 		});
 
 		// rewire edges from v to newNode
-		G.forWeightedEdgesOf(v, [&](node v, node neighbor, edgeweight w) {
+		G.forEdgesOf(v, [&](node v, node neighbor, edgeweight w) {
 			if (neighbor != v) {
 				TRACE("neighbor of ",v,": ",neighbor);
 				G.addEdge(neighbor, newNode, G.weight(v, neighbor));  // TODO: make faster
@@ -72,7 +72,7 @@ node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
 Partition CNM::run(Graph &graph) {
 	// copy graph because we make changes due to merges
 	Graph G(graph.numberOfNodes(), true); // make weighted copy
-	graph.forWeightedEdges([&](node u, node v, edgeweight w){
+	graph.forEdges([&](node u, node v, edgeweight w){
 		G.addEdge(u, v, w);
 	});
 	count n = G.numberOfNodes();
