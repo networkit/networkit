@@ -1224,9 +1224,9 @@ cdef extern from "../cpp/io/KONECTGraphReader.h":
 		_Graph* _read(string path) except +
 
 cdef class KONECTGraphReader:
-	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
-		use readGraph(path, graphio.formats.metis) as an alternative.
-		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1]. 
+
+		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
 	"""
 	cdef _KONECTGraphReader _this
 
