@@ -31,7 +31,7 @@ EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, cons
 		 */
 
 		std::vector<AttributizedEdge> neighbors;
-		graph.forNeighborsOf(i, [&](node j, edgeid eid) {
+		graph.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
 			double sim = getSimilarity(graph, i, j);
 			neighbors.push_back(AttributizedEdge(i, j, eid, sim));
 		});

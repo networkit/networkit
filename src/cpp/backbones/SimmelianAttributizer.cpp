@@ -16,7 +16,7 @@ std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const 
 
 	g.forNodes([&](node u) {
 		//Sort ego's alters from strongly to weakly tied.
-		g.forNeighborsOf(u, [&](node v, edgeid eid) {
+		g.forNeighborsOf(u, [&](node _u, node v, edgeid eid) {
 			count triangleCount = round(triangles[eid]);
 			neighbors[u].push_back(RankedEdge(u, v, triangleCount));
 		});

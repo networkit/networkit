@@ -31,7 +31,7 @@ EdgeAttribute MultiscaleAttributizer::getAttribute(const Graph& graph, const Edg
 		});
 
 		//Filter edges by probability
-		graph.forNeighborsOf(u, [&](node v, edgeid eid) {
+		graph.forNeighborsOf(u, [&](node _u, node v, edgeid eid) {
 			//In case d(u) == 1 and d(v) > 1: ignore u
 			if (k > 1 || graph.degree(v) == 1) {
 				edgeweight p = normalizedWeights[v];

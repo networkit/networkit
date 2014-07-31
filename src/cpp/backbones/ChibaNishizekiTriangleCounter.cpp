@@ -26,10 +26,12 @@ EdgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, co
 			nodeMarker[v] = true;
 		});
 
+		//TODO: Remove _u currently breaks everything due to missing lambda case in Graph.h
 		//For all neighbors: check for already marked neighbors.
-		g.forNeighborsOf(u, [&](node v, edgeid eid_uv) {
-			g.forNeighborsOf(v, [&](node w, edgeid eid_vw) {
+		g.forNeighborsOf(u, [&](node _u, node v, edgeid eid_uv) {
+			g.forNeighborsOf(v, [&](node _v, node w, edgeid eid_vw) {
 				if (nodeMarker[w]) {
+
 					edgeid eid_uw = graph.edgeId(u, w);
 
 					triangleCount[eid_uv] = triangleCount[eid_uv] + 1.0;
