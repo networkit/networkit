@@ -222,7 +222,7 @@ public:
 	/**
 	* Get the id of the given edge.
 	*/
-	edgeid edgeId(node u, node v);
+	const edgeid edgeId(node u, node v) const;
 
 	/**
 	* Get an upper bound for the edge ids in the graph.
