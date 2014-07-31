@@ -23,10 +23,10 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsTrivial) {
 	ChibaNishizekiTriangleCounter counter;
 	EdgeAttribute counts = counter.getAttribute(g, EdgeAttribute());
 
-	EXPECT_DOUBLE_EQ(1.0, (counts[uEdge(0,1)])) << "wrong triangle count";
-	EXPECT_EQ(1.0, (counts[uEdge(0,2)])) << "wrong triangle count";
-	EXPECT_EQ(1.0, (counts[uEdge(1,2)])) << "wrong triangle count";
-	EXPECT_EQ(0.0, (counts[uEdge(2,3)])) << "wrong triangle count";
+	EXPECT_DOUBLE_EQ(1.0, (counts[g.edgeId(0,1)])) << "wrong triangle count";
+	EXPECT_EQ(1.0, (counts[g.edgeId(0,2)])) << "wrong triangle count";
+	EXPECT_EQ(1.0, (counts[g.edgeId(1,2)])) << "wrong triangle count";
+	EXPECT_EQ(0.0, (counts[g.edgeId(2,3)])) << "wrong triangle count";
 }
 
 TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsSimple) {

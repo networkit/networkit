@@ -19,7 +19,7 @@ EdgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, co
 	nodeMarker.resize(graph.numberOfNodes());
 
 	//Edge attribute: triangle count
-	EdgeAttribute triangleCount(graph.upperedgeIdBound(), 0.0);
+	EdgeAttribute triangleCount(graph.upperEdgeIdBound(), 0.0);
 
 	g.forNodes([&](node u) {
 		//Mark all neighbors
@@ -56,9 +56,9 @@ void ChibaNishizekiTriangleCounter::removeNode(Graph& graph, const node& u) {
 void ChibaNishizekiTriangleCounter::triangleFound(
 		const Graph& graph, EdgeAttribute& triangleCount,
 		const node& u, const node& v,const node& w ) {
-	triangleCount[graph.edgeId(u, v)] = triangleCount[graph.edgeId(u, v)] + 1.0);
-	triangleCount[graph.edgeId(u, w)] = triangleCount[graph.edgeId(u, w)] + 1.0);
-	triangleCount[graph.edgeId(v, w)] = triangleCount[graph.edgeId(v, w)] + 1.0);
+	triangleCount[graph.edgeId(u, v)] = triangleCount[graph.edgeId(u, v)] + 1.0;
+	triangleCount[graph.edgeId(u, w)] = triangleCount[graph.edgeId(u, w)] + 1.0;
+	triangleCount[graph.edgeId(v, w)] = triangleCount[graph.edgeId(v, w)] + 1.0;
 }
 
 } /* namespace NetworKit */
