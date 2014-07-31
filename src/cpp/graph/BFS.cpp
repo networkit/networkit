@@ -14,7 +14,7 @@ BFS::BFS(const Graph& G, node source, bool storePaths, bool storeStack) : SSSP(G
 }
 
 
-void BFS::run() {
+void BFS::run(node t) {
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	count z = G.upperNodeIdBound();
 	distances.clear();
@@ -36,7 +36,7 @@ void BFS::run() {
 	std::queue<node> q;
 	q.push(source);
 	distances[source] = 0;
-
+	bool breakWhenFound = (t != none);
 	while (! q.empty()) {
 		node u = q.front();
 		q.pop();
@@ -44,6 +44,10 @@ void BFS::run() {
 		if (storeStack) {
 			stack.push(u);
 		}
+		if (breakWhenFound && t == u) {
+			break;
+		}
+		
 		// TRACE("current node in BFS: " , u);
 //		TRACE(distances);
 
