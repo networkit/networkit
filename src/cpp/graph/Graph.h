@@ -171,8 +171,6 @@ private:
 		}
 	}
 
-
-
 public:
 
 	/**
