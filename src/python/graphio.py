@@ -1,6 +1,6 @@
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
 						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
-						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader)
+						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader)
 from GraphMLIO import GraphMLReader, GraphMLWriter
 import os
 import logging
@@ -33,6 +33,7 @@ class Format(AutoNumber):
 #	GDF = ()
 	EdgeList = ()
 	LFR = ()
+	KONECT = ()
 
 
 
@@ -50,7 +51,8 @@ def getReader(fileformat, **kwargs):
 			Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
 			Format.EdgeListTabOne:		EdgeListReader('\t',1),
 			Format.EdgeListTabZero:		EdgeListReader('\t',0),
-			Format.LFR:			EdgeListReader('\t',1)
+			Format.LFR:			EdgeListReader('\t',1),
+			Format.KONECT:			KONECTGraphReader(' ')
 			}
 
 	try:

@@ -1,6 +1,6 @@
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
 						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
-						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader)
+						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader)
 from GraphMLIO import GraphMLReader, GraphMLWriter
 import os
 import logging
@@ -21,6 +21,7 @@ class Format:
 	EdgeList = "edgelist"
 	LFR = "edgelist-t1"
 	GML = "gml"
+	KONECT = "konect"
 
 
 # reading
@@ -34,6 +35,7 @@ def getReader(format, **kwargs):
 			"edgelist-cs1": EdgeListReader(',',1),
 			"graphml": GraphMLReader(),
 			"snap": EdgeListReader('\t',0,'#',False),
+			"konect": KONECTGraphReader(' ')
 		}
 	try:
 		# special case for custom Edge Lists
