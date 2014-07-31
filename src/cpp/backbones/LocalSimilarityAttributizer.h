@@ -16,10 +16,11 @@ namespace NetworKit {
 struct AttributizedEdge {
 	node ego;
 	node alter;
+	edgeid eid;
 	double value;
 
-	AttributizedEdge(node ego, node alter, double v) :
-			ego(ego), alter(alter), value(v) {
+	AttributizedEdge(node ego, node alter, edgeid eid, double v) :
+			ego(ego), alter(alter), eid(eid), value(v) {
 	}
 
 	bool operator<(const AttributizedEdge& other) const {

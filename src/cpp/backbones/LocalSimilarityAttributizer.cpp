@@ -31,15 +31,15 @@ EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, cons
 		 */
 
 		std::vector<AttributizedEdge> neighbors;
-		graph.forNeighborsOf(i, [&](node j) {
+		graph.forNeighborsOf(i, [&](node j, edgeid eid) {
 			double sim = getSimilarity(graph, i, j);
-			neighbors.push_back(AttributizedEdge(i, j, sim));
+			neighbors.push_back(AttributizedEdge(i, j, eid, sim));
 		});
 		std::sort(neighbors.begin(), neighbors.end(), greater());
 
 		count rank = 1;
 		for(std::vector<AttributizedEdge>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
-			edgeid eid = graph.edgeId(it->ego, it->alter);
+			edgeid eid = it->eid;
 
 			double e = 0.0;
 			if (d > 1)
