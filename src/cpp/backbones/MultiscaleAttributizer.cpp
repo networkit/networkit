@@ -31,13 +31,12 @@ EdgeAttribute MultiscaleAttributizer::getAttribute(const Graph& graph, const Edg
 		});
 
 		//Filter edges by probability
-		graph.forNeighborsOf(u, [&](node v) {
+		graph.forNeighborsOf(u, [&](node v, edgeid eid) {
 			//In case d(u) == 1 and d(v) > 1: ignore u
 			if (k > 1 || graph.degree(v) == 1) {
 				edgeweight p = normalizedWeights[v];
 				double probability = getProbability(k, p);
 
-				edgeid eid = graph.edgeId(u, v);
 				multiscaleAttribute[eid] = std::min(multiscaleAttribute[eid], probability);
 			}
 		});

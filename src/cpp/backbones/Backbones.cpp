@@ -50,8 +50,8 @@ MultiscaleBackbone::MultiscaleBackbone(double alpha) :
 Graph MultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
 	//TODO: the following will be obsolete once graph edge attributes are used.
 	EdgeAttribute weight(g.upperEdgeIdBound());
-	g.forEdges([&](node u, node v) {
-		weight[g.edgeId(u, v)] = g.weight(u, v);
+	g.forEdges([&](node u, node v, edgeid eid) {
+		weight[eid] = g.weight(u, v);
 	});
 
 	MultiscaleAttributizer multiscaleAttributizer;

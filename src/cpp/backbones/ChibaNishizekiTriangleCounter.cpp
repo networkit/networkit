@@ -27,10 +27,14 @@ EdgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, co
 		});
 
 		//For all neighbors: check for already marked neighbors.
-		g.forNeighborsOf(u, [&](node v) {
-			g.forNeighborsOf(v, [&](node w) {
+		g.forNeighborsOf(u, [&](node v, edgeid eid_uv) {
+			g.forNeighborsOf(v, [&](node w, edgeid eid_vw) {
 				if (nodeMarker[w]) {
-					triangleFound(graph, triangleCount, u, v, w);
+					edgeid eid_uw = graph.edgeId(u, w);
+
+					triangleCount[eid_uv] = triangleCount[eid_uv] + 1.0;
+					triangleCount[eid_uw] = triangleCount[eid_uw] + 1.0;
+					triangleCount[eid_vw] = triangleCount[eid_vw] + 1.0;
 				}
 			});
 
@@ -50,17 +54,6 @@ void ChibaNishizekiTriangleCounter::removeNode(Graph& graph, node u) {
 	});
 
 	graph.removeNode(u);
-}
-
-void ChibaNishizekiTriangleCounter::triangleFound(
-		const Graph& graph, EdgeAttribute& triangleCount,
-		node u, node v, node w ) {
-	edgeid id_uv = graph.edgeId(u, v);
-	edgeid id_uw = graph.edgeId(u, w);
-	edgeid id_vw = graph.edgeId(v, w);
-	triangleCount[id_uv] = triangleCount[id_uv] + 1.0;
-	triangleCount[id_uw] = triangleCount[id_uw] + 1.0;
-	triangleCount[id_vw] = triangleCount[id_vw] + 1.0;
 }
 
 } /* namespace NetworKit */
