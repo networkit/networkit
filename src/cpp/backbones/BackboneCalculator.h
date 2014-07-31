@@ -26,7 +26,7 @@ public:
 
 	/** only to be used by cython - this eliminates an unnecessary copy */
 	Graph* _calculate(const Graph& g) {
-		return new Graph{std::move(calculate(g, EdgeAttribute()))};
+		return new Graph{std::move(calculate(g, EdgeAttribute(g.upperEdgeIdBound())))};
 	};
 
 	/**

@@ -13,7 +13,7 @@ SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(double threshold)
 
 Graph SimmelianBackboneNonParametric::calculate(const Graph& g, const EdgeAttribute& attribute) {
 	ChibaNishizekiTriangleCounter triangleAttributizer;
-	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute());
+	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
 
 	SimmelianJaccardAttributizer jaccardAttributizer;
 	EdgeAttribute jaccard = jaccardAttributizer.getAttribute(g, triangles);
@@ -31,7 +31,7 @@ SimmelianBackboneParametric::SimmelianBackboneParametric(int maxRank, int minOve
 
 Graph SimmelianBackboneParametric::calculate(const Graph& g, const EdgeAttribute& attribute) {
 	ChibaNishizekiTriangleCounter triangleAttributizer;
-	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute());
+	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
 
 	SimmelianOverlapAttributizer overlapAttributizer(maxRank);
 	EdgeAttribute overlap = overlapAttributizer.getAttribute(g, triangles);
@@ -49,7 +49,7 @@ MultiscaleBackbone::MultiscaleBackbone(double alpha) :
 
 Graph MultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
 	//TODO: the following will be obsolete once graph edge attributes are used.
-	EdgeAttribute weight;
+	EdgeAttribute weight(g.upperEdgeIdBound());
 	g.forEdges([&](node u, node v) {
 		weight[g.edgeId(u, v)] = g.weight(u, v);
 	});
@@ -70,7 +70,7 @@ LocalSimilarityBackbone::LocalSimilarityBackbone(double e) :
 
 Graph LocalSimilarityBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
 	LocalSimilarityAttributizer localSimAttributizer;
-	EdgeAttribute minExponent = localSimAttributizer.getAttribute(g, EdgeAttribute());
+	EdgeAttribute minExponent = localSimAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
 
 	GlobalThresholdFilter filter(e, true);
 	return filter.calculate(g, minExponent);
@@ -85,7 +85,7 @@ SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(double alpha) :
 
 Graph SimmelianMultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
 	ChibaNishizekiTriangleCounter triangleAttributizer;
-	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute());
+	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
 
 	MultiscaleAttributizer multiscaleAttributizer;
 	EdgeAttribute multiscale = multiscaleAttributizer.getAttribute(g, triangles);

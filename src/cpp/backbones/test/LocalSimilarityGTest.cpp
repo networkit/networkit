@@ -29,6 +29,7 @@ TEST_F(LocalSimilarityGTest, testSimilarityCalculation) {
 	g.addEdge(1, 7);
 	g.addEdge(1, 8);
 	g.addEdge(1, 9);
+	g.indexEdges();
 
 	LocalSimilarityAttributizer localSim;
 
@@ -44,9 +45,10 @@ TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 	g.addEdge(0, 3);
 	g.addEdge(0, 2);
 	g.addEdge(1, 2);
+	g.indexEdges();
 
 	LocalSimilarityAttributizer localSim;
-	EdgeAttribute exp = localSim.getAttribute(g, EdgeAttribute());
+	EdgeAttribute exp = localSim.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
 
 	EXPECT_DOUBLE_EQ(0.0, exp[g.edgeId(0, 1)]);
 	EXPECT_DOUBLE_EQ(0.0, exp[g.edgeId(0, 2)]);

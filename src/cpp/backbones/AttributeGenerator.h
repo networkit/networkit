@@ -49,22 +49,6 @@ struct uEdge
 	}
 };
 
-typedef std::vector<double> EdgeAttribute;
-
-/**
- * Abstract base class for graph attribute generator. It takes a graph (weighted or unweighted)
- * and calculates a graph attribute from the input graph.
- */
-class AttributeGenerator {
-
-public:
-	/**
-	 * Calculates an edge attribute for the edges of the given graph.
-	 * (Possibly under consideration of the given attribute).
-	 */
-	virtual EdgeAttribute getAttribute(const Graph& g, const EdgeAttribute& attribute) = 0;
-};
-
 } /* namespace NetworKit */
 
 
@@ -96,17 +80,12 @@ struct hash<NetworKit::uEdge> {
 } /* namespace std */
 
 
-/*namespace NetworKit {
+namespace NetworKit {
 
 class EdgeAttribute {
 
 private:
-	typedef std::unordered_map<uEdge, double> EdgeMap;
-	EdgeMap attributeMap;
-	double defaultValue;
-
 	std::vector<double> attributeVector;
-	Graph& graph;
 
 public:
 
@@ -115,31 +94,38 @@ public:
 
 	EdgeAttribute(count nEdges) : attributeVector(nEdges, 0.0) {}
 
-	void set(const Graph& graph, node u, node v, double value) {
-		edgeid eid = graph.edgeId(u, v);
-
-		attributeMap[key] = value;
+	//Read operator
+	double& operator[](std::vector<double>::size_type idx) {
+		return attributeVector[idx];
 	}
 
-	const double operator[](const uEdge& key) const {
-		EdgeMap::const_iterator it = attributeMap.find(key);
-		if (it != attributeMap.end())
-			return it->second;
-		else
-			return defaultValue;
-	}
-
-	const bool contains(uEdge key) const {
-		EdgeMap::const_iterator it = attributeMap.find(key);
-		return it != attributeMap.end();
+	//Write operator
+	const double& operator[](std::vector<double>::size_type idx) const {
+		return attributeVector[idx];
 	}
 
 	const std::size_t size() const {
-		return attributeMap.size();
+		return attributeVector.size();
 	}
+
 };
 
-}*/
+
+/**
+ * Abstract base class for graph attribute generator. It takes a graph (weighted or unweighted)
+ * and calculates a graph attribute from the input graph.
+ */
+class AttributeGenerator {
+
+public:
+	/**
+	 * Calculates an edge attribute for the edges of the given graph.
+	 * (Possibly under consideration of the given attribute).
+	 */
+	virtual EdgeAttribute getAttribute(const Graph& g, const EdgeAttribute& attribute) = 0;
+};
+
+}
 
 
 #endif /* ATTRIBUTEGENERATOR_H_ */

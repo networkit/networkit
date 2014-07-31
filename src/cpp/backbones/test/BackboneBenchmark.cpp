@@ -26,10 +26,11 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
+	G.indexEdges();
 
 	runtime.start();
 	SimmelianBackboneParametric algSBP(10, 5);
-	Graph B = algSBP.calculate(G, EdgeAttribute());
+	Graph B = algSBP.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
 
 	runtime.stop();
 	INFO("[DONE] completeGraphSimmelianBackboneParametric (" , runtime.elapsed().count() , " ms)");
@@ -41,10 +42,11 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
+	G.indexEdges();
 
 	runtime.start();
 	SimmelianBackboneNonParametric algSBNP(0.5);
-	Graph B = algSBNP.calculate(G, EdgeAttribute());
+	Graph B = algSBNP.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
 
 	runtime.stop();
 	INFO("[DONE] SimmelianBackboneNonParametric (" , runtime.elapsed().count() , " ms)");
@@ -56,10 +58,11 @@ TEST_F(BackboneBenchmark, completeGraphMultiscaleBackbone) {
 
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
+	G.indexEdges();
 
 	runtime.start();
 	MultiscaleBackbone algMB(0.5);
-	Graph B = algMB.calculate(G, EdgeAttribute());
+	Graph B = algMB.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
 
 	runtime.stop();
 	INFO("[DONE] MultiscaleBackbone (" , runtime.elapsed().count() , " ms)");
@@ -71,10 +74,11 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
+	G.indexEdges();
 
 	runtime.start();
 	LocalSimilarityBackbone algLSB(0.5);
-	Graph B = algLSB.calculate(G, EdgeAttribute());
+	Graph B = algLSB.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
 
 	runtime.stop();
 	INFO("[DONE] LocalSimilarityBackbone (" , runtime.elapsed().count() , " ms)");
@@ -86,10 +90,11 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianMultiscaleBackbone) {
 
 	GraphGenerator graphGen;
 	Graph G = graphGen.makeCompleteGraph(n);
+	G.indexEdges();
 
 	runtime.start();
 	SimmelianMultiscaleBackbone algSMB(0.5);
-	Graph B = algSMB.calculate(G, EdgeAttribute());
+	Graph B = algSMB.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
 
 	runtime.stop();
 	INFO("[DONE] SimmelianMultiscaleBackbone (" , runtime.elapsed().count() , " ms)");
