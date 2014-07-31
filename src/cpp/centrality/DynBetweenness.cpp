@@ -1,5 +1,5 @@
 /*
- * DynBetweenness.h
+ * DynBetweenness.cpp
  *
  *  Created on: 29.07.2014
  *      Author: ebergamini
@@ -19,6 +19,7 @@
 namespace NetworKit {
 
 DynBetweenness::DynBetweenness(const Graph& G) : Centrality(G, normalized),
+maxDistance(G.upperNodeIdBound()),
 npaths(G.upperNodeIdBound(), std::vector<count>(G.upperNodeIdBound())),
 distances(G.upperNodeIdBound(), std::vector<edgeweight>(G.upperNodeIdBound())),
 dependencies(G.upperNodeIdBound(),std::vector<double>(G.upperNodeIdBound(), 0.0)) {
@@ -50,6 +51,8 @@ void DynBetweenness::run() {
 
         // compute dependencies for nodes in order of decreasing distance from s
         std::stack<node> stack = sssp->getStack();
+        // set maxDistance to the distance of the furthest vertex
+        maxDistance[s] = distances[s][stack.top()];
         while (!stack.empty()) {
             node t = stack.top();
             stack.pop();
@@ -85,7 +88,7 @@ void DynBetweenness::update(const GraphEvent e) {
             });
             std::vector<double> new_dep(G.upperNodeIdBound(), 0.0);
             std::vector<int> touched(G.upperNodeIdBound(), 0);
-            std::vector<std::queue<node>> l_queues(G.upperNodeIdBound());
+            std::vector<std::queue<node>> l_queues(maxDistance[s]+1);
             std::queue<node> queue_BFS;
             queue_BFS.push(u_l);
             // one-level update
@@ -110,7 +113,7 @@ void DynBetweenness::update(const GraphEvent e) {
                     });
                 }
                 // dependencies accumulation
-                count level = G.upperNodeIdBound() - 1;
+                count level = maxDistance[s];
                 while (level > 0) {
                     while (!l_queues[level].empty()){
                         node w = l_queues[level].front();
@@ -160,7 +163,7 @@ void DynBetweenness::update(const GraphEvent e) {
                 }
                 // dependencies accumulation
                 DEBUG("Dependency accumulation");
-                count level = G.upperNodeIdBound() - 1;
+                count level = maxDistance[s];
                 while(level > 0) {
                     while(!l_queues[level].empty()) {
                         node w = l_queues[level].front();

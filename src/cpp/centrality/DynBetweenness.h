@@ -42,6 +42,7 @@ public:
     void update(const GraphEvent e);
 
 protected:
+        std::vector<count> maxDistance;
         std::vector<std::vector<count>> npaths;
         std::vector<std::vector<edgeweight>> distances;
         std::vector<std::vector<double>> dependencies;
