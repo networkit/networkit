@@ -20,7 +20,7 @@ bool isSingletonClustering(Graph& G, Partition& zeta);
 
 bool isOneClustering(Graph& G, Partition& zeta);
 
-bool equalClusterings(Partition& zeta, Partition& eta, Graph& G);
+bool equalClusterings(const Partition &zeta, const Partition &eta, Graph& G);
 
 }
 

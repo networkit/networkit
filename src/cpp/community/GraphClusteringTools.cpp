@@ -94,7 +94,7 @@ bool isSingletonClustering(Graph& G, Partition& zeta) {
 	return (zeta.numberOfSubsets() == G.numberOfNodes());
 }
 
-bool equalClusterings(Partition& zeta, Partition& eta, Graph& G) {
+bool equalClusterings(const Partition& zeta, const Partition& eta, Graph& G) {
 	bool eq = true;
 	G.parallelForEdges([&](node u, node v) {
 		if (zeta.inSameSubset(u, v)) {
