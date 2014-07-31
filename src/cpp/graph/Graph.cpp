@@ -238,7 +238,7 @@ void Graph::indexEdges() {
 }
 
 
-edgeid Graph::edgeId(node u, node v) {
+edgeid Graph::edgeId(node u, node v) const {
 	if (! edgesIndexed) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
