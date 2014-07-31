@@ -157,7 +157,6 @@ private:
 		}
 	}
 
-
 	/**
 	 * Calls the given function f if it has only one argument, discards the first (or second if InEdges is true)
 	 * node id, the edge weight and the edge id
