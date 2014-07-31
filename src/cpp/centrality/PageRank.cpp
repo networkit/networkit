@@ -6,6 +6,7 @@
  */
 
 #include "PageRank.h"
+#include "../auxiliary/NumericTools.h"
 
 namespace NetworKit {
 
