@@ -34,6 +34,7 @@ public:
 	void update(const std::vector<GraphEvent>& batch) override;
 
 protected:
+	enum Color {WHITE, BLACK};
 	std::vector<Color> color;
 
 };
