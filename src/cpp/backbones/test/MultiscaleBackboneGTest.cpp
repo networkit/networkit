@@ -24,6 +24,7 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 	g.setWeight(0, 4, 20.0);
 	g.setWeight(4, 5, 1.0);
 	g.setWeight(3, 5, 0.5);
+	g.indexEdges();
 
 	//TODO: weight --> attribute
 
@@ -45,7 +46,7 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 	//Compare the backbone graph to the expected backbone.
 
 	MultiscaleBackbone backbone(0.5);
-	Graph b = backbone.calculate(g, EdgeAttribute());
+	Graph b = backbone.calculate(g, EdgeAttribute(g.upperEdgeIdBound()));
 
 	EXPECT_EQ(3, b.numberOfEdges());
 	EXPECT_TRUE(b.hasEdge(0, 4));
@@ -53,7 +54,7 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 	EXPECT_TRUE(b.hasEdge(4, 5));
 
 	MultiscaleBackbone backbone2(0.3333);
-	b = backbone2.calculate(g, EdgeAttribute());
+	b = backbone2.calculate(g, EdgeAttribute(g.upperEdgeIdBound()));
 	EXPECT_EQ(2, b.numberOfEdges());
 	EXPECT_TRUE(b.hasEdge(0, 4));
 	EXPECT_TRUE(b.hasEdge(0, 3));
