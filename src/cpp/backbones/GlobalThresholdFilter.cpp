@@ -18,8 +18,8 @@ Graph GlobalThresholdFilter::calculate(const Graph& graph, const EdgeAttribute& 
 
 	//Re-add the backbone edges.
 	graph.forEdges([&](node u, node v) {
-		if ((above && attribute[uEdge(u, v)] >= threshold)
-				|| (!above && attribute[uEdge(u, v)] <= threshold)) {
+		if ((above && attribute[graph.edgeid(u, v)] >= threshold)
+				|| (!above && attribute[graph.edgeid(u, v)] <= threshold)) {
 			backboneGraph.addEdge(u, v);
 		}
 	});

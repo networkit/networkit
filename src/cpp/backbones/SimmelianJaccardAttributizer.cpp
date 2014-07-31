@@ -14,17 +14,14 @@ SimmelianJaccardAttributizer::SimmelianJaccardAttributizer() {}
 
 EdgeAttribute SimmelianJaccardAttributizer::getAttribute(const Graph& graph, const EdgeAttribute& attribute) {
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, attribute);
-	EdgeAttribute jaccardAttribute;
+	EdgeAttribute jaccardAttribute(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forEdges([&](node u, node v) {
 		count maxNeighborhoodSize = std::max(neighbors[u].size(), neighbors[v].size());
 		Redundancy redundancy = getOverlap(u, v, neighbors, maxNeighborhoodSize);
 
-		uEdge key = uEdge(u,v);
-		if (jaccardAttribute.contains(key))
-			jaccardAttribute.set(key, std::min(redundancy.jaccard, jaccardAttribute[key]));
-		else
-			jaccardAttribute.set(key, redundancy.jaccard);
+		edgeid eid = graph.edgeId(u, v);
+		jaccardAttribute[eid] = std::min(redundancy.jaccard, jaccardAttribute[eid]);
 	});
 
 	return jaccardAttribute;

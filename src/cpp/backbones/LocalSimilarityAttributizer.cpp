@@ -20,7 +20,7 @@ EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, cons
 	 * such that the edge is contained in the backbone.
 	 */
 
-	EdgeAttribute sparsificationExp(1.0);
+	EdgeAttribute sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forNodes([&](node i) {
 		count d = graph.degree(i);
@@ -33,21 +33,19 @@ EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, cons
 		std::vector<AttributizedEdge> neighbors;
 		graph.forNeighborsOf(i, [&](node j) {
 			double sim = getSimilarity(graph, i, j);
-			//ERROR("sim: ", sim, "\n");
 			neighbors.push_back(AttributizedEdge(i, j, sim));
 		});
 		std::sort(neighbors.begin(), neighbors.end(), greater());
 
 		count rank = 1;
 		for(std::vector<AttributizedEdge>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
-			uEdge edgeKey = uEdge(it->ego, it->alter);
+			edgeid eid = graph.edgeId(it->ego, it->alter);
 
 			double e = 0.0;
 			if (d > 1)
 				e = log(rank) / log(d);
 
-			//ERROR("e: ", e, ",",rank,",",d, "\n");
-			sparsificationExp.set(edgeKey, std::min(e, sparsificationExp[edgeKey]));
+			sparsificationExp[eid] = std::min(e, sparsificationExp[eid]);
 			rank++;
 		}
 

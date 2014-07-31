@@ -16,7 +16,7 @@ EdgeAttribute MultiscaleAttributizer::getAttribute(const Graph& graph, const Edg
 	//We use a global vector for performance reasons.
 	std::vector<edgeweight> normalizedWeights(graph.upperNodeIdBound());
 
-	EdgeAttribute multiscaleAttribute;
+	EdgeAttribute multiscaleAttribute(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forNodes([&](node u) {
 		count k = graph.degree(u);
@@ -37,11 +37,8 @@ EdgeAttribute MultiscaleAttributizer::getAttribute(const Graph& graph, const Edg
 				edgeweight p = normalizedWeights[v];
 				double probability = getProbability(k, p);
 
-				uEdge key = uEdge(u, v);
-				if (multiscaleAttribute.contains(key))
-					multiscaleAttribute.set(key, std::min(multiscaleAttribute[key], probability));
-				else
-					multiscaleAttribute.set(key, probability);
+				edgeid eid = graph.edgeId(u, v);
+				multiscaleAttribute[eid] = std::min(multiscaleAttribute[eid], probability);
 			}
 		});
 	});

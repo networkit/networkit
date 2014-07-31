@@ -23,7 +23,7 @@ public:
 	EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute);
 
 private:
-	void triangleFound(EdgeAttribute& map, const node& u, const node& v, const node& w);
+	void triangleFound(const Graph& graph, EdgeAttribute& map, const node& u, const node& v, const node& w);
 	void removeNode(Graph& graph, const node& u);
 };
 

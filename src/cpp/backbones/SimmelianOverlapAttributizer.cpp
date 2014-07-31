@@ -15,16 +15,13 @@ SimmelianOverlapAttributizer::SimmelianOverlapAttributizer(count maxRank) :
 
 EdgeAttribute SimmelianOverlapAttributizer::getAttribute(const Graph& graph, const EdgeAttribute& attribute) {
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, attribute);
-	EdgeAttribute overlapAttribute;
+	EdgeAttribute overlapAttribute(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forEdges([&](node u, node v) {
 		Redundancy redundancy = getOverlap(u, v, neighbors, maxRank);
 
-		uEdge key = uEdge(u,v);
-		if (overlapAttribute.contains(key))
-			overlapAttribute.set(key, std::min((double) redundancy.overlap, overlapAttribute[key]));
-		else
-			overlapAttribute.set(key, (double) redundancy.overlap);
+		edgeid eid = graph.edgeId(u, v);
+		overlapAttribute[eid] = std::min((double) redundancy.overlap, overlapAttribute[eid]);
 	});
 
 	return overlapAttribute;

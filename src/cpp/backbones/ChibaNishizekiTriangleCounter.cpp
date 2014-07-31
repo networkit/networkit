@@ -19,7 +19,7 @@ EdgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, co
 	nodeMarker.resize(graph.numberOfNodes());
 
 	//Edge attribute: triangle count
-	EdgeAttribute triangleCount;
+	EdgeAttribute triangleCount(graph.upperedgeIdBound(), 0.0);
 
 	g.forNodes([&](node u) {
 		//Mark all neighbors
@@ -31,7 +31,7 @@ EdgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, co
 		g.forNeighborsOf(u, [&](node v) {
 			g.forNeighborsOf(v, [&](node w) {
 				if (nodeMarker[w]) {
-					triangleFound(triangleCount, u, v, w);
+					triangleFound(graph, triangleCount, u, v, w);
 				}
 			});
 
@@ -54,11 +54,11 @@ void ChibaNishizekiTriangleCounter::removeNode(Graph& graph, const node& u) {
 }
 
 void ChibaNishizekiTriangleCounter::triangleFound(
-		EdgeAttribute& triangleCount, const node& u, const node& v,
-		const node& w) {
-	triangleCount.set(uEdge(u,v), triangleCount[uEdge(u,v)] + 1.0);
-	triangleCount.set(uEdge(u,w), triangleCount[uEdge(u,w)] + 1.0);
-	triangleCount.set(uEdge(v,w), triangleCount[uEdge(v,w)] + 1.0);
+		const Graph& graph, EdgeAttribute& triangleCount,
+		const node& u, const node& v,const node& w ) {
+	triangleCount[graph.edgeId(u, v)] = triangleCount[graph.edgeId(u, v)] + 1.0);
+	triangleCount[graph.edgeId(u, w)] = triangleCount[graph.edgeId(u, w)] + 1.0);
+	triangleCount[graph.edgeId(v, w)] = triangleCount[graph.edgeId(v, w)] + 1.0);
 }
 
 } /* namespace NetworKit */
