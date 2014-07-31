@@ -39,6 +39,7 @@
 #include "../SampledGraphStructuralRandMeasure.h"
 #include "../SampledNodeStructuralRandMeasure.h"
 #include "../../community/GraphClusteringTools.h"
+#include "../ClusteringProduct.h"
 
 namespace NetworKit {
 
@@ -756,6 +757,30 @@ TEST_F(CommunityGTest, testParallelAgglomerativeAndPLM) {
 	clustering = louvain.run(blog);
 	INFO("Louvain number of blog clusters: " , clustering.numberOfSubsets());
 	INFO("Louvain modularity blog graph:   " , modularity.getQuality(clustering, blog));
+}
+
+TEST_F(CommunityGTest, testClusteringProduct) {
+	ClusteringProduct prod;
+	GraphGenerator graphGenerator;
+	Graph G = graphGenerator.makeCompleteGraph(1200);
+	ClusteringGenerator clusteringGenerator;
+	Partition twelve = clusteringGenerator.makeContinuousBalancedClustering(G, 12);
+	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
+	Partition eight = clusteringGenerator.makeContinuousBalancedClustering(G, 8);
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(twelve, prod.calculate(twelve, twelve), G)) << "Product of itself does not modify the clustering";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(singleton, prod.calculate(twelve, singleton), G)) << "Product of singleton with any clustering is the singleton clustering";
+	Partition sixteen = prod.calculate(twelve, eight);
+	EXPECT_EQ(16, sixteen.numberOfSubsets());
+	auto clusterSizes = sixteen.subsetSizeMap();
+	size_t i = 0;
+	for (auto size : clusterSizes) {
+		if (i % 4 == 0 || i % 4 == 3) {
+			EXPECT_EQ(100, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
+		} else {
+			EXPECT_EQ(50, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
+		}
+		++i;
+	}
 }
 
 
