@@ -35,6 +35,7 @@ public:
 	void update(const std::vector<GraphEvent>& batch) override;
 
 protected:
+	enum Color {WHITE, BLACK, GRAY};
 	std::vector<Color> color;
 	count maxDistance;
 

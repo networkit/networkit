@@ -16,8 +16,6 @@
 
 namespace NetworKit {
 
-  enum Color {WHITE, BLACK, GRAY};
-
 /**
  * @ingroup graph
  * Interface for dynamic single-source shortest path algorithms.
