@@ -17,7 +17,7 @@ std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const 
 	g.forNodes([&](node u) {
 		//Sort ego's alters from strongly to weakly tied.
 		g.forNeighborsOf(u, [&](node v) {
-			count triangleCount = round(triangles[uEdge(u, v)]);
+			count triangleCount = round(triangles[g.edgeid(u, v)]);
 			neighbors[u].push_back(RankedEdge(u, v, triangleCount));
 		});
 		std::sort(neighbors[u].begin(), neighbors[u].end());
@@ -43,9 +43,9 @@ std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const 
 }
 
 Redundancy SimmelianAttributizer::getOverlap(	const node& ego,
-											const node& alter,
-											const std::vector<RankedNeighbors>& neighbors,
-											const count& maxRank) {
+												const node& alter,
+												const std::vector<RankedNeighbors>& neighbors,
+												const count& maxRank) {
 	//Initialization of output values
 	Redundancy result = Redundancy(0, 0.0);
 

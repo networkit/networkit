@@ -49,6 +49,22 @@ struct uEdge
 	}
 };
 
+typedef std::vector<double> EdgeAttribute;
+
+/**
+ * Abstract base class for graph attribute generator. It takes a graph (weighted or unweighted)
+ * and calculates a graph attribute from the input graph.
+ */
+class AttributeGenerator {
+
+public:
+	/**
+	 * Calculates an edge attribute for the edges of the given graph.
+	 * (Possibly under consideration of the given attribute).
+	 */
+	virtual EdgeAttribute getAttribute(const Graph& g, const EdgeAttribute& attribute) = 0;
+};
+
 } /* namespace NetworKit */
 
 
@@ -80,7 +96,7 @@ struct hash<NetworKit::uEdge> {
 } /* namespace std */
 
 
-namespace NetworKit {
+/*namespace NetworKit {
 
 class EdgeAttribute {
 
@@ -89,13 +105,19 @@ private:
 	EdgeMap attributeMap;
 	double defaultValue;
 
+	std::vector<double> attributeVector;
+	Graph& graph;
+
 public:
 
-	EdgeAttribute(double defaultValue) : defaultValue(defaultValue) {}
+	EdgeAttribute(count nEdges, double defaultValue) :
+		attributeVector(std::vector<double>(nEdges, defaultValue)) {}
 
-	EdgeAttribute() : defaultValue(0.0) {}
+	EdgeAttribute(count nEdges) : attributeVector(nEdges, 0.0) {}
 
-	void set(uEdge key, double value) {
+	void set(const Graph& graph, node u, node v, double value) {
+		edgeid eid = graph.edgeId(u, v);
+
 		attributeMap[key] = value;
 	}
 
@@ -117,20 +139,7 @@ public:
 	}
 };
 
-/**
- * Abstract base class for graph attribute generator. It takes a graph (weighted or unweighted)
- * and calculates a graph attribute from the input graph.
- */
-class AttributeGenerator {
+}*/
 
-public:
-	/**
-	 * Calculates an edge attribute for the edges of the given graph.
-	 * (Possibly under consideration of the given attribute).
-	 */
-	virtual EdgeAttribute getAttribute(const Graph& g, const EdgeAttribute& attribute) = 0;
-};
-
-}/* namespace NetworKit */
 
 #endif /* ATTRIBUTEGENERATOR_H_ */
