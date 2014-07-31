@@ -32,7 +32,7 @@ public:
 	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false);
 
 	/** Computes the shortest paths from the source to all other nodes. */
-	virtual void run() = 0;
+	virtual void run(node t = none) = 0;
 
 	/**
 	 * Returns a vector of weighted distances from the source node, i.e. the
