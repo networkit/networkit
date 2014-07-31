@@ -112,33 +112,6 @@ void DynBetweenness::update(const GraphEvent e) {
                         }
                     });
                 }
-                // dependencies accumulation
-                count level = maxDistance[s];
-                while (level > 0) {
-                    while (!l_queues[level].empty()){
-                        node w = l_queues[level].front();
-                        l_queues[level].pop();
-                        G.forNeighborsOf(w, [&](node v){
-                            // v is a predecessor of w
-                            if (new_dist[v] < new_dist[w]) {
-                                if (touched[v] == 0) {
-                                    touched[v] = 1;
-                                    new_dep[v] = dependencies[s][v];
-                                    l_queues[level - 1].push(v);
-                                }
-                                double new_contrib = double(new_npaths[v])/new_npaths[w]*(1+new_dep[w]);
-                                new_dep[v] += new_contrib;
-                                double old_contrib = double(npaths[s][v])/npaths[s][w]*(1+dependencies[s][w]);
-                                if (touched[v] == 1 && (v != u_h or w!= u_l))
-                                    new_dep[v] -= old_contrib;
-                            }
-                        });
-                        if (w != s) {
-                            scoreData[w] = scoreData[w] + new_dep[w] - dependencies[s][w];
-                        }
-                    }
-                    level = level - 1;
-                }
             } else if (difference > 1) {
                 new_dist[u_l] = distances[s][u_h] + 1;
                 l_queues[new_dist[u_l]].push(u_l);
@@ -161,37 +134,36 @@ void DynBetweenness::update(const GraphEvent e) {
                             }
                     });
                 }
-                // dependencies accumulation
-                DEBUG("Dependency accumulation");
-                count level = maxDistance[s];
-                while(level > 0) {
-                    while(!l_queues[level].empty()) {
-                        node w = l_queues[level].front();
-                        DEBUG("Node ",w);
-                        l_queues[level].pop();
-                        G.forNeighborsOf(w, [&](node v){
-                            if (new_dist[v] < new_dist[w]) {
-                                if (touched[v] == 0) {
-                                    touched[v] = 1;
-                                    new_dep[v] = dependencies[s][v];
-                                    l_queues[level-1].push(v);
-                                }
-                                double new_contrib = double(new_npaths[v])/new_npaths[w]*(1+new_dep[w]);
-                                new_dep[v] += new_contrib;
-                                double old_contrib = double(npaths[s][v])/npaths[s][w]*(1+dependencies[s][w]);
-                                if (touched[v] == 1 && (v != u_h or w!= u_l))
-                                    new_dep[v] -= old_contrib;
-                                DEBUG("Parent ", v);
-                            }
-                        });
-                        if (w != s) {
-                            scoreData[w] = scoreData[w] + new_dep[w] - dependencies[s][w];
-                        }
-                    }
-                    level = level - 1;
-                }
             }
-
+            // dependencies accumulation
+            DEBUG("Dependency accumulation");
+            count level = maxDistance[s];
+            while(level > 0) {
+                while(!l_queues[level].empty()) {
+                    node w = l_queues[level].front();
+                    DEBUG("Node ",w);
+                    l_queues[level].pop();
+                    G.forNeighborsOf(w, [&](node v){
+                        if (new_dist[v] < new_dist[w]) {
+                            if (touched[v] == 0) {
+                                touched[v] = 1;
+                                new_dep[v] = dependencies[s][v];
+                                l_queues[level-1].push(v);
+                            }
+                            double new_contrib = double(new_npaths[v])/new_npaths[w]*(1+new_dep[w]);
+                            new_dep[v] += new_contrib;
+                            double old_contrib = double(npaths[s][v])/npaths[s][w]*(1+dependencies[s][w]);
+                            if (touched[v] == 1 && (v != u_h or w!= u_l))
+                                new_dep[v] -= old_contrib;
+                            DEBUG("Parent ", v);
+                        }
+                    });
+                    if (w != s) {
+                        scoreData[w] = scoreData[w] + new_dep[w] - dependencies[s][w];
+                    }
+                }
+                level = level - 1;
+            }
             // data structures update
             G.forNodes([&] (node r){
                 distances[s][r] = new_dist[r];
