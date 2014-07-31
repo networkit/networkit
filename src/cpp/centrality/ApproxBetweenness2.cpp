@@ -51,7 +51,7 @@ void ApproxBetweenness2::run() {
 		for (node t : stack) {
 			if (t == s){
 				continue;
-			}			
+			}
 			for (node p : sssp->getPredecessors(t)) {
 				// TODO: make weighting factor configurable
 				dependency[p] += (double(sssp->distance(p)) / sssp->distance(t))*(double(sssp->numberOfPaths(p)) / sssp->numberOfPaths(t)) * (1 + dependency[t]);
