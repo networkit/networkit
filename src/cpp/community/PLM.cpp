@@ -64,7 +64,7 @@ Partition PLM::run(Graph& G) {
 
 		// collect edge weight to neighbor clusters
 		std::map<index, edgeweight> affinity;
-		G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
+		G.forNeighborsOf(u, [&](node v, edgeweight weight) {
 			if (u != v) {
 				index C = zeta[v];
 				affinity[C] += weight;

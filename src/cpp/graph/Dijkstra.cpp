@@ -57,7 +57,7 @@ void Dijkstra::run() {
 //		DEBUG("pq size: ", pq.size());
 //		TRACE("current node in Dijkstra: " , current);
 
-		G.forWeightedEdgesOf(current, relax);
+		G.forEdgesOf(current, relax);
 	}
 
 }
