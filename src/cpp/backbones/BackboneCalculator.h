@@ -22,10 +22,10 @@ public:
 	/**
 	 * Calculates the backbone graph for the given input graph.
 	 */
-	virtual Graph calculate(const Graph& g, const EdgeAttribute& attribute) = 0;
+	virtual Graph calculate(Graph& g, const EdgeAttribute& attribute) = 0;
 
 	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _calculate(const Graph& g) {
+	Graph* _calculate(Graph& g) {
 		return new Graph{std::move(calculate(g, EdgeAttribute(g.upperEdgeIdBound())))};
 	};
 
