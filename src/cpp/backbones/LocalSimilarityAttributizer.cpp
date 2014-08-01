@@ -22,7 +22,7 @@ EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, cons
 
 	EdgeAttribute sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
-	graph.forNodes([&](node i) {
+	graph.parallelForNodes([&](node i) {
 		count d = graph.degree(i);
 
 		/*
