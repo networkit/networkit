@@ -2088,6 +2088,158 @@ cdef class Cover:
 
 # Module: community
 
+cdef extern from "../cpp/community/ClusteringGenerator.h":
+	cdef cppclass _ClusteringGenerator "NetworKit::ClusteringGenerator":
+		_ClusteringGenerator() except +
+		_Partition makeSingletonClustering(_Graph G) except +
+		_Partition makeOneClustering(_Graph G) except +
+		_Partition makeRandomClustering(_Graph G, count k) except +
+		_Partition makeContinuousBalancedClustering(_Graph G, count k) except +
+		_Partition makeNoncontinuousBalancedClustering(_Graph G, count k) except +
+
+cdef class ClusteringGenerator:
+	""" Generators for various clusterings """
+	cdef _ClusteringGenerator _this
+	"""  Generate a clustering where each node has its own cluster
+
+	Parameters
+	----------
+	G: Graph
+		The graph for which the clustering shall be generated
+
+	Returns
+	-------
+	Partition
+		The generated partition
+	"""
+	def makeSingletonClustering(self, Graph G):
+		return Partition().setThis(self._this.makeSingletonClustering(dereference(G._this)))
+	"""  Generate a clustering with one cluster consisting of all nodes
+
+	Parameters
+	----------
+	G: Graph
+		The graph for which the clustering shall be generated
+
+	Returns
+	-------
+	Partition
+		The generated partition
+	"""
+	def makeOneClustering(self, Graph G):
+		return Partition().setThis(self._this.makeOneClustering(dereference(G._this)))
+	"""  Generate a clustering with `k` clusters to which nodes are assigned randomly
+
+	Parameters
+	----------
+	G: Graph
+		The graph for which the clustering shall be generated
+	k: count
+		The number of clusters that shall be generated
+
+	Returns
+	-------
+	Partition
+		The generated partition
+	"""
+	def makeRandomClustering(self, Graph G, count k):
+		return Partition().setThis(self._this.makeRandomClustering(dereference(G._this), k))
+	"""  Generate a clustering with `k` clusters to which nodes are assigned in continuous blocks
+
+	Parameters
+	----------
+	G: Graph
+		The graph for which the clustering shall be generated
+	k: count
+		The number of clusters that shall be generated
+
+	Returns
+	-------
+	Partition
+		The generated partition
+	"""
+	def makeContinuousBalancedClustering(self, Graph G, count k):
+		return Partition().setThis(self._this.makeContinuousBalancedClustering(dereference(G._this), k))
+	"""  Generate a clustering with `k` clusters, the ith node is assigned to cluster i % k. This means that
+	for k**2 nodes, this clustering is complementary to the continuous clustering in the sense that no pair
+	of nodes that is in the same cluster in one of the clusterings is in the same cluster in the other clustering.
+
+	Parameters
+	----------
+	G: Graph
+		The graph for which the clustering shall be generated
+	k: count
+		The number of clusters that shall be generated
+
+	Returns
+	-------
+	Partition
+		The generated partition
+	"""
+	def makeNoncontinuousBalancedClustering(self, Graph G, count k):
+		return Partition().setThis(self._this.makeNoncontinuousBalancedClustering(dereference(G._this), k))
+
+cdef extern from "../cpp/community/GraphClusteringTools.h" namespace "NetworKit::GraphClusteringTools":
+	float getImbalance(_Partition zeta) except +
+	_Graph communicationGraph(_Graph graph, _Partition zeta) except +
+	count weightedDegreeWithCluster(_Graph graph, _Partition zeta, node u, index cid)
+	bool isProperClustering(_Graph G, _Partition zeta)
+	bool isSingletonClustering(_Graph G, _Partition zeta)
+	bool isOneClustering(_Graph G, _Partition zeta)
+	bool equalClusterings(_Partition zeta, _Partition eta, _Graph G)
+
+cdef class GraphClusteringTools:
+	@staticmethod
+	def getImbalance(Partition zeta):
+		return getImbalance(zeta._this)
+	@staticmethod
+	def communicationGraph(Graph graph, Partition zeta):
+		cdef Graph ret = Graph()
+		ret._this.stealFrom(communicationGraph(dereference(graph._this), zeta._this))
+		return ret
+	@staticmethod
+	def weightedDegreeWithCluster(Graph graph, Partition zeta, node u, index cid):
+		return weightedDegreeWithCluster(dereference(graph._this), zeta._this, u, cid)
+	@staticmethod
+	def isProperClustering(Graph G, Partition zeta):
+		return isProperClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def isSingletonClustering(Graph G, Partition zeta):
+		return isSingletonClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def isOneClustering(Graph G, Partition zeta):
+		return isOneClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def equalClustering(Partition zeta, Partition eta, Graph G):
+		return equalClusterings(zeta._this, eta._this, dereference(G._this))
+
+cdef extern from "../cpp/community/ClusteringProduct.h":
+	cdef cppclass _ClusteringProduct "NetworKit::ClusteringProduct":
+		_ClusteringProduct() except +
+		_Partition calculate(_Partition zeta, _Partition eta) except +
+
+cdef class ClusteringProduct:
+	""" The product of two partitions is defined as the partitions where each cluster is the intersection
+	of a cluster in the first and in the second clustering
+	"""
+	cdef _ClusteringProduct _this
+	"""  Calculate the product of two partitions `zeta` and `eta`
+
+	Parameters
+	----------
+	zeta: Partition
+		The first partition
+	eta: Partition
+		The second partition
+
+	Returns
+	-------
+	Partition
+		The product of zeta and eta
+	"""
+	def calculate(self, Partition zeta, Partition eta):
+		return Partition().setThis(self._this.calculate(zeta._this, eta._this))
+
 cdef extern from "../cpp/community/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
 		_Coverage() except +
