@@ -12,6 +12,7 @@
 #include "../../backbones/Backbones.h"
 #include "../../backbones/SimmelianJaccardAttributizer.h"
 #include "../../backbones/ChibaNishizekiTriangleCounter.h"
+#include "../../graph/GraphGenerator.h"
 
 namespace NetworKit {
 
@@ -202,6 +203,19 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 	EXPECT_EQ(5, b.numberOfNodes()) << "wrong node count in backbone";
 }
 
+TEST_F(SimmelianBackboneGTest, testBackboneConnectedGraph) {
+	GraphGenerator graphGen;
+	Graph g = graphGen.makeCompleteGraph(25);
+	g.indexEdges();
+
+	ChibaNishizekiTriangleCounter counter;
+	EdgeAttribute triangleCounts = counter.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+
+	//Parametric
+	SimmelianBackboneParametric simmel(25, 5);
+	Graph b = simmel.calculate(g, triangleCounts);
+	EXPECT_EQ(300, b.numberOfEdges()) << "wrong edge count in backbone";
+}
 
 }
 /* namespace NetworKit */
