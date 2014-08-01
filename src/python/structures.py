@@ -1,1 +1,1 @@
-from _NetworKit import Partition
+from _NetworKit import Partition, Cover

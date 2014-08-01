@@ -28,9 +28,10 @@ public:
 	 * 							0.0 -> one community
 	 * 							2m 	-> singleton communities
 	 * @param[in]	maxIter		maximum number of iterations for move phase
+	 * @param[in]	parallelCoarsening	use parallel graph coarsening
 	 *
 	 */
-	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=false);
+	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=true);
 
 
 	/**

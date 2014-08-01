@@ -50,7 +50,8 @@ Partition PLM::run(const Graph& G) {
 	// init community-dependent temporaries
 	std::vector<double> volCommunity(o, 0.0);
 	zeta.parallelForEntries([&](node u, index C) { 	// set volume for all communities
-		volCommunity[C] = volNode[u];
+		if (C != none)
+			volCommunity[C] = volNode[u];
 	});
 
 	// first move phase
@@ -187,9 +188,11 @@ Partition PLM::run(const Graph& G) {
 			volCommunity.clear();
 			volCommunity.resize(o, 0.0);
 			zeta.parallelForEntries([&](node u, index C) { 	// set volume for all communities
-				edgeweight volN = volNode[u];
-				#pragma omp atomic update
-				volCommunity[C] += volN;
+				if (C != none) {
+					edgeweight volN = volNode[u];
+					#pragma omp atomic update
+					volCommunity[C] += volN;
+				}
 			});
 
 			// second move phase

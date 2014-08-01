@@ -793,7 +793,7 @@ void Graph::forNodePairs(L handle) const {
 
 template<typename L>
 void Graph::parallelForNodePairs(L handle) const {
-	#pragma omp parallel for
+	#pragma omp parallel for schedule(guided)
 	for (node u = 0; u < z; ++u) {
 		if (exists[u]) {
 			for (node v = u + 1; v < z; ++v) {

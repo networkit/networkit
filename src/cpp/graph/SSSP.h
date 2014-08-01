@@ -9,12 +9,13 @@
 #define SSSP_H_
 
 #include <set>
- 
+#include <stack>
+
 #include "Graph.h"
 
 namespace NetworKit {
 
-/** 
+/**
  * @ingroup graph
  * Abstract base class for single-source shortest path algorithms.
  */
@@ -28,13 +29,10 @@ public:
 	 * @param G The graph.
 	 * @param s The source node.
 	 */
-	SSSP(const Graph& G, node s);
-
-	/** Default destructor */
-	virtual ~SSSP() = default;	
+	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false);
 
 	/** Computes the shortest paths from the source to all other nodes. */
-	virtual void run() = 0;
+	virtual void run(node t = none) = 0;
 
 	/**
 	 * Returns a vector of weighted distances from the source node, i.e. the
@@ -83,6 +81,14 @@ public:
 	 */
 	virtual std::set<std::vector<node> > getPaths(node t, bool forward=true) const;
 
+
+	/**
+	* Returns a stack of nodes ordered in decreasing distance from the source
+	*
+	* @return stack of nodes
+	*/
+	virtual std::stack<node> getStack() const;
+
 protected:
 
 	const Graph& G;
@@ -90,6 +96,11 @@ protected:
 	std::vector<edgeweight> distances;
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<count> npaths;
+
+	std::stack<node> stack;
+
+	bool storePaths;		//!< if true, paths are reconstructable and the number of paths is stored
+	bool storeStack;		//!< if true, store a stack of nodes ordered in decreasing distance from the source
 };
 
 inline edgeweight SSSP::distance(node t) const {
@@ -97,10 +108,16 @@ inline edgeweight SSSP::distance(node t) const {
 }
 
 inline count SSSP::numberOfPaths(node t) const {
+	if (! storePaths) {
+		throw std::runtime_error("number of paths have not been stored");
+	}
 	return npaths[t];
 }
 
 inline std::vector<node> SSSP::getPredecessors(node t) const {
+	if (! storePaths) {
+		throw std::runtime_error("predecessors have not been stored");
+	}
 	return previous[t];
 }
 
