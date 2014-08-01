@@ -12,7 +12,7 @@ namespace NetworKit {
 GlobalThresholdFilter::GlobalThresholdFilter(double threshold, bool above) :
 		threshold(threshold), above(above) {}
 
-Graph GlobalThresholdFilter::calculate(const Graph& graph, const EdgeAttribute& attribute) {
+Graph GlobalThresholdFilter::calculate(Graph& graph, const EdgeAttribute& attribute) {
 	//Create an edge-less backbone graph.
 	Graph backboneGraph = cloneNodes(graph, false);
 

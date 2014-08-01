@@ -11,7 +11,9 @@ namespace NetworKit {
 
 SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(double threshold) : threshold(threshold) {}
 
-Graph SimmelianBackboneNonParametric::calculate(const Graph& g, const EdgeAttribute& attribute) {
+Graph SimmelianBackboneNonParametric::calculate(Graph& g, const EdgeAttribute& attribute) {
+	g.indexEdges();
+
 	ChibaNishizekiTriangleCounter triangleAttributizer;
 	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
 
@@ -29,7 +31,9 @@ Graph SimmelianBackboneNonParametric::calculate(const Graph& g, const EdgeAttrib
 SimmelianBackboneParametric::SimmelianBackboneParametric(int maxRank, int minOverlap) :
 		maxRank(maxRank), minOverlap(minOverlap) {}
 
-Graph SimmelianBackboneParametric::calculate(const Graph& g, const EdgeAttribute& attribute) {
+Graph SimmelianBackboneParametric::calculate(Graph& g, const EdgeAttribute& attribute) {
+	g.indexEdges();
+
 	ChibaNishizekiTriangleCounter triangleAttributizer;
 	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
 
@@ -47,7 +51,9 @@ Graph SimmelianBackboneParametric::calculate(const Graph& g, const EdgeAttribute
 MultiscaleBackbone::MultiscaleBackbone(double alpha) :
 		alpha(alpha) {}
 
-Graph MultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
+Graph MultiscaleBackbone::calculate(Graph& g, const EdgeAttribute& attribute) {
+	g.indexEdges();
+
 	//TODO: the following will be obsolete once graph edge attributes are used.
 	EdgeAttribute weight(g.upperEdgeIdBound());
 	g.forEdges([&](node u, node v, edgeid eid) {
@@ -68,7 +74,9 @@ Graph MultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribu
 LocalSimilarityBackbone::LocalSimilarityBackbone(double e) :
 		e(e) {}
 
-Graph LocalSimilarityBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
+Graph LocalSimilarityBackbone::calculate(Graph& g, const EdgeAttribute& attribute) {
+	g.indexEdges();
+
 	LocalSimilarityAttributizer localSimAttributizer;
 	EdgeAttribute minExponent = localSimAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
 
@@ -83,7 +91,9 @@ Graph LocalSimilarityBackbone::calculate(const Graph& g, const EdgeAttribute& at
 SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(double alpha) :
 		alpha(alpha) {}
 
-Graph SimmelianMultiscaleBackbone::calculate(const Graph& g, const EdgeAttribute& attribute) {
+Graph SimmelianMultiscaleBackbone::calculate(Graph& g, const EdgeAttribute& attribute) {
+	g.indexEdges();
+
 	ChibaNishizekiTriangleCounter triangleAttributizer;
 	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
 
