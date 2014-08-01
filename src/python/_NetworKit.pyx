@@ -155,6 +155,7 @@ cdef class Graph:
 	# 	return self
 
 	cdef setThis(self, _Graph* other):
+		del self._this
 		self._this = other
 		return self
 
