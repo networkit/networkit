@@ -177,7 +177,7 @@ struct IsStreamableHelper {
 	
 	template<typename T,
 		AUX_REQUIRE(Streamable, isBaseOrSame<std::ostream,
-				decay<decltype(std::declval<std::ostream&>() << std::declval<const T&>())>>())
+				decay_t<decltype(std::declval<std::ostream&>() << std::declval<const T&>())>>())
 	>
 	static std::true_type isStreamable(const T&);
 	
