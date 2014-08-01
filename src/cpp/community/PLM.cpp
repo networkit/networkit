@@ -209,9 +209,15 @@ std::string NetworKit::PLM::toString() const {
 	} else {
 		refined = "";
 	}
+	std::string parCoarsening;
+	if (parallelCoarsening) {
+		parCoarsening = "parallel coarsening";
+	} else {
+		parCoarsening = "";
+	}
 
 	std::stringstream stream;
-	stream << "PLM(" << parallelism << "," << refined << "," << parallelCoarsening << ")";
+	stream << "PLM(" << parallelism << "," << refined << "," << parCoarsening << ")";
 
 	return stream.str();
 }
