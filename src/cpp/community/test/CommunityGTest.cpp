@@ -783,6 +783,18 @@ TEST_F(CommunityGTest, testClusteringProduct) {
 	}
 }
 
+TEST_F(CommunityGTest, testMakeNoncontinuousClustering) {
+	ClusteringGenerator generator;
+	GraphGenerator graphGenerator;
+	Graph G = graphGenerator.makeCompleteGraph(100);
+	Partition con = generator.makeContinuousBalancedClustering(G, 10);
+	Partition nonCon = generator.makeNoncontinuousBalancedClustering(G, 10);
+	ClusteringProduct prod;
 
+	JaccardMeasure jaccard;
+
+	EXPECT_EQ(1, jaccard.getDissimilarity(G, con, nonCon)) << "The Jaccard distance of a clustering with its complementary clustering should be 1";
+	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, prod.calculate(con, nonCon))) << "The product of a clustering with its complementary clustering should be the singleton clustering";
+}
 
 } /* namespace NetworKit */
