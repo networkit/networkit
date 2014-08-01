@@ -20,8 +20,10 @@
 #include "../viz/Point.h"
 #include "../auxiliary/Random.h"
 
+
 namespace NetworKit {
 
+	class ParallelPartitionCoarsening; // forward declaration for friend class
 	class GraphBuilder; // forward declaration
 
 /**
@@ -30,6 +32,7 @@ namespace NetworKit {
  */
 class Graph final {
 
+	friend class ParallelPartitionCoarsening;
 	friend class GraphBuilder;
 
 private:
@@ -79,6 +82,7 @@ private:
 	 * Returns the index of node v in the array of outgoing edges of node u.
 	 */
 	index indexInOutEdgeArray(node u, node v) const;
+
 
 public:
 
@@ -711,6 +715,15 @@ public:
 
 
 	template<typename L> void DFSEdgesfrom(node r, L handle) const;
+
+
+	/* SPECIAL */
+
+
+	/**
+	* Treat the adjacency datastructure as an undirected graph.
+	*/
+	void treatAsUndirected();
 };
 
 /* NODE ITERATORS */

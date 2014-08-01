@@ -15,10 +15,8 @@
 
 namespace NetworKit {
 
-NMIDistance::~NMIDistance() {
-}
 
-double NMIDistance::getDissimilarity(Graph& G, Partition& zeta, Partition& eta) {
+double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, const Partition& eta) {
 
 	count n = G.numberOfNodes();
 

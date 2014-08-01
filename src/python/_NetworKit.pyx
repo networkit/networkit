@@ -2242,7 +2242,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 cdef extern from "../cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
 		_PLM() except +
-		_PLM(bool refine, double gamma, string par, count maxIter) except +
+		_PLM(bool refine, double gamma, string par, count maxIter, bool parCoarsening) except +
 		string toString() except +
 		_Partition run(_Graph G) except +
 
@@ -2270,8 +2270,8 @@ cdef class PLM(CommunityDetector):
 
 	cdef _PLM _this
 
-	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32):
-		self._this = _PLM(refine, gamma, stdstring(par), maxIter)
+	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True):
+		self._this = _PLM(refine, gamma, stdstring(par), maxIter, parCoarsening)
 
 	def toString(self):
 		""" Get string representation.
@@ -3590,3 +3590,22 @@ cdef class GraphUpdater:
 		for ev in stream:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_stream)
+
+
+# Module: coarsening
+
+cdef extern from "../cpp/coarsening/ParallelPartitionCoarsening.h":
+	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening":
+		_ParallelPartitionCoarsening() except +
+		pair[_Graph, vector[node]] run(_Graph, _Partition) except +
+
+
+cdef class ParallelPartitionCoarsening:
+	cdef _ParallelPartitionCoarsening* _this
+
+	def __cinit__(self):
+		self._this = new _ParallelPartitionCoarsening()
+
+	def run(self, Graph G not None, Partition zeta not None):
+		result = self._this.run(dereference(G._this), zeta._this)
+		return (Graph(0).setThis(&result.first), result.second)
