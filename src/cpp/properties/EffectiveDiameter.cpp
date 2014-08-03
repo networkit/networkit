@@ -11,14 +11,15 @@
 #include <math.h>
 #include <iterator>
 #include <stdlib.h>
+#include <omp.h>
 
 namespace NetworKit {
 
-count EffectiveDiameter::effectiveDiameter(const Graph& G) {
+double EffectiveDiameter::effectiveDiameter(const Graph& G) {
 	return EffectiveDiameter::effectiveDiameter(G, 0.9, 64, 7);
 }
 
-count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio) {
+double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio) {
 	return EffectiveDiameter::effectiveDiameter(G, ratio, 64, 7);
 }
 
@@ -26,19 +27,14 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio) {
 this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
 in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 */
-count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, const count k, const count r) {
-	// check whether the graph is connected
-	ConnectedComponents cc(G);
-	cc.run();
-	if (cc.numberOfComponents() > 1) {
-		throw std::runtime_error("Graph not connected - diameter is infinite");
-	}
-
+double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, const count k, const count r) {
+	// set number of threads for OpenMP
+	omp_set_num_threads(4);
 	// the length of the bitmask where the number of connected nodes is saved
 	count lengthOfBitmask = (count) ceil(log2(G.numberOfNodes()));
 	// saves all k bitmasks for every node of the current iteration
 	std::vector<std::vector<unsigned int> > mCurr;
-	// saved all k bitmasks for every node of the previous iteration
+	// saves all k bitmasks for every node of the previous iteration
 	std::vector<std::vector<unsigned int> > mLast;
 	// the list of nodes that are already connected to all other nodes
 	std::vector<node> finishedNodes;
@@ -50,6 +46,13 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, c
 	count h = 1;
 	// the amount of nodes that are connected to all other nodes (|finishedNodes|)
 	count numberOfFinishedNodes = 0;
+	// the minimal number of leading ones in all bitmasks
+	count leadingOnes = 0; // TODO
+	// sums over the number of edges needed to reach 90% of all other nodes
+	double effectiveDiameter = 0;
+	// the estimated number of connected nodes
+	double estimatedConnectedNodes;
+
 	double random;
 	srand (time(NULL));
 
@@ -83,10 +86,11 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, c
 	});
 
 	// as long as we need to connect more nodes
-	while (numberOfFinishedNodes < threshold) {
+	while (numberOfFinishedNodes < G.numberOfNodes()) {
 		G.forNodes([&](node v) {
 			// if the current node is not yet connected to all other nodes
 			if (finishedNodes[v] == 0) {
+				#pragma omp parallel for
 				// for each parallel approximation
 				for (count j = 0; j < k; j++) {
 					// the node is still connected to all previous neighbors
@@ -96,8 +100,6 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, c
 						mCurr[v][j] = mCurr[v][j] | mLast[u][j];
 					});
 				}
-				// the estimated number of neighbors
-				double estimatedConnectedNodes;
 				// the least bit number in the bitmask of the current node/distance that has not been set
 				double b = 0;
 
@@ -109,7 +111,6 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, c
 						}
 					}
 				}
-
 				// calculate the average least bit number that has not been set over all parallel approximations
 				b = b / k;
 				// calculate the estimated number of neighbors
@@ -122,28 +123,20 @@ count EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, c
 						break;
 					}
 				}
-				if (nodeFinished) {
+				if (estimatedConnectedNodes >= threshold || nodeFinished) {
 					finishedNodes[v] = 1;
 					numberOfFinishedNodes++;
+					effectiveDiameter += h;
 				}
 			}
 		});
 		mLast = mCurr;
 		h++;
 	}
-	// decrement h since we increment it even in the very last iteration
-	h = h-1;
-	return h;
+	return effectiveDiameter/G.numberOfNodes();
 }
 
 count EffectiveDiameter::effectiveDiameterExact(const Graph& G) {
-	// Check whether the graph is connected
-	ConnectedComponents cc(G);
-	cc.run();
-	if (cc.numberOfComponents() > 1) {
-		throw std::runtime_error("Graph not connected - diameter is infinite");
-	}
-
 	// list of nodes that are connected to all other nodes
 	std::set<node> finished;
 	// diameter[node][distance][connected_nodes]
