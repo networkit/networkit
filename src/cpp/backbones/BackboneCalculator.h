@@ -29,6 +29,11 @@ public:
 		return new Graph{std::move(calculate(g, EdgeAttribute(g.upperEdgeIdBound())))};
 	};
 
+	/** only to be used by cython - this eliminates an unnecessary copy */
+	Graph* _calculate(Graph& g, EdgeAttribute& e) {
+		return new Graph{std::move(calculate(g, e))};
+	};
+
 	/**
 	 * Creates a new undirected graph that contains only the nodes of the given graph.
 	 * TODO: Implement a clone method in Graph instead?
