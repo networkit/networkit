@@ -3514,4 +3514,40 @@ cdef class SimmelianMultiscaleBackbone:
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
 		
-		
+####### THE FOLLOWING ARE ACTUALLY INTERNAL IMPLEMENTATIONS. THEY ARE EXPORTED TEMPORARILY FOR PERFORMANCE REASONS.
+
+
+cdef extern from "../cpp/backbones/AttributeGenerator.h":
+	cdef cppclass _EdgeAttribute "NetworKit::EdgeAttribute":
+		_EdgeAttribute(count c, double defaultValue) except +
+
+cdef class EdgeAttribute:
+	cdef _EdgeAttribute* _this
+
+	def __cinit__(self, count):
+		self._this = new _EdgeAttribute(count, 0.0)
+
+	def __dealloc__(self):
+		del self._this
+
+	cdef setThis(self, _EdgeAttribute* other):
+		self._this = other
+		return self
+
+cdef extern from "../cpp/backbones/ChibaNishizekiTriangleCounter.h":
+	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
+		_ChibaNishizekiTriangleCounter() except +
+		_EdgeAttribute* _getAttribute(_Graph G, _EdgeAttribute a) except +
+
+cdef class ChibaNishizekiTriangleCounter:
+	"""
+	Triangle counting. 
+	"""
+
+	cdef _ChibaNishizekiTriangleCounter* _this
+
+	def __cinit__(self):
+		self._this = new _ChibaNishizekiTriangleCounter()
+
+	def getAttribute(self, Graph G, EdgeAttribute a):
+		return EdgeAttribute(0).setThis(self._this._getAttribute(dereference(G._this), dereference(a._this)))
