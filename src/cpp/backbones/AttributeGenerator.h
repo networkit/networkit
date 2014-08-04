@@ -94,6 +94,9 @@ public:
 
 	EdgeAttribute(count nEdges) : attributeVector(nEdges, 0.0) {}
 
+	/** Default move constructor */
+	EdgeAttribute(EdgeAttribute&& other) = default;
+
 	//Read operator
 	double& operator[](std::vector<double>::size_type idx) {
 		return attributeVector[idx];
@@ -118,11 +121,17 @@ public:
 class AttributeGenerator {
 
 public:
+
 	/**
 	 * Calculates an edge attribute for the edges of the given graph.
 	 * (Possibly under consideration of the given attribute).
 	 */
 	virtual EdgeAttribute getAttribute(const Graph& g, const EdgeAttribute& attribute) = 0;
+
+	/** only to be used by cython - this eliminates an unnecessary copy */
+	EdgeAttribute* _getAttribute(Graph& g, EdgeAttribute& attribute) {
+		return new EdgeAttribute{std::move(getAttribute(g, attribute))};
+	};
 };
 
 }
