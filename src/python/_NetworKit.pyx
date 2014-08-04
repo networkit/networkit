@@ -3551,3 +3551,32 @@ cdef class ChibaNishizekiTriangleCounter:
 
 	def getAttribute(self, Graph G, EdgeAttribute a):
 		return EdgeAttribute(0).setThis(self._this._getAttribute(dereference(G._this), dereference(a._this)))
+		
+cdef extern from "../cpp/backbones/SimmelianJaccardAttributizer.h":
+	cdef cppclass _SimmelianJaccardAttributizer "NetworKit::SimmelianJaccardAttributizer":
+		_SimmelianJaccardAttributizer() except +
+		_EdgeAttribute* _getAttribute(_Graph G, _EdgeAttribute a) except +
+
+cdef class SimmelianJaccardAttributizer:
+
+	cdef _SimmelianJaccardAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _SimmelianJaccardAttributizer()
+
+	def getAttribute(self, Graph G, EdgeAttribute a):
+		return EdgeAttribute(0).setThis(self._this._getAttribute(dereference(G._this), dereference(a._this)))
+		
+cdef extern from "../cpp/backbones/GlobalThresholdFilter.h":
+	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
+		_GlobalThresholdFilter(double alpha, bool above) except +
+		_Graph* _calculate(_Graph G, _EdgeAttribute a) except +
+
+cdef class GlobalThresholdFilter:
+	cdef _GlobalThresholdFilter* _this
+
+	def __cinit__(self, double e, bool above):
+		self._this = new _GlobalThresholdFilter(e, above)
+
+	def calculate(self, Graph G, EdgeAttribute a):
+		return Graph().setThis(self._this._calculate(dereference(G._this), dereference(a._this)))
