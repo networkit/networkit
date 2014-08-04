@@ -676,7 +676,7 @@ TEST_F(CommunityGTest, testModularityParallelVsSequential) {
 TEST_F(CommunityGTest, testNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
 	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
+	Graph G = gen.makeErdosRenyiGraph(1000, 0.01);
 
 	ClusteringGenerator clustGen;
 	Partition one1 = clustGen.makeOneClustering(G);
@@ -698,12 +698,15 @@ TEST_F(CommunityGTest, testNMIDistance) {
 
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distSingleton)) << "NMID of two identical singleton clusterings should be 0.0";
 
-	Partition random1 = clustGen.makeRandomClustering(G, 2);
-	Partition random2 = clustGen.makeRandomClustering(G, 2);
+	Partition random1 = clustGen.makeRandomClustering(G, 40);
+	Partition random2 = clustGen.makeRandomClustering(G, 40);
 
 	double distRandom = NMID.getDissimilarity(G, random1, random2);
 	INFO("NMID for two random clusterings: " , distRandom);
 
+	Partition prod = ClusteringProduct().calculate(random1, random2);
+	double distSingleProd = NMID.getDissimilarity(G, singleton1, prod);
+	EXPECT_LE(0.0, distSingleProd) << "NMID always needs to be 0 or positive";
 }
 
 
