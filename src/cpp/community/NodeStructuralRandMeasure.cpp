@@ -26,7 +26,7 @@ double NodeStructuralRandMeasure::getDissimilarity(const Graph& G, const Partiti
 		}
 	});
 
-	double rand = 1 - ((2 * (s11 + s00)) / (n * (n-1)));
+	double rand = 1 - ((2 * (s11 + s00)) * 1.0 / (n * (n-1)));
 
 	// assert range [0, 1]
 	assert (rand <= 1.0);
