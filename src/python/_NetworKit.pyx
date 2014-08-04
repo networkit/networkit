@@ -2223,21 +2223,21 @@ cdef class ClusteringProduct:
 	of a cluster in the first and in the second clustering
 	"""
 	cdef _ClusteringProduct _this
-	"""  Calculate the product of two partitions `zeta` and `eta`
-
-	Parameters
-	----------
-	zeta: Partition
-		The first partition
-	eta: Partition
-		The second partition
-
-	Returns
-	-------
-	Partition
-		The product of zeta and eta
-	"""
 	def calculate(self, Partition zeta, Partition eta):
+		"""  Calculate the product of two partitions `zeta` and `eta`
+
+		Parameters
+		----------
+		zeta: Partition
+			The first partition
+		eta: Partition
+			The second partition
+
+		Returns
+		-------
+		Partition
+			The product of zeta and eta
+		"""
 		return Partition().setThis(self._this.calculate(zeta._this, eta._this))
 
 cdef extern from "../cpp/community/Coverage.h":
