@@ -9,6 +9,7 @@ namespace NetworKit {
  * The product of two partitions is defined as the partitions where each cluster is the intersection
  * of a cluster in the first and in the second clustering
  */
+// TODO: rename to PartitionProduct
 class ClusteringProduct {
 	public:
 		/**
