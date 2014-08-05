@@ -2100,83 +2100,83 @@ cdef extern from "../cpp/community/ClusteringGenerator.h":
 cdef class ClusteringGenerator:
 	""" Generators for various clusterings """
 	cdef _ClusteringGenerator _this
-	"""  Generate a clustering where each node has its own cluster
-
-	Parameters
-	----------
-	G: Graph
-		The graph for which the clustering shall be generated
-
-	Returns
-	-------
-	Partition
-		The generated partition
-	"""
 	def makeSingletonClustering(self, Graph G):
+		"""  Generate a clustering where each node has its own cluster
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
 		return Partition().setThis(self._this.makeSingletonClustering(dereference(G._this)))
-	"""  Generate a clustering with one cluster consisting of all nodes
-
-	Parameters
-	----------
-	G: Graph
-		The graph for which the clustering shall be generated
-
-	Returns
-	-------
-	Partition
-		The generated partition
-	"""
 	def makeOneClustering(self, Graph G):
+		"""  Generate a clustering with one cluster consisting of all nodes
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
 		return Partition().setThis(self._this.makeOneClustering(dereference(G._this)))
-	"""  Generate a clustering with `k` clusters to which nodes are assigned randomly
-
-	Parameters
-	----------
-	G: Graph
-		The graph for which the clustering shall be generated
-	k: count
-		The number of clusters that shall be generated
-
-	Returns
-	-------
-	Partition
-		The generated partition
-	"""
 	def makeRandomClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters to which nodes are assigned randomly
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
 		return Partition().setThis(self._this.makeRandomClustering(dereference(G._this), k))
-	"""  Generate a clustering with `k` clusters to which nodes are assigned in continuous blocks
-
-	Parameters
-	----------
-	G: Graph
-		The graph for which the clustering shall be generated
-	k: count
-		The number of clusters that shall be generated
-
-	Returns
-	-------
-	Partition
-		The generated partition
-	"""
 	def makeContinuousBalancedClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters to which nodes are assigned in continuous blocks
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
 		return Partition().setThis(self._this.makeContinuousBalancedClustering(dereference(G._this), k))
-	"""  Generate a clustering with `k` clusters, the ith node is assigned to cluster i % k. This means that
-	for k**2 nodes, this clustering is complementary to the continuous clustering in the sense that no pair
-	of nodes that is in the same cluster in one of the clusterings is in the same cluster in the other clustering.
-
-	Parameters
-	----------
-	G: Graph
-		The graph for which the clustering shall be generated
-	k: count
-		The number of clusters that shall be generated
-
-	Returns
-	-------
-	Partition
-		The generated partition
-	"""
 	def makeNoncontinuousBalancedClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters, the ith node is assigned to cluster i % k. This means that
+		for k**2 nodes, this clustering is complementary to the continuous clustering in the sense that no pair
+		of nodes that is in the same cluster in one of the clusterings is in the same cluster in the other clustering.
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
 		return Partition().setThis(self._this.makeNoncontinuousBalancedClustering(dereference(G._this), k))
 
 cdef extern from "../cpp/community/GraphClusteringTools.h" namespace "NetworKit::GraphClusteringTools":
