@@ -8,6 +8,7 @@
 #ifndef NOGTEST
 
 #include "OverlapGTest.h"
+#include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
 
 namespace NetworKit {
@@ -153,7 +154,47 @@ TEST_F(OverlapGTest, testHashingOverlapperForCorrectness) {
 	INFO("overlap clustering: ", overlap.getVector());
 }
 
+TEST_F(OverlapGTest, tryHashingOverlapperCorrectness) {
+	count n = 2;
+	Graph G(n);
 
+	std::vector<Partition> clusterings;
+	clusterings.emplace_back(n);
+	clusterings[0].setUpperBound(10);
+	clusterings[0][0] = 3;
+	clusterings[0][1] = 9;
+	clusterings.emplace_back(n);
+	clusterings[1].setUpperBound(7);
+	clusterings[1][0] = 6;
+	clusterings[1][1] = 2;
+	clusterings.emplace_back(n);
+	clusterings[2].setUpperBound(1);
+	clusterings[2][0] = 0;
+	clusterings[2][1] = 0;
+
+	HashingOverlapper overlapper;
+	Partition overlap = overlapper.run(G, clusterings);
+
+	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, overlap)) << "When one singleton clustering is in the overlap, the result should be a singleton clustering";
+}
+
+TEST_F(OverlapGTest, tryHashingOverlapperCorrectness2) {
+	count n = 10000;
+	count k = 1000;
+	Graph G(n);
+	ClusteringGenerator generator;
+
+	std::vector<Partition> clusterings;
+	clusterings.push_back(generator.makeRandomClustering(G, k));
+	clusterings.push_back(generator.makeSingletonClustering(G));
+	clusterings.push_back(generator.makeContinuousBalancedClustering(G, k));
+
+	HashingOverlapper overlapper;
+	Partition overlap = overlapper.run(G, clusterings);
+	INFO("Number of clusters in the overlap is ", overlap.numberOfSubsets(), " and should be ", n);
+
+	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, overlap)) << "When a singleton clustering is in the overlap, the result should be a singleton clustering";
+}
 
 
 } /* namespace NetworKit */

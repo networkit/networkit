@@ -68,8 +68,36 @@ TEST_F(CommunityGTest, testEnsemblePreprocessing) {
 	Modularity modularity;
 	INFO("modularity: " , modularity.getQuality(zeta, G));
 
+}
 
+TEST_F(CommunityGTest, tryEnsemblePreprocessingCorrectness) {
+	count n = 10000;
+	count k = 1000;
+	double pin = 1.0;
+	double pout = 0.0;
 
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	EPP ensemble;
+
+	count b = 4;
+	for (count i = 0; i < b; ++i) {
+		ensemble.addBaseClusterer(*(new PLP()));
+	}
+	ensemble.setFinalClusterer(*(new PLM()));
+	ensemble.setOverlapper(*(new HashingOverlapper));
+
+	Partition zeta = ensemble.run(G);
+
+	Modularity modularity;
+	PLP plp;
+	Partition plpClus = plp.run(G);
+	INFO("modularity of PLP clusters: ", modularity.getQuality(plpClus, G));
+	EXPECT_EQ(k, plpClus.numberOfSubsets()) << "In this simple setting (clusters are cliques), PLP should detect all 1000 clusters";
+	INFO("modularity: " , modularity.getQuality(zeta, G));
+
+	EXPECT_EQ(k, zeta.numberOfSubsets()) << "In this simple setting (clusters are cliques), EPP should detect all 1000 clusters";
 }
 
 
