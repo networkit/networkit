@@ -255,4 +255,56 @@ double HyperbolicSpace::EuclideanRadiusToHyperbolic(double euclideanRadius) {
 	double result = acosh( 1 + 2*eusq / ((1 - eusq)));
 	return result;
 }
+
+double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
+		double r_max) {
+	double result = 0;
+	assert(r_c > 0);
+	assert(d_c >= 0);
+	assert(r_c <= r_max);
+	double min = r_c - d_c;
+	double max = std::min(r_c+d_c, r_max);
+
+	if (d_c > r_c) {
+		//the query circle overlaps the origin
+		result += 2*M_PI*(cosh(EuclideanRadiusToHyperbolic(d_c-r_c))-1);//adding small circle around origin
+		min = d_c-r_c;//correcting integral start to exclude circle
+	}
+
+	/**
+	 * Now, the integral.
+	 * It is 4\int_{min}^{max} \text{acos}(\frac{r_c^2-d_c^2+r^2}{2r_c\cdot r})  \cdot \frac{1}{1-r^2} \cdot (\sinh (\text{acosh}( 1 + 2\frac{r^2}{1 - r^2})))\,dr
+	 * The solution for this was computed by WolframAlpha
+	 */
+
+	auto realpart = [](double r, double d, double c) {
+		return acos((c*c-d*d+r*r) / (2*c*r)) / (r*r-1);
+	};
+
+	/**
+	 * Maybe the denominator can be omitted, atan2 is probably the same.
+	 */
+	auto firstlogpart = [](double r, double d, double c) {
+		double s = (c*c-d*d);
+		double denominator = r*r*s*s;
+		double rsqs = r*r+s;
+		double real = -2*s*sqrt(4*c*c*r*r-rsqs*rsqs);
+		double imag = -4*c*c*r*r+2*s*r*r+2*s*s;
+		return atan2(imag/denominator, real/denominator)/2;
+	};
+
+	auto secondlogpart = [](double r, double d, double c) {
+		double s = (c*c-d*d);
+		double rsqs = r*r+s;
+		double denominator = (r*r-1)*(s-1);
+		double real = sqrt(4*c*c*r*r-rsqs*rsqs);
+		double imag = 2*c*c*(r*r+1)-(s+1)*rsqs;
+		imag = imag / sqrt((s+1)*(s+1)-(4*c*c));
+		return (s-1)*atan2(2*imag/denominator, 2*real/denominator)/(2*sqrt((s+1)*(s+1)-(4*c*c)));
+	};
+
+	double lower = -realpart(min, d_c, r_c) -firstlogpart(min, d_c, r_c) + secondlogpart(min, d_c, r_c);
+	double upper = -realpart(max, d_c, r_c) -firstlogpart(max, d_c, r_c) + secondlogpart(max, d_c, r_c);
+	return result + (upper - lower);
+}
 }

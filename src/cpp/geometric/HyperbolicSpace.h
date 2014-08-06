@@ -40,6 +40,7 @@ public:
 	static void getEuclideanCircle(Point2D<double> hyperbolicCenter, Point2D<double> hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius);
 	static double hyperbolicRadiusToEuclidean(double hyperbolicRadius);
 	static double EuclideanRadiusToHyperbolic(double EuclideanRadius);
+	static double hyperbolicSpaceInEuclideanCircle(double r_c, double d_c, double R);
 
 
 private:
