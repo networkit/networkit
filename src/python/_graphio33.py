@@ -48,10 +48,10 @@ def getReader(format, **kwargs):
 	return reader
 
 
-def readGraph(path, format="metis", **kwargs):
+def readGraph(path, fileformat="metis", **kwargs):
 	"""    Read graph file in various formats and return a NetworKit::Graph
 		Default format is METIS"""
-	reader = getReader(format, **kwargs)
+	reader = getReader(fileformat, **kwargs)
 
 	if ("~" in path):
 		path = os.path.expanduser(path)
@@ -64,7 +64,7 @@ def readGraph(path, format="metis", **kwargs):
 				G = reader.read(path)
 				return G
 			except Exception as e:
-				raise IOError("{0} is not a valid {1} file: {2}".format(path,format,e))
+				raise IOError("{0} is not a valid {1} file: {2}".format(path,fileformat,e))
 	return None
 
 
