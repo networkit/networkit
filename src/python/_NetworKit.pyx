@@ -2244,16 +2244,16 @@ cdef class GraphClusteringTools:
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		return equalClusterings(zeta._this, eta._this, dereference(G._this))
 
-cdef extern from "../cpp/community/ClusteringProduct.h":
-	cdef cppclass _ClusteringProduct "NetworKit::ClusteringProduct":
-		_ClusteringProduct() except +
+cdef extern from "../cpp/community/PartitionProduct.h":
+	cdef cppclass _PartitionProduct "NetworKit::PartitionProduct":
+		_PartitionProduct() except +
 		_Partition calculate(_Partition zeta, _Partition eta) except +
 
-cdef class ClusteringProduct:
+cdef class PartitionProduct:
 	""" The product of two partitions is defined as the partitions where each cluster is the intersection
 	of a cluster in the first and in the second clustering
 	"""
-	cdef _ClusteringProduct _this
+	cdef _PartitionProduct _this
 	def calculate(self, Partition zeta, Partition eta):
 		"""  Calculate the product of two partitions `zeta` and `eta`
 

@@ -37,7 +37,7 @@
 #include "../SampledGraphStructuralRandMeasure.h"
 #include "../SampledNodeStructuralRandMeasure.h"
 #include "../../community/GraphClusteringTools.h"
-#include "../ClusteringProduct.h"
+#include "../PartitionProduct.h"
 
 namespace NetworKit {
 
@@ -617,7 +617,7 @@ TEST_F(CommunityGTest, testNMIDistance) {
 	double distRandom = NMID.getDissimilarity(G, random1, random2);
 	INFO("NMID for two random clusterings: " , distRandom);
 
-	Partition prod = ClusteringProduct().calculate(random1, random2);
+	Partition prod = PartitionProduct().calculate(random1, random2);
 	double distSingleProd = NMID.getDissimilarity(G, singleton1, prod);
 	EXPECT_LE(0.0, distSingleProd) << "NMID always needs to be 0 or positive";
 }
@@ -676,7 +676,7 @@ TEST_F(CommunityGTest, testParallelAgglomerativeAndPLM) {
 }
 
 TEST_F(CommunityGTest, testClusteringProduct) {
-	ClusteringProduct prod;
+	PartitionProduct prod;
 	GraphGenerator graphGenerator;
 	Graph G = graphGenerator.makeCompleteGraph(1200);
 	ClusteringGenerator clusteringGenerator;
@@ -705,7 +705,7 @@ TEST_F(CommunityGTest, testMakeNoncontinuousClustering) {
 	Graph G = graphGenerator.makeCompleteGraph(100);
 	Partition con = generator.makeContinuousBalancedClustering(G, 10);
 	Partition nonCon = generator.makeNoncontinuousBalancedClustering(G, 10);
-	ClusteringProduct prod;
+	PartitionProduct prod;
 
 	JaccardMeasure jaccard;
 
