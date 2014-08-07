@@ -22,10 +22,12 @@ class Quadtree {
 public:
 	Quadtree() {
 		root = QuadNode<T>();
+		this->maxRadius = 1;
 	}
 
 	Quadtree(double maxR) {
 		root = QuadNode<T>(0, 0, 2*M_PI, maxR, 1000, 0);
+		this->maxRadius = maxR;
 	}
 
 	virtual ~Quadtree() {
@@ -115,6 +117,8 @@ public:
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
 			circleDenizens.resize(newend - circleDenizens.begin());
 		}
+		double expected = HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(center.length(), radius, maxRadius);
+		TRACE("Got ", circleDenizens.size(), " nodes in space of size ", expected, ". ", 100*abs(circleDenizens.size() - expected) / expected, " percent difference.");
 		/**
 		 * return them
 		 */
@@ -133,6 +137,7 @@ public:
 
 private:
 	QuadNode<T> root;
+	double maxRadius;
 };
 }
 
