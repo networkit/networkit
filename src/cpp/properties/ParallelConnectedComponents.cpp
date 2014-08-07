@@ -76,7 +76,7 @@ void ParallelConnectedComponents::run() {
 	}
 	if (coarsening && numIterations == 8) { // TODO: externalize constant
 		// coarsen and make recursive call
-		PartitionCoarsening con;
+		ParallelPartitionCoarsening con;
 		std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
 		ParallelConnectedComponents cc(coarse.first);
 		cc.run();
