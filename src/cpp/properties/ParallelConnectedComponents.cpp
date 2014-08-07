@@ -10,6 +10,7 @@
 #include "ParallelConnectedComponents.h"
 #include "../structures/Partition.h"
 #include "../coarsening/PartitionCoarsening.h"
+#include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../auxiliary/Log.h"
 
 namespace NetworKit {
