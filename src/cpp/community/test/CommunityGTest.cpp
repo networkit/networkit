@@ -20,7 +20,6 @@
 #include "../EPPFactory.h"
 #include "../CommunityGraph.h"
 #include "../PLM.h"
-#include "../PLMOld.h"
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
 #include "../../structures/Partition.h"
@@ -227,44 +226,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnManySmallClusters) {
 
 }
 
-TEST_F(CommunityGTest, tryOldPLM) {
-	count n = 500;
-	count k = 25;
-	double pin = 0.9;
-	double pout = 0.005;
-	GraphGenerator graphGen;
-    DEBUG("generating graph");
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-    DEBUG("running old PLM algorithm");
-	PLMOld louvain;
-	Partition zeta = louvain.run(G);
-
-	INFO("number of clusters: " , zeta.numberOfSubsets());
-
-	Modularity modularity;
-	INFO("modularity: " , modularity.getQuality(zeta, G));
-
-}
-
-
-TEST_F(CommunityGTest, tryOldPLMParallel) {
-	count n = 500;
-	count k = 25;
-	double pin = 0.9;
-	double pout = 0.005;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
-
-	PLMOld louvain("simple");
-	Partition zeta = louvain.run(G);
-
-	INFO("number of clusters: " , zeta.numberOfSubsets());
-
-	Modularity modularity;
-	INFO("modularity: " , modularity.getQuality(zeta, G));
-
-}
 
 /*
 TEST_F(CommunityGTest, testLouvainParallel2Naive) {
@@ -286,24 +248,6 @@ TEST_F(CommunityGTest, testLouvainParallel2Naive) {
 }
 */
 
-
-TEST_F(CommunityGTest, tryOldPLMParallelBalanced) {
-	count n = 500;
-	count k = 25;
-	double pin = 0.9;
-	double pout = 0.005;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
-
-	PLMOld louvain("balanced");
-	Partition zeta = louvain.run(G);
-
-	INFO("number of clusters: " , zeta.numberOfSubsets());
-
-	Modularity modularity;
-	INFO("modularity: " , modularity.getQuality(zeta, G));
-
-}
 
 
 TEST_F(CommunityGTest, tryCNMandLouvainRandom) {
@@ -350,39 +294,6 @@ TEST_F(CommunityGTest, tryCNMandLouvainReal) {
 	INFO("Louvain modularity jazz graph: " , modularity.getQuality(clustering, jazz));
 }
 
-
-TEST_F(CommunityGTest, tryParallelAgglomerativeAndLouvain) {
-	Modularity modularity;
-	ParallelAgglomerativeClusterer aggl;
-	PLMOld louvain;
-	METISGraphReader reader;
-	Graph jazz = reader.read("input/jazz.graph");
-	Graph blog = reader.read("input/polblogs.graph");
-
-
-	// *** jazz graph
-	// aggl
-	Partition clustering = aggl.run(jazz);
-	INFO("Match-AGGL number of jazz clusters: " , clustering.numberOfSubsets());
-	INFO("Match-AGGL modularity jazz graph:   " , modularity.getQuality(clustering, jazz));
-
-	// Louvain
-	clustering = louvain.run(jazz);
-	INFO("Louvain number of jazz clusters: " , clustering.numberOfSubsets());
-	INFO("Louvain modularity jazz graph:   " , modularity.getQuality(clustering, jazz));
-
-
-	// *** blog graph
-	// CNM
-	clustering = aggl.run(blog);
-	INFO("Match-AGGL number of blog clusters: " , clustering.numberOfSubsets());
-	INFO("Match-AGGL modularity blog graph:   " , modularity.getQuality(clustering, blog));
-
-	// Louvain
-	clustering = louvain.run(blog);
-	INFO("Louvain number of blog clusters: " , clustering.numberOfSubsets());
-	INFO("Louvain modularity blog graph:   " , modularity.getQuality(clustering, blog));
-}
 
 
 
