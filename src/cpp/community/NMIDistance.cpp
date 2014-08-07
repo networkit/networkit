@@ -8,17 +8,15 @@
 #include "NMIDistance.h"
 
 #include "DynamicNMIDistance.h"
-#include "../overlap/HashingOverlapper.h"
 #include "../auxiliary/MissingMath.h"
 #include "../auxiliary/NumericTools.h"
 #include "../auxiliary/Log.h"
+#include "ClusteringProduct.h"
 
 namespace NetworKit {
 
-NMIDistance::~NMIDistance() {
-}
 
-double NMIDistance::getDissimilarity(Graph& G, Partition& zeta, Partition& eta) {
+double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, const Partition& eta) {
 
 	count n = G.numberOfNodes();
 
@@ -56,14 +54,7 @@ double NMIDistance::getDissimilarity(Graph& G, Partition& zeta, Partition& eta) 
 	}
 
 
-
-	// RegionGrowingOverlapper hashing;
-	HashingOverlapper hashing;
-	std::vector<Partition> clusterings;
-	clusterings.push_back(zeta);
-	clusterings.push_back(eta);
-
-	Partition overlap = hashing.run(G, clusterings);
+	Partition overlap = ClusteringProduct().calculate(zeta, eta);
 	DEBUG("overlap=", overlap.getVector());
 
 	std::vector<std::vector<index> > intersect(zeta.upperBound(), std::vector<index>(eta.upperBound(), none)); // intersect[C][D] returns the overlap cluster
