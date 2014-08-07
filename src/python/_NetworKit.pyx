@@ -155,6 +155,7 @@ cdef class Graph:
 	# 	return self
 
 	cdef setThis(self, _Graph* other):
+		del self._this
 		self._this = other
 		return self
 
@@ -810,6 +811,37 @@ cdef class Subgraph:
 			nnodes.insert(node);
 		return Graph().setThis(self._this._fromNodes(dereference(G._this), nnodes))
 
+
+cdef extern from "../cpp/graph/SpanningForest.h":
+	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
+		_SpanningForest(_Graph) except +
+		_Graph* _generate()
+
+cdef class SpanningForest:
+	""" Generates a spanning forest for a given graph
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		nodes : list
+			A subset of nodes of `G` which induce the subgraph.
+	"""
+	cdef _SpanningForest* _this
+
+	def __cinit__(self, Graph G not None):
+		self._this = new _SpanningForest(dereference(G._this))
+
+
+	def __dealloc__(self):
+		del self._this
+
+	def generate(self):
+		return Graph().setThis(self._this._generate());
+
+
+
+
 cdef extern from "../cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
@@ -1215,6 +1247,27 @@ cdef class EdgeListReader:
 		for elem in cResult:
 			result.append((elem.first,elem.second))
 		return result
+
+cdef extern from "../cpp/io/KONECTGraphReader.h":
+	cdef cppclass _KONECTGraphReader "NetworKit::KONECTGraphReader":
+		_KONECTGraphReader() except +
+		_KONECTGraphReader(char separator, bool ignoreLoops)
+		_Graph read(string path) except +
+		_Graph* _read(string path) except +
+
+cdef class KONECTGraphReader:
+	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
+
+		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
+	"""
+	cdef _KONECTGraphReader _this
+
+	def __cinit__(self, separator, ignoreLoops = False):
+		self._this = _KONECTGraphReader(stdstring(separator)[0], ignoreLoops)
+
+	def read(self, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this._read(pathbytes))
 
 cdef extern from "../cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
@@ -2066,6 +2119,158 @@ cdef class Cover:
 
 # Module: community
 
+cdef extern from "../cpp/community/ClusteringGenerator.h":
+	cdef cppclass _ClusteringGenerator "NetworKit::ClusteringGenerator":
+		_ClusteringGenerator() except +
+		_Partition makeSingletonClustering(_Graph G) except +
+		_Partition makeOneClustering(_Graph G) except +
+		_Partition makeRandomClustering(_Graph G, count k) except +
+		_Partition makeContinuousBalancedClustering(_Graph G, count k) except +
+		_Partition makeNoncontinuousBalancedClustering(_Graph G, count k) except +
+
+cdef class ClusteringGenerator:
+	""" Generators for various clusterings """
+	cdef _ClusteringGenerator _this
+	def makeSingletonClustering(self, Graph G):
+		"""  Generate a clustering where each node has its own cluster
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeSingletonClustering(dereference(G._this)))
+	def makeOneClustering(self, Graph G):
+		"""  Generate a clustering with one cluster consisting of all nodes
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeOneClustering(dereference(G._this)))
+	def makeRandomClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters to which nodes are assigned randomly
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeRandomClustering(dereference(G._this), k))
+	def makeContinuousBalancedClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters to which nodes are assigned in continuous blocks
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeContinuousBalancedClustering(dereference(G._this), k))
+	def makeNoncontinuousBalancedClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters, the ith node is assigned to cluster i % k. This means that
+		for k**2 nodes, this clustering is complementary to the continuous clustering in the sense that no pair
+		of nodes that is in the same cluster in one of the clusterings is in the same cluster in the other clustering.
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeNoncontinuousBalancedClustering(dereference(G._this), k))
+
+cdef extern from "../cpp/community/GraphClusteringTools.h" namespace "NetworKit::GraphClusteringTools":
+	float getImbalance(_Partition zeta) except +
+	_Graph communicationGraph(_Graph graph, _Partition zeta) except +
+	count weightedDegreeWithCluster(_Graph graph, _Partition zeta, node u, index cid)
+	bool isProperClustering(_Graph G, _Partition zeta)
+	bool isSingletonClustering(_Graph G, _Partition zeta)
+	bool isOneClustering(_Graph G, _Partition zeta)
+	bool equalClusterings(_Partition zeta, _Partition eta, _Graph G)
+
+cdef class GraphClusteringTools:
+	@staticmethod
+	def getImbalance(Partition zeta):
+		return getImbalance(zeta._this)
+	@staticmethod
+	def communicationGraph(Graph graph, Partition zeta):
+		cdef Graph ret = Graph()
+		ret._this.stealFrom(communicationGraph(dereference(graph._this), zeta._this))
+		return ret
+	@staticmethod
+	def weightedDegreeWithCluster(Graph graph, Partition zeta, node u, index cid):
+		return weightedDegreeWithCluster(dereference(graph._this), zeta._this, u, cid)
+	@staticmethod
+	def isProperClustering(Graph G, Partition zeta):
+		return isProperClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def isSingletonClustering(Graph G, Partition zeta):
+		return isSingletonClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def isOneClustering(Graph G, Partition zeta):
+		return isOneClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def equalClustering(Partition zeta, Partition eta, Graph G):
+		return equalClusterings(zeta._this, eta._this, dereference(G._this))
+
+cdef extern from "../cpp/community/ClusteringProduct.h":
+	cdef cppclass _ClusteringProduct "NetworKit::ClusteringProduct":
+		_ClusteringProduct() except +
+		_Partition calculate(_Partition zeta, _Partition eta) except +
+
+cdef class ClusteringProduct:
+	""" The product of two partitions is defined as the partitions where each cluster is the intersection
+	of a cluster in the first and in the second clustering
+	"""
+	cdef _ClusteringProduct _this
+	def calculate(self, Partition zeta, Partition eta):
+		"""  Calculate the product of two partitions `zeta` and `eta`
+
+		Parameters
+		----------
+		zeta: Partition
+			The first partition
+		eta: Partition
+			The second partition
+
+		Returns
+		-------
+		Partition
+			The product of zeta and eta
+		"""
+		return Partition().setThis(self._this.calculate(zeta._this, eta._this))
+
 cdef extern from "../cpp/community/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
 		_Coverage() except +
@@ -2221,7 +2426,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 cdef extern from "../cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
 		_PLM() except +
-		_PLM(bool refine, double gamma, string par, count maxIter) except +
+		_PLM(bool refine, double gamma, string par, count maxIter, bool parCoarsening) except +
 		string toString() except +
 		_Partition run(_Graph G) except +
 
@@ -2249,8 +2454,8 @@ cdef class PLM(CommunityDetector):
 
 	cdef _PLM _this
 
-	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32):
-		self._this = _PLM(refine, gamma, stdstring(par), maxIter)
+	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True):
+		self._this = _PLM(refine, gamma, stdstring(par), maxIter, parCoarsening)
 
 	def toString(self):
 		""" Get string representation.
@@ -3638,3 +3843,22 @@ cdef class GraphUpdater:
 		for ev in stream:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_stream)
+
+
+# Module: coarsening
+
+cdef extern from "../cpp/coarsening/ParallelPartitionCoarsening.h":
+	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening":
+		_ParallelPartitionCoarsening() except +
+		pair[_Graph, vector[node]] run(_Graph, _Partition) except +
+
+
+cdef class ParallelPartitionCoarsening:
+	cdef _ParallelPartitionCoarsening* _this
+
+	def __cinit__(self):
+		self._this = new _ParallelPartitionCoarsening()
+
+	def run(self, Graph G not None, Partition zeta not None):
+		result = self._this.run(dereference(G._this), zeta._this)
+		return (Graph(0).setThis(&result.first), result.second)

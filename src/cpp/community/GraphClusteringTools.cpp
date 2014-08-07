@@ -5,7 +5,7 @@ namespace NetworKit {
 
 namespace GraphClusteringTools {
 
-float getImbalance(Partition& zeta) {
+float getImbalance(const Partition &zeta) {
 	float avg = ceil(
 			(float) zeta.numberOfElements() / (float) zeta.numberOfSubsets()); //TODO number of nodes and not number of elements
 	std::vector<count> clusterSizes = zeta.subsetSizes();
@@ -15,7 +15,7 @@ float getImbalance(Partition& zeta) {
 	return imbalance;
 }
 
-Graph communicationGraph(const Graph& graph, Partition& zeta) {
+Graph communicationGraph(const Graph& graph, Partition &zeta) {
 	zeta.compact();
 	count n = zeta.numberOfSubsets();
 	Graph commGraph(n);
@@ -44,7 +44,7 @@ Graph communicationGraph(const Graph& graph, Partition& zeta) {
 }
 
 
-count weightedDegreeWithCluster(const Graph& graph, Partition& zeta, node u, index cid) { //const
+count weightedDegreeWithCluster(const Graph& graph, const Partition &zeta, node u, index cid) { //const
 //	TRACE("start wdeg with cluster...");
 	count wdeg = 0;
 
@@ -65,7 +65,7 @@ count weightedDegreeWithCluster(const Graph& graph, Partition& zeta, node u, ind
 	return wdeg;
 }
 
-bool isProperClustering(Graph& G, Partition& zeta) {
+bool isProperClustering(const Graph &G, const Partition &zeta) {
 	// test whether each node has been assigned to a cluster
 	bool success = true;
 	G.forNodes([&](node v) {
@@ -78,7 +78,7 @@ bool isProperClustering(Graph& G, Partition& zeta) {
 	return success;
 }
 
-bool isOneClustering(Graph& G, Partition& zeta) {
+bool isOneClustering(const Graph &G, const Partition &zeta) {
 	return (zeta.numberOfSubsets() == 1);
 /*	index one = data[0];	// first subset id should be equal to all others
 	// TODO: use iterator forEntries and pair-wise comparison?
@@ -90,11 +90,11 @@ bool isOneClustering(Graph& G, Partition& zeta) {
 	return true;*/
 }
 
-bool isSingletonClustering(Graph& G, Partition& zeta) {
+bool isSingletonClustering(const Graph& G, const Partition& zeta) {
 	return (zeta.numberOfSubsets() == G.numberOfNodes());
 }
 
-bool equalClusterings(Partition& zeta, Partition& eta, Graph& G) {
+bool equalClusterings(const Partition& zeta, const Partition& eta, Graph& G) {
 	bool eq = true;
 	G.parallelForEdges([&](node u, node v) {
 		if (zeta.inSameSubset(u, v)) {

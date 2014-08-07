@@ -26,7 +26,7 @@ private:
 
 public:
 
-	virtual Partition run(Graph& G);
+	virtual Partition run(const Graph& G);
 
 	/**
 	* Get number of iterations in last run.
