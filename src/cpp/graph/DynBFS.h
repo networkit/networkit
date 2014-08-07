@@ -9,7 +9,7 @@
 #define DYNBFS_H_
 
 #include "DynSSSP.h"
-#include "BFS.h"
+
 
 namespace NetworKit {
 
@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup graph
  * Dynamic breadth-first search.
  */
-class DynBFS : public DynSSSP, public BFS {
+class DynBFS : public DynSSSP {
 
 public:
 
@@ -29,7 +29,7 @@ public:
 	 */
 	DynBFS(const Graph& G, node s);
 
-	void init();
+	void run(node t = none) override;
 
 	/** Updates the distances after an event.*/
 	void update(const std::vector<GraphEvent>& batch) override;

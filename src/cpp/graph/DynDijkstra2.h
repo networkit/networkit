@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup graph
  * Dynamic Dijkstra based on FMN approach.
  */
-class DynDijkstra2 : public DynSSSP, public Dijkstra {
+class DynDijkstra2 : public DynSSSP {
 
 public:
 
@@ -28,6 +28,8 @@ public:
 	 * @param s The source node.
 	 */
 	DynDijkstra2(const Graph& G, node s);
+
+	void run(node t=none) override;
 
 	/** Updates the distances after an event.*/
 	void update(const std::vector<GraphEvent>& batch) override;

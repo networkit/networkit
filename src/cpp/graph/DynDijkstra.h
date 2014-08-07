@@ -9,7 +9,6 @@
 #define DYNDIJKSTRA_H_
 
 #include "DynSSSP.h"
-#include "Dijkstra.h"
 
 namespace NetworKit {
 
@@ -17,7 +16,7 @@ namespace NetworKit {
  * @ingroup graph
  * Dynamic Dijkstra.
  */
-class DynDijkstra : public DynSSSP, public Dijkstra {
+class DynDijkstra : public DynSSSP {
 
 public:
 
@@ -29,6 +28,9 @@ public:
 	 */
 	DynDijkstra(const Graph& G, node s);
 
+	void init();
+
+	void run(node t = none) override;
 
 	/** Updates the distances after an event.*/
 	void update(const std::vector<GraphEvent>& batch) override;

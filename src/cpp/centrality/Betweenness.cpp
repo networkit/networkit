@@ -225,7 +225,6 @@ void Betweenness::run(bool runUnweightedInParallel) {
 			});
 		}
 	}
-
 	if (normalized) {
 		// divide by the number of possible pairs
 		count n = G.numberOfNodes();
@@ -243,4 +242,3 @@ void Betweenness::run(bool runUnweightedInParallel) {
 
 
 } /* namespace NetworKit */
-
