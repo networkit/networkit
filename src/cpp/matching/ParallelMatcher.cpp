@@ -69,9 +69,10 @@ Matching LocalMaxMatcher::run(Graph& graph) {
 #if 0
 	// TODO: exclude isolated nodes?
 
+	// FIXME: will crash if deleted nodes present
 	int64_t n = G.numberOfNodes();
-	NodeMap<node> candidate(n, 0);//!< candidate[v] is the preferred matching partner of v
-	NodeMap<std::set<node> > S(n, std::set<node>());//!< S[v] is a set with the potential
+	std::vector<node> candidate(n, 0);//!< candidate[v] is the preferred matching partner of v
+	std::vector<std::set<node> > S(n, std::set<node>());//!< S[v] is a set with the potential
 													//!< candidates of node v
 	std::vector<node> D;							//!< targets of dominating edges
 	Matching M(n);
