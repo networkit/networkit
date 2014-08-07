@@ -16,7 +16,6 @@ namespace NetworKit {
 /**
  * @ingroup matching
  * FIXME: Could be better to store a reference to the according graph;
- * FIXME: do not inherit from NodeMap
  */
 class Matching {
 

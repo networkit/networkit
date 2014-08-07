@@ -19,6 +19,8 @@
 #include "Coordinates.h"
 #include "../viz/Point.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
+
 
 
 namespace NetworKit {

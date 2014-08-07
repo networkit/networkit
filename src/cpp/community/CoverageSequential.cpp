@@ -6,12 +6,9 @@
  */
 
 #include "CoverageSequential.h"
-#include "../base/IndexMap.h"
 
 namespace NetworKit {
 
-CoverageSequential::~CoverageSequential() {
-}
 
 double CoverageSequential::getQuality(const Partition& zeta, const Graph& G) {
 
@@ -25,7 +22,7 @@ double CoverageSequential::getQuality(const Partition& zeta, const Graph& G) {
 				"Coverage is undefined for graphs without edges (including self-loops).");
 	}
 
-	IndexMap<index, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
+	std::vector<double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
 
 	// TODO: sum only over intra-cluster edges, not over clusters
 
