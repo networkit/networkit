@@ -32,7 +32,7 @@ public:
 	/** Default destructor */
 	virtual ~SampledGraphStructuralRandMeasure();
 
-	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second);
+	virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
 
 protected:
 

@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-Partition ParallelAgglomerativeClusterer::run(Graph& graph) {
+Partition ParallelAgglomerativeClusterer::run(const Graph& graph) {
 	// copy graph because we make changes due to merges
 	Graph G(graph.numberOfNodes(), true); // make weighted copy
 	graph.forWeightedEdges([&](node u, node v, edgeweight w){

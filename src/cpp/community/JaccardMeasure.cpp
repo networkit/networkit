@@ -9,11 +9,9 @@
 
 namespace NetworKit {
 
-JaccardMeasure::~JaccardMeasure() {
-}
 
-double JaccardMeasure::getDissimilarity(Graph& G, Partition& first,
-		Partition& second) {
+double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& first,
+		const Partition& second) {
 
 	int64_t n = G.numberOfNodes();
 	assert (n > 0);

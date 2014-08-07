@@ -25,13 +25,14 @@ namespace NetworKit {
 class CNM : public NetworKit::CommunityDetectionAlgorithm {
 public:
 
+
 	/**
 	 * Detect communities in the given graph @a graph.
 	 *
 	 * @param graph The graph.
 	 * @return A partition containing the found communities.
 	 */
-	Partition run(Graph &graph) override;
+	Partition run(const Graph &graph) override;
 
 	/**
 	 * Get string representation.
