@@ -9,7 +9,6 @@
 #define CLUSTERINGCUT_H_
 
 #include "../graph/Graph.h"
-#include "../graph/NodeMap.h"
 #include "../structures/Partition.h"
 #include <set>
 #include <unordered_map>

@@ -10,7 +10,6 @@
 
 # include "../auxiliary/Log.h"
 #include "../graph/Graph.h"
-#include "../graph/NodeMap.h"
 
 namespace NetworKit {
 
@@ -19,7 +18,7 @@ namespace NetworKit {
  * FIXME: Could be better to store a reference to the according graph;
  * FIXME: do not inherit from NodeMap
  */
-class Matching : public NodeMap<node> {
+class Matching {
 
 
 public:
@@ -100,6 +99,11 @@ public:
 	 * @return Total weight of edges in this matching.
 	 */
 	edgeweight weight(const Graph& g) const;
+
+protected:
+
+	std::vector<node> data; //!< storage of matching nodes
+	count n; //!< number of nodes
 };
 
 } /* namespace NetworKit */
