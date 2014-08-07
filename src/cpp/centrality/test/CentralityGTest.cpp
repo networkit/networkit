@@ -8,6 +8,7 @@
 #include "CentralityGTest.h"
 #include "../Betweenness.h"
 #include "../Betweenness2.h"
+#include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
 #include "../EigenvectorCentrality.h"
@@ -115,15 +116,64 @@ TEST_F(CentralityGTest, testDynBetweenness) {
 	}
 
 	// edge insertions
-	GraphEvent e(GraphEvent::EDGE_ADDITION, 0, 7, 1.0);
-	G.addEdge(e.u, e.v);
+	std::vector<GraphEvent> batch(1);
+	batch[0].type = GraphEvent::EDGE_ADDITION;
+	batch[0].u = 0;
+	batch[0].v = 6;
+	batch[0].w = 1.0;
+	G.addEdge(batch[0].u, batch[0].v);
 	bc.run();
-	dynbc.update(e);
+	dynbc.update(batch);
 
 	dynbc_scores = dynbc.scores();
 	bc_scores = bc.scores();
 	for(i=0; i<n; i++) {
 		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
+	}
+
+}
+
+
+TEST_F(CentralityGTest, testDynApproxBetweenness) {
+/* Graph:
+   0    3   6
+	\  / \ /
+	 2    5
+	/  \ / \
+   1    4   7
+*/
+	int n = 8;
+	Graph G(n);
+
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+	G.addEdge(5, 6);
+	G.addEdge(5, 7);
+
+	double epsilon = 0.01; // error
+	double delta = 0.1; // confidence
+	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta);
+	Betweenness bc = Betweenness(G, false);
+	dynbc.run();
+	bc.run();
+	std::vector<double> dynbc_scores = dynbc.scores();
+	std::vector<double> bc_scores = bc.scores();
+	for(int i=0; i<n; i++) {
+		std::cout<<dynbc_scores[i]-bc_scores[i]/double(n*(n-1))<<std::endl;
+	}
+	std::vector<GraphEvent> batch;
+	batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, 0, 6, 1.0));
+	G.addEdge(batch[0].u, batch[0].v);
+	bc.run();
+	dynbc.update(batch);
+	dynbc_scores = dynbc.scores();
+	bc_scores = bc.scores();
+	for(int i=0; i<n; i++) {
+		std::cout<<dynbc_scores[i]-bc_scores[i]/double(n*(n-1))<<std::endl;
 	}
 
 }

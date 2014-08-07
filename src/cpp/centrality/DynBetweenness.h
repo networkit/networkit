@@ -9,6 +9,7 @@
 #define DYNBETW_H_
 
 #include "Centrality.h"
+#include "DynCentrality.h"
 #include "../dynamics/GraphEvent.h"
 
 namespace NetworKit {
@@ -17,15 +18,13 @@ namespace NetworKit {
  * @ingroup graph
  * Interface for dynamic betweenness centrality algorithms.
  */
-class DynBetweenness: public NetworKit::Centrality {
+class DynBetweenness: public Centrality, public DynCentrality {
 
 public:
     /**
-     * Constructs the Betweenness class for the given Graph @a G. If the betweenness scores should be normalized,
-     * then set @a normalized to <code>true</code>.
+     * Constructs the Betweenness class for the given Graph @a G.
      *
      * @param G The graph.
-     * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
      */
     DynBetweenness(const Graph& G);
 
@@ -39,7 +38,7 @@ public:
     *
     * @param batch The batch of edge insertions.
     */
-    void update(const GraphEvent e);
+    void update(const std::vector<GraphEvent>& batch);
 
 protected:
         std::vector<count> maxDistance;

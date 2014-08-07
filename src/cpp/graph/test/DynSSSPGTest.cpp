@@ -39,7 +39,7 @@ TEST_F(DynSSSPGTest, testDynamicBFS_1edge) {
   	BFS bfs(G, 0);
   	bfs.run();
   	DynBFS dbfs(G, 0);
-	dbfs.init();
+	dbfs.run();
 	std::vector<GraphEvent> batch(1);
 	batch[0].type = GraphEvent::EDGE_ADDITION;
 	batch[0].u = 0;
@@ -79,7 +79,7 @@ TEST_F(DynSSSPGTest, testDynamicBFS_batch) {
 	BFS bfs(G, 0);
 	bfs.run();
 	DynBFS dbfs(G, 0);
-	dbfs.init();
+	dbfs.run();
 	std::vector<GraphEvent> batch(3);
 	batch[0].type = GraphEvent::EDGE_ADDITION;
 	batch[0].u = 3;

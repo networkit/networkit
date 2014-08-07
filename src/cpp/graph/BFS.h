@@ -18,6 +18,9 @@ namespace NetworKit {
  * The BFS class is used to do a breadth-first search on a Graph from a given source node.
  */
 class BFS : public SSSP {
+
+friend class DynBFS;
+
 public:
 	/**
 	 * Constructs the BFS class for @a G and source node @a source.

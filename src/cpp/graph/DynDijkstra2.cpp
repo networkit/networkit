@@ -6,6 +6,7 @@
  */
 
 #include "DynDijkstra2.h"
+#include "Dijkstra.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/PrioQueue.h"
 #include <queue>
@@ -13,7 +14,7 @@
 
 namespace NetworKit {
 
-DynDijkstra2::DynDijkstra2(const Graph& G, node s) : Dijkstra(G, s),
+DynDijkstra2::DynDijkstra2(const Graph& G, node source) : DynSSSP(G, source),
 color(G.upperNodeIdBound(), WHITE),
 N (G.upperNodeIdBound(), Aux::PrioQueue<edgeweight, node>(G.upperNodeIdBound())){
 
@@ -25,8 +26,13 @@ N (G.upperNodeIdBound(), Aux::PrioQueue<edgeweight, node>(G.upperNodeIdBound()))
 	});
 }
 
+void DynDijkstra2::run(node t) {
+	Dijkstra dij(G, source, true);
+	dij.run();
+}
 
 void DynDijkstra2::update(const std::vector<GraphEvent>& batch) {
+	mod = false;
 	// priority queue with distance-node pairs
 /*	Aux::PrioQueue<edgeweight, node> Q(G.upperNodeIdBound());
 	// queue with all visited edges
