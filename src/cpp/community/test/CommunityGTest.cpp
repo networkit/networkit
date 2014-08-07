@@ -25,7 +25,6 @@
 #include "../../auxiliary/Log.h"
 #include "../../structures/Partition.h"
 #include "../Modularity.h"
-#include "../ModularitySequential.h"
 #include "../Coverage.h"
 #include "../ClusteringGenerator.h"
 #include "../JaccardMeasure.h"
@@ -605,31 +604,6 @@ TEST_F(CommunityGTest, testGraphStructuralRandMeasure) {
 	double r = rand.getDissimilarity(G, one1, one2);
 
 	EXPECT_EQ(0.0, r) << "Identical clusterings should compare with a dissimilarity of 0.0";
-
-}
-
-
-TEST_F(CommunityGTest, testModularityParallelVsSequential) {
-
-	Modularity modularityPar;
-	ModularitySequential modularitySeq;
-
-	count n = 500;
-	GraphGenerator graphGen;
-	ClusteringGenerator clusteringGen;
-
-	INFO("making random graph");
-	Graph G = graphGen.makeRandomGraph(n, 0.2);
-	INFO("making random clustering");
-	Partition zeta = clusteringGen.makeRandomClustering(G, 42);
-
-	INFO("calculating modularity in parallel");
-	double modPar = modularityPar.getQuality(zeta, G);
-	INFO("calculating modularity sequentially");
-	double modSeq = modularitySeq.getQuality(zeta, G);
-
-	// EXPECT_EQ(modPar, modSeq) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
-	EXPECT_TRUE(Aux::NumericTools::equal(modPar, modSeq, 1e-12)) << "Modularity values should be equal within a small error no matter if calculated in parallel or sequentially";
 
 }
 
