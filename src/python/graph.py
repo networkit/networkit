@@ -1,1 +1,1 @@
-from _NetworKit import Graph, BFS, Dijkstra, Subgraph, DynBFS, DynDijkstra
+from _NetworKit import Graph, BFS, Dijkstra, Subgraph, DynBFS, DynDijkstra, SpanningForest

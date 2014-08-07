@@ -167,6 +167,15 @@ public:
 	std::string toString() const;
 
 
+	/* COPYING */
+
+	/*
+	* Copies all nodes to a new graph
+	* @return graph with the same nodes.
+	*/
+	Graph copyNodes() const;
+
+
 	/* NODE MODIFIERS */
 
 	/**
@@ -355,6 +364,7 @@ public:
 	 * Check for invalid graph states, such as multiedges
 	 */
 	bool consistencyCheck() const;
+
 
 	/* DYNAMICS */
 
@@ -704,7 +714,7 @@ public:
 	template<typename L> void BFSfrom(std::vector<node> &startNodes, L handle) const;
 
 
-	template<typename L> void BFSEdgesfrom(node r, L handle) const;
+	template<typename L> void BFSEdgesFrom(node r, L handle) const;
 
 	/**
 	 * Iterate over nodes in depth-first search order starting from r until connected component
@@ -716,7 +726,7 @@ public:
 	template<typename L> void DFSfrom(node r, L handle) const;
 
 
-	template<typename L> void DFSEdgesfrom(node r, L handle) const;
+	template<typename L> void DFSEdgesFrom(node r, L handle) const;
 
 
 	/* SPECIAL */
@@ -1178,7 +1188,7 @@ void Graph::BFSfrom(std::vector<node> &startNodes, L handle) const {
 }
 
 template<typename L>
-void Graph::BFSEdgesfrom(node r, L handle) const {
+void Graph::BFSEdgesFrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::queue<node> q;
 	q.push(r); // enqueue root
@@ -1218,7 +1228,7 @@ void Graph::DFSfrom(node r, L handle) const {
 }
 
 template<typename L>
-void Graph::DFSEdgesfrom(node r, L handle) const {
+void Graph::DFSEdgesFrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::stack<node> s;
 	s.push(r); // enqueue root

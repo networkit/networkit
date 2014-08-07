@@ -260,6 +260,18 @@ std::string Graph::toString() const {
 }
 
 
+/** COPYING **/
+
+Graph Graph::copyNodes() const {
+	Graph C(z, weighted, directed);
+	for (node u = 0; u < z; ++u) {
+		if (! exists[u]) {
+			C.removeNode(u);
+		}
+	}
+	return C;
+}
+
 /** NODE MODIFIERS **/
 
 node Graph::addNode() {
