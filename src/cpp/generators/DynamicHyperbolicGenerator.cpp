@@ -5,6 +5,8 @@
  *      Author: moritzl
  */
 
+#include <cmath>
+
 #include "DynamicHyperbolicGenerator.h"
 
 #include "../geometric/HyperbolicSpace.h"
@@ -87,7 +89,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 			//nodes are stationary, growing factors
 			double newfactor = currentfactor + factorgrowth;
 /**
- * most efficient way: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array
+ * most efficient way: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array. TODO: implement
  */
 			//#pragma omp parallel for
 			for (index i = 0; i < nodes; i++) {
@@ -105,28 +107,6 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				auto it = std::set_difference(newset.begin(), newset.end(), oldset.begin(), oldset.end(), difference.begin());
 				difference.resize(it - difference.begin());
 
-				/**
-				index oldindex = 0;
-				index newindex = 0;
-				for (newindex = 0; newindex < newset.size(); newindex++) {
-					double distance = HyperbolicSpace::getHyperbolicDistance(angles[i], radii[i], angles[newset[newindex]], radii[newset[newindex]]);
-					if (oldindex < oldset.size() && newset[newindex] == oldset[oldindex]) {
-						//skip element
-						assert(distance <= R*currentfactor);
-						//TRACE("Skipping old edge (", i, ", ", newset[newindex], ")");
-						oldindex++;
-					} else if (i < newset[newindex]){
-						assert(distance <= R*newfactor);
-						assert(distance >= R*currentfactor);
-						#pragma omp critical
-						{
-							result.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, i, newset[newindex]));
-						}
-
-					}
-				}
-				assert(oldindex == oldset.size());
-				*/
 				//#pragma omp critical
 				{
 					for (auto edge : difference) {
@@ -151,14 +131,35 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 			for (index j = 0; j < toWiggle.size(); j++) {
 				//wiggle this node!
 				double hyperbolicRadius = HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[toWiggle[j]]);
-				Point2D<double> point = HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], hyperbolicRadius);
-				Point2D<double> offset = HyperbolicSpace::polarToCartesian(Aux::Random::real(2*M_PI), moveEachStep);
-				double newphi, newradius;
-				HyperbolicSpace::cartesianToPolar(point + offset, newphi, newradius);
+
+				//angular movement
+
+				double maxcdf = cosh(R);
+				double mincdf = 1;
+				double currcdf = cosh(hyperbolicRadius);
+
+				double offset = moveEachStep*50;
+				double random = Aux::Random::real(currcdf-offset, currcdf+offset);
+				if (random > maxcdf) {
+					random -= 2*(random - maxcdf);
+				}
+				if (random < mincdf) {
+					random += 2*(mincdf - random);
+				}
+				double newradius = acosh(random)/alpha;
+				//assert(abs(newradius - hyperbolicRadius) < moveEachStep);
+				if (newradius == R) newradius = std::nextafter(newradius, std::numeric_limits<double>::lowest());
+				assert(newradius < R);
+				assert(newradius >= 0);
+
+				double angleMovement = Aux::Random::real(-moveEachStep/hyperbolicRadius, moveEachStep/hyperbolicRadius);
+				double newphi = angles[toWiggle[j]] + angleMovement;
+				if (newphi < 0) newphi += (floor(-newphi/(2*M_PI))+1)*2*M_PI;
+				if (newphi > 2*M_PI) newphi -= floor(newphi/(2*M_PI))*2*M_PI;
 
 				//bounce off the boundary
-				if (newradius > R) newradius -= 2*(newradius - R);
 				newradius = HyperbolicSpace::hyperbolicRadiusToEuclidean(newradius);
+				if (newradius >= HyperbolicSpace::hyperbolicRadiusToEuclidean(R)) newradius = std::nextafter(newradius, std::numeric_limits<double>::lowest());
 
 				bool removed = quad.removeContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
 				assert(removed);
