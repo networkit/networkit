@@ -811,6 +811,37 @@ cdef class Subgraph:
 			nnodes.insert(node);
 		return Graph().setThis(self._this._fromNodes(dereference(G._this), nnodes))
 
+
+cdef extern from "../cpp/graph/SpanningForest.h":
+	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
+		_SpanningForest(_Graph) except +
+		_Graph* _generate()
+
+cdef class SpanningForest:
+	""" Generates a spanning forest for a given graph
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		nodes : list
+			A subset of nodes of `G` which induce the subgraph.
+	"""
+	cdef _SpanningForest* _this
+
+	def __cinit__(self, Graph G not None):
+		self._this = new _SpanningForest(dereference(G._this))
+
+
+	def __dealloc__(self):
+		del self._this
+
+	def generate(self):
+		return Graph().setThis(self._this._generate());
+
+
+
+
 cdef extern from "../cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
@@ -1225,7 +1256,7 @@ cdef extern from "../cpp/io/KONECTGraphReader.h":
 		_Graph* _read(string path) except +
 
 cdef class KONECTGraphReader:
-	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1]. 
+	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
 
 		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
 	"""
