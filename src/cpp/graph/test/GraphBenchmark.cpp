@@ -8,7 +8,7 @@
 #ifndef NOGTEST
 
 #include "GraphBenchmark.h"
-#include "../NodeMap.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -153,7 +153,7 @@ TEST_F(GraphBenchmark, weightedDegree_standard_seq) {
 	Aux::Timer runtime;
 
 	runtime.start();
-	NodeMap<double> weightedDegree(n, 0.0);
+	std::vector<double> weightedDegree(n, 0.0);
 
 	G.forNodes([&](node v) {
 		weightedDegree[v] = G.weightedDegree(v);
@@ -186,7 +186,7 @@ TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 	Aux::Timer runtime;
 
 	runtime.start();
-	NodeMap<double> weightedDegree(n, 0.0);
+	std::vector<double> weightedDegree(n, 0.0);
 
 	G.parallelForNodes([&](node v) {
 		weightedDegree[v] = G.weightedDegree(v);
