@@ -6,6 +6,7 @@
  */
 
 #include <assert.h>
+#include <cmath>
 
 
 #include "HyperbolicSpace.h"
@@ -72,9 +73,7 @@ void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii
 		double random = Aux::Random::real(1, maxcdf);
 		double radius = (acosh(random)/alpha);
 		//now translate into coordinates of Poincaré disc
-		double rad_nom = (cosh(radius)-1);
-		double rad_denom = (cosh(radius)+1);
-		(*radii)[i] = sqrt(rad_nom/rad_denom);
+		(*radii)[i] = hyperbolicRadiusToEuclidean(radius);
 		assert((*radii)[i] < 1);
 	}
 }
@@ -259,16 +258,17 @@ double HyperbolicSpace::EuclideanRadiusToHyperbolic(double euclideanRadius) {
 double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 		double r_max) {
 	double result = 0;
-	assert(r_c > 0);
+	assert(r_c >= 0);
 	assert(d_c >= 0);
 	assert(r_c <= r_max);
 	double min = r_c - d_c;
 	double max = std::min(r_c+d_c, r_max);
+	double epsilon = 0.0000001;
 
 	if (d_c > r_c) {
 		//the query circle overlaps the origin
 		result += 2*M_PI*(cosh(EuclideanRadiusToHyperbolic(d_c-r_c))-1);//adding small circle around origin
-		min = d_c-r_c;//correcting integral start to exclude circle
+		min = std::nextafter(d_c-r_c, std::numeric_limits<double>::max());//correcting integral start to exclude circle
 	}
 
 	/**
@@ -277,8 +277,11 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 	 * The solution for this was computed by WolframAlpha
 	 */
 
+	if (max < min) return result;
+
 	auto realpart = [](double r, double d, double c) {
-		return acos((c*c-d*d+r*r) / (2*c*r)) / (r*r-1);
+		double result = acos((c*c-d*d+r*r) / (2*c*r)) / (r*r-1);
+		return result;
 	};
 
 	/**
@@ -290,7 +293,7 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 		double rsqs = r*r+s;
 		double real = -2*s*sqrt(4*c*c*r*r-rsqs*rsqs);
 		double imag = -4*c*c*r*r+2*s*r*r+2*s*s;
-		return atan2(imag/denominator, real/denominator)/2;
+		return atan2(imag, real)/2;
 	};
 
 	auto secondlogpart = [](double r, double d, double c) {
@@ -300,11 +303,11 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 		double real = sqrt(4*c*c*r*r-rsqs*rsqs);
 		double imag = 2*c*c*(r*r+1)-(s+1)*rsqs;
 		imag = imag / sqrt((s+1)*(s+1)-(4*c*c));
-		return (s-1)*atan2(2*imag/denominator, 2*real/denominator)/(2*sqrt((s+1)*(s+1)-(4*c*c)));
+		return (s-1)*atan2(imag, real)/(2*sqrt((s+1)*(s+1)-(4*c*c)));
 	};
 
 	double lower = -realpart(min, d_c, r_c) -firstlogpart(min, d_c, r_c) + secondlogpart(min, d_c, r_c);
 	double upper = -realpart(max, d_c, r_c) -firstlogpart(max, d_c, r_c) + secondlogpart(max, d_c, r_c);
-	return result + (upper - lower);
+	return 4*(result + (upper - lower));
 }
 }
