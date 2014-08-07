@@ -9,7 +9,6 @@
 #include <random>
 
 #include "Graph.h"
-#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 

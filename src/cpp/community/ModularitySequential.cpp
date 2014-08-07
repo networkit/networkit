@@ -6,11 +6,11 @@
  */
 
 #include "ModularitySequential.h"
+#include "../auxiliary/Log.h"
 
 #include <cmath>
 #include <stdexcept>
 #include "CoverageSequential.h"
-#include "../base/IndexMap.h"
 
 
 namespace NetworKit {
@@ -37,7 +37,7 @@ double ModularitySequential::getQuality(const Partition& zeta, const Graph& G) {
 		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
 	}
 
-	IndexMap<index, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
+	std::vector<double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
 
 	// compute volume of each cluster
 	G.forNodes([&](node v){
