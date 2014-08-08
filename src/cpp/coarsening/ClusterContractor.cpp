@@ -48,7 +48,7 @@ std::pair<Graph, std::vector<node> > ClusterContractor::run(const Graph& G, cons
 
 
 	DEBUG("iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon");
-	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
+	G.forEdges([&](node u, node v, edgeweight ew) {
 		// TRACE(Gcon.upperNodeIdBound()," ",nodeToSuperNode[u]," ",nodeToSuperNode[v]);
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];

@@ -121,9 +121,10 @@ edgeweight EdmondsKarp::run(Graph &graph, const node source, const node sink, in
 	std::vector<std::vector<edgeweight>> flow;
 	edgeweight maxFlow = solveMaxFlow(graph, source, sink, flow);
 
-	attribute_id = graph.addEdgeAttribute_double(0.0);
+	// FIXME: update to new edge attribute system
+	// attribute_id = graph.addEdgeAttribute_double(0.0);
 	graph.forEdges([&](node u, node v) {
-		graph.setAttribute_double(u, v, attribute_id, flow[u][getEdgeIdx(graph, u, v)]);
+		// FIXME: graph.setAttribute_double(u, v, attribute_id, flow[u][getEdgeIdx(graph, u, v)]);
 	});
 
 	return maxFlow;
@@ -133,9 +134,9 @@ edgeweight EdmondsKarp::run(Graph &graph, node source, node sink, std::vector<no
 	std::vector<std::vector<edgeweight>> flow;
 	edgeweight maxFlow = solveMaxFlow(graph, source, sink, flow);
 
-	attribute_id = graph.addEdgeAttribute_double(0.0);
+	// FIXME: attribute_id = graph.addEdgeAttribute_double(0.0);
 	graph.forEdges([&](node u, node v) {
-		graph.setAttribute_double(u, v, attribute_id, flow[u][getEdgeIdx(graph, u, v)]);
+		// FIXME: graph.setAttribute_double(u, v, attribute_id, flow[u][getEdgeIdx(graph, u, v)]);
 	});
 
 	computeSourceSet(graph, source, sink, flow, sourceSet);

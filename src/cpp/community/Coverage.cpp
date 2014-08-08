@@ -28,7 +28,7 @@ double Coverage::getQuality(const Partition& zeta, const Graph& G) {
 
 	// compute intra-cluster edge weights per cluster
 	// TODO: Make parallel, protect intraEdgeWeight[c]
-	G.forWeightedEdges(
+	G.forEdges(
 			[&](node u, node v, edgeweight ew) {
 				assert (u < zeta.numberOfElements());
 				assert (v < zeta.numberOfElements());

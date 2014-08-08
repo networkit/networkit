@@ -74,7 +74,7 @@ void Dijkstra::run(node t) {
 			stack.push(current);
 		}
 
-		G.forWeightedEdgesOf(current, relax);
+		G.forEdgesOf(current, relax);
 	}
 
 }
@@ -136,7 +136,7 @@ void Dijkstra::runUntil(node t) {
 			break;
 		}
 
-		G.forWeightedEdgesOf(current, relax);
+		G.forEdgesOf(current, relax);
 	}
 
 }

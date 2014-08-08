@@ -14,7 +14,7 @@ Matching PathGrowingMatcher::run(Graph& G) {
 	// make copy since graph will be transformed
 	// copy graph because we make changes due to merges
 	Graph graph(G.numberOfNodes(), true); // make weighted copy
-	G.forWeightedEdges([&](node u, node v, edgeweight w){
+	G.forEdges([&](node u, node v, edgeweight w){
 		graph.addEdge(u, v, w);
 	});
 	const count n = graph.numberOfNodes();
@@ -41,7 +41,7 @@ Matching PathGrowingMatcher::run(Graph& G) {
 			// find heaviest incident edge
 			node bestNeighbor = 0;
 			edgeweight bestWeight = 0;
-			graph.forWeightedEdgesOf(v, [&](node v, node u, edgeweight weight) {
+			graph.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
 				if (weight > bestWeight) {
 					bestNeighbor = u;
 					bestWeight = weight;

@@ -10,10 +10,10 @@
 namespace NetworKit {
 
 NormalizedLaplacianMatrix::NormalizedLaplacianMatrix(const Graph &graph) : Matrix(graph.upperNodeIdBound()) {
-	graph.forNodes([&](const index i){
+	graph.forNodes([&](const node i){
 		double weightedDegree = graph.weightedDegree(i);
 
-		graph.forWeightedNeighborsOf(i, [&](const index j, double weight){
+		graph.forNeighborsOf(i, [&](const node j, double weight){
 			if (i != j) {
 				double weightedNeighborDegree = graph.weightedDegree(j);
 				setValue(i, j, -weight/sqrt(weightedDegree * weightedNeighborDegree));

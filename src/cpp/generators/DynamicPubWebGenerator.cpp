@@ -33,7 +33,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 			eventStream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, v));
 		});
 
-		G.forWeightedEdges([&](node u, node v, edgeweight ew){
+		G.forEdges([&](node u, node v, edgeweight ew){
 			eventStream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, ew));
 		});	
 

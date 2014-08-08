@@ -46,7 +46,7 @@ void CommunityGraph::run(const Graph& G, const Partition& zeta) {
 	DEBUG("create edges");
 
 	// iterate over edges of G and create edges in Gcon or update edge and node weights in Gcon
-	G.forWeightedEdges([&](node u, node v, edgeweight ew) {
+	G.forEdges([&](node u, node v, edgeweight ew) {
 		node su = nodeToSuperNode[u];
 		node sv = nodeToSuperNode[v];
 		if (Gcom.hasEdge(su, sv)) {

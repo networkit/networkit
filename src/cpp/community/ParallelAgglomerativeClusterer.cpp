@@ -17,7 +17,7 @@ namespace NetworKit {
 Partition ParallelAgglomerativeClusterer::run(const Graph& graph) {
 	// copy graph because we make changes due to merges
 	Graph G(graph.numberOfNodes(), true); // make weighted copy
-	graph.forWeightedEdges([&](node u, node v, edgeweight w){
+	graph.forEdges([&](node u, node v, edgeweight w){
 		G.addEdge(u, v, w);
 	});
 
@@ -26,7 +26,9 @@ Partition ParallelAgglomerativeClusterer::run(const Graph& graph) {
 	bool repeat = true;
 	do {
 		// prepare attributes for scoring
-		int attrId = G.addEdgeAttribute_double(0.0);
+		// FIXME: update to new edge attribute system
+		//int attrId = G.addEdgeAttribute_double(0.0);
+		int attrId = 0;
 
 		// perform scoring
 		TRACE("before scoring graph of size " , G.numberOfNodes());
