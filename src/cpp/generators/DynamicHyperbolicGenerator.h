@@ -21,7 +21,9 @@ public:
 	DynamicHyperbolicGenerator();
 	virtual ~DynamicHyperbolicGenerator();
 	std::vector<GraphEvent> generate(count nSteps) override;
-	virtual void initializeQuadTree();
+	void initializeQuadTree();
+	Graph getGraph();
+
 
 private:
 	count quadTreeHeight() {

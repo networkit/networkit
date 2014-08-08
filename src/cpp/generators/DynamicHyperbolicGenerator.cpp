@@ -8,7 +8,7 @@
 #include <cmath>
 
 #include "DynamicHyperbolicGenerator.h"
-
+#include "HyperbolicGenerator.h"
 #include "../geometric/HyperbolicSpace.h"
 
 using std::vector;
@@ -74,6 +74,17 @@ void DynamicHyperbolicGenerator::initializeQuadTree() {
 		quad.addContent(i, angles[i], radii[i]);
 	}
 	INFO("Filled Quadtree");
+}
+
+Graph DynamicHyperbolicGenerator::getGraph() {
+	if (!initialized) initializeQuadTree();//this is horribly expensive, since it constructs a new Quadtree
+	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	/**
+	 * The next call is unnecessarily expensive, since it constructs a new QuadTree.
+	 * Reduces code duplication, though.
+	 */
+	return HyperbolicGenerator::generate(&angles, &radii, r, currentfactor*R);
 }
 
 std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
