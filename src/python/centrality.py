@@ -1,4 +1,4 @@
-from _NetworKit import Betweenness, Betweenness2, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness
+from _NetworKit import Betweenness, Betweenness2, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness
 
 
 def ranking(G, algorithm=Betweenness, normalized=False):
