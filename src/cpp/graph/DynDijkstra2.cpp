@@ -19,7 +19,7 @@ N (G.upperNodeIdBound(), Aux::PrioQueue<edgeweight, node>(G.upperNodeIdBound()))
 
 	// insert all neighbors of each vertex u in its priority queue
 	G.forNodes([&](node u){
-		G.forWeightedNeighborsOf(u, [&](node v, edgeweight w){
+		G.forNeighborsOf(u, [&](node v, edgeweight w){
 			N[u].insert(distances[v]-w, v);
 		});
 	});
