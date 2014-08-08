@@ -199,7 +199,10 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
 
 /** EDGE IDS **/
 
-void Graph::indexEdges() {
+void Graph::indexEdges(bool force) {
+	if (edgesIndexed && !force) return;
+
+	omega = 0; // reset edge ids (for re-indexing)
 
 	outEdgeIds.resize(outEdges.size());
 	for (node u = 0; u < z; ++u) {
