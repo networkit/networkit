@@ -3269,6 +3269,33 @@ cdef class DynamicPubWebGenerator:
 	def getGraph(self):
 		return Graph().setThis(self._this._getGraph())
 
+cdef extern from "../cpp/generators/DynamicHyperbolicGenerator.h":
+	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
+		_DynamicHyperbolicGenerator(count numNodes, double initialFactor,
+			double alpha, double stretch, double moveEachStep, double factorGrowth, double moveDistance) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph* _getGraph() except +
+
+
+cdef class DynamicHyperbolicGenerator:
+	cdef _DynamicHyperbolicGenerator* _this
+
+	def __cinit__(self, numNodes, initialFactor, alpha, stretch, moveEachStep, factorGrowth, moveDistance):
+		self._this = new _DynamicHyperbolicGenerator(numNodes, initialFactor, alpha, stretch, moveEachStep, factorGrowth, moveDistance)
+
+	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+	def getGraph(self):
+		return Graph().setThis(self._this._getGraph())
+
 
 # cdef extern from "../cpp/generators/ForestFireGenerator.h":
 # 	cdef cppclass _ForestFireGenerator "NetworKit::ForestFireGenerator":
