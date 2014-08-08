@@ -16,6 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup graph
  * Simple methods for graph generation.
+ * DEPRECATED: do not use in new code, replace usage with dedicated generator classes
  */
 class GraphGenerator {
 

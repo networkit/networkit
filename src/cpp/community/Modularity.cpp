@@ -10,7 +10,6 @@
 #include <cmath>
 #include <stdexcept>
 #include "Coverage.h"
-#include "../base/IndexMap.h"
 
 
 
@@ -52,7 +51,7 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
 		throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
 	}
 
-	IndexMap<index, double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
+	std::vector<double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
 
 	// compute volume of each cluster
 	G.parallelForNodes([&](node v) {

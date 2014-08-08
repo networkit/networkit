@@ -69,7 +69,7 @@ public:
 	 * @param G The graph.
 	 * @return A Partition of the clustering.
 	 */
-	virtual Partition run(Graph& G);
+	virtual Partition run(const Graph& G);
 
 	/**
 	 * String representation of EPP class.

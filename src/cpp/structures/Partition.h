@@ -25,7 +25,7 @@ namespace NetworKit {
 
 /**
  * @ingroup structures
- * Implements a partition of a set, i.e. a subdivision of the 
+ * Implements a partition of a set, i.e. a subdivision of the
  * set into disjoint subsets.
  */
 class Partition {
@@ -88,13 +88,22 @@ public:
 	 * for one more element. Initializes the entry to none
 	 * and returns the index of the entry.
 	 */
-	index extend();
+	inline index extend() {
+		data.push_back(none);
+		z++;
+		assert (z == data.size()); //(data.size() - 1)
+		return z-1;
+	}
+
 
 	/**
 	 * Removes the entry for the given element
 	 * by setting it to none.
 	 */
-	void remove(index e);
+	inline void remove(index e) {
+		assert (e < z);
+		data[e] = none;
+	}
 
 	/**
 	 * Add a (previously unassigned) element @a e to the set @a s.
@@ -102,7 +111,12 @@ public:
 	 * @param s The index of the subset.
 	 * @param e The element to add.
 	 */
-	void addToSubset(index subset, index elem);
+	inline void addToSubset(index s, index e) {
+		assert (data[e] == none);	// guarantee that element was unassigned
+		assert (s <= omega);		// do not create new subset ids
+		data[e] = s;
+	}
+
 
 	/**
 	 * Move the (previously assigned) element @a e to the set @a s.
@@ -110,14 +124,20 @@ public:
 	 * @param s The index of the subset.
 	 * @param e The element to move.
 	 */
-	void moveToSubset(index s, index e);
+	inline void moveToSubset(index s, index e) {
+		assert (this->contains(e));
+		assert (s <= omega); 		// do not create new subset ids
+		data[e] = s;
+	}
 
 	/**
 	 * Creates a singleton set containing the element @a e.
 	 *
 	 * @param e The index of the element.
 	 */
-	void toSingleton(index e);
+	inline void toSingleton(index e) {
+		data[e] = newSubsetId();
+	}
 
 	/**
 	 * Assigns every element to a singleton set.
@@ -159,7 +179,9 @@ public:
 	 *
 	 * @param[in]	upper	highest assigned subset ID + 1
 	 */
-	void setUpperBound(index upper);
+	inline void setUpperBound(index upper) {
+		this->omega = upper-1;
+	}
 
 	/**
 	 * Return an upper bound for the subset ids that have been assigned.
@@ -167,14 +189,18 @@ public:
 	 *
 	 * @return The upper bound.
 	 */
-	index upperBound() const;
+	inline index upperBound() const {
+		return omega+1;
+	}
 
 	/**
 	 * Get a lower bound for the subset ids that have been assigned.
 	 *
 	 * @return The lower bound.
 	 */
-	index lowerBound() const;
+	inline index lowerBound() const {
+		return 0;
+	}
 
 
 	/**
@@ -189,7 +215,9 @@ public:
 	 * @param e The element.
 	 * @return @c true if the assigned subset is valid, @c false otherwise.
 	 */
-	bool contains(index e) const;
+	inline bool contains(index e) const {
+		return (e < z) && (data[e] != none);	// e is in the element index range and the entry is not empty
+	}
 
 
 	/**
@@ -199,7 +227,11 @@ public:
 	 * @param e2 Element.
 	 * @return @c true if @a e1 and @a e2 belong to same subset, @c false otherwise.
 	 */
-	bool inSameSubset(index e1, index e2) const;
+	inline bool inSameSubset(index e1, index e2) const {
+		assert (data[e1] != none);
+		assert (data[e2] != none);
+		return (data[e1] == data[e2]);
+	}
 
 
 	/**
@@ -230,7 +262,9 @@ public:
 	/**
 	 * @return number of elements in the partition.
 	 */
-	count numberOfElements() const;
+	inline count numberOfElements() const {
+		return z;	// z is the maximum element id
+	}
 
 
 	/**
@@ -239,32 +273,35 @@ public:
 	 * @return The current number of sets.
 	 */
 	count numberOfSubsets() const;
-	
+
 	/**
 	 * Get the actual vector representing the partition data structure.
 	 * @return vector containing information about partitions.
 	 */
-	std::vector<index> getVector();
+	std::vector<index> getVector() const;
 
 
-	/** 
+	/**
 	 * @return the subsets of the partition as a set of sets.
 	 */
 	std::set<std::set<index> > getSubsets();
 
-	/** 
+
+	/**
 	 * Get the ids of nonempty subsets.
 	 *
 	 * @return A set of ids of nonempty subsets.
 	 */
 	std::set<index> getSubsetIds();
-	 
+
 	/**
 	 * Set a human-readable identifier @a name for the instance.
 	 *
 	 * @param name The name.
 	 */
-	void setName(std::string name);
+	inline void setName(std::string name) {
+		this->name = name;
+	}
 
 
 	/**
@@ -272,8 +309,10 @@ public:
 	 *
 	 * @return The name of this partition.
 	 */
-	std::string getName() const;
-	 
+	inline std::string getName() const {
+		return this->name;
+	}
+
 	/**
 	 * Iterate over all entries (node, cluster id) and execute callback function @a func (lambda closure).
 	 *
