@@ -205,21 +205,21 @@ void Graph::indexEdges(bool force) {
 	omega = 0; // reset edge ids (for re-indexing)
 
 	outEdgeIds.resize(outEdges.size());
-	for (node u = 0; u < z; ++u) {
+	forNodes([&](node u) {
 		outEdgeIds[u].resize(outEdges[u].size(), none);
-	}
+	});
 
 	if (directed) {
 		inEdgeIds.resize(inEdges.size());
-		for (node u = 0; u < z; ++u) {
+		forNodes([&](node u) {
 			inEdgeIds[u].resize(inEdges[u].size(), none);
-		}
+		});
 	}
 
-	for (node u = 0; u < z; ++u) {
+	forNodes([&](node u) {
 		for (index i = 0; i < outEdges[u].size(); ++i) {
 			node v = outEdges[u][i];
-			if (directed || (u >= v)) {
+			if (v != none && (directed || (u >= v))) {
 				// new id
 				edgeid id = omega++;
 				outEdgeIds[u][i] = id;
@@ -235,7 +235,7 @@ void Graph::indexEdges(bool force) {
 
 			}
 		}
-	}
+	});
 
 	edgesIndexed = true; // remember that edges have been indexed so that addEdge needs to create edge ids
 }
