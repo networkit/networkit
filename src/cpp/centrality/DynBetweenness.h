@@ -9,7 +9,6 @@
 #define DYNBETW_H_
 
 #include "Centrality.h"
-#include "DynCentrality.h"
 #include "../dynamics/GraphEvent.h"
 
 namespace NetworKit {
@@ -18,7 +17,7 @@ namespace NetworKit {
  * @ingroup graph
  * Interface for dynamic betweenness centrality algorithms.
  */
-class DynBetweenness: public Centrality, public DynCentrality {
+class DynBetweenness: public Centrality {
 
 public:
     /**
@@ -38,7 +37,7 @@ public:
     *
     * @param batch The batch of edge insertions.
     */
-    void update(const std::vector<GraphEvent>& batch);
+    void update(GraphEvent e);
 
 protected:
         std::vector<count> maxDistance;

@@ -116,14 +116,10 @@ TEST_F(CentralityGTest, testDynBetweenness) {
 	}
 
 	// edge insertions
-	std::vector<GraphEvent> batch(1);
-	batch[0].type = GraphEvent::EDGE_ADDITION;
-	batch[0].u = 0;
-	batch[0].v = 6;
-	batch[0].w = 1.0;
-	G.addEdge(batch[0].u, batch[0].v);
+	GraphEvent ev(GraphEvent::EDGE_ADDITION, 0, 6, 1.0);
+	G.addEdge(ev.u, ev.v);
 	bc.run();
-	dynbc.update(batch);
+	dynbc.update(ev);
 
 	dynbc_scores = dynbc.scores();
 	bc_scores = bc.scores();
