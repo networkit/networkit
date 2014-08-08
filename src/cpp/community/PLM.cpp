@@ -7,7 +7,7 @@
 
 #include "PLM.h"
 #include <omp.h>
-#include "../coarsening/PartitionCoarsening.h"
+#include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
@@ -16,12 +16,12 @@
 
 namespace NetworKit {
 
-PLM::PLM(bool refine, double gamma, std::string par, count maxIter) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter) {
+PLM::PLM(bool refine, double gamma, std::string par, count maxIter, bool parallelCoarsening) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), parallelCoarsening(parallelCoarsening) {
 
 }
 
 
-Partition PLM::run(Graph& G) {
+Partition PLM::run(const Graph& G) {
 	DEBUG("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();
@@ -56,7 +56,7 @@ Partition PLM::run(Graph& G) {
 
 	// first move phase
 	bool moved = false; // indicates whether any node has been moved in the last pass
-	bool change = false; // indicates whether the communities have changed at all 
+	bool change = false; // indicates whether the communities have changed at all
 
 	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
@@ -95,7 +95,7 @@ Partition PLM::run(Graph& G) {
 		auto modGain = [&](node u, index C, index D) {
 			double volN = 0.0;
 			volN = volNode[u];
-			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor; 
+			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
 			//TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
 			return delta;
 		};
@@ -173,10 +173,12 @@ Partition PLM::run(Graph& G) {
 	movePhase();
 
 	if (change) {
-		DEBUG("nodes moved, so begin coarsening and recursive call");
-		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
+		INFO("nodes moved, so begin coarsening and recursive call");
+		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta, parallelCoarsening);	// coarsen graph according to communitites
+
 		Partition zetaCoarse = run(coarsened.first);
 
+		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {
@@ -207,17 +209,22 @@ std::string NetworKit::PLM::toString() const {
 	} else {
 		refined = "";
 	}
+	std::string parCoarsening;
+	if (parallelCoarsening) {
+		parCoarsening = "parallel coarsening";
+	} else {
+		parCoarsening = "";
+	}
 
 	std::stringstream stream;
-	stream << "PLM(" << parallelism << "," << refined << ")";
+	stream << "PLM(" << parallelism << "," << refined << "," << parCoarsening << ")";
 
 	return stream.str();
 }
 
-std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
-	bool parallelCoarsening = false; // switch between parallel and sequential coarsening
-	if (parallelCoarsening) {
-		PartitionCoarsening parCoarsening;
+std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta, bool parallel) {
+	if (parallel) {
+		ParallelPartitionCoarsening parCoarsening;
 		return parCoarsening.run(G, zeta);
 	} else {
 		ClusterContractor seqCoarsening;
@@ -236,10 +243,9 @@ Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const 
 		index cv = zetaCoarse[mv];
 		zetaFine[v] = cv;
 	});
-	
+
 
 	return zetaFine;
 }
 
 } /* namespace NetworKit */
-
