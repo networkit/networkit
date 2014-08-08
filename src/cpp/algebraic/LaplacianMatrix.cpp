@@ -13,7 +13,7 @@ LaplacianMatrix::LaplacianMatrix(const Graph &graph) : Matrix(graph.upperNodeIdB
 	graph.forNodes([&](const index i){
 		double weightedDegree = graph.weightedDegree(i);
 
-		graph.forWeightedNeighborsOf(i, [&](const index j, double weight) { // - adjacency matrix
+		graph.forNeighborsOf(i, [&](const index j, double weight) { // - adjacency matrix
 			setValue(i, j, -weight);
 		});
 

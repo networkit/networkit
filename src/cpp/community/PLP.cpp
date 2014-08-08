@@ -70,7 +70,7 @@ Partition& PLP::runFromGiven(const Graph& G, Partition& labels) {
 				std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 
 				// weigh the labels in the neighborhood of v
-				G.forWeightedNeighborsOf(v, [&](node w, edgeweight weight) {
+				G.forNeighborsOf(v, [&](node w, edgeweight weight) {
 					label lw = labels.subsetOf(w);
 					labelWeights[lw] += weight; // add weight of edge {v, w}
 				});
