@@ -46,7 +46,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 
 	// iterate over edges of G and create edges in coarse graph or update edge and node weights in Gcon
 	DEBUG("create edges in coarse graphs");
-	G.parallelForWeightedEdges([&](node u, node v, edgeweight ew) {
+	G.parallelForEdges([&](node u, node v, edgeweight ew) {
 		index t = omp_get_thread_num();
 
 		node su = nodeToSuperNode[u];
@@ -87,7 +87,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	DEBUG("combining graphs");
 	Gcombined.balancedParallelForNodes([&](node u) {
 		for (index l = 0; l < nThreads; ++l) {
-			localGraphs.at(l).forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+			localGraphs.at(l).forEdgesOf(u, [&](node u, node v, edgeweight w) {
 				TRACE("increasing weight of (", u, v, ") to", w);
 				threadSafeIncreaseWeight(u, v, w);
 			});
