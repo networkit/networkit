@@ -205,9 +205,23 @@ private:
 	template<class F, bool InEdges = false, void* = nullptr>
 	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, ...) const {
 		// the strange condition is used in order to delay the eveluation of the static assert to the moment when this function is actually used
-		static_assert(! std::is_same<F, F>::value, "Your lambda does not support the required parameters or accepts more than 3 parameters.");
+		static_assert(! std::is_same<F, F>::value, "Your lambda does not support the required parameters or the parameters have the wrong type.");
 		return std::declval<typename Aux::FunctionTraits<F>::result_type>(); // use the correct return type (this won't compile)
 	}
+
+	/**
+	 * Calls the given function f if its fourth argument is of the type edgeid and third of type edgeweight
+	 * Note that the decltype check is not enough as edgeweight can be casted to node and we want to assure that .
+	 */
+	template < class F, bool InEdges = false,
+	         typename std::enable_if <
+	         std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value &&
+	         std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::value
+	         >::type * = nullptr >
+	auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, ew, id)) {
+		return f(u, v, ew, id);
+	}
+
 
 	/**
 	 * Calls the given function f if its third argument is of the type edgeid, discards the edge weight
@@ -754,14 +768,14 @@ public:
 	/**
 	 * Iterate over all edges of the const graph and call @a handle (lambda closure).
 	 *
-	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgweight)</code>.
+	 * @param handle Takes parameters <code>(node, node)</code>, <code>(node, node, edgweight)</code>, <code>(node, node, edgeid)</code> or <code>(node, node, edgeweight, edgeid)</code>.
 	 */
 	template<typename L> void forEdges(L handle) const;
 
 	/**
 	 * Iterate in parallel over all edges of the const graph and call @a handle (lambda closure).
 	 *
-	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgweight)</code>.
+	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgweight)</code>, <code>(node, node, edgeid)</code> or <code>(node, node, edgeweight, edgeid)</code>.
 	 */
 	template<typename L> void parallelForEdges(L handle) const;
 
@@ -783,7 +797,7 @@ public:
 	 * Iterate over all incident edges of a node and call @a handle (lamdba closure).
 	 *
 	 * @param u Node.
-	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgeweight)</code> where the first node is @a u and the second is a neighbor of @a u.
+	 * @param handle Takes parameters <code>(node, node)</code>, <code>(node, node, edgeweight)</code>, <code>(node, node, edgeid)</code> or <code>(node, node, edgeweight, edgeid)</code> where the first node is @a u and the second is a neighbor of @a u.
 	 * @note For undirected graphs all edges incident to @a u are also outgoing edges.
 	 */
 	template<typename L> void forEdgesOf(node u, L handle) const;
