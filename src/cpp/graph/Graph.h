@@ -215,8 +215,10 @@ public:
 
 	/**
 	* Initially assign integer edge identifiers.
+	*
+	* @param force Force re-indexing of edges even if they have already been indexed
 	*/
-	void indexEdges();
+	void indexEdges(bool force = false);
 
 
 	/**
