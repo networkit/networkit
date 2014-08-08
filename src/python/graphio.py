@@ -6,34 +6,54 @@ import os
 import logging
 import numpy
 import scipy.io
-from enum import Enum
+
+try:
+	from enum import Enum
+
+	class AutoNumber(Enum):
+		def __new__(cls):
+			value = len(cls.__members__) + 1
+			obj = object.__new__(cls)
+			obj._value_ = value
+			return obj
 
 
-class AutoNumber(Enum):
-	def __new__(cls):
-		value = len(cls.__members__) + 1
-		obj = object.__new__(cls)
-		obj._value_ = value
-		return obj
+	class Format(AutoNumber):
+		""" Simple enumeration class to list supported file types """
+		SNAP = ()
+		EdgeListSpaceZero = ()
+		EdgeListSpaceOne = ()
+		EdgeListTabZero = ()
+		EdgeListTabOne = ()
+		METIS = ()
+		GraphML = ()
+		GML = ()
+	#	VNA = ()
+		EdgeListCommaOne = ()
+		GraphViz = ()
+		DOT = ()
+	#	GDF = ()
+		EdgeList = ()
+		LFR = ()
+		KONECT = ()
+except ImportError:
+	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
+	class Format:
+		SNAP = "snap"
+		EdgeListTabOne = "edgelist-t1"
+		EdgeListTabZero = "edgelist-t0"
+		EdgeListSpaceOne = "edgelist-s1"
+		EdgeListSpaceZero = "edgelist-s0"
+		METIS = "metis"
+		GraphML = "graphml"
+		GML = "gml"
+		EdgeListCommaOne = "edgelist-cs1"
+		GraphViz = "dot"
+		DOT = "dot"
+		EdgeList = "edgelist"
+		LFR = "edgelist-t1"
+		KONECT = "konect"
 
-
-class Format(AutoNumber):
-	""" Simple enumeration class to list supported file types """
-	SNAP = ()
-	EdgeListSpaceZero = ()
-	EdgeListSpaceOne = ()
-	EdgeListTabZero = ()
-	EdgeListTabOne = ()
-	METIS = ()
-	GraphML = ()
-	GML = ()
-#	VNA = ()
-	EdgeListCommaOne = ()
-	GraphViz = ()
-#	GDF = ()
-	EdgeList = ()
-	LFR = ()
-	KONECT = ()
 
 
 
@@ -127,6 +147,7 @@ def getWriter(fileformat, **kwargs):
 			Format.EdgeListTabOne:		EdgeListWriter('\t',1),
 			Format.EdgeListTabZero:		EdgeListWriter('\t',0),
 			Format.GraphViz:		DotGraphWriter(),
+			Format.DOT:			DotGraphWriter(),
 			Format.GML:			GMLGraphWriter(),
 			Format.LFR:			EdgeListWriter('\t',1)
 #			Format.GDF:			GDFGraphWriter(),
