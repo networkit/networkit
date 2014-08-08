@@ -98,18 +98,39 @@ TEST_F(DynBetweennessGTest, timeDynExactBetweenness) {
 	INFO("initial run");
 	dynbc.run();
 	INFO("update");
-	std::vector<GraphEvent> batch;
+	GraphEvent ev;
 	count nInsertions = 100, i = 0;
 	while (i < nInsertions) {
 		node v1 = Sampling::randomNode(G);
 		node v2 = Sampling::randomNode(G);
 		if (v1 != v2 && !G.hasEdge(v1, v2)) {
 			G.addEdge(v1, v2);
-			batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0));
+			ev = GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0);
+			dynbc.update(ev);
 			i++;
 		}
 	}
-	dynbc.update(batch);
+}
+
+TEST_F(DynBetweennessGTest, testCorrectnessDynExactBetweenness) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+
+	DynBetweenness dynbc = DynBetweenness(G);
+	dynbc.run();
+	std::cout<<"Before the edge insertion: "<<std::endl;
+	GraphEvent ev;
+	count nInsertions = 10, i = 0;
+	while (i < nInsertions) {
+		node v1 = Sampling::randomNode(G);
+		node v2 = Sampling::randomNode(G);
+		if (v1 != v2 && !G.hasEdge(v1, v2)) {
+			G.addEdge(v1, v2);
+			ev = GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0);
+			dynbc.update(ev);
+			i++;
+		}
+	}
 }
 
 

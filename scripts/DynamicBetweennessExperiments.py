@@ -46,18 +46,21 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	timesDynBc = []
 	timesApprBc = []
 	timesDynApprBc = []
-	for i in range(0, nExperiments):
+	for i in range (0, nExperiments):
 		batch = addStream[i*batchSize : (i+1)*batchSize]
 		# add the edges of batch to the graph
-		updater.update(batch)
+		totalTime = 0
+		for j in range (0, batchSize):
+			updater.update(batch[j])
+			# update the betweenness with the dynamic exact algorithm
+			t = stopwatch.Timer()
+			dynBc.update(batch[j])
+			totalTime += t.stop()
+		timesDynBc.append(totalTime)
 		# update the betweenness with the static exact algorithm
 		t = stopwatch.Timer()
 		bc.run()
 		timesBc.append(t.stop())
-		# update the betweenness with the dynamic exact algorithm
-		t = stopwatch.Timer()
-		dynBc.update(batch)
-		timesDynBc.append(t.stop())
 		# update the betweenness with the static approximated algorithm
 		t = stopwatch.Timer()
 		apprBc.run()

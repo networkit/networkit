@@ -3289,7 +3289,7 @@ cdef extern from "../cpp/centrality/DynBetweenness.h":
 	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
 		_DynBetweenness(_Graph) except +
 		void run() except +
-		void update(vector[_GraphEvent]) except +
+		void update(_GraphEvent) except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
@@ -3314,17 +3314,14 @@ cdef class DynBetweenness:
 		"""
 		self._this.run()
 
-	def update(self, batch):
-		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
+	def update(self, ev):
+		""" Updates the betweenness centralities after the edge insertion.
 
 		Parameters
 		----------
-		batch : list of GraphEvent.
+		ev : GraphEvent.
 		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		self._this.update(_batch)
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
