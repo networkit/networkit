@@ -187,7 +187,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 	int nSteps = 100;
 	count n = 1000;
-	double initialFactor = 0;
+	double initialFactor = 0.5;
 	double factorGrowth = (double) (1 - initialFactor) / nSteps;
 
 	double stretch = 1;
@@ -202,7 +202,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 
 	DynamicHyperbolicGenerator dynGen(angles, radii, R, initialFactor, 0, factorGrowth, 0);
 
-	Graph G(n);
+	Graph G = dynGen.getGraph();
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 
@@ -238,9 +238,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
 	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
-	double rad_nom = (cosh(R)-1);
-	double rad_denom = (cosh(R)+1);
-	double r = sqrt(rad_nom/rad_denom);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 
 	DynamicHyperbolicGenerator dynGen(angles, radii, R, factor, movedShare, 0, moveDistance);
 

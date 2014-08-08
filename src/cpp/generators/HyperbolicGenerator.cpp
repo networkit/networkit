@@ -44,9 +44,7 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	double R = stretchradius*acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
 	vector<double> radii(n);
-	double rad_nom = (cosh(R)-1);
-	double rad_denom = (cosh(R)+1);
-	double r = sqrt(rad_nom/rad_denom);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	HyperbolicSpace::fillPoints(&angles, &radii, stretchradius, alpha);
 	INFO("Generated Points");
 	return generate(&angles, &radii, r, R*distanceFactor);
