@@ -1,9 +1,9 @@
 from NetworKit import *
 from dynamic import *
-
+from centrality import *
 
 def removeAndAddEdges(G, nEdges, tabu=None):
-	if nEdges > G.numberOfEdges():
+	if nEdges > G.numberOfEdges() - tabu.numberOfEdges():
 		raise Error("G does not have enough edges")
 
 	# select random edges for removal
@@ -18,23 +18,69 @@ def removeAndAddEdges(G, nEdges, tabu=None):
 	for (u, v) in removed:
 		removeStream.append(GraphEvent(GraphEvent.EDGE_REMOVAL, u, v, 0))
 	addStream = []
-	i = 0
 	for (u, v) in removed:
 		addStream.append(GraphEvent(GraphEvent.EDGE_ADDITION, u, v, 1.0))
-		i += 1
 
 	return (removeStream, addStream)
 
 
-def applyStreams(G, removeStream, addStream):
-	updater = dynamic.GraphUpdater(G)
-	updater.udpate(removeStream)
-	updater.update(addStream)
-
-
-def test():
-	G = readGraph("../input/PGPgiantcompo.graph")
+def test(G, nEdges, batchSize, epsilon, delta):
+	# find a set of nEdges to remove from G
 	T = graph.SpanningForest(G).generate()
+	(removeStream, addStream) = removeAndAddEdges(G, nEdges, tabu=T)
+	# remove the edges from G
+	updater = dynamic.GraphUpdater(G)
+	updater.update(removeStream)
+	# run the algorithms on the inital graph
+	bc = Betweenness(G)
+	bc.run()
+	dynBc = DynBetweenness(G)
+	dynBc.run()
+	apprBc = ApproxBetweenness(G, epsilon, delta)
+	apprBc.run()
+	dynApprBc = DynApproxBetweenness(G, epsilon, delta)
+	dynApprBc.run()
+	# apply the batches
+	nExperiments = nEdges // batchSize
+	timesBc = []
+	timesDynBc = []
+	timesApprBc = []
+	timesDynApprBc = []
+	for i in range(0, nExperiments):
+		batch = addStream[i*batchSize : (i+1)*batchSize]
+		# add the edges of batch to the graph
+		updater.update(batch)
+		# update the betweenness with the static exact algorithm
+		t = stopwatch.Timer()
+		bc.run()
+		timesBc.append(t.stop())
+		# update the betweenness with the dynamic exact algorithm
+		t = stopwatch.Timer()
+		dynBc.update(batch)
+		timesDynBc.append(t.stop())
+		# update the betweenness with the static approximated algorithm
+		t = stopwatch.Timer()
+		apprBc.run()
+		timesApprBc.append(t.stop())
+		# update the betweenness with the dynamic approximated algorithm
+		t = stopwatch.Timer()
+		dynApprBc.update(batch)
+		timesDynApprBc.append(t.stop())
+	return {
+			"bc" : timesBc,
+			"dynBc" : timesDynBc,
+			"apprBc" : timesApprBc,
+			"dynApprBc" : timesDynApprBc
+			}
 
-	(removeStream, addStream) = removeAndAddEdges(G, 100, tabu=T)
-	return (removeStream, addStream)
+
+
+
+
+G = readGraph("../input/PGPgiantcompo.graph")
+nEdges = 100
+batchSize = 5
+epsilon = 0.1
+delta = 0.1
+times = test(G, nEdges, batchSize, epsilon, delta)
+print (times)
