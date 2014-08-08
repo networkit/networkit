@@ -197,11 +197,6 @@ private:
 	 * they define type as void.
 	 */
 
-	template<bool s>
-	struct lambda_error {
-			static_assert(s, "Your lambda does not support the required parameters or accepts more than 3 parameters.");
-	};
-
 	/**
 	 * Triggers a static assert error when no other method is chosen. Because of the use of "..." as arguments, the priority
 	 * of this method is lower than the priority of the other methods. This method avoids ugly and unreadable template substitution
@@ -209,8 +204,8 @@ private:
 	 */
 	template<class F, bool InEdges = false, void* = nullptr>
 	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, ...) const {
-		lambda_error<false> e; // trigger a static assert. Cannot use static assert directly as this will trigger too often.
-		(void)e; // avoid unused variable warning
+		// the strange condition is used in order to delay the eveluation of the static assert to the moment when this function is actually used
+		static_assert(! std::is_same<F, F>::value, "Your lambda does not support the required parameters or accepts more than 3 parameters.");
 		return std::declval<typename Aux::FunctionTraits<F>::result_type>(); // use the correct return type (this won't compile)
 	}
 
