@@ -15,6 +15,10 @@ build.conf
 src/python/NetworKit.egg-info/
 NetworKit-Tests-D
 
+scripts/BackboneEvaluation/input/
+scripts/BackboneEvaluation/output/
+input/backbones/
+
 syntax: regexp
 ^output$
 syntax: regexp
