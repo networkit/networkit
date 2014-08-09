@@ -15,7 +15,7 @@ EdgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, co
 	Graph g = graph;
 
 	//Node attribute: marker
-	std::vector<bool> nodeMarker(graph.numberOfNodes(), false);
+	std::vector<bool> nodeMarker(graph.upperNodeIdBound(), false);
 
 	//Edge attribute: triangle count
 	EdgeAttribute triangleCount(graph.upperEdgeIdBound(), 0.0);
