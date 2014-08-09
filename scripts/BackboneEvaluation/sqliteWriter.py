@@ -56,7 +56,7 @@ class SqliteResultWriter():
 		db = sqlite3.connect(self.dbFile)
 
 		#Graph
-		graphName = taskResult.task.graphPath
+		graphName = taskResult.task.graph.name
 		graphId = self.createRowIfNeccessary(db, 'graphs', graphName)
 		db.execute('''UPDATE graphs SET name=?, loadingTime=? WHERE id=?''', (graphName, taskResult.loadingTime, graphId))
 

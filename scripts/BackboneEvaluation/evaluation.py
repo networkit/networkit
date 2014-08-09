@@ -3,19 +3,17 @@ from scipy.spatial import distance
 import time
 
 # -----------------------------------------------------------------------
-# The purpose of the following script is to automatically apply a set 
-# of backbone algorithms to a set of input graphs and to determine 
+# The purpose of the following script is to automatically apply a set
+# of backbone algorithms to a set of input graphs and to determine
 # certain graph properties for evaluation.
 # -----------------------------------------------------------------------
 
 
-#A pair of a graph and a backbone algorithm
+#A pair of a graph description and a set of backbone algorithms
 class BackboneTask:
-	def __init__(self, graphPath, graphFormat, algorithms, outputDir=None):
-		self.graphPath = graphPath
-		self.graphFormat = graphFormat
+	def __init__(self, graph, algorithms, outputDir=None):
+		self.graph = graph
 		self.algorithms = algorithms
-		self.graphName = os.path.basename(graphPath)
 		self.outputDir = outputDir
 
 class BackboneTaskResult:
@@ -23,6 +21,18 @@ class BackboneTaskResult:
 		self.loadingTime = 0
 		self.backboneProperties = []
 		self.task = task
+
+#Information about a graph; used as input parameter
+class GraphDescription:
+	def __init__(self, path, format, name):
+		self.path = path
+		self.format = format
+		self.name = name
+
+class BackboneAlgorithm:
+	def __init__(self, algorithmString, name):
+		self.algorithmString = algorithmString
+		self.name = name
 
 #Contains some result values that are characteristic for a backbone calculation result
 class GraphProperties:
@@ -110,7 +120,7 @@ def applyBackboneAlgorithm(graph, algorithm):
 	return backbone, bprops
 
 def writeBackboneFile(backbone, task, algorithm):
-	fileName = task.outputDir + "/" + task.graphName + "_" + algorithm.name + ".txt"
+	fileName = task.outputDir + "/" + task.graph.name + "_" + algorithm.name + ".txt"
 	if task.outputDir is not None:
 		writeGraph(backbone, fileName, Format.METIS)
 
@@ -119,7 +129,7 @@ def writeBackboneFile(backbone, task, algorithm):
 def executeTask(task):
 	#Load graph into memory
 	start = time.clock()
-	graph = readGraph(task.graphPath, task.graphFormat)
+	graph = readGraph(task.graph.path, task.graph.format)
 	end = time.clock()
 
 	taskResult = BackboneTaskResult(task)
@@ -127,7 +137,7 @@ def executeTask(task):
 
 	#Apply the algorithms!
 	for algorithm in task.algorithms:
-		print("[Applying algorithm '", algorithm.name, "' to graph '", task.graphName , "']")
+		print("[Applying algorithm '", algorithm.name, "' to graph '", task.graph.name , "']")
 		backbone, bprops = applyBackboneAlgorithm(graph, algorithm)
 		taskResult.backboneProperties.append(bprops)
 
@@ -135,8 +145,3 @@ def executeTask(task):
 		writeBackboneFile(backbone, task, algorithm)
 
 	return taskResult
-
-class BackboneAlgorithm:
-	def __init__(self, algorithmString, name):
-		self.algorithmString = algorithmString
-		self.name = name
