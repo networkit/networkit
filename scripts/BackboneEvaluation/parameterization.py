@@ -16,6 +16,11 @@ def getBackboneTask(graph, inputAlgorithms, targetEdgeRatios, outputDir):
 	#Generate a set of algorithms to apply to that graph
 	algorithms = []
 	for inputAlgorithm in inputAlgorithms:
+		#Skip unweighted graphs for algorithms that require a weight
+		if not G.isWeighted() and inputAlgorithm.requiresWeight():
+			print("Skipping ", graph.name, " for ", inputAlgorithm.getName(), " (requires weighted graph)")
+			continue
+
 		for targetEp in targetEdgeRatios:
 			if inputAlgorithm.parameterType() == "FloatType":
 				outputAlgorithm = parameterizeUsingDouble(G, inputAlgorithm, targetEp, 0.0, 1.0, 20)
