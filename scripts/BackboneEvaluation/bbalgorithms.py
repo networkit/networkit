@@ -29,6 +29,9 @@ class bb_SimmelianBackboneNonParametric:
     def increasing(self):
         return False
 
+    def requiresWeight(self):
+        return False
+
 # -----------------------------------------------------------
 
 class bb_Original:
@@ -40,6 +43,9 @@ class bb_Original:
 
     def getAlgorithmExpr(self):
         return "OriginalGraph()"
+
+    def requiresWeight(self):
+            return False
 
 # -----------------------------------------------------------
 
@@ -70,6 +76,9 @@ class bb_SimmelianMultiscaleBackbone:
 
     def increasing(self):
         return True
+
+    def requiresWeight(self):
+        return False
 # -----------------------------------------------------------
 
 class bb_SimmelianBackboneParametric:
@@ -96,6 +105,9 @@ class bb_SimmelianBackboneParametric:
 
     def parameterType(self):
         return "IntType"
+
+    def requiresWeight(self):
+        return False
 
 # -----------------------------------------------------------
 
@@ -124,3 +136,37 @@ class bb_LocalSimilarityBackbone:
 
     def increasing(self):
         return False
+
+    def requiresWeight(self):
+        return False
+
+# -----------------------------------------------------------
+
+class bb_MultiscaleBackbone:
+    def getName(self):
+        return "MultiscaleBackbone"
+
+    def getShortName(self, parameter):
+        return "MB " + str(parameter)
+
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.MultiscaleBackbone(" + str(parameter) + ")"
+
+    def getPrecalcAttribute(self, graph):
+        #TODO we might use a precalculated edge attribute for speedup, but that
+        # requires writable edge attributes in python.
+        return None
+
+    def getPrecalcBackbone(self, graph, attribute, value):
+        empty = backbones.EdgeAttribute(0)
+        msb = backbones.MultiscaleBackbone(value)
+        return msb.calculate(graph)
+
+    def parameterType(self):
+        return "FloatType"
+
+    def increasing(self):
+        return True
+
+    def requiresWeight(self):
+        return True
