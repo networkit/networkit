@@ -39,9 +39,8 @@ void Dijkstra::run(node t) {
 	}
 
 	// priority queue with distance-node pairs
-	Aux::PrioQueue<edgeweight, node> pq(distances);
-
 	distances[source] = 0;
+	Aux::PrioQueue<edgeweight, node> pq(distances);
 
 
 	auto relax([&](node u, node v, edgeweight w) {
