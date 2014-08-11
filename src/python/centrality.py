@@ -82,9 +82,9 @@ class SpectralCentrality:
 		return self.rankList
 
 
-class PythonNativeEVZ(SpectralCentrality):
+class SciPyEVZ(SpectralCentrality):
 	def __init__(self, G, normalized=False):
-		super(PythonNativeEVZ, self).__init__(G, normalized=normalized)
+		super(SciPyEVZ, self).__init__(G, normalized=normalized)
 
 	def _length(self, vector):
 		square = sum([val * val for val in vector])
@@ -98,9 +98,9 @@ class PythonNativeEVZ(SpectralCentrality):
 		self.eigenvector = spectrum[1]
 		self.eigenvalue = spectrum[0]
 
-class PythonNativePageRank(SpectralCentrality):
+class SciPyPageRank(SpectralCentrality):
 	def __init__(self, G, damp=0.95, normalized=False):
-		super(PythonNativePageRank, self).__init__(G, normalized=normalized)
+		super(SciPyPageRank, self).__init__(G, normalized=normalized)
 
 		self.damp = damp
 
