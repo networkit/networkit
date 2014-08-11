@@ -4846,3 +4846,22 @@ cdef class GlobalThresholdFilter:
 
 	def calculate(self, Graph G, vector[double] a):
 		return Graph().setThis(self._this.calculate(G._this, a))
+
+cdef extern from "cpp/backbones/AttributeAsWeight.h":
+	cdef cppclass _AttributeAsWeight "NetworKit::AttributeAsWeight":
+		_AttributeAsWeight(bool squared, edgeweight offset, edgeweight factor) except +
+		_AttributeAsWeight() except +
+		_Graph calculate(_Graph G, vector[double] a) except +
+
+cdef class AttributeAsWeight:
+	"""
+	Assigns the attribute as edge weight
+	"""
+
+	cdef _AttributeAsWeight _this
+
+	def __cinit__(self, bool squared, edgeweight offset, edgeweight factor):
+		self._this = _AttributeAsWeight(squared, offset, factor)
+
+	def calculate(self, Graph G, vector[double] a):
+		return Graph(0).setThis(self._this.calculate(G._this, a))
