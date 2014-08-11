@@ -3503,7 +3503,7 @@ cdef class SimmelianMultiscaleBackbone:
 	Calculates the multiscale backbone for a given input graph using simmelianness
 	(i.e. triangle counts) as edge weights.
 	Parameters:
-		-	alpha	 [0-1] the multiscale filtering parameter
+		-	alpha	 [0,1] the multiscale filtering parameter
 	"""
 
 	cdef _SimmelianMultiscaleBackbone* _this
@@ -3513,6 +3513,28 @@ cdef class SimmelianMultiscaleBackbone:
 
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
+
+cdef extern from "../cpp/backbones/Backbones.h":
+	cdef cppclass _RandomBackbone "NetworKit::RandomBackbone":
+		_RandomBackbone(double ratio) except +
+		_Graph* _calculate(_Graph G) except +
+
+cdef class RandomBackbone:
+	"""
+	Calculates abackbone containing a given ratio of randomly selected edges  of
+	the original graph.
+	Parameters:
+		-	ratio	 [0,1] approximated edge ratio
+	"""
+
+	cdef _RandomBackbone* _this
+
+	def __cinit__(self, double e):
+		self._this = new _RandomBackbone(e)
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this._calculate(dereference(G._this)))
+
 
 ####### THE FOLLOWING ARE ACTUALLY INTERNAL IMPLEMENTATIONS. THEY ARE EXPORTED TEMPORARILY FOR PERFORMANCE REASONS.
 
@@ -3593,6 +3615,21 @@ cdef class MultiscaleAttributizer:
 
 	def __cinit__(self):
 		self._this = new _MultiscaleAttributizer()
+
+	def getAttribute(self, Graph G, EdgeAttribute a):
+		return EdgeAttribute(0).setThis(self._this._getAttribute(dereference(G._this), dereference(a._this)))
+
+cdef extern from "../cpp/backbones/RandomAttributizer.h":
+	cdef cppclass _RandomAttributizer "NetworKit::RandomAttributizer":
+		_RandomAttributizer() except +
+		_EdgeAttribute* _getAttribute(_Graph G, _EdgeAttribute a) except +
+
+cdef class RandomAttributizer:
+
+	cdef _RandomAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _RandomAttributizer()
 
 	def getAttribute(self, Graph G, EdgeAttribute a):
 		return EdgeAttribute(0).setThis(self._this._getAttribute(dereference(G._this), dereference(a._this)))

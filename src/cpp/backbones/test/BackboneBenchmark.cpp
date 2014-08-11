@@ -9,7 +9,15 @@
 
 #include "BackboneBenchmark.h"
 #include "../Backbones.h"
+#include "../ChibaNishizekiTriangleCounter.h"
+#include "../SimmelianJaccardAttributizer.h"
+#include "../SimmelianOverlapAttributizer.h"
+#include "../MultiscaleAttributizer.h"
+#include "../LocalSimilarityAttributizer.h"
+#include "../RandomAttributizer.h"
+#include "../GlobalThresholdFilter.h"
 #include "../../io/METISGraphReader.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 
