@@ -9,6 +9,7 @@
 #include <queue>
 #include <memory>
 
+#include "../auxiliary/PrioQueue.h"
 #include "DynBetweenness.h"
 #include "../auxiliary/PrioQueue.h"
 #include "../auxiliary/Log.h"
@@ -68,7 +69,8 @@ void DynBetweenness::run() {
     G.forNodes(computeDependencies);
 }
 
-void DynBetweenness::update(GraphEvent e) {
+
+void DynBetweenness::updateUnweighted(GraphEvent e) {
     G.forNodes([&] (node s){
         node u_l, u_h;
         if (distances[s][e.u] > distances[s][e.v]){
@@ -206,6 +208,50 @@ void DynBetweenness::update(GraphEvent e) {
 */
 
     });
+}
+
+
+void DynBetweenness::updateWeighted(GraphEvent e) {
+/*    G.forNodes([&] (node s){
+        // update of distances and number of shoretst paths
+        Aux::PrioQueue<int, node> stack(G.upperNodeIdBound());
+        auto updatePaths = [&](node u, node v, edgeweight w) {
+            if (distances[s][t] > distances[s][u] + w + distances[v][t]){
+                distances[s][t] = distances[s][u] + w + distances[v][t];
+                npaths[s][t] = npaths[s][u] * npaths[v][t];
+                //TODO: add predecessors!
+            }
+            if (distances[s][t] == distances[s][u] + w + distances[v][t]){
+                npaths[s][t] = npaths[s][t] + npaths[s][u] * npaths[v][t];
+            }
+        }
+        G.forNodes([&] (node t){
+            if (s != t) {
+                updatePaths(e.u, e.v, e.w);
+                updatePaths(e.v, e.u, e.w);
+                stack.insert(-1*distances[s][t], t);
+            }
+        });
+        // dependency accumulation
+        while (!stack.empty()) {
+            // extract the node with the maximum distance
+            node t = stack.extractMin();
+            for (node p : sssp->getPredecessors(t)) {
+                dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
+            }
+            if (t != s) {
+                scoreData[t] += dependencies[s][t];
+            }
+        }
+    });
+*/
+}
+
+void DynBetweenness::update(GraphEvent e) {
+    if (G.isWeighted())
+        updateWeighted(e);
+    else
+        updateUnweighted(e);
 }
 
 } /* namespace NetworKit */
