@@ -20,19 +20,19 @@ namespace NetworKit {
  * - densification power law
  * - shrinking diameter
  *
- * This class implements a variant of the original model which produces undirected graphs.
- *
  * see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
  * 	Shringking Diameters and Possible Explanations
  */
-class ForestFireGenerator: public NetworKit::DynamicGraphGenerator {
+class DynamicForestFireGenerator: public NetworKit::DynamicGraphGenerator {
 
 public:
 
 	/**
-	 * @param	p	"burning probability", controls the amount of connections formed by each new node
+	 * @param	p	      "forward burning probability", controls the amount of forward connections burned by each new node
+	 * @param   directed  whether the generated graph is directed or undirected
+	 * @param   r         scales down the burning probability for backward connections (ignored for undirected graphs)
 	 */
-	ForestFireGenerator(double p);
+	DynamicForestFireGenerator(double p, bool directed, double r = 1.0);
 
 	/**
 	 * Generate event stream.
@@ -44,7 +44,10 @@ public:
 private:
 
 	 double p;
+	 bool directed;
+	 double r;
 	 bool firstCall;
+	 Graph G;
 
 };
 
