@@ -44,6 +44,21 @@ def laplacianMatrix(G):
 	return scipy.sparse.csgraph.laplacian(A)
 
 def PageRankMatrix(G, damp):
+	"""
+	Builds the PageRank matrix of the undirected Graph `G`. This matrix corresponds with the
+	PageRank matrix used in the C++ backend.
+
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+
+	Returns
+    -------
+    pr : ndarray
+         The N x N page rank matrix of graph.
+	"""
 	A = adjacencyMatrix(G)
 
 	n = G.numberOfNodes()
@@ -62,6 +77,25 @@ def PageRankMatrix(G, damp):
 	return dampened + teleport
 
 def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
+	"""
+	Computes eigenvectors and -values of symmetric matrices.
+
+	Parameters
+	----------
+	matrix : sparse matrix
+			 The matrix to compute the eigenvectors of 
+	cutoff : int
+			 The maximum (or minimum) magnitude of the eigenvectors needed
+	reverse : boolean
+			  If set to true, the smaller eigenvalues will be computed before the larger ones
+
+	Returns
+    -------
+    pr : ( [ float ], [ ndarray ] )
+    	 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
+    	 second one holding the corresponding eigenvectors
+
+	"""
 	if cutoff == -1:
 		cutoff = matrix.shape[0] - 2
 
