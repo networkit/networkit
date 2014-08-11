@@ -4,7 +4,6 @@
  *  Created on: 29.07.2014
  *      Author: ebergamini
  */
-
 #include <stack>
 #include <queue>
 #include <memory>
@@ -18,12 +17,12 @@
 #include "../graph/BFS.h"
 
 namespace NetworKit {
-
-DynBetweenness::DynBetweenness(const Graph& G) : Centrality(G, normalized),
+DynBetweenness::DynBetweenness(const Graph& G, bool storePredecessors) : Centrality(G, normalized),
 maxDistance(G.upperNodeIdBound()),
 npaths(G.upperNodeIdBound(), std::vector<count>(G.upperNodeIdBound())),
 distances(G.upperNodeIdBound(), std::vector<edgeweight>(G.upperNodeIdBound())),
-dependencies(G.upperNodeIdBound(),std::vector<double>(G.upperNodeIdBound(), 0.0)) {
+dependencies(G.upperNodeIdBound(),std::vector<double>(G.upperNodeIdBound(), 0.0)),
+storePreds(storePredecessors) {
 
 }
 
@@ -32,7 +31,13 @@ void DynBetweenness::run() {
     scoreData.clear();
     scoreData.resize(z);
     //TODO: resize also npaths, dependencies and distances
-
+    if (storePreds) {
+        predecessors.clear();
+        predecessors.resize(G.upperNodeIdBound());
+        G.forNodes([&](node v){
+            predecessors[v].resize(G.upperNodeIdBound());
+        });
+    }
 
     auto computeDependencies = [&](node s) {
         // run SSSP algorithm and keep track of everything
@@ -48,6 +53,9 @@ void DynBetweenness::run() {
         G.forNodes([&](node t){
             distances[s][t] = sssp->distance(t);
             npaths[s][t] = sssp->numberOfPaths(t);
+            if (storePreds) {
+                predecessors[s][t] = sssp->getPredecessors(t);
+            }
         });
 
         // compute dependencies for nodes in order of decreasing distance from s
@@ -212,39 +220,117 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
 
 
 void DynBetweenness::updateWeighted(GraphEvent e) {
-/*    G.forNodes([&] (node s){
-        // update of distances and number of shoretst paths
-        Aux::PrioQueue<int, node> stack(G.upperNodeIdBound());
-        auto updatePaths = [&](node u, node v, edgeweight w) {
-            if (distances[s][t] > distances[s][u] + w + distances[v][t]){
-                distances[s][t] = distances[s][u] + w + distances[v][t];
-                npaths[s][t] = npaths[s][u] * npaths[v][t];
-                //TODO: add predecessors!
-            }
-            if (distances[s][t] == distances[s][u] + w + distances[v][t]){
-                npaths[s][t] = npaths[s][t] + npaths[s][u] * npaths[v][t];
-            }
-        }
+    G.forNodes([&] (node s){
+        std::cout<<"SSSP from node "<<s<<std::endl;
+        // update of distances and number of shortest paths
+        Aux::PrioQueue<double, node> S(G.upperNodeIdBound());
         G.forNodes([&] (node t){
+            auto updatePaths = [&](node u, node v, edgeweight w) {
+                if (distances[s][t] == distances[s][u] + w + distances[v][t]){
+                    npaths[s][t] = npaths[s][t] + npaths[s][u] * npaths[v][t];
+                    if (storePreds) {
+                        if (t != v)
+                            predecessors[s][t].insert(predecessors[v][t].end(), predecessors[v][t].begin(), predecessors[s][t].end());
+                        else
+                            predecessors[s][t].push_back(u);
+                    }
+                }
+                if (distances[s][t] > distances[s][u] + w + distances[v][t]){
+                    distances[s][t] = distances[s][u] + w + distances[v][t];
+                    npaths[s][t] = npaths[s][u] * npaths[v][t];
+                    if (storePreds) {
+                        if (t != v)
+                            predecessors[s][t] = predecessors[v][t];
+                        else {
+                            predecessors[s][t].clear();
+                            predecessors[s][t].push_back(u);
+                        }
+                    }
+                }
+            };
             if (s != t) {
                 updatePaths(e.u, e.v, e.w);
                 updatePaths(e.v, e.u, e.w);
-                stack.insert(-1*distances[s][t], t);
+                S.insert(-1*distances[s][t], t);
+                dependencies[s][t] = 0.0;
             }
         });
         // dependency accumulation
-        while (!stack.empty()) {
+        while (S.size() != 0) {
             // extract the node with the maximum distance
-            node t = stack.extractMin();
-            for (node p : sssp->getPredecessors(t)) {
-                dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
+            node t = S.extractMin().second;
+            if (storePreds) {
+                for (node p : predecessors[s][t]) {
+            //        if (p == 2) {
+            //            std::cout<<"(1) This is node "<<t<<", the dependency of "<<p<<" before my contribution was "<<dependencies[s
+            //            ][p]<<std::endl;
+            //        }
+                    dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
+            //        if (p == 2) {
+            //            std::cout<<"After my contribution "<<dependencies[s][p]<<std::endl;
+            //
+        //        }
+                }
+            }
+            else {
+                G.forNeighborsOf(t, [&] (node p){
+                    if (distances[s][t] == distances[s][p] + G.weight(p, t)) {
+                        dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
+                        std::cout<<"Predecessor "<<p<<std::endl;
+                    }
+                });
             }
             if (t != s) {
                 scoreData[t] += dependencies[s][t];
             }
         }
+
+
+
+
+
+
+        BFS sssp(G, s, true, true);
+        sssp.run();
+        G.forNodes([&](node t){
+            if(distances[s][t] != sssp.distance(t) || npaths[s][t] != sssp.numberOfPaths(t)) {
+                std::cout<<"Source: "<<s<<"  Node "<<t<<std::endl;
+                std::cout<<"COMPUTED DISTANCE: "<<distances[s][t]<<"  REAL DISTANCE: "<<sssp.distance(t)<<std::endl;
+                std::cout<<"COMPUTED NUMBER OF PATHS: "<<npaths[s][t]<<"  REAL NUMBER OF PATHS: "<<sssp.numberOfPaths(t)<<std::endl;
+            }
+        });
+
+
+        // compute dependencies for nodes in order of decreasing distance from s
+        std::vector<double> dep(G.upperNodeIdBound());
+        std::stack<node> stack = sssp.getStack();
+        while (!stack.empty()) {
+            node t = stack.top();
+            stack.pop();
+            for (node p : sssp.getPredecessors(t)) {
+        //        if (p == 2) {
+        //            std::cout<<"(2) This is node "<<t<<", the dependency of "<<p<<" before my contribution was "<<dep[p]<<std::endl;
+        //        }
+                dep[p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dep[t]);
+        //        if (p == 2) {
+        //            std::cout<<"After my contribution "<<dep[p]<<std::endl;
+        //        }
+            }
+        }
+
+        G.forNodes([&](node t){
+            if (sssp.getPredecessors(t).size() != predecessors[s][t].size())
+                std::cout<<"size1 "<<sssp.getPredecessors(t).size()<<" size2 "<<sssp.getPredecessors(t).size()<<std::endl;
+            if((dependencies[s][t]-dep[t]>0.000001 || dependencies[s][t]-dep[t]<-0.000001) && s!=t) {
+                std::cout<<"Source: "<<s<<"  Node "<<t<<std::endl;
+                std::cout<<"COMPUTED DEPENDENCY: "<<dependencies[s][t]<<"  REAL DEPENDENCY: "<<dep[t]<<std::endl;
+            }
+        });
+
+
+
     });
-*/
+
 }
 
 void DynBetweenness::update(GraphEvent e) {

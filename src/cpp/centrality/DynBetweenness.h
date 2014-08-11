@@ -25,7 +25,7 @@ public:
      *
      * @param G The graph.
      */
-    DynBetweenness(const Graph& G);
+    DynBetweenness(const Graph& G, bool storePredecessors = false);
 
     /**
      * Runs the static betweenness centrality algorithm on the initial graph.
@@ -46,6 +46,8 @@ protected:
     std::vector<std::vector<count>> npaths;
     std::vector<std::vector<edgeweight>> distances;
     std::vector<std::vector<double>> dependencies;
+    bool storePreds = false;
+    std::vector<std::vector<std::vector<node>>> predecessors;
 };
 
 } /* namespace NetworKit */
