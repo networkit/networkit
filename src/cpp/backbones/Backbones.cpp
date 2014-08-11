@@ -6,6 +6,15 @@
  */
 
 #include "Backbones.h"
+#include "ChibaNishizekiTriangleCounter.h"
+#include "SimmelianJaccardAttributizer.h"
+#include "SimmelianOverlapAttributizer.h"
+#include "MultiscaleAttributizer.h"
+#include "LocalSimilarityAttributizer.h"
+#include "RandomAttributizer.h"
+#include "GlobalThresholdFilter.h"
+
+#include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
@@ -104,4 +113,21 @@ Graph SimmelianMultiscaleBackbone::calculate(Graph& g, const EdgeAttribute& attr
 	return filter.calculate(g, multiscale);
 }
 
+/**
+* ---------------------------------------------------------------------------
+*/
+
+RandomBackbone::RandomBackbone(double ratio) :
+		ratio(ratio) {}
+
+Graph RandomBackbone::calculate(Graph& g, const EdgeAttribute& attribute) {
+	g.indexEdges();
+
+	RandomAttributizer randomAttributizer;
+	EdgeAttribute random = randomAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+
+	GlobalThresholdFilter filter(ratio, false);
+	return filter.calculate(g, random);
 } /* namespace NetworKit */
+
+}

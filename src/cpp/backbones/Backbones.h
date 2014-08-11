@@ -11,17 +11,10 @@
 #include "../graph/Graph.h"
 #include "AttributeGenerator.h"
 #include "BackboneCalculator.h"
-#include "ChibaNishizekiTriangleCounter.h"
-#include "SimmelianJaccardAttributizer.h"
-#include "SimmelianOverlapAttributizer.h"
-#include "MultiscaleAttributizer.h"
-#include "LocalSimilarityAttributizer.h"
-#include "GlobalThresholdFilter.h"
-#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
-/** 
+/**
  * Here, we combine attribute generators and edge attribute filters into different
  * backbone algorithms.
  */
@@ -137,6 +130,30 @@ public:
 
 private:
 	double alpha;
+
+};
+
+/**
+* --------------------------------------------------------------------------------------
+* Backbone that contains approximately a given percentage
+* of edges of the original graph (mainly for comparison purposes).
+* The edges are selected randomly.
+* --------------------------------------------------------------------------------------
+*/
+
+class RandomBackbone : public BackboneCalculator {
+
+public:
+	/**
+		* Creates a new instance of the Random Backbone calculator
+		* @param ratio			edge ratio in [0,1] to be kept in backbone.
+		*/
+	RandomBackbone(double ratio);
+
+	Graph calculate(Graph& graph, const EdgeAttribute& attribute);
+
+private:
+	double ratio;
 
 };
 

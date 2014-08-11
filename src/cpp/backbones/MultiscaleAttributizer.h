@@ -13,8 +13,10 @@
 
 namespace NetworKit {
 
-/** 
- * Calculates the multiscale backbone for a given input graph.
+/**
+ * Calculates the multiscale backbone attribute for a given graph. Each edge is
+ * assigned the maximum filter value in [0,1] for which the edge will be contained
+ * in the multiscale backbone.
  *
  * See "Extracting the multiscale backbone of complex weighted networks" by Serrano et al.
  */
@@ -23,8 +25,7 @@ class MultiscaleAttributizer : public AttributeGenerator {
 public:
 
 	/**
-	 * Creates a new instance of the Multiscale Backbone calculator.
-	 * @param alpha 		filter parameter
+	 * Creates a new instance of the Multiscale attributizer.
 	 */
 	MultiscaleAttributizer();
 
