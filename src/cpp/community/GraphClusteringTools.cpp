@@ -112,6 +112,17 @@ bool equalClusterings(const Partition& zeta, const Partition& eta, Graph& G) {
 	return eq;
 }
 
+Partition intersectPartitions(const Partition &zeta, const Partition &eta) {
+	
+	assert(zeta.numberOfElements() == eta.numberOfElements());
+	Partition intersection(zeta.numberOfElements());
+	intersection.setUpperBound(zeta.upperBound() * eta.upperBound());
+	zeta.forEntries([&](index i, index set_i) {
+		intersection.moveToSubset(set_i * eta.upperBound() + eta.subsetOf(i), i);
+	});
+	intersection.compact();
+	return std::move(intersection);
+}
 } // namespace GCT
 
 } // namespace NetworKit

@@ -1007,8 +1007,11 @@ cdef extern from "../cpp/generators/DorogovtsevMendesGenerator.h":
 		_Graph* _generate() except +
 
 cdef class DorogovtsevMendesGenerator:
-	"""
-	TODO:
+	""" Generates a graph according to the Dorogovtsev-Mendes model.
+
+ 	DorogovtsevMendesGenerator(nNodes)
+ 	
+ 	Constructs the generator class.
 
 	Parameters
 	----------
@@ -1022,6 +1025,86 @@ cdef class DorogovtsevMendesGenerator:
 		self._this = new _DorogovtsevMendesGenerator(nNodes)
 
 	def generate(self):
+		""" Generates a random graph according to the Dorogovtsev-Mendes model.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
+		return Graph(0).setThis(self._this._generate())
+
+
+cdef extern from "../cpp/generators/RegularRingLatticeGenerator.h":
+	cdef cppclass _RegularRingLatticeGenerator "NetworKit::RegularRingLatticeGenerator":
+		_RegularRingLatticeGenerator(count nNodes, count nNeighbors) except +
+		_Graph* _generate() except +
+
+cdef class RegularRingLatticeGenerator:
+	"""
+	Constructs a regular ring lattice.
+	
+	RegularRingLatticeGenerator(count nNodes, count nNeighbors)
+	
+	Constructs the generator.
+
+	Parameters
+	----------
+	nNodes : number of nodes in the target graph.
+	nNeighbors : number of neighbors on each side of a node
+	"""
+
+	cdef _RegularRingLatticeGenerator* _this
+
+	def __cinit__(self, nNodes, nNeighbors):
+		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
+
+	def generate(self):
+		""" Generates a rgular ring lattice.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
+		return Graph(0).setThis(self._this._generate())
+		
+
+cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
+	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator":
+		_WattsStrogatzGenerator(count nNodes, count nNeighbors, double p) except +
+		_Graph* _generate() except +
+
+cdef class WattsStrogatzGenerator:
+	""" Generates a graph according to the Watts-Strogatz model.
+	
+	First, a regular ring lattice is generated. Then edges are rewired
+		with a given probability.
+	
+	WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
+	
+	Constructs the generator.
+	
+	Parameters
+	----------
+	nNodes : Number of nodes in the target graph.
+	nNeighbors : number of neighbors on each side of a node
+	p : rewiring probability
+	"""
+
+	cdef _WattsStrogatzGenerator* _this
+
+	def __cinit__(self, nNodes, nNeighbors, p):
+		self._this = new _WattsStrogatzGenerator(nNodes, nNeighbors, p)
+
+	def generate(self):
+		""" Generates a random graph according to the Watts-Strogatz model.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
 		return Graph(0).setThis(self._this._generate())
 
 
@@ -1583,6 +1666,7 @@ cdef extern from "../cpp/structures/Partition.h":
 		void setName(string name) except +
 		string getName() except +
 		set[index] getSubsetIds() except +
+		index operator[](index) except +
 
 
 cdef class Partition:
@@ -1630,6 +1714,12 @@ cdef class Partition:
 	cdef setThis(self, _Partition other):
 		self._this = other
 		return self
+
+	def __cinit__(self, size=None):
+		if size is None:
+			self._this = _Partition()
+		else:
+			self._this = _Partition(size)
 
 	def subsetOf(self, e):
 		""" Get the set (id) in which the element `e` is contained.
@@ -1712,6 +1802,9 @@ cdef class Partition:
 			Id of newly created set.
 		"""
 		self._this.mergeSubsets(s, t)
+
+	def __getitem__(self, index):
+		return self._this[index]
 
 
 	def setUpperBound(self, index upper):
@@ -2244,16 +2337,16 @@ cdef class GraphClusteringTools:
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		return equalClusterings(zeta._this, eta._this, dereference(G._this))
 
-cdef extern from "../cpp/community/ClusteringProduct.h":
-	cdef cppclass _ClusteringProduct "NetworKit::ClusteringProduct":
-		_ClusteringProduct() except +
+cdef extern from "../cpp/community/PartitionProduct.h":
+	cdef cppclass _PartitionProduct "NetworKit::PartitionProduct":
+		_PartitionProduct() except +
 		_Partition calculate(_Partition zeta, _Partition eta) except +
 
-cdef class ClusteringProduct:
+cdef class PartitionProduct:
 	""" The product of two partitions is defined as the partitions where each cluster is the intersection
 	of a cluster in the first and in the second clustering
 	"""
-	cdef _ClusteringProduct _this
+	cdef _PartitionProduct _this
 	def calculate(self, Partition zeta, Partition eta):
 		"""  Calculate the product of two partitions `zeta` and `eta`
 
@@ -3928,12 +4021,25 @@ cdef extern from "../cpp/generators/DynamicDorogovtsevMendesGenerator.h":
 
 
 cdef class DynamicDorogovtsevMendesGenerator:
+	""" Generates a graph according to the Dorogovtsev-Mendes model.
+
+ 	DynamicDorogovtsevMendesGenerator()
+ 	
+ 	Constructs the generator class.
+	"""
 	cdef _DynamicDorogovtsevMendesGenerator* _this
 
 	def __cinit__(self):
 		self._this = new _DynamicDorogovtsevMendesGenerator()
 
 	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 
@@ -3966,21 +4072,52 @@ cdef class DynamicPubWebGenerator:
 		return Graph().setThis(self._this._getGraph())
 
 
-# cdef extern from "../cpp/generators/ForestFireGenerator.h":
-# 	cdef cppclass _ForestFireGenerator "NetworKit::ForestFireGenerator":
-# 		_ForestFireGenerator(double p) except +
-# 		vector[_GraphEvent] generate(count nSteps) except +
-# 		_Graph getGraph() except +
 
 
-# cdef class ForestFireGenerator:
-# 	cdef _ForestFireGenerator* _this
 
-# 	def __cinit__(self, p):
-# 		self._this = new _ForestFireGenerator(p)
+cdef extern from "../cpp/generators/DynamicForestFireGenerator.h":
+	cdef cppclass _DynamicForestFireGenerator "NetworKit::DynamicForestFireGenerator":
+		_DynamicForestFireGenerator(double p, bool directed, double r) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
 
-# 	def generate(self, nSteps):
-# 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+cdef class DynamicForestFireGenerator:
+	""" Generates a graph according to the forest fire model.
+	 The forest fire generative model produces dynamic graphs with the following properties:
+     heavy tailed degree distribution
+     communities
+     densification power law
+     shrinking diameter
+ 
+    see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
+    Shringking Diameters and Possible Explanations
+
+ 	DynamicForestFireGenerator(double p, bool directed, double r = 1.0)
+ 	
+ 	Constructs the generator class.
+ 	
+ 	Parameters
+ 	----------
+ 	p : forward burning probability.
+ 	directed : decides whether the resulting graph should be directed
+ 	r : optional, backward burning probability
+	"""
+	cdef _DynamicForestFireGenerator* _this
+
+	def __cinit__(self, p, directed, r = 1.0):
+		self._this = new _DynamicForestFireGenerator(p, directed, r)
+
+	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
 
 
 
