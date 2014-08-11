@@ -49,9 +49,9 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	for i in range (0, nExperiments):
 		batch = addStream[i*batchSize : (i+1)*batchSize]
 		# add the edges of batch to the graph
-		totalTime = 0
+		totalTime = 0.0
 		for j in range (0, batchSize):
-			updater.update(batch[j])
+			updater.update([batch[j]])
 			# update the betweenness with the dynamic exact algorithm
 			t = stopwatch.Timer()
 			dynBc.update(batch[j])
