@@ -43,25 +43,38 @@ def inspectPartitions(partition, graph):
 	]
 	print(tabulate.tabulate(props))
 
-class SpectralPartitioner(object):
+class SpectralPartitioner:
 	"""
+	Class to do spectral partitioning.
+
 
 	Please note that the code in this class assumes the nodes of a graph to be numbered
 	from 0 to n.
 
 	"""
 	def __init__(self, graph, count, balanced=True):
+		"""
+		Constructs the spectral parititoner.
+
+		Args:
+			graph: The graph to parititon
+			count (int): The number of partitions to create
+			balanced (boolean): Set this to false if you do not want to enforce balance, possibly increasing quality 
+
+		Remember to call run() afterwards.
+
+		"""
 		self.graph = graph
 		self.count = count
 
 		self.balanced = balanced
 
-	def prepareSpectrum(self):
+	def _prepareSpectrum(self):
 		spectrum = laplacianEigenvectors(self.graph, cutoff = (math.ceil(math.log(self.count, 2)) + 1), reverse=True)
 		self.eigenvectors = spectrum[1]
 		self.eigenvalues = spectrum[0]
 
-	def getQuantiles(self, eigv, vertices, count = 1):
+	def _getQuantiles(self, eigv, vertices, count = 1):
 		values = [eigv[i] for i in vertices]
 		values.sort()
 
@@ -74,13 +87,13 @@ class SpectralPartitioner(object):
 
 		return quantiles
 
-	def getMean(self, eigv, vertices):
+	def _getMean(self, eigv, vertices):
 		values = [eigv[i] for i in vertices]
 		mean = np.mean(values)
 
 		return mean
 
-	def trisect(self, partition=None, iteration=1):
+	def _trisect(self, partition=None, iteration=1):
 		if partition is None:
 			vertices = self.graph.nodes()
 		else:
@@ -89,7 +102,7 @@ class SpectralPartitioner(object):
 
 		eigv = self.eigenvectors[iteration]
 
-		quantiles = self.getQuantiles(eigv, vertices, count = 2)
+		quantiles = self._getQuantiles(eigv, vertices, count = 2)
 
 
 		partA = self.nextPartition
@@ -113,12 +126,12 @@ class SpectralPartitioner(object):
 		if (not (partition is None)):
 			del self.partitions[partition]
 
-	def bisect(self, count, partition=None, iteration=1):
+	def _bisect(self, count, partition=None, iteration=1):
 		if count == 1:
 			return
 
 		if count == 3:
-			self.trisect(partition=partition)
+			self._trisect(partition=partition)
 			return
 
 		if partition is None:
@@ -130,9 +143,9 @@ class SpectralPartitioner(object):
 		eigv = self.eigenvectors[iteration]
 
 		if (self.balanced):
-			split = self.getQuantiles(eigv, vertices)[0]
+			split = self._getQuantiles(eigv, vertices)[0]
 		else:
-			split = self.getMean(eigv, vertices)
+			split = self._getMean(eigv, vertices)
 
 		partA = self.nextPartition
 		partB = self.nextPartition + 1
@@ -153,19 +166,19 @@ class SpectralPartitioner(object):
 
 		if count > 2:
 			if (count % 2 == 0):
-				self.bisect(count / 2, partition = partA, iteration = iteration + 1)
-				self.bisect(count / 2, partition = partB, iteration = iteration + 1)
+				self._bisect(count / 2, partition = partA, iteration = iteration + 1)
+				self._bisect(count / 2, partition = partB, iteration = iteration + 1)
 			else:
 				nextCount = (count - 1) / 2
 				if nextCount > 2:
-					self.bisect(nextCount, partition = partA, iteration = iteration + 1)
-					self.bisect(nextCount + 1, partition = partB, iteration = iteration + 1)
+					self._bisect(nextCount, partition = partA, iteration = iteration + 1)
+					self._bisect(nextCount + 1, partition = partB, iteration = iteration + 1)
 				else:
-					self.bisect(nextCount, partition = partA, iteration = iteration + 1)
-					self.trisect(partition = partB, iteration = iteration + 1)
+					self._bisect(nextCount, partition = partA, iteration = iteration + 1)
+					self._trisect(partition = partB, iteration = iteration + 1)
 
 
-	def generatePartition(self):
+	def _generatePartition(self):
 		partition = Partition(size=self.graph.numberOfNodes())
 
 		for partIndex in self.partitions:
@@ -185,13 +198,22 @@ class SpectralPartitioner(object):
 		return partition
 
 	def run(self):
+		"""
+		Runs the partitioning.
+		"""
 		self.nextPartition = 0
 		self.partitions = {}
-		self.prepareSpectrum()
+		self._prepareSpectrum()
 
-		self.bisect(self.count)
+		self._bisect(self.count)
 
-		self.generatePartition()
+		self._generatePartition()
 
 	def getPartition(self):
+		"""
+		Retrieves the partitioning after run() was called.
+
+		Returns:
+			A partition object
+		"""
 		return self.partition

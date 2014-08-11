@@ -20,12 +20,12 @@ class Layout:
 	
 class SpectralLayout(Layout):
 
-	def prepareSpectrum(self):
+	def _prepareSpectrum(self):
 		spectrum = laplacianEigenvectors(self.graph, cutoff = 2, reverse=True)
 		self.eigenvectors = spectrum[1]
 		self.eigenvalues = spectrum[0]
 
-	def prepareNormalization(self):
+	def _prepareNormalization(self):
 		x = self.eigenvectors[1] / self.eigenvalues[1]
 		y = self.eigenvectors[2] / self.eigenvalues[2]
 
@@ -49,7 +49,7 @@ class SpectralLayout(Layout):
 		self.minY = minY
 		self.rangeY = maxY - minY
 
-	def computePositions(self):
+	def _computePositions(self):
 		self.pos = {}
 
 		for v in self.graph.nodes():
@@ -58,16 +58,28 @@ class SpectralLayout(Layout):
 
 			self.pos[v] = (x,y)
 
-	def getPos(self, v):
+	def _getPos(self, v):
 		return np.array(self.pos[v])
 
 	def layout(self, G):
-		self.graph = G
-		self.prepareSpectrum()
-		self.prepareNormalization()
-		self.computePositions()
+		"""
+		Perform a spectral layout of the Graph G.
 
-		return {v : self.getPos(v) for v in self.graph.nodes()}
+		Parameters
+		----------
+		G : graph
+		    The graph to layout
+
+		Returns
+		-------
+		A dictionary mapping vertices to 2D positions.
+		"""
+		self.graph = G
+		self._prepareSpectrum()
+		self._prepareNormalization()
+		self._computePositions()
+
+		return {v : self._getPos(v) for v in self.graph.nodes()}
 
 
 class ForceDirected(Layout):

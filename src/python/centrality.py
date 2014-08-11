@@ -17,8 +17,23 @@ def scores(G, algorithm=Betweenness, normalized=False):
 	centrality.run()
 	return centrality.scores()
 
-class SpectralCentrality(object):		
+class SpectralCentrality:
+	"""
+	Abstract class to compute the spectral centrality of a graph. This class needs to be supplied with methods
+	to generate the correct matrices and do the correct normalization.
+	"""
 	def __init__(self, G, normalized=False):
+		"""
+		Constructor.
+
+		Parameters
+		----------
+		G : graph
+		    The graph of which to compute the centrality
+		normalized : boolean
+					 Whether to normalize the results or not
+
+		"""
 		super(SpectralCentrality, self).__init__()
 
 		self.graph = G
@@ -28,14 +43,15 @@ class SpectralCentrality(object):
 		self.rankList = None
 
 	def prepareSpectrum(self):
+		""" Method that must be implemented to set the following values:
+		self.eigenvectors = list of eigenvectors desired for centrality measure
+		self.eigenvalues = list of corresponding eigenvalues
+		"""
 		raise NotImplemented
-		spectrum = adjacencyEigenvector(self.graph, order=0)
-		self.eigenvector = spectrum[1]
-		self.eigenvalue = spectrum[0]
 
-	def length(self, vector):
-		square = sum([val * val for val in vector])
-		return math.sqrt(square)
+	def normFactor(self):
+		""" Method that must be implemented to return a correct normalization factor"""
+		raise NotImplemented
 
 	def run(self):
 		self.prepareSpectrum()
@@ -45,7 +61,7 @@ class SpectralCentrality(object):
 		self.evz = {}
 
 		if self.normalized:
-			normFactor = 1 / self.length(self.eigenvector)
+			normFactor = self.normFactor()
 		else:
 			normFactor = 1
 
@@ -70,6 +86,13 @@ class PythonNativeEVZ(SpectralCentrality):
 	def __init__(self, G, normalized=False):
 		super(PythonNativeEVZ, self).__init__(G, normalized=normalized)
 
+	def _length(self, vector):
+		square = sum([val * val for val in vector])
+		return math.sqrt(square)
+
+	def normFactor(self):
+		return 1 / self._length(self.eigenvector)
+
 	def prepareSpectrum(self):
 		spectrum = adjacencyEigenvector(self.graph, order=0)
 		self.eigenvector = spectrum[1]
@@ -80,6 +103,12 @@ class PythonNativePageRank(SpectralCentrality):
 		super(PythonNativePageRank, self).__init__(G, normalized=normalized)
 
 		self.damp = damp
+
+	def _length(self, vector):
+		return sum(vector)
+
+	def normFactor(self):
+		return 1 / self._length(self.eigenvector)
 
 	def prepareSpectrum(self):
 		prMatrix = PageRankMatrix(self.graph, self.damp)
