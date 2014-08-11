@@ -170,3 +170,34 @@ class bb_MultiscaleBackbone:
 
     def requiresWeight(self):
         return True
+
+# -----------------------------------------------------------
+
+class bb_RandomBackbone:
+    def __init__(self, tag):
+        self._tag = tag
+
+    def getName(self):
+        return "RandomBackbone " + self._tag
+
+    def getShortName(self, parameter):
+        return "R " + self._tag + " "+ str(parameter)
+
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.RandomBackbone(" + str(parameter) + ")"
+
+    def getPrecalcAttribute(self, graph):
+        return None
+
+    def getPrecalcBackbone(self, graph, attribute, value):
+        rb = backbones.RandomBackbone(value)
+        return rb.calculate(graph)
+
+    def parameterType(self):
+        return "FloatType"
+
+    def increasing(self):
+        return True
+
+    def requiresWeight(self):
+        return False
