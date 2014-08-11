@@ -3309,6 +3309,75 @@ cdef class Betweenness:
 		return self._this.ranking()
 
 
+cdef extern from "../cpp/centrality/Betweenness2.h":
+	cdef cppclass _Betweenness2 "NetworKit::Betweenness2":
+		_Betweenness2(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class Betweenness2:
+	"""
+		Betweenness2(G, normalized=False)
+
+		Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
+		then set `normalized` to True.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		normalized : bool, optional
+			Set this parameter to True if scores should be normalized in the interval [0,1].
+	"""
+	cdef _Betweenness2* _this
+
+	def __cinit__(self, Graph G, normalized=False):
+		self._this = new _Betweenness2(dereference(G._this), normalized)
+
+	def run(self):
+		"""  Compute betweenness scores sequential or parallel depending on `runUnweightedInParallel`.
+		"""
+		self._this.run()
+
+	def scores(self):
+		""" Get a vector containing the betweenness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the betweenness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The betweenness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+
 cdef extern from "../cpp/centrality/ApproxBetweenness.h":
 	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness":
 		_ApproxBetweenness(_Graph, double, double, count) except +
