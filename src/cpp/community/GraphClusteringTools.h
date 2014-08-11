@@ -22,6 +22,8 @@ bool isOneClustering(const Graph& G, const Partition& zeta);
 
 bool equalClusterings(const Partition &zeta, const Partition &eta, Graph& G);
 
+Partition intersectPartitions(const Partition &zeta, const Partition &eta);
+
 }
 
 }
