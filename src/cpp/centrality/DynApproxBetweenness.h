@@ -33,10 +33,11 @@ public:
       * The values are normalized by default.
       *
       * @param	G			the graph
+      * @param  storePredecessors   keep track of the lists of predecessors?
       * @param	epsilon		maximum additive error
       * @param	delta		probability that the values are within the error guarantee
      */
-    DynApproxBetweenness(const Graph& G, double epsilon=0.01, double delta=0.1);
+    DynApproxBetweenness(const Graph& G, double epsilon=0.01, double delta=0.1, bool storePredecessors = true);
 
     /**
      * Runs the static approximated betweenness centrality algorithm on the initial graph.
@@ -51,7 +52,7 @@ public:
     void update(const std::vector<GraphEvent>& batch);
 
 private:
-
+    bool storePreds = true;
     double epsilon; //!< maximum error
     double delta;
     count r;

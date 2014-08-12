@@ -13,7 +13,8 @@
 
 namespace NetworKit {
 
-DynBFS::DynBFS(const Graph& G, node s) : DynSSSP(G, s), color(G.upperNodeIdBound(), WHITE) {
+DynBFS::DynBFS(const Graph& G, node s, bool storePredecessors) : DynSSSP(G, s, storePredecessors),
+color(G.upperNodeIdBound(), WHITE) {
 }
 
 void DynBFS::run(node t) {
@@ -24,7 +25,8 @@ void DynBFS::run(node t) {
 	bfs.run();
 	distances = bfs.distances;
 	npaths = bfs.npaths;
-	previous = bfs.previous;
+	if (storePreds)
+		previous = bfs.previous;
 	maxDistance = 0;
 	G.forNodes([&](node v){
 		if (distances[v] > maxDistance)
@@ -64,12 +66,16 @@ void DynBFS::update(const std::vector<GraphEvent>& batch) {
 			visited.push(w);
 			color[w] = BLACK;
 			distances[w] = m;
-			previous[w].clear();
+			if (storePreds) {
+				previous[w].clear();
+			}
 			npaths[w] = 0;
 			G.forNeighborsOf(w, [&](node z) {
 				//z is a predecessor for w
 				if (distances[w] == distances[z]+1) {
-					previous[w].push_back(z);
+					if (storePreds) {
+						previous[w].push_back(z);
+					}
 					npaths[w] += npaths[z];
 				}
 				//w is a predecessor for z

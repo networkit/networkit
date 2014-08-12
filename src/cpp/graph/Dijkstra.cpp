@@ -37,11 +37,9 @@ void Dijkstra::run(node t) {
 		std::stack<node> empty;
 		std::swap(stack, empty);
 	}
-
+	distances[source] = 0;
 	// priority queue with distance-node pairs
 	Aux::PrioQueue<edgeweight, node> pq(distances);
-
-	distances[source] = 0;
 
 
 	auto relax([&](node u, node v, edgeweight w) {
@@ -51,7 +49,10 @@ void Dijkstra::run(node t) {
 				previous[v] = {u}; // new predecessor on shortest path
 				npaths[v] = npaths[u];
 			}
+			DEBUG("Decreasing key of ", v);
+			DEBUG("pq size: ", pq.size());
 			pq.decreaseKey(distances[v], v);
+			DEBUG("pq size: ", pq.size());
 		} else if (storePaths && (distances[v] == distances[u] + w)) {
 			previous[v].push_back(u); 	// additional predecessor
 			npaths[v] += npaths[u]; 	// all the shortest paths to u are also shortest paths to v now
@@ -61,11 +62,10 @@ void Dijkstra::run(node t) {
 	bool breakWhenFound = (t != none);
 	DEBUG("traversing graph");
 	while (pq.size() > 0) {
-//		DEBUG("pq size: ", pq.size());
-
+		DEBUG("pq size: ", pq.size());
 		node current = pq.extractMin().second;
-//		DEBUG("pq size: ", pq.size());
-//		TRACE("current node in Dijkstra: " , current);
+		TRACE("current node in Dijkstra: " , current);
+		DEBUG("pq size: ", pq.size());
 		if (breakWhenFound && t == current) {
 			break;
 		}

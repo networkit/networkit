@@ -1010,7 +1010,7 @@ cdef class DorogovtsevMendesGenerator:
 	""" Generates a graph according to the Dorogovtsev-Mendes model.
 
  	DorogovtsevMendesGenerator(nNodes)
- 	
+
  	Constructs the generator class.
 
 	Parameters
@@ -1043,9 +1043,9 @@ cdef extern from "../cpp/generators/RegularRingLatticeGenerator.h":
 cdef class RegularRingLatticeGenerator:
 	"""
 	Constructs a regular ring lattice.
-	
+
 	RegularRingLatticeGenerator(count nNodes, count nNeighbors)
-	
+
 	Constructs the generator.
 
 	Parameters
@@ -1068,7 +1068,7 @@ cdef class RegularRingLatticeGenerator:
 			The generated graph.
 		"""
 		return Graph(0).setThis(self._this._generate())
-		
+
 
 cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
 	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator":
@@ -1077,14 +1077,14 @@ cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
 
 cdef class WattsStrogatzGenerator:
 	""" Generates a graph according to the Watts-Strogatz model.
-	
+
 	First, a regular ring lattice is generated. Then edges are rewired
 		with a given probability.
-	
+
 	WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
-	
+
 	Constructs the generator.
-	
+
 	Parameters
 	----------
 	nNodes : Number of nodes in the target graph.
@@ -3380,7 +3380,7 @@ cdef class Betweenness2:
 
 cdef extern from "../cpp/centrality/DynBetweenness.h":
 	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
-		_DynBetweenness(_Graph) except +
+		_DynBetweenness(_Graph, bool) except +
 		void run() except +
 		void update(_GraphEvent) except +
 		vector[double] scores() except +
@@ -3389,18 +3389,20 @@ cdef extern from "../cpp/centrality/DynBetweenness.h":
 
 cdef class DynBetweenness:
 	"""
-		DynBetweenness(G)
+		DynBetweenness(G, storePredecessors)
 
 		Constructs the Betweenness class for the dynamic Graph `G`.
 		Parameters
 		----------
 		G : Graph
 			The graph.
+		storePredecessors : bool
+			store lists of predecessors?
 	"""
 	cdef _DynBetweenness* _this
 
-	def __cinit__(self, Graph G):
-		self._this = new _DynBetweenness(dereference(G._this))
+	def __cinit__(self, Graph G, bool storePredecessors):
+		self._this = new _DynBetweenness(dereference(G._this), storePredecessors)
 
 	def run(self):
 		"""  Compute betweenness scores on the initial graph.
@@ -3530,7 +3532,7 @@ cdef class ApproxBetweenness:
 
 cdef extern from "../cpp/centrality/DynApproxBetweenness.h":
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness":
-		_DynApproxBetweenness(_Graph, double, double) except +
+		_DynApproxBetweenness(_Graph, double, double, bool) except +
 		void run() except +
 		void update(vector[_GraphEvent]) except +
 		vector[double] scores() except +
@@ -3541,7 +3543,7 @@ cdef class DynApproxBetweenness:
 	""" New dynamic algorithm for the approximation of betweenness centrality with
 	a guaranteed error
 
-	DynApproxBetweenness(G, epsiolon=0.01, delta=0.1)
+	DynApproxBetweenness(G, epsiolon=0.01, delta=0.1, storePredecessors = true)
 
 	The algorithm approximates the betweenness of all vertices so that the scores are
 	within an additive error epsilon with probability at least (1- delta).
@@ -3555,11 +3557,13 @@ cdef class DynApproxBetweenness:
 		maximum additive error
 	delta : double, optional
 		probability that the values are within the error guarantee
+	storePredecessors : bool
+		store lists of predecessors?
 	"""
 	cdef _DynApproxBetweenness* _this
 
-	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1):
-		self._this = new _DynApproxBetweenness(dereference(G._this), epsilon, delta)
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, storePredecessors = True):
+		self._this = new _DynApproxBetweenness(dereference(G._this), epsilon, delta, storePredecessors)
 
 	def run(self):
 		self._this.run()
@@ -4024,7 +4028,7 @@ cdef class DynamicDorogovtsevMendesGenerator:
 	""" Generates a graph according to the Dorogovtsev-Mendes model.
 
  	DynamicDorogovtsevMendesGenerator()
- 	
+
  	Constructs the generator class.
 	"""
 	cdef _DynamicDorogovtsevMendesGenerator* _this
@@ -4089,14 +4093,14 @@ cdef class DynamicForestFireGenerator:
      communities
      densification power law
      shrinking diameter
- 
+
     see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
     Shringking Diameters and Possible Explanations
 
  	DynamicForestFireGenerator(double p, bool directed, double r = 1.0)
- 	
+
  	Constructs the generator class.
- 	
+
  	Parameters
  	----------
  	p : forward burning probability.

@@ -29,8 +29,9 @@ public:
      *
      * @param	graph		input graph.
      * @param	source	    source vertex.
+     * @param   storePredecessors   keep track of the lists of predecessors?
      */
-    DynSSSP(const Graph& G, node source);
+    DynSSSP(const Graph& G, node source, bool storePredecessors = true);
     /**
     * Updates the betweenness centralities after a batch of edge insertions on the graph.
     *
@@ -53,7 +54,15 @@ public:
     */
     void setTargetNode(const node t = 0);
 
+    /**
+     * Returns the predecessor nodes of @a t on all shortest paths from source to @a t.
+     * @param t Target node.
+     * @return The predecessors of @a t on all shortest paths from source to @a t.
+     */
+    std::vector<node> getPredecessors(node t) const;
+
 protected:
+    bool storePreds = true;
     bool mod = false;
     node target;
 };
@@ -64,6 +73,13 @@ inline bool DynSSSP::modified() {
 
 inline void DynSSSP::setTargetNode(const node t) {
     target = t;
+}
+
+inline std::vector<node> DynSSSP::getPredecessors(node t) const {
+    if (! storePreds) {
+        throw std::runtime_error("predecessors have not been stored");
+    }
+    return previous[t];
 }
 
 } /* namespace NetworKit */

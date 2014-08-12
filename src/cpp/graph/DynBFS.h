@@ -26,8 +26,9 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param s The source node.
+	 * @param   storePredecessors   keep track of the lists of predecessors?
 	 */
-	DynBFS(const Graph& G, node s);
+	DynBFS(const Graph& G, node s, bool storePredecessors = true);
 
 	void run(node t = none) override;
 

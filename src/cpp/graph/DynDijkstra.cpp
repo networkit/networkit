@@ -14,7 +14,8 @@
 
 namespace NetworKit {
 
-DynDijkstra::DynDijkstra(const Graph& G, node source) : DynSSSP(G, source), color(G.upperNodeIdBound(), WHITE) {
+DynDijkstra::DynDijkstra(const Graph& G, node source, bool storePredecessors) : DynSSSP(G, source, storePredecessors),
+color(G.upperNodeIdBound(), WHITE) {
 
 }
 
@@ -26,7 +27,9 @@ void DynDijkstra::run(node t) {
 	dij.run();
 	distances = dij.distances;
 	npaths = dij.npaths;
-	previous = dij.previous;
+	if (storePreds) {
+		previous = dij.previous;
+	}
 }
 
 void DynDijkstra::update(const std::vector<GraphEvent>& batch) {
@@ -62,12 +65,16 @@ void DynDijkstra::update(const std::vector<GraphEvent>& batch) {
 		mod = true;
 		node current = Q.extractMin().second;
 		visited.push(current);
-		previous[current].clear();
+		if (storePreds) {
+			previous[current].clear();
+		}
 		npaths[current] = 0;
 		G.forWeightedNeighborsOf(current, [&](node z, edgeweight w){
 			//z is a predecessor of current node
 			if (distances[current] == distances[z]+w) {
-				previous[current].push_back(z);
+				if (storePreds) {
+					previous[current].push_back(z);
+				}
 				npaths[current] += npaths[z];
 			}
 			//check whether curent node is a predecessor of z
