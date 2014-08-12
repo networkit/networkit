@@ -92,8 +92,9 @@ def test(G, nEdges, batchSize, epsilon, delta):
 
 
 
-
+print("before reading the graph")
 G = readGraph("../input/PGPgiantcompo.graph")
+print("after reading the graph")
 nEdges = 100
 batchSize = 5
 epsilon = 0.1
