@@ -35,7 +35,7 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	bc = Betweenness(G)
 	print ("Running bc")
 	bc.run()
-	dynBc = DynBetweenness(G)
+	dynBc = DynBetweenness(G, True)
 	print ("Running dyn bc")
 	dynBc.run()
 	apprBc = ApproxBetweenness(G, epsilon, delta)

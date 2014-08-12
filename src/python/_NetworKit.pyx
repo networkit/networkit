@@ -3389,7 +3389,7 @@ cdef extern from "../cpp/centrality/DynBetweenness.h":
 
 cdef class DynBetweenness:
 	"""
-		DynBetweenness(G, storePredecessors)
+		DynBetweenness(G, storePredecessors = True)
 
 		Constructs the Betweenness class for the dynamic Graph `G`.
 		Parameters
@@ -3401,7 +3401,7 @@ cdef class DynBetweenness:
 	"""
 	cdef _DynBetweenness* _this
 
-	def __cinit__(self, Graph G, bool storePredecessors):
+	def __cinit__(self, Graph G, bool storePredecessors = True):
 		self._this = new _DynBetweenness(dereference(G._this), storePredecessors)
 
 	def run(self):
@@ -3543,7 +3543,7 @@ cdef class DynApproxBetweenness:
 	""" New dynamic algorithm for the approximation of betweenness centrality with
 	a guaranteed error
 
-	DynApproxBetweenness(G, epsiolon=0.01, delta=0.1, storePredecessors = true)
+	DynApproxBetweenness(G, epsiolon=0.01, delta=0.1, storePredecessors = True)
 
 	The algorithm approximates the betweenness of all vertices so that the scores are
 	within an additive error epsilon with probability at least (1- delta).
