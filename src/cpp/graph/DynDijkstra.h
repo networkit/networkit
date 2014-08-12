@@ -25,8 +25,9 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param s The source node.
+	 * @param   storePredecessors   keep track of the lists of predecessors?
 	 */
-	DynDijkstra(const Graph& G, node s);
+	DynDijkstra(const Graph& G, node s, bool storePredecessors = true);
 
 	void init();
 
@@ -40,6 +41,7 @@ protected:
 	std::vector<Color> color;
 
 };
+
 
 } /* namespace NetworKit */
 

@@ -16,8 +16,14 @@
 
 namespace NetworKit {
 
-DynApproxBetweenness::DynApproxBetweenness(const Graph& G, double epsilon, double delta) : Centrality(G, true), epsilon(epsilon), delta(delta) {
+DynApproxBetweenness::DynApproxBetweenness(const Graph& G, double epsilon, double delta, bool storePredecessors) : Centrality(G, true),
+storePreds(storePredecessors), epsilon(epsilon), delta(delta) {
 
+}
+
+inline bool logically_equal(double a, double b, double error_factor=1.0)
+{
+  return a==b || std::abs(a-b)<std::abs(std::min(a,b))*std::numeric_limits<double>::epsilon()*error_factor;
 }
 
 void DynApproxBetweenness::run() {
@@ -49,9 +55,9 @@ void DynApproxBetweenness::run() {
             v[i] = Sampling::randomNode(G);
         } while (v[i] == u[i]);
         if (G.isWeighted()) {
-            sssp[i].reset(new DynDijkstra(G, u[i]));
+            sssp[i].reset(new DynDijkstra(G, u[i], storePreds));
         } else {
-            sssp[i].reset(new DynBFS(G, u[i]));
+            sssp[i].reset(new DynBFS(G, u[i], storePreds));
         }
         DEBUG("running shortest path algorithm for node ", u[i]);
         sssp[i]->setTargetNode(v[i]);
@@ -64,9 +70,16 @@ void DynApproxBetweenness::run() {
             while (t != u[i])  {
                 // sample z in P_u(t) with probability sigma_uz / sigma_us
                 std::vector<std::pair<node, double> > choices;
-
-                for (node z : sssp[i]->getPredecessors(t)) {
-                    choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t)); 	// sigma_uz / sigma_us
+                if (storePreds) {
+                    for (node z : sssp[i]->getPredecessors(t)) {
+                        choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t)); 	// sigma_uz / sigma_us
+                    }
+                }
+                else {
+                    G.forNeighborsOf(t, [&](node z){
+                        if (logically_equal(sssp[i]->distance(t), sssp[i]->distance(z) + G.weight(z, t)))
+                            choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t));
+                    });
                 }
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
@@ -95,9 +108,16 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
             while (t != u[i])  {
                 // sample z in P_u(t) with probability sigma_uz / sigma_us
                 std::vector<std::pair<node, double> > choices;
-
-                for (node z : sssp[i]->getPredecessors(t)) {
-                    choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t)); 	// sigma_uz / sigma_us
+                if (storePreds) {
+                    for (node z : sssp[i]->getPredecessors(t)) {
+                        choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t)); 	// sigma_uz / sigma_us
+                    }
+                }
+                else {
+                    G.forNeighborsOf(t, [&](node z){
+                        if (logically_equal(sssp[i]->distance(t), sssp[i]->distance(z) + G.weight(z, t)))
+                            choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t));
+                    });
                 }
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());

@@ -26,6 +26,11 @@ storePreds(storePredecessors) {
 
 }
 
+inline bool logically_equal(double a, double b, double error_factor=1.0)
+{
+  return a==b || std::abs(a-b)<std::abs(std::min(a,b))*std::numeric_limits<double>::epsilon()*error_factor;
+}
+
 void DynBetweenness::run() {
     count z = G.upperNodeIdBound();
     scoreData.clear();
@@ -221,7 +226,9 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
 
 void DynBetweenness::updateWeighted(GraphEvent e) {
     G.forNodes([&] (node s){
-        std::cout<<"SSSP from node "<<s<<std::endl;
+        scoreData[s] = 0.0;
+    });
+    G.forNodes([&] (node s){
         // update of distances and number of shortest paths
         Aux::PrioQueue<double, node> S(G.upperNodeIdBound());
         G.forNodes([&] (node t){
@@ -261,22 +268,13 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
             node t = S.extractMin().second;
             if (storePreds) {
                 for (node p : predecessors[s][t]) {
-            //        if (p == 2) {
-            //            std::cout<<"(1) This is node "<<t<<", the dependency of "<<p<<" before my contribution was "<<dependencies[s
-            //            ][p]<<std::endl;
-            //        }
                     dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
-            //        if (p == 2) {
-            //            std::cout<<"After my contribution "<<dependencies[s][p]<<std::endl;
-            //
-        //        }
                 }
             }
             else {
                 G.forNeighborsOf(t, [&] (node p){
-                    if (distances[s][t] == distances[s][p] + G.weight(p, t)) {
+                    if (logically_equal(distances[s][t], distances[s][p] + G.weight(p, t))) {
                         dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
-                        std::cout<<"Predecessor "<<p<<std::endl;
                     }
                 });
             }
@@ -284,50 +282,6 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
                 scoreData[t] += dependencies[s][t];
             }
         }
-
-
-
-
-
-
-        BFS sssp(G, s, true, true);
-        sssp.run();
-        G.forNodes([&](node t){
-            if(distances[s][t] != sssp.distance(t) || npaths[s][t] != sssp.numberOfPaths(t)) {
-                std::cout<<"Source: "<<s<<"  Node "<<t<<std::endl;
-                std::cout<<"COMPUTED DISTANCE: "<<distances[s][t]<<"  REAL DISTANCE: "<<sssp.distance(t)<<std::endl;
-                std::cout<<"COMPUTED NUMBER OF PATHS: "<<npaths[s][t]<<"  REAL NUMBER OF PATHS: "<<sssp.numberOfPaths(t)<<std::endl;
-            }
-        });
-
-
-        // compute dependencies for nodes in order of decreasing distance from s
-        std::vector<double> dep(G.upperNodeIdBound());
-        std::stack<node> stack = sssp.getStack();
-        while (!stack.empty()) {
-            node t = stack.top();
-            stack.pop();
-            for (node p : sssp.getPredecessors(t)) {
-        //        if (p == 2) {
-        //            std::cout<<"(2) This is node "<<t<<", the dependency of "<<p<<" before my contribution was "<<dep[p]<<std::endl;
-        //        }
-                dep[p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dep[t]);
-        //        if (p == 2) {
-        //            std::cout<<"After my contribution "<<dep[p]<<std::endl;
-        //        }
-            }
-        }
-
-        G.forNodes([&](node t){
-            if (sssp.getPredecessors(t).size() != predecessors[s][t].size())
-                std::cout<<"size1 "<<sssp.getPredecessors(t).size()<<" size2 "<<sssp.getPredecessors(t).size()<<std::endl;
-            if((dependencies[s][t]-dep[t]>0.000001 || dependencies[s][t]-dep[t]<-0.000001) && s!=t) {
-                std::cout<<"Source: "<<s<<"  Node "<<t<<std::endl;
-                std::cout<<"COMPUTED DEPENDENCY: "<<dependencies[s][t]<<"  REAL DEPENDENCY: "<<dep[t]<<std::endl;
-            }
-        });
-
-
 
     });
 

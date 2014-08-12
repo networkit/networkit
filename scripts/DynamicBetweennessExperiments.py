@@ -38,14 +38,17 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	dynBc.run()
 	apprBc = ApproxBetweenness(G, epsilon, delta)
 	apprBc.run()
-	dynApprBc = DynApproxBetweenness(G, epsilon, delta)
+	dynApprBc = DynApproxBetweenness(G, epsilon, delta, True)
 	dynApprBc.run()
+	dynApprBc2 = DynApproxBetweenness(G, epsilon, delta, False)
+	dynApprBc2.run()
 	# apply the batches
 	nExperiments = nEdges // batchSize
 	timesBc = []
 	timesDynBc = []
 	timesApprBc = []
 	timesDynApprBc = []
+	timesDynApprBc2 = []
 	for i in range (0, nExperiments):
 		batch = addStream[i*batchSize : (i+1)*batchSize]
 		# add the edges of batch to the graph
@@ -69,11 +72,16 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		t = stopwatch.Timer()
 		dynApprBc.update(batch)
 		timesDynApprBc.append(t.stop())
+		# update the betweenness with the dynamic approximated algorithm
+		t = stopwatch.Timer()
+		dynApprBc2.update(batch)
+		timesDynApprBc2.append(t.stop())
 	return {
 			"bc" : timesBc,
 			"dynBc" : timesDynBc,
 			"apprBc" : timesApprBc,
-			"dynApprBc" : timesDynApprBc
+			"dynApprBc (predecessors stored)" : timesDynApprBc,
+			"dynApprBc (predecessors not stored)" : timesDynApprBc2
 			}
 
 

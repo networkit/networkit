@@ -86,7 +86,8 @@ TEST_F(DynBetweennessGTest, testWeightedDynBetweennessSmallGraph) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-	DynBetweenness dynbc = DynBetweenness(G, true);
+	DynBetweenness dynbc = DynBetweenness(G, false);
+//	Graph G1 = Graph(G, false, false);
 	Betweenness2 bc = Betweenness2(G);
 	dynbc.run();
 	bc.run();
@@ -98,18 +99,19 @@ TEST_F(DynBetweennessGTest, testWeightedDynBetweennessSmallGraph) {
 	for(i=0; i<n; i++) {
 		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
 	}
-/*
+
 	// edge insertions
 	GraphEvent ev(GraphEvent::EDGE_ADDITION, 0, 6, 1.0);
 	G.addEdge(ev.u, ev.v);
+//	G1.addEdge(ev.u, ev.v);
 	bc.run();
 	dynbc.update(ev);
-
+	std::cout<<"after"<<std::endl;
 	dynbc_scores = dynbc.scores();
 	bc_scores = bc.scores();
 	for(i=0; i<n; i++) {
 		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
-	}*/
+	}
 
 }
 
@@ -136,7 +138,7 @@ TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
 	double epsilon = 0.01; // error
 	double delta = 0.1; // confidence
 	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta);
-	Betweenness bc = Betweenness(G, false);
+	Betweenness bc = Betweenness(G);
 	dynbc.run();
 	bc.run();
 	std::vector<double> dynbc_scores = dynbc.scores();
@@ -166,7 +168,7 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 
 	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
-	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta);
+	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta, false);
 	ApproxBetweenness bc = ApproxBetweenness(G, epsilon, delta);
 	dynbc.run();
 	bc.run();
@@ -212,7 +214,7 @@ TEST_F(DynBetweennessGTest, timeDynApproxBetweenness) {
 
 	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
-	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta);
+	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta, false);
 	INFO("initial run");
 	dynbc.run();
 	INFO("update");
