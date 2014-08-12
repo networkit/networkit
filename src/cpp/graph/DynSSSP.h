@@ -22,6 +22,8 @@ namespace NetworKit {
  */
 class DynSSSP: public SSSP {
 
+friend class DynApproxBetweenness;
+
 public:
     /**
      * The algorithm computes a dynamic SSSP starting from the specified

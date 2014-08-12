@@ -62,7 +62,7 @@ void DynApproxBetweenness::run() {
         DEBUG("running shortest path algorithm for node ", u[i]);
         sssp[i]->setTargetNode(v[i]);
         sssp[i]->run();
-        if (sssp[i]->numberOfPaths(v[i]) > 0) { // at least one path between {u, v} exists
+        if (sssp[i]->distances[v[i]] > 0) { // at least one path between {u, v} exists
             DEBUG("updating estimate for path ", u[i], " <-> ", v[i]);
             // random path sampling and estimation update
             sampledPaths[i].clear();
@@ -71,14 +71,14 @@ void DynApproxBetweenness::run() {
                 // sample z in P_u(t) with probability sigma_uz / sigma_us
                 std::vector<std::pair<node, double> > choices;
                 if (storePreds) {
-                    for (node z : sssp[i]->getPredecessors(t)) {
-                        choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t)); 	// sigma_uz / sigma_us
+                    for (node z : sssp[i]->previous[t]) {
+                        choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]); 	// sigma_uz / sigma_us
                     }
                 }
                 else {
                     G.forNeighborsOf(t, [&](node z){
-                        if (logically_equal(sssp[i]->distance(t), sssp[i]->distance(z) + G.weight(z, t)))
-                            choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t));
+                        if (logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + G.weight(z, t)))
+                            choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
                     });
                 }
                 node z = Aux::Random::weightedChoice(choices);
@@ -109,14 +109,14 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
                 // sample z in P_u(t) with probability sigma_uz / sigma_us
                 std::vector<std::pair<node, double> > choices;
                 if (storePreds) {
-                    for (node z : sssp[i]->getPredecessors(t)) {
-                        choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t)); 	// sigma_uz / sigma_us
+                    for (node z : sssp[i]->previous[t]) {
+                        choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]); 	// sigma_uz / sigma_us
                     }
                 }
                 else {
                     G.forNeighborsOf(t, [&](node z){
-                        if (logically_equal(sssp[i]->distance(t), sssp[i]->distance(z) + G.weight(z, t)))
-                            choices.emplace_back(z, sssp[i]->numberOfPaths(z) / (double) sssp[i]->numberOfPaths(t));
+                        if (logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + G.weight(z, t)))
+                            choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
                     });
                 }
                 node z = Aux::Random::weightedChoice(choices);
