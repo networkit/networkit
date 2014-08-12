@@ -10,9 +10,9 @@ def removeAndAddEdges(G, nEdges, tabu=None):
 	removed = set()
 	while len(removed) < nEdges:
 		(u, v) = G.randomEdge()
-		if not tabu.hasEdge(u, v):	# exclude all edges in the tabu graph
+		if not tabu.hasEdge(u, v) and not ((u,v) in removed or (v,u) in removed):	# exclude all edges in the tabu graph
 			removed.add((u, v))
-
+	print (removed)
 	# build event streams
 	removeStream = []
 	for (u, v) in removed:
@@ -33,14 +33,19 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	updater.update(removeStream)
 	# run the algorithms on the inital graph
 	bc = Betweenness(G)
+	print ("Running bc")
 	bc.run()
 	dynBc = DynBetweenness(G)
+	print ("Running dyn bc")
 	dynBc.run()
 	apprBc = ApproxBetweenness(G, epsilon, delta)
+	print ("Running approx bc")
 	apprBc.run()
 	dynApprBc = DynApproxBetweenness(G, epsilon, delta, True)
+	print ("Running dyn approx bc with predecessors")
 	dynApprBc.run()
 	dynApprBc2 = DynApproxBetweenness(G, epsilon, delta, False)
+	print ("Running dyn approx bc without predecessors")
 	dynApprBc2.run()
 	# apply the batches
 	nExperiments = nEdges // batchSize
