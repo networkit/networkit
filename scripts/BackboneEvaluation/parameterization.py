@@ -26,6 +26,8 @@ def getBackboneTask(graph, inputAlgorithms, targetEdgeRatios, outputDir):
 				outputAlgorithm = parameterizeUsingDouble(G, inputAlgorithm, targetEp, 0.0, 1.0, 20)
 			elif inputAlgorithm.parameterType() == "IntType":
 				outputAlgorithm = parameterizeUsingInteger(G, inputAlgorithm, targetEp, 0, 10)
+			elif inputAlgorithm.parameterType() == "Trivial":
+				outputAlgorithm = parameterizeUsingDoubleTrivial(G, inputAlgorithm, targetEp)
 			else:
 				outputAlgorithm = None
 			name = inputAlgorithm.getShortName(targetEp)
@@ -100,3 +102,8 @@ def parameterizeUsingInteger(G, algorithm, targetEdgeRatio, lowerBound, upperBou
 
 	print("Best fit for parameter: ", bestParameter, " ep: ", bestRatio, ", tep: ", targetEdgeRatio)
 	return algorithm.getAlgorithmExpr(bestParameter)
+
+#Directly use targetEdgeRatio as input parameter for the algorithm.
+def parameterizeUsingDoubleTrivial(G, algorithm, targetEdgeRatio):
+	print("Parameterizing ", algorithm.getName(), " ... (trivial), edge ratio ", str(targetEdgeRatio))
+	return algorithm.getAlgorithmExpr(targetEdgeRatio)

@@ -194,7 +194,7 @@ class bb_RandomBackbone:
         return rb.calculate(graph)
 
     def parameterType(self):
-        return "FloatType"
+        return "Trivial"  #Trivial: No parameterizitation needed.
 
     def increasing(self):
         return True
