@@ -96,6 +96,7 @@ cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count, bool, bool) except +
+		_Graph(const _Graph& other) except +
 		void stealFrom(_Graph)
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -162,6 +163,18 @@ cdef class Graph:
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
 		del self._this
+
+	def __copy__(self):
+		"""
+		Generates a copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
+
+	def __deepcopy__(self, memo):
+		"""
+		Generates a (deep) copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
 
 	def numberOfNodes(self):
 		"""
