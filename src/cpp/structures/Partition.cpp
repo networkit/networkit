@@ -89,7 +89,9 @@ void Partition::compact() {
 		}
 	});
 	this->parallelForEntries([&](index e, index s){ // replace old SubsetIDs with the new IDs
-		data[e] = compactingMap[s];
+		if (s != none) {
+			data[e] = compactingMap[s];
+		}
 	});
 	this->setUpperBound(i); // does i contain the right value?
 }
