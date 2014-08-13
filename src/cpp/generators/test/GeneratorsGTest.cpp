@@ -379,7 +379,7 @@ TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
 			EXPECT_EQ(1, count);
 		}
 	});
-	
+
 	Graph G2(0);
 	GraphUpdater gu2(G2);
 	DynamicForestFireGenerator ffg2(1.0, true, 1.0);
@@ -408,7 +408,7 @@ TEST_F(GeneratorsGTest, testRegularRingLatticeGenerator) {
 			}
 		});
 	};
-	
+
 	RegularRingLatticeGenerator rrlg = RegularRingLatticeGenerator(n0, neighbors);
 	testRingLattice(rrlg.generate());
 }
@@ -426,10 +426,10 @@ TEST_F(GeneratorsGTest, testWattsStrogatzGenerator) {
 			}
 		});
 	};
-	
+
 	WattsStrogatzGenerator wsg1 = WattsStrogatzGenerator(n0, neighbors, 0.0);
 	testRingLattice(wsg1.generate());
-	
+
 	WattsStrogatzGenerator wsg2 = WattsStrogatzGenerator(n0, neighbors, 0.3);
 	Graph G = wsg2.generate();
 	EXPECT_EQ(n0, G.numberOfNodes());
@@ -440,7 +440,7 @@ TEST_F(GeneratorsGTest, testDorogovtsevMendesGenerator) {
 	int n0 = 20;
 	DorogovtsevMendesGenerator dmg = DorogovtsevMendesGenerator(n0);
 	Graph G = dmg.generate();
-	
+
 	EXPECT_EQ(n0, G.numberOfNodes());
 	EXPECT_EQ(2*n0-3, G.numberOfEdges());
 	G.forNodes([&](node u) {
@@ -459,14 +459,14 @@ TEST_F(GeneratorsGTest, testDorogovtsevMendesGenerator) {
 }
 
 TEST_F(GeneratorsGTest, testDynamicDorogovtsevMendesGenerator) {
-	int n0 = 20;
+	count n0 = 20;
 	DynamicDorogovtsevMendesGenerator ddmg = DynamicDorogovtsevMendesGenerator();
 	Graph G(0);
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 	stream = ddmg.generate(n0 - 3);
 	gu.update(stream);
-	
+
 	EXPECT_EQ(n0, G.numberOfNodes());
 	EXPECT_EQ(2*n0-3, G.numberOfEdges());
 	G.forNodes([&](node u) {
@@ -487,4 +487,3 @@ TEST_F(GeneratorsGTest, testDynamicDorogovtsevMendesGenerator) {
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
-
