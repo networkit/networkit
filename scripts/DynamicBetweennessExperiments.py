@@ -94,7 +94,9 @@ def test(G, nEdges, batchSize, epsilon, delta):
 
 setNumberOfThreads(1)
 G = generators.DorogovtsevMendesGenerator(100000).generate()
-if (properties.numberOfComponents(G) == 1) :
+cc = properties.ConnectedComponents(G)
+cc.run()
+if (cc.numberOfComponents() == 1) :
 	nEdges = 50
 	batchSize = 10
 	epsilon = 0.1
