@@ -20,6 +20,7 @@ Dy * GeneratorsTest.cpp
 #include "../../properties/ClusteringCoefficient.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
+#include "../StochasticBlockmodel.h"
 
 
 namespace NetworKit {
@@ -482,6 +483,20 @@ TEST_F(GeneratorsGTest, testDynamicDorogovtsevMendesGenerator) {
 			EXPECT_EQ(2, count);
 		}
 	});
+}
+
+
+
+TEST_F(GeneratorsGTest, testStochasticBlockmodel) {
+	count n = 10;
+	count nBlocks = 2;
+	std::vector<index> membership = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
+	std::vector<std::vector<double> > affinity = {{1.0, 0.0}, {0.0, 1.0}};
+	StochasticBlockmodel sbm(n, nBlocks, membership, affinity);
+	Graph G = sbm.generate();
+
+	EXPECT_EQ(n, G.numberOfNodes());
+	EXPECT_EQ(20, G.numberOfEdges());
 }
 
 } /* namespace NetworKit */

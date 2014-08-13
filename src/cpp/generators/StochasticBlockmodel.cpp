@@ -10,19 +10,19 @@
 
 namespace NetworKit {
 
-StochasticBlockmodel::StochasticBlockmodel(count nNodes, count nBlocks, const std::vector<index>& membership, const std::vector<std::vector<double> >& affinity)
-	: nNodes(nNodes), nBlocks(nBlocks), membership(membership), affinity(affinity) {
+StochasticBlockmodel::StochasticBlockmodel(count n, count nBlocks, const std::vector<index>& membership, const std::vector<std::vector<double> >& affinity)
+	: n(n), nBlocks(nBlocks), membership(membership), affinity(affinity) {
 	if (affinity.size() != nBlocks) {
 		throw std::runtime_error("affinity matrix must be of size nBlocks x nBlocks");
 	}
-	if (membership.size() != nNodes) {
+	if (membership.size() != n) {
 		throw std::runtime_error("membership list must be of size nNodes");
 	}
 }
 
 
 Graph StochasticBlockmodel::generate() {
-	Graph G(nNodes);
+	Graph G(n);
 
 	G.forNodePairs([&](node u, node v) {
 		index a = membership.at(u);
