@@ -92,11 +92,14 @@ def test(G, nEdges, batchSize, epsilon, delta):
 
 
 
-
-G = readGraph("../input/PGPgiantcompo.graph")
-nEdges = 100
-batchSize = 5
-epsilon = 0.1
-delta = 0.1
-times = test(G, nEdges, batchSize, epsilon, delta)
-print (times)
+setNumberOfThreads(1)
+G = generators.DorogovtsevMendesGenerator(100000).generate()
+if (properties.numberOfComponents(G) == 1) :
+	nEdges = 50
+	batchSize = 10
+	epsilon = 0.1
+	delta = 0.1
+	times = test(G, nEdges, batchSize, epsilon, delta)
+	print (times)
+else:
+	print ("The generated graph is not connected.")
