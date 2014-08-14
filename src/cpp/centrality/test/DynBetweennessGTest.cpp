@@ -39,7 +39,7 @@ TEST_F(DynBetweennessGTest, testDynBetweennessSmallGraph) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-	DynBetweenness dynbc = DynBetweenness(G, true);
+	DynBetweenness dynbc = DynBetweenness(G, false);
 	Betweenness bc = Betweenness(G);
 	dynbc.run();
 	bc.run();
@@ -239,7 +239,7 @@ TEST_F(DynBetweennessGTest, timeDynExactBetweenness) {
 	dynbc.run();
 	INFO("update");
 	GraphEvent ev;
-	count nInsertions = 100, i = 0;
+	count nInsertions = 10, i = 0;
 	while (i < nInsertions) {
 		node v1 = Sampling::randomNode(G);
 		node v2 = Sampling::randomNode(G);
@@ -254,9 +254,10 @@ TEST_F(DynBetweennessGTest, timeDynExactBetweenness) {
 
 TEST_F(DynBetweennessGTest, testCorrectnessDynExactBetweenness) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/PGPgiantcompo.graph");
+	DorogovtsevMendesGenerator generator(1000);
+	Graph G = generator.generate();
 	int n = G.upperNodeIdBound();
-	DynBetweenness dynbc = DynBetweenness(G);
+	DynBetweenness dynbc = DynBetweenness(G, true);
 	Betweenness bc = Betweenness(G);
 	dynbc.run();
 	bc.run();
@@ -267,18 +268,18 @@ TEST_F(DynBetweennessGTest, testCorrectnessDynExactBetweenness) {
 		node v1 = Sampling::randomNode(G);
 		node v2 = Sampling::randomNode(G);
 		if (v1 != v2 && !G.hasEdge(v1, v2)) {
+			i++;
 			G.addEdge(v1, v2);
 			ev = GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0);
 			dynbc.update(ev);
 			bc.run();
 			std::vector<double> dynbc_scores = dynbc.scores();
 			std::vector<double> bc_scores = bc.scores();
-			int i;
+			int j;
 			const double tol = 1e-6;
-			for(i=0; i<n; i++) {
-				EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
+			for(j=0; j<n; j++) {
+				EXPECT_NEAR(dynbc_scores[j], bc_scores[j], tol) << "Scores are different";
 			}
-			i++;
 		}
 	}
 }
