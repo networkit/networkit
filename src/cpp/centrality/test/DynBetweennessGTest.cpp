@@ -86,7 +86,7 @@ TEST_F(DynBetweennessGTest, testWeightedDynBetweennessSmallGraph) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-	DynBetweenness dynbc = DynBetweenness(G, false);
+	DynBetweenness dynbc = DynBetweenness(G, true);
 //	Graph G1 = Graph(G, false, false);
 	Betweenness2 bc = Betweenness2(G);
 	dynbc.run();
