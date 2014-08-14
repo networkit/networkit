@@ -79,7 +79,6 @@ void GraphGTest::SetUp() {
 		if (Ghouse.isWeighted()) {
 			ew += 1.0;
 		}
-
 	}
 }
 
@@ -226,7 +225,7 @@ TEST_P(GraphGTest, testTyp) {
 	}
 }
 
-TEST_P(GraphGTest, tesSetName) {
+TEST_P(GraphGTest, testSetName) {
 	Graph G1 = createGraph(0);
 	Graph G2 = createGraph(0);
 	

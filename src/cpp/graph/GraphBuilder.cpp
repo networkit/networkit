@@ -46,6 +46,20 @@ void GraphBuilder::addEdge(node u, node v, edgeweight ew) {
 	}
 }
 
+void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
+	if (!weighted) {
+		throw std::runtime_error("Cannot set edge weight in unweighted graph.");
+	}
+
+	index vi = indexHalfEdgeArray(u, v);
+
+	if (vi != none) {
+		halfEdgeWeights[u][vi] = ew;
+	} else {
+		addEdge(u, v, ew);
+	}
+}
+
 void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
 	if (!weighted) {
 		throw std::runtime_error("Cannot increase edge weight in unweighted graph.");
@@ -53,23 +67,10 @@ void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
 
 	index vi = indexHalfEdgeArray(u, v);
 
-	if (directed) {
-		if (vi != none) {
-			halfEdgeWeights[u][vi] += ew;
-		} else {
-			addEdge(u, v, ew);
-		}
+	if (vi != none) {
+		halfEdgeWeights[u][vi] += ew;
 	} else {
-		if (vi != none) {
-			halfEdgeWeights[u][vi] += ew;
-		} else {
-			index ui = indexHalfEdgeArray(v, u);
-			if (ui != none) {
-				halfEdgeWeights[v][ui] += ew;
-			} else {
-				addEdge(u, v, ew);
-			}
-		}
+		addEdge(u, v, ew);
 	}
 }
 
@@ -119,10 +120,11 @@ Graph GraphBuilder::toGraphParallel() {
 			}
 		}
 
-		std::copy(halfEdges[v].begin(), halfEdges[v].end(), G.outEdges[v].end());
+		std::copy(halfEdges[v].begin(), halfEdges[v].end(), std::back_inserter(G.outEdges[v]));
 		halfEdges[v].clear();
+
 		if (weighted) {
-			std::copy(halfEdgeWeights[v].begin(), halfEdgeWeights[v].end(), G.outEdgeWeights[v].end());
+			std::copy(halfEdgeWeights[v].begin(), halfEdgeWeights[v].end(), std::back_inserter(G.outEdgeWeights[v]));
 			halfEdgeWeights[v].clear();
 		}
 
@@ -130,24 +132,24 @@ Graph GraphBuilder::toGraphParallel() {
 			G.inDeg[v] = inDeg;
 			G.outDeg[v] = outDeg;
 			for (int tid = 0; tid < maxThreads; tid++) {
-				std::copy(inEdgesPerThread[tid][v].begin(), inEdgesPerThread[tid][v].end(), G.inEdges[v].end());
+				std::copy(inEdgesPerThread[tid][v].begin(), inEdgesPerThread[tid][v].end(), std::back_inserter(G.inEdges[v]));
 				inEdgesPerThread[tid][v].clear();
 			}
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
-					std::copy(inWeightsPerThread[tid][v].begin(), inWeightsPerThread[tid][v].end(), G.inEdgeWeights[v].end());
+					std::copy(inWeightsPerThread[tid][v].begin(), inWeightsPerThread[tid][v].end(), std::back_inserter(G.inEdgeWeights[v]));
 					inWeightsPerThread[tid][v].clear();
 				}	
 			}
 		} else {
 			G.outDeg[v] = inDeg + outDeg;
 			for (int tid = 0; tid < maxThreads; tid++) {
-				std::copy(inEdgesPerThread[tid][v].begin(), inEdgesPerThread[tid][v].end(), G.outEdges[v].end());
+				std::copy(inEdgesPerThread[tid][v].begin(), inEdgesPerThread[tid][v].end(), std::back_inserter(G.outEdges[v]));
 				inEdgesPerThread[tid][v].clear();
 			}
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
-					std::copy(inWeightsPerThread[tid][v].begin(), inWeightsPerThread[tid][v].end(), G.outEdgeWeights[v].end());
+					std::copy(inWeightsPerThread[tid][v].begin(), inWeightsPerThread[tid][v].end(), std::back_inserter(G.outEdgeWeights[v]));
 					inWeightsPerThread[tid][v].clear();
 				}	
 			}

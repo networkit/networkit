@@ -21,7 +21,7 @@ namespace NetworKit {
 
 TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	// parameters for Erdös-Renyi
-	count n = 100000;
+	count n = 10000;
 	double p = 0.001;
 	count m_expected = p * n * (n + 1) / 2;
 
@@ -44,6 +44,25 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	count m_actual;
 	uint64_t t1, t2;
 	
+	// half parallel way
+	m_actual = 0;
+	t1 = timeOnce([&]() {
+		builder = GraphBuilder(n);
+		builder.parallelForNodePairs([&](node u, node v) {
+			int tid = omp_get_thread_num();
+			double rdn = randomPerThread[tid]();
+			if (rdn <= p) {
+				builder.addEdge(u, v);
+			}
+		});
+	});
+	t2 = timeOnce([&]() {
+		G = builder.toGraph(false);
+	});
+	m_actual = G.numberOfEdges();
+	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
+	printf("parallelForNodePairs + toGraphSequentiel:\t\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
+
 	// fully parallel way
 	m_actual = 0;
 	t1 = timeOnce([&]() {
@@ -64,17 +83,17 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	printf("parallelForNodePairs + toGraphParallel:\t\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
 
 	// old way
-	t1 = timeOnce([&]() {
-		G = Graph(n);
-		G.forNodePairs([&](node u, node v) {
-			if (randomPerThread[0]() <= p) {
-				G.addEdge(u, v);
-			}
-		});
-	});
-	m_actual = G.numberOfEdges();
-	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	printf("forNodePairs + Graph.addEdge:\t\t\t\t%lu ms\n", t1);
+	// t1 = timeOnce([&]() {
+	// 	G = Graph(n);
+	// 	G.forNodePairs([&](node u, node v) {
+	// 		if (randomPerThread[0]() <= p) {
+	// 			G.addEdge(u, v);
+	// 		}
+	// 	});
+	// });
+	// m_actual = G.numberOfEdges();
+	// EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
+	// printf("forNodePairs + Graph.addEdge:\t\t\t\t%lu ms\n", t1);
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
