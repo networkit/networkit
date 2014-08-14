@@ -30,14 +30,74 @@ protected:
 public:
 	GraphBuilder(count n = 0, bool weighted = false, bool directed = false);
 
+	/**
+	 * Returns <code>true</code> if this graph supports edge weights other than 1.0.
+	 * @return <code>true</code> if this graph supports edge weights other than 1.0.
+	 */
 	bool isWeighted() const { return weighted; }
+
+	/**
+	 * Return @c true if this graph supports directed edges.
+	 * @return @c true if this graph supports directed edges.
+	 */
 	bool isDirected() const { return directed; }
+
+	/**
+	 * Return <code>true</code> if graph contains no nodes.
+	 * @return <code>true</code> if graph contains no nodes.
+	 */
+	bool isEmpty() const { return n == 0; }
+
+	/**
+	 * Return the number of nodes in the graph.
+	 * @return The number of nodes.
+	 */
 	count numberOfNodes() const { return n; }
 
+ 	/**
+	 * Get an upper bound for the node ids in the graph.
+	 * @return An upper bound for the node ids.
+	 */
+	index upperNodeIdBound() const { return n; }
+
+	/**
+	 * Add a new node to the graph and return it.
+	 * @return The new node.
+	 */
 	node addNode();
+	
+	/**
+	 * Insert an edge between the nodes @a u and @a v. If the graph is weighted you can optionally
+	 * set a weight for this edge. The default weight is 1.0.
+	 * @param u Endpoint of edge.
+	 * @param v Endpoint of edge.
+	 * @param weight Optional edge weight.
+	 */
 	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+
+	/**
+	 * Set the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	void setWeight(node u, node v, edgeweight ew);
+
+	/**
+	 * Increase the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
 	void increaseWeight(node u, node v, edgeweight ew);
 
+	/**
+	 * Generates a Graph instance. The graph builder will be reseted at the end.
+	 */
 	Graph toGraph(bool parallel = true) { return parallel ? toGraphParallel() : toGraphSequential(); }
 
 	/**
