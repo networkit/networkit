@@ -20,7 +20,7 @@ Dijkstra::Dijkstra(const Graph& G, node source, bool storePaths, bool storeStack
 
 void Dijkstra::run(node t) {
 
-	DEBUG("initializing Dijkstra data structures");
+	TRACE("initializing Dijkstra data structures");
 	// init distances
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	distances.clear();
@@ -49,10 +49,10 @@ void Dijkstra::run(node t) {
 				previous[v] = {u}; // new predecessor on shortest path
 				npaths[v] = npaths[u];
 			}
-			DEBUG("Decreasing key of ", v);
-			DEBUG("pq size: ", pq.size());
+			TRACE("Decreasing key of ", v);
+			TRACE("pq size: ", pq.size());
 			pq.decreaseKey(distances[v], v);
-			DEBUG("pq size: ", pq.size());
+			TRACE("pq size: ", pq.size());
 		} else if (storePaths && (distances[v] == distances[u] + w)) {
 			previous[v].push_back(u); 	// additional predecessor
 			npaths[v] += npaths[u]; 	// all the shortest paths to u are also shortest paths to v now
@@ -60,12 +60,12 @@ void Dijkstra::run(node t) {
 	});
 
 	bool breakWhenFound = (t != none);
-	DEBUG("traversing graph");
+	TRACE("traversing graph");
 	while (pq.size() > 0) {
-		DEBUG("pq size: ", pq.size());
+		TRACE("pq size: ", pq.size());
 		node current = pq.extractMin().second;
 		TRACE("current node in Dijkstra: " , current);
-		DEBUG("pq size: ", pq.size());
+		TRACE("pq size: ", pq.size());
 		if (breakWhenFound && t == current) {
 			break;
 		}
@@ -120,7 +120,7 @@ void Dijkstra::runUntil(node t) {
 	});
 
 
-	DEBUG("traversing graph");
+	TRACE("traversing graph");
 	while (pq.size() > 0) {
 //		DEBUG("pq size: ", pq.size());
 
