@@ -236,21 +236,41 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
                 if (distances[s][t] == distances[s][u] + w + distances[v][t]){
                     npaths[s][t] = npaths[s][t] + npaths[s][u] * npaths[v][t];
                     if (storePreds) {
-                        if (t != v)
-                            predecessors[s][t].insert(predecessors[v][t].end(), predecessors[v][t].begin(), predecessors[s][t].end());
-                        else
+                        if (t != v){
+                            DEBUG("Adding predecessors from v to t to predecessors from s to t");
+                            //predecessors[s][t].insert( predecessors[s][t].end(), predecessors[v][t].begin(), predecessors[v][t].end());
+                            for (node pv : predecessors[v][t]) {
+                                bool wasAlreadyPred = false;
+                                for (node ps : predecessors[s][t]) {
+                                    if (ps == pv)
+                                        wasAlreadyPred = true;
+                                }
+                                if (!wasAlreadyPred)
+                                    predecessors[s][t].push_back(pv);
+                            }
+                            DEBUG("Finished adding");
+                        }
+                        else {
+                            DEBUG("Adding u to the predecessors of v");
                             predecessors[s][t].push_back(u);
+                            DEBUG("Finished adding");
+                        }
                     }
                 }
                 if (distances[s][t] > distances[s][u] + w + distances[v][t]){
                     distances[s][t] = distances[s][u] + w + distances[v][t];
                     npaths[s][t] = npaths[s][u] * npaths[v][t];
                     if (storePreds) {
-                        if (t != v)
+                        if (t != v) {
+                            DEBUG("Replacing predecessors from v to t with predecessors from s to t");
                             predecessors[s][t] = predecessors[v][t];
+                            DEBUG("Finished replacing");
+                        }
                         else {
+                            DEBUG("Replacing old predecessors of v with u");
                             predecessors[s][t].clear();
                             predecessors[s][t].push_back(u);
+                            DEBUG("Finished replacing");
                         }
                     }
                 }
@@ -267,6 +287,7 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
             // extract the node with the maximum distance
             node t = S.extractMin().second;
             if (storePreds) {
+                DEBUG("Computing dependencies");
                 for (node p : predecessors[s][t]) {
                     dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
                 }
