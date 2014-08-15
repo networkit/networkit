@@ -23,7 +23,7 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsTrivial) {
 	g.indexEdges();
 
 	ChibaNishizekiTriangleCounter counter;
-	EdgeAttribute counts = counter.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<int> counts = counter.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	EXPECT_DOUBLE_EQ(1.0, (counts[g.edgeId(0,1)])) << "wrong triangle count";
 	EXPECT_DOUBLE_EQ(1.0, (counts[g.edgeId(0,2)])) << "wrong triangle count";
@@ -51,7 +51,7 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsSimple) {
 	EXPECT_EQ(8, g.numberOfEdges()) << "wrong edge count";
 
 	ChibaNishizekiTriangleCounter counter;
-	EdgeAttribute counts = counter.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<int> counts = counter.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	EXPECT_EQ(6, g.numberOfNodes()) << "undesired side effect";
 	EXPECT_EQ(8, g.numberOfEdges()) << "undesired side effect";

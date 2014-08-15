@@ -48,7 +48,7 @@ TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 	g.indexEdges();
 
 	LocalSimilarityAttributizer localSim;
-	EdgeAttribute exp = localSim.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<double> exp = localSim.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	EXPECT_DOUBLE_EQ(0.0, exp[g.edgeId(0, 1)]);
 	EXPECT_DOUBLE_EQ(0.0, exp[g.edgeId(0, 2)]);
