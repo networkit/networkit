@@ -109,6 +109,8 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
             // one-level update
             if (difference == 1) {
                 l_queues[distances[s][u_l]].push(u_l);
+                if (storePreds)
+                    predecessors[s][u_l].push_back(u_h);
                 new_npaths[u_l] += npaths[s][u_h];
                 touched[u_l] = -1;
                 // BFS traversal from u_l
@@ -134,12 +136,19 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
                 while (!queue_BFS.empty()) {
                     node v = queue_BFS.front();
                     DEBUG("extracted node ",v);
+                    if (storePreds) {
+                        predecessors[s][v].clear();
+                    }
                     queue_BFS.pop();
                     touched[v] = -1;
                     new_npaths[v] = 0;
                     G.forNeighborsOf(v, [&] (node w){
-                            if (new_dist[w] + 1 == new_dist[v])
+                            if (new_dist[w] + 1 == new_dist[v]) {
                                 new_npaths[v] += new_npaths[w];
+                                if (storePreds) {
+                                    predecessors[s][v].push_back(w);
+                                }
+                            }
                             if (new_dist[w] >= new_dist[v] && touched[w] == 0) {
                                 if (new_dist[w] > new_dist[v])
                                     new_dist[w] = new_dist[v]+1;
@@ -158,7 +167,7 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
                     node w = l_queues[level].front();
                     DEBUG("Node ",w);
                     l_queues[level].pop();
-                    G.forNeighborsOf(w, [&](node v){
+                    auto updateDependency = [&](node w, node v) {
                         if (new_dist[v] < new_dist[w]) {
                             if (touched[v] == 0) {
                                 touched[v] = 1;
@@ -172,7 +181,17 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
                                 new_dep[v] -= old_contrib;
                             DEBUG("Parent ", v);
                         }
-                    });
+                    };
+                    if (storePreds) {
+                        for (node v : predecessors[s][w]) {
+                            updateDependency(w, v);
+                        }
+                    }
+                    else {
+                        G.forNeighborsOf(w, [&](node v){
+                            updateDependency(w, v);
+                        });
+                    }
                     if (w != s) {
                         scoreData[w] = scoreData[w] + new_dep[w] - dependencies[s][w];
                     }
@@ -236,21 +255,41 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
                 if (distances[s][t] == distances[s][u] + w + distances[v][t]){
                     npaths[s][t] = npaths[s][t] + npaths[s][u] * npaths[v][t];
                     if (storePreds) {
-                        if (t != v)
-                            predecessors[s][t].insert(predecessors[v][t].end(), predecessors[v][t].begin(), predecessors[s][t].end());
-                        else
+                        if (t != v){
+                            DEBUG("Adding predecessors from v to t to predecessors from s to t");
+                            //predecessors[s][t].insert( predecessors[s][t].end(), predecessors[v][t].begin(), predecessors[v][t].end());
+                            for (node pv : predecessors[v][t]) {
+                                bool wasAlreadyPred = false;
+                                for (node ps : predecessors[s][t]) {
+                                    if (ps == pv)
+                                        wasAlreadyPred = true;
+                                }
+                                if (!wasAlreadyPred)
+                                    predecessors[s][t].push_back(pv);
+                            }
+                            DEBUG("Finished adding");
+                        }
+                        else {
+                            DEBUG("Adding u to the predecessors of v");
                             predecessors[s][t].push_back(u);
+                            DEBUG("Finished adding");
+                        }
                     }
                 }
                 if (distances[s][t] > distances[s][u] + w + distances[v][t]){
                     distances[s][t] = distances[s][u] + w + distances[v][t];
                     npaths[s][t] = npaths[s][u] * npaths[v][t];
                     if (storePreds) {
-                        if (t != v)
+                        if (t != v) {
+                            DEBUG("Replacing predecessors from v to t with predecessors from s to t");
                             predecessors[s][t] = predecessors[v][t];
+                            DEBUG("Finished replacing");
+                        }
                         else {
+                            DEBUG("Replacing old predecessors of v with u");
                             predecessors[s][t].clear();
                             predecessors[s][t].push_back(u);
+                            DEBUG("Finished replacing");
                         }
                     }
                 }
@@ -267,6 +306,7 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
             // extract the node with the maximum distance
             node t = S.extractMin().second;
             if (storePreds) {
+                DEBUG("Computing dependencies");
                 for (node p : predecessors[s][t]) {
                     dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
                 }
