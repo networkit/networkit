@@ -284,6 +284,92 @@ TEST_F(DynBetweennessGTest, testCorrectnessDynExactBetweenness) {
 	}
 }
 
+inline bool logically_equal(double a, double b, double error_factor=1.0) {
+	return a==b || std::abs(a-b)<std::abs(std::min(a,b))*std::numeric_limits<double>::epsilon()*error_factor;
+}
+
+TEST_F(DynBetweennessGTest, compareAffectedVertices) {
+	METISGraphReader reader;
+	DorogovtsevMendesGenerator generator(100);
+	Graph G = generator.generate();
+	DynBetweenness dynbc = DynBetweenness(G, true);
+	dynbc.run();
+	std::vector<std::vector<edgeweight>> dist1;
+	std::vector<std::vector<double>> dep1;
+	std::vector<std::vector<count>> npaths1;
+	dist1.resize(G.upperNodeIdBound());
+	dep1.resize(G.upperNodeIdBound());
+	npaths1.resize(G.upperNodeIdBound());
+	G.forNodes([&] (node s){
+		dist1[s].resize(G.upperNodeIdBound());
+		dep1[s].resize(G.upperNodeIdBound());
+		npaths1[s].resize(G.upperNodeIdBound());
+		G.forNodes([&] (node t){
+			dist1[s][t] = dynbc.distance(s, t);
+			dep1[s][t] = dynbc.dependency(s, t);
+			npaths1[s][t] = dynbc.nPaths(s, t);
+		});
+	});
+	DEBUG("Before the edge insertion: ");
+	GraphEvent ev;
+	count nInsertions = 10, i = 0;
+	while (i < nInsertions) {
+		node v1 = Sampling::randomNode(G);
+		node v2 = Sampling::randomNode(G);
+		if (v1 != v2 && !G.hasEdge(v1, v2)) {
+			i++;
+			G.addEdge(v1, v2);
+			ev = GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0);
+			dynbc.update(ev);
+			std::vector<std::vector<edgeweight>> dist2;
+			std::vector<std::vector<double>> dep2;
+			std::vector<std::vector<count>> npaths2;
+			dist2.resize(G.upperNodeIdBound());
+			dep2.resize(G.upperNodeIdBound());
+			npaths2.resize(G.upperNodeIdBound());
+			G.forNodes([&] (node s){
+				dist2[s].resize(G.upperNodeIdBound());
+				dep2[s].resize(G.upperNodeIdBound());
+				npaths2[s].resize(G.upperNodeIdBound());
+				G.forNodes([&] (node t){
+					dist2[s][t] = dynbc.distance(s, t);
+					dep2[s][t] = dynbc.dependency(s, t);
+					npaths2[s][t] = dynbc.nPaths(s, t);
+				});
+			});
+			// compare the old distances, number of shortest paths and dependencies with the new ones
+			int diff_dep = 0;
+			int diff_dist = 0;
+			G.forNodes([&] (node s){
+				G.forNodes([&] (node t){
+					if (!logically_equal(dist1[s][t], dist2[s][t]) || !logically_equal(npaths1[s][t], npaths2[s][t])) {
+						diff_dist ++;
+					}
+					if (!logically_equal(dep1[s][t], dep2[s][t])) {
+						diff_dep ++;
+					}
+				});
+			});
+			std::cout<<"Diff_dist: "<<diff_dist<<std::endl;
+			std::cout<<"Diff_dep: "<<diff_dep<<std::endl;
+		}
+	}
+}
+
+TEST_F(DynBetweennessGTest, testApproxBetweenness) {
+	METISGraphReader reader;
+	DorogovtsevMendesGenerator generator(1000);
+	Graph G1 = generator.generate();
+	Graph G = Graph(G1, true, false);
+	ApproxBetweenness bc(G, 0.1, 0.1);
+	bc.run();
+	DEBUG("Number of samples: ", bc.numberOfSamples());
+	ApproxBetweenness bc1(G1, 0.1, 0.1);
+	bc1.run();
+	DEBUG("Number of samples: ", bc1.numberOfSamples());
+}
+
+
 TEST_F(DynBetweennessGTest, testWeightedDynExactBetweenness) {
 	METISGraphReader reader;
 	DorogovtsevMendesGenerator generator(1000);

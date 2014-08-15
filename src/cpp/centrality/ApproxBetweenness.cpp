@@ -32,7 +32,6 @@ void ApproxBetweenness::run() {
 
 	double c = 0.5; // universal positive constant - see reference in paper
 
-
 	edgeweight vd = 0;
 	if (diameterSamples == 0) {
 		INFO("estimating vertex diameter pedantically");
