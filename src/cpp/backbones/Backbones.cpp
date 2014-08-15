@@ -107,7 +107,8 @@ Graph SimmelianMultiscaleBackbone::calculate(Graph& g) {
 	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	MultiscaleAttributizer multiscaleAttributizer;
-	std::vector<double> multiscale = multiscaleAttributizer.getAttribute(g, triangles);
+	std::vector<double> multiscale = multiscaleAttributizer.getAttribute(g,
+			std::vector<double>(triangles.begin(), triangles.end()));
 
 	GlobalThresholdFilter filter(alpha, false);
 	return filter.calculate(g, multiscale);

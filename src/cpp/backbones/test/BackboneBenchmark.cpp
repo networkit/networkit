@@ -39,7 +39,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 
 	runtime.start();
 	SimmelianBackboneParametric algSBP(10, 5);
-	Graph B = algSBP.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
+	Graph B = algSBP.calculate(G);
 
 	runtime.stop();
 	INFO("[DONE] completeGraphSimmelianBackboneParametric (" , runtime.elapsed().count() , " ms)");
@@ -55,7 +55,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 
 	runtime.start();
 	SimmelianBackboneNonParametric algSBNP(0.5);
-	Graph B = algSBNP.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
+	Graph B = algSBNP.calculate(G);
 
 	runtime.stop();
 	INFO("[DONE] SimmelianBackboneNonParametric (" , runtime.elapsed().count() , " ms)");
@@ -71,7 +71,7 @@ TEST_F(BackboneBenchmark, completeGraphMultiscaleBackbone) {
 
 	runtime.start();
 	MultiscaleBackbone algMB(0.5);
-	Graph B = algMB.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
+	Graph B = algMB.calculate(G);
 
 	runtime.stop();
 	INFO("[DONE] MultiscaleBackbone (" , runtime.elapsed().count() , " ms)");
@@ -87,7 +87,7 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 
 	runtime.start();
 	LocalSimilarityBackbone algLSB(0.5);
-	Graph B = algLSB.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
+	Graph B = algLSB.calculate(G);
 
 	runtime.stop();
 	INFO("[DONE] LocalSimilarityBackbone (" , runtime.elapsed().count() , " ms)");
@@ -103,7 +103,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianMultiscaleBackbone) {
 
 	runtime.start();
 	SimmelianMultiscaleBackbone algSMB(0.5);
-	Graph B = algSMB.calculate(G, EdgeAttribute(G.upperEdgeIdBound()));
+	Graph B = algSMB.calculate(G);
 
 	runtime.stop();
 	INFO("[DONE] SimmelianMultiscaleBackbone (" , runtime.elapsed().count() , " ms)");
@@ -135,7 +135,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	std::cout << "[BEGIN] triangle counting: " << std::endl;
 	runtime.start();
 	ChibaNishizekiTriangleCounter triangleAttributizer;
-	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(0));
 	runtime.stop();
 	std::cout << "[DONE] triangle counting " << runtime.elapsedTag() << std::endl;
 
@@ -143,7 +143,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	std::cout << "[BEGIN] multiscale attribute: " << std::endl;
 	runtime.start();
 	MultiscaleAttributizer multiscaleAttributizer;
-	EdgeAttribute multiscale = multiscaleAttributizer.getAttribute(g, triangles);
+	std::vector<double> multiscale = multiscaleAttributizer.getAttribute(g, std::vector<double>(triangles.begin(), triangles.end()));
 	runtime.stop();
 	std::cout << "[DONE] multiscale attribute " << runtime.elapsedTag() << std::endl;
 
@@ -158,7 +158,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	std::cout << "[BEGIN] Simmelian Jaccard attribute: " << std::endl;
 	runtime.start();
 	SimmelianJaccardAttributizer jaccardAttributizer;
-	EdgeAttribute jaccard = jaccardAttributizer.getAttribute(g, triangles);
+	std::vector<double> jaccard = jaccardAttributizer.getAttribute(g, triangles);
 	runtime.stop();
 	std::cout << "[DONE] Simmelian Jaccard attribute " << runtime.elapsedTag() << std::endl;
 
@@ -173,7 +173,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	std::cout << "[BEGIN] Simmelian Overlap attribute: " << std::endl;
 	runtime.start();
 	SimmelianOverlapAttributizer overlapAttributizer(10);
-	EdgeAttribute overlap = overlapAttributizer.getAttribute(g, triangles);
+	std::vector<double> overlap = overlapAttributizer.getAttribute(g, triangles);
 	runtime.stop();
 	std::cout << "[DONE] Simmelian Overlap attribute " << runtime.elapsedTag() << std::endl;
 
@@ -188,7 +188,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	std::cout << "[BEGIN] Local Similarity attribute: " << std::endl;
 	runtime.start();
 	LocalSimilarityAttributizer localSimAttributizer;
-	EdgeAttribute minExponent = localSimAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, std::vector<int>());
 	runtime.stop();
 	std::cout << "[DONE] Local Similarity attribute " << runtime.elapsedTag() << std::endl;
 

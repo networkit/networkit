@@ -71,7 +71,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 
 	//Apply triangle counting algorithm
 	ChibaNishizekiTriangleCounter counter;
-	EdgeAttribute triangles = counter.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<int> triangles = counter.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	//Actual test: ranked neighborhood
 	SimmelianJaccardAttributizer simmel;
@@ -111,7 +111,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 
 	//Apply triangle counting algorithm
 	ChibaNishizekiTriangleCounter counter;
-	EdgeAttribute triangles = counter.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<int> triangles = counter.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	//Actual test: ranked neighborhood
 	SimmelianJaccardAttributizer simmel;
@@ -166,11 +166,8 @@ TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {
 	g.addEdge(5,1);
 	g.indexEdges();
 
-	ChibaNishizekiTriangleCounter counter;
-	EdgeAttribute triangleCounts = counter.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
-
 	SimmelianBackboneParametric simmel(2, 1);
-	Graph b = simmel.calculate(g, triangleCounts);
+	Graph b = simmel.calculate(g);
 
 	EXPECT_EQ(20, b.numberOfEdges());
 
@@ -193,12 +190,9 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 	g.addEdge(1,2);
 	g.indexEdges();
 
-	ChibaNishizekiTriangleCounter counter;
-	EdgeAttribute triangleCounts = counter.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
-
 	//Parametric
 	SimmelianBackboneParametric simmel(1, 0);
-	Graph b = simmel.calculate(g, triangleCounts);
+	Graph b = simmel.calculate(g);
 	EXPECT_EQ(3, b.numberOfEdges()) << "wrong edge count in backbone";
 	EXPECT_EQ(5, b.numberOfNodes()) << "wrong node count in backbone";
 }
@@ -208,12 +202,9 @@ TEST_F(SimmelianBackboneGTest, testBackboneConnectedGraph) {
 	Graph g = graphGen.makeCompleteGraph(25);
 	g.indexEdges();
 
-	ChibaNishizekiTriangleCounter counter;
-	EdgeAttribute triangleCounts = counter.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
-
 	//Parametric
 	SimmelianBackboneParametric simmel(25, 5);
-	Graph b = simmel.calculate(g, triangleCounts);
+	Graph b = simmel.calculate(g);
 	EXPECT_EQ(300, b.numberOfEdges()) << "wrong edge count in backbone";
 }
 
