@@ -87,14 +87,20 @@ Graph GraphBuilder::toGraphParallel() {
 
 	parallelForNodes([&](node v) {
 		int tid = omp_get_thread_num();
-		for (node u : halfEdges[v]) {
-			inEdgesPerThread[tid][u].push_back(v);
-		}
 		if (weighted) {
 			for (index i = 0; i < halfEdges[v].size(); i++) {
 				node u = halfEdges[v][i];
-				edgeweight ew = halfEdgeWeights[v][i];
-				inWeightsPerThread[tid][u].push_back(ew);
+				if (directed || u != v) { // self loops don't need to be added twice in undirected graphs
+					edgeweight ew = halfEdgeWeights[v][i];
+					inEdgesPerThread[tid][u].push_back(v);
+					inWeightsPerThread[tid][u].push_back(ew);
+				}
+			}
+		} else {
+			for (node u : halfEdges[v]) {
+				if (directed || u != v) { // self loops don't need to be added twice in undirected graphs
+					inEdgesPerThread[tid][u].push_back(v);
+				}
 			}
 		}
 	});
@@ -197,7 +203,11 @@ Graph GraphBuilder::toGraphSequential() {
 	G.forNodes([&](node v) {
 		// increase count of incoming edges for all neighbors
 		for (node u : G.outEdges[v]) {
-			missingEdgesCounts[u]++;
+			if (directed || u != v) {
+				missingEdgesCounts[u]++;
+			} else {
+				// self loops don't need to be added again
+			}
 		}
 	});
 
@@ -240,10 +250,14 @@ Graph GraphBuilder::toGraphSequential() {
 			// we are adding after G.outDeg[v]
 			for (index i = 0; i < G.outDeg[v]; i++) {
 				node u = G.outEdges[v][i];
-				G.outEdges[u].push_back(v);
-				if (weighted) {
-					edgeweight ew = G.outEdgeWeights[v][i];
-					G.outEdgeWeights[u].push_back(ew);
+				if (u != v) {
+					G.outEdges[u].push_back(v);
+					if (weighted) {
+						edgeweight ew = G.outEdgeWeights[v][i];
+						G.outEdgeWeights[u].push_back(ew);
+					}
+				} else {
+					// ignore self loops here
 				}
 			}
 		});
