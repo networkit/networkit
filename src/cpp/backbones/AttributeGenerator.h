@@ -96,10 +96,10 @@ public:
 	 */
 	virtual std::vector<TOutput> getAttribute(const Graph& g, const std::vector<TInput>& attribute) = 0;
 
-	/** only to be used by cython - this eliminates an unnecessary copy */
-	/*std::vector<TOutput>* _getAttribute(Graph& g, std::vector<TInput>& attribute) {
+	std::vector<TOutput>* _getAttribute(Graph& g, std::vector<TInput>& attribute) {
 		return new std::vector<TOutput>{std::move(getAttribute(g, attribute))};
-	};*/
+	};
+
 };
 
 }
