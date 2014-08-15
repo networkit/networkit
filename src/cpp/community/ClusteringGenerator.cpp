@@ -76,4 +76,17 @@ Partition ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count 
 	return clustering;
 }
 
+Partition ClusteringGenerator::makeNoncontinuousBalancedClustering(Graph &G, count k) {
+	Partition clustering(G.upperNodeIdBound());
+	clustering.setUpperBound(k);
+
+	count i = 0;
+	G.forNodes([&](node u) {
+		clustering[u] = i % k;
+		++i;
+	});
+
+	return clustering;
+}
+
 } /* namespace NetworKit */

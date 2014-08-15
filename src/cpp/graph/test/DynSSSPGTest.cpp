@@ -5,10 +5,10 @@
  *      Author: ebergamini
  */
 
-#include "dynSSSPGTest.h"
-#include "../dynBFS.h"
+#include "DynSSSPGTest.h"
+#include "../DynBFS.h"
 #include "../BFS.h"
-#include "../dynDijkstra.h"
+#include "../DynDijkstra.h"
 #include "../Dijkstra.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"

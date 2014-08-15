@@ -9,6 +9,4 @@
 
 namespace NetworKit {
 
-
-
 } /* namespace NetworKit */

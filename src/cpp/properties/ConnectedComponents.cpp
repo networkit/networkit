@@ -26,12 +26,12 @@ void ConnectedComponents::run() {
 	// perform breadth-first searches
 	G.forNodes([&](node u) {
 		if (component[u] == none) {
-			component.toSingleton(u);
-			index c = component[u];
-			assert (component[u] != none);
+			component.setUpperBound(numComponents+1);
+			index c = numComponents;
 			G.BFSfrom(u, [&](node v, count dist) {
 				component[v] = c;
 			});
+			assert (component[u] != none);
 			++numComponents;
 		}
 	});

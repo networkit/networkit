@@ -43,7 +43,7 @@ public:
 	 * @param[in]	G	input graph
 	 * @return			clustering
 	 */
-	virtual Partition run(Graph& G);
+	virtual Partition run(const Graph& G);
 
 	/**
 	 * Run the label propagation clustering algorithm, cluster
@@ -53,7 +53,7 @@ public:
 	 * @param[in]	part input partition
 	 * @return			clustering
 	 */
-	virtual Partition& runFromGiven(Graph& G, Partition& part);
+	virtual Partition& runFromGiven(const Graph& G, Partition& part);
 
 	/**
 	 * @return String representation of algorithm and parameters.
