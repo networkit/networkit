@@ -39,6 +39,15 @@ public:
     */
     void update(GraphEvent e);
 
+
+    edgeweight distance(node s, node t) const;
+
+    double dependency(node s, node t) const;
+
+    count nPaths(node s, node t) const;
+
+
+
 protected:
     void updateWeighted(GraphEvent e);
     void updateUnweighted(GraphEvent e);
@@ -49,6 +58,18 @@ protected:
     bool storePreds = false;
     std::vector<std::vector<std::vector<node>>> predecessors;
 };
+
+inline edgeweight DynBetweenness::distance(node s, node t) const {
+    return distances[s][t];
+}
+
+inline double DynBetweenness::dependency(node s, node t) const {
+    return dependencies[s][t];
+}
+
+inline count DynBetweenness::nPaths(node s, node t) const {
+    return npaths[s][t];
+}
 
 } /* namespace NetworKit */
 

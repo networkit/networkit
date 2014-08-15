@@ -213,7 +213,15 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 			return estimateFrom(G.randomNode());
 		}
 	} else {
-		count largest_comp_size = cc.getComponentSizes()[1];
+		DEBUG("Estimating size of the largest component");
+		std::map<count, count> sizes = cc.getComponentSizes();
+		count largest_comp_size = 0;
+		for(auto it = sizes.cbegin(); it != sizes.cend(); ++it) {
+			DEBUG(it->second);
+			if (it->second > largest_comp_size) {
+				largest_comp_size = it->second;
+			}
+		}
 		return largest_comp_size;
 	}
 
