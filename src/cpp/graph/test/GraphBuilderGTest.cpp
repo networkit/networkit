@@ -42,6 +42,8 @@ GraphBuilder GraphBuilderGTest::createGraphBuilder(count n) const {
 	return b;
 }
 
+Graph GraphBuilderGTest::toGraph(GraphBuilder& b) const { return b.toGraph(useParallel()); };
+
 void GraphBuilderGTest::SetUp() {
 	/*
 	 *    0
@@ -89,15 +91,13 @@ void GraphBuilderGTest::SetUp() {
 			ew += 1.0;
 		}
 	}
-
-	Ghouse = bHouse.toGraph(useParallel());
 }
 
 TEST_P(GraphBuilderGTest, testEmptyGraph) {
 	GraphBuilder b = createGraphBuilder();
 	ASSERT_EQ(0u, b.numberOfNodes());
 
-	Graph G = b.toGraph(useParallel());
+	Graph G = toGraph(b);
 
 	ASSERT_EQ(0u, G.numberOfNodes());
 	ASSERT_EQ(0u, G.numberOfEdges());
@@ -114,7 +114,7 @@ TEST_P(GraphBuilderGTest, testAddNode) {
 	b.addNode();
 	ASSERT_EQ(3u, b.numberOfNodes());
 
-	Graph G = b.toGraph(useParallel());
+	Graph G = toGraph(b);
 
 	ASSERT_TRUE(G.hasNode(0));
 	ASSERT_TRUE(G.hasNode(1));
@@ -129,50 +129,53 @@ TEST_P(GraphBuilderGTest, testAddNode) {
 /** NODE PROPERTIES **/
 
 TEST_P(GraphBuilderGTest, testDegree) {
+	Graph Ghouse = toGraph(this->bHouse);
 	if (isDirected()) {
-		ASSERT_EQ(1u, this->Ghouse.degree(0));
-		ASSERT_EQ(2u, this->Ghouse.degree(1));
-		ASSERT_EQ(2u, this->Ghouse.degree(2));
-		ASSERT_EQ(2u, this->Ghouse.degree(3));
-		ASSERT_EQ(1u, this->Ghouse.degree(4));
+		ASSERT_EQ(1u, Ghouse.degree(0));
+		ASSERT_EQ(2u, Ghouse.degree(1));
+		ASSERT_EQ(2u, Ghouse.degree(2));
+		ASSERT_EQ(2u, Ghouse.degree(3));
+		ASSERT_EQ(1u, Ghouse.degree(4));
 	} else {
-		ASSERT_EQ(2u, this->Ghouse.degree(0));
-		ASSERT_EQ(4u, this->Ghouse.degree(1));
-		ASSERT_EQ(4u, this->Ghouse.degree(2));
-		ASSERT_EQ(3u, this->Ghouse.degree(3));
-		ASSERT_EQ(3u, this->Ghouse.degree(4));
+		ASSERT_EQ(2u, Ghouse.degree(0));
+		ASSERT_EQ(4u, Ghouse.degree(1));
+		ASSERT_EQ(4u, Ghouse.degree(2));
+		ASSERT_EQ(3u, Ghouse.degree(3));
+		ASSERT_EQ(3u, Ghouse.degree(4));
 	}
 }
 
 TEST_P(GraphBuilderGTest, testDegreeIn) {
+	Graph Ghouse = toGraph(this->bHouse);
 	if (isDirected()) {
-		ASSERT_EQ(1u, this->Ghouse.degreeIn(0));
-		ASSERT_EQ(2u, this->Ghouse.degreeIn(1));
-		ASSERT_EQ(2u, this->Ghouse.degreeIn(2));
-		ASSERT_EQ(1u, this->Ghouse.degreeIn(3));
-		ASSERT_EQ(2u, this->Ghouse.degreeIn(4));
+		ASSERT_EQ(1u, Ghouse.degreeIn(0));
+		ASSERT_EQ(2u, Ghouse.degreeIn(1));
+		ASSERT_EQ(2u, Ghouse.degreeIn(2));
+		ASSERT_EQ(1u, Ghouse.degreeIn(3));
+		ASSERT_EQ(2u, Ghouse.degreeIn(4));
 	} else {
-		ASSERT_EQ(2u, this->Ghouse.degreeIn(0));
-		ASSERT_EQ(4u, this->Ghouse.degreeIn(1));
-		ASSERT_EQ(4u, this->Ghouse.degreeIn(2));
-		ASSERT_EQ(3u, this->Ghouse.degreeIn(3));
-		ASSERT_EQ(3u, this->Ghouse.degreeIn(4));
+		ASSERT_EQ(2u, Ghouse.degreeIn(0));
+		ASSERT_EQ(4u, Ghouse.degreeIn(1));
+		ASSERT_EQ(4u, Ghouse.degreeIn(2));
+		ASSERT_EQ(3u, Ghouse.degreeIn(3));
+		ASSERT_EQ(3u, Ghouse.degreeIn(4));
 	}
 }
 
 TEST_P(GraphBuilderGTest, testDegreeOut) {
+	Graph Ghouse = toGraph(this->bHouse);
 	if (isDirected()) {
-		ASSERT_EQ(1u, this->Ghouse.degreeOut(0));
-		ASSERT_EQ(2u, this->Ghouse.degreeOut(1));
-		ASSERT_EQ(2u, this->Ghouse.degreeOut(2));
-		ASSERT_EQ(2u, this->Ghouse.degreeOut(3));
-		ASSERT_EQ(1u, this->Ghouse.degreeOut(4));
+		ASSERT_EQ(1u, Ghouse.degreeOut(0));
+		ASSERT_EQ(2u, Ghouse.degreeOut(1));
+		ASSERT_EQ(2u, Ghouse.degreeOut(2));
+		ASSERT_EQ(2u, Ghouse.degreeOut(3));
+		ASSERT_EQ(1u, Ghouse.degreeOut(4));
 	} else {
-		ASSERT_EQ(2u, this->Ghouse.degreeOut(0));
-		ASSERT_EQ(4u, this->Ghouse.degreeOut(1));
-		ASSERT_EQ(4u, this->Ghouse.degreeOut(2));
-		ASSERT_EQ(3u, this->Ghouse.degreeOut(3));
-		ASSERT_EQ(3u, this->Ghouse.degreeOut(4));
+		ASSERT_EQ(2u, Ghouse.degreeOut(0));
+		ASSERT_EQ(4u, Ghouse.degreeOut(1));
+		ASSERT_EQ(4u, Ghouse.degreeOut(2));
+		ASSERT_EQ(3u, Ghouse.degreeOut(3));
+		ASSERT_EQ(3u, Ghouse.degreeOut(4));
 	}
 }
 
@@ -186,7 +189,7 @@ TEST_P(GraphBuilderGTest, testAddEdge) {
 	b.addEdge(0, 1, 4.51);
 	b.addEdge(1, 2, 2.39);
 
-	Graph G = b.toGraph(useParallel());
+	Graph G = toGraph(b);
 
 	ASSERT_EQ(2u, G.numberOfEdges());
 	ASSERT_FALSE(G.hasEdge(0, 2)); // was never added
@@ -231,26 +234,32 @@ TEST_P(GraphBuilderGTest, testAddEdge) {
 }
 
 
-// /** GLOBAL PROPERTIES **/
+/** GLOBAL PROPERTIES **/
 
 TEST_P(GraphBuilderGTest, testIsWeighted) {
-	ASSERT_EQ(isWeighted(), this->Ghouse.isWeighted());
+	ASSERT_EQ(isWeighted(), this->bHouse.isWeighted());
+	Graph Ghouse = toGraph(this->bHouse);
+	ASSERT_EQ(isWeighted(), Ghouse.isWeighted());
 }
 
 TEST_P(GraphBuilderGTest, testIsDirected) {
-	ASSERT_EQ(isDirected(), this->Ghouse.isDirected());
+	ASSERT_EQ(isDirected(), this->bHouse.isDirected());
+	Graph Ghouse = toGraph(this->bHouse);
+	ASSERT_EQ(isDirected(), Ghouse.isDirected());
 }
 
 TEST_P(GraphBuilderGTest, testNumberOfSelfLoops) {
 	GraphBuilder b = createGraphBuilder(3);
 	b.addEdge(0, 1);
 	b.addEdge(0, 0);
-	Graph G = b.toGraph(useParallel());
+	Graph G = toGraph(b);
 	ASSERT_EQ(1u, G.numberOfSelfLoops());
 }
 
 TEST_P(GraphBuilderGTest, testUpperNodeIdBound) {
-	ASSERT_EQ(5u, this->Ghouse.upperNodeIdBound());
+	ASSERT_EQ(5u, this->bHouse.upperNodeIdBound());
+	Graph Ghouse = toGraph(this->bHouse);
+	ASSERT_EQ(5u, Ghouse.upperNodeIdBound());
 }
 
 
@@ -275,8 +284,8 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 		b.addEdge(8, 8, 2.5);
 		b.setWeight(8, 8, 3.14);
 
-		Graph G = b.toGraph(useParallel());
-		
+		Graph G = toGraph(b);
+
 		// edges should get weight defaultWeight on creation and setWeight should overwrite this
 		ASSERT_EQ(defaultEdgeWeight, G.weight(0, 1));
 		ASSERT_EQ(2.718, G.weight(1, 2));
@@ -312,102 +321,89 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 }
 
 
-// /** Collections **/
+/** toGraph **/
 
-// TEST_P(GraphBuilderGTest, testNodes) {
-// 	GraphBuilder b = createGraphBuilder(3);
-// 	G.addNode();
-// 	G.removeNode(2);
-// 	G.addNode();
-// 	auto nodes = G.nodes();
+TEST_P(GraphBuilderGTest, testSameAsGraph) {
+	FAIL();
+}
 
-// 	auto containsNode = [&nodes](node v) {
-// 		return std::find(nodes.begin(), nodes.end(), v) != nodes.end();
-// 	};
+TEST_P(GraphBuilderGTest, testForValidStateAfterToGraph) {
+	Graph Ghouse = toGraph(this->bHouse);
 
-// 	ASSERT_EQ(G.numberOfNodes(), nodes.size());
-// 	for (node v : nodes) {
-// 		ASSERT_TRUE(containsNode(v));
-// 	}
-// }
+	ASSERT_TRUE(this->bHouse.isEmpty());
+	ASSERT_EQ(0u, this->bHouse.numberOfNodes());
+	ASSERT_EQ(0u, this->bHouse.upperNodeIdBound());
+	ASSERT_EQ(isWeighted(), this->bHouse.isWeighted());
+	ASSERT_EQ(isDirected(), this->bHouse.isDirected());
+	this->bHouse.forNodes([&](node v) {
+		FAIL();
+	});
 
-// TEST_P(GraphBuilderGTest, testNeighbors) {
-// 	auto neighbors = this->Ghouse.neighbors(1);
-// 	auto containsNode = [&neighbors](node v) {
-// 		return std::find(neighbors.begin(), neighbors.end(), v) != neighbors.end();
-// 	};
-// 	if(this->Ghouse.isDirected()){	
-// 		ASSERT_TRUE(containsNode(0));
-// 		ASSERT_TRUE(containsNode(4));
-// 	}else{
-// 		ASSERT_TRUE(containsNode(0));
-// 		ASSERT_TRUE(containsNode(2));
-// 		ASSERT_TRUE(containsNode(3));
-// 		ASSERT_TRUE(containsNode(4));
-// 	}
+	Graph G1 = toGraph(this->bHouse);
+	ASSERT_TRUE(G1.isEmpty());
+	ASSERT_EQ(0u, G1.numberOfNodes());
+	ASSERT_EQ(0u, G1.upperNodeIdBound());
+	ASSERT_EQ(isWeighted(), G1.isWeighted());
+	ASSERT_EQ(isDirected(), G1.isDirected());
 
-// }
+	node v = this->bHouse.addNode();
+	node u = this->bHouse.addNode();
+	this->bHouse.addEdge(v, u, 0.25);
 
-// TEST_P(GraphBuilderGTest, testEdges) {
-// 	// add self-loop
-// 	this->Ghouse.addEdge(3, 3);
-// 	auto isCorrectEdge = [&](node u, node v) {
-// 		if (u == 3 && v == 3) {
-// 			return true;
-// 		}
-// 		auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), std::make_pair(u, v));
-// 		if (it != this->houseEdgesOut.end()) {
-// 			return true;
-// 		} else if (!this->Ghouse.isDirected()) {
-// 			it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), std::make_pair(v, u));
-// 			return it != this->houseEdgesOut.end();
-// 		}
-// 		return false;
-// 	};
+	Graph G2 = toGraph(this->bHouse);
+	ASSERT_FALSE(G2.isEmpty());
+	ASSERT_EQ(2u, G2.numberOfNodes());
+	ASSERT_EQ(1u, G2.numberOfEdges());
+	ASSERT_TRUE(G2.hasEdge(v, u));
+	if (!isDirected()) {
+		ASSERT_TRUE(G2.hasEdge(u, v));
+	}
+	if (isWeighted()) {
+		ASSERT_EQ(0.25, G2.weight(v, u));
+	} else {
+		ASSERT_EQ(1.0, G2.weight(v, u));
+	}
+}
+
+/** NODE ITERATORS **/
+
+TEST_P(GraphBuilderGTest, testForNodes) {
+	GraphBuilder b = createGraphBuilder(3);
+	std::vector<bool> visited(4, false);
+	b.forNodes([&](node v) {
+		ASSERT_FALSE(visited[v]);
+		if (v == 2) {
+			b.addNode();
+		}
+		visited[v] = true;
+	});
+	for (bool x : visited) {
+		ASSERT_TRUE(x);
+	}
+}
+
+TEST_P(GraphBuilderGTest, testParallelForNodes) {
+	std::vector<node> visited;
+	this->bHouse.parallelForNodes([&](node u) {
+		#pragma omp critical
+		visited.push_back(u);
+	});
 	
-// 	auto edges = this->Ghouse.edges();
-// 	ASSERT_EQ(this->m_house + 1, edges.size()); // plus self-loop
-// 	for (auto e : edges) {
-// 		ASSERT_TRUE(isCorrectEdge(e.first, e.second)) << "(" << e.first << ", " << e.second << ") is in edge array, but is not an edge of Ghouse";
-// 	}
-// }
+	std::sort(visited.begin(), visited.end());
 
-// /** NODE ITERATORS **/
+	ASSERT_EQ(5u, visited.size());
+	for (index i = 0; i < this->bHouse.upperNodeIdBound(); i++) {
+		ASSERT_EQ(i, visited[i]);
+	}
+}
 
-// TEST_P(GraphBuilderGTest, testForNodes) {
-// 	GraphBuilder b = createGraphBuilder(3);
-// 	std::vector<bool> visited(4, false);
-// 	G.forNodes([&](node v) {
-// 		ASSERT_FALSE(visited[v]);
-// 		if (v == 2) {
-// 			G.addNode();
-// 		}
-// 		visited[v] = true;
-// 	});
-// 	for (bool b : visited) {
-// 		ASSERT_TRUE(b);
-// 	}
-// }
+TEST_P(GraphBuilderGTest, testForNodePairs) {
+	FAIL();
+}
 
-// TEST_P(GraphBuilderGTest, testParallelForNodes) {
-// 	std::vector<node> visited;
-// 	this->Ghouse.parallelForNodes([&](node u){
-// 		#pragma omp critical
-// 		visited.push_back(u);
-// 	});
-	
-// 	std::sort(visited.begin(), visited.end());
-
-// 	ASSERT_EQ(5u, visited.size());
-// 	for (index i = 0; i < this->Ghouse.upperNodeIdBound(); i++) {
-// 		ASSERT_EQ(i, visited[i]);
-// 	}
-// }
-
-
-
-
-
+TEST_P(GraphBuilderGTest, testParallelForNodePairs) {
+	FAIL();
+}
 
 } /* namespace NetworKit */
 

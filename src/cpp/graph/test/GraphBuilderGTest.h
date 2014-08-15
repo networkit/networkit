@@ -24,7 +24,6 @@ public:
 
 protected:
 	GraphBuilder bHouse;
-	Graph Ghouse;
 	std::vector< std::pair<node, node> > houseEdgesOut;
 	std::vector< std::vector<edgeweight> > Ahouse;
 	count n_house;
@@ -38,7 +37,9 @@ protected:
 	bool isWeighted() const;
 	bool isDirected() const;
 	bool useParallel() const;
+
 	GraphBuilder createGraphBuilder(count n = 0) const;
+	Graph toGraph(GraphBuilder& b) const;
 };
 
 } /* namespace NetworKit */
