@@ -44,10 +44,10 @@ struct greater {
     bool operator()(T const &a, T const &b) const { return a > b; }
 };
 
-/** 
+/**
  * Implementation of the Local Sparsification Algorithm by Sataluri et al.
  */
-class LocalSimilarityAttributizer : public AttributeGenerator {
+class LocalSimilarityAttributizer : public AttributeGenerator<int, double> {
 
 public:
 
@@ -56,7 +56,7 @@ public:
 	 */
 	LocalSimilarityAttributizer();
 
-	EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute);
+	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
 private:
 	//Private helper functions

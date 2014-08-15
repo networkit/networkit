@@ -20,7 +20,7 @@ namespace NetworKit {
  *
  * See "Extracting the multiscale backbone of complex weighted networks" by Serrano et al.
  */
-class MultiscaleAttributizer : public AttributeGenerator {
+class MultiscaleAttributizer : public AttributeGenerator<double, double> {
 
 public:
 
@@ -29,7 +29,7 @@ public:
 	 */
 	MultiscaleAttributizer();
 
-	EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute);
+	std::vector<double> getAttribute(const Graph& graph, const std::vector<double>& attribute);
 
 private:
 	//Private helper functions

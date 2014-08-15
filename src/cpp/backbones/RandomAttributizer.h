@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * Generates a random edge attribute. Each edge is assigned a random value in [0,1].
  */
-class RandomAttributizer : public AttributeGenerator {
+class RandomAttributizer : public AttributeGenerator<int, double> {
 
 public:
 
@@ -25,7 +25,7 @@ public:
 	 */
 	RandomAttributizer();
 
-	EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute);
+	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
 };
 

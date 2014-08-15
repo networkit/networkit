@@ -62,17 +62,17 @@ struct Redundancy {
 	Redundancy(count o, double j) : overlap(o), jaccard(j) { }
 };
 
-/** 
+/**
  * Abstract base class for the two variants of Simmelian backbones (OverlapFilter, JaccardFilter).
  */
-class SimmelianAttributizer : public AttributeGenerator {
+class SimmelianAttributizer : public AttributeGenerator<int, double> {
 
 public:
 
-	virtual EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute) = 0;
+	virtual std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute) = 0;
 
 protected:
-	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const EdgeAttribute& triangles);
+	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const std::vector<int>& triangles);
 
 	Redundancy getOverlap(
 			const node& ego,

@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const Graph& g, const EdgeAttribute& triangles) {
+std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const Graph& g, const std::vector<int>& triangles) {
 	std::vector<RankedNeighbors> neighbors;
 	neighbors.resize(g.upperNodeIdBound());
 

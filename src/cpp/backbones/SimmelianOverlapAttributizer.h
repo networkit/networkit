@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-/** 
+/**
  * Calculates the Simmelian backbone (paramaetric variant) for a given input graph.
  */
 class SimmelianOverlapAttributizer : public SimmelianAttributizer {
@@ -27,7 +27,7 @@ public:
 	 */
 	SimmelianOverlapAttributizer(count maxRank);
 
-	EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute);
+	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
 private:
 	count maxRank;

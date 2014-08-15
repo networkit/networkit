@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-/** 
+/**
  * * Calculates the Simmelian backbone (non-parametric aka jaccard variant) for a given input graph.
  */
 class SimmelianJaccardAttributizer : public SimmelianAttributizer {
@@ -24,7 +24,7 @@ public:
 	 */
 	SimmelianJaccardAttributizer();
 
-	EdgeAttribute getAttribute(const Graph& graph, const EdgeAttribute& attribute);
+	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
 };
 

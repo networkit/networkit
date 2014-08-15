@@ -13,9 +13,9 @@ namespace NetworKit {
 SimmelianOverlapAttributizer::SimmelianOverlapAttributizer(count maxRank) :
 		maxRank(maxRank) {}
 
-EdgeAttribute SimmelianOverlapAttributizer::getAttribute(const Graph& graph, const EdgeAttribute& attribute) {
+std::vector<double> SimmelianOverlapAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, attribute);
-	EdgeAttribute overlapAttribute(graph.upperEdgeIdBound(), 0.0);
+	std::vector<double> overlapAttribute(graph.upperEdgeIdBound(), 0.0);
 
 	graph.forEdges([&](node u, node v, edgeid eid) {
 		Redundancy redundancy = getOverlap(u, v, neighbors, maxRank);

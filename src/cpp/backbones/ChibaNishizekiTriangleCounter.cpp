@@ -11,14 +11,14 @@
 
 namespace NetworKit {
 
-EdgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, const EdgeAttribute& attribute) {
+std::vector<int> ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
 	Graph g = graph;
 
 	//Node attribute: marker
 	std::vector<bool> nodeMarker(graph.upperNodeIdBound(), false);
 
 	//Edge attribute: triangle count
-	EdgeAttribute triangleCount(graph.upperEdgeIdBound(), 0.0);
+	std::vector<int> triangleCount(graph.upperEdgeIdBound(), 0.0);
 
 	g.forNodes([&](node u) {
 		//Mark all neighbors
@@ -34,9 +34,9 @@ EdgeAttribute ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, co
 
 					edgeid eid_uw = graph.edgeId(u, w);
 
-					triangleCount[eid_uv] = triangleCount[eid_uv] + 1.0;
-					triangleCount[eid_uw] = triangleCount[eid_uw] + 1.0;
-					triangleCount[eid_vw] = triangleCount[eid_vw] + 1.0;
+					triangleCount[eid_uv] = triangleCount[eid_uv] + 1;
+					triangleCount[eid_uw] = triangleCount[eid_uw] + 1;
+					triangleCount[eid_vw] = triangleCount[eid_vw] + 1;
 				}
 			});
 
