@@ -27,7 +27,7 @@ public:
 	Graph* _calculate(Graph& g) {
 		return new Graph{std::move(calculate(g))};
 	};
-	
+
 };
 
 } /* namespace NetworKit */
