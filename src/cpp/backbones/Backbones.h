@@ -35,7 +35,7 @@ public:
 	 */
 	SimmelianBackboneNonParametric(double threshold);
 
-	Graph calculate(Graph& graph, const EdgeAttribute& attribute);
+	Graph calculate(Graph& graph);
 
 private:
 	double threshold;
@@ -59,7 +59,7 @@ public:
 		 */
 	SimmelianBackboneParametric(int maxRank, int minOverlap);
 
-	Graph calculate(Graph& graph, const EdgeAttribute& attribute);
+	Graph calculate(Graph& graph);
 
 private:
 	int maxRank;
@@ -82,7 +82,7 @@ public:
 		 */
 	MultiscaleBackbone(double alpha);
 
-	Graph calculate(Graph& graph, const EdgeAttribute& attribute);
+	Graph calculate(Graph& graph);
 
 private:
 	double alpha;
@@ -104,7 +104,7 @@ public:
 		 */
 	LocalSimilarityBackbone(double e);
 
-	Graph calculate(Graph& graph, const EdgeAttribute& attribute);
+	Graph calculate(Graph& graph);
 
 private:
 	double e;
@@ -126,7 +126,7 @@ public:
 		 */
 	SimmelianMultiscaleBackbone(double alpha);
 
-	Graph calculate(Graph& graph, const EdgeAttribute& attribute);
+	Graph calculate(Graph& graph);
 
 private:
 	double alpha;
@@ -150,7 +150,7 @@ public:
 		*/
 	RandomBackbone(double ratio);
 
-	Graph calculate(Graph& graph, const EdgeAttribute& attribute);
+	Graph calculate(Graph& graph);
 
 private:
 	double ratio;

@@ -14,15 +14,15 @@ namespace NetworKit {
 
 LocalSimilarityAttributizer::LocalSimilarityAttributizer() {}
 
-EdgeAttribute LocalSimilarityAttributizer::getAttribute(const Graph& graph, const EdgeAttribute& attribute) {
+std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
 	/*
 	 * For each edge, we calculate the minimum required sparsification exponent e
 	 * such that the edge is contained in the backbone.
 	 */
 
-	EdgeAttribute sparsificationExp(graph.upperEdgeIdBound(), 1.0);
+	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
-	graph.parallelForNodes([&](node i) {
+	graph.forNodes([&](node i) {
 		count d = graph.degree(i);
 
 		/*

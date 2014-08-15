@@ -20,14 +20,14 @@ namespace NetworKit {
 
 SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(double threshold) : threshold(threshold) {}
 
-Graph SimmelianBackboneNonParametric::calculate(Graph& g, const EdgeAttribute& attribute) {
+Graph SimmelianBackboneNonParametric::calculate(Graph& g) {
 	g.indexEdges();
 
 	ChibaNishizekiTriangleCounter triangleAttributizer;
-	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	SimmelianJaccardAttributizer jaccardAttributizer;
-	EdgeAttribute jaccard = jaccardAttributizer.getAttribute(g, triangles);
+	std::vector<double> jaccard = jaccardAttributizer.getAttribute(g, triangles);
 
 	GlobalThresholdFilter filter(threshold, true);
 	return filter.calculate(g, jaccard);
@@ -40,14 +40,14 @@ Graph SimmelianBackboneNonParametric::calculate(Graph& g, const EdgeAttribute& a
 SimmelianBackboneParametric::SimmelianBackboneParametric(int maxRank, int minOverlap) :
 		maxRank(maxRank), minOverlap(minOverlap) {}
 
-Graph SimmelianBackboneParametric::calculate(Graph& g, const EdgeAttribute& attribute) {
+Graph SimmelianBackboneParametric::calculate(Graph& g) {
 	g.indexEdges();
 
 	ChibaNishizekiTriangleCounter triangleAttributizer;
-	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	SimmelianOverlapAttributizer overlapAttributizer(maxRank);
-	EdgeAttribute overlap = overlapAttributizer.getAttribute(g, triangles);
+	std::vector<double> overlap = overlapAttributizer.getAttribute(g, triangles);
 
 	GlobalThresholdFilter filter(minOverlap, true);
 	return filter.calculate(g, overlap);
@@ -60,17 +60,17 @@ Graph SimmelianBackboneParametric::calculate(Graph& g, const EdgeAttribute& attr
 MultiscaleBackbone::MultiscaleBackbone(double alpha) :
 		alpha(alpha) {}
 
-Graph MultiscaleBackbone::calculate(Graph& g, const EdgeAttribute& attribute) {
+Graph MultiscaleBackbone::calculate(Graph& g) {
 	g.indexEdges();
 
-	//TODO: the following will be obsolete once graph edge attributes are used.
-	EdgeAttribute weight(g.upperEdgeIdBound());
+	//TODO: the following will be obsolete once graph edge attributes are used. ?
+	std::vector<double> weight(g.upperEdgeIdBound());
 	g.forEdges([&](node u, node v, edgeid eid) {
 		weight[eid] = g.weight(u, v);
 	});
 
 	MultiscaleAttributizer multiscaleAttributizer;
-	EdgeAttribute multiscale = multiscaleAttributizer.getAttribute(g, weight);
+	std::vector<double> multiscale = multiscaleAttributizer.getAttribute(g, weight);
 
 	GlobalThresholdFilter filter(alpha, false);
 	return filter.calculate(g, multiscale);
@@ -83,11 +83,11 @@ Graph MultiscaleBackbone::calculate(Graph& g, const EdgeAttribute& attribute) {
 LocalSimilarityBackbone::LocalSimilarityBackbone(double e) :
 		e(e) {}
 
-Graph LocalSimilarityBackbone::calculate(Graph& g, const EdgeAttribute& attribute) {
+Graph LocalSimilarityBackbone::calculate(Graph& g) {
 	g.indexEdges();
 
 	LocalSimilarityAttributizer localSimAttributizer;
-	EdgeAttribute minExponent = localSimAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	GlobalThresholdFilter filter(e, true);
 	return filter.calculate(g, minExponent);
@@ -100,14 +100,14 @@ Graph LocalSimilarityBackbone::calculate(Graph& g, const EdgeAttribute& attribut
 SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(double alpha) :
 		alpha(alpha) {}
 
-Graph SimmelianMultiscaleBackbone::calculate(Graph& g, const EdgeAttribute& attribute) {
+Graph SimmelianMultiscaleBackbone::calculate(Graph& g) {
 	g.indexEdges();
 
 	ChibaNishizekiTriangleCounter triangleAttributizer;
-	EdgeAttribute triangles = triangleAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	MultiscaleAttributizer multiscaleAttributizer;
-	EdgeAttribute multiscale = multiscaleAttributizer.getAttribute(g, triangles);
+	std::vector<double> multiscale = multiscaleAttributizer.getAttribute(g, triangles);
 
 	GlobalThresholdFilter filter(alpha, false);
 	return filter.calculate(g, multiscale);
@@ -120,11 +120,11 @@ Graph SimmelianMultiscaleBackbone::calculate(Graph& g, const EdgeAttribute& attr
 RandomBackbone::RandomBackbone(double ratio) :
 		ratio(ratio) {}
 
-Graph RandomBackbone::calculate(Graph& g, const EdgeAttribute& attribute) {
+Graph RandomBackbone::calculate(Graph& g) {
 	g.indexEdges();
 
 	RandomAttributizer randomAttributizer;
-	EdgeAttribute random = randomAttributizer.getAttribute(g, EdgeAttribute(g.upperEdgeIdBound()));
+	std::vector<double> random = randomAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
 	GlobalThresholdFilter filter(ratio, false);
 	return filter.calculate(g, random);

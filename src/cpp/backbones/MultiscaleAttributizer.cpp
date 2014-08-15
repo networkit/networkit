@@ -11,12 +11,12 @@ namespace NetworKit {
 
 MultiscaleAttributizer::MultiscaleAttributizer() {}
 
-EdgeAttribute MultiscaleAttributizer::getAttribute(const Graph& graph, const EdgeAttribute& attribute) {
+std::vector<double> MultiscaleAttributizer::getAttribute(const Graph& graph, const std::vector<double>& attribute) {
 	//The following vector is used for the _local_ normalization of edgeweights.
 	//We use a global vector for performance reasons.
 	std::vector<edgeweight> normalizedWeights(graph.upperNodeIdBound());
 
-	EdgeAttribute multiscaleAttribute(graph.upperEdgeIdBound(), 1.0);
+	std::vector<double> multiscaleAttribute(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forNodes([&](node u) {
 		count k = graph.degree(u);

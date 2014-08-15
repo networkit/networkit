@@ -10,6 +10,7 @@
 
 #include "../graph/Graph.h"
 #include <unordered_map>
+#include <vector>
 
 namespace NetworKit {
 
@@ -79,45 +80,12 @@ struct hash<NetworKit::uEdge> {
 
 } /* namespace std */
 
-
 namespace NetworKit {
-
-class EdgeAttribute {
-
-private:
-	std::vector<double> attributeVector;
-
-public:
-
-	EdgeAttribute(count nEdges, double defaultValue) :
-		attributeVector(std::vector<double>(nEdges, defaultValue)) {}
-
-	EdgeAttribute(count nEdges) : attributeVector(nEdges, 0.0) {}
-
-	/** Default move constructor */
-	EdgeAttribute(EdgeAttribute&& other) = default;
-
-	//Read operator
-	double& operator[](std::vector<double>::size_type idx) {
-		return attributeVector[idx];
-	}
-
-	//Write operator
-	const double& operator[](std::vector<double>::size_type idx) const {
-		return attributeVector[idx];
-	}
-
-	const std::size_t size() const {
-		return attributeVector.size();
-	}
-
-};
-
-
 /**
  * Abstract base class for graph attribute generator. It takes a graph (weighted or unweighted)
  * and calculates a graph attribute from the input graph.
  */
+template<typename TInput, typename TOutput>
 class AttributeGenerator {
 
 public:
@@ -126,12 +94,12 @@ public:
 	 * Calculates an edge attribute for the edges of the given graph.
 	 * (Possibly under consideration of the given attribute).
 	 */
-	virtual EdgeAttribute getAttribute(const Graph& g, const EdgeAttribute& attribute) = 0;
+	virtual std::vector<TOutput> getAttribute(const Graph& g, const std::vector<TInput>& attribute) = 0;
 
 	/** only to be used by cython - this eliminates an unnecessary copy */
-	EdgeAttribute* _getAttribute(Graph& g, EdgeAttribute& attribute) {
-		return new EdgeAttribute{std::move(getAttribute(g, attribute))};
-	};
+	/*std::vector<TOutput>* _getAttribute(Graph& g, std::vector<TInput>& attribute) {
+		return new std::vector<TOutput>{std::move(getAttribute(g, attribute))};
+	};*/
 };
 
 }
