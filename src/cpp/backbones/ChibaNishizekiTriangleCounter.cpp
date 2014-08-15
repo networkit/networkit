@@ -18,7 +18,7 @@ std::vector<int> ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph,
 	std::vector<bool> nodeMarker(graph.upperNodeIdBound(), false);
 
 	//Edge attribute: triangle count
-	std::vector<int> triangleCount(graph.upperEdgeIdBound(), 0.0);
+	std::vector<int> triangleCount(graph.upperEdgeIdBound(), 0);
 
 	g.forNodes([&](node u) {
 		//Mark all neighbors
