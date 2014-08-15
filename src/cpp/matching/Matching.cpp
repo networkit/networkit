@@ -9,12 +9,7 @@
 
 namespace NetworKit {
 
-Matching::Matching(uint64_t n) :
-		NodeMap<node>(n, 0) {
-	// initialize each node's matching partner to itself
-	for (index i = 0; i < n; ++i) {
-		this->data[i] = i;
-	}
+Matching::Matching(uint64_t n) : data(n, none), n(n) {
 }
 
 Matching::~Matching() {
@@ -22,7 +17,7 @@ Matching::~Matching() {
 }
 
 bool Matching::isMatched(const node& u) const {
-	return (this->data[u] != u);
+	return (this->data[u] != none);
 }
 
 bool Matching::isProper(Graph& G) const {
@@ -35,7 +30,7 @@ bool Matching::isProper(Graph& G) const {
 	bool sym = true;
 	// check if entries are symmetric
 	for (node v = 0; v < G.numberOfNodes(); ++v) {
-		sym = (((*this)[v] == v) || ((*this)[(*this)[v]] == v));
+		sym = ((data[v] == none) || (data[data[v]] == v));
 		if (!sym) {
 			DEBUG("node " , v , " is not symmetrically matched");
 			return false;
@@ -45,8 +40,8 @@ bool Matching::isProper(Graph& G) const {
 	bool inGraph = true;
 	// check if every pair exists as an edge
 	for (node v = 0; v < G.numberOfNodes(); ++v) {
-		node w = (*this)[v];
-		if (v != w) {
+		node w = data[v];
+		if ((v != w) && (w != none)) {
 			inGraph = G.hasEdge(v, w);
 			if (!inGraph) {
 				DEBUG("matched pair (" , v , "," , w , ") is not an edge");
@@ -59,17 +54,17 @@ bool Matching::isProper(Graph& G) const {
 }
 
 void Matching::match(const node& u, const node& v) {
-	(*this)[u] = v;
-	(*this)[v] = u;
+	data[u] = v;
+	data[v] = u;
 }
 
 void Matching::unmatch(const node& u, const node& v) {
-	(*this)[u] = u;
-	(*this)[v] = v;
+	data[u] = u;
+	data[v] = v;
 }
 
 bool Matching::areMatched(const node& u, const node& v) const {
-	return ((*this)[u] == v);
+	return (data[u] == v);
 }
 
 count Matching::size() const {

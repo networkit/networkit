@@ -62,6 +62,17 @@ public:
 	 */
 	virtual Partition makeContinuousBalancedClustering(Graph& G, count k);
 
+	/**
+	 * Make a clustering of a Graph @a G with @a k clusters. Each node u is assigned to cluster u % k.
+	 * When the number of nodes n is quadratic and k is the square root of n, this clustering is complementary
+	 * to the continuous balanced clustering in the sense that no pair of nodes that is in the same cluster
+	 * in one of the clusterings is in the same cluster in the other clustering.
+	 *
+	 * @param G The graph.
+	 * @param k The amount of clusters.
+	 * @return A Partition with @a k clusters and each node assigned as described above.
+	 */
+	virtual Partition makeNoncontinuousBalancedClustering(Graph &G, count k);
 };
 
 } /* namespace NetworKit */

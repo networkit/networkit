@@ -21,9 +21,11 @@
 #include "../viz/Point.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/FunctionTraits.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
+	class ParallelPartitionCoarsening; // forward declaration for friend class
 	class GraphBuilder; // forward declaration
 
 /**
@@ -32,6 +34,7 @@ namespace NetworKit {
  */
 class Graph final {
 
+	friend class ParallelPartitionCoarsening;
 	friend class GraphBuilder;
 
 private:
@@ -80,7 +83,108 @@ private:
 	 * Returns the index of node v in the array of outgoing edges of node u.
 	 */
 	index indexInOutEdgeArray(node u, node v) const;
+	
+	/**
+	 * Returns the edge weight of the outgoing edge of index i in the outgoing edges of node u
+	 *
+	 * @param u The node
+	 * @param i The index
+	 * @return The weight of the outgoing edge or defaultEdgeWeight if the graph is unweighted
+	 */
+	template<bool weighted>
+	inline edgeweight getOutEdgeWeight(node u, index i) const;
 
+	/**
+	 * Returns the edge weight of the incoming edge of index i in the incoming edges of node u
+	 *
+	 * @param u The node
+	 * @param i The index in the incoming edge array
+	 * @return The weight of the incoming edge
+	 */
+	template<bool weighted>
+	inline edgeweight getInEdgeWeight(node u, index i) const;
+
+	/**
+	 * Returns the edge id of the edge of index i in the outgoing edges of node u
+	 *
+	 * @param u The node
+	 * @param i The index in the outgoing edges
+	 * @return The edge id
+	 */
+	template<bool hasEdgeIds>
+	inline edgeid getOutEdgeId(node u, index i) const;
+
+	/**
+	 * Returns the edge id of the edge of index i in the incoming edges of node u
+	 *
+	 * @param u The node
+	 * @param i The index in the incoming edges of u
+	 * @return The edge id
+	 */
+	template<bool hasEdgeIds>
+	inline edgeid getInEdgeId(node u, index i) const;
+
+	/**
+	 * @brief Returns if the edge (u, v) shall be used in the iteration of all edgesIndexed
+	 *
+	 * @param u The source node of the edge
+	 * @param v The target node of the edge
+	 * @return If the node shall be used, i.e. if v is not none and in the undirected case if u >= v
+	 */
+	template<bool directed>
+	inline bool useEdgeInIteration(node u, node v) const;
+
+	/**
+	 * @brief Implementation of the for loop for outgoing edges of u
+	 *
+	 * Note: If all (valid) outgoing edges shall be considered, directed needs to be set to true
+	 *
+	 * @param u The node
+	 * @param handle The handle that shall be executed for each edge
+	 * @return void
+	 */
+	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	inline void forOutEdgesOfImpl(node u, L handle) const;
+
+	/**
+	 * @brief Implementation of the for loop for incoming edges of u
+	 *
+	 * For undirected graphs, this is the same as forOutEdgesOfImpl but u and v are changed in the handle
+	 *
+	 * @param u The node
+	 * @param handle The handle that shall be executed for each edge
+	 * @return void
+	 */
+	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	inline void forInEdgesOfImpl(node u, L handle) const;
+
+	/**
+	 * @brief Implementation of the for loop for all edges, @see forEdges
+	 *
+	 * @param handle The handle that shall be executed for all edges
+	 * @return void
+	 */
+	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	inline void forEdgeImpl(L handle) const;
+
+	/**
+	 * @brief Parallel implementation of the for loop for all edges, @see parallelForEdges
+	 *
+	 * @param handle The handle that shall be executed for all edges
+	 * @return void
+	 */
+	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	inline void parallelForEdgesImpl(L handle) const;
+
+	/**
+	 * @brief Summation variant of the parallel for loop for all edges, @see parallelSumForEdges
+	 *
+	 * @param handle The handle that shall be executed for all edges
+	 * @return void
+	 */
+	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	inline double parallelSumForEdgesImpl(L handle) const;
+	
 	/*
 	 * In the following definition, Aux::FunctionTraits is used in order to only execute lambda functions
 	 * with the appropriate parameters. The decltype-return type is used for determining the return type of
@@ -93,11 +197,6 @@ private:
 	 * they define type as void.
 	 */
 
-	template<bool s>
-	struct lambda_error {
-			static_assert(s, "Your lambda does not support the required parameters or accepts more than 3 parameters.");
-	};
-
 	/**
 	 * Triggers a static assert error when no other method is chosen. Because of the use of "..." as arguments, the priority
 	 * of this method is lower than the priority of the other methods. This method avoids ugly and unreadable template substitution
@@ -105,10 +204,24 @@ private:
 	 */
 	template<class F, bool InEdges = false, void* = nullptr>
 	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, ...) const {
-		lambda_error<false> e; // trigger a static assert. Cannot use static assert directly as this will trigger too often.
-		(void)e; // avoid unused variable warning
+		// the strange condition is used in order to delay the eveluation of the static assert to the moment when this function is actually used
+		static_assert(! std::is_same<F, F>::value, "Your lambda does not support the required parameters or the parameters have the wrong type.");
 		return std::declval<typename Aux::FunctionTraits<F>::result_type>(); // use the correct return type (this won't compile)
 	}
+
+	/**
+	 * Calls the given function f if its fourth argument is of the type edgeid and third of type edgeweight
+	 * Note that the decltype check is not enough as edgeweight can be casted to node and we want to assure that .
+	 */
+	template < class F, bool InEdges = false,
+	         typename std::enable_if <
+	         std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value &&
+	         std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::value
+	         >::type * = nullptr >
+	auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, ew, id)) {
+		return f(u, v, ew, id);
+	}
+
 
 	/**
 	 * Calls the given function f if its third argument is of the type edgeid, discards the edge weight
@@ -212,8 +325,10 @@ public:
 
 	/**
 	* Initially assign integer edge identifiers.
+	*
+	* @param force Force re-indexing of edges even if they have already been indexed
 	*/
-	void indexEdges();
+	void indexEdges(bool force = false);
 
 
 	/**
@@ -270,6 +385,15 @@ public:
 	 * @return A string representation.
 	 */
 	std::string toString() const;
+
+
+	/* COPYING */
+
+	/*
+	* Copies all nodes to a new graph
+	* @return graph with the same nodes.
+	*/
+	Graph copyNodes() const;
 
 
 	/* NODE MODIFIERS */
@@ -461,6 +585,7 @@ public:
 	 */
 	bool consistencyCheck() const;
 
+
 	/* DYNAMICS */
 
 	/**
@@ -641,14 +766,14 @@ public:
 	/**
 	 * Iterate over all edges of the const graph and call @a handle (lambda closure).
 	 *
-	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgweight)</code>.
+	 * @param handle Takes parameters <code>(node, node)</code>, <code>(node, node, edgweight)</code>, <code>(node, node, edgeid)</code> or <code>(node, node, edgeweight, edgeid)</code>.
 	 */
 	template<typename L> void forEdges(L handle) const;
 
 	/**
 	 * Iterate in parallel over all edges of the const graph and call @a handle (lambda closure).
 	 *
-	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgweight)</code>.
+	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgweight)</code>, <code>(node, node, edgeid)</code> or <code>(node, node, edgeweight, edgeid)</code>.
 	 */
 	template<typename L> void parallelForEdges(L handle) const;
 
@@ -670,7 +795,7 @@ public:
 	 * Iterate over all incident edges of a node and call @a handle (lamdba closure).
 	 *
 	 * @param u Node.
-	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node, node, edgeweight)</code> where the first node is @a u and the second is a neighbor of @a u.
+	 * @param handle Takes parameters <code>(node, node)</code>, <code>(node, node, edgeweight)</code>, <code>(node, node, edgeid)</code> or <code>(node, node, edgeweight, edgeid)</code> where the first node is @a u and the second is a neighbor of @a u.
 	 * @note For undirected graphs all edges incident to @a u are also outgoing edges.
 	 */
 	template<typename L> void forEdgesOf(node u, L handle) const;
@@ -715,7 +840,7 @@ public:
 	template<typename L> void BFSfrom(std::vector<node> &startNodes, L handle) const;
 
 
-	template<typename L> void BFSEdgesfrom(node r, L handle) const;
+	template<typename L> void BFSEdgesFrom(node r, L handle) const;
 
 	/**
 	 * Iterate over nodes in depth-first search order starting from r until connected component
@@ -727,7 +852,16 @@ public:
 	template<typename L> void DFSfrom(node r, L handle) const;
 
 
-	template<typename L> void DFSEdgesfrom(node r, L handle) const;
+	template<typename L> void DFSEdgesFrom(node r, L handle) const;
+
+
+	/* SPECIAL */
+
+
+	/**
+	* Treat the adjacency datastructure as an undirected graph.
+	*/
+	void treatAsUndirected();
 };
 
 /* NODE ITERATORS */
@@ -797,7 +931,7 @@ void Graph::forNodePairs(L handle) const {
 
 template<typename L>
 void Graph::parallelForNodePairs(L handle) const {
-	#pragma omp parallel for
+	#pragma omp parallel for schedule(guided)
 	for (node u = 0; u < z; ++u) {
 		if (exists[u]) {
 			for (node v = u + 1; v < z; ++v) {
@@ -812,115 +946,162 @@ void Graph::parallelForNodePairs(L handle) const {
 
 /* EDGE ITERATORS */
 
+/* HELPERS */
+
+template<bool weighted> // implementation for weighted == true
+inline edgeweight Graph::getOutEdgeWeight(node u, index i) const {
+	return outEdgeWeights[u][i];
+};
+
+template<> // implementation for weighted == false
+inline edgeweight Graph::getOutEdgeWeight<false>(node, index) const {
+	return defaultEdgeWeight;
+};
+
+template<bool weighted> // implementation for weighted == true
+inline edgeweight Graph::getInEdgeWeight(node u, index i) const {
+	return inEdgeWeights[u][i];
+};
+
+template<> // implementation for weighted == false
+inline edgeweight Graph::getInEdgeWeight<false>(node, index) const {
+	return defaultEdgeWeight;
+};
+
+
+template<bool hasEdgeIds> // implementation for hasEdgeIds == true
+inline edgeid Graph::getOutEdgeId(node u, index i) const {
+	return outEdgeIds[u][i];
+};
+
+template<> // implementation for hasEdgeIds == false
+inline edgeid Graph::getOutEdgeId<false>(node, index) const {
+	return 0;
+};
+
+template<bool hasEdgeIds> // implementation for hasEdgeIds == true
+inline edgeid Graph::getInEdgeId(node u, index i) const {
+	return inEdgeIds[u][i];
+}
+
+template<> // implementation for hasEdgeIds == false
+inline edgeid Graph::getInEdgeId<false>(node, index) const {
+	return 0;
+}
+
+
+template<bool directed> // implementation for directed == true
+inline bool Graph::useEdgeInIteration(node u, node v) const {
+	return v != none;
+}
+
+template<> // implementation for directed == false
+inline bool Graph::useEdgeInIteration<false>(node u, node v) const {
+	return u >= v;
+}
+
+template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
+	for (index i = 0; i < outEdges[u].size(); ++i) {
+		node v = outEdges[u][i];
+
+		if (useEdgeInIteration<directed>(u, v)) {
+			edgeLambda(handle, u, v, getOutEdgeWeight<weighted>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
+		}
+	}
+}
+
+template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+inline void Graph::forInEdgesOfImpl(node u, L handle) const {
+	if (directed) {
+		for (index i = 0; i < inEdges[u].size(); i++) {
+			node v = inEdges[u][i];
+
+			if (useEdgeInIteration<true>(u, v)) {
+				edgeLambda<L, true, nullptr>(handle, v, u, getInEdgeWeight<weighted>(u, i), getInEdgeId<hasEdgeIds>(u, i));
+			}
+		}
+	} else {
+		for (index i = 0; i < outEdges[u].size(); ++i) {
+			node v = outEdges[u][i];
+
+			if (useEdgeInIteration<true>(u, v)) {
+				edgeLambda<L, true, nullptr>(handle, v, u, getOutEdgeWeight<weighted>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
+			}
+		}
+	}
+}
+
+template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+inline void Graph::forEdgeImpl(L handle) const {
+	for (node u = 0; u < z; ++u) {
+		forOutEdgesOfImpl<directed, weighted, hasEdgeIds, L>(u, handle);
+	}
+}
+
+template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+inline void Graph::parallelForEdgesImpl(L handle) const {
+	#pragma omp parallel for
+	for (node u = 0; u < z; ++u) {
+		forOutEdgesOfImpl<directed, weighted, hasEdgeIds, L>(u, handle);
+	}
+}
+
+template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+inline double Graph::parallelSumForEdgesImpl(L handle) const {
+	double sum = 0.0;
+
+	#pragma omp parallel for reduction(+:sum)
+
+	for (node u = 0; u < z; ++u) {
+		for (index i = 0; i < outEdges[u].size(); ++i) {
+			node v = outEdges[u][i];
+
+			// undirected, do not iterate over edges twice
+			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+			if (useEdgeInIteration<directed>(u, v)) {
+				sum += edgeLambda(handle, u, v, getOutEdgeWeight<weighted>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
+			}
+		}
+	}
+
+	return sum;
+}
+
 template<typename L>
 void Graph::forEdges(L handle) const {
 	switch (weighted + 2 * directed + 4 * edgesIndexed) {
-		case 0: // unweighted, undirected, no edgeIds
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
+	case 0: // unweighted, undirected, no edgeIds
+		forEdgeImpl<false, false, false, L>(handle);
+		break;
 
-		case 1: // weighted,   undirected, no edgeIds
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
+	case 1: // weighted,   undirected, no edgeIds
+		forEdgeImpl<false, true, false, L>(handle);
+		break;
 
-		case 2: // unweighted, directed, no edgeIds
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
+	case 2: // unweighted, directed, no edgeIds
+		forEdgeImpl<true, false, false, L>(handle);
+		break;
 
-		case 3: // weighted, directed, no edgeIds
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
-		case 4: // unweighted, undirected, with edgeIds
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeid eid = outEdgeIds[u][i];
-						edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 3: // weighted, directed, no edgeIds
+		forEdgeImpl<true, true, false, L>(handle);
+		break;
 
-		case 5: // weighted,   undirected, with edgeIds
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeid eid = outEdgeIds[u][i];
-						edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 4: // unweighted, undirected, with edgeIds
+		forEdgeImpl<false, false, true, L>(handle);
+		break;
 
-		case 6: // unweighted, directed, with edgeIds
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeid eid = outEdgeIds[u][i];
-						edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 5: // weighted,   undirected, with edgeIds
+		forEdgeImpl<false, true, true, L>(handle);
+		break;
 
-		case 7: // weighted,   directed, with edgeIds
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeid eid = outEdgeIds[u][i];
-						edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 6: // unweighted, directed, with edgeIds
+		forEdgeImpl<true, false, true, L>(handle);
+		break;
+
+	case 7: // weighted,   directed, with edgeIds
+		forEdgeImpl<true, true, true, L>(handle);
+		break;
 	}
 }
 
@@ -928,120 +1109,37 @@ void Graph::forEdges(L handle) const {
 template<typename L>
 void Graph::parallelForEdges(L handle) const {
 	switch (weighted + 2 * directed + 4 * edgesIndexed) {
-		case 0: // unweighted, undirected
-			#pragma omp parallel for
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
+	case 0: // unweighted, undirected, no edgeIds
+		parallelForEdgesImpl<false, false, false, L>(handle);
+		break;
 
-		case 1: // weighted,   undirected
-			#pragma omp parallel for
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
+	case 1: // weighted,   undirected, no edgeIds
+		parallelForEdgesImpl<false, true, false, L>(handle);
+		break;
 
-		case 2: // unweighted, directed
-			#pragma omp parallel for
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
+	case 2: // unweighted, directed, no edgeIds
+		parallelForEdgesImpl<true, false, false, L>(handle);
+		break;
 
-		case 3: // weighted,   directed
-			#pragma omp parallel for
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
-		case 4: // unweighted, undirected, with edgeIds
-			#pragma omp parallel for
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeid eid = outEdgeIds[u][i];
-						edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 3: // weighted, directed, no edgeIds
+		parallelForEdgesImpl<true, true, false, L>(handle);
+		break;
 
-		case 5: // weighted,   undirected, with edgeIds
-			#pragma omp parallel for
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeid eid = outEdgeIds[u][i];
-						edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 4: // unweighted, undirected, with edgeIds
+		parallelForEdgesImpl<false, false, true, L>(handle);
+		break;
 
-		case 6: // unweighted, directed, with edgeIds
-			#pragma omp parallel for
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeid eid = outEdgeIds[u][i];
-						edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 5: // weighted,   undirected, with edgeIds
+		parallelForEdgesImpl<false, true, true, L>(handle);
+		break;
 
-		case 7: // weighted,   directed, with edgeIds
-			#pragma omp parallel for
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeid eid = outEdgeIds[u][i];
-						edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 6: // unweighted, directed, with edgeIds
+		parallelForEdgesImpl<true, false, true, L>(handle);
+		break;
+
+	case 7: // weighted,   directed, with edgeIds
+		parallelForEdgesImpl<true, true, true, L>(handle);
+		break;
 	}
 }
 
@@ -1056,45 +1154,22 @@ void Graph::forNeighborsOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forEdgesOf(node u, L handle) const {
-	switch(weighted + 2 * edgesIndexed) {
-		case 0: //not weighted, no edge ids
-			for (index i = 0; i < outEdges[u].size(); i++) {
-				node v = outEdges[u][i];
-				if (v != none) {
-					edgeweight ew = defaultEdgeWeight;
-					edgeLambda(handle, u, v, ew, 0);
-				}
-			}
-			break;
-		case 1:	//weighted, no edge ids
-			for (index i = 0; i < outEdges[u].size(); i++) {
-				node v = outEdges[u][i];
-				if (v != none) {
-					edgeweight ew = outEdgeWeights[u][i];
-					edgeLambda(handle, u, v, ew, 0);
-				}
-			}
-			break;
-		case 2: //not weighted, with edge ids
-			for (index i = 0; i < outEdges[u].size(); i++) {
-				node v = outEdges[u][i];
-				if (v != none) {
-					edgeweight ew = defaultEdgeWeight;
-					edgeid eid = outEdgeIds[u][i];
-					edgeLambda(handle, u, v, ew, eid);
-				}
-			}
-			break;
-		case 3:	//weighted, with edge ids
-			for (index i = 0; i < outEdges[u].size(); i++) {
-				node v = outEdges[u][i];
-				if (v != none) {
-					edgeweight ew = outEdgeWeights[u][i];
-					edgeid eid = outEdgeIds[u][i];
-					edgeLambda(handle, u, v, ew, eid);
-				}
-			}
-			break;
+	switch (weighted + 2 * edgesIndexed) {
+	case 0: //not weighted, no edge ids
+		forOutEdgesOfImpl<true, false, false, L>(u, handle);
+		break;
+
+	case 1:	//weighted, no edge ids
+		forOutEdgesOfImpl<true, true, false, L>(u, handle);
+		break;
+
+	case 2: //not weighted, with edge ids
+		forOutEdgesOfImpl<true, false, true, L>(u, handle);
+		break;
+
+	case 3:	//weighted, with edge ids
+		forOutEdgesOfImpl<true, true, true, L>(u, handle);
+		break;
 	}
 }
 
@@ -1105,87 +1180,38 @@ void Graph::forInNeighborsOf(node u, L handle) const {
 
 template<typename L>
 void Graph::forInEdgesOf(node u, L handle) const {
-	switch(weighted + 2 * directed + 4 * edgesIndexed) {
-		case 0: //unweighted, undirected, no edge ids
-			for (index i = 0; i < outEdges[u].size(); i++) {
-				node v = outEdges[u][i];
-				if (v != none) {
-					edgeweight ew = defaultEdgeWeight;
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
-				}
-			}
-			break;
-		case 1: //weighted, undirected, no edge ids
-			for (index i = 0; i < outEdges[u].size(); i++) {
-				node v = outEdges[u][i];
-				if (v != none) {
-					edgeweight ew = outEdgeWeights[u][i];
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
+	switch (weighted + 2 * directed + 4 * edgesIndexed) {
+	case 0: //unweighted, undirected, no edge ids
+		forInEdgesOfImpl<false, false, false, L>(u, handle);
+		break;
 
-				}
-			}
-			break;
-		case 2: //unweighted, directed, no edge ids
-			for (index i = 0; i < inEdges[u].size(); i++) {
-				node v = inEdges[u][i];
-				if (v != none) {
-					edgeweight ew = defaultEdgeWeight;
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
+	case 1: //weighted, undirected, no edge ids
+		forInEdgesOfImpl<false, true, false, L>(u, handle);
+		break;
 
-				}
-			}
-			break;
-		case 3: //weighted, directed, no edge ids
-			for (index i = 0; i < inEdges[u].size(); i++) {
-				node v = inEdges[u][i];
-				if (v != none) {
-					edgeweight ew = inEdgeWeights[u][i];
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, 0);
-				}
-			}
-			break;
-		case 4: //unweighted, undirected, with edge ids
-			for (index i = 0; i < outEdges[u].size(); i++) {
-				node v = outEdges[u][i];
-				if (v != none) {
-					edgeweight ew = defaultEdgeWeight;
-					edgeid eid = outEdgeIds[u][i];
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, eid);
-				}
-			}
-			break;
-		case 5: //weighted, undirected, with edge ids
-			for (index i = 0; i < outEdges[u].size(); i++) {
-				node v = outEdges[u][i];
-				if (v != none) {
-					edgeweight ew = outEdgeWeights[u][i];
-					edgeid eid = outEdgeIds[u][i];
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, eid);
+	case 2: //unweighted, directed, no edge ids
+		forInEdgesOfImpl<true, false, false, L>(u, handle);
+		break;
 
-				}
-			}
-			break;
-		case 6: //unweighted, directed, with edge ids
-			for (index i = 0; i < inEdges[u].size(); i++) {
-				node v = inEdges[u][i];
-				if (v != none) {
-					edgeweight ew = defaultEdgeWeight;
-					edgeid eid = outEdgeIds[u][i];
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, eid);
+	case 3: //weighted, directed, no edge ids
+		forInEdgesOfImpl<true, true, false, L>(u, handle);
+		break;
 
-				}
-			}
-			break;
-		case 7: //weighted, directed, with edge ids
-			for (index i = 0; i < inEdges[u].size(); i++) {
-				node v = inEdges[u][i];
-				if (v != none) {
-					edgeweight ew = inEdgeWeights[u][i];
-					edgeid eid = outEdgeIds[u][i];
-					edgeLambda<L, true, nullptr>(handle, v, u, ew, eid);
-				}
-			}
-			break;
+	case 4: //unweighted, undirected, with edge ids
+		forInEdgesOfImpl<false, false, true, L>(u, handle);
+		break;
+
+	case 5: //weighted, undirected, with edge ids
+		forInEdgesOfImpl<false, true, true, L>(u, handle);
+		break;
+
+	case 6: //unweighted, directed, with edge ids
+		forInEdgesOfImpl<true, false, true, L>(u, handle);
+		break;
+
+	case 7: //weighted, directed, with edge ids
+		forInEdgesOfImpl<true, true, true, L>(u, handle);
+		break;
 	}
 }
 
@@ -1195,133 +1221,54 @@ template<typename L>
 double Graph::parallelSumForNodes(L handle) const {
 	double sum = 0.0;
 	#pragma omp parallel for reduction(+:sum)
+
 	for (node v = 0; v < z; ++v) {
 		if (exists[v]) {
 			sum += handle(v);
 		}
 	}
+
 	return sum;
 }
 
 template<typename L>
 double Graph::parallelSumForEdges(L handle) const {
 	double sum = 0.0;
+
 	switch (weighted + 2 * directed + 4 * edgesIndexed) {
-		case 0: // unweighted, undirected, no edge ids
-			#pragma omp parallel for reduction(+:sum)
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = defaultEdgeWeight;
-						sum += edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
+	case 0: // unweighted, undirected, no edge ids
+		sum = parallelSumForEdgesImpl<false, false, false, L>(handle);
+		break;
 
-		case 1: // weighted,   undirected, no edge ids
-			#pragma omp parallel for reduction(+:sum)
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = outEdgeWeights[u][i];
-						sum += edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
+	case 1: // weighted,   undirected, no edge ids
+		sum = parallelSumForEdgesImpl<false, true, false, L>(handle);
+		break;
 
-		case 2: // unweighted, directed, no edge ids
-			#pragma omp parallel for reduction(+:sum)
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = defaultEdgeWeight;
-						sum += edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
+	case 2: // unweighted, directed, no edge ids
+		sum = parallelSumForEdgesImpl<true, false, false, L>(handle);
+		break;
 
-		case 3: // weighted,   directed, no edge ids
-			#pragma omp parallel for reduction(+:sum)
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = outEdgeWeights[u][i];
-						sum += edgeLambda(handle, u, v, ew, 0);
-					}
-				}
-			}
-			break;
-		case 4: // unweighted, undirected, with edge ids
-			#pragma omp parallel for reduction(+:sum)
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeid eid = outEdgeIds[u][i];
-						sum += edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 3: // weighted,   directed, no edge ids
+		sum = parallelSumForEdgesImpl<true, true, false, L>(handle);
+		break;
 
-		case 5: // weighted,   undirected, with edge ids
-			#pragma omp parallel for reduction(+:sum)
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					// undirected, do not iterate over edges twice
-					// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-					if (u >= v) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeid eid = outEdgeIds[u][i];
-						sum += edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 4: // unweighted, undirected, with edge ids
+		sum = parallelSumForEdgesImpl<false, false, true, L>(handle);
+		break;
 
-		case 6: // unweighted, directed, with edge ids
-			#pragma omp parallel for reduction(+:sum)
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = defaultEdgeWeight;
-						edgeid eid = outEdgeIds[u][i];
-						sum += edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 5: // weighted,   undirected, with edge ids
+		sum = parallelSumForEdgesImpl<false, true, true, L>(handle);
+		break;
 
-		case 7: // weighted,   directed, with edge ids
-			#pragma omp parallel for reduction(+:sum)
-			for (node u = 0; u < z; ++u) {
-				for (index i = 0; i < outEdges[u].size(); ++i) {
-					node v = outEdges[u][i];
-					if (v != none) {
-						edgeweight ew = outEdgeWeights[u][i];
-						edgeid eid = outEdgeIds[u][i];
-						sum += edgeLambda(handle, u, v, ew, eid);
-					}
-				}
-			}
-			break;
+	case 6: // unweighted, directed, with edge ids
+		sum = parallelSumForEdgesImpl<true, false, true, L>(handle);
+		break;
+
+	case 7: // weighted,   directed, with edge ids
+		sum = parallelSumForEdgesImpl<true, true, true, L>(handle);
+		break;
 	}
+
 	return sum;
 }
 
@@ -1363,7 +1310,7 @@ void Graph::BFSfrom(std::vector<node> &startNodes, L handle) const {
 }
 
 template<typename L>
-void Graph::BFSEdgesfrom(node r, L handle) const {
+void Graph::BFSEdgesFrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::queue<node> q;
 	q.push(r); // enqueue root
@@ -1403,7 +1350,7 @@ void Graph::DFSfrom(node r, L handle) const {
 }
 
 template<typename L>
-void Graph::DFSEdgesfrom(node r, L handle) const {
+void Graph::DFSEdgesFrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::stack<node> s;
 	s.push(r); // enqueue root

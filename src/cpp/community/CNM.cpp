@@ -69,7 +69,7 @@ node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
 }
 
 
-Partition CNM::run(Graph &graph) {
+Partition CNM::run(const Graph &graph) {
 	// copy graph because we make changes due to merges
 	Graph G(graph.numberOfNodes(), true); // make weighted copy
 	graph.forEdges([&](node u, node v, edgeweight w){

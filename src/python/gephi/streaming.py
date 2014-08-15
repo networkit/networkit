@@ -35,7 +35,6 @@ class GephiStreamingClient:
             for edge in graph.edges():
                 edgeId = graph.edgeId(edge[0], edge[1])
                 self._pygephi.add_edge(edgeId, edge[0], edge[1], False)
-                print("added edge ", edgeId)
 
             self._pygephi.flush()
         except _urllib.error.URLError as e:

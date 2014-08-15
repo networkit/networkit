@@ -1697,6 +1697,96 @@ TEST_P(GraphGTest, testForEdgesWithIds) {
 	}
 }
 
+TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
+	std::vector<Graph> graphs;
+	graphs.push_back(Graph(10, false, false));
+	graphs.push_back(Graph(10, false, true));
+	graphs.push_back(Graph(10, true, false));
+	graphs.push_back(Graph(10, true, true));
+
+	for (auto graph = graphs.begin(); graph != graphs.end(); ++graph) {
+		graph->addEdge(0, 0, 2);
+		graph->addEdge(1, 2, 2);
+		graph->addEdge(4, 5, 2);
+
+		//No edge indices
+
+		count m = 0;
+		edgeweight sum = 0;
+		graph->forEdges([&](node u, node v, edgeweight ew, edgeid eid) {
+			EXPECT_EQ(0, eid);
+			m++;
+			sum += ew;
+		});
+		ASSERT_EQ(3u, m);
+
+		if (graph->isWeighted()) {
+			ASSERT_EQ(6.0, sum);
+		} else {
+			ASSERT_EQ(3.0, sum);
+		}
+
+		m = 0;
+		sum = .0;
+		graph->parallelForEdges([&](node u, node v, edgeweight ew, edgeid eid) {
+			EXPECT_EQ(0, eid);
+			#pragma omp atomic
+			m++;
+			#pragma omp atomic
+			sum += ew;
+		});
+		ASSERT_EQ(3u, m);
+
+		if (graph->isWeighted()) {
+			ASSERT_EQ(6.0, sum);
+		} else {
+			ASSERT_EQ(3.0, sum);
+		}
+
+
+		//With edge indices
+		graph->indexEdges();
+
+		edgeid expectedId = 0;
+		m = 0;
+		sum = .0;
+		graph->forEdges([&](node u, node v, edgeweight ew, edgeid eid) {
+			EXPECT_EQ(expectedId++, eid);
+			EXPECT_LT(eid, graph->upperEdgeIdBound());
+			m++;
+			sum += ew;
+		});
+		ASSERT_EQ(3u, m);
+
+		if (graph->isWeighted()) {
+			ASSERT_EQ(6.0, sum);
+		} else {
+			ASSERT_EQ(3.0, sum);
+		}
+
+
+		m = 0;
+		sum = .0;
+		graph->parallelForEdges([&](node u, node v, edgeweight ew, edgeid eid) {
+			EXPECT_NE(none, eid);
+			EXPECT_LT(eid, graph->upperEdgeIdBound());
+			#pragma omp atomic
+			m++;
+			#pragma omp atomic
+			sum += ew;
+		});
+		ASSERT_EQ(3u, m);
+
+		if (graph->isWeighted()) {
+			ASSERT_EQ(6.0, sum);
+		} else {
+			ASSERT_EQ(3.0, sum);
+		}
+
+	}
+}
+
+
 
 } /* namespace NetworKit */
 

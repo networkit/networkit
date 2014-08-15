@@ -23,10 +23,8 @@ class NMIDistance: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	/** Default destructor */
-	virtual ~NMIDistance();
 
-	virtual double getDissimilarity(Graph& G, Partition& zeta, Partition& eta);
+	virtual double getDissimilarity(const Graph& G, const Partition& zeta, const Partition& eta);
 
 };
 

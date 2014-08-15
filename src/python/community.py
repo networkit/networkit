@@ -1,6 +1,6 @@
 """ This module handles community detection, i.e. the discovery of densely connected groups in networks."""
 
-from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader
+from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionProduct
 
 import properties
 import graph
