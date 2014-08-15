@@ -3559,7 +3559,7 @@ cdef class ChibaNishizekiTriangleCounter:
 cdef extern from "../cpp/backbones/SimmelianJaccardAttributizer.h":
 	cdef cppclass _SimmelianJaccardAttributizer "NetworKit::SimmelianJaccardAttributizer":
 		_SimmelianJaccardAttributizer() except +
-		vector[int] getAttribute(_Graph G, vector[int] a) except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
 
 cdef class SimmelianJaccardAttributizer:
 
@@ -3568,5 +3568,79 @@ cdef class SimmelianJaccardAttributizer:
 	def __cinit__(self):
 		self._this = new _SimmelianJaccardAttributizer()
 
+	def getAttribute(self, Graph G, vector[int] triangles):
+		return self._this.getAttribute(dereference(G._this), triangles)
+
+cdef extern from "../cpp/backbones/SimmelianOverlapAttributizer.h":
+		cdef cppclass _SimmelianOverlapAttributizer "NetworKit::SimmelianOverlapAttributizer":
+			_SimmelianOverlapAttributizer(count maxRank) except +
+			vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class SimmelianOverlapAttributizer:
+
+	cdef _SimmelianOverlapAttributizer* _this
+
+	def __cinit__(self, maxRank):
+		self._this = new _SimmelianOverlapAttributizer(maxRank)
+
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(dereference(G._this), a)
+
+cdef extern from "../cpp/backbones/MultiscaleAttributizer.h":
+		cdef cppclass _MultiscaleAttributizer "NetworKit::MultiscaleAttributizer":
+			_MultiscaleAttributizer() except +
+			vector[double] getAttribute(_Graph G, vector[double] a) except +
+
+cdef class MultiscaleAttributizer:
+
+	cdef _MultiscaleAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _MultiscaleAttributizer()
+
+	def getAttribute(self, Graph G, vector[double] a):
+		return self._this.getAttribute(dereference(G._this), a)
+
+cdef extern from "../cpp/backbones/RandomAttributizer.h":
+	cdef cppclass _RandomAttributizer "NetworKit::RandomAttributizer":
+		_RandomAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class RandomAttributizer:
+
+	cdef _RandomAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _RandomAttributizer()
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(dereference(G._this), a)
+
+cdef extern from "../cpp/backbones/LocalSimilarityAttributizer.h":
+	cdef cppclass _LocalSimilarityAttributizer "NetworKit::LocalSimilarityAttributizer":
+		_LocalSimilarityAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class LocalSimilarityAttributizer:
+
+	cdef _LocalSimilarityAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _LocalSimilarityAttributizer()
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(dereference(G._this), a)
+
+cdef extern from "../cpp/backbones/GlobalThresholdFilter.h":
+	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
+		_GlobalThresholdFilter(double alpha, bool above) except +
+		_Graph* _calculate(_Graph G, vector[double] a) except +
+
+cdef class GlobalThresholdFilter:
+	cdef _GlobalThresholdFilter* _this
+
+	def __cinit__(self, double e, bool above):
+		self._this = new _GlobalThresholdFilter(e, above)
+
+	def calculate(self, Graph G, vector[double] a):
+		return Graph().setThis(self._this._calculate(dereference(G._this), a))

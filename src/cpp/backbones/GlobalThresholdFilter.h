@@ -29,6 +29,11 @@ public:
 
 	Graph calculate(Graph& graph, const std::vector<double>& attribute);
 
+	/** only to be used by cython - this eliminates an unnecessary copy */
+	Graph* _calculate(Graph& g, const std::vector<double>& attribute) {
+		return new Graph{std::move(calculate(g, attribute))};
+	};
+
 private:
 	double threshold;
 	bool above;
