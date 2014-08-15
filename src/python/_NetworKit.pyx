@@ -96,6 +96,7 @@ cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count, bool, bool) except +
+		_Graph(const _Graph& other) except +
 		void stealFrom(_Graph)
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -155,12 +156,25 @@ cdef class Graph:
 	# 	return self
 
 	cdef setThis(self, _Graph* other):
+		del self._this
 		self._this = other
 		return self
 
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
 		del self._this
+
+	def __copy__(self):
+		"""
+		Generates a copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
+
+	def __deepcopy__(self, memo):
+		"""
+		Generates a (deep) copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
 
 	def numberOfNodes(self):
 		"""
@@ -810,6 +824,37 @@ cdef class Subgraph:
 			nnodes.insert(node);
 		return Graph().setThis(self._this._fromNodes(dereference(G._this), nnodes))
 
+
+cdef extern from "../cpp/graph/SpanningForest.h":
+	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
+		_SpanningForest(_Graph) except +
+		_Graph* _generate()
+
+cdef class SpanningForest:
+	""" Generates a spanning forest for a given graph
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		nodes : list
+			A subset of nodes of `G` which induce the subgraph.
+	"""
+	cdef _SpanningForest* _this
+
+	def __cinit__(self, Graph G not None):
+		self._this = new _SpanningForest(dereference(G._this))
+
+
+	def __dealloc__(self):
+		del self._this
+
+	def generate(self):
+		return Graph().setThis(self._this._generate());
+
+
+
+
 cdef extern from "../cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
@@ -975,8 +1020,11 @@ cdef extern from "../cpp/generators/DorogovtsevMendesGenerator.h":
 		_Graph* _generate() except +
 
 cdef class DorogovtsevMendesGenerator:
-	"""
-	TODO:
+	""" Generates a graph according to the Dorogovtsev-Mendes model.
+
+ 	DorogovtsevMendesGenerator(nNodes)
+ 	
+ 	Constructs the generator class.
 
 	Parameters
 	----------
@@ -990,6 +1038,86 @@ cdef class DorogovtsevMendesGenerator:
 		self._this = new _DorogovtsevMendesGenerator(nNodes)
 
 	def generate(self):
+		""" Generates a random graph according to the Dorogovtsev-Mendes model.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
+		return Graph(0).setThis(self._this._generate())
+
+
+cdef extern from "../cpp/generators/RegularRingLatticeGenerator.h":
+	cdef cppclass _RegularRingLatticeGenerator "NetworKit::RegularRingLatticeGenerator":
+		_RegularRingLatticeGenerator(count nNodes, count nNeighbors) except +
+		_Graph* _generate() except +
+
+cdef class RegularRingLatticeGenerator:
+	"""
+	Constructs a regular ring lattice.
+	
+	RegularRingLatticeGenerator(count nNodes, count nNeighbors)
+	
+	Constructs the generator.
+
+	Parameters
+	----------
+	nNodes : number of nodes in the target graph.
+	nNeighbors : number of neighbors on each side of a node
+	"""
+
+	cdef _RegularRingLatticeGenerator* _this
+
+	def __cinit__(self, nNodes, nNeighbors):
+		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
+
+	def generate(self):
+		""" Generates a rgular ring lattice.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
+		return Graph(0).setThis(self._this._generate())
+		
+
+cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
+	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator":
+		_WattsStrogatzGenerator(count nNodes, count nNeighbors, double p) except +
+		_Graph* _generate() except +
+
+cdef class WattsStrogatzGenerator:
+	""" Generates a graph according to the Watts-Strogatz model.
+	
+	First, a regular ring lattice is generated. Then edges are rewired
+		with a given probability.
+	
+	WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
+	
+	Constructs the generator.
+	
+	Parameters
+	----------
+	nNodes : Number of nodes in the target graph.
+	nNeighbors : number of neighbors on each side of a node
+	p : rewiring probability
+	"""
+
+	cdef _WattsStrogatzGenerator* _this
+
+	def __cinit__(self, nNodes, nNeighbors, p):
+		self._this = new _WattsStrogatzGenerator(nNodes, nNeighbors, p)
+
+	def generate(self):
+		""" Generates a random graph according to the Watts-Strogatz model.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
 		return Graph(0).setThis(self._this._generate())
 
 
@@ -1215,6 +1343,27 @@ cdef class EdgeListReader:
 		for elem in cResult:
 			result.append((elem.first,elem.second))
 		return result
+
+cdef extern from "../cpp/io/KONECTGraphReader.h":
+	cdef cppclass _KONECTGraphReader "NetworKit::KONECTGraphReader":
+		_KONECTGraphReader() except +
+		_KONECTGraphReader(char separator, bool ignoreLoops)
+		_Graph read(string path) except +
+		_Graph* _read(string path) except +
+
+cdef class KONECTGraphReader:
+	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
+
+		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
+	"""
+	cdef _KONECTGraphReader _this
+
+	def __cinit__(self, separator, ignoreLoops = False):
+		self._this = _KONECTGraphReader(stdstring(separator)[0], ignoreLoops)
+
+	def read(self, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this._read(pathbytes))
 
 cdef extern from "../cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
@@ -1530,6 +1679,7 @@ cdef extern from "../cpp/structures/Partition.h":
 		void setName(string name) except +
 		string getName() except +
 		set[index] getSubsetIds() except +
+		index operator[](index) except +
 
 
 cdef class Partition:
@@ -1577,6 +1727,12 @@ cdef class Partition:
 	cdef setThis(self, _Partition other):
 		self._this = other
 		return self
+
+	def __cinit__(self, size=None):
+		if size is None:
+			self._this = _Partition()
+		else:
+			self._this = _Partition(size)
 
 	def subsetOf(self, e):
 		""" Get the set (id) in which the element `e` is contained.
@@ -1659,6 +1815,9 @@ cdef class Partition:
 			Id of newly created set.
 		"""
 		self._this.mergeSubsets(s, t)
+
+	def __getitem__(self, index):
+		return self._this[index]
 
 
 	def setUpperBound(self, index upper):
@@ -2066,6 +2225,163 @@ cdef class Cover:
 
 # Module: community
 
+# Fused type for methods that accept both a partition and a cover
+ctypedef fused PartitionCover:
+	Partition
+	Cover
+
+cdef extern from "../cpp/community/ClusteringGenerator.h":
+	cdef cppclass _ClusteringGenerator "NetworKit::ClusteringGenerator":
+		_ClusteringGenerator() except +
+		_Partition makeSingletonClustering(_Graph G) except +
+		_Partition makeOneClustering(_Graph G) except +
+		_Partition makeRandomClustering(_Graph G, count k) except +
+		_Partition makeContinuousBalancedClustering(_Graph G, count k) except +
+		_Partition makeNoncontinuousBalancedClustering(_Graph G, count k) except +
+
+cdef class ClusteringGenerator:
+	""" Generators for various clusterings """
+	cdef _ClusteringGenerator _this
+	def makeSingletonClustering(self, Graph G):
+		"""  Generate a clustering where each node has its own cluster
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeSingletonClustering(dereference(G._this)))
+	def makeOneClustering(self, Graph G):
+		"""  Generate a clustering with one cluster consisting of all nodes
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeOneClustering(dereference(G._this)))
+	def makeRandomClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters to which nodes are assigned randomly
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeRandomClustering(dereference(G._this), k))
+	def makeContinuousBalancedClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters to which nodes are assigned in continuous blocks
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeContinuousBalancedClustering(dereference(G._this), k))
+	def makeNoncontinuousBalancedClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters, the ith node is assigned to cluster i % k. This means that
+		for k**2 nodes, this clustering is complementary to the continuous clustering in the sense that no pair
+		of nodes that is in the same cluster in one of the clusterings is in the same cluster in the other clustering.
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeNoncontinuousBalancedClustering(dereference(G._this), k))
+
+cdef extern from "../cpp/community/GraphClusteringTools.h" namespace "NetworKit::GraphClusteringTools":
+	float getImbalance(_Partition zeta) except +
+	_Graph communicationGraph(_Graph graph, _Partition zeta) except +
+	count weightedDegreeWithCluster(_Graph graph, _Partition zeta, node u, index cid)
+	bool isProperClustering(_Graph G, _Partition zeta)
+	bool isSingletonClustering(_Graph G, _Partition zeta)
+	bool isOneClustering(_Graph G, _Partition zeta)
+	bool equalClusterings(_Partition zeta, _Partition eta, _Graph G)
+
+cdef class GraphClusteringTools:
+	@staticmethod
+	def getImbalance(Partition zeta):
+		return getImbalance(zeta._this)
+	@staticmethod
+	def communicationGraph(Graph graph, Partition zeta):
+		cdef Graph ret = Graph()
+		ret._this.stealFrom(communicationGraph(dereference(graph._this), zeta._this))
+		return ret
+	@staticmethod
+	def weightedDegreeWithCluster(Graph graph, Partition zeta, node u, index cid):
+		return weightedDegreeWithCluster(dereference(graph._this), zeta._this, u, cid)
+	@staticmethod
+	def isProperClustering(Graph G, Partition zeta):
+		return isProperClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def isSingletonClustering(Graph G, Partition zeta):
+		return isSingletonClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def isOneClustering(Graph G, Partition zeta):
+		return isOneClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def equalClustering(Partition zeta, Partition eta, Graph G):
+		return equalClusterings(zeta._this, eta._this, dereference(G._this))
+
+cdef extern from "../cpp/community/PartitionProduct.h":
+	cdef cppclass _PartitionProduct "NetworKit::PartitionProduct":
+		_PartitionProduct() except +
+		_Partition calculate(_Partition zeta, _Partition eta) except +
+
+cdef class PartitionProduct:
+	""" The product of two partitions is defined as the partitions where each cluster is the intersection
+	of a cluster in the first and in the second clustering
+	"""
+	cdef _PartitionProduct _this
+	def calculate(self, Partition zeta, Partition eta):
+		"""  Calculate the product of two partitions `zeta` and `eta`
+
+		Parameters
+		----------
+		zeta: Partition
+			The first partition
+		eta: Partition
+			The second partition
+
+		Returns
+		-------
+		Partition
+			The product of zeta and eta
+		"""
+		return Partition().setThis(self._this.calculate(zeta._this, eta._this))
+
 cdef extern from "../cpp/community/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
 		_Coverage() except +
@@ -2100,6 +2416,48 @@ cdef class Modularity:
 	cdef _Modularity _this
 
 	def getQuality(self, Partition zeta, Graph G):
+		return self._this.getQuality(zeta._this, dereference(G._this))
+
+cdef extern from "../cpp/community/HubDominance.h":
+	cdef cppclass _HubDominance "NetworKit::HubDominance":
+		_HubDominance() except +
+		double getQuality(_Partition _zeta, _Graph _G) except +
+		double getQuality(_Cover _zeta, _Graph _G) except +
+
+cdef class HubDominance:
+	"""
+	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
+	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
+	the maximum cluster-internal degree, i.e. the number of nodes in the cluster minus one. The
+	value for all clusters is defined as the average of all clusters.
+
+	Strictly speaking this is not a quality measure as this is rather dependent on the type of the
+	considered graph, for more information see
+	Lancichinetti A, Kivelä M, Saramäki J, Fortunato S (2010)
+	Characterizing the Community Structure of Complex Networks
+	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
+	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
+	"""
+
+	cdef _HubDominance _this
+
+	def getQuality(self, PartitionCover zeta, Graph G):
+		"""
+		Calculates the dominance of hubs in the given Partition or Cover of the given
+		Graph.
+
+		Parameters
+		----------
+		zeta : Partition or Cover
+			The Partition or Cover for which the hub dominance shall be calculated
+		G : Graph
+			The Graph to which zeta belongs
+
+		Returns
+		-------
+		double
+			The average hub dominance in the given Partition or Cover
+		"""
 		return self._this.getQuality(zeta._this, dereference(G._this))
 
 
@@ -2221,7 +2579,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 cdef extern from "../cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
 		_PLM() except +
-		_PLM(bool refine, double gamma, string par, count maxIter) except +
+		_PLM(bool refine, double gamma, string par, count maxIter, bool parCoarsening) except +
 		string toString() except +
 		_Partition run(_Graph G) except +
 
@@ -2249,8 +2607,8 @@ cdef class PLM(CommunityDetector):
 
 	cdef _PLM _this
 
-	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32):
-		self._this = _PLM(refine, gamma, stdstring(par), maxIter)
+	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True):
+		self._this = _PLM(refine, gamma, stdstring(par), maxIter, parCoarsening)
 
 	def toString(self):
 		""" Get string representation.
@@ -3496,12 +3854,25 @@ cdef extern from "../cpp/generators/DynamicDorogovtsevMendesGenerator.h":
 
 
 cdef class DynamicDorogovtsevMendesGenerator:
+	""" Generates a graph according to the Dorogovtsev-Mendes model.
+
+ 	DynamicDorogovtsevMendesGenerator()
+ 	
+ 	Constructs the generator class.
+	"""
 	cdef _DynamicDorogovtsevMendesGenerator* _this
 
 	def __cinit__(self):
 		self._this = new _DynamicDorogovtsevMendesGenerator()
 
 	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 
@@ -3534,21 +3905,52 @@ cdef class DynamicPubWebGenerator:
 		return Graph().setThis(self._this._getGraph())
 
 
-# cdef extern from "../cpp/generators/ForestFireGenerator.h":
-# 	cdef cppclass _ForestFireGenerator "NetworKit::ForestFireGenerator":
-# 		_ForestFireGenerator(double p) except +
-# 		vector[_GraphEvent] generate(count nSteps) except +
-# 		_Graph getGraph() except +
 
 
-# cdef class ForestFireGenerator:
-# 	cdef _ForestFireGenerator* _this
 
-# 	def __cinit__(self, p):
-# 		self._this = new _ForestFireGenerator(p)
+cdef extern from "../cpp/generators/DynamicForestFireGenerator.h":
+	cdef cppclass _DynamicForestFireGenerator "NetworKit::DynamicForestFireGenerator":
+		_DynamicForestFireGenerator(double p, bool directed, double r) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
 
-# 	def generate(self, nSteps):
-# 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+cdef class DynamicForestFireGenerator:
+	""" Generates a graph according to the forest fire model.
+	 The forest fire generative model produces dynamic graphs with the following properties:
+     heavy tailed degree distribution
+     communities
+     densification power law
+     shrinking diameter
+ 
+    see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
+    Shringking Diameters and Possible Explanations
+
+ 	DynamicForestFireGenerator(double p, bool directed, double r = 1.0)
+ 	
+ 	Constructs the generator class.
+ 	
+ 	Parameters
+ 	----------
+ 	p : forward burning probability.
+ 	directed : decides whether the resulting graph should be directed
+ 	r : optional, backward burning probability
+	"""
+	cdef _DynamicForestFireGenerator* _this
+
+	def __cinit__(self, p, directed, r = 1.0):
+		self._this = new _DynamicForestFireGenerator(p, directed, r)
+
+	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
 
 
 
@@ -3569,3 +3971,22 @@ cdef class GraphUpdater:
 		for ev in stream:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_stream)
+
+
+# Module: coarsening
+
+cdef extern from "../cpp/coarsening/ParallelPartitionCoarsening.h":
+	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening":
+		_ParallelPartitionCoarsening() except +
+		pair[_Graph, vector[node]] run(_Graph, _Partition) except +
+
+
+cdef class ParallelPartitionCoarsening:
+	cdef _ParallelPartitionCoarsening* _this
+
+	def __cinit__(self):
+		self._this = new _ParallelPartitionCoarsening()
+
+	def run(self, Graph G not None, Partition zeta not None):
+		result = self._this.run(dereference(G._this), zeta._this)
+		return (Graph(0).setThis(&result.first), result.second)

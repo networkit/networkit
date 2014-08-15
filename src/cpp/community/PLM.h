@@ -1,5 +1,5 @@
 /*
- * MLPLM.h
+ * PLM.h
  *
  *  Created on: 20.11.2013
  *      Author: cls
@@ -14,7 +14,7 @@ namespace NetworKit {
 
 /**
  * @ingroup community
- * MultiLevel Parallel LocalMover - a multi-level modularity maximizer.
+ * Parallel Louvain Method - a multi-level modularity maximizer.
  */
 class PLM: public NetworKit::CommunityDetectionAlgorithm {
 
@@ -27,10 +27,11 @@ public:
 	 * 							1.0 -> standard modularity
 	 * 							0.0 -> one community
 	 * 							2m 	-> singleton communities
-	 * @param[in]	maxIter		maximum number of iterations for move phase	
+	 * @param[in]	maxIter		maximum number of iterations for move phase
+	 * @param[in]	parallelCoarsening	use parallel graph coarsening
 	 *
 	 */
-	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32);
+	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=true);
 
 
 	/**
@@ -46,9 +47,9 @@ public:
 	 * @param G The graph.
 	 * @return A partition containing the found communities.
 	 */
-	Partition run(Graph& G) override;
+	Partition run(const Graph& G) override;
 
-	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta);
+	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta, bool parallel=false);
 
 	static Partition prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
 
@@ -58,8 +59,9 @@ private:
 	bool refine;
 	double gamma = 1.0;
 	count maxIter;
+	bool parallelCoarsening;
 };
 
 } /* namespace NetworKit */
 
-#endif /* MLPLM_H_ */
+#endif /* PLM_H_ */

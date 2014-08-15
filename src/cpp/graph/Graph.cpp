@@ -9,7 +9,6 @@
 #include <random>
 
 #include "Graph.h"
-#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -260,6 +259,18 @@ std::string Graph::toString() const {
 	return strm.str();
 }
 
+
+/** COPYING **/
+
+Graph Graph::copyNodes() const {
+	Graph C(z, weighted, directed);
+	for (node u = 0; u < z; ++u) {
+		if (! exists[u]) {
+			C.removeNode(u);
+		}
+	}
+	return C;
+}
 
 /** NODE MODIFIERS **/
 
@@ -700,6 +711,13 @@ bool Graph::consistencyCheck() const {
 		multFound = (multFound || (it != copy.end()));
 	});
 	return !multFound;
+}
+
+
+void Graph::treatAsUndirected() {
+	assert (isDirected());
+	directed = false;
+	m /= 2;
 }
 
 } /* namespace NetworKit */

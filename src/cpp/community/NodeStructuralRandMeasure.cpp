@@ -9,10 +9,8 @@
 
 namespace NetworKit {
 
-NodeStructuralRandMeasure::~NodeStructuralRandMeasure() {
-}
 
-double NodeStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, Partition& second) {
+double NodeStructuralRandMeasure::getDissimilarity(const Graph& G, const Partition& first, const Partition& second) {
 
 	count n = G.numberOfNodes();
 	assert (n > 0);
@@ -28,7 +26,7 @@ double NodeStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, P
 		}
 	});
 
-	double rand = 1 - ((2 * (s11 + s00)) / (n * (n-1)));
+	double rand = 1 - ((2 * (s11 + s00)) * 1.0 / (n * (n-1)));
 
 	// assert range [0, 1]
 	assert (rand <= 1.0);

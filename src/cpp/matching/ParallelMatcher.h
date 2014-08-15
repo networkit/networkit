@@ -12,7 +12,6 @@
 #include <algorithm>
 
 #include "Matcher.h"
-#include "../graph/NodeMap.h"
 
 namespace NetworKit {
 
