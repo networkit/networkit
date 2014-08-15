@@ -15,6 +15,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 #include "../../graph/Sampling.h"
+#include "../../generators/DorogovtsevMendesGenerator.h"
 
 namespace NetworKit {
 
@@ -38,7 +39,7 @@ TEST_F(DynBetweennessGTest, testDynBetweennessSmallGraph) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-	DynBetweenness dynbc = DynBetweenness(G, true);
+	DynBetweenness dynbc = DynBetweenness(G, false);
 	Betweenness bc = Betweenness(G);
 	dynbc.run();
 	bc.run();
@@ -86,7 +87,7 @@ TEST_F(DynBetweennessGTest, testWeightedDynBetweennessSmallGraph) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-	DynBetweenness dynbc = DynBetweenness(G, false);
+	DynBetweenness dynbc = DynBetweenness(G, true);
 //	Graph G1 = Graph(G, false, false);
 	Betweenness2 bc = Betweenness2(G);
 	dynbc.run();
@@ -106,7 +107,7 @@ TEST_F(DynBetweennessGTest, testWeightedDynBetweennessSmallGraph) {
 //	G1.addEdge(ev.u, ev.v);
 	bc.run();
 	dynbc.update(ev);
-	std::cout<<"after"<<std::endl;
+	DEBUG("after");
 	dynbc_scores = dynbc.scores();
 	bc_scores = bc.scores();
 	for(i=0; i<n; i++) {
@@ -144,7 +145,7 @@ TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
 	std::vector<double> dynbc_scores = dynbc.scores();
 	std::vector<double> bc_scores = bc.scores();
 	for(int i=0; i<n; i++) {
-		std::cout<<dynbc_scores[i]-bc_scores[i]/double(n*(n-1))<<std::endl;
+		DEBUG("Difference ", dynbc_scores[i]-bc_scores[i]/double(n*(n-1)));
 	}
 	std::vector<GraphEvent> batch;
 	batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, 0, 6, 1.0));
@@ -154,7 +155,7 @@ TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
 	dynbc_scores = dynbc.scores();
 	bc_scores = bc.scores();
 	for(int i=0; i<n; i++) {
-		std::cout<<dynbc_scores[i]-bc_scores[i]/double(n*(n-1))<<std::endl;
+		DEBUG("Difference ", dynbc_scores[i]-bc_scores[i]/double(n*(n-1)));
 	}
 
 }
@@ -164,7 +165,6 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
 	count n = G.upperNodeIdBound();
-	std::cout<<n<<std::endl;
 
 	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
@@ -176,12 +176,11 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 	std::vector<double> bc_scores = bc.scores();
 	double err1=0;
 	for(count i=0; i<n; i++) {
-		//std::cout<<dynbc_scores[i]-bc_scores[i]/double(n*(n-1))<<std::endl;
 		double x = dynbc_scores[i]-bc_scores[i];
 		if (x > err1)
 			err1 = x;
 	}
-	std::cout<<"Before the edge insertion: "<<err1<<std::endl;
+	DEBUG("Before the edge insertion: ");
 	std::vector<GraphEvent> batch;
 	count nInsertions = 10, i = 0;
 	while (i < nInsertions) {
@@ -199,12 +198,11 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 	bc_scores = bc.scores();
 	err1 = 0;
 	for(count i=0; i<n; i++) {
-		//std::cout<<dynbc_scores[i]-bc_scores[i]/double(n*(n-1))<<std::endl;
 		double x = dynbc_scores[i]-bc_scores[i];
 		if (x > err1)
 			err1 = x;
 	}
-	std::cout<<"After the edge insertion: "<<err1<<std::endl;
+	DEBUG("After the edge insertion: ");
 
 }
 
@@ -241,7 +239,7 @@ TEST_F(DynBetweennessGTest, timeDynExactBetweenness) {
 	dynbc.run();
 	INFO("update");
 	GraphEvent ev;
-	count nInsertions = 100, i = 0;
+	count nInsertions = 10, i = 0;
 	while (i < nInsertions) {
 		node v1 = Sampling::randomNode(G);
 		node v2 = Sampling::randomNode(G);
@@ -256,64 +254,70 @@ TEST_F(DynBetweennessGTest, timeDynExactBetweenness) {
 
 TEST_F(DynBetweennessGTest, testCorrectnessDynExactBetweenness) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/PGPgiantcompo.graph");
+	DorogovtsevMendesGenerator generator(1000);
+	Graph G = generator.generate();
 	int n = G.upperNodeIdBound();
-	DynBetweenness dynbc = DynBetweenness(G);
+	DynBetweenness dynbc = DynBetweenness(G, true);
 	Betweenness bc = Betweenness(G);
 	dynbc.run();
 	bc.run();
-	std::cout<<"Before the edge insertion: "<<std::endl;
+	DEBUG("Before the edge insertion: ");
 	GraphEvent ev;
 	count nInsertions = 10, i = 0;
 	while (i < nInsertions) {
 		node v1 = Sampling::randomNode(G);
 		node v2 = Sampling::randomNode(G);
 		if (v1 != v2 && !G.hasEdge(v1, v2)) {
+			i++;
 			G.addEdge(v1, v2);
 			ev = GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0);
 			dynbc.update(ev);
 			bc.run();
 			std::vector<double> dynbc_scores = dynbc.scores();
 			std::vector<double> bc_scores = bc.scores();
-			int i;
+			int j;
 			const double tol = 1e-6;
-			for(i=0; i<n; i++) {
-				EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
+			for(j=0; j<n; j++) {
+				EXPECT_NEAR(dynbc_scores[j], bc_scores[j], tol) << "Scores are different";
 			}
-			i++;
 		}
 	}
 }
 
 TEST_F(DynBetweennessGTest, testWeightedDynExactBetweenness) {
 	METISGraphReader reader;
-	Graph G1 = reader.read("input/PGPgiantcompo.graph");
+	DorogovtsevMendesGenerator generator(1000);
+	Graph G1 = generator.generate();
 	Graph G = Graph(G1, true, false);
-	std::cout<<G.isWeighted()<<std::endl;
+	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
 	int n = G.upperNodeIdBound();
-	DynBetweenness dynbc = DynBetweenness(G);
+	DynBetweenness dynbc = DynBetweenness(G, true);
 	Betweenness bc = Betweenness(G);
 	dynbc.run();
 	bc.run();
-	std::cout<<"Before the edge insertion: "<<std::endl;
+	DEBUG("Before the edge insertion: ");
 	GraphEvent ev;
-	count nInsertions = 10, i = 0;
+	count nInsertions = 1, i = 0;
 	while (i < nInsertions) {
+		DEBUG("Sampling a new edge");
 		node v1 = Sampling::randomNode(G);
 		node v2 = Sampling::randomNode(G);
 		if (v1 != v2 && !G.hasEdge(v1, v2)) {
+			i++;
+			DEBUG("Adding edge number ", i);
 			G.addEdge(v1, v2);
 			ev = GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0);
+			DEBUG("Running update with dynamic bc");
 			dynbc.update(ev);
+			DEBUG("Running from scratch with bc");
 			bc.run();
 			std::vector<double> dynbc_scores = dynbc.scores();
 			std::vector<double> bc_scores = bc.scores();
-			int i;
+			int j;
 			const double tol = 1e-6;
-			for(i=0; i<n; i++) {
-				EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
+			for(j=0; j<n; j++) {
+				EXPECT_NEAR(dynbc_scores[j], bc_scores[j], tol) << "Scores are different";
 			}
-			i++;
 		}
 	}
 }
