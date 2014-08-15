@@ -107,7 +107,8 @@ try:
 		os.environ["CXX"] = "g++-4.7"
 
 	else:
-		pass
+		os.environ["CC"] = "g++"
+		os.environ["CXX"] = "g++"
 except:
 	os.environ["CC"] = "g++"
 	os.environ["CXX"] = "g++"
