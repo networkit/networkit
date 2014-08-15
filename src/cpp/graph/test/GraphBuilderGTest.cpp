@@ -10,17 +10,18 @@
 #include <algorithm>
 
 #include "GraphBuilderGTest.h"
+#include "../../auxiliary/Random.h"
 
 namespace NetworKit {
 
 INSTANTIATE_TEST_CASE_P(InstantiationName, GraphBuilderGTest, testing::Values(
-						std::make_tuple(false, false, false),
-						std::make_tuple(true, false, false),
-						std::make_tuple(false, true, false),
-						std::make_tuple(true, true, false),
-						std::make_tuple(false, false, true),
-						std::make_tuple(true, false, true),
-						std::make_tuple(false, true, true),
+						// std::make_tuple(false, false, false),
+						// std::make_tuple(true, false, false),
+						// std::make_tuple(false, true, false),
+						// std::make_tuple(true, true, false),
+						// std::make_tuple(false, false, true),
+						// std::make_tuple(true, false, true),
+						// std::make_tuple(false, true, true),
 						std::make_tuple(true, true, true)
 						));
 
@@ -324,7 +325,70 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 /** toGraph **/
 
 TEST_P(GraphBuilderGTest, testSameAsGraph) {
-	FAIL();
+	const double epsilon = 1e-6;
+	const count runs = 10;
+	for (index i = 0; i < runs; i++) {
+		count n = Aux::Random::integer(100);
+		GraphBuilder b(n, isWeighted(), isDirected());
+		Graph G_expected(n, isWeighted(), isDirected());
+
+		G_expected.forNodes([&](node v) {
+			double p = Aux::Random::probability();
+			if (p < 0.1) {
+				// new node
+				n++;
+				b.addNode();
+				G_expected.addNode();
+			} else if (p < 0.3) {
+				// self loop
+				edgeweight ew = Aux::Random::probability();
+				b.addEdge(v, v, ew);
+				G_expected.addEdge(v, v, ew);
+			} else {
+				node u = p < 0.2 ? v : Aux::Random::integer(n);
+				edgeweight ew = Aux::Random::probability();
+				b.addEdge(v, u, ew);
+				G_expected.addEdge(v, u, ew);
+			}
+
+			if (isWeighted()) {
+				node u = Aux::Random::integer(n);
+				edgeweight ew = Aux::Random::probability();
+				if (p < 0.25) {
+					b.setWeight(v, u, ew);
+					G_expected.setWeight(v, u, ew);
+				} else if (p < 0.5) {
+					b.increaseWeight(v, u, ew);
+					G_expected.increaseWeight(v, u, ew);
+				}
+			}
+		});
+
+		Graph G_actual = toGraph(b);
+
+		EXPECT_EQ(G_expected.numberOfNodes(), G_actual.numberOfNodes());
+		EXPECT_EQ(G_expected.numberOfEdges(), G_actual.numberOfEdges());
+		EXPECT_EQ(G_expected.upperNodeIdBound(), G_actual.upperNodeIdBound());
+		EXPECT_EQ(G_expected.numberOfSelfLoops(), G_actual.numberOfSelfLoops());
+		G_expected.forNodes([&](node v) {
+			EXPECT_TRUE(G_actual.hasNode(v));
+			EXPECT_EQ(G_expected.degree(v), G_actual.degree(v));
+			EXPECT_EQ(G_expected.degreeIn(v), G_actual.degreeIn(v));
+			EXPECT_EQ(G_expected.degreeOut(v), G_actual.degreeOut(v));
+			EXPECT_NEAR(G_expected.weightedDegree(v), G_actual.weightedDegree(v), epsilon);
+			EXPECT_NEAR(G_expected.volume(v), G_actual.volume(v), epsilon);
+		});
+		G_expected.forWeightedEdges([&](node u, node v, edgeweight ew) {
+			EXPECT_TRUE(G_actual.hasEdge(u, v));
+			EXPECT_NEAR(ew, G_actual.weight(u, v), epsilon);
+		});
+		G_actual.forNodes([&](node v) {
+			EXPECT_TRUE(G_expected.hasNode(v));
+		});
+		G_actual.forEdges([&](node u, node v) {
+			EXPECT_TRUE(G_expected.hasEdge(u, v));
+		});
+	}
 }
 
 TEST_P(GraphBuilderGTest, testForValidStateAfterToGraph) {
@@ -398,11 +462,51 @@ TEST_P(GraphBuilderGTest, testParallelForNodes) {
 }
 
 TEST_P(GraphBuilderGTest, testForNodePairs) {
-	FAIL();
+	count n = 10;
+	GraphBuilder b = createGraphBuilder(n);
+	
+	std::vector< std::vector<bool> > visited(n, std::vector<bool>(n, false));
+	b.forNodePairs([&](node u, node v) {
+		if (visited[u][v] || visited[v][u]) {
+			FAIL();
+		} else {
+			visited[u][v] = true;
+		}
+	});
+	
+	for (node u = 0; u < n; u++) {
+		for (node v = 0; v < n; v++) {
+			if (u == v) {
+				ASSERT_FALSE(visited[u][u]);
+			} else {
+				ASSERT_TRUE(visited[u][v] ^ visited[v][u]);
+			}
+		}
+	}
 }
 
 TEST_P(GraphBuilderGTest, testParallelForNodePairs) {
-	FAIL();
+	count n = 10;
+	GraphBuilder b = createGraphBuilder(n);
+	
+	std::vector< std::vector<bool> > visited(n, std::vector<bool>(n, false));
+	b.forNodePairs([&](node u, node v) {
+		if (visited[u][v]) {
+			FAIL();
+		} else {
+			visited[u][v] = true;
+		}
+	});
+
+	for (node u = 0; u < n; u++) {
+		for (node v = 0; v < n; v++) {
+			if (u == v) {
+				ASSERT_FALSE(visited[u][u]);
+			} else {
+				ASSERT_TRUE(visited[u][v] ^ visited[v][u]);
+			}
+		}
+	}
 }
 
 } /* namespace NetworKit */
