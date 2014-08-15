@@ -79,7 +79,7 @@ class GephiStreamingClient:
             idx = 0
             for edge in graph.edges():
                 edgeId = graph.edgeId(edge[0], edge[1])
-                eAttrs = {aName:values[idx], "Type":"Undirected"}
+                eAttrs = {attribute_name:values[idx], "Type":"Undirected"}
                 self._pygephi.change_edge(edgeId, edge[0], edge[1], False, **eAttrs)
                 idx += 1
 
