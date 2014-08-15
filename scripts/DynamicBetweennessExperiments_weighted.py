@@ -50,6 +50,7 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	dynApprBc2 = DynApproxBetweenness(G, epsilon, delta, False)
 	print ("Running dyn approx bc without predecessors")
 	dynApprBc2.run()
+	print ("Finished initialization")
 	# apply the batches
 	nExperiments = nEdges // batchSize
 	timesBc = []
@@ -66,10 +67,12 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		for j in range (0, batchSize):
 			updater.update([batch[j]])
 			# update the betweenness with the dynamic exact algorithm
+			print ("Updating with dyn bc (with predecessors)")
 			t = stopwatch.Timer()
 			dynBc.update(batch[j])
 			totalTime += t.stop()
 			# update the betweenness with the dynamic exact algorithm (without predecessors)
+			print ("Updating with dyn bc (without predecessors)")
 			t = stopwatch.Timer()
 			dynBc2.update(batch[j])
 			totalTime2 += t.stop()
@@ -118,15 +121,18 @@ def test(G, nEdges, batchSize, epsilon, delta):
 
 
 setNumberOfThreads(1)
-G = generators.DorogovtsevMendesGenerator(100000).generate()
-cc = properties.ConnectedComponents(G)
+G = generators.DorogovtsevMendesGenerator(1000).generate()
+G1 = Graph(G.numberOfNodes(), True, False)
+for e in G.edges():
+	G1.addEdge(e[0], e[1], 1.0)
+cc = properties.ConnectedComponents(G1)
 cc.run()
 if (cc.numberOfComponents() == 1) :
-	nEdges = 1000
-	batchSize = 100
-	epsilon = 0.05
+	nEdges = 10
+	batchSize = 1
+	epsilon = 0.1
 	delta = 0.1
-	times = test(G, nEdges, batchSize, epsilon, delta)
+	times = test(G1, nEdges, batchSize, epsilon, delta)
 	print (times)
 else:
 	print ("The generated graph is not connected.")
