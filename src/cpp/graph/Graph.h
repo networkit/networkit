@@ -19,6 +19,7 @@
 #include "Coordinates.h"
 #include "../viz/Point.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -28,6 +29,7 @@ namespace NetworKit {
  */
 class Graph final {
 
+	friend class ParallelPartitionCoarsening;
 	friend class GraphBuilder;
 
 private:
@@ -77,6 +79,7 @@ private:
 	 * Returns the index of node v in the array of outgoing edges of node u.
 	 */
 	index indexInOutEdgeArray(node u, node v) const;
+
 
 public:
 
@@ -157,6 +160,15 @@ public:
 	 * @return A string representation.
 	 */
 	std::string toString() const;
+
+
+	/* COPYING */
+
+	/*
+	* Copies all nodes to a new graph
+	* @return graph with the same nodes.
+	*/
+	Graph copyNodes() const;
 
 
 	/* NODE MODIFIERS */
@@ -344,9 +356,11 @@ public:
 	index upperNodeIdBound() const { return z; }
 
 	/**
-	 * Check for invalid graph states, such as multiedges
+	 * Check for invalid graph states, such as multi-edges.
+	 * @return False if the graph is in invalid state.
 	 */
 	bool consistencyCheck() const;
+
 
 	/* DYNAMICS */
 
@@ -693,9 +707,10 @@ public:
 	 * @param handle Takes parameter <code>(node)</code>.
 	 */
 	template<typename L> void BFSfrom(node r, L handle) const;
+	template<typename L> void BFSfrom(std::vector<node> &startNodes, L handle) const;
 
 
-	template<typename L> void BFSEdgesfrom(node r, L handle) const;
+	template<typename L> void BFSEdgesFrom(node r, L handle) const;
 
 	/**
 	 * Iterate over nodes in depth-first search order starting from r until connected component
@@ -707,7 +722,16 @@ public:
 	template<typename L> void DFSfrom(node r, L handle) const;
 
 
-	template<typename L> void DFSEdgesfrom(node r, L handle) const;
+	template<typename L> void DFSEdgesFrom(node r, L handle) const;
+
+
+	/* SPECIAL */
+
+
+	/**
+	* Treat the adjacency datastructure as an undirected graph.
+	*/
+	void treatAsUndirected();
 };
 
 /* NODE ITERATORS */
@@ -777,7 +801,7 @@ void Graph::forNodePairs(L handle) const {
 
 template<typename L>
 void Graph::parallelForNodePairs(L handle) const {
-	#pragma omp parallel for
+	#pragma omp parallel for schedule(guided)
 	for (node u = 0; u < z; ++u) {
 		if (exists[u]) {
 			for (node v = u + 1; v < z; ++v) {
@@ -1127,26 +1151,40 @@ double Graph::parallelSumForWeightedEdges(L handle) const {
 
 template<typename L>
 void Graph::BFSfrom(node r, L handle) const {
+	std::vector<node> startNodes(1, r);
+	BFSfrom(startNodes, handle);
+}
+
+template<typename L>
+void Graph::BFSfrom(std::vector<node> &startNodes, L handle) const {
 	std::vector<bool> marked(z);
-	std::queue<node> q;
-	q.push(r); // enqueue root
-	marked[r] = true;
+	std::queue<node> q, qNext;
+	count dist = 0;
+	// enqueue start nodes
+	for (node u : startNodes) {
+		q.push(u);
+		marked[u] = true;
+	}
 	do {
 		node u = q.front();
 		q.pop();
 		// apply function
-		handle(u);
+		handle(u, dist);
 		forNeighborsOf(u, [&](node v) {
 			if (!marked[v]) {
-				q.push(v);
+				qNext.push(v);
 				marked[v] = true;
 			}
 		});
+		if (q.empty() && !qNext.empty()) {
+			q.swap(qNext);
+			++dist;
+		}
 	} while (!q.empty());
 }
 
 template<typename L>
-void Graph::BFSEdgesfrom(node r, L handle) const {
+void Graph::BFSEdgesFrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::queue<node> q;
 	q.push(r); // enqueue root
@@ -1186,7 +1224,7 @@ void Graph::DFSfrom(node r, L handle) const {
 }
 
 template<typename L>
-void Graph::DFSEdgesfrom(node r, L handle) const {
+void Graph::DFSEdgesFrom(node r, L handle) const {
 	std::vector<bool> marked(z);
 	std::stack<node> s;
 	s.push(r); // enqueue root

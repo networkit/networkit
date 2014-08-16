@@ -20,7 +20,7 @@ class ParallelAgglomerativeClusterer: public NetworKit::CommunityDetectionAlgori
 
 public:
 
-	virtual Partition run(Graph& G);
+	virtual Partition run(const Graph& G);
 
 	virtual std::string toString() const;
 };

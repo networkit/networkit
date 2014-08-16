@@ -196,7 +196,7 @@ def properties(G, settings):
 		nComponents, componentSizes = components(G)
 
 	# diameter
-	if settings["diameter"] and nComponents == 1:
+	if settings["diameter"]:
 		dia = Diameter.estimatedDiameterRange(G, error=0.1)
 	else:
 		dia = None

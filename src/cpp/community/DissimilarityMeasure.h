@@ -9,6 +9,7 @@
 #define DISSIMILARITYMEASURE_H_
 
 #include "../structures/Partition.h"
+#include "../structures/Cover.h"
 
 namespace NetworKit {
 
@@ -21,11 +22,10 @@ class DissimilarityMeasure {
 
 public:
 
-	/** Default destructor */
-	virtual ~DissimilarityMeasure();
+	virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second) = 0;
 
 
-	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second) = 0;
+	virtual double getDissimilarity(const Graph &G, const Cover &first, const Cover &second);
 };
 
 } /* namespace NetworKit */

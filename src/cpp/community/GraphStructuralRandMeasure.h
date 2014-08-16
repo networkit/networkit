@@ -21,10 +21,8 @@ class GraphStructuralRandMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	/** Default destructor */
-	virtual ~GraphStructuralRandMeasure();
 
-	virtual double getDissimilarity(Graph& G, Partition& first, Partition& second);
+	virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
 
 	//virtual double getDissimilarity(Graph& G, Clustering& zeta1, Graph& G2, Clustering& zeta2);
 };

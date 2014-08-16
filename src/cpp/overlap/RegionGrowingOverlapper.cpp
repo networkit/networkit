@@ -10,8 +10,10 @@
 
 namespace NetworKit {
 
-Partition RegionGrowingOverlapper::run(Graph& G,
-		std::vector<Partition>& clusterings) {
+
+
+Partition RegionGrowingOverlapper::run(const Graph& G,
+		const std::vector<Partition>& clusterings) {
 	// TODO: test
 
 	uint64_t n = G.numberOfNodes();
@@ -65,12 +67,12 @@ Partition RegionGrowingOverlapper::run(Graph& G,
 		// >>>>>
 
 		// <<<<< new code
-		G.BFSfrom(r, [&](node u) {
+		G.BFSfrom(r, [&](node u, count dist) {
 			unvisited.erase(u);
 			// check for all incident edges if u and v belong in the same core cluster
 			G.forEdgesOf(u, [&](node u, node v) {
 				bool together = true;
-				for (std::vector<Partition>::iterator iter = clusterings.begin(); iter != clusterings.end(); ++iter ) {
+				for (auto iter = clusterings.begin(); iter != clusterings.end(); ++iter ) {
 					together = together && (iter->subsetOf(u) == iter->subsetOf(v));
 				}
 				if (together) {
