@@ -132,7 +132,18 @@ public:
 private:
 	Graph toGraphParallel();
 	Graph toGraphSequential();
+
+	void reset();
+	template <typename T>
+	static void copyAndClear(std::vector<T>& source, std::vector<T>& target);
+	static void correctNumberOfEdges(Graph& G, count numberOfSelfLoops);
 };
+
+template <typename T>
+void GraphBuilder::copyAndClear(std::vector<T>& source, std::vector<T>& target) {
+	std::copy(source.begin(), source.end(), std::back_inserter(target));
+	source.clear();	
+}
 
 template<typename L>
 void GraphBuilder::forNodes(L handle) const {

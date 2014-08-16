@@ -131,59 +131,40 @@ Graph GraphBuilder::toGraphParallel() {
 			}
 		}
 
-		std::copy(halfEdges[v].begin(), halfEdges[v].end(), std::back_inserter(G.outEdges[v]));
-		halfEdges[v].clear();
-
+		copyAndClear(halfEdges[v], G.outEdges[v]);
 		if (weighted) {
-			std::copy(halfEdgeWeights[v].begin(), halfEdgeWeights[v].end(), std::back_inserter(G.outEdgeWeights[v]));
-			halfEdgeWeights[v].clear();
+			copyAndClear(halfEdgeWeights[v], G.outEdgeWeights[v]);
 		}
 
 		if (directed) {
 			G.inDeg[v] = inDeg;
 			G.outDeg[v] = outDeg;
 			for (int tid = 0; tid < maxThreads; tid++) {
-				std::copy(inEdgesPerThread[tid][v].begin(), inEdgesPerThread[tid][v].end(), std::back_inserter(G.inEdges[v]));
-				inEdgesPerThread[tid][v].clear();
-			}
-			if (weighted) {
-				for (int tid = 0; tid < maxThreads; tid++) {
-					std::copy(inWeightsPerThread[tid][v].begin(), inWeightsPerThread[tid][v].end(), std::back_inserter(G.inEdgeWeights[v]));
-					inWeightsPerThread[tid][v].clear();
+				copyAndClear(inEdgesPerThread[tid][v], G.inEdges[v]);
+				if (weighted) {
+					copyAndClear(inWeightsPerThread[tid][v], G.inEdgeWeights[v]);
 				}	
 			}
 		} else {
 			G.outDeg[v] = inDeg + outDeg;
 			for (int tid = 0; tid < maxThreads; tid++) {
-				std::copy(inEdgesPerThread[tid][v].begin(), inEdgesPerThread[tid][v].end(), std::back_inserter(G.outEdges[v]));
-				inEdgesPerThread[tid][v].clear();
-			}
-			if (weighted) {
-				for (int tid = 0; tid < maxThreads; tid++) {
-					std::copy(inWeightsPerThread[tid][v].begin(), inWeightsPerThread[tid][v].end(), std::back_inserter(G.outEdgeWeights[v]));
-					inWeightsPerThread[tid][v].clear();
+				copyAndClear(inEdgesPerThread[tid][v], G.outEdges[v]);
+				if (weighted) {
+					copyAndClear(inWeightsPerThread[tid][v], G.outEdgeWeights[v]);
 				}	
 			}
 		}
 	});
 
 	// calculate correct m
-	forNodes([&](node v) {
-		G.m += G.degree(v);
-	});
-	if (!directed) {
-		count numberOfSelfLoops = 0;
-		for (int tid = 0; tid < maxThreads; tid++) {
-			numberOfSelfLoops += numberOfSelfLoopsPerThread[tid];
-		}	
-		// self loops are already just counted once
-		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
+	count numberOfSelfLoops = 0;
+	for (auto c : numberOfSelfLoopsPerThread) {
+		numberOfSelfLoops += c;
 	}
+	correctNumberOfEdges(G, numberOfSelfLoops);
 
 	// bring the builder into an empty, but valid state
-	n = 0;
-	halfEdges.clear();
-	halfEdgeWeights.clear();
+	reset();
 
 	return G;
 }
@@ -282,20 +263,30 @@ Graph GraphBuilder::toGraphSequential() {
 	}
 
 	// calculate correct m	
-	G.forNodes([&](node v) {
-		G.m += G.degree(v);
-	});
-	if (!directed) {
-		// self loops are already just counted once
-		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
-	}
+	correctNumberOfEdges(G, numberOfSelfLoops);
 
 	// bring the builder into an empty, but valid state
+	reset();
+
+	return G;
+}
+
+
+void GraphBuilder::reset() {
 	n = 0;
 	halfEdges.clear();
 	halfEdgeWeights.clear();
+}
 
-	return G;
+void GraphBuilder::correctNumberOfEdges(Graph& G, count numberOfSelfLoops) {
+	G.m = 0;
+	G.forNodes([&](node v) {
+		G.m += G.degree(v);
+	});
+	if (!G.isDirected()) {
+		// self loops are already just counted once
+		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
+	}
 }
 
 } /* namespace NetworKit */
