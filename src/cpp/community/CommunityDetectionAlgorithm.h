@@ -26,7 +26,7 @@ public:
 	 * Apply algorithm to graph
 	 * @return partition of the node set
 	 */
-	virtual Partition run(Graph& G) = 0;
+	virtual Partition run(const Graph& G) = 0;
 
 	/**
 	 * @return string representation of algorithm and parameters.

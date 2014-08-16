@@ -6,6 +6,7 @@
  */
 
 #include "PageRank.h"
+#include "../auxiliary/NumericTools.h"
 
 namespace NetworKit {
 
@@ -50,6 +51,7 @@ void NetworKit::PageRank::run() {
 	double sum = G.parallelSumForNodes([&](node u) {
 		return scoreData[u];
 	});
+	assert(! Aux::NumericTools::equal(sum, 0.0, 1e-15));
 	G.parallelForNodes([&](node u) {
 		scoreData[u] /= sum;
 	});

@@ -136,9 +136,9 @@ TEST_F(PartitionGTest, testUpperBound) {
 	count n = 6542;
 	Partition p(n);
 	p.allToSingletons();
-	// ID start with 1, plus 1 for hard upper bound
-	count ub = n+1;
-	EXPECT_EQ(p.upperBound(),ub);
+	// ID start with 0
+	count ub = n;
+	EXPECT_EQ(ub, p.upperBound());
 }
 
 TEST_F(PartitionGTest, testUpperBound2) {
@@ -150,8 +150,8 @@ TEST_F(PartitionGTest, testUpperBound2) {
 	}
 	// 6542 because of singletons
 	// +(6542/2) = 3271 merge operations
-	// +1 for "hard" upper bound = 9814
-	EXPECT_EQ(9814u, p.upperBound());
+	// = 9813
+	EXPECT_EQ(9813u, p.upperBound());
 }
 
 TEST_F(PartitionGTest, testContainsSuccessSingletons) {

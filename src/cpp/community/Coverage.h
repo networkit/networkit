@@ -11,15 +11,13 @@
 #include "QualityMeasure.h"
 
 namespace NetworKit {
-	
+
 /**
  * @ingroup community
  * Coverage is the fraction of intra-cluster edges.
  */
 class Coverage: public NetworKit::QualityMeasure {
 public:
-	/** Default destructor */
-	virtual ~Coverage();
 
 	virtual double getQuality(const Partition& zeta, const Graph& G);
 };

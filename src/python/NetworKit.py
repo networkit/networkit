@@ -20,25 +20,18 @@ import stopwatch
 # NetworKit submodules
 import graph
 import sys
-try:
-	import graphio
-except ImportError:
-	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
-	import _graphio33 as graphio
-
-#if sys.version_info < (3,4):
-#	print("Please update to a Python version >=3.4, however, NetworKit should still work")
-#	import _graphio33 as graphio
-#else:
-#	import graphio
+import graphio
 import community
 import centrality
 import generators
 import properties
+import structures
 import engineering
 import toolbox
 import dynamic
 import gephi
+import partitioning
+import coloring
 
 try:
 	import viztools

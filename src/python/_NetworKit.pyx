@@ -96,14 +96,18 @@ cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count, bool, bool) except +
+		_Graph(const _Graph& other) except +
 		void stealFrom(_Graph)
 		count numberOfNodes() except +
 		count numberOfEdges() except +
+		count upperNodeIdBound() except +
 		count degree(node u) except +
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
+		bool isIsolated(node u) except +
 		node addNode() except +
 		void removeNode(node u) except +
+		bool hasNode(node u) except +
 		void addEdge(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		bool hasEdge(node u, node v) except +
@@ -123,12 +127,12 @@ cdef extern from "../cpp/graph/Graph.h":
 
 
 cdef class Graph:
-	""" An undirected graph (with optional weights) and parallel iterator methods. 
-		
+	""" An undirected graph (with optional weights) and parallel iterator methods.
+
 		Graph(n=0, weighted=False, directed=False)
 
 		Create a graph of `n` nodes. The graph has assignable edge weights if `weighted` is set to True.
-	 	If `weighted` is set to False each edge has edge weight 1.0 and any other weight assignment will 
+	 	If `weighted` is set to False each edge has edge weight 1.0 and any other weight assignment will
 	 	be ignored.
 
 	    Parameters
@@ -152,6 +156,7 @@ cdef class Graph:
 	# 	return self
 
 	cdef setThis(self, _Graph* other):
+		del self._this
 		self._this = other
 		return self
 
@@ -159,10 +164,22 @@ cdef class Graph:
 	def __dealloc__(self):
 		del self._this
 
+	def __copy__(self):
+		"""
+		Generates a copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
+
+	def __deepcopy__(self, memo):
+		"""
+		Generates a (deep) copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
+
 	def numberOfNodes(self):
-		""" 
+		"""
 		Get the number of nodes in the graph.
-	 	
+
 	 	Returns
 	 	-------
 	 	count
@@ -171,9 +188,9 @@ cdef class Graph:
 		return self._this.numberOfNodes()
 
 	def numberOfEdges(self):
-		""" 
+		"""
 		Get the number of edges in the graph.
-	 	
+
 	 	Returns
 	 	-------
 	 	count
@@ -181,10 +198,21 @@ cdef class Graph:
 		"""
 		return self._this.numberOfEdges()
 
+	def upperNodeIdBound(self):
+		"""
+		Get an upper bound for the node ids in the graph
+
+		Returns
+		-------
+		count
+			An upper bound for the node ids in the graph
+		"""
+		return self._this.upperNodeIdBound()
+
 	def degree(self, u):
-		""" 
+		"""
 		Get the number of neighbors of `v`.
-	 	
+
 		Parameters
 		----------
 		v : node
@@ -203,6 +231,22 @@ cdef class Graph:
 	def degreeOut(self, u):
 		return self._this.degreeOut(u)
 
+	def isIsolated(self, u):
+		"""
+		If the node `u` is isolated
+
+		Parameters
+		----------
+		u : node
+			Node.
+
+		Returns
+		-------
+		bool
+			If the node is isolated
+		"""
+		return self._this.isIsolated(u)
+
 	def addNode(self):
 		""" Add a new node to the graph and return it.
 
@@ -215,7 +259,7 @@ cdef class Graph:
 
 	def removeNode(self, u):
 		""" Remove the isolated node `u` from the graph.
-	 	
+
 	 	Parameters
 	 	----------
 	 	u : node
@@ -223,11 +267,26 @@ cdef class Graph:
 
 	 	Notes
 	 	-----
-	 	Although it would be convenient to remove all incident edges at the same time, this causes complications for 
-	 	dynamic applications. Therefore, removeNode is an atomic event. All incident edges need to be removed first 
+	 	Although it would be convenient to remove all incident edges at the same time, this causes complications for
+	 	dynamic applications. Therefore, removeNode is an atomic event. All incident edges need to be removed first
 	 	and an exception is thrown otherwise.
 		"""
 		self._this.removeNode(u)
+
+	def hasNode(self, u):
+		""" Checks if the Graph has the node `u`, i.e. if `u` hasn't been deleted and is in the range of valid ids.
+
+		Parameters
+		----------
+		u : node
+			Node
+
+		Returns
+		-------
+		bool
+			If the Graph has the node `u`
+		"""
+		return self._this.hasNode(u)
 
 	def addEdge(self, u, v, w=1.0):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally
@@ -292,7 +351,7 @@ cdef class Graph:
 
 	def nodes(self):
 		""" Get list of all nodes.
-	 	
+
 	 	Returns
 	 	-------
 	 	list
@@ -302,7 +361,7 @@ cdef class Graph:
 
 	def edges(self):
 		""" Get list of edges as node pairs.
-	 
+
 	 	Returns
 	 	-------
 	 	list
@@ -312,13 +371,13 @@ cdef class Graph:
 
 	def neighbors(self, u):
 		""" Get list of neighbors of `u`.
-	 	
+
 	 	Parameters
 	 	----------
 	 	u : node
 	 		Node.
 
-	 	Returns 
+	 	Returns
 	 	-------
 	 	list
 	 		List of neighbors of `u.
@@ -330,7 +389,7 @@ cdef class Graph:
 		Returns
 		-------
 		bool
-			True if this graph supports edge weights other than 1.0.	 
+			True if this graph supports edge weights other than 1.0.
 		"""
 		return self._this.isWeighted()
 
@@ -421,15 +480,16 @@ cdef class Graph:
 
 cdef extern from "../cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS(_Graph G, node source) except +
+		_BFS(_Graph G, node source, bool storePaths, bool storeStack) except +
 		void run() except +
+		void run(node t) except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
 cdef class BFS:
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source)
+	BFS(G, source, [storePaths], [storeStack])
 
 	Create BFS for `G` and source node `source`.
 
@@ -438,28 +498,34 @@ cdef class BFS:
 	G : Graph
 		The graph.
 	source : node
-		The source node of the breadth-first search.		
+		The source node of the breadth-first search.
+	storePaths : bool
+		store paths and number of paths?
 
 	"""
 	cdef _BFS* _this
 
-	def __cinit__(self, Graph G, source):		
-		self._this = new _BFS(dereference(G._this), source)
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._this = new _BFS(dereference(G._this), source, storePaths, storeStack)
 
-	def run(self):
-		"""	
+
+	def run(self, t = None):
+		"""
 		Breadth-first search from source.
-		
+
 		Returns
 		-------
 		vector
 			Vector of unweighted distances from source node, i.e. the
 	 		length (number of edges) of the shortest path from source to any other node.
 		"""
-		self._this.run()
+		if t == None:
+			self._this.run()
+		else:
+			self._this.run(t)
 
 	def getDistances(self):
-		""" 
+		"""
 		Returns a vector of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
 
@@ -486,19 +552,102 @@ cdef class BFS:
 		return self._this.getPath(t)
 
 
+cdef extern from "../cpp/graph/DynBFS.h":
+	cdef cppclass _DynBFS "NetworKit::DynBFS":
+		_DynBFS(_Graph G, node source) except +
+		void init() except +
+		vector[edgeweight] getDistances() except +
+		vector[node] getPath(node t) except +
+		void update(vector[_GraphEvent]) except +
+
+cdef class DynBFS:
+	""" Dynamic version of BFS.
+
+	DynBFS(G, source)
+
+	Create DynBFS for `G` and source node `source`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	source : node
+		The source node of the breadth-first search.
+	storeStack : bool
+		maintain a stack of nodes in order of decreasing distance?
+	"""
+	cdef _DynBFS* _this
+
+	def __cinit__(self, Graph G, source):
+		self._this = new _DynBFS(dereference(G._this), source)
+
+	def init(self):
+		"""
+		Breadth-first search from source.
+
+		Returns
+		-------
+		vector
+			Vector of unweighted distances from source node, i.e. the
+			length (number of edges) of the shortest path from source to any other node.
+		"""
+		self._this.init()
+
+	def getDistances(self):
+		"""
+		Returns a vector of weighted distances from the source node, i.e. the
+			length of the shortest path from the source node to any other node.
+
+			Returns
+			-------
+			vector
+				The weighted distances from the source node to any other node in the graph.
+		"""
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+
+		Returns
+		-------
+		vector
+			A shortest path from source to `t or an empty path.
+		"""
+		return self._this.getPath(t)
+
+	def update(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.update(_batch)
+
+
+
 cdef extern from "../cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-		_Dijkstra(_Graph G, node source) except +
+		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack) except +
 		void run() except +
+		void run(node t) except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
 cdef class Dijkstra:
 	""" Dijkstra's SSSP algorithm.
-	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to 
+	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source)
+    Dijkstra(G, source, [storePaths], [storeStack])
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -508,15 +657,31 @@ cdef class Dijkstra:
 		The graph.
 	source : node
 		The source node.
+	storePaths : bool
+		store paths and number of paths?
+	storeStack : bool
+		maintain a stack of nodes in order of decreasing distance?
     """
 	cdef _Dijkstra* _this
 
-	def __cinit__(self, Graph G, source):		
-		self._this = new _Dijkstra(dereference(G._this), source)
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._this = new _Dijkstra(dereference(G._this), source, storePaths, storeStack)
 
-	def run(self):
-		""" Performs the Dijkstra SSSP algorithm on the graph given in the constructor. """
-		self._this.run()
+
+	def run(self, t = None):
+		"""
+		Breadth-first search from source.
+
+		Returns
+		-------
+		vector
+			Vector of unweighted distances from source node, i.e. the
+	 		length (number of edges) of the shortest path from source to any other node.
+		"""
+		if t == None:
+			self._this.run()
+		else:
+			self._this.run(t)
 
 	def getDistances(self):
 		""" Returns a vector of weighted distances from the source node, i.e. the
@@ -545,6 +710,86 @@ cdef class Dijkstra:
 		return self._this.getPath(t)
 
 
+cdef extern from "../cpp/graph/DynDijkstra.h":
+	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra":
+		_DynDijkstra(_Graph G, node source) except +
+		void run() except +
+		vector[edgeweight] getDistances() except +
+		vector[node] getPath(node t) except +
+		void update(vector[_GraphEvent]) except +
+
+cdef class DynDijkstra:
+	""" Dynamic version of Dijkstra.
+
+	DynDijkstra(G, source)
+
+	Create DynDijkstra for `G` and source node `source`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	source : node
+		The source node of the breadth-first search.
+
+	"""
+	cdef _DynDijkstra* _this
+
+	def __cinit__(self, Graph G, source):
+		self._this = new _DynDijkstra(dereference(G._this), source)
+
+	def init(self):
+		"""
+		SSSP search from source.
+
+		Returns
+		-------
+		vector
+			Vector of distances from source node, i.e. the length of the
+			shortest path from source to any other node.
+		"""
+		self._this.run()
+
+	def getDistances(self):
+		"""
+		Returns a vector of weighted distances from the source node, i.e. the
+			length of the shortest path from the source node to any other node.
+
+		Returns
+		-------
+		vector
+			The weighted distances from the source node to any other node in the graph.
+		"""
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+
+		Returns
+		-------
+		vector
+			A shortest path from source to `t or an empty path.
+		"""
+		return self._this.getPath(t)
+
+	def update(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.update(_batch)
+
+
 cdef extern from "../cpp/graph/Subgraph.h":
 	cdef cppclass _Subgraph "NetworKit::Subgraph":
 		_Subgraph() except +
@@ -556,7 +801,7 @@ cdef class Subgraph:
 
 	def fromNodes(self, Graph G, nodes): #unordered_set[node]
 		""" Create a subgraph induced by the set `nodes`.
-	 	
+
 	 	Parameters
 	 	----------
 	 	G : Graph
@@ -578,6 +823,37 @@ cdef class Subgraph:
 		for node in nodes:
 			nnodes.insert(node);
 		return Graph().setThis(self._this._fromNodes(dereference(G._this), nnodes))
+
+
+cdef extern from "../cpp/graph/SpanningForest.h":
+	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
+		_SpanningForest(_Graph) except +
+		_Graph* _generate()
+
+cdef class SpanningForest:
+	""" Generates a spanning forest for a given graph
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		nodes : list
+			A subset of nodes of `G` which induce the subgraph.
+	"""
+	cdef _SpanningForest* _this
+
+	def __cinit__(self, Graph G not None):
+		self._this = new _SpanningForest(dereference(G._this))
+
+
+	def __dealloc__(self):
+		del self._this
+
+	def generate(self):
+		return Graph().setThis(self._this._generate());
+
+
+
 
 cdef extern from "../cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
@@ -665,14 +941,14 @@ cdef extern from "../cpp/generators/PubWebGenerator.h":
 		_Graph* _generate() except +
 
 cdef class PubWebGenerator:
-	""" Generates a static graph that resembles an assumed geometric distribution of nodes in 
-	a P2P network. 
+	""" Generates a static graph that resembles an assumed geometric distribution of nodes in
+	a P2P network.
 
-	The basic structure is to distribute points randomly in the unit torus 
-	and to connect vertices close to each other (at most @a neighRad distance and none of 
-	them already has @a maxNeigh neighbors). The distribution is chosen to get some areas with 
-	high density and others with low density. There are @a numDenseAreas dense areas, which can 
-	overlap. Each area is circular, has a certain position and radius and number of points. 
+	The basic structure is to distribute points randomly in the unit torus
+	and to connect vertices close to each other (at most @a neighRad distance and none of
+	them already has @a maxNeigh neighbors). The distribution is chosen to get some areas with
+	high density and others with low density. There are @a numDenseAreas dense areas, which can
+	overlap. Each area is circular, has a certain position and radius and number of points.
 	These values are strored in @a denseAreaXYR and @a numPerArea, respectively.
 
 	Used and described in more detail in J. Gehweiler, H. Meyerhenke: A Distributed
@@ -685,7 +961,7 @@ cdef class PubWebGenerator:
 	Parameters
 	----------
 	numNodes : count
-		Up to a few thousand (possibly more if visualization is not desired and quadratic 
+		Up to a few thousand (possibly more if visualization is not desired and quadratic
 		time complexity has been resolved)
 	numberOfDenseAreas : count
 		Depending on number of nodes, e.g. [8, 50]
@@ -715,7 +991,7 @@ cdef extern from "../cpp/generators/ErdosRenyiGenerator.h":
 cdef class ErdosRenyiGenerator:
 	""" Creates random graphs in the G(n,p) model.
 	The generation follows Vladimir Batagelj and Ulrik Brandes: "Efficient
-	generation of large random networks", Phys Rev E 71, 036113 (2005).	 
+	generation of large random networks", Phys Rev E 71, 036113 (2005).
 
 	ErdosRenyiGenerator(count, double)
 
@@ -726,12 +1002,12 @@ cdef class ErdosRenyiGenerator:
 	nNodes : count
 		Number of nodes n in the graph.
 	prob : double
-		Probability of existence for each edge p.		
+		Probability of existence for each edge p.
 	"""
 
 	cdef _ErdosRenyiGenerator* _this
 
-	def __cinit__(self, nNodes, prob):		
+	def __cinit__(self, nNodes, prob):
 		self._this = new _ErdosRenyiGenerator(nNodes, prob)
 
 	def generate(self):
@@ -744,8 +1020,11 @@ cdef extern from "../cpp/generators/DorogovtsevMendesGenerator.h":
 		_Graph* _generate() except +
 
 cdef class DorogovtsevMendesGenerator:
-	"""
-	TODO:
+	""" Generates a graph according to the Dorogovtsev-Mendes model.
+
+ 	DorogovtsevMendesGenerator(nNodes)
+ 	
+ 	Constructs the generator class.
 
 	Parameters
 	----------
@@ -759,6 +1038,86 @@ cdef class DorogovtsevMendesGenerator:
 		self._this = new _DorogovtsevMendesGenerator(nNodes)
 
 	def generate(self):
+		""" Generates a random graph according to the Dorogovtsev-Mendes model.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
+		return Graph(0).setThis(self._this._generate())
+
+
+cdef extern from "../cpp/generators/RegularRingLatticeGenerator.h":
+	cdef cppclass _RegularRingLatticeGenerator "NetworKit::RegularRingLatticeGenerator":
+		_RegularRingLatticeGenerator(count nNodes, count nNeighbors) except +
+		_Graph* _generate() except +
+
+cdef class RegularRingLatticeGenerator:
+	"""
+	Constructs a regular ring lattice.
+	
+	RegularRingLatticeGenerator(count nNodes, count nNeighbors)
+	
+	Constructs the generator.
+
+	Parameters
+	----------
+	nNodes : number of nodes in the target graph.
+	nNeighbors : number of neighbors on each side of a node
+	"""
+
+	cdef _RegularRingLatticeGenerator* _this
+
+	def __cinit__(self, nNodes, nNeighbors):
+		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
+
+	def generate(self):
+		""" Generates a rgular ring lattice.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
+		return Graph(0).setThis(self._this._generate())
+		
+
+cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
+	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator":
+		_WattsStrogatzGenerator(count nNodes, count nNeighbors, double p) except +
+		_Graph* _generate() except +
+
+cdef class WattsStrogatzGenerator:
+	""" Generates a graph according to the Watts-Strogatz model.
+	
+	First, a regular ring lattice is generated. Then edges are rewired
+		with a given probability.
+	
+	WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
+	
+	Constructs the generator.
+	
+	Parameters
+	----------
+	nNodes : Number of nodes in the target graph.
+	nNeighbors : number of neighbors on each side of a node
+	p : rewiring probability
+	"""
+
+	cdef _WattsStrogatzGenerator* _this
+
+	def __cinit__(self, nNodes, nNeighbors, p):
+		self._this = new _WattsStrogatzGenerator(nNodes, nNeighbors, p)
+
+	def generate(self):
+		""" Generates a random graph according to the Watts-Strogatz model.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
 		return Graph(0).setThis(self._this._generate())
 
 
@@ -769,7 +1128,7 @@ cdef extern from "../cpp/generators/ClusteredRandomGraphGenerator.h":
 
 cdef class ClusteredRandomGraphGenerator:
 	""" The ClusteredRandomGraphGenerator class is used to create a clustered random graph.
- 		
+
 	The number of nodes and the number of edges are adjustable as well as the probabilities
 	for intra-cluster and inter-cluster edges.
 
@@ -791,7 +1150,7 @@ cdef class ClusteredRandomGraphGenerator:
 
 	cdef _ClusteredRandomGraphGenerator* _this
 
-	def __cinit__(self, n, k, pin, pout):		
+	def __cinit__(self, n, k, pin, pout):
 		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
 
 	def generate(self):
@@ -826,7 +1185,7 @@ cdef class ChungLuGenerator:
 		self._this = new _ChungLuGenerator(degreeSequence)
 
 	def generate(self):
-		""" Generates graph with expected degree sequence seq. 
+		""" Generates graph with expected degree sequence seq.
 
 		Returns
 		-------
@@ -846,9 +1205,9 @@ cdef extern from "../cpp/generators/HavelHakimiGenerator.h":
 
 cdef class HavelHakimiGenerator:
 	""" Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
- 		
- 		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually 
- 		has a high clustering coefficient. Construction runs in linear time O(m). However, the test 
+
+ 		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
+ 		has a high clustering coefficient. Construction runs in linear time O(m). However, the test
  		if a sequence is realizable is quadratic in the sequence length.
 
  		HavelHakimiGenerator(sequence, skipTest=True)
@@ -860,13 +1219,13 @@ cdef class HavelHakimiGenerator:
 		skipTest : bool, optional
 			If True, the test if the sequence is realizable is skipped.
 	        Default value is False. Set ONLY to True if you are certain that the
-	        sequence is realizable		
+	        sequence is realizable
 	"""
 
 	cdef _HavelHakimiGenerator* _this
 
 
-	def __cinit__(self, degreeSequence, skipTest=True):		
+	def __cinit__(self, degreeSequence, skipTest=True):
 		self._this = new _HavelHakimiGenerator(degreeSequence, skipTest)
 
 	def isRealizable(self):
@@ -897,7 +1256,7 @@ cdef class RmatGenerator:
 	random graphs with n=2^scale nodes and m=nedgeFactor edges.
 	More details at http://www.graph500.org or in the original paper:
 	Deepayan Chakrabarti, Yiping Zhan, Christos Faloutsos:
-	R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.	
+	R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
 
 	RmatGenerator(scale, edgeFactor, a, b, c, d)
 
@@ -915,12 +1274,12 @@ cdef class RmatGenerator:
 		Probability for quadrant lower left
 	d : double
 		Probability for quadrant lower right
-	
+
 	"""
 
 	cdef _RmatGenerator* _this
 
-	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):		
+	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
 
 	def generate(self):
@@ -962,7 +1321,7 @@ cdef extern from "../cpp/io/EdgeListReader.h":
 		_Graph read(string path) except +
 		_Graph* _read(string path) except +
 		unordered_map[node,node] getNodeMap() except +
-		
+
 
 cdef class EdgeListReader:
 	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
@@ -977,13 +1336,34 @@ cdef class EdgeListReader:
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this._read(pathbytes))
-	
+
 	def getNodeMap(self):
 		cdef unordered_map[node,node] cResult = self._this.getNodeMap()
 		result = []
 		for elem in cResult:
 			result.append((elem.first,elem.second))
 		return result
+
+cdef extern from "../cpp/io/KONECTGraphReader.h":
+	cdef cppclass _KONECTGraphReader "NetworKit::KONECTGraphReader":
+		_KONECTGraphReader() except +
+		_KONECTGraphReader(char separator, bool ignoreLoops)
+		_Graph read(string path) except +
+		_Graph* _read(string path) except +
+
+cdef class KONECTGraphReader:
+	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
+
+		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
+	"""
+	cdef _KONECTGraphReader _this
+
+	def __cinit__(self, separator, ignoreLoops = False):
+		self._this = _KONECTGraphReader(stdstring(separator)[0], ignoreLoops)
+
+	def read(self, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this._read(pathbytes))
 
 cdef extern from "../cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
@@ -1299,10 +1679,11 @@ cdef extern from "../cpp/structures/Partition.h":
 		void setName(string name) except +
 		string getName() except +
 		set[index] getSubsetIds() except +
+		index operator[](index) except +
 
 
 cdef class Partition:
-	""" Implements a partition of a set, i.e. a subdivision of the 
+	""" Implements a partition of a set, i.e. a subdivision of the
  		set into disjoint subsets.
 
  		Partition(z=0)
@@ -1312,11 +1693,11 @@ cdef class Partition:
 		Parameters
 		----------
 		z : index, optional
-			Maximum index of an element. Default is 0.		
+			Maximum index of an element. Default is 0.
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, z=0):		
+	def __cinit__(self, z=0):
 		self._this = _Partition(z)
 
 	def __len__(self):
@@ -1330,7 +1711,7 @@ cdef class Partition:
 
 	def __getitem__(self, e):
 		""" Get the set (id) in which the element `e` is contained.
-	 
+
 	 	Parameters
 	 	----------
 	 	e : index
@@ -1347,9 +1728,15 @@ cdef class Partition:
 		self._this = other
 		return self
 
+	def __cinit__(self, size=None):
+		if size is None:
+			self._this = _Partition()
+		else:
+			self._this = _Partition(size)
+
 	def subsetOf(self, e):
 		""" Get the set (id) in which the element `e` is contained.
-	 
+
 	 	Parameters
 	 	----------
 	 	e : index
@@ -1429,6 +1816,9 @@ cdef class Partition:
 		"""
 		self._this.mergeSubsets(s, t)
 
+	def __getitem__(self, index):
+		return self._this[index]
+
 
 	def setUpperBound(self, index upper):
 		""" Sets an upper bound for the subset ids that **can** be assigned.
@@ -1499,7 +1889,7 @@ cdef class Partition:
 
 	def subsetSizes(self):
 		""" Get a list of subset sizes. Indices do not necessarily correspond to subset ids.
-	 	
+
 	 	Returns
 	 	-------
 	 	vector
@@ -1595,6 +1985,7 @@ cdef class Partition:
 cdef extern from "../cpp/structures/Cover.h":
 	cdef cppclass _Cover "NetworKit::Cover":
 		_Cover() except +
+		_Cover(_Partition p) except +
 		set[index] subsetsOf(index e) except +
 #		index extend() except +
 		void remove(index e) except +
@@ -1623,6 +2014,10 @@ cdef extern from "../cpp/structures/Cover.h":
 cdef class Cover:
 	""" Implements a cover of a set, i.e. an assignment of its elements to possibly overlapping subsets. """
 	cdef _Cover _this
+
+	def __cinit__(self, Partition p = None):
+		if p is not None:
+			self._this = _Cover(p._this)
 
 	cdef setThis(self, _Cover other):
 		self._this = other
@@ -1654,7 +2049,7 @@ cdef class Cover:
 		s : index
 			A subset
 		e : index
-			An element			
+			An element
 		"""
 		self._this.addToSubset(s, e)
 
@@ -1746,7 +2141,7 @@ cdef class Cover:
 
 	def inSameSubset(self, index e1, index e2):
 		"""  Check if two elements `e1` and `e2` belong to the same subset.
-	 
+
 	 	Parameters
 	 	----------
 	 	e1 : index
@@ -1762,7 +2157,7 @@ cdef class Cover:
 		return self._this.inSameSubset(e1, e2)
 
 	def subsetSizes(self):
-		""" Get a list of subset sizes. 
+		""" Get a list of subset sizes.
 
 		Returns
 		-------
@@ -1777,7 +2172,7 @@ cdef class Cover:
 
 	def subsetSizeMap(self):
 		""" Get a map from subset id to size of the subset.
-	 
+
 	 	Returns
 	 	-------
 	 	dict
@@ -1830,6 +2225,163 @@ cdef class Cover:
 
 # Module: community
 
+# Fused type for methods that accept both a partition and a cover
+ctypedef fused PartitionCover:
+	Partition
+	Cover
+
+cdef extern from "../cpp/community/ClusteringGenerator.h":
+	cdef cppclass _ClusteringGenerator "NetworKit::ClusteringGenerator":
+		_ClusteringGenerator() except +
+		_Partition makeSingletonClustering(_Graph G) except +
+		_Partition makeOneClustering(_Graph G) except +
+		_Partition makeRandomClustering(_Graph G, count k) except +
+		_Partition makeContinuousBalancedClustering(_Graph G, count k) except +
+		_Partition makeNoncontinuousBalancedClustering(_Graph G, count k) except +
+
+cdef class ClusteringGenerator:
+	""" Generators for various clusterings """
+	cdef _ClusteringGenerator _this
+	def makeSingletonClustering(self, Graph G):
+		"""  Generate a clustering where each node has its own cluster
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeSingletonClustering(dereference(G._this)))
+	def makeOneClustering(self, Graph G):
+		"""  Generate a clustering with one cluster consisting of all nodes
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeOneClustering(dereference(G._this)))
+	def makeRandomClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters to which nodes are assigned randomly
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeRandomClustering(dereference(G._this), k))
+	def makeContinuousBalancedClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters to which nodes are assigned in continuous blocks
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeContinuousBalancedClustering(dereference(G._this), k))
+	def makeNoncontinuousBalancedClustering(self, Graph G, count k):
+		"""  Generate a clustering with `k` clusters, the ith node is assigned to cluster i % k. This means that
+		for k**2 nodes, this clustering is complementary to the continuous clustering in the sense that no pair
+		of nodes that is in the same cluster in one of the clusterings is in the same cluster in the other clustering.
+
+		Parameters
+		----------
+		G: Graph
+			The graph for which the clustering shall be generated
+		k: count
+			The number of clusters that shall be generated
+
+		Returns
+		-------
+		Partition
+			The generated partition
+		"""
+		return Partition().setThis(self._this.makeNoncontinuousBalancedClustering(dereference(G._this), k))
+
+cdef extern from "../cpp/community/GraphClusteringTools.h" namespace "NetworKit::GraphClusteringTools":
+	float getImbalance(_Partition zeta) except +
+	_Graph communicationGraph(_Graph graph, _Partition zeta) except +
+	count weightedDegreeWithCluster(_Graph graph, _Partition zeta, node u, index cid)
+	bool isProperClustering(_Graph G, _Partition zeta)
+	bool isSingletonClustering(_Graph G, _Partition zeta)
+	bool isOneClustering(_Graph G, _Partition zeta)
+	bool equalClusterings(_Partition zeta, _Partition eta, _Graph G)
+
+cdef class GraphClusteringTools:
+	@staticmethod
+	def getImbalance(Partition zeta):
+		return getImbalance(zeta._this)
+	@staticmethod
+	def communicationGraph(Graph graph, Partition zeta):
+		cdef Graph ret = Graph()
+		ret._this.stealFrom(communicationGraph(dereference(graph._this), zeta._this))
+		return ret
+	@staticmethod
+	def weightedDegreeWithCluster(Graph graph, Partition zeta, node u, index cid):
+		return weightedDegreeWithCluster(dereference(graph._this), zeta._this, u, cid)
+	@staticmethod
+	def isProperClustering(Graph G, Partition zeta):
+		return isProperClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def isSingletonClustering(Graph G, Partition zeta):
+		return isSingletonClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def isOneClustering(Graph G, Partition zeta):
+		return isOneClustering(dereference(G._this), zeta._this)
+	@staticmethod
+	def equalClustering(Partition zeta, Partition eta, Graph G):
+		return equalClusterings(zeta._this, eta._this, dereference(G._this))
+
+cdef extern from "../cpp/community/PartitionProduct.h":
+	cdef cppclass _PartitionProduct "NetworKit::PartitionProduct":
+		_PartitionProduct() except +
+		_Partition calculate(_Partition zeta, _Partition eta) except +
+
+cdef class PartitionProduct:
+	""" The product of two partitions is defined as the partitions where each cluster is the intersection
+	of a cluster in the first and in the second clustering
+	"""
+	cdef _PartitionProduct _this
+	def calculate(self, Partition zeta, Partition eta):
+		"""  Calculate the product of two partitions `zeta` and `eta`
+
+		Parameters
+		----------
+		zeta: Partition
+			The first partition
+		eta: Partition
+			The second partition
+
+		Returns
+		-------
+		Partition
+			The product of zeta and eta
+		"""
+		return Partition().setThis(self._this.calculate(zeta._this, eta._this))
+
 cdef extern from "../cpp/community/Coverage.h":
 	cdef cppclass _Coverage "NetworKit::Coverage":
 		_Coverage() except +
@@ -1850,8 +2402,8 @@ cdef extern from "../cpp/community/Modularity.h":
 
 
 cdef class Modularity:
-	"""	Modularity is a quality index for community detection. 
-	It assigns a quality value in [-0.5, 1.0] to a partition of a graph which is higher for more modular networks and 
+	"""	Modularity is a quality index for community detection.
+	It assigns a quality value in [-0.5, 1.0] to a partition of a graph which is higher for more modular networks and
 	partitions which better capture the modular structure. See also http://en.wikipedia.org/wiki/Modularity_(networks).
 
  	Notes
@@ -1864,6 +2416,48 @@ cdef class Modularity:
 	cdef _Modularity _this
 
 	def getQuality(self, Partition zeta, Graph G):
+		return self._this.getQuality(zeta._this, dereference(G._this))
+
+cdef extern from "../cpp/community/HubDominance.h":
+	cdef cppclass _HubDominance "NetworKit::HubDominance":
+		_HubDominance() except +
+		double getQuality(_Partition _zeta, _Graph _G) except +
+		double getQuality(_Cover _zeta, _Graph _G) except +
+
+cdef class HubDominance:
+	"""
+	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
+	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
+	the maximum cluster-internal degree, i.e. the number of nodes in the cluster minus one. The
+	value for all clusters is defined as the average of all clusters.
+
+	Strictly speaking this is not a quality measure as this is rather dependent on the type of the
+	considered graph, for more information see
+	Lancichinetti A, Kivelä M, Saramäki J, Fortunato S (2010)
+	Characterizing the Community Structure of Complex Networks
+	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
+	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
+	"""
+
+	cdef _HubDominance _this
+
+	def getQuality(self, PartitionCover zeta, Graph G):
+		"""
+		Calculates the dominance of hubs in the given Partition or Cover of the given
+		Graph.
+
+		Parameters
+		----------
+		zeta : Partition or Cover
+			The Partition or Cover for which the hub dominance shall be calculated
+		G : Graph
+			The Graph to which zeta belongs
+
+		Returns
+		-------
+		double
+			The average hub dominance in the given Partition or Cover
+		"""
 		return self._this.getQuality(zeta._this, dereference(G._this))
 
 
@@ -1905,7 +2499,7 @@ cdef class PLP(CommunityDetector):
 
 	def run(self, Graph G not None):
 		""" Run the label propagation clustering algorithm.
-		
+
 		Parameters
 		----------
 		G : Graph
@@ -1921,12 +2515,12 @@ cdef class PLP(CommunityDetector):
 	def runFromGiven(self, Graph G not None, Partition part not None):
 		""" Run the label propagation clustering algorithm starting
 		from the Partition part.
-		
+
 		Parameters
 		----------
 		G : Graph
 			input graph
-			
+
 		part : Partition
 			input partition
 
@@ -1985,7 +2579,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 cdef extern from "../cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
 		_PLM() except +
-		_PLM(bool refine, double gamma, string par, count maxIter) except +
+		_PLM(bool refine, double gamma, string par, count maxIter, bool parCoarsening) except +
 		string toString() except +
 		_Partition run(_Graph G) except +
 
@@ -2013,8 +2607,8 @@ cdef class PLM(CommunityDetector):
 
 	cdef _PLM _this
 
-	def __cinit__(self, refine=True, gamma=1.0, par="balanced", maxIter=32):
-		self._this = _PLM(refine, gamma, stdstring(par), maxIter)
+	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True):
+		self._this = _PLM(refine, gamma, stdstring(par), maxIter, parCoarsening)
 
 	def toString(self):
 		""" Get string representation.
@@ -2077,7 +2671,7 @@ cdef class CNM(CommunityDetector):
 		----------
 		graph : Graph
 			The graph.
-		
+
 		Returns
 		-------
 		Partition
@@ -2155,9 +2749,9 @@ cdef extern from "../cpp/community/EPP.h":
 
 cdef class EPP(CommunityDetector):
 	""" EPP - Ensemble Preprocessing community detection algorithm.
-	Combines multiple base algorithms and a final algorithm. A consensus of the 
-	solutions of the base algorithms is formed and the graph is coarsened accordingly. 
-	Then the final algorithm operates on the coarse graph and determines a solution 
+	Combines multiple base algorithms and a final algorithm. A consensus of the
+	solutions of the base algorithms is formed and the graph is coarsened accordingly.
+	Then the final algorithm operates on the coarse graph and determines a solution
 	for the input graph.
 	"""
 	cdef _EPP _this
@@ -2211,13 +2805,13 @@ cdef extern from "../cpp/community/CommunityGraph.h":
 		map[node, index] getNodeToCommunityMap() except +
 
 cdef class CommunityGraph:
-	""" The CommunityGraph class represents a Graph coarsened according to communities. Each node in the CommunityGraph 
+	""" The CommunityGraph class represents a Graph coarsened according to communities. Each node in the CommunityGraph
  	represents a community. Edge weights are the weights of inter-community cuts.
 	"""
 	cdef _CommunityGraph _this
 
 	def run(self, Graph G, Partition zeta):
-		""" Creates a coarsened graph of `G` according to communities in `zeta`. Edge weights are the weights of 
+		""" Creates a coarsened graph of `G` according to communities in `zeta`. Edge weights are the weights of
 		inter-community cuts.
 
 		Parameters
@@ -2308,7 +2902,7 @@ cdef class GraphProperties:
 		return averageLocalClusteringCoefficient(dereference(G._this))
 
 	@staticmethod
-	def degreeAssortativity(Graph G, bool useWeights):	
+	def degreeAssortativity(Graph G, bool useWeights):
 		""" Get degree assortativity of the graph `G`.
 
 		Parameters
@@ -2470,7 +3064,7 @@ cdef class ClusteringCoefficient:
 	def exactLocal(Graph G):
 		return exactLocal(dereference(G._this))
 
-	@staticmethod	
+	@staticmethod
 	def avgLocal(Graph G):
 		"""  This calculates the average local clustering coefficient of graph `G`.
 
@@ -2518,8 +3112,8 @@ cdef class Diameter:
 
 	@staticmethod
 	def estimatedDiameterRange(Graph G, error=0.1):
-		""" Estimates a range for the diameter of @a G. Based on the algorithm suggested in 
-		C. Magnien, M. Latapy, M. Habib: Fast Computation of Empirically Tight Bounds for 
+		""" Estimates a range for the diameter of @a G. Based on the algorithm suggested in
+		C. Magnien, M. Latapy, M. Habib: Fast Computation of Empirically Tight Bounds for
 		the Diameter of Massive Graphs. Journal of Experimental Algorithmics, Volume 13, Feb 2009.
 
 		Returns
@@ -2554,10 +3148,10 @@ cdef class Diameter:
 		G : Graph
 			The graph.
 		samples : count
-			One sample is enough if the graph is connected. If there 
-			are multiple connected components, then the number of samples 
-			must be chosen so that the probability of sampling the component 
-			with the largest diameter ist high. 
+			One sample is enough if the graph is connected. If there
+			are multiple connected components, then the number of samples
+			must be chosen so that the probability of sampling the component
+			with the largest diameter ist high.
 
 		Returns
 		-------
@@ -2715,7 +3309,7 @@ cdef class Betweenness:
 
 		Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
   		then set `normalized` to True.
-	 
+
 	 	Parameters
 	 	----------
 	 	G : Graph
@@ -2764,7 +3358,7 @@ cdef class Betweenness:
 		return self._this.score(v)
 
 	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score 
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		calculated by run().
 
 		Returns
@@ -2785,7 +3379,7 @@ cdef extern from "../cpp/centrality/ApproxBetweenness.h":
 		count numberOfSamples() except +
 
 cdef class ApproxBetweenness:
-	""" Approximation of betweenness centrality according to algorithm described in 
+	""" Approximation of betweenness centrality according to algorithm described in
  	Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
 
  	ApproxBetweenness(G, epsiolon=0.01, delta=0.1)
@@ -2837,7 +3431,7 @@ cdef class ApproxBetweenness:
 		return self._this.score(v)
 
 	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score 
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		calculated by run().
 
 		Returns
@@ -2860,12 +3454,12 @@ cdef extern from "../cpp/centrality/ApproxBetweenness2.h":
 		double score(node) except +
 
 cdef class ApproxBetweenness2:
-	""" Approximation of betweenness centrality according to algorithm described in 
+	""" Approximation of betweenness centrality according to algorithm described in
 	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
 
 	ApproxBetweenness2(G, nSamples, normalized=False)
 
-	The algorithm approximates the betweenness of all nodes, using weighting 
+	The algorithm approximates the betweenness of all nodes, using weighting
 	of the contributions to avoid biased estimation.
 
 	Parameters
@@ -2906,7 +3500,7 @@ cdef class ApproxBetweenness2:
 		return self._this.score(v)
 
 	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score 
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		calculated by run().
 
 		Returns
@@ -2954,7 +3548,7 @@ cdef class PageRank:
 		-------
 		vector
 			The betweenness scores calculated by run().
-		"""		
+		"""
 		return self._this.scores()
 
 	def score(self, v):
@@ -2968,7 +3562,7 @@ cdef class PageRank:
 		return self._this.score(v)
 
 	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score 
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		calculated by run().
 
 		Returns
@@ -2988,7 +3582,7 @@ cdef extern from "../cpp/centrality/EigenvectorCentrality.h":
 		double score(node) except +
 
 cdef class EigenvectorCentrality:
-	"""	Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm). 
+	"""	Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm).
 	Interpreted as eigenvector centrality score.
 
 	EigenvectorCentrality(G, tol=1e-9)
@@ -3017,7 +3611,7 @@ cdef class EigenvectorCentrality:
 		-------
 		vector
 			The betweenness scores calculated by run().
-		"""		
+		"""
 		return self._this.scores()
 
 	def score(self, v):
@@ -3031,7 +3625,7 @@ cdef class EigenvectorCentrality:
 		return self._this.score(v)
 
 	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score 
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		calculated by run().
 
 		Returns
@@ -3056,7 +3650,7 @@ cdef class DegreeCentrality:
 
  	DegreeCentrality(G, normalized=False)
 
- 	Constructs the DegreeCentrality class for the given Graph `G`. If the betweenness scores should be normalized, 
+ 	Constructs the DegreeCentrality class for the given Graph `G`. If the betweenness scores should be normalized,
  	then set `normalized` to True.
 
  	Parameters
@@ -3081,7 +3675,7 @@ cdef class DegreeCentrality:
 		-------
 		vector
 			The betweenness scores calculated by run().
-		"""		
+		"""
 		return self._this.scores()
 
 	def score(self, v):
@@ -3095,7 +3689,7 @@ cdef class DegreeCentrality:
 		return self._this.score(v)
 
 	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score 
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		calculated by run().
 
 		Returns
@@ -3109,7 +3703,7 @@ cdef class DegreeCentrality:
 # Module: dynamic
 
 cdef extern from "../cpp/dynamics/GraphEvent.h":
-	enum _Type "NetworKit::GraphEvent::Type":
+	enum _GraphEventType "NetworKit::GraphEvent::Type":
 		NODE_ADDITION,
 		NODE_REMOVAL,
 		EDGE_ADDITION,
@@ -3121,13 +3715,20 @@ cdef extern from "../cpp/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
 		node u, v
 		edgeweight w
-		_Type type
+		_GraphEventType type
 		_GraphEvent() except +
-		_GraphEvent(_Type type, node u, node v, edgeweight w) except +
+		_GraphEvent(_GraphEventType type, node u, node v, edgeweight w) except +
 		string toString() except +
 
 cdef class GraphEvent:
 	cdef _GraphEvent _this
+
+	NODE_ADDITION = 0
+	NODE_REMOVAL = 1
+	EDGE_ADDITION = 2
+	EDGE_REMOVAL = 3
+	EDGE_WEIGHT_UPDATE = 4
+	TIME_STEP = 5
 
 	property type:
 		def __get__(self):
@@ -3253,12 +3854,25 @@ cdef extern from "../cpp/generators/DynamicDorogovtsevMendesGenerator.h":
 
 
 cdef class DynamicDorogovtsevMendesGenerator:
+	""" Generates a graph according to the Dorogovtsev-Mendes model.
+
+ 	DynamicDorogovtsevMendesGenerator()
+ 	
+ 	Constructs the generator class.
+	"""
 	cdef _DynamicDorogovtsevMendesGenerator* _this
 
 	def __cinit__(self):
 		self._this = new _DynamicDorogovtsevMendesGenerator()
 
 	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 
@@ -3291,21 +3905,52 @@ cdef class DynamicPubWebGenerator:
 		return Graph().setThis(self._this._getGraph())
 
 
-# cdef extern from "../cpp/generators/ForestFireGenerator.h":
-# 	cdef cppclass _ForestFireGenerator "NetworKit::ForestFireGenerator":
-# 		_ForestFireGenerator(double p) except +
-# 		vector[_GraphEvent] generate(count nSteps) except +
-# 		_Graph getGraph() except +
 
 
-# cdef class ForestFireGenerator:
-# 	cdef _ForestFireGenerator* _this
 
-# 	def __cinit__(self, p):
-# 		self._this = new _ForestFireGenerator(p)
+cdef extern from "../cpp/generators/DynamicForestFireGenerator.h":
+	cdef cppclass _DynamicForestFireGenerator "NetworKit::DynamicForestFireGenerator":
+		_DynamicForestFireGenerator(double p, bool directed, double r) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
 
-# 	def generate(self, nSteps):
-# 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+cdef class DynamicForestFireGenerator:
+	""" Generates a graph according to the forest fire model.
+	 The forest fire generative model produces dynamic graphs with the following properties:
+     heavy tailed degree distribution
+     communities
+     densification power law
+     shrinking diameter
+ 
+    see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
+    Shringking Diameters and Possible Explanations
+
+ 	DynamicForestFireGenerator(double p, bool directed, double r = 1.0)
+ 	
+ 	Constructs the generator class.
+ 	
+ 	Parameters
+ 	----------
+ 	p : forward burning probability.
+ 	directed : decides whether the resulting graph should be directed
+ 	r : optional, backward burning probability
+	"""
+	cdef _DynamicForestFireGenerator* _this
+
+	def __cinit__(self, p, directed, r = 1.0):
+		self._this = new _DynamicForestFireGenerator(p, directed, r)
+
+	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
 
 
 
@@ -3326,3 +3971,22 @@ cdef class GraphUpdater:
 		for ev in stream:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_stream)
+
+
+# Module: coarsening
+
+cdef extern from "../cpp/coarsening/ParallelPartitionCoarsening.h":
+	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening":
+		_ParallelPartitionCoarsening() except +
+		pair[_Graph, vector[node]] run(_Graph, _Partition) except +
+
+
+cdef class ParallelPartitionCoarsening:
+	cdef _ParallelPartitionCoarsening* _this
+
+	def __cinit__(self):
+		self._this = new _ParallelPartitionCoarsening()
+
+	def run(self, Graph G not None, Partition zeta not None):
+		result = self._this.run(dereference(G._this), zeta._this)
+		return (Graph(0).setThis(&result.first), result.second)
