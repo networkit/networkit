@@ -716,10 +716,4 @@ bool Graph::consistencyCheck() const {
 	return !multiEdge;
 }
 
-void Graph::treatAsUndirected() {
-	assert (isDirected());
-	directed = false;
-	m /= 2;
-}
-
 } /* namespace NetworKit */

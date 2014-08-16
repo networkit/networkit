@@ -723,15 +723,6 @@ public:
 
 
 	template<typename L> void DFSEdgesFrom(node r, L handle) const;
-
-
-	/* SPECIAL */
-
-
-	/**
-	* Treat the adjacency datastructure as an undirected graph.
-	*/
-	void treatAsUndirected();
 };
 
 /* NODE ITERATORS */
