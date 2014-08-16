@@ -61,7 +61,8 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	});
 	m_actual = G.numberOfEdges();
 	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	printf("parallelForNodePairs + toGraphSequentiel:\t\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
+	std::cout << "parallelForNodePairs + toGraphSequentiel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
+	// printf("parallelForNodePairs + toGraphSequentiel:\t\t%" PRIu64 " + %" PRIu64 " = %" PRIu64 " ms\n", t1, t2, t1 + t2);
 
 	// fully parallel way
 	m_actual = 0;
@@ -80,7 +81,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	});
 	m_actual = G.numberOfEdges();
 	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	printf("parallelForNodePairs + toGraphParallel:\t\t%lu + %lu = %lu ms\n", t1, t2, t1 + t2);
+	std::cout << "parallelForNodePairs + toGraphParallel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
 
 	// old way
 	// t1 = timeOnce([&]() {
@@ -93,7 +94,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	// });
 	// m_actual = G.numberOfEdges();
 	// EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	// printf("forNodePairs + Graph.addEdge:\t\t\t\t%lu ms\n", t1);
+	// std::cout << "forNodePairs + Graph.addEdge:\t\t\t\t" << t1 << " ms\n";
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {

@@ -688,14 +688,14 @@ TEST_F(CommunityGTest, testClusteringProduct) {
 	EXPECT_TRUE(GraphClusteringTools::equalClusterings(twelve, prod.calculate(twelve, twelve), G)) << "Product of itself does not modify the clustering";
 	EXPECT_TRUE(GraphClusteringTools::equalClusterings(singleton, prod.calculate(twelve, singleton), G)) << "Product of singleton with any clustering is the singleton clustering";
 	Partition sixteen = prod.calculate(twelve, eight);
-	EXPECT_EQ(16, sixteen.numberOfSubsets());
+	EXPECT_EQ(16u, sixteen.numberOfSubsets());
 	auto clusterSizes = sixteen.subsetSizeMap();
 	size_t i = 0;
 	for (auto size : clusterSizes) {
 		if (i % 4 == 0 || i % 4 == 3) {
-			EXPECT_EQ(100, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
+			EXPECT_EQ(100u, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
 		} else {
-			EXPECT_EQ(50, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
+			EXPECT_EQ(50u, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
 		}
 		++i;
 	}
@@ -723,10 +723,10 @@ TEST_F(CommunityGTest, testHubDominance) {
 
 	HubDominance hub;
 
-	EXPECT_EQ(1, hub.getQuality(con, G)) << "In complete graphs, the hub dominance is always 1";
+	EXPECT_EQ(1u, hub.getQuality(con, G)) << "In complete graphs, the hub dominance is always 1";
 
 	G = Graph(100);
-	EXPECT_EQ(0, hub.getQuality(con, G)) << "In graphs without nodes, the hub dominance is always 0";
+	EXPECT_EQ(0u, hub.getQuality(con, G)) << "In graphs without nodes, the hub dominance is always 0";
 
 	for (node v = 1; v < 4; ++v) {
 		G.addEdge(0, v);
@@ -751,11 +751,11 @@ TEST_F(CommunityGTest, testHubDominance) {
 
 	con = generator.makeSingletonClustering(G);
 
-	EXPECT_EQ(1, hub.getQuality(con, G)) << "The singleton partition has hub dominance 1 by definition.";
+	EXPECT_EQ(1u, hub.getQuality(con, G)) << "The singleton partition has hub dominance 1 by definition.";
 
 	cov = Cover(con);
 
-	EXPECT_EQ(1, hub.getQuality(con, G)) << "The singleton cover has hub dominance 1 by definition.";
+	EXPECT_EQ(1u, hub.getQuality(con, G)) << "The singleton cover has hub dominance 1 by definition.";
 }
 
 } /* namespace NetworKit */
