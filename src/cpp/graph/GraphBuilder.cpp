@@ -84,6 +84,7 @@ Graph GraphBuilder::toGraphParallel() {
 
 	std::vector<adjacencylists> inEdgesPerThread(maxThreads, adjacencylists(n));
 	std::vector<weightlists> inWeightsPerThread(weighted ? maxThreads : 0, weightlists(n));
+	std::vector<count> numberOfSelfLoopsPerThread(maxThreads, 0);
 
 	parallelForNodes([&](node v) {
 		int tid = omp_get_thread_num();
@@ -94,12 +95,16 @@ Graph GraphBuilder::toGraphParallel() {
 					edgeweight ew = halfEdgeWeights[v][i];
 					inEdgesPerThread[tid][u].push_back(v);
 					inWeightsPerThread[tid][u].push_back(ew);
+				} else {
+					numberOfSelfLoopsPerThread[tid]++;
 				}
 			}
 		} else {
 			for (node u : halfEdges[v]) {
 				if (directed || u != v) { // self loops don't need to be added twice in undirected graphs
 					inEdgesPerThread[tid][u].push_back(v);
+				} else {
+					numberOfSelfLoopsPerThread[tid]++;
 				}
 			}
 		}
@@ -167,7 +172,12 @@ Graph GraphBuilder::toGraphParallel() {
 		G.m += G.degree(v);
 	});
 	if (!directed) {
-		G.m /= 2;
+		count numberOfSelfLoops = 0;
+		for (int tid = 0; tid < maxThreads; tid++) {
+			numberOfSelfLoops += numberOfSelfLoopsPerThread[tid];
+		}	
+		// self loops are already just counted once
+		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
 	}
 
 	// bring the builder into an empty, but valid state
@@ -182,6 +192,7 @@ Graph GraphBuilder::toGraphSequential() {
 	Graph G(n, weighted, directed);
 
 	std::vector<count> missingEdgesCounts(n, 0);
+	count numberOfSelfLoops = 0;
 
 	// first half edge
 	// copy halfEdges to G.outEdges and set G.outDeg
@@ -207,6 +218,8 @@ Graph GraphBuilder::toGraphSequential() {
 				missingEdgesCounts[u]++;
 			} else {
 				// self loops don't need to be added again
+				// but we need to count them to correct the number of edges later
+				numberOfSelfLoops++;
 			}
 		}
 	});
@@ -273,7 +286,8 @@ Graph GraphBuilder::toGraphSequential() {
 		G.m += G.degree(v);
 	});
 	if (!directed) {
-		G.m /= 2;
+		// self loops are already just counted once
+		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
 	}
 
 	// bring the builder into an empty, but valid state

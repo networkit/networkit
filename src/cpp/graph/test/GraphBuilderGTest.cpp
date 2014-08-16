@@ -15,13 +15,13 @@
 namespace NetworKit {
 
 INSTANTIATE_TEST_CASE_P(InstantiationName, GraphBuilderGTest, testing::Values(
-						// std::make_tuple(false, false, false),
-						// std::make_tuple(true, false, false),
-						// std::make_tuple(false, true, false),
-						// std::make_tuple(true, true, false),
-						// std::make_tuple(false, false, true),
-						// std::make_tuple(true, false, true),
-						// std::make_tuple(false, true, true),
+						std::make_tuple(false, false, false),
+						std::make_tuple(true, false, false),
+						std::make_tuple(false, true, false),
+						std::make_tuple(true, true, false),
+						std::make_tuple(false, false, true),
+						std::make_tuple(true, false, true),
+						std::make_tuple(false, true, true),
 						std::make_tuple(true, true, true)
 						));
 
@@ -326,38 +326,39 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 
 TEST_P(GraphBuilderGTest, testSameAsGraph) {
 	const double epsilon = 1e-6;
-	const count runs = 10;
+	const count runs = 100;
+	const count n_max = 100;
+
+	// in each loop run we will create a random graph (using a GraphBuilder and a Graph)
+	// we will only use methods that both GraphBuilder and Graph support and 
 	for (index i = 0; i < runs; i++) {
-		count n = Aux::Random::integer(100);
+		count n = Aux::Random::integer(n_max);
 		GraphBuilder b(n, isWeighted(), isDirected());
 		Graph G_expected(n, isWeighted(), isDirected());
 
 		G_expected.forNodes([&](node v) {
 			double p = Aux::Random::probability();
-			if (p < 0.1) {
-				// new node
+			// if we change edges we have to keep in mind, that GraphBuilder is designed to keep only half-edges.
+			// e.g. if we have already added an edge v -> u, changing the weight of u -> v might create a new edge in the builder but change the existing edge in G_expected (does not apply for directed graphs)
+
+			if (p < 0.1) { // new node
 				n++;
 				b.addNode();
 				G_expected.addNode();
-			} else if (p < 0.3) {
-				// self loop
-				edgeweight ew = Aux::Random::probability();
-				b.addEdge(v, v, ew);
-				G_expected.addEdge(v, v, ew);
-			} else {
-				node u = p < 0.2 ? v : Aux::Random::integer(n);
+			} else { // new edge
+				node u = Aux::Random::integer(v, n - 1); // self-loops possible
 				edgeweight ew = Aux::Random::probability();
 				b.addEdge(v, u, ew);
 				G_expected.addEdge(v, u, ew);
 			}
 
 			if (isWeighted()) {
-				node u = Aux::Random::integer(n);
+				node u = Aux::Random::integer(v, n - 1); // self-loops possible
 				edgeweight ew = Aux::Random::probability();
-				if (p < 0.25) {
+				if (p < 0.5) {
 					b.setWeight(v, u, ew);
 					G_expected.setWeight(v, u, ew);
-				} else if (p < 0.5) {
+				} else {
 					b.increaseWeight(v, u, ew);
 					G_expected.increaseWeight(v, u, ew);
 				}
@@ -366,10 +367,13 @@ TEST_P(GraphBuilderGTest, testSameAsGraph) {
 
 		Graph G_actual = toGraph(b);
 
+		// check for correct graph properties
 		EXPECT_EQ(G_expected.numberOfNodes(), G_actual.numberOfNodes());
 		EXPECT_EQ(G_expected.numberOfEdges(), G_actual.numberOfEdges());
 		EXPECT_EQ(G_expected.upperNodeIdBound(), G_actual.upperNodeIdBound());
 		EXPECT_EQ(G_expected.numberOfSelfLoops(), G_actual.numberOfSelfLoops());
+
+		// compare nodes and edges of G_expected and G_actual
 		G_expected.forNodes([&](node v) {
 			EXPECT_TRUE(G_actual.hasNode(v));
 			EXPECT_EQ(G_expected.degree(v), G_actual.degree(v));
@@ -382,6 +386,8 @@ TEST_P(GraphBuilderGTest, testSameAsGraph) {
 			EXPECT_TRUE(G_actual.hasEdge(u, v));
 			EXPECT_NEAR(ew, G_actual.weight(u, v), epsilon);
 		});
+		
+		// make sure that G_actual has not more nodes/edges than G_expected
 		G_actual.forNodes([&](node v) {
 			EXPECT_TRUE(G_expected.hasNode(v));
 		});
