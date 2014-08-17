@@ -114,7 +114,7 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 		assert (twiceM % 2 == 0);
 		Gcombined.m = (twiceM / 2);
 
-		assert (G.consistencyCheck());
+		assert (Gcombined.consistencyCheck());
 
 		// stop both timers before printing
 		timer2.stop();
@@ -149,30 +149,6 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 		Gcombined = b.toGraph();
 	}
 
-<<<<<<< local
-	DEBUG("combining graphs");
-	Gcombined.balancedParallelForNodes([&](node u) {
-		for (index l = 0; l < nThreads; ++l) {
-			localGraphs.at(l).forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
-				TRACE("increasing weight of (", u, v, ") to", w);
-				threadSafeIncreaseWeight(u, v, w);
-			});
-		}
-	});
-
-
-	// ensure consistency of data structure
-	DEBUG("numEdges: ", numEdges);
-	count twiceM = std::accumulate(numEdges.begin(), numEdges.end(), 0);
-	assert (twiceM % 2 == 0);
-	Gcombined.m = (twiceM / 2);
-
-	assert (Gcombined.consistencyCheck());
-
-	// stop both timers before printing
-	timer2.stop();
-=======
->>>>>>> other
 	timer.stop();
 	INFO("parallel coarsening took ", timer.elapsedTag());
 
