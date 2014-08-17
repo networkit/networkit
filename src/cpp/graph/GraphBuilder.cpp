@@ -82,41 +82,41 @@ Graph GraphBuilder::toGraphParallel() {
 	using adjacencylists = std::vector< std::vector<node> >;
 	using weightlists = std::vector< std::vector<edgeweight> >;
 
+	// basic idea of the parallelization:
+	// 1) each threads collects its own data
+	// 2) each node collects all its data from all threads
+
 	std::vector<adjacencylists> inEdgesPerThread(maxThreads, adjacencylists(n));
 	std::vector<weightlists> inWeightsPerThread(weighted ? maxThreads : 0, weightlists(n));
 	std::vector<count> numberOfSelfLoopsPerThread(maxThreads, 0);
 
+	// step 1
 	parallelForNodes([&](node v) {
 		int tid = omp_get_thread_num();
-		if (weighted) {
-			for (index i = 0; i < halfEdges[v].size(); i++) {
-				node u = halfEdges[v][i];
-				if (directed || u != v) { // self loops don't need to be added twice in undirected graphs
-					edgeweight ew = halfEdgeWeights[v][i];
-					inEdgesPerThread[tid][u].push_back(v);
+		for (index i = 0; i < halfEdges[v].size(); i++) {
+			node u = halfEdges[v][i];
+			if (directed || u != v) { // self loops don't need to be added twice in undirected graphs
+				edgeweight ew = halfEdgeWeights[v][i];
+				inEdgesPerThread[tid][u].push_back(v);
+				if (weighted) {
 					inWeightsPerThread[tid][u].push_back(ew);
-				} else {
-					numberOfSelfLoopsPerThread[tid]++;
 				}
-			}
-		} else {
-			for (node u : halfEdges[v]) {
-				if (directed || u != v) { // self loops don't need to be added twice in undirected graphs
-					inEdgesPerThread[tid][u].push_back(v);
-				} else {
-					numberOfSelfLoopsPerThread[tid]++;
-				}
+			} else {
+				numberOfSelfLoopsPerThread[tid]++;
 			}
 		}
 	});
 
+	// step 2
 	parallelForNodes([&](node v) {
+		// get degrees for v
 		count inDeg = 0;
 		count outDeg = halfEdges[v].size();
 		for (int tid = 0; tid < maxThreads; tid++) {
 			inDeg += inEdgesPerThread[tid][v].size();
 		}
 
+		// allocate memory for all edges and weights
 		if (directed) {
 			G.inEdges[v].reserve(inDeg);
 			G.outEdges[v].reserve(outDeg);
@@ -133,7 +133,6 @@ Graph GraphBuilder::toGraphParallel() {
 
 		std::copy(halfEdges[v].begin(), halfEdges[v].end(), std::back_inserter(G.outEdges[v]));
 		halfEdges[v].clear();
-
 		if (weighted) {
 			std::copy(halfEdgeWeights[v].begin(), halfEdgeWeights[v].end(), std::back_inserter(G.outEdgeWeights[v]));
 			halfEdgeWeights[v].clear();

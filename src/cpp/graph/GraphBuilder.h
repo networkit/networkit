@@ -28,6 +28,15 @@ protected:
 	index indexHalfEdgeArray(node u, node v) const;
 
 public:
+	/**
+	 * Creates a new GraphBuilder. GraphBuilder supports the basic methods needed to create a new graph (addNode, addEdge, setWeight, increaseWeight). It is designed to be much faster for graph creation, but the speed comes with a restriction:
+	 * For undirected graphs GraphBuilder will handle u->v and v->u as two different edges. Keep that in mind when using setWeight and increaseWeight.
+	 * GraphBuilder allows parallelization in a special way. It's internal data structure saves edges only at the source node. As long as edges from node u are only added/changed by thread t1, every other thread can modifier edges not starting in u.
+	 * addNode is not threadsafe.
+	 * @param n Number of nodes.
+	 * @param weighted If set to <code>true</code>, the graph has edge weights.
+	 * @param directed If set to @c true, the graph will be directed.
+	 */
 	GraphBuilder(count n = 0, bool weighted = false, bool directed = false);
 
 	/**
@@ -37,8 +46,8 @@ public:
 	bool isWeighted() const { return weighted; }
 
 	/**
-	 * Return @c true if this graph supports directed edges.
-	 * @return @c true if this graph supports directed edges.
+	 * Return <code>true</code> if this graph supports directed edges.
+	 * @return </code>true</code> if this graph supports directed edges.
 	 */
 	bool isDirected() const { return directed; }
 
