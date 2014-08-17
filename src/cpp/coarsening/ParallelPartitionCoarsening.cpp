@@ -101,7 +101,7 @@ std::pair<Graph, std::vector<node> > NetworKit::ParallelPartitionCoarsening::run
 	assert (twiceM % 2 == 0);
 	Gcombined.m = (twiceM / 2);
 
-	assert (G.consistencyCheck());
+	assert (Gcombined.consistencyCheck());
 
 	// stop both timers before printing
 	timer2.stop();
