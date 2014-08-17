@@ -1230,6 +1230,29 @@ cdef extern from "../cpp/properties/CoreDecomposition.h":
 		vector[set[node]] shells() except +
 		index maxCoreNumber() except +
 
+cdef extern from "../cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
+	double effectiveDiameter(_Graph G, double ratio, count k, count r) except +
+	double effectiveDiameterExact(_Graph G, double ratio) except +
+	map[count, double] hopPlot(_Graph G, count maxDistance, count k, count r) except +
+
+cdef class EffectiveDiameter:
+	""" 
+	Effective Diameter computation algorithms similar to ANF by Palmer, Gibbons and Faloutsos
+ 	Runtime and quality mainly influenced by the parameter k.
+ 	"""
+
+	@staticmethod
+	def effectiveDiameter(Graph G, ratio=0.9, k=64, r=7):
+		return effectiveDiameter(dereference(G._this), ration, k, r)
+
+	@staticmethod
+	def effectiveDiameterExact(Graph G, ratio=0.9):
+		return exactDiameter(dereference(G._this), ratio)
+
+	@staticmethod
+	def hopPlot(Graph G, maxDistance=0, k=64, r=7):
+		return hopPlot(dereference(G._this), maxDistance, k, r)
+
 cdef class CoreDecomposition:
 	"""
 	Computes k-core decomposition of a graph.
