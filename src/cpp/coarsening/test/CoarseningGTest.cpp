@@ -128,8 +128,8 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 }
 
 
-TEST_F(CoarseningGTest, testParallelPartitionCoarsening) {
-	count n = 100;
+TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyi) {
+	count n = 5000;
 
 	ErdosRenyiGenerator ERGen(n, 0.5);
 	Graph G = ERGen.generate();
@@ -160,7 +160,39 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarsening) {
 	EXPECT_EQ(k, GconRand.numberOfNodes())
 			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
 	EXPECT_EQ(k + 1, GconRand.numberOfEdges()) << "graph contracted according to random clustering should have k+1 clusters";
+}
 
+TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyiWithGraphBuilder) {
+	count n = 5000;
+
+	ErdosRenyiGenerator ERGen(n, 0.5);
+	Graph G = ERGen.generate();
+
+	ClusteringGenerator clusteringGen;
+	Partition singleton = clusteringGen.makeSingletonClustering(G);
+
+
+	DEBUG("coarsening on singleton partition");
+	ParallelPartitionCoarsening coarsening(true); // use graph builder
+	auto conSingletonPair = coarsening.run(G, singleton);
+	Graph Gcon = conSingletonPair.first;
+
+	assert (Gcon.consistencyCheck());
+
+	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
+			<< "graph contracted according to singleton clustering should have the same number of nodes as original";
+	EXPECT_EQ(G.numberOfEdges(), Gcon.numberOfEdges())
+			<< "graph contracted according to singletons clustering should have the same number of nodes as original";
+
+	DEBUG("coarsening on random partition");
+	count k = 2; // number of clusters in random clustering
+	Partition random = clusteringGen.makeRandomClustering(G, k);
+	auto conRandPair = coarsening.run(G, random);
+	Graph GconRand = conRandPair.first;
+
+	EXPECT_EQ(k, GconRand.numberOfNodes())
+			<< "graph contracted according to random clustering should have the same number of nodes as there are clusters.";
+	EXPECT_EQ(k + 1, GconRand.numberOfEdges()) << "graph contracted according to random clustering should have k+1 clusters";
 }
 
 TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraph) {
