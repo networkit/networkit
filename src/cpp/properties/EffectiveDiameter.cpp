@@ -28,8 +28,6 @@ this is a variaton of the ANF algorithm presented in the paper "A Fast and Scala
 in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 */
 double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, const count k, const count r) {
-	// set number of threads for OpenMP
-	omp_set_num_threads(4);
 	// the length of the bitmask where the number of connected nodes is saved
 	count lengthOfBitmask = (count) ceil(log2(G.numberOfNodes()));
 	// saves all k bitmasks for every node of the current iteration
@@ -140,14 +138,16 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G) {
 	return EffectiveDiameter::effectiveDiameterExact(G, 0.9);
 }
 
+/*
+this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
+in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
+*/
 double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ratio) {
-	// set number of threads for OpenMP
-	omp_set_num_threads(4);
 	// list of nodes that are already connected to enough other nodes
 	std::vector<node> finishedNodes;
-	// saves the reachable nodes in the current iteration
+	// saves the reachable nodes of the current iteration
 	std::vector<std::vector<bool> > mCurr;
-	// saves the reachable nodes in the previous iteration
+	// saves the reachable nodes of the previous iteration
 	std::vector<std::vector<bool> > mPrev;
 	// the amount of nodes that are connected to enough other nodes (|finishedNodes|)
 	count numberOfFinishedNodes = 0;
@@ -178,7 +178,6 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ra
 				if (finishedNodes[v] == 0) {
 					mCurr[v] = mPrev[v];
 					G.forNeighborsOf(v, [&](node u) {
-						//for (auto it : mLast[u]) {
 						for (count i = 0; i < G.numberOfNodes(); i++) {
 							// add the current neighbor of u to the neighborhood of v
 							mCurr[v][i] = mCurr[v][i] || mPrev[u][i];
@@ -208,9 +207,11 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ra
 	return effectiveDiameter/G.numberOfNodes();
 }
 
+/*
+this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
+in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
+*/
 std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count maxDistance, const count k, const count r) {
-	// set number of threads for OpenMP
-	omp_set_num_threads(4);
 	//the returned hop-plot
 	std::map<count, double> hopPlot;
 	// the length of the bitmask where the number of connected nodes is saved
@@ -272,7 +273,6 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 		G.forNodes([&](node v) {
 			// if the current node is not yet connected to all other nodes
 			if (finishedNodes[v] == 0) {
-				#pragma omp parallel for
 				// for each parallel approximation
 				for (count j = 0; j < k; j++) {
 					// the node is still connected to all previous neighbors
@@ -324,7 +324,7 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 				totalConnectedNodes += G.numberOfNodes();
 			}
 		});
-		hopPlot[h] = totalConnectedNodes/G.numberOfNodes();
+		hopPlot[h] = totalConnectedNodes/(G.numberOfNodes()*G.numberOfNodes());
 		mPrev = mCurr;
 		h++;
 	}
