@@ -19,7 +19,7 @@ SampledNodeStructuralRandMeasure::SampledNodeStructuralRandMeasure(count maxSamp
 SampledNodeStructuralRandMeasure::~SampledNodeStructuralRandMeasure() {
 }
 
-double SampledNodeStructuralRandMeasure::getDissimilarity(Graph& G, Partition& first, Partition& second) {
+double SampledNodeStructuralRandMeasure::getDissimilarity(const Graph& G, const Partition& first, const Partition& second) {
 	assert (G.numberOfNodes() > 0);
 	assert (G.numberOfNodes() > maxSamples);
 

@@ -19,9 +19,12 @@ import shlex
 
 from argparse import ArgumentParser
 
-if shutil.which("scons") is None:
-	print("Build system SCons is not installed. Please install and rerun setup.py")
-	exit(1)
+try:
+	if shutil.which("scons") is None:
+		print("ERROR: Build system SCons is not installed. Please install and rerun setup.py")
+		exit(1)
+except:
+	print("WARNING: unable to check whether build system SCons is installed")
 
 
 
@@ -32,11 +35,11 @@ parser.add_argument("-o", "--optimize", dest="optimize", help="specify build typ
 (options,args) = parser.parse_known_args()
 
 # set optional arguments to parsed ones or the default ones
-if options.jobs != None:
+if options.jobs is not None:
 	jobs = options.jobs
 else:
 	jobs = multiprocessing.cpu_count()
-if options.optimize != None:
+if options.optimize is not None:
 	optimize = options.optimize
 else:
 	optimize = "Opt"
@@ -79,9 +82,9 @@ def additional_clean():
 
 
 
-if ("build_ext" in sys.argv):
+if "build_ext" in sys.argv:
 	build_NetworKit()
-elif (("develop" in sys.argv) and ("--uninstall" not in sys.argv)):
+elif ("develop" in sys.argv) and ("--uninstall" not in sys.argv):
 	try:
 		os.mkdir("src/python/NetworKit")
 	except:
@@ -92,14 +95,14 @@ elif "clean" in sys.argv:
 
 # try-catch block when shutil.which is not available
 try:
-	if (shutil.which("g++-4.9") is not None):
+	if shutil.which("g++-4.9") is not None:
 		os.environ["CC"] = "g++-4.9"
 		os.environ["CXX"] = "g++-4.9"
-	elif (shutil.which("g++-4.8") is not None):
+	elif shutil.which("g++-4.8") is not None:
 		os.environ["CC"] = "g++-4.8"
 		os.environ["CXX"] = "g++-4.8"
 
-	elif (shutil.which("g++-4.7") is not None):
+	elif shutil.which("g++-4.7") is not None:
 		os.environ["CC"] = "g++-4.7"
 		os.environ["CXX"] = "g++-4.7"
 

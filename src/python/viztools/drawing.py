@@ -41,7 +41,7 @@ class GraphDrawer:
 		
 		
 		
-	def draw(self, G, pos=None, nodeSizes=None):
+	def draw(self, G, pos=None, nodeSizes=None, nodeColors=None):
 		"""
 		Draw graph unweighted
 
@@ -61,6 +61,10 @@ class GraphDrawer:
 			nodeOpts = dict(self.nodeOpts, **{"node_size" : nodeSizes})
 		else:
 			nodeOpts = self.nodeOpts
+
+		if not nodeColors is None:
+			nodeOpts = dict(nodeOpts, **{"node_color": nodeColors})
+
 		nx.draw_networkx_nodes(G, pos, **nodeOpts)
 
 		# draw nodelabels

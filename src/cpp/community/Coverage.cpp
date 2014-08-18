@@ -6,12 +6,10 @@
  */
 
 #include "Coverage.h"
-#include "../base/IndexMap.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
-Coverage::~Coverage() {
-}
 
 double Coverage::getQuality(const Partition& zeta, const Graph& G) {
 
@@ -26,7 +24,7 @@ double Coverage::getQuality(const Partition& zeta, const Graph& G) {
 				"Coverage is undefined for graphs without edges (including self-loops).");
 	}
 
-	IndexMap<index, double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
+	std::vector<double> intraEdgeWeight(zeta.upperBound(), 0.0); // cluster -> weight of its internal edges
 
 	// compute intra-cluster edge weights per cluster
 	// TODO: Make parallel, protect intraEdgeWeight[c]

@@ -42,6 +42,8 @@ std::vector<GraphEvent> DynamicDorogovtsevMendesGenerator::generate(count nSteps
 		index e = Aux::Random::integer(edges.size() - 1);
 		node s = edges[e].first;
 		node t = edges[e].second;
+		edges.push_back({s,u});
+		edges.push_back({t,u});
 		// connect node
 		stream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, u, s));
 		stream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, u, t));

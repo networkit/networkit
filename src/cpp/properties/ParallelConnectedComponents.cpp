@@ -10,6 +10,7 @@
 #include "ParallelConnectedComponents.h"
 #include "../structures/Partition.h"
 #include "../coarsening/PartitionCoarsening.h"
+#include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../auxiliary/Log.h"
 
 namespace NetworKit {
@@ -30,6 +31,12 @@ void ParallelConnectedComponents::run() {
 	DEBUG("initializing labels");
 	component = Partition(z);
 	component.allToSingletons();
+	// remove nodes that do not exist from the partition so it doesn't report wrong numbers
+	component.parallelForEntries([&](node u, index s) {
+		if (!G.hasNode(u)) {
+			component[u] = none;
+		}
+	});
 
 	DEBUG("initializing active nodes");
 	const char INACTIVE = 0;
@@ -76,7 +83,7 @@ void ParallelConnectedComponents::run() {
 	}
 	if (coarsening && numIterations == 8) { // TODO: externalize constant
 		// coarsen and make recursive call
-		PartitionCoarsening con;
+		ParallelPartitionCoarsening con;
 		std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
 		ParallelConnectedComponents cc(coarse.first);
 		cc.run();
@@ -97,6 +104,13 @@ void ParallelConnectedComponents::runSequential() {
 	DEBUG("initializing labels");
 	component = Partition(z);
 	component.allToSingletons();
+	// remove nodes that do not exist from the partition so it doesn't report wrong numbers
+	component.forEntries([&](node u, index s) {
+		if (!G.hasNode(u)) {
+			component[u] = none;
+		}
+	});
+
 	DEBUG("initializing active nodes");
 	std::vector<bool> activeNodes(z, true); // record if node must be processed
 

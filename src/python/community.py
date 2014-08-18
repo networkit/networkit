@@ -1,6 +1,12 @@
 """ This module handles community detection, i.e. the discovery of densely connected groups in networks."""
 
-from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader
+from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter,\
+	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance,\
+	EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionProduct, HubDominance
+
+import properties
+import graph
+
 import os
 
 try:
@@ -13,7 +19,7 @@ def detectCommunities(G, algo=None, inspect=True):
 	""" Perform high-performance community detection on the graph.
 		:param    G    the graph
 		:param     algorithm    community detection algorithm instance
-		:return communities (as type Clustering)
+		:return communities (as type Partition)
 		"""
 	if algo is None:
 		algo = PLM(refine=False)
@@ -65,7 +71,7 @@ def evalCommunityDetection(algo, G):
 	print(tabulate.tabulate(results))
 
 
-def readCommunities(path, format="partition"):
+def readCommunities(path, format="default"):
 	""" Read a partition into communities from a file"""
 	readers =  {"default": PartitionReader(),
 		"edgelist-t1": EdgeListPartitionReader(1),
@@ -103,4 +109,28 @@ def writeCommunities(communities, path):
 
 def compareCommunities(G, zeta1, zeta2):
 	""" Compare the partitions with respect to several (dis)similarity measures"""
-	pass # TODO
+	raise NotImplementedError("TODO:")
+
+
+def kCoreCommunityDetection(G, k, algo=None, inspect=True):
+	""" Perform community detection on the k-core of the graph, which possibly
+		reduces computation time and enhances the result.
+		:param    G    the graph
+		:param		k 	k as in k-core
+		:param     algorithm    community detection algorithm instance
+		:return communities (as type Partition)
+		"""
+	coreDec = properties.CoreDecomposition(G)
+	coreDec.run()
+
+	cores = coreDec.cores()
+	try:
+		kCore = cores[k]
+	except IndexError:
+		raise Error("There is no core for the specified k")
+
+	C = graph.Subgraph().fromNodes(G, kCore)	# FIXME: node indices are not preserved
+
+	properties.overview(C)
+
+	return detectCommunities(C, algo, inspect)
