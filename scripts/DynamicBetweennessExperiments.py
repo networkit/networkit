@@ -2,6 +2,8 @@ from NetworKit import *
 from dynamic import *
 from centrality import *
 
+import random
+
 def removeAndAddEdges(G, nEdges, tabu=None):
 	if nEdges > G.numberOfEdges() - tabu.numberOfEdges():
 		raise Error("G does not have enough edges")
@@ -22,6 +24,17 @@ def removeAndAddEdges(G, nEdges, tabu=None):
 		addStream.append(GraphEvent(GraphEvent.EDGE_ADDITION, u, v, 1.0))
 
 	return (removeStream, addStream)
+
+
+def setRandomWeights(G, mu, sigma):
+	"""
+	Add random weights, normal distribution with mean mu and standard deviation sigma
+	"""
+	for (u, v) in G.edges():
+		w = random.normalvariate(mu, sigma)
+		G.setWeight(u, v, w)
+	return G
+
 
 
 def test(G, nEdges, batchSize, epsilon, delta):
