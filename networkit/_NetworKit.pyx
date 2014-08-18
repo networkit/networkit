@@ -4830,6 +4830,35 @@ cdef class LocalDegreeAttributizer:
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(G._this, a)
 
+cdef extern from "cpp/backbones/LinearizeAttribute.h":
+	cdef cppclass _LinearizeAttribute "NetworKit::LinearizeAttribute":
+		_LinearizeAttribute() except +
+		vector[double] getAttribute(_Graph G, vector[double] a) except +
+
+cdef class LinearizeAttribute:
+	"""
+	Linearize an attribute such that values are evenly distributed between 0 and 1.
+	"""
+	cdef _LinearizeAttribute _this
+
+	def getAttribute(self, Graph G, vector[double] a):
+		"""
+		Gets the edge attribute that can be used for global filtering.
+		Parameters
+		----------
+		G : Graph
+			The input graph.
+		a : vector[double]
+			Edge attribute that shall be linearized.
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains the linearized attribute.
+
+		"""
+		return self._this.getAttribute(G._this, a)
+
+
 cdef extern from "cpp/backbones/GlobalThresholdFilter.h":
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
 		_GlobalThresholdFilter(double alpha, bool above) except +
