@@ -109,6 +109,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
 		void addEdge(node u, node v, edgeweight w) except +
+		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		bool hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
@@ -302,6 +303,20 @@ cdef class Graph:
 			Edge weight.
 		"""
 		self._this.addEdge(u, v, w)
+
+	def setWeight(self, u, v, w):
+		""" Set the weight of an edge. If the edge does not exist, it will be inserted.
+
+		Parameters
+		----------
+		u : node
+			Endpoint of edge.
+		v : node
+			Endpoint of edge.
+		w : edgeweight
+			Edge weight.
+		"""
+		self._this.setWeight(u, v, w)
 
 	def removeEdge(self, u, v):
 		""" Removes the undirected edge {`u`,`v`}.
@@ -1023,7 +1038,7 @@ cdef class DorogovtsevMendesGenerator:
 	""" Generates a graph according to the Dorogovtsev-Mendes model.
 
  	DorogovtsevMendesGenerator(nNodes)
- 	
+
  	Constructs the generator class.
 
 	Parameters
@@ -1056,9 +1071,9 @@ cdef extern from "../cpp/generators/RegularRingLatticeGenerator.h":
 cdef class RegularRingLatticeGenerator:
 	"""
 	Constructs a regular ring lattice.
-	
+
 	RegularRingLatticeGenerator(count nNodes, count nNeighbors)
-	
+
 	Constructs the generator.
 
 	Parameters
@@ -1081,7 +1096,7 @@ cdef class RegularRingLatticeGenerator:
 			The generated graph.
 		"""
 		return Graph(0).setThis(self._this._generate())
-		
+
 
 cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
 	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator":
@@ -1090,14 +1105,14 @@ cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
 
 cdef class WattsStrogatzGenerator:
 	""" Generates a graph according to the Watts-Strogatz model.
-	
+
 	First, a regular ring lattice is generated. Then edges are rewired
 		with a given probability.
-	
+
 	WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
-	
+
 	Constructs the generator.
-	
+
 	Parameters
 	----------
 	nNodes : Number of nodes in the target graph.
@@ -3857,7 +3872,7 @@ cdef class DynamicDorogovtsevMendesGenerator:
 	""" Generates a graph according to the Dorogovtsev-Mendes model.
 
  	DynamicDorogovtsevMendesGenerator()
- 	
+
  	Constructs the generator class.
 	"""
 	cdef _DynamicDorogovtsevMendesGenerator* _this
@@ -3922,14 +3937,14 @@ cdef class DynamicForestFireGenerator:
      communities
      densification power law
      shrinking diameter
- 
+
     see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
     Shringking Diameters and Possible Explanations
 
  	DynamicForestFireGenerator(double p, bool directed, double r = 1.0)
- 	
+
  	Constructs the generator class.
- 	
+
  	Parameters
  	----------
  	p : forward burning probability.
