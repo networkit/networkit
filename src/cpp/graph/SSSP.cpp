@@ -10,28 +10,19 @@
 
 namespace NetworKit {
 
-SSSP::SSSP(const Graph& G, node s) : G(G), source(s) {
-	
+SSSP::SSSP(const Graph& G, node s, bool storePaths, bool storeStack) : G(G), source(s), storePaths(storePaths), storeStack(storeStack) {
+
 }
 
 std::vector<edgeweight> SSSP::getDistances() const {
 	return distances;
 }
 
-edgeweight SSSP::distance(node t) const {
-	return distances[t];	
-}
-
-count SSSP::numberOfPaths(node t) const {
-	return npaths[t];	
-}
-
-
-std::vector<node> SSSP::getPredecessors(node t) const {
-	return previous[t];
-}
 
 std::vector<node> SSSP::getPath(node t, bool forward) const {
+	if (! storePaths) {
+		throw std::runtime_error("paths have not been stored");
+	}
 	std::vector<node> path;
 	if (previous[t].empty()) { // t is not reachable from source
 		WARN("there is no path from ", source, " to ", t);
@@ -83,6 +74,11 @@ std::set<std::vector<node> > SSSP::getPaths(node t, bool forward) const {
 		}
 	}
 	return thePaths;
+}
+
+
+std::stack<node> SSSP::getStack() const {
+	return stack;
 }
 
 } /* namespace NetworKit */

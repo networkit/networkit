@@ -27,13 +27,14 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param source The source node.
+	 * @param storePaths	store paths and number of paths?
 	 */
-	Dijkstra(const Graph& G, node source);
-	
+	Dijkstra(const Graph& G, node source, bool storePaths=true, bool storeStack=false);
+
 	/**
 	 * Performs the Dijkstra SSSP algorithm on the graph given in the constructor.
 	 */
-	virtual void run();
+	virtual void run(node t = none);
 };
 
 } /* namespace NetworKit */

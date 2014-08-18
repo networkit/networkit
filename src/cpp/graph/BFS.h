@@ -24,15 +24,17 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param source The source node of the breadth-first search.
+	 * @param storePaths	store paths and number of paths?
+	 * @param storeStack	maintain a stack of nodes in decreasing order of distance
 	 */
-	BFS(const Graph& G, node source); 
+	BFS(const Graph& G, node source, bool storePaths=true, bool storeStack=false);
 
 	/**
 	 * Breadth-first search from @a source.
 	 * @return Vector of unweighted distances from node @a source, i.e. the
 	 * length (number of edges) of the shortest path from @a source to any other node.
 	 */
-	virtual void run();
+	virtual void run(node t = none);
 
 };
 

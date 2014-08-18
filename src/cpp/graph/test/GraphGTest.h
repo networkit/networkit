@@ -43,4 +43,4 @@ protected:
 
 #endif /* GRAPHGTEST_H_ */
 
-#endif /*NOGTEST */
+#endif /* NOGTEST */

@@ -1,38 +1,59 @@
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
 						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
-						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader)
+						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader)
 from GraphMLIO import GraphMLReader, GraphMLWriter
 import os
 import logging
 import numpy
 import scipy.io
-from enum import Enum
+
+try:
+	from enum import Enum
+
+	class AutoNumber(Enum):
+		def __new__(cls):
+			value = len(cls.__members__) + 1
+			obj = object.__new__(cls)
+			obj._value_ = value
+			return obj
 
 
-class AutoNumber(Enum):
-	def __new__(cls):
-		value = len(cls.__members__) + 1
-		obj = object.__new__(cls)
-		obj._value_ = value
-		return obj
+	class Format(AutoNumber):
+		""" Simple enumeration class to list supported file types """
+		SNAP = ()
+		EdgeListSpaceZero = ()
+		EdgeListSpaceOne = ()
+		EdgeListTabZero = ()
+		EdgeListTabOne = ()
+		METIS = ()
+		GraphML = ()
+		GML = ()
+	#	VNA = ()
+		EdgeListCommaOne = ()
+		GraphViz = ()
+		DOT = ()
+	#	GDF = ()
+		EdgeList = ()
+		LFR = ()
+		KONECT = ()
+except ImportError:
+	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
+	class Format:
+		SNAP = "snap"
+		EdgeListTabOne = "edgelist-t1"
+		EdgeListTabZero = "edgelist-t0"
+		EdgeListSpaceOne = "edgelist-s1"
+		EdgeListSpaceZero = "edgelist-s0"
+		METIS = "metis"
+		GraphML = "graphml"
+		GML = "gml"
+		EdgeListCommaOne = "edgelist-cs1"
+		GraphViz = "dot"
+		DOT = "dot"
+		EdgeList = "edgelist"
+		LFR = "edgelist-t1"
+		KONECT = "konect"
 
-
-class Format(AutoNumber):
-	""" Simple enumeration class to list supported file types """
-	SNAP = ()
-	EdgeListSpaceZero = ()
-	EdgeListSpaceOne = ()
-	EdgeListTabZero = ()
-	EdgeListTabOne = ()
-	METIS = ()
-	GraphML = ()
-	GML = ()
-#	VNA = ()
-	EdgeListCommaOne = ()
-	GraphViz = ()
-#	GDF = ()
-	EdgeList = ()
-	LFR = ()
 
 
 
@@ -50,7 +71,8 @@ def getReader(fileformat, **kwargs):
 			Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
 			Format.EdgeListTabOne:		EdgeListReader('\t',1),
 			Format.EdgeListTabZero:		EdgeListReader('\t',0),
-			Format.LFR:			EdgeListReader('\t',1)
+			Format.LFR:			EdgeListReader('\t',1),
+			Format.KONECT:			KONECTGraphReader(' ')
 			}
 
 	try:
@@ -90,30 +112,31 @@ def readGraph(path, fileformat = Format.METIS, **kwargs):
 	return None
 
 
-def readMat(path):
-	""" Reads a Graph from a matlab object file containing an adjacency matrix"""
+def readMat(path, key="A"):
+	""" Reads a Graph from a matlab object file containing an adjacency matrix and returns a NetworKit::Graph
+		Parameters:
+		- key: The key of the adjacency matrix in the matlab object file (default: A)"""
 	matlabObject = scipy.io.loadmat(path)	
 	# result is a dictionary of variable names and objects, representing the matlab object
-	for (key, value) in matlabObject.items():
-		if type(matlabObject[key]) is numpy.ndarray:
-			A = matlabObject[key]
-			break # found the matrix
-			
+	if key in matlabObject:
+		A = matlabObject[key]
+	else:
+		raise Exception("Key {0} not found in the matlab object file".format(key))
 	(n, n2) = A.shape
-	if (n != n2):
-		raise Exception("this (%sx%s) matrix is not square".format(n, n2))
-	if not ((A.transpose() == A).all()):
+	if n != n2:
+		raise Exception("this ({0}x{1}) matrix is not square".format(n, n2))
+	if not numpy.array_equal(A, A.transpose):
 		logging.warning("the adjacency matrix is not symmetric")
 	G = Graph(n)
 	nz = A.nonzero()
-	edges = [(u,v) for (u,v) in zip(nz[0], nz[1])]
-	for (u,v) in edges:
-		G.addEdge(u, v)
+	for (u,v) in zip(nz[0], nz[1]):
+		if not G.hasEdge(u, v):
+			G.addEdge(u, v)
 	return G
 
 
 # writing
-def getWriter(fileformat):
+def getWriter(fileformat, **kwargs):
 	writers =	{
 			Format.METIS:			METISGraphWriter(),
 			Format.GraphML:			GraphMLWriter(),
@@ -124,6 +147,7 @@ def getWriter(fileformat):
 			Format.EdgeListTabOne:		EdgeListWriter('\t',1),
 			Format.EdgeListTabZero:		EdgeListWriter('\t',0),
 			Format.GraphViz:		DotGraphWriter(),
+			Format.DOT:			DotGraphWriter(),
 			Format.GML:			GMLGraphWriter(),
 			Format.LFR:			EdgeListWriter('\t',1)
 #			Format.GDF:			GDFGraphWriter(),
@@ -132,16 +156,16 @@ def getWriter(fileformat):
 	try:
 		# special case for custom Edge Lists
 		if fileformat == Format.EdgeList:
-			writer = EdgeListIO(kwargs['separator'],kwargs['firstNode'])
+			writer = EdgeListWriter(kwargs['separator'],kwargs['firstNode'])
 		else:
 			writer = writers[fileformat]#(**kwargs)
 	except KeyError:
 		raise Exception("format {0} currently not supported".format(fileformat))
 	return writer
-def writeGraph(G, path, fileformat = Format.METIS):
+def writeGraph(G, path, fileformat = Format.METIS, **kwargs):
 	""" Write graph to various output formats. 
 		Default format is METIS."""
-	writer = getWriter(fileformat)
+	writer = getWriter(fileformat, **kwargs)
 	writer.write(G, path)
 	logging.info("wrote graph {0} to file {1}".format(G, path))
 
