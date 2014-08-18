@@ -256,14 +256,14 @@ TEST_F(AuxGTest, testRandomWeightedChoice) {
 TEST_F(AuxGTest, testRandomIndex) {
 	using namespace Aux::Random;
 	
-	for(unsigned i = 0; i <10; ++i) {
-		EXPECT_EQ(0, index(1));
+	for (unsigned i = 0; i < 10; i++) {
+		EXPECT_EQ(0u, index(1));
 	}
 	
-	for(unsigned i = 0; i <100; ++i) {
+	for (unsigned i = 0; i < 100; i++) {
 		auto tmp = index(10);
-		EXPECT_LE(tmp, 9);
-		EXPECT_GE(tmp, 0);
+		EXPECT_LE(tmp, 9u);
+		EXPECT_GE(tmp, 0u);
 	}
 }
 

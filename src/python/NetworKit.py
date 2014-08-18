@@ -32,6 +32,7 @@ import dynamic
 import gephi
 import partitioning
 import coloring
+import workflows
 
 try:
 	import viztools

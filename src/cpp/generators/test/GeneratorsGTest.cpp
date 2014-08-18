@@ -20,6 +20,7 @@ Dy * GeneratorsTest.cpp
 #include "../../properties/ClusteringCoefficient.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
+#include "../StochasticBlockmodel.h"
 
 
 namespace NetworKit {
@@ -203,9 +204,6 @@ TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
 
 	EXPECT_EQ(nMax, G.numberOfNodes());
 	EXPECT_EQ( ((n0-1) + ((nMax - n0) * k)), G.numberOfEdges());
-
-
-
 }
 
 TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
@@ -221,7 +219,6 @@ TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 				"BarabasiGraph.txt");
 }
 
-
 TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
 	DynamicPathGenerator gen;
 	auto stream = gen.generate(42);
@@ -229,7 +226,6 @@ TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
 		TRACE(ev.toString());
 	}
 }
-
 
 TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 	count n = 2000;
@@ -301,7 +297,6 @@ TEST_F(GeneratorsGTest, testChungLuGenerator) {
 	INFO("expected volume: ", expVolume, ", actual volume: ", actualVolume);
 }
 
-
 TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 	count n = 400;
 	count maxDegree = n / 10;
@@ -365,27 +360,27 @@ TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
 	DynamicForestFireGenerator ffg1(0.0, false);
 	stream = ffg1.generate(10);
 	gu1.update(stream);
-	EXPECT_EQ(11, G1.numberOfNodes());
+	EXPECT_EQ(11u, G1.numberOfNodes());
 	G1.forNodes([&](node u) {
-		int count = 0;
+		count c = 0;
 		G1.forNeighborsOf(u, [&](node v) {
 			if (v < u) {
-				count += 1;
+				c += 1;
 			}
 		});
 		if (u == 0) {
-			EXPECT_EQ(0, count);
+			EXPECT_EQ(0u, c);
 		} else {
-			EXPECT_EQ(1, count);
+			EXPECT_EQ(1u, c);
 		}
 	});
-	
+
 	Graph G2(0);
 	GraphUpdater gu2(G2);
 	DynamicForestFireGenerator ffg2(1.0, true, 1.0);
 	stream = ffg2.generate(10);
 	gu2.update(stream);
-	EXPECT_EQ(11, G2.numberOfNodes());
+	EXPECT_EQ(11u, G2.numberOfNodes());
 	G2.forNodePairs([&](node u, node v) {
 		if (v < u) {
 			EXPECT_TRUE(G2.hasEdge(u,v));
@@ -397,8 +392,8 @@ TEST_F(GeneratorsGTest, testRegularRingLatticeGenerator) {
 	int n0 = 10;
 	int neighbors = 2;
 	auto testRingLattice = [&](Graph G) {
-		EXPECT_EQ(n0, G.numberOfNodes());
-		EXPECT_EQ(n0*neighbors, G.numberOfEdges());
+		EXPECT_EQ(n0, (int) G.numberOfNodes());
+		EXPECT_EQ(n0 * neighbors, (int) G.numberOfEdges());
 		G.forNodePairs([&](node u, node v) {
 			int diff = std::abs((int) u- (int) v);
 			if (u != v && (diff <= neighbors || diff >= n0 - neighbors)) {
@@ -408,7 +403,7 @@ TEST_F(GeneratorsGTest, testRegularRingLatticeGenerator) {
 			}
 		});
 	};
-	
+
 	RegularRingLatticeGenerator rrlg = RegularRingLatticeGenerator(n0, neighbors);
 	testRingLattice(rrlg.generate());
 }
@@ -426,65 +421,78 @@ TEST_F(GeneratorsGTest, testWattsStrogatzGenerator) {
 			}
 		});
 	};
-	
+
 	WattsStrogatzGenerator wsg1 = WattsStrogatzGenerator(n0, neighbors, 0.0);
 	testRingLattice(wsg1.generate());
-	
+
 	WattsStrogatzGenerator wsg2 = WattsStrogatzGenerator(n0, neighbors, 0.3);
 	Graph G = wsg2.generate();
-	EXPECT_EQ(n0, G.numberOfNodes());
-	EXPECT_EQ(n0*neighbors, G.numberOfEdges());
+	EXPECT_EQ(n0, (int) G.numberOfNodes());
+	EXPECT_EQ(n0*neighbors, (int) G.numberOfEdges());
 }
 
 TEST_F(GeneratorsGTest, testDorogovtsevMendesGenerator) {
 	int n0 = 20;
 	DorogovtsevMendesGenerator dmg = DorogovtsevMendesGenerator(n0);
 	Graph G = dmg.generate();
-	
-	EXPECT_EQ(n0, G.numberOfNodes());
-	EXPECT_EQ(2*n0-3, G.numberOfEdges());
+
+	EXPECT_EQ(n0, (int) G.numberOfNodes());
+	EXPECT_EQ(2 * n0 - 3, (int) G.numberOfEdges());
 	G.forNodes([&](node u) {
-		int count = 0;
+		count c = 0;
 		G.forNeighborsOf(u, [&](node v) {
 			if (v < u) {
-				count += 1;
+				c += 1;
 			}
 		});
 		if (u <= 2) {
-			EXPECT_EQ(u, count);
+			EXPECT_EQ(u, c);
 		} else {
-			EXPECT_EQ(2, count);
+			EXPECT_EQ(2u, c);
 		}
 	});
 }
 
 TEST_F(GeneratorsGTest, testDynamicDorogovtsevMendesGenerator) {
-	int n0 = 20;
+	count n0 = 20;
 	DynamicDorogovtsevMendesGenerator ddmg = DynamicDorogovtsevMendesGenerator();
 	Graph G(0);
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 	stream = ddmg.generate(n0 - 3);
 	gu.update(stream);
-	
+
 	EXPECT_EQ(n0, G.numberOfNodes());
 	EXPECT_EQ(2*n0-3, G.numberOfEdges());
 	G.forNodes([&](node u) {
-		int count = 0;
+		count c = 0;
 		G.forNeighborsOf(u, [&](node v) {
 			if (v < u) {
-				count += 1;
+				c += 1;
 			}
 		});
 		if (u <= 2) {
-			EXPECT_EQ(u, count);
+			EXPECT_EQ(u, c);
 		} else {
-			EXPECT_EQ(2, count);
+			EXPECT_EQ(2u, c);
 		}
 	});
+}
+
+
+
+TEST_F(GeneratorsGTest, testStochasticBlockmodel) {
+	count n = 10;
+	count nBlocks = 2;
+	std::vector<index> membership = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
+	std::vector<std::vector<double> > affinity = {{1.0, 0.0}, {0.0, 1.0}};
+	StochasticBlockmodel sbm(n, nBlocks, membership, affinity);
+	Graph G = sbm.generate();
+
+	EXPECT_EQ(n, G.numberOfNodes());
+	EXPECT_EQ(20u, G.numberOfEdges());
 }
 
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
-

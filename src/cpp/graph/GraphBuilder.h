@@ -23,136 +23,170 @@ protected:
 	bool directed; //!< true if the graph will be directed, false otherwise
 
 	std::vector< std::vector<node> > halfEdges;
-	std::vector< std::vector<edgeweight> > halfWeights;
+	std::vector< std::vector<edgeweight> > halfEdgeWeights;
+
+	index indexHalfEdgeArray(node u, node v) const;
 
 public:
-	GraphBuilder(count n = 0, bool weighted = false, bool directed = false) :
-		n(n),
-		weighted(weighted),
-		directed(directed),
-		halfEdges(n),
-		halfWeights(weighted ? n : 0)
-	{}
+	/**
+	 * Creates a new GraphBuilder. GraphBuilder supports the basic methods needed to create a new graph (addNode, addEdge, setWeight, increaseWeight). It is designed to be much faster for graph creation, but the speed comes with a restriction:
+	 * For undirected graphs GraphBuilder will handle u->v and v->u as two different edges. Keep that in mind when using setWeight and increaseWeight.
+	 * GraphBuilder allows parallelization in a special way. It's internal data structure saves edges only at the source node. As long as edges from node u are only added/changed by thread t1, every other thread can modifier edges not starting in u.
+	 * addNode is not threadsafe.
+	 * @param n Number of nodes.
+	 * @param weighted If set to <code>true</code>, the graph has edge weights.
+	 * @param directed If set to @c true, the graph will be directed.
+	 */
+	GraphBuilder(count n = 0, bool weighted = false, bool directed = false);
 
+	/**
+	 * Returns <code>true</code> if this graph supports edge weights other than 1.0.
+	 * @return <code>true</code> if this graph supports edge weights other than 1.0.
+	 */
 	bool isWeighted() const { return weighted; }
+
+	/**
+	 * Return <code>true</code> if this graph supports directed edges.
+	 * @return </code>true</code> if this graph supports directed edges.
+	 */
 	bool isDirected() const { return directed; }
+
+	/**
+	 * Return <code>true</code> if graph contains no nodes.
+	 * @return <code>true</code> if graph contains no nodes.
+	 */
+	bool isEmpty() const { return n == 0; }
+
+	/**
+	 * Return the number of nodes in the graph.
+	 * @return The number of nodes.
+	 */
 	count numberOfNodes() const { return n; }
 
-	node addNode() {
-		halfEdges.push_back(std::vector<node>{});
-		if (weighted) {
-			halfWeights.push_back(std::vector<edgeweight>{});
-		}
-		return n++;
-	}
+ 	/**
+	 * Get an upper bound for the node ids in the graph.
+	 * @return An upper bound for the node ids.
+	 */
+	index upperNodeIdBound() const { return n; }
 
-	// add edge from u to v
-	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight) {
-		halfEdges[u].push_back(v);
-		if (weighted) {
-			halfWeights[u].push_back(ew);
-		}
-	}
+	/**
+	 * Add a new node to the graph and return it.
+	 * @return The new node.
+	 */
+	node addNode();
+	
+	/**
+	 * Insert an edge between the nodes @a u and @a v. If the graph is weighted you can optionally
+	 * set a weight for this edge. The default weight is 1.0.
+	 * @param u Endpoint of edge.
+	 * @param v Endpoint of edge.
+	 * @param weight Optional edge weight.
+	 */
+	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+
+	/**
+	 * Set the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	void setWeight(node u, node v, edgeweight ew);
+
+	/**
+	 * Increase the weight of an edge. If the edge does not exist,
+	 * it will be inserted.
+	 *
+	 * @param[in]	u	endpoint of edge
+	 * @param[in]	v	endpoint of edge
+	 * @param[in]	weight	edge weight
+	 */
+	void increaseWeight(node u, node v, edgeweight ew);
+
+	/**
+	 * Generates a Graph instance. The graph builder will be reseted at the end.
+	 */
+	Graph toGraph(bool parallel = true) { return parallel ? toGraphParallel() : toGraphSequential(); }
+
+	/**
+	 * Iterate over all nodes of the graph and call @a handle (lambda closure).
+	 *
+	 * @param handle Takes parameter <code>(node)</code>.
+	 */
+	template<typename L> void forNodes(L handle) const;
+
+	/**
+	 * Iterate randomly over all nodes of the graph and call @a handle (lambda closure).
+	 *
+	 * @param handle Takes parameter <code>(node)</code>.
+	 */
+	template<typename L> void parallelForNodes(L handle) const;
+
+	/**
+	 * Iterate over all undirected pairs of nodes and call @a handle (lambda closure).
+	 *
+	 * @param handle Takes parameters <code>(node, node)</code>.
+	 */
+	template<typename L> void forNodePairs(L handle) const;
+
 
 	/**
 	 * Iterate over all undirected pairs of nodes in parallel and call @a handle (lambda closure).
 	 *
 	 * @param handle Takes parameters <code>(node, node)</code>.
 	 */
-	template<typename L> void parallelForNodePairs(L handle) const {
-	 	#pragma omp parallel for
-		for (node u = 0; u < n; u++) {
-			for (node v = u + 1; v < n; v++) {
-				handle(u, v);
-			}
-		}
-	}
+	template<typename L> void parallelForNodePairs(L handle) const;
 
-	Graph toGraph() const {
-		Graph G(n, weighted, directed);
+private:
+	Graph toGraphParallel();
+	Graph toGraphSequential();
 
-		std::vector<count> missingEdgesCounts(n, 0);
-
-		// copy out edges (first half)
-		G.forNodes([&](node v) {
-			G.outDeg[v] = halfEdges[v].size();
-			G.outEdges[v] = halfEdges[v];
-			if (weighted) {
-				G.outEdgeWeights[v] = halfWeights[v];
-			}
-
-			// increase total edge count
-			G.m += G.outDeg[v];
-
-			// increase count of incoming edges for neighbors
-			for (node u : G.outEdges[v]) {
-				missingEdgesCounts[u]++;
-			}
-		});
-
-		// add second half of the edge
-		if (directed) {
-			// directed: outEdges is complete, fill inEdges
-			// missingEdgesCounts are our inDegrees
-			G.inDeg = missingEdgesCounts;
-
-			G.forNodes([&](node v) {
-				G.inEdges.reserve(G.inDeg[v]);
-			});
-			G.forNodes([&](node v) {
-				for (node u : halfEdges[v]) {
-					// edge v -> u
-					G.inEdges[u].push_back(v);
-				}
-			});
-
-			// same stuff for weights
-			if (weighted) {
-				G.forNodes([&](node v) {
-					G.inEdgeWeights.reserve(G.inDeg[v]);
-				});
-				G.forNodes([&](node v) {
-					for (index i = 0; i < halfWeights[v].size(); i++) {
-						node u = halfEdges[v][i];
-						edgeweight ew = halfWeights[v][i];
-						G.inEdgeWeights[u].push_back(ew);
-					}
-				});
-			}
-		} else {
-			// undirected: so far each edge is just saved at one node
-			// add it to the other node as well
-			G.forNodes([&](node v) {
-				G.outDeg[v] += missingEdgesCounts[v];
-				G.outEdges[v].reserve(G.outDeg[v]);
-			});
-			G.forNodes([&](node v) {
-				for (node u : halfEdges[v]) {
-					// edge v -> u
-					G.outEdges[u].push_back(v);
-				}
-			});
-
-			// same stuff for weights
-			if (weighted) {
-				G.forNodes([&](node v) {
-					G.outEdgeWeights[v].reserve(G.outDeg[v]);
-				});
-				G.forNodes([&](node v) {
-					for (index i = 0; i < halfWeights[v].size(); i++) {
-						node u = halfEdges[v][i];
-						edgeweight ew = halfWeights[v][i];
-						G.outEdgeWeights[u].push_back(ew);
-					}
-				});				
-			}
-		}
-
-		G.shrinkToFit();
-		return G;
-	}
+	void reset();
+	template <typename T>
+	static void copyAndClear(std::vector<T>& source, std::vector<T>& target);
+	static void correctNumberOfEdges(Graph& G, count numberOfSelfLoops);
 };
 
+template <typename T>
+void GraphBuilder::copyAndClear(std::vector<T>& source, std::vector<T>& target) {
+	std::copy(source.begin(), source.end(), std::back_inserter(target));
+	source.clear();	
+}
+
+template<typename L>
+void GraphBuilder::forNodes(L handle) const {
+	for (node v = 0; v < n; v++) {
+		handle(v);
+	}
+}
+
+template<typename L>
+void GraphBuilder::parallelForNodes(L handle) const {
+	#pragma omp parallel for schedule(dynamic)
+	for (node v = 0; v < n; v++) {
+		handle(v);
+	}
+}
+
+template<typename L>
+void GraphBuilder::forNodePairs(L handle) const {
+	for (node u = 0; u < n; u++) {
+		for (node v = u + 1; v < n; v++) {
+			handle(u, v);
+		}
+	}
+}
+
+template<typename L>
+void GraphBuilder::parallelForNodePairs(L handle) const {
+	#pragma omp parallel for schedule(dynamic)
+	for (node u = 0; u < n; u++) {
+		for (node v = u + 1; v < n; v++) {
+			handle(u, v);
+		}
+	}
+}
 
 } /* namespace NetworKit */
 

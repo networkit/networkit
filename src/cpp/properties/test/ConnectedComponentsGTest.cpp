@@ -16,6 +16,7 @@
 #include "../../generators/HavelHakimiGenerator.h"
 #include "../../auxiliary/Log.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
+#include "../../graph/GraphGenerator.h"
 
 namespace NetworKit {
 
@@ -147,6 +148,33 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 		DEBUG("Number of components: ", seqNum);
 		EXPECT_EQ(seqNum, parNum);
 	}
+}
+
+TEST_F(ConnectedComponentsGTest, testParallelConnectedComponentsWithDeletedNodes) {
+	GraphGenerator generator;
+	Graph G = generator.makeCompleteGraph(100);
+
+	{
+		ParallelConnectedComponents cc(G);
+		cc.run();
+		EXPECT_EQ(1, cc.numberOfComponents()) << "The complete graph has just one connected component";
+	}
+
+	for (node u = 0; u < 10; ++u) {
+		G.forNeighborsOf(u, [&](node v) {
+			G.removeEdge(u, v);
+		});
+		G.removeNode(u);
+	}
+
+	{
+		ParallelConnectedComponents cc(G);
+		cc.run();
+		EXPECT_EQ(1, cc.numberOfComponents()) << "The complete graph with 10 nodes removed has still just one connected component (run())";
+		cc.runSequential();
+		EXPECT_EQ(1, cc.numberOfComponents()) << "The complete graph with 10 nodes removed has still just one connected component (runSequential())";
+	}
+
 }
 
 TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
