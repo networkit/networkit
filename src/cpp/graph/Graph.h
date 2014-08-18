@@ -375,7 +375,7 @@ public:
 	 * Check for invalid graph states, such as multi-edges.
 	 * @return False if the graph is in invalid state.
 	 */
-	bool consistencyCheck() const;
+	bool checkConsistency() const;
 
 
 	/* DYNAMICS */

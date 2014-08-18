@@ -699,21 +699,21 @@ std::vector<node> Graph::neighbors(node u) const {
 	return neighbors;
 }
 
-bool Graph::consistencyCheck() const {
+bool Graph::checkConsistency() const {
 	// check for multi-edges
 	std::vector<node> lastSeen(z, none);
-	bool multiEdge = false;
-	auto multiEdgeDetected = [&multiEdge]() { return !multiEdge; };
-	forNodesWhile(multiEdgeDetected, [&](node v) {
+	bool noMultiEdges = true;
+	auto noMultiEdgesDetected = [&noMultiEdges]() { return noMultiEdges; };
+	forNodesWhile(noMultiEdgesDetected, [&](node v) {
 		forNeighborsOf(v, [&](node u) {
 			if (lastSeen[u] == v) {
-				multiEdge = true;
+				noMultiEdges = false;
 			}
 			lastSeen[u] = v;
 		});
 	});
 
-	return !multiEdge;
+	return noMultiEdges;
 }
 
 } /* namespace NetworKit */

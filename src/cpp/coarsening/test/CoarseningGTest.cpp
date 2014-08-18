@@ -143,7 +143,7 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyi) {
 	auto conSingletonPair = coarsening.run(G, singleton);
 	Graph Gcon = conSingletonPair.first;
 
-	assert (Gcon.consistencyCheck());
+	assert (Gcon.checkConsistency());
 
 	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
 			<< "graph contracted according to singleton clustering should have the same number of nodes as original";
@@ -177,7 +177,7 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyiWithGraphBuil
 	auto conSingletonPair = coarsening.run(G, singleton);
 	Graph Gcon = conSingletonPair.first;
 
-	assert (Gcon.consistencyCheck());
+	assert (Gcon.checkConsistency());
 
 	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
 			<< "graph contracted according to singleton clustering should have the same number of nodes as original";

@@ -765,16 +765,16 @@ TEST_P(GraphGTest, testUpperNodeIdBound) {
 
 TEST_P(GraphGTest, testCheckConsistency_MultiEdgeDetection) {
 	Graph G = createGraph(3);
-	ASSERT_TRUE(G.consistencyCheck());
+	ASSERT_TRUE(G.checkConsistency());
 	G.addEdge(0, 1);
-	ASSERT_TRUE(G.consistencyCheck());
+	ASSERT_TRUE(G.checkConsistency());
 	G.addEdge(0, 2);
 	G.addEdge(0, 1);
-	ASSERT_FALSE(G.consistencyCheck());
+	ASSERT_FALSE(G.checkConsistency());
 	G.removeEdge(0, 1);
-	ASSERT_TRUE(G.consistencyCheck());
+	ASSERT_TRUE(G.checkConsistency());
 	G.removeEdge(0, 1);
-	ASSERT_TRUE(G.consistencyCheck());
+	ASSERT_TRUE(G.checkConsistency());
 }
 
 /** DYNAMICS **/

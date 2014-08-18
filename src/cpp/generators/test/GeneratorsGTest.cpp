@@ -235,7 +235,7 @@ TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 	Graph G = generator.generate();
 	EXPECT_EQ(n, G.numberOfNodes());
 	EXPECT_FALSE(G.isEmpty());
-	EXPECT_TRUE(G.consistencyCheck());
+	EXPECT_TRUE(G.checkConsistency());
 
 	count nPairs = (n * (n-1)) / 2;
 	count nEdges = G.numberOfEdges();
