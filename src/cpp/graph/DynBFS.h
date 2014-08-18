@@ -9,7 +9,7 @@
 #define DYNBFS_H_
 
 #include "DynSSSP.h"
-#include "BFS.h"
+
 
 namespace NetworKit {
 
@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup graph
  * Dynamic breadth-first search.
  */
-class DynBFS : public DynSSSP, public BFS {
+class DynBFS : public DynSSSP {
 
 public:
 
@@ -26,15 +26,17 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param s The source node.
+	 * @param   storePredecessors   keep track of the lists of predecessors?
 	 */
-	DynBFS(const Graph& G, node s);
+	DynBFS(const Graph& G, node s, bool storePredecessors = true);
 
-	void init();
+	void run(node t = none) override;
 
 	/** Updates the distances after an event.*/
 	void update(const std::vector<GraphEvent>& batch) override;
 
 protected:
+	enum Color {WHITE, BLACK, GRAY};
 	std::vector<Color> color;
 	count maxDistance;
 

@@ -32,7 +32,6 @@ void ApproxBetweenness::run() {
 
 	double c = 0.5; // universal positive constant - see reference in paper
 
-
 	edgeweight vd = 0;
 	if (diameterSamples == 0) {
 		INFO("estimating vertex diameter pedantically");
@@ -79,7 +78,7 @@ void ApproxBetweenness::run() {
 			sssp.reset(new BFS(G, u));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
-		sssp->run(); // TODO: this can be optimized by stopping the search once the target node has been reached
+		sssp->run(v); // TODO: this can be optimized by stopping the search once the target node has been reached
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update
