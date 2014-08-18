@@ -1759,7 +1759,7 @@ cdef class Partition:
 		index
 			The index of the new element.
 		"""
-		self._this.extend()
+		return self._this.extend()
 
 	def addToSubset(self, s, e):
 		""" Add a (previously unassigned) element `e` to the set `s`.
