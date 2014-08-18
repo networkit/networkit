@@ -29,8 +29,6 @@ public:
 	 */
 	DynDijkstra(const Graph& G, node s, bool storePredecessors = true);
 
-	void init();
-
 	void run(node t = none) override;
 
 	/** Updates the distances after an event.*/
