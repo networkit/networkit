@@ -38,6 +38,7 @@
 #include "../SampledNodeStructuralRandMeasure.h"
 #include "../../community/GraphClusteringTools.h"
 #include "../PartitionProduct.h"
+#include "../HubDominance.h"
 
 namespace NetworKit {
 
@@ -687,14 +688,14 @@ TEST_F(CommunityGTest, testClusteringProduct) {
 	EXPECT_TRUE(GraphClusteringTools::equalClusterings(twelve, prod.calculate(twelve, twelve), G)) << "Product of itself does not modify the clustering";
 	EXPECT_TRUE(GraphClusteringTools::equalClusterings(singleton, prod.calculate(twelve, singleton), G)) << "Product of singleton with any clustering is the singleton clustering";
 	Partition sixteen = prod.calculate(twelve, eight);
-	EXPECT_EQ(16, sixteen.numberOfSubsets());
+	EXPECT_EQ(16u, sixteen.numberOfSubsets());
 	auto clusterSizes = sixteen.subsetSizeMap();
 	size_t i = 0;
 	for (auto size : clusterSizes) {
 		if (i % 4 == 0 || i % 4 == 3) {
-			EXPECT_EQ(100, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
+			EXPECT_EQ(100u, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
 		} else {
-			EXPECT_EQ(50, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
+			EXPECT_EQ(50u, size.second) << "cluster size pattern is not 100 | 50 | 50 | 100 | 100 | 50 | 50 | 100 | 100 | ... | 50 | 50 | 100";
 		}
 		++i;
 	}
@@ -712,6 +713,49 @@ TEST_F(CommunityGTest, testMakeNoncontinuousClustering) {
 
 	EXPECT_EQ(1, jaccard.getDissimilarity(G, con, nonCon)) << "The Jaccard distance of a clustering with its complementary clustering should be 1";
 	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, prod.calculate(con, nonCon))) << "The product of a clustering with its complementary clustering should be the singleton clustering";
+}
+
+TEST_F(CommunityGTest, testHubDominance) {
+	ClusteringGenerator generator;
+	GraphGenerator graphGenerator;
+	Graph G = graphGenerator.makeCompleteGraph(100);
+	Partition con = generator.makeContinuousBalancedClustering(G, 10);
+
+	HubDominance hub;
+
+	EXPECT_EQ(1u, hub.getQuality(con, G)) << "In complete graphs, the hub dominance is always 1";
+
+	G = Graph(100);
+	EXPECT_EQ(0u, hub.getQuality(con, G)) << "In graphs without nodes, the hub dominance is always 0";
+
+	for (node v = 1; v < 4; ++v) {
+		G.addEdge(0, v);
+	}
+
+	EXPECT_LT(0, hub.getQuality(con, G)) << "In graphs with internal edges, the hub dominance must be > 0";
+
+	EXPECT_DOUBLE_EQ(3.0 / 9.0 * 1.0 / 10.0, hub.getQuality(con, G)) << "In this case, in one of ten equally-sized clusters a node has 3 of 9 possible neighbors.";
+
+	Cover cov(con);
+
+	EXPECT_DOUBLE_EQ(3.0 / 9.0 * 1.0 / 10.0, hub.getQuality(cov, G)) << "The Cover should have the same hub dominance as the equivalent partition";
+
+	index newS = cov.upperBound();
+	cov.setUpperBound(newS + 1);
+
+	for (node u = 0; u < 10; ++u) {
+		cov.addToSubset(newS, u);
+	}
+
+	EXPECT_DOUBLE_EQ(3.0 / 9.0 * 2.0 / 11.0, hub.getQuality(cov, G)) << "Duplicated subsets in covers count twice for the hub dominance";
+
+	con = generator.makeSingletonClustering(G);
+
+	EXPECT_EQ(1u, hub.getQuality(con, G)) << "The singleton partition has hub dominance 1 by definition.";
+
+	cov = Cover(con);
+
+	EXPECT_EQ(1u, hub.getQuality(con, G)) << "The singleton cover has hub dominance 1 by definition.";
 }
 
 } /* namespace NetworKit */

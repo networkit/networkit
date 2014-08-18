@@ -96,6 +96,7 @@ cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count, bool, bool) except +
+		_Graph(const _Graph& other) except +
 		void stealFrom(_Graph)
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -162,6 +163,18 @@ cdef class Graph:
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
 		del self._this
+
+	def __copy__(self):
+		"""
+		Generates a copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
+
+	def __deepcopy__(self, memo):
+		"""
+		Generates a (deep) copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
 
 	def numberOfNodes(self):
 		"""
@@ -1746,7 +1759,7 @@ cdef class Partition:
 		index
 			The index of the new element.
 		"""
-		self._this.extend()
+		return self._this.extend()
 
 	def addToSubset(self, s, e):
 		""" Add a (previously unassigned) element `e` to the set `s`.
@@ -2212,6 +2225,11 @@ cdef class Cover:
 
 # Module: community
 
+# Fused type for methods that accept both a partition and a cover
+ctypedef fused PartitionCover:
+	Partition
+	Cover
+
 cdef extern from "../cpp/community/ClusteringGenerator.h":
 	cdef cppclass _ClusteringGenerator "NetworKit::ClusteringGenerator":
 		_ClusteringGenerator() except +
@@ -2398,6 +2416,48 @@ cdef class Modularity:
 	cdef _Modularity _this
 
 	def getQuality(self, Partition zeta, Graph G):
+		return self._this.getQuality(zeta._this, dereference(G._this))
+
+cdef extern from "../cpp/community/HubDominance.h":
+	cdef cppclass _HubDominance "NetworKit::HubDominance":
+		_HubDominance() except +
+		double getQuality(_Partition _zeta, _Graph _G) except +
+		double getQuality(_Cover _zeta, _Graph _G) except +
+
+cdef class HubDominance:
+	"""
+	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
+	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
+	the maximum cluster-internal degree, i.e. the number of nodes in the cluster minus one. The
+	value for all clusters is defined as the average of all clusters.
+
+	Strictly speaking this is not a quality measure as this is rather dependent on the type of the
+	considered graph, for more information see
+	Lancichinetti A, Kivelä M, Saramäki J, Fortunato S (2010)
+	Characterizing the Community Structure of Complex Networks
+	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
+	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
+	"""
+
+	cdef _HubDominance _this
+
+	def getQuality(self, PartitionCover zeta, Graph G):
+		"""
+		Calculates the dominance of hubs in the given Partition or Cover of the given
+		Graph.
+
+		Parameters
+		----------
+		zeta : Partition or Cover
+			The Partition or Cover for which the hub dominance shall be calculated
+		G : Graph
+			The Graph to which zeta belongs
+
+		Returns
+		-------
+		double
+			The average hub dominance in the given Partition or Cover
+		"""
 		return self._this.getQuality(zeta._this, dereference(G._this))
 
 
