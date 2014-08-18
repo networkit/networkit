@@ -130,16 +130,17 @@ def test(G, nEdges, batchSize, epsilon, delta):
 			}
 
 
-setNumberOfThreads(1)
-G = generators.DorogovtsevMendesGenerator(100000).generate()
-cc = properties.ConnectedComponents(G)
-cc.run()
-if (cc.numberOfComponents() == 1) :
-	nEdges = 1000
-	batchSize = 100
-	epsilon = 0.05
-	delta = 0.1
-	times = test(G, nEdges, batchSize, epsilon, delta)
-	print (times)
-else:
-	print ("The generated graph is not connected.")
+if __name__ == "__main__":
+	setNumberOfThreads(1)
+	G = generators.DorogovtsevMendesGenerator(100000).generate()
+	cc = properties.ConnectedComponents(G)
+	cc.run()
+	if (cc.numberOfComponents() == 1) :
+		nEdges = 1000
+		batchSize = 100
+		epsilon = 0.05
+		delta = 0.1
+		times = test(G, nEdges, batchSize, epsilon, delta)
+		print (times)
+	else:
+		print ("The generated graph is not connected.")
