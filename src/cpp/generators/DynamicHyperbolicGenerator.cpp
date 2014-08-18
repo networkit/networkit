@@ -108,8 +108,6 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				vector<index> oldset = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor);
 				//we only add new edges, don't remove any. The order of the points should be the same
 				vector<index> newset = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*newfactor);
-				count oldsize = oldset.size();
-				count newsize = newset.size();
 				assert(newset.size() >= oldset.size());
 
 				std::sort(oldset.begin(), oldset.end());

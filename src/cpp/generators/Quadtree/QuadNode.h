@@ -254,6 +254,10 @@ public:
 				}
 			}
 			DEBUG("No responsible child for (", angle, ", ", R, ") found. Segfault imminent.");
+			assert(false);
+			//to make compiler happy:
+			QuadNode<T> * result = nullptr;
+			return result;
 		}
 	}
 

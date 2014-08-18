@@ -494,7 +494,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 		EXPECT_GE(angles[i], 0);
 		EXPECT_LT(angles[i], 2*M_PI);
 		EXPECT_GE(radii[i], 0);
-		EXPECT_LT(radii[i], 1);
+		EXPECT_LE(radii[i], HyperbolicSpace::hyperbolicRadiusToEuclidean(R));
 	}
 }
 

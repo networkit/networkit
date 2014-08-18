@@ -263,7 +263,6 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 	assert(r_c <= r_max);
 	double min = r_c - d_c;
 	double max = std::min(r_c+d_c, r_max);
-	double epsilon = 0.0000001;
 
 	if (d_c > r_c) {
 		//the query circle overlaps the origin
@@ -274,7 +273,7 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 	/**
 	 * Now, the integral.
 	 * It is 4\int_{min}^{max} \text{acos}(\frac{r_c^2-d_c^2+r^2}{2r_c\cdot r})  \cdot \frac{1}{1-r^2} \cdot (\sinh (\text{acosh}( 1 + 2\frac{r^2}{1 - r^2})))\,dr
-	 * The solution for this was computed by WolframAlpha
+	 * This solution was computed by WolframAlpha
 	 */
 
 	if (max < min) return result;
@@ -289,7 +288,7 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 	 */
 	auto firstlogpart = [](double r, double d, double c) {
 		double s = (c*c-d*d);
-		double denominator = r*r*s*s;
+		//double denominator = r*r*s*s;
 		double rsqs = r*r+s;
 		double real = -2*s*sqrt(4*c*c*r*r-rsqs*rsqs);
 		double imag = -4*c*c*r*r+2*s*r*r+2*s*s;
@@ -299,7 +298,7 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 	auto secondlogpart = [](double r, double d, double c) {
 		double s = (c*c-d*d);
 		double rsqs = r*r+s;
-		double denominator = (r*r-1)*(s-1);
+		//double denominator = (r*r-1)*(s-1);
 		double real = sqrt(4*c*c*r*r-rsqs*rsqs);
 		double imag = 2*c*c*(r*r+1)-(s+1)*rsqs;
 		imag = imag / sqrt((s+1)*(s+1)-(4*c*c));
