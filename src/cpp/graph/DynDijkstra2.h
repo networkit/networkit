@@ -5,8 +5,8 @@
  *      Author: ebergamini
  */
 
-#ifndef DYNDIJKSTRA_H_
-#define DYNDIJKSTRA_H_
+#ifndef DYNDIJKSTRA2_H_
+#define DYNDIJKSTRA2_H_
 
 #include "DynSSSP.h"
 #include "Dijkstra.h"
@@ -22,12 +22,13 @@ class DynDijkstra2 : public DynSSSP {
 public:
 
 	/**
-	 * Creates the object for @a G and source @a s.
-	 *
-	 * @param G The graph.
-	 * @param s The source node.
-	 */
-	DynDijkstra2(const Graph& G, node s);
+	* Creates the object for @a G and source @a s.
+	*
+	* @param G The graph.
+	* @param s The source node.
+	* @param   storePredecessors   keep track of the lists of predecessors?
+	*/
+	DynDijkstra2(const Graph& G, node s, bool storePredecessors = true);
 
 	void run(node t=none) override;
 
@@ -36,11 +37,12 @@ public:
 
 protected:
 	enum Color {WHITE, BLACK};
+	enum ModificationType {DISTANCE, NUM_PATHS, NONE};
 	std::vector<Color> color;
-	std::vector<Aux::PrioQueue<edgeweight, node> > N;
-
+	std::vector<ModificationType> modification;
+	std::vector<Aux::PrioQueue<double, node> > N;
 };
 
 } /* namespace NetworKit */
 
-#endif /* DYNDIJKSTRA_H_ */
+#endif /* DYNDIJKSTRA2_H_ */

@@ -21,6 +21,7 @@ namespace NetworKit {
 class Dijkstra : public SSSP {
 
 friend class DynDijkstra;
+friend class DynDijkstra2;
 
 public:
 

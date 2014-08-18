@@ -310,9 +310,13 @@ TEST_F(DynBetweennessGTest, compareAffectedVertices) {
 			npaths1[s][t] = dynbc.nPaths(s, t);
 		});
 	});
+	std::vector<std::vector<edgeweight>> dist2 = dist1;
+	std::vector<std::vector<double>> dep2 = dep1;
+	std::vector<std::vector<count>> npaths2 = npaths1;
 	DEBUG("Before the edge insertion: ");
 	GraphEvent ev;
 	count nInsertions = 10, i = 0;
+	int totAffectedDep = 0;
 	while (i < nInsertions) {
 		node v1 = Sampling::randomNode(G);
 		node v2 = Sampling::randomNode(G);
@@ -321,9 +325,37 @@ TEST_F(DynBetweennessGTest, compareAffectedVertices) {
 			G.addEdge(v1, v2);
 			ev = GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0);
 			dynbc.update(ev);
-			std::vector<std::vector<edgeweight>> dist2;
-			std::vector<std::vector<double>> dep2;
-			std::vector<std::vector<count>> npaths2;
+			// compare the old distances, number of shortest paths and dependencies with the new ones
+			int diff_dep = 0;
+			int diff_dist = 0;
+			int diff_dep2 = 0;
+			int diff_dist2 = 0;
+			G.forNodes([&] (node s){
+				G.forNodes([&] (node t){
+					if (!logically_equal(dist1[s][t], dynbc.distance(s,t)) || !logically_equal(npaths1[s][t], dynbc.nPaths(s,t))) {
+						diff_dist ++;
+					}
+					if (!logically_equal(dist1[s][t], dynbc.distance(s,t)) || !logically_equal(npaths1[s][t], dynbc.nPaths(s,t)) || !logically_equal(dep1[s][t], dynbc.dependency(s,t))) {
+						diff_dep ++;
+					}
+					if (!logically_equal(dist2[s][t], dynbc.distance(s,t)) || !logically_equal(npaths2[s][t], dynbc.nPaths(s,t))) {
+						diff_dist2 ++;
+					}
+					if (!logically_equal(dist2[s][t], dynbc.distance(s,t)) || !logically_equal(npaths2[s][t], dynbc.nPaths(s,t)) || !logically_equal(dep2[s][t], dynbc.dependency(s,t))) {
+						diff_dep2 ++;
+					}
+				});
+			});
+			std::cout<<"Number of vertices affected by the "<<i<<"-th batch"<<std::endl;
+			std::cout<<i<<" Diff_dist: "<<diff_dist2<<std::endl;
+			std::cout<<i<<" Diff_dep: "<<diff_dep2<<std::endl;
+			totAffectedDep += diff_dep2;
+			std::cout<<"Total number of vertices affected up to now (counting only once the vertices affected by more than one edge insertion of the batch)"<<std::endl;
+			std::cout<<i<<" Diff_dist: "<<diff_dist<<std::endl;
+			std::cout<<i<<" Diff_dep: "<<diff_dep<<std::endl;
+			dist2.clear();
+			dep2.clear();
+			npaths2.clear();
 			dist2.resize(G.upperNodeIdBound());
 			dep2.resize(G.upperNodeIdBound());
 			npaths2.resize(G.upperNodeIdBound());
@@ -337,23 +369,9 @@ TEST_F(DynBetweennessGTest, compareAffectedVertices) {
 					npaths2[s][t] = dynbc.nPaths(s, t);
 				});
 			});
-			// compare the old distances, number of shortest paths and dependencies with the new ones
-			int diff_dep = 0;
-			int diff_dist = 0;
-			G.forNodes([&] (node s){
-				G.forNodes([&] (node t){
-					if (!logically_equal(dist1[s][t], dist2[s][t]) || !logically_equal(npaths1[s][t], npaths2[s][t])) {
-						diff_dist ++;
-					}
-					if (!logically_equal(dep1[s][t], dep2[s][t])) {
-						diff_dep ++;
-					}
-				});
-			});
-			std::cout<<"Diff_dist: "<<diff_dist<<std::endl;
-			std::cout<<"Diff_dep: "<<diff_dep<<std::endl;
 		}
 	}
+	std::cout<<"Sum of vertices whose dependencies have been affected in the batches: "<<totAffectedDep<<std::endl;
 }
 
 TEST_F(DynBetweennessGTest, testApproxBetweenness) {
