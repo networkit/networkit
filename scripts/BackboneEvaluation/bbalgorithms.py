@@ -13,8 +13,7 @@ class bb_SimmelianBackboneNonParametric:
 
     def getPrecalcAttribute(self, graph):
         chiba = backbones.ChibaNishizekiTriangleCounter()
-        empty = backbones.EdgeAttribute(0)
-        triangles = chiba.getAttribute(graph, empty)
+        triangles = chiba.getAttribute(graph)
         sj = backbones.SimmelianJaccardAttributizer()
         a_sj = sj.getAttribute(graph, triangles)
         return a_sj
@@ -61,8 +60,7 @@ class bb_SimmelianMultiscaleBackbone:
 
     def getPrecalcAttribute(self, graph):
         chiba = backbones.ChibaNishizekiTriangleCounter()
-        empty = backbones.EdgeAttribute(0)
-        triangles = chiba.getAttribute(graph, empty)
+        triangles = chiba.getAttribute(graph)
         ms = backbones.MultiscaleAttributizer()
         a_ms = ms.getAttribute(graph, triangles)
         return a_ms
@@ -93,8 +91,7 @@ class bb_SimmelianBackboneParametric:
 
     def getPrecalcAttribute(self, graph):
         chiba = backbones.ChibaNishizekiTriangleCounter()
-        empty = backbones.EdgeAttribute(0)
-        triangles = chiba.getAttribute(graph, empty)
+        triangles = chiba.getAttribute(graph)
         so = backbones.SimmelianOverlapAttributizer(10)
         a_so = so.getAttribute(graph, triangles)
         return a_so
@@ -122,9 +119,8 @@ class bb_LocalSimilarityBackbone:
         return "backbones.LocalSimilarityBackbone(" + str(parameter) + ")"
 
     def getPrecalcAttribute(self, graph):
-        empty = backbones.EdgeAttribute(0)
         attributizer = backbones.LocalSimilarityAttributizer()
-        a_ls = attributizer.getAttribute(graph, empty)
+        a_ls = attributizer.getAttribute(graph, [])
         return a_ls
 
     def getPrecalcBackbone(self, graph, attribute, value):
@@ -158,7 +154,6 @@ class bb_MultiscaleBackbone:
         return None
 
     def getPrecalcBackbone(self, graph, attribute, value):
-        empty = backbones.EdgeAttribute(0)
         msb = backbones.MultiscaleBackbone(value)
         return msb.calculate(graph)
 
