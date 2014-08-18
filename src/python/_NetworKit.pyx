@@ -1243,11 +1243,11 @@ cdef class EffectiveDiameter:
 
 	@staticmethod
 	def effectiveDiameter(Graph G, ratio=0.9, k=64, r=7):
-		return effectiveDiameter(dereference(G._this), ration, k, r)
+		return effectiveDiameter(dereference(G._this), ratio, k, r)
 
 	@staticmethod
 	def effectiveDiameterExact(Graph G, ratio=0.9):
-		return exactDiameter(dereference(G._this), ratio)
+		return effectiveDiameterExact(dereference(G._this), ratio)
 
 	@staticmethod
 	def hopPlot(Graph G, maxDistance=0, k=64, r=7):
