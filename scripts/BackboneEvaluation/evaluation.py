@@ -42,6 +42,7 @@ class GraphProperties:
 		self.numEdges = 0
 		self.keptEdgesPercent = 0
 		self.graphStructuralRandMeasure = 0
+		self.nmi = 0
 		self.clusteringCoefficient = 0
 		self.degreeDistCoefficient = 0
 		self.cpvDistanceFromOriginal = 0
@@ -88,13 +89,18 @@ def applyBackboneAlgorithm(graph, algorithm):
 	bprops.keptEdgesPercent = (bprops.numEdges / graph.numberOfEdges()) * 100.0
 	debugInfo("Backbone edge percentage: " + str(bprops.keptEdgesPercent))
 
-	#Graph structural rand measure
 	debugInfo("Detecting communities")
 	if backbone.numberOfEdges() > 0:
 		communitiesGraph = community.detectCommunities(graph)
 		communitiesBackbone = community.detectCommunities(backbone)
+
+		#Graph structural rand measure
 		randMeasure = community.GraphStructuralRandMeasure()
 		bprops.graphStructuralRandMeasure = randMeasure.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
+
+		#Normalized Mutual information
+		nmi = community.NMIDistance()
+		bprops.nmi = nmi.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
 
 		#Clustering coefficient
 		debugInfo("Calculating clustering coefficient")
