@@ -81,7 +81,7 @@ Graph LocalSimilarityBackbone::calculate(const Graph& g) {
 	LocalSimilarityAttributizer localSimAttributizer;
 	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
-	GlobalThresholdFilter filter(e, true);
+	GlobalThresholdFilter filter(e, false);
 	return filter.calculate(g, minExponent);
 }
 
