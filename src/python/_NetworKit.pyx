@@ -2876,6 +2876,7 @@ cdef extern from "../cpp/properties/GraphProperties.h" namespace "NetworKit::Gra
 	pair[count, count] minMaxDegree(_Graph _G) except +
 	double averageDegree(_Graph _G) except +
 	vector[count] degreeDistribution(_Graph _G) except +
+	vector[unsigned int] degreeSequence(_Graph _G) except +
 	vector[double] localClusteringCoefficients(_Graph _G) except +
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
@@ -2898,6 +2899,10 @@ cdef class GraphProperties:
 	@staticmethod
 	def degreeDistribution(Graph G not None):
 		return degreeDistribution(dereference(G._this))
+
+	@staticmethod
+	def degreeSequence(Graph G not None):
+		return degreeSequence(dereference(G._this))
 
 	@staticmethod
 	def averageLocalClusteringCoefficient(Graph G not None):
