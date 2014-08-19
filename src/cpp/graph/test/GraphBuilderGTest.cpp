@@ -318,7 +318,7 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 		}
 
 		Graph G = toGraph(b);
-		ASSERT_TRUE(G.consistencyCheck());
+		ASSERT_TRUE(G.checkConsistency());
 		// edges should get weight defaultWeight on creation and setWeight should overwrite this
 		ASSERT_EQ(defaultEdgeWeight, G.weight(0, 1));
 		ASSERT_EQ(2.718, G.weight(1, 2));
