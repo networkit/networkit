@@ -15,14 +15,16 @@
 namespace NetworKit {
 
 INSTANTIATE_TEST_CASE_P(InstantiationName, GraphBuilderGTest, testing::Values(
-						std::make_tuple(false, false, false),
-						std::make_tuple(true, false, false),
-						std::make_tuple(false, true, false),
-						std::make_tuple(true, true, false),
-						std::make_tuple(false, false, true),
-						std::make_tuple(true, false, true),
-						std::make_tuple(false, true, true),
-						std::make_tuple(true, true, true)
+						std::make_tuple(false, false, false, false),
+						std::make_tuple(true, false, false, false),
+						std::make_tuple(false, true, false, false),
+						std::make_tuple(true, true, false, false),
+						std::make_tuple(false, false, true, false),
+						std::make_tuple(true, false, true, false),
+						std::make_tuple(false, true, true, false),
+						std::make_tuple(true, true, true, false),
+						std::make_tuple(true, false, true, true),
+						std::make_tuple(false, false, true, true)
 						));
 
 bool GraphBuilderGTest::isWeighted() const {
@@ -36,14 +38,24 @@ bool GraphBuilderGTest::useParallel() const {
 	return std::get<2>(GetParam());
 }
 
+bool GraphBuilderGTest::useDirectSwap() const {
+	return std::get<3>(GetParam());
+}
+
 GraphBuilder GraphBuilderGTest::createGraphBuilder(count n) const {
-	bool weighted, directed, parallel;
-	std::tie(weighted, directed, parallel) = GetParam();
+	bool weighted, directed, parallel,useDirectSwap;
+	std::tie(weighted, directed, parallel,useDirectSwap) = GetParam();
 	GraphBuilder b(n, weighted, directed);
 	return b;
 }
 
-Graph GraphBuilderGTest::toGraph(GraphBuilder& b) const { return b.toGraph(useParallel()); };
+Graph GraphBuilderGTest::toGraph(GraphBuilder& b) const {
+	if (useDirectSwap()) {
+		return b.directSwap();
+	} else {
+		return b.toGraph(useParallel());
+	}
+};
 
 void GraphBuilderGTest::SetUp() {
 	/*
@@ -81,6 +93,7 @@ void GraphBuilderGTest::SetUp() {
 		node u = e.first;
 		node v = e.second;
 		bHouse.addEdge(u, v, ew);
+		if (useDirectSwap()) bHouse.addEdge(v,u,ew);
 		
 		Ahouse[u][v] = ew;
 	
@@ -189,6 +202,10 @@ TEST_P(GraphBuilderGTest, testAddEdge) {
 	// Graph with 2 normal edges
 	b.addEdge(0, 1, 4.51);
 	b.addEdge(1, 2, 2.39);
+	if (useDirectSwap()) {
+		b.addEdge(1, 0, 4.51);
+		b.addEdge(2, 1, 2.39);
+	}
 
 	Graph G = toGraph(b);
 
@@ -253,6 +270,9 @@ TEST_P(GraphBuilderGTest, testNumberOfSelfLoops) {
 	GraphBuilder b = createGraphBuilder(3);
 	b.addEdge(0, 1);
 	b.addEdge(0, 0);
+	if (useDirectSwap()) {
+		b.addEdge(1,0);
+	}
 	Graph G = toGraph(b);
 	ASSERT_EQ(1u, G.numberOfSelfLoops());
 }
@@ -270,6 +290,10 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 	GraphBuilder b = createGraphBuilder(10);
 	b.addEdge(0, 1);
 	b.addEdge(1, 2);
+	if (useDirectSwap()) {
+		b.addEdge(1,0);
+		b.addEdge(2,1);
+	}
 
 	if (isWeighted()) {
 		// edges should get weight defaultWeight on creation and setWeight should overwrite this
@@ -279,14 +303,22 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 		b.setWeight(5, 6, 56.0);
 		// directed graphs are not symmetric, undirected are
 		b.setWeight(3, 4, 2.718);
-		b.setWeight(4, 3, 5.243);
+		if (isDirected()) {
+			b.setWeight(4, 3, 5.243);
+		}
 		
 		// self-loop
 		b.addEdge(8, 8, 2.5);
 		b.setWeight(8, 8, 3.14);
 
-		Graph G = toGraph(b);
+		if (useDirectSwap()) {
+			b.setWeight(2, 1, 2.718);
+			b.setWeight(6, 5, 56.0);
+			b.setWeight(4, 3, 2.718);
+		}
 
+		Graph G = toGraph(b);
+		ASSERT_TRUE(G.consistencyCheck());
 		// edges should get weight defaultWeight on creation and setWeight should overwrite this
 		ASSERT_EQ(defaultEdgeWeight, G.weight(0, 1));
 		ASSERT_EQ(2.718, G.weight(1, 2));
@@ -349,6 +381,7 @@ TEST_P(GraphBuilderGTest, testSameAsGraph) {
 				node u = Aux::Random::integer(v, n - 1); // self-loops possible
 				edgeweight ew = Aux::Random::probability();
 				b.addEdge(v, u, ew);
+				if (useDirectSwap() && u != v) b.addEdge(u,v,ew);
 				G_expected.addEdge(v, u, ew);
 			}
 
@@ -357,9 +390,11 @@ TEST_P(GraphBuilderGTest, testSameAsGraph) {
 				edgeweight ew = Aux::Random::probability();
 				if (p < 0.5) {
 					b.setWeight(v, u, ew);
+					if (useDirectSwap() && u != v) b.setWeight(u,v,ew);
 					G_expected.setWeight(v, u, ew);
 				} else {
 					b.increaseWeight(v, u, ew);
+					if (useDirectSwap() && u != v) b.increaseWeight(u,v,ew);
 					G_expected.increaseWeight(v, u, ew);
 				}
 			}
@@ -419,6 +454,9 @@ TEST_P(GraphBuilderGTest, testForValidStateAfterToGraph) {
 	node v = this->bHouse.addNode();
 	node u = this->bHouse.addNode();
 	this->bHouse.addEdge(v, u, 0.25);
+	if (useDirectSwap()) {
+		this->bHouse.addEdge(u,v,0.25);
+	}
 
 	Graph G2 = toGraph(this->bHouse);
 	ASSERT_FALSE(G2.isEmpty());
