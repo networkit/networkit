@@ -21,7 +21,7 @@ public:
 	/**
 	 * Calculates the backbone graph for the given input graph.
 	 */
-	virtual Graph calculate(Graph& g) = 0;
+	virtual Graph calculate(const Graph& g) = 0;
 
 	/** only to be used by cython - this eliminates an unnecessary copy */
 	Graph* _calculate(Graph& g) {

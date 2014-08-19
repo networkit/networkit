@@ -72,6 +72,9 @@ def getCentralityPositionVector(graph):
 
 # Applies the given backbone algorithm to the given graph and calculates various graph properties
 def applyBackboneAlgorithm(graph, algorithm):
+	#Index edges if neccessary
+	graph.indexEdges()
+
 	#Backbone calculation
 	debugInfo("Calculating backbone")
 	start = time.clock()
