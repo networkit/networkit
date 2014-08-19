@@ -20,9 +20,7 @@ namespace NetworKit {
 
 SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(double threshold) : threshold(threshold) {}
 
-Graph SimmelianBackboneNonParametric::calculate(Graph& g) {
-	g.indexEdges();
-
+Graph SimmelianBackboneNonParametric::calculate(const Graph& g) {
 	ChibaNishizekiTriangleCounter triangleAttributizer;
 	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
@@ -40,9 +38,7 @@ Graph SimmelianBackboneNonParametric::calculate(Graph& g) {
 SimmelianBackboneParametric::SimmelianBackboneParametric(int maxRank, int minOverlap) :
 		maxRank(maxRank), minOverlap(minOverlap) {}
 
-Graph SimmelianBackboneParametric::calculate(Graph& g) {
-	g.indexEdges();
-
+Graph SimmelianBackboneParametric::calculate(const Graph& g) {
 	ChibaNishizekiTriangleCounter triangleAttributizer;
 	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
@@ -60,9 +56,7 @@ Graph SimmelianBackboneParametric::calculate(Graph& g) {
 MultiscaleBackbone::MultiscaleBackbone(double alpha) :
 		alpha(alpha) {}
 
-Graph MultiscaleBackbone::calculate(Graph& g) {
-	g.indexEdges();
-
+Graph MultiscaleBackbone::calculate(const Graph& g) {
 	//TODO: the following will be obsolete once graph edge attributes are used. ?
 	std::vector<double> weight(g.upperEdgeIdBound());
 	g.forEdges([&](node u, node v, edgeid eid) {
@@ -83,9 +77,7 @@ Graph MultiscaleBackbone::calculate(Graph& g) {
 LocalSimilarityBackbone::LocalSimilarityBackbone(double e) :
 		e(e) {}
 
-Graph LocalSimilarityBackbone::calculate(Graph& g) {
-	g.indexEdges();
-
+Graph LocalSimilarityBackbone::calculate(const Graph& g) {
 	LocalSimilarityAttributizer localSimAttributizer;
 	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
@@ -100,9 +92,7 @@ Graph LocalSimilarityBackbone::calculate(Graph& g) {
 SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(double alpha) :
 		alpha(alpha) {}
 
-Graph SimmelianMultiscaleBackbone::calculate(Graph& g) {
-	g.indexEdges();
-
+Graph SimmelianMultiscaleBackbone::calculate(const Graph& g) {
 	ChibaNishizekiTriangleCounter triangleAttributizer;
 	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
@@ -121,9 +111,7 @@ Graph SimmelianMultiscaleBackbone::calculate(Graph& g) {
 RandomBackbone::RandomBackbone(double ratio) :
 		ratio(ratio) {}
 
-Graph RandomBackbone::calculate(Graph& g) {
-	g.indexEdges();
-
+Graph RandomBackbone::calculate(const Graph& g) {
 	RandomAttributizer randomAttributizer;
 	std::vector<double> random = randomAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
 
