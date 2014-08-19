@@ -8,8 +8,33 @@
 #ifndef NOGTEST
 
 #include "IOGTest.h"
-#include "../../community/GraphClusteringTools.h"
+
+#include <fstream>
+#include <unordered_set>
+#include <vector>
+
 #include "../FastMETISGraphReader.h"
+#include "../METISGraphReader.h"
+#include "../METISGraphWriter.h"
+#include "../PartitionWriter.h"
+#include "../PartitionReader.h"
+#include "../GraphIO.h"
+#include "../DotGraphWriter.h"
+#include "../DGSReader.h"
+#include "../EdgeListIO.h"
+#include "../EdgeListPartitionReader.h"
+#include "../SNAPEdgeListPartitionReader.h"
+#include "../SNAPGraphWriter.h"
+#include "../FastMETISGraphReader.h"
+
+#include "../../community/GraphClusteringTools.h"
+#include "../../auxiliary/Log.h"
+#include "../../graph/GraphGenerator.h"
+#include "../../community/ClusteringGenerator.h"
+#include "../../structures/Partition.h"
+#include "../../community/Modularity.h"
+#include "../../community/PLP.h"
+
 
 namespace NetworKit {
 
@@ -182,7 +207,7 @@ TEST_F(IOGTest, testMETISGraphReaderWithDoubleWeights) {
 }
 
 
-TEST_F(IOGTest, testClusteringWriterAndReader) {
+TEST_F(IOGTest, testPartitionWriterAndReader) {
 	// write clustering first
 	std::string path = "output/example.clust";
 
@@ -194,7 +219,7 @@ TEST_F(IOGTest, testClusteringWriterAndReader) {
 	ClusteringGenerator clusteringGen;
 	Partition zeta = clusteringGen.makeRandomClustering(G, k);
 
-	ClusteringWriter writer;
+	PartitionWriter writer;
 	writer.write(zeta, path);
 
 	// check if file exists
@@ -206,7 +231,7 @@ TEST_F(IOGTest, testClusteringWriterAndReader) {
 	EXPECT_TRUE(exists) << "clustering file should have been written to: " << path;
 
 
-	ClusteringReader reader;
+	PartitionReader reader;
 	Partition read = reader.read(path);
 
 	EXPECT_EQ(n, read.numberOfElements()) << "read clustering should contain n nodes";
@@ -299,8 +324,8 @@ TEST_F(IOGTest, testEdgeListIO) {
 
 }
 
-TEST_F(IOGTest, testEdgeListClusteringReader) {
-	EdgeListClusteringReader reader(1);
+TEST_F(IOGTest, testEdgeListPartitionReader) {
+	EdgeListPartitionReader reader(1);
 
 	Partition zeta = reader.read("input/LFR-generator-example/community.dat");
 	//EXPECT_EQ(10, zeta.size());
@@ -346,7 +371,7 @@ TEST_F(IOGTest, tryReadingLFR) {
 	std::getline(std::cin, clustPath);
 
 	EdgeListIO graphReader('\t',1);
-	EdgeListClusteringReader clusteringReader;
+	EdgeListPartitionReader clusteringReader;
 
 	Graph G = graphReader.read(graphPath);
 	Partition truth = clusteringReader.read(clustPath);
@@ -375,20 +400,6 @@ TEST_F(IOGTest, tryReadingSNAP) {
 
 	INFO("n = " , G.numberOfNodes());
 	INFO("m = " , G.numberOfEdges());
-
-}
-
-TEST_F(IOGTest, trySNAPEdgeListClusteringReader) {
-	std::string graphPath;
-
-	std::cout << "[INPUT] SNAP clustering graph file path >" << std::endl;
-	std::getline(std::cin, graphPath);
-
-
-	SNAPEdgeListClusteringReader reader;
-
-	std::vector<std::set<node>> clusterings = reader.read(graphPath);
-	INFO("Number of clusters: " , clusterings.size());
 
 }
 

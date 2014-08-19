@@ -11,6 +11,8 @@
 
 namespace NetworKit {
 
+Cover::Cover() : z(0), omega(0), data(0) {}
+
 Cover::Cover(index z) : z(z-1), omega(0), data(z) {
 }
 
@@ -150,6 +152,14 @@ count Cover::numberOfSubsets() const {
 	}
 
 	return k;
+}
+
+count Cover::numberOfElements() const {
+	return z+1;
+}
+
+void Cover::setUpperBound(index upper) {
+	this->omega = upper -1;
 }
 
 

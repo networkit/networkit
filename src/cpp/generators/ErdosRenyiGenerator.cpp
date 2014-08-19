@@ -13,9 +13,6 @@ ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob): n(nNodes), 
 
 }
 
-ErdosRenyiGenerator::~ErdosRenyiGenerator() {
-
-}
 
 /**
  * Returns number of steps you need to wait until the next success (edge) occurs.

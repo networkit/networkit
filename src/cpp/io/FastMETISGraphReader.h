@@ -16,10 +16,9 @@ namespace NetworKit {
 
 class FastMETISGraphReader : public NetworKit::GraphReader {
 public:
-	FastMETISGraphReader();
-	virtual ~FastMETISGraphReader();
+	FastMETISGraphReader() = default;
 
-	virtual Graph read(const std::string path);
+	virtual Graph read(const std::string& path) override;
 };
 
 } /* namespace NetworKit */

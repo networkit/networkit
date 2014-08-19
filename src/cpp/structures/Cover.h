@@ -28,6 +28,7 @@ typedef uint64_t count;
 class Cover {
 
 public:
+	Cover();
 
 	/**
 	 * Create a new cover data structure for elements up to a maximum element index.
@@ -155,6 +156,14 @@ public:
 	 * Get the current number of sets in this cover.
 	 */
 	count numberOfSubsets() const;
+
+	/**
+	 * Get the current number of elements in this cover.
+	 */
+	count numberOfElements() const;
+
+	void setUpperBound(index upper);
+
 
 	/**
 	 * Iterate over all entries (node, set of subset IDs) and execute callback function (lambda closure).

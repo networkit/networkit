@@ -7,6 +7,7 @@
 
 #include "METISParser.h"
 
+#include "../auxiliary/Enforce.h"
 
 namespace NetworKit {
 
@@ -80,7 +81,7 @@ std::tuple<count, count, index> METISParser::getHeader() {
 	index weighted; // weighted or unweighted graph
 
 	std::string line = "";
-	assert (this->graphFile);
+	Aux::enforce (this->graphFile);
 
 	if (std::getline(this->graphFile, line)) {
 		while (line[0] == '%') {

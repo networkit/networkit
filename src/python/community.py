@@ -1,6 +1,7 @@
 """ This module handles community detection, i.e. the discovery of densely connected groups in networks."""
 
-from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, ClusteringReader, ClusteringWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, EPP, EPPFactory, CommunityGraph
+from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter, NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader
+import os
 
 try:
 	import tabulate
@@ -41,11 +42,11 @@ def inspectCommunities(zeta, G):
 		["modularity", mod],
 	]
 	print(tabulate.tabulate(commProps))
-	
+
 
 def evalCommunityDetection(algo, G):
 	""" Evaluate a community detection algorithm """
-	
+
 	t = stopwatch.Timer()
 	zeta = algo.run(G)
 	t.stop()
@@ -57,16 +58,39 @@ def evalCommunityDetection(algo, G):
 	print(tabulate.tabulate(results))
 
 
-def readCommunities(path):
+def readCommunities(path, format="partition"):
 	""" Read a partition into communities from a file"""
-	communities = ClusteringReader().read(path)
-	print("read communities from: {0}".format(path))
-	return communities
+	readers =  {"default": PartitionReader(),
+		"edgelist-t1": EdgeListPartitionReader(1),
+		"edgelist-t0": EdgeListPartitionReader(0),
+		"edgelist-s1": EdgeListPartitionReader(1),
+		"edgelist-s0": EdgeListPartitionReader(0),
+		}
+	# get reader
+	try:
+		reader = readers[format]#(**kwargs)
+	except KeyError:
+		raise Exception("unrecognized format: {0}".format(format))
+
+	# get proper file path
+	if ("~" in path):
+		path = os.path.expanduser(path)
+		print("path expanded to: {0}".format(path))
+	# check if file path leads to a valid file
+	if not os.path.isfile(path):
+		raise IOError("{0} is not a file".format(path))
+	else:
+		with open(path, "r") as file:    # catch a wrong path before it crashes the interpreteri
+			print("read communities from: {0}".format(path))
+			communities = reader.read(path)
+			return communities
+
+	return None
 
 
 def writeCommunities(communities, path):
 	""" Write a partition into communities to a file"""
-	ClusteringWriter().write(communities, path)
+	PartitionWriter().write(communities, path)
 	print("wrote communities to: {0}".format(path))
 
 

@@ -41,8 +41,8 @@ typedef double edgeweight; // edge weight type
 
 constexpr index none = std::numeric_limits<index>::max();
 
-//#define Vector std::vector // TODO: test tbb::concurrent_vector
-template <typename T> using Vector = std::vector<T>;
+//#define StdVector std::vector // TODO: test tbb::concurrent_vector
+template <typename T> using StdVector = std::vector<T>;
 
 /**
  * An undirected graph (with optional weights) and parallel iterator methods.
@@ -59,13 +59,13 @@ protected:
 	bool weighted; //!< true if this graph supports edge weights other than 1.0
 
 	// per node data
-	Vector<count> deg; //!< degree of each node (size of neighborhood)
-	Vector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
+	StdVector<count> deg; //!< degree of each node (size of neighborhood)
+	StdVector<bool> exists; //!< exists[v] is true if node v has not been removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
 	// per edge data
-	Vector<Vector<node> > adja; //!< neighbors/adjacencies
-	Vector<Vector<edgeweight> > eweights; //!< edge weights
+	StdVector<StdVector<node> > adja; //!< neighbors/adjacencies
+	StdVector<StdVector<edgeweight> > eweights; //!< edge weights
 
 	// graph attributes
 	std::string name;
@@ -105,7 +105,7 @@ public:
 
 	/** GRAPH INTERFACE **/
 
-	/** 
+	/**
 	 * Create a graph of n nodes.
 	 */
 	Graph(count n=0, bool weighted=false);
@@ -220,6 +220,15 @@ public:
 	 * @return Random (uuid) neighbor of @a v. None if degree is zero.
 	 */
 	node randomNeighbor(node v) const;
+
+
+    /**
+     * @return Random random edge (note: fast, but not uniformly random)
+     */
+    std::pair<node, node> randomEdge() const;	// TODO: implement uniformly random edge choice
+
+
+
 
 
 
@@ -947,7 +956,7 @@ void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) const
 		return degree(v1) < degree(v2); // FIXME
 	};
 
-	Vector<node> neighbors = adja[u];
+	StdVector<node> neighbors = adja[u];
 	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
 
 	for (node v : neighbors) {
@@ -963,7 +972,7 @@ void NetworKit::Graph::forEdgesOfInDegreeIncreasingOrder(node u, L handle) {
 		return degree(v1) < degree(v2); // FIXME
 	};
 
-	Vector<node> neighbors = adja[u];
+	StdVector<node> neighbors = adja[u];
 	std::sort(neighbors.begin(), neighbors.end(), hasSmallerDegree);
 
 	for (node v : neighbors) {

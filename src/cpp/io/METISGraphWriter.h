@@ -18,11 +18,9 @@ class METISGraphWriter: public NetworKit::GraphWriter {
 
 public:
 
-	METISGraphWriter();
+	METISGraphWriter() = default;
 
-	virtual ~METISGraphWriter();
-
-	virtual void write(Graph& G, std::string path);
+	virtual void write(Graph& G, const std::string& path) override;
 
 	virtual void write(Graph& G, bool weighted, std::string path);
 };

@@ -11,11 +11,9 @@
 namespace NetworKit {
 
 class DotGraphWriter {
-
 public:
-    DotGraphWriter();
 
-    virtual ~DotGraphWriter();
+    virtual ~DotGraphWriter() = default;
 
     virtual void write(Graph& graph, std::string path) const;
 

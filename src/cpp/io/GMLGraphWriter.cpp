@@ -6,41 +6,31 @@
  */
 
 #include "GMLGraphWriter.h"
+#include "../auxiliary/Enforce.h"
 
 namespace NetworKit {
 
-GMLGraphWriter::GMLGraphWriter() {
-
-}
-
-GMLGraphWriter::~GMLGraphWriter() {
-
-}
-
-void GMLGraphWriter::write(Graph& G, std::string path) {
+void GMLGraphWriter::write(Graph& G, const std::string& path) {
 	std::ofstream file(path);
-	assert (file.good());
-
-	file << "graph" << std::endl;
-	file << "["<< std::endl;
-
+	Aux::enforceOpened(file);
+	
+	file << "graph\n[\n";
+	
 	G.forNodes([&](node u) {
-	    file << "  node" << std::endl;
-	    file << "  [" << std::endl;
-	    file << "    id "<< u << std::endl;
-		file << "  ]"<< std::endl;
-
+		file << "  node\n"
+		        "  [\n"
+		        "    id " << u << "\n"
+		        "  ]\n";
+		
 		G.forNeighborsOf(u, [&](node v) {
-		    file <<"  edge" << std::endl;
-       	    file << "  [" << std::endl;
-       	    file << "    source "<< u << std::endl;
-			file << "    target "<< v << std::endl;
-			file << "  ]" << std::endl;
+			file << "  edge\n"
+			        "  [\n"
+			        "    source "<< u << "\n"
+			        "    target "<< v << "\n"
+			        "  ]\n";
 		});
 	});
-
-	file << "]" << std::endl;
-	file.close();
+	file << "]\n";
 }
 
 } /* namespace NetworKit */

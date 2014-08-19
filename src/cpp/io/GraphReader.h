@@ -18,19 +18,15 @@ namespace NetworKit {
  * Abstract base class for graph readers.
  */
 class GraphReader {
-
 public:
-
-	GraphReader();
-
-	virtual ~GraphReader();
+	virtual ~GraphReader() = default;
 
 	/**
 	 * Given the path of an input file, read the graph contained.
 	 *
 	 * @param[in]	path	input file path
 	 */
-	virtual Graph read(std::string path) = 0;
+	virtual Graph read(const std::string& path) = 0;
 
 	/** only to be used by cython - this eliminates an unnecessary copy */
 	Graph* _read(std::string& path) {
