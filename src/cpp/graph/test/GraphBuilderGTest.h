@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-class GraphBuilderGTest: public testing::TestWithParam< std::tuple<bool, bool, bool> > {
+class GraphBuilderGTest: public testing::TestWithParam< std::tuple<bool, bool, bool, bool> > {
 public:
 	virtual void SetUp();
 
@@ -37,6 +37,7 @@ protected:
 	bool isWeighted() const;
 	bool isDirected() const;
 	bool useParallel() const;
+	bool useDirectSwap() const;
 
 	GraphBuilder createGraphBuilder(count n = 0) const;
 	Graph toGraph(GraphBuilder& b) const;

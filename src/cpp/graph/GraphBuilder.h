@@ -110,6 +110,13 @@ public:
 	Graph toGraph(bool parallel = true) { return parallel ? toGraphParallel() : toGraphSequential(); }
 
 	/**
+	 * Makes an unsafe swap to a Graph instance, which is returned.
+	 * Only works for undirected graphs.
+	 * The caller is responsible for adding each edge in both directions to ensure consistency
+	 */
+	Graph directSwap();
+
+	/**
 	 * Iterate over all nodes of the graph and call @a handle (lambda closure).
 	 *
 	 * @param handle Takes parameter <code>(node)</code>.

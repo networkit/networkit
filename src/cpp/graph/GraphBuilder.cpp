@@ -74,6 +74,24 @@ void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
 	}
 }
 
+Graph GraphBuilder::directSwap() {
+	assert(!directed);
+	Graph G(n, weighted, directed);
+	G.outEdges.swap(halfEdges);
+	G.outEdgeWeights.swap(halfEdgeWeights);
+	count globalselfloops = 0;
+	for (node v = 0; v < n; v++) {
+		G.outDeg[v] = G.outEdges[v].size();
+		count localselfloops = std::count(G.outEdges[v].begin(), G.outEdges[v].end(), v);
+		if (localselfloops > 1) DEBUG("Found ", localselfloops, " self loops! That is too much!");
+		globalselfloops += localselfloops;
+	}
+	correctNumberOfEdges(G, globalselfloops);
+
+	reset();
+	return G;
+}
+
 Graph GraphBuilder::toGraphParallel() {
 	Graph G(n, weighted, directed);
 
