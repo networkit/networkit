@@ -265,7 +265,7 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 		}
 	});
 	// at zero distance, all nodes can only reach themselves
-	hopPlot[0] = 1;
+	hopPlot[0] = 1/G.numberOfNodes();
 
 	// as long as we need to connect more nodes
 	while (numberOfFinishedNodes < G.numberOfNodes() && (maxDistance <= 0 || h < maxDistance)) {
