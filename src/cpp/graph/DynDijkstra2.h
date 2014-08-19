@@ -37,9 +37,7 @@ public:
 
 protected:
 	enum Color {WHITE, BLACK};
-	enum ModificationType {DISTANCE, NUM_PATHS, NONE};
 	std::vector<Color> color;
-	std::vector<ModificationType> modification;
 	std::vector<Aux::PrioQueue<double, node> > N;
 };
 
