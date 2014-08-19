@@ -16,7 +16,6 @@ namespace NetworKit {
 
 DynDijkstra2::DynDijkstra2(const Graph& G, node source, bool storePredecessors) : DynSSSP(G, source, storePredecessors),
 color(G.upperNodeIdBound(), WHITE),
-modification(G.upperNodeIdBound(), NONE),
 N (G.upperNodeIdBound(), Aux::PrioQueue<double, node>(G.upperNodeIdBound())){
 }
 
@@ -47,6 +46,7 @@ void DynDijkstra2::update(const std::vector<GraphEvent>& batch) {
 	Aux::PrioQueue<edgeweight, node> Q(G.upperNodeIdBound());
 	// queue with all visited edges
 	std::queue<std::pair<node, node>> visited;
+	std::vector<count> old_paths = npaths;
 	// if u has a new shortest path going through v, it updates the distance of u
 	// and inserts u in the priority queue (or updates its priority, if already in Q)
 	auto updateQueueAndPaths = [&](node u, node v, edgeweight w) {
@@ -63,7 +63,17 @@ void DynDijkstra2::update(const std::vector<GraphEvent>& batch) {
 			}
 		} else if (distances[u] == distances[v]+w) {
 			DEBUG("Found new shortest paths (not shorter) going through ", v);
-			previous[u].push_back(v);
+			// check whether v was already a predecessor of u (in that case, subtract the old contribution)
+			bool old_pred = false;
+			for (node p : previous[u]) {
+				if (p == v)
+					old_pred = true;
+			}
+			if (old_pred) {
+				npaths[u] -= old_paths[v];
+			} else {
+				previous[u].push_back(v);
+			}
 			npaths[u] += npaths[v];
 			if (color[u] == WHITE) {
 				Q.insert(distances[u], u);
@@ -76,7 +86,7 @@ void DynDijkstra2::update(const std::vector<GraphEvent>& batch) {
 	for (GraphEvent edge : batch) {
 		if (edge.type!=GraphEvent::EDGE_ADDITION) //TODO: consider also weight decrease operations
 			throw std::runtime_error("Graph update not allowed");
-		// insert edge.u in edge.v's priority queue and vice versa (if you allow also weight decrease, this will need to be changed
+		// insert edge.u in edge.v's priority queue and vice versa (if you allow also weight decrease, this will need to be changed)
 		N[edge.v].insert(-1* (distances[edge.u]-edge.w), edge.u);
 		N[edge.u].insert(-1 * (distances[edge.v]-edge.w), edge.v);
 		updateQueueAndPaths(edge.u, edge.v, edge.w);
@@ -106,12 +116,10 @@ void DynDijkstra2::update(const std::vector<GraphEvent>& batch) {
 		std::pair<node, node> e = visited.front();
 		visited.pop();
 		color[e.first] = WHITE;
-		modification[e.first] = NONE;
 		if (e.first != e.second) {
 			color[e.second] = WHITE;
-			modification[e.second] = NONE;
 			N[e.first].insert(-1*(distances[e.second]-G.weight(e.first, e.second)), e.second);
-			// shouldn't we also update distances in the priority queue of e.second? Because e.first has changed its distance...
+			//TODO shouldn't we also update distances in the priority queue of e.second? Because e.first has changed its distance...
 		}
 	}
 
