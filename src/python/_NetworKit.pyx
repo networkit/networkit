@@ -3981,6 +3981,13 @@ cdef extern from "../cpp/dynamics/GraphUpdater.h":
 		vector[pair[count, count]] getSizeTimeline() except +
 
 cdef class GraphUpdater:
+	""" Updates a graph according to a stream of graph events.
+
+	Parameters
+	----------
+	G : Graph
+	 	initial graph
+	"""
 	cdef _GraphUpdater* _this
 
 	def __cinit__(self, Graph G):
