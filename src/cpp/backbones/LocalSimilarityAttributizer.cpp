@@ -28,10 +28,6 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 		/* The top d^e edges (sorted by similarity)
 		 * are to be kept in the backbone */
 
-		/* Preferably retain intra-cluster to inter-cluster edges.
-		TODO: then why sort by similarity in ascending order?
-		Descending order seems more promising to me... */
-
 		std::vector<AttributizedEdge> neighbors;
 		graph.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
 			double sim = getSimilarity(graph, i, j);
