@@ -51,6 +51,11 @@ def degreeDistribution(G):
 	return GraphProperties.degreeDistribution(G)
 
 
+def degreeSequence(G):
+	""" Return the degree sequence of a graph"""
+	return GraphProperties.degreeSequence(G)
+
+
 def density(G):
 	""" Return the density of the graph"""
 	(n, m) = size(G)
