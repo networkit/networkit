@@ -1,4 +1,5 @@
 from NetworKit import *
+from scipy.spatial import distance
 
 #This file holds the definitions of all backbone properties, including
 #how to calculate the property's characteristic values.
@@ -20,8 +21,8 @@ class P_Ratios:
     def getValues(self, graph, backbone):
         numNodes = backbone.numberOfNodes()
         numEdges = backbone.numberOfEdges()
-        nodeRatio = (bprops.numNodes / graph.numberOfNodes())
-        edgeRatio = (bprops.numEdges / graph.numberOfEdges())
+        nodeRatio = (numNodes / graph.numberOfNodes())
+        edgeRatio = (numEdges / graph.numberOfEdges())
         return {'numNodes':numNodes, 'numEdges':numEdges, 'nodeRatio':nodeRatio, 'edgeRatio':edgeRatio}
 
 #Community structure
@@ -34,22 +35,23 @@ class P_Community:
             raise Exception('Empty backbones are not allowed.')
 
         communitiesGraph = community.detectCommunities(graph)
-		communitiesBackbone = community.detectCommunities(backbone)
+        communitiesBackbone = community.detectCommunities(backbone)
 
-		#Graph structural rand measure
-		_randMeasure = community.GraphStructuralRandMeasure()
-		randMeasure = _randMeasure.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
+        #Graph structural rand measure
+        _randMeasure = community.GraphStructuralRandMeasure()
+        randMeasure = _randMeasure.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
 
-		#Normalized Mutual information
-		_nmi = community.NMIDistance()
-		nmi = _nmi.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
+        #Normalized Mutual information
+        _nmi = community.NMIDistance()
+        nmi = _nmi.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
 
-		#Clustering coefficients
-		_cc = properties.ClusteringCoefficient()
-		ccAvgLocal = _cc.avgLocal(backbone)
+        #Clustering coefficients
+        _cc = properties.ClusteringCoefficient()
+        ccAvgLocal = _cc.avgLocal(backbone)
         ccGlobal = _cc.approxGlobal(backbone, min(backbone.numberOfNodes(), 10000))
 
         return {'randMeasure':randMeasure, 'nmi':nmi, 'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal}
+
 
 #Diameter
 class P_Diameter:

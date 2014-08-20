@@ -29,50 +29,26 @@ def userInputYesNo(q):
 		else:
 			print('Respond with [y/n].')
 
-#Get parameterized tasks (either by calculation or use existing file)
-def getTasks(targetEdgeRatios, targetAlgorithms, targetGraphs, outputDir):
-	pickleFile = "_tasks.txt"
-	tasks = []
-	if not os.path.isfile('./' + pickleFile) or not userInputYesNo(pickleFile + ' found. Use existing tasks?'):
-		print("Parameterizing algorithms...")
-		for targetGraph in targetGraphs:
-			task = parameterization.getBackboneTask(targetGraph, targetAlgorithms, targetEdgeRatios, outputDir)
-			tasks.append(task)
-
-		with open(pickleFile, 'wb') as pf:
-			pickle.dump(tasks, pf)
-
-		print("Finished parameterizing algorithms. Wrote pickle file ", pickleFile)
-
-	#Unpickle the tasks
-	with open(pickleFile, 'rb') as pf:
-		tasks = pickle.load(pf)
-
-	return tasks
-
 def writeResults(taskResults):
 	#TxtResultWriter("./output"),
-	writers = [SqliteResultWriter("./output/backbones.db")]
+	#SqliteResultWriter("./output/backbones.db")
+	writers = [ConsoleWriter()]
 	for taskResult in taskResults:
 		for writer in writers:
 			writer.receiveResult(taskResult)
 
 def main():
-	# Create output dir
-	outputDir = "./output/"
-	if not os.path.exists(os.path.dirname(outputDir)):
-		os.makedirs(os.path.dirname(outputDir))
-
 	#Get input parameters
 	edgeRatios = parameters.getEdgeRatios()
 	algorithms = parameters.getAlgorithms()
 	graphs = parameters.getGraphs()
+	properties = parameters.getProperties()
 
 	#Generate tasks from input parameters
-	tasks = getTasks(edgeRatios, algorithms, graphs, outputDir)
+	task = Task(graphs, algorithms, properties, edgeRatios)
 
 	#Execute the tasks
-	taskResults = map(executeTask, tasks)
+	taskResult = executeTask(task)
 
 	#Output files...
 	writeResults(taskResults)
