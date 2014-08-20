@@ -76,7 +76,7 @@ void Betweenness::run(bool runUnweightedInParallel) {
 				node v = pq.extractMin().second;
 				increasing.push(v);
 
-				G.forWeightedNeighborsOf(v, [&] (node w, edgeweight ew) {
+				G.forNeighborsOf(v, [&] (node w, edgeweight ew) {
 					relax(v, w, ew);
 				});
 			}

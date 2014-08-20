@@ -23,6 +23,7 @@ from unordered_map cimport unordered_map
 # NetworKit typedefs
 ctypedef uint64_t count
 ctypedef uint64_t index
+ctypedef uint64_t edgeid
 ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
@@ -96,10 +97,14 @@ cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count, bool, bool) except +
+		_Graph(const _Graph& other) except +
 		void stealFrom(_Graph)
+		void indexEdges() except +
+		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
-		count upperNodeIdBound() except +
+		index upperNodeIdBound() except +
+		index upperEdgeIdBound() except +
 		count degree(node u) except +
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
@@ -108,6 +113,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
 		void addEdge(node u, node v, edgeweight w) except +
+		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		bool hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
@@ -163,6 +169,34 @@ cdef class Graph:
 	def __dealloc__(self):
 		del self._this
 
+	def __copy__(self):
+		"""
+		Generates a copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
+
+	def __deepcopy__(self, memo):
+		"""
+		Generates a (deep) copy of the graph
+		"""
+		return Graph().setThis(new _Graph(dereference(self._this)))
+
+	def indexEdges(self):
+		"""
+		Assign integer ids to edges.
+
+		"""
+		self._this.indexEdges()
+
+	def edgeId(self, node u, node v):
+		"""
+		Returns
+		-------
+		edgeid
+			id of the edge
+		"""
+		return self._this.edgeId(u, v)
+
 	def numberOfNodes(self):
 		"""
 		Get the number of nodes in the graph.
@@ -195,6 +229,17 @@ cdef class Graph:
 			An upper bound for the node ids in the graph
 		"""
 		return self._this.upperNodeIdBound()
+
+	def upperEdgeIdBound(self):
+		"""
+		Get an upper bound for the edge ids in the graph
+
+		Returns
+		-------
+		count
+			An upper bound for the edge ids in the graph
+		"""
+		return self._this.upperEdgeIdBound()
 
 	def degree(self, u):
 		"""
@@ -289,6 +334,20 @@ cdef class Graph:
 			Edge weight.
 		"""
 		self._this.addEdge(u, v, w)
+
+	def setWeight(self, u, v, w):
+		""" Set the weight of an edge. If the edge does not exist, it will be inserted.
+
+		Parameters
+		----------
+		u : node
+			Endpoint of edge.
+		v : node
+			Endpoint of edge.
+		w : edgeweight
+			Edge weight.
+		"""
+		self._this.setWeight(u, v, w)
 
 	def removeEdge(self, u, v):
 		""" Removes the undirected edge {`u`,`v`}.
@@ -1010,7 +1069,7 @@ cdef class DorogovtsevMendesGenerator:
 	""" Generates a graph according to the Dorogovtsev-Mendes model.
 
  	DorogovtsevMendesGenerator(nNodes)
- 	
+
  	Constructs the generator class.
 
 	Parameters
@@ -1043,9 +1102,9 @@ cdef extern from "../cpp/generators/RegularRingLatticeGenerator.h":
 cdef class RegularRingLatticeGenerator:
 	"""
 	Constructs a regular ring lattice.
-	
+
 	RegularRingLatticeGenerator(count nNodes, count nNeighbors)
-	
+
 	Constructs the generator.
 
 	Parameters
@@ -1068,7 +1127,7 @@ cdef class RegularRingLatticeGenerator:
 			The generated graph.
 		"""
 		return Graph(0).setThis(self._this._generate())
-		
+
 
 cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
 	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator":
@@ -1077,14 +1136,14 @@ cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
 
 cdef class WattsStrogatzGenerator:
 	""" Generates a graph according to the Watts-Strogatz model.
-	
+
 	First, a regular ring lattice is generated. Then edges are rewired
 		with a given probability.
-	
+
 	WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
-	
+
 	Constructs the generator.
-	
+
 	Parameters
 	----------
 	nNodes : Number of nodes in the target graph.
@@ -1746,7 +1805,7 @@ cdef class Partition:
 		index
 			The index of the new element.
 		"""
-		self._this.extend()
+		return self._this.extend()
 
 	def addToSubset(self, s, e):
 		""" Add a (previously unassigned) element `e` to the set `s`.
@@ -2212,6 +2271,11 @@ cdef class Cover:
 
 # Module: community
 
+# Fused type for methods that accept both a partition and a cover
+ctypedef fused PartitionCover:
+	Partition
+	Cover
+
 cdef extern from "../cpp/community/ClusteringGenerator.h":
 	cdef cppclass _ClusteringGenerator "NetworKit::ClusteringGenerator":
 		_ClusteringGenerator() except +
@@ -2398,6 +2462,48 @@ cdef class Modularity:
 	cdef _Modularity _this
 
 	def getQuality(self, Partition zeta, Graph G):
+		return self._this.getQuality(zeta._this, dereference(G._this))
+
+cdef extern from "../cpp/community/HubDominance.h":
+	cdef cppclass _HubDominance "NetworKit::HubDominance":
+		_HubDominance() except +
+		double getQuality(_Partition _zeta, _Graph _G) except +
+		double getQuality(_Cover _zeta, _Graph _G) except +
+
+cdef class HubDominance:
+	"""
+	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
+	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
+	the maximum cluster-internal degree, i.e. the number of nodes in the cluster minus one. The
+	value for all clusters is defined as the average of all clusters.
+
+	Strictly speaking this is not a quality measure as this is rather dependent on the type of the
+	considered graph, for more information see
+	Lancichinetti A, Kivelä M, Saramäki J, Fortunato S (2010)
+	Characterizing the Community Structure of Complex Networks
+	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
+	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
+	"""
+
+	cdef _HubDominance _this
+
+	def getQuality(self, PartitionCover zeta, Graph G):
+		"""
+		Calculates the dominance of hubs in the given Partition or Cover of the given
+		Graph.
+
+		Parameters
+		----------
+		zeta : Partition or Cover
+			The Partition or Cover for which the hub dominance shall be calculated
+		G : Graph
+			The Graph to which zeta belongs
+
+		Returns
+		-------
+		double
+			The average hub dominance in the given Partition or Cover
+		"""
 		return self._this.getQuality(zeta._this, dereference(G._this))
 
 
@@ -2801,6 +2907,7 @@ cdef extern from "../cpp/properties/GraphProperties.h" namespace "NetworKit::Gra
 	pair[count, count] minMaxDegree(_Graph _G) except +
 	double averageDegree(_Graph _G) except +
 	vector[count] degreeDistribution(_Graph _G) except +
+	vector[unsigned int] degreeSequence(_Graph _G) except +
 	vector[double] localClusteringCoefficients(_Graph _G) except +
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
@@ -2823,6 +2930,10 @@ cdef class GraphProperties:
 	@staticmethod
 	def degreeDistribution(Graph G not None):
 		return degreeDistribution(dereference(G._this))
+
+	@staticmethod
+	def degreeSequence(Graph G not None):
+		return degreeSequence(dereference(G._this))
 
 	@staticmethod
 	def averageLocalClusteringCoefficient(Graph G not None):
@@ -3866,7 +3977,7 @@ cdef class DynamicDorogovtsevMendesGenerator:
 	""" Generates a graph according to the Dorogovtsev-Mendes model.
 
  	DynamicDorogovtsevMendesGenerator()
- 	
+
  	Constructs the generator class.
 	"""
 	cdef _DynamicDorogovtsevMendesGenerator* _this
@@ -3931,14 +4042,14 @@ cdef class DynamicForestFireGenerator:
      communities
      densification power law
      shrinking diameter
- 
+
     see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
     Shringking Diameters and Possible Explanations
 
  	DynamicForestFireGenerator(double p, bool directed, double r = 1.0)
- 	
+
  	Constructs the generator class.
- 	
+
  	Parameters
  	----------
  	p : forward burning probability.
@@ -3970,6 +4081,13 @@ cdef extern from "../cpp/dynamics/GraphUpdater.h":
 		vector[pair[count, count]] getSizeTimeline() except +
 
 cdef class GraphUpdater:
+	""" Updates a graph according to a stream of graph events.
+
+	Parameters
+	----------
+	G : Graph
+	 	initial graph
+	"""
 	cdef _GraphUpdater* _this
 
 	def __cinit__(self, Graph G):

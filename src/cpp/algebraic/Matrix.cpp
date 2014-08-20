@@ -87,7 +87,7 @@ void Matrix::setValue(const index &i, const index &j, const double &value) {
 
 Vector Matrix::row(const index &i) const {
 	Vector row(numberOfColumns(), 0.0, true);
-	graph.forWeightedEdgesOf(i, [&](node i, node j, double value) {
+	graph.forEdgesOf(i, [&](node i, node j, double value) {
 		row[j] = value;
 	});
 
@@ -144,7 +144,7 @@ Matrix Matrix::operator*(const double &scalar) const {
 }
 
 Matrix& Matrix::operator*=(const double &scalar) {
-	graph.parallelForWeightedEdges([&](node i, node j, double value) {
+	graph.parallelForEdges([&](node i, node j, double value) {
 		graph.setWeight(i, j, value * scalar);
 	});
 
