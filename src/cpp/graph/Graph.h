@@ -1,5 +1,5 @@
 /*
- * BasicGraph.h
+ * Graph.h
  *
  *  Created on: 01.06.2014
  *      Author: Christian Staudt (christian.staudt@kit.edu), Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
@@ -723,8 +723,7 @@ public:
 	 * @param handle Takes parameter <code>(node)</code>.
 	 */
 	template<typename L> void BFSfrom(node r, L handle) const;
-	template<typename L> void BFSfrom(std::vector<node> &startNodes, L handle) const;
-
+	template<typename L> void BFSfrom(const std::vector<node> &startNodes, L handle) const;
 
 	template<typename L> void BFSEdgesFrom(node r, L handle) const;
 
@@ -1163,7 +1162,7 @@ void Graph::BFSfrom(node r, L handle) const {
 }
 
 template<typename L>
-void Graph::BFSfrom(std::vector<node> &startNodes, L handle) const {
+void Graph::BFSfrom(const std::vector<node> &startNodes, L handle) const {
 	std::vector<bool> marked(z);
 	std::queue<node> q, qNext;
 	count dist = 0;

@@ -1,5 +1,5 @@
 /*
- * BasicGraph.cpp
+ * Graph.cpp
  *
  *  Created on: 01.06.2014
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
