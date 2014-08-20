@@ -118,6 +118,7 @@ void ApproxBetweenness::run() {
 
 
 count ApproxBetweenness::numberOfSamples() {
+	INFO("Estimated number of samples", r);
 	return r;
 }
 

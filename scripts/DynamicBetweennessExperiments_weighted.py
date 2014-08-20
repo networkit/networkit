@@ -44,6 +44,7 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	apprBc = ApproxBetweenness(G, epsilon, delta)
 	print ("Running approx bc")
 	apprBc.run()
+	print (apprBc.numberOfSamples())
 	dynApprBc = DynApproxBetweenness(G, epsilon, delta, True)
 	print ("Running dyn approx bc with predecessors")
 	dynApprBc.run()
@@ -112,16 +113,16 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		print (x/y)
 	return {
 			"bc" : timesBc,
-			"dynBc" : timesDynBc,
-			"apprBc (predecessors stored)" : timesApprBc,
-			"apprBc (predecessors not stored)" : timesApprBc2,
+			"dynBc (predecessors stored)" : timesDynBc,
+			"dynBc (predecessors not stored)" : timesDynBc2,
+			"apprBc" : timesApprBc,
 			"dynApprBc (predecessors stored)" : timesDynApprBc,
 			"dynApprBc (predecessors not stored)" : timesDynApprBc2
 			}
 
 
 setNumberOfThreads(1)
-G = generators.DorogovtsevMendesGenerator(1000).generate()
+G = generators.DorogovtsevMendesGenerator(10000).generate()
 G1 = Graph(G.numberOfNodes(), True, False)
 for e in G.edges():
 	G1.addEdge(e[0], e[1], 1.0)
