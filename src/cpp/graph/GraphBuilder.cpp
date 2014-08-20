@@ -14,6 +14,7 @@ namespace NetworKit {
 
 GraphBuilder::GraphBuilder(count n, bool weighted, bool directed, bool directSwap) :
 	n(n),
+	selfloops(0),
 	weighted(weighted),
 	directed(directed),
 	usedirectswap(directSwap),
@@ -45,6 +46,10 @@ void GraphBuilder::addEdge(node u, node v, edgeweight ew) {
 	halfEdges[u].push_back(v);
 	if (weighted) {
 		halfEdgeWeights[u].push_back(ew);
+	}
+	if (u == v) {
+	#pragma omp atomic
+		selfloops++;
 	}
 }
 
@@ -81,14 +86,11 @@ Graph GraphBuilder::directSwap() {
 	Graph G(n, weighted, directed);
 	G.outEdges.swap(halfEdges);
 	G.outEdgeWeights.swap(halfEdgeWeights);
-	count globalselfloops = 0;
-	#pragma omp parallel for reduction(+:globalselfloops)
+	#pragma omp parallel for
 	for (node v = 0; v < n; v++) {
 		G.outDeg[v] = G.outEdges[v].size();
-		count localselfloops = std::count(G.outEdges[v].begin(), G.outEdges[v].end(), v);
-		globalselfloops += localselfloops;
 	}
-	correctNumberOfEdges(G, globalselfloops);
+	correctNumberOfEdges(G, selfloops);
 
 	reset();
 	return G;
@@ -289,6 +291,7 @@ Graph GraphBuilder::toGraphSequential() {
 
 void GraphBuilder::reset() {
 	n = 0;
+	selfloops = 0;
 	halfEdges.clear();
 	halfEdgeWeights.clear();
 }
