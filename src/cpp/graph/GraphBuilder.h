@@ -21,6 +21,7 @@ protected:
 
 	bool weighted; //!< true if the graph will be weighted, false otherwise
 	bool directed; //!< true if the graph will be directed, false otherwise
+	bool usedirectswap; //!< true if edges are moved directly into the graph without constructing backedges
 
 	std::vector< std::vector<node> > halfEdges;
 	std::vector< std::vector<edgeweight> > halfEdgeWeights;
@@ -37,7 +38,7 @@ public:
 	 * @param weighted If set to <code>true</code>, the graph has edge weights.
 	 * @param directed If set to @c true, the graph will be directed.
 	 */
-	GraphBuilder(count n = 0, bool weighted = false, bool directed = false);
+	GraphBuilder(count n = 0, bool weighted = false, bool directed = false, bool directSwap = false);
 
 	/**
 	 * Returns <code>true</code> if this graph supports edge weights other than 1.0.
@@ -50,6 +51,12 @@ public:
 	 * @return </code>true</code> if this graph supports directed edges.
 	 */
 	bool isDirected() const { return directed; }
+
+	/**
+	 * Return <code>true</code> if this graph builder uses direct swaps.
+	 * @return </code>true</code> if this graph builder uses direct swaps.
+	 */
+	bool useDirectSwap() const { return usedirectswap; }
 
 	/**
 	 * Return <code>true</code> if graph contains no nodes.
@@ -107,7 +114,10 @@ public:
 	/**
 	 * Generates a Graph instance. The graph builder will be reseted at the end.
 	 */
-	Graph toGraph(bool parallel = true) { return parallel ? toGraphParallel() : toGraphSequential(); }
+	Graph toGraph(bool parallel = true) {
+		if (usedirectswap) return directSwap();
+		else return parallel ? toGraphParallel() : toGraphSequential();
+	}
 
 	/**
 	 * Iterate over all nodes of the graph and call @a handle (lambda closure).
@@ -141,7 +151,26 @@ public:
 private:
 	Graph toGraphParallel();
 	Graph toGraphSequential();
+
+	void reset();
+	template <typename T>
+	static void copyAndClear(std::vector<T>& source, std::vector<T>& target);
+	static void correctNumberOfEdges(Graph& G, count numberOfSelfLoops);
+	static bool checkConsistency(Graph& G);
+
+	/**
+	 * Makes an unsafe swap to a Graph instance, which is returned.
+	 * Only works for undirected graphs.
+	 * The caller is responsible for adding each edge in both directions to ensure consistency
+	 */
+	Graph directSwap();
 };
+
+template <typename T>
+void GraphBuilder::copyAndClear(std::vector<T>& source, std::vector<T>& target) {
+	std::copy(source.begin(), source.end(), std::back_inserter(target));
+	source.clear();	
+}
 
 template<typename L>
 void GraphBuilder::forNodes(L handle) const {

@@ -109,6 +109,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
 		void addEdge(node u, node v, edgeweight w) except +
+		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		bool hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
@@ -302,6 +303,20 @@ cdef class Graph:
 			Edge weight.
 		"""
 		self._this.addEdge(u, v, w)
+
+	def setWeight(self, u, v, w):
+		""" Set the weight of an edge. If the edge does not exist, it will be inserted.
+
+		Parameters
+		----------
+		u : node
+			Endpoint of edge.
+		v : node
+			Endpoint of edge.
+		w : edgeweight
+			Edge weight.
+		"""
+		self._this.setWeight(u, v, w)
 
 	def removeEdge(self, u, v):
 		""" Removes the undirected edge {`u`,`v`}.
@@ -1023,7 +1038,7 @@ cdef class DorogovtsevMendesGenerator:
 	""" Generates a graph according to the Dorogovtsev-Mendes model.
 
  	DorogovtsevMendesGenerator(nNodes)
- 	
+
  	Constructs the generator class.
 
 	Parameters
@@ -1056,9 +1071,9 @@ cdef extern from "../cpp/generators/RegularRingLatticeGenerator.h":
 cdef class RegularRingLatticeGenerator:
 	"""
 	Constructs a regular ring lattice.
-	
+
 	RegularRingLatticeGenerator(count nNodes, count nNeighbors)
-	
+
 	Constructs the generator.
 
 	Parameters
@@ -1081,7 +1096,7 @@ cdef class RegularRingLatticeGenerator:
 			The generated graph.
 		"""
 		return Graph(0).setThis(self._this._generate())
-		
+
 
 cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
 	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator":
@@ -1090,14 +1105,14 @@ cdef extern from "../cpp/generators/WattsStrogatzGenerator.h":
 
 cdef class WattsStrogatzGenerator:
 	""" Generates a graph according to the Watts-Strogatz model.
-	
+
 	First, a regular ring lattice is generated. Then edges are rewired
 		with a given probability.
-	
+
 	WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
-	
+
 	Constructs the generator.
-	
+
 	Parameters
 	----------
 	nNodes : Number of nodes in the target graph.
@@ -1759,7 +1774,7 @@ cdef class Partition:
 		index
 			The index of the new element.
 		"""
-		self._this.extend()
+		return self._this.extend()
 
 	def addToSubset(self, s, e):
 		""" Add a (previously unassigned) element `e` to the set `s`.
@@ -2861,6 +2876,7 @@ cdef extern from "../cpp/properties/GraphProperties.h" namespace "NetworKit::Gra
 	pair[count, count] minMaxDegree(_Graph _G) except +
 	double averageDegree(_Graph _G) except +
 	vector[count] degreeDistribution(_Graph _G) except +
+	vector[unsigned int] degreeSequence(_Graph _G) except +
 	vector[double] localClusteringCoefficients(_Graph _G) except +
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
@@ -2883,6 +2899,10 @@ cdef class GraphProperties:
 	@staticmethod
 	def degreeDistribution(Graph G not None):
 		return degreeDistribution(dereference(G._this))
+
+	@staticmethod
+	def degreeSequence(Graph G not None):
+		return degreeSequence(dereference(G._this))
 
 	@staticmethod
 	def averageLocalClusteringCoefficient(Graph G not None):
@@ -3857,7 +3877,7 @@ cdef class DynamicDorogovtsevMendesGenerator:
 	""" Generates a graph according to the Dorogovtsev-Mendes model.
 
  	DynamicDorogovtsevMendesGenerator()
- 	
+
  	Constructs the generator class.
 	"""
 	cdef _DynamicDorogovtsevMendesGenerator* _this
@@ -3922,14 +3942,14 @@ cdef class DynamicForestFireGenerator:
      communities
      densification power law
      shrinking diameter
- 
+
     see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
     Shringking Diameters and Possible Explanations
 
  	DynamicForestFireGenerator(double p, bool directed, double r = 1.0)
- 	
+
  	Constructs the generator class.
- 	
+
  	Parameters
  	----------
  	p : forward burning probability.
@@ -3961,6 +3981,13 @@ cdef extern from "../cpp/dynamics/GraphUpdater.h":
 		vector[pair[count, count]] getSizeTimeline() except +
 
 cdef class GraphUpdater:
+	""" Updates a graph according to a stream of graph events.
+
+	Parameters
+	----------
+	G : Graph
+	 	initial graph
+	"""
 	cdef _GraphUpdater* _this
 
 	def __cinit__(self, Graph G):

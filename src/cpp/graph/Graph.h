@@ -81,6 +81,22 @@ private:
 	index indexInOutEdgeArray(node u, node v) const;
 
 
+	/**
+	 * Calls the given BFS handle with distance parameter
+	 */
+	template <class F>
+	auto callBFSHandle(F &f, node u, count dist) const -> decltype(f(u, dist)) {
+		return f(u, dist);
+	}
+
+	/**
+	 * Calls the given BFS handle without distance parameter
+	 */
+	template <class F>
+	auto callBFSHandle(F &f, node u, count dist) const -> decltype(f(u)) {
+		return f(u);
+	}
+
 public:
 
 	/**
@@ -359,7 +375,7 @@ public:
 	 * Check for invalid graph states, such as multi-edges.
 	 * @return False if the graph is in invalid state.
 	 */
-	bool consistencyCheck() const;
+	bool checkConsistency() const;
 
 
 	/* DYNAMICS */
@@ -723,15 +739,6 @@ public:
 
 
 	template<typename L> void DFSEdgesFrom(node r, L handle) const;
-
-
-	/* SPECIAL */
-
-
-	/**
-	* Treat the adjacency datastructure as an undirected graph.
-	*/
-	void treatAsUndirected();
 };
 
 /* NODE ITERATORS */
@@ -1169,7 +1176,7 @@ void Graph::BFSfrom(std::vector<node> &startNodes, L handle) const {
 		node u = q.front();
 		q.pop();
 		// apply function
-		handle(u, dist);
+		callBFSHandle(handle, u, dist);
 		forNeighborsOf(u, [&](node v) {
 			if (!marked[v]) {
 				qNext.push(v);

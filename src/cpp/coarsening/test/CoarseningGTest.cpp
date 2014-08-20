@@ -129,7 +129,7 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
 
 
 TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyi) {
-	count n = 5000;
+	count n = 100;
 
 	ErdosRenyiGenerator ERGen(n, 0.5);
 	Graph G = ERGen.generate();
@@ -143,7 +143,7 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyi) {
 	auto conSingletonPair = coarsening.run(G, singleton);
 	Graph Gcon = conSingletonPair.first;
 
-	assert (Gcon.consistencyCheck());
+	assert (Gcon.checkConsistency());
 
 	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
 			<< "graph contracted according to singleton clustering should have the same number of nodes as original";
@@ -163,7 +163,7 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyi) {
 }
 
 TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyiWithGraphBuilder) {
-	count n = 5000;
+	count n = 100;
 
 	ErdosRenyiGenerator ERGen(n, 0.5);
 	Graph G = ERGen.generate();
@@ -177,7 +177,7 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyiWithGraphBuil
 	auto conSingletonPair = coarsening.run(G, singleton);
 	Graph Gcon = conSingletonPair.first;
 
-	assert (Gcon.consistencyCheck());
+	assert (Gcon.checkConsistency());
 
 	EXPECT_EQ(G.numberOfNodes(), Gcon.numberOfNodes())
 			<< "graph contracted according to singleton clustering should have the same number of nodes as original";
@@ -198,7 +198,6 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnErdosRenyiWithGraphBuil
 TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraph) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
-
 
 	ClusteringGenerator clusteringGen;
 	count k = 10; // number of clusters in random clustering

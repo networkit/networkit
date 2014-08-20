@@ -12,13 +12,15 @@
 
 namespace NetworKit {
 
-GraphBuilder::GraphBuilder(count n, bool weighted, bool directed) :
+GraphBuilder::GraphBuilder(count n, bool weighted, bool directed, bool directSwap) :
 	n(n),
 	weighted(weighted),
 	directed(directed),
+	usedirectswap(directSwap),
 	halfEdges(n),
 	halfEdgeWeights(weighted ? n : 0)
 {
+	if (directed && directSwap) throw std::runtime_error("Cannot use direct swap in directed graph.");
 }
 
 index GraphBuilder::indexHalfEdgeArray(node u, node v) const {
@@ -74,17 +76,35 @@ void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
 	}
 }
 
+Graph GraphBuilder::directSwap() {
+	if (directed) throw std::runtime_error("Cannot swap directly in directed Graph.");
+	Graph G(n, weighted, directed);
+	G.outEdges.swap(halfEdges);
+	G.outEdgeWeights.swap(halfEdgeWeights);
+	count globalselfloops = 0;
+	#pragma omp parallel for reduction(+:globalselfloops)
+	for (node v = 0; v < n; v++) {
+		G.outDeg[v] = G.outEdges[v].size();
+		count localselfloops = std::count(G.outEdges[v].begin(), G.outEdges[v].end(), v);
+		globalselfloops += localselfloops;
+	}
+	correctNumberOfEdges(G, globalselfloops);
+
+	reset();
+	return G;
+}
+
 Graph GraphBuilder::toGraphParallel() {
 	Graph G(n, weighted, directed);
+
+	// basic idea of the parallelization:
+	// 1) each threads collects its own data
+	// 2) each node collects all its data from all threads
 
 	int maxThreads = omp_get_max_threads();
 
 	using adjacencylists = std::vector< std::vector<node> >;
 	using weightlists = std::vector< std::vector<edgeweight> >;
-
-	// basic idea of the parallelization:
-	// 1) each threads collects its own data
-	// 2) each node collects all its data from all threads
 
 	std::vector<adjacencylists> inEdgesPerThread(maxThreads, adjacencylists(n));
 	std::vector<weightlists> inWeightsPerThread(weighted ? maxThreads : 0, weightlists(n));
@@ -96,9 +116,9 @@ Graph GraphBuilder::toGraphParallel() {
 		for (index i = 0; i < halfEdges[v].size(); i++) {
 			node u = halfEdges[v][i];
 			if (directed || u != v) { // self loops don't need to be added twice in undirected graphs
-				edgeweight ew = halfEdgeWeights[v][i];
 				inEdgesPerThread[tid][u].push_back(v);
 				if (weighted) {
+					edgeweight ew = halfEdgeWeights[v][i];
 					inWeightsPerThread[tid][u].push_back(ew);
 				}
 			} else {
@@ -107,22 +127,23 @@ Graph GraphBuilder::toGraphParallel() {
 		}
 	});
 
+	// we have already half of the edges
+	G.outEdges.swap(halfEdges);
+	G.outEdgeWeights.swap(halfEdgeWeights);
+
 	// step 2
 	parallelForNodes([&](node v) {
-		// get degrees for v
 		count inDeg = 0;
-		count outDeg = halfEdges[v].size();
+		count outDeg = G.outEdges[v].size();
 		for (int tid = 0; tid < maxThreads; tid++) {
 			inDeg += inEdgesPerThread[tid][v].size();
 		}
 
-		// allocate memory for all edges and weights
+		// allocate enough memory for all edges/weights
 		if (directed) {
 			G.inEdges[v].reserve(inDeg);
-			G.outEdges[v].reserve(outDeg);
 			if (weighted) {
 				G.inEdgeWeights[v].reserve(inDeg);
-				G.outEdgeWeights[v].reserve(outDeg);
 			}
 		} else {
 			G.outEdges[v].reserve(outDeg + inDeg);
@@ -131,58 +152,40 @@ Graph GraphBuilder::toGraphParallel() {
 			}
 		}
 
-		std::copy(halfEdges[v].begin(), halfEdges[v].end(), std::back_inserter(G.outEdges[v]));
-		halfEdges[v].clear();
-		if (weighted) {
-			std::copy(halfEdgeWeights[v].begin(), halfEdgeWeights[v].end(), std::back_inserter(G.outEdgeWeights[v]));
-			halfEdgeWeights[v].clear();
-		}
-
+		// collect 'second' half of the edges
 		if (directed) {
 			G.inDeg[v] = inDeg;
 			G.outDeg[v] = outDeg;
 			for (int tid = 0; tid < maxThreads; tid++) {
-				std::copy(inEdgesPerThread[tid][v].begin(), inEdgesPerThread[tid][v].end(), std::back_inserter(G.inEdges[v]));
-				inEdgesPerThread[tid][v].clear();
+				copyAndClear(inEdgesPerThread[tid][v], G.inEdges[v]);
 			}
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
-					std::copy(inWeightsPerThread[tid][v].begin(), inWeightsPerThread[tid][v].end(), std::back_inserter(G.inEdgeWeights[v]));
-					inWeightsPerThread[tid][v].clear();
+					copyAndClear(inWeightsPerThread[tid][v], G.inEdgeWeights[v]);
 				}	
 			}
 		} else {
 			G.outDeg[v] = inDeg + outDeg;
 			for (int tid = 0; tid < maxThreads; tid++) {
-				std::copy(inEdgesPerThread[tid][v].begin(), inEdgesPerThread[tid][v].end(), std::back_inserter(G.outEdges[v]));
-				inEdgesPerThread[tid][v].clear();
+				copyAndClear(inEdgesPerThread[tid][v], G.outEdges[v]);
 			}
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
-					std::copy(inWeightsPerThread[tid][v].begin(), inWeightsPerThread[tid][v].end(), std::back_inserter(G.outEdgeWeights[v]));
-					inWeightsPerThread[tid][v].clear();
+					copyAndClear(inWeightsPerThread[tid][v], G.outEdgeWeights[v]);
 				}	
 			}
 		}
 	});
 
 	// calculate correct m
-	forNodes([&](node v) {
-		G.m += G.degree(v);
-	});
-	if (!directed) {
-		count numberOfSelfLoops = 0;
-		for (int tid = 0; tid < maxThreads; tid++) {
-			numberOfSelfLoops += numberOfSelfLoopsPerThread[tid];
-		}	
-		// self loops are already just counted once
-		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
+	count numberOfSelfLoops = 0;
+	for (auto c : numberOfSelfLoopsPerThread) {
+		numberOfSelfLoops += c;
 	}
+	correctNumberOfEdges(G, numberOfSelfLoops);
 
 	// bring the builder into an empty, but valid state
-	n = 0;
-	halfEdges.clear();
-	halfEdgeWeights.clear();
+	reset();
 
 	return G;
 }
@@ -193,21 +196,12 @@ Graph GraphBuilder::toGraphSequential() {
 	std::vector<count> missingEdgesCounts(n, 0);
 	count numberOfSelfLoops = 0;
 
-	// first half edge
-	// copy halfEdges to G.outEdges and set G.outDeg
-	G.forNodes([&](node v) {
-		G.outDeg[v] = halfEdges[v].size();
-		G.outEdges[v] = halfEdges[v];
-		halfEdges[v].clear();
+	// 'first' half of the edges
+	G.outEdges.swap(halfEdges);
+	G.outEdgeWeights.swap(halfEdgeWeights);
+	parallelForNodes([&](node v) {
+		G.outDeg[v] = G.outEdges[v].size();
 	});
-
-	// same for weights
-	if (weighted) {
-		G.forNodes([&](node v) {
-			G.outEdgeWeights[v] = halfEdgeWeights[v];
-			halfEdgeWeights[v].clear();
-		});		
-	}
 
 	// count missing edges for each node
 	G.forNodes([&](node v) {
@@ -223,19 +217,21 @@ Graph GraphBuilder::toGraphSequential() {
 		}
 	});
 
-	// second half edge
+	// 'second' half the edges
 	if (directed) {
 		// directed: outEdges is complete, missing half edges are the inEdges
 		// missingEdgesCounts are our inDegrees
 		G.inDeg = missingEdgesCounts;
 
-		// reserve the exact amount of space needed first
+		// reserve the exact amount of space needed
 		G.forNodes([&](node v) {
 			G.inEdges[v].reserve(G.inDeg[v]);
 			if (weighted) {
 				G.inEdgeWeights[v].reserve(G.inDeg[v]);
 			}
 		});
+
+		// copy values
 		G.forNodes([&](node v) {
 			for (index i = 0; i < G.outDeg[v]; i++) {
 				node u = G.outEdges[v][i];
@@ -250,13 +246,15 @@ Graph GraphBuilder::toGraphSequential() {
 		// undirected: so far each edge is just saved at one node
 		// add it to the other node as well
 
-		// reserve the exact amount of space needed first
+		// reserve the exact amount of space needed
 		G.forNodes([&](node v) {
 			G.outEdges[v].reserve(G.outDeg[v] + missingEdgesCounts[v]);
 			if (weighted) {
 				G.outEdgeWeights[v].reserve(G.outDeg[v] + missingEdgesCounts[v]);
 			}
 		});
+
+		// cope value
 		G.forNodes([&](node v) {
 			// the first G.outDeg[v] edges in G.outEdges[v] are the first half edges
 			// we are adding after G.outDeg[v]
@@ -281,20 +279,31 @@ Graph GraphBuilder::toGraphSequential() {
 	}
 
 	// calculate correct m	
-	G.forNodes([&](node v) {
-		G.m += G.degree(v);
-	});
-	if (!directed) {
-		// self loops are already just counted once
-		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
-	}
+	correctNumberOfEdges(G, numberOfSelfLoops);
 
 	// bring the builder into an empty, but valid state
+	reset();
+
+	return G;
+}
+
+void GraphBuilder::reset() {
 	n = 0;
 	halfEdges.clear();
 	halfEdgeWeights.clear();
+}
 
-	return G;
+void GraphBuilder::correctNumberOfEdges(Graph& G, count numberOfSelfLoops) {
+	count edges = 0;
+	#pragma omp parallel for reduction(+:edges)
+	for (node v = 0; v < G.z; v++) {
+		edges += G.degree(v);
+	}
+	G.m = edges;
+	if (!G.isDirected()) {
+		// self loops are just counted once
+		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
+	}
 }
 
 } /* namespace NetworKit */

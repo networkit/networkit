@@ -21,7 +21,7 @@ namespace NetworKit {
 
 TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	// parameters for Erdös-Renyi
-	count n = 10000;
+	count n = 25000;
 	double p = 0.001;
 	count m_expected = p * n * (n + 1) / 2;
 
