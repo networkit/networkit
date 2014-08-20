@@ -1,6 +1,9 @@
 from NetworKit import *
 from dynamic import *
 from centrality import *
+import pandas as pd
+
+import random
 
 def removeAndAddEdges(G, nEdges, tabu=None):
 	if nEdges > G.numberOfEdges() - tabu.numberOfEdges():
@@ -24,6 +27,17 @@ def removeAndAddEdges(G, nEdges, tabu=None):
 	return (removeStream, addStream)
 
 
+def setRandomWeights(G, mu, sigma):
+	"""
+	Add random weights, normal distribution with mean mu and standard deviation sigma
+	"""
+	for (u, v) in G.edges():
+		w = random.normalvariate(mu, sigma)
+		G.setWeight(u, v, w)
+	return G
+
+
+
 def test(G, nEdges, batchSize, epsilon, delta):
 	# find a set of nEdges to remove from G
 	T = graph.SpanningForest(G).generate()
@@ -38,9 +52,6 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	dynBc = DynBetweenness(G, True)
 	print ("Running dyn bc with predecessors")
 	dynBc.run()
-	dynBc2 = DynBetweenness(G, False)
-	print ("Running dyn bc without predecessors")
-	dynBc2.run()
 	apprBc = ApproxBetweenness(G, epsilon, delta)
 	print ("Running approx bc")
 	apprBc.run()
@@ -48,37 +59,23 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	dynApprBc = DynApproxBetweenness(G, epsilon, delta, True)
 	print ("Running dyn approx bc with predecessors")
 	dynApprBc.run()
-	dynApprBc2 = DynApproxBetweenness(G, epsilon, delta, False)
-	print ("Running dyn approx bc without predecessors")
-	dynApprBc2.run()
-	print ("Finished initialization")
 	# apply the batches
 	nExperiments = nEdges // batchSize
 	timesBc = []
 	timesDynBc = []
-	timesDynBc2 = []
 	timesApprBc = []
 	timesDynApprBc = []
-	timesDynApprBc2 = []
 	for i in range (0, nExperiments):
 		batch = addStream[i*batchSize : (i+1)*batchSize]
 		# add the edges of batch to the graph
 		totalTime = 0.0
-		totalTime2 = 0.0
 		for j in range (0, batchSize):
 			updater.update([batch[j]])
 			# update the betweenness with the dynamic exact algorithm
-			print ("Updating with dyn bc (with predecessors)")
 			t = stopwatch.Timer()
 			dynBc.update(batch[j])
 			totalTime += t.stop()
-			# update the betweenness with the dynamic exact algorithm (without predecessors)
-			print ("Updating with dyn bc (without predecessors)")
-			t = stopwatch.Timer()
-			dynBc2.update(batch[j])
-			totalTime2 += t.stop()
 		timesDynBc.append(totalTime)
-		timesDynBc2.append(totalTime2)
 		# update the betweenness with the static exact algorithm
 		t = stopwatch.Timer()
 		bc.run()
@@ -88,8 +85,6 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		print (x)
 		print ("Speedup Dyn BC (with preds)")
 		print (x/totalTime)
-		print ("Speedup Dyn BC (without preds)")
-		print (x/totalTime2)
 		# update the betweenness with the static approximated algorithm
 		t = stopwatch.Timer()
 		apprBc.run()
@@ -104,6 +99,14 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		timesDynApprBc.append(x)
 		print ("Speedup DynApprBC (with preds)")
 		print (x/y)
+<<<<<<< local
+	a = pd.Series(timesBc)
+	b = pd.Series(timesDynBc)
+	c = pd.Series(timesApprBc)
+	d = pd.Series(timesDynApprBc)
+	df = pd.DataFrame({"Static exact bc": a, "Dynamic exact bc" : b, "Static approx bc" : c, "Dynamic approx bc" : d})
+	return df
+=======
 		# update the betweenness with the dynamic approximated algorithm
 		t = stopwatch.Timer()
 		dynApprBc2.update(batch)
@@ -119,8 +122,29 @@ def test(G, nEdges, batchSize, epsilon, delta):
 			"dynApprBc (predecessors stored)" : timesDynApprBc,
 			"dynApprBc (predecessors not stored)" : timesDynApprBc2
 			}
+>>>>>>> other
 
 
+<<<<<<< local
+if __name__ == "__main__":
+	setNumberOfThreads(1)
+	size = 1000
+	G = generators.DorogovtsevMendesGenerator(size).generate()
+	G1 = Graph(G.numberOfNodes(), True, False)
+	for e in G.edges():
+		G1.addEdge(e[0], e[1], 1.0)
+	cc = properties.ConnectedComponents(G1)
+	cc.run()
+	if (cc.numberOfComponents() == 1) :
+		nEdges = 10
+		batchSize = 10
+		epsilon = 0.05
+		delta = 0.1
+		df = test(G1, nEdges, batchSize, epsilon, delta)
+		df.to_csv("results/weighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
+	else:
+		print ("The generated graph is not connected.")
+=======
 setNumberOfThreads(1)
 G = generators.DorogovtsevMendesGenerator(10000).generate()
 G1 = Graph(G.numberOfNodes(), True, False)
@@ -137,3 +161,4 @@ if (cc.numberOfComponents() == 1) :
 	print (times)
 else:
 	print ("The generated graph is not connected.")
+>>>>>>> other
