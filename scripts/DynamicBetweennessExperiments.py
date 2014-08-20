@@ -108,12 +108,12 @@ def test(G, nEdges, batchSize, epsilon, delta):
 
 if __name__ == "__main__":
 	setNumberOfThreads(1)
-	size = 1000
+	size = 100000
 	G = generators.DorogovtsevMendesGenerator(size).generate()
 	cc = properties.ConnectedComponents(G)
 	cc.run()
 	if (cc.numberOfComponents() == 1) :
-		nEdges = 10
+		nEdges = 1000
 		batchSize = 10
 		epsilon = 0.05
 		delta = 0.1
