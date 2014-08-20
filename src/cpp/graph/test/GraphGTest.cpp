@@ -79,7 +79,6 @@ void GraphGTest::SetUp() {
 		if (Ghouse.isWeighted()) {
 			ew += 1.0;
 		}
-
 	}
 }
 
@@ -226,7 +225,7 @@ TEST_P(GraphGTest, testTyp) {
 	}
 }
 
-TEST_P(GraphGTest, tesSetName) {
+TEST_P(GraphGTest, testSetName) {
 	Graph G1 = createGraph(0);
 	Graph G2 = createGraph(0);
 	
@@ -706,14 +705,6 @@ TEST_P(GraphGTest, testIsEmpty) {
 	ASSERT_TRUE(G2.isEmpty());
 }
 
-TEST_P(GraphGTest, testMultiEdgeDetection) {
-	Graph G1 = createGraph(2);
-	G1.addEdge(0,1);
-	ASSERT_TRUE(G1.consistencyCheck());
-	G1.addEdge(0,1);
-	ASSERT_FALSE(G1.consistencyCheck());
-}
-
 TEST_P(GraphGTest, testNumberOfNodes) {
 	ASSERT_EQ(this->n_house, this->Ghouse.numberOfNodes());
 
@@ -772,6 +763,19 @@ TEST_P(GraphGTest, testUpperNodeIdBound) {
 	ASSERT_EQ(3u, G1.upperNodeIdBound());
 }
 
+TEST_P(GraphGTest, testCheckConsistency_MultiEdgeDetection) {
+	Graph G = createGraph(3);
+	ASSERT_TRUE(G.consistencyCheck());
+	G.addEdge(0, 1);
+	ASSERT_TRUE(G.consistencyCheck());
+	G.addEdge(0, 2);
+	G.addEdge(0, 1);
+	ASSERT_FALSE(G.consistencyCheck());
+	G.removeEdge(0, 1);
+	ASSERT_TRUE(G.consistencyCheck());
+	G.removeEdge(0, 1);
+	ASSERT_TRUE(G.consistencyCheck());
+}
 
 /** DYNAMICS **/
 

@@ -700,24 +700,20 @@ std::vector<node> Graph::neighbors(node u) const {
 }
 
 bool Graph::consistencyCheck() const {
-	/**
-	 * checking for multiple edges
-	 */
-	bool multFound = false;
-	this->forNodes([&](node v) {
-		std::vector<node> copy = outEdges[v];
-		std::sort(copy.begin(), copy.end());
-		auto it = std::unique(copy.begin(), copy.end());
-		multFound = (multFound || (it != copy.end()));
+	// check for multi-edges
+	std::vector<node> lastSeen(z, none);
+	bool multiEdge = false;
+	auto multiEdgeDetected = [&multiEdge]() { return !multiEdge; };
+	forNodesWhile(multiEdgeDetected, [&](node v) {
+		forNeighborsOf(v, [&](node u) {
+			if (lastSeen[u] == v) {
+				multiEdge = true;
+			}
+			lastSeen[u] = v;
+		});
 	});
-	return !multFound;
-}
 
-
-void Graph::treatAsUndirected() {
-	assert (isDirected());
-	directed = false;
-	m /= 2;
+	return !multiEdge;
 }
 
 } /* namespace NetworKit */
