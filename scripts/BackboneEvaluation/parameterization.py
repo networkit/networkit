@@ -3,39 +3,19 @@ from evaluation import *
 from bbalgorithms import *
 
 ABS_ZERO = 1e-5
+BINARY_SEARCH_STEPS = 20
 
-# Returns backbone task that contains all combinations of desired algorithms and target edge ratios
-# for the given graph.
-def getBackboneTask(graph, inputAlgorithms, targetEdgeRatios, outputDir):
-	#TODO: actually use those interval limits given in the input strings...
-
-	#Load graph
-	G = readGraph(graph.path, graph.format)
-	G.indexEdges()
-
-	#Generate a set of algorithms to apply to that graph
-	algorithms = []
-	for inputAlgorithm in inputAlgorithms:
-		#Skip unweighted graphs for algorithms that require a weight
-		if not G.isWeighted() and inputAlgorithm.requiresWeight():
-			print("Skipping ", graph.name, " for ", inputAlgorithm.getName(), " (requires weighted graph)")
-			continue
-
-		for targetEp in targetEdgeRatios:
-			if inputAlgorithm.parameterType() == "FloatType":
-				outputAlgorithm = parameterizeUsingDouble(G, inputAlgorithm, targetEp, 0.0, 1.0, 20)
-			elif inputAlgorithm.parameterType() == "IntType":
-				outputAlgorithm = parameterizeUsingInteger(G, inputAlgorithm, targetEp, 0, 10)
-			elif inputAlgorithm.parameterType() == "Trivial":
-				outputAlgorithm = parameterizeUsingDoubleTrivial(G, inputAlgorithm, targetEp)
-			else:
-				outputAlgorithm = None
-			name = inputAlgorithm.getShortName(targetEp)
-			algorithms.append(BackboneAlgorithm(outputAlgorithm, name))
-
-	bbOriginal = bb_Original()
-	algorithms.append(BackboneAlgorithm(bbOriginal.getAlgorithmExpr(), bbOriginal.getShortName()))
-	return BackboneTask(graph, algorithms, outputDir)
+#Parameterizes the given algorithm such that the targetEdgeRatio is met approximately.
+def parameterize(graph, algorithm, targetEdgeRatio):
+	if algorithm.parameterizationType() == "Float":
+		bestParameter = parameterizeUsingDouble(graph, algorithm, targetEdgeRatio, 0.0, 1.0, BINARY_SEARCH_STEPS)
+	elif inputAlgorithm.parameterizationType() == "Int":
+		bestParameter = parameterizeUsingInteger(G, inputAlgorithm, targetEdgeRatio, 0, 10)
+	elif inputAlgorithm.parameterizationType() == "Trivial":
+		bestParameter = parameterizeUsingDoubleTrivial(G, inputAlgorithm, targetEdgeRatio)
+	else:
+		bestParameter = None
+	return bestParameter
 
 #Parameterize the given algorithm using binary search.
 def parameterizeUsingDouble(G, algorithm, targetEdgeRatio, lowerBound, upperBound, maxSteps):
@@ -54,7 +34,7 @@ def parameterizeUsingDouble(G, algorithm, targetEdgeRatio, lowerBound, upperBoun
 		backbone = algorithm.getPrecalcBackbone(G, preCalcAttr, estimation)
 		currentEdgeRatio = backbone.numberOfEdges() / G.numberOfEdges()
 
-		print ("Est:", str(estimation), "ep: ", currentEdgeRatio, ", tep: ", targetEdgeRatio)
+		print ("Est:", str(estimation), "er: ", currentEdgeRatio, ", ter: ", targetEdgeRatio)
 		distance = abs(currentEdgeRatio - targetEdgeRatio)
 
 		if distance < minDistance and abs(currentEdgeRatio) > ABS_ZERO:
@@ -74,7 +54,7 @@ def parameterizeUsingDouble(G, algorithm, targetEdgeRatio, lowerBound, upperBoun
 		else:
 			upperBound = estimation
 
-	return algorithm.getAlgorithmExpr(bestParameter)
+	return bestParameter
 
 #Parameterize the given algorithm using brute force search.
 def parameterizeUsingInteger(G, algorithm, targetEdgeRatio, lowerBound, upperBound):
@@ -92,7 +72,7 @@ def parameterizeUsingInteger(G, algorithm, targetEdgeRatio, lowerBound, upperBou
 		backbone = algorithm.getPrecalcBackbone(G, preCalcAttr, i)
 		currentEdgeRatio = backbone.numberOfEdges() / G.numberOfEdges()
 
-		print ("Current ep: ", currentEdgeRatio, ", target ep: ", targetEdgeRatio)
+		print ("Current er: ", currentEdgeRatio, ", target er: ", targetEdgeRatio)
 
 		distance = abs(currentEdgeRatio - targetEdgeRatio)
 		if distance < minDistance and abs(currentEdgeRatio) > ABS_ZERO:
@@ -100,10 +80,10 @@ def parameterizeUsingInteger(G, algorithm, targetEdgeRatio, lowerBound, upperBou
 			bestParameter = i
 			bestRatio = currentEdgeRatio
 
-	print("Best fit for parameter: ", bestParameter, " ep: ", bestRatio, ", tep: ", targetEdgeRatio)
-	return algorithm.getAlgorithmExpr(bestParameter)
+	print("Best fit for parameter: ", bestParameter, " er: ", bestRatio, ", ter: ", targetEdgeRatio)
+	return bestParameter
 
 #Directly use targetEdgeRatio as input parameter for the algorithm.
 def parameterizeUsingDoubleTrivial(G, algorithm, targetEdgeRatio):
 	print("Parameterizing ", algorithm.getName(), " ... (trivial), edge ratio ", str(targetEdgeRatio))
-	return algorithm.getAlgorithmExpr(targetEdgeRatio)
+	return targetEdgeRatio
