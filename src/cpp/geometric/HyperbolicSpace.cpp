@@ -280,7 +280,14 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 
 	if (d_c > r_c) {
 		//the query circle overlaps the origin
-		result += 2*M_PI*(cosh(EuclideanRadiusToHyperbolic(d_c-r_c))-1);//adding small circle around origin
+
+		if (d_c - r_c < r_max) {
+			//remaining query circle is smaller than the disk representation
+			result += 2*M_PI*(cosh(EuclideanRadiusToHyperbolic(d_c-r_c))-1);//adding small circle around origin
+		} else {
+			result += 2*M_PI*(cosh(EuclideanRadiusToHyperbolic(r_max))-1);//adding small circle around origin
+		}
+		assert(result <= 2*M_PI*(cosh(EuclideanRadiusToHyperbolic(r_max))-1));
 		min = std::nextafter(d_c-r_c, std::numeric_limits<double>::max());//correcting integral start to exclude circle
 	}
 
@@ -321,6 +328,7 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 
 	double lower = -realpart(min, d_c, r_c) -firstlogpart(min, d_c, r_c) + secondlogpart(min, d_c, r_c);
 	double upper = -realpart(max, d_c, r_c) -firstlogpart(max, d_c, r_c) + secondlogpart(max, d_c, r_c);
-	return 4*(result + (upper - lower));
+	result += 4*(upper - lower);
+	return result;
 }
 }

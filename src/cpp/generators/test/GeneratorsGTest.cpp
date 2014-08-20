@@ -633,9 +633,12 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 }
 
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
-	count n = 10000;
+	count n = 100000;
 	HyperbolicGenerator gen(n,1);
+	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,1);
+	DEBUG("Expected: ", expected);
 	Graph G = gen.generate();
+	DEBUG("Actual: ", G.numberOfEdges());
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_TRUE(G.checkConsistency());
 	ConnectedComponents cc(G);
