@@ -12,13 +12,15 @@
 
 namespace NetworKit {
 
-GraphBuilder::GraphBuilder(count n, bool weighted, bool directed) :
+GraphBuilder::GraphBuilder(count n, bool weighted, bool directed, bool directSwap) :
 	n(n),
 	weighted(weighted),
 	directed(directed),
+	usedirectswap(directSwap),
 	halfEdges(n),
 	halfEdgeWeights(weighted ? n : 0)
 {
+	if (directed && directSwap) throw std::runtime_error("Cannot use direct swap in directed graph.");
 }
 
 index GraphBuilder::indexHalfEdgeArray(node u, node v) const {
@@ -84,7 +86,6 @@ Graph GraphBuilder::directSwap() {
 	for (node v = 0; v < n; v++) {
 		G.outDeg[v] = G.outEdges[v].size();
 		count localselfloops = std::count(G.outEdges[v].begin(), G.outEdges[v].end(), v);
-		if (localselfloops > 1) DEBUG("Found ", localselfloops, " self loops! That is too much!");
 		globalselfloops += localselfloops;
 	}
 	correctNumberOfEdges(G, globalselfloops);

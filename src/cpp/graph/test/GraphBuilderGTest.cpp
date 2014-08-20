@@ -43,18 +43,14 @@ bool GraphBuilderGTest::useDirectSwap() const {
 }
 
 GraphBuilder GraphBuilderGTest::createGraphBuilder(count n) const {
-	bool weighted, directed, parallel,useDirectSwap;
-	std::tie(weighted, directed, parallel,useDirectSwap) = GetParam();
-	GraphBuilder b(n, weighted, directed);
+	bool weighted, directed, parallel,directSwap;
+	std::tie(weighted, directed, parallel,directSwap) = GetParam();
+	GraphBuilder b(n, weighted, directed,directSwap);
 	return b;
 }
 
 Graph GraphBuilderGTest::toGraph(GraphBuilder& b) const {
-	if (useDirectSwap()) {
-		return b.directSwap();
-	} else {
 		return b.toGraph(useParallel());
-	}
 };
 
 void GraphBuilderGTest::SetUp() {
@@ -365,7 +361,7 @@ TEST_P(GraphBuilderGTest, testSameAsGraph) {
 	// we will only use methods that both GraphBuilder and Graph support and 
 	for (index i = 0; i < runs; i++) {
 		count n = Aux::Random::integer(n_max);
-		GraphBuilder b(n, isWeighted(), isDirected());
+		GraphBuilder b = createGraphBuilder(n);
 		Graph G_expected(n, isWeighted(), isDirected());
 
 		G_expected.forNodes([&](node v) {
