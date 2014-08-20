@@ -1,8 +1,8 @@
 /*
- * Betweenness.cpp
+ * Betweenness2.cpp
  *
- *  Created on: 19.02.2014
- *      Author: hm
+ *  Created on: 29.07.2014
+ *      Author: cls, ebergamini
  */
 
 #include <stack>
@@ -56,6 +56,14 @@ void Betweenness2::run() {
 	};
 
 	G.forNodes(computeDependencies);
+	if (normalized) {
+		// divide by the number of possible pairs
+		count n = G.numberOfNodes();
+		count pairs = (n-2) * (n-1);
+		G.forNodes([&](node u){
+			scoreData[u] = scoreData[u] / pairs;
+		});
+	}
 }
 
 

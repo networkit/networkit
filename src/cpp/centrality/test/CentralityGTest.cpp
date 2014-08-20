@@ -8,10 +8,12 @@
 #include "CentralityGTest.h"
 #include "../Betweenness.h"
 #include "../Betweenness2.h"
+#include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
 #include "../EigenvectorCentrality.h"
 #include "../PageRank.h"
+#include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 

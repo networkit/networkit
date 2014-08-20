@@ -21,17 +21,21 @@
 
 namespace NetworKit {
 
-ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta, count diameterSamples) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples) {
+ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta, count diameterSamples, bool storePredecessors) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples),
+storePreds(storePredecessors) {
 
 }
 
+inline bool logically_equal(double a, double b, double error_factor=1.0)
+{
+return a==b || std::abs(a-b)<std::abs(std::min(a,b))*std::numeric_limits<double>::epsilon()*error_factor;
+}
 
 void ApproxBetweenness::run() {
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
 
 	double c = 0.5; // universal positive constant - see reference in paper
-
 
 	edgeweight vd = 0;
 	if (diameterSamples == 0) {
@@ -74,12 +78,12 @@ void ApproxBetweenness::run() {
 		// runs faster for unweighted graphs
 		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
-			sssp.reset(new Dijkstra(G, u));
+			sssp.reset(new Dijkstra(G, u, storePreds));
 		} else {
-			sssp.reset(new BFS(G, u));
+			sssp.reset(new BFS(G, u, storePreds));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
-		sssp->run(v); // TODO: this can be optimized by stopping the search once the target node has been reached
+		sssp->run(v);
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update
@@ -88,9 +92,15 @@ void ApproxBetweenness::run() {
 			while (t != u)  {
 				// sample z in P_u(t) with probability sigma_uz / sigma_us
 				std::vector<std::pair<node, double> > choices;
-
-				for (node z : sssp->getPredecessors(t)) {
-					choices.emplace_back(z, sssp->numberOfPaths(z) / (double) sssp->numberOfPaths(t)); 	// sigma_uz / sigma_us
+				if (storePreds) {
+					for (node z : sssp->getPredecessors(t)) {
+						choices.emplace_back(z, sssp->numberOfPaths(z) / (double) sssp->numberOfPaths(t)); 	// sigma_uz / sigma_us
+					}
+				} else {
+					G.forNeighborsOf(t, [&](node z){
+						if (logically_equal(sssp->distance(t), sssp->distance(z) + G.weight(z, t)))
+							choices.emplace_back(z, sssp->numberOfPaths(z) / (double) sssp->numberOfPaths(t));
+					});
 				}
 				node z = Aux::Random::weightedChoice(choices);
 				assert (z <= G.upperNodeIdBound());

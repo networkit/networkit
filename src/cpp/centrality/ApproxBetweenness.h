@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 
-/** 
+/**
  * @ingroup centrality
  * Approximation of betweenness centrality according to algorithm described in
  * Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
@@ -34,7 +34,7 @@ public:
 	 * guarantees approximation quality. Otherwise, use a fast heuristic that has a higher chance of getting the
 	 * estimate right the higher the number of samples
 	 */
-	ApproxBetweenness(const Graph& G, double epsilon=0.01, double delta=0.1, count diameterSamples=0);
+	ApproxBetweenness(const Graph& G, double epsilon=0.01, double delta=0.1, count diameterSamples=0, bool storePredecessors = true);
 
 	void run() override;
 
@@ -50,6 +50,7 @@ private:
 	double delta;
 	count r; // number of samples taken in last run
 	count diameterSamples;
+	bool storePreds;
 };
 
 } /* namespace NetworKit */
