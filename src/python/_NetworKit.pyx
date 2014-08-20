@@ -1259,6 +1259,44 @@ cdef class HavelHakimiGenerator:
 		"""
 		return Graph(0).setThis(self._this._generate())
 
+cdef extern from "../cpp/generators/HyperbolicGenerator.h":
+	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
+		# TODO: revert to count when cython issue fixed
+		_HyperbolicGenerator(unsigned int nodes,  double distanceFactor, double alpha, double stretch) except +
+		_Graph* _generate() except +
+
+cdef class HyperbolicGenerator:
+	""" The Hyperbolic Generator uses the poincaré disc of hyperbolic space.
+
+ 		HyperbolicGenerator(n, distanceFactor=1, alpha=1, stretchradius=1)
+
+ 		Parameters
+		----------
+		n : integer
+			number of nodes
+		distanceFactor : double
+			scale distance threshold
+		alpha : double
+			move points to boundary or to center?
+		stretchradius : double
+			parameter governing stretch of nodes
+			
+	"""
+
+	cdef _HyperbolicGenerator* _this
+
+	def __cinit__(self,  n, distanceFactor=1, alpha=1, stretchradius=1):		
+		self._this = new _HyperbolicGenerator(n, distanceFactor, alpha, stretchradius)
+
+	def generate(self):
+		""" Generates graph from hyperbolic geometry
+
+		Returns
+		-------
+		Graph
+		
+		"""
+		return Graph(0).setThis(self._this._generate())
 
 cdef extern from "../cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
@@ -3910,6 +3948,33 @@ cdef class DynamicPubWebGenerator:
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _DynamicPubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+
+	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+	def getGraph(self):
+		return Graph().setThis(self._this._getGraph())
+
+cdef extern from "../cpp/generators/DynamicHyperbolicGenerator.h":
+	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
+		_DynamicHyperbolicGenerator(count numNodes, double initialFactor,
+			double alpha, double stretch, double moveEachStep, double factorGrowth, double moveDistance) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph* _getGraph() except +
+
+
+cdef class DynamicHyperbolicGenerator:
+	cdef _DynamicHyperbolicGenerator* _this
+
+	def __cinit__(self, numNodes, initialFactor, alpha, stretch, moveEachStep, factorGrowth, moveDistance):
+		self._this = new _DynamicHyperbolicGenerator(numNodes, initialFactor, alpha, stretch, moveEachStep, factorGrowth, moveDistance)
 
 	def generate(self, nSteps):
 		""" Generate event stream.
