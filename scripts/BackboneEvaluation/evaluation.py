@@ -8,19 +8,19 @@ import time
 # certain graph properties for evaluation.
 # -----------------------------------------------------------------------
 
-
-#A pair of a graph description and a set of backbone algorithms
-class BackboneTask:
-	def __init__(self, graph, algorithms, outputDir=None):
-		self.graph = graph
+#Sets of graphs, algorithms, properties, and target edge ratios.
+class Task:
+	def __init__(self, graphs, algorithms, properties, edgeRatios):
+		self.graphs = graphs
 		self.algorithms = algorithms
-		self.outputDir = outputDir
+		self.properties = properties
+		self.edgeRatios = edgeRatios
 
-class BackboneTaskResult:
+#Holds the results of a Task
+class TaskResult:
 	def __init__(self, task):
-		self.loadingTime = 0
-		self.backboneProperties = []
 		self.task = task
+		self.data = [] #Set of dictionaries
 
 #Information about a graph; used as input parameter
 class GraphDescription:
@@ -29,120 +29,33 @@ class GraphDescription:
 		self.format = format
 		self.name = name
 
-class BackboneAlgorithm:
-	def __init__(self, algorithmString, name):
-		self.algorithmString = algorithmString
-		self.name = name
-
-#Contains some result values that are characteristic for a backbone calculation result
-class GraphProperties:
-	def __init__(self, algorithmName):
-		self.numNodes = 0
-		self.nodeRatio= 0.0
-		self.numEdges = 0
-		self.edgeRatio = 0.0
-		self.graphStructuralRandMeasure = 0
-		self.nmi = 0
-		self.clusteringCoefficient = 0
-		self.degreeDistCoefficient = 0
-		self.cpvDistanceFromOriginal = 0
-		self.cpvDistanceFromOriginalNormalized = 0
-		self.runningTime = 0.0
-		self.diameter = None
-		self.algorithmName = algorithmName
-
 # Fake backbone algorithm that returns the input graph itself
 class OriginalGraph:
 	def calculate(self, graph):
 		return graph
 
-def debugInfo(text):
-	print("{" + text + "...}")
 
-def getCentralityPositionVector(graph):
-	bc = centrality.ApproxBetweenness2(graph, min(100, graph.numberOfNodes()))
-	bc.run()
-	ranking = map(lambda x: x[0], bc.ranking())
-	centralityPositionVector = [0] * graph.numberOfNodes()
-	rank = 0
-	for node in ranking:
-		centralityPositionVector[node] = rank
-		rank += 1
-	return centralityPositionVector
-
-# Applies the given backbone algorithm to the given graph and calculates various graph properties
-def applyBackboneAlgorithm(graph, algorithm):
-	#Index edges if neccessary
-	graph.indexEdges()
-
-	#Backbone calculation
-	debugInfo("Calculating backbone")
-	start = time.clock()
-	backbone = eval(algorithm.algorithmString).calculate(graph)
-	end = time.clock()
-
-	#Result backbone graph properties
-	bprops = GraphProperties(algorithm.name)
-	bprops.runningTime = end - start
-
-	#Basic graph properties
-	bprops.numNodes = backbone.numberOfNodes()
-	bprops.numEdges = backbone.numberOfEdges()
-	bprops.nodeRatio = (bprops.numNodes / graph.numberOfNodes())
-	bprops.edgeRatio = (bprops.numEdges / graph.numberOfEdges())
-	debugInfo("Node ratio " + str(bprops.nodeRatio) + " / Edge ratio " + str(bprops.edgeRatio))
-
-	debugInfo("Detecting communities")
-	if backbone.numberOfEdges() > 0:
-		communitiesGraph = community.detectCommunities(graph)
-		communitiesBackbone = community.detectCommunities(backbone)
-
-		#Graph structural rand measure
-		randMeasure = community.GraphStructuralRandMeasure()
-		bprops.graphStructuralRandMeasure = randMeasure.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
-
-		#Normalized Mutual information
-		nmi = community.NMIDistance()
-		bprops.nmi = nmi.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
-
-		#Clustering coefficient
-		debugInfo("Calculating clustering coefficient")
-		#bprops.clusteringCoefficient = properties.clustering(backbone)
-		cc = properties.ClusteringCoefficient()
-		bprops.clusteringCoefficient = cc.avgLocal(backbone)
-
-	#Diameter
-	debugInfo("Calculating diameter")
-	bprops.diameter = str(properties.Diameter.estimatedDiameterRange(backbone, error=0.1))
-
-	#Degree distribution coefficient
-	debugInfo("Calculating degree distribution coefficient")
-	bprops.degreeDistCoefficient = properties.powerLawExponent(backbone)
-
-	#Centrality position vector distance
-	debugInfo("Calculating centrality position vector distance")
-	cpvOriginal = getCentralityPositionVector(graph)
-	cpvBackbone = getCentralityPositionVector(backbone)
-	bprops.cpvDistanceFromOriginal = distance.euclidean(cpvOriginal, cpvBackbone)
-	bprops.cpvDistanceFromOriginalNormalized = bprops.cpvDistanceFromOriginal / graph.numberOfNodes()
-
-	return backbone, bprops
-
-def writeBackboneFile(backbone, task, algorithm):
-	fileName = task.outputDir + "/" + task.graph.name + "_" + algorithm.name + ".txt"
-	if task.outputDir is not None:
-		writeGraph(backbone, fileName, Format.METIS)
-
-
-# Executes the given BackboneTask
+# Calculates all backbone properties for all graphs for all algorithms.
 def executeTask(task):
-	#Load graph into memory
-	start = time.clock()
-	graph = readGraph(task.graph.path, task.graph.format)
-	end = time.clock()
+	taskResult = TaskResult(task)
+	data = [] 				#Set of dictionaries containing key/value pairs
+	columns = [] 		#Set containing the keys that appear in data.
 
-	taskResult = BackboneTaskResult(task)
-	taskResult.loadingTime = end - start
+	for igraph in task.graphs:
+		graph = readGraph(igraph.path, igraph.format)
+
+		for ialgorithm in task.algorithms:
+			#Calculate the attribute that is characteristic for that algorithm.
+			attribute = ialgorithm.getPrecalcAttribute(graph)
+
+			if not G.isWeighted() and inputAlgorithm.requiresWeight():
+				print("Skipping ", igraph.name, " for ", ialgorithm.getName(), " (requires weighted graph)")
+				continue
+
+			for iedgeRatio in task.edgeRatios:
+				#Parameterize the algorithm in such a way that we meet the expected edge ratio
+				algorithmParameter = parameterization.parameterize(graph, ialgorithm, iedgeRatio)
+
 
 	#Apply the algorithms!
 	for algorithm in task.algorithms:

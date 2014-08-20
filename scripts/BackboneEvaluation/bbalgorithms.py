@@ -22,8 +22,8 @@ class bb_SimmelianBackboneNonParametric:
         gf = backbones.GlobalThresholdFilter(value, True)
         return gf.calculate(graph, attribute)
 
-    def parameterType(self):
-        return "FloatType"
+    def parameterizationType(self):
+        return "Float"
 
     def increasing(self):
         return False
@@ -69,8 +69,8 @@ class bb_SimmelianMultiscaleBackbone:
         gf = backbones.GlobalThresholdFilter(value, False)
         return gf.calculate(graph, attribute)
 
-    def parameterType(self):
-        return "FloatType"
+    def parameterizationType(self):
+        return "Float"
 
     def increasing(self):
         return True
@@ -100,8 +100,8 @@ class bb_SimmelianBackboneParametric:
         gf = backbones.GlobalThresholdFilter(value, True)
         return gf.calculate(graph, attribute)
 
-    def parameterType(self):
-        return "IntType"
+    def parameterizationType(self):
+        return "Int"
 
     def requiresWeight(self):
         return False
@@ -127,8 +127,8 @@ class bb_LocalSimilarityBackbone:
         gf = backbones.GlobalThresholdFilter(value, False)
         return gf.calculate(graph, attribute)
 
-    def parameterType(self):
-        return "FloatType"
+    def parameterizationType(self):
+        return "Float"
 
     def increasing(self):
         return False
@@ -157,8 +157,8 @@ class bb_MultiscaleBackbone:
         msb = backbones.MultiscaleBackbone(value)
         return msb.calculate(graph)
 
-    def parameterType(self):
-        return "FloatType"
+    def parameterizationType(self):
+        return "Float"
 
     def increasing(self):
         return True
@@ -188,7 +188,7 @@ class bb_RandomBackbone:
         rb = backbones.RandomBackbone(value)
         return rb.calculate(graph)
 
-    def parameterType(self):
+    def parameterizationType(self):
         return "Trivial"  #Trivial: No parameterizitation needed.
 
     def increasing(self):
