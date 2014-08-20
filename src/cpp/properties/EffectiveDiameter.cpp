@@ -7,6 +7,7 @@
 
 #include "EffectiveDiameter.h"
 #include "ConnectedComponents.h"
+#include "../auxiliary/Random.h"
 
 #include <math.h>
 #include <iterator>
@@ -34,43 +35,36 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 	std::vector<std::vector<unsigned int> > mCurr;
 	// saves all k bitmasks for every node of the previous iteration
 	std::vector<std::vector<unsigned int> > mPrev;
-	// the list of nodes that are already connected to enough other nodes
+	// the list of nodes that are already connected to all other nodes
 	std::vector<node> finishedNodes;
 	// the maximum possible bitmask based on the random initialization of all k bitmasks
 	std::vector<count> highestCount;
-	// the amount of nodes that a node needs to be connected to
+	// the amount of nodes that need to be connected to all others nodes
 	count threshold = (count) (ceil(ratio * G.numberOfNodes()));
-	// the current step range
+	// the current distance of the neighborhoods
 	count h = 1;
-	// the number of nodes that are connected to all other nodes (|finishedNodes|)
+	// the amount of nodes that are connected to all other nodes (|finishedNodes|)
 	count numberOfFinishedNodes = 0;
 	// sums over the number of edges needed to reach 90% of all other nodes
 	double effectiveDiameter = 0;
 	// the estimated number of connected nodes
 	double estimatedConnectedNodes;
-
-	// FIXME: why not use Aux::Random like the rest of NetworKit?
+	// used for setting a random bit in the bitmasks
 	double random;
-	srand (time(NULL));
 
 	// initialize all vectors
-	for (count j = 0; j < k; j++) {
-		highestCount.push_back(j);
-		highestCount[j] = 0;
-	}
+	highestCount.assign(k, 0);
 	G.forNodes([&](node v) {
 		finishedNodes.push_back(v);
 		finishedNodes[v] = 0;
-		std::vector<unsigned int> tmp;
-		for (count j = 0; j < k; j++) {
-			tmp.push_back(0); // FIXME: looks strange - are you just initializing a vector here? you don't need a loop for that
-		}
-		mCurr.push_back(tmp);
-		mPrev.push_back(tmp);
+		std::vector<unsigned int> bitmasks;
+		bitmasks.assign(k, 0);
+		mCurr.push_back(bitmasks);
+		mPrev.push_back(bitmasks);
 
 		// set one bit in each bitmask with probability P(bit i=1) = 0.5^(i+1), i=0,..
 		for (count j = 0; j < k; j++) {
-			random = (rand()/(double)(RAND_MAX)); // FIXME: why not use Aux::Random like the rest of NetworKit?
+			random = Aux::Random::real(0,1);
 			for (count i = 0; i < lengthOfBitmask+r; i++) {
 				if (random > pow(0.5,i+1)) {
 					mPrev[v][j] |= 1 << i;
@@ -97,6 +91,7 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 						mCurr[v][j] = mCurr[v][j] | mPrev[u][j];
 					});
 				}
+
 				// the least bit number in the bitmask of the current node/distance that has not been set
 				double b = 0;
 
@@ -110,8 +105,9 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 				}
 				// calculate the average least bit number that has not been set over all parallel approximations
 				b = b / k;
-				// calculate the estimated number of neighbors
-				estimatedConnectedNodes = (pow(2,b) / 0.77351); // FIXME: documentation missing: what is this magic number 0.77351 ?
+
+				// calculate the estimated number of neighbors where 0.77351 is a correction factor and the result of a complex sum
+				estimatedConnectedNodes = (pow(2,b) / 0.77351);
 
 				// check whether all k bitmask for this node have reached their highest possible value
 				bool nodeFinished = true;
@@ -156,14 +152,14 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ra
 	double effectiveDiameter = 0;
 	// the current distance of the neighborhoods
 	count h = 1;
-	// the number of nodes that a node needs to be connected to
+	// number of nodes that need to be connected with all other nodes
 	count threshold = (uint64_t) (ceil(ratio * G.numberOfNodes()) + 0.5);
 
 	// initialize all nodes
 	G.forNodes([&](node v){
 		std::vector<bool> connectedNodes;
 		// initialize n entries with value 0
-		connectedNodes.assign(G.numberOfNodes(),0); // FIXME: initializing such vector with G.numberOfNodes() instead of G.upperNodeIdBound() is a bug that will lead to a crash when nodes have been deleted from the graph
+		connectedNodes.assign(G.upperNodeIdBound(),0);
 		// the node is always connected to itself
 		connectedNodes[v] = 1;
 		finishedNodes.push_back(v);
@@ -213,7 +209,6 @@ this is a variaton of the ANF algorithm presented in the paper "A Fast and Scala
 in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 */
 std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count maxDistance, const count k, const count r) {
-	// FIXME: this looks like a lot of code duplication, which is bad in most cases (errors need to be fixed multiple times...) - could it have been avoided?
 	//the returned hop-plot
 	std::map<count, double> hopPlot;
 	// the length of the bitmask where the number of connected nodes is saved
@@ -234,29 +229,22 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 	double estimatedConnectedNodes;
 	// the sum over all estimated connected nodes
 	double totalConnectedNodes;
-
-	// FIXME: why not use Aux::Random like the rest of NetworKit?
+	// used for setting a random bit in the bitmasks
 	double random;
-	srand (time(NULL));
 
 	// initialize all vectors
-	for (count j = 0; j < k; j++) {
-		highestCount.push_back(j);
-		highestCount[j] = 0;
-	}
+	highestCount.assign(k, 0);
 	G.forNodes([&](node v) {
 		finishedNodes.push_back(v);
 		finishedNodes[v] = 0;
-		std::vector<unsigned int> tmp;
-		for (count j = 0; j < k; j++) {
-			tmp.push_back(0);
-		}
-		mCurr.push_back(tmp);
-		mPrev.push_back(tmp);
+		std::vector<unsigned int> bitmasks;
+		bitmasks.assign(k, 0);
+		mCurr.push_back(bitmasks);
+		mPrev.push_back(bitmasks);
 
 		// set one bit in each bitmask with probability P(bit i=1) = 0.5^(i+1), i=0,..
 		for (count j = 0; j < k; j++) {
-			random = (rand()/(double)(RAND_MAX));
+			random = Aux::Random::real(0,1);
 			for (count i = 0; i < lengthOfBitmask+r; i++) {
 				if (random > pow(0.5,i+1)) {
 					mPrev[v][j] |= 1 << i;
