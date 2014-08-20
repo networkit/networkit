@@ -11,7 +11,7 @@
 #include "../auxiliary/MissingMath.h"
 #include "../auxiliary/NumericTools.h"
 #include "../auxiliary/Log.h"
-#include "PartitionProduct.h"
+#include "PartitionIntersection.h"
 
 namespace NetworKit {
 
@@ -54,7 +54,7 @@ double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, cons
 	}
 
 
-	Partition overlap = PartitionProduct().calculate(zeta, eta);
+	Partition overlap = PartitionIntersection().calculate(zeta, eta);
 	DEBUG("overlap=", overlap.getVector());
 
 	std::vector<std::vector<index> > intersect(zeta.upperBound(), std::vector<index>(eta.upperBound(), none)); // intersect[C][D] returns the overlap cluster

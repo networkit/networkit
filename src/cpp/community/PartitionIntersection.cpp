@@ -1,8 +1,8 @@
-#include "PartitionProduct.h"
+#include "PartitionIntersection.h"
 
 #include <algorithm>
 
-NetworKit::Partition NetworKit::PartitionProduct::calculate(const Partition &zeta, const NetworKit::Partition &eta) {
+NetworKit::Partition NetworKit::PartitionIntersection::calculate(const Partition &zeta, const NetworKit::Partition &eta) {
 	Partition result(std::max(zeta.numberOfElements(), eta.numberOfElements()));
 	result.setUpperBound(zeta.upperBound()*eta.upperBound());
 	zeta.parallelForEntries([&](node u, index s) {
