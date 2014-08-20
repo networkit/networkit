@@ -124,7 +124,7 @@ class bb_LocalSimilarityBackbone:
         return a_ls
 
     def getPrecalcBackbone(self, graph, attribute, value):
-        gf = backbones.GlobalThresholdFilter(value, True)
+        gf = backbones.GlobalThresholdFilter(value, False)
         return gf.calculate(graph, attribute)
 
     def parameterType(self):
