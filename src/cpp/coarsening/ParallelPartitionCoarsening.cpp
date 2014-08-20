@@ -50,7 +50,7 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 	});
 
 	Graph Gcombined;
-	if (!useGraphBuilder) { 
+	if (!useGraphBuilder) {
 		// make copies of initial graph
 		count nThreads = omp_get_max_threads();
 		std::vector<Graph> localGraphs(nThreads, Ginit); // thread-local graphs
@@ -58,7 +58,7 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 
 		// iterate over edges of G and create edges in coarse graph or update edge and node weights in Gcon
 		DEBUG("create edges in coarse graphs");
-		G.parallelForWeightedEdges([&](node u, node v, edgeweight ew) {
+		G.parallelForEdges([&](node u, node v, edgeweight ew) {
 			index t = omp_get_thread_num();
 
 			node su = nodeToSuperNode[u];
@@ -100,7 +100,7 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 		DEBUG("combining graphs");
 		Gcombined.balancedParallelForNodes([&](node u) {
 			for (index l = 0; l < nThreads; ++l) {
-				localGraphs.at(l).forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+				localGraphs.at(l).forEdgesOf(u, [&](node u, node v, edgeweight w) {
 					TRACE("increasing weight of (", u, v, ") to", w);
 					threadSafeIncreaseWeight(u, v, w);
 				});
@@ -126,7 +126,7 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 		#pragma omp parallel for
 		for (node su = 0; su < nextNodeId; su++) { // BAD: not every supernode has the same size, some threads might idle (also we don't use all cores if #supernodes < #cores)
 			for (node u : nodesPerSuperNode[su]) {
-				G.forWeightedNeighborsOf(u, [&](node v, edgeweight ew) {
+				G.forNeighborsOf(u, [&](node v, edgeweight ew) {
 					node sv = nodeToSuperNode[v];
 					if (su < sv) { // BAD: we need another run for the other case
 						b.increaseWeight(su, sv, ew);
@@ -137,7 +137,7 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 		#pragma omp parallel for
 		for (node su = 0; su < nextNodeId; su++) {
 			for (node u : nodesPerSuperNode[su]) {
-				G.forWeightedNeighborsOf(u, [&](node v, edgeweight ew) {
+				G.forNeighborsOf(u, [&](node v, edgeweight ew) {
 					node sv = nodeToSuperNode[v];
 					if (sv >= su) {
 						b.increaseWeight(su, sv, ew);

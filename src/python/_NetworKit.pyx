@@ -23,6 +23,7 @@ from unordered_map cimport unordered_map
 # NetworKit typedefs
 ctypedef uint64_t count
 ctypedef uint64_t index
+ctypedef uint64_t edgeid
 ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
@@ -98,9 +99,12 @@ cdef extern from "../cpp/graph/Graph.h":
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
 		void stealFrom(_Graph)
+		void indexEdges() except +
+		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
-		count upperNodeIdBound() except +
+		index upperNodeIdBound() except +
+		index upperEdgeIdBound() except +
 		count degree(node u) except +
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
@@ -177,6 +181,22 @@ cdef class Graph:
 		"""
 		return Graph().setThis(new _Graph(dereference(self._this)))
 
+	def indexEdges(self):
+		"""
+		Assign integer ids to edges.
+
+		"""
+		self._this.indexEdges()
+
+	def edgeId(self, node u, node v):
+		"""
+		Returns
+		-------
+		edgeid
+			id of the edge
+		"""
+		return self._this.edgeId(u, v)
+
 	def numberOfNodes(self):
 		"""
 		Get the number of nodes in the graph.
@@ -209,6 +229,17 @@ cdef class Graph:
 			An upper bound for the node ids in the graph
 		"""
 		return self._this.upperNodeIdBound()
+
+	def upperEdgeIdBound(self):
+		"""
+		Get an upper bound for the edge ids in the graph
+
+		Returns
+		-------
+		count
+			An upper bound for the edge ids in the graph
+		"""
+		return self._this.upperEdgeIdBound()
 
 	def degree(self, u):
 		"""

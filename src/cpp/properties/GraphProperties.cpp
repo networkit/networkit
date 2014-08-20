@@ -159,7 +159,7 @@ double GraphProperties::degreeAssortativitySlower(const Graph& G, bool useWeight
 
 	// iterate over edges and accumulate
 	if (G.isWeighted() && useWeights) {
-		G.forWeightedEdges([&](node u, node v, edgeweight ew) {
+		G.forEdges([&](node u, node v, edgeweight ew) {
 			degu = G.weightedDegree(u);
 			degv = G.weightedDegree(v);
 			A += degu * degv;

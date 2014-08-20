@@ -43,7 +43,7 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const G
 	std::vector<Graph> localGraphs(nThreads, Ginit); // thread-local graphs
 
 	// iterate over edges of G and create edges in coarse graph or update edge and node weights in Gcon
-	G.parallelForWeightedEdges([&](node u, node v, edgeweight ew) {
+	G.parallelForEdges([&](node u, node v, edgeweight ew) {
 		index t = omp_get_thread_num();
 
 		node su = nodeToSuperNode[u];
@@ -56,7 +56,7 @@ std::pair<Graph, std::vector<node> > NetworKit::PartitionCoarsening::run(const G
 	timer2.start();
 	// combine local graphs
 	for (index i = 0; i < (nThreads - 1); ++i) {
-		localGraphs[i].forWeightedEdges([&](node u, node v, edgeweight ew) {
+		localGraphs[i].forEdges([&](node u, node v, edgeweight ew) {
 			localGraphs.at(i+1).increaseWeight(u, v, ew);
 		});
 	}
