@@ -443,6 +443,23 @@ TEST_F(PropertiesGTest, testDegreeAssortativity) {
 //	assortativity = GraphProperties::degreeAssortativity(cnr);
 }
 
+TEST_F(PropertiesGTest, testEffectiveDiameter) {
+	using namespace std;
+	vector<string> testInstances= {
+		"celegans_metabolic",	// 6
+		"jazz",					// 5
+		"karate",				// 5
+		"lesmis"				// 5
+	};
+
+	for (auto testInstance : testInstances) {
+		METISGraphReader reader;
+		Graph G = reader.read("input/" + testInstance + ".graph");
+		count effectiveDiameter = EffectiveDiameter::effectiveDiameter(G);
+		count exactDiameter = Diameter::exactDiameter(G);
+		EXPECT_LE(effectiveDiameter, exactDiameter);
+	}
+}
 
 
 

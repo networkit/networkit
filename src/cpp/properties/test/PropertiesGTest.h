@@ -19,6 +19,7 @@
 
 #include "../ClusteringCoefficient.h"
 #include "../CoreDecomposition.h"
+#include "../EffectiveDiameter.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../properties/GraphProperties.h"
 #include "../../io/METISGraphReader.h"
