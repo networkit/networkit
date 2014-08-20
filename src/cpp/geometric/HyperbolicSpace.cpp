@@ -220,19 +220,33 @@ double HyperbolicSpace::hyperbolicDistanceToArc(Point2D<double> query,
 }
 
 Point2D<double> HyperbolicSpace::getPointOnHyperbolicCircle(Point2D<double> hyperbolicCenter, double radius) {
-	double sqL = hyperbolicCenter.squaredLength();
-	double nom = (cosh(radius)-1)*(1-sqL)*(1-sqL);
-	double denom = 4*sqL;
-	double gamma = acos(1-nom/denom);
-	double phi, r, newphi;
-	HyperbolicSpace::cartesianToPolar(hyperbolicCenter, phi, r);
-	if (gamma + phi < 2*M_PI) {
-		newphi = gamma + phi;
+	double phi_q, r_q;
+	HyperbolicSpace::cartesianToPolar(hyperbolicCenter, phi_q, r_q);
+	double hyperbolicRadius = HyperbolicSpace::EuclideanRadiusToHyperbolic(r_q);
+	if (hyperbolicRadius < radius) {
+		//origin is part of circle, need to use other method
+		//use right triangle at origin to construct new point at phi_p, r_p
+		double phi_p, r_p;
+		phi_p = phi_q + M_PI/2;
+		if (phi_p > 2*M_PI) phi_p -= 2*M_PI;
+		double r_p_nom = (cosh(radius)-1)*(1-r_q*r_q)-2*r_q*r_q;
+		double r_p_denom = (2+(cosh(radius)-1)*(1-r_q*r_q));
+		r_p = pow(r_p_nom/r_p_denom, 0.5);
+		return HyperbolicSpace::polarToCartesian(phi_p, r_p);
 	} else {
-		assert(phi - gamma >= 0);
-		newphi = phi - gamma;
+		double sqL = hyperbolicCenter.squaredLength();
+		double nom = (cosh(radius)-1)*(1-sqL)*(1-sqL);
+		double denom = 4*sqL;
+		double gamma = acos(1-nom/denom);
+		double newphi;
+		if (gamma + phi_q < 2*M_PI) {
+			newphi = gamma + phi_q;
+		} else {
+			assert(phi_q - gamma >= 0);
+			newphi = phi_q - gamma;
+		}
+		return HyperbolicSpace::polarToCartesian(newphi, r_q);
 	}
-	return HyperbolicSpace::polarToCartesian(newphi, r);
 }
 
 void HyperbolicSpace::getEuclideanCircle(Point2D<double> hyperbolicCenter, Point2D<double> pointOnEdge, Point2D<double> &euclideanCenter, double &euclideanRadius) {

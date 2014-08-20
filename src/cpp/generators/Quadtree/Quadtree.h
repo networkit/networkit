@@ -50,28 +50,8 @@ public:
 		Point2D<double> origin(0,0);
 		vector<T> circleDenizens;
 		Point2D<double> center;
-		double hyperbolicFromOrigin = HyperbolicSpace::getHyperbolicDistance(origin, query);
-		Point2D<double> pointOnEdge;
-		if (hyperbolicFromOrigin < maxDistance) {
-			/*
-			 * TODO: move code to method
-			 */
-			//use right triangle at origin to construct new point at phi_p, r_p
-			double phi_q, r_q;
-			HyperbolicSpace::cartesianToPolar(query, phi_q, r_q);
-			double phi_p, r_p;
-			phi_p = phi_q + M_PI/2;
-			if (phi_p > 2*M_PI) phi_p -= 2*M_PI;
-			double r_p_nom = (cosh(maxDistance)-1)*(1-r_q*r_q)-2*r_q*r_q;
-			double r_p_denom = (2+(cosh(maxDistance)-1)*(1-r_q*r_q));
-			r_p = pow(r_p_nom/r_p_denom, 0.5);
-			pointOnEdge = HyperbolicSpace::polarToCartesian(phi_p, r_p);
-		} else {
-			/**
-		 	 * compute circle and polar rectangle
-		 	 */
-			pointOnEdge = HyperbolicSpace::getPointOnHyperbolicCircle(query, maxDistance);
-		}
+		Point2D<double> pointOnEdge = HyperbolicSpace::getPointOnHyperbolicCircle(query, maxDistance);
+
 		double distance = HyperbolicSpace::getHyperbolicDistance(query, pointOnEdge);
 		assert(abs(distance - maxDistance) < 0.00001);
 
@@ -123,7 +103,6 @@ public:
 		 * return them
 		 */
 		return circleDenizens;
-		//return root.getCloseElements(query, maxDistance);
 	}
 
 	count size() {
