@@ -51,6 +51,38 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	return generate(&angles, &radii, r, R*distanceFactor);
 }
 
+double HyperbolicGenerator::expectedNumberOfEdges(count n, double distanceFactor) {
+	double R = acosh((double)n/(2*M_PI)+1);
+	double euR = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	double radius = R*distanceFactor;
+	double epsilon = 0.00001;
+	double upperlimit =-log(1-euR);
+
+	//numeric integration
+	double stepsize = 0.01;
+	double result;
+	for (double step = 0; step < upperlimit; step += stepsize) {
+		double r_a = 1-(exp(-step));
+		double r_a_next = 1-(exp(-(step+stepsize)));
+		double stSq = r_a*r_a;
+		double r_c = (2*r_a)/((1-stSq)*(cosh(radius)-1+2/(1-stSq)));
+		double euRadius = sqrt(r_c*r_c - (2*stSq - (1-stSq)*(cosh(radius)-1))/((1-stSq)*(cosh(radius)-1+2/(1-stSq))));
+		double circleSpace;
+		if (r_c*r_c-euRadius*euRadius+1 <= 2*r_c) {
+			circleSpace = 0;
+		} else {
+			circleSpace = HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(r_c,euRadius,euR);
+		}
+		if (!(circleSpace == circleSpace)) circleSpace = 0;//careful, this will behave differently in Debug mode and optimized
+		assert(circleSpace <= n+epsilon);
+		double outerSpace = 2*M_PI*(cosh(HyperbolicSpace::EuclideanRadiusToHyperbolic(std::min(r_a_next,euR)))-1);
+		double innerSpace = 2*M_PI*(cosh(HyperbolicSpace::EuclideanRadiusToHyperbolic(r_a))-1);
+		result += (outerSpace-innerSpace)*circleSpace;
+		assert(result == result);
+	}
+	return result / 2;
+}
+
 Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance) {
 	index n = angles->size();
 	assert(radii->size() == n);

@@ -23,6 +23,7 @@ public:
 	HyperbolicGenerator();
 	HyperbolicGenerator(count n, double factor = 1, double alpha = 1, double stretchradius = 1);
 	virtual ~HyperbolicGenerator();
+	static double expectedNumberOfEdges(count n, double distanceFactor);
 	static Graph generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance);
 	Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1);
 	Graph generate();
