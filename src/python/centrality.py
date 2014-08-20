@@ -1,8 +1,4 @@
-<<<<<<< local
 from _NetworKit import Betweenness, Betweenness2, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness
-=======
-from _NetworKit import Betweenness, Betweenness2, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2
->>>>>>> other
 
 from algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
 
