@@ -35,8 +35,8 @@ class SqliteResultWriter():
 			diameter integer,
 			graphStructuralRandMeasure real,
 			nmi real,
-			keptEdgesPercent real,
-			keptNodesPercent real,
+			edgeRatio real,
+			nodeRatio real,
 			numEdges integer,
 			numNodes integer,
 			runningTime real)''')
@@ -73,7 +73,7 @@ class SqliteResultWriter():
 			#Properties
 			propertyNames = ["clusteringCoefficient", "cpvDistanceFromOriginal",
 				"cpvDistanceFromOriginalNormalized", "degreeDistCoefficient", "diameter",
-				"graphStructuralRandMeasure", "nmi", "keptEdgesPercent", "keptNodesPercent",
+				"graphStructuralRandMeasure", "nmi", "edgeRatio", "nodeRatio",
 				"numEdges", "numNodes", "runningTime"]
 			values = [graphId, algorithmId] + list(map(lambda x: getattr(backbone, x), propertyNames))
 			db.execute('''INSERT INTO properties VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', tuple(values))

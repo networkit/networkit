@@ -38,9 +38,9 @@ class BackboneAlgorithm:
 class GraphProperties:
 	def __init__(self, algorithmName):
 		self.numNodes = 0
-		self.keptNodesPercent = 0
+		self.nodeRatio= 0.0
 		self.numEdges = 0
-		self.keptEdgesPercent = 0
+		self.edgeRatio = 0.0
 		self.graphStructuralRandMeasure = 0
 		self.nmi = 0
 		self.clusteringCoefficient = 0
@@ -88,9 +88,9 @@ def applyBackboneAlgorithm(graph, algorithm):
 	#Basic graph properties
 	bprops.numNodes = backbone.numberOfNodes()
 	bprops.numEdges = backbone.numberOfEdges()
-	bprops.keptNodesPercent = (bprops.numNodes / graph.numberOfNodes()) * 100.0
-	bprops.keptEdgesPercent = (bprops.numEdges / graph.numberOfEdges()) * 100.0
-	debugInfo("Backbone edge percentage: " + str(bprops.keptEdgesPercent))
+	bprops.nodeRatio = (bprops.numNodes / graph.numberOfNodes())
+	bprops.edgeRatio = (bprops.numEdges / graph.numberOfEdges())
+	debugInfo("Node ratio " + str(bprops.nodeRatio) + " / Edge ratio " + str(bprops.edgeRatio))
 
 	debugInfo("Detecting communities")
 	if backbone.numberOfEdges() > 0:
