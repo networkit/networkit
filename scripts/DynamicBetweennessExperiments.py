@@ -79,7 +79,7 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		t = stopwatch.Timer()
 		bc.run()
 		x = t.stop()
-		timesApprBc.append(x)
+		timesBc.append(x)
 		print ("Exact BC")
 		print (x)
 		print ("Speedup Dyn BC (with preds)")
@@ -88,7 +88,7 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		t = stopwatch.Timer()
 		apprBc.run()
 		x = t.stop()
-		timesBc.append(x)
+		timesApprBc.append(x)
 		print ("ApprBC")
 		print (x)
 		# update the betweenness with the dynamic approximated algorithm
@@ -108,14 +108,14 @@ def test(G, nEdges, batchSize, epsilon, delta):
 
 if __name__ == "__main__":
 	setNumberOfThreads(1)
-	size = 100000
+	size = 10000
 	G = generators.DorogovtsevMendesGenerator(size).generate()
 	cc = properties.ConnectedComponents(G)
 	cc.run()
 	if (cc.numberOfComponents() == 1) :
-		nEdges = 1000
+		nEdges = 100
 		batchSize = 10
-		epsilon = 0.05
+		epsilon = 0.1
 		delta = 0.1
 		df = test(G, nEdges, batchSize, epsilon, delta)
 		df.to_csv("results/unweighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
