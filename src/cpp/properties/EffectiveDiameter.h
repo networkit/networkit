@@ -24,9 +24,7 @@ public:
 	 * @param r the amount of bits that are added to the length of the bitmask to improve the accuracy
 	 * @return the approximated effective diameter of the graph
 	 */
-	static double effectiveDiameter(const Graph& G, const double ratio, const count k, const count r);
-	static double effectiveDiameter(const Graph& G, const double ratio);
-	static double effectiveDiameter(const Graph& G);
+	static double effectiveDiameter(const Graph& G, const double ratio=0.9, const count k=64, const count r=7);
 
 	/**
 	 * computes the effective diameter exactly
@@ -34,8 +32,7 @@ public:
 	 * @param ratio the ratio of nodes that should be connected (0,1]
 	 * @return the exact effective diameter of the graph
 	 */
-	static double effectiveDiameterExact(const Graph& G, const double ratio);
-	static double effectiveDiameterExact(const Graph& G);
+	static double effectiveDiameterExact(const Graph& G, const double ratio=0.9);
 
 	/**
 	 * computes the hop-plot of a given graph
@@ -46,7 +43,7 @@ public:
 	 * @param r the amount of bits that are added to the length of the bitmask to improve the accuracy
 	 * @return the approximated hop-plot of the graph
 	 */
-	static std::map<count, double> hopPlot(const Graph& G, const count maxDistance, const count k, const count r);
+	static std::map<count, double> hopPlot(const Graph& G, const count maxDistance=0, const count k=64, const count r=7);
 
 };
 

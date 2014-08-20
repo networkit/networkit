@@ -15,15 +15,6 @@
 #include <omp.h>
 
 namespace NetworKit {
-
-double EffectiveDiameter::effectiveDiameter(const Graph& G) {
-	return EffectiveDiameter::effectiveDiameter(G, 0.9, 64, 7);
-}
-
-double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio) {
-	return EffectiveDiameter::effectiveDiameter(G, ratio, 64, 7);
-}
-
 /*
 this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
 in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
@@ -129,10 +120,6 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 		h++;
 	}
 	return effectiveDiameter/G.numberOfNodes();
-}
-
-double EffectiveDiameter::effectiveDiameterExact(const Graph& G) {
-	return EffectiveDiameter::effectiveDiameterExact(G, 0.9);
 }
 
 /*
