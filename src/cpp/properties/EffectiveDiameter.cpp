@@ -34,15 +34,15 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 	std::vector<std::vector<unsigned int> > mCurr;
 	// saves all k bitmasks for every node of the previous iteration
 	std::vector<std::vector<unsigned int> > mPrev;
-	// the list of nodes that are already connected to all other nodes
+	// the list of nodes that are already connected to enough other nodes
 	std::vector<node> finishedNodes;
 	// the maximum possible bitmask based on the random initialization of all k bitmasks
 	std::vector<count> highestCount;
-	// the amount of nodes that need to be connected to all others nodes
+	// the amount of nodes that a node needs to be connected to
 	count threshold = (count) (ceil(ratio * G.numberOfNodes()));
-	// the current distance of the neighborhoods
+	// the current step range
 	count h = 1;
-	// the amount of nodes that are connected to all other nodes (|finishedNodes|)
+	// the number of nodes that are connected to all other nodes (|finishedNodes|)
 	count numberOfFinishedNodes = 0;
 	// sums over the number of edges needed to reach 90% of all other nodes
 	double effectiveDiameter = 0;
@@ -156,7 +156,7 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ra
 	double effectiveDiameter = 0;
 	// the current distance of the neighborhoods
 	count h = 1;
-	// number of nodes that need to be connected with all other nodes
+	// the number of nodes that a node needs to be connected to
 	count threshold = (uint64_t) (ceil(ratio * G.numberOfNodes()) + 0.5);
 
 	// initialize all nodes
