@@ -86,12 +86,9 @@ Graph GraphBuilder::directSwap() {
 	Graph G(n, weighted, directed);
 	G.outEdges.swap(halfEdges);
 	G.outEdgeWeights.swap(halfEdgeWeights);
-	//count globalselfloops = 0;
 	#pragma omp parallel for
 	for (node v = 0; v < n; v++) {
 		G.outDeg[v] = G.outEdges[v].size();
-		//count localselfloops = std::count(G.outEdges[v].begin(), G.outEdges[v].end(), v);
-		//globalselfloops += localselfloops;
 	}
 	correctNumberOfEdges(G, selfloops);
 
