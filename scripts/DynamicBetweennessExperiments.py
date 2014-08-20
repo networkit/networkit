@@ -95,7 +95,7 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		t = stopwatch.Timer()
 		dynApprBc.update(batch)
 		y = t.stop()
-		timesDynApprBc.append(x)
+		timesDynApprBc.append(y)
 		print ("Speedup DynApprBC (with preds)")
 		print (x/y)
 	a = pd.Series(timesBc)
