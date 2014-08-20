@@ -9,6 +9,7 @@
 #define EFFECTIVEDIAMETER_H_
 
 #include "../graph/Graph.h"
+#include <map>
 
 namespace NetworKit {
 
@@ -24,6 +25,7 @@ public:
 	 * @param r the amount of bits that are added to the length of the bitmask to improve the accuracy
 	 * @return the approximated effective diameter of the graph
 	 */
+	// FIXME: use default parameters instead of multiple functions!
 	static double effectiveDiameter(const Graph& G, const double ratio, const count k, const count r);
 	static double effectiveDiameter(const Graph& G, const double ratio);
 	static double effectiveDiameter(const Graph& G);
@@ -34,6 +36,7 @@ public:
 	 * @param ratio the ratio of nodes that should to be connected (0,1]
 	 * @return the exact effective diameter of the graph
 	 */
+	// FIXME: use default parameters instead of multiple functions!
 	static double effectiveDiameterExact(const Graph& G, const double ratio);
 	static double effectiveDiameterExact(const Graph& G);
 

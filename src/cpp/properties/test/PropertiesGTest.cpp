@@ -459,6 +459,8 @@ TEST_F(PropertiesGTest, testEffectiveDiameter) {
 		count exactDiameter = Diameter::exactDiameter(G);
 		EXPECT_LE(effectiveDiameter, exactDiameter);
 	}
+
+	// TODO: write more tests - KONECT database contains values for effective diameter, use them to test your results
 }
 
 

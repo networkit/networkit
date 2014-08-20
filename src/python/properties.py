@@ -211,6 +211,7 @@ def properties(G, settings):
 
 	# effective diameter
 	if nComponents == 1:
+		logging.info("[...] calculating effective diameter")
 		effDia = EffectiveDiameter.effectiveDiameter(G, ratio=0.9, k=64, r=7)
 	else:
 		effDia = None
@@ -287,7 +288,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 		["connected components", props["nComponents"]],
 		["size of largest component", props["sizeLargestComponent"]],
 		["estimated diameter range", str(props["dia"])],
-		["estimated effective diameter", str(props["effDia"])],
+		["estimated effective diameter", str(props["effDia"])],	# FIXME: show at most 6 decimal points
 	]
 
 	communityStructure = [
@@ -337,7 +338,7 @@ def printDegreeHistogram(G, nbins=25):
 
 	(labels, hist) = compressHistogram(hist, nbins)
 	termgraph.graph(labels, hist)
-	
+
 def showHopPlot(G):
 	""" Prints the hop-plot"""
 	if nComponents == 1:

@@ -49,6 +49,7 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 	// the estimated number of connected nodes
 	double estimatedConnectedNodes;
 
+	// FIXME: why not use Aux::Random like the rest of NetworKit?
 	double random;
 	srand (time(NULL));
 
@@ -62,14 +63,14 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 		finishedNodes[v] = 0;
 		std::vector<unsigned int> tmp;
 		for (count j = 0; j < k; j++) {
-			tmp.push_back(0);
+			tmp.push_back(0); // FIXME: looks strange - are you just initializing a vector here? you don't need a loop for that
 		}
 		mCurr.push_back(tmp);
 		mPrev.push_back(tmp);
 
 		// set one bit in each bitmask with probability P(bit i=1) = 0.5^(i+1), i=0,..
 		for (count j = 0; j < k; j++) {
-			random = (rand()/(double)(RAND_MAX));
+			random = (rand()/(double)(RAND_MAX)); // FIXME: why not use Aux::Random like the rest of NetworKit?
 			for (count i = 0; i < lengthOfBitmask+r; i++) {
 				if (random > pow(0.5,i+1)) {
 					mPrev[v][j] |= 1 << i;
@@ -110,7 +111,7 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 				// calculate the average least bit number that has not been set over all parallel approximations
 				b = b / k;
 				// calculate the estimated number of neighbors
-				estimatedConnectedNodes = (pow(2,b) / 0.77351);
+				estimatedConnectedNodes = (pow(2,b) / 0.77351); // FIXME: documentation missing: what is this magic number 0.77351 ?
 
 				// check whether all k bitmask for this node have reached their highest possible value
 				bool nodeFinished = true;
@@ -162,7 +163,7 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ra
 	G.forNodes([&](node v){
 		std::vector<bool> connectedNodes;
 		// initialize n entries with value 0
-		connectedNodes.assign(G.numberOfNodes(),0);
+		connectedNodes.assign(G.numberOfNodes(),0); // FIXME: initializing such vector with G.numberOfNodes() instead of G.upperNodeIdBound() is a bug that will lead to a crash when nodes have been deleted from the graph
 		// the node is always connected to itself
 		connectedNodes[v] = 1;
 		finishedNodes.push_back(v);
@@ -212,6 +213,7 @@ this is a variaton of the ANF algorithm presented in the paper "A Fast and Scala
 in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 */
 std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count maxDistance, const count k, const count r) {
+	// FIXME: this looks like a lot of code duplication, which is bad in most cases (errors need to be fixed multiple times...) - could it have been avoided?
 	//the returned hop-plot
 	std::map<count, double> hopPlot;
 	// the length of the bitmask where the number of connected nodes is saved
@@ -233,6 +235,7 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 	// the sum over all estimated connected nodes
 	double totalConnectedNodes;
 
+	// FIXME: why not use Aux::Random like the rest of NetworKit?
 	double random;
 	srand (time(NULL));
 
