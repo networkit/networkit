@@ -24,15 +24,19 @@ Matching LocalMaxMatcher::run(Graph& graph) {
 	G.forEdges([&](node u, node v) { // TODO: parallel
 		// check neighborhood if both vertices are unmatched
 		if (! M.isMatched(u) && ! M.isMatched(v)) {
-			edgeweight escore = (attrId == none) ?
-					(G.weight(u, v)):
-					(G.attribute_double(u, v, attrId));
+			edgeweight escore = 0.0;
+			// FIXME: update to new edge attribute system
+			// edgeweight escore = (attrId == none) ?
+			// 		(G.weight(u, v)):
+			// 		(G.attribute_double(u, v, attrId));
 			bool localMax = true;
 
 			G.forEdgesOf(u, [&](node u, node x) {
-				edgeweight otherScore = (attrId == none) ?
-						(G.weight(u, x)):
-						(G.attribute_double(u, x, attrId));
+				edgeweight otherScore = 0.0;
+				// FIXME: update to new edge attribute system
+				// edgeweight otherScore = (attrId == none) ?
+				// 		(G.weight(u, x)):
+				// 		(G.attribute_double(u, x, attrId));
 
 				if (otherScore > escore) {
 					localMax = false;
@@ -41,9 +45,11 @@ Matching LocalMaxMatcher::run(Graph& graph) {
 			});
 
 			G.forEdgesOf(v, [&](node v, node x) {
-				edgeweight otherScore = (attrId == none) ?
-						(G.weight(v, x)):
-						(G.attribute_double(v, x, attrId));
+				edgeweight otherScore = 0.0;
+				// FIXME: update to new edge attribute system
+				// edgeweight otherScore = (attrId == none) ?
+				// 		(G.weight(v, x)):
+				// 		(G.attribute_double(v, x, attrId));
 
 				if (otherScore > escore) {
 					localMax = false;
