@@ -245,6 +245,11 @@ edgeid Graph::edgeId(node u, node v) const {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 	index i = indexInOutEdgeArray(u, v);
+
+	if (i == none) {
+		throw std::runtime_error("Edge does not exist");
+	}
+
 	edgeid id = outEdgeIds[u][i];
 	return id;
 }
