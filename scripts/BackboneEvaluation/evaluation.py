@@ -1,6 +1,6 @@
 from NetworKit import *
-from scipy.spatial import distance
 import time
+import parameterization
 
 # -----------------------------------------------------------------------
 # The purpose of the following script is to automatically apply a set
@@ -43,19 +43,20 @@ def executeTask(task):
 
 	for igraph in task.graphs:
 		graph = readGraph(igraph.path, igraph.format)
+		graph.indexEdges()
 
 		for ialgorithm in task.algorithms:
 			#Calculate the attribute that is characteristic for that algorithm.
 			attribute = ialgorithm.getPrecalcAttribute(graph)
 
-			if not G.isWeighted() and inputAlgorithm.requiresWeight():
+			if not graph.isWeighted() and ialgorithm.requiresWeight():
 				print("Skipping ", igraph.name, " for ", ialgorithm.getName(), " (requires weighted graph)")
 				continue
 
 			for iedgeRatio in task.edgeRatios:
 				#Parameterize the algorithm in such a way that we meet the expected edge ratio
 				algorithmParameter = parameterization.parameterize(graph, ialgorithm, iedgeRatio)
-				backbone = getPrecalcBackbone(graph, attribute, algorithmParameter)
+				backbone = ialgorithm.getPrecalcBackbone(graph, attribute, algorithmParameter)
 
 				#Calculate all desired properties of the backbone
 				propertiesDict = {}
@@ -64,5 +65,5 @@ def executeTask(task):
 					propertiesDict = dict(list(propertiesDict.items()) + list(d.items()))
 
 				taskResult.data.append(propertiesDict)
-				
+
 	return taskResult
