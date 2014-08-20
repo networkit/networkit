@@ -19,7 +19,7 @@ public:
 	 * approximates the effective diameter of a given graph
 	 * the effective diameter equals the number of edges on average to reach 90% of all other nodes
 	 * @param G the given graph
-	 * @param ratio the ratio of nodes that should to be connected (0,1]
+	 * @param ratio the ratio of nodes that should be connected (0,1]
 	 * @param k the number of parallel approximations to get a more robust result
 	 * @param r the amount of bits that are added to the length of the bitmask to improve the accuracy
 	 * @return the approximated effective diameter of the graph
@@ -31,7 +31,7 @@ public:
 	/**
 	 * computes the effective diameter exactly
 	 * @param G the given graph
-	 * @param ratio the ratio of nodes that should to be connected (0,1]
+	 * @param ratio the ratio of nodes that should be connected (0,1]
 	 * @return the exact effective diameter of the graph
 	 */
 	static double effectiveDiameterExact(const Graph& G, const double ratio);
