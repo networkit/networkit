@@ -18,6 +18,7 @@ namespace NetworKit {
 class GraphBuilder {
 protected:
 	count n; //!< current number of nodes
+	count selfloops; //!< currently encountered number of self loops
 
 	bool weighted; //!< true if the graph will be weighted, false otherwise
 	bool directed; //!< true if the graph will be directed, false otherwise
