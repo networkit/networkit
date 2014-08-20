@@ -75,11 +75,12 @@ void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
 }
 
 Graph GraphBuilder::directSwap() {
-	assert(!directed);
+	if (directed) throw std::runtime_error("Cannot swap directly in directed Graph.");
 	Graph G(n, weighted, directed);
 	G.outEdges.swap(halfEdges);
 	G.outEdgeWeights.swap(halfEdgeWeights);
 	count globalselfloops = 0;
+	#pragma omp parallel for reduction(+:globalselfloops)
 	for (node v = 0; v < n; v++) {
 		G.outDeg[v] = G.outEdges[v].size();
 		count localselfloops = std::count(G.outEdges[v].begin(), G.outEdges[v].end(), v);
@@ -292,10 +293,12 @@ void GraphBuilder::reset() {
 }
 
 void GraphBuilder::correctNumberOfEdges(Graph& G, count numberOfSelfLoops) {
-	G.m = 0;
-	G.forNodes([&](node v) {
-		G.m += G.degree(v);
-	});
+	count edges = 0;
+	#pragma omp parallel for reduction(+:edges)
+	for (node v = 0; v < G.z; v++) {
+		edges += G.degree(v);
+	}
+	G.m = edges;
 	if (!G.isDirected()) {
 		// self loops are just counted once
 		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;

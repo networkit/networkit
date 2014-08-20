@@ -153,6 +153,7 @@ private:
 	template <typename T>
 	static void copyAndClear(std::vector<T>& source, std::vector<T>& target);
 	static void correctNumberOfEdges(Graph& G, count numberOfSelfLoops);
+	static bool checkConsistency(Graph& G);
 };
 
 template <typename T>
