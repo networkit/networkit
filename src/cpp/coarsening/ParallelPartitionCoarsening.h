@@ -18,12 +18,13 @@ namespace NetworKit {
  * @ingroup coarsening
  */
 class ParallelPartitionCoarsening: public NetworKit::GraphCoarsening {
-
 public:
+	ParallelPartitionCoarsening(bool useGraphBuilder = false);
 
 	virtual std::pair<Graph, std::vector<node> > run(const Graph& G, const Partition& zeta);
 
-
+private:
+	bool useGraphBuilder;
 };
 
 } /* namespace NetworKit */

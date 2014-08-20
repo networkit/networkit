@@ -28,7 +28,7 @@ void ConnectedComponents::run() {
 		if (component[u] == none) {
 			component.setUpperBound(numComponents+1);
 			index c = numComponents;
-			G.BFSfrom(u, [&](node v, count dist) {
+			G.BFSfrom(u, [&](node v) {
 				component[v] = c;
 			});
 			assert (component[u] != none);
