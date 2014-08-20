@@ -20,7 +20,8 @@ class Task:
 class TaskResult:
 	def __init__(self, task):
 		self.task = task
-		self.data = [] #Set of dictionaries
+		self.data = [] 				#Set of dictionaries containing key/value pairs
+		self.columns = []		#Set containing the keys that appear in data. #TODO
 
 #Information about a graph; used as input parameter
 class GraphDescription:
@@ -34,12 +35,11 @@ class OriginalGraph:
 	def calculate(self, graph):
 		return graph
 
-
 # Calculates all backbone properties for all graphs for all algorithms.
 def executeTask(task):
 	taskResult = TaskResult(task)
-	data = [] 				#Set of dictionaries containing key/value pairs
-	columns = [] 		#Set containing the keys that appear in data.
+	taskResult.data = []
+	taskResult.columns = []
 
 	for igraph in task.graphs:
 		graph = readGraph(igraph.path, igraph.format)
@@ -55,15 +55,14 @@ def executeTask(task):
 			for iedgeRatio in task.edgeRatios:
 				#Parameterize the algorithm in such a way that we meet the expected edge ratio
 				algorithmParameter = parameterization.parameterize(graph, ialgorithm, iedgeRatio)
+				backbone = getPrecalcBackbone(graph, attribute, algorithmParameter)
 
+				#Calculate all desired properties of the backbone
+				propertiesDict = {}
+				for iproperty in task.properties:
+					d = iproperty.getValues(graph, backbone)
+					propertiesDict = dict(list(propertiesDict.items()) + list(d.items()))
 
-	#Apply the algorithms!
-	for algorithm in task.algorithms:
-		print("[Applying algorithm '", algorithm.name, "' to graph '", task.graph.name , "']")
-		backbone, bprops = applyBackboneAlgorithm(graph, algorithm)
-		taskResult.backboneProperties.append(bprops)
-
-		#Write output
-		writeBackboneFile(backbone, task, algorithm)
-
+				taskResult.data.append(propertiesDict)
+				
 	return taskResult
