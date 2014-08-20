@@ -27,6 +27,8 @@ public:
 	 */
 	SimmelianOverlapAttributizer(count maxRank);
 
+	~SimmelianOverlapAttributizer() = default;
+
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
 private:
