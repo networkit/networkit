@@ -71,6 +71,8 @@ public:
 
 	virtual std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute) = 0;
 
+	virtual ~SimmelianAttributizer() = default;
+
 protected:
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const std::vector<int>& triangles);
 

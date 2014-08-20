@@ -29,6 +29,8 @@ public:
 	 */
 	MultiscaleAttributizer();
 
+	~MultiscaleAttributizer() = default;
+
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<double>& attribute);
 
 private:

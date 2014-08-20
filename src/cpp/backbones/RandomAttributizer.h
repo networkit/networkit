@@ -25,6 +25,8 @@ public:
 	 */
 	RandomAttributizer();
 
+	~RandomAttributizer() = default;
+
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
 };

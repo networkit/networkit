@@ -3849,6 +3849,9 @@ cdef class SimmelianBackboneParametric:
 	def __cinit__(self, maxRank, minOverlap):
 		self._this = new _SimmelianBackboneParametric(maxRank, minOverlap)
 
+	def __dealloc__(self):
+		del self._this
+
 cdef extern from "../cpp/backbones/Backbones.h":
 	cdef cppclass _SimmelianBackboneNonParametric "NetworKit::SimmelianBackboneNonParametric":
 		_SimmelianBackboneNonParametric(double jaccardTreshold) except +
@@ -3869,6 +3872,8 @@ cdef class SimmelianBackboneNonParametric:
 	def __cinit__(self, jaccardThreshold):
 		self._this = new _SimmelianBackboneNonParametric(jaccardThreshold)
 
+	def __dealloc__(self):
+		del self._this
 
 cdef extern from "../cpp/backbones/Backbones.h":
 	cdef cppclass _MultiscaleBackbone "NetworKit::MultiscaleBackbone":
@@ -3886,6 +3891,9 @@ cdef class MultiscaleBackbone:
 
 	def __cinit__(self, double alpha):
 		self._this = new _MultiscaleBackbone(alpha)
+
+	def __dealloc__(self):
+		del self._this
 
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
@@ -3906,6 +3914,9 @@ cdef class LocalSimilarityBackbone:
 
 	def __cinit__(self, double e):
 		self._this = new _LocalSimilarityBackbone(e)
+
+	def __dealloc__(self):
+		del self._this
 
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
@@ -3928,6 +3939,9 @@ cdef class SimmelianMultiscaleBackbone:
 	def __cinit__(self, double e):
 		self._this = new _SimmelianMultiscaleBackbone(e)
 
+	def __dealloc__(self):
+		del self._this
+
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
 
@@ -3948,6 +3962,9 @@ cdef class RandomBackbone:
 
 	def __cinit__(self, double e):
 		self._this = new _RandomBackbone(e)
+
+	def __dealloc__(self):
+		del self._this
 
 	def calculate(self, Graph G):
 		return Graph().setThis(self._this._calculate(dereference(G._this)))
@@ -3970,6 +3987,9 @@ cdef class ChibaNishizekiTriangleCounter:
 	def __cinit__(self):
 		self._this = new _ChibaNishizekiTriangleCounter()
 
+	def __dealloc__(self):
+		del self._this
+
 	def getAttribute(self, Graph G):
 		return  self._this.getAttribute(dereference(G._this), range(0))
 
@@ -3984,6 +4004,9 @@ cdef class SimmelianJaccardAttributizer:
 
 	def __cinit__(self):
 		self._this = new _SimmelianJaccardAttributizer()
+
+	def __dealloc__(self):
+		del self._this
 
 	def getAttribute(self, Graph G, vector[int] triangles):
 		return self._this.getAttribute(dereference(G._this), triangles)
@@ -4000,6 +4023,9 @@ cdef class SimmelianOverlapAttributizer:
 	def __cinit__(self, maxRank):
 		self._this = new _SimmelianOverlapAttributizer(maxRank)
 
+	def __dealloc__(self):
+		del self._this
+
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(dereference(G._this), a)
 
@@ -4014,6 +4040,9 @@ cdef class MultiscaleAttributizer:
 
 	def __cinit__(self):
 		self._this = new _MultiscaleAttributizer()
+
+	def __dealloc__(self):
+		del self._this
 
 	def getAttribute(self, Graph G, vector[double] a):
 		return self._this.getAttribute(dereference(G._this), a)
@@ -4030,6 +4059,9 @@ cdef class RandomAttributizer:
 	def __cinit__(self):
 		self._this = new _RandomAttributizer()
 
+	def __dealloc__(self):
+		del self._this
+
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(dereference(G._this), a)
 
@@ -4045,6 +4077,9 @@ cdef class LocalSimilarityAttributizer:
 	def __cinit__(self):
 		self._this = new _LocalSimilarityAttributizer()
 
+	def __dealloc__(self):
+		del self._this
+
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(dereference(G._this), a)
 
@@ -4058,6 +4093,9 @@ cdef class GlobalThresholdFilter:
 
 	def __cinit__(self, double e, bool above):
 		self._this = new _GlobalThresholdFilter(e, above)
+
+	def __dealloc__(self):
+		del self._this
 
 	def calculate(self, Graph G, vector[double] a):
 		return Graph().setThis(self._this._calculate(dereference(G._this), a))

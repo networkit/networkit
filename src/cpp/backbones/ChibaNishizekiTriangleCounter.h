@@ -21,6 +21,7 @@ class ChibaNishizekiTriangleCounter : public AttributeGenerator<int, int> {
 public:
 
 	std::vector<int> getAttribute(const Graph& graph, const std::vector<int>& attribute);
+	~ChibaNishizekiTriangleCounter() = default;
 
 private:
 	void removeNode(Graph& graph, node u);
