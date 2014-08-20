@@ -10,6 +10,7 @@
 #include <math.h>
 #include <assert.h>
 
+#include "../graph/GraphBuilder.h"
 #include "HyperbolicGenerator.h"
 #include "Quadtree/Quadtree.h"
 #include "../auxiliary/Random.h"
@@ -54,7 +55,7 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	index n = angles->size();
 	assert(radii->size() == n);
 	Quadtree<index> quad(R);
-	Graph result(n, false);
+	GraphBuilder result(n, false, false, true);
 	for (index i = 0; i < n; i++) {
 		assert(radii->at(i) < R);
 		quad.addContent(i, angles->at(i), radii->at(i));
@@ -66,8 +67,8 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	for (index i = 0; i < n; i++) {
 			vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles->at(i), radii->at(i)), thresholdDistance);
 			for (index j : near) {
-				if (i != j) {//we only want to add the edges once for each pair
-						result.addHalfEdge(i,j);
+				if (i != j) {
+						result.addEdge(i,j);
 				}
 			}
 
@@ -75,12 +76,11 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 				#pragma omp critical (progress)//that doesn't make any sense, creating the block every time and only printing every 200th iterations
 				{
 					progress.signal(i);
-					TRACE("total edges: ", result.totalEdgeWeight());
 				}
 			}
 		}
 
-	return result;
+	return result.toGraph(true);
 }
 
 

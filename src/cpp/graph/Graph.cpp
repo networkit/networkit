@@ -444,37 +444,6 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 	}
 }
 
-/*
- * this is used for parallelization of graph generators
- * when calling addHalfEdge(u,v), you must also call addHalfEdge(v,u)
- */
-void Graph::addHalfEdge(node u, node v, edgeweight ew) {
-	assert (u < z);
-	assert (exists[u]);
-	assert (v < z);
-	assert (exists[v]);
-
-	if (u < v)	{
-		#pragma omp atomic
-			m++; // increase number of edges
-	}
-
-	outDeg[u]++;
-	outEdges[u].push_back(v);
-	assert(!directed);
-	assert(u != v);
-
-	if (weighted) {
-		outEdgeWeights[u].push_back(ew);
-	}
-
-	// loop over all attributes, setting default attr
-	for (index attrId = 0; attrId < edgeMaps_double.size(); ++attrId) {
-		double defaultAttr = edgeAttrDefaults_double[attrId];
-		edgeMaps_double[attrId][u].push_back(defaultAttr);
-	}
-}
-
 void Graph::removeEdge(node u, node v) {
 	assert (u < z);
 	assert (exists[u]);
@@ -730,23 +699,21 @@ std::vector<node> Graph::neighbors(node u) const {
 	return neighbors;
 }
 
-bool Graph::consistencyCheck() const {
+bool Graph::checkConsistency() const {
 	// check for multi-edges
 	std::vector<node> lastSeen(z, none);
-	bool multiEdge = false;
-	auto multiEdgeDetected = [&multiEdge]() { return !multiEdge; };
-	forNodesWhile(multiEdgeDetected, [&](node v) {
+	bool noMultiEdges = true;
+	auto noMultiEdgesDetected = [&noMultiEdges]() { return noMultiEdges; };
+	forNodesWhile(noMultiEdgesDetected, [&](node v) {
 		forNeighborsOf(v, [&](node u) {
 			if (lastSeen[u] == v) {
-				multiEdge = true;
+				noMultiEdges = false;
 			}
 			lastSeen[u] = v;
 		});
 	});
 
-	//TODO: check consistency with half-edges
-
-	return !multiEdge;
+	return noMultiEdges;
 }
 
 } /* namespace NetworKit */

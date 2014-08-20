@@ -359,7 +359,7 @@ TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 	Graph G = generator.generate();
 	EXPECT_EQ(n, G.numberOfNodes());
 	EXPECT_FALSE(G.isEmpty());
-	EXPECT_TRUE(G.consistencyCheck());
+	EXPECT_TRUE(G.checkConsistency());
 
 	count nPairs = (n * (n-1)) / 2;
 	count nEdges = G.numberOfEdges();
@@ -637,7 +637,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	HyperbolicGenerator gen(n,1);
 	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_TRUE(G.consistencyCheck());
+	EXPECT_TRUE(G.checkConsistency());
 	ConnectedComponents cc(G);
 	cc.run();
 	EXPECT_EQ(cc.numberOfComponents(),1);

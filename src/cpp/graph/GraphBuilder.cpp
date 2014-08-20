@@ -12,13 +12,16 @@
 
 namespace NetworKit {
 
-GraphBuilder::GraphBuilder(count n, bool weighted, bool directed) :
+GraphBuilder::GraphBuilder(count n, bool weighted, bool directed, bool directSwap) :
 	n(n),
+	selfloops(0),
 	weighted(weighted),
 	directed(directed),
+	usedirectswap(directSwap),
 	halfEdges(n),
 	halfEdgeWeights(weighted ? n : 0)
 {
+	if (directed && directSwap) throw std::runtime_error("Cannot use direct swap in directed graph.");
 }
 
 index GraphBuilder::indexHalfEdgeArray(node u, node v) const {
@@ -43,6 +46,10 @@ void GraphBuilder::addEdge(node u, node v, edgeweight ew) {
 	halfEdges[u].push_back(v);
 	if (weighted) {
 		halfEdgeWeights[u].push_back(ew);
+	}
+	if (u == v) {
+	#pragma omp atomic
+		selfloops++;
 	}
 }
 
@@ -72,6 +79,24 @@ void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
 	} else {
 		addEdge(u, v, ew);
 	}
+}
+
+Graph GraphBuilder::directSwap() {
+	if (directed) throw std::runtime_error("Cannot swap directly in directed Graph.");
+	Graph G(n, weighted, directed);
+	G.outEdges.swap(halfEdges);
+	G.outEdgeWeights.swap(halfEdgeWeights);
+	//count globalselfloops = 0;
+	#pragma omp parallel for
+	for (node v = 0; v < n; v++) {
+		G.outDeg[v] = G.outEdges[v].size();
+		//count localselfloops = std::count(G.outEdges[v].begin(), G.outEdges[v].end(), v);
+		//globalselfloops += localselfloops;
+	}
+	correctNumberOfEdges(G, selfloops);
+
+	reset();
+	return G;
 }
 
 Graph GraphBuilder::toGraphParallel() {
@@ -269,15 +294,18 @@ Graph GraphBuilder::toGraphSequential() {
 
 void GraphBuilder::reset() {
 	n = 0;
+	selfloops = 0;
 	halfEdges.clear();
 	halfEdgeWeights.clear();
 }
 
 void GraphBuilder::correctNumberOfEdges(Graph& G, count numberOfSelfLoops) {
-	G.m = 0;
-	G.forNodes([&](node v) {
-		G.m += G.degree(v);
-	});
+	count edges = 0;
+	#pragma omp parallel for reduction(+:edges)
+	for (node v = 0; v < G.z; v++) {
+		edges += G.degree(v);
+	}
+	G.m = edges;
 	if (!G.isDirected()) {
 		// self loops are just counted once
 		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;

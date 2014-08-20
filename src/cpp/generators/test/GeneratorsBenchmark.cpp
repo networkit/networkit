@@ -119,7 +119,7 @@ TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGenerator) {
-	count n = 500000;
+	count n = 200000;
 	HyperbolicGenerator gen(n,1,1);
 	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
