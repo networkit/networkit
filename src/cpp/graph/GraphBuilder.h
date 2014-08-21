@@ -116,8 +116,10 @@ public:
 	 * Generates a Graph instance. The graph builder will be reseted at the end.
 	 */
 	Graph toGraph(bool parallel = true) {
-		if (usedirectswap) return directSwap();
-		else return parallel ? toGraphParallel() : toGraphSequential();
+		Graph G(n, weighted, directed);
+		if (usedirectswap) directSwap(G);
+		else parallel ? toGraphParallel(G) : toGraphSequential(G);
+		return G;
 	}
 
 	/**
@@ -150,21 +152,15 @@ public:
 	template<typename L> void parallelForNodePairs(L handle) const;
 
 private:
-	Graph toGraphParallel();
-	Graph toGraphSequential();
+	void toGraphParallel(Graph &G);
+	void toGraphSequential(Graph &G);
+	void directSwap(Graph &G);
 
 	void reset();
 	template <typename T>
 	static void copyAndClear(std::vector<T>& source, std::vector<T>& target);
 	static void correctNumberOfEdges(Graph& G, count numberOfSelfLoops);
 	static bool checkConsistency(Graph& G);
-
-	/**
-	 * Makes an unsafe swap to a Graph instance, which is returned.
-	 * Only works for undirected graphs.
-	 * The caller is responsible for adding each edge in both directions to ensure consistency
-	 */
-	Graph directSwap();
 };
 
 template <typename T>
