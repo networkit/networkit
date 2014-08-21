@@ -26,6 +26,7 @@ class SqliteResultWriter():
 				query += key + ' ' + p.getTypes()[key] + ', '
 		query = query[:-2] + ")"
 		db.execute(query)
+		db.commit()
 
 	def createRowIfNeccessary(self, db, table, name):
 		cursor = db.cursor()
