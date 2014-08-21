@@ -37,7 +37,7 @@
 #include "../SampledGraphStructuralRandMeasure.h"
 #include "../SampledNodeStructuralRandMeasure.h"
 #include "../../community/GraphClusteringTools.h"
-#include "../PartitionProduct.h"
+#include "../PartitionIntersection.h"
 #include "../HubDominance.h"
 
 namespace NetworKit {
@@ -589,8 +589,7 @@ TEST_F(CommunityGTest, testGraphStructuralRandMeasure) {
 
 TEST_F(CommunityGTest, testNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
-	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(1000, 0.01);
+	Graph G(1000);
 
 	ClusteringGenerator clustGen;
 	Partition one1 = clustGen.makeOneClustering(G);
@@ -612,15 +611,15 @@ TEST_F(CommunityGTest, testNMIDistance) {
 
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distSingleton)) << "NMID of two identical singleton clusterings should be 0.0";
 
-	Partition random1 = clustGen.makeRandomClustering(G, 40);
-	Partition random2 = clustGen.makeRandomClustering(G, 40);
+	Partition continuous1 = clustGen.makeContinuousBalancedClustering(G, 40);
+	Partition continuous2 = clustGen.makeContinuousBalancedClustering(G, 70);
 
-	double distRandom = NMID.getDissimilarity(G, random1, random2);
-	INFO("NMID for two random clusterings: " , distRandom);
+	double distContinuous = NMID.getDissimilarity(G, continuous1, continuous2);
+	INFO("NMID for two continuous clusterings: " , distContinuous);
 
-	Partition prod = PartitionProduct().calculate(random1, random2);
-	double distSingleProd = NMID.getDissimilarity(G, singleton1, prod);
-	EXPECT_LE(0.0, distSingleProd) << "NMID always needs to be 0 or positive";
+	Partition smallClusters = clustGen.makeContinuousBalancedClustering(G, 300);
+	double distSingleIntersection = NMID.getDissimilarity(G, singleton1, smallClusters);
+	EXPECT_LE(0.0, distSingleIntersection) << "NMID always needs to be 0 or positive";
 }
 
 
@@ -677,17 +676,17 @@ TEST_F(CommunityGTest, tryParallelAgglomerativeAndPLM) {
 	INFO("Louvain modularity blog graph:   " , modularity.getQuality(clustering, blog));
 }
 
-TEST_F(CommunityGTest, testClusteringProduct) {
-	PartitionProduct prod;
+TEST_F(CommunityGTest, testClusteringIntersection) {
+	PartitionIntersection intersection;
 	GraphGenerator graphGenerator;
 	Graph G = graphGenerator.makeCompleteGraph(1200);
 	ClusteringGenerator clusteringGenerator;
 	Partition twelve = clusteringGenerator.makeContinuousBalancedClustering(G, 12);
 	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
 	Partition eight = clusteringGenerator.makeContinuousBalancedClustering(G, 8);
-	EXPECT_TRUE(GraphClusteringTools::equalClusterings(twelve, prod.calculate(twelve, twelve), G)) << "Product of itself does not modify the clustering";
-	EXPECT_TRUE(GraphClusteringTools::equalClusterings(singleton, prod.calculate(twelve, singleton), G)) << "Product of singleton with any clustering is the singleton clustering";
-	Partition sixteen = prod.calculate(twelve, eight);
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(twelve, intersection.calculate(twelve, twelve), G)) << "Intersection of itself does not modify the clustering";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(singleton, intersection.calculate(twelve, singleton), G)) << "Intersection of singleton with any clustering is the singleton clustering";
+	Partition sixteen = intersection.calculate(twelve, eight);
 	EXPECT_EQ(16u, sixteen.numberOfSubsets());
 	auto clusterSizes = sixteen.subsetSizeMap();
 	size_t i = 0;
@@ -707,12 +706,12 @@ TEST_F(CommunityGTest, testMakeNoncontinuousClustering) {
 	Graph G = graphGenerator.makeCompleteGraph(100);
 	Partition con = generator.makeContinuousBalancedClustering(G, 10);
 	Partition nonCon = generator.makeNoncontinuousBalancedClustering(G, 10);
-	PartitionProduct prod;
+	PartitionIntersection intersection;
 
 	JaccardMeasure jaccard;
 
 	EXPECT_EQ(1, jaccard.getDissimilarity(G, con, nonCon)) << "The Jaccard distance of a clustering with its complementary clustering should be 1";
-	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, prod.calculate(con, nonCon))) << "The product of a clustering with its complementary clustering should be the singleton clustering";
+	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, intersection.calculate(con, nonCon))) << "The intersection of a clustering with its complementary clustering should be the singleton clustering";
 }
 
 TEST_F(CommunityGTest, testHubDominance) {
