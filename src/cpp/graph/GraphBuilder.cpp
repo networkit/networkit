@@ -81,9 +81,8 @@ void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
 	}
 }
 
-Graph GraphBuilder::directSwap() {
+void GraphBuilder::directSwap(Graph &G) {
 	if (directed) throw std::runtime_error("Cannot swap directly in directed Graph.");
-	Graph G(n, weighted, directed);
 	G.outEdges.swap(halfEdges);
 	G.outEdgeWeights.swap(halfEdgeWeights);
 	#pragma omp parallel for
@@ -93,11 +92,9 @@ Graph GraphBuilder::directSwap() {
 	correctNumberOfEdges(G, selfloops);
 
 	reset();
-	return G;
 }
 
-Graph GraphBuilder::toGraphParallel() {
-	Graph G(n, weighted, directed);
+void GraphBuilder::toGraphParallel(Graph &G) {
 
 	// basic idea of the parallelization:
 	// 1) each threads collects its own data
@@ -188,13 +185,9 @@ Graph GraphBuilder::toGraphParallel() {
 
 	// bring the builder into an empty, but valid state
 	reset();
-
-	return G;
 }
 
-Graph GraphBuilder::toGraphSequential() {
-	Graph G(n, weighted, directed);
-
+void GraphBuilder::toGraphSequential(Graph &G) {
 	std::vector<count> missingEdgesCounts(n, 0);
 	count numberOfSelfLoops = 0;
 
@@ -285,8 +278,6 @@ Graph GraphBuilder::toGraphSequential() {
 
 	// bring the builder into an empty, but valid state
 	reset();
-
-	return G;
 }
 
 void GraphBuilder::reset() {
