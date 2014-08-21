@@ -189,7 +189,7 @@ inline void NetworKit::Matrix::parallelForNonZeroElementsInRowOrder(L handle) co
 			handle(i, j, value);
 		};
 
-		graph.forWeightedNeighborsOf(i, elementHandle);
+		graph.forNeighborsOf(i, elementHandle);
 	};
 
 	graph.parallelForNodes(rowHandle);
@@ -202,7 +202,7 @@ inline void NetworKit::Matrix::parallelForNonZeroElementsInRowOrder(L handle) {
 			handle(i, j, value);
 		};
 
-		graph.forWeightedNeighborsOf(i, elementHandle);
+		graph.forNeighborsOf(i, elementHandle);
 	};
 
 	graph.parallelForNodes(rowHandle);

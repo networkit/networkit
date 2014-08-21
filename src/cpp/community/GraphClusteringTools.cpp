@@ -23,7 +23,7 @@ Graph communicationGraph(const Graph& graph, Partition &zeta) {
 	if (graph.isWeighted()) {
 		DEBUG("weighted");
 
-		graph.forWeightedEdges([&](node u, node v, edgeweight w) {
+		graph.forEdges([&](node u, node v, edgeweight w) {
 			if (zeta[u] != zeta[v]) {
 				commGraph.increaseWeight(zeta[u], zeta[v], w);
 				TRACE("increase weight of " , zeta[u] , " and " , zeta[v] , " by " , w);
@@ -49,7 +49,7 @@ count weightedDegreeWithCluster(const Graph& graph, const Partition &zeta, node 
 	count wdeg = 0;
 
 	if (graph.isWeighted()) {
-		graph.forWeightedEdgesOf(u, [&](node u, node v, edgeweight w) {
+		graph.forEdgesOf(u, [&](node u, node v, edgeweight w) {
 			if (zeta[v] == cid) {
 				wdeg += w;
 			}
@@ -112,17 +112,6 @@ bool equalClusterings(const Partition& zeta, const Partition& eta, Graph& G) {
 	return eq;
 }
 
-Partition intersectPartitions(const Partition &zeta, const Partition &eta) {
-	
-	assert(zeta.numberOfElements() == eta.numberOfElements());
-	Partition intersection(zeta.numberOfElements());
-	intersection.setUpperBound(zeta.upperBound() * eta.upperBound());
-	zeta.forEntries([&](index i, index set_i) {
-		intersection.moveToSubset(set_i * eta.upperBound() + eta.subsetOf(i), i);
-	});
-	intersection.compact();
-	return std::move(intersection);
-}
 } // namespace GCT
 
 } // namespace NetworKit

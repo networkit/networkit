@@ -23,6 +23,7 @@ from unordered_map cimport unordered_map
 # NetworKit typedefs
 ctypedef uint64_t count
 ctypedef uint64_t index
+ctypedef uint64_t edgeid
 ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
@@ -98,9 +99,12 @@ cdef extern from "../cpp/graph/Graph.h":
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
 		void stealFrom(_Graph)
+		void indexEdges() except +
+		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
-		count upperNodeIdBound() except +
+		index upperNodeIdBound() except +
+		index upperEdgeIdBound() except +
 		count degree(node u) except +
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
@@ -177,6 +181,22 @@ cdef class Graph:
 		"""
 		return Graph().setThis(new _Graph(dereference(self._this)))
 
+	def indexEdges(self):
+		"""
+		Assign integer ids to edges.
+
+		"""
+		self._this.indexEdges()
+
+	def edgeId(self, node u, node v):
+		"""
+		Returns
+		-------
+		edgeid
+			id of the edge
+		"""
+		return self._this.edgeId(u, v)
+
 	def numberOfNodes(self):
 		"""
 		Get the number of nodes in the graph.
@@ -209,6 +229,17 @@ cdef class Graph:
 			An upper bound for the node ids in the graph
 		"""
 		return self._this.upperNodeIdBound()
+
+	def upperEdgeIdBound(self):
+		"""
+		Get an upper bound for the edge ids in the graph
+
+		Returns
+		-------
+		count
+			An upper bound for the edge ids in the graph
+		"""
+		return self._this.upperEdgeIdBound()
 
 	def degree(self, u):
 		"""
@@ -2408,18 +2439,18 @@ cdef class GraphClusteringTools:
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		return equalClusterings(zeta._this, eta._this, dereference(G._this))
 
-cdef extern from "../cpp/community/PartitionProduct.h":
-	cdef cppclass _PartitionProduct "NetworKit::PartitionProduct":
-		_PartitionProduct() except +
+cdef extern from "../cpp/community/PartitionIntersection.h":
+	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
+		_PartitionIntersection() except +
 		_Partition calculate(_Partition zeta, _Partition eta) except +
 
-cdef class PartitionProduct:
-	""" The product of two partitions is defined as the partitions where each cluster is the intersection
-	of a cluster in the first and in the second clustering
+cdef class PartitionIntersection:
+	""" Class for calculating the intersection of two partitions, i.e. the clustering with the fewest clusters
+	such that each cluster is a subset of a cluster in both partitions.
 	"""
-	cdef _PartitionProduct _this
+	cdef _PartitionIntersection _this
 	def calculate(self, Partition zeta, Partition eta):
-		"""  Calculate the product of two partitions `zeta` and `eta`
+		"""  Calculate the intersection of two partitions `zeta` and `eta`
 
 		Parameters
 		----------
@@ -2431,7 +2462,7 @@ cdef class PartitionProduct:
 		Returns
 		-------
 		Partition
-			The product of zeta and eta
+			The intersection of zeta and eta
 		"""
 		return Partition().setThis(self._this.calculate(zeta._this, eta._this))
 

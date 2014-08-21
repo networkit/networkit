@@ -90,13 +90,13 @@ void GraphBuilderGTest::SetUp() {
 		node v = e.second;
 		bHouse.addEdge(u, v, ew);
 		if (useDirectSwap()) bHouse.addEdge(v,u,ew);
-		
+
 		Ahouse[u][v] = ew;
-	
+
 		if (!bHouse.isDirected()) {
 			Ahouse[v][u] = ew;
 		}
-		
+
 		if (bHouse.isWeighted()) {
 			ew += 1.0;
 		}
@@ -243,7 +243,7 @@ TEST_P(GraphBuilderGTest, testAddEdge) {
 		} else {
 			ASSERT_EQ(defaultEdgeWeight, G.weight(1, 0));
 			ASSERT_EQ(defaultEdgeWeight, G.weight(2, 1));
-		}	
+		}
 	}
 }
 
@@ -294,7 +294,7 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 	if (isWeighted()) {
 		// edges should get weight defaultWeight on creation and setWeight should overwrite this
 		b.setWeight(1, 2, 2.718);
-		
+
 		// setting an edge weight should create the edge if it doesn't exists
 		b.setWeight(5, 6, 56.0);
 		// directed graphs are not symmetric, undirected are
@@ -302,7 +302,7 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 		if (isDirected()) {
 			b.setWeight(4, 3, 5.243);
 		}
-		
+
 		// self-loop
 		b.addEdge(8, 8, 2.5);
 		b.setWeight(8, 8, 3.14);
@@ -341,7 +341,7 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 			ASSERT_TRUE(G.weight(3, 4) == 2.718 || G.weight(3, 4) == 5.243);
 			ASSERT_TRUE(G.weight(4, 3) == 2.718 || G.weight(4, 3) == 5.243);
 		}
-		
+
 		// self-loop
 		ASSERT_EQ(3.14, G.weight(8, 8));
 	} else {
@@ -358,7 +358,7 @@ TEST_P(GraphBuilderGTest, testSameAsGraph) {
 	const count n_max = 100;
 
 	// in each loop run we will create a random graph (using a GraphBuilder and a Graph)
-	// we will only use methods that both GraphBuilder and Graph support and 
+	// we will only use methods that both GraphBuilder and Graph support and
 	for (index i = 0; i < runs; i++) {
 		count n = Aux::Random::integer(n_max);
 		GraphBuilder b = createGraphBuilder(n);
@@ -413,11 +413,11 @@ TEST_P(GraphBuilderGTest, testSameAsGraph) {
 			EXPECT_NEAR(G_expected.weightedDegree(v), G_actual.weightedDegree(v), epsilon);
 			EXPECT_NEAR(G_expected.volume(v), G_actual.volume(v), epsilon);
 		});
-		G_expected.forWeightedEdges([&](node u, node v, edgeweight ew) {
+		G_expected.forEdges([&](node u, node v, edgeweight ew) {
 			EXPECT_TRUE(G_actual.hasEdge(u, v));
 			EXPECT_NEAR(ew, G_actual.weight(u, v), epsilon);
 		});
-		
+
 		// make sure that G_actual has not more nodes/edges than G_expected
 		G_actual.forNodes([&](node v) {
 			EXPECT_TRUE(G_expected.hasNode(v));
@@ -492,7 +492,7 @@ TEST_P(GraphBuilderGTest, testParallelForNodes) {
 		#pragma omp critical
 		visited.push_back(u);
 	});
-	
+
 	std::sort(visited.begin(), visited.end());
 
 	ASSERT_EQ(5u, visited.size());
@@ -504,7 +504,7 @@ TEST_P(GraphBuilderGTest, testParallelForNodes) {
 TEST_P(GraphBuilderGTest, testForNodePairs) {
 	count n = 10;
 	GraphBuilder b = createGraphBuilder(n);
-	
+
 	std::vector< std::vector<bool> > visited(n, std::vector<bool>(n, false));
 	b.forNodePairs([&](node u, node v) {
 		if (visited[u][v] || visited[v][u]) {
@@ -513,7 +513,7 @@ TEST_P(GraphBuilderGTest, testForNodePairs) {
 			visited[u][v] = true;
 		}
 	});
-	
+
 	for (node u = 0; u < n; u++) {
 		for (node v = 0; v < n; v++) {
 			if (u == v) {
@@ -528,7 +528,7 @@ TEST_P(GraphBuilderGTest, testForNodePairs) {
 TEST_P(GraphBuilderGTest, testParallelForNodePairs) {
 	count n = 10;
 	GraphBuilder b = createGraphBuilder(n);
-	
+
 	std::vector< std::vector<bool> > visited(n, std::vector<bool>(n, false));
 	b.forNodePairs([&](node u, node v) {
 		if (visited[u][v]) {

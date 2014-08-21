@@ -35,7 +35,7 @@ void AlgebraicDistance::preprocess() {
 				double val = 0.0;
 
 				// step 1
-				G.forWeightedNeighborsOf(u, [&](node v, edgeweight weight) {
+				G.forNeighborsOf(u, [&](node v, edgeweight weight) {
 					val += weight * oldLoads[sys][v];
 				});
 				val /= G.weightedDegree(u);

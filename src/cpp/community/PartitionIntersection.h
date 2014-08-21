@@ -6,16 +6,16 @@
 namespace NetworKit {
 
 /**
- * The product of two partitions is defined as the partitions where each cluster is the intersection
- * of a cluster in the first and in the second clustering
+ * Class for calculating the intersection of two partitions, i.e. the clustering with the fewest clusters
+ * such that each cluster is a subset of a cluster in both partitions.
  */
-class PartitionProduct {
+class PartitionIntersection {
 	public:
 		/**
-		 * Calculate the product of two partitions @a zeta and @a eta
+		 * Calculate the intersection of two partitions @a zeta and @a eta
 		 * @param zeta	The first partition
 		 * @param eta	The second partition
-		 * @return The product of @a zeta and @a eta
+		 * @return The intersection of @a zeta and @a eta
 		 */
 		Partition calculate(const Partition &zeta, const Partition &eta);
 };

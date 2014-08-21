@@ -18,10 +18,13 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	n(n),
 	m(0),
 	z(n),
+	omega(0),
 	t(0),
 
 	weighted(weighted), // indicates whether the graph is weighted or not
 	directed(directed), // indicates whether the graph is directed or not
+	edgesIndexed(false), // edges are not indexed by default
+
 	exists(n, true),
 
 	/* for directed graphs inDeg stores the incoming degree of a node, for undirected graphs inDeg is not used*/
@@ -37,7 +40,9 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	undirected edges*/
 	outEdges(n),
 	inEdgeWeights(weighted && directed ? n : 0),
-	outEdgeWeights(weighted ? n : 0) {
+	outEdgeWeights(weighted ? n : 0),
+	inEdgeIds(),
+	outEdgeIds() {
 
 	// set name from global id
 	id = getNextGraphId();
@@ -53,6 +58,7 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 	t(G.t),
 	weighted(weighted),
 	directed(directed),
+	edgesIndexed(false), //edges are not indexed by default
 	exists(G.exists),
 
 	// let the following be empty for the start, we fill them later
@@ -151,22 +157,6 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 		}
 	}
 
-	// done we everything except attributes ...
-	if (G.edgeAttrDefaults_double.size() > 0) {
-		if (!directed && G.isDirected()) {
-			// problem, we did not save both direction for attributes, so combining out and in attributes for every edge
-			// would be kind of complicated :/
-			throw std::runtime_error("Copying edge attributes from directed to an undirected graph is not supported.");
-		} else {
-			// we have 3 cases here:
-			// 1) both G and this copy are undirected => copying is fine
-			// 2) both G and this copy are directed => copying is fine
-			// 3) G is undirected and this is directed => as we only save attributes for out edges, we are
-			// 	fine with copying as well
-			edgeMaps_double = G.edgeMaps_double;
-			edgeAttrDefaults_double = G.edgeAttrDefaults_double;
-		}
-	}
 }
 
 //only to be used by Cython
@@ -206,6 +196,65 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
 }
 
 
+/** EDGE IDS **/
+
+void Graph::indexEdges(bool force) {
+	if (edgesIndexed && !force) return;
+
+	omega = 0; // reset edge ids (for re-indexing)
+
+	outEdgeIds.resize(outEdges.size());
+	forNodes([&](node u) {
+		outEdgeIds[u].resize(outEdges[u].size(), none);
+	});
+
+	if (directed) {
+		inEdgeIds.resize(inEdges.size());
+		forNodes([&](node u) {
+			inEdgeIds[u].resize(inEdges[u].size(), none);
+		});
+	}
+
+	forNodes([&](node u) {
+		for (index i = 0; i < outEdges[u].size(); ++i) {
+			node v = outEdges[u][i];
+			if (v != none && (directed || (u >= v))) {
+				// new id
+				edgeid id = omega++;
+				outEdgeIds[u][i] = id;
+				if (! directed) {
+					// for undirected graphs, set symmetric edge id
+					index j = indexInOutEdgeArray(v, u);
+					outEdgeIds[v][j] = id;
+				} else {
+					// assign in-edge id
+					index k = indexInInEdgeArray(v, u);
+					inEdgeIds[v][k] = id;
+				}
+
+			}
+		}
+	});
+
+	edgesIndexed = true; // remember that edges have been indexed so that addEdge needs to create edge ids
+}
+
+
+edgeid Graph::edgeId(node u, node v) const {
+	if (! edgesIndexed) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+	index i = indexInOutEdgeArray(u, v);
+
+	if (i == none) {
+		throw std::runtime_error("Edge does not exist");
+	}
+
+	edgeid id = outEdgeIds[u][i];
+	return id;
+}
+
+
 /** GRAPH INFORMATION **/
 
 std::string Graph::typ() const {
@@ -240,14 +289,6 @@ void Graph::shrinkToFit() {
 	outEdges.shrink_to_fit();
 	for (auto& a : outEdges) {
 		a.shrink_to_fit();
-	}
-
-	edgeMaps_double.shrink_to_fit();
-	for (auto& map : edgeMaps_double) {
-		map.shrink_to_fit();
-		for (auto& a : map) {
-			a.shrink_to_fit();
-		}
 	}
 
 }
@@ -297,11 +338,6 @@ node Graph::addNode() {
 		inEdges.push_back(std::vector<node>{});
 	}
 
-	// update edge attribute data structures
-	for (size_t attrId = 0; attrId < this->edgeMaps_double.size(); attrId++) {
-		std::vector<double> attrVector;
-		this->edgeMaps_double[attrId].push_back(attrVector);
-	}
 
 	return v;
 }
@@ -331,7 +367,7 @@ void Graph::removeNode(node v) {
 edgeweight Graph::weightedDegree(node v) const {
 	if (weighted) {
 		edgeweight sum = 0.0;
-		forWeightedNeighborsOf(v, [&](node u, edgeweight ew) {
+		forNeighborsOf(v, [&](node u, edgeweight ew) {
 			sum += ew;
 		});
 		return sum;
@@ -402,30 +438,30 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 	outDeg[u]++;
 	outEdges[u].push_back(v);
 
+	// if edges indexed, give new id
+	if (edgesIndexed) {
+		edgeid id = omega++;
+		outEdgeIds[u].push_back(id);
+	}
+
 	if (directed) {
 		inDeg[v]++;
 		inEdges[v].push_back(u);
+
+		if (edgesIndexed) {
+			inEdgeIds[v].push_back(id);
+		}
 
 		if (weighted) {
 			inEdgeWeights[v].push_back(ew);
 			outEdgeWeights[u].push_back(ew);
 		}
 
-		// loop over all attributes, setting default attr
-		for (index attrId = 0; attrId < edgeMaps_double.size(); ++attrId) {
-			double defaultAttr = edgeAttrDefaults_double[attrId];
-			edgeMaps_double[attrId][u].push_back(defaultAttr);
-			edgeMaps_double[attrId][v].push_back(defaultAttr);
-		}
 	} else if (u == v) { // self-loop case
 		if (weighted) {
 			outEdgeWeights[u].push_back(ew);
 		}
 
-		for (index attrId = 0; attrId < edgeMaps_double.size(); ++attrId) {
-			double defaultAttr = edgeAttrDefaults_double[attrId];
-			edgeMaps_double[attrId][u].push_back(defaultAttr);
-		}
 	} else { // undirected, no self-loop
 		outDeg[v]++;
 		outEdges[v].push_back(u);
@@ -435,11 +471,8 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 			outEdgeWeights[v].push_back(ew);
 		}
 
-		// loop over all attributes, setting default attr
-		for (index attrId = 0; attrId < edgeMaps_double.size(); ++attrId) {
-			double defaultAttr = edgeAttrDefaults_double[attrId];
-			edgeMaps_double[attrId][u].push_back(defaultAttr);
-			edgeMaps_double[attrId][v].push_back(defaultAttr);
+		if (edgesIndexed) {
+			outEdgeIds[v].push_back(omega - 1);
 		}
 	}
 }
@@ -607,50 +640,6 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 	}
 }
 
-int Graph::addEdgeAttribute_double(double defaultValue) {
-	int attrId = edgeMaps_double.size();
-
-	std::vector<std::vector<double> > edgeMap(z);
-	if (numberOfEdges() > 0) {
-		forNodes([&] (node v) {
-			// create edgeMaps and fill them with default value
-			edgeMap[v].resize(degree(v));
-			fill(edgeMap[v].begin(), edgeMap[v].end(), defaultValue);
-		});
-	}
-
-	edgeMaps_double.push_back(edgeMap);
-	edgeAttrDefaults_double.push_back(defaultValue);
-
-	return attrId;
-}
-
-double Graph::attribute_double(node u, node v, int attrId) const {
-	assert (attrId < edgeMaps_double.size());
-	index vi = indexInOutEdgeArray(u, v);
-	if (vi != none) {
-		return edgeMaps_double[attrId][u][vi];
-	} else {
-		throw std::runtime_error("Edge does not exist. Can't access double attribute.");
-	}
-}
-
-void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
-	assert (attrId < edgeMaps_double.size());
-	index vi = indexInOutEdgeArray(u, v);
-	if (vi == none) {
-		throw std::runtime_error("Edge does not exist. Can't set double attribute.");
-	}
-
-	edgeMaps_double[attrId][u][vi] = attr;
-	if (directed) {
-		// we don't have to do anything as we do not save attributes for incoming edges
-	} else if (u != v) { // we can ignore self-loops
-		index ui = indexInOutEdgeArray(v, u);
-		assert (ui != none);
-		edgeMaps_double[attrId][v][ui] = attr;
-	}
-}
 
 
 /** SUMS **/
@@ -658,7 +647,7 @@ void Graph::setAttribute_double(node u, node v, int attrId, double attr) {
 edgeweight Graph::totalEdgeWeight() const {
 	if (weighted) {
 		edgeweight sum = 0.0;
-		forWeightedEdges([&](node u, node v, edgeweight ew) {
+		forEdges([&](node u, node v, edgeweight ew) {
 			sum += ew;
 		});
 		return sum;
