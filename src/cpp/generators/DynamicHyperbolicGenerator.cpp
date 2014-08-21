@@ -130,12 +130,14 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 		else {
 			vector<index> toWiggle;
 			vector<vector<index> > oldNeighbours;
+			//TODO: One could parallelize this.
 			for (index i = 0; i < nodes; i++) {
 				if (Aux::Random::real(1) < moveEachStep) {
 					toWiggle.push_back(i);
 					oldNeighbours.push_back(quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor));
 				}
 			}
+			//#pragma omp parallel for
 			for (index j = 0; j < toWiggle.size(); j++) {
 				//wiggle this node!
 				double hyperbolicRadius = HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[toWiggle[j]]);
@@ -169,46 +171,38 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				newradius = HyperbolicSpace::hyperbolicRadiusToEuclidean(newradius);
 				if (newradius >= HyperbolicSpace::hyperbolicRadiusToEuclidean(R)) newradius = std::nextafter(newradius, std::numeric_limits<double>::lowest());
 
-				bool removed = quad.removeContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
-				assert(removed);
-
-				angles[toWiggle[j]] = newphi;
-				radii[toWiggle[j]] = newradius;
-				quad.addContent(toWiggle[j], newphi, newradius);
+				//#pragma omp critical (quadtree)
+				{
+					bool removed = quad.removeContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
+					assert(removed);
+					angles[toWiggle[j]] = newphi;
+					radii[toWiggle[j]] = newradius;
+					quad.addContent(toWiggle[j], newphi, newradius);
+				}
 			}
 
 			//now get the new edges and see what changed
+			#pragma omp parallel for
 			for (index j = 0; j < toWiggle.size(); j++) {
 				vector<index> newNeighbours = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]), R*currentfactor);
 				std::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
 				std::sort(newNeighbours.begin(), newNeighbours.end());
-				index aindex = 0;
-				index bindex = 0;
-				while (aindex < oldNeighbours[j].size() && bindex < newNeighbours.size()) {
-					if (oldNeighbours[j][aindex] == newNeighbours[bindex]) {
-						//unchanged edge, skip
-						aindex++;
-						bindex++;
-					} else if (oldNeighbours[j][aindex] < newNeighbours[bindex]) {
-						//edge only in one set.
-						result.push_back(GraphEvent(GraphEvent::EDGE_REMOVAL, toWiggle[j], oldNeighbours[j][aindex]));
-						aindex++;
-					} else {
-						result.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, toWiggle[j], newNeighbours[bindex]));
-						bindex++;
+				vector<index> newEdges(newNeighbours.size());
+				auto it = std::set_difference(newNeighbours.begin(), newNeighbours.end(), oldNeighbours[j].begin(), oldNeighbours[j].end(), newEdges.begin());
+				newEdges.erase(it, newEdges.end());//trim empty space
+
+				vector<index> brokenEdges(oldNeighbours[j].size() - (newNeighbours.size() - newEdges.size()));//this should be the number of broken edges
+				it = std::set_difference(oldNeighbours[j].begin(), oldNeighbours[j].end(), newNeighbours.begin(), newNeighbours.end(), brokenEdges.begin());
+				assert(it == brokenEdges.end());
+
+				#pragma omp critical
+				{
+					for (index edge : newEdges) {
+						result.emplace_back(GraphEvent::EDGE_ADDITION, toWiggle[j], edge);
 					}
-				}
-
-				//handling leftover edges
-
-				while (aindex < oldNeighbours[j].size()) {
-					result.push_back(GraphEvent(GraphEvent::EDGE_REMOVAL, toWiggle[j], oldNeighbours[j][aindex]));
-					aindex++;
-				}
-
-				while (bindex < newNeighbours.size()) {
-					result.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, toWiggle[j], newNeighbours[bindex]));
-					bindex++;
+					for (index edge : brokenEdges) {
+						result.emplace_back(GraphEvent::EDGE_REMOVAL, toWiggle[j], edge);
+					}
 				}
 			}
 
