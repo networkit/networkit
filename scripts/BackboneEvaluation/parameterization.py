@@ -9,10 +9,10 @@ BINARY_SEARCH_STEPS = 20
 def parameterize(graph, algorithm, targetEdgeRatio):
 	if algorithm.parameterizationType() == "Float":
 		bestParameter = parameterizeUsingDouble(graph, algorithm, targetEdgeRatio, 0.0, 1.0, BINARY_SEARCH_STEPS)
-	elif inputAlgorithm.parameterizationType() == "Int":
-		bestParameter = parameterizeUsingInteger(G, inputAlgorithm, targetEdgeRatio, 0, 10)
-	elif inputAlgorithm.parameterizationType() == "Trivial":
-		bestParameter = parameterizeUsingDoubleTrivial(G, inputAlgorithm, targetEdgeRatio)
+	elif algorithm.parameterizationType() == "Int":
+		bestParameter = parameterizeUsingInteger(graph, algorithm, targetEdgeRatio, 0, 10)
+	elif algorithm.parameterizationType() == "Trivial":
+		bestParameter = parameterizeUsingDoubleTrivial(graph, algorithm, targetEdgeRatio)
 	else:
 		bestParameter = None
 	return bestParameter
