@@ -8,6 +8,8 @@
 #ifndef EFFECTIVEDIAMETER_H_
 #define EFFECTIVEDIAMETER_H_
 
+#include <map>
+
 #include "../graph/Graph.h"
 
 namespace NetworKit {
