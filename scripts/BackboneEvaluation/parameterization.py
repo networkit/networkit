@@ -26,12 +26,12 @@ def parameterizeUsingDouble(G, algorithm, targetEdgeRatio, lowerBound, upperBoun
 
 	#Precalculation
 	print ("Calculating attribute...")
-	preCalcAttr = algorithm.getPrecalcAttribute(G)
+	preCalcAttr = algorithm.getAttribute(G)
 
 	print("Fitting parameter...")
 	for i in range(0, maxSteps):
 		estimation = (lowerBound + upperBound) / 2.0
-		backbone = algorithm.getPrecalcBackbone(G, preCalcAttr, estimation)
+		backbone = algorithm.getBackboneFromAttribute(G, preCalcAttr, estimation)
 		currentEdgeRatio = backbone.numberOfEdges() / G.numberOfEdges()
 
 		print ("Est:", str(estimation), "er: ", currentEdgeRatio, ", ter: ", targetEdgeRatio)
@@ -65,11 +65,11 @@ def parameterizeUsingInteger(G, algorithm, targetEdgeRatio, lowerBound, upperBou
 
 	#Precalculation
 	print ("Calculating attribute...")
-	preCalcAttr = algorithm.getPrecalcAttribute(G)
+	preCalcAttr = algorithm.getAttribute(G)
 
 	print("Fitting parameter...")
 	for i in range(lowerBound, upperBound + 1):
-		backbone = algorithm.getPrecalcBackbone(G, preCalcAttr, i)
+		backbone = algorithm.getBackboneFromAttribute(G, preCalcAttr, i)
 		currentEdgeRatio = backbone.numberOfEdges() / G.numberOfEdges()
 
 		print ("Current er: ", currentEdgeRatio, ", target er: ", targetEdgeRatio)

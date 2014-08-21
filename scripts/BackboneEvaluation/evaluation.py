@@ -47,7 +47,7 @@ def executeTask(task):
 
 		for ialgorithm in task.algorithms:
 			#Calculate the attribute that is characteristic for that algorithm.
-			attribute = ialgorithm.getPrecalcAttribute(graph)
+			attribute = ialgorithm.getAttribute(graph)
 
 			if not graph.isWeighted() and ialgorithm.requiresWeight():
 				print("Skipping ", igraph.name, " for ", ialgorithm.getName(), " (requires weighted graph)")
@@ -56,10 +56,10 @@ def executeTask(task):
 			for iedgeRatio in task.edgeRatios:
 				#Parameterize the algorithm in such a way that we meet the expected edge ratio
 				algorithmParameter = parameterization.parameterize(graph, ialgorithm, iedgeRatio)
-				backbone = ialgorithm.getPrecalcBackbone(graph, attribute, algorithmParameter)
+				backbone = ialgorithm.getBackboneFromAttribute(graph, attribute, algorithmParameter)
 
 				#Calculate all desired properties of the backbone
-				propertiesDict = {}
+				propertiesDict = {'graph':igraph.name, 'algorithm':ialgorithm.getShortName()}
 				for iproperty in task.properties:
 					d = iproperty.getValues(graph, backbone)
 					propertiesDict = dict(list(propertiesDict.items()) + list(d.items()))

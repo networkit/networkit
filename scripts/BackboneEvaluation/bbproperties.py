@@ -11,7 +11,11 @@ class P_Example:
 
     #Returns a dictionary containing key/value pairs that are calculated from the given graph and backbone.
     def getValues(self, graph, backbones):
-        return {}
+        return {'key':'value'}
+
+    #Returns a dictionary containing the types (integer or real) of the values
+    def getTypes(self):
+        return {'key':'real'}
 
 #Node and edge ratios
 class P_Ratios:
@@ -24,6 +28,9 @@ class P_Ratios:
         nodeRatio = (numNodes / graph.numberOfNodes())
         edgeRatio = (numEdges / graph.numberOfEdges())
         return {'numNodes':numNodes, 'numEdges':numEdges, 'nodeRatio':nodeRatio, 'edgeRatio':edgeRatio}
+
+    def getTypes(self):
+        return {'numNodes':'integer', 'numEdges':'integer', 'nodeRatio':'real', 'edgeRatio':'real'}
 
 #Community structure
 class P_Community:
@@ -52,6 +59,9 @@ class P_Community:
 
         return {'randMeasure':randMeasure, 'nmi':nmi, 'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal}
 
+    def getTypes(self):
+        return {'randMeasure':'real', 'nmi':'real', 'ccAvgLocal':'real', 'ccGlobal':'real'}
+
 
 #Diameter
 class P_Diameter:
@@ -60,7 +70,10 @@ class P_Diameter:
 
     def getValues(self, graph, backbone):
         diameter = properties.Diameter.estimatedDiameterRange(backbone, error=0.1)
-        return {'diameterLow':diameter[0], 'diamterHigh':diameter[1]}
+        return {'diameterLow':diameter[0], 'diameterHigh':diameter[1]}
+
+    def getTypes(self):
+        return {'diameterLow':'integer', 'diameterHigh':'integer'}
 
 #Degree distribution
 class P_DegreeDistribution:
@@ -70,6 +83,9 @@ class P_DegreeDistribution:
     def getValues(self, graph, backbone):
         degreeDistCoefficient = properties.powerLawExponent(backbone)
         return {'degreeDistCoefficient':degreeDistCoefficient}
+
+    def getTypes(self):
+        return {'degreeDistCoefficient':'real'}
 
 #Centrality
 class P_Centrality:
@@ -86,11 +102,14 @@ class P_Centrality:
             centralityPositionVector[node] = rank
             rank += 1
         return centralityPositionVector
+        cpvBackbone = self.getCentralityPositionVector(backbone)
 
     def getValues(self, graph, backbone):
         cpvOriginal = self.getCentralityPositionVector(graph)
-        cpvBackbone = self.getCentralityPositionVector(backbone)
         cpvDistance = distance.euclidean(cpvOriginal, cpvBackbone)
         cpvDistanceNormalized = cpvDistance / graph.numberOfNodes()
 
         return {'cpvDistance':cpvDistance, 'cpvDistanceNormalized':cpvDistanceNormalized}
+
+    def getTypes(self):
+        return {'cpvDistance':'real', 'cpvDistanceNormalized':'real'}
