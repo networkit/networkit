@@ -102,10 +102,10 @@ class P_Centrality:
             centralityPositionVector[node] = rank
             rank += 1
         return centralityPositionVector
-        cpvBackbone = self.getCentralityPositionVector(backbone)
 
     def getValues(self, graph, backbone):
         cpvOriginal = self.getCentralityPositionVector(graph)
+        cpvBackbone = self.getCentralityPositionVector(backbone)
         cpvDistance = distance.euclidean(cpvOriginal, cpvBackbone)
         cpvDistanceNormalized = cpvDistance / graph.numberOfNodes()
 

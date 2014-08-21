@@ -30,13 +30,6 @@ def userInputYesNo(q):
 		else:
 			print('Respond with [y/n].')
 
-def writeResults(taskResult):
-	#TxtResultWriter("./output"),
-	#SqliteResultWriter("./output/backbones.db")
-	writers = [ConsoleWriter()]
-	for writer in writers:
-		writer.receiveResult(taskResult)
-
 def main():
 	#Get input parameters
 	edgeRatios = parameters.getEdgeRatios()
@@ -51,7 +44,9 @@ def main():
 	taskResult = executeTask(task)
 
 	#Output files...
-	writeResults(taskResult)
+	writers = [SqliteResultWriter("./output/backbones.db", properties)]
+	for writer in writers:
+		writer.receiveResult(taskResult)
 
 if __name__ == "__main__":
 	sys.exit(main())
