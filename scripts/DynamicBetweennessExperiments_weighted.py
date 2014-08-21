@@ -106,7 +106,6 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	df = pd.DataFrame({"Static exact bc": a, "Dynamic exact bc" : b, "Static approx bc" : c, "Dynamic approx bc" : d})
 	return df
 
-
 if __name__ == "__main__":
 	setNumberOfThreads(1)
 	size = 1000
