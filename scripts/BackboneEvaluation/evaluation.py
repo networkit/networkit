@@ -42,6 +42,9 @@ def executeTask(task):
 	taskResult.columns = []
 
 	for igraph in task.graphs:
+		print("-------------------------------------------------------------------------------------------- ")
+		print("Now working on graph ", igraph.name)
+		print("-------------------------------------------------------------------------------------------- ")
 		graph = readGraph(igraph.path, igraph.format)
 		graph.indexEdges()
 
