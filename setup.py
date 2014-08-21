@@ -30,7 +30,7 @@ except:
 	
 
 # remove MANIFEST.in when networkit is not in the repository (i.e. a download pypi/zip)
-if os.path.exists(".hg"):
+if os.path.isfile("MANIFEST.in") and not os.path.exists(".hg"):
 	os.remove("MANIFEST.in")
 
 
