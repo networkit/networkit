@@ -140,7 +140,7 @@ class bb_LocalSimilarityBackbone:
         return "Float"
 
     def increasing(self):
-        return False
+        return True
 
     def requiresWeight(self):
         return False
