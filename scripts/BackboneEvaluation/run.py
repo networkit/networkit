@@ -1,17 +1,11 @@
 from NetworKit import *
 from evaluation import *
-from multiprocessing import Pool
-from concurrent.futures import *
-import time
-import copy
 from txtWriter import TxtResultWriter
 from sqliteWriter import SqliteResultWriter
 from consoleWriter import ConsoleWriter
 import string
-import pickle
 import parameters
 import parameterization
-from types import *
 
 # -----------------------------------------------------------------------
 # The purpose of the following script is to automatically apply a set

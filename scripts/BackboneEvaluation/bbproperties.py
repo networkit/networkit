@@ -17,6 +17,17 @@ class P_Example:
     def getTypes(self):
         return {'key':'real'}
 
+#Fake class, ensuring some fields are created in the sqlite database
+class P_General:
+    def getName(self):
+        return "General information"
+
+    def getValues(self, graph, backbone):
+        return {}
+
+    def getTypes(self):
+        return {'graph':'text', 'algorithm':'text', 'parameter':'text', 'evalExpr':'text'}
+
 #Node and edge ratios
 class P_Ratios:
     def getName(self):

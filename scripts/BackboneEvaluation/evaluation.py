@@ -52,23 +52,27 @@ def executeTask(task):
 			#Check preconditions
 			if not graph.isWeighted() and ialgorithm.requiresWeight():
 				print("Skipping ", igraph.name, " for ", ialgorithm.getName(), " (requires weighted graph)")
-				continue
+			else:
+				for iedgeRatio in task.edgeRatios:
+					#Parameterize the algorithm in such a way that we meet the expected edge ratio
+					algorithmParameter = parameterization.parameterize(graph, ialgorithm, iedgeRatio)
+					backbone = ialgorithm.getBackboneFromAttribute(graph, attribute, algorithmParameter)
 
-			for iedgeRatio in task.edgeRatios:
-				#Parameterize the algorithm in such a way that we meet the expected edge ratio
-				algorithmParameter = parameterization.parameterize(graph, ialgorithm, iedgeRatio)
-				backbone = ialgorithm.getBackboneFromAttribute(graph, attribute, algorithmParameter)
+					propertiesDict = {
+								'graph':igraph.name,
+								'algorithm':ialgorithm.getShortName(),
+								'parameter':algorithmParameter,
+								'evalExpr':ialgorithm.getAlgorithmExpr(algorithmParameter)}
 
-				#Calculate all desired properties of the backbone
-				propertiesDict = {'graph':igraph.name, 'algorithm':ialgorithm.getShortName()}
-				for iproperty in task.properties:
-					d = iproperty.getValues(graph, backbone)
-					propertiesDict = dict(list(propertiesDict.items()) + list(d.items()))
+					#Calculate all desired properties of the backbone
+					for iproperty in task.properties:
+						d = iproperty.getValues(graph, backbone)
+						propertiesDict = dict(list(propertiesDict.items()) + list(d.items()))
 
-				taskResult.data.append(propertiesDict)
+					taskResult.data.append(propertiesDict)
 
-				#Non-parameterizable algorithms do not need to be applied several times.
-				if ialgorithm.parameterizationType() == 'None':
-					continue
+					#Non-parameterizable algorithms do not need to be applied several times.
+					if ialgorithm.parameterizationType() == 'None':
+						break
 
 	return taskResult
