@@ -38,6 +38,7 @@ class SqliteResultWriter():
 	def receiveResult(self, taskResult):
 		db = sqlite3.connect(self.dbFile)
 		#db.execute('''UPDATE graphs SET name=?, loadingTime=? WHERE id=?''', (graphName, taskResult.loadingTime, graphId))
+		deleted = [] #List of pairs
 
 		for row in taskResult.data:
 			#Create entries in graph and algorithm tables
@@ -47,7 +48,9 @@ class SqliteResultWriter():
 			self.createRowIfNeccessary(db, 'graphs', graphId)
 
 			#Delete existing properties
-			db.execute('''DELETE FROM properties WHERE graph=? AND algorithm=?''', (graphId, algorithmId))
+			if (graphId, algorithmId) not in deleted:
+				db.execute('''DELETE FROM properties WHERE graph=? AND algorithm=?''', (graphId, algorithmId))
+				deleted.append((graphId, algorithmId))
 
 			#Insert datarow into database
 			propertyNames = list(row.keys())
