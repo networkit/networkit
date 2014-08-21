@@ -541,8 +541,9 @@ std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
 
 count Graph::numberOfSelfLoops() const {
 	count c = 0;
-	forEdges([&](node u, node v) {
+	parallelForEdges([&](node u, node v) {
 		if (u == v) {
+			#pragma omp atomic
 			c += 1;
 		}
 	});
