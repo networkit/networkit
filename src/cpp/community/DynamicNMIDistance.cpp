@@ -154,8 +154,8 @@ double DynamicNMIDistance::entropy(const Partition& clustering, count n, std::ve
 	assert (! std::isnan(H));
 
 	// entropy values range from 0 for the 1-clustering to log_2(n) for the singleton clustering
-	assert (H >= 0.0);
-	assert (H <= log_b(n, 2));
+	assert (Aux::NumericTools::ge(H, 0.0));
+	assert (Aux::NumericTools::le(H, log_b(n, 2)));
 
 	return H;
 }
