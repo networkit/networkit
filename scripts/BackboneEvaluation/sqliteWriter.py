@@ -20,7 +20,7 @@ class SqliteResultWriter():
 		db.execute('''CREATE TABLE algorithms (name text primary key)''')
 
 		#Properties table
-		query = '''CREATE TABLE properties (graph text, algorithm text, '''
+		query = '''CREATE TABLE properties ('''
 		for p in properties:
 			for key in list(p.getTypes().keys()):
 				query += key + ' ' + p.getTypes()[key] + ', '

@@ -8,6 +8,9 @@ class bb_SimmelianBackboneNonParametric:
     def getShortName(self):
         return "Simmelian NonParametric"
 
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.SimmelianBackboneNonParametric(" + str(parameter) + ")"
+
     def getAttribute(self, graph):
         chiba = backbones.ChibaNishizekiTriangleCounter()
         triangles = chiba.getAttribute(graph)
@@ -37,6 +40,9 @@ class bb_Original:
     def getShortName(self):
         return "Original"
 
+    def getAlgorithmExpr(self, parameter):
+        return "None"
+
     def requiresWeight(self):
         return False
 
@@ -57,6 +63,9 @@ class bb_SimmelianMultiscaleBackbone:
 
     def getShortName(self):
         return "Simmelian Multiscale"
+
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.SimmelianMultiscaleBackbone(" + str(parameter) + ")"
 
     def getAttribute(self, graph):
         chiba = backbones.ChibaNishizekiTriangleCounter()
@@ -86,6 +95,9 @@ class bb_SimmelianBackboneParametric:
     def getShortName(self):
         return "Simmelian Parametric"
 
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.SimmelianBackboneParametric(10, " + str(parameter) + ")"
+
     def getAttribute(self, graph):
         chiba = backbones.ChibaNishizekiTriangleCounter()
         triangles = chiba.getAttribute(graph)
@@ -111,6 +123,9 @@ class bb_LocalSimilarityBackbone:
 
     def getShortName(self):
         return "Local Similarity"
+
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.LocalSimilarityBackbone(" + str(parameter) + ")"
 
     def getAttribute(self, graph):
         attributizer = backbones.LocalSimilarityAttributizer()
@@ -138,6 +153,9 @@ class bb_MultiscaleBackbone:
 
     def getShortName(self):
         return "Multiscale"
+
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.MultiscaleBackbone(" + str(parameter) + ")"
 
     def getAttribute(self, graph):
         #TODO we might use a precalculated edge attribute for speedup, but that
@@ -168,6 +186,9 @@ class bb_RandomBackbone:
 
     def getShortName(self):
         return "Random " + self._tag
+
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.RandomBackbone(" + str(parameter) + ")"
 
     def getAttribute(self, graph):
         return None
