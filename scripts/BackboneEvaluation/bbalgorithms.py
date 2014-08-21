@@ -5,20 +5,17 @@ class bb_SimmelianBackboneNonParametric:
     def getName(self):
         return "SimmelianBackboneNonParametric"
 
-    def getShortName(self, parameter):
-        return "SBNP " + str(parameter)
+    def getShortName(self):
+        return "Simmelian NonParametric"
 
-    def getAlgorithmExpr(self, parameter):
-        return "backbones.SimmelianBackboneNonParametric(" + str(parameter) + ")"
-
-    def getPrecalcAttribute(self, graph):
+    def getAttribute(self, graph):
         chiba = backbones.ChibaNishizekiTriangleCounter()
         triangles = chiba.getAttribute(graph)
         sj = backbones.SimmelianJaccardAttributizer()
         a_sj = sj.getAttribute(graph, triangles)
         return a_sj
 
-    def getPrecalcBackbone(self, graph, attribute, value):
+    def getBackboneFromAttribute(self, graph, attribute, value):
         gf = backbones.GlobalThresholdFilter(value, True)
         return gf.calculate(graph, attribute)
 
@@ -40,11 +37,11 @@ class bb_Original:
     def getShortName(self):
         return "Original"
 
-    def getAlgorithmExpr(self):
-        return "OriginalGraph()"
-
     def requiresWeight(self):
-            return False
+        return False
+
+    def parameterizationType(self):
+        return "None"   #Algorithm does not take a parameter as input.
 
 # -----------------------------------------------------------
 
@@ -52,20 +49,17 @@ class bb_SimmelianMultiscaleBackbone:
     def getName(self):
         return "SimmelianMultiscaleBackbone"
 
-    def getShortName(self, parameter):
-        return "SMB " + str(parameter)
+    def getShortName(self):
+        return "Simmelian Multiscale"
 
-    def getAlgorithmExpr(self, parameter):
-        return "backbones.SimmelianMultiscaleBackbone(" + str(parameter) + ")"
-
-    def getPrecalcAttribute(self, graph):
+    def getAttribute(self, graph):
         chiba = backbones.ChibaNishizekiTriangleCounter()
         triangles = chiba.getAttribute(graph)
         ms = backbones.MultiscaleAttributizer()
         a_ms = ms.getAttribute(graph, triangles)
         return a_ms
 
-    def getPrecalcBackbone(self, graph, attribute, value):
+    def getBackboneFromAttribute(self, graph, attribute, value):
         gf = backbones.GlobalThresholdFilter(value, False)
         return gf.calculate(graph, attribute)
 
@@ -83,20 +77,17 @@ class bb_SimmelianBackboneParametric:
     def getName(self):
         return "SimmelianBackboneParametric"
 
-    def getShortName(self, parameter):
-        return "SBP " + str(parameter)
+    def getShortName(self):
+        return "Simmelian Parametric"
 
-    def getAlgorithmExpr(self, parameter):
-        return "backbones.SimmelianBackboneParametric(10, " + str(parameter) + ")"
-
-    def getPrecalcAttribute(self, graph):
+    def getAttribute(self, graph):
         chiba = backbones.ChibaNishizekiTriangleCounter()
         triangles = chiba.getAttribute(graph)
         so = backbones.SimmelianOverlapAttributizer(10)
         a_so = so.getAttribute(graph, triangles)
         return a_so
 
-    def getPrecalcBackbone(self, graph, attribute, value):
+    def getBackboneFromAttribute(self, graph, attribute, value):
         gf = backbones.GlobalThresholdFilter(value, True)
         return gf.calculate(graph, attribute)
 
@@ -112,18 +103,15 @@ class bb_LocalSimilarityBackbone:
     def getName(self):
         return "LocalSimilarityBackbone"
 
-    def getShortName(self, parameter):
-        return "LSB " + str(parameter)
+    def getShortName(self):
+        return "Local Similarity"
 
-    def getAlgorithmExpr(self, parameter):
-        return "backbones.LocalSimilarityBackbone(" + str(parameter) + ")"
-
-    def getPrecalcAttribute(self, graph):
+    def getAttribute(self, graph):
         attributizer = backbones.LocalSimilarityAttributizer()
         a_ls = attributizer.getAttribute(graph, [])
         return a_ls
 
-    def getPrecalcBackbone(self, graph, attribute, value):
+    def getBackboneFromAttribute(self, graph, attribute, value):
         gf = backbones.GlobalThresholdFilter(value, False)
         return gf.calculate(graph, attribute)
 
@@ -142,18 +130,15 @@ class bb_MultiscaleBackbone:
     def getName(self):
         return "MultiscaleBackbone"
 
-    def getShortName(self, parameter):
-        return "MB " + str(parameter)
+    def getShortName(self):
+        return "Multiscale"
 
-    def getAlgorithmExpr(self, parameter):
-        return "backbones.MultiscaleBackbone(" + str(parameter) + ")"
-
-    def getPrecalcAttribute(self, graph):
+    def getAttribute(self, graph):
         #TODO we might use a precalculated edge attribute for speedup, but that
         # requires writable edge attributes in python.
         return None
 
-    def getPrecalcBackbone(self, graph, attribute, value):
+    def getBackboneFromAttribute(self, graph, attribute, value):
         msb = backbones.MultiscaleBackbone(value)
         return msb.calculate(graph)
 
@@ -175,16 +160,13 @@ class bb_RandomBackbone:
     def getName(self):
         return "RandomBackbone " + self._tag
 
-    def getShortName(self, parameter):
-        return "R " + self._tag + " "+ str(parameter)
+    def getShortName(self):
+        return "Random " + self._tag
 
-    def getAlgorithmExpr(self, parameter):
-        return "backbones.RandomBackbone(" + str(parameter) + ")"
-
-    def getPrecalcAttribute(self, graph):
+    def getAttribute(self, graph):
         return None
 
-    def getPrecalcBackbone(self, graph, attribute, value):
+    def getBackboneFromAttribute(self, graph, attribute, value):
         rb = backbones.RandomBackbone(value)
         return rb.calculate(graph)
 
