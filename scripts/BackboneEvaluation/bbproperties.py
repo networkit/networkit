@@ -1,5 +1,5 @@
-from NetworKit import *
 from scipy.spatial import distance
+from NetworKit import *
 
 #This file holds the definitions of all backbone properties, including
 #how to calculate the property's characteristic values.

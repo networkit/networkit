@@ -6,6 +6,7 @@ import time
 import copy
 from txtWriter import TxtResultWriter
 from sqliteWriter import SqliteResultWriter
+from consoleWriter import ConsoleWriter
 import string
 import pickle
 import parameters
@@ -29,13 +30,12 @@ def userInputYesNo(q):
 		else:
 			print('Respond with [y/n].')
 
-def writeResults(taskResults):
+def writeResults(taskResult):
 	#TxtResultWriter("./output"),
 	#SqliteResultWriter("./output/backbones.db")
 	writers = [ConsoleWriter()]
-	for taskResult in taskResults:
-		for writer in writers:
-			writer.receiveResult(taskResult)
+	for writer in writers:
+		writer.receiveResult(taskResult)
 
 def main():
 	#Get input parameters
@@ -51,7 +51,7 @@ def main():
 	taskResult = executeTask(task)
 
 	#Output files...
-	writeResults(taskResults)
+	writeResults(taskResult)
 
 if __name__ == "__main__":
 	sys.exit(main())
