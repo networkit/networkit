@@ -589,8 +589,7 @@ TEST_F(CommunityGTest, testGraphStructuralRandMeasure) {
 
 TEST_F(CommunityGTest, testNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
-	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(1000, 0.01);
+	Graph G(1000);
 
 	ClusteringGenerator clustGen;
 	Partition one1 = clustGen.makeOneClustering(G);
@@ -612,14 +611,14 @@ TEST_F(CommunityGTest, testNMIDistance) {
 
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distSingleton)) << "NMID of two identical singleton clusterings should be 0.0";
 
-	Partition random1 = clustGen.makeRandomClustering(G, 40);
-	Partition random2 = clustGen.makeRandomClustering(G, 40);
+	Partition continuous1 = clustGen.makeContinuousBalancedClustering(G, 40);
+	Partition continuous2 = clustGen.makeContinuousBalancedClustering(G, 70);
 
-	double distRandom = NMID.getDissimilarity(G, random1, random2);
-	INFO("NMID for two random clusterings: " , distRandom);
+	double distContinuous = NMID.getDissimilarity(G, continuous1, continuous2);
+	INFO("NMID for two continuous clusterings: " , distContinuous);
 
-	Partition intersection = PartitionIntersection().calculate(random1, random2);
-	double distSingleIntersection = NMID.getDissimilarity(G, singleton1, intersection);
+	Partition smallClusters = clustGen.makeContinuousBalancedClustering(G, 300);
+	double distSingleIntersection = NMID.getDissimilarity(G, singleton1, smallClusters);
 	EXPECT_LE(0.0, distSingleIntersection) << "NMID always needs to be 0 or positive";
 }
 
