@@ -627,6 +627,10 @@ cdef class DynBFS:
 	def __cinit__(self, Graph G, source):
 		self._this = new _DynBFS(dereference(G._this), source)
 
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
 	def run(self):
 		"""
 		Breadth-first search from source.
@@ -783,6 +787,10 @@ cdef class DynDijkstra:
 
 	def __cinit__(self, Graph G, source):
 		self._this = new _DynDijkstra(dereference(G._this), source)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
 
 	def init(self):
 		"""
@@ -3373,6 +3381,10 @@ cdef class Betweenness:
 	def __cinit__(self, Graph G, normalized=False):
 		self._this = new _Betweenness(dereference(G._this), normalized)
 
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
 	def run(self, parallel=False):
 		"""  Compute betweenness scores sequential or parallel depending on `runUnweightedInParallel`.
 
@@ -3514,6 +3526,10 @@ cdef class DynBetweenness:
 	def __cinit__(self, Graph G, bool storePredecessors = True):
 		self._this = new _DynBetweenness(dereference(G._this), storePredecessors)
 
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
 	def run(self):
 		"""  Compute betweenness scores on the initial graph.
 		"""
@@ -3598,6 +3614,10 @@ cdef class ApproxBetweenness:
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
 		self._this = new _ApproxBetweenness(dereference(G._this), epsilon, delta, diameterSamples)
 
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
 	def run(self):
 		self._this.run()
 
@@ -3674,6 +3694,10 @@ cdef class DynApproxBetweenness:
 
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, storePredecessors = True):
 		self._this = new _DynApproxBetweenness(dereference(G._this), epsilon, delta, storePredecessors)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -3757,6 +3781,10 @@ cdef class ApproxBetweenness2:
 	def __cinit__(self, Graph G, nSamples, normalized=False):
 		self._this = new _ApproxBetweenness2(dereference(G._this), nSamples, normalized)
 
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
 	def run(self):
 		self._this.run()
 
@@ -3818,6 +3846,10 @@ cdef class PageRank:
 
 	def __cinit__(self, Graph G, double damp, double tol=1e-9):
 		self._this = new _PageRank(dereference(G._this), damp, tol)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
