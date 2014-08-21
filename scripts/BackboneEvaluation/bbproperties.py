@@ -66,7 +66,10 @@ class P_Community:
         #Clustering coefficients
         _cc = properties.ClusteringCoefficient()
         ccAvgLocal = _cc.avgLocal(backbone)
-        ccGlobal = _cc.approxGlobal(backbone, min(backbone.numberOfNodes(), 10000))
+        if backbone.numberOfNodes() < 300:
+            ccGlobal = _cc.exactGlobal(backbone)
+        else:
+            ccGlobal = _cc.approxGlobal(backbone, min(backbone.numberOfNodes(), 10000))
 
         return {'randMeasure':randMeasure, 'nmi':nmi, 'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal}
 
