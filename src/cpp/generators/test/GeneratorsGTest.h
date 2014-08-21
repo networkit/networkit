@@ -17,6 +17,8 @@
 #include "../DynamicBarabasiAlbertGenerator.h"
 #include "../PubWebGenerator.h"
 #include "../DynamicPubWebGenerator.h"
+#include "../HyperbolicGenerator.h"
+#include "../DynamicHyperbolicGenerator.h"
 #include "../ErdosRenyiGenerator.h"
 #include "../ChungLuGenerator.h"
 #include "../HavelHakimiGenerator.h"
@@ -41,6 +43,18 @@ class GeneratorsGTest: public testing::Test {
 public:
 	GeneratorsGTest();
 	virtual ~GeneratorsGTest();
+
+	vector<double> getAngles(DynamicHyperbolicGenerator dynGen) {
+		return dynGen.angles;
+	}
+
+	vector<double> getRadii(DynamicHyperbolicGenerator dynGen) {
+		return dynGen.radii;
+	}
+
+	count getQuadTreeHeight(DynamicHyperbolicGenerator dynGen) {
+		return dynGen.quadTreeHeight();
+	}
 };
 
 } /* namespace NetworKit */
