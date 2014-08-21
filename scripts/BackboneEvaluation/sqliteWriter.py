@@ -3,7 +3,7 @@ import os
 
 class SqliteResultWriter():
 
-	def __init__(self, dbFile. properties):
+	def __init__(self, dbFile, properties):
 		self.dbFile = dbFile
 
 		#Create empty databse
@@ -22,8 +22,8 @@ class SqliteResultWriter():
 		#Properties table
 		query = '''CREATE TABLE properties (graph text, algorithm text, '''
 		for p in properties:
-			for key, typee in p.getTypes().iteritems():
-				query += key + ' ' + typee + ', '
+			for key in list(p.getTypes().keys()):
+				query += key + ' ' + p.getTypes()[key] + ', '
 		query = query[:-2] + ")"
 		db.execute(query)
 
@@ -37,15 +37,14 @@ class SqliteResultWriter():
 
 	def receiveResult(self, taskResult):
 		db = sqlite3.connect(self.dbFile)
-
-		#Graph
-		graphId = taskResult.task.graph.name
-		self.createRowIfNeccessary(db, 'graphs', graphId)
 		#db.execute('''UPDATE graphs SET name=?, loadingTime=? WHERE id=?''', (graphName, taskResult.loadingTime, graphId))
 
 		for row in taskResult.data:
-			algorithmId = data['algorithm']
+			#Create entries in graph and algorithm tables
+			algorithmId = row['algorithm']
+			graphId = row['graph']
 			self.createRowIfNeccessary(db, 'algorithms', algorithmId)
+			self.createRowIfNeccessary(db, 'graphs', graphId)
 
 			#Delete existing properties
 			db.execute('''DELETE FROM properties WHERE graph=? AND algorithm=?''', (graphId, algorithmId))
@@ -57,7 +56,7 @@ class SqliteResultWriter():
 				query += propertyName + ', '
 			query = query[:-2] + ") VALUES ("
 			for propertyName in propertyNames:
-				query += row[propertyName] + ', '
+				query += "'" + str(row[propertyName]) + "', "
 			query = query[:-2] +");"
 			db.execute(query)
 
