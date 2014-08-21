@@ -49,6 +49,7 @@ def executeTask(task):
 			#Calculate the attribute that is characteristic for that algorithm.
 			attribute = ialgorithm.getAttribute(graph)
 
+			#Check preconditions
 			if not graph.isWeighted() and ialgorithm.requiresWeight():
 				print("Skipping ", igraph.name, " for ", ialgorithm.getName(), " (requires weighted graph)")
 				continue
@@ -65,5 +66,9 @@ def executeTask(task):
 					propertiesDict = dict(list(propertiesDict.items()) + list(d.items()))
 
 				taskResult.data.append(propertiesDict)
+
+				#Non-parameterizable algorithms do not need to be applied several times.
+				if ialgorithm.parameterizationType() == 'None':
+					continue
 
 	return taskResult

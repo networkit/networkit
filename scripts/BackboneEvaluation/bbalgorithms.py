@@ -40,6 +40,12 @@ class bb_Original:
     def requiresWeight(self):
         return False
 
+    def getAttribute(self, graph):
+        return None
+
+    def getBackboneFromAttribute(self, graph, attribute, value):
+        return graph
+
     def parameterizationType(self):
         return "None"   #Algorithm does not take a parameter as input.
 
