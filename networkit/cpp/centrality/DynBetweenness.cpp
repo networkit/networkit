@@ -35,12 +35,13 @@ void DynBetweenness::run() {
     count z = G.upperNodeIdBound();
     scoreData.clear();
     scoreData.resize(z);
-    npaths.clear();
+/*    npaths.clear();
     npaths.resize(z);
     distances.clear();
     distances.resize(z);
     dependencies.clear();
     dependencies.resize(z);
+*/
     if (storePreds) {
         predecessors.clear();
         predecessors.resize(G.upperNodeIdBound());
