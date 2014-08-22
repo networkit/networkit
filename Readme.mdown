@@ -11,20 +11,16 @@ centrality (see next sections of this document for a list of existing features
 and a roadmap of planned features). In this respect, NetworKit is comparable
 to packages such as [NetworkX][networkx], albeit with a focus on parallelism
 and scalability. NetworKit is also a testbed for algorithm engineering and
-contains a few novel algorithms from recently published research, especially
+contains novel algorithms from recently published research, especially
 in the area of community detection (see list of publications below).
 
-As of release 2.0, NetworKit is meant to be built into a Python extension
-module. High-performance algorithms are written in C++ and exposed to Python
-via Cython. Python in turn gives us the ability to work interactively and a
-rich environment of tools for data analysis and scientific computing, such as
-`pandas`, `matplotlib`, `networkx`, `numpy` and `scipy`. A static command line
-program for community detection can still be built, but we focus our efforts
-on the interactive Python environment.
+NetworKit is a Python module. High-performance algorithms are written in C++ and exposed to Python
+via the Cython toolchain. Python in turn gives us the ability to work interactively and a
+rich environment of tools for data analysis and scientific computing.
+Furthermore, NetworKit's core can be built and used as a native library if needed.
 
 
-[networkit]: http://parco.iti.kit.edu/software/networkit.shtml
-[networkx]: http://networkx.github.com/
+[networkit]: https://networkit.iti.kit.edu/
 
 
 Help
@@ -60,46 +56,10 @@ A C++ compiler supporting C++11 (we use GCC 4.8). The compiler and linker flags 
 To avoid possible binary incompatibilities, try to build these libraries with the same compiler that will be used to build NetworKit.
 
 
-Building the C++ Core only
---------------------------
-
-We recommend [SCons](http://scons.org) for building the C++ part of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
-
-The call to SCons has the following options:
-
-	scons --optimize=<level> --target=<target>
-
-where `<level>` can be
-
-- `Dbg` 	debug
-- `Opt`		optimized
-- `Pro`		profiling
-
-and `<target>` can be
-
-- `Core`				build NetworKit as a library, required by the Python shell
-- `Tests`				build executable for the unit tests
-- `Lib`					build NetworKit as a library and create symbolic links
-
-For example, to build NetworKit as an optimized library, run
-	scons --optimize=Opt --target=Core
-
-To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
-
-Logging is enabled by default. If you want to disable logging functionality, add the following to your scons call:
-
-	--logging=no
-
-Test
-----
-
-You actually don't need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the `Unit Tests and Testing` section in our `DevGuide`.
-
-
 Building NetworKit as a Python Module
 --------------------------------------
 
-As of version 2.0 NetworKit is meant to be used as a Python extension module. To build the module, the following is required:
+To build the module, the following is required:
 
 - Python 3 (>= 3.4 recommended, 3.3 supported)
 - Cython
@@ -111,8 +71,7 @@ Additionally, the module uses the following external Python packages:
 - `scipy`
 - `matplotlib`
 
-The functionality of NetworKit available to Python is greatly reduced without these packages.
-These are best installed via `easy_install` or `pip`. (If you have multiple Python installations, be sure you use the commands matching your Python 3 version. In the following examples, `python3` and `pip3` will be used.)
+NetworKit is still usable without these packages, but with reduced functionality.The dependencies are best installed via `easy_install` or `pip`. (If you have multiple Python installations, be sure you use the commands matching your Python 3 version. In the following examples, `python3` and `pip3` will be used.)
 
 	pip3 install package_name
 
@@ -167,6 +126,46 @@ It can occur, that ipython3 itself works, but the notebook server won't start. I
 The notebook appears in the list and you can start it by clicking on it.
 
 
+
+Building the C++ Core only
+--------------------------
+
+In case you do not need NetworKit's Python functionality, this section describes how to build the C++ parts only.
+
+We recommend [SCons](http://scons.org) for building the C++ part of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
+
+The call to SCons has the following options:
+
+	scons --optimize=<level> --target=<target>
+
+where `<level>` can be
+
+- `Dbg` 	debug
+- `Opt`		optimized
+- `Pro`		profiling
+
+and `<target>` can be
+
+- `Core`				build NetworKit as a library, required by the Python shell
+- `Tests`				build executable for the unit tests
+- `Lib`					build NetworKit as a library and create symbolic links
+
+For example, to build NetworKit as an optimized library, run
+	scons --optimize=Opt --target=Core
+
+To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
+
+Logging is enabled by default. If you want to disable logging functionality, add the following to your scons call:
+
+	--logging=no
+
+Test
+----
+
+You actually don't need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the `Unit Tests and Testing` section in our `DevGuide`.
+
+
+
 NetworKit as a library
 ----------------------
 
@@ -217,6 +216,7 @@ Credits
 - Simon Bischof
 - Guido Brückner
 - Patrick Flick
+- Michael Hamann
 - Lukas Hartmann
 - Daniel Hoske
 - Gerd Lindner
@@ -262,6 +262,18 @@ The following is a list of publications on the basis of NetworKit. We ask you to
 			Journal = {arXiv preprint arXiv:1403.3005},
 			Title = {NetworKit: An Interactive Tool Suite for High-Performance Network Analysis},
 			Year = {2014}}
+
+
+		@article{DBLP:journals/corr/abs-1304-4453,
+		  author    = {Christian Staudt and Henning Meyerhenke},
+		  title     = {Engineering High-Performance Community Detection Heuristics
+		               for Massive Graphs},
+		  journal   = {CoRR},
+		  volume    = {abs/1304.4453},
+		  year      = {2013},
+		  ee        = {http://arxiv.org/abs/1304.4453},
+		  bibsource = {DBLP, http://dblp.uni-trier.de}}
+
 
 		@inproceedings{sm2013ehpcdh,
 			Author = {Christian L. Staudt and Henning Meyerhenke},
