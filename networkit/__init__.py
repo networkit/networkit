@@ -1,12 +1,13 @@
 """
-NetworKit - an interactive toolkit for high-performance network analysis
+an interactive toolkit for high-performance network analysis
+usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb
 """
 
-
-__author__ = "Christian L. Staudt (christian.staudt @ kit.edu)"
-__copyright__ = "Copyright (c) 2013 Christian Staudt"
-__license__ = "MIT License"
-__version__ = "3.2"
+#from . import version as _version
+__author__ = "Christian Staudt" #_version.author
+__copyright__ = "Copyright (c) 2014 Christan Staudt"#{0}".format(_version.author)
+__license__ = "MIT"#_version.license
+__version__ = "3.2"#_version.version
 
 
 # standard library modules
