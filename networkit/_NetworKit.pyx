@@ -601,7 +601,7 @@ cdef class BFS:
 cdef extern from "cpp/graph/DynBFS.h":
 	cdef cppclass _DynBFS "NetworKit::DynBFS":
 		_DynBFS(_Graph G, node source) except +
-		void init() except +
+		void run() except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 		void update(vector[_GraphEvent]) except +
@@ -627,7 +627,11 @@ cdef class DynBFS:
 	def __cinit__(self, Graph G, source):
 		self._this = new _DynBFS(dereference(G._this), source)
 
-	def init(self):
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
 		"""
 		Breadth-first search from source.
 
@@ -637,7 +641,7 @@ cdef class DynBFS:
 			Vector of unweighted distances from source node, i.e. the
 			length (number of edges) of the shortest path from source to any other node.
 		"""
-		self._this.init()
+		self._this.run()
 
 	def getDistances(self):
 		"""
@@ -783,6 +787,10 @@ cdef class DynDijkstra:
 
 	def __cinit__(self, Graph G, source):
 		self._this = new _DynDijkstra(dereference(G._this), source)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
 
 	def init(self):
 		"""
@@ -3373,6 +3381,10 @@ cdef class Betweenness:
 	def __cinit__(self, Graph G, normalized=False):
 		self._this = new _Betweenness(dereference(G._this), normalized)
 
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
 	def run(self, parallel=False):
 		"""  Compute betweenness scores sequential or parallel depending on `runUnweightedInParallel`.
 
@@ -3382,6 +3394,155 @@ cdef class Betweenness:
 			If set to True the computation is done in parallel.
 		"""
 		self._this.run(parallel)
+
+	def scores(self):
+		""" Get a vector containing the betweenness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the betweenness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The betweenness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+cdef extern from "cpp/centrality/Betweenness2.h":
+	cdef cppclass _Betweenness2 "NetworKit::Betweenness2":
+		_Betweenness2(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class Betweenness2:
+	"""
+		Betweenness2(G, normalized=False)
+
+		Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
+		then set `normalized` to True.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		normalized : bool, optional
+			Set this parameter to True if scores should be normalized in the interval [0,1].
+	"""
+	cdef _Betweenness2* _this
+
+	def __cinit__(self, Graph G, normalized=False):
+		self._this = new _Betweenness2(dereference(G._this), normalized)
+
+	def run(self):
+		"""  Compute betweenness scores sequential or parallel depending on `runUnweightedInParallel`.
+		"""
+		self._this.run()
+
+	def scores(self):
+		""" Get a vector containing the betweenness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the betweenness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The betweenness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+
+cdef extern from "cpp/centrality/DynBetweenness.h":
+	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
+		_DynBetweenness(_Graph, bool) except +
+		void run() except +
+		void update(_GraphEvent) except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class DynBetweenness:
+	"""
+		DynBetweenness(G, [storePredecessors])
+
+		Constructs the Betweenness class for the dynamic Graph `G`.
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		storePredecessors : bool
+			store lists of predecessors?
+	"""
+	cdef _DynBetweenness* _this
+
+	def __cinit__(self, Graph G, bool storePredecessors = True):
+		self._this = new _DynBetweenness(dereference(G._this), storePredecessors)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute betweenness scores on the initial graph.
+		"""
+		self._this.run()
+
+	def update(self, ev):
+		""" Updates the betweenness centralities after the edge insertion.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -3433,7 +3594,7 @@ cdef class ApproxBetweenness:
 	""" Approximation of betweenness centrality according to algorithm described in
  	Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
 
- 	ApproxBetweenness(G, epsiolon=0.01, delta=0.1)
+ 	ApproxBetweenness(G, epsilon=0.01, delta=0.1)
 
  	The algorithm approximates the betweenness of all vertices so that the scores are
 	within an additive error epsilon with probability at least (1- delta).
@@ -3452,6 +3613,10 @@ cdef class ApproxBetweenness:
 
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
 		self._this = new _ApproxBetweenness(dereference(G._this), epsilon, delta, diameterSamples)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -3495,6 +3660,95 @@ cdef class ApproxBetweenness:
 	def numberOfSamples(self):
 		return self._this.numberOfSamples()
 
+cdef extern from "cpp/centrality/DynApproxBetweenness.h":
+	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness":
+		_DynApproxBetweenness(_Graph, double, double, bool) except +
+		void run() except +
+		void update(vector[_GraphEvent]) except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class DynApproxBetweenness:
+	""" New dynamic algorithm for the approximation of betweenness centrality with
+	a guaranteed error
+
+	DynApproxBetweenness(G, epsiolon=0.01, delta=0.1, [storePredecessors])
+
+	The algorithm approximates the betweenness of all vertices so that the scores are
+	within an additive error epsilon with probability at least (1- delta).
+	The values are normalized by default.
+
+	Parameters
+	----------
+	G : Graph
+		the graph
+	epsilon : double, optional
+		maximum additive error
+	delta : double, optional
+		probability that the values are within the error guarantee
+	storePredecessors : bool
+		store lists of predecessors?
+	"""
+	cdef _DynApproxBetweenness* _this
+
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, storePredecessors = True):
+		self._this = new _DynApproxBetweenness(dereference(G._this), epsilon, delta, storePredecessors)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+
+	def update(self, batch):
+		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.update(_batch)
+
+	def scores(self):
+		""" Get a vector containing the betweenness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the betweenness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The betweenness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
 
 cdef extern from "cpp/centrality/ApproxBetweenness2.h":
 	cdef cppclass _ApproxBetweenness2 "NetworKit::ApproxBetweenness2":
@@ -3526,6 +3780,10 @@ cdef class ApproxBetweenness2:
 
 	def __cinit__(self, Graph G, nSamples, normalized=False):
 		self._this = new _ApproxBetweenness2(dereference(G._this), nSamples, normalized)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -3588,6 +3846,10 @@ cdef class PageRank:
 
 	def __cinit__(self, Graph G, double damp, double tol=1e-9):
 		self._this = new _PageRank(dereference(G._this), damp, tol)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
