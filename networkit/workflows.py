@@ -1,11 +1,9 @@
 """ This module provides convenient workflows constructed from NetworKit functions."""
 
-
-from NetworKit import *
-
 import operator
 import logging
 
+from networkit import properties, graph
 
 def extractLargestComponent(G):
 	"""
