@@ -36,9 +36,9 @@ void DynBetweenness::run() {
     scoreData.clear();
     scoreData.resize(z);
     npaths.clear();
-    nPaths.resize(z);
+    npaths.resize(z);
     distances.clear();
-    distance.resize(z);
+    distances.resize(z);
     dependencies.clear();
     dependencies.resize(z);
     if (storePreds) {
