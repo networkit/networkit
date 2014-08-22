@@ -71,7 +71,7 @@ def components(G):
 	if G.isDirected():
 		cc = StronglyConnectedComponents(G)
 	else:
-		cc = ParallelConnectedComponents(G, True)	# performs best in parallel on large graphs
+		cc = ConnectedComponents(G)	
 	cc.run()
 	components = cc.getPartition()
 	nComponents = components.numberOfSubsets()
