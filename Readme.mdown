@@ -80,7 +80,7 @@ Then, switch to the top folder and run the script `setup.py` with the following 
 
 	python3 setup.py build_ext --inplace [--optimize=V] [-jX]
 
-The script will call scons to compile NetworKit as a library and then build the extensions in the folder `src/python`. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the options `--optimize=V` and `-jN` the same way it can be done to a manual scons call, to specify the optimization level and the number of threads used for compilation.
+The script will call scons to compile NetworKit as a library and then build the extensions in the top folder. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the options `--optimize=V` and `-jN` the same way it can be done to a manual scons call, to specify the optimization level and the number of threads used for compilation.
 The setup script provides more functionality:
 
 	python3 setup.py develop [--uninstall] [--optimize=V] [-jX]
@@ -173,7 +173,7 @@ It is also possible to use NetworKit as a library. Therefore, choose the target 
 
 	#include <NetworKit/graph/Graph.h>
 
-NetworKit is a symlink to the directory `src/cpp`, so the directory structure from the repository is valid. To compile your application, you need to add the paths for the header files and the location of the library. There is a simple source file to demonstrate this. Feel free to compile `LibDemo.cpp` as follows:
+NetworKit is a symlink to the directory `networkit/cpp`, so the directory structure from the repository is valid. To compile your application, you need to add the paths for the header files and the location of the library. There is a simple source file to demonstrate this. Feel free to compile `LibDemo.cpp` as follows:
 
 	g++ -o LibDemo -std=c++11 -I/path/to/repository
 		-L/path/to/repository LibDemo.cpp -lNetworKit -fopenmp
