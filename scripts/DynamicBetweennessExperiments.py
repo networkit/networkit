@@ -1,6 +1,6 @@
-from NetworKit import *
-from dynamic import *
-from centrality import *
+from networkit import *
+from networkit.dynamic import *
+from networkit.centrality import *
 import pandas as pd
 
 import random
@@ -108,7 +108,7 @@ def test(G, nEdges, batchSize, epsilon, delta):
 
 if __name__ == "__main__":
 	setNumberOfThreads(1)
-	size = 5000
+	size = 50000
 
 	for i in range(9):
 		batchSize = 2**i
