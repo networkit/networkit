@@ -69,7 +69,7 @@ sample.close()
 
 
 gcc_version_satisfied = False
-gcc_versions = ["","-4.9","-4.8"] #"4.7"
+gcc_versions = ["","-4.9","-4.8"] #"-4.7"
 gcc = ""
 v = 0
 while gcc_version_satisfied == False and v < len(gcc_versions):
@@ -124,7 +124,10 @@ sys.argv = args
 
 def build_NetworKit():
 	#os.chdir("./networkit")
-	comp_cmd = "scons --optimize={0} --target=Core --compiler={1} -j{2}".format(optimize,gcc,jobs)
+	if os.path.isfile("build.conf"):
+		comp_cmd = "scons --optimize={0} --target=Core -j{1}".format(optimize,jobs)
+	else:
+		comp_cmd = "scons --optimize={0} --target=Core --compiler={1} -j{2}".format(optimize,gcc,jobs)
 	print("initializing NetworKit compilation with: {0}".format(comp_cmd))
 	comp_proc = Popen(shlex.split(comp_cmd))
 	comp_proc.wait()
