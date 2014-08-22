@@ -69,18 +69,18 @@ sample.close()
 
 
 gcc_version_satisfied = False
-gcc_versions = ["4.9","4.8","4.7"]
+gcc_versions = ["","-4.9","-4.8"] #"4.7"
 gcc = ""
 v = 0
 while gcc_version_satisfied == False and v < len(gcc_versions):
 	try:
-		comp_cmd = "g++-{0} -o test sample.cpp -fopenmp -std=c++11".format(gcc_versions[v])
+		comp_cmd = "g++{0} -o test sample.cpp -fopenmp -std=c++11".format(gcc_versions[v])
 		#print(comp_cmd)
 		comp_proc = Popen(shlex.split(comp_cmd))
 		comp_proc.wait()
 		if (comp_proc.returncode == 0):
 			gcc_version_satisfied = True
-			gcc = "g++-{0}".format(gcc_versions[v])
+			gcc = "g++{0}".format(gcc_versions[v])
 			#print("your latest gcc is {0}".format(gcc))
 	except:
 		foo = 0
@@ -92,7 +92,7 @@ if gcc_version_satisfied:
 	os.environ["CC"] = gcc
 	os.environ["CXX"] = gcc
 else:
-	print("please install GCC 4.7 or later to be able to install NetworKit")
+	print("please install GCC 4.8 or later to be able to install NetworKit")
 	exit(1)
 
 
