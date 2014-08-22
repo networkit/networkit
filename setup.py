@@ -35,7 +35,7 @@ try:
 		abortInstallation = True
 except:
 	print("WARNING: unable to check whether build system SCons is installed")
-	
+
 #prepare sample.cpp file necessary to determine gcc
 sample = open("sample.cpp", "w")
 sample.write("""/*****************************************************************************
@@ -71,14 +71,14 @@ sample.close()
 
 
 gcc_version_satisfied = False
-gcc_versions = ["","-4.9","-4.8"] #"-4.7"
+gcc_versions = ["","-4.9","-4.8","-4.7"]
 gcc = ""
 v = 0
 while gcc_version_satisfied == False and v < len(gcc_versions):
 	try:
 		comp_cmd = "g++{0} -o test sample.cpp -fopenmp -std=c++11".format(gcc_versions[v])
 		#print(comp_cmd)
-		comp_proc = Popen(shlex.split(comp_cmd))
+		comp_proc = Popen(shlex.split(comp_cmd),stderr=None, stdout=None)
 		comp_proc.wait()
 		if (comp_proc.returncode == 0):
 			gcc_version_satisfied = True
@@ -86,7 +86,7 @@ while gcc_version_satisfied == False and v < len(gcc_versions):
 			#print("your latest gcc is {0}".format(gcc))
 	except:
 		foo = 0
-		#print("g++-{0} is not installed".format(gcc_versions[v]))
+		#print("g++{0} is not installed".format(gcc_versions[v]))
 	v += 1
 os.remove("sample.cpp")
 if gcc_version_satisfied:
