@@ -46,7 +46,7 @@ if args.gtest_filter and args.target != 'Tests':
 	sys.exit()
 
 # hard coded configuration
-sourceDirectory = 'src/cpp'
+sourceDirectory = 'networkit/cpp'
 workingDirectory = None
 
 def buildAntTest():
