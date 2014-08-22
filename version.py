@@ -51,4 +51,6 @@ classifiers = [
 ]
 
 install_requires = []
-
+# not used because it can mess up pip's installation process
+# therefore, setup.py prints warnings for each package missing (tabulate, readline, scipy, numpy, matplotlib, networkx)
+# or terminates the installation process (gcc, scons and cython)

@@ -9,8 +9,16 @@ from setuptools import setup
 from setuptools import Extension
 from setuptools import find_packages
 #from distutils.extension import Extension
-from Cython.Build import cythonize
-from Cython.Distutils import build_ext
+
+abortInstallation = False
+errorMessages = []
+warnMessages = []
+try:
+	from Cython.Build import cythonize
+	from Cython.Distutils import build_ext
+except:
+	abortInstallation = True
+	errorMessages.append("ERROR: Cython not installed. Please install Cython and rerun")
 
 import multiprocessing
 import os
@@ -23,17 +31,11 @@ from argparse import ArgumentParser
 
 try:
 	if shutil.which("scons") is None:
-		print("ERROR: Build system SCons is not installed. Please install and rerun setup.py")
-		exit(1)
+		errorMessages.append("ERROR: Build system SCons is not installed. Please install and rerun")
+		abortInstallation = True
 except:
 	print("WARNING: unable to check whether build system SCons is installed")
 	
-
-# remove MANIFEST.in when networkit is not in the repository (i.e. a download pypi/zip)
-if os.path.isfile("MANIFEST.in") and not os.path.exists(".hg"):
-	os.remove("MANIFEST.in")
-
-
 #prepare sample.cpp file necessary to determine gcc
 sample = open("sample.cpp", "w")
 sample.write("""/*****************************************************************************
@@ -92,10 +94,59 @@ if gcc_version_satisfied:
 	os.environ["CC"] = gcc
 	os.environ["CXX"] = gcc
 else:
-	print("please install GCC 4.8 or later to be able to install NetworKit")
+	errorMessages.append("ERROR: Please install GCC/g++ 4.8 or later and rerun")
+	abortInstallation = True
+
+
+# abort installation in case either Cython, Scons or the compiler requirements aren't satisfied
+if abortInstallation:
+	for msg in errorMessages:
+		print(msg)
 	exit(1)
 
+# check for external packages and collect warning messages
+try:
+	import scipy
+	del scipy
+except:
+	warnMessages.append("WARNING: SciPy is not installed; to use all of networkit, please install SciPy")
+try:
+	import numpy
+	del numpy
+except:
+	warnMessages.append("WARNING: numpy is not installed; to use all of networkit, please install numpy")
 
+try:
+	import readline
+	del readline
+except:
+	warnMessages.append("WARNING: readline is not installed; to use all of networkit, please install readline")
+
+try:
+	import matplotlib
+	del matplotlib
+except:
+	warnMessages.append("WARNING: matplotlib is not installed; to use all of networkit, please install matplotlib")
+
+try:
+	import networkx
+	del networkx
+except:
+	warnMessages.append("WARNING: networkx is not installed; to use all of networkit, please install networkx")
+
+try:
+	import tabulate
+	del tabulate
+except:
+	warnMessages.append("WARNING: tabulate is not installed; to use all of networkit, please install tabulate")
+
+# remove MANIFEST.in when networkit is not in the repository (i.e. a download pypi/zip)
+if os.path.isfile("MANIFEST.in") and not os.path.exists(".hg"):
+	os.remove("MANIFEST.in")
+
+# remove _NetworKit.cpp, since it is very unlikely there is a scenario, where it's necessary to keep the file.
+if os.path.isfile("networkit/_NetworKit.cpp"):
+	os.remove("networkit/_NetworKit.cpp")
 
 # get the optional arguments for the compilation
 parser = ArgumentParser()
@@ -118,9 +169,6 @@ args.reverse()
 args.append(__file__)
 args.reverse() # this is not a very nice way to do this for sure
 sys.argv = args
-#for e in sys.argv:
-#	print(e)
-#print("################")
 
 def build_NetworKit():
 	#os.chdir("./networkit")
@@ -183,19 +231,16 @@ elif "clean" in sys.argv:
  #except:
 	#os.environ["CC"] = "g++"
 	#os.environ["CXX"] = "g++"
-
 #print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
+
 src = ["networkit/_NetworKit.pyx"]	# list of source files
-
- #print("source files: {0}".format(src))
-
 modules = [Extension("_NetworKit",
-					src,
-					language = "c++",
-					extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
-					extra_link_args=["-fopenmp", "-std=c++11"],
-					libraries=["NetworKit-Core-{0}".format(optimize)],
-					library_dirs=["./"])]
+	src,
+	language = "c++",
+	extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
+	extra_link_args=["-fopenmp", "-std=c++11"],
+	libraries=["NetworKit-Core-{0}".format(optimize)],
+	library_dirs=["./"])]
 
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}
@@ -210,17 +255,19 @@ setup(
 	description	= version.description,
 	long_description= version.long_description,
 	license		= version.license,
-#	packages = ["networkit"],
-#	package_dir ={"networkit" : "./","networkit.gephi":"networkit","networkit.viztools":"networkit"},
 	packages	= find_packages(),
-#	packages = ["networkit","networkit.gephi","networkit.viztools"].append(modules),
-#	package_dir = packages_dir,
 	keywords	= version.keywords,
 	platforms	= version.platforms,
 	classifiers	= version.classifiers,
 	cmdclass	= {"build_ext": build_ext},
 	ext_modules	= modules,
-	install_requires= version.install_requires,
-	zip_safe	= False)#,
+#	install_requires= version.install_requires,
+	zip_safe	= False)
+
+# print warnings about missing packages
+if len(warnMessages) > 0 and "install" in sys.argv:
+	for msg in warnMessages:
+		print(msg)
+	print("Save this list and check for each package how to install it on your system.")
 
  #print("[Done] setup.py")
