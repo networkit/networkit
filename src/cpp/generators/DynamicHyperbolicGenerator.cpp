@@ -92,6 +92,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 	assert(quad.size() == nodes);
 	vector<GraphEvent> result;
 	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 
 	for (index step = 0; step < nSteps; step++) {
 		count oldStreamMarker = result.size();
@@ -100,7 +101,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 			//nodes are stationary, growing factors
 			double newfactor = currentfactor + factorgrowth;
 /**
- * most efficient way: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array. TODO: implement
+ * TODO: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array.
  */
 			#pragma omp parallel for
 			for (index i = 0; i < nodes; i++) {
@@ -112,15 +113,18 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				std::sort(oldset.begin(), oldset.end());
 				std::sort(newset.begin(), newset.end());
 				vector<index> difference(newset.size());
+
+				//get new edges
 				auto it = std::set_difference(newset.begin(), newset.end(), oldset.begin(), oldset.end(), difference.begin());
+
+				//keep only those pointing to higher node indices, we don't want any multiedges
+				it = std::remove_if(difference.begin(), it, [i](index edge){return i >= edge;});
 				difference.resize(it - difference.begin());
 
 				#pragma omp critical
 				{
 					for (auto edge : difference) {
-						if (i < edge) {
-							result.emplace_back(GraphEvent::EDGE_ADDITION, i, edge);
-						}
+						result.emplace_back(GraphEvent::EDGE_ADDITION, i, edge);
 					}
 				}
 
@@ -137,7 +141,10 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 					oldNeighbours.push_back(quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor));
 				}
 			}
-			//#pragma omp parallel for
+			/**
+			 * Tried to parallelize this, didn't bring any benefit.
+			 * Not surprising, since most of the work - manipulating the QuadTree - needs to be done in a critical section
+			 */
 			for (index j = 0; j < toWiggle.size(); j++) {
 				//wiggle this node!
 				double hyperbolicRadius = HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[toWiggle[j]]);
@@ -169,16 +176,15 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 
 				//bounce off the boundary
 				newradius = HyperbolicSpace::hyperbolicRadiusToEuclidean(newradius);
-				if (newradius >= HyperbolicSpace::hyperbolicRadiusToEuclidean(R)) newradius = std::nextafter(newradius, std::numeric_limits<double>::lowest());
+				if (newradius >= r) newradius = std::nextafter(newradius, std::numeric_limits<double>::lowest());
 
-				//#pragma omp critical (quadtree)
-				{
-					bool removed = quad.removeContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
-					assert(removed);
-					angles[toWiggle[j]] = newphi;
-					radii[toWiggle[j]] = newradius;
-					quad.addContent(toWiggle[j], newphi, newradius);
-				}
+				//updating Quadtree
+				bool removed = quad.removeContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
+				assert(removed);
+				angles[toWiggle[j]] = newphi;
+				radii[toWiggle[j]] = newradius;
+				quad.addContent(toWiggle[j], newphi, newradius);
+
 			}
 
 			//now get the new edges and see what changed
@@ -206,7 +212,11 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				}
 			}
 
-			//make sure no duplicates happen
+			/**
+			 * since we didn't know whether the other endpoint of an edge was wiggled or not, we may
+			 * have added some of them twice.
+			 * Remove the doubles:
+			 */
 			for (auto it = result.begin()+oldStreamMarker; it < result.end(); it++) {
 				if (it->u > it->v) std::swap(it->u, it->v);
 			}
