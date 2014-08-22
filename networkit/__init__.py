@@ -3,11 +3,10 @@ an interactive toolkit for high-performance network analysis
 usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb
 """
 
-#from . import version as _version
-__author__ = "Christian Staudt" #_version.author
-__copyright__ = "Copyright (c) 2014 Christan Staudt"#{0}".format(_version.author)
-__license__ = "MIT"#_version.license
-__version__ = "3.2"#_version.version
+__author__ = "Christian Staudt" 
+__copyright__ = "Copyright (c) 2014 Christan Staudt"
+__license__ = "MIT"
+__version__ = "3.3"
 
 
 # standard library modules
