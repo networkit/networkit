@@ -4,7 +4,7 @@ version='3.3'
 
 url='https://networkit.iti.kit.edu/'
 
-download_url='https://testpypi.python.org/pypi/networkit'
+download_url='https://pypi.python.org/pypi/networkit'
 
 license='MIT'
 
