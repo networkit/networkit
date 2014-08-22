@@ -1,6 +1,6 @@
 name='networkit'
 
-version='3.2'
+version='3.3'
 
 url='https://networkit.iti.kit.edu/'
 
