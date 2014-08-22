@@ -47,16 +47,16 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	updater.update(removeStream)
 	# run the algorithms on the inital graph
 	bc = Betweenness(G)
-	print ("Running bc")
+	print("Running bc")
 	bc.run()
 	dynBc = DynBetweenness(G, True)
-	print ("Running dyn bc with predecessors")
+	print("Running dyn bc with predecessors")
 	dynBc.run()
 	apprBc = ApproxBetweenness(G, epsilon, delta)
-	print ("Running approx bc")
+	print("Running approx bc")
 	apprBc.run()
 	dynApprBc = DynApproxBetweenness(G, epsilon, delta, True)
-	print ("Running dyn approx bc with predecessors")
+	print("Running dyn approx bc with predecessors")
 	dynApprBc.run()
 	# apply the batches
 	nExperiments = nEdges // batchSize
@@ -64,11 +64,11 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	timesDynBc = []
 	timesApprBc = []
 	timesDynApprBc = []
-	for i in range (0, nExperiments):
+	for i in range(nExperiments):
 		batch = addStream[i*batchSize : (i+1)*batchSize]
 		# add the edges of batch to the graph
 		totalTime = 0.0
-		for j in range (0, batchSize):
+		for j in range(0, batchSize):
 			updater.update([batch[j]])
 			# update the betweenness with the dynamic exact algorithm
 			t = stopwatch.Timer()
@@ -80,24 +80,24 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		bc.run()
 		x = t.stop()
 		timesBc.append(x)
-		print ("Exact BC")
-		print (x)
-		print ("Speedup Dyn BC (with preds)")
-		print (x/totalTime)
+		print("Exact BC")
+		print(x)
+		print("Speedup Dyn BC (with preds)")
+		print(x/totalTime)
 		# update the betweenness with the static approximated algorithm
 		t = stopwatch.Timer()
 		apprBc.run()
 		x = t.stop()
 		timesApprBc.append(x)
-		print ("ApprBC")
-		print (x)
+		print("ApprBC")
+		print(x)
 		# update the betweenness with the dynamic approximated algorithm
 		t = stopwatch.Timer()
 		dynApprBc.update(batch)
 		y = t.stop()
 		timesDynApprBc.append(y)
-		print ("Speedup DynApprBC (with preds)")
-		print (x/y)
+		print("Speedup DynApprBC (with preds)")
+		print(x/y)
 	a = pd.Series(timesBc)
 	b = pd.Series(timesDynBc)
 	c = pd.Series(timesApprBc)
@@ -108,16 +108,18 @@ def test(G, nEdges, batchSize, epsilon, delta):
 
 if __name__ == "__main__":
 	setNumberOfThreads(1)
-	size = 10000
-	G = generators.DorogovtsevMendesGenerator(size).generate()
-	cc = properties.ConnectedComponents(G)
-	cc.run()
-	if (cc.numberOfComponents() == 1) :
-		nEdges = 100
-		batchSize = 10
-		epsilon = 0.1
-		delta = 0.1
-		df = test(G, nEdges, batchSize, epsilon, delta)
-		df.to_csv("results/unweighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
-	else:
-		print ("The generated graph is not connected.")
+	size = 5000
+
+	for i in range(9):
+		batchSize = 2**i
+		G = generators.DorogovtsevMendesGenerator(size).generate()
+		cc = properties.ConnectedComponents(G)
+		cc.run()
+		if (cc.numberOfComponents() == 1) :
+			nEdges = batchSize * 5
+			epsilon = 0.1
+			delta = 0.01
+			df = test(G, nEdges, batchSize, epsilon, delta)
+			df.to_csv("results/unweighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
+		else:
+			print("The generated graph is not connected.")
