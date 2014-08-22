@@ -88,7 +88,7 @@ private:
 	 * @param i The index
 	 * @return The weight of the outgoing edge or defaultEdgeWeight if the graph is unweighted
 	 */
-	template<bool weighted>
+	template<bool hasWeights>
 	inline edgeweight getOutEdgeWeight(node u, index i) const;
 
 	/**
@@ -98,7 +98,7 @@ private:
 	 * @param i The index in the incoming edge array
 	 * @return The weight of the incoming edge
 	 */
-	template<bool weighted>
+	template<bool hasWeights>
 	inline edgeweight getInEdgeWeight(node u, index i) const;
 
 	/**
@@ -128,19 +128,19 @@ private:
 	 * @param v The target node of the edge
 	 * @return If the node shall be used, i.e. if v is not none and in the undirected case if u >= v
 	 */
-	template<bool directed>
+	template<bool graphIsDirected>
 	inline bool useEdgeInIteration(node u, node v) const;
 
 	/**
 	 * @brief Implementation of the for loop for outgoing edges of u
 	 *
-	 * Note: If all (valid) outgoing edges shall be considered, directed needs to be set to true
+	 * Note: If all (valid) outgoing edges shall be considered, graphIsDirected needs to be set to true
 	 *
 	 * @param u The node
 	 * @param handle The handle that shall be executed for each edge
 	 * @return void
 	 */
-	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 	inline void forOutEdgesOfImpl(node u, L handle) const;
 
 	/**
@@ -152,7 +152,7 @@ private:
 	 * @param handle The handle that shall be executed for each edge
 	 * @return void
 	 */
-	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 	inline void forInEdgesOfImpl(node u, L handle) const;
 
 	/**
@@ -161,7 +161,7 @@ private:
 	 * @param handle The handle that shall be executed for all edges
 	 * @return void
 	 */
-	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 	inline void forEdgeImpl(L handle) const;
 
 	/**
@@ -170,7 +170,7 @@ private:
 	 * @param handle The handle that shall be executed for all edges
 	 * @return void
 	 */
-	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 	inline void parallelForEdgesImpl(L handle) const;
 
 	/**
@@ -179,7 +179,7 @@ private:
 	 * @param handle The handle that shall be executed for all edges
 	 * @return void
 	 */
-	template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 	inline double parallelSumForEdgesImpl(L handle) const;
 	
 	/*
@@ -954,7 +954,7 @@ void Graph::parallelForNodePairs(L handle) const {
 
 /* HELPERS */
 
-template<bool weighted> // implementation for weighted == true
+template<bool hasWeights> // implementation for weighted == true
 inline edgeweight Graph::getOutEdgeWeight(node u, index i) const {
 	return outEdgeWeights[u][i];
 };
@@ -964,7 +964,7 @@ inline edgeweight Graph::getOutEdgeWeight<false>(node, index) const {
 	return defaultEdgeWeight;
 };
 
-template<bool weighted> // implementation for weighted == true
+template<bool hasWeights> // implementation for weighted == true
 inline edgeweight Graph::getInEdgeWeight(node u, index i) const {
 	return inEdgeWeights[u][i];
 };
@@ -996,35 +996,35 @@ inline edgeid Graph::getInEdgeId<false>(node, index) const {
 }
 
 
-template<bool directed> // implementation for directed == true
+template<bool graphIsDirected> // implementation for graphIsDirected == true
 inline bool Graph::useEdgeInIteration(node u, node v) const {
 	return v != none;
 }
 
-template<> // implementation for directed == false
+template<> // implementation for graphIsDirected == false
 inline bool Graph::useEdgeInIteration<false>(node u, node v) const {
 	return u >= v;
 }
 
-template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
 	for (index i = 0; i < outEdges[u].size(); ++i) {
 		node v = outEdges[u][i];
 
-		if (useEdgeInIteration<directed>(u, v)) {
-			edgeLambda(handle, u, v, getOutEdgeWeight<weighted>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
+		if (useEdgeInIteration<graphIsDirected>(u, v)) {
+			edgeLambda(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
 		}
 	}
 }
 
-template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 inline void Graph::forInEdgesOfImpl(node u, L handle) const {
-	if (directed) {
+	if (graphIsDirected) {
 		for (index i = 0; i < inEdges[u].size(); i++) {
 			node v = inEdges[u][i];
 
 			if (useEdgeInIteration<true>(u, v)) {
-				edgeLambda<L, true, nullptr>(handle, v, u, getInEdgeWeight<weighted>(u, i), getInEdgeId<hasEdgeIds>(u, i));
+				edgeLambda<L, true, nullptr>(handle, v, u, getInEdgeWeight<hasWeights>(u, i), getInEdgeId<hasEdgeIds>(u, i));
 			}
 		}
 	} else {
@@ -1032,28 +1032,28 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
 			node v = outEdges[u][i];
 
 			if (useEdgeInIteration<true>(u, v)) {
-				edgeLambda<L, true, nullptr>(handle, v, u, getOutEdgeWeight<weighted>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
+				edgeLambda<L, true, nullptr>(handle, v, u, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
 			}
 		}
 	}
 }
 
-template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 inline void Graph::forEdgeImpl(L handle) const {
 	for (node u = 0; u < z; ++u) {
-		forOutEdgesOfImpl<directed, weighted, hasEdgeIds, L>(u, handle);
+		forOutEdgesOfImpl<graphIsDirected, hasWeights, hasEdgeIds, L>(u, handle);
 	}
 }
 
-template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 inline void Graph::parallelForEdgesImpl(L handle) const {
 	#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
-		forOutEdgesOfImpl<directed, weighted, hasEdgeIds, L>(u, handle);
+		forOutEdgesOfImpl<graphIsDirected, hasWeights, hasEdgeIds, L>(u, handle);
 	}
 }
 
-template<bool directed, bool weighted, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
 inline double Graph::parallelSumForEdgesImpl(L handle) const {
 	double sum = 0.0;
 
@@ -1065,8 +1065,8 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
 
 			// undirected, do not iterate over edges twice
 			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-			if (useEdgeInIteration<directed>(u, v)) {
-				sum += edgeLambda(handle, u, v, getOutEdgeWeight<weighted>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
+			if (useEdgeInIteration<graphIsDirected>(u, v)) {
+				sum += edgeLambda(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
 			}
 		}
 	}
