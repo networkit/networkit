@@ -24,7 +24,7 @@ import multiprocessing
 import os
 import shutil
 
-from subprocess import Popen
+from subprocess import Popen, DEVNULL
 import shlex
 
 from argparse import ArgumentParser
@@ -78,7 +78,7 @@ while gcc_version_satisfied == False and v < len(gcc_versions):
 	try:
 		comp_cmd = "g++{0} -o test sample.cpp -fopenmp -std=c++11".format(gcc_versions[v])
 		#print(comp_cmd)
-		comp_proc = Popen(shlex.split(comp_cmd),stderr=None, stdout=None)
+		comp_proc = Popen(shlex.split(comp_cmd), stdout=DEVNULL, stderr=DEVNULL)
 		comp_proc.wait()
 		if (comp_proc.returncode == 0):
 			gcc_version_satisfied = True

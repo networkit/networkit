@@ -93,10 +93,10 @@ will remove the extensions and its build folder as well as call scons to remove 
 
 Note: All of the above installation command may require `sudo` privileges depending on your system, so try this accordingly.
 
-Assuming the extension module `NetworKit` exists, it can be imported in python:
+Assuming the extension module `_NetworKit` exists, it can be imported in python:
 
 	python3
-	>>> import NetworKit
+	>>> import networkit
 
 
 Interactive Work with NetworKit
@@ -107,10 +107,17 @@ With NetworKit as a Python extension module, you get access to native high-perfo
 After the requirements are satisfied, start IPython and import NetworKit.
 
 	ipython3
-	>>> from NetworKit import *
+	>>> from networkit import *
 
 Now you should be able to use NetworKit interactively. For usage examples, refer to the `UserGuide`.
 
+
+pip install networkit
+---------------------
+
+It is now possible to install Networkit via `[sudo] pip[3] install networkit`. While this is supposed to be convenient, there are some restrictions. Before you use pip to install NetworKit, Cython, SCons and g++ need to be installed. During installation, the setup will check if the external packages networkit uses are available and print warnings at the end of the installation process. If you don't see any warnings, your system should be ready to use NetworKit.
+
+You can remove NetworKit completely by using the command `[sudo] pip[3] uninstall networkit`.
 
 IPython Notebook
 ----------------
