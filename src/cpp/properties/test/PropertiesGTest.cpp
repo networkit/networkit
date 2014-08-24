@@ -463,6 +463,24 @@ TEST_F(PropertiesGTest, testEffectiveDiameter) {
 	// TODO: write more tests - KONECT database contains values for effective diameter, use them to test your results
 }
 
+TEST_F(PropertiesGTest, testEffectiveDiameterWithMissingNodes) {
+	GraphGenerator generator;
+
+	Graph G = generator.makeErdosRenyiGraph(1000, 0.01);
+
+	for (node u = 0; u < 100; ++u) {
+		G.forNeighborsOf(u, [&](node v) {
+			G.removeEdge(u, v);
+		});
+
+		G.removeNode(u);
+	}
+
+	count effectiveDiameter = EffectiveDiameter::effectiveDiameter(G);
+	count exactDiameter = Diameter::exactDiameter(G);
+	EXPECT_LE(effectiveDiameter, exactDiameter);
+}
+
 
 
 

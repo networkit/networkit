@@ -13,6 +13,7 @@
 #include <iterator>
 #include <stdlib.h>
 #include <omp.h>
+#include <map>
 
 namespace NetworKit {
 /*
