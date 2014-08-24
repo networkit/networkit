@@ -6,7 +6,7 @@ import ConfigParser
 home_path = os.environ['HOME']
 
 # SOURCE files (including executable) will be gathered here
-srcDir = "src/cpp"
+srcDir = "networkit/cpp"
 def getSourceFiles(target, optimize):
 	source = []
 
@@ -50,48 +50,69 @@ def getSourceFiles(target, optimize):
 	return source
 
 
+AddOption("--compiler",
+	dest="compiler",
+	type="string",
+	nargs=1,
+	action="store",
+	help="used to pass gcc version from setup.py to SConstruct")
+
+
 # ENVIRONMENT
 
 ## read environment settings from configuration file
 
 env = Environment()
-confPath = "build.conf"
-if not os.path.isfile(confPath):
-	print("The configuration file `build.conf` does not exist. You need to create it.")
-	print("Use the file build.conf.example to create your build.conf")
-	Exit(1)
+#print(get
+compiler = ""
+try:
+	compiler = GetOption("compiler")
+except:
+	compiler = None
 
-conf = ConfigParser.ConfigParser()
-conf.read([confPath])     # read the configuration file
-
-## compiler
-cppComp = conf.get("compiler", "cpp", "gcc")
-defines = conf.get("compiler", "defines", [])		# defines are optional
-if defines is not []:
-    defines = defines.split(",")
-
-## includes
-stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
-gtestInclude = conf.get("includes", "gtest")
-if conf.has_option("includes", "tbb"):
-	tbbInclude = conf.get("includes", "tbb", "")
+if not os.path.isfile("build.conf") and not compiler == None:
+	#print("{0} has been passed via command line".format(compiler))
+	env["CC"] = compiler
+	env["CXX"] = compiler
 else:
-	tbbInclude = ""
+	confPath = "build.conf"
+	if not os.path.isfile(confPath):
+		print("The configuration file `build.conf` does not exist. You need to create it.")
+		print("Use the file build.conf.example to create your build.conf")
+		Exit(1)
 
-## libraries
-gtestLib = conf.get("libraries", "gtest")
-if conf.has_option("libraries", "tbb"):
-	tbbLib = conf.get("libraries", "tbb", "")
-else:
-	tbbLib = ""
+	conf = ConfigParser.ConfigParser()
+	conf.read([confPath])     # read the configuration file
 
-env["CC"] = cppComp
-env["CXX"] = cppComp
+	## compiler
+	cppComp = conf.get("compiler", "cpp", "gcc")
+	defines = conf.get("compiler", "defines", [])		# defines are optional
+	if defines is not []:
+		defines = defines.split(",")
 
-env.Append(CPPDEFINES=defines)
-env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude])
-env.Append(LIBS = ["gtest"])
-env.Append(LIBPATH = [gtestLib, tbbLib])
+	## includes
+	stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
+	gtestInclude = conf.get("includes", "gtest")
+	if conf.has_option("includes", "tbb"):
+		tbbInclude = conf.get("includes", "tbb", "")
+	else:
+		tbbInclude = ""
+
+	## libraries
+	gtestLib = conf.get("libraries", "gtest")
+	if conf.has_option("libraries", "tbb"):
+		tbbLib = conf.get("libraries", "tbb", "")
+	else:
+		tbbLib = ""
+
+	env["CC"] = cppComp
+	env["CXX"] = cppComp
+
+	env.Append(CPPDEFINES=defines)
+	env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude])
+	env.Append(LIBS = ["gtest"])
+	env.Append(LIBPATH = [gtestLib, tbbLib])
+
 env.Append(LINKFLAGS = ["-std=c++11"])
 
 ## CONFIGURATIONS
@@ -239,7 +260,7 @@ if target in availableTargets:
 			if os.path.isdir("NetworKit"):
 				#print("sym link for include stuff exists already")
 				os.remove("NetworKit")
-			subprocess.call(["ln","-s","src/cpp","NetworKit"])
+			subprocess.call(["ln","-s","networkit/cpp","NetworKit"])
 
 	else:
 		env.Program(targetName, source)

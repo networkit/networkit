@@ -1,3 +1,4 @@
+import version
 import sys
 if "setuptools" not in sys.modules:
 	from ez_setup import use_setuptools
@@ -6,27 +7,146 @@ if "setuptools" not in sys.modules:
 
 from setuptools import setup
 from setuptools import Extension
+from setuptools import find_packages
 #from distutils.extension import Extension
-from Cython.Build import cythonize
-from Cython.Distutils import build_ext
+
+abortInstallation = False
+errorMessages = []
+warnMessages = []
+try:
+	from Cython.Build import cythonize
+	from Cython.Distutils import build_ext
+except:
+	abortInstallation = True
+	errorMessages.append("ERROR: Cython not installed. Please install Cython and rerun")
 
 import multiprocessing
 import os
 import shutil
 
-from subprocess import Popen
+from subprocess import Popen, DEVNULL
 import shlex
 
 from argparse import ArgumentParser
 
 try:
 	if shutil.which("scons") is None:
-		print("ERROR: Build system SCons is not installed. Please install and rerun setup.py")
-		exit(1)
+		errorMessages.append("ERROR: Build system SCons is not installed. Please install and rerun")
+		abortInstallation = True
 except:
 	print("WARNING: unable to check whether build system SCons is installed")
 
+#prepare sample.cpp file necessary to determine gcc
+sample = open("sample.cpp", "w")
+sample.write("""/*****************************************************************************
+* File: sample.cpp
+* DESCRIPTION:
+*   OpenMP Example - Hello World - C/C++ Version
+*   In this simple example, the master thread forks a parallel region.
+*   All threads in the team obtain their unique thread number and print it.
+*   The master thread only prints the total number of threads.  Two OpenMP
+*   library routines are used to obtain the number of threads and each
+*   thread's number.
+* AUTHOR: Blaise Barney  5/99
+* LAST REVISED: 04/06/05
+******************************************************************************/
+#include <omp.h>
+#include <iostream>
+int main (int argc, char *argv[]) {
+	int nthreads, tid;
+	/* Fork a team of threads giving them their own copies of variables */
+	#pragma omp parallel private(nthreads, tid)
+	{
+		/* Obtain thread number */
+		tid = omp_get_thread_num();
+		std::cout << \"Hello World from thread = \" << tid << std::endl;
+		/* Only master thread does this */
+		if (tid == 0) {
+			nthreads = omp_get_num_threads();
+			std::cout << \"Number of threads = \" << nthreads << std::endl;
+		}
+	}  /* All threads join master thread and disband */
+}""")
+sample.close()
 
+
+gcc_version_satisfied = False
+gcc_versions = ["","-4.9","-4.8","-4.7"]
+gcc = ""
+v = 0
+while gcc_version_satisfied == False and v < len(gcc_versions):
+	try:
+		comp_cmd = "g++{0} -o test sample.cpp -fopenmp -std=c++11".format(gcc_versions[v])
+		#print(comp_cmd)
+		comp_proc = Popen(shlex.split(comp_cmd), stdout=DEVNULL, stderr=DEVNULL)
+		comp_proc.wait()
+		if (comp_proc.returncode == 0):
+			gcc_version_satisfied = True
+			gcc = "g++{0}".format(gcc_versions[v])
+			#print("your latest gcc is {0}".format(gcc))
+	except:
+		foo = 0
+		#print("g++{0} is not installed".format(gcc_versions[v]))
+	v += 1
+os.remove("sample.cpp")
+if gcc_version_satisfied:
+	os.remove("test")
+	os.environ["CC"] = gcc
+	os.environ["CXX"] = gcc
+else:
+	errorMessages.append("ERROR: Please install GCC/g++ 4.8 or later and rerun")
+	abortInstallation = True
+
+
+# abort installation in case either Cython, Scons or the compiler requirements aren't satisfied
+if abortInstallation:
+	for msg in errorMessages:
+		print(msg)
+	exit(1)
+
+# check for external packages and collect warning messages
+try:
+	import scipy
+	del scipy
+except:
+	warnMessages.append("WARNING: SciPy is not installed; to use all of networkit, please install SciPy")
+try:
+	import numpy
+	del numpy
+except:
+	warnMessages.append("WARNING: numpy is not installed; to use all of networkit, please install numpy")
+
+try:
+	import readline
+	del readline
+except:
+	warnMessages.append("WARNING: readline is not installed; to use all of networkit, please install readline")
+
+try:
+	import matplotlib
+	del matplotlib
+except:
+	warnMessages.append("WARNING: matplotlib is not installed; to use all of networkit, please install matplotlib")
+
+try:
+	import networkx
+	del networkx
+except:
+	warnMessages.append("WARNING: networkx is not installed; to use all of networkit, please install networkx")
+
+try:
+	import tabulate
+	del tabulate
+except:
+	warnMessages.append("WARNING: tabulate is not installed; to use all of networkit, please install tabulate")
+
+# remove MANIFEST.in when networkit is not in the repository (i.e. a download pypi/zip)
+if os.path.isfile("MANIFEST.in") and not os.path.exists(".hg"):
+	os.remove("MANIFEST.in")
+
+# remove _NetworKit.cpp, since it is very unlikely there is a scenario, where it's necessary to keep the file.
+if os.path.isfile("networkit/_NetworKit.cpp"):
+	os.remove("networkit/_NetworKit.cpp")
 
 # get the optional arguments for the compilation
 parser = ArgumentParser()
@@ -49,94 +169,105 @@ args.reverse()
 args.append(__file__)
 args.reverse() # this is not a very nice way to do this for sure
 sys.argv = args
-#for e in sys.argv:
-#	print(e)
-#print("################")
 
 def build_NetworKit():
-	#os.chdir("../")
-	comp_cmd = "scons --optimize={0} --target=Core -j{1}".format(optimize,jobs)
+	#os.chdir("./networkit")
+	if os.path.isfile("build.conf"):
+		comp_cmd = "scons --optimize={0} --target=Core -j{1}".format(optimize,jobs)
+	else:
+		comp_cmd = "scons --optimize={0} --target=Core --compiler={1} -j{2}".format(optimize,gcc,jobs)
 	print("initializing NetworKit compilation with: {0}".format(comp_cmd))
 	comp_proc = Popen(shlex.split(comp_cmd))
 	comp_proc.wait()
 	if (comp_proc.returncode != 0):
 		print("scons returned an error, exiting setup.py")
 		exit(1)
-	os.chdir("./src/python")
-	try:
-		os.remove("_NetworKit.cpp")
-	except:
-		print("_NetworKit.cpp already deleted")
+	#os.chdir("./src/python")
+	if os.path.isfile("networkit/_NetworKit.cpp"):
+		os.remove("networkit/_NetworKit.cpp")
+	#os.chdir("../")
 
 def additional_clean():
-	#os.chdir("../")
+	#os.chdir("./networkit")
 	clean_cmd = "scons --optimize={0} --target=Core -c".format(optimize)
 	clean_proc = Popen(shlex.split(clean_cmd))
 	clean_proc.wait()
-	os.chdir("./src/python")
+	#os.chdir("./src/python")
 	#os.rmdir("./build")
-	try:
-		os.remove("_NetworKit.cpp")
-	except:
-		print("_NetworKit.cpp already deleted")
+	if os.path.isfile("networkit/_NetworKit.cpp"):
+		os.remove("networkit/_NetworKit.cpp")
+	#os.chdir("../")
 
 
 
 if "build_ext" in sys.argv:
 	build_NetworKit()
 elif ("develop" in sys.argv) and ("--uninstall" not in sys.argv):
-	try:
-		os.mkdir("src/python/NetworKit")
-	except:
-		foo = 0
+	#try:
+	#	os.mkdir("src/python/NetworKit")
+	#except:
+	#	foo = 0
+	build_NetworKit()
+elif "install" in sys.argv:
 	build_NetworKit()
 elif "clean" in sys.argv:
 	additional_clean()
 
 # try-catch block when shutil.which is not available
-try:
-	if shutil.which("g++-4.9") is not None:
-		os.environ["CC"] = "g++-4.9"
-		os.environ["CXX"] = "g++-4.9"
-	elif shutil.which("g++-4.8") is not None:
-		os.environ["CC"] = "g++-4.8"
-		os.environ["CXX"] = "g++-4.8"
+ #try:
+	#if shutil.which("g++-4.9") is not None:
+	#	os.environ["CC"] = "g++-4.9"
+	#	os.environ["CXX"] = "g++-4.9"
+	#elif shutil.which("g++-4.8") is not None:
+	#	os.environ["CC"] = "g++-4.8"
+	#	os.environ["CXX"] = "g++-4.8"
 
-	elif shutil.which("g++-4.7") is not None:
-		os.environ["CC"] = "g++-4.7"
-		os.environ["CXX"] = "g++-4.7"
+	#elif shutil.which("g++-4.7") is not None:
+	#	os.environ["CC"] = "g++-4.7"
+	#	os.environ["CXX"] = "g++-4.7"
 
-	else:
-		pass
-except:
-	os.environ["CC"] = "g++"
-	os.environ["CXX"] = "g++"
-
+	#else:
+	#	pass
+ #except:
+	#os.environ["CC"] = "g++"
+	#os.environ["CXX"] = "g++"
 #print("Using compilers: {0} and {1}".format(os.environ["CC"], os.environ["CXX"]))
-src = ["_NetworKit.pyx"]	# list of source files
 
-print("source files: {0}".format(src))
-
+src = ["networkit/_NetworKit.pyx"]	# list of source files
 modules = [Extension("_NetworKit",
-					src,
-					language = "c++",
-					extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
-					extra_link_args=["-fopenmp", "-std=c++11"],
-					libraries=["NetworKit-Core-{0}".format(optimize)],
-					library_dirs=["../../"])]
+	src,
+	language = "c++",
+	extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
+	extra_link_args=["-fopenmp", "-std=c++11"],
+	libraries=["NetworKit-Core-{0}".format(optimize)],
+	library_dirs=["./"])]
 
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}
 
-setup(name="NetworKit",
-	author="Christian L. Staudt, Henning Meyerhenke",
-	author_email = "christian.staudt@kit.edu, meyerhenke@kit.edu",
-	description = "NetworKit is a toolbox for high-performance network analysis",
-	license = "MIT",
-	keywords = "graph algorithm network analysis social network",
-	version="3.2",
-	cmdclass={"build_ext": build_ext},
-	ext_modules=modules,
-	py_modules = ["NetworKit.py"])
+setup(
+	name		= version.name,
+	version		= version.version,
+	author		= version.author,
+	author_email	= version.author_email,
+	url		= version.url,
+	download_url	= version.download_url,
+	description	= version.description,
+	long_description= version.long_description,
+	license		= version.license,
+	packages	= find_packages(),
+	keywords	= version.keywords,
+	platforms	= version.platforms,
+	classifiers	= version.classifiers,
+	cmdclass	= {"build_ext": build_ext},
+	ext_modules	= modules,
+#	install_requires= version.install_requires,
+	zip_safe	= False)
 
-print("[Done] setup.py")
+# print warnings about missing packages
+if len(warnMessages) > 0 and "install" in sys.argv:
+	for msg in warnMessages:
+		print(msg)
+	print("Save this list and check for each package how to install it on your system.")
+
+ #print("[Done] setup.py")
