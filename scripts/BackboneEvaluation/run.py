@@ -1,4 +1,4 @@
-from NetworKit import *
+from networkit import *
 from evaluation import *
 from txtWriter import TxtResultWriter
 from sqliteWriter import SqliteResultWriter

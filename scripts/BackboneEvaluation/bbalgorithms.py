@@ -1,5 +1,5 @@
 from types import *
-from NetworKit import *
+from networkit import *
 
 class bb_SimmelianBackboneNonParametric:
     def getName(self):

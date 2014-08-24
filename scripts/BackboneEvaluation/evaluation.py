@@ -1,4 +1,4 @@
-from NetworKit import *
+from networkit import *
 import time
 import parameterization
 

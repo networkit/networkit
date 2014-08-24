@@ -1,5 +1,5 @@
 from scipy.spatial import distance
-from NetworKit import *
+from networkit import *
 
 #This file holds the definitions of all backbone properties, including
 #how to calculate the property's characteristic values.
@@ -52,8 +52,9 @@ class P_Community:
         if backbone.numberOfEdges() == 0:
             raise Exception('Empty backbones are not allowed.')
 
-        communitiesGraph = community.detectCommunities(graph)
-        communitiesBackbone = community.detectCommunities(backbone)
+        cAlgo = community.PLM(refine=False, par='none')
+        communitiesGraph = community.detectCommunities(graph, algo=cAlgo)
+        communitiesBackbone = community.detectCommunities(backbone, algo=cAlgo)
 
         #Graph structural rand measure
         _randMeasure = community.GraphStructuralRandMeasure()
