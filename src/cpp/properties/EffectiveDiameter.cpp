@@ -34,14 +34,16 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 	count threshold = (count) (ceil(ratio * G.numberOfNodes()));
 	// the current distance of the neighborhoods
 	count h = 1;
-	// the amount of nodes that are connected to all other nodes (|finishedNodes|)
-	count numberOfFinishedNodes = 0;
 	// sums over the number of edges needed to reach 90% of all other nodes
 	double effectiveDiameter = 0;
 	// the estimated number of connected nodes
 	double estimatedConnectedNodes;
 	// used for setting a random bit in the bitmasks
 	double random;
+	// the position of the bit that has been set in a bitmask
+	count position;
+	// nodes that are not connected to enough nodes yet
+	std::vector<node> activeNodes;
 
 	// initialize all vectors
 	highestCount.assign(k, 0);
@@ -52,15 +54,14 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 		bitmasks.assign(k, 0);
 		mCurr.push_back(bitmasks);
 		mPrev.push_back(bitmasks);
-
+		activeNodes.push_back(v);
 		// set one bit in each bitmask with probability P(bit i=1) = 0.5^(i+1), i=0,..
 		for (count j = 0; j < k; j++) {
 			random = Aux::Random::real(0,1);
-			for (count i = 0; i < lengthOfBitmask+r; i++) {
-				if (random > pow(0.5,i+1)) {
-					mPrev[v][j] |= 1 << i;
-					break;
-				}
+			position = ceil(log(random)/log(0.5) - 1);
+			// set the bit in the bitmask
+			if (position < lengthOfBitmask+r) {
+				mPrev[v][j] |= 1 << position;
 			}
 			// add the current bit to the maximum-bitmask
 			highestCount[j] = highestCount[j] | mPrev[v][j];
@@ -68,54 +69,53 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 	});
 
 	// as long as we need to connect more nodes
-	while (numberOfFinishedNodes < G.numberOfNodes()) {
-		G.forNodes([&](node v) {
-			// if the current node is not yet connected to all other nodes
-			if (finishedNodes[v] == 0) {
-				#pragma omp parallel for
-				// for each parallel approximation
-				for (count j = 0; j < k; j++) {
-					// the node is still connected to all previous neighbors
-					mCurr[v][j] = mPrev[v][j];
-					// and to all previous neighbors of all its neighbors
-					G.forNeighborsOf(v, [&](node u) {
-						mCurr[v][j] = mCurr[v][j] | mPrev[u][j];
-					});
-				}
+	while (!activeNodes.empty()) {
+		for (int x = 0; x < activeNodes.size(); x++) {
+			node v = activeNodes[x];
+			#pragma omp parallel for
+			// for each parallel approximation
+			for (count j = 0; j < k; j++) {
+				// the node is still connected to all previous neighbors
+				mCurr[v][j] = mPrev[v][j];
+				// and to all previous neighbors of all its neighbors
+				G.forNeighborsOf(v, [&](node u) {
+					mCurr[v][j] = mCurr[v][j] | mPrev[u][j];
+				});
+			}
 
-				// the least bit number in the bitmask of the current node/distance that has not been set
-				double b = 0;
+			// the least bit number in the bitmask of the current node/distance that has not been set
+			double b = 0;
 
-				for (count j = 0; j < k; j++) {
-					for (count i = 0; i < sizeof(i)*8; i++) {
-						if (((mCurr[v][j] >> i) & 1) == 0) {
-							b += i;
-							break;
-						}
-					}
-				}
-				// calculate the average least bit number that has not been set over all parallel approximations
-				b = b / k;
-
-				// calculate the estimated number of neighbors where 0.77351 is a correction factor and the result of a complex sum
-				estimatedConnectedNodes = (pow(2,b) / 0.77351);
-
-				// check whether all k bitmask for this node have reached their highest possible value
-				bool nodeFinished = true;
-				for (count j = 0; j < k; j++) {
-					if (mCurr[v][j] != highestCount[j]) {
-						nodeFinished = false;
+			for (count j = 0; j < k; j++) {
+				for (count i = 0; i < sizeof(i)*8; i++) {
+					if (((mCurr[v][j] >> i) & 1) == 0) {
+						b += i;
 						break;
 					}
 				}
-				// if the node wont change or is connected to enough nodes it must no longer be considered
-				if (estimatedConnectedNodes >= threshold || nodeFinished) {
-					finishedNodes[v] = 1;
-					numberOfFinishedNodes++;
-					effectiveDiameter += h;
+			}
+			// calculate the average least bit number that has not been set over all parallel approximations
+			b = b / k;
+
+			// calculate the estimated number of neighbors where 0.77351 is a correction factor and the result of a complex sum
+			estimatedConnectedNodes = (pow(2,b) / 0.77351);
+
+			// check whether all k bitmask for this node have reached their highest possible value
+			bool nodeFinished = true;
+			for (count j = 0; j < k; j++) {
+				if (mCurr[v][j] != highestCount[j]) {
+					nodeFinished = false;
+					break;
 				}
 			}
-		});
+			// if the node wont change or is connected to enough nodes it must no longer be considered
+			if (estimatedConnectedNodes >= threshold || nodeFinished) {
+				effectiveDiameter += h;
+				// remove the current node from future iterations
+				std::swap(activeNodes[x], activeNodes.back());
+				activeNodes.pop_back();
+			}
+		}
 		mPrev = mCurr;
 		h++;
 	}
@@ -127,20 +127,18 @@ this is a variaton of the ANF algorithm presented in the paper "A Fast and Scala
 in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 */
 double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ratio) {
-	// list of nodes that are already connected to enough other nodes
-	std::vector<node> finishedNodes;
 	// saves the reachable nodes of the current iteration
 	std::vector<std::vector<bool> > mCurr;
 	// saves the reachable nodes of the previous iteration
 	std::vector<std::vector<bool> > mPrev;
-	// the amount of nodes that are connected to enough other nodes (|finishedNodes|)
-	count numberOfFinishedNodes = 0;
 	// sums over the number of edges needed to reach 90% of all other nodes
 	double effectiveDiameter = 0;
 	// the current distance of the neighborhoods
 	count h = 1;
 	// number of nodes that need to be connected with all other nodes
 	count threshold = (uint64_t) (ceil(ratio * G.numberOfNodes()) + 0.5);
+	// nodes that are not connected to enough nodes yet
+	std::vector<node> activeNodes;
 
 	// initialize all nodes
 	G.forNodes([&](node v){
@@ -149,41 +147,39 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ra
 		connectedNodes.assign(G.upperNodeIdBound(),0);
 		// the node is always connected to itself
 		connectedNodes[v] = 1;
-		finishedNodes.push_back(v);
-		finishedNodes[v] = 0;
 		mCurr.push_back(connectedNodes);
 		mPrev.push_back(connectedNodes);
+		activeNodes.push_back(v);
 	});
 
 	// as long as we need to connect more nodes
-	while (numberOfFinishedNodes < G.numberOfNodes()) {
-			G.forNodes([&](node v) {
-				// if the current node is not yet connected to all other nodes
-				if (finishedNodes[v] == 0) {
-					mCurr[v] = mPrev[v];
-					G.forNeighborsOf(v, [&](node u) {
-						for (count i = 0; i < G.numberOfNodes(); i++) {
-							// add the current neighbor of u to the neighborhood of v
-							mCurr[v][i] = mCurr[v][i] || mPrev[u][i];
-						}
-					});
-
-					// compute the number of connected nodes
-					count numConnectedNodes = 0;
+	while (!activeNodes.empty()) {
+		for (int x = 0; x < activeNodes.size(); x++) {
+			node v = activeNodes[x];
+				mCurr[v] = mPrev[v];
+				G.forNeighborsOf(v, [&](node u) {
 					for (count i = 0; i < G.numberOfNodes(); i++) {
-						if (mCurr[v][i] == 1) {
-							numConnectedNodes++;
-						}
+						// add the current neighbor of u to the neighborhood of v
+						mCurr[v][i] = mCurr[v][i] || mPrev[u][i];
 					}
+				});
 
-					// when the number of connected nodes surpasses the threshold the node must no longer be considered
-					if (numConnectedNodes >= threshold) {
-						finishedNodes[v] = 1;
-						numberOfFinishedNodes++;
-						effectiveDiameter += h;
+				// compute the number of connected nodes
+				count numConnectedNodes = 0;
+				for (count i = 0; i < G.numberOfNodes(); i++) {
+					if (mCurr[v][i] == 1) {
+						numConnectedNodes++;
 					}
 				}
-			});
+
+				// when the number of connected nodes surpasses the threshold the node must no longer be considered
+				if (numConnectedNodes >= threshold) {
+					effectiveDiameter += h;
+					// remove the current node from future iterations
+					std::swap(activeNodes[x], activeNodes.back());
+					activeNodes.pop_back();
+				}
+			}
 			mPrev = mCurr;
 			h++;
 		}
@@ -204,39 +200,37 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 	std::vector<std::vector<unsigned int> > mCurr;
 	// saves all k bitmasks for every node of the previous iteration
 	std::vector<std::vector<unsigned int> > mPrev;
-	// the list of nodes that are already connected to all other nodes
-	std::vector<node> finishedNodes;
 	// the maximum possible bitmask based on the random initialization of all k bitmasks
 	std::vector<count> highestCount;
 	// the current distance of the neighborhoods
 	count h = 1;
-	// the amount of nodes that are connected to all other nodes (|finishedNodes|)
-	count numberOfFinishedNodes = 0;
 	// the estimated number of connected nodes
 	double estimatedConnectedNodes;
 	// the sum over all estimated connected nodes
 	double totalConnectedNodes;
 	// used for setting a random bit in the bitmasks
 	double random;
+	// the position of the bit that has been set in a bitmask
+	count position;
+	// nodes that are not connected to enough nodes yet
+	std::vector<node> activeNodes;
 
 	// initialize all vectors
 	highestCount.assign(k, 0);
 	G.forNodes([&](node v) {
-		finishedNodes.push_back(v);
-		finishedNodes[v] = 0;
 		std::vector<unsigned int> bitmasks;
 		bitmasks.assign(k, 0);
 		mCurr.push_back(bitmasks);
 		mPrev.push_back(bitmasks);
+		activeNodes.push_back(v);
 
 		// set one bit in each bitmask with probability P(bit i=1) = 0.5^(i+1), i=0,..
 		for (count j = 0; j < k; j++) {
 			random = Aux::Random::real(0,1);
-			for (count i = 0; i < lengthOfBitmask+r; i++) {
-				if (random > pow(0.5,i+1)) {
-					mPrev[v][j] |= 1 << i;
-					break;
-				}
+			position = ceil(log(random)/log(0.5) - 1);
+			// set the bit in the bitmask
+			if (position < lengthOfBitmask+r) {
+				mPrev[v][j] |= 1 << position;
 			}
 			// add the current bit to the maximum-bitmask
 			highestCount[j] = highestCount[j] | mPrev[v][j];
@@ -246,62 +240,62 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 	hopPlot[0] = 1/G.numberOfNodes();
 
 	// as long as we need to connect more nodes
-	while (numberOfFinishedNodes < G.numberOfNodes() && (maxDistance <= 0 || h < maxDistance)) {
+	while (!activeNodes.empty() && (maxDistance <= 0 || h < maxDistance)) {
 		totalConnectedNodes = 0;
-		G.forNodes([&](node v) {
-			// if the current node is not yet connected to all other nodes
-			if (finishedNodes[v] == 0) {
-				// for each parallel approximation
-				for (count j = 0; j < k; j++) {
-					// the node is still connected to all previous neighbors
-					mCurr[v][j] = mPrev[v][j];
-					// and to all previous neighbors of all its neighbors
-					G.forNeighborsOf(v, [&](node u) {
-						mCurr[v][j] = mCurr[v][j] | mPrev[u][j];
-					});
-				}
-				// the least bit number in the bitmask of the current node/distance that has not been set
-				double b = 0;
+		// add nodes that are already connected to all nodes
+		totalConnectedNodes += (G.numberOfNodes() - activeNodes.size()) * G.numberOfNodes();
+		for (int x = 0; x < activeNodes.size(); x++) {
+			node v = activeNodes[x];
+			// for each parallel approximation
+			for (count j = 0; j < k; j++) {
+				// the node is still connected to all previous neighbors
+				mCurr[v][j] = mPrev[v][j];
+				// and to all previous neighbors of all its neighbors
+				G.forNeighborsOf(v, [&](node u) {
+					mCurr[v][j] = mCurr[v][j] | mPrev[u][j];
+				});
+			}
+			// the least bit number in the bitmask of the current node/distance that has not been set
+			double b = 0;
 
-				for (count j = 0; j < k; j++) {
-					for (count i = 0; i < sizeof(i)*8; i++) {
-						if (((mCurr[v][j] >> i) & 1) == 0) {
-							b += i;
-							break;
-						}
-					}
-				}
-				// calculate the average least bit number that has not been set over all parallel approximations
-				b = b / k;
-				// calculate the estimated number of neighbors
-				estimatedConnectedNodes = (pow(2,b) / 0.77351);
-
-				// enforce monotonicity
-				if (estimatedConnectedNodes > G.numberOfNodes()) {
-					estimatedConnectedNodes = G.numberOfNodes();
-				}
-
-				// add value of the node to all nodes so we can calculate the average
-				totalConnectedNodes += estimatedConnectedNodes;
-
-				// check whether all k bitmask for this node have reached the highest possible value
-				bool nodeFinished = true;
-				for (count j = 0; j < k; j++) {
-					if (mCurr[v][j] != highestCount[j]) {
-						nodeFinished = false;
+			for (count j = 0; j < k; j++) {
+				for (count i = 0; i < sizeof(i)*8; i++) {
+					if (((mCurr[v][j] >> i) & 1) == 0) {
+						b += i;
 						break;
 					}
 				}
-
-				// if the node wont change or is connected to enough nodes it must no longer be considered
-				if (estimatedConnectedNodes >= G.numberOfNodes() || nodeFinished) {
-					finishedNodes[v] = 1;
-					numberOfFinishedNodes++;
-				}
-			} else {
-				totalConnectedNodes += G.numberOfNodes();
 			}
-		});
+			// calculate the average least bit number that has not been set over all parallel approximations
+			b = b / k;
+			// calculate the estimated number of neighbors
+			estimatedConnectedNodes = (pow(2,b) / 0.77351);
+
+			// enforce monotonicity
+			if (estimatedConnectedNodes > G.numberOfNodes()) {
+				estimatedConnectedNodes = G.numberOfNodes();
+			}
+
+			// add value of the node to all nodes so we can calculate the average
+			totalConnectedNodes += estimatedConnectedNodes;
+
+			// check whether all k bitmask for this node have reached the highest possible value
+			bool nodeFinished = true;
+			for (count j = 0; j < k; j++) {
+				if (mCurr[v][j] != highestCount[j]) {
+					nodeFinished = false;
+					break;
+				}
+			}
+
+			// if the node wont change or is connected to enough nodes it must no longer be considered
+			if (estimatedConnectedNodes >= G.numberOfNodes() || nodeFinished) {
+				// remove the current node from future iterations
+				std::swap(activeNodes[x], activeNodes.back());
+				activeNodes.pop_back();
+			}
+		}
+		// compute the fraction of connected nodes
 		hopPlot[h] = totalConnectedNodes/(G.numberOfNodes()*G.numberOfNodes());
 		mPrev = mCurr;
 		h++;
