@@ -4830,6 +4830,44 @@ cdef class LocalDegreeAttributizer:
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(G._this, a)
 
+cdef extern from "cpp/backbones/JaccardSimilarityAttributizer.h":
+	cdef cppclass _JaccardSimilarityAttributizer "NetworKit::JaccardSimilarityAttributizer":
+		_JaccardSimilarityAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class JaccardSimilarityAttributizer:
+
+	cdef _JaccardSimilarityAttributizer _this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(G._this, a)
+
+
+cdef extern from "cpp/backbones/LocalLogAttributizer.h":
+	cdef cppclass _LocalLogAttributizerDouble "NetworKit::LocalLogAttributizer<double>":
+		_LocalLogAttributizer() except +
+		inline vector[double] getAttribute(_Graph G, vector[double] a) except +
+
+	cdef cppclass _LocalLogAttributizerInt "NetworKit::LocalLogAttributizer<int>":
+		_LocalLogAttributizer() except +
+		inline vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+ctypedef fused DoubleInt:
+	int
+	double
+
+cdef class LocalLogAttributizer:
+
+	cdef _LocalLogAttributizerDouble _thisDouble
+#cdef _LocalLogAttributizerInt _thisInt
+
+	#def getAttribute(self, Graph G, vector[DoubleInt] a):
+	def getAttribute(self,  Graph G, vector[double] a):
+		#if DoubleInt is int:
+		#	return self._thisInt.getAttribute(G._this, a)
+		#else:
+		return self._thisDouble.getAttribute(G._this,  a)
+
 cdef extern from "cpp/backbones/LinearizeAttribute.h":
 	cdef cppclass _LinearizeAttribute "NetworKit::LinearizeAttribute":
 		_LinearizeAttribute() except +
@@ -4861,7 +4899,6 @@ cdef class LinearizeAttribute:
 
 		"""
 		return self._this.getAttribute(G._this, a)
-
 
 cdef extern from "cpp/backbones/GlobalThresholdFilter.h":
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
