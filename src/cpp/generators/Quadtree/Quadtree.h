@@ -97,8 +97,8 @@ public:
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
 			circleDenizens.resize(newend - circleDenizens.begin());
 		}
-		double expected = HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(center.length(), radius, maxRadius);
-		TRACE("Got ", circleDenizens.size(), " nodes in space of size ", expected, ". ", 100*abs(circleDenizens.size() - expected) / expected, " percent difference.");
+		//double expected = HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(center.length(), radius, maxRadius);
+		//TRACE("Got ", circleDenizens.size(), " nodes in space of size ", expected, ". ", 100*abs(circleDenizens.size() - expected) / expected, " percent difference.");
 		/**
 		 * return them
 		 */
