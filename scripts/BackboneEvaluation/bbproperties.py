@@ -1,4 +1,5 @@
 from scipy.spatial import distance
+from scipy.stats import kendalltau
 from networkit import *
 
 #This file holds the definitions of all backbone properties, including
@@ -131,13 +132,29 @@ class P_Centrality:
             rank += 1
         return centralityPositionVector
 
+    #Returns a list of node ids. The nodes are sorted in descending order by betweenness centrality.
+    def getCentralityRanking(self, graph):
+        bc = centrality.ApproxBetweenness2(graph, min(100, graph.numberOfNodes()))
+        bc.run()
+        ranking = bc.ranking()
+        ranking.sort(key=lambda x: x[1]) #Sort by centrality score
+        return list(map(lambda x: x[0], ranking))
+
+    def kendallTauQM(self, c1, c2):
+        # Transform from [-1, 1] to [0, 1]. 0 is worst and returned for reverse ordering.
+        return (kendalltau(c1, c2)[0] + 1.0) / 2.0
+
     def getValues(self, graph, backbone):
         cpvOriginal = self.getCentralityPositionVector(graph)
         cpvBackbone = self.getCentralityPositionVector(backbone)
         cpvDistance = distance.euclidean(cpvOriginal, cpvBackbone)
         cpvDistanceNormalized = cpvDistance / graph.numberOfNodes()
 
-        return {'cpvDistance':cpvDistance, 'cpvDistanceNormalized':cpvDistanceNormalized}
+        rankingOriginal = self.getCentralityRanking(graph)
+        rankingBackbone = self.getCentralityRanking(backbone)
+        bcKendallTau = self.kendallTauQM(rankingOriginal, rankingBackbone)
+
+        return {'cpvDistance':cpvDistance, 'cpvDistanceNormalized':cpvDistanceNormalized, 'bcKendallTau':bcKendallTau}
 
     def getTypes(self):
-        return {'cpvDistance':'real', 'cpvDistanceNormalized':'real'}
+        return {'cpvDistance':'real', 'cpvDistanceNormalized':'real', 'bcKendallTau':'real'}
