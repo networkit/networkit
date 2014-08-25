@@ -9,7 +9,6 @@
 #define LOCALSIMATTRIBUTIZER_H_
 
 #include "BackboneCalculator.h"
-#include "gtest/gtest_prod.h"
 
 namespace NetworKit {
 
@@ -55,16 +54,10 @@ public:
 	 * Creates a new instance of the Local Sparsification algorithm.
 	 */
 	LocalSimilarityAttributizer();
-
 	~LocalSimilarityAttributizer() = default;
-
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
-private:
-	//Private helper functions
 	double getSimilarity(const Graph& graph, node i, node j);
-
-	FRIEND_TEST(LocalSimilarityGTest, testSimilarityCalculation);
 };
 
 }

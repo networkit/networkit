@@ -9,7 +9,6 @@
 #define SIMMELIANATTRIBUTIZER_H_
 
 #include "AttributeGenerator.h"
-#include "gtest/gtest_prod.h"
 #include <set>
 
 namespace NetworKit {
@@ -70,10 +69,8 @@ class SimmelianAttributizer : public AttributeGenerator<int, double> {
 public:
 
 	virtual std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute) = 0;
-
 	virtual ~SimmelianAttributizer() = default;
 
-protected:
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const std::vector<int>& triangles);
 
 	Redundancy getOverlap(
@@ -92,11 +89,6 @@ protected:
 			std::set<node>& alterNeighborsUnmatched,
 			const count& rank,
 			count& overlap);
-
-	FRIEND_TEST(SimmelianBackboneGTest, testOverlapCounting);
-	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhood);
-	FRIEND_TEST(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks);
-	FRIEND_TEST(SimmelianBackboneGTest, testOverlapFiltering);
 };
 
 }

@@ -9,7 +9,6 @@
 #define MULTISCALEATTRIBUTIZER_H_
 
 #include "BackboneCalculator.h"
-#include "gtest/gtest_prod.h"
 
 namespace NetworKit {
 
@@ -28,16 +27,10 @@ public:
 	 * Creates a new instance of the Multiscale attributizer.
 	 */
 	MultiscaleAttributizer();
-
 	~MultiscaleAttributizer() = default;
-
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<double>& attribute);
 
-private:
-	//Private helper functions
 	double getProbability(count degree, edgeweight normalizedWeight);
-
-	FRIEND_TEST(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone);
 };
 
 }
