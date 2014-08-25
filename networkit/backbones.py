@@ -3,7 +3,7 @@
 __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleCounter, SimmelianJaccardAttributizer, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapAttributizer, RandomAttributizer, LocalDegreeAttributizer, ForestFireAttributizer, \
-	AttributeAsWeight, LinearizeAttribute
+	AttributeAsWeight, LinearizeAttribute, JaccardSimilarityAttributizer, LocalLogAttributizer
 
 #SimmelianBackboneParametric, SimmelianBackboneNonParametric, MultiscaleBackbone, LocalSimilarityBackbone, SimmelianMultiscaleBackbone, RandomBackbone
 
@@ -412,4 +412,3 @@ class LocalDegreeBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(True, 0.0, 1.0, 20)
 
-	
