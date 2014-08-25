@@ -9,7 +9,6 @@
 #define SIMMELIANOVERLAPATTRIBUTIZER_H_
 
 #include "SimmelianAttributizer.h"
-#include "gtest/gtest_prod.h"
 #include <set>
 
 namespace NetworKit {
@@ -26,9 +25,7 @@ public:
 	 * @param maxRank 		the maximum rank that is considered for overlap calculation
 	 */
 	SimmelianOverlapAttributizer(count maxRank);
-
 	~SimmelianOverlapAttributizer() = default;
-
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
 private:

@@ -9,7 +9,6 @@
 #define RANDOMATTRIBUTIZER_H_
 
 #include "BackboneCalculator.h"
-#include "gtest/gtest_prod.h"
 
 namespace NetworKit {
 
@@ -24,7 +23,6 @@ public:
 	 * Creates a new instance of the Random edge attributizer.
 	 */
 	RandomAttributizer();
-
 	~RandomAttributizer() = default;
 
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
