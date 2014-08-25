@@ -230,8 +230,8 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 }
 
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
-	int nSteps = 100;
-	count n = 1000;
+	int nSteps = 50;
+	count n = 5000;
 
 	double factor = 0.5;
 	double stretch = 1;
@@ -248,6 +248,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	DynamicHyperbolicGenerator dynGen(angles, radii, R, factor, movedShare, 0, moveDistance);
 
 	Graph G = HyperbolicGenerator::generate(&angles, &radii, r, factor*R);
+	count initialEdgeCount = G.numberOfEdges();
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 
@@ -265,6 +266,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	radii = getRadii(dynGen);
 	Graph comparison = HyperbolicGenerator::generate(&angles, &radii, r, R*factor);
 	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
+	EXPECT_NEAR(G.numberOfEdges(), initialEdgeCount, initialEdgeCount/10);
 }
 
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorCollectedSteps) {
@@ -634,8 +636,8 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	count n = 100000;
-	HyperbolicGenerator gen(n,1);
-	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,1);
+	HyperbolicGenerator gen(n,1,1,2);
+	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,1,2);
 	DEBUG("Expected: ", expected);
 	Graph G = gen.generate();
 	DEBUG("Actual: ", G.numberOfEdges());
@@ -644,6 +646,11 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	ConnectedComponents cc(G);
 	cc.run();
 	EXPECT_EQ(cc.numberOfComponents(),1);
+
+	count m = 100*n;
+	HyperbolicGenerator gen2(n,m);
+	G = gen2.generate();
+	DEBUG("Actual: ", G.numberOfEdges());
 }
 
 } /* namespace NetworKit */
