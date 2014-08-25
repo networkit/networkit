@@ -49,29 +49,31 @@ class P_Community:
         return "Community structure"
 
     def getValues(self, graph, backbone):
-        if backbone.numberOfEdges() == 0:
-            raise Exception('Empty backbones are not allowed.')
+        if backbone.numberOfEdges() > 0:
+            cAlgo = community.PLM(refine=False, par='none')
+            communitiesGraph = community.detectCommunities(graph, algo=cAlgo)
+            communitiesBackbone = community.detectCommunities(backbone, algo=cAlgo)
 
-        cAlgo = community.PLM(refine=False, par='none')
-        communitiesGraph = community.detectCommunities(graph, algo=cAlgo)
-        communitiesBackbone = community.detectCommunities(backbone, algo=cAlgo)
+            #Graph structural rand measure
+            _randMeasure = community.GraphStructuralRandMeasure()
+            randMeasure = _randMeasure.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
 
-        #Graph structural rand measure
-        _randMeasure = community.GraphStructuralRandMeasure()
-        randMeasure = _randMeasure.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
+            #Normalized Mutual information
+            _nmi = community.NMIDistance()
+            nmi = _nmi.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
 
-        #Normalized Mutual information
-        _nmi = community.NMIDistance()
-        nmi = _nmi.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
-
-        #Clustering coefficients
-        _cc = properties.ClusteringCoefficient()
-        ccAvgLocal = _cc.avgLocal(backbone)
-        if backbone.numberOfNodes() < 300:
-            ccGlobal = _cc.exactGlobal(backbone)
+            #Clustering coefficients
+            _cc = properties.ClusteringCoefficient()
+            ccAvgLocal = _cc.avgLocal(backbone)
+            if backbone.numberOfNodes() < 300:
+                ccGlobal = _cc.exactGlobal(backbone)
+            else:
+                ccGlobal = _cc.approxGlobal(backbone, min(backbone.numberOfNodes(), 10000))
         else:
-            ccGlobal = _cc.approxGlobal(backbone, min(backbone.numberOfNodes(), 10000))
-
+            randMeasure = 0.0
+            nmi = 0.0
+            ccAvgLocal = 0.0
+            ccGlobal = 0.0
         return {'randMeasure':randMeasure, 'nmi':nmi, 'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal}
 
     def getTypes(self):
@@ -83,12 +85,23 @@ class P_Diameter:
     def getName(self):
         return "Diameter"
 
+    #def getValues(self, graph, backbone):
+    #    diameter = properties.Diameter.estimatedDiameterRange(backbone, error=0.1)
+    #    return {'diameterLow':diameter[0], 'diameterHigh':diameter[1]}
+
+    #def getTypes(self):
+    #    return {'diameterLow':'integer', 'diameterHigh':'integer'}
+
     def getValues(self, graph, backbone):
-        diameter = properties.Diameter.estimatedDiameterRange(backbone, error=0.1)
-        return {'diameterLow':diameter[0], 'diameterHigh':diameter[1]}
+        if graph.isWeighted():
+            diameter = properties.Diameter.exactDiameter(workflows.extractLargestComponent(backbone))
+        else:
+            #This is actually not neccessary but a workaround for sometimes failing diameter calculation. TODO: investigate
+            diameter = properties.Diameter.exactDiameter(backbone)
+        return {'diameter':diameter}
 
     def getTypes(self):
-        return {'diameterLow':'integer', 'diameterHigh':'integer'}
+        return {'diameter':'integer'}
 
 #Degree distribution
 class P_DegreeDistribution:
