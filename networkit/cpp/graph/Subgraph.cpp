@@ -1,8 +1,8 @@
 /*
  * Subgraph.cpp
  *
- *  Created on: Jun 13, 2013
- *      Author: forigem
+ *  Created on: Aug 26, 2014
+ *      Author: Christian Staudt
  */
 
 #include "Subgraph.h"
@@ -11,41 +11,22 @@ namespace NetworKit {
 
 Graph Subgraph::fromNodes(const Graph& G, const std::unordered_set<node>& nodes) {
 
-	Graph returnGraph;
-	std::unordered_map<node,node> setNodesToSubgraphNodes;
-
-	int i = 0;
-	for (node setNode: nodes) {
-		i++;
-		node addedNode = returnGraph.addNode();
-		setNodesToSubgraphNodes[setNode] = addedNode;
-	}
-
+	Graph S(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
+	// delete all nodes that are not in the node set
+	S.forNodes([&](node u) {
+		if (nodes.find(u) == nodes.end()) {
+			S.removeNode(u);
+		}
+	});
 
 	G.forEdges([&](node u, node v) {
-
-		bool gotU = true;
-		bool gotV = true;
-
-		auto got = nodes.find(u);
-		if (got == nodes.end())
-			 gotU = false;
-
-		if (gotU == true) {
-			auto got = nodes.find(v);
-			if (got == nodes.end())
-				gotV = false;
+		// if both end nodes are in the node set
+		if (nodes.find(u) != nodes.end() && nodes.find(v) != nodes.end()) {
+			S.addEdge(u, v, G.weight(u, v));
 		}
-
-		if (gotV == true && gotU == true) {
-			node uSubgraph = setNodesToSubgraphNodes[u];
-			node vSubgraph = setNodesToSubgraphNodes[v];
-			returnGraph.addEdge(uSubgraph, vSubgraph);
-		}
-
-
 	});
-	return returnGraph;
+
+	return S;
 }
 
 } /* namespace NetworKit */

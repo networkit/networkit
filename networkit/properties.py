@@ -71,7 +71,7 @@ def components(G):
 	if G.isDirected():
 		cc = StronglyConnectedComponents(G)
 	else:
-		cc = ConnectedComponents(G)	
+		cc = ConnectedComponents(G)
 	cc.run()
 	components = cc.getPartition()
 	nComponents = components.numberOfSubsets()
@@ -258,7 +258,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	basicProperties = [
 		["nodes (n)", props["n"]],
 		["edges (m)", props["m"]],
-		["directed?", props["directed"]],
+		["directed?", "{0}".format(props["directed"])],
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
