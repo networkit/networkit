@@ -1,6 +1,7 @@
 from scipy.spatial import distance
 from scipy.stats import kendalltau
 from networkit import *
+import math
 
 #This file holds the definitions of all backbone properties, including
 #how to calculate the property's characteristic values.
@@ -140,21 +141,35 @@ class P_Centrality:
         ranking.sort(key=lambda x: x[1]) #Sort by centrality score
         return list(map(lambda x: x[0], ranking))
 
+    #Returns a (small) list of hubs (nodes with high centrality)
+    def getHubs(self, graph):
+        bc = centrality.ApproxBetweenness2(graph, min(200, graph.numberOfNodes()))
+        bc.run()
+        ranking = bc.ranking()
+        ranking.sort(key=lambda x: (x[1] if not math.isnan(x[1]) else 0), reverse=True) #Sort by centrality score
+        ranking = ranking[:3]
+        return list(map(lambda x: x[0], ranking))
+
     def kendallTauQM(self, c1, c2):
         # Transform from [-1, 1] to [0, 1]. 0 is worst and returned for reverse ordering.
         return (kendalltau(c1, c2)[0] + 1.0) / 2.0
 
     def getValues(self, graph, backbone):
+        #First try
         cpvOriginal = self.getCentralityPositionVector(graph)
         cpvBackbone = self.getCentralityPositionVector(backbone)
         cpvDistance = distance.euclidean(cpvOriginal, cpvBackbone)
         cpvDistanceNormalized = cpvDistance / graph.numberOfNodes()
 
+        #Second try
         rankingOriginal = self.getCentralityRanking(graph)
         rankingBackbone = self.getCentralityRanking(backbone)
         bcKendallTau = self.kendallTauQM(rankingOriginal, rankingBackbone)
 
-        return {'cpvDistance':cpvDistance, 'cpvDistanceNormalized':cpvDistanceNormalized, 'bcKendallTau':bcKendallTau}
+        #Third try
+        centralityJaccard = distance.jaccard(self.getHubs(graph), self.getHubs(backbone))
+
+        return {'cpvDistance':cpvDistance, 'cpvDistanceNormalized':cpvDistanceNormalized, 'bcKendallTau':bcKendallTau, 'centralityJaccard':centralityJaccard}
 
     def getTypes(self):
-        return {'cpvDistance':'real', 'cpvDistanceNormalized':'real', 'bcKendallTau':'real'}
+        return {'cpvDistance':'real', 'cpvDistanceNormalized':'real', 'bcKendallTau':'real', 'centralityJaccard':'real'}

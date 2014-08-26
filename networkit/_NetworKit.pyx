@@ -4306,6 +4306,24 @@ cdef class LocalSimilarityAttributizer:
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(dereference(G._this), a)
 
+cdef extern from "cpp/backbones/TopDegreeAttributizer.h":
+	cdef cppclass _TopDegreeAttributizer "NetworKit::TopDegreeAttributizer":
+		_TopDegreeAttributizer() except +
+		vector[count] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class TopDegreeAttributizer:
+
+	cdef _TopDegreeAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _TopDegreeAttributizer()
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(dereference(G._this), a)
+
 cdef extern from "cpp/backbones/GlobalThresholdFilter.h":
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
 		_GlobalThresholdFilter(double alpha, bool above) except +
