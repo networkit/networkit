@@ -205,3 +205,68 @@ class bb_RandomBackbone:
 
     def requiresWeight(self):
         return False
+
+# -----------------------------------------------------------
+
+class bb_TopDegree:
+
+    def getName(self):
+        return "TopDegree Backbone"
+
+    def getShortName(self):
+        return "TopDegree"
+
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.TopDegreeBackbone(" + str(parameter) + ")"
+
+    def getAttribute(self, graph):
+        attributizer = backbones.TopDegreeAttributizer()
+        return attributizer.getAttribute(graph, [])
+
+    def getBackboneFromAttribute(self, graph, attribute, value):
+        gf = backbones.GlobalThresholdFilter(value, False)
+        return gf.calculate(graph, attribute)
+
+    def parameterizationType(self):
+        return "Int"
+
+    def increasing(self):
+        return True
+
+    def requiresWeight(self):
+        return False
+
+# -----------------------------------------------------------
+
+class bb_ForestFire:
+
+    def __init__(self, tag, pf, tber):
+        self.tag = tag
+        self.pf = pf
+        self.tber = tber
+
+    def getName(self):
+        return "ForestFire Backbone " + self.tag
+
+    def getShortName(self):
+        return "ForestFire " + self.tag
+
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.ForestFire(" + str(parameter) + ")"
+
+    def getAttribute(self, graph):
+        attributizer = backbones.ForestFireAttributizer(self.pf, self.tber)
+        return attributizer.getAttribute(graph, [])
+
+    def getBackboneFromAttribute(self, graph, attribute, value):
+        gf = backbones.GlobalThresholdFilter(value, True)
+        return gf.calculate(graph, attribute)
+
+    def parameterizationType(self):
+        return "Float"
+
+    def increasing(self):
+        return False
+
+    def requiresWeight(self):
+        return False

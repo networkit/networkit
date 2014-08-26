@@ -4324,6 +4324,24 @@ cdef class TopDegreeAttributizer:
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(dereference(G._this), a)
 
+cdef extern from "cpp/backbones/ForestFireAttributizer.h":
+	cdef cppclass _ForestFireAttributizer "NetworKit::ForestFireAttributizer":
+		_ForestFireAttributizer(double pf, double tebr) except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class ForestFireAttributizer:
+
+	cdef _ForestFireAttributizer* _this
+
+	def __cinit__(self, double pf, double tebr):
+		self._this = new _ForestFireAttributizer(pf, tebr)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(dereference(G._this), a)
+
 cdef extern from "cpp/backbones/GlobalThresholdFilter.h":
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
 		_GlobalThresholdFilter(double alpha, bool above) except +
