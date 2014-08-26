@@ -14,6 +14,7 @@
 #include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
+#include "../../auxiliary/NumericTools.h"
 #include "../../graph/Sampling.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
 
@@ -284,10 +285,6 @@ TEST_F(DynBetweennessGTest, testCorrectnessDynExactBetweenness) {
 	}
 }
 
-inline bool logically_equal(double a, double b, double error_factor=1.0) {
-	return a==b || std::abs(a-b)<std::abs(std::min(a,b))*std::numeric_limits<double>::epsilon()*error_factor;
-}
-
 TEST_F(DynBetweennessGTest, compareAffectedVertices) {
 	METISGraphReader reader;
 	DorogovtsevMendesGenerator generator(100);
@@ -332,16 +329,16 @@ TEST_F(DynBetweennessGTest, compareAffectedVertices) {
 			int diff_dist2 = 0;
 			G.forNodes([&] (node s){
 				G.forNodes([&] (node t){
-					if (!logically_equal(dist1[s][t], dynbc.distance(s,t)) || !logically_equal(npaths1[s][t], dynbc.nPaths(s,t))) {
+					if (!Aux::NumericTools::logically_equal(dist1[s][t], dynbc.distance(s,t)) || !Aux::NumericTools::logically_equal(npaths1[s][t], dynbc.nPaths(s,t))) {
 						diff_dist ++;
 					}
-					if (!logically_equal(dist1[s][t], dynbc.distance(s,t)) || !logically_equal(npaths1[s][t], dynbc.nPaths(s,t)) || !logically_equal(dep1[s][t], dynbc.dependency(s,t))) {
+					if (!Aux::NumericTools::logically_equal(dist1[s][t], dynbc.distance(s,t)) || !Aux::NumericTools::logically_equal(npaths1[s][t], dynbc.nPaths(s,t)) || !Aux::NumericTools::logically_equal(dep1[s][t], dynbc.dependency(s,t))) {
 						diff_dep ++;
 					}
-					if (!logically_equal(dist2[s][t], dynbc.distance(s,t)) || !logically_equal(npaths2[s][t], dynbc.nPaths(s,t))) {
+					if (!Aux::NumericTools::logically_equal(dist2[s][t], dynbc.distance(s,t)) || !Aux::NumericTools::logically_equal(npaths2[s][t], dynbc.nPaths(s,t))) {
 						diff_dist2 ++;
 					}
-					if (!logically_equal(dist2[s][t], dynbc.distance(s,t)) || !logically_equal(npaths2[s][t], dynbc.nPaths(s,t)) || !logically_equal(dep2[s][t], dynbc.dependency(s,t))) {
+					if (!Aux::NumericTools::logically_equal(dist2[s][t], dynbc.distance(s,t)) || !Aux::NumericTools::logically_equal(npaths2[s][t], dynbc.nPaths(s,t)) || !Aux::NumericTools::logically_equal(dep2[s][t], dynbc.dependency(s,t))) {
 						diff_dep2 ++;
 					}
 				});

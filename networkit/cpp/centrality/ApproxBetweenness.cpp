@@ -25,10 +25,6 @@ ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delt
 
 }
 
-inline bool logically_equal(double a, double b, double error_factor=1.0)
-{
-return a==b || std::abs(a-b)<std::abs(std::min(a,b))*std::numeric_limits<double>::epsilon()*error_factor;
-}
 
 void ApproxBetweenness::run() {
 	scoreData.clear();

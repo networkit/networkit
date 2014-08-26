@@ -12,6 +12,7 @@
 #include "DynBetweenness.h"
 #include "../auxiliary/PrioQueue.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/NumericTools.h"
 #include "../graph/SSSP.h"
 #include "../graph/Dijkstra.h"
 #include "../graph/BFS.h"
@@ -26,10 +27,6 @@ storePreds(storePredecessors) {
 
 }
 
-inline bool logically_equal(double a, double b, double error_factor=1.0)
-{
-  return a==b || std::abs(a-b)<std::abs(std::min(a,b))*std::numeric_limits<double>::epsilon()*error_factor;
-}
 
 void DynBetweenness::run() {
     count z = G.upperNodeIdBound();
@@ -319,7 +316,7 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
             }
             else {
                 G.forNeighborsOf(t, [&] (node p){
-                    if (logically_equal(distances[s][t], distances[s][p] + G.weight(p, t))) {
+                    if (Aux::NumericTools::logically_equal(distances[s][t], distances[s][p] + G.weight(p, t))) {
                         dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
                     }
                 });

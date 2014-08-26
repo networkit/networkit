@@ -12,6 +12,7 @@
 #include "../graph/DynDijkstra.h"
 #include "../graph/DynBFS.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/NumericTools.h"
 
 
 namespace NetworKit {
@@ -21,10 +22,6 @@ storePreds(storePredecessors), epsilon(epsilon), delta(delta) {
 
 }
 
-inline bool logically_equal(double a, double b, double error_factor=1.0)
-{
-  return a==b || std::abs(a-b)<std::abs(std::min(a,b))*std::numeric_limits<double>::epsilon()*error_factor;
-}
 
 void DynApproxBetweenness::run() {
     scoreData.clear();
@@ -77,7 +74,7 @@ void DynApproxBetweenness::run() {
                 }
                 else {
                     G.forNeighborsOf(t, [&](node z){
-                        if (logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + G.weight(z, t)))
+                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + G.weight(z, t)))
                             choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
                     });
                 }
@@ -115,7 +112,7 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
                 }
                 else {
                     G.forNeighborsOf(t, [&](node z){
-                        if (logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + G.weight(z, t)))
+                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + G.weight(z, t)))
                             choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
                     });
                 }
