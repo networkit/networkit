@@ -12,27 +12,28 @@
 
 namespace NetworKit {
 
+template<typename T>
 struct AttributizedEdge {
 	node ego;
 	node alter;
 	edgeid eid;
-	double value;
+	T value;
 
-	AttributizedEdge(node ego, node alter, edgeid eid, double v) :
+	AttributizedEdge(node ego, node alter, edgeid eid, T v) :
 			ego(ego), alter(alter), eid(eid), value(v) {
 	}
 
-	bool operator<(const AttributizedEdge& other) const {
+	bool operator<(const AttributizedEdge<T>& other) const {
 		return (value > other.value)
 				|| (value == other.value && alter < other.alter);
 	}
 
-	bool operator>(const AttributizedEdge& other) const {
+	bool operator>(const AttributizedEdge<T>& other) const {
 		return (value < other.value)
 				|| (value == other.value && alter > other.alter);
 	}
 
-	bool operator==(const AttributizedEdge& other) const {
+	bool operator==(const AttributizedEdge<T>& other) const {
 		return ego == other.ego && alter == other.alter
 				&& value == other.value;
 	}

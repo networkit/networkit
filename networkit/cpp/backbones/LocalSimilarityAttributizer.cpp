@@ -8,7 +8,6 @@
 #include "LocalSimilarityAttributizer.h"
 #include <math.h> //log
 #include <set>
-#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
@@ -28,17 +27,17 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 		/* The top d^e edges (sorted by similarity)
 		 * are to be kept in the backbone */
 
-		std::vector<AttributizedEdge> neighbors;
+		std::vector<AttributizedEdge<double>> neighbors;
 		graph.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
 			double sim = getSimilarity(graph, i, j);
-			neighbors.push_back(AttributizedEdge(i, j, eid, sim));
+			neighbors.push_back(AttributizedEdge<double>(i, j, eid, sim));
 		});
 		std::sort(neighbors.begin(), neighbors.end());
 
 		count rank = 1;
 		//Top d^e edges are to be retained in the backbone graph.
 		//So we calculate the minimum exponent e for each edge that will keep it in the backbone.
-		for(std::vector<AttributizedEdge>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
+		for(std::vector<AttributizedEdge<double>>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
 			edgeid eid = it->eid;
 
 			double e = 0.0;
