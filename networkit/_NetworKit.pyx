@@ -4842,24 +4842,28 @@ cdef class JaccardSimilarityAttributizer:
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(G._this, a)
 
-
-cdef extern from "cpp/backbones/LocalLogAttributizer.h":
-	cdef cppclass _LocalLogAttributizerDouble "NetworKit::LocalLogAttributizer<double>":
-		_LocalLogAttributizer() except +
+cdef extern from "cpp/backbones/LocalFilterAttributizer.h":
+	cdef cppclass _LocalFilterAttributizerDouble "NetworKit::LocalFilterAttributizer<double>":
+		_LocalFilterAttributizerDouble() except +
+		_LocalFilterAttributizerDouble(bool logarithmic,  bool bothRequired) except +
 		inline vector[double] getAttribute(_Graph G, vector[double] a) except +
 
-	cdef cppclass _LocalLogAttributizerInt "NetworKit::LocalLogAttributizer<int>":
-		_LocalLogAttributizer() except +
+	cdef cppclass _LocalFilterAttributizerInt "NetworKit::LocalFilterAttributizer<int>":
+		_LocalFilterAttributizerInt() except +
+		_LocalFilterAttributizerInt(bool logarithmic,  bothRequired) except +
 		inline vector[double] getAttribute(_Graph G, vector[int] a) except +
 
 ctypedef fused DoubleInt:
 	int
 	double
 
-cdef class LocalLogAttributizer:
+cdef class LocalFilterAttributizer:
 
-	cdef _LocalLogAttributizerDouble _thisDouble
-#cdef _LocalLogAttributizerInt _thisInt
+	cdef _LocalFilterAttributizerDouble _thisDouble
+#cdef _LocalFilterAttributizerInt _thisInt
+
+	def __init__(self,  bool logarithmic = True, bool bothRequired = False):
+		self._thisDouble = _LocalFilterAttributizerDouble(logarithmic, bothRequired)
 
 	#def getAttribute(self, Graph G, vector[DoubleInt] a):
 	def getAttribute(self,  Graph G, vector[double] a):
