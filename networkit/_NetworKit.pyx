@@ -28,7 +28,8 @@ ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
 
-
+cdef extern from "<algorithm>" namespace "std":
+	void swap[T](T &a,  T &b)
 
 
 # Cython helper functions
@@ -1550,7 +1551,7 @@ cdef class SNAPGraphReader:
 cdef extern from "cpp/io/PartitionReader.h":
 	cdef cppclass _PartitionReader "NetworKit::PartitionReader":
 		_PartitionReader() except +
-		_Partition read(string path)
+		_Partition read(string path) except +
 
 
 cdef class PartitionReader:
@@ -1583,7 +1584,7 @@ cdef extern from "cpp/io/EdgeListPartitionReader.h":
 	cdef cppclass _EdgeListPartitionReader "NetworKit::EdgeListPartitionReader":
 		_EdgeListPartitionReader() except +
 		_EdgeListPartitionReader(node firstNode) except +
-		_Partition read(string path)
+		_Partition read(string path) except +
 
 
 cdef class EdgeListPartitionReader:
@@ -1770,8 +1771,8 @@ cdef class Partition:
 		"""
 		return self._this.subsetOf(e)
 
-	cdef setThis(self, _Partition other):
-		self._this = other
+	cdef setThis(self,  _Partition& other):
+		swap[_Partition](self._this,  other)
 		return self
 
 	def __cinit__(self, size=None):
@@ -2601,7 +2602,7 @@ cdef class PLP(CommunityDetector):
 cdef extern from "cpp/community/LPDegreeOrdered.h":
 	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered":
 		_LPDegreeOrdered() except +
-		_Partition run(_Graph _G)
+		_Partition run(_Graph _G) except +
 		count numberOfIterations()
 
 cdef class LPDegreeOrdered(CommunityDetector):
@@ -2790,7 +2791,7 @@ cdef class NMIDistance(DissimilarityMeasure):
 
 cdef extern from "cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
-		_Partition run(_Graph G)
+		_Partition run(_Graph G) except +
 		string toString()
 
 cdef class EPP(CommunityDetector):
