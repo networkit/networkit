@@ -142,17 +142,22 @@ class P_Centrality:
         return list(map(lambda x: x[0], ranking))
 
     #Returns a (small) list of hubs (nodes with high centrality)
-    def getHubs(self, graph):
+    def getHubs(self, graph, count):
         bc = centrality.ApproxBetweenness2(graph, min(200, graph.numberOfNodes()))
         bc.run()
         ranking = bc.ranking()
         ranking.sort(key=lambda x: (x[1] if not math.isnan(x[1]) else 0), reverse=True) #Sort by centrality score
-        ranking = ranking[:3]
+        ranking = ranking[:count]
         return list(map(lambda x: x[0], ranking))
 
     def kendallTauQM(self, c1, c2):
         # Transform from [-1, 1] to [0, 1]. 0 is worst and returned for reverse ordering.
         return (kendalltau(c1, c2)[0] + 1.0) / 2.0
+
+    def customCentralityMeasure(self, c1, c2):
+        s1 = set(c1)
+        s2 = set(c2)
+        return len(s1 & s2) / len(s1)
 
     def getValues(self, graph, backbone):
         #First try
@@ -167,9 +172,12 @@ class P_Centrality:
         bcKendallTau = self.kendallTauQM(rankingOriginal, rankingBackbone)
 
         #Third try
-        centralityJaccard = distance.jaccard(self.getHubs(graph), self.getHubs(backbone))
+        centralityJaccard = distance.jaccard(self.getHubs(graph, 3), self.getHubs(backbone, 3))
 
-        return {'cpvDistance':cpvDistance, 'cpvDistanceNormalized':cpvDistanceNormalized, 'bcKendallTau':bcKendallTau, 'centralityJaccard':centralityJaccard}
+        #Forth try
+        centralityCustom = self.customCentralityMeasure(self.getHubs(graph, 5), self.getHubs(backbone, 10))
+
+        return {'cpvDistance':cpvDistance, 'cpvDistanceNormalized':cpvDistanceNormalized, 'bcKendallTau':bcKendallTau, 'centralityJaccard':centralityJaccard, 'centralityCustom':centralityCustom}
 
     def getTypes(self):
-        return {'cpvDistance':'real', 'cpvDistanceNormalized':'real', 'bcKendallTau':'real', 'centralityJaccard':'real'}
+        return {'cpvDistance':'real', 'cpvDistanceNormalized':'real', 'bcKendallTau':'real', 'centralityJaccard':'real', 'centralityCustom':'real'}
