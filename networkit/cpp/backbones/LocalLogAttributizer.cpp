@@ -1,6 +1,0 @@
-/*
- *
- */
-
-#include "LocalLogAttributizer.h"
-
