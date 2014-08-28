@@ -116,6 +116,7 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
                             choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
                     });
                 }
+                assert (choices.size() > 0); // this should fail only if the graph is not connected
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
                 if (z != u[i]) {
