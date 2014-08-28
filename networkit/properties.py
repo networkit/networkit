@@ -151,8 +151,6 @@ def properties(G, settings):
 	# size
 	n, m = size(G)    # n and m
 
-	directed = G.isDirected()
-
 	logging.info("[...] determining degree distribution")
 	# degrees
 	degDist = GraphProperties.degreeDistribution(G)
@@ -225,7 +223,8 @@ def properties(G, settings):
 		 "name": G.getName(),
 		 "n": n,
 		 "m": m,
-		 "directed": directed,
+		 "directed": G.isDirected(),
+		 "weighted": G.isWeighted(),
 		 "minDeg": minDeg,
 		 "maxDeg": maxDeg,
 		 "avgDeg": avgDeg,
@@ -259,6 +258,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 		["nodes (n)", props["n"]],
 		["edges (m)", props["m"]],
 		["directed?", "{0}".format(props["directed"])],
+		["weighted?", "{0}".format(props["weighted"])],
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
