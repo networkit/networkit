@@ -38,7 +38,7 @@ def setRandomWeights(G, mu, sigma):
 
 
 
-def test(G, nEdges, batchSize, epsilon, delta):
+def test(G, nEdges, batchSize, epsilon, delta, size):
 	# find a set of nEdges to remove from G
 	T = graph.SpanningForest(G).generate()
 	(removeStream, addStream) = removeAndAddEdges(G, nEdges, tabu=T)
@@ -64,6 +64,8 @@ def test(G, nEdges, batchSize, epsilon, delta):
 	timesDynBc = []
 	timesApprBc = []
 	timesDynApprBc = []
+	scoresBc = []
+	scoresApprBc = []
 	for i in range(nExperiments):
 		batch = addStream[i*batchSize : (i+1)*batchSize]
 		# add the edges of batch to the graph
@@ -98,28 +100,40 @@ def test(G, nEdges, batchSize, epsilon, delta):
 		timesDynApprBc.append(y)
 		print("Speedup DynApprBC (with preds)")
 		print(x/y)
+		bcNormalized = [ k/(size*(size-1)) for k in bc.scores()]
+		scoresBc.append(bcNormalized)
+		scoresApprBc.append(dynApprBc.scores())
+
 	a = pd.Series(timesBc)
 	b = pd.Series(timesDynBc)
 	c = pd.Series(timesApprBc)
 	d = pd.Series(timesDynApprBc)
-	df = pd.DataFrame({"Static exact bc": a, "Dynamic exact bc" : b, "Static approx bc" : c, "Dynamic approx bc" : d})
-	return df
+	df1 = pd.DataFrame({"Static exact bc": a, "Dynamic exact bc" : b, "Static approx bc" : c, "Dynamic approx bc" : d})
+	dic2 = {}
+	for experiment in range(nExperiments):
+		a = pd.Series(scoresBc[experiment])
+		b = pd.Series(scoresApprBc[experiment])
+		dic2["Exact scores (exp. "+str(experiment)+")"] = a
+		dic2["Approx scores (exp. "+str(experiment)+")"] = b
+	df2 = pd.DataFrame(dic2)
+	return df1, df2
 
 
 if __name__ == "__main__":
 	setNumberOfThreads(1)
-	size = 50000
+	size = 20000
 
-	for i in range(9):
+	for i in range(11):
 		batchSize = 2**i
 		G = generators.DorogovtsevMendesGenerator(size).generate()
 		cc = properties.ConnectedComponents(G)
 		cc.run()
 		if (cc.numberOfComponents() == 1) :
-			nEdges = batchSize * 5
-			epsilon = 0.1
-			delta = 0.01
-			df = test(G, nEdges, batchSize, epsilon, delta)
-			df.to_csv("results/unweighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
+			nEdges = batchSize * 10
+			epsilon = 0.05
+			delta = 0.1
+			(df1, df2) = test(G, nEdges, batchSize, epsilon, delta, size)
+			df1.to_csv("results/times_unweighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
+			df2.to_csv("results/scores_unweighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
 		else:
 			print("The generated graph is not connected.")
