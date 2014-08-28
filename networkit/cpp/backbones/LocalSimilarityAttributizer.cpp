@@ -58,9 +58,7 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
  */
 double LocalSimilarityAttributizer::getSimilarity(const Graph& graph, node u, node v) {
 	//Use the jaccard measure as similarity measure.
-	/* TODO: The following implementation might be quite inefficient....
-	 * can the implementation in community/JaccardMeasure be used?
-	 */
+	// TODO: This could be easily replaced by using triangle counts. 
 	std::set<node> uNeighbors;
 	graph.forNeighborsOf(u, [&](node n) {
 		uNeighbors.insert(n);

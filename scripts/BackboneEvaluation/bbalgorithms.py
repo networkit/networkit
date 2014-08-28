@@ -270,3 +270,48 @@ class bb_ForestFire:
 
     def requiresWeight(self):
         return False
+
+# -----------------------------------------------------------
+
+class bb_Test:
+
+    def __init__(self, tag, r):
+        self.r = r
+        self.tag = tag
+
+    def getName(self):
+        return "Test " + self.tag
+
+    def getShortName(self):
+        return "Test " + self.tag
+
+    def getAlgorithmExpr(self, parameter):
+        return "backbones.Test(wontWork)"
+
+    def getAttribute(self, graph):
+
+        #chiba = backbones.ChibaNishizekiTriangleCounter()
+        #triangles = chiba.getAttribute(graph)
+        #t = backbones.TestAttributizer(self.md, self.r)
+        #a_t = t.getAttribute(graph, triangles)
+
+        attributizer = backbones.LocalSimilarityAttributizer()
+        a_ls = attributizer.getAttribute(graph, [])
+
+        t = backbones.RandomAttributizer(self.r)
+        a_t = t.getAttribute(graph, a_ls)
+
+        return a_t
+
+    def getBackboneFromAttribute(self, graph, attribute, value):
+        gf = backbones.GlobalThresholdFilter(value, False)
+        return gf.calculate(graph, attribute)
+
+    def parameterizationType(self):
+        return "Float"
+
+    def increasing(self):
+        return True
+
+    def requiresWeight(self):
+        return False

@@ -9,13 +9,14 @@
 
 namespace NetworKit {
 
-RandomAttributizer::RandomAttributizer() {}
+RandomAttributizer::RandomAttributizer(double randomness) : randomness(randomness) {}
 
-std::vector<double> RandomAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
+std::vector<double> RandomAttributizer::getAttribute(const Graph& graph, const std::vector<double>& attribute) {
 	std::vector<double> randomAttribute(graph.upperEdgeIdBound(), 0.0);
 
 	graph.forEdges([&](node u, node v, edgeid eid) {
-		randomAttribute[eid] = Aux::Random::probability();
+		double r = Aux::Random::probability();
+		randomAttribute[eid] = randomness * r + (1 - randomness) * attribute[eid];
 	});
 
 	return randomAttribute;
