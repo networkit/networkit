@@ -4272,20 +4272,20 @@ cdef class MultiscaleAttributizer:
 
 cdef extern from "cpp/backbones/RandomAttributizer.h":
 	cdef cppclass _RandomAttributizer "NetworKit::RandomAttributizer":
-		_RandomAttributizer() except +
-		vector[double] getAttribute(_Graph G, vector[int] a) except +
+		_RandomAttributizer(double randomness) except +
+		vector[double] getAttribute(_Graph G, vector[double] a) except +
 
 cdef class RandomAttributizer:
 
 	cdef _RandomAttributizer* _this
 
-	def __cinit__(self):
-		self._this = new _RandomAttributizer()
+	def __cinit__(self, randomness):
+		self._this = new _RandomAttributizer(randomness)
 
 	def __dealloc__(self):
 		del self._this
 
-	def getAttribute(self, Graph G, vector[int] a):
+	def getAttribute(self, Graph G, vector[double] a):
 		return self._this.getAttribute(dereference(G._this), a)
 
 cdef extern from "cpp/backbones/LocalSimilarityAttributizer.h":
@@ -4335,6 +4335,24 @@ cdef class ForestFireAttributizer:
 
 	def __cinit__(self, double pf, double tebr):
 		self._this = new _ForestFireAttributizer(pf, tebr)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(dereference(G._this), a)
+
+cdef extern from "cpp/backbones/TestAttributizer.h":
+	cdef cppclass _TestAttributizer "NetworKit::TestAttributizer":
+		_TestAttributizer(int md, double r) except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class TestAttributizer:
+
+	cdef _TestAttributizer* _this
+
+	def __cinit__(self, int md, double r):
+		self._this = new _TestAttributizer(md, r)
 
 	def __dealloc__(self):
 		del self._this

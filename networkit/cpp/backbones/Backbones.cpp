@@ -112,8 +112,8 @@ RandomBackbone::RandomBackbone(double ratio) :
 		ratio(ratio) {}
 
 Graph RandomBackbone::calculate(const Graph& g) {
-	RandomAttributizer randomAttributizer;
-	std::vector<double> random = randomAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	RandomAttributizer randomAttributizer (1.0);
+	std::vector<double> random = randomAttributizer.getAttribute(g, std::vector<double>(g.upperEdgeIdBound()));
 
 	GlobalThresholdFilter filter(ratio, false);
 	return filter.calculate(g, random);
