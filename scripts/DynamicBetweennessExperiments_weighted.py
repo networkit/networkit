@@ -128,9 +128,10 @@ def test(G, nEdges, batchSize, epsilon, delta, size):
 
 if __name__ == "__main__":
 	setNumberOfThreads(1)
-	size = 20000
+	setLogLevel("INFO")
+	size = 1000
 
-	for i in range(11):
+	for i in range(3,4):
 		batchSize = 2**i
 		G = generators.DorogovtsevMendesGenerator(size).generate()
 		G1 = Graph(G.numberOfNodes(), True, False)
@@ -140,7 +141,7 @@ if __name__ == "__main__":
 		cc = properties.ConnectedComponents(G1)
 		cc.run()
 		if (cc.numberOfComponents() == 1) :
-			nEdges = batchSize * 5
+			nEdges = batchSize * 1
 			epsilon = 0.05
 			delta = 0.1
 			(df1, df2) = test(G1, nEdges, batchSize, epsilon, delta, size)

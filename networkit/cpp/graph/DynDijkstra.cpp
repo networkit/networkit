@@ -9,6 +9,7 @@
 #include "DynDijkstra.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/PrioQueue.h"
+#include "../auxiliary/NumericTools.h"
 #include <queue>
 
 
@@ -71,7 +72,7 @@ void DynDijkstra::update(const std::vector<GraphEvent>& batch) {
 		npaths[current] = 0;
 		G.forNeighborsOf(current, [&](node z, edgeweight w){
 			//z is a predecessor of current node
-			if (distances[current] == distances[z]+w) {
+			if (Aux::NumericTools::equal(distances[current], distances[z]+w, 0.000001)) {
 				if (storePreds) {
 					previous[current].push_back(z);
 				}
