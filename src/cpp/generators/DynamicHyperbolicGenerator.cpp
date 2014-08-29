@@ -177,7 +177,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				double mincdf = 1;
 				double currcdf = cosh(hyperbolicRadius);
 
-				double offset = moveEachStep*50;
+				double offset = moveDistance;
 				double random = Aux::Random::real(currcdf-offset, currcdf+offset);
 				if (random > maxcdf) {
 					random -= 2*(random - maxcdf);
@@ -191,7 +191,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				assert(newradius < R);
 				assert(newradius >= 0);
 
-				double angleMovement = Aux::Random::real(-moveEachStep/hyperbolicRadius, moveEachStep/hyperbolicRadius);
+				double angleMovement = Aux::Random::real(-moveDistance/hyperbolicRadius, moveDistance/hyperbolicRadius);
 				double newphi = angles[toWiggle[j]] + angleMovement;
 				if (newphi < 0) newphi += (floor(-newphi/(2*M_PI))+1)*2*M_PI;
 				if (newphi > 2*M_PI) newphi -= floor(newphi/(2*M_PI))*2*M_PI;
