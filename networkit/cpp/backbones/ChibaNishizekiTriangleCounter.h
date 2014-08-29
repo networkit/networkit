@@ -21,9 +21,6 @@ class ChibaNishizekiTriangleCounter : public AttributeGenerator<int, int> {
 public:
 
 	std::vector<int> getAttribute(const Graph& graph, const std::vector<int>& attribute);
-
-private:
-	void removeNode(Graph& graph, node u);
 };
 
 } /* namespace NetworKit */
