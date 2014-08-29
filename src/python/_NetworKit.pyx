@@ -137,6 +137,8 @@ cdef extern from "../cpp/graph/Graph.h":
 		node randomNeighbor(node) except +
 		pair[node, node] randomEdge() except +
 		Point[float] getCoordinate(node v) except +
+		void setCoordinate(node v, Point[float] value) except +
+		void initCoordinates() except +
 
 
 cdef class Graph:
@@ -544,6 +546,13 @@ cdef class Graph:
 		"""
 
 		return (self._this.getCoordinate(v)[0], self._this.getCoordinate(v)[1])
+
+	def setCoordinate(self, v, value):
+		cdef Point[float] p = Point[float](value[0], value[1])
+		self._this.setCoordinate(v, p)
+
+	def initCoordinates(self):
+		self._this.initCoordinates()
 
 # TODO: expose all methods
 
