@@ -210,11 +210,6 @@ public:
 		}
 		if (rightDistance <= radius) return false;
 		return true;
-		//TRACE("leftDistance:", leftDistance);
-		//TRACE("rightDistance:", rightDistance);
-		//TRACE("topDistance:", topDistance);
-		//TRACE("bottomDistance:", bottomDistance);
-		//return std::min(std::min(leftDistance, rightDistance), std::min(bottomDistance, topDistance));
 	}
 
 	bool outOfReach(double angle, double R, double radius) {
@@ -224,7 +219,6 @@ public:
 	}
 
 	bool responsible(double angle, double R) {
-
 		return (angle >= leftAngle && angle < rightAngle && R >= minR && R < maxR);
 	}
 
