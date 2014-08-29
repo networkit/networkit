@@ -93,6 +93,13 @@ def enableNestedParallelism():
 
 ## Module: graph
 
+cdef extern from "../cpp/viz/Point.h" namespace "NetworKit":
+	cdef cppclass Point[T]:
+		Point()
+		Point(T x, T y)
+		T& operator[](const index i) except +
+		T& at(const index i) except +
+
 cdef extern from "../cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
@@ -129,6 +136,7 @@ cdef extern from "../cpp/graph/Graph.h":
 		node randomNode() except +
 		node randomNeighbor(node) except +
 		pair[node, node] randomEdge() except +
+		Point[float] getCoordinate(node v) except +
 
 
 cdef class Graph:
@@ -521,6 +529,21 @@ cdef class Graph:
 		"""
 		return self._this.randomEdge()
 
+	def getCoordinate(self, v):
+		""" Get the coordinates of node v.
+
+		Parameters
+		----------
+		v : node
+			Node.
+
+		Returns
+		-------
+		pair[float, float]
+			x and y coordinates of v.
+		"""
+
+		return (self._this.getCoordinate(v)[0], self._this.getCoordinate(v)[1])
 
 # TODO: expose all methods
 
@@ -3999,6 +4022,8 @@ cdef extern from "../cpp/generators/DynamicHyperbolicGenerator.h":
 			double alpha, double stretch, double moveEachStep, double factorGrowth, double moveDistance) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph* _getGraph() except +
+		vector[Point[float]] getCoordinates() except +
+		vector[Point[float]] getHyperbolicCoordinates() except +
 
 
 cdef class DynamicHyperbolicGenerator:
@@ -4020,7 +4045,11 @@ cdef class DynamicHyperbolicGenerator:
 	def getGraph(self):
 		return Graph().setThis(self._this._getGraph())
 
+	def getCoordinates(self):
+		return [(p[0], p[1]) for p in self._this.getCoordinates()]
 
+	def getHyperbolicCoordinates(self):
+		return [(p[0], p[1]) for p in self._this.getHyperbolicCoordinates()]
 
 
 

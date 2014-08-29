@@ -59,6 +59,7 @@ public:
 	T squaredLength() const;
 
 	T& operator[](const index i);
+	T& at(const index i);
 
 	/**
 	 * Default point to string conversion.
@@ -165,6 +166,12 @@ Point<T>& Point<T>::scale(const T factor) {
 
 template<class T>
 inline T& Point<T>::operator [](index i) {
+	assert(i >= 0 && i < data.size());
+	return data[i];
+}
+
+template<class T>
+inline T& Point<T>::at(index i) {
 	assert(i >= 0 && i < data.size());
 	return data[i];
 }
