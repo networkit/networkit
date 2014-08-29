@@ -12,49 +12,55 @@
 namespace NetworKit {
 
 std::vector<int> ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
-	Graph g = graph;
+	std::vector<std::vector<std::pair<node, edgeid> > > edges(graph.upperNodeIdBound());
+	
+	graph.parallelForNodes([&](node u) {
+		edges[u].reserve(graph.degree(u));
+		graph.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
+			edges[u].emplace_back(v, eid);
+		});
+	});
 
 	//Node attribute: marker
-	std::vector<bool> nodeMarker(graph.upperNodeIdBound(), false);
+	std::vector<edgeid> nodeMarker(graph.upperNodeIdBound(), none);
 
 	//Edge attribute: triangle count
 	std::vector<int> triangleCount(graph.upperEdgeIdBound(), 0);
 
-	g.forNodes([&](node u) {
+	graph.forNodes([&](node u) {
 		//Mark all neighbors
-		g.forNeighborsOf(u, [&](node v) {
-			nodeMarker[v] = true;
-		});
+		for (auto uv : edges[u]) {
+			nodeMarker[uv.first] = uv.second;
+		}
 
 		//For all neighbors: check for already marked neighbors.
-		g.forNeighborsOf(u, [&](node _u, node v, edgeid eid_uv) {
-			g.forNeighborsOf(v, [&](node _v, node w, edgeid eid_vw) {
-				if (nodeMarker[w]) {
-
-					edgeid eid_uw = graph.edgeId(u, w);
-
-					triangleCount[eid_uv] = triangleCount[eid_uv] + 1;
-					triangleCount[eid_uw] = triangleCount[eid_uw] + 1;
-					triangleCount[eid_vw] = triangleCount[eid_vw] + 1;
+		for (auto uv : edges[u]) {
+			bool edgeDeleted = false;
+			for (auto vw = edges[uv.first].begin(); vw != edges[uv.first].end(); ++vw) {
+				if (edgeDeleted) {
+					(*(vw-1)) = *vw;
 				}
-			});
+				if (nodeMarker[vw->first] != none) {
 
-			nodeMarker[v] = false;
-		});
+					edgeid eid_uw = nodeMarker[vw->first];
 
-		removeNode(g, u);
+					++triangleCount[uv.second];
+					++triangleCount[eid_uw];
+					++triangleCount[vw->second];
+				} else if (vw->first == u) {
+					edgeDeleted = true;
+				}
+			}
+			
+			assert(edgeDeleted);
+			
+			edges[uv.first].pop_back();
+
+			nodeMarker[uv.first] = none;
+		}
 	});
 
 	return triangleCount;
-}
-
-void ChibaNishizekiTriangleCounter::removeNode(Graph& graph, node u) {
-	//isolate the node before removing it.
-	graph.forNeighborsOf(u, [&](node v) {
-		graph.removeEdge(u,v);
-	});
-
-	graph.removeNode(u);
 }
 
 } /* namespace NetworKit */
