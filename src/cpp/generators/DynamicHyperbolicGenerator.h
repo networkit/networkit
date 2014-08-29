@@ -8,8 +8,11 @@
 #ifndef DYNAMICHYPERBOLICGENERATOR_H_
 #define DYNAMICHYPERBOLICGENERATOR_H_
 
+#include <map>
+
 #include "DynamicGraphGenerator.h"
 #include "Quadtree/Quadtree.h"
+
 
 namespace NetworKit {
 
@@ -28,6 +31,9 @@ public:
 	Graph* _getGraph() {
 		return new Graph{std::move(getGraph())};
 	};
+
+	std::map<index, Point<float> > getCoordinates() const;
+	std::map<index, Point<float> > getHyperbolicCoordinates() const;
 
 
 private:
