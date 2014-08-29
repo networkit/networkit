@@ -20,12 +20,15 @@ class DynamicHyperbolicGenerator: public NetworKit::DynamicGraphGenerator  {
 	friend class GeneratorsGTest;
 public:
 	DynamicHyperbolicGenerator(count n, double initialFactor = 1, double alpha = 1, double stretch = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
-	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double R, double initialFactor = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
+	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double stretch, double initialFactor = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
 	DynamicHyperbolicGenerator();
 	virtual ~DynamicHyperbolicGenerator();
 	std::vector<GraphEvent> generate(count nSteps) override;
 	void initializeQuadTree();
+	void initializeMovement();
 	Graph getGraph();
+
+
 
 	/** only to be used by cython - this eliminates an unnecessary copy */
 	Graph* _getGraph() {
@@ -34,7 +37,6 @@ public:
 
 	std::vector<Point<float> > getCoordinates() const;
 	std::vector<Point<float> > getHyperbolicCoordinates() const;
-
 
 private:
 	count quadTreeHeight() {
@@ -50,6 +52,8 @@ private:
 	Quadtree<index> quad;
 	vector<double> angles;
 	vector<double> radii;
+	vector<double> angularMovement;
+	vector<double> radialMovement;
 	bool initialized;
 };
 
