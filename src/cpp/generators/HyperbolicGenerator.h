@@ -9,6 +9,7 @@
 #define HYPERBOLICGENERATOR_H_
 
 #include <vector>
+#include <map>
 #include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"
 
@@ -26,6 +27,7 @@ public:
 	virtual ~HyperbolicGenerator();
 	static double expectedNumberOfEdges(count n, double distanceFactor, double stretch);
 	static Graph generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance);
+	static std::map<index, Point<float> > getCoordinates(vector<double> &angles, vector<double> &radii);
 	Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1);
 	Graph generate();
 

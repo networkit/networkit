@@ -31,8 +31,6 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double initialFa
 }
 
 DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, vector<double> &radii, double R, double initialFactor, double moveEachStep, double factorgrowth, double moveDistance) {
-
-
 	this->angles = angles;
 	this->radii = radii;
 	this->nodes = angles.size();
@@ -85,6 +83,30 @@ Graph DynamicHyperbolicGenerator::getGraph() {
 	 * Reduces code duplication, though.
 	 */
 	return HyperbolicGenerator::generate(&angles, &radii, r, currentfactor*R);
+}
+
+std::map<index, Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
+	count n = angles.size();
+	assert(radii.size() == n);
+	std::map<index, Point<float> > result;
+	for (index i = 0; i < angles.size(); i++) {
+		Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+		Point<float> temp(coord[0], coord[1]);
+		result.emplace(i, temp);
+	}
+	return result;
+}
+
+std::map<index, Point<float> > DynamicHyperbolicGenerator::getHyperbolicCoordinates() const {
+	count n = angles.size();
+	assert(radii.size() == n);
+	std::map<index, Point<float> > result;
+	for (index i = 0; i < angles.size(); i++) {
+		Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i]));
+		Point<float> temp(coord[0], coord[1]);
+		result.emplace(i, temp);
+	}
+	return result;
 }
 
 std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
@@ -228,7 +250,4 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 	}
 	return result;
 }
-
-
-
 } /* namespace NetworKit */

@@ -65,6 +65,18 @@ double HyperbolicGenerator::expectedNumberOfEdges(count n, double distanceFactor
 	return (8 / M_PI) * n * exp(-R/2)*(n/2);
 }
 
+std::map<index, Point<float> > HyperbolicGenerator::getCoordinates(vector<double> &angles, vector<double> &radii) {
+	count n = angles.size();
+	assert(radii.size() == n);
+	std::map<index, Point<float> > result;
+	for (index i = 0; i < angles.size(); i++) {
+		Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+		Point<float> temp(coord[0], coord[1]);
+		result.emplace(i, temp);
+	}
+	return result;
+}
+
 Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance) {
 	index n = angles->size();
 	assert(radii->size() == n);
