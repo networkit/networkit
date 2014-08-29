@@ -106,7 +106,7 @@ def powerLawExponent(G, dd=None):
 	"""
 	if not dd:
 		dd = degreeDistribution(G)
-	fit = powerlaw.Fit(dd)
+	fit = powerlaw.Fit(dd,discrete=True,estimate_discrete=False)
 	return fit.alpha
 
 def powerLawFit(G, dd=None):
@@ -114,7 +114,7 @@ def powerLawFit(G, dd=None):
 	"""
 	if not dd:
 		dd = degreeDistribution(G)
-	fit = powerlaw.Fit(dd)
+	fit = powerlaw.Fit(dd,discrete=True,estimate_discrete=False)
 	R, p = fit.distribution_compare("power_law", "exponential", normalized_ratio=True)
 	return ((R > 0), R)
 
@@ -177,15 +177,15 @@ def properties(G, settings):
 
 	ncomPLP, modPLP = None, None
 	ncomPLM, modPLM = None, None
-	if settings["communities"]:
-		logging.info("[...] detecting communities")
-		# perform PLM community detection
-		logging.info("[...] performing community detection: PLM")
-		plm = community.PLM()
-		print(plm)
-		zetaPLM = plm.run(G)
-		ncomPLM = zetaPLM.numberOfSubsets()
-		modPLM = community.Modularity().getQuality(zetaPLM, G)
+	#if settings["communities"]:
+	#	logging.info("[...] detecting communities")
+	#	# perform PLM community detection
+	#	logging.info("[...] performing community detection: PLM")
+	#	plm = community.PLM()
+	#	print(plm)
+	#	zetaPLM = plm.run(G)
+	#	ncomPLM = zetaPLM.numberOfSubsets()
+	#	modPLM = community.Modularity().getQuality(zetaPLM, G)
 
 	# degree histogram
 
