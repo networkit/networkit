@@ -32,8 +32,8 @@ public:
 		return new Graph{std::move(getGraph())};
 	};
 
-	std::map<index, Point<float> > getCoordinates() const;
-	std::map<index, Point<float> > getHyperbolicCoordinates() const;
+	std::vector<Point<float> > getCoordinates() const;
+	std::vector<Point<float> > getHyperbolicCoordinates() const;
 
 
 private:

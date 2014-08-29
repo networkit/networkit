@@ -230,15 +230,15 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 
 
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
-	int nSteps = 50;
-	count n = 5000;
+	int nSteps = 100;
+	count n = 2000;
 
-	double factor = 0.5;
+	double factor = 0.4;
 	double stretch = 1;
 	double alpha = 1;
 	double R = acosh((double)n/(2*M_PI)+1)*stretch;
-	double movedShare = 0.2;
-	double moveDistance = 1;
+	double movedShare = 1;
+	double moveDistance = 0.01;
 
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
@@ -257,6 +257,9 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 		DEBUG("Edges: ", G.numberOfEdges());
 		for (auto event : stream) {
 			EXPECT_TRUE(event.type == GraphEvent::EDGE_REMOVAL || event.type == GraphEvent::EDGE_ADDITION || event.type == GraphEvent::TIME_STEP);
+			if (event.type == GraphEvent::EDGE_REMOVAL) {
+				EXPECT_TRUE(G.hasEdge(event.u, event.v));
+			}
 		}
 		gu.update(stream);
 	}
@@ -271,7 +274,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 
 TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 	count n = 300;
-	count nSteps = 100;
+	count nSteps = 20;
 
 	double factor = 0.5;
 	double stretch = 1;
@@ -302,10 +305,9 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 		gu.update(stream);
 		G.initCoordinates();
 
-		for (auto iter : dynGen.getHyperbolicCoordinates()) {
-			index v = iter.first;
-			Point<float> p = iter.second;
-			G.setCoordinate(v, p);
+		auto coords = dynGen.getHyperbolicCoordinates();
+		for (index i = 0; i < coords.size(); i++) {
+			G.setCoordinate(i, coords[i]);
 		}
 
 		// output for visual inspection
