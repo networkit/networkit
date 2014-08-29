@@ -203,7 +203,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);// sqrt(rad_nom/rad_denom);
 
-	DynamicHyperbolicGenerator dynGen(angles, radii, R, initialFactor, 0, factorGrowth, 0);
+	DynamicHyperbolicGenerator dynGen(angles, radii, stretch, initialFactor, 0, factorGrowth, 0);
 
 	Graph G = dynGen.getGraph();
 	GraphUpdater gu(G);
@@ -233,19 +233,19 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	int nSteps = 100;
 	count n = 2000;
 
-	double factor = 0.4;
-	double stretch = 1;
+	double factor = 1;
+	double stretch = 2;
 	double alpha = 1;
 	double R = acosh((double)n/(2*M_PI)+1)*stretch;
 	double movedShare = 1;
-	double moveDistance = 0.01;
+	double moveDistance = 0.1;
 
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
 	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 
-	DynamicHyperbolicGenerator dynGen(angles, radii, R, factor, movedShare, 0, moveDistance);
+	DynamicHyperbolicGenerator dynGen(angles, radii, stretch, factor, movedShare, 0, moveDistance);
 
 	Graph G = HyperbolicGenerator::generate(&angles, &radii, r, factor*R);
 	count initialEdgeCount = G.numberOfEdges();
@@ -287,7 +287,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 
 	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
 
-	DynamicHyperbolicGenerator dynGen(angles, radii, R, factor, movedShare, 0, moveDistance);
+	DynamicHyperbolicGenerator dynGen(angles, radii, stretch, factor, movedShare, 0, moveDistance);
 	Graph G = dynGen.getGraph();
 
 	GraphUpdater gu(G);

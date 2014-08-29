@@ -28,18 +28,20 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double initialFa
 	this->factorgrowth = factorgrowth;
 	this->moveDistance = moveDistance;
 	this->initialized = false;
+	initializeMovement();
 }
 
-DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, vector<double> &radii, double R, double initialFactor, double moveEachStep, double factorgrowth, double moveDistance) {
+DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, vector<double> &radii, double stretch, double initialFactor, double moveEachStep, double factorgrowth, double moveDistance) {
 	this->angles = angles;
 	this->radii = radii;
 	this->nodes = angles.size();
+	this->stretch = stretch;
 	assert(radii.size() == nodes);
+	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	quad = Quadtree<index>(r);
 	currentfactor = initialFactor;
 	this->alpha = 1;//not needed any more
-	this->stretch = 1;//not needed any more
 	this->moveEachStep = moveEachStep;
 	this->factorgrowth = factorgrowth;
 	this->moveDistance = moveDistance;
@@ -49,10 +51,22 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, v
 		quad.addContent(i, angles[i], radii[i]);
 	}
 	INFO("Filled Quadtree");
+	initializeQuadTree();
+	initializeMovement();
 }
 
 DynamicHyperbolicGenerator::~DynamicHyperbolicGenerator() {
 	// TODO Auto-generated destructor stub
+}
+
+void DynamicHyperbolicGenerator::initializeMovement() {
+	angularMovement.resize(nodes);
+	radialMovement.resize(nodes);
+	int scale = 10;
+	for (index i = 0; i < nodes; i++) {
+		angularMovement[i] = Aux::Random::real(-moveDistance, moveDistance);
+		radialMovement[i] = Aux::Random::real(-scale*moveDistance, scale*moveDistance);
+	}
 }
 
 void DynamicHyperbolicGenerator::initializeQuadTree() {
@@ -177,26 +191,36 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				double mincdf = 1;
 				double currcdf = cosh(hyperbolicRadius);
 
-				double offset = moveDistance;
-				double random = Aux::Random::real(currcdf-offset, currcdf+offset);
-				if (random > maxcdf) {
-					random -= 2*(random - maxcdf);
+				double newcosh = currcdf + radialMovement[toWiggle[j]];
+
+				//bounce off the boundary
+				if (newcosh > maxcdf) {
+					newcosh -= 2*(newcosh - maxcdf);
+					radialMovement[toWiggle[j]] *= -1;
+					DEBUG("Node ", toWiggle[j], " bounced off upper boundary, radial movement set to ", radialMovement[toWiggle[j]]);
 				}
-				if (random < mincdf) {
-					random += 2*(mincdf - random);
+				if (newcosh < mincdf) {
+					newcosh += 2*(mincdf - newcosh);
+					radialMovement[toWiggle[j]] *= -1;
+					DEBUG("Node ", toWiggle[j], " bounced off lower boundary, radial movement set to ", radialMovement[toWiggle[j]]);
+					if (angles[toWiggle[j]] > M_PI) {
+						angles[toWiggle[j]] -= M_PI;
+					}
+					else {
+						angles[toWiggle[j]] += M_PI;
+					}
 				}
-				double newradius = acosh(random)/alpha;
+				double newradius = acosh(newcosh)/alpha;
 				//assert(abs(newradius - hyperbolicRadius) < moveEachStep);
 				if (newradius >= R) newradius = std::nextafter(R, std::numeric_limits<double>::lowest());
 				assert(newradius < R);
 				assert(newradius >= 0);
 
-				double angleMovement = Aux::Random::real(-moveDistance/hyperbolicRadius, moveDistance/hyperbolicRadius);
-				double newphi = angles[toWiggle[j]] + angleMovement;
+				//double angleMovement = Aux::Random::real(-moveDistance/hyperbolicRadius, moveDistance/hyperbolicRadius);
+				double newphi = angles[toWiggle[j]] + angularMovement[toWiggle[j]]/newradius;
 				if (newphi < 0) newphi += (floor(-newphi/(2*M_PI))+1)*2*M_PI;
 				if (newphi > 2*M_PI) newphi -= floor(newphi/(2*M_PI))*2*M_PI;
 
-				//bounce off the boundary
 				newradius = HyperbolicSpace::hyperbolicRadiusToEuclidean(newradius);
 				if (newradius >= r) newradius = std::nextafter(newradius, std::numeric_limits<double>::lowest());
 
