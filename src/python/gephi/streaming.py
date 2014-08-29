@@ -92,12 +92,12 @@ class GephiStreamingClient:
         except _urllib.error.URLError as e:
             self._urlError(e)
 
-    def exportCoordinates(self, graph, scale):
+    def exportCoordinates(self, graph, scale=1):
         try:
             xcoords = [scale*graph.getCoordinate(v)[0] for v in graph.nodes()]
             ycoords = [scale*graph.getCoordinate(v)[1] for v in graph.nodes()]
-            client.exportNodeValues(graph, xcoords, 'x')
-            client.exportNodeValues(graph, ycoords, 'y')
+            self.exportNodeValues(graph, xcoords, 'x')
+            self.exportNodeValues(graph, ycoords, 'y')
             self._pygephi.flush()
         except _urllib.error.URLError as e:
             self._urlError(e) 
