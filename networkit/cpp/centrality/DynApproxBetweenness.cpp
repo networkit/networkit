@@ -120,7 +120,6 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
                 }
                 assert (choices.size() > 0); // this should fail only if the graph is not connected
                 if (choices.size() == 0) {
-                    INFO ("size of predecessors: ", choices.size());
                     INFO ("node: ", t);
                     INFO ("source: ", u[i]);
                     INFO ("distance: ", sssp[i]->distances[t]);
