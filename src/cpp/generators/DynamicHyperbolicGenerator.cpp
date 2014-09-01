@@ -89,7 +89,10 @@ void DynamicHyperbolicGenerator::initializeQuadTree() {
 }
 
 Graph DynamicHyperbolicGenerator::getGraph() {
-	if (!initialized) initializeQuadTree();//this is horribly expensive, since it constructs a new Quadtree
+	/**
+	 * while the Quadtree doesn't strictly need to be initialized this early, it has to be done anyway and there is no harm doing it now
+	 */
+	if (!initialized) initializeQuadTree();
 	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	/**
@@ -192,7 +195,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				double currcdf = cosh(hyperbolicRadius);
 
 				double newcosh = currcdf + radialMovement[toWiggle[j]];
-
+				double newphi = angles[toWiggle[j]];
 				//bounce off the boundary
 				if (newcosh > maxcdf) {
 					newcosh -= 2*(newcosh - maxcdf);
@@ -203,11 +206,15 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 					newcosh += 2*(mincdf - newcosh);
 					radialMovement[toWiggle[j]] *= -1;
 					DEBUG("Node ", toWiggle[j], " bounced off lower boundary, radial movement set to ", radialMovement[toWiggle[j]]);
-					if (angles[toWiggle[j]] > M_PI) {
-						angles[toWiggle[j]] -= M_PI;
+
+					/**
+					 * nodes should cross the center, not bounce off it
+					 */
+					if (newphi > M_PI) {
+						newphi -= M_PI;
 					}
 					else {
-						angles[toWiggle[j]] += M_PI;
+						newphi += M_PI;
 					}
 				}
 				double newradius = acosh(newcosh)/alpha;
@@ -217,7 +224,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				assert(newradius >= 0);
 
 				//double angleMovement = Aux::Random::real(-moveDistance/hyperbolicRadius, moveDistance/hyperbolicRadius);
-				double newphi = angles[toWiggle[j]] + angularMovement[toWiggle[j]]/newradius;
+				newphi += angularMovement[toWiggle[j]]/newradius;
 				if (newphi < 0) newphi += (floor(-newphi/(2*M_PI))+1)*2*M_PI;
 				if (newphi > 2*M_PI) newphi -= floor(newphi/(2*M_PI))*2*M_PI;
 
