@@ -6,6 +6,7 @@
  */
 
 #include "LocalSimilarityAttributizer.h"
+#include "ChibaNishizekiTriangleCounter.h"
 #include <math.h> //log
 #include <set>
 
@@ -14,11 +15,13 @@ namespace NetworKit {
 LocalSimilarityAttributizer::LocalSimilarityAttributizer() {}
 
 std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
-	/*
-	 * For each edge, we calculate the minimum required sparsification exponent e
-	 * such that the edge is contained in the backbone.
-	 */
+	//Calculate local similarities (using triangle counts)
+	std::vector<double> similarity = getLocalSimilarity(graph);
 
+	/*
+	* For each edge, we calculate the minimum required sparsification exponent e
+	* such that the edge is contained in the backbone.
+	*/
 	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forNodes([&](node i) {
@@ -29,7 +32,7 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 
 		std::vector<AttributizedEdge<double>> neighbors;
 		graph.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-			double sim = getSimilarity(graph, i, j);
+			double sim = similarity[eid];
 			neighbors.push_back(AttributizedEdge<double>(i, j, eid, sim));
 		});
 		std::sort(neighbors.begin(), neighbors.end());
@@ -53,28 +56,14 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 	return sparsificationExp;
 }
 
-/**
- * Returns the similarity between two nodes.
- */
-double LocalSimilarityAttributizer::getSimilarity(const Graph& graph, node u, node v) {
-	//Use the jaccard measure as similarity measure.
-	// TODO: This could be easily replaced by using triangle counts. 
-	std::set<node> uNeighbors;
-	graph.forNeighborsOf(u, [&](node n) {
-		uNeighbors.insert(n);
+std::vector<double> LocalSimilarityAttributizer::getLocalSimilarity(const Graph& graph) {
+	ChibaNishizekiTriangleCounter triangleAttributizer;
+	std::vector<int> triangles = triangleAttributizer.getAttribute(graph, std::vector<int>(graph.upperEdgeIdBound()));
+	std::vector<double> similarity(graph.upperEdgeIdBound(), 0.0);
+	graph.forEdges([&](node u, node v, edgeid eid) {
+		similarity[eid] = ((double) triangles[eid]) / (graph.degree(u) + graph.degree(v) - triangles[eid]);
 	});
-
-	count inUnion = graph.degree(u);
-	count inIntersection = 0;
-
-	graph.forNeighborsOf(v, [&](node n) {
-		if (uNeighbors.erase(n))
-			inIntersection++;
-		else
-			inUnion++;
-	});
-
-	return (double) inIntersection / (double) inUnion;
+	return similarity;
 }
 
 } /* namespace NetworKit */

@@ -58,7 +58,8 @@ public:
 	~LocalSimilarityAttributizer() = default;
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
-	double getSimilarity(const Graph& graph, node i, node j);
+	std::vector<double> getLocalSimilarity(const Graph& graph);
+
 };
 
 }
