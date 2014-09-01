@@ -52,8 +52,6 @@ public:
 	 */
 	Partition(index z, index defaultValue);
 
-	virtual ~Partition() = default;
-
 	/**
 	 *  Index operator.
 	 *

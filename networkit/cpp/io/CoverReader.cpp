@@ -15,12 +15,14 @@ NetworKit::Cover NetworKit::CoverReader::read(std::string path, NetworKit::Graph
 	node current;
 
 	while (std::getline(file, line)) {
-		communities.setUpperBound(i+1);
-		std::stringstream linestream(line);
-		while (linestream >> current) {
-			communities.addToSubset(i, current);
+		if (line.substr(0, 1) != "#") {
+			communities.setUpperBound(i+1);
+			std::stringstream linestream(line);
+			while (linestream >> current) {
+				communities.addToSubset(i, current);
+			}
+			++i;
 		}
-		++i;
 	}
 
 	file.close();

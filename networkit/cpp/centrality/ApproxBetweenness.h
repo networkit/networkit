@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 
-/** 
+/**
  * @ingroup centrality
  * Approximation of betweenness centrality according to algorithm described in
  * Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling

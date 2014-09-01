@@ -1,5 +1,6 @@
 # extension imports
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness
+
 
 # local imports
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors

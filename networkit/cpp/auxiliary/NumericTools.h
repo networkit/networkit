@@ -50,6 +50,11 @@ bool le(double x, double y, double error = acceptableError);
  */
 bool ge(double x, double y, double error = acceptableError);
 
+/**
+* Test doubles for equality within the smallest possible error.
+*/
+bool logically_equal(double a, double b, double error_factor=1.0);
+
 } /* namespace NumericTools */
 
 } /* namespace NetworKit */
