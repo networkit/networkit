@@ -14,9 +14,11 @@ namespace NetworKit {
 
 LocalSimilarityAttributizer::LocalSimilarityAttributizer() {}
 
-std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
-	//Calculate local similarities (using triangle counts)
-	std::vector<double> similarity = getLocalSimilarity(graph);
+std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph, const std::vector<int>& triangles) {
+	/*
+	 * For each edge, we calculate the minimum required sparsification exponent e
+	 * such that the edge is contained in the backbone.
+	 */
 
 	/*
 	* For each edge, we calculate the minimum required sparsification exponent e
@@ -31,9 +33,10 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 		 * are to be kept in the backbone */
 
 		std::vector<AttributizedEdge<double>> neighbors;
+		neighbors.reserve(graph.degree(i));
 		graph.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-			double sim = similarity[eid];
-			neighbors.push_back(AttributizedEdge<double>(i, j, eid, sim));
+			double sim = triangles[eid] * 1.0 / (graph.degree(i) + graph.degree(j) - triangles[eid]);
+			neighbors.emplace_back(i, j, eid, sim);
 		});
 		std::sort(neighbors.begin(), neighbors.end());
 
@@ -54,16 +57,6 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 	});
 
 	return sparsificationExp;
-}
-
-std::vector<double> LocalSimilarityAttributizer::getLocalSimilarity(const Graph& graph) {
-	ChibaNishizekiTriangleCounter triangleAttributizer;
-	std::vector<int> triangles = triangleAttributizer.getAttribute(graph, std::vector<int>(graph.upperEdgeIdBound()));
-	std::vector<double> similarity(graph.upperEdgeIdBound(), 0.0);
-	graph.forEdges([&](node u, node v, edgeid eid) {
-		similarity[eid] = ((double) triangles[eid]) / (graph.degree(u) + graph.degree(v) - triangles[eid]);
-	});
-	return similarity;
 }
 
 } /* namespace NetworKit */

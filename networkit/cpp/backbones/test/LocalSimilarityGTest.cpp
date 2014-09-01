@@ -11,35 +11,10 @@
 
 #include "../Backbones.h"
 #include "../LocalSimilarityAttributizer.h"
+#include "../ChibaNishizekiTriangleCounter.h"
 
 
 namespace NetworKit {
-
-TEST_F(LocalSimilarityGTest, testSimilarityCalculation) {
-	Graph g(10);
-
-	g.addEdge(0, 2);
-	g.addEdge(0, 3);
-	g.addEdge(0, 4);
-	g.addEdge(0, 5);
-	g.addEdge(0, 9);
-	g.addEdge(1, 4);
-	g.addEdge(1, 5);
-	g.addEdge(1, 6);
-	g.addEdge(1, 7);
-	g.addEdge(1, 8);
-	g.addEdge(1, 9);
-	g.addEdge(0, 1);
-	g.indexEdges();
-
-	LocalSimilarityAttributizer attributizer;
-
-	std::vector<double> localSimilarity = attributizer.getLocalSimilarity(g);
-
-	//Common neighbors of 0 and 1: 4, 5, 9 --> jaccard measure of 3/8.
-	EXPECT_DOUBLE_EQ(0.3, localSimilarity[g.edgeId(0, 1)]);
-	EXPECT_DOUBLE_EQ(0.3, localSimilarity[g.edgeId(1, 0)]);
-}
 
 TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 	Graph g(4);
@@ -50,8 +25,10 @@ TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 	g.addEdge(1, 2);
 	g.indexEdges();
 
+	ChibaNishizekiTriangleCounter triangleCounter;
+	std::vector<int> triangles = triangleCounter.getAttribute(g, std::vector<int>());
 	LocalSimilarityAttributizer localSim;
-	std::vector<double> exp = localSim.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	std::vector<double> exp = localSim.getAttribute(g, triangles);
 
 	EXPECT_DOUBLE_EQ(0.0, exp[g.edgeId(0, 1)]);
 	EXPECT_NEAR(0.63092975, exp[g.edgeId(0, 2)], 1e-7);

@@ -194,7 +194,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	std::cout << "[BEGIN] Local Similarity attribute: " << std::endl;
 	runtime.start();
 	LocalSimilarityAttributizer localSimAttributizer;
-	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, std::vector<int>());
+	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, triangles);
 	runtime.stop();
 	std::cout << "[DONE] Local Similarity attribute " << runtime.elapsedTag() << std::endl;
 
