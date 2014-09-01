@@ -62,28 +62,28 @@ std::vector<int> ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph,
 
 		//For all neighbors: check for already marked neighbors.
 		for (auto uv : edges[u]) {
-			bool edgeDeleted = false;
 			for (auto vw = edges[uv.first].begin(); vw != edges[uv.first].end(); ++vw) {
-				if (edgeDeleted) {
-					(*(vw-1)) = *vw;
+				// delete the edge to u as we do not need to consider it again.
+				// the opposite edge doesn't need to be deleted as we will never again consider
+				// outgoing edges of u as u cannot be reached anymore after the uv loop.
+				if (vw->first == u) {
+					// move last element to current position in order to avoid changing too much
+					*vw = edges[uv.first].back();
+					edges[uv.first].pop_back();
+					if (vw == edges[uv.first].end()) // break if we were at the last element already
+						break;
 				}
-				if (nodeMarker[vw->first] != none) {
 
+				if (nodeMarker[vw->first] != none) { // triangle found - count it!
 					edgeid eid_uw = nodeMarker[vw->first];
 
 					++triangleCount[uv.second];
 					++triangleCount[eid_uw];
 					++triangleCount[vw->second];
-				} else if (vw->first == u) {
-					edgeDeleted = true;
 				}
 			}
-			
-			assert(edgeDeleted);
-			
-			edges[uv.first].pop_back();
 
-			nodeMarker[uv.first] = none;
+			nodeMarker[uv.first] = none; // all triangles with u and v have been counted already
 		}
 	}
 
