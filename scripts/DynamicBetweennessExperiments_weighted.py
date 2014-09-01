@@ -5,6 +5,11 @@ import pandas as pd
 
 import random
 
+def isConnected(G):
+	cc = properties.ConnectedComponents(G)
+	cc.run()
+	return (cc.numberOfComponents() == 1)
+
 def removeAndAddEdges(G, nEdges, tabu=None):
 	if nEdges > G.numberOfEdges() - tabu.numberOfEdges():
 		raise Error("G does not have enough edges")
@@ -14,16 +19,15 @@ def removeAndAddEdges(G, nEdges, tabu=None):
 	while len(removed) < nEdges:
 		(u, v) = G.randomEdge()
 		if not tabu.hasEdge(u, v) and not ((u,v) in removed or (v,u) in removed):	# exclude all edges in the tabu graph
-			w = G.weight(u, v)
-			removed.add((u, v, w))
+			removed.add((u, v))
 	print (removed)
 	# build event streams
 	removeStream = []
-	for (u, v, w) in removed:
+	for (u, v) in removed:
 		removeStream.append(GraphEvent(GraphEvent.EDGE_REMOVAL, u, v, 0))
 	addStream = []
-	for (u, v, w) in removed:
-		addStream.append(GraphEvent(GraphEvent.EDGE_ADDITION, u, v, w))
+	for (u, v) in removed:
+		addStream.append(GraphEvent(GraphEvent.EDGE_ADDITION, u, v, G.weight(u, v)))
 
 	return (removeStream, addStream)
 
@@ -47,6 +51,8 @@ def test(G, nEdges, batchSize, epsilon, delta, size):
 	updater = dynamic.GraphUpdater(G)
 	updater.update(removeStream)
 	# run the algorithms on the inital graph
+	print("--- IS G CONNECTED? ")
+	print(isConnected(G))
 	bc = Betweenness(G)
 	print("Running bc")
 	bc.run()
@@ -72,16 +78,16 @@ def test(G, nEdges, batchSize, epsilon, delta, size):
 		# add the edges of batch to the graph
 		print("BATCH SIZE")
 		print(batchSize)
-		if batchSize < 8:
-			totalTime = 0.0
-			for j in range(0, batchSize):
-				updater.update([batch[j]])
-				# update the betweenness with the dynamic exact algorithm
+		totalTime = 0.0
+		for j in range(0, batchSize):
+			updater.update([batch[j]])
+			# update the betweenness with the dynamic exact algorithm
+			if batchSize <= 16:
 				t = stopwatch.Timer()
 				dynBc.update(batch[j])
 				totalTime += t.stop()
-		else:
-			totalTime = -1
+			else:
+				totalTime = -1
 		timesDynBc.append(totalTime)
 		# update the betweenness with the static exact algorithm
 		t = stopwatch.Timer()
@@ -125,23 +131,20 @@ def test(G, nEdges, batchSize, epsilon, delta, size):
 	return df1, df2
 
 
-
 if __name__ == "__main__":
 	setNumberOfThreads(1)
-	setLogLevel("INFO")
-	size = 1000
+#	setLogLevel("INFO")
+	size = 20000
 
-	for i in range(3,4):
+	for i in range(0,11):
 		batchSize = 2**i
 		G = generators.DorogovtsevMendesGenerator(size).generate()
 		G1 = Graph(G.numberOfNodes(), True, False)
 		for e in G.edges():
 			G1.addEdge(e[0], e[1], 1.0)
-		G1 = setRandomWeights(G1, 10, 1)
-		cc = properties.ConnectedComponents(G1)
-		cc.run()
-		if (cc.numberOfComponents() == 1) :
-			nEdges = batchSize * 1
+		G1 = setRandomWeights(G1, 1, 0.1)
+		if (isConnected(G1)) :
+			nEdges = batchSize * 20
 			epsilon = 0.05
 			delta = 0.1
 			(df1, df2) = test(G1, nEdges, batchSize, epsilon, delta, size)
