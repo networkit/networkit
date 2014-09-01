@@ -26,11 +26,6 @@ public:
 	/** Default destructor */
 	virtual ~BackboneCalculator() = default;
 
-	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _calculate(Graph& g) {
-		return new Graph{std::move(calculate(g))};
-	};
-
 };
 
 } /* namespace NetworKit */

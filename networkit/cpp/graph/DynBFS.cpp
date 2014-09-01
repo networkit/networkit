@@ -5,6 +5,7 @@
  *      Author: cls, ebergamini
  */
 
+#include "BFS.h"
 #include "DynBFS.h"
 #include "../auxiliary/Log.h"
 #include <queue>
@@ -12,20 +13,30 @@
 
 namespace NetworKit {
 
-DynBFS::DynBFS(const Graph& G, node s) : BFS(G, s), color(G.upperNodeIdBound(), WHITE) {
+DynBFS::DynBFS(const Graph& G, node s, bool storePredecessors) : DynSSSP(G, s, storePredecessors),
+color(G.upperNodeIdBound(), WHITE) {
 }
 
-void DynBFS::init() {
-	run();
+void DynBFS::run(node t) {
+	if (t != none) {
+		throw std::runtime_error("Invalid argument: DynBFS doesn't work with a target node.");
+	}
+	BFS bfs(G, source, true);
+	bfs.run();
+	distances = bfs.distances;
+	npaths = bfs.npaths;
+	if (storePreds)
+		previous = bfs.previous;
 	maxDistance = 0;
-	G.forNodes([&] (node n){
-		if (distances[n] > maxDistance)
-			maxDistance = distances[n];
+	G.forNodes([&](node v){
+		if (distances[v] > maxDistance)
+			maxDistance = distances[v];
 	});
 	maxDistance++;
 }
 
 void DynBFS::update(const std::vector<GraphEvent>& batch) {
+	mod = false;
 	std::vector<std::queue<node> > queues(maxDistance);
 
 	// insert nodes from the batch whose distance has changed (affected nodes) into the queues
@@ -45,6 +56,7 @@ void DynBFS::update(const std::vector<GraphEvent>& batch) {
 	while (m < maxDistance) {
 		DEBUG("m = ", m);
 		while (!queues[m].empty()) {
+			mod = true;
 			node w = queues[m].front();
 			DEBUG("node ", w);
 			queues[m].pop();
@@ -54,12 +66,16 @@ void DynBFS::update(const std::vector<GraphEvent>& batch) {
 			visited.push(w);
 			color[w] = BLACK;
 			distances[w] = m;
-			previous[w].clear();
+			if (storePreds) {
+				previous[w].clear();
+			}
 			npaths[w] = 0;
 			G.forNeighborsOf(w, [&](node z) {
 				//z is a predecessor for w
 				if (distances[w] == distances[z]+1) {
-					previous[w].push_back(z);
+					if (storePreds) {
+						previous[w].push_back(z);
+					}
 					npaths[w] += npaths[z];
 				}
 				//w is a predecessor for z
