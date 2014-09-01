@@ -4919,6 +4919,34 @@ cdef class LinearizeAttribute:
 		"""
 		return self._this.getAttribute(G._this, a)
 
+cdef extern from "cpp/backbones/ChanceCorrectedTriangleAttributizer.h":
+	cdef cppclass _ChanceCorrectedTriangleAttributizer "NetworKit::ChanceCorrectedTriangleAttributizer":
+		_ChanceCorrectedTriangleAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] triangles) except +
+
+cdef class ChanceCorrectedTriangleAttributizer:
+	"""
+	Divide the number of triangles per edge by the expected number of triangles given a random edge distribution.
+	"""
+	cdef _ChanceCorrectedTriangleAttributizer _this
+
+	def getAttribute(self, Graph G, vector[int] triangles):
+		"""
+		Gets the edge attribute that can be used for global filtering.
+		Parameters
+		----------
+		G : Graph
+			The input graph.
+		triangles : vector[int]
+			Triangle count.
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains the adamic adar similarity.
+
+		"""
+		return self._this.getAttribute(G._this, triangles)
+
 cdef extern from "cpp/backbones/AdamicAdarAttributizer.h":
 	cdef cppclass _AdamicAdarAttributizer "NetworKit::AdamicAdarAttributizer":
 		_AdamicAdarAttributizer() except +
