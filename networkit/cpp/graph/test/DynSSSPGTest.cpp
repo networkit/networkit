@@ -9,9 +9,13 @@
 #include "../DynBFS.h"
 #include "../BFS.h"
 #include "../DynDijkstra.h"
+#include "../DynDijkstra2.h"
 #include "../Dijkstra.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
+#include "../../generators/DorogovtsevMendesGenerator.h"
+#include "../../graph/Sampling.h"
+#include <random>
 
 
 namespace NetworKit {
@@ -36,10 +40,10 @@ TEST_F(DynSSSPGTest, testDynamicBFS_1edge) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-  BFS bfs(G, 0);
-  bfs.run();
-  DynBFS dbfs(G, 0);
-	dbfs.init();
+  	BFS bfs(G, 0);
+  	bfs.run();
+  	DynBFS dbfs(G, 0);
+	dbfs.run();
 	std::vector<GraphEvent> batch(1);
 	batch[0].type = GraphEvent::EDGE_ADDITION;
 	batch[0].u = 0;
@@ -79,7 +83,7 @@ TEST_F(DynSSSPGTest, testDynamicBFS_batch) {
 	BFS bfs(G, 0);
 	bfs.run();
 	DynBFS dbfs(G, 0);
-	dbfs.init();
+	dbfs.run();
 	std::vector<GraphEvent> batch(3);
 	batch[0].type = GraphEvent::EDGE_ADDITION;
 	batch[0].u = 3;
@@ -158,6 +162,133 @@ TEST_F(DynSSSPGTest, testDynamicDijkstra) {
 		EXPECT_EQ(dij.numberOfPaths(i), ddij.numberOfPaths(i));
 	});
 
+}
+
+TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
+	METISGraphReader reader;
+	DorogovtsevMendesGenerator generator(1000);
+	Graph G = generator.generate();
+	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
+	DynBFS dyn_bfs(G, 0);
+	BFS bfs(G, 0);
+	dyn_bfs.run();
+	bfs.run();
+	DEBUG("Before the edge insertion: ");
+	GraphEvent ev;
+	count nInsertions = 1000, i = 0;
+	while (i < nInsertions) {
+		DEBUG("Sampling a new edge");
+		node v1 = Sampling::randomNode(G);
+		node v2 = Sampling::randomNode(G);
+		if (v1 != v2 && !G.hasEdge(v1, v2)) {
+			i++;
+			DEBUG("Adding edge number ", i);
+			G.addEdge(v1, v2);
+			std::vector<GraphEvent> batch;
+			batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0));
+			DEBUG("Running update with dynamic bfs");
+			dyn_bfs.update(batch);
+			DEBUG("Running from scratch with bfs");
+			bfs.run();
+			G.forNodes([&] (node i) {
+			//	std::cout<<"Node "<<i<<":"<<std::endl;
+			//	std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance: "<<ddij.distance(i)<<std::endl;
+			//	std::cout<<"Actual number of paths: "<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
+				EXPECT_EQ(dyn_bfs.distance(i), bfs.distance(i));
+				EXPECT_EQ(dyn_bfs.numberOfPaths(i), bfs.numberOfPaths(i));
+			});
+		}
+	}
+}
+
+TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
+	METISGraphReader reader;
+	DorogovtsevMendesGenerator generator(1000);
+	Graph G1 = generator.generate();
+	Graph G = Graph(G1, true, false);
+	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
+	DynDijkstra dyn_dij(G, 0);
+	Dijkstra dij(G, 0);
+	dyn_dij.run();
+	dij.run();
+	DEBUG("Before the edge insertion: ");
+	GraphEvent ev;
+	count nInsertions = 10, i = 0;
+	while (i < nInsertions) {
+		DEBUG("Sampling a new edge");
+		node v1 = Sampling::randomNode(G);
+		node v2 = Sampling::randomNode(G);
+		if (v1 != v2 && !G.hasEdge(v1, v2)) {
+			i++;
+			DEBUG("Adding edge number ", i);
+			G.addEdge(v1, v2);
+			std::vector<GraphEvent> batch;
+			batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0));
+			DEBUG("Running update with dynamic dijkstra");
+			dyn_dij.update(batch);
+			DEBUG("Running from scratch with dijkstra");
+			dij.run();
+			G.forNodes([&] (node i) {
+			//	std::cout<<"Node "<<i<<":"<<std::endl;
+			//	std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance: "<<ddij.distance(i)<<std::endl;
+			//	std::cout<<"Actual number of paths: "<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
+				EXPECT_EQ(dyn_dij.distance(i), dij.distance(i));
+				EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
+			});
+		}
+	}
+}
+
+TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
+	METISGraphReader reader;
+	std::default_random_engine random_generator;
+  	std::normal_distribution<double> distribution(1000,10);
+	DorogovtsevMendesGenerator generator(1000);
+	Graph G1 = generator.generate();
+	Graph G = Graph(G1, true, false);
+	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
+	// add random normal weights to G
+
+	G.forNodes([&] (node source) {
+		DynDijkstra dyn_dij(G, source, true);
+		Dijkstra dij(G, source);
+		dyn_dij.run();
+		dij.run();
+		DEBUG("Before the edge insertion: ");
+		GraphEvent ev;
+		count batchSize = 8;
+		count nBatches = 1, i = 0;
+		for (count j=0; j<nBatches; j++) {
+			std::vector<GraphEvent> batch;
+			i = 0;
+			while (i < batchSize) {
+				DEBUG("Sampling a new edge");
+				node v1 = Sampling::randomNode(G);
+				node v2 = Sampling::randomNode(G);
+				if (v1 != v2 && !G.hasEdge(v1, v2)) {
+					i++;
+					double number = distribution(random_generator);
+					G.addEdge(v1, v2, number);
+					batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, number));
+				}
+			}
+			DEBUG("batch size: ", batch.size());
+			DEBUG("Updating with dynamic dijkstra");
+			dyn_dij.update(batch);
+			DEBUG("Running from scratch with dijkstra");
+			dij.run();
+			G.forNodes([&] (node i) {
+			//	std::cout<<"Node "<<i<<":"<<std::endl;
+			//	std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance: "<<ddij.distance(i)<<std::endl;
+			//	std::cout<<"Actual number of paths: "<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
+				EXPECT_EQ(dyn_dij.distance(i), dij.distance(i));
+				EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
+				if (i != source)
+					assert(dyn_dij.distance(i) != 0);
+			//	EXPECT_EQ(dyn_dij.getPredecessors(i).size(), dij.getPredecessors(i).size());
+			});
+		}
+	});
 }
 
 } /* namespace NetworKit */
