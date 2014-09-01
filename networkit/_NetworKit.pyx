@@ -4705,6 +4705,21 @@ cdef class ChibaNishizekiTriangleCounter:
 	def getAttribute(self, Graph G):
 		return  self._this.getAttribute(G._this, range(0))
 
+cdef extern from "cpp/backbones/TriangleCounter.h":
+	cdef cppclass _TriangleCounter "NetworKit::TriangleCounter":
+		_TriangleCounter() except +
+		vector[int] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class TriangleCounter:
+	"""
+	Triangle counting.
+	"""
+
+	cdef _TriangleCounter _this
+
+	def getAttribute(self, Graph G):
+		return  self._this.getAttribute(G._this, range(0))
+
 cdef extern from "cpp/backbones/SimmelianJaccardAttributizer.h":
 	cdef cppclass _SimmelianJaccardAttributizer "NetworKit::SimmelianJaccardAttributizer":
 		_SimmelianJaccardAttributizer() except +
