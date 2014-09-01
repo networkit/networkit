@@ -21,7 +21,7 @@ Dy * GeneratorsTest.cpp
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
 #include "../StochasticBlockmodel.h"
-
+#include "../../properties/ConnectedComponents.h"
 
 namespace NetworKit {
 
@@ -189,6 +189,181 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 	}
 }
 
+TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
+	int nSteps = 100;
+	count n = 1000;
+	double initialFactor = 0.5;
+	double factorGrowth = (double) (1 - initialFactor) / nSteps;
+
+	double stretch = 1;
+	double alpha = 1;
+	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	vector<double> angles(n, -1);
+	vector<double> radii(n, -1);
+	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);// sqrt(rad_nom/rad_denom);
+
+	DynamicHyperbolicGenerator dynGen(angles, radii, stretch, initialFactor, 0, factorGrowth, 0);
+
+	Graph G = dynGen.getGraph();
+	GraphUpdater gu(G);
+	std::vector<GraphEvent> stream;
+
+	for (int i = 0; i < nSteps; i++) {
+		stream = dynGen.generate(1);
+		for (auto event : stream) {
+			EXPECT_NE(event.type, GraphEvent::EDGE_REMOVAL);
+			EXPECT_TRUE(event.type == GraphEvent::EDGE_ADDITION || event.type == GraphEvent::TIME_STEP);
+			if (event.type == GraphEvent::EDGE_ADDITION) {
+				double distance = HyperbolicSpace::getHyperbolicDistance(angles[event.u], radii[event.u], angles[event.v], radii[event.v]);
+				EXPECT_GE(distance, (initialFactor+factorGrowth*i)*R);
+				EXPECT_LE(distance, (initialFactor+factorGrowth*(i+1))*R);
+			}
+		}
+		gu.update(stream);
+	}
+
+	Graph comparison = HyperbolicGenerator::generate(&angles, &radii, r, R);
+	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
+}
+
+
+
+TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
+	int nSteps = 100;
+	count n = 2000;
+
+	double factor = 1;
+	double stretch = 2;
+	double alpha = 1;
+	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	double movedShare = 1;
+	double moveDistance = 0.1;
+
+	vector<double> angles(n, -1);
+	vector<double> radii(n, -1);
+	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+
+	DynamicHyperbolicGenerator dynGen(angles, radii, stretch, factor, movedShare, 0, moveDistance);
+
+	Graph G = HyperbolicGenerator::generate(&angles, &radii, r, factor*R);
+	count initialEdgeCount = G.numberOfEdges();
+	GraphUpdater gu(G);
+	std::vector<GraphEvent> stream;
+
+	for (int i = 0; i < nSteps; i++) {
+		stream = dynGen.generate(1);
+		DEBUG("Edges: ", G.numberOfEdges());
+		for (auto event : stream) {
+			EXPECT_TRUE(event.type == GraphEvent::EDGE_REMOVAL || event.type == GraphEvent::EDGE_ADDITION || event.type == GraphEvent::TIME_STEP);
+			if (event.type == GraphEvent::EDGE_REMOVAL) {
+				EXPECT_TRUE(G.hasEdge(event.u, event.v));
+			}
+		}
+		gu.update(stream);
+	}
+
+	//update moved nodes
+	angles = getAngles(dynGen);
+	radii = getRadii(dynGen);
+	Graph comparison = HyperbolicGenerator::generate(&angles, &radii, r, R*factor);
+	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
+	EXPECT_NEAR(G.numberOfEdges(), initialEdgeCount, initialEdgeCount/10);
+}
+
+TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
+	count n = 300;
+	count nSteps = 20;
+
+	double factor = 0.5;
+	double stretch = 1;
+	double alpha = 1;
+	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	double movedShare = 0.2;
+	double moveDistance = 1;
+	vector<double> angles(n);
+	vector<double> radii(n);
+
+	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+
+	DynamicHyperbolicGenerator dynGen(angles, radii, stretch, factor, movedShare, 0, moveDistance);
+	Graph G = dynGen.getGraph();
+
+	GraphUpdater gu(G);
+	std::vector<GraphEvent> stream;
+	G.initCoordinates();
+	PostscriptWriter psWriter(true);
+	psWriter.write(G, "output/hyperbolic-0000.eps");
+
+	for (index i = 0; i < nSteps; i++) {
+		stream = dynGen.generate(1);
+		DEBUG("Edges: ", G.numberOfEdges());
+		for (auto event : stream) {
+			EXPECT_TRUE(event.type == GraphEvent::EDGE_REMOVAL || event.type == GraphEvent::EDGE_ADDITION || event.type == GraphEvent::TIME_STEP);
+		}
+		gu.update(stream);
+		G.initCoordinates();
+
+		auto coords = dynGen.getHyperbolicCoordinates();
+		for (index i = 0; i < coords.size(); i++) {
+			G.setCoordinate(i, coords[i]);
+		}
+
+		// output for visual inspection
+		char path[27];//TODO: come on, this is ridiculous!
+		sprintf(path, "output/hyperbolic-%04llu.eps", static_cast<unsigned long long>(i));
+		TRACE("path: " , path);
+		psWriter.write(G, path);
+	}
+}
+
+TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorCollectedSteps) {
+	count n = 10;
+	count nSteps = 100;
+
+	double stretch = 1;
+	double alpha = 1;
+	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	double initialFactor = 0;
+	double factorGrowth = (double) (1 - initialFactor) / nSteps;
+
+	vector<double> angles(n, -1);
+	vector<double> radii(n, -1);
+	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+
+	DynamicHyperbolicGenerator dyngen(angles, radii, R, initialFactor, 0, factorGrowth, 0);
+
+	DynamicHyperbolicGenerator copy(angles, radii, R, initialFactor, 0, factorGrowth, 0);
+	std::vector<GraphEvent> stream;
+
+	for (index i = 0; i < nSteps; i++) {
+		std::vector<GraphEvent> stepStream = dyngen.generate(1);
+		stream.insert(stream.end(), stepStream.begin(), stepStream.end());
+	}
+
+	std::vector<GraphEvent> comparison = copy.generate(nSteps);
+	EXPECT_EQ(stream.size(), comparison.size());
+	std::sort(stream.begin(), stream.end(), GraphEvent::compare);
+	std::sort(comparison.begin(), comparison.end(), GraphEvent::compare);
+	vector<GraphEvent> diff(stream.size()+comparison.size());
+	auto newend = std::set_difference(stream.begin(), stream.end(), comparison.begin(), comparison.end(), diff.begin(), GraphEvent::equal);
+	diff.resize(newend - diff.begin());
+	for (auto event : diff) {
+		DEBUG("Found ", event.toString(), " in one but not other.");
+	}
+	if (diff.size() > 0) {
+		DEBUG("G:");
+		for (auto orig : stream) {
+			DEBUG(orig.toString());
+		}
+		DEBUG("Comparison:");
+		for (auto orig : comparison) {
+			DEBUG(orig.toString());
+		}
+	}
+	EXPECT_TRUE(std::equal(stream.begin(), stream.end(), comparison.begin(), GraphEvent::equal));
+}
 
 TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
 	count k = 3;
@@ -352,7 +527,6 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 	}
 }
 
-
 TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
 	Graph G1(0);
 	GraphUpdater gu1(G1);
@@ -491,6 +665,41 @@ TEST_F(GeneratorsGTest, testStochasticBlockmodel) {
 
 	EXPECT_EQ(n, G.numberOfNodes());
 	EXPECT_EQ(20u, G.numberOfEdges());
+}
+
+TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
+	count n = 1000;
+	double stretch = Aux::Random::real(0.5,1.5);
+	double alpha = Aux::Random::real(0.5,1.5);
+	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	vector<double> angles(n, -1);
+	vector<double> radii(n, -1);
+	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	for (index i = 0; i < n; i++) {
+		EXPECT_GE(angles[i], 0);
+		EXPECT_LT(angles[i], 2*M_PI);
+		EXPECT_GE(radii[i], 0);
+		EXPECT_LE(radii[i], HyperbolicSpace::hyperbolicRadiusToEuclidean(R));
+	}
+}
+
+TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
+	count n = 100000;
+	HyperbolicGenerator gen(n,1,1,1);
+	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,1,1);
+	DEBUG("Expected: ", expected);
+	Graph G = gen.generate();
+	DEBUG("Actual: ", G.numberOfEdges());
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_TRUE(G.checkConsistency());
+	ConnectedComponents cc(G);
+	cc.run();
+	EXPECT_EQ(cc.numberOfComponents(),1);
+
+	count m = 100*n;
+	HyperbolicGenerator gen2(n,m);
+	G = gen2.generate();
+	DEBUG("Actual: ", G.numberOfEdges());
 }
 
 } /* namespace NetworKit */
