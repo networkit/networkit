@@ -6,6 +6,7 @@
  */
 
 #include "GlobalThresholdFilter.h"
+#include "../graph/GraphBuilder.h"
 
 namespace NetworKit {
 
@@ -14,13 +15,23 @@ GlobalThresholdFilter::GlobalThresholdFilter(double threshold, bool above) :
 
 Graph GlobalThresholdFilter::calculate(const Graph& graph, const std::vector<double>& attribute) {
 	//Create an edge-less backbone graph.
-	Graph backboneGraph = cloneNodes(graph, false);
+	GraphBuilder builder(graph.upperNodeIdBound(), false, false, true);
 
 	//Re-add the backbone edges.
-	graph.forEdges([&](node u, node v, edgeid eid) {
-		if ((above && attribute[eid] >= threshold)
-				|| (!above && attribute[eid] <= threshold)) {
-			backboneGraph.addEdge(u, v);
+	graph.balancedParallelForNodes([&](node u) {
+		// add each edge in both directions
+		graph.forEdgesOf(u, [&](node u, node v, edgeid eid) {
+			if ((above && attribute[eid] >= threshold)
+			|| (!above && attribute[eid] <= threshold)) {
+				builder.addEdge(u, v);
+			}
+		});
+	});
+
+	Graph backboneGraph = builder.toGraph();
+	backboneGraph.parallelForNodes([&](node u) {
+		if (!graph.hasNode(u)) {
+			backboneGraph.removeNode(u);
 		}
 	});
 
