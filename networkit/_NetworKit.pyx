@@ -94,6 +94,13 @@ def enableNestedParallelism():
 
 ## Module: graph
 
+cdef extern from "cpp/viz/Point.h" namespace "NetworKit":
+	cdef cppclass Point[T]:
+		Point()
+		Point(T x, T y)
+		T& operator[](const index i) except +
+		T& at(const index i) except +
+
 cdef extern from "cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
@@ -130,6 +137,9 @@ cdef extern from "cpp/graph/Graph.h":
 		node randomNode() except +
 		node randomNeighbor(node) except +
 		pair[node, node] randomEdge() except +
+		Point[float] getCoordinate(node v) except +
+		void setCoordinate(node v, Point[float] value) except +
+		void initCoordinates() except +
 
 
 cdef class Graph:
@@ -522,6 +532,35 @@ cdef class Graph:
 		"""
 		return self._this.randomEdge()
 
+	def getCoordinate(self, v):
+		""" Get the coordinates of node v.
+		Parameters
+		----------
+		v : node
+			Node.
+
+		Returns
+		-------
+		pair[float, float]
+			x and y coordinates of v.
+		"""
+
+		return (self._this.getCoordinate(v)[0], self._this.getCoordinate(v)[1])
+
+	def setCoordinate(self, v, value):
+		""" Set the coordinates of node v.
+		Parameters
+		----------
+		v : node
+			Node.
+		value : pair[float, float]
+			x and y coordinates of v.
+		"""
+		cdef Point[float] p = Point[float](value[0], value[1])
+		self._this.setCoordinate(v, p)
+
+	def initCoordinates(self):
+		self._this.initCoordinates()
 
 # TODO: expose all methods
 
