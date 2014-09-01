@@ -159,12 +159,6 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 
 }
 
-//only to be used by Cython
-void Graph::stealFrom(Graph& input) {
-	*this = std::move(input);
-}
-
-
 /** PRIVATE HELPERS **/
 
 count Graph::getNextGraphId() {
