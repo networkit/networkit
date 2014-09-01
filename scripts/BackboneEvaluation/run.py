@@ -6,6 +6,7 @@ from consoleWriter import ConsoleWriter
 import string
 import parameters
 import parameterization
+import multiprocessing
 
 # -----------------------------------------------------------------------
 # The purpose of the following script is to automatically apply a set
@@ -32,15 +33,17 @@ def main():
 	properties = parameters.getProperties()
 
 	#Generate tasks from input parameters
-	task = Task(graphs, algorithms, properties, edgeRatios)
+	tasks = [Task([_graphs], algorithms, properties, edgeRatios) for _graphs in graphs]
 
 	#Execute the tasks
-	taskResult = executeTask(task)
+	pool = multiprocessing.Pool()
+	taskResults = pool.map(executeTask, tasks)
 
 	#Output files...
 	writers = [SqliteResultWriter("./output/backbones.db", properties)]
 	for writer in writers:
-		writer.receiveResult(taskResult)
+		for taskResult in taskResults:
+			writer.receiveResult(taskResult)
 
 if __name__ == "__main__":
 	sys.exit(main())
