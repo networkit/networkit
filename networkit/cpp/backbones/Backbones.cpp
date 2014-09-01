@@ -78,7 +78,9 @@ LocalSimilarityBackbone::LocalSimilarityBackbone(double e) :
 
 Graph LocalSimilarityBackbone::calculate(const Graph& g) {
 	LocalSimilarityAttributizer localSimAttributizer;
-	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	ChibaNishizekiTriangleCounter triangleCounter;
+	std::vector<int> triangles = triangleCounter.getAttribute(g, std::vector<int>());
+	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, triangles);
 
 	GlobalThresholdFilter filter(e, false);
 	return filter.calculate(g, minExponent);
