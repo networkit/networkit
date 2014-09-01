@@ -1333,7 +1333,7 @@ cdef class HavelHakimiGenerator:
 		"""
 		return Graph(0).setThis(self._this._generate())
 
-cdef extern from "../cpp/generators/HyperbolicGenerator.h":
+cdef extern from "cpp/generators/HyperbolicGenerator.h":
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
 		# TODO: revert to count when cython issue fixed
 		_HyperbolicGenerator(unsigned int nodes,  double distanceFactor, double alpha, double stretch) except +
@@ -4036,7 +4036,7 @@ cdef class DynamicPubWebGenerator:
 	def getGraph(self):
 		return Graph().setThis(self._this._getGraph())
 
-cdef extern from "../cpp/generators/DynamicHyperbolicGenerator.h":
+cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
 		_DynamicHyperbolicGenerator(count numNodes, double initialFactor,
 			double alpha, double stretch, double moveEachStep, double factorGrowth, double moveDistance) except +
