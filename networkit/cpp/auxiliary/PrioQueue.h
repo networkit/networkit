@@ -86,6 +86,12 @@ public:
 	 */
 	virtual uint64_t size() const;
 
+
+	/**
+	 * @return current content of queue
+	 */
+	virtual std::set<std::pair<Key, Val>> content() const;
+
 	/**
 	 * Removes all elements from the PQ.
 	 */
@@ -171,6 +177,11 @@ inline void Aux::PrioQueue<Key, Val>::decreaseKey(Key newKey, Val value) {
 template<class Key, class Val>
 inline uint64_t Aux::PrioQueue<Key, Val>::size() const {
 	return pqset.size();
+}
+
+template<class Key, class Val>
+inline std::set<std::pair<Key, Val>> Aux::PrioQueue<Key, Val>::content() const {
+	return pqset;
 }
 
 template<class Key, class Val>
