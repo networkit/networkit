@@ -144,7 +144,7 @@ class GephiStreamingClient:
             idx = 0
             for edge in graph.edges():
                 edgeId = str(min(edge[0],edge[1])) + '-' + str(max(edge[0],edge[1])) #graph.edgeId(edge[0], edge[1]) #
-                eAttrs = {attribute_name:values[edgeId], "Type":"Undirected"}
+                eAttrs = {attribute_name:values[graph.edgeId(edge[0], edge[1])], "Type":"Undirected"}#still need to use the old edge to access the graph array
                 self._pygephi.change_edge(edgeId, edge[0], edge[1], False, **eAttrs)
                 idx += 1
 
