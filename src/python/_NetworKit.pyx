@@ -548,6 +548,15 @@ cdef class Graph:
 		return (self._this.getCoordinate(v)[0], self._this.getCoordinate(v)[1])
 
 	def setCoordinate(self, v, value):
+		""" Set the coordinates of node v.
+		Parameters
+		----------
+		v : node
+			Node.
+		value : pair[float, float]
+			x and y coordinates of v.
+		"""
+
 		cdef Point[float] p = Point[float](value[0], value[1])
 		self._this.setCoordinate(v, p)
 
