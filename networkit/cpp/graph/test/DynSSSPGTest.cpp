@@ -327,7 +327,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
 		DEBUG("Before the edge insertion: ");
 		GraphEvent ev;
 		count batchSize = 8;
-		count nBatches = 10, i = 0;
+		count nBatches = 1, i = 0;
 		for (count j=0; j<nBatches; j++) {
 			std::vector<GraphEvent> batch;
 			i = 0;

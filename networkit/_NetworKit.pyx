@@ -28,7 +28,8 @@ ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
 
-
+cdef extern from "<algorithm>" namespace "std":
+	void swap[T](T &a,  T &b)
 
 
 # Cython helper functions
@@ -93,6 +94,13 @@ def enableNestedParallelism():
 
 ## Module: graph
 
+cdef extern from "cpp/viz/Point.h" namespace "NetworKit":
+	cdef cppclass Point[T]:
+		Point()
+		Point(T x, T y)
+		T& operator[](const index i) except +
+		T& at(const index i) except +
+
 cdef extern from "cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
@@ -129,6 +137,9 @@ cdef extern from "cpp/graph/Graph.h":
 		node randomNode() except +
 		node randomNeighbor(node) except +
 		pair[node, node] randomEdge() except +
+		Point[float] getCoordinate(node v) except +
+		void setCoordinate(node v, Point[float] value) except +
+		void initCoordinates() except +
 
 
 cdef class Graph:
@@ -521,6 +532,35 @@ cdef class Graph:
 		"""
 		return self._this.randomEdge()
 
+	def getCoordinate(self, v):
+		""" Get the coordinates of node v.
+		Parameters
+		----------
+		v : node
+			Node.
+
+		Returns
+		-------
+		pair[float, float]
+			x and y coordinates of v.
+		"""
+
+		return (self._this.getCoordinate(v)[0], self._this.getCoordinate(v)[1])
+
+	def setCoordinate(self, v, value):
+		""" Set the coordinates of node v.
+		Parameters
+		----------
+		v : node
+			Node.
+		value : pair[float, float]
+			x and y coordinates of v.
+		"""
+		cdef Point[float] p = Point[float](value[0], value[1])
+		self._this.setCoordinate(v, p)
+
+	def initCoordinates(self):
+		self._this.initCoordinates()
 
 # TODO: expose all methods
 
@@ -1558,7 +1598,7 @@ cdef class SNAPGraphReader:
 cdef extern from "cpp/io/PartitionReader.h":
 	cdef cppclass _PartitionReader "NetworKit::PartitionReader":
 		_PartitionReader() except +
-		_Partition read(string path)
+		_Partition read(string path) except +
 
 
 cdef class PartitionReader:
@@ -1591,7 +1631,7 @@ cdef extern from "cpp/io/EdgeListPartitionReader.h":
 	cdef cppclass _EdgeListPartitionReader "NetworKit::EdgeListPartitionReader":
 		_EdgeListPartitionReader() except +
 		_EdgeListPartitionReader(node firstNode) except +
-		_Partition read(string path)
+		_Partition read(string path) except +
 
 
 cdef class EdgeListPartitionReader:
@@ -1778,8 +1818,8 @@ cdef class Partition:
 		"""
 		return self._this.subsetOf(e)
 
-	cdef setThis(self, _Partition other):
-		self._this = other
+	cdef setThis(self,  _Partition& other):
+		swap[_Partition](self._this,  other)
 		return self
 
 	def __cinit__(self, size=None):
@@ -2609,7 +2649,7 @@ cdef class PLP(CommunityDetector):
 cdef extern from "cpp/community/LPDegreeOrdered.h":
 	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered":
 		_LPDegreeOrdered() except +
-		_Partition run(_Graph _G)
+		_Partition run(_Graph _G) except +
 		count numberOfIterations()
 
 cdef class LPDegreeOrdered(CommunityDetector):
@@ -2798,7 +2838,7 @@ cdef class NMIDistance(DissimilarityMeasure):
 
 cdef extern from "cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
-		_Partition run(_Graph G)
+		_Partition run(_Graph G) except +
 		string toString()
 
 cdef class EPP(CommunityDetector):

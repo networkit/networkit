@@ -15,6 +15,7 @@ class GephiStreamingClient:
     def __init__(self, url='http://localhost:8080/workspace0'):
         #Disabling Flushing means quite a good performance boost.
         self._pygephi = _gephipyclient.GephiClient(url, autoflush=10000)
+        self.graphExported = False
 
     def _urlError(self, e):
         print("Could not connect to the gephi streaming plugin. Did you start the streaming master server in gephi?")
@@ -40,8 +41,33 @@ class GephiStreamingClient:
                 self._pygephi.add_edge(edgeId, edge[0], edge[1], False)
 
             self._pygephi.flush()
+            self.graphExported = True
         except _urllib.error.URLError as e:
             self._urlError(e)
+
+    def exportAdditionalEdge(self, graph, u, v):
+        """ Adds an edge in an already exported graph."""
+        if self.graphExported != True:
+            print("Error: Cannot add edges. Export Graph first!")
+            return      
+        try:
+            edgeId =  graph.edgeId(u,v)
+            self._pygephi.add_edge(edgeId, u, v, False)
+            self._pygephi.flush()
+        except _urllib.error.URLError as e:
+            self._urlError(e)        
+
+    def removeExportedEdge(self, graph, u, v):
+        """ Removes an edge from an already exported graph."""
+        if self.graphExported != True:
+            print("Error: Cannot remove edges. Export Graph first!")
+            return      
+        try:
+            edgeId = graph.edgeId(u,v)
+            self._pygephi.delete_edge(edgeId)
+            self._pygephi.flush()
+        except _urllib.error.URLError as e:
+            self._urlError(e)        
 
     def exportNodeValues(self, graph, values, attribute_name):
         """
@@ -65,6 +91,16 @@ class GephiStreamingClient:
             self._pygephi.flush()
         except _urllib.error.URLError as e:
             self._urlError(e)
+
+    def exportCoordinates(self, graph, scale=1):
+        try:
+            xcoords = [scale*graph.getCoordinate(v)[0] for v in graph.nodes()]
+            ycoords = [scale*graph.getCoordinate(v)[1] for v in graph.nodes()]
+            self.exportNodeValues(graph, xcoords, 'x')
+            self.exportNodeValues(graph, ycoords, 'y')
+            self._pygephi.flush()
+        except _urllib.error.URLError as e:
+            self._urlError(e) 
 
     def exportEdgeValues(self, graph, values, attribute_name):
         """
@@ -96,6 +132,7 @@ class GephiStreamingClient:
         try:
             self._pygephi.clean()
             self._pygephi.flush()
+            self.graphExported = False
 
         except _urllib.error.URLError as e:
             self._urlError(e)

@@ -1,12 +1,12 @@
 """
-NetworKit - an interactive toolkit for high-performance network analysis
+an interactive toolkit for high-performance network analysis
+usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb
 """
 
-
-__author__ = "Christian L. Staudt (christian.staudt @ kit.edu)"
-__copyright__ = "Copyright (c) 2013 Christian Staudt"
-__license__ = "MIT License"
-__version__ = "3.2"
+__author__ = "Christian Staudt" 
+__copyright__ = "Copyright (c) 2014 Christan Staudt"
+__license__ = "MIT"
+__version__ = "3.3"
 
 
 # standard library modules
@@ -30,6 +30,7 @@ from . import dynamic
 from . import gephi
 from . import partitioning
 from . import coloring
+from . import workflows
 
 try:
 	from . import viztools
