@@ -26,7 +26,7 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 	*/
 	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
-	graph.forNodes([&](node i) {
+	graph.balancedParallelForNodes([&](node i) {
 		count d = graph.degree(i);
 
 		/* The top d^e edges (sorted by similarity)
@@ -43,8 +43,9 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 		count rank = 1;
 		//Top d^e edges are to be retained in the backbone graph.
 		//So we calculate the minimum exponent e for each edge that will keep it in the backbone.
-		for (auto neighborEdge : neighbors) {
-			edgeid eid = neighborEdge.eid;
+		#pragma omp critical
+		for(std::vector<AttributizedEdge<double>>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
+			edgeid eid = it->eid;
 
 			double e = 0.0;
 			if (d > 1) 			//The node has only one neighbor,, so the edge will be kept anyway.
