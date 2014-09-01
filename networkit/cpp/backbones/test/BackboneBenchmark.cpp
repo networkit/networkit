@@ -9,6 +9,7 @@
 
 #include "BackboneBenchmark.h"
 #include "../ChibaNishizekiTriangleCounter.h"
+#include "../TriangleCounter.h"
 #include "../SimmelianJaccardAttributizer.h"
 #include "../SimmelianOverlapAttributizer.h"
 #include "../MultiscaleAttributizer.h"
@@ -131,7 +132,15 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Triangle counting
 	std::cout << "[BEGIN] triangle counting: " << std::endl;
 	runtime.start();
-	ChibaNishizekiTriangleCounter triangleAttributizer;
+	ChibaNishizekiTriangleCounter oldTriangleAttributizer;
+	std::vector<int> oldTriangles = oldTriangleAttributizer.getAttribute(g, std::vector<int>(0));
+	runtime.stop();
+	std::cout << "[DONE] Chiba Nishizeki triangle counting " << runtime.elapsedTag() << std::endl;
+
+	// --------- Triangle counting
+	std::cout << "[BEGIN] triangle counting: " << std::endl;
+	runtime.start();
+	TriangleCounter triangleAttributizer;
 	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(0));
 	runtime.stop();
 	std::cout << "[DONE] triangle counting " << runtime.elapsedTag() << std::endl;
