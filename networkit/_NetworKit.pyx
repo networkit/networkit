@@ -4919,6 +4919,34 @@ cdef class LinearizeAttribute:
 		"""
 		return self._this.getAttribute(G._this, a)
 
+cdef extern from "cpp/backbones/AdamicAdarAttributizer.h":
+	cdef cppclass _AdamicAdarAttributizer "NetworKit::AdamicAdarAttributizer":
+		_AdamicAdarAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class AdamicAdarAttributizer:
+	"""
+	Calculate the adamic adar similarity.
+	"""
+	cdef _AdamicAdarAttributizer _this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		"""
+		Gets the edge attribute that can be used for global filtering.
+		Parameters
+		----------
+		G : Graph
+			The input graph.
+		a : vector[int]
+			Unused.
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains the adamic adar similarity.
+
+		"""
+		return self._this.getAttribute(G._this, a)
+
 cdef extern from "cpp/backbones/GlobalThresholdFilter.h":
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
 		_GlobalThresholdFilter(double alpha, bool above) except +
