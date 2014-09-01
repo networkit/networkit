@@ -1,10 +1,10 @@
 name='networkit'
 
-version='3.2'
+version='3.3'
 
 url='https://networkit.iti.kit.edu/'
 
-download_url='https://testpypi.python.org/pypi/networkit'
+download_url='https://pypi.python.org/pypi/networkit'
 
 license='MIT'
 
@@ -51,4 +51,6 @@ classifiers = [
 ]
 
 install_requires = []
-
+# not used because it can mess up pip's installation process
+# therefore, setup.py prints warnings for each package missing (tabulate, readline, scipy, numpy, matplotlib, networkx)
+# or terminates the installation process (gcc, scons and cython)

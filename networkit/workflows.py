@@ -1,11 +1,10 @@
 """ This module provides convenient workflows constructed from NetworKit functions."""
 
-
-from NetworKit import *
-
 import operator
 import logging
+import unittest
 
+from networkit import properties, graph, generators
 
 def extractLargestComponent(G):
 	"""
@@ -29,3 +28,15 @@ def extractLargestComponent(G):
 	compoNodes = [v for v in G.nodes() if cc.componentOfNode(v) is largestCompo]
 	C = graph.Subgraph().fromNodes(G, compoNodes)
 	return C
+
+
+
+class TestWorkflows(unittest.TestCase):
+
+	def testExtractLargestComponent(self):
+		G = generators.DorogovtsevMendesGenerator(100).generate()
+		C = extractLargestComponent(G)
+		self.assertEqual(properties.size(C), properties.size(G))
+
+if __name__ == '__main__':
+    unittest.main()

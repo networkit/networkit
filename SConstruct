@@ -260,7 +260,7 @@ if target in availableTargets:
 			if os.path.isdir("NetworKit"):
 				#print("sym link for include stuff exists already")
 				os.remove("NetworKit")
-			subprocess.call(["ln","-s","src/cpp","NetworKit"])
+			subprocess.call(["ln","-s","networkit/cpp","NetworKit"])
 
 	else:
 		env.Program(targetName, source)

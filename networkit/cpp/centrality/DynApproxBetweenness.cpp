@@ -73,8 +73,8 @@ void DynApproxBetweenness::run() {
                     }
                 }
                 else {
-                    G.forNeighborsOf(t, [&](node z){
-                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + G.weight(z, t)))
+                G.forEdgesOf(t, [&](node t, node z, edgeweight w){
+                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w))
                             choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
                     });
                 }
@@ -113,14 +113,13 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
                     }
                 }
                 else {
-                    G.forNeighborsOf(t, [&](node z){
-                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + G.weight(z, t)))
+                    G.forEdgesOf(t, [&](node t, node z, edgeweight w){
+                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w))
                             choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
                     });
                 }
                 assert (choices.size() > 0); // this should fail only if the graph is not connected
                 if (choices.size() == 0) {
-                    INFO ("size of predecessors: ", choices.size());
                     INFO ("node: ", t);
                     INFO ("source: ", u[i]);
                     INFO ("distance: ", sssp[i]->distances[t]);
