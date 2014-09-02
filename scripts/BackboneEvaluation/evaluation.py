@@ -1,6 +1,7 @@
 from networkit import *
 import time
 import parameterization
+import traceback
 
 # -----------------------------------------------------------------------
 # The purpose of the following script is to automatically apply a set
@@ -23,14 +24,14 @@ class TaskResult:
 		self.data = [] 				#Set of dictionaries containing key/value pairs
 		self.columns = []		#Set containing the keys that appear in data. #TODO
 
-#Information about a graph; used as input parameter
+#Information about a graph; used as inpu tparamete
 class GraphDescription:
 	def __init__(self, path, format, name):
 		self.path = path
 		self.format = format
 		self.name = name
 
-# Fake backbone algorithm that returns the input graph itself
+# Fake backbone algorithm that returns the inpu tgraph itself
 class OriginalGraph:
 	def calculate(self, graph):
 		return graph
@@ -50,7 +51,9 @@ def executeTask(task):
 
 		for ialgorithm in task.algorithms:
 			#Calculate the attribute that is characteristic for that algorithm.
+			time_attribute_start = time.time()
 			attribute = ialgorithm.getAttribute(graph)
+			time_attribute_elapsed = time.time() - time_attribute_start
 
 			#Check preconditions
 			if not graph.isWeighted() and ialgorithm.requiresWeight():
@@ -59,18 +62,28 @@ def executeTask(task):
 				for iedgeRatio in task.edgeRatios:
 					#Parameterize the algorithm in such a way that we meet the expected edge ratio
 					algorithmParameter = parameterization.parameterize(graph, ialgorithm, iedgeRatio)
+					time_backbone_start = time.time()
 					backbone = ialgorithm.getBackboneFromAttribute(graph, attribute, algorithmParameter)
+					time_backbone_elapsed = time.time() - time_backbone_start
 
 					propertiesDict = {
 								'graph':igraph.name,
 								'algorithm':ialgorithm.getShortName(),
 								'parameter':algorithmParameter,
-								'evalExpr':ialgorithm.getAlgorithmExpr(algorithmParameter)}
+								'evalExpr':ialgorithm.getAlgorithmExpr(algorithmParameter),
+								'rt_attribute':time_attribute_elapsed,
+								'rt_backbone':time_attribute_elapsed
+								}
 
 					#Calculate all desired properties of the backbone
 					for iproperty in task.properties:
-						d = iproperty.getValues(graph, backbone)
-						propertiesDict = dict(list(propertiesDict.items()) + list(d.items()))
+						try:
+							d = iproperty.getValues(graph, backbone)
+							propertiesDict = dict(list(propertiesDict.items()) + list(d.items()))
+						except:
+							print(traceback.format_exc())
+							print("Unexpected error:", sys.exc_info()[0])
+							raise
 
 					taskResult.data.append(propertiesDict)
 
