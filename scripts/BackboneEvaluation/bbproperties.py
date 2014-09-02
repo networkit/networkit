@@ -56,6 +56,13 @@ class P_Community:
 			communitiesGraph = community.detectCommunities(graph, algo=cAlgo)
 			communitiesBackbone = community.detectCommunities(backbone, algo=cAlgo)
 
+			#Number of communities
+			communitySizes = communitiesBackbone.subsetSizes()
+			numCommunities = communitiesBackbone.numberOfSubsets()
+			minCommunitySize = min(communitySizes)
+			maxCommunitySize = max(communitySizes)
+			avgCommunitySize = sum(communitySizes) / len(communitySizes)
+
 			#Graph structural rand measure
 			_randMeasure = community.GraphStructuralRandMeasure()
 			randMeasure = _randMeasure.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
@@ -76,11 +83,19 @@ class P_Community:
 			nmi = 0.0
 			ccAvgLocal = 0.0
 			ccGlobal = 0.0
-		return {'randMeasure':randMeasure, 'nmi':nmi, 'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal}
+			numCommunities = 0
+			minCommunitySize = 0
+			maxCommunitySize = 0
+			avgCommunitySize = 0
+		return {'randMeasure':randMeasure, 'nmi':nmi, 'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal,
+			'numCommunities':numCommunities, 'minCommunitySize':minCommunitySize,
+			'maxCommunitySize':maxCommunitySize, 'avgCommunitySize':avgCommunitySize}
 
 	def getTypes(self):
-		return {'randMeasure':'real', 'nmi':'real', 'ccAvgLocal':'real', 'ccGlobal':'real'}
-
+		return {'randMeasure':'real', 'nmi':'real', 'ccAvgLocal':'real', 'ccGlobal':'real',
+			'numCommunities':'integer', 'minCommunitySize':'integer',
+			'maxCommunitySize':'integer', 'avgCommunitySize':'integer'
+		}
 
 #Diameter
 class P_Diameter:
@@ -95,7 +110,7 @@ class P_Diameter:
 	#	return {'diameterLow':'integer', 'diameterHigh':'integer'}
 
 	def getValues(self, graph, backbone):
-		diameter = properties.Diameter.estimatedDiameterRange(backbone, 0)[0]		
+		diameter = properties.Diameter.estimatedDiameterRange(backbone, 0)[0]
 		return {'diameter':diameter}
 
 	def getTypes(self):
@@ -107,11 +122,15 @@ class P_DegreeDistribution:
 		return "Degree Distribution"
 
 	def getValues(self, graph, backbone):
-		degreeDistCoefficient = properties.powerLawExponent(backbone)
-		return {'degreeDistCoefficient':degreeDistCoefficient}
+		dd = properties.degreeDistribution(backbone)
+		fit = properties.powerlaw.Fit(dd)
+		degreeDistCoefficient = fit.alpha
+		powerLawFit = properties.powerLawFit(backbone, dd)[1]
+
+		return {'degreeDistCoefficient':degreeDistCoefficient, 'powerLawFit':powerLawFit}
 
 	def getTypes(self):
-		return {'degreeDistCoefficient':'real'}
+		return {'degreeDistCoefficient':'real', 'powerLawFit':'real'}
 
 #Centrality
 class P_Centrality:
@@ -151,4 +170,5 @@ class P_Centrality:
 
 		return {'centralityPageRank':centralityPageRank, 'centralityBetweenness':centralityBetweenness}
 
+	def getTypes(self):
 		return {'centralityPageRank':'real', 'centralityBetweenness':'real'}
