@@ -30,7 +30,7 @@ std::vector<count> TopDegreeAttributizer::getAttribute(const Graph& graph, const
 
 		count rank = 1;
 		count previousValue = std::numeric_limits<count>::max();
-		for (std::vector<AttributizedEdge<count>>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
+		for (std::vector<AttributizedEdge<count>>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) { // TODO: use range-based for-loops for better readability http://www.cprogramming.com/c++11/c++11-ranged-for-loop.html
 			edgeid eid = it-> eid;
 
 			sparsificationAttribute[eid] = std::min(rank, sparsificationAttribute[eid]);
