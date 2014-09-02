@@ -14,7 +14,9 @@
 namespace NetworKit {
 
 /**
- * EXPERIMENTAL
+ * This attributizer weights each edge by the algebraic distance between its end nodes.
+ * Algebraic distance of nodes in common dense subgraphs is small, while bridge edges
+ * between dense subgraphs are rated higher.
  */
 class AlgebraicDistanceAttributizer : public AttributeGenerator<int, double> {
 
