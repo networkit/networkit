@@ -16,11 +16,11 @@ std::vector<double> SimmelianJaccardAttributizer::getAttribute(const Graph& grap
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, attribute);
 	std::vector<double> jaccardAttribute(graph.upperEdgeIdBound(), 1.0);
 
-	graph.forEdges([&](node u, node v, edgeid eid) {
+	graph.parallelForEdges([&](node u, node v, edgeid eid) {
 		count maxNeighborhoodSize = std::max(neighbors[u].size(), neighbors[v].size());
 		Redundancy redundancy = getOverlap(u, v, neighbors, maxNeighborhoodSize);
 
-		jaccardAttribute[eid] = std::min(redundancy.jaccard, jaccardAttribute[eid]);
+		jaccardAttribute[eid] = redundancy.jaccard;
 	});
 
 	return jaccardAttribute;
