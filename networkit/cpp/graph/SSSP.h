@@ -81,6 +81,8 @@ public:
 	 */
 	virtual std::set<std::vector<node> > getPaths(node t, bool forward=true) const;
 
+	/* Returns the number of shortest paths to node t.*/
+	count getNumberOfPaths(node t) const;
 
 	/**
 	* Returns a stack of nodes ordered in decreasing distance from the source
@@ -119,6 +121,10 @@ inline std::vector<node> SSSP::getPredecessors(node t) const {
 		throw std::runtime_error("predecessors have not been stored");
 	}
 	return previous[t];
+}
+
+inline count SSSP::getNumberOfPaths(node t) const {
+	return npaths[t];
 }
 
 } /* namespace NetworKit */
