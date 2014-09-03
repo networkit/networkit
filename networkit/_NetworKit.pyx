@@ -38,6 +38,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Graph move( _Graph t ) # specialized declaration as general declaration disables template argument deduction and doesn't work
 	_Partition move( _Partition t)
 	_Cover move(_Cover t)
+	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
 
 
 # Cython helper functions
@@ -2768,6 +2769,10 @@ cdef extern from "cpp/community/PLM.h":
 		void run() except +
 		_Partition getPartition() except +
 
+cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
+	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
+	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[unsigned long] nodeToMetaNode) except + # FIXME this should be vector[node]
+
 
 cdef class PLM(CommunityDetector):
 	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
@@ -2821,6 +2826,16 @@ cdef class PLM(CommunityDetector):
 			A Partition of the clustering.
 		"""
 		return Partition().setThis(self._this.getPartition())
+
+	@staticmethod
+	def coarsen(Graph G, Partition zeta, bool parallel = False):
+		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this, parallel))
+		return (Graph().setThis(result.first), result.second)
+
+	@staticmethod
+	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[unsigned long] nodeToMetaNode):
+		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
+
 
 cdef extern from "cpp/community/CNM.h":
 	cdef cppclass _CNM "NetworKit::CNM":
