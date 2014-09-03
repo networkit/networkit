@@ -109,6 +109,13 @@ TEST_F(DynSSSPGTest, testDynamicBFS_batch) {
 
 }
 
+TEST_F(DynSSSPGTest, testDynamicBFS_usa_road_network) {
+	METISGraphReader reader;
+	Graph G = reader.read("/algoDaten/staudt/Graphs/Collections/DynBC/road_usa.metis.graph");
+	DynBFS bfs(G, 18881085);
+	bfs.run();
+}
+
 
 TEST_F(DynSSSPGTest, testDynamicDijkstra) {
  /* Graph:
