@@ -66,6 +66,11 @@ void DynApproxBetweenness::run() {
             node t = v[i];
             while (t != u[i])  {
                 // sample z in P_u(t) with probability sigma_uz / sigma_us
+                if (sssp[i]->npaths[t] == 0) {
+                    INFO("In SSSP from ", u[i]);
+                    INFO("Considering node ", t);
+                    throw std::runtime_error("Error: no shortest paths found");
+                }
                 std::vector<std::pair<node, double> > choices;
                 if (storePreds) {
                     for (node z : sssp[i]->previous[t]) {
@@ -78,7 +83,9 @@ void DynApproxBetweenness::run() {
                             choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
                     });
                 }
-                assert (choices.size() > 0);
+                if (choices.size() == 0) {
+                    throw std::runtime_error("Error: no predecessors found");
+                }
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
                 if (z != u[i]) {
