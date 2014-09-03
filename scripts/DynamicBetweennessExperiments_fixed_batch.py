@@ -76,13 +76,13 @@ def test(G, nEdges, batchSize, epsilon, delta, size):
 	for i in range(nExperiments):
 		batch = addStream[i*batchSize : (i+1)*batchSize]
 		# add the edges of batch to the graph
-		print("BATCH SIZE")
-		print(batchSize)
+		print("GRAPH SIZE")
+		print(size)
 		totalTime = 0.0
 		for j in range(0, batchSize):
 			updater.update([batch[j]])
 			# update the betweenness with the dynamic exact algorithm
-			if batchSize <= 16:
+			if size <= 2**15:
 				t = stopwatch.Timer()
 				dynBc.update(batch[j])
 				totalTime += t.stop()
@@ -134,21 +134,21 @@ def test(G, nEdges, batchSize, epsilon, delta, size):
 if __name__ == "__main__":
 	setNumberOfThreads(1)
 #	setLogLevel("INFO")
-	size = 20000
+	batchSize = 128
 
-	for i in range(0,11):
-		batchSize = 2**i
+	for i in range(10,21):
+		size = 2**i
 		G = generators.DorogovtsevMendesGenerator(size).generate()
 		G1 = Graph(G.numberOfNodes(), True, False)
 		for e in G.edges():
 			G1.addEdge(e[0], e[1], 1.0)
 		G1 = setRandomWeights(G1, 1, 0.1)
 		if (isConnected(G1)) :
-			nEdges = batchSize * 20
+			nEdges = batchSize * 5
 			epsilon = 0.05
 			delta = 0.1
 			(df1, df2) = test(G1, nEdges, batchSize, epsilon, delta, size)
-			df1.to_csv("results/times_weighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
-			df2.to_csv("results/scores_weighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
+			df1.to_csv("results_fixed_batch/times_weighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
+			df2.to_csv("results_fixed_batch/scores_weighted_size_"+str(size)+"_batch_"+str(batchSize)+".csv")
 		else:
 			print("The generated graph is not connected.")

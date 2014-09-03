@@ -645,6 +645,7 @@ cdef extern from "cpp/graph/DynBFS.h":
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 		void update(vector[_GraphEvent]) except +
+		count getNumberOfPaths(node t) except +
 
 cdef class DynBFS:
 	""" Dynamic version of BFS.
@@ -709,6 +710,21 @@ cdef class DynBFS:
 			A shortest path from source to `t or an empty path.
 		"""
 		return self._this.getPath(t)
+
+	def getNumberOfPaths(self, t):
+		""" Returns the number of shortest paths from source to `t`.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+
+		Returns
+		-------
+		count
+			The number of shortest paths.
+		"""
+		return self._this.getNumberOfPaths(t)
 
 	def update(self, batch):
 		""" Updates shortest paths with the batch `batch` of edge insertions.
