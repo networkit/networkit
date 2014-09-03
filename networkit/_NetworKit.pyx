@@ -4868,6 +4868,21 @@ cdef extern from "cpp/backbones/LocalFilterAttributizer.h":
 		_LocalFilterAttributizerInt(bool logarithmic,  bothRequired) except +
 		inline vector[double] getAttribute(_Graph G, vector[int] a) except +
 
+cdef extern from "cpp/backbones/RandomEdgeAttributizer.h":
+	cdef cppclass _RandomEdgeAttributizer "NetworKit::RandomEdgeAttributizer":
+		_RandomEdgeAttributizer() except +
+		_RandomEdgeAttributizer(double rneRatio) except +
+		vector[double] getAttribute(_Graph G,  vector[int] attribute) except +
+
+cdef class RandomEdgeAttributizer:
+	cdef _RandomEdgeAttributizer _this
+
+	def __cinit__(self, double rneRatio):
+		self._this = _RandomEdgeAttributizer(rneRatio)
+
+	def getAttribute(self, Graph G):
+		return self._this.getAttribute(G._this,  vector[int]())
+
 ctypedef fused DoubleInt:
 	int
 	double

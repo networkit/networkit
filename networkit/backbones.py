@@ -3,7 +3,7 @@
 __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleCounter, SimmelianJaccardAttributizer, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapAttributizer, RandomAttributizer, LocalDegreeAttributizer, ForestFireAttributizer, \
-	AttributeAsWeight, LinearizeAttribute, JaccardSimilarityAttributizer, LocalFilterAttributizer, AdamicAdarAttributizer, ChanceCorrectedTriangleAttributizer, TriangleCounter
+	AttributeAsWeight, LinearizeAttribute, JaccardSimilarityAttributizer, LocalFilterAttributizer, AdamicAdarAttributizer, ChanceCorrectedTriangleAttributizer, TriangleCounter, RandomEdgeAttributizer
 
 #SimmelianBackboneParametric, SimmelianBackboneNonParametric, MultiscaleBackbone, LocalSimilarityBackbone, SimmelianMultiscaleBackbone, RandomBackbone
 
