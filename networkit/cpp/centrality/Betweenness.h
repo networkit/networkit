@@ -2,7 +2,7 @@
  * Betweenness.h
  *
  *  Created on: 19.02.2014
- *      Author: hm
+ *      Author: cls, ebergamini
  */
 
 #ifndef BETWEENNESS_H_
@@ -26,14 +26,13 @@ public:
 	 */
 	Betweenness(const Graph& G, bool normalized=false);
 
-	/**
-	 * Compute betweenness scores sequential or parallel depending on @a runUnweightedInParallel.
-	 *
-	 * @param runUnweightedInParallel If set to <code>true</code> the computation is done in parallel.
-	 */
-	void run(bool runUnweightedInParallel);
 
-	void run() override { run(false); }
+
+	/**
+	* Compute betweenness scores sequential or parallel depending on @a runUnweightedInParallel.
+	*
+	*/
+	void run() override;
 
 };
 

@@ -7,7 +7,6 @@
 
 #include "CentralityGTest.h"
 #include "../Betweenness.h"
-#include "../Betweenness2.h"
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
@@ -69,7 +68,7 @@ TEST_F(CentralityGTest, testBetweenness2Centrality) {
 	G.addEdge(3, 5);
 	G.addEdge(4, 5);
 
-	Betweenness2 centrality = Betweenness2(G);
+	Betweenness centrality = Betweenness(G);
 	centrality.run();
 	std::vector<double> bc = centrality.scores();
 
@@ -251,7 +250,7 @@ TEST_F(CentralityGTest, benchSequentialBetweennessCentralityOnRealGraph) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
 	Betweenness bc(G);
-	bc.run(false);
+	bc.run();
 	std::vector<std::pair<node, double> > ranking = bc.ranking();
 	INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
 }
@@ -260,7 +259,7 @@ TEST_F(CentralityGTest, benchParallelBetweennessCentralityOnRealGraph) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
 	Betweenness bc(G);
-	bc.run(true);
+	bc.run();
 	std::vector<std::pair<node, double> > ranking = bc.ranking();
 	INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
 }
