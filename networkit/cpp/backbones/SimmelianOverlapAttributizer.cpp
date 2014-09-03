@@ -17,10 +17,10 @@ std::vector<double> SimmelianOverlapAttributizer::getAttribute(const Graph& grap
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, attribute);
 	std::vector<double> overlapAttribute(graph.upperEdgeIdBound(), 0.0);
 
-	graph.forEdges([&](node u, node v, edgeid eid) {
+	graph.parallelForEdges([&](node u, node v, edgeid eid) {
 		Redundancy redundancy = getOverlap(u, v, neighbors, maxRank);
 
-		overlapAttribute[eid] = std::max((double) redundancy.overlap, overlapAttribute[eid]);
+		overlapAttribute[eid] = (double) redundancy.overlap;
 	});
 
 	return overlapAttribute;
