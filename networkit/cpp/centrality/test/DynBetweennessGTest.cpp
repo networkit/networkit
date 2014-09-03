@@ -17,6 +17,7 @@
 #include "../../graph/Sampling.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
 
+
 namespace NetworKit {
 
 TEST_F(DynBetweennessGTest, testDynBetweennessSmallGraph) {
