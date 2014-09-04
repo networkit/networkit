@@ -36,7 +36,7 @@ public:
 	void update(const std::vector<GraphEvent>& batch) override;
 
 	/* Returns the number of shortest paths to node t.*/
-	count getNumberOfPaths(node t) const;
+	bigfloat getNumberOfPaths(node t) const;
 
 protected:
 	enum Color {WHITE, BLACK, GRAY};
@@ -45,7 +45,7 @@ protected:
 
 };
 
-inline count DynBFS::getNumberOfPaths(node t) const {
+inline bigfloat DynBFS::getNumberOfPaths(node t) const {
 	return npaths[t];
 }
 

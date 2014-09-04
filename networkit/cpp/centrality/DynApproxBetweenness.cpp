@@ -66,26 +66,31 @@ void DynApproxBetweenness::run() {
             node t = v[i];
             while (t != u[i])  {
                 // sample z in P_u(t) with probability sigma_uz / sigma_us
-                if (sssp[i]->npaths[t] == 0) {
-                    INFO("In SSSP from ", u[i]);
-                    INFO("Considering node ", t);
-                    throw std::runtime_error("Error: no shortest paths found");
-                }
                 std::vector<std::pair<node, double> > choices;
                 if (storePreds) {
                     for (node z : sssp[i]->previous[t]) {
-                        choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]); 	// sigma_uz / sigma_us
+                        // workaround for integer overflow in large graphs
+                        bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);
+                        double weight;
+                        tmp.ToDouble(weight);
+
+                        choices.emplace_back(z, weight); 	// sigma_uz / sigma_us
                     }
                 }
                 else {
                 G.forEdgesOf(t, [&](node t, node z, edgeweight w){
-                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w))
-                            choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
+                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w)) {
+                            // workaround for integer overflow in large graphs
+                            bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);
+                            double weight;
+                            tmp.ToDouble(weight);
+
+                            choices.emplace_back(z, weight);
+                        }
+
                     });
                 }
-                if (choices.size() == 0) {
-                    throw std::runtime_error("Error: no predecessors found");
-                }
+                assert (choices.size() > 0);
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
                 if (z != u[i]) {
@@ -116,13 +121,24 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
                 std::vector<std::pair<node, double> > choices;
                 if (storePreds) {
                     for (node z : sssp[i]->previous[t]) {
-                        choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]); 	// sigma_uz / sigma_us
+                        // workaround for integer overflow in large graphs
+                        bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);
+                        double weight;
+                        tmp.ToDouble(weight);
+
+                        choices.emplace_back(z, weight);
                     }
                 }
                 else {
                     G.forEdgesOf(t, [&](node t, node z, edgeweight w){
-                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w))
-                            choices.emplace_back(z, sssp[i]->npaths[z] / (double) sssp[i]->npaths[t]);
+                        if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w)) {
+                            // workaround for integer overflow in large graphs
+                            bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);
+                            double weight;
+                            tmp.ToDouble(weight);
+
+                            choices.emplace_back(z, weight);
+                        }
                     });
                 }
                 assert (choices.size() > 0); // this should fail only if the graph is not connected

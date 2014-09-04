@@ -17,7 +17,6 @@
 #include "../../graph/Sampling.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
 
-
 namespace NetworKit {
 
 TEST_F(DynBetweennessGTest, testDynBetweennessSmallGraph) {
@@ -208,19 +207,17 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 }
 
 TEST_F(DynBetweennessGTest, timeDynApproxBetweenness) {
-//	METISGraphReader reader;
-//	Graph G = reader.read("input/PGPgiantcompo.graph");
 	METISGraphReader reader;
-	DorogovtsevMendesGenerator generator(1000);
-	Graph G = generator.generate();
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+
 	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
 	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta, false);
 	INFO("initial run");
 	dynbc.run();
-/*	INFO("update");
+	INFO("update");
 	std::vector<GraphEvent> batch;
-	count nInsertions = 10, i = 0;
+	count nInsertions = 100000, i = 0;
 	while (i < nInsertions) {
 		node v1 = Sampling::randomNode(G);
 		node v2 = Sampling::randomNode(G);
@@ -230,7 +227,7 @@ TEST_F(DynBetweennessGTest, timeDynApproxBetweenness) {
 			i++;
 		}
 	}
-	dynbc.update(batch);*/
+	dynbc.update(batch);
 }
 
 TEST_F(DynBetweennessGTest, timeDynExactBetweenness) {
@@ -295,7 +292,7 @@ TEST_F(DynBetweennessGTest, compareAffectedVertices) {
 	dynbc.run();
 	std::vector<std::vector<edgeweight>> dist1;
 	std::vector<std::vector<double>> dep1;
-	std::vector<std::vector<count>> npaths1;
+	std::vector<std::vector<bigfloat>> npaths1;
 	dist1.resize(G.upperNodeIdBound());
 	dep1.resize(G.upperNodeIdBound());
 	npaths1.resize(G.upperNodeIdBound());
@@ -311,7 +308,7 @@ TEST_F(DynBetweennessGTest, compareAffectedVertices) {
 	});
 	std::vector<std::vector<edgeweight>> dist2 = dist1;
 	std::vector<std::vector<double>> dep2 = dep1;
-	std::vector<std::vector<count>> npaths2 = npaths1;
+	auto npaths2 = npaths1;
 	DEBUG("Before the edge insertion: ");
 	GraphEvent ev;
 	count nInsertions = 10, i = 0;
@@ -331,16 +328,16 @@ TEST_F(DynBetweennessGTest, compareAffectedVertices) {
 			int diff_dist2 = 0;
 			G.forNodes([&] (node s){
 				G.forNodes([&] (node t){
-					if (!Aux::NumericTools::logically_equal(dist1[s][t], dynbc.distance(s,t)) || !Aux::NumericTools::logically_equal(npaths1[s][t], dynbc.nPaths(s,t))) {
+					if (!Aux::NumericTools::logically_equal(dist1[s][t], dynbc.distance(s,t)) || npaths1[s][t] != dynbc.nPaths(s,t)) {
 						diff_dist ++;
 					}
-					if (!Aux::NumericTools::logically_equal(dist1[s][t], dynbc.distance(s,t)) || !Aux::NumericTools::logically_equal(npaths1[s][t], dynbc.nPaths(s,t)) || !Aux::NumericTools::logically_equal(dep1[s][t], dynbc.dependency(s,t))) {
+					if (!Aux::NumericTools::logically_equal(dist1[s][t], dynbc.distance(s,t)) || (npaths1[s][t] != dynbc.nPaths(s,t)) || !Aux::NumericTools::logically_equal(dep1[s][t], dynbc.dependency(s,t))) {
 						diff_dep ++;
 					}
-					if (!Aux::NumericTools::logically_equal(dist2[s][t], dynbc.distance(s,t)) || !Aux::NumericTools::logically_equal(npaths2[s][t], dynbc.nPaths(s,t))) {
+					if (!Aux::NumericTools::logically_equal(dist2[s][t], dynbc.distance(s,t)) ||(npaths2[s][t] != dynbc.nPaths(s,t))) {
 						diff_dist2 ++;
 					}
-					if (!Aux::NumericTools::logically_equal(dist2[s][t], dynbc.distance(s,t)) || !Aux::NumericTools::logically_equal(npaths2[s][t], dynbc.nPaths(s,t)) || !Aux::NumericTools::logically_equal(dep2[s][t], dynbc.dependency(s,t))) {
+					if (!Aux::NumericTools::logically_equal(dist2[s][t], dynbc.distance(s,t)) || (npaths2[s][t] != dynbc.nPaths(s,t)) || !Aux::NumericTools::logically_equal(dep2[s][t], dynbc.dependency(s,t))) {
 						diff_dep2 ++;
 					}
 				});
