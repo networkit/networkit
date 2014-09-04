@@ -78,6 +78,9 @@ class P_Community:
 				ccGlobal = _cc.exactGlobal(backbone)
 			else:
 				ccGlobal = _cc.approxGlobal(backbone, min(backbone.numberOfNodes(), 10000))
+
+			#Modularity
+			modularity = community.Modularity().getQuality(communitiesBackbone, backbone)
 		else:
 			randMeasure = 0.0
 			nmi = 0.0
@@ -87,14 +90,17 @@ class P_Community:
 			minCommunitySize = 0
 			maxCommunitySize = 0
 			avgCommunitySize = 0
+			modularity = 0.0
 		return {'randMeasure':randMeasure, 'nmi':nmi, 'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal,
 			'numCommunities':numCommunities, 'minCommunitySize':minCommunitySize,
-			'maxCommunitySize':maxCommunitySize, 'avgCommunitySize':avgCommunitySize}
+			'maxCommunitySize':maxCommunitySize, 'avgCommunitySize':avgCommunitySize,
+			'modularity':modularity}
 
 	def getTypes(self):
 		return {'randMeasure':'real', 'nmi':'real', 'ccAvgLocal':'real', 'ccGlobal':'real',
 			'numCommunities':'integer', 'minCommunitySize':'integer',
-			'maxCommunitySize':'integer', 'avgCommunitySize':'integer'
+			'maxCommunitySize':'integer', 'avgCommunitySize':'integer',
+			'modularity':modularity
 		}
 
 #Diameter
@@ -145,7 +151,7 @@ class P_Centrality:
 	def getBetweennessHubs(self, graph, count):
 		#Empty graphs result in crash of approxbetweenness. #TODO incestigate
 		if graph.numberOfNodes() == 0:
-			return [-1] * count		
+			return [-1] * count
 
 		print("ApproxBetweenness...")
 		bc = centrality.ApproxBetweenness(graph, epsilon=0.75, delta=0.75, diameterSamples=0)
