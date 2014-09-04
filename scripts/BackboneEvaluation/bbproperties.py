@@ -143,11 +143,17 @@ class P_Centrality:
 		return list(map(lambda x: x[0], ranking))
 
 	def getBetweennessHubs(self, graph, count):
-		bc = centrality.ApproxBetweenness(graph, epsilon=0.075, delta=0.075, diameterSamples=0)
+		#Empty graphs result in crash of approxbetweenness. #TODO incestigate
+		if graph.numberOfNodes() == 0:
+			return [-1] * count		
+
+		print("ApproxBetweenness...")
+		bc = centrality.ApproxBetweenness(graph, epsilon=0.75, delta=0.75, diameterSamples=0)
 		bc.run()
 		return self.getHubsFromRanking(bc.ranking(), count)
 
 	def getPageRankHubs(self, graph, count):
+		print("PageRank...")
 		bc = centrality.PageRank(graph, damp=0.95)
 		bc.run()
 		return self.getHubsFromRanking(bc.ranking(), count)
@@ -156,6 +162,9 @@ class P_Centrality:
 		return len(set(list1) & set(list2)) / len(set(list1) | set(list2))
 
 	def getValues(self, graph, backbone):
+		#lcGraph = workflows.extractLargestComponent(graph)
+		#lcBackbone = workflows.extractLargestComponent(backbone)
+
 		#PageRank
 		hubCountPageRank = math.ceil(graph.numberOfNodes() * 0.01)
 		prHubsG = self.getPageRankHubs(graph, hubCountPageRank)

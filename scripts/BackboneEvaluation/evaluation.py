@@ -76,6 +76,7 @@ def executeTask(task):
 								}
 
 					#Calculate all desired properties of the backbone
+					print('Calculating properties: ', igraph.name, ', ', ialgorithm.getShortName(),', ', algorithmParameter)
 					for iproperty in task.properties:
 						try:
 							d = iproperty.getValues(graph, backbone)
