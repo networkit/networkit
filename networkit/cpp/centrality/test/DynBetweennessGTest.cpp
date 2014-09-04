@@ -208,17 +208,19 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 }
 
 TEST_F(DynBetweennessGTest, timeDynApproxBetweenness) {
+//	METISGraphReader reader;
+//	Graph G = reader.read("input/PGPgiantcompo.graph");
 	METISGraphReader reader;
-	Graph G = reader.read("input/PGPgiantcompo.graph");
-
+	DorogovtsevMendesGenerator generator(1000);
+	Graph G = generator.generate();
 	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
 	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta, false);
 	INFO("initial run");
 	dynbc.run();
-	INFO("update");
+/*	INFO("update");
 	std::vector<GraphEvent> batch;
-	count nInsertions = 100000, i = 0;
+	count nInsertions = 10, i = 0;
 	while (i < nInsertions) {
 		node v1 = Sampling::randomNode(G);
 		node v2 = Sampling::randomNode(G);
@@ -228,7 +230,7 @@ TEST_F(DynBetweennessGTest, timeDynApproxBetweenness) {
 			i++;
 		}
 	}
-	dynbc.update(batch);
+	dynbc.update(batch);*/
 }
 
 TEST_F(DynBetweennessGTest, timeDynExactBetweenness) {
