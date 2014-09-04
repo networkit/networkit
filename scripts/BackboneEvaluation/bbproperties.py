@@ -100,7 +100,7 @@ class P_Community:
 		return {'randMeasure':'real', 'nmi':'real', 'ccAvgLocal':'real', 'ccGlobal':'real',
 			'numCommunities':'integer', 'minCommunitySize':'integer',
 			'maxCommunitySize':'integer', 'avgCommunitySize':'integer',
-			'modularity':modularity
+			'modularity':'real'
 		}
 
 #Diameter
