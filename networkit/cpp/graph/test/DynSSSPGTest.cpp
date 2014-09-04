@@ -9,7 +9,6 @@
 #include "../DynBFS.h"
 #include "../BFS.h"
 #include "../DynDijkstra.h"
-#include "../DynDijkstra2.h"
 #include "../Dijkstra.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
