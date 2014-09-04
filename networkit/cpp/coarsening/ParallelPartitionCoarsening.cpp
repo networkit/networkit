@@ -126,13 +126,17 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 		GraphBuilder b(nextNodeId, true, false, true);
 		#pragma omp parallel for schedule(guided)
 		for (node su = 0; su < nextNodeId; su++) {
+			std::map<index, edgeweight> outEdges;
 			for (node u : nodesPerSuperNode[su]) {
 				G.forNeighborsOf(u, [&](node v, edgeweight ew) {
 					node sv = nodeToSuperNode[v];
 					if (su != sv || u >= v) { // count edges inside uv only once (we iterate over them twice)
-						b.increaseWeight(su, sv, ew);
+						outEdges[sv] += ew;
 					}
 				});
+			}
+			for (auto it : outEdges) {
+				b.addEdge(su, it.first, it.second);
 			}
 		}
 
