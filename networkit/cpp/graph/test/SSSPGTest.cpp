@@ -59,7 +59,7 @@ TEST_F(SSSPGTest, testShortestPaths) {
 	int source = 2;
 	BFS bfs(G, source);
 	bfs.run();
-	count max = 0;
+	bigfloat max = 0;
 	node x;
 	G.forNodes([&](node n){
 		if(bfs.numberOfPaths(n) > max) {
