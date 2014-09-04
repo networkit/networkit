@@ -30,7 +30,7 @@ TEST_F(ApproxBetweennessGTest, testApproxDiameterErdos) {
 	approx.run();
 }
 
-TEST_F(ApproxBetweennessGTest, testApproxBetweennessSamples) {
+TEST_F(ApproxBetweennessGTest, ApproxBetweennessSamples) {
 	int n = 20000;
 	DorogovtsevMendesGenerator generator(n);
 	Graph G = generator.generate();
