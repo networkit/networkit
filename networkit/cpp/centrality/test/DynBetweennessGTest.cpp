@@ -230,6 +230,7 @@ TEST_F(DynBetweennessGTest, timeDynApproxBetweenness) {
 	dynbc.update(batch);
 }
 
+/*
 TEST_F(DynBetweennessGTest, timeDynExactBetweenness) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
@@ -250,8 +251,7 @@ TEST_F(DynBetweennessGTest, timeDynExactBetweenness) {
 			i++;
 		}
 	}
-}
-
+}*/
 TEST_F(DynBetweennessGTest, testCorrectnessDynExactBetweenness) {
 	METISGraphReader reader;
 	DorogovtsevMendesGenerator generator(1000);
