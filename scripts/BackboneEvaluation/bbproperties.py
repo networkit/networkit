@@ -90,7 +90,7 @@ class P_Community:
 			minCommunitySize = 0
 			maxCommunitySize = 0
 			avgCommunitySize = 0
-			modularity = 0.0
+			modularity = 0
 		return {'randMeasure':randMeasure, 'nmi':nmi, 'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal,
 			'numCommunities':numCommunities, 'minCommunitySize':minCommunitySize,
 			'maxCommunitySize':maxCommunitySize, 'avgCommunitySize':avgCommunitySize,
@@ -101,7 +101,7 @@ class P_Community:
 			'numCommunities':'integer', 'minCommunitySize':'integer',
 			'maxCommunitySize':'integer', 'avgCommunitySize':'integer',
 			'modularity':'real'
-		}
+			}
 
 #Diameter
 class P_Diameter:
@@ -149,14 +149,20 @@ class P_Centrality:
 		return list(map(lambda x: x[0], ranking))
 
 	def getBetweennessHubs(self, graph, count):
-		#Empty graphs result in crash of approxbetweenness. #TODO incestigate
+		#Empty graphs result in crash of approxbetweenness. #TODO investigate
 		if graph.numberOfNodes() == 0:
-			return [-1] * count
-
-		print("ApproxBetweenness...")
-		bc = centrality.ApproxBetweenness(graph, epsilon=0.75, delta=0.75, diameterSamples=0)
-		bc.run()
-		return self.getHubsFromRanking(bc.ranking(), count)
+			ranking = [-1] * count
+		elif graph.numberOfNodes() < 100:
+			print("ExactBetweenness...")
+			bc = centrality.Betweenness(graph)
+			bc.run()
+			ranking = bc.ranking()
+		else:
+			print("ApproxBetweenness...")
+			bc = centrality.ApproxBetweenness(graph, epsilon=0.75, delta=0.75, diameterSamples=0)
+			bc.run()
+			ranking = bc.ranking()
+		return self.getHubsFromRanking(ranking, count)
 
 	def getPageRankHubs(self, graph, count):
 		print("PageRank...")
