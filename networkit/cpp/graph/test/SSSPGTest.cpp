@@ -52,6 +52,43 @@ TEST_F(SSSPGTest, testDijkstra) {
 	}
 }
 
+TEST_F(SSSPGTest, testShortestPaths) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+	INFO("The graph has been read.");
+	int source = 2;
+	BFS bfs(G, source);
+	bfs.run();
+	count max = 0;
+	node x;
+	G.forNodes([&](node n){
+		if(bfs.numberOfPaths(n) > max) {
+			max = bfs.numberOfPaths(n);
+			x = n;
+		}
+	});
+	count dist = bfs.distance(x);
+	std::set<std::vector<node>> paths = bfs.getPaths(x, true);
+	count i = 0;
+	for (auto path : paths) {
+		INFO("Path number ", i);
+		i ++;
+		count count = 0;
+		for (node n : path) {
+			if (count < dist) {
+				EXPECT_EQ(G.hasEdge(path[count], path[count+1]), true);
+			}
+			INFO(n);
+			count ++;
+		}
+		EXPECT_EQ(count, dist+1);
+		EXPECT_EQ(path[0], source);
+		EXPECT_EQ(path[dist], x);
+	}
+	INFO("Maximum number of shortest paths: ", bfs.numberOfPaths(x));
+	INFO("Distance: ", dist);
+}
+
 TEST_F(SSSPGTest, testGetAllShortestPaths) {
 /* Graph:
 
