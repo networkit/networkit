@@ -23,11 +23,11 @@ std::vector<double> MultiscaleAttributizer::getAttribute(const Graph& graph, con
 
 		//Normalize edgeweights of N(u)
 		edgeweight sum = 0.0;
-		graph.forNeighborsOf(u, [&](node v) {
-			sum += graph.weight(u, v);
+		graph.forNeighborsOf(u, [&](node v, edgeweight weight) {
+			sum += weight;
 		});
-		graph.forNeighborsOf(u, [&](node v) {
-			normalizedWeights[v] = graph.weight(u, v) / sum;
+		graph.forNeighborsOf(u, [&](node v, edgeweight weight) {
+			normalizedWeights[v] = weight / sum;
 		});
 
 		//Filter edges by probability
