@@ -7,6 +7,7 @@
 
 #include "RmatGenerator.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/NumericTools.h"
 #include "../auxiliary/Log.h"
 
 namespace NetworKit {
@@ -15,7 +16,7 @@ RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, 
 	scale(scale), edgeFactor(edgeFactor), a(a), b(b), c(c), d(d)
 {
 	double sum = a+b+c+d;
-	if (sum != 1.0) throw std::runtime_error("Probabilities in Rmat have to sum to 1!");
+	if (!Aux::NumericTools::equal(sum, 1.0)) throw std::runtime_error("Probabilities in Rmat have to sum to 1!");
 	defaultEdgeWeight = 1.0;
 }
 
