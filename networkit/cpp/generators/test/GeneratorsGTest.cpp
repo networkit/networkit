@@ -707,6 +707,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorDegeneracy) {
 	count n = 10000;
 	HyperbolicGenerator gen(n, n*3);
 	Graph H = gen.generate();
+	ASSERT_TRUE(H.checkConsistency());
 	CoreDecomposition cd(H);
 	cd.run();
 	EXPECT_LE(cd.maxCoreNumber(), n); //actually testing for crashes here

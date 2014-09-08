@@ -308,4 +308,8 @@ void GraphBuilder::correctNumberOfEdges(Graph& G, count numberOfSelfLoops) {
 	}
 }
 
+bool GraphBuilder::checkConsistency(Graph& G) {
+	return G.checkConsistency();
+}
+
 } /* namespace NetworKit */
