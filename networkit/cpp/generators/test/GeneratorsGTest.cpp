@@ -141,6 +141,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	EXPECT_GE(modVal, 0.2) << "modularity of clustering";
 	DEBUG("Modularity of clustering: " , modVal);
 	DEBUG("Total edge weight: " , G.totalEdgeWeight());
+	EXPECT_TRUE(G.checkConsistency());
 }
 
 
@@ -187,6 +188,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 		sprintf(path, "output/pubweb-%04llu.eps", static_cast<unsigned long long>(i));
 		TRACE("path: " , path);
 		psWriter.write(G, path);
+		//EXPECT_TRUE(G.checkConsistency()); TODO: make this not fail!
 	}
 }
 
@@ -222,6 +224,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 			}
 		}
 		gu.update(stream);
+		EXPECT_TRUE(G.checkConsistency());
 	}
 
 	Graph comparison = HyperbolicGenerator::generate(&angles, &radii, r, R);
@@ -261,8 +264,10 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 			if (event.type == GraphEvent::EDGE_REMOVAL) {
 				EXPECT_TRUE(G.hasEdge(event.u, event.v));
 			}
+			if (event.type != GraphEvent::TIME_STEP) EXPECT_LT(event.u, G.upperNodeIdBound());
 		}
 		gu.update(stream);
+		EXPECT_TRUE(G.checkConsistency());
 	}
 
 	//update moved nodes
@@ -380,6 +385,7 @@ TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
 
 	EXPECT_EQ(nMax, G.numberOfNodes());
 	EXPECT_EQ( ((n0-1) + ((nMax - n0) * k)), G.numberOfEdges());
+	EXPECT_TRUE(G.checkConsistency());
 }
 
 TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
@@ -419,6 +425,7 @@ TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 	EXPECT_LE(nEdges, 1.25 * p * nPairs);
 
 	DEBUG("Number of edges with probability " , p , " (actual/expected): " , nEdges , " / " , (nPairs * p));
+	EXPECT_TRUE(G.checkConsistency());
 }
 
 TEST_F(GeneratorsGTest, testRmatGenerator) {
@@ -446,6 +453,7 @@ TEST_F(GeneratorsGTest, testRmatGenerator) {
 	double modVal = mod.getQuality(zeta, G);
 	INFO("Modularity of R-MAT graph clustering: ", modVal);
 	EXPECT_GE(modVal, 0.0);
+	EXPECT_TRUE(G.checkConsistency());
 }
 
 
@@ -464,6 +472,7 @@ TEST_F(GeneratorsGTest, testChungLuGenerator) {
 
 	ChungLuGenerator gen(sequence);
 	Graph G = gen.generate();
+	EXPECT_TRUE(G.checkConsistency());
 
 	EXPECT_EQ(n, G.numberOfNodes());
 	G.forNodes([&](node v) {
@@ -493,6 +502,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 
 		if (realizable) {
 			Graph G = hhgen.generate();
+			EXPECT_TRUE(G.checkConsistency());
 			count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
 			EXPECT_EQ(volume, 2 * G.numberOfEdges());
 		}
@@ -512,6 +522,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 		bool skipTest = false;
 		HavelHakimiGenerator hhgen(sequence, skipTest);
 		Graph G2 = hhgen.generate();
+		EXPECT_TRUE(G.checkConsistency());
 
 		count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
 		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
@@ -535,6 +546,7 @@ TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
 	DynamicForestFireGenerator ffg1(0.0, false);
 	stream = ffg1.generate(10);
 	gu1.update(stream);
+	EXPECT_TRUE(G1.checkConsistency());
 	EXPECT_EQ(11u, G1.numberOfNodes());
 	G1.forNodes([&](node u) {
 		count c = 0;
@@ -555,6 +567,7 @@ TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
 	DynamicForestFireGenerator ffg2(1.0, true, 1.0);
 	stream = ffg2.generate(10);
 	gu2.update(stream);
+	EXPECT_TRUE(G2.checkConsistency());
 	EXPECT_EQ(11u, G2.numberOfNodes());
 	G2.forNodePairs([&](node u, node v) {
 		if (v < u) {
@@ -602,6 +615,7 @@ TEST_F(GeneratorsGTest, testWattsStrogatzGenerator) {
 
 	WattsStrogatzGenerator wsg2 = WattsStrogatzGenerator(n0, neighbors, 0.3);
 	Graph G = wsg2.generate();
+	EXPECT_TRUE(G.checkConsistency());
 	EXPECT_EQ(n0, (int) G.numberOfNodes());
 	EXPECT_EQ(n0*neighbors, (int) G.numberOfEdges());
 }
@@ -626,6 +640,7 @@ TEST_F(GeneratorsGTest, testDorogovtsevMendesGenerator) {
 			EXPECT_EQ(2u, c);
 		}
 	});
+	EXPECT_TRUE(G.checkConsistency());
 }
 
 TEST_F(GeneratorsGTest, testDynamicDorogovtsevMendesGenerator) {
@@ -685,7 +700,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 }
 
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
-	count n = 100000;
+	count n = 10000;
 	HyperbolicGenerator gen(n,1,1,1);
 	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,1,1);
 	DEBUG("Expected: ", expected);
