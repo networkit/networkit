@@ -18,6 +18,7 @@ Dy * GeneratorsTest.cpp
 #include "../WattsStrogatzGenerator.h"
 #include "../RegularRingLatticeGenerator.h"
 #include "../../properties/ClusteringCoefficient.h"
+#include "../../properties/CoreDecomposition.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
 #include "../StochasticBlockmodel.h"
@@ -700,6 +701,15 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	HyperbolicGenerator gen2(n,m);
 	G = gen2.generate();
 	DEBUG("Actual: ", G.numberOfEdges());
+}
+
+TEST_F(GeneratorsGTest, testHyperbolicGeneratorDegeneracy) {
+	count n = 10000;
+	HyperbolicGenerator gen(n, n*3);
+	Graph H = gen.generate();
+	CoreDecomposition cd(H);
+	cd.run();
+	EXPECT_LE(cd.maxCoreNumber(), n); //actually testing for crashes here
 }
 
 } /* namespace NetworKit */

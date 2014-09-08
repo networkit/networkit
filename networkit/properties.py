@@ -175,15 +175,15 @@ def properties(G, settings):
 
 	ncomPLP, modPLP = None, None
 	ncomPLM, modPLM = None, None
-	#if settings["communities"]:
-	#	logging.info("[...] detecting communities")
-	#	# perform PLM community detection
-	#	logging.info("[...] performing community detection: PLM")
-	#	plm = community.PLM()
-	#	print(plm)
-	#	zetaPLM = plm.run(G)
-	#	ncomPLM = zetaPLM.numberOfSubsets()
-	#	modPLM = community.Modularity().getQuality(zetaPLM, G)
+	if settings["communities"]:
+		logging.info("[...] detecting communities")
+		# perform PLM community detection
+		logging.info("[...] performing community detection: PLM")
+		plm = community.PLM()
+		print(plm)
+		zetaPLM = plm.run(G)
+		ncomPLM = zetaPLM.numberOfSubsets()
+		modPLM = community.Modularity().getQuality(zetaPLM, G)
 
 	# degree histogram
 

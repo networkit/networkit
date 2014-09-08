@@ -43,6 +43,8 @@ node GraphBuilder::addNode() {
 }
 
 void GraphBuilder::addEdge(node u, node v, edgeweight ew) {
+	assert(u < n);
+	assert(v < n);
 	halfEdges[u].push_back(v);
 	if (weighted) {
 		halfEdgeWeights[u].push_back(ew);
@@ -54,6 +56,9 @@ void GraphBuilder::addEdge(node u, node v, edgeweight ew) {
 }
 
 void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
+	assert(u < n);
+	assert(v < n);
+
 	if (!weighted) {
 		throw std::runtime_error("Cannot set edge weight in unweighted graph.");
 	}
@@ -68,6 +73,9 @@ void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
 }
 
 void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
+	assert(u < n);
+	assert(v < n);
+
 	if (!weighted) {
 		throw std::runtime_error("Cannot increase edge weight in unweighted graph.");
 	}
