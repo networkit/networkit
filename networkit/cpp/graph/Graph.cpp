@@ -698,9 +698,12 @@ bool Graph::checkConsistency() const {
 	parallelForNodes([&](node u) {
 		if (exists[u]) {
 			forNeighborsOf(u, [&](node v){
-				if (!exists[v]) nodeMissing = true;
-				DEBUG("Node ", v, " is missing, but node ", u, " has an edge to it!");
-				neighborsets[u].insert(v);
+				if (!exists[v]) {
+					nodeMissing = true;
+					DEBUG("Node ", v, " is missing, but node ", u, " has an edge to it!");
+				} else if (v != u) {
+					neighborsets[u].insert(v);
+				}
 			});
 		}
 	});
@@ -708,17 +711,29 @@ bool Graph::checkConsistency() const {
 
 	bool edgeMissing = false;
 	forNodes([&](node u) {
-		for (node v : neighborsets[u]) {
-			auto it = neighborsets[v].find(u);
-			if (it == neighborsets[v].end()) {
-				DEBUG("Edge from ", u, " to ", v,  ", but not from ", v , " to ", u, "!");
-				edgeMissing = true;;
-			} else {
-				neighborsets[v].erase(it);
+		assert(u < z);
+		std::vector<node> comp = this->directed ? inEdges[u] : outEdges[u];
+		for (node v : comp) {
+			if (v != none && v != u) {
+				auto it = neighborsets[v].find(u);
+				if (it == neighborsets[v].end()) {
+					DEBUG("Edge from ", u, " to ", v,  ", but not from ", v , " to ", u, "!");
+					edgeMissing = true;
+				} else {
+					neighborsets[v].erase(it);
+				}
 			}
 		}
-		neighborsets[u].clear();
 	});
+
+	bool nonEmpty = false;
+	forNodes([&](node u) {
+		if (exists[u] && !neighborsets[u].empty()) {
+			DEBUG("Node ", u, " had unresolved directed edges.");
+			nonEmpty = true;
+		}
+	});
+	if (nonEmpty) return false;
 	if (edgeMissing) return false;
 
 	// check for multi-edges
