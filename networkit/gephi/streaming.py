@@ -50,7 +50,13 @@ class GephiStreamingClient:
             self._urlError(e)
 
     def exportAdditionalEdge(self, u, v):
-        """ Adds an edge in an already exported graph."""
+        """ Adds an edge (u,v) in an already exported graph. If the edge is already present, nothing happens.
+            If the graph is directed, the edge goes from u to v
+
+            Parameters:
+            - u: first node
+            - v: second node
+        """
         if self.graphExported != True:
             print("Error: Cannot add edges. Export Graph first!")
             return      
