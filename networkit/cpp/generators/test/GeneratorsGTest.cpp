@@ -428,6 +428,17 @@ TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
 	EXPECT_TRUE(G.checkConsistency());
 }
 
+TEST_F(GeneratorsGTest, testRmatGeneratorException) {
+	count scale = 9;
+	count edgeFactor = 12;
+	double a = 0.51;
+	double b = 0.12;
+	double c = 0.12;
+	double d = 0.2;
+
+	EXPECT_THROW(RmatGenerator rmat(scale, edgeFactor, a, b, c, d), std::runtime_error);
+}
+
 TEST_F(GeneratorsGTest, testRmatGenerator) {
 	count scale = 9;
 	count n = (1 << scale);
@@ -435,7 +446,7 @@ TEST_F(GeneratorsGTest, testRmatGenerator) {
 	double a = 0.51;
 	double b = 0.12;
 	double c = 0.12;
-	double d = 0.2;
+	double d = 0.25;
 
 	RmatGenerator rmat(scale, edgeFactor, a, b, c, d);
 	Graph G = rmat.generate();

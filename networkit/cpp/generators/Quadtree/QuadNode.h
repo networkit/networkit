@@ -175,7 +175,7 @@ public:
 
 	bool outOfReach(Point2D<double> query, double radius) {
 		double phi, r;
-		#radius *= 1.05;
+		//radius *= 1.05;
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
 		if (responsible(phi, r)) return false;
 

@@ -99,7 +99,7 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 			}
 
 			if (i % 1000 == 0) {
-				#pragma omp critical (progress)//that doesn't make any sense, creating the block every time and only printing every 200th iterations
+				#pragma omp critical (progress)
 				{
 					progress.signal(i);
 				}
