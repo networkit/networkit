@@ -729,7 +729,7 @@ bool Graph::checkConsistency() const {
 	bool nonEmpty = false;
 	forNodes([&](node u) {
 		if (exists[u] && !neighborsets[u].empty()) {
-			DEBUG("Node ", u, " had unresolved directed edges.");
+			DEBUG("Node ", u, " had unresolved edges.");
 			nonEmpty = true;
 		}
 	});
