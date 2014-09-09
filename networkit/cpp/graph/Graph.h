@@ -332,10 +332,6 @@ public:
 	/** Default copy assignment operator */
 	Graph& operator=(const Graph& other) = default;
 
-	/** Only to be used from Cython */
-	void stealFrom(Graph& input);
-
-
 	/** EDGE IDS **/
 
 	/**

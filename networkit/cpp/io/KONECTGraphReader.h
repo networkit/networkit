@@ -45,12 +45,6 @@ public:
 	Graph read(const std::string& path);
 
 
-	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _read(std::string& path) {
-		return new Graph{std::move(read(path))};
-	};
-
-
 protected:
 	char separator; 	//!< character separating nodes in an edge line
 	std::string commentPrefix;
