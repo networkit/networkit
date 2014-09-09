@@ -7,7 +7,6 @@
 
 #include "DynBetweennessGTest.h"
 #include "../Betweenness.h"
-#include "../Betweenness2.h"
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
@@ -90,7 +89,7 @@ TEST_F(DynBetweennessGTest, testWeightedDynBetweennessSmallGraph) {
 
 	DynBetweenness dynbc = DynBetweenness(G, true);
 //	Graph G1 = Graph(G, false, false);
-	Betweenness2 bc = Betweenness2(G);
+	Betweenness bc = Betweenness(G);
 	dynbc.run();
 	bc.run();
 	std::vector<double> dynbc_scores = dynbc.scores();

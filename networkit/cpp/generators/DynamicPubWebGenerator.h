@@ -38,11 +38,6 @@ public:
 
 	Graph getGraph() const { return G; }
 
-	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _getGraph() {
-		return new Graph{std::move(getGraph())};
-	};
-
 	/**
 	 * Generate event stream.
 	 *

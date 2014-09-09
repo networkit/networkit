@@ -163,75 +163,6 @@ TEST_F(DynSSSPGTest, testDynamicDijkstra) {
 	});
 
 }
-/*
-TEST_F(DynSSSPGTest, testDynamicDijkstra2) {
-/* Graph:
-	0    3   6
-	\  / \ /
-	2 -- 5
-	/  \ / \
-	1    4   7
-
-	Edges in the upper row have weight 3,
-	the edge in the middle row has weight 1.5,
-	edges in the lower row have weight 2.
-
-	count n = 8;
-	Graph G(n, true);
-
-	G.addEdge(0, 2, 3);
-	G.addEdge(1, 2, 2);
-	G.addEdge(2, 3, 3);
-	G.addEdge(2, 4, 2);
-	G.addEdge(2, 5, 1.5);
-	G.addEdge(3, 5, 3);
-	G.addEdge(4, 5, 2);
-	G.addEdge(5, 6, 3);
-	G.addEdge(5, 7, 2);
-
-	Dijkstra dij(G, 0);
-	INFO("Running static dijkstra.");
-	dij.run();
-	INFO("Running initialization of dynamic dijkstra.");
-	DynDijkstra2 ddij(G, 0);
-	ddij.run();
-	INFO("Finished initalization of dynamic dijkstra");
-	G.forNodes([&] (node i) {
-		std::cout<<"Node "<<i<<":"<<std::endl;
-		std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance: "<<ddij.distance(i)<<std::endl;
-		std::cout<<"Actual number of paths: "<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
-		EXPECT_EQ(dij.distance(i), ddij.distance(i));
-		EXPECT_EQ(dij.numberOfPaths(i), ddij.numberOfPaths(i));
-	});
-	std::vector<GraphEvent> batch(3);
-	batch[0].type = GraphEvent::EDGE_ADDITION;
-	batch[0].u = 0;
-	batch[0].v = 4;
-	batch[0].w = 1.0;
-	batch[1].type = GraphEvent::EDGE_ADDITION;
-	batch[1].u = 1;
-	batch[1].v = 4;
-	batch[1].w = 1.0;
-	batch[2].type = GraphEvent::EDGE_ADDITION;
-	batch[2].u = 6;
-	batch[2].v = 7;
-	batch[2].w = 3.0;
-	for (GraphEvent edge : batch) {
-		G.addEdge(edge.u, edge.v, edge.w);
-	}
-	INFO("Running dynamic dijkstra after edge updates.");
-	ddij.update(batch);
-	INFO("Running static dijkstra after edge updates.");
-	dij.run();
-	G.forNodes([&] (node i) {
-		std::cout<<"Node "<<i<<":"<<std::endl;
-		std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance: "<<ddij.distance(i)<<std::endl;
-		std::cout<<"Actual number of paths: "<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
-		EXPECT_EQ(dij.distance(i), ddij.distance(i));
-		EXPECT_EQ(dij.numberOfPaths(i), ddij.numberOfPaths(i));
-	});
-
-}*/
 
 TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
 	METISGraphReader reader;
@@ -319,7 +250,6 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
 	// add random normal weights to G
 
 	G.forNodes([&] (node source) {
-		INFO("Node ", source);
 		DynDijkstra dyn_dij(G, source, true);
 		Dijkstra dij(G, source);
 		dyn_dij.run();

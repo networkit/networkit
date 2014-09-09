@@ -32,11 +32,6 @@ public:
 	 * but node indices are not preserved.
 	 */
 	static Graph fromNodes(const Graph& G, const std::unordered_set<node>& nodes);
-
-	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _fromNodes(const Graph& G, const std::unordered_set<node>& nodes) {
-		return new Graph{std::move(fromNodes(G, nodes))};
-	};
 };
 
 
