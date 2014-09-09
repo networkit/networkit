@@ -189,7 +189,9 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 	ConnectedComponents cc(G);
 	DEBUG("finding connected components");
 	cc.run();
+	INFO("Graph is weighted? ", G.isWeighted());
 	if (!G.isWeighted()) {
+		INFO("Number of components ", cc.numberOfComponents());
 		if (cc.numberOfComponents() > 1) {
 			DEBUG("estimating for each component in parallel");
 			std::vector<std::set<node> > components;
@@ -213,7 +215,17 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 			return estimateFrom(G.randomNode());
 		}
 	} else {
-		count largest_comp_size = cc.getComponentSizes()[1];
+		INFO("Number of components ", cc.numberOfComponents());
+		DEBUG("Estimating size of the largest component");
+		std::map<count, count> sizes = cc.getComponentSizes();
+		count largest_comp_size = 0;
+		for(auto it = sizes.cbegin(); it != sizes.cend(); ++it) {
+			DEBUG(it->second);
+			if (it->second > largest_comp_size) {
+				largest_comp_size = it->second;
+			}
+		}
+		INFO("Largest component size: ", largest_comp_size);
 		return largest_comp_size;
 	}
 

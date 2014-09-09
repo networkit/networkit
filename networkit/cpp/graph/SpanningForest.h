@@ -23,11 +23,6 @@ public:
 
 	Graph generate();
 
-	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _generate() {
-		return new Graph{std::move(generate())};
-	};
-
 protected:
 
 	const Graph& G;

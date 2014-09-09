@@ -9,7 +9,6 @@
 #define DYNDIJKSTRA_H_
 
 #include "DynSSSP.h"
-#include "Dijkstra.h"
 
 namespace NetworKit {
 
@@ -17,7 +16,7 @@ namespace NetworKit {
  * @ingroup graph
  * Dynamic Dijkstra.
  */
-class DynDijkstra : public DynSSSP, public Dijkstra {
+class DynDijkstra : public DynSSSP {
 
 public:
 
@@ -26,17 +25,21 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param s The source node.
+	 * @param   storePredecessors   keep track of the lists of predecessors?
 	 */
-	DynDijkstra(const Graph& G, node s);
+	DynDijkstra(const Graph& G, node s, bool storePredecessors = true);
 
+	void run(node t = none) override;
 
 	/** Updates the distances after an event.*/
 	void update(const std::vector<GraphEvent>& batch) override;
 
 protected:
+	enum Color {WHITE, BLACK};
 	std::vector<Color> color;
 
 };
+
 
 } /* namespace NetworKit */
 
