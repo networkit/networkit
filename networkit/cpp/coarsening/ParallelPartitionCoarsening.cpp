@@ -32,7 +32,6 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 			subsetToSuperNode[c] = nextNodeId++;
 		}
 	});
-	Graph Ginit(nextNodeId, true); // initial graph containing supernodes
 
 	index z = G.upperNodeIdBound();
 	std::vector<node> nodeToSuperNode(z, none);
@@ -43,14 +42,10 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 		nodeToSuperNode[v] = subsetToSuperNode[zeta.subsetOf(v)];
 	});
 
-	std::vector< std::vector<node> > nodesPerSuperNode(nextNodeId);
-	G.forNodes([&](node v) {
-		node sv = nodeToSuperNode[v];
-		nodesPerSuperNode[sv].push_back(v);
-	});
-
 	Graph Gcombined;
 	if (!useGraphBuilder) {
+		Graph Ginit(nextNodeId, true); // initial graph containing supernodes
+
 		// make copies of initial graph
 		count nThreads = omp_get_max_threads();
 		std::vector<Graph> localGraphs(nThreads, Ginit); // thread-local graphs
@@ -120,29 +115,28 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 		timer2.stop();
 		INFO("combining coarse graphs took ", timer2.elapsedTag());
 	} else {
+		std::vector< std::vector<node> > nodesPerSuperNode(nextNodeId);
+		G.forNodes([&](node v) {
+			node sv = nodeToSuperNode[v];
+			nodesPerSuperNode[sv].push_back(v);
+		});
+
 		// iterate over edges of G and create edges in coarse graph or update edge and node weights in Gcon
 		DEBUG("create edges in coarse graphs");
-		GraphBuilder b(nextNodeId, true);
-		#pragma omp parallel for
-		for (node su = 0; su < nextNodeId; su++) { // BAD: not every supernode has the same size, some threads might idle (also we don't use all cores if #supernodes < #cores)
+		GraphBuilder b(nextNodeId, true, false, true);
+		#pragma omp parallel for schedule(guided)
+		for (node su = 0; su < nextNodeId; su++) {
+			std::map<index, edgeweight> outEdges;
 			for (node u : nodesPerSuperNode[su]) {
 				G.forNeighborsOf(u, [&](node v, edgeweight ew) {
 					node sv = nodeToSuperNode[v];
-					if (su < sv) { // BAD: we need another run for the other case
-						b.increaseWeight(su, sv, ew);
+					if (su != sv || u >= v) { // count edges inside uv only once (we iterate over them twice)
+						outEdges[sv] += ew;
 					}
 				});
 			}
-		}
-		#pragma omp parallel for
-		for (node su = 0; su < nextNodeId; su++) {
-			for (node u : nodesPerSuperNode[su]) {
-				G.forNeighborsOf(u, [&](node v, edgeweight ew) {
-					node sv = nodeToSuperNode[v];
-					if (sv >= su) {
-						b.increaseWeight(su, sv, ew);
-					}
-				});
+			for (auto it : outEdges) {
+				b.addEdge(su, it.first, it.second);
 			}
 		}
 
