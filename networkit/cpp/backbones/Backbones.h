@@ -35,8 +35,6 @@ public:
 	 */
 	SimmelianBackboneNonParametric(double threshold);
 
-	~SimmelianBackboneNonParametric() = default;
-
 	Graph calculate(const Graph& graph);
 
 private:
@@ -61,8 +59,6 @@ public:
 		 */
 	SimmelianBackboneParametric(int maxRank, int minOverlap);
 
-	~SimmelianBackboneParametric() = default;
-
 	Graph calculate(const Graph& graph);
 
 private:
@@ -86,8 +82,6 @@ public:
 		 */
 	MultiscaleBackbone(double alpha);
 
-	~MultiscaleBackbone() = default;
-
 	Graph calculate(const Graph& graph);
 
 private:
@@ -110,8 +104,6 @@ public:
 		 */
 	LocalSimilarityBackbone(double e);
 
-	~LocalSimilarityBackbone() = default;
-
 	Graph calculate(const Graph& graph);
 
 private:
@@ -133,8 +125,6 @@ public:
 		 * @param alpha			the threshold value for multiscale filtering
 		 */
 	SimmelianMultiscaleBackbone(double alpha);
-
-	~SimmelianMultiscaleBackbone() = default;
 
 	Graph calculate(const Graph& graph);
 
@@ -159,8 +149,6 @@ public:
 		* @param ratio			edge ratio in [0,1] to be kept in backbone.
 		*/
 	RandomBackbone(double ratio);
-
-	~RandomBackbone() = default;
 
 	Graph calculate(const Graph& graph);
 
