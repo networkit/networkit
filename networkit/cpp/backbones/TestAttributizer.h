@@ -20,7 +20,6 @@ class TestAttributizer : public AttributeGenerator<int, double> {
 public:
 
 	TestAttributizer(count minDegree, double randomness);
-	~TestAttributizer() = default;
 
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 

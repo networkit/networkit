@@ -55,7 +55,7 @@ public:
 	 * Creates a new instance of the Local Sparsification algorithm.
 	 */
 	LocalSimilarityAttributizer();
-	~LocalSimilarityAttributizer() = default;
+	
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
 	std::vector<double> getLocalSimilarity(const Graph& graph);
