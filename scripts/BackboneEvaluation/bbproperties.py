@@ -154,7 +154,8 @@ class P_Centrality:
 			return [-1] * count
 
 		print("ApproxBetweenness...")
-		bc = centrality.ApproxBetweenness(graph, epsilon=0.75, delta=0.75, diameterSamples=0)
+		#bc = centrality.ApproxBetweenness(graph, epsilon=0.01, delta=0.01, diameterSamples=0)
+		bc = centrality.Betweenness(graph)
 		bc.run()
 		return self.getHubsFromRanking(bc.ranking(), count)
 

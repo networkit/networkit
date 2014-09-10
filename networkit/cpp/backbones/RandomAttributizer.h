@@ -23,7 +23,6 @@ public:
 	 * Creates a new instance of the Random edge attributizer.
 	 */
 	RandomAttributizer(double randomness);
-	~RandomAttributizer() = default;
 
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<double>& attribute);
 
