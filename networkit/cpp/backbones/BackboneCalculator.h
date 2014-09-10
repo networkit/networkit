@@ -23,7 +23,6 @@ public:
 	 */
 	virtual Graph calculate(const Graph& g) = 0;
 
-	/** Default destructor */
 	virtual ~BackboneCalculator() = default;
 
 };

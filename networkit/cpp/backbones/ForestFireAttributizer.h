@@ -20,7 +20,7 @@ class ForestFireAttributizer : public AttributeGenerator<int, double> {
 public:
 
 	ForestFireAttributizer(double pf, double targetBurntRatio);
-	~ForestFireAttributizer() = default;
+	
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
 
 private:

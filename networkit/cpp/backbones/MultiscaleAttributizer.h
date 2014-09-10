@@ -27,7 +27,7 @@ public:
 	 * Creates a new instance of the Multiscale attributizer.
 	 */
 	MultiscaleAttributizer();
-	~MultiscaleAttributizer() = default;
+	
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<double>& attribute);
 
 	double getProbability(count degree, edgeweight normalizedWeight);
