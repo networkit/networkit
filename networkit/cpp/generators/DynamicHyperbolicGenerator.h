@@ -28,13 +28,6 @@ public:
 	void initializeMovement();
 	Graph getGraph();
 
-
-
-	/** only to be used by cython - this eliminates an unnecessary copy */
-	Graph* _getGraph() {
-		return new Graph{std::move(getGraph())};
-	};
-
 	std::vector<Point<float> > getCoordinates() const;
 	std::vector<Point<float> > getHyperbolicCoordinates() const;
 
