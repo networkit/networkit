@@ -190,11 +190,11 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 
 				//angular movement
 
-				double maxcdf = cosh(R);
+				double maxcdf = cosh(alpha*R);
 				double mincdf = 1;
-				double currcdf = cosh(hyperbolicRadius);
+				double currcdf = cosh(alpha*hyperbolicRadius);
 
-				double newcosh = currcdf + radialMovement[toWiggle[j]];
+				double newcosh = currcdf + alpha*radialMovement[toWiggle[j]];
 				double newphi = angles[toWiggle[j]];
 				//bounce off the boundary
 				if (newcosh > maxcdf) {
