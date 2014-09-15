@@ -73,7 +73,7 @@ public:
 
 				//double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
 				//double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
-				//double hyperbolicMiddle = acosh((cosh(hyperbolicOuter -1) + cosh(hyperbolicInner -1))/2) +1;
+				//double hyperbolicMiddle = acosh((cosh(hyperbolicOuter) + cosh(hyperbolicInner))/2);
 				//double middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
 
 				double nom = maxR - minR;
