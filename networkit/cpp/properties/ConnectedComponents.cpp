@@ -17,8 +17,6 @@ ConnectedComponents::ConnectedComponents(const Graph& G) : G(G), numComponents(0
 }
 
 void ConnectedComponents::run() {
-
-
 	DEBUG("initializing labels");
 	component = Partition(G.upperNodeIdBound(), none);
 	numComponents = 0;
@@ -35,7 +33,6 @@ void ConnectedComponents::run() {
 			++numComponents;
 		}
 	});
-
 }
 
 
