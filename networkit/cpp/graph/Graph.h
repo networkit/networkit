@@ -341,6 +341,12 @@ public:
 	*/
 	void indexEdges(bool force = false);
 
+	/**
+	* Checks if edges have been indexed
+	*
+	* @return bool if edges have been indexed
+	*/
+	bool hasEdgeIds() const { return edgesIndexed; }
 
 	/**
 	* Get the id of the given edge.
