@@ -8,6 +8,8 @@ if "setuptools" not in sys.modules:
 from setuptools import setup
 from setuptools import Extension
 from setuptools import find_packages
+from setuptools.command.test import test as TestCommand
+import unittest
 #from distutils.extension import Extension
 
 abortInstallation = False
@@ -76,7 +78,7 @@ gcc = ""
 v = 0
 while gcc_version_satisfied == False and v < len(gcc_versions):
 	try:
-		comp_cmd = "g++{0} -o test sample.cpp -fopenmp -std=c++11".format(gcc_versions[v])
+		comp_cmd = "g++{0} -o test_build sample.cpp -fopenmp -std=c++11".format(gcc_versions[v])
 		#print(comp_cmd)
 		comp_proc = Popen(shlex.split(comp_cmd), stdout=DEVNULL, stderr=DEVNULL)
 		comp_proc.wait()
@@ -90,7 +92,7 @@ while gcc_version_satisfied == False and v < len(gcc_versions):
 	v += 1
 os.remove("sample.cpp")
 if gcc_version_satisfied:
-	os.remove("test")
+	os.remove("test_build")
 	os.environ["CC"] = gcc
 	os.environ["CXX"] = gcc
 else:
@@ -245,6 +247,53 @@ modules = [Extension("_NetworKit",
 for e in modules:
 	e.cython_directives = {"embedsignature" : True}
 
+class MyTestCommand(TestCommand):
+	def initialize_options(self):
+		#pass
+		TestCommand.initialize_options(self)
+		#loader = unittest.TestLoader()
+		#TestCommand.test_suite = loader.discover('test')
+		#TestCommand.loader = loader
+	
+	def finalize_options(self):
+		#pass
+		TestCommand.finalize_options(self)
+	
+	def run(self):
+		jobs = multiprocessing.cpu_count()
+		#if options.optimize is not None:
+		#	optimize = options.optimize
+		#else:
+		optimize = "Dbg"
+		comp_cmd = "scons --optimize={0} --target=Tests -j{1}".format(optimize,jobs)
+		print("initializing NetworKit compilation with: {0}".format(comp_cmd))
+		#comp_proc = Popen(shlex.split(comp_cmd), stdout=DEVNULL, stderr=DEVNULL)
+		comp_proc = Popen(shlex.split(comp_cmd))
+		comp_proc.wait()
+		if (comp_proc.returncode != 0):
+			print("scons returned an error, exiting setup.py")
+			exit(1)
+		run_cpp_cmd = "./NetworKit-Tests-{0} -t".format(optimize)
+		#run_cpp_proc = Popen(shlex.split(run_cpp_cmd), stdout=DEVNULL, stderr=DEVNULL)
+		run_cpp_proc = Popen(shlex.split(run_cpp_cmd))
+		run_cpp_proc.wait()
+		if run_cpp_proc.returncode == 0:
+			print("C++ unit tests didn't report any errors")
+		else:
+			print("some C++ unit tests failed, see above")
+#		print("return code from tests: {0}".format(run_cpp_proc.returncode))
+#		build_ext.run(self)	
+		comp_cmd = "scons --optimize=Opt --target=Core -j{1}".format(optimize,jobs)
+		print("initializing NetworKit compilation with: {0}".format(comp_cmd))
+		comp_proc = Popen(shlex.split(comp_cmd))
+		comp_proc.wait()
+		if (comp_proc.returncode != 0):
+			print("scons returned an error, exiting setup.py")
+			exit(1)
+
+		TestCommand.run(self)
+
+
 setup(
 	name		= version.name,
 	version		= version.version,
@@ -259,7 +308,8 @@ setup(
 	keywords	= version.keywords,
 	platforms	= version.platforms,
 	classifiers	= version.classifiers,
-	cmdclass	= {"build_ext": build_ext},
+	cmdclass	= {'build_ext' : build_ext, 'test' : MyTestCommand},
+	test_suite	= 'nose.collector',
 	ext_modules	= modules,
 #	install_requires= version.install_requires,
 	zip_safe	= False)
