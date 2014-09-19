@@ -4705,6 +4705,21 @@ cdef class ChibaNishizekiTriangleCounter:
 	def getAttribute(self, Graph G):
 		return  self._this.getAttribute(G._this, range(0))
 
+cdef extern from "cpp/backbones/ChungLuAttributizer.h":
+	cdef cppclass _ChungLuAttributizer "NetworKit::ChungLuAttributizer":
+		_ChungLuAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class ChungLuAttributizer:
+	"""
+	Chung-Lu based attributizer.
+	"""
+
+	cdef _ChungLuAttributizer _this
+
+	def getAttribute(self, Graph G):
+		return  self._this.getAttribute(G._this, range(0))
+
 cdef extern from "cpp/backbones/TriangleCounter.h":
 	cdef cppclass _TriangleCounter "NetworKit::TriangleCounter":
 		_TriangleCounter() except +
