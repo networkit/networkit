@@ -6,7 +6,7 @@ usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.ki
 __author__ = "Christian Staudt"
 __copyright__ = "Copyright (c) 2014 Christan Staudt"
 __license__ = "MIT"
-__version__ = "3.3"
+__version__ = "3.4"
 
 
 # standard library modules
