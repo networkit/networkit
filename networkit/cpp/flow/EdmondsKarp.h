@@ -28,7 +28,7 @@ private:
 	 * @param pred Used to store the path from @a source to @a sink.
 	 * @return The gain in terms of flow.
 	 */
-	edgeweight BFS(const NetworKit::Graph &graph, std::vector< edgeweight > &flow, node source, node sink, std::vector< NetworKit::node > &pred) const;
+	edgeweight BFS(const NetworKit::Graph &graph, std::vector< NetworKit::edgeweight > &flow, std::vector< NetworKit::edgeweight > &residFlow, node source, node sink, std::vector< NetworKit::node > &pred) const;
 
 	/**
 	 * Performs the Edmonds-Karp algorithm on @a graph with @a source and @a sink. The flow is stored in @a flow.
