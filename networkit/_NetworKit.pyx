@@ -2791,6 +2791,55 @@ cdef class CNM(CommunityDetector):
 		"""
 		return Partition().setThis(self._this.run(G._this))
 
+cdef extern from "cpp/community/CutClustering.h":
+	cdef cppclass _CutClustering "NetworKit::CutClustering":
+		_CutClustering(edgeweight alpha) except +
+		string toString() except +
+		_Partition run(_Graph G) except +
+
+cdef class CutClustering(CommunityDetector):
+	"""
+	Cut clustering algorithm as defined in
+	Flake, Gary William; Tarjan, Robert E.; Tsioutsiouliklis, Kostas. Graph Clustering and Minimum Cut Trees.
+	Internet Mathematics 1 (2003), no. 4, 385--408.
+	
+	Parameters
+	----------
+	alpha : double
+		The parameter for the cut clustering algorithm
+	"""
+	cdef _CutClustering* _this
+
+	def __cinit__(self, edgeweight alpha):
+		self._this = new _CutClustering(alpha)
+
+	def __dealloc__(self):
+		del self._this
+
+	def toString(self):
+		""" Get string representation.
+
+		Returns
+		-------
+		string
+			A string representation of this algorithm.
+		"""
+		return self._this.toString().decode("utf-8")
+
+	def run(self, Graph G not None):
+		""" Detect communities in the given graph `graph`.
+
+		Parameters
+		----------
+		graph : Graph
+			The graph.
+
+		Returns
+		-------
+		Partition
+			A partition containing the found communities.
+		"""
+		return Partition().setThis(self._this.run(G._this))
 
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures """
