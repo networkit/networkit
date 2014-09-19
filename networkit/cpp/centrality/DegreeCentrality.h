@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-/** 
+/**
  * @ingroup centrality
  * Node centrality index which ranks nodes by their degree.
  * Optional normalization by maximum degree.
@@ -29,6 +29,11 @@ public:
 	DegreeCentrality(const Graph& G, bool normalized=false);
 
 	void run() override;
+
+	/**
+	 * @return the theoretical maximum degree centrality, which is $n$ (including the possibility of a self-loop)
+	 */
+	double maximum();
 };
 
 } /* namespace NetworKit */

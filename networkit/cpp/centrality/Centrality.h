@@ -56,6 +56,13 @@ public:
 	 */
 	virtual double score(node v);
 
+	/**
+	* Get the theoretical maximum of centrality score in the given graph.
+	*
+	* @return The maximum centrality score.
+	*/
+	virtual double maximum();
+
 protected:
 
 	const Graph& G;
