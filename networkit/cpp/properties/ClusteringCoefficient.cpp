@@ -75,16 +75,12 @@ double ClusteringCoefficient::avgLocal(Graph& G) {
 	auto coefficients = exactLocal(G); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	double sum = 0.0;
-	count size = 0;
 
 	G.forNodes([&](node u) {
-		if (G.degree(u) >= 2) {
-			sum += coefficients[u];
-			size++;
-		}
+		sum += coefficients[u];
 	});
 
-	return sum / (double) size;
+	return sum / (double) G.numberOfNodes();
 }
 
 double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
