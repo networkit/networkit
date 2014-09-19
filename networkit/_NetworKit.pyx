@@ -3925,6 +3925,7 @@ cdef extern from "cpp/centrality/DegreeCentrality.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		double maximum()  except +
 
 cdef class DegreeCentrality:
 	""" Node centrality index which ranks nodes by their degree.
@@ -3980,6 +3981,15 @@ cdef class DegreeCentrality:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+	def maximum(self):
+		"""
+		Returns
+		-------
+		m
+			The theoretical maximum of centrality score.
+		"""
+		return self._this.maximum()
 
 
 # Module: dynamic

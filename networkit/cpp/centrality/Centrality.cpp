@@ -31,7 +31,10 @@ std::vector<double> Centrality::scores() {
 	return scoreData;
 }
 
+double Centrality::maximum() {
+	throw std::runtime_error("Not implemented: Compute the maximum centrality score in the respective centrality subclass.");
+}
+
 
 
 } /* namespace NetworKit */
-
