@@ -1,5 +1,6 @@
 from . import pyclient as _gephipyclient   # we want to hide these from the user
 import urllib as _urllib
+import time
 
 """
 This module provides methods to export data from NetworKit directly to Gephi using the
@@ -64,7 +65,7 @@ class GephiStreamingClient:
             if self.directed:
                 edgeId = str(u) + '->' + str(v)
             else:
-                edgeId = str(min(u,v)) + '-' + str(max(u,v))# graph.edgeId(u,v)
+                edgeId = str(min(u,v)) + '-' + str(max(u,v))
             self._pygephi.add_edge(edgeId, u, v, self.directed)
             self._pygephi.flush()
         except _urllib.error.URLError as e:
@@ -79,13 +80,13 @@ class GephiStreamingClient:
             if self.directed:
                 edgeId = str(u) + '->' + str(v)
             else:
-                edgeId = str(min(u,v)) + '-' + str(max(u,v))# graph.edgeId(u,v)
+                edgeId = str(min(u,v)) + '-' + str(max(u,v))
             self._pygephi.delete_edge(edgeId)
             self._pygephi.flush()
         except _urllib.error.URLError as e:
             self._urlError(e)
 
-    def exportEventStream(self, stream):
+    def exportEventStream(self, stream, timeStepDelay = 0):
         if self.graphExported != True:
             print("Error: Cannot export event stream. Export Graph first!")
             return
@@ -101,19 +102,21 @@ class GephiStreamingClient:
                     if self.directed:
                         edgeId = str(ev.u) + '->' + str(ev.v)
                     else:
-                        edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))# graph.edgeId(u,v)
-                    self._pygephi.add_edge(edgeId, ev.u, ev.v, False)
+                        edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))
+                    self._pygephi.add_edge(edgeId, ev.u, ev.v, self.directed)
                 elif ev.type == ev.EDGE_REMOVAL:
                     if self.directed:
                         edgeId = str(ev.u) + '->' + str(ev.v)
                     else:
-                        edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))# graph.edgeId(u,v)
+                        edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))
                     edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))
                     self._pygephi.delete_edge(edgeId)
                 elif ev.type == ev.EDGE_WEIGHT_UPDATE:
                     print("Edge weights not yet supported in gephi streaming!")
                 elif ev.type == ev.TIME_STEP:
                     self._pygephi.flush()
+                    if timeStepDelay > 0:
+                        time.sleep(timeStepDelay)
                 self._pygephi.flush()
         except _urllib.error.URLError as e:
             self._urlError(e)

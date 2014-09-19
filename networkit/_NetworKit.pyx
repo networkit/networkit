@@ -110,6 +110,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
 		void indexEdges() except +
+		bool hasEdgeIds()
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -195,6 +196,17 @@ cdef class Graph:
 
 		"""
 		self._this.indexEdges()
+
+	def hasEdgeIds(self):
+		"""
+		Returns true if edges have been indexed
+
+		Returns
+		-------
+		bool
+			if edges have been indexed
+		"""
+		return self._this.hasEdgeIds()
 
 	def edgeId(self, node u, node v):
 		"""
@@ -3913,6 +3925,7 @@ cdef extern from "cpp/centrality/DegreeCentrality.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		double maximum()  except +
 
 cdef class DegreeCentrality:
 	""" Node centrality index which ranks nodes by their degree.
@@ -3968,6 +3981,15 @@ cdef class DegreeCentrality:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+	def maximum(self):
+		"""
+		Returns
+		-------
+		m
+			The theoretical maximum of centrality score.
+		"""
+		return self._this.maximum()
 
 
 # Module: dynamic
