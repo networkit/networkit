@@ -31,6 +31,7 @@ from . import gephi
 from . import partitioning
 from . import coloring
 from . import workflows
+from . import backbones
 
 try:
 	from . import viztools
