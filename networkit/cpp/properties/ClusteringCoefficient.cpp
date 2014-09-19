@@ -78,8 +78,7 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 
 		if (G.degree(v) < 2) {
 			// this vertex can never be part of a triangle,
-			// nor middle point of a path of length 3
-			--k;  // do not count trial
+			// (nor middle point of a path of length 3)
 			continue;
 		}
 
