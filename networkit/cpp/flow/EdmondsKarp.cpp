@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-edgeweight EdmondsKarp::BFS(const Graph &graph, std::vector<edgeweight> &flow, node source, node sink, std::vector<node> &pred) const {
+edgeweight EdmondsKarp::BFS(const Graph &graph, std::vector<edgeweight> &flow, std::vector<edgeweight> &residFlow, node source, node sink, std::vector<node> &pred) const {
 	pred = std::vector<node>(graph.upperNodeIdBound(), none);
 	std::vector<edgeweight> gain(graph.upperNodeIdBound(), 0);
 
@@ -22,9 +22,11 @@ edgeweight EdmondsKarp::BFS(const Graph &graph, std::vector<edgeweight> &flow, n
 
 		bool sinkReached = false;
 		graph.forNeighborsOf(u, [&](node _u, node v, edgeweight weight, edgeid eid){
-			if (flow[eid] < weight && pred[v] == none) { // only add those neighbors with rest capacity and which were not discovered yet
+			if ((
+			(u >= v && flow[eid] < weight) || (u < v && residFlow[eid] < weight)
+			)&& pred[v] == none) { // only add those neighbors with rest capacity and which were not discovered yet
 				pred[v] = u;
-				gain[v] = std::min(gain[u], weight - flow[eid]);
+				gain[v] = std::min(gain[u], weight - (u >= v ? flow[eid] : residFlow[eid]));
 
 				if (v != sink && !sinkReached) {
 					Q.push(v);
@@ -47,20 +49,33 @@ edgeweight EdmondsKarp::solveMaxFlow(const Graph &graph, const node source, cons
 	flow.clear();
 	flow.resize(graph.upperEdgeIdBound(), 0.0);
 
+	std::vector<edgeweight> residFlow(graph.upperEdgeIdBound(), 0.0);
+
 	edgeweight maxFlow = 0;
 	while (true) {
 		std::vector<node> pred;
-		edgeweight gain = BFS(graph, flow, source, sink, pred);
+		edgeweight gain = BFS(graph, flow, residFlow, source, sink, pred);
 		if (gain == 0) break;
 
 		maxFlow += gain;
 		node v = sink;
 		while (v != source) {
 			node u = pred[v];
-			flow[graph.edgeId(u, v)] += gain;
+			edgeid eid = graph.edgeId(u, v);
+			if (u >= v) {
+				flow[eid] += gain;
+				residFlow[eid] -= gain;
+			} else {
+				flow[eid] -= gain;
+				residFlow[eid] += gain;
+			}
 			v = u;
 		}
 	}
+
+	graph.parallelForEdges([&](node u, node v, edgeid eid) {
+		flow[eid] = std::max(flow[eid], residFlow[eid]);
+	});
 
 	return maxFlow;
 }
