@@ -100,7 +100,7 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 			if (split.size() == 2) {
 				node u = std::stoul(split[0]) - this->firstNode;
 				node v = std::stoul(split[1]) - this->firstNode;
-			        if (!G.hasEdge(u,v) && !G.hasEdge(v,u)) {
+			        if (!G.hasEdge(u,v)) {
 					G.addEdge(u, v);
 				}
 			} else {
