@@ -1,3 +1,9 @@
+""" This module contains algorithms for the calculation of centrality, i.e. ranking nodes by their structural importance
+to the network """
+
+
+__author__ = "Christian Staudt"
+
 # extension imports
 from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness
 

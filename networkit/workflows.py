@@ -1,5 +1,7 @@
 """ This module provides convenient workflows constructed from NetworKit functions."""
 
+__author__ = "Christian Staudt"
+
 import operator
 import logging
 import unittest
@@ -30,6 +32,8 @@ def extractLargestComponent(G):
 	return C
 
 
+
+# TODO: move this to testing module
 
 class TestWorkflows(unittest.TestCase):
 
