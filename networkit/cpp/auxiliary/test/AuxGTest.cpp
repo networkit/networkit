@@ -391,6 +391,14 @@ TEST_F(AuxGTest, testNumberParsingSignedInteger) {
 	EXPECT_EQ(it, end);
 }
 
+TEST_F(AuxGTest, testNumberParsingSignedIntegerMin) {
+	using namespace Aux::Parsing;
+	const std::string str = "-128"; // uint8_t::min
+	std::int8_t val;
+	std::tie(val, std::ignore) = strTo<int8_t>(str.begin(), str.end());
+	EXPECT_EQ(-128, val);
+}
+
 TEST_F(AuxGTest, testOverflowCatching) {
 	using namespace Aux::Parsing;
 	const std::string str = "1000";
@@ -441,6 +449,7 @@ TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
 			// of by one is ok here
 			return true;
 		}
+		//ERRORF("str=%s, expected=%s, parsed=%s", str, expected, result);
 		return false;
 	};
 #define TEST_CASE_REAL(number) EXPECT_EQ(true, helper(#number, number))
@@ -458,6 +467,7 @@ TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
 	TEST_CASE_REAL(1.4126572077159480e+23);
 	TEST_CASE_REAL(-784008854951861199831040.);
 	TEST_CASE_REAL(-78400885495186119983104.0);
+	//TEST_CASE_REAL(2.2250738585072012e-308);
 #undef TEST_CASE_REAL
 }
 #endif /*NOGTEST */

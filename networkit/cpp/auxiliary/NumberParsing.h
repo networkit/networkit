@@ -43,6 +43,20 @@ namespace Impl {
 				RealTag, void>::type
 		>::type;
 	
+	template<bool Positive>
+	class SignTag{};
+	
+	using PositiveTag = SignTag<true>;
+	using NegativeTag = SignTag<false>;
+	
+	template<typename Integer, typename CharIterator, typename ValidationPolicy>
+	std::tuple<Integer, CharIterator> parseInteger(CharIterator it, CharIterator end,
+			PositiveTag);
+	
+	template<typename Integer, typename CharIterator, typename ValidationPolicy>
+	std::tuple<Integer, CharIterator> parseInteger(CharIterator it, CharIterator end,
+			NegativeTag);
+	
 } // namespace Impl
 
 
@@ -81,53 +95,75 @@ std::tuple<Integer, CharIterator> strTo(CharIterator it, const CharIterator end,
 	std::tie(it, c) = dropSpaces(it, end);
 	
 	bool isNegative = false;
-	if(std::is_signed<Integer>::value) { // this should be optimized away entirely
-		switch (c) {
-			case '-':
-				isNegative = true;
-				// fallthrough
-			case '+':
-				++it;
-				if (it == end) {
-					throw std::invalid_argument{
-						"string contains no digits after sign"};
-				}
-				c = *it;
-				break;
-			default:
-				break;
-		}
+	switch (c) {
+		case '-':
+			isNegative = true;
+			// fallthrough
+		case '+':
+			++it;
+			if (it == end) {
+				throw std::invalid_argument{
+					"string contains no digits after sign"};
+			}
+			c = *it;
+			break;
+		default:
+			break;
 	}
 	
 	if(!isdigit(c)) {
 		throw std::invalid_argument{"string contains no digits"};
 	}
 	
+	if (isNegative) {
+		if (std::numeric_limits<Integer>::is_signed) {
+			return parseInteger<Integer, ValidationPolicy>(it, end, NegativeTag{});
+		} else {
+			throw std::invalid_argument{
+				"unsigned integer cannot hold negative values"};
+		}
+	} else {
+		return parseInteger<Integer, ValidationPolicy>(it, end, PositiveTag{});
+	}
+}
+
+template<typename Integer, typename ValidationPolicy, typename CharIterator>
+std::tuple<Integer, CharIterator> parseInteger(CharIterator it, CharIterator end, PositiveTag) {
+	char c;
 	Integer val = 0;
-	while (true) {
-		ValidationPolicy::enforce(std::numeric_limits<Integer>::max() / 10 >= val);
-		
+	constexpr auto max = std::numeric_limits<Integer>::max();
+	while (it != end && isdigit(c = *it)) {
+		ValidationPolicy::enforce(max / 10 >= val);
 		val *= 10;
 		
 		c -= '0';
-		ValidationPolicy::enforce(std::numeric_limits<Integer>::max() - c >= val);
 		
+		ValidationPolicy::enforce(max - c >= val);
 		val += c;
 		
 		++it;
-		if(it == end) {
-			break;
-		}
-		c = *it;
-		if(!isdigit(c)) {
-			break;
-		}
 	}
+	std::tie(it, c) = dropSpaces(it, end);
 	
-	if(isNegative) {
-		val = -val;
+	return std::make_tuple(val, it);
+}
+
+template<typename Integer, typename ValidationPolicy, typename CharIterator>
+std::tuple<Integer, CharIterator> parseInteger(CharIterator it, CharIterator end, NegativeTag) {
+	char c;
+	Integer val = 0;
+	constexpr auto min = std::numeric_limits<Integer>::min();
+	while (it != end && isdigit(c = *it)) {
+		ValidationPolicy::enforce(min / 10 <= val);
+		val *= 10;
+		
+		c -= '0';
+		
+		ValidationPolicy::enforce(min + c <= val);
+		val -= c;
+		
+		++it;
 	}
-	
 	std::tie(it, c) = dropSpaces(it, end);
 	
 	return std::make_tuple(val, it);
