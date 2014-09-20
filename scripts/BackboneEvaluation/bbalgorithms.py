@@ -295,13 +295,16 @@ class bb_Test:
         #t = backbones.TestAttributizer(self.md, self.r)
         #a_t = t.getAttribute(graph, triangles)
 
-        attributizer = backbones.LocalSimilarityAttributizer()
-        a_ls = attributizer.getAttribute(graph, [])
+        #attributizer = backbones.LocalSimilarityAttributizer()
+        #a_ls = attributizer.getAttribute(graph, [])
 
-        t = backbones.RandomAttributizer(self.r)
-        a_t = t.getAttribute(graph, a_ls)
+        #t = backbones.RandomAttributizer(self.r)
+        #a_t = t.getAttribute(graph, a_ls)
 
-        return a_t
+        attributizer = backbones.TestAttributizer(0, 0.0)
+        a_test = attributizer.getAttribute(graph, [])
+
+        return a_test
 
     def getBackboneFromAttribute(self, graph, attribute, value):
         gf = backbones.GlobalThresholdFilter(value, False)
