@@ -29,6 +29,7 @@
 #include "../EdgeListCoverReader.h"
 #include "../CoverReader.h"
 #include "../CoverWriter.h"
+#include "../GMLGraphReader.h"
 
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
@@ -575,6 +576,35 @@ TEST_F(IOGTest, testGMLGraphWriterDirected) {
 	}
 	EXPECT_TRUE(exists) << "A file should have been created : " << path;
 
+
+}
+
+TEST_F(IOGTest, testGMLGraphReaderUndirected) {
+	std::string path = "input/jazz2_undirected.gml";
+	GMLGraphReader reader;
+	Graph G = reader.read(path);
+	EXPECT_EQ(G.numberOfNodes(),5) << "number of nodes is not correct";
+	EXPECT_TRUE(G.hasEdge(0,2));
+	EXPECT_TRUE(G.hasEdge(0,1));
+	EXPECT_TRUE(G.hasEdge(0,0));
+	EXPECT_TRUE(G.hasEdge(1,1));
+	EXPECT_FALSE(G.isDirected());
+	EXPECT_TRUE(G.hasEdge(2,0));
+	EXPECT_TRUE(G.hasEdge(1,0));
+}
+
+TEST_F(IOGTest, testGMLGraphReaderDirected) {
+	std::string path = "input/jazz2_directed.gml";
+	GMLGraphReader reader;
+	Graph G = reader.read(path);
+	EXPECT_EQ(G.numberOfNodes(),5) << "number of nodes is not correct";
+	EXPECT_TRUE(G.hasEdge(0,2));
+	EXPECT_TRUE(G.hasEdge(0,1));
+	EXPECT_TRUE(G.hasEdge(0,0));
+	EXPECT_TRUE(G.hasEdge(1,1));
+	EXPECT_TRUE(G.isDirected());
+	EXPECT_FALSE(G.hasEdge(2,0));
+	EXPECT_FALSE(G.hasEdge(1,0));
 
 }
 
