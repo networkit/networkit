@@ -246,10 +246,10 @@ class bb_ForestFire:
 class bb_LocalDegree:
 
     def getName(self):
-        return "LocalDegree Backbone"
+        return "Local Degree Backbone"
 
     def getShortName(self):
-        return "LocalDegree"
+        return "Local Degree"
 
     def getAlgorithmExpr(self, parameter):
         return "backbones.LocalDegreeBackbone()"

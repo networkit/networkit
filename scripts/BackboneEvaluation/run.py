@@ -40,7 +40,7 @@ def main():
 	taskResults = pool.map(executeTask, tasks)
 
 	#Output files...
-	writers = [SqliteResultWriter("./output/backbones.db", properties)]
+	writers = [SqliteResultWriter("./output/backbones.db")]
 	for writer in writers:
 		for taskResult in taskResults:
 			writer.receiveResult(taskResult)
