@@ -188,3 +188,16 @@ class P_Centrality:
 
 	def getTypes(self):
 		return {'centralityPageRank':'real', 'centralityBetweenness':'real'}
+
+#Connected components
+class P_Components:
+	def getName(self):
+		return "Connected Components"
+
+	def getValues(self, graph, backbone):
+		nComponents, componentSizes = properties.components(backbone)
+
+		return {'largestComponentSize':max(componentSizes.values()), 'numComponents':nComponents}
+
+	def getTypes(self):
+		return {'largestComponentSize':'integer', 'numComponents':'integer'}
