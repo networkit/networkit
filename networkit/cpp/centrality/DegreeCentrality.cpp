@@ -31,5 +31,9 @@ void DegreeCentrality::run() {
 }
 
 
-} /* namespace NetworKit */
+double DegreeCentrality::maximum() {
+	return G.numberOfNodes();
+}
 
+
+} /* namespace NetworKit */

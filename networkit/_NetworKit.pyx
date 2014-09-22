@@ -110,6 +110,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
 		void indexEdges() except +
+		bool hasEdgeIds()
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -195,6 +196,17 @@ cdef class Graph:
 
 		"""
 		self._this.indexEdges()
+
+	def hasEdgeIds(self):
+		"""
+		Returns true if edges have been indexed
+
+		Returns
+		-------
+		bool
+			if edges have been indexed
+		"""
+		return self._this.hasEdgeIds()
 
 	def edgeId(self, node u, node v):
 		"""
@@ -1447,6 +1459,25 @@ cdef class KONECTGraphReader:
 
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this.read(pathbytes))
+
+cdef extern from "cpp/io/GMLGraphReader.h":
+	cdef cppclass _GMLGraphReader "NetworKit::GMLGraphReader":
+		_GMLGraphReader() except +
+		_Graph read(string path) except +
+
+cdef class GMLGraphReader:
+	""" Reader for the GML graph format, which is documented here [1].
+
+		[1]: http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
+ 	"""
+	cdef _GMLGraphReader _this
+	
+	def __cinit__(self):
+		self._this = _GMLGraphReader()
+
+	def read(self, path):
+		pathbytes = path.encode("utf-8")
 		return Graph(0).setThis(self._this.read(pathbytes))
 
 cdef extern from "cpp/io/METISGraphWriter.h":
@@ -3913,6 +3944,7 @@ cdef extern from "cpp/centrality/DegreeCentrality.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		double maximum()  except +
 
 cdef class DegreeCentrality:
 	""" Node centrality index which ranks nodes by their degree.
@@ -3968,6 +4000,15 @@ cdef class DegreeCentrality:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+	def maximum(self):
+		"""
+		Returns
+		-------
+		m
+			The theoretical maximum of centrality score.
+		"""
+		return self._this.maximum()
 
 
 # Module: dynamic

@@ -20,15 +20,6 @@ namespace NetworKit {
 class EdmondsKarp {
 private:
 	/**
-	 * Get the index of node @a v in adjacency list of @a u in @a graph.
-	 * @param graph The graph.
-	 * @param u The start node of the edge.
-	 * @param v The end node of the edge.
-	 * @return The index of the edge.
-	 */
-	index getEdgeIdx(const Graph &graph, node u, node v) const;
-
-	/**
 	 * Performs a breadth-first search on @a graph from node @a source to find an augmenting path to @a sink respecting the @a flow.
 	 * @param graph The graph.
 	 * @param flow The current flow in the network.
@@ -37,7 +28,7 @@ private:
 	 * @param pred Used to store the path from @a source to @a sink.
 	 * @return The gain in terms of flow.
 	 */
-	edgeweight BFS(const Graph &graph, std::vector<std::vector<edgeweight>> &flow, const node source, const node sink, std::vector<node> &pred) const;
+	edgeweight BFS(const NetworKit::Graph &graph, std::vector< NetworKit::edgeweight > &flow, std::vector< NetworKit::edgeweight > &residFlow, node source, node sink, std::vector< NetworKit::node > &pred) const;
 
 	/**
 	 * Performs the Edmonds-Karp algorithm on @a graph with @a source and @a sink. The flow is stored in @a flow.
@@ -47,7 +38,7 @@ private:
 	 * @param flow Used to store the flow on each edge.
 	 * @return The maximum flow.
 	 */
-	edgeweight solveMaxFlow(const Graph &graph, const node source, const node sink, std::vector<std::vector<edgeweight>> &flow) const;
+	edgeweight solveMaxFlow(const NetworKit::Graph &graph, const node source, const node sink, std::vector< edgeweight > &flow) const;
 
 	/**
 	 * Computes the source set and stores it in @a sourceSet.
@@ -57,7 +48,7 @@ private:
 	 * @param flow Used to store the flow on each edge.
 	 * @param sourceSet Used to store the nodes belonging to the source set.
 	 */
-	void computeSourceSet(const Graph &graph, const node source, const node sink, const std::vector<std::vector<edgeweight>> &flow, std::vector<node> &sourceSet) const;
+	void computeSourceSet(const Graph &graph, const node source, const node sink, const std::vector<edgeweight> &flow, std::vector<node> &sourceSet) const;
 
 public:
 	/**
@@ -87,7 +78,7 @@ public:
 	 * @param attribute_id The attribute id for getting the flow as edge attribute.
 	 * @return The maximum flow.
 	 */
-	edgeweight run(Graph &graph, const node source, const node sink, int &attribute_id) const;
+	edgeweight run(const Graph &graph, const node source, const node sink, std::vector< edgeweight > &flow) const;
 
 	/**
 	 * Returns the maximum flow on @a graph with given @a source and @a sink. The nodes belonging to the source set are stored in @a sourceSet
@@ -99,7 +90,7 @@ public:
 	 * @param attribute_id The attribute id for getting the flow as edge attribute.
 	 * @return The maximum flow.
 	 */
-	edgeweight run(Graph &graph, const node source, const node sink, std::vector<node> &sourceSet, int &attribute_id) const;
+	edgeweight run(const Graph &graph, node source, node sink, std::vector< node > &sourceSet, std::vector< edgeweight > &flow) const;
 
 
 };
