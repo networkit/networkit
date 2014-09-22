@@ -185,8 +185,13 @@ std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, Re
 	int exp = 0;
 	
 	auto makeReturnValue = [&]() {
+		// This split up is needed to deal with very small exponents
+		// that would otherwise underflow:
+		auto exp1 = exp/2;
+		auto exp2 = exp - exp1;
 		Real fp_mantissa = mantissa;
-		Real value = fp_mantissa * powerOf10(exp);
+		Real value = fp_mantissa * powerOf10(exp1);
+		value *= powerOf10(exp2);
 		if (isNegative) {
 			value = -value;
 		}
