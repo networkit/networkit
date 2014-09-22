@@ -72,7 +72,8 @@ def executeTask(task):
 								'parameter':algorithmParameter,
 								'evalExpr':ialgorithm.getAlgorithmExpr(algorithmParameter),
 								'rt_attribute':time_attribute_elapsed,
-								'rt_backbone':time_backbone_elapsed
+								'rt_backbone':time_backbone_elapsed,
+								'targetEdgeRatio':iedgeRatio
 								}
 
 					#Calculate all desired properties of the backbone

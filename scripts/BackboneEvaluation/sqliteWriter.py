@@ -20,12 +20,11 @@ class SqliteResultWriter():
 		db.execute('''CREATE TABLE algorithms (name text primary key)''')
 
 		#Properties table
-		query = '''CREATE TABLE properties ('''
-		for p in properties:
-			for key in list(p.getTypes().keys()):
-				query += key + ' ' + p.getTypes()[key] + ', '
-		query = query[:-2] + ")"
-		db.execute(query)
+		db.execute("CREATE TABLE properties (name text primary key)")
+
+		#Properties table
+		db.execute("CREATE TABLE data (graph text, algorithm text, targetEdgeRatio real, property text, value text)")
+
 		db.commit()
 
 	def createRowIfNeccessary(self, db, table, name):
@@ -38,7 +37,6 @@ class SqliteResultWriter():
 
 	def receiveResult(self, taskResult):
 		db = sqlite3.connect(self.dbFile)
-		#db.execute('''UPDATE graphs SET name=?, loadingTime=? WHERE id=?''', (graphName, taskResult.loadingTime, graphId))
 		deleted = [] #List of pairs
 
 		for row in taskResult.data:
@@ -48,21 +46,14 @@ class SqliteResultWriter():
 			self.createRowIfNeccessary(db, 'algorithms', algorithmId)
 			self.createRowIfNeccessary(db, 'graphs', graphId)
 
-			#Delete existing properties
-			if (graphId, algorithmId) not in deleted:
-				db.execute('''DELETE FROM properties WHERE graph=? AND algorithm=?''', (graphId, algorithmId))
-				deleted.append((graphId, algorithmId))
+			propertyNames = list(set(row.keys()) - {'graph', 'algorithm', 'targetEdgeRatio'})
 
-			#Insert datarow into database
-			propertyNames = list(row.keys())
-			query = "INSERT INTO properties ("
-			for propertyName in propertyNames:
-				query += propertyName + ', '
-			query = query[:-2] + ") VALUES ("
-			for propertyName in propertyNames:
-				query += "'" + str(row[propertyName]) + "', "
-			query = query[:-2] +");"
-			db.execute(query)
+			for propertyId in propertyNames:
+				ratioId = row['targetEdgeRatio']
+				self.createRowIfNeccessary(db, 'properties', propertyId)
+				db.execute('''DELETE FROM data WHERE graph=? AND algorithm=? AND targetEdgeRatio=? AND property=?''', (graphId, algorithmId, ratioId, propertyId))
+				query = "INSERT INTO data (graph, algorithm, property, targetEdgeRatio, value) VALUES ('" + graphId + "', '" + algorithmId + "', '" + propertyId + "', '" + str(ratioId) + "', '" + str(row[propertyId]) + "')"
+				db.execute(query)
 
 		db.commit()
 		db.close()

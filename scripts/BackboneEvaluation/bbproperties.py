@@ -28,7 +28,7 @@ class P_General:
 		return {}
 
 	def getTypes(self):
-		return {'graph':'text', 'algorithm':'text', 'parameter':'text', 'evalExpr':'text', 'rt_attribute':'real', 'rt_backbone':'real'}
+		return {'graph':'text', 'algorithm':'text', 'parameter':'text', 'evalExpr':'text', 'rt_attribute':'real', 'rt_backbone':'real', 'targetEdgeRatio':'real'}
 
 #Node and edge ratios
 class P_Ratios:
