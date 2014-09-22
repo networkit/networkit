@@ -57,6 +57,14 @@ namespace Impl {
 	std::tuple<Integer, CharIterator> parseInteger(CharIterator it, CharIterator end,
 			NegativeTag);
 	
+	/**
+	 * @return: whether the type is negative (false=positive) and the iterator to the
+	 * next element (unchanged argument if it didn't point to a sign).
+	 * @throws std::invalid_argument if [it, end) only consits of a sign-character.
+	 */
+	template<typename CharIterator>
+	std::tuple<bool, CharIterator> readSign(CharIterator it, CharIterator end);
+	
 } // namespace Impl
 
 
@@ -95,21 +103,8 @@ std::tuple<Integer, CharIterator> strTo(CharIterator it, const CharIterator end,
 	std::tie(it, c) = dropSpaces(it, end);
 	
 	bool isNegative = false;
-	switch (c) {
-		case '-':
-			isNegative = true;
-			// fallthrough
-		case '+':
-			++it;
-			if (it == end) {
-				throw std::invalid_argument{
-					"string contains no digits after sign"};
-			}
-			c = *it;
-			break;
-		default:
-			break;
-	}
+	std::tie(isNegative, it) = readSign(it, end);
+	c = *it;
 	
 	if(!isdigit(c)) {
 		throw std::invalid_argument{"string contains no digits"};
@@ -204,30 +199,14 @@ std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, Re
 	ValidationPolicy::enforce(it != end);
 	
 	// set sign:
-	switch (c) {
-		case '-':
-			isNegative = true;
-			// fallthrough
-		case '+':
-			++it;
-			if (it == end) {
-				throw std::invalid_argument{"string contains no digits"};
-			}
-			c = *it;
-			break;
-		default:
-			break;
-	}
+	std::tie(isNegative, it) = readSign(it, end);
+	c = *it;
 	
 	// number of decimal digits that can be stored in the mantissa and the used integer
 	unsigned remainingDigits = std::numeric_limits<Real>::max_digits10;
 	
 	//read 'big' part of the mantissa:
-	while (remainingDigits > 0) {
-		if (!isdigit(c)) {
-			break;
-		}
-		--remainingDigits;
+	for (;remainingDigits > 0 and isdigit(c); --remainingDigits) {
 		mantissa *= 10;
 		mantissa += c - '0';
 		++it;
@@ -247,7 +226,7 @@ std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, Re
 			++exp;
 			++it;
 			if (it == end) {
-				break;
+				return makeReturnValue();
 			}
 			c = *it;
 		}
@@ -259,12 +238,8 @@ std::tuple<Real, CharIterator> strTo(CharIterator it, const CharIterator end, Re
 			return makeReturnValue();
 		}
 		c = *it;
-		while (remainingDigits > 0) {
-			if (!isdigit(c)) {
-				break;
-			}
+		for (;remainingDigits > 0 and isdigit(c); --remainingDigits) {
 			--exp;
-			--remainingDigits;
 			mantissa *= 10;
 			mantissa += c - '0';
 			++it;
@@ -336,6 +311,24 @@ double powerOf10(Integer exp) {
 				return tmp * tmp * 10;
 			}
 	}
+}
+
+template<typename CharIterator>
+std::tuple<bool, CharIterator> readSign(CharIterator it, CharIterator end) {
+	bool isNegative = false;
+	switch (*it) {
+		case '-':
+			isNegative = true;
+			// fallthrough
+		case '+':
+			++it;
+			if (it == end) {
+				throw std::invalid_argument{"string contains no digits"};
+			}
+		default:
+			break;
+	}
+	return std::make_tuple(isNegative, it);
 }
 
 } // namespace Impl
