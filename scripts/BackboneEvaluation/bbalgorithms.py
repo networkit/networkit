@@ -57,7 +57,7 @@ class bb_Original:
 
 # -----------------------------------------------------------
 
-class bb_SimmelianMultiscaleBackbone:
+class bb_SimmelianMultiscale:
     def getName(self):
         return "SimmelianMultiscaleBackbone"
 
@@ -117,7 +117,7 @@ class bb_SimmelianBackboneParametric:
 
 # -----------------------------------------------------------
 
-class bb_LocalSimilarityBackbone:
+class bb_LocalSimilarity:
     def getName(self):
         return "LocalSimilarityBackbone"
 
@@ -147,7 +147,7 @@ class bb_LocalSimilarityBackbone:
 
 # -----------------------------------------------------------
 
-class bb_MultiscaleBackbone:
+class bb_Multiscale:
     def getName(self):
         return "MultiscaleBackbone"
 
@@ -177,7 +177,7 @@ class bb_MultiscaleBackbone:
 
 # -----------------------------------------------------------
 
-class bb_RandomBackbone:
+class bb_Random:
     def __init__(self, tag):
         self._tag = tag
 
@@ -199,36 +199,6 @@ class bb_RandomBackbone:
 
     def parameterizationType(self):
         return "Trivial"  #Trivial: No parameterizitation needed.
-
-    def increasing(self):
-        return True
-
-    def requiresWeight(self):
-        return False
-
-# -----------------------------------------------------------
-
-class bb_TopDegree:
-
-    def getName(self):
-        return "TopDegree Backbone"
-
-    def getShortName(self):
-        return "TopDegree"
-
-    def getAlgorithmExpr(self, parameter):
-        return "backbones.TopDegreeBackbone(" + str(parameter) + ")"
-
-    def getAttribute(self, graph):
-        attributizer = backbones.TopDegreeAttributizer()
-        return attributizer.getAttribute(graph, [])
-
-    def getBackboneFromAttribute(self, graph, attribute, value):
-        gf = backbones.GlobalThresholdFilter(value, False)
-        return gf.calculate(graph, attribute)
-
-    def parameterizationType(self):
-        return "Int"
 
     def increasing(self):
         return True
@@ -273,38 +243,22 @@ class bb_ForestFire:
 
 # -----------------------------------------------------------
 
-class bb_Test:
-
-    def __init__(self, tag, r):
-        self.r = r
-        self.tag = tag
+class bb_LocalDegree:
 
     def getName(self):
-        return "Test " + self.tag
+        return "LocalDegree Backbone"
 
     def getShortName(self):
-        return "Test " + self.tag
+        return "LocalDegree"
 
     def getAlgorithmExpr(self, parameter):
-        return "backbones.Test(wontWork)"
+        return "backbones.LocalDegreeBackbone()"
 
     def getAttribute(self, graph):
+        attributizer_ld = backbones.LocalDegreeAttributizer()
+        a_ld = attributizer_ld.getAttribute(graph, [])
 
-        #chiba = backbones.ChibaNishizekiTriangleCounter()
-        #triangles = chiba.getAttribute(graph)
-        #t = backbones.TestAttributizer(self.md, self.r)
-        #a_t = t.getAttribute(graph, triangles)
-
-        #attributizer = backbones.LocalSimilarityAttributizer()
-        #a_ls = attributizer.getAttribute(graph, [])
-
-        #t = backbones.RandomAttributizer(self.r)
-        #a_t = t.getAttribute(graph, a_ls)
-
-        attributizer = backbones.TestAttributizer(0, 0.0)
-        a_test = attributizer.getAttribute(graph, [])
-
-        return a_test
+        return a_ld
 
     def getBackboneFromAttribute(self, graph, attribute, value):
         gf = backbones.GlobalThresholdFilter(value, False)

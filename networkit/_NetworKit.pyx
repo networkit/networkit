@@ -4583,17 +4583,17 @@ cdef class ForestFireAttributizer:
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(G._this, a)
 
-cdef extern from "cpp/backbones/TestAttributizer.h":
-	cdef cppclass _TestAttributizer "NetworKit::TestAttributizer":
-		_TestAttributizer(int md, double r) except +
+cdef extern from "cpp/backbones/LocalDegreeAttributizer.h":
+	cdef cppclass _LocalDegreeAttributizer "NetworKit::LocalDegreeAttributizer":
+		LocalDegreeAttributizer() except +
 		vector[double] getAttribute(_Graph G, vector[int] a) except +
 
-cdef class TestAttributizer:
+cdef class LocalDegreeAttributizer:
 
-	cdef _TestAttributizer* _this
+	cdef _LocalDegreeAttributizer* _this
 
-	def __cinit__(self, int md, double r):
-		self._this = new _TestAttributizer(md, r)
+	def __cinit__(self):
+		self._this = new _LocalDegreeAttributizer()
 
 	def __dealloc__(self):
 		del self._this

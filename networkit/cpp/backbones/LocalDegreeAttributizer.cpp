@@ -1,33 +1,19 @@
 /*
- * TestAttributizer.cpp
+ * LocalDegreeAttributizer.cpp
  *
  *  Created on: 28.08.2014
  *      Author: Gerd Lindner
  */
 
-#include "TestAttributizer.h"
+#include "LocalDegreeAttributizer.h"
 #include "LocalSimilarityAttributizer.h"
 
 namespace NetworKit {
 
-TestAttributizer::TestAttributizer(count minDegree, double randomness) : minDegree(minDegree), randomness(randomness) {}
+LocalDegreeAttributizer::LocalDegreeAttributizer() {}
 
-std::vector<double> TestAttributizer::getAttribute(const Graph& graph, const std::vector<int>& triangles) {
-	/*std::vector<double> test(graph.upperEdgeIdBound(), 0.0);
-
-	double maxt = (double) *std::max_element(std::begin(triangles), std::end(triangles));
-
-	graph.forEdges([&](node u, node v, edgeid eid) {
-		if (graph.degree(u) <= minDegree || graph.degree(v) <= minDegree) {
-			test[eid] = 1.0;
-		}
-
-		double random = Aux::Random::probability();
-		test[eid] = (randomness * random) + (1-randomness) * (triangles[eid] / maxt);
-	});
-
-	return test;*/
-
+std::vector<double> LocalDegreeAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
+	//TODO: refactoring neccessary, need to eliminate code duplication with LocalSimilarity.
 	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forNodes([&](node i) {
@@ -38,7 +24,8 @@ std::vector<double> TestAttributizer::getAttribute(const Graph& graph, const std
 
 		std::vector<AttributizedEdge<count>> neighbors;
 		graph.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-			neighbors.push_back(AttributizedEdge<count>(i, j, eid, graph.degree(j)));
+			if (graph.degree(j) > d)
+				neighbors.push_back(AttributizedEdge<count>(i, j, eid, graph.degree(j)));
 		});
 		std::sort(neighbors.begin(), neighbors.end());
 

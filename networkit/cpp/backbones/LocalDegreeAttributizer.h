@@ -1,12 +1,12 @@
 /*
- * TestAttributizer.h
+ * LocalDegreeAttributizer.h
  *
  *  Created on: 28.08.2014
  *      Author: Gerd Lindner
  */
 
-#ifndef TESTATTRIBUTIZER_H_
-#define TESTATTRIBUTIZER_H_
+#ifndef LOCALDEGREEATTRIBUTIZER_H_
+#define LOCALDEGREEATTRIBUTIZER_H_
 
 #include "BackboneCalculator.h"
 
@@ -15,20 +15,16 @@ namespace NetworKit {
 /**
  * EXPERIMENTAL
  */
-class TestAttributizer : public AttributeGenerator<int, double> {
+class LocalDegreeAttributizer : public AttributeGenerator<int, double> {
 
 public:
 
-	TestAttributizer(count minDegree, double randomness);
+	LocalDegreeAttributizer();
 
 	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
-
-private:
-	count minDegree;
-	double randomness;
 
 };
 
 }
 /* namespace NetworKit */
-#endif /* TESTATTRIBUTIZER_H_ */
+#endif /* LOCALDEGREEATTRIBUTIZER_H_ */
