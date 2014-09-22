@@ -3,16 +3,16 @@ import os
 
 class SqliteResultWriter():
 
-	def __init__(self, dbFile, properties):
+	def __init__(self, dbFile):
 		self.dbFile = dbFile
 
 		#Create empty databse
 		if not os.path.isfile(dbFile):
 			db = sqlite3.connect(dbFile)
-			self.createTables(db, properties)
+			self.createTables(db)
 			db.close()
 
-	def createTables(self, db, properties):
+	def createTables(self, db):
 		#Graphs table
 		db.execute('''CREATE TABLE graphs (name text primary key)''')
 
