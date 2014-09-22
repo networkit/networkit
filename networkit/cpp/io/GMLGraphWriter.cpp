@@ -14,24 +14,22 @@ void GMLGraphWriter::write(Graph& G, const std::string& path) {
 	std::ofstream file(path);
 	Aux::enforceOpened(file);
 	
-	file << "graph\n[\n";
+	file << "graph [\n";
 	if (G.isDirected()) {
-		file << "directed 1\n";
+		file << "  directed 1\n";
 	}
 	
 	G.forNodes([&](node u) {
-		file << "  node\n"
-		        "  [\n"
-		        "    id " << u << "\n"
-				"  ]\n";
+		file << "  node [\n";
+		file << "    id " << u << "\n";
+                file << "  ]\n";
 	});
 		
 	G.forEdges([&](node u, node v) {
-			file << "  edge\n"
-			        "  [\n"
-			        "    source "<< u << "\n"
-			        "    target "<< v << "\n"
-			        "  ]\n";
+			file << "  edge [\n";
+			file << "    source "<< u << "\n";
+			file << "    target "<< v << "\n";
+			file << "  ]\n";
 	});
 	file << "]\n";
 }
