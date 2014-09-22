@@ -48,7 +48,7 @@ public:
 
 	/**
 	 * Constructs the Vector from the contents of the initializer list @a list.
-	 * @param list The initializer list.
+   * @param list The initializer list.
 	 */
 	Vector(const std::initializer_list<double> &list);
 
@@ -73,6 +73,11 @@ public:
 	 */
 	Vector transpose() const;
 
+  /**
+   * Calculates and returns the Euclidean length of this vector
+   * @return The Euclidean length of this vector.
+   */
+  double lengthSqr() const;
 
 	/**
 	 * Calculates and returns the Euclidean length of this vector

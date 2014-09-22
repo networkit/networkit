@@ -4308,3 +4308,331 @@ cdef class ParallelPartitionCoarsening:
 	def run(self, Graph G not None, Partition zeta not None):
 		result = self._this.run(G._this, zeta._this)
 		return (Graph(0).setThis(result.first), result.second)
+
+# Module: backbones
+
+cdef extern from "cpp/backbones/Backbones.h":
+	cdef cppclass _SimmelianBackboneParametric "NetworKit::SimmelianBackboneParametric":
+		_SimmelianBackboneParametric(count maxRank, count minOverlap) except +
+		_Graph calculate(_Graph G) except +
+
+cdef class SimmelianBackboneParametric:
+	"""
+	Calculates the simmelian backbone for a given input graph.
+	Parameters (parametric variant):
+		-	maxRank		the maximum rank of a tie so it is still considered strongly embedded.
+		-	minOverlap	the minimum required overlap of two ranked neighborhoods for a tie to be kept in the backbone.
+	"""
+
+	cdef _SimmelianBackboneParametric* _this
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this.calculate(G._this))
+
+	def __cinit__(self, maxRank, minOverlap):
+		self._this = new _SimmelianBackboneParametric(maxRank, minOverlap)
+
+	def __dealloc__(self):
+		del self._this
+
+cdef extern from "cpp/backbones/Backbones.h":
+	cdef cppclass _SimmelianBackboneNonParametric "NetworKit::SimmelianBackboneNonParametric":
+		_SimmelianBackboneNonParametric(double jaccardTreshold) except +
+		_Graph calculate(_Graph G) except +
+
+cdef class SimmelianBackboneNonParametric:
+	"""
+	Calculates the simmelian backbone for a given input graph.
+	Parameters (non-parameteric variant):
+		-	jaccardTreshold	the minimum best prefix jaccard coefficient of a tie to be kept in the backbone.be kept in the backbone.
+	"""
+
+	cdef _SimmelianBackboneNonParametric* _this
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this.calculate(G._this))
+
+	def __cinit__(self, jaccardThreshold):
+		self._this = new _SimmelianBackboneNonParametric(jaccardThreshold)
+
+	def __dealloc__(self):
+		del self._this
+
+cdef extern from "cpp/backbones/Backbones.h":
+	cdef cppclass _MultiscaleBackbone "NetworKit::MultiscaleBackbone":
+		_MultiscaleBackbone(double alpha) except +
+		_Graph calculate(_Graph G) except +
+
+cdef class MultiscaleBackbone:
+	"""
+	Calculates the multiscale backbone for a given input graph.
+	Parameters:
+		-	alpha	[0-1] the filtering parameter
+	"""
+
+	cdef _MultiscaleBackbone* _this
+
+	def __cinit__(self, double alpha):
+		self._this = new _MultiscaleBackbone(alpha)
+
+	def __dealloc__(self):
+		del self._this
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this.calculate(G._this))
+
+cdef extern from "cpp/backbones/Backbones.h":
+	cdef cppclass _LocalSimilarityBackbone "NetworKit::LocalSimilarityBackbone":
+		_LocalSimilarityBackbone(double e) except +
+		_Graph calculate(_Graph G) except +
+
+cdef class LocalSimilarityBackbone:
+	"""
+	Calculates the local similarity backbone for a given input graph.
+	Parameters:
+		-	e	(0-1) the filtering parameter
+	"""
+
+	cdef _LocalSimilarityBackbone* _this
+
+	def __cinit__(self, double e):
+		self._this = new _LocalSimilarityBackbone(e)
+
+	def __dealloc__(self):
+		del self._this
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this.calculate(G._this))
+
+cdef extern from "cpp/backbones/Backbones.h":
+	cdef cppclass _SimmelianMultiscaleBackbone "NetworKit::SimmelianMultiscaleBackbone":
+		_SimmelianMultiscaleBackbone(double alpha) except +
+		_Graph calculate(_Graph G) except +
+
+cdef class SimmelianMultiscaleBackbone:
+	"""
+	Calculates the multiscale backbone for a given input graph using simmelianness
+	(i.e. triangle counts) as edge weights.
+	Parameters:
+		-	alpha	 [0,1] the multiscale filtering parameter
+	"""
+
+	cdef _SimmelianMultiscaleBackbone* _this
+
+	def __cinit__(self, double e):
+		self._this = new _SimmelianMultiscaleBackbone(e)
+
+	def __dealloc__(self):
+		del self._this
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this.calculate(G._this))
+
+cdef extern from "cpp/backbones/Backbones.h":
+	cdef cppclass _RandomBackbone "NetworKit::RandomBackbone":
+		_RandomBackbone(double ratio) except +
+		_Graph calculate(_Graph G) except +
+
+cdef class RandomBackbone:
+	"""
+	Calculates abackbone containing a given ratio of randomly selected edges  of
+	the original graph.
+	Parameters:
+		-	ratio	 [0,1] approximated edge ratio
+	"""
+
+	cdef _RandomBackbone* _this
+
+	def __cinit__(self, double e):
+		self._this = new _RandomBackbone(e)
+
+	def __dealloc__(self):
+		del self._this
+
+	def calculate(self, Graph G):
+		return Graph().setThis(self._this.calculate(G._this))
+
+
+####### THE FOLLOWING ARE ACTUALLY INTERNAL IMPLEMENTATIONS. THEY ARE EXPORTED TEMPORARILY FOR PERFORMANCE REASONS.
+
+cdef extern from "cpp/backbones/ChibaNishizekiTriangleCounter.h":
+	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
+		_ChibaNishizekiTriangleCounter() except +
+		vector[int] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class ChibaNishizekiTriangleCounter:
+	"""
+	Triangle counting.
+	"""
+
+	cdef _ChibaNishizekiTriangleCounter* _this
+
+	def __cinit__(self):
+		self._this = new _ChibaNishizekiTriangleCounter()
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G):
+		return  self._this.getAttribute(G._this, range(0))
+
+cdef extern from "cpp/backbones/SimmelianJaccardAttributizer.h":
+	cdef cppclass _SimmelianJaccardAttributizer "NetworKit::SimmelianJaccardAttributizer":
+		_SimmelianJaccardAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class SimmelianJaccardAttributizer:
+
+	cdef _SimmelianJaccardAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _SimmelianJaccardAttributizer()
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[int] triangles):
+		return self._this.getAttribute(G._this, triangles)
+
+cdef extern from "cpp/backbones/SimmelianOverlapAttributizer.h":
+		cdef cppclass _SimmelianOverlapAttributizer "NetworKit::SimmelianOverlapAttributizer":
+			_SimmelianOverlapAttributizer(count maxRank) except +
+			vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class SimmelianOverlapAttributizer:
+
+	cdef _SimmelianOverlapAttributizer* _this
+
+	def __cinit__(self, maxRank):
+		self._this = new _SimmelianOverlapAttributizer(maxRank)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(G._this, a)
+
+cdef extern from "cpp/backbones/MultiscaleAttributizer.h":
+		cdef cppclass _MultiscaleAttributizer "NetworKit::MultiscaleAttributizer":
+			_MultiscaleAttributizer() except +
+			vector[double] getAttribute(_Graph G, vector[double] a) except +
+
+cdef class MultiscaleAttributizer:
+
+	cdef _MultiscaleAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _MultiscaleAttributizer()
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[double] a):
+		return self._this.getAttribute(G._this, a)
+
+cdef extern from "cpp/backbones/RandomAttributizer.h":
+	cdef cppclass _RandomAttributizer "NetworKit::RandomAttributizer":
+		_RandomAttributizer(double randomness) except +
+		vector[double] getAttribute(_Graph G, vector[double] a) except +
+
+cdef class RandomAttributizer:
+
+	cdef _RandomAttributizer* _this
+
+	def __cinit__(self, randomness):
+		self._this = new _RandomAttributizer(randomness)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[double] a):
+		return self._this.getAttribute(G._this, a)
+
+cdef extern from "cpp/backbones/LocalSimilarityAttributizer.h":
+	cdef cppclass _LocalSimilarityAttributizer "NetworKit::LocalSimilarityAttributizer":
+		_LocalSimilarityAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class LocalSimilarityAttributizer:
+
+	cdef _LocalSimilarityAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _LocalSimilarityAttributizer()
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(G._this, a)
+
+cdef extern from "cpp/backbones/TopDegreeAttributizer.h":
+	cdef cppclass _TopDegreeAttributizer "NetworKit::TopDegreeAttributizer":
+		_TopDegreeAttributizer() except +
+		vector[count] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class TopDegreeAttributizer:
+
+	cdef _TopDegreeAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _TopDegreeAttributizer()
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(G._this, a)
+
+cdef extern from "cpp/backbones/ForestFireAttributizer.h":
+	cdef cppclass _ForestFireAttributizer "NetworKit::ForestFireAttributizer":
+		_ForestFireAttributizer(double pf, double tebr) except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class ForestFireAttributizer:
+
+	cdef _ForestFireAttributizer* _this
+
+	def __cinit__(self, double pf, double tebr):
+		self._this = new _ForestFireAttributizer(pf, tebr)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(G._this, a)
+
+cdef extern from "cpp/backbones/LocalDegreeAttributizer.h":
+	cdef cppclass _LocalDegreeAttributizer "NetworKit::LocalDegreeAttributizer":
+		LocalDegreeAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class LocalDegreeAttributizer:
+
+	cdef _LocalDegreeAttributizer* _this
+
+	def __cinit__(self):
+		self._this = new _LocalDegreeAttributizer()
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		return self._this.getAttribute(G._this, a)
+
+cdef extern from "cpp/backbones/GlobalThresholdFilter.h":
+	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
+		_GlobalThresholdFilter(double alpha, bool above) except +
+		_Graph calculate(_Graph G, vector[double] a) except +
+
+cdef class GlobalThresholdFilter:
+	cdef _GlobalThresholdFilter* _this
+
+	def __cinit__(self, double e, bool above):
+		self._this = new _GlobalThresholdFilter(e, above)
+
+	def __dealloc__(self):
+		del self._this
+
+	def calculate(self, Graph G, vector[double] a):
+		return Graph().setThis(self._this.calculate(G._this, a))
