@@ -80,7 +80,7 @@ private:
 	 * Returns the index of node v in the array of outgoing edges of node u.
 	 */
 	index indexInOutEdgeArray(node u, node v) const;
-	
+
 	/**
 	 * Returns the edge weight of the outgoing edge of index i in the outgoing edges of node u
 	 *
@@ -108,7 +108,7 @@ private:
 	 * @param i The index in the outgoing edges
 	 * @return The edge id
 	 */
-	template<bool hasEdgeIds>
+	template<bool graphHasEdgeIds>
 	inline edgeid getOutEdgeId(node u, index i) const;
 
 	/**
@@ -118,7 +118,7 @@ private:
 	 * @param i The index in the incoming edges of u
 	 * @return The edge id
 	 */
-	template<bool hasEdgeIds>
+	template<bool graphHasEdgeIds>
 	inline edgeid getInEdgeId(node u, index i) const;
 
 	/**
@@ -140,7 +140,7 @@ private:
 	 * @param handle The handle that shall be executed for each edge
 	 * @return void
 	 */
-	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 	inline void forOutEdgesOfImpl(node u, L handle) const;
 
 	/**
@@ -152,7 +152,7 @@ private:
 	 * @param handle The handle that shall be executed for each edge
 	 * @return void
 	 */
-	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 	inline void forInEdgesOfImpl(node u, L handle) const;
 
 	/**
@@ -161,7 +161,7 @@ private:
 	 * @param handle The handle that shall be executed for all edges
 	 * @return void
 	 */
-	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 	inline void forEdgeImpl(L handle) const;
 
 	/**
@@ -170,7 +170,7 @@ private:
 	 * @param handle The handle that shall be executed for all edges
 	 * @return void
 	 */
-	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 	inline void parallelForEdgesImpl(L handle) const;
 
 	/**
@@ -179,9 +179,9 @@ private:
 	 * @param handle The handle that shall be executed for all edges
 	 * @return void
 	 */
-	template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+	template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 	inline double parallelSumForEdgesImpl(L handle) const;
-	
+
 	/*
 	 * In the following definition, Aux::FunctionTraits is used in order to only execute lambda functions
 	 * with the appropriate parameters. The decltype-return type is used for determining the return type of
@@ -977,7 +977,7 @@ inline edgeweight Graph::getInEdgeWeight<false>(node, index) const {
 };
 
 
-template<bool hasEdgeIds> // implementation for hasEdgeIds == true
+template<bool graphHasEdgeIds> // implementation for hasEdgeIds == true
 inline edgeid Graph::getOutEdgeId(node u, index i) const {
 	return outEdgeIds[u][i];
 };
@@ -987,7 +987,7 @@ inline edgeid Graph::getOutEdgeId<false>(node, index) const {
 	return 0;
 };
 
-template<bool hasEdgeIds> // implementation for hasEdgeIds == true
+template<bool graphHasEdgeIds> // implementation for hasEdgeIds == true
 inline edgeid Graph::getInEdgeId(node u, index i) const {
 	return inEdgeIds[u][i];
 }
@@ -1008,25 +1008,25 @@ inline bool Graph::useEdgeInIteration<false>(node u, node v) const {
 	return u >= v;
 }
 
-template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
 	for (index i = 0; i < outEdges[u].size(); ++i) {
 		node v = outEdges[u][i];
 
 		if (useEdgeInIteration<graphIsDirected>(u, v)) {
-			edgeLambda(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
+			edgeLambda(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
 		}
 	}
 }
 
-template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::forInEdgesOfImpl(node u, L handle) const {
 	if (graphIsDirected) {
 		for (index i = 0; i < inEdges[u].size(); i++) {
 			node v = inEdges[u][i];
 
 			if (useEdgeInIteration<true>(u, v)) {
-				edgeLambda<L, true, nullptr>(handle, v, u, getInEdgeWeight<hasWeights>(u, i), getInEdgeId<hasEdgeIds>(u, i));
+				edgeLambda<L, true, nullptr>(handle, v, u, getInEdgeWeight<hasWeights>(u, i), getInEdgeId<graphHasEdgeIds>(u, i));
 			}
 		}
 	} else {
@@ -1034,28 +1034,28 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
 			node v = outEdges[u][i];
 
 			if (useEdgeInIteration<true>(u, v)) {
-				edgeLambda<L, true, nullptr>(handle, v, u, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
+				edgeLambda<L, true, nullptr>(handle, v, u, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
 			}
 		}
 	}
 }
 
-template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::forEdgeImpl(L handle) const {
 	for (node u = 0; u < z; ++u) {
-		forOutEdgesOfImpl<graphIsDirected, hasWeights, hasEdgeIds, L>(u, handle);
+		forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
 	}
 }
 
-template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::parallelForEdgesImpl(L handle) const {
 	#pragma omp parallel for
 	for (node u = 0; u < z; ++u) {
-		forOutEdgesOfImpl<graphIsDirected, hasWeights, hasEdgeIds, L>(u, handle);
+		forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
 	}
 }
 
-template<bool graphIsDirected, bool hasWeights, bool hasEdgeIds, typename L>
+template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline double Graph::parallelSumForEdgesImpl(L handle) const {
 	double sum = 0.0;
 
@@ -1068,7 +1068,7 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
 			// undirected, do not iterate over edges twice
 			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 			if (useEdgeInIteration<graphIsDirected>(u, v)) {
-				sum += edgeLambda(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<hasEdgeIds>(u, i));
+				sum += edgeLambda(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
 			}
 		}
 	}

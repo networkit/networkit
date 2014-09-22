@@ -1461,6 +1461,25 @@ cdef class KONECTGraphReader:
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this.read(pathbytes))
 
+cdef extern from "cpp/io/GMLGraphReader.h":
+	cdef cppclass _GMLGraphReader "NetworKit::GMLGraphReader":
+		_GMLGraphReader() except +
+		_Graph read(string path) except +
+
+cdef class GMLGraphReader:
+	""" Reader for the GML graph format, which is documented here [1].
+
+		[1]: http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
+ 	"""
+	cdef _GMLGraphReader _this
+	
+	def __cinit__(self):
+		self._this = _GMLGraphReader()
+
+	def read(self, path):
+		pathbytes = path.encode("utf-8")
+		return Graph(0).setThis(self._this.read(pathbytes))
+
 cdef extern from "cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
 		_METISGraphWriter() except +

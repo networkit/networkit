@@ -61,12 +61,16 @@ double ClusteringCoefficient::avgLocal(Graph& G) {
 	auto coefficients = exactLocal(G); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	double sum = 0.0;
+	count size = 0;
 
 	G.forNodes([&](node u) {
-		sum += coefficients[u];
+		if (G.degree(u) >= 2) {
+			sum += coefficients[u];
+			size++;
+		}
 	});
 
-	return sum / (double) G.numberOfNodes();
+	return sum / (double) size;
 }
 
 double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
@@ -78,7 +82,8 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 
 		if (G.degree(v) < 2) {
 			// this vertex can never be part of a triangle,
-			// (nor middle point of a path of length 3)
+			// nor middle point of a path of length 3
+			--k;  // do not count trial
 			continue;
 		}
 
