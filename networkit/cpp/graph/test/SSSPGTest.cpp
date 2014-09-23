@@ -73,15 +73,7 @@ TEST_F(SSSPGTest, testShortestPaths) {
 	for (auto path : paths) {
 		INFO("Path number ", i);
 		i ++;
-		count count = 0;
-		for (node n : path) {
-			if (count < dist) {
-				EXPECT_EQ(G.hasEdge(path[count], path[count+1]), true);
-			}
-			INFO(n);
-			count ++;
-		}
-		EXPECT_EQ(count, dist+1);
+		INFO(path);
 		EXPECT_EQ(path[0], source);
 		EXPECT_EQ(path[dist], x);
 	}
