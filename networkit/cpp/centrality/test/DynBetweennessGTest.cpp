@@ -39,8 +39,8 @@ TEST_F(DynBetweennessGTest, testDynBetweennessSmallGraph) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-	DynBetweenness dynbc = DynBetweenness(G, false);
-	Betweenness bc = Betweenness(G);
+	DynBetweenness dynbc(G, false);
+	Betweenness bc(G);
 	dynbc.run();
 	bc.run();
 	std::vector<double> dynbc_scores = dynbc.scores();
@@ -87,9 +87,9 @@ TEST_F(DynBetweennessGTest, testWeightedDynBetweennessSmallGraph) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-	DynBetweenness dynbc = DynBetweenness(G, true);
+	DynBetweenness dynbc(G, true);
 //	Graph G1 = Graph(G, false, false);
-	Betweenness bc = Betweenness(G);
+	Betweenness bc(G);
 	dynbc.run();
 	bc.run();
 	std::vector<double> dynbc_scores = dynbc.scores();
@@ -138,8 +138,8 @@ TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
 
 	double epsilon = 0.01; // error
 	double delta = 0.1; // confidence
-	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta);
-	Betweenness bc = Betweenness(G);
+	DynApproxBetweenness dynbc(G, epsilon, delta);
+	Betweenness bc(G);
 	dynbc.run();
 	bc.run();
 	std::vector<double> dynbc_scores = dynbc.scores();
@@ -168,8 +168,8 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 
 	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
-	DynApproxBetweenness dynbc = DynApproxBetweenness(G, epsilon, delta, false);
-	ApproxBetweenness bc = ApproxBetweenness(G, epsilon, delta);
+	DynApproxBetweenness dynbc(G, epsilon, delta, false);
+	ApproxBetweenness bc(G, epsilon, delta);
 	dynbc.run();
 	bc.run();
 	std::vector<double> dynbc_scores = dynbc.scores();
@@ -212,8 +212,8 @@ TEST_F(DynBetweennessGTest, testCorrectnessDynExactBetweenness) {
 	DorogovtsevMendesGenerator generator(100);
 	Graph G = generator.generate();
 	int n = G.upperNodeIdBound();
-	DynBetweenness dynbc = DynBetweenness(G, true);
-	Betweenness bc = Betweenness(G);
+	DynBetweenness dynbc(G, true);
+	Betweenness bc(G);
 	dynbc.run();
 	bc.run();
 	DEBUG("Before the edge insertion: ");
@@ -244,7 +244,7 @@ TEST_F(DynBetweennessGTest, testApproxBetweenness) {
 	METISGraphReader reader;
 	DorogovtsevMendesGenerator generator(1000);
 	Graph G1 = generator.generate();
-	Graph G = Graph(G1, true, false);
+	Graph G(G1, true, false);
 	ApproxBetweenness bc(G, 0.1, 0.1);
 	bc.run();
 	DEBUG("Number of samples: ", bc.numberOfSamples());
@@ -258,11 +258,11 @@ TEST_F(DynBetweennessGTest, testWeightedDynExactBetweenness) {
 	METISGraphReader reader;
 	DorogovtsevMendesGenerator generator(100);
 	Graph G1 = generator.generate();
-	Graph G = Graph(G1, true, false);
+	Graph G(G1, true, false);
 	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
 	int n = G.upperNodeIdBound();
-	DynBetweenness dynbc = DynBetweenness(G, true);
-	Betweenness bc = Betweenness(G);
+	DynBetweenness dynbc(G, true);
+	Betweenness bc(G);
 	dynbc.run();
 	bc.run();
 	DEBUG("Before the edge insertion: ");
