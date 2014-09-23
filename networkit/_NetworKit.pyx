@@ -2797,6 +2797,10 @@ cdef extern from "cpp/community/CutClustering.h":
 		string toString() except +
 		_Partition run(_Graph G) except +
 
+cdef extern from "cpp/community/CutClustering.h" namespace "NetworKit::CutClustering":
+	map[double, _Partition] CutClustering_getClusterHierarchy "NetworKit::CutClustering::getClusterHierarchy"(const _Graph& G) except +
+
+
 cdef class CutClustering(CommunityDetector):
 	"""
 	Cut clustering algorithm as defined in
@@ -2829,9 +2833,13 @@ cdef class CutClustering(CommunityDetector):
 	def run(self, Graph G not None):
 		""" Detect communities in the given graph `graph`.
 
+		Warning: due to numerical errors the resulting clusters might not be correct.
+		This implementation is rather slow because of the use of the Edmonds-Karp algorithm
+		for the cut calculation.
+
 		Parameters
 		----------
-		graph : Graph
+		G : Graph
 			The graph.
 
 		Returns
@@ -2840,6 +2848,34 @@ cdef class CutClustering(CommunityDetector):
 			A partition containing the found communities.
 		"""
 		return Partition().setThis(self._this.run(G._this))
+
+	@staticmethod
+	def getClusterHierarchy(Graph G not None):
+		""" Get the complete hierarchy with all possible parameter values.
+
+		Each reported parameter value is the lower bound for the range in which the corresponding clustering is calculated by the cut clustering algorithm.
+
+		Warning: all reported parameter values are slightly too high in order to avoid wrong clusterings because of numerical inaccuracies.
+		Furthermore the completeness of the hierarchy cannot be guaranteed because of these inaccuracies.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+
+		Returns
+		-------
+		dict
+			A dictionary with the parameter values as keys and the corresponding Partition instances as values
+		"""
+		cdef map[double, _Partition] result
+		# FIXME: this probably copies the whole hierarchy because of exception handling, using move might fix this
+		result = CutClustering_getClusterHierarchy(G._this)
+		pyResult = {}
+		# FIXME: this code copies the partitions a lot!
+		for res in result:
+			pyResult[res.first] = Partition().setThis(res.second)
+		return pyResult
 
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures """
