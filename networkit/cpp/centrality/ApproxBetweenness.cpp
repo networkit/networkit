@@ -86,7 +86,6 @@ void ApproxBetweenness::run() {
 			while (t != u)  {
 				// sample z in P_u(t) with probability sigma_uz / sigma_us
 				std::vector<std::pair<node, double> > choices;
-				INFO("scanning the stored predecessors");
 				for (node z : sssp->getPredecessors(t)) {
 					bigfloat tmp = sssp->numberOfPaths(z) / sssp->numberOfPaths(t);
 					double weight;

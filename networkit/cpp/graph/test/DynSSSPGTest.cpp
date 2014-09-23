@@ -108,14 +108,6 @@ TEST_F(DynSSSPGTest, testDynamicBFS_batch) {
 
 }
 
-TEST_F(DynSSSPGTest, testDynamicBFS_usa_road_network) {
-	METISGraphReader reader;
-	Graph G = reader.read("/algoDaten/staudt/Graphs/Collections/DynBC/road_usa.metis.graph");
-	INFO("The graph has been read.");
-	DynBFS bfs(G, 18881085);
-	bfs.run();
-}
-
 
 TEST_F(DynSSSPGTest, testDynamicDijkstra) {
  /* Graph:
@@ -249,8 +241,8 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
 TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
 	METISGraphReader reader;
 	std::default_random_engine random_generator;
-  	std::normal_distribution<double> distribution(1000,10);
-	DorogovtsevMendesGenerator generator(1000);
+  	std::normal_distribution<double> distribution(100,10);
+	DorogovtsevMendesGenerator generator(100);
 	Graph G1 = generator.generate();
 	Graph G = Graph(G1, true, false);
 	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
