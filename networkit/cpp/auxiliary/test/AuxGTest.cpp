@@ -236,6 +236,16 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	Aux::setLoglevel(cl);	
 }*/
 
+TEST_F(AuxGTest, testFormatting) {
+	using Aux::toStringF;
+	EXPECT_EQ("",toStringF(""));
+	EXPECT_EQ("",toStringF("%s", ""));
+	EXPECT_EQ("%",toStringF("%%", ""));
+	EXPECT_EQ("aaabbbaaa",toStringF("aaa%saaa", "bbb"));
+	EXPECT_THROW(toStringF("%"), std::invalid_argument);
+	EXPECT_THROW(toStringF("%i"), std::invalid_argument);
+	EXPECT_THROW(toStringF("%s"), std::invalid_argument);
+}
 
 TEST_F(AuxGTest, testRandomChoice) {
 	std::vector<uint64_t> data = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};

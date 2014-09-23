@@ -219,6 +219,37 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraph) {
 
 	Gseq.forNodes([&](node u){
 		EXPECT_EQ(Gseq.degree(u), Gpar.degree(u)) << "node degrees should be equal";
+		EXPECT_EQ(Gseq.weightedDegree(u), Gpar.weightedDegree(u)) << "Weighted degrees should be equal";
+		EXPECT_EQ(parResult.second[u], seqResult.second[u]) << "mapping is equal";
+	});
+
+}
+
+TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraphWithGraphBuilder) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/celegans_metabolic.graph");
+
+	ClusteringGenerator clusteringGen;
+	count k = 10; // number of clusters in random clustering
+	Partition random = clusteringGen.makeRandomClustering(G, k);
+
+	ParallelPartitionCoarsening parCoarsening(true);
+	auto parResult = parCoarsening.run(G, random);
+
+	ClusterContractor seqCoarsening;
+	auto seqResult = seqCoarsening.run(G, random);
+
+	Graph Gpar = parResult.first;
+	EXPECT_EQ(k, Gpar.numberOfNodes());
+
+	Graph Gseq = seqResult.first;
+	EXPECT_EQ(k, Gseq.numberOfNodes());
+
+	EXPECT_EQ(Gseq.numberOfEdges(), Gpar.numberOfEdges()) << "sequential and parallel coarsening should produce the same number of edges";
+
+	Gseq.forNodes([&](node u){
+		EXPECT_EQ(Gseq.degree(u), Gpar.degree(u)) << "node degrees should be equal";
+		EXPECT_EQ(Gseq.weightedDegree(u), Gpar.weightedDegree(u)) << "Weighted degrees should be equal";
 		EXPECT_EQ(parResult.second[u], seqResult.second[u]) << "mapping is equal";
 	});
 

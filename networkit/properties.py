@@ -105,7 +105,7 @@ def powerLawExponent(G, dd=None):
 		get the exponent (gamma).
 	"""
 	if not dd:
-		dd = degreeDistribution(G)
+		dd = degreeSequence(G)
 	fit = powerlaw.Fit(dd)
 	return fit.alpha
 
@@ -113,7 +113,7 @@ def powerLawFit(G, dd=None):
 	""" Check if a power law is a good fit for the degree distribution.
 	"""
 	if not dd:
-		dd = degreeDistribution(G)
+		dd = degreeSequence(G)
 	fit = powerlaw.Fit(dd)
 	R, p = fit.distribution_compare("power_law", "exponential", normalized_ratio=True)
 	return ((R > 0), R)
@@ -200,6 +200,7 @@ def properties(G, settings):
 
 	# diameter
 	if settings["diameter"]:
+		logging.info("[...] estimating diameter range")
 		dia = Diameter.estimatedDiameterRange(G, error=0.1)
 	else:
 		dia = None
