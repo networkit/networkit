@@ -13,7 +13,9 @@
 #include "../../community/ClusteringGenerator.h"
 #include "../../coarsening/ClusterContractor.h"
 #include "../../coarsening/PartitionCoarsening.h"
+#include "../../coarsening/ParallelPartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
+#include "../../community/ClusteringGenerator.h"
 #include "../../auxiliary/Timer.h"
 #include "../../auxiliary/Log.h"
 
@@ -24,18 +26,16 @@ TEST_F(CoarseningBenchmark, benchmarkClusterContractor) {
 	count n;
 	std::cin >> n;
 	count redF = 100; // reduction factor
+	count k = n/redF;
 	DEBUG("generating graph with ", n, " nodes");
 	auto gen = ErdosRenyiGenerator(n, 0.05);
 	Graph G = gen.generate();
 
-	DEBUG("generating partition");
-	Partition zeta(G.upperNodeIdBound());
-	zeta.setUpperBound(G.upperNodeIdBound());
-	G.forNodes([&](node u){
-		zeta.addToSubset(u/redF,u);
-	});
-	
-	count k = zeta.numberOfSubsets();
+	DEBUG("generating random partition");
+	ClusteringGenerator clusteringGen;
+	Partition zeta = clusteringGen.makeRandomClustering(G, k);
+
+	//count k = zeta.numberOfSubsets();
 	DEBUG("number of subsets: ", k);
 
 	INFO("sequential coarsening");
@@ -57,6 +57,15 @@ TEST_F(CoarseningBenchmark, benchmarkClusterContractor) {
 	INFO("parallel coarsening: ", timer.elapsedTag());
 	EXPECT_EQ(k, Gc1.numberOfNodes());
 	EXPECT_EQ(k, Gc2.numberOfNodes());
+
+	INFO("parallel coarsening using GraphBuilder");
+	ParallelPartitionCoarsening gbCoarsening(true);
+	timer.start();
+	auto result3 = gbCoarsening.run(G, zeta);
+	timer.stop();
+	Graph Gc3 = result3.first;
+	INFO("parallel coarsening: ", timer.elapsedTag());
+	EXPECT_EQ(k, Gc3.numberOfNodes());
 
 }
 

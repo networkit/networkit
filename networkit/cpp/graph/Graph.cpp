@@ -159,12 +159,6 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 
 }
 
-//only to be used by Cython
-void Graph::stealFrom(Graph& input) {
-	*this = std::move(input);
-}
-
-
 /** PRIVATE HELPERS **/
 
 count Graph::getNextGraphId() {
@@ -215,6 +209,7 @@ void Graph::indexEdges(bool force) {
 		});
 	}
 
+	// assign edge ids for edges in one direction
 	forNodes([&](node u) {
 		for (index i = 0; i < outEdges[u].size(); ++i) {
 			node v = outEdges[u][i];
@@ -222,19 +217,33 @@ void Graph::indexEdges(bool force) {
 				// new id
 				edgeid id = omega++;
 				outEdgeIds[u][i] = id;
-				if (! directed) {
-					// for undirected graphs, set symmetric edge id
-					index j = indexInOutEdgeArray(v, u);
-					outEdgeIds[v][j] = id;
-				} else {
-					// assign in-edge id
-					index k = indexInInEdgeArray(v, u);
-					inEdgeIds[v][k] = id;
-				}
-
 			}
 		}
 	});
+
+	// copy edge ids for the edges in the other direction. Note that "indexInOutEdgeArray" is slow
+	// which is why this second loop in parallel makes sense.
+	if (!directed) {
+		balancedParallelForNodes([&](node u) {
+			for (index i = 0; i < outEdges[u].size(); ++i) {
+				node v = outEdges[u][i];
+				if (v != none && outEdgeIds[u][i] == none) {
+					index j = indexInOutEdgeArray(v, u);
+					outEdgeIds[u][i] = outEdgeIds[v][j];
+				}
+			}
+		});
+	} else {
+		balancedParallelForNodes([&](node u) {
+			for (index i = 0; i < inEdges[u].size(); ++i) {
+				node v = inEdges[u][i];
+				if (v != none) {
+					index j = indexInOutEdgeArray(v, u);
+					inEdgeIds[u][i] = outEdgeIds[v][j];
+				}
+			}
+		});
+	}
 
 	edgesIndexed = true; // remember that edges have been indexed so that addEdge needs to create edge ids
 }
