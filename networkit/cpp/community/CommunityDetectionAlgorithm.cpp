@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-CommunityDetectionAlgorithm::~CommunityDetectionAlgorithm() {
-}
-
 std::string CommunityDetectionAlgorithm::toString() const {
 	return "TODO: string representation of clusterer";
 }

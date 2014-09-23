@@ -13,10 +13,6 @@
 namespace NetworKit {
 
 SampledNodeStructuralRandMeasure::SampledNodeStructuralRandMeasure(count maxSamples) : maxSamples(maxSamples) {
-
-}
-
-SampledNodeStructuralRandMeasure::~SampledNodeStructuralRandMeasure() {
 }
 
 double SampledNodeStructuralRandMeasure::getDissimilarity(const Graph& G, const Partition& first, const Partition& second) {

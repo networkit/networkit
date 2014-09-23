@@ -8,16 +8,6 @@
 #include "LineFileReader.h"
 
 namespace NetworKit {
-
-LineFileReader::LineFileReader() {
-	// TODO Auto-generated constructor stub
-
-}
-
-LineFileReader::~LineFileReader() {
-	// TODO Auto-generated destructor stub
-}
-
 std::vector<std::string> LineFileReader::read(std::string path) {
 	std::ifstream file;
 	std::string line; // the current line

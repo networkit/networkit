@@ -18,11 +18,6 @@ namespace NetworKit {
 class GraphEventHandler {
 
 public:
-
-	GraphEventHandler();
-
-	virtual ~GraphEventHandler();
-
 	virtual void onNodeAddition(node u) = 0;
 
 	virtual void onNodeRemoval(node u) = 0;

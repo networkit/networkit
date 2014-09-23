@@ -9,15 +9,6 @@
 
 namespace NetworKit {
 
-GraphIO::GraphIO() {
-	// TODO Auto-generated constructor stub
-
-}
-
-GraphIO::~GraphIO() {
-	// TODO Auto-generated destructor stub
-}
-
 void GraphIO::writeEdgeList(Graph& G, std::string path) {
 
 	std::ofstream file;

@@ -10,10 +10,6 @@
 
 namespace NetworKit {
 
-
-Conductance::~Conductance() {
-}
-
 double Conductance::getQuality(const Partition& zeta, const Graph& G) {
 	double cond = 0.0;
 	double denom = 0.0;

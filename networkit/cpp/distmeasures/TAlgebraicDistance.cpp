@@ -16,10 +16,6 @@ TAlgebraicDistance::TAlgebraicDistance(const Graph& G) : TNodeDistance(G), numSy
 	// parameters are set in the initialize method
 }
 
-TAlgebraicDistance::~TAlgebraicDistance() {
-	// TODO Auto-generated destructor stub
-}
-
 void TAlgebraicDistance::initialize(const Parameters& param) {
 	numSystems = param.getInt("numSystems");
 	numIters = param.getInt("numIters");

@@ -51,8 +51,6 @@ public:
 	 */
 	FruchtermanReingold(Point<float> bottomLeft, Point<float> topRight, bool useGivenCoordinates = false, count maxIterations = MAX_ITER, float precision = EPS);
 
-	virtual ~FruchtermanReingold();
-
 	/**
 	 * Assigns coordinates to vertices in graph @a g
 	 */

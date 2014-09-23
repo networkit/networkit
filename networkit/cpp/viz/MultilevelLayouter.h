@@ -30,7 +30,6 @@ protected:
 
 public:
 	MultilevelLayouter(Point<float> bottomLeft, Point<float> topRight, bool useGivenLayout = false);
-	virtual ~MultilevelLayouter();
 
 	virtual void draw(Graph& G);
 	virtual void drawInternal(Graph& G, count level);
