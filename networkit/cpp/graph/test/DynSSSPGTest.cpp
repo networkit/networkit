@@ -204,7 +204,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
 	METISGraphReader reader;
 	DorogovtsevMendesGenerator generator(1000);
 	Graph G1 = generator.generate();
-	Graph G = Graph(G1, true, false);
+	Graph G(G1, true, false);
 	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
 	DynDijkstra dyn_dij(G, 0);
 	Dijkstra dij(G, 0);
@@ -244,7 +244,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
   	std::normal_distribution<double> distribution(100,10);
 	DorogovtsevMendesGenerator generator(100);
 	Graph G1 = generator.generate();
-	Graph G = Graph(G1, true, false);
+	Graph G(G1, true, false);
 	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
 	// add random normal weights to G
 
