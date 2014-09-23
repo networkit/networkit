@@ -16,7 +16,7 @@
 
 namespace NetworKit {
 
-PLM::PLM(bool refine, double gamma, std::string par, count maxIter, bool parallelCoarsening) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), parallelCoarsening(parallelCoarsening) {
+PLM::PLM(bool refine, double gamma, std::string par, count maxIter, bool parallelCoarsening, bool turbo) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), parallelCoarsening(parallelCoarsening), turbo(turbo) {
 
 }
 
@@ -56,18 +56,64 @@ Partition PLM::run(const Graph& G) {
 	bool moved = false; // indicates whether any node has been moved in the last pass
 	bool change = false; // indicates whether the communities have changed at all
 
+	// stores the affinity for each neighboring community (index), one vector per thread
+	std::vector<std::vector<edgeweight> > turboAffinity;
+	// stores the list of neighboring communities, one vector per thread
+	std::vector<std::vector<index> > neigh_comm;
+
+
+	if (turbo) {
+		if (this->parallelism != "none") { // initialize arrays for all threads only when actually needed
+			turboAffinity.resize(omp_get_max_threads());
+			neigh_comm.resize(omp_get_max_threads());
+			for (auto &it : turboAffinity) {
+				// resize to maximum community id
+				it.resize(zeta.upperBound());
+			}
+			for (auto &it : neigh_comm) {
+				// resize to maximum size so no further memory allocation is needed
+				it.resize(G.upperNodeIdBound());
+			}
+		} else { // initialize array only for first thread
+			turboAffinity.emplace_back(zeta.upperBound());
+			neigh_comm.emplace_back(G.upperNodeIdBound());
+		}
+	}
+
 	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
 		// TRACE("trying to move node " , u);
+		index tid = omp_get_thread_num();
 
 		// collect edge weight to neighbor clusters
 		std::map<index, edgeweight> affinity;
-		G.forNeighborsOf(u, [&](node v, edgeweight weight) {
-			if (u != v) {
-				index C = zeta[v];
-				affinity[C] += weight;
-			}
-		});
+		// only for turbo mode, stores the number of neighbors
+		index numNeighbors = 0;
+
+		if (turbo) {
+			G.forNeighborsOf(u, [&](node v) {
+				turboAffinity[tid][zeta[v]] = -1; // set all to -1 so we can see when we get to it the first time
+			});
+			turboAffinity[tid][zeta[u]] = 0;
+			G.forNeighborsOf(u, [&](node v, edgeweight weight) {
+				if (u != v) {
+					index C = zeta[v];
+					if (turboAffinity[tid][C] == -1) {
+						// found the neighbor for the first time, initialize to 0 and add to list of neighboring communities
+						turboAffinity[tid][C] = 0;
+						neigh_comm[tid][numNeighbors++] = C;
+					}
+					turboAffinity[tid][C] += weight;
+				}
+			});
+		} else {
+			G.forNeighborsOf(u, [&](node v, edgeweight weight) {
+				if (u != v) {
+					index C = zeta[v];
+					affinity[C] += weight;
+				}
+			});
+		}
 
 
 		// sub-functions
@@ -104,22 +150,41 @@ Partition PLM::run(const Graph& G) {
 		double deltaBest = -1;
 
 		C = zeta[u];
-		edgeweight affinityC = affinity[C];
+
+		if (turbo) {
+			edgeweight affinityC = turboAffinity[tid][C];
+
+			for (index i = 0; i < numNeighbors; ++i) {
+				D = neigh_comm[tid][i];
+
+				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
+					double delta = modGain(u, C, D, affinityC, turboAffinity[tid][D]);
+
+					// TRACE("mod gain: " , delta);
+					if (delta > deltaBest) {
+						deltaBest = delta;
+						best = D;
+					}
+				}
+			}
+		} else {
+			edgeweight affinityC = affinity[C];
 
 //			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
-		for (auto it : affinity) {
-			D = it.first;
-			if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
-				double delta = modGain(u, C, D, affinityC, it.second);
-				// TRACE("mod gain: " , delta); // FIXME: all mod gains are negative
-				if (delta > deltaBest) {
-					deltaBest = delta;
-					best = D;
+			for (auto it : affinity) {
+				D = it.first;
+				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
+					double delta = modGain(u, C, D, affinityC, it.second);
+					// TRACE("mod gain: " , delta);
+					if (delta > deltaBest) {
+						deltaBest = delta;
+						best = D;
+					}
 				}
 			}
 		}
 
-		// TRACE("deltaBest=" , deltaBest); // FIXME: best mod gain is negative
+		// TRACE("deltaBest=" , deltaBest);
 		if (deltaBest > 0) { // if modularity improvement possible
 			assert (best != C && best != none);// do not "move" to original cluster
 
@@ -223,7 +288,7 @@ std::string NetworKit::PLM::toString() const {
 
 std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta, bool parallel) {
 	if (parallel) {
-		ParallelPartitionCoarsening parCoarsening;
+		ParallelPartitionCoarsening parCoarsening(true);
 		return parCoarsening.run(G, zeta);
 	} else {
 		ClusterContractor seqCoarsening;
