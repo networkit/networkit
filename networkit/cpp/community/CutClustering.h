@@ -26,8 +26,7 @@ public:
 	 * Apply algorithm to graph
 	 *
 	 * Warning: due to numerical errors the resulting clusters might not be correct.
-	 * This implementation is rather slow because of the use of the Edmonds-Karp algorithm
-	 * for the cut calculation.
+	 * This implementation uses the Edmonds-Karp algorithm for the cut calculation.
 	 *
 	 * @return partition of the node set
 	 */
@@ -45,6 +44,7 @@ public:
 	 *
 	 * Warning: all reported parameter values are slightly too high in order to avoid wrong clusterings because of numerical inaccuracies.
 	 * Furthermore the completeness of the hierarchy cannot be guaranteed because of these inaccuracies.
+	 * This implementation hasn't been optimized for performance.
 	 *
 	 * @param G The Graph instance for which the hierarchy shall be calculated
 	 *
