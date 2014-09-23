@@ -25,7 +25,6 @@ from . import generators
 from . import properties
 from . import structures
 from . import engineering
-from . import toolbox
 from . import dynamic
 from . import gephi
 from . import partitioning
@@ -61,7 +60,7 @@ from .graphio import readGraph, writeGraph, Format
 #except ImportError:
 #	from _graphio33 import readGraph, writeGraph, Format
 from .nxadapter import nk2nx, nx2nk
-from .toolbox import batch
+from .workflows import batch
 from .community import detectCommunities
 
 
