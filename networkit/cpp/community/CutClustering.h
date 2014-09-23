@@ -24,6 +24,11 @@ public:
 
 	/**
 	 * Apply algorithm to graph
+	 *
+	 * Warning: due to numerical errors the resulting clusters might not be correct.
+	 * This implementation is rather slow because of the use of the Edmonds-Karp algorithm
+	 * for the cut calculation.
+	 *
 	 * @return partition of the node set
 	 */
 	virtual Partition run(const Graph& G) override;
@@ -32,7 +37,26 @@ public:
 	 * @return string representation of algorithm and parameters.
 	 */
 	virtual std::string toString() const override;
+
+	/**
+	 * Get the complete hierarchy with all possible parameter values.
+	 *
+	 * Each reported parameter value is the lower bound for the range in which the corresponding clustering is calculated by the cut clustering algorithm.
+	 *
+	 * Warning: all reported parameter values are slightly too high in order to avoid wrong clusterings because of numerical inaccuracies.
+	 * Furthermore the completeness of the hierarchy cannot be guaranteed because of these inaccuracies.
+	 *
+	 * @param G The Graph instance for which the hierarchy shall be calculated
+	 *
+	 * @return The hierarchy as map
+	 */
+	static std::map<double, Partition> getClusterHierarchy(const Graph& G);
 private:
+
+	/**
+	 * Helper function for the recursive clustering hierarchy calculation.
+	 */
+	static void clusterHierarchyRecursion(const Graph &G, double lower, Partition lowerClusters, double upper, Partition upperClusters, std::map< double, Partition > &result);
 	edgeweight alpha;
 };
 
