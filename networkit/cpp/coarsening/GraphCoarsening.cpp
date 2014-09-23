@@ -9,16 +9,6 @@
 
 namespace NetworKit {
 
-GraphCoarsening::GraphCoarsening() {
-	// TODO Auto-generated constructor stub
-
-}
-
-GraphCoarsening::~GraphCoarsening() {
-	// TODO Auto-generated destructor stub
-}
-
-
 }
 
 

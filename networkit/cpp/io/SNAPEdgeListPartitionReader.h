@@ -12,15 +12,9 @@
 #include <vector>
 #include <fstream>
 #include <unordered_map>
-// TODO: clean up includes
-
-//#include <unordered_set>
-//#include <vector>
-// #include <fstream>
 
 #include "../graph/Graph.h"
 #include "../auxiliary/StringTools.h"
-//#include "../structures/Partition.h"
 #include "../structures/Cover.h"
 
 namespace NetworKit {
@@ -31,9 +25,6 @@ namespace NetworKit {
  */
 class SNAPEdgeListPartitionReader {
 public:
-	/** Default destructor */
-	virtual ~SNAPEdgeListPartitionReader() = default;
-
 	virtual Cover read(std::string path, std::unordered_map<node,node>& mapNodeIds, Graph& G);
 
 //	virtual Partition readWithInfo(std::string path, count nNodes);

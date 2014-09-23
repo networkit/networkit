@@ -12,10 +12,6 @@ namespace NetworKit {
 Matching::Matching(uint64_t n) : data(n, none), n(n) {
 }
 
-Matching::~Matching() {
-
-}
-
 bool Matching::isMatched(const node& u) const {
 	return (this->data[u] != none);
 }

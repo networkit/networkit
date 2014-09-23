@@ -18,10 +18,6 @@ StronglyConnectedComponents::StronglyConnectedComponents(const Graph& G) : G(G) 
 
 }
 
-StronglyConnectedComponents::~StronglyConnectedComponents() {
-
-}
-
 void StronglyConnectedComponents::run() {
 	count z = G.upperNodeIdBound();
 	component = Partition(z);

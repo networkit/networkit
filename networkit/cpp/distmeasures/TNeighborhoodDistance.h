@@ -17,11 +17,7 @@ namespace NetworKit {
  */
 class TNeighborhoodDistance: public NetworKit::TNodeDistance {
 public:
-
 	TNeighborhoodDistance(const Graph& G);
-
-	/** Default destructor */
-	virtual ~TNeighborhoodDistance();
 
 	void initialize(const Parameters& param);
 

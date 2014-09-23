@@ -23,9 +23,6 @@ public:
 	 */
 	EdgeListPartitionReader(node firstNode=1);
 
-	/** Default destructor */
-	virtual ~EdgeListPartitionReader() = default;
-
 	/**
 	 * Read a clustering from a file. File format:
 	 * 		A list of the nodes and their membership (memberships are labelled by integer numbers >=1).
