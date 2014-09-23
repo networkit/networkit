@@ -81,9 +81,9 @@ NetworKit::Partition NetworKit::CutClustering::run(const NetworKit::Graph &G) {
 	return result;
 }
 
-std::map< double, NetworKit::Partition > NetworKit::CutClustering::getClusterHierarchy(const NetworKit::Graph &G) {
-	std::map<double, Partition> result;
-	double lower = 0, upper = 2;
+std::map< NetworKit::edgeweight, NetworKit::Partition > NetworKit::CutClustering::getClusterHierarchy(const NetworKit::Graph &G) {
+	std::map<edgeweight, Partition> result;
+	edgeweight lower = 0, upper = 2;
 
 	// for weighted networks the upper bound of alpha is the maximum edge weight +1
 	if (G.isWeighted()) {
@@ -139,9 +139,9 @@ std::map< double, NetworKit::Partition > NetworKit::CutClustering::getClusterHie
 	return result;
 }
 
-void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph &G, double lower, NetworKit::Partition lowerClusters, double upper, NetworKit::Partition upperClusters, std::map< double, Partition > &result) {
+void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph &G, edgeweight lower, NetworKit::Partition lowerClusters, edgeweight upper, NetworKit::Partition upperClusters, std::map< edgeweight, Partition > &result) {
 	while (true) {
-		double middle = -1;
+		edgeweight middle = -1;
 
 		// calculate cut values and cluster sizes for all clusters
 		// FIXME: it might be more efficient to calculate them only on demand, especially the cut values. However without a possibility to efficiently enumerate the nodes of a cluster this is inefficient.
@@ -193,10 +193,10 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
 			});
 
 			// check if we have actually found a new breakpoint. Use an epsilon in order to be sure that the (almost) same value is not used twice.
-			if (possibleBreakpoint + std::numeric_limits<double>::epsilon() < upper) {
+			if (possibleBreakpoint + std::numeric_limits<edgeweight>::epsilon() < upper) {
 				// also the actual alpha value needs to be higher as otherwise the lower clustering might be calculated again
 				// because the value is not high enough.
-				middle = possibleBreakpoint + std::numeric_limits<double>::epsilon();
+				middle = possibleBreakpoint + std::numeric_limits<edgeweight>::epsilon();
 				break;
 			} else if (possibleBreakpoint > upper) {
 				// this shouldn't happen and indicates that there are numerical inaccuracies or an error in the implementation

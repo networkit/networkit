@@ -50,13 +50,13 @@ public:
 	 *
 	 * @return The hierarchy as map
 	 */
-	static std::map<double, Partition> getClusterHierarchy(const Graph& G);
+	static std::map<edgeweight, Partition> getClusterHierarchy(const Graph& G);
 private:
 
 	/**
 	 * Helper function for the recursive clustering hierarchy calculation.
 	 */
-	static void clusterHierarchyRecursion(const Graph &G, double lower, Partition lowerClusters, double upper, Partition upperClusters, std::map< double, Partition > &result);
+	static void clusterHierarchyRecursion(const Graph &G, edgeweight lower, Partition lowerClusters, edgeweight upper, Partition upperClusters, std::map< edgeweight, Partition > &result);
 	edgeweight alpha;
 };
 
