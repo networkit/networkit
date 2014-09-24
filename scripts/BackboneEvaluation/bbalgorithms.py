@@ -185,7 +185,7 @@ class bb_Random:
         return "RandomBackbone " + self._tag
 
     def getShortName(self):
-        return "Random " + self._tag
+        return ("Random " + self._tag).strip()
 
     def getAlgorithmExpr(self, parameter):
         return "backbones.RandomBackbone(" + str(parameter) + ")"
@@ -219,7 +219,7 @@ class bb_ForestFire:
         return "ForestFire Backbone " + self.tag
 
     def getShortName(self):
-        return "ForestFire " + self.tag
+        return ("ForestFire " + self.tag).strip()
 
     def getAlgorithmExpr(self, parameter):
         return "backbones.ForestFire(" + str(parameter) + ")"
