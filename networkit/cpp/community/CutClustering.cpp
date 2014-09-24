@@ -200,9 +200,7 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
 				break;
 			} else if (possibleBreakpoint > upper) {
 				// this shouldn't happen and indicates that there are numerical inaccuracies or an error in the implementation
-				std::stringstream stream;
-				stream << "Warning: possible breakpoint " << possibleBreakpoint << " higher than the upper value: " << upper;
-				WARN(stream.str());
+				WARN("Warning: possible breakpoint ", possibleBreakpoint, " higher than the upper value: ", upper);
 			}
 		}
 
@@ -216,9 +214,7 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
 		// calculate the clustering at the calculated breakpoint
 		Partition middleClusters(CutClustering(middle).run(G)); // FIXME using a single cut clustering instance such that G is not always copied is probably faster
 
-		std::stringstream stream;
-		stream << "Calculated clustering for alpha value " << middle;
-		INFO(stream.str());
+		INFO("Calculated clustering for alpha value ", middle);
 
 		// As all clusterings are nested we can compare by simply comparing the number of clusters.
 		count numMiddleClusters = middleClusters.numberOfSubsets();
