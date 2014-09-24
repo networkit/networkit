@@ -3303,7 +3303,7 @@ cdef class ClusteringCoefficient:
 
 
 cdef extern from "cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
-	pair[count, count] estimatedDiameterRange(_Graph G, double error) except +
+	pair[count, count] estimatedDiameterRange(_Graph G, double error, pair[node,node] *proof) except +
 	count exactDiameter(_Graph G) except +
 	edgeweight estimatedVertexDiameter(_Graph G, count) except +
 
@@ -3323,7 +3323,21 @@ cdef class Diameter:
 		pair
 			Pair of lower and upper bound for diameter.
 		"""
-		return estimatedDiameterRange(G._this, error)
+		return estimatedDiameterRange(G._this, error, NULL)
+
+	@staticmethod
+	def estimatedDiameterRangeWithProof(Graph G, error=0.1):
+		""" Estimates a range for the diameter of @a G like estimatedDiameterRange but also
+		returns a pair of nodes that has the reported lower bound as distance if the graph is non-trivial.
+
+		Returns
+		-------
+		tuple
+			Tuple of two tuples, the first is the result and contains lower and upper bound, the second contains the two nodes whose distance is the reported lower bound
+		"""
+		cdef pair[node, node] proof
+		cdef pair[count, count] result = estimatedDiameterRange(G._this, error, &proof)
+		return (result, proof)
 
 	@staticmethod
 	def exactDiameter(Graph G):
