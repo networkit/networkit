@@ -79,18 +79,7 @@ void Betweenness::run() {
 		});
 	}
 
-	/*
-	for (int i = 0; i < 6; i++) {
-		for (int j = i; j < 6; j++) {
-			if (i != j) {
-				if (G.hasEdge(i,j)) {
-					//std::cout << i << " " << j << ":" << G.edgeId(i,j) << std::endl;
-				}
-				//std::cout << i << "->" << j << ": " << edges[i][j] << std::endl;
-			}
-		}
-	}
-	*/
+	// TODO: normalize edge scores
 }
 
 
