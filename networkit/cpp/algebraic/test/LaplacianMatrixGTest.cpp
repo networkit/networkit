@@ -15,7 +15,7 @@ LaplacianMatrixGTest::LaplacianMatrixGTest() {
 LaplacianMatrixGTest::~LaplacianMatrixGTest() {
 }
 
-TEST(LaplacianMatrixGTest, trySmallLaplacianMatrix) {
+TEST(LaplacianMatrixGTest, testSmallLaplacianMatrix) {
 	NetworKit::Graph graph(6);
 	graph.addEdge(0, 0); // self-loop
 	graph.addEdge(0, 1);
@@ -53,7 +53,7 @@ TEST(LaplacianMatrixGTest, trySmallLaplacianMatrix) {
 	EXPECT_EQ(1, laplacianMatrix(5,5));
 }
 
-TEST(LaplacianMatrixGTest, tryLaplacianMatrixOfLesmisGraph) {
+TEST(LaplacianMatrixGTest, testLaplacianMatrixOfLesmisGraph) {
 	// read lesmis graph
 	NetworKit::METISGraphReader graphReader;
 	NetworKit::Graph graph = graphReader.read("input/lesmis.graph");

@@ -16,14 +16,14 @@ MatrixGTest::MatrixGTest() {
 MatrixGTest::~MatrixGTest() {
 }
 
-TEST(MatrixGTest, tryMatrixDimension) {
+TEST(MatrixGTest, testMatrixDimension) {
 	Matrix mat(10);
 
 	ASSERT_EQ(10u, mat.numberOfRows());
 	ASSERT_EQ(10u, mat.numberOfColumns());
 }
 
-TEST(MatrixGTest, tryRowAndColumnAccess) {
+TEST(MatrixGTest, testRowAndColumnAccess) {
 	std::vector<std::pair<int, int> > positions;
 	std::vector<double> values;
 
@@ -58,7 +58,7 @@ TEST(MatrixGTest, tryRowAndColumnAccess) {
 
 }
 
-TEST(MatrixGTest, tryMatrixAddition) {
+TEST(MatrixGTest, testMatrixAddition) {
 	std::vector<std::pair<NetworKit::node, NetworKit::node> > positions1;
 	std::vector<std::pair<NetworKit::node, NetworKit::node> > positions2;
 	std::vector<double> values1;
@@ -97,7 +97,7 @@ TEST(MatrixGTest, tryMatrixAddition) {
 	EXPECT_EQ(0.0, result(3, 14));
 }
 
-TEST(MatrixGTest, tryMatrixSubtraction) {
+TEST(MatrixGTest, testMatrixSubtraction) {
 	std::vector<std::pair<NetworKit::node, NetworKit::node> > positions1;
 	std::vector<std::pair<NetworKit::node, NetworKit::node> > positions2;
 	std::vector<double> values1;
@@ -136,7 +136,7 @@ TEST(MatrixGTest, tryMatrixSubtraction) {
 	EXPECT_EQ(0.0, result(3, 14));
 }
 
-TEST(MatrixGTest, tryScalarMultiplication) {
+TEST(MatrixGTest, testScalarMultiplication) {
 	std::vector<std::pair<int, int> > positions;
 	std::vector<double> values;
 
@@ -168,7 +168,7 @@ TEST(MatrixGTest, tryScalarMultiplication) {
 	EXPECT_EQ(0.0, mat(55, 199));
 }
 
-TEST(MatrixGTest, tryMatrixDivisionOperator) {
+TEST(MatrixGTest, testMatrixDivisionOperator) {
 	std::vector<std::pair<int, int> > positions;
 	std::vector<double> values;
 
@@ -200,7 +200,7 @@ TEST(MatrixGTest, tryMatrixDivisionOperator) {
 	EXPECT_EQ(0.0, mat(55, 199));
 }
 
-TEST(MatrixGTest, tryMatrixVectorProduct) {
+TEST(MatrixGTest, testMatrixVectorProduct) {
 	std::vector<std::pair<int, int> > mPositions;
 	std::vector<double> mValues;
 
@@ -256,7 +256,7 @@ TEST(MatrixGTest, tryMatrixVectorProduct) {
 	EXPECT_EQ(-3, res[3]);
 }
 
-TEST(MatrixGTest, tryMatrixMultiplication) {
+TEST(MatrixGTest, testMatrixMultiplication) {
 	std::vector<std::pair<int, int> > positions;
 	std::vector<double> values = {1, 2, 3, 2, 2, 3, 3, -1, -1, 4};
 
