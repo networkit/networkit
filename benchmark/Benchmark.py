@@ -15,6 +15,7 @@ import sys
 from unittest.signals import registerResult
 import warnings
 import time
+import math
 
 
 class BenchmarkRunner(unittest.TextTestRunner):
@@ -386,7 +387,7 @@ class Timer:
 
     def __exit__(self, *args):
         self.end = time.clock()
-        self.elapsed = self.end - self.start
+        self.elapsed = round(self.end - self.start, 6)
 
 
 
@@ -429,26 +430,77 @@ selected = ["PGPgiantcompo", "power"]
 collectionDir = os.path.expanduser("~/workspace/Data/NwkBenchmark")
 
 
-def main():
-    print("main")
+class Algo:
+    """ runner for an algorithm"""
+    def run(self, G):
+        raise Exception("Not implementedd")
 
-    for graphName in selected:
+class ConnectedComponents_(Algo):
+    name = "ConnectedComponents"
+
+    def run(self, G):
+        cc = properties.ConnectedComponents(G)
+        cc.run()
+        # TODO: validate result?
+
+class ParallelConnectedComponents_(Algo):
+    name = "ParallelConnectedComponents"
+
+    def run(self, G):
+        cc = properties.ParallelConnectedComponents(G)
+        cc.run()
+
+
+class CoreDecomposition_(Algo):
+    name = "CoreDecomposition"
+
+    def run(self, G):
+        cd = properties.CoreDecomposition(G)
+        cd.run()
+
+
+class Fail_(Algo):
+    name = "Fail"
+
+    def run(self, G):
+        raise Exception("FAIL!")
+
+
+
+def main():
+    logging.info("start benchmark")
+
+    data = benchmark(ConnectedComponents_(), ["PGPgiantcompo", "power"])
+    data = benchmark(CoreDecomposition_(), ["PGPgiantcompo", "power"])
+    #data = benchmark(_Fail(), ["PGPgiantcompo", "power    "])
+
+
+def benchmark(algo, graphs):
+    table = []  # list of dictionaries, to be converted to a DataFrame
+
+    for graphName in graphs:
         try:
+            print("")
             logging.info("loading {0}".format(graphName))
             G = loadGraph(graphName, basePath=collectionDir)
             try:
                 for i in range(nRuns):
+                    row = {}    # benchmark data row
                     with Timer() as t:
-                        cc = properties.ConnectedComponents(G)
-                        cc.run()
-                        # TODO: validate result?
+                        logging.info("running {algo.name}".format(**locals()))
+                        algo.run(G)
                     logging.info("took {0} s".format(t.elapsed))
+                    # store data
+                    row["algo"] = algo.name
+                    row["graph"] = graphName
+                    row["time"] = t.elapsed
+                    table.append(row)
             except Exception as ex:
-                logging.error("algorithm failed with exception: {0}".format(str(ex)))
-                raise ex
+                logging.error("algorithm {algo.name} failed with exception: {ex}".format(**locals()))
         except Exception as ex:
-            logging.error("loading graph {0} failed with exception: {1}".format(graphName, str(ex)))
-            raise ex
+            logging.error("loading graph {graphName} failed with exception: {ex}".format(**locals()))
+
+    return pandas.DataFrame(table)
 
 # - degree distribution power-law estimation (properties.powerLawExponent)
 # - k-core decomposition (properties.CoreDecomposition)
