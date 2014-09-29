@@ -106,9 +106,8 @@ class nk:
         def run(self, G):
             raise Exception("Not implemented")
 
-        def loadGraph(key, basePath):
-            (fileName, formatName) = networks[key]
-            G = readGraph(os.path.join(basePath, fileName), formatName)
+        def loadGraph(path):
+            G = readGraph(path, formatName)
             return G
 
     class bConnectedComponents(nk.Algo):
@@ -243,6 +242,10 @@ class nx:
         """ runner for an algorithm"""
         def run(self, G):
             raise Exception("Not implemented")
+
+        def loadGraph(path):
+            G = networkx.read_edgelist(path)
+            return G
 
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
