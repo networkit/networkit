@@ -15,7 +15,7 @@ AdjacencyMatrixGTest::AdjacencyMatrixGTest() {
 AdjacencyMatrixGTest::~AdjacencyMatrixGTest() {
 }
 
-TEST(AdjacencyMatrixGTest, trySmallAdjacencyMatrix) {
+TEST(AdjacencyMatrixGTest, testSmallAdjacencyMatrix) {
 	NetworKit::Graph graph(6);
 	graph.addEdge(0,0);
 	graph.addEdge(0,1);
@@ -53,7 +53,7 @@ TEST(AdjacencyMatrixGTest, trySmallAdjacencyMatrix) {
 	ASSERT_EQ(0, mat(4,5));
 }
 
-TEST(AdjacencyMatrixGTest, tryAdjacencyMatrixOfLesmisGraph) {
+TEST(AdjacencyMatrixGTest, testAdjacencyMatrixOfLesmisGraph) {
 	// read lesmis graph
 	NetworKit::METISGraphReader graphReader;
 	NetworKit::Graph graph = graphReader.read("input/lesmis.graph");
