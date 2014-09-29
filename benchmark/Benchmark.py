@@ -15,12 +15,10 @@ import sys
 from unittest.signals import registerResult
 import warnings
 import time
-# timing
-#t = stopwatch.Timer()
-#t.elapsed
-#t.stop()
+
 
 class BenchmarkRunner(unittest.TextTestRunner):
+
     def run(self, test):
         "Run the given test case or test suite."
         result = self._makeResult()
@@ -235,7 +233,7 @@ class _Outcome(object):
 class BenchmarkTestCase(unittest.TestCase):
     def setUp(self):
         pass
-    
+
     def tearDown(self):
         pass
 
@@ -338,7 +336,7 @@ class Benchmark_ConnectedComponents(BenchmarkTestCase):
         elapsed = t.stop()
         data = pandas.DataFrame(data={'name': ['ConnectedComponents.init'], 'time':[elapsed]})
         return data
-    
+
     def test_run(self):
         g = loadGraph('PGPgiantcompo')
         cc = properties.ConnectedComponents(g)
@@ -359,7 +357,7 @@ class Benchmark_PLM(BenchmarkTestCase):
         elapsed = t.stop()
         data = pandas.DataFrame(data={'name': ['PLM.init'], 'time':[elapsed]})
         return data
-    
+
     def test_run(self):
         g = loadGraph('PGPgiantcompo')
         plm = community.PLM()
@@ -372,21 +370,24 @@ class Benchmark_PLM(BenchmarkTestCase):
 
 # helper function
 
-def loadGraph(key):
+def loadGraph(key, basePath):
     (fileName, formatName) = networks[key]
-    basePath = ''
     G = readGraph(os.path.join(basePath, fileName), formatName)
     return G
 
-class Timing:
+
+class Timer:
+    """ Use the Python with-statement to time your code
+    with this timer. """
 
     def __enter__(self):
-        print("enter called")
-        self.watch = stopwatch.Timer()
+        self.start = time.clock()
+        return self
 
-    def __exit__(self, typ, value, traceback):
-        print("exit called")
-        self.watch.stop()
+    def __exit__(self, *args):
+        self.end = time.clock()
+        self.elapsed = self.end - self.start
+
 
 
 # what is a  test
@@ -406,22 +407,48 @@ nRuns = 5   # how many runs for representative results
 # collection of networks
 
 networks = {
-            "PGPgiantcompo" : ("input/PGPgiantcompo.graph", Format.METIS),
-            "uk2007" : ("uk2007.graph", Format.METIS),
+            "PGPgiantcompo" : ("PGPgiantcompo.metis.graph", Format.METIS),
+            "power" : ("power.metis.graph", Format.METIS),
+            "caidaRouterLevel" : ("caidaRouterLevel.graph", Format.METIS),
+            "as-22july06" : ("as-22july06.metis.graph", Format.METIS),
+            "coAuthorsDBLP" : ("coAuthorsDBLP.graph", Format.METIS),
+            "uk-2007-05" : ("uk2007-05.metis.graph", Format.METIS),
+            "uk-2002" : ("uk-2002.metis.graph", Format.METIS),
+            "fb-Texas84" : ("Texas84.edgelist", Format.EdgeListTabZero),
+            "fb-Caltech36" : ("Caltech36.edgelist", Format.EdgeListTabZero),
+            "fb-MIT8" : ("MIT8.edgelist", Format.EdgeListTabZero),
+            "fb-Smith60" : ("Smith60.edgelist", Format.EdgeListTabZero),
+            "con-fiber_big" : ("con-fiber_big.metis.graph", Format.METIS),
             }
 
 
 
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
-selected = ["PGPgiantcompo", "uk2007"]
-
+selected = ["PGPgiantcompo", "power"]
+collectionDir = os.path.expanduser("~/workspace/Data/NwkBenchmark")
 
 
 def main():
-    for selectedGraphName in selected:
-        G = loadGraph(selectedGraphName)
-        connectedComponents = properties.ConnectedComponents(G)
+    print("main")
+
+    for graphName in selected:
+        try:
+            logging.info("loading {0}".format(graphName))
+            G = loadGraph(graphName, basePath=collectionDir)
+            try:
+                for i in range(nRuns):
+                    with Timer() as t:
+                        cc = properties.ConnectedComponents(G)
+                        cc.run()
+                        # TODO: validate result?
+                    logging.info("took {0} s".format(t.elapsed))
+            except Exception as ex:
+                logging.error("algorithm failed with exception: {0}".format(str(ex)))
+                raise ex
+        except Exception as ex:
+            logging.error("loading graph {0} failed with exception: {1}".format(graphName, str(ex)))
+            raise ex
 
 # - degree distribution power-law estimation (properties.powerLawExponent)
 # - k-core decomposition (properties.CoreDecomposition)
@@ -439,3 +466,6 @@ def main():
 # 	- Barabasi-Albert (generators.BarabasiAlbertGenerator)
 # 	- Chung-Lu (generators.ChungLuGenerator)
 # 	- RMAT (generators.RmatGenerator)
+
+if __name__ == "__main__":
+    main()
