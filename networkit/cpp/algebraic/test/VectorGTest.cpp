@@ -16,7 +16,7 @@ VectorGTest::VectorGTest() {
 VectorGTest::~VectorGTest() {
 }
 
-TEST(VectorGTest, tryVectorConstruction) {
+TEST(VectorGTest, testVectorConstruction) {
 	Vector v1;
 	ASSERT_EQ(0u, v1.getDimension());
 
@@ -34,12 +34,12 @@ TEST(VectorGTest, tryVectorConstruction) {
 	}
 }
 
-TEST(VectorGTest, tryDimension) {
+TEST(VectorGTest, testDimension) {
 	Vector testVector = {1.0, 2.0, 3.0, 4.0, 5.0};
 	ASSERT_EQ(5u, testVector.getDimension());
 }
 
-TEST(VectorGTest, tryTransposition) {
+TEST(VectorGTest, testTransposition) {
 	Vector v = {1, 2, 3, 4, 5};
 	EXPECT_FALSE(v.isTransposed());
 
@@ -53,7 +53,7 @@ TEST(VectorGTest, tryTransposition) {
 	EXPECT_TRUE(v2.isTransposed());
 }
 
-TEST(VectorGTest, tryLength) {
+TEST(VectorGTest, testLength) {
 	Vector v = {12, 3, 9, 28, 0, -1};
 	double result = 0.0;
 	v.forElements([&](const double &value) {
@@ -63,7 +63,7 @@ TEST(VectorGTest, tryLength) {
 	EXPECT_EQ(std::sqrt(result), v.length());
 }
 
-TEST(VectorGTest, tryAccessVectorElement) {
+TEST(VectorGTest, testAccessVectorElement) {
 	Vector testVector = {1.0, 2.0, 3.0, 4.0, 5.0};
 
 	double third = testVector[2];
@@ -74,7 +74,7 @@ TEST(VectorGTest, tryAccessVectorElement) {
 	EXPECT_EQ(4.0, third);
 }
 
-TEST(VectorGTest, tryInnerProduct) {
+TEST(VectorGTest, testInnerProduct) {
 	Vector v1 = {1.0, 0.0, -1.0, -5.0, 2.0};
 	Vector v2 = {1.0, 2.0,  3.0,  0.0, 5.0};
 
@@ -82,7 +82,7 @@ TEST(VectorGTest, tryInnerProduct) {
 	EXPECT_EQ(8.0, dotProduct);
 }
 
-TEST(VectorGTest, tryVectorComparisonOperators) {
+TEST(VectorGTest, testVectorComparisonOperators) {
 	Vector v1 = {1.0, 2.0, 3.0, 4.0, 5.0};
 	Vector v2 = {1.0, 2.0, 3.0, 4.0, 5.0};
 
@@ -95,7 +95,7 @@ TEST(VectorGTest, tryVectorComparisonOperators) {
 	EXPECT_TRUE(v1 != v3);
 }
 
-TEST(VectorGTest, tryVectorScalarMultiplication) {
+TEST(VectorGTest, testVectorScalarMultiplication) {
 	Vector testVector = {1.0, 2.0, 3.0, 4.0, 5.0};
 
 	Vector vectorScalar = testVector * 2.0;
@@ -110,7 +110,7 @@ TEST(VectorGTest, tryVectorScalarMultiplication) {
 	}
 }
 
-TEST(VectorGTest, tryVectorMatrixMultiplication) {
+TEST(VectorGTest, testVectorMatrixMultiplication) {
 	Vector v = {1.0, 2.0, 3.0};
 	Vector r1 = {8, 3, 4};
 	Vector r2 = {3, 5, 9};
@@ -127,7 +127,7 @@ TEST(VectorGTest, tryVectorMatrixMultiplication) {
 	EXPECT_EQ(28, result[2]);
 }
 
-TEST(VectorGTest, tryVectorDivisionOperator) {
+TEST(VectorGTest, testVectorDivisionOperator) {
 	Vector testVector = {1.0, 2.0, 3.0, 4.0, 5.0};
 
 	Vector vectorScalar = testVector / (1.0 / 2.0);
@@ -138,7 +138,7 @@ TEST(VectorGTest, tryVectorDivisionOperator) {
 	}
 }
 
-TEST(VectorGTest, tryVectorAddition) {
+TEST(VectorGTest, testVectorAddition) {
 	Vector v1 = {1.0, 2.0, 3.0, 4.0, 5.0};
 	Vector v2 = {1.0, 2.0, 3.0, 4.0, 5.0};
 
@@ -154,7 +154,7 @@ TEST(VectorGTest, tryVectorAddition) {
 	}
 }
 
-TEST(VectorGTest, tryVectorSubtraction) {
+TEST(VectorGTest, testVectorSubtraction) {
 	Vector v1 = {2.0, 4.0, 6.0, 8.0, 10.0};
 	Vector v2 = {1.0, 2.0, 3.0, 4.0, 5.0};
 
@@ -170,7 +170,7 @@ TEST(VectorGTest, tryVectorSubtraction) {
 	}
 }
 
-TEST(VectorGTest, tryVectorIterators) {
+TEST(VectorGTest, testVectorIterators) {
 	Vector v = {1.0, 2.0, 3.0, 4.0, 5.0};
 
 	// constant iterators
