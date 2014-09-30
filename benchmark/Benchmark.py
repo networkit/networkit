@@ -22,6 +22,8 @@ import seaborn
 import networkit
 
 import nk
+from nk import Algo
+from networkit import *
 import nx
 import ig
 
@@ -98,7 +100,12 @@ collectionDir = os.path.expanduser("~/workspace/Data/NwkBenchmark")
 
 
 
+<<<<<<< local
 class bFail:
+=======
+
+class bFail(Algo):
+>>>>>>> other
     name = "Fail"
 
     def run(self, G):
