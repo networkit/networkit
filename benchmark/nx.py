@@ -13,6 +13,10 @@ class Algo:
 		G = networkx.read_edgelist(path)
 		return G
 
+	def numberOfEdges(self, G):
+		return G.numberOfEdges()
+
+
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
 class bConnectedComponents(Algo):
