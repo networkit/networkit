@@ -37,10 +37,10 @@ def averageRuns(df, groupby=["graph"]):
 def graphMeta(graphNames, graphDir):
     meta = []
     for name in graphNames:
-        G = networkit.readGraph(os.path.join(graphDir, "{0}.gml.graph".format(name)))
+        G = networkit.readGraph(os.path.join(graphDir, "{0}.gml.graph".format(name)), networkit.Format.GML)
         (n, m) = networkit.properties.size(G)
         meta.append({"name" : name, "n" : n, "m" : m})
-    return pandas.DataFrame(meta)
+    return pandas.DataFrame(meta, columns=["name", "n", "m"])
 
 
 class Timer:
@@ -125,6 +125,8 @@ seaborn.set_style("whitegrid")
 
 ### Colors
 red = seaborn.xkcd_rgb["crimson"]
+orange = seaborn.xkcd_rgb["bright orange"]
+
 
 def timePlot(data, size=(6,3)):
     pos = numpy.arange(len(data))+.5    # the bar centers on the y axis
@@ -137,6 +139,20 @@ def timePlot(data, size=(6,3)):
     #gca().xaxis.set_minor_formatter(FormatStrFormatter("%.2f"))
     plt.xlabel("time [s]")
     plt.grid(True)
+
+
+def epsPlot(data, size=(6,3)):
+    pos = numpy.arange(len(data))+.5    # the bar centers on the y axis
+    labels = list(data["graph"])
+    plt.figure(figsize=size)
+    plt.xscale("log")
+    plt.barh(pos, data["time"], align='center', height=0.25, color=red)    # notice the 'height' argument
+    plt.yticks(pos, labels)
+    plt.gca().xaxis.set_minor_locator(plt.LogLocator(subs=[0,1,2,3,4,5,6,7,8,9,10]))
+    #gca().xaxis.set_minor_formatter(FormatStrFormatter("%.2f"))
+    plt.xlabel("time [s]")
+    plt.grid(True)
+
 
 
 def graphPlot(data, size=None):
@@ -162,7 +178,7 @@ def barPlot(data, labels, x_label="", y_label="", size=None, color="b", transpar
     plt.grid(True)
 
 
-def benchmark(algo, graphs):
+def algoBenchmark(algo, graphs):
     info("benchmarking {algo.name}".format(**locals()))
     table = []  # list of dictionaries, to be converted to a DataFrame
 
@@ -188,6 +204,10 @@ def benchmark(algo, graphs):
             error("loading graph {graphName} failed with exception: {ex}".format(**locals()))
 
     return pandas.DataFrame(table)
+
+
+def generatorBenchmark(generator, argtuples):
+    pass
 
 
 # - generators
