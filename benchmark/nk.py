@@ -63,11 +63,18 @@ class bBFS(Algo):
 
 # - community detection (community.PLM, community.PLP)
 
-class bCommunityDetection(Algo):
-	name = "CommunityDetection"
+class bCommunityDetectionLM(Algo):
+	name = "CommunityDetectionLM"
 
 	def run(self, G):
 		plm = networkit.community.PLM(G)
+		plm.run()
+
+class bCommunityDetectionLP(Algo):
+	name = "CommunityDetectionLP"
+
+	def run(self, G):
+		plm = networkit.community.PLP(G)
 		plm.run()
 
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)

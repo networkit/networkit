@@ -27,22 +27,21 @@ import ig
 
 # helper function
 
-def loadGraph(key, basePath, framework="networkit"):
-    if framework is "networkit":
-        (fileName, formatName) = networks[key]
-        G = networkit.readGraph(os.path.join(basePath, fileName), formatName)
-        return G
-    elif framework is "networkx":
-        pass
-    elif framework is "igraph":
-        pass
-    else:
-        raise Exception("unknown framework {0}".format(framework))
 
 
 def averageRuns(df, groupby=["graph"]):
     """ Average running time, modularity, edges per second and number of clusters over multiple runs"""
     return df.groupby(groupby, as_index=False).mean()
+
+
+def graphMeta(graphNames, graphDir):
+    meta = []
+    for name in graphNames:
+        G = networkit.readGraph(os.path.join(graphDir, "{0}.gml.graph".format(name)))
+        (n, m) = networkit.properties.size(G)
+        meta.append({"name" : name, "n" : n, "m" : m})
+    return pandas.DataFrame(meta)
+
 
 class Timer:
     """ Use the Python with-statement to time your code

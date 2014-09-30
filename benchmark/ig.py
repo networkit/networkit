@@ -58,11 +58,19 @@ class bBFS(Algo):
 
 
 # - community detection (community.PLM, community.PLP)
-class bCommunityDetection(Algo):
-	name = "CommunityDetection"
+class bCommunityDetectionLM(Algo):
+	name = "CommunityDetectionLM"
 
 	def run(self, G):
-		raise NotImplementedError("TODO")  # Need to check which method corresponds to PLM/PLP
+		igraph.Graph.community_multilevel(G)
+
+
+class bCommunityDetectionLP(Algo):
+	name = "CommunityDetectionLP"
+
+	def run(self, G):
+		igraph.Graph.community_label_propagation(G)
+
 
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 
