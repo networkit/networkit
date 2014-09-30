@@ -1,7 +1,7 @@
 try:
 	import igraph
 except ImportError:
-	error("igraph not available")
+	Error("igraph not available")
 
 
 class Algo:
