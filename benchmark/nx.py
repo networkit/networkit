@@ -9,7 +9,7 @@ class Algo:
 	def run(self, G):
 		raise Exception("Not implemented")
 
-	def loadGraph(path):
+	def loadGraph(self, path):
 		G = networkx.read_edgelist(path)
 		return G
 

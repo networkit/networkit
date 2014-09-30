@@ -8,8 +8,8 @@ class Algo:
 	def run(self, G):
 		raise Exception("Not implemented")
 
-	def loadGraph(path):
-		G = networkit.readGraph(path, formatName)
+	def loadGraph(self, path):
+		G = networkit.readGraph(path, networkit.Format.GML)
 		return G
 
 class bConnectedComponents(Algo):

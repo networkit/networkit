@@ -9,7 +9,7 @@ class Algo:
 	def run(self, G):
 		raise Exception("Not implemented")
 
-	def loadGraph(key, basePath):
+	def loadGraph(self, path):
 		G = igraph.read(basePath, format="edgelist")  # Check if the format is actually edgelist
 		return G
 
