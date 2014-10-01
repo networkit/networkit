@@ -76,6 +76,8 @@ public:
 				//double hyperbolicMiddle = acosh((cosh(hyperbolicOuter) + cosh(hyperbolicInner))/2);
 				//double middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
 
+				//one could also use the median here. Results in worse asymptotical complexity, but maybe better runtime?
+
 				double nom = maxR - minR;
 				double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
 				double middleR = nom/denom + minR;
