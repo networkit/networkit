@@ -74,12 +74,12 @@ void Betweenness::run() {
 		// divide by the number of possible pairs
 		count n = G.numberOfNodes();
 		count pairs = (n-2) * (n-1);
+		count edges =  n    * (n-1);
 		G.forNodes([&](node u){
 			scoreData[u] = scoreData[u] / pairs;
+			 edgeData[u] =  edgeData[u] / edges;
 		});
 	}
-
-	// TODO: normalize edge scores
 }
 
 
