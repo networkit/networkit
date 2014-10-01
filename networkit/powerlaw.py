@@ -58,7 +58,7 @@ class Fit(object):
         self.xmax = self.given_xmax
 
         if 0 in self.data:
-            print("Value 0 in data. Throwing out 0 values")
+            #print("Value 0 in data. Throwing out 0 values")
             self.data = self.data[self.data!=0]
 
         if self.xmax:
@@ -1976,7 +1976,7 @@ def distribution_fit(data, distribution='all', discrete=False, xmin=None, xmax=N
     if xmin is None or xmin == 'find' or type(xmin) == tuple or type(xmin) == list:
         print("Calculating best minimal value")
         if 0 in data:
-            print("Value 0 in data. Throwing out 0 values")
+            #print("Value 0 in data. Throwing out 0 values")
             data = data[data != 0]
         xmin, D, alpha, loglikelihood, n_tail, noise_flag = find_xmin(data, discrete=discrete, xmax=xmax, search_method=search_method, estimate_discrete=estimate_discrete, xmin_range=xmin)
     else:
@@ -2206,7 +2206,7 @@ def likelihood_function_generator(distribution_name, discrete=False, xmin=1, xma
 def find_xmin(data, discrete=False, xmax=None, search_method='Likelihood', return_all=False, estimate_discrete=True, xmin_range=None):
     from numpy import sort, unique, asarray, argmin, vstack, arange, sqrt
     if 0 in data:
-        print("Value 0 in data. Throwing out 0 values")
+        #print("Value 0 in data. Throwing out 0 values")
         data = data[data != 0]
     if xmax:
         data = data[data <= xmax]

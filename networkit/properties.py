@@ -201,7 +201,7 @@ def properties(G, settings):
 	# diameter
 	if settings["diameter"]:
 		logging.info("[...] estimating diameter range")
-		dia = Diameter.estimatedDiameterRange(G, error=0.1)
+		dia = Diameter.estimatedDiameterRange(G, error=0.5)
 	else:
 		dia = None
 

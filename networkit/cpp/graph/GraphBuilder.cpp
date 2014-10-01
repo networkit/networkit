@@ -43,6 +43,8 @@ node GraphBuilder::addNode() {
 }
 
 void GraphBuilder::addEdge(node u, node v, edgeweight ew) {
+	assert(u < n);
+	assert(v < n);
 	halfEdges[u].push_back(v);
 	if (weighted) {
 		halfEdgeWeights[u].push_back(ew);
@@ -54,6 +56,9 @@ void GraphBuilder::addEdge(node u, node v, edgeweight ew) {
 }
 
 void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
+	assert(u < n);
+	assert(v < n);
+
 	if (!weighted) {
 		throw std::runtime_error("Cannot set edge weight in unweighted graph.");
 	}
@@ -68,6 +73,9 @@ void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
 }
 
 void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
+	assert(u < n);
+	assert(v < n);
+
 	if (!weighted) {
 		throw std::runtime_error("Cannot increase edge weight in unweighted graph.");
 	}
@@ -298,6 +306,10 @@ void GraphBuilder::correctNumberOfEdges(Graph& G, count numberOfSelfLoops) {
 		// self loops are just counted once
 		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
 	}
+}
+
+bool GraphBuilder::checkConsistency(Graph& G) {
+	return G.checkConsistency();
 }
 
 } /* namespace NetworKit */
