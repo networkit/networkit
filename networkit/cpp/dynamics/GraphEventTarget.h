@@ -18,10 +18,6 @@ namespace NetworKit {
 class GraphEventTarget {
 
 public:
-
-	/** Default destructor */
-	virtual ~GraphEventTarget();
-
 	virtual void receive(GraphEvent event) = 0;
 };
 

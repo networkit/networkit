@@ -20,10 +20,6 @@ FruchtermanReingold::FruchtermanReingold(Point<float> bottom_left, Point<float> 
 
 }
 
-FruchtermanReingold::~FruchtermanReingold() {
-
-}
-
 void FruchtermanReingold::draw(Graph& g) {
 
 	int width = (topRight[0] - bottomLeft[0]);

@@ -29,9 +29,7 @@ Partition PLM::run(const Graph& G) {
 
 	// init communities to singletons
 	Partition zeta(z);
-	G.forNodes([&](node v) {
-		zeta.toSingleton(v);
-	});
+	zeta.allToSingletons();
 	index o = zeta.upperBound();
 
 	// init graph-dependent temporaries
@@ -92,10 +90,10 @@ Partition PLM::run(const Graph& G) {
 		// 	return affinity[C];
 		// };
 
-		auto modGain = [&](node u, index C, index D) {
+		auto modGain = [&](node u, index C, index D, edgeweight affinityC, edgeweight affinityD) {
 			double volN = 0.0;
 			volN = volNode[u];
-			double delta = (affinity[D] - affinity[C]) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
+			double delta = (affinityD - affinityC) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
 			//TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
 			return delta;
 		};
@@ -106,19 +104,20 @@ Partition PLM::run(const Graph& G) {
 		double deltaBest = -1;
 
 		C = zeta[u];
+		edgeweight affinityC = affinity[C];
 
 //			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
-		G.forNeighborsOf(u, [&](node v) {
-			D = zeta[v];
+		for (auto it : affinity) {
+			D = it.first;
 			if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
-				double delta = modGain(u, C, D);
+				double delta = modGain(u, C, D, affinityC, it.second);
 				// TRACE("mod gain: " , delta); // FIXME: all mod gains are negative
 				if (delta > deltaBest) {
 					deltaBest = delta;
 					best = D;
 				}
 			}
-		});
+		}
 
 		// TRACE("deltaBest=" , deltaBest); // FIXME: best mod gain is negative
 		if (deltaBest > 0) { // if modularity improvement possible

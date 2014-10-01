@@ -20,7 +20,7 @@ class CommunityDetectionAlgorithm {
 public:
 
 	/** Default destructor */
-	virtual ~CommunityDetectionAlgorithm();
+	virtual ~CommunityDetectionAlgorithm() = default;
 
 	/**
 	 * Apply algorithm to graph

@@ -10,9 +10,6 @@
 
 namespace NetworKit {
 
-CommunityGraph::~CommunityGraph() {
-}
-
 void CommunityGraph::run(const Graph& G, const Partition& zeta) {
 
 	Gcom = Graph(0, true);

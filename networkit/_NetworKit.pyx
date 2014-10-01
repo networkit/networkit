@@ -110,6 +110,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
 		void indexEdges() except +
+		bool hasEdgeIds()
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -195,6 +196,17 @@ cdef class Graph:
 
 		"""
 		self._this.indexEdges()
+
+	def hasEdgeIds(self):
+		"""
+		Returns true if edges have been indexed
+
+		Returns
+		-------
+		bool
+			if edges have been indexed
+		"""
+		return self._this.hasEdgeIds()
 
 	def edgeId(self, node u, node v):
 		"""
@@ -1488,6 +1500,25 @@ cdef class KONECTGraphReader:
 
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this.read(pathbytes))
+
+cdef extern from "cpp/io/GMLGraphReader.h":
+	cdef cppclass _GMLGraphReader "NetworKit::GMLGraphReader":
+		_GMLGraphReader() except +
+		_Graph read(string path) except +
+
+cdef class GMLGraphReader:
+	""" Reader for the GML graph format, which is documented here [1].
+
+		[1]: http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
+ 	"""
+	cdef _GMLGraphReader _this
+	
+	def __cinit__(self):
+		self._this = _GMLGraphReader()
+
+	def read(self, path):
+		pathbytes = path.encode("utf-8")
 		return Graph(0).setThis(self._this.read(pathbytes))
 
 cdef extern from "cpp/io/METISGraphWriter.h":
@@ -2801,6 +2832,91 @@ cdef class CNM(CommunityDetector):
 		"""
 		return Partition().setThis(self._this.run(G._this))
 
+cdef extern from "cpp/community/CutClustering.h":
+	cdef cppclass _CutClustering "NetworKit::CutClustering":
+		_CutClustering(edgeweight alpha) except +
+		string toString() except +
+		_Partition run(_Graph G) except +
+
+cdef extern from "cpp/community/CutClustering.h" namespace "NetworKit::CutClustering":
+	map[double, _Partition] CutClustering_getClusterHierarchy "NetworKit::CutClustering::getClusterHierarchy"(const _Graph& G) except +
+
+
+cdef class CutClustering(CommunityDetector):
+	"""
+	Cut clustering algorithm as defined in
+	Flake, Gary William; Tarjan, Robert E.; Tsioutsiouliklis, Kostas. Graph Clustering and Minimum Cut Trees.
+	Internet Mathematics 1 (2003), no. 4, 385--408.
+	
+	Parameters
+	----------
+	alpha : double
+		The parameter for the cut clustering algorithm
+	"""
+	cdef _CutClustering* _this
+
+	def __cinit__(self, edgeweight alpha):
+		self._this = new _CutClustering(alpha)
+
+	def __dealloc__(self):
+		del self._this
+
+	def toString(self):
+		""" Get string representation.
+
+		Returns
+		-------
+		string
+			A string representation of this algorithm.
+		"""
+		return self._this.toString().decode("utf-8")
+
+	def run(self, Graph G not None):
+		""" Detect communities in the given graph `graph`.
+
+		Warning: due to numerical errors the resulting clusters might not be correct.
+		This implementation uses the Edmonds-Karp algorithm for the cut calculation.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+
+		Returns
+		-------
+		Partition
+			A partition containing the found communities.
+		"""
+		return Partition().setThis(self._this.run(G._this))
+
+	@staticmethod
+	def getClusterHierarchy(Graph G not None):
+		""" Get the complete hierarchy with all possible parameter values.
+
+		Each reported parameter value is the lower bound for the range in which the corresponding clustering is calculated by the cut clustering algorithm.
+
+		Warning: all reported parameter values are slightly too high in order to avoid wrong clusterings because of numerical inaccuracies.
+		Furthermore the completeness of the hierarchy cannot be guaranteed because of these inaccuracies.
+		This implementation hasn't been optimized for performance.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+
+		Returns
+		-------
+		dict
+			A dictionary with the parameter values as keys and the corresponding Partition instances as values
+		"""
+		cdef map[double, _Partition] result
+		# FIXME: this probably copies the whole hierarchy because of exception handling, using move might fix this
+		result = CutClustering_getClusterHierarchy(G._this)
+		pyResult = {}
+		# FIXME: this code copies the partitions a lot!
+		for res in result:
+			pyResult[res.first] = Partition().setThis(res.second)
+		return pyResult
 
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures """
@@ -3228,7 +3344,7 @@ cdef class ClusteringCoefficient:
 
 
 cdef extern from "cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
-	pair[count, count] estimatedDiameterRange(_Graph G, double error) except +
+	pair[count, count] estimatedDiameterRange(_Graph G, double error, pair[node,node] *proof) except +
 	count exactDiameter(_Graph G) except +
 	edgeweight estimatedVertexDiameter(_Graph G, count) except +
 
@@ -3248,7 +3364,21 @@ cdef class Diameter:
 		pair
 			Pair of lower and upper bound for diameter.
 		"""
-		return estimatedDiameterRange(G._this, error)
+		return estimatedDiameterRange(G._this, error, NULL)
+
+	@staticmethod
+	def estimatedDiameterRangeWithProof(Graph G, error=0.1):
+		""" Estimates a range for the diameter of @a G like estimatedDiameterRange but also
+		returns a pair of nodes that has the reported lower bound as distance if the graph is non-trivial.
+
+		Returns
+		-------
+		tuple
+			Tuple of two tuples, the first is the result and contains lower and upper bound, the second contains the two nodes whose distance is the reported lower bound
+		"""
+		cdef pair[node, node] proof
+		cdef pair[count, count] result = estimatedDiameterRange(G._this, error, &proof)
+		return (result, proof)
 
 	@staticmethod
 	def exactDiameter(Graph G):
@@ -3954,6 +4084,7 @@ cdef extern from "cpp/centrality/DegreeCentrality.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		double maximum()  except +
 
 cdef class DegreeCentrality:
 	""" Node centrality index which ranks nodes by their degree.
@@ -4009,6 +4140,15 @@ cdef class DegreeCentrality:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+	def maximum(self):
+		"""
+		Returns
+		-------
+		m
+			The theoretical maximum of centrality score.
+		"""
+		return self._this.maximum()
 
 
 # Module: dynamic

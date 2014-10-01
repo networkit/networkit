@@ -19,7 +19,6 @@ namespace NetworKit {
 class StronglyConnectedComponents {
 public:
 	StronglyConnectedComponents(const Graph& G);
-	virtual ~StronglyConnectedComponents();
 
 	/**
 	 * This method determines the connected components for the graph g.

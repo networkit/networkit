@@ -35,12 +35,19 @@ public:
 	/** Updates the distances after an event.*/
 	void update(const std::vector<GraphEvent>& batch) override;
 
+	/* Returns the number of shortest paths to node t.*/
+	bigfloat getNumberOfPaths(node t) const;
+
 protected:
 	enum Color {WHITE, BLACK, GRAY};
 	std::vector<Color> color;
 	count maxDistance;
 
 };
+
+inline bigfloat DynBFS::getNumberOfPaths(node t) const {
+	return npaths[t];
+}
 
 } /* namespace NetworKit */
 

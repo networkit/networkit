@@ -13,7 +13,7 @@ class GraphMLSAX(xml.sax.ContentHandler):
 		self.charBuffer = []
 		self.mapping = dict()
 		self.g = Graph(0)
-		self.graphName = ''
+		self.graphName = 'unnamed'
 		self.weightedID = ''
 		self.weighted = False
 		self.directed = False
@@ -28,8 +28,8 @@ class GraphMLSAX(xml.sax.ContentHandler):
 			if attrs.getValue("edgedefault") == "directed":
 				print("identified graph as directed")
 				self.directed = True
-			if not attrs.getValue("id") == '':
-				self.graphName = attrs.getValue("id")
+			if "id" in  attrs.getNames() and not attrs.getValue("id") == '':
+					self.graphName = attrs.getValue("id")
 			self.g = Graph(0,self.weighted, self.directed)
 			self.g.setName(self.graphName)
 		if name == "node":

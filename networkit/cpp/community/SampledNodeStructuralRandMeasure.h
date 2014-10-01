@@ -29,9 +29,6 @@ public:
 	 */
 	SampledNodeStructuralRandMeasure(count maxSamples);
 
-	/** Default destructor */
-	virtual ~SampledNodeStructuralRandMeasure();
-
 	virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
 
 protected:

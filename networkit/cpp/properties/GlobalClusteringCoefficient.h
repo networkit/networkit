@@ -16,11 +16,7 @@ namespace NetworKit {
  */
 class GlobalClusteringCoefficient {
 
-public:
-
-	/** Default destructor */
-	virtual ~GlobalClusteringCoefficient() = default;
-  
+public:  
 	virtual double approximate(const Graph& G, int k);
 };
 

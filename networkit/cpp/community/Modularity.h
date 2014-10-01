@@ -33,9 +33,6 @@ public:
 	/** Default constructor */
 	Modularity();
 
-	/** Default destructor */
-	virtual ~Modularity();
-
 	/**
 	 * Returns the Modularity of the given clustering with respect to the graph @a G.
 	 *

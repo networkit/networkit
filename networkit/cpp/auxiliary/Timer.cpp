@@ -10,12 +10,6 @@
 namespace Aux {
 
 Timer::Timer() : running(false) {
-	// TODO Auto-generated constructor stub
-
-}
-
-Timer::~Timer() {
-	// TODO Auto-generated destructor stub
 }
 
 std::chrono::steady_clock::time_point Timer::start() {

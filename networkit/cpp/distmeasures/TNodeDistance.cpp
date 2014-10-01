@@ -14,10 +14,6 @@ TNodeDistance::TNodeDistance(const Graph& G) : G(G) {
 
 }
 
-TNodeDistance::~TNodeDistance() {
-	// TODO Auto-generated destructor stub
-}
-
 void TNodeDistance::initialize(const Parameters& param) {
 	// do nothing
 }
