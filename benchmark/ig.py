@@ -1,8 +1,8 @@
 try:
 	import igraph
-except ImportError:
-	Error("igraph not available")
-
+except ImportError as ex:
+	print("igraph not available")
+	
 
 class Algo:
 	""" runner for an algorithm"""
