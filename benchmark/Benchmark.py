@@ -51,11 +51,6 @@ def saveData(df, name):
     df.to_csv(os.path.join(bench.dataPath, "{0}.csv".format(name)), sep="\t")
 
 
-# settings
-
-nRuns = 5   # how many runs for representative results
-
-
 
 
 class bFail:
@@ -74,7 +69,8 @@ class bFail:
 seaborn.set_style("whitegrid")
 
 ### Colors
-red = seaborn.xkcd_rgb["crimson"]
+lightred = seaborn.xkcd_rgb["red"]
+darkred = seaborn.xkcd_rgb["crimson"]
 orange = seaborn.xkcd_rgb["bright orange"]
 
 
@@ -83,7 +79,7 @@ def timePlot(data, size=(6,3)):
     labels = list(data["graph"])
     plt.figure(figsize=size)
     plt.xscale("symlog")
-    plt.barh(pos, data["time"], align='center', height=0.25, color=red)    # notice the 'height' argument
+    plt.barh(pos, data["time"], align='center', height=0.25, color=lightred)    # notice the 'height' argument
     plt.yticks(pos, labels)
     plt.gca().xaxis.set_minor_locator(plt.LogLocator(subs=[0,1,2,3,4,5,6,7,8,9,10]))
     #gca().xaxis.set_minor_formatter(FormatStrFormatter("%.2f"))
@@ -96,11 +92,11 @@ def epsPlot(data, size=(6,3)):
     labels = list(data["graph"])
     plt.figure(figsize=size)
     plt.xscale("log")
-    plt.barh(pos, data["time"], align='center', height=0.25, color=red)    # notice the 'height' argument
+    plt.barh(pos, data["eps"], align='center', height=0.25, color=darkred)    # notice the 'height' argument
     plt.yticks(pos, labels)
     plt.gca().xaxis.set_minor_locator(plt.LogLocator(subs=[0,1,2,3,4,5,6,7,8,9,10]))
     #gca().xaxis.set_minor_formatter(FormatStrFormatter("%.2f"))
-    plt.xlabel("time [s]")
+    plt.xlabel("edges / s")
     plt.grid(True)
 
 
@@ -136,7 +132,7 @@ class Bench:
         # store result data of benchmarks
         self.data = {}
 
-    def algoBenchmark(self, algo, graphs):
+    def algoBenchmark(self, algo, graphs, nRuns=5):
         info("benchmarking {algo.name}".format(**locals()))
         table = []  # list of dictionaries, to be converted to a DataFrame
 
@@ -145,17 +141,20 @@ class Bench:
                 info("loading {0}".format(graphName))
                 G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
                 try:
-                    for i in range(algo.nRuns):
+                    for i in range(nRuns):
                         row = {}    # benchmark data row
                         with Timer() as t:
-                            debug("running {algo.name}".format(**locals()))
-                            algo.run(G)
+                            info("running {algo.name} on {graphName}".format(**locals()))
+                            result = algo.run(G)
                         debug("took {0} s".format(t.elapsed))
                         # store data
+                        m = float(self.graphMeta[self.graphMeta["name"] == graphName]["m"])
                         row["algo"] = algo.name
                         row["graph"] = graphName
+                        row["m"] = m
                         row["time"] = t.elapsed
-                        row["eps"] =  float(self.graphMeta[self.graphMeta["name"] == graphName]["m"]) / t.elapsed  # calculate edges per second
+                        row["eps"] =  m / t.elapsed  # calculate edges per second
+                        row["result"] = result
                         table.append(row)
                 except Exception as ex:
                     error("algorithm {algo.name} failed with exception: {ex}".format(**locals()))
@@ -163,8 +162,9 @@ class Bench:
                 error("loading graph {graphName} failed with exception: {ex}".format(**locals()))
 
         df = pandas.DataFrame(table)
+        df.sort("m")    # sort by number of edges
         self.data[algo.name] = df
-        return df
+        #return df
 
 
     def generatorBenchmark(self, generator, argtuples):

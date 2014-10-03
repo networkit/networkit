@@ -20,6 +20,7 @@ class bConnectedComponents(Algo):
 	def run(self, G):
 		cc = networkit.properties.ConnectedComponents(G)
 		cc.run()
+		return cc.numberOfComponents()
 
 class bParallelConnectedComponents(Algo):
 	name = "ParallelConnectedComponents"
@@ -27,6 +28,7 @@ class bParallelConnectedComponents(Algo):
 	def run(self, G):
 		cc = networkit.properties.ParallelConnectedComponents(G)
 		cc.run()
+		return cc.numberOfComponents()
 
 # - k-core decomposition (properties.CoreDecomposition)
 
