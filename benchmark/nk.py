@@ -1,15 +1,17 @@
 import networkit
 
+from util import *
+import base
 
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
-class Algo:
+class Algo(base.Algo):
 	""" runner for an algorithm"""
-	def run(self, G):
-		raise Exception("Not implemented")
 
 	def loadGraph(self, path):
-		G = networkit.readGraph(path, networkit.Format.GML)
+		with Timer() as t:
+			G = networkit.readGraph(path, networkit.Format.GML)
+		debug("reading {path} took {t.elapsed} s".format(**locals()))
 		return G
 
 class bConnectedComponents(Algo):
