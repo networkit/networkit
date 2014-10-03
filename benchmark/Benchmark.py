@@ -135,7 +135,8 @@ class Bench:
 
     """
 
-    def __init__(self, graphDir, graphMeta, outDir, save=True):
+    def __init__(self, graphDir, graphMeta, outDir, save=True, nRuns=5):
+        self.nRuns = nRuns  # default number of runs for each algo
         self.graphDir = graphDir
         self.graphMeta = graphMeta  # data frame with graph metadata
         # store result data of benchmarks
@@ -153,7 +154,10 @@ class Bench:
             if not os.path.isdir(self.plotDir):
                 os.mkdir(self.plotDir)
 
-    def algoBenchmark(self, algo, graphs, nRuns=5):
+    def algoBenchmark(self, algo, graphs, nRuns=None):
+        if nRuns is None:
+            nRuns = self.nRuns  # lets argument override the default nRuns
+
         info("benchmarking {algo.name}".format(**locals()))
         table = []  # list of dictionaries, to be converted to a DataFrame
 
@@ -187,7 +191,7 @@ class Bench:
         self.data[algo.name] = df
         # store data frame on disk
         if self.save:
-            df.to_csv(os.path.join(self.outDir, "{algo.name}.csv".format(**locals())))
+            df.to_csv(os.path.join(self.outDataDir, "{algo.name}.csv".format(**locals())))
 
 
     def timePlot(self, algoName):
@@ -199,6 +203,10 @@ class Bench:
         epsPlot(averageRuns(self.data[algoName]))
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "{algoName}-eps.pdf".format(**locals())), bbox_inches="tight")
+
+    def plot(self, algoName):
+        self.timePlot(algoName)
+        self.epsPlot(algoName)
 
 
 

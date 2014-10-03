@@ -45,7 +45,7 @@ class bPowerLaw(Algo):
 	name = "PowerLaw"
 
 	def run(self, G):
-		networkit.properties.powerLawExponent(G)
+		return networkit.properties.powerLawExponent(G)
 
 # - degree assortativity (properties.degreeAssortativity)
 
@@ -61,7 +61,7 @@ class bBFS(Algo):
 	name = "BFS"
 
 	def run(self, G):
-		bfs = networkit.graph.BFS(G)
+		bfs = networkit.graph.BFS(G, G.randomNode())
 		bfs.run()
 
 
@@ -71,15 +71,15 @@ class bCommunityDetectionLM(Algo):
 	name = "CommunityDetectionLM"
 
 	def run(self, G):
-		plm = networkit.community.PLM(G)
-		plm.run()
+		plm = networkit.community.PLM()
+		plm.run(G)
 
 class bCommunityDetectionLP(Algo):
 	name = "CommunityDetectionLP"
 
 	def run(self, G):
-		plm = networkit.community.PLP(G)
-		plm.run()
+		plm = networkit.community.PLP()
+		plm.run(G)
 
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 
@@ -103,6 +103,7 @@ class bClusteringCoefficient(Algo):
 
 	def run(self, G):
 		c = networkit.properties.ClusteringCoefficient.avgLocal(G)
+		return c
 
 class bApproxClusteringCoefficient(Algo):
 	name = "ApproxClusteringCoefficient"
@@ -121,7 +122,7 @@ class bPageRank(Algo):
 	name = "PageRank"
 
 	def run(self, G):
-		pr = networkit.centrality.PageRank(G)
+		pr = networkit.centrality.PageRank(G, damp=0.1)
 		pr.run()
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
