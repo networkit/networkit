@@ -11,7 +11,6 @@ This module implements a comprehensive benchmark of NetworKit's analytics algori
 import pandas
 import sys
 import warnings
-import time
 import math
 import os
 import numpy
@@ -21,12 +20,12 @@ import seaborn
 
 import networkit
 
+from util import *
 import nk
 import nx
 import ig
 
 # helper function
-
 
 
 def averageRuns(df, groupby=["graph"]):
@@ -37,31 +36,15 @@ def averageRuns(df, groupby=["graph"]):
 def graphMeta(graphNames, graphDir):
     meta = []
     for name in graphNames:
+        info("loading {name}".format(**locals()))
         G = networkit.readGraph(os.path.join(graphDir, "{0}.gml.graph".format(name)), networkit.Format.GML)
         (n, m) = networkit.properties.size(G)
         meta.append({"name" : name, "n" : n, "m" : m})
+    info("done")
     return pandas.DataFrame(meta, columns=["name", "n", "m"])
 
 
-class Timer:
-    """ Use the Python with-statement to time your code
-    with this timer. """
 
-    def __enter__(self):
-        self.start = time.clock()
-        return self
-
-    def __exit__(self, *args):
-        self.end = time.clock()
-        self.elapsed = round(self.end - self.start, 6)
-
-
-
-class Bench:
-
-    def __init__(self):
-        self.dataPath = "benchData-{0}".format(time.time()) # TODO: timestamp this
-        os.mkdir(self.dataPath)
 
 
 def saveData(df, name):
@@ -71,29 +54,6 @@ def saveData(df, name):
 # settings
 
 nRuns = 5   # how many runs for representative results
-
-# collection of networks
-
-networks = {
-            "PGPgiantcompo" : ("PGPgiantcompo.metis.graph", networkit.Format.METIS),
-            "power" : ("power.metis.graph", networkit.Format.METIS),
-            "caidaRouterLevel" : ("caidaRouterLevel.metis.graph", networkit.Format.METIS),
-            "as-22july06" : ("as-22july06.metis.graph", networkit.Format.METIS),
-            "coAuthorsDBLP" : ("coAuthorsDBLP.graph", networkit.Format.METIS),
-            "uk-2007-05" : ("uk2007-05.metis.graph", networkit.Format.METIS),
-            "uk-2002" : ("uk-2002.metis.graph", networkit.Format.METIS),
-            "fb-Texas84" : ("Texas84.edgelist", networkit.Format.EdgeListTabZero),
-            "fb-Caltech36" : ("Caltech36.edgelist", networkit.Format.EdgeListTabZero),
-            "fb-MIT8" : ("MIT8.edgelist", networkit.Format.EdgeListTabZero),
-            "fb-Smith60" : ("Smith60.edgelist", networkit.Format.EdgeListTabZero),
-            "con-fiber_big" : ("con-fiber_big.metis.graph", networkit.Format.METIS),
-            }
-
-
-
-
-selected = ["PGPgiantcompo", "power"]
-collectionDir = os.path.expanduser("~/workspace/Data/NwkBenchmark")
 
 
 
@@ -105,17 +65,7 @@ class bFail:
         raise Exception("FAIL!")
 
 
-# Logging
 
-def info(message):
-    print(message)
-
-def error(message):
-    print(message)
-
-def debug(message):
-    pass
-    # print(message)
 
 # Plots
 
@@ -178,36 +128,47 @@ def barPlot(data, labels, x_label="", y_label="", size=None, color="b", transpar
     plt.grid(True)
 
 
-def algoBenchmark(algo, graphs):
-    info("benchmarking {algo.name}".format(**locals()))
-    table = []  # list of dictionaries, to be converted to a DataFrame
+class Bench:
 
-    for graphName in graphs:
-        try:
-            info("loading {0}".format(graphName))
-            G = algo.loadGraph(os.path.join(collectionDir, "{0}.gml.graph".format(graphName)))
+    def __init__(self, graphDir, graphMeta):
+        self.graphDir = graphDir
+        self.graphMeta = graphMeta  # data frame with graph metadata
+        # store result data of benchmarks
+        self.data = {}
+
+    def algoBenchmark(self, algo, graphs):
+        info("benchmarking {algo.name}".format(**locals()))
+        table = []  # list of dictionaries, to be converted to a DataFrame
+
+        for graphName in graphs:
             try:
-                for i in range(nRuns):
-                    row = {}    # benchmark data row
-                    with Timer() as t:
-                        debug("running {algo.name}".format(**locals()))
-                        algo.run(G)
-                    debug("took {0} s".format(t.elapsed))
-                    # store data
-                    row["algo"] = algo.name
-                    row["graph"] = graphName
-                    row["time"] = t.elapsed
-                    table.append(row)
+                info("loading {0}".format(graphName))
+                G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
+                try:
+                    for i in range(algo.nRuns):
+                        row = {}    # benchmark data row
+                        with Timer() as t:
+                            debug("running {algo.name}".format(**locals()))
+                            algo.run(G)
+                        debug("took {0} s".format(t.elapsed))
+                        # store data
+                        row["algo"] = algo.name
+                        row["graph"] = graphName
+                        row["time"] = t.elapsed
+                        row["eps"] =  float(self.graphMeta[self.graphMeta["name"] == graphName]["m"]) / t.elapsed  # calculate edges per second
+                        table.append(row)
+                except Exception as ex:
+                    error("algorithm {algo.name} failed with exception: {ex}".format(**locals()))
             except Exception as ex:
-                error("algorithm {algo.name} failed with exception: {ex}".format(**locals()))
-        except Exception as ex:
-            error("loading graph {graphName} failed with exception: {ex}".format(**locals()))
+                error("loading graph {graphName} failed with exception: {ex}".format(**locals()))
 
-    return pandas.DataFrame(table)
+        df = pandas.DataFrame(table)
+        self.data[algo.name] = df
+        return df
 
 
-def generatorBenchmark(generator, argtuples):
-    pass
+    def generatorBenchmark(self, generator, argtuples):
+        pass
 
 
 # - generators
