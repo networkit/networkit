@@ -75,6 +75,7 @@ lightred = seaborn.xkcd_rgb["red"]
 darkred = seaborn.xkcd_rgb["crimson"]
 orange = seaborn.xkcd_rgb["bright orange"]
 
+# plot functions
 
 def timePlot(data, size=(6,3)):
     pos = numpy.arange(len(data))+.5    # the bar centers on the y axis
@@ -128,11 +129,21 @@ def barPlot(data, labels, x_label="", y_label="", size=None, color="b", transpar
 
 class Bench:
 
-    def __init__(self, graphDir, graphMeta):
+    def __init__(self, graphDir, graphMeta, outDir, save=True):
         self.graphDir = graphDir
         self.graphMeta = graphMeta  # data frame with graph metadata
         # store result data of benchmarks
         self.data = {}
+        self.outDir = outDir
+        self.save = save  # store data frames on disk if true
+        # create output directory if it does not exist
+        if self.save:
+            self.outDataDir = os.path.join(self.outDir, "data")
+            self.plotDir = os.path.join(self.outDir, "plots")
+            if not os.path.isdir(self.outDataDir):
+                os.mkdir(self.outDataDir)
+            if not os.path.isdir(self.plotDir):
+                os.mkdir(self.plotDir)
 
     def algoBenchmark(self, algo, graphs, nRuns=5):
         info("benchmarking {algo.name}".format(**locals()))
@@ -166,7 +177,15 @@ class Bench:
         df = pandas.DataFrame(table)
         df.sort("m")    # sort by number of edges
         self.data[algo.name] = df
-        #return df
+        # store data frame on disk
+        if self.storeData:
+            df.to_csv(os.path.join(self.outDir, "{algo.name}.csv".format(**locals())))
+
+
+    def timePlot(self, algo):
+        timePlot(self.data[algo.name])
+        if self.save:
+            plt.savefig(os.path.join(self.plotDir, "{algo.name}-time.pdf".format(**locals())))
 
 
     def generatorBenchmark(self, generator, argtuples):
