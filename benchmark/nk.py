@@ -110,7 +110,7 @@ class bApproxClusteringCoefficient(Algo):
 
 	def run(self, G):
 		# TODO: specify number of trials
-		c = networkit.properties.ClusteringCoefficient.approxAvgLocal(G)
+		c = networkit.properties.ClusteringCoefficient.approxAvgLocal(G, trials=1000)
 
 
 

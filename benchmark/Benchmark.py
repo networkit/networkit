@@ -135,7 +135,8 @@ class Bench:
 
     """
 
-    def __init__(self, graphDir, graphMeta, outDir, save=True, nRuns=5):
+    def __init__(self, graphDir, graphMeta, defaultGraphs, outDir, save=True, nRuns=5):
+        self.defaultGraphs = defaultGraphs
         self.nRuns = nRuns  # default number of runs for each algo
         self.graphDir = graphDir
         self.graphMeta = graphMeta  # data frame with graph metadata
@@ -154,9 +155,11 @@ class Bench:
             if not os.path.isdir(self.plotDir):
                 os.mkdir(self.plotDir)
 
-    def algoBenchmark(self, algo, graphs, nRuns=None):
+    def algoBenchmark(self, algo, graphs=None, nRuns=None):
         if nRuns is None:
             nRuns = self.nRuns  # lets argument override the default nRuns
+        if graphs is None:
+            graphs = self.defaultGraphs
 
         info("benchmarking {algo.name}".format(**locals()))
         table = []  # list of dictionaries, to be converted to a DataFrame
@@ -207,6 +210,20 @@ class Bench:
     def plot(self, algoName):
         self.timePlot(algoName)
         self.epsPlot(algoName)
+
+    def plotSummary(self, algoNames=None):
+        if algoNames is None:
+            algoNames = list(self.data.keys())
+        epsSummary = pandas.DataFrame()
+        for (algoName, algoData) in self.data.items():
+            if algoName in algoNames:
+                epsSummary[algoName] = pandas.Series(self.data[algoName]["eps"])
+        if self.save:
+            epsSummary.to_csv(os.path.join(self.outDataDir, "epsSummary.csv".format(**locals())))
+        plt.gca().xaxis.get_major_formatter().set_powerlimits((3, 3))
+        plt.xscale("log")
+        seaborn.boxplot(epsSummary, linewidth=1.5, widths=.25, color=darkred, vert=False)
+        return epsSummary
 
 
 
