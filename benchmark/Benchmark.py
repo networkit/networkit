@@ -129,6 +129,12 @@ def barPlot(data, labels, x_label="", y_label="", size=None, color="b", transpar
 
 class Bench:
 
+    """
+    A Bench objects represents a benchmarking session. It is responsible
+    for running the benchmarks, collecting and storing the resulting data.
+
+    """
+
     def __init__(self, graphDir, graphMeta, outDir, save=True):
         self.graphDir = graphDir
         self.graphMeta = graphMeta  # data frame with graph metadata
@@ -138,6 +144,8 @@ class Bench:
         self.save = save  # store data frames on disk if true
         # create output directory if it does not exist
         if self.save:
+            if not os.path.isdir(self.outDir):
+                os.mkdir(self.outDir)
             self.outDataDir = os.path.join(self.outDir, "data")
             self.plotDir = os.path.join(self.outDir, "plots")
             if not os.path.isdir(self.outDataDir):
@@ -154,10 +162,10 @@ class Bench:
                 info("loading {0}".format(graphName))
                 G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
                 try:
+                    info("running {algo.name} {nRuns}x on {graphName}".format(**locals()))
                     for i in range(nRuns):
                         row = {}    # benchmark data row
                         with Timer() as t:
-                            info("running {algo.name} on {graphName}".format(**locals()))
                             result = algo.run(G)
                         debug("took {0} s".format(t.elapsed))
                         # store data
@@ -178,14 +186,20 @@ class Bench:
         df.sort("m")    # sort by number of edges
         self.data[algo.name] = df
         # store data frame on disk
-        if self.storeData:
+        if self.save:
             df.to_csv(os.path.join(self.outDir, "{algo.name}.csv".format(**locals())))
 
 
-    def timePlot(self, algo):
-        timePlot(self.data[algo.name])
+    def timePlot(self, algoName):
+        timePlot(averageRuns(self.data[algoName]))
         if self.save:
-            plt.savefig(os.path.join(self.plotDir, "{algo.name}-time.pdf".format(**locals())))
+            plt.savefig(os.path.join(self.plotDir, "{algoName}-time.pdf".format(**locals())), bbox_inches="tight")
+
+    def epsPlot(self, algoName):
+        epsPlot(averageRuns(self.data[algoName]))
+        if self.save:
+            plt.savefig(os.path.join(self.plotDir, "{algoName}-eps.pdf".format(**locals())), bbox_inches="tight")
+
 
 
     def generatorBenchmark(self, generator, argtuples):
