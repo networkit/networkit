@@ -30,7 +30,9 @@ import ig
 
 def averageRuns(df, groupby=["graph"]):
     """ Average running time, modularity, edges per second and number of clusters over multiple runs"""
-    return df.groupby(groupby, as_index=False).mean()
+    df = df.groupby(groupby, as_index=False).mean()
+    df = df.sort("m", ascending=True)    # sort by graph size
+    return df
 
 
 def graphMeta(graphNames, graphDir):
