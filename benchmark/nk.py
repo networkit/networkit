@@ -53,7 +53,7 @@ class bDegreeAssortativity(Algo):
 	name = "DegreeAssortativity"
 
 	def run(self, G):
-		networkit.properties.degreeAssortativity(G)
+		return networkit.properties.degreeAssortativity(G)
 
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
@@ -87,14 +87,14 @@ class bDiameter(Algo):
 	name = "Diameter"
 
 	def run(self, G):
-		d = networkit.properties.Diameter.exactDiameter(G)
+		return networkit.properties.Diameter.exactDiameter(G)
 
 
 class bDiameterEstimate(Algo):
 	name = "Diameter"
 
 	def run(self, G):
-		d =networkit.properties.Diameter.estimatedDiameterRange(G)
+		return networkit.properties.Diameter.estimatedDiameterRange(G)
 
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 
@@ -111,6 +111,7 @@ class bApproxClusteringCoefficient(Algo):
 	def run(self, G):
 		# TODO: specify number of trials
 		c = networkit.properties.ClusteringCoefficient.approxAvgLocal(G, trials=1000)
+		return c
 
 
 
@@ -142,5 +143,5 @@ class bApproxBetweenness(Algo):
 	name = "ApproxBetweenness"
 
 	def run(self, G):
-		bc = networkit.centrality.ApproxBetweenness(G, epsilon=0.05, delta=0.1)
+		bc = networkit.centrality.ApproxBetweenness(G, epsilon=0.2, delta=0.1)
 		bc.run()
