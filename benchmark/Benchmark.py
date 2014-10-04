@@ -245,7 +245,10 @@ class Bench:
             epsSummary.to_csv(os.path.join(self.outDataDir, "epsSummary.csv".format(**locals())))
         plt.gca().xaxis.get_major_formatter().set_powerlimits((3, 3))
         plt.xscale("log")
+        plt.xlabel("edges / s")
         seaborn.boxplot(epsSummary, linewidth=1.5, widths=.25, color=darkred, vert=False)
+        if self.save:
+            plt.savefig(os.path.join(self.plotDir, "epsSummary.pdf".format(**locals())), bbox_inches="tight")
         return epsSummary
 
 
