@@ -16,6 +16,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 import seaborn
+from time import gmtime, strftime
 
 
 import networkit
@@ -154,6 +155,8 @@ class Bench:
                 os.mkdir(self.outDataDir)
             if not os.path.isdir(self.plotDir):
                 os.mkdir(self.plotDir)
+            # log file
+            self.logPath = os.path.join(self.outDir, "log.txt")
 
     def algoBenchmark(self, algo, graphs=None, nRuns=None):
         if nRuns is None:
@@ -161,20 +164,20 @@ class Bench:
         if graphs is None:
             graphs = self.defaultGraphs
 
-        info("benchmarking {algo.name}".format(**locals()))
+        self.info("benchmarking {algo.name}".format(**locals()))
         table = []  # list of dictionaries, to be converted to a DataFrame
 
         for graphName in graphs:
             try:
-                info("loading {0}".format(graphName))
+                self.info("loading {0}".format(graphName))
                 G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
                 try:
-                    info("running {algo.name} {nRuns}x on {graphName}".format(**locals()))
+                    self.info("running {algo.name} {nRuns}x on {graphName}".format(**locals()))
                     for i in range(nRuns):
                         row = {}    # benchmark data row
                         with Timer() as t:
                             result = algo.run(G)
-                        debug("took {0} s".format(t.elapsed))
+                        self.debug("took {0} s".format(t.elapsed))
                         # store data
                         m = float(self.graphMeta[self.graphMeta["name"] == graphName]["m"])
                         row["algo"] = algo.name
@@ -185,9 +188,9 @@ class Bench:
                         row["result"] = result
                         table.append(row)
                 except Exception as ex:
-                    error("algorithm {algo.name} failed with exception: {ex}".format(**locals()))
+                    self.error("algorithm {algo.name} failed with exception: {ex}".format(**locals()))
             except Exception as ex:
-                error("loading graph {graphName} failed with exception: {ex}".format(**locals()))
+                self.error("loading graph {graphName} failed with exception: {ex}".format(**locals()))
 
         df = pandas.DataFrame(table)
         df.sort("m")    # sort by number of edges
@@ -195,6 +198,26 @@ class Bench:
         # store data frame on disk
         if self.save:
             df.to_csv(os.path.join(self.outDataDir, "{algo.name}.csv".format(**locals())))
+
+
+    def log(self, message):
+        """ Write a message to the logfile"""
+        with open(self.logPath, "a") as logfile:
+            logfile.write("{0}: {1}\n".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), message))
+
+    def info(self, message):
+        print(message)
+        sys.stdout.flush()
+        self.log(message)
+
+    def error(self, message):
+        print(message)
+        sys.stdout.flush()
+        self.log(message)
+
+    def debug(self, message):
+        pass
+        # print(message)
 
 
     def timePlot(self, algoName):
