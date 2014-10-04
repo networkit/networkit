@@ -38,6 +38,7 @@ void Closeness::run() {
 		sssp->run();
 
 		std::vector<edgeweight> distances = sssp->getDistances();
+
 		double sum = 0;
 		for (auto dist : distances) {
 			sum += dist;
@@ -46,7 +47,9 @@ void Closeness::run() {
 
 	});
 	if (normalized) {
-		//TODO
+		G.forNodes([&](node u){
+			scoreData[u] = scoreData[u] * (G.numberOfNodes() - 1);
+		});
 	}
 }
 
