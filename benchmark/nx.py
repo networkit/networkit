@@ -3,6 +3,8 @@ try:
 except ImportError:
 	error("networkx not available")
 
+import random
+
 
 class Algo:
 	""" runner for an algorithm"""
@@ -10,8 +12,11 @@ class Algo:
 		raise Exception("Not implemented")
 
 	def loadGraph(self, path):
-		G = networkx.read_edgelist(path)
+		G = networkx.read_gml(path)
 		return G
+
+	def preprocessGraph(self, G):
+		return G	# do nothing
 
 	def numberOfEdges(self, G):
 		return G.numberOfEdges()
@@ -23,7 +28,8 @@ class bConnectedComponents(Algo):
 	name = "ConnectedComponents"
 
 	def run(self, G):
-		cc = networkx.connected_components(G)
+		cc = networkx.number_connected_components(G)
+		return cc
 
 # - k-core decomposition (properties.CoreDecomposition)
 
@@ -32,6 +38,7 @@ class bCoreDecomposition(Algo):
 
 	def run(self, G):
 		cn = networkx.core_number(G)
+		#return cn[0]
 
 # - degree distribution power-law estimation (properties.powerLawExponent)
 
@@ -44,6 +51,7 @@ class bDegreeAssortativity(Algo):
 
 	def run(self, G):
 		ac = networkx.degree_assortativity_coefficient(G)
+		return ac
 
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
@@ -51,7 +59,8 @@ class bBFS(Algo):
 	name = "BFS"
 
 	def run(self, G):
-		networkx.bfs_predecessors(G)
+		s = random.randint(0, G.number_of_nodes())
+		networkx.bfs_predecessors(G, s)
 
 
 # - community detection (community.PLM, community.PLP)
@@ -64,6 +73,7 @@ class bDiameter(Algo):
 
 	def run(self, G):
 		d = networkx.diameter(G)
+		return d
 
 
 # approximate diameter not available
@@ -74,14 +84,15 @@ class bClusteringCoefficient(Algo):
 	name = "ClusteringCoefficient"
 
 	def run(self, G):
-		c = properties.ClusteringCoefficient.avgLocal(G)
+		c = networkx.average_clustering(G)
+		return c
 
 class bApproxClusteringCoefficient(Algo):
 	name = "ApproxClusteringCoefficient"
 
 	def run(self, G):
-		# TODO: number of trials
-		c = networkx.average_clustering(G, trials)
+		c = networkx.average_clustering(G, trials=1000)
+		return C
 
 
 
@@ -93,8 +104,7 @@ class bPageRank(Algo):
 	name = "PageRank"
 
 	def run(self, G):
-		# TODO: check parameters
-		pr = networkx.pagerank(G)
+		pr = networkx.pagerank(G, alpha=0.85, tol=1e-06)
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 

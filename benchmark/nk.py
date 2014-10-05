@@ -123,7 +123,7 @@ class bPageRank(Algo):
 	name = "PageRank"
 
 	def run(self, G):
-		pr = networkit.centrality.PageRank(G, damp=0.1)
+		pr = networkit.centrality.PageRank(G, damp=0.85, tol=1e-06)
 		pr.run()
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
