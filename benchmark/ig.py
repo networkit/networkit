@@ -2,7 +2,9 @@ try:
 	import igraph
 except ImportError as ex:
 	print("igraph not available")
-	
+
+import random
+
 
 class Algo:
 	""" runner for an algorithm"""
@@ -10,7 +12,7 @@ class Algo:
 		raise Exception("Not implemented")
 
 	def loadGraph(self, path):
-		G = igraph.read(basePath, format="edgelist")  # Check if the format is actually edgelist
+		G = igraph.read(path, format="gml")  # Check if the format is actually edgelist
 		return G
 
 
@@ -18,8 +20,8 @@ class bConnectedComponents(Algo):
 	name = "ConnectedComponents"
 
 	def run(self, G):
-		c = igraph.Graph.components(G)
-
+		comp = G.components()
+		return len(comp.sizes())
 
 # - k-core decomposition (properties.CoreDecomposition)
 
@@ -36,8 +38,8 @@ class bPowerLaw(Algo):
 	name = "PowerLaw"
 
 	def run(self, G):
-		raise NotImplementedError("TODO")  # Can't find relevant method
-
+		fit = igraph.statistics.power_law_fit(G.degree())
+		return fit.alpha
 
 # - degree assortativity (properties.degreeAssortativity)
 
@@ -45,7 +47,7 @@ class bDegreeAssortativity(Algo):
 	name = "DegreeAssortativity"
 
 	def run(self, G):
-		igraph.Graph.assortativity_degree(G)
+		return igraph.Graph.assortativity_degree(G)
 
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
@@ -54,7 +56,8 @@ class bBFS(Algo):
 	name = "BFS"
 
 	def run(self, G):
-		igraph.Graph.shortest_paths(G)
+		s = random.randint(0, G.vcount())
+		G.bfs(s)
 
 
 # - community detection (community.PLM, community.PLP)
@@ -94,7 +97,7 @@ class bClusteringCoefficient(Algo):
 	name = "ClusteringCoefficient"
 
 	def run(self, G):
-		igraph.Graph.transitivity_undirected(G)
+		igraph.Graph.transitivity_local_undirected(G)
 
 
 class bApproxClusteringCoefficient(Algo):
@@ -112,7 +115,7 @@ class bPageRank(Algo):
 	name = "PageRank"
 
 	def run(self, G):
-		pr = igraph.Graph.pagerank(G)
+		pr = igraph.Graph.pagerank(G)	# this leads to a segfault -seems buggy
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
