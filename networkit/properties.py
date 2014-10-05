@@ -180,7 +180,6 @@ def properties(G, settings):
 		# perform PLM community detection
 		logging.info("[...] performing community detection: PLM")
 		plm = community.PLM()
-		print(plm)
 		zetaPLM = plm.run(G)
 		ncomPLM = zetaPLM.numberOfSubsets()
 		modPLM = community.Modularity().getQuality(zetaPLM, G)
