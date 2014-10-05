@@ -136,7 +136,7 @@ class Bench:
 
     """
 
-    def __init__(self, graphDir, graphMeta, defaultGraphs, outDir, save=True, nRuns=5):
+    def __init__(self, graphDir, graphMeta, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False):
         self.defaultGraphs = defaultGraphs
         self.nRuns = nRuns  # default number of runs for each algo
         self.graphDir = graphDir
@@ -157,6 +157,22 @@ class Bench:
                 os.mkdir(self.plotDir)
             # log file
             self.logPath = os.path.join(self.outDir, "log.txt")
+        # graph cache
+        self.cacheGraphs = cacheGraphs
+        self.graphCache = {}
+
+    def getGraph(self, graphName, algo):
+        """" Get the graph from disk or from in-memory cache"""
+        if graphName in self.graphCache:
+            self.info("getting {0} from cache".format(graphName))
+            G = self.graphCache[graphName]
+            return G
+        else:
+            self.info("loading {0}".format(graphName))
+            G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
+            if self.cacheGraphs:
+                self.graphCache[graphName] = G
+            return G
 
     def algoBenchmark(self, algo, graphs=None, nRuns=None):
         if nRuns is None:
@@ -169,8 +185,7 @@ class Bench:
 
         for graphName in graphs:
             try:
-                self.info("loading {0}".format(graphName))
-                G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
+                G = self.getGraph(graphName, algo)
                 try:
                     self.info("running {algo.name} {nRuns}x on {graphName}".format(**locals()))
                     for i in range(nRuns):
