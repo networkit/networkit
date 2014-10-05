@@ -9,7 +9,7 @@ class Algo:
 		raise Exception("Not implemented")
 
 	def loadGraph(self, path):
-		G = networkit.readGraph(path, networkit.Format.GML)
+		G = graphtool.load_graph(path, fmt="gml")
 		return G
 
 class bConnectedComponents(Algo):
@@ -30,11 +30,7 @@ class bCoreDecomposition(Algo):
 
 # - degree distribution power-law estimation (properties.powerLawExponent)
 
-class bPowerLaw(Algo):
-	name = "PowerLaw"
-
-	def run(self, G):
-		networkit.properties.powerLawExponent(G)
+# class bPowerLaw(Algo) – not found in GT
 
 # - degree assortativity (properties.degreeAssortativity)
 
@@ -42,7 +38,7 @@ class bDegreeAssortativity(Algo):
 	name = "DegreeAssortativity"
 
 	def run(self, G):
-		networkit.properties.degreeAssortativity(G)
+		graphtool.assortativity(G, deg="total")
 
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
@@ -50,8 +46,7 @@ class bBFS(Algo):
 	name = "BFS"
 
 	def run(self, G):
-		bfs = networkit.graph.BFS(G)
-		bfs.run()
+		gt.shortest_distance(G) # Johnson’s algorithm seems to be used https://graph-tool.skewed.de/static/doc/topology.html#graph_tool.topology.shortest_distance
 
 
 # - community detection (community.PLM, community.PLP)
@@ -76,14 +71,14 @@ class bDiameter(Algo):
 	name = "Diameter"
 
 	def run(self, G):
-		d = networkit.properties.Diameter.exactDiameter(G)
+		d = graphtool.distance_histogram(G)
 
 
 class bDiameterEstimate(Algo):
 	name = "Diameter"
 
 	def run(self, G):
-		d =networkit.properties.Diameter.estimatedDiameterRange(G)
+		d = graphtool.pseudo_diameter(G)
 
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 
@@ -91,14 +86,9 @@ class bClusteringCoefficient(Algo):
 	name = "ClusteringCoefficient"
 
 	def run(self, G):
-		c = networkit.properties.ClusteringCoefficient.avgLocal(G)
+		c = graphtool.local_clustering(G)
 
-class bApproxClusteringCoefficient(Algo):
-	name = "ApproxClusteringCoefficient"
-
-	def run(self, G):
-		# TODO: specify number of trials
-		c = networkit.properties.ClusteringCoefficient.approxAvgLocal(G)
+# class bApproxClusteringCoefficient(Algo): – not implemented in graph-tool
 
 
 
@@ -110,11 +100,15 @@ class bPageRank(Algo):
 	name = "PageRank"
 
 	def run(self, G):
-		pr = networkit.centrality.PageRank(G)
-		pr.run()
+		pr = graphtool.pagerank(G)
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
+class bEigenvector(Algo):
+	name = "Eigenvector"
+
+	def run(self, G):
+		pr = graphtool.eigenvector(G)
 
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 
@@ -122,12 +116,11 @@ class bBetweenness(Algo):
 	name = "Betweenness"
 
 	def run(self, G):
-		bc = networkit.centrality.Betweenness(G)
-		bc.run()
-
-
-class bApproxBetweenness(Algo):
-	name = "ApproxBetweenness"
-
-	def run(self, G):
 		graphtool.betweenness(G)
+
+
+#class bApproxBetweenness(Algo):
+#	name = "ApproxBetweenness"
+
+#	def run(self, G):
+#		graphtool.betweenness(G)
