@@ -46,24 +46,16 @@ class bBFS(Algo):
 	name = "BFS"
 
 	def run(self, G):
-		gt.shortest_distance(G) # Johnson’s algorithm seems to be used https://graph-tool.skewed.de/static/doc/topology.html#graph_tool.topology.shortest_distance
+		from random import randint
 
+		v = randint(0, G.num_vertices()-1)
+		graphtool.bfs_search(G,v)
 
 # - community detection (community.PLM, community.PLP)
 
-class bCommunityDetectionLM(Algo):
-	name = "CommunityDetectionLM"
+#class bCommunityDetectionLM(Algo): – not implemented in graph-tool
 
-	def run(self, G):
-		plm = networkit.community.PLM(G)
-		plm.run()
-
-class bCommunityDetectionLP(Algo):
-	name = "CommunityDetectionLP"
-
-	def run(self, G):
-		plm = networkit.community.PLP(G)
-		plm.run()
+#class bCommunityDetectionLP(Algo): – not implemented in graph-tool
 
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 
