@@ -1,0 +1,9 @@
+include version.py
+#include ez_setup.py
+include SConstruct
+#include networkit/build.conf
+include networkit/_NetworKit.pyx
+recursive-include networkit *.h *.cpp
+#recursive-include src/python *.py
+recursive-include networkit *.pxd
+recursive-exclude networkit *GTest.cpp *GTest.h *Benchmark.h *Benchmark.cpp /test/ *-X.cpp
