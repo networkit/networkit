@@ -17,6 +17,7 @@ import numpy
 import matplotlib.pyplot as plt
 import seaborn
 from time import gmtime, strftime
+import signal
 
 
 import networkit
@@ -52,6 +53,15 @@ def graphMeta(graphNames, graphDir):
 
 def saveData(df, name):
     df.to_csv(os.path.join(bench.dataPath, "{0}.csv".format(name)), sep="\t")
+
+# timeout
+
+class Timeout(Exception):
+    pass
+
+def timeoutHandler(signum, frame):
+    error("timeout")
+    raise Timeout()
 
 
 
@@ -136,7 +146,7 @@ class Bench:
 
     """
 
-    def __init__(self, graphDir, graphMeta, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False):
+    def __init__(self, graphDir, graphMeta, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None):
         self.defaultGraphs = defaultGraphs
         self.nRuns = nRuns  # default number of runs for each algo
         self.graphDir = graphDir
@@ -160,6 +170,8 @@ class Bench:
         # graph cache
         self.cacheGraphs = cacheGraphs
         self.graphCache = {}
+        #timeout
+        self.timeout = timeout
 
     def getGraph(self, graphName, algo):
         """" Get the graph from disk or from in-memory cache"""
@@ -174,11 +186,14 @@ class Bench:
                 self.graphCache[graphName] = G
             return G
 
-    def algoBenchmark(self, algo, graphs=None, nRuns=None):
+    def algoBenchmark(self, algo, graphs=None, nRuns=None, timeout=None):
+        # set the defaults
         if nRuns is None:
             nRuns = self.nRuns  # lets argument override the default nRuns
         if graphs is None:
             graphs = self.defaultGraphs
+        if timeout is None:
+            timeout = self.timeout
 
         self.info("benchmarking {algo.name}".format(**locals()))
         table = []  # list of dictionaries, to be converted to a DataFrame
@@ -186,22 +201,32 @@ class Bench:
         for graphName in graphs:
             try:
                 G = self.getGraph(graphName, algo)
+                m = float(self.graphMeta[self.graphMeta["name"] == graphName]["m"])
                 try:
                     self.info("running {algo.name} {nRuns}x on {graphName}".format(**locals()))
                     for i in range(nRuns):
                         row = {}    # benchmark data row
-                        with Timer() as t:
-                            result = algo.run(G)
-                        self.debug("took {0} s".format(t.elapsed))
-                        # store data
-                        m = float(self.graphMeta[self.graphMeta["name"] == graphName]["m"])
                         row["algo"] = algo.name
                         row["graph"] = graphName
                         row["m"] = m
-                        row["time"] = t.elapsed
-                        row["eps"] =  m / t.elapsed  # calculate edges per second
-                        row["result"] = result
-                        table.append(row)
+                        try: # timeout
+                            signal.signal(signal.SIGALRM, timeoutHandler)
+                            signal.alarm(int(timeout * 60))  # timeout in seconds
+                            with Timer() as t:
+                                result = algo.run(G)
+                            self.debug("took {0} s".format(t.elapsed))
+                            # store data
+                            row["time"] = t.elapsed
+                            row["eps"] =  m / t.elapsed  # calculate edges per second
+                            row["result"] = result
+                        except Timeout as tx:
+                            self.error("{algo.name} timed out after {timeout} minutes".format(**locals()))
+                            row["time"] = None
+                            row["eps"] = None
+                            row["result"] = None
+                        finally:
+                            table.append(row)
+                            signal.alarm(int(1e9))    # in any case, cancel the timeout alarm by setting it to a ridiculously high time
                 except Exception as ex:
                     self.error("algorithm {algo.name} failed with exception: {ex}".format(**locals()))
             except Exception as ex:
