@@ -9,8 +9,8 @@ stamp = sys.argv[1]
 # load parameters
 with open(str(stamp)+'-alpha.json', 'r') as j:
 	alphalist = json.load(j)
-with open(str(stamp)+'-stretch.json', 'r') as j:
-	stretchlist = json.load(j)
+with open(str(stamp)+'-factor.json', 'r') as j:
+	factorlist = json.load(j)
 with open(str(stamp)+'-mag.json', 'r') as j:
 	maglist = json.load(j)
 
@@ -55,19 +55,19 @@ for mag in maglist:
 										with open(str(stamp)+'-table-modularities-'+str(n)+'.dat', 'w') as mo:
 											with open(str(stamp)+'-table-comsize-'+str(n)+'.dat', 'w') as cs:
 												for alpha in alphalist:
-													for stretch in stretchlist:
+													for factor in factorlist:
 														if (i < len(edges)):
-															e.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(edges[i]) + '\n')
-															c.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(cost[i]) + '\n')
-															p.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(powerLaw[i]) + '\n')
-															cc.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(clusterCoeff[i]) + '\n')
-															a.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(degreeAss[i]) + '\n')
-															exp.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(powerLawExponents[i]) + '\n')
-															diam.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(diameters[i]) + '\n')
-															degen.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(degeneracy[i]) + '\n')
-															nc.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(ncoms[i]) + '\n')
-															mo.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(mods[i]) + '\n')
-															cs.write(str(alpha) + '\t' + str(stretch/10) + '\t' + str(int(n/ncoms[i])) + '\n')
+															e.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(edges[i]) + '\n')
+															c.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(cost[i]) + '\n')
+															p.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(powerLaw[i]) + '\n')
+															cc.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(clusterCoeff[i]) + '\n')
+															a.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(degreeAss[i]) + '\n')
+															exp.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(powerLawExponents[i]) + '\n')
+															diam.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(diameters[i]) + '\n')
+															degen.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(degeneracy[i]) + '\n')
+															nc.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(ncoms[i]) + '\n')
+															mo.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(mods[i]) + '\n')
+															cs.write(str(alpha) + '\t' + str(factor/10) + '\t' + str(int(n/ncoms[i])) + '\n')
 															i = i+1
 														else:
 															break

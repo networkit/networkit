@@ -90,7 +90,7 @@ class Fit(object):
             #self.power_law = pl
         else:
             self.fixed_xmin=False
-            print("Calculating best minimal value for power law fit")
+            #print("Calculating best minimal value for power law fit")
             self.find_xmin()
 
         self.data = self.data[self.data>=self.xmin]
