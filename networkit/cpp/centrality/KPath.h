@@ -17,19 +17,32 @@ namespace NetworKit {
  */
 class KPath: public NetworKit::Centrality {
 public:
+
+	/*
+	 * the maximum length of paths
+	 * default value ln(n+m)
+	 */
+	count k;
+	/*
+	 * value in interval [-0.5, 0.5]
+	 * tradeoff between runtime and precision
+	 * -0.5: maximum precision, maximum runtime
+	 *  0.5: lowest precision, lowest runtime
+	 * default value 0.2
+	 */
+	double alpha;
+
 	/**
-	 * Constructs the Betweenness class for the given Graph @a G. If the betweenness scores should be normalized,
-	 * then set @a normalized to <code>true</code>.
+	 * Constructs the Betweenness class for the given Graph @a G.
 	 *
 	 * @param G The graph.
-	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
+	 * @param alpha tradeoff between precision and runtime.
+	 * @param k maximum length of paths.
 	 */
-	KPath(const Graph& G, bool normalized=false);
-
-
+	KPath(const Graph& G, double alpha=0.2, count k=0);
 
 	/**
-	* Compute betweenness scores sequential or parallel depending on @a runUnweightedInParallel.
+	* Compute betweenness scores sequential.
 	*
 	*/
 	void run() override;
