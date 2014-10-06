@@ -58,18 +58,15 @@ std::vector<int> TriangleCounter::getAttribute(const Graph& graph, const std::ve
 	std::vector<int> triangleCount(graph.upperEdgeIdBound(), 0);
 
 	std::vector<std::vector<edgeid> > nodeMarker;
-	std::vector<std::vector<int> > localTriangleCount;
 
 	#pragma omp parallel
 	{
 		#pragma omp single
 		{
 			nodeMarker.resize(omp_get_num_threads());
-			localTriangleCount.resize(omp_get_num_threads());
 		}
 
 		nodeMarker[omp_get_thread_num()].resize(graph.upperNodeIdBound(), none);
-		localTriangleCount[omp_get_thread_num()].resize(graph.upperEdgeIdBound(), 0);
 	}
 
 	graph.balancedParallelForNodes([&](node u) {
@@ -81,7 +78,7 @@ std::vector<int> TriangleCounter::getAttribute(const Graph& graph, const std::ve
 		graph.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
 			if (isOutEdge(u, v)) {
 				outEdges.emplace_back(v, eid);
-				nodeMarker[tid][v] = eid;
+				nodeMarker[tid][v] = 0;
 			}
 		});
 
@@ -90,27 +87,24 @@ std::vector<int> TriangleCounter::getAttribute(const Graph& graph, const std::ve
 			for (auto vw : inEdges[uv.first]) {
 				if (graph.degree(vw.first) > degU) break;
 
-				edgeid eid_uw = nodeMarker[tid][vw.first];
-				if (eid_uw != none) {
+				if (nodeMarker[tid][vw.first] != none) {
 
-					++localTriangleCount[tid][uv.second];
-					++localTriangleCount[tid][eid_uw];
-					++localTriangleCount[tid][vw.second];
+					++nodeMarker[tid][uv.first];
+					++nodeMarker[tid][vw.first];
+					#pragma omp atomic update
+					++triangleCount[vw.second];
 				}
 			}
 		}
 
 		for (auto uv : outEdges) {
+			if (nodeMarker[tid][uv.first] > 0) {
+				#pragma omp atomic update
+				triangleCount[uv.second] += nodeMarker[tid][uv.first];
+			}
 			nodeMarker[tid][uv.first] = none;
 		}
 	});
-
-	#pragma omp parallel for
-	for (index i = 0; i < graph.upperEdgeIdBound(); ++i) {
-		for (auto &localCount : localTriangleCount) {
-			triangleCount[i] += localCount[i];
-		}
-	}
 
 	return triangleCount;
 }
