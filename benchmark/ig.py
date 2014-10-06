@@ -82,7 +82,7 @@ class bDiameter(Algo):
 	name = "Diameter"
 
 	def run(self, G):
-		igraph.Graph.diameter(G)
+		return igraph.Graph.diameter(G)
 
 
 class bDiameterEstimate(Algo):
@@ -97,7 +97,7 @@ class bClusteringCoefficient(Algo):
 	name = "ClusteringCoefficient"
 
 	def run(self, G):
-		igraph.Graph.transitivity_local_undirected(G)
+		return igraph.Graph.transitivity_local_undirected(G)
 
 
 class bApproxClusteringCoefficient(Algo):
