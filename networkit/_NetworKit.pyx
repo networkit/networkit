@@ -1465,6 +1465,14 @@ cdef class EdgeListReader:
 	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
 		use readGraph(path, graphio.formats.metis) as an alternative.
 		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+
+		Parameters
+		----------
+		separator : string
+			separator when parsing file
+		firstNode : index
+			first node index in graph.
+
 	"""
 	cdef _EdgeListReader _this
 
