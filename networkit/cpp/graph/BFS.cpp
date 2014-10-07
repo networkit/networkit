@@ -20,6 +20,9 @@ void BFS::run(node t) {
 	distances.clear();
 	distances.resize(z, infDist);
 
+	std::vector<bool> visited;
+	visited.resize(z, false);
+
 	if (storePaths) {
 		previous.clear();
 		previous.resize(z);
@@ -35,6 +38,7 @@ void BFS::run(node t) {
 
 	std::queue<node> q;
 	q.push(source);
+	visited[source] = true;
 	distances[source] = 0;
 	bool breakWhenFound = (t != none);
 	while (! q.empty()) {
@@ -47,7 +51,7 @@ void BFS::run(node t) {
 		if (breakWhenFound && t == u) {
 			break;
 		}
-		
+
 		// TRACE("current node in BFS: " , u);
 //		TRACE(distances);
 
@@ -55,8 +59,9 @@ void BFS::run(node t) {
 		G.forNeighborsOf(u, [&](node v) {
 			// TRACE("scanning neighbor ", v);
 
-			if (distances[v] == infDist) {
+			if (!visited[v]) {
 				q.push(v);
+				visited[v] = true;
 				distances[v] = distances[u] + 1;
 				if (storePaths) {
 					previous[v] = {u};
