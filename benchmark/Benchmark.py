@@ -26,6 +26,7 @@ from util import *
 import nk
 import nx
 import ig
+import gt
 
 # helper function
 
@@ -177,16 +178,22 @@ class Bench:
         """" Get the graph from disk or from in-memory cache"""
         if graphName in self.graphCache:
             self.info("getting {0} from cache".format(graphName))
-            G = self.graphCache[graphName]
+            G = self.graphCache[algo.frameworkPrefix + graphName]
             return G
         else:
             self.info("loading {0}".format(graphName))
             G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
             if self.cacheGraphs:
-                self.graphCache[graphName] = G
+                self.graphCache[algo.frameworkPrefix + graphName] = G
             return G
 
+    def clearCache(self):
+        """ Delete all stored graphs to free memory """
+        del self.graphCache
+        self.graphCache = {}
+
     def algoBenchmark(self, algo, graphs=None, nRuns=None, timeout=None):
+        """ Run a kernel represented by an algorithm benchmark object """
         # set the defaults
         if nRuns is None:
             nRuns = self.nRuns  # lets argument override the default nRuns
@@ -210,8 +217,9 @@ class Bench:
                         row["graph"] = graphName
                         row["m"] = m
                         try: # timeout
-                            signal.signal(signal.SIGALRM, timeoutHandler)
-                            signal.alarm(int(timeout * 60))  # timeout in seconds
+                            if timeout:
+                                signal.signal(signal.SIGALRM, timeoutHandler)
+                                signal.alarm(int(timeout * 60))  # timeout in seconds
                             with Timer() as t:
                                 result = algo.run(G)
                             self.debug("took {0} s".format(t.elapsed))
@@ -285,7 +293,7 @@ class Bench:
             epsSummary.to_csv(os.path.join(self.outDataDir, "epsSummary.csv".format(**locals())))
         plt.gca().xaxis.get_major_formatter().set_powerlimits((3, 3))
         plt.xscale("log")
-        plt.xlabel("edges / s")
+        plt.xlabel("edges/s")
         seaborn.boxplot(epsSummary, linewidth=1.5, widths=.25, color=darkred, vert=False)
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "epsSummary.pdf".format(**locals())), bbox_inches="tight")
