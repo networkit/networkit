@@ -17,8 +17,6 @@ namespace NetworKit {
  */
 class DotPartitionWriter {
 public:
-    virtual ~DotPartitionWriter() = default;
-
     virtual void write(Graph& graph, Partition& zeta, std::string path) const;
 
     virtual std::map<index, double> createHueMap(Graph &graph, Partition& zeta) const;

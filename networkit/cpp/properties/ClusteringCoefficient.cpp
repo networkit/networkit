@@ -10,6 +10,7 @@
 #include "ClusteringCoefficient.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/Log.h"
+#include <omp.h>
 
 namespace NetworKit {
 
@@ -17,54 +18,39 @@ std::vector<double> ClusteringCoefficient::exactLocal(Graph &G) {
 	count z = G.upperNodeIdBound();
 	std::vector<double> coefficient(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
+	std::vector<std::vector<bool> > nodeMarker(omp_get_max_threads());
+
+	for (auto & nm : nodeMarker) {
+		nm.resize(z, false);
+	}
+
 	G.balancedParallelForNodes([&](node u) {
-
-#if 0
-		// TODO:
-		// for each vertex u
-		// retrieve neighborhood of u
-		// examine each pair (v, w) of neighbors of u
-		// if (v, w) \in E then increase triangles
-
 		count d = G.degree(u);
-	    if (d < 2) {
-	      coefficient[u] = 0.0;
-	    } else {
-		      count triangles = 0;
-		      std::vector<node> neigh = G.neighbors(u);
-		      for (index i = 0; i < d; ++i) {
-		    	  for (index j = i+1; j < d; ++j) {
-		    		  if (G.hasEdge(neigh[i], neigh[j])) {
-		    			  triangles++;
-		    		  }
-		    	  }
-		      }
-		      coefficient[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
-	    }
-#endif
 
+		if (d < 2) {
+			coefficient[u] = 0.0;
+		} else {
+			size_t tid = omp_get_thread_num();
+			count triangles = 0;
 
-		count d = G.degree(u);
-		std::unordered_set<node> uNeighbors; // set for O(1) time access to u's neighbors
-		G.forNeighborsOf(u, [&](node v){
-			if (v != u) {
-				uNeighbors.insert(v);
-			}
-		});
-	    
-	    if (d < 2) {
-	      coefficient[u] = 0.0;
-	    } else {
-	      count triangles = 0;
-	      G.forEdgesOf(u, [&](node u, node v) {
-	        G.forEdgesOf(v, [&](node v, node w){
-	          if (uNeighbors.find(w) != uNeighbors.end()) { // w is also a neighbor of u
-	            triangles += 1;
-	          }
-	        });
-	      });
-	      coefficient[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
-	    }
+			G.forEdgesOf(u, [&](node u, node v) {
+				nodeMarker[tid][v] = true;
+			});
+
+			G.forEdgesOf(u, [&](node u, node v) {
+				G.forEdgesOf(v, [&](node v, node w) {
+					if (nodeMarker[tid][w]) {
+						triangles += 1;
+					}
+				});
+			});
+
+			G.forEdgesOf(u, [&](node u, node v) {
+				nodeMarker[tid][v] = false;
+			});
+
+			coefficient[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
+		}
 	});
 
 	return coefficient;
@@ -125,22 +111,36 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 double ClusteringCoefficient::exactGlobal(Graph& G) {
 	count z = G.upperNodeIdBound();
 	std::vector<count> triangles(z); // triangles including node u (every triangle is counted six times)
-	std::vector<count> triples(z); // triples around node u
 
+	std::vector<std::vector<bool> > nodeMarker(omp_get_max_threads());
+	for (auto &nm : nodeMarker) {
+		nm.resize(z, false);
+	}
 
-	G.parallelForNodes([&](node u){
+	G.balancedParallelForNodes([&](node u){
+
+		size_t tid = omp_get_thread_num();
 		count tr = 0;
-    	if (G.degree(u) > 1) {
-     	 	G.forEdgesOf(u, [&](node u, node v) {
-       			G.forEdgesOf(v, [&](node v, node w){
-         			if (G.hasEdge(u, w)) {
-            			tr += 1;
-          			}
-        		});
-      		});
-    	}
-    
-    	triangles[u] = tr;
+
+		if (G.degree(u) > 1) {
+			G.forEdgesOf(u, [&](node u, node v) {
+				nodeMarker[tid][v] = true;
+			});
+
+			G.forEdgesOf(u, [&](node u, node v) {
+				G.forEdgesOf(v, [&](node v, node w) {
+					if (nodeMarker[tid][w]) {
+						tr += 1;
+					}
+				});
+			});
+
+			G.forEdgesOf(u, [&](node u, node v) {
+				nodeMarker[tid][v] = false;
+			});
+		}
+
+		triangles[u] = tr;
 	});
   
   double denominator = G.parallelSumForNodes([&](node u){

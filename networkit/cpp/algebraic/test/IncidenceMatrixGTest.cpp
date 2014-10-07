@@ -16,7 +16,7 @@ IncidenceMatrixGTest::IncidenceMatrixGTest() {
 IncidenceMatrixGTest::~IncidenceMatrixGTest() {
 }
 
-TEST_F(IncidenceMatrixGTest, tryElementAccess) {
+TEST_F(IncidenceMatrixGTest, testElementAccess) {
 	IncidenceMatrix mat(graph);
 
 	EXPECT_EQ(sqrt(graph.weight(0,1)), mat(0,0));
@@ -35,7 +35,7 @@ TEST_F(IncidenceMatrixGTest, tryElementAccess) {
 	}
 }
 
-TEST_F(IncidenceMatrixGTest, tryRowAndColumnAccess) {
+TEST_F(IncidenceMatrixGTest, testRowAndColumnAccess) {
 	IncidenceMatrix mat(graph);
 
 	Vector row0 = mat.row(0);
@@ -68,7 +68,7 @@ TEST_F(IncidenceMatrixGTest, tryRowAndColumnAccess) {
 	}
 }
 
-TEST_F(IncidenceMatrixGTest, tryMatrixVectorProduct) {
+TEST_F(IncidenceMatrixGTest, testMatrixVectorProduct) {
 	IncidenceMatrix mat(graph);
 	Vector v = {12, 3, 9, 28, 0, -1};
 

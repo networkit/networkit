@@ -22,11 +22,6 @@ namespace NetworKit {
 class DotGraphWriter {
 public:
 	/**
-	 * Constructor. No arguments required.
-	 */
-	virtual ~DotGraphWriter() = default;
-
-	/**
 	 * Write a graph as a GraphViz/file.
 	 * 
 	 * @param[in]	graph	The graph object

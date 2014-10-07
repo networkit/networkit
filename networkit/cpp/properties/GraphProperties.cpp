@@ -7,14 +7,6 @@
 
 namespace NetworKit {
 
-GraphProperties::GraphProperties() {
-
-}
-
-GraphProperties::~GraphProperties() {
-
-}
-
 std::vector<count> GraphProperties::degreeDistribution(const Graph& G) {
 	count maxDegree = minMaxDegree(G).second;
 	std::vector<count> distribution(maxDegree+1, 0);

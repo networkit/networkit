@@ -21,9 +21,6 @@ namespace NetworKit {
  */
 class Conductance: public NetworKit::QualityMeasure {
 public:
-	/** Default destructor */
-	virtual ~Conductance();
-
 	/**
 	 * @return Conductance of 2-partition @a zeta in graph @a G.
 	 * Requires cluster IDs to be either 0 or 1.

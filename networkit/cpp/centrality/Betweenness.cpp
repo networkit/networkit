@@ -48,7 +48,12 @@ void Betweenness::run() {
 			node t = stack.top();
 			stack.pop();
 			for (node p : sssp->getPredecessors(t)) {
-				dependency[p] += (double(sssp->numberOfPaths(p)) / sssp->numberOfPaths(t)) * (1 + dependency[t]);
+				// workaround for integer overflow in large graphs
+				bigfloat tmp = sssp->numberOfPaths(p) / sssp->numberOfPaths(t);
+				double weight;
+				tmp.ToDouble(weight);
+
+				dependency[p] += weight * (1 + dependency[t]);
 			}
 			if (t != s) {
 				scoreData[t] += dependency[t];

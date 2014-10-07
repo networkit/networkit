@@ -21,8 +21,6 @@ namespace NetworKit {
  */
 class LineFileReader {
 public:
-	LineFileReader();
-	virtual ~LineFileReader();
 	std::vector<std::string> read(std::string path);
 };
 
