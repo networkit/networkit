@@ -1,9 +1,12 @@
 import graph_tool.all as graphtool
+import random
 
 
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
 class Algo:
+	frameworkPrefix = "gt:"
+
 	""" runner for an algorithm"""
 	def run(self, G):
 		raise Exception("Not implemented")
@@ -13,7 +16,7 @@ class Algo:
 		return G
 
 class bConnectedComponents(Algo):
-	name = "ConnectedComponents"
+	name = "gt:ConnectedComponents"
 
 	def run(self, G):
 		cc = graphtool.label_components(G)
@@ -23,7 +26,7 @@ class bConnectedComponents(Algo):
 # - k-core decomposition (properties.CoreDecomposition)
 
 class bCoreDecomposition(Algo):
-	name = "CoreDecomposition"
+	name = "gt:CoreDecomposition"
 
 	def run(self, G):
 		cd = graphtool.kcore_decomposition(G)
@@ -35,7 +38,7 @@ class bCoreDecomposition(Algo):
 # - degree assortativity (properties.degreeAssortativity)
 
 class bDegreeAssortativity(Algo):
-	name = "DegreeAssortativity"
+	name = "gt:DegreeAssortativity"
 
 	def run(self, G):
 		graphtool.assortativity(G, deg="total")
@@ -43,12 +46,10 @@ class bDegreeAssortativity(Algo):
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
 class bBFS(Algo):
-	name = "BFS"
+	name = "gt:BFS"
 
 	def run(self, G):
-		from random import randint
-
-		v = randint(0, G.num_vertices()-1)
+		v = random.randint(0, G.num_vertices()-1)
 		graphtool.bfs_search(G,v)
 
 # - community detection (community.PLM, community.PLP)
@@ -60,14 +61,14 @@ class bBFS(Algo):
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 
 class bDiameter(Algo):
-	name = "Diameter"
+	name = "gt:Diameter"
 
 	def run(self, G):
 		d = graphtool.distance_histogram(G)
 
 
 class bDiameterEstimate(Algo):
-	name = "Diameter"
+	name = "gt:DiameterEstimate"
 
 	def run(self, G):
 		d = graphtool.pseudo_diameter(G)
@@ -75,7 +76,7 @@ class bDiameterEstimate(Algo):
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 
 class bClusteringCoefficient(Algo):
-	name = "ClusteringCoefficient"
+	name = "gt:ClusteringCoefficient"
 
 	def run(self, G):
 		c = graphtool.local_clustering(G)
@@ -89,7 +90,7 @@ class bClusteringCoefficient(Algo):
 # 	- PageRank (centrality.PageRank, centrality.SciPyPageRank)
 
 class bPageRank(Algo):
-	name = "PageRank"
+	name = "gt:PageRank"
 
 	def run(self, G):
 		pr = graphtool.pagerank(G)
@@ -97,7 +98,7 @@ class bPageRank(Algo):
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
 class bEigenvector(Algo):
-	name = "Eigenvector"
+	name = "gt:Eigenvector"
 
 	def run(self, G):
 		pr = graphtool.eigenvector(G)
@@ -105,7 +106,7 @@ class bEigenvector(Algo):
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 
 class bBetweenness(Algo):
-	name = "Betweenness"
+	name = "gt:Betweenness"
 
 	def run(self, G):
 		graphtool.betweenness(G)
