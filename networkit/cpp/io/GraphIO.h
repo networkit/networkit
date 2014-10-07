@@ -22,11 +22,6 @@ namespace NetworKit {
  */
 class GraphIO {
 public:
-
-	GraphIO();
-
-	virtual ~GraphIO();
-
 	/**
 	 * Writes graph to text file in edge list format.
 	 * Keep in mind that isolated nodes are ignored.

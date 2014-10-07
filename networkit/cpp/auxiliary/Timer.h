@@ -26,10 +26,7 @@ protected:
 	std::chrono::steady_clock::time_point stopped;		//!< time at which timer has been stopped
 
 public:
-
 	Timer();
-
-	virtual ~Timer();
 
 	/**
 	 * Start the clock.

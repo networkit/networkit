@@ -21,7 +21,7 @@ class StaticGraphGenerator {
 public:
 
 	/** Default destructor */
-	virtual ~StaticGraphGenerator();
+	virtual ~StaticGraphGenerator() = default;
 
 	virtual Graph generate() = 0;
 };

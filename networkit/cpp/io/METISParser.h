@@ -38,8 +38,6 @@ public:
 	 */
 	METISParser(std::string path);
 
-	virtual ~METISParser();
-
 
 	/**
 	 * Get the METIS graph file header

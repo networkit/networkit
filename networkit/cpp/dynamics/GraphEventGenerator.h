@@ -20,10 +20,7 @@ namespace NetworKit {
 class GraphEventGenerator {
 
 public:
-
 	GraphEventGenerator(Graph& G);
-
-	virtual ~GraphEventGenerator();
 
 	virtual void generateStream(std::function<bool(void)> done);
 };

@@ -18,10 +18,6 @@ MultilevelLayouter::MultilevelLayouter(Point<float> bottomLeft, Point<float> top
 
 }
 
-MultilevelLayouter::~MultilevelLayouter() {
-
-}
-
 void MultilevelLayouter::prolongCoordinates(Graph& Gcon, Graph& G) {
 
 }

@@ -38,9 +38,6 @@ public:
 	/** Default constructor */
 	EPP();
 
-	/** Default destructor */
-	virtual ~EPP() = default;
-
 	/**
 	 * Add a base clusterer to the ensemble.
 	 *

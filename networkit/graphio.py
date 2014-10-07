@@ -1,7 +1,7 @@
 # extension imports
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
 						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
-						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader)
+						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader, GMLGraphReader)
 						  
 # local imports
 from .GraphMLIO import GraphMLReader, GraphMLWriter
@@ -77,7 +77,8 @@ def getReader(fileformat, **kwargs):
 			Format.EdgeListTabOne:		EdgeListReader('\t',1),
 			Format.EdgeListTabZero:		EdgeListReader('\t',0),
 			Format.LFR:			EdgeListReader('\t',1),
-			Format.KONECT:			KONECTGraphReader(' ')
+			Format.KONECT:			KONECTGraphReader(' '),
+			Format.GML:			GMLGraphReader()
 			}
 
 	try:

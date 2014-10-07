@@ -14,10 +14,6 @@ TNeighborhoodDistance::TNeighborhoodDistance(const Graph& G) : TNodeDistance(G) 
 
 }
 
-TNeighborhoodDistance::~TNeighborhoodDistance() {
-	// TODO Auto-generated destructor stub
-}
-
 void TNeighborhoodDistance::initialize(const Parameters& param) {
 	// no initialization needed
 
