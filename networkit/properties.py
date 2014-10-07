@@ -154,10 +154,11 @@ def properties(G, settings):
 	logging.info("[...] determining degree distribution")
 	# degrees
 	degDist = GraphProperties.degreeDistribution(G)
+	degSeq = GraphProperties.degreeSequence(G)
 	minDeg, maxDeg, avgDeg = degrees(G)
 
-	plfit = powerLawFit(G, degDist)
-	gamma = powerLawExponent(G, degDist)
+	plfit = powerLawFit(G, degSeq)
+	gamma = powerLawExponent(G, degSeq)
 
 	# number of isolated nodes
 	isolates = degDist[0] if len(degDist) > 0 else None
