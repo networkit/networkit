@@ -5041,6 +5041,34 @@ cdef class ChanceCorrectedTriangleAttributizer:
 		"""
 		return self._this.getAttribute(G._this, triangles)
 
+cdef extern from "cpp/backbones/NodeNormalizedTriangleAttributizer.h":
+	cdef cppclass _NodeNormalizedTriangleAttributizer "NetworKit::NodeNormalizedTriangleAttributizer":
+		_NodeNormalizedTriangleAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] triangles) except +
+
+cdef class NodeNormalizedTriangleAttributizer:
+	"""
+	Divide the number of triangles per edge by the average number of triangles of the incident nodes.
+	"""
+	cdef _NodeNormalizedTriangleAttributizer _this
+
+	def getAttribute(self, Graph G, vector[int] triangles):
+		"""
+		Gets the edge attribute that can be used for global filtering.
+		Parameters
+		----------
+		G : Graph
+			The input graph.
+		triangles : vector[int]
+			Triangle count.
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains triangle count normalized by average number of triangles of the incident nodes.
+
+		"""
+		return self._this.getAttribute(G._this, triangles)
+
 cdef extern from "cpp/backbones/AdamicAdarAttributizer.h":
 	cdef cppclass _AdamicAdarAttributizer "NetworKit::AdamicAdarAttributizer":
 		_AdamicAdarAttributizer() except +
