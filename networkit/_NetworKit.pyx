@@ -28,6 +28,11 @@ ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
 
+cdef extern from "cpp/Globals.h" namespace "NetworKit":
+	index _none "NetworKit::none"
+
+none = _none
+
 cdef extern from "<algorithm>" namespace "std":
 	void swap[T](T &a,  T &b)
 	_Graph move( _Graph t ) # specialized declaration as general declaration disables template argument deduction and doesn't work
