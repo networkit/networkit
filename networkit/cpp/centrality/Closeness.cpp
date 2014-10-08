@@ -23,12 +23,11 @@ Closeness::Closeness(const Graph& G, bool normalized) : Centrality(G, normalized
 }
 
 void Closeness::run() {
-	// TODO: we might want to add a parallel version
 	count z = G.upperNodeIdBound();
 	scoreData.clear();
 	scoreData.resize(z);
 
-	G.forNodes([&](node s) {
+	G.parallelForNodes([&](node s) {
 		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
 			sssp.reset(new Dijkstra(G, s, true, true));
