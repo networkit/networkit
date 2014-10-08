@@ -4964,6 +4964,33 @@ cdef class LinearizeAttribute:
 		"""
 		return self._this.getAttribute(G._this, a)
 
+cdef extern from "cpp/backbones/GeometricAverageAttributizer.h":
+	cdef cppclass _GeometricAverageAttributizer "NetworKit::GeometricAverageAttributizer":
+		_GeometricAverageAttributizer() except +
+		vector[double] getAttribute(_Graph G, vector[int] a) except +
+
+cdef class GeometricAverageAttributizer:
+	"""
+	Normalizes the given edge attribute by the geometric average of the sum of the attributes of the incident edges of the incident nodes.
+	"""
+	cdef _GeometricAverageAttributizer _this
+
+	def getAttribute(self, Graph G, vector[int] a):
+		"""
+		Normalizes the given edge attribute.
+		----------
+		G : Graph
+			The input graph.
+		a : vector[int]
+			Edge attribute that shall be normalized.
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains the normalized attribute.
+
+		"""
+		return self._this.getAttribute(G._this, a)
+
 cdef extern from "cpp/backbones/ChanceCorrectedTriangleAttributizer.h":
 	cdef cppclass _ChanceCorrectedTriangleAttributizer "NetworKit::ChanceCorrectedTriangleAttributizer":
 		_ChanceCorrectedTriangleAttributizer() except +
