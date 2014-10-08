@@ -17,6 +17,8 @@ public:
 		*/
 
 		std::vector<double> sparsificationExp(g.upperEdgeIdBound(), (bothRequired ? .0 : 1.0));
+		
+		count n = g.numberOfNodes();
 
 		g.parallelForNodes([&](node i) {
 			count d = g.degree(i);
@@ -26,17 +28,17 @@ public:
 			 * are to be kept in the backbone.
 			 */
 
-			std::vector<std::pair<double, index> > neighbors;
+			std::vector<std::tuple<double, count, index> > neighbors;
 			g.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-				neighbors.push_back(std::make_pair(attribute[eid], eid));
+				neighbors.emplace_back(attribute[eid], n - g.degree(j), eid);
 			});
-			std::sort(neighbors.begin(), neighbors.end(), std::greater<std::pair<double, index> >());
+			std::sort(neighbors.begin(), neighbors.end(), std::greater<std::tuple<double, count, index> >());
 
 			count rank = 1;
 
 			#pragma omp critical // each value is set twice, the value can be wrong if the wrong thread wins
 			for (auto it : neighbors) {
-				edgeid eid = it.second;
+				edgeid eid = std::get<2>(it);
 
 				double e = 0.0;
 
