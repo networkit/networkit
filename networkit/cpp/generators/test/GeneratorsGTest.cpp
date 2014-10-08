@@ -285,7 +285,6 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 	double factor = 0.5;
 	double stretch = 1;
 	double alpha = 1;
-	double R = acosh((double)n/(2*M_PI)+1)*stretch;
 	double movedShare = 0.2;
 	double moveDistance = 1;
 	vector<double> angles(n);
@@ -713,7 +712,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	count n = 100000;
 	HyperbolicGenerator gen(n,1,1,1);
-	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,1,1);
+	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,1);
 	DEBUG("Expected: ", expected);
 	Graph G = gen.generate();
 	DEBUG("Actual: ", G.numberOfEdges());

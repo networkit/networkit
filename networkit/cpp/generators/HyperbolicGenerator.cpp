@@ -60,7 +60,7 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	return generate(&angles, &radii, r, R*distanceFactor);
 }
 
-double HyperbolicGenerator::expectedNumberOfEdges(count n, double distanceFactor, double stretch) {
+double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
 	double R = stretch*acosh((double)n/(2*M_PI)+1);
 	return (8 / M_PI) * n * exp(-R/2)*(n/2);
 }
