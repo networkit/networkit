@@ -964,8 +964,30 @@ cdef class SpanningForest:
 	def generate(self):
 		return Graph().setThis(self._this.generate());
 
+cdef extern from "cpp/graph/UMST.h":
+	cdef cppclass _UMST "NetworKit::UMST":
+		_UMST(_Graph) except +
+		_Graph generate() except +
+		_Graph generate[A](vector[A]) except +
+		vector[bool] generateAttribute(vector[double])  except +
 
+cdef class UMST:
+	cdef _UMST* _this
 
+	def __cinit__(self, Graph G not None):
+		self._this = new _UMST(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def generate(self, vector[double] attribute = vector[double]()):
+		if attribute.empty():
+			return Graph().setThis(self._this.generate())
+		else:
+			return Graph().setThis(self._this.generate[double](attribute))
+
+	def generateAttribute(self, vector[double] attribute):
+		return self._this.generateAttribute(attribute)
 
 cdef extern from "cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
