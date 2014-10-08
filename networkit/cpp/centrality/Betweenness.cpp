@@ -23,7 +23,6 @@ Betweenness::Betweenness(const Graph& G, bool normalized) : Centrality(G, normal
 }
 
 void Betweenness::run() {
-	// TODO: we might want to add a parallel version
 	count z = G.upperNodeIdBound();
 	scoreData.clear();
 	scoreData.resize(z);
@@ -56,12 +55,13 @@ void Betweenness::run() {
 				dependency[p] += weight * (1 + dependency[t]);
 			}
 			if (t != s) {
+				#pragma omp atomic update
 				scoreData[t] += dependency[t];
 			}
 		}
 	};
 
-	G.forNodes(computeDependencies);
+	G.balancedParallelForNodes(computeDependencies);
 	if (normalized) {
 		// divide by the number of possible pairs
 		count n = G.numberOfNodes();
