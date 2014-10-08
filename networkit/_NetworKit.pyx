@@ -3262,6 +3262,7 @@ cdef class StronglyConnectedComponents:
 cdef extern from "cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
 		vector[double] exactLocal(_Graph G) except +
 		double avgLocal(_Graph G) except +
+		double sequentialAvgLocal(_Graph G) except +
 		double approxAvgLocal(_Graph G, count trials) except +
 		double exactGlobal(_Graph G) except +
 		double approxGlobal(_Graph G, count trials) except +
@@ -3291,6 +3292,26 @@ cdef class ClusteringCoefficient:
 
 		"""
 		return avgLocal(G._this)
+
+	@staticmethod
+	def sequentialAvgLocal(Graph G):
+		""" This calculates the average local clustering coefficient of graph `G` using inherently sequential triangle counting.
+		Parameters
+		----------
+		G : Graph
+			The graph.
+
+		Notes
+		-----
+
+		.. math:: c(G) := \\frac{1}{n} \sum_{u \in V} c(u)
+
+		where
+
+		.. math:: c(u) := \\frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}
+
+		"""
+		return sequentialAvgLocal(G._this)
 
 	@staticmethod
 	def approxAvgLocal(Graph G, trials):

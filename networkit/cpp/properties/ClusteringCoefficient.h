@@ -29,6 +29,7 @@ public:
 	 * where $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 	 */
 	static double avgLocal(Graph& G);
+	static double sequentialAvgLocal(const Graph &G);
   	static double approxAvgLocal(Graph& G, const count trials);
 
 	/**
