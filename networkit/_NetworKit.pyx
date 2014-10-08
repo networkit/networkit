@@ -1851,12 +1851,6 @@ cdef class Partition:
 		swap[_Partition](self._this,  other)
 		return self
 
-	def __cinit__(self, size=None):
-		if size is None:
-			self._this = _Partition()
-		else:
-			self._this = _Partition(size)
-
 	def subsetOf(self, e):
 		""" Get the set (id) in which the element `e` is contained.
 
