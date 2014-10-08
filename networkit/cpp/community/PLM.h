@@ -29,9 +29,10 @@ public:
 	 * 							2m 	-> singleton communities
 	 * @param[in]	maxIter		maximum number of iterations for move phase
 	 * @param[in]	parallelCoarsening	use parallel graph coarsening
+	 * @param[in]	turbo	faster but uses O(n) additional memory per thread
 	 *
 	 */
-	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=true);
+	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=true, bool turbo = false);
 
 
 	/**
@@ -60,6 +61,7 @@ private:
 	double gamma = 1.0;
 	count maxIter;
 	bool parallelCoarsening;
+	bool turbo;
 };
 
 } /* namespace NetworKit */
