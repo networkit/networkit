@@ -1500,6 +1500,13 @@ cdef class KONECTGraphReader:
 	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
 
 		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
+
+		Parameters
+		----------
+		separator : string
+			separator when parsing file
+		ignoreLoops : boolean
+			set to false in default
 	"""
 	cdef _KONECTGraphReader _this
 
