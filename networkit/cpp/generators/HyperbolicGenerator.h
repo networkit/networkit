@@ -25,7 +25,7 @@ public:
 	HyperbolicGenerator(count n, double factor = 1, double alpha = 1, double stretchradius = 1);
 	HyperbolicGenerator(count n, count m);
 	virtual ~HyperbolicGenerator();
-	static double expectedNumberOfEdges(count n, double distanceFactor, double stretch);
+	static double expectedNumberOfEdges(count n, double stretch);
 	static Graph generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance);
 	static std::map<index, Point<float> > getCoordinates(vector<double> &angles, vector<double> &radii);
 	Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1);
