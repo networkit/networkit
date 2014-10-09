@@ -8,6 +8,8 @@
 #include <stack>
 #include <queue>
 #include <memory>
+#include <omp.h>
+
 
 #include "Betweenness.h"
 #include "../auxiliary/PrioQueue.h"
@@ -26,6 +28,11 @@ void Betweenness::run() {
 	count z = G.upperNodeIdBound();
 	scoreData.clear();
 	scoreData.resize(z);
+
+	// thread-local scores for efficient parallelism
+	count maxThreads = omp_get_max_threads();
+	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
+
 
 	auto computeDependencies = [&](node s) {
 
@@ -55,13 +62,23 @@ void Betweenness::run() {
 				dependency[p] += weight * (1 + dependency[t]);
 			}
 			if (t != s) {
-				#pragma omp atomic update
-				scoreData[t] += dependency[t];
+				scorePerThread[omp_get_thread_num()][t] += dependency[t];
 			}
 		}
 	};
 
+
+
 	G.balancedParallelForNodes(computeDependencies);
+
+	INFO("adding thread-local scores");
+	// add up all thread-local values
+	for (auto local : scorePerThread) {
+		G.parallelForNodes([&](node v){
+			scoreData[v] += local[v];
+		});
+	}
+
 	if (normalized) {
 		// divide by the number of possible pairs
 		count n = G.numberOfNodes();
