@@ -34,6 +34,7 @@ public:
 	*/
 	void run() override;
 
+	double centralization();
 };
 
 } /* namespace NetworKit */
