@@ -149,7 +149,9 @@ def properties(G, settings):
 	degDist = GraphProperties.degreeDistribution(G)
 	minDeg, maxDeg, avgDeg = degrees(G)
 
-	plfit = degreePowerLaw(G)
+	if settings["powerlaw"]:
+		plfit = degreePowerLaw(G)
+		
 	# number of isolated nodes
 	isolates = degDist[0] if len(degDist) > 0 else None
 	satellites = degDist[1] if len(degDist) > 1 else None
