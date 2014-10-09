@@ -254,18 +254,15 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
 		["clustering coefficient", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
 		["max. core number", props["degeneracy"]],
-	]
-	degreeProperties = [
-		["min. degree", props["minDeg"]],
-		["max. degree", props["maxDeg"]],
-		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
-		["power law?, likelihood, gamma", "{0}, {1}, {2}".format(props["plfit"][0], "{0:.4f}".format(props["plfit"][1]), "{0:.4f}".format(props["plfit"][2]))],
-		["degree assortativity", "{0:.4f}".format(props["assort"])],
-	]
-	pathStructure = [
 		["connected components", props["nComponents"]],
 		["size of largest component", props["sizeLargestComponent"]],
 		["estimated diameter range", str(props["dia"])],
+	]
+	degreeProperties = [
+		["min./max. degree", "({0}, {1})".format(props["minDeg"], props["maxDeg"])],
+		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
+		["power law?, likelihood, gamma", "{0}, {1}, {2}".format(props["plfit"][0], "{0:.4f}".format(props["plfit"][1]), "{0:.4f}".format(props["plfit"][2]))],
+		["degree assortativity", "{0:.4f}".format(props["assort"])],
 	]
 
 	communityStructure = [
@@ -281,8 +278,6 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	print(tabulate.tabulate(basicProperties))
 	print("Node Degree Properties")
 	print(tabulate.tabulate(degreeProperties))
-	print("Path Structure")
-	print(tabulate.tabulate(pathStructure))
 	#print("Miscellaneous")
 	#print(tabulate.tabulate(miscProperties))
 	print("Community Structure")
