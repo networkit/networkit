@@ -151,13 +151,13 @@ def properties(G, settings):
 
 	if settings["powerlaw"]:
 		plfit = degreePowerLaw(G)
-		
+
 	# number of isolated nodes
 	isolates = degDist[0] if len(degDist) > 0 else None
 	satellites = degDist[1] if len(degDist) > 1 else None
 
 	# number of self-loops
-	loops = len([(u, v) for (u,v) in G.edges() if (u == v)])
+	loops = G.numberOfSelfLoops()
 
 	# density
 	dens = density(G)
