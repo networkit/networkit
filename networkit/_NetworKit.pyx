@@ -143,6 +143,7 @@ cdef extern from "cpp/graph/Graph.h":
 		Point[float] getCoordinate(node v) except +
 		void setCoordinate(node v, Point[float] value) except +
 		void initCoordinates() except +
+		count numberOfSelfLoops() except +
 
 
 cdef class Graph:
@@ -570,6 +571,9 @@ cdef class Graph:
 
 	def initCoordinates(self):
 		self._this.initCoordinates()
+
+	def numberOfSelfLoops(self):
+		return self._this.numberOfSelfLoops()
 
 # TODO: expose all methods
 
@@ -1472,7 +1476,7 @@ cdef class GMLGraphReader:
 		[1]: http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
  	"""
 	cdef _GMLGraphReader _this
-	
+
 	def __cinit__(self):
 		self._this = _GMLGraphReader()
 
@@ -2808,7 +2812,7 @@ cdef class CutClustering(CommunityDetector):
 	Cut clustering algorithm as defined in
 	Flake, Gary William; Tarjan, Robert E.; Tsioutsiouliklis, Kostas. Graph Clustering and Minimum Cut Trees.
 	Internet Mathematics 1 (2003), no. 4, 385--408.
-	
+
 	Parameters
 	----------
 	alpha : double
