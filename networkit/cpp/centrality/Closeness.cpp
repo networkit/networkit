@@ -52,22 +52,8 @@ void Closeness::run() {
 	}
 }
 
-double Closeness::centralization() {
-	//TODO: only valid when scoreData has not been normalized
-	double n = G.numberOfNodes();
-	double maximum = 0;
-	G.forNodes([&](node u){
-		// find the most central node
-		if (scoreData[u] > maximum) {
-			maximum = scoreData[u];
-		}
-	});
-	double sumOfDifferences = 0;
-	G.forNodes([&](node u){
-		sumOfDifferences += maximum - scoreData[u];
-	});
-	double largestPossibleDiff = (n - 1) * ( (1/(n-1)) - (1/(1+2*(n-2))) );
-	return sumOfDifferences / largestPossibleDiff;
+double Closeness::maximum() {
+	return 1 / (G.numberOfNodes() - 1);
 }
 
 } /* namespace NetworKit */
