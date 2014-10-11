@@ -53,7 +53,7 @@ void Closeness::run() {
 }
 
 double Closeness::maximum() {
-	return 1 / (G.numberOfNodes() - 1);
+	return (double) 1 / (G.numberOfNodes() - 1);
 }
 
 } /* namespace NetworKit */
