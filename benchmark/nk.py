@@ -1,35 +1,41 @@
 import networkit
 
+from util import *
+import base
 
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
-class Algo:
+class Algo(base.Algo):
 	""" runner for an algorithm"""
-	def run(self, G):
-		raise Exception("Not implemented")
+
+	frameworkPrefix = "nk:"
 
 	def loadGraph(self, path):
-		G = networkit.readGraph(path, networkit.Format.GML)
+		with Timer() as t:
+			G = networkit.readGraph(path, networkit.Format.GML)
+		debug("reading {path} took {t.elapsed} s".format(**locals()))
 		return G
 
 class bConnectedComponents(Algo):
-	name = "ConnectedComponents"
+	name = "nk:ConnectedComponents"
 
 	def run(self, G):
 		cc = networkit.properties.ConnectedComponents(G)
 		cc.run()
+		return cc.numberOfComponents()
 
 class bParallelConnectedComponents(Algo):
-	name = "ParallelConnectedComponents"
+	name = "nk:ParallelConnectedComponents"
 
 	def run(self, G):
 		cc = networkit.properties.ParallelConnectedComponents(G)
 		cc.run()
+		return cc.numberOfComponents()
 
 # - k-core decomposition (properties.CoreDecomposition)
 
 class bCoreDecomposition(Algo):
-	name = "CoreDecomposition"
+	name = "nk:CoreDecomposition"
 
 	def run(self, G):
 		cd = networkit.properties.CoreDecomposition(G)
@@ -38,74 +44,76 @@ class bCoreDecomposition(Algo):
 # - degree distribution power-law estimation (properties.powerLawExponent)
 
 class bPowerLaw(Algo):
-	name = "PowerLaw"
+	name = "nk:PowerLaw"
 
 	def run(self, G):
-		networkit.properties.powerLawExponent(G)
+		return networkit.properties.powerLawExponent(G)
 
 # - degree assortativity (properties.degreeAssortativity)
 
 class bDegreeAssortativity(Algo):
-	name = "DegreeAssortativity"
+	name = "nk:DegreeAssortativity"
 
 	def run(self, G):
-		networkit.properties.degreeAssortativity(G)
+		return networkit.properties.degreeAssortativity(G)
 
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
 class bBFS(Algo):
-	name = "BFS"
+	name = "nk:BFS"
 
 	def run(self, G):
-		bfs = networkit.graph.BFS(G)
+		bfs = networkit.graph.BFS(G, G.randomNode())
 		bfs.run()
 
 
 # - community detection (community.PLM, community.PLP)
 
 class bCommunityDetectionLM(Algo):
-	name = "CommunityDetectionLM"
+	name = "nk:CommunityDetectionLM"
 
 	def run(self, G):
-		plm = networkit.community.PLM(G)
-		plm.run()
+		plm = networkit.community.PLM()
+		plm.run(G)
 
 class bCommunityDetectionLP(Algo):
-	name = "CommunityDetectionLP"
+	name = "nk:CommunityDetectionLP"
 
 	def run(self, G):
-		plm = networkit.community.PLP(G)
-		plm.run()
+		plm = networkit.community.PLP()
+		plm.run(G)
 
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 
 class bDiameter(Algo):
-	name = "Diameter"
+	name = "nk:Diameter"
 
 	def run(self, G):
-		d = networkit.properties.Diameter.exactDiameter(G)
+		return networkit.properties.Diameter.exactDiameter(G)
 
 
 class bDiameterEstimate(Algo):
-	name = "Diameter"
+	name = "nk:DiameterEstimate"
 
 	def run(self, G):
-		d =networkit.properties.Diameter.estimatedDiameterRange(G)
+		return networkit.properties.Diameter.estimatedDiameterRange(G)
 
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 
 class bClusteringCoefficient(Algo):
-	name = "ClusteringCoefficient"
+	name = "nk:ClusteringCoefficient"
 
 	def run(self, G):
 		c = networkit.properties.ClusteringCoefficient.avgLocal(G)
+		return c
 
 class bApproxClusteringCoefficient(Algo):
-	name = "ApproxClusteringCoefficient"
+	name = "nk:ApproxClusteringCoefficient"
 
 	def run(self, G):
 		# TODO: specify number of trials
-		c = networkit.properties.ClusteringCoefficient.approxAvgLocal(G)
+		c = networkit.properties.ClusteringCoefficient.approxAvgLocal(G, trials=1000)
+		return c
 
 
 
@@ -114,10 +122,10 @@ class bApproxClusteringCoefficient(Algo):
 # 	- PageRank (centrality.PageRank, centrality.SciPyPageRank)
 
 class bPageRank(Algo):
-	name = "PageRank"
+	name = "nk:PageRank"
 
 	def run(self, G):
-		pr = networkit.centrality.PageRank(G)
+		pr = networkit.centrality.PageRank(G, damp=0.85, tol=1e-06)
 		pr.run()
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
@@ -126,7 +134,7 @@ class bPageRank(Algo):
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 
 class bBetweenness(Algo):
-	name = "Betweenness"
+	name = "nk:Betweenness"
 
 	def run(self, G):
 		bc = networkit.centrality.Betweenness(G)
@@ -134,8 +142,8 @@ class bBetweenness(Algo):
 
 
 class bApproxBetweenness(Algo):
-	name = "ApproxBetweenness"
+	name = "nk:ApproxBetweenness"
 
 	def run(self, G):
-		bc = networkit.centrality.ApproxBetweenness(G, epsilon=0.05, delta=0.1)
+		bc = networkit.centrality.ApproxBetweenness(G, epsilon=0.2, delta=0.1)
 		bc.run()

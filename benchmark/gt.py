@@ -1,100 +1,87 @@
-try:
-	import networkx
-except ImportError:
-	error("networkx not available")
-
+import graph_tool.all as graphtool
 import random
 
 
+# - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
+
 class Algo:
-	frameworkPrefix = "nx:"
+	frameworkPrefix = "gt:"
 
 	""" runner for an algorithm"""
 	def run(self, G):
 		raise Exception("Not implemented")
 
 	def loadGraph(self, path):
-		G = networkx.read_gml(path)
+		G = graphtool.load_graph(path, fmt="gml")
 		return G
 
-	def preprocessGraph(self, G):
-		return G	# do nothing
-
-	def numberOfEdges(self, G):
-		return G.numberOfEdges()
-
-
-# - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
-
 class bConnectedComponents(Algo):
-	name = "nx:ConnectedComponents"
+	name = "gt:ConnectedComponents"
 
 	def run(self, G):
-		cc = networkx.number_connected_components(G)
-		return cc
+		cc = graphtool.label_components(G)
+
+
 
 # - k-core decomposition (properties.CoreDecomposition)
 
 class bCoreDecomposition(Algo):
-	name = "nx:CoreDecomposition"
+	name = "gt:CoreDecomposition"
 
 	def run(self, G):
-		cn = networkx.core_number(G)
-		#return cn[0]
+		cd = graphtool.kcore_decomposition(G)
 
 # - degree distribution power-law estimation (properties.powerLawExponent)
 
-# not available
+# class bPowerLaw(Algo) – not found in GT
 
 # - degree assortativity (properties.degreeAssortativity)
 
 class bDegreeAssortativity(Algo):
-	name = "nx:DegreeAssortativity"
+	name = "gt:DegreeAssortativity"
 
 	def run(self, G):
-		ac = networkx.degree_assortativity_coefficient(G)
-		return ac
+		graphtool.assortativity(G, deg="total")
 
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
 class bBFS(Algo):
-	name = "nx:BFS"
+	name = "gt:BFS"
 
 	def run(self, G):
-		s = random.randint(0, G.number_of_nodes())
-		networkx.bfs_predecessors(G, s)
-
+		v = random.randint(0, G.num_vertices()-1)
+		graphtool.bfs_search(G,v)
 
 # - community detection (community.PLM, community.PLP)
-# not available
+
+#class bCommunityDetectionLM(Algo): – not implemented in graph-tool
+
+#class bCommunityDetectionLP(Algo): – not implemented in graph-tool
 
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 
 class bDiameter(Algo):
-	name = "nx:Diameter"
+	name = "gt:Diameter"
 
 	def run(self, G):
-		d = networkx.diameter(G)
-		return d
+		d = graphtool.distance_histogram(G)
 
 
-# approximate diameter not available
+class bDiameterEstimate(Algo):
+	name = "gt:DiameterEstimate"
+
+	def run(self, G):
+		d = graphtool.pseudo_diameter(G)
 
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 
 class bClusteringCoefficient(Algo):
-	name = "nx:ClusteringCoefficient"
+	name = "gt:ClusteringCoefficient"
 
 	def run(self, G):
-		c = networkx.average_clustering(G)
-		return c
+		c = graphtool.local_clustering(G)
 
-class bApproxClusteringCoefficient(Algo):
-	name = "nx:ApproxClusteringCoefficient"
-
-	def run(self, G):
-		c = networkx.average_clustering(G, trials=1000)
-		return C
+# class bApproxClusteringCoefficient(Algo): – not implemented in graph-tool
 
 
 
@@ -103,23 +90,30 @@ class bApproxClusteringCoefficient(Algo):
 # 	- PageRank (centrality.PageRank, centrality.SciPyPageRank)
 
 class bPageRank(Algo):
-	name = "nx:PageRank"
+	name = "gt:PageRank"
 
 	def run(self, G):
-		pr = networkx.pagerank(G, alpha=0.85, tol=1e-06)
+		pr = graphtool.pagerank(G)
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
+class bEigenvector(Algo):
+	name = "gt:Eigenvector"
+
+	def run(self, G):
+		pr = graphtool.eigenvector(G)
 
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 
 class bBetweenness(Algo):
-	name = "nx:Betweenness"
+	name = "gt:Betweenness"
 
 	def run(self, G):
-		networkx.betweenness_centrality(G)
+		graphtool.betweenness(G)
 
 
-# approximation not available
+#class bApproxBetweenness(Algo):
+#	name = "ApproxBetweenness"
 
-#-------------------------
+#	def run(self, G):
+#		graphtool.betweenness(G)

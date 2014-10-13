@@ -143,6 +143,7 @@ cdef extern from "cpp/graph/Graph.h":
 		Point[float] getCoordinate(node v) except +
 		void setCoordinate(node v, Point[float] value) except +
 		void initCoordinates() except +
+		count numberOfSelfLoops() except +
 
 
 cdef class Graph:
@@ -573,6 +574,9 @@ cdef class Graph:
 
 	def initCoordinates(self):
 		self._this.initCoordinates()
+
+	def numberOfSelfLoops(self):
+		return self._this.numberOfSelfLoops()
 
 # TODO: expose all methods
 
@@ -1528,7 +1532,7 @@ cdef class GMLGraphReader:
 		[1]: http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
  	"""
 	cdef _GMLGraphReader _this
-	
+
 	def __cinit__(self):
 		self._this = _GMLGraphReader()
 
@@ -2747,7 +2751,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 cdef extern from "cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
 		_PLM() except +
-		_PLM(bool refine, double gamma, string par, count maxIter, bool parCoarsening) except +
+		_PLM(bool refine, double gamma, string par, count maxIter, bool parCoarsening, bool turbo) except +
 		string toString() except +
 		_Partition run(_Graph G) except +
 
@@ -2771,12 +2775,14 @@ cdef class PLM(CommunityDetector):
 			parallelization strategy
 		maxIter : count
 			maximum number of iterations for move phase
+		turbo : bool, optional
+			faster but uses O(n) additional memory per thread
 	"""
 
 	cdef _PLM _this
 
-	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True):
-		self._this = _PLM(refine, gamma, stdstring(par), maxIter, parCoarsening)
+	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
+		self._this = _PLM(refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
 
 	def toString(self):
 		""" Get string representation.
@@ -2862,7 +2868,7 @@ cdef class CutClustering(CommunityDetector):
 	Cut clustering algorithm as defined in
 	Flake, Gary William; Tarjan, Robert E.; Tsioutsiouliklis, Kostas. Graph Clustering and Minimum Cut Trees.
 	Internet Mathematics 1 (2003), no. 4, 385--408.
-	
+
 	Parameters
 	----------
 	alpha : double
