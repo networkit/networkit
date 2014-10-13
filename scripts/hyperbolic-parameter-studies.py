@@ -26,17 +26,17 @@ stamp = time.time()
 
 with open(str(stamp)+'-alpha.json', 'w') as j:
 	json.dump(alphalist, j)
-with open(str(stamp)+'-factor.json', 'w') as j:
-	json.dump(factorlist, j)
+with open(str(stamp)+'-stretch.json', 'w') as j:
+	json.dump(stretchlist, j)
 with open(str(stamp)+'-mag.json', 'w') as j:
 	json.dump(maglist, j)
 
-stretch = 10
+factor = 10
 
 for magnitude in maglist:
 	n = 10**magnitude
 	for alpha in alphalist:
-		for factor in factorlist:
+		for stretch in stretchlist:
 			print("Starting run with", n, " nodes, alpha ", alpha, "factor ", factor/10, " and stretch ", stretch/10)
 			start = time.time()
 			G = generators.HyperbolicGenerator(n,factor/10,alpha,stretch/10).generate()
@@ -63,9 +63,6 @@ for magnitude in maglist:
 			powerLawExponents.append(gamma)
 			ncoms.append(communities)
 			mods.append(modularity)
-
-			#with open(str(stamp)+'-result-'+str(n)+'.csv', 'a') as f:
-			#	f.write(str(n) + "," + str(alpha) + "," + str(factor/10) + "," + str(end-start) + "," + str(m) + "," + str(fit[1]) + "\n")
 
 			with open(str(stamp)+'-cost-'+str(n)+'.json', 'w') as j:
 				json.dump(cost, j)
