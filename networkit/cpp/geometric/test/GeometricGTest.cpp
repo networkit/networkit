@@ -202,10 +202,10 @@ TEST_F(GeometricGTest, testEuclideanCircleProjection) {
 			EXPECT_LE(abs(phi_c - phi_a), 0.000001);
 
 			//numeric solution:
-			double r_c2 = (2*r_a)/((1-r_a*r_a)*(cosh(radius)-1+2/(1-r_a*r_a)));
+			double r_c2 = (2*r_a)/((1-r_a*r_a)*(cosh(radius)-1)+2);
 			EXPECT_LE(abs(r_c-r_c2), 0.000001);
 
-			double euRadius2 = sqrt(r_c2*r_c2 - (2*r_a*r_a - (1-r_a*r_a)*(cosh(radius)-1))/((1-r_a*r_a)*(cosh(radius)-1+2/(1-r_a*r_a))));
+			double euRadius2 = sqrt(r_c2*r_c2 - (2*r_a*r_a - (1-r_a*r_a)*(cosh(radius)-1))/((1-r_a*r_a)*(cosh(radius)-1)+2));
 			EXPECT_LE(abs(euRadius-euRadius2), 0.000001);
 		}
 }

@@ -50,13 +50,13 @@ public:
 		Point2D<double> origin(0,0);
 		vector<T> circleDenizens;
 		Point2D<double> center;
-		Point2D<double> pointOnEdge = HyperbolicSpace::getPointOnHyperbolicCircle(query, maxDistance);
+		//Point2D<double> pointOnEdge = HyperbolicSpace::getPointOnHyperbolicCircle(query, maxDistance);
 
-		double distance = HyperbolicSpace::getHyperbolicDistance(query, pointOnEdge);
-		assert(abs(distance - maxDistance) < 0.00001);
+		//double distance = HyperbolicSpace::getHyperbolicDistance(query, pointOnEdge);
+		//assert(abs(distance - maxDistance) < 0.00001);
 
 		double minPhi, maxPhi, radius;
-		HyperbolicSpace::getEuclideanCircle(query, pointOnEdge, center, radius);
+		HyperbolicSpace::getEuclideanCircle(query, maxDistance, center, radius);
 		double minR = center.length() - radius;
 		double maxR = center.length() + radius;
 		//assert(maxR < 1);//this looks fishy
@@ -92,6 +92,7 @@ public:
 			wraparound = true;
 		}
 
+		//we have sort(deg(v)) here! This is not good, but does not make the asymptotical complexity of O(deg(v) log n) worse.
 		if (wraparound) {
 			std::sort(circleDenizens.begin(), circleDenizens.end());
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());

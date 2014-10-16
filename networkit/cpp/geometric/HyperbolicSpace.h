@@ -37,7 +37,8 @@ public:
 	static void getTransmutationCircle(Point2D<double> source, Point2D<double> target, double minRadius, Point2D<double> &circleCenter, double &circleRadius);
 	static double hyperbolicDistanceToArc(Point2D<double> query, Point2D<double> a, Point2D<double> b, double R);
 	static Point2D<double> getPointOnHyperbolicCircle(Point2D<double> hyperbolicCenter, double radius);
-	static void getEuclideanCircle(Point2D<double> hyperbolicCenter, Point2D<double> hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius);
+	static void getEuclideanCircle(Point2D<double> hyperbolicCenter, Point2D<double> pointOnEdge, Point2D<double> &euclideanCenter, double &euclideanRadius);
+	static void getEuclideanCircle(Point2D<double> hyperbolicCenter, double hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius);
 	static double hyperbolicRadiusToEuclidean(double hyperbolicRadius);
 	static double EuclideanRadiusToHyperbolic(double EuclideanRadius);
 	static double hyperbolicSpaceInEuclideanCircle(double r_c, double d_c, double R);
