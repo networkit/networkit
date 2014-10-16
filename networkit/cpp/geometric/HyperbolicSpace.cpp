@@ -258,6 +258,16 @@ void HyperbolicSpace::getEuclideanCircle(Point2D<double> hyperbolicCenter, Point
 	euclideanRadius = euclideanCenter.distance(pointOnEdge);
 }
 
+void HyperbolicSpace::getEuclideanCircle(Point2D<double> hyperbolicCenter, double hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius) {
+	double phi_h, r_h;
+	HyperbolicSpace::cartesianToPolar(hyperbolicCenter, phi_h, r_h);
+	double a = cosh(hyperbolicRadius)-1;
+	double b = 1-(r_h*r_h);
+	double r_c = (2*r_h)/(b*a+2);
+	euclideanCenter = HyperbolicSpace::polarToCartesian(phi_h, r_c);
+	euclideanRadius = sqrt(r_c*r_c - (2*r_h*r_h - b*a)/(b*a+2));
+}
+
 double HyperbolicSpace::hyperbolicRadiusToEuclidean(double hyperbolicRadius) {
 	double ch = cosh(hyperbolicRadius);
 	return sqrt((ch-1)/(ch+1));
