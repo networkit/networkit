@@ -239,12 +239,9 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 	});
 	// at zero distance, all nodes can only reach themselves
 	hopPlot[0] = 1/G.numberOfNodes();
-
 	// as long as we need to connect more nodes
 	while (!activeNodes.empty() && (maxDistance <= 0 || h < maxDistance)) {
 		totalConnectedNodes = 0;
-		// add nodes that are already connected to all nodes
-		totalConnectedNodes += (G.numberOfNodes() - activeNodes.size()) * G.numberOfNodes();
 		for (int x = 0; x < activeNodes.size(); x++) {
 			node v = activeNodes[x];
 			// for each parallel approximation
@@ -269,6 +266,7 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 			}
 			// calculate the average least bit number that has not been set over all parallel approximations
 			b = b / k;
+
 			// calculate the estimated number of neighbors
 			estimatedConnectedNodes = (pow(2,b) / 0.77351);
 
@@ -276,9 +274,6 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 			if (estimatedConnectedNodes > G.numberOfNodes()) {
 				estimatedConnectedNodes = G.numberOfNodes();
 			}
-
-			// add value of the node to all nodes so we can calculate the average
-			totalConnectedNodes += estimatedConnectedNodes;
 
 			// check whether all k bitmask for this node have reached the highest possible value
 			bool nodeFinished = true;
@@ -294,10 +289,19 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 				// remove the current node from future iterations
 				std::swap(activeNodes[x], activeNodes.back());
 				activeNodes.pop_back();
+				totalConnectedNodes += G.numberOfNodes();
+			} else {
+				// add value of the node to all nodes so we can calculate the average
+				totalConnectedNodes += estimatedConnectedNodes;
 			}
 		}
+		// add nodes that are already connected to all nodes
+		totalConnectedNodes += (G.numberOfNodes() - activeNodes.size()) * G.numberOfNodes();
 		// compute the fraction of connected nodes
 		hopPlot[h] = totalConnectedNodes/(G.numberOfNodes()*G.numberOfNodes());
+		if (hopPlot[h] > 1) {
+			hopPlot[h] = 1;
+		}
 		mPrev = mCurr;
 		h++;
 	}
