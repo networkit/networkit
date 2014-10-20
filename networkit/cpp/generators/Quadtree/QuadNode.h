@@ -233,7 +233,7 @@ public:
 	}
 
 	bool outOfReach(double angle, double R, double radius) {//TODO: complete out of reach method for polar coordinates!
-		if (responsible(angle, R)) return 0;
+		if (responsible(angle, R)) return false;
 		Point2D<double> query = HyperbolicSpace::polarToCartesian(angle, R);
 		return outOfReach(query, radius);
 	}

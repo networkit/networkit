@@ -19,7 +19,6 @@ alphalist = [0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0] # creating lists t
 alphalist.reverse()
 stretchlist = list(range(5,21))
 factorlist = list(range(1,11))
-maglist = list(range(3,8))
 stamp = time.time()
 
 # dumping parameters
@@ -41,13 +40,14 @@ for magnitude in maglist:
 			start = time.time()
 			G = generators.HyperbolicGenerator(n,factor/10,alpha,stretch/10).generate()
 			end = time.time()
-			fit = properties.powerLawFit(G)
+			pl = properties.degreePowerLaw(G)
+			fit = pl[1]
 			m = G.numberOfEdges()
 			diameter = properties.Diameter.estimatedDiameterRange(G)[0]
 			clusteringCoefficient = properties.clustering(G)
 			degen = properties.degeneracy(G)
 			degAss = properties.degreeAssortativity(G)
-			gamma = properties.powerLawExponent(G)
+			gamma = pl[2]
 			plm = community.PLM()
 			coms = plm.run(G)
 			communities = coms.numberOfSubsets()
