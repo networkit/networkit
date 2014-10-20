@@ -23,6 +23,23 @@ namespace NetworKit {
 template <class T>
 class QuadNode {
 	friend class QuadTreeTest;
+private:
+	double leftAngle;
+	double rightAngle;
+	double minR;
+	double maxR;
+	Point2D<double> a,b,c,d;
+	unsigned capacity;
+	unsigned coarsenLimit = 4;
+	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
+	count elements;
+	std::vector<QuadNode> children;
+	std::vector<T> content;
+	std::vector<Point2D<double> > positions;
+	std::vector<double> angles;
+	std::vector<double> radii;
+	bool isLeaf;
+
 public:
 	QuadNode() {
 		leftAngle = 0;
@@ -215,7 +232,7 @@ public:
 		return true;
 	}
 
-	bool outOfReach(double angle, double R, double radius) {
+	bool outOfReach(double angle, double R, double radius) {//TODO: complete out of reach method for polar coordinates!
 		if (responsible(angle, R)) return 0;
 		Point2D<double> query = HyperbolicSpace::polarToCartesian(angle, R);
 		return outOfReach(query, radius);
@@ -268,15 +285,44 @@ public:
 
 		if (isLeaf) {
 			for (uint i = 0; i < content.size(); i++) {
-				double asq = positions[i][0] - center[0];
-				double bsq = positions[i][1] - center[1];
-				if (asq*asq + bsq*bsq < rsq) {//maybe improve this with functors
+				double deltaX = positions[i][0] - center[0];
+				double deltaY = positions[i][1] - center[1];
+				if (deltaX*deltaX + deltaY*deltaY < rsq) {//maybe improve this with functors
 					result.push_back(content[i]);
 				}
 			}
 		}	else {
 			for (uint i = 0; i < children.size(); i++) {
 				children[i].getElementsInEuclideanCircle(minAngle, maxAngle, lowR, highR, center, radius, result);
+			}
+		}
+	}
+
+	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, double phi_c, double r_c, double radius, vector<T> &result) {
+		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
+
+		if (outOfReach(phi_c, r_c, radius)) {
+			return;
+		}
+		double rsq = radius*radius;
+		double bsq = r_c*r_c;
+
+		if (isLeaf) {
+			for (uint i = 0; i < content.size(); i++) {
+				double asq = radii[i]*radii[i];
+				double deltaphi;
+				if (phi_c > angles[i]) {
+					deltaphi = min(phi_c - angles[i], angles[i]+2*M_PI - phi_c);
+				} else {//phi_c < angles[i]
+					deltaphi = min(angles[i] - phi_c, phi_c + 2*M_PI - angles[i]);
+				}
+				if (asq + bsq + 2*radii[i]*r_c*cos(deltaphi) < rsq) {//maybe improve this with functors
+					result.push_back(content[i]);
+				}
+			}
+		}	else {
+			for (uint i = 0; i < children.size(); i++) {
+				children[i].getElementsInEuclideanCircle(minAngle, maxAngle, lowR, highR, phi_c, r_c, radius, result);
 			}
 		}
 	}
@@ -311,23 +357,6 @@ public:
 	double getMaxR() {
 		return maxR;
 	}
-
-private:
-	double leftAngle;
-	double rightAngle;
-	double minR;
-	double maxR;
-	Point2D<double> a,b,c,d;
-	unsigned capacity;
-	unsigned coarsenLimit = 4;
-	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
-	count elements;
-	std::vector<QuadNode> children;
-	std::vector<T> content;
-	std::vector<Point2D<double> > positions;
-	std::vector<double> angles;
-	std::vector<double> radii;
-	bool isLeaf;
 };
 }
 
