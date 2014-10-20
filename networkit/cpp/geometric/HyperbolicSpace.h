@@ -39,6 +39,7 @@ public:
 	static Point2D<double> getPointOnHyperbolicCircle(Point2D<double> hyperbolicCenter, double radius);
 	static void getEuclideanCircle(Point2D<double> hyperbolicCenter, Point2D<double> pointOnEdge, Point2D<double> &euclideanCenter, double &euclideanRadius);
 	static void getEuclideanCircle(Point2D<double> hyperbolicCenter, double hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius);
+	static void getEuclideanCircle(double r_h, double hyperbolicRadius, double &euclideanCenter, double &euclideanRadius);
 	static double hyperbolicRadiusToEuclidean(double hyperbolicRadius);
 	static double EuclideanRadiusToHyperbolic(double EuclideanRadius);
 	static double hyperbolicSpaceInEuclideanCircle(double r_c, double d_c, double R);
