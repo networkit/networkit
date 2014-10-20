@@ -19,6 +19,7 @@ alphalist = [0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0] # creating lists t
 alphalist.reverse()
 stretchlist = list(range(5,21))
 factorlist = list(range(1,11))
+maglist = list(range(3,8))
 stamp = time.time()
 
 # dumping parameters
