@@ -318,10 +318,12 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 
 TEST_F(QuadTreeTest, testQuadTreeBalance) {
 	count n = 100000;
-	double R = acosh((double)n/(2*M_PI)+1);
+	double s = 1;
+	double alpha = 2;
+	double R = s*acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	HyperbolicSpace::fillPoints(&angles, &radii, s, alpha);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
 		if (radii[i] > max) {
@@ -329,7 +331,7 @@ TEST_F(QuadTreeTest, testQuadTreeBalance) {
 		}
 	}
 
-	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R));
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),true,alpha);
 
 	for (index i = 0; i < n; i++) {
 		EXPECT_GE(angles[i], 0);
