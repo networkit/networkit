@@ -25,8 +25,8 @@ public:
 		this->maxRadius = 1;
 	}
 
-	Quadtree(double maxR) {
-		root = QuadNode<T>(0, 0, 2*M_PI, maxR, 1000, 0);
+	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1) {
+		root = QuadNode<T>(0, 0, 2*M_PI, maxR, 1000, 0,theoreticalSplit,alpha);
 		this->maxRadius = maxR;
 	}
 

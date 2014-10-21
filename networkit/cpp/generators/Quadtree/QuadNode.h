@@ -39,6 +39,8 @@ private:
 	std::vector<double> angles;
 	std::vector<double> radii;
 	bool isLeaf;
+	bool splitTheoretical;
+	double alpha;
 
 public:
 	QuadNode() {
@@ -50,13 +52,15 @@ public:
 		isLeaf = true;
 		minRegion = 0;
 		elements = 0;
+		splitTheoretical = false;
+		alpha = 1;
 	}
 
 	~QuadNode() {
-		// TODO Auto-generated constructor stub
+
 	}
 
-	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter) {
+	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1) {
 		this->leftAngle = leftAngle;
 		this->minR = minR;
 		this->maxR = maxR;
@@ -67,6 +71,8 @@ public:
 		this->d = HyperbolicSpace::polarToCartesian(leftAngle, maxR);
 		this->capacity = capacity;
 		this->minRegion = minDiameter;
+		this->alpha = alpha;
+		this->splitTheoretical = splitTheoretical;
 		isLeaf = true;
 		elements = 0;
 	}
@@ -88,23 +94,27 @@ public:
 				 * Simply halving the radius will cause a larger space for the outer Quadnode, resulting in an unbalanced tree
 				 */
 
-				//double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
-				//double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
-				//double hyperbolicMiddle = acosh((cosh(hyperbolicOuter) + cosh(hyperbolicInner))/2);
-				//double middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
+				double middleR;
+				if (splitTheoretical) {
+					double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
+					double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
+					double hyperbolicMiddle = acosh((cosh(alpha*hyperbolicOuter) + cosh(alpha*hyperbolicInner))/2)/alpha;
+					middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
+				} else {
+					double nom = maxR - minR;
+					double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
+					middleR = nom/denom + minR;
+				}
 
 				//one could also use the median here. Results in worse asymptotical complexity, but maybe better runtime?
 
-				double nom = maxR - minR;
-				double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
-				double middleR = nom/denom + minR;
 				assert(middleR < maxR);
 				assert(middleR > minR);
 
-				QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion);
-				QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion);
-				QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion);
-				QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, minRegion);
+				QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion, splitTheoretical, alpha);
+				QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion, splitTheoretical, alpha);
+				QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion, splitTheoretical, alpha);
+				QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, minRegion, splitTheoretical, alpha);
 				children = {southwest, southeast, northwest, northeast};
 
 				isLeaf = false;
