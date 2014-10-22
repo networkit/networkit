@@ -193,7 +193,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 }
 
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
-	int nSteps = 100;
+	int nSteps = 20;
 	count n = 1000;
 	double initialFactor = 0.5;
 	double factorGrowth = (double) (1 - initialFactor) / nSteps;
@@ -234,8 +234,8 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 
 
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
-	int nSteps = 100;
-	count n = 2000;
+	int nSteps = 20;
+	count n = 1000;
 
 	double factor = 1;
 	double stretch = 2;

@@ -77,15 +77,6 @@ void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii
 		assert((*radii)[i] < 1);
 	}
 }
-/**
-double HyperbolicSpace::getDistancePrecached(double firstangle, double firstRcosh, double firstRsinh, double secondangle, double secondRcosh, double secondRsinh) {
-	double deltaAngle = abs(firstangle - secondangle); //I don't have to check the direction because of the symmetry of cos
-	if (deltaAngle == 0 && firstRcosh == secondRcosh && firstRsinh == secondRsinh) return 0;//points are identical, sometimes resulted in -nan
-	double result = acosh(firstRcosh*secondRcosh - firstRsinh*secondRsinh*cos(deltaAngle));
-	assert(result >= 0);
-	return result;
-}
-*/
 
 double HyperbolicSpace::cross(Point2D<double> a, Point2D<double> b) {
 	return a[0]*b[1] - a[1]*b[0];
