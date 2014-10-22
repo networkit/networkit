@@ -69,7 +69,7 @@ public:
 			minPhi = phi_c - spread;
 			maxPhi = phi_c + spread;
 			/**
-			 * what to do if they overlap the 2\pi line? Well, have to make two separate calls and collect
+			 * If the circle overlaps the 2\pi line, we have to make two separate calls and collect
 			 */
 		}
 
@@ -96,7 +96,7 @@ public:
 		}
 
 		/**
-		 * return them
+		 * return the elements
 		 */
 		return circleDenizens;
 	}

@@ -133,17 +133,12 @@ public:
 		}
 		else {
 			assert(children.size() > 0);
-			//bool foundResponsibleChild = false;
 			for (uint i = 0; i < children.size(); i++) {
 				if (children[i].responsible(angle, R)) {
-					//assert(!foundResponsibleChild);//only one!
 					children[i].addContent(input, angle, R);
-				//	foundResponsibleChild = true;
-				} else {
-					//cout << "Not responsible for (" << angle << ", " << R << "). Borders are " << children[i].leftAngle << "-" << children[i].rightAngle << ", and " << children[i].minR << "-" << children[i].maxR << endl;
+					break;
 				}
 			}
-			//assert(foundResponsibleChild);
 		}
 		elements++;
 	}
@@ -247,7 +242,7 @@ public:
 		return true;
 	}
 
-	bool outOfReach(double angle, double R, double radius) {//TODO: complete out of reach method for polar coordinates!
+	bool outOfReach(double angle, double R, double radius) {
 		if (responsible(angle, R)) return false;
 		Point2D<double> query = HyperbolicSpace::polarToCartesian(angle, R);
 		return outOfReach(query, radius);
@@ -308,7 +303,7 @@ public:
 			for (uint i = 0; i < content.size(); i++) {
 				double deltaX = positions[i][0] - center[0];
 				double deltaY = positions[i][1] - center[1];
-				if (deltaX*deltaX + deltaY*deltaY < rsq) {//maybe improve this with functors
+				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
 					ncomp++;
 				} else {
