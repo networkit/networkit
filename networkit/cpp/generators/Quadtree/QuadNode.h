@@ -322,35 +322,6 @@ public:
 		}
 	}
 
-	void getElementsInEuclideanCirclePolar(double minAngle, double maxAngle, double lowR, double highR, double phi_c, double r_c, double radius, vector<T> &result) {
-		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
-
-		if (outOfReach(phi_c, r_c, radius)) {
-			return;
-		}
-		double rsq = radius*radius;
-		double bsq = r_c*r_c;
-
-		if (isLeaf) {
-			for (uint i = 0; i < content.size(); i++) {
-				double asq = radii[i]*radii[i];
-				double deltaphi;
-				if (phi_c > angles[i]) {
-					deltaphi = min(phi_c - angles[i], angles[i]+2*M_PI - phi_c);
-				} else {//phi_c < angles[i]
-					deltaphi = min(angles[i] - phi_c, phi_c + 2*M_PI - angles[i]);
-				}
-				if (asq + bsq + 2*radii[i]*r_c*cos(deltaphi) < rsq) {//maybe improve this with functors
-					result.push_back(content[i]);
-				}
-			}
-		}	else {
-			for (uint i = 0; i < children.size(); i++) {
-				children[i].getElementsInEuclideanCirclePolar(minAngle, maxAngle, lowR, highR, phi_c, r_c, radius, result);
-			}
-		}
-	}
-
 	void resetCounter() {
 		ncomp = 0;
 		uncomp = 0;

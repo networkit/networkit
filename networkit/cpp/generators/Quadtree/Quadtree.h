@@ -46,65 +46,10 @@ public:
 		return root.getElements();
 	}
 
-	vector<T> getCloseElementsPolar(double phi_q, double r_q, double maxDistance) {
-		double minPhi, maxPhi, radius, phi_c, r_c;
-		HyperbolicSpace::getEuclideanCircle(r_q, maxDistance, r_c, radius);
-		phi_c = phi_q;
-		double minR = r_c - radius;
-		double maxR = r_c + radius;
-		//assert(maxR < 1);//this looks fishy
-		if (maxR > 1) maxR = 1;
-		if (minR < 0) {
-			maxR = std::max(abs(minR), maxR);
-			minR = 0;
-			minPhi = 0;
-			maxPhi = 2*M_PI;
-		} else {
-			double spread = asin(radius / r_c);
-			minPhi = phi_c - spread;
-			maxPhi = phi_c + spread;
-			/**
-			 * what to do if they overlap the 2\pi line? Well, have to make two separate calls and collect
-			 */
-		}
-
-		/**
-		 * get Elements in Circle
-		 */
-		vector<T> circleDenizens;
-		bool wraparound = false;
-		root.getElementsInEuclideanCirclePolar(minPhi, maxPhi, minR, maxR, phi_c, r_c, radius, circleDenizens);
-		if (minPhi < 0) {
-			root.getElementsInEuclideanCirclePolar(2*M_PI+minPhi, 2*M_PI, minR, maxR, phi_c, r_c, radius, circleDenizens);
-			wraparound = true;
-		}
-		if (maxPhi > 2*M_PI) {
-			root.getElementsInEuclideanCirclePolar(0, maxPhi - 2*M_PI, minR, maxR, phi_c, r_c, radius, circleDenizens);
-			wraparound = true;
-		}
-
-		//we have sort(deg(v)) here! This is not good, but does not make the asymptotical complexity of O(deg(v) log n) worse.
-		if (wraparound) {
-			std::sort(circleDenizens.begin(), circleDenizens.end());
-			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
-			circleDenizens.resize(newend - circleDenizens.begin());
-		}
-		//double expected = HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(center.length(), radius, maxRadius);
-		//TRACE("Got ", circleDenizens.size(), " nodes in space of size ", expected, ". ", 100*abs(circleDenizens.size() - expected) / expected, " percent difference.");
-		/**
-		 * return them
-		 */
-		return circleDenizens;
-	}
-
 	vector<T> getCloseElements(Point2D<double> query, double maxDistance) {
 		Point2D<double> origin(0,0);
 		vector<T> circleDenizens;
 		Point2D<double> center;
-		//Point2D<double> pointOnEdge = HyperbolicSpace::getPointOnHyperbolicCircle(query, maxDistance);
-
-		//double distance = HyperbolicSpace::getHyperbolicDistance(query, pointOnEdge);
-		//assert(abs(distance - maxDistance) < 0.00001);
 
 		double minPhi, maxPhi, radius;
 		HyperbolicSpace::getEuclideanCircle(query, maxDistance, center, radius);
@@ -149,8 +94,7 @@ public:
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
 			circleDenizens.resize(newend - circleDenizens.begin());
 		}
-		//double expected = HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(center.length(), radius, maxRadius);
-		//TRACE("Got ", circleDenizens.size(), " nodes in space of size ", expected, ". ", 100*abs(circleDenizens.size() - expected) / expected, " percent difference.");
+
 		/**
 		 * return them
 		 */
