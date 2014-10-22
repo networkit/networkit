@@ -22,6 +22,7 @@ typedef index node; // node indices are 0-based
 class HyperbolicGenerator: public NetworKit::StaticGraphGenerator {
 public:
 	HyperbolicGenerator();
+
 	/**
 	 * @param[in] n Number of nodes
 	 * @param[in] factor Size of neighborhood radius. If factor=1, radius = R

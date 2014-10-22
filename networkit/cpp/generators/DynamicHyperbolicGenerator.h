@@ -35,6 +35,7 @@ private:
 	count quadTreeHeight() {
 		return quad.height();
 	}
+
 	double factorgrowth;
 	double moveDistance;
 	count nodes;
