@@ -46,7 +46,7 @@ public:
 		return root.getElements();
 	}
 
-	vector<T> getCloseElements(double phi_q, double r_q, double maxDistance) {
+	vector<T> getCloseElementsPolar(double phi_q, double r_q, double maxDistance) {
 		double minPhi, maxPhi, radius, phi_c, r_c;
 		HyperbolicSpace::getEuclideanCircle(r_q, maxDistance, r_c, radius);
 		phi_c = phi_q;
@@ -73,13 +73,13 @@ public:
 		 */
 		vector<T> circleDenizens;
 		bool wraparound = false;
-		root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, phi_c, r_c, radius, circleDenizens);
+		root.getElementsInEuclideanCirclePolar(minPhi, maxPhi, minR, maxR, phi_c, r_c, radius, circleDenizens);
 		if (minPhi < 0) {
-			root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, phi_c, r_c, radius, circleDenizens);
+			root.getElementsInEuclideanCirclePolar(2*M_PI+minPhi, 2*M_PI, minR, maxR, phi_c, r_c, radius, circleDenizens);
 			wraparound = true;
 		}
 		if (maxPhi > 2*M_PI) {
-			root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, phi_c, r_c, radius, circleDenizens);
+			root.getElementsInEuclideanCirclePolar(0, maxPhi - 2*M_PI, minR, maxR, phi_c, r_c, radius, circleDenizens);
 			wraparound = true;
 		}
 

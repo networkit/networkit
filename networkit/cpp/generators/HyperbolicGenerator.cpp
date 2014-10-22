@@ -15,6 +15,7 @@
 #include "Quadtree/Quadtree.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/ProgressMeter.h"
+#include "../auxiliary/Timer.h"
 
 namespace NetworKit {
 
@@ -78,6 +79,8 @@ std::map<index, Point<float> > HyperbolicGenerator::getCoordinates(vector<double
 }
 
 Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance) {
+	Aux::Timer timer;
+	timer.start();
 	index n = angles->size();
 	assert(radii->size() == n);
 	Quadtree<index> quad(R);
@@ -86,7 +89,9 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 		assert(radii->at(i) < R);
 		quad.addContent(i, angles->at(i), radii->at(i));
 	}
-	INFO("Filled Quadtree");
+	timer.stop();
+	INFO("Filled Quadtree, took ", timer.elapsedMilliseconds(), " milliseconds.");
+	timer.start();
 
 	Aux::ProgressMeter progress(n, 1000);
 	#pragma omp parallel for schedule(dynamic, 1000)
@@ -106,6 +111,8 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 			}
 		}
 
+	timer.stop();
+	INFO("Generated Graph, took ", timer.elapsedMilliseconds(), " milliseconds.");
 	return result.toGraph(false);
 }
 

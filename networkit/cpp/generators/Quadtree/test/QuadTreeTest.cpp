@@ -5,6 +5,8 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
+#include <stack>
+
 #include "QuadTreeTest.h"
 #include "../../../auxiliary/Random.h"
 #include "../../../auxiliary/Log.h"
@@ -54,35 +56,6 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 		vector<index> closeToOne = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]), R);
 		EXPECT_LE(closeToOne.size(), n);
 
-		/**
-		* probable query circle
-
-		Point<double> pointOnEdge = HyperbolicSpace::getPointOnHyperbolicCircle(query, R);
-		double distance = HyperbolicSpace::getHyperbolicDistance(query, pointOnEdge);
-		EXPECT_LE(abs(distance - R), 0.00001);
-		Point<double> center;
-		double radius, minPhi, maxPhi;
-		HyperbolicSpace::getEuclideanCircle(query, pointOnEdge, center, radius);
-		DEBUG("Assuming circle at (", center[0], ",",center[1], ") with radius ", radius);
-		double minR = center.length() - radius;
-		double maxR = center.length() + radius;
-		assert(maxR < 1);
-		if (minR < 0) {
-			maxR = std::max(abs(minR), maxR);
-			minR = 0;
-			minPhi = 0;
-			maxPhi = 2*M_PI;
-		} else {
-			double spread = asin(radius / center.length());
-			double phi_c, r_c;
-			HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
-			minPhi = phi_c - spread;
-			maxPhi = phi_c + spread;
-
-			 //what to do if they overlap the 2\pi line? Well, have to make two separate calls and collect
-			/
-		}
-		*/
 		for (index i = 0; i < closeToOne.size(); i++) {
 			//no corrupt indices
 			ASSERT_LE(closeToOne[i], n);
@@ -103,13 +76,6 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 				bool found = false;
 				QuadNode<index> responsibleNode = * getRoot(quad).getAppropriateLeaf(angles[i], radii[i]);
 
-				/**
-				TRACE("Getting lower bound for responsible node");
-				double bound = responsibleNode.distanceLowerBound(angles[comparison], radii[comparison]);
-				double actualDistance = HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[i], radii[i]);
-				EXPECT_GE(actualDistance, bound);
-				EXPECT_TRUE(responsibleNode.responsible(angles[i], radii[i]));
-	*/
 				for (index j = 0; j < closeToOne.size(); j++) {
 					if (closeToOne[j] == i) {
 						found = true;
@@ -318,8 +284,8 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 
 TEST_F(QuadTreeTest, testQuadTreeBalance) {
 	count n = 100000;
-	double s = 1;
-	double alpha = 2;
+	double s =1;
+	double alpha = 1;
 	double R = s*acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
 	vector<double> radii(n);
@@ -343,21 +309,96 @@ TEST_F(QuadTreeTest, testQuadTreeBalance) {
 	}
 
 	QuadNode<index> root = getRoot(quad);
-	vector<QuadNode<index> > children = getChildren(root);
-	EXPECT_EQ(children.size(), 4);
 
-	EXPECT_LE(children[0].size(), 2*children[1].size());
-	EXPECT_LE(children[0].size(), 2*children[3].size());
+	//visit tree
+	std::stack<QuadNode<index> > toAnalyze;
+	toAnalyze.push(root);
+	while (!toAnalyze.empty()) {
+		QuadNode<index> current = toAnalyze.top();
+		toAnalyze.pop();
+		if (current.height() > 1) {
+			vector<QuadNode<index> > children = getChildren(current);
+			EXPECT_EQ(children.size(), 4);
 
-	EXPECT_LE(children[1].size(), 2*children[0].size());
-	EXPECT_LE(children[1].size(), 2*children[2].size());
+			EXPECT_LE(children[0].size(), 2*children[1].size());
+			EXPECT_LE(children[0].size(), 2*children[3].size());
 
-	EXPECT_LE(children[2].size(), 2*children[1].size());
-	EXPECT_LE(children[2].size(), 2*children[3].size());
+			EXPECT_LE(children[1].size(), 2*children[0].size());
+			EXPECT_LE(children[1].size(), 2*children[2].size());
 
-	EXPECT_LE(children[3].size(), 2*children[2].size());
-	EXPECT_LE(children[3].size(), 2*children[0].size());
+			EXPECT_LE(children[2].size(), 2*children[1].size());
+			EXPECT_LE(children[2].size(), 2*children[3].size());
 
+			EXPECT_LE(children[3].size(), 2*children[2].size());
+			EXPECT_LE(children[3].size(), 2*children[0].size());
+
+			EXPECT_LE(children[0].height(), children[1].height()+1);
+			EXPECT_LE(children[0].height(), children[3].height()+1);
+
+			EXPECT_LE(children[1].height(), children[0].height()+1);
+			EXPECT_LE(children[1].height(), children[2].height()+1);
+
+			EXPECT_LE(children[2].height(), children[1].height()+1);
+			EXPECT_LE(children[2].height(), children[3].height()+1);
+
+			EXPECT_LE(children[3].height(), children[2].height()+1);
+			EXPECT_LE(children[3].height(), children[0].height()+1);
+			for (auto child : children) {
+				toAnalyze.push(child);
+			}
+		}
+	}
+}
+
+TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
+	count n = 100000;
+	count trials = 20;
+	double s =1;
+	double alpha = 1;
+	double t = 1;
+	double R = s*acosh((double)n/(2*M_PI)+1);
+	double threshold = t*R;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(&angles, &radii, s, alpha);
+
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha);
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+
+	count sumIncluded = 0;
+	count sumCut = 0;
+	count sumUNcomp = 0;
+	count sumNcomp = 0;
+	count totalEdges = 0;
+
+	for (index e = 0; e < trials; e++) {
+		index q = Aux::Random::integer(n);
+		vector<index> neighbours = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
+		QuadNode<index> root = getRoot(quad);
+		count included = root.countIncluded();
+		count cut = root.countCut();
+		count uncomp = root.countUnnecessaryComparisonsInCutLeaves();
+		count ncomp = root.countNecessaryComparisonsInCutLeaves();
+		DEBUG("Node: ", q);
+		DEBUG("Degree: ", neighbours.size());
+		DEBUG("Included leaves: ", included);
+		DEBUG("Cut leaves: ", cut);
+		DEBUG("Unnecessary comparisons in cut leaves: ", uncomp);
+		DEBUG("Necessary comparisons in cut leaves: ", ncomp);
+		sumIncluded += included;
+		sumCut += cut;
+		sumUNcomp += uncomp;
+		sumNcomp += ncomp;
+		totalEdges += neighbours.size();
+	}
+	DEBUG("Total included leaves: ", sumIncluded);
+	DEBUG("Total cut leaves: ", sumCut);
+	DEBUG("Unnecessary comparisons in cut leaves: ", sumUNcomp);
+	DEBUG("Necessary comparisons in cut leaves: ", sumNcomp);
+	DEBUG("Total edges: ", totalEdges);
 }
 
 } /* namespace NetworKit */

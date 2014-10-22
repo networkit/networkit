@@ -41,6 +41,10 @@ private:
 	bool isLeaf;
 	bool splitTheoretical;
 	double alpha;
+	count uncomp;
+	count ncomp;
+	bool wasCut;
+	bool wasIncluded;
 
 public:
 	QuadNode() {
@@ -54,6 +58,7 @@ public:
 		elements = 0;
 		splitTheoretical = false;
 		alpha = 1;
+		resetCounter();
 	}
 
 	~QuadNode() {
@@ -75,6 +80,7 @@ public:
 		this->splitTheoretical = splitTheoretical;
 		isLeaf = true;
 		elements = 0;
+		resetCounter();
 	}
 
 	void addContent(T input, double angle, double R) {
@@ -204,7 +210,6 @@ public:
 
 	bool outOfReach(Point2D<double> query, double radius) {
 		double phi, r;
-		//radius *= 1.05;
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
 		if (responsible(phi, r)) return false;
 
@@ -294,11 +299,20 @@ public:
 		double rsq = radius*radius;
 
 		if (isLeaf) {
+			if (center.distance(a) > radius || center.distance(b) > radius || center.distance(c) > radius || center.distance(d) > radius) {
+				wasCut = true;
+			} else {
+				wasCut = false;
+				wasIncluded = true;
+			}
 			for (uint i = 0; i < content.size(); i++) {
 				double deltaX = positions[i][0] - center[0];
 				double deltaY = positions[i][1] - center[1];
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {//maybe improve this with functors
 					result.push_back(content[i]);
+					ncomp++;
+				} else {
+					uncomp++;
 				}
 			}
 		}	else {
@@ -308,7 +322,7 @@ public:
 		}
 	}
 
-	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, double phi_c, double r_c, double radius, vector<T> &result) {
+	void getElementsInEuclideanCirclePolar(double minAngle, double maxAngle, double lowR, double highR, double phi_c, double r_c, double radius, vector<T> &result) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
 
 		if (outOfReach(phi_c, r_c, radius)) {
@@ -332,9 +346,49 @@ public:
 			}
 		}	else {
 			for (uint i = 0; i < children.size(); i++) {
-				children[i].getElementsInEuclideanCircle(minAngle, maxAngle, lowR, highR, phi_c, r_c, radius, result);
+				children[i].getElementsInEuclideanCirclePolar(minAngle, maxAngle, lowR, highR, phi_c, r_c, radius, result);
 			}
 		}
+	}
+
+	void resetCounter() {
+		ncomp = 0;
+		uncomp = 0;
+		wasCut = false;
+		wasIncluded = false;
+		if (!isLeaf) {
+			for (index i = 0; i < children.size(); i++) {
+				children[i].resetCounter();
+			}
+		}
+	}
+
+	int countIncluded() {
+		if (isLeaf) return wasIncluded ? 1 : 0;
+		int result = 0;
+		for (auto child : children) result += child.countIncluded();
+		return result;
+	}
+
+	int countCut() {
+		if (isLeaf) return wasCut ? 1 : 0;
+		int result = 0;
+		for (auto child : children) result += child.countCut();
+		return result;
+	}
+
+	int countUnnecessaryComparisonsInCutLeaves() {
+		if (isLeaf) return wasCut ? uncomp : 0;
+		int result = 0;
+		for (auto child : children) result += child.countUnnecessaryComparisonsInCutLeaves();
+		return result;
+	}
+
+	int countNecessaryComparisonsInCutLeaves() {
+		if (isLeaf) return wasCut ? ncomp : 0;
+		int result = 0;
+		for (auto child : children) result += child.countNecessaryComparisonsInCutLeaves();
+		return result;
 	}
 
 	count size() {
