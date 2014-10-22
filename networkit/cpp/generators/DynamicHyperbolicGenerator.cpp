@@ -27,6 +27,7 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double initialFa
 	this->factorgrowth = factorgrowth;
 	this->moveDistance = moveDistance;
 	this->initialized = false;
+	initializeQuadTree();
 	initializeMovement();
 }
 
@@ -132,14 +133,13 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 
 	for (index step = 0; step < nSteps; step++) {
-		count oldStreamMarker = result.size();
-		assert(factorgrowth == 0 || moveEachStep == 0 || moveDistance == 0);
+		//assert(factorgrowth == 0 || moveEachStep == 0 || moveDistance == 0);
 		if (factorgrowth != 0) {
 			//nodes are stationary, growing factors
 			double newfactor = currentfactor + factorgrowth;
-/**
- * TODO: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array.
- */
+			/**
+			 * TODO: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array.
+			 */
 			#pragma omp parallel for
 			for (index i = 0; i < nodes; i++) {
 				assert(R*newfactor > R*currentfactor);
@@ -168,7 +168,9 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 			}
 			currentfactor = newfactor;
 		}
-		else {
+
+		if (moveEachStep > 0 && moveDistance > 0) {
+			count oldStreamMarker = result.size();
 			vector<index> toWiggle;
 			vector<vector<index> > oldNeighbours;
 			//TODO: One could parallelize this.
@@ -203,7 +205,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 				if (newcosh < mincdf) {
 					newcosh += 2*(mincdf - newcosh);
 					radialMovement[toWiggle[j]] *= -1;
-					DEBUG("Node ", toWiggle[j], " bounced off lower boundary, radial movement set to ", radialMovement[toWiggle[j]]);
+					DEBUG("Node ", toWiggle[j], " crossed center, radial movement set to ", radialMovement[toWiggle[j]]);
 
 					/**
 					 * nodes should cross the center, not bounce off it
