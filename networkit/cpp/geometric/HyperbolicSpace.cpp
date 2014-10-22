@@ -30,9 +30,6 @@ HyperbolicSpace::~HyperbolicSpace() {
  * This distance measure is taken from the Poincaré disc model.
  */
 double HyperbolicSpace::getHyperbolicDistance(double phi_a, double  r_a, double phi_b, double r_b) {
-	/**
-	 * quick and dirty to see if it works. TODO: clean up later.
-	 */
 	assert(r_a < 1);
 	assert(r_b < 1);
 	return getHyperbolicDistance(polarToCartesian(phi_a, r_a), polarToCartesian(phi_b, r_b));
@@ -44,7 +41,6 @@ double HyperbolicSpace::getHyperbolicDistance(Point2D<double> a, Point2D<double>
 	return result;
 }
 
-//TODO: add const keywords where appropriate
 void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii, double stretch, double alpha) {
 	uint64_t n = radii->size();
 	double R = stretch*acosh((double)n/(2*M_PI)+1);

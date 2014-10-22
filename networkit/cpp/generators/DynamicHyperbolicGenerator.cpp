@@ -15,7 +15,6 @@ using std::vector;
 namespace NetworKit {
 
 DynamicHyperbolicGenerator::DynamicHyperbolicGenerator() {
-	// TODO Auto-generated constructor stub
 
 }
 
@@ -51,7 +50,6 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, v
 		quad.addContent(i, angles[i], radii[i]);
 	}
 	INFO("Filled Quadtree");
-	initializeQuadTree();
 	initializeMovement();
 }
 
