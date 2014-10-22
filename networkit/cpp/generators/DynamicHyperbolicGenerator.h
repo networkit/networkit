@@ -35,7 +35,8 @@ private:
 	count quadTreeHeight() {
 		return quad.height();
 	}
-
+	void getEventsFromFactorGrowth(vector<GraphEvent> &result);
+	void getEventsFromNodeMovement(vector<GraphEvent> &result);
 	double factorgrowth;
 	double moveDistance;
 	count nodes;
