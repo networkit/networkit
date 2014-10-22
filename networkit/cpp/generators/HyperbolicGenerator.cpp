@@ -84,7 +84,7 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	index n = angles->size();
 	assert(radii->size() == n);
 	Quadtree<index> quad(R);
-	GraphBuilder result(n, false, false, false);
+	GraphBuilder result(n, false, false, true);
 	for (index i = 0; i < n; i++) {
 		assert(radii->at(i) < R);
 		quad.addContent(i, angles->at(i), radii->at(i));
@@ -98,7 +98,7 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	for (index i = 0; i < n; i++) {
 			vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles->at(i), radii->at(i)), thresholdDistance);
 			for (index j : near) {
-				if (i < j) {
+				if (i != j) {
 						result.addEdge(i,j);
 				}
 			}
@@ -113,8 +113,6 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 
 	timer.stop();
 	INFO("Generated Graph, took ", timer.elapsedMilliseconds(), " milliseconds.");
-	return result.toGraph(false);
+	return result.toGraph(true);
 }
-
-
 }
