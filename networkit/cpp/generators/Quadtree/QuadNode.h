@@ -329,6 +329,18 @@ public:
 		}
 	}
 
+	void trim() {
+		content.shrink_to_fit();
+		positions.shrink_to_fit();
+		angles.shrink_to_fit();
+		radii.shrink_to_fit();
+		if (!isLeaf) {
+			for (index i = 0; i < children.size(); i++) {
+				children[i].trim();
+			}
+		}
+	}
+
 	int countIncluded() {
 		if (isLeaf) return wasIncluded ? 1 : 0;
 		int result = 0;

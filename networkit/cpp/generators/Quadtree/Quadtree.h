@@ -109,6 +109,10 @@ public:
 		return root.height();
 	}
 
+	void trim() {
+		root.trim();
+	}
+
 
 private:
 	QuadNode<T> root;
