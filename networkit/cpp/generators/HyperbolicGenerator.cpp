@@ -100,6 +100,7 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 		assert(radii->at(i) < R);
 		quad.addContent(i, angles->at(i), radii->at(i));
 	}
+	quad.trim();
 	timer.stop();
 	INFO("Filled Quadtree, took ", timer.elapsedMilliseconds(), " milliseconds.");
 	timer.start();
