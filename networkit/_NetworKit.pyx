@@ -1234,6 +1234,7 @@ cdef extern from "cpp/generators/ClusteredRandomGraphGenerator.h":
 	cdef cppclass _ClusteredRandomGraphGenerator "NetworKit::ClusteredRandomGraphGenerator":
 		_ClusteredRandomGraphGenerator(count, count, double, double) except +
 		_Graph generate() except +
+		_Partition getCommunities() except +
 
 cdef class ClusteredRandomGraphGenerator:
 	""" The ClusteredRandomGraphGenerator class is used to create a clustered random graph.
@@ -1271,6 +1272,16 @@ cdef class ClusteredRandomGraphGenerator:
 			The generated graph.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	def getCommunities(self):
+		""" Returns the generated ground truth clustering.
+
+		Returns
+		-------
+		Partition
+			The generated ground truth clustering.
+		"""
+		return Partition().setThis(self._this.getCommunities())
 
 
 cdef extern from "cpp/generators/ChungLuGenerator.h":
