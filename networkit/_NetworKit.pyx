@@ -9,7 +9,6 @@ from cython.operator import dereference
 from libc.stdint cimport uint64_t
 from libc.stdint cimport int64_t
 
-
 # the C++ standard library
 from libcpp cimport bool
 from libcpp.vector cimport vector
@@ -4989,7 +4988,7 @@ cdef class LinearizeAttribute:
 cdef extern from "cpp/backbones/GeometricAverageAttributizer.h":
 	cdef cppclass _GeometricAverageAttributizer "NetworKit::GeometricAverageAttributizer":
 		_GeometricAverageAttributizer() except +
-		vector[double] getAttribute(_Graph G, vector[int] a) except +
+		vector[double] getAttribute(_Graph G, vector[double] a) except +
 
 cdef class GeometricAverageAttributizer:
 	"""
@@ -4997,13 +4996,13 @@ cdef class GeometricAverageAttributizer:
 	"""
 	cdef _GeometricAverageAttributizer _this
 
-	def getAttribute(self, Graph G, vector[int] a):
+	def getAttribute(self, Graph G, vector[double] a):
 		"""
 		Normalizes the given edge attribute.
 		----------
 		G : Graph
 			The input graph.
-		a : vector[int]
+		a : vector[double]
 			Edge attribute that shall be normalized.
 		Returns
 		-------
