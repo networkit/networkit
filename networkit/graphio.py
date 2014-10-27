@@ -131,8 +131,8 @@ def readMat(path, key="A"):
 	(n, n2) = A.shape
 	if n != n2:
 		raise Exception("this ({0}x{1}) matrix is not square".format(n, n2))
-	if not numpy.array_equal(A, A.transpose):
-		logging.warning("the adjacency matrix is not symmetric")
+#	if not numpy.array_equal(A, A.transpose): # FIXME this is slow and doesn't work as expected, seems to be False for valid inputs
+#		logging.warning("the adjacency matrix is not symmetric")
 	G = Graph(n)
 	nz = A.nonzero()
 	for (u,v) in zip(nz[0], nz[1]):
