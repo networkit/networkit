@@ -31,6 +31,7 @@ from . import partitioning
 from . import coloring
 from . import workflows
 from . import flow
+from . import distmeasures
 
 try:
 	from . import viztools
