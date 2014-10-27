@@ -35,8 +35,8 @@ void METISGraphWriter::write(Graph& G, bool weighted, std::string path) {
 		});
 	} else {
 			G.forNodes([&](node u) {
-			G.forNeighborsOf(u, [&](node v){
-				file << v + 1 << " " << G.weight(u, v) <<"\t";
+			G.forNeighborsOf(u, [&](node v, edgeweight w){
+				file << v + 1 << " " << w <<"\t";
 			});
 			file << '\n';
 		});
