@@ -21,14 +21,22 @@ TEST(MatrixGTest, testMatrixDimension) {
 
 	ASSERT_EQ(10u, mat.numberOfRows());
 	ASSERT_EQ(10u, mat.numberOfColumns());
+
+	mat = Matrix(5, 10);
+	ASSERT_EQ(5u, mat.numberOfRows());
+	ASSERT_EQ(10u, mat.numberOfColumns());
+
+	mat = Matrix(10, 5);
+	ASSERT_EQ(10u, mat.numberOfRows());
+	ASSERT_EQ(5u, mat.numberOfColumns());
 }
 
 TEST(MatrixGTest, testRowAndColumnAccess) {
-	std::vector<std::pair<int, int> > positions;
+	std::vector<std::pair<index, index> > positions;
 	std::vector<double> values;
 
-	for (int i = 0; i < 1000; ++i) {
-		positions.push_back(std::make_pair(3, (int)i));
+	for (index i = 0; i < 1000; ++i) {
+		positions.push_back(std::make_pair(3, i));
 		values.push_back(i);
 	}
 
@@ -40,7 +48,7 @@ TEST(MatrixGTest, testRowAndColumnAccess) {
 	Vector v = mat.row(3);
 	ASSERT_EQ(mat.numberOfColumns(), v.getDimension());
 
-	for (int i = 0; i < 1000; ++i) {
+	for (index i = 0; i < 1000; ++i) {
 		EXPECT_EQ(i, v[i]);
 	}
 
@@ -56,26 +64,90 @@ TEST(MatrixGTest, testRowAndColumnAccess) {
 	EXPECT_EQ(10.0, v[3]);
 	EXPECT_EQ(42.123, v[10]);
 
+
+	// rectangular matrix
+	// n x m (n < m)
+	positions.clear();
+	values.clear();
+
+	positions.push_back(std::make_pair(4,9));
+	values.push_back(11);
+
+	positions.push_back(std::make_pair(0,0));
+	values.push_back(42);
+
+	mat = Matrix(5, 10, positions, values);
+	v = mat.row(0);
+	ASSERT_EQ(v.getDimension(), 10u);
+	for (index i = 0; i < v.getDimension(); ++i) {
+		if (i == 0) {
+			EXPECT_EQ(42, v[i]);
+		} else {
+			EXPECT_EQ(0, v[i]);
+		}
+	}
+
+	v = mat.column(9);
+	ASSERT_EQ(v.getDimension(), 5u);
+	for (index i = 0; i < v.getDimension(); ++i) {
+		if (i == v.getDimension() - 1) {
+			EXPECT_EQ(11, v[i]);
+		} else {
+			EXPECT_EQ(0, v[i]);
+		}
+	}
+
+	// rectangular matrix
+	// n x m (n > m)
+
+	positions.clear();
+	values.clear();
+
+	positions.push_back(std::make_pair(9,4));
+	values.push_back(11);
+
+	positions.push_back(std::make_pair(0,0));
+	values.push_back(42);
+
+	mat = Matrix(10, 5, positions, values);
+	v = mat.row(0);
+	ASSERT_EQ(v.getDimension(), 5u);
+	for (index i = 0; i < v.getDimension(); ++i) {
+		if (i == 0) {
+			EXPECT_EQ(42, v[i]);
+		} else {
+			EXPECT_EQ(0, v[i]);
+		}
+	}
+
+	v = mat.column(4);
+	ASSERT_EQ(v.getDimension(), 10u);
+	for (index i = 0; i < v.getDimension(); ++i) {
+		if (i == v.getDimension() - 1) {
+			EXPECT_EQ(11, v[i]);
+		} else {
+			EXPECT_EQ(0, v[i]);
+		}
+	}
 }
 
 TEST(MatrixGTest, testMatrixAddition) {
-	std::vector<std::pair<NetworKit::node, NetworKit::node> > positions1;
-	std::vector<std::pair<NetworKit::node, NetworKit::node> > positions2;
+	std::vector<std::pair<index, index> > positions1;
+	std::vector<std::pair<index, index> > positions2;
 	std::vector<double> values1;
 	std::vector<double> values2;
 
-	for (int i = 0; i < 100000; ++i) {
-		NetworKit::node n = static_cast<NetworKit::node>(i);
-		positions1.push_back(std::make_pair(n, n));
-		positions2.push_back(std::make_pair(n, n));
+	for (index i = 0; i < 100000; ++i) {
+		positions1.push_back(std::make_pair(i, i));
+		positions2.push_back(std::make_pair(i, i));
 		values1.push_back(1);
 		values2.push_back(i);
 	}
 
-	positions1.push_back(std::make_pair(static_cast<NetworKit::node>(2), static_cast<NetworKit::node>(71)));
+	positions1.push_back(std::make_pair(2, 71));
 	values1.push_back(1.8);
 
-	positions2.push_back(std::make_pair(static_cast<NetworKit::node>(42), static_cast<NetworKit::node>(43)));
+	positions2.push_back(std::make_pair(42, 43));
 	values2.push_back(3.14);
 
 	Matrix mat1(100000, positions1, values1);
@@ -88,33 +160,91 @@ TEST(MatrixGTest, testMatrixAddition) {
 	EXPECT_EQ(0.0, result(10, 13));
 
 
-	for (unsigned int i = 0; i < result.numberOfRows(); ++i) {
+	for (index i = 0; i < result.numberOfRows(); ++i) {
 		EXPECT_EQ((i + 1), result(i, i));
 	}
 	EXPECT_EQ(1.8, result(2, 71));
 	EXPECT_EQ(3.14, result(42, 43));
 
 	EXPECT_EQ(0.0, result(3, 14));
+
+
+	// rectangular matrix
+	// n x m (n < m)
+	std::vector<Vector> rows;
+	rows.push_back({1,0,0,0,0});
+	rows.push_back({0,0,3,0,0});
+
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({0,0,1,0,0});
+	rows.push_back({0,0,1,0,0});
+
+	mat2 = Matrix(rows);
+
+	result = mat1 + mat2;
+
+	ASSERT_EQ(2u, result.numberOfRows());
+	ASSERT_EQ(5u, result.numberOfColumns());
+
+	EXPECT_EQ(1, result(0,0));
+	EXPECT_EQ(1, result(0,2));
+	EXPECT_EQ(4, result(1,2));
+
+	EXPECT_EQ(0, result(0,1));
+	EXPECT_EQ(0, result(1,4));
+
+	// rectangular matrix
+	// n x m (n > m)
+	rows.clear();
+	rows.push_back({1,0});
+	rows.push_back({0,0});
+	rows.push_back({0,3});
+	rows.push_back({0,0});
+	rows.push_back({0,0});
+
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({0,0});
+	rows.push_back({0,0});
+	rows.push_back({1,1});
+	rows.push_back({0,0});
+	rows.push_back({0,0});
+
+	mat2 = Matrix(rows);
+
+	result = mat1 + mat2;
+
+	ASSERT_EQ(5u, result.numberOfRows());
+	ASSERT_EQ(2u, result.numberOfColumns());
+
+	EXPECT_EQ(1, result(0,0));
+	EXPECT_EQ(1, result(2,0));
+	EXPECT_EQ(4, result(2,1));
+
+	EXPECT_EQ(0, result(0,1));
+	EXPECT_EQ(0, result(4,1));
 }
 
 TEST(MatrixGTest, testMatrixSubtraction) {
-	std::vector<std::pair<NetworKit::node, NetworKit::node> > positions1;
-	std::vector<std::pair<NetworKit::node, NetworKit::node> > positions2;
+	std::vector<std::pair<index, index> > positions1;
+	std::vector<std::pair<index, index> > positions2;
 	std::vector<double> values1;
 	std::vector<double> values2;
 
-	for (int i = 0; i < 100000; ++i) {
-		NetworKit::node n = static_cast<NetworKit::node>(i);
-		positions1.push_back(std::make_pair(n, n));
-		positions2.push_back(std::make_pair(n, n));
+	for (index i = 0; i < 100000; ++i) {
+		positions1.push_back(std::make_pair(i, i));
+		positions2.push_back(std::make_pair(i, i));
 		values1.push_back(1);
 		values2.push_back(i);
 	}
 
-	positions1.push_back(std::make_pair(static_cast<NetworKit::node>(2), static_cast<NetworKit::node>(71)));
+	positions1.push_back(std::make_pair(2, 71));
 	values1.push_back(1.8);
 
-	positions2.push_back(std::make_pair(static_cast<NetworKit::node>(42), static_cast<NetworKit::node>(43)));
+	positions2.push_back(std::make_pair(42, 43));
 	values2.push_back(3.14);
 
 	Matrix mat1(100000, positions1, values1);
@@ -127,20 +257,78 @@ TEST(MatrixGTest, testMatrixSubtraction) {
 	EXPECT_EQ(0.0, result(10, 13));
 
 
-	for (unsigned int i = 0; i < result.numberOfRows(); ++i) {
+	for (index i = 0; i < result.numberOfRows(); ++i) {
 		EXPECT_EQ(((int) i - 1), result(i, i));
 	}
 	EXPECT_EQ(-1.8, result(2, 71));
 	EXPECT_EQ(3.14, result(42, 43));
 
 	EXPECT_EQ(0.0, result(3, 14));
+
+	// rectangular matrix
+	// n x m (n < m)
+	std::vector<Vector> rows;
+	rows.push_back({1,0,0,0,0});
+	rows.push_back({0,0,3,0,0});
+
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({0,0,1,0,0});
+	rows.push_back({0,0,1,0,0});
+
+	mat2 = Matrix(rows);
+
+	result = mat1 - mat2;
+
+	ASSERT_EQ(2u, result.numberOfRows());
+	ASSERT_EQ(5u, result.numberOfColumns());
+
+	EXPECT_EQ(1, result(0,0));
+	EXPECT_EQ(-1, result(0,2));
+	EXPECT_EQ(2, result(1,2));
+
+	EXPECT_EQ(0, result(0,1));
+	EXPECT_EQ(0, result(1,4));
+
+	// rectangular matrix
+	// n x m (n > m)
+	rows.clear();
+	rows.push_back({1,0});
+	rows.push_back({0,0});
+	rows.push_back({0,3});
+	rows.push_back({0,0});
+	rows.push_back({0,0});
+
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({0,0});
+	rows.push_back({0,0});
+	rows.push_back({1,1});
+	rows.push_back({0,0});
+	rows.push_back({0,0});
+
+	mat2 = Matrix(rows);
+
+	result = mat1 - mat2;
+
+	ASSERT_EQ(5u, result.numberOfRows());
+	ASSERT_EQ(2u, result.numberOfColumns());
+
+	EXPECT_EQ(1, result(0,0));
+	EXPECT_EQ(-1, result(2,0));
+	EXPECT_EQ(2, result(2,1));
+
+	EXPECT_EQ(0, result(0,1));
+	EXPECT_EQ(0, result(4,1));
 }
 
 TEST(MatrixGTest, testScalarMultiplication) {
-	std::vector<std::pair<int, int> > positions;
+	std::vector<std::pair<index, index> > positions;
 	std::vector<double> values;
 
-	for (int i = 0; i < 10000; ++i) {
+	for (index i = 0; i < 10000; ++i) {
 		positions.push_back(std::make_pair(i, i));
 		values.push_back(i);
 	}
@@ -153,7 +341,7 @@ TEST(MatrixGTest, testScalarMultiplication) {
 	ASSERT_EQ(10000u, mat.numberOfRows());
 	ASSERT_EQ(10000u, mat.numberOfColumns());
 
-	for (int i = 0; i < 10000; ++i) {
+	for (index i = 0; i < 10000; ++i) {
 		EXPECT_EQ(i*2, mat(i, i));
 	}
 	EXPECT_EQ(84.0, mat(42, 43));
@@ -161,18 +349,29 @@ TEST(MatrixGTest, testScalarMultiplication) {
 
 	mat *= 0.5;
 
-	for (int i = 0; i < 10000; ++i) {
+	for (index i = 0; i < 10000; ++i) {
 		EXPECT_EQ(i, mat(i, i));
 	}
 	EXPECT_EQ(42.0, mat(42, 43));
 	EXPECT_EQ(0.0, mat(55, 199));
+
+	// rectangular matrix
+	std::vector<Vector> rows;
+	rows.push_back({1,0,0,0,0});
+	rows.push_back({0,0,3,0,0});
+	mat = Matrix(rows);
+
+	mat *= 2;
+
+	EXPECT_EQ(2, mat(0,0));
+	EXPECT_EQ(6, mat(1,2));
 }
 
 TEST(MatrixGTest, testMatrixDivisionOperator) {
-	std::vector<std::pair<int, int> > positions;
+	std::vector<std::pair<index, index> > positions;
 	std::vector<double> values;
 
-	for (int i = 0; i < 10000; ++i) {
+	for (index i = 0; i < 10000; ++i) {
 		positions.push_back(std::make_pair(i, i));
 		values.push_back(i);
 	}
@@ -185,7 +384,7 @@ TEST(MatrixGTest, testMatrixDivisionOperator) {
 	ASSERT_EQ(10000u, mat.numberOfRows());
 	ASSERT_EQ(10000u, mat.numberOfColumns());
 
-	for (int i = 0; i < 10000; ++i) {
+	for (index i = 0; i < 10000; ++i) {
 		EXPECT_EQ(i*2, mat(i, i));
 	}
 	EXPECT_EQ(84.0, mat(42, 43));
@@ -193,18 +392,29 @@ TEST(MatrixGTest, testMatrixDivisionOperator) {
 
 	mat /= 2;
 
-	for (int i = 0; i < 10000; ++i) {
+	for (index i = 0; i < 10000; ++i) {
 		EXPECT_EQ(i, mat(i, i));
 	}
 	EXPECT_EQ(42.0, mat(42, 43));
 	EXPECT_EQ(0.0, mat(55, 199));
+
+	// rectangular matrix
+	std::vector<Vector> rows;
+	rows.push_back({1,0,0,0,0});
+	rows.push_back({0,0,3,0,0});
+	mat = Matrix(rows);
+
+	mat /= 2;
+
+	EXPECT_EQ(0.5, mat(0,0));
+	EXPECT_EQ(1.5, mat(1,2));
 }
 
 TEST(MatrixGTest, testMatrixVectorProduct) {
-	std::vector<std::pair<int, int> > mPositions;
+	std::vector<std::pair<index, index> > mPositions;
 	std::vector<double> mValues;
 
-	for (int i = 0; i < 10000; ++i) {
+	for (index i = 0; i < 10000; ++i) {
 		mPositions.push_back(std::make_pair(i, i));
 		mValues.push_back(i);
 	}
@@ -220,7 +430,7 @@ TEST(MatrixGTest, testMatrixVectorProduct) {
 	Vector result = mat * vector;
 	ASSERT_EQ(mat.numberOfRows(), result.getDimension());
 
-	for (int i = 0; i < 10000; ++i) {
+	for (index i = 0; i < 10000; ++i) {
 		if (i != 500 && i != 42 && i != 43) {
 			EXPECT_EQ(i, result[i]);
 		}
@@ -231,7 +441,7 @@ TEST(MatrixGTest, testMatrixVectorProduct) {
 	EXPECT_EQ(1750.0, result[500]);
 
 
-	std::vector<std::pair<int, int> > positions;
+	std::vector<std::pair<index, index> > positions;
 	positions.push_back(std::make_pair(0,0));
 	positions.push_back(std::make_pair(0,1));
 	positions.push_back(std::make_pair(0,2));
@@ -254,10 +464,23 @@ TEST(MatrixGTest, testMatrixVectorProduct) {
 	EXPECT_EQ(6, res[1]);
 	EXPECT_EQ(12, res[2]);
 	EXPECT_EQ(-3, res[3]);
+
+	// rectangular matrix
+	std::vector<Vector> rows;
+	rows.push_back({1,0,0,0,0});
+	rows.push_back({0,0,3,0,0});
+	mat = Matrix(rows);
+
+	v = {0,1,2,3,0};
+	res = mat * v;
+
+	ASSERT_EQ(2u, res.getDimension());
+	EXPECT_EQ(0, res[0]);
+	EXPECT_EQ(6, res[1]);
 }
 
 TEST(MatrixGTest, testMatrixMultiplication) {
-	std::vector<std::pair<int, int> > positions;
+	std::vector<std::pair<index, index> > positions;
 	std::vector<double> values = {1, 2, 3, 2, 2, 3, 3, -1, -1, 4};
 
 	positions.push_back(std::make_pair(0,0));
@@ -311,6 +534,41 @@ TEST(MatrixGTest, testMatrixMultiplication) {
 	EXPECT_EQ(0, result(3,1));
 	EXPECT_EQ(-7, result(3,2));
 	EXPECT_EQ(17, result(3,3));
+
+
+	// rectangular matrices
+	std::vector<Vector> rows;
+	rows.push_back({1,0,0,2});
+	rows.push_back({0,0,1,0});
+	rows.push_back({0,2,0,4});
+
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({1,0});
+	rows.push_back({0,0});
+	rows.push_back({0,0.5});
+	rows.push_back({42,1});
+
+	mat2 = Matrix(rows);
+
+	result = mat1 * mat2;
+
+	EXPECT_EQ(85, result(0,0));
+	EXPECT_EQ(2, result(0,1));
+	EXPECT_EQ(0, result(1,0));
+	EXPECT_EQ(0.5, result(1,1));
+	EXPECT_EQ(168, result(2,0));
+	EXPECT_EQ(4, result(2,1));
+}
+
+TEST(MatrixGTest, testBigMatrixMultiplication) {
+	METISGraphReader graphReader;
+	AdjacencyMatrix mat(graphReader.read("input/PGPgiantcompo.graph"));
+
+	Matrix result = mat * mat;
+	ASSERT_EQ(mat.numberOfRows(), result.numberOfRows());
+	ASSERT_EQ(mat.numberOfColumns(), result.numberOfColumns());
 }
 
 
