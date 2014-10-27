@@ -5,9 +5,9 @@
 
 namespace NetworKit {
 
-class GeometricAverageAttributizer : public AttributeGenerator<int, double> {
+class GeometricAverageAttributizer : public AttributeGenerator<double, double> {
 public:
-	virtual std::vector<double> getAttribute(const Graph& g, const std::vector<int>& attribute) override;
+	virtual std::vector<double> getAttribute(const Graph& g, const std::vector<double>& attribute) override;
 };
 
 } // namespace NetworKit

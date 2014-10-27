@@ -6,10 +6,10 @@
 #include "GeometricAverageAttributizer.h"
 #include "../auxiliary/Log.h"
 
-std::vector< double > NetworKit::GeometricAverageAttributizer::getAttribute(const NetworKit::Graph &g, const std::vector< int > &attribute) {
+std::vector< double > NetworKit::GeometricAverageAttributizer::getAttribute(const NetworKit::Graph &g, const std::vector< double > &attribute) {
 	std::vector<double> result(g.upperEdgeIdBound());
 	
-	std::vector<count> nodeSum(g.upperNodeIdBound());
+	std::vector<double> nodeSum(g.upperNodeIdBound());
 	
 	g.parallelForNodes([&](node u) {
 		g.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
