@@ -18,6 +18,8 @@ IncidenceMatrixGTest::~IncidenceMatrixGTest() {
 
 TEST_F(IncidenceMatrixGTest, testElementAccess) {
 	IncidenceMatrix mat(graph);
+	ASSERT_EQ(graph.numberOfNodes(), mat.numberOfRows());
+	ASSERT_EQ(graph.numberOfEdges(), mat.numberOfColumns());
 
 	EXPECT_EQ(sqrt(graph.weight(0,1)), mat(0,0));
 	EXPECT_EQ(-sqrt(graph.weight(0,1)), mat(1,0));

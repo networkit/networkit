@@ -16,7 +16,7 @@ LaplacianMatrixGTest::~LaplacianMatrixGTest() {
 }
 
 TEST(LaplacianMatrixGTest, testSmallLaplacianMatrix) {
-	NetworKit::Graph graph(6);
+	Graph graph(6);
 	graph.addEdge(0, 0); // self-loop
 	graph.addEdge(0, 1);
 	graph.addEdge(0, 4);
@@ -28,7 +28,7 @@ TEST(LaplacianMatrixGTest, testSmallLaplacianMatrix) {
 
 	LaplacianMatrix laplacianMatrix(graph);
 	ASSERT_EQ(graph.numberOfNodes(), laplacianMatrix.numberOfRows());
-	ASSERT_EQ(graph.numberOfNodes(), laplacianMatrix.numberOfRows());
+	ASSERT_EQ(graph.numberOfNodes(), laplacianMatrix.numberOfColumns());
 
 	EXPECT_EQ(2, laplacianMatrix(0,0));
 	EXPECT_EQ(-1, laplacianMatrix(0,1));
@@ -51,17 +51,33 @@ TEST(LaplacianMatrixGTest, testSmallLaplacianMatrix) {
 	EXPECT_EQ(3, laplacianMatrix(4,4));
 	EXPECT_EQ(0, laplacianMatrix(4,5));
 	EXPECT_EQ(1, laplacianMatrix(5,5));
+
+
+	// directed, weighted graph
+	Graph dGraph(4, true, true);
+	dGraph.addEdge(0,0,-1);
+	dGraph.addEdge(0,1,3);
+	dGraph.addEdge(1,3,42);
+	dGraph.addEdge(3,1, -4);
+
+	laplacianMatrix = LaplacianMatrix(dGraph);
+	EXPECT_EQ(3, laplacianMatrix(0,0));
+	EXPECT_EQ(-3, laplacianMatrix(0,1));
+	EXPECT_EQ(-42, laplacianMatrix(1,3));
+	EXPECT_EQ(42, laplacianMatrix(1,1));
+	EXPECT_EQ(-4, laplacianMatrix(3,3));
+	EXPECT_EQ(4, laplacianMatrix(3,1));
 }
 
 TEST(LaplacianMatrixGTest, testLaplacianMatrixOfLesmisGraph) {
 	// read lesmis graph
-	NetworKit::METISGraphReader graphReader;
-	NetworKit::Graph graph = graphReader.read("input/lesmis.graph");
+	METISGraphReader graphReader;
+	Graph graph = graphReader.read("input/lesmis.graph");
 
 	// create LaplacianMatrix
 	LaplacianMatrix mat(graph);
 
-	mat.forElementsInRowOrder([&](const index row, const index column, const double value){
+	mat.forNonZeroElementsInRowOrder([&](const index row, const index column, const double value){
 		if (row == column) {
 			EXPECT_EQ(graph.weightedDegree(row) - graph.weight(row, row), value);
 		} else {
