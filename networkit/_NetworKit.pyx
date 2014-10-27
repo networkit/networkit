@@ -4242,6 +4242,68 @@ cdef class DegreeCentrality:
 		"""
 		return self._this.maximum()
 
+# Module: distmeasures
+
+cdef extern from "cpp/distmeasures/AlgebraicDistance.h":
+	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
+		_AlgebraicDistance(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
+		void preprocess() except +
+		double distance(node u, node v) except +
+
+cdef class AlgebraicDistance:
+	"""
+	Algebraic distance assigns a distance value to pairs of nodes
+	according to their structural closeness in the graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	numberSystems : count
+		Number of vectors/systems used for algebraic iteration.
+	numberIterations : count
+		Number of iterations in each system.
+	omega : double, optional
+		Overrelaxation parameter, default: 0.5.
+	norm : index, optional
+		The norm factor of the extended algebraic distance. Maximum norm is realized by setting the norm to 0. Default: 2.
+	"""
+	cdef _AlgebraicDistance* _this
+
+	def __cinit__(self, Graph G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2):
+		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
+
+	def __dealloc__(self):
+		del self._this
+
+	def preprocess(self):
+		"""
+		Starting with random initialization, compute for all numberSystems
+		"diffusion" systems the situation after numberIterations iterations
+		of overrelaxation with overrelaxation parameter omega.
+
+		REQ: Needs to be called before algdist delivers meaningful results!
+		"""
+		self._this.preprocess()
+
+
+	def distance(self, node u, node v):
+		"""
+		Returns the extended algebraic distance between node u and node v in the norm specified in
+		the constructor.
+
+		Parameters
+		----------
+		u : node
+			The first node
+		v : node
+			The second node
+
+		Returns
+		-------
+		Extended algebraic distance between the two nodes.
+		"""
+		return self._this.distance(u, v)
 
 # Module: dynamic
 
