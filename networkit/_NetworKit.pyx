@@ -3066,6 +3066,102 @@ cdef class CommunityGraph:
 		"""
 		return self._this.getNodeToCommunityMap()
 
+# Module: flows
+
+cdef extern from "cpp/flow/EdmondsKarp.h":
+	cdef cppclass _EdmondsKarp "NetworKit::EdmondsKarp":
+		_EdmondsKarp(const _Graph &graph, node source, node sink) except +
+		void run() except +
+		edgeweight getMaxFlow() const
+		vector[node] getSourceSet() except +
+		edgeweight getFlow(node u, node v) except +
+		edgeweight getFlow(edgeid eid) const
+		vector[edgeweight] getFlowVector() except +
+
+cdef class EdmondsKarp:
+	"""
+	The EdmondsKarp class implements the maximum flow algorithm by Edmonds and Karp.
+
+	Parameters
+	----------
+	graph : Graph
+		The graph
+	source : node
+		The source node for the flow calculation
+	sink : node
+		The sink node for the flow calculation
+	"""
+	cdef _EdmondsKarp* _this
+	cdef Graph _graph
+
+	def __cinit__(self, Graph graph not None, node source, node sink):
+		self._graph = graph # store reference of graph for memory management, so the graph is not deallocated before this object
+		self._this = new _EdmondsKarp(graph._this, source, sink)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""
+		Computes the maximum flow, executes the EdmondsKarp algorithm
+		"""
+		self._this.run()
+
+	def getMaxFlow(self):
+		"""
+		Returns the value of the maximum flow from source to sink.
+
+		Returns
+		-------
+		edgeweight
+			The maximum flow value
+		"""
+		return self._this.getMaxFlow()
+
+	def getSourceSet(self):
+		"""
+		Returns the set of the nodes on the source side of the flow/minimum cut.
+
+		Returns
+		-------
+		list
+			The set of nodes that form the (smallest) source side of the flow/minimum cut.
+		"""
+		return self._this.getSourceSet()
+
+	def getFlow(self, node u, node v = none):
+		"""
+		Get the flow value between two nodes u and v or an edge identified by the edge id u.
+		Warning: The variant with two edge ids is linear in the degree of u.
+
+		Parameters
+		----------
+		u : node or edgeid
+			The first node incident to the edge or the edge id
+		v : node
+			The second node incident to the edge (optional if edge id is specified)
+
+		Returns
+		-------
+		edgeweight
+			The flow on the specified edge
+		"""
+		if v == none: # Assume that node and edge ids are the same type
+			return self._this.getFlow(u)
+		else:
+			return self._this.getFlow(u, v)
+
+	def getFlowVector(self):
+		"""
+		Return a copy of the flow values of all edges.
+
+		Returns
+		-------
+		list
+			The flow values of all edges indexed by edge id
+		"""
+		return self._this.getFlowVector()
+
 # Module: properties
 
 # this is an example for using static methods
