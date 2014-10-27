@@ -5097,6 +5097,46 @@ cdef class AdamicAdarAttributizer:
 		"""
 		return self._this.getAttribute(G._this, a)
 
+cdef extern from "cpp/backbones/AlgebraicDistanceAttributizer.h":
+	cdef cppclass _AlgebraicDistanceAttributizer "NetworKit::AlgebraicDistanceAttributizer":
+		_AlgebraicDistanceAttributizer(_AlgebraicDistance &dist) except +
+		vector[double] getAttribute(_Graph G, vector[int] unused) except +
+
+cdef class AlgebraicDistanceAttributizer:
+	"""
+	Generates an edge attribute from algebraic distances.
+
+	Parameters
+	----------
+	algDist : AlgebraicDistance
+		The algebraic distance instance that shall be used
+	"""
+	cdef _AlgebraicDistanceAttributizer* _this
+	cdef AlgebraicDistance _algDist
+
+	def __cinit__(self, AlgebraicDistance algDist):
+		self._this = new _AlgebraicDistanceAttributizer(dereference(algDist._this))
+		self._algDist = algDist # store algDist instance in order to avoid deallocation
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self, Graph G):
+		"""
+		Gets the edge attribute that contains the algebraic distances
+
+		Parameters
+		----------
+		G : Graph
+			The input graph
+
+		Returns
+		-------
+		list
+			The edge attribute that contains the algebraic distances
+		"""
+		return self._this.getAttribute(G._this, vector[int]())
+
 cdef extern from "cpp/backbones/GlobalThresholdFilter.h":
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
 		_GlobalThresholdFilter(double alpha, bool above) except +
