@@ -30,6 +30,7 @@ from . import gephi
 from . import partitioning
 from . import coloring
 from . import workflows
+from . import flow
 
 try:
 	from . import viztools

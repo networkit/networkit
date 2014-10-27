@@ -33,9 +33,6 @@ NetworKit::Partition NetworKit::CutClustering::run(const NetworKit::Graph &G) {
 	// Index edges (needed by Edmonds-Karp implementation)
 	graph.indexEdges();
 
-	// The Edmonds-Karp implementation
-	EdmondsKarp flowAlgo;
-	
 	// sort nodes by degree, this (heuristically) reduces the number of needed cut calculations
 	// bucket sort
 	count n = G.numberOfNodes();
@@ -68,8 +65,9 @@ NetworKit::Partition NetworKit::CutClustering::run(const NetworKit::Graph &G) {
 		// is already in a cluster will always produce a source side that is completely
 		// contained in its cluster
 		if (!result.contains(u)) {
-			std::vector<node> sourceSet;
-			flowAlgo.run(graph, u, t, sourceSet);
+			EdmondsKarp flowAlgo(graph, u, t);
+			flowAlgo.run();
+			std::vector<node> sourceSet(flowAlgo.getSourceSet());
 
 			// all nodes in the source side form a new cluster, this cluster might absorb other clusters
 			for (node v : sourceSet) {
