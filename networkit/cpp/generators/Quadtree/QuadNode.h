@@ -384,6 +384,15 @@ public:
 		return result;
 	}
 
+	count countLeaves() {
+		if (isLeaf) return 1;
+		count result = 0;
+		for (index i = 0; i < children.size(); i++) {
+			result += children[i].countLeaves();
+		}
+		return result;
+	}
+
 	double getLeftAngle() {
 		return leftAngle;
 	}

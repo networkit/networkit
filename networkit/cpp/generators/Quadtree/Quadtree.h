@@ -25,8 +25,8 @@ public:
 		this->maxRadius = 1;
 	}
 
-	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1) {
-		root = QuadNode<T>(0, 0, 2*M_PI, maxR, 1000, 0,theoreticalSplit,alpha);
+	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000) {
+		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha);
 		this->maxRadius = maxR;
 	}
 
@@ -109,10 +109,17 @@ public:
 		return root.height();
 	}
 
+	count countLeaves() {
+		return root.countLeaves();
+	}
+
 	void trim() {
 		root.trim();
 	}
 
+	void resetCounter() {
+		root.resetCounter();
+	}
 
 private:
 	QuadNode<T> root;
