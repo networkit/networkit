@@ -1790,6 +1790,7 @@ cdef extern from "cpp/structures/Partition.h":
 	cdef cppclass _Partition "NetworKit::Partition":
 		_Partition() except +
 		_Partition(index) except +
+		_Partition(_Partition) except +
 		index subsetOf(index e) except +
 		index extend() except +
 		void remove(index e) except +
@@ -1831,7 +1832,7 @@ cdef class Partition:
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, z=0):
+	def __cinit__(self, index z=0):
 		self._this = move(_Partition(z))
 
 	def __len__(self):
@@ -1857,6 +1858,18 @@ cdef class Partition:
 	 		The index of the set in which `e` is contained.
 		"""
 		return self._this.subsetOf(e)
+
+	def __copy__(self):
+		"""
+		Generates a copy of the partition
+		"""
+		return Partition().setThis(_Partition(self._this))
+
+	def __deepcopy__(self):
+		"""
+		Generates a copy of the partition
+		"""
+		return Partition().setThis(_Partition(self._this))
 
 	cdef setThis(self,  _Partition& other):
 		swap[_Partition](self._this,  other)
