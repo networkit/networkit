@@ -66,8 +66,22 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	//sample points randomly
 	HyperbolicSpace::fillPoints(&angles, &radii, stretchradius, alpha);
+	vector<index> permutation(n);
+
+	index p = 0;
+	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+
+	vector<double> anglecopy(n);
+	vector<double> radiicopy(n);
+
+	for (index j = 0; j < n; j++) {
+		anglecopy[j] = angles[permutation[j]];
+		radiicopy[j] = radii[permutation[j]];
+	}
+
 	INFO("Generated Points");
-	return generate(&angles, &radii, r, R*distanceFactor);
+	return generate(anglecopy, radiicopy, r, R*distanceFactor);
 }
 
 double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
@@ -87,18 +101,18 @@ std::map<index, Point<float> > HyperbolicGenerator::getCoordinates(vector<double
 	return result;
 }
 
-Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance) {
+Graph HyperbolicGenerator::generate(vector<double> &angles, vector<double> &radii, double R, double thresholdDistance) {
 	Aux::Timer timer;
 	timer.start();
-	index n = angles->size();
-	assert(radii->size() == n);
+	index n = angles.size();
+	assert(radii.size() == n);
 	Quadtree<index> quad(R);
 
 	//initialize a graph builder for n nodes and an undirected, unweighted graph with direct swap
 	GraphBuilder result(n, false, false, true);
 	for (index i = 0; i < n; i++) {
-		assert(radii->at(i) < R);
-		quad.addContent(i, angles->at(i), radii->at(i));
+		assert(radii[i] < R);
+		quad.addContent(i, angles[i], radii[i]);
 	}
 	quad.trim();
 	timer.stop();
@@ -106,10 +120,10 @@ Graph HyperbolicGenerator::generate(vector<double> * angles, vector<double> * ra
 	timer.start();
 
 	Aux::ProgressMeter progress(n, 1000);
-	#pragma omp parallel for schedule(dynamic, 1000)
+	#pragma omp parallel for schedule(guided, 1000)
 	for (index i = 0; i < n; i++) {
 		//get neighbours for node i
-		vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles->at(i), radii->at(i)), thresholdDistance);
+		vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance);
 		for (index j : near) {
 			if (i != j) {
 				//we add half-edges from both directions at the same time. Due to the symmetry of distances, the correct edges will be formed in parallel without a need for deduplication

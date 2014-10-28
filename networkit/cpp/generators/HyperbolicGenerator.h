@@ -53,7 +53,7 @@ public:
 	 * @param[in] thresholdDistance Edges are added for nodes closer to each other than this threshold
 	 * @return Graph to be generated according to parameters
 	 */
-	static Graph generate(vector<double> * angles, vector<double> * radii, double R, double thresholdDistance);
+	static Graph generate(vector<double> &angles, vector<double> &radii, double R, double thresholdDistance);
 
 	/**
 	 * Convenience function to convert polar coordinates into Cartesian coordinates
