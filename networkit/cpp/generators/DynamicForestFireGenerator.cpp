@@ -16,7 +16,7 @@ namespace NetworKit {
 
 typedef std::function<std::vector<node>(node)> neighborFunction;
 
-DynamicForestFireGenerator::DynamicForestFireGenerator(double p, bool directed, double r) :p(p), directed(directed), firstCall(true) {
+DynamicForestFireGenerator::DynamicForestFireGenerator(double p, bool directed, double r) :p(p), directed(directed), r(r), firstCall(true) {
 	G = Graph(0, false, directed);
 }
 
