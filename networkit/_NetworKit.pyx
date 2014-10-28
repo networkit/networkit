@@ -2668,7 +2668,10 @@ cdef class PLP(CommunityDetector):
 	 	Partition
 	 		The created clustering.
 		"""
-		return Partition().setThis(self._this.run(G._this))
+		# Work on a local copy as PLP::runFromGiven works on the input
+		cdef _Partition algInput = part._this
+		self._this.runFromGiven(G._this, algInput)
+		return Partition().setThis(algInput)
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
