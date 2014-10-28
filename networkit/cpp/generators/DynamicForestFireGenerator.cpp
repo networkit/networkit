@@ -121,11 +121,12 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 	};
 
 	// initial graph
-	if (firstCall) {
+	if (firstCall && nSteps > 0) {
 		node s = G.addNode();
 	 	stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, s));
 		stream.push_back(GraphEvent(GraphEvent::TIME_STEP));
 		firstCall = false;
+		--nSteps;
 	}
 
 
