@@ -14,7 +14,6 @@
 namespace NetworKit {
 
 /**
- * @ingroup scd
  * Computes an approximate PageRank vector from a given seed.
  */
 class ApproximatePageRank {
@@ -37,8 +36,8 @@ public:
 	 * @param alpha Loop probability of random walk.
 	 * @param epsilon Error tolerance.
 	 */
-	ApproximatePageRank(Graph& g, double alpha, double epsilon = 1e-12);
-
+	ApproximatePageRank(const Graph& g, double alpha, double epsilon = 1e-12);
+	virtual ~ApproximatePageRank();
 
 	/**
 	 * @return Approximate PageRank vector from @a seed with parameters
