@@ -1374,7 +1374,7 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 		_Graph generate() except +
 
 cdef class HyperbolicGenerator:
-	""" The Hyperbolic Generator uses the poincaré disc of hyperbolic space.
+	""" The Hyperbolic Generator can be described as a unit-disk model in hyperbolic space. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
 
  		HyperbolicGenerator(n, distanceFactor=1, alpha=1, stretchradius=1)
 
@@ -1383,11 +1383,11 @@ cdef class HyperbolicGenerator:
 		n : integer
 			number of nodes
 		distanceFactor : double
-			scale distance threshold
+			scale distance threshold. The number of edges grows exponentially with a higher threshold
 		alpha : double
-			move points to boundary or to center?
+			dispersion parameter governing whether points are moved to the boundary or the center. The power-law exponent of the degree distribution is 2*alpha+1.
 		stretchradius : double
-			parameter governing stretch of nodes
+			parameter governing stretch of nodes. The number of edges decreases exponentially with a higher stretch
 			
 	"""
 
@@ -4594,8 +4594,27 @@ cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 cdef class DynamicHyperbolicGenerator:
 	cdef _DynamicHyperbolicGenerator* _this
 
-	def __cinit__(self, numNodes, initialFactor, alpha, stretch, moveEachStep, factorGrowth, moveDistance):
-		self._this = new _DynamicHyperbolicGenerator(numNodes, initialFactor, alpha, stretch, moveEachStep, factorGrowth, moveDistance)
+	def __cinit__(self, numNodes, initialFactor, alpha, stretch, moveFraction, factorGrowth, moveDistance):
+		""" Dynamic graph generator according to the hyperbolic unit disk model.
+
+		Parameters
+		----------
+		numNodes : count
+			number of nodes
+		initialFactor : double
+			initial value of thresholdFactor
+		alpha : double
+			point dispersion parameter, remaining fixed
+		stretch : double
+			multiplier for the hyperbolic disk, remaining fixed
+		moveFraction : double
+			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
+		factorGrowth : double
+			increment added to the value of thresholdFactor at each step
+		moveDistance: double
+			base value for the node movements
+		"""
+		self._this = new _DynamicHyperbolicGenerator(numNodes, initialFactor, alpha, stretch, moveFraction, factorGrowth, moveDistance)
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -4611,9 +4630,11 @@ cdef class DynamicHyperbolicGenerator:
 		return Graph().setThis(self._this.getGraph())
 
 	def getCoordinates(self):
+		""" Get coordinates in the Poincare disk"""
 		return [(p[0], p[1]) for p in self._this.getCoordinates()]
 
 	def getHyperbolicCoordinates(self):
+		""" Get coordinates in the hyperbolic disk"""
 		return [(p[0], p[1]) for p in self._this.getHyperbolicCoordinates()]
 
 
