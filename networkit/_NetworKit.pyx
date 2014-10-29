@@ -549,6 +549,7 @@ cdef class Graph:
 
 	def getCoordinate(self, v):
 		""" Get the coordinates of node v.
+
 		Parameters
 		----------
 		v : node
@@ -564,6 +565,7 @@ cdef class Graph:
 
 	def setCoordinate(self, v, value):
 		""" Set the coordinates of node v.
+
 		Parameters
 		----------
 		v : node
@@ -571,6 +573,7 @@ cdef class Graph:
 		value : pair[float, float]
 			x and y coordinates of v.
 		"""
+
 		cdef Point[float] p = Point[float](value[0], value[1])
 		self._this.setCoordinate(v, p)
 
@@ -1364,6 +1367,44 @@ cdef class HavelHakimiGenerator:
 		"""
 		return Graph(0).setThis(self._this.generate())
 
+cdef extern from "cpp/generators/HyperbolicGenerator.h":
+	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
+		# TODO: revert to count when cython issue fixed
+		_HyperbolicGenerator(unsigned int nodes,  double distanceFactor, double alpha, double stretch) except +
+		_Graph generate() except +
+
+cdef class HyperbolicGenerator:
+	""" The Hyperbolic Generator uses the poincaré disc of hyperbolic space.
+
+ 		HyperbolicGenerator(n, distanceFactor=1, alpha=1, stretchradius=1)
+
+ 		Parameters
+		----------
+		n : integer
+			number of nodes
+		distanceFactor : double
+			scale distance threshold
+		alpha : double
+			move points to boundary or to center?
+		stretchradius : double
+			parameter governing stretch of nodes
+			
+	"""
+
+	cdef _HyperbolicGenerator* _this
+
+	def __cinit__(self,  n, distanceFactor=1, alpha=1, stretchradius=1):		
+		self._this = new _HyperbolicGenerator(n, distanceFactor, alpha, stretchradius)
+
+	def generate(self):
+		""" Generates graph from hyperbolic geometry
+
+		Returns
+		-------
+		Graph
+		
+		"""
+		return Graph(0).setThis(self._this.generate())
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
@@ -1444,6 +1485,14 @@ cdef class EdgeListReader:
 	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
 		use readGraph(path, graphio.formats.metis) as an alternative.
 		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+
+		Parameters
+		----------
+		separator : string
+			separator when parsing file
+		firstNode : index
+			first node index in graph.
+
 	"""
 	cdef _EdgeListReader _this
 
@@ -1471,6 +1520,13 @@ cdef class KONECTGraphReader:
 	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
 
 		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
+
+		Parameters
+		----------
+		separator : string
+			separator when parsing file
+		ignoreLoops : boolean
+			set to false in default
 	"""
 	cdef _KONECTGraphReader _this
 
@@ -4525,7 +4581,40 @@ cdef class DynamicPubWebGenerator:
 	def getGraph(self):
 		return Graph().setThis(self._this.getGraph())
 
+cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
+	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
+		_DynamicHyperbolicGenerator(count numNodes, double initialFactor,
+			double alpha, double stretch, double moveEachStep, double factorGrowth, double moveDistance) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
+		vector[Point[float]] getCoordinates() except +
+		vector[Point[float]] getHyperbolicCoordinates() except +
 
+
+cdef class DynamicHyperbolicGenerator:
+	cdef _DynamicHyperbolicGenerator* _this
+
+	def __cinit__(self, numNodes, initialFactor, alpha, stretch, moveEachStep, factorGrowth, moveDistance):
+		self._this = new _DynamicHyperbolicGenerator(numNodes, initialFactor, alpha, stretch, moveEachStep, factorGrowth, moveDistance)
+
+	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+	def getGraph(self):
+		return Graph().setThis(self._this.getGraph())
+
+	def getCoordinates(self):
+		return [(p[0], p[1]) for p in self._this.getCoordinates()]
+
+	def getHyperbolicCoordinates(self):
+		return [(p[0], p[1]) for p in self._this.getHyperbolicCoordinates()]
 
 
 
