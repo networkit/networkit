@@ -54,7 +54,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 		Point2D<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
 		DEBUG("Using ", comparison, " at (", angles[comparison], ",", radii[comparison], ") as query point");
 
-		vector<index> closeToOne = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]), R);
+		vector<index> closeToOne = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]), R);
 		EXPECT_LE(closeToOne.size(), n);
 
 		for (index i = 0; i < closeToOne.size(); i++) {
@@ -137,7 +137,7 @@ TEST_F(QuadTreeTest, testQuadTreeQuery) {
 		if (query == n) query--;
 		vector<index> lastNeighbours;
 		for (double threshold = 0; threshold < R; threshold += 0.01) {
-			vector<index> neighbours = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), threshold);
+			vector<index> neighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), threshold);
 			EXPECT_GE(neighbours.size(), lastNeighbours.size());
 			if (neighbours.size() < lastNeighbours.size()) {
 				DEBUG("Previous Neighbours: ");
@@ -154,6 +154,9 @@ TEST_F(QuadTreeTest, testQuadTreeQuery) {
 	}
 }
 
+/**
+ * Insert nodes into Quadtree and successively delete all of them, check if resulting tree is empty
+ */
 TEST_F(QuadTreeTest, testQuadTreeDeletion) {
 	count n = 1000;
 	double R = acosh((double)n/(2*M_PI)+1);
@@ -181,108 +184,119 @@ TEST_F(QuadTreeTest, testQuadTreeDeletion) {
 	}
 
 	while(indices.size() > 0) {
+		//pick random point which is not yet deleted
 		index toRemove = Aux::Random::integer(indices.size());
 		if (toRemove == indices.size()) toRemove--;
 		assert(toRemove < indices.size());
 		assert(toRemove >= 0);
+
+		//remove content at point
 		EXPECT_EQ(quad.size(), indices.size());
 		bool removed = quad.removeContent(indices[toRemove], angles[toRemove], radii[toRemove]);
 		EXPECT_TRUE(removed);
 		EXPECT_EQ(quad.size(), indices.size()-1);
+
+		//removing twice should not work
 		bool removedTwice = quad.removeContent(indices[toRemove], angles[toRemove], radii[toRemove]);
 		EXPECT_FALSE(removedTwice);
 		EXPECT_EQ(quad.size(), indices.size()-1);
+
+		//mark point as removed in query list
 		indices.erase(indices.begin()+toRemove);
 		angles.erase(angles.begin()+toRemove);
 		radii.erase(radii.begin()+toRemove);
 	}
 
 	QuadNode<index> root = getRoot(quad);
-	EXPECT_EQ(getChildren(root).size(), 0);//root is leaf node, coarsening worked.
+	//if root is leaf node, the coarsening worked
+	EXPECT_EQ(getChildren(root).size(), 0);
 }
 
 TEST_F(QuadTreeTest, testEuclideanCircle) {
-		count n = 1000;
-		double R = 1;
-		vector<double> angles(n);
-		vector<double> radii(n);
-		HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
-		double max = 0;
-		for (index i = 0; i < n; i++) {
-			if (radii[i] > max) {
-				max = radii[i];
-			}
+	count n = 1000;
+	double R = 1;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	double max = 0;
+	for (index i = 0; i < n; i++) {
+		if (radii[i] > max) {
+			max = radii[i];
 		}
-		Quadtree<index> quad(max+(1-max)/4);
+	}
+	Quadtree<index> quad(max+(1-max)/4);
 
-		for (index i = 0; i < n; i++) {
-			EXPECT_GE(angles[i], 0);
-			EXPECT_LT(angles[i], 2*M_PI);
-			EXPECT_GE(radii[i], 0);
-			EXPECT_LT(radii[i], R);
-			TRACE("Added (", angles[i], ",", radii[i], ")");
-			quad.addContent(i, angles[i], radii[i]);
-		}
-		vector<index> all = quad.getElements();
-		EXPECT_EQ(all.size(), n);
-		QuadNode<index> root = getRoot(quad);
-		for (index i = 0; i < 100; i++) {
-			index comparison = Aux::Random::integer(n);
-			Point2D<double> origin;
-			Point2D<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
-			double radius = Aux::Random::real(1);//this may overshoot the poincaré disc, this is intentional. I want to know what happens
-			double minR = query.length() - radius;
-			double maxR = query.length() + radius;
-			double minPhi, maxPhi, phi_c, r_c, spread;
-			if (minR < 0) {
-				maxR = std::max(abs(minR), maxR);
-				minR = 0;
-				minPhi = 0;
-				maxPhi = 2*M_PI;
-			} else {
-				spread = asin(radius / query.length());
-				HyperbolicSpace::cartesianToPolar(query, phi_c, r_c);
-				minPhi = phi_c - spread;
-				maxPhi = phi_c + spread;
-				/**
-				 * what to do if they overlap the 2\pi line? Well, have to make two separate calls and collect
-				 */
-			}
-
+	for (index i = 0; i < n; i++) {
+		EXPECT_GE(angles[i], 0);
+		EXPECT_LT(angles[i], 2*M_PI);
+		EXPECT_GE(radii[i], 0);
+		EXPECT_LT(radii[i], R);
+		TRACE("Added (", angles[i], ",", radii[i], ")");
+		quad.addContent(i, angles[i], radii[i]);
+	}
+	vector<index> all = quad.getElements();
+	EXPECT_EQ(all.size(), n);
+	QuadNode<index> root = getRoot(quad);
+	for (index i = 0; i < 100; i++) {
+		index comparison = Aux::Random::integer(n);
+		Point2D<double> origin;
+		Point2D<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
+		double radius = Aux::Random::real(1);//this may overshoot the poincaré disc, this is intentional. I want to know what happens
+		double minR = query.length() - radius;
+		double maxR = query.length() + radius;
+		double minPhi, maxPhi, phi_c, r_c, spread;
+		if (minR < 0) {
+			maxR = std::max(abs(minR), maxR);
+			minR = 0;
+			minPhi = 0;
+			maxPhi = 2*M_PI;
+		} else {
+			spread = asin(radius / query.length());
+			HyperbolicSpace::cartesianToPolar(query, phi_c, r_c);
+			minPhi = phi_c - spread;
+			maxPhi = phi_c + spread;
 			/**
-			 * get Elements in Circle
+			 * what to do if they overlap the 2\pi line? Well, have to make two separate calls and collect
 			 */
+		}
 
-			vector<index> circleDenizens;
+		/**
+		 * get Elements in Circle
+		 */
 
-			root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, query, radius, circleDenizens);
-			if (minPhi < 0) {
-				root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, query, radius, circleDenizens);
-			}
-			if (maxPhi > 2*M_PI) {
-				root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, query, radius, circleDenizens);
-			}
+		vector<index> circleDenizens;
 
-			for (index j = 0; j < n; j++) {
-				Point2D<double> comp = HyperbolicSpace::polarToCartesian(angles[j], radii[j]);
-				double dist = comp.distance(query);
-				if (dist < radius) {
-					bool found = false;
-					for (index k = 0; k < circleDenizens.size(); k++) {
-						if (circleDenizens[k] == j) {
-							found = true;
-						}
+		root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, query, radius, circleDenizens);
+		if (minPhi < 0) {
+			root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, query, radius, circleDenizens);
+		}
+		if (maxPhi > 2*M_PI) {
+			root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, query, radius, circleDenizens);
+		}
+
+		for (index j = 0; j < n; j++) {
+			Point2D<double> comp = HyperbolicSpace::polarToCartesian(angles[j], radii[j]);
+			double dist = comp.distance(query);
+			if (dist < radius) {
+				bool found = false;
+				for (index k = 0; k < circleDenizens.size(); k++) {
+					if (circleDenizens[k] == j) {
+						found = true;
 					}
-					EXPECT_TRUE(found)<< "dist(" << j << "," << comparison << ") = "
-							<< dist << " < " << radius;
-					if (!found) {
-						DEBUG("angle: ", angles[j], ", radius: ", radii[j]);
-					}
+				}
+				EXPECT_TRUE(found)<< "dist(" << j << "," << comparison << ") = "
+						<< dist << " < " << radius;
+				if (!found) {
+					DEBUG("angle: ", angles[j], ", radius: ", radii[j]);
 				}
 			}
 		}
+	}
 }
 
+/**
+ * Test whether the theoretical splitting rules for different point distributions succeed in creating a balanced tree
+ */
 TEST_F(QuadTreeTest, testQuadTreeBalance) {
 	count n = 100000;
 	double s =1;
@@ -380,7 +394,7 @@ TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
 		for (index e = 0; e < trials; e++) {
 			index q = Aux::Random::integer(n);
 			quad.resetCounter();
-			vector<index> neighbours = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
+			vector<index> neighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
 			QuadNode<index> root = getRoot(quad);
 			count included = root.countIncluded();
 			count cut = root.countCut();
@@ -437,7 +451,7 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	for (index e = 0; e < trials; e++) {
 		index q = Aux::Random::integer(n);
 		quad.resetCounter();
-		vector<index> neighbours = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
+		vector<index> neighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
 		QuadNode<index> root = getRoot(quad);
 		count included = root.countIncluded();
 		count cut = root.countCut();

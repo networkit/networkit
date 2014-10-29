@@ -114,7 +114,7 @@ Graph HyperbolicGenerator::generate(vector<double> &angles, vector<double> &radi
 	#pragma omp parallel for schedule(guided, 1000)
 	for (index i = 0; i < n; i++) {
 		//get neighbours for node i
-		vector<index> near = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance);
+		vector<index> near = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance);
 		for (index j : near) {
 			if (i != j) {
 				//we add half-edges from both directions at the same time. Due to the symmetry of distances, the correct edges will be formed in parallel without a need for deduplication

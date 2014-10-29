@@ -25,6 +25,12 @@ public:
 		this->maxRadius = 1;
 	}
 
+	/**
+	 * @param maxR radius of the managed area. Must be smaller than 1.
+	 * @param theoreticalSplit if true, split cells to get the same area in each child cell. Default is false
+	 * @param alpha dispersion parameter of the point distribution. Only has an effect if theoretical split is true
+	 * @param capacity how many points can inhabit a leaf cell before it is split up?
+	 */
 	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000) {
 		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha);
 		this->maxRadius = maxR;
@@ -34,25 +40,46 @@ public:
 
 	}
 
-	void addContent(T newcomer, double angle, double R) {
-		root.addContent(newcomer, angle, R);
+	/**
+	 * @param newcomer content to be added at point x
+	 * @param angle angular coordinate of x
+	 * @param R radial coordinate of x
+	 */
+	void addContent(T newcomer, double angle, double r) {
+		root.addContent(newcomer, angle, r);
 	}
 
-	bool removeContent(T toRemove, double angle, double R) {
-		return root.removeContent(toRemove, angle, R);
+	/**
+	 * @param newcomer content to be removed at point x
+	 * @param angle angular coordinate of x
+	 * @param R radial coordinate of x
+	 */
+	bool removeContent(T toRemove, double angle, double r) {
+		return root.removeContent(toRemove, angle, r);
 	}
 
+	/**
+	 * Get all elements, regardless of position
+	 *
+	 * @return vector<T> of elements
+	 */
 	vector<T> getElements() {
 		return root.getElements();
 	}
 
-	vector<T> getCloseElements(Point2D<double> query, double maxDistance) {
+	/**
+	 * Get elements whose hyperbolic distance to the query point is less than maxDistance
+	 *
+	 * @param circleCenter
+	 * @param hyperbolicRadius
+	 */
+	vector<T> getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius) {
 		Point2D<double> origin(0,0);
 		vector<T> circleDenizens;
 		Point2D<double> center;
 
 		double minPhi, maxPhi, radius;
-		HyperbolicSpace::getEuclideanCircle(query, maxDistance, center, radius);
+		HyperbolicSpace::getEuclideanCircle(circleCenter, hyperbolicRadius, center, radius);
 		double minR = center.length() - radius;
 		double maxR = center.length() + radius;
 		//assert(maxR < 1);//this looks fishy
@@ -113,10 +140,16 @@ public:
 		return root.countLeaves();
 	}
 
+	/**
+	 * trims the vectors used to hold the content in the leaf cells. Reduces memory usage, makes changes slower
+	 */
 	void trim() {
 		root.trim();
 	}
 
+	/**
+	 * Reset the counters of necessary and unnecessary comparisons.
+	 */
 	void resetCounter() {
 		root.resetCounter();
 	}
