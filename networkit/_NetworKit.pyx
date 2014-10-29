@@ -28,6 +28,11 @@ ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
 
+cdef extern from "cpp/Globals.h" namespace "NetworKit":
+	index _none "NetworKit::none"
+
+none = _none
+
 cdef extern from "<algorithm>" namespace "std":
 	void swap[T](T &a,  T &b)
 	_Graph move( _Graph t ) # specialized declaration as general declaration disables template argument deduction and doesn't work
@@ -1232,6 +1237,7 @@ cdef extern from "cpp/generators/ClusteredRandomGraphGenerator.h":
 	cdef cppclass _ClusteredRandomGraphGenerator "NetworKit::ClusteredRandomGraphGenerator":
 		_ClusteredRandomGraphGenerator(count, count, double, double) except +
 		_Graph generate() except +
+		_Partition getCommunities() except +
 
 cdef class ClusteredRandomGraphGenerator:
 	""" The ClusteredRandomGraphGenerator class is used to create a clustered random graph.
@@ -1269,6 +1275,16 @@ cdef class ClusteredRandomGraphGenerator:
 			The generated graph.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	def getCommunities(self):
+		""" Returns the generated ground truth clustering.
+
+		Returns
+		-------
+		Partition
+			The generated ground truth clustering.
+		"""
+		return Partition().setThis(self._this.getCommunities())
 
 
 cdef extern from "cpp/generators/ChungLuGenerator.h":
@@ -1830,6 +1846,7 @@ cdef extern from "cpp/structures/Partition.h":
 	cdef cppclass _Partition "NetworKit::Partition":
 		_Partition() except +
 		_Partition(index) except +
+		_Partition(_Partition) except +
 		index subsetOf(index e) except +
 		index extend() except +
 		void remove(index e) except +
@@ -1871,7 +1888,7 @@ cdef class Partition:
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, z=0):
+	def __cinit__(self, index z=0):
 		self._this = move(_Partition(z))
 
 	def __len__(self):
@@ -1898,15 +1915,21 @@ cdef class Partition:
 		"""
 		return self._this.subsetOf(e)
 
+	def __copy__(self):
+		"""
+		Generates a copy of the partition
+		"""
+		return Partition().setThis(_Partition(self._this))
+
+	def __deepcopy__(self):
+		"""
+		Generates a copy of the partition
+		"""
+		return Partition().setThis(_Partition(self._this))
+
 	cdef setThis(self,  _Partition& other):
 		swap[_Partition](self._this,  other)
 		return self
-
-	def __cinit__(self, size=None):
-		if size is None:
-			self._this = _Partition()
-		else:
-			self._this = _Partition(size)
 
 	def subsetOf(self, e):
 		""" Get the set (id) in which the element `e` is contained.
@@ -2701,7 +2724,10 @@ cdef class PLP(CommunityDetector):
 	 	Partition
 	 		The created clustering.
 		"""
-		return Partition().setThis(self._this.run(G._this))
+		# Work on a local copy as PLP::runFromGiven works on the input
+		cdef _Partition algInput = part._this
+		self._this.runFromGiven(G._this, algInput)
+		return Partition().setThis(algInput)
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
@@ -3112,6 +3138,102 @@ cdef class CommunityGraph:
 		"""
 		return self._this.getNodeToCommunityMap()
 
+# Module: flows
+
+cdef extern from "cpp/flow/EdmondsKarp.h":
+	cdef cppclass _EdmondsKarp "NetworKit::EdmondsKarp":
+		_EdmondsKarp(const _Graph &graph, node source, node sink) except +
+		void run() except +
+		edgeweight getMaxFlow() const
+		vector[node] getSourceSet() except +
+		edgeweight getFlow(node u, node v) except +
+		edgeweight getFlow(edgeid eid) const
+		vector[edgeweight] getFlowVector() except +
+
+cdef class EdmondsKarp:
+	"""
+	The EdmondsKarp class implements the maximum flow algorithm by Edmonds and Karp.
+
+	Parameters
+	----------
+	graph : Graph
+		The graph
+	source : node
+		The source node for the flow calculation
+	sink : node
+		The sink node for the flow calculation
+	"""
+	cdef _EdmondsKarp* _this
+	cdef Graph _graph
+
+	def __cinit__(self, Graph graph not None, node source, node sink):
+		self._graph = graph # store reference of graph for memory management, so the graph is not deallocated before this object
+		self._this = new _EdmondsKarp(graph._this, source, sink)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""
+		Computes the maximum flow, executes the EdmondsKarp algorithm
+		"""
+		self._this.run()
+
+	def getMaxFlow(self):
+		"""
+		Returns the value of the maximum flow from source to sink.
+
+		Returns
+		-------
+		edgeweight
+			The maximum flow value
+		"""
+		return self._this.getMaxFlow()
+
+	def getSourceSet(self):
+		"""
+		Returns the set of the nodes on the source side of the flow/minimum cut.
+
+		Returns
+		-------
+		list
+			The set of nodes that form the (smallest) source side of the flow/minimum cut.
+		"""
+		return self._this.getSourceSet()
+
+	def getFlow(self, node u, node v = none):
+		"""
+		Get the flow value between two nodes u and v or an edge identified by the edge id u.
+		Warning: The variant with two edge ids is linear in the degree of u.
+
+		Parameters
+		----------
+		u : node or edgeid
+			The first node incident to the edge or the edge id
+		v : node
+			The second node incident to the edge (optional if edge id is specified)
+
+		Returns
+		-------
+		edgeweight
+			The flow on the specified edge
+		"""
+		if v == none: # Assume that node and edge ids are the same type
+			return self._this.getFlow(u)
+		else:
+			return self._this.getFlow(u, v)
+
+	def getFlowVector(self):
+		"""
+		Return a copy of the flow values of all edges.
+
+		Returns
+		-------
+		list
+			The flow values of all edges indexed by edge id
+		"""
+		return self._this.getFlowVector()
+
 # Module: properties
 
 # this is an example for using static methods
@@ -3319,6 +3441,7 @@ cdef class StronglyConnectedComponents:
 cdef extern from "cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
 		vector[double] exactLocal(_Graph G) except +
 		double avgLocal(_Graph G) except +
+		double sequentialAvgLocal(_Graph G) except +
 		double approxAvgLocal(_Graph G, count trials) except +
 		double exactGlobal(_Graph G) except +
 		double approxGlobal(_Graph G, count trials) except +
@@ -3348,6 +3471,26 @@ cdef class ClusteringCoefficient:
 
 		"""
 		return avgLocal(G._this)
+
+	@staticmethod
+	def sequentialAvgLocal(Graph G):
+		""" This calculates the average local clustering coefficient of graph `G` using inherently sequential triangle counting.
+		Parameters
+		----------
+		G : Graph
+			The graph.
+
+		Notes
+		-----
+
+		.. math:: c(G) := \\frac{1}{n} \sum_{u \in V} c(u)
+
+		where
+
+		.. math:: c(u) := \\frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}
+
+		"""
+		return sequentialAvgLocal(G._this)
 
 	@staticmethod
 	def approxAvgLocal(Graph G, trials):
@@ -4171,6 +4314,68 @@ cdef class DegreeCentrality:
 		"""
 		return self._this.maximum()
 
+# Module: distmeasures
+
+cdef extern from "cpp/distmeasures/AlgebraicDistance.h":
+	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
+		_AlgebraicDistance(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
+		void preprocess() except +
+		double distance(node u, node v) except +
+
+cdef class AlgebraicDistance:
+	"""
+	Algebraic distance assigns a distance value to pairs of nodes
+	according to their structural closeness in the graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	numberSystems : count
+		Number of vectors/systems used for algebraic iteration.
+	numberIterations : count
+		Number of iterations in each system.
+	omega : double, optional
+		Overrelaxation parameter, default: 0.5.
+	norm : index, optional
+		The norm factor of the extended algebraic distance. Maximum norm is realized by setting the norm to 0. Default: 2.
+	"""
+	cdef _AlgebraicDistance* _this
+
+	def __cinit__(self, Graph G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2):
+		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
+
+	def __dealloc__(self):
+		del self._this
+
+	def preprocess(self):
+		"""
+		Starting with random initialization, compute for all numberSystems
+		"diffusion" systems the situation after numberIterations iterations
+		of overrelaxation with overrelaxation parameter omega.
+
+		REQ: Needs to be called before algdist delivers meaningful results!
+		"""
+		self._this.preprocess()
+
+
+	def distance(self, node u, node v):
+		"""
+		Returns the extended algebraic distance between node u and node v in the norm specified in
+		the constructor.
+
+		Parameters
+		----------
+		u : node
+			The first node
+		v : node
+			The second node
+
+		Returns
+		-------
+		Extended algebraic distance between the two nodes.
+		"""
+		return self._this.distance(u, v)
 
 # Module: dynamic
 

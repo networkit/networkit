@@ -12,10 +12,9 @@
 
 #include "gtest/gtest.h"
 #include "../Matrix.h"
-#include "../LaplacianMatrix.h"
-#include "../NormalizedLaplacianMatrix.h"
-#include "../IncidenceMatrix.h"
 #include "../../graph/Graph.h"
+#include "../../io/METISGraphReader.h"
+#include "../AdjacencyMatrix.h"
 #include <math.h>
 #include <vector>
 #include <utility>

@@ -30,6 +30,8 @@ from . import gephi
 from . import partitioning
 from . import coloring
 from . import workflows
+from . import flow
+from . import distmeasures
 
 try:
 	from . import viztools
@@ -51,7 +53,7 @@ except ImportError as importError:
 # TODO: introduce settings module
 
 # extension imports
-from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
+from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none
 
 # local imports
 from .graph import Graph

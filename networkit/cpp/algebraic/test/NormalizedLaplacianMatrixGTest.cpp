@@ -68,7 +68,7 @@ TEST(NormalizedLaplacianMatrixGTest, testNormalizedLaplacianMatrixOfLesmisGraph)
 	// create NormalizedLaplacianMatrix
 	NormalizedLaplacianMatrix mat(graph);
 
-	mat.forElementsInRowOrder([&](const index row, const index column, const double value){
+	mat.forNonZeroElementsInRowOrder([&](const index row, const index column, const double value){
 		if (row == column) {
 			if (graph.weightedDegree(row) != 0) {
 				if (graph.isWeighted()) {
