@@ -17,13 +17,15 @@ namespace NetworKit {
 
 QuadTreeTest::QuadTreeTest() {
 	// TODO Auto-generated constructor stub
-
 }
 
 QuadTreeTest::~QuadTreeTest() {
 	// TODO Auto-generated destructor stub
 }
 
+/**
+ * Test whether the elements returned by a quadtree range query are indeed those whose hyperbolic distance to the query point is below a threshold
+ */
 TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	count n = 1000;
 	double R = 1;
@@ -106,8 +108,11 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	}
 }
 
+/**
+ * Gradually increase the distance threshold and check whether the number of neighbours increases monotonically. Necessary foundation for the dynamic hyperbolic generator.
+ */
 TEST_F(QuadTreeTest, testQuadTreeQuery) {
-	count n = 10;
+	count n = 100;
 	double R = acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
 	vector<double> radii(n);
@@ -212,6 +217,9 @@ TEST_F(QuadTreeTest, testQuadTreeDeletion) {
 	EXPECT_EQ(getChildren(root).size(), 0);
 }
 
+/**
+ * Test whether the points found by a Euclidean range query on the quadtree root are exactly those whose Euclidean distance to the query point is smaller than the threshold.
+ */
 TEST_F(QuadTreeTest, testEuclideanCircle) {
 	count n = 1000;
 	double R = 1;
@@ -365,6 +373,9 @@ TEST_F(QuadTreeTest, testQuadTreeBalance) {
 	}
 }
 
+/**
+ * No testing yet, just debug output
+ */
 TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
 	count n = 1000000;
 	count trials = 20;
@@ -424,6 +435,9 @@ TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
 	}
 }
 
+/**
+ * No testing yet, just debug output
+ */
 TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	count n = 100000;
 	count trials = 20;
