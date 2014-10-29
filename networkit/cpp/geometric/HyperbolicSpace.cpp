@@ -96,11 +96,11 @@ void HyperbolicSpace::getEuclideanCircle(Point2D<double> hyperbolicCenter, doubl
 	euclideanCenter = HyperbolicSpace::polarToCartesian(phi_h, r_c);
 }
 
-void HyperbolicSpace::getEuclideanCircle(double r_h, double hyperbolicRadius, double &euclideanCenter, double &euclideanRadius) {
+void HyperbolicSpace::getEuclideanCircle(double r_h, double hyperbolicRadius, double &radialCoordOfEuclideanCenter, double &euclideanRadius) {
 	double a = cosh(hyperbolicRadius)-1;
 	double b = 1-(r_h*r_h);
-	euclideanCenter = (2*r_h)/(b*a+2);
-	euclideanRadius = sqrt(euclideanCenter*euclideanCenter - (2*r_h*r_h - b*a)/(b*a+2));
+	radialCoordOfEuclideanCenter = (2*r_h)/(b*a+2);
+	euclideanRadius = sqrt(radialCoordOfEuclideanCenter*radialCoordOfEuclideanCenter - (2*r_h*r_h - b*a)/(b*a+2));
 }
 
 double HyperbolicSpace::hyperbolicRadiusToEuclidean(double hyperbolicRadius) {
@@ -149,9 +149,6 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 		return result;
 	};
 
-	/**
-	 * Maybe the denominator can be omitted, atan2 is probably the same.
-	 */
 	auto firstlogpart = [](double r, double d, double c) {
 		double s = (c*c-d*d);
 		//double denominator = r*r*s*s;

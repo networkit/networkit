@@ -32,7 +32,7 @@ public:
 
 	/**
 	 * @param[in] n Number of nodes
-	 * @param[in] m Number of edges
+	 * @param[in] m Target number of edges
 	 */
 	HyperbolicGenerator(count n, count m);
 
@@ -62,6 +62,7 @@ public:
 	 * @return Graph to be generated according to parameters
 	 */
 	Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1);
+
 	/**
 	 * @return Graph to be generated according to parameters specified in constructor.
 	 */

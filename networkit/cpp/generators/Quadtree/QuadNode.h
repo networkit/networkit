@@ -48,10 +48,11 @@ private:
 
 public:
 	QuadNode() {
+		//This should never be called.
 		leftAngle = 0;
 		rightAngle = 2*M_PI;
 		minR = 0;
-		maxR = 1;//TODO: magic Number, careful.
+		maxR = 1;
 		capacity = 20;
 		isLeaf = true;
 		minRegion = 0;

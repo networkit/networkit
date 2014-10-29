@@ -153,9 +153,9 @@ void DynamicHyperbolicGenerator::getEventsFromFactorGrowth(vector<GraphEvent> &r
 	#pragma omp parallel for
 	for (index i = 0; i < nodes; i++) {
 		assert(R*newfactor > R*currentfactor);
-		vector<index> oldset = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor);
+		vector<index> oldset = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor);
 		//we only add new edges, don't remove any. The order of the points should be the same
-		vector<index> newset = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*newfactor);
+		vector<index> newset = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*newfactor);
 		assert(newset.size() >= oldset.size());
 		std::sort(oldset.begin(), oldset.end());
 		std::sort(newset.begin(), newset.end());
@@ -189,7 +189,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	for (index i = 0; i < nodes; i++) {
 		if (Aux::Random::real(1) < moveEachStep) {
 			toWiggle.push_back(i);
-			oldNeighbours.push_back(quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor));
+			oldNeighbours.push_back(quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor));
 		}
 	}
 	/**
@@ -255,7 +255,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	//now get the new edges and see what changed
 	#pragma omp parallel for
 	for (index j = 0; j < toWiggle.size(); j++) {
-		vector<index> newNeighbours = quad.getCloseElements(HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]), R*currentfactor);
+		vector<index> newNeighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]), R*currentfactor);
 		std::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
 		std::sort(newNeighbours.begin(), newNeighbours.end());
 		vector<index> newEdges(newNeighbours.size());
