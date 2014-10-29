@@ -86,7 +86,7 @@ public:
 	void addContent(T input, double angle, double R) {
 		assert(this->responsible(angle, R));
 		if (isLeaf) {
-			if (content.size() + 1 < capacity ||  HyperbolicSpace::getHyperbolicDistance(leftAngle, minR, rightAngle, maxR) < minRegion) {
+			if (content.size() + 1 < capacity ||  HyperbolicSpace::poincareMetric(leftAngle, minR, rightAngle, maxR) < minRegion) {
 				content.push_back(input);
 				angles.push_back(angle);
 				radii.push_back(R);
@@ -291,15 +291,15 @@ public:
 			return;
 		}
 
-		double rsq = radius*radius;
-
 		if (isLeaf) {
+			double rsq = radius*radius;
 			if (center.distance(a) > radius || center.distance(b) > radius || center.distance(c) > radius || center.distance(d) > radius) {
 				wasCut = true;
 			} else {
 				wasCut = false;
 				wasIncluded = true;
 			}
+
 			for (uint i = 0; i < content.size(); i++) {
 				double deltaX = positions[i][0] - center[0];
 				double deltaY = positions[i][1] - center[1];
@@ -308,6 +308,7 @@ public:
 					ncomp++;
 				} else {
 					uncomp++;
+					//if (wasIncluded) ERROR("Node not in range despite cell included.");
 				}
 			}
 		}	else {

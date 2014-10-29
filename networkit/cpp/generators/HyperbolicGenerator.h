@@ -9,7 +9,6 @@
 #define HYPERBOLICGENERATOR_H_
 
 #include <vector>
-#include <map>
 #include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"
 
@@ -54,11 +53,6 @@ public:
 	 * @return Graph to be generated according to parameters
 	 */
 	static Graph generate(vector<double> &angles, vector<double> &radii, double R, double thresholdDistance);
-
-	/**
-	 * Convenience function to convert polar coordinates into Cartesian coordinates
-	 */
-	static std::map<index, Point<float> > getCoordinates(vector<double> &angles, vector<double> &radii);
 
 	/**
 	 * @param[in] n Number of nodes

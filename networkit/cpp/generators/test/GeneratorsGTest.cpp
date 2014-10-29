@@ -218,7 +218,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 			EXPECT_NE(event.type, GraphEvent::EDGE_REMOVAL);
 			EXPECT_TRUE(event.type == GraphEvent::EDGE_ADDITION || event.type == GraphEvent::TIME_STEP);
 			if (event.type == GraphEvent::EDGE_ADDITION) {
-				double distance = HyperbolicSpace::getHyperbolicDistance(angles[event.u], radii[event.u], angles[event.v], radii[event.v]);
+				double distance = HyperbolicSpace::poincareMetric(angles[event.u], radii[event.u], angles[event.v], radii[event.v]);
 				EXPECT_GE(distance, (initialFactor+factorGrowth*i)*R);
 				EXPECT_LE(distance, (initialFactor+factorGrowth*(i+1))*R);
 			}

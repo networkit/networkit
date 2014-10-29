@@ -62,7 +62,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 			ASSERT_LE(closeToOne[i], n);
 
 			//close results should actually be close
-			EXPECT_LE(HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[closeToOne[i]], radii[closeToOne[i]]), R);
+			EXPECT_LE(HyperbolicSpace::poincareMetric(angles[comparison], radii[comparison], angles[closeToOne[i]], radii[closeToOne[i]]), R);
 			for (index j = 0; j < i; j++) {
 				/**
 				 * results are unique
@@ -73,7 +73,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 		count notfound = 0;
 		count didfind = 0;
 		for (index i = 0; i < n; i++) {
-			if (HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
+			if (HyperbolicSpace::poincareMetric(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
 				bool found = false;
 				QuadNode<index> responsibleNode = * getRoot(quad).getAppropriateLeaf(angles[i], radii[i]);
 
@@ -84,16 +84,16 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 					}
 				}
 				EXPECT_TRUE(found) << "dist(" << i << "," << comparison << ") = "
-						<< HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], angles[i], radii[i]) << " < " << R;
+						<< HyperbolicSpace::poincareMetric(angles[comparison], radii[comparison], angles[i], radii[i]) << " < " << R;
 				if (!found) {
 					notfound++;
 					DEBUG("angle: ", angles[i], ", radius: ", radii[i], ", leftAngle: ", responsibleNode.getLeftAngle(),
 							", rightAngle: ", responsibleNode.getRightAngle(), ", minR: ", responsibleNode.getMinR(), ", maxR:", responsibleNode.getMaxR());
 					//DEBUG("euclidean Distance from circle center: ", center.distance(HyperbolicSpace::polarToCartesian(angles[i], radii[i])));
-					DEBUG("dist(", comparison, ", leftMin)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMinR()));
-					DEBUG("dist(", comparison, ", leftMax)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMaxR()));
-					DEBUG("dist(", comparison, ", rightMin)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMinR()));
-					DEBUG("dist(", comparison, ", rightMax)=", HyperbolicSpace::getHyperbolicDistance(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMaxR()));
+					DEBUG("dist(", comparison, ", leftMin)=", HyperbolicSpace::poincareMetric(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMinR()));
+					DEBUG("dist(", comparison, ", leftMax)=", HyperbolicSpace::poincareMetric(angles[comparison], radii[comparison], responsibleNode.getLeftAngle(), responsibleNode.getMaxR()));
+					DEBUG("dist(", comparison, ", rightMin)=", HyperbolicSpace::poincareMetric(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMinR()));
+					DEBUG("dist(", comparison, ", rightMax)=", HyperbolicSpace::poincareMetric(angles[comparison], radii[comparison], responsibleNode.getRightAngle(), responsibleNode.getMaxR()));
 				}
 				else {
 					didfind++;

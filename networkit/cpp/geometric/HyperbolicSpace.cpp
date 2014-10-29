@@ -29,13 +29,13 @@ HyperbolicSpace::~HyperbolicSpace() {
 /**
  * This distance measure is taken from the Poincaré disc model.
  */
-double HyperbolicSpace::getHyperbolicDistance(double phi_a, double  r_a, double phi_b, double r_b) {
+double HyperbolicSpace::poincareMetric(double phi_a, double  r_a, double phi_b, double r_b) {
 	assert(r_a < 1);
 	assert(r_b < 1);
-	return getHyperbolicDistance(polarToCartesian(phi_a, r_a), polarToCartesian(phi_b, r_b));
+	return poincareMetric(polarToCartesian(phi_a, r_a), polarToCartesian(phi_b, r_b));
 }
 
-double HyperbolicSpace::getHyperbolicDistance(Point2D<double> a, Point2D<double> b) {
+double HyperbolicSpace::poincareMetric(Point2D<double> a, Point2D<double> b) {
 	double result = acosh( 1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength())));
 	assert(result >= 0);
 	return result;
@@ -63,6 +63,18 @@ void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii
 
 Point2D<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
 	return Point2D<double>(r*cos(phi), r*sin(phi));
+}
+
+std::map<index, Point<float> > HyperbolicSpace::polarToCartesian(vector<double> &angles, vector<double> &radii) {
+	count n = angles.size();
+	assert(radii.size() == n);
+	std::map<index, Point<float> > result;
+	for (index i = 0; i < angles.size(); i++) {
+		Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+		Point<float> temp(coord[0], coord[1]);
+		result.emplace(i, temp);
+	}
+	return result;
 }
 
 void HyperbolicSpace::cartesianToPolar(Point2D<double> a, double &phi, double &r) {

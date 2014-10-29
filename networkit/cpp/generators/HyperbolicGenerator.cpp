@@ -70,11 +70,14 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 
 	index p = 0;
 	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+
+	//can probably be parallelized easily, but doesn't bring much benefit
 	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
 
 	vector<double> anglecopy(n);
 	vector<double> radiicopy(n);
 
+	#pragma omp parallel for
 	for (index j = 0; j < n; j++) {
 		anglecopy[j] = angles[permutation[j]];
 		radiicopy[j] = radii[permutation[j]];
@@ -87,18 +90,6 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
 	double R = stretch*acosh((double)n/(2*M_PI)+1);
 	return (8 / M_PI) * n * exp(-R/2)*(n/2);
-}
-
-std::map<index, Point<float> > HyperbolicGenerator::getCoordinates(vector<double> &angles, vector<double> &radii) {
-	count n = angles.size();
-	assert(radii.size() == n);
-	std::map<index, Point<float> > result;
-	for (index i = 0; i < angles.size(); i++) {
-		Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
-		Point<float> temp(coord[0], coord[1]);
-		result.emplace(i, temp);
-	}
-	return result;
 }
 
 Graph HyperbolicGenerator::generate(vector<double> &angles, vector<double> &radii, double R, double thresholdDistance) {
@@ -130,7 +121,7 @@ Graph HyperbolicGenerator::generate(vector<double> &angles, vector<double> &radi
 				result.addEdge(i,j);
 			}
 		}
-			if (i % 1000 == 0) {
+		if (i % 1000 == 0) {
 			#pragma omp critical (progress)
 			{
 				progress.signal(i);
