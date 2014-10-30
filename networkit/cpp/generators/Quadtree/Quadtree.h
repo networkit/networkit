@@ -31,8 +31,8 @@ public:
 	 * @param alpha dispersion parameter of the point distribution. Only has an effect if theoretical split is true
 	 * @param capacity how many points can inhabit a leaf cell before it is split up?
 	 */
-	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000) {
-		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha);
+	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, bool diagnostics = false) {
+		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,diagnostics);
 		this->maxRadius = maxR;
 	}
 
