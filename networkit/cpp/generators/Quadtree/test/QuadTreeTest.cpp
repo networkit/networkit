@@ -390,7 +390,7 @@ TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
 
 	for (index capexp = 1; capexp < log(n)/log(4); capexp++) {
 		count capacity = pow(4,capexp);
-		Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity);
+		Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity,true);
 
 		for (index i = 0; i < n; i++) {
 			quad.addContent(i, angles[i], radii[i]);
@@ -440,6 +440,7 @@ TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
  */
 TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	count n = 100000;
+	count capacity = 1000;
 	count trials = 20;
 	double s =1;
 	double alpha = 1;
@@ -450,7 +451,7 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	vector<double> radii(n);
 	HyperbolicSpace::fillPoints(&angles, &radii, s, alpha);
 
-	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha);
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity,true);
 
 	for (index i = 0; i < n; i++) {
 		quad.addContent(i, angles[i], radii[i]);

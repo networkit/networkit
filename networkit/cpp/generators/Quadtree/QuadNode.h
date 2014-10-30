@@ -25,12 +25,12 @@ class QuadNode {
 	friend class QuadTreeTest;
 private:
 	double leftAngle;
-	double rightAngle;
 	double minR;
+	double rightAngle;
 	double maxR;
 	Point2D<double> a,b,c,d;
 	unsigned capacity;
-	unsigned coarsenLimit = 4;
+	static const unsigned coarsenLimit = 4;
 	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
 	count elements;
 	std::vector<QuadNode> children;
@@ -45,6 +45,7 @@ private:
 	count ncomp;
 	bool wasCut;
 	bool wasIncluded;
+	bool diagnostics;
 
 public:
 	QuadNode() {
@@ -66,7 +67,7 @@ public:
 
 	}
 
-	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1) {
+	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1,bool diagnostics = false) {
 		this->leftAngle = leftAngle;
 		this->minR = minR;
 		this->maxR = maxR;
@@ -79,6 +80,7 @@ public:
 		this->minRegion = minDiameter;
 		this->alpha = alpha;
 		this->splitTheoretical = splitTheoretical;
+		this->diagnostics = diagnostics;
 		isLeaf = true;
 		elements = 0;
 		resetCounter();
@@ -118,10 +120,10 @@ public:
 				assert(middleR < maxR);
 				assert(middleR > minR);
 
-				QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion, splitTheoretical, alpha);
-				QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion, splitTheoretical, alpha);
-				QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion, splitTheoretical, alpha);
-				QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, minRegion, splitTheoretical, alpha);
+				QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
+				QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
+				QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
+				QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
 				children = {southwest, southeast, northwest, northeast};
 
 				isLeaf = false;
@@ -178,6 +180,7 @@ public:
 			//coarsen?
 			if (removed && allLeaves && size() < coarsenLimit) {
 				//coarsen!!
+				//why not assert empty containers and then insert directly?
 				vector<T> allContent;
 				vector<Point2D<double> > allPositions;
 				vector<double> allAngles;
@@ -192,10 +195,10 @@ public:
 				assert(allContent.size() == allAngles.size());
 				assert(allContent.size() == allRadii.size());
 				children.clear();
-				content = allContent;
-				positions = allPositions;
-				angles = allAngles;
-				radii = allRadii;
+				content.swap(allContent);
+				positions.swap(allPositions);
+				angles.swap(allAngles);
+				radii.swap(allRadii);
 				isLeaf = true;
 			}
 
@@ -294,11 +297,13 @@ public:
 
 		if (isLeaf) {
 			double rsq = radius*radius;
-			if (center.distance(a) > radius || center.distance(b) > radius || center.distance(c) > radius || center.distance(d) > radius) {
-				wasCut = true;
-			} else {
-				wasCut = false;
-				wasIncluded = true;
+			if (diagnostics) {
+				if (center.distance(a) > radius || center.distance(b) > radius || center.distance(c) > radius || center.distance(d) > radius) {
+					wasCut = true;
+				} else {
+					wasCut = false;
+					wasIncluded = true;
+				}
 			}
 
 			for (uint i = 0; i < content.size(); i++) {
@@ -306,9 +311,9 @@ public:
 				double deltaY = positions[i][1] - center[1];
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
-					ncomp++;
+					if (diagnostics) ncomp++;
 				} else {
-					uncomp++;
+					if (diagnostics) uncomp++;
 					//if (wasIncluded) ERROR("Node not in range despite cell included.");
 				}
 			}
