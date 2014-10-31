@@ -29,6 +29,7 @@ HyperbolicGenerator::HyperbolicGenerator() {
 	alpha = 1;
 	factor = 1;
 	nodeCount = 10000;
+	initialize();
 }
 /**
  * Construct a generator for n nodes and the parameters, t, alpha and s.
@@ -38,6 +39,7 @@ HyperbolicGenerator::HyperbolicGenerator(count n, double distanceFactor, double 
 	stretch = stretchradius;
 	factor = distanceFactor;
 	this->alpha = alpha;
+	initialize();
 }
 /**
  * Construct a generator for n nodes and m edges
@@ -49,11 +51,13 @@ HyperbolicGenerator::HyperbolicGenerator(count n, count m) {
 	stretch = targetR / R;
 	factor = 1;
 	alpha = 1;
+	initialize();
 }
 
-HyperbolicGenerator::~HyperbolicGenerator() {
+void HyperbolicGenerator::initialize() {
+	capacity = 1000;
+	theoreticalSplit = false;
 }
-
 
 Graph HyperbolicGenerator::generate() {
 	return generate(nodeCount, factor, alpha, stretch);
@@ -92,12 +96,12 @@ double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
 	return (8 / M_PI) * n * exp(-R/2)*(n/2);
 }
 
-Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, const double R, const double thresholdDistance) {
+Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R, double thresholdDistance) {
 	Aux::Timer timer;
 	timer.start();
 	index n = angles.size();
 	assert(radii.size() == n);
-	Quadtree<index> quad(R);
+	Quadtree<index> quad(R, theoreticalSplit, alpha, capacity);
 
 	//initialize a graph builder for n nodes and an undirected, unweighted graph with direct swap
 	GraphBuilder result(n, false, false, true);

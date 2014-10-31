@@ -50,6 +50,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 	}
 	vector<index> all = quad.getElements();
 	EXPECT_EQ(all.size(), n);
+	EXPECT_EQ(quad.size(), n);
 	for (index testindex = 0; testindex < 100; testindex++) {
 		index comparison = Aux::Random::integer(n-1);
 		Point2D<double> origin;

@@ -1371,6 +1371,8 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
 		# TODO: revert to count when cython issue fixed
 		_HyperbolicGenerator(unsigned int nodes,  double distanceFactor, double alpha, double stretch) except +
+		void setLeafCapacity(unsigned int capacity) except +
+		void setTheoreticalSplit(bool split) except +
 		_Graph generate() except +
 
 cdef class HyperbolicGenerator:
@@ -1395,6 +1397,12 @@ cdef class HyperbolicGenerator:
 
 	def __cinit__(self,  n, distanceFactor=1, alpha=1, stretchradius=1):		
 		self._this = new _HyperbolicGenerator(n, distanceFactor, alpha, stretchradius)
+
+	def setLeafCapacity(self, capacity):
+		self._this.setLeafCapacity(capacity)
+
+	def setTheoreticalSplit(self, theoreticalSplit):
+		self._this.setTheoreticalSplit(theoreticalSplit)
 
 	def generate(self):
 		""" Generates graph from hyperbolic geometry

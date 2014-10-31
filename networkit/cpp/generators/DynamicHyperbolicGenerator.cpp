@@ -94,7 +94,7 @@ Graph DynamicHyperbolicGenerator::getGraph() {
 	 * The next call is unnecessarily expensive, since it constructs a new QuadTree.
 	 * Reduces code duplication, though.
 	 */
-	return HyperbolicGenerator::generate(angles, radii, r, currentfactor*R);
+	return HyperbolicGenerator().generate(angles, radii, r, currentfactor*R);
 }
 
 std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
