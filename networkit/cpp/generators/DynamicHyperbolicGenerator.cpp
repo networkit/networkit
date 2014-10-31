@@ -54,10 +54,6 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, v
 	initializeMovement();
 }
 
-DynamicHyperbolicGenerator::~DynamicHyperbolicGenerator() {
-	// TODO Auto-generated destructor stub
-}
-
 void DynamicHyperbolicGenerator::initializeMovement() {
 	angularMovement.resize(nodes);
 	radialMovement.resize(nodes);

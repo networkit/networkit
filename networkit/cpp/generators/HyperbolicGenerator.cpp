@@ -92,7 +92,7 @@ double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
 	return (8 / M_PI) * n * exp(-R/2)*(n/2);
 }
 
-Graph HyperbolicGenerator::generate(vector<double> &angles, vector<double> &radii, double R, double thresholdDistance) {
+Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, const double R, const double thresholdDistance) {
 	Aux::Timer timer;
 	timer.start();
 	index n = angles.size();

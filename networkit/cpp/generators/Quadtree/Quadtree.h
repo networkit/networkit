@@ -36,10 +36,6 @@ public:
 		this->maxRadius = maxR;
 	}
 
-	virtual ~Quadtree() {
-
-	}
-
 	/**
 	 * @param newcomer content to be added at point x
 	 * @param angle angular coordinate of x

@@ -63,10 +63,6 @@ public:
 		resetCounter();
 	}
 
-	~QuadNode() {
-
-	}
-
 	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1,bool diagnostics = false) {
 		this->leftAngle = leftAngle;
 		this->minR = minR;
@@ -207,7 +203,7 @@ public:
 	}
 
 
-	bool outOfReach(Point2D<double> query, double radius) {
+	bool outOfReach(Point2D<double> query, double radius) const {
 		double phi, r;
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
 		if (responsible(phi, r)) return false;
@@ -246,17 +242,17 @@ public:
 		return true;
 	}
 
-	bool outOfReach(double angle, double R, double radius) {
+	bool outOfReach(double angle, double R, double radius) const {
 		if (responsible(angle, R)) return false;
 		Point2D<double> query = HyperbolicSpace::polarToCartesian(angle, R);
 		return outOfReach(query, radius);
 	}
 
-	bool responsible(double angle, double R) {
+	bool responsible(double angle, double R) const {
 		return (angle >= leftAngle && angle < rightAngle && R >= minR && R < maxR);
 	}
 
-	std::vector<T> getElements() {
+	std::vector<T> getElements() const {
 		if (isLeaf) {
 			return content;
 		} else {
@@ -348,35 +344,35 @@ public:
 		}
 	}
 
-	int countIncluded() {
+	int countIncluded() const {
 		if (isLeaf) return wasIncluded ? 1 : 0;
 		int result = 0;
 		for (auto child : children) result += child.countIncluded();
 		return result;
 	}
 
-	int countCut() {
+	int countCut() const {
 		if (isLeaf) return wasCut ? 1 : 0;
 		int result = 0;
 		for (auto child : children) result += child.countCut();
 		return result;
 	}
 
-	int countUnnecessaryComparisonsInCutLeaves() {
+	int countUnnecessaryComparisonsInCutLeaves() const {
 		if (isLeaf) return wasCut ? uncomp : 0;
 		int result = 0;
 		for (auto child : children) result += child.countUnnecessaryComparisonsInCutLeaves();
 		return result;
 	}
 
-	int countNecessaryComparisonsInCutLeaves() {
+	int countNecessaryComparisonsInCutLeaves() const {
 		if (isLeaf) return wasCut ? ncomp : 0;
 		int result = 0;
 		for (auto child : children) result += child.countNecessaryComparisonsInCutLeaves();
 		return result;
 	}
 
-	count size() {
+	count size() const {
 		count result = 0;
 		if (isLeaf) result = content.size();
 		else {
@@ -385,13 +381,13 @@ public:
 		return result;
 	}
 
-	count height() {
+	count height() const {
 		count result = 1;//if leaf node, the children loop will not execute
 		for (auto child : children) result = std::max(result, child.height()+1);
 		return result;
 	}
 
-	count countLeaves() {
+	count countLeaves() const {
 		if (isLeaf) return 1;
 		count result = 0;
 		for (index i = 0; i < children.size(); i++) {
@@ -400,19 +396,19 @@ public:
 		return result;
 	}
 
-	double getLeftAngle() {
+	double getLeftAngle() const {
 		return leftAngle;
 	}
 
-	double getRightAngle() {
+	double getRightAngle() const {
 		return rightAngle;
 	}
 
-	double getMinR() {
+	double getMinR() const {
 		return minR;
 	}
 
-	double getMaxR() {
+	double getMaxR() const {
 		return maxR;
 	}
 };
