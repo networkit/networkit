@@ -11,9 +11,9 @@
 #include <stdexcept>
 #include <limits>
 
-NetworKit::CutClustering::CutClustering(NetworKit::edgeweight alpha) : alpha(alpha) { }
+NetworKit::CutClustering::CutClustering(const Graph& G, NetworKit::edgeweight alpha) : CommunityDetectionAlgorithm(G), alpha(alpha) { }
 
-NetworKit::Partition NetworKit::CutClustering::run(const NetworKit::Graph &G) {
+NetworKit::Partition NetworKit::CutClustering::run() {
 	Partition result(G.upperNodeIdBound());
 	result.setUpperBound(G.upperNodeIdBound());
 
@@ -210,7 +210,7 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
 		}
 
 		// calculate the clustering at the calculated breakpoint
-		Partition middleClusters(CutClustering(middle).run(G)); // FIXME using a single cut clustering instance such that G is not always copied is probably faster
+		Partition middleClusters(CutClustering(G, middle).run()); // FIXME using a single cut clustering instance such that G is not always copied is probably faster
 
 		INFO("Calculated clustering for alpha value ", middle);
 
