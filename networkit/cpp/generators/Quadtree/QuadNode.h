@@ -285,7 +285,7 @@ public:
 		}
 	}
 
-	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point2D<double> center, double radius, vector<T> &result) {
+	void getElementsInEuclideanCircle(const double minAngle, const double maxAngle, const double lowR, const double highR, Point2D<double> center, const double radius, vector<T> &result) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -293,23 +293,26 @@ public:
 
 		if (isLeaf) {
 			double rsq = radius*radius;
-			if (diagnostics) {
-				if (center.distance(a) > radius || center.distance(b) > radius || center.distance(c) > radius || center.distance(d) > radius) {
-					wasCut = true;
-				} else {
-					wasCut = false;
-					wasIncluded = true;
-				}
-			}
+	//		if (diagnostics) {
+	//			if (center.distance(a) > radius || center.distance(b) > radius || center.distance(c) > radius || center.distance(d) > radius) {
+	//				wasCut = true;
+	//			} else {
+	//				wasCut = false;
+	//				wasIncluded = true;
+	//			}
+	//		}
+			const double queryX = center[0];
+			const double queryY = center[1];
+			const count cSize = content.size();
 
-			for (uint i = 0; i < content.size(); i++) {
-				double deltaX = positions[i][0] - center[0];
-				double deltaY = positions[i][1] - center[1];
+			for (uint i = 0; i < cSize; i++) {
+				double deltaX = positions[i][0] - queryX;
+				double deltaY = positions[i][1] - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
-					if (diagnostics) ncomp++;
+	//				if (diagnostics) ncomp++;
 				} else {
-					if (diagnostics) uncomp++;
+	//				if (diagnostics) uncomp++;
 					//if (wasIncluded) ERROR("Node not in range despite cell included.");
 				}
 			}
