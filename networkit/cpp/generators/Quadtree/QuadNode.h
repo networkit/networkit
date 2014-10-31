@@ -285,14 +285,14 @@ public:
 		}
 	}
 
-	void getElementsInEuclideanCircle(const double minAngle, const double maxAngle, const double lowR, const double highR, Point2D<double> center, const double radius, vector<T> &result) {
+	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point2D<double> center, double radius, vector<T> &result) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
 		if (outOfReach(center, radius)) {
 			return;
 		}
 
 		if (isLeaf) {
-			double rsq = radius*radius;
+			const double rsq = radius*radius;
 	//		if (diagnostics) {
 	//			if (center.distance(a) > radius || center.distance(b) > radius || center.distance(c) > radius || center.distance(d) > radius) {
 	//				wasCut = true;
@@ -306,8 +306,8 @@ public:
 			const count cSize = content.size();
 
 			for (uint i = 0; i < cSize; i++) {
-				double deltaX = positions[i][0] - queryX;
-				double deltaY = positions[i][1] - queryY;
+				const double deltaX = positions[i][0] - queryX;
+				const double deltaY = positions[i][1] - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
 	//				if (diagnostics) ncomp++;
@@ -350,6 +350,7 @@ public:
 	int countIncluded() const {
 		if (isLeaf) return wasIncluded ? 1 : 0;
 		int result = 0;
+		//This probably creates a copy each loop iteration
 		for (auto child : children) result += child.countIncluded();
 		return result;
 	}
@@ -376,11 +377,8 @@ public:
 	}
 
 	count size() const {
-		count result = 0;
-		if (isLeaf) result = content.size();
-		else {
-			for (auto child : children) result += child.size();
-		}
+		count result = isLeaf ? content.size() : 0;
+		for (auto child : children) result += child.size();
 		return result;
 	}
 

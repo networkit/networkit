@@ -236,7 +236,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 		EXPECT_TRUE(G.checkConsistency());
 	}
 	//graph recreated from edge stream should be equal to graph generated with final parameters
-	Graph comparison = HyperbolicGenerator::generate(angles, radii, r, R);
+	Graph comparison = HyperbolicGenerator().generate(angles, radii, r, R);
 	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
 }
 
@@ -265,7 +265,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	DynamicHyperbolicGenerator dynGen(angles, radii, stretch, factor, movedShare, 0, moveDistance);
 
 	//generate starting graph
-	Graph G = HyperbolicGenerator::generate(angles, radii, r, factor*R);
+	Graph G = HyperbolicGenerator().generate(angles, radii, r, factor*R);
 	count initialEdgeCount = G.numberOfEdges();
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
@@ -289,7 +289,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	//update moved nodes
 	angles = getAngles(dynGen);
 	radii = getRadii(dynGen);
-	Graph comparison = HyperbolicGenerator::generate(angles, radii, r, R*factor);
+	Graph comparison = HyperbolicGenerator().generate(angles, radii, r, R*factor);
 	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
 
 	//heuristic criterion: Number of edges may change, but should not change much

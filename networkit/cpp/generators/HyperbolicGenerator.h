@@ -36,8 +36,6 @@ public:
 	 */
 	HyperbolicGenerator(count n, count m);
 
-	virtual ~HyperbolicGenerator();
-
 	/**
 	 * @param[in] n Number of nodes
 	 * @param[in] stretch Parameter s
@@ -52,7 +50,7 @@ public:
 	 * @param[in] thresholdDistance Edges are added for nodes closer to each other than this threshold
 	 * @return Graph to be generated according to parameters
 	 */
-	static Graph generate(const vector<double> &angles, const vector<double> &radii, const double R, const double thresholdDistance);
+	Graph generate(const vector<double> &angles, const vector<double> &radii, double R, double thresholdDistance);
 
 	/**
 	 * @param[in] n Number of nodes
@@ -68,12 +66,29 @@ public:
 	 */
 	Graph generate();
 
+	void setLeafCapacity(count capacity) {
+		this->capacity = capacity;
+	}
+	void setTheoreticalSplit(bool split) {
+		this->theoreticalSplit = split;
+	}
+
 private:
+
+	void initialize();
+	/**
+	 * graph parameters
+	 */
 	count nodeCount;
 	double stretch;
 	double factor;
 	double alpha;
 
+	/**
+	 * tuning parameters
+	 */
+	count capacity;
+	bool theoreticalSplit;
 };
 }
 #endif /* HYPERBOLICGENERATOR_H_ */
