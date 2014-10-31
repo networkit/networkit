@@ -16,13 +16,13 @@
 
 namespace NetworKit {
 
-PLP::PLP(count theta) : updateThreshold(theta) {
+PLP::PLP(const Graph& G, count theta) : CommunityDetectionAlgorithm(G), updateThreshold(theta) {
 
 	this->VERSION = "1.0";
 }
 
 
-Partition& PLP::runFromGiven(const Graph& G, Partition& labels) {
+Partition& PLP::runFromGiven(Partition& labels) {
 	typedef index label; // a label is the same as a cluster id
 
 	count n = G.numberOfNodes();
@@ -108,7 +108,7 @@ Partition& PLP::runFromGiven(const Graph& G, Partition& labels) {
 }
 
 
-Partition PLP::run(const Graph& G) {
+Partition PLP::run() {
 	// set unique label for each node
 	index z = G.upperNodeIdBound();
 	Partition labels(z);
@@ -119,7 +119,7 @@ Partition PLP::run(const Graph& G) {
 //	});
 //	labels.setUpperBound(z);
 
-	return runFromGiven(G, labels);
+	return runFromGiven(labels);
 }
 
 std::string PLP::toString() const {

@@ -14,7 +14,7 @@
 #include "../auxiliary/Log.h"
 
 namespace NetworKit{
-
+CNM::CNM(const Graph& G) : CommunityDetectionAlgorithm(G) {};
 
 node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
 
@@ -69,13 +69,13 @@ node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
 }
 
 
-Partition CNM::run(const Graph &graph) {
+Partition CNM::run() {
 	// copy graph because we make changes due to merges
-	Graph G(graph.numberOfNodes(), true); // make weighted copy
-	graph.forEdges([&](node u, node v, edgeweight w){
-		G.addEdge(u, v, w);
+	Graph Gcopy(G.numberOfNodes(), true); // make weighted copy
+	G.forEdges([&](node u, node v, edgeweight w){
+		Gcopy.addEdge(u, v, w);
 	});
-	count n = G.numberOfNodes();
+	count n = Gcopy.numberOfNodes();
 
 	auto createEdge([&](node u, node v) {
 		std::pair<node, node> edge = (u <= v) ? (std::make_pair(u, v)) : (std::make_pair(v, u));
@@ -88,19 +88,19 @@ Partition CNM::run(const Graph &graph) {
 	clustering.allToSingletons();
 
 	// record current modularity
-	double gTotalEdgeWeight = G.totalEdgeWeight();
+	double gTotalEdgeWeight = Gcopy.totalEdgeWeight();
 	Modularity modularityInspector;
 	modularityInspector.setTotalEdgeWeight(gTotalEdgeWeight);
-	double bestModularity = modularityInspector.getQuality(clustering, G);
+	double bestModularity = modularityInspector.getQuality(clustering, Gcopy);
 	Partition bestClustering = clustering;
 
 	// insert edges into priority queue, key: delta mod score
-	ModularityScoring<double> modScoring(G);
+	ModularityScoring<double> modScoring(Gcopy);
 	std::vector<double> scores;
 	std::map<std::pair<node, node>, index> edgeToIndex;
 	std::map<index, std::pair<node, node> > indexToEdge;
 	index idx = 0;
-	G.forEdges([&](node u, node v) {
+	Gcopy.forEdges([&](node u, node v) {
 		if (u != v) {
 			// get modularity score
 			double modScore = modScoring.edgeScore(u, v);
@@ -129,21 +129,21 @@ Partition CNM::run(const Graph &graph) {
 		std::pair<node, node> currentEdge = indexToEdge[pqOpt.second];
 		node best_u = currentEdge.first;
 		node best_v = currentEdge.second;
-//		TRACE("best_u: " , best_u , ", best_v: " , best_v, ", ew: ", G.weight(best_u, best_v), ", deltaMod: ", -pqOpt.first);
+//		TRACE("best_u: " , best_u , ", best_v: " , best_v, ", ew: ", Gcopy.weight(best_u, best_v), ", deltaMod: ", -pqOpt.first);
 
 		// merge clusters best_u and best_v
 		index newCluster = clustering.mergeSubsets(clustering.subsetOf(best_u), clustering.subsetOf(best_v));
 
 		// adapt PQ accordingly
-		G.forEdgesOf(best_u, [&](node best_u, node neighbor) {
+		Gcopy.forEdgesOf(best_u, [&](node best_u, node neighbor) {
 			pq.remove(edgeToIndex[createEdge(best_u, neighbor)]);
 		});
-		G.forEdgesOf(best_v, [&](node best_v, node neighbor) {
+		Gcopy.forEdgesOf(best_v, [&](node best_v, node neighbor) {
 			pq.remove(edgeToIndex[createEdge(best_v, neighbor)]);
 		});
 
-		// merge incident nodes in G
-		node newNode = CNM::mergeEdge(G, best_u, best_v, false);
+		// merge incident nodes in Gcopy
+		node newNode = CNM::mergeEdge(Gcopy, best_u, best_v, false);
 		assert(newNode != none);
 
 		// adapt clustering accordingly
@@ -152,11 +152,11 @@ Partition CNM::run(const Graph &graph) {
 
 		// update delta mod scores for incident edges and insert them into the PQ,
 		// needs to done after all edges have been rewired
-		G.forEdgesOf(newNode, [&](node newNode, node neighbor) {
+		Gcopy.forEdgesOf(newNode, [&](node newNode, node neighbor) {
 			if (newNode != neighbor) {
 				// determine edge score
-//				assert(G.totalEdgeWeight() == gTotalEdgeWeight);
-				ModularityScoring<double> modScoring(G, gTotalEdgeWeight);
+//				assert(Gcopy.totalEdgeWeight() == gTotalEdgeWeight);
+				ModularityScoring<double> modScoring(Gcopy, gTotalEdgeWeight);
 				double score = modScoring.edgeScore(newNode, neighbor);
 
 				// insert edge score and corresponding ID into PQ
@@ -172,9 +172,9 @@ Partition CNM::run(const Graph &graph) {
 		});
 
 		// compute new modularity
-//		assert(G.totalEdgeWeight() == gTotalEdgeWeight);
+//		assert(Gcopy.totalEdgeWeight() == gTotalEdgeWeight);
 		modularityInspector.setTotalEdgeWeight(gTotalEdgeWeight);
-		double newModularity = modularityInspector.getQuality(clustering, graph);
+		double newModularity = modularityInspector.getQuality(clustering, G);
 //		TRACE("pq size: ", pq.size(), ", current mod value: " , newModularity);
 
 		// record best solutions
