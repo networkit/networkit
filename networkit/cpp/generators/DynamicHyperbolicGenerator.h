@@ -22,7 +22,6 @@ public:
 	DynamicHyperbolicGenerator(count n, double initialFactor = 1, double alpha = 1, double stretch = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
 	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double stretch, double initialFactor = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
 	DynamicHyperbolicGenerator();
-	virtual ~DynamicHyperbolicGenerator();
 	std::vector<GraphEvent> generate(count nSteps) override;
 	void initializeQuadTree();
 	void initializeMovement();
