@@ -627,6 +627,7 @@ cdef class BFS:
 			self._this.run()
 		else:
 			self._this.run(t)
+		return self
 
 	def getDistances(self):
 		"""
@@ -700,6 +701,7 @@ cdef class DynBFS:
 			length (number of edges) of the shortest path from source to any other node.
 		"""
 		self._this.run()
+		return self
 
 	def getDistances(self):
 		"""
@@ -790,6 +792,7 @@ cdef class Dijkstra:
 			self._this.run()
 		else:
 			self._this.run(t)
+		return self
 
 	def getDistances(self):
 		""" Returns a vector of weighted distances from the source node, i.e. the
@@ -990,6 +993,7 @@ cdef class Luby:
 			A boolean vector of length n.
 		"""
 		return self._this.run(G._this)
+		# TODO: return self
 
 	def toString(self):
 		""" Get string representation of the algorithm.
@@ -3051,6 +3055,7 @@ cdef class CommunityGraph:
 			A community clustering of `G`.
 		"""
 		self._this.run(G._this, zeta._this)
+		return self
 
 	def getGraph(self):
 		""" Returns the coarsened Graph.
@@ -3122,6 +3127,7 @@ cdef class EdmondsKarp:
 		Computes the maximum flow, executes the EdmondsKarp algorithm
 		"""
 		self._this.run()
+		return self
 
 	def getMaxFlow(self):
 		"""
@@ -3286,6 +3292,7 @@ cdef class ConnectedComponents:
 	def run(self):
 		""" This method determines the connected components for the graph given in the constructor. """
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		""" Get a Partition that represents the components.
@@ -3339,6 +3346,7 @@ cdef class ParallelConnectedComponents:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		return Partition().setThis(self._this.getPartition())
@@ -3370,6 +3378,7 @@ cdef class StronglyConnectedComponents:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		return Partition().setThis(self._this.getPartition())
@@ -3569,6 +3578,7 @@ cdef class CoreDecomposition:
 	def run(self):
 		""" Perform k-core decomposition of graph passed in constructor. """
 		self._this.run()
+		return self
 
 	def coreNumbers(self):
 		""" Get vector of core numbers, indexed by node.
@@ -3699,6 +3709,7 @@ cdef class Betweenness:
 			If set to True the computation is done in parallel.
 		"""
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -3771,6 +3782,7 @@ cdef class DynBetweenness:
 		"""  Compute betweenness scores on the initial graph.
 		"""
 		self._this.run()
+		return self
 
 	def update(self, ev):
 		""" Updates the betweenness centralities after the edge insertion.
@@ -3856,6 +3868,7 @@ cdef class ApproxBetweenness:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -3937,6 +3950,7 @@ cdef class DynApproxBetweenness:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def update(self, batch):
 		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
@@ -4023,6 +4037,7 @@ cdef class ApproxBetweenness2:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -4089,6 +4104,7 @@ cdef class PageRank:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -4152,6 +4168,7 @@ cdef class EigenvectorCentrality:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -4217,6 +4234,7 @@ cdef class DegreeCentrality:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
