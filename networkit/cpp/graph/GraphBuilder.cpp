@@ -93,11 +93,17 @@ void GraphBuilder::directSwap(Graph &G) {
 	if (directed) throw std::runtime_error("Cannot swap directly in directed Graph.");
 	G.outEdges.swap(halfEdges);
 	G.outEdgeWeights.swap(halfEdgeWeights);
-	#pragma omp parallel for
+	count edges = 0;
+	//maybe this loop should not be parallelized, since distributing the edge array to all processors takes too long
+	#pragma omp parallel for reduction(+:edges)
 	for (node v = 0; v < n; v++) {
-		G.outDeg[v] = G.outEdges[v].size();
+		count deg = G.outEdges[v].size();
+		G.outDeg[v] = deg;
+		edges += deg;
 	}
-	correctNumberOfEdges(G, selfloops);
+	G.m = edges;
+
+	//correctNumberOfEdges(G, selfloops);// no need to correct edges, graph is undirected
 
 	reset();
 }
