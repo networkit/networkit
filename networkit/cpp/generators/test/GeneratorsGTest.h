@@ -42,7 +42,6 @@ namespace NetworKit {
 class GeneratorsGTest: public testing::Test {
 public:
 	GeneratorsGTest();
-	virtual ~GeneratorsGTest();
 
 	vector<double> getAngles(DynamicHyperbolicGenerator dynGen) {
 		return dynGen.angles;

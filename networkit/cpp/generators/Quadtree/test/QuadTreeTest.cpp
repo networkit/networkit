@@ -26,7 +26,7 @@ QuadTreeTest::~QuadTreeTest() {
 /**
  * Test whether the elements returned by a quadtree range query are indeed those whose hyperbolic distance to the query point is below a threshold
  */
-TEST_F(QuadTreeTest, testQuadTreeInsertion) {
+TEST_F(QuadTreeTest, testQuadTreeHyperbolicCircle) {
 	count n = 1000;
 	double R = 1;
 	vector<double> angles(n);
@@ -282,6 +282,13 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 		if (maxPhi > 2*M_PI) {
 			root.getElementsInEuclideanCircle(query, radius, circleDenizens, 0, maxPhi - 2*M_PI, minR, maxR);
 		}
+
+		//check whether bounds were correct by calling again without bounds and comparing
+		vector<index> alternateDenizens;
+		root.getElementsInEuclideanCircle(query, radius, alternateDenizens);
+
+		EXPECT_EQ(circleDenizens.size(), alternateDenizens.size());
+
 
 		for (index j = 0; j < n; j++) {
 			Point2D<double> comp = HyperbolicSpace::polarToCartesian(angles[j], radii[j]);

@@ -30,11 +30,6 @@ GeneratorsGTest::GeneratorsGTest() {
 
 }
 
-GeneratorsGTest::~GeneratorsGTest() {
-
-}
-
-
 TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGeneratorSingleStep) {
 	count k = 2; // number of edges added per node
 	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(k);
