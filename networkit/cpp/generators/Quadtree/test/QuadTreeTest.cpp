@@ -112,7 +112,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 /**
  * Gradually increase the distance threshold and check whether the number of neighbours increases monotonically. Necessary foundation for the dynamic hyperbolic generator.
  */
-TEST_F(QuadTreeTest, testQuadTreeQuery) {
+TEST_F(QuadTreeTest, testQuadTreeThresholdGrowth) {
 	count n = 100;
 	double R = acosh((double)n/(2*M_PI)+1);
 	vector<double> angles(n);
@@ -275,12 +275,12 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 
 		vector<index> circleDenizens;
 
-		root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, query, radius, circleDenizens);
+		root.getElementsInEuclideanCircle(query, radius, circleDenizens, minPhi, maxPhi, minR, maxR);
 		if (minPhi < 0) {
-			root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, query, radius, circleDenizens);
+			root.getElementsInEuclideanCircle(query, radius, circleDenizens, 2*M_PI+minPhi, 2*M_PI, minR, maxR);
 		}
 		if (maxPhi > 2*M_PI) {
-			root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, query, radius, circleDenizens);
+			root.getElementsInEuclideanCircle(query, radius, circleDenizens, 0, maxPhi - 2*M_PI, minR, maxR);
 		}
 
 		for (index j = 0; j < n; j++) {

@@ -78,6 +78,7 @@ public:
 		vector<T> circleDenizens;
 		Point2D<double> center;
 
+		//Transform hyperbolic circle into Euclidean circle
 		double minPhi, maxPhi, radius;
 		HyperbolicSpace::getEuclideanCircle(circleCenter, hyperbolicRadius, center, radius);
 		double minR = center.length() - radius;
@@ -101,17 +102,17 @@ public:
 		}
 
 		/**
-		 * get Elements in Circle
+		 * get Elements in Euclidean circle
 		 */
 
 		bool wraparound = false;
-		root.getElementsInEuclideanCircle(minPhi, maxPhi, minR, maxR, center, radius, circleDenizens);
+		root.getElementsInEuclideanCircle(center, radius, circleDenizens, minPhi, maxPhi, minR, maxR);
 		if (minPhi < 0) {
-			root.getElementsInEuclideanCircle(2*M_PI+minPhi, 2*M_PI, minR, maxR, center, radius, circleDenizens);
+			root.getElementsInEuclideanCircle(center, radius, circleDenizens, 2*M_PI+minPhi, 2*M_PI, minR, maxR);
 			wraparound = true;
 		}
 		if (maxPhi > 2*M_PI) {
-			root.getElementsInEuclideanCircle(0, maxPhi - 2*M_PI, minR, maxR, center, radius, circleDenizens);
+			root.getElementsInEuclideanCircle(center, radius, circleDenizens, 0, maxPhi - 2*M_PI, minR, maxR);
 			wraparound = true;
 		}
 

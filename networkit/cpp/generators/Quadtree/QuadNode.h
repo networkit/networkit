@@ -361,9 +361,22 @@ public:
 	}
 
 	/**
-	 * Main query method
+	 * Main query method, get points lying in a Euclidean circle around the center point.
+	 * Optional limits can be given to get a different result or to reduce unnecessary comparisons
+	 *
+	 * Elements are pushed onto a vector which is a required argument. This is done to reduce copying
+	 *
+	 * Safe to call in parallel if diagnostics are disabled
+	 *
+	 * @param center Center of the query circle
+	 * @param radius Radius of the query circle
+	 * @param result Reference to the vector where the results will be stored
+	 * @param minAngle Optional value for the minimum angular coordinate of the query region
+	 * @param maxAngle Optional value for the maximum angular coordinate of the query region
+	 * @param lowR Optional value for the minimum radial coordinate of the query region
+	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point2D<double> center, double radius, vector<T> &result) {
+	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -396,11 +409,15 @@ public:
 			}
 		}	else {
 			for (uint i = 0; i < children.size(); i++) {
-				children[i].getElementsInEuclideanCircle(minAngle, maxAngle, lowR, highR, center, radius, result);
+				children[i].getElementsInEuclideanCircle(center, radius, result, minAngle, maxAngle, lowR, highR);
 			}
 		}
 	}
 
+	/**
+	 * Reset the counters of necessary and unecessary distance calculations in this subtree.
+	 * Also reset the flags indicating whether each leaf was included or cut during the last query
+	 */
 	void resetCounter() {
 		ncomp = 0;
 		uncomp = 0;
@@ -413,6 +430,10 @@ public:
 		}
 	}
 
+	/**
+	 * Shrink all vectors in this subtree to fit the content.
+	 * Call after quadtree construction is complete, causes better memory usage and cache efficiency
+	 */
 	void trim() {
 		content.shrink_to_fit();
 		positions.shrink_to_fit();
@@ -425,6 +446,9 @@ public:
 		}
 	}
 
+	/**
+	 * Count how many of the leafs in this subtree were wholly included in the last query circle
+	 */
 	int countIncluded() const {
 		if (isLeaf) return wasIncluded ? 1 : 0;
 		int result = 0;
@@ -433,6 +457,9 @@ public:
 		return result;
 	}
 
+	/**
+	 * Count how many of the leafs in this subtree were cut by the last query circle
+	 */
 	int countCut() const {
 		if (isLeaf) return wasCut ? 1 : 0;
 		int result = 0;
@@ -440,6 +467,9 @@ public:
 		return result;
 	}
 
+	/**
+	 * Count how many points where contained in cut leaves of the last query circle, but not the circle itself
+	 */
 	int countUnnecessaryComparisonsInCutLeaves() const {
 		if (isLeaf) return wasCut ? uncomp : 0;
 		int result = 0;
@@ -447,6 +477,9 @@ public:
 		return result;
 	}
 
+	/**
+     * Count how many points where contained in cut leaves of the last query circle AND in the circle itself
+	 */
 	int countNecessaryComparisonsInCutLeaves() const {
 		if (isLeaf) return wasCut ? ncomp : 0;
 		int result = 0;
@@ -454,18 +487,27 @@ public:
 		return result;
 	}
 
+	/**
+	 * Number of points lying in the region managed by this QuadNode
+	 */
 	count size() const {
 		count result = isLeaf ? content.size() : 0;
 		for (auto child : children) result += child.size();
 		return result;
 	}
 
+	/**
+	 * Height of subtree hanging from this QuadNode
+	 */
 	count height() const {
 		count result = 1;//if leaf node, the children loop will not execute
 		for (auto child : children) result = std::max(result, child.height()+1);
 		return result;
 	}
 
+	/**
+	 * Leaf cells in the subtree hanging from this QuadNode
+	 */
 	count countLeaves() const {
 		if (isLeaf) return 1;
 		count result = 0;
@@ -474,6 +516,7 @@ public:
 		}
 		return result;
 	}
+
 
 	double getLeftAngle() const {
 		return leftAngle;
