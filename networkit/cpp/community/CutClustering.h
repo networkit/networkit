@@ -20,7 +20,7 @@ public:
 	 *
 	 * @param alpha The parameter for the cut clustering
 	 */
-	CutClustering(edgeweight alpha);
+	CutClustering(const Graph& G, edgeweight alpha);
 
 	/**
 	 * Apply algorithm to graph
@@ -30,7 +30,7 @@ public:
 	 *
 	 * @return partition of the node set
 	 */
-	virtual Partition run(const Graph& G) override;
+	virtual Partition run() override;
 
 	/**
 	 * @return string representation of algorithm and parameters.

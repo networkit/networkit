@@ -5,13 +5,11 @@
  *      Author: Henning
  */
 
-#include <set>
-
 #include "ApproximatePageRank.h"
 
 namespace NetworKit {
 
-ApproximatePageRank::ApproximatePageRank(Graph& g, double alpha_, double epsilon):
+ApproximatePageRank::ApproximatePageRank(const Graph& g, double alpha_, double epsilon):
 		G(g), alpha(alpha_), oneMinusAlphaOver2((1.0 - alpha) * 0.5), eps(epsilon)
 {
 
@@ -40,6 +38,10 @@ void ApproximatePageRank::push(node u, node seed, std::set<node>& activeNodes)
 	}
 
 //	TRACE("normalizedResidual[", u, "]: ", normalizedResid[u]);
+}
+
+ApproximatePageRank::~ApproximatePageRank() {
+
 }
 
 std::vector<double> ApproximatePageRank::run(node seed) {

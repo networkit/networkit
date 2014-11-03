@@ -630,6 +630,7 @@ cdef class BFS:
 			self._this.run()
 		else:
 			self._this.run(t)
+		return self
 
 	def getDistances(self):
 		"""
@@ -703,6 +704,7 @@ cdef class DynBFS:
 			length (number of edges) of the shortest path from source to any other node.
 		"""
 		self._this.run()
+		return self
 
 	def getDistances(self):
 		"""
@@ -793,6 +795,7 @@ cdef class Dijkstra:
 			self._this.run()
 		else:
 			self._this.run(t)
+		return self
 
 	def getDistances(self):
 		""" Returns a vector of weighted distances from the source node, i.e. the
@@ -993,6 +996,7 @@ cdef class Luby:
 			A boolean vector of length n.
 		"""
 		return self._this.run(G._this)
+		# TODO: return self
 
 	def toString(self):
 		""" Get string representation of the algorithm.
@@ -2670,10 +2674,10 @@ cdef class CommunityDetector:
 
 cdef extern from "cpp/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP":
-		_PLP() except +
-		_PLP(count updateThreshold) except +
-		_Partition run(_Graph _G) except +
-		_Partition runFromGiven(_Graph _G, _Partition _part) except +
+		_PLP(_Graph _G) except +
+		_PLP(_Graph _G, count updateThreshold) except +
+		_Partition run() except +
+		_Partition runFromGiven(_Partition _part) except +
 		count numberOfIterations() except +
 		string toString() except +
 
@@ -2691,16 +2695,16 @@ cdef class PLP(CommunityDetector):
  	that the maximum number of its neighbors have. The procedure is stopped when every vertex
  	has the label that at least half of its neighbors have.
 	"""
-	cdef _PLP _this
+	cdef _PLP* _this
 
-	def __cinit__(self, updateThreshold=None):
+	def __cinit__(self, Graph G not None, updateThreshold=None):
 		if updateThreshold is None:
-			self._this = _PLP()
+			self._this = new _PLP(G._this)
 		else:
-			self._this = _PLP(updateThreshold)
+			self._this = new _PLP(G._this, updateThreshold)
 
 
-	def run(self, Graph G not None):
+	def run(self):
 		""" Run the label propagation clustering algorithm.
 
 		Parameters
@@ -2713,9 +2717,9 @@ cdef class PLP(CommunityDetector):
 	 	Partition
 	 		The created clustering.
 		"""
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run())
 
-	def runFromGiven(self, Graph G not None, Partition part not None):
+	def runFromGiven(self, Partition part not None):
 		""" Run the label propagation clustering algorithm starting
 		from the Partition part.
 
@@ -2734,7 +2738,7 @@ cdef class PLP(CommunityDetector):
 		"""
 		# Work on a local copy as PLP::runFromGiven works on the input
 		cdef _Partition algInput = part._this
-		self._this.runFromGiven(G._this, algInput)
+		self._this.runFromGiven(algInput)
 		return Partition().setThis(algInput)
 
 	def numberOfIterations(self):
@@ -2760,16 +2764,20 @@ cdef class PLP(CommunityDetector):
 
 cdef extern from "cpp/community/LPDegreeOrdered.h":
 	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered":
-		_LPDegreeOrdered() except +
-		_Partition run(_Graph _G) except +
+		_LPDegreeOrdered(_Graph _G) except +
+		_Partition run() except +
 		count numberOfIterations()
+		string toString() except +
 
 cdef class LPDegreeOrdered(CommunityDetector):
 	""" Label propagation-based community detection algorithm which processes nodes in increasing order of node degree.	"""
-	cdef _LPDegreeOrdered _this
+	cdef _LPDegreeOrdered* _this
 
-	def run(self, Graph G not None):
-		return Partition().setThis(self._this.run(G._this))
+	def __cinit__(self, Graph G not None):
+		self._this = new _LPDegreeOrdered(G._this)
+
+	def run(self):
+		return Partition().setThis(self._this.run())
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
@@ -2781,13 +2789,22 @@ cdef class LPDegreeOrdered(CommunityDetector):
 		"""
 		return self._this.numberOfIterations()
 
+	def toString(self):
+		""" Get string representation.
+
+		Returns
+		-------
+		string
+			String representation of algorithm and parameters.
+		"""
+		return self._this.toString().decode("utf-8")
 
 cdef extern from "cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM":
-		_PLM() except +
-		_PLM(bool refine, double gamma, string par, count maxIter, bool parCoarsening, bool turbo) except +
+		_PLM(_Graph _G) except +
+		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool parCoarsening, bool turbo) except +
 		string toString() except +
-		_Partition run(_Graph G) except +
+		_Partition run() except +
 
 
 cdef class PLM(CommunityDetector):
@@ -2813,10 +2830,10 @@ cdef class PLM(CommunityDetector):
 			faster but uses O(n) additional memory per thread
 	"""
 
-	cdef _PLM _this
+	cdef _PLM* _this
 
-	def __cinit__(self, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
-		self._this = _PLM(refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
+	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
+		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
 
 	def toString(self):
 		""" Get string representation.
@@ -2828,7 +2845,7 @@ cdef class PLM(CommunityDetector):
 		"""
 		return self._this.toString().decode("utf-8")
 
-	def run(self, Graph G not None):
+	def run(self):
 		""" Detect communities in the given graph `G`
 
 		Parameters
@@ -2841,13 +2858,14 @@ cdef class PLM(CommunityDetector):
 		Partition
 			A partition containing the found communities.
 		"""
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run())
 
 
 cdef extern from "cpp/community/CNM.h":
 	cdef cppclass _CNM "NetworKit::CNM":
+		_CNM(_Graph _G) except +
 		string toString() except +
-		_Partition run(_Graph G) except +
+		_Partition run() except +
 
 
 cdef class CNM(CommunityDetector):
@@ -2859,8 +2877,8 @@ cdef class CNM(CommunityDetector):
 
 	cdef _CNM* _this
 
-	def __cinit__(self):
-		self._this = new _CNM()
+	def __cinit__(self, Graph G not None):
+		self._this = new _CNM(G._this)
 
 	def toString(self):
 		""" Get string representation.
@@ -2872,7 +2890,7 @@ cdef class CNM(CommunityDetector):
 		"""
 		return self._this.toString().decode("utf-8")
 
-	def run(self, Graph G not None):
+	def run(self):
 		""" Detect communities in the given graph `graph`.
 
 		Parameters
@@ -2885,13 +2903,14 @@ cdef class CNM(CommunityDetector):
 		Partition
 			A partition containing the found communities.
 		"""
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run())
 
 cdef extern from "cpp/community/CutClustering.h":
 	cdef cppclass _CutClustering "NetworKit::CutClustering":
-		_CutClustering(edgeweight alpha) except +
+		_CutClustering(_Graph _G) except +
+		_CutClustering(_Graph _G, edgeweight alpha) except +
 		string toString() except +
-		_Partition run(_Graph G) except +
+		_Partition run() except +
 
 cdef extern from "cpp/community/CutClustering.h" namespace "NetworKit::CutClustering":
 	map[double, _Partition] CutClustering_getClusterHierarchy "NetworKit::CutClustering::getClusterHierarchy"(const _Graph& G) except +
@@ -2910,8 +2929,8 @@ cdef class CutClustering(CommunityDetector):
 	"""
 	cdef _CutClustering* _this
 
-	def __cinit__(self, edgeweight alpha):
-		self._this = new _CutClustering(alpha)
+	def __cinit__(self, Graph G not None,  edgeweight alpha):
+		self._this = new _CutClustering(G._this, alpha)
 
 	def __dealloc__(self):
 		del self._this
@@ -2926,7 +2945,7 @@ cdef class CutClustering(CommunityDetector):
 		"""
 		return self._this.toString().decode("utf-8")
 
-	def run(self, Graph G not None):
+	def run(self):
 		""" Detect communities in the given graph `graph`.
 
 		Warning: due to numerical errors the resulting clusters might not be correct.
@@ -2942,7 +2961,7 @@ cdef class CutClustering(CommunityDetector):
 		Partition
 			A partition containing the found communities.
 		"""
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run())
 
 	@staticmethod
 	def getClusterHierarchy(Graph G not None):
@@ -3037,7 +3056,8 @@ cdef class NMIDistance(DissimilarityMeasure):
 
 cdef extern from "cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
-		_Partition run(_Graph G) except +
+		_EPP(_Graph G)
+		_Partition run() except +
 		string toString()
 
 cdef class EPP(CommunityDetector):
@@ -3047,9 +3067,12 @@ cdef class EPP(CommunityDetector):
 	Then the final algorithm operates on the coarse graph and determines a solution
 	for the input graph.
 	"""
-	cdef _EPP _this
+	cdef _EPP* _this
 
-	def run(self, Graph G):
+	def __cinit__(self, Graph G not None):
+		self._this = new _EPP(G._this)
+
+	def run(self):
 		"""  Run the ensemble clusterer on `G` and return the result in a Partition.
 
 		Parameters
@@ -3062,7 +3085,7 @@ cdef class EPP(CommunityDetector):
 		Partition:
 			A Partition of the clustering.
 		"""
-		return Partition().setThis(self._this.run(G._this))
+		return Partition().setThis(self._this.run())
 
 	def toString(self):
 		""" String representation of EPP class.
@@ -3074,21 +3097,21 @@ cdef class EPP(CommunityDetector):
 		"""
 		return self._this.toString()
 
-	cdef setThis(self, _EPP other):
+	cdef setThis(self, _EPP* other):
 		self._this = other
 		return self
 
 
 cdef extern from "cpp/community/EPPFactory.h":
 	cdef cppclass _EPPFactory "NetworKit::EPPFactory":
-		_EPP make(count ensembleSize, string baseAlgorithm, string finalAlgorithm)
+		_EPP make(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
 
 cdef class EPPFactory:
 	""" This class makes instaces of the EPP community detection algorithm """
 	cdef _EPPFactory _this
 
-	def make(self, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
-		return EPP().setThis(self._this.make(ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
+#	def make(self, Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
+#		return EPP().setThis(self._this.make(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
 
 cdef extern from "cpp/community/CommunityGraph.h":
 	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":
@@ -3115,6 +3138,7 @@ cdef class CommunityGraph:
 			A community clustering of `G`.
 		"""
 		self._this.run(G._this, zeta._this)
+		return self
 
 	def getGraph(self):
 		""" Returns the coarsened Graph.
@@ -3186,6 +3210,7 @@ cdef class EdmondsKarp:
 		Computes the maximum flow, executes the EdmondsKarp algorithm
 		"""
 		self._this.run()
+		return self
 
 	def getMaxFlow(self):
 		"""
@@ -3350,6 +3375,7 @@ cdef class ConnectedComponents:
 	def run(self):
 		""" This method determines the connected components for the graph given in the constructor. """
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		""" Get a Partition that represents the components.
@@ -3403,6 +3429,7 @@ cdef class ParallelConnectedComponents:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		return Partition().setThis(self._this.getPartition())
@@ -3434,6 +3461,7 @@ cdef class StronglyConnectedComponents:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		return Partition().setThis(self._this.getPartition())
@@ -3633,6 +3661,7 @@ cdef class CoreDecomposition:
 	def run(self):
 		""" Perform k-core decomposition of graph passed in constructor. """
 		self._this.run()
+		return self
 
 	def coreNumbers(self):
 		""" Get vector of core numbers, indexed by node.
@@ -3763,6 +3792,7 @@ cdef class Betweenness:
 			If set to True the computation is done in parallel.
 		"""
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -3835,6 +3865,7 @@ cdef class DynBetweenness:
 		"""  Compute betweenness scores on the initial graph.
 		"""
 		self._this.run()
+		return self
 
 	def update(self, ev):
 		""" Updates the betweenness centralities after the edge insertion.
@@ -3920,6 +3951,7 @@ cdef class ApproxBetweenness:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -4001,6 +4033,7 @@ cdef class DynApproxBetweenness:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def update(self, batch):
 		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
@@ -4087,6 +4120,7 @@ cdef class ApproxBetweenness2:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -4153,6 +4187,7 @@ cdef class PageRank:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -4216,6 +4251,7 @@ cdef class EigenvectorCentrality:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -4281,6 +4317,7 @@ cdef class DegreeCentrality:
 
 	def run(self):
 		self._this.run()
+		return self
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
