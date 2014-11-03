@@ -14,8 +14,9 @@
 using std::vector;
 namespace NetworKit {
 
-DynamicHyperbolicGenerator::DynamicHyperbolicGenerator() {
-
+DynamicHyperbolicGenerator::DynamicHyperbolicGenerator() : nodes(0), currentfactor(0), alpha(1), stretch(1), moveEachStep(0), factorgrowth(0), moveDistance(0) {
+	initializeQuadTree();
+	initializeMovement();
 }
 
 DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double initialFactor, double alpha, double stretch, double moveEachStep, double factorgrowth, double moveDistance) {
@@ -45,11 +46,11 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, v
 	this->moveEachStep = moveEachStep;
 	this->factorgrowth = factorgrowth;
 	this->moveDistance = moveDistance;
-	this->initialized = true;
 	for (index i = 0; i < nodes; i++) {
 		assert(radii[i] < r);
 		quad.addContent(i, angles[i], radii[i]);
 	}
+	this->initialized = true;
 	INFO("Filled Quadtree");
 	initializeMovement();
 }
@@ -70,9 +71,7 @@ void DynamicHyperbolicGenerator::initializeQuadTree() {
 	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
 	angles.resize(nodes);
 	radii.resize(nodes);
-	double rad_nom = (cosh(R)-1);
-	double rad_denom = (cosh(R)+1);
-	double r = sqrt(rad_nom/rad_denom);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	quad = Quadtree<index>(r);
 	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
 	INFO("Generated Points");
@@ -83,11 +82,7 @@ void DynamicHyperbolicGenerator::initializeQuadTree() {
 	INFO("Filled Quadtree");
 }
 
-Graph DynamicHyperbolicGenerator::getGraph() {
-	/**
-	 * while the Quadtree doesn't strictly need to be initialized this early, it has to be done anyway and there is no harm doing it now
-	 */
-	if (!initialized) initializeQuadTree();
+Graph DynamicHyperbolicGenerator::getGraph() const {
 	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	/**
@@ -140,7 +135,12 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 }
 
 void DynamicHyperbolicGenerator::getEventsFromFactorGrowth(vector<GraphEvent> &result) {
+	if (currentfactor == 0 && factorgrowth < 0) {
+		return;
+	}
 	double newfactor = currentfactor + factorgrowth;
+	if (newfactor < 0) newfactor = 0;
+
 	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
 
 	/**

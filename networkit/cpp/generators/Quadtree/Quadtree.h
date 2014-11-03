@@ -26,10 +26,12 @@ public:
 	}
 
 	/**
-	 * @param maxR radius of the managed area. Must be smaller than 1.
-	 * @param theoreticalSplit if true, split cells to get the same area in each child cell. Default is false
-	 * @param alpha dispersion parameter of the point distribution. Only has an effect if theoretical split is true
-	 * @param capacity how many points can inhabit a leaf cell before it is split up?
+	 * @param maxR Radius of the managed area. Must be smaller than 1.
+	 * @param theoreticalSplit If true, split cells to get the same area in each child cell. Default is false
+	 * @param alpha dispersion Parameter of the point distribution. Only has an effect if theoretical split is true
+	 * @param capacity How many points can inhabit a leaf cell before it is split up?
+	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel calls
+	 *
 	 */
 	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, bool diagnostics = false) {
 		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,diagnostics);
@@ -59,15 +61,17 @@ public:
 	 *
 	 * @return vector<T> of elements
 	 */
-	vector<T> getElements() {
+	vector<T> getElements() const {
 		return root.getElements();
 	}
 
 	/**
-	 * Get elements whose hyperbolic distance to the query point is less than maxDistance
+	 * Get elements whose hyperbolic distance to the query point is less than the hyperbolic distance
 	 *
-	 * @param circleCenter
-	 * @param hyperbolicRadius
+	 * Safe to call in parallel if diagnostics were not activated
+	 *
+	 * @param circleCenter Cartesian coordinates of the query circle's center
+	 * @param hyperbolicRadius Radius of the query circle
 	 */
 	vector<T> getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius) {
 		Point2D<double> origin(0,0);
@@ -124,15 +128,15 @@ public:
 		return circleDenizens;
 	}
 
-	count size() {
+	count size() const {
 		return root.size();
 	}
 
-	count height() {
+	count height() const {
 		return root.height();
 	}
 
-	count countLeaves() {
+	count countLeaves() const {
 		return root.countLeaves();
 	}
 

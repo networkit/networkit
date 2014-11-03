@@ -66,16 +66,30 @@ public:
 	 */
 	Graph generate();
 
+	/**
+	 * Set the capacity of a quadtree leaf.
+	 *
+	 * @param capacity Tuning parameter, default value is 1000
+	 */
 	void setLeafCapacity(count capacity) {
 		this->capacity = capacity;
 	}
+
+	/**
+	 * When using a theoretically optimal split, the quadtree will be flatter, but running time usually longer.
+	 * @param split Whether to use the theoretically optimal split. Defaults to false
+	 */
 	void setTheoreticalSplit(bool split) {
 		this->theoreticalSplit = split;
 	}
 
 private:
 
+	/**
+	 * Set tuning parameters to their default values
+	 */
 	void initialize();
+
 	/**
 	 * graph parameters
 	 */

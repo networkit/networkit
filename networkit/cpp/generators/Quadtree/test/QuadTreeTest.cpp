@@ -78,7 +78,7 @@ TEST_F(QuadTreeTest, testQuadTreeInsertion) {
 		for (index i = 0; i < n; i++) {
 			if (HyperbolicSpace::poincareMetric(angles[comparison], radii[comparison], angles[i], radii[i]) < R) {
 				bool found = false;
-				QuadNode<index> responsibleNode = * getRoot(quad).getAppropriateLeaf(angles[i], radii[i]);
+				QuadNode<index> responsibleNode = getRoot(quad).getAppropriateLeaf(angles[i], radii[i]);
 
 				for (index j = 0; j < closeToOne.size(); j++) {
 					if (closeToOne[j] == i) {

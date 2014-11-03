@@ -51,9 +51,9 @@ public:
 	QuadNode() {
 		//This should never be called.
 		leftAngle = 0;
-		rightAngle = 2*M_PI;
+		rightAngle = 0;
 		minR = 0;
-		maxR = 1;
+		maxR = 0;
 		capacity = 20;
 		isLeaf = true;
 		minRegion = 0;
@@ -63,6 +63,21 @@ public:
 		resetCounter();
 	}
 
+	/**
+	 * Construct a QuadNode for polar coordinates.
+	 *
+	 *
+	 * @param leftAngle Minimal angular coordinate of region, in radians from 0 to 2\pi
+	 * @param rightAngle Maximal angular coordinate of region, in radians from 0 to 2\pi
+	 * @param minR Minimal radial coordinate of region, between 0 and 1
+	 * @param maxR Maximal radial coordinate of region, between 0 and 1
+	 * @param capacity Number of points a leaf cell can store before splitting
+	 * @param minDiameter Minimal diameter of a quadtree node. If the node is already smaller, don't split even if over capacity. Default is 0
+	 * @param splitTheoretical Whether to split in a theoretically optimal way or in a way to decrease measured running times
+	 * @param alpha dispersion Parameter of the point distribution. Only has an effect if theoretical split is true
+	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel use
+	 *
+	 */
 	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1,bool diagnostics = false) {
 		this->leftAngle = leftAngle;
 		this->minR = minR;
@@ -82,6 +97,13 @@ public:
 		resetCounter();
 	}
 
+	/**
+	 * Add a point at polar coordinates (angle, R) with content input. May split node if capacity is full
+	 *
+	 * @param input arbitrary content, in our case an index
+	 * @param angle angular coordinate of point, between 0 and 2 pi.
+	 * @param R radial coordinate of point, between 0 and 1.
+	 */
 	void addContent(T input, double angle, double R) {
 		assert(this->responsible(angle, R));
 		if (isLeaf) {
@@ -142,6 +164,15 @@ public:
 		elements++;
 	}
 
+	/**
+	 * Remove content at polar coordinates (angle, R). May cause coarsening of the quadtree
+	 *
+	 * @param input Content to be removed
+	 * @param angle Angular coordinate
+	 * @param R Radial coordinate
+	 *
+	 * @return True if content was found and removed, false otherwise
+	 */
 	bool removeContent(T input, double angle, double R) {
 		if (!responsible(angle, R)) return false;
 		if (isLeaf) {
@@ -203,6 +234,14 @@ public:
 	}
 
 
+	/**
+	 * Check whether the region managed by this node lies outside of an Euclidean circle.
+	 *
+	 * @param query Center of the Euclidean query circle, given in Cartesian coordinates
+	 * @param radius Radius of the Euclidean query circle
+	 *
+	 * @return True if the region managed by this node lies completely outside of the circle
+	 */
 	bool outOfReach(Point2D<double> query, double radius) const {
 		double phi, r;
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
@@ -242,16 +281,39 @@ public:
 		return true;
 	}
 
-	bool outOfReach(double angle, double R, double radius) const {
-		if (responsible(angle, R)) return false;
-		Point2D<double> query = HyperbolicSpace::polarToCartesian(angle, R);
+	/**
+	 * Check whether the region managed by this node lies outside of an Euclidean circle.
+	 * Functionality is the same as in the method above, but it takes polar coordinates instead of Cartesian ones
+	 *
+	 * @param angle_c Angular coordinate of the Euclidean query circle's center
+	 * @param r_c Radial coordinate of the Euclidean query circle's center
+	 * @param radius Radius of the Euclidean query circle
+	 *
+	 * @return True if the region managed by this node lies completely outside of the circle
+	 */
+	bool outOfReach(double angle_c, double r_c, double radius) const {
+		if (responsible(angle_c, r_c)) return false;
+		Point2D<double> query = HyperbolicSpace::polarToCartesian(angle_c, r_c);
 		return outOfReach(query, radius);
 	}
 
-	bool responsible(double angle, double R) const {
-		return (angle >= leftAngle && angle < rightAngle && R >= minR && R < maxR);
+	/**
+	 * Does the point at (angle, r) fall inside the region managed by this QuadNode?
+	 *
+	 * @param angle Angular coordinate of input point
+	 * @param r Radial coordinate of input points
+	 *
+	 * @return True if input point lies within the region of this QuadNode
+	 */
+	bool responsible(double angle, double r) const {
+		return (angle >= leftAngle && angle < rightAngle && r >= minR && r < maxR);
 	}
 
+	/**
+	 * Get all Elements in this QuadNode or a descendant of it
+	 *
+	 * @return vector of content type T
+	 */
 	std::vector<T> getElements() const {
 		if (isLeaf) {
 			return content;
@@ -265,26 +327,42 @@ public:
 		}
 	}
 
-	QuadNode<T> * getAppropriateLeaf(double angle, double R) {
-		assert(this->responsible(angle, R));
-		if (isLeaf) return this;
+	/**
+	 * Don't use this!
+	 * Code is still in here for a unit test.
+	 *
+	 * Get copy of the leaf cell responsible for a point at (angle, r).
+	 * Expensive because it copies the whole subtree, causes assertion failure if called with the wrong arguments
+	 *
+	 * @param angle Angular coordinate of point
+	 * @param r Radial coordinate of point
+	 *
+	 * @return Copy of leaf cell containing point, or dummy cell not responsible for point
+	 *
+	 */
+	QuadNode<T> getAppropriateLeaf(double angle, double r) {
+		assert(this->responsible(angle, r));
+		if (isLeaf) return *this;
 		else {
 			for (uint i = 0; i < children.size(); i++) {
 				bool foundResponsibleChild = false;
-				if (children[i].responsible(angle, R)) {
+				if (children[i].responsible(angle, r)) {
 					assert(foundResponsibleChild == false);
 					foundResponsibleChild = true;
-					return children[i].getAppropriateLeaf(angle, R);
+					return children[i].getAppropriateLeaf(angle, r);
 				}
 			}
-			DEBUG("No responsible child for (", angle, ", ", R, ") found. Segfault imminent.");
+			DEBUG("No responsible child for (", angle, ", ", r, ") found.");
 			assert(false);
 			//to make compiler happy:
-			QuadNode<T> * result = nullptr;
-			return result;
+			QuadNode<T> dummy;
+			return dummy;
 		}
 	}
 
+	/**
+	 * Main query method
+	 */
 	void getElementsInEuclideanCircle(double minAngle, double maxAngle, double lowR, double highR, Point2D<double> center, double radius, vector<T> &result) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
 		if (outOfReach(center, radius)) {
