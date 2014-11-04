@@ -57,9 +57,7 @@ void Betweenness::run() {
 				c = (double(sssp->numberOfPaths(p)) / sssp->numberOfPaths(t)) * (1 + dependency[t]);
 				dependency[p] += c;
 				if (computeEdges) {
-					//if (G.hasEdge(p,t)) { //TODO needed?
-						edgeData[G.edgeId(p,t)] += c;
-					//}
+					edgeData[G.edgeId(p,t)] += c;
 				}
 
 			}
