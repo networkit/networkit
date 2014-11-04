@@ -93,10 +93,18 @@ public:
 	/**
 	 * Project radial coordinates of the Poincare model into the hyperbolic plane
 	 *
-	 * @param EuclideanRadius radial coordinate of a point in the Poincare model
+	 * @param EuclideanRadius Radial coordinate of a point in the Poincare model
 	 * @return radial coordinate in the hyperbolic plane
 	 */
 	static double EuclideanRadiusToHyperbolic(double EuclideanRadius);
+
+	/**
+	 * @param area The area of the hyperbolic circle
+	 * @param return Radius of a hyperbolic circle with the given area
+	 */
+	static inline double hyperbolicAreaToRadius(double area) {
+		return acosh(area/(2*M_PI)+1);
+	}
 
 	/**
 	 * @param r_c radial coordinate of the circle center
