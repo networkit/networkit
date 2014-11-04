@@ -94,12 +94,6 @@ METISParser::METISParser(std::string path) : graphFile(path) {
 }
 
 
-
-METISParser::~METISParser() {
-	// TODO Auto-generated destructor stub
-}
-
-
 std::tuple<count, count, index, count> METISParser::getHeader() {
 	// handle header line
 	count n;		// number of nodes

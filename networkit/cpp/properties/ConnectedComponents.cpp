@@ -13,12 +13,10 @@
 
 namespace NetworKit {
 
-ConnectedComponents::ConnectedComponents(const Graph& G) : G(G), numComponents(0) {
+ConnectedComponents::ConnectedComponents(const Graph& G) : G(G), hasRun(false) {
 }
 
 void ConnectedComponents::run() {
-
-
 	DEBUG("initializing labels");
 	component = Partition(G.upperNodeIdBound(), none);
 	numComponents = 0;
@@ -36,15 +34,18 @@ void ConnectedComponents::run() {
 		}
 	});
 
+	hasRun = true;
 }
 
 
 Partition ConnectedComponents::getPartition() {
+	if (!hasRun) throw std::runtime_error("run method has not been called");
 	return this->component;
 }
 
 
 std::map<index, count> ConnectedComponents::getComponentSizes() {
+	if (!hasRun) throw std::runtime_error("run method has not been called");
 	return this->component.subsetSizeMap();
 }
 

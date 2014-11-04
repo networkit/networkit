@@ -3,10 +3,10 @@ an interactive toolkit for high-performance network analysis
 usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb
 """
 
-__author__ = "Christian Staudt" 
+__author__ = "Christian Staudt"
 __copyright__ = "Copyright (c) 2014 Christan Staudt"
 __license__ = "MIT"
-__version__ = "3.3"
+__version__ = "3.4"
 
 
 # standard library modules
@@ -25,12 +25,13 @@ from . import generators
 from . import properties
 from . import structures
 from . import engineering
-from . import toolbox
 from . import dynamic
 from . import gephi
 from . import partitioning
 from . import coloring
 from . import workflows
+from . import flow
+from . import distmeasures
 
 try:
 	from . import viztools
@@ -52,7 +53,7 @@ except ImportError as importError:
 # TODO: introduce settings module
 
 # extension imports
-from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
+from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none
 
 # local imports
 from .graph import Graph
@@ -61,7 +62,7 @@ from .graphio import readGraph, writeGraph, Format
 #except ImportError:
 #	from _graphio33 import readGraph, writeGraph, Format
 from .nxadapter import nk2nx, nx2nk
-from .toolbox import batch
+from .workflows import batch
 from .community import detectCommunities
 
 

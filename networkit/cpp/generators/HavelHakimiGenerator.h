@@ -34,7 +34,6 @@ public:
 	 *            sequence is realizable.
 	 */
 	HavelHakimiGenerator(const std::vector<unsigned int>& sequence, bool skipTest = false);
-	virtual ~HavelHakimiGenerator() = default;
 
 	/**
 	 * Generates degree sequence seq (if it is realizable).

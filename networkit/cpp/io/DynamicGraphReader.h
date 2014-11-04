@@ -18,10 +18,6 @@ namespace NetworKit {
 class DynamicGraphReader {
 
 public:
-
-	/** Default destructor */
-	virtual ~DynamicGraphReader() = default;
-
 	/**
 	 * @param[in]	path	path to dynamic graph file
 	 * @param[in]	Gproxy	graph event proxy receives the events from the file

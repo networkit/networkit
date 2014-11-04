@@ -10,6 +10,7 @@
 #include "ClusteringCoefficient.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/Log.h"
+#include <omp.h>
 
 namespace NetworKit {
 
@@ -17,57 +18,129 @@ std::vector<double> ClusteringCoefficient::exactLocal(Graph &G) {
 	count z = G.upperNodeIdBound();
 	std::vector<double> coefficient(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
+	std::vector<std::vector<bool> > nodeMarker(omp_get_max_threads());
+
+	for (auto & nm : nodeMarker) {
+		nm.resize(z, false);
+	}
+
 	G.balancedParallelForNodes([&](node u) {
-
-#if 0
-		// TODO:
-		// for each vertex u
-		// retrieve neighborhood of u
-		// examine each pair (v, w) of neighbors of u
-		// if (v, w) \in E then increase triangles
-
 		count d = G.degree(u);
-	    if (d < 2) {
-	      coefficient[u] = 0.0;
-	    } else {
-		      count triangles = 0;
-		      std::vector<node> neigh = G.neighbors(u);
-		      for (index i = 0; i < d; ++i) {
-		    	  for (index j = i+1; j < d; ++j) {
-		    		  if (G.hasEdge(neigh[i], neigh[j])) {
-		    			  triangles++;
-		    		  }
-		    	  }
-		      }
-		      coefficient[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
-	    }
-#endif
 
+		if (d < 2) {
+			coefficient[u] = 0.0;
+		} else {
+			size_t tid = omp_get_thread_num();
+			count triangles = 0;
 
-		count d = G.degree(u);
-		std::unordered_set<node> uNeighbors; // set for O(1) time access to u's neighbors
-		G.forNeighborsOf(u, [&](node v){
-			if (v != u) {
-				uNeighbors.insert(v);
-			}
-		});
-	    
-	    if (d < 2) {
-	      coefficient[u] = 0.0;
-	    } else {
-	      count triangles = 0;
-	      G.forEdgesOf(u, [&](node u, node v) {
-	        G.forEdgesOf(v, [&](node v, node w){
-	          if (uNeighbors.find(w) != uNeighbors.end()) { // w is also a neighbor of u
-	            triangles += 1;
-	          }
-	        });
-	      });
-	      coefficient[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
-	    }
+			G.forEdgesOf(u, [&](node u, node v) {
+				nodeMarker[tid][v] = true;
+			});
+
+			G.forEdgesOf(u, [&](node u, node v) {
+				G.forEdgesOf(v, [&](node v, node w) {
+					if (nodeMarker[tid][w]) {
+						triangles += 1;
+					}
+				});
+			});
+
+			G.forEdgesOf(u, [&](node u, node v) {
+				nodeMarker[tid][v] = false;
+			});
+
+			coefficient[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
+		}
 	});
 
 	return coefficient;
+}
+
+double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
+	std::vector<std::vector<node> > edges(G.upperNodeIdBound());
+
+	// copy edges with edge ids
+	G.parallelForNodes([&](node u) {
+		edges[u].reserve(G.degree(u));
+		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
+			edges[u].emplace_back(v);
+		});
+	});
+
+	//Node attribute: marker
+	std::vector<bool> nodeMarker(G.upperNodeIdBound(), false);
+
+	//Edge attribute: triangle count
+	std::vector<count> triangleCount(G.upperNodeIdBound(), 0);
+
+	// bucket sort
+	count n = G.numberOfNodes();
+	std::vector<node> sortedNodes(n);
+	{
+		std::vector<index> nodePos(n + 1, 0);
+
+		G.forNodes([&](node u) {
+			++nodePos[n - G.degree(u)];
+		});
+
+		// exclusive prefix sum
+		index tmp = nodePos[0];
+		index sum = tmp;
+		nodePos[0] = 0;
+
+		for (index i = 1; i < nodePos.size(); ++i) {
+			tmp = nodePos[i];
+			nodePos[i] = sum;
+			sum += tmp;
+		}
+
+		G.forNodes([&](node u) {
+			sortedNodes[nodePos[n - G.degree(u)]++] = u;
+		});
+	}
+
+	for (node u : sortedNodes) {
+		//Mark all neighbors
+		for (auto v : edges[u]) {
+			nodeMarker[v] = true;
+		}
+
+		//For all neighbors: check for already marked neighbors.
+		for (auto v : edges[u]) {
+			for (auto w = edges[v].begin(); w != edges[v].end(); ++w) {
+				// delete the edge to u as we do not need to consider it again.
+				// the opposite edge doesn't need to be deleted as we will never again consider
+				// outgoing edges of u as u cannot be reached anymore after the uv loop.
+				if (*w == u) {
+					// move last element to current position in order to avoid changing too much
+					*w = edges[v].back();
+					edges[v].pop_back();
+					if (w == edges[v].end()) // break if we were at the last element already
+						break;
+				}
+
+				if (nodeMarker[*w]) { // triangle found - count it!
+					++triangleCount[u];
+					++triangleCount[*w];
+					++triangleCount[v];
+				}
+			}
+
+			nodeMarker[v] = false; // all triangles with u and v have been counted already
+		}
+	}
+
+	double coefficient = 0;
+	count size = 0;
+	G.forNodes([&](node u) {
+		count d = G.degree(u);
+		if (d > 1) {
+			coefficient += triangleCount[u] * 2.0 / (d * (d - 1));
+			size++;
+		}
+	});
+
+	return coefficient / size;
 }
 
 double ClusteringCoefficient::avgLocal(Graph& G) {
@@ -125,22 +198,36 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 double ClusteringCoefficient::exactGlobal(Graph& G) {
 	count z = G.upperNodeIdBound();
 	std::vector<count> triangles(z); // triangles including node u (every triangle is counted six times)
-	std::vector<count> triples(z); // triples around node u
 
+	std::vector<std::vector<bool> > nodeMarker(omp_get_max_threads());
+	for (auto &nm : nodeMarker) {
+		nm.resize(z, false);
+	}
 
-	G.parallelForNodes([&](node u){
+	G.balancedParallelForNodes([&](node u){
+
+		size_t tid = omp_get_thread_num();
 		count tr = 0;
-    	if (G.degree(u) > 1) {
-     	 	G.forEdgesOf(u, [&](node u, node v) {
-       			G.forEdgesOf(v, [&](node v, node w){
-         			if (G.hasEdge(u, w)) {
-            			tr += 1;
-          			}
-        		});
-      		});
-    	}
-    
-    	triangles[u] = tr;
+
+		if (G.degree(u) > 1) {
+			G.forEdgesOf(u, [&](node u, node v) {
+				nodeMarker[tid][v] = true;
+			});
+
+			G.forEdgesOf(u, [&](node u, node v) {
+				G.forEdgesOf(v, [&](node v, node w) {
+					if (nodeMarker[tid][w]) {
+						tr += 1;
+					}
+				});
+			});
+
+			G.forEdgesOf(u, [&](node u, node v) {
+				nodeMarker[tid][v] = false;
+			});
+		}
+
+		triangles[u] = tr;
 	});
   
   double denominator = G.parallelSumForNodes([&](node u){

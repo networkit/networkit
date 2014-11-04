@@ -17,9 +17,6 @@ GraphEventProxy::GraphEventProxy(Graph& G) {
 	this->G = &G;
 }
 
-GraphEventProxy::~GraphEventProxy() {
-}
-
 node GraphEventProxy::addNode() {
 	node u = this->G->addNode();
 //	TRACE("adding node " , u);

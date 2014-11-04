@@ -14,9 +14,4 @@ NodeDistance::NodeDistance(const Graph& G) : G(G) {
 
 }
 
-NodeDistance::~NodeDistance() {
-	// TODO Auto-generated destructor stub
-}
-
-
 } /* namespace NetworKit */

@@ -11,7 +11,7 @@
 namespace NetworKit {
 
 NetworKit::PageRank::PageRank(const Graph& G, double damp, double tol):
-		Centrality(G, true), damp(damp), tol(tol)
+		Centrality(G, true, false), damp(damp), tol(tol)
 {
 
 }

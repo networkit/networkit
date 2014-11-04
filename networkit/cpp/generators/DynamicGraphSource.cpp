@@ -13,13 +13,6 @@ DynamicGraphSource::DynamicGraphSource() : Gproxy(NULL), G(NULL), graphSet(false
 	// Graph and GraphEventProxy are set by calling newGraph
 }
 
-
-
-
-DynamicGraphSource::~DynamicGraphSource() {
-	// TODO Auto-generated destructor stub
-}
-
 void DynamicGraphSource::generateWhile(std::function<bool(void)> cont) {
 	while (cont()) {
 		this->generate();

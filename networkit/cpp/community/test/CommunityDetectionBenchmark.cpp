@@ -43,10 +43,10 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 
 	for (int r = 0; r < runs; r++) {
 		Graph Gcopy = G;
-		PLP algo;
+		PLP algo(Gcopy);
 
 		timer.start();
-		Partition zeta = algo.run(Gcopy);
+		Partition zeta = algo.run();
 		timer.stop();
 
 		auto communitySizes = zeta.subsetSizes();
@@ -61,10 +61,10 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 
 	for (int r = 0; r < runs; r++) {
 		Graph Gcopy = G;
-		PLM algo;
+		PLM algo(Gcopy);
 
 		timer.start();
-		Partition zeta = algo.run(Gcopy);
+		Partition zeta = algo.run();
 		timer.stop();
 
 		auto communitySizes = zeta.subsetSizes();

@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-DegreeCentrality::DegreeCentrality(const Graph& G, bool normalized) : Centrality(G, normalized) {
+DegreeCentrality::DegreeCentrality(const Graph& G, bool normalized) : Centrality(G, normalized, false) {
 }
 
 void DegreeCentrality::run() {
@@ -31,5 +31,9 @@ void DegreeCentrality::run() {
 }
 
 
-} /* namespace NetworKit */
+double DegreeCentrality::maximum() {
+	return G.numberOfNodes();
+}
 
+
+} /* namespace NetworKit */

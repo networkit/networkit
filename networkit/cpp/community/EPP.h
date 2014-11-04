@@ -34,12 +34,12 @@ protected:
 	Overlapper* overlap; //!< clustering overlap algorithm
 
 public:
-
-	/** Default constructor */
-	EPP();
-
-	/** Default destructor */
-	virtual ~EPP() = default;
+	/**
+	 * Constructor to the EPP community detection algorithm.
+	 *
+	 * @param[in]	G	input graph
+	 */
+	EPP(const Graph& G);
 
 	/**
 	 * Add a base clusterer to the ensemble.
@@ -69,7 +69,7 @@ public:
 	 * @param G The graph.
 	 * @return A Partition of the clustering.
 	 */
-	virtual Partition run(const Graph& G);
+	virtual Partition run();
 
 	/**
 	 * String representation of EPP class.
