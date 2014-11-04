@@ -20,3 +20,5 @@ def degreeDistribution(G):
 	plt.plot(dd)
 
 # TODO: hop plot
+
+# TODO: core decomposition sequence
