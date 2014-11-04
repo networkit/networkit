@@ -200,7 +200,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 	//set up node positions
 	double stretch = 1;
 	double alpha = 1;
-	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n)*stretch;
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
 	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
@@ -247,7 +247,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	double factor = 1;
 	double stretch = 2;
 	double alpha = 1;
-	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n)*stretch;
 	double movedShare = 1;
 	double moveDistance = 0.1;
 
@@ -348,7 +348,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorCollectedSteps) {
 
 	double stretch = 1;
 	double alpha = 1;
-	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n)*stretch;
 	double initialFactor = 0;
 	double factorGrowth = (double) (1 - initialFactor) / nSteps;
 
@@ -721,7 +721,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 	count n = 1000;
 	double stretch = Aux::Random::real(0.5,1.5);
 	double alpha = Aux::Random::real(0.5,1.5);
-	double R = acosh((double)n/(2*M_PI)+1)*stretch;
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n)*stretch;
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
 	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);

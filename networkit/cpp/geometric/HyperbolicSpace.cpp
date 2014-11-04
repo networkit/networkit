@@ -43,7 +43,7 @@ double HyperbolicSpace::poincareMetric(Point2D<double> a, Point2D<double> b) {
 
 void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii, double stretch, double alpha) {
 	uint64_t n = radii->size();
-	double R = stretch*acosh((double)n/(2*M_PI)+1);
+	double R = stretch*hyperbolicAreaToRadius(n);
 	assert(angles->size() == n);
 	for (uint64_t i = 0; i < n; i++) {
 		(*angles)[i] = Aux::Random::real(0, 2*M_PI);

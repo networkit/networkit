@@ -114,7 +114,7 @@ TEST_F(QuadTreeTest, testQuadTreeHyperbolicCircle) {
  */
 TEST_F(QuadTreeTest, testQuadTreeThresholdGrowth) {
 	count n = 100;
-	double R = acosh((double)n/(2*M_PI)+1);
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
 	vector<double> radii(n);
 	vector<double> indices(n);
@@ -165,7 +165,7 @@ TEST_F(QuadTreeTest, testQuadTreeThresholdGrowth) {
  */
 TEST_F(QuadTreeTest, testQuadTreeDeletion) {
 	count n = 1000;
-	double R = acosh((double)n/(2*M_PI)+1);
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
 	vector<double> radii(n);
 	vector<double> indices(n);
@@ -317,7 +317,7 @@ TEST_F(QuadTreeTest, testQuadTreeBalance) {
 	count n = 100000;
 	double s =1;
 	double alpha = 1;
-	double R = s*acosh((double)n/(2*M_PI)+1);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
 	vector<double> radii(n);
 	HyperbolicSpace::fillPoints(&angles, &radii, s, alpha);
@@ -390,7 +390,7 @@ TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
 	double s =1;
 	double alpha = 1;
 	double t = 1;
-	double R = s*acosh((double)n/(2*M_PI)+1);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	double threshold = t*R;
 	vector<double> angles(n);
 	vector<double> radii(n);
@@ -453,7 +453,7 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	double s =1;
 	double alpha = 1;
 	double t = 1;
-	double R = s*acosh((double)n/(2*M_PI)+1);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	double threshold = t*R;
 	vector<double> angles(n);
 	vector<double> radii(n);

@@ -46,7 +46,7 @@ HyperbolicGenerator::HyperbolicGenerator(count n, double distanceFactor, double 
  */
 HyperbolicGenerator::HyperbolicGenerator(count n, count m) {
 	nodeCount = n;
-	double R = acosh((double)n/(2*M_PI)+1);
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
 	double targetR = 2*log(8*n / (M_PI*(m/n)*2));
 	stretch = targetR / R;
 	factor = 1;
@@ -64,7 +64,7 @@ Graph HyperbolicGenerator::generate() {
 }
 
 Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha, double stretchradius) {
-	double R = stretchradius*acosh((double)n/(2*M_PI)+1);
+	double R = stretchradius*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
 	vector<double> radii(n);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
@@ -92,7 +92,7 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 }
 
 double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
-	double R = stretch*acosh((double)n/(2*M_PI)+1);
+	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	return (8 / M_PI) * n * exp(-R/2)*(n/2);
 }
 

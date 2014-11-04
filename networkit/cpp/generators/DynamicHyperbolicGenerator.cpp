@@ -38,7 +38,7 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, v
 	this->nodes = angles.size();
 	this->stretch = stretch;
 	assert(radii.size() == nodes);
-	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
+	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	quad = Quadtree<index>(r);
 	currentfactor = initialFactor;
@@ -68,7 +68,7 @@ void DynamicHyperbolicGenerator::initializeMovement() {
 void DynamicHyperbolicGenerator::initializeQuadTree() {
 	if (initialized) return;
 	else initialized = true;
-	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
+	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
 	angles.resize(nodes);
 	radii.resize(nodes);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
@@ -83,7 +83,7 @@ void DynamicHyperbolicGenerator::initializeQuadTree() {
 }
 
 Graph DynamicHyperbolicGenerator::getGraph() const {
-	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
+	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	/**
 	 * The next call is unnecessarily expensive, since it constructs a new QuadTree.
@@ -141,7 +141,7 @@ void DynamicHyperbolicGenerator::getEventsFromFactorGrowth(vector<GraphEvent> &r
 	double newfactor = currentfactor + factorgrowth;
 	if (newfactor < 0) newfactor = 0;
 
-	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
+	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
 
 	/**
 	 * TODO: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array.
@@ -176,7 +176,7 @@ void DynamicHyperbolicGenerator::getEventsFromFactorGrowth(vector<GraphEvent> &r
 }
 
 void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &result) {
-	double R = stretch*acosh((double)nodes/(2*M_PI)+1);
+	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	count oldStreamMarker = result.size();
 	vector<index> toWiggle;
