@@ -20,15 +20,7 @@ namespace NetworKit {
 class ClusterContractor: public GraphCoarsening {
 
 public:
-
-	ClusterContractor();
-
-	virtual ~ClusterContractor();
-
 	virtual std::pair<Graph, std::vector<node> > run(const Graph& G, const Partition& zeta);
-
-
-
 
 };
 

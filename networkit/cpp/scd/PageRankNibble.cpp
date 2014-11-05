@@ -8,15 +8,16 @@
 #include "PageRankNibble.h"
 #include "ApproximatePageRank.h"
 #include "../community/Conductance.h"
-#include "../auxiliary/Log.h"
 #include <cmath>
 #include <vector>
- 
+
 namespace NetworKit {
 
-PageRankNibble::PageRankNibble(Graph& g): G(g) {
+PageRankNibble::PageRankNibble(Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {
 
 }
+
+
 
 std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
 	double entry = 0.0;
@@ -74,13 +75,22 @@ std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
 }
 
 
-std::set<node> PageRankNibble::run(node seed, double alpha, double epsilon) {
+std::set<node> PageRankNibble::expandSeed(node seed) {
 	DEBUG("APR(G, ", alpha, ", ", epsilon, ")");
 	ApproximatePageRank apr(G, alpha, epsilon);
 	std::vector<double> pr = apr.run(seed);
 
 	std::set<node> cluster = bestSweepSet(pr);
 	return cluster;
+}
+
+std::map<node, std::set<node> >  PageRankNibble::run(std::set<unsigned int>& seeds) {
+    std::map<node, std::set<node> > result;
+	for (auto seed : seeds) {
+		auto community = expandSeed(seed);
+		result[seed] = community;
+	}
+    return result;
 }
 
 } /* namespace NetworKit */

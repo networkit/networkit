@@ -30,7 +30,7 @@ public:
 	Matching(uint64_t n);
 
 	/** Default destructor */
-	virtual ~Matching();
+	virtual ~Matching() = default;
 
 
 	/**

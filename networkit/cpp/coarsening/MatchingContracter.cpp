@@ -9,14 +9,6 @@
 
 namespace NetworKit {
 
-MatchingContracter::MatchingContracter() {
-
-}
-
-MatchingContracter::~MatchingContracter() {
-
-}
-
 std::pair<Graph, std::vector<node> > MatchingContracter::run(Graph& G, Matching& M, bool noSelfLoops) {
 	count n = G.numberOfNodes();
 	index z = G.upperNodeIdBound();

@@ -9,15 +9,6 @@
 
 namespace NetworKit {
 
-Parameters::Parameters() {
-	// TODO Auto-generated constructor stub
-
-}
-
-Parameters::~Parameters() {
-	// TODO Auto-generated destructor stub
-}
-
 void Parameters::setInt(std::string key, std::int64_t value) {
 	intMap.insert(std::make_pair(key, value));
 }

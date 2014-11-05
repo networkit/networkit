@@ -36,7 +36,9 @@ namespace NetworKit {
 
         // first find out the maximum node id
         DEBUG("first pass");
-        node maxNode = 0;
+ 	// first run through the file determines if the graph is directed and/or weighted and checks the consistency of the file
+	// IF NEEDED: try to improve performance by storing edges in a vector or map during first pass.
+	node maxNode = 0;
         count i = 0;
 
         // the number of vertices / edges as specified in the input file
@@ -47,6 +49,7 @@ namespace NetworKit {
         unsigned int minValuesPerLine = 2;
 	// attempt to detect a tab separator character 
 	bool detectSeparatorAttempt = true;
+
 
         while (file.good()) {
             ++i;
@@ -73,8 +76,9 @@ namespace NetworKit {
                         throw std::runtime_error(message.str());
                     }
 
-                    if (split[2] == "unweighted") {
+                    if (split[2] == "unweighted" || split[2] == "positive") {
                         weighted = false;
+			// NOTE: positive means, that there can be multiple edges. currently, these will be ignored. 
                         // graph must only contain source and target ids
                         minValuesPerLine = 2;
                     } else if (split[2] == "posweighted" || split[2] == "signed" || split[2] == "weighted") {
@@ -83,7 +87,7 @@ namespace NetworKit {
                         minValuesPerLine = 3;
                     } else {
 			std::stringstream message;
-			message << "graph types \"positive\", \"multiweighted\" and \"dynamic\" are not supported yet, found in line ";
+			message << "graph types \"multiweighted\" and \"dynamic\" are not supported yet, found in line ";
 			message << i << ": " << line;
 			throw std::runtime_error(message.str());
 		    }
@@ -145,8 +149,8 @@ namespace NetworKit {
         Graph G(maxNode, weighted, directed);
 
         DEBUG("second pass");
+	// second pass adds the edges to the graph.
         file.open(path);
-
         i = 0; // count lines
         while (std::getline(file, line)) {
             ++i;

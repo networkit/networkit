@@ -7,7 +7,10 @@
 
 #include "ApproxBetweennessGTest.h"
 #include "../ApproxBetweenness.h"
+#include "../Betweenness.h"
 #include "../../generators/ErdosRenyiGenerator.h"
+#include "../../generators/DorogovtsevMendesGenerator.h"
+#include "../../properties/Diameter.h"
 
 namespace NetworKit {
 

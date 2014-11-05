@@ -9,7 +9,4 @@
 
 namespace NetworKit {
 
-StaticGraphGenerator::~StaticGraphGenerator() {
-}
-
 } /* namespace NetworKit */

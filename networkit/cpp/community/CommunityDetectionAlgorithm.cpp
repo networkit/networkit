@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-CommunityDetectionAlgorithm::~CommunityDetectionAlgorithm() {
+CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G) : G(G) {
 }
 
 std::string CommunityDetectionAlgorithm::toString() const {

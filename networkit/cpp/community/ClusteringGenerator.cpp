@@ -11,10 +11,6 @@
 #include "../auxiliary/Log.h"
 
 namespace NetworKit {
-
-ClusteringGenerator::~ClusteringGenerator() {
-}
-
 Partition ClusteringGenerator::makeSingletonClustering(Graph& G) {
 	count n = G.upperNodeIdBound();
 	Partition zeta(n);

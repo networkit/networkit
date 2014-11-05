@@ -9,7 +9,4 @@
 
 namespace NetworKit {
 
-GraphEventSource::~GraphEventSource() {
-}
-
 } /* namespace NetworKit */

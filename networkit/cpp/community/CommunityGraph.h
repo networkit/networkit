@@ -19,9 +19,6 @@ namespace NetworKit {
  */
 class CommunityGraph {
 public:
-	/** Default destructor */
-	virtual ~CommunityGraph();
-
 	/**
 	 * Creates a coarsened graph of @a G according to communities in @a zeta. Edge weights are the weights of
 	 * inter-community cuts.

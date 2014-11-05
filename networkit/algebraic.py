@@ -1,10 +1,14 @@
-# local imports 
-from .toolbox import column
+# local imports
 
 # external imports
 import scipy.sparse
 import numpy as np
 
+
+
+
+def column(matrix, i):
+    return [row[i] for row in matrix]
 
 
 def adjacencyMatrix(G):
@@ -17,7 +21,7 @@ def adjacencyMatrix(G):
 
 	Returns
 	-------
-	:py:class:`scipy.sparse.csr_matrix`	
+	:py:class:`scipy.sparse.csr_matrix`
 		The adjacency matrix of the graph.
 	"""
 	n = G.numberOfNodes()
@@ -42,7 +46,7 @@ def laplacianMatrix(G):
         The N x N laplacian matrix of graph.
     diag : ndarray
         The length-N diagonal of the laplacian matrix.
-        diag is returned only if return_diag is True.	
+        diag is returned only if return_diag is True.
 	"""
 	A = adjacencyMatrix(G)
 	return scipy.sparse.csgraph.laplacian(A)
@@ -87,7 +91,7 @@ def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 	Parameters
 	----------
 	matrix : sparse matrix
-			 The matrix to compute the eigenvectors of 
+			 The matrix to compute the eigenvectors of
 	cutoff : int
 			 The maximum (or minimum) magnitude of the eigenvectors needed
 	reverse : boolean

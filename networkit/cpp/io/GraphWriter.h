@@ -16,6 +16,7 @@ namespace NetworKit {
 
 /**
  * @ingroup io
+ * Abstract base class for graph writers.
  */
 class GraphWriter {
 public:

@@ -21,10 +21,6 @@ namespace NetworKit {
 class PartitionReader {
 
 public:
-
-	/** Default destructor */
-	virtual ~PartitionReader() = default;
-
 	/**
 	 * Read a clustering from a file. File format:
 	 * 		line n contains cluster id of node (n - 1)
