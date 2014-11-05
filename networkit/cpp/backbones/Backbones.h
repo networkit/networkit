@@ -10,7 +10,6 @@
 
 #include "../graph/Graph.h"
 #include "AttributeGenerator.h"
-#include "BackboneCalculator.h"
 
 namespace NetworKit {
 
@@ -18,6 +17,21 @@ namespace NetworKit {
  * Here, we combine attribute generators and edge attribute filters into different
  * backbone algorithms.
  */
+
+/**
+ * Abstract base class for Backbone Calculators.
+ */
+class BackboneCalculator {
+
+public:
+	/**
+	 * Calculates the backbone graph for the given input graph.
+	 */
+	virtual Graph calculate(const Graph& g) = 0;
+
+	virtual ~BackboneCalculator() = default;
+
+};
 
 
 /**

@@ -8,7 +8,7 @@
 #ifndef LOCALDEGREEATTRIBUTIZER_H_
 #define LOCALDEGREEATTRIBUTIZER_H_
 
-#include "BackboneCalculator.h"
+#include "AttributeGenerator.h"
 
 namespace NetworKit {
 

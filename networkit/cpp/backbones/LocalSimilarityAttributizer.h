@@ -8,7 +8,7 @@
 #ifndef LOCALSIMATTRIBUTIZER_H_
 #define LOCALSIMATTRIBUTIZER_H_
 
-#include "BackboneCalculator.h"
+#include "AttributeGenerator.h"
 
 namespace NetworKit {
 

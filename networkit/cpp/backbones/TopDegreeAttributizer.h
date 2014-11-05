@@ -8,7 +8,7 @@
 #ifndef TOPDEGREEATTRIBUTIZER_H_
 #define TOPDEGREEATTRIBUTIZER_H_
 
-#include "BackboneCalculator.h"
+#include "AttributeGenerator.h"
 
 namespace NetworKit {
 

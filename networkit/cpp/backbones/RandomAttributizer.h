@@ -8,7 +8,7 @@
 #ifndef RANDOMATTRIBUTIZER_H_
 #define RANDOMATTRIBUTIZER_H_
 
-#include "BackboneCalculator.h"
+#include "AttributeGenerator.h"
 
 namespace NetworKit {
 

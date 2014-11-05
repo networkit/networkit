@@ -8,7 +8,6 @@
 #ifndef NOGTEST
 
 #include "BackboneBenchmark.h"
-#include "../Backbones.h"
 #include "../ChibaNishizekiTriangleCounter.h"
 #include "../SimmelianJaccardAttributizer.h"
 #include "../SimmelianOverlapAttributizer.h"
@@ -38,8 +37,9 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 	G.indexEdges();
 
 	runtime.start();
-	SimmelianBackboneParametric algSBP(10, 5);
-	Graph B = algSBP.calculate(G);
+
+	SimmelianOverlapAttributizer attributizer(10);
+	auto attribute = attributizer.getAttribute(G, std::vector<int>());
 
 	runtime.stop();
 	INFO("[DONE] completeGraphSimmelianBackboneParametric (" , runtime.elapsed().count() , " ms)");
@@ -54,8 +54,9 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 	G.indexEdges();
 
 	runtime.start();
-	SimmelianBackboneNonParametric algSBNP(0.5);
-	Graph B = algSBNP.calculate(G);
+
+	SimmelianJaccardAttributizer attributizer;
+	auto attribute = attributizer.getAttribute(G, std::vector<int>());
 
 	runtime.stop();
 	INFO("[DONE] SimmelianBackboneNonParametric (" , runtime.elapsed().count() , " ms)");
@@ -70,8 +71,13 @@ TEST_F(BackboneBenchmark, completeGraphMultiscaleBackbone) {
 	G.indexEdges();
 
 	runtime.start();
-	MultiscaleBackbone algMB(0.5);
-	Graph B = algMB.calculate(G);
+
+	MultiscaleAttributizer attributizer;
+	std::vector<double> weight(G.upperEdgeIdBound());
+	G.forEdges([&](node u, node v, edgeid eid) {
+		weight[eid] = G.weight(u, v);
+	});
+	auto attribute = attributizer.getAttribute(G, weight);
 
 	runtime.stop();
 	INFO("[DONE] MultiscaleBackbone (" , runtime.elapsed().count() , " ms)");
@@ -86,27 +92,12 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 	G.indexEdges();
 
 	runtime.start();
-	LocalSimilarityBackbone algLSB(0.5);
-	Graph B = algLSB.calculate(G);
+
+	LocalSimilarityAttributizer attributizer;
+	auto attribute = attributizer.getAttribute(G, std::vector<int>());
 
 	runtime.stop();
 	INFO("[DONE] LocalSimilarityBackbone (" , runtime.elapsed().count() , " ms)");
-}
-
-TEST_F(BackboneBenchmark, completeGraphSimmelianMultiscaleBackbone) {
-	int64_t n = this->n;
-	Aux::Timer runtime;
-
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
-	G.indexEdges();
-
-	runtime.start();
-	SimmelianMultiscaleBackbone algSMB(0.5);
-	Graph B = algSMB.calculate(G);
-
-	runtime.stop();
-	INFO("[DONE] SimmelianMultiscaleBackbone (" , runtime.elapsed().count() , " ms)");
 }
 
 TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
