@@ -2,56 +2,58 @@
 
 __author__ = "Gerd Lindner"
 
-from abc import ABCMeta, abstractmethod
+import abc as _abc
 from _NetworKit import ChibaNishizekiTriangleCounter, SimmelianJaccardAttributizer, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapAttributizer, RandomAttributizer, LocalDegreeAttributizer, ForestFireAttributizer
 
 #SimmelianBackboneParametric, SimmelianBackboneNonParametric, MultiscaleBackbone, LocalSimilarityBackbone, SimmelianMultiscaleBackbone, RandomBackbone
+
+_ABS_ZERO = 1e-7
 
 """ Abstract base class representing a graph sparsification algorithm. 
  Sparsification algorithms can be split up into a precalculation step
  (calculation of an attribute) and a global filtering step. """
 class BackboneAlgorithm(object):
-	__metaclass__ = ABCMeta
+	__metaclass__ = _abc.ABCMeta
 	
-	@abstractmethod
-	def getAttribute(self, graph):
+	@_abc.abstractmethod
+	def getAttribute(self, G):
 		"""Returns an edge attribute"""
 		pass
 
-	def getBackbone(self, graph, parameter, attribute=None):
+	def getBackbone(self, G, parameter, attribute=None):
 		"""Returns a sparsified version of the given input graph.
 		
 		Keyword arguments:
-		graph -- the input graph
+		G -- the input graph
 		parameter -- a parameter value that determines the degree of sparsification
 		attribute -- (optional) a previously calculated edge attribute. If none is provided, we will try to calculate it. 
 		"""
 		
 		if attribute is None:
-			attribute = self.getAttribute()
+			attribute = self.getAttribute(G)
 		
-		return self._getBackbone(graph)
+		return self._getBackbone(G, parameter, attribute)
 	
-	def getBackboneOfSize(self, graph, edgeRatio, attribute=None):
+	def getBackboneOfSize(self, G, edgeRatio, attribute=None):
 		"""This is a convenience function that applies an appropriate parameterization
 		algorithm to obtain a parameter value that yields a backbone of the desired size
 		and then calls getBackbone(...) with that parameter value.
 		
 		Keyword arguments:
-		graph -- the input graph
+		G -- the input graph
 		edgeRatio -- the target edge ratio
 		attribute -- (optional) a previously calculated edge attribute. If none is provided, we will try to calculate it.
 		"""
 		if attribute is None:
-			attribute = self.getAttribute(graph)
+			attribute = self.getAttribute(G)
 		
-		paramAlgorithm = _getParameterizationAlgorithm()
-		parameter = paramAlgorithm.parameterize(graph, attribute, edgeRatio)
+		paramAlgorithm = self._getParameterizationAlgorithm()
+		parameter = paramAlgorithm.parameterize(self, G, attribute, edgeRatio)
 		
-		return self.getBackbone(graph, parameter, attribute)
+		return self.getBackbone(G, parameter, attribute)
  
-	@abstractmethod
-	def _getBackbone(self, graph, parameter, attribute):
+	@_abc.abstractmethod
+	def _getBackbone(self, G, parameter, attribute):
 		pass
  
 	def _getParameterizationAlgorithm(self):
@@ -60,13 +62,11 @@ class BackboneAlgorithm(object):
 """ Represents an algorithm that, given a graph and a backbone algorithm, 
 calculates a parameter value such that a desired edge ratio is met.""" 
 class SimpleParameterization:
-	def parameterize(self, graph, attribute, edgeRatio):
+	def parameterize(self, algorithm, G, attribute, edgeRatio):
 		return edgeRatio
 
 """ Parameterizes a backbone algorithm using binary search """
 class BinarySearchParameterization:
-	
-	ABS_ZERO = 1e-5
 	
 	def __init__(self, sizeIncreasesWithParameter, lowerParameterBound, upperParameterBound, maxSteps):
 		self.sizeIncreasesWithParameter = sizeIncreasesWithParameter
@@ -74,29 +74,29 @@ class BinarySearchParameterization:
 		self.upperParameterBound = upperParameterBound
 		self.maxSteps = maxSteps
 	
-	def parameterize(self, algorithm, graph, attribute, edgeRatio):
+	def parameterize(self, algorithm, G, attribute, edgeRatio):
 		lowerBound = self.lowerParameterBound
 		upperBound = self.upperParameterBound
 		estimation = self.lowerParameterBound
 		bestParameter = self.lowerParameterBound
 		minDistance = self.upperParameterBound
 
-		for i in range(0, maxSteps):
+		for i in range(0, self.maxSteps):
 			estimation = (lowerBound + upperBound) / 2.0
-			backbone = algorithm.getBackbone(graph, attribute, estimation)
-			currentEdgeRatio = backbone.numberOfEdges() / graph.numberOfEdges()
+			backbone = algorithm._getBackbone(G, estimation, attribute)
+			currentEdgeRatio = backbone.numberOfEdges() / G.numberOfEdges()
 
-			distance = abs(currentEdgeRatio - targetEdgeRatio)
+			distance = abs(currentEdgeRatio - edgeRatio)
 
-			if distance < minDistance and abs(currentEdgeRatio) > ABS_ZERO:
+			if distance < minDistance and abs(currentEdgeRatio) > _ABS_ZERO:
 				minDistance = distance
 				bestParameter = estimation
 
 				#"Exact" hit?
-				if abs(currentEdgeRatio - targetEdgeRatio) < 1e-7:
+				if abs(currentEdgeRatio - edgeRatio) < _ABS_ZERO:
 					break;
 
-			increase = (currentEdgeRatio < targetEdgeRatio)
+			increase = (currentEdgeRatio < edgeRatio)
 			if not self.sizeIncreasesWithParameter:
 				increase = not increase
 
@@ -111,124 +111,128 @@ class BinarySearchParameterization:
 input a parameter from a small set of possible values """
 class CompleteSearchParameterization:
 	
-	ABS_ZERO = 1e-5
-	
 	def __init__(self, lowerParameterBound, upperParameterBound):
 		self.lowerParameterBound = lowerParameterBound
 		self.upperParameterBound = upperParameterBound
 	
-	def parameterize(self, algorithm, graph, attribute, edgeRatio):
+	def parameterize(self, algorithm, G, attribute, edgeRatio):
 		bestParameter = self.lowerParameterBound
 		bestRatio = 0.0
 		minDistance = 100.0
 
 		for i in range(self.lowerParameterBound, self.upperParameterBound + 1):
-			backbone = algorithm.getBackbone(graph, attribute, i)
-			currentEdgeRatio = backbone.numberOfEdges() / graph.numberOfEdges()
+			backbone = algorithm._getBackbone(G, i, attribute)
+			currentEdgeRatio = backbone.numberOfEdges() / G.numberOfEdges()
 
-			distance = abs(currentEdgeRatio - targetEdgeRatio)
-			if distance < minDistance and abs(currentEdgeRatio) > ABS_ZERO:
+			distance = abs(currentEdgeRatio - edgeRatio)
+			if distance < minDistance and abs(currentEdgeRatio) > _ABS_ZERO:
 				minDistance = distance
-				
-			bestParameter = i
-			bestRatio = currentEdgeRatio
+				bestParameter = i
+				bestRatio = currentEdgeRatio
 
-			return bestParameter
+		return bestParameter
 
 """ Parametric variant of the Simmelian Backbones introduced by Nick et al. """
-class SimmelianBackboneParametric:
+class SimmelianBackboneParametric(BackboneAlgorithm):
 
-	def getAttribute(self, graph):
+	def getAttribute(self, G):
 		chiba = ChibaNishizekiTriangleCounter()
-		triangles = chiba.getAttribute(graph)
-		sj = SimmelianJaccardAttributizer()
-		a_sj = sj.getAttribute(graph, triangles)
-		return a_sj
+		triangles = chiba.getAttribute(G)
+		so = SimmelianOverlapAttributizer(10)
+		a_so = so.getAttribute(G, triangles)
+		return a_so
 
-	def _getBackbone(self, graph, attribute, parameter):
-		gf = GlobalThresholdFilter(value, True)
-		return gf.calculate(graph, attribute)
+	def _getBackbone(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(parameter, True)
+		return gf.calculate(G, attribute)
 
 	def _getParameterizationAlgorithm(self):
 		return CompleteSearchParameterization(0, 10)
 	
 """ Non-parametric variant of the Simmelian Backbones introduced by Nick et al. """
-class SimmelianBackboneNonParametric:
+class SimmelianBackboneNonParametric(BackboneAlgorithm):
 	
-	def getAttribute(self, graph):
-		chiba = backbones.ChibaNishizekiTriangleCounter()
-		triangles = chiba.getAttribute(graph)
-		sj = backbones.SimmelianJaccardAttributizer()
-		a_sj = sj.getAttribute(graph, triangles)
+	def getAttribute(self, G):
+		chiba = ChibaNishizekiTriangleCounter()
+		triangles = chiba.getAttribute(G)
+		sj = SimmelianJaccardAttributizer()
+		a_sj = sj.getAttribute(G, triangles)
 		return a_sj
 	
-	def _getBackbone(self, graph, attribute, parameter):
-		gf = backbones.GlobalThresholdFilter(value, True)
-		return gf.calculate(graph, attribute)
+	def _getBackbone(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(parameter, True)
+		return gf.calculate(G, attribute)
 
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 """ Multiscale Backbone that uses triangle counts as input edge weight. """
-class SimmelianMultiscaleBackbone:
+class SimmelianMultiscaleBackbone(BackboneAlgorithm):
 	
-	def getAttribute(self, graph):
-		chiba = backbones.ChibaNishizekiTriangleCounter()
-		triangles = chiba.getAttribute(graph)
-		ms = backbones.MultiscaleAttributizer()
-		a_ms = ms.getAttribute(graph, triangles)
+	def getAttribute(self, G):
+		chiba = ChibaNishizekiTriangleCounter()
+		triangles = chiba.getAttribute(G)
+		ms = MultiscaleAttributizer()
+		a_ms = ms.getAttribute(G, triangles)
 		return a_ms
        
-	def _getBackbone(self, graph, attribute, parameter):
-		gf = backbones.GlobalThresholdFilter(value, False)
-		return gf.calculate(graph, attribute)
+	def _getBackbone(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(parameter, False)
+		return gf.calculate(G, attribute)
 	
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(True, 0.0, 1.0, 20)
 
 """ An implementation of the Local Similarity sparsification approach introduced by Satuluri et al. """
-class LocalSimilarityBackbone:
-	def getAttribute(self, graph):
-		attributizer = backbones.LocalSimilarityAttributizer()
-		a_ls = attributizer.getAttribute(graph, [])
+class LocalSimilarityBackbone(BackboneAlgorithm):
+	def getAttribute(self, G):
+		attributizer = LocalSimilarityAttributizer()
+		a_ls = attributizer.getAttribute(G, [])
 		return a_ls
 
-	def _getBackbone(self, graph, attribute, parameter):
-		gf = backbones.GlobalThresholdFilter(value, False)
-		return gf.calculate(graph, attribute)
+	def _getBackbone(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(parameter, False)
+		return gf.calculate(G, attribute)
 
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(True, 0.0, 1.0, 20)
 
 """ An implementation of the Multiscale backbone approach introduced by Serrano et al. """
-class MultiscaleBackbone:
-	def getAttribute(self, graph):
-		# TODO we might use a precalculated edge attribute for speedup, but that
-        # requires writable edge attributes in python.
-		return None
+class MultiscaleBackbone(BackboneAlgorithm):
+	def getAttribute(self, G):
+		inputAttribute = [0.0] * G.upperEdgeIdBound()
+		for edge in G.edges():
+			edgeId = G.edgeId(edge[0], edge[1])
+			inputAttribute[edgeId] = G.weight(edge[0], edge[1])
+		
+		attributizer = MultiscaleAttributizer()
+		attribute = attributizer.getAttribute(G, inputAttribute)
+		return attribute
 
-	def _getBackbone(self, graph, attribute, parameter):
-		msb = backbones.MultiscaleBackbone(value)
-		return msb.calculate(graph)
+	def _getBackbone(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(parameter, False)
+		return gf.calculate(G, attribute)
 	
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(True, 0.0, 1.0, 20)
 	
 
 """ Random Edge sampling. Edges to keep in the backbone are selected uniformly at random. """
-class RandomBackbone:
-	def getAttribute(self, graph):
-		attributizer = backbones.RandomAttributizer()
-		a_r = attributizer.getAttribute(graph, [1.0] * graph.upperEdgeIdBound())
+class RandomBackbone(BackboneAlgorithm):
+	def getAttribute(self, G):
+		attributizer = RandomAttributizer(1.0)
+		a_r = attributizer.getAttribute(G, [1.0] * G.upperEdgeIdBound())
+		return a_r
 		
-	def _getBackbone(self, graph, attribute, parameter):
-		gf = backbones.GlobalThresholdFilter(value, False)
+	def _getBackbone(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(parameter, False)
+		return gf.calculate(G, attribute)
 	
 	def _getParameterizationAlgorithm(self):
 		return SimpleParameterization()
 
 """ A variant of the Forest Fire sparsification approach proposed by Leskovec et al. """
-class ForestFireBackbone:
+class ForestFireBackbone(BackboneAlgorithm):
 	
 	def __init__(self, burnProbability, targetBurntRatio):
 		""" Creates a new instance of the Edge Forest Fire backbone algorithm.
@@ -240,28 +244,28 @@ class ForestFireBackbone:
 		self.burnProbability = burnProbability
 		self.targetBurntRatio = targetBurntRatio
 	
-	def getAttribute(self, graph):
-		attributizer = backbones.ForestFireAttributizer(self.burnProbability, self.targetBurntRatio)
-		return attributizer.getAttribute(graph, [])
+	def getAttribute(self, G):
+		attributizer = ForestFireAttributizer(self.burnProbability, self.targetBurntRatio)
+		return attributizer.getAttribute(G, [])
 		
-	def _getBackbone(self, graph, attribute, parameter):
-		gf = backbones.GlobalThresholdFilter(parameter, True)
-		return gf.calculate(graph, attribute)
+	def _getBackbone(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(parameter, True)
+		return gf.calculate(G, attribute)
 	
 	def _getParameterizationAlgorithm(self):
 		 return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 """ An implementation of the Local Degree backbone algorithm. """
-class LocalDegreeBackbone:
+class LocalDegreeBackbone(BackboneAlgorithm):
 	
-	def getAttribute(self, graph):
-		attributizer_ld = backbones.LocalDegreeAttributizer()
-		a_ld = attributizer_ld.getAttribute(graph, [])
+	def getAttribute(self, G):
+		attributizer_ld = LocalDegreeAttributizer()
+		a_ld = attributizer_ld.getAttribute(G, [])
 		return a_ld
        
-	def _getBackbone(self, graph, attribute, parameter):
-		gf = backbones.GlobalThresholdFilter(parameter, False)
-		return gf.calculate(graph, attribute)
+	def _getBackbone(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(parameter, False)
+		return gf.calculate(G, attribute)
 	
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(True, 0.0, 1.0, 20)
