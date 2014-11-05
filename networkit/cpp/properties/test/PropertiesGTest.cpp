@@ -9,6 +9,7 @@
 
 #include "PropertiesGTest.h"
 #include "../Diameter.h"
+#include "../EffectiveDiameter.h"
 #include "../../auxiliary/Timer.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
@@ -455,6 +456,23 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
        EXPECT_LE(testInstance.second, range.second);
    }
 }
+
+TEST_F(PropertiesGTest, testEffectiveDiameter) {
+
+   using namespace std;
+
+   vector<string> testInstances= {"celegans_metabolic", "jazz", "lesmis"};
+
+   for (auto testInstance : testInstances) {
+       METISGraphReader reader;
+       Graph G = reader.read("input/" + testInstance + ".graph");
+       double effective = EffectiveDiameter::effectiveDiameter(G);
+       count exact = Diameter::estimatedDiameterRange(G, 0).first;
+       EXPECT_LE(effective, exact);
+   }
+}
+
+
 TEST_F(PropertiesGTest, testPedanticDiameterErdos) {
 	count n = 5000;
 	ErdosRenyiGenerator gen(n,0.001);
