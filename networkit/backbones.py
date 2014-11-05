@@ -1,4 +1,4 @@
-""" This module contains algorithms for the sparsification of networks """
+""" This module contains algorithms for the sparsification of networks, i.e. Backbone algorithms. """
 
 __author__ = "Gerd Lindner"
 
@@ -18,30 +18,44 @@ class BackboneAlgorithm(object):
 		"""Returns an edge attribute"""
 		pass
 
-	@abstractmethod
-	def getBackbone(self, graph, attribute, parameter):
+	def getBackbone(self, graph, parameter, attribute=None):
 		"""Returns a sparsified version of the given input graph.
 		
 		Keyword arguments:
 		graph -- the input graph
-		attribute -- a previously calculated edge attribute
-		parameter -- a parameter value that determines the degree of sparsification 
+		parameter -- a parameter value that determines the degree of sparsification
+		attribute -- (optional) a previously calculated edge attribute. If none is provided, we will try to calculate it. 
 		"""
-		pass
-
-	@abstractmethod 
-	def getParameterizationAlgorithm(self):
-		return SimpleParameterization()
-
-	def parameterize(self, graph, attribute, edgeRatio):
-		"""Returns a parameter value that will yield a backbone graph of approximately the desired size
+		
+		if attribute is None:
+			attribute = self.getAttribute()
+		
+		return self._getBackbone(graph)
+	
+	def getBackboneOfSize(self, graph, edgeRatio, attribute=None):
+		"""This is a convenience function that applies an appropriate parameterization
+		algorithm to obtain a parameter value that yields a backbone of the desired size
+		and then calls getBackbone(...) with that parameter value.
 		
 		Keyword arguments:
 		graph -- the input graph
-		attribute -- a previously calculated edge attribute
 		edgeRatio -- the target edge ratio
+		attribute -- (optional) a previously calculated edge attribute. If none is provided, we will try to calculate it.
 		"""
+		if attribute is None:
+			attribute = self.getAttribute(graph)
+		
+		paramAlgorithm = _getParameterizationAlgorithm()
+		parameter = paramAlgorithm.parameterize(graph, attribute, edgeRatio)
+		
+		return self.getBackbone(graph, parameter, attribute)
+ 
+	@abstractmethod
+	def _getBackbone(self, graph, parameter, attribute):
 		pass
+ 
+	def _getParameterizationAlgorithm(self):
+		return SimpleParameterization()
 
 """ Represents an algorithm that, given a graph and a backbone algorithm, 
 calculates a parameter value such that a desired edge ratio is met.""" 
@@ -131,9 +145,125 @@ class SimmelianBackboneParametric:
 		a_sj = sj.getAttribute(graph, triangles)
 		return a_sj
 
-	def getBackbone(self, graph, attribute, parameter):
+	def _getBackbone(self, graph, attribute, parameter):
 		gf = GlobalThresholdFilter(value, True)
 		return gf.calculate(graph, attribute)
 
-	def getParameterizationAlgorithm(self):
+	def _getParameterizationAlgorithm(self):
 		return CompleteSearchParameterization(0, 10)
+	
+""" Non-parametric variant of the Simmelian Backbones introduced by Nick et al. """
+class SimmelianBackboneNonParametric:
+	
+	def getAttribute(self, graph):
+		chiba = backbones.ChibaNishizekiTriangleCounter()
+		triangles = chiba.getAttribute(graph)
+		sj = backbones.SimmelianJaccardAttributizer()
+		a_sj = sj.getAttribute(graph, triangles)
+		return a_sj
+	
+	def _getBackbone(self, graph, attribute, parameter):
+		gf = backbones.GlobalThresholdFilter(value, True)
+		return gf.calculate(graph, attribute)
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
+""" Multiscale Backbone that uses triangle counts as input edge weight. """
+class SimmelianMultiscaleBackbone:
+	
+	def getAttribute(self, graph):
+		chiba = backbones.ChibaNishizekiTriangleCounter()
+		triangles = chiba.getAttribute(graph)
+		ms = backbones.MultiscaleAttributizer()
+		a_ms = ms.getAttribute(graph, triangles)
+		return a_ms
+       
+	def _getBackbone(self, graph, attribute, parameter):
+		gf = backbones.GlobalThresholdFilter(value, False)
+		return gf.calculate(graph, attribute)
+	
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(True, 0.0, 1.0, 20)
+
+""" An implementation of the Local Similarity sparsification approach introduced by Satuluri et al. """
+class LocalSimilarityBackbone:
+	def getAttribute(self, graph):
+		attributizer = backbones.LocalSimilarityAttributizer()
+		a_ls = attributizer.getAttribute(graph, [])
+		return a_ls
+
+	def _getBackbone(self, graph, attribute, parameter):
+		gf = backbones.GlobalThresholdFilter(value, False)
+		return gf.calculate(graph, attribute)
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(True, 0.0, 1.0, 20)
+
+""" An implementation of the Multiscale backbone approach introduced by Serrano et al. """
+class MultiscaleBackbone:
+	def getAttribute(self, graph):
+		# TODO we might use a precalculated edge attribute for speedup, but that
+        # requires writable edge attributes in python.
+		return None
+
+	def _getBackbone(self, graph, attribute, parameter):
+		msb = backbones.MultiscaleBackbone(value)
+		return msb.calculate(graph)
+	
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(True, 0.0, 1.0, 20)
+	
+
+""" Random Edge sampling. Edges to keep in the backbone are selected uniformly at random. """
+class RandomBackbone:
+	def getAttribute(self, graph):
+		attributizer = backbones.RandomAttributizer()
+		a_r = attributizer.getAttribute(graph, [1.0] * graph.upperEdgeIdBound())
+		
+	def _getBackbone(self, graph, attribute, parameter):
+		gf = backbones.GlobalThresholdFilter(value, False)
+	
+	def _getParameterizationAlgorithm(self):
+		return SimpleParameterization()
+
+""" A variant of the Forest Fire sparsification approach proposed by Leskovec et al. """
+class ForestFireBackbone:
+	
+	def __init__(self, burnProbability, targetBurntRatio):
+		""" Creates a new instance of the Edge Forest Fire backbone algorithm.
+		
+		Keyword arguments:
+		burnProbability -- the probability that the neighbor of a burnt node gets burnt as well.
+		edgeRatio -- the fires will stop when a edgeRatio * edgeCount edges have been burnt.
+		"""
+		self.burnProbability = burnProbability
+		self.targetBurntRatio = targetBurntRatio
+	
+	def getAttribute(self, graph):
+		attributizer = backbones.ForestFireAttributizer(self.burnProbability, self.targetBurntRatio)
+		return attributizer.getAttribute(graph, [])
+		
+	def _getBackbone(self, graph, attribute, parameter):
+		gf = backbones.GlobalThresholdFilter(parameter, True)
+		return gf.calculate(graph, attribute)
+	
+	def _getParameterizationAlgorithm(self):
+		 return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
+""" An implementation of the Local Degree backbone algorithm. """
+class LocalDegreeBackbone:
+	
+	def getAttribute(self, graph):
+		attributizer_ld = backbones.LocalDegreeAttributizer()
+		a_ld = attributizer_ld.getAttribute(graph, [])
+		return a_ld
+       
+	def _getBackbone(self, graph, attribute, parameter):
+		gf = backbones.GlobalThresholdFilter(parameter, False)
+		return gf.calculate(graph, attribute)
+	
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(True, 0.0, 1.0, 20)
+
+	
