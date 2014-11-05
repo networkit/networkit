@@ -18,20 +18,29 @@ namespace NetworKit {
  */
 class CommunityDetectionAlgorithm {
 public:
+	/**
+	 * A community detection algorithm operates on a graph, so the constructor expects a graph.
+	 *
+	 * @param[in]	G	input graph
+	 */
+	CommunityDetectionAlgorithm(const Graph& G);
 
 	/** Default destructor */
-	virtual ~CommunityDetectionAlgorithm();
+	virtual ~CommunityDetectionAlgorithm() = default;
 
 	/**
 	 * Apply algorithm to graph
 	 * @return partition of the node set
 	 */
-	virtual Partition run(const Graph& G) = 0;
+	virtual Partition run() = 0;
 
 	/**
 	 * @return string representation of algorithm and parameters.
 	 */
 	virtual std::string toString() const;
+
+protected:
+	const Graph& G;
 };
 
 } /* namespace NetworKit */

@@ -54,7 +54,13 @@ void ApproxBetweenness2::run() {
 			}
 			for (node p : sssp->getPredecessors(t)) {
 				// TODO: make weighting factor configurable
-				dependency[p] += (double(sssp->distance(p)) / sssp->distance(t))*(double(sssp->numberOfPaths(p)) / sssp->numberOfPaths(t)) * (1 + dependency[t]);
+
+				// workaround for integer overflow in large graphs
+				bigfloat tmp = sssp->numberOfPaths(p) / sssp->numberOfPaths(t);
+				double weight;
+				tmp.ToDouble(weight);
+
+				dependency[p] += (double(sssp->distance(p)) / sssp->distance(t)) * weight * (1 + dependency[t]);
 			}
 			scoreData[t] += dependency[t];
 		}

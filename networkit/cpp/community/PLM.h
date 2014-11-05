@@ -19,8 +19,8 @@ namespace NetworKit {
 class PLM: public NetworKit::CommunityDetectionAlgorithm {
 
 public:
-
 	/**
+	 * @param[in]	G	input graph
 	 * @param[in]	refine	add a second move phase to refine the communities
 	 * @param[in]	par		parallelization strategy
 	 * @param[in]	gamma	multi-resolution modularity parameter:
@@ -29,9 +29,10 @@ public:
 	 * 							2m 	-> singleton communities
 	 * @param[in]	maxIter		maximum number of iterations for move phase
 	 * @param[in]	parallelCoarsening	use parallel graph coarsening
+	 * @param[in]	turbo	faster but uses O(n) additional memory per thread
 	 *
 	 */
-	PLM(bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=true);
+	PLM(const Graph& G, bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=true, bool turbo = false);
 
 
 	/**
@@ -44,10 +45,9 @@ public:
 	/**
 	 * Detect communities in the given graph @a G
 	 *
-	 * @param G The graph.
 	 * @return A partition containing the found communities.
 	 */
-	Partition run(const Graph& G) override;
+	Partition run() override;
 
 	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta, bool parallel=false);
 
@@ -60,6 +60,7 @@ private:
 	double gamma = 1.0;
 	count maxIter;
 	bool parallelCoarsening;
+	bool turbo;
 };
 
 } /* namespace NetworKit */

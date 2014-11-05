@@ -31,7 +31,7 @@ public:
 	NodeDistance(const Graph& G);
 
 	/** Default destructor */
-	virtual ~NodeDistance();
+	virtual ~NodeDistance() = default;
 
 	/**
 	 * Perform preprocessing work. Needs to be called before distances are requested.

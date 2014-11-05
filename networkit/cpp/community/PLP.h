@@ -35,15 +35,19 @@ public:
 
 	std::string VERSION;	// algorithm version number - increment in constructor for significant changes to the implementation
 
-	PLP(count theta = none);
+	/**
+	 * Constructor to the label propagation community detection algorithm.
+	 *
+	 * @param[in]	G	input graph
+	 */
+	PLP(const Graph& G, count theta = none);
 
 	/**
 	 * Run the label propagation clustering algorithm.
 	 *
-	 * @param[in]	G	input graph
 	 * @return			clustering
 	 */
-	virtual Partition run(const Graph& G);
+	virtual Partition run();
 
 	/**
 	 * Run the label propagation clustering algorithm, cluster
@@ -53,7 +57,7 @@ public:
 	 * @param[in]	part input partition
 	 * @return			clustering
 	 */
-	virtual Partition& runFromGiven(const Graph& G, Partition& part);
+	virtual Partition& runFromGiven(Partition& part);
 
 	/**
 	 * @return String representation of algorithm and parameters.

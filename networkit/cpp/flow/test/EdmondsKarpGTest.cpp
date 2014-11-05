@@ -25,14 +25,14 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP1) {
 
 	G.indexEdges();
 
-	EdmondsKarp edKa;
-	std::vector<edgeweight> flow;
-	std::vector<node> sourceSet;
-	edgeweight maxFlow = edKa.run(G, 0, 6, sourceSet, flow);
-	EXPECT_EQ(2, maxFlow) << "max flow is not correct";
+	EdmondsKarp edKa(G, 0, 6);
+	edKa.run();
+	EXPECT_EQ(2, edKa.getMaxFlow()) << "max flow is not correct";
 
-	EXPECT_EQ(1, flow[G.edgeId(4, 6)]);
-	EXPECT_EQ(1, flow[G.edgeId(5, 6)]);
+	EXPECT_EQ(1, edKa.getFlow(4, 6));
+	EXPECT_EQ(1, edKa.getFlow(5, 6));
+
+	std::vector<node> sourceSet(edKa.getSourceSet());
 
 	EXPECT_TRUE(std::find(sourceSet.begin(), sourceSet.end(), 0) != sourceSet.end());
 	EXPECT_TRUE(std::find(sourceSet.begin(), sourceSet.end(), 1) != sourceSet.end());
@@ -62,12 +62,11 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpTwoPaths) {
 
 	G.indexEdges();
 
-	EdmondsKarp edKa;
-	std::vector<edgeweight> flow;
-	edgeweight maxFlow = edKa.run(G, 0, 10, flow);
+	EdmondsKarp edKa(G, 0, 10);
+	edKa.run();
 
-	EXPECT_EQ(2, maxFlow);
-	EXPECT_EQ(0, flow[G.edgeId(1, 4)]);
+	EXPECT_EQ(2, edKa.getMaxFlow());
+	EXPECT_EQ(0, edKa.getFlow(1, 4));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpP2) {
@@ -83,9 +82,10 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP2) {
 
 	G.indexEdges();
 
-	EdmondsKarp edKa;
-	edgeweight maxFlow = edKa.run(G, 0, 5);
-	EXPECT_EQ(15, maxFlow) << "max flow is not correct";
+	EdmondsKarp edKa(G, 0, 5);
+	edKa.run();
+
+	EXPECT_EQ(15, edKa.getMaxFlow()) << "max flow is not correct";
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpUnconnected) {
@@ -99,9 +99,9 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpUnconnected) {
 
 	G.indexEdges();
 
-	EdmondsKarp edKa;
-	edgeweight maxFlow = edKa.run(G, 0, 5);
-	EXPECT_EQ(0, maxFlow) << "max flow is not correct";
+	EdmondsKarp edKa(G, 0, 5);
+	edKa.run();
+	EXPECT_EQ(0, edKa.getMaxFlow()) << "max flow is not correct";
 }
 
 } /* namespace NetworKit */

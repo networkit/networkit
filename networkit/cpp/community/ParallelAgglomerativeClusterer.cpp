@@ -13,12 +13,13 @@
 #include "../coarsening/ClusteringProjector.h"
 
 namespace NetworKit {
+ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {};
 
-Partition ParallelAgglomerativeClusterer::run(const Graph& graph) {
+Partition ParallelAgglomerativeClusterer::run() {
 	// copy graph because we make changes due to merges
-	Graph G(graph.numberOfNodes(), true); // make weighted copy
-	graph.forEdges([&](node u, node v, edgeweight w){
-		G.addEdge(u, v, w);
+	Graph Gcopy(G.numberOfNodes(), true); // make weighted copy
+	G.forEdges([&](node u, node v, edgeweight w){
+		Gcopy.addEdge(u, v, w);
 	});
 
 	std::vector<std::vector<node> > mapHierarchy;
@@ -27,25 +28,25 @@ Partition ParallelAgglomerativeClusterer::run(const Graph& graph) {
 	do {
 		// prepare attributes for scoring
 		// FIXME: update to new edge attribute system
-		//int attrId = G.addEdgeAttribute_double(0.0);
+		//int attrId = Gcopy.addEdgeAttribute_double(0.0);
 		int attrId = 0;
 
 		// perform scoring
-		TRACE("before scoring graph of size " , G.numberOfNodes());
-		ModularityScoring<double> modScoring(G);
+		TRACE("before scoring graph of size " , Gcopy.numberOfNodes());
+		ModularityScoring<double> modScoring(Gcopy);
 		modScoring.scoreEdges(attrId);
 
 		// FIXME: so far only sequential
 		// compute matching
 		PathGrowingMatcher parMatcher;
-		Matching M = parMatcher.run(G);
+		Matching M = parMatcher.run(Gcopy);
 
 		// contract graph according to matching, TODO: (and star-like structures)
 		MatchingContracter matchingContracter;
-		auto GandMap = matchingContracter.run(G, M);
+		auto GandMap = matchingContracter.run(Gcopy, M);
 
 		// determine if it makes sense to proceed
-		count n = G.numberOfNodes();
+		count n = Gcopy.numberOfNodes();
 		count cn = GandMap.first.numberOfNodes();
 		count diff = n - cn;
 		repeat = ((diff > 0) &&
@@ -55,21 +56,21 @@ Partition ParallelAgglomerativeClusterer::run(const Graph& graph) {
 
 		// prepare next iteration if there is one
 		if (repeat) {
-			G = GandMap.first;
+			Gcopy = GandMap.first;
 			mapHierarchy.push_back(GandMap.second);
-			TRACE("Repeat agglomeration with graph of size " , G.numberOfNodes());
+			TRACE("Repeat agglomeration with graph of size " , Gcopy.numberOfNodes());
 		}
 	} while (repeat);
 
 	// vertices of coarsest graph are the clusters
-	count cn = G.numberOfNodes();
+	count cn = Gcopy.numberOfNodes();
 	Partition zetaCoarse(cn);
 	zetaCoarse.allToSingletons();
 
 	// project clustering back to finest graph
 	ClusteringProjector projector;
 	Partition zeta = projector.projectBackToFinest(zetaCoarse, mapHierarchy,
-			graph);
+			G);
 
 	return zeta;
 }

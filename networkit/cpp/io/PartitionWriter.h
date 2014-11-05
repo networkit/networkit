@@ -21,13 +21,6 @@ namespace NetworKit {
 class PartitionWriter {
 
 public:
-
-	/** Default constructor */
-	PartitionWriter() = default;
-
-	/** Default destructor */
-	virtual ~PartitionWriter() = default;
-
 	virtual void write(Partition& zeta, const std::string& path) const;
 };
 

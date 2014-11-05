@@ -1,11 +1,16 @@
-from . import pyclient as _gephipyclient   # we want to hide these from the user
-import urllib as _urllib
-import time
-
 """
 This module provides methods to export data from NetworKit directly to Gephi using the
 Gephi Streaming Plugin.
 """
+
+__author__ = "Gerd Lindner, Moritz v.Looz"
+
+
+import urllib as _urllib
+import time
+
+from . import pyclient as _gephipyclient   # we want to hide these from the user
+
 
 class GephiStreamingClient:
     """
@@ -60,7 +65,7 @@ class GephiStreamingClient:
         """
         if self.graphExported != True:
             print("Error: Cannot add edges. Export Graph first!")
-            return      
+            return
         try:
             if self.directed:
                 edgeId = str(u) + '->' + str(v)
@@ -69,7 +74,7 @@ class GephiStreamingClient:
             self._pygephi.add_edge(edgeId, u, v, self.directed)
             self._pygephi.flush()
         except _urllib.error.URLError as e:
-            self._urlError(e)        
+            self._urlError(e)
 
     def removeExportedEdge(self, u, v):
         """ Removes an edge from an already exported graph."""
@@ -152,7 +157,7 @@ class GephiStreamingClient:
             self.exportNodeValues(graph, ycoords, 'y')
             self._pygephi.flush()
         except _urllib.error.URLError as e:
-            self._urlError(e) 
+            self._urlError(e)
 
     def exportEdgeValues(self, graph, values, attribute_name):
         """

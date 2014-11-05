@@ -42,38 +42,39 @@ std::vector<node> SSSP::getPath(node t, bool forward) const {
 }
 
 
-std::set<std::vector<node> > SSSP::getPaths(node t, bool forward) const {
-	throw std::runtime_error("FIXME: correct implementation needed");
+std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
 
-	std::set<std::vector<node> > paths;
+	std::set<std::vector<node>> paths;
 	if (previous[t].empty()) { // t is not reachable from source
 		WARN("there is no path from ", source, " to ", t);
 		return paths;
 	}
 
-
-	std::function<std::set<std::vector<node> > (std::vector<node>& prefix, node v) > trace = [&](std::vector<node>& prefix, node v) {
+	std::function<void (std::vector<node> suffix, node v) > trace = [&](std::vector<node> suffix, node v) {
 		// base case
-
-		prefix.push_back(v);
-		std::set<std::vector<node> > paths;
-		paths.insert(prefix);
-		for (node u : previous[v]) {
-			auto returned = trace(prefix, u);
-			paths.insert(returned.begin(), returned.end());
+		suffix.push_back(v);
+		if (v == source) {
+			paths.insert(suffix);
+			return;
 		}
-		return paths;
+		for (node u : previous[v]) {
+			trace(suffix, u);
+		}
 	};
 
 	std::vector<node> emptyPath;
-	auto thePaths = trace(emptyPath, t);
+	trace(emptyPath, t);
 
 	if (forward) {
-		for (auto path : thePaths) {
-			std::reverse(path.begin(), path.end());
+		std::set<std::vector<node>> paths1;
+		for (std::vector<node> path : paths) {
+			std::reverse(std::begin(path), std::end(path));
+			paths1.insert(path);
 		}
+		return paths1;
 	}
-	return thePaths;
+
+	return paths;
 }
 
 

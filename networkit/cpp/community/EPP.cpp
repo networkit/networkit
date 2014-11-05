@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-EPP::EPP() : CommunityDetectionAlgorithm() {
+EPP::EPP(const Graph& G) : CommunityDetectionAlgorithm(G) {
 	this->finalClusterer = NULL;
 	this->overlap = NULL;
 }
@@ -32,7 +32,7 @@ void EPP::setOverlapper(Overlapper& overlap) {
 	this->overlap = &overlap;
 }
 
-Partition EPP::run(const Graph& G) {
+Partition EPP::run() {
 	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
 
 	// fixed sub-algorithms
@@ -45,7 +45,8 @@ Partition EPP::run(const Graph& G) {
 	// run base clusterers in parallel
 	#pragma omp parallel for
 	for (index b = 0; b < baseClusterers.size(); b += 1) {
-		baseClusterings.at(b) = baseClusterers.at(b)->run(G);
+		// FIXME: initialization of base clusterer?
+		baseClusterings.at(b) = baseClusterers.at(b)->run();
 	}
 
 	// ANALYSIS
@@ -70,7 +71,8 @@ Partition EPP::run(const Graph& G) {
 	Graph Gcore = contraction.first;
 	std::vector<node> fineToCoarse = contraction.second;
 	// send contracted graph to final clusterer
-	Partition finalCoarse = this->finalClusterer->run(Gcore);
+	// FIXME: initialization of final clusterer?
+	Partition finalCoarse = this->finalClusterer->run();
 
 	// project clustering of contracted graph back to original graph
 	Partition final = projector.projectBack(Gcore, G, fineToCoarse, finalCoarse);

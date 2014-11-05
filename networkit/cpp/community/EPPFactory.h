@@ -18,7 +18,7 @@ namespace NetworKit {
  */
 class EPPFactory {
 public:
-	EPP make(count ensembleSize, std::string baseAlgorithm, std::string finalAlgorithm);
+	EPP make(const Graph& G, count ensembleSize, std::string baseAlgorithm, std::string finalAlgorithm);
 
 };
 

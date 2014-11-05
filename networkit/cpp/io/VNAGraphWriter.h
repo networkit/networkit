@@ -37,9 +37,6 @@ protected:
 
 
 public:
-
-	VNAGraphWriter() = default;
-
 	/**
 	 * Write a graph @a G and its coordinates to a VNA file.
 	 *

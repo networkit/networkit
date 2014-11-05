@@ -18,10 +18,6 @@ MultilevelLayouter::MultilevelLayouter(Point<float> bottomLeft, Point<float> top
 
 }
 
-MultilevelLayouter::~MultilevelLayouter() {
-
-}
-
 void MultilevelLayouter::prolongCoordinates(Graph& Gcon, Graph& G) {
 
 }
@@ -48,8 +44,8 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 	}
 	else {
 		// compute clustering
-		PLP clusterer;
-		Partition clustering = clusterer.run(G);
+		PLP clusterer(G);
+		Partition clustering = clusterer.run();
 		EdgeCut ec;
 		INFO("Clustering: #clusters: ", clustering.numberOfSubsets(), "; cut: ", ec.getQuality(clustering, G));
 

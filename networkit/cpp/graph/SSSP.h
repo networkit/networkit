@@ -13,6 +13,7 @@
 
 #include "Graph.h"
 
+
 namespace NetworKit {
 
 /**
@@ -54,7 +55,7 @@ public:
 	 * @param  t Target node.
 	 * @return The number of shortest paths between source and @a t.
 	 */
-	count numberOfPaths(node t) const;
+	bigfloat numberOfPaths(node t) const;
 
 	/**
 	 * Returns the predecessor nodes of @a t on all shortest paths from source to @a t.
@@ -81,6 +82,8 @@ public:
 	 */
 	virtual std::set<std::vector<node> > getPaths(node t, bool forward=true) const;
 
+	/* Returns the number of shortest paths to node t.*/
+	bigfloat getNumberOfPaths(node t) const;
 
 	/**
 	* Returns a stack of nodes ordered in decreasing distance from the source
@@ -95,7 +98,7 @@ protected:
 	const node source;
 	std::vector<edgeweight> distances;
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
-	std::vector<count> npaths;
+	std::vector<bigfloat> npaths;
 
 	std::stack<node> stack;
 
@@ -107,7 +110,7 @@ inline edgeweight SSSP::distance(node t) const {
 	return distances[t];
 }
 
-inline count SSSP::numberOfPaths(node t) const {
+inline bigfloat SSSP::numberOfPaths(node t) const {
 	if (! storePaths) {
 		throw std::runtime_error("number of paths have not been stored");
 	}
@@ -119,6 +122,10 @@ inline std::vector<node> SSSP::getPredecessors(node t) const {
 		throw std::runtime_error("predecessors have not been stored");
 	}
 	return previous[t];
+}
+
+inline bigfloat SSSP::getNumberOfPaths(node t) const {
+	return npaths[t];
 }
 
 } /* namespace NetworKit */

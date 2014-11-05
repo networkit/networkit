@@ -13,9 +13,6 @@ namespace NetworKit {
 GraphEventGenerator::GraphEventGenerator(Graph& G) {
 }
 
-GraphEventGenerator::~GraphEventGenerator() {
-}
-
 void GraphEventGenerator::generateStream(std::function<bool(void)> done) {
 
 	while (!done()) {
