@@ -1,5 +1,5 @@
 # NetworKit native classes and functions
-from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, CoreDecomposition
+from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, EffectiveDiameter, Eccentricity, CoreDecomposition
 
 # other submodules
 from . import community
@@ -13,6 +13,9 @@ import textwrap
 import collections
 import math
 import logging
+
+import numpy as np 	 	
+import matplotlib.pyplot as plt 
 
 try:
 	import networkx as nx
@@ -198,6 +201,13 @@ def properties(G, settings):
 	else:
 		dia = None
 
+	# effective diameter
+	if settings["effectiveDiameter"] and nComponents == 1:
+		logging.info("[...] estimating effective diameter")
+		effDia = EffectiveDiameter.effectiveDiameter(G, ratio=0.9, k=64, r=7) 	 	
+	else: 	 	
+		effDia = None 
+
 	# clustering
 	avglcc = None
 	if settings["clustering"]:
@@ -230,6 +240,7 @@ def properties(G, settings):
 		 "nComponents": nComponents,
 		 "sizeLargestComponent": max(componentSizes.values()),
 		 "dia": dia,
+		 "effDia": effDia,
 		 "isolates": isolates,
 		 "loops": loops,
 		 "ncomPLP": ncomPLP,
@@ -261,6 +272,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 		["connected components", props["nComponents"]],
 		["size of largest component", props["sizeLargestComponent"]],
 		["estimated diameter range", str(props["dia"])],
+		["estimated effective diameter", str(props["effDia"])],
 	]
 	degreeProperties = [
 		["min./max. degree", "({0}, {1})".format(props["minDeg"], props["maxDeg"])],
@@ -314,3 +326,17 @@ def printDegreeHistogram(G, nbins=25):
 
 	(labels, hist) = compressHistogram(hist, nbins)
 	termgraph.graph(labels, hist)
+
+def showHopPlot(G): 	 	
+	""" Prints the hop-plot""" 	 	
+	# hop-plot 	 	
+	if nComponents == 1: 	 	
+		hopPlot = EffectiveDiameter.hopPlot(G, maxDistance=0, k=64, r=7) 	 	
+	else: 	 	
+		hopPlot = None 	 	
+	plt.title(G.getName())
+	plt.xlabel('distance')
+	plt.ylabel('fraction of connected nodes') 	 	
+	plt.ylim([0,1.02]) 	 	
+	plt.plot(hopPlot, 'r') 	 	
+	plt.show()
