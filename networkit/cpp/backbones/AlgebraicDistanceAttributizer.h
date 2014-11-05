@@ -8,7 +8,7 @@
 #ifndef ALGEBRAICDISTANCEATTRIBUTIZER_H_
 #define ALGEBRAICDISTANCEATTRIBUTIZER_H_
 
-#include "BackboneCalculator.h"
+#include "AttributeGenerator.h"
 #include "../distmeasures/AlgebraicDistance.h"
 
 namespace NetworKit {

@@ -8,7 +8,7 @@
 #ifndef FORESTFIREATTRIBUTIZER_H_
 #define FORESTFIREATTRIBUTIZER_H_
 
-#include "BackboneCalculator.h"
+#include "AttributeGenerator.h"
 
 namespace NetworKit {
 

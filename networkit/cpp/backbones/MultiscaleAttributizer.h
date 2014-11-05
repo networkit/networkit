@@ -8,7 +8,7 @@
 #ifndef MULTISCALEATTRIBUTIZER_H_
 #define MULTISCALEATTRIBUTIZER_H_
 
-#include "BackboneCalculator.h"
+#include "AttributeGenerator.h"
 
 namespace NetworKit {
 
