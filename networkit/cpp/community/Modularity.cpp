@@ -18,11 +18,6 @@ namespace NetworKit {
 
 
 Modularity::Modularity() : QualityMeasure(), gTotalEdgeWeight(0.0) {
-
-}
-
-Modularity::~Modularity() {
-
 }
 
 void Modularity::setTotalEdgeWeight(double totalEdgeWeight) {

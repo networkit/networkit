@@ -16,9 +16,6 @@ MaxentStress::MaxentStress(Point<float> bottomLeft, Point<float> topRight, bool 
 
 }
 
-MaxentStress::~MaxentStress() {
-
-}
 
 void MaxentStress::draw(Graph& G) {
 	count n = G.numberOfNodes();

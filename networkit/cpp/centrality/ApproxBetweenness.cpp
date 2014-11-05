@@ -77,7 +77,7 @@ void ApproxBetweenness::run() {
 			sssp.reset(new BFS(G, u));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
-		sssp->run(v); 
+		sssp->run(v);
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update
@@ -86,9 +86,11 @@ void ApproxBetweenness::run() {
 			while (t != u)  {
 				// sample z in P_u(t) with probability sigma_uz / sigma_us
 				std::vector<std::pair<node, double> > choices;
-				INFO("scanning the stored predecessors");
 				for (node z : sssp->getPredecessors(t)) {
-					choices.emplace_back(z, sssp->numberOfPaths(z) / (double) sssp->numberOfPaths(t)); 	// sigma_uz / sigma_us
+					bigfloat tmp = sssp->numberOfPaths(z) / sssp->numberOfPaths(t);
+					double weight;
+					tmp.ToDouble(weight);
+					choices.emplace_back(z, weight); 	// sigma_uz / sigma_us
 				}
 				node z = Aux::Random::weightedChoice(choices);
 				assert (z <= G.upperNodeIdBound());

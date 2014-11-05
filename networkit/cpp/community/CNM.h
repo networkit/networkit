@@ -24,15 +24,19 @@ namespace NetworKit {
  */
 class CNM : public NetworKit::CommunityDetectionAlgorithm {
 public:
-
+	/**
+	 * Constructor to the community detection algorithm after Clauset, Newman and Moore.
+	 *
+	 * @param[in]	G	input graph
+	 */
+	CNM(const Graph& G);
 
 	/**
 	 * Detect communities in the given graph @a graph.
 	 *
-	 * @param graph The graph.
 	 * @return A partition containing the found communities.
 	 */
-	Partition run(const Graph &graph) override;
+	Partition run() override;
 
 	/**
 	 * Get string representation.

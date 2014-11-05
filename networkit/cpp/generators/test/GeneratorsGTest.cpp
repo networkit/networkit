@@ -130,8 +130,8 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	psWriter.write(G, oneClustering, "output/pubweb.eps");
 
 	// clustering
-	PLM clusterAlgo;
-	Partition clustering = clusterAlgo.run(G);
+	PLM clusterAlgo(G);
+	Partition clustering = clusterAlgo.run();
 	EXPECT_EQ(G.numberOfNodes(),clustering.numberOfElements());
 	psWriter.write(G, clustering, "output/pubweb-clustered-PLM.eps");
 
@@ -275,8 +275,8 @@ TEST_F(GeneratorsGTest, testRmatGenerator) {
 	double ccex = cc.exactGlobal(G);
 	EXPECT_LE(ccex, 0.4);
 
-	PLM clusterer(true);
-	Partition zeta = clusterer.run(G);
+	PLM clusterer(G, true);
+	Partition zeta = clusterer.run();
 	Modularity mod;
 	double modVal = mod.getQuality(zeta, G);
 	INFO("Modularity of R-MAT graph clustering: ", modVal);

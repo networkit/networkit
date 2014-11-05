@@ -19,10 +19,6 @@ namespace NetworKit {
  */
 class Parameters {
 public:
-	Parameters();
-
-	virtual ~Parameters();
-
 	void setInt(std::string key, std::int64_t value);
 
 	void setDouble(std::string key, double value);

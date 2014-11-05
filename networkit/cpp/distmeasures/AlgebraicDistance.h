@@ -32,8 +32,6 @@ public:
 	 */
 	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
 
-	 ~AlgebraicDistance();
-
 	/**
 	 * Starting with random initialization, compute for all @a numberSystems
 	 * "diffusion" systems the situation after @a numberIterations iterations

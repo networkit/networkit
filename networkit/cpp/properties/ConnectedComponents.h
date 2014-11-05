@@ -27,13 +27,6 @@ public:
 	 */
 	ConnectedComponents(const Graph& G);
 
-	/** Default destructor */
-	virtual ~ConnectedComponents() = default;
-	/**
-	 * This method determines the connected components for the graph given in the constructor.
-	 */
-	void runSequential();
-
 	/**
 	 * This method determines the connected components for the graph given in the constructor.
 	 */
@@ -54,13 +47,13 @@ public:
 	count componentOfNode(node u);
 
 
-	/** 
+	/**
 	 * Get a Partition that represents the components.
 	 *
 	 * @return A partition representing the found components.
 	 */
 	Partition getPartition();
-    
+
     /**
      *Return the map from component to size
      */
@@ -71,14 +64,17 @@ private:
 	const Graph& G;
 	Partition component;
 	count numComponents;
+	bool hasRun;
 };
 
 inline count ConnectedComponents::componentOfNode(node u) {
 	assert (component[u] != none);
+	if (!hasRun) throw std::runtime_error("run method has not been called");
 	return component[u];
 }
 
 inline count ConnectedComponents::numberOfComponents() {
+	if (!hasRun) throw std::runtime_error("run method has not been called");
 	return this->numComponents;
 }
 

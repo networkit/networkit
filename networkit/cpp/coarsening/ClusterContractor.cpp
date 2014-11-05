@@ -11,14 +11,6 @@
 
 namespace NetworKit {
 
-ClusterContractor::ClusterContractor() {
-
-}
-
-ClusterContractor::~ClusterContractor() {
-
-}
-
 std::pair<Graph, std::vector<node> > ClusterContractor::run(const Graph& G, const Partition& zeta) {
 
 	Aux::Timer timer;
