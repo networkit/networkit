@@ -10,9 +10,3 @@
 namespace NetworKit {
 
 } /* namespace NetworKit */
-
-NetworKit::GraphEventHandler::GraphEventHandler() {
-}
-
-NetworKit::GraphEventHandler::~GraphEventHandler() {
-}

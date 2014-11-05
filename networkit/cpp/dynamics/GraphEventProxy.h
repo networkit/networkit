@@ -34,8 +34,6 @@ public:
 
 	GraphEventProxy(Graph& G);
 
-	virtual ~GraphEventProxy();
-
 	void registerObserver(GraphEventHandler* observer);
 
 	node addNode();

@@ -44,7 +44,7 @@ public:
 
     double dependency(node s, node t) const;
 
-    count nPaths(node s, node t) const;
+    bigfloat nPaths(node s, node t) const;
 
 
 
@@ -57,7 +57,7 @@ protected:
     // for each source s (possible node), stores the maximum distance from s to any other node
     std::vector<count> maxDistance;
     // stores the number of shortest paths between every vertex pair
-    std::vector<std::vector<count>> npaths;
+    std::vector<std::vector<bigfloat>> npaths;
     // stores the distances between every vertex pair
     std::vector<std::vector<edgeweight>> distances;
     // store the dependencies of every vertex on any other vertex
@@ -76,7 +76,7 @@ inline double DynBetweenness::dependency(node s, node t) const {
     return dependencies[s][t];
 }
 
-inline count DynBetweenness::nPaths(node s, node t) const {
+inline bigfloat DynBetweenness::nPaths(node s, node t) const {
     return npaths[s][t];
 }
 

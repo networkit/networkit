@@ -16,9 +16,6 @@ AlgebraicDistance::AlgebraicDistance(const Graph& G, count numberSystems, count 
 
 }
 
-AlgebraicDistance::~AlgebraicDistance() {
-}
-
 void AlgebraicDistance::preprocess() {
 	Aux::Timer running1;
 	running1.start();

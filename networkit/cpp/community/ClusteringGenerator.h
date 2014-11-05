@@ -19,10 +19,6 @@ namespace NetworKit {
 class ClusteringGenerator {
 
 public:
-
-	/** Default destructor */
-	virtual ~ClusteringGenerator();
-
 	/**
 	 * Make a singleton clustering of Graph @a G, i.e. a clustering in which every node
 	 * belongs to its own cluster.

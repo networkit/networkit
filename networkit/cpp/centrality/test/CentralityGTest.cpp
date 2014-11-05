@@ -36,7 +36,7 @@ TEST_F(CentralityGTest, testBetweennessCentrality) {
 	G.addEdge(3, 5);
 	G.addEdge(4, 5);
 
-	Betweenness centrality = Betweenness(G);
+	Betweenness centrality(G);
 	centrality.run();
 	std::vector<double> bc = centrality.scores();
 
@@ -68,7 +68,7 @@ TEST_F(CentralityGTest, testBetweenness2Centrality) {
 	G.addEdge(3, 5);
 	G.addEdge(4, 5);
 
-	Betweenness centrality = Betweenness(G);
+	Betweenness centrality(G);
 	centrality.run();
 	std::vector<double> bc = centrality.scores();
 
@@ -102,7 +102,7 @@ TEST_F(CentralityGTest, testApproxBetweennessSmallGraph) {
 
 	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
-	ApproxBetweenness centrality = ApproxBetweenness(G, epsilon, delta, 0);
+	ApproxBetweenness centrality(G, epsilon, delta, 0);
 	centrality.run();
 	std::vector<double> bc = centrality.scores();
 
@@ -115,7 +115,7 @@ TEST_F(CentralityGTest, tryApproxBetweennessOnRealGraph) {
 
 	double epsilon = 0.01; // error
 	double delta = 0.1; // confidence
-	ApproxBetweenness centrality = ApproxBetweenness(G, epsilon, delta);
+	ApproxBetweenness centrality(G, epsilon, delta);
 	centrality.run();
 	std::vector<double> bc = centrality.scores();
 
@@ -148,7 +148,7 @@ TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
 	G.addEdge(5, 6, 3);
 	G.addEdge(5, 7, 2);
 
-	Betweenness centrality = Betweenness(G);
+	Betweenness centrality(G);
 	centrality.run();
 	std::vector<double> bc = centrality.scores();
 
@@ -188,7 +188,7 @@ TEST_F(CentralityGTest, testEigenvectorCentrality) {
 	G.addEdge(5, 6, 3);
 	G.addEdge(5, 7, 2);
 
-	EigenvectorCentrality centrality = EigenvectorCentrality(G);
+	EigenvectorCentrality centrality(G);
 	centrality.run();
 	std::vector<double> cen = centrality.scores();
 
@@ -230,7 +230,7 @@ TEST_F(CentralityGTest, testPageRankCentrality) {
 	G.addEdge(5, 7, 2);
 
 	double damp = 0.85;
-	PageRank centrality = PageRank(G, damp);
+	PageRank centrality(G, damp);
 	centrality.run();
 	std::vector<double> cen = centrality.scores();
 

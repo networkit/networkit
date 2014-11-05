@@ -56,6 +56,93 @@ std::vector<double> ClusteringCoefficient::exactLocal(Graph &G) {
 	return coefficient;
 }
 
+double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
+	std::vector<std::vector<node> > edges(G.upperNodeIdBound());
+
+	// copy edges with edge ids
+	G.parallelForNodes([&](node u) {
+		edges[u].reserve(G.degree(u));
+		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
+			edges[u].emplace_back(v);
+		});
+	});
+
+	//Node attribute: marker
+	std::vector<bool> nodeMarker(G.upperNodeIdBound(), false);
+
+	//Edge attribute: triangle count
+	std::vector<count> triangleCount(G.upperNodeIdBound(), 0);
+
+	// bucket sort
+	count n = G.numberOfNodes();
+	std::vector<node> sortedNodes(n);
+	{
+		std::vector<index> nodePos(n + 1, 0);
+
+		G.forNodes([&](node u) {
+			++nodePos[n - G.degree(u)];
+		});
+
+		// exclusive prefix sum
+		index tmp = nodePos[0];
+		index sum = tmp;
+		nodePos[0] = 0;
+
+		for (index i = 1; i < nodePos.size(); ++i) {
+			tmp = nodePos[i];
+			nodePos[i] = sum;
+			sum += tmp;
+		}
+
+		G.forNodes([&](node u) {
+			sortedNodes[nodePos[n - G.degree(u)]++] = u;
+		});
+	}
+
+	for (node u : sortedNodes) {
+		//Mark all neighbors
+		for (auto v : edges[u]) {
+			nodeMarker[v] = true;
+		}
+
+		//For all neighbors: check for already marked neighbors.
+		for (auto v : edges[u]) {
+			for (auto w = edges[v].begin(); w != edges[v].end(); ++w) {
+				// delete the edge to u as we do not need to consider it again.
+				// the opposite edge doesn't need to be deleted as we will never again consider
+				// outgoing edges of u as u cannot be reached anymore after the uv loop.
+				if (*w == u) {
+					// move last element to current position in order to avoid changing too much
+					*w = edges[v].back();
+					edges[v].pop_back();
+					if (w == edges[v].end()) // break if we were at the last element already
+						break;
+				}
+
+				if (nodeMarker[*w]) { // triangle found - count it!
+					++triangleCount[u];
+					++triangleCount[*w];
+					++triangleCount[v];
+				}
+			}
+
+			nodeMarker[v] = false; // all triangles with u and v have been counted already
+		}
+	}
+
+	double coefficient = 0;
+	count size = 0;
+	G.forNodes([&](node u) {
+		count d = G.degree(u);
+		if (d > 1) {
+			coefficient += triangleCount[u] * 2.0 / (d * (d - 1));
+			size++;
+		}
+	});
+
+	return coefficient / size;
+}
+
 double ClusteringCoefficient::avgLocal(Graph& G) {
 
 	auto coefficients = exactLocal(G); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$

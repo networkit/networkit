@@ -21,11 +21,6 @@ namespace NetworKit {
 class MatchingContracter: public GraphCoarsening {
 
 public:
-
-	MatchingContracter();
-
-	virtual ~MatchingContracter();
-
 	/**
 	 * Contracts graph according to a matching.
 	 *

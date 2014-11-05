@@ -14,10 +14,6 @@ NeighborhoodDistance::NeighborhoodDistance(const Graph& G) : NodeDistance(G) {
 
 }
 
-NeighborhoodDistance::~NeighborhoodDistance() {
-	// TODO Auto-generated destructor stub
-}
-
 void NeighborhoodDistance::preprocess() {
 	// no preprocessing necessary
 }

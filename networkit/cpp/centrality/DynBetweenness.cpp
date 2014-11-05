@@ -20,7 +20,7 @@
 namespace NetworKit {
 DynBetweenness::DynBetweenness(const Graph& G, bool storePredecessors) : Centrality(G, normalized),
 maxDistance(G.upperNodeIdBound()),
-npaths(G.upperNodeIdBound(), std::vector<count>(G.upperNodeIdBound())),
+npaths(G.upperNodeIdBound(), std::vector<bigfloat>(G.upperNodeIdBound())),
 distances(G.upperNodeIdBound(), std::vector<edgeweight>(G.upperNodeIdBound())),
 dependencies(G.upperNodeIdBound(),std::vector<double>(G.upperNodeIdBound(), 0.0)),
 storePreds(storePredecessors) {
@@ -74,7 +74,12 @@ void DynBetweenness::run() {
             node t = stack.top();
             stack.pop();
             for (node p : sssp->getPredecessors(t)) {
-                dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
+                // workaround for integer overflow in large graphs
+                bigfloat tmp = npaths[s][p] / npaths[s][t];
+                double weight;
+                tmp.ToDouble(weight);
+
+                dependencies[s][p] += weight * (1 + dependencies[s][t]);
             }
             if (t != s) {
                 scoreData[t] += dependencies[s][t];
@@ -98,7 +103,7 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
         }
         edgeweight difference = distances[s][u_l] - distances[s][u_h];
         if (difference > 0) {
-            std::vector<count> new_npaths(G.upperNodeIdBound());
+            std::vector<bigfloat> new_npaths(G.upperNodeIdBound());
             std::vector<edgeweight> new_dist(G.upperNodeIdBound());
             G.forNodes([&] (node v){
                 new_npaths[v] = npaths[s][v];
@@ -177,9 +182,15 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
                                 new_dep[v] = dependencies[s][v];
                                 l_queues[level-1].push(v);
                             }
-                            double new_contrib = double(new_npaths[v])/new_npaths[w]*(1+new_dep[w]);
+
+                            bigfloat tmp = new_npaths[v] / new_npaths[w];
+                            double weight;
+                            tmp.ToDouble(weight);
+                            double new_contrib = weight * (1 + new_dep[w]);
                             new_dep[v] += new_contrib;
-                            double old_contrib = double(npaths[s][v])/npaths[s][w]*(1+dependencies[s][w]);
+                            tmp = npaths[s][v] / npaths[s][w];
+                            tmp.ToDouble(weight);
+                            double old_contrib = weight * (1 + dependencies[s][w]);
                             if (touched[v] == 1 && (v != u_h or w!= u_l))
                                 new_dep[v] -= old_contrib;
                             DEBUG("Parent ", v);
@@ -311,13 +322,19 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
             if (storePreds) {
                 DEBUG("Computing dependencies");
                 for (node p : predecessors[s][t]) {
-                    dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
+                    bigfloat tmp = npaths[s][p] / npaths[s][t];
+                    double weight;
+                    tmp.ToDouble(weight);
+                    dependencies[s][p] += weight  * (1 + dependencies[s][t]);
                 }
             }
             else {
                 G.forNeighborsOf(t, [&] (node p){
                     if (Aux::NumericTools::logically_equal(distances[s][t], distances[s][p] + G.weight(p, t))) {
-                        dependencies[s][p] += (double(npaths[s][p]) / npaths[s][t])  * (1 + dependencies[s][t]);
+                        bigfloat tmp = npaths[s][p] / npaths[s][t];
+                        double weight;
+                        tmp.ToDouble(weight);
+                        dependencies[s][p] += weight * (1 + dependencies[s][t]);
                     }
                 });
             }

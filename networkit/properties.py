@@ -100,23 +100,16 @@ def clustering(G, error=0.01):
 	return ClusteringCoefficient().approxAvgLocal(G, nSamples)
 
 
-def powerLawExponent(G, dd=None):
-	""" Supposing that the degreee distribution fits a power law,
-		get the exponent (gamma).
-	"""
-	if not dd:
-		dd = degreeSequence(G)
-	fit = powerlaw.Fit(dd)
-	return fit.alpha
-
-def powerLawFit(G, dd=None):
+def degreePowerLaw(G, dd=None):
 	""" Check if a power law is a good fit for the degree distribution.
+
 	"""
 	if not dd:
 		dd = degreeSequence(G)
 	fit = powerlaw.Fit(dd)
 	R, p = fit.distribution_compare("power_law", "exponential", normalized_ratio=True)
-	return ((R > 0), R)
+	gamma = fit.alpha
+	return ((R > 0), R, gamma)
 
 
 # def powerLawExponent_(G):
@@ -156,15 +149,15 @@ def properties(G, settings):
 	degDist = GraphProperties.degreeDistribution(G)
 	minDeg, maxDeg, avgDeg = degrees(G)
 
-	plfit = powerLawFit(G, degDist)
-	gamma = powerLawExponent(G, degDist)
+	if settings["powerlaw"]:
+		plfit = degreePowerLaw(G)
 
 	# number of isolated nodes
 	isolates = degDist[0] if len(degDist) > 0 else None
 	satellites = degDist[1] if len(degDist) > 1 else None
 
 	# number of self-loops
-	loops = len([(u, v) for (u,v) in G.edges() if (u == v)])
+	loops = G.numberOfSelfLoops()
 
 	# density
 	dens = density(G)
@@ -179,9 +172,9 @@ def properties(G, settings):
 		logging.info("[...] detecting communities")
 		# perform PLM community detection
 		logging.info("[...] performing community detection: PLM")
-		plm = community.PLM()
+		plm = community.PLM(G)
 		print(plm)
-		zetaPLM = plm.run(G)
+		zetaPLM = plm.run()
 		ncomPLM = zetaPLM.numberOfSubsets()
 		modPLM = community.Modularity().getQuality(zetaPLM, G)
 
@@ -216,9 +209,11 @@ def properties(G, settings):
 	assort = degreeAssortativity(G)
 
 	# degeneracy
-	logging.info("[...] calculating degeneracy by k-core decomposition")
-	degen = degeneracy(G)
-
+	if not G.isDirected():
+		logging.info("[...] calculating degeneracy by k-core decomposition")
+		degen = degeneracy(G)
+	else:
+		degen = None
 
 	props = {
 		 "name": G.getName(),
@@ -230,7 +225,6 @@ def properties(G, settings):
 		 "maxDeg": maxDeg,
 		 "avgDeg": avgDeg,
 		 "plfit": plfit,
-		 "gamma": gamma,
 		 "avglcc": avglcc,
 		 "degeneracy": degen,
 		 "nComponents": nComponents,
@@ -256,32 +250,27 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	"""
 	props = properties(G, settings)
 	basicProperties = [
-		["nodes (n)", props["n"]],
-		["edges (m)", props["m"]],
+		["nodes, edges", "{0}, {1}".format(props["n"], props["m"])],
 		["directed?", "{0}".format(props["directed"])],
 		["weighted?", "{0}".format(props["weighted"])],
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
 		["clustering coefficient", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
-		["degeneracy (max. core number)", props["degeneracy"]],
-	]
-	degreeProperties = [
-		["min. degree", props["minDeg"]],
-		["max. degree", props["maxDeg"]],
-		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
-		["degree power law fit?", "{0}, {1}".format(props["plfit"][0], "{0:.6f}".format(props["plfit"][1]))],
-		["degree power law exponent", "{0:.4f}".format(props["gamma"]) if props["plfit"][0] else None],
-		["degree assortativity", "{0:.4f}".format(props["assort"])],
-	]
-	pathStructure = [
+		["max. core number", props["degeneracy"]],
 		["connected components", props["nComponents"]],
 		["size of largest component", props["sizeLargestComponent"]],
 		["estimated diameter range", str(props["dia"])],
 	]
+	degreeProperties = [
+		["min./max. degree", "({0}, {1})".format(props["minDeg"], props["maxDeg"])],
+		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
+		["power law?, likelihood, gamma", "{0}, {1}, {2}".format(props["plfit"][0], "{0:.4f}".format(props["plfit"][1]), "{0:.4f}".format(props["plfit"][2]))],
+		["degree assortativity", "{0:.4f}".format(props["assort"])],
+	]
 
 	communityStructure = [
-		["modularity-driven community detection (PLM)", "", ""],
+		["community detection (PLM)", "", ""],
 		["", "communities", props["ncomPLM"]],
 		["", "modularity", "{0:.6f}".format(props["modPLM"]) if props["modPLM"] else None],
 	]
@@ -293,8 +282,6 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	print(tabulate.tabulate(basicProperties))
 	print("Node Degree Properties")
 	print(tabulate.tabulate(degreeProperties))
-	print("Path Structure")
-	print(tabulate.tabulate(pathStructure))
 	#print("Miscellaneous")
 	#print(tabulate.tabulate(miscProperties))
 	print("Community Structure")

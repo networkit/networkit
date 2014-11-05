@@ -89,13 +89,11 @@ template <typename Element>
 const Element& weightedChoice(const std::vector<std::pair<Element, double>>& weightedElements) {
 	if (weightedElements.size() == 0)
 		throw std::runtime_error("Random::weightedChoice: input size equal to 0");
-	INFO("Input size: ", weightedElements.size());
 	double total = 0.0;
 	for (const auto& entry : weightedElements) {
 		assert(entry.second >= 0.0 && "This algorithm only works with non-negative weights");
 		total += entry.second;
 	}
-	INFO("total: ", total);
 	double r = Aux::Random::real(total);
 	for (const auto& entry : weightedElements) {
 		if (r < entry.second) {
@@ -103,7 +101,6 @@ const Element& weightedChoice(const std::vector<std::pair<Element, double>>& wei
 		}
 		r -= entry.second;
 	}
-	INFO("r: ", r);
 	throw std::runtime_error("Random::weightedChoice: should never get here"); // should never get here
 }
 

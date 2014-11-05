@@ -12,11 +12,15 @@
 #include <cmath>
 #include <limits>
 
+#include "ext/ttmath/ttmath.h"
+
+
 namespace NetworKit {
 	/** Typedefs **/
 
 	typedef uint64_t index; // more expressive name for an index into an array
 	typedef uint64_t count; // more expressive name for an integer quantity
+	typedef ttmath::Big<1,1> bigfloat;	// big floating point number
 	typedef index node; // node indices are 0-based
 	typedef double edgeweight; // edge weight type
 	typedef index edgeid;	// edge id

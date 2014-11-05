@@ -27,7 +27,6 @@ public:
 	 */
 	MaxentStress() {}  // nullary constructor needed for Python shell
 	MaxentStress(Point<float> bottomLeft, Point<float> topRight, bool useGivenLayout = false);
-	virtual ~MaxentStress();
 
 	virtual void draw(Graph& g);
 };

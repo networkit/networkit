@@ -34,6 +34,9 @@ public:
      * @param   storePredecessors   keep track of the lists of predecessors?
      */
     DynSSSP(const Graph& G, node source, bool storePredecessors = true);
+
+    virtual ~DynSSSP() = default;
+
     /**
     * Updates the betweenness centralities after a batch of edge insertions on the graph.
     *
