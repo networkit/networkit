@@ -1,6 +1,5 @@
 from networkit import *
 import time
-import parameterization
 import traceback
 
 # -----------------------------------------------------------------------
@@ -52,7 +51,7 @@ def executeTask(task):
 		for ialgorithm in task.algorithms:
 			#Calculate the attribute that is characteristic for that algorithm.
 			time_attribute_start = time.time()
-			attribute = ialgorithm.getAttribute(graph)
+			attribute = ialgorithm.getAlgorithm().getAttribute(graph)
 			time_attribute_elapsed = time.time() - time_attribute_start
 
 			#Check preconditions
@@ -61,16 +60,17 @@ def executeTask(task):
 			else:
 				for iedgeRatio in task.edgeRatios:
 					#Parameterize the algorithm in such a way that we meet the expected edge ratio
-					algorithmParameter = parameterization.parameterize(graph, ialgorithm, iedgeRatio)
+					algorithmParameter = ialgorithm.getAlgorithm().getParameter(graph, iedgeRatio)
+					
 					time_backbone_start = time.time()
-					backbone = ialgorithm.getBackboneFromAttribute(graph, attribute, algorithmParameter)
+					backbone = ialgorithm.getAlgorithm().getBackbone(graph, algorithmParameter, attribute)
 					time_backbone_elapsed = time.time() - time_backbone_start
 
 					propertiesDict = {
 								'graph':igraph.name,
 								'algorithm':ialgorithm.getShortName(),
 								'parameter':algorithmParameter,
-								'evalExpr':ialgorithm.getAlgorithmExpr(algorithmParameter),
+								'evalExpr':'unknown',
 								'rt_attribute':time_attribute_elapsed,
 								'rt_backbone':time_backbone_elapsed,
 								'targetEdgeRatio':iedgeRatio

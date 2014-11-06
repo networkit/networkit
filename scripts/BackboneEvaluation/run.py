@@ -5,7 +5,6 @@ from sqliteWriter import SqliteResultWriter
 from consoleWriter import ConsoleWriter
 import string
 import parameters
-import parameterization
 import multiprocessing
 
 # -----------------------------------------------------------------------
