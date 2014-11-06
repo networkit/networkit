@@ -1098,7 +1098,7 @@ cdef class PubWebGenerator:
 
 cdef extern from "cpp/generators/ErdosRenyiGenerator.h":
 	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator":
-		_ErdosRenyiGenerator(count nNodes, double prob) except +
+		_ErdosRenyiGenerator(count nNodes, double prob, bool directed) except +
 		_Graph generate() except +
 
 cdef class ErdosRenyiGenerator:
@@ -1116,12 +1116,14 @@ cdef class ErdosRenyiGenerator:
 		Number of nodes n in the graph.
 	prob : double
 		Probability of existence for each edge p.
+	directed : bool
+		Generates a directed
 	"""
 
 	cdef _ErdosRenyiGenerator* _this
 
-	def __cinit__(self, nNodes, prob):
-		self._this = new _ErdosRenyiGenerator(nNodes, prob)
+	def __cinit__(self, nNodes, prob, directed=False):
+		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed)
 
 	def generate(self):
 		return Graph(0).setThis(self._this.generate())
