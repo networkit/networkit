@@ -52,7 +52,7 @@ class P_Community:
 
 	def getValues(self, graph, backbone):
 		if backbone.numberOfEdges() > 0:
-			cAlgo = community.PLM(refine=False, par='none')
+			cAlgo = community.PLM(graph, refine=False, par='none')
 			communitiesGraph = community.detectCommunities(graph, algo=cAlgo)
 			communitiesBackbone = community.detectCommunities(backbone, algo=cAlgo)
 
@@ -131,7 +131,7 @@ class P_DegreeDistribution:
 		dd = properties.degreeDistribution(backbone)
 		fit = properties.powerlaw.Fit(dd)
 		degreeDistCoefficient = fit.alpha
-		powerLawFit = properties.powerLawFit(backbone, dd)[1]
+		powerLawFit = properties.degreePowerLaw(backbone, dd)[1]
 
 		return {'degreeDistCoefficient':degreeDistCoefficient, 'powerLawFit':powerLawFit}
 

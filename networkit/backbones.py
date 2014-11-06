@@ -47,15 +47,24 @@ class BackboneAlgorithm(object):
 		if attribute is None:
 			attribute = self.getAttribute(G)
 		
-		paramAlgorithm = self._getParameterizationAlgorithm()
-		parameter = paramAlgorithm.parameterize(self, G, attribute, edgeRatio)
+		parameter = self.getParameter(G, edgeRatio, attribute)
 		
 		return self.getBackbone(G, parameter, attribute)
  
 	@_abc.abstractmethod
 	def _getBackbone(self, G, parameter, attribute):
 		pass
- 
+
+	def getParameter(self, G, edgeRatio, attribute=None):
+		""" This is a convenience function that applies an appropriate parameterization 
+		algorithm to obtain a parameter value that yields a backbone of the desired size. """
+		if attribute is None:
+			attribute = self.getAttribute(G)
+
+		paramAlgorithm = self._getParameterizationAlgorithm()
+		parameter = paramAlgorithm.parameterize(self, G, attribute, edgeRatio)
+		return parameter
+
 	def _getParameterizationAlgorithm(self):
 		return SimpleParameterization()
 
