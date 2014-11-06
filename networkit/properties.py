@@ -209,11 +209,8 @@ def properties(G, settings):
 	assort = degreeAssortativity(G)
 
 	# degeneracy
-	if not G.isDirected():
-		logging.info("[...] calculating degeneracy by k-core decomposition")
-		degen = degeneracy(G)
-	else:
-		degen = None
+	logging.info("[...] calculating degeneracy by k-core decomposition")
+	degen = degeneracy(G)
 
 	props = {
 		 "name": G.getName(),
