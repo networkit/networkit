@@ -45,7 +45,8 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 	else {
 		// compute clustering
 		PLP clusterer(G);
-		Partition clustering = clusterer.run();
+		clusterer.run();
+		Partition clustering = clusterer.getPartition();
 		EdgeCut ec;
 		INFO("Clustering: #clusters: ", clustering.numberOfSubsets(), "; cut: ", ec.getQuality(clustering, G));
 

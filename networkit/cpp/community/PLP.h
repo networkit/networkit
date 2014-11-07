@@ -44,20 +44,16 @@ public:
 
 	/**
 	 * Run the label propagation clustering algorithm.
-	 *
-	 * @return			clustering
 	 */
-	virtual Partition run();
+	virtual void run();
 
 	/**
 	 * Run the label propagation clustering algorithm, cluster
 	 * initialization with @a part.
 	 *
-	 * @param[in]	G	input graph
 	 * @param[in]	part input partition
-	 * @return			clustering
 	 */
-	virtual Partition& runFromGiven(Partition& part);
+	virtual void runFromGiven(Partition& part);
 
 	/**
 	 * @return String representation of algorithm and parameters.
