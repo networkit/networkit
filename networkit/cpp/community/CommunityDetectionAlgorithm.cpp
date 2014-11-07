@@ -9,7 +9,14 @@
 
 namespace NetworKit {
 
-CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G) : G(G) {
+CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G) : G(G), result(0), hasRun(false) {
+}
+
+Partition CommunityDetectionAlgorithm::getPartition() {
+	if(!hasRun) {
+		throw std::runtime_error("Call run()-function first.");
+	}
+	return result;
 }
 
 std::string CommunityDetectionAlgorithm::toString() const {

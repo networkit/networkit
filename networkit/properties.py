@@ -81,8 +81,8 @@ def components(G):
 def numberOfComponents(G):
 	""" Find and number of components """
 	logging.info("[...] finding connected components....")
-	cc = ConnectedComponents()
-	cc.run(G)
+	cc = ConnectedComponents(G)
+	cc.run()
 	nComponents = cc.numberOfComponents()
 	return nComponents
 
@@ -174,7 +174,8 @@ def properties(G, settings):
 		logging.info("[...] performing community detection: PLM")
 		plm = community.PLM(G)
 		print(plm)
-		zetaPLM = plm.run()
+		plm.run()
+		zetaPLM = plm.getPartition()
 		ncomPLM = zetaPLM.numberOfSubsets()
 		modPLM = community.Modularity().getQuality(zetaPLM, G)
 
