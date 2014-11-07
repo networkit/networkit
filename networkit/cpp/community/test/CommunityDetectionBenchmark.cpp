@@ -46,7 +46,8 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 		PLP algo(Gcopy);
 
 		timer.start();
-		Partition zeta = algo.run();
+		algo.run();
+		Partition zeta = algo.getPartition();
 		timer.stop();
 
 		auto communitySizes = zeta.subsetSizes();
@@ -64,7 +65,8 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 		PLM algo(Gcopy);
 
 		timer.start();
-		Partition zeta = algo.run();
+		algo.run();
+		Partition zeta = algo.getPartition();
 		timer.stop();
 
 		auto communitySizes = zeta.subsetSizes();

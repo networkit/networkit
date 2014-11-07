@@ -27,10 +27,8 @@ public:
 	 *
 	 * Warning: due to numerical errors the resulting clusters might not be correct.
 	 * This implementation uses the Edmonds-Karp algorithm for the cut calculation.
-	 *
-	 * @return partition of the node set
 	 */
-	virtual Partition run() override;
+	virtual void run() override;
 
 	/**
 	 * @return string representation of algorithm and parameters.
