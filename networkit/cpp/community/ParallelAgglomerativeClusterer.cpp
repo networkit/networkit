@@ -15,7 +15,7 @@
 namespace NetworKit {
 ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {};
 
-Partition ParallelAgglomerativeClusterer::run() {
+void ParallelAgglomerativeClusterer::run() {
 	// copy graph because we make changes due to merges
 	Graph Gcopy(G.numberOfNodes(), true); // make weighted copy
 	G.forEdges([&](node u, node v, edgeweight w){
@@ -71,8 +71,8 @@ Partition ParallelAgglomerativeClusterer::run() {
 	ClusteringProjector projector;
 	Partition zeta = projector.projectBackToFinest(zetaCoarse, mapHierarchy,
 			G);
-
-	return zeta;
+	result = std::move(zeta);
+	hasRun = true;
 }
 
 std::string ParallelAgglomerativeClusterer::toString() const {
