@@ -1,6 +1,7 @@
 from networkit import *
 import matplotlib.pyplot as plt
 import numpy as np
+import operator
 
 try:
 	import seaborn
@@ -22,3 +23,15 @@ def degreeDistribution(G):
 # TODO: hop plot
 
 # TODO: core decomposition sequence
+
+# TODO: clustering coefficient per degree
+
+def clusteringPerDegree(G):
+	degs = properties.degreeSequence(G)
+	cc = properties.ClusteringCoefficient.exactLocal(G)
+	pairs = sorted(zip(degs, cc), key=operator.itemgetter(0))
+	x, y = zip(*pairs)
+	plt.xlabel("degree")
+	plt.ylabel("clustering coefficient")
+	plt.scatter(x, y)
+	seaborn.jointplot(np.array(x), np.array(y), kind="reg")
