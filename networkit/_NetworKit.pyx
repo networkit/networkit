@@ -1034,17 +1034,23 @@ cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 		_Graph generate() except +
 
 cdef class BarabasiAlbertGenerator:
-	""" Generates a scale-free graph using the Barabasi-Albert preferential attachment model. """
+	""" Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
+
+	Parameters
+	----------
+	k : count
+		number of edges that come with a new node
+	nMax : count
+		maximum number of nodes produced
+	n0 : count
+		number of starting nodes
+	 """
 	cdef _BarabasiAlbertGenerator _this
 
 	def __cinit__(self, k, nMax, n0):
-		""" TODO
-		"""
 		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
 
 	def generate(self):
-		""" TODO
-		"""
 		return Graph().setThis(self._this.generate());
 
 
