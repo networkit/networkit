@@ -83,8 +83,11 @@ void SimmelianAttributizer::matchNeighbors(
 	const count& rank,
 	count& overlap) {
 
-	for (; egoIt != egoNeighbors.end() && egoIt->rank == rank; egoIt++) {
-		node other = egoIt->alter;
+	for (auto egoIt : egoNeighbors) {
+		if (egoIt.rank != rank)
+			continue;
+
+		node other = egoIt.alter;
 
 		//We count nodes that are incident to the currently considered edge, as well.
 		if (reciprocityCheck && other == alter)
