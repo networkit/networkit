@@ -32,6 +32,7 @@ from . import coloring
 from . import workflows
 from . import flow
 from . import distmeasures
+from . import plot
 
 try:
 	from . import viztools
