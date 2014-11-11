@@ -64,12 +64,9 @@ public:
 	virtual void setOverlapper(Overlapper& overlap);
 
 	/**
-	 * Run the ensemble clusterer on @a G and return the result in a Partition.
-	 *
-	 * @param G The graph.
-	 * @return A Partition of the clustering.
+	 * Run the ensemble clusterer.
 	 */
-	virtual Partition run();
+	virtual void run();
 
 	/**
 	 * String representation of EPP class.

@@ -20,8 +20,7 @@ PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIt
 
 }
 
-
-Partition PLM::run() {
+void PLM::run() {
 	DEBUG("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();
@@ -240,7 +239,8 @@ Partition PLM::run() {
 		INFO("nodes moved, so begin coarsening and recursive call");
 		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta, parallelCoarsening);	// coarsen graph according to communitites
 		PLM onCoarsened(coarsened.first);
-		Partition zetaCoarse = onCoarsened.run();
+		onCoarsened.run();
+		Partition zetaCoarse = onCoarsened.getPartition();
 
 		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
@@ -263,7 +263,8 @@ Partition PLM::run() {
 			movePhase();
 		}
 	}
-	return zeta;
+	result = std::move(zeta);
+	hasRun = true;
 }
 
 std::string NetworKit::PLM::toString() const {

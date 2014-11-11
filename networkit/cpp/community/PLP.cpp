@@ -21,8 +21,7 @@ PLP::PLP(const Graph& G, count theta) : CommunityDetectionAlgorithm(G), updateTh
 	this->VERSION = "1.0";
 }
 
-
-Partition& PLP::runFromGiven(Partition& labels) {
+void PLP::runFromGiven(Partition& labels) {
 	typedef index label; // a label is the same as a cluster id
 
 	count n = G.numberOfNodes();
@@ -103,12 +102,11 @@ Partition& PLP::runFromGiven(Partition& labels) {
 
 
 	} // end while
-
-	return labels;
+	hasRun = true;
+	result = std::move(labels);
 }
 
-
-Partition PLP::run() {
+void PLP::run() {
 	// set unique label for each node
 	index z = G.upperNodeIdBound();
 	Partition labels(z);
@@ -118,8 +116,7 @@ Partition PLP::run() {
 //		labels[v] = v;
 //	});
 //	labels.setUpperBound(z);
-
-	return runFromGiven(labels);
+	runFromGiven(labels);
 }
 
 std::string PLP::toString() const {
