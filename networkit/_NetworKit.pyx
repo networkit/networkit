@@ -4794,24 +4794,6 @@ cdef class LocalSimilarityAttributizer:
 	def getAttribute(self, Graph G, vector[int] a):
 		return self._this.getAttribute(G._this, a)
 
-cdef extern from "cpp/backbones/TopDegreeAttributizer.h":
-	cdef cppclass _TopDegreeAttributizer "NetworKit::TopDegreeAttributizer":
-		_TopDegreeAttributizer() except +
-		vector[count] getAttribute(_Graph G, vector[int] a) except +
-
-cdef class TopDegreeAttributizer:
-
-	cdef _TopDegreeAttributizer* _this
-
-	def __cinit__(self):
-		self._this = new _TopDegreeAttributizer()
-
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self, Graph G, vector[int] a):
-		return self._this.getAttribute(G._this, a)
-
 cdef extern from "cpp/backbones/ForestFireAttributizer.h":
 	cdef cppclass _ForestFireAttributizer "NetworKit::ForestFireAttributizer":
 		_ForestFireAttributizer(double pf, double tebr) except +
