@@ -43,11 +43,9 @@ public:
 	std::string toString() const override;
 
 	/**
-	 * Detect communities in the given graph @a G
-	 *
-	 * @return A partition containing the found communities.
+	 * Detect communities.
 	 */
-	Partition run() override;
+	void run() override;
 
 	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta, bool parallel=false);
 

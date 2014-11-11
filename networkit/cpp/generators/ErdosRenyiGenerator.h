@@ -21,6 +21,7 @@ class ErdosRenyiGenerator: public StaticGraphGenerator {
 protected:
 	count n;
 	double p;
+	bool directed;
 
 public:
 	/**
@@ -30,8 +31,9 @@ public:
 	 *
 	 * @param nNodes Number of nodes n in the graph.
 	 * @param prob Probability of existence for each edge p.
+	 * @param directed	generates a directed graph
 	 */
-	ErdosRenyiGenerator(count nNodes, double prob);
+	ErdosRenyiGenerator(count nNodes, double prob, bool directed=false);
 
 	virtual Graph generate();
 };

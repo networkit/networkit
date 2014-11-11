@@ -30,9 +30,14 @@ public:
 
 	/**
 	 * Apply algorithm to graph
+	 */
+	virtual void run() = 0;
+
+	/**
+	 * Returns the result of the run method or throws an error, if the algorithm hasn't run yet.
 	 * @return partition of the node set
 	 */
-	virtual Partition run() = 0;
+	virtual Partition getPartition();
 
 	/**
 	 * @return string representation of algorithm and parameters.
@@ -41,6 +46,8 @@ public:
 
 protected:
 	const Graph& G;
+	Partition result;
+	bool hasRun;
 };
 
 } /* namespace NetworKit */

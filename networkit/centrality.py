@@ -127,6 +127,7 @@ class SpectralCentrality:
 
 
 class SciPyEVZ(SpectralCentrality):
+	# TODO: docstring
 	def __init__(self, G, normalized=False):
 		super(SciPyEVZ, self).__init__(G, normalized=normalized)
 
@@ -143,6 +144,7 @@ class SciPyEVZ(SpectralCentrality):
 		self.eigenvalue = spectrum[0]
 
 class SciPyPageRank(SpectralCentrality):
+	# TODO: docstring
 	def __init__(self, G, damp=0.95, normalized=False):
 		super(SciPyPageRank, self).__init__(G, normalized=normalized)
 
