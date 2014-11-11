@@ -1,4 +1,5 @@
 """ This module contains algorithms for the sparsification of networks, i.e. Backbone algorithms. """
+from numpy.core._internal import _index_fields
 
 __author__ = "Gerd Lindner"
 
@@ -140,6 +141,33 @@ class CompleteSearchParameterization:
 				bestRatio = currentEdgeRatio
 
 		return bestParameter
+	
+	
+""" Takes as input an attribute (node or edge) and returns an attribute where
+each node is assigned its rank among all others according to the attribute values.
+The node/edge with lowest input value is assigned 0, the one with second-lowest 
+value 1, and so on.
+
+Keyword arguments:
+attribute -- the input node/edge attribute 
+reverse -- reverses the ranking, if set to True
+
+"""
+def getRankAttribute(attribute, reverse = False):
+	
+	#Example input: [0.1, 0.05, 0.9, 0.2], ascending
+	#Example output: [1, 0, 3, 2]
+	
+	_attribute = zip([x for x in range(0, len(attribute))], attribute)
+	_attribute = sorted(_attribute, key=lambda x: x[1], reverse=reverse)
+	
+	_index = 0
+	result = [0] * len(attribute)
+	for (i, v) in _attribute:
+		result[i] = _index
+		_index = _index + 1
+	
+	return result
 
 """ Parametric variant of the Simmelian Backbones introduced by Nick et al. """
 class SimmelianBackboneParametric(BackboneAlgorithm):
