@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob): n(nNodes), p(prob) {
+ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob, bool directed): n(nNodes), p(prob), directed(directed) {
 
 }
 
@@ -23,7 +23,7 @@ static inline count get_next_edge_distance(const double log_cp) {
 }
 
 Graph ErdosRenyiGenerator::generate() {
-	Graph G(n);
+	Graph G(n, false, directed);
 	const double log_cp = log(1.0 - p); // log of counter probability
 
 	// create edges

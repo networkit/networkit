@@ -1034,17 +1034,23 @@ cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 		_Graph generate() except +
 
 cdef class BarabasiAlbertGenerator:
-	""" Generates a scale-free graph using the Barabasi-Albert preferential attachment model. """
+	""" Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
+
+	Parameters
+	----------
+	k : count
+		number of edges that come with a new node
+	nMax : count
+		maximum number of nodes produced
+	n0 : count
+		number of starting nodes
+	 """
 	cdef _BarabasiAlbertGenerator _this
 
 	def __cinit__(self, k, nMax, n0):
-		""" TODO
-		"""
 		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
 
 	def generate(self):
-		""" TODO
-		"""
 		return Graph().setThis(self._this.generate());
 
 
@@ -1098,7 +1104,7 @@ cdef class PubWebGenerator:
 
 cdef extern from "cpp/generators/ErdosRenyiGenerator.h":
 	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator":
-		_ErdosRenyiGenerator(count nNodes, double prob) except +
+		_ErdosRenyiGenerator(count nNodes, double prob, bool directed) except +
 		_Graph generate() except +
 
 cdef class ErdosRenyiGenerator:
@@ -1116,12 +1122,14 @@ cdef class ErdosRenyiGenerator:
 		Number of nodes n in the graph.
 	prob : double
 		Probability of existence for each edge p.
+	directed : bool
+		Generates a directed
 	"""
 
 	cdef _ErdosRenyiGenerator* _this
 
-	def __cinit__(self, nNodes, prob):
-		self._this = new _ErdosRenyiGenerator(nNodes, prob)
+	def __cinit__(self, nNodes, prob, directed=False):
+		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed)
 
 	def generate(self):
 		return Graph(0).setThis(self._this.generate())
@@ -2612,8 +2620,9 @@ cdef extern from "cpp/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP":
 		_PLP(_Graph _G) except +
 		_PLP(_Graph _G, count updateThreshold) except +
-		_Partition run() except +
-		_Partition runFromGiven(_Partition _part) except +
+		void run() except +
+		_Partition getPartition() except +
+		void runFromGiven(_Partition _part) except +
 		count numberOfIterations() except +
 		string toString() except +
 
@@ -2642,18 +2651,8 @@ cdef class PLP(CommunityDetector):
 
 	def run(self):
 		""" Run the label propagation clustering algorithm.
-
-		Parameters
-		----------
-		G : Graph
-			input graph
-
-	 	Returns
-	 	-------
-	 	Partition
-	 		The created clustering.
 		"""
-		return Partition().setThis(self._this.run())
+		self._this.run()
 
 	def runFromGiven(self, Partition part not None):
 		""" Run the label propagation clustering algorithm starting
@@ -2675,7 +2674,17 @@ cdef class PLP(CommunityDetector):
 		# Work on a local copy as PLP::runFromGiven works on the input
 		cdef _Partition algInput = part._this
 		self._this.runFromGiven(algInput)
-		return Partition().setThis(algInput)
+		#return Partition().setThis(algInput)
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
@@ -2701,7 +2710,8 @@ cdef class PLP(CommunityDetector):
 cdef extern from "cpp/community/LPDegreeOrdered.h":
 	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered":
 		_LPDegreeOrdered(_Graph _G) except +
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
 		count numberOfIterations()
 		string toString() except +
 
@@ -2713,7 +2723,19 @@ cdef class LPDegreeOrdered(CommunityDetector):
 		self._this = new _LPDegreeOrdered(G._this)
 
 	def run(self):
-		return Partition().setThis(self._this.run())
+		""" Detect communites.
+		"""
+		self._this.run()
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
@@ -2740,7 +2762,8 @@ cdef extern from "cpp/community/PLM.h":
 		_PLM(_Graph _G) except +
 		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool parCoarsening, bool turbo) except +
 		string toString() except +
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
 
 
 cdef class PLM(CommunityDetector):
@@ -2782,26 +2805,26 @@ cdef class PLM(CommunityDetector):
 		return self._this.toString().decode("utf-8")
 
 	def run(self):
-		""" Detect communities in the given graph `G`
+		""" Detect communities.
+		"""
+		self._this.run()
 
-		Parameters
-		----------
-		G : Graph
-			The graph.
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
 
 		Returns
 		-------
-		Partition
-			A partition containing the found communities.
+		Partition:
+			A Partition of the clustering.
 		"""
-		return Partition().setThis(self._this.run())
-
+		return Partition().setThis(self._this.getPartition())
 
 cdef extern from "cpp/community/CNM.h":
 	cdef cppclass _CNM "NetworKit::CNM":
 		_CNM(_Graph _G) except +
 		string toString() except +
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
 
 
 cdef class CNM(CommunityDetector):
@@ -2827,26 +2850,27 @@ cdef class CNM(CommunityDetector):
 		return self._this.toString().decode("utf-8")
 
 	def run(self):
-		""" Detect communities in the given graph `graph`.
+		""" Detect communities.
+		"""
+		self._this.run()
 
-		Parameters
-		----------
-		graph : Graph
-			The graph.
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
 
 		Returns
 		-------
-		Partition
-			A partition containing the found communities.
+		Partition:
+			A Partition of the clustering.
 		"""
-		return Partition().setThis(self._this.run())
+		return Partition().setThis(self._this.getPartition())
 
 cdef extern from "cpp/community/CutClustering.h":
 	cdef cppclass _CutClustering "NetworKit::CutClustering":
 		_CutClustering(_Graph _G) except +
 		_CutClustering(_Graph _G, edgeweight alpha) except +
 		string toString() except +
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
 
 cdef extern from "cpp/community/CutClustering.h" namespace "NetworKit::CutClustering":
 	map[double, _Partition] CutClustering_getClusterHierarchy "NetworKit::CutClustering::getClusterHierarchy"(const _Graph& G) except +
@@ -2881,23 +2905,24 @@ cdef class CutClustering(CommunityDetector):
 		"""
 		return self._this.toString().decode("utf-8")
 
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
+
 	def run(self):
 		""" Detect communities in the given graph `graph`.
 
 		Warning: due to numerical errors the resulting clusters might not be correct.
 		This implementation uses the Edmonds-Karp algorithm for the cut calculation.
 
-		Parameters
-		----------
-		G : Graph
-			The graph.
-
-		Returns
-		-------
-		Partition
-			A partition containing the found communities.
 		"""
-		return Partition().setThis(self._this.run())
+		self._this.run()
 
 	@staticmethod
 	def getClusterHierarchy(Graph G not None):
@@ -2993,7 +3018,8 @@ cdef class NMIDistance(DissimilarityMeasure):
 cdef extern from "cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
 		_EPP(_Graph G)
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
 		string toString()
 
 cdef class EPP(CommunityDetector):
@@ -3009,19 +3035,19 @@ cdef class EPP(CommunityDetector):
 		self._this = new _EPP(G._this)
 
 	def run(self):
-		"""  Run the ensemble clusterer on `G` and return the result in a Partition.
+		"""  Run the ensemble clusterer.
+		"""
+		self._this.run()
 
-		Parameters
-		----------
-		G : Graph
-			The graph.
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
 
 		Returns
 		-------
 		Partition:
 			A Partition of the clustering.
 		"""
-		return Partition().setThis(self._this.run())
+		return Partition().setThis(self._this.getPartition())
 
 	def toString(self):
 		""" String representation of EPP class.

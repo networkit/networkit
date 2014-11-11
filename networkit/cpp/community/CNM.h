@@ -33,10 +33,8 @@ public:
 
 	/**
 	 * Detect communities in the given graph @a graph.
-	 *
-	 * @return A partition containing the found communities.
 	 */
-	Partition run() override;
+	void run() override;
 
 	/**
 	 * Get string representation.
