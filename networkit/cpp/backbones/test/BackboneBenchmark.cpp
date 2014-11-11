@@ -38,8 +38,11 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 
 	runtime.start();
 
+	ChibaNishizekiTriangleCounter counter;
+	std::vector<int> counts = counter.getAttribute(G, std::vector<int>(G.upperEdgeIdBound()));
+
 	SimmelianOverlapAttributizer attributizer(10);
-	auto attribute = attributizer.getAttribute(G, std::vector<int>());
+	auto attribute = attributizer.getAttribute(G, counts);
 
 	runtime.stop();
 	INFO("[DONE] completeGraphSimmelianBackboneParametric (" , runtime.elapsed().count() , " ms)");
@@ -55,8 +58,11 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 
 	runtime.start();
 
+	ChibaNishizekiTriangleCounter counter;
+	std::vector<int> counts = counter.getAttribute(G, std::vector<int>(G.upperEdgeIdBound()));
+
 	SimmelianJaccardAttributizer attributizer;
-	auto attribute = attributizer.getAttribute(G, std::vector<int>());
+	auto attribute = attributizer.getAttribute(G, counts);
 
 	runtime.stop();
 	INFO("[DONE] SimmelianBackboneNonParametric (" , runtime.elapsed().count() , " ms)");

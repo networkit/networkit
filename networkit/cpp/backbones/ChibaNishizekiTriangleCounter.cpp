@@ -26,7 +26,6 @@ std::vector<int> ChibaNishizekiTriangleCounter::getAttribute(const Graph& graph,
 			nodeMarker[v] = true;
 		});
 
-		//TODO: Remove _u currently breaks everything due to missing lambda case in Graph.h
 		//For all neighbors: check for already marked neighbors.
 		g.forNeighborsOf(u, [&](node _u, node v, edgeid eid_uv) {
 			g.forNeighborsOf(v, [&](node _v, node w, edgeid eid_vw) {

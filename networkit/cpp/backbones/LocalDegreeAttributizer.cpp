@@ -13,7 +13,6 @@ namespace NetworKit {
 LocalDegreeAttributizer::LocalDegreeAttributizer() {}
 
 std::vector<double> LocalDegreeAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
-	//TODO: refactoring neccessary, need to eliminate code duplication with LocalSimilarity.
 	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forNodes([&](node i) {
@@ -32,8 +31,8 @@ std::vector<double> LocalDegreeAttributizer::getAttribute(const Graph& graph, co
 		count rank = 1;
 		//Top d^e edges are to be retained in the backbone graph.
 		//So we calculate the minimum exponent e for each edge that will keep it in the backbone.
-		for(std::vector<AttributizedEdge<count>>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
-			edgeid eid = it->eid;
+		for (auto it : neighbors) {
+			edgeid eid = it.eid;
 
 			double e = 0.0;
 			if (d > 1) 			//The node has only one neighbor,, so the edge will be kept anyway.
