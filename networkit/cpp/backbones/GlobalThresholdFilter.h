@@ -25,7 +25,7 @@ public:
 	 * @param above			if set to true, edge attribute needs to be above or equal to the threshold.
 	 * 						If set to false, edge attribute needs to be below or equal to the threshold.
 	 */
-	GlobalThresholdFilter(double threshold, bool above); //TODO: better name for parameter?
+	GlobalThresholdFilter(double threshold, bool above);
 
 	Graph calculate(const Graph& graph, const std::vector<double>& attribute);
 
@@ -35,7 +35,6 @@ private:
 
 	/**
 	* Creates a new undirected graph that contains only the nodes of the given graph.
-	* TODO: Implement a clone method in Graph instead?
 	* @param graph 	the original graph to copy
 	* @param weighted	whether the new graph should be weighted
 	*/
