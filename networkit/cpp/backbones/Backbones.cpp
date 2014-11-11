@@ -57,7 +57,6 @@ MultiscaleBackbone::MultiscaleBackbone(double alpha) :
 		alpha(alpha) {}
 
 Graph MultiscaleBackbone::calculate(const Graph& g) {
-	//TODO: the following will be obsolete once graph edge attributes are used. ?
 	std::vector<double> weight(g.upperEdgeIdBound());
 	g.forEdges([&](node u, node v, edgeid eid) {
 		weight[eid] = g.weight(u, v);

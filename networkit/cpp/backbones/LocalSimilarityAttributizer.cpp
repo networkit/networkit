@@ -40,8 +40,8 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 		count rank = 1;
 		//Top d^e edges are to be retained in the backbone graph.
 		//So we calculate the minimum exponent e for each edge that will keep it in the backbone.
-		for(std::vector<AttributizedEdge<double>>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
-			edgeid eid = it->eid;
+		for (auto neighborEdge : neighbors) {
+			edgeid eid = neighborEdge.eid;
 
 			double e = 0.0;
 			if (d > 1) 			//The node has only one neighbor,, so the edge will be kept anyway.

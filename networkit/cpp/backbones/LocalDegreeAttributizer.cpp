@@ -31,8 +31,8 @@ std::vector<double> LocalDegreeAttributizer::getAttribute(const Graph& graph, co
 		count rank = 1;
 		//Top d^e edges are to be retained in the backbone graph.
 		//So we calculate the minimum exponent e for each edge that will keep it in the backbone.
-		for (auto it : neighbors) {
-			edgeid eid = it.eid;
+		for (auto neighborEdge : neighbors) {
+			edgeid eid = neighborEdge.eid;
 
 			double e = 0.0;
 			if (d > 1) 			//The node has only one neighbor,, so the edge will be kept anyway.
