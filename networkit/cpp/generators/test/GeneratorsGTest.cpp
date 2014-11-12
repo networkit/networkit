@@ -373,7 +373,7 @@ TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
 	DynamicForestFireGenerator ffg1(0.0, false);
 	stream = ffg1.generate(10);
 	gu1.update(stream);
-	EXPECT_EQ(11u, G1.numberOfNodes());
+	EXPECT_EQ(10u, G1.numberOfNodes());
 	G1.forNodes([&](node u) {
 		count c = 0;
 		G1.forNeighborsOf(u, [&](node v) {
@@ -393,12 +393,15 @@ TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
 	DynamicForestFireGenerator ffg2(1.0, true, 1.0);
 	stream = ffg2.generate(10);
 	gu2.update(stream);
-	EXPECT_EQ(11u, G2.numberOfNodes());
+	EXPECT_EQ(10u, G2.numberOfNodes());
 	G2.forNodePairs([&](node u, node v) {
 		if (v < u) {
 			EXPECT_TRUE(G2.hasEdge(u,v));
 		}
 	});
+	stream = ffg2.generate(10);
+	gu2.update(stream);
+	EXPECT_EQ(20u, G2.numberOfNodes());
 }
 
 TEST_F(GeneratorsGTest, testRegularRingLatticeGenerator) {
