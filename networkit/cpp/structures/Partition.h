@@ -282,7 +282,7 @@ public:
 	/**
 	 * @return the subsets of the partition as a set of sets.
 	 */
-	std::set<std::set<index> > getSubsets();
+	std::set<std::set<index> > getSubsets() const;
 
 
 	/**
