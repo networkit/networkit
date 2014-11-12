@@ -1839,13 +1839,13 @@ cdef class Partition:
 
 		Parameters
 		----------
-		z : index, optional
+		size : index, optional
 			Maximum index of an element. Default is 0.
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, index z=0):
-		self._this = move(_Partition(z))
+	def __cinit__(self, index size=0):
+		self._this = move(_Partition(size))
 
 	def __len__(self):
 		"""
