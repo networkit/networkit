@@ -4833,6 +4833,7 @@ cdef class LocalDegreeAttributizer:
 cdef extern from "cpp/backbones/LinearizeAttribute.h":
 	cdef cppclass _LinearizeAttribute "NetworKit::LinearizeAttribute":
 		_LinearizeAttribute() except +
+		_LinearizeAttribute(bool inverse) except +
 		vector[double] getAttribute(_Graph G, vector[double] a) except +
 
 cdef class LinearizeAttribute:
@@ -4840,6 +4841,9 @@ cdef class LinearizeAttribute:
 	Linearize an attribute such that values are evenly distributed between 0 and 1.
 	"""
 	cdef _LinearizeAttribute _this
+
+	def __cinit__(self, inverse = False):
+		self._this = _LinearizeAttribute(inverse)
 
 	def getAttribute(self, Graph G, vector[double] a):
 		"""
