@@ -4,25 +4,29 @@
 #include "Graph.h"
 #include <limits>
 #include "../structures/UnionFind.h"
+#include "../auxiliary/Log.h"
 
 namespace NetworKit {
 
 /**
  * Union maximum spanning tree algorithm, computes the union of all maximum spanning trees.
  */
+template <typename A = edgeweight>
 class UMST {
 public:
 	UMST(const Graph &G);
-	
-	Graph generate();
 
-	template <typename A>
-	inline Graph generate(const std::vector<A> &attribute);
+	UMST(const Graph &G, const std::vector<A> &attribute);
 	
-	template <typename A>
-	inline std::vector<bool> generateAttribute(const std::vector<A> &attribute);
+	void run();
+
+	std::vector<bool> getAttribute(bool move = false);
+	bool inUMST(node u, node v) const;
+	bool inUMST(edgeid eid) const;
+
+	Graph getUMST(bool move = false);
+
 private:
-	template <typename A>
 	struct weightedEdge {
 		A attribute;
 		node u;
@@ -35,19 +39,22 @@ private:
 		weightedEdge(node u, node v, A attribute, edgeid eid = 0) : attribute(attribute), u(u), v(v), eid(eid) {};
 	};
 
-	template <typename A, typename F>
-	inline void generate(std::vector< NetworKit::UMST::weightedEdge< A > > weightedEdges, F callback);
-	
-	template <typename A>
-	inline std::vector<weightedEdge<A> > genWeightedEdges(const std::vector<A> &attribute);
-
 	const Graph &G;
+	std::vector<weightedEdge> weightedEdges;
+
+	Graph umst;
+	std::vector<bool> umstAttribute;
+
+	bool hasWeightedEdges;
+	bool hasUMST;
+	bool hasAttribute;
 };
 
 template <typename A>
-std::vector< UMST::weightedEdge< A > > UMST::genWeightedEdges(const std::vector< A > &attribute) {
-	std::vector<weightedEdge<A> > weightedEdges;
+UMST<A>::UMST(const Graph &G) : G(G), hasWeightedEdges(false), hasUMST(false), hasAttribute(false) { };
 
+template <typename A>
+UMST<A>::UMST(const Graph &G, const std::vector< A > &attribute) : G(G), hasWeightedEdges(false), hasUMST(false), hasAttribute(false) {
 	if (!G.hasEdgeIds()) {
 		throw std::runtime_error("Error: Edges of G must be indexed for using edge attributes");
 	}
@@ -58,43 +65,41 @@ std::vector< UMST::weightedEdge< A > > UMST::genWeightedEdges(const std::vector<
 		weightedEdges.emplace_back(u, v, attribute[eid], eid);
 	});
 
-	return weightedEdges;
-}
+	INFO(weightedEdges.size(), " weighted edges saved");
 
-
-template <typename A>
-Graph UMST::generate(const std::vector< A > &attribute) {
-	Graph result(G.copyNodes());
-
-	generate(genWeightedEdges(attribute), [&](weightedEdge<A> &e) {
-		result.addEdge(e.u, e.v);
-	});
-
-	return result;
+	hasWeightedEdges = true;
 }
 
 template <typename A>
-std::vector< bool > UMST::generateAttribute(const std::vector< A > &attribute) {
-	std::vector<bool> result(G.upperEdgeIdBound(), false);
+void UMST<A>::run() {
+	umst = G.copyNodes();
 
-	generate(genWeightedEdges(attribute), [&](weightedEdge<A> &e) {
-		result[e.eid] = true;
-	});
+	bool useEdgeWeights = false;
 
-	return result;
-}
+	if (!hasWeightedEdges) {
+		weightedEdges.reserve(G.numberOfEdges());
 
+		G.forEdges([&](node u, node v, edgeweight weight, edgeid eid) {
+			weightedEdges.emplace_back(u, v, weight, eid);
+		});
 
-template <typename A, typename F>
-void UMST::generate(std::vector< UMST::weightedEdge< A > > weightedEdges, F callback) {
-	std::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<weightedEdge<A> >());
+		hasWeightedEdges = true;
+		useEdgeWeights = true;
+	}
+
+	if (G.hasEdgeIds()) {
+		umstAttribute.resize(G.upperEdgeIdBound(), false);
+		hasAttribute = true;
+	}
+
+	std::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<weightedEdge>());
 
 	A currentAttribute = std::numeric_limits<A>::max();
 
 	std::vector<std::pair<node, node> > nodesToMerge;
 	UnionFind uf(G.upperNodeIdBound());
 
-	for (weightedEdge<A> e : weightedEdges) {
+	for (weightedEdge e : weightedEdges) {
 		if (e.attribute != currentAttribute) {
 			for (auto candidate : nodesToMerge) {
 				uf.merge(candidate.first, candidate.second);
@@ -104,13 +109,74 @@ void UMST::generate(std::vector< UMST::weightedEdge< A > > weightedEdges, F call
 			currentAttribute = e.attribute;
 		}
 
-		
+
 		if (uf.find(e.u) != uf.find(e.v)) {
-			callback(e);
+			if (useEdgeWeights) {
+				umst.addEdge(e.u, e.v, e.attribute);
+			} else {
+				umst.addEdge(e.u, e.v);
+			}
+
+			if (hasAttribute) {
+				umstAttribute[e.eid] = true;
+			}
+
 			nodesToMerge.emplace_back(e.u, e.v);
-	
+
 		}
 	}
+
+	hasUMST = true;
+}
+
+template <typename A>
+bool UMST<A>::inUMST(edgeid eid) const {
+	if (!hasAttribute) throw std::runtime_error("Error: Either the attribute hasn't be calculated yet or the graph has no edge ids.");
+
+	return umstAttribute[eid];
+}
+
+template <typename A>
+bool UMST<A>::inUMST(node u, node v) const {
+	if (hasUMST) {
+		return umst.hasEdge(u, v);
+	} else if (hasAttribute) {
+		return umstAttribute[G.edgeId(u, v)];
+	} else {
+		throw std::runtime_error("Error: The run() method must be executed first");
+	}
+}
+
+template <typename A>
+std::vector< bool > UMST<A>::getAttribute(bool move) {
+	std::vector<bool> result;
+
+	if (!hasAttribute) throw std::runtime_error("Error: The run() method must be executed first");
+
+	if (move) {
+		result = std::move(umstAttribute);
+		hasAttribute = false;
+	} else {
+		result = umstAttribute;
+	}
+
+	return result;
+}
+
+template <typename A>
+Graph UMST<A>::getUMST(bool move) {
+	Graph result;
+
+	if (!hasUMST) throw std::runtime_error("Error: The run() method must be executed first");
+
+	if (move) {
+		result = std::move(umst);
+		hasUMST = false;
+	} else {
+		result = umst;
+	}
+
+	return result;
 }
 
 
