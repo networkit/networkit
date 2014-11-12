@@ -1275,6 +1275,9 @@ cdef class ClusteredRandomGraphGenerator:
 	def __cinit__(self, n, k, pin, pout):
 		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self):
 		""" Generates a clustered random graph with the properties given in the constructor.
 
