@@ -39,6 +39,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Cover move(_Cover t)
 	vector[double] move(vector[double])
 	vector[bool] move(vector[bool])
+	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
 
 
 # Cython helper functions
@@ -1354,6 +1355,9 @@ cdef class ClusteredRandomGraphGenerator:
 	def __cinit__(self, n, k, pin, pout):
 		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self):
 		""" Generates a clustered random graph with the properties given in the constructor.
 
@@ -1918,13 +1922,13 @@ cdef class Partition:
 
 		Parameters
 		----------
-		z : index, optional
+		size : index, optional
 			Maximum index of an element. Default is 0.
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, index z=0):
-		self._this = move(_Partition(z))
+	def __cinit__(self, index size=0):
+		self._this = move(_Partition(size))
 
 	def __len__(self):
 		"""
@@ -2844,6 +2848,10 @@ cdef extern from "cpp/community/PLM.h":
 		void run() except +
 		_Partition getPartition() except +
 
+cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
+	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
+	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[unsigned long] nodeToMetaNode) except + # FIXME this should be vector[node]
+
 
 cdef class PLM(CommunityDetector):
 	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
@@ -2897,6 +2905,16 @@ cdef class PLM(CommunityDetector):
 			A Partition of the clustering.
 		"""
 		return Partition().setThis(self._this.getPartition())
+
+	@staticmethod
+	def coarsen(Graph G, Partition zeta, bool parallel = False):
+		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this, parallel))
+		return (Graph().setThis(result.first), result.second)
+
+	@staticmethod
+	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[unsigned long] nodeToMetaNode):
+		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
+
 
 cdef extern from "cpp/community/CNM.h":
 	cdef cppclass _CNM "NetworKit::CNM":
@@ -3413,6 +3431,9 @@ cdef class ConnectedComponents:
 	def __cinit__(self,  Graph G):
 		self._this = new _ConnectedComponents(G._this)
 
+	def __dealloc__(self):
+		del self._this
+
 	def run(self):
 		""" This method determines the connected components for the graph given in the constructor. """
 		self._this.run()
@@ -3467,6 +3488,9 @@ cdef class ParallelConnectedComponents:
 
 	def __cinit__(self,  Graph G, coarsening=True	):
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -3698,6 +3722,9 @@ cdef class CoreDecomposition:
 
 	def __cinit__(self, Graph G):
 		self._this = new _CoreDecomposition(G._this)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		""" Perform k-core decomposition of graph passed in constructor. """
