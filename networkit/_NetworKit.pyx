@@ -3334,6 +3334,9 @@ cdef class ConnectedComponents:
 	def __cinit__(self,  Graph G):
 		self._this = new _ConnectedComponents(G._this)
 
+	def __dealloc__(self):
+		del self._this
+
 	def run(self):
 		""" This method determines the connected components for the graph given in the constructor. """
 		self._this.run()
@@ -3388,6 +3391,9 @@ cdef class ParallelConnectedComponents:
 
 	def __cinit__(self,  Graph G, coarsening=True	):
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -3619,6 +3625,9 @@ cdef class CoreDecomposition:
 
 	def __cinit__(self, Graph G):
 		self._this = new _CoreDecomposition(G._this)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		""" Perform k-core decomposition of graph passed in constructor. """
