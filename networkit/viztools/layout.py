@@ -11,7 +11,6 @@ import random
 import numpy as np
 import itertools
 import math
-import networkx as nx
 
 
 
@@ -150,12 +149,13 @@ class ForceDirected(Layout):
 			return distance
 			
 		
+		springLength = (self.scale**2)/math.sqrt(G.numberOfNodes())
+
 		def attractiveForce(p1, p2):
 			""" Return the attractive force of p2 acting on p1"""
 			d = distance(p1, p2)
 			if d < 0.000001: # Error if d is too small
 				d = 0.000001
-			springLength = (self.scale**2)/(nx.number_of_nodes(G))
 			value = d/springLength
 			direction = p2 - p1 
 			force = (direction/d) * value # = unit vector * value of the force
@@ -209,13 +209,14 @@ class ForceDirected(Layout):
 			# shift origin to (0,0)
 			lim = 0 # max coordinate for all axes
 			for i in range(2):
-				for u in range(nx.number_of_nodes(G)):
-					pos[u][i] -= min(pos[u][i] for u in range(nx.number_of_nodes(G)))
-				lim=max(max(pos[u][i] for u in range(nx.number_of_nodes(G))),lim)
+				minPos = min(pos[u][i] for u in G.nodes())
+				for u in G.nodes():
+					pos[u][i] -= minPos
+				lim=max(max(pos[u][i] for u in G.nodes()),lim)
 				
 			# rescale to (0,scale) in all directions, preserves aspect
 			for i in range(2):
-				for u in range(nx.number_of_nodes(G)):
+				for u in G.nodes():
 					pos[u][i]*=self.scale/lim
 			return pos
 
@@ -231,11 +232,13 @@ class ForceDirected(Layout):
 		# main algorithm
 		
 		# a force vector acts on every node
-		forces = {v: np.array((0.0, 0.0)) for v in G.nodes()}
 
 		while not done():
 
 			M += 1
+
+			forces = {v: np.array((0.0, 0.0)) for v in G.nodes()}
+
 			
 			for (u, v) in itertools.combinations(G.nodes(), 2): # all node pairs
                                 
@@ -260,8 +263,8 @@ class ForceDirected(Layout):
 			for u in G.nodes():
 				self.coord[u] = move(self.coord[u], forces[u])
 
-			# rescale coordinates to [0, scale]
-			self.coord =rescaleLayout(self.coord)
+		# rescale coordinates to [0, scale]
+		self.coord =rescaleLayout(self.coord)
 			
 
 		return self.coord
