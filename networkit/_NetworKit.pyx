@@ -1001,6 +1001,49 @@ cdef class UMST:
 		else:
 			return self._this.inUMST(u, v)
 
+cdef extern from "cpp/graph/MST.h":
+	cdef cppclass _MST "NetworKit::MST":
+		_MST(_Graph) except +
+		_MST(_Graph, vector[double]) except +
+		void run() except +
+		_Graph getMST(bool move) except +
+		vector[bool] getAttribute(bool move) except +
+		bool inMST(edgeid eid) except +
+		bool inMST(node u, node v) except +
+
+cdef class MST:
+	cdef _MST* _this
+	cdef vector[double] _attribute
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None, vector[double] attribute = vector[double]()):
+		self._G = G
+		if attribute.empty():
+			self._this = new _MST(G._this)
+		else:
+			self._attribute = move(attribute)
+			self._this = new _MST(G._this, self._attribute)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getMST(self, bool move = False):
+		return Graph().setThis(self._this.getMST(move))
+
+	def getAttribute(self, bool move = False):
+		return self._this.getAttribute(move)
+
+	def inMST(self, node u, node v = _none):
+		if v == _none:
+			return self._this.inMST(u)
+		else:
+			return self._this.inMST(u, v)
+
+
 cdef extern from "cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
