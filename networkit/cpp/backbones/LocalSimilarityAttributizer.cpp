@@ -20,10 +20,6 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph
 	 * such that the edge is contained in the backbone.
 	 */
 
-	/*
-	* For each edge, we calculate the minimum required sparsification exponent e
-	* such that the edge is contained in the backbone.
-	*/
 	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
 	graph.balancedParallelForNodes([&](node i) {

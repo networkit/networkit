@@ -296,8 +296,10 @@ class LocalSimilarityBackbone(Sparsifier):
 		G -- the input graph
 		"""
 		
+		chiba = ChibaNishizekiTriangleCounter()
+		triangles = chiba.getAttribute(G)
 		attributizer = LocalSimilarityAttributizer()
-		a_ls = attributizer.getAttribute(G, [])
+		a_ls = attributizer.getAttribute(G, triangles)
 		return a_ls
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
