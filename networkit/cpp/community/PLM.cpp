@@ -218,6 +218,8 @@ void PLM::run() {
 				G.parallelForNodes(tryMove);
 			} else if (this->parallelism == "balanced") {
 				G.balancedParallelForNodes(tryMove);
+			} else if (this->parallelism == "none randomized") {
+				G.forNodesInRandomOrder(tryMove);
 			} else {
 				ERROR("unknown parallelization strategy: " , this->parallelism);
 				throw std::runtime_error("unknown parallelization strategy");
