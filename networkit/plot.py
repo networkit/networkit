@@ -21,6 +21,19 @@ def degreeDistribution(G, **kwargs):
 	plt.ylabel("degree")
 	plt.plot(dd)
 
+def connectedComponentsSizes(G, **kwargs):
+	""" Plot the size distribution of connected components as a pie chart """
+	csizes = properties.ConnectedComponents(G).run().getComponentSizes()
+	colors = seaborn.color_palette("Set2", 10)
+	data = list(csizes.values())
+	# explode the largest component pie piece
+	maxi = data.index(max(data))
+	explode = [0 for i in range(len(data))]
+	explode[maxi] = 0.1
+	# plot
+	plt.figure(figsize=(5,5))
+	plt.pie(data, colors=colors, autopct='%1.1f%%', explode=explode)
+
 # TODO: hop plot
 
 def coreDecompositionSequence(G, **kwargs):
