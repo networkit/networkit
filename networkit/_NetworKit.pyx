@@ -38,6 +38,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Partition move( _Partition t)
 	_Cover move(_Cover t)
 	vector[double] move(vector[double])
+	vector[bool] move(vector[bool])
 
 
 # Cython helper functions
@@ -5071,6 +5072,52 @@ cdef class AttributeNormalizer:
 
 	def getAttribute(self):
 		return self._this.getAttribute()
+
+cdef extern from "cpp/backbones/AttributeBlender.h":
+	cdef cppclass _AttributeBlender "NetworKit::AttributeBlender":
+		_AttributeBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool]&) except +
+		void run()
+		vector[double] getAttribute() except +
+
+cdef class AttributeBlender:
+	"""
+	Blends two attribute vectors, the value is chosen depending on the supplied boolean vector
+
+	Parameters
+	----------
+	G : Graph
+		The graph for which the attribute shall be blended
+	attribute0 : vector[double]
+		The first attribute (chosen for selection[eid] == false)
+	attribute1 : vector[double]
+		The second attribute (chosen for selection[eid] == true)
+	selection : vector[bool]
+		The selection vector
+	"""
+	cdef _AttributeBlender *_this
+	cdef Graph _G
+	cdef vector[double] _attribute0
+	cdef vector[double] _attribute1
+	cdef vector[bool] _selection
+
+	def __cinit__(self, Graph G not None, vector[double] attribute0, vector[double] attribute1, vector[bool] selection):
+		self._G = G
+		self._attribute0 = move(attribute0)
+		self._attribute1 = move(attribute1)
+		self._selection = move(selection)
+
+		self._this = new _AttributeBlender(G._this, self._attribute0, self._attribute1, self._selection)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getAttribute(self):
+		return self._this.getAttribute()
+
 
 cdef extern from "cpp/backbones/GeometricAverageAttributizer.h":
 	cdef cppclass _GeometricAverageAttributizer "NetworKit::GeometricAverageAttributizer":
