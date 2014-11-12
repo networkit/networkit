@@ -37,6 +37,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Graph move( _Graph t ) # specialized declaration as general declaration disables template argument deduction and doesn't work
 	_Partition move( _Partition t)
 	_Cover move(_Cover t)
+	vector[double] move(vector[double])
 
 
 # Cython helper functions
@@ -5040,6 +5041,36 @@ cdef class LinearizeAttribute:
 
 		"""
 		return self._this.getAttribute(G._this, a)
+
+
+cdef extern from "cpp/backbones/AttributeNormalizer.h":
+	cdef cppclass _AttributeNormalizer "NetworKit::AttributeNormalizer<double>":
+		_AttributeNormalizer(const _Graph&, const vector[double], bool inverse, double lower, double upper) except +
+		void run() except +
+		vector[double] getAttribute() except +
+
+cdef class AttributeNormalizer:
+	"""
+	Normalize an edge attribute such that it is in a certain range
+	"""
+	cdef _AttributeNormalizer *_this
+	cdef Graph _G
+	cdef vector[double] _inAttribute
+
+	def __cinit__(self, Graph G not None, vector[double] attribute, bool inverse = False, double lower = 0.0, double upper = 1.0):
+		self._inAttribute = move(attribute)
+		self._this = new _AttributeNormalizer(G._this, self._inAttribute, inverse, lower, upper)
+		self._G = G
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getAttribute(self):
+		return self._this.getAttribute()
 
 cdef extern from "cpp/backbones/GeometricAverageAttributizer.h":
 	cdef cppclass _GeometricAverageAttributizer "NetworKit::GeometricAverageAttributizer":
