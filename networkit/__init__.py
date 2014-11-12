@@ -33,6 +33,7 @@ from . import workflows
 from . import flow
 from . import distmeasures
 from . import plot
+from . import backbones
 
 try:
 	from . import viztools
