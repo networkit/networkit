@@ -964,29 +964,42 @@ cdef class SpanningForest:
 		return Graph().setThis(self._this.generate());
 
 cdef extern from "cpp/graph/UMST.h":
-	cdef cppclass _UMST "NetworKit::UMST":
+	cdef cppclass _UMST "NetworKit::UMST<double>":
 		_UMST(_Graph) except +
-		_Graph generate() except +
-		_Graph generate[A](vector[A]) except +
-		vector[bool] generateAttribute(vector[double])  except +
+		_UMST(_Graph, vector[double]) except +
+		void run() except +
+		_Graph getUMST(bool move) except +
+		vector[bool] getAttribute(bool move) except +
+		bool inUMST(edgeid eid) except +
+		bool inUMST(node u, node v) except +
 
 cdef class UMST:
 	cdef _UMST* _this
 
-	def __cinit__(self, Graph G not None):
-		self._this = new _UMST(G._this)
+	def __cinit__(self, Graph G not None, vector[double] attribute = vector[double]()):
+		if attribute.empty():
+			self._this = new _UMST(G._this)
+		else:
+			self._this = new _UMST(G._this, attribute)
 
 	def __dealloc__(self):
 		del self._this
 
-	def generate(self, vector[double] attribute = vector[double]()):
-		if attribute.empty():
-			return Graph().setThis(self._this.generate())
-		else:
-			return Graph().setThis(self._this.generate[double](attribute))
+	def run(self):
+		self._this.run()
+		return self
 
-	def generateAttribute(self, vector[double] attribute):
-		return self._this.generateAttribute(attribute)
+	def getUMST(self, bool move = False):
+		return Graph().setThis(self._this.getUMST(move))
+
+	def getAttribute(self, bool move = False):
+		return self._this.getAttribute(move)
+
+	def inUMST(self, node u, node v = _none):
+		if v == _none:
+			return self._this.inUMST(u)
+		else:
+			return self._this.inUMST(u, v)
 
 cdef extern from "cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
