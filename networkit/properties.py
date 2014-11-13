@@ -257,7 +257,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 		["clustering coefficient", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
 		["max. core number", props["degeneracy"]],
 		["connected components", props["nComponents"]],
-		["size of largest component", "{0} ({1} %)".format(props["sizeLargestComponent"], (props["sizeLargestComponent"] / props["n"]) * 100)],
+		["size of largest component", "{0} ({1:.2f} %)".format(props["sizeLargestComponent"], (props["sizeLargestComponent"] / props["n"]) * 100)],
 		["estimated diameter range", str(props["dia"])],
 	]
 	degreeProperties = [
