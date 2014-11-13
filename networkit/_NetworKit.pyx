@@ -2657,6 +2657,7 @@ cdef class PLP(CommunityDetector):
 		""" Run the label propagation clustering algorithm.
 		"""
 		self._this.run()
+		return self
 
 	def runFromGiven(self, Partition part not None):
 		""" Run the label propagation clustering algorithm starting
@@ -2679,6 +2680,7 @@ cdef class PLP(CommunityDetector):
 		cdef _Partition algInput = part._this
 		self._this.runFromGiven(algInput)
 		#return Partition().setThis(algInput)
+		return self
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -2730,6 +2732,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 		""" Detect communites.
 		"""
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -2816,6 +2819,7 @@ cdef class PLM(CommunityDetector):
 		""" Detect communities.
 		"""
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -2871,6 +2875,7 @@ cdef class CNM(CommunityDetector):
 		""" Detect communities.
 		"""
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -2941,6 +2946,7 @@ cdef class CutClustering(CommunityDetector):
 
 		"""
 		self._this.run()
+		return self
 
 	@staticmethod
 	def getClusterHierarchy(Graph G not None):
