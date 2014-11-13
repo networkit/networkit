@@ -2771,7 +2771,7 @@ cdef extern from "cpp/community/PLM.h":
 
 cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
 	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
-	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[unsigned long] nodeToMetaNode) except + # FIXME this should be vector[node]
+	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[node] nodeToMetaNode) except +
 
 
 cdef class PLM(CommunityDetector):
@@ -2833,7 +2833,7 @@ cdef class PLM(CommunityDetector):
 		return (Graph().setThis(result.first), result.second)
 
 	@staticmethod
-	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[unsigned long] nodeToMetaNode):
+	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode):
 		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
 
 
