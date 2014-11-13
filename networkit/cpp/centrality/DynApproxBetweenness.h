@@ -51,6 +51,11 @@ public:
     */
     void update(const std::vector<GraphEvent>& batch);
 
+    /**
+    * Get number of path samples used for last calculation
+    */
+    count getNumberOfSamples();
+
 private:
     bool storePreds = true;
     double epsilon; //!< maximum error
