@@ -3995,6 +3995,7 @@ cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		count getNumberOfSamples() except +
 
 cdef class DynApproxBetweenness:
 	""" New dynamic algorithm for the approximation of betweenness centrality with
@@ -4077,6 +4078,12 @@ cdef class DynApproxBetweenness:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+	def getNumberOfSamples(self):
+		"""
+		Get number of path samples used in last calculation.
+		"""
+		return self._this.getNumberOfSamples()
 
 cdef extern from "cpp/centrality/ApproxBetweenness2.h":
 	cdef cppclass _ApproxBetweenness2 "NetworKit::ApproxBetweenness2":
