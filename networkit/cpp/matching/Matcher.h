@@ -27,7 +27,7 @@ public:
 	 * Run the matching algorithm on Graph @a G and return a matching.
 	 * @return A matching of @a G
 	 */
-	virtual Matching run(Graph& G) = 0;
+	virtual Matching run(const Graph& G, const bool matchSelfLoops = true) = 0;
 };
 
 } /* namespace NetworKit */

@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-std::pair<Graph, std::vector<node> > MatchingContracter::run(Graph& G, Matching& M, bool noSelfLoops) {
+std::pair<Graph, std::vector<node> > MatchingContracter::run(const Graph& G, Matching& M, bool noSelfLoops) {
 	count n = G.numberOfNodes();
 	index z = G.upperNodeIdBound();
 	count cn = n - M.size();
@@ -20,7 +20,7 @@ std::pair<Graph, std::vector<node> > MatchingContracter::run(Graph& G, Matching&
 	std::vector<node> mapFineToCoarse(z, none);
 	G.forNodes([&](node v) { // TODO: difficult in parallel
 		index mate = M.mate(v);
-		if ((mate == none) || (v < mate)) {
+		if ((mate == none) || (v <= mate)) {
 			// vertex is carried over to the new level
 			mapFineToCoarse[v] = idx;
 			++idx;

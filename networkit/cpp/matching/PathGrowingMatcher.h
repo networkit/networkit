@@ -22,7 +22,7 @@ protected:
 
 public:
 
-	virtual Matching run(Graph& G);
+	virtual Matching run(const Graph& G, const bool matchSelfLoops = true);
 };
 
 } /* namespace NetworKit */
