@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 
-Matching PathGrowingMatcher::run(Graph& G) {
+Matching PathGrowingMatcher::run(const Graph& G, const bool matchSelfLoops) {
 	// make copy since graph will be transformed
 	// copy graph because we make changes due to merges
 	Graph graph(G.numberOfNodes(), true); // make weighted copy
@@ -42,7 +42,7 @@ Matching PathGrowingMatcher::run(Graph& G) {
 			node bestNeighbor = 0;
 			edgeweight bestWeight = 0;
 			graph.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
-				if (weight > bestWeight) {
+				if (weight > bestWeight && (v != u || matchSelfLoops)) {
 					bestNeighbor = u;
 					bestWeight = weight;
 				}

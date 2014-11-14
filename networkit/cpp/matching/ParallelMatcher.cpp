@@ -14,7 +14,7 @@ LocalMaxMatcher::LocalMaxMatcher(uint64_t attrId_) :
 
 }
 
-Matching LocalMaxMatcher::run(Graph& graph) {
+Matching LocalMaxMatcher::run(const Graph& graph, const bool matchSelfLoops) {
 	Graph G = graph;
 
 	int64_t n = G.numberOfNodes();
