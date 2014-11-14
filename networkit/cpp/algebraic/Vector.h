@@ -9,9 +9,7 @@
 #define VECTOR_H_
 
 #include <vector>
-#include <stdexcept>
-#include <cstdint>
-#include <cmath>
+#include "../Globals.h"
 
 namespace NetworKit {
 
@@ -83,7 +81,7 @@ public:
 	/**
 	 * @return Reference to the element at index @a idx.
 	 */
-	inline double& operator[](const uint64_t &idx) {
+	inline double& operator[](const NetworKit::index &idx) {
 		if (idx >= values.size()) {
 			throw std::out_of_range("index out of range");
 		} else {

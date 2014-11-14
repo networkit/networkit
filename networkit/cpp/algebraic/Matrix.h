@@ -9,7 +9,6 @@
 #define MATRIX_H_
 
 #include "../graph/Graph.h"
-#include <cstdint>
 #include "../auxiliary/Log.h"
 #include "Vector.h"
 #include "SparseAccumulator.h"
@@ -85,14 +84,20 @@ public:
 	count numberOfColumns() const;
 
 	/**
+	 * @param i The row index.
+	 * @return Number of non-zeros in row @a i.
+	 */
+	count nnzInRow(const index i) const;
+
+	/**
 	 * @return Value at matrix position (i,j).
 	 */
-	double operator()(const index &i, const index &j) const;
+	double operator()(const index i, const index j) const;
 
 	/**
 	 * Set the matrix at position (@a i, @a j) to @a value.
 	 */
-	void setValue(const index &i, const index &j, const double &value);
+	void setValue(const index i, const index j, const double value);
 
 	/**
 	 * @return Row @a i of this matrix as vector.
@@ -165,6 +170,18 @@ public:
 	 */
 	Matrix& operator/=(const double &divisor);
 
+	static Matrix mTmMultiply(const Matrix &A, const Matrix &B);
+
+	static Vector mTvMultiply(const Matrix &matrix, const Vector &vector);
+
+//	static Matrix mmTMultiply(const Matrix &A, const Matrix &B);
+
+	Matrix transpose() const;
+
+	/**
+	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index row, index column, double value)
+	 */
+	template<typename L> void forNonZeroElementsInRow(index row, L handle) const;
 
 	/**
 	 * Iterate over all non-zero elements of the matrix in row order and call handler (lambda closure).
@@ -184,6 +201,13 @@ public:
 
 
 } /* namespace NetworKit */
+
+template<typename L>
+inline void NetworKit::Matrix::forNonZeroElementsInRow(index row, L handle) const {
+	graph.forNeighborsOf(row, [&](index j, edgeweight weight){
+		handle(row, j, weight);
+	});
+}
 
 template<typename L>
 inline void NetworKit::Matrix::forNonZeroElementsInRowOrder(L handle) const {

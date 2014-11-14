@@ -77,7 +77,12 @@ count Matrix::numberOfColumns() const {
 	return nCols;
 }
 
-double Matrix::operator()(const index &i, const index &j) const {
+count Matrix::nnzInRow(const index i) const {
+	assert(i >= 0 && i < numberOfRows());
+	return graph.degree(i);
+}
+
+double Matrix::operator()(const index i, const index j) const {
 	if (i < 0 || i >= numberOfRows()) {
 		throw std::out_of_range("Matrix(i,j): Row index out of range");
 	} else if (j< 0 || j >= numberOfColumns()) {
@@ -87,7 +92,7 @@ double Matrix::operator()(const index &i, const index &j) const {
 	return graph.weight(i,j);
 }
 
-void Matrix::setValue(const index &i, const index &j, const double &value) {
+void Matrix::setValue(const index i, const index j, const double value) {
 	if (i < 0 || i >= numberOfRows()) {
 		throw std::out_of_range("Matrix::setValue(const index &i, const index &j, const double &value): "
 																						"Row index out of range");
@@ -171,7 +176,7 @@ Matrix& Matrix::operator*=(const double &scalar) {
 }
 
 Vector Matrix::operator*(const Vector &vector) const {
-	if (vector.isTransposed() && numberOfColumns() != 1) {
+	if (vector.isTransposed()) {
 		throw std::runtime_error("operator*(const Vector &vector): Vector is not transposed correctly");
 	} else if (numberOfColumns() != vector.getDimension()) {
 		throw std::runtime_error("operator*(const Vector &vector): Dimensions of matrix and vector do not match");
@@ -217,6 +222,51 @@ Matrix Matrix::operator/(const double &divisor) const {
 
 Matrix& Matrix::operator/=(const double &divisor) {
 	return *this *= 1 / divisor;
+}
+
+Matrix Matrix::mTmMultiply(const Matrix &A, const Matrix &B) {
+	if (A.numberOfRows() != B.numberOfRows()) {
+		throw std::runtime_error("Matrix::mTmMultiply(const Matrix &A, const Matrix &B): Dimensions of matrices do not match");
+	}
+
+	Matrix C(A.numberOfColumns(), B.numberOfColumns());
+	for (index k = 0; k < A.numberOfRows(); ++k) {
+		A.graph.forNeighborsOf(k, [&](index i, edgeweight wA){
+			B.graph.forNeighborsOf(k, [&](index j, edgeweight wB){
+				C.graph.increaseWeight(i, j, wA * wB);
+			});
+		});
+	}
+
+	return C;
+}
+
+Vector Matrix::mTvMultiply(const Matrix &matrix, const Vector &vector) {
+	if (matrix.numberOfRows() != vector.getDimension()) {
+		throw std::runtime_error("Matrix::mtvMultiply(const Matrix &matrix, const Vector &vector): Dimensions of matrix and vector do not match");
+	}
+
+	Vector result(matrix.numberOfColumns(), 0.0);
+	for (index k = 0; k < matrix.numberOfRows(); ++k) {
+		matrix.graph.forNeighborsOf(k, [&](index j, edgeweight w){
+			result[j] += w * vector[k];
+		});
+	}
+
+	return result;
+}
+
+//Matrix Matrix::mmTMultiply(const Matrix &A, const Matrix &B) {
+//	// TODO
+//}
+
+Matrix Matrix::transpose() const {
+	Matrix transposedMatrix(numberOfColumns(), numberOfRows());
+	parallelForNonZeroElementsInRowOrder([&](index i, index j, edgeweight weight){
+		transposedMatrix.graph.addEdge(i,j,weight);
+	});
+
+	return transposedMatrix;
 }
 
 
