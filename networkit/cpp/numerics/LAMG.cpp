@@ -22,6 +22,44 @@ std::vector<bool> LAMG::lowDegreeNodes(const Matrix &matrix) {
 	return eliminate;
 }
 
+std::vector<Vector> LAMG::computeTestVectors(const Matrix &matrix, const count numberOfVectors) const {
+	std::vector<Vector> testVectors(numberOfVectors, Vector(matrix.numberOfColumns()));
+	Vector zeroVector(matrix.numberOfColumns(), 0.0);
+	for (count i = 0; i < numberOfVectors; ++i) {
+		for (count j = 0; j < matrix.numberOfColumns(); ++j) {
+			testVectors[i][j] = Aux::Random::real(-1.0, 1.0);
+		}
+
+		// do 3 GS sweeps on the system Av = 0
+		testVectors[i] = smoother.relax(matrix, zeroVector, testVectors[i], 3);
+	}
+
+	return testVectors;
+}
+
+Matrix LAMG::computeAffinityMatrix(const Matrix &matrix, const std::vector<Vector> &testVectors) const {
+	assert(testVectors.size() > 0);
+	Matrix C(matrix.numberOfRows(), matrix.numberOfColumns());
+	matrix.forNonZeroElementsInRowOrder([&](index i, index j, edgeweight value){
+		if (j < i) continue; // symmetric
+		double ij = 0.0;
+		double ii = 0.0;
+		double jj = 0.0;
+		for (count k = 0; k < testVectors.size(); ++k) {
+			ii += testVectors[k][i] * testVectors[k][i];
+			jj += testVectors[k][j] * testVectors[k][j];
+			ij += testVectors[k][i] * testVectors[k][j];
+		}
+
+		double weight = (ij * ij) / (ii*ii * jj*jj);
+
+		C.setValue(i, j, weight);
+		C.setValue(j, i, weight); // symmetric
+	});
+
+	return C;
+}
+
 bool LAMG::addEliminationLevel(Matrix &matrix, LAMGHierarchy &hierarchy) {
 	bool nodesEliminated = false;
 
