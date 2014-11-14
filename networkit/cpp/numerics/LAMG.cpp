@@ -41,20 +41,21 @@ Matrix LAMG::computeAffinityMatrix(const Matrix &matrix, const std::vector<Vecto
 	assert(testVectors.size() > 0);
 	Matrix C(matrix.numberOfRows(), matrix.numberOfColumns());
 	matrix.forNonZeroElementsInRowOrder([&](index i, index j, edgeweight value){
-		if (j < i) continue; // symmetric
-		double ij = 0.0;
-		double ii = 0.0;
-		double jj = 0.0;
-		for (count k = 0; k < testVectors.size(); ++k) {
-			ii += testVectors[k][i] * testVectors[k][i];
-			jj += testVectors[k][j] * testVectors[k][j];
-			ij += testVectors[k][i] * testVectors[k][j];
+		if (j >= i) {  // symmetric
+			double ij = 0.0;
+			double ii = 0.0;
+			double jj = 0.0;
+			for (count k = 0; k < testVectors.size(); ++k) {
+				ii += testVectors[k][i] * testVectors[k][i];
+				jj += testVectors[k][j] * testVectors[k][j];
+				ij += testVectors[k][i] * testVectors[k][j];
+			}
+
+			double weight = (ij * ij) / (ii*ii * jj*jj);
+
+			C.setValue(i, j, weight);
+			C.setValue(j, i, weight); // symmetric
 		}
-
-		double weight = (ij * ij) / (ii*ii * jj*jj);
-
-		C.setValue(i, j, weight);
-		C.setValue(j, i, weight); // symmetric
 	});
 
 	return C;
