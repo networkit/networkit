@@ -180,9 +180,9 @@ It is also possible to use NetworKit as a library. Therefore, choose the target 
 
 	#include <NetworKit/graph/Graph.h>
 
-NetworKit is a symlink to the directory `networkit/cpp`, so the directory structure from the repository is valid. To compile your application, you need to add the paths for the header files and the location of the library. There is a simple source file to demonstrate this. Feel free to compile `LibDemo.cpp` as follows:
+NetworKit in the directory `include `is a symlink to the directory `networkit/cpp`, so the directory structure from the repository is valid. To compile your application, you need to add the paths for the header files and the location of the library. Note, that it is possible to link the different builds (debug, profiling, optimized) of the library. There is a simple source file to demonstrate this. Feel free to compile `LibDemo.cpp` as follows:
 
-	g++ -o LibDemo -std=c++11 -I/path/to/repository
+	g++ -o LibDemo -std=c++11 -I/path/to/repository/include
 		-L/path/to/repository LibDemo.cpp -lNetworKit -fopenmp
 
 
