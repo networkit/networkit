@@ -9,9 +9,9 @@
 
 #include "SimmelianBackboneGTest.h"
 
-#include "../../backbones/Backbones.h"
-#include "../../backbones/SimmelianJaccardAttributizer.h"
-#include "../../backbones/ChibaNishizekiTriangleCounter.h"
+#include "../Backbones.h"
+#include "../SimmelianJaccardAttributizer.h"
+#include "../../edgeproperties/ChibaNishizekiTriangleCounter.h"
 #include "../../graph/GraphGenerator.h"
 
 namespace NetworKit {
@@ -70,8 +70,8 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 	g.indexEdges();
 
 	//Apply triangle counting algorithm
-	ChibaNishizekiTriangleCounter counter;
-	std::vector<int> triangles = counter.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	ChibaNishizekiTriangleCounter counter(g);
+	std::vector<count> triangles = counter.getAttribute();
 
 	//Actual test: ranked neighborhood
 	SimmelianJaccardAttributizer simmel;
@@ -110,8 +110,8 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 	g.indexEdges();
 
 	//Apply triangle counting algorithm
-	ChibaNishizekiTriangleCounter counter;
-	std::vector<int> triangles = counter.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	ChibaNishizekiTriangleCounter counter(g);
+	std::vector<count> triangles = counter.getAttribute();
 
 	//Actual test: ranked neighborhood
 	SimmelianJaccardAttributizer simmel;

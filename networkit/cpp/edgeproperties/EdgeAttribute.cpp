@@ -5,7 +5,7 @@
  *      Author: Gerd Lindner
  */
 
-#include "AttributeGenerator.h"
+#include "EdgeAttribute.h"
 
 namespace NetworKit {
 

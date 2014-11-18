@@ -11,7 +11,7 @@
 
 #include "../Backbones.h"
 #include "../LocalSimilarityAttributizer.h"
-#include "../ChibaNishizekiTriangleCounter.h"
+#include "../../edgeproperties/ChibaNishizekiTriangleCounter.h"
 
 
 namespace NetworKit {
@@ -25,8 +25,8 @@ TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 	g.addEdge(1, 2);
 	g.indexEdges();
 
-	ChibaNishizekiTriangleCounter triangleCounter;
-	std::vector<int> triangles = triangleCounter.getAttribute(g, std::vector<int>());
+	ChibaNishizekiTriangleCounter triangleCounter(g);
+	std::vector<count> triangles = triangleCounter.getAttribute();
 	LocalSimilarityAttributizer localSim;
 	std::vector<double> exp = localSim.getAttribute(g, triangles);
 

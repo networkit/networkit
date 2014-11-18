@@ -21,8 +21,6 @@ class EdgeAttribute {
 
 public:
 
-	EdgeAttribute();
-
 	/**
 	 * Calculates an edge attribute for the edges of the given graph.
 	 */
@@ -31,7 +29,7 @@ public:
 	virtual ~EdgeAttribute() = default;
 
 	std::vector<T>* _getAttribute() {
-		return new std::vector<TOutput>{std::move(getAttribute())};
+		return new std::vector<T>{std::move(getAttribute())};
 	};
 
 };

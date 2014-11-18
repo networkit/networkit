@@ -9,10 +9,10 @@
 
 namespace NetworKit {
 
-AttributeAsWeight::AttributeAsWeight(bool squared, edgeweight offset, edgeweight factor) : squared(squared), offset(offset), factor(factor) {
+EdgeAttributeAsWeight::EdgeAttributeAsWeight(bool squared, edgeweight offset, edgeweight factor) : squared(squared), offset(offset), factor(factor) {
 }
 
-Graph NetworKit::AttributeAsWeight::calculate(Graph &g, const std::vector<double> &attribute) {
+Graph EdgeAttributeAsWeight::calculate(Graph &g, const std::vector<double> &attribute) {
 	Graph result(g, true, false);
 
 	if (squared) {

@@ -47,7 +47,7 @@ struct greater {
 /**
  * Implementation of the Local Sparsification Algorithm by Sataluri et al.
  */
-class LocalSimilarityAttributizer : public AttributeGenerator<int, double> {
+class LocalSimilarityAttributizer : public AttributeGenerator<count, double> {
 
 public:
 
@@ -56,7 +56,7 @@ public:
 	 */
 	LocalSimilarityAttributizer();
 
-	std::vector<double> getAttribute(const NetworKit::Graph &graph, const std::vector< int > &triangles);
+	std::vector<double> getAttribute(const NetworKit::Graph &graph, const std::vector< count > &triangles);
 };
 
 }

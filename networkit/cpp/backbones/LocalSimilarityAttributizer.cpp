@@ -6,7 +6,6 @@
  */
 
 #include "LocalSimilarityAttributizer.h"
-#include "ChibaNishizekiTriangleCounter.h"
 #include <math.h> //log
 #include <set>
 
@@ -14,7 +13,7 @@ namespace NetworKit {
 
 LocalSimilarityAttributizer::LocalSimilarityAttributizer() {}
 
-std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph, const std::vector<int>& triangles) {
+std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph, const std::vector<count>& triangles) {
 	/*
 	 * For each edge, we calculate the minimum required sparsification exponent e
 	 * such that the edge is contained in the backbone.

@@ -12,7 +12,7 @@ namespace NetworKit {
 
 SimmelianJaccardAttributizer::SimmelianJaccardAttributizer() {}
 
-std::vector<double> SimmelianJaccardAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
+std::vector<double> SimmelianJaccardAttributizer::getAttribute(const Graph& graph, const std::vector<count>& attribute) {
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, attribute);
 	std::vector<double> jaccardAttribute(graph.upperEdgeIdBound(), 1.0);
 
