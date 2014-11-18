@@ -242,7 +242,7 @@ def properties(G, settings):
 	return props
 
 
-def overview(G, settings=collections.defaultdict(lambda: True)):
+def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistogram=True):
 	"""
 	Print an overview of important network properties to the terminal.
 	"""
@@ -284,11 +284,12 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	#print(tabulate.tabulate(miscProperties))
 	print("Community Structure")
 	print(tabulate.tabulate(communityStructure))
-	print("Degree Distribution")
-	print("-------------------")
-	(labels, histo) = props["histo"]
-	if labels and histo:
-		termgraph.graph(labels, histo)
+	if showDegreeHistogram:
+		print("Degree Distribution")
+		print("-------------------")
+		(labels, histo) = props["histo"]
+		if labels and histo:
+			termgraph.graph(labels, histo)
 
 
 def compressHistogram(hist, nbins=20):
