@@ -1,10 +1,18 @@
 /*
+ * ChibaNishizekiQuadrangleCounter.cpp
  *
+ *  Created on: 18.11.2014
+ *      Author: Michael Hamann, Gerd Lindner
  */
 
 #include "ChibaNishizekiQuadrangleCounter.h"
 
-std::vector< int > NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute(const NetworKit::Graph &graph, const std::vector< int > &attribute) {
+namespace NetworKit {
+
+ChibaNishizekiQuadrangleCounter::ChibaNishizekiQuadrangleCounter(const Graph& G) : EdgeAttribute(G) {
+}
+
+std::vector< count > NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute() {
 	std::vector<std::vector<std::pair<node, edgeid> > > edges(graph.upperNodeIdBound());
 
 	// copy edges with edge ids
@@ -19,7 +27,7 @@ std::vector< int > NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute(cons
 	std::vector<count> nodeMarker(graph.upperNodeIdBound(), 0);
 
 	//Edge attribute: triangle count
-	std::vector<int> quandrangleCount(graph.upperEdgeIdBound(), 0);
+	std::vector<count> quandrangleCount(graph.upperEdgeIdBound(), 0);
 
 	// bucket sort
 	count n = graph.numberOfNodes();
@@ -82,5 +90,6 @@ std::vector< int > NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute(cons
 	}
 
 	return quandrangleCount;
-
 }
+
+}/* namespace NetworKit */

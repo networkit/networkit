@@ -12,20 +12,23 @@
 
 namespace NetworKit {
 
-std::vector<int> TriangleCounter::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
+TriangleCounter::TriangleCounter(const Graph& G) : EdgeAttribute(G) {
+}
+
+std::vector<count> TriangleCounter::getAttribute() {
 	auto isOutEdge = [&](node u, node v) {
-		return graph.degree(u) > graph.degree(v) || (graph.degree(u) == graph.degree(v) && u < v);
+		return G.degree(u) > G.degree(v) || (G.degree(u) == G.degree(v) && u < v);
 	};
 
-	std::vector<std::vector<std::pair<node, edgeid> > > inEdges(graph.upperNodeIdBound());
+	std::vector<std::vector<std::pair<node, edgeid> > > inEdges(G.upperNodeIdBound());
 
-	graph.balancedParallelForNodes([&](node u) {
+	G.balancedParallelForNodes([&](node u) {
 		// bucket sort
 		std::vector<count> nodePos(1);
 
-		graph.forEdgesOf(u, [&](node _u, node v, edgeid eid){
+		G.forEdgesOf(u, [&](node _u, node v, edgeid eid){
 			if (isOutEdge(v, u)) {
-				count deg = graph.degree(v);
+				count deg = G.degree(v);
 				if (nodePos.size() < deg + 1) {
 					nodePos.resize(deg + 1);
 				}
@@ -47,15 +50,15 @@ std::vector<int> TriangleCounter::getAttribute(const Graph& graph, const std::ve
 
 		inEdges[u].resize(sum);
 
-		graph.forEdgesOf(u, [&](node _u, node v, edgeid eid){
+		G.forEdgesOf(u, [&](node _u, node v, edgeid eid){
 			if (isOutEdge(v, u)) {
-				inEdges[u][nodePos[graph.degree(v)]++] = std::make_pair(v, eid);
+				inEdges[u][nodePos[G.degree(v)]++] = std::make_pair(v, eid);
 			}
 		});
 	});
 
 	//Edge attribute: triangle count
-	std::vector<int> triangleCount(graph.upperEdgeIdBound(), 0);
+	std::vector<int> triangleCount(G.upperEdgeIdBound(), 0);
 
 	std::vector<std::vector<edgeid> > nodeMarker;
 
@@ -66,16 +69,16 @@ std::vector<int> TriangleCounter::getAttribute(const Graph& graph, const std::ve
 			nodeMarker.resize(omp_get_num_threads());
 		}
 
-		nodeMarker[omp_get_thread_num()].resize(graph.upperNodeIdBound(), none);
+		nodeMarker[omp_get_thread_num()].resize(G.upperNodeIdBound(), none);
 	}
 
-	graph.balancedParallelForNodes([&](node u) {
+	G.balancedParallelForNodes([&](node u) {
 		auto tid = omp_get_thread_num();
-		count degU = graph.degree(u);
+		count degU = G.degree(u);
 		std::vector<std::pair<node, edgeid> > outEdges;
 		outEdges.reserve(degU - inEdges[u].size());
 
-		graph.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
+		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
 			if (isOutEdge(u, v)) {
 				outEdges.emplace_back(v, eid);
 				nodeMarker[tid][v] = 0;
@@ -85,7 +88,7 @@ std::vector<int> TriangleCounter::getAttribute(const Graph& graph, const std::ve
 		//For all neighbors: check for already marked neighbors.
 		for (auto uv : outEdges) {
 			for (auto vw : inEdges[uv.first]) {
-				if (graph.degree(vw.first) > degU) break;
+				if (G.degree(vw.first) > degU) break;
 
 				if (nodeMarker[tid][vw.first] != none) {
 

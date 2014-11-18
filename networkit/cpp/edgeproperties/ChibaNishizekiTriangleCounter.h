@@ -9,18 +9,23 @@
 #define CHIBANISHIZEKI_H_
 
 #include "../graph/Graph.h"
-#include "AttributeGenerator.h"
+#include "EdgeAttribute.h"
 
 namespace NetworKit {
 
 /**
  * An implementation of the triangle counting algorithm by Chiba/Nishizeki.
  */
-class ChibaNishizekiTriangleCounter : public AttributeGenerator<int, int> {
+class ChibaNishizekiTriangleCounter : public EdgeAttribute<count> {
+
+protected:
+	const Graph& G;
 
 public:
 
-	std::vector<int> getAttribute(const Graph& graph, const std::vector<int>& attribute);
+	ChibaNishizekiTriangleCounter(const Graph& G);
+
+	std::vector<count> getAttribute();
 };
 
 } /* namespace NetworKit */
