@@ -1356,7 +1356,7 @@ cdef class ChungLuGenerator:
 
 cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
-		_HavelHakimiGenerator(vector[count] degreeSequence, bool skipTest) except +
+		_HavelHakimiGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
 		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
@@ -1364,28 +1364,29 @@ cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 cdef class HavelHakimiGenerator:
 	""" Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
 
- 		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
- 		has a high clustering coefficient. Construction runs in linear time O(m). However, the test
- 		if a sequence is realizable is quadratic in the sequence length.
+		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
+		has a high clustering coefficient. Construction runs in linear time O(m).
 
- 		HavelHakimiGenerator(sequence, skipTest=True)
+		If the sequence is not realizable, depending on the parameter ignoreIfRealizable, either
+		an exception is thrown during generation or the graph is generated with a modified degree
+		sequence, i.e. not all nodes might have as many neighbors as requested.
 
- 		Parameters
+		HavelHakimiGenerator(sequence, ignoreIfRealizable=True)
+
+		Parameters
 		----------
 		sequence : vector
 			Degree sequence to realize. Must be non-increasing.
-		skipTest : bool, optional
-			If True, the test if the sequence is realizable is skipped.
-	        Default value is False. Set ONLY to True if you are certain that the
-	        sequence is realizable
+		ignoreIfRealizable : bool, optional
+			If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	"""
 
 	cdef _HavelHakimiGenerator* _this
 
 
-	def __cinit__(self, vector[count] degreeSequence, skipTest=True):
-		self._this = new _HavelHakimiGenerator(degreeSequence, skipTest)
-		
+	def __cinit__(self, vector[count] degreeSequence, ignoreIfRealizable=True):
+		self._this = new _HavelHakimiGenerator(degreeSequence, ignoreIfRealizable)
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1401,7 +1402,7 @@ cdef class HavelHakimiGenerator:
 		Returns
 		-------
 		Graph
-			Empty graph if graph is not realizable, otherwise graph with degree sequence seq.
+			Graph with degree sequence seq or modified sequence if ignoreIfRealizable is true and the sequence is not realizable.
 		"""
 		return Graph(0).setThis(self._this.generate())
 

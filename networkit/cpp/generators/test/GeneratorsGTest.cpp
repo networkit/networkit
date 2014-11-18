@@ -324,9 +324,8 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 		}
 
 		// check if sequence is realizable
-		bool skipTest = false;
-		HavelHakimiGenerator hhgen(sequence, skipTest);
-		realizable = hhgen.getRealizable();
+		HavelHakimiGenerator hhgen(sequence);
+		realizable = hhgen.isRealizable();
 
 		if (realizable) {
 			Graph G = hhgen.generate();
@@ -346,8 +345,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 		count n = G.numberOfNodes();
 		std::vector<count> sequence = GraphProperties::degreeSequence(G);
 
-		bool skipTest = false;
-		HavelHakimiGenerator hhgen(sequence, skipTest);
+		HavelHakimiGenerator hhgen(sequence);
 		Graph G2 = hhgen.generate();
 
 		count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
@@ -355,14 +353,26 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 
 		if (volume < 50000) {
 			std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
-			std::sort(testSequence.begin(), testSequence.end(), std::greater<unsigned int>());
-			std::sort(sequence.begin(), sequence.end(), std::greater<unsigned int>());
 
 			for (index i = 0; i < n; ++i) {
 				EXPECT_EQ(sequence[i], testSequence[i]);
 			}
 		}
 	}
+}
+
+TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnUnrealizableSequence) {
+	std::vector<count> seq = {20, 10, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
+	HavelHakimiGenerator hhgen(seq);
+	EXPECT_THROW(hhgen.generate(), std::runtime_error);
+
+	hhgen = HavelHakimiGenerator(seq, true);
+	Graph G = hhgen.generate();
+
+	G.forNodes([&](node u) {
+		EXPECT_EQ(std::min<count>(seq[u], 10), G.degree(u));
+	});
 }
 
 
