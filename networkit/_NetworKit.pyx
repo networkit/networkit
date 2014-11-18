@@ -1320,8 +1320,7 @@ cdef class ClusteredRandomGraphGenerator:
 
 cdef extern from "cpp/generators/ChungLuGenerator.h":
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
-		# TODO: revert to count when cython issue fixed
-		_ChungLuGenerator(vector[unsigned int] degreeSequence) except +
+		_ChungLuGenerator(vector[count] degreeSequence) except +
 		_Graph generate() except +
 
 cdef class ChungLuGenerator:
@@ -1334,8 +1333,7 @@ cdef class ChungLuGenerator:
 
 	cdef _ChungLuGenerator* _this
 
-	def __cinit__(self, degreeSequence):
-		cdef vector
+	def __cinit__(self, vector[count] degreeSequence):
 		self._this = new _ChungLuGenerator(degreeSequence)
 		
 	def __dealloc__(self):
@@ -1354,8 +1352,7 @@ cdef class ChungLuGenerator:
 
 cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
-		# TODO: revert to count when cython issue fixed
-		_HavelHakimiGenerator(vector[unsigned int] degreeSequence, bool skipTest) except +
+		_HavelHakimiGenerator(vector[count] degreeSequence, bool skipTest) except +
 		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
@@ -1381,7 +1378,8 @@ cdef class HavelHakimiGenerator:
 
 	cdef _HavelHakimiGenerator* _this
 
-	def __cinit__(self, degreeSequence, skipTest=True):
+
+	def __cinit__(self, vector[count] degreeSequence, skipTest=True):
 		self._this = new _HavelHakimiGenerator(degreeSequence, skipTest)
 		
 	def __dealloc__(self):
@@ -3305,7 +3303,7 @@ cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphP
 	pair[count, count] minMaxDegree(_Graph _G) except +
 	double averageDegree(_Graph _G) except +
 	vector[count] degreeDistribution(_Graph _G) except +
-	vector[unsigned int] degreeSequence(_Graph _G) except +
+	vector[count] degreeSequence(_Graph _G) except +
 	vector[double] localClusteringCoefficients(_Graph _G) except +
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +

@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<unsigned int>& sequence, bool skipTest) :
+HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<count>& sequence, bool skipTest) :
 		StaticDegreeSequenceGenerator(sequence) {
 	std::sort(seq.begin(), seq.end(), std::greater<unsigned int>());
 	if (! skipTest) {
