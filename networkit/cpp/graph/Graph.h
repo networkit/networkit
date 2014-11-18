@@ -545,6 +545,18 @@ public:
 	void removeEdge(node u, node v);
 
 	/**
+	 * Changes the edges {@a s1, @a t1} into {@a s1, @a t2} and the edge {@a s2, @a t2} into {@a s2, @a t1}.
+	 *
+	 * If there are edge weights or edge ids, they are preserved. Note that no check is performed if the swap is actually possible, i.e. does not generate duplicate edges.
+	 *
+	 * @param s1 The first source
+	 * @param t1 The first target
+	 * @param s2 The second source
+	 * @param t2 The second target
+	 */
+	void swapEdge(NetworKit::node s1, NetworKit::node t1, NetworKit::node s2, NetworKit::node t2);
+
+	/**
 	 * Checks if undirected edge {@a u,@a v} exists in the graph.
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
