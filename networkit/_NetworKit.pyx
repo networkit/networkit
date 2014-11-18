@@ -1457,6 +1457,104 @@ cdef class RmatGenerator:
 		"""
 		return Graph(0).setThis(self._this.generate())
 
+cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
+	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
+		_PowerlawDegreeSequence(count minDeg, count maxDeg, double gamma) except +
+		void setMinimumFromAverageDegree(double avgDeg) except +
+		double getExpectedAverageDegree() except +
+		count getMinimumDegree() const
+		void run() except +
+		vector[count] getDegreeSequence(count numNodes) except +
+		count getDegree() except +
+
+cdef class PowerlawDegreeSequence:
+	"""
+	Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma
+
+	Parameters
+	----------
+	minDeg : count
+		The minium degree
+	maxDeg : count
+		The maximum degree
+	gamma : double
+		The powerlaw exponent
+	"""
+	cdef _PowerlawDegreeSequence *_this
+
+	def __cinit__(self, count minDeg, count maxDeg, double gamma):
+		self._this = new _PowerlawDegreeSequence(minDeg, maxDeg, gamma)
+
+	def __dealloc__(self):
+		del self._this
+
+	def setMinimumFromAverageDegree(self, double avgDeg):
+		"""
+		Tries to set the minimum degree such that the specified average degree is expected.
+
+		Parameters
+		----------
+		avgDeg : double
+			The average degree that shall be approximated
+		"""
+		self._this.setMinimumFromAverageDegree(avgDeg)
+		return self
+
+	def getExpectedAverageDegree(self):
+		"""
+		Returns the expected average degree. Note: run needs to be called first.
+
+		Returns
+		-------
+		double
+			The expected average degree.
+		"""
+		return self._this.getExpectedAverageDegree()
+
+	def getMinimumDegree(self):
+		"""
+		Returns the minimum degree.
+
+		Returns
+		-------
+		count
+			The minimum degree
+		"""
+		return self._this.getMinimumDegree()
+
+	def run(self):
+		"""
+		Executes the generation of the probability distribution.
+		"""
+		self._this.run()
+		return self
+
+	def getDegreeSequence(self, count numNodes):
+		"""
+		Returns a degree sequence with even degree sum.
+
+		Parameters
+		----------
+		numNodes : count
+			The number of nodes/degrees that shall be returned
+
+		Returns
+		-------
+		vector[count]
+			The generated degree sequence
+		"""
+		return self._this.getDegreeSequence(numNodes)
+
+	def getDegree(self):
+		"""
+		Returns a degree drawn at random with a power law distribution
+
+		Returns
+		-------
+		count
+			The generated random degree
+		"""
+		return self._this.getDegree()
 
 # Module: graphio
 
