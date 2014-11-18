@@ -133,6 +133,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
+		void swapEdge(node s1, node t1, node s2, node t2) except +
 		bool hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
 		vector[node] nodes() except +
@@ -391,6 +392,25 @@ cdef class Graph:
 			Endpoint of edge.
 		"""
 		self._this.removeEdge(u, v)
+
+	def swapEdge(self, node s1, node t1, node s2, node t2):
+		"""
+		Changes the edge (s1, t1) into (s1, t2) and the edge (s2, t2) into (s2, t1).
+
+		If there are edge weights or edge ids, they are preserved. Note that no check is performed if the swap is actually possible, i.e. does not generate duplicate edges.
+
+		Parameters
+		----------
+		s1 : node
+			Source node of the first edge
+		t1 : node
+			Target node of the first edge
+		s2 : node
+			Source node of the second edge
+		t2 : node
+			Target node of the second edge
+		"""
+		self._this.swapEdge(s1, t1, s2, t2)
 
 	def hasEdge(self, u, v):
 		""" Checks if undirected edge {`u`,`v`} exists in the graph.
