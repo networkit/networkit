@@ -21,6 +21,7 @@ Dy * GeneratorsTest.cpp
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
 #include "../StochasticBlockmodel.h"
+#include "../ConfigurationModelGenerator.h"
 
 
 namespace NetworKit {
@@ -517,6 +518,35 @@ TEST_F(GeneratorsGTest, testStochasticBlockmodel) {
 
 	EXPECT_EQ(n, G.numberOfNodes());
 	EXPECT_EQ(20u, G.numberOfEdges());
+}
+
+TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
+	METISGraphReader reader;
+	std::vector<std::string> graphs = {"input/jazz.graph",
+			"input/lesmis.graph"}; //, "input/PGPgiantcompo.graph", "input/coAuthorsDBLP.graph"};
+
+	for (auto path : graphs) {
+		Graph G = reader.read(path);
+		count n = G.numberOfNodes();
+		std::vector<count> sequence = GraphProperties::degreeSequence(G);
+
+		bool skipTest = false;
+		ConfigurationModelGenerator gen(sequence, skipTest);
+		Graph G2 = gen.generate();
+
+		count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
+
+		if (volume < 50000) {
+			std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
+			std::sort(testSequence.begin(), testSequence.end(), std::greater<count>());
+			std::sort(sequence.begin(), sequence.end(), std::greater<count>());
+
+			for (index i = 0; i < n; ++i) {
+				EXPECT_EQ(sequence[i], testSequence[i]);
+			}
+		}
+	}
 }
 
 } /* namespace NetworKit */
