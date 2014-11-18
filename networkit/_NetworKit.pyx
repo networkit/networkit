@@ -2771,6 +2771,7 @@ cdef extern from "cpp/community/PLM.h":
 		string toString() except +
 		void run() except +
 		_Partition getPartition() except +
+		map[string, vector[count]] getTiming() except +
 
 cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
 	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
@@ -2830,6 +2831,9 @@ cdef class PLM(CommunityDetector):
 			A Partition of the clustering.
 		"""
 		return Partition().setThis(self._this.getPartition())
+
+	def getTiming(self):
+		return self._this.getTiming()
 
 	@staticmethod
 	def coarsen(Graph G, Partition zeta, bool parallel = False):

@@ -11,6 +11,8 @@
 #include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Timer.h"
+
 
 #include <sstream>
 
@@ -235,14 +237,37 @@ void PLM::run() {
 	};
 
 	// first move phase
+	Aux::Timer timer;
+	timer.start();
+	//
 	movePhase();
+	//
+	timer.stop();
+	timing["move"].push_back(timer.elapsedMilliseconds());
 
 	if (change) {
 		INFO("nodes moved, so begin coarsening and recursive call");
+
+		timer.start();
+		//
 		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta, parallelCoarsening);	// coarsen graph according to communitites
+		//
+		timer.stop();
+		timing["coarsen"].push_back(timer.elapsedMilliseconds());
+
 		PLM onCoarsened(coarsened.first);
 		onCoarsened.run();
 		Partition zetaCoarse = onCoarsened.getPartition();
+
+		// get timings
+		auto tim = onCoarsened.getTiming();
+		for (count t : tim["move"]) {
+			timing["move"].push_back(t);
+		}
+		for (count t : tim["coarsen"]) {
+			timing["coarsen"].push_back(t);
+		}
+
 
 		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
@@ -313,6 +338,12 @@ Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const 
 
 
 	return zetaFine;
+}
+
+
+
+std::map<std::string, std::vector<count> > PLM::getTiming() {
+	return timing;
 }
 
 } /* namespace NetworKit */

@@ -51,6 +51,11 @@ public:
 
 	static Partition prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
 
+	/**
+	 * Returns fine-grained running time measurements for algorithm engineering purposes.
+	 */
+	std::map<std::string, std::vector<count> > getTiming();
+
 private:
 
 	std::string parallelism;
@@ -59,6 +64,7 @@ private:
 	count maxIter;
 	bool parallelCoarsening;
 	bool turbo;
+	std::map<std::string, std::vector<count> > timing;	 // fine-grained running time measurement
 };
 
 } /* namespace NetworKit */
