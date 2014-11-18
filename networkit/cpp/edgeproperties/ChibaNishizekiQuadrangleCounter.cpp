@@ -9,34 +9,34 @@
 
 namespace NetworKit {
 
-ChibaNishizekiQuadrangleCounter::ChibaNishizekiQuadrangleCounter(const Graph& G) : EdgeAttribute(G) {
+ChibaNishizekiQuadrangleCounter::ChibaNishizekiQuadrangleCounter(const Graph& G) : G(G) {
 }
 
 std::vector< count > NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute() {
-	std::vector<std::vector<std::pair<node, edgeid> > > edges(graph.upperNodeIdBound());
+	std::vector<std::vector<std::pair<node, edgeid> > > edges(G.upperNodeIdBound());
 
 	// copy edges with edge ids
-	graph.parallelForNodes([&](node u) {
-		edges[u].reserve(graph.degree(u));
-		graph.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
+	G.parallelForNodes([&](node u) {
+		edges[u].reserve(G.degree(u));
+		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
 			edges[u].emplace_back(v, eid);
 		});
 	});
 
 	//Node attribute: marker
-	std::vector<count> nodeMarker(graph.upperNodeIdBound(), 0);
+	std::vector<count> nodeMarker(G.upperNodeIdBound(), 0);
 
 	//Edge attribute: triangle count
-	std::vector<count> quandrangleCount(graph.upperEdgeIdBound(), 0);
+	std::vector<count> quandrangleCount(G.upperEdgeIdBound(), 0);
 
 	// bucket sort
-	count n = graph.numberOfNodes();
+	count n = G.numberOfNodes();
 	std::vector<node> sortedNodes(n);
 	{
 		std::vector<index> nodePos(n + 1, 0);
 
-		graph.forNodes([&](node u) {
-			++nodePos[n - graph.degree(u)];
+		G.forNodes([&](node u) {
+			++nodePos[n - G.degree(u)];
 		});
 
 		// exclusive prefix sum
@@ -50,8 +50,8 @@ std::vector< count > NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute() 
 			sum += tmp;
 		}
 
-		graph.forNodes([&](node u) {
-			sortedNodes[nodePos[n - graph.degree(u)]++] = u;
+		G.forNodes([&](node u) {
+			sortedNodes[nodePos[n - G.degree(u)]++] = u;
 		});
 	}
 

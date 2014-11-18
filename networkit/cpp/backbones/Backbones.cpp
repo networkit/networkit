@@ -6,7 +6,7 @@
  */
 
 #include "Backbones.h"
-#include "ChibaNishizekiTriangleCounter.h"
+#include "../edgeproperties/ChibaNishizekiTriangleCounter.h"
 #include "SimmelianJaccardAttributizer.h"
 #include "SimmelianOverlapAttributizer.h"
 #include "MultiscaleAttributizer.h"
@@ -21,8 +21,8 @@ namespace NetworKit {
 SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(double threshold) : threshold(threshold) {}
 
 Graph SimmelianBackboneNonParametric::calculate(const Graph& g) {
-	ChibaNishizekiTriangleCounter triangleAttributizer;
-	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	ChibaNishizekiTriangleCounter triangleAttributizer(g);
+	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
 	SimmelianJaccardAttributizer jaccardAttributizer;
 	std::vector<double> jaccard = jaccardAttributizer.getAttribute(g, triangles);
@@ -39,8 +39,8 @@ SimmelianBackboneParametric::SimmelianBackboneParametric(int maxRank, int minOve
 		maxRank(maxRank), minOverlap(minOverlap) {}
 
 Graph SimmelianBackboneParametric::calculate(const Graph& g) {
-	ChibaNishizekiTriangleCounter triangleAttributizer;
-	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	ChibaNishizekiTriangleCounter triangleAttributizer(g);
+	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
 	SimmelianOverlapAttributizer overlapAttributizer(maxRank);
 	std::vector<double> overlap = overlapAttributizer.getAttribute(g, triangles);
@@ -78,8 +78,8 @@ LocalSimilarityBackbone::LocalSimilarityBackbone(double e) :
 
 Graph LocalSimilarityBackbone::calculate(const Graph& g) {
 	LocalSimilarityAttributizer localSimAttributizer;
-	ChibaNishizekiTriangleCounter triangleCounter;
-	std::vector<int> triangles = triangleCounter.getAttribute(g, std::vector<int>());
+	ChibaNishizekiTriangleCounter triangleCounter(g);
+	std::vector<count> triangles = triangleCounter.getAttribute();
 	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, triangles);
 
 	GlobalThresholdFilter filter(e, false);
@@ -94,8 +94,8 @@ SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(double alpha) :
 		alpha(alpha) {}
 
 Graph SimmelianMultiscaleBackbone::calculate(const Graph& g) {
-	ChibaNishizekiTriangleCounter triangleAttributizer;
-	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	ChibaNishizekiTriangleCounter triangleAttributizer(g);
+	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
 	MultiscaleAttributizer multiscaleAttributizer;
 	std::vector<double> multiscale = multiscaleAttributizer.getAttribute(g,

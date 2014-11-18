@@ -24,7 +24,7 @@ public:
 	 */
 	SimmelianJaccardAttributizer();
 
-	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
+	std::vector<double> getAttribute(const Graph& graph, const std::vector<count>& attribute);
 
 };
 

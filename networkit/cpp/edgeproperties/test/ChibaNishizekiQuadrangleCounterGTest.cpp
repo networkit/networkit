@@ -9,7 +9,7 @@
 
 #include "ChibaNishizekiQuadrangleCounterGTest.h"
 
-#include "../../backbones/ChibaNishizekiQuadrangleCounter.h"
+#include "../ChibaNishizekiQuadrangleCounter.h"
 
 namespace NetworKit {
 
@@ -23,8 +23,8 @@ TEST_F(ChibaNishizekiQuadrangleCounterGTest, testQuadrangleCountsTrivial) {
 
 	g.indexEdges();
 
-	ChibaNishizekiQuadrangleCounter counter;
-	std::vector<int> counts = counter.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	ChibaNishizekiQuadrangleCounter counter(g);
+	std::vector<count> counts = counter.getAttribute();
 
 	EXPECT_EQ(1, (counts[g.edgeId(0,1)])) << "wrong quadrangle count";
 	EXPECT_EQ(1, (counts[g.edgeId(0,2)])) << "wrong quadrangle count";
@@ -53,8 +53,8 @@ TEST_F(ChibaNishizekiQuadrangleCounterGTest, testQuadrangleCountsSimple) {
 
 	EXPECT_EQ(10, g.numberOfEdges()) << "wrong edge count";
 
-	ChibaNishizekiQuadrangleCounter counter;
-	std::vector<int> counts = counter.getAttribute(g, std::vector<int>(g.upperEdgeIdBound()));
+	ChibaNishizekiQuadrangleCounter counter(g);
+	std::vector<count> counts = counter.getAttribute();
 
 	EXPECT_EQ(7, g.numberOfNodes()) << "undesired side effect";
 	EXPECT_EQ(10, g.numberOfEdges()) << "undesired side effect";

@@ -5,7 +5,7 @@
  *      Author: Michael Hamann
  */
 
-#include "AttributeBlender.h"
+#include "EdgeAttributeBlender.h"
 
 namespace NetworKit {
 
@@ -22,7 +22,7 @@ void EdgeAttributeBlender::run() {
 	hasAttribute = true;
 }
 
-std::vector< double > AttributeBlender::getAttribute() {
+std::vector< double > EdgeAttributeBlender::getAttribute() {
 	if (!hasAttribute) throw std::runtime_error("Error: Run must called first");
 
 	hasAttribute = false;

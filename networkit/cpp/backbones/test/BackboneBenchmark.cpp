@@ -8,8 +8,8 @@
 #ifndef NOGTEST
 
 #include "BackboneBenchmark.h"
-#include "../ChibaNishizekiTriangleCounter.h"
-#include "../TriangleCounter.h"
+#include "../../edgeproperties/ChibaNishizekiTriangleCounter.h"
+#include "../../edgeproperties/TriangleCounter.h"
 #include "../SimmelianJaccardAttributizer.h"
 #include "../SimmelianOverlapAttributizer.h"
 #include "../MultiscaleAttributizer.h"
@@ -39,8 +39,8 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 
 	runtime.start();
 
-	ChibaNishizekiTriangleCounter counter;
-	std::vector<int> counts = counter.getAttribute(G, std::vector<int>(G.upperEdgeIdBound()));
+	ChibaNishizekiTriangleCounter counter(G);
+	std::vector<count> counts = counter.getAttribute();
 
 	SimmelianOverlapAttributizer attributizer(10);
 	auto attribute = attributizer.getAttribute(G, counts);
@@ -59,8 +59,8 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 
 	runtime.start();
 
-	ChibaNishizekiTriangleCounter counter;
-	std::vector<int> counts = counter.getAttribute(G, std::vector<int>(G.upperEdgeIdBound()));
+	ChibaNishizekiTriangleCounter counter(G);
+	std::vector<count> counts = counter.getAttribute();
 
 	SimmelianJaccardAttributizer attributizer;
 	auto attribute = attributizer.getAttribute(G, counts);
@@ -101,7 +101,7 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 	runtime.start();
 
 	LocalSimilarityAttributizer attributizer;
-	auto attribute = attributizer.getAttribute(G, std::vector<int>());
+	auto attribute = attributizer.getAttribute(G, std::vector<count>());
 
 	runtime.stop();
 	INFO("[DONE] LocalSimilarityBackbone (" , runtime.elapsed().count() , " ms)");
@@ -132,16 +132,16 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Triangle counting
 	std::cout << "[BEGIN] triangle counting: " << std::endl;
 	runtime.start();
-	ChibaNishizekiTriangleCounter oldTriangleAttributizer;
-	std::vector<int> oldTriangles = oldTriangleAttributizer.getAttribute(g, std::vector<int>(0));
+	ChibaNishizekiTriangleCounter oldTriangleAttributizer(g);
+	std::vector<count> oldTriangles = oldTriangleAttributizer.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] Chiba Nishizeki triangle counting " << runtime.elapsedTag() << std::endl;
 
 	// --------- Triangle counting
 	std::cout << "[BEGIN] triangle counting: " << std::endl;
 	runtime.start();
-	TriangleCounter triangleAttributizer;
-	std::vector<int> triangles = triangleAttributizer.getAttribute(g, std::vector<int>(0));
+	TriangleCounter triangleAttributizer(g);
+	std::vector<count> triangles = triangleAttributizer.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] triangle counting " << runtime.elapsedTag() << std::endl;
 
