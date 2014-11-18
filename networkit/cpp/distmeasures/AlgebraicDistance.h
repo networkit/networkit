@@ -52,7 +52,7 @@ public:
 	  * Returns the extended algebraic distances between all connected nodes in the norm specified in the constructor.
 	  * @return Vector containing the extended algebraic distances between all connected pairs of nodes.
 	  */
-	 std::vector<double> AlgebraicDistance::distances() {
+	 virtual std::vector<double> getEdgeAttribute();
 
 protected:
 
