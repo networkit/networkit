@@ -29,17 +29,18 @@ protected:
 public:
 	/**
 	 * @param[in] sequence Degree sequence to realize. Must be non-increasing.
-	 * @param[in] skipTest If true, the test if the sequence is realizable is skipped.
-	 *            Default value is false. Set ONLY to true if you are certain that the
-	 *            sequence is realizable.
+	 * @param[in] ignoreIfRealizable If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	 */
-	HavelHakimiGenerator(const std::vector<count>& sequence, bool skipTest = false);
+	HavelHakimiGenerator(const std::vector<count>& sequence, bool ignoreIfRealizable = false);
 
 	/**
 	 * Generates degree sequence seq (if it is realizable).
-	 * @return Empty graph if graph is not realizable, otherwise graph with degree sequence seq.
+	 * @throws std::runtime_error If the sequence is not realizable and ignoreIfRealizable is false.
+	 * @return Graph with degree sequence seq or modified sequence if ignoreIfRealizable is true and the sequence is not realizable.
 	 */
 	Graph generate() override;
+private:
+	bool ignoreIfRealizable;
 };
 
 

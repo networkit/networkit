@@ -37,20 +37,24 @@ bool StaticDegreeSequenceGenerator::isRealizable() {
 	}
 
 	if (deg_sum % 2 != 0) {
-		DEBUG("not realizable");
+		DEBUG("not realizable, degree sum not even!");
 		realizable = NO;
 		return false;
 	}
 
 	/* Second inequality. */
+	// this inequality needs a sorted sequence
+	std::vector<count> sortedSeq = seq;
+	std::sort(sortedSeq.begin(), sortedSeq.end(), std::greater<count>());
+
 	deg_sum = 0;
 	for (count j = 0; j < n; ++j) {
-		deg_sum += seq[j];
+		deg_sum += sortedSeq[j];
 
 		/* sum of min(deg(i), j) for i from j + 1 to n - 1. */
 		count min_deg_sum = 0;
 		for (count i = j + 1; i < n; ++i) {
-			min_deg_sum += std::min(seq[i], j + 1);
+			min_deg_sum += std::min(sortedSeq[i], j + 1);
 		}
 
 		if (deg_sum > (j + 1) * j + min_deg_sum) {
