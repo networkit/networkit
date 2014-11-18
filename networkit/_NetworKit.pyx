@@ -2234,6 +2234,72 @@ cdef class PowerlawDegreeSequence:
 		"""
 		return self._this.getDegree()
 
+cdef extern from "cpp/generators/LFRGenerator.h":
+	cdef cppclass _LFRGenerator "NetworKit::LFRGenerator":
+		_LFRGenerator(count n, count avgDegree, count maxDegree, double mu, double nodeDegreeExp, double communitySizeExp, count minCommunitySize, count maxCommunitySize) except +
+		void run() except +
+		_Graph getGraph() except +
+		_Partition getPartition() except +
+
+cdef class LFRGenerator:
+	"""
+	The LFR clustered graph generator as introduced by Andrea Lancichinetti, Santo Fortunato, and Filippo Radicchi.
+
+	The community assignment follows the algorithm described in
+	"Benchmark graphs for testing community detection algorithms". The edge generation is however taken from their follow-up publication
+	"Benchmarks for testing community detection algorithms on directed and weighted graphs with overlapping communities". Parts of the
+	implementation follow the choices made in their implementation which is available at https://sites.google.com/site/andrealancichinetti/software
+	but other parts differ, for example some more checks for the realizability of the community and degree size distributions are done
+	instead of heavily modifying the distributions.
+
+	The configuration model implementation in NetworKit is used which is different from the implementation in the original LFR benchmark.
+
+	Parameters
+	----------
+	n : count
+		The number of nodes
+	avgDegree : count
+		The average degree of the created graph
+	maxDegree : count
+		The maximum degree of the created graph
+	mu : double
+		The mixing coefficient, i.e. the factor of the degree that shall be inter-cluster degree
+	nodeDegreeExp : double
+		The (negative) exponent of the power law degree distribution of the node degrees
+	communitySizeExp : double
+		The (negative) community size exponent of the power law degree distribution of the community sizes
+	minCommunitySize : count
+		The minimum community size
+	maxCommunitySize : count
+		The maximum community size
+	"""
+	cdef _LFRGenerator *_this
+
+	def __cinit__(self, count n, count avgDegree, count maxDegree, double mu, double nodeDegreeExp, double communitySizeExp, count minCommunitySize, count maxCommunitySize):
+		self._this = new _LFRGenerator(n, avgDegree, maxDegree, mu, nodeDegreeExp, communitySizeExp, minCommunitySize, maxCommunitySize)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""
+		Run the generator
+		"""
+		self._this.run()
+		return self
+
+	def getGraph(self):
+		"""
+		Return the generated Graph.
+		"""
+		return Graph().setThis(self._this.getGraph())
+
+	def getPartition(self):
+		"""
+		Return the generated Partiton.
+		"""
+		return Partition().setThis(self._this.getPartition())
+
 # Module: graphio
 
 cdef extern from "cpp/io/GraphReader.h":
