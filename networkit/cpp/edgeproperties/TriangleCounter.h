@@ -1,26 +1,31 @@
 /*
- * ChibaNishizekiTriangleCounter.h
+ * TriangleCounter.h
  *
  *  Created on: 22.05.2014
- *      Author: Gerd Lindner
+ *      Author: Gerd Lindner, Michael Hamann
  */
 
 #ifndef TRIANGLE_COUNTER_H_
 #define TRIANGLE_COUNTER_H_
 
 #include "../graph/Graph.h"
-#include "AttributeGenerator.h"
+#include "EdgeAttribute.h"
 
 namespace NetworKit {
 
 /**
  * An implementation of the triangle counting algorithm by Ortmann et al.
  */
-class TriangleCounter : public AttributeGenerator<int, int> {
+class TriangleCounter : public EdgeAttribute<count> {
+
+protected:
+	const Graph& G;
 
 public:
 
-	std::vector<int> getAttribute(const Graph& graph, const std::vector<int>& attribute);
+	TriangleCounter(const Graph& G);
+
+	std::vector<count> getAttribute();
 };
 
 } /* namespace NetworKit */
