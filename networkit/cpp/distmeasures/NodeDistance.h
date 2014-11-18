@@ -43,6 +43,12 @@ public:
 	 * The distance must be normed to return a distance between 0 and 1.
 	 */
 	virtual double distance(node u, node v) = 0;
+
+	/**
+	 * Returns the distances between all connected pairs of nodes.
+	 * @return Vector containing the distances between all connected pairs of nodes.
+	 */
+	virtual std::vector<double> distances() = 0;
 };
 
 } /* namespace NetworKit */

@@ -48,6 +48,12 @@ public:
 	 */
 	 virtual double distance(node u, node v);
 
+	 /**
+	  * Returns the extended algebraic distances between all connected nodes in the norm specified in the constructor.
+	  * @return Vector containing the extended algebraic distances between all connected pairs of nodes.
+	  */
+	 std::vector<double> AlgebraicDistance::distances() {
+
 protected:
 
 	count numSystems; //!< number of vectors/systems used for algebraic iteration
