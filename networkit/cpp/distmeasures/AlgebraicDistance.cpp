@@ -68,7 +68,7 @@ double AlgebraicDistance::distance(node u, node v) {
 	return result;
 }
 
-std::vector<double> AlgebraicDistance::distances() {
+std::vector<double> AlgebraicDistance::getEdgeAttribute() {
 	INFO("attributizing edges");
 	std::vector<double> ad(G.upperEdgeIdBound(), 0.0);
 

@@ -48,7 +48,7 @@ public:
 	 * Returns the distances between all connected pairs of nodes.
 	 * @return Vector containing the distances between all connected pairs of nodes.
 	 */
-	virtual std::vector<double> distances() = 0;
+	virtual std::vector<double> getEdgeAttribute() = 0;
 };
 
 } /* namespace NetworKit */
