@@ -45,6 +45,7 @@ Dy * GeneratorsTest.cpp
 #include "../../global/ClusteringCoefficient.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
+#include "../LFRGenerator.h"
 
 
 namespace NetworKit {
@@ -855,6 +856,20 @@ TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicUnitDiskGraphs) {
 		EXPECT_TRUE(G.checkConsistency());
 		k *= 2;
 	}
+}
+
+TEST_F(GeneratorsGTest, testLFRGenerator) {
+	LFRGenerator gen(1000, 20, 50, 0.5, -2, -1, 10, 50);
+	gen.run();
+	Graph G = gen.getMoveGraph();
+	EXPECT_EQ(1000, G.numberOfNodes());
+}
+
+TEST_F(GeneratorsGTest, testLFRGeneratorImpossibleSequence) {
+	LFRGenerator gen(1000, 35, 98, 0.5, -2, -3, 10, 50);
+	gen.run();
+	Graph G = gen.getMoveGraph();
+	EXPECT_EQ(1000, G.numberOfNodes());
 }
 
 } /* namespace NetworKit */
