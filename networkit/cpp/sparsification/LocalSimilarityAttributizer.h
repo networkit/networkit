@@ -8,7 +8,7 @@
 #ifndef LOCALSIMATTRIBUTIZER_H_
 #define LOCALSIMATTRIBUTIZER_H_
 
-#include "../edgeproperties/EdgeAttribute.h"
+#include "../edgeattributes/EdgeAttribute.h"
 
 namespace NetworKit {
 

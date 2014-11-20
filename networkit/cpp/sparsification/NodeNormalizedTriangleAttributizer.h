@@ -8,7 +8,7 @@
 #ifndef NODENORMALIZEDTRIANGLEATTRIBUTIZER_H
 #define NODENORMALIZEDTRIANGLEATTRIBUTIZER_H
 
-#include "../edgeproperties/EdgeAttribute.h"
+#include "../edgeattributes/EdgeAttribute.h"
 
 namespace NetworKit {
 

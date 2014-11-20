@@ -9,7 +9,7 @@
 
 #include "MultiscaleBackboneGTest.h"
 
-#include "../Backbones.h"
+#include "../Sparsifiers.h"
 #include "../MultiscaleAttributizer.h"
 
 
@@ -43,16 +43,18 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 
 	//Compare the backbone graph to the expected backbone.
 
-	MultiscaleBackbone backbone(0.5);
-	Graph b = backbone.calculate(g);
+	MultiscaleBackbone backbone(g, 0.5);
+	backbone.run();
+	Graph b = backbone.getGraph();
 
 	EXPECT_EQ(3, b.numberOfEdges());
 	EXPECT_TRUE(b.hasEdge(0, 4));
 	EXPECT_TRUE(b.hasEdge(0, 3));
 	EXPECT_TRUE(b.hasEdge(4, 5));
 
-	MultiscaleBackbone backbone2(0.3333);
-	b = backbone2.calculate(g);
+	MultiscaleBackbone backbone2(g, 0.3333);
+	backbone2.run();
+	b = backbone2.getGraph();
 	EXPECT_EQ(2, b.numberOfEdges());
 	EXPECT_TRUE(b.hasEdge(0, 4));
 	EXPECT_TRUE(b.hasEdge(0, 3));

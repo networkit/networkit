@@ -8,7 +8,7 @@
 #ifndef RANDOMEDGEATTRIBUTIZER_H
 #define RANDOMEDGEATTRIBUTIZER_H
 
-#include "../edgeproperties/EdgeAttribute.h"
+#include "../edgeattributes/EdgeAttribute.h"
 
 namespace NetworKit {
 

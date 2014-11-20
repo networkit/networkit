@@ -8,7 +8,7 @@
 #ifndef CHANCECORRECTEDTRIANGLEATTRIBUTIZER_H
 #define CHANCECORRECTEDTRIANGLEATTRIBUTIZER_H
 
-#include "../edgeproperties/EdgeAttribute.h"
+#include "../edgeattributes/EdgeAttribute.h"
 
 namespace NetworKit {
 

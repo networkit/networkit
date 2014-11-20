@@ -8,7 +8,7 @@
 #ifndef CHUNGLUATTRIBUTIZER_H
 #define CHUNGLUATTRIBUTIZER_H
 
-#include "../edgeproperties/EdgeAttribute.h"
+#include "../edgeattributes/EdgeAttribute.h"
 
 namespace NetworKit {
 

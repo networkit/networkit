@@ -8,7 +8,7 @@
 #ifndef SIMMELIANATTRIBUTIZER_H_
 #define SIMMELIANATTRIBUTIZER_H_
 
-#include "../edgeproperties/EdgeAttribute.h"
+#include "../edgeattributes/EdgeAttribute.h"
 #include <set>
 
 namespace NetworKit {

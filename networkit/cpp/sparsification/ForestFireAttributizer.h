@@ -8,7 +8,7 @@
 #ifndef FORESTFIREATTRIBUTIZER_H_
 #define FORESTFIREATTRIBUTIZER_H_
 
-#include "../edgeproperties/EdgeAttribute.h"
+#include "../edgeattributes/EdgeAttribute.h"
 
 namespace NetworKit {
 
