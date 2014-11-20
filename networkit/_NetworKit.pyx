@@ -4857,7 +4857,7 @@ cdef class ChibaNishizekiQuadrangleCounter:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/TriangleCounter.h":
+cdef extern from "cpp/edgeattributes/TriangleCounter.h":
 	cdef cppclass _TriangleCounter "NetworKit::TriangleCounter":
 		_TriangleCounter(const _Graph& G) except +
 		#void run() except +
@@ -4886,6 +4886,172 @@ cdef class TriangleCounter:
 
 	def getAttribute(self):
 		return self._this.getAttribute()
+	
+cdef extern from "cpp/edgeattributes/EdgeAttributeLinearizer.h":
+	cdef cppclass _EdgeAttributeLinearizer "NetworKit::EdgeAttributeLinearizer":
+		_EdgeAttributeLinearizer(const _Graph& G, vector[double] a, bool inverse) except +
+		vector[double] getAttribute() except +
+
+cdef class EdgeAttributeLinearizer:
+	"""
+	Linearize an attribute such that values are evenly distributed between 0 and 1.
+	
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	a : vector[double]
+		Edge attribute that shall be linearized.
+	"""
+	cdef _EdgeAttributeLinearizer* _this
+
+	def __cinit__(self, Graph G, vector[double] a, inverse = False):
+		self._this = new _EdgeAttributeLinearizer(G._this, a, inverse)
+	
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self):
+		"""
+		Gets the edge attribute that can be used for global filtering.
+		
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains the linearized attribute.
+
+		"""
+		return self._this.getAttribute()
+
+
+cdef extern from "cpp/edgeattributes/EdgeAttributeNormalizer.h":
+	cdef cppclass _EdgeAttributeNormalizer "NetworKit::EdgeAttributeNormalizer<double>":
+		_EdgeAttributeNormalizer(const _Graph&, const vector[double], bool inverse, double lower, double upper) except +
+		void run() except +
+		vector[double] getAttribute() except +
+
+cdef class EdgeAttributeNormalizer:
+	"""
+	Normalize an edge attribute such that it is in a certain range
+	"""
+	cdef _EdgeAttributeNormalizer *_this
+	cdef Graph _G
+	cdef vector[double] _inAttribute
+
+	def __cinit__(self, Graph G not None, vector[double] attribute, bool inverse = False, double lower = 0.0, double upper = 1.0):
+		self._inAttribute = move(attribute)
+		self._this = new _EdgeAttributeNormalizer(G._this, self._inAttribute, inverse, lower, upper)
+		self._G = G
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getAttribute(self):
+		return self._this.getAttribute()
+
+cdef extern from "cpp/edgeattributes/EdgeAttributeBlender.h":
+	cdef cppclass _EdgeAttributeBlender "NetworKit::EdgeAttributeBlender":
+		_EdgeAttributeBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool]&) except +
+		void run()
+		vector[double] getAttribute() except +
+
+cdef class EdgeAttributeBlender:
+	"""
+	Blends two attribute vectors, the value is chosen depending on the supplied boolean vector
+
+	Parameters
+	----------
+	G : Graph
+		The graph for which the attribute shall be blended
+	attribute0 : vector[double]
+		The first attribute (chosen for selection[eid] == false)
+	attribute1 : vector[double]
+		The second attribute (chosen for selection[eid] == true)
+	selection : vector[bool]
+		The selection vector
+	"""
+	cdef _EdgeAttributeBlender *_this
+	cdef Graph _G
+	cdef vector[double] _attribute0
+	cdef vector[double] _attribute1
+	cdef vector[bool] _selection
+
+	def __cinit__(self, Graph G not None, vector[double] attribute0, vector[double] attribute1, vector[bool] selection):
+		self._G = G
+		self._attribute0 = move(attribute0)
+		self._attribute1 = move(attribute1)
+		self._selection = move(selection)
+
+		self._this = new _EdgeAttributeBlender(G._this, self._attribute0, self._attribute1, self._selection)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getAttribute(self):
+		return self._this.getAttribute()
+
+
+cdef extern from "cpp/edgeattributes/GeometricMeanAttributizer.h":
+	cdef cppclass _GeometricMeanAttributizer "NetworKit::GeometricMeanAttributizer":
+		_GeometricMeanAttributizer(const _Graph& G, vector[double] a) except +
+		vector[double] getAttribute() except +
+
+cdef class GeometricMeanAttributizer:
+	"""
+	Normalizes the given edge attribute by the geometric average of the sum of the attributes of the incident edges of the incident nodes.
+	
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	a : vector[double]
+		Edge attribute that shall be normalized.
+	"""
+	cdef _GeometricMeanAttributizer* _this
+
+	def __cinit__(self, Graph G, vector[double] a):
+		self._this = new _GeometricMeanAttributizer(G._this, a)
+
+	def __dealloc__(self):
+		del self._this
+
+	#def run(self):
+		#self._this.run()
+		
+	def getAttribute(self):
+		"""
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains the normalized attribute.
+		"""
+		return self._this.getAttribute()
+
+cdef extern from "cpp/edgeattributes/EdgeAttributeAsWeight.h":
+	cdef cppclass _EdgeAttributeAsWeight "NetworKit::EdgeAttributeAsWeight":
+		_EdgeAttributeAsWeight(const _Graph& G, vector[double] a, bool squared, edgeweight offset, edgeweight factor) except +
+		_Graph calculate() except +
+
+cdef class EdgeAttributeAsWeight:
+	"""
+	Assigns the attribute as edge weight
+	"""
+
+	cdef _EdgeAttributeAsWeight* _this
+
+	def __cinit__(self, Graph G, vector[double] a, bool squared, edgeweight offset, edgeweight factor):
+		self._this = new _EdgeAttributeAsWeight(G._this, a, squared, offset, factor)
+
+	def getAttribute(self):
+		return Graph(0).setThis(self._this.calculate())
 
 # Module: distmeasures
 
@@ -4981,7 +5147,7 @@ cdef class SimmelianJaccardAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/SimmelianOverlapAttributizer.h":
+cdef extern from "cpp/sparsification/SimmelianOverlapAttributizer.h":
 	cdef cppclass _SimmelianOverlapAttributizer "NetworKit::SimmelianOverlapAttributizer":
 		_SimmelianOverlapAttributizer(const _Graph& G, vector[count] triangles, maxRank) except +
 		#void run() except +
@@ -4992,7 +5158,9 @@ cdef class SimmelianOverlapAttributizer:
 	cdef _SimmelianOverlapAttributizer* _this
 
 	def __cinit__(self, Graph G, vector[count] triangles, maxRank):
-		self._this = new _SimmelianOverlapAttributizer(G._this, triangles, maxRank)
+		self._test = None
+		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######
+		#self._this = new _SimmelianOverlapAttributizer(G._this, triangles, maxRank)
 
 	def __dealloc__(self):
 		del self._this
@@ -5003,7 +5171,7 @@ cdef class SimmelianOverlapAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/MultiscaleAttributizer.h":
+cdef extern from "cpp/sparsification/MultiscaleAttributizer.h":
 	cdef cppclass _MultiscaleAttributizer "NetworKit::MultiscaleAttributizer":
 		_MultiscaleAttributizer(const _Graph& G, vector[double] a) except +
 		#void run() except +
@@ -5025,7 +5193,7 @@ cdef class MultiscaleAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/RandomAttributizer.h":
+cdef extern from "cpp/sparsification/RandomAttributizer.h":
 	cdef cppclass _RandomAttributizer "NetworKit::RandomAttributizer":
 		_RandomAttributizer(const _Graph& G) except +
 		#void run() except +
@@ -5047,17 +5215,17 @@ cdef class RandomAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/LocalSimilarityAttributizer.h":
+cdef extern from "cpp/sparsification/LocalSimilarityAttributizer.h":
 	cdef cppclass _LocalSimilarityAttributizer "NetworKit::LocalSimilarityAttributizer":
-		_LocalSimilarityAttributizer(const _Graph& G) except +
+		_LocalSimilarityAttributizer(const _Graph& G, vector[count] triangles) except +
 		#void run() except +
 		vector[double] getAttribute() except +
 
 cdef class LocalSimilarityAttributizer:
 	cdef _LocalSimilarityAttributizer* _this
 
-	def __cinit__(self, Graph G):
-		self._this = new _LocalSimilarityAttributizer(G._this)
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._this = new _LocalSimilarityAttributizer(G._this, triangles)
 
 	def __dealloc__(self):
 		del self._this
@@ -5068,7 +5236,7 @@ cdef class LocalSimilarityAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/ForestFireAttributizer.h":
+cdef extern from "cpp/sparsification/ForestFireAttributizer.h":
 	cdef cppclass _ForestFireAttributizer "NetworKit::ForestFireAttributizer":
 		_ForestFireAttributizer(const _Graph& G, double pf, double tebr) except +
 		#void run() except +
@@ -5090,7 +5258,7 @@ cdef class ForestFireAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/LocalDegreeAttributizer.h":
+cdef extern from "cpp/sparsification/LocalDegreeAttributizer.h":
 	cdef cppclass _LocalDegreeAttributizer "NetworKit::LocalDegreeAttributizer":
 		_LocalDegreeAttributizer(const _Graph& G) except +
 		void run() except +
@@ -5112,18 +5280,18 @@ cdef class LocalDegreeAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/JaccardSimilarityAttributizer.h":
+cdef extern from "cpp/distmeasures/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
-		_JaccardDistance(const _Graph& G) except +
+		_JaccardDistance(const _Graph& G, vector[count] triangles) except +
 		#void run() except +
-		vector[double] getAttribute() except +
+		vector[double] getEdgeAttribute() except +
 
 cdef class JaccardSimilarityAttributizer:
 
 	cdef _JaccardDistance* _this
 
-	def __cinit__(self, Graph G):
-		self._this = new _JaccardDistance(G._this)
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._this = new _JaccardDistance(G._this, triangles)
 
 	def __dealloc__(self):
 		del self._this
@@ -5133,9 +5301,9 @@ cdef class JaccardSimilarityAttributizer:
 		
 	def getAttribute(self):
 		#convert distance to similarity
-		return map(lambda x: 1 - x, self._this.getAttribute())
+		return [1 - x for x in self._this.getEdgeAttribute()]
 
-cdef extern from "cpp/backbones/LocalFilterAttributizer.h":
+cdef extern from "cpp/sparsification/LocalFilterAttributizer.h":
 	cdef cppclass _LocalFilterAttributizerDouble "NetworKit::LocalFilterAttributizer<double>":
 		_LocalFilterAttributizerDouble(const _Graph& G, vector[double] a, bool logarithmic,  bool bothRequired) except +
 		inline vector[double] getAttribute() except +
@@ -5144,7 +5312,7 @@ cdef extern from "cpp/backbones/LocalFilterAttributizer.h":
 		_LocalFilterAttributizerInt(const _Graph& G, vector[double] a, bool logarithmic,  bothRequired) except +
 		inline vector[double] getAttribute() except +
 
-cdef extern from "cpp/backbones/RandomEdgeAttributizer.h":
+cdef extern from "cpp/sparsification/RandomEdgeAttributizer.h":
 	cdef cppclass _RandomEdgeAttributizer "NetworKit::RandomEdgeAttributizer":
 		_RandomEdgeAttributizer(const _Graph& G) except +
 		#void run() except +
@@ -5186,155 +5354,7 @@ cdef class LocalFilterAttributizer:
 		#else:
 		return self._thisDouble.getAttribute()
 
-cdef extern from "cpp/backbones/EdgeAttributeLinearizer.h":
-	cdef cppclass _EdgeAttributeLinearizer "NetworKit::EdgeAttributeLinearizer":
-		_EdgeAttributeLinearizer(const _Graph& G, vector[double] a, bool inverse) except +
-		vector[double] getAttribute() except +
-
-cdef class EdgeAttributeLinearizer:
-	"""
-	Linearize an attribute such that values are evenly distributed between 0 and 1.
-	
-	Parameters
-	----------
-	G : Graph
-		The input graph.
-	a : vector[double]
-		Edge attribute that shall be linearized.
-	"""
-	cdef _EdgeAttributeLinearizer* _this
-
-	def __cinit__(self, Graph G, vector[double] a, inverse = False):
-		self._this = new _EdgeAttributeLinearizer(G._this, a, inverse)
-	
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		"""
-		Gets the edge attribute that can be used for global filtering.
-		
-		Returns
-		-------
-		vector[double]
-			The edge attribute that contains the linearized attribute.
-
-		"""
-		return self._this.getAttribute()
-
-
-cdef extern from "cpp/backbones/EdgeAttributeNormalizer.h":
-	cdef cppclass _EdgeAttributeNormalizer "NetworKit::EdgeAttributeNormalizer<double>":
-		_EdgeAttributeNormalizer(const _Graph&, const vector[double], bool inverse, double lower, double upper) except +
-		void run() except +
-		vector[double] getAttribute() except +
-
-cdef class EdgeAttributeNormalizer:
-	"""
-	Normalize an edge attribute such that it is in a certain range
-	"""
-	cdef _EdgeAttributeNormalizer *_this
-	cdef Graph _G
-	cdef vector[double] _inAttribute
-
-	def __cinit__(self, Graph G not None, vector[double] attribute, bool inverse = False, double lower = 0.0, double upper = 1.0):
-		self._inAttribute = move(attribute)
-		self._this = new _EdgeAttributeNormalizer(G._this, self._inAttribute, inverse, lower, upper)
-		self._G = G
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		self._this.run()
-		return self
-
-	def getAttribute(self):
-		return self._this.getAttribute()
-
-cdef extern from "cpp/backbones/EdgeAttributeBlender.h":
-	cdef cppclass _EdgeAttributeBlender "NetworKit::EdgeAttributeBlender":
-		_EdgeAttributeBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool]&) except +
-		void run()
-		vector[double] getAttribute() except +
-
-cdef class EdgeAttributeBlender:
-	"""
-	Blends two attribute vectors, the value is chosen depending on the supplied boolean vector
-
-	Parameters
-	----------
-	G : Graph
-		The graph for which the attribute shall be blended
-	attribute0 : vector[double]
-		The first attribute (chosen for selection[eid] == false)
-	attribute1 : vector[double]
-		The second attribute (chosen for selection[eid] == true)
-	selection : vector[bool]
-		The selection vector
-	"""
-	cdef _EdgeAttributeBlender *_this
-	cdef Graph _G
-	cdef vector[double] _attribute0
-	cdef vector[double] _attribute1
-	cdef vector[bool] _selection
-
-	def __cinit__(self, Graph G not None, vector[double] attribute0, vector[double] attribute1, vector[bool] selection):
-		self._G = G
-		self._attribute0 = move(attribute0)
-		self._attribute1 = move(attribute1)
-		self._selection = move(selection)
-
-		self._this = new _EdgeAttributeBlender(G._this, self._attribute0, self._attribute1, self._selection)
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		self._this.run()
-		return self
-
-	def getAttribute(self):
-		return self._this.getAttribute()
-
-
-cdef extern from "cpp/backbones/GeometricMeanAttributizer.h":
-	cdef cppclass _GeometricMeanAttributizer "NetworKit::GeometricMeanAttributizer":
-		_GeometricMeanAttributizer(const _Graph& G, vector[double] a) except +
-		vector[double] getAttribute() except +
-
-cdef class GeometricMeanAttributizer:
-	"""
-	Normalizes the given edge attribute by the geometric average of the sum of the attributes of the incident edges of the incident nodes.
-	
-	Parameters
-	----------
-	G : Graph
-		The input graph.
-	a : vector[double]
-		Edge attribute that shall be normalized.
-	"""
-	cdef _GeometricMeanAttributizer* _this
-
-	def __cinit__(self, Graph G, vector[double] a):
-		self._this = new _GeometricMeanAttributizer(G._this, a)
-
-	def __dealloc__(self):
-		del self._this
-
-	#def run(self):
-		#self._this.run()
-		
-	def getAttribute(self):
-		"""
-		Returns
-		-------
-		vector[double]
-			The edge attribute that contains the normalized attribute.
-		"""
-		return self._this.getAttribute()
-
-cdef extern from "cpp/backbones/ChanceCorrectedTriangleAttributizer.h":
+cdef extern from "cpp/sparsification/ChanceCorrectedTriangleAttributizer.h":
 	cdef cppclass _ChanceCorrectedTriangleAttributizer "NetworKit::ChanceCorrectedTriangleAttributizer":
 		_ChanceCorrectedTriangleAttributizer(const _Graph& G, vector[count] triangles) except +
 		vector[double] getAttribute() except +
@@ -5370,7 +5390,7 @@ cdef class ChanceCorrectedTriangleAttributizer:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/NodeNormalizedTriangleAttributizer.h":
+cdef extern from "cpp/sparsification/NodeNormalizedTriangleAttributizer.h":
 	cdef cppclass _NodeNormalizedTriangleAttributizer "NetworKit::NodeNormalizedTriangleAttributizer":
 		_NodeNormalizedTriangleAttributizer(_Graph G, vector[count] triangles) except +
 		vector[double] getAttribute() except +
@@ -5406,7 +5426,7 @@ cdef class NodeNormalizedTriangleAttributizer:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/backbones/GlobalThresholdFilter.h":
+cdef extern from "cpp/sparsification/GlobalThresholdFilter.h":
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
 		_GlobalThresholdFilter(const _Graph& G, vector[double] a, double alpha, bool above) except +
 		_Graph calculate() except +
@@ -5422,21 +5442,3 @@ cdef class GlobalThresholdFilter:
 
 	def calculate(self):
 		return Graph().setThis(self._this.calculate())
-
-cdef extern from "cpp/backbones/EdgeAttributeAsWeight.h":
-	cdef cppclass _EdgeAttributeAsWeight "NetworKit::EdgeAttributeAsWeight":
-		_EdgeAttributeAsWeight(const _Graph& G, vector[double] a, bool squared, edgeweight offset, edgeweight factor) except +
-		_Graph calculate() except +
-
-cdef class EdgeAttributeAsWeight:
-	"""
-	Assigns the attribute as edge weight
-	"""
-
-	cdef _EdgeAttributeAsWeight* _this
-
-	def __cinit__(self, Graph G, vector[double] a, bool squared, edgeweight offset, edgeweight factor):
-		self._this = new _EdgeAttributeAsWeight(G._this, a, squared, offset, factor)
-
-	def getAttribute(self):
-		return Graph(0).setThis(self._this.calculate())

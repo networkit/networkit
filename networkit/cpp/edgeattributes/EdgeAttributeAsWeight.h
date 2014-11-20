@@ -15,11 +15,13 @@ namespace NetworKit {
 class EdgeAttributeAsWeight {
 
 public:
-	EdgeAttributeAsWeight(bool squared = false, edgeweight offset = 1, edgeweight factor = 1);
+	EdgeAttributeAsWeight(const Graph& graph, const std::vector<double>& attribute, bool squared = false, edgeweight offset = 1, edgeweight factor = 1);
 	virtual ~EdgeAttributeAsWeight() = default;
-	virtual Graph calculate(Graph &g, const std::vector<double> &attribute);
+	virtual Graph calculate();
 
 private:
+	const Graph& graph;
+	const std::vector<double>& attribute;
 	bool squared;
 	edgeweight offset;
 	edgeweight factor;
