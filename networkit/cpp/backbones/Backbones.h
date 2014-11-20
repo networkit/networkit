@@ -9,7 +9,6 @@
 #define BACKBONES_H_
 
 #include "../graph/Graph.h"
-#include "AttributeGenerator.h"
 
 namespace NetworKit {
 

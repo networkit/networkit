@@ -24,11 +24,11 @@ Graph SimmelianBackboneNonParametric::calculate(const Graph& g) {
 	ChibaNishizekiTriangleCounter triangleAttributizer(g);
 	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
-	SimmelianJaccardAttributizer jaccardAttributizer;
-	std::vector<double> jaccard = jaccardAttributizer.getAttribute(g, triangles);
+	SimmelianJaccardAttributizer jaccardAttributizer(g, triangles);
+	std::vector<double> jaccard = jaccardAttributizer.getAttribute();
 
-	GlobalThresholdFilter filter(threshold, true);
-	return filter.calculate(g, jaccard);
+	GlobalThresholdFilter filter(g, jaccard, threshold, true);
+	return filter.calculate();
 }
 
 /**
@@ -42,11 +42,11 @@ Graph SimmelianBackboneParametric::calculate(const Graph& g) {
 	ChibaNishizekiTriangleCounter triangleAttributizer(g);
 	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
-	SimmelianOverlapAttributizer overlapAttributizer(maxRank);
-	std::vector<double> overlap = overlapAttributizer.getAttribute(g, triangles);
+	SimmelianOverlapAttributizer overlapAttributizer(g, triangles, maxRank);
+	std::vector<double> overlap = overlapAttributizer.getAttribute();
 
-	GlobalThresholdFilter filter(minOverlap, true);
-	return filter.calculate(g, overlap);
+	GlobalThresholdFilter filter(g, overlap, minOverlap, true);
+	return filter.calculate();
 }
 
 /**
@@ -62,11 +62,11 @@ Graph MultiscaleBackbone::calculate(const Graph& g) {
 		weight[eid] = g.weight(u, v);
 	});
 
-	MultiscaleAttributizer multiscaleAttributizer;
-	std::vector<double> multiscale = multiscaleAttributizer.getAttribute(g, weight);
+	MultiscaleAttributizer multiscaleAttributizer(g, weight);
+	std::vector<double> multiscale = multiscaleAttributizer.getAttribute();
 
-	GlobalThresholdFilter filter(alpha, false);
-	return filter.calculate(g, multiscale);
+	GlobalThresholdFilter filter(g, multiscale, alpha, false);
+	return filter.calculate();
 }
 
 /**
@@ -77,13 +77,14 @@ LocalSimilarityBackbone::LocalSimilarityBackbone(double e) :
 		e(e) {}
 
 Graph LocalSimilarityBackbone::calculate(const Graph& g) {
-	LocalSimilarityAttributizer localSimAttributizer;
 	ChibaNishizekiTriangleCounter triangleCounter(g);
 	std::vector<count> triangles = triangleCounter.getAttribute();
-	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, triangles);
 
-	GlobalThresholdFilter filter(e, false);
-	return filter.calculate(g, minExponent);
+	LocalSimilarityAttributizer localSimAttributizer(g, triangles);
+	std::vector<double> minExponent = localSimAttributizer.getAttribute();
+
+	GlobalThresholdFilter filter(g, minExponent, e, false);
+	return filter.calculate();
 }
 
 /**
@@ -96,13 +97,13 @@ SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(double alpha) :
 Graph SimmelianMultiscaleBackbone::calculate(const Graph& g) {
 	ChibaNishizekiTriangleCounter triangleAttributizer(g);
 	std::vector<count> triangles = triangleAttributizer.getAttribute();
+	std::vector<double> triangles_d = std::vector<double>(triangles.begin(), triangles.end());
 
-	MultiscaleAttributizer multiscaleAttributizer;
-	std::vector<double> multiscale = multiscaleAttributizer.getAttribute(g,
-			std::vector<double>(triangles.begin(), triangles.end()));
+	MultiscaleAttributizer multiscaleAttributizer (g, triangles_d);
+	std::vector<double> multiscale = multiscaleAttributizer.getAttribute();
 
-	GlobalThresholdFilter filter(alpha, false);
-	return filter.calculate(g, multiscale);
+	GlobalThresholdFilter filter(g, multiscale, alpha, false);
+	return filter.calculate();
 }
 
 /**
@@ -113,11 +114,11 @@ RandomBackbone::RandomBackbone(double ratio) :
 		ratio(ratio) {}
 
 Graph RandomBackbone::calculate(const Graph& g) {
-	RandomAttributizer randomAttributizer (1.0);
-	std::vector<double> random = randomAttributizer.getAttribute(g, std::vector<double>(g.upperEdgeIdBound()));
+	RandomAttributizer randomAttributizer (g);
+	std::vector<double> random = randomAttributizer.getAttribute();
 
-	GlobalThresholdFilter filter(ratio, false);
-	return filter.calculate(g, random);
-} /* namespace NetworKit */
-
+	GlobalThresholdFilter filter(g, random, ratio, false);
+	return filter.calculate();
 }
+
+} /* namespace NetworKit */

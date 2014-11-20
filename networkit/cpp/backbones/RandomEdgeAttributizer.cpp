@@ -1,18 +1,22 @@
 /*
+ * RandomEdgeAttributizer.cpp
  *
+ *  Created on: 20.11.2014
+ *      Author: Michael Hamann
  */
 
 #include "RandomEdgeAttributizer.h"
 #include "../auxiliary/Random.h"
 
-NetworKit::RandomEdgeAttributizer::RandomEdgeAttributizer(double rneRatio) : rneRatio(rneRatio) {
+namespace NetworKit {
 
+RandomEdgeAttributizer::RandomEdgeAttributizer(const Graph& graph, double rneRatio) : graph(graph), rneRatio(rneRatio) {
 }
 
-std::vector< double > NetworKit::RandomEdgeAttributizer::getAttribute(const NetworKit::Graph &g, const std::vector< int > &attribute) {
-	Graph backbone = g;
+std::vector< double > RandomEdgeAttributizer::getAttribute() {
+	Graph backbone = graph;
 
-	std::vector<double> edgeAttribute(g.upperEdgeIdBound());
+	std::vector<double> edgeAttribute(graph.upperEdgeIdBound());
 
 	count numRemoved = 0;
 
@@ -33,7 +37,7 @@ std::vector< double > NetworKit::RandomEdgeAttributizer::getAttribute(const Netw
 				if (backbone.hasEdge(edge.first, edge.second)) {
 					edgeid id = backbone.edgeId(edge.first, edge.second);
 
-					edgeAttribute[id] = numRemoved * 1.0 / g.numberOfEdges();
+					edgeAttribute[id] = numRemoved * 1.0 / graph.numberOfEdges();
 
 					backbone.removeEdge(edge.first, edge.second);
 
@@ -46,7 +50,7 @@ std::vector< double > NetworKit::RandomEdgeAttributizer::getAttribute(const Netw
 
 			edgeid id = backbone.edgeId(edge.first, edge.second);
 
-			edgeAttribute[id] = numRemoved * 1.0 / g.numberOfEdges();
+			edgeAttribute[id] = numRemoved * 1.0 / graph.numberOfEdges();
 
 			backbone.removeEdge(edge.first, edge.second);
 
@@ -57,3 +61,4 @@ std::vector< double > NetworKit::RandomEdgeAttributizer::getAttribute(const Netw
 	return edgeAttribute;
 }
 
+} /* namespace NetworKit */

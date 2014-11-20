@@ -1,13 +1,26 @@
+/*
+ * ChangeCorrectedTriangleAttributizer.h
+ *
+ *  Created on: 20.11.2014
+ *      Author: Michael Hamann
+ */
+
 #ifndef CHANCECORRECTEDTRIANGLEATTRIBUTIZER_H
 #define CHANCECORRECTEDTRIANGLEATTRIBUTIZER_H
 
-#include "AttributeGenerator.h"
+#include "../edgeproperties/EdgeAttribute.h"
 
 namespace NetworKit {
 
-class ChanceCorrectedTriangleAttributizer : public AttributeGenerator<int, double> {
+class ChanceCorrectedTriangleAttributizer : public EdgeAttribute<double> {
+
 public:
-	virtual std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& triangles) override;
+	ChanceCorrectedTriangleAttributizer(const Graph& graph, const std::vector<count>& triangles);
+	virtual std::vector<double> getAttribute() override;
+
+private:
+	const Graph& graph;
+	const std::vector<count>& triangles;
 
 };
 

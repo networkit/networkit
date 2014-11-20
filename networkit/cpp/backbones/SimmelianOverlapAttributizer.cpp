@@ -10,11 +10,11 @@
 
 namespace NetworKit {
 
-SimmelianOverlapAttributizer::SimmelianOverlapAttributizer(count maxRank) :
-		maxRank(maxRank) {}
+SimmelianOverlapAttributizer::SimmelianOverlapAttributizer(const Graph& graph, const std::vector<count>& triangles, count maxRank) :
+		SimmelianAttributizer(graph, triangles), maxRank(maxRank) {}
 
-std::vector<double> SimmelianOverlapAttributizer::getAttribute(const Graph& graph, const std::vector<count>& attribute) {
-	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, attribute);
+std::vector<double> SimmelianOverlapAttributizer::getAttribute() {
+	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, triangles);
 	std::vector<double> overlapAttribute(graph.upperEdgeIdBound(), 0.0);
 
 	graph.parallelForEdges([&](node u, node v, edgeid eid) {

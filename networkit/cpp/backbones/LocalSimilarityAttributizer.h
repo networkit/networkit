@@ -8,7 +8,7 @@
 #ifndef LOCALSIMATTRIBUTIZER_H_
 #define LOCALSIMATTRIBUTIZER_H_
 
-#include "AttributeGenerator.h"
+#include "../edgeproperties/EdgeAttribute.h"
 
 namespace NetworKit {
 
@@ -47,18 +47,23 @@ struct greater {
 /**
  * Implementation of the Local Sparsification Algorithm by Sataluri et al.
  */
-class LocalSimilarityAttributizer : public AttributeGenerator<count, double> {
+class LocalSimilarityAttributizer : public EdgeAttribute<double> {
 
 public:
 
 	/**
 	 * Creates a new instance of the Local Sparsification algorithm.
 	 */
-	LocalSimilarityAttributizer();
+	LocalSimilarityAttributizer(const Graph &graph, const std::vector< count > &triangles);
 
-	std::vector<double> getAttribute(const NetworKit::Graph &graph, const std::vector< count > &triangles);
+	virtual std::vector<double> getAttribute() override;
+
+private:
+	const Graph& graph;
+	const std::vector<count>& triangles;
 };
 
 }
 /* namespace NetworKit */
+
 #endif /* LOCALSIMATTRIBUTIZER_H_ */

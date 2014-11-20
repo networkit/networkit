@@ -24,9 +24,9 @@ public:
 	 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
 	 * @param maxRank 		the maximum rank that is considered for overlap calculation
 	 */
-	SimmelianOverlapAttributizer(count maxRank);
+	SimmelianOverlapAttributizer(const Graph& graph, const std::vector<count>& attribute, count maxRank);
 	
-	std::vector<double> getAttribute(const Graph& graph, const std::vector<count>& attribute);
+	virtual std::vector<double> getAttribute() override;
 
 private:
 	count maxRank;

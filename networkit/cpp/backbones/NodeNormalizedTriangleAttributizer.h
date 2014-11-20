@@ -1,13 +1,27 @@
+/*
+ * NodeNormalizedTriangleAttributizer.h
+ *
+ *  Created on: 20.11.2014
+ *      Author: Michael Hamann
+ */
+
 #ifndef NODENORMALIZEDTRIANGLEATTRIBUTIZER_H
 #define NODENORMALIZEDTRIANGLEATTRIBUTIZER_H
 
-#include "AttributeGenerator.h"
+#include "../edgeproperties/EdgeAttribute.h"
 
 namespace NetworKit {
 
-class NodeNormalizedTriangleAttributizer : public AttributeGenerator<int, double> {
+class NodeNormalizedTriangleAttributizer : public EdgeAttribute<double> {
+
 public:
-	virtual std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& triangles) override;
+	NodeNormalizedTriangleAttributizer(const Graph& graph, const std::vector<count>& triangles);
+	virtual std::vector<double> getAttribute() override;
+
+private:
+	const Graph& graph;
+	const std::vector<count>& triangles;
+
 };
 
 } // namespace NetworKit

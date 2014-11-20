@@ -8,26 +8,26 @@
 #ifndef RANDOMATTRIBUTIZER_H_
 #define RANDOMATTRIBUTIZER_H_
 
-#include "AttributeGenerator.h"
+#include "../edgeproperties/EdgeAttribute.h"
 
 namespace NetworKit {
 
 /**
  * Generates a random edge attribute. Each edge is assigned a random value in [0,1].
  */
-class RandomAttributizer : public AttributeGenerator<double, double> {
+class RandomAttributizer : public EdgeAttribute<double> {
 
 public:
 
 	/**
 	 * Creates a new instance of the Random edge attributizer.
 	 */
-	RandomAttributizer(double randomness);
+	RandomAttributizer(const Graph& graph);
 
-	std::vector<double> getAttribute(const Graph& graph, const std::vector<double>& attribute);
+	virtual std::vector<double> getAttribute() override;
 
 private:
-	double randomness;
+	const Graph& graph;
 
 };
 

@@ -11,9 +11,9 @@
 
 namespace NetworKit {
 
-LocalSimilarityAttributizer::LocalSimilarityAttributizer() {}
+LocalSimilarityAttributizer::LocalSimilarityAttributizer(const Graph& graph, const std::vector<count>& triangles) : graph(graph), triangles(triangles) {}
 
-std::vector<double> LocalSimilarityAttributizer::getAttribute(const Graph& graph, const std::vector<count>& triangles) {
+std::vector<double> LocalSimilarityAttributizer::getAttribute() {
 	/*
 	 * For each edge, we calculate the minimum required sparsification exponent e
 	 * such that the edge is contained in the backbone.

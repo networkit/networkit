@@ -8,20 +8,22 @@
 #ifndef LOCALDEGREEATTRIBUTIZER_H_
 #define LOCALDEGREEATTRIBUTIZER_H_
 
-#include "AttributeGenerator.h"
+#include "../edgeproperties/EdgeAttribute.h"
 
 namespace NetworKit {
 
 /**
  * EXPERIMENTAL
  */
-class LocalDegreeAttributizer : public AttributeGenerator<int, double> {
+class LocalDegreeAttributizer : public EdgeAttribute<double> {
 
 public:
 
-	LocalDegreeAttributizer();
+	LocalDegreeAttributizer(const Graph& graph);
+	virtual std::vector<double> getAttribute() override;
 
-	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
+private:
+	const Graph& graph;
 
 };
 

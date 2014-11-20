@@ -8,22 +8,23 @@
 #ifndef FORESTFIREATTRIBUTIZER_H_
 #define FORESTFIREATTRIBUTIZER_H_
 
-#include "AttributeGenerator.h"
+#include "../edgeproperties/EdgeAttribute.h"
 
 namespace NetworKit {
 
 /**
  * Experimental
  */
-class ForestFireAttributizer : public AttributeGenerator<int, double> {
+class ForestFireAttributizer : public EdgeAttribute<double> {
 
 public:
 
-	ForestFireAttributizer(double pf, double targetBurntRatio);
+	ForestFireAttributizer(const Graph& graph, double pf, double targetBurntRatio);
 	
-	std::vector<double> getAttribute(const Graph& graph, const std::vector<int>& attribute);
+	virtual std::vector<double> getAttribute() override;
 
 private:
+	const Graph& graph;
 	double pf;
 	double targetBurntRatio;
 

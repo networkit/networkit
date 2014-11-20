@@ -42,8 +42,8 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 	ChibaNishizekiTriangleCounter counter(G);
 	std::vector<count> counts = counter.getAttribute();
 
-	SimmelianOverlapAttributizer attributizer(10);
-	auto attribute = attributizer.getAttribute(G, counts);
+	SimmelianOverlapAttributizer attributizer(G, counts, 10);
+	auto attribute = attributizer.getAttribute();
 
 	runtime.stop();
 	INFO("[DONE] completeGraphSimmelianBackboneParametric (" , runtime.elapsed().count() , " ms)");
@@ -62,8 +62,8 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 	ChibaNishizekiTriangleCounter counter(G);
 	std::vector<count> counts = counter.getAttribute();
 
-	SimmelianJaccardAttributizer attributizer;
-	auto attribute = attributizer.getAttribute(G, counts);
+	SimmelianJaccardAttributizer attributizer(G, counts);
+	auto attribute = attributizer.getAttribute();
 
 	runtime.stop();
 	INFO("[DONE] SimmelianBackboneNonParametric (" , runtime.elapsed().count() , " ms)");
@@ -79,12 +79,13 @@ TEST_F(BackboneBenchmark, completeGraphMultiscaleBackbone) {
 
 	runtime.start();
 
-	MultiscaleAttributizer attributizer;
 	std::vector<double> weight(G.upperEdgeIdBound());
 	G.forEdges([&](node u, node v, edgeid eid) {
 		weight[eid] = G.weight(u, v);
 	});
-	auto attribute = attributizer.getAttribute(G, weight);
+
+	MultiscaleAttributizer attributizer(G, weight);
+	auto attribute = attributizer.getAttribute();
 
 	runtime.stop();
 	INFO("[DONE] MultiscaleBackbone (" , runtime.elapsed().count() , " ms)");
@@ -100,8 +101,11 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 
 	runtime.start();
 
-	LocalSimilarityAttributizer attributizer;
-	auto attribute = attributizer.getAttribute(G, std::vector<count>());
+	ChibaNishizekiTriangleCounter counter(G);
+	std::vector<count> triangles = counter.getAttribute();
+
+	LocalSimilarityAttributizer attributizer(G, triangles);
+	auto attribute = attributizer.getAttribute();
 
 	runtime.stop();
 	INFO("[DONE] LocalSimilarityBackbone (" , runtime.elapsed().count() , " ms)");
@@ -148,60 +152,60 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Multiscale
 	std::cout << "[BEGIN] multiscale attribute: " << std::endl;
 	runtime.start();
-	MultiscaleAttributizer multiscaleAttributizer;
-	std::vector<double> multiscale = multiscaleAttributizer.getAttribute(g, std::vector<double>(triangles.begin(), triangles.end()));
+	MultiscaleAttributizer multiscaleAttributizer(g, std::vector<double>(triangles.begin(), triangles.end()));
+	std::vector<double> multiscale = multiscaleAttributizer.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] multiscale attribute " << runtime.elapsedTag() << std::endl;
 
 	std::cout << "[BEGIN] global filter (multiscale attribute): " << std::endl;
 	runtime.start();
-	GlobalThresholdFilter filter(0.5, false);
-	Graph b = filter.calculate(g, multiscale);
+	GlobalThresholdFilter filter(g, multiscale, 0.5, false);
+	Graph b = filter.calculate();
 	runtime.stop();
 	std::cout << "[DONE] global filter (multiscale attribute) " << runtime.elapsedTag() << std::endl;
 
 	// --------- Simmelian Backbone (Jaccard)
 	std::cout << "[BEGIN] Simmelian Jaccard attribute: " << std::endl;
 	runtime.start();
-	SimmelianJaccardAttributizer jaccardAttributizer;
-	std::vector<double> jaccard = jaccardAttributizer.getAttribute(g, triangles);
+	SimmelianJaccardAttributizer jaccardAttributizer(g, triangles);
+	std::vector<double> jaccard = jaccardAttributizer.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] Simmelian Jaccard attribute " << runtime.elapsedTag() << std::endl;
 
 	std::cout << "[BEGIN] global filter (simmelian jaccard attribute): " << std::endl;
 	runtime.start();
-	filter = GlobalThresholdFilter(0.5, true);
-	b = filter.calculate(g, jaccard);
+	GlobalThresholdFilter filter2(g, jaccard, 0.5, true);
+	b = filter2.calculate();
 	runtime.stop();
 	std::cout << "[DONE] global filter (simmelian jaccard attribute) " << runtime.elapsedTag() << std::endl;
 
 	// --------- Simmelian Backbone (Overlap)
 	std::cout << "[BEGIN] Simmelian Overlap attribute: " << std::endl;
 	runtime.start();
-	SimmelianOverlapAttributizer overlapAttributizer(10);
-	std::vector<double> overlap = overlapAttributizer.getAttribute(g, triangles);
+	SimmelianOverlapAttributizer overlapAttributizer(g, triangles, 10);
+	std::vector<double> overlap = overlapAttributizer.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] Simmelian Overlap attribute " << runtime.elapsedTag() << std::endl;
 
 	std::cout << "[BEGIN] global filter (simmelian overlap attribute): " << std::endl;
 	runtime.start();
-	filter = GlobalThresholdFilter(5, true);
-	b = filter.calculate(g, overlap);
+	GlobalThresholdFilter filter3(g, overlap, 5, true);
+	b = filter3.calculate();
 	runtime.stop();
 	std::cout << "[DONE] global filter (simmelian overlap attribute) " << runtime.elapsedTag() << std::endl;
 
 	// --------- Local similarity Backbone
 	std::cout << "[BEGIN] Local Similarity attribute: " << std::endl;
 	runtime.start();
-	LocalSimilarityAttributizer localSimAttributizer;
-	std::vector<double> minExponent = localSimAttributizer.getAttribute(g, triangles);
+	LocalSimilarityAttributizer localSimAttributizer(g, triangles);
+	std::vector<double> minExponent = localSimAttributizer.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] Local Similarity attribute " << runtime.elapsedTag() << std::endl;
 
 	std::cout << "[BEGIN] global filter (local similarity attribute): " << std::endl;
 	runtime.start();
-	filter = GlobalThresholdFilter(0.37, true);
-	b = filter.calculate(g, minExponent);
+	GlobalThresholdFilter filter4 (g, minExponent, 0.37, true);
+	b = filter4.calculate();
 	runtime.stop();
 	std::cout << "[DONE] global filter (local similarity attribute) " << runtime.elapsedTag() << std::endl;
 }
