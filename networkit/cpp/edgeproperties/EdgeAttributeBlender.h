@@ -9,17 +9,19 @@
 #define EDGEATTRIBUTEBLENDER_H
 
 #include "../graph/Graph.h"
+#include "EdgeAttribute.h"
 
 namespace NetworKit {
 
-class EdgeAttributeBlender {
+class EdgeAttributeBlender : public EdgeAttribute<double> {
 
 public:
+
 	EdgeAttributeBlender(const Graph &G, const std::vector<double> &attribute0, const std::vector<double> &attribute1, const std::vector<bool> &selection);
 
 	void run();
 
-	std::vector<double> getAttribute();
+	virtual std::vector<double> getAttribute() override;
 
 private:
 	const Graph &G;

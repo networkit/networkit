@@ -25,7 +25,7 @@ public:
 
 	ChibaNishizekiTriangleCounter(const Graph& G);
 
-	std::vector<count> getAttribute();
+	virtual std::vector<count> getAttribute() override;
 };
 
 } /* namespace NetworKit */
