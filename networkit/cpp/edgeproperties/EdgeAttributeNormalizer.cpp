@@ -1,34 +1,20 @@
-#ifndef ATTRIBUTENORMALIZER_H
-#define ATTRIBUTENORMALIZER_H
+/*
+ * EdgeAttributeNormalizer.cpp
+ *
+ *  Created on: 18.11.2014
+ *      Author: Michael Hamann
+ */
 
-#include "../graph/Graph.h"
+#include "EdgeAttributeNormalizer.h"
 
 namespace NetworKit {
 
-template <typename A>
-class AttributeNormalizer {
-public:
-	AttributeNormalizer(const Graph &G, const std::vector<A> &attribute, bool invert = false, double lower = 0, double upper = 1.0) :
+template<typename A>
+EdgeAttributeNormalizer<A>::EdgeAttributeNormalizer(const Graph &G, const std::vector<A> &attribute, bool invert, double lower, double upper) :
 		G(G), input(attribute), hasOutput(false), invert(invert), lower(lower), upper(upper) {};
 
-	void run();
-
-	std::vector<double> getAttribute() {
-		if (!hasOutput) throw std::runtime_error("Error: Run must called first");
-
-		hasOutput = false;
-		return std::move(output);
-	}
-private:
-	const Graph &G;
-	const std::vector<A> &input;
-	std::vector<double> output;
-	bool hasOutput, invert;
-	double lower, upper;
-};
-
 template <typename A>
-void AttributeNormalizer<A>::run() {
+void EdgeAttributeNormalizer<A>::run() {
 	A minValue = std::numeric_limits< A >::max();
 	A maxValue = std::numeric_limits< A >::lowest();
 
@@ -58,6 +44,12 @@ void AttributeNormalizer<A>::run() {
 	hasOutput = true;
 }
 
+template <typename A>
+std::vector<double> EdgeAttributeNormalizer<A>::getAttribute() {
+	if (!hasOutput) throw std::runtime_error("Error: Run must be called first");
+
+	hasOutput = false;
+	return std::move(output);
 }
 
-#endif // ATTRIBUTENORMALIZER_H
+} /* namespace NetworKit */
