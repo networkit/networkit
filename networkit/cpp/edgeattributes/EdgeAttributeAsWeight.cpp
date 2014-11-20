@@ -9,18 +9,19 @@
 
 namespace NetworKit {
 
-EdgeAttributeAsWeight::EdgeAttributeAsWeight(bool squared, edgeweight offset, edgeweight factor) : squared(squared), offset(offset), factor(factor) {
+EdgeAttributeAsWeight::EdgeAttributeAsWeight(const Graph& graph, const std::vector<double>& attribute, bool squared, edgeweight offset, edgeweight factor) :
+		graph(graph), attribute(attribute), squared(squared), offset(offset), factor(factor) {
 }
 
-Graph EdgeAttributeAsWeight::calculate(Graph &g, const std::vector<double> &attribute) {
-	Graph result(g, true, false);
+Graph EdgeAttributeAsWeight::calculate() {
+	Graph result(graph, true, false);
 
 	if (squared) {
-		g.parallelForEdges([&](node u, node v, edgeid eid) {
+		graph.parallelForEdges([&](node u, node v, edgeid eid) {
 			result.setWeight(u, v, offset + factor * attribute[eid] * attribute[eid]);
 		});
 	} else {
-		g.parallelForEdges([&](node u, node v, edgeid eid) {
+		graph.parallelForEdges([&](node u, node v, edgeid eid) {
 			result.setWeight(u, v, offset + factor * attribute[eid]);
 		});
 	}
