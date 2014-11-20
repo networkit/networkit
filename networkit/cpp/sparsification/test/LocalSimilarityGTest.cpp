@@ -9,9 +9,8 @@
 
 #include "LocalSimilarityGTest.h"
 
-#include "../Backbones.h"
 #include "../LocalSimilarityAttributizer.h"
-#include "../../edgeproperties/ChibaNishizekiTriangleCounter.h"
+#include "../../edgeattributes/ChibaNishizekiTriangleCounter.h"
 
 
 namespace NetworKit {

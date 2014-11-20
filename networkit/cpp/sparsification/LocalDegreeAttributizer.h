@@ -8,7 +8,7 @@
 #ifndef LOCALDEGREEATTRIBUTIZER_H_
 #define LOCALDEGREEATTRIBUTIZER_H_
 
-#include "../edgeproperties/EdgeAttribute.h"
+#include "../edgeattributes/EdgeAttribute.h"
 
 namespace NetworKit {
 

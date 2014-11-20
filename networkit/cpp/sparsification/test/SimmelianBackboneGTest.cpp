@@ -9,9 +9,9 @@
 
 #include "SimmelianBackboneGTest.h"
 
-#include "../Backbones.h"
+#include "../Sparsifiers.h"
 #include "../SimmelianJaccardAttributizer.h"
-#include "../../edgeproperties/ChibaNishizekiTriangleCounter.h"
+#include "../../edgeattributes/ChibaNishizekiTriangleCounter.h"
 #include "../../graph/GraphGenerator.h"
 
 namespace NetworKit {
@@ -166,8 +166,9 @@ TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {
 	g.addEdge(5,1);
 	g.indexEdges();
 
-	SimmelianBackboneParametric simmel(2, 1);
-	Graph b = simmel.calculate(g);
+	SimmelianBackboneParametric simmel(g, 2, 1);
+	simmel.run();
+	Graph b = simmel.getGraph();
 
 	EXPECT_EQ(20, b.numberOfEdges());
 
@@ -191,8 +192,9 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 	g.indexEdges();
 
 	//Parametric
-	SimmelianBackboneParametric simmel(1, 0);
-	Graph b = simmel.calculate(g);
+	SimmelianBackboneParametric simmel(g, 1, 0);
+	simmel.run();
+	Graph b = simmel.getGraph();
 	EXPECT_EQ(3, b.numberOfEdges()) << "wrong edge count in backbone";
 	EXPECT_EQ(5, b.numberOfNodes()) << "wrong node count in backbone";
 }
@@ -203,8 +205,9 @@ TEST_F(SimmelianBackboneGTest, testBackboneConnectedGraph) {
 	g.indexEdges();
 
 	//Parametric
-	SimmelianBackboneParametric simmel(25, 5);
-	Graph b = simmel.calculate(g);
+	SimmelianBackboneParametric simmel(g, 25, 5);
+	simmel.run();
+	Graph b = simmel.getGraph();
 	EXPECT_EQ(300, b.numberOfEdges()) << "wrong edge count in backbone";
 }
 
