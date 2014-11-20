@@ -1,10 +1,18 @@
 /*
+ * NodeNormalizedTriangleAttributizer.h
  *
+ *  Created on: 20.11.2014
+ *      Author: Michael Hamann
  */
 
 #include "NodeNormalizedTriangleAttributizer.h"
 
-std::vector< double > NetworKit::NodeNormalizedTriangleAttributizer::getAttribute(const NetworKit::Graph &graph, const std::vector< int > &triangles) {
+namespace NetworKit {
+
+NodeNormalizedTriangleAttributizer::NodeNormalizedTriangleAttributizer(const Graph& graph, const std::vector<count>& triangles) : graph(graph), triangles(triangles) {
+};
+
+std::vector< double > NodeNormalizedTriangleAttributizer::getAttribute() {
 	std::vector<double> averageTrianglesPerNode(graph.upperNodeIdBound());
 
 	graph.balancedParallelForNodes([&](node u) {
@@ -30,4 +38,6 @@ std::vector< double > NetworKit::NodeNormalizedTriangleAttributizer::getAttribut
 	});
 	
 	return result;
+}
+
 }

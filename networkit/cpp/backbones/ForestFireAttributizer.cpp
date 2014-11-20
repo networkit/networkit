@@ -13,9 +13,9 @@
 
 namespace NetworKit {
 
-ForestFireAttributizer::ForestFireAttributizer(double pf, double targetBurntRatio): pf(pf), targetBurntRatio(targetBurntRatio) {}
+ForestFireAttributizer::ForestFireAttributizer(const Graph& graph, double pf, double targetBurntRatio): graph(graph), pf(pf), targetBurntRatio(targetBurntRatio) {}
 
-std::vector<double> ForestFireAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
+std::vector<double> ForestFireAttributizer::getAttribute() {
 
 	std::vector<count> burnt (graph.upperEdgeIdBound(), 0);
 	count edgesBurnt = 0;

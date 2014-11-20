@@ -10,10 +10,10 @@
 
 namespace NetworKit {
 
-GlobalThresholdFilter::GlobalThresholdFilter(double threshold, bool above) :
-		threshold(threshold), above(above) {}
+GlobalThresholdFilter::GlobalThresholdFilter(const Graph& graph, const std::vector<double>& attribute, const double threshold, bool above) :
+		graph(graph), attribute(attribute), threshold(threshold), above(above) {}
 
-Graph GlobalThresholdFilter::calculate(const Graph& graph, const std::vector<double>& attribute) {
+Graph GlobalThresholdFilter::calculate() {
 	//Create an edge-less backbone graph.
 	GraphBuilder builder(graph.upperNodeIdBound(), false, false, true);
 

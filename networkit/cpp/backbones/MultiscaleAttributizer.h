@@ -8,7 +8,7 @@
 #ifndef MULTISCALEATTRIBUTIZER_H_
 #define MULTISCALEATTRIBUTIZER_H_
 
-#include "AttributeGenerator.h"
+#include "../edgeproperties/EdgeAttribute.h"
 
 namespace NetworKit {
 
@@ -19,20 +19,21 @@ namespace NetworKit {
  *
  * See "Extracting the multiscale backbone of complex weighted networks" by Serrano et al.
  */
-class MultiscaleAttributizer : public AttributeGenerator<double, double> {
+class MultiscaleAttributizer : public EdgeAttribute<double> {
 
 public:
 
-	/**
-	 * Creates a new instance of the Multiscale attributizer.
-	 */
-	MultiscaleAttributizer();
-	
-	std::vector<double> getAttribute(const Graph& graph, const std::vector<double>& attribute);
-
+	MultiscaleAttributizer(const Graph& graph, const std::vector<double>& attribute);
+	virtual std::vector<double> getAttribute() override;
 	double getProbability(count degree, edgeweight normalizedWeight);
+
+private:
+	const Graph& graph;
+	const std::vector<double>& attribute;
+
 };
 
 }
 /* namespace NetworKit */
-#endif /* SIMMELIANBACKBONE_H_ */
+
+#endif /* MULTISCALEATTRIBUTIZER_H_ */

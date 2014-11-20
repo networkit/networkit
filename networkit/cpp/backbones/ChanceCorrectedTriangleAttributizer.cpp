@@ -1,10 +1,18 @@
 /*
+ * ChangeCorrectedTriangleAttributizer.cpp
  *
+ *  Created on: 20.11.2014
+ *      Author: Michael Hamann
  */
 
 #include "ChanceCorrectedTriangleAttributizer.h"
 
-std::vector< double > NetworKit::ChanceCorrectedTriangleAttributizer::getAttribute(const NetworKit::Graph &graph, const std::vector< int > &triangles) {
+namespace NetworKit {
+
+ChanceCorrectedTriangleAttributizer::ChanceCorrectedTriangleAttributizer(const Graph& graph, const std::vector<count>& triangles) : graph(graph), triangles(triangles) {
+}
+
+std::vector< double > ChanceCorrectedTriangleAttributizer::getAttribute() {
 	std::vector<double> result(graph.upperEdgeIdBound(), 0);
 	
 	graph.parallelForEdges([&](node u, node v, edgeid eid) {
@@ -17,3 +25,5 @@ std::vector< double > NetworKit::ChanceCorrectedTriangleAttributizer::getAttribu
 	
 	return result;
 }
+
+} /* namespace NetworKit */

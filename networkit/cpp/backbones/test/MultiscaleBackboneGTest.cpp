@@ -26,7 +26,7 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 	g.setWeight(3, 5, 0.5);
 	g.indexEdges();
 
-	MultiscaleAttributizer attributizer;
+	MultiscaleAttributizer attributizer(g, std::vector<double>());
 	EXPECT_NEAR(0.0878244, attributizer.getProbability(4, 0.5555), 1e-5) << "faulty probability calculation";
 	/**
 	 * a01 = 0.91896

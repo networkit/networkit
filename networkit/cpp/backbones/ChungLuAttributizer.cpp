@@ -1,15 +1,22 @@
 /*
+ * ChungLuAttributizer.cpp
  *
+ *  Created on: 20.11.2014
+ *      Author: Michael Hamann
  */
 
 #include "ChungLuAttributizer.h"
 
-std::vector< double > NetworKit::ChungLuAttributizer::getAttribute(const NetworKit::Graph &g, const std::vector< int > &attribute) {
-	std::vector< double > result(g.upperEdgeIdBound());
+namespace NetworKit {
+
+std::vector< double > ChungLuAttributizer::getAttribute() {
+	std::vector< double > result(graph.upperEdgeIdBound());
 	
-	g.parallelForEdges([&](node u, node v, edgeid eid) {
-		result[eid] = 1.0 / (g.degree(u) * g.degree(v));
+	graph.parallelForEdges([&](node u, node v, edgeid eid) {
+		result[eid] = 1.0 / (graph.degree(u) * graph.degree(v));
 	});
 	
 	return result;
 }
+
+} /* namespace NetworKit */

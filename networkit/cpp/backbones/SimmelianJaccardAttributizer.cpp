@@ -10,10 +10,11 @@
 
 namespace NetworKit {
 
-SimmelianJaccardAttributizer::SimmelianJaccardAttributizer() {}
+SimmelianJaccardAttributizer::SimmelianJaccardAttributizer(const Graph& graph, const std::vector<count>& triangles) : SimmelianAttributizer(graph, triangles) {
+}
 
-std::vector<double> SimmelianJaccardAttributizer::getAttribute(const Graph& graph, const std::vector<count>& attribute) {
-	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, attribute);
+std::vector<double> SimmelianJaccardAttributizer::getAttribute() {
+	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, triangles);
 	std::vector<double> jaccardAttribute(graph.upperEdgeIdBound(), 1.0);
 
 	graph.parallelForEdges([&](node u, node v, edgeid eid) {

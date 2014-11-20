@@ -22,12 +22,13 @@ public:
 	/**
 	 * Creates a new instance of the non-parametric (jaccard) variant of the Simmelian Backbone calculator.
 	 */
-	SimmelianJaccardAttributizer();
+	SimmelianJaccardAttributizer(const Graph& graph, const std::vector<count>& triangles);
 
-	std::vector<double> getAttribute(const Graph& graph, const std::vector<count>& attribute);
+	virtual std::vector<double> getAttribute() override;
 
 };
 
 }
 /* namespace NetworKit */
+
 #endif /* SIMMELIANJACCARDATTRIBUTIZER_H_ */

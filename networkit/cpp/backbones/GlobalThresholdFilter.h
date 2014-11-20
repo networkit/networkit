@@ -25,11 +25,13 @@ public:
 	 * @param above			if set to true, edge attribute needs to be above or equal to the threshold.
 	 * 						If set to false, edge attribute needs to be below or equal to the threshold.
 	 */
-	GlobalThresholdFilter(double threshold, bool above);
+	GlobalThresholdFilter(const Graph& graph, const std::vector<double>& attribute, double threshold, bool above);
 
-	Graph calculate(const Graph& graph, const std::vector<double>& attribute);
+	Graph calculate();
 
 private:
+	const Graph& graph;
+	const std::vector<double>& attribute;
 	double threshold;
 	bool above;
 

@@ -10,9 +10,10 @@
 
 namespace NetworKit {
 
-LocalDegreeAttributizer::LocalDegreeAttributizer() {}
+LocalDegreeAttributizer::LocalDegreeAttributizer(const Graph& graph) : graph(graph) {
+}
 
-std::vector<double> LocalDegreeAttributizer::getAttribute(const Graph& graph, const std::vector<int>& attribute) {
+std::vector<double> LocalDegreeAttributizer::getAttribute() {
 	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forNodes([&](node i) {
