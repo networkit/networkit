@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-SimmelianOverlapAttributizer::SimmelianOverlapAttributizer(const Graph& graph, const std::vector<count>& triangles, count maxRank) :
+SimmelianOverlapAttributizer::SimmelianOverlapAttributizer(const Graph& graph, const std::vector<int>& triangles, count maxRank) :
 		SimmelianAttributizer(graph, triangles), maxRank(maxRank) {}
 
 std::vector<double> SimmelianOverlapAttributizer::getAttribute() {

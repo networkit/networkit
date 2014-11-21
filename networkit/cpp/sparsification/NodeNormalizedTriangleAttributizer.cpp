@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-NodeNormalizedTriangleAttributizer::NodeNormalizedTriangleAttributizer(const Graph& graph, const std::vector<count>& triangles) : graph(graph), triangles(triangles) {
+NodeNormalizedTriangleAttributizer::NodeNormalizedTriangleAttributizer(const Graph& graph, const std::vector<int>& triangles) : graph(graph), triangles(triangles) {
 };
 
 std::vector< double > NodeNormalizedTriangleAttributizer::getAttribute() {

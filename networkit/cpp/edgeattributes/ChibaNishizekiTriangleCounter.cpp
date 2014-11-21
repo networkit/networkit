@@ -14,7 +14,7 @@ namespace NetworKit {
 ChibaNishizekiTriangleCounter::ChibaNishizekiTriangleCounter(const Graph& G) : G(G) {
 }
 
-std::vector<count> ChibaNishizekiTriangleCounter::getAttribute() {
+std::vector<int> ChibaNishizekiTriangleCounter::getAttribute() {
 	std::vector<std::vector<std::pair<node, edgeid> > > edges(G.upperNodeIdBound());
 
 	// copy edges with edge ids
@@ -29,7 +29,7 @@ std::vector<count> ChibaNishizekiTriangleCounter::getAttribute() {
 	std::vector<edgeid> nodeMarker(G.upperNodeIdBound(), none);
 
 	//Edge attribute: triangle count
-	std::vector<count> triangleCount(G.upperEdgeIdBound(), 0);
+	std::vector<int> triangleCount(G.upperEdgeIdBound(), 0);
 
 	// bucket sort
 	count n = G.numberOfNodes();

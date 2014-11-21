@@ -22,19 +22,13 @@ namespace NetworKit {
  */
 class JaccardDistance: public NetworKit::NodeDistance {
 
-protected:
-	const std::vector<count>& triangles;
-	std::vector<double> jDistance; //result vector
-
-	inline double getJaccardDistance(count degU, count degV, count t);
-
 public:
 
 	/**
 	 * @param G The graph.
 	 * @param triangles Edge attribute containing the number of triangles each edge is contained in.
 	 */
-	JaccardDistance(const Graph& G, const std::vector<count>& triangles);
+	JaccardDistance(const Graph& G, const std::vector<int>& triangles);
 
 	/**
 	 * REQ: Needs to be called before getEdgeAttribute delivers meaningful results.
@@ -52,6 +46,12 @@ public:
 	 * @return Vector containing the Jaccard distances between all connected pairs of nodes.
 	 */
 	std::vector<double> getEdgeAttribute();
+
+protected:
+	const std::vector<int>& triangles;
+	std::vector<double> jDistance; //result vector
+
+	inline double getJaccardDistance(count degU, count degV, count t);
 
 };
 

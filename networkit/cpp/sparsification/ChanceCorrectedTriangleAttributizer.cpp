@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-ChanceCorrectedTriangleAttributizer::ChanceCorrectedTriangleAttributizer(const Graph& graph, const std::vector<count>& triangles) : graph(graph), triangles(triangles) {
+ChanceCorrectedTriangleAttributizer::ChanceCorrectedTriangleAttributizer(const Graph& graph, const std::vector<int>& triangles) : graph(graph), triangles(triangles) {
 }
 
 std::vector< double > ChanceCorrectedTriangleAttributizer::getAttribute() {
