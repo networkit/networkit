@@ -23,6 +23,11 @@ storePreds(storePredecessors), epsilon(epsilon), delta(delta) {
 }
 
 
+count DynApproxBetweenness::getNumberOfSamples() {
+    return r;
+}
+
+
 void DynApproxBetweenness::run() {
     scoreData.clear();
     scoreData.resize(G.upperNodeIdBound());

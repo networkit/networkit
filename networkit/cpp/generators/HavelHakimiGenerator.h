@@ -33,7 +33,7 @@ public:
 	 *            Default value is false. Set ONLY to true if you are certain that the
 	 *            sequence is realizable.
 	 */
-	HavelHakimiGenerator(const std::vector<unsigned int>& sequence, bool skipTest = false);
+	HavelHakimiGenerator(const std::vector<count>& sequence, bool skipTest = false);
 
 	/**
 	 * Generates degree sequence seq (if it is realizable).
