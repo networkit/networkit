@@ -30,7 +30,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 	neighbors[1].push_back(RankedEdge(1,4,2,2));
 	neighbors[1].push_back(RankedEdge(1,3,1,4));
 
-	SimmelianJaccardAttributizer simmel(Graph(0), std::vector<count>());
+	SimmelianJaccardAttributizer simmel(Graph(0), std::vector<int>());
 	Redundancy r (0, 0.0);
 
 	r = simmel.getOverlap(0, 1, neighbors, 1);
@@ -71,7 +71,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 
 	//Apply triangle counting algorithm
 	ChibaNishizekiTriangleCounter counter(g);
-	std::vector<count> triangles = counter.getAttribute();
+	std::vector<int> triangles = counter.getAttribute();
 
 	//Actual test: ranked neighborhood
 	SimmelianJaccardAttributizer simmel(g, triangles);
@@ -111,7 +111,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 
 	//Apply triangle counting algorithm
 	ChibaNishizekiTriangleCounter counter(g);
-	std::vector<count> triangles = counter.getAttribute();
+	std::vector<int> triangles = counter.getAttribute();
 
 	//Actual test: ranked neighborhood
 	SimmelianJaccardAttributizer simmel(g, triangles);

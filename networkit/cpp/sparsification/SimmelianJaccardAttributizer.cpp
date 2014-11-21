@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-SimmelianJaccardAttributizer::SimmelianJaccardAttributizer(const Graph& graph, const std::vector<count>& triangles) : SimmelianAttributizer(graph, triangles) {
+SimmelianJaccardAttributizer::SimmelianJaccardAttributizer(const Graph& graph, const std::vector<int>& triangles) : SimmelianAttributizer(graph, triangles) {
 }
 
 std::vector<double> SimmelianJaccardAttributizer::getAttribute() {

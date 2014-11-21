@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-class ChibaNishizekiQuadrangleCounter : public EdgeAttribute<count> {
+class ChibaNishizekiQuadrangleCounter : public EdgeAttribute<int> {
 
 protected:
 	const Graph& G;
@@ -20,7 +20,7 @@ protected:
 public:
 	ChibaNishizekiQuadrangleCounter(const Graph& G);
 
-	virtual std::vector<count> getAttribute() override;
+	virtual std::vector<int> getAttribute() override;
 };
 
 } // namespace NetworKit

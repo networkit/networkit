@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * An implementation of the triangle counting algorithm by Ortmann et al.
  */
-class TriangleCounter : public EdgeAttribute<count> {
+class TriangleCounter : public EdgeAttribute<int> {
 
 protected:
 	const Graph& G;
@@ -25,7 +25,7 @@ public:
 
 	TriangleCounter(const Graph& G);
 
-	virtual std::vector<count> getAttribute() override;
+	virtual std::vector<int> getAttribute() override;
 };
 
 } /* namespace NetworKit */

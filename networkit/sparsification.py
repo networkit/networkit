@@ -218,15 +218,15 @@ class SimmelianBackboneParametric(Sparsifier):
 		G -- the input graph
 		"""
 		
-		chiba = ChibaNishizekiTriangleCounter()
-		triangles = chiba.getAttribute(G)
-		so = SimmelianOverlapAttributizer(10)
-		a_so = so.getAttribute(G, triangles)
+		chiba = ChibaNishizekiTriangleCounter(G)
+		triangles = chiba.getAttribute()
+		so = SimmelianOverlapAttributizer(G, triangles, 10)
+		a_so = so.getAttribute()
 		return a_so
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(parameter, True)
-		return gf.calculate(G, attribute)
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
 		return CompleteSearchParameterization(0, 10)
@@ -244,15 +244,15 @@ class SimmelianBackboneNonParametric(Sparsifier):
 		G -- the input graph
 		"""
 		
-		chiba = ChibaNishizekiTriangleCounter()
-		triangles = chiba.getAttribute(G)
-		sj = SimmelianJaccardAttributizer()
-		a_sj = sj.getAttribute(G, triangles)
+		chiba = ChibaNishizekiTriangleCounter(G)
+		triangles = chiba.getAttribute()
+		sj = SimmelianJaccardAttributizer(G, triangles)
+		a_sj = sj.getAttribute()
 		return a_sj
 	
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(parameter, True)
-		return gf.calculate(G, attribute)
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
@@ -269,15 +269,15 @@ class SimmelianMultiscaleBackbone(Sparsifier):
 		G -- the input graph
 		"""
 		
-		chiba = ChibaNishizekiTriangleCounter()
-		triangles = chiba.getAttribute(G)
-		ms = MultiscaleAttributizer()
-		a_ms = ms.getAttribute(G, triangles)
+		chiba = ChibaNishizekiTriangleCounter(G)
+		triangles = chiba.getAttribute()
+		ms = MultiscaleAttributizer(G, triangles)
+		a_ms = ms.getAttribute()
 		return a_ms
        
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(parameter, False)
-		return gf.calculate(G, attribute)
+		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		return gf.calculate()
 	
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(True, 0.0, 1.0, 20)
@@ -294,15 +294,15 @@ class LocalSimilarityBackbone(Sparsifier):
 		G -- the input graph
 		"""
 		
-		chiba = ChibaNishizekiTriangleCounter()
-		triangles = chiba.getAttribute(G)
-		attributizer = LocalSimilarityAttributizer()
-		a_ls = attributizer.getAttribute(G, triangles)
+		chiba = ChibaNishizekiTriangleCounter(G)
+		triangles = chiba.getAttribute()
+		attributizer = LocalSimilarityAttributizer(G, triangles)
+		a_ls = attributizer.getAttribute()
 		return a_ls
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(parameter, False)
-		return gf.calculate(G, attribute)
+		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(True, 0.0, 1.0, 20)
@@ -324,13 +324,13 @@ class MultiscaleBackbone(Sparsifier):
 			edgeId = G.edgeId(edge[0], edge[1])
 			inputAttribute[edgeId] = G.weight(edge[0], edge[1])
 		
-		attributizer = MultiscaleAttributizer()
-		attribute = attributizer.getAttribute(G, inputAttribute)
+		attributizer = MultiscaleAttributizer(G, inputAttribute)
+		attribute = attributizer.getAttribute()
 		return attribute
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(parameter, False)
-		return gf.calculate(G, attribute)
+		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		return gf.calculate()
 	
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(True, 0.0, 1.0, 20)
@@ -347,13 +347,13 @@ class RandomBackbone(Sparsifier):
 		G -- the input graph
 		"""
 		
-		attributizer = RandomAttributizer(1.0)
-		a_r = attributizer.getAttribute(G, [1.0] * G.upperEdgeIdBound())
+		attributizer = RandomAttributizer(G)
+		a_r = attributizer.getAttribute()
 		return a_r
 		
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(parameter, False)
-		return gf.calculate(G, attribute)
+		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		return gf.calculate()
 	
 	def _getParameterizationAlgorithm(self):
 		return SimpleParameterization()
@@ -380,12 +380,12 @@ class ForestFireBackbone(Sparsifier):
 		G -- the input graph
 		"""
 		
-		attributizer = ForestFireAttributizer(self.burnProbability, self.targetBurntRatio)
-		return attributizer.getAttribute(G, [])
+		attributizer = ForestFireAttributizer(G, self.burnProbability, self.targetBurntRatio)
+		return attributizer.getAttribute()
 		
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(parameter, True)
-		return gf.calculate(G, attribute)
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
 	
 	def _getParameterizationAlgorithm(self):
 		 return BinarySearchParameterization(False, 0.0, 1.0, 20)
@@ -402,13 +402,13 @@ class LocalDegreeBackbone(Sparsifier):
 		G -- the input graph
 		"""
 		
-		attributizer_ld = LocalDegreeAttributizer()
-		a_ld = attributizer_ld.getAttribute(G, [])
+		attributizer_ld = LocalDegreeAttributizer(G)
+		a_ld = attributizer_ld.getAttribute()
 		return a_ld
        
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(parameter, False)
-		return gf.calculate(G, attribute)
+		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		return gf.calculate()
 	
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(True, 0.0, 1.0, 20)

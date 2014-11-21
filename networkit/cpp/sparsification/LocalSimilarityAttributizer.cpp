@@ -11,7 +11,8 @@
 
 namespace NetworKit {
 
-LocalSimilarityAttributizer::LocalSimilarityAttributizer(const Graph& graph, const std::vector<count>& triangles) : graph(graph), triangles(triangles) {}
+LocalSimilarityAttributizer::LocalSimilarityAttributizer(const Graph& graph, const std::vector<int>& triangles) :
+	graph(graph), triangles(triangles) {}
 
 std::vector<double> LocalSimilarityAttributizer::getAttribute() {
 	/*

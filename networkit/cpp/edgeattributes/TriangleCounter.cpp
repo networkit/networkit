@@ -15,7 +15,7 @@ namespace NetworKit {
 TriangleCounter::TriangleCounter(const Graph& G) : G(G) {
 }
 
-std::vector<count> TriangleCounter::getAttribute() {
+std::vector<int> TriangleCounter::getAttribute() {
 	auto isOutEdge = [&](node u, node v) {
 		return G.degree(u) > G.degree(v) || (G.degree(u) == G.degree(v) && u < v);
 	};
@@ -58,7 +58,7 @@ std::vector<count> TriangleCounter::getAttribute() {
 	});
 
 	//Edge attribute: triangle count
-	std::vector<count> triangleCount(G.upperEdgeIdBound(), 0);
+	std::vector<int> triangleCount(G.upperEdgeIdBound(), 0);
 
 	std::vector<std::vector<edgeid> > nodeMarker;
 
