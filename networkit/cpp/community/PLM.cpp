@@ -295,28 +295,19 @@ void PLM::run() {
 }
 
 std::string NetworKit::PLM::toString() const {
-	std::string refined;
-	if (refine) {
-		refined = "refinement";
-	} else {
-		refined = "";
-	}
-	std::string parCoarsening;
-	if (parallelCoarsening) {
-		parCoarsening = "parallel coarsening";
-	} else {
-		parCoarsening = "";
-	}
-
-	std::string hasTurbo;
-	if (turbo) {
-		hasTurbo = "turbo";
-	} else {
-		hasTurbo = "";
-	}
-
 	std::stringstream stream;
-	stream << "PLM(" << parallelism << "," << refined << "," << parCoarsening << "," << hasTurbo << ")";
+	stream << "PLM(";
+	stream << parallelism;
+	if (refine) {
+		stream << "," << "refine";
+	}
+	if (parallelCoarsening) {
+		stream << "," << "pc";
+	}
+	if (turbo) {
+		stream << "," << "turbo";
+	}
+	stream << ")";
 
 	return stream.str();
 }
