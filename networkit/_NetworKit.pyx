@@ -5150,7 +5150,7 @@ cdef class SimmelianJaccardAttributizer:
 
 cdef extern from "cpp/sparsification/SimmelianOverlapAttributizer.h":
 	cdef cppclass _SimmelianOverlapAttributizer "NetworKit::SimmelianOverlapAttributizer":
-		_SimmelianOverlapAttributizer(const _Graph& G, vector[int] triangles, maxRank) except +
+		_SimmelianOverlapAttributizer(const _Graph& G, vector[int] triangles, count maxRank) except +
 		#void run() except +
 		vector[double] getAttribute() except +
 
@@ -5158,10 +5158,8 @@ cdef class SimmelianOverlapAttributizer:
 
 	cdef _SimmelianOverlapAttributizer* _this
 
-	def __cinit__(self, Graph G, vector[int] triangles, maxRank):
-		self._test = None
-		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######		######
-		#self._this = new _SimmelianOverlapAttributizer(G._this, triangles, maxRank)
+	def __cinit__(self, Graph G, vector[int] triangles, count maxRank):
+		self._this = new _SimmelianOverlapAttributizer(G._this, triangles, maxRank)
 
 	def __dealloc__(self):
 		del self._this
