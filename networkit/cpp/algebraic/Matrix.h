@@ -9,8 +9,6 @@
 #define MATRIX_H_
 
 #include "../graph/Graph.h"
-#include <cstdint>
-#include "../auxiliary/Log.h"
 #include "Vector.h"
 #include "SparseAccumulator.h"
 
@@ -18,7 +16,7 @@ namespace NetworKit {
 
 /**
  * @ingroup algebraic
- * The matrix class represents a matrix which is optimized for sparse matrices. *
+ * The matrix class represents a matrix which is optimized for sparse matrices.
  */
 class Matrix {
 private:

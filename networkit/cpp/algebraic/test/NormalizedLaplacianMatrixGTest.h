@@ -5,6 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef NORMALIZEDLAPLACIANMATRIXGTEST_H_
 #define NORMALIZEDLAPLACIANMATRIXGTEST_H_
 
@@ -25,3 +27,5 @@ public:
 } /* namespace NetworKit */
 
 #endif /* NORMALIZEDLAPLACIANMATRIXGTEST_H_ */
+
+#endif

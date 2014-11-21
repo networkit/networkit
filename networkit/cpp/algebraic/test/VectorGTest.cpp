@@ -72,14 +72,47 @@ TEST(VectorGTest, testAccessVectorElement) {
 	testVector[2]++;
 	third = testVector[2];
 	EXPECT_EQ(4.0, third);
+
+	EXPECT_EQ(5.0, testVector.at(4));
+
+	EXPECT_THROW(testVector.at(5), std::runtime_error);
+	EXPECT_THROW(testVector.at(42), std::runtime_error);
+	EXPECT_THROW(testVector.at(-1), std::runtime_error);
+	EXPECT_THROW(testVector.at(-42), std::runtime_error);
+}
+
+TEST(VectorGTest, testOuterProduct) {
+	Vector v1 = {1.0, -1.0};
+	Vector v2 = {1.0, 2.0,  3.0};
+
+	Matrix result = Vector::outerProduct(v1, v2);
+	ASSERT_EQ(v1.getDimension(), result.numberOfRows());
+	ASSERT_EQ(v2.getDimension(), result.numberOfColumns());
+
+	EXPECT_EQ(1.0, result(0,0));
+	EXPECT_EQ(2.0, result(0,1));
+	EXPECT_EQ(3.0, result(0,2));
+	EXPECT_EQ(-1.0, result(1,0));
+	EXPECT_EQ(-2.0, result(1,1));
+	EXPECT_EQ(-3.0, result(1,2));
 }
 
 TEST(VectorGTest, testInnerProduct) {
 	Vector v1 = {1.0, 0.0, -1.0, -5.0, 2.0};
 	Vector v2 = {1.0, 2.0,  3.0,  0.0, 5.0};
+	Vector v3 = {1.0, 2.0};
 
 	double dotProduct = v1.transpose() * v2;
 	EXPECT_EQ(8.0, dotProduct);
+
+	EXPECT_THROW(v1 * v2, std::runtime_error);
+	EXPECT_THROW(v1 * v2.transpose(), std::runtime_error);
+	EXPECT_THROW(v1.transpose() * v3, std::runtime_error);
+
+	dotProduct = Vector::innerProduct(v1, v2);
+	EXPECT_EQ(8.0, dotProduct);
+
+	EXPECT_THROW(Vector::innerProduct(v1, v3), std::runtime_error);
 }
 
 TEST(VectorGTest, testVectorComparisonOperators) {
@@ -112,6 +145,7 @@ TEST(VectorGTest, testVectorScalarMultiplication) {
 
 TEST(VectorGTest, testVectorMatrixMultiplication) {
 	Vector v = {1.0, 2.0, 3.0};
+	Vector v2 = {1.0, 2.0};
 	Vector r1 = {8, 3, 4};
 	Vector r2 = {3, 5, 9};
 	Vector r3 = {4, 9, 2};
@@ -125,6 +159,9 @@ TEST(VectorGTest, testVectorMatrixMultiplication) {
 	EXPECT_EQ(26, result[0]);
 	EXPECT_EQ(40, result[1]);
 	EXPECT_EQ(28, result[2]);
+
+	EXPECT_THROW(v * mat, std::runtime_error);
+	EXPECT_THROW(v2 * mat, std::runtime_error);
 }
 
 TEST(VectorGTest, testVectorDivisionOperator) {
@@ -141,6 +178,7 @@ TEST(VectorGTest, testVectorDivisionOperator) {
 TEST(VectorGTest, testVectorAddition) {
 	Vector v1 = {1.0, 2.0, 3.0, 4.0, 5.0};
 	Vector v2 = {1.0, 2.0, 3.0, 4.0, 5.0};
+	Vector v4 = {1.0, 2.0};
 
 	Vector v3 = v1 + v2;
 	ASSERT_EQ(v1.getDimension(), v3.getDimension());
@@ -152,11 +190,21 @@ TEST(VectorGTest, testVectorAddition) {
 	for (uint64_t i = 0; i < v1.getDimension(); i++) {
 		EXPECT_EQ(v3[i], v1[i]);
 	}
+
+	v3 = v1.transpose() + v2.transpose();
+	EXPECT_TRUE(v3.isTransposed());
+
+	EXPECT_THROW(v1.transpose() + v2, std::runtime_error);
+	EXPECT_THROW(v1 + v2.transpose(), std::runtime_error);
+
+	EXPECT_THROW(v1 + v4, std::runtime_error);
+	EXPECT_THROW(v4 + v2, std::runtime_error);
 }
 
 TEST(VectorGTest, testVectorSubtraction) {
 	Vector v1 = {2.0, 4.0, 6.0, 8.0, 10.0};
 	Vector v2 = {1.0, 2.0, 3.0, 4.0, 5.0};
+	Vector v4 = {1.0, 2.0};
 
 	Vector v3 = v1 - v2;
 	ASSERT_EQ(v1.getDimension(), v3.getDimension());
@@ -168,6 +216,15 @@ TEST(VectorGTest, testVectorSubtraction) {
 	for (uint64_t i = 0; i < v1.getDimension(); i++) {
 		EXPECT_EQ(v3[i], v1[i]);
 	}
+
+	v3 = v1.transpose() - v2.transpose();
+	EXPECT_TRUE(v3.isTransposed());
+
+	EXPECT_THROW(v1.transpose() - v2, std::runtime_error);
+	EXPECT_THROW(v1 - v2.transpose(), std::runtime_error);
+
+	EXPECT_THROW(v1 - v4, std::runtime_error);
+	EXPECT_THROW(v4 - v2, std::runtime_error);
 }
 
 TEST(VectorGTest, testVectorIterators) {

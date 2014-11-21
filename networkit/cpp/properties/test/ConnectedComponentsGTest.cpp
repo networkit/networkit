@@ -198,7 +198,7 @@ TEST_F(ConnectedComponentsGTest, benchHHConnectedComponents) {
 	DEBUG("Number of components in original: ", cc.numberOfComponents());
 
 	// compute HH graph and apply CC algo
-	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
+	std::vector<count> sequence = GraphProperties::degreeSequence(G);
 	HavelHakimiGenerator hhgen(sequence, true);
 	Graph G2 = hhgen.generate();
 	ConnectedComponents cc2(G2);
@@ -217,7 +217,7 @@ TEST_F(ConnectedComponentsGTest, benchLiveJConnectedComponents) {
 	DEBUG("Number of components in original: ", cc.numberOfComponents());
 
 	// compute HH graph and apply CC algo
-	std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G);
+	std::vector<count> sequence = GraphProperties::degreeSequence(G);
 	HavelHakimiGenerator hhgen(sequence, true);
 	Graph G2 = hhgen.generate();
 	ConnectedComponents cc2(G2);

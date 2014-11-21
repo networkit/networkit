@@ -45,3 +45,4 @@ syntax: regexp
 
 syntax: glob
 NetworKit-Tests-*
+include/NetworKit
