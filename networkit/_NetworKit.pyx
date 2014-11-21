@@ -5290,6 +5290,19 @@ cdef extern from "cpp/distmeasures/JaccardDistance.h":
 		#void run() except +
 		vector[double] getEdgeAttribute() except +
 
+cdef class JaccardDistance:
+
+	cdef _JaccardDistance* _this
+
+	def __cinit__(self, Graph G, vector[int] triangles):
+		self._this = new _JaccardDistance(G._this, triangles)
+
+	def __dealloc__(self):
+		del self._this
+		
+	def getAttribute(self):
+		return self._this.getEdgeAttribute()
+
 cdef class JaccardSimilarityAttributizer:
 
 	cdef _JaccardDistance* _this
