@@ -48,7 +48,9 @@ void AdamicAdarDistance::preprocess() {
 		removeNode(g, u);
 	});
 
-	//TODO: invert aaDistance.
+	G.parallelForEdges([&](node u, node v, edgeid eid) {
+		aaDistance[eid] = 1 / aaDistance[eid];
+	});
 }
 
 double AdamicAdarDistance::distance(node u, node v) {
