@@ -1,3 +1,3 @@
 
-from _NetworKit import AlgebraicDistance
+from _NetworKit import AlgebraicDistance, AdamicAdarDistance, JaccardDistance
 

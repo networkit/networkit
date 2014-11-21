@@ -19,7 +19,6 @@
 # This file has been modified by porting it to Python3.
 #
 # -------------------------------------------------------------------
-# Modification by Gerd Lindner (gerd.lindner@student.kit.edu):
 # Changed type of autoflush attribute to integer, so autoflush every x
 # send requests is possible.
 #
@@ -56,13 +55,12 @@ class JSONClient(object):
         if len(self.data) > 0:
             self._send(self.data)
             self.data = ""
-
+        
     def incrementUnflushedDumps(self):
         self.unflushedDumps = self.unflushedDumps + 1
         if self.unflushedDumps > self.autoflush:
             self.flush()
             self.unflushedDumps = 0
-
     def _send(self, data):
         print('passing')
         pass
