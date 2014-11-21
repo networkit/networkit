@@ -1,4 +1,4 @@
-""" 
+"""
 Tools for algorithm engineering.
 """
 # extension imports
@@ -7,13 +7,14 @@ from _NetworKit import setNumberOfThreads, getMaxNumberOfThreads, getCurrentNumb
 # local imports
 from . import stopwatch
 
-# external imports 
+# external imports
 import csv
 
-def strongScaling(algorithm, threadSequence, input, inputTitle=None, repetitions=1, outPath=None):
+def strongScaling(algorithmClass, threadSequence, inargs, inputTitle=None, repetitions=1, outPath=None):
 	""" Evaluate strong scaling, i.e. how the performance varies with the number of threads
 		for a fixed input size.
 	"""
+	algorithm = algorithmClass(*inargs)
 	data = []	# collects data about the experiments
 	threadsAvailable = getMaxNumberOfThreads()	# remember maximum number of threads and restore later
 	for nThreads in threadSequence:
@@ -22,7 +23,7 @@ def strongScaling(algorithm, threadSequence, input, inputTitle=None, repetitions
 		for r in range(repetitions):
 			print("running {0}".format(algorithm.toString()))
 			timer = stopwatch.Timer()
-			result = algorithm.run(input)
+			result = algorithm.run()
 			timer.stop()
 			print("elapsed time: {0}".format(timer.elapsed))
 			if inputTitle is None:

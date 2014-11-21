@@ -308,8 +308,15 @@ std::string NetworKit::PLM::toString() const {
 		parCoarsening = "";
 	}
 
+	std::string hasTurbo;
+	if (turbo) {
+		hasTurbo = "turbo";
+	} else {
+		hasTurbo = "";
+	}
+
 	std::stringstream stream;
-	stream << "PLM(" << parallelism << "," << refined << "," << parCoarsening << ")";
+	stream << "PLM(" << parallelism << "," << refined << "," << parCoarsening << "," << hasTurbo << ")";
 
 	return stream.str();
 }

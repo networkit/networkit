@@ -1,8 +1,7 @@
-import stopwatch
 import csv
 import os
 
-from NetworKit import *
+from networkit import *
 
 
 def getFileList(directory):
@@ -13,12 +12,14 @@ def getFileList(directory):
 			ls.append(os.path.join(root, filename))
 	return ls
 
-def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
+def communityDetectionBenchmark(graphPaths, outPath, algorithms, arglist=None, repeat=1, graphFormat=Format.METIS):
 	"""
 		Evaluate community detection algorithms on a collection of graphs and save benchmark data in .csv format
 		:param	graphPaths	paths to graph files
 		:param 	algorithms	list of algorithms
 	"""
+	if not arglist:
+		arglist = [{} for i in range(len(algorithms))]
 
 	# write results
 	with open(outPath, 'w') as outFile:
@@ -27,15 +28,17 @@ def communityDetectionBenchmark(graphPaths, algorithms, outPath, repeat=1):
 		writer.writerow(header)
 		for graphPath in graphPaths:
 			print("reading graph: {0}".format(graphPath))
-			G = graphio.readGraph(graphPath)
+			G = graphio.readGraph(graphPath, fileformat=graphFormat)
 			graphName = os.path.basename(graphPath).split(".")[0]
 			(n, m) = properties.size(G)
-			for algo in algorithms:
+			for (algoClass, kwargs) in zip(algorithms, arglist):
+				algo = algoClass(G, **kwargs)
 				algoName = algo.toString()
 				for i in range(repeat):
 					print("evaluating {0} on {1}".format(algoName, graphName))
 					timer = stopwatch.Timer()
-					zeta = algo.run(G)
+					algo.run()
+					zeta = algo.getPartition()
 					timer.stop()
 					time = timer.elapsed
 
@@ -73,5 +76,3 @@ def testPLPThreshold(graphPaths, thresholdFactors, outPath, repeat=1):
 					row = [graphName, "PLP", factor, theta,  time, mod]
 					writer.writerow(row)
 					print(row)
-
-
