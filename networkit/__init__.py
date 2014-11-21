@@ -33,7 +33,7 @@ from . import workflows
 from . import flow
 from . import distmeasures
 from . import plot
-from . import backbones
+from . import sparsification
 
 try:
 	from . import viztools

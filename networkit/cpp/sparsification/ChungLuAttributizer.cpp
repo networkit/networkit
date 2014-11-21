@@ -9,6 +9,8 @@
 
 namespace NetworKit {
 
+ChungLuAttributizer::ChungLuAttributizer(const Graph& graph) : graph(graph) {}
+
 std::vector< double > ChungLuAttributizer::getAttribute() {
 	std::vector< double > result(graph.upperEdgeIdBound());
 	

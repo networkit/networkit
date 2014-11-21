@@ -5062,7 +5062,7 @@ cdef extern from "cpp/distmeasures/AdamicAdarDistance.h":
 		double distance(node u, node v) except +
 		vector[double] getEdgeAttribute() except +
 
-cdef class AdamicAdarAttributizer:
+cdef class AdamicAdarDistance:
 	"""
 	Calculate the adamic adar similarity.
 	
@@ -5303,15 +5303,6 @@ cdef class JaccardSimilarityAttributizer:
 		#convert distance to similarity
 		return [1 - x for x in self._this.getEdgeAttribute()]
 
-cdef extern from "cpp/sparsification/LocalFilterAttributizer.h":
-	cdef cppclass _LocalFilterAttributizerDouble "NetworKit::LocalFilterAttributizer<double>":
-		_LocalFilterAttributizerDouble(const _Graph& G, vector[double] a, bool logarithmic,  bool bothRequired) except +
-		inline vector[double] getAttribute() except +
-
-	cdef cppclass _LocalFilterAttributizerInt "NetworKit::LocalFilterAttributizer<int>":
-		_LocalFilterAttributizerInt(const _Graph& G, vector[double] a, bool logarithmic,  bothRequired) except +
-		inline vector[double] getAttribute() except +
-
 cdef extern from "cpp/sparsification/RandomEdgeAttributizer.h":
 	cdef cppclass _RandomEdgeAttributizer "NetworKit::RandomEdgeAttributizer":
 		_RandomEdgeAttributizer(const _Graph& G) except +
@@ -5337,9 +5328,19 @@ ctypedef fused DoubleInt:
 	int
 	double
 
+cdef extern from "cpp/sparsification/LocalFilterAttributizer.h":
+	cdef cppclass _LocalFilterAttributizerDouble "NetworKit::LocalFilterAttributizer<double>":
+		_LocalFilterAttributizerDouble(const _Graph& G, vector[double] a, bool logarithmic,  bool bothRequired) except +
+		inline vector[double] getAttribute() except +
+
+	cdef cppclass _LocalFilterAttributizerInt "NetworKit::LocalFilterAttributizer<int>":
+		_LocalFilterAttributizerInt(const _Graph& G, vector[double] a, bool logarithmic,  bothRequired) except +
+		inline vector[double] getAttribute() except +
+
+
 cdef class LocalFilterAttributizer:
 	cdef _LocalFilterAttributizerDouble* _thisDouble
-#cdef _LocalFilterAttributizerInt _thisInt
+	#cdef _LocalFilterAttributizerInt _thisInt
 
 	def __init__(self, Graph G, vector[double] a, bool logarithmic = True, bool bothRequired = False):
 		self._thisDouble = new _LocalFilterAttributizerDouble(G._this, a, logarithmic, bothRequired)
@@ -5347,13 +5348,12 @@ cdef class LocalFilterAttributizer:
 	def __dealloc__(self):
 		del self._thisDouble
 
-	#def getAttribute(self, Graph G, vector[DoubleInt] a):
 	def getAttribute(self):
 		#if DoubleInt is int:
 		#	return self._thisInt.getAttribute(G._this, a)
 		#else:
 		return self._thisDouble.getAttribute()
-
+	
 cdef extern from "cpp/sparsification/ChanceCorrectedTriangleAttributizer.h":
 	cdef cppclass _ChanceCorrectedTriangleAttributizer "NetworKit::ChanceCorrectedTriangleAttributizer":
 		_ChanceCorrectedTriangleAttributizer(const _Graph& G, vector[count] triangles) except +
