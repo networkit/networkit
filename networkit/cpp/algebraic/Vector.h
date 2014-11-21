@@ -9,9 +9,7 @@
 #define VECTOR_H_
 
 #include <vector>
-#include <stdexcept>
-#include <cstdint>
-#include <cmath>
+#include "../Globals.h"
 
 namespace NetworKit {
 
@@ -37,7 +35,7 @@ public:
 	 * @param initialValue All coefficients will be initialized to @a initialValue.
 	 * @param transpose Indicates whether this vector is transposed (row vector) or not (column vector).
 	 */
-	Vector(const uint64_t dimension, const double initialValue = 0, const bool transpose = false);
+	Vector(const count dimension, const double initialValue = 0, const bool transpose = false);
 
 	/**
 	 * Constructs the Vector with the contents of @a values.
@@ -58,7 +56,7 @@ public:
 	/**
 	 * @return dimension of vector
 	 */
-	inline uint64_t getDimension() const {
+	inline count getDimension() const {
 		return values.size();
 	}
 
@@ -81,20 +79,42 @@ public:
 	double length() const;
 
 	/**
+	 * Returns a reference to the element at index @a idx without checking the range of this vector.
+	 * @param idx The index of the element.
 	 * @return Reference to the element at index @a idx.
 	 */
-	inline double& operator[](const uint64_t &idx) {
+	inline double& operator[](const index idx) {
+		return values[idx];
+	}
+
+	/**
+	 * Returns a constant reference to the element at index @a idx without checking the range of this vector.
+	 * @a idx The index of the element.
+	 * @return Constant reference to the element at index @a idx.
+	 */
+	inline const double& operator[](const index idx) const {
+		return values[idx];
+	}
+
+	/**
+	 * Returns a reference to the element at index @a idx. If @a idx is not a valid index an exception is thrown.
+	 * @param idx The index of the element.
+	 * @return Reference to the element at index @a idx.
+	 */
+	double &at(const index idx) {
 		if (idx >= values.size()) {
-			throw std::out_of_range("index out of range");
+			throw std::runtime_error("index out of range");
 		} else {
 			return values[idx];
 		}
 	}
 
 	/**
-	 * @return Constant reference to the element at index @a idx.
+	 * Returns a constant reference to the element at index @a idx. If @a idx is not a valid index an exception is thrown.
+	 * @param idx The index of the element.
+	 * @return Reference to the element at index @a idx.
 	 */
-	inline const double& operator[](const uint64_t &idx) const {
+	const double &at(const index idx) const {
 		if (idx >= values.size()) {
 			throw std::runtime_error("index out of range");
 		} else {
@@ -115,7 +135,13 @@ public:
 	bool operator!=(const Vector &other) const;
 
 
-	// TODO: outer product, but this only makes sense with non-symmetric matrix support.
+	/**
+	 * Computes the outer product of @a v1 and @a v2.
+	 * @param v1 First Vector.
+	 * @param v2 Second Vector.
+	 * @return The resulting matrix from the outer product.
+	 */
+	static Matrix outerProduct(const Vector &v1, const Vector &v2);
 
 	/**
 	 * Computes the inner product (dot product) of the vectors @a v1 and @a v2.

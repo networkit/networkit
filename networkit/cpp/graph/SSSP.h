@@ -32,6 +32,8 @@ public:
 	 */
 	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false);
 
+	virtual ~SSSP() = default;
+
 	/** Computes the shortest paths from the source to all other nodes. */
 	virtual void run(node t = none) = 0;
 

@@ -5,6 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
+#ifndef NOGTEST
+
 #ifndef LAPLACIANMATRIXGTEST_H_
 #define LAPLACIANMATRIXGTEST_H_
 
@@ -26,3 +28,5 @@ public:
 } /* namespace NetworKit */
 
 #endif /* LAPLACIANMATRIXGTEST_H_ */
+
+#endif

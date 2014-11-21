@@ -26,7 +26,7 @@ public:
 
 	DGSStreamParser(std::string path, bool mapped=true, node baseIndex=0);
 
-	virtual std::vector<GraphEvent> getStream();
+	std::vector<GraphEvent> getStream();
 
 private:
 

@@ -38,6 +38,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Graph move( _Graph t ) # specialized declaration as general declaration disables template argument deduction and doesn't work
 	_Partition move( _Partition t)
 	_Cover move(_Cover t)
+	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
 
 
 # Cython helper functions
@@ -612,6 +613,8 @@ cdef class BFS:
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
 		self._this = new _BFS(G._this, source, storePaths, storeStack)
 
+	def __dealloc__(self):
+		del self._this
 
 	def run(self, t = None):
 		"""
@@ -777,6 +780,8 @@ cdef class Dijkstra:
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
 		self._this = new _Dijkstra(G._this, source, storePaths, storeStack)
 
+	def __dealloc__(self):
+		del self._this
 
 	def run(self, t = None):
 		"""
@@ -957,7 +962,6 @@ cdef class SpanningForest:
 	def __cinit__(self, Graph G not None):
 		self._this = new _SpanningForest(G._this)
 
-
 	def __dealloc__(self):
 		del self._this
 
@@ -1096,6 +1100,9 @@ cdef class PubWebGenerator:
 		"""
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self):
 		""" TODO
 		"""
@@ -1130,6 +1137,9 @@ cdef class ErdosRenyiGenerator:
 
 	def __cinit__(self, nNodes, prob, directed=False):
 		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self):
 		return Graph(0).setThis(self._this.generate())
@@ -1157,6 +1167,9 @@ cdef class DorogovtsevMendesGenerator:
 
 	def __cinit__(self, nNodes):
 		self._this = new _DorogovtsevMendesGenerator(nNodes)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self):
 		""" Generates a random graph according to the Dorogovtsev-Mendes model.
@@ -1192,6 +1205,9 @@ cdef class RegularRingLatticeGenerator:
 
 	def __cinit__(self, nNodes, nNeighbors):
 		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self):
 		""" Generates a rgular ring lattice.
@@ -1227,6 +1243,9 @@ cdef class WattsStrogatzGenerator:
 	"""
 
 	cdef _WattsStrogatzGenerator* _this
+		
+	def __dealloc__(self):
+		del self._this
 
 	def __cinit__(self, nNodes, nNeighbors, p):
 		self._this = new _WattsStrogatzGenerator(nNodes, nNeighbors, p)
@@ -1275,6 +1294,9 @@ cdef class ClusteredRandomGraphGenerator:
 	def __cinit__(self, n, k, pin, pout):
 		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self):
 		""" Generates a clustered random graph with the properties given in the constructor.
 
@@ -1298,8 +1320,7 @@ cdef class ClusteredRandomGraphGenerator:
 
 cdef extern from "cpp/generators/ChungLuGenerator.h":
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
-		# TODO: revert to count when cython issue fixed
-		_ChungLuGenerator(vector[unsigned int] degreeSequence) except +
+		_ChungLuGenerator(vector[count] degreeSequence) except +
 		_Graph generate() except +
 
 cdef class ChungLuGenerator:
@@ -1312,9 +1333,11 @@ cdef class ChungLuGenerator:
 
 	cdef _ChungLuGenerator* _this
 
-	def __cinit__(self, degreeSequence):
-		cdef vector
+	def __cinit__(self, vector[count] degreeSequence):
 		self._this = new _ChungLuGenerator(degreeSequence)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self):
 		""" Generates graph with expected degree sequence seq.
@@ -1329,8 +1352,7 @@ cdef class ChungLuGenerator:
 
 cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
-		# TODO: revert to count when cython issue fixed
-		_HavelHakimiGenerator(vector[unsigned int] degreeSequence, bool skipTest) except +
+		_HavelHakimiGenerator(vector[count] degreeSequence, bool skipTest) except +
 		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
@@ -1357,8 +1379,11 @@ cdef class HavelHakimiGenerator:
 	cdef _HavelHakimiGenerator* _this
 
 
-	def __cinit__(self, degreeSequence, skipTest=True):
+	def __cinit__(self, vector[count] degreeSequence, skipTest=True):
 		self._this = new _HavelHakimiGenerator(degreeSequence, skipTest)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def isRealizable(self):
 		return self._this.isRealizable()
@@ -1413,6 +1438,9 @@ cdef class RmatGenerator:
 
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self):
 		""" Graph to be generated according to parameters specified in constructor.
@@ -1635,7 +1663,7 @@ cdef class SNAPGraphReader:
 		[1]: http://snap.stanford.edu/data/index.html
 	"""
 	cdef _SNAPGraphReader _this
-
+		
 	def read(self, path):
 		return Graph().setThis(self._this.read(stdstring(path)))
 
@@ -1839,13 +1867,13 @@ cdef class Partition:
 
 		Parameters
 		----------
-		z : index, optional
+		size : index, optional
 			Maximum index of an element. Default is 0.
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, index z=0):
-		self._this = move(_Partition(z))
+	def __cinit__(self, index size=0):
+		self._this = move(_Partition(size))
 
 	def __len__(self):
 		"""
@@ -2647,12 +2675,15 @@ cdef class PLP(CommunityDetector):
 			self._this = new _PLP(G._this)
 		else:
 			self._this = new _PLP(G._this, updateThreshold)
-
+		
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		""" Run the label propagation clustering algorithm.
 		"""
 		self._this.run()
+		return self
 
 	def runFromGiven(self, Partition part not None):
 		""" Run the label propagation clustering algorithm starting
@@ -2675,6 +2706,7 @@ cdef class PLP(CommunityDetector):
 		cdef _Partition algInput = part._this
 		self._this.runFromGiven(algInput)
 		#return Partition().setThis(algInput)
+		return self
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -2721,11 +2753,15 @@ cdef class LPDegreeOrdered(CommunityDetector):
 
 	def __cinit__(self, Graph G not None):
 		self._this = new _LPDegreeOrdered(G._this)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		""" Detect communites.
 		"""
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -2764,6 +2800,11 @@ cdef extern from "cpp/community/PLM.h":
 		string toString() except +
 		void run() except +
 		_Partition getPartition() except +
+		map[string, vector[count]] getTiming() except +
+
+cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
+	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
+	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[node] nodeToMetaNode) except +
 
 
 cdef class PLM(CommunityDetector):
@@ -2793,6 +2834,9 @@ cdef class PLM(CommunityDetector):
 
 	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
 		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def toString(self):
 		""" Get string representation.
@@ -2808,6 +2852,7 @@ cdef class PLM(CommunityDetector):
 		""" Detect communities.
 		"""
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -2818,6 +2863,19 @@ cdef class PLM(CommunityDetector):
 			A Partition of the clustering.
 		"""
 		return Partition().setThis(self._this.getPartition())
+
+	def getTiming(self):
+		return self._this.getTiming()
+
+	@staticmethod
+	def coarsen(Graph G, Partition zeta, bool parallel = False):
+		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this, parallel))
+		return (Graph().setThis(result.first), result.second)
+
+	@staticmethod
+	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode):
+		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
+
 
 cdef extern from "cpp/community/CNM.h":
 	cdef cppclass _CNM "NetworKit::CNM":
@@ -2838,6 +2896,9 @@ cdef class CNM(CommunityDetector):
 
 	def __cinit__(self, Graph G not None):
 		self._this = new _CNM(G._this)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def toString(self):
 		""" Get string representation.
@@ -2853,6 +2914,7 @@ cdef class CNM(CommunityDetector):
 		""" Detect communities.
 		"""
 		self._this.run()
+		return self
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -2923,6 +2985,7 @@ cdef class CutClustering(CommunityDetector):
 
 		"""
 		self._this.run()
+		return self
 
 	@staticmethod
 	def getClusterHierarchy(Graph G not None):
@@ -3033,6 +3096,9 @@ cdef class EPP(CommunityDetector):
 
 	def __cinit__(self, Graph G not None):
 		self._this = new _EPP(G._this)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		"""  Run the ensemble clusterer.
@@ -3237,7 +3303,7 @@ cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphP
 	pair[count, count] minMaxDegree(_Graph _G) except +
 	double averageDegree(_Graph _G) except +
 	vector[count] degreeDistribution(_Graph _G) except +
-	vector[unsigned int] degreeSequence(_Graph _G) except +
+	vector[count] degreeSequence(_Graph _G) except +
 	vector[double] localClusteringCoefficients(_Graph _G) except +
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
@@ -3334,6 +3400,9 @@ cdef class ConnectedComponents:
 	def __cinit__(self,  Graph G):
 		self._this = new _ConnectedComponents(G._this)
 
+	def __dealloc__(self):
+		del self._this
+
 	def run(self):
 		""" This method determines the connected components for the graph given in the constructor. """
 		self._this.run()
@@ -3389,6 +3458,9 @@ cdef class ParallelConnectedComponents:
 	def __cinit__(self,  Graph G, coarsening=True	):
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
 
+	def __dealloc__(self):
+		del self._this
+
 	def run(self):
 		self._this.run()
 		return self
@@ -3420,6 +3492,9 @@ cdef class StronglyConnectedComponents:
 
 	def __cinit__(self,  Graph G):
 		self._this = new _StronglyConnectedComponents(G._this)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -3619,6 +3694,9 @@ cdef class CoreDecomposition:
 
 	def __cinit__(self, Graph G):
 		self._this = new _CoreDecomposition(G._this)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		""" Perform k-core decomposition of graph passed in constructor. """
@@ -3962,6 +4040,7 @@ cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		count getNumberOfSamples() except +
 
 cdef class DynApproxBetweenness:
 	""" New dynamic algorithm for the approximation of betweenness centrality with
@@ -4044,6 +4123,12 @@ cdef class DynApproxBetweenness:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+	def getNumberOfSamples(self):
+		"""
+		Get number of path samples used in last calculation.
+		"""
+		return self._this.getNumberOfSamples()
 
 cdef extern from "cpp/centrality/ApproxBetweenness2.h":
 	cdef cppclass _ApproxBetweenness2 "NetworKit::ApproxBetweenness2":
@@ -4210,6 +4295,9 @@ cdef class EigenvectorCentrality:
 
 	def __cinit__(self, Graph G, double tol=1e-9):
 		self._this = new _EigenvectorCentrality(G._this, tol)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -4276,6 +4364,9 @@ cdef class DegreeCentrality:
 
 	def __cinit__(self, Graph G, bool normalized=False):
 		self._this = new _DegreeCentrality(G._this, normalized)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -4458,6 +4549,9 @@ cdef class DGSStreamParser:
 
 	def __cinit__(self, path, mapped=True, baseIndex=0):
 		self._this = new _DGSStreamParser(stdstring(path), mapped, baseIndex)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def getStream(self):
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.getStream()]
@@ -4473,6 +4567,9 @@ cdef class DGSWriter:
 
 	def __cinit__(self):
 		self._this = new _DGSWriter()
+		
+	def __dealloc__(self):
+		del self._this
 
 	def write(self, stream, path):
 		cdef vector[_GraphEvent] _stream
@@ -4526,6 +4623,9 @@ cdef class DynamicPathGenerator:
 
 	def __cinit__(self):
 		self._this = new _DynamicPathGenerator()
+		
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self, nSteps):
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
@@ -4548,6 +4648,9 @@ cdef class DynamicDorogovtsevMendesGenerator:
 
 	def __cinit__(self):
 		self._this = new _DynamicDorogovtsevMendesGenerator()
+		
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -4574,6 +4677,9 @@ cdef class DynamicPubWebGenerator:
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _DynamicPubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -4624,6 +4730,9 @@ cdef class DynamicForestFireGenerator:
 
 	def __cinit__(self, p, directed, r = 1.0):
 		self._this = new _DynamicForestFireGenerator(p, directed, r)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -4656,6 +4765,9 @@ cdef class GraphUpdater:
 
 	def __cinit__(self, Graph G):
 		self._this = new _GraphUpdater(G._this)
+		
+	def __dealloc__(self):
+		del self._this
 
 	def update(self, stream):
 		cdef vector[_GraphEvent] _stream
@@ -4677,6 +4789,9 @@ cdef class ParallelPartitionCoarsening:
 
 	def __cinit__(self):
 		self._this = new _ParallelPartitionCoarsening()
+		
+	def __dealloc__(self):
+		del self._this
 
 	def run(self, Graph G not None, Partition zeta not None):
 		result = self._this.run(G._this, zeta._this)

@@ -21,12 +21,12 @@ const short UNKNOWN = 2;
  */
 class StaticDegreeSequenceGenerator: public NetworKit::StaticGraphGenerator {
 protected:
-	std::vector<unsigned int> seq;
+	std::vector<count> seq;
 	short realizable;
 
 
 public:
-	StaticDegreeSequenceGenerator(const std::vector<unsigned int>& sequence);
+	StaticDegreeSequenceGenerator(const std::vector<count>& sequence);
 
 	/**
 	 * Erdoes-Gallai test if degree sequence seq is realizable.
