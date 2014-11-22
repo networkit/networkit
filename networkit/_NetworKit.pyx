@@ -2648,9 +2648,10 @@ cdef extern from "cpp/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP":
 		_PLP(_Graph _G) except +
 		_PLP(_Graph _G, count updateThreshold) except +
+		_PLP(_Graph _G, _Partition baseClustering, count updateThreshold) except +
+		_PLP(_Graph _G, _Partition baseClustering) except +
 		void run() except +
 		_Partition getPartition() except +
-		void runFromGiven(_Partition _part) except +
 		count numberOfIterations() except +
 		string toString() except +
 
@@ -2670,11 +2671,28 @@ cdef class PLP(CommunityDetector):
 	"""
 	cdef _PLP* _this
 
-	def __cinit__(self, Graph G not None, updateThreshold=None):
-		if updateThreshold is None:
+	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
+		""" 
+		Constructor to the Parallel label propagation community detection algorithm.
+
+		Parameters
+		----------
+		G : Graph
+			The graph on which the algorithm has to run.
+		baseClustering : Partition
+			PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
+		updateThreshold : integer
+			number of nodes that have to be changed in each iteration so that a new iteration starts.
+		"""
+		if updateThreshold is None and baseClustering is None:
 			self._this = new _PLP(G._this)
+		elif updateThreshold is None and baseClustering is not None:
+			self._this = new _PLP(G._this, baseClustering._this)
+		elif updateThreshold is not None and baseClustering is None:
+			p = Partition(0)
+			self._this = new _PLP(G._this, p._this, updateThreshold)
 		else:
-			self._this = new _PLP(G._this, updateThreshold)
+			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
 		
 	def __dealloc__(self):
 		del self._this
@@ -2683,29 +2701,6 @@ cdef class PLP(CommunityDetector):
 		""" Run the label propagation clustering algorithm.
 		"""
 		self._this.run()
-		return self
-
-	def runFromGiven(self, Partition part not None):
-		""" Run the label propagation clustering algorithm starting
-		from the Partition part.
-
-		Parameters
-		----------
-		G : Graph
-			input graph
-
-		part : Partition
-			input partition
-
-	 	Returns
-	 	-------
-	 	Partition
-	 		The created clustering.
-		"""
-		# Work on a local copy as PLP::runFromGiven works on the input
-		cdef _Partition algInput = part._this
-		self._this.runFromGiven(algInput)
-		#return Partition().setThis(algInput)
 		return self
 
 	def getPartition(self):
