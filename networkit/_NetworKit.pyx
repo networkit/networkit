@@ -2537,6 +2537,7 @@ cdef class GraphClusteringTools:
 cdef extern from "cpp/graph/GraphTools.h" namespace "NetworKit::GraphTools":
 	_Graph getCompactedGraph(_Graph G) except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) except +
+	_Graph toUndirected(_Graph G) except +
 
 cdef class GraphTools:
 	@staticmethod
@@ -2549,6 +2550,9 @@ cdef class GraphTools:
 		for elem in cResult:
 			result[elem.first] = elem.second
 		return result
+	@staticmethod
+	def toUndirected(Graph graph):
+		return Graph().setThis(toUndirected(graph._this))
 
 cdef extern from "cpp/community/PartitionIntersection.h":
 	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
