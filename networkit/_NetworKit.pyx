@@ -2534,6 +2534,22 @@ cdef class GraphClusteringTools:
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		return equalClusterings(zeta._this, eta._this, G._this)
 
+cdef extern from "cpp/graph/GraphTools.h" namespace "NetworKit::GraphTools":
+	_Graph getCompactedGraph(_Graph G) except +
+	unordered_map[node,node] getContinuousNodeIds(_Graph G) except +
+
+cdef class GraphTools:
+	@staticmethod
+	def getCompactedGraph(Graph graph):
+		return Graph().setThis(getCompactedGraph(graph._this))
+	@staticmethod
+	def getContinuousNodeIds(Graph graph):
+		cdef unordered_map[node,node] cResult = getContinuousNodeIds(graph._this)
+		result = dict()
+		for elem in cResult:
+			result[elem.first] = elem.second
+		return result
+
 cdef extern from "cpp/community/PartitionIntersection.h":
 	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
 		_PartitionIntersection() except +
