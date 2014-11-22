@@ -12,6 +12,8 @@ Graph getCompactedGraph(const Graph& graph);
 
 std::unordered_map<node,node> getContinuousNodeIds(const Graph& graph);
 
+Graph toUndirected(const Graph& graph);
+
 }	// namespace GraphTools
 
 }	// namespace NetworKit
