@@ -199,7 +199,7 @@ private:
 	 * of this method is lower than the priority of the other methods. This method avoids ugly and unreadable template substitution
 	 * error messages from the other declarations.
 	 */
-	template<class F, bool InEdges = false, void* = nullptr>
+	template<class F, bool InEdges = false, void* = (void*)0>
 	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, ...) const {
 		// the strange condition is used in order to delay the eveluation of the static assert to the moment when this function is actually used
 		static_assert(! std::is_same<F, F>::value, "Your lambda does not support the required parameters or the parameters have the wrong type.");
@@ -212,9 +212,10 @@ private:
 	 */
 	template < class F, bool InEdges = false,
 	         typename std::enable_if <
+	         (Aux::FunctionTraits<F>::arity >= 3) &&
 	         std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value &&
 	         std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::value
-	         >::type * = nullptr >
+	         >::type * = (void*)0 >
 	auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, ew, id)) {
 		return f(u, v, ew, id);
 	}
@@ -225,7 +226,10 @@ private:
 	 * Note that the decltype check is not enough as edgeweight can be casted to node.
 	 */
 	template<class F, bool InEdges = false,
-			 typename std::enable_if<std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value>::type* = nullptr>
+			 typename std::enable_if<
+			 (Aux::FunctionTraits<F>::arity >= 2) &&
+			 std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
+			 >::type* = (void*)0>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, id)) {
 		return f(u, v, id);
 	}
@@ -235,7 +239,10 @@ private:
 	 * Note that the decltype check is not enough as node can be casted to edgeweight.
 	 */
 	template<class F, bool InEdges = false,
-			 typename std::enable_if<std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value>::type* = nullptr>
+			 typename std::enable_if<
+			 (Aux::FunctionTraits<F>::arity >= 2) &&
+			 std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
+			 >::type* = (void*)0>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, ew)) {
 		return f(u, v, ew);
 	}
@@ -247,7 +254,10 @@ private:
 	 * Note that the decltype check is not enough as edgeweight can be casted to node.
 	 */
 	template<class F, bool InEdges = false,
-			 typename std::enable_if<std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value>::type* = nullptr>
+			 typename std::enable_if<
+			 (Aux::FunctionTraits<F>::arity >= 1) &&
+			 std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value
+			 >::type* = (void*)0>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v)) {
 			return f(u, v);
 	}
@@ -258,7 +268,10 @@ private:
 	 * Note that the decltype check is not enough as edgeweight can be casted to node.
 	 */
 	template<class F, bool InEdges = false,
-			 typename std::enable_if<std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<1>::type>::value>::type* = nullptr>
+			 typename std::enable_if<
+			 (Aux::FunctionTraits<F>::arity >= 1) &&
+			 std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<1>::type>::value
+			 >::type* = (void*)0>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, ew)) {
 		if (InEdges) {
 			return f(u, ew);
@@ -273,7 +286,7 @@ private:
 	 * node id, the edge weight and the edge id
 	 */
 	template<class F, bool InEdges = false,
-			 void* = nullptr>
+			 void* = (void*)0>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(v)) {
 		if (InEdges) {
 			return f(u);
@@ -1014,7 +1027,7 @@ inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
 		node v = outEdges[u][i];
 
 		if (useEdgeInIteration<graphIsDirected>(u, v)) {
-			edgeLambda(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
+			edgeLambda<L, false>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
 		}
 	}
 }
@@ -1026,7 +1039,7 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
 			node v = inEdges[u][i];
 
 			if (useEdgeInIteration<true>(u, v)) {
-				edgeLambda<L, true, nullptr>(handle, v, u, getInEdgeWeight<hasWeights>(u, i), getInEdgeId<graphHasEdgeIds>(u, i));
+				edgeLambda<L, true>(handle, v, u, getInEdgeWeight<hasWeights>(u, i), getInEdgeId<graphHasEdgeIds>(u, i));
 			}
 		}
 	} else {
@@ -1034,7 +1047,7 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
 			node v = outEdges[u][i];
 
 			if (useEdgeInIteration<true>(u, v)) {
-				edgeLambda<L, true, nullptr>(handle, v, u, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
+				edgeLambda<L, true>(handle, v, u, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
 			}
 		}
 	}
@@ -1068,7 +1081,7 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
 			// undirected, do not iterate over edges twice
 			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 			if (useEdgeInIteration<graphIsDirected>(u, v)) {
-				sum += edgeLambda(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
+				sum += edgeLambda<L, false>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
 			}
 		}
 	}

@@ -12,13 +12,13 @@ namespace Aux {
 Timer::Timer() : running(false) {
 }
 
-std::chrono::steady_clock::time_point Timer::start() {
-	this->started = std::chrono::steady_clock::now();
+my_steady_clock::time_point Timer::start() {
+	this->started = my_steady_clock::now();
 	return this->started;
 }
 
-std::chrono::steady_clock::time_point Timer::stop() {
-	this->stopped = std::chrono::steady_clock::now();
+my_steady_clock::time_point Timer::stop() {
+	this->stopped = my_steady_clock::now();
 	return this->stopped;
 }
 
@@ -27,11 +27,11 @@ std::chrono::duration<uint64_t, std::milli> Timer::elapsed() {
 	return elapsed;
 }
 
-std::chrono::steady_clock::time_point Timer::startTime() {
+my_steady_clock::time_point Timer::startTime() {
 	return this->started;
 }
 
-std::chrono::steady_clock::time_point Timer::stopTime() {
+my_steady_clock::time_point Timer::stopTime() {
 	return this->stopped;
 }
 
