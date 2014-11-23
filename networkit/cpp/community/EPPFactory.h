@@ -9,20 +9,10 @@
 #define EPPFACTORY_H_
 
 #include "EPP.h"
-
 namespace NetworKit {
-
-/**
- * @ingroup community
- * This class makes instaces of the EPP community detection algorithm.
- */
-class EPPFactory {
-public:
+namespace EPPFactory {
 	EPP make(const Graph& G, count ensembleSize, std::string baseAlgorithm, std::string finalAlgorithm);
-
-};
-
+	EPP* makePtr(const Graph& G, count ensembleSize, std::string baseAlgorithm, std::string finalAlgorithm);
 }
-
-
-#endif
+}
+#endif 
