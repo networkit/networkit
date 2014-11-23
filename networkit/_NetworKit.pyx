@@ -3141,6 +3141,7 @@ cdef class EPP(CommunityDetector):
 		return self._this.toString()
 
 	cdef setThis(self, _EPP* other):
+		del self._this # is this correct here?
 		self._this = other
 		return self
 
@@ -3151,8 +3152,10 @@ cdef extern from "cpp/community/EPPFactory.h" namespace "NetworKit::EPPFactory":
 
 cdef class EPPFactory:
 	""" This class makes instaces of the EPP community detection algorithm """
+
 	@staticmethod
-	"""
+	def make(Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
+		"""
 		Returns an instance of an ensemble preprocessing (EPP).
 
 		Parameters:
@@ -3162,16 +3165,15 @@ cdef class EPPFactory:
 		ensembleSize : integer
 			The amount of baseAlgorithms to preprocess the communities.
 		baseAlgorithm : CommunityDetectionAlgorithm
-			Algorithm ("PLP","PLM") to preprocess the communities. ensembleSize instances will be created.
+			String representation of the algorithm ("PLP","PLM") to preprocess the communities. ensembleSize instances will be created.
 		finalAlgorithm  : CommunityDetectionAlgorithm
-			lgorithm ("PLP" "PLM[R]") to finish the ensemble.
-		
+			String representation of the algorithm ("PLP" "PLM[R]") to finish the ensemble.
+
 		Returns
 		-------
 		EPP
 			The EPP instance.
-	"""
-	def make(Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
+		"""
 		return EPP(G).setThis(makePtr(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
 
 cdef extern from "cpp/community/CommunityGraph.h":
