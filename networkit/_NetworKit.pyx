@@ -3141,20 +3141,20 @@ cdef class EPP(CommunityDetector):
 		return self._this.toString()
 
 	cdef setThis(self, _EPP* other):
+		#swap[_EPP](self._this, other)
 		self._this = other
 		return self
 
 
-cdef extern from "cpp/community/EPPFactory.h":
-	cdef cppclass _EPPFactory "NetworKit::EPPFactory":
+cdef extern from "cpp/community/EPPFactory.h" namespace "NetworKit::EPPFactory":
 		_EPP make(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
+		_EPP* makePtr(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
 
 cdef class EPPFactory:
 	""" This class makes instaces of the EPP community detection algorithm """
-	cdef _EPPFactory _this
-
-#	def make(self, Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
-#		return EPP().setThis(self._this.make(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
+	@staticmethod
+	def make(Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
+		return EPP(G).setThis(makePtr(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
 
 cdef extern from "cpp/community/CommunityGraph.h":
 	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":
