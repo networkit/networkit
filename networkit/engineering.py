@@ -14,7 +14,7 @@ def strongScaling(algorithmClass, threadSequence, inargs, inputTitle=None, repet
 	""" Evaluate strong scaling, i.e. how the performance varies with the number of threads
 		for a fixed input size.
 	"""
-	algorithm = algorithmClass(*inargs)
+	algorithm = algorithmClass(**inargs)
 	data = []	# collects data about the experiments
 	threadsAvailable = getMaxNumberOfThreads()	# remember maximum number of threads and restore later
 	for nThreads in threadSequence:
