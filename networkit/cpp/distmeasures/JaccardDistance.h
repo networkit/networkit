@@ -28,7 +28,7 @@ public:
 	 * @param G The graph.
 	 * @param triangles Edge attribute containing the number of triangles each edge is contained in.
 	 */
-	JaccardDistance(const Graph& G, const std::vector<int>& triangles);
+	JaccardDistance(const Graph& G, const std::vector<count>& triangles);
 
 	/**
 	 * REQ: Needs to be called before getEdgeAttribute delivers meaningful results.
@@ -48,7 +48,7 @@ public:
 	std::vector<double> getEdgeAttribute();
 
 protected:
-	const std::vector<int>& triangles;
+	const std::vector<count>& triangles;
 	std::vector<double> jDistance; //result vector
 
 	inline double getJaccardDistance(count degU, count degV, count t);

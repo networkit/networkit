@@ -25,7 +25,7 @@ TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 	g.indexEdges();
 
 	ChibaNishizekiTriangleCounter triangleCounter(g);
-	std::vector<int> triangles = triangleCounter.getAttribute();
+	std::vector<count> triangles = triangleCounter.getAttribute();
 	LocalSimilarityAttributizer localSim(g, triangles);
 	std::vector<double> exp = localSim.getAttribute();
 
