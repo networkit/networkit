@@ -15,12 +15,12 @@ namespace NetworKit {
 class NodeNormalizedTriangleAttributizer : public EdgeAttribute<double> {
 
 public:
-	NodeNormalizedTriangleAttributizer(const Graph& graph, const std::vector<int>& triangles);
+	NodeNormalizedTriangleAttributizer(const Graph& graph, const std::vector<count>& triangles);
 	virtual std::vector<double> getAttribute() override;
 
 private:
 	const Graph& graph;
-	const std::vector<int>& triangles;
+	const std::vector<count>& triangles;
 
 };
 

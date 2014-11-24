@@ -40,7 +40,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 	runtime.start();
 
 	ChibaNishizekiTriangleCounter counter(G);
-	std::vector<int> counts = counter.getAttribute();
+	std::vector<count> counts = counter.getAttribute();
 
 	SimmelianOverlapAttributizer attributizer(G, counts, 10);
 	auto attribute = attributizer.getAttribute();
@@ -60,7 +60,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 	runtime.start();
 
 	ChibaNishizekiTriangleCounter counter(G);
-	std::vector<int> counts = counter.getAttribute();
+	std::vector<count> counts = counter.getAttribute();
 
 	SimmelianJaccardAttributizer attributizer(G, counts);
 	auto attribute = attributizer.getAttribute();
@@ -102,7 +102,7 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 	runtime.start();
 
 	ChibaNishizekiTriangleCounter counter(G);
-	std::vector<int> triangles = counter.getAttribute();
+	std::vector<count> triangles = counter.getAttribute();
 
 	LocalSimilarityAttributizer attributizer(G, triangles);
 	auto attribute = attributizer.getAttribute();
@@ -137,7 +137,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	std::cout << "[BEGIN] triangle counting: " << std::endl;
 	runtime.start();
 	ChibaNishizekiTriangleCounter oldTriangleAttributizer(g);
-	std::vector<int> oldTriangles = oldTriangleAttributizer.getAttribute();
+	std::vector<count> oldTriangles = oldTriangleAttributizer.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] Chiba Nishizeki triangle counting " << runtime.elapsedTag() << std::endl;
 
@@ -145,7 +145,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	std::cout << "[BEGIN] triangle counting: " << std::endl;
 	runtime.start();
 	TriangleCounter triangleAttributizer(g);
-	std::vector<int> triangles = triangleAttributizer.getAttribute();
+	std::vector<count> triangles = triangleAttributizer.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] triangle counting " << runtime.elapsedTag() << std::endl;
 

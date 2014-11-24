@@ -39,7 +39,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Cover move(_Cover t)
 	vector[double] move(vector[double])
 	vector[bool] move(vector[bool])
-	vector[int] move(vector[int])
+	vector[count] move(vector[count])
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
 
 
@@ -4896,7 +4896,7 @@ cdef extern from "cpp/edgeattributes/ChibaNishizekiTriangleCounter.h":
 	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
 		_ChibaNishizekiTriangleCounter(const _Graph& G) except +
 		void run() except +
-		vector[int] getAttribute() except +
+		vector[count] getAttribute() except +
 
 cdef class ChibaNishizekiTriangleCounter:
 	"""
@@ -4926,7 +4926,7 @@ cdef extern from "cpp/edgeattributes/ChibaNishizekiQuadrangleCounter.h":
 	cdef cppclass _ChibaNishizekiQuadrangleCounter "NetworKit::ChibaNishizekiQuadrangleCounter":
 		_ChibaNishizekiQuadrangleCounter(const _Graph& G) except +
 		#void run() except +
-		vector[int] getAttribute() except +
+		vector[count] getAttribute() except +
 
 cdef class ChibaNishizekiQuadrangleCounter:
 	"""
@@ -4955,7 +4955,7 @@ cdef extern from "cpp/edgeattributes/TriangleCounter.h":
 	cdef cppclass _TriangleCounter "NetworKit::TriangleCounter":
 		_TriangleCounter(const _Graph& G) except +
 		#void run() except +
-		vector[int] getAttribute() except +
+		vector[count] getAttribute() except +
 
 cdef class TriangleCounter:
 	"""
@@ -5221,7 +5221,7 @@ cdef class ChungLuAttributizer:
 
 cdef extern from "cpp/sparsification/SimmelianJaccardAttributizer.h":
 	cdef cppclass _SimmelianJaccardAttributizer "NetworKit::SimmelianJaccardAttributizer":
-		_SimmelianJaccardAttributizer(const _Graph& G, vector[int] triangles) except +
+		_SimmelianJaccardAttributizer(const _Graph& G, vector[count] triangles) except +
 		#void run() except +
 		vector[double] getAttribute() except +
 
@@ -5229,7 +5229,7 @@ cdef class SimmelianJaccardAttributizer:
 
 	cdef _SimmelianJaccardAttributizer* _this
 
-	def __cinit__(self, Graph G, vector[int] triangles):
+	def __cinit__(self, Graph G, vector[count] triangles):
 		self._this = new _SimmelianJaccardAttributizer(G._this, triangles)
 
 	def __dealloc__(self):
@@ -5243,7 +5243,7 @@ cdef class SimmelianJaccardAttributizer:
 
 cdef extern from "cpp/sparsification/SimmelianOverlapAttributizer.h":
 	cdef cppclass _SimmelianOverlapAttributizer "NetworKit::SimmelianOverlapAttributizer":
-		_SimmelianOverlapAttributizer(const _Graph& G, vector[int] triangles, count maxRank) except +
+		_SimmelianOverlapAttributizer(const _Graph& G, vector[count] triangles, count maxRank) except +
 		#void run() except +
 		vector[double] getAttribute() except +
 
@@ -5251,7 +5251,7 @@ cdef class SimmelianOverlapAttributizer:
 
 	cdef _SimmelianOverlapAttributizer* _this
 
-	def __cinit__(self, Graph G, vector[int] triangles, count maxRank):
+	def __cinit__(self, Graph G, vector[count] triangles, count maxRank):
 		self._this = new _SimmelianOverlapAttributizer(G._this, triangles, maxRank)
 
 	def __dealloc__(self):
@@ -5309,7 +5309,7 @@ cdef class RandomAttributizer:
 
 cdef extern from "cpp/sparsification/LocalSimilarityAttributizer.h":
 	cdef cppclass _LocalSimilarityAttributizer "NetworKit::LocalSimilarityAttributizer":
-		_LocalSimilarityAttributizer(const _Graph& G, const vector[int]& triangles) except +
+		_LocalSimilarityAttributizer(const _Graph& G, const vector[count]& triangles) except +
 		#void run() except +
 		vector[double] getAttribute() except +
 
@@ -5317,9 +5317,9 @@ cdef class LocalSimilarityAttributizer:
 	cdef _LocalSimilarityAttributizer* _this
 	
 	cdef Graph _G
-	cdef vector[int] _triangles
+	cdef vector[count] _triangles
 
-	def __cinit__(self, Graph G, vector[int] triangles):
+	def __cinit__(self, Graph G, vector[count] triangles):
 		self._G = G
 		self._triangles = move(triangles)
 		self._this = new _LocalSimilarityAttributizer(G._this, self._triangles)
@@ -5379,7 +5379,7 @@ cdef class LocalDegreeAttributizer:
 
 cdef extern from "cpp/distmeasures/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
-		_JaccardDistance(const _Graph& G, vector[int] triangles) except +
+		_JaccardDistance(const _Graph& G, vector[count] triangles) except +
 		#void run() except +
 		vector[double] getEdgeAttribute() except +
 
@@ -5387,7 +5387,7 @@ cdef class JaccardDistance:
 
 	cdef _JaccardDistance* _this
 
-	def __cinit__(self, Graph G, vector[int] triangles):
+	def __cinit__(self, Graph G, vector[count] triangles):
 		self._this = new _JaccardDistance(G._this, triangles)
 
 	def __dealloc__(self):
@@ -5400,7 +5400,7 @@ cdef class JaccardSimilarityAttributizer:
 
 	cdef _JaccardDistance* _this
 
-	def __cinit__(self, Graph G, vector[int] triangles):
+	def __cinit__(self, Graph G, vector[count] triangles):
 		self._this = new _JaccardDistance(G._this, triangles)
 
 	def __dealloc__(self):
@@ -5466,7 +5466,7 @@ cdef class LocalFilterAttributizer:
 	
 cdef extern from "cpp/sparsification/ChanceCorrectedTriangleAttributizer.h":
 	cdef cppclass _ChanceCorrectedTriangleAttributizer "NetworKit::ChanceCorrectedTriangleAttributizer":
-		_ChanceCorrectedTriangleAttributizer(const _Graph& G, vector[int] triangles) except +
+		_ChanceCorrectedTriangleAttributizer(const _Graph& G, vector[count] triangles) except +
 		vector[double] getAttribute() except +
 
 cdef class ChanceCorrectedTriangleAttributizer:
@@ -5477,12 +5477,12 @@ cdef class ChanceCorrectedTriangleAttributizer:
 	----------
 	G : Graph
 		The input graph.
-	triangles : vector[int]
+	triangles : vector[count]
 		Triangle count.
 	"""
 	cdef _ChanceCorrectedTriangleAttributizer* _this
 
-	def __cinit__(self, Graph G, vector[int] triangles):
+	def __cinit__(self, Graph G, vector[count] triangles):
 		self._this = new _ChanceCorrectedTriangleAttributizer(G._this, triangles)
 
 	def __dealloc__(self):
@@ -5502,7 +5502,7 @@ cdef class ChanceCorrectedTriangleAttributizer:
 
 cdef extern from "cpp/sparsification/NodeNormalizedTriangleAttributizer.h":
 	cdef cppclass _NodeNormalizedTriangleAttributizer "NetworKit::NodeNormalizedTriangleAttributizer":
-		_NodeNormalizedTriangleAttributizer(_Graph G, vector[int] triangles) except +
+		_NodeNormalizedTriangleAttributizer(_Graph G, vector[count] triangles) except +
 		vector[double] getAttribute() except +
 
 cdef class NodeNormalizedTriangleAttributizer:
@@ -5513,12 +5513,12 @@ cdef class NodeNormalizedTriangleAttributizer:
 	----------
 	G : Graph
 		The input graph.
-	triangles : vector[int]
+	triangles : vector[count]
 		Triangle count.
 	"""
 	cdef _NodeNormalizedTriangleAttributizer* _this
 
-	def __cinit__(self, Graph G, vector[int] triangles):
+	def __cinit__(self, Graph G, vector[count] triangles):
 		self._this = new _NodeNormalizedTriangleAttributizer(G._this, triangles)
 
 	def __dealloc__(self):

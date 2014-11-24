@@ -41,7 +41,7 @@ SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(const Graph& grap
 
 void SimmelianBackboneNonParametric::run() {
 	ChibaNishizekiTriangleCounter triangleAttributizer(inputGraph);
-	std::vector<int> triangles = triangleAttributizer.getAttribute();
+	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
 	SimmelianJaccardAttributizer jaccardAttributizer(inputGraph, triangles);
 	std::vector<double> jaccard = jaccardAttributizer.getAttribute();
@@ -60,7 +60,7 @@ SimmelianBackboneParametric::SimmelianBackboneParametric(const Graph& graph, int
 
 void SimmelianBackboneParametric::run() {
 	ChibaNishizekiTriangleCounter triangleAttributizer(inputGraph);
-	std::vector<int> triangles = triangleAttributizer.getAttribute();
+	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
 	SimmelianOverlapAttributizer overlapAttributizer(inputGraph, triangles, maxRank);
 	std::vector<double> overlap = overlapAttributizer.getAttribute();
@@ -100,7 +100,7 @@ LocalSimilarityBackbone::LocalSimilarityBackbone(const Graph& graph, double e) :
 
 void LocalSimilarityBackbone::run() {
 	ChibaNishizekiTriangleCounter triangleCounter(inputGraph);
-	std::vector<int> triangles = triangleCounter.getAttribute();
+	std::vector<count> triangles = triangleCounter.getAttribute();
 
 	LocalSimilarityAttributizer localSimAttributizer(inputGraph, triangles);
 	std::vector<double> minExponent = localSimAttributizer.getAttribute();
@@ -119,7 +119,7 @@ SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(const Graph& graph, dou
 
 void SimmelianMultiscaleBackbone::run() {
 	ChibaNishizekiTriangleCounter triangleAttributizer(inputGraph);
-	std::vector<int> triangles = triangleAttributizer.getAttribute();
+	std::vector<count> triangles = triangleAttributizer.getAttribute();
 	std::vector<double> triangles_d = std::vector<double>(triangles.begin(), triangles.end());
 
 	MultiscaleAttributizer multiscaleAttributizer (inputGraph, triangles_d);
