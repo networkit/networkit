@@ -55,7 +55,7 @@ def weakScaling(algorithmClass, inargs, threadSequence, inputSequence, inputTitl
 		setNumberOfThreads(nThreads)
 		print("set number of threads to {0}".format(getMaxNumberOfThreads()))
 		for r in range(repetitions):
-			algorithm = algorithmclass(input, **inargs)
+			algorithm = algorithmClass(input, **inargs)
 			print("running {0}".format(algorithm.toString()))
 			timer = stopwatch.Timer()
 			result = algorithm.run()
