@@ -43,7 +43,7 @@ def strongScaling(algorithmClass, threadSequence, inargs, inputTitle=None, repet
 				writer.writerow(row)
 	return data
 
-def weakScaling(algorithm, threadSequence, inputSequence, inputTitles=None, repetitions=1, outPath=None):
+def weakScaling(algorithmClass, inargs, threadSequence, inputSequence, inputTitles=None, repetitions=1, outPath=None):
 	""" Evaluate weak scaling, i.e. how the performance varies with the number of threads
 		for a fixed input size per processor.
 	"""
@@ -55,9 +55,10 @@ def weakScaling(algorithm, threadSequence, inputSequence, inputTitles=None, repe
 		setNumberOfThreads(nThreads)
 		print("set number of threads to {0}".format(getMaxNumberOfThreads()))
 		for r in range(repetitions):
+			algorithm = algorithmclass(input, **inargs)
 			print("running {0}".format(algorithm.toString()))
 			timer = stopwatch.Timer()
-			result = algorithm.run(input)
+			result = algorithm.run()
 			timer.stop()
 			# append run data
 			data.append({"algo": algorithm.toString(), "input": inputTitles[i], "threads": nThreads, "time": timer.elapsed})
