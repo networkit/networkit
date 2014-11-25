@@ -19,7 +19,7 @@ class Test_CommunityDetection(unittest.TestCase):
 	def test_CutClustering(self):
 		jazz = readGraph("input/jazz.graph",Format.METIS)
 
-		cc = community.CutClustering(self.G,0.5076142131979697)
+		cc = community.CutClustering(jazz,0.5076142131979697)
 
 		comms = community.detectCommunities(jazz, cc)
 		self.assertEqual(193, comms.numberOfSubsets())
