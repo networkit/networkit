@@ -26,6 +26,7 @@ import multiprocessing
 import os
 import shutil
 
+import subprocess
 from subprocess import Popen, DEVNULL
 import shlex
 
@@ -154,7 +155,7 @@ if os.path.isfile("networkit/_NetworKit.cpp"):
 parser = ArgumentParser()
 parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
 parser.add_argument("-o", "--optimize", dest="optimize", help="specify build type: Opt=optimize, Dbg=debug, Pro=profiling")
-parser.add_argument("-c", "--with-cpp-tests", dest="cpptests", help="Also compile and run the C++ unit tests",action='store_false')
+parser.add_argument("-c", "--with-cpp-tests", dest="cpptests", help="Also compile and run the C++ unit tests",action='store_true')
 (options,args) = parser.parse_known_args()
 
 # set optional arguments to parsed ones or the default ones
@@ -166,11 +167,6 @@ if options.optimize is not None:
 	optimize = options.optimize
 else:
 	optimize = "Opt"
-if options.cpptests is not None:
-	cpptests = True
-else:
-	cpptests = False
-
 
 # make sure sys.argv is correct for setuptools
 args.reverse()
@@ -266,7 +262,7 @@ class MyTestCommand(TestCommand):
 		TestCommand.finalize_options(self)
 	
 	def run(self):
-		if cpptests:
+		if options.cpptests:
 			optimize = "Dbg"
 			comp_cmd = "scons --optimize={0} --target=Tests -j{1}".format(optimize,jobs)
 			print("initializing NetworKit compilation with: {0}".format(comp_cmd))
@@ -284,6 +280,9 @@ class MyTestCommand(TestCommand):
 				print("C++ unit tests didn't report any errors")
 			else:
 				print("some C++ unit tests failed, see above")
+		if subprocess.call(["scons","--optimize=Opt","--target=Core","-j{0}".format(jobs)]) != 0:
+			print("compiling NetworKit for the extension went wrong...exiting")
+			exit(1)
 		TestCommand.run(self)
 
 
