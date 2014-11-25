@@ -154,6 +154,7 @@ if os.path.isfile("networkit/_NetworKit.cpp"):
 parser = ArgumentParser()
 parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
 parser.add_argument("-o", "--optimize", dest="optimize", help="specify build type: Opt=optimize, Dbg=debug, Pro=profiling")
+parser.add_argument("-c", "--with-cpp-tests", dest="cpptests", help="Also compile and run the C++ unit tests",action='store_false')
 (options,args) = parser.parse_known_args()
 
 # set optional arguments to parsed ones or the default ones
@@ -165,6 +166,11 @@ if options.optimize is not None:
 	optimize = options.optimize
 else:
 	optimize = "Opt"
+if options.cpptests is not None:
+	cpptests = True
+else:
+	cpptests = False
+
 
 # make sure sys.argv is correct for setuptools
 args.reverse()
@@ -260,37 +266,24 @@ class MyTestCommand(TestCommand):
 		TestCommand.finalize_options(self)
 	
 	def run(self):
-		jobs = multiprocessing.cpu_count()
-		#if options.optimize is not None:
-		#	optimize = options.optimize
-		#else:
-		optimize = "Dbg"
-		comp_cmd = "scons --optimize={0} --target=Tests -j{1}".format(optimize,jobs)
-		print("initializing NetworKit compilation with: {0}".format(comp_cmd))
-		#comp_proc = Popen(shlex.split(comp_cmd), stdout=DEVNULL, stderr=DEVNULL)
-		comp_proc = Popen(shlex.split(comp_cmd))
-		comp_proc.wait()
-		if (comp_proc.returncode != 0):
-			print("scons returned an error, exiting setup.py")
-			exit(1)
-		run_cpp_cmd = "./NetworKit-Tests-{0} -t".format(optimize)
-		#run_cpp_proc = Popen(shlex.split(run_cpp_cmd), stdout=DEVNULL, stderr=DEVNULL)
-		run_cpp_proc = Popen(shlex.split(run_cpp_cmd))
-		run_cpp_proc.wait()
-		if run_cpp_proc.returncode == 0:
-			print("C++ unit tests didn't report any errors")
-		else:
-			print("some C++ unit tests failed, see above")
-#		print("return code from tests: {0}".format(run_cpp_proc.returncode))
-#		build_ext.run(self)	
-		comp_cmd = "scons --optimize=Opt --target=Core -j{1}".format(optimize,jobs)
-		print("initializing NetworKit compilation with: {0}".format(comp_cmd))
-		comp_proc = Popen(shlex.split(comp_cmd))
-		comp_proc.wait()
-		if (comp_proc.returncode != 0):
-			print("scons returned an error, exiting setup.py")
-			exit(1)
-
+		if cpptests:
+			optimize = "Dbg"
+			comp_cmd = "scons --optimize={0} --target=Tests -j{1}".format(optimize,jobs)
+			print("initializing NetworKit compilation with: {0}".format(comp_cmd))
+			#comp_proc = Popen(shlex.split(comp_cmd), stdout=DEVNULL, stderr=DEVNULL)
+			comp_proc = Popen(shlex.split(comp_cmd))
+			comp_proc.wait()
+			if (comp_proc.returncode != 0):
+				print("scons returned an error, exiting setup.py")
+				exit(1)
+			run_cpp_cmd = "./NetworKit-Tests-{0} -t".format(optimize)
+			#run_cpp_proc = Popen(shlex.split(run_cpp_cmd), stdout=DEVNULL, stderr=DEVNULL)
+			run_cpp_proc = Popen(shlex.split(run_cpp_cmd))
+			run_cpp_proc.wait()
+			if run_cpp_proc.returncode == 0:
+				print("C++ unit tests didn't report any errors")
+			else:
+				print("some C++ unit tests failed, see above")
 		TestCommand.run(self)
 
 
