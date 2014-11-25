@@ -75,6 +75,7 @@ void NetworKit::CutClustering::run() {
 			}
 		}
 	}
+	this->result = std::move(result);
 	hasRun = true;
 }
 
