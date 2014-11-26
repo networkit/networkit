@@ -25,9 +25,10 @@ def graphInfo(directory, fileEnding, outPath, fileformat=Format.METIS):
 		print("reading ", file)
 		G = readGraph(file, fileformat)
 		print("analyzing ", file)
-		data.append({"n": G.numberOfNodes(), "m": G.numberOfEdges(), "maxdeg": properties.degrees(G)[1], "comp": properties.numberOfComponents(G), "lcc": round(properties.clustering(G), 4)})
+		graphName = os.path.split(file)[1].split(".")[0]
+		data.append({"graph": graphName, "n": G.numberOfNodes(), "m": G.numberOfEdges(), "maxdeg": properties.degrees(G)[1], "comp": properties.numberOfComponents(G), "lcc": round(properties.clustering(G), 4)})
 	print(data)
-	info = pandas.DataFrame(data, columns=["n", "m", "maxdeg", "comp", "lcc"])
+	info = pandas.DataFrame(data, columns=["graph", "n", "m", "maxdeg", "comp", "lcc"])
 	info.to_csv(path_or_buf=outPath, sep="\t")
 	return info
 
