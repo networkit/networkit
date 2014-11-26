@@ -1,5 +1,6 @@
 import csv
 import os
+import pandas
 
 from networkit import *
 
@@ -11,6 +12,25 @@ def getFileList(directory):
 		for filename in filenames:
 			ls.append(os.path.join(root, filename))
 	return ls
+
+
+def graphInfo(directory, fileEnding, outPath, fileformat=Format.METIS):
+	fileList = []
+	data = []
+	for (root, _, filenames) in os.walk(directory):
+		for filename in filenames:
+			if filename.endswith(fileEnding):
+				fileList.append(os.path.join(root, filename))
+	for file in fileList:
+		print("reading ", file)
+		G = readGraph(file, fileformat)
+		print("analyzing ", file)
+		data.append({"n": G.numberOfNodes(), "m": G.numberOfEdges(), "maxdeg": properties.degrees(G)[1], "comp": properties.numberOfComponents(G), "lcc": round(properties.clustering(G), 4)})
+	print(data)
+	info = pandas.DataFrame(data, columns=["n", "m", "maxdeg", "comp", "lcc"])
+	info.to_csv(path_or_buf=outPath, sep="\t")
+	return info
+
 
 def communityDetectionBenchmark(graphPaths, outPath, algorithms, arglist=None, repeat=1, graphFormat=Format.METIS):
 	"""
