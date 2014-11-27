@@ -255,7 +255,7 @@ void PLM::run() {
 		timer.stop();
 		timing["coarsen"].push_back(timer.elapsedMilliseconds());
 
-		PLM onCoarsened(coarsened.first);
+		PLM onCoarsened(coarsened.first, this->refine, this->gamma, this->parallelism, this->maxIter, this->parallelCoarsening, this->turbo);
 		onCoarsened.run();
 		Partition zetaCoarse = onCoarsened.getPartition();
 
