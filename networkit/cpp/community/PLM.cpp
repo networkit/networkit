@@ -64,7 +64,7 @@ void PLM::run() {
 
 
 	if (turbo) {
-		if (this->parallelism != "none") { // initialize arrays for all threads only when actually needed
+		if (this->parallelism != "none" && this->parallelism != "none randomized") { // initialize arrays for all threads only when actually needed
 			turboAffinity.resize(omp_get_max_threads());
 			neigh_comm.resize(omp_get_max_threads());
 			for (auto &it : turboAffinity) {
