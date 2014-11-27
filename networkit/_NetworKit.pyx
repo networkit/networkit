@@ -115,6 +115,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph() except +
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
+		_Graph(const _Graph& other, bool weighted, bool directed) except +
 		void indexEdges() except +
 		bool hasEdgeIds()
 		edgeid edgeId(node, node) except +
@@ -172,8 +173,11 @@ cdef class Graph:
 	"""
 	cdef _Graph _this
 
-	def __cinit__(self, n=0, weighted=False, directed=False):
-		self._this = move(_Graph(n, weighted, directed))
+	def __cinit__(self, n=0, bool weighted=False, bool directed=False):
+		if isinstance(n, Graph):
+			self._this = move(_Graph((<Graph>n)._this, weighted, directed))
+		else:
+			self._this = move(_Graph(<count>n, weighted, directed))
 
 	# # any _thisect which appears as a return type needs to implement setThis
 	# cdef setThis(self, _Graph other):
