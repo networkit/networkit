@@ -2,6 +2,8 @@
 # cython: language_level=3
 
 #includes
+# needed for collections.Iterable
+import collections
 
 # C++ operators
 from cython.operator import dereference
@@ -2236,7 +2238,15 @@ cdef class PowerlawDegreeSequence:
 
 cdef extern from "cpp/generators/LFRGenerator.h":
 	cdef cppclass _LFRGenerator "NetworKit::LFRGenerator":
-		_LFRGenerator(count n, count avgDegree, count maxDegree, double mu, double nodeDegreeExp, double communitySizeExp, count minCommunitySize, count maxCommunitySize) except +
+		_LFRGenerator(count n) except +
+		void setDegreeSequence(vector[count] degreeSequence) except +
+		void generatePowerlawDegreeSequence(count avgDegree, count maxDegree, double nodeDegreeExp) except +
+		void setCommunitySizeSequence(vector[count] communitySizeSequence) except +
+		void setPartition(_Partition zeta) except +
+		void generatePowerlawCommunitySizeSequence(count minCommunitySize, count maxCommunitySize, double communitySizeExp) except +
+		void setMu(double mu) except +
+		void setMu(const vector[double] & mu) except +
+		void setMuWithBinomialDistribution(double mu) except +
 		void run() except +
 		_Graph getGraph() except +
 		_Partition getPartition() except +
@@ -2275,11 +2285,42 @@ cdef class LFRGenerator:
 	"""
 	cdef _LFRGenerator *_this
 
-	def __cinit__(self, count n, count avgDegree, count maxDegree, double mu, double nodeDegreeExp, double communitySizeExp, count minCommunitySize, count maxCommunitySize):
-		self._this = new _LFRGenerator(n, avgDegree, maxDegree, mu, nodeDegreeExp, communitySizeExp, minCommunitySize, maxCommunitySize)
+	def __cinit__(self, count n):
+		self._this = new _LFRGenerator(n)
 
 	def __dealloc__(self):
 		del self._this
+
+	def setDegreeSequence(self, vector[count] degreeSequence):
+		self._this.setDegreeSequence(degreeSequence)
+		return self
+
+	def generatePowerlawDegreeSequence(self, count avgDegree, count maxDegree, double nodeDegreeExp):
+		self._this.generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
+		return self
+
+	def setCommunitySizeSequence(self, vector[count] communitySizeSequence):
+		self._this.setCommunitySizeSequence(communitySizeSequence)
+		return self
+
+	def setPartition(self, Partition zeta not None):
+		self._this.setPartition(zeta._this)
+		return self
+
+	def generatePowerlawCommunitySizeSequence(self, count minCommunitySize, count maxCommunitySize, double communitySizeExp):
+		self._this.generatePowerlawCommunitySizeSequence(minCommunitySize, maxCommunitySize, communitySizeExp)
+		return self
+
+	def setMu(self, mu):
+		if isinstance(mu, collections.Iterable):
+			self._this.setMu(<vector[double]>mu)
+		else:
+			self._this.setMu(<double>mu)
+		return self
+
+	def setMuWithBinomialDistribution(self, double mu):
+		self._this.setMuWithBinomialDistribution(mu)
+		return self
 
 	def run(self):
 		"""

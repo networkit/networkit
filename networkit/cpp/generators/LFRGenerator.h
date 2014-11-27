@@ -20,7 +20,23 @@ namespace NetworKit {
  */
 class LFRGenerator {
 public:
-	LFRGenerator(count n, count avgDegree, count maxDegree, double mu, double nodeDegreeExp, double communitySizeExp, count minCommunitySize, count maxCommunitySize);
+	LFRGenerator(count n);
+
+	void setDegreeSequence(std::vector<count> degreeSequence);
+
+	void generatePowerlawDegreeSequence(count avgDegree, count maxDegree, double nodeDegreeExp);
+
+	void setCommunitySizeSequence(std::vector<count> communitySizeSequence);
+
+	void setPartition(Partition zeta);
+
+	void generatePowerlawCommunitySizeSequence(count minCommunitySize, count maxCommunitySize, double communitySizeExp);
+
+	void setMu(double mu);
+
+	void setMu(const std::vector<double> & mu);
+
+	void setMuWithBinomialDistribution(double mu);
 
 	/**
 	 * Generates the graph and the community structure.
@@ -54,15 +70,28 @@ public:
 	 * @return The generated partition.
 	 */
 	Partition&& getMovePartition();
-private:
-	count n, avgDegree, maxDegree;
-	double mu, nodeDegreeExp, communitySizeExp;
-	count minCommunitySize, maxCommunitySize;
 
-	Graph G;
-	Partition zeta;
+protected:
+	virtual std::vector<std::vector<node>> assignNodesToCommunities();
+	virtual Graph generateIntraClusterGraph(std::vector< NetworKit::count > intraDegreeSequence, const std::vector< NetworKit::node > &localToGlobalNode);
+	virtual Graph generateInterClusterGraph(const std::vector<count> &externalDegreeSequence);
+private:
+	count n;
+
+	bool hasDegreeSequence;
+	std::vector<count> degreeSequence;
+
+	bool hasCommunitySizeSequence;
+	std::vector<count> communitySizeSequence;
+
+	bool hasInternalDegreeSequence;
+	std::vector<count> internalDegreeSequence;
+
 	bool hasGraph;
+	Graph G;
+
 	bool hasPartition;
+	Partition zeta;
 };
 
 } // namespace NetworKit
