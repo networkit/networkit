@@ -10,238 +10,151 @@
 #include <algorithm>
 #include <random>
 
-NetworKit::LFRGenerator::LFRGenerator(NetworKit::count n, NetworKit::count avgDegree, NetworKit::count maxDegree, double mu, double nodeDegreeExp, double communitySizeExp, NetworKit::count minCommunitySize, NetworKit::count maxCommunitySize) :
-n(n), avgDegree(avgDegree), maxDegree(maxDegree), mu(mu), nodeDegreeExp(nodeDegreeExp), communitySizeExp(communitySizeExp), minCommunitySize(minCommunitySize), maxCommunitySize(maxCommunitySize), hasGraph(false), hasPartition(false) {
-	if (std::ceil(mu * maxDegree) >= maxCommunitySize) {
-		throw std::runtime_error("Graph not realizable, the maximum internal degree is greater than the largest possible internal degree.");
-	}
+NetworKit::LFRGenerator::LFRGenerator(NetworKit::count n) :
+n(n), hasDegreeSequence(false), hasCommunitySizeSequence(false), hasInternalDegreeSequence(false), hasGraph(false), hasPartition(false) { }
 
-	if (maxDegree >= n) {
-		throw std::runtime_error("Graph not realizable, the maximum degree must not be larger or equal to n");
-	}
+void NetworKit::LFRGenerator::setDegreeSequence(std::vector< NetworKit::count > degreeSequence) {
+	if (degreeSequence.size() != n) throw std::runtime_error("The degree sequence must have as many entries as there are nodes");
+	if (*std::max_element(degreeSequence.begin(), degreeSequence.end()) >= n) throw std::runtime_error("The maximum degree must be smaller than the number of nodes");
+
+	this->degreeSequence = std::move(degreeSequence);
+	this->hasDegreeSequence = true;
 }
 
-void NetworKit::LFRGenerator::run() {
-	std::vector<count> externalDegree;
+void NetworKit::LFRGenerator::generatePowerlawDegreeSequence(NetworKit::count avgDegree, NetworKit::count maxDegree, double nodeDegreeExp) {
+	if (maxDegree >= n) throw std::runtime_error("The maximum degree must be smaller than the number of nodes");
 
-	{
-		PowerlawDegreeSequence nodeDegreeSequence(1, maxDegree, nodeDegreeExp);
-		nodeDegreeSequence.setMinimumFromAverageDegree(avgDegree);
-		if (std::ceil(nodeDegreeSequence.getMinimumDegree() * mu) >= minCommunitySize) {
-			throw std::runtime_error("Graph not realizable, the needed minimum degree in order to realize the node degree sequence is so high that no nodes can be assigned in communities of minimum size");
+	PowerlawDegreeSequence nodeDegreeSequence(1, maxDegree, nodeDegreeExp);
+
+	nodeDegreeSequence.setMinimumFromAverageDegree(avgDegree);
+	nodeDegreeSequence.run();
+
+	this->degreeSequence = nodeDegreeSequence.getDegreeSequence(n);
+	this->hasDegreeSequence = true;
+}
+
+void NetworKit::LFRGenerator::setCommunitySizeSequence(std::vector< NetworKit::count > communitySizeSequence) {
+	this->communitySizeSequence = std::move(communitySizeSequence);
+	this->hasCommunitySizeSequence = true;
+}
+
+void NetworKit::LFRGenerator::generatePowerlawCommunitySizeSequence(NetworKit::count minCommunitySize, NetworKit::count maxCommunitySize, double communitySizeExp) {
+	PowerlawDegreeSequence communityDegreeSequenceGen(minCommunitySize, maxCommunitySize, communitySizeExp);
+	communityDegreeSequenceGen.run();
+
+	count sumCommunitySizes = 0;
+
+	while (true) {
+		count newSize = communityDegreeSequenceGen.getDegree();
+		if (sumCommunitySizes + newSize <= n) {
+			communitySizeSequence.push_back(newSize);
+			sumCommunitySizes += newSize;
+		} else { // if the new community doesn't fit anymore, increase the smallest community to fill the gap and exit the loop
+			*std::min_element(communitySizeSequence.begin(), communitySizeSequence.end()) += n - sumCommunitySizes;
+
+			break;
 		}
-		nodeDegreeSequence.run();
-		externalDegree = nodeDegreeSequence.getDegreeSequence(n);
 	}
 
-	std::vector<count> internalDegree(n);
+	hasCommunitySizeSequence = true;
+}
+
+void NetworKit::LFRGenerator::setMu(double mu) {
+	if (!hasDegreeSequence) throw std::runtime_error("Error, the degree sequence needs to be set first");
+
+	internalDegreeSequence.resize(n);
 
 	#pragma omp parallel for
 	for (node u = 0; u < n; ++u) {
-		if (externalDegree[u] == 0) continue;
+		if (degreeSequence[u] == 0) continue;
 
-		double intDeg = (1.0 - mu) * externalDegree[u];
+		double intDeg = (1.0 - mu) * degreeSequence[u];
 		if (intDeg < 1) { // assure minimum internal degree of 1
-			internalDegree[u] = 1;
+			internalDegreeSequence[u] = 1;
 		} else if (Aux::Random::probability() >= std::remainder(intDeg, 1)) {
-			internalDegree[u] = count(intDeg);
+			internalDegreeSequence[u] = count(intDeg);
 		} else {
-			internalDegree[u] = std::ceil(intDeg);
-		}
-		externalDegree[u] -= internalDegree[u];
-	}
-
-	count actualMaxInternalDegree = *std::max_element(internalDegree.begin(), internalDegree.end());
-	count actualMaxCommunitySize = 0;
-
-	std::vector<count> communitySizes;
-
-	{ // generate community sizes according to the community size power law distribution
-		PowerlawDegreeSequence communityDegreeSequenceGen(minCommunitySize, maxCommunitySize, communitySizeExp);
-		communityDegreeSequenceGen.run();
-
-		count sumCommunitySizes = 0;
-
-		while (true) {
-			count newSize = communityDegreeSequenceGen.getDegree();
-
-			if (actualMaxCommunitySize <= actualMaxInternalDegree && sumCommunitySizes + actualMaxInternalDegree + 1 + newSize > n) {
-				// this is the first time this happened,  sumCommunitySizes + actualMaxInternalDegree + 1 <= n
-				// however there is also no chance that without intervention the graph will be realizable
-				// so modify the degree sequence such that the graph is possibly realizable
-				newSize = actualMaxInternalDegree + 1;
-			}
-
-			if (sumCommunitySizes + newSize <= n) {
-				communitySizes.push_back(newSize);
-				sumCommunitySizes += newSize;
-				actualMaxCommunitySize = std::max(newSize, actualMaxCommunitySize);
-			} else { // if the new community doesn't fit anymore, increase the smallest community to fill the gap and exit the loop
-				*std::min_element(communitySizes.begin(), communitySizes.end()) += n - sumCommunitySizes;
-
-				break;
-			}
+			internalDegreeSequence[u] = std::ceil(intDeg);
 		}
 	}
 
-	// a list of nodes for each community
-	std::vector<std::vector<node> > communityNodeList;
+	hasInternalDegreeSequence = true;
+}
 
-	bool assignmentSucceeded = true;
+void NetworKit::LFRGenerator::setMu(const std::vector< double > &mu) {
+	if (!hasDegreeSequence) throw std::runtime_error("Error, the degree sequence needs to be set first");
+	if (mu.size() != n) throw std::runtime_error("Error, mu must have as many entries as there are nodes");
 
-	do {
-		assignmentSucceeded = true;
-		communityNodeList.clear();
-		communityNodeList.resize(communitySizes.size());
-
-		std::vector<count> communitySelection;
-		{ // generate a random permutation of size(c) copies of each community id c
-			communitySelection.reserve(n);
-
-			for (index i = 0; i < communitySizes.size(); ++i) {
-				for (node u = 0; u < communitySizes[i]; ++u) {
-					communitySelection.push_back(i);
-				}
-			}
-
-			std::shuffle(communitySelection.begin(), communitySelection.end(), std::default_random_engine());
-		}
-
-		// how many nodes are still missing in the community
-		std::vector<count> remainingCommunitySizes(communitySizes);
-
-		// nodes that still need to be assigned to a community
-		std::vector<node> nodesToAssign;
-
-		// in the first round, assign each node to a randomly chosen community if possible
-		for (node u = 0; u < n; ++u) {
-			if (communitySizes[communitySelection[u]] > internalDegree[u]) {
-				communityNodeList[communitySelection[u]].push_back(u);
-				--remainingCommunitySizes[communitySelection[u]];
-			} else {
-				nodesToAssign.push_back(u);
-			}
-		}
-
-		// now assign a random unassigned node to a random feasible community (chosen at random weighted by community size)
-		// if the community is full, remove a node from it
-		count attempts = 0;
-		count totalAttempts = 0;
-		while (!nodesToAssign.empty()) {
-			++totalAttempts;
-			index c = Aux::Random::choice(communitySelection);
-
-			index i = Aux::Random::index(nodesToAssign.size());
-			node u = nodesToAssign[i];
-
-			{ // remove index u from nodesToAssign
-				nodesToAssign[i] = nodesToAssign.back();
-				nodesToAssign.pop_back();
-			}
-
-			// pick another community till the node's internal degree fits into the community
-			while (internalDegree[u] >= communitySizes[c]) {
-				// we ensured above that there is always a community in which every node will fit
-				c = Aux::Random::choice(communitySelection);
-			}
-
-			communityNodeList[c].push_back(u);
-
-			// we are lucky, the community is not full yet
-			if (remainingCommunitySizes[c] > 0) {
-				--remainingCommunitySizes[c];
-				attempts = 0;
-			} else { // remove a random node from c
-				index r = Aux::Random::index(communityNodeList[c].size());
-				nodesToAssign.push_back(communityNodeList[c][r]);
-				communityNodeList[c][r] = communityNodeList[c].back();
-				communityNodeList[c].pop_back();
-				++attempts;
-			}
-
-			if (attempts > 3*n) {
-				// merge two smallest communities
-				WARN("Needed too long to assign nodes to communities. Either there are too many high-degree nodes or the communities are simply too small.");
-				WARN("Changing the community sizes by merging the two smallest communities");
-				DEBUG(attempts, " nodes were assigned to full communities, in total, ", totalAttempts, " were made");
-				auto minIt = std::min_element(communitySizes.begin(), communitySizes.end());
-				count minVal = *minIt;
-
-				// delete minimum element
-				*minIt = communitySizes.back();
-				communitySizes.pop_back();
-
-				minIt = std::min_element(communitySizes.begin(), communitySizes.end());
-				*minIt += minVal;
-
-				assignmentSucceeded = false;
-
-				break;
-			}
-		}
-	} while (!assignmentSucceeded);
-
-
-	// write communityNodeList into partition instance
-	zeta = Partition(n);
-	zeta.setUpperBound(communityNodeList.size());
+	internalDegreeSequence.resize(n);
 
 	#pragma omp parallel for
-	for (index i = 0; i < communityNodeList.size(); ++i) {
-		for (node u : communityNodeList[i]) {
-			zeta[u] = i;
-		}
+	for (node u = 0; u < n; ++u) {
+		if (degreeSequence[u] == 0) continue;
+
+		double intDeg = (1.0 - mu[u]) * degreeSequence[u];
+		internalDegreeSequence[u] = std::llround(intDeg);
 	}
 
-	// initialize the result graph
-	G = Graph(n);
+	hasInternalDegreeSequence = true;
+}
 
-	// generate intra-cluster edges
-	for (auto & communityNodes : communityNodeList) {
-		std::vector<count> intraDeg;
-		intraDeg.reserve(communityNodes.size());
+void NetworKit::LFRGenerator::setMuWithBinomialDistribution(double mu) {
+	if (!hasDegreeSequence) throw std::runtime_error("Error, the degree sequence needs to be set first");
 
-		for (node u : communityNodes) {
-			intraDeg.push_back(internalDegree[u]);
-		}
+	internalDegreeSequence.resize(n);
 
-		// check if sum of degrees is even and fix if necessary
-		count intraDegSum = std::accumulate(intraDeg.begin(), intraDeg.end(), 0);
+	auto &gen = Aux::Random::getURNG();
+	std::binomial_distribution<count> binDist;
 
-		while (intraDegSum % 2 != 0) {
-			index i = Aux::Random::index(communityNodes.size());
-			node u = communityNodes[i];
-			if (Aux::Random::real() >= 0.5) {
-				if (intraDeg[i] < communityNodes.size() - 2 && externalDegree[u] > 0) {
-					TRACE("Making degree distribution even by increasing intra-degree of node ", u);
-					++intraDeg[i];
-					++internalDegree[u];
-					++intraDegSum;
-					--externalDegree[u];
-				}
-			} else {
-				if (intraDeg[i] > 1 && externalDegree[u] < n - 2) {
-					TRACE("Making degree distribution even by decreasing intra-degree of node ", u);
-					--intraDeg[i];
-					--internalDegree[u];
-					--intraDegSum;
-					++externalDegree[u];
-				}
+	for (node u = 0; u < n; ++u) {
+		if (degreeSequence[u] == 0) continue;
+
+		internalDegreeSequence[u] = binDist(gen, std::binomial_distribution<count>::param_type(degreeSequence[u], 1.0 - mu));
+	}
+
+	hasInternalDegreeSequence = true;
+}
+
+
+void NetworKit::LFRGenerator::setPartition(NetworKit::Partition zeta) {
+	this->zeta = zeta;
+	this->hasPartition = true;
+	this->hasCommunitySizeSequence = false;
+}
+
+NetworKit::Graph NetworKit::LFRGenerator::generateIntraClusterGraph(std::vector< NetworKit::count > intraDegreeSequence, const std::vector<NetworKit::node> &localToGlobalNode) {
+	// check if sum of degrees is even and fix if necessary
+	count intraDegSum = std::accumulate(intraDegreeSequence.begin(), intraDegreeSequence.end(), 0);
+
+	while (intraDegSum % 2 != 0) {
+		index i = Aux::Random::index(intraDegreeSequence.size());
+		node u = localToGlobalNode[i];
+		if (Aux::Random::real() >= 0.5) {
+			if (intraDegreeSequence[i] < intraDegreeSequence.size() - 1 && intraDegreeSequence[i] < degreeSequence[u]) {
+				TRACE("Making degree distribution even by increasing intra-degree of node ", u);
+				++intraDegreeSequence[i];
+				++internalDegreeSequence[u];
+				++intraDegSum;
+			}
+		} else {
+			if (intraDegreeSequence[i] > 1) {
+				TRACE("Making degree distribution even by decreasing intra-degree of node ", u);
+				--intraDegreeSequence[i];
+				--internalDegreeSequence[u];
+				--intraDegSum;
 			}
 		}
-
-		EdgeSwitchingMarkovChainGenerator intraGen(intraDeg, true);
-		/* even though the sum is even the degree distribution isn't necessarily realizable.
-		Disabling the check means that some edges might not be created because of this but at least we will get a graph. */
-		Graph intraG = intraGen.generate();
-
-		intraG.forEdges([&](node u, node v) {
-			G.addEdge(communityNodes[u], communityNodes[v]);
-		});
 	}
 
-	// generate inter-cluster edges
-	EdgeSwitchingMarkovChainGenerator graphGen(externalDegree, true);
+		EdgeSwitchingMarkovChainGenerator intraGen(intraDegreeSequence, true);
+	/* even though the sum is even the degree distribution isn't necessarily realizable.
+	Disabling the check means that some edges might not be created because of this but at least we will get a graph. */
+	return  intraGen.generate();
+}
+
+
+NetworKit::Graph NetworKit::LFRGenerator::generateInterClusterGraph(const std::vector< NetworKit::count > &externalDegreeSequence) {
+	EdgeSwitchingMarkovChainGenerator graphGen(externalDegreeSequence, true);
 
 	Graph interG = graphGen.generate();
 
@@ -267,7 +180,7 @@ void NetworKit::LFRGenerator::run() {
 
 		count intraRemovalAttempts = 0;
 		count maxIntraRemovelAttempts = n * 10;
-		while (!edgesToRemove.empty()) { // FIXME simply drop these edges at some point if rewiring is not possible
+		while (!edgesToRemove.empty()) {
 			index i = Aux::Random::index(edgesToRemove.size());
 			node s1, t1;
 			std::tie(s1, t1) = edgesToRemove[i];
@@ -331,6 +244,207 @@ void NetworKit::LFRGenerator::run() {
 			}
 		}
 	}
+
+	return interG;
+}
+
+std::vector<std::vector<NetworKit::node>> NetworKit::LFRGenerator::assignNodesToCommunities() {
+	std::vector<std::vector<NetworKit::node>> communityNodeList;
+
+	bool assignmentSucceeded = true;
+	do {
+		assignmentSucceeded = true;
+		communityNodeList.clear();
+		communityNodeList.resize(communitySizeSequence.size());
+
+		std::vector<count> communitySelection;
+		{ // generate a random permutation of size(c) copies of each community id c
+			communitySelection.reserve(n);
+
+			for (index i = 0; i < communitySizeSequence.size(); ++i) {
+				for (node u = 0; u < communitySizeSequence[i]; ++u) {
+					communitySelection.push_back(i);
+				}
+			}
+
+			std::shuffle(communitySelection.begin(), communitySelection.end(), Aux::Random::getURNG());
+		}
+
+		// how many nodes are still missing in the community
+		std::vector<count> remainingCommunitySizes(communitySizeSequence);
+
+		// nodes that still need to be assigned to a community
+		std::vector<node> nodesToAssign;
+
+		// in the first round, assign each node to a randomly chosen community if possible
+		for (node u = 0; u < n; ++u) {
+			if (communitySizeSequence[communitySelection[u]] > internalDegreeSequence[u]) {
+				communityNodeList[communitySelection[u]].push_back(u);
+				--remainingCommunitySizes[communitySelection[u]];
+			} else {
+				nodesToAssign.push_back(u);
+			}
+		}
+
+		// now assign a random unassigned node to a random feasible community (chosen at random weighted by community size)
+		// if the community is full, remove a node from it
+		count attempts = 0;
+		count totalAttempts = 0;
+		while (!nodesToAssign.empty()) {
+			++totalAttempts;
+			index c = Aux::Random::choice(communitySelection);
+
+			index i = Aux::Random::index(nodesToAssign.size());
+			node u = nodesToAssign[i];
+
+			{ // remove index u from nodesToAssign
+				nodesToAssign[i] = nodesToAssign.back();
+				nodesToAssign.pop_back();
+			}
+
+			// pick another community till the node's internal degree fits into the community
+			while (internalDegreeSequence[u] >= communitySizeSequence[c]) {
+				// we ensured above that there is always a community in which every node will fit
+				c = Aux::Random::choice(communitySelection);
+			}
+
+			communityNodeList[c].push_back(u);
+
+			// we are lucky, the community is not full yet
+			if (remainingCommunitySizes[c] > 0) {
+				--remainingCommunitySizes[c];
+				attempts = 0;
+			} else { // remove a random node from c
+				index r = Aux::Random::index(communityNodeList[c].size());
+				nodesToAssign.push_back(communityNodeList[c][r]);
+				communityNodeList[c][r] = communityNodeList[c].back();
+				communityNodeList[c].pop_back();
+				++attempts;
+			}
+
+			if (attempts > 3*n) {
+				// merge two smallest communities
+				WARN("Needed too long to assign nodes to communities. Either there are too many high-degree nodes or the communities are simply too small.");
+				WARN("Changing the community sizes by merging the two smallest communities");
+				DEBUG(attempts, " nodes were assigned to full communities, in total, ", totalAttempts, " were made");
+				auto minIt = std::min_element(communitySizeSequence.begin(), communitySizeSequence.end());
+				count minVal = *minIt;
+
+				// delete minimum element
+				*minIt = communitySizeSequence.back();
+				communitySizeSequence.pop_back();
+
+				minIt = std::min_element(communitySizeSequence.begin(), communitySizeSequence.end());
+				*minIt += minVal;
+
+				assignmentSucceeded = false;
+
+				break;
+			}
+		}
+	} while (!assignmentSucceeded);
+
+	return communityNodeList;
+}
+
+
+
+void NetworKit::LFRGenerator::run() {
+	if (!hasDegreeSequence) throw std::runtime_error("Error, the degree sequence needs to be set first");
+	if (!(hasCommunitySizeSequence || hasPartition)) throw std::runtime_error("Error, either the community size sequence or the partition needs to be set first");
+	if (!hasInternalDegreeSequence) throw std::runtime_error("Error, mu needs to be set first");
+
+	auto minMaxInternalDegreeIt = std::minmax_element(internalDegreeSequence.begin(), internalDegreeSequence.end());
+	count minInternalDegree = *minMaxInternalDegreeIt.first, maxInternalDegree = *minMaxInternalDegreeIt.second;
+
+	if (hasCommunitySizeSequence && !hasPartition) { // check if community size sequence is realizable
+		auto minMaxCommunitySizeIt = std::minmax_element(communitySizeSequence.begin(), communitySizeSequence.end());
+		count minCommunitySize = *minMaxCommunitySizeIt.first, maxCommunitySize = *minMaxCommunitySizeIt.second;
+
+		if (maxInternalDegree >= maxCommunitySize) throw std::runtime_error("Graph not realizable, the maximum internal degree is greater than the largest internal degree.");
+		if (minInternalDegree >= minCommunitySize) throw std::runtime_error("Graph not realizable, no node can be placed in the smallest community.");
+
+		std::vector<count> sortedInternalDegreeSequence = internalDegreeSequence;
+		std::sort(sortedInternalDegreeSequence.begin(), sortedInternalDegreeSequence.end());
+		std::vector<count> sortedCommunitySizes = communitySizeSequence;
+		std::sort(sortedCommunitySizes.begin(), sortedCommunitySizes.end());
+
+		auto communitySizeIt = sortedCommunitySizes.begin();
+		count nodesInCommunity = 0;
+		for (count deg : sortedInternalDegreeSequence) {
+			if (nodesInCommunity == *communitySizeIt) {
+				++communitySizeIt;
+				nodesInCommunity = 0;
+			}
+
+			if (deg >= *communitySizeIt) {
+				throw std::runtime_error("Graph not realizable, community sizes too small or internal degrees too large");
+			}
+
+			++nodesInCommunity;
+		}
+	} else {
+		auto communitySizes = zeta.subsetSizeMap();
+		for (index u = 0; u < internalDegreeSequence.size(); ++u) {
+			if (internalDegreeSequence[u] >= communitySizes[zeta[u]]) {
+				throw std::runtime_error("Graph not realizable, internal degree too large for the assigned community");
+			}
+		}
+	}
+
+	// initialize the result graph
+	G = Graph(n);
+
+	// a list of nodes for each community
+	std::vector<std::vector<node> > communityNodeList;
+
+	// set communityNodeList and zeta (if not given)
+	if (hasCommunitySizeSequence && !hasPartition) {
+		communityNodeList = assignNodesToCommunities();
+
+		// write communityNodeList into partition instance
+		zeta = Partition(n);
+		zeta.setUpperBound(communityNodeList.size());
+
+		#pragma omp parallel for
+		for (index i = 0; i < communityNodeList.size(); ++i) {
+			for (node u : communityNodeList[i]) {
+				zeta[u] = i;
+			}
+		}
+	} else {
+		communityNodeList.resize(zeta.upperBound());
+		G.forNodes([&](node u) {
+			communityNodeList[zeta[u]].push_back(u);
+		});
+	}
+
+	// generate intra-cluster edges
+	for (auto & communityNodes : communityNodeList) {
+		if (communityNodes.empty()) continue;
+
+		std::vector<count> intraDeg;
+		intraDeg.reserve(communityNodes.size());
+
+		for (node u : communityNodes) {
+			intraDeg.push_back(internalDegreeSequence[u]);
+		}
+
+		Graph intraG = generateIntraClusterGraph(std::move(intraDeg), communityNodes);
+
+		intraG.forEdges([&](node i, node j) {
+			G.addEdge(communityNodes[i], communityNodes[j]);
+		});
+	}
+
+	// generate inter-cluster edges
+	std::vector<count> externalDegree(n);
+
+	G.parallelForNodes([&](node u) {
+		externalDegree[u] = degreeSequence[u] - internalDegreeSequence[u];
+	});
+
+	Graph interG = generateInterClusterGraph(externalDegree);
 
 	count edgesRemoved = 0;
 	interG.forEdges([&](node u, node v) {
