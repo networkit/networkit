@@ -476,7 +476,8 @@ TEST_F(IOGTest, tryReadingLFR) {
 	Partition truth = clusteringReader.read(clustPath);
 
 	PLP PLP(G);
-	Partition zeta = PLP.run();
+	PLP.run();
+	Partition zeta = PLP.getPartition();
 
 	Modularity mod;
 	INFO("static clustering quality: " , mod.getQuality(zeta, G));

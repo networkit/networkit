@@ -530,6 +530,40 @@ void Graph::removeEdge(node u, node v) {
 	// cause the edge is marked as deleted and we have no null values for the attributes
 }
 
+void Graph::swapEdge(node s1, node t1, node s2, node t2) {
+	index s1t1 = indexInOutEdgeArray(s1, t1);
+	if (s1t1 == none) throw std::runtime_error("The first edge does not exist");
+	index t1s1 = indexInInEdgeArray(t1, s1);
+
+	index s2t2 = indexInOutEdgeArray(s2, t2);
+	if (s2t2 == none) throw std::runtime_error("The second edge does not exist");
+	index t2s2 = indexInInEdgeArray(t2, s2);
+
+	std::swap(outEdges[s1][s1t1], outEdges[s2][s2t2]);
+
+	if (directed) {
+		std::swap(inEdges[t1][t1s1], inEdges[t2][t2s2]);
+
+		if (weighted) {
+			std::swap(inEdgeWeights[t1][t1s1], inEdgeWeights[t2][t2s2]);
+		}
+
+		if (edgesIndexed) {
+			std::swap(inEdgeIds[t1][t1s1], inEdgeIds[t2][t2s2]);
+		}
+	} else {
+		std::swap(outEdges[t1][t1s1], outEdges[t2][t2s2]);
+
+		if (weighted) {
+			std::swap(outEdgeWeights[t1][t1s1], outEdgeWeights[t2][t2s2]);
+		}
+
+		if (edgesIndexed) {
+			std::swap(outEdgeIds[t1][t1s1], outEdgeIds[t2][t2s2]);
+		}
+	}
+}
+
 bool Graph::hasEdge(node u, node v) const {
 	return indexInOutEdgeArray(u, v) != none;
 }

@@ -21,12 +21,22 @@ PLP::PLP(const Graph& G, count theta) : CommunityDetectionAlgorithm(G), updateTh
 	this->VERSION = "1.0";
 }
 
+PLP::PLP(const Graph& G, const Partition baseClustering, count theta) : CommunityDetectionAlgorithm(G, baseClustering), updateThreshold(theta) {
 
-Partition& PLP::runFromGiven(Partition& labels) {
+	this->VERSION = "1.0";
+}
+
+void PLP::run() {
+	// set unique label for each node if no baseClustering was given
+	index z = G.upperNodeIdBound();
+	if (result.numberOfElements() != z) {
+		result = Partition(z);
+		result.allToSingletons();
+	}
+
 	typedef index label; // a label is the same as a cluster id
 
 	count n = G.numberOfNodes();
-	index z = G.upperNodeIdBound();
 	// update threshold heuristic
 	if (updateThreshold == none) {
 		updateThreshold = (count) (n / 1e5);
@@ -36,7 +46,7 @@ Partition& PLP::runFromGiven(Partition& labels) {
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
 	nIterations = 0; // number of iterations
-
+	
 	/**
 	 * == Dealing with isolated nodes ==
 	 *
@@ -71,7 +81,7 @@ Partition& PLP::runFromGiven(Partition& labels) {
 
 				// weigh the labels in the neighborhood of v
 				G.forNeighborsOf(v, [&](node w, edgeweight weight) {
-					label lw = labels.subsetOf(w);
+					label lw = result.subsetOf(w);
 					labelWeights[lw] += weight; // add weight of edge {v, w}
 				});
 
@@ -81,8 +91,8 @@ Partition& PLP::runFromGiven(Partition& labels) {
 								[](const std::pair<label, edgeweight>& p1, const std::pair<label, edgeweight>& p2) {
 									return p1.second < p2.second;})->first;
 
-				if (labels.subsetOf(v) != heaviest) { // UPDATE
-					labels.moveToSubset(heaviest,v); //labels[v] = heaviest;
+				if (result.subsetOf(v) != heaviest) { // UPDATE
+					result.moveToSubset(heaviest,v); //result[v] = heaviest;
 					nUpdated += 1; // TODO: atomic update?
 					G.forNeighborsOf(v, [&](node u) {
 						activeNodes[u] = true;
@@ -103,23 +113,7 @@ Partition& PLP::runFromGiven(Partition& labels) {
 
 
 	} // end while
-
-	return labels;
-}
-
-
-Partition PLP::run() {
-	// set unique label for each node
-	index z = G.upperNodeIdBound();
-	Partition labels(z);
-	labels.allToSingletons();
-	// TODO: make (call to) allToSingletons faster
-//	G.parallelForNodes([&](node v) {
-//		labels[v] = v;
-//	});
-//	labels.setUpperBound(z);
-
-	return runFromGiven(labels);
+	hasRun = true;
 }
 
 std::string PLP::toString() const {

@@ -14,7 +14,7 @@ namespace NetworKit {
 
 LPDegreeOrdered::LPDegreeOrdered(const Graph& G) : CommunityDetectionAlgorithm(G) {}
 
-Partition LPDegreeOrdered::run() {
+void LPDegreeOrdered::run() {
 	count n = G.numberOfNodes();
 	count theta = n / 1e5;
 	DEBUG("theta: " , theta);
@@ -80,8 +80,8 @@ Partition LPDegreeOrdered::run() {
 		INFO("updated labels: " , nUpdated);
 		nIterations += 1;
 	}
-
-	return labels;
+	result = std::move(labels);
+	hasRun = true;
 }
 
 

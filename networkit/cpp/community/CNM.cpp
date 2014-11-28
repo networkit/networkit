@@ -68,8 +68,7 @@ node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
 	return none;
 }
 
-
-Partition CNM::run() {
+void CNM::run() {
 	// copy graph because we make changes due to merges
 	Graph Gcopy(G.numberOfNodes(), true); // make weighted copy
 	G.forEdges([&](node u, node v, edgeweight w){
@@ -187,8 +186,8 @@ Partition CNM::run() {
 		++iterations;
 //		pq.print();
 	}
-
-	return bestClustering;
+	result = std::move(bestClustering);
+	hasRun = true;
 }
 
 } // namespace

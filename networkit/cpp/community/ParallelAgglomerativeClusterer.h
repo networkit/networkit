@@ -27,11 +27,9 @@ public:
 	ParallelAgglomerativeClusterer(const Graph& G);
 
 	/**
-	 * Detect communities in the given graph @a G
-	 *
-	 * @return A partition containing the found communities.
+	 * Detect communities.
 	 */
-	virtual Partition run();
+	virtual void run();
 
 	virtual std::string toString() const;
 };

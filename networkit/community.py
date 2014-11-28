@@ -5,8 +5,7 @@ __author__ = "Christian Staudt"
 
 from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter,\
 	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance,\
-	EPP, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering
-#	EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering
+	EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering
 
 # local imports
 #from .properties import CoreDecomposition, overview
@@ -29,7 +28,8 @@ def detectCommunities(G, algo=None, inspect=True):
 	if algo is None:
 		algo = PLM(G, refine=False)
 	t = stopwatch.Timer()
-	zeta = algo.run()
+	algo.run()
+	zeta = algo.getPartition()
 	t.stop()
 	print("{0} detected communities in {1} [s]".format(algo.toString(), t.elapsed))
 	if inspect:
@@ -66,7 +66,8 @@ def evalCommunityDetection(algo, G):
 	""" Evaluate a community detection algorithm """
 
 	t = stopwatch.Timer()
-	zeta = algo.run(G)
+	algo.run()
+	zeta = algo.getPartition()
 	t.stop()
 	results = [
 		["time [s]", t.elapsed],
