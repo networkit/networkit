@@ -17,9 +17,15 @@ abort_installation = False
 errorMessages = []
 warnMessages = []
 try:
+	import Cython
 	from Cython.Build import cythonize
 	from Cython.Distutils import build_ext as CythonBuildExtCmd
-	cython_available = True
+	from distutils.version import LooseVersion
+	if LooseVersion(Cython.__version__) >= LooseVersion('0.21'):
+		cython_available = True
+	else:
+		cython_available = False
+		#print("Cython version too old, please update")
 except:
 	# import so that the deriving class can still be there
 	from setuptools.command.build_ext import build_ext as CythonBuildExtCmd
@@ -203,18 +209,23 @@ do_cythonize = False
 build_ext_cmd = None
 # the `build_ext` command depends on the role of the setup script
 if not os.path.exists(".hg") and os.path.isfile("networkit/_NetworKit.cpp"):
+	#print("using pre-cythonized _NetworKit.cpp")
 	# we assume, were not in the repository, but installing networkit from a zip or via pip
 	if os.path.isfile("MANIFEST.in"):
 		os.remove("MANIFEST.in")
 	src = ["networkit/_NetworKit.cpp"]
 	build_ext_cmd = CustomStBuildExtCmd
-else:
+elif os.path.isfile("networkit/_NetworKit.pyx") and cython_available:
+	#print("cythonize _NetworKit.pyx to _NetworKit.cpp")
 	# remove _NetworKit.cpp to make room for cython
 	#if cython_available and os.path.isfile("networkit/_NetworKit.cpp"):
 	#	os.remove("networkit/_NetworKit.cpp")
 	build_ext_cmd = CustomCythonBuildExtCmd
 	src = ["networkit/_NetworKit.pyx"]
 	do_cythonize = True
+else:
+	print("ERROR: some requirements aren't met. Exiting...")
+	exit(1)
 
 # initialize Extension module with the appropriate source file
 modules = [Extension("_NetworKit",
