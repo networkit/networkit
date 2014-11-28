@@ -77,7 +77,7 @@ class MinimalBuildEnvironment:
 		cppfiles = self.__getSourceFiles(target)
 		#print(cppfiles)
 		# compile each source file on its own. halt if an error occurs
-		with ProcessPoolExecutor(max_workers=2*multiprocessing.cpu_count()) as executor:
+		with ProcessPoolExecutor(max_workers=multiprocessing.cpu_count()) as executor:
 			for (returncode, ofile) in executor.map(self.compile_file,cppfiles):
 				self.__object_files.append(ofile)
 				if not returncode == 0:
