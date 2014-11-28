@@ -88,7 +88,7 @@ parser.add_argument("-c", "--with-cpp-tests", dest="cpptests", help="Also compil
 if options.jobs is not None:
 	jobs = options.jobs
 else:
-	jobs = 2 * multiprocessing.cpu_count()
+	jobs = multiprocessing.cpu_count()
 if options.optimize is not None:
 	optimize = options.optimize
 else:
