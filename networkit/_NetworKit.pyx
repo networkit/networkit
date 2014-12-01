@@ -117,6 +117,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph() except +
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
+		_Graph(const _Graph& other, bool weighted, bool directed) except +
 		void indexEdges() except +
 		bool hasEdgeIds()
 		edgeid edgeId(node, node) except +
@@ -134,6 +135,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
+		void swapEdge(node s1, node t1, node s2, node t2) except +
 		bool hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
 		vector[node] nodes() except +
@@ -174,8 +176,11 @@ cdef class Graph:
 	"""
 	cdef _Graph _this
 
-	def __cinit__(self, n=0, weighted=False, directed=False):
-		self._this = move(_Graph(n, weighted, directed))
+	def __cinit__(self, n=0, bool weighted=False, bool directed=False):
+		if isinstance(n, Graph):
+			self._this = move(_Graph((<Graph>n)._this, weighted, directed))
+		else:
+			self._this = move(_Graph(<count>n, weighted, directed))
 
 	# # any _thisect which appears as a return type needs to implement setThis
 	# cdef setThis(self, _Graph other):
@@ -389,6 +394,25 @@ cdef class Graph:
 			Endpoint of edge.
 		"""
 		self._this.removeEdge(u, v)
+
+	def swapEdge(self, node s1, node t1, node s2, node t2):
+		"""
+		Changes the edge (s1, t1) into (s1, t2) and the edge (s2, t2) into (s2, t1).
+
+		If there are edge weights or edge ids, they are preserved. Note that no check is performed if the swap is actually possible, i.e. does not generate duplicate edges.
+
+		Parameters
+		----------
+		s1 : node
+			Source node of the first edge
+		t1 : node
+			Target node of the first edge
+		s2 : node
+			Source node of the second edge
+		t2 : node
+			Target node of the second edge
+		"""
+		self._this.swapEdge(s1, t1, s2, t2)
 
 	def hasEdge(self, u, v):
 		""" Checks if undirected edge {`u`,`v`} exists in the graph.
@@ -1433,7 +1457,7 @@ cdef class ChungLuGenerator:
 
 cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
-		_HavelHakimiGenerator(vector[count] degreeSequence, bool skipTest) except +
+		_HavelHakimiGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
 		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
@@ -1441,28 +1465,29 @@ cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 cdef class HavelHakimiGenerator:
 	""" Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
 
- 		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
- 		has a high clustering coefficient. Construction runs in linear time O(m). However, the test
- 		if a sequence is realizable is quadratic in the sequence length.
+		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
+		has a high clustering coefficient. Construction runs in linear time O(m).
 
- 		HavelHakimiGenerator(sequence, skipTest=True)
+		If the sequence is not realizable, depending on the parameter ignoreIfRealizable, either
+		an exception is thrown during generation or the graph is generated with a modified degree
+		sequence, i.e. not all nodes might have as many neighbors as requested.
 
- 		Parameters
+		HavelHakimiGenerator(sequence, ignoreIfRealizable=True)
+
+		Parameters
 		----------
 		sequence : vector
 			Degree sequence to realize. Must be non-increasing.
-		skipTest : bool, optional
-			If True, the test if the sequence is realizable is skipped.
-	        Default value is False. Set ONLY to True if you are certain that the
-	        sequence is realizable
+		ignoreIfRealizable : bool, optional
+			If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	"""
 
 	cdef _HavelHakimiGenerator* _this
 
 
-	def __cinit__(self, vector[count] degreeSequence, skipTest=True):
-		self._this = new _HavelHakimiGenerator(degreeSequence, skipTest)
-		
+	def __cinit__(self, vector[count] degreeSequence, ignoreIfRealizable=True):
+		self._this = new _HavelHakimiGenerator(degreeSequence, ignoreIfRealizable)
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1478,9 +1503,67 @@ cdef class HavelHakimiGenerator:
 		Returns
 		-------
 		Graph
-			Empty graph if graph is not realizable, otherwise graph with degree sequence seq.
+			Graph with degree sequence seq or modified sequence if ignoreIfRealizable is true and the sequence is not realizable.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+cdef extern from "cpp/generators/ConfigurationModelGenerator.h":
+	cdef cppclass _ConfigurationModelGenerator "NetworKit::ConfigurationModelGenerator":
+		_ConfigurationModelGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
+		_Graph generate() except +
+		bool isRealizable() except +
+		bool getRealizable() except +
+
+cdef class ConfigurationModelGenerator:
+	"""
+	Configuration model graph generator for generating a random simple graph with exactly the given degree sequence.
+
+	This implementation is based on the paper
+	"Random generation of large connected simple graphs with prescribed degree distribution" by Fabien Viger and Matthieu Latapy,
+	available at http://www-rp.lip6.fr/~latapy/FV/generation.html, however without preserving connectivity (this could later be added as
+	optional feature).
+
+	The Havel-Hakami generator is used for the initial graph generation, then the Markov-Chain Monte-Carlo algorithm as described and
+	implemented by Fabien Viger and Matthieu Latapy but without the steps for ensuring connectivity is executed. This should lead to a
+	graph that is drawn uniformly at random from all graphs with the given degree sequence.
+
+	Note that at most 10 times the number of edges edge swaps are performed (same number as in the abovementioned implementation) and
+	in order to limit the running time, at most 200 times as many attempts to perform an edge swap are made (as certain degree distributions
+	do not allow edge swaps at all).
+
+	Parameters
+	----------
+	degreeSequence : vector[count]
+		The degree sequence that shall be generated
+	ignoreIfRealizable : bool, optional
+		If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
+	"""
+	cdef _ConfigurationModelGenerator *_this
+
+	def __cinit__(self, vector[count] degreeSequence, bool ignoreIfRealizable = False):
+		self._this = new _ConfigurationModelGenerator(degreeSequence, ignoreIfRealizable)
+
+	def __dealloc__(self):
+		del self._this
+
+	def isRealizable(self):
+		return self._this.isRealizable()
+
+	def getRealizable(self):
+		return self._this.getRealizable()
+
+	def generate(self):
+		"""
+		Generate a graph according to the configuration model.
+
+		Issues a INFO log message if the wanted number of edge swaps cannot be performed because of the limit of attempts (see in the description of the class for details).
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
+		return Graph().setThis(self._this.generate())
 
 
 cdef extern from "cpp/generators/RmatGenerator.h":
@@ -1533,6 +1616,104 @@ cdef class RmatGenerator:
 		"""
 		return Graph(0).setThis(self._this.generate())
 
+cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
+	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
+		_PowerlawDegreeSequence(count minDeg, count maxDeg, double gamma) except +
+		void setMinimumFromAverageDegree(double avgDeg) except +
+		double getExpectedAverageDegree() except +
+		count getMinimumDegree() const
+		void run() except +
+		vector[count] getDegreeSequence(count numNodes) except +
+		count getDegree() except +
+
+cdef class PowerlawDegreeSequence:
+	"""
+	Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma
+
+	Parameters
+	----------
+	minDeg : count
+		The minium degree
+	maxDeg : count
+		The maximum degree
+	gamma : double
+		The powerlaw exponent
+	"""
+	cdef _PowerlawDegreeSequence *_this
+
+	def __cinit__(self, count minDeg, count maxDeg, double gamma):
+		self._this = new _PowerlawDegreeSequence(minDeg, maxDeg, gamma)
+
+	def __dealloc__(self):
+		del self._this
+
+	def setMinimumFromAverageDegree(self, double avgDeg):
+		"""
+		Tries to set the minimum degree such that the specified average degree is expected.
+
+		Parameters
+		----------
+		avgDeg : double
+			The average degree that shall be approximated
+		"""
+		self._this.setMinimumFromAverageDegree(avgDeg)
+		return self
+
+	def getExpectedAverageDegree(self):
+		"""
+		Returns the expected average degree. Note: run needs to be called first.
+
+		Returns
+		-------
+		double
+			The expected average degree.
+		"""
+		return self._this.getExpectedAverageDegree()
+
+	def getMinimumDegree(self):
+		"""
+		Returns the minimum degree.
+
+		Returns
+		-------
+		count
+			The minimum degree
+		"""
+		return self._this.getMinimumDegree()
+
+	def run(self):
+		"""
+		Executes the generation of the probability distribution.
+		"""
+		self._this.run()
+		return self
+
+	def getDegreeSequence(self, count numNodes):
+		"""
+		Returns a degree sequence with even degree sum.
+
+		Parameters
+		----------
+		numNodes : count
+			The number of nodes/degrees that shall be returned
+
+		Returns
+		-------
+		vector[count]
+			The generated degree sequence
+		"""
+		return self._this.getDegreeSequence(numNodes)
+
+	def getDegree(self):
+		"""
+		Returns a degree drawn at random with a power law distribution
+
+		Returns
+		-------
+		count
+			The generated random degree
+		"""
+		return self._this.getDegree()
 
 # Module: graphio
 
@@ -2615,6 +2796,26 @@ cdef class GraphClusteringTools:
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		return equalClusterings(zeta._this, eta._this, G._this)
 
+cdef extern from "cpp/graph/GraphTools.h" namespace "NetworKit::GraphTools":
+	_Graph getCompactedGraph(_Graph G) except +
+	unordered_map[node,node] getContinuousNodeIds(_Graph G) except +
+	_Graph toUndirected(_Graph G) except +
+
+cdef class GraphTools:
+	@staticmethod
+	def getCompactedGraph(Graph graph):
+		return Graph().setThis(getCompactedGraph(graph._this))
+	@staticmethod
+	def getContinuousNodeIds(Graph graph):
+		cdef unordered_map[node,node] cResult = getContinuousNodeIds(graph._this)
+		result = dict()
+		for elem in cResult:
+			result[elem.first] = elem.second
+		return result
+	@staticmethod
+	def toUndirected(Graph graph):
+		return Graph().setThis(toUndirected(graph._this))
+
 cdef extern from "cpp/community/PartitionIntersection.h":
 	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
 		_PartitionIntersection() except +
@@ -2729,9 +2930,10 @@ cdef extern from "cpp/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP":
 		_PLP(_Graph _G) except +
 		_PLP(_Graph _G, count updateThreshold) except +
+		_PLP(_Graph _G, _Partition baseClustering, count updateThreshold) except +
+		_PLP(_Graph _G, _Partition baseClustering) except +
 		void run() except +
 		_Partition getPartition() except +
-		void runFromGiven(_Partition _part) except +
 		count numberOfIterations() except +
 		string toString() except +
 
@@ -2751,11 +2953,28 @@ cdef class PLP(CommunityDetector):
 	"""
 	cdef _PLP* _this
 
-	def __cinit__(self, Graph G not None, updateThreshold=None):
-		if updateThreshold is None:
+	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
+		""" 
+		Constructor to the Parallel label propagation community detection algorithm.
+
+		Parameters
+		----------
+		G : Graph
+			The graph on which the algorithm has to run.
+		baseClustering : Partition
+			PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
+		updateThreshold : integer
+			number of nodes that have to be changed in each iteration so that a new iteration starts.
+		"""
+		if updateThreshold is None and baseClustering is None:
 			self._this = new _PLP(G._this)
+		elif updateThreshold is None and baseClustering is not None:
+			self._this = new _PLP(G._this, baseClustering._this)
+		elif updateThreshold is not None and baseClustering is None:
+			p = Partition(0)
+			self._this = new _PLP(G._this, p._this, updateThreshold)
 		else:
-			self._this = new _PLP(G._this, updateThreshold)
+			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
 		
 	def __dealloc__(self):
 		del self._this
@@ -2764,29 +2983,6 @@ cdef class PLP(CommunityDetector):
 		""" Run the label propagation clustering algorithm.
 		"""
 		self._this.run()
-		return self
-
-	def runFromGiven(self, Partition part not None):
-		""" Run the label propagation clustering algorithm starting
-		from the Partition part.
-
-		Parameters
-		----------
-		G : Graph
-			input graph
-
-		part : Partition
-			input partition
-
-	 	Returns
-	 	-------
-	 	Partition
-	 		The created clustering.
-		"""
-		# Work on a local copy as PLP::runFromGiven works on the input
-		cdef _Partition algInput = part._this
-		self._this.runFromGiven(algInput)
-		#return Partition().setThis(algInput)
 		return self
 
 	def getPartition(self):
@@ -3211,20 +3407,40 @@ cdef class EPP(CommunityDetector):
 		return self._this.toString()
 
 	cdef setThis(self, _EPP* other):
+		del self._this # is this correct here?
 		self._this = other
 		return self
 
 
-cdef extern from "cpp/community/EPPFactory.h":
-	cdef cppclass _EPPFactory "NetworKit::EPPFactory":
-		_EPP make(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
+cdef extern from "cpp/community/EPPFactory.h" namespace "NetworKit::EPPFactory":
+		#_EPP make(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
+		_EPP* makePtr(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
 
 cdef class EPPFactory:
 	""" This class makes instaces of the EPP community detection algorithm """
-	cdef _EPPFactory _this
 
-#	def make(self, Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
-#		return EPP().setThis(self._this.make(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
+	@staticmethod
+	def make(Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
+		"""
+		Returns an instance of an ensemble preprocessing (EPP).
+
+		Parameters:
+		-----------
+		G : Graph
+			The graph on which the ensemble is supposed to run.
+		ensembleSize : integer
+			The amount of baseAlgorithms to preprocess the communities.
+		baseAlgorithm : CommunityDetectionAlgorithm
+			String representation of the algorithm ("PLP","PLM") to preprocess the communities. ensembleSize instances will be created.
+		finalAlgorithm  : CommunityDetectionAlgorithm
+			String representation of the algorithm ("PLP" "PLM[R]") to finish the ensemble.
+
+		Returns
+		-------
+		EPP
+			The EPP instance.
+		"""
+		return EPP(G).setThis(makePtr(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
 
 cdef extern from "cpp/community/CommunityGraph.h":
 	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":

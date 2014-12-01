@@ -13,6 +13,11 @@
 
 namespace Aux {
 
+#ifdef __MIC__
+#define my_steady_clock std::chrono::monotonic_clock
+#else
+#define my_steady_clock std::chrono::steady_clock
+#endif
 
 /**
  * A timer for running time measurements.
@@ -22,8 +27,8 @@ class Timer {
 protected:
 
 	bool running;			//!< true if timer has been started and not stopped after that
-	std::chrono::steady_clock::time_point started;	//!< time at which timer has been started
-	std::chrono::steady_clock::time_point stopped;		//!< time at which timer has been stopped
+	my_steady_clock::time_point started;	//!< time at which timer has been started
+	my_steady_clock::time_point stopped;		//!< time at which timer has been stopped
 
 public:
 	Timer();
@@ -32,13 +37,13 @@ public:
 	 * Start the clock.
 	 * Returns the time at which the instance was started.
 	 */
-	virtual std::chrono::steady_clock::time_point start();
+	virtual my_steady_clock::time_point start();
 
 	/**
 	 * Stops the clock permanently for the instance of the Timer.
 	 * Returns the time at which the instance was stopped.
 	 */
-	virtual std::chrono::steady_clock::time_point stop();
+	virtual my_steady_clock::time_point stop();
 
 	/**
 	 * The number of milliseconds since the current time that the Timer
@@ -71,13 +76,13 @@ public:
 	/**
 	 * Returns the time at which the instance was started.
 	 */
-	virtual std::chrono::steady_clock::time_point startTime();
+	virtual my_steady_clock::time_point startTime();
 
 	/**
 	 * Returns the time at which the instance was stopped.
 	 *
 	 */
-	virtual std::chrono::steady_clock::time_point stopTime();
+	virtual my_steady_clock::time_point stopTime();
 
 
 	/**

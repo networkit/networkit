@@ -39,21 +39,23 @@ public:
 	 * Constructor to the label propagation community detection algorithm.
 	 *
 	 * @param[in]	G	input graph
+	 * @param[in]	theta	updateThreshold: number of nodes that have to be changed in each iteration so that a new iteration starts.
 	 */
 	PLP(const Graph& G, count theta = none);
+
+	/**
+	 * Constructor to the label propagation community detection algorithm.
+	 *
+	 * @param[in]	G	input graph
+	 * @param[in]	baseClustering optional; the algorithm will start from the given clustering.
+	 * @param[in]	theta	updateThreshold: number of nodes that have to be changed in each iteration so that a new iteration starts.
+	 */
+	PLP(const Graph& G, const Partition baseClustering, count theta = none);
 
 	/**
 	 * Run the label propagation clustering algorithm.
 	 */
 	virtual void run();
-
-	/**
-	 * Run the label propagation clustering algorithm, cluster
-	 * initialization with @a part.
-	 *
-	 * @param[in]	part input partition
-	 */
-	virtual void runFromGiven(Partition& part);
 
 	/**
 	 * @return String representation of algorithm and parameters.

@@ -20,16 +20,16 @@ EPP::EPP(const Graph& G) : CommunityDetectionAlgorithm(G) {
 }
 
 
-void EPP::addBaseClusterer(CommunityDetectionAlgorithm& base) {
-	this->baseClusterers.push_back(&base);
+void EPP::addBaseClusterer(std::unique_ptr<CommunityDetectionAlgorithm>& base) {
+	this->baseClusterers.push_back(std::move(base));
 }
 
-void EPP::setFinalClusterer(CommunityDetectionAlgorithm& final) {
-	this->finalClusterer = &final;
+void EPP::setFinalClusterer(std::unique_ptr<CommunityDetectionAlgorithm>& final) {
+	this->finalClusterer = std::move(final);
 }
 
-void EPP::setOverlapper(Overlapper& overlap) {
-	this->overlap = &overlap;
+void EPP::setOverlapper(std::unique_ptr<Overlapper>& overlap) {
+	this->overlap = std::move(overlap);
 }
 
 void EPP::run() {
@@ -88,5 +88,6 @@ std::string EPP::toString() const {
 	strm << "EnsemblePreprocessing(" << "base=" << this->baseClusterers.front()->toString() << ",ensemble=" << this->baseClusterers.size() << ",final=" << this->finalClusterer->toString() << ")";
 	return strm.str();
 }
+
 
 } /* namespace NetworKit */

@@ -12,6 +12,9 @@ namespace NetworKit {
 CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G) : G(G), result(0), hasRun(false) {
 }
 
+CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering) : G(G), result(baseClustering), hasRun(false) {
+}
+
 Partition CommunityDetectionAlgorithm::getPartition() {
 	if(!hasRun) {
 		throw std::runtime_error("Call run()-function first.");

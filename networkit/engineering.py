@@ -1,4 +1,4 @@
-""" 
+"""
 Tools for algorithm engineering.
 """
 # extension imports
@@ -7,10 +7,10 @@ from _NetworKit import setNumberOfThreads, getMaxNumberOfThreads, getCurrentNumb
 # local imports
 from . import stopwatch
 
-# external imports 
+# external imports
 import csv
 
-def strongScaling(algorithm, threadSequence, input, inputTitle=None, repetitions=1, outPath=None):
+def strongScaling(algorithmClass, threadSequence, inargs, inputTitle=None, repetitions=1, outPath=None):
 	""" Evaluate strong scaling, i.e. how the performance varies with the number of threads
 		for a fixed input size.
 	"""
@@ -20,9 +20,10 @@ def strongScaling(algorithm, threadSequence, input, inputTitle=None, repetitions
 		setNumberOfThreads(nThreads)
 		print("set number of threads to {0}".format(getMaxNumberOfThreads()))
 		for r in range(repetitions):
+			algorithm = algorithmClass(**inargs)
 			print("running {0}".format(algorithm.toString()))
 			timer = stopwatch.Timer()
-			result = algorithm.run(input)
+			result = algorithm.run()
 			timer.stop()
 			print("elapsed time: {0}".format(timer.elapsed))
 			if inputTitle is None:
@@ -42,7 +43,7 @@ def strongScaling(algorithm, threadSequence, input, inputTitle=None, repetitions
 				writer.writerow(row)
 	return data
 
-def weakScaling(algorithm, threadSequence, inputSequence, inputTitles=None, repetitions=1, outPath=None):
+def weakScaling(algorithmClass, inargs, threadSequence, inputSequence, inputTitles=None, repetitions=1, outPath=None):
 	""" Evaluate weak scaling, i.e. how the performance varies with the number of threads
 		for a fixed input size per processor.
 	"""
@@ -54,9 +55,10 @@ def weakScaling(algorithm, threadSequence, inputSequence, inputTitles=None, repe
 		setNumberOfThreads(nThreads)
 		print("set number of threads to {0}".format(getMaxNumberOfThreads()))
 		for r in range(repetitions):
+			algorithm = algorithmClass(input, **inargs)
 			print("running {0}".format(algorithm.toString()))
 			timer = stopwatch.Timer()
-			result = algorithm.run(input)
+			result = algorithm.run()
 			timer.stop()
 			# append run data
 			data.append({"algo": algorithm.toString(), "input": inputTitles[i], "threads": nThreads, "time": timer.elapsed})

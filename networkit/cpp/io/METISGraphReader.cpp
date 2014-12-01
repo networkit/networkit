@@ -81,11 +81,9 @@ Graph METISGraphReader::read(const std::string& path) {
 				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
 				double weight = adjacencies[i].second;
 				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
-				if (u <= v && weight > 0) { // self-loops are allowed
-					G.addEdge(u, v);
-					G.setWeight(u, v, adjacencies[i].second);
+				if (u <= v) { // self-loops are allowed
+					G.addEdge(u, v, weight);
 					TRACE("(",u,",",v,",",adjacencies[i].second,")");
-					assert(adjacencies[i].second > 0);
 				}
 			}
 			u += 1; // next node
@@ -98,7 +96,7 @@ Graph METISGraphReader::read(const std::string& path) {
 	if (G.numberOfEdges() != m) {
 		ERROR("METIS file is corrupted: actual number of added edges doesn't match the specifed number of edges");
 	}
-	if (edgeCounter / m != 2) {
+	if (edgeCounter != 2 * m) {
 		WARN("METIS file is corrupted: not every edge is listed twice");
 	}
 
