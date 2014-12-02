@@ -1652,6 +1652,22 @@ cdef class METISGraphReader:
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this.read(pathbytes))
 
+cdef extern from "cpp/io/GraphToolBinaryReader.h":
+	cdef cppclass _GraphToolBinaryReader "NetworKit::GraphToolBinaryReader":
+		_GraphToolBinaryReader() except +
+		_Graph read(string path) except +
+
+cdef class GraphToolBinaryReader:
+	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
+		use readGraph(path, graphio.formats.metis) as an alternative.
+		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+	"""
+	cdef _GraphToolBinaryReader _this
+
+	def read(self, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this.read(pathbytes))
+
 
 cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader":
@@ -1730,6 +1746,20 @@ cdef extern from "cpp/io/METISGraphWriter.h":
 cdef class METISGraphWriter:
 	""" Writes graphs in the METIS format"""
 	cdef _METISGraphWriter _this
+
+	def write(self, Graph G not None, path):
+		 # string needs to be converted to bytes, which are coerced to std::string
+		self._this.write(G._this, stdstring(path))
+
+cdef extern from "cpp/io/GraphToolBinaryWriter.h":
+	cdef cppclass _GraphToolBinaryWriter "NetworKit::GraphToolBinaryWriter":
+		_GraphToolBinaryWriter() except +
+		void write(_Graph G, string path) except +
+
+
+cdef class GraphToolBinaryWriter:
+	""" Writes graphs in the METIS format"""
+	cdef _GraphToolBinaryWriter _this
 
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
