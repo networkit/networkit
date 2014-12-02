@@ -635,7 +635,7 @@ TEST_F(IOGTest, testGraphToolBinaryWriter) {
 	G.addEdge(9,0);
 	GraphToolBinaryReader reader;
 	GraphToolBinaryWriter writer;
-	std::string path = "input/test.gt";
+	std::string path = "output/test.gt";
 	writer.write(G,path);
 	Graph Gread = reader.read(path);
 	EXPECT_EQ(G.numberOfNodes(),Gread.numberOfNodes());
@@ -657,7 +657,7 @@ TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodes) {
 	G.removeNode(9);
 	GraphToolBinaryReader reader;
 	GraphToolBinaryWriter writer;
-	std::string path = "input/test.gt";
+	std::string path = "output/test.gt";
 	writer.write(G,path);
 	Graph Gread = reader.read(path);
 	EXPECT_EQ(G.numberOfNodes(),Gread.numberOfNodes());
@@ -681,7 +681,7 @@ TEST_F(IOGTest, testGraphToolBinaryWriterDirected) {
 	G.addEdge(9,0);
 	GraphToolBinaryReader reader;
 	GraphToolBinaryWriter writer;
-	std::string path = "input/test.gt";
+	std::string path = "output/test.gt";
 	writer.write(G,path);
 	Graph Gread = reader.read(path);
 	EXPECT_EQ(G.numberOfNodes(),Gread.numberOfNodes());
@@ -703,7 +703,7 @@ TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodesDirected) {
 	G.removeNode(9);
 	GraphToolBinaryReader reader;
 	GraphToolBinaryWriter writer;
-	std::string path = "input/test.gt";
+	std::string path = "output/test.gt";
 	writer.write(G,path);
 	Graph Gread = reader.read(path);
 	EXPECT_EQ(G.numberOfNodes(),Gread.numberOfNodes());
@@ -711,14 +711,6 @@ TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodesDirected) {
 	EXPECT_EQ(G.isDirected(),Gread.isDirected());
 	EXPECT_EQ(G.isWeighted(),Gread.isWeighted());
 }
-
-
-//TEST_F(IOGTest, testEdgeListReaderOnSNAP) {
-//	std::string path = "/home/birderon/Downloads/com-amazon.ungraph.txt";
-//	EdgeListReader reader('\t',0,"#",false);
-//	Graph G = reader.read(path);
-//}
-
 
 } /* namespace NetworKit */
 
