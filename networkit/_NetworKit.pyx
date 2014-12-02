@@ -1161,7 +1161,7 @@ cdef class ErdosRenyiGenerator:
 
 	def __cinit__(self, nNodes, prob, directed=False):
 		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1191,7 +1191,7 @@ cdef class DorogovtsevMendesGenerator:
 
 	def __cinit__(self, nNodes):
 		self._this = new _DorogovtsevMendesGenerator(nNodes)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1229,7 +1229,7 @@ cdef class RegularRingLatticeGenerator:
 
 	def __cinit__(self, nNodes, nNeighbors):
 		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1267,7 +1267,7 @@ cdef class WattsStrogatzGenerator:
 	"""
 
 	cdef _WattsStrogatzGenerator* _this
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1359,7 +1359,7 @@ cdef class ChungLuGenerator:
 
 	def __cinit__(self, vector[count] degreeSequence):
 		self._this = new _ChungLuGenerator(degreeSequence)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1521,7 +1521,7 @@ cdef class RmatGenerator:
 
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1874,7 +1874,7 @@ cdef class SNAPGraphReader:
 		[1]: http://snap.stanford.edu/data/index.html
 	"""
 	cdef _SNAPGraphReader _this
-		
+
 	def read(self, path):
 		return Graph().setThis(self._this.read(stdstring(path)))
 
@@ -2884,6 +2884,7 @@ cdef extern from "cpp/community/PLP.h":
 		void run() except +
 		_Partition getPartition() except +
 		count numberOfIterations() except +
+		vector[count] getTiming() except +
 		string toString() except +
 
 
@@ -2903,7 +2904,7 @@ cdef class PLP(CommunityDetector):
 	cdef _PLP* _this
 
 	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
-		""" 
+		"""
 		Constructor to the Parallel label propagation community detection algorithm.
 
 		Parameters
@@ -2924,7 +2925,7 @@ cdef class PLP(CommunityDetector):
 			self._this = new _PLP(G._this, p._this, updateThreshold)
 		else:
 			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -2954,6 +2955,16 @@ cdef class PLP(CommunityDetector):
 		"""
 		return self._this.numberOfIterations()
 
+	def getTiming(self):
+		""" Get list of running times for each iteration.
+
+		Returns
+		-------
+		count
+			The list of running times in milliseconds.
+		"""
+		return self._this.getTiming()
+
 	def toString(self):
 		""" Get string representation.
 
@@ -2979,7 +2990,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 
 	def __cinit__(self, Graph G not None):
 		self._this = new _LPDegreeOrdered(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -3060,7 +3071,7 @@ cdef class PLM(CommunityDetector):
 
 	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
 		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -3122,7 +3133,7 @@ cdef class CNM(CommunityDetector):
 
 	def __cinit__(self, Graph G not None):
 		self._this = new _CNM(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -3322,7 +3333,7 @@ cdef class EPP(CommunityDetector):
 
 	def __cinit__(self, Graph G not None):
 		self._this = new _EPP(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -3738,7 +3749,7 @@ cdef class StronglyConnectedComponents:
 
 	def __cinit__(self,  Graph G):
 		self._this = new _StronglyConnectedComponents(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4541,7 +4552,7 @@ cdef class EigenvectorCentrality:
 
 	def __cinit__(self, Graph G, double tol=1e-9):
 		self._this = new _EigenvectorCentrality(G._this, tol)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4610,7 +4621,7 @@ cdef class DegreeCentrality:
 
 	def __cinit__(self, Graph G, bool normalized=False):
 		self._this = new _DegreeCentrality(G._this, normalized)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4795,7 +4806,7 @@ cdef class DGSStreamParser:
 
 	def __cinit__(self, path, mapped=True, baseIndex=0):
 		self._this = new _DGSStreamParser(stdstring(path), mapped, baseIndex)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4813,7 +4824,7 @@ cdef class DGSWriter:
 
 	def __cinit__(self):
 		self._this = new _DGSWriter()
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4869,7 +4880,7 @@ cdef class DynamicPathGenerator:
 
 	def __cinit__(self):
 		self._this = new _DynamicPathGenerator()
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4894,7 +4905,7 @@ cdef class DynamicDorogovtsevMendesGenerator:
 
 	def __cinit__(self):
 		self._this = new _DynamicDorogovtsevMendesGenerator()
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4923,7 +4934,7 @@ cdef class DynamicPubWebGenerator:
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _DynamicPubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4976,7 +4987,7 @@ cdef class DynamicForestFireGenerator:
 
 	def __cinit__(self, p, directed, r = 1.0):
 		self._this = new _DynamicForestFireGenerator(p, directed, r)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -5011,7 +5022,7 @@ cdef class GraphUpdater:
 
 	def __cinit__(self, Graph G):
 		self._this = new _GraphUpdater(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -5035,7 +5046,7 @@ cdef class ParallelPartitionCoarsening:
 
 	def __cinit__(self):
 		self._this = new _ParallelPartitionCoarsening()
-		
+
 	def __dealloc__(self):
 		del self._this
 

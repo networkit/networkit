@@ -17,13 +17,9 @@
 namespace NetworKit {
 
 PLP::PLP(const Graph& G, count theta) : CommunityDetectionAlgorithm(G), updateThreshold(theta) {
-
-	this->VERSION = "1.0";
 }
 
 PLP::PLP(const Graph& G, const Partition baseClustering, count theta) : CommunityDetectionAlgorithm(G, baseClustering), updateThreshold(theta) {
-
-	this->VERSION = "1.0";
 }
 
 void PLP::run() {
@@ -46,7 +42,7 @@ void PLP::run() {
 	nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
 	nIterations = 0; // number of iterations
-	
+
 	/**
 	 * == Dealing with isolated nodes ==
 	 *
@@ -109,6 +105,7 @@ void PLP::run() {
 		// for each while loop iteration...
 
 		runtime.stop();
+		this->timing.push_back(runtime.elapsedMilliseconds());
 		DEBUG("[DONE] LabelPropagation: iteration #" , nIterations , " - updated " , nUpdated , " labels, time spent: " , runtime.elapsedTag());
 
 
@@ -118,7 +115,7 @@ void PLP::run() {
 
 std::string PLP::toString() const {
 	std::stringstream strm;
-	strm << "PLP(updateThreshold=" << this->updateThreshold << ")";
+	strm << "PLP";
 	return strm.str();
 }
 
@@ -130,6 +127,11 @@ void PLP::setUpdateThreshold(count th) {
 
 count PLP::numberOfIterations() {
 	return this->nIterations;
+}
+
+
+std::vector<count> PLP::getTiming() {
+	return this->timing;
 }
 
 } /* namespace NetworKit */
