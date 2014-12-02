@@ -64,7 +64,7 @@ void PLM::run() {
 
 
 	if (turbo) {
-		if (this->parallelism != "none") { // initialize arrays for all threads only when actually needed
+		if (this->parallelism != "none" && this->parallelism != "none randomized") { // initialize arrays for all threads only when actually needed
 			turboAffinity.resize(omp_get_max_threads());
 			neigh_comm.resize(omp_get_max_threads());
 			for (auto &it : turboAffinity) {
@@ -255,7 +255,7 @@ void PLM::run() {
 		timer.stop();
 		timing["coarsen"].push_back(timer.elapsedMilliseconds());
 
-		PLM onCoarsened(coarsened.first);
+		PLM onCoarsened(coarsened.first, this->refine, this->gamma, this->parallelism, this->maxIter, this->parallelCoarsening, this->turbo);
 		onCoarsened.run();
 		Partition zetaCoarse = onCoarsened.getPartition();
 
@@ -295,21 +295,19 @@ void PLM::run() {
 }
 
 std::string NetworKit::PLM::toString() const {
-	std::string refined;
-	if (refine) {
-		refined = "refinement";
-	} else {
-		refined = "";
-	}
-	std::string parCoarsening;
-	if (parallelCoarsening) {
-		parCoarsening = "parallel coarsening";
-	} else {
-		parCoarsening = "";
-	}
-
 	std::stringstream stream;
-	stream << "PLM(" << parallelism << "," << refined << "," << parCoarsening << ")";
+	stream << "PLM(";
+	stream << parallelism;
+	if (refine) {
+		stream << "," << "refine";
+	}
+	if (parallelCoarsening) {
+		stream << "," << "pc";
+	}
+	if (turbo) {
+		stream << "," << "turbo";
+	}
+	stream << ")";
 
 	return stream.str();
 }

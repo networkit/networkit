@@ -2,34 +2,85 @@
 #include "PLM.h"
 #include "PLP.h"
 #include "../overlap/HashingOverlapper.h"
-#include "PLM.h"
+#include <memory>
 
 namespace NetworKit {
 
-EPP EPPFactory::make(const Graph& G, count ensembleSize, std::string baseAlgorithm, std::string finalAlgorithm) {
-	EPP ensemble(G);
+namespace EPPFactory {
+	EPP make(const Graph& G, count ensembleSize, std::string baseAlgorithm, std::string finalAlgorithm) {
+		EPP ensemble(G);
 
-	for (count i = 0; i < ensembleSize; ++i) {
-		if (baseAlgorithm == "PLP") {
-			ensemble.addBaseClusterer(*(new PLP(G)));
-		} else if (baseAlgorithm == "PLM") {
-			ensemble.addBaseClusterer(*(new PLM(G,false)));
-		} else {
-			throw std::runtime_error("unknown base algorithm name");
+		for (count i = 0; i < ensembleSize; ++i) {
+			CommunityDetectionAlgorithm* p;
+			if (baseAlgorithm == "PLP") {
+				p = new PLP(G);
+			} else if (baseAlgorithm == "PLM") {
+				p = new PLM(G,false);
+			} else {
+				throw std::runtime_error("unknown base algorithm name");
+			}
+			std::unique_ptr<CommunityDetectionAlgorithm> base;
+			base.reset(p);
+			ensemble.addBaseClusterer(base);
 		}
+
+		CommunityDetectionAlgorithm* p;
+		if (finalAlgorithm == "PLM") {
+			p = new PLM(G,false);
+		} else if (finalAlgorithm == "PLP") {
+			p = new PLP(G);
+		} else if (finalAlgorithm == "PLMR") {
+			p = new PLM(G,true);
+		} else throw std::runtime_error("unknown final algorithm name");
+		std::unique_ptr<CommunityDetectionAlgorithm> final;
+		final.reset(p);
+		ensemble.setFinalClusterer(final);
+
+
+		auto overlap = new HashingOverlapper();
+		std::unique_ptr<Overlapper> overlap_ptr(overlap);
+		ensemble.setOverlapper(overlap_ptr);
+
+		return std::move(ensemble);
 	}
 
-	if (finalAlgorithm == "PLM") {
-		ensemble.setFinalClusterer(*(new PLM(G,false)));
-	} else if (finalAlgorithm == "PLP") {
-		ensemble.setFinalClusterer(*(new PLP(G)));
-	} else if (finalAlgorithm == "PLMR") {
-		ensemble.setFinalClusterer(*(new PLM(G,true)));
-	} else throw std::runtime_error("unknown final algorithm name");
+	EPP* makePtr(const Graph& G, count ensembleSize, std::string baseAlgorithm, std::string finalAlgorithm) {
+		EPP* ensemble = new EPP(G);
 
-	ensemble.setOverlapper(*(new HashingOverlapper));
+		for (count i = 0; i < ensembleSize; ++i) {
+			CommunityDetectionAlgorithm* p;
+			if (baseAlgorithm == "PLP") {
+				p = new PLP(G);
+			} else if (baseAlgorithm == "PLM") {
+				p = new PLM(G,false);
+			} else {
+				throw std::runtime_error("unknown base algorithm name");
+			}
+			std::unique_ptr<CommunityDetectionAlgorithm> base;
+			base.reset(p);
+			ensemble->addBaseClusterer(base);
+		}
 
-	return ensemble;
+		CommunityDetectionAlgorithm* p;
+		if (finalAlgorithm == "PLM") {
+			p = new PLM(G,false);
+		} else if (finalAlgorithm == "PLP") {
+			p = new PLP(G);
+		} else if (finalAlgorithm == "PLMR") {
+			p = new PLM(G,true);
+		} else throw std::runtime_error("unknown final algorithm name");
+		std::unique_ptr<CommunityDetectionAlgorithm> final;
+		final.reset(p);
+		ensemble->setFinalClusterer(final);
+
+
+		auto overlap = new HashingOverlapper();
+		std::unique_ptr<Overlapper> overlap_ptr(overlap);
+		ensemble->setOverlapper(overlap_ptr);
+
+		return ensemble;
+	}
+
 }
 
-} /* namespace NetworKit */
+}

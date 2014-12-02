@@ -7,19 +7,21 @@ from networkit import *
 class Test_CommunityDetection(unittest.TestCase):
 
 	def setUp(self):
-		self.G = readGraph("input/PGPgiantcompo.graph")
+		self.G = readGraph("input/PGPgiantcompo.graph",Format.METIS)
 
 	def test_PLM(self):
-		comms = community.detectCommunities(self.G, community.PLM())
+		comms = community.detectCommunities(self.G, community.PLM(self.G))
 
 		# each node must be assigned
 		for v in self.G.nodes():
 			self.assertTrue(comms.contains(v))
 
 	def test_CutClustering(self):
-		jazz = readGraph("input/jazz.graph")
+		jazz = readGraph("input/jazz.graph",Format.METIS)
 
-		comms = community.detectCommunities(jazz, community.CutClustering(0.5076142131979697))
+		cc = community.CutClustering(jazz,0.5076142131979697)
+
+		comms = community.detectCommunities(jazz, cc)
 		self.assertEqual(193, comms.numberOfSubsets())
 
 		hierarchy = community.CutClustering.getClusterHierarchy(jazz)

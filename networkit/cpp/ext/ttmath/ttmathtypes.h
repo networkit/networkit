@@ -140,6 +140,14 @@
 		#define TTMATH_NOASM
 	#endif
 
+	#if defined __MIC__
+		/*!
+			Intel Many Integrated Core (Xeon Phi)
+		*/
+		#define TTMATH_NOASM
+	#endif
+
+
 #endif
 
 
