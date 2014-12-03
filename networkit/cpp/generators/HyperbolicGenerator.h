@@ -11,6 +11,7 @@
 #include <vector>
 #include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"
+#include "../auxiliary/Timer.h"
 
 namespace NetworKit {
 
@@ -83,6 +84,14 @@ public:
 		this->theoreticalSplit = split;
 	}
 
+	vector<double> getElapsedMilliseconds() {
+		vector<double> result(threadtimers.size());
+		for (index i = 0; i < result.size(); i++) {
+			result[i] = threadtimers[i].elapsedMilliseconds();
+		}
+		return result;
+	}
+
 private:
 
 	/**
@@ -103,6 +112,11 @@ private:
 	 */
 	count capacity;
 	bool theoreticalSplit;
+
+	/**
+	 * times
+	 */
+	vector<Aux::Timer> threadtimers;
 };
 }
 #endif /* HYPERBOLICGENERATOR_H_ */

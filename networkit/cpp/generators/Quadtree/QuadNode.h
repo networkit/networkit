@@ -396,7 +396,7 @@ public:
 			const double queryY = center[1];
 			const count cSize = content.size();
 
-			for (uint i = 0; i < cSize; i++) {
+			for (int i = 0; i < cSize; i++) {
 				const double deltaX = positions[i][0] - queryX;
 				const double deltaY = positions[i][1] - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
