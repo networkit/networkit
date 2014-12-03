@@ -15,8 +15,9 @@ build.conf
 src/python/NetworKit.egg-info/
 NetworKit-Tests-D
 
-scripts/BackboneEvaluation/input/
-scripts/BackboneEvaluation/output/
+scripts/SparsificationEvaluation/input/
+scripts/SparsificationEvaluation/output/
+scripts/SparsificationEvaluation/figures
 input/backbones/
 
 syntax: regexp
