@@ -15,12 +15,7 @@
 
 namespace NetworKit {
 
-enum class EdgeType {
-	HalfEdges,
-	FullEdges
-};
-
-template <EdgeType edgeType = EdgeType::HalfEdges>
+template <bool useHalfEdges>
 class GraphBuilder {
 protected:
 	count n; //!< current number of nodes
@@ -37,6 +32,7 @@ protected:
 	index indexInOutEdgeArray(node u, node v) const;
 
 public:
+
 	/**
 	 * Creates a new GraphBuilder. GraphBuilder supports the basic methods needed to create a new graph (addNode, addEdge, setWeight, increaseWeight). It is designed to be much faster for graph creation, but the speed comes with a restriction:
 	 * For undirected graphs GraphBuilder will handle u->v and v->u as two different edges. Keep that in mind when using setWeight and increaseWeight.
@@ -52,31 +48,31 @@ public:
 	 * Returns <code>true</code> if this graph supports edge weights other than 1.0.
 	 * @return <code>true</code> if this graph supports edge weights other than 1.0.
 	 */
-	bool isWeighted() const { return weighted; }
+	inline bool isWeighted() const;
 
 	/**
 	 * Return <code>true</code> if this graph supports directed edges.
 	 * @return </code>true</code> if this graph supports directed edges.
 	 */
-	bool isDirected() const { return directed; }
+	inline bool isDirected() const;
 
 	/**
 	 * Return <code>true</code> if graph contains no nodes.
 	 * @return <code>true</code> if graph contains no nodes.
 	 */
-	bool isEmpty() const { return n == 0; }
+	inline bool isEmpty() const;
 
 	/**
 	 * Return the number of nodes in the graph.
 	 * @return The number of nodes.
 	 */
-	count numberOfNodes() const { return n; }
+	count numberOfNodes() const;
 
  	/**
 	 * Get an upper bound for the node ids in the graph.
 	 * @return An upper bound for the node ids.
 	 */
-	index upperNodeIdBound() const { return n; }
+	index upperNodeIdBound() const;
 
 	/**
 	 * Add a new node to the graph and return it.
@@ -92,6 +88,8 @@ public:
 	 * @param weight Optional edge weight.
 	 */
 	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+
+	void addInEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
 	/**
 	 * Set the weight of an edge. If the edge does not exist,
@@ -116,12 +114,7 @@ public:
 	/**
 	 * Generates a Graph instance. The graph builder will be reseted at the end.
 	 */
-	Graph toGraph(bool parallel = true) {
-		Graph G(n, weighted, directed);
-		if (usedirectswap) directSwap(G);
-		else parallel ? toGraphParallel(G) : toGraphSequential(G);
-		return G;
-	}
+	Graph toGraph(bool parallel = true);
 
 	/**
 	 * Iterate over all nodes of the graph and call @a handle (lambda closure).
@@ -158,29 +151,34 @@ private:
 	void directSwap(Graph &G);
 
 	void reset();
+
 	template <typename T>
 	static void copyAndClear(std::vector<T>& source, std::vector<T>& target);
+	
 	static void correctNumberOfEdges(Graph& G, count numberOfSelfLoops);
 	static bool checkConsistency(Graph& G);
 };
 
+template <bool useHalfEdges>
 template<typename L>
-void GraphBuilder::forNodes(L handle) const {
+void GraphBuilder<useHalfEdges>::forNodes(L handle) const {
 	for (node v = 0; v < n; v++) {
 		handle(v);
 	}
 }
 
+template <bool useHalfEdges>
 template<typename L>
-void GraphBuilder::parallelForNodes(L handle) const {
+void GraphBuilder<useHalfEdges>::parallelForNodes(L handle) const {
 	#pragma omp parallel for schedule(dynamic)
 	for (node v = 0; v < n; v++) {
 		handle(v);
 	}
 }
 
+template <bool useHalfEdges>
 template<typename L>
-void GraphBuilder::forNodePairs(L handle) const {
+void GraphBuilder<useHalfEdges>::forNodePairs(L handle) const {
 	for (node u = 0; u < n; u++) {
 		for (node v = u + 1; v < n; v++) {
 			handle(u, v);
@@ -188,8 +186,9 @@ void GraphBuilder::forNodePairs(L handle) const {
 	}
 }
 
+template <bool useHalfEdges>
 template<typename L>
-void GraphBuilder::parallelForNodePairs(L handle) const {
+void GraphBuilder<useHalfEdges>::parallelForNodePairs(L handle) const {
 	#pragma omp parallel for schedule(dynamic)
 	for (node u = 0; u < n; u++) {
 		for (node v = u + 1; v < n; v++) {
@@ -197,6 +196,16 @@ void GraphBuilder::parallelForNodePairs(L handle) const {
 		}
 	}
 }
+
+template <bool useHalfEdges>
+template <typename T>
+void GraphBuilder<useHalfEdges>::copyAndClear(std::vector<T>& source, std::vector<T>& target) {
+	std::copy(source.begin(), source.end(), std::back_inserter(target));
+	source.clear();
+}
+
+template class GraphBuilder<true>;
+template class GraphBuilder<false>;
 
 } /* namespace NetworKit */
 

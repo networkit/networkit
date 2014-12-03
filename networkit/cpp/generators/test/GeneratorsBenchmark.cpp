@@ -26,7 +26,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	count m_expected = p * n * (n + 1) / 2;
 
 	Graph G;
-	GraphBuilder builder;
+	GraphBuilder<true> builder;
 
 	// prepare a random generator for each possible thread
 	int maxThreads = omp_get_max_threads();
@@ -47,7 +47,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	// half parallel way
 	m_actual = 0;
 	t1 = timeOnce([&]() {
-		builder = GraphBuilder(n);
+		builder = GraphBuilder<true>(n);
 		builder.parallelForNodePairs([&](node u, node v) {
 			int tid = omp_get_thread_num();
 			double rdn = randomPerThread[tid]();
@@ -67,7 +67,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	// fully parallel way
 	m_actual = 0;
 	t1 = timeOnce([&]() {
-		builder = GraphBuilder(n);
+		builder = GraphBuilder<true>(n);
 		builder.parallelForNodePairs([&](node u, node v) {
 			int tid = omp_get_thread_num();
 			double rdn = randomPerThread[tid]();
