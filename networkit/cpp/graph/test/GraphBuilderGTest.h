@@ -23,7 +23,7 @@ public:
 	virtual void SetUp();
 
 protected:
-	GraphBuilder<true> bHouse;
+	GraphBuilder bHouse;
 	std::vector< std::pair<node, node> > houseEdgesOut;
 	std::vector< std::vector<edgeweight> > Ahouse;
 	count n_house;
@@ -36,11 +36,11 @@ protected:
 
 	bool isWeighted() const;
 	bool isDirected() const;
+	bool useAutoCompleteEdges() const;
 	bool useParallel() const;
-	bool useDirectSwap() const;
 
-	GraphBuilder<true> createGraphBuilder(count n = 0) const;
-	Graph toGraph(GraphBuilder<true>& b) const;
+	GraphBuilder createGraphBuilder(count n = 0) const;
+	Graph toGraph(GraphBuilder& b) const;
 };
 
 } /* namespace NetworKit */

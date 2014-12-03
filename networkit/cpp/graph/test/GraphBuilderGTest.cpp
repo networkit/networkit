@@ -15,16 +15,20 @@
 namespace NetworKit {
 
 INSTANTIATE_TEST_CASE_P(InstantiationName, GraphBuilderGTest, testing::Values(
-	std::make_tuple(false, false, false, false),
-	std::make_tuple(true, false, false, false),
-	std::make_tuple(false, true, false, false),
-	std::make_tuple(true, true, false, false),
-	std::make_tuple(false, false, true, false),
-	std::make_tuple(true, false, true, false),
-	std::make_tuple(false, true, true, false),
-	std::make_tuple(true, true, true, false),
-	std::make_tuple(true, false, true, true),
-	std::make_tuple(false, false, true, true)
+	// std::make_tuple(false, false, true, false), // weighted, directed, autoCompleteHalfEdges, parallel
+	// std::make_tuple(true, false, true, false),
+	// std::make_tuple(false, true, true, false),
+	// std::make_tuple(true, true, true, false),
+
+	// std::make_tuple(false, false, true, true),
+	// std::make_tuple(true, false, true, true),
+	// std::make_tuple(false, true, true, true),
+	// std::make_tuple(false, false, true, true),
+
+	std::make_tuple(false, false, false, true),
+	std::make_tuple(true, false, false, true),
+	std::make_tuple(false, true, false, true),
+	std::make_tuple(false, false, false, true)
 ));
 
 bool GraphBuilderGTest::isWeighted() const {
@@ -34,22 +38,20 @@ bool GraphBuilderGTest::isDirected() const {
 	return std::get<1>(GetParam());
 }
 
-bool GraphBuilderGTest::useParallel() const {
+bool GraphBuilderGTest::useAutoCompleteEdges() const {
 	return std::get<2>(GetParam());
 }
 
-bool GraphBuilderGTest::useDirectSwap() const {
+bool GraphBuilderGTest::useParallel() const {
 	return std::get<3>(GetParam());
 }
 
-GraphBuilder<true> GraphBuilderGTest::createGraphBuilder(count n) const {
-	bool weighted, directed, parallel, directSwap;
-	std::tie(weighted, directed, parallel, directSwap) = GetParam();
-	return GraphBuilder<true>(n, weighted, directed);
+GraphBuilder GraphBuilderGTest::createGraphBuilder(count n) const {
+	return GraphBuilder(n, isWeighted(), isDirected());
 }
 
-Graph GraphBuilderGTest::toGraph(GraphBuilder<true>& b) const {
-		return b.toGraph(useParallel());
+Graph GraphBuilderGTest::toGraph(GraphBuilder& b) const {
+	return b.toGraph(useAutoCompleteEdges(), useParallel());
 };
 
 void GraphBuilderGTest::SetUp() {
@@ -87,11 +89,16 @@ void GraphBuilderGTest::SetUp() {
 	for (auto& e : houseEdgesOut) {
 		node u = e.first;
 		node v = e.second;
-		bHouse.addEdge(u, v, ew);
-		if (useDirectSwap()) bHouse.addEdge(v,u,ew);
+		bHouse.addHalfOutEdge(u, v, ew);
+		if (!useAutoCompleteEdges()) {
+			if (isDirected()) {
+				bHouse.addHalfInEdge(v, u, ew);
+			} else {
+				bHouse.addHalfEdge(v, u, ew);
+			}
+		}
 
 		Ahouse[u][v] = ew;
-
 		if (!bHouse.isDirected()) {
 			Ahouse[v][u] = ew;
 		}
@@ -191,15 +198,15 @@ TEST_P(GraphBuilderGTest, testDegreeOut) {
 
 /** EDGE MODIFIERS **/
 
-TEST_P(GraphBuilderGTest, testAddEdge) {
+TEST_P(GraphBuilderGTest, testAddHalfEdge) {
 	auto b = createGraphBuilder(3);
 
 	// Graph with 2 normal edges
-	b.addEdge(0, 1, 4.51);
-	b.addEdge(1, 2, 2.39);
-	if (useDirectSwap()) {
-		b.addEdge(1, 0, 4.51);
-		b.addEdge(2, 1, 2.39);
+	b.addHalfEdge(0, 1, 4.51);
+	b.addHalfEdge(1, 2, 2.39);
+	if (!useAutoCompleteEdges()) {
+		b.addHalfEdge(1, 0, 4.51);
+		b.addHalfEdge(2, 1, 2.39);
 	}
 
 	Graph G = toGraph(b);
@@ -263,10 +270,10 @@ TEST_P(GraphBuilderGTest, testIsDirected) {
 
 TEST_P(GraphBuilderGTest, testNumberOfSelfLoops) {
 	auto b = createGraphBuilder(3);
-	b.addEdge(0, 1);
-	b.addEdge(0, 0);
-	if (useDirectSwap()) {
-		b.addEdge(1,0);
+	b.addHalfEdge(0, 1);
+	b.addHalfEdge(0, 0);
+	if (!useAutoCompleteEdges()) {
+		b.addHalfEdge(1,0);
 	}
 	Graph G = toGraph(b);
 	ASSERT_EQ(1u, G.numberOfSelfLoops());
@@ -283,11 +290,11 @@ TEST_P(GraphBuilderGTest, testUpperNodeIdBound) {
 
 TEST_P(GraphBuilderGTest, testSetWeight) {
 	auto b = createGraphBuilder(10);
-	b.addEdge(0, 1);
-	b.addEdge(1, 2);
-	if (useDirectSwap()) {
-		b.addEdge(1,0);
-		b.addEdge(2,1);
+	b.addHalfEdge(0, 1);
+	b.addHalfEdge(1, 2);
+	if (!useAutoCompleteEdges()) {
+		b.addHalfEdge(1,0);
+		b.addHalfEdge(2,1);
 	}
 
 	if (isWeighted()) {
@@ -303,10 +310,10 @@ TEST_P(GraphBuilderGTest, testSetWeight) {
 		}
 
 		// self-loop
-		b.addEdge(8, 8, 2.5);
+		b.addHalfEdge(8, 8, 2.5);
 		b.setWeight(8, 8, 3.14);
 
-		if (useDirectSwap()) {
+		if (!useAutoCompleteEdges()) {
 			b.setWeight(2, 1, 2.718);
 			b.setWeight(6, 5, 56.0);
 			b.setWeight(4, 3, 2.718);
@@ -375,8 +382,10 @@ TEST_P(GraphBuilderGTest, testSameAsGraph) {
 			} else { // new edge
 				node u = Aux::Random::integer(v, n - 1); // self-loops possible
 				edgeweight ew = Aux::Random::probability();
-				b.addEdge(v, u, ew);
-				if (useDirectSwap() && u != v) b.addEdge(u,v,ew);
+				b.addHalfEdge(v, u, ew);
+				if (!useAutoCompleteEdges() && u != v) {
+					b.addHalfEdge(u,v,ew);
+				}
 				G_expected.addEdge(v, u, ew);
 			}
 
@@ -385,11 +394,15 @@ TEST_P(GraphBuilderGTest, testSameAsGraph) {
 				edgeweight ew = Aux::Random::probability();
 				if (p < 0.5) {
 					b.setWeight(v, u, ew);
-					if (useDirectSwap() && u != v) b.setWeight(u,v,ew);
+					if (!useAutoCompleteEdges() && u != v) {
+						b.setWeight(u,v,ew);
+					}
 					G_expected.setWeight(v, u, ew);
 				} else {
 					b.increaseWeight(v, u, ew);
-					if (useDirectSwap() && u != v) b.increaseWeight(u,v,ew);
+					if (!useAutoCompleteEdges() && u != v) {
+						b.increaseWeight(u,v,ew);
+					}
 					G_expected.increaseWeight(v, u, ew);
 				}
 			}
@@ -448,9 +461,9 @@ TEST_P(GraphBuilderGTest, testForValidStateAfterToGraph) {
 
 	node v = this->bHouse.addNode();
 	node u = this->bHouse.addNode();
-	this->bHouse.addEdge(v, u, 0.25);
-	if (useDirectSwap()) {
-		this->bHouse.addEdge(u,v,0.25);
+	this->bHouse.addHalfEdge(v, u, 0.25);
+	if (!useAutoCompleteEdges()) {
+		this->bHouse.addHalfEdge(u,v,0.25);
 	}
 
 	Graph G2 = toGraph(this->bHouse);
