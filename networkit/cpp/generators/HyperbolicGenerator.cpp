@@ -13,13 +13,14 @@
 #include <random>
 #include <math.h>
 #include <assert.h>
+#include <omp.h>
 
 #include "../graph/GraphBuilder.h"
 #include "HyperbolicGenerator.h"
 #include "Quadtree/Quadtree.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/ProgressMeter.h"
-#include "../auxiliary/Timer.h"
+
 
 namespace NetworKit {
 
@@ -57,6 +58,7 @@ HyperbolicGenerator::HyperbolicGenerator(count n, count m) {
 void HyperbolicGenerator::initialize() {
 	capacity = 1000;
 	theoreticalSplit = false;
+	threadtimers.resize(omp_get_max_threads());
 }
 
 Graph HyperbolicGenerator::generate() {
@@ -115,22 +117,28 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	timer.start();
 
 	Aux::ProgressMeter progress(n, 1000);
-	#pragma omp parallel for schedule(guided, 1000)
-	for (index i = 0; i < n; i++) {
-		//get neighbours for node i
-		vector<index> near = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance);
-		for (index j : near) {
-			if (i != j) {
-				//we add half-edges from both directions at the same time. Due to the symmetry of distances, the correct edges will be formed in parallel without a need for deduplication
-				result.addEdge(i,j);
+	#pragma omp parallel
+	{
+		index id = omp_get_thread_num();
+		threadtimers[id].start();
+		#pragma omp for schedule(guided, 1000) nowait
+		for (index i = 0; i < n; i++) {
+			//get neighbours for node i
+			vector<index> near = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance);
+			for (index j : near) {
+				if (i != j) {
+					//we add half-edges from both directions at the same time. Due to the symmetry of distances, the correct edges will be formed in parallel without a need for deduplication
+					result.addEdge(i,j);
+				}
+			}
+			if (i % 1000 == 0) {
+				#pragma omp critical (progress)
+				{
+					progress.signal(i);
+				}
 			}
 		}
-		if (i % 1000 == 0) {
-			#pragma omp critical (progress)
-			{
-				progress.signal(i);
-			}
-		}
+		threadtimers[id].stop();
 	}
 
 	timer.stop();
