@@ -1,5 +1,5 @@
 /*
- * GraphBuilderGTest.h
+ * GraphBuilderDirectSwapGTest.h
  *
  *  Created on: 14.08.2014
  *      Author: Marvin Ritter (marvin.ritter@gmail.com)
@@ -7,8 +7,8 @@
 
 #ifndef NOGTEST
 
-#ifndef GRAPHBUILDERGTEST_H_
-#define GRAPHBUILDERGTEST_H_
+#ifndef GRAPH_BUILDER_DIRECT_SWAP_GTEST_H_
+#define GRAPH_BUILDER_DIRECT_SWAP_GTEST_H_
 
 #include <tuple>
 #include <gtest/gtest.h>
@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-class GraphBuilderGTest: public testing::TestWithParam< std::tuple<bool, bool, bool, bool> > {
+class GraphBuilderDirectSwapGTest: public testing::TestWithParam< std::tuple<bool, bool> > {
 public:
 	virtual void SetUp();
 
@@ -36,8 +36,6 @@ protected:
 
 	bool isWeighted() const;
 	bool isDirected() const;
-	bool useAutoCompleteEdges() const;
-	bool useParallel() const;
 
 	GraphBuilder createGraphBuilder(count n = 0) const;
 	Graph toGraph(GraphBuilder& b) const;
@@ -45,6 +43,6 @@ protected:
 
 } /* namespace NetworKit */
 
-#endif /* GRAPHBUILDERGTEST_H_ */
+#endif /* GRAPH_BUILDER_DIRECT_SWAP_GTEST_H_ */
 
 #endif /* NOGTEST */

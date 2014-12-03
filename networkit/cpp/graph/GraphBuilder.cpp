@@ -33,19 +33,20 @@ void GraphBuilder::reset(count n) {
 	inEdgeWeights.assign((isDirected() && isWeighted()) ? n : 0, std::vector<edgeweight>{});
 }
 
-index GraphBuilder::indexInInEdgeArray(node v, node u) const {
-	for (index i = 0; i < inEdges[v].size(); i++) {
-		node x = inEdges[v][i];
-		if (x == u) {
+index GraphBuilder::indexInOutEdgeArray(node u, node v) const {
+	for (index i = 0; i < outEdges[u].size(); i++) {
+		node x = outEdges[u][i];
+		if (x == v) {
 			return i;
 		}
 	}
 	return none;
 }
 
-index GraphBuilder::indexInOutEdgeArray(node u, node v) const {
-	for (index i = 0; i < outEdges[u].size(); i++) {
-		node x = outEdges[u][i];
+index GraphBuilder::indexInInEdgeArray(node u, node v) const {
+	assert(isDirected());
+	for (index i = 0; i < inEdges[u].size(); i++) {
+		node x = inEdges[u][i];
 		if (x == v) {
 			return i;
 		}
@@ -72,6 +73,7 @@ void GraphBuilder::addHalfEdge(node u, node v, edgeweight ew) {
 }
 
 void GraphBuilder::addHalfOutEdge(node u, node v, edgeweight ew) {
+	assert(indexInOutEdgeArray(u, v) == none);
 	outEdges[u].push_back(v);
 	if (weighted) {
 		outEdgeWeights[u].push_back(ew);
@@ -82,10 +84,11 @@ void GraphBuilder::addHalfOutEdge(node u, node v, edgeweight ew) {
 	}
 }
 
-void GraphBuilder::addHalfInEdge(node u, node v, edgeweight) {
-	inEdges[v].push_back(u);
+void GraphBuilder::addHalfInEdge(node u, node v, edgeweight ew) {
+	assert(indexInInEdgeArray(u, v) == none);
+	inEdges[u].push_back(v);
 	if (weighted) {
-		inEdgeWeights[v].push_back(u);
+		inEdgeWeights[u].push_back(ew);
 	}
 	if (u == v) {
 		#pragma omp atomic
@@ -94,6 +97,7 @@ void GraphBuilder::addHalfInEdge(node u, node v, edgeweight) {
 }
 
 void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
+	assert(isWeighted());
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi != none) {
 		outEdgeWeights[u][vi] = ew;
@@ -103,6 +107,7 @@ void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
 }
 
 void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
+	assert(isWeighted());
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi != none) {
 		outEdgeWeights[u][vi] += ew;
@@ -136,11 +141,6 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 	assert(G.inEdgeWeights.size() == ( (weighted && directed) ? n : 0));
 
 	setDegrees(G);
-
-	if (!autoCompleteEdges) {
-		// we counted each self loops twice
-		selfloops /= 2;
-	}
 	G.m = numberOfEdges(G);
 
 	reset();
@@ -235,15 +235,6 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 			}
 		}
 	});
-
-	// calculate correct m
-	count numberOfSelfLoops = 0;
-	for (auto c : numberOfSelfLoopsPerThread) {
-		numberOfSelfLoops += c;
-	}
-
-	// bring the builder into an empty, but valid state
-	reset();
 }
 
 void GraphBuilder::toGraphSequential(Graph &G) {
@@ -331,9 +322,6 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 			G.outDeg[v] += missingEdgesCounts[v];
 		});
 	}
-
-	// bring the builder into an empty, but valid state
-	reset();
 }
 
 void GraphBuilder::setDegrees(Graph& G) {
@@ -352,7 +340,6 @@ count GraphBuilder::numberOfEdges(const Graph& G) {
 	for (node v = 0; v < G.z; v++) {
 		m += G.degree(v);
 	}
-	
 	if (G.isDirected()) {
 		return m;
 	} else {

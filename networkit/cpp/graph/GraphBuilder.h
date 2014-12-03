@@ -150,7 +150,6 @@ public:
 	 */
 	template<typename L> void forNodePairs(L handle) const;
 
-
 	/**
 	 * Iterate over all undirected pairs of nodes in parallel and call @a handle (lambda closure).
 	 *
