@@ -15,21 +15,30 @@
 
 namespace NetworKit {
 
-template <bool useHalfEdges>
+/*
+ * The GraphBuilder helps to speed up graph generation by minimizing the number of checks on addEdge/setWeight/increaseWeight. Further more it delays the construction of some internal data structures of the Graph class until you call toGraph(). toGraph() can only be called once.
+ * In the Graph class for an edge u -> v, v is stored in the adjacent array of u (first half) and u in the adjacent array of v (second half). (For directed graphs these might be in and out adjacent arrays.). So each edge can be seen as a pair of 2 half edges. To allow optimization and mainly parallelization GraphBuilder lets you add both half edges yourself. You are responsible for adding both half edges, otherwise you might end up with an invalid Graph object.
+ * As adding the first half edge of an edge u -> v only requires access to the adjacent array of u, other threads can add edges a -> b as long as a != u. Some goes for the methods setWeight and increaseWeight. Note: If you add the first half edge of u -> v, you can change the weight by calling setWeight(u, v, ew) or increaseWeight(u, v, ew), but calling setWeight(v, u, ew) or increaseWeight(v, u, ew) will add the second half edge.
+ * GraphBuilder allows you to be lazy and only add one half of each edge. Calling toGraph with autoCompleteEdges set to true, will make each half Edge in GraphBuilder to one full edge in Graph.
+ */
+
 class GraphBuilder {
-protected:
+private:
 	count n; //!< current number of nodes
 	count selfloops; //!< currently encountered number of self loops
 
 	bool weighted; //!< true if the graph will be weighted, false otherwise
 	bool directed; //!< true if the graph will be directed, false otherwise
 
-	std::vector< std::vector<node> > inEdges;
-	std::vector< std::vector<node> > outEdges;
-	std::vector< std::vector<edgeweight> > inEdgeWeights;
-	std::vector< std::vector<edgeweight> > outEdgeWeights;
+	std::vector< std::vector<node> > outEdges; //!< (outgoing) edges, for each edge (u, v) v is saved in outEdges[u] and for undirected also u in outEdges[v]
+	std::vector< std::vector<edgeweight> > outEdgeWeights; //!< same schema (and same order!) as outEdges
+
+	std::vector< std::vector<node> > inEdges; //!< only used for directed graphs, inEdges[v] contains all nodes u that have an edge (u, v)
+	std::vector< std::vector<edgeweight> > inEdgeWeights; //!< only used for directed graphs, same schema as inEdges
 
 	index indexInOutEdgeArray(node u, node v) const;
+	
+	index indexInInEdgeArray(node u, node v) const;
 
 public:
 
@@ -44,35 +53,37 @@ public:
 	 */
 	GraphBuilder(count n = 0, bool weighted = false, bool directed = false);
 
+	void reset(count n = 0);
+
 	/**
 	 * Returns <code>true</code> if this graph supports edge weights other than 1.0.
 	 * @return <code>true</code> if this graph supports edge weights other than 1.0.
 	 */
-	inline bool isWeighted() const;
+	inline bool isWeighted() const { return weighted; }
 
 	/**
 	 * Return <code>true</code> if this graph supports directed edges.
 	 * @return </code>true</code> if this graph supports directed edges.
 	 */
-	inline bool isDirected() const;
+	inline bool isDirected() const { return directed; }
 
 	/**
 	 * Return <code>true</code> if graph contains no nodes.
 	 * @return <code>true</code> if graph contains no nodes.
 	 */
-	inline bool isEmpty() const;
+	inline bool isEmpty() const { return n == 0; }
 
 	/**
 	 * Return the number of nodes in the graph.
 	 * @return The number of nodes.
 	 */
-	count numberOfNodes() const;
+	count numberOfNodes() const { return n; }
 
  	/**
 	 * Get an upper bound for the node ids in the graph.
 	 * @return An upper bound for the node ids.
 	 */
-	index upperNodeIdBound() const;
+	index upperNodeIdBound() const { return n; }
 
 	/**
 	 * Add a new node to the graph and return it.
@@ -87,9 +98,11 @@ public:
 	 * @param v Endpoint of edge.
 	 * @param weight Optional edge weight.
 	 */
-	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+	void addHalfEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
-	void addInEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+	void addHalfOutEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+
+	void addHalfInEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
 	/**
 	 * Set the weight of an edge. If the edge does not exist,
@@ -114,7 +127,7 @@ public:
 	/**
 	 * Generates a Graph instance. The graph builder will be reseted at the end.
 	 */
-	Graph toGraph(bool parallel = true);
+	Graph toGraph(bool autoCompleteEdges, bool parallel = false);
 
 	/**
 	 * Iterate over all nodes of the graph and call @a handle (lambda closure).
@@ -146,39 +159,34 @@ public:
 	template<typename L> void parallelForNodePairs(L handle) const;
 
 private:
-	void toGraphParallel(Graph &G);
+	void toGraphDirectSwap(Graph &G);
 	void toGraphSequential(Graph &G);
-	void directSwap(Graph &G);
-
-	void reset();
+	void toGraphParallel(Graph &G);
 
 	template <typename T>
 	static void copyAndClear(std::vector<T>& source, std::vector<T>& target);
 	
-	static void correctNumberOfEdges(Graph& G, count numberOfSelfLoops);
-	static bool checkConsistency(Graph& G);
+	void setDegrees(Graph& G);
+	count numberOfEdges(const Graph& G);
 };
 
-template <bool useHalfEdges>
 template<typename L>
-void GraphBuilder<useHalfEdges>::forNodes(L handle) const {
+void GraphBuilder::forNodes(L handle) const {
 	for (node v = 0; v < n; v++) {
 		handle(v);
 	}
 }
 
-template <bool useHalfEdges>
 template<typename L>
-void GraphBuilder<useHalfEdges>::parallelForNodes(L handle) const {
+void GraphBuilder::parallelForNodes(L handle) const {
 	#pragma omp parallel for schedule(dynamic)
 	for (node v = 0; v < n; v++) {
 		handle(v);
 	}
 }
 
-template <bool useHalfEdges>
 template<typename L>
-void GraphBuilder<useHalfEdges>::forNodePairs(L handle) const {
+void GraphBuilder::forNodePairs(L handle) const {
 	for (node u = 0; u < n; u++) {
 		for (node v = u + 1; v < n; v++) {
 			handle(u, v);
@@ -186,9 +194,8 @@ void GraphBuilder<useHalfEdges>::forNodePairs(L handle) const {
 	}
 }
 
-template <bool useHalfEdges>
 template<typename L>
-void GraphBuilder<useHalfEdges>::parallelForNodePairs(L handle) const {
+void GraphBuilder::parallelForNodePairs(L handle) const {
 	#pragma omp parallel for schedule(dynamic)
 	for (node u = 0; u < n; u++) {
 		for (node v = u + 1; v < n; v++) {
@@ -197,15 +204,11 @@ void GraphBuilder<useHalfEdges>::parallelForNodePairs(L handle) const {
 	}
 }
 
-template <bool useHalfEdges>
 template <typename T>
-void GraphBuilder<useHalfEdges>::copyAndClear(std::vector<T>& source, std::vector<T>& target) {
+void GraphBuilder::copyAndClear(std::vector<T>& source, std::vector<T>& target) {
 	std::copy(source.begin(), source.end(), std::back_inserter(target));
 	source.clear();
 }
-
-template class GraphBuilder<true>;
-template class GraphBuilder<false>;
 
 } /* namespace NetworKit */
 

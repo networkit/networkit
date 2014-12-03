@@ -12,56 +12,38 @@
 
 namespace NetworKit {
 
-template <bool useHalfEdges>
-GraphBuilder<useHalfEdges>::GraphBuilder(count n, bool weighted, bool directed) :
+GraphBuilder::GraphBuilder(count n, bool weighted, bool directed) :
 	n(n),
 	selfloops(0),
 	weighted(weighted),
 	directed(directed),
 	outEdges(n),
-	inEdges(useHalfEdges ? 0 : n),
 	outEdgeWeights(weighted ? n : 0),
-	inEdgeWeights((weighted && !useHalfEdges) ? n : 0) {
+	inEdges(directed ? n : 0),
+	inEdgeWeights((directed && weighted) ? n : 0) {
+
 }
 
-template <bool useHalfEdges>
-bool GraphBuilder<useHalfEdges>::isWeighted() const {
-	return weighted;
+void GraphBuilder::reset(count n) {
+	this->n = n;
+	selfloops = 0;
+	outEdges.assign(n, std::vector<node>{});
+	outEdgeWeights.assign(isWeighted() ? n : 0, std::vector<edgeweight>{}),
+	inEdges.assign(isDirected() ? n : 0, std::vector<node>{}),
+	inEdgeWeights.assign((isDirected() && isWeighted()) ? n : 0, std::vector<edgeweight>{});
 }
 
-template <bool useHalfEdges>
-bool GraphBuilder<useHalfEdges>::isDirected() const {
-	return directed;
-}
-
-template <bool useHalfEdges>
-bool GraphBuilder<useHalfEdges>::isEmpty() const {
-	return n == 0;
-}
-
-template <bool useHalfEdges>
-count GraphBuilder<useHalfEdges>::numberOfNodes() const {
-	return n;
-}
-
-template <bool useHalfEdges>
-index GraphBuilder<useHalfEdges>::upperNodeIdBound() const {
-	return n;
-}
-
-template <bool useHalfEdges>
-Graph GraphBuilder<useHalfEdges>::toGraph(bool parallel) {
-	Graph G(n, weighted, directed);
-	// if (usedirectswap) directSwap(G);
-	if (parallel)
-		toGraphParallel(G);
-	else
-		toGraphSequential(G);
-	return std::move(G);
+index GraphBuilder::indexInInEdgeArray(node v, node u) const {
+	for (index i = 0; i < inEdges[v].size(); i++) {
+		node x = inEdges[v][i];
+		if (x == u) {
+			return i;
+		}
 	}
+	return none;
+}
 
-template <bool useHalfEdges>
-index GraphBuilder<useHalfEdges>::indexInOutEdgeArray(node u, node v) const {
+index GraphBuilder::indexInOutEdgeArray(node u, node v) const {
 	for (index i = 0; i < outEdges[u].size(); i++) {
 		node x = outEdges[u][i];
 		if (x == v) {
@@ -71,31 +53,36 @@ index GraphBuilder<useHalfEdges>::indexInOutEdgeArray(node u, node v) const {
 	return none;
 }
 
-template <bool useHalfEdges>
-node GraphBuilder<useHalfEdges>::addNode() {
+node GraphBuilder::addNode() {
 	outEdges.push_back(std::vector<node>{});
 	if (weighted) {
 		outEdgeWeights.push_back(std::vector<edgeweight>{});
 	}
+	if (directed) {
+		inEdges.push_back(std::vector<node>{});
+		if (weighted) {
+			inEdgeWeights.push_back(std::vector<edgeweight>{});
+		}
+	}
 	return n++;
 }
 
-template <bool useHalfEdges>
-void GraphBuilder<useHalfEdges>::addEdge(node u, node v, edgeweight ew) {
+void GraphBuilder::addHalfEdge(node u, node v, edgeweight ew) {
+	addHalfOutEdge(u, v, ew);
+}
+
+void GraphBuilder::addHalfOutEdge(node u, node v, edgeweight ew) {
 	outEdges[u].push_back(v);
 	if (weighted) {
 		outEdgeWeights[u].push_back(ew);
 	}
+	if (u == v) {
+		#pragma omp atomic
+		selfloops++;
+	}
 }
 
-template<>
-void GraphBuilder<true>::addInEdge(node u, node v, edgeweight) = delete;
-
-template<>
-void GraphBuilder<false>::addInEdge(node u, node v, edgeweight) {
-	if (!isDirected()) {
-		throw std::runtime_error("Cannot set in-edges in undirected graphs, use addEdge.");
-	}
+void GraphBuilder::addHalfInEdge(node u, node v, edgeweight) {
 	inEdges[v].push_back(u);
 	if (weighted) {
 		inEdgeWeights[v].push_back(u);
@@ -106,60 +93,69 @@ void GraphBuilder<false>::addInEdge(node u, node v, edgeweight) {
 	}
 }
 
-template <bool useHalfEdges>
-void GraphBuilder<useHalfEdges>::setWeight(node u, node v, edgeweight ew) {
-	if (!weighted) {
-		throw std::runtime_error("Cannot set edge weight in unweighted graph.");
-	}
-
+void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
 	index vi = indexInOutEdgeArray(u, v);
-
 	if (vi != none) {
 		outEdgeWeights[u][vi] = ew;
 	} else {
-		addEdge(u, v, ew);
+		addHalfEdge(u, v, ew);
 	}
 }
 
-template <bool useHalfEdges>
-void GraphBuilder<useHalfEdges>::increaseWeight(node u, node v, edgeweight ew) {
-	if (!weighted) {
-		throw std::runtime_error("Cannot increase edge weight in unweighted graph.");
-	}
-
+void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
 	index vi = indexInOutEdgeArray(u, v);
-
 	if (vi != none) {
 		outEdgeWeights[u][vi] += ew;
 	} else {
-		addEdge(u, v, ew);
+		addHalfEdge(u, v, ew);
 	}
 }
 
-template <bool useHalfEdges>
-void GraphBuilder<useHalfEdges>::directSwap(Graph& G) {
-	G.outEdges.swap(outEdges);
-	G.outEdges.swap(inEdges);
-	G.outEdgeWeights.swap(outEdgeWeights);
-	G.outEdgeWeights.swap(inEdgeWeights);
-	
-	count selfLoopCount = 0;
+Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
+	Graph G(n, weighted, directed);
 
-	#pragma omp parallel for reduction(+:selfLoopCount)
-	for (node v = 0; v < n; v++) {
-		G.outDeg[v] = G.outEdges[v].size();
-		if (directed) {
-			G.inDeg[v] = G.inEdges[v].size();
+	assert(G.outEdges.size() == n);
+	assert(G.outEdgeWeights.size() == (weighted ? n : 0));
+	assert(G.inEdges.size() == (directed ? n : 0));
+	assert(G.inEdgeWeights.size() == ( (weighted && directed) ? n : 0));
+	
+	// copy edges and weights
+	if (autoCompleteEdges) {
+		if (parallel) {
+			toGraphParallel(G);
+		} else {
+			toGraphSequential(G);
 		}
-		selfLoopCount += std::count(G.outEdges[v].begin(), G.outEdges[v].end(), v);
+	} else {
+		toGraphDirectSwap(G);
 	}
-	correctNumberOfEdges(G, selfLoopCount);
+
+	assert(G.outEdges.size() == n);
+	assert(G.outEdgeWeights.size() == (weighted ? n : 0));
+	assert(G.inEdges.size() == (directed ? n : 0));
+	assert(G.inEdgeWeights.size() == ( (weighted && directed) ? n : 0));
+
+	setDegrees(G);
+
+	if (!autoCompleteEdges) {
+		// we counted each self loops twice
+		selfloops /= 2;
+	}
+	G.m = numberOfEdges(G);
 
 	reset();
+
+	return std::move(G);
 }
 
-template <bool useHalfEdges>
-void GraphBuilder<useHalfEdges>::toGraphParallel(Graph& G) {
+void GraphBuilder::toGraphDirectSwap(Graph& G) {
+	G.outEdges = std::move(outEdges);
+	G.outEdgeWeights = std::move(outEdgeWeights);
+	G.inEdges = std::move(inEdges);
+	G.inEdgeWeights = std::move(inEdgeWeights);
+}
+
+void GraphBuilder::toGraphParallel(Graph& G) {
 	// basic idea of the parallelization:
 	// 1) each threads collects its own data
 	// 2) each node collects all its data from all threads
@@ -245,14 +241,12 @@ void GraphBuilder<useHalfEdges>::toGraphParallel(Graph& G) {
 	for (auto c : numberOfSelfLoopsPerThread) {
 		numberOfSelfLoops += c;
 	}
-	correctNumberOfEdges(G, numberOfSelfLoops);
 
 	// bring the builder into an empty, but valid state
 	reset();
 }
 
-template <bool useHalfEdges>
-void GraphBuilder<useHalfEdges>::toGraphSequential(Graph &G) {
+void GraphBuilder::toGraphSequential(Graph &G) {
 	std::vector<count> missingEdgesCounts(n, 0);
 	count numberOfSelfLoops = 0;
 
@@ -338,32 +332,32 @@ void GraphBuilder<useHalfEdges>::toGraphSequential(Graph &G) {
 		});
 	}
 
-	// calculate correct m	
-	correctNumberOfEdges(G, numberOfSelfLoops);
-
 	// bring the builder into an empty, but valid state
 	reset();
 }
 
-template <bool useHalfEdges>
-void GraphBuilder<useHalfEdges>::reset() {
-	n = 0;
-	selfloops = 0;
-	outEdges.clear();
-	outEdgeWeights.clear();
+void GraphBuilder::setDegrees(Graph& G) {
+	#pragma omp parallel for
+	for (node v = 0; v < n; v++) {
+		G.outDeg[v] = G.outEdges[v].size();
+		if (G.isDirected()) {
+			G.inDeg[v] = G.inEdges[v].size();
+		}
+	}
 }
 
-template <bool useHalfEdges>
-void GraphBuilder<useHalfEdges>::correctNumberOfEdges(Graph& G, count numberOfSelfLoops) {
-	count edgeCount = 0;
-	#pragma omp parallel for reduction(+:edgeCount)
+count GraphBuilder::numberOfEdges(const Graph& G) {
+	count m = 0;
+	#pragma omp parallel for reduction(+:m)
 	for (node v = 0; v < G.z; v++) {
-		edgeCount += G.degree(v);
+		m += G.degree(v);
 	}
-	G.m = edgeCount;
-	if (!G.isDirected()) {
+	
+	if (G.isDirected()) {
+		return m;
+	} else {
 		// self loops are just counted once
-		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
+		return (m - selfloops) / 2 + selfloops;
 	}
 }
 

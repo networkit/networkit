@@ -32,8 +32,6 @@ namespace NetworKit {
 class Graph final {
 
 	friend class ParallelPartitionCoarsening;
-
-	template <bool useHalfEdges>
 	friend class GraphBuilder;
 
 private:
