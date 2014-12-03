@@ -55,10 +55,18 @@ TEST_F(CommunityGTest, testEnsemblePreprocessing) {
 
 	count b = 4;
 	for (count i = 0; i < b; ++i) {
-		ensemble.addBaseClusterer(*(new PLP(G)));
+		auto p = new PLP(G);
+		std::unique_ptr<CommunityDetectionAlgorithm> base(p);
+		ensemble.addBaseClusterer(base);
 	}
-	ensemble.setFinalClusterer(*(new PLM(G)));
-	ensemble.setOverlapper(*(new HashingOverlapper));
+
+	auto p = new PLM(G);
+	std::unique_ptr<CommunityDetectionAlgorithm> final(p);
+	ensemble.setFinalClusterer(final);
+
+	auto overlap = new HashingOverlapper;
+	std::unique_ptr<Overlapper> overlap_ptr(overlap);
+	ensemble.setOverlapper(overlap_ptr);
 
 	ensemble.run();
 	Partition zeta = ensemble.getPartition();
@@ -83,10 +91,17 @@ TEST_F(CommunityGTest, tryEnsemblePreprocessingCorrectness) {
 
 	count b = 4;
 	for (count i = 0; i < b; ++i) {
-		ensemble.addBaseClusterer(*(new PLP(G)));
+		auto p = new PLP(G);
+		std::unique_ptr<CommunityDetectionAlgorithm> base(p);
+		ensemble.addBaseClusterer(base);
 	}
-	ensemble.setFinalClusterer(*(new PLM(G)));
-	ensemble.setOverlapper(*(new HashingOverlapper));
+
+	auto p = new PLM(G);
+	std::unique_ptr<CommunityDetectionAlgorithm> final(p);
+	ensemble.setFinalClusterer(final);
+	auto overlap = new HashingOverlapper;
+	std::unique_ptr<Overlapper> overlap_ptr(overlap);
+	ensemble.setOverlapper(overlap_ptr);
 
 	ensemble.run();
 	Partition zeta = ensemble.getPartition();
@@ -317,8 +332,7 @@ TEST_F(CommunityGTest, testEPPFactory) {
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 
-	EPPFactory factory;
-	EPP epp = factory.make(jazz, 4, "PLP", "PLM");
+	EPP epp = EPPFactory::make(jazz, 4, "PLP", "PLM");
 
 	epp.run();
 	Partition zeta = epp.getPartition();
