@@ -98,10 +98,8 @@ public:
 	 * @param v Endpoint of edge.
 	 * @param weight Optional edge weight.
 	 */
-	void addHalfEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
-
+	void addHalfEdge(node u, node v, edgeweight ew = defaultEdgeWeight) { addHalfOutEdge(u, v, ew); }
 	void addHalfOutEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
-
 	void addHalfInEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
 	/**
@@ -112,7 +110,9 @@ public:
 	 * @param[in]	v	endpoint of edge
 	 * @param[in]	weight	edge weight
 	 */
-	void setWeight(node u, node v, edgeweight ew);
+	void setWeight(node u, node v, edgeweight ew) { setOutWeight(u, v, ew); }
+	void setOutWeight(node u, node v, edgeweight ew);
+	void setInWeight(node u, node v, edgeweight ew);
 
 	/**
 	 * Increase the weight of an edge. If the edge does not exist,
@@ -122,7 +122,9 @@ public:
 	 * @param[in]	v	endpoint of edge
 	 * @param[in]	weight	edge weight
 	 */
-	void increaseWeight(node u, node v, edgeweight ew);
+	void increaseWeight(node u, node v, edgeweight ew) { increaseOutWeight(u, v, ew); }
+	void increaseOutWeight(node u, node v, edgeweight ew);
+	void increaseInWeight(node u, node v, edgeweight ew);
 
 	/**
 	 * Generates a Graph instance. The graph builder will be reseted at the end.

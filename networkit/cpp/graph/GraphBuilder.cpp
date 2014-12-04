@@ -68,10 +68,6 @@ node GraphBuilder::addNode() {
 	return n++;
 }
 
-void GraphBuilder::addHalfEdge(node u, node v, edgeweight ew) {
-	addHalfOutEdge(u, v, ew);
-}
-
 void GraphBuilder::addHalfOutEdge(node u, node v, edgeweight ew) {
 	assert(indexInOutEdgeArray(u, v) == none);
 	outEdges[u].push_back(v);
@@ -96,23 +92,45 @@ void GraphBuilder::addHalfInEdge(node u, node v, edgeweight ew) {
 	}
 }
 
-void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
+void GraphBuilder::setOutWeight(node u, node v, edgeweight ew) {
 	assert(isWeighted());
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi != none) {
 		outEdgeWeights[u][vi] = ew;
 	} else {
-		addHalfEdge(u, v, ew);
+		addHalfOutEdge(u, v, ew);
 	}
 }
 
-void GraphBuilder::increaseWeight(node u, node v, edgeweight ew) {
+void GraphBuilder::setInWeight(node u, node v, edgeweight ew) {
+	assert(isWeighted());
+	assert(isDirected());
+	index vi = indexInInEdgeArray(u, v);
+	if (vi != none) {
+		inEdgeWeights[u][vi] = ew;
+	} else {
+		addHalfInEdge(u, v, ew);
+	}
+}
+
+void GraphBuilder::increaseOutWeight(node u, node v, edgeweight ew) {
 	assert(isWeighted());
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi != none) {
 		outEdgeWeights[u][vi] += ew;
 	} else {
-		addHalfEdge(u, v, ew);
+		addHalfOutEdge(u, v, ew);
+	}
+}
+
+void GraphBuilder::increaseInWeight(node u, node v, edgeweight ew) {
+	assert(isWeighted());
+	assert(isDirected());
+	index vi = indexInInEdgeArray(u, v);
+	if (vi != none) {
+		inEdgeWeights[u][vi] += ew;
+	} else {
+		addHalfInEdge(u, v, ew);
 	}
 }
 
