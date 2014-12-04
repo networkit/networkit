@@ -20,6 +20,8 @@ namespace NetworKit {
  * In the Graph class for an edge u -> v, v is stored in the adjacent array of u (first half) and u in the adjacent array of v (second half). (For directed graphs these might be in and out adjacent arrays.). So each edge can be seen as a pair of 2 half edges. To allow optimization and mainly parallelization GraphBuilder lets you add both half edges yourself. You are responsible for adding both half edges, otherwise you might end up with an invalid Graph object.
  * As adding the first half edge of an edge u -> v only requires access to the adjacent array of u, other threads can add edges a -> b as long as a != u. Some goes for the methods setWeight and increaseWeight. Note: If you add the first half edge of u -> v, you can change the weight by calling setWeight(u, v, ew) or increaseWeight(u, v, ew), but calling setWeight(v, u, ew) or increaseWeight(v, u, ew) will add the second half edge.
  * GraphBuilder allows you to be lazy and only add one half of each edge. Calling toGraph with autoCompleteEdges set to true, will make each half Edge in GraphBuilder to one full edge in Graph.
+ *
+ * So far I didn't came up with a good parallelization for toGraph, so at some point I might omit the parallel parameter for toGraph.
  */
 
 class GraphBuilder {
