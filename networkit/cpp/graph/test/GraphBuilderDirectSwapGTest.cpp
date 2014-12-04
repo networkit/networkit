@@ -364,30 +364,34 @@ TEST_P(GraphBuilderDirectSwapGTest, testSameAsGraph) {
 			} else { // new edge
 				node u = Aux::Random::integer(v, n - 1); // self-loops possible
 				edgeweight ew = Aux::Random::probability();
+				G_expected.addEdge(v, u, ew);
 				b.addHalfOutEdge(v, u, ew);
 				if (isDirected()) {
 					b.addHalfInEdge(u, v, ew);
 				} else if (u != v) {
 					b.addHalfOutEdge(u, v, ew);
 				}
-				G_expected.addEdge(v, u, ew);
 			}
 
 			if (isWeighted()) {
 				node u = Aux::Random::integer(v, n - 1); // self-loops possible
 				edgeweight ew = Aux::Random::probability();
 				if (p < 0.5) {
-					b.setWeight(v, u, ew);
-					if (!isDirected()) {
-						b.setWeight(u, v, ew);
-					}
 					G_expected.setWeight(v, u, ew);
-				} else {
-					b.increaseWeight(v, u, ew);
-					if (!isDirected()) {
-						b.increaseWeight(u, v, ew);
+					b.setOutWeight(v, u, ew);
+					if (isDirected()) {
+						b.setInWeight(u, v, ew);
+					} else {
+						b.setOutWeight(u, v, ew);
 					}
+				} else {
 					G_expected.increaseWeight(v, u, ew);
+					b.increaseOutWeight(v, u, ew);
+					if (isDirected()) {
+						b.increaseInWeight(u, v, ew);
+					} else {
+						b.increaseOutWeight(u, v, ew);
+					}
 				}
 			}
 		});
