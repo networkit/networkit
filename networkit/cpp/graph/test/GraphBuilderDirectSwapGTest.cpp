@@ -381,7 +381,7 @@ TEST_P(GraphBuilderDirectSwapGTest, testSameAsGraph) {
 					b.setOutWeight(v, u, ew);
 					if (isDirected()) {
 						b.setInWeight(u, v, ew);
-					} else {
+					} else if (u != v) {
 						b.setOutWeight(u, v, ew);
 					}
 				} else {
@@ -389,7 +389,7 @@ TEST_P(GraphBuilderDirectSwapGTest, testSameAsGraph) {
 					b.increaseOutWeight(v, u, ew);
 					if (isDirected()) {
 						b.increaseInWeight(u, v, ew);
-					} else {
+					} else if (u != v) {
 						b.increaseOutWeight(u, v, ew);
 					}
 				}
@@ -449,8 +449,12 @@ TEST_P(GraphBuilderDirectSwapGTest, testForValidStateAfterToGraph) {
 
 	node v = this->bHouse.addNode();
 	node u = this->bHouse.addNode();
-	this->bHouse.addHalfEdge(v, u, 0.25);
-	this->bHouse.addHalfEdge(u, v, 0.25);
+	this->bHouse.addHalfOutEdge(v, u, 0.25);
+	if (isDirected()) {
+		this->bHouse.addHalfInEdge(v, u, 0.25);
+	} else {
+		this->bHouse.addHalfOutEdge(u, v, 0.25);
+	}
 
 	Graph G2 = toGraph(this->bHouse);
 	ASSERT_FALSE(G2.isEmpty());
