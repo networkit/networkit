@@ -614,6 +614,12 @@ cdef class Graph:
 		self._this.initCoordinates()
 
 	def numberOfSelfLoops(self):
+		""" Get number of self-loops, i.e. edges {v, v}.
+		Returns
+		-------
+		count
+			number of self-loops.
+		"""
 		return self._this.numberOfSelfLoops()
 
 # TODO: expose all methods
@@ -1131,16 +1137,12 @@ cdef class PubWebGenerator:
 	cdef _PubWebGenerator* _this
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
-		""" TODO
-		"""
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
 
 	def __dealloc__(self):
 		del self._this
 
 	def generate(self):
-		""" TODO
-		"""
 		return Graph(0).setThis(self._this.generate())
 
 
@@ -1669,7 +1671,7 @@ cdef extern from "cpp/io/GraphToolBinaryReader.h":
 		_Graph read(string path) except +
 
 cdef class GraphToolBinaryReader:
-	""" Reads the binary file format defined by graph-tool[1]. 
+	""" Reads the binary file format defined by graph-tool[1].
 		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
 	"""
 	cdef _GraphToolBinaryReader _this
@@ -1766,7 +1768,7 @@ cdef extern from "cpp/io/GraphToolBinaryWriter.h":
 
 
 cdef class GraphToolBinaryWriter:
-	""" Reads the binary file format defined by graph-tool[1]. 
+	""" Reads the binary file format defined by graph-tool[1].
 		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
 	"""
 	cdef _GraphToolBinaryWriter _this
@@ -3054,8 +3056,6 @@ cdef class PLM(CommunityDetector):
 	""" Parallel Louvain Method - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement
 
-		PLM(refine=True, gamma=1.0, par="balanced", maxIter=32)
-
 		Parameters
 		----------
 		G : Graph
@@ -3110,6 +3110,8 @@ cdef class PLM(CommunityDetector):
 		return Partition().setThis(self._this.getPartition())
 
 	def getTiming(self):
+		"""  Get detailed time measurements.
+		"""
 		return self._this.getTiming()
 
 	@staticmethod
@@ -5061,7 +5063,7 @@ cdef class ParallelPartitionCoarsening:
 	def run(self, Graph G not None, Partition zeta not None):
 		result = self._this.run(G._this, zeta._this)
 		return (Graph(0).setThis(result.first), result.second)
-	
+
 # Module: scd
 
 cdef extern from "cpp/scd/PageRankNibble.h":
@@ -5073,7 +5075,7 @@ cdef class PageRankNibble:
 	"""
 	Produces a cut around a given seed node using the PageRank-Nibble algorithm.
 	see Andersen, Chung, Lang: Local Graph Partitioning using PageRank Vectors
-	
+
 	Parameters:
 	-----------
 	G : graph in which the cut is to be produced, must be unweighted.
@@ -5081,14 +5083,14 @@ cdef class PageRankNibble:
 	alpha : the random walk loop probability.
 	"""
 	cdef _PageRankNibble *_this
-	
+
 	def __cinit__(self, Graph G, double epsilon, double alpha):
 		self._this = new _PageRankNibble(G._this, epsilon, alpha)
 
 	def run(self, set[unsigned int] seeds):
 		"""
 		Produces a cut around a given seed node.
-		
+
 		Parameters:
 		-----------
 		seeds : the seed node ids.
