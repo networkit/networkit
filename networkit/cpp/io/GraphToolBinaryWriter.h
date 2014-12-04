@@ -19,13 +19,12 @@
 namespace NetworKit {
 
 /**
- *
+ * Writes graphs to files in the binary format defined by graph-tool[1].
+ * [1]: http://graph-tool.skewed.de/static/doc/gt_format.html
  */
 class GraphToolBinaryWriter: public NetworKit::GraphWriter {
 
 public:
-
-	//GraphToolBinaryWriter() = default; //nullary constructor for Python shell
 
 	GraphToolBinaryWriter(bool littleEndianness = true);
 
@@ -44,10 +43,6 @@ private:
 	void writeAdjacencies(std::ofstream& file, Graph& G);
 
 	uint8_t getAdjacencyWidth(uint64_t n);
-
-	//uint64_t getNumNodes(std::istream& file);
-
-	//bool getDirected(std::istream& file);
 
 	void writeComment(std::ofstream& file);
 

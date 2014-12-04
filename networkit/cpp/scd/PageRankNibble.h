@@ -9,8 +9,10 @@
 #define PAGERANKNIBBLE_H_
 
 #include <set>
+#include <unordered_map>
 #include "../graph/Graph.h"
 #include "SelectiveCommunityDetector.h"
+
 
 namespace NetworKit {
 
@@ -27,7 +29,7 @@ protected:
 	double alpha;
 	double epsilon;
 
-	std::set<node> bestSweepSet(const std::vector<double>& pr);
+	std::set<node> bestSweepSet(std::vector<std::pair<node, double>>& pr);
 
 public:
 	/**
@@ -39,8 +41,9 @@ public:
 	 */
 	PageRankNibble(Graph& g, double alpha, double epsilon);
 
+	virtual ~PageRankNibble();
 
-	std::map<node, std::set<node> >  run(std::set<unsigned int>& seeds);
+	virtual std::map<node, std::set<node> >  run(std::set<unsigned int>& seeds);
 
 
 		/**
